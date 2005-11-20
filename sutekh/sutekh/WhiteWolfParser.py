@@ -13,13 +13,22 @@ class CardDict(dict):
         super(CardDict,self).__init__()
 
     def _makeCard(self,sName):
+        sName = sName.strip()
         try:
             oC = AbstractCard.byName(sName)
         except:
             oC = AbstractCard(name=sName,text="")
         return oC
     
-    def _addExpansions(self,oC,aExp):
+    def _addExpansions(self,oC,sExp):
+        aPairs = [x.split(':') for x in sExp.strip('[]').split(',')]
+        aExp = []
+        for aPair in aPairs:
+            if len(aPair) == 1:
+                aExp.append((aPair[0].strip(),'NA'))
+            else:
+                aExp.append((aPair[0].strip(),aPair[1].strip()))
+    
         for sExp, sRarSet in aExp:
             for sRar in sRarSet.split('/'):
                 oP = IRarityPair((sExp,sRar))
@@ -67,6 +76,10 @@ class CardDict(dict):
         except ValueError:
             pass
 
+    def _addCardType(self,oC,sTypes):
+        for s in sTypes.split('/'):
+            oC.addCardType(ICardType(s.strip()))
+
     def save(self):
         if not self.has_key('name'):
             return
@@ -95,6 +108,9 @@ class CardDict(dict):
         
         if self.has_key('clan'):
             self._addClans(oC,self['clan'])
+            
+        if self.has_key('cardtype'):
+            self._addCardType(oC,self['cardtype'])
                                         
 # State Base Classes
 
@@ -159,14 +175,7 @@ class InCardName(StateWithCard):
 class InExpansion(StateWithCard):
     def transition(self,sTag,dAttr):
         if sTag == '/span':
-            aPairs = [x.split(':') for x in self._sData.strip('[]').split(',')]
-            aExp = []
-            for aPair in aPairs:
-                if len(aPair) == 1:
-                    aExp.append((aPair[0].strip(),'NA'))
-                else:
-                    aExp.append((aPair[0].strip(),aPair[1].strip()))
-            self._dInfo['expansion'] = aExp
+            self._dInfo['expansion'] = self._sData.strip()
             return InCard(self._dInfo)
         elif sTag == 'span':
             raise StateError()

@@ -14,6 +14,7 @@ class IRarity(Interface): pass
 class IDisciplinePair(Interface): pass
 class IDiscipline(Interface): pass
 class IClan(Interface): pass
+class ICardType(Interface): pass
 
 # Table Objects
 
@@ -30,6 +31,7 @@ class AbstractCard(SQLObject):
     discipline = RelatedJoin('DisciplinePair',intermediateTable='abs_discipline_pair_map')
     rarity = RelatedJoin('RarityPair',intermediateTable='abs_rarity_pair_map')
     clan = RelatedJoin('Clan',intermediateTable='abs_clan_map')
+    cardtype = RelatedJoin('CardType',intermediateTable='abs_type_map')
     sets = RelatedJoin('AbstractCardSet',intermediateTable='abstract_map')
     
 class PhysicalCard(SQLObject):
@@ -86,10 +88,16 @@ class Clan(SQLObject):
     
     name = StringCol(alternateID=True,length=40)
     cards = RelatedJoin('AbstractCard',intermediateTable='abs_clan_map')
+
+class CardType(SQLObject):
+    advise(instancesProvide=[ICardType])
+    
+    name = StringCol(alternateID=True,length=50)
+    cards = RelatedJoin('AbstractCard',intermediateTable='abs_type_map')
     
 ObjectList = [ AbstractCard, PhysicalCard, AbstractCardSet, PhysicalCardSet,
                RarityPair, Expansion, Rarity, DisciplinePair, Discipline,
-               Clan ]
+               Clan, CardType ]
 
 # Adapters
 
@@ -249,3 +257,27 @@ class ClanAdapter(object):
         except:
             oC = Clan(name=sCanonical)
         return oC
+
+class CardTypeAdapter(object):
+    advise(instancesProvide=[ICardType],asAdapterForTypes=[basestring])
+    
+    dKey = { 'Action' : [], 'Action Modifier' : [], 'Combat' : [],
+             'Reaction' : [], 'Ally' : [], 'Equipment' : [], 'Event' : [],
+             'Master' : [], 'Political Action' : [], 'Retainer' : [],
+             'Vampire' : []
+           }
+    
+    dLook = {}
+    for sKey, aAlts in dKey.iteritems():
+        dLook[sKey] = sKey
+        for sAlt in aAlts:
+            dLook[sAlt] = sKey
+
+    def __new__(cls,s):
+        sCanonical = cls.dLook[s]
+        try:
+            oC = CardType.byName(sCanonical)
+        except:
+            oC = CardType(name=sCanonical)
+        return oC
+    
