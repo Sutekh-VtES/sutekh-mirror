@@ -80,7 +80,7 @@ class CardTextView(gtk.TextView,object):
         self.__oBuf.delete(oStart,oEnd)
                 
         oIter = self.__oBuf.get_iter_at_offset(0)
-        self.__oBuf.insert(oIter,str(oCard))
+        self.__oBuf.insert(oIter,oCard.text)
 
 class CardListView(gtk.TreeView,object):
     def __init__(self,oController):
@@ -129,6 +129,8 @@ class AbstractCardView(CardListView):
         self.connect('drag_data_get',self.dragCard)
         self.connect('drag_data_delete',self.dragDelete)
         
+        self.load()
+        
     def dragCard(self, btn, context, selection_data, info, time):
         oModel, oIter = self._oSelection.get_selected()
         if not oIter:
@@ -138,7 +140,26 @@ class AbstractCardView(CardListView):
     
     def dragDelete(self, btn, context, data):
         pass
-
+        
+    def load(self):
+        self._oModel.clear()
+        
+        for oType in CardType.select():
+            # Create Section
+            oSectionIter = self._oModel.append(None)
+            self._oModel.set(oSectionIter,
+                0, oType.name,
+                1, 0
+            )
+            
+            # Fill in Cards
+            for oCard in oType.cards:
+                oChildIter = self._oModel.append(oSectionIter)
+                self._oModel.set(oChildIter,
+                    0, oCard.name,
+                    1, 0
+                )
+    
 class PhysicalCardView(CardListView):
     def __init__(self,oController):
         super(PhysicalCardView,self).__init__(oController)
@@ -173,6 +194,8 @@ class PhysicalCardView(CardListView):
                      ('text/plain', 0, 0) ] # and here
         self.drag_dest_set(gtk.DEST_DEFAULT_ALL, aTargets, gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
         self.connect('drag_data_received',self.cardDrop)
+        
+        self.load()
                
     def incCard(self,oCell,oPath):
         oIter = self._oModel.get_iter(oPath)
@@ -191,56 +214,76 @@ class PhysicalCardView(CardListView):
         else:
             context.finish(False, False, time)
     
-    def populate(self,oDeckStore):
+    def load(self):
         self._oModel.clear()
-        dCardTypes = {}
+        # oIter = self._oModel.append(None)
+        iCount = 1 # TODO: Remove
         
-        for oCard, iCount, aGroups in oDeckStore.getCardList(lambda x: True, lambda x: ["foo"]):
-            if not oCard.has_key('cardtype'):
-                sType = 'other'
-            else:
-                sType = oCard['cardtype']
-                
-            if not dCardTypes.has_key(sType):
-                oMain = self._oModel.append(None)    
-                self._oModel.set(oMain,
-                    0, sType.capitalize(),
-                    1, iCount
-                )
-                dCardTypes[sType] = [oMain, iCount]
-            else:
-                dCardTypes[sType][1] += iCount
-                self._oModel.set(dCardTypes[sType][0],
-                    1, dCardTypes[sType][1]
-                )
-            
-            oChildIter = self._oModel.append(dCardTypes[sType][0])
-            self._oModel.set(oChildIter,
-                0, oCard.getName(),
+        for oCard in PhysicalCard.select():                            
+            self._oModel.set(self._oModel.append(None),
+                0, oCard.abstractCard.name,
                 1, iCount
             )
+            # print oCard.abstractCard.name
             
         self.expand_all()
 
+class PhysicalCardController(object):
+    def __init__(self,oMasterController):
+        self.__oView = PhysicalCardView(self)
+        self.__oC = oMasterController
+        
+    def getView(self):
+        return self.__oView
+    
+    def decCard(self,sName):
+        # TODO: Finish
+        # Remove card, then:
+        self.__oView.load()
+    
+    def incCard(self,sName):
+        # TODO: Finish
+        # Inc card, then:
+        self.__oView.load()
+    
+    def addCard(self,sName):
+        try:
+            oC = AbstractCard.byName(sName)
+        except SQLObjectNotFound:
+            return
+        oPC = PhysicalCard(abstractCard=oC)
+        self.__oView.load()
+        
+    def setCardText(self,sCardName):
+        self.__oC.setCardText(sCardName)
     
 class MainController(object):
     def __init__(self):
+        # Create Sub-Controllers
+        self.__oPhysicalCards = PhysicalCardController(self)
+    
         # Create Views
         self.__oWin = MainWindow(self)
         self.__oMenu = MainMenu(self)
         self.__oCardText = CardTextView(self)
         self.__oAbstractCards = AbstractCardView(self)
-        self.__oPhysicalCards = PhysicalCardView(self)
                 
         # Link
         self.__oWin.addParts(self.__oMenu,self.__oCardText, \
-                             self.__oAbstractCards,self.__oPhysicalCards)
+                             self.__oAbstractCards,self.__oPhysicalCards.getView())
         
     def run(self):
         gtk.main()
         
     def actionQuit(self):
         gtk.main_quit()
+
+    def setCardText(self,sCardName):
+        try:
+            oCard = AbstractCard.byName(sCardName)
+            self.__oCardText.setCardText(oCard)
+        except SQLObjectNotFound:    
+            pass
     
         
 # Script Launching    
