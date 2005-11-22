@@ -1,0 +1,62 @@
+=== Requirements ===
+
+The Python modules required are:
+
+* SQLObject
+* PyProtocols
+* sqllite (or the module for whatever database one plans to use)
+* PyGtk (for the GUI)
+
+One will also need to download the official cardlist at:
+
+* http://www.white-wolf.com/vtes/index.php?line=cardlist.html
+
+to a local file.
+
+=== Getting Started ===
+
+To get started, run:
+
+python sutekh/SutekhCli.py --help
+python sutekh/SutekhCli.py -c -r vtes_card_file.html
+
+Currently the GUI mostly just supports creating a list of (physical)
+cards one owns although it's also a means of browsing cards by card
+type. Launch using:
+
+* python sutekh/SutekhGui.py
+
+=== Using Sutekh from the Python Interpreter ===
+
+I think the most useful part of Sutekh at the moment is the ability
+to play around with the database from inside the Python interpreter:
+
+python
+>>> import sutekh.SutekhCli
+>>> from sutekh.SutekhObjects import *
+>>> sutekh.SutekhCli.main(['foo'])
+
+An example:
+
+Print all Malkavian cards:
+>>> for oC in Clan.byName('Malkavian').cards:
+...           print oC.name
+
+>>> oTony = AbstractCard.byName('Tony')
+>>> print oTony
+>>> for oP in oTony.discipline:
+...     print oP.level, oP.discipline
+>>> print oTony.cardtype
+>>> print oTony.capacity
+>>> print oTony.clan
+>>> print oTony.group
+>>> print oTony.text
+>>> oMariel = list(AbstractCard.select(AbstractCard.q.name.startswith('Mariel')))[0]
+
+=== Philosophy ===
+
+Conceptually Sutekh is organised around two datatypes, AbstractCard
+and PhysicalCard. AbstractCard models a conceptual card (e.g. ".44 Magnum")
+while PhysicalCard stores information about an actual rectangular piece of
+cardboard (e.g. My third copy of a .44 Magnum from the VTES expansion).
+
