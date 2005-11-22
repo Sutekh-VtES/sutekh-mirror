@@ -32,9 +32,8 @@ I think the most useful part of Sutekh at the moment is the ability
 to play around with the database from inside the Python interpreter:
 
 python
->>> import sutekh.SutekhCli
->>> from sutekh.SutekhObjects import *
->>> sutekh.SutekhCli.main(['foo'])
+>>> from sutekh import * 
+>>> start() 
 
 An example:
 

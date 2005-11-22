@@ -32,6 +32,7 @@ class CardDict(dict):
         for sExp, sRarSet in aExp:
             for sRar in sRarSet.split('/'):
                 oP = IRarityPair((sExp,sRar))
+                oC.addRarityPair(oP)
             
     def _addDisciplines(self,oC,sDis):
         sDis = self.oDisGaps.sub(' ',sDis).strip()

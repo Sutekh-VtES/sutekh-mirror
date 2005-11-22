@@ -1,0 +1,3 @@
+* Import discipline level from WhiteWolf HTML card file.
+* Find out why SutekhGui.py spews warnings like:
+     Pango-WARNING **: Invalid UTF-8 string passed to pango_layout_set_text()
