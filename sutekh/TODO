@@ -3,3 +3,4 @@
      Pango-WARNING **: Invalid UTF-8 string passed to pango_layout_set_text()
 * Make import from HTML file faster (possible use lazy SQLObject writes).
 * Add selection mechanisms to GUI card lists (filter, sorting, grouping).
+* Make removing cards from PhysicalCard list in GUI possible.
