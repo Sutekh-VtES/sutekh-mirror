@@ -1,8 +1,6 @@
 * Import discipline level from WhiteWolf HTML card file.
-* Find out why SutekhGui.py spews warnings like:
-     Pango-WARNING **: Invalid UTF-8 string passed to pango_layout_set_text()
 * Make import from HTML file faster (possible use lazy SQLObject writes).
 * Add selection mechanisms to GUI card lists (filter, sorting, grouping).
 * Make removing cards from PhysicalCard list in GUI possible.
 * Create logo for wiki.
-* The 'o' in Rotschreck causes problems.  Fix.
+* Handle advanced versions of vampires properly.

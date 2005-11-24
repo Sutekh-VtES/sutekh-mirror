@@ -14,11 +14,7 @@ class CardDict(dict):
 
     def _makeCard(self,sName):
         sName = sName.strip()
-        try:
-            oC = AbstractCard.byName(sName)
-        except:
-            oC = AbstractCard(name=sName,text="")
-        return oC
+        return IAbstractCard(sName)
     
     def _addExpansions(self,oC,sExp):
         aPairs = [x.split(':') for x in sExp.strip('[]').split(',')]
@@ -85,7 +81,7 @@ class CardDict(dict):
         if not self.has_key('name'):
             return
 
-        print self['name']
+        print self['name'].encode('ascii','xmlcharrefreplace')
         
         oC = self._makeCard(self['name'])
             
@@ -112,7 +108,7 @@ class CardDict(dict):
             
         if self.has_key('cardtype'):
             self._addCardType(oC,self['cardtype'])
-                                        
+                                                    
 # State Base Classes
 
 class StateError(Exception):

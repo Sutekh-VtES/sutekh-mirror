@@ -21,8 +21,8 @@ class ICardType(Interface): pass
 class AbstractCard(SQLObject):
     advise(instancesProvide=[IAbstractCard])
 
-    name = StringCol(alternateID=True,length=50)
-    text = StringCol(length=512)
+    name = UnicodeCol(alternateID=True,length=50)
+    text = UnicodeCol(length=512)
     group = IntCol(default=None,dbName='grp')
     capacity = IntCol(default=None)
     cost = IntCol(default=None)
@@ -43,13 +43,13 @@ class PhysicalCard(SQLObject):
 class AbstractCardSet(SQLObject):
     advise(instancesProvide=[IAbstractCardSet])
 
-    name = StringCol(alternateID=True,length=50)
+    name = UnicodeCol(alternateID=True,length=50)
     cards = RelatedJoin('AbstractCard',intermediateTable='abstract_map')
     
 class PhysicalCardSet(SQLObject):
     advise(instancesProvide=[IPhysicalCardSet])
 
-    name = StringCol(alternateID=True,length=50)
+    name = UnicodeCol(alternateID=True,length=50)
     cards = RelatedJoin('PhysicalCard',intermediateTable='physical_map')
 
 class RarityPair(SQLObject):
@@ -63,12 +63,12 @@ class RarityPair(SQLObject):
 class Expansion(SQLObject):
     advise(instancesProvide=[IExpansion])
 
-    name = StringCol(alternateID=True,length=20)
+    name = UnicodeCol(alternateID=True,length=20)
     
 class Rarity(SQLObject):
     advise(instancesProvide=[IRarity])
 
-    name = StringCol(alternateID=True,length=20)
+    name = UnicodeCol(alternateID=True,length=20)
 
 class DisciplinePair(SQLObject):
     advise(instancesProvide=[IDisciplinePair])
@@ -81,18 +81,18 @@ class DisciplinePair(SQLObject):
 class Discipline(SQLObject):
     advise(instancesProvide=[IDiscipline])
 
-    name = StringCol(alternateID=True,length=30)
+    name = UnicodeCol(alternateID=True,length=30)
 
 class Clan(SQLObject):
     advise(instancesProvide=[IClan])
     
-    name = StringCol(alternateID=True,length=40)
+    name = UnicodeCol(alternateID=True,length=40)
     cards = RelatedJoin('AbstractCard',intermediateTable='abs_clan_map')
 
 class CardType(SQLObject):
     advise(instancesProvide=[ICardType])
     
-    name = StringCol(alternateID=True,length=50)
+    name = UnicodeCol(alternateID=True,length=50)
     cards = RelatedJoin('AbstractCard',intermediateTable='abs_type_map')
     
 ObjectList = [ AbstractCard, PhysicalCard, AbstractCardSet, PhysicalCardSet,
@@ -132,7 +132,7 @@ class ExpansionAdapter(object):
         else:
             sCanonical = cls.dLook[s]
         try:
-            oE = Expansion.byName(sCanonical)
+            oE = Expansion.byName(sCanonical.encode('utf8'))
         except:
             oE = Expansion(name=sCanonical)
         return oE
@@ -161,7 +161,7 @@ class RarityAdapter(object):
         else:
             sCanonical = cls.dLook[s]
         try:
-            oR = Rarity.byName(sCanonical)
+            oR = Rarity.byName(sCanonical.encode('utf8'))
         except:
             oR = Rarity(name=sCanonical)
         return oR
@@ -223,7 +223,7 @@ class DisciplineAdapter(object):
     def __new__(cls,s):
         sCanonical = cls.dLook[s]
         try:
-            oD = Discipline.byName(sCanonical)
+            oD = Discipline.byName(sCanonical.encode('utf8'))
         except:
             oD = Discipline(name=sCanonical)
         return oD
@@ -253,7 +253,7 @@ class ClanAdapter(object):
     def __new__(cls,s):
         sCanonical = cls.dLook[s]
         try:
-            oC = Clan.byName(sCanonical)
+            oC = Clan.byName(sCanonical.encode('utf8'))
         except:
             oC = Clan(name=sCanonical)
         return oC
@@ -276,8 +276,17 @@ class CardTypeAdapter(object):
     def __new__(cls,s):
         sCanonical = cls.dLook[s]
         try:
-            oC = CardType.byName(sCanonical)
+            oC = CardType.byName(sCanonical.encode('utf8'))
         except:
             oC = CardType(name=sCanonical)
         return oC
     
+class AbstractCardAdapter(object):
+    advise(instancesProvide=[IAbstractCard],asAdapterForTypes=[basestring])
+    
+    def __new__(cls,s):
+        try:
+            oC = AbstractCard.byName(s.encode('utf8'))
+        except SQLObjectNotFound:
+            oC = AbstractCard(name=s,text="")
+        return oC

@@ -1,4 +1,4 @@
-import sys, optparse, os
+import sys, optparse, os, codecs
 from sqlobject import *
 from SutekhObjects import *
 from WhiteWolfParser import WhiteWolfParser
@@ -29,7 +29,7 @@ def createTables(**kw):
 
 def readWhiteWolfList(sWwList):
     oP = WhiteWolfParser()
-    fIn = file(sWwList)
+    fIn = codecs.open(sWwList,'rU','cp1252')
     for sLine in fIn:
         oP.feed(sLine)
     fIn.close()
