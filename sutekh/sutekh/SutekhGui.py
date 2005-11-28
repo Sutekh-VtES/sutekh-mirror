@@ -93,6 +93,9 @@ class CardTextView(gtk.TextView,object):
         
         if not oCard.group is None:
             s += "\nGroup: " + str(oCard.group)
+            
+        if not oCard.level is None:
+            s += "\nLevel: " + str(oCard.level)
         
         s += "\nCard Type:"
         if len(oCard.cardtype) == 0:

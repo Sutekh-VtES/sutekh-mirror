@@ -21,12 +21,15 @@ class ICardType(Interface): pass
 class AbstractCard(SQLObject):
     advise(instancesProvide=[IAbstractCard])
 
+    sqlmeta.lazyUpdate = True
+
     name = UnicodeCol(alternateID=True,length=50)
     text = UnicodeCol(length=512)
     group = IntCol(default=None,dbName='grp')
     capacity = IntCol(default=None)
     cost = IntCol(default=None)
     costtype = EnumCol(enumValues=['pool','blood',None],default=None)
+    level = EnumCol(enumValues=['advanced',None],default=None)
     
     discipline = RelatedJoin('DisciplinePair',intermediateTable='abs_discipline_pair_map')
     rarity = RelatedJoin('RarityPair',intermediateTable='abs_rarity_pair_map')
@@ -101,10 +104,48 @@ ObjectList = [ AbstractCard, PhysicalCard, AbstractCardSet, PhysicalCardSet,
 
 # Adapters
 
+class StrAdaptMeta(type):
+    def __init__(self, sName, aBases, dDict):
+        self.makeLookupDict(dDict['keys'],dDict.get('suffixes',[]))
+        self.makeObjectCache()
+    
+    def makeLookupDict(self,dKeys,aSuffixes):
+        self.__dLook = {}
+        
+        for sKey, aAlts in dKeys.iteritems():
+            self.__dLook[sKey] = sKey
+            for sAlt in aAlts:
+                self.__dLook[sAlt] = sKey
+                
+            for s in aSuffixes:
+                self.__dLook[sKey + s] = sKey
+                for sAlt in aAlts:
+                    self.__dLook[sAlt + s] = sKey
+
+    def makeObjectCache(self):
+        self.__dCache = {}
+
+    def canonical(self,sName):
+        return self.__dLook[sName]
+        
+    def fetch(self,sName,oCls):
+        o = self.__dCache.get(sName,None)
+        if not o is None:
+            return o
+        
+        try:
+            o = oCls.byName(sName.encode('utf8'))
+        except SQLObjectNotFound:
+            o = oCls(name=sName)
+        
+        self.__dCache[sName] = o
+        return o
+
 class ExpansionAdapter(object):
+    __metaclass__ = StrAdaptMeta
     advise(instancesProvide=[IExpansion],asAdapterForTypes=[basestring])
 
-    dKey = { 'Jyhad' : [],
+    keys = { 'Jyhad' : [],
              'VTES' : [],
              'Sabbat' : [],
              'Sabbat Wars' : ['SW'],
@@ -119,28 +160,19 @@ class ExpansionAdapter(object):
              'Tenth Anniversary' : ['Tenth'],
              'Anarchs' : [],             
            }
-    
-    dLook = {}
-    for sKey, aAlts in dKey.iteritems():
-        dLook[sKey] = sKey
-        for sAlt in aAlts:
-            dLook[sAlt] = sKey
-    
+        
     def __new__(cls,s):
         if s.startswith('Promo-'):
-            sCanonical = s
+            sName = s
         else:
-            sCanonical = cls.dLook[s]
-        try:
-            oE = Expansion.byName(sCanonical.encode('utf8'))
-        except:
-            oE = Expansion(name=sCanonical)
-        return oE
+            sName = cls.canonical(s)
+        return cls.fetch(sName,Expansion)
     
 class RarityAdapter(object):
+    __metaclass__ = StrAdaptMeta
     advise(instancesProvide=[IRarity],asAdapterForTypes=[basestring])
 
-    dKey = { 'Common' : ['C','C1','C2','C3'],
+    keys = { 'Common' : ['C','C1','C2','C3'],
              'Uncommon' : ['U','U1','U2','U3','U5'],
              'Rare' : ['R','R1','R2','R3'],
              'Vampire' : ['V','V1','V2','V3'],
@@ -148,30 +180,27 @@ class RarityAdapter(object):
              'Precon' : ['PB','PA','PTo3','PTr','PG','PB2','PTo4','PAl2'],
              'Not Applicable' : ['NA'],
            }
-    
-    dLook = {}
-    for sKey, aAlts in dKey.iteritems():
-        dLook[sKey] = sKey
-        for sAlt in aAlts:
-            dLook[sAlt] = sKey
-    
+        
     def __new__(cls,s):
         if s.startswith('P'):
-            sCanonical = 'Precon'
+            sName = 'Precon'
         else:
-            sCanonical = cls.dLook[s]
-        try:
-            oR = Rarity.byName(sCanonical.encode('utf8'))
-        except:
-            oR = Rarity(name=sCanonical)
-        return oR
+            sName = cls.canonical(s)
+        return cls.fetch(sName,Rarity)
 
 class RarityPairAdapter(object):
     advise(instancesProvide=[IRarityPair],asAdapterForTypes=[tuple])
     
+    __dCache = {}
+    
     def __new__(cls,t):
         oE = IExpansion(t[0])
         oR = IRarity(t[1])
+        
+        oP = cls.__dCache.get((oE.id,oR.id),None)
+        if not oP is None:
+            return oP
+        
         try:
             aRes = list(RarityPair.selectBy(expansion=oE,rarity=oR))
             if len(aRes) != 1:
@@ -179,12 +208,15 @@ class RarityPairAdapter(object):
             oP = aRes[0]    
         except:
             oP = RarityPair(expansion=oE,rarity=oR)
+            
+        cls.__dCache[(oE.id,oR.id)] = oP
         return oP
 
 class DisciplineAdapter(object):
+    __metaclass__ = StrAdaptMeta
     advise(instancesProvide=[IDiscipline],asAdapterForTypes=[basestring])
 
-    dKey = { 'ani' : ['ANI','Animalism'],
+    keys = { 'ani' : ['ANI','Animalism'],
              'aus' : ['AUS','Auspex'],
              'cel' : ['CEL','Celerity'],
              'chi' : ['CHI','Chimerstry'],
@@ -214,24 +246,39 @@ class DisciplineAdapter(object):
              'vis' : ['VIS','Visceratika'],
            }
            
-    dLook = {}
-    for sKey, aAlts in dKey.iteritems():
-        dLook[sKey] = sKey
-        for sAlt in aAlts:
-            dLook[sAlt] = sKey
-
     def __new__(cls,s):
-        sCanonical = cls.dLook[s]
+        sName = cls.canonical(s)
+        return cls.fetch(sName,Discipline)
+
+class DisciplinePairAdapter(object):
+    advise(instancesProvide=[IDisciplinePair],asAdapterForTypes=[tuple])
+    
+    __dCache = {}
+    
+    def __new__(cls,t):
+        oD = IDiscipline(t[0])
+        sLevel = str(t[1])
+        
+        oP = cls.__dCache.get((oD.id,sLevel),None)
+        if not oP is None:
+            return oP
+        
         try:
-            oD = Discipline.byName(sCanonical.encode('utf8'))
+            aRes = list(DisciplinePair.selectBy(discipline=oD,level=sLevel))
+            if len(aRes) != 1:
+                raise TypeError
+            oP = aRes[0]
         except:
-            oD = Discipline(name=sCanonical)
-        return oD
+            oP = DisciplinePair(discipline=oD,level=sLevel)
+            
+        cls.__dCache[(oD.id,sLevel)] = oP
+        return oP
 
 class ClanAdapter(object):
+    __metaclass__ = StrAdaptMeta
     advise(instancesProvide=[IClan],asAdapterForTypes=[basestring])
     
-    dKey = { 'Follower of Set' : [], 'Toreador' : [],
+    keys = { 'Follower of Set' : [], 'Toreador' : [],
              'Lasombra' : [], 'Gangrel' : [], 'Caitiff' : [],
              'Assamite' : [], 'Ravnos' : [], 'Harbinger of Skulls' : [],
              'Tremere' : [], 'Giovanni' : [], 'Ventrue' : [],
@@ -243,43 +290,25 @@ class ClanAdapter(object):
              'True Brujah' : [],
            }
            
-    dLook = {}
-    for sKey, aAlts in dKey.iteritems():
-        dLook[sKey] = sKey
-        dLook[sKey + ' antitribu'] = sKey + ' antitribu'
-        for sAlt in aAlts:
-            dLook[sAlt] = sKey
-
+    suffixes = [' antitribu']
+           
     def __new__(cls,s):
-        sCanonical = cls.dLook[s]
-        try:
-            oC = Clan.byName(sCanonical.encode('utf8'))
-        except:
-            oC = Clan(name=sCanonical)
-        return oC
+        sName = cls.canonical(s)
+        return cls.fetch(sName,Clan)
 
 class CardTypeAdapter(object):
+    __metaclass__ = StrAdaptMeta
     advise(instancesProvide=[ICardType],asAdapterForTypes=[basestring])
     
-    dKey = { 'Action' : [], 'Action Modifier' : [], 'Combat' : [],
+    keys = { 'Action' : [], 'Action Modifier' : [], 'Combat' : [],
              'Reaction' : [], 'Ally' : [], 'Equipment' : [], 'Event' : [],
              'Master' : [], 'Political Action' : [], 'Retainer' : [],
              'Vampire' : []
            }
     
-    dLook = {}
-    for sKey, aAlts in dKey.iteritems():
-        dLook[sKey] = sKey
-        for sAlt in aAlts:
-            dLook[sAlt] = sKey
-
     def __new__(cls,s):
-        sCanonical = cls.dLook[s]
-        try:
-            oC = CardType.byName(sCanonical.encode('utf8'))
-        except:
-            oC = CardType(name=sCanonical)
-        return oC
+        sName = cls.canonical(s)
+        return cls.fetch(sName,CardType)
     
 class AbstractCardAdapter(object):
     advise(instancesProvide=[IAbstractCard],asAdapterForTypes=[basestring])

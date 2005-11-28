@@ -17,6 +17,9 @@ def parseOptions(aArgs):
     oP.add_option("--drop-tables",
                   action="store_true",dest="drop_tables",default=False,
                   help="Drop database tables.")
+    oP.add_option("--sql-debug",
+                  action="store_true",dest="sql_debug",default=False,
+                  help="Print out SQL statements.")
     return oP, oP.parse_args(aArgs)
 
 def dropTables(**kw):
@@ -46,6 +49,9 @@ def main(aArgs):
 
     oConn = connectionForURI(oOpts.db)
     sqlhub.processConnection = oConn
+    
+    if oOpts.sql_debug:
+        oConn.debug = True
     
     if oOpts.drop_tables:
         dropTables(ifExists=True)

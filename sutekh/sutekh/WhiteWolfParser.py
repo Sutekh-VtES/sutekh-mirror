@@ -36,13 +36,7 @@ class CardDict(dict):
         if sDis == '-none-' or sDis == '': return
                 
         for s in sDis.split():
-            oD = IDiscipline(s)
-        
-            try:
-                oP = DisciplinePair.selectBy(discipline=oD,level='inferior')[0]
-            except:
-                oP = DisciplinePair(discipline=oD,level='inferior')
-                
+            oP = IDisciplinePair((s,'inferior'))
             oC.addDisciplinePair(oP)
             
     def _addClans(self,oC,sClan):
@@ -63,7 +57,16 @@ class CardDict(dict):
             iCost = int(sAmnt,10)
         
         oC.cost = iCost
-        oC.costtype = sType.lower()        
+        oC.costtype = str(sType.lower()) # make str non-unicode
+
+    def _getLevel(self,sLevel):
+        return self.oWhiteSp.sub(' ',sLevel).strip().lower()
+
+    def _addLevel(self,oC,sLevel):
+        oC.level = str(self._getLevel(sLevel)) # make str non-unicode
+        
+    def _addLevelToName(self,sName,sLevel):
+        return sName.strip() + " (" + self._getLevel(sLevel).capitalize() + ")"
 
     def _addCapacity(self,oC,sCap):
         sCap = self.oWhiteSp.sub(' ',sCap).strip()
@@ -80,7 +83,10 @@ class CardDict(dict):
     def save(self):
         if not self.has_key('name'):
             return
-
+        
+        if self.has_key('level'):
+            self['name'] = self._addLevelToName(self['name'],self['level'])
+        
         print self['name'].encode('ascii','xmlcharrefreplace')
         
         oC = self._makeCard(self['name'])
@@ -97,6 +103,9 @@ class CardDict(dict):
         if self.has_key('cost'):
             self._addCost(oC,self['cost'])
             
+        if self.has_key('level'):
+            self._addLevel(oC,self['level'])
+            
         if self.has_key('expansion'):
             self._addExpansions(oC,self['expansion'])
             
@@ -108,6 +117,8 @@ class CardDict(dict):
             
         if self.has_key('cardtype'):
             self._addCardType(oC,self['cardtype'])
+        
+        oC.syncUpdate()
                                                     
 # State Base Classes
 
