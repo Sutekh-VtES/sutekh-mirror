@@ -2,4 +2,3 @@
 * Add selection mechanisms to GUI card lists (filter, sorting, grouping).
 * Make removing cards from PhysicalCard list in GUI possible.
 * Create logo for wiki.
-* Add parser for errata / clarifications file.

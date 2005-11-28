@@ -11,7 +11,12 @@ One will also need to download the official cardlist at:
 
 * http://www.white-wolf.com/vtes/index.php?line=cardlist.html
 
-to a local file.
+to a local file.  Sutekh can also parse the official rulings
+file from:
+
+* http://www.white-wolf.com/vtes/rulings.html
+
+so that might be useful too.
 
 === Getting Started ===
 
@@ -19,6 +24,7 @@ To get started, run:
 
 python sutekh/SutekhCli.py --help
 python sutekh/SutekhCli.py -c -r vtes_card_file.html
+python sutekh/SutekhCli.py --ruling-file vtes_ruling_file.html (optional)
 
 Currently the GUI mostly just supports creating a list of (physical)
 cards one owns although it's also a means of browsing cards by card

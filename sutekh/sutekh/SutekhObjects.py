@@ -15,6 +15,7 @@ class IDisciplinePair(Interface): pass
 class IDiscipline(Interface): pass
 class IClan(Interface): pass
 class ICardType(Interface): pass
+class IRuling(Interface): pass
 
 # Table Objects
 
@@ -35,6 +36,7 @@ class AbstractCard(SQLObject):
     rarity = RelatedJoin('RarityPair',intermediateTable='abs_rarity_pair_map')
     clan = RelatedJoin('Clan',intermediateTable='abs_clan_map')
     cardtype = RelatedJoin('CardType',intermediateTable='abs_type_map')
+    rulings = RelatedJoin('Ruling',intermediateTable='abs_ruling_map')
     sets = RelatedJoin('AbstractCardSet',intermediateTable='abstract_map')
     
 class PhysicalCard(SQLObject):
@@ -97,10 +99,18 @@ class CardType(SQLObject):
     
     name = UnicodeCol(alternateID=True,length=50)
     cards = RelatedJoin('AbstractCard',intermediateTable='abs_type_map')
+
+class Ruling(SQLObject):
+    advise(instancesProvide=[IRuling])
+    
+    text = UnicodeCol(alternateID=True,length=512)
+    code = UnicodeCol(length=50)
+    url = UnicodeCol(length=256,default=None)
+    cards = RelatedJoin('AbstractCard',intermediateTable='abs_ruling_map')
     
 ObjectList = [ AbstractCard, PhysicalCard, AbstractCardSet, PhysicalCardSet,
                RarityPair, Expansion, Rarity, DisciplinePair, Discipline,
-               Clan, CardType ]
+               Clan, CardType, Ruling ]
 
 # Adapters
 
@@ -319,3 +329,15 @@ class AbstractCardAdapter(object):
         except SQLObjectNotFound:
             oC = AbstractCard(name=s,text="")
         return oC
+
+class RulingAdapter(object):
+    advise(instancesProvide=[IRuling],asAdapterForTypes=[tuple])
+    
+    def __new__(cls,t):
+        sText = t[0]
+        sCode = t[1]
+        try:
+            oR = Ruling.byText(sText.encode('utf8'))
+        except SQLObjectNotFound:
+            oR = Ruling(text=sText,code=sCode)
+        return oR

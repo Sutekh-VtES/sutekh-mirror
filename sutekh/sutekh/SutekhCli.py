@@ -2,6 +2,7 @@ import sys, optparse, os, codecs
 from sqlobject import *
 from SutekhObjects import *
 from WhiteWolfParser import WhiteWolfParser
+from RulingParser import RulingParser
 
 def parseOptions(aArgs):
     oP = optparse.OptionParser(usage="usage: %prog [options]",version="%prog 0.1")
@@ -11,6 +12,9 @@ def parseOptions(aArgs):
     oP.add_option("-r","--ww-file",
                   type="string",dest="ww_file",default=None,
                   help="HTML file (probably from WW website) to read cards from.")
+    oP.add_option("--ruling-file",
+                  type="string",dest="ruling_file",default=None,
+                  help="HTML file (probably from WW website) to read rulings from.")
     oP.add_option("-c","--create-tables",
                   action="store_true",dest="create_tables",default=False,
                   help="Create database tables.")
@@ -33,6 +37,13 @@ def createTables(**kw):
 def readWhiteWolfList(sWwList):
     oP = WhiteWolfParser()
     fIn = codecs.open(sWwList,'rU','cp1252')
+    for sLine in fIn:
+        oP.feed(sLine)
+    fIn.close()
+
+def readRulings(sRulings):
+    oP = RulingParser()
+    fIn = codecs.open(sRulings,'rU','cp1252')
     for sLine in fIn:
         oP.feed(sLine)
     fIn.close()
@@ -61,6 +72,9 @@ def main(aArgs):
     
     if not oOpts.ww_file is None:
         readWhiteWolfList(oOpts.ww_file)
+        
+    if not oOpts.ruling_file is None:
+        readRulings(oOpts.ruling_file)
 
     return 0
 

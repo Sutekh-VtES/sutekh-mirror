@@ -120,8 +120,13 @@ class CardTextView(gtk.TextView,object):
             s += "\nExpansions:"
         for oP in oCard.rarity:
             s += "\n\t* " + oP.expansion.name + " (" + oP.rarity.name + ")"
+        
+        if not len(oCard.rulings) == 0:
+            s += "\nRulings:"
+        for oR in oCard.rulings:
+            s += "\n\t* " + oR.text.replace("\n"," ") + " " + oR.code
             
-        s += "\n" + oCard.text.replace("\n"," ")
+        s += "\n\n" + oCard.text.replace("\n"," ")
         
         return s
 
