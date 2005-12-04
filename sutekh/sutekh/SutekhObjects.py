@@ -116,10 +116,10 @@ ObjectList = [ AbstractCard, PhysicalCard, AbstractCardSet, PhysicalCardSet,
 
 class StrAdaptMeta(type):
     def __init__(self, sName, aBases, dDict):
-        self.makeLookupDict(dDict['keys'],dDict.get('suffixes',[]))
+        self.makeLookupDict(dDict['keys'])
         self.makeObjectCache()
     
-    def makeLookupDict(self,dKeys,aSuffixes):
+    def makeLookupDict(self,dKeys):
         self.__dLook = {}
         
         for sKey, aAlts in dKeys.iteritems():
@@ -127,11 +127,6 @@ class StrAdaptMeta(type):
             for sAlt in aAlts:
                 self.__dLook[sAlt] = sKey
                 
-            for s in aSuffixes:
-                self.__dLook[sKey + s] = sKey
-                for sAlt in aAlts:
-                    self.__dLook[sAlt + s] = sKey
-
     def makeObjectCache(self):
         self.__dCache = {}
 
@@ -155,20 +150,20 @@ class ExpansionAdapter(object):
     __metaclass__ = StrAdaptMeta
     advise(instancesProvide=[IExpansion],asAdapterForTypes=[basestring])
 
-    keys = { 'Jyhad' : [],
-             'VTES' : [],
+    keys = { 'Anarchs' : [],
+             'Ancient Hearts' : ['AH'],
+             'Blackhand' : ['BH'],
+             'Bloodlines' : ['BL'],
+             'Camarilla Edition' : ['CE'],
+             'Dark Sovereigns' : ['DS'],
+             'Final Nights' : ['FN'],
+             'Gehenna' : [],
+             'Jyhad' : [],
+             'Kindred Most Wanted' : ['KMW'],
              'Sabbat' : [],
              'Sabbat Wars' : ['SW'],
-             'Camarilla Edition' : ['CE'],
-             'Final Nights' : ['FN'],
-             'Ancient Hearts' : ['AH'],
-             'Gehenna' : [],
-             'Bloodlines' : ['BL'],
-             'Blackhand' : ['BH'],
-             'Dark Sovereigns' : ['DS'],
-             'Kindred Most Wanted' : ['KMW'],
              'Tenth Anniversary' : ['Tenth'],
-             'Anarchs' : [],             
+             'VTES' : [],
            }
         
     def __new__(cls,s):
@@ -226,7 +221,8 @@ class DisciplineAdapter(object):
     __metaclass__ = StrAdaptMeta
     advise(instancesProvide=[IDiscipline],asAdapterForTypes=[basestring])
 
-    keys = { 'ani' : ['ANI','Animalism'],
+    keys = { 'abo' : ['ABO','Abombwe'],
+             'ani' : ['ANI','Animalism'],
              'aus' : ['AUS','Auspex'],
              'cel' : ['CEL','Celerity'],
              'chi' : ['CHI','Chimerstry'],
@@ -288,20 +284,27 @@ class ClanAdapter(object):
     __metaclass__ = StrAdaptMeta
     advise(instancesProvide=[IClan],asAdapterForTypes=[basestring])
     
-    keys = { 'Follower of Set' : [], 'Toreador' : [],
-             'Lasombra' : [], 'Gangrel' : [], 'Caitiff' : [],
-             'Assamite' : [], 'Ravnos' : [], 'Harbinger of Skulls' : [],
-             'Tremere' : [], 'Giovanni' : [], 'Ventrue' : [],
-             'Malkavian' : [], 'Salubri' :[], 'Pander' : [],
-             'Brujah' : [], 'Nosferatu' : [], 'Abomination' : [],
-             'Tzimisce' : [], 'Daughter of Cacophony' : [], 'Baali' : [],
-             'Samedi' : [], 'Blood Brother' : [], 'Kiasyd' : [],
-             'Ahrimanes' : [], 'Gargoyle' : [], 'Nagaraja' : [],
+    keys = { # Camarilla
+             'Brujah' : [], 'Malkavian' : [], 'Nosferatu' : [],
+             'Toreador' : [],'Tremere' : [], 'Ventrue' : [],
+             'Caitiff' : [],
+             # Independents
+             'Abomination' : [], 'Gangrel' : [], 'Assamite' : [],
+             'Follower of Set' : [], 'Giovanni' : [], 'Ravnos' : [],
+             'Baali' : [], 'Daughter of Cacophony' : [], 'Gargoyle' : [],
+             'Nagaraja' : [], 'Salubri' :[], 'Samedi' : [],
              'True Brujah' : [],
+             # Sabbat
+             'Lasombra' : [], 'Tzimisce' : [], 'Brujah antitribu' : [],
+             'Gangrel antitribu' : [], 'Malkavian antitribu' : [], 'Nosferatu antitribu' : [],
+             'Toreador antitribu' : [], 'Tremere antitribu' : [], 'Ventrue antitribu' : [],
+             'Pander' : [], 'Ahrimanes' : [], 'Blood Brother' : [],
+             'Harbinger of Skulls' : [], 'Kiasyd' : [], 'Salubri antitribu' : [],
+             # Laibon
+             'Akunanse' : [], 'Guruhi' : [], 'Ishtarri' : [],
+             'Osebo' : [],
            }
-           
-    suffixes = [' antitribu']
-           
+               
     def __new__(cls,s):
         sName = cls.canonical(s)
         return cls.fetch(sName,Clan)
@@ -310,10 +313,10 @@ class CardTypeAdapter(object):
     __metaclass__ = StrAdaptMeta
     advise(instancesProvide=[ICardType],asAdapterForTypes=[basestring])
     
-    keys = { 'Action' : [], 'Action Modifier' : [], 'Combat' : [],
-             'Reaction' : [], 'Ally' : [], 'Equipment' : [], 'Event' : [],
-             'Master' : [], 'Political Action' : [], 'Retainer' : [],
-             'Vampire' : []
+    keys = { 'Action' : [], 'Action Modifier' : [], 'Ally' : [],
+             'Combat' : [], 'Equipment' : [], 'Event' : [], 'Master' : [],
+             'Political Action' : [], 'Reaction' : [], 'Reflex' : [],
+             'Retainer' : [], 'Vampire' : [],
            }
     
     def __new__(cls,s):
