@@ -160,6 +160,7 @@ class ExpansionAdapter(object):
              'Gehenna' : [],
              'Jyhad' : [],
              'Kindred Most Wanted' : ['KMW'],
+             'Legacy of Blood' : ['LoB'],
              'Sabbat' : [],
              'Sabbat Wars' : ['SW'],
              'Tenth Anniversary' : ['Tenth'],
