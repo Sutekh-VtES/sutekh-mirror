@@ -15,24 +15,22 @@ def parseOptions(aArgs):
     oP.add_option("--ruling-file",
                   type="string",dest="ruling_file",default=None,
                   help="HTML file (probably from WW website) to read rulings from.")
-    oP.add_option("-c","--create-tables",
-                  action="store_true",dest="create_tables",default=False,
-                  help="Create database tables.")
-    oP.add_option("--drop-tables",
-                  action="store_true",dest="drop_tables",default=False,
-                  help="Drop database tables.")
+    oP.add_option("-c","--refresh-tables",
+                  action="store_true",dest="refresh_tables",default=False,
+                  help="Drop (if possible) and recreate database tables.")
+    oP.add_option("--refresh-ruling-tables",
+                  action="store_true",dest="refresh_ruling_tables",default=False,
+                  help="Drop (if possible) and recreate rulings tables only.")
     oP.add_option("--sql-debug",
                   action="store_true",dest="sql_debug",default=False,
                   help="Print out SQL statements.")
     return oP, oP.parse_args(aArgs)
 
-def dropTables(**kw):
-    for cCls in ObjectList:
-        cCls.dropTable(**kw)
-
-def createTables(**kw):
-    for cCls in ObjectList:
-        cCls.createTable(**kw)
+def refreshTables(aTables,**kw):
+    for cCls in aTables:
+        cCls.dropTable(ifExists=True)
+    for cCls in aTables:
+        cCls.createTable()
 
 def readWhiteWolfList(sWwList):
     oP = WhiteWolfParser()
@@ -64,11 +62,11 @@ def main(aArgs):
     if oOpts.sql_debug:
         oConn.debug = True
     
-    if oOpts.drop_tables:
-        dropTables(ifExists=True)
-        
-    if oOpts.create_tables:
-        createTables(ifNotExists=True)
+    if oOpts.refresh_ruling_tables:
+        refreshTables([Ruling])
+    
+    if oOpts.refresh_tables:
+        refreshTables(ObjectList)        
     
     if not oOpts.ww_file is None:
         readWhiteWolfList(oOpts.ww_file)
