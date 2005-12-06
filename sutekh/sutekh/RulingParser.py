@@ -74,7 +74,7 @@ class RuleDict(dict):
         if self['card'] is None:
             return
         
-        print self['card'].name
+        print self['card'].name.encode('ascii','replace')
             
         oR = IRuling((self['text'],self['code']))
         
@@ -106,32 +106,10 @@ class StateWithRule(State):
 
 # State Classes
 
-class WaitFirstTable(State):
-    def transition(self,sTag,dAttr):
-        if sTag == 'table':
-            return WaitSecondTable()
-        else:
-            return self
-
-class WaitSecondTable(State):
-    def transition(self,sTag,dAttr):
-        if sTag == 'table':
-            return NoSection()
-        else:
-            return self
-            
-class AllDone(State):
-    def transition(self,sTag,dAttr):
-        return self
-
 class NoSection(State):
     def transition(self,sTag,dAttr):
         if sTag == 'p':
             return InSection(RuleDict())
-        elif sTag == '/p' or sTag == 'table':
-            raise StateError()
-        elif sTag == '/table':
-            return AllDone()
         else:
             return self
             
@@ -139,17 +117,11 @@ class InSection(StateWithRule):
     def transition(self,sTag,dAttr):
         if sTag == 'b':
             return SectionTitle(self._dInfo)
-        elif (sTag == 'small' or sTag == 'li') and (self._dInfo.has_key('title')):
-            return SectionRule(self._dInfo)
         elif sTag == 'p':
             # skip to next section
             return InSection(RuleDict())
-        elif sTag == '/p':
-            return NoSection()
-        elif sTag == '/li':
-            raise StateError()
         else:
-            return self
+            return NoSection()
 
 class SectionTitle(StateWithRule):
     def transition(self,sTag,dAttr):
@@ -157,40 +129,50 @@ class SectionTitle(StateWithRule):
             raise StateError()
         elif sTag == '/b':
             self._dInfo['title'] = self._sData.strip().strip(':')
-            return InSection(self._dInfo)
+            return SectionWithTitle(self._dInfo)
+        else:
+            return self
+
+class SectionWithTitle(StateWithRule):
+    def transition(self,sTag,dAttr):
+        if sTag == 'li':
+            return SectionRule(self._dInfo)
+        elif sTag == 'p':
+            # skip to next section
+            return InSection(RuleDict()) 
+        elif sTag == '/p':
+            return NoSection()
         else:
             return self
             
 class SectionRule(StateWithRule):
     def transition(self,sTag,dAttr):
-        if sTag == 'font':
+        if sTag == 'span' and dAttr.get('class') == 'ruling':
             return InRuleText(self._dInfo)
         elif sTag == 'a':
             self._dInfo['url'] = dAttr['href']
             return InRuleUrl(self._dInfo)
-        elif sTag == '/small' or sTag == '/li':
+        elif sTag == '/li':
             if not self._dInfo.has_key('code'):
                 self._dInfo['code'] = self._sData.strip()
             self._dInfo.save()
             self._dInfo.clearRule()
-            return InSection(self._dInfo)
+            return SectionWithTitle(self._dInfo)
         elif sTag == 'li':
+            raise StateError()
             # skip to next ruling
             if not self._dInfo.has_key('code'):
                 self._dInfo['code'] = self._sData.strip()
             self._dInfo.save()
             self._dInfo.clearRule()
             return SectionRule(self._dInfo)
-        elif sTag == 'small':
-            raise StateError()
-        else:
-            return self
+        return self
             
 class InRuleText(StateWithRule):
     def transition(self,sTag,dAttr):
-        if sTag == 'font':
+        if sTag == 'span':
             raise StateError()
-        elif sTag == '/font':
+        elif sTag == '/span':
             self._dInfo['text'] = self._sData.strip()
             return SectionRule(self._dInfo)
         else:
