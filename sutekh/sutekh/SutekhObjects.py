@@ -304,6 +304,8 @@ class ClanAdapter(object):
              # Laibon
              'Akunanse' : [], 'Guruhi' : [], 'Ishtarri' : [],
              'Osebo' : [],
+             # Other
+             'Ahrimane' : [],
            }
                
     def __new__(cls,s):

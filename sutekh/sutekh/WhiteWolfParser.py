@@ -6,13 +6,15 @@ from SutekhObjects import *
 # Card Saver
 
 class CardDict(dict):
-    oDisGaps = re.compile(r'[\\\/{}\s]+')
+    oDisGaps = re.compile(r'[\\\/{}\&\s]+')
     oWhiteSp = re.compile(r'[{}\s]+')
+    oDispCard = re.compile(r'\[[^\]]+\]$')
 
     def __init__(self):
         super(CardDict,self).__init__()
 
     def _makeCard(self,sName):
+        sName = self.oDispCard.sub('',sName)
         sName = sName.strip()
         return IAbstractCard(sName)
     
@@ -146,11 +148,18 @@ class StateWithCard(State):
 class NoCard(State):
     def transition(self,sTag,dAttr):
         if sTag == 'p':
-            return InCard(CardDict())
+            return PotentialCard()
         elif sTag == '/p':
             raise StateError()
         else:
             return self
+
+class PotentialCard(State):
+    def transition(self,sTag,dAttr):
+        if sTag == 'a' and dAttr.has_key('name'):
+            return InCard(CardDict())
+        else:
+            return NoCard()
             
 class InCard(StateWithCard):
     def transition(self,sTag,dAttr):
@@ -192,7 +201,7 @@ class InExpansion(StateWithCard):
 
 class InCardText(StateWithCard):
     def transition(self,sTag,dAttr):
-        if sTag == '/td':
+        if sTag == '/td' or sTag == 'tr' or sTag == '/tr':
             self._dInfo['text'] = self._sData.strip()
             return InCard(self._dInfo)
         elif sTag == 'td':
