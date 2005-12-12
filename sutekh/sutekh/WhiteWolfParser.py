@@ -149,8 +149,6 @@ class NoCard(State):
     def transition(self,sTag,dAttr):
         if sTag == 'p':
             return PotentialCard()
-        elif sTag == '/p':
-            raise StateError()
         else:
             return self
 
