@@ -58,6 +58,12 @@ Print all Malkavian cards:
 >>> print oTony.text
 >>> oMariel = list(AbstractCard.select(AbstractCard.q.name.startswith('Mariel')))[0]
 
+Filtering:
+
+>>> aC = AbstractCard.select(CardTextFilter('Laibon').getExpression())
+>>> for oC in aC:
+...     print oC.name, oC.cardtype
+
 === Philosophy ===
 
 Conceptually Sutekh is organised around two datatypes, AbstractCard
