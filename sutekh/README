@@ -64,6 +64,16 @@ Filtering:
 >>> for oC in aC:
 ...     print oC.name, oC.cardtype
 
+>>> oF1 = DisciplineFilter('Dementation')
+>>> oF2 = CardTextFilter('bleed')
+>>> oF3 = CardTypeFilter('Action')
+>>> oF4 = CardTypeFilter('Action Modifier')
+>>> oF5 = FilterOrBox([oF3,oF4])
+>>> oF = FilterAndBox([oF1,oF2,oF5])
+>>> for oC in AbstractCard.select(oF.getExpression()):
+...     print "---", oC.name, "---"
+...     print oC.text
+
 === Philosophy ===
 
 Conceptually Sutekh is organised around two datatypes, AbstractCard
