@@ -1,3 +1,7 @@
+28 Dec 2005:
+* Applied patch from Neil Muller which implements incrementing,
+  decrementing and deleting entries from the Physical Card view.
+
 24 Nov 2005:
 * Strings now stored as UTF8 which clears up a bunch of
   character encoding issues.

@@ -221,20 +221,22 @@ class PhysicalCardView(CardListView):
         
         oColumn1 = gtk.TreeViewColumn("#",oCell1,text=1)
         self.append_column(oColumn1)
+        oColumn1.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
+        oColumn1.set_fixed_width(20)
         oColumn2 = gtk.TreeViewColumn("Cards", oCell2, text=0)
+        oColumn2.set_expand(True)
         self.append_column(oColumn2)
         oColumn3 = gtk.TreeViewColumn("",oCell3)
-        oColumn3.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
         oColumn3.set_fixed_width(20)
+        oColumn3.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
         self.append_column(oColumn3)
         oColumn4 = gtk.TreeViewColumn("",oCell4)
-        oColumn4.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
         oColumn4.set_fixed_width(20)
+        oColumn4.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
         self.append_column(oColumn4) 
-        
+
         self.set_expander_column(oColumn2)
-        oColumn3.set_sizing(gtk.TREE_VIEW_COLUMN_AUTOSIZE)
-        
+       
         oCell3.connect('toggled',self.incCard)
         oCell4.connect('toggled',self.decCard)
 
@@ -265,14 +267,42 @@ class PhysicalCardView(CardListView):
     def load(self):
         self._oModel.clear()
         # oIter = self._oModel.append(None)
-        iCount = 1 # TODO: Remove
+        # This feels a bit clumsy, but does work - NM
+        cardDict = {}
         
         for oCard in PhysicalCard.select():                            
-            self._oModel.set(self._oModel.append(None),
-                0, oCard.abstractCard.name,
-                1, iCount
-            )
-            # print oCard.abstractCard.name
+            # Check if Card is already in dictionary
+            if oCard.abstractCardID in cardDict:
+               cardDict[oCard.abstractCardID]+=1
+               # Find correct row
+               # There may be an easier way of doing this, rather
+               # than iterating over the entire list
+               oIter=self._oModel.get_iter_first()
+               while oIter:
+                  Name=self._oModel.get_value(oIter,0)
+                  if Name==oCard.abstractCard.name:
+                     # Update row entry
+                     self._oModel.set_value(oIter,1,cardDict[oCard.abstractCardID])
+                     break
+                  oIter=self._oModel.iter_next(oIter)
+            else:
+               cardDict[oCard.abstractCardID]=1
+               # add new row entry
+               self._oModel.set(self._oModel.append(None),
+                  0, oCard.abstractCard.name,
+                  1, cardDict[oCard.abstractCardID],
+               )
+
+        # I'm not sure if an alternative approach isn't better:
+        # rather than find and update each row in turn, merely update the
+        # dict, and do an iteration over the dict, adding each card in
+        # turn - something like
+        # for cD in cardDict:
+        #     oC = PhysicalCard.selectBy(abstractCardID=cD) 
+        #     self._oModel.set(self._oModel.append(None),
+        #           0, oC[-1].abstractCard.name,
+        #           1, cardDict[cD]
+        #     )
             
         self.expand_all()
 
@@ -285,13 +315,29 @@ class PhysicalCardController(object):
         return self.__oView
     
     def decCard(self,sName):
-        # TODO: Finish
-        # Remove card, then:
+        try:
+            oC = AbstractCard.byName(sName)
+        except SQLObjectNotFound:
+            return
+        # Go from Name to Abstract Card ID to Physical card ID 
+        # which is needed for delete
+        # find Physical cards cards with this name
+        cardCands=PhysicalCard.selectBy(abstractCardID=oC.id)
+        # check we found something?
+        if cardCands.count()==0:
+            return
+        # delete last from list (habit)
+        PhysicalCard.delete(cardCands[-1].id)
+        # Removed card, so reload list - NM
         self.__oView.load()
     
     def incCard(self,sName):
-        # TODO: Finish
-        # Inc card, then:
+        try:
+            oC = AbstractCard.byName(sName)
+        except SQLObjectNotFound:
+            return
+        oPC = PhysicalCard(abstractCard=oC)
+        # Inc'ed card, so reload list - NM
         self.__oView.load()
     
     def addCard(self,sName):
