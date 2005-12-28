@@ -32,6 +32,17 @@ type. Launch using:
 
 * python sutekh/SutekhGui.py
 
+You can save and load list of physical cards using:
+
+python sutekh/SutekhCli.py --refresh-physical-card-tables
+python sutekh/SutekhCli.py --save-physical-cards-to mycards.xml
+python sutekh/SutekhCli.py --read-physical-cards-from mycards.xml
+
+Short options for save and read are -s (save) and -l (load).  In practice -l
+will usually be used in conjunction with a refresh:
+
+python sutekh/SutekhCli.py --refresh-physical-card-tables -l mycards.xml
+
 === Using Sutekh from the Python Interpreter ===
 
 I think the most useful part of Sutekh at the moment is the ability
