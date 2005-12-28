@@ -3,6 +3,8 @@ from sqlobject import *
 from SutekhObjects import *
 from WhiteWolfParser import WhiteWolfParser
 from RulingParser import RulingParser
+from PhysicalCardParser import PhysicalCardParser
+from PhysicalCardWriter import PhysicalCardWriter
 
 def parseOptions(aArgs):
     oP = optparse.OptionParser(usage="usage: %prog [options]",version="%prog 0.1")
@@ -21,9 +23,19 @@ def parseOptions(aArgs):
     oP.add_option("--refresh-ruling-tables",
                   action="store_true",dest="refresh_ruling_tables",default=False,
                   help="Drop (if possible) and recreate rulings tables only.")
+    oP.add_option("--refresh-physical-card-tables",
+                  action="store_true",dest="refresh_physical_card_tables",default=False,
+                  help="Drop (if possible) and recreate physical card tables only.")
     oP.add_option("--sql-debug",
                   action="store_true",dest="sql_debug",default=False,
                   help="Print out SQL statements.")
+    oP.add_option("-s","--save-physical-cards-to",
+                  type="string",dest="save_physical_cards_to",default=None,
+                  help="Write an XML description of the list of physical cards to the given file.")
+    oP.add_option("-l","--read-physical-cards-from",
+                  type="string",dest="read_physical_cards_from",default=None,
+                  help="Read physical card list from the given XML file.")                   
+                  
     return oP, oP.parse_args(aArgs)
 
 def refreshTables(aTables,**kw):
@@ -46,6 +58,16 @@ def readRulings(sRulings):
         oP.feed(sLine)
     fIn.close()
 
+def readPhysicalCards(sXmlFile):
+    oP = PhysicalCardParser()
+    oP.parse(file(sXmlFile,'rU'))
+
+def writePhysicalCards(sXmlFile):
+    oW = PhysicalCardWriter()
+    fOut = file(sXmlFile,'w')
+    oW.write(fOut)
+    fOut.close()
+
 def main(aArgs):
     oOptParser, (oOpts, aArgs) = parseOptions(aArgs)
     
@@ -66,13 +88,22 @@ def main(aArgs):
         refreshTables([Ruling])
     
     if oOpts.refresh_tables:
-        refreshTables(ObjectList)        
+        refreshTables(ObjectList)
+        
+    if oOpts.refresh_physical_card_tables:
+        refreshTables([PhysicalCard])
     
     if not oOpts.ww_file is None:
         readWhiteWolfList(oOpts.ww_file)
         
     if not oOpts.ruling_file is None:
         readRulings(oOpts.ruling_file)
+        
+    if not oOpts.read_physical_cards_from is None:
+        readPhysicalCards(oOpts.read_physical_cards_from)
+
+    if not oOpts.save_physical_cards_to is None:
+        writePhysicalCards(oOpts.save_physical_cards_to)
 
     return 0
 

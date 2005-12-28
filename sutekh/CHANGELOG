@@ -1,4 +1,8 @@
 28 Dec 2005:
+* Added classes for writing out and parsing in list of PhysicalCards
+  as XML.
+
+28 Dec 2005:
 * Applied patch from Neil Muller which implements incrementing,
   decrementing and deleting entries from the Physical Card view.
 
