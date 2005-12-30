@@ -396,25 +396,23 @@ class PhysicalCardView(CardListView):
         # This feels a bit clumsy, but does work - NM
         cardDict = {}
         
-        for oCard in PhysicalCard.select():                            
+        for oCard in PhysicalCard.select():
             # Check if Card is already in dictionary
             if oCard.abstractCardID in cardDict:
-               cardDict[oCard.abstractCardID][0]+=1
-               # Get iter to correct row
-               rowRef=cardDict[oCard.abstractCardID][1]
-               if rowRef.valid():
-                  oIter=self._oModel.get_iter( rowRef.get_path() )
-                  # Update row entry
-                  self._oModel.set_value(oIter,
-                        1,cardDict[oCard.abstractCardID][0])
+                cardDict[oCard.abstractCardID][1] += 1
             else:
-               # add new row entry
-               rowIter=self._oModel.append(None)
-               self._oModel.set(rowIter,
-                     0,oCard.abstractCard.name,1,1)
-               rowRef=gtk.TreeRowReference(
-                     self._oModel,self._oModel.get_path(rowIter) )
-               cardDict[oCard.abstractCardID]=[1, rowRef]
+                cardDict[oCard.abstractCardID] = [oCard.abstractCard.name,1]
+         
+        aCards = list(cardDict.iteritems())
+        aCards.sort(lambda x,y: cmp(x[1],y[1]))
+ 
+        for iD, aItems in aCards:
+            sName, iCnt = aItems
+            self._oModel.set(self._oModel.append(None),
+                0, sName,
+                1, iCnt
+            )   
+
         self.expand_all()
 
     def pressButton(self, treeview, event):
