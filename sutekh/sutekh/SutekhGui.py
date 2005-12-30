@@ -5,6 +5,87 @@ from SutekhObjects import *
 
 # GUI Classes
 
+# Pixbuf Button CellRenderer - limited to icons only ATM - NM 
+# This is heavily cribbed from the example in the pygtk FAQ 
+# (By Nikos Kouremenos)
+# Allows creation of a cell containing a icon pixbuf,
+# and returns a "clicked" signal when activated
+# To be generically useful, should be extended to abitary pixmaps,
+# but that is currently not a priority
+class CellRendererSutekhButton(gtk.GenericCellRenderer):
+    def __init__(self):
+        self.__gobject_init__()
+        self.pixbuf = None
+        self.set_property("mode",gtk.CELL_RENDERER_MODE_ACTIVATABLE)
+
+    def load_icon(self,name,widget):
+        # Load the icon specified in name
+        self.pixbuf=widget.render_icon(name,gtk.ICON_SIZE_SMALL_TOOLBAR)
+           
+
+    def on_get_size(self,widget,cell_area):
+        if self.pixbuf==None:
+            return 0, 0, 0, 0
+        pixbuf_width  = self.pixbuf.get_width()
+        pixbuf_height = self.pixbuf.get_height()
+        calc_width  = self.get_property("xpad") * 2 + pixbuf_width
+        calc_height = self.get_property("ypad") * 2 + pixbuf_height
+        x_offset = 0
+        y_offset = 0
+        if cell_area and pixbuf_width > 0 and pixbuf_height > 0:
+            x_offset = self.get_property("xalign") * (cell_area.width - \
+                calc_width -  self.get_property("xpad"))
+            y_offset = self.get_property("yalign") * (cell_area.height - \
+                calc_height -  self.get_property("ypad"))
+        return x_offset, y_offset, calc_width, calc_height
+
+    def on_activate(self, event, widget, path, background_area, cell_area, flags):
+        # TODO - setup drawing of clicked image
+        # clicke dcallback should be called
+        self.emit('clicked',path)
+        return True
+     
+    def on_render(self,window, widget, background_area, cell_area, expose_area, flags):
+       if (self.pixbuf==None):
+          return None
+       # Render pixbuf
+       pix_rect = gtk.gdk.Rectangle()
+       pix_rect.x, pix_rect.y, pix_rect.width, pix_rect.height = \
+          self.on_get_size(widget, cell_area)
+
+       pix_rect.x += cell_area.x
+       pix_rect.y += cell_area.y
+       pix_rect.width  -= 2 * self.get_property("xpad")
+       pix_rect.height -= 2 * self.get_property("ypad")
+
+       draw_rect = cell_area.intersect(pix_rect)
+       draw_rect = expose_area.intersect(draw_rect)
+
+       window.draw_pixbuf(widget.style.black_gc, self.pixbuf, \
+          draw_rect.x-pix_rect.x, draw_rect.y-pix_rect.y, draw_rect.x, \
+          draw_rect.y+2, draw_rect.width, draw_rect.height, \
+          gtk.gdk.RGB_DITHER_NONE, 0, 0)
+       return None
+
+# HouseKeeping work for CellRendererStukehButton
+# Awkward stylistically, but I'm putting it here as it's
+# associated with class creation (is global to the class)
+# so doesn't belong in the per-instance constructor - NM
+# Register class, needed to make clicked signal go to right class
+# (otherwise it gets associated with GenericCellRenderer, which is
+# not desireable)
+gobject.type_register(CellRendererSutekhButton)
+# Setup clicked signal -- can also be done using the __gsignals__
+# dict in the class, but I couldn't find good documentation for
+# that approach. 
+gobject.signal_new("clicked", CellRendererSutekhButton,
+    gobject.SIGNAL_RUN_FIRST|gobject.SIGNAL_ACTION,
+   gobject.TYPE_NONE,
+   (gobject.TYPE_STRING,)) 
+# the callback is called as callback(self,path)
+
+# Main Window
+
 class MainWindow(gtk.Window,object):
     def __init__(self,oController):
         super(MainWindow,self).__init__()
@@ -47,6 +128,7 @@ class MainMenu(gtk.MenuBar,object):
         self.__oC = oController
         
         self.__createFileMenu()
+        self.__createDeckMenu()
         
     def __createFileMenu(self):
         # setup sub menu
@@ -61,6 +143,43 @@ class MainMenu(gtk.MenuBar,object):
         wMenu.add(iQuit)
         
         self.add(iMenu)
+
+    def __createDeckMenu(self):
+        iMenu = gtk.MenuItem("Deck")
+        wMenu=gtk.Menu()
+        iMenu.set_submenu(wMenu)
+
+        iCreate=gtk.MenuItem("Create New Deck")
+        wMenu.add(iCreate)
+
+        iLoad=gtk.MenuItem("Load an Existing Deck")
+        wMenu.add(iLoad)
+
+        iDelete=gtk.MenuItem("Delete Current Deck")
+        wMenu.add(iDelete)
+
+        iClose=gtk.MenuItem("Close Deck View")
+        wMenu.add(iClose)
+
+        iAnalyze = gtk.MenuItem("Analyze Deck")
+        wMenu.add(iAnalyze)
+
+        self.add(iMenu)
+        
+
+class PopupMenu(gtk.Menu):
+   def __init__(self,view,path):
+      super(PopupMenu,self).__init__()
+      iInc=gtk.MenuItem("Increase Card Count")
+      iDec=gtk.MenuItem("Decrease Card Count")
+      iInc.connect("activate",view.incCard,path)
+      iDec.connect("activate",view.decCard,path)
+      # Apprantly need these shows as we're using the popup method,
+      # which doesn't seem to call them automatically
+      iInc.show()
+      iDec.show()
+      self.add(iInc)
+      self.add(iDec)
 
 class CardTextView(gtk.TextView,object):
     def __init__(self,oController):
@@ -164,6 +283,8 @@ class CardListView(gtk.TreeView,object):
 class AbstractCardView(CardListView):
     def __init__(self,oController):
         super(AbstractCardView,self).__init__(oController)
+
+        # HouseKeeping work for 
     
         oCell = gtk.CellRendererText()
         oCell.set_property('style', pango.STYLE_ITALIC)
@@ -207,7 +328,7 @@ class AbstractCardView(CardListView):
                     0, oCard.name,
                     1, 0
                 )
-    
+
 class PhysicalCardView(CardListView):
     def __init__(self,oController):
         super(PhysicalCardView,self).__init__(oController)
@@ -216,13 +337,17 @@ class PhysicalCardView(CardListView):
         oCell1.set_property('style', pango.STYLE_ITALIC)
         oCell2 = gtk.CellRendererText()
         oCell2.set_property('style', pango.STYLE_ITALIC)
-        oCell3 = gtk.CellRendererToggle()
-        oCell4 = gtk.CellRendererToggle()
+        oCell3 = CellRendererSutekhButton()
+        oCell4 = CellRendererSutekhButton()
+        oCell3.load_icon(gtk.STOCK_GO_UP,self)
+        oCell4.load_icon(gtk.STOCK_GO_DOWN,self)
+        #oCell3 = gtk.CellRendererToggle()
+        #oCell4 = gtk.CellRendererToggle()
         
         oColumn1 = gtk.TreeViewColumn("#",oCell1,text=1)
         self.append_column(oColumn1)
         oColumn1.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
-        oColumn1.set_fixed_width(20)
+        oColumn1.set_fixed_width(40)
         oColumn2 = gtk.TreeViewColumn("Cards", oCell2, text=0)
         oColumn2.set_expand(True)
         self.append_column(oColumn2)
@@ -236,15 +361,16 @@ class PhysicalCardView(CardListView):
         self.append_column(oColumn4) 
 
         self.set_expander_column(oColumn2)
-       
-        oCell3.connect('toggled',self.incCard)
-        oCell4.connect('toggled',self.decCard)
+     
+        oCell3.connect('clicked',self.incCard)
+        oCell4.connect('clicked',self.decCard)
 
         aTargets = [ ('STRING', 0, 0), # second 0 means TARGET_STRING
                      ('text/plain', 0, 0) ] # and here
         self.drag_dest_set(gtk.DEST_DEFAULT_ALL, aTargets, gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
         self.connect('drag_data_received',self.cardDrop)
-        
+        self.connect('button_press_event',self.pressButton)
+
         self.load()
                
     def incCard(self,oCell,oPath):
@@ -273,38 +399,41 @@ class PhysicalCardView(CardListView):
         for oCard in PhysicalCard.select():                            
             # Check if Card is already in dictionary
             if oCard.abstractCardID in cardDict:
-               cardDict[oCard.abstractCardID]+=1
-               # Find correct row
-               # There may be an easier way of doing this, rather
-               # than iterating over the entire list
-               oIter=self._oModel.get_iter_first()
-               while oIter:
-                  Name=self._oModel.get_value(oIter,0)
-                  if Name==oCard.abstractCard.name:
-                     # Update row entry
-                     self._oModel.set_value(oIter,1,cardDict[oCard.abstractCardID])
-                     break
-                  oIter=self._oModel.iter_next(oIter)
+               cardDict[oCard.abstractCardID][0]+=1
+               # Get iter to correct row
+               rowRef=cardDict[oCard.abstractCardID][1]
+               if rowRef.valid():
+                  oIter=self._oModel.get_iter( rowRef.get_path() )
+                  # Update row entry
+                  self._oModel.set_value(oIter,
+                        1,cardDict[oCard.abstractCardID][0])
             else:
-               cardDict[oCard.abstractCardID]=1
                # add new row entry
-               self._oModel.set(self._oModel.append(None),
-                  0, oCard.abstractCard.name,
-                  1, cardDict[oCard.abstractCardID],
-               )
-
-        # I'm not sure if an alternative approach isn't better:
-        # rather than find and update each row in turn, merely update the
-        # dict, and do an iteration over the dict, adding each card in
-        # turn - something like
-        # for cD in cardDict:
-        #     oC = PhysicalCard.selectBy(abstractCardID=cD) 
-        #     self._oModel.set(self._oModel.append(None),
-        #           0, oC[-1].abstractCard.name,
-        #           1, cardDict[cD]
-        #     )
-            
+               rowIter=self._oModel.append(None)
+               self._oModel.set(rowIter,
+                     0,oCard.abstractCard.name,1,1)
+               rowRef=gtk.TreeRowReference(
+                     self._oModel,self._oModel.get_path(rowIter) )
+               cardDict[oCard.abstractCardID]=[1, rowRef]
         self.expand_all()
+
+    def pressButton(self, treeview, event):
+        if event.button == 3:
+            x = int(event.x)
+            y = int(event.y)
+            time = event.time
+            pthinfo = treeview.get_path_at_pos(x, y)
+            if pthinfo != None:
+                path, col, cellx, celly = pthinfo
+                treeview.grab_focus()
+                treeview.set_cursor( path, col, False)
+                popupMenu=PopupMenu(self,path)
+                print gobject.list_properties(col)
+                print path, cellx, celly
+                popupMenu.popup( None, None, None, event.button, time)
+                return True # Don't propogate to buttons
+        return False
+
 
 class PhysicalCardController(object):
     def __init__(self,oMasterController):
@@ -404,5 +533,8 @@ def main(aArgs):
     
     MainController().run()
 
+
 if __name__ == "__main__":
     sys.exit(main(sys.argv))
+
+
