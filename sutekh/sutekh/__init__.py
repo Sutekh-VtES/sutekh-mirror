@@ -8,9 +8,11 @@ __all__ = [ # Sutekh Objects
             # Misc
            'start' ]
 
+# Do importing
 from SutekhObjects import *
 from Filters import *
 from SutekhCli import main
 
+# start() method for use when working in the Python interpreter
 def start(aArgs=['sutekh']):
     main(aArgs)
