@@ -6,6 +6,7 @@
   be greyed out if need be (incCard in deck view for instance) - NM
 * Split MainWindow into two seperate windows. Move CardText view to
   AbstractCardWindow - NM
+* Add dialogs which will be used in deck handling stuff (not enabled) - NM
 
 05 Jan 2006:
 * Split GUI classes out into their own sub-package.
