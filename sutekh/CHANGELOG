@@ -4,6 +4,8 @@
   provisional work for deck handling and multiple windows - NM
 * Change PopupMenu to use gtk.Action items - will allow things to 
   be greyed out if need be (incCard in deck view for instance) - NM
+* Split MainWindow into two seperate windows. Move CardText view to
+  AbstractCardWindow - NM
 
 05 Jan 2006:
 * Split GUI classes out into their own sub-package.

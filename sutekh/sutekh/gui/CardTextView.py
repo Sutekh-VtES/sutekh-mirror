@@ -11,7 +11,7 @@ class CardTextView(gtk.TextView,object):
         self.set_cursor_visible(False)
         self.set_wrap_mode(2)
 
-        self.set_size_request(-1,200)
+        self.set_size_request(-1,250)
         
     def setCardText(self,oCard):
         oStart, oEnd = self.__oBuf.get_bounds()

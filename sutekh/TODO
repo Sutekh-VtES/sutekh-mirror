@@ -1,4 +1,5 @@
 * Import discipline level from WhiteWolf HTML card file.
 * Add selection mechanisms to GUI card lists (filter, sorting, grouping).
 * Create logo for wiki.
-* Split GUI into multiple windows for more GIMP-like interface.
+* Make split window optional - NM
+* Give gui resource handling capablities (.sutekhrc) to save window pos, etc - NM
