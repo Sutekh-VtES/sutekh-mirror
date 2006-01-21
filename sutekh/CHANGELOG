@@ -1,3 +1,10 @@
+21 Jan 2006:
+* Tweak -db message for sqlite to give form of URI - NM
+* Rework menu structure - split deck options into seperate window, 
+  provisional work for deck handling and multiple windows - NM
+* Change PopupMenu to use gtk.Action items - will allow things to 
+  be greyed out if need be (incCard in deck view for instance) - NM
+
 05 Jan 2006:
 * Split GUI classes out into their own sub-package.
 

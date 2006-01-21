@@ -9,7 +9,7 @@ def parseOptions(aArgs):
     oP = optparse.OptionParser(usage="usage: %prog [options]",version="%prog 0.1")
     oP.add_option("-d","--db",
                   type="string",dest="db",default=None,
-                  help="Database URI. [./sutekh.db]")
+                  help="Database URI. [sqlite://$PWD/sutekh.db]")
     return oP, oP.parse_args(aArgs)
 
 def main(aArgs):
