@@ -41,7 +41,13 @@ class PhysicalCardView(CardListView):
 
         aTargets = [ ('STRING', 0, 0), # second 0 means TARGET_STRING
                      ('text/plain', 0, 0) ] # and here
+
+        self.drag_source_set(gtk.gdk.BUTTON1_MASK | gtk.gdk.BUTTON3_MASK,
+                  aTargets, gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
         self.drag_dest_set(gtk.DEST_DEFAULT_ALL, aTargets, gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
+
+        self.connect('drag_data_get',self.dragCard)
+        self.connect('drag_data_delete',self.dragDelete)
         self.connect('drag_data_received',self.cardDrop)
         self.connect('button_press_event',self.pressButton)
 
@@ -58,12 +64,22 @@ class PhysicalCardView(CardListView):
         self._oC.decCard(sCardName)
     
     def cardDrop(self, w, context, x, y, data, info, time):
-        if data and data.format == 8:
-            self._oC.addCard(data.data)
+        if data and data.format == 8 and data.data[:5] == "Abst:":
+            self._oC.addCard(data.data[5:])
             context.finish(True, False, time)
         else:
             context.finish(False, False, time)
     
+    def dragCard(self, btn, context, selection_data, info, time):
+        oModel, oIter = self._oSelection.get_selected()
+        if not oIter:
+            return
+        sCardName = oModel.get_value(oIter,0)
+        selection_data.set(selection_data.target, 8, "Phys:" + sCardName)
+    
+    def dragDelete(self, btn, context, data):
+        pass
+
     def load(self):
         self._oModel.clear()
         # oIter = self._oModel.append(None)

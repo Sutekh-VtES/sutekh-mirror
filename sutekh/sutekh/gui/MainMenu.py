@@ -1,10 +1,13 @@
 import gtk
 from SutekhObjects import PhysicalCardSet
+from CreateDeckDialog import CreateDeckDialog
+from LoadDeckDialog import LoadDeckDialog
 
 class MainMenu(gtk.MenuBar,object):
-    def __init__(self,oController):
+    def __init__(self,oController,oWindow):
         super(MainMenu,self).__init__()
         self.__oC = oController
+        self.__oWin = oWindow
         
         self.__createFileMenu()
         
@@ -16,10 +19,12 @@ class MainMenu(gtk.MenuBar,object):
         
         # items
         iCreate = gtk.MenuItem("Create New Deck")
+        iCreate.connect('activate', self.doCreateDeck)
         wMenu.add(iCreate)
 
         self.deckLoad=gtk.Action("DeckLoad","Load an Existing Deck",None,None)
         wMenu.add(self.deckLoad.create_menu_item())
+        self.deckLoad.connect('activate', self.doLoadDeck)
         self.deckLoad.set_sensitive(False)
 
         iSeperator=gtk.SeparatorMenuItem()
@@ -36,6 +41,39 @@ class MainMenu(gtk.MenuBar,object):
     def setLoadDeckState(self,openDecks):
         # Determine if loadDeck should be greyed out or not
         # loadDeck is greyed if a deck exists that isn't open
-        # placeholder at the moment - NM
         state = False
+        oDecks = PhysicalCardSet.select()
+        for Deck in oDecks:
+            if Deck.name not in openDecks:
+                state = True
         self.deckLoad.set_sensitive(state)
+
+    def doCreateDeck(self,widget):
+        # Popup Create Deck Dialog
+        Dialog=CreateDeckDialog(self.__oWin)
+        Dialog.run()
+        Name=Dialog.getName()
+        if Name!=None:
+            # Check Name isn't in user
+            NameList = PhysicalCardSet.selectBy(name=Name)
+            if NameList.count() != 0:
+                # Complain about duplicate name
+                Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR, \
+                      gtk.BUTTON_CLOSE,"Name already in use")
+                Complaint.connect("response",lambda dlg, resp: dlg.destroy())
+                Complaint.run()
+                return
+        else:
+            return 
+        PhysicalCardSet(name=Name) # Create Deck
+        self.__oC.createNewDeckWindow(Name)
+
+    def doLoadDeck(self,widget):
+        # Popup Load Deck Dialog
+        Dialog=LoadDeckDialog(self.__oWin)
+        Dialog.run()
+        Name=Dialog.getName()
+        if Name != None:
+            window = self.__oC.createNewDeckWindow(Name)
+            if window != None:
+                window.load()

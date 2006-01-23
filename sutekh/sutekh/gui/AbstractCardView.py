@@ -27,7 +27,7 @@ class AbstractCardView(CardListView):
         if not oIter:
             return
         sCardName = oModel.get_value(oIter,0)
-        selection_data.set(selection_data.target, 8, sCardName)
+        selection_data.set(selection_data.target, 8, "Abst:" + sCardName)
     
     def dragDelete(self, btn, context, data):
         pass

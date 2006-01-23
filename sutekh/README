@@ -6,6 +6,7 @@ The Python modules required are:
 * PyProtocols
 * sqllite (or the module for whatever database one plans to use)
 * PyGtk (for the GUI)
+* Python-xml for the xml writing support
 
 One will also need to download the official cardlist at:
 

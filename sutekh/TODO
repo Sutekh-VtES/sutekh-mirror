@@ -3,3 +3,5 @@
 * Create logo for wiki.
 * Make split window optional - NM
 * Give gui resource handling capablities (.sutekhrc) to save window pos, etc - NM
+* Extend xml export/import to handle decks
+* Implement some constraints on different decks

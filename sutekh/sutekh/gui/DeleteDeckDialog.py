@@ -1,9 +1,11 @@
 import gtk
 
-class DeleteDeckPopup(gtk.Dialog):
-    def __init__(self):
-        super(DeleteDeckPopup,self).__init__("Really Delete?",None,0,( gtk.STOCK_YES, gtk.RESPONSE_OK, gtk.STOCK_NO, gtk.RESPONSE_CANCEL))
-        Label=gtk.Label("Deck Not Empty - Really Delete?")
+class DeleteDeckDialog(gtk.Dialog):
+    def __init__(self,parent,name):
+        super(DeleteDeckDialog,self).__init__("Really Delete?", \
+              parent,gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT, \
+              ( gtk.STOCK_YES, gtk.RESPONSE_OK, gtk.STOCK_NO, gtk.RESPONSE_CANCEL))
+        Label=gtk.Label("Deck " + name + " Not Empty - Really Delete?")
         Label.show()
         Icon=gtk.Image()
         Icon.set_from_stock(gtk.STOCK_DIALOG_QUESTION,gtk.ICON_SIZE_DIALOG)

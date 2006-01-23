@@ -38,7 +38,10 @@ class CardDict(dict):
         if sDis == '-none-' or sDis == '': return
                 
         for s in sDis.split():
-            oP = IDisciplinePair((s,'inferior'))
+            if s==s.lower():
+               oP = IDisciplinePair((s,'inferior'))
+            else:
+               oP = IDisciplinePair((s,'superior'))
             oC.addDisciplinePair(oP)
             
     def _addClans(self,oC,sClan):

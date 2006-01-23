@@ -1,11 +1,13 @@
 from sqlobject import SQLObjectNotFound
 from PhysicalCardView import PhysicalCardView
 from SutekhObjects import *
+from DeleteCardDialog import DeleteCardDialog
 
 class PhysicalCardController(object):
-    def __init__(self,oMasterController):
+    def __init__(self,oWindow,oMasterController):
         self.__oView = PhysicalCardView(self)
         self.__oC = oMasterController
+        self.__oWin = oWindow
         
     def getView(self):
         return self.__oView
@@ -22,19 +24,47 @@ class PhysicalCardController(object):
         # check we found something?
         if cardCands.count()==0:
             return
-        # delete last from list (habit)
-        PhysicalCard.delete(cardCands[-1].id)
-        # Removed card, so reload list - NM
-        self.__oView.load()
+        # Loop throgh list and see if we can find a card
+        # not present in any decks
+        deckdict={}
+        decks=PhysicalCardSet.select()
+        for card in cardCands.reversed():
+            idtodel = card.id
+            deckdict[idtodel]=[0,[]]
+            for deck in decks:
+                subset=[x for x in deck.cards if x.id == idtodel]
+                if len(subset)>0:
+                    deckdict[idtodel][0]+=1;
+                    deckdict[idtodel][1].append(deck.name)
+            if deckdict[idtodel][0]==0:
+                # OK, can delete this one and be done with it
+                PhysicalCard.delete(idtodel)
+                self.__oView.load()
+                return
+        # All physical cards are assigned to decks, so find the
+        # one in the fewest
+        T=min(deckdict.values())
+        list=[x for x in deckdict if T is deckdict[x]]
+        idtodel=list[-1]
+        candtodel=deckdict[idtodel] 
+        # This is probably overcomplicated, need to revisit this sometime
+        # Prompt the user for confirmation
+        Dialog=DeleteCardDialog(self.__oWin,candtodel[1])
+        Dialog.run()
+        if Dialog.getResult():
+            # User agrees
+            # Delete card from all the decks first
+            for deck in candtodel[1]:
+                oPC=PhysicalCardSet.byName(deck)
+                oPC.removePhysicalCard(idtodel)
+            PhysicalCard.delete(idtodel)
+            # Reload everything
+            self.__oC.reloadAll()
+        
     
     def incCard(self,sName):
-        try:
-            oC = AbstractCard.byName(sName)
-        except SQLObjectNotFound:
-            return
-        oPC = PhysicalCard(abstractCard=oC)
-        # Inc'ed card, so reload list - NM
-        self.__oView.load()
+        # Identical to addCard
+        self.addCard(sName)
     
     def addCard(self,sName):
         try:
@@ -42,6 +72,7 @@ class PhysicalCardController(object):
         except SQLObjectNotFound:
             return
         oPC = PhysicalCard(abstractCard=oC)
+        # Inc'ed card, so reload list - NM
         self.__oView.load()
         
     def setCardText(self,sCardName):
