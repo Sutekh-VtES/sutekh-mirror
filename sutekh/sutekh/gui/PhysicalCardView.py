@@ -50,6 +50,12 @@ class PhysicalCardView(CardListView):
         self.connect('drag_data_delete',self.dragDelete)
         self.connect('drag_data_received',self.cardDrop)
         self.connect('button_press_event',self.pressButton)
+        self.cardFilter = None
+        self.applyFilter = False
+
+        self.set_search_equal_func(self.compare,None)
+        self.set_search_column(1)
+        self.set_enable_search(True)
 
         self.load()
                
@@ -85,8 +91,14 @@ class PhysicalCardView(CardListView):
         # oIter = self._oModel.append(None)
         # This feels a bit clumsy, but does work - NM
         cardDict = {}
+
+        if self.applyFilter and self.cardFilter != None:
+            print "Need to filter here"
+            oCardsel = PhysicalCard.select()
+        else:
+            oCardsel = PhysicalCard.select()
         
-        for oCard in PhysicalCard.select():
+        for oCard in oCardsel:
             # Check if Card is already in dictionary
             if oCard.abstractCardID in cardDict:
                 cardDict[oCard.abstractCardID][1] += 1
@@ -116,8 +128,11 @@ class PhysicalCardView(CardListView):
                 treeview.grab_focus()
                 treeview.set_cursor( path, col, False)
                 popupMenu=PopupMenu(self,path)
-                print gobject.list_properties(col)
-                print path, cellx, celly
+                #print gobject.list_properties(col)
+                #print path, cellx, celly
                 popupMenu.popup( None, None, None, event.button, time)
                 return True # Don't propogate to buttons
         return False
+   
+
+

@@ -19,6 +19,9 @@ class AbstractCardView(CardListView):
                   aTargets, gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
         self.connect('drag_data_get',self.dragCard)
         self.connect('drag_data_delete',self.dragDelete)
+        self.set_search_equal_func(self.compare,None)
+        self.set_search_column(0)
+        self.set_enable_search(True)
         
         self.load()
         
@@ -31,6 +34,15 @@ class AbstractCardView(CardListView):
     
     def dragDelete(self, btn, context, data):
         pass
+
+    def compare(self,model,column,key,iter,data):
+        if (model.iter_depth(iter)==0):
+            # Don't succeed for top level items
+            return True
+        CandName=model.get_value(iter,0).lower()
+        if CandName.startswith(key.lower()):
+            return False
+        return True
         
     def load(self):
         self._oModel.clear()

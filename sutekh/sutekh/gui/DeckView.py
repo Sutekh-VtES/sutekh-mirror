@@ -52,6 +52,11 @@ class DeckView(CardListView):
         self.connect('drag_data_received',self.cardDrop)
         self.connect('button_press_event',self.pressButton)
 
+        self.set_search_equal_func(self.compare,None)
+        self.set_search_column(1)
+        self.set_enable_search(True)
+
+
         self.load()
                
     def incCard(self,oCell,oPath):
@@ -79,7 +84,7 @@ class DeckView(CardListView):
     def cardDrop(self, w, context, x, y, data, info, time):
         if data and data.format == 8 and data.data[:5] == "Phys:":
             # Card is from the Physical card view, so we only get one
-            print data.data[5:]
+            #print data.data[5:]
             self._oC.addCard(data.data[5:])
             context.finish(True, False, time)
         else:
@@ -147,8 +152,9 @@ class DeckView(CardListView):
                 treeview.grab_focus()
                 treeview.set_cursor( path, col, False)
                 popupMenu=PopupMenu(self,path)
-                print gobject.list_properties(col)
-                print path, cellx, celly
+                #print gobject.list_properties(col)
+                #print path, cellx, celly
                 popupMenu.popup( None, None, None, event.button, time)
                 return True # Don't propogate to buttons
         return False
+

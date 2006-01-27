@@ -29,3 +29,9 @@ class CardListView(gtk.TreeView,object):
             return False
         sCardName = oModel.get_value(oIter,0)
         self._oC.setCardText(sCardName)
+
+    def compare(self,model,column,key,iter,data):
+        CandName=model.get_value(iter,0).lower()
+        if CandName.startswith(key.lower()):
+            return False
+        return True

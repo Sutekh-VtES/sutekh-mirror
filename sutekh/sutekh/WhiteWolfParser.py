@@ -202,7 +202,7 @@ class InExpansion(StateWithCard):
 
 class InCardText(StateWithCard):
     def transition(self,sTag,dAttr):
-        if sTag == '/td' or sTag == 'tr' or sTag == '/tr':
+        if sTag == '/td' or sTag == 'tr' or sTag == '/tr' or sTag == '/table':
             self._dInfo['text'] = self._sData.strip()
             return InCard(self._dInfo)
         elif sTag == 'td':
