@@ -1,6 +1,5 @@
 import gtk
 from AutoScrolledWindow import AutoScrolledWindow
-from DeckMenu import DeckMenu
 from AnalyzeDialog import AnalyzeDialog
 
 class DeckWindow(gtk.Window,object):
@@ -12,12 +11,10 @@ class DeckWindow(gtk.Window,object):
         self.connect('destroy', self.closeDeck)
         
         self.set_title("Sutekh: Vampire Deck : "+Name)
-        self.set_default_size(300, 400)
+        self.set_default_size(400, 400)
    
-    def addParts(self,oDeckView):
+    def addParts(self,oDeckView,oDeckMenu):
         wMbox = gtk.VBox(False, 2)
-
-        oDeckMenu = DeckMenu(self.__oC,self,self.deckName)
 
         wMbox.pack_start(oDeckMenu, False, False)
         wMbox.pack_end(AutoScrolledWindow(oDeckView), expand=True)

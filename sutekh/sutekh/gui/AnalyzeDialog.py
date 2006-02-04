@@ -14,8 +14,10 @@ class AnalyzeDialog(gtk.Dialog):
         Deck=PhysicalCardSet.byName(deckName)
         text="Analysis Results for deck : <b>"+deckName+"</b>\n"
         self.NumberVampires=0
+        self.TotNumber=0
         self.NumberUniqueVampires=0
         self.NumberLibrary=0
+        self.NumberMult=0
         self.NumberMasters=0
         self.MaxGroup=-500
         self.MinGroup=500
@@ -24,29 +26,35 @@ class AnalyzeDialog(gtk.Dialog):
         self.deckDisc={}
         for card in Deck.cards:
             thisAbsCard=card.abstractCard
+            self.TotNumber+=1
+            if len(thisAbsCard.cardtype)>1:
+                self.NumberMult+=1
             for cardType in thisAbsCard.cardtype:
                 if cardType.name=="Vampire":
                     self.processVampire(thisAbsCard)
-                else:
-                    self.NumberLibrary+=1    
                 if cardType.name=="Master":
                     self.processMaster(thisAbsCard)
         text=text+"Number of Vampires = "+str(self.NumberVampires)+"\n"
         text=text+"Number of Unique Vampires = "+str(self.NumberUniqueVampires)+"\n"
+        self.NumberLibrary=self.TotNumber-self.NumberVampires
         if self.NumberVampires<12:
             text=text+"<span foreground=\"red\">Less than 12 Vampires</span>\n"
-        for clan,number in self.deckClans.iteritems():
-            text=text+str(number)+" Vampires of clan " + str(clan) + \
-                  " (" + str(number/float(self.NumberVampires)*100).ljust(5)[:5] + \
-                  " % of the crypt )\n"
-        for discipline,number in sorted(self.deckDisc.iteritems()):
-            # Maybe should sort this by number[0]?
-            text=text+str(number[0])+" Vampires with " + discipline + \
-                  " (" + str(number[0]/float(self.NumberVampires)*100).ljust(5)[:5] + \
-                  "%), " + str(number[1]) + " at Superior (" + \
-                  str(number[1]/float(self.NumberVampires)*100).ljust(5)[:5] + " %)\n"
-        text=text+"Number of Masters             = "+str(self.NumberMasters)+"\n"
+        if self.NumberVampires>0:
+            for clan,number in self.deckClans.iteritems():
+                text=text+str(number)+" Vampires of clan " + str(clan) + \
+                      " (" + str(number/float(self.NumberVampires)*100).ljust(5)[:5] + \
+                      " % of the crypt )\n"
+            for discipline,number in sorted(self.deckDisc.iteritems()):
+                # Maybe should sort this by number[0]?
+                text=text+str(number[0])+" Vampires with " + discipline + \
+                      " (" + str(number[0]/float(self.NumberVampires)*100).ljust(5)[:5] + \
+                      "%), " + str(number[1]) + " at Superior (" + \
+                      str(number[1]/float(self.NumberVampires)*100).ljust(5)[:5] + " %)\n"
+        text=text+"Total Library Size            = "+str(self.NumberLibrary)+"\n"
+        if self.NumberLibrary>0:
+            text=text+"Number of Masters             = "+str(self.NumberMasters)+" (" + str((self.NumberMasters*100)/float(self.NumberLibrary)).ljust(5)[:5] +"% of Library)\n"
         text=text+"Number of Other Library Cards = "+str(self.NumberLibrary-self.NumberMasters)+"\n"
+        text=text+"Number of Multirole cards = "+str(self.NumberMult)+"\n"
         Label.set_markup(text)
         self.vbox.pack_start(Label)
         self.show_all()

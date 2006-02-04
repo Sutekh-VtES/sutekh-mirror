@@ -10,6 +10,7 @@ class MainMenu(gtk.MenuBar,object):
         self.__oWin = oWindow
         
         self.__createFileMenu()
+        self.__createFilterMenu()
         
     def __createFileMenu(self):
         # setup sub menu
@@ -37,6 +38,25 @@ class MainMenu(gtk.MenuBar,object):
         
         self.add(iMenu)
         self.setLoadDeckState({}) # Call with an explicitly empty dict
+
+    def __createFilterMenu(self):
+        # setup sub menu
+        iMenu = gtk.MenuItem("Filter")
+        wMenu = gtk.Menu()
+        iMenu.set_submenu(wMenu)
+        
+        # items
+        iFilter = gtk.MenuItem("Specify Filter")
+        wMenu.add(iFilter)
+        iFilter.connect('activate', self.__oC.getFilter)
+
+        self.iApply=gtk.CheckMenuItem("Apply Filter")
+        self.iApply.set_inconsistent(False)
+        self.iApply.set_active(False)
+        wMenu.add(self.iApply)
+        self.iApply.connect('activate', self.__oC.runFilter)
+        
+        self.add(iMenu)
 
     def setLoadDeckState(self,openDecks):
         # Determine if loadDeck should be greyed out or not
@@ -77,3 +97,9 @@ class MainMenu(gtk.MenuBar,object):
             window = self.__oC.createNewDeckWindow(Name)
             if window != None:
                 window.load()
+
+    def getApplyFilter(self):
+        return self.iApply.get_active()
+
+    def setApplyFilter(self,state):
+        self.iApply.set_active(state)

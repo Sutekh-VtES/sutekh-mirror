@@ -57,3 +57,28 @@ class CardTextFilter(Filter):
         
     def getExpression(self):
         return LIKE(AbstractCard.q.text,'%' + self.__sPattern + '%')
+
+class PhysicalCardFilter(Filter):
+    def __init__(self):
+        # Specifies Physical Cards, intended to be anded with other filters
+        pass
+        
+    def getExpression(self):
+        oT = Table('physical_card')
+        return AND (AbstractCard.q.id == oT.abstract_card_id)
+
+class DeckFilter(Filter):
+    def __init__(self,sName):
+        # Select cards belonging to a deck
+        # Clumsy, should create Adapter in SutekhObjects
+        PS=PhysicalCardSet.byName(sName)
+        self.deckID = PS.id
+
+    def getExpression(self):
+        oT = Table('physical_map')
+        oPT = Table('physical_card')
+        return AND ( oT.physical_card_set_id == self.deckID,
+                oPT.id == oT.physical_card_id,
+                AbstractCard.q.id == oPT.abstract_card_id )
+        
+        

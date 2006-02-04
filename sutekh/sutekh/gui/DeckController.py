@@ -1,15 +1,21 @@
 from sqlobject import SQLObjectNotFound
 from DeckView import DeckView
+from DeckMenu import DeckMenu
 from SutekhObjects import *
 
 class DeckController(object):
     def __init__(self,oWindow,oMasterController,deckName):
         self.__oView = DeckView(oWindow,self,deckName)
+        self.__oWin = oWindow
         self.__oC = oMasterController
         self.deckName=deckName
+        self.__oMenu = DeckMenu(self,self.__oWin,self.deckName)
         
     def getView(self):
         return self.__oView
+
+    def getMenu(self):
+        return self.__oMenu
     
     def decCard(self,sName):
         try:
@@ -54,3 +60,9 @@ class DeckController(object):
 
     def setCardText(self,sName):
         pass
+
+    def getFilter(self,widget):
+        self.__oView.getFilter(self.__oMenu)
+
+    def runFilter(self,widget):
+        self.__oView.runFilter(self.__oMenu.getApplyFilter())

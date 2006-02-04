@@ -2,7 +2,9 @@ import gtk, gobject, pango
 from CardListView import CardListView
 from CellRendererSutekhButton import CellRendererSutekhButton
 from SutekhObjects import *
+from Filters import *
 from DeleteDeckDialog import DeleteDeckDialog
+from FilterDialog import FilterDialog
 
 class DeckView(CardListView):
     def __init__(self,oWindow,oController,Name):
@@ -56,6 +58,8 @@ class DeckView(CardListView):
         self.set_search_column(1)
         self.set_enable_search(True)
 
+        self.Filter = None
+        self.doFilter = False
 
         self.load()
                
@@ -120,9 +124,14 @@ class DeckView(CardListView):
         # oIter = self._oModel.append(None)
         # This feels a bit clumsy, but does work - NM
         cardDict = {}
+
+        if self.doFilter and self.Filter != None:
+            deckSelection = PhysicalCard.select(self.Filter.getExpression())
+        else:
+            oPCS = PhysicalCardSet.byName(self.deckName)
+            deckSelection = oPCS.cards
         
-        oPCS = PhysicalCardSet.byName(self.deckName)
-        for oCard in oPCS.cards:
+        for oCard in deckSelection:
             # Check if Card is already in dictionary
             if oCard.abstractCardID in cardDict:
                 cardDict[oCard.abstractCardID][1] += 1
@@ -158,3 +167,20 @@ class DeckView(CardListView):
                 return True # Don't propogate to buttons
         return False
 
+    def getFilter(self,Menu):
+        Dialog=FilterDialog(self.__oWin)
+        Dialog.run()
+        Filter = Dialog.getFilter()
+        if Filter != None:
+            self.Filter=FilterAndBox([DeckFilter(self.deckName),Filter])
+            if not self.doFilter:
+                Menu.setApplyFilter(True) # If a filter is set, automatically apply
+                self.runFilter(True)
+            else:
+                self.load() # Filter Changed, so reload
+        
+
+    def runFilter(self,state):
+        if self.doFilter != state:
+            self.doFilter=state
+            self.load()

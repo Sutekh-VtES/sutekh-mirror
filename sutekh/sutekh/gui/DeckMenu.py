@@ -8,6 +8,7 @@ class DeckMenu(gtk.MenuBar,object):
         self.deckName=Name
         
         self.__createDeckMenu()
+        self.__createFilterMenu()
         
     def __createDeckMenu(self):
         iMenu = gtk.MenuItem("Deck Actions")
@@ -39,6 +40,25 @@ class DeckMenu(gtk.MenuBar,object):
         wMenu.add(iDelete)
 
         self.add(iMenu)
+  
+    def __createFilterMenu(self):
+        # setup sub menu
+        iMenu = gtk.MenuItem("Filter")
+        wMenu = gtk.Menu()
+        iMenu.set_submenu(wMenu)
+        
+        # items
+        iFilter = gtk.MenuItem("Specify Filter")
+        wMenu.add(iFilter)
+        iFilter.connect('activate', self.__oC.getFilter)
+
+        self.iApply=gtk.CheckMenuItem("Apply Filter")
+        self.iApply.set_inconsistent(False)
+        self.iApply.set_active(False)
+        wMenu.add(self.iApply)
+        self.iApply.connect('activate', self.__oC.runFilter)
+        
+        self.add(iMenu)
 
     def deckClose(self,widget):
         self.__oWindow.closeDeck(widget)
@@ -48,3 +68,10 @@ class DeckMenu(gtk.MenuBar,object):
 
     def deckDelete(self,widget):
         self.__oWindow.deleteDeck()
+
+
+    def getApplyFilter(self):
+        return self.iApply.get_active()
+
+    def setApplyFilter(self,state):
+        self.iApply.set_active(state)

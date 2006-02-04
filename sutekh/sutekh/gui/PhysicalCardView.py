@@ -2,6 +2,8 @@ import gtk, gobject, pango
 from CardListView import CardListView
 from CellRendererSutekhButton import CellRendererSutekhButton
 from SutekhObjects import *
+from Filters import *
+from FilterDialog import FilterDialog
 
 class PhysicalCardView(CardListView):
     def __init__(self,oController):
@@ -50,12 +52,13 @@ class PhysicalCardView(CardListView):
         self.connect('drag_data_delete',self.dragDelete)
         self.connect('drag_data_received',self.cardDrop)
         self.connect('button_press_event',self.pressButton)
-        self.cardFilter = None
-        self.applyFilter = False
 
         self.set_search_equal_func(self.compare,None)
         self.set_search_column(1)
         self.set_enable_search(True)
+
+        self.Filter = None
+        self.doFilter = False
 
         self.load()
                
@@ -92,9 +95,8 @@ class PhysicalCardView(CardListView):
         # This feels a bit clumsy, but does work - NM
         cardDict = {}
 
-        if self.applyFilter and self.cardFilter != None:
-            print "Need to filter here"
-            oCardsel = PhysicalCard.select()
+        if self.doFilter and self.Filter != None:
+            oCardsel = PhysicalCard.select(self.Filter.getExpression())
         else:
             oCardsel = PhysicalCard.select()
         
@@ -136,3 +138,20 @@ class PhysicalCardView(CardListView):
    
 
 
+    def getFilter(self,Menu,Window):
+        Dialog=FilterDialog(Window)
+        Dialog.run()
+        Filter = Dialog.getFilter()
+        if Filter != None:
+            self.Filter=FilterAndBox([PhysicalCardFilter(),Filter])
+            if not self.doFilter:
+                Menu.setApplyFilter(True) # If a filter is set, automatically apply
+                self.runFilter(True)
+            else:
+                self.load() # Filter Changed, so reload
+        
+
+    def runFilter(self,state):
+        if self.doFilter != state:
+            self.doFilter=state
+            self.load()

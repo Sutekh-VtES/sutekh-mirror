@@ -1,13 +1,16 @@
 import gtk, pango
 from CardListView import CardListView
 from SutekhObjects import *
+from FilterDialog import FilterDialog
+from Filters import *
 
 class AbstractCardView(CardListView):
-    def __init__(self,oController):
+    def __init__(self,oController,oWindow):
         super(AbstractCardView,self).__init__(oController)
 
         # HouseKeeping work for 
     
+        self.__oWin=oWindow
         oCell = gtk.CellRendererText()
         oCell.set_property('style', pango.STYLE_ITALIC)
         oColumn = gtk.TreeViewColumn("Collection", oCell, text=0)
@@ -22,6 +25,8 @@ class AbstractCardView(CardListView):
         self.set_search_equal_func(self.compare,None)
         self.set_search_column(0)
         self.set_enable_search(True)
+        self.doFilter = False
+        self.Filter = None
         
         self.load()
         
@@ -46,7 +51,6 @@ class AbstractCardView(CardListView):
         
     def load(self):
         self._oModel.clear()
-        
         for oType in CardType.select():
             # Create Section
             oSectionIter = self._oModel.append(None)
@@ -54,11 +58,33 @@ class AbstractCardView(CardListView):
                 0, oType.name,
                 1, 0
             )
-            
             # Fill in Cards
-            for oCard in oType.cards:
+            if self.doFilter and self.Filter != None:
+                cardList = AbstractCard.select( \
+                    FilterAndBox([CardTypeFilter(oType.name),self.Filter]).getExpression())
+            else:
+                cardList=oType.cards
+            for oCard in cardList:
                 oChildIter = self._oModel.append(oSectionIter)
                 self._oModel.set(oChildIter,
                     0, oCard.name,
                     1, 0
                 )
+        
+    def getFilter(self,MainMenu):
+        Dialog=FilterDialog(self.__oWin)
+        Dialog.run()
+        Filter = Dialog.getFilter()
+        if Filter != None:
+            self.Filter=Filter
+            if not self.doFilter:
+                MainMenu.setApplyFilter(True) # If a filter is set, automatically apply
+                self.runFilter(True)
+            else:
+                self.load() # Filter Changed, so reload
+        
+
+    def runFilter(self,state):
+        if self.doFilter != state:
+            self.doFilter=state
+            self.load()

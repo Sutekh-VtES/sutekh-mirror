@@ -1,5 +1,6 @@
 from sqlobject import SQLObjectNotFound
 from PhysicalCardView import PhysicalCardView
+from PhysicalCardMenu import PhysicalCardMenu
 from SutekhObjects import *
 from DeleteCardDialog import DeleteCardDialog
 
@@ -8,9 +9,13 @@ class PhysicalCardController(object):
         self.__oView = PhysicalCardView(self)
         self.__oC = oMasterController
         self.__oWin = oWindow
+        self.__oMenu = PhysicalCardMenu(self,self.__oWin)
         
     def getView(self):
         return self.__oView
+    
+    def getMenu(self):
+        return self.__oMenu
     
     def decCard(self,sName):
         try:
@@ -77,3 +82,10 @@ class PhysicalCardController(object):
         
     def setCardText(self,sCardName):
         self.__oC.setCardText(sCardName)
+
+
+    def getFilter(self,widget):
+        self.__oView.getFilter(self.__oMenu,self.__oWin)
+
+    def runFilter(self,widget):
+        self.__oView.runFilter(self.__oMenu.getApplyFilter())

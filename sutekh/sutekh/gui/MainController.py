@@ -22,7 +22,7 @@ class MainController(object):
         self.__oPhysicalCardWin = PhysicalCardWindow(self)
         self.__oMenu = MainMenu(self,self.__oAbstractCardWin)
         self.__oCardText = CardTextView(self)
-        self.__oAbstractCards = AbstractCardView(self)
+        self.__oAbstractCards = AbstractCardView(self,self.__oAbstractCardWin)
         self.__oPhysicalCards = PhysicalCardController(self.__oPhysicalCardWin,self)
         self.__oWinGrp.add_window(self.__oAbstractCardWin)
         self.__oWinGrp.add_window(self.__oPhysicalCardWin)
@@ -35,7 +35,7 @@ class MainController(object):
         # Link
         self.__oAbstractCardWin.addParts(self.__oMenu,self.__oCardText, \
                              self.__oAbstractCards)
-        self.__oPhysicalCardWin.addParts(self.__oMenu, \
+        self.__oPhysicalCardWin.addParts(self.__oPhysicalCards.getMenu(), \
                              self.__oPhysicalCards.getView())
         
     def run(self):
@@ -59,7 +59,7 @@ class MainController(object):
                 newDeckWindow = DeckWindow(self,deckName)
                 newDeckController = DeckController(newDeckWindow,self,deckName)
                 self.openDecks[deckName] = [newDeckWindow, newDeckController]
-                newDeckWindow.addParts(newDeckController.getView())
+                newDeckWindow.addParts(newDeckController.getView(),newDeckController.getMenu())
                 self.__oMenu.setLoadDeckState(self.openDecks)
                 self.__oWinGrp.add_window(newDeckWindow)
                 return newDeckWindow
@@ -81,3 +81,9 @@ class MainController(object):
         for name in self.openDecks:
             controller = self.openDecks[name][1]
             controller.getView().load()
+
+    def getFilter(self,widget):
+        self.__oAbstractCards.getFilter(self.__oMenu)
+
+    def runFilter(self,widget):
+        self.__oAbstractCards.runFilter(self.__oMenu.getApplyFilter())

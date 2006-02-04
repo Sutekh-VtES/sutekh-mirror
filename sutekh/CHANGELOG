@@ -1,11 +1,14 @@
+04 Feb 2006:
+* Add basic support for filtering in the gui - NM
+
 27 Jan 2006:
-* Tweak Card parser - now works properly for me for wget'd cardlist 
-* Support lookahead in CardViews
+* Tweak Card parser - now works properly for me for wget'd cardlist - NM
+* Support lookahead in CardViews - NM
 
 22 Jan 2006:
 * Fill out deck support - currently the code is limited to 3 deck windows
-  open at a time. 
-* Basic anaylsis deck started. 
+  open at a time. - NM
+* Basic anaylsis deck started. - NM
 
 21 Jan 2006:
 * Tweak -db message for sqlite to give form of URI - NM
