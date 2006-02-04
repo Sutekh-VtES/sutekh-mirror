@@ -1,0 +1,35 @@
+import gtk
+
+class PhysicalCardMenu(gtk.MenuBar,object):
+    def __init__(self,oController,oWindow):
+        super(PhysicalCardMenu,self).__init__()
+        self.__oC = oController
+        self.__oWindow = oWindow
+        
+        self.__createFilterMenu()
+        
+    def __createFilterMenu(self):
+        # setup sub menu
+        iMenu = gtk.MenuItem("Filter")
+        wMenu = gtk.Menu()
+        iMenu.set_submenu(wMenu)
+        
+        # items
+        iFilter = gtk.MenuItem("Specify Filter")
+        wMenu.add(iFilter)
+        iFilter.connect('activate', self.__oC.getFilter)
+
+        self.iApply=gtk.CheckMenuItem("Apply Filter")
+        self.iApply.set_inconsistent(False)
+        self.iApply.set_active(False)
+        wMenu.add(self.iApply)
+        self.iApply.connect('activate', self.__oC.runFilter)
+        
+        self.add(iMenu)
+
+
+    def getApplyFilter(self):
+        return self.iApply.get_active()
+
+    def setApplyFilter(self,state):
+        self.iApply.set_active(state)
