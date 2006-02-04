@@ -5,6 +5,8 @@ from WhiteWolfParser import WhiteWolfParser
 from RulingParser import RulingParser
 from PhysicalCardParser import PhysicalCardParser
 from PhysicalCardWriter import PhysicalCardWriter
+from DeckParser import DeckParser
+from DeckWriter import DeckWriter
 
 def parseOptions(aArgs):
     oP = optparse.OptionParser(usage="usage: %prog [options]",version="%prog 0.1")
@@ -35,6 +37,18 @@ def parseOptions(aArgs):
     oP.add_option("-l","--read-physical-cards-from",
                   type="string",dest="read_physical_cards_from",default=None,
                   help="Read physical card list from the given XML file.")                   
+    oP.add_option("--save-deck",
+                  type="string",dest="save_deck",default=None,
+                  help="Save the given deck to an XML file (by default named <deckname>.xml).")
+    oP.add_option("--deck-filename",
+                  type="string",dest="deck_filename",default=None,
+                  help="Give an alternative filename to save the deck as")
+    oP.add_option("--save-all-decks",
+                  action="store_true",dest="save_all_decks",default=False,
+                  help="Save all decks in the database to files - Cannot be used with --save-deck.")
+    oP.add_option("--read-deck",
+                  type="string",dest="read_deck",default=None,
+                  help="Load a deck from the given XML file.")
                   
     return oP, oP.parse_args(aArgs)
 
@@ -67,6 +81,25 @@ def writePhysicalCards(sXmlFile):
     fOut = file(sXmlFile,'w')
     oW.write(fOut)
     fOut.close()
+
+def readDeck(sXmlFile):
+    oP = DeckParser()
+    oP.parse(file(sXmlFile,'rU'))
+
+def writeDeck(sDeckName,sXmlFile):
+    oW = DeckWriter()
+    if sXmlFile is None:
+        filename=sDeckName.replace(" ","_") # I hate spaces in filenames
+        fOut=file(filename,'w')
+    else:
+        fOut=file(sXmlFile,'w')
+    oW.write(fOut,sDeckName)
+    fOut.close()
+
+def writeAllDecks():
+    oDecks = PhysicalCardSet.select()
+    for deck in oDecks:
+        writeDeck(deck.name,None)
 
 def main(aArgs):
     oOptParser, (oOpts, aArgs) = parseOptions(aArgs)
@@ -104,6 +137,19 @@ def main(aArgs):
 
     if not oOpts.save_physical_cards_to is None:
         writePhysicalCards(oOpts.save_physical_cards_to)
+
+    if oOpts.save_all_decks and not oOpts.save_deck is None:
+        print "Can't use --save-deck and --save-all-decks Simulatenously"
+        return 1
+
+    if oOpts.save_all_decks:
+        writeAllDecks()
+
+    if not oOpts.save_deck is None:
+        writeDeck(oOpts.save_deck,oOpts.deck_filename)
+
+    if not oOpts.read_deck is None:
+        readDeck(oOpts.read_deck)
 
     return 0
 
