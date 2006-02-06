@@ -74,18 +74,24 @@ class PhysicalCardView(CardListView):
     
     def cardDrop(self, w, context, x, y, data, info, time):
         if data and data.format == 8 and data.data[:5] == "Abst:":
-            self._oC.addCard(data.data[5:])
+            cards=data.data.splitlines()
+            for name in cards[1:]:
+                self._oC.addCard(name)
             context.finish(True, False, time)
         else:
             context.finish(False, False, time)
     
     def dragCard(self, btn, context, selection_data, info, time):
-        oModel, oIter = self._oSelection.get_selected()
-        if not oIter:
+        if self._oSelection.count_selected_rows()<1:
             return
-        sCardName = oModel.get_value(oIter,0)
-        selection_data.set(selection_data.target, 8, "Phys:" + sCardName)
-    
+        oModel, oPathList = self._oSelection.get_selected_rows()
+        selectData = "Phys:"
+        for oPath in oPathList:
+            oIter = oModel.get_iter(oPath)
+            sCardName = oModel.get_value(oIter,0)
+            selectData = selectData + "\n" + sCardName
+        selection_data.set(selection_data.target, 8, selectData)
+
     def dragDelete(self, btn, context, data):
         pass
 
@@ -130,8 +136,6 @@ class PhysicalCardView(CardListView):
                 treeview.grab_focus()
                 treeview.set_cursor( path, col, False)
                 popupMenu=PopupMenu(self,path)
-                #print gobject.list_properties(col)
-                #print path, cellx, celly
                 popupMenu.popup( None, None, None, event.button, time)
                 return True # Don't propogate to buttons
         return False

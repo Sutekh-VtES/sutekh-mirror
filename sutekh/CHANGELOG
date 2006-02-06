@@ -1,6 +1,9 @@
+06 Feb 2006:
+* Initial support for multiple selections - NM
+
 04 Feb 2006:
 * Add basic support for filtering in the gui - NM
-* Add support for reading and writing XML decks
+* Add support for reading and writing XML decks - NM
 
 27 Jan 2006:
 * Tweak Card parser - now works properly for me for wget'd cardlist - NM

@@ -10,7 +10,8 @@ class CardListView(gtk.TreeView,object):
         self.set_size_request(200, -1)
         
         self._oSelection = self.get_selection()
-        self._oSelection.set_mode(gtk.SELECTION_BROWSE)
+        self._oSelection.set_mode(gtk.SELECTION_MULTIPLE)
+        self.__oldSelection = []
         
         self.connect('row-activated',self.cardActivated)
         self._oSelection.connect('changed',self.cardSelected)
@@ -24,11 +25,18 @@ class CardListView(gtk.TreeView,object):
         self._oC.setCardText(sCardName)
     
     def cardSelected(self,oSelection):
-        oModel, oIter = oSelection.get_selected()
-        if not oIter:
+        if oSelection.count_selected_rows()<1:
             return False
+        oModel, List = oSelection.get_selected_rows()
+        if len(List)<=len(self.__oldSelection):
+           oIter=oModel.get_iter(List[-1])
+        else:
+            # Find the last entry in List that's not in __oldSelection
+            s=[x for x in List if x not in self.__oldSelection]
+            oIter=oModel.get_iter(s[-1])
         sCardName = oModel.get_value(oIter,0)
         self._oC.setCardText(sCardName)
+        self.__oldSelection=List
 
     def compare(self,model,column,key,iter,data):
         CandName=model.get_value(iter,0).lower()

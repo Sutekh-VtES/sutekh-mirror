@@ -74,13 +74,16 @@ class DeckView(CardListView):
         self._oC.decCard(sCardName)
     
     def dragCard(self, btn, context, selection_data, info, time):
-        oModel, oIter = self._oSelection.get_selected()
-        if not oIter:
+        if self._oSelection.count_selected_rows()<1:
             return
-        sCardName = oModel.get_value(oIter,0)
-        number = str(oModel.get_value(oIter,1))
-        selection_data.set(selection_data.target, 8, \
-              "Deck:" + self.deckName + "_" + number + "_" + sCardName)
+        oModel, oPathList = self._oSelection.get_selected_rows()
+        selectData = "Deck:"+self.deckName
+        for oPath in oPathList:
+            oIter = oModel.get_iter(oPath)
+            sCardName = oModel.get_value(oIter,0)
+            number = str(oModel.get_value(oIter,1))
+            selectData = selectData + "\n" + number + "_" + sCardName
+        selection_data.set(selection_data.target, 8, selectData)
 
     def dragDelete(self, btn, context, data):
         pass
@@ -89,18 +92,24 @@ class DeckView(CardListView):
         if data and data.format == 8 and data.data[:5] == "Phys:":
             # Card is from the Physical card view, so we only get one
             #print data.data[5:]
-            self._oC.addCard(data.data[5:])
+            cards=data.data.splitlines()
+            for name in cards[1:]:
+               self._oC.addCard(data.data[5:])
             context.finish(True, False, time)
         else:
             if data and data.format == 8 and data.data[:5] == "Deck:":
                 # Card is from a deck, so extract deckname
-                [sourceDeckName,number,card] = data.data[5:].split("_")
+                cards=data.data.splitlines()
+                sourceDeckName = cards[0][5:]
                 if sourceDeckName != self.deckName:
                     # different deck, so try and add number cards
                     # We rely on addCard to prevent stuff becoming 
                     # inconsistent
-                    for j in range(int(number)):
-                        self._oC.addCard(card)
+                    for candidate in cards[1:]:
+                        [number, name] = candidate.split('_')
+                        for j in range(int(number)):
+                            self._oC.addCard(name)
+                context.finish(True,False, time)
             else:
                 context.finish(False, False, time)
 
