@@ -62,23 +62,27 @@ class FilterDialog(gtk.Dialog):
 
     def buttonResponse(self,widget,response):
        if response ==  gtk.RESPONSE_OK:
-           ClanFilters=[]
-           DiscFilters=[]
-           # Create Clan Filters for all Selected Clans
+           aClans = []
+           aDiscs = []
+       
+           # Compile lists of clans and disciplines selected
            for clanButton in self.clanCheckBoxes:
                if self.clanCheckBoxes[clanButton].get_active():
-                   ClanFilters.append(ClanFilter(clanButton))
+                   aClans.append(clanButton)
            for discButton in self.discCheckBoxes:
                if self.discCheckBoxes[discButton].get_active():
-                   DiscFilters.append(DisciplineFilter(discButton))
-           # Create Discipline Filters for all Selected Disciplines
-           if len(ClanFilters) > 0:
-               cF=FilterOrBox(ClanFilters)
-               self.Data=cF
-           if len(DiscFilters) > 0:
-               dF=FilterOrBox(DiscFilters)
-               self.Data=dF
-           if len(DiscFilters)>0 and len(ClanFilters)>0:
-               self.Data = FilterAndBox([cF,dF])
+                   aDiscs.append(discButton)
+                   
+           # Create Filters for all Selected Clans and Disciplines
+           if len(aClans)>0 and len(aDiscs)>0:
+               self.data = FilterAndBox([MultiClanFilter(aClans),
+                                         MultiDisciplineFilter(aDiscs)])
+           elif len(aClans) > 0:
+               self.Data = MultiClanFilter(aClans)
+           elif len(aDiscs) > 0:
+               self.Data = MultiDisciplineFilter(aDiscs)
+           else:
+               self.Data = None
+               
        self.destroy()
 

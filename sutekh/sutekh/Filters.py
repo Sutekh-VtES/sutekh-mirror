@@ -31,6 +31,15 @@ class ClanFilter(Filter):
         oT = Table('abs_clan_map')
         return AND(AbstractCard.q.id == oT.abstract_card_id,
                    oT.clan_id == self.__oClan.id)
+
+class MultiClanFilter(Filter):
+    def __init__(self,aClans):
+        self.__aClanIds = [IClan(x).id for x in aClans]
+        
+    def getExpression(self):
+        oT = Table('abs_clan_map')
+        return AND(AbstractCard.q.id == oT.abstract_card_id,
+                   IN(oT.clan_id,self.__aClanIds))
     
 class DisciplineFilter(Filter):
     def __init__(self,sDiscipline):
@@ -41,6 +50,16 @@ class DisciplineFilter(Filter):
         return AND(AbstractCard.q.id == oT.abstract_card_id,
                    oT.discipline_pair_id == DisciplinePair.q.id,
                    DisciplinePair.q.disciplineID == self.__oDis.id)
+
+class MultiDisciplineFilter(Filter):
+    def __init__(self,aDisciplines):
+        self.__aDisIds = [IDiscipline(x).id for x in aDisciplines]
+        
+    def getExpression(self):
+        oT = Table('abs_discipline_pair_map')
+        return AND(AbstractCard.q.id == oT.abstract_card_id,
+                   oT.discipline_pair_id == DisciplinePair.q.id,
+                   IN(DisciplinePair.q.disciplineID,self.__aDisIds))
     
 class CardTypeFilter(Filter):
     def __init__(self,sCardType):
