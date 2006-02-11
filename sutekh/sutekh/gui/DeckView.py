@@ -135,7 +135,7 @@ class DeckView(CardListView):
         cardDict = {}
 
         if self.doFilter and self.Filter != None:
-            deckSelection = PhysicalCard.select(self.Filter.getExpression())
+            deckSelection = PhysicalCard.select(self.Filter.getExpression()).distinct()
         else:
             oPCS = PhysicalCardSet.byName(self.deckName)
             deckSelection = oPCS.cards

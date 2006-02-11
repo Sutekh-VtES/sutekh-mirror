@@ -64,8 +64,9 @@ class AbstractCardView(CardListView):
             )
             # Fill in Cards
             if self.doFilter and self.Filter != None:
-                cardList = AbstractCard.select( \
-                    FilterAndBox([CardTypeFilter(oType.name),self.Filter]).getExpression())
+                cardList = AbstractCard.select(
+                    FilterAndBox([CardTypeFilter(oType.name),self.Filter]).getExpression()
+		).distinct()
             else:
                 cardList=oType.cards
             for oCard in cardList:
