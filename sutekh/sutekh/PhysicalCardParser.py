@@ -18,7 +18,7 @@ class CardHandler(ContentHandler):
             sName = oAttrs.getValue('name')
             iCount = int(oAttrs.getValue('count'),10)
             
-            oAbs = AbstractCard.byName(sName)
+            oAbs = AbstractCard.byName(sName.encode('utf8'))
             for i in range(iCount):
                 PhysicalCard(abstractCard=oAbs)
         
