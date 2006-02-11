@@ -147,7 +147,7 @@ class PhysicalCardView(CardListView):
         Dialog.run()
         Filter = Dialog.getFilter()
         if Filter != None:
-            self.Filter=FilterAndBox([PhysicalCardFilter(),Filter])
+            self.Filter=FilterAndBox([Filter,PhysicalCardFilter()])
             if not self.doFilter:
                 Menu.setApplyFilter(True) # If a filter is set, automatically apply
                 self.runFilter(True)
