@@ -102,7 +102,7 @@ class PhysicalCardView(CardListView):
         cardDict = {}
 
         if self.doFilter and self.Filter != None:
-            oCardsel = PhysicalCard.select(self.Filter.getExpression())
+            oCardsel = PhysicalCard.select(self.Filter.getExpression()).distinct()
         else:
             oCardsel = PhysicalCard.select()
         
