@@ -94,7 +94,7 @@ class DeckView(CardListView):
             #print data.data[5:]
             cards=data.data.splitlines()
             for name in cards[1:]:
-               self._oC.addCard(data.data[5:])
+               self._oC.addCard(name)
             context.finish(True, False, time)
         else:
             if data and data.format == 8 and data.data[:5] == "Deck:":
