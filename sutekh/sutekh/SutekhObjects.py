@@ -347,3 +347,13 @@ class RulingAdapter(object):
         except SQLObjectNotFound:
             oR = Ruling(text=sText,code=sCode)
         return oR
+
+class PhysicalCardSetAdapter(object):
+    advise(instancesProvide=[IPhysicalCardSet],asAdapterForTypes=[basestring])
+    
+    def __new__(cls,s):
+        try:
+	    oS = PhysicalCardSet.byName(s.encode('utf8'))
+	except:
+	    oS = PhysicalCardSet(name=s)
+	return oS 
