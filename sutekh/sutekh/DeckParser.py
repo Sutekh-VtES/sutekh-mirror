@@ -24,7 +24,7 @@ class DeckHandler(ContentHandler):
             # Try and add deck to PhysicalCardSet
             # Make sure 
             try:
-                deck=PhysicalCardSet.byName(self.deckName)
+                deck=PhysicalCardSet.byName(self.deckName.encode('utf8'))
                 # We overwrite deck, so we drop all cards currently 
                 # part of the deck
                 ids=[]
@@ -39,7 +39,7 @@ class DeckHandler(ContentHandler):
             sName = oAttrs.getValue('name')
             iCount = int(oAttrs.getValue('count'),10)
             
-            oAbs = AbstractCard.byName(sName)
+            oAbs = AbstractCard.byName(sName.encode('utf8'))
             if self.deckDB:
                 # deck exists in databse, so we're OK
                 deck=PhysicalCardSet.byName(self.deckName)
