@@ -5,6 +5,7 @@ from SutekhObjects import *
 from Filters import *
 from DeleteDeckDialog import DeleteDeckDialog
 from FilterDialog import FilterDialog
+from PopupMenu import PopupMenu
 
 class DeckView(CardListView):
     def __init__(self,oWindow,oController,Name):

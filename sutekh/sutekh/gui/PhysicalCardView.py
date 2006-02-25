@@ -4,6 +4,7 @@ from CellRendererSutekhButton import CellRendererSutekhButton
 from SutekhObjects import *
 from Filters import *
 from FilterDialog import FilterDialog
+from PopupMenu import PopupMenu
 
 class PhysicalCardView(CardListView):
     def __init__(self,oController):
