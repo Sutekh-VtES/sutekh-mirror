@@ -59,6 +59,7 @@ class DeckView(CardListView):
         self.set_enable_search(True)
 
         self.Filter = None
+        self.FilterDialog = None
         self.doFilter = False
 
         self.load()
@@ -177,9 +178,12 @@ class DeckView(CardListView):
         return False
 
     def getFilter(self,Menu):
-        Dialog=FilterDialog(self.__oWin)
-        Dialog.run()
-        Filter = Dialog.getFilter()
+        if self.FilterDialog is None:
+            self.FilterDialog=FilterDialog(self.__oWin)
+        self.FilterDialog.run()
+        if self.FilterDialog.Cancelled():
+            return # Change nothing
+        Filter = self.FilterDialog.getFilter()
         if Filter != None:
             self.Filter=FilterAndBox([DeckFilter(self.deckName),Filter])
             if not self.doFilter:
@@ -187,7 +191,12 @@ class DeckView(CardListView):
                 self.runFilter(True)
             else:
                 self.load() # Filter Changed, so reload
-        
+        else:
+            # Filter is set to blank, so we treat this as disabling
+            # Filter
+            Menu.setApplyFilter(False) 
+            self.runFilter(False)
+            self.load()
 
     def runFilter(self,state):
         if self.doFilter != state:

@@ -27,6 +27,7 @@ class AbstractCardView(CardListView):
         self.set_enable_search(True)
         self.doFilter = False
         self.Filter = None
+        self.FilterDialog = None
         
         self.load()
         
@@ -77,9 +78,12 @@ class AbstractCardView(CardListView):
                 )
         
     def getFilter(self,MainMenu):
-        Dialog=FilterDialog(self.__oWin)
-        Dialog.run()
-        Filter = Dialog.getFilter()
+        if self.FilterDialog is None:
+            self.FilterDialog=FilterDialog(self.__oWin)
+        self.FilterDialog.run()
+        if self.FilterDialog.Cancelled():
+            return # Change nothing
+        Filter = self.FilterDialog.getFilter()
         if Filter != None:
             self.Filter=Filter
             if not self.doFilter:
@@ -87,6 +91,10 @@ class AbstractCardView(CardListView):
                 self.runFilter(True)
             else:
                 self.load() # Filter Changed, so reload
+        else:
+            Menu.setApplyFilter(False) 
+            self.runFilter(False)
+            self.load()
         
 
     def runFilter(self,state):

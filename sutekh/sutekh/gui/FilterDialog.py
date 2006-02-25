@@ -8,6 +8,7 @@ class FilterDialog(gtk.Dialog):
         super(FilterDialog,self).__init__("Specify Filter", \
               parent,gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT, \
               ( gtk.STOCK_OK, gtk.RESPONSE_OK, gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
+        self.wasCancelled = False
         myHBox=gtk.HBox(False,0)
         clanFrame=gtk.Frame('Clans to Filter on')
         discFrame=gtk.Frame('Disciplines to Filter on')
@@ -25,17 +26,17 @@ class FilterDialog(gtk.Dialog):
         vBox2[0]=gtk.VButtonBox() # Discplines
         vBox2[1]=gtk.VButtonBox() # Discplines
         vBox2[2]=gtk.VButtonBox() # Discplines
-        clanHBox.pack_end(vBox1[0])
-        clanHBox.pack_end(vBox1[1])
-        clanHBox.pack_end(vBox1[2])
-        discHBox.pack_end(vBox2[0])
-        discHBox.pack_end(vBox2[1])
-        discHBox.pack_end(vBox2[2])
+        clanHBox.pack_start(vBox1[0])
+        clanHBox.pack_start(vBox1[1])
+        clanHBox.pack_start(vBox1[2])
+        discHBox.pack_start(vBox2[0])
+        discHBox.pack_start(vBox2[1])
+        discHBox.pack_start(vBox2[2])
         self.vbox.pack_start(myHBox)
         self.clanCheckBoxes={}
         self.discCheckBoxes={}
         i=0
-        for clan in Clan.select():
+        for clan in Clan.select().orderBy('name'):
             # Add clan to the list
             self.clanCheckBoxes[clan.name] = gtk.CheckButton(clan.name)
             self.clanCheckBoxes[clan.name].set_active(False)
@@ -44,7 +45,7 @@ class FilterDialog(gtk.Dialog):
             if (i>2):
                 i=0
         i=0
-        for discipline in Discipline.select():
+        for discipline in Discipline.select().orderBy('name'):
             # add disciplie
             name=DisciplineAdapter.keys[discipline.name][1]
             self.discCheckBoxes[name]= gtk.CheckButton(name)
@@ -60,7 +61,27 @@ class FilterDialog(gtk.Dialog):
     def getFilter(self):
         return self.Data
 
+    def Cancelled(self):
+        return self.wasCancelled
+
+    def run(self):
+        self.oldClanState={}
+        self.oldDiscState={}
+        for clanButton in self.clanCheckBoxes:
+            if self.clanCheckBoxes[clanButton].get_active():
+                self.oldClanState[clanButton]=True
+            else:
+                self.oldClanState[clanButton]=False
+        for discButton in self.discCheckBoxes:
+            if self.discCheckBoxes[discButton].get_active():
+                self.oldDiscState[discButton]=True
+            else:
+                self.oldDiscState[discButton]=False
+        return super(FilterDialog,self).run()
+
+
     def buttonResponse(self,widget,response):
+       self.wasCancelled = False # Need to reset if filter is rerun
        if response ==  gtk.RESPONSE_OK:
            aClans = []
            aDiscs = []
@@ -83,6 +104,19 @@ class FilterDialog(gtk.Dialog):
                self.Data = MultiDisciplineFilter(aDiscs)
            else:
                self.Data = None
+       else:
+           print "restoring state"
+           for clanButton in self.clanCheckBoxes:
+               if self.oldClanState[clanButton]:
+                   self.clanCheckBoxes[clanButton].set_active(True)
+               else:
+                   self.clanCheckBoxes[clanButton].set_active(False)
+           for discButton in self.discCheckBoxes:
+               if self.oldDiscState[discButton]:
+                   self.discCheckBoxes[discButton].set_active(True)
+               else:
+                   self.discCheckBoxes[discButton].set_active(False)
+           self.wasCancelled = True
                
-       self.destroy()
+       self.hide()
 

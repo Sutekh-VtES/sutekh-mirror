@@ -59,6 +59,7 @@ class PhysicalCardView(CardListView):
 
         self.Filter = None
         self.doFilter = False
+        self.FilterDialog = None
 
         self.load()
                
@@ -143,9 +144,12 @@ class PhysicalCardView(CardListView):
 
 
     def getFilter(self,Menu,Window):
-        Dialog=FilterDialog(Window)
-        Dialog.run()
-        Filter = Dialog.getFilter()
+        if self.FilterDialog is None:
+            self.FilterDialog=FilterDialog(self.__oWin)
+        self.FilterDialog.run()
+        if self.FilterDialog.Cancelled():
+            return # Change nothing
+        Filter = self.FilterDialog.getFilter()
         if Filter != None:
             self.Filter=FilterAndBox([Filter,PhysicalCardFilter()])
             if not self.doFilter:
@@ -153,6 +157,10 @@ class PhysicalCardView(CardListView):
                 self.runFilter(True)
             else:
                 self.load() # Filter Changed, so reload
+        else:
+            Menu.setApplyFilter(False) 
+            self.runFilter(False)
+            self.load()
         
 
     def runFilter(self,state):
