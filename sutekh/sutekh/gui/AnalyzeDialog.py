@@ -1,8 +1,8 @@
 import gtk
 from SutekhObjects import *
 
-# GUI Classes
-#              #parent,gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT, \
+
+# Popup Window that describes the deck
 
 class AnalyzeDialog(gtk.Dialog):
     def __init__(self,parent,deckName):
@@ -10,13 +10,24 @@ class AnalyzeDialog(gtk.Dialog):
               parent,gtk.DIALOG_DESTROY_WITH_PARENT, \
               (gtk.STOCK_OK, gtk.RESPONSE_OK))
         self.connect("response", lambda dlg, resp: dlg.destroy())
-        Label=gtk.Label()
-        Deck=PhysicalCardSet.byName(deckName)
-        text="Analysis Results for deck : <b>"+deckName+"</b>\n"
-        self.NumberVampires=0
-        self.TotNumber=0
+        Notebook=gtk.Notebook()
+        self.MainLabel=gtk.Label()
+        self.HappyFamiliesLabel=gtk.Label()
+        self.VampiresLabel=gtk.Label()
+        self.MastersLabel=gtk.Label()
+        self.CombatLabel=gtk.Label()
+        Notebook.append_page(self.MainLabel,gtk.Label('Basic Info'));
+        Notebook.append_page(self.HappyFamiliesLabel,gtk.Label('Happy Families Analysis'));
+        Notebook.append_page(self.VampiresLabel,gtk.Label('Vampires'));
+        Notebook.append_page(self.MastersLabel,gtk.Label('Master Cards'));
+        Notebook.append_page(self.CombatLabel,gtk.Label('combat Cards'));
+        Deck=list(PhysicalCardSet.byName(deckName).cards)
+        mainText="Analysis Results for deck : <b>"+deckName+"</b>\n"
+        vampText="Vampies :\n"
+        masterText="Master Cards :\n"
+        happyFamilyText="Happy Families Analysis :\n"
+        combatText="Combat Cards :\n"
         self.NumberUniqueVampires=0
-        self.NumberLibrary=0
         self.NumberMult=0
         self.NumberMasters=0
         self.MaxGroup=-500
@@ -24,43 +35,60 @@ class AnalyzeDialog(gtk.Dialog):
         self.deckVamps={}
         self.deckClans={}
         self.deckDisc={}
-        for card in Deck.cards:
-            thisAbsCard=card.abstractCard
-            self.TotNumber+=1
-            if len(thisAbsCard.cardtype)>1:
-                self.NumberMult+=1
-            for cardType in thisAbsCard.cardtype:
-                if cardType.name=="Vampire":
-                    self.processVampire(thisAbsCard)
-                if cardType.name=="Master":
-                    self.processMaster(thisAbsCard)
-        text=text+"Number of Vampires = "+str(self.NumberVampires)+"\n"
-        text=text+"Number of Unique Vampires = "+str(self.NumberUniqueVampires)+"\n"
+        # Split out the card types of interest
+        Filter=CardTypeFilter('Vampire')
+        vampireCards=list(PhysicalCard.select(Filter.getExpression()))
+        Filter=CardTypeFilter('Combat')
+        combatCards=list(PhysicalCard.select(Filter.getExpression()))
+        Filter=CardTypeFilter('Reaction')
+        reactionCards=list(PhysicalCard.select(Filter.getExpression()))
+        Filter=CardTypeFilter('Action')
+        actionCards=list(PhysicalCard.select(Filter.getExpression()))
+        Filter=CardTypeFilter('Master')
+        masterCards=list(PhysicalCard.select(Filter.getExpression()))
+        self.NumberVampires=len(bvampireCards)
+        self.TotNumber = len(Deck)
         self.NumberLibrary=self.TotNumber-self.NumberVampires
+        for card in vampireCards:
+            self.processVampire(card.abstractCard)
+        mainText=mainText+"Number of Vampires = "+str(self.NumberVampires)+"\n"
+        vampText=vampText+"Number of Vampires = "+str(self.NumberVampires)+"\n"
+        mainText=mainText+"Number of Unique Vampires = "+str(self.NumberUniqueVampires)+"\n"
+        vampText=vampText+"Number of Unique Vampires = "+str(self.NumberUniqueVampires)+"\n"
         if self.NumberVampires<12:
-            text=text+"<span foreground=\"red\">Less than 12 Vampires</span>\n"
+            mainText=mainText+"<span foreground=\"red\">Less than 12 Vampires</span>\n"
+            vampText=vampText+"<span foreground=\"red\">Less than 12 Vampires</span>\n"
+        vampText=vampText+"Minimum Group is : "+str(self.MinGroup)+"\n"
+        vampText=vampText+"Maximum Group is : "+str(self.MaxGroup)+"\n"
+        if self.MaxGroup-self.MinGroup>1:
+            mainText=mainText+"<span foreground=\"red\">Group Range Exceeded</span>\n"
+            vampText=vampText+"<span foreground=\"red\">Group Range Exceeded</span>\n"
         if self.NumberVampires>0:
             for clan,number in self.deckClans.iteritems():
-                text=text+str(number)+" Vampires of clan " + str(clan) + \
+                vampText=vampText+str(number)+" Vampires of clan " + str(clan) + \
                       " (" + str(number/float(self.NumberVampires)*100).ljust(5)[:5] + \
                       " % of the crypt )\n"
             for discipline,number in sorted(self.deckDisc.iteritems()):
                 # Maybe should sort this by number[0]?
-                text=text+str(number[0])+" Vampires with " + discipline + \
+                vampText=vampText+str(number[0])+" Vampires with " + discipline + \
                       " (" + str(number[0]/float(self.NumberVampires)*100).ljust(5)[:5] + \
                       "%), " + str(number[1]) + " at Superior (" + \
                       str(number[1]/float(self.NumberVampires)*100).ljust(5)[:5] + " %)\n"
-        text=text+"Total Library Size            = "+str(self.NumberLibrary)+"\n"
+        mainText=mainText+"Total Library Size            = "+str(self.NumberLibrary)+"\n"
         if self.NumberLibrary>0:
-            text=text+"Number of Masters             = "+str(self.NumberMasters)+" (" + str((self.NumberMasters*100)/float(self.NumberLibrary)).ljust(5)[:5] +"% of Library)\n"
-        text=text+"Number of Other Library Cards = "+str(self.NumberLibrary-self.NumberMasters)+"\n"
-        text=text+"Number of Multirole cards = "+str(self.NumberMult)+"\n"
-        Label.set_markup(text)
-        self.vbox.pack_start(Label)
+            mainText=mainText+"Number of Masters             = "+str(self.NumberMasters)+" (" + str((self.NumberMasters*100)/float(self.NumberLibrary)).ljust(5)[:5] +"% of Library)\n"
+            masterText=masterText+"Number of Masters             = "+str(self.NumberMasters)+" (" + str((self.NumberMasters*100)/float(self.NumberLibrary)).ljust(5)[:5] +"% of Library)\n"
+        mainText=mainText+"Number of Other Library Cards = "+str(self.NumberLibrary-self.NumberMasters)+"\n"
+        mainText=mainText+"Number of Multirole cards = "+str(self.NumberMult)+"\n"
+        self.MainLabel.set_markup(mainText)
+        self.VampiresLabel.set_markup(vampText)
+        self.MastersLabel.set_markup(masterText)
+        self.HappyFamiliesLabel.set_markup(happyFamilyText)
+        self.CombatLabel.set_markup(combatText)
+        self.vbox.pack_start(Notebook)
         self.show_all()
 
     def processVampire(self,absCard):
-        self.NumberVampires+=1
         if absCard.name not in self.deckVamps:
             self.NumberUniqueVampires+=1
             self.deckVamps[absCard.name]=1
@@ -84,4 +112,7 @@ class AnalyzeDialog(gtk.Dialog):
                 self.deckDisc[disc.discipline.name][1]+=1
 
     def processMaster(self,absCard):
-        self.NumberMasters+=1
+        pass
+
+    def happyFamiliesAnalysis(self,deck):
+        pass
