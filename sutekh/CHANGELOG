@@ -1,3 +1,8 @@
+26 Feb 2006
+* Rework Filter Dialog Considerably - add support for retaining state an
+  filtering on card Type
+* Change Analyze Deck dialog to have tabbed dialog 
+
 06 Feb 2006:
 * Initial support for multiple selections - NM
 

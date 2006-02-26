@@ -1,61 +1,88 @@
 # Dialog for setting Filter Parameters
-import gtk
+import gtk, gobject
 from Filters import *
 from SutekhObjects import *
-        
+from AutoScrolledWindow import AutoScrolledWindow
+
+class InternalScroll(gtk.Frame):
+    def __init__(self,title):
+        super(InternalScroll,self).__init__(None)
+        self.List=gtk.ListStore(gobject.TYPE_STRING)
+        self.TreeView=gtk.TreeView(self.List)
+        self.TreeView.get_selection().set_mode(gtk.SELECTION_MULTIPLE)
+        myScroll=AutoScrolledWindow(self.TreeView)
+        self.add(myScroll)
+        oCell1=gtk.CellRendererText()
+        oColumn=gtk.TreeViewColumn(title,oCell1,text=0)
+        self.List.append(None) # Create empty items at top of list
+        self.TreeView.append_column(oColumn)
+        self.set_shadow_type(gtk.SHADOW_NONE)
+        self.show_all()
+
+    def get_list(self):
+        return self.List
+
+    def get_view(self):
+        return self.TreeView
+
+    def reset(self,State):
+        Model=self.TreeView.get_model()
+        oIter=Model.get_iter_first()
+        while oIter != None:
+           name=Model.get_value(oIter,0)
+           if name != None and State[name]:
+               self.TreeView.get_selection().select_iter(oIter)
+           else:
+               self.TreeView.get_selection().unselect_iter(oIter)
+           oIter=Model.iter_next(oIter)
+
+    def get_selection(self,selList,State):
+        Model,Selection = self.TreeView.get_selection().get_selected_rows()
+        for oPath in Selection:
+            oIter = Model.get_iter(oPath)
+            name = Model.get_value(oIter,0)
+            if name!=None:
+               State[name]=True
+               selList.append(name)
+
+
+
 class FilterDialog(gtk.Dialog):
     def __init__(self,parent):
         super(FilterDialog,self).__init__("Specify Filter", \
               parent,gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT, \
               ( gtk.STOCK_OK, gtk.RESPONSE_OK, gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
+        self.set_default_size(400,200)
         self.wasCancelled = False
+        self.State={}
         myHBox=gtk.HBox(False,0)
-        clanFrame=gtk.Frame('Clans to Filter on')
-        discFrame=gtk.Frame('Disciplines to Filter on')
-        myHBox.pack_end(clanFrame)
-        myHBox.pack_end(discFrame)
-        clanHBox=gtk.HBox(False,0)
-        discHBox=gtk.HBox(False,0)
-        clanFrame.add(clanHBox)
-        discFrame.add(discHBox)
-        vBox1={}
-        vBox2={}
-        vBox1[0]=gtk.VButtonBox() # Clans
-        vBox1[1]=gtk.VButtonBox() # Clans
-        vBox1[2]=gtk.VButtonBox() # Clans
-        vBox2[0]=gtk.VButtonBox() # Discplines
-        vBox2[1]=gtk.VButtonBox() # Discplines
-        vBox2[2]=gtk.VButtonBox() # Discplines
-        clanHBox.pack_start(vBox1[0])
-        clanHBox.pack_start(vBox1[1])
-        clanHBox.pack_start(vBox1[2])
-        discHBox.pack_start(vBox2[0])
-        discHBox.pack_start(vBox2[1])
-        discHBox.pack_start(vBox2[2])
-        self.vbox.pack_start(myHBox)
-        self.clanCheckBoxes={}
-        self.discCheckBoxes={}
-        i=0
+        self.clanFrame=InternalScroll('Clans')
+        self.discFrame=InternalScroll('Disciplines')
+        self.typeFrame=InternalScroll('Card Types')
+        myHBox.pack_start(self.clanFrame)
+        myHBox.pack_start(self.discFrame)
+        myHBox.pack_start(self.typeFrame)
+        self.State['clan']={}
+        self.State['disc']={}
+        self.State['type']={}
         for clan in Clan.select().orderBy('name'):
             # Add clan to the list
-            self.clanCheckBoxes[clan.name] = gtk.CheckButton(clan.name)
-            self.clanCheckBoxes[clan.name].set_active(False)
-            vBox1[i].add(self.clanCheckBoxes[clan.name])
-            i=i+1
-            if (i>2):
-                i=0
-        i=0
+            iter=self.clanFrame.get_list().append(None)
+            self.clanFrame.get_list().set(iter,0,clan.name)
+            self.State['clan'][clan.name]=False
         for discipline in Discipline.select().orderBy('name'):
             # add disciplie
             name=DisciplineAdapter.keys[discipline.name][1]
-            self.discCheckBoxes[name]= gtk.CheckButton(name)
-            self.discCheckBoxes[name].set_active(False)
-            vBox2[i].add(self.discCheckBoxes[name])
-            i=i+1
-            if (i>2):
-                i=0
+            iter=self.discFrame.get_list().append(None)
+            self.discFrame.get_list().set(iter,0,name)
+            self.State['disc'][name]=False
+        for type in CardType.select():
+            iter=self.typeFrame.get_list().append(None)
+            self.typeFrame.get_list().set(iter,0,type.name)
+            self.State['type'][type.name]=False
         self.connect("response", self.buttonResponse)
         self.Data = None
+        self.vbox.pack_end(myHBox)
         self.show_all()
 
     def getFilter(self):
@@ -64,59 +91,46 @@ class FilterDialog(gtk.Dialog):
     def Cancelled(self):
         return self.wasCancelled
 
-    def run(self):
-        self.oldClanState={}
-        self.oldDiscState={}
-        for clanButton in self.clanCheckBoxes:
-            if self.clanCheckBoxes[clanButton].get_active():
-                self.oldClanState[clanButton]=True
-            else:
-                self.oldClanState[clanButton]=False
-        for discButton in self.discCheckBoxes:
-            if self.discCheckBoxes[discButton].get_active():
-                self.oldDiscState[discButton]=True
-            else:
-                self.oldDiscState[discButton]=False
-        return super(FilterDialog,self).run()
-
-
     def buttonResponse(self,widget,response):
        self.wasCancelled = False # Need to reset if filter is rerun
+       andData=[]
        if response ==  gtk.RESPONSE_OK:
            aClans = []
            aDiscs = []
-       
+           aTypes = []
+           # Unset state
+           for clanName in self.State['clan']:
+               self.State['clan'][clanName]=False
+           for discName in self.State['disc']:
+               self.State['disc'][discName]=False
+           for typeName in self.State['type']:
+               self.State['type'][typeName]=False
            # Compile lists of clans and disciplines selected
-           for clanButton in self.clanCheckBoxes:
-               if self.clanCheckBoxes[clanButton].get_active():
-                   aClans.append(clanButton)
-           for discButton in self.discCheckBoxes:
-               if self.discCheckBoxes[discButton].get_active():
-                   aDiscs.append(discButton)
-                   
-           # Create Filters for all Selected Clans and Disciplines
-           if len(aClans)>0 and len(aDiscs)>0:
-               self.data = FilterAndBox([MultiClanFilter(aClans),
-                                         MultiDisciplineFilter(aDiscs)])
-           elif len(aClans) > 0:
-               self.Data = MultiClanFilter(aClans)
-           elif len(aDiscs) > 0:
-               self.Data = MultiDisciplineFilter(aDiscs)
+           self.clanFrame.get_selection(aClans,self.State['clan'])
+           if len(aClans) > 0:
+               andData.append(MultiClanFilter(aClans))
+           self.discFrame.get_selection(aDiscs,self.State['disc'])
+           if len(aDiscs) > 0:
+               andData.append(MultiDisciplineFilter(aDiscs))
+           self.typeFrame.get_selection(aTypes,self.State['type'])
+           if len(aTypes) > 0:
+               typeFilter=[]
+               for type in aTypes:
+                   typeFilter.append(CardTypeFilter(type))
+               if len(typeFilter)>1:
+                   andData.append(FilterOrBox(typeFilter))
+               else:
+                   andData.append(typeFilter[0])
+           if len(andData)>1:
+               self.Data = FilterAndBox(andData)
+           elif len(andData)==1:
+               self.Data=andData[0] # Avoid extra and
            else:
                self.Data = None
        else:
-           print "restoring state"
-           for clanButton in self.clanCheckBoxes:
-               if self.oldClanState[clanButton]:
-                   self.clanCheckBoxes[clanButton].set_active(True)
-               else:
-                   self.clanCheckBoxes[clanButton].set_active(False)
-           for discButton in self.discCheckBoxes:
-               if self.oldDiscState[discButton]:
-                   self.discCheckBoxes[discButton].set_active(True)
-               else:
-                   self.discCheckBoxes[discButton].set_active(False)
+           self.clanFrame.reset(self.State['clan'])
+           self.discFrame.reset(self.State['disc'])
+           self.typeFrame.reset(self.State['type'])
            self.wasCancelled = True
-               
        self.hide()
 
