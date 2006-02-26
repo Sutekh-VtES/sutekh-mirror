@@ -6,7 +6,7 @@ from DeleteCardDialog import DeleteCardDialog
 
 class PhysicalCardController(object):
     def __init__(self,oWindow,oMasterController):
-        self.__oView = PhysicalCardView(self)
+        self.__oView = PhysicalCardView(self,oWindow)
         self.__oC = oMasterController
         self.__oWin = oWindow
         self.__oMenu = PhysicalCardMenu(self,self.__oWin)

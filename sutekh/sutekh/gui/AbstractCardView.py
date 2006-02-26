@@ -92,7 +92,7 @@ class AbstractCardView(CardListView):
             else:
                 self.load() # Filter Changed, so reload
         else:
-            Menu.setApplyFilter(False) 
+            MainMenu.setApplyFilter(False) 
             self.runFilter(False)
             self.load()
         
