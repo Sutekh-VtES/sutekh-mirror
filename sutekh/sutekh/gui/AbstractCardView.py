@@ -56,7 +56,9 @@ class AbstractCardView(CardListView):
         
     def load(self):
         self._oModel.clear()
-        for oType in CardType.select():
+        if self.doFilter and self.Filter != None:
+            filtercardList = list(AbstractCard.select(self.Filter.getExpression()).distinct())
+        for oType in list(CardType.select()):
             # Create Section
             oSectionIter = self._oModel.append(None)
             self._oModel.set(oSectionIter,
@@ -65,9 +67,8 @@ class AbstractCardView(CardListView):
             )
             # Fill in Cards
             if self.doFilter and self.Filter != None:
-                cardList = AbstractCard.select(
-                    FilterAndBox([CardTypeFilter(oType.name),self.Filter]).getExpression()
-		).distinct()
+                # This is very hacky, but gives me a speed increase -NM
+                cardList = [x for x in oType.cards if x in filtercardList]
             else:
                 cardList=oType.cards
             for oCard in cardList:
