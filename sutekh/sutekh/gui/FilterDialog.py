@@ -59,12 +59,15 @@ class FilterDialog(gtk.Dialog):
         self.clanFrame=InternalScroll('Clans')
         self.discFrame=InternalScroll('Disciplines')
         self.typeFrame=InternalScroll('Card Types')
+        self.textFrame=gtk.Frame('Card Text')
         myHBox.pack_start(self.clanFrame)
         myHBox.pack_start(self.discFrame)
         myHBox.pack_start(self.typeFrame)
+        myHBox.pack_start(self.textFrame)
         self.State['clan']={}
         self.State['disc']={}
         self.State['type']={}
+        self.State['text']=''
         for clan in Clan.select().orderBy('name'):
             # Add clan to the list
             iter=self.clanFrame.get_list().append(None)
@@ -81,6 +84,8 @@ class FilterDialog(gtk.Dialog):
             self.typeFrame.get_list().set(iter,0,type.name)
             self.State['type'][type.name]=False
         self.connect("response", self.buttonResponse)
+        self.textEntry=gtk.Entry(100)
+        self.textFrame.add(self.textEntry)
         self.Data = None
         self.vbox.pack_end(myHBox)
         self.show_all()
@@ -98,6 +103,7 @@ class FilterDialog(gtk.Dialog):
            aClans = []
            aDiscs = []
            aTypes = []
+           aText = []
            # Unset state
            for clanName in self.State['clan']:
                self.State['clan'][clanName]=False
@@ -105,6 +111,7 @@ class FilterDialog(gtk.Dialog):
                self.State['disc'][discName]=False
            for typeName in self.State['type']:
                self.State['type'][typeName]=False
+           self.State['text']=''
            # Compile lists of clans and disciplines selected
            self.clanFrame.get_selection(aClans,self.State['clan'])
            if len(aClans) > 0:
@@ -121,6 +128,10 @@ class FilterDialog(gtk.Dialog):
                    andData.append(FilterOrBox(typeFilter))
                else:
                    andData.append(typeFilter[0])
+           aText=self.textEntry.get_text()
+           if aText!='':
+               andData.append(CardTextFilter(aText))
+               self.State['text']=aText
            if len(andData)>1:
                self.Data = FilterAndBox(andData)
            elif len(andData)==1:
@@ -131,6 +142,7 @@ class FilterDialog(gtk.Dialog):
            self.clanFrame.reset(self.State['clan'])
            self.discFrame.reset(self.State['disc'])
            self.typeFrame.reset(self.State['type'])
+           self.textEntry.set_text(self.State['text'])
            self.wasCancelled = True
        self.hide()
 
