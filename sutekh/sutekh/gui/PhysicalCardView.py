@@ -7,8 +7,9 @@ from FilterDialog import FilterDialog
 from PopupMenu import PopupMenu
 
 class PhysicalCardView(CardListView):
-    def __init__(self,oController):
+    def __init__(self,oController,oWindow):
         super(PhysicalCardView,self).__init__(oController)
+        self.__oWin=oWindow
         
         oCell1 = gtk.CellRendererText()
         oCell1.set_property('style', pango.STYLE_ITALIC)
