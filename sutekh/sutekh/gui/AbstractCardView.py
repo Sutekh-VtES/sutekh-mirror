@@ -3,6 +3,7 @@ from CardListView import CardListView
 from SutekhObjects import *
 from FilterDialog import FilterDialog
 from Filters import *
+from Groupings import *
 
 class AbstractCardView(CardListView):
     def __init__(self,oController,oWindow):
@@ -53,31 +54,43 @@ class AbstractCardView(CardListView):
         if CandName.startswith(key.lower()):
             return False
         return True
-        
+
     def load(self):
         self._oModel.clear()
-        if self.doFilter and self.Filter != None:
-            filtercardList = list(AbstractCard.select(self.Filter.getExpression()).distinct())
-        for oType in list(CardType.select()):
-            # Create Section
+	
+        # Set Filter
+        if self.doFilter:
+            oFilter = self.Filter.getExpression()
+        else:
+            oFilter = None
+		
+        # Set Grouping
+        cGroupBy = CardTypeGrouping
+		
+        # Set Card Iterable
+        oCardIter = AbstractCard.select(oFilter).distinct()
+		
+        # Iterate over groups
+        for sGroup, oGroupIter in cGroupBy(oCardIter):
+            # Check for null group
+            if sGroup is None:
+                sGroup = '<< None >>'
+        		
+            # Create Group Section
             oSectionIter = self._oModel.append(None)
             self._oModel.set(oSectionIter,
-                0, oType.name,
+                0, sGroup,
                 1, 0
             )
+			
             # Fill in Cards
-            if self.doFilter and self.Filter != None:
-                # This is very hacky, but gives me a speed increase -NM
-                cardList = [x for x in oType.cards if x in filtercardList]
-            else:
-                cardList=oType.cards
-            for oCard in cardList:
+            for oCard in oGroupIter:
                 oChildIter = self._oModel.append(oSectionIter)
                 self._oModel.set(oChildIter,
                     0, oCard.name,
                     1, 0
                 )
-        
+                        
     def getFilter(self,MainMenu):
         if self.FilterDialog is None:
             self.FilterDialog=FilterDialog(self.__oWin)
@@ -97,7 +110,6 @@ class AbstractCardView(CardListView):
             self.runFilter(False)
             self.load()
         
-
     def runFilter(self,state):
         if self.doFilter != state:
             self.doFilter=state

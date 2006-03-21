@@ -112,6 +112,7 @@ class FilterDialog(gtk.Dialog):
            for typeName in self.State['type']:
                self.State['type'][typeName]=False
            self.State['text']=''
+
            # Compile lists of clans and disciplines selected
            self.clanFrame.get_selection(aClans,self.State['clan'])
            if len(aClans) > 0:
@@ -121,17 +122,15 @@ class FilterDialog(gtk.Dialog):
                andData.append(MultiDisciplineFilter(aDiscs))
            self.typeFrame.get_selection(aTypes,self.State['type'])
            if len(aTypes) > 0:
-               typeFilter=[]
-               for type in aTypes:
-                   typeFilter.append(CardTypeFilter(type))
-               if len(typeFilter)>1:
-                   andData.append(FilterOrBox(typeFilter))
-               else:
-                   andData.append(typeFilter[0])
+               andData.append(MultiCardTypeFilter(aTypes))
+
+           # Add text lookup			   
            aText=self.textEntry.get_text()
            if aText!='':
                andData.append(CardTextFilter(aText))
                self.State['text']=aText
+
+           # Combine filters
            if len(andData)>1:
                self.Data = FilterAndBox(andData)
            elif len(andData)==1:

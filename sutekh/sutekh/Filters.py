@@ -70,6 +70,15 @@ class CardTypeFilter(Filter):
         return AND(AbstractCard.q.id == oT.abstract_card_id,
                    oT.card_type_id == self.__oType.id)
 
+class MultiCardTypeFilter(Filter):
+    def __init__(self,aCardTypes):
+        self.__aTypeIds = [ICardType(x).id for x in aCardTypes]
+        
+    def getExpression(self):
+        oT = Table('abs_type_map')
+        return AND(AbstractCard.q.id == oT.abstract_card_id,
+                   IN(oT.card_type_id,self.__aTypeIds))
+
 class CardTextFilter(Filter):
     def __init__(self,sPattern):
         self.__sPattern = sPattern
@@ -89,12 +98,12 @@ class PhysicalCardFilter(Filter):
 class DeckFilter(Filter):
     def __init__(self,sName):
         # Select cards belonging to a deck
-        self.deckID = IPhysicalCardSet(sName).id
+        self.__iDeckId = IPhysicalCardSet(sName).id
 
     def getExpression(self):
         oT = Table('physical_map')
         oPT = Table('physical_card')
-        return AND(oT.physical_card_set_id == self.deckID,
+        return AND(oT.physical_card_set_id == self.__iDeckId,
                    PhysicalCard.q.id == oT.physical_card_id,
                    AbstractCard.q.id == oPT.abstract_card_id)
         

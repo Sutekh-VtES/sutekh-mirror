@@ -3,6 +3,7 @@ from CardListView import CardListView
 from CellRendererSutekhButton import CellRendererSutekhButton
 from SutekhObjects import *
 from Filters import *
+from Groupings import *
 from FilterDialog import FilterDialog
 from PopupMenu import PopupMenu
 
@@ -100,31 +101,52 @@ class PhysicalCardView(CardListView):
 
     def load(self):
         self._oModel.clear()
-        # oIter = self._oModel.append(None)
-        # This feels a bit clumsy, but does work - NM
-        cardDict = {}
-
-        if self.doFilter and self.Filter != None:
-            oCardsel = PhysicalCard.select(self.Filter.getExpression()).distinct()
+	
+        # Set Filter
+        if self.doFilter:
+            oFilter = self.Filter.getExpression()
         else:
-            oCardsel = PhysicalCard.select()
-        
-        for oCard in oCardsel:
-            # Check if Card is already in dictionary
-            if oCard.abstractCardID in cardDict:
-                cardDict[oCard.abstractCardID][1] += 1
-            else:
-                cardDict[oCard.abstractCardID] = [oCard.abstractCard.name,1]
+            oFilter = PhysicalCardFilter().getExpression()
+		
+        # Set Grouping
+        cGroupBy = CardTypeGrouping
+		
+        # Set Physical Card Iterable
+        oPhysCardIter = PhysicalCard.select(oFilter).distinct()
+
+        # Count by Abstract Card
+        dAbsCards = {}
+        for oCard in oPhysCardIter:
+            dAbsCards.setdefault(oCard.abstractCard,0)
+            dAbsCards[oCard.abstractCard] += 1
          
-        aCards = list(cardDict.iteritems())
-        aCards.sort(lambda x,y: cmp(x[1],y[1]))
- 
-        for iD, aItems in aCards:
-            sName, iCnt = aItems
-            self._oModel.set(self._oModel.append(None),
-                0, sName,
-                1, iCnt
-            )   
+        aCards = list(dAbsCards.iteritems())
+        aCards.sort(lambda x,y: cmp(x[0].name,y[0].name))
+ 		
+        # Iterate over groups
+        for sGroup, oGroupIter in cGroupBy(aCards,lambda x:x[0]):
+            # Check for null group
+            if sGroup is None:
+                sGroup = '<< None >>'
+        		
+            # Create Group Section
+            oSectionIter = self._oModel.append(None)
+			
+            # Fill in Cards
+            iGrpCnt = 0
+            for oCard, iCnt in oGroupIter:
+                iGrpCnt += iCnt
+                oChildIter = self._oModel.append(oSectionIter)
+                self._oModel.set(oChildIter,
+                    0, oCard.name,
+                    1, iCnt
+                )
+                
+            # Update Group Section
+            self._oModel.set(oSectionIter,
+                0, sGroup,
+                1, iGrpCnt
+            )
 
         self.expand_all()
 
@@ -143,8 +165,6 @@ class PhysicalCardView(CardListView):
                 return True # Don't propogate to buttons
         return False
    
-
-
     def getFilter(self,Menu,Window):
         if self.FilterDialog is None:
             self.FilterDialog=FilterDialog(self.__oWin)
@@ -164,7 +184,6 @@ class PhysicalCardView(CardListView):
             self.runFilter(False)
             self.load()
         
-
     def runFilter(self,state):
         if self.doFilter != state:
             self.doFilter=state

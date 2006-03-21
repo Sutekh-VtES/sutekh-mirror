@@ -5,12 +5,15 @@ __all__ = [ # Sutekh Objects
             # Filters
             'FilterAndBox', 'FilterOrBox', 'ClanFilter', 'DisciplineFilter',
             'CardTypeFilter', 'CardTextFilter',
+            # Groupings
+            'GroupByCardType',
             # Misc
            'start' ]
 
 # Do importing
 from SutekhObjects import *
 from Filters import *
+from Groupings import *
 from SutekhCli import main
 
 # start() method for use when working in the Python interpreter
