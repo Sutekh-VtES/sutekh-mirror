@@ -31,6 +31,9 @@ class IterGrouping(object):
             yield key, dKeyItem[key]        			
 			
 # Individual Groupings
+#
+# If you need to group PhysicalCards,
+# set fGetCard to lambda x: x.abstractCard
 
 class CardTypeGrouping(IterGrouping):
     def __init__(self,oIter,fGetCard=lambda x:x):
@@ -41,22 +44,13 @@ class ClanGrouping(IterGrouping):
         super(ClanGrouping,self).__init__(oIter,lambda x: [y.name for y in fGetCard(x).clan])
 
 class DisciplineGrouping(IterGrouping):
-    def __init__(self,oIter,bPhysicalCards=False):
-        if not bPhysicalCards:
-            super(DisciplineGrouping,self).__init__(oIter,lambda x: [y.name for y in x.clan])
-        else:
-            super(DisciplineGrouping,self).__init__(oIter,lambda x: [y.name for y in x.abstractCard.clan])
+    def __init__(self,oIter,fGetCard=lambda x:x):
+        super(DisciplineGrouping,self).__init__(oIter,lambda x: [y.name for y in fGetCard(x).clan])
 
 class ExpansionGrouping(IterGrouping):
-    def __init__(self,oIter,bPhysicalCards=False):
-        if not bPhysicalCards:
-            super(DisciplineGrouping,self).__init__(oIter,lambda x: [y.expansion.name for y in x.rarity])
-        else:
-            super(DisciplineGrouping,self).__init__(oIter,lambda x: [y.expansion.name for y in x.abstractCard.rarity])
+    def __init__(self,oIter,fGetCard=lambda x:x):
+        super(DisciplineGrouping,self).__init__(oIter,lambda x: [y.expansion.name for y in fGetCard(x).rarity])
 
 class RarityGrouping(IterGrouping):
-    def __init__(self,oIter,bPhysicalCards=False):
-        if not bPhysicalCards:
-            super(DisciplineGrouping,self).__init__(oIter,lambda x: [y.rarity.name for y in x.rarity])
-        else:
-            super(DisciplineGrouping,self).__init__(oIter,lambda x: [y.rarity.name for y in x.abstractCard.rarity])    
+    def __init__(self,oIter,fGetCard=lambda x:x):
+        super(DisciplineGrouping,self).__init__(oIter,lambda x: [y.rarity.name for y in fGetCard(x).rarity])
