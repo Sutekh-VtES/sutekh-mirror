@@ -1,3 +1,7 @@
+# Simple popup menu to handle card number changing in the views
+# Copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
+# GPL - see COPYING for details
+
 import gtk
 
 class PopupMenu(gtk.Menu):

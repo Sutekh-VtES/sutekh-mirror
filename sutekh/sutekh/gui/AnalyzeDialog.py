@@ -1,3 +1,7 @@
+# Dialog to display deck analysis software
+# Copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
+# GPL - see COPYING for details
+
 import gtk
 from SutekhObjects import *
 

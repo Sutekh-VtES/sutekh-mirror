@@ -1,8 +1,12 @@
+# Pixbuf Button CellRenderer 
+# Copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
+# GPL - see COPYING for details
+
 import gtk, gobject
 
-# Pixbuf Button CellRenderer - limited to icons only ATM - NM 
 # This is heavily cribbed from the example in the pygtk FAQ 
 # (By Nikos Kouremenos)
+# limited to the use of icons only ATM
 # Allows creation of a cell containing a icon pixbuf,
 # and returns a "clicked" signal when activated
 # To be generically useful, should be extended to abitary pixmaps,

@@ -1,3 +1,7 @@
+# Menu for the Deck View
+# Copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
+# GPL - see COPYING for details
+
 import gtk
 
 class DeckMenu(gtk.MenuBar,object):
