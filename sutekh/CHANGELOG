@@ -1,3 +1,6 @@
+19 April 2006
+* Moving development to SVN.
+
 26 Feb 2006
 * Rework Filter Dialog Considerably - add support for retaining state an
   filtering on card Type
