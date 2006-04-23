@@ -1,3 +1,8 @@
+# AbstractCardView.py
+# Copyright 2005,2006 Simon Cross <hodgestar@gmail.com>
+# Minor modifications copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
+# GPL - see COPYING for details
+
 import gtk, pango
 from CardListView import CardListView
 from SutekhObjects import *

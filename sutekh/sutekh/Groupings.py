@@ -1,3 +1,7 @@
+# Groupings.py
+# Copyright 2006 Simon Cross <hodgestar@gmail.com>
+# GPL - see COPYING for details
+
 from SutekhObjects import *
 from sqlobject import AND, OR, LIKE
 from sqlobject.sqlbuilder import Table

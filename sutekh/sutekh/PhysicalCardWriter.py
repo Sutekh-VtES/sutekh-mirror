@@ -1,3 +1,7 @@
+# PhysicalCardWrite.py
+# Copyright 2006 Simon Cross <hodgestar@gmail.com>
+# GPL - see COPYING for details
+
 """
 Write physical cards out to an XML file which
 looks like:

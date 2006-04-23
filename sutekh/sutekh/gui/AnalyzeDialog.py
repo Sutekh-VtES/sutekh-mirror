@@ -1,12 +1,11 @@
+# AnalyzeDeck.py
 # Dialog to display deck analysis software
 # Copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
+# Copyright 2006 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
 
 import gtk
 from SutekhObjects import *
-
-
-# Popup Window that describes the deck
 
 class AnalyzeDialog(gtk.Dialog):
     def __init__(self,parent,deckName):

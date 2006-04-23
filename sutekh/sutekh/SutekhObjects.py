@@ -1,3 +1,7 @@
+# SutekhObjects.py
+# Copyright 2005,2006 Simon Cross <hodgestar@gmail.com>
+# GPL - see COPYING for details
+
 from sqlobject import *
 from protocols import advise, Interface
 import protocols

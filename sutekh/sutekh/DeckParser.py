@@ -1,3 +1,8 @@
+# DeckParser.py
+# Copyright 2006 Simon Cross <hodgestar@gmail.com>
+# Minor modifications copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
+# GPL - see COPYING for details
+
 """
 Read physical cards from an XML file which
 looks like:
@@ -5,6 +10,7 @@ looks like:
   <card id='3' name='Some Card' count='5' />
   <card id='5' name='Some Other Card' count='2' />  
 </deck>
+into a PhysicalCardSet
 """
 
 from SutekhObjects import *

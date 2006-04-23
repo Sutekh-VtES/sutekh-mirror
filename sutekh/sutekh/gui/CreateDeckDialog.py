@@ -1,3 +1,8 @@
+# CreateDeckDialog.py
+# Dialog to create a new deck (PhysicalCardSet)
+# Copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
+# GPL - see COPYING for details
+
 import gtk
 
 class CreateDeckDialog(gtk.Dialog):

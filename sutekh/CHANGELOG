@@ -1,10 +1,19 @@
+23 April 2006:
+* Fill in file headers, listing copyrights, based on svn log history - NM
+* Add COPYRIGHT file, generally try and dot t's and cross i's on the
+  licensing stuff - NM
+
+19 April 2006
+* Add COPYING file - convential GPL 2 license, as discussed on the mailing
+  list - NM
+
 19 April 2006
 * Moving development to SVN.
 
 26 Feb 2006
 * Rework Filter Dialog Considerably - add support for retaining state an
-  filtering on card Type
-* Change Analyze Deck dialog to have tabbed dialog 
+  filtering on card Type - NM 
+* Change Analyze Deck dialog to have tabbed dialog - NM
 
 06 Feb 2006:
 * Initial support for multiple selections - NM

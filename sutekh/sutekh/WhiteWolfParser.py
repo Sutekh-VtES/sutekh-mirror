@@ -1,4 +1,7 @@
+# WhiteWolfParser.py
 # WhiteWolf Parser
+# Copyright 2005,2006 Simon Cross <hodgestar@gmail.com>
+# GPL - see COPYING for details
 
 import HTMLParser, re
 from SutekhObjects import *

@@ -1,3 +1,8 @@
+# PhysicalCardController.py
+# Copyright 2005,2006 Simon Cross <hodgestar@gmail.com>
+# Copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
+# GPL - see COPYING for details
+
 from sqlobject import SQLObjectNotFound
 from PhysicalCardView import PhysicalCardView
 from PhysicalCardMenu import PhysicalCardMenu

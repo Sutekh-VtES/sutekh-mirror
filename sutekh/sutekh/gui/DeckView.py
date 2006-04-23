@@ -1,3 +1,8 @@
+# DeckView.py
+# Copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
+# Copyright 2006 Simon Cross <hodgestar@gmail.com>
+# GPL - see COPYING for details
+
 import gtk, gobject, pango
 from CardListView import CardListView
 from CellRendererSutekhButton import CellRendererSutekhButton

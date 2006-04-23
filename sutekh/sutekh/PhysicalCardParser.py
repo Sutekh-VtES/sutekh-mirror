@@ -1,3 +1,7 @@
+# PhysicalCardParser.py
+# Copyright 2005,2006 Simon Cross <hodgestar@gmail.com>
+# GPL - see COPYING for details
+
 """
 Read physical cards from an XML file which
 looks like:

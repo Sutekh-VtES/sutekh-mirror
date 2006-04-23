@@ -1,4 +1,10 @@
+# FilterDialog.py
 # Dialog for setting Filter Parameters
+# Dialog to display deck analysis software
+# Copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
+# Copyright 2006 Simon Cross <hodgestar@gmail.com>
+# GPL - see COPYING for details
+
 import gtk, gobject
 from Filters import *
 from SutekhObjects import *

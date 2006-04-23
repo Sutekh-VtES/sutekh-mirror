@@ -1,5 +1,7 @@
+# CellRendererSutekhButton.py
 # Pixbuf Button CellRenderer 
 # Copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
+# Copyright 2006 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
 
 import gtk, gobject
@@ -11,6 +13,7 @@ import gtk, gobject
 # and returns a "clicked" signal when activated
 # To be generically useful, should be extended to abitary pixmaps,
 # but that is currently not a priority
+
 class CellRendererSutekhButton(gtk.GenericCellRenderer):
     def __init__(self):
         self.__gobject_init__()

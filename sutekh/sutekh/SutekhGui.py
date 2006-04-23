@@ -1,3 +1,7 @@
+# SutekhGui.py
+# Copyright 2005,2006 Simon Cross <hodgestar@gmail.com>
+# GPL - see COPYING for details
+
 import sys, optparse, os
 from sqlobject import *
 from SutekhObjects import *

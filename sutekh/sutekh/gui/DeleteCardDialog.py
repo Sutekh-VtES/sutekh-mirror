@@ -1,3 +1,4 @@
+# DeleteCardDialog.py
 # Confirm card deletion dialog
 # Copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
