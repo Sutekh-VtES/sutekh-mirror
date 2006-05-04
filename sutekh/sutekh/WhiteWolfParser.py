@@ -46,6 +46,17 @@ class CardDict(dict):
             else:
                oP = IDisciplinePair((s,'superior'))
             oC.addDisciplinePair(oP)
+    
+    def _addVirtues(self,oC,sVir):
+        sVir = self.oDisGaps.sub(' ',sVir).strip()
+        
+        if sVir == '-none-' or sVir == '': return
+                
+        for s in sVir.split():
+            if len(s) == 3:
+                s = 'v_' + s.lower()
+            oP = IDisciplinePair((s,'inferior'))
+            oC.addDisciplinePair(oP)
             
     def _addClans(self,oC,sClan):
         sClan = self.oWhiteSp.sub(' ',sClan).strip()
@@ -119,6 +130,9 @@ class CardDict(dict):
             
         if self.has_key('discipline'):
             self._addDisciplines(oC,self['discipline'])
+        
+        if self.has_key('virtue'):
+            self._addVirtues(oC,self['virtue'])
         
         if self.has_key('clan'):
             self._addClans(oC,self['clan'])

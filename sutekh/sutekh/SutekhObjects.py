@@ -227,7 +227,8 @@ class DisciplineAdapter(object):
     __metaclass__ = StrAdaptMeta
     advise(instancesProvide=[IDiscipline],asAdapterForTypes=[basestring])
 
-    keys = { 'abo' : ['ABO','Abombwe'],
+    keys = { # Disciplines
+             'abo' : ['ABO','Abombwe'],
              'ani' : ['ANI','Animalism'],
              'aus' : ['AUS','Auspex'],
              'cel' : ['CEL','Celerity'],
@@ -256,6 +257,14 @@ class DisciplineAdapter(object):
              'val' : ['VAL','Valeren'],
              'vic' : ['VIC','Vicissitude'],
              'vis' : ['VIS','Visceratika'],
+             # Virtues
+             'v_def' : ['Defense'],
+             'v_inn' : ['Innocence'],
+             'v_jud' : ['Judgement','Judgment'],
+             'v_mar' : ['Martyrdom'],
+             'v_red' : ['Redemption'],
+             'v_ven' : ['Vengeance'],
+             'v_vis' : ['Vision'],
            }
            
     def __new__(cls,s):
