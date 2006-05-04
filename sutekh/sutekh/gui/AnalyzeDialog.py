@@ -6,6 +6,7 @@
 
 import gtk
 from SutekhObjects import *
+from Filters import *
 
 class AnalyzeDialog(gtk.Dialog):
     def __init__(self,parent,deckName):
@@ -39,17 +40,17 @@ class AnalyzeDialog(gtk.Dialog):
         self.deckClans={}
         self.deckDisc={}
         # Split out the card types of interest
-        Filter=CardTypeFilter('Vampire')
+        Filter=FilterAndBox([DeckFilter(deckName),CardTypeFilter('Vampire')])
         vampireCards=list(PhysicalCard.select(Filter.getExpression()))
-        Filter=CardTypeFilter('Combat')
+        Filter=FilterAndBox([DeckFilter(deckName),CardTypeFilter('Combat')])
         combatCards=list(PhysicalCard.select(Filter.getExpression()))
-        Filter=CardTypeFilter('Reaction')
+        Filter=FilterAndBox([DeckFilter(deckName),CardTypeFilter('Reaction')])
         reactionCards=list(PhysicalCard.select(Filter.getExpression()))
-        Filter=CardTypeFilter('Action')
+        Filter=FilterAndBox([DeckFilter(deckName),CardTypeFilter('Action')])
         actionCards=list(PhysicalCard.select(Filter.getExpression()))
-        Filter=CardTypeFilter('Master')
+        Filter=FilterAndBox([DeckFilter(deckName),CardTypeFilter('Master')])
         masterCards=list(PhysicalCard.select(Filter.getExpression()))
-        self.NumberVampires=len(bvampireCards)
+        self.NumberVampires=len(vampireCards)
         self.TotNumber = len(Deck)
         self.NumberLibrary=self.TotNumber-self.NumberVampires
         for card in vampireCards:
