@@ -150,7 +150,7 @@ class SectionWithTitle(StateWithRule):
             
 class SectionRule(StateWithRule):
     def transition(self,sTag,dAttr):
-        if sTag == 'span' and dAttr.get('class') == 'ruling':
+        if sTag == 'span' and dAttr.get('class') in ['ruling','errata','clarification']:
             return InRuleText(self._dInfo)
         elif sTag == 'a':
             self._dInfo['url'] = dAttr['href']
@@ -162,13 +162,21 @@ class SectionRule(StateWithRule):
             self._dInfo.clearRule()
             return SectionWithTitle(self._dInfo)
         elif sTag == 'li':
-            raise StateError()
-            # skip to next ruling
+            # handles unclosed <li> inside section block
+            # skip to next rule
             if not self._dInfo.has_key('code'):
                 self._dInfo['code'] = self._sData.strip()
             self._dInfo.save()
             self._dInfo.clearRule()
-            return SectionRule(self._dInfo)
+            return SectionRule(self._dInfo)            
+        elif sTag == '/p':
+            # handles unclosed <li> at end of section block
+            # skip to next section
+            if not self._dInfo.has_key('code'):
+                self._dInfo['code'] = self._sData.strip()
+            self._dInfo.save()
+            self._dInfo.clearRule()
+            return NoSection()
         return self
             
 class InRuleText(StateWithRule):
