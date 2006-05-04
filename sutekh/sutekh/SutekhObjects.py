@@ -33,7 +33,7 @@ class AbstractCard(SQLObject):
     group = IntCol(default=None,dbName='grp')
     capacity = IntCol(default=None)
     cost = IntCol(default=None)
-    costtype = EnumCol(enumValues=['pool','blood',None],default=None)
+    costtype = EnumCol(enumValues=['pool','blood','conviction',None],default=None)
     level = EnumCol(enumValues=['advanced',None],default=None)
     
     discipline = RelatedJoin('DisciplinePair',intermediateTable='abs_discipline_pair_map')
@@ -165,6 +165,7 @@ class ExpansionAdapter(object):
              'Jyhad' : [],
              'Kindred Most Wanted' : ['KMW'],
              'Legacy of Blood' : ['LoB'],
+             'Nights of Reckoning' : ['NoR'],
              'Sabbat' : [],
              'Sabbat Wars' : ['SW'],
              'Tenth Anniversary' : ['Tenth'],
@@ -321,9 +322,10 @@ class CardTypeAdapter(object):
     advise(instancesProvide=[ICardType],asAdapterForTypes=[basestring])
     
     keys = { 'Action' : [], 'Action Modifier' : [], 'Ally' : [],
-             'Combat' : [], 'Equipment' : [], 'Event' : [], 'Master' : [],
-             'Political Action' : [], 'Reaction' : [], 'Reflex' : [],
-             'Retainer' : [], 'Vampire' : [],
+             'Combat' : [], 'Conviction' : [], 'Equipment' : [],
+             'Event' : [], 'Imbued' : [], 'Master' : [],
+             'Political Action' : [], 'Power' : [], 'Reaction' : [],
+             'Reflex' : [], 'Retainer' : [], 'Vampire' : [],
            }
     
     def __new__(cls,s):
