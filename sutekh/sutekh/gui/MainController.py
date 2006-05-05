@@ -78,11 +78,10 @@ class MainController(object):
             del self.openDecks[deckName] 
             self.__oMenu.setLoadDeckState(self.openDecks)
 
-    def reloadAll(self):
-        # Reload's the Physical card view and all deck Views
+    def reloadAllDecks(self):
+        # Reload all deck Views
         # Needed if we delete a card both from Physical cards
         # and the decks
-        self.__oPhysicalCards.getView().load()
         for name in self.openDecks:
             controller = self.openDecks[name][1]
             controller.getView().load()

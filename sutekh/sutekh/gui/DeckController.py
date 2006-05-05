@@ -9,15 +9,18 @@ from DeckMenu import DeckMenu
 from SutekhObjects import *
 
 class DeckController(object):
-    def __init__(self,oWindow,oMasterController,deckName):
-        self.__oView = DeckView(oWindow,self,deckName)
+    def __init__(self,oWindow,oMasterController,sDeckName):
+        self.__oView = DeckView(oWindow,self,sDeckName)
         self.__oWin = oWindow
         self.__oC = oMasterController
-        self.deckName=deckName
-        self.__oMenu = DeckMenu(self,self.__oWin,self.deckName)
+        self.__oDeck = PhysicalCardSet.byName(sDeckName)
+        self.__oMenu = DeckMenu(self,self.__oWin,self.__oDeck.name)
         
     def getView(self):
         return self.__oView
+
+    def getModel(self):
+        return self.__oView._oModel
 
     def getMenu(self):
         return self.__oMenu
@@ -26,45 +29,47 @@ class DeckController(object):
         try:
             oC = AbstractCard.byName(sName)
         except SQLObjectNotFound:
-            return
+            return False
+            
         # find if there's a physical card of that name in the deck
-        deck = PhysicalCardSet.byName(self.deckName)
-        subset=[x for x in deck.cards if x.abstractCardID==oC.id]
-        if len(subset)>0:
+        aSubset = [x for x in self.__oDeck.cards if x.abstractCardID == oC.id]
+        
+        if len(aSubset) > 0:
             # Remove last card (habit)
-            deck.removePhysicalCard(subset[-1].id)
-            # reload
-            self.__oView.load()
+            self.__oDeck.removePhysicalCard(aSubset[-1].id)
+            return True
+        
+        return False   
             
     def incCard(self,sName):
-        self.addCard(sName)
+        return self.addCard(sName,False)
     
-    def addCard(self,sName):
+    def addCard(self,sName,bViewReload=True):
         try:
             oC = AbstractCard.byName(sName)
         except SQLObjectNotFound:
-            return
-        # Select current deck
-        try:
-            deck = PhysicalCardSet.byName(self.deckName)
-        except SQLObjectNotFound:
-            return
+            return False
+            
         # Find all Physicalcards with this name
-        Physcards=PhysicalCard.selectBy(abstractCardID=oC.id)
-        if Physcards.count()>0:
+        oPhysCards = PhysicalCard.selectBy(abstractCardID=oC.id)
+        if oPhysCards.count() > 0:
             # Card exists
-            for card in Physcards:
+            for oCard in oPhysCards:
                 # Add first Physical card not already in deck
                 # Limits us to number of cards in PhysicalCards
                 # Need to extend this to handle constraints
-                if card not in deck.cards:
-                    deck.addPhysicalCard(card.id)
+                if oCard not in self.__oDeck.cards:
+                    self.__oDeck.addPhysicalCard(oCard.id)
                     break
             # Inc'ed card, so reload list - NM
-            self.__oView.load()
+            if bViewReload:
+                self.__oView.load()
+            return True
+            
+        return False
 
-    def setCardText(self,sName):
-        pass
+    def setCardText(self,sCardName):
+        self.__oC.setCardText(sCardName)
 
     def getFilter(self,widget):
         self.__oView.getFilter(self.__oMenu)
