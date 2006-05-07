@@ -23,6 +23,9 @@ class PhysicalCardController(object):
         return self.__oMenu
     
     def decCard(self,sName):
+        """
+        Returns True if a card was successfully removed, False otherwise.
+        """
         try:
             oC = AbstractCard.byName(sName)
         except SQLObjectNotFound:
@@ -76,17 +79,21 @@ class PhysicalCardController(object):
             return True
     
     def incCard(self,sName):
-        return self.addCard(sName,False)
+        """
+        Returns True if a card was successfully added, False otherwise.
+        """
+        return self.addCard(sName)
     
-    def addCard(self,sName,bReloadView=True):
+    def addCard(self,sName):
+        """
+        Returns True if a card was successfully added, False otherwise.
+        """
         try:
             oC = AbstractCard.byName(sName)
         except SQLObjectNotFound:
             return False
             
         oPC = PhysicalCard(abstractCard=oC)
-        if bReloadView:
-            self.__oView.load()
         return True
         
     def setCardText(self,sCardName):

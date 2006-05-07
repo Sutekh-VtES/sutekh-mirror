@@ -35,7 +35,7 @@ class DeckView(EditableCardListView):
             #print data.data[5:]
             cards=data.data.splitlines()
             for name in cards[1:]:
-               self._oC.addCard(name)
+               self.addCard(name)
             context.finish(True, False, time)
         else:
             if data and data.format == 8 and data.data[:5] == "Deck:":
@@ -49,7 +49,7 @@ class DeckView(EditableCardListView):
                     for candidate in cards[1:]:
                         [number, name] = candidate.split('_')
                         for j in range(int(number)):
-                            self._oC.addCard(name)
+                            self.addCard(name)
                 context.finish(True,False, time)
             else:
                 context.finish(False, False, time)

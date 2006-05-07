@@ -26,6 +26,9 @@ class DeckController(object):
         return self.__oMenu
     
     def decCard(self,sName):
+        """
+        Returns True if a card was successfully removed, False otherwise.
+        """
         try:
             oC = AbstractCard.byName(sName)
         except SQLObjectNotFound:
@@ -42,9 +45,15 @@ class DeckController(object):
         return False   
             
     def incCard(self,sName):
-        return self.addCard(sName,False)
+        """
+        Returns True if a card was successfully added, False otherwise.
+        """
+        return self.addCard(sName)
     
-    def addCard(self,sName,bViewReload=True):
+    def addCard(self,sName):
+        """
+        Returns True if a card was successfully added, False otherwise.
+        """
         try:
             oC = AbstractCard.byName(sName)
         except SQLObjectNotFound:
@@ -61,9 +70,6 @@ class DeckController(object):
                 if oCard not in self.__oDeck.cards:
                     self.__oDeck.addPhysicalCard(oCard.id)
                     break
-            # Inc'ed card, so reload list - NM
-            if bViewReload:
-                self.__oView.load()
             return True
             
         return False

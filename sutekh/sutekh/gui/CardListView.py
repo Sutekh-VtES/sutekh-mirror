@@ -192,6 +192,13 @@ class EditableCardListView(CardListView):
         if bSucc:
             self._oModel.decCard(oPath)
 
+    def addCard(self,sCardName):
+        bSucc = self._oC.addCard(sCardName)
+        if bSucc:
+            bReload = self._oModel.incCardByName(sCardName)
+            if bReload:
+                self.expand_all()
+
     # Popup Menu
 
     def pressButton(self, treeview, event):

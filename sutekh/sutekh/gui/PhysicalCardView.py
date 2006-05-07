@@ -19,7 +19,7 @@ class PhysicalCardView(EditableCardListView):
         if data and data.format == 8 and data.data[:5] == "Abst:":
             cards=data.data.splitlines()
             for name in cards[1:]:
-                self._oC.addCard(name)
+                self.addCard(name)
             context.finish(True, False, time)
         else:
             context.finish(False, False, time)

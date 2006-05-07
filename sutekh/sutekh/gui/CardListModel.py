@@ -16,6 +16,7 @@ class CardListModel(gtk.TreeStore):
     def __init__(self):
         # STRING is the card name, INT is the card count
         super(CardListModel,self).__init__(gobject.TYPE_STRING,gobject.TYPE_INT)
+        self._dName2Iter = {}
         
         self.cardclass = AbstractCard # card class to use, or option is PhysicalCard
         self.groupby = CardTypeGrouping # grouping class to use
@@ -36,6 +37,7 @@ class CardListModel(gtk.TreeStore):
         the filter or grouping changes.
         """
         self.clear()
+        self._dName2Iter = {}
 
         oFilter = self.getCompleteFilterExpression()		
         oCardIter = self.cardclass.select(oFilter).distinct()
@@ -77,6 +79,7 @@ class CardListModel(gtk.TreeStore):
                     0, oCard.name,
                     1, iCnt
                 )
+                self._dName2Iter.setdefault(oCard.name,[]).append(oChildIter)
                 
             # Update Group Section
             self.set(oSectionIter,
@@ -105,27 +108,39 @@ class CardListModel(gtk.TreeStore):
         return sCardName
         
     def incCard(self,oPath):
-        oIter = self.get_iter(oPath)
-        oGrpIter = self.iter_parent(oIter)
-        
-        iCnt = self.get_value(oIter,1)
-        self.set(oIter,1,iCnt+1)
-        
-        iGrpCnt = self.get_value(oGrpIter,1)        
-        self.set(oGrpIter,1,iGrpCnt+1)
+        sCardName = self.getCardNameFromPath(oPath)
+        self.alterCardCount(sCardName,+1)
         
     def decCard(self,oPath):
-        oIter = self.get_iter(oPath)
-        oGrpIter = self.iter_parent(oIter)
-        
-        iCnt = self.get_value(oIter,1)
-        if iCnt > 1:
-            self.set(oIter,1,iCnt-1)
+        sCardName = self.getCardNameFromPath(oPath)
+        self.alterCardCount(sCardName,-1)
+
+    def incCardByName(self,sCardName):
+        """
+        Returns True is a reload was needed, False otherwise.
+        """
+        if self._dName2Iter.has_key(sCardName):
+            self.alterCardCount(sCardName,+1)
+            return False
         else:
-            self.remove(oIter)
-        
-        iGrpCnt = self.get_value(oGrpIter,1)
-        if iGrpCnt > 1:
-            self.set(oGrpIter,1,iGrpCnt-1)
-        else:
-            self.remove(oGrpIter)
+            self.load()
+            return True
+
+    def alterCardCount(self,sCardName,iChg):
+        for oIter in self._dName2Iter[sCardName]:
+            oGrpIter = self.iter_parent(oIter)
+            iCnt = self.get_value(oIter,1) + iChg
+            iGrpCnt = self.get_value(oGrpIter,1) + iChg
+            
+            if iCnt > 0:
+                self.set(oIter,1,iCnt)
+            else:
+                self.remove(oIter)
+                
+            if iGrpCnt > 0:
+                self.set(oGrpIter,1,iGrpCnt)
+            else:
+                self.remove(oGrpIter)
+                
+        if iCnt <= 0:
+            del self._dName2Iter[sCardName]
