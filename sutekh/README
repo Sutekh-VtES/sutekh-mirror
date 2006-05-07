@@ -98,6 +98,10 @@ CREATE INDEX physical_map_index_01 ON physical_map (physical_card_id);
 CREATE INDEX physical_map_index_02 ON physical_map (physical_card_set_id);
 CREATE INDEX abstract_map_index_01 ON abstract_map (abstract_card_id);
 CREATE INDEX abstract_map_index_02 ON abstract_map (abstract_card_set_id);
+CREATE INDEX abs_discipline_pair_map_index_01 ON abs_discipline_pair_map (abstract_card_id);
+CREATE INDEX abs_rarity_pair_map_index_01 ON abs_rarity_pair_map (abstract_card_id);
+CREATE INDEX abs_ruling_map_index_01 ON abs_ruling_map (abstract_card_id);
+CREATE INDEX abs_type_map_index_01 ON abs_type_map (abstract_card_id);
 .quit
 
 If you're using sqlite version 2, you'll need to replace the first line with:
