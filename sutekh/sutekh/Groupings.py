@@ -25,7 +25,7 @@ class IterGrouping(object):
             if len(a) == 0:
                 dKeyItem.setdefault(None,[]).append(x)
             else:
-                for y in self.__fKeys(x):
+                for y in a:
                     dKeyItem.setdefault(y,[]).append(x)
          
         a = dKeyItem.keys()
