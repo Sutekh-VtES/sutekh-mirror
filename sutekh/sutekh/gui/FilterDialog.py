@@ -81,7 +81,7 @@ class FilterDialog(gtk.Dialog):
             self.State['clan'][clan.name]=False
         for discipline in Discipline.select().orderBy('name'):
             # add disciplie
-            name=DisciplineAdapter.keys[discipline.name][1]
+            name=DisciplineAdapter.keys[discipline.name][-1]
             iter=self.discFrame.get_list().append(None)
             self.discFrame.get_list().set(iter,0,name)
             self.State['disc'][name]=False

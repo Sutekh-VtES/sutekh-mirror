@@ -94,7 +94,7 @@ class CardListModel(gtk.TreeStore):
             if not self.applyfilter or self.selectfilter is None:
                 return self.basefilter.getExpression()
             else:
-                return FilterAndBox(self.basefilter,self.selectfilter).getExpression()            
+                return FilterAndBox([self.basefilter,self.selectfilter]).getExpression()            
 
     def getCardNameFromPath(self,oPath):
         oIter = self.get_iter(oPath)

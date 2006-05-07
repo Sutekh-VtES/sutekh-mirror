@@ -93,7 +93,7 @@ class PhysicalCardController(object):
         self.__oC.setCardText(sCardName)
 
     def getFilter(self,oWidget):
-        self.__oView.getFilter(self.__oMenu,self.__oWin)
+        self.__oView.getFilter(self.__oMenu)
 
     def runFilter(self,oWidget):
         self.__oView.runFilter(self.__oMenu.getApplyFilter())
