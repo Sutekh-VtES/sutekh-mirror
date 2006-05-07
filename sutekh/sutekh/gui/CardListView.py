@@ -31,7 +31,6 @@ class CardListView(gtk.TreeView,object):
 
         # Text searching of card names
         self.set_search_equal_func(self.compare,None)
-        # FIXME: Needs to be 1 for Deck and Physical? self.set_search_column(0)
         self.set_enable_search(True)
 
         # Drag and Drop
