@@ -7,3 +7,4 @@
 * Improve Filter selection dialog
 * Make GUI Filtering less slow
 * Version database
+* Handle 'Creed' and 'Life' attributes of Imbued in WhiteWolfParser.
