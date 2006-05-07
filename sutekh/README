@@ -86,6 +86,24 @@ Filtering:
 ...     print "---", oC.name, "---"
 ...     print oC.text
 
+=== Adding Indexes to Sqlite Databases ===
+
+Sqlite databases access can be signigicantly sped up by adding indexes.  Use:
+
+./sqlite3 sutekh.db
+CREATE INDEX abstract_card_index_01 ON abstract_card (id);
+CREATE INDEX physical_card_index_01 ON physical_card (id);
+CREATE INDEX physical_card_index_02 ON physical_card (abstract_card_id);
+CREATE INDEX physical_map_index_01 ON physical_map (physical_card_id);
+CREATE INDEX physical_map_index_02 ON physical_map (physical_card_set_id);
+CREATE INDEX abstract_map_index_01 ON abstract_map (abstract_card_id);
+CREATE INDEX abstract_map_index_02 ON abstract_map (abstract_card_set_id);
+.quit
+
+If you're using sqlite version 2, you'll need to replace the first line with:
+
+./sqlite sutekh.db
+
 === Philosophy ===
 
 Conceptually Sutekh is organised around two datatypes, AbstractCard
