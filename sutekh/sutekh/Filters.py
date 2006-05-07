@@ -84,6 +84,20 @@ class MultiCardTypeFilter(Filter):
         return AND(AbstractCard.q.id == oT.abstract_card_id,
                    IN(oT.card_type_id,self.__aTypeIds))
 
+class GroupFilter(Filter):
+    def __init__(self,iGroup):
+        self.__iGroup = iGroup
+
+    def getExpression(self):
+        return AbstractCard.q.group == self.__iGroup
+
+class MultiGroupFilter(Filter):
+    def __init__(self,aGroups):
+        self.__aGroups = aGroups
+        
+    def getExpression(self):
+        return IN(AbstractCard.q.group,self.__aGroups)
+
 class CardTextFilter(Filter):
     def __init__(self,sPattern):
         self.__sPattern = sPattern
