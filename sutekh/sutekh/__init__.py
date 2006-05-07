@@ -8,9 +8,12 @@ __all__ = [ # Sutekh Objects
             'Clan', 'CardType', 'Ruling',
             # Filters
             'FilterAndBox', 'FilterOrBox', 'ClanFilter', 'DisciplineFilter',
-            'CardTypeFilter', 'CardTextFilter',
+            'CardTypeFilter', 'CardTextFilter', 'MultiCardTypeFilter',
+            'MultiDisciplineFilter', 'MultiClanFilter', 'DeckFilter',
+            'PhysicalCardFilter', 'GroupFilter', 'MultiGroupFilter',
             # Groupings
-            'GroupByCardType',
+            'CardTypeGrouping', 'ClanGrouping', 'DisciplineGrouping',
+            'ExpansionGrouping', 'RarityGrouping',
             # Misc
            'start' ]
 
