@@ -195,9 +195,7 @@ class EditableCardListView(CardListView):
     def addCard(self,sCardName):
         bSucc = self._oC.addCard(sCardName)
         if bSucc:
-            bReload = self._oModel.incCardByName(sCardName)
-            if bReload:
-                self.expand_all()
+            self._oModel.incCardByName(sCardName)
 
     # Popup Menu
 
@@ -215,10 +213,3 @@ class EditableCardListView(CardListView):
                 popupMenu.popup( None, None, None, event.button, time)
                 return True # Don't propogate to buttons
         return False
-    
-    def load(self):
-        """
-        Override the base classes load method.
-        """
-        self._oModel.load()
-        self.expand_all()

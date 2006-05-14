@@ -126,4 +126,9 @@ class DeckFilter(Filter):
                    PhysicalCard.q.id == oT.physical_card_id,
                    AbstractCard.q.id == oPT.abstract_card_id)
         
+class SpecificCardFilter(Filter):
+    def __init__(self,oCard):
+        self.__iCardId = IAbstractCard(oCard).id
         
+    def getExpression(self):
+        return (AbstractCard.q.id == self.__iCardId)  

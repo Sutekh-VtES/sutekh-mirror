@@ -38,36 +38,21 @@ class CardListModel(gtk.TreeStore):
         """
         self.clear()
         self._dName2Iter = {}
+        self._dGroupName2Iter = {}
 
         oFilter = self.getCompleteFilterExpression()		
         oCardIter = self.cardclass.select(oFilter).distinct()
-
-        # Define iterable and grouping function based on cardclass
-        if self.cardclass is PhysicalCard:
-            fGetCard = lambda x:x[0]
-            fGetCount = lambda x:x[1]
-            
-            # Count by Abstract Card
-            dAbsCards = {}
-            for oCard in oCardIter:
-                dAbsCards.setdefault(oCard.abstractCard,0)
-                dAbsCards[oCard.abstractCard] += 1
-
-            aCards = list(dAbsCards.iteritems())
-            aCards.sort(lambda x,y: cmp(x[0].name,y[0].name))
-        else:
-            fGetCard = lambda x:x
-            fGetCount = lambda x:0            
-            aCards = oCardIter
- 		
+        fGetCard, fGetCount, oGroupedIter = self.groupedCardIterator(oCardIter)
+		
         # Iterate over groups
-        for sGroup, oGroupIter in self.groupby(aCards,fGetCard):
+        for sGroup, oGroupIter in oGroupedIter:
             # Check for null group
             if sGroup is None:
                 sGroup = '<< None >>'
         		
             # Create Group Section
             oSectionIter = self.append(None)
+            self._dGroupName2Iter[sGroup] = oSectionIter
 			
             # Fill in Cards
             iGrpCnt = 0
@@ -86,6 +71,35 @@ class CardListModel(gtk.TreeStore):
                 0, sGroup,
                 1, iGrpCnt
             )
+
+    def groupedCardIterator(self,oCardIter):
+        """
+        Handles the differences in the way AbstractCards and PhysicalCards
+        are grouped and returns a triple of fGetCard (the function used to
+        retrieve a card from an item), fGetCount (the function used to
+        retrieve a card count from an item) and oGroupedIter (an iterator
+        over the card groups)
+        """
+        # Define iterable and grouping function based on cardclass
+        if self.cardclass is PhysicalCard:
+            fGetCard = lambda x:x[0]
+            fGetCount = lambda x:x[1]
+            
+            # Count by Abstract Card
+            dAbsCards = {}
+            for oCard in oCardIter:
+                dAbsCards.setdefault(oCard.abstractCard,0)
+                dAbsCards[oCard.abstractCard] += 1
+
+            aCards = list(dAbsCards.iteritems())
+            aCards.sort(lambda x,y: cmp(x[0].name,y[0].name))
+        else:
+            fGetCard = lambda x:x
+            fGetCount = lambda x:0            
+            aCards = oCardIter
+        
+        # Iterate over groups
+        return fGetCard, fGetCount, self.groupby(aCards,fGetCard)
 
     def getCompleteFilterExpression(self):
         if self.basefilter is None:
@@ -116,17 +130,19 @@ class CardListModel(gtk.TreeStore):
         self.alterCardCount(sCardName,-1)
 
     def incCardByName(self,sCardName):
-        """
-        Returns True is a reload was needed, False otherwise.
-        """
         if self._dName2Iter.has_key(sCardName):
+            # card already in the list
             self.alterCardCount(sCardName,+1)
-            return False
         else:
-            self.load()
-            return True
+            # new card
+            self.addNewCard(sCardName)
 
     def alterCardCount(self,sCardName,iChg):
+        """
+        Alter the card count of a card which is in the
+        current list (i.e. in the card set and not filtered
+        out) by iChg.
+        """
         for oIter in self._dName2Iter[sCardName]:
             oGrpIter = self.iter_parent(oIter)
             iCnt = self.get_value(oIter,1) + iChg
@@ -144,3 +160,50 @@ class CardListModel(gtk.TreeStore):
                 
         if iCnt <= 0:
             del self._dName2Iter[sCardName]
+
+    def addNewCard(self,sCardName):
+        """
+        If the card sCardName is not in the current list
+        (i.e. is not in the card set or is filtered out)
+        see if it should be filtered out or if it should be
+        visible. If it should be visible, add it to the appropriate
+        groups.
+        """
+        oFilter = AND(SpecificCardFilter(sCardName).getExpression(),
+                      self.getCompleteFilterExpression())
+        oCardIter = self.cardclass.select(oFilter).distinct()
+        fGetCard, fGetCount, oGroupedIter = self.groupedCardIterator(oCardIter)
+        
+        # Iterate over groups
+        for sGroup, oGroupIter in oGroupedIter:
+            # Check for null group
+            if sGroup is None:
+                sGroup = '<< None >>'
+        		
+            # Find Group Section
+            if self._dGroupName2Iter.has_key(sGroup):
+                oSectionIter = self._dGroupName2Iter[sGroup]
+                iGrpCnt = self.get_value(oSectionIter,1)
+            else:
+                oSectionIter = self.append(None)
+                iGrpCnt = 0
+                self.set(oSectionIter,
+                    0, sGroup,
+                    1, iGrpCnt
+                )
+			
+            # Add Cards
+            for oItem in oGroupIter:
+                oCard, iCnt = fGetCard(oItem), fGetCount(oItem)
+                iGrpCnt += iCnt
+                oChildIter = self.append(oSectionIter)
+                self.set(oChildIter,
+                    0, oCard.name,
+                    1, iCnt
+                )
+                self._dName2Iter.setdefault(oCard.name,[]).append(oChildIter)
+                
+            # Update Group Section
+            self.set(oSectionIter,
+                1, iGrpCnt
+            )
