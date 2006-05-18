@@ -113,7 +113,7 @@ class Ruling(SQLObject):
     cards = RelatedJoin('AbstractCard',intermediateTable='abs_ruling_map')
     
 ObjectList = [ AbstractCard, PhysicalCard, AbstractCardSet, PhysicalCardSet,
-               RarityPair, Expansion, Rarity, DisciplinePair, Discipline,
+               Expansion, Rarity, RarityPair, Discipline, DisciplinePair,
                Clan, CardType, Ruling ]
 
 # Adapters
