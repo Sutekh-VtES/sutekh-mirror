@@ -91,6 +91,7 @@ class Discipline(SQLObject):
     advise(instancesProvide=[IDiscipline])
 
     name = UnicodeCol(alternateID=True,length=30)
+    pairs = MultipleJoin('DisciplinePair')
 
 class Clan(SQLObject):
     advise(instancesProvide=[IClan])

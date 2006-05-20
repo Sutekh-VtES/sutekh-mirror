@@ -48,23 +48,24 @@ class MultiClanFilter(Filter):
     
 class DisciplineFilter(Filter):
     def __init__(self,sDiscipline):
-        self.__oDis = IDiscipline(sDiscipline)
+        self.__aPairIds = [oP.id for oP in IDiscipline(sDiscipline).pairs]
         
     def getExpression(self):
         oT = Table('abs_discipline_pair_map')
         return AND(AbstractCard.q.id == oT.abstract_card_id,
-                   oT.discipline_pair_id == DisciplinePair.q.id,
-                   DisciplinePair.q.disciplineID == self.__oDis.id)
+                   IN(oT.discipline_pair_id, self.__aPairIds))
 
 class MultiDisciplineFilter(Filter):
     def __init__(self,aDisciplines):
-        self.__aDisIds = [IDiscipline(x).id for x in aDisciplines]
+        oPairs = []
+        for sDis in aDisciplines:
+            oPairs += IDiscipline(sDis).pairs
+        self.__aPairIds = [oP.id for oP in oPairs]
         
     def getExpression(self):
         oT = Table('abs_discipline_pair_map')
         return AND(AbstractCard.q.id == oT.abstract_card_id,
-                   oT.discipline_pair_id == DisciplinePair.q.id,
-                   IN(DisciplinePair.q.disciplineID,self.__aDisIds))
+                   IN(oT.discipline_pair_id, self.__aPairIds))
     
 class CardTypeFilter(Filter):
     def __init__(self,sCardType):
