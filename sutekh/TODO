@@ -3,6 +3,7 @@ Backend:
  * Make filtering less slow (mainly for sqlite).
  * Version database
  * Handle 'Creed' and 'Life' attributes of Imbued in WhiteWolfParser.
+ * Export card sets to HTML.
 
 CLI:
  * Options for backing up and restoring all physical cards and decks.
@@ -12,10 +13,12 @@ Gui (Functionality):
  * Improve Filter selection dialog.
  * Add ordering selection dialog (possibly part of filtering dialog).
  * Add grouping selection dialog (possibly part of filtering dialog).
+ * Ability to add additional columns to card list displays (capacity, group, ...).
 
 Gui (Presentation):
  * Make split window optional - NM
  * Give gui resource handling capablities (.sutekhrc) to save window pos, etc - NM
+ * Neaten up card text display (maybe move to an HTML widget)?
 
 Website:
  * Create logo for wiki.
