@@ -1,10 +1,24 @@
-* Add selection mechanisms to GUI card lists (filter, sorting, grouping).
-* Create logo for wiki.
-* Make split window optional - NM
-* Give gui resource handling capablities (.sutekhrc) to save window pos, etc - NM
-* Extend xml export/import to handle decks
-* Implement some constraints on different decks
-* Improve Filter selection dialog
-* Make GUI Filtering less slow
-* Version database
-* Handle 'Creed' and 'Life' attributes of Imbued in WhiteWolfParser.
+Backend:
+ * Add ordering mechanism for card lists.
+ * Make filtering less slow (mainly for sqlite).
+ * Version database
+ * Handle 'Creed' and 'Life' attributes of Imbued in WhiteWolfParser.
+
+CLI:
+ * Options for backing up and restoring all physical cards and decks.
+ * Single command-line updating of card database.
+
+Gui (Functionality):
+ * Improve Filter selection dialog.
+ * Add ordering selection dialog (possibly part of filtering dialog).
+ * Add grouping selection dialog (possibly part of filtering dialog).
+
+Gui (Presentation):
+ * Make split window optional - NM
+ * Give gui resource handling capablities (.sutekhrc) to save window pos, etc - NM
+
+Website:
+ * Create logo for wiki.
+
+Up for debate:
+ * Implement some constraints on different decks
