@@ -29,7 +29,10 @@ class CardTextView(gtk.TextView,object):
         s = oCard.name
         
         if not oCard.cost is None:
-            s += "\nCost: " + str(oCard.cost) + " " + str(oCard.costtype)
+            if oCard.cost == -1:
+                s += "\nCost: X " + str(oCard.costtype)
+            else:
+                s += "\nCost: " + str(oCard.cost) + " " + str(oCard.costtype)
         
         if not oCard.capacity is None:
             s += "\nCapacity: " + str(oCard.capacity)
