@@ -54,6 +54,9 @@ def parseOptions(aArgs):
     oP.add_option("--read-deck",
                   type="string",dest="read_deck",default=None,
                   help="Load a deck from the given XML file.")
+    oP.add_option("--reload",action="store_true",dest="reload",default=False,
+                  help="Dump physical card list and decks and reload them - \
+intended to be used with -c and refreshing the abstract card list")
                   
     return oP, oP.parse_args(aArgs)
 
@@ -103,10 +106,14 @@ def writeDeck(sDeckName,sXmlFile):
     oW.write(fOut,sDeckName)
     fOut.close()
 
-def writeAllDecks():
+def writeAllDecks(prefix=''):
     oDecks = PhysicalCardSet.select()
+    aList=[];
     for deck in oDecks:
-        writeDeck(deck.name,None)
+        filename=prefix+deck.name.replace(" ","_")
+        aList.append(filename)
+        writeDeck(deck.name,filename)
+    return aList
 
 def main(aArgs):
     oOptParser, (oOpts, aArgs) = parseOptions(aArgs)
@@ -123,6 +130,18 @@ def main(aArgs):
     
     if oOpts.sql_debug:
         oConn.debug = True
+
+    if oOpts.reload:
+        if not oOpts.refresh_tables:
+            print "reload should be called with --refresh-tables"
+            return 1
+        else:
+            prefix='reload_dump_'
+            aDeckList=writeAllDecks(prefix)
+            sCardList=prefix+'PhysCardList'
+            writePhysicalCards(sCardList)
+            # We dump the databases here
+            # We will reload them later
     
     if oOpts.refresh_ruling_tables:
         refreshTables([Ruling])
@@ -157,6 +176,12 @@ def main(aArgs):
 
     if not oOpts.read_deck is None:
         readDeck(oOpts.read_deck)
+
+    if oOpts.reload:
+        readPhysicalCards(sCardList)
+        for deck in aDeckList:
+            readDeck(deck)
+
 
     return 0
 
