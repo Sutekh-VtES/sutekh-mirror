@@ -48,7 +48,7 @@ class DeckHandler(ContentHandler):
             oAbs = AbstractCard.byName(sName.encode('utf8'))
             if self.deckDB:
                 # deck exists in databse, so we're OK
-                deck=PhysicalCardSet.byName(self.deckName)
+                deck=PhysicalCardSet.byName(self.deckName.encode('utf8'))
                 for i in range(iCount):
                     # We see if we can add the card, otherwise we add it to the
                     # dictionary of unhandlable cards 
