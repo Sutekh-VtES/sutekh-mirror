@@ -58,8 +58,10 @@ def parseOptions(aArgs):
     return oP, oP.parse_args(aArgs)
 
 def refreshTables(aTables,**kw):
+    aTables.reverse()
     for cCls in aTables:
         cCls.dropTable(ifExists=True)
+    aTables.reverse()
     for cCls in aTables:
         cCls.createTable()
 

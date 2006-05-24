@@ -29,7 +29,7 @@ class AbstractCard(SQLObject):
     sqlmeta.lazyUpdate = True
 
     name = UnicodeCol(alternateID=True,length=50)
-    text = UnicodeCol(length=512)
+    text = UnicodeCol()
     group = IntCol(default=None,dbName='grp')
     capacity = IntCol(default=None)
     cost = IntCol(default=None)
