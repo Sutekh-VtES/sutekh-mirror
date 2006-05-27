@@ -47,6 +47,7 @@ class PhysicalCard(SQLObject):
     advise(instancesProvide=[IPhysicalCard])
 
     abstractCard = ForeignKey('AbstractCard')
+    abstractCardIndex = DatabaseIndex(abstractCard)
     sets = RelatedJoin('PhysicalCardSet',intermediateTable='physical_map')
     
 class AbstractCardSet(SQLObject):

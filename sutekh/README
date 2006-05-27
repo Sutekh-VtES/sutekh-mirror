@@ -93,9 +93,6 @@ Filtering:
 Sqlite databases access can be signigicantly sped up by adding indexes.  Use:
 
 ./sqlite3 sutekh.db
-CREATE INDEX abstract_card_index_01 ON abstract_card (id);
-CREATE INDEX physical_card_index_01 ON physical_card (id);
-CREATE INDEX physical_card_index_02 ON physical_card (abstract_card_id);
 CREATE INDEX physical_map_index_01 ON physical_map (physical_card_id);
 CREATE INDEX physical_map_index_02 ON physical_map (physical_card_set_id);
 CREATE INDEX abstract_map_index_01 ON abstract_map (abstract_card_id);
