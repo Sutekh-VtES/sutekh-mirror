@@ -86,7 +86,9 @@ Filtering:
 ...     print "---", oC.name, "---"
 ...     print oC.text
 
-=== Adding Indexes to Sqlite Databases ===
+=== Database Notes ===
+
+==== Adding Indexes to Sqlite Databases ====
 
 Sqlite databases access can be signigicantly sped up by adding indexes.  Use:
 
@@ -108,9 +110,30 @@ CREATE INDEX abs_type_map_index_01 ON abs_type_map (abstract_card_id);
 CREATE INDEX abs_type_map_index_02 ON abs_type_map (card_type_id);
 .quit
 
+For large databases, sqlite will also benefit from running ANALYZE after the
+indexes have been created:
+
+./sqlite3 sutekh.db
+ANALYZE;
+.quit
+
 If you're using sqlite version 2, you'll need to replace the first line with:
 
 ./sqlite sutekh.db
+
+==== Using other database backends ====
+
+Sutekh has been developed mainly with sqlite, but, since it uses SQLObject for
+to manage the databases, it is possible to try other database backends by 
+specifying a suitable URI. So to use a postgresql database, specify:
+postres://username@host/database
+
+PostgreSQL has been tested. Sutekh can be made to work with mysql version 5 
+or later, but, due to some issues with SQLObject 0.7.0 and MySQLdb 1.2.1, this
+is not that simple. Due to the database schema used, though, Sutekh will 
+definately NOT work with MySQL version 4.
+
+Other databases are untested.
 
 === Philosophy ===
 
@@ -118,4 +141,5 @@ Conceptually Sutekh is organised around two datatypes, AbstractCard
 and PhysicalCard. AbstractCard models a conceptual card (e.g. ".44 Magnum")
 while PhysicalCard stores information about an actual rectangular piece of
 cardboard (e.g. My third copy of a .44 Magnum from the VTES expansion).
+
 
