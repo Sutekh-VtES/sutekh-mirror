@@ -108,7 +108,8 @@ CREATE INDEX abs_type_map_index_02 ON abs_type_map (card_type_id);
 .quit
 
 For large databases, sqlite will also benefit from running ANALYZE after the
-indexes have been created:
+indexes have been created (note that the ANALYZE command is only available in
+sqlite3 from version 3.2.3):
 
 ./sqlite3 sutekh.db
 ANALYZE;
