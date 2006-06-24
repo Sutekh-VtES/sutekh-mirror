@@ -374,3 +374,9 @@ class PhysicalCardSetAdapter(object):
 	except:
 	    oS = PhysicalCardSet(name=s)
 	return oS 
+
+class PhysicalCardToAbstractCardAdapter(object):
+    advise(instancesProvide=[IAbstractCard],asAdapterForTypes=[PhysicalCard])
+    
+    def __new__(cls,oPhysCard):
+        return oPhysCard.abstractCard
