@@ -13,10 +13,15 @@ from DeckController import DeckController
 from MainMenu import MainMenu
 from CardTextView import CardTextView
 from AbstractCardView import AbstractCardView
+from PluginManager import PluginManager
 from SutekhObjects import *
 
 class MainController(object):
     def __init__(self):
+        # Create PluginManager
+        self.__oPluginManager = PluginManager()
+        self.__oPluginManager.loadPlugins()
+    
         # Create Sub-Controllers
     
         # Create Views
@@ -91,3 +96,6 @@ class MainController(object):
 
     def runFilter(self,widget):
         self.__oAbstractCards.runFilter(self.__oMenu.getApplyFilter())
+
+    def getPluginManager(self):
+        return self.__oPluginManager
