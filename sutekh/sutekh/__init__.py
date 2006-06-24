@@ -15,12 +15,13 @@ __all__ = [ # Sutekh Objects
             'CardTypeGrouping', 'ClanGrouping', 'DisciplineGrouping',
             'ExpansionGrouping', 'RarityGrouping',
             # Misc
-           'start' ]
+           'start', 'CardListTabulator' ]
 
 # Do importing
 from SutekhObjects import *
 from Filters import *
 from Groupings import *
+from CardListTabulator import CardListTabulator
 from SutekhCli import main
 
 # start() method for use when working in the Python interpreter
