@@ -58,6 +58,11 @@ class CardListView(gtk.TreeView,object):
         """
         self._oModel.load()
 
+    # Introspection
+    
+    def getWindow(self): return self._oWin
+    def getModel(self): return self._oModel
+
     # Activating Rows
         
     def cardActivated(self,wTree,oPath,oColumn):
