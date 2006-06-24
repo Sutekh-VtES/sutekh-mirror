@@ -40,8 +40,7 @@ class CardListModel(gtk.TreeStore):
         self._dName2Iter = {}
         self._dGroupName2Iter = {}
 
-        oFilter = self.getCompleteFilterExpression()		
-        oCardIter = self.cardclass.select(oFilter).distinct()
+        oCardIter = self.getCardIterator(self.getSelectFilter())
         fGetCard, fGetCount, oGroupedIter = self.groupedCardIterator(oCardIter)
 		
         # Iterate over groups
@@ -72,6 +71,21 @@ class CardListModel(gtk.TreeStore):
                 1, iGrpCnt
             )
 
+    def getCardIterator(self,oFilter):
+        """
+        Return an interator over the card model. The filter is
+        combined with self.basefilter. None may be used to retrieve
+        the entire card list (with only the base filter restriciting which cards appear).
+        """
+        oFilter = self.combineFilterWithBase(oFilter)
+
+        if not oFilter is None:
+            oExpr = oFilter.getExpression()
+        else:
+            oExpr = None
+            
+        return self.cardclass.select(oExpr).distinct()
+
     def groupedCardIterator(self,oCardIter):
         """
         Handles the differences in the way AbstractCards and PhysicalCards
@@ -101,17 +115,19 @@ class CardListModel(gtk.TreeStore):
         # Iterate over groups
         return fGetCard, fGetCount, self.groupby(aCards,fGetCard)
 
-    def getCompleteFilterExpression(self):
-        if self.basefilter is None:
-            if not self.applyfilter or self.selectfilter is None:
-                return None
-            else:
-                return self.selectfilter.getExpression()
+    def getSelectFilter(self):
+        if self.applyfilter:
+            return self.selectfilter
         else:
-            if not self.applyfilter or self.selectfilter is None:
-                return self.basefilter.getExpression()
-            else:
-                return FilterAndBox([self.basefilter,self.selectfilter]).getExpression()            
+            return None
+
+    def combineFilterWithBase(self,oOtherFilter):
+        if self.basefilter is None:
+            return oOtherFilter
+        elif oOtherFilter is None:
+            return self.basefilter
+        else:
+            return FilterAndBox([self.basefilter,oOtherFilter])
 
     def getCardNameFromPath(self,oPath):
         oIter = self.get_iter(oPath)
@@ -169,9 +185,11 @@ class CardListModel(gtk.TreeStore):
         visible. If it should be visible, add it to the appropriate
         groups.
         """
-        oFilter = AND(SpecificCardFilter(sCardName).getExpression(),
-                      self.getCompleteFilterExpression())
-        oCardIter = self.cardclass.select(oFilter).distinct()
+        oFilter = self.combineFilterWithBase(self.getSelectFilter())        
+        oExpr = AND(SpecificCardFilter(sCardName).getExpression(),
+                    oFilter.getExpression())
+                      
+        oCardIter = self.cardclass.select(oExpr).distinct()
         fGetCard, fGetCount, oGroupedIter = self.groupedCardIterator(oCardIter)
         
         # Iterate over groups

@@ -5,7 +5,6 @@
 
 import gtk
 from AutoScrolledWindow import AutoScrolledWindow
-from AnalyzeDialog import AnalyzeDialog
 
 class DeckWindow(gtk.Window,object):
     def __init__(self,oController,Name):
@@ -15,7 +14,7 @@ class DeckWindow(gtk.Window,object):
         
         self.connect('destroy', self.closeDeck)
         
-        self.set_title("Sutekh: Vampire Deck : "+Name)
+        self.set_title("Sutekh: Vampire Deck : " + Name)
         self.set_default_size(400, 400)
    
     def addParts(self,oDeckView,oDeckMenu):
@@ -36,10 +35,6 @@ class DeckWindow(gtk.Window,object):
         if self.__oView.deleteDeck():
            # Deck was deleted, so close up
            self.closeDeck()
-
-    def analyzeDeck(self):
-        Dialog=AnalyzeDialog(self,self.deckName)
-        Dialog.run()
 
     def load(self):
         # Select all cards from

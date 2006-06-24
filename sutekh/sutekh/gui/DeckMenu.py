@@ -1,6 +1,7 @@
 # DeckMenu.py
 # Menu for the Deck View
 # Copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
+# Copyright 2006 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
 
 import gtk
@@ -10,10 +11,11 @@ class DeckMenu(gtk.MenuBar,object):
         super(DeckMenu,self).__init__()
         self.__oC = oController
         self.__oWindow = oWindow
-        self.deckName=Name
+        self.deckName = Name
         
         self.__createDeckMenu()
         self.__createFilterMenu()
+        self.__createPluginMenu()
         
     def __createDeckMenu(self):
         iMenu = gtk.MenuItem("Deck Actions")
@@ -23,10 +25,6 @@ class DeckMenu(gtk.MenuBar,object):
         iClose=gtk.MenuItem("Close Deck ("+self.deckName+")")
         wMenu.add(iClose)
         iClose.connect("activate", self.deckClose)
-
-        iAnalyze = gtk.MenuItem("Analyze Deck")
-        iAnalyze.connect("activate", self.deckAnalyze)
-        wMenu.add(iAnalyze)
 
         iAddConstraint = gtk.MenuItem("Add Constraint")
         wMenu.add(iAddConstraint)
@@ -63,6 +61,18 @@ class DeckMenu(gtk.MenuBar,object):
         wMenu.add(self.iApply)
         self.iApply.connect('activate', self.__oC.runFilter)
         
+        self.add(iMenu)
+
+    def __createPluginMenu(self):
+        # setup sub menu
+        iMenu = gtk.MenuItem("Plugins")
+        wMenu = gtk.Menu()
+        iMenu.set_submenu(wMenu)
+        
+        # plugins
+        for oPlugin in self.__oC.getPlugins():
+            wMenu.add(oPlugin.getMenuItem())
+            
         self.add(iMenu)
 
     def deckClose(self,widget):

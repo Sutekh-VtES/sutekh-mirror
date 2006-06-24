@@ -14,7 +14,13 @@ class DeckController(object):
         self.__oWin = oWindow
         self.__oC = oMasterController
         self.__oDeck = PhysicalCardSet.byName(sDeckName)
-        self.__oMenu = DeckMenu(self,self.__oWin,self.__oDeck.name)
+        
+        # setup plugins before the menu (which needs a list of plugins)
+        self.__aPlugins = []
+        for cPlugin in oMasterController.getPluginManager().getCardListPlugins():
+            self.__aPlugins.append(cPlugin(self.__oView,self.__oView.getModel()))
+        
+        self.__oMenu = DeckMenu(self,self.__oWin,self.__oDeck.name)        
         
     def getView(self):
         return self.__oView
@@ -24,6 +30,9 @@ class DeckController(object):
 
     def getMenu(self):
         return self.__oMenu
+        
+    def getPlugins(self):
+        return self.__aPlugins
     
     def decCard(self,sName):
         """

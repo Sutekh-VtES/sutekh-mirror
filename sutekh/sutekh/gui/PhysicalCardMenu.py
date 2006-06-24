@@ -13,6 +13,7 @@ class PhysicalCardMenu(gtk.MenuBar,object):
         self.__oWindow = oWindow
         
         self.__createFilterMenu()
+        self.__createPluginMenu()        
         
     def __createFilterMenu(self):
         # setup sub menu
@@ -33,6 +34,17 @@ class PhysicalCardMenu(gtk.MenuBar,object):
         
         self.add(iMenu)
 
+    def __createPluginMenu(self):
+        # setup sub menu
+        iMenu = gtk.MenuItem("Plugins")
+        wMenu = gtk.Menu()
+        iMenu.set_submenu(wMenu)
+        
+        # plugins
+        for oPlugin in self.__oC.getPlugins():
+            wMenu.add(oPlugin.getMenuItem())
+            
+        self.add(iMenu)
 
     def getApplyFilter(self):
         return self.iApply.get_active()

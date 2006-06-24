@@ -14,13 +14,22 @@ class PhysicalCardController(object):
         self.__oView = PhysicalCardView(self,oWindow)
         self.__oC = oMasterController
         self.__oWin = oWindow
-        self.__oMenu = PhysicalCardMenu(self,self.__oWin)
+        
+        # setup plugins before the menu (which needs a list of plugins)
+        self.__aPlugins = []
+        for cPlugin in oMasterController.getPluginManager().getCardListPlugins():
+            self.__aPlugins.append(cPlugin(self.__oView,self.__oView.getModel()))
+    
+        self.__oMenu = PhysicalCardMenu(self,self.__oWin)        
         
     def getView(self):
         return self.__oView
     
     def getMenu(self):
         return self.__oMenu
+        
+    def getPlugins(self):
+        return self.__aPlugins
     
     def decCard(self,sName):
         """
