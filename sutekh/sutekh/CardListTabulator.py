@@ -21,26 +21,29 @@ class CardListTabulator(object):
         self._dPropFuncs = dPropFuncs
 
     @staticmethod
-    def getFullAllPropFuncs():
+    def getDefaultPropFuncs():
         """
         Return a dictionary of card property creation functions.
         The keys are strings suitable for use as column names, the values are functions for calculating a column entry
-        from an abstract card.
+        from an abstract card, i.e. f: AbstractCard -> Int.
         Since a new dictionary is created every time this function is called it's safe to edit it to include just
         the functions you want.
-        
-        For card costs, a cost of X is represented by a value of -1.
-        Many boolean attributes are represented by values of 0 or 1.
+
+        Notes:        
+         * For blood, pool and conviction costs, a cost of X is represented by a value of -1.
+         * Boolean attributes (disciplines, rarities, expansions, clans and cardtypes) are represented by values of 0 or 1.
+         * Group and capacity are set to 0 if the card doesn't have a group or capacity.
         """
         d = {}
         
         # properties from direct attributes of Abstract Cards
-        d['group'] = lambda card: card.group
-        d['capacity'] = lambda card: card.capacity
+        d['group'] = lambda card: (card.group is not None and card.group) or 0
+        d['capacity'] = lambda card: (card.capacity is not None and card.capacity) or 0
         d['pool cost'] = lambda card: (card.costtype == 'pool' and card.cost) or 0
         d['blood cost'] = lambda card: (card.costtype == 'blood' and card.cost) or 0
         d['conviction cost'] = lambda card: (card.costtype == 'conviction' and card.cost) or 0
         d['advanced'] = lambda card: (card.level == 'advanced' and 1) or 0
+        d['physical card count'] = lambda card: len(card.physicalCards)
         
         # discipline properties
         for oDis in Discipline.select():
@@ -48,19 +51,19 @@ class CardListTabulator(object):
         
         # rarity properties
         for oRar in Rarity.select():
-            d['rarity:' + oRar.name] = lambda card: (oRar in [oPair.rarity for oPair in card.rarity] and 1) or 0
+            d['rarity: ' + oRar.name] = lambda card: (oRar in [oPair.rarity for oPair in card.rarity] and 1) or 0
         
         # expansion properties
         for oExp in Expansion.select():
-            d['expansion:' + oExp.name] = lambda card: (oExp in [oPair.rarity for oPair in card.rarity] and 1) or 0
+            d['expansion: ' + oExp.name] = lambda card: (oExp in [oPair.rarity for oPair in card.rarity] and 1) or 0
         
         # clan properties
         for oClan in Clan.select():
-            d['clan:' + oClan.name] = lambda card: (oClan in card.clan and 1) or 0
+            d['clan: ' + oClan.name] = lambda card: (oClan in card.clan and 1) or 0
         
         # cardtype properties
         for oType in CardType.select():
-            d['card type:' + oType.name] = lambda card: (oType in card.cardtype and 1) or 0
+            d['card type: ' + oType.name] = lambda card: (oType in card.cardtype and 1) or 0
             
         return d
     
