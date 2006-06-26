@@ -42,6 +42,7 @@ class AbstractCard(SQLObject):
     cardtype = RelatedJoin('CardType',intermediateTable='abs_type_map')
     rulings = RelatedJoin('Ruling',intermediateTable='abs_ruling_map')
     sets = RelatedJoin('AbstractCardSet',intermediateTable='abstract_map')
+    physicalCards = MultipleJoin('PhysicalCard')
     
 class PhysicalCard(SQLObject):
     advise(instancesProvide=[IPhysicalCard])
