@@ -47,7 +47,8 @@ class CardListTabulator(object):
         
         # discipline properties
         for oDis in Discipline.select():
-            d['discipline: ' + oDis.name] = lambda card: (oDis in [oPair.discipline for oPair in card.discipline] and 1) or 0
+            sName = DisciplineAdapter.keys[oDis.name][-1]
+            d['discipline: ' + sName] = lambda card: (oDis in [oPair.discipline for oPair in card.discipline] and 1) or 0
         
         # rarity properties
         for oRar in Rarity.select():
