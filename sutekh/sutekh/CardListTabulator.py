@@ -44,27 +44,44 @@ class CardListTabulator(object):
         d['conviction cost'] = lambda card: (card.costtype == 'conviction' and card.cost) or 0
         d['advanced'] = lambda card: (card.level == 'advanced' and 1) or 0
         d['physical card count'] = lambda card: len(card.physicalCards)
-        
+
+        # The little helper functions below are necessary for scoping reasons.
+
         # discipline properties
+        def makeDisFunc(oTmpDis):
+            return lambda card: ((oTmpDis in [oPair.discipline for oPair in card.discipline]) and 1) or 0
+            
         for oDis in Discipline.select():
             sName = DisciplineAdapter.keys[oDis.name][-1]
-            d['discipline: ' + sName] = lambda card: (oDis in [oPair.discipline for oPair in card.discipline] and 1) or 0
+            d['discipline: ' + sName] = makeDisFunc(oDis)
         
         # rarity properties
+        def makeRarFunc(oTmpRar):
+            return lambda card: ((oTmpRar in [oPair.rarity for oPair in card.rarity]) and 1) or 0
+        
         for oRar in Rarity.select():
-            d['rarity: ' + oRar.name] = lambda card: (oRar in [oPair.rarity for oPair in card.rarity] and 1) or 0
+            d['rarity: ' + oRar.name] = makeRarFunc(oRar)
         
         # expansion properties
+        def makeExpFunc(oTmpExp):
+            return lambda card: ((oTmpExp in [oPair.expansion for oPair in card.rarity]) and 1) or 0
+        
         for oExp in Expansion.select():
-            d['expansion: ' + oExp.name] = lambda card: (oExp in [oPair.rarity for oPair in card.rarity] and 1) or 0
+            d['expansion: ' + oExp.name] = makeExpFunc(oExp)
         
         # clan properties
+        def makeClanFunc(oTmpClan):
+            return lambda card: ((oTmpClan in card.clan) and 1) or 0
+        
         for oClan in Clan.select():
-            d['clan: ' + oClan.name] = lambda card: (oClan in card.clan and 1) or 0
+            d['clan: ' + oClan.name] = makeClanFunc(oClan)
         
         # cardtype properties
+        def makeCardTypeFunc(oTmpType):
+            return lambda card: ((oTmpType in card.cardtype) and 1) or 0
+        
         for oType in CardType.select():
-            d['card type: ' + oType.name] = lambda card: (oType in card.cardtype and 1) or 0
+            d['card type: ' + oType.name] = makeCardTypeFunc(oType)
             
         return d
     
