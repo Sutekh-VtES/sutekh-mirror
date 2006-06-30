@@ -293,7 +293,7 @@ class ClusterCardList(CardListPlugin):
         # Check Deck Doesn't Exist
         if PhysicalCardSet.selectBy(name=sDeckName).count() != 0:
             oComplaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
-                                          gtk.BUTTON_CLOSE,"Deck %s already exists." % sDeckName)
+                                          gtk.BUTTONS_CLOSE,"Deck %s already exists." % sDeckName)
             oComplaint.connect("response",lambda oW, oResp: oW.destroy())
             oComplaint.run()
             return
