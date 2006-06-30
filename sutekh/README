@@ -135,21 +135,24 @@ Other databases are untested.
 
 === Clustering Plugin ===
 
-Sutekh will soon have the ability to data mine card sets for related groups of
+Sutekh has the ability to data mine card sets for related groups of
 cards using the Cluster 3.0 [1] data clustering package. You'll need to download
 a version of Cluster 3.0 (the command-line only version has the least
 dependencies if you're looking to get up and running quickly on a Unix platform).
+Once you've created a bunch of clusters of related cards, the clustering
+plugin gives you the option of creating decks from whichever clusters look
+promising.
 
 You'll also need to obtain Pycluster (from the same page) which contains the
 Python bindings for Cluster 3.0. Alternatively you can the Bio.Cluster version
 of Pycluster.
 
-For now you'll also need to obtain a program for viewing the clustering output
-although hopefully Sutekh will eventually include its own simple viewer. One
+You may also like to obtain a program for viewing the clustering output
+although Sutekh doesn't currently support writing out the clusters. One
 such viewer is TreeView (unfortunately Java-based) [2].
 
 If you don't have any of these clustering packages, Sutekh will simply not
-load the clustering plugin and run fine without.
+load the clustering plugin and run fine without it.
 
 [1] http://bonsai.ims.u-tokyo.ac.jp/~mdehoon/software/cluster/software.htm
 [2] http://jtreeview.sourceforge.net/
