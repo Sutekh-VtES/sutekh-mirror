@@ -58,12 +58,17 @@ class DeckView(EditableCardListView):
         # Check if deck is empty
         oPCS = PhysicalCardSet.byName(self.deckName)
         if len(oPCS.cards)>0:
-            # Not empty
+            # Not empty, ask user if we should delete it
             Dialog = DeleteDeckDialog(self._oWin,self.deckName)
             Dialog.run()
             if not Dialog.getResult():
-                return False # not deleting 
-        # Either deck empty, or user agreed to delete
+                return False # not deleting
+
+            # User agreed, so clear the deck
+            for oC in oPCS.cards:
+                oPCS.removePhysicalCard(oC)
+
+        # deck now empty
         deck = PhysicalCardSet.byName(self.deckName)
         PhysicalCardSet.delete(deck.id)
         # Tell Window to clean up
