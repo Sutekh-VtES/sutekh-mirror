@@ -83,8 +83,8 @@ class MainMenu(gtk.MenuBar,object):
             NameList = PhysicalCardSet.selectBy(name=Name)
             if NameList.count() != 0:
                 # Complain about duplicate name
-                Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR, \
-                      gtk.BUTTON_CLOSE,"Name already in use")
+                Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
+                                              gtk.BUTTONS_CLOSE,"Chosen deck name already in use.")
                 Complaint.connect("response",lambda dlg, resp: dlg.destroy())
                 Complaint.run()
                 return
