@@ -204,6 +204,7 @@ class CardListModel(gtk.TreeStore):
                 iGrpCnt = self.get_value(oSectionIter,1)
             else:
                 oSectionIter = self.append(None)
+                self._dGroupName2Iter[sGroup] = oSectionIter
                 iGrpCnt = 0
                 self.set(oSectionIter,
                     0, sGroup,
