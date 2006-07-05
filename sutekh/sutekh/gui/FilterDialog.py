@@ -65,16 +65,19 @@ class FilterDialog(gtk.Dialog):
         self.clanFrame=InternalScroll('Clans')
         self.discFrame=InternalScroll('Disciplines')
         self.typeFrame=InternalScroll('Card Types')
+        self.expFrame=InternalScroll('Expansions')
         self.groupFrame=InternalScroll('Crypt Group')
         self.textFrame=gtk.Frame('Card Text')
         myHBox.pack_start(self.clanFrame)
         myHBox.pack_start(self.discFrame)
         myHBox.pack_start(self.typeFrame)
+        myHBox.pack_start(self.expFrame)
         myHBox.pack_start(self.groupFrame)
         myHBox.pack_start(self.textFrame)
         self.State['clan']={}
         self.State['disc']={}
         self.State['type']={}
+        self.State['exp']={}
         self.State['group']={}
         self.State['text']=''
         for clan in Clan.select().orderBy('name'):
@@ -92,6 +95,10 @@ class FilterDialog(gtk.Dialog):
             iter=self.typeFrame.get_list().append(None)
             self.typeFrame.get_list().set(iter,0,type.name)
             self.State['type'][type.name]=False
+        for exp in Expansion.select():
+            iter=self.expFrame.get_list().append(None)
+            self.expFrame.get_list().set(iter,0,exp.name)
+            self.State['exp'][exp.name]=False
         for group in range(1,4+1):
             iter=self.groupFrame.get_list().append(None)
             self.groupFrame.get_list().set(iter,0,str(group))
@@ -116,6 +123,7 @@ class FilterDialog(gtk.Dialog):
            aClans = []
            aDiscs = []
            aTypes = []
+           aExps = []
            aGroups = []
            aText = []
            # Unset state
@@ -125,6 +133,8 @@ class FilterDialog(gtk.Dialog):
                self.State['disc'][discName]=False
            for typeName in self.State['type']:
                self.State['type'][typeName]=False
+           for expName in self.State['exp']:
+               self.State['exp'][expName]=False
            for groupName in self.State['group']:
                self.State['group'][groupName]=False
            self.State['text']=''
@@ -139,6 +149,9 @@ class FilterDialog(gtk.Dialog):
            self.typeFrame.get_selection(aTypes,self.State['type'])
            if len(aTypes) > 0:
                andData.append(MultiCardTypeFilter(aTypes))
+           self.expFrame.get_selection(aExps,self.State['exp'])
+           if len(aExps) > 0:
+               andData.append(MultiExpansionFilter(aExps))
            self.groupFrame.get_selection(aGroups,self.State['group'])
            if len(aGroups) > 0:
                andData.append(MultiGroupFilter([int(x) for x in aGroups]))
@@ -160,6 +173,7 @@ class FilterDialog(gtk.Dialog):
            self.clanFrame.reset(self.State['clan'])
            self.discFrame.reset(self.State['disc'])
            self.typeFrame.reset(self.State['type'])
+           self.expFrame.reset(self.State['exp'])
            self.groupFrame.reset(self.State['group'])
            self.textEntry.set_text(self.State['text'])
            self.wasCancelled = True
