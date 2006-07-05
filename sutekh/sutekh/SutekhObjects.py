@@ -75,6 +75,7 @@ class Expansion(SQLObject):
     advise(instancesProvide=[IExpansion])
 
     name = UnicodeCol(alternateID=True,length=20)
+    pairs = MultipleJoin('RarityPair')
     
 class Rarity(SQLObject):
     advise(instancesProvide=[IRarity])
