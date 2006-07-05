@@ -80,6 +80,27 @@ class MultiDisciplineFilter(Filter):
         oT = self._makeTableAlias('abs_discipline_pair_map')
         return AND(AbstractCard.q.id == oT.q.abstract_card_id,
                    IN(oT.q.discipline_pair_id, self.__aPairIds))
+
+class ExpansionFilter(Filter):
+    def __init__(self,sExpansion):
+        self.__aPairIds = [oP.id for oP in IExpansion(sExpansion).pairs]
+        
+    def getExpression(self):
+        oT = self._makeTableAlias('abs_rarity_pair_map')
+        return AND(AbstractCard.q.id == oT.q.abstract_card_id,
+                   IN(oT.q.rarity_pair_id, self._aPairIds))
+
+class MultiExpansionFilter(Filter):
+    def __init__(self,aExpansions):
+        oPairs = []
+        for sExp in aExpansions:
+            oPairs += IExpansion(sExp).pairs
+        self.__aPairIds = [oP.id for oP in oPairs]
+        
+    def getExpression(self):
+        oT = self._makeTableAlias('abs_rarity_pair_map')
+        return AND(AbstractCard.q.id == oT.q.abstract_card_id,
+                   IN(oT.q.rarity_pair_id, self.__aPairIds))
     
 class CardTypeFilter(Filter):
     def __init__(self,sCardType):
