@@ -23,9 +23,15 @@ class IRuling(Interface): pass
 
 # Table Objects
 
+class VersionTable(SQLObject):
+    TableName = UnicodeCol(length=50)
+    Version = IntCol(default=None)
+    tableversion = 1
+
 class AbstractCard(SQLObject):
     advise(instancesProvide=[IAbstractCard])
 
+    tableversion = 1
     sqlmeta.lazyUpdate = True
 
     name = UnicodeCol(alternateID=True,length=50)
@@ -47,6 +53,7 @@ class AbstractCard(SQLObject):
 class PhysicalCard(SQLObject):
     advise(instancesProvide=[IPhysicalCard])
 
+    tableversion = 1
     abstractCard = ForeignKey('AbstractCard')
     abstractCardIndex = DatabaseIndex(abstractCard)
     sets = RelatedJoin('PhysicalCardSet',intermediateTable='physical_map')
@@ -54,18 +61,21 @@ class PhysicalCard(SQLObject):
 class AbstractCardSet(SQLObject):
     advise(instancesProvide=[IAbstractCardSet])
 
+    tableversion = 1
     name = UnicodeCol(alternateID=True,length=50)
     cards = RelatedJoin('AbstractCard',intermediateTable='abstract_map')
     
 class PhysicalCardSet(SQLObject):
     advise(instancesProvide=[IPhysicalCardSet])
 
+    tableversion = 1
     name = UnicodeCol(alternateID=True,length=50)
     cards = RelatedJoin('PhysicalCard',intermediateTable='physical_map')
 
 class RarityPair(SQLObject):
     advise(instancesProvide=[IRarityPair])
 
+    tableversion = 1
     expansion = ForeignKey('Expansion')
     rarity = ForeignKey('Rarity')
     cards = RelatedJoin('AbstractCard',intermediateTable='abs_rarity_pair_map')
@@ -74,17 +84,20 @@ class RarityPair(SQLObject):
 class Expansion(SQLObject):
     advise(instancesProvide=[IExpansion])
 
+    tableversion = 1
     name = UnicodeCol(alternateID=True,length=20)
     pairs = MultipleJoin('RarityPair')
     
 class Rarity(SQLObject):
     advise(instancesProvide=[IRarity])
 
+    tableversion = 1
     name = UnicodeCol(alternateID=True,length=20)
 
 class DisciplinePair(SQLObject):
     advise(instancesProvide=[IDisciplinePair])
 
+    tableversion = 1
     discipline = ForeignKey('Discipline')
     level = EnumCol(enumValues=['inferior','superior'])
     disciplineLevelIndex = DatabaseIndex(discipline,level,unique=True)
@@ -93,24 +106,28 @@ class DisciplinePair(SQLObject):
 class Discipline(SQLObject):
     advise(instancesProvide=[IDiscipline])
 
+    tableversion = 1
     name = UnicodeCol(alternateID=True,length=30)
     pairs = MultipleJoin('DisciplinePair')
 
 class Clan(SQLObject):
     advise(instancesProvide=[IClan])
     
+    tableversion = 1
     name = UnicodeCol(alternateID=True,length=40)
     cards = RelatedJoin('AbstractCard',intermediateTable='abs_clan_map')
 
 class CardType(SQLObject):
     advise(instancesProvide=[ICardType])
     
+    tableversion = 1
     name = UnicodeCol(alternateID=True,length=50)
     cards = RelatedJoin('AbstractCard',intermediateTable='abs_type_map')
 
 class Ruling(SQLObject):
     advise(instancesProvide=[IRuling])
     
+    tableversion = 1
     text = UnicodeCol(alternateID=True,length=512)
     code = UnicodeCol(length=50)
     url = UnicodeCol(length=256,default=None)
@@ -382,3 +399,43 @@ class PhysicalCardToAbstractCardAdapter(object):
     
     def __new__(cls,oPhysCard):
         return oPhysCard.abstractCard
+
+# version management helper class
+
+class DatabaseVersion(object):
+    def __init__(self):
+        VersionTable.createTable(ifNotExists=True)
+
+    def setVersion(self,oTable,iTableVersion):
+        sTableName=oTable.sqlmeta.table
+        aVer=VersionTable.selectBy(TableName=sTableName)
+        if aVer.count()==0:
+            VersionTable(TableName=sTableName,
+                    Version=iTableVersion)
+        elif aVer.count()==1:
+            for version in aVer:
+                if version.Version!=iTableVersion:
+                    VersionTable.delete(version.id)
+                    VersionTable(TableName=sTableName,
+                       Version=iTableVersion)
+        elif aVer.count()>1:
+            print "Multiple version entries for ",sTablename," in the database"
+            print "Giving up. I suggest dumping and reloading everything"
+            return False
+        return True
+
+    def getVersion(self,oTable):
+        ver=-1
+        aVer=VersionTable.selectBy(TableName=oTable.sqlmeta.table)
+        if aVer.count()!=1:
+            ver=-1
+        else:
+            for version in aVer:
+                ver=version.Version
+        return ver
+
+    def checkVersions(self,aTable,aTableVersion):
+        bRes=True
+        for oTable,iVersion in zip(aTable,aTableVersion):
+            bRes=bRes and self.getVersion(oTable)==iVersion
+        return bRes

@@ -65,8 +65,14 @@ def refreshTables(aTables,**kw):
     for cCls in aTables:
         cCls.dropTable(ifExists=True)
     aTables.reverse()
+    oVerHandler=DatabaseVersion()
+    if not oVerHandler.setVersion(VersionTable,VersionTable.tableversion):
+        return False
     for cCls in aTables:
         cCls.createTable()
+        if not oVerHandler.setVersion(cCls, cCls.tableversion):
+            return False
+    return True
 
 def readWhiteWolfList(sWwList):
     oP = WhiteWolfParser()
@@ -144,13 +150,19 @@ def main(aArgs):
             # We will reload them later
     
     if oOpts.refresh_ruling_tables:
-        refreshTables([Ruling])
+        if not refreshTables([Ruling]):
+            print "refresh failed"
+            return 1
     
     if oOpts.refresh_tables:
-        refreshTables(ObjectList)
+        if not refreshTables(ObjectList):
+            print "refresh failed"
+            return 1
         
     if oOpts.refresh_physical_card_tables:
-        refreshTables([PhysicalCard])
+        if not refreshTables([PhysicalCard]):
+            print "refresh failed"
+            return 1
     
     if not oOpts.ww_file is None:
         readWhiteWolfList(oOpts.ww_file)

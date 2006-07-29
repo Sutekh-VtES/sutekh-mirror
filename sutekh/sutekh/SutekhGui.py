@@ -28,7 +28,19 @@ def main(aArgs):
 
     oConn = connectionForURI(oOpts.db)
     sqlhub.processConnection = oConn
-    
+
+    aTables=[VersionTable]+ObjectList
+    aVersions=[]
+
+    for oTable in aTables:
+        aVersions.append(oTable.tableversion)
+
+    oVer=DatabaseVersion()
+
+    if not oVer.checkVersions(aTables,aVersions):
+        print "Unsupported database Version."
+        return 1
+
     MainController().run()
 
 
