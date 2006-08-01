@@ -53,8 +53,8 @@ class DisciplineGrouping(IterGrouping):
 
 class ExpansionGrouping(IterGrouping):
     def __init__(self,oIter,fGetCard=lambda x:x):
-        super(DisciplineGrouping,self).__init__(oIter,lambda x: [y.expansion.name for y in fGetCard(x).rarity])
+        super(ExpansionGrouping,self).__init__(oIter,lambda x: [y.expansion.name for y in fGetCard(x).rarity])
 
 class RarityGrouping(IterGrouping):
     def __init__(self,oIter,fGetCard=lambda x:x):
-        super(DisciplineGrouping,self).__init__(oIter,lambda x: [y.rarity.name for y in fGetCard(x).rarity])
+        super(RarityGrouping,self).__init__(oIter,lambda x: [y.rarity.name for y in fGetCard(x).rarity])
