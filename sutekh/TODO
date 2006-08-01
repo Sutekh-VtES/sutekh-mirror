@@ -12,7 +12,6 @@ CLI:
 Gui (Functionality):
  * Improve Filter selection dialog.
  * Add ordering selection dialog (possibly part of filtering dialog).
- * Add grouping selection dialog (possibly part of filtering dialog).
  * Ability to add additional columns to card list displays (capacity, group, ...).
  * Make AnalyzeCardList plugin work for card list models and views containing AbstractCards.
  * Finish ClusterCardList plugin.
