@@ -134,7 +134,11 @@ class CardListModel(gtk.TreeStore):
         return self.getCardNameFromIter(oIter)
         
     def getCardNameFromIter(self,oIter):
-        sCardName = self.get_value(oIter,0)
+        # For some reason the string comes back from the
+        # tree store having been encoded *again* despite
+        # displaying correctly, so we decode it here.
+        # I hope all systems encode with utf-8. :(
+        sCardName = self.get_value(oIter,0).decode("utf-8")
         return sCardName
         
     def incCard(self,oPath):
