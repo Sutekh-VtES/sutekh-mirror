@@ -5,6 +5,7 @@
 from SutekhObjects import *
 from sqlobject import AND, OR, LIKE
 from sqlobject.sqlbuilder import Table
+import sets
 
 # Base Grouping Class
 
@@ -21,7 +22,7 @@ class IterGrouping(object):
     def __iter__(self):
         dKeyItem = {}
         for x in self.__oIter:
-            a = self.__fKeys(x)
+            a = sets.Set(self.__fKeys(x))
             if len(a) == 0:
                 dKeyItem.setdefault(None,[]).append(x)
             else:
