@@ -1,5 +1,6 @@
 # SutekhObjects.py
 # Copyright 2005,2006 Simon Cross <hodgestar@gmail.com>
+# Minor modifications copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
 from sqlobject import *
@@ -56,7 +57,7 @@ class PhysicalCard(SQLObject):
     tableversion = 1
     abstractCard = ForeignKey('AbstractCard')
     abstractCardIndex = DatabaseIndex(abstractCard)
-    sets = RelatedJoin('PhysicalCardSet',intermediateTable='physical_map')
+    sets = RelatedJoin('PhysicalCardSet',intermediateTable='physical_map',createRelatedTable=False)
     
 class AbstractCardSet(SQLObject):
     advise(instancesProvide=[IAbstractCardSet])
@@ -70,7 +71,7 @@ class PhysicalCardSet(SQLObject):
 
     tableversion = 1
     name = UnicodeCol(alternateID=True,length=50)
-    cards = RelatedJoin('PhysicalCard',intermediateTable='physical_map')
+    cards = RelatedJoin('PhysicalCard',intermediateTable='physical_map',createRelatedTable=False)
 
 class RarityPair(SQLObject):
     advise(instancesProvide=[IRarityPair])
@@ -132,6 +133,21 @@ class Ruling(SQLObject):
     code = UnicodeCol(length=50)
     url = UnicodeCol(length=256,default=None)
     cards = RelatedJoin('AbstractCard',intermediateTable='abs_ruling_map')
+
+# Mapping Tables
+
+class MapPhysicalCardToPhysicalCardSet(SQLObject):
+    class sqlmeta:
+        table = 'physical_map'
+        
+    physicalCard = ForeignKey('PhysicalCard',notNull=True)
+    physicalCardSet = ForeignKey('PhysicalCardSet',notNull=True)
+    
+    physicalCardIndex = DatabaseIndex(physicalCard,unique=False)
+    physicalCardSetIndex = DatabaseIndex(physicalCardSet,unique=False)
+    jointIndex = DatabaseIndex(physicalCard,physicalCardSet,unique=False)
+
+# List of Tables to be created, dropped, etc.
     
 ObjectList = [ AbstractCard, PhysicalCard, AbstractCardSet, PhysicalCardSet,
                Expansion, Rarity, RarityPair, Discipline, DisciplinePair,
