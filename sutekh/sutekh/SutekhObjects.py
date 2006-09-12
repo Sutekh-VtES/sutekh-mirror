@@ -139,6 +139,8 @@ class Ruling(SQLObject):
 class MapPhysicalCardToPhysicalCardSet(SQLObject):
     class sqlmeta:
         table = 'physical_map'
+
+    tableversion = 1
         
     physicalCard = ForeignKey('PhysicalCard',notNull=True)
     physicalCardSet = ForeignKey('PhysicalCardSet',notNull=True)
@@ -151,7 +153,7 @@ class MapPhysicalCardToPhysicalCardSet(SQLObject):
     
 ObjectList = [ AbstractCard, PhysicalCard, AbstractCardSet, PhysicalCardSet,
                Expansion, Rarity, RarityPair, Discipline, DisciplinePair,
-               Clan, CardType, Ruling ]
+               Clan, CardType, Ruling, MapPhysicalCardToPhysicalCardSet ]
 
 # Adapters
 
