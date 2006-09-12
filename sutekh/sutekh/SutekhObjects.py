@@ -208,6 +208,7 @@ class ExpansionAdapter(object):
              'Sabbat' : [],
              'Sabbat Wars' : ['SW'],
              'Tenth Anniversary' : ['Tenth'],
+             'Third Edition' : ['Third'],
              'VTES' : [],
            }
         
