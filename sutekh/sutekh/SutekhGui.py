@@ -6,6 +6,7 @@ import sys, optparse, os
 from sqlobject import *
 from SutekhObjects import *
 from gui.MainController import MainController
+from gui.DBErrorPopup import DBErrorPopup
         
 # Script Launching    
 
@@ -14,6 +15,9 @@ def parseOptions(aArgs):
     oP.add_option("-d","--db",
                   type="string",dest="db",default=None,
                   help="Database URI. [sqlite://$PWD/sutekh.db]")
+    oP.add_option("--ignore-db-version",action="store_true",
+            dest="ignore_db_version",default=False,
+            help="Ignore the database version check. Only use this if you know what you're doing")
     return oP, oP.parse_args(aArgs)
 
 def main(aArgs):
@@ -37,8 +41,8 @@ def main(aArgs):
 
     oVer=DatabaseVersion()
 
-    if not oVer.checkVersions(aTables,aVersions):
-        print "Unsupported database Version."
+    if not oVer.checkVersions(aTables,aVersions) and not ignore_db_version:
+        DBErrorPopup().run()
         return 1
 
     MainController().run()
