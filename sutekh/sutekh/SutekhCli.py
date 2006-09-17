@@ -3,7 +3,7 @@
 # Minor modifications copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-import sys, optparse, os, codecs
+import sys, optparse, os, codecs, tempfile
 from sqlobject import *
 from SutekhObjects import *
 from WhiteWolfParser import WhiteWolfParser
@@ -112,11 +112,12 @@ def writeDeck(sDeckName,sXmlFile):
     oW.write(fOut,sDeckName)
     fOut.close()
 
-def writeAllDecks(prefix=''):
+def writeAllDecks(dir=''):
     oDecks = PhysicalCardSet.select()
     aList=[];
     for deck in oDecks:
-        filename=prefix+deck.name.replace(" ","_")
+        (fd,filename)=tempfile.mkstemp('.xml','deck_'+deck.name.replace(" ","_")+'_',dir)
+        os.close(fd)
         aList.append(filename)
         writeDeck(deck.name,filename)
     return aList
@@ -142,9 +143,13 @@ def main(aArgs):
             print "reload should be called with --refresh-tables"
             return 1
         else:
-            prefix='reload_dump_'
-            aDeckList=writeAllDecks(prefix)
-            sCardList=prefix+'PhysCardList'
+            sTempdir=tempfile.mkdtemp('dir','sutekh')
+            aDeckList=writeAllDecks(sTempdir)
+            (fd, sCardList)=tempfile.mkstemp('.xml','physical_cards_',sTempdir)
+            # This may not be nessecary, but the available documentation
+            # suggests that, on Windows NT anyway, leaving the file open will
+            # cause problems when writePhysicalCards tries to reopen it
+            os.close(fd)
             writePhysicalCards(sCardList)
             # We dump the databases here
             # We will reload them later
@@ -191,8 +196,11 @@ def main(aArgs):
 
     if oOpts.reload:
         readPhysicalCards(sCardList)
+        os.remove(sCardList)
         for deck in aDeckList:
             readDeck(deck)
+            os.remove(deck)
+        os.rmdir(sTempdir)
 
 
     return 0
