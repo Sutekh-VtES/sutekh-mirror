@@ -41,7 +41,7 @@ def main(aArgs):
 
     oVer=DatabaseVersion()
 
-    if not oVer.checkVersions(aTables,aVersions) and not ignore_db_version:
+    if not oVer.checkVersions(aTables,aVersions) and not oOpts.ignore_db_version:
         DBErrorPopup().run()
         return 1
 
