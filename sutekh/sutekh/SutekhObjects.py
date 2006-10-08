@@ -43,12 +43,12 @@ class AbstractCard(SQLObject):
     costtype = EnumCol(enumValues=['pool','blood','conviction',None],default=None)
     level = EnumCol(enumValues=['advanced',None],default=None)
     
-    discipline = RelatedJoin('DisciplinePair',intermediateTable='abs_discipline_pair_map')
-    rarity = RelatedJoin('RarityPair',intermediateTable='abs_rarity_pair_map')
-    clan = RelatedJoin('Clan',intermediateTable='abs_clan_map')
-    cardtype = RelatedJoin('CardType',intermediateTable='abs_type_map')
-    rulings = RelatedJoin('Ruling',intermediateTable='abs_ruling_map')
-    sets = RelatedJoin('AbstractCardSet',intermediateTable='abstract_map')
+    discipline = RelatedJoin('DisciplinePair',intermediateTable='abs_discipline_pair_map',createRelatedTable=False)
+    rarity = RelatedJoin('RarityPair',intermediateTable='abs_rarity_pair_map',createRelatedTable=False)
+    clan = RelatedJoin('Clan',intermediateTable='abs_clan_map',createRelatedTable=False)
+    cardtype = RelatedJoin('CardType',intermediateTable='abs_type_map',createRelatedTable=False)
+    rulings = RelatedJoin('Ruling',intermediateTable='abs_ruling_map',createRelatedTable=False)
+    sets = RelatedJoin('AbstractCardSet',intermediateTable='abstract_map',createRelatedTable=False)
     physicalCards = MultipleJoin('PhysicalCard')
     
 class PhysicalCard(SQLObject):
@@ -64,7 +64,7 @@ class AbstractCardSet(SQLObject):
 
     tableversion = 1
     name = UnicodeCol(alternateID=True,length=50)
-    cards = RelatedJoin('AbstractCard',intermediateTable='abstract_map')
+    cards = RelatedJoin('AbstractCard',intermediateTable='abstract_map',createRelatedTable=False)
     
 class PhysicalCardSet(SQLObject):
     advise(instancesProvide=[IPhysicalCardSet])
@@ -79,7 +79,7 @@ class RarityPair(SQLObject):
     tableversion = 1
     expansion = ForeignKey('Expansion')
     rarity = ForeignKey('Rarity')
-    cards = RelatedJoin('AbstractCard',intermediateTable='abs_rarity_pair_map')
+    cards = RelatedJoin('AbstractCard',intermediateTable='abs_rarity_pair_map',createRelatedTable=False)
     expansionRarityIndex = DatabaseIndex(expansion,rarity,unique=True)
     
 class Expansion(SQLObject):
@@ -102,7 +102,7 @@ class DisciplinePair(SQLObject):
     discipline = ForeignKey('Discipline')
     level = EnumCol(enumValues=['inferior','superior'])
     disciplineLevelIndex = DatabaseIndex(discipline,level,unique=True)
-    cards = RelatedJoin('AbstractCard',intermediateTable='abs_discipline_pair_map')
+    cards = RelatedJoin('AbstractCard',intermediateTable='abs_discipline_pair_map',createRelatedTable=False)
 
 class Discipline(SQLObject):
     advise(instancesProvide=[IDiscipline])
@@ -116,14 +116,14 @@ class Clan(SQLObject):
     
     tableversion = 1
     name = UnicodeCol(alternateID=True,length=40)
-    cards = RelatedJoin('AbstractCard',intermediateTable='abs_clan_map')
+    cards = RelatedJoin('AbstractCard',intermediateTable='abs_clan_map',createRelatedTable=False)
 
 class CardType(SQLObject):
     advise(instancesProvide=[ICardType])
     
     tableversion = 1
     name = UnicodeCol(alternateID=True,length=50)
-    cards = RelatedJoin('AbstractCard',intermediateTable='abs_type_map')
+    cards = RelatedJoin('AbstractCard',intermediateTable='abs_type_map',createRelatedTable=False)
 
 class Ruling(SQLObject):
     advise(instancesProvide=[IRuling])
@@ -132,7 +132,7 @@ class Ruling(SQLObject):
     text = UnicodeCol(alternateID=True,length=512)
     code = UnicodeCol(length=50)
     url = UnicodeCol(length=256,default=None)
-    cards = RelatedJoin('AbstractCard',intermediateTable='abs_ruling_map')
+    cards = RelatedJoin('AbstractCard',intermediateTable='abs_ruling_map',createRelatedTable=False)
 
 # Mapping Tables
 
@@ -149,11 +149,90 @@ class MapPhysicalCardToPhysicalCardSet(SQLObject):
     physicalCardSetIndex = DatabaseIndex(physicalCardSet,unique=False)
     jointIndex = DatabaseIndex(physicalCard,physicalCardSet,unique=False)
 
+class MapAbstractCardToAbstractCardSet(SQLObject):
+    class sqlmeta:
+        table = 'abstract_map'
+
+    tableversion = 1
+    abstractCard = ForeignKey('AbstractCard',notNull=True)
+    abstractCardSet = ForeignKey('AbstractCardSet',notNull=True)
+
+    abstractCardIndex = DatabaseIndex(abstractCard,unique=False)
+    abstractCardSetIndex = DatabaseIndex(abstractCardSet,unique=False)
+
+class MapAbstractCardToRarityPair(SQLObject):
+    class sqlmeta:
+        table = 'abs_rarity_pair_map'
+
+    tableversion = 1
+
+    abstractCard = ForeignKey('AbstractCard',notNull=True)
+    rarityPair = ForeignKey('RarityPair',notNull=True)
+
+    abstractCardIndex = DatabaseIndex(abstractCard,unique=False)
+    rarityPairIndex = DatabaseIndex(rarityPair,unique=False)
+
+class MapAbstractCardToRuling(SQLObject):
+    class sqlmeta:
+        table = 'abs_ruling_map'
+
+    tableversion = 1
+
+    abstractCard = ForeignKey('AbstractCard',notNull=True)
+    ruling = ForeignKey('Ruling',notNull=True)
+
+    abstractCardIndex = DatabaseIndex(abstractCard,unique=False)
+    rulingIndex = DatabaseIndex(ruling,unique=False)
+
+class MapAbstractCardToClan(SQLObject):
+    class sqlmeta:
+        table = 'abs_clan_map'
+
+    tableversion = 1
+
+    abstractCard = ForeignKey('AbstractCard',notNull=True)
+    clan = ForeignKey('Clan',notNull=True)
+
+    abstractCardIndex = DatabaseIndex(abstractCard,unique=False)
+    clanIndex = DatabaseIndex(clan,unique=False)
+
+class MapAbstractCardToDisciplinePair(SQLObject):
+    class sqlmeta:
+        table = 'abs_discipline_pair_map'
+
+    tableversion = 1
+
+    abstractCard = ForeignKey('AbstractCard',notNull=True)
+    disciplinePair = ForeignKey('AbstractCard',notNull=True)
+
+    abstractCardIndex = DatabaseIndex(abstractCard,unique=False)
+    disciplinePairIndex = DatabaseIndex(disciplinePair,unique=False)
+
+class MapAbstractCardToCardType(SQLObject):
+    class sqlmeta:
+        table = 'abs_type_map'
+
+    tableversion = 1
+
+    abstractCard = ForeignKey('AbstractCard',notNull=True)
+    cardType = ForeignKey('CardType',notNull=True)
+
+    abstractCardIndex = DatabaseIndex(abstractCard,unique=False)
+    cardTypeIndex = DatabaseIndex(cardType,unique=False)
+
 # List of Tables to be created, dropped, etc.
     
 ObjectList = [ AbstractCard, PhysicalCard, AbstractCardSet, PhysicalCardSet,
                Expansion, Rarity, RarityPair, Discipline, DisciplinePair,
-               Clan, CardType, Ruling, MapPhysicalCardToPhysicalCardSet ]
+               Clan, CardType, Ruling, 
+               # Mapping tables from here on out
+               MapPhysicalCardToPhysicalCardSet,
+               MapAbstractCardToAbstractCardSet,
+               MapAbstractCardToRarityPair,
+               MapAbstractCardToRuling,
+               MapAbstractCardToClan,
+               MapAbstractCardToDisciplinePair,
+               MapAbstractCardToCardType ]
 
 # Adapters
 
