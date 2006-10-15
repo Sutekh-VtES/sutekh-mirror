@@ -21,11 +21,11 @@ class CardHandler(ContentHandler):
             iId = int(oAttrs.getValue('id'),10)
             sName = oAttrs.getValue('name')
             iCount = int(oAttrs.getValue('count'),10)
-            
+
             oAbs = AbstractCard.byName(sName.encode('utf8'))
             for i in range(iCount):
                 PhysicalCard(abstractCard=oAbs)
-        
+
     def endElement(self,sName):
         pass
 

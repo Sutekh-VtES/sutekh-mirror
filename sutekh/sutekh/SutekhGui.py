@@ -7,7 +7,7 @@ from sqlobject import *
 from SutekhObjects import *
 from gui.MainController import MainController
 from gui.DBErrorPopup import DBErrorPopup
-        
+
 # Script Launching    
 
 def parseOptions(aArgs):
@@ -22,11 +22,11 @@ def parseOptions(aArgs):
 
 def main(aArgs):
     oOptParser, (oOpts, aArgs) = parseOptions(aArgs)
-    
+
     if len(aArgs) != 1:
         oOptParser.print_help()
         return 1
-        
+
     if oOpts.db is None:
         oOpts.db = "sqlite://" + "/".join([os.getcwd().replace(os.sep,"/"),"sutekh.db"])
 

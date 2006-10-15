@@ -28,13 +28,13 @@ class IterGrouping(object):
             else:
                 for y in a:
                     dKeyItem.setdefault(y,[]).append(x)
-         
+
         a = dKeyItem.keys()
         a.sort()
-        
+
         for key in a:
-            yield key, dKeyItem[key]        			
-			
+            yield key, dKeyItem[key]
+
 # Individual Groupings
 #
 # If you need to group PhysicalCards,
@@ -43,7 +43,7 @@ class IterGrouping(object):
 class CardTypeGrouping(IterGrouping):
     def __init__(self,oIter,fGetCard=lambda x:x):
         super(CardTypeGrouping,self).__init__(oIter,lambda x: [y.name for y in fGetCard(x).cardtype])
-	
+
 class ClanGrouping(IterGrouping):
     def __init__(self,oIter,fGetCard=lambda x:x):
         super(ClanGrouping,self).__init__(oIter,lambda x: [y.name for y in fGetCard(x).clan])

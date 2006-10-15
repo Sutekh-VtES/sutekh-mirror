@@ -23,8 +23,8 @@ class DeckWriter(object):
         try:
             oPCS = PhysicalCardSet.byName(sDeckName)
         except SQLObjectNotFound:
-            return 
-    
+            return
+
         for oC in oPCS.cards:
             oAbs = oC.abstractCard
             try:
@@ -33,7 +33,7 @@ class DeckWriter(object):
                 dPhys[(oAbs.id, oAbs.name)] = 1
 
         oDoc = getDOMImplementation().createDocument(None,'deck',None)
-        
+
         oCardsElem = oDoc.firstChild
         oCardsElem.setAttribute('name',sDeckName)
 
@@ -44,5 +44,5 @@ class DeckWriter(object):
             oCardElem.setAttribute('name',sName)
             oCardElem.setAttribute('count',str(iNum))
             oCardsElem.appendChild(oCardElem)
-            
+
         PrettyPrint(oDoc,fOut)

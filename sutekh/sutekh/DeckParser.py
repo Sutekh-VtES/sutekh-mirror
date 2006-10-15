@@ -23,7 +23,7 @@ class DeckHandler(ContentHandler):
         self.deckDB=False
         self.unHandled={}
         self.deckName=None
-        
+
     def startElement(self,sTagName,oAttrs):
         if sTagName == 'deck':
             self.deckName = oAttrs.getValue('name')
@@ -44,7 +44,7 @@ class DeckHandler(ContentHandler):
             iId = int(oAttrs.getValue('id'),10)
             sName = oAttrs.getValue('name')
             iCount = int(oAttrs.getValue('count'),10)
-            
+
             oAbs = AbstractCard.byName(sName.encode('utf8'))
             if self.deckDB:
                 # deck exists in databse, so we're OK
@@ -65,7 +65,7 @@ class DeckHandler(ContentHandler):
                             self.unHandled[oAbs.name]+=1
                         except KeyError:
                             self.unHandled[oAbs.name]=1
-        
+
     def endElement(self,sName):
         pass
 

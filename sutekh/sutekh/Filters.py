@@ -28,14 +28,14 @@ class Filter(object):
         return Alias(sTable)
 
 # Collections of Filters
-    
+
 class FilterBox(Filter,list):
     pass
-    
+
 class FilterAndBox(FilterBox):
     def getExpression(self):
         return AND(*[x.getExpression() for x in self])
-    
+
 class FilterOrBox(FilterBox):
     def getExpression(self):
         return OR(*[x.getExpression() for x in self])
@@ -45,7 +45,7 @@ class FilterOrBox(FilterBox):
 class ClanFilter(Filter):
     def __init__(self,sClan):
         self.__oClan = IClan(sClan)
-        
+
     def getExpression(self):
         oT = self._makeTableAlias('abs_clan_map')
         return AND(AbstractCard.q.id == oT.q.abstract_card_id,
@@ -54,16 +54,16 @@ class ClanFilter(Filter):
 class MultiClanFilter(Filter):
     def __init__(self,aClans):
         self.__aClanIds = [IClan(x).id for x in aClans]
-        
+
     def getExpression(self):
         oT = self._makeTableAlias('abs_clan_map')
         return AND(AbstractCard.q.id == oT.q.abstract_card_id,
                    IN(oT.q.clan_id,self.__aClanIds))
-    
+
 class DisciplineFilter(Filter):
     def __init__(self,sDiscipline):
         self.__aPairIds = [oP.id for oP in IDiscipline(sDiscipline).pairs]
-        
+
     def getExpression(self):
         oT = self._makeTableAlias('abs_discipline_pair_map')
         return AND(AbstractCard.q.id == oT.q.abstract_card_id,
@@ -75,7 +75,7 @@ class MultiDisciplineFilter(Filter):
         for sDis in aDisciplines:
             oPairs += IDiscipline(sDis).pairs
         self.__aPairIds = [oP.id for oP in oPairs]
-        
+
     def getExpression(self):
         oT = self._makeTableAlias('abs_discipline_pair_map')
         return AND(AbstractCard.q.id == oT.q.abstract_card_id,
@@ -84,7 +84,7 @@ class MultiDisciplineFilter(Filter):
 class ExpansionFilter(Filter):
     def __init__(self,sExpansion):
         self.__aPairIds = [oP.id for oP in IExpansion(sExpansion).pairs]
-        
+
     def getExpression(self):
         oT = self._makeTableAlias('abs_rarity_pair_map')
         return AND(AbstractCard.q.id == oT.q.abstract_card_id,
@@ -96,16 +96,16 @@ class MultiExpansionFilter(Filter):
         for sExp in aExpansions:
             oPairs += IExpansion(sExp).pairs
         self.__aPairIds = [oP.id for oP in oPairs]
-        
+
     def getExpression(self):
         oT = self._makeTableAlias('abs_rarity_pair_map')
         return AND(AbstractCard.q.id == oT.q.abstract_card_id,
                    IN(oT.q.rarity_pair_id, self.__aPairIds))
-    
+
 class CardTypeFilter(Filter):
     def __init__(self,sCardType):
         self.__oType = ICardType(sCardType)
-        
+
     def getExpression(self):
         oT = self._makeTableAlias('abs_type_map')
         return AND(AbstractCard.q.id == oT.q.abstract_card_id,
@@ -114,7 +114,7 @@ class CardTypeFilter(Filter):
 class MultiCardTypeFilter(Filter):
     def __init__(self,aCardTypes):
         self.__aTypeIds = [ICardType(x).id for x in aCardTypes]
-        
+
     def getExpression(self):
         oT = self._makeTableAlias('abs_type_map')
         return AND(AbstractCard.q.id == oT.q.abstract_card_id,
@@ -130,14 +130,14 @@ class GroupFilter(Filter):
 class MultiGroupFilter(Filter):
     def __init__(self,aGroups):
         self.__aGroups = aGroups
-        
+
     def getExpression(self):
         return IN(AbstractCard.q.group,self.__aGroups)
 
 class CardTextFilter(Filter):
     def __init__(self,sPattern):
         self.__sPattern = sPattern
-        
+
     def getExpression(self):
         return LIKE(AbstractCard.q.text,'%' + self.__sPattern + '%')
 
@@ -145,7 +145,7 @@ class PhysicalCardFilter(Filter):
     def __init__(self):
         # Specifies Physical Cards, intended to be anded with other filters
         pass
-        
+
     def getExpression(self):
         oT = Table('physical_card')
         return AND(AbstractCard.q.id == oT.abstract_card_id)
@@ -161,10 +161,10 @@ class DeckFilter(Filter):
         return AND(oT.q.physical_card_set_id == self.__iDeckId,
                    PhysicalCard.q.id == oT.q.physical_card_id,
                    AbstractCard.q.id == oPT.abstract_card_id)
-        
+
 class SpecificCardFilter(Filter):
     def __init__(self,oCard):
         self.__iCardId = IAbstractCard(oCard).id
-        
+
     def getExpression(self):
-        return (AbstractCard.q.id == self.__iCardId)  
+        return (AbstractCard.q.id == self.__iCardId)

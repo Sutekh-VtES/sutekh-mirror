@@ -42,7 +42,7 @@ class AbstractCard(SQLObject):
     cost = IntCol(default=None)
     costtype = EnumCol(enumValues=['pool','blood','conviction',None],default=None)
     level = EnumCol(enumValues=['advanced',None],default=None)
-    
+
     discipline = RelatedJoin('DisciplinePair',intermediateTable='abs_discipline_pair_map',createRelatedTable=False)
     rarity = RelatedJoin('RarityPair',intermediateTable='abs_rarity_pair_map',createRelatedTable=False)
     clan = RelatedJoin('Clan',intermediateTable='abs_clan_map',createRelatedTable=False)
@@ -50,7 +50,7 @@ class AbstractCard(SQLObject):
     rulings = RelatedJoin('Ruling',intermediateTable='abs_ruling_map',createRelatedTable=False)
     sets = RelatedJoin('AbstractCardSet',intermediateTable='abstract_map',createRelatedTable=False)
     physicalCards = MultipleJoin('PhysicalCard')
-    
+
 class PhysicalCard(SQLObject):
     advise(instancesProvide=[IPhysicalCard])
 
@@ -58,14 +58,14 @@ class PhysicalCard(SQLObject):
     abstractCard = ForeignKey('AbstractCard')
     abstractCardIndex = DatabaseIndex(abstractCard)
     sets = RelatedJoin('PhysicalCardSet',intermediateTable='physical_map',createRelatedTable=False)
-    
+
 class AbstractCardSet(SQLObject):
     advise(instancesProvide=[IAbstractCardSet])
 
     tableversion = 1
     name = UnicodeCol(alternateID=True,length=50)
     cards = RelatedJoin('AbstractCard',intermediateTable='abstract_map',createRelatedTable=False)
-    
+
 class PhysicalCardSet(SQLObject):
     advise(instancesProvide=[IPhysicalCardSet])
 
@@ -81,14 +81,14 @@ class RarityPair(SQLObject):
     rarity = ForeignKey('Rarity')
     cards = RelatedJoin('AbstractCard',intermediateTable='abs_rarity_pair_map',createRelatedTable=False)
     expansionRarityIndex = DatabaseIndex(expansion,rarity,unique=True)
-    
+
 class Expansion(SQLObject):
     advise(instancesProvide=[IExpansion])
 
     tableversion = 1
     name = UnicodeCol(alternateID=True,length=20)
     pairs = MultipleJoin('RarityPair')
-    
+
 class Rarity(SQLObject):
     advise(instancesProvide=[IRarity])
 
@@ -113,21 +113,21 @@ class Discipline(SQLObject):
 
 class Clan(SQLObject):
     advise(instancesProvide=[IClan])
-    
+
     tableversion = 1
     name = UnicodeCol(alternateID=True,length=40)
     cards = RelatedJoin('AbstractCard',intermediateTable='abs_clan_map',createRelatedTable=False)
 
 class CardType(SQLObject):
     advise(instancesProvide=[ICardType])
-    
+
     tableversion = 1
     name = UnicodeCol(alternateID=True,length=50)
     cards = RelatedJoin('AbstractCard',intermediateTable='abs_type_map',createRelatedTable=False)
 
 class Ruling(SQLObject):
     advise(instancesProvide=[IRuling])
-    
+
     tableversion = 1
     text = UnicodeCol(alternateID=True,length=512)
     code = UnicodeCol(length=50)
@@ -141,10 +141,10 @@ class MapPhysicalCardToPhysicalCardSet(SQLObject):
         table = 'physical_map'
 
     tableversion = 1
-        
+
     physicalCard = ForeignKey('PhysicalCard',notNull=True)
     physicalCardSet = ForeignKey('PhysicalCardSet',notNull=True)
-    
+
     physicalCardIndex = DatabaseIndex(physicalCard,unique=False)
     physicalCardSetIndex = DatabaseIndex(physicalCardSet,unique=False)
     jointIndex = DatabaseIndex(physicalCard,physicalCardSet,unique=False)
@@ -221,10 +221,10 @@ class MapAbstractCardToCardType(SQLObject):
     cardTypeIndex = DatabaseIndex(cardType,unique=False)
 
 # List of Tables to be created, dropped, etc.
-    
+
 ObjectList = [ AbstractCard, PhysicalCard, AbstractCardSet, PhysicalCardSet,
                Expansion, Rarity, RarityPair, Discipline, DisciplinePair,
-               Clan, CardType, Ruling, 
+               Clan, CardType, Ruling,
                # Mapping tables from here on out
                MapPhysicalCardToPhysicalCardSet,
                MapAbstractCardToAbstractCardSet,
@@ -240,31 +240,31 @@ class StrAdaptMeta(type):
     def __init__(self, sName, aBases, dDict):
         self.makeLookupDict(dDict['keys'])
         self.makeObjectCache()
-    
+
     def makeLookupDict(self,dKeys):
         self.__dLook = {}
-        
+
         for sKey, aAlts in dKeys.iteritems():
             self.__dLook[sKey] = sKey
             for sAlt in aAlts:
                 self.__dLook[sAlt] = sKey
-                
+
     def makeObjectCache(self):
         self.__dCache = {}
 
     def canonical(self,sName):
         return self.__dLook[sName]
-        
+
     def fetch(self,sName,oCls):
         o = self.__dCache.get(sName,None)
         if not o is None:
             return o
-        
+
         try:
             o = oCls.byName(sName.encode('utf8'))
         except SQLObjectNotFound:
             o = oCls(name=sName)
-        
+
         self.__dCache[sName] = o
         return o
 
@@ -290,14 +290,14 @@ class ExpansionAdapter(object):
              'Third Edition' : ['Third'],
              'VTES' : [],
            }
-        
+
     def __new__(cls,s):
         if s.startswith('Promo-'):
             sName = s
         else:
             sName = cls.canonical(s)
         return cls.fetch(sName,Expansion)
-    
+
 class RarityAdapter(object):
     __metaclass__ = StrAdaptMeta
     advise(instancesProvide=[IRarity],asAdapterForTypes=[basestring])
@@ -310,7 +310,7 @@ class RarityAdapter(object):
              'Precon' : ['PB','PA','PTo3','PTr','PG','PB2','PTo4','PAl2'],
              'Not Applicable' : ['NA'],
            }
-        
+
     def __new__(cls,s):
         if s.startswith('P'):
             sName = 'Precon'
@@ -320,25 +320,25 @@ class RarityAdapter(object):
 
 class RarityPairAdapter(object):
     advise(instancesProvide=[IRarityPair],asAdapterForTypes=[tuple])
-    
+
     __dCache = {}
-    
+
     def __new__(cls,t):
         oE = IExpansion(t[0])
         oR = IRarity(t[1])
-        
+
         oP = cls.__dCache.get((oE.id,oR.id),None)
         if not oP is None:
             return oP
-        
+
         try:
             aRes = list(RarityPair.selectBy(expansion=oE,rarity=oR))
             if len(aRes) != 1:
                 raise TypeError
-            oP = aRes[0]    
+            oP = aRes[0]
         except:
             oP = RarityPair(expansion=oE,rarity=oR)
-            
+
         cls.__dCache[(oE.id,oR.id)] = oP
         return oP
 
@@ -385,24 +385,24 @@ class DisciplineAdapter(object):
              'v_ven' : ['Vengeance'],
              'v_vis' : ['Vision'],
            }
-           
+
     def __new__(cls,s):
         sName = cls.canonical(s)
         return cls.fetch(sName,Discipline)
 
 class DisciplinePairAdapter(object):
     advise(instancesProvide=[IDisciplinePair],asAdapterForTypes=[tuple])
-    
+
     __dCache = {}
-    
+
     def __new__(cls,t):
         oD = IDiscipline(t[0])
         sLevel = str(t[1])
-        
+
         oP = cls.__dCache.get((oD.id,sLevel),None)
         if not oP is None:
             return oP
-        
+
         try:
             aRes = list(DisciplinePair.selectBy(discipline=oD,level=sLevel))
             if len(aRes) != 1:
@@ -410,14 +410,14 @@ class DisciplinePairAdapter(object):
             oP = aRes[0]
         except:
             oP = DisciplinePair(discipline=oD,level=sLevel)
-            
+
         cls.__dCache[(oD.id,sLevel)] = oP
         return oP
 
 class ClanAdapter(object):
     __metaclass__ = StrAdaptMeta
     advise(instancesProvide=[IClan],asAdapterForTypes=[basestring])
-    
+
     keys = { # Camarilla
              'Brujah' : [], 'Malkavian' : [], 'Nosferatu' : [],
              'Toreador' : [],'Tremere' : [], 'Ventrue' : [],
@@ -440,7 +440,7 @@ class ClanAdapter(object):
              # Other
              'Ahrimane' : [],
            }
-               
+
     def __new__(cls,s):
         sName = cls.canonical(s)
         return cls.fetch(sName,Clan)
@@ -448,21 +448,21 @@ class ClanAdapter(object):
 class CardTypeAdapter(object):
     __metaclass__ = StrAdaptMeta
     advise(instancesProvide=[ICardType],asAdapterForTypes=[basestring])
-    
+
     keys = { 'Action' : [], 'Action Modifier' : [], 'Ally' : [],
              'Combat' : [], 'Conviction' : [], 'Equipment' : [],
              'Event' : [], 'Imbued' : [], 'Master' : [],
              'Political Action' : [], 'Power' : [], 'Reaction' : [],
              'Reflex' : [], 'Retainer' : [], 'Vampire' : [],
            }
-    
+
     def __new__(cls,s):
         sName = cls.canonical(s)
         return cls.fetch(sName,CardType)
-    
+
 class AbstractCardAdapter(object):
     advise(instancesProvide=[IAbstractCard],asAdapterForTypes=[basestring])
-    
+
     def __new__(cls,s):
         try:
             oC = AbstractCard.byName(s.encode('utf8'))
@@ -472,7 +472,7 @@ class AbstractCardAdapter(object):
 
 class RulingAdapter(object):
     advise(instancesProvide=[IRuling],asAdapterForTypes=[tuple])
-    
+
     def __new__(cls,t):
         sText = t[0]
         sCode = t[1]
@@ -484,17 +484,17 @@ class RulingAdapter(object):
 
 class PhysicalCardSetAdapter(object):
     advise(instancesProvide=[IPhysicalCardSet],asAdapterForTypes=[basestring])
-    
+
     def __new__(cls,s):
         try:
 	    oS = PhysicalCardSet.byName(s.encode('utf8'))
 	except:
 	    oS = PhysicalCardSet(name=s)
-	return oS 
+	return oS
 
 class PhysicalCardToAbstractCardAdapter(object):
     advise(instancesProvide=[IAbstractCard],asAdapterForTypes=[PhysicalCard])
-    
+
     def __new__(cls,oPhysCard):
         return oPhysCard.abstractCard
 
