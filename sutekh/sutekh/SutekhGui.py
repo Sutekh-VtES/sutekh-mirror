@@ -28,7 +28,7 @@ def main(aArgs):
         return 1
         
     if oOpts.db is None:
-        oOpts.db = "sqlite://" + os.path.join(os.getcwd(),"sutekh.db")
+        oOpts.db = "sqlite://" + "/".join([os.getcwd().replace(os.sep,"/"),"sutekh.db"])
 
     oConn = connectionForURI(oOpts.db)
     sqlhub.processConnection = oConn
