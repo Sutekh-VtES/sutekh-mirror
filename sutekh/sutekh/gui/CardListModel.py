@@ -107,6 +107,19 @@ class CardListModel(gtk.TreeStore):
 
             aCards = list(dAbsCards.iteritems())
             aCards.sort(lambda x,y: cmp(x[0].name,y[0].name))
+        elif self.cardclass is AbstractCardSet:
+            fGetCard = lambda x:x[0]
+            fGetCount = lambda x:x[1]
+            
+            # Count by Abstract Card
+            dAbsCards = {}
+            for oCardSet in oCardIter:
+                for oCard in oCardSet.cards:
+                    dAbsCards.setdefault(oCard,0)
+                    dAbsCards[oCard] += 1
+
+            aCards = list(dAbsCards.iteritems())
+            aCards.sort(lambda x,y: cmp(x[0].name,y[0].name))
         else:
             fGetCard = lambda x:x
             fGetCount = lambda x:0            

@@ -6,15 +6,15 @@
 import gtk
 
 class DeleteCardDialog(gtk.Dialog):
-    def __init__(self,parent,decklist):
+    def __init__(self,parent,PCSlist):
         # In retrospect, A MesgDialog would also work
         super(DeleteCardDialog,self).__init__("Really Delete?", \
               parent,gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT, \
               ( gtk.STOCK_YES, gtk.RESPONSE_OK, gtk.STOCK_NO, gtk.RESPONSE_CANCEL))
         Label=gtk.Label()
-        text="Card Present in the following decks:\n"
-        for deck in decklist:
-            text=text+"<span foreground=\"blue\">"+deck+"</span>\n"
+        text="Card Present in the following Physical Card Sets:\n"
+        for sPCS in PCSlist:
+            text=text+"<span foreground=\"blue\">"+PCS+"</span>\n"
         text=text+"<b>Really Delete?</b>"
         Label.set_markup(text)
         Icon=gtk.Image()

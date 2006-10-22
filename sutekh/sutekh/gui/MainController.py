@@ -8,8 +8,8 @@ from sqlobject import SQLObjectNotFound
 from PhysicalCardController import PhysicalCardController
 from MainWindow import MainWindow
 from PhysicalCardWindow import PhysicalCardWindow
-from DeckWindow import DeckWindow
-from DeckController import DeckController
+from CardSetWindow import CardSetWindow
+from CardSetController import PhysicalCardSetController, AbstractCardSetController
 from MainMenu import MainMenu
 from CardTextView import CardTextView
 from AbstractCardView import AbstractCardView
@@ -21,12 +21,10 @@ class MainController(object):
         # Create PluginManager
         self.__oPluginManager = PluginManager()
         self.__oPluginManager.loadPlugins()
-    
         # Create Sub-Controllers
-    
         # Create Views
         self.__oWinGrp = gtk.WindowGroup()
-        # Need a group as we'll be adding and removing Deck View windows,
+        # Need a group as we'll be adding and removing Card Set View windows,
         # and they should all be blocked by the appropriate dialogs
         self.__oAbstractCardWin = MainWindow(self)
         self.__oPhysicalCardWin = PhysicalCardWindow(self)
@@ -37,20 +35,18 @@ class MainController(object):
         self.__oWinGrp.add_window(self.__oAbstractCardWin)
         self.__oWinGrp.add_window(self.__oPhysicalCardWin)
 
-        self.deckWinCount = 0
-        # In place as I want to limit the maximum number of deck views open
-        # to 3 (should change this later as arbitary restrictions not good)
-        self.openDecks={}
-                
+        self.openPhysicalCardSets={}
+        self.openAbstractCardSets={}
+
         # Link
         self.__oAbstractCardWin.addParts(self.__oMenu,self.__oCardText, \
                              self.__oAbstractCards)
         self.__oPhysicalCardWin.addParts(self.__oPhysicalCards.getMenu(), \
                              self.__oPhysicalCards.getView())
-        
+
     def run(self):
         gtk.main()
-        
+
     def actionQuit(self):
         gtk.main_quit()
 
@@ -58,37 +54,53 @@ class MainController(object):
         try:
             oCard = AbstractCard.byName(sCardName)
             self.__oCardText.setCardText(oCard)
-        except SQLObjectNotFound:    
+        except SQLObjectNotFound:
             pass
 
-    def createNewDeckWindow(self,deckName):
-        if (self.deckWinCount < 3):
-            # name is not already used
-            if deckName not in self.openDecks:
-                self.deckWinCount+=1
-                newDeckWindow = DeckWindow(self,deckName)
-                newDeckController = DeckController(newDeckWindow,self,deckName)
-                self.openDecks[deckName] = [newDeckWindow, newDeckController]
-                newDeckWindow.addParts(newDeckController.getView(),newDeckController.getMenu())
-                self.__oMenu.setLoadDeckState(self.openDecks)
-                self.__oWinGrp.add_window(newDeckWindow)
-                return newDeckWindow
+    def createNewPhysicalCardSetWindow(self,sSetName):
+        # name is not already used
+        if sSetName not in self.openPhysicalCardSets.keys():
+            newPCSWindow = CardSetWindow(self,sSetName,"Physical")
+            newPCSController = PhysicalCardSetController(newPCSWindow,self,sSetName)
+            self.openPhysicalCardSets[sSetName] = [newPCSWindow, newPCSController]
+            newPCSWindow.addParts(newPCSController.getView(),newPCSController.getMenu())
+            self.__oMenu.setLoadPhysicalState(self.openPhysicalCardSets)
+            self.__oWinGrp.add_window(newPCSWindow)
+            return newPCSWindow
         return None
 
-    def removeDeckWindow(self,deckName):
-        # Check deck window does exist
-        if deckName in self.openDecks:
-            self.deckWinCount-=1
-            self.__oWinGrp.remove_window(self.openDecks[deckName][0])
-            del self.openDecks[deckName] 
-            self.__oMenu.setLoadDeckState(self.openDecks)
+    def createNewAbstractCardSetWindow(self,sSetName):
+        # name is not already used
+        if sSetName not in self.openAbstractCardSets.keys():
+            newACSWindow = CardSetWindow(self,sSetName,"Abstract")
+            newACSController = AbstractCardSetController(newACSWindow,self,sSetName)
+            self.openAbstractCardSets[sSetName] = [newACSWindow, newACSController]
+            newACSWindow.addParts(newACSController.getView(),newACSController.getMenu())
+            self.__oMenu.setLoadAbstractState(self.openAbstractCardSets)
+            self.__oWinGrp.add_window(newACSWindow)
+            return newACSWindow
+        return None
 
-    def reloadAllDecks(self):
-        # Reload all deck Views
-        # Needed if we delete a card both from Physical cards
-        # and the decks
-        for name in self.openDecks:
-            controller = self.openDecks[name][1]
+    def removeCardSetWindow(self,sSetName,sType):
+        # Check Card Set window does exist
+        if sType == "Physical":
+            openSets=self.openPhysicalCardSets
+        else:
+            openSets=self.openAbstractCardSets
+        if sSetName in openSets.keys():
+            self.__oWinGrp.remove_window(openSets[sSetName][0])
+            del openSets[sSetName]
+            if sType == "Physical":
+                self.__oMenu.setLoadPhysicalState(self.openPhysicalCardSets)
+            else:
+                self.__oMenu.setLoadAbstractState(self.openPhysicalCardSets)
+
+    def reloadAllPhysicalCardSets(self):
+        for window, controller in self.openPhysicalCardSets.values():
+            controller.getView().load()
+
+    def reloadAllAbstractCardSets(self):
+        for window, controller in self.openAbstractCardSets.values():
             controller.getView().load()
 
     def getFilter(self,widget):

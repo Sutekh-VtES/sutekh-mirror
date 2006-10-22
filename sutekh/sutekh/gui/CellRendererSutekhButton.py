@@ -1,12 +1,12 @@
 # CellRendererSutekhButton.py
-# Pixbuf Button CellRenderer 
+# Pixbuf Button CellRenderer
 # Copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
 # Copyright 2006 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
 
 import gtk, gobject
 
-# This is heavily cribbed from the example in the pygtk FAQ 
+# This is heavily cribbed from the example in the pygtk FAQ
 # (By Nikos Kouremenos)
 # limited to the use of icons only ATM
 # Allows creation of a cell containing a icon pixbuf,
@@ -23,7 +23,6 @@ class CellRendererSutekhButton(gtk.GenericCellRenderer):
     def load_icon(self,name,widget):
         # Load the icon specified in name
         self.pixbuf=widget.render_icon(name,gtk.ICON_SIZE_SMALL_TOOLBAR)
-           
 
     def on_get_size(self,widget,cell_area):
         if self.pixbuf==None:
@@ -43,10 +42,10 @@ class CellRendererSutekhButton(gtk.GenericCellRenderer):
 
     def on_activate(self, event, widget, path, background_area, cell_area, flags):
         # TODO - setup drawing of clicked image
-        # clicke dcallback should be called
+        # clicked callback should be called
         self.emit('clicked',path)
         return True
-     
+
     def on_render(self,window, widget, background_area, cell_area, expose_area, flags):
        if (self.pixbuf==None):
           return None
@@ -79,9 +78,9 @@ class CellRendererSutekhButton(gtk.GenericCellRenderer):
 gobject.type_register(CellRendererSutekhButton)
 # Setup clicked signal -- can also be done using the __gsignals__
 # dict in the class, but I couldn't find good documentation for
-# that approach. 
+# that approach.
 gobject.signal_new("clicked", CellRendererSutekhButton,
     gobject.SIGNAL_RUN_FIRST|gobject.SIGNAL_ACTION,
    gobject.TYPE_NONE,
-   (gobject.TYPE_STRING,)) 
+   (gobject.TYPE_STRING,))
 # the callback is called as callback(self,path)

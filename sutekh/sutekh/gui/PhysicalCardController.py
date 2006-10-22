@@ -50,41 +50,40 @@ class PhysicalCardController(object):
             return False
             
         # Loop throgh list and see if we can find a card
-        # not present in any decks
-        deckdict = {}
-        decks = PhysicalCardSet.select()
+        # not present in any PCS
+        dPCS = {}
+        aPhysicalCardSets = PhysicalCardSet.select()
         for card in cardCands.reversed():
             idtodel = card.id
-            deckdict[idtodel]=[0,[]]
-            for deck in decks:
-                subset=[x for x in deck.cards if x.id == idtodel]
+            dPCS[idtodel]=[0,[]]
+            for oPCS in aPhysicalCardSets:
+                subset=[x for x in oPCS.cards if x.id == idtodel]
                 if len(subset)>0:
-                    deckdict[idtodel][0]+=1;
-                    deckdict[idtodel][1].append(deck.name)
-            if deckdict[idtodel][0]==0:
+                    dPCS[idtodel][0]+=1;
+                    dPCS[idtodel][1].append(oPCS.name)
+            if dPCS[idtodel][0]==0:
                 # OK, can delete this one and be done with it
                 PhysicalCard.delete(idtodel)
                 return True
-                
-        # All physical cards are assigned to decks, so find the
+        # All physical cards are assigned to PhysicalCardSets, so find the
         # one in the fewest
-        T=min(deckdict.values())
-        list=[x for x in deckdict if T is deckdict[x]]
+        T=min(dPCS.values())
+        list=[x for x in dPCS if T is dPCS[x]]
         idtodel=list[-1]
-        candtodel=deckdict[idtodel] 
+        candtodel=dPCS[idtodel] 
         # This is probably overcomplicated, need to revisit this sometime
         # Prompt the user for confirmation
         Dialog = DeleteCardDialog(self.__oWin,candtodel[1])
         Dialog.run()
         if Dialog.getResult():
             # User agrees
-            # Delete card from all the decks first
-            for deck in candtodel[1]:
-                oPC = PhysicalCardSet.byName(deck)
+            # Delete card from all the PhysicalCardSets first
+            for sPCS in candtodel[1]:
+                oPC = PhysicalCardSet.byName(sPCS)
                 oPC.removePhysicalCard(idtodel)
             PhysicalCard.delete(idtodel)
             # Reload everything
-            self.__oC.reloadAllDecks()
+            self.__oC.reloadAllPhysicalCardSets()
             return True
     
     def incCard(self,sName):

@@ -1,6 +1,5 @@
 # FilterDialog.py
 # Dialog for setting Filter Parameters
-# Dialog to display deck analysis software
 # Copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
 # Copyright 2006 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
@@ -50,8 +49,6 @@ class InternalScroll(gtk.Frame):
             if name!=None:
                State[name]=True
                selList.append(name)
-
-
 
 class FilterDialog(gtk.Dialog):
     def __init__(self,parent):
@@ -156,7 +153,7 @@ class FilterDialog(gtk.Dialog):
            if len(aGroups) > 0:
                andData.append(MultiGroupFilter([int(x) for x in aGroups]))
 
-           # Add text lookup			   
+           # Add text lookup
            aText=self.textEntry.get_text()
            if aText!='':
                andData.append(CardTextFilter(aText))

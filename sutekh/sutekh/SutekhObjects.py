@@ -482,15 +482,25 @@ class RulingAdapter(object):
             oR = Ruling(text=sText,code=sCode)
         return oR
 
+class AbstractCardSetAdapter(object):
+    advise(instancesProvide=[IAbstractCardSet],asAdapterForTypes=[basestring])
+
+    def __new__(cls,s):
+        try:
+           oS = AbstractCardSet.byName(s.encode('utf8'))
+        except:
+           oS = AbstractCardSet(name=s)
+        return oS
+
 class PhysicalCardSetAdapter(object):
     advise(instancesProvide=[IPhysicalCardSet],asAdapterForTypes=[basestring])
 
     def __new__(cls,s):
         try:
-	    oS = PhysicalCardSet.byName(s.encode('utf8'))
-	except:
-	    oS = PhysicalCardSet(name=s)
-	return oS
+           oS = PhysicalCardSet.byName(s.encode('utf8'))
+        except:
+           oS = PhysicalCardSet(name=s)
+        return oS
 
 class PhysicalCardToAbstractCardAdapter(object):
     advise(instancesProvide=[IAbstractCard],asAdapterForTypes=[PhysicalCard])

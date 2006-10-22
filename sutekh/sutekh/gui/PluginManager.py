@@ -28,7 +28,7 @@ class PluginManager(object):
             if sPluginName == "__init__": continue
             
             # load module
-            try: 
+            try:
                 mPlugin = __import__("gui.plugins." + sPluginName,None,None,[plugins])
             except ImportError, e:
                 logging.warn("Failed to load plugin %s (%s)." % (sPluginName,str(e)))
@@ -47,7 +47,7 @@ class PluginManager(object):
 
     def getCardListPlugins(self):
         return list(self._aCardListPlugins)
-        
+
 class CardListPlugin(object):
     """
     Base class for card list plugins.

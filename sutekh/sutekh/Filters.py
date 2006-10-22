@@ -150,9 +150,9 @@ class PhysicalCardFilter(Filter):
         oT = Table('physical_card')
         return AND(AbstractCard.q.id == oT.abstract_card_id)
 
-class DeckFilter(Filter):
+class PhysicalCardSetFilter(Filter):
     def __init__(self,sName):
-        # Select cards belonging to a deck
+        # Select cards belonging to a PhysicalCardSet
         self.__iDeckId = IPhysicalCardSet(sName).id
 
     def getExpression(self):
@@ -161,6 +161,16 @@ class DeckFilter(Filter):
         return AND(oT.q.physical_card_set_id == self.__iDeckId,
                    PhysicalCard.q.id == oT.q.physical_card_id,
                    AbstractCard.q.id == oPT.abstract_card_id)
+
+class AbstractCardSetFilter(Filter):
+    def __init__(self,sName):
+        # Select cards belonging to a AbstractCardSet
+        self.__iASCId = IAbstractCardSet(sName).id
+
+    def getExpression(self):
+        oT = self._makeTableAlias('abstract_map')
+        return AND(oT.q.abstract_card_set_id == self.__iASCId,
+                   AbstractCard.q.id == oT.q.abstract_card_id)
 
 class SpecificCardFilter(Filter):
     def __init__(self,oCard):

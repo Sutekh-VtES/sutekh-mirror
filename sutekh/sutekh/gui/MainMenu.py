@@ -4,52 +4,63 @@
 # GPL - see COPYING for details
 
 import gtk
-from SutekhObjects import PhysicalCardSet
-from CreateDeckDialog import CreateDeckDialog
-from LoadDeckDialog import LoadDeckDialog
+from SutekhObjects import PhysicalCardSet, AbstractCardSet
+from CreateCardSetDialog import CreateCardSetDialog
+from LoadCardSetDialog import LoadCardSetDialog
 
 class MainMenu(gtk.MenuBar,object):
     def __init__(self,oController,oWindow):
         super(MainMenu,self).__init__()
         self.__oC = oController
         self.__oWin = oWindow
-        
+
         self.__createFileMenu()
         self.__createFilterMenu()
-        
+
     def __createFileMenu(self):
         # setup sub menu
         iMenu = gtk.MenuItem("File")
         wMenu = gtk.Menu()
         iMenu.set_submenu(wMenu)
-        
-        # items
-        iCreate = gtk.MenuItem("Create New Deck")
-        iCreate.connect('activate', self.doCreateDeck)
-        wMenu.add(iCreate)
 
-        self.deckLoad=gtk.Action("DeckLoad","Load an Existing Deck",None,None)
-        wMenu.add(self.deckLoad.create_menu_item())
-        self.deckLoad.connect('activate', self.doLoadDeck)
-        self.deckLoad.set_sensitive(False)
+        # items
+        iCreatePhysical = gtk.MenuItem("Create New Physical Card Set")
+        iCreatePhysical.connect('activate', self.doCreatePCS)
+        wMenu.add(iCreatePhysical)
+
+        iCreateAbstract= gtk.MenuItem("Create New Abstract Card Set")
+        iCreateAbstract.connect('activate', self.doCreateACS)
+        wMenu.add(iCreateAbstract)
+
+        self.physLoad=gtk.Action("PhysicalLoad","Load an Existing Physical Card Set",None,None)
+        wMenu.add(self.physLoad.create_menu_item())
+        self.physLoad.connect('activate', self.doLoadPCS)
+        self.physLoad.set_sensitive(False)
+
+        self.absLoad=gtk.Action("AbstractLoad","Load an Existing Abstract Card Set",None,None)
+        wMenu.add(self.absLoad.create_menu_item())
+        self.absLoad.connect('activate', self.doLoadACS)
+        self.absLoad.set_sensitive(False)
+
 
         iSeperator=gtk.SeparatorMenuItem()
         wMenu.add(iSeperator)
-        
+
         iQuit = gtk.MenuItem("Quit")
         iQuit.connect('activate', lambda iItem: self.__oC.actionQuit())
-        
+
         wMenu.add(iQuit)
-        
+
         self.add(iMenu)
-        self.setLoadDeckState({}) # Call with an explicitly empty dict
+        self.setLoadPhysicalState({})
+        self.setLoadAbstractState({}) # Call with an explicitly empty dict
 
     def __createFilterMenu(self):
         # setup sub menu
         iMenu = gtk.MenuItem("Filter")
         wMenu = gtk.Menu()
         iMenu.set_submenu(wMenu)
-        
+
         # items
         iFilter = gtk.MenuItem("Specify Filter")
         wMenu.add(iFilter)
@@ -60,48 +71,88 @@ class MainMenu(gtk.MenuBar,object):
         self.iApply.set_active(False)
         wMenu.add(self.iApply)
         self.iApply.connect('activate', self.__oC.runFilter)
-        
+
         self.add(iMenu)
 
-    def setLoadDeckState(self,openDecks):
-        # Determine if loadDeck should be greyed out or not
-        # loadDeck is greyed if a deck exists that isn't open
+    def setLoadPhysicalState(self,openSets):
+        # Determine if physLoad should be greyed out or not
+        # physLoad is active if a PhysicalCardSet exists that isn't open
         state = False
-        oDecks = PhysicalCardSet.select()
-        for Deck in oDecks:
-            if Deck.name not in openDecks:
+        oSets = PhysicalCardSet.select()
+        for oPCS in oSets:
+            if oPCS.name not in openSets.keys():
                 state = True
-        self.deckLoad.set_sensitive(state)
+        self.physLoad.set_sensitive(state)
 
-    def doCreateDeck(self,widget):
-        # Popup Create Deck Dialog
-        Dialog=CreateDeckDialog(self.__oWin)
+    def setLoadAbstractState(self,openSets):
+        # Determine if loadAbs should be greyed out or not (as for loadPhys)
+        state = False
+        oSets = AbstractCardSet.select()
+        for oACS in oSets:
+            if oACS.name not in openSets.keys():
+                state = True
+        self.absLoad.set_sensitive(state)
+
+    def doCreatePCS(self,widget):
+        # Popup Create PhysicalCardSet Dialog
+        Dialog=CreateCardSetDialog(self.__oWin,"Physical")
         Dialog.run()
         Name=Dialog.getName()
         if Name!=None:
-            # Check Name isn't in user
+            # Check Name isn't in use
             NameList = PhysicalCardSet.selectBy(name=Name)
             if NameList.count() != 0:
                 # Complain about duplicate name
                 Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
-                                              gtk.BUTTONS_CLOSE,"Chosen deck name already in use.")
+                                              gtk.BUTTONS_CLOSE,"Chosen Physical Card Set name already in use.")
                 Complaint.connect("response",lambda dlg, resp: dlg.destroy())
                 Complaint.run()
                 return
         else:
-            return 
-        PhysicalCardSet(name=Name) # Create Deck
-        self.__oC.createNewDeckWindow(Name)
+            return
+        PhysicalCardSet(name=Name) # Create PhysicalCardSet
+        self.__oC.createNewPhysicalCardSetWindow(Name)
 
-    def doLoadDeck(self,widget):
-        # Popup Load Deck Dialog
-        Dialog=LoadDeckDialog(self.__oWin)
+    def doCreateACS(self,widget):
+        # Popup Create AbstractCardSet Dialog
+        Dialog=CreateCardSetDialog(self.__oWin,"Abstract")
+        Dialog.run()
+        Name=Dialog.getName()
+        if Name!=None:
+            # Check Name isn't in use
+            NameList = AbstractCardSet.selectBy(name=Name)
+            if NameList.count() != 0:
+                # Complain about duplicate name
+                Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
+                                              gtk.BUTTONS_CLOSE,"Chosen Abstract Card Set name already in use.")
+                Complaint.connect("response",lambda dlg, resp: dlg.destroy())
+                Complaint.run()
+                return
+        else:
+            return
+        AbstractCardSet(name=Name) # Create New Abstract Card Set
+        self.__oC.createNewAbstractCardSetWindow(Name)
+
+    def doLoadPCS(self,widget):
+        # Popup Load Dialog
+        Dialog=LoadCardSetDialog(self.__oWin,"Physical")
         Dialog.run()
         Name=Dialog.getName()
         if Name != None:
-            window = self.__oC.createNewDeckWindow(Name)
+            window = self.__oC.createNewPhysicalCardSetWindow(Name)
             if window != None:
                 window.load()
+
+    def doLoadACS(self,widget):
+        # Popup Load Dialog
+        Dialog=LoadCardSetDialog(self.__oWin,"Abstract")
+        Dialog.run()
+        Name=Dialog.getName()
+        if Name != None:
+            window = self.__oC.createNewAbstractCardSetWindow(Name)
+            if window != None:
+                window.load()
+
 
     def getApplyFilter(self):
         return self.iApply.get_active()
