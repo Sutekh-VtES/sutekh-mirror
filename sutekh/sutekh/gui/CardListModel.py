@@ -83,8 +83,11 @@ class CardListModel(gtk.TreeStore):
             oExpr = oFilter.getExpression()
         else:
             oExpr = None
-            
-        return self.cardclass.select(oExpr).distinct()
+        
+        if self.cardclass is not AbstractCardSet:
+            return self.cardclass.select(oExpr).distinct()
+        else:
+            return AbstractCard.select(oExpr) # Allowed Multiples here
 
     def groupedCardIterator(self,oCardIter):
         """
@@ -113,10 +116,9 @@ class CardListModel(gtk.TreeStore):
             
             # Count by Abstract Card
             dAbsCards = {}
-            for oCardSet in oCardIter:
-                for oCard in oCardSet.cards:
-                    dAbsCards.setdefault(oCard,0)
-                    dAbsCards[oCard] += 1
+            for oCard in oCardIter:
+                dAbsCards.setdefault(oCard,0)
+                dAbsCards[oCard] += 1
 
             aCards = list(dAbsCards.iteritems())
             aCards.sort(lambda x,y: cmp(x[0].name,y[0].name))
@@ -205,8 +207,12 @@ class CardListModel(gtk.TreeStore):
         oFilter = self.combineFilterWithBase(self.getSelectFilter())        
         oExpr = AND(SpecificCardFilter(sCardName).getExpression(),
                     oFilter.getExpression())
-                      
-        oCardIter = self.cardclass.select(oExpr).distinct()
+
+        if self.cardclass is not AbstractCardSet:
+            oCardIter = self.cardclass.select(oExpr).distinct()
+        else:
+            oCardIter = AbstractCard.select(oExpr)
+
         fGetCard, fGetCount, oGroupedIter = self.groupedCardIterator(oCardIter)
         
         # Iterate over groups

@@ -114,8 +114,14 @@ class AbstractCardSetController(CardSetController):
         # find if there's a abstract card of that name in the Set
         aSubset = [x for x in self.__oAbsCardSet.cards if x.id == oC.id]
         if len(aSubset) > 0:
-            # Remove last card (habit)
+            # FIXME: This currently removes all the cards and restore
+            # X-1 of them, because of the way removeAbstractCard works
+            # for AbstractCardSets. Need to get at the id field of the
+            # join to avoid this
+            # Remove card
             self.__oAbsCardSet.removeAbstractCard(aSubset[-1].id)
+            for j in range(len(aSubset)-1):
+                self.__oAbsCardSet.addAbstractCard(oC.id)
             return True
         return False
 
@@ -136,6 +142,5 @@ class AbstractCardSetController(CardSetController):
         # Add to the Set
         # This is much simpler than for PhysicalCardSets, as we don't have
         # to worry about whether the card exists in PhysicalCards or not
-        print oC
         self.__oAbsCardSet.addAbstractCard(oC.id)
         return True

@@ -169,8 +169,9 @@ class AbstractCardSetFilter(Filter):
 
     def getExpression(self):
         oT = self._makeTableAlias('abstract_map')
+        oAT = Table('abstract_card')
         return AND(oT.q.abstract_card_set_id == self.__iASCId,
-                   AbstractCard.q.id == oT.q.abstract_card_id)
+                oAT.id == oT.q.abstract_card_id)
 
 class SpecificCardFilter(Filter):
     def __init__(self,oCard):

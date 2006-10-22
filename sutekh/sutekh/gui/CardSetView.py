@@ -42,8 +42,6 @@ class CardSetView(EditableCardListView):
         lines=data.data.splitlines()
         # We need to do things in this order as cardNames can include :
         bits=lines[0].split(":")
-        print lines
-        print bits
         if data and data.format == 8 and bits[0] == "Phys":
             # Card is from the Physical card view, so we only get one
             for name in lines[1:]:
