@@ -126,10 +126,15 @@ to manage the databases, it is possible to try other database backends by
 specifying a suitable URI. So to use a postgresql database, specify:
 postres://username@host/database
 
-PostgreSQL has been tested. Sutekh can be made to work with mysql version 5 
-or later, but, due to some issues with SQLObject 0.7.0 and MySQLdb 1.2.1, this
-is not that simple. Due to the database schema used, though, Sutekh will 
-definately NOT work with MySQL version 4.
+Postgres works fine out of the box. With SQLObject 0.7.1 and earlier, mysql 
+doesn't work.
+
+Recent svn snapshots of SQLObject work with MySQL 5, and these fixes should
+make it into SQLObject 0.8.0. The url syntax for mysql is somewhat complex, due
+to the encoding issues involved, typically looking like
+mysql://username@host/database?sqlobject_encoding=latin1
+
+MySQL 4 or earlier will definately NOT work. This is unlikely to ever change.
 
 Other databases are untested.
 
