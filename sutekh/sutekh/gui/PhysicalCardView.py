@@ -10,11 +10,11 @@ from SutekhObjects import PhysicalCard
 class PhysicalCardView(EditableCardListView):
     def __init__(self,oController,oWindow):
         super(PhysicalCardView,self).__init__(oController,oWindow)
-        
+
         self._oModel.basefilter = PhysicalCardFilter()
         self._oModel.cardclass = PhysicalCard
         self.load()
-                   
+
     def cardDrop(self, w, context, x, y, data, info, time):
         if data and data.format == 8 and data.data[:5] == "Abst:":
             cards=data.data.splitlines()
@@ -23,7 +23,7 @@ class PhysicalCardView(EditableCardListView):
             context.finish(True, False, time)
         else:
             context.finish(False, False, time)
-    
+
     def dragCard(self, btn, context, selection_data, info, time):
         if self._oSelection.count_selected_rows()<1:
             return

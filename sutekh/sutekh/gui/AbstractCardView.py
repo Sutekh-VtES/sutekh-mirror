@@ -9,14 +9,14 @@ from CardListView import CardListView
 class AbstractCardView(CardListView):
     def __init__(self,oController,oWindow):
         super(AbstractCardView,self).__init__(oController,oWindow)
-            
+
         oCell = gtk.CellRendererText()
         oCell.set_property('style', pango.STYLE_ITALIC)
         oColumn = gtk.TreeViewColumn("Collection", oCell, text=0)
         self.append_column(oColumn)
-                
+
         self.load()
-        
+
     def dragCard(self, btn, context, selection_data, info, time):
         if self._oSelection.count_selected_rows()<1:
             return

@@ -12,18 +12,18 @@ class CardListModel(gtk.TreeStore):
     """
     Provides a card list specific API for accessing a gtk.TreeStore.
     """
-    
+
     def __init__(self):
         # STRING is the card name, INT is the card count
         super(CardListModel,self).__init__(gobject.TYPE_STRING,gobject.TYPE_INT)
         self._dName2Iter = {}
-        
+
         self.cardclass = AbstractCard # card class to use, or option is PhysicalCard
         self.groupby = CardTypeGrouping # grouping class to use
         self.basefilter = None # base filter defines the card list
         self.applyfilter = False # whether to apply the select filter
         self.selectfilter = None # additional filters for selecting from the list
-           
+
     store = property(fget=lambda self: self._oGtkStore)
     cardclass = property(fget=lambda self: self._cCardClass, fset=lambda self,x: setattr(self,'_cCardClass',x)) 
     groupby = property(fget=lambda self: self._cGroupBy, fset=lambda self,x: setattr(self,'_cGroupBy',x))
@@ -42,17 +42,17 @@ class CardListModel(gtk.TreeStore):
 
         oCardIter = self.getCardIterator(self.getSelectFilter())
         fGetCard, fGetCount, oGroupedIter = self.groupedCardIterator(oCardIter)
-		
+
         # Iterate over groups
         for sGroup, oGroupIter in oGroupedIter:
             # Check for null group
             if sGroup is None:
                 sGroup = '<< None >>'
-        		
+
             # Create Group Section
             oSectionIter = self.append(None)
             self._dGroupName2Iter[sGroup] = oSectionIter
-			
+
             # Fill in Cards
             iGrpCnt = 0
             for oItem in oGroupIter:
@@ -64,7 +64,7 @@ class CardListModel(gtk.TreeStore):
                     1, iCnt
                 )
                 self._dName2Iter.setdefault(oCard.name,[]).append(oChildIter)
-                
+
             # Update Group Section
             self.set(oSectionIter,
                 0, sGroup,
@@ -83,7 +83,7 @@ class CardListModel(gtk.TreeStore):
             oExpr = oFilter.getExpression()
         else:
             oExpr = None
-        
+
         if self.cardclass is not AbstractCardSet:
             return self.cardclass.select(oExpr).distinct()
         else:
@@ -101,7 +101,7 @@ class CardListModel(gtk.TreeStore):
         if self.cardclass is PhysicalCard:
             fGetCard = lambda x:x[0]
             fGetCount = lambda x:x[1]
-            
+
             # Count by Abstract Card
             dAbsCards = {}
             for oCard in oCardIter:
@@ -113,7 +113,7 @@ class CardListModel(gtk.TreeStore):
         elif self.cardclass is AbstractCardSet:
             fGetCard = lambda x:x[0]
             fGetCount = lambda x:x[1]
-            
+
             # Count by Abstract Card
             dAbsCards = {}
             for oCard in oCardIter:
@@ -124,9 +124,9 @@ class CardListModel(gtk.TreeStore):
             aCards.sort(lambda x,y: cmp(x[0].name,y[0].name))
         else:
             fGetCard = lambda x:x
-            fGetCount = lambda x:0            
+            fGetCount = lambda x:0
             aCards = oCardIter
-        
+
         # Iterate over groups
         return fGetCard, fGetCount, self.groupby(aCards,fGetCard)
 
@@ -147,7 +147,7 @@ class CardListModel(gtk.TreeStore):
     def getCardNameFromPath(self,oPath):
         oIter = self.get_iter(oPath)
         return self.getCardNameFromIter(oIter)
-        
+
     def getCardNameFromIter(self,oIter):
         # For some reason the string comes back from the
         # tree store having been encoded *again* despite
@@ -155,11 +155,11 @@ class CardListModel(gtk.TreeStore):
         # I hope all systems encode with utf-8. :(
         sCardName = self.get_value(oIter,0).decode("utf-8")
         return sCardName
-        
+
     def incCard(self,oPath):
         sCardName = self.getCardNameFromPath(oPath)
         self.alterCardCount(sCardName,+1)
-        
+
     def decCard(self,oPath):
         sCardName = self.getCardNameFromPath(oPath)
         self.alterCardCount(sCardName,-1)
@@ -182,17 +182,17 @@ class CardListModel(gtk.TreeStore):
             oGrpIter = self.iter_parent(oIter)
             iCnt = self.get_value(oIter,1) + iChg
             iGrpCnt = self.get_value(oGrpIter,1) + iChg
-            
+
             if iCnt > 0:
                 self.set(oIter,1,iCnt)
             else:
                 self.remove(oIter)
-                
+
             if iGrpCnt > 0:
                 self.set(oGrpIter,1,iGrpCnt)
             else:
                 self.remove(oGrpIter)
-                
+
         if iCnt <= 0:
             del self._dName2Iter[sCardName]
 
@@ -204,7 +204,7 @@ class CardListModel(gtk.TreeStore):
         visible. If it should be visible, add it to the appropriate
         groups.
         """
-        oFilter = self.combineFilterWithBase(self.getSelectFilter())        
+        oFilter = self.combineFilterWithBase(self.getSelectFilter())
         oExpr = AND(SpecificCardFilter(sCardName).getExpression(),
                     oFilter.getExpression())
 
@@ -214,13 +214,13 @@ class CardListModel(gtk.TreeStore):
             oCardIter = AbstractCard.select(oExpr)
 
         fGetCard, fGetCount, oGroupedIter = self.groupedCardIterator(oCardIter)
-        
+
         # Iterate over groups
         for sGroup, oGroupIter in oGroupedIter:
             # Check for null group
             if sGroup is None:
                 sGroup = '<< None >>'
-        		
+
             # Find Group Section
             if self._dGroupName2Iter.has_key(sGroup):
                 oSectionIter = self._dGroupName2Iter[sGroup]
@@ -233,7 +233,7 @@ class CardListModel(gtk.TreeStore):
                     0, sGroup,
                     1, iGrpCnt
                 )
-			
+
             # Add Cards
             for oItem in oGroupIter:
                 oCard, iCnt = fGetCard(oItem), fGetCount(oItem)
@@ -244,7 +244,7 @@ class CardListModel(gtk.TreeStore):
                     1, iCnt
                 )
                 self._dName2Iter.setdefault(oCard.name,[]).append(oChildIter)
-                
+
             # Update Group Section
             self.set(oSectionIter,
                 1, iGrpCnt
