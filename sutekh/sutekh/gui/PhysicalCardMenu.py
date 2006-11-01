@@ -12,8 +12,21 @@ class PhysicalCardMenu(gtk.MenuBar,object):
         self.__oC = oController
         self.__oWindow = oWindow
         
+        self.__createFileMenu()
         self.__createFilterMenu()
         self.__createPluginMenu()
+
+    def __createFileMenu(self):
+        # setup sub menu
+        iMenu = gtk.MenuItem("File")
+        wMenu = gtk.Menu()
+        iMenu.set_submenu(wMenu)
+        # items
+        iExport = gtk.MenuItem("Export Physical Card List to File")
+        wMenu.add(iExport)
+        iExport.connect('activate', self.doExport)
+
+        self.add(iMenu)
 
     def __createFilterMenu(self):
         # setup sub menu
@@ -41,6 +54,9 @@ class PhysicalCardMenu(gtk.MenuBar,object):
         for oPlugin in self.__oC.getPlugins():
             wMenu.add(oPlugin.getMenuItem())
         self.add(iMenu)
+
+    def doExport(self,widget):
+        pass
 
     def getApplyFilter(self):
         return self.iApply.get_active()

@@ -15,11 +15,37 @@ class MainMenu(gtk.MenuBar,object):
         self.__oWin = oWindow
 
         self.__createFileMenu()
+        self.__createCardSetMenu()
         self.__createFilterMenu()
 
     def __createFileMenu(self):
         # setup sub menu
         iMenu = gtk.MenuItem("File")
+        wMenu = gtk.Menu()
+        iMenu.set_submenu(wMenu)
+
+        # items
+        iImportPhysical = gtk.MenuItem("Import Physical Card List from File")
+        iImportPhysical.connect('activate', self.doImportPhysicalCardList)
+        wMenu.add(iImportPhysical)
+
+        iImportCardSet = gtk.MenuItem("Import Card Set from File")
+        iImportCardSet.connect('activate', self.doImportCardSet)
+        wMenu.add(iImportCardSet)
+
+        iSeperator=gtk.SeparatorMenuItem()
+        wMenu.add(iSeperator)
+
+        iQuit = gtk.MenuItem("Quit")
+        iQuit.connect('activate', lambda iItem: self.__oC.actionQuit())
+
+        wMenu.add(iQuit)
+
+        self.add(iMenu)
+
+    def __createCardSetMenu(self):
+        # setup sub menu
+        iMenu = gtk.MenuItem("CardSet")
         wMenu = gtk.Menu()
         iMenu.set_submenu(wMenu)
 
@@ -32,24 +58,15 @@ class MainMenu(gtk.MenuBar,object):
         iCreateAbstract.connect('activate', self.doCreateACS)
         wMenu.add(iCreateAbstract)
 
-        self.physLoad=gtk.Action("PhysicalLoad","Load an Existing Physical Card Set",None,None)
+        self.physLoad=gtk.Action("PhysicalLoad","Open an Existing Physical Card Set",None,None)
         wMenu.add(self.physLoad.create_menu_item())
         self.physLoad.connect('activate', self.doLoadPCS)
         self.physLoad.set_sensitive(False)
 
-        self.absLoad=gtk.Action("AbstractLoad","Load an Existing Abstract Card Set",None,None)
+        self.absLoad=gtk.Action("AbstractLoad","Open an Existing Abstract Card Set",None,None)
         wMenu.add(self.absLoad.create_menu_item())
         self.absLoad.connect('activate', self.doLoadACS)
         self.absLoad.set_sensitive(False)
-
-
-        iSeperator=gtk.SeparatorMenuItem()
-        wMenu.add(iSeperator)
-
-        iQuit = gtk.MenuItem("Quit")
-        iQuit.connect('activate', lambda iItem: self.__oC.actionQuit())
-
-        wMenu.add(iQuit)
 
         self.add(iMenu)
         self.setLoadPhysicalState({})
@@ -92,6 +109,12 @@ class MainMenu(gtk.MenuBar,object):
             if oACS.name not in openSets.keys():
                 state = True
         self.absLoad.set_sensitive(state)
+
+    def doImportPhysicalCardList(self,widget):
+        pass
+
+    def doImportCardSet(self,widget):
+        pass
 
     def doCreatePCS(self,widget):
         # Popup Create PhysicalCardSet Dialog

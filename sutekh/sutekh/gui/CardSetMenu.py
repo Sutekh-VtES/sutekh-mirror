@@ -20,6 +20,9 @@ class CardSetMenu(gtk.MenuBar,object):
         iMenu = gtk.MenuItem("Card Set Actions")
         wMenu=gtk.Menu()
         iMenu.set_submenu(wMenu)
+        iExport = gtk.MenuItem("Export Card Set ("+self.sSetName+") to File")
+        wMenu.add(iExport)
+        iExport.connect('activate', self.doExport)
         iClose=gtk.MenuItem("Close Card Set ("+self.sSetName+")")
         wMenu.add(iClose)
         iClose.connect("activate", self.cardSetClose)
@@ -58,6 +61,9 @@ class CardSetMenu(gtk.MenuBar,object):
         for oPlugin in self.__oC.getPlugins():
             wMenu.add(oPlugin.getMenuItem())
         self.add(iMenu)
+
+    def doExport(self,widget):
+        pass
 
     def cardSetClose(self,widget):
         self.__oWindow.closeCardSet(widget)
