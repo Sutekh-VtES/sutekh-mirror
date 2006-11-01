@@ -55,7 +55,7 @@ class FilterDialog(gtk.Dialog):
         super(FilterDialog,self).__init__("Specify Filter", \
               parent,gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT, \
               ( gtk.STOCK_OK, gtk.RESPONSE_OK, gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
-        self.set_default_size(400,200)
+        self.set_default_size(640,200)
         self.wasCancelled = False
         self.State={}
         myHBox=gtk.HBox(False,0)
