@@ -5,19 +5,21 @@
 # GPL - see COPYING for details
 
 import gtk
+from ExportDialog import ExportDialog
 
 class CardSetMenu(gtk.MenuBar,object):
-    def __init__(self,oController,oWindow,sName):
+    def __init__(self,oController,oWindow,sName,sType):
         super(CardSetMenu,self).__init__()
         self.__oC = oController
         self.__oWindow = oWindow
         self.sSetName = sName
+        self.__sType=sType
         self.__createCardSetMenu()
         self.__createFilterMenu()
         self.__createPluginMenu()
 
     def __createCardSetMenu(self):
-        iMenu = gtk.MenuItem("Card Set Actions")
+        iMenu = gtk.MenuItem(self.__sType+" Card Set Actions")
         wMenu=gtk.Menu()
         iMenu.set_submenu(wMenu)
         iExport = gtk.MenuItem("Export Card Set ("+self.sSetName+") to File")
@@ -63,7 +65,10 @@ class CardSetMenu(gtk.MenuBar,object):
         self.add(iMenu)
 
     def doExport(self,widget):
-        pass
+        oFileChooser=ExportDialog("Save "+self.__sType+" Card Set As",self.__oWindow)
+        oFileChooser.run()
+        sFileName=oFileChooser.getName()
+        print sFileName
 
     def cardSetClose(self,widget):
         self.__oWindow.closeCardSet(widget)

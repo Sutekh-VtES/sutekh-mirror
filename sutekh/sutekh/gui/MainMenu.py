@@ -7,6 +7,7 @@ import gtk
 from SutekhObjects import PhysicalCardSet, AbstractCardSet
 from CreateCardSetDialog import CreateCardSetDialog
 from LoadCardSetDialog import LoadCardSetDialog
+from ImportDialog import ImportDialog
 
 class MainMenu(gtk.MenuBar,object):
     def __init__(self,oController,oWindow):
@@ -111,10 +112,22 @@ class MainMenu(gtk.MenuBar,object):
         self.absLoad.set_sensitive(state)
 
     def doImportPhysicalCardList(self,widget):
-        pass
+        oFileChooser=ImportDialog("Select Card List to Import",self.__oWin)
+        oFileChooser.run()
+        sFileName=oFileChooser.getName()
+        if sFileName is not None:
+            print sFileName
+        else:
+            print "Import Cancelled"
 
     def doImportCardSet(self,widget):
-        pass
+        oFileChooser=ImportDialog("Select Card Set(s) to Import",self.__oWin)
+        oFileChooser.run()
+        sFileName=oFileChooser.getName()
+        if sFileName is not None:
+            print sFileName
+        else:
+            print "Import Cancelled"
 
     def doCreatePCS(self,widget):
         # Popup Create PhysicalCardSet Dialog

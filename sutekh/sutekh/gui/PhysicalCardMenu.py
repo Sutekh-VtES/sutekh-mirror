@@ -5,6 +5,7 @@
 # GPL - see COPYING for details
 
 import gtk
+from ExportDialog import ExportDialog
 
 class PhysicalCardMenu(gtk.MenuBar,object):
     def __init__(self,oController,oWindow):
@@ -56,7 +57,10 @@ class PhysicalCardMenu(gtk.MenuBar,object):
         self.add(iMenu)
 
     def doExport(self,widget):
-        pass
+        oFileChooser=ExportDialog("Save Physical Card List As",self.__oWindow)
+        oFileChooser.run()
+        sFileName=oFileChooser.getName()
+        print sFileName
 
     def getApplyFilter(self):
         return self.iApply.get_active()
