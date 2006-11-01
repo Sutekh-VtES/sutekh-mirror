@@ -30,7 +30,7 @@ class CardSetMenu(gtk.MenuBar,object):
         # Possible enhancement, make card set names italic.
         # Looks like it requires playing with menuitem attributes
         # (or maybe gtk.Action)
-        iDelete.connect("activate", self.cardSetDelete) 
+        iDelete.connect("activate", self.cardSetDelete)
         wMenu.add(iDelete)
         self.add(iMenu)
 

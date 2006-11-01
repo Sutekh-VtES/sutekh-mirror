@@ -14,23 +14,23 @@ class PhysicalCardController(object):
         self.__oView = PhysicalCardView(self,oWindow)
         self.__oC = oMasterController
         self.__oWin = oWindow
-        
+
         # setup plugins before the menu (which needs a list of plugins)
         self.__aPlugins = []
         for cPlugin in oMasterController.getPluginManager().getCardListPlugins():
             self.__aPlugins.append(cPlugin(self.__oView,self.__oView.getModel()))
-    
-        self.__oMenu = PhysicalCardMenu(self,self.__oWin)        
-        
+
+        self.__oMenu = PhysicalCardMenu(self,self.__oWin)
+
     def getView(self):
         return self.__oView
-    
+
     def getMenu(self):
         return self.__oMenu
-        
+
     def getPlugins(self):
         return self.__aPlugins
-    
+
     def decCard(self,sName):
         """
         Returns True if a card was successfully removed, False otherwise.
@@ -39,16 +39,16 @@ class PhysicalCardController(object):
             oC = AbstractCard.byName(sName)
         except SQLObjectNotFound:
             return False
-            
-        # Go from Name to Abstract Card ID to Physical card ID 
+
+        # Go from Name to Abstract Card ID to Physical card ID
         # which is needed for delete
         # find Physical cards cards with this name
         cardCands = PhysicalCard.selectBy(abstractCardID=oC.id)
-        
+
         # check we found something?
         if cardCands.count()==0:
             return False
-            
+
         # Loop throgh list and see if we can find a card
         # not present in any PCS
         dPCS = {}
@@ -70,7 +70,7 @@ class PhysicalCardController(object):
         T=min(dPCS.values())
         list=[x for x in dPCS if T is dPCS[x]]
         idtodel=list[-1]
-        candtodel=dPCS[idtodel] 
+        candtodel=dPCS[idtodel]
         # This is probably overcomplicated, need to revisit this sometime
         # Prompt the user for confirmation
         Dialog = DeleteCardDialog(self.__oWin,candtodel[1])
@@ -85,13 +85,13 @@ class PhysicalCardController(object):
             # Reload everything
             self.__oC.reloadAllPhysicalCardSets()
             return True
-    
+
     def incCard(self,sName):
         """
         Returns True if a card was successfully added, False otherwise.
         """
         return self.addCard(sName)
-    
+
     def addCard(self,sName):
         """
         Returns True if a card was successfully added, False otherwise.
@@ -100,10 +100,10 @@ class PhysicalCardController(object):
             oC = AbstractCard.byName(sName)
         except SQLObjectNotFound:
             return False
-            
+
         oPC = PhysicalCard(abstractCard=oC)
         return True
-        
+
     def setCardText(self,sCardName):
         self.__oC.setCardText(sCardName)
 

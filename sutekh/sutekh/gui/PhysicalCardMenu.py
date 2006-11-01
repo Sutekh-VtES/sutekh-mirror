@@ -11,7 +11,7 @@ class PhysicalCardMenu(gtk.MenuBar,object):
         super(PhysicalCardMenu,self).__init__()
         self.__oC = oController
         self.__oWindow = oWindow
-        
+
         self.__createFileMenu()
         self.__createFilterMenu()
         self.__createPluginMenu()

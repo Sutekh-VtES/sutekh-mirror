@@ -25,7 +25,7 @@ class CardListModel(gtk.TreeStore):
         self.selectfilter = None # additional filters for selecting from the list
 
     store = property(fget=lambda self: self._oGtkStore)
-    cardclass = property(fget=lambda self: self._cCardClass, fset=lambda self,x: setattr(self,'_cCardClass',x)) 
+    cardclass = property(fget=lambda self: self._cCardClass, fset=lambda self,x: setattr(self,'_cCardClass',x))
     groupby = property(fget=lambda self: self._cGroupBy, fset=lambda self,x: setattr(self,'_cGroupBy',x))
     basefilter = property(fget=lambda self: self._oBaseFilter, fset=lambda self,x: setattr(self,'_oBaseFilter',x))
     applyfilter = property(fget=lambda self: self._bApplyFilter, fset=lambda self,x: setattr(self,'_bApplyFilter',x))

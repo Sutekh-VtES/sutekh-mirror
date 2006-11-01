@@ -24,6 +24,6 @@ class DBErrorPopup(object):
 
     def run(self):
         gtk.main()
-        
+
     def actionQuit(self):
         gtk.main_quit()
