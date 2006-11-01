@@ -1,43 +1,42 @@
-# DeckParser.py
+# AbstractCardSetParser.py
 # Copyright 2006 Simon Cross <hodgestar@gmail.com>
 # Minor modifications copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
 """
-Write physical cards from a PhysicalCardSet out to an XML file which
+Write cards from a AbstractCardSet out to an XML file which
 looks like:
-<deck name='DeckName'>
+<abstractcardset name='AbstractCardSetName'>
   <card id='3' name='Some Card' count='5' />
-  <card id='5' name='Some Other Card' count='2' />  
-</deck>
+  <card id='5' name='Some Other Card' count='2' />
+</abstractcardset>
 """
 
 from SutekhObjects import *
 from xml.dom.ext import PrettyPrint
 from xml.dom.minidom import getDOMImplementation
 
-class DeckWriter(object):
-    def write(self,fOut,sDeckName):
-        dPhys = {}
+class AbstractCardSetWriter(object):
+    def write(self,fOut,sAbstractCardSetName):
+        dCards = {}
 
         try:
-            oPCS = PhysicalCardSet.byName(sDeckName)
+            oACS = AbstractCardSet.byName(sAbstractCardSetName)
         except SQLObjectNotFound:
             return
 
-        for oC in oPCS.cards:
-            oAbs = oC.abstractCard
+        for oAbs in oACS.cards:
             try:
-                dPhys[(oAbs.id, oAbs.name)] += 1
+                dCards[(oAbs.id, oAbs.name)] += 1
             except KeyError:
-                dPhys[(oAbs.id, oAbs.name)] = 1
+                dCards[(oAbs.id, oAbs.name)] = 1
 
-        oDoc = getDOMImplementation().createDocument(None,'deck',None)
+        oDoc = getDOMImplementation().createDocument(None,'abstractcardset',None)
 
         oCardsElem = oDoc.firstChild
-        oCardsElem.setAttribute('name',sDeckName)
+        oCardsElem.setAttribute('name',sAbstractCardSetName)
 
-        for tKey, iNum in dPhys.iteritems():
+        for tKey, iNum in dCards.iteritems():
             iId, sName = tKey
             oCardElem = oDoc.createElement('card')
             oCardElem.setAttribute('id',str(iId))

@@ -8,7 +8,7 @@ from SutekhObjects import *
 from gui.MainController import MainController
 from gui.DBErrorPopup import DBErrorPopup
 
-# Script Launching    
+# Script Launching
 
 def parseOptions(aArgs):
     oP = optparse.OptionParser(usage="usage: %prog [options]",version="%prog 0.1")

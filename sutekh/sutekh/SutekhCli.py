@@ -10,8 +10,10 @@ from WhiteWolfParser import WhiteWolfParser
 from RulingParser import RulingParser
 from PhysicalCardParser import PhysicalCardParser
 from PhysicalCardWriter import PhysicalCardWriter
-from DeckParser import DeckParser
-from DeckWriter import DeckWriter
+from PhysicalCardSetParser import PhysicalCardSetParser
+from PhysicalCardSetWriter import PhysicalCardSetWriter
+from AbstractCardSetParser import AbstractCardSetParser
+from AbstractCardSetWriter import AbstractCardSetWriter
 
 def parseOptions(aArgs):
     oP = optparse.OptionParser(usage="usage: %prog [options]",version="%prog 0.1")
@@ -41,23 +43,35 @@ def parseOptions(aArgs):
                   help="Write an XML description of the list of physical cards to the given file.")
     oP.add_option("-l","--read-physical-cards-from",
                   type="string",dest="read_physical_cards_from",default=None,
-                  help="Read physical card list from the given XML file.")                   
-    oP.add_option("--save-deck",
-                  type="string",dest="save_deck",default=None,
-                  help="Save the given deck to an XML file (by default named <deckname>.xml).")
-    oP.add_option("--deck-filename",
-                  type="string",dest="deck_filename",default=None,
-                  help="Give an alternative filename to save the deck as")
-    oP.add_option("--save-all-decks",
-                  action="store_true",dest="save_all_decks",default=False,
-                  help="Save all decks in the database to files - Cannot be used with --save-deck.")
-    oP.add_option("--read-deck",
-                  type="string",dest="read_deck",default=None,
-                  help="Load a deck from the given XML file.")
+                  help="Read physical card list from the given XML file.")
+    oP.add_option("--save-pcs",
+                  type="string",dest="save_pcs",default=None,
+                  help="Save the given Physical Card Set to an XML file (by default named <pcsname>.xml).")
+    oP.add_option("--pcs-filename",
+                  type="string",dest="pcs_filename",default=None,
+                  help="Give an alternative filename to save the Physical Card Set as")
+    oP.add_option("--save-all-pcs",
+                  action="store_true",dest="save_all_pcss",default=False,
+                  help="Save all Physical Card Sets in the database to files - Cannot be used with --save-pcs.")
+    oP.add_option("--read-pcs",
+                  type="string",dest="read_pcs",default=None,
+                  help="Load a Physical Card Set from the given XML file.")
+    oP.add_option("--save-acs",
+                  type="string",dest="save_acs",default=None,
+                  help="Save the given Abstract Card Set to an XML file (by default named <acsname>.xml).")
+    oP.add_option("--acs-filename",
+                  type="string",dest="acs_filename",default=None,
+                  help="Give an alternative filename to save the Abstract Card Set as")
+    oP.add_option("--save-all-acs",
+                  action="store_true",dest="save_all_acss",default=False,
+                  help="Save all Abstract Card Sets in the database to files - Cannot be used with --save-acs.")
+    oP.add_option("--read-acs",
+                  type="string",dest="read_acs",default=None,
+                  help="Load an Abstract Card Set from the given XML file.")
     oP.add_option("--reload",action="store_true",dest="reload",default=False,
-                  help="Dump physical card list and decks and reload them - \
+                  help="Dump the physical card list and all card sets and reload them - \
 intended to be used with -c and refreshing the abstract card list")
-                  
+
     return oP, oP.parse_args(aArgs)
 
 def refreshTables(aTables,**kw):
@@ -98,43 +112,67 @@ def writePhysicalCards(sXmlFile):
     oW.write(fOut)
     fOut.close()
 
-def readDeck(sXmlFile):
-    oP = DeckParser()
+def readPhysicalCardSet(sXmlFile):
+    oP = PhysicalCardSetParser()
     oP.parse(file(sXmlFile,'rU'))
 
-def writeDeck(sDeckName,sXmlFile):
-    oW = DeckWriter()
+def writePhysicalCardSet(sPhysicalCardSetName,sXmlFile):
+    oW = PhysicalCardSetWriter()
     if sXmlFile is None:
-        filename=sDeckName.replace(" ","_") # I hate spaces in filenames
+        filename=sPhysicalCardSetName.replace(" ","_") # I hate spaces in filenames
         fOut=file(filename,'w')
     else:
         fOut=file(sXmlFile,'w')
-    oW.write(fOut,sDeckName)
+    oW.write(fOut,sPhysicalCardSetName)
     fOut.close()
 
-def writeAllDecks(dir=''):
-    oDecks = PhysicalCardSet.select()
+def writeAllPhysicalCardSets(dir=''):
+    oPhysicalCardSets = PhysicalCardSet.select()
     aList=[];
-    for deck in oDecks:
-        (fd,filename)=tempfile.mkstemp('.xml','deck_'+deck.name.replace(" ","_")+'_',dir)
+    for pcs in oPhysicalCardSets:
+        (fd,filename)=tempfile.mkstemp('.xml','pcs_'+pcs.name.replace(" ","_")+'_',dir)
         os.close(fd)
         aList.append(filename)
-        writeDeck(deck.name,filename)
+        writePhysicalCardSet(pcs.name,filename)
+    return aList
+
+def readAbstractCardSet(sXmlFile):
+    oP = AbstractCardSetParser()
+    oP.parse(file(sXmlFile,'rU'))
+
+def writeAbstractCardSet(sAbstractCardSetName,sXmlFile):
+    oW = AbstractCardSetWriter()
+    if sXmlFile is None:
+        filename=sAbstractCardSetName.replace(" ","_") # I hate spaces in filenames
+        fOut=file(filename,'w')
+    else:
+        fOut=file(sXmlFile,'w')
+    oW.write(fOut,sAbstractCardSetName)
+    fOut.close()
+
+def writeAllAbstractCardSets(dir=''):
+    oAbstractCardSets = AbstractCardSet.select()
+    aList=[];
+    for acs in oAbstractCardSets:
+        (fd,filename)=tempfile.mkstemp('.xml','acs_'+acs.name.replace(" ","_")+'_',dir)
+        os.close(fd)
+        aList.append(filename)
+        writeAbstractCardSet(acs.name,filename)
     return aList
 
 def main(aArgs):
     oOptParser, (oOpts, aArgs) = parseOptions(aArgs)
-    
+
     if len(aArgs) != 1:
         oOptParser.print_help()
         return 1
-        
+
     if oOpts.db is None:
         oOpts.db = "sqlite://" + os.path.join(os.getcwd(),"sutekh.db")
 
     oConn = connectionForURI(oOpts.db)
     sqlhub.processConnection = oConn
-    
+
     if oOpts.sql_debug:
         oConn.debug = True
 
@@ -144,7 +182,8 @@ def main(aArgs):
             return 1
         else:
             sTempdir=tempfile.mkdtemp('dir','sutekh')
-            aDeckList=writeAllDecks(sTempdir)
+            aPhysicalCardSetList=writeAllPhysicalCardSets(sTempdir)
+            aAbstractCardSetList=writeAllAbstractCardSets(sTempdir)
             (fd, sCardList)=tempfile.mkstemp('.xml','physical_cards_',sTempdir)
             # This may not be nessecary, but the available documentation
             # suggests that, on Windows NT anyway, leaving the file open will
@@ -153,55 +192,67 @@ def main(aArgs):
             writePhysicalCards(sCardList)
             # We dump the databases here
             # We will reload them later
-    
+
     if oOpts.refresh_ruling_tables:
         if not refreshTables([Ruling]):
             print "refresh failed"
             return 1
-    
+
     if oOpts.refresh_tables:
         if not refreshTables(ObjectList):
             print "refresh failed"
             return 1
-        
+
     if oOpts.refresh_physical_card_tables:
         if not refreshTables([PhysicalCard]):
             print "refresh failed"
             return 1
-    
+
     if not oOpts.ww_file is None:
         readWhiteWolfList(oOpts.ww_file)
-        
+
     if not oOpts.ruling_file is None:
         readRulings(oOpts.ruling_file)
-        
+
     if not oOpts.read_physical_cards_from is None:
         readPhysicalCards(oOpts.read_physical_cards_from)
 
     if not oOpts.save_physical_cards_to is None:
         writePhysicalCards(oOpts.save_physical_cards_to)
 
-    if oOpts.save_all_decks and not oOpts.save_deck is None:
-        print "Can't use --save-deck and --save-all-decks Simulatenously"
+    if oOpts.save_all_acss and not oOpts.save_acs is None:
+        print "Can't use --save-acs and --save-all-acss Simulatenously"
         return 1
 
-    if oOpts.save_all_decks:
-        writeAllDecks()
+    if oOpts.save_all_pcss and not oOpts.save_pcs is None:
+        print "Can't use --save-pcs and --save-all-pcss Simulatenously"
+        return 1
 
-    if not oOpts.save_deck is None:
-        writeDeck(oOpts.save_deck,oOpts.deck_filename)
+    if oOpts.save_all_acss:
+        writeAllAbstractCardSets()
 
-    if not oOpts.read_deck is None:
-        readDeck(oOpts.read_deck)
+    if not oOpts.save_pcs is None:
+        writePhysicalCardSet(oOpts.save_pcs,oOpts.pcs_filename)
+
+    if not oOpts.save_acs is None:
+        writeAbstractCardSet(oOpts.save_acs,oOpts.acs_filename)
+
+    if not oOpts.read_pcs is None:
+        readPhysicalCardSet(oOpts.read_pcs)
+
+    if not oOpts.read_acs is None:
+        readAbstractCardSet(oOpts.read_acs)
 
     if oOpts.reload:
         readPhysicalCards(sCardList)
         os.remove(sCardList)
-        for deck in aDeckList:
-            readDeck(deck)
-            os.remove(deck)
+        for pcs in aPhysicalCardSetList:
+            readPhysicalCardSet(pcs)
+            os.remove(pcs)
+        for acs in aAbstractCardSetList:
+            readAbstrctCardSet(acs)
+            os.remove(acs)
         os.rmdir(sTempdir)
-
 
     return 0
 
