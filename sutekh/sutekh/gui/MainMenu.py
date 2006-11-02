@@ -8,6 +8,10 @@ from SutekhObjects import PhysicalCardSet, AbstractCardSet
 from CreateCardSetDialog import CreateCardSetDialog
 from LoadCardSetDialog import LoadCardSetDialog
 from ImportDialog import ImportDialog
+from AbstractCardSetParser import AbstractCardSetParser
+from PhysicalCardParser import PhysicalCardParser
+from PhysicalCardSetParser import PhysicalCardSetParser
+from IdentifyXMLFile import IdentifyXMLFile
 
 class MainMenu(gtk.MenuBar,object):
     def __init__(self,oController,oWindow):
@@ -117,6 +121,15 @@ class MainMenu(gtk.MenuBar,object):
         sFileName=oFileChooser.getName()
         if sFileName is not None:
             print sFileName
+            oP=IdentifyXMLFile()
+            (sType,sName,bExists)=oP.parse(file(sFileName,'rU'))
+            if sType=='PhysicalCard':
+                print "Can process this"
+                if bExists:
+                    print "Would need to delete current Card List"
+            else:
+                print sType+" not a PhysicalCard list"
+
         else:
             print "Import Cancelled"
 
@@ -126,6 +139,14 @@ class MainMenu(gtk.MenuBar,object):
         sFileName=oFileChooser.getName()
         if sFileName is not None:
             print sFileName
+            oP=IdentifyXMLFile()
+            (sType,sName,bExists)=oP.parse(file(sFileName,'rU'))
+            if sType=='PhysicalCardSet' or sType=='AbstractCardSet':
+                print "Can process this"
+                if bExists:
+                    print "Would need to delete current "+sName+" "+sType
+            else:
+                print sType+" not a CardSet"
         else:
             print "Import Cancelled"
 
