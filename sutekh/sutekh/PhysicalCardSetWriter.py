@@ -1,4 +1,4 @@
-# PhysicalCardSetParser.py
+# PhysicalCardSetWriter.py
 # Copyright 2006 Simon Cross <hodgestar@gmail.com>
 # Minor modifications copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
