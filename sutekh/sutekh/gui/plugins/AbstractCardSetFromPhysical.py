@@ -4,6 +4,7 @@
 
 import gtk
 from SutekhObjects import *
+from gui.CreateCardSetDialog import CreateCardSetDialog
 from gui.PluginManager import CardListPlugin
 
 class AbstractCardSetFromPhysical(CardListPlugin):
@@ -16,15 +17,29 @@ class AbstractCardSetFromPhysical(CardListPlugin):
         """
         Overrides method from base class.
         """
-        iDF = gtk.MenuItem("Generate a Physical Card Set")
+        iDF = gtk.MenuItem("Generate a Abstract Card Set")
         iDF.connect("activate", self.activate)
         return iDF
         
     def activate(self,oWidget):
-        self.createPhysCardSet()
+        self.createAbsCardSet()
 
-    def createPhysCardSet(self):
-        print "Creating a Physical Card Set"
-        pass
+    def createAbsCardSet(self):
+        parent = self.view.getWindow()
+        oDlg = CreateCardSetDialog(parent,"Abstract")
+        oDlg.run()
+        sName = oDlg.getName()
+        if sName is not None:
+            NameList = AbstractCardSet.selectBy(name=sName)
+            if NameList.count()!=0:
+                Complaint=gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
+                        gtk.BUTTONS_CLOSE,"Chosen Abstract Card Set already exists")
+                Complaint.run()
+                Complaint.destroy()
+                return
+            nA=AbstractCardSet(name=sName)
+            # Copy the cards across
+            for oCard in self.model.getCardIterator(None):
+                nA.addAbstractCard(oCard.abstractCardID)
 
 plugin = AbstractCardSetFromPhysical

@@ -4,6 +4,7 @@
 
 import gtk
 from SutekhObjects import *
+from gui.CreateCardSetDialog import CreateCardSetDialog
 from gui.PluginManager import CardListPlugin
 
 class PhysicalCardSetFromAbstract(CardListPlugin):
@@ -23,10 +24,29 @@ class PhysicalCardSetFromAbstract(CardListPlugin):
         return iDF
         
     def activate(self,oWidget):
-        self.createAbsCardSet()
+        self.createPhysCardSet()
 
-    def createAbsCardSet(self):
-        print "Creating a Physical Card Set"
-        pass
+    def createPhysCardSet(self):
+        parent = self.view.getWindow()
+        oDlg = CreateCardSetDialog(parent,"Physical")
+        oDlg.run()
+        sName = oDlg.getName()
+        if sName is not None:
+            NameList = PhysicalCardSet.selectBy(name=sName)
+            if NameList.count()!=0:
+                Complaint=gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
+                        gtk.BUTTONS_CLOSE,"Chosen Physical Card Set already exists")
+                Complaint.run()
+                Complaint.destroy()
+                return
+            nP=PhysicalCardSet(name=sName)
+            # Copy the cards across
+            for oCard in self.model.getCardIterator(None):
+                oPhysCards=PhysicalCard.selectBy(abstractCardID=oCard.id)
+                if oPhysCards.count() > 0:
+                    for oPC in oPhysCards:
+                        if oPC not in nP.cards:
+                            nP.addPhysicalCard(oPC.id)
+                            break
 
 plugin = PhysicalCardSetFromAbstract
