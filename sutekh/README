@@ -88,37 +88,6 @@ Filtering:
 
 === Database Notes ===
 
-==== Adding Indexes to Sqlite Databases ====
-
-Sqlite databases access can be signigicantly sped up by adding indexes.  Use:
-
-./sqlite3 sutekh.db
-CREATE INDEX physical_map_index_01 ON physical_map (physical_card_id);
-CREATE INDEX physical_map_index_02 ON physical_map (physical_card_set_id);
-CREATE INDEX abstract_map_index_01 ON abstract_map (abstract_card_id);
-CREATE INDEX abstract_map_index_02 ON abstract_map (abstract_card_set_id);
-CREATE INDEX abs_discipline_pair_map_index_01 ON abs_discipline_pair_map (abstract_card_id);
-CREATE INDEX abs_discipline_pair_map_index_02 ON abs_discipline_pair_map (discipline_pair_id);
-CREATE INDEX abs_rarity_pair_map_index_01 ON abs_rarity_pair_map (abstract_card_id);
-CREATE INDEX abs_rarity_pair_map_index_02 ON abs_rarity_pair_map (rarity_pair_id);
-CREATE INDEX abs_ruling_map_index_01 ON abs_ruling_map (abstract_card_id);
-CREATE INDEX abs_ruling_map_index_02 ON abs_ruling_map (ruling_id);
-CREATE INDEX abs_type_map_index_01 ON abs_type_map (abstract_card_id);
-CREATE INDEX abs_type_map_index_02 ON abs_type_map (card_type_id);
-.quit
-
-For large databases, sqlite will also benefit from running ANALYZE after the
-indexes have been created (note that the ANALYZE command is only available in
-sqlite3 from version 3.2.3):
-
-./sqlite3 sutekh.db
-ANALYZE;
-.quit
-
-If you're using sqlite version 2, you'll need to replace the first line with:
-
-./sqlite sutekh.db
-
 ==== Using other database backends ====
 
 Sutekh has been developed mainly with sqlite, but, since it uses SQLObject for

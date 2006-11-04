@@ -1,3 +1,23 @@
+4 Nov 2006
+ * Support for exporting cards to xML from the GUI - NM
+
+22 October 2006
+ * Replace deck handling with PhysicalCardSets and AbstractCardSets - NM
+
+between April and November
+ Many, many changes
+ * Add version information to the database
+ * Grouping support in display
+ * handle both phyicalcardsets and abstractcardsets
+ * added indexes to the database
+ * plugin support
+ * clustering plugin
+ * create card set from filter plugin
+ * Support for imbued from the white wolf cardlist
+ * Support third ed
+ * Tweaked database structure 
+   to support mysql (with correct sqlobject version) and postgresql
+
 23 April 2006:
 * Fill in file headers, listing copyrights, based on svn log history - NM
 * Add COPYRIGHT file, generally try and dot t's and cross i's on the

@@ -1,28 +1,28 @@
 Backend:
  * Add ordering mechanism for card lists.
- * Make filtering less slow (mainly for sqlite).
- * Version database
- * Handle 'Creed' and 'Life' attributes of Imbued in WhiteWolfParser.
+ * Make filtering less slow (mainly for sqlite) 
+      (seems OK with the indexes. Do we need more?).
+ * Handle 'Creed' and 'Life' attributes of Imbued in WhiteWolfParser (done?)
  * Export card sets to HTML.
 
-CLI:
- * Options for backing up and restoring all physical cards and decks.
- * Single command-line updating of card database.
-
 Gui (Functionality):
- * Improve Filter selection dialog.
+ * Improve Filter selection dialog. 
  * Add ordering selection dialog (possibly part of filtering dialog).
  * Ability to add additional columns to card list displays (capacity, group, ...).
- * Make AnalyzeCardList plugin work for card list models and views containing AbstractCards.
+ * Split AnalyzeCardList into a bunch of seperate plugins - NM
  * Finish ClusterCardList plugin.
 
 Gui (Presentation):
- * Make split window optional - NM
- * Give gui resource handling capablities (.sutekhrc) to save window pos, etc - NM
+ * Give gui resource handling capablities to save window pos, etc - NM
  * Neaten up card text display (maybe move to an HTML widget)?
+ * Seperate card text display into it's own window - NM
 
 Website:
  * Create logo for wiki.
 
-Up for debate:
- * Implement some constraints on different decks
+Release Candidate tasks:
+ * Finish up XML file handling in GUI
+ * PCS to ACS and vice versa plugins
+ * Finish up database upgrade
+ * Cardlist & ruling refresh in GUI??
+ * Check everything works on Windows again
