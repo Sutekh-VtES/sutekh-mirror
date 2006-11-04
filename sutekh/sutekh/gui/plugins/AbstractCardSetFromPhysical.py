@@ -8,7 +8,7 @@ from gui.CreateCardSetDialog import CreateCardSetDialog
 from gui.PluginManager import CardListPlugin
 
 class AbstractCardSetFromPhysical(CardListPlugin):
-    """Create a equivilant Abstract Card Set from a given 
+    """Create a equivilant Abstract Card Set from a given
        Physical Card Set."""
     def __init__(self,*args,**kws):
         super(AbstractCardSetFromPhysical,self).__init__(*args,**kws)
@@ -20,7 +20,7 @@ class AbstractCardSetFromPhysical(CardListPlugin):
         iDF = gtk.MenuItem("Generate a Abstract Card Set")
         iDF.connect("activate", self.activate)
         return iDF
-        
+
     def activate(self,oWidget):
         self.createAbsCardSet()
 

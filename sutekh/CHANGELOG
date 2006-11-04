@@ -1,5 +1,7 @@
-4 Nov 2006
+
+04 Nov 2006
  * Support for exporting cards to xML from the GUI - NM
+ * Finsh PhysicalCardSet to AbstractCardSet and reverse plugins - NM
 
 22 October 2006
  * Replace deck handling with PhysicalCardSets and AbstractCardSets - NM

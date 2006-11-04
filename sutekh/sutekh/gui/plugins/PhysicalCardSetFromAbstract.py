@@ -8,8 +8,8 @@ from gui.CreateCardSetDialog import CreateCardSetDialog
 from gui.PluginManager import CardListPlugin
 
 class PhysicalCardSetFromAbstract(CardListPlugin):
-    """Create a (as far as possible) equivilant Physical Card Set 
-       from a given Abstract Card Set. 
+    """Create a (as far as possible) equivilant Physical Card Set
+       from a given Abstract Card Set.
        Ignores Cards which don't exist in Physical Cards"""
        #Q: How should the user be informed of missing cards?
     def __init__(self,*args,**kws):
@@ -22,7 +22,7 @@ class PhysicalCardSetFromAbstract(CardListPlugin):
         iDF = gtk.MenuItem("Generate a Physical Card Set")
         iDF.connect("activate", self.activate)
         return iDF
-        
+
     def activate(self,oWidget):
         self.createPhysCardSet()
 

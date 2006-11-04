@@ -22,7 +22,6 @@ Website:
 
 Release Candidate tasks:
  * Finish up XML file handling in GUI
- * PCS to ACS and vice versa plugins
  * Finish up database upgrade
  * Cardlist & ruling refresh in GUI??
  * Check everything works on Windows again
