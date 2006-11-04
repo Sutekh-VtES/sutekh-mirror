@@ -6,6 +6,8 @@
 
 import gtk
 from ExportDialog import ExportDialog
+from AbstractCardSetWriter import AbstractCardSetWriter
+from PhysicalCardSetWriter import PhysicalCardSetWriter
 
 class CardSetMenu(gtk.MenuBar,object):
     def __init__(self,oController,oWindow,sName,sType):
@@ -68,7 +70,15 @@ class CardSetMenu(gtk.MenuBar,object):
         oFileChooser=ExportDialog("Save "+self.__sType+" Card Set As",self.__oWindow)
         oFileChooser.run()
         sFileName=oFileChooser.getName()
-        print sFileName
+        if sFileName is not None:
+            if self.__sType=='Physical':
+                oW=PhysicalCardSetWriter()
+            else:
+                oW=AbstractCardSetWriter()
+            # User has OK'd us overwriting anything
+            fOut=file(sFileName,'w')
+            oW.write(fOut,self.sSetName)
+            fOut.close()
 
     def cardSetClose(self,widget):
         self.__oWindow.closeCardSet(widget)

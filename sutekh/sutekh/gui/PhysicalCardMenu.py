@@ -6,6 +6,7 @@
 
 import gtk
 from ExportDialog import ExportDialog
+from PhysicalCardWriter import PhysicalCardWriter
 
 class PhysicalCardMenu(gtk.MenuBar,object):
     def __init__(self,oController,oWindow):
@@ -60,7 +61,11 @@ class PhysicalCardMenu(gtk.MenuBar,object):
         oFileChooser=ExportDialog("Save Physical Card List As",self.__oWindow)
         oFileChooser.run()
         sFileName=oFileChooser.getName()
-        print sFileName
+        if sFileName is not None:
+            fOut=file(sFileName,'w')
+            oW=PhysicalCardWriter()
+            oW.write(fOut)
+            fOut.close()
 
     def getApplyFilter(self):
         return self.iApply.get_active()
