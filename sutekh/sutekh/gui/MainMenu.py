@@ -8,9 +8,9 @@ from SutekhObjects import PhysicalCardSet, AbstractCardSet
 from CreateCardSetDialog import CreateCardSetDialog
 from LoadCardSetDialog import LoadCardSetDialog
 from ImportDialog import ImportDialog
-from AbstractCardSetParser import AbstractCardSetParser
 from PhysicalCardParser import PhysicalCardParser
 from PhysicalCardSetParser import PhysicalCardSetParser
+from AbstractCardSetParser import AbstractCardSetParser
 from IdentifyXMLFile import IdentifyXMLFile
 
 class MainMenu(gtk.MenuBar,object):
@@ -120,35 +120,47 @@ class MainMenu(gtk.MenuBar,object):
         oFileChooser.run()
         sFileName=oFileChooser.getName()
         if sFileName is not None:
-            print sFileName
             oP=IdentifyXMLFile()
             (sType,sName,bExists)=oP.parse(file(sFileName,'rU'))
             if sType=='PhysicalCard':
-                print "Can process this"
-                if bExists:
-                    print "Would need to delete current Card List"
+                if not bExists:
+                    oP=PhysicalCardParser()
+                    oP.parse(file(sFileName,'rU'))
+                else:
+                    Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
+                            gtk.BUTTONS_CLOSE,"Can only do this when the current Card List is empty")
+                    response=Complaint.run()
+                    Complaint.destroy()
             else:
-                print sType+" not a PhysicalCard list"
-
-        else:
-            print "Import Cancelled"
+                Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
+                                              gtk.BUTTONS_CLOSE,"File is not a PhysicalCard XML File.")
+                Complaint.connect("response",lambda dlg, resp: dlg.destroy())
+                Complaint.run()
 
     def doImportCardSet(self,widget):
         oFileChooser=ImportDialog("Select Card Set(s) to Import",self.__oWin)
         oFileChooser.run()
         sFileName=oFileChooser.getName()
         if sFileName is not None:
-            print sFileName
             oP=IdentifyXMLFile()
             (sType,sName,bExists)=oP.parse(file(sFileName,'rU'))
             if sType=='PhysicalCardSet' or sType=='AbstractCardSet':
-                print "Can process this"
                 if bExists:
-                    print "Would need to delete current "+sName+" "+sType
+                    Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_WARNING,
+                            gtk.BUTTONS_OK_CANCEL,"This would delete the existing CardSet "+sName)
+                    response=Complaint.run()
+                    Complaint.destroy()
+                    if response==gtk.RESPONSE_CANCEL:
+                        return
+                if sType=="AbstractCardSet":
+                    oP=AbstractCardSetParser()
+                else:
+                    oP=PhysicalCardSetParser()
+                oP.parse(file(sFileName,'rU'))
             else:
-                print sType+" not a CardSet"
-        else:
-            print "Import Cancelled"
+                Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
+                                              gtk.BUTTONS_CLOSE,"File is not a CardSet XML File.")
+                Complaint.connect("response",lambda dlg, resp: dlg.destroy())
 
     def doCreatePCS(self,widget):
         # Popup Create PhysicalCardSet Dialog
