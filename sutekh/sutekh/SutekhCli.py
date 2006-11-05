@@ -221,15 +221,18 @@ def main(aArgs):
         writePhysicalCards(oOpts.save_physical_cards_to)
 
     if oOpts.save_all_acss and not oOpts.save_acs is None:
-        print "Can't use --save-acs and --save-all-acss Simulatenously"
+        print "Can't use --save-acs and --save-all-acs Simulatenously"
         return 1
 
     if oOpts.save_all_pcss and not oOpts.save_pcs is None:
-        print "Can't use --save-pcs and --save-all-pcss Simulatenously"
+        print "Can't use --save-pcs and --save-all-pcs Simulatenously"
         return 1
 
     if oOpts.save_all_acss:
         writeAllAbstractCardSets()
+
+    if oOpts.save_all_pcss:
+        writeAllPhysicalCardSets()
 
     if not oOpts.save_pcs is None:
         writePhysicalCardSet(oOpts.save_pcs,oOpts.pcs_filename)
