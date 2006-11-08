@@ -68,8 +68,8 @@ class PhysicalCardController(object):
         # All physical cards are assigned to PhysicalCardSets, so find the
         # one in the fewest
         T=min(dPCS.values())
-        list=[x for x in dPCS if T is dPCS[x]]
-        idtodel=list[-1]
+        aList=[x for x in dPCS if T is dPCS[x]]
+        idtodel=aList[-1]
         candtodel=dPCS[idtodel]
         # This is probably overcomplicated, need to revisit this sometime
         # Prompt the user for confirmation

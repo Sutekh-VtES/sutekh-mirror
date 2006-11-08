@@ -21,26 +21,26 @@ class PluginManager(object):
         Load list of Plugin Classes from plugin dir.
         """
         sPluginDir = os.path.dirname(plugins.__file__)
-                
+
         for sPluginPath in glob.glob(os.path.join(sPluginDir,"*.py")):
             sPluginName = os.path.basename(sPluginPath)[:-len(".py")]
-                        
+
             if sPluginName == "__init__": continue
-            
+
             # load module
             try:
                 mPlugin = __import__("gui.plugins." + sPluginName,None,None,[plugins])
             except ImportError, e:
                 logging.warn("Failed to load plugin %s (%s)." % (sPluginName,str(e)))
                 continue
-                
+
             # find plugin class
             try:
                 cPlugin = mPlugin.plugin
             except AttributeError, e:
                 logging.warn("Plugin module %s appears not to contain a plugin (%s)." % (sPluginName,str(e)))
                 continue
-                
+
             # add to appropriate plugin lists
             if issubclass(cPlugin,CardListPlugin):
                 self._aCardListPlugins.append(cPlugin)

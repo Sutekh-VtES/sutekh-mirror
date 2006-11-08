@@ -19,10 +19,10 @@ class LoadCardSetDialog(gtk.Dialog):
         # this violates some or other UI style guide
         self.List.append_text('')
         if sType == "Physical":
-            for card in PhysicalCardSet.select():
+            for card in PhysicalCardSet.select().orderBy('name'):
                 self.List.append_text(card.name)
         else:
-            for card in AbstractCardSet.select():
+            for card in AbstractCardSet.select().orderBy('name'):
                 self.List.append_text(card.name)
         self.vbox.pack_start(self.List)
         self.connect("response", self.buttonResponse)
