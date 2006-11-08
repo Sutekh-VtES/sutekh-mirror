@@ -8,47 +8,7 @@ import gtk, gobject
 from Filters import *
 from SutekhObjects import *
 from AutoScrolledWindow import AutoScrolledWindow
-
-class InternalScroll(gtk.Frame):
-    def __init__(self,title):
-        super(InternalScroll,self).__init__(None)
-        self.List=gtk.ListStore(gobject.TYPE_STRING)
-        self.TreeView=gtk.TreeView(self.List)
-        self.TreeView.get_selection().set_mode(gtk.SELECTION_MULTIPLE)
-        myScroll=AutoScrolledWindow(self.TreeView)
-        self.add(myScroll)
-        oCell1=gtk.CellRendererText()
-        oColumn=gtk.TreeViewColumn(title,oCell1,text=0)
-        self.List.append(None) # Create empty items at top of list
-        self.TreeView.append_column(oColumn)
-        self.set_shadow_type(gtk.SHADOW_NONE)
-        self.show_all()
-
-    def get_list(self):
-        return self.List
-
-    def get_view(self):
-        return self.TreeView
-
-    def reset(self,State):
-        Model=self.TreeView.get_model()
-        oIter=Model.get_iter_first()
-        while oIter != None:
-           name=Model.get_value(oIter,0)
-           if name != None and State[name]:
-               self.TreeView.get_selection().select_iter(oIter)
-           else:
-               self.TreeView.get_selection().unselect_iter(oIter)
-           oIter=Model.iter_next(oIter)
-
-    def get_selection(self,selList,State):
-        Model,Selection = self.TreeView.get_selection().get_selected_rows()
-        for oPath in Selection:
-            oIter = Model.get_iter(oPath)
-            name = Model.get_value(oIter,0)
-            if name!=None:
-               State[name]=True
-               selList.append(name)
+from ScrolledList import ScrolledList
 
 class FilterDialog(gtk.Dialog):
     def __init__(self,parent):
@@ -59,11 +19,11 @@ class FilterDialog(gtk.Dialog):
         self.wasCancelled = False
         self.State={}
         myHBox=gtk.HBox(False,0)
-        self.clanFrame=InternalScroll('Clans')
-        self.discFrame=InternalScroll('Disciplines')
-        self.typeFrame=InternalScroll('Card Types')
-        self.expFrame=InternalScroll('Expansions')
-        self.groupFrame=InternalScroll('Crypt Group')
+        self.clanFrame=ScrolledList('Clans')
+        self.discFrame=ScrolledList('Disciplines')
+        self.typeFrame=ScrolledList('Card Types')
+        self.expFrame=ScrolledList('Expansions')
+        self.groupFrame=ScrolledList('Crypt Group')
         self.textFrame=gtk.Frame('Card Text')
         myHBox.pack_start(self.clanFrame)
         myHBox.pack_start(self.discFrame)
