@@ -19,6 +19,12 @@ class AbstractCardSetFromPhysical(CardListPlugin):
         """
         iDF = gtk.MenuItem("Generate a Abstract Card Set")
         iDF.connect("activate", self.activate)
+        try:
+            if self.view.sSetType != 'Physical':
+                iDF.set_sensitive(False)
+        except AttributeError:
+            iDF.set_sensitive(False)
+
         return iDF
 
     def activate(self,oWidget):

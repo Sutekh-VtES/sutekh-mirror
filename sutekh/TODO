@@ -3,7 +3,7 @@ Backend:
  * Make filtering less slow (mainly for sqlite) 
       (seems OK with the indexes. Do we need more?).
  * Handle 'Creed' and 'Life' attributes of Imbued in WhiteWolfParser (done?)
- * Export card sets to HTML.
+ * Export card sets to HTML. (XSL and more detailed XML export??)
 
 Gui (Functionality):
  * Improve Filter selection dialog. 
@@ -11,6 +11,8 @@ Gui (Functionality):
  * Ability to add additional columns to card list displays (capacity, group, ...).
  * Split AnalyzeCardList into a bunch of seperate plugins - NM
  * Finish ClusterCardList plugin.
+ * Allow Plugins to specify supported database versions
+ * Allow Plugins to specify which windows they appear on
 
 Gui (Presentation):
  * Give gui resource handling capablities to save window pos, etc - NM
@@ -21,7 +23,7 @@ Website:
  * Create logo for wiki.
 
 Release Candidate tasks:
- * Finish up XML file handling in GUI
  * Finish up database upgrade
  * Cardlist & ruling refresh in GUI??
  * Check everything works on Windows again
+ * Print decks (integrate ARDB's xsl transform, or roll our own?)

@@ -23,7 +23,6 @@ class AbstractCardSetIndependence(CardListPlugin):
                 iDF.set_sensitive(False)
         except AttributeError:
             iDF.set_sensitive(False)
-
         return iDF
 
     def activate(self,oWidget):
@@ -32,22 +31,22 @@ class AbstractCardSetIndependence(CardListPlugin):
         # only do stuff for AbstractCardSets
 
     def makeDialog(self):
+        """
+        Create the list of card sets to select
+        """
         parent = self.view.getWindow()
-
         self.oDlg = gtk.Dialog("Choose Abstract Card Sets to Test",parent,
                           gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                           (gtk.STOCK_OK, gtk.RESPONSE_OK,
                            gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
         self.csFrame=ScrolledList('Abstract Card Sets')
-        self.oDlg.vbox.add(self.csFrame)
+        self.oDlg.vbox.pack_start(self.csFrame)
         for cs in AbstractCardSet.select().orderBy('name'):
             if cs.name != self.view.sSetName:
                 iter=self.csFrame.get_list().append(None)
                 self.csFrame.get_list().set(iter,0,cs.name)
         self.oDlg.connect("response", self.handleResponse)
-
         self.oDlg.show_all()
-
         return self.oDlg
 
     def handleResponse(self,oWidget,oResponse):
