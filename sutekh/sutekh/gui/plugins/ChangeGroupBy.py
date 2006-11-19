@@ -7,6 +7,8 @@ from Groupings import *
 from gui.PluginManager import CardListPlugin
 
 class GroupCardList(CardListPlugin):
+    dTableVersions = {}
+    aModelsSupported = ["PhysicalCardSet","AbstractCardSet","PhysicalCard"]
     def __init__(self,*args,**kws):
         super(GroupCardList,self).__init__(*args,**kws)
         self._dGrpings = {}
@@ -20,6 +22,8 @@ class GroupCardList(CardListPlugin):
         """
         Overrides method from base class.
         """
+        if not self.checkVersions() or not self.checkModelType():
+            return None
         iCluster = gtk.MenuItem("Change Grouping")
         iCluster.connect("activate", self.activate)
         return iCluster

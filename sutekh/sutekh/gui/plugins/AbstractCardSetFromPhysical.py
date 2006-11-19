@@ -10,20 +10,16 @@ from gui.PluginManager import CardListPlugin
 class AbstractCardSetFromPhysical(CardListPlugin):
     """Create a equivilant Abstract Card Set from a given
        Physical Card Set."""
-    def __init__(self,*args,**kws):
-        super(AbstractCardSetFromPhysical,self).__init__(*args,**kws)
-
+    dTableVersions={}
+    aModelsSupported = ['PhysicalCardSet']
     def getMenuItem(self):
         """
         Overrides method from base class.
         """
+        if not self.checkVersions() or not self.checkModelType():
+            return None
         iDF = gtk.MenuItem("Generate a Abstract Card Set")
         iDF.connect("activate", self.activate)
-        try:
-            if self.view.sSetType != 'Physical':
-                iDF.set_sensitive(False)
-        except AttributeError:
-            iDF.set_sensitive(False)
 
         return iDF
 
@@ -32,7 +28,7 @@ class AbstractCardSetFromPhysical(CardListPlugin):
 
     def createAbsCardSet(self):
         parent = self.view.getWindow()
-        oDlg = CreateCardSetDialog(parent,"Abstract")
+        oDlg = CreateCardSetDialog(parent,"AbstractCardSet")
         oDlg.run()
         sName = oDlg.getName()
         if sName is not None:

@@ -9,20 +9,16 @@ from gui.PluginManager import CardListPlugin
 from gui.ScrolledList import ScrolledList
 
 class PhysicalCardSetIndependence(CardListPlugin):
-    def __init__(self,*args,**kws):
-        super(PhysicalCardSetIndependence,self).__init__(*args,**kws)
-
+    dTableVersions = {}
+    aModelsSupported = ["PhysicalCardSet"]
     def getMenuItem(self):
         """
         Overrides method from base class.
         """
+        if not self.checkVersions() or not self.checkModelType():
+            return None
         iDF = gtk.MenuItem("Test Physical Card Set Independence")
         iDF.connect("activate", self.activate)
-        try:
-            if self.view.sSetType != 'Physical':
-                iDF.set_sensitive(False)
-        except AttributeError:
-            iDF.set_sensitive(False)
         return iDF
         
     def activate(self,oWidget):

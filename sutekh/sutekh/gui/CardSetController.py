@@ -18,7 +18,7 @@ class CardSetController(object):
         # setup plugins before the menu (which needs a list of plugins)
         self.__aPlugins = []
         for cPlugin in oMasterController.getPluginManager().getCardListPlugins():
-            self.__aPlugins.append(cPlugin(self.__oView,self.__oView.getModel()))
+            self.__aPlugins.append(cPlugin(self.__oView,self.__oView.getModel(),sType))
 
     def getView(self):
         return self.__oView

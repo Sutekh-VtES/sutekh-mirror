@@ -19,6 +19,8 @@ else:
     raise ImportError("Could not find PyCluster or Bio.Cluster. Not loading clustering plugin.")
 
 class ClusterCardList(CardListPlugin):
+    dTableVersions = {}
+    aModelsSupported = ["PhysicalCard"]
     def __init__(self,*args,**kws):
         super(ClusterCardList,self).__init__(*args,**kws)
 
@@ -26,6 +28,8 @@ class ClusterCardList(CardListPlugin):
         """
         Overrides method from base class.
         """
+        if not self.checkVersions() or not self.checkModelType():
+            return None
         iCluster = gtk.MenuItem("Cluster Cards")
         iCluster.connect("activate", self.activate)
         return iCluster

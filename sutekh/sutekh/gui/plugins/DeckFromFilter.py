@@ -7,6 +7,8 @@ from SutekhObjects import *
 from gui.PluginManager import CardListPlugin
 
 class DeckFromFilter(CardListPlugin):
+    dTableVersions = {}
+    aModelsSupported = ["PhysicalCardSet","AbstractCardSet","PhysicalCard"]
     def __init__(self,*args,**kws):
         super(DeckFromFilter,self).__init__(*args,**kws)
 
@@ -14,6 +16,8 @@ class DeckFromFilter(CardListPlugin):
         """
         Overrides method from base class.
         """
+        if not self.checkVersions() or not self.checkModelType():
+            return None
         iDF = gtk.MenuItem("Deck From Filter")
         iDF.connect("activate", self.activate)
         return iDF

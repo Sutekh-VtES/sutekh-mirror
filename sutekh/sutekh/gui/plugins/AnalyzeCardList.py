@@ -10,10 +10,14 @@ from Filters import *
 from gui.PluginManager import CardListPlugin
 
 class AnalyzeCardList(CardListPlugin):
+    dTableVersions = {}
+    aModelsSupported = ["PhysicalCardSet","AbstractCardSet"]
     def getMenuItem(self):
         """
         Overrides method from base class.
         """
+        if not self.checkVersions() or not self.checkModelType():
+            return None
         iAnalyze = gtk.MenuItem("Analyze Deck")
         iAnalyze.connect("activate", self.activate)
         return iAnalyze

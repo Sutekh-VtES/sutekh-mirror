@@ -12,20 +12,16 @@ class PhysicalCardSetFromAbstract(CardListPlugin):
        from a given Abstract Card Set.
        Ignores Cards which don't exist in Physical Cards"""
        #Q: How should the user be informed of missing cards?
-    def __init__(self,*args,**kws):
-        super(PhysicalCardSetFromAbstract,self).__init__(*args,**kws)
-
+    dTableVersions = {}
+    aModelsSupported = ["AbstractCardSet"]
     def getMenuItem(self):
         """
         Overrides method from base class.
         """
+        if not self.checkVersions() or not self.checkModelType():
+            return None
         iDF = gtk.MenuItem("Generate a Physical Card Set")
         iDF.connect("activate", self.activate)
-        try:
-            if self.view.sSetType != 'Abstract':
-                iDF.set_sensitive(False)
-        except AttributeError:
-            iDF.set_sensitive(False)
             
         return iDF
 
@@ -34,7 +30,7 @@ class PhysicalCardSetFromAbstract(CardListPlugin):
 
     def createPhysCardSet(self):
         parent = self.view.getWindow()
-        oDlg = CreateCardSetDialog(parent,"Physical")
+        oDlg = CreateCardSetDialog(parent,"PhysicalCardSet")
         oDlg.run()
         sName = oDlg.getName()
         if sName is not None:

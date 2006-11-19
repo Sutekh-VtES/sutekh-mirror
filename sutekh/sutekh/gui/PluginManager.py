@@ -6,6 +6,7 @@ import plugins
 import os
 import glob
 import logging
+from SutekhObjects import *
 
 class PluginManager(object):
     """
@@ -52,12 +53,16 @@ class CardListPlugin(object):
     """
     Base class for card list plugins.
     """
-    def __init__(self,oCardListView,oCardListModel):
+    dTableVersions = {}
+    aModelsSupported = []
+
+    def __init__(self,oCardListView,oCardListModel,sModelType='Unknown'):
         """
         oCardListModel - card list model for this plugin to operate on.
         """
         self._oView = oCardListView
         self._oModel = oCardListModel
+        self._sModelType = sModelType
 
     view = property(fget=lambda self: self._oView,doc="Associated CardListView object.")
     model = property(fget=lambda self: self._oModel,doc="Associated CardModel object.")
@@ -67,3 +72,17 @@ class CardListPlugin(object):
         Return a gtk.MenuItem for the plugin or None if no menu item is need.
         """
         return None
+
+    def checkModelType(self):
+        if self._sModelType in self.aModelsSupported:
+            return True
+        return False
+
+    def checkVersions(self):
+        oDBVer = DatabaseVersion()
+        for oTableName,aVersions in self.dTableVersions.iteritems():
+            iCurVer=oDBVer.getVersion(oTableName)
+            if iCurVer not in aVersions:
+                return False
+        # If nothing is specified, currently we assume everything is A-OK
+        return True
