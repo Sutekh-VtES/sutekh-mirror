@@ -76,10 +76,16 @@ class AnalyzeCardList(CardListPlugin):
         self.iNumberLibrary = self.iTotNumber - self.iNumberVampires
         
         for oCard in aVampireCards:
-            self.processVampire(oCard.abstractCard)
+            if type(oCard) is PhysicalCard:
+                self.processVampire(oCard.abstractCard)
+            else:
+                self.processVampire(oCard)
             
         for oCard in aMasterCards:
-            self.processMaster(oCard.abstractCard)
+            if type(oCard) is PhysicalCard:
+                self.processMaster(oCard.abstractCard)
+            else:
+                self.processMaster(oCard)
             
         sMainText += "Number of Vampires = " + str(self.iNumberVampires) + "\n"
         sVampText += "Number of Vampires = " + str(self.iNumberVampires) + "\n"
