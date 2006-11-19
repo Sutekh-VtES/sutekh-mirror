@@ -154,8 +154,7 @@ class WriteArdbXML(object):
                 if oCard.capacity<iMin:
                     iMin=oCard.capacity
         if iCryptSize>0:
-            fAvg=fAvg/iCryptSize
-            fAvg=round(fAvg*100)/100 # Very crude truncate to 2 dec places
+            fAvg=round(fAvg/iCryptSize,2)
         if iMin==75:
             iMin=0
         return (dVamps,iCryptSize,iMin,iMax,fAvg)
