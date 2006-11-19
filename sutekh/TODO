@@ -5,25 +5,31 @@ Backend:
  * Handle 'Creed' and 'Life' attributes of Imbued in WhiteWolfParser (done?)
  * Export card sets to HTML. (XSL and more detailed XML export??)
 
+Database
+ * Add title & attributes columns to Abstract Card
+ * Add author & description columns to Card Sets
+
 Gui (Functionality):
  * Improve Filter selection dialog. 
  * Add ordering selection dialog (possibly part of filtering dialog).
  * Ability to add additional columns to card list displays (capacity, group, ...).
- * Split AnalyzeCardList into a bunch of seperate plugins - NM
+ * Turn AnalyzeDeck into something more useful - NM
  * Finish ClusterCardList plugin.
  * Allow Plugins to specify supported database versions
  * Allow Plugins to specify which windows they appear on
+ * Create CardSet Management Window (Abstract/Physical)
 
 Gui (Presentation):
  * Give gui resource handling capablities to save window pos, etc - NM
  * Neaten up card text display (maybe move to an HTML widget)?
  * Seperate card text display into it's own window - NM
+ * Tabbed interface for Card Sets? - Need both tabs & windows?
 
 Website:
  * Create logo for wiki.
 
 Release Candidate tasks:
  * Finish up database upgrade
- * Cardlist & ruling refresh in GUI??
+ * Cardlist & ruling refresh in GUI
  * Check everything works on Windows again
  * Print decks (integrate ARDB's xsl transform, or roll our own?)

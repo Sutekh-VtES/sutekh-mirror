@@ -148,7 +148,7 @@ class WriteArdbXML(object):
             if aTypes[0]=='Vampire':
                 dVamps[tKey]=iCount
                 iCryptSize+=iCount
-                fAvg+=oCard.capacity
+                fAvg+=oCard.capacity*iCount
                 if oCard.capacity>iMax:
                     iMax=oCard.capacity
                 if oCard.capacity<iMin:
