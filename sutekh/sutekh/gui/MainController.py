@@ -60,7 +60,7 @@ class MainController(object):
     def createNewPhysicalCardSetWindow(self,sSetName):
         # name is not already used
         if sSetName not in self.openPhysicalCardSets.keys():
-            newPCSWindow = CardSetWindow(self,sSetName,"Physical")
+            newPCSWindow = CardSetWindow(self,sSetName,"PhysicalCardSet")
             newPCSController = PhysicalCardSetController(newPCSWindow,self,sSetName)
             self.openPhysicalCardSets[sSetName] = [newPCSWindow, newPCSController]
             newPCSWindow.addParts(newPCSController.getView(),newPCSController.getMenu())
@@ -72,7 +72,7 @@ class MainController(object):
     def createNewAbstractCardSetWindow(self,sSetName):
         # name is not already used
         if sSetName not in self.openAbstractCardSets.keys():
-            newACSWindow = CardSetWindow(self,sSetName,"Abstract")
+            newACSWindow = CardSetWindow(self,sSetName,"AbstractCardSet")
             newACSController = AbstractCardSetController(newACSWindow,self,sSetName)
             self.openAbstractCardSets[sSetName] = [newACSWindow, newACSController]
             newACSWindow.addParts(newACSController.getView(),newACSController.getMenu())
@@ -83,14 +83,14 @@ class MainController(object):
 
     def removeCardSetWindow(self,sSetName,sType):
         # Check Card Set window does exist
-        if sType == "Physical":
+        if sType == "PhysicalCardSet":
             openSets=self.openPhysicalCardSets
         else:
             openSets=self.openAbstractCardSets
         if sSetName in openSets.keys():
             self.__oWinGrp.remove_window(openSets[sSetName][0])
             del openSets[sSetName]
-            if sType == "Physical":
+            if sType == "PhysicalCardSet":
                 self.__oMenu.setLoadPhysicalState(self.openPhysicalCardSets)
             else:
                 self.__oMenu.setLoadAbstractState(self.openPhysicalCardSets)

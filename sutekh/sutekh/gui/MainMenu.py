@@ -164,7 +164,7 @@ class MainMenu(gtk.MenuBar,object):
 
     def doCreatePCS(self,widget):
         # Popup Create PhysicalCardSet Dialog
-        Dialog=CreateCardSetDialog(self.__oWin,"Physical")
+        Dialog=CreateCardSetDialog(self.__oWin,"PhysicalCardSet")
         Dialog.run()
         Name=Dialog.getName()
         if Name!=None:
@@ -184,7 +184,7 @@ class MainMenu(gtk.MenuBar,object):
 
     def doCreateACS(self,widget):
         # Popup Create AbstractCardSet Dialog
-        Dialog=CreateCardSetDialog(self.__oWin,"Abstract")
+        Dialog=CreateCardSetDialog(self.__oWin,"AbstractCardSet")
         Dialog.run()
         Name=Dialog.getName()
         if Name!=None:
@@ -204,7 +204,7 @@ class MainMenu(gtk.MenuBar,object):
 
     def doLoadPCS(self,widget):
         # Popup Load Dialog
-        Dialog=LoadCardSetDialog(self.__oWin,"Physical")
+        Dialog=LoadCardSetDialog(self.__oWin,"PhysicalCardSet")
         Dialog.run()
         Name=Dialog.getName()
         if Name != None:
@@ -214,7 +214,7 @@ class MainMenu(gtk.MenuBar,object):
 
     def doLoadACS(self,widget):
         # Popup Load Dialog
-        Dialog=LoadCardSetDialog(self.__oWin,"Abstract")
+        Dialog=LoadCardSetDialog(self.__oWin,"AbstractCardSet")
         Dialog.run()
         Name=Dialog.getName()
         if Name != None:

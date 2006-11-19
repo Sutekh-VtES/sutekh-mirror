@@ -14,10 +14,10 @@ class CardSetView(EditableCardListView):
         self.sSetName = sName
         self.sSetType = sSetType
         # Needs to be PhysicalCard for both so Model does the right thing
-        if sSetType == "Physical":
+        if sSetType == "PhysicalCardSet":
             self._oModel.cardclass = PhysicalCard
             self._oModel.basefilter = PhysicalCardSetFilter(self.sSetName)
-        elif sSetType == "Abstract":
+        elif sSetType == "AbstractCardSet":
             self._oModel.cardclass = AbstractCardSet
             self._oModel.basefilter = AbstractCardSetFilter(self.sSetName)
         else:
@@ -48,7 +48,7 @@ class CardSetView(EditableCardListView):
                self.addCard(name)
             context.finish(True, False, time)
         elif data and data.format == 8 and bits[0] == "Abst" \
-                  and self.sSetType == "Abstract":
+                  and self.sSetType == "AbstractCardSet":
             # Abstract Card Sets can accept cards from the Abstract Card List
             # Card is from the Abstract card view, so we only get one
             for name in lines[1:]:
@@ -72,7 +72,7 @@ class CardSetView(EditableCardListView):
 
     def deleteCardSet(self):
         # Check if CardSet is empty
-        if self.sSetType == "Physical":
+        if self.sSetType == "PhysicalCardSet":
             oCS = PhysicalCardSet.byName(self.sSetName)
         else:
             oCS = AbstractCardSet.byName(self.sSetName)
@@ -84,7 +84,7 @@ class CardSetView(EditableCardListView):
                 return False # not deleting
 
             # User agreed, so clear the CardSet
-            if self.sSetType == "Physical":
+            if self.sSetType == "PhysicalCardSet":
                 for oC in oCS.cards:
                     oCS.removePhysicalCard(oC)
             else:
@@ -92,7 +92,7 @@ class CardSetView(EditableCardListView):
                     oCS.removeAbstractCard(oC)
 
         # Card Set now empty
-        if self.sSetType =="Physical":
+        if self.sSetType =="PhysicalCardSet":
             cardSet = PhysicalCardSet.byName(self.sSetName)
             PhysicalCardSet.delete(cardSet.id)
         else:

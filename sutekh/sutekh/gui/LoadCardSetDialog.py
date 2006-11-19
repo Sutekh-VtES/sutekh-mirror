@@ -18,7 +18,7 @@ class LoadCardSetDialog(gtk.Dialog):
         # I like explicitly null entries in the list, but I suspect
         # this violates some or other UI style guide
         self.List.append_text('')
-        if sType == "Physical":
+        if sType == "PhysicalCardSet":
             for card in PhysicalCardSet.select().orderBy('name'):
                 self.List.append_text(card.name)
         else:
