@@ -63,7 +63,9 @@ class CardSetMenu(gtk.MenuBar,object):
         iMenu.set_submenu(wMenu)
         # plugins
         for oPlugin in self.__oC.getPlugins():
-            wMenu.add(oPlugin.getMenuItem())
+            oMI=oPlugin.getMenuItem()
+            if oMI is not None:
+                wMenu.add(oMI)
         self.add(iMenu)
 
     def doExport(self,widget):
