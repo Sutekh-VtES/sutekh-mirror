@@ -508,42 +508,4 @@ class PhysicalCardToAbstractCardAdapter(object):
     def __new__(cls,oPhysCard):
         return oPhysCard.abstractCard
 
-# version management helper class
 
-class DatabaseVersion(object):
-    def __init__(self):
-        VersionTable.createTable(ifNotExists=True)
-
-    def setVersion(self,oTable,iTableVersion):
-        sTableName=oTable.sqlmeta.table
-        aVer=VersionTable.selectBy(TableName=sTableName)
-        if aVer.count()==0:
-            VersionTable(TableName=sTableName,
-                    Version=iTableVersion)
-        elif aVer.count()==1:
-            for version in aVer:
-                if version.Version!=iTableVersion:
-                    VersionTable.delete(version.id)
-                    VersionTable(TableName=sTableName,
-                       Version=iTableVersion)
-        elif aVer.count()>1:
-            print "Multiple version entries for ",sTablename," in the database"
-            print "Giving up. I suggest dumping and reloading everything"
-            return False
-        return True
-
-    def getVersion(self,oTable):
-        ver=-1
-        aVer=VersionTable.selectBy(TableName=oTable.sqlmeta.table)
-        if aVer.count()!=1:
-            ver=-1
-        else:
-            for version in aVer:
-                ver=version.Version
-        return ver
-
-    def checkVersions(self,aTable,aTableVersion):
-        bRes=True
-        for oTable,iVersion in zip(aTable,aTableVersion):
-            bRes=bRes and self.getVersion(oTable)==iVersion
-        return bRes
