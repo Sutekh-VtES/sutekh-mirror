@@ -6,6 +6,8 @@
 import sys, optparse, os, codecs, tempfile
 from sqlobject import *
 from SutekhObjects import *
+from SutekhUtility import *
+from DatabaseUpgrade import *
 from WhiteWolfParser import WhiteWolfParser
 from RulingParser import RulingParser
 from PhysicalCardParser import PhysicalCardParser
@@ -14,6 +16,7 @@ from PhysicalCardSetParser import PhysicalCardSetParser
 from PhysicalCardSetWriter import PhysicalCardSetWriter
 from AbstractCardSetParser import AbstractCardSetParser
 from AbstractCardSetWriter import AbstractCardSetWriter
+from DatabaseVersion import DatabaseVersion
 
 def parseOptions(aArgs):
     oP = optparse.OptionParser(usage="usage: %prog [options]",version="%prog 0.1")
@@ -71,22 +74,11 @@ def parseOptions(aArgs):
     oP.add_option("--reload",action="store_true",dest="reload",default=False,
                   help="Dump the physical card list and all card sets and reload them - \
 intended to be used with -c and refreshing the abstract card list")
+     oP.add_option("--upgrade-db",
+                   action="store_true",dest="upgrade_db",default=False,
+                   help="Attempt to upgrade a database to the latest version. Cannot be used with --refresh-tables")
 
     return oP, oP.parse_args(aArgs)
-
-def refreshTables(aTables,**kw):
-    aTables.reverse()
-    for cCls in aTables:
-        cCls.dropTable(ifExists=True)
-    aTables.reverse()
-    oVerHandler=DatabaseVersion()
-    if not oVerHandler.setVersion(VersionTable,VersionTable.tableversion):
-        return False
-    for cCls in aTables:
-        cCls.createTable()
-        if not oVerHandler.setVersion(cCls, cCls.tableversion):
-            return False
-    return True
 
 def readWhiteWolfList(sWwList):
     oP = WhiteWolfParser()
@@ -194,17 +186,17 @@ def main(aArgs):
             # We will reload them later
 
     if oOpts.refresh_ruling_tables:
-        if not refreshTables([Ruling]):
+        if not refreshTables([Ruling],sqlhub.processConnection):
             print "refresh failed"
             return 1
 
     if oOpts.refresh_tables:
-        if not refreshTables(ObjectList):
+        if not refreshTables(ObjectList,sqlhub.processConnection):
             print "refresh failed"
             return 1
 
     if oOpts.refresh_physical_card_tables:
-        if not refreshTables([PhysicalCard]):
+        if not refreshTables([PhysicalCard],sqlhub.processConnection):
             print "refresh failed"
             return 1
 
@@ -256,6 +248,13 @@ def main(aArgs):
             readAbstrctCardSet(acs)
             os.remove(acs)
         os.rmdir(sTempdir)
+
+     if oOpts.upgrade_db and oOpts.refresh_tables:
+         print "Can't use --upgrade-db and --refresh-tables simulatenously"
+         return 1
+ 
+     if oOpts.upgrade_db:
+         attemptDatabaseUpgrade()
 
     return 0
 
