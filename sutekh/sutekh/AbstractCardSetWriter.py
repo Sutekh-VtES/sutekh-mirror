@@ -22,6 +22,8 @@ class AbstractCardSetWriter(object):
 
         try:
             oACS = AbstractCardSet.byName(sAbstractCardSetName)
+            sAuthor=oACS.author
+            sComment=oACS.comment
         except SQLObjectNotFound:
             return
 
@@ -35,6 +37,8 @@ class AbstractCardSetWriter(object):
 
         oCardsElem = oDoc.firstChild
         oCardsElem.setAttribute('name',sAbstractCardSetName)
+        oCardsElem.setAttribute('author',sAuthor)
+        oCardsElem.setAttribute('comment',sComment)
 
         for tKey, iNum in dCards.iteritems():
             iId, sName = tKey

@@ -8,6 +8,13 @@
 from sqlobject import *
 from SutekhObjects import *
 
+dTableMap={
+        "PhysicalCardSet" : PhysicalCardSet.sqlmeta.table,
+        "AbstractCardSet" : AbstractCardSet.sqlmeta.table,
+        "AbstractCard"    : AbstractCard.sqlmeta.table,
+        "PhysicalCard"    : PhysicalCard.sqlmeta.table
+        }
+
 class DatabaseVersion(object):
     def __init__(self,connection=None):
         if connection is None:
@@ -38,7 +45,12 @@ class DatabaseVersion(object):
         if connection is None:
             connection=sqlhub.processConnection
         ver=-1
-        aVer=VersionTable.selectBy(TableName=oTable.sqlmeta.table,connection=connection)
+        # Define PyProtocols adaptor for this??
+        if type(oTable) is str:
+            sName=dTableMap[oTable]
+        else:
+            sName=oTable.sqlmeta.table
+        aVer=VersionTable.selectBy(TableName=sName,connection=connection)
         if aVer.count()<1:
             ver=-1
         elif aVer.count()==1:

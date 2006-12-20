@@ -28,10 +28,15 @@ class PhysicalCardSetHandler(ContentHandler):
     def startElement(self,sTagName,oAttrs):
         if sTagName == 'physicalcardset':
             self.pcsName = oAttrs.getValue('name')
+            sAuthor=oAttrs.getValue('author')
+            sComment=oAttrs.getValue('comment')
             # Try and add pcs to PhysicalCardSet
             # Make sure
             try:
                 pcs=PhysicalCardSet.byName(self.pcsName.encode('utf8'))
+                pcs.author=sAuthor
+                pcs.comment=sComment
+                pcs.syncUpdate()
                 # We overwrite pcs, so we drop all cards currently
                 # part of the PhysicalCardSet
                 ids=[]
@@ -39,7 +44,7 @@ class PhysicalCardSetHandler(ContentHandler):
                     pcs.removePhysicalCard(card.id)
                 self.pcsDB=True
             except SQLObjectNotFound:
-                PhysicalCardSet(name=self.pcsName)
+                PhysicalCardSet(name=self.pcsName,author=sAuthor,comment=sComment)
                 self.pcsDB=True
         if sTagName == 'card':
             iId = int(oAttrs.getValue('id'),10)

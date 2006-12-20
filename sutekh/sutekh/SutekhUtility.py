@@ -7,7 +7,7 @@
 
 from sqlobject import *
 from SutekhObjects import *
-from DatabaseVersion import *
+from DatabaseVersion import DatabaseVersion
 
 def refreshTables(aTables,oConn,**kw):
     aTables.reverse()

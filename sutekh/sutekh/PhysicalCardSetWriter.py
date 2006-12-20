@@ -22,6 +22,8 @@ class PhysicalCardSetWriter(object):
 
         try:
             oPCS = PhysicalCardSet.byName(sPhysicalCardSetName)
+            sAuthor=oPCS.author
+            sComment=oPCS.comment
         except SQLObjectNotFound:
             return
 
@@ -36,6 +38,8 @@ class PhysicalCardSetWriter(object):
 
         oCardsElem = oDoc.firstChild
         oCardsElem.setAttribute('name',sPhysicalCardSetName)
+        oCardsElem.setAttribute('author',sAuthor)
+        oCardsElem.setAttribute('comment',sComment)
 
         for tKey, iNum in dPhys.iteritems():
             iId, sName = tKey

@@ -27,18 +27,23 @@ class AbstractCardSetHandler(ContentHandler):
     def startElement(self,sTagName,oAttrs):
         if sTagName == 'abstractcardset':
             self.acsName = oAttrs.getValue('name')
+            sAuthor=oAttrs.getValue('author')
+            sComment=oAttrs.getValue('comment')
             # Try and add acs to AbstractCardSet
             # Make sure
             try:
                 acs=AbstractCardSet.byName(self.acsName.encode('utf8'))
                 # We overwrite acs, so we drop all cards currently
                 # part of the acs
+                acs.author=sAuthor
+                acs.comment=sComment
+                acs.syncUpdate()
                 ids=[]
                 for card in acs.cards:
                     acs.removeAbstractCard(card.id)
                 self.acsDB=True
             except SQLObjectNotFound:
-                AbstractCardSet(name=self.acsName)
+                AbstractCardSet(name=self.acsName,author=sAuthor,comment=sComment)
                 self.acsDB=True
         if sTagName == 'card':
             iId = int(oAttrs.getValue('id'),10)
