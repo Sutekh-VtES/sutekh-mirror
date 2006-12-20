@@ -25,7 +25,7 @@ class IRuling(Interface): pass
 # Table Objects
 
 class VersionTable(SQLObject):
-    TableName = UnicodeCol(length=50)
+    TableName = UnicodeCol(alternateID=True,length=50)
     Version = IntCol(default=None)
     tableversion = 1
 
@@ -62,15 +62,19 @@ class PhysicalCard(SQLObject):
 class AbstractCardSet(SQLObject):
     advise(instancesProvide=[IAbstractCardSet])
 
-    tableversion = 1
+    tableversion = 2
     name = UnicodeCol(alternateID=True,length=50)
+    author = UnicodeCol(length=50,default='')
+    comment = UnicodeCol(default='')
     cards = RelatedJoin('AbstractCard',intermediateTable='abstract_map',createRelatedTable=False)
 
 class PhysicalCardSet(SQLObject):
     advise(instancesProvide=[IPhysicalCardSet])
 
-    tableversion = 1
+    tableversion = 2
     name = UnicodeCol(alternateID=True,length=50)
+    author = UnicodeCol(length=50,default='')
+    comment = UnicodeCol(default='')
     cards = RelatedJoin('PhysicalCard',intermediateTable='physical_map',createRelatedTable=False)
 
 class RarityPair(SQLObject):

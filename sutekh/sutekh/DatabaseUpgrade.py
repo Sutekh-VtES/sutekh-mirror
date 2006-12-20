@@ -11,6 +11,7 @@ from DatabaseVersion import DatabaseVersion
 # (arguablely overly) complex trickery to read old databases, and we create a
 # copy in sqlite memory database first, before commiting to the actual DB
 
+
 # Utility Exceptions
 
 class unknownVersion(Exception):
@@ -19,12 +20,29 @@ class unknownVersion(Exception):
     def __str__(self):
         return "Unrecognised version for "+self.sTableName
 
-# We wrap the SQLObject classes in SutekhObjects so we can read
+# We clone the SQLObject classes in SutekhObjects so we can read
 # old versions
+
+class AbstractCardSet_v1(SQLObject):
+    class sqlmeta:
+        table=AbstractCardSet.sqlmeta.table
+
+    advise(instancesProvide=[IAbstractCardSet])
+    name = UnicodeCol(alternateID=True,length=50)
+    cards = RelatedJoin('AbstractCard',intermediateTable='abstract_map',createRelatedTable=False)
+
+class PhysicalCardSet_v1(SQLObject):
+    class sqlmeta:
+        table=PhysicalCardSet.sqlmeta.table
+    advise(instancesProvide=[IPhysicalCardSet])
+
+    name = UnicodeCol(alternateID=True,length=50)
+    cards = RelatedJoin('PhysicalCard',intermediateTable='physical_map',createRelatedTable=False)
+
+
 
 def checkCanReadOldDB(orig_conn):
     """Can we upgrade from this database version?"""
-    bResult=True
     oVer=DatabaseVersion()
     if not oVer.checkVersions([Rarity],[Rarity.tableversion]) and \
            not oVer.checkVersions([Rarity],[-1]):
@@ -57,12 +75,14 @@ def checkCanReadOldDB(orig_conn):
            not oVer.checkVersions([PhysicalCard],[-1]):
         raise unknownVersion("PhysicalCard")
     if not oVer.checkVersions([PhysicalCardSet],[PhysicalCardSet.tableversion]) and \
+           not oVer.checkVersions([PhysicalCardSet],[1]) and \
            not oVer.checkVersions([PhysicalCardSet],[-1]):
         raise unknownVersion("PhysicalCardSet")
     if not oVer.checkVersions([AbstractCardSet],[AbstractCardSet.tableversion]) and \
+           not oVer.checkVersions([AbstractCardSet],[1]) and \
            not oVer.checkVersions([AbstractCardSet],[-1]):
         raise unknownVersion("AbstractCardSet")
-    return bResult
+    return True
 
 def CopyOldRarity(orig_conn,trans):
     for oObj in Rarity.select(connection=orig_conn):
@@ -124,19 +144,43 @@ def CopyOldPhysicalCard(orig_conn,trans):
         oCardCopy=PhysicalCard(id=oCard.id,abstractCard=oCard.abstractCard,connection=trans)
 
 def CopyOldPhysicalCardSet(orig_conn,trans):
-    for oSet in PhysicalCardSet.select(connection=orig_conn):
-        oCopy=PhysicalCardSet(id=oSet.id,name=oSet.name,connection=trans)
-        for oCard in oSet.cards:
-            oCopy.addPhysicalCard(oCard.id)
-        oCopy.syncUpdate() 
+    oVer=DatabaseVersion()
+    if oVer.checkVersions([PhysicalCardSet],[PhysicalCardSet.tableversion]):
+        for oSet in PhysicalCardSet.select(connection=orig_conn):
+            oCopy=PhysicalCardSet(id=oSet.id,name=oSet.name,\
+                    author=oSet.author,comment=oSet.comment,\
+                    connection=trans)
+            for oCard in oSet.cards:
+                oCopy.addPhysicalCard(oCard.id)
+            oCopy.syncUpdate() 
+    elif oVer.checkVersions([PhysicalCardSet],[1]) or \
+           oVer.checkVersions([PhysicalCardSet],[-1]):
+        for oSet in PhysicalCardSet_v1.select(connection=orig_conn):
+            oCopy=PhysicalCardSet(id=oSet.id,name=oSet.name,\
+                    connection=trans)
+            for oCard in oSet.cards:
+                oCopy.addPhysicalCard(oCard.id)
+            oCopy.syncUpdate() 
+ 
 
 def CopyOldAbstractCardSet(orig_conn,trans):
     oVer=DatabaseVersion()
-    for oSet in AbstractCardSet.select(connection=orig_conn):
-        oCopy=AbstractCardSet(id=oSet.id,name=oSet.name,connection=trans)
-        for oCard in oSet.cards:
-            oCopy.addAbstractCard(oCard.id)
-        oCopy.syncUpdate()
+    if oVer.checkVersions([AbstractCardSet],[AbstractCardSet.tableversion]):
+        for oSet in AbstractCardSet.select(connection=orig_conn):
+            oCopy=AbstractCardSet(id=oSet.id,name=oSet.name,\
+                    author=oSet.author,comment=oSet.comment,\
+                    connection=trans)
+            for oCard in oSet.cards:
+                oCopy.addAbstractCard(oCard.id)
+            oCopy.syncUpdate()
+    elif oVer.checkVersions([AbstractCardSet],[1]) or \
+           oVer.checkVersions([AbstractCardSet],[-1]):
+        for oSet in AbstractCardSet_v1.select(connection=orig_conn):
+            oCopy=AbstractCardSet(id=oSet.id,name=oSet.name,\
+                    connection=trans)
+            for oCard in oSet.cards:
+                oCopy.addAbstractCard(oCard.id)
+            oCopy.syncUpdate()
 
 def readOldDB(orig_conn,dest_conn):
     """Read the old database into memory table, filling in
@@ -211,15 +255,19 @@ def copyDB(orig_conn,dest_conn):
         oCardCopy=PhysicalCard(id=oCard.id,abstractCard=oCard.abstractCard,connection=trans)
     # Copy Physical card sets
     for oSet in PhysicalCardSet.select(connection=orig_conn):
-        oCopy=PhysicalCardSet(id=oSet.id,name=oSet.name,connection=trans)
+        oCopy=PhysicalCardSet(id=oSet.id,name=oSet.name,\
+                author=oSet.author,comment=oSet.comment,\
+                connection=trans)
         for oCard in oSet.cards:
             oCopy.addPhysicalCard(oCard.id)
-        oCardCopy.syncUpdate() # probably unnessecary
+        oCopy.syncUpdate() # probably unnessecary
     for oSet in AbstractCardSet.select(connection=orig_conn):
-        oCopy=AbstractCardSet(id=oSet.id,name=oSet.name,connection=trans)
+        oCopy=AbstractCardSet(id=oSet.id,name=oSet.name,\
+                author=oSet.author,comment=oSet.comment,\
+                connection=trans)
         for oCard in oSet.cards:
             oCopy.addAbstractCard(oCard.id)
-        oCardCopy.syncUpdate() 
+        oCopy.syncUpdate() 
     trans.commit()
     return True
 
