@@ -49,7 +49,7 @@ class PhysicalCardSetController(CardSetController):
         super(PhysicalCardSetController,self).__init__(\
                 oWindow,oMasterController,sName,"PhysicalCardSet")
         self.__oPhysCardSet = PhysicalCardSet.byName(sName)
-        self._oMenu = CardSetMenu(self,self.getWin(),self.__oPhysCardSet.name,"PhysicalCardSet")
+        self._oMenu = CardSetMenu(self,self.getWin(),self.getView(),self.__oPhysCardSet.name,"PhysicalCardSet")
 
     def decCard(self,sName):
         """
@@ -101,7 +101,7 @@ class AbstractCardSetController(CardSetController):
         super(AbstractCardSetController,self).__init__(\
                 oWindow,oMasterController,sName,"AbstractCardSet")
         self.__oAbsCardSet = AbstractCardSet.byName(sName)
-        self._oMenu = CardSetMenu(self,self.getWin(),self.__oAbsCardSet.name,"AbstractCardSet")
+        self._oMenu = CardSetMenu(self,self.getWin(),self.getView(),self.__oAbsCardSet.name,"AbstractCardSet")
 
     def decCard(self,sName):
         """

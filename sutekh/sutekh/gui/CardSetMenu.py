@@ -5,25 +5,32 @@
 # GPL - see COPYING for details
 
 import gtk
+from SutekhObjects import PhysicalCardSet,AbstractCardSet
 from ExportDialog import ExportDialog
+from PropDialog import PropDialog
 from AbstractCardSetWriter import AbstractCardSetWriter
 from PhysicalCardSetWriter import PhysicalCardSetWriter
 
 class CardSetMenu(gtk.MenuBar,object):
-    def __init__(self,oController,oWindow,sName,sType):
+    def __init__(self,oController,oWindow,oView,sName,sType):
         super(CardSetMenu,self).__init__()
         self.__oC = oController
         self.__oWindow = oWindow
+        self.__oView = oView
         self.sSetName = sName
         self.__sType=sType
+        self.__sMenuType=sType.replace('CardSet','')
         self.__createCardSetMenu()
         self.__createFilterMenu()
         self.__createPluginMenu()
 
     def __createCardSetMenu(self):
-        iMenu = gtk.MenuItem(self.__sType+" Card Set Actions")
+        iMenu = gtk.MenuItem(self.__sMenuType+" Card Set Actions")
         wMenu=gtk.Menu()
         iMenu.set_submenu(wMenu)
+        iProperties=gtk.MenuItem("Edit Card Set ("+self.sSetName+") properties")
+        wMenu.add(iProperties)
+        iProperties.connect('activate',self.editProperites)
         iExport = gtk.MenuItem("Export Card Set ("+self.sSetName+") to File")
         wMenu.add(iExport)
         iExport.connect('activate', self.doExport)
@@ -68,12 +75,46 @@ class CardSetMenu(gtk.MenuBar,object):
                 wMenu.add(oMI)
         self.add(iMenu)
 
+    def editProperites(self,widget):
+        if self.__sType=='PhysicalCardSet':
+            oCS=PhysicalCardSet.byName(self.sSetName)
+        else:
+            oCS=AbstractCardSet.byName(self.sSetName)
+        oProp=PropDialog("Edit Card Set ("+self.sSetName+") Propeties",\
+                self.__oWindow,oCS.name,oCS.author,oCS.comment)
+        oProp.run()
+        (sName,sAuthor,sComment)=oProp.getData()
+        if sName is not None and sName != self.sSetName and len(sName)>0:
+            # Check new name is not in use
+            if self.__sType=='PhysicalCardSet':
+                oNameList=PhysicalCardSet.selectBy(name=sName)
+            else:
+                oNameList=AbstractCardSet.selectBy(name=sName)
+            if oNameList.count()>0:
+                Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,\
+                    gtk.BUTTONS_CLOSE,\
+                    "Chosen "+self.__sMenuType+" Card Set name already in use.")
+                Complaint.connect("response",lambda dlg, resp: dlg.destroy())
+                Complaint.run()
+                return
+            else:
+                oCS.name=sName
+                self.__oView.sSetName=sName
+                self.sSetName=sName
+                oCS.syncUpdate()
+        if sAuthor is not None:
+            oCS.author=sAuthor
+            oCS.syncUpdate()
+        if sComment is not None:
+            oCS.comment=sComment
+            oCS.syncUpdate()
+
     def doExport(self,widget):
-        oFileChooser=ExportDialog("Save "+self.__sType+" Card Set As",self.__oWindow)
+        oFileChooser=ExportDialog("Save "+self.__sMenuType+" Card Set As",self.__oWindow)
         oFileChooser.run()
         sFileName=oFileChooser.getName()
         if sFileName is not None:
-            if self.__sType=='Physical':
+            if self.__sType=='PhysicalCardSet':
                 oW=PhysicalCardSetWriter()
             else:
                 oW=AbstractCardSetWriter()

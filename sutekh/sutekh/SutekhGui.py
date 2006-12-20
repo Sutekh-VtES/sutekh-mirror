@@ -8,7 +8,7 @@ from SutekhObjects import *
 from gui.MainController import MainController
 from gui.DBErrorPopup import DBErrorPopup
 from gui.DBUpgradeDialog import DBUpgradeDialog
-from DatabaseVersion import *
+from DatabaseVersion import DatabaseVersion
 from DatabaseUpgrade import *
 import gtk
 
@@ -54,22 +54,29 @@ def main(aArgs):
             return 1
         else:
             tempConn=connectionForURI("sqlite:///:memory:")
-            if createMemoryCopy(tempConn):
-                diag=DBUpgradeDialog()
-                res=diag.run()
-                diag.destroy()
-                if res==gtk.RESPONSE_OK:
-                    createFinalCopy(tempConn)
-                    print "Changes Committed"
-                elif res==1:
-                    # Try with the upgraded database
-                    oConn=tempConn
+            try:
+                if createMemoryCopy(tempConn):
+                    diag=DBUpgradeDialog()
+                    res=diag.run()
+                    diag.destroy()
+                    if res==gtk.RESPONSE_OK:
+                        createFinalCopy(tempConn)
+                        print "Changes Committed"
+                    elif res==1:
+                        # Try with the upgraded database
+                        sqlhub.processConnection=tempConn
+                    else:
+                        return 1
                 else:
+                    diag=gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,\
+                            gtk.BUTTONS_CLOSE,None)
+                    diag.set_markup("Unable to create memory copy. Upgrade Failed")
+                    diag.run()
                     return 1
-            else:
+            except unknownVersion, err:
                 diag=gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,\
                         gtk.BUTTONS_CLOSE,None)
-                diag.set_markup("Unable to create memory copy. Upgrade Failed")
+                diag.set_markup("Upgrade Failed. "+str(err))
                 diag.run()
                 return 1
 

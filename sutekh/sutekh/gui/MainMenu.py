@@ -166,7 +166,7 @@ class MainMenu(gtk.MenuBar,object):
         # Popup Create PhysicalCardSet Dialog
         Dialog=CreateCardSetDialog(self.__oWin,"PhysicalCardSet")
         Dialog.run()
-        Name=Dialog.getName()
+        (Name,sAuthor,sDesc)=Dialog.getName()
         if Name!=None:
             # Check Name isn't in use
             NameList = PhysicalCardSet.selectBy(name=Name)
@@ -179,14 +179,14 @@ class MainMenu(gtk.MenuBar,object):
                 return
         else:
             return
-        PhysicalCardSet(name=Name) # Create PhysicalCardSet
+        PhysicalCardSet(name=Name,author=sAuthor,comment=sDesc) # Create PhysicalCardSet
         self.__oC.createNewPhysicalCardSetWindow(Name)
 
     def doCreateACS(self,widget):
         # Popup Create AbstractCardSet Dialog
         Dialog=CreateCardSetDialog(self.__oWin,"AbstractCardSet")
         Dialog.run()
-        Name=Dialog.getName()
+        (Name,sAuthor,sDesc)=Dialog.getName()
         if Name!=None:
             # Check Name isn't in use
             NameList = AbstractCardSet.selectBy(name=Name)
@@ -199,7 +199,7 @@ class MainMenu(gtk.MenuBar,object):
                 return
         else:
             return
-        AbstractCardSet(name=Name) # Create New Abstract Card Set
+        AbstractCardSet(name=Name,author=sAuthor,comment=sDesc) # Create New Abstract Card Set
         self.__oC.createNewAbstractCardSetWindow(Name)
 
     def doLoadPCS(self,widget):

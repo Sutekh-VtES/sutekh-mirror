@@ -74,9 +74,9 @@ def parseOptions(aArgs):
     oP.add_option("--reload",action="store_true",dest="reload",default=False,
                   help="Dump the physical card list and all card sets and reload them - \
 intended to be used with -c and refreshing the abstract card list")
-     oP.add_option("--upgrade-db",
-                   action="store_true",dest="upgrade_db",default=False,
-                   help="Attempt to upgrade a database to the latest version. Cannot be used with --refresh-tables")
+    oP.add_option("--upgrade-db",\
+                  action="store_true",dest="upgrade_db",default=False,\
+                  help="Attempt to upgrade a database to the latest version. Cannot be used with --refresh-tables")
 
     return oP, oP.parse_args(aArgs)
 
@@ -122,7 +122,10 @@ def writeAllPhysicalCardSets(dir=''):
     oPhysicalCardSets = PhysicalCardSet.select()
     aList=[];
     for pcs in oPhysicalCardSets:
-        (fd,filename)=tempfile.mkstemp('.xml','pcs_'+pcs.name.replace(" ","_")+'_',dir)
+        sFName=pcs.name
+        sFName=sFName.replace(" ","_")
+        sFName=sFName.replace("/","_")
+        (fd,filename)=tempfile.mkstemp('.xml','pcs_'+sFName+'_',dir)
         os.close(fd)
         aList.append(filename)
         writePhysicalCardSet(pcs.name,filename)
@@ -146,7 +149,10 @@ def writeAllAbstractCardSets(dir=''):
     oAbstractCardSets = AbstractCardSet.select()
     aList=[];
     for acs in oAbstractCardSets:
-        (fd,filename)=tempfile.mkstemp('.xml','acs_'+acs.name.replace(" ","_")+'_',dir)
+        sFName=acs.name
+        sFName=sFName.replace(" ","_")
+        sFName=sFName.replace("/","_")
+        (fd,filename)=tempfile.mkstemp('.xml','acs_'+sFName+'_',dir)
         os.close(fd)
         aList.append(filename)
         writeAbstractCardSet(acs.name,filename)
@@ -249,12 +255,12 @@ def main(aArgs):
             os.remove(acs)
         os.rmdir(sTempdir)
 
-     if oOpts.upgrade_db and oOpts.refresh_tables:
-         print "Can't use --upgrade-db and --refresh-tables simulatenously"
-         return 1
+    if oOpts.upgrade_db and oOpts.refresh_tables:
+        print "Can't use --upgrade-db and --refresh-tables simulatenously"
+        return 1
  
-     if oOpts.upgrade_db:
-         attemptDatabaseUpgrade()
+    if oOpts.upgrade_db:
+        attemptDatabaseUpgrade()
 
     return 0
 
