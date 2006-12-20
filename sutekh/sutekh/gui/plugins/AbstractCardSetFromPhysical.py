@@ -10,7 +10,7 @@ from gui.PluginManager import CardListPlugin
 class AbstractCardSetFromPhysical(CardListPlugin):
     """Create a equivilant Abstract Card Set from a given
        Physical Card Set."""
-    dTableVersions={}
+    dTableVersions = {"AbstractCardSet" : [2]}
     aModelsSupported = ['PhysicalCardSet']
     def getMenuItem(self):
         """
@@ -40,6 +40,10 @@ class AbstractCardSetFromPhysical(CardListPlugin):
                 Complaint.destroy()
                 return
             nA=AbstractCardSet(name=sName)
+            oPC=PhysicalCardSet.byName(sName)
+            nA.author=oPC.author
+            nA.comment=oPC.comment
+            nA.syncUpdate()
             # Copy the cards across
             for oCard in self.model.getCardIterator(None):
                 nA.addAbstractCard(oCard.abstractCardID)

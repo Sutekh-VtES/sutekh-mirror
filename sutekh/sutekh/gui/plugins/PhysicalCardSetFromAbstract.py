@@ -12,7 +12,7 @@ class PhysicalCardSetFromAbstract(CardListPlugin):
        from a given Abstract Card Set.
        Ignores Cards which don't exist in Physical Cards"""
        #Q: How should the user be informed of missing cards?
-    dTableVersions = {}
+    dTableVersions = {"PhysicalCardSet" : [2]}
     aModelsSupported = ["AbstractCardSet"]
     def getMenuItem(self):
         """
@@ -42,6 +42,10 @@ class PhysicalCardSetFromAbstract(CardListPlugin):
                 Complaint.destroy()
                 return
             nP=PhysicalCardSet(name=sName)
+            oAC=AbstractCardSet.byName(sName)
+            nP.author=oAC.author
+            nP.comment=oAC.comment
+            nP.syncUpdate()
             # Copy the cards across
             for oCard in self.model.getCardIterator(None):
                 oPhysCards=PhysicalCard.selectBy(abstractCardID=oCard.id)

@@ -9,7 +9,7 @@ from gui.PluginManager import CardListPlugin
 from WriteArdbXML import WriteArdbXML
 
 class AbstractCardSetExportArdbXML(CardListPlugin):
-    dTableVersions = {}
+    dTableVersions = {"AbstractCardSet" : [2]}
     aModelsSupported = ["AbstractCardSet"]
     def getMenuItem(self):
         """
@@ -28,21 +28,13 @@ class AbstractCardSetExportArdbXML(CardListPlugin):
 
     def makeDialog(self):
         parent = self.view.getWindow()
-        self.oDlg = gtk.Dialog("Choose PhysicalCardSets to Test",parent,
+        self.oDlg = gtk.Dialog("Choose FileName for Exported CardSet",parent,
                           gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                           (gtk.STOCK_OK, gtk.RESPONSE_OK,
                            gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
         self.oFileChooser=gtk.FileChooserWidget(gtk.FILE_CHOOSER_ACTION_SAVE)
         self.oFileChooser.set_do_overwrite_confirmation(True)
-        oAuthorLabel=gtk.Label("Author : ")
-        oDescLabel=gtk.Label("Description : ")
-        self.oAuthor=gtk.Entry(50)
-        self.oDescription=gtk.Entry(550)
         self.oDlg.vbox.pack_start(self.oFileChooser)
-        self.oDlg.vbox.pack_start(oAuthorLabel)
-        self.oDlg.vbox.pack_start(self.oAuthor)
-        self.oDlg.vbox.pack_start(oDescLabel)
-        self.oDlg.vbox.pack_start(self.oDescription)
         self.oDlg.connect("response", self.handleResponse)
         self.oDlg.show_all()
         return self.oDlg
@@ -51,11 +43,14 @@ class AbstractCardSetExportArdbXML(CardListPlugin):
         if oResponse ==  gtk.RESPONSE_OK:
             sFileName=self.oFileChooser.get_filename()
             if sFileName is not None:
+                oCardSet=AbstractCardSet.byName(self.view.sSetName)
+                sAuthor=oCardSet.author
+                sComment=oCardSet.comment
                 oW=WriteArdbXML()
                 fOut=file(sFileName,"w")
                 oW.write(fOut,self.view.sSetName,\
-                        self.oAuthor.get_text(),\
-                        self.oDescription.get_text(),\
+                        sAuthor,\
+                        sComment,\
                         self.getCards())
                 fOut.close()
 

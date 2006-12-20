@@ -7,7 +7,9 @@ from SutekhObjects import *
 from gui.PluginManager import CardListPlugin
 
 class DeckFromFilter(CardListPlugin):
-    dTableVersions = {}
+    dTableVersions = {"PhysicalCardSet" : [1,2],
+            "AbstractCardSet" : [1.2],
+            "PhysicalCard" : [1]}
     aModelsSupported = ["PhysicalCardSet","AbstractCardSet","PhysicalCard"]
     def __init__(self,*args,**kws):
         super(DeckFromFilter,self).__init__(*args,**kws)

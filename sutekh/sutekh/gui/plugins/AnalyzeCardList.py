@@ -10,7 +10,8 @@ from Filters import *
 from gui.PluginManager import CardListPlugin
 
 class AnalyzeCardList(CardListPlugin):
-    dTableVersions = {}
+    dTableVersions = {"PhysicalCardSet" : [2],
+            "AbstractCardSet" : [2]}
     aModelsSupported = ["PhysicalCardSet","AbstractCardSet"]
     def getMenuItem(self):
         """
@@ -29,7 +30,14 @@ class AnalyzeCardList(CardListPlugin):
     def makeDialog(self):
         parent = self.view.getWindow()
         name = "Analysis of Card List"
-        deckName = "UNKNOWN DECK"
+        deckName = self.view.sSetName
+        if self.view.sSetType=='PhysicalCardSet':
+            oCS=PhysicalCardSet.byName(self.view.sSetName)
+        else:
+            oCS=AbstractCardSet.byName(self.view.sSetName)
+
+        sComment = oCS.comment
+        sAuthor = oCS.author
     
         dlg = gtk.Dialog(name,parent,
                          gtk.DIALOG_DESTROY_WITH_PARENT,
@@ -40,6 +48,8 @@ class AnalyzeCardList(CardListPlugin):
         oNotebook = gtk.Notebook()
         
         oMainLabel = gtk.Label()
+        oMainLabel.set_line_wrap(True)
+        oMainLabel.set_width_chars(60)
         oHappyFamiliesLabel = gtk.Label()
         oVampiresLabel = gtk.Label()
         oMastersLabel = gtk.Label()
@@ -51,7 +61,7 @@ class AnalyzeCardList(CardListPlugin):
         oNotebook.append_page(oMastersLabel,gtk.Label('Master Cards'));
         oNotebook.append_page(oCombatLabel,gtk.Label('combat Cards'));
                 
-        sMainText = "Analysis Results for deck : <b>" + deckName + "</b>\n"
+        sMainText = "Analysis Results for deck : <b>" + deckName + "</b>\nby <i>"+sAuthor+"</i>\n"+sComment+"\n"
         sVampText = "Vampies :\n"
         sMasterText = "Master Cards :\n"
         sHappyFamilyText = "Happy Families Analysis :\n"

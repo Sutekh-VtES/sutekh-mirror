@@ -9,7 +9,7 @@ from gui.PluginManager import CardListPlugin
 from gui.ScrolledList import ScrolledList
 
 class PhysicalCardSetIndependence(CardListPlugin):
-    dTableVersions = {}
+    dTableVersions = {"PhysicalCardSet" : [1,2]}
     aModelsSupported = ["PhysicalCardSet"]
     def getMenuItem(self):
         """
