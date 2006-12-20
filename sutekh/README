@@ -27,11 +27,12 @@ python sutekh/SutekhCli.py --help
 python sutekh/SutekhCli.py -c -r vtes_card_file.html
 python sutekh/SutekhCli.py --ruling-file vtes_ruling_file.html (optional)
 
-Currently the GUI mostly just supports creating a list of (physical)
-cards one owns although it's also a means of browsing cards by card
-type. Launch using:
+The card list can be manipulated and examined via the gui
 
 * python sutekh/SutekhGui.py
+
+The gui also allows the creation of AbstractCardSets and PhysicalCardSets, and
+these can be manipulated in various ways. 
 
 You can save and load list of physical cards using:
 
@@ -43,6 +44,22 @@ Short options for save and read are -s (save) and -l (load).  In practice -l
 will usually be used in conjunction with a refresh:
 
 python sutekh/SutekhCli.py --refresh-physical-card-tables -l mycards.xml
+
+Lkewise, it's also possible to export and read in AbstractCardSets and 
+PhysicalCardSets.
+
+python sutekh/SutekhCli.py --save-acs "Toreador Deck" --acs-filename=deck.xml 
+saves the AbstractCardSet called "Toreador Deck" to the file "deck.xml",
+while
+python sutekh/SutekhCli.py --read-pcs="vampires.xml" 
+loads the PhysicalCardSet saved as vampires.xml
+
+A --reload option exists for when re-importing the official cardlists and
+rulings.  This dumps and then reloads the card list and all the card sets.
+
+Typically used as:
+python sutekh/SutekhCli.py -c --reload -r vtes_card_file.html \
+      --ruling-file vtes_ruling_file.html  
 
 === Using Sutekh from the Python Interpreter ===
 

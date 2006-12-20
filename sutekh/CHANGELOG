@@ -1,4 +1,15 @@
 
+20 Dec 2006
+ * Database can be upgraded to handle changes to the database structure both
+   via SutekhCli and the GUI - NM
+ * Add Comment and Author fields to card sets - NM
+ * Card Sets can be renamed from within the GUI - NM
+ * Misc bug fixes (mainly of things I broke while doing the above) - NM
+
+19 Nov 2006
+ * Export to Anarachs Revolt Deck Builder XML Format. Allows us to leverage
+   their XSLT files - NM
+
 04 Nov 2006
  * Support for exporting cards to xML from the GUI - NM
  * Finsh PhysicalCardSet to AbstractCardSet and reverse plugins - NM
