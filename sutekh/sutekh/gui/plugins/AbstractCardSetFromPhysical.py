@@ -28,21 +28,23 @@ class AbstractCardSetFromPhysical(CardListPlugin):
 
     def createAbsCardSet(self):
         parent = self.view.getWindow()
-        oDlg = CreateCardSetDialog(parent,"AbstractCardSet")
+        oPC=PhysicalCardSet.byName(self.view.sSetName)
+        oDlg = CreateCardSetDialog(parent,"AbstractCardSet",oPC.author,oPC.comment)
         oDlg.run()
-        sName = oDlg.getName()
+        (sName,sAuthor,sDesc) = oDlg.getName()
         if sName is not None:
-            NameList = AbstractCardSet.selectBy(name=sName)
-            if NameList.count()!=0:
+	    print sName
+            oNameList = AbstractCardSet.selectBy(name=sName)
+	    print oNameList
+            if oNameList.count()!=0:
                 Complaint=gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
                         gtk.BUTTONS_CLOSE,"Chosen Abstract Card Set already exists")
                 Complaint.run()
                 Complaint.destroy()
                 return
             nA=AbstractCardSet(name=sName)
-            oPC=PhysicalCardSet.byName(sName)
-            nA.author=oPC.author
-            nA.comment=oPC.comment
+            nA.author=sAuthor
+            nA.comment=sDesc
             nA.syncUpdate()
             # Copy the cards across
             for oCard in self.model.getCardIterator(None):

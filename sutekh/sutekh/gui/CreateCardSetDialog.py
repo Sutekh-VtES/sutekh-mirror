@@ -6,7 +6,7 @@
 import gtk
 
 class CreateCardSetDialog(gtk.Dialog):
-    def __init__(self,parent,sType):
+    def __init__(self,parent,sType,sAuthor=None,sDesc=None):
         super(CreateCardSetDialog,self).__init__(sType+" Card Set Details", \
               parent,gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT, \
               ( gtk.STOCK_OK, gtk.RESPONSE_OK, gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
@@ -19,7 +19,11 @@ class CreateCardSetDialog(gtk.Dialog):
         oAuthorLabel = gtk.Label("Author : ")
         oDescriptionLabel = gtk.Label("Description : ")
         self.Author = gtk.Entry(50)
+	if sAuthor is not None:
+	    self.Author.set_text(sAuthor)
         self.Desc = gtk.Entry(50)
+	if sDesc is not None:
+	    self.Desc.set_text(sDesc)
         self.vbox.pack_start(oAuthorLabel)
         self.vbox.pack_start(self.Author)
         self.vbox.pack_start(oDescriptionLabel)

@@ -30,9 +30,10 @@ class PhysicalCardSetFromAbstract(CardListPlugin):
 
     def createPhysCardSet(self):
         parent = self.view.getWindow()
-        oDlg = CreateCardSetDialog(parent,"PhysicalCardSet")
+        oAC=AbstractCardSet.byName(self.view.sSetName)
+        oDlg = CreateCardSetDialog(parent,"PhysicalCardSet",oAC.author,oAC.comment)
         oDlg.run()
-        sName = oDlg.getName()
+        (sName, sAuthor, sDesc) = oDlg.getName()
         if sName is not None:
             NameList = PhysicalCardSet.selectBy(name=sName)
             if NameList.count()!=0:
@@ -42,9 +43,8 @@ class PhysicalCardSetFromAbstract(CardListPlugin):
                 Complaint.destroy()
                 return
             nP=PhysicalCardSet(name=sName)
-            oAC=AbstractCardSet.byName(sName)
-            nP.author=oAC.author
-            nP.comment=oAC.comment
+            nP.author=sAuthor
+            nP.comment=sComment
             nP.syncUpdate()
             # Copy the cards across
             for oCard in self.model.getCardIterator(None):
