@@ -14,7 +14,7 @@ class DeleteCardDialog(gtk.Dialog):
         Label=gtk.Label()
         text="Card Present in the following Physical Card Sets:\n"
         for sPCS in PCSlist:
-            text=text+"<span foreground=\"blue\">"+PCS+"</span>\n"
+            text=text+"<span foreground=\"blue\">"+sPCS+"</span>\n"
         text=text+"<b>Really Delete?</b>"
         Label.set_markup(text)
         Icon=gtk.Image()
