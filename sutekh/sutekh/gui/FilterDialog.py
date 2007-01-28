@@ -24,19 +24,24 @@ class FilterDialog(gtk.Dialog):
         self.typeFrame=ScrolledList('Card Types')
         self.expFrame=ScrolledList('Expansions')
         self.groupFrame=ScrolledList('Crypt Group')
+	textVBox=gtk.VBox(False,0)
         self.textFrame=gtk.Frame('Card Text')
+        self.nameFrame=gtk.Frame('Card Name')
+	textVBox.pack_start(self.nameFrame)
+	textVBox.pack_start(self.textFrame)
         myHBox.pack_start(self.clanFrame)
         myHBox.pack_start(self.discFrame)
         myHBox.pack_start(self.typeFrame)
         myHBox.pack_start(self.expFrame)
         myHBox.pack_start(self.groupFrame)
-        myHBox.pack_start(self.textFrame)
+        myHBox.pack_start(textVBox)
         self.State['clan']={}
         self.State['disc']={}
         self.State['type']={}
         self.State['exp']={}
         self.State['group']={}
         self.State['text']=''
+        self.State['name']=''
         for clan in Clan.select().orderBy('name'):
             # Add clan to the list
             iter=self.clanFrame.get_list().append(None)
@@ -63,6 +68,8 @@ class FilterDialog(gtk.Dialog):
         self.connect("response", self.buttonResponse)
         self.textEntry=gtk.Entry(100)
         self.textFrame.add(self.textEntry)
+	self.nameEntry=gtk.Entry(100)
+	self.nameFrame.add(self.nameEntry)
         self.Data = None
         self.vbox.pack_end(myHBox)
         self.show_all()
@@ -95,6 +102,7 @@ class FilterDialog(gtk.Dialog):
            for groupName in self.State['group']:
                self.State['group'][groupName]=False
            self.State['text']=''
+           self.State['name']=''
 
            # Compile lists of clans and disciplines selected
            self.clanFrame.get_selection(aClans,self.State['clan'])
@@ -114,10 +122,15 @@ class FilterDialog(gtk.Dialog):
                andData.append(MultiGroupFilter([int(x) for x in aGroups]))
 
            # Add text lookup
-           aText=self.textEntry.get_text()
-           if aText!='':
-               andData.append(CardTextFilter(aText))
-               self.State['text']=aText
+           sCardText=self.textEntry.get_text()
+           if sCardText!='':
+               andData.append(CardTextFilter(sCardText))
+               self.State['text']=sCardText
+
+	   sPartialName=self.nameEntry.get_text()
+           if sPartialName!='':
+               andData.append(CardNameFilter(sPartialName))
+               self.State['name']=sPartialName
 
            # Combine filters
            if len(andData)>1:
@@ -133,6 +146,7 @@ class FilterDialog(gtk.Dialog):
            self.expFrame.reset(self.State['exp'])
            self.groupFrame.reset(self.State['group'])
            self.textEntry.set_text(self.State['text'])
+           self.nameEntry.set_text(self.State['name'])
            self.wasCancelled = True
        self.hide()
 

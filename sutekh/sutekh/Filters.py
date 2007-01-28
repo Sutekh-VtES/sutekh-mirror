@@ -141,6 +141,13 @@ class CardTextFilter(Filter):
     def getExpression(self):
         return LIKE(AbstractCard.q.text,'%' + self.__sPattern + '%')
 
+class CardNameFilter(Filter):
+    def __init__(self,sPattern):
+        self.__sPattern = sPattern
+
+    def getExpression(self):
+        return LIKE(AbstractCard.q.name,'%' + self.__sPattern + '%')
+
 class PhysicalCardFilter(Filter):
     def __init__(self):
         # Specifies Physical Cards, intended to be anded with other filters

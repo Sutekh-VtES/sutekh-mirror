@@ -2,6 +2,7 @@ Backend:
  * Add ordering mechanism for card lists.
  * Make filtering less slow (mainly for sqlite) 
       (seems OK with the indexes. Do we need more?).
+ * Additional Filter (Votes, Sect, etc)
  * Handle 'Creed' and 'Life' attributes of Imbued in WhiteWolfParser (done?)
  * Export card sets to HTML. (XSL and more detailed XML export??)
 
@@ -9,7 +10,7 @@ Database
  * Add title & attributes columns to Abstract Card
 
 Gui (Functionality):
- * Improve Filter selection dialog. 
+ * Improve Filter selection dialog.  (And/Or/Not)
  * Add ordering selection dialog (possibly part of filtering dialog).
  * Ability to add additional columns to card list displays (capacity, group, ...).
  * Turn AnalyzeDeck into something more useful - NM
