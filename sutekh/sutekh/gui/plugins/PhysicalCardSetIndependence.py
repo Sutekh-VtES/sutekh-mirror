@@ -20,6 +20,9 @@ class PhysicalCardSetIndependence(CardListPlugin):
         iDF = gtk.MenuItem("Test Physical Card Set Independence")
         iDF.connect("activate", self.activate)
         return iDF
+
+    def getDesiredMenu(self):
+        return "Plugins"
         
     def activate(self,oWidget):
         oDlg = self.makeDialog()

@@ -14,6 +14,7 @@ class PhysicalCardMenu(gtk.MenuBar,object):
         self.__oC = oController
         self.__oWindow = oWindow
 
+        self.__dMenus={}
         self.__createFileMenu()
         self.__createFilterMenu()
         self.__createPluginMenu()
@@ -22,6 +23,7 @@ class PhysicalCardMenu(gtk.MenuBar,object):
         # setup sub menu
         iMenu = gtk.MenuItem("File")
         wMenu = gtk.Menu()
+        self.__dMenus["File"]=wMenu
         iMenu.set_submenu(wMenu)
         # items
         iExport = gtk.MenuItem("Export Physical Card List to File")
@@ -35,6 +37,7 @@ class PhysicalCardMenu(gtk.MenuBar,object):
         iMenu = gtk.MenuItem("Filter")
         wMenu = gtk.Menu()
         iMenu.set_submenu(wMenu)
+        self.__dMenus["Filter"]=wMenu
         # items
         iFilter = gtk.MenuItem("Specify Filter")
         wMenu.add(iFilter)
@@ -51,12 +54,19 @@ class PhysicalCardMenu(gtk.MenuBar,object):
         # setup sub menu
         iMenu = gtk.MenuItem("Plugins")
         wMenu = gtk.Menu()
+        self.__dMenus["Plugins"]=wMenu
         iMenu.set_submenu(wMenu)
         # plugins
         for oPlugin in self.__oC.getPlugins():
             oMI=oPlugin.getMenuItem()
             if oMI is not None:
-                wMenu.add(oMI)
+                sMenu=oPlugin.getDesiredMenu()
+                # Add to the requested menu if supplied
+                if sMenu in self.__dMenus.keys():
+                    self.__dMenus[sMenu].add(oMI)
+                else:
+                    # Plugins acts as a catchall Menu
+                    wMenu.add(oMI)
         self.add(iMenu)
 
     def doExport(self,widget):

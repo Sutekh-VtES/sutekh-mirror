@@ -22,6 +22,9 @@ class AnalyzeCardList(CardListPlugin):
         iAnalyze = gtk.MenuItem("Analyze Deck")
         iAnalyze.connect("activate", self.activate)
         return iAnalyze
+
+    def getDesiredMenu(self):
+        return "Plugins"
         
     def activate(self,oWidget):
         dlg = self.makeDialog()

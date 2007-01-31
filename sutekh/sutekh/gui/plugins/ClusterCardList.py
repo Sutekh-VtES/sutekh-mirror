@@ -33,6 +33,9 @@ class ClusterCardList(CardListPlugin):
         iCluster = gtk.MenuItem("Cluster Cards")
         iCluster.connect("activate", self.activate)
         return iCluster
+
+    def getDesiredMenu(self):
+        return "Plugins"
         
     def activate(self,oWidget):
         dlg = self.makeDialog()

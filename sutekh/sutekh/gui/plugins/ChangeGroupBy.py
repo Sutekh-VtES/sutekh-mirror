@@ -24,9 +24,12 @@ class GroupCardList(CardListPlugin):
         """
         if not self.checkVersions() or not self.checkModelType():
             return None
-        iCluster = gtk.MenuItem("Change Grouping")
-        iCluster.connect("activate", self.activate)
-        return iCluster
+        iGrouping= gtk.MenuItem("Change Grouping")
+        iGrouping.connect("activate", self.activate)
+        return iGrouping
+
+    def getDesiredMenu(self):
+        return "Plugins"
         
     def activate(self,oWidget):
         dlg = self.makeDialog()

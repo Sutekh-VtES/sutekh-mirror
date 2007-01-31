@@ -23,6 +23,9 @@ class AbstractCardSetFromPhysical(CardListPlugin):
 
         return iDF
 
+    def getDesiredMenu(self):
+        return "CardSet"
+
     def activate(self,oWidget):
         self.createAbsCardSet()
 

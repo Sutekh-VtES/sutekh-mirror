@@ -21,6 +21,9 @@ class AbstractCardSetIndependence(CardListPlugin):
         iDF.connect("activate", self.activate)
         return iDF
 
+    def getDesiredMenu(self):
+        return "Plugins"
+
     def activate(self,oWidget):
         oDlg = self.makeDialog()
         oDlg.run()

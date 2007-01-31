@@ -7,8 +7,8 @@ from SutekhObjects import *
 from gui.PluginManager import CardListPlugin
 
 class DeckFromFilter(CardListPlugin):
-    dTableVersions = {"PhysicalCardSet" : [1,2],
-            "AbstractCardSet" : [1.2],
+    dTableVersions = {"PhysicalCardSet" : [2],
+            "AbstractCardSet" : [2],
             "PhysicalCard" : [1]}
     aModelsSupported = ["PhysicalCardSet","AbstractCardSet","PhysicalCard"]
     def __init__(self,*args,**kws):
@@ -23,6 +23,9 @@ class DeckFromFilter(CardListPlugin):
         iDF = gtk.MenuItem("Deck From Filter")
         iDF.connect("activate", self.activate)
         return iDF
+
+    def getDesiredMenu(self):
+        return "Filter"
         
     def activate(self,oWidget):
         oDlg = self.makeDialog()

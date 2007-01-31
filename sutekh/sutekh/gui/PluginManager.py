@@ -70,7 +70,14 @@ class CardListPlugin(object):
 
     def getMenuItem(self):
         """
-        Return a gtk.MenuItem for the plugin or None if no menu item is need.
+        Return a gtk.MenuItem for the plugin or None if no menu item is needed.
+        """
+        return None
+
+    def getDesiredMenu(self):
+        """
+        Return the name of the menu this plugin should be added to, or None
+        if no menu iterm is needed.
         """
         return None
 

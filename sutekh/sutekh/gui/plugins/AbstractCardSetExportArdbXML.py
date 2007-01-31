@@ -20,6 +20,9 @@ class AbstractCardSetExportArdbXML(CardListPlugin):
         iDF = gtk.MenuItem("Export Abstract Card Set to ARDB XML")
         iDF.connect("activate", self.activate)
         return iDF
+
+    def getDesiredMenu(self):
+        return "CardSet"
         
     def activate(self,oWidget):
         oDlg = self.makeDialog()

@@ -20,6 +20,7 @@ class CardSetMenu(gtk.MenuBar,object):
         self.sSetName = sName
         self.__sType=sType
         self.__sMenuType=sType.replace('CardSet','')
+        self.__dMenus={}
         self.__createCardSetMenu()
         self.__createFilterMenu()
         self.__createPluginMenu()
@@ -27,6 +28,7 @@ class CardSetMenu(gtk.MenuBar,object):
     def __createCardSetMenu(self):
         iMenu = gtk.MenuItem(self.__sMenuType+" Card Set Actions")
         wMenu=gtk.Menu()
+        self.__dMenus["CardSet"]=wMenu
         iMenu.set_submenu(wMenu)
         self.__iProperties=gtk.MenuItem("Edit Card Set ("+self.sSetName+") properties")
         wMenu.add(self.__iProperties)
@@ -55,6 +57,7 @@ class CardSetMenu(gtk.MenuBar,object):
         # setup sub menu
         iMenu = gtk.MenuItem("Filter")
         wMenu = gtk.Menu()
+        self.__dMenus["Filter"]=wMenu
         iMenu.set_submenu(wMenu)
 
         # items
@@ -73,12 +76,19 @@ class CardSetMenu(gtk.MenuBar,object):
         # setup sub menu
         iMenu = gtk.MenuItem("Plugins")
         wMenu = gtk.Menu()
+        self.__dMenus["Plugins"]=wMenu
         iMenu.set_submenu(wMenu)
         # plugins
         for oPlugin in self.__oC.getPlugins():
             oMI=oPlugin.getMenuItem()
             if oMI is not None:
-                wMenu.add(oMI)
+                sMenu=oPlugin.getDesiredMenu()
+                # Add to the requested menu if supplied
+                if sMenu in self.__dMenus.keys():
+                    self.__dMenus[sMenu].add(oMI)
+                else:
+                    # Plugins acts as a catchall Menu
+                    wMenu.add(oMI)
         self.add(iMenu)
 
     def editProperites(self,widget):
