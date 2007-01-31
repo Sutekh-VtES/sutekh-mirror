@@ -28,22 +28,28 @@ class CardSetMenu(gtk.MenuBar,object):
         iMenu = gtk.MenuItem(self.__sMenuType+" Card Set Actions")
         wMenu=gtk.Menu()
         iMenu.set_submenu(wMenu)
-        iProperties=gtk.MenuItem("Edit Card Set ("+self.sSetName+") properties")
-        wMenu.add(iProperties)
-        iProperties.connect('activate',self.editProperites)
-        iExport = gtk.MenuItem("Export Card Set ("+self.sSetName+") to File")
-        wMenu.add(iExport)
-        iExport.connect('activate', self.doExport)
-        iClose=gtk.MenuItem("Close Card Set ("+self.sSetName+")")
-        wMenu.add(iClose)
-        iClose.connect("activate", self.cardSetClose)
-        iDelete=gtk.MenuItem("Delete Card Set ("+self.sSetName+")")
+        self.__iProperties=gtk.MenuItem("Edit Card Set ("+self.sSetName+") properties")
+        wMenu.add(self.__iProperties)
+        self.__iProperties.connect('activate',self.editProperites)
+        self.__iExport = gtk.MenuItem("Export Card Set ("+self.sSetName+") to File")
+        wMenu.add(self.__iExport)
+        self.__iExport.connect('activate', self.doExport)
+        self.__iClose=gtk.MenuItem("Close Card Set ("+self.sSetName+")")
+        wMenu.add(self.__iClose)
+        self.__iClose.connect("activate", self.cardSetClose)
+        self.__iDelete=gtk.MenuItem("Delete Card Set ("+self.sSetName+")")
         # Possible enhancement, make card set names italic.
         # Looks like it requires playing with menuitem attributes
         # (or maybe gtk.Action)
-        iDelete.connect("activate", self.cardSetDelete)
-        wMenu.add(iDelete)
+        self.__iDelete.connect("activate", self.cardSetDelete)
+        wMenu.add(self.__iDelete)
         self.add(iMenu)
+
+    def __updateCardSetMenu(self):
+        self.__iProperties.get_child().set_label("Edit Card Set ("+self.sSetName+") properties")
+        self.__iExport.get_child().set_label("Export Card Set ("+self.sSetName+") to File")
+        self.__iClose.get_child().set_label("Close Card Set ("+self.sSetName+")")
+        self.__iDelete.get_child().set_label("Delete Card Set ("+self.sSetName+")")
 
     def __createFilterMenu(self):
         # setup sub menu
@@ -101,6 +107,8 @@ class CardSetMenu(gtk.MenuBar,object):
                 oCS.name=sName
                 self.__oView.sSetName=sName
                 self.sSetName=sName
+                self.__updateCardSetMenu()
+                self.__oWindow.updateName(self.sSetName)
                 oCS.syncUpdate()
         if sAuthor is not None:
             oCS.author=sAuthor

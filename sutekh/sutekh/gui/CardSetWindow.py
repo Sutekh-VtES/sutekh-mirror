@@ -18,6 +18,10 @@ class CardSetWindow(gtk.Window,object):
         self.set_title("Sutekh:" + sType + " Card Set : " + sName)
         self.set_default_size(400, 400)
 
+    def updateName(self,sNewName):
+        self.sSetName=sNewName
+        self.set_title("Sutekh:" + self.sSetType + " Card Set : " + self.sSetName)
+
     def addParts(self,oCardSetView,oCardSetMenu):
         wMbox = gtk.VBox(False, 2)
 
