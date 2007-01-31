@@ -15,10 +15,11 @@ from xml.dom.minidom import getDOMImplementation
 import time
 
 class WriteArdbXML(object):
-    def write(self,fOut,sSetName,sAuthor,sDescription,dCards,):
+
+    def genDoc(self,sSetName,sAuthor,sDescription,dCards):
         """
-        Takes filename, deck details and a dictionary of cards, of the form
-        dCard[(id,name)]=count
+        Creates the actual XML document into memory. Allows for conversion
+        to HTML without using a Temporary file
         """
         oDoc = getDOMImplementation().createDocument(None,'deck',None)
 
@@ -119,7 +120,14 @@ class WriteArdbXML(object):
                 oDiscElem.appendChild(oDoc.createTextNode(sDisciplines))
                 oCardElem.appendChild(oDiscElem)
             oLibElem.appendChild(oCardElem)
+        return oDoc
 
+    def write(self,fOut,sSetName,sAuthor,sDescription,dCards):
+        """
+        Takes filename, deck details and a dictionary of cards, of the form
+        dCard[(id,name)]=count
+        """
+        oDoc=self.genDoc(sSetName,sAuthor,sDescription,dCards)
         PrettyPrint(oDoc,fOut)
 
     def getDisc(self,oCard):
