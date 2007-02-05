@@ -6,7 +6,7 @@ import sys, optparse, os
 from sqlobject import *
 from SutekhObjects import *
 from gui.MainController import MainController
-from gui.DBErrorPopup import DBErrorPopup
+from gui.DBErrorPopup import DBVerErrorPopup, NoDBErrorPopup
 from gui.DBUpgradeDialog import DBUpgradeDialog
 from DatabaseVersion import DatabaseVersion
 from DatabaseUpgrade import *
@@ -37,6 +37,16 @@ def main(aArgs):
     oConn = connectionForURI(oOpts.db)
     sqlhub.processConnection = oConn
 
+    # Test on some tables where we specify the table name
+    if not oConn.tableExists('abstract_map') or not oConn.tableExists('physical_map'):
+        diag=NoDBErrorPopup()
+        res=diag.run()
+        if res!=1:
+            return 1
+        else:
+            print "Not yet implemented"
+            return 1
+
     aTables=[VersionTable]+ObjectList
     aVersions=[]
 
@@ -47,7 +57,7 @@ def main(aArgs):
 
     if not oVer.checkVersions(aTables,aVersions) and not oOpts.ignore_db_version:
         aBadTables=oVer.getBadTables(aTables,aVersions)
-        diag=DBErrorPopup(aBadTables)
+        diag=DBVerErrorPopup(aBadTables)
         res=diag.run()
         diag.destroy()
         if res!=1:
