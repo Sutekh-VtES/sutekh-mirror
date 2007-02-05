@@ -8,6 +8,7 @@ from SutekhObjects import *
 from gui.MainController import MainController
 from gui.DBErrorPopup import DBVerErrorPopup, NoDBErrorPopup
 from gui.DBUpgradeDialog import DBUpgradeDialog
+from gui.WWFilesDialog import WWFilesDialog
 from DatabaseVersion import DatabaseVersion
 from DatabaseUpgrade import *
 import gtk
@@ -44,7 +45,16 @@ def main(aArgs):
         if res!=1:
             return 1
         else:
-            print "Not yet implemented"
+            Dlg=WWFilesDialog(None)
+            Dlg.run()
+            (sCLFilename,sRulingsFilename)=Dlg.getNames()
+            Dlg.destroy()
+            if sCLFilename is not None:
+                print "CardList filename is ",sCLFilename
+                if sRulingsFilename is not None:
+                    print "Ruling filename is ",sRulingsFilename
+                else:
+                    print "No rulings file specified"
             return 1
 
     aTables=[VersionTable]+ObjectList
