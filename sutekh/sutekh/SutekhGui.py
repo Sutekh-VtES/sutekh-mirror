@@ -5,6 +5,8 @@
 import sys, optparse, os
 from sqlobject import *
 from SutekhObjects import *
+from SutekhUtility import *
+from SutekhCli import *
 from gui.MainController import MainController
 from gui.DBErrorPopup import DBVerErrorPopup, NoDBErrorPopup
 from gui.DBUpgradeDialog import DBUpgradeDialog
@@ -42,6 +44,7 @@ def main(aArgs):
     if not oConn.tableExists('abstract_map') or not oConn.tableExists('physical_map'):
         diag=NoDBErrorPopup()
         res=diag.run()
+        diag.destroy()
         if res!=1:
             return 1
         else:
@@ -50,12 +53,12 @@ def main(aArgs):
             (sCLFilename,sRulingsFilename)=Dlg.getNames()
             Dlg.destroy()
             if sCLFilename is not None:
-                print "CardList filename is ",sCLFilename
+                refreshTables(ObjectList,oConn)
+                readWhiteWolfList(sCLFilename)
                 if sRulingsFilename is not None:
-                    print "Ruling filename is ",sRulingsFilename
-                else:
-                    print "No rulings file specified"
-            return 1
+                    readRulings(sRulingsFilename)
+            else:
+                return 1
 
     aTables=[VersionTable]+ObjectList
     aVersions=[]

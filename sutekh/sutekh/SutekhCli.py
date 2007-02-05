@@ -3,13 +3,11 @@
 # Minor modifications copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-import sys, optparse, os, codecs, tempfile
+import sys, optparse, os, tempfile
 from sqlobject import *
 from SutekhObjects import *
 from SutekhUtility import *
 from DatabaseUpgrade import *
-from WhiteWolfParser import WhiteWolfParser
-from RulingParser import RulingParser
 from PhysicalCardParser import PhysicalCardParser
 from PhysicalCardWriter import PhysicalCardWriter
 from PhysicalCardSetParser import PhysicalCardSetParser
@@ -79,20 +77,6 @@ intended to be used with -c and refreshing the abstract card list")
                   help="Attempt to upgrade a database to the latest version. Cannot be used with --refresh-tables")
 
     return oP, oP.parse_args(aArgs)
-
-def readWhiteWolfList(sWwList):
-    oP = WhiteWolfParser()
-    fIn = codecs.open(sWwList,'rU','cp1252')
-    for sLine in fIn:
-        oP.feed(sLine)
-    fIn.close()
-
-def readRulings(sRulings):
-    oP = RulingParser()
-    fIn = codecs.open(sRulings,'rU','cp1252')
-    for sLine in fIn:
-        oP.feed(sLine)
-    fIn.close()
 
 def readPhysicalCards(sXmlFile):
     oP = PhysicalCardParser()
