@@ -10,18 +10,14 @@ class WWFilesDialog(gtk.Dialog):
                       gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,\
                       (gtk.STOCK_OK, gtk.RESPONSE_OK, gtk.STOCK_CANCEL,\
                       gtk.RESPONSE_CANCEL))
-        oCardListLabel=gtk.Label("Choose White Wolf cardlist file")
-        self.oCardListFile=gtk.FileChooserWidget(gtk.FILE_CHOOSER_ACTION_OPEN)
-        oRulingsLabel=gtk.Label("Choose White Wolf Rulings file (optional)")
-        self.oRulingsFile=gtk.FileChooserWidget(gtk.FILE_CHOOSER_ACTION_OPEN)
-        self.oCardListFile.set_local_only(False)
-        self.oRulingsFile.set_local_only(False)
+        oCardListLabel=gtk.Label("White Wolf CardList")
+        self.oCardListFileButton=gtk.FileChooserButton("White Wolf cardlist")
+        oRulingsLabel=gtk.Label("White Wolf Rulings File (optional)")
+        self.oRulingsFileButton=gtk.FileChooserButton("White Wolf rulings file")
         self.vbox.pack_start(oCardListLabel)
-        self.vbox.pack_start(self.oCardListFile)
+        self.vbox.pack_start(self.oCardListFileButton)
         self.vbox.pack_start(oRulingsLabel)
-        self.vbox.pack_start(self.oRulingsFile)
-        self.oRulingsFile.set_select_multiple(False)
-        self.oCardListFile.set_select_multiple(False)
+        self.vbox.pack_start(self.oRulingsFileButton)
         self.connect("response",self.handleResponse)
         self.show_all()
         self.sCLName=None
@@ -29,8 +25,8 @@ class WWFilesDialog(gtk.Dialog):
 
     def handleResponse(self,oWidget,oResponse):
         if oResponse==gtk.RESPONSE_OK:
-            self.sCLName=self.oCardListFile.get_filename()
-            self.sRulingsName=self.oRulingsFile.get_filename()
+            self.sCLName=self.oCardListFileButton.get_filename()
+            self.sRulingsName=self.oRulingsFileButton.get_filename()
 
     def getNames(self):
         return (self.sCLName,self.sRulingsName)
