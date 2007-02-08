@@ -27,6 +27,5 @@ Website:
  * Create logo for wiki.
 
 Release Candidate tasks:
- * Cardlist & ruling refresh in GUI
  * Check everything works on Windows again
- * Print decks (integrate ARDB's xsl transform, or roll our own?)
+ * Print decks (integrate ARDB's xsl transform, or roll our own?) (kinda done)

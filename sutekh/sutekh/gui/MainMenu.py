@@ -4,7 +4,8 @@
 # GPL - see COPYING for details
 
 import gtk
-from SutekhObjects import PhysicalCardSet, AbstractCardSet
+from sqlobject import sqlhub
+from SutekhObjects import PhysicalCardSet, AbstractCardSet, ObjectList
 from CreateCardSetDialog import CreateCardSetDialog
 from LoadCardSetDialog import LoadCardSetDialog
 from ImportDialog import ImportDialog
@@ -12,6 +13,9 @@ from PhysicalCardParser import PhysicalCardParser
 from PhysicalCardSetParser import PhysicalCardSetParser
 from AbstractCardSetParser import AbstractCardSetParser
 from IdentifyXMLFile import IdentifyXMLFile
+from WWFilesDialog import WWFilesDialog
+from DatabaseUpgrade import copyToNewAbstractCardDB, createFinalCopy
+from SutekhUtility import *
 
 class MainMenu(gtk.MenuBar,object):
     def __init__(self,oController,oWindow):
@@ -40,6 +44,14 @@ class MainMenu(gtk.MenuBar,object):
 
         iSeperator=gtk.SeparatorMenuItem()
         wMenu.add(iSeperator)
+
+        if sqlhub.processConnection.uri() != "sqlite:///:memory:":
+            # Need to have memory connection available for this
+            iImportNewCardList = gtk.MenuItem("Import new White Wolf cardlist and rulings")
+            iImportNewCardList.connect('activate', self.doImportNewCardList)
+            wMenu.add(iImportNewCardList)
+            iSeperator2=gtk.SeparatorMenuItem()
+            wMenu.add(iSeperator2)
 
         iQuit = gtk.MenuItem("Quit")
         iQuit.connect('activate', lambda iItem: self.__oC.actionQuit())
@@ -161,6 +173,29 @@ class MainMenu(gtk.MenuBar,object):
                 Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
                                               gtk.BUTTONS_CLOSE,"File is not a CardSet XML File.")
                 Complaint.connect("response",lambda dlg, resp: dlg.destroy())
+
+    def doImportNewCardList(self,widget):
+        oWWFilesDialog=WWFilesDialog(self.__oWin)
+        oWWFilesDialog.run()
+        (sCLFileName,sRulingsFileName) = oWWFilesDialog.getNames()
+        oWWFilesDialog.destroy()
+        if sCLFileName is not None:
+            tempConn=connectionForURI("sqlite:///:memory:")
+            #tempConn=connectionForURI("sqlite:///tmp/test.db")
+            oldConn=sqlhub.processConnection
+            refreshTables(ObjectList,tempConn)
+            # WhiteWolf Parser uses sqlhub connection
+            trans=tempConn.transaction()
+            sqlhub.processConnection=trans
+            readWhiteWolfList(sCLFileName)
+            if sRulingsFileName is not None:
+                readRulings(sRulingsFileName)
+            trans.commit()
+            sqlhub.processConnection=oldConn
+            copyToNewAbstractCardDB(oldConn,tempConn)
+            # OK, update complete
+            createFinalCopy(tempConn)
+            self.__oC.reloadAll()
 
     def doCreatePCS(self,widget):
         # Popup Create PhysicalCardSet Dialog

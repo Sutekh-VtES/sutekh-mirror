@@ -40,7 +40,6 @@ class PhysicalCardSet_v1(SQLObject):
     cards = RelatedJoin('PhysicalCard',intermediateTable='physical_map',createRelatedTable=False)
 
 
-
 def checkCanReadOldDB(orig_conn):
     """Can we upgrade from this database version?"""
     oVer=DatabaseVersion()
@@ -120,7 +119,7 @@ def CopyOldRarityPair(orig_conn,trans):
 def CopyOldAbstractCard(orig_conn,trans):
     for oCard in AbstractCard.select(connection=orig_conn):
         oCardCopy=AbstractCard(id=oCard.id,name=oCard.name,text=oCard.text,connection=trans)
-        # If I don't do things this way, I get encoding issues 
+        # If I don't do things this way, I get encoding issues
         # I don't really feel like trying to understand why
         oCardCopy.group=oCard.group
         oCardCopy.capacity=oCard.capacity
@@ -152,7 +151,7 @@ def CopyOldPhysicalCardSet(orig_conn,trans):
                     connection=trans)
             for oCard in oSet.cards:
                 oCopy.addPhysicalCard(oCard.id)
-            oCopy.syncUpdate() 
+            oCopy.syncUpdate()
     elif oVer.checkVersions([PhysicalCardSet],[1]) or \
            oVer.checkVersions([PhysicalCardSet],[-1]):
         for oSet in PhysicalCardSet_v1.select(connection=orig_conn):
@@ -160,8 +159,7 @@ def CopyOldPhysicalCardSet(orig_conn,trans):
                     connection=trans)
             for oCard in oSet.cards:
                 oCopy.addPhysicalCard(oCard.id)
-            oCopy.syncUpdate() 
- 
+            oCopy.syncUpdate()
 
 def CopyOldAbstractCardSet(orig_conn,trans):
     oVer=DatabaseVersion()
@@ -232,6 +230,8 @@ def copyDB(orig_conn,dest_conn):
     for oObj in RarityPair.select(connection=orig_conn):
         oCopy=RarityPair(id=oObj.id,expansion=oObj.expansion,rarity=oObj.rarity,\
                 connection=trans)
+    trans.commit()
+    trans=dest_conn.transaction()
     for oCard in AbstractCard.select(connection=orig_conn):
         oCardCopy=AbstractCard(id=oCard.id,name=oCard.name,text=oCard.text,connection=trans)
         oCardCopy.group=oCard.group
@@ -250,9 +250,12 @@ def copyDB(orig_conn,dest_conn):
         for oData in oCard.cardtype:
             oCardCopy.addCardType(oData)
         oCardCopy.syncUpdate()
-    # Copy the physical card list
+    trans.commit()
+    trans=dest_conn.transaction()
     for oCard in PhysicalCard.select(connection=orig_conn):
         oCardCopy=PhysicalCard(id=oCard.id,abstractCard=oCard.abstractCard,connection=trans)
+    trans.commit()
+    trans=dest_conn.transaction()
     # Copy Physical card sets
     for oSet in PhysicalCardSet.select(connection=orig_conn):
         oCopy=PhysicalCardSet(id=oSet.id,name=oSet.name,\
@@ -260,20 +263,55 @@ def copyDB(orig_conn,dest_conn):
                 connection=trans)
         for oCard in oSet.cards:
             oCopy.addPhysicalCard(oCard.id)
-        oCopy.syncUpdate() # probably unnessecary
+        oCopy.syncUpdate()
+    trans.commit()
+    trans=dest_conn.transaction()
     for oSet in AbstractCardSet.select(connection=orig_conn):
         oCopy=AbstractCardSet(id=oSet.id,name=oSet.name,\
                 author=oSet.author,comment=oSet.comment,\
                 connection=trans)
         for oCard in oSet.cards:
             oCopy.addAbstractCard(oCard.id)
-        oCopy.syncUpdate() 
+        oCopy.syncUpdate()
     trans.commit()
+    return True
+
+def copyToNewAbstractCardDB(orig_conn,new_conn):
+    # Given an existing database, and a new database created from
+    # a new cardlist, copy the PhysicalCards and the CardSets,
+    # adjusting for the possibly changed id's in the AbstractCard Table
+    target=new_conn.transaction()
+    # Copy the physical card list
+    for oCard in PhysicalCard.select(connection=orig_conn):
+        sName=oCard.abstractCard.name
+        oNewAbsCard=AbstractCard.byName(sName,connection=target)
+        oCardCopy=PhysicalCard(id=oCard.id,abstractCard=oNewAbsCard,connection=target)
+    # Copy Physical card sets
+    # IDs are unchangd, since we preserve Physical Card set ids
+    for oSet in PhysicalCardSet.select(connection=orig_conn):
+        oCopy=PhysicalCardSet(id=oSet.id,name=oSet.name,\
+                author=oSet.author,comment=oSet.comment,\
+                connection=target)
+        for oCard in oSet.cards:
+            oCopy.addPhysicalCard(oCard.id)
+        oCopy.syncUpdate() # probably unnessecary
+    # Copy AbstractCardSets
+    # AbstractCArd is not preserved, so adjust for this
+    for oSet in AbstractCardSet.select(connection=orig_conn):
+        oCopy=AbstractCardSet(id=oSet.id,name=oSet.name,\
+                author=oSet.author,comment=oSet.comment,\
+                connection=target)
+        for oCard in oSet.cards:
+            sName=oCard.name
+            oNewAbsCard=AbstractCard.byName(sName,connection=target)
+            oCopy.addAbstractCard(oNewAbsCard.id)
+        oCopy.syncUpdate()
+    target.commit()
     return True
 
 def createMemoryCopy(tempConn):
     # We create a temporary memory database, and create the updated
-    # database in it. readOldDB is responsbile for upgrading stuff 
+    # database in it. readOldDB is responsbile for upgrading stuff
     # as needed
     refreshTables(ObjectList,tempConn)
     return readOldDB (sqlhub.processConnection,tempConn)
@@ -282,7 +320,7 @@ def createFinalCopy(tempConn):
     # Copy from the memory database to the real thing
     refreshTables(ObjectList,sqlhub.processConnection)
     copyDB(tempConn,sqlhub.processConnection)
- 
+
 def attemptDatabaseUpgrade():
     tempConn=connectionForURI("sqlite:///:memory:")
     if createMemoryCopy(tempConn):

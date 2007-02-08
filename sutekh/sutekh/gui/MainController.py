@@ -95,6 +95,12 @@ class MainController(object):
             else:
                 self.__oMenu.setLoadAbstractState(self.openPhysicalCardSets)
 
+    def reloadAll(self):
+        self.__oAbstractCards.load()
+        self.__oPhysicalCards.getView().load()
+        self.reloadAllPhysicalCardSets()
+        self.reloadAllAbstractCardSets()
+
     def reloadAllPhysicalCardSets(self):
         for window, controller in self.openPhysicalCardSets.values():
             controller.getView().load()
