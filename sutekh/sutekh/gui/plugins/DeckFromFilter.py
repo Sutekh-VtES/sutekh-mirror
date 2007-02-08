@@ -26,35 +26,35 @@ class DeckFromFilter(CardListPlugin):
 
     def getDesiredMenu(self):
         return "Filter"
-        
+
     def activate(self,oWidget):
         oDlg = self.makeDialog()
         oDlg.run()
 
     def makeDialog(self):
         parent = self.view.getWindow()
-    
+
         self.oDlg = gtk.Dialog("Choose Deck Name",parent,
                           gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                           (gtk.STOCK_OK, gtk.RESPONSE_OK,
-                           gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))     
+                           gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
         self.oDlg.connect("response", self.handleResponse)
-        
+
         self.oDeckNameEntry = gtk.Entry(50)
         self.oDeckNameEntry.connect("activate", self.handleResponse, gtk.RESPONSE_OK)
-        
+
         self.oDlg.vbox.pack_start(self.oDeckNameEntry)
         self.oDlg.show_all()
-        
+
         return self.oDlg
 
     def handleResponse(self,oWidget,oResponse):
        if oResponse ==  gtk.RESPONSE_OK:
           sDeckName = self.oDeckNameEntry.get_text().strip()
           self.makeDeckFromFilter(sDeckName)
-          
+
        self.oDlg.destroy()
-          
+
     def makeDeckFromFilter(self,sDeckName):
         # Check Deck Doesn't Exist
         if PhysicalCardSet.selectBy(name=sDeckName).count() != 0:
@@ -63,10 +63,10 @@ class DeckFromFilter(CardListPlugin):
             oComplaint.connect("response",lambda oW, oResp: oW.destroy())
             oComplaint.run()
             return
-        
+
         # Create Deck
         oDeck = PhysicalCardSet(name=sDeckName)
-    
+
         for oCard in self.model.getCardIterator(self.model.getSelectFilter()):
             oDeck.addPhysicalCard(oCard)
 

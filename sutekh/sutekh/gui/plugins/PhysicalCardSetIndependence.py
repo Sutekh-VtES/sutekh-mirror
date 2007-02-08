@@ -23,7 +23,7 @@ class PhysicalCardSetIndependence(CardListPlugin):
 
     def getDesiredMenu(self):
         return "Plugins"
-        
+
     def activate(self,oWidget):
         oDlg = self.makeDialog()
         oDlg.run()
@@ -33,14 +33,13 @@ class PhysicalCardSetIndependence(CardListPlugin):
         self.oDlg = gtk.Dialog("Choose PhysicalCardSets to Test",parent,
                           gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                           (gtk.STOCK_OK, gtk.RESPONSE_OK,
-                           gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))     
+                           gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
         self.csFrame=ScrolledList('Physical Card Sets')
         self.oDlg.vbox.pack_start(self.csFrame)
         for cs in PhysicalCardSet.select().orderBy('name'):
             if cs.name != self.view.sSetName:
                 iter=self.csFrame.get_list().append(None)
                 self.csFrame.get_list().set(iter,0,cs.name)
- 
         self.oDlg.connect("response", self.handleResponse)
         self.oDlg.show_all()
         return self.oDlg
@@ -52,7 +51,7 @@ class PhysicalCardSetIndependence(CardListPlugin):
            self.csFrame.get_selection(aPhysicalCardSetNames,dSelect)
            self.testPhysicalCardSets(aPhysicalCardSetNames)
        self.oDlg.destroy()
-          
+
     def testPhysicalCardSets(self,aPhysicalCardSetNames):
         dFullCardList={}
         dMissing={}

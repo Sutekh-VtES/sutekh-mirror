@@ -22,7 +22,6 @@ class PhysicalCardSetFromAbstract(CardListPlugin):
             return None
         iDF = gtk.MenuItem("Generate a Physical Card Set")
         iDF.connect("activate", self.activate)
-            
         return iDF
 
     def getDesiredMenu(self):

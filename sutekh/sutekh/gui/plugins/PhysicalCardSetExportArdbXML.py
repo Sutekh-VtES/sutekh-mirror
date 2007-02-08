@@ -23,7 +23,7 @@ class PhysicalCardSetExportArdbXML(CardListPlugin):
 
     def getDesiredMenu(self):
         return "CardSet"
-        
+
     def activate(self,oWidget):
         oDlg = self.makeDialog()
         oDlg.run()
