@@ -37,7 +37,7 @@ class DeckFromFilter(CardListPlugin):
         self.oDlg = gtk.Dialog("Choose Deck Name",parent,
                           gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                           (gtk.STOCK_OK, gtk.RESPONSE_OK,
-                           gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
+                           gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
         self.oDlg.connect("response", self.handleResponse)
 
         self.oDeckNameEntry = gtk.Entry(50)
