@@ -30,7 +30,7 @@ class GroupCardList(CardListPlugin):
 
     def getDesiredMenu(self):
         return "Plugins"
-        
+
     def activate(self,oWidget):
         dlg = self.makeDialog()
         dlg.run()
@@ -38,29 +38,32 @@ class GroupCardList(CardListPlugin):
     def makeDialog(self):
         parent = self.view.getWindow()
         name = "Change Card List Grouping..."
-        
+
         oDlg = gtk.Dialog(name,parent,
                           gtk.DIALOG_DESTROY_WITH_PARENT)
         oDlg.add_button(gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE)
         oDlg.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
-                         
+
         oDlg.connect("response", self.handleResponse)
 
+        cCurrentGrping = self.getGrouping()
         oIter = self._dGrpings.iteritems()
         for sName, cGrping in oIter:
             self._oFirstBut = gtk.RadioButton(None,sName,False)
+            self._oFirstBut.set_active(cGrping is cCurrentGrping)
             oDlg.vbox.pack_start(self._oFirstBut)
             break
         for sName, cGrping in oIter:
             oBut = gtk.RadioButton(self._oFirstBut,sName)
+            oBut.set_active(cGrping is cCurrentGrping)
             oDlg.vbox.pack_start(oBut)
-                   
+
         oDlg.show_all()
 
         return oDlg
-                
+
     # Actions
-    
+
     def handleResponse(self,oDlg,oResponse):
         if oResponse == gtk.RESPONSE_CLOSE:
             oDlg.destroy()
@@ -75,5 +78,8 @@ class GroupCardList(CardListPlugin):
     def setGrouping(self,cGrping):
         self.model.groupby = cGrping
         self.model.load()
-            
+
+    def getGrouping(self):
+        return self.model.groupby
+
 plugin = GroupCardList
