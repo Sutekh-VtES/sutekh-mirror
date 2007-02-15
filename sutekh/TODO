@@ -19,8 +19,6 @@ Gui (Functionality):
 
 Gui (Presentation):
  * Give gui resource handling capablities to save window pos, etc - NM
- * Neaten up card text display (maybe move to an HTML widget)?
- * Seperate card text display into it's own window - NM
  * Tabbed interface for Card Sets? - Need both tabs & windows?
 
 Website:
@@ -29,3 +27,4 @@ Website:
 Release Candidate tasks:
  * Check everything works on Windows again
  * Print decks (integrate ARDB's xsl transform, or roll our own?) (kinda done)
+ * Create setup.py file (and egg?)
