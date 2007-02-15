@@ -7,6 +7,7 @@ import gtk
 from sqlobject import SQLObjectNotFound
 from PhysicalCardController import PhysicalCardController
 from MainWindow import MainWindow
+from CardTextWindow import CardTextWindow
 from PhysicalCardWindow import PhysicalCardWindow
 from CardSetWindow import CardSetWindow
 from CardSetController import PhysicalCardSetController, AbstractCardSetController
@@ -28,6 +29,7 @@ class MainController(object):
         # and they should all be blocked by the appropriate dialogs
         self.__oAbstractCardWin = MainWindow(self)
         self.__oPhysicalCardWin = PhysicalCardWindow(self)
+        self.__oCardTextWin = CardTextWindow(self)
         self.__oMenu = MainMenu(self,self.__oAbstractCardWin)
         self.__oCardText = CardTextView(self)
         self.__oAbstractCards = AbstractCardView(self,self.__oAbstractCardWin)
@@ -39,10 +41,10 @@ class MainController(object):
         self.openAbstractCardSets={}
 
         # Link
-        self.__oAbstractCardWin.addParts(self.__oMenu,self.__oCardText, \
-                             self.__oAbstractCards)
+        self.__oAbstractCardWin.addParts(self.__oMenu,self.__oAbstractCards)
         self.__oPhysicalCardWin.addParts(self.__oPhysicalCards.getMenu(), \
                              self.__oPhysicalCards.getView())
+        self.__oCardTextWin.addParts(self.__oCardText)
 
     def run(self):
         gtk.main()
