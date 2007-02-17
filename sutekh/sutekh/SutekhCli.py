@@ -15,6 +15,8 @@ from PhysicalCardSetWriter import PhysicalCardSetWriter
 from AbstractCardSetParser import AbstractCardSetParser
 from AbstractCardSetWriter import AbstractCardSetWriter
 from DatabaseVersion import DatabaseVersion
+from IdentifyXMLFile import IdentifyXMLFile
+import zipfile 
 
 def parseOptions(aArgs):
     oP = optparse.OptionParser(usage="usage: %prog [options]",version="%prog 0.1")
@@ -75,6 +77,12 @@ intended to be used with -c and refreshing the abstract card list")
     oP.add_option("--upgrade-db",\
                   action="store_true",dest="upgrade_db",default=False,\
                   help="Attempt to upgrade a database to the latest version. Cannot be used with --refresh-tables")
+    oP.add_option("--dump-zip",\
+            type="string",dest="dump_zip_name",default=None,\
+            help="Dump the PhysicalCard list and all the CardSets to the given zipfile")
+    oP.add_option("--restore-zip",\
+            type="string",dest="restore_zip_name",default=None,\
+            help="Restore everything from the given zipfile")
 
     return oP, oP.parse_args(aArgs)
 
@@ -115,6 +123,20 @@ def writeAllPhysicalCardSets(dir=''):
         writePhysicalCardSet(pcs.name,filename)
     return aList
 
+def writeAllPhysicalCardSetsToZip(oZipfile):
+    oPhysicalCardSets = PhysicalCardSet.select()
+    aList=[];
+    for pcs in oPhysicalCardSets:
+        sZName=pcs.name
+        oW = PhysicalCardSetWriter()
+        oString=oW.genDoc(sZName).toprettyxml().encode('utf-8')
+        sZName=sZName.replace(" ","_")
+        sZName=sZName.replace("/","_")
+        sZipName='pcs_'+sZName.encode('ascii','xmlcharrefreplace')+'.xml'
+        aList.append(sZipName)
+        oZipfile.writestr(sZipName,oString)
+    return aList
+
 def readAbstractCardSet(sXmlFile):
     oP = AbstractCardSetParser()
     oP.parse(file(sXmlFile,'rU'))
@@ -141,6 +163,21 @@ def writeAllAbstractCardSets(dir=''):
         aList.append(filename)
         writeAbstractCardSet(acs.name,filename)
     return aList
+
+def writeAllAbstractCardSetsToZip(oZipfile):
+    oAbstractCardSets = AbstractCardSet.select()
+    aList=[];
+    for acs in oAbstractCardSets:
+        sZName=acs.name
+        oW = AbstractCardSetWriter()
+        oString=oW.genDoc(sZName).toprettyxml().encode('utf-8')
+        sZName=sZName.replace(" ","_")
+        sZName=sZName.replace("/","_")
+        sZipName='acs_'+sZName.encode('ascii','xmlcharrefreplace')+'.xml'
+        aList.append(sZipName)
+        oZipfile.writestr(sZipName,oString)
+    return aList
+
 
 def main(aArgs):
     oOptParser, (oOpts, aArgs) = parseOptions(aArgs)
@@ -215,6 +252,49 @@ def main(aArgs):
 
     if oOpts.save_all_pcss:
         writeAllPhysicalCardSets()
+
+    if oOpts.dump_zip_name is not None:
+        oW=PhysicalCardWriter()
+        # Zipfile doesn't handle unicode unencoded - blargh
+        oString=oW.genDoc().toprettyxml().encode('utf-8')
+        oZip=zipfile.ZipFile(oOpts.dump_zip_name,'w')
+        oZip.writestr('PhysicalCardList.xml',oString)
+        writeAllAbstractCardSetsToZip(oZip)
+        writeAllPhysicalCardSetsToZip(oZip)
+        oZip.close()
+
+    if oOpts.restore_zip_name is not None:
+        oZip=zipfile.ZipFile(oOpts.restore_zip_name,'r')
+        bPhysicalCardsRead=False
+        # We do this so we can accomodate user created zipfiles,
+        # that don't neseecarily have the ordering we want
+        for oItem in oZip.infolist():
+            sFileName=oItem.filename.split('/')[-1]
+            oData=oZip.read(oItem.filename)
+            oP=IdentifyXMLFile()
+            (sType,sName,bExists)=oP.parseString(oData)
+            if sType=='PhysicalCard':
+                oP = PhysicalCardParser()
+                oP.parseString(oData)
+                bPhysicalCardsRead=True
+                print "PhysicalCards imported"
+                break
+        if not bPhysicalCardsRead:
+            print "No PhysicalCard list found in the zip file, cannot import"
+        else:
+            for oItem in oZip.infolist():
+                sFileName=oItem.filename.split('/')[-1]
+                oData=oZip.read(oItem.filename)
+                oP=IdentifyXMLFile()
+                (sType,sName,bExists)=oP.parseString(oData)
+                if sType=='PhysicalCardSet':
+                    oP=PhysicalCardSetParser()
+                elif sType=='AbstractCardSet':
+                    oP=AbstractCardSetParser()
+                else:
+                    continue
+                oP.parseString(oData)
+                print "Imported",sType,sName
 
     if not oOpts.save_pcs is None:
         writePhysicalCardSet(oOpts.save_pcs,oOpts.pcs_filename)
