@@ -14,7 +14,8 @@ into a PhysicalCardSet
 """
 
 from SutekhObjects import *
-from xml.sax import parse
+from sqlobject import *
+from xml.sax import parse, parseString
 from xml.sax.handler import ContentHandler
 
 class PhysicalCardSetHandler(ContentHandler):
@@ -91,6 +92,19 @@ class PhysicalCardSetHandler(ContentHandler):
 
 class PhysicalCardSetParser(object):
     def parse(self,fIn):
+        oldConn = sqlhub.processConnection
+        sqlhub.processConnection= oldConn.transaction()
         myHandler=PhysicalCardSetHandler()
         parse(fIn,myHandler)
         myHandler.printUnHandled()
+        sqlhub.processConnection.commit()
+        sqlhub.processConnection=oldConn
+
+    def parseString(self,sIn):
+        oldConn = sqlhub.processConnection
+        sqlhub.processConnection= oldConn.transaction()
+        myHandler=PhysicalCardSetHandler()
+        parseString(sIn,myHandler)
+        myHandler.printUnHandled()
+        sqlhub.processConnection.commit()
+        sqlhub.processConnection=oldConn

@@ -14,7 +14,8 @@ into a AbstractCardSet
 """
 
 from SutekhObjects import *
-from xml.sax import parse
+from sqlobject import *
+from xml.sax import parse, parseString
 from xml.sax.handler import ContentHandler
 
 class AbstractCardSetHandler(ContentHandler):
@@ -72,6 +73,19 @@ class AbstractCardSetHandler(ContentHandler):
 
 class AbstractCardSetParser(object):
     def parse(self,fIn):
+        oldConn = sqlhub.processConnection
+        sqlhub.processConnection= oldConn.transaction()
         myHandler=AbstractCardSetHandler()
         parse(fIn,myHandler)
         myHandler.printUnHandled()
+        sqlhub.processConnection.commit()
+        sqlhub.processConnection=oldConn
+
+    def parseString(self,sIn):
+        oldConn = sqlhub.processConnection
+        sqlhub.processConnection= oldConn.transaction()
+        myHandler=AbstractCardSetHandler()
+        parseString(sIn,myHandler)
+        myHandler.printUnHandled()
+        sqlhub.processConnection.commit()
+        sqlhub.processConnection=oldConn

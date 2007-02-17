@@ -12,7 +12,8 @@ looks like:
 """
 
 from SutekhObjects import *
-from xml.sax import parse
+from sqlobject import *
+from xml.sax import parse, parseString
 from xml.sax.handler import ContentHandler
 
 class CardHandler(ContentHandler):
@@ -31,4 +32,15 @@ class CardHandler(ContentHandler):
 
 class PhysicalCardParser(object):
     def parse(self,fIn):
+        oldConn = sqlhub.processConnection
+        sqlhub.processConnection= oldConn.transaction()
         parse(fIn,CardHandler())
+        sqlhub.processConnection.commit()
+        sqlhub.processConnection=oldConn
+
+    def parseString(self,sIn):
+        oldConn = sqlhub.processConnection
+        sqlhub.processConnection= oldConn.transaction()
+        parseString(sIn, CardHandler())
+        sqlhub.processConnection.commit()
+        sqlhub.processConnection=oldConn

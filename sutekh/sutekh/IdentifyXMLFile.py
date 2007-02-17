@@ -9,7 +9,7 @@ AbstractCardSet
 """
 
 from SutekhObjects import *
-from xml.sax import parse,_exceptions
+from xml.sax import parse,_exceptions,parseString
 from xml.sax.handler import ContentHandler
 
 class IdentifyXMLHandler(ContentHandler):
@@ -57,3 +57,10 @@ class IdentifyXMLFile(object):
             pass
         return myHandler.getDetails()
 
+    def parseString(self,sIn):
+        myHandler=IdentifyXMLHandler()
+        try:
+            parseString(sIn,myHandler)
+        except _exceptions.SAXParseException:
+            pass
+        return myHandler.getDetails()
