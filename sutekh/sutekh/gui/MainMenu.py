@@ -185,15 +185,13 @@ class MainMenu(gtk.MenuBar,object):
             oldConn=sqlhub.processConnection
             refreshTables(ObjectList,tempConn)
             # WhiteWolf Parser uses sqlhub connection
-            trans=tempConn.transaction()
-            sqlhub.processConnection=trans
+            sqlhub.processConnection=tempConn
             readWhiteWolfList(sCLFileName)
             if sRulingsFileName is not None:
                 readRulings(sRulingsFileName)
-            trans.commit()
-            sqlhub.processConnection=oldConn
             copyToNewAbstractCardDB(oldConn,tempConn)
-            # OK, update complete
+            # OK, update complete, copy back from tempConn
+            sqlhub.processConnection=oldConn
             createFinalCopy(tempConn)
             self.__oC.reloadAll()
 
