@@ -16,7 +16,7 @@ from xml.dom.ext import PrettyPrint
 from xml.dom.minidom import getDOMImplementation
 
 class PhysicalCardWriter(object):
-    def write(self,fOut):
+    def genDoc(self):
         dPhys = {}
     
         for oC in PhysicalCard.select():
@@ -36,5 +36,9 @@ class PhysicalCardWriter(object):
             oCardElem.setAttribute('name',sName)
             oCardElem.setAttribute('count',str(iNum))
             oCardsElem.appendChild(oCardElem)
-            
+
+        return oDoc
+        
+    def write(self,fOut):
+        oDoc=self.genDoc()
         PrettyPrint(oDoc,fOut)

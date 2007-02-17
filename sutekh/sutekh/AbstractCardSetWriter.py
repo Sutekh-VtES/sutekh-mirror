@@ -17,7 +17,7 @@ from xml.dom.ext import PrettyPrint
 from xml.dom.minidom import getDOMImplementation
 
 class AbstractCardSetWriter(object):
-    def write(self,fOut,sAbstractCardSetName):
+    def genDoc(self,sAbstractCardSetName):
         dCards = {}
 
         try:
@@ -48,4 +48,8 @@ class AbstractCardSetWriter(object):
             oCardElem.setAttribute('count',str(iNum))
             oCardsElem.appendChild(oCardElem)
 
+        return oDoc
+
+    def write(self,fOut,sAbstractCardSetName):
+        oDoc=self.genDoc(sAbstractCardSetName)
         PrettyPrint(oDoc,fOut)
