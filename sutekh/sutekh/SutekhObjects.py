@@ -207,7 +207,7 @@ class MapAbstractCardToDisciplinePair(SQLObject):
     tableversion = 1
 
     abstractCard = ForeignKey('AbstractCard',notNull=True)
-    disciplinePair = ForeignKey('AbstractCard',notNull=True)
+    disciplinePair = ForeignKey('DisciplinePair',notNull=True)
 
     abstractCardIndex = DatabaseIndex(abstractCard,unique=False)
     disciplinePairIndex = DatabaseIndex(disciplinePair,unique=False)
