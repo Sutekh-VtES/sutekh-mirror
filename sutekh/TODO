@@ -4,10 +4,11 @@ Backend:
       (seems OK with the indexes. Do we need more?).
  * Additional Filter (Votes, Sect, etc)
  * Handle 'Creed' and 'Life' attributes of Imbued in WhiteWolfParser (done?)
- * Export card sets to HTML. (XSL and more detailed XML export??)
+ * Export card sets to HTML. (XSL and more detailed XML export??) (done?)
 
 Database
  * Add title & attributes columns to Abstract Card
+ * Add Annotations field to the CardSets
 
 Gui (Functionality):
  * Improve Filter selection dialog.  (And/Or/Not)
@@ -16,6 +17,7 @@ Gui (Functionality):
  * Turn AnalyzeDeck into something more useful - NM
  * Finish ClusterCardList plugin.
  * Create CardSet Management Window (Abstract/Physical)
+ * Compare CardSet Plugin
 
 Gui (Presentation):
  * Give gui resource handling capablities to save window pos, etc - NM
@@ -27,4 +29,5 @@ Website:
 Release Candidate tasks:
  * Check everything works on Windows again
  * Print decks (integrate ARDB's xsl transform, or roll our own?) (kinda done)
+ * Add option to print current text of cards when printing decks (as for ELDB decks on lasombra?)
  * Create setup.py file (and egg?)

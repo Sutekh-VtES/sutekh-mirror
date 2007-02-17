@@ -1,3 +1,9 @@
+17 Feb 2007
+ * Add support for dumping everything to zipfile & restoring from it
+
+15 Feb 2007
+ * Seperate out cardtext window from Main card list
+
 08 Feb 2007
  * GUI support for updating the WW card list
 

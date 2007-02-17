@@ -124,6 +124,14 @@ MySQL 4 or earlier will definately NOT work. This is unlikely to ever change.
 
 Other databases are untested.
 
+To dump data between databases, you can use the zip file support. Something
+like (assuming that the new database has already had the cardlist & rulings 
+imported):
+
+SutekhCli.py -d <old_database_uri> --dump-zip=zipfile.zip
+
+SutekhCli.py -d <new_database_uti> --restore-zip=zipfile.zip
+
 === Clustering Plugin ===
 
 Sutekh has the ability to data mine card sets for related groups of
