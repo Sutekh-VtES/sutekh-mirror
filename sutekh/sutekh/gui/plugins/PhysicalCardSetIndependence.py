@@ -36,6 +36,7 @@ class PhysicalCardSetIndependence(CardListPlugin):
                            gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
         self.csFrame=ScrolledList('Physical Card Sets')
         self.oDlg.vbox.pack_start(self.csFrame)
+        self.csFrame.set_size_request(150,300)
         for cs in PhysicalCardSet.select().orderBy('name'):
             if cs.name != self.view.sSetName:
                 iter=self.csFrame.get_list().append(None)
