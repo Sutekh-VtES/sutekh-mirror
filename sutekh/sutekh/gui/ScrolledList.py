@@ -1,5 +1,5 @@
-# FilterDialog.py
-# Dialog for setting Filter Parameters
+# ScrolledList.py
+# Scrolled List, used in the Filter Dialo and elsewhere
 # Copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
 # Copyright 2006 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details

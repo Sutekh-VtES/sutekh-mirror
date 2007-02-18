@@ -1,6 +1,6 @@
-# MainWindow.py
-# The Main App Window
-# Copyright 2005,2006 Simon Cross <hodgestar@gmail.com>
+# CardTextWindow.py
+# The Card Text Window
+# Copyright 2005,2006,2007 Simon Cross <hodgestar@gmail.com>
 # Copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
