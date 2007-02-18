@@ -9,7 +9,7 @@ from SutekhObjects import *
 from AutoScrolledWindow import AutoScrolledWindow
 
 class ScrolledList(gtk.Frame):
-    def __init__(self,title):
+    def __init__(self,title,sNullValue=None):
         super(ScrolledList,self).__init__(None)
         self.List=gtk.ListStore(gobject.TYPE_STRING)
         self.TreeView=gtk.TreeView(self.List)
@@ -17,8 +17,11 @@ class ScrolledList(gtk.Frame):
         myScroll=AutoScrolledWindow(self.TreeView)
         self.add(myScroll)
         oCell1=gtk.CellRendererText()
+        self.sNullValue=sNullValue
         oColumn=gtk.TreeViewColumn(title,oCell1,text=0)
-        self.List.append(None) # Create empty items at top of list
+        iter=self.List.append(None) # Create Null item at top of list
+        if self.sNullValue is not None:
+            self.List.set(iter,0,self.sNullValue)
         self.TreeView.append_column(oColumn)
         self.set_shadow_type(gtk.SHADOW_NONE)
         self.show_all()
@@ -34,7 +37,7 @@ class ScrolledList(gtk.Frame):
         oIter=Model.get_iter_first()
         while oIter != None:
            name=Model.get_value(oIter,0)
-           if name != None and State[name]:
+           if name != self.sNullValue and State[name]:
                self.TreeView.get_selection().select_iter(oIter)
            else:
                self.TreeView.get_selection().unselect_iter(oIter)
@@ -45,7 +48,7 @@ class ScrolledList(gtk.Frame):
         for oPath in Selection:
             oIter = Model.get_iter(oPath)
             name = Model.get_value(oIter,0)
-            if name!=None:
+            if name!=self.sNullValue:
                State[name]=True
                selList.append(name)
 
