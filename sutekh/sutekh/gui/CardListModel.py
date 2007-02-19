@@ -191,6 +191,8 @@ class CardListModel(gtk.TreeStore):
             if iGrpCnt > 0:
                 self.set(oGrpIter,1,iGrpCnt)
             else:
+                sGroupName = self.get_value(oGrpIter,0)
+                del self._dGroupName2Iter[sGroupName]
                 self.remove(oGrpIter)
 
         if iCnt <= 0:

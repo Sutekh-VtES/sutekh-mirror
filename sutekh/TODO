@@ -31,4 +31,4 @@ Release Candidate tasks:
  * Print decks (integrate ARDB's xsl transform, or roll our own?) (kinda done)
  * Add option to print current text of cards when printing decks (as for ELDB decks on lasombra?)
  * Create setup.py file (and egg?)
- * BUG: Adding cards to a card set, removing all of them and then adding more crashes Sutekh.
+ * BUG: Adding cards to a card set, removing all of them and then adding more crashes Sutekh. (fixed in r212?)
