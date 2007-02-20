@@ -26,6 +26,12 @@ class ScrolledList(gtk.Frame):
         self.set_shadow_type(gtk.SHADOW_NONE)
         self.show_all()
 
+    def set_select_single(self):
+        self.TreeView.get_selection().set_mode(gtk.SELECTION_SINGLE)
+
+    def set_select_multiple(self):
+        self.TreeView.get_selection().set_mode(gtk.SELECTION_MULTIPLE)
+
     def get_list(self):
         return self.List
 
