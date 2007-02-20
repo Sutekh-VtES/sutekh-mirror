@@ -1,4 +1,4 @@
-# AbstractCardSetExportHTML.py
+# CardSetExportHTML.py
 # Copyright 2007 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
@@ -16,7 +16,7 @@ try:
 except ImportError:
     bHaveXmlParser = False
 
-class AbstractCardSetExportHTML(CardListPlugin):
+class CardSetExportHTML(CardListPlugin):
     dTableVersions = {"AbstractCardSet" : [2], "PhysicalCardSet" : [2]}
     aModelsSupported = ["AbstractCardSet","PhysicalCardSet"]
     def getMenuItem(self):
@@ -93,4 +93,4 @@ class AbstractCardSetExportHTML(CardListPlugin):
             dDict[(oCard.id,oCard.name)]+=1
         return dDict
 
-plugin = AbstractCardSetExportHTML
+plugin = CardSetExportHTML
