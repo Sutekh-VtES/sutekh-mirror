@@ -1,4 +1,4 @@
-# AbstractCardSetIndependence.py
+# CardSetIndependence.py
 # Copyright 2006 Simon Cross <hodgestar@gmail.com>, Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
@@ -8,16 +8,17 @@ from Filters import *
 from gui.PluginManager import CardListPlugin
 from gui.ScrolledList import ScrolledList
 
-class AbstractCardSetIndependence(CardListPlugin):
-    dTableVersions = {"AbstractCardSet" : [1,2]}
-    aModelsSupported = ["AbstractCardSet"]
+class CardSetIndependence(CardListPlugin):
+    dTableVersions = {"AbstractCardSet" : [1,2],
+                      "PhysicalCardSet" : [1,2]}
+    aModelsSupported = ["AbstractCardSet","PhysicalCardSet"]
     def getMenuItem(self):
         """
         Overrides method from base class.
         """
         if not self.checkVersions() or not self.checkModelType():
             return None
-        iDF = gtk.MenuItem("Test Abstract Card Set Independence")
+        iDF = gtk.MenuItem("Test Card Set Independence")
         iDF.connect("activate", self.activate)
         return iDF
 
@@ -34,14 +35,20 @@ class AbstractCardSetIndependence(CardListPlugin):
         Create the list of card sets to select
         """
         parent = self.view.getWindow()
-        self.oDlg = gtk.Dialog("Choose Abstract Card Sets to Test",parent,
+        self.oDlg = gtk.Dialog("Choose Card Sets to Test",parent,
                           gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                           (gtk.STOCK_OK, gtk.RESPONSE_OK,
                            gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
         self.csFrame=ScrolledList('Abstract Card Sets')
         self.oDlg.vbox.pack_start(self.csFrame)
         self.csFrame.set_size_request(150,300)
-        for cs in AbstractCardSet.select().orderBy('name'):
+        if self.view.sSetType == 'AbstractCardSet':
+            oSelect=AbstractCardSet.select().orderBy('name')
+        elif self.view.sSetType == 'PhysicalCardSet':
+            oSelect=PhysicalCardSet.select().orderBy('name')
+        else:
+            return
+        for cs in oSelect:
             if cs.name != self.view.sSetName:
                 iter=self.csFrame.get_list().append(None)
                 self.csFrame.get_list().set(iter,0,cs.name)
@@ -51,23 +58,15 @@ class AbstractCardSetIndependence(CardListPlugin):
 
     def handleResponse(self,oWidget,oResponse):
        if oResponse ==  gtk.RESPONSE_OK:
-           aAbstractCardSetNames=[self.view.sSetName]
+           aCardSetNames=[self.view.sSetName]
            dSelect={}
-           self.csFrame.get_selection(aAbstractCardSetNames,dSelect)
-           self.testAbstractCardSets(aAbstractCardSetNames)
+           self.csFrame.get_selection(aCardSetNames,dSelect)
+           self.testCardSets(aCardSetNames)
        self.oDlg.destroy()
 
-    def testAbstractCardSets(self,aAbstractCardSetNames):
-        dFullCardList={}
+    def testCardSets(self,aCardSetNames):
         dMissing={}
-        for name in aAbstractCardSetNames:
-            oFilter=AbstractCardSetFilter(name)
-            oCS=AbstractCard.select(oFilter.getExpression())
-            for oC in oCS:
-                try:
-                    dFullCardList[oC.id][1]+=1
-                except KeyError:
-                    dFullCardList[oC.id]=[oC.name,1]
+        dFullCardList=self.__getCardSetList(aCardSetNames)
         for cardid,(cardname,cardcount) in dFullCardList.iteritems():
             oPC=list(PhysicalCard.selectBy(abstractCardID=cardid))
             if cardcount>len(oPC):
@@ -85,4 +84,21 @@ class AbstractCardSetIndependence(CardListPlugin):
         Results.run()
         Results.destroy()
 
-plugin = AbstractCardSetIndependence
+    def __getCardSetList(self,aCardSetNames):
+        dFullCardList={}
+        for name in aCardSetNames:
+            if self.view.sSetType=='AbstractCardSet':
+                oFilter=AbstractCardSetFilter(name)
+                oCS=AbstractCard.select(oFilter.getExpression())
+            elif self.view.sSetType=='PhysicalCardSet':
+                oFilter=PhysicalCardSetFilter(name)
+                oCS=PhysicalCard.select(oFilter.getExpression())
+            for oC in oCS:
+                oAC=IAbstractCard(oC)
+                try:
+                    dFullCardList[oAC.id][1]+=1
+                except KeyError:
+                    dFullCardList[oAC.id]=[oAC.name,1]
+        return dFullCardList
+
+plugin = CardSetIndependence
