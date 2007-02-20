@@ -1,4 +1,4 @@
-# PhysicalCardSetExportArdbXML.py
+# CardSetExportArdbXML.py
 # Copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
@@ -8,16 +8,18 @@ from Filters import *
 from gui.PluginManager import CardListPlugin
 from WriteArdbXML import WriteArdbXML
 
-class PhysicalCardSetExportArdbXML(CardListPlugin):
-    dTableVersions = {"PhysicalCardSet" : [2]}
-    aModelsSupported = ["PhysicalCardSet"]
+class CardSetExportArdbXML(CardListPlugin):
+    dTableVersions = {"AbstractCardSet" : [2],
+                      "PhysicalCardSet" : [2]}
+    aModelsSupported = ["AbstractCardSet", "PhysicalCardSet"]
+
     def getMenuItem(self):
         """
         Overrides method from base class.
         """
         if not self.checkVersions() or not self.checkModelType():
             return None
-        iDF = gtk.MenuItem("Export Physical Card Set to ARDB XML")
+        iDF = gtk.MenuItem("Export Card Set to ARDB XML")
         iDF.connect("activate", self.activate)
         return iDF
 
@@ -31,7 +33,7 @@ class PhysicalCardSetExportArdbXML(CardListPlugin):
 
     def makeDialog(self):
         parent = self.view.getWindow()
-        self.oDlg = gtk.Dialog("Choose Filename for Exported CardSet",parent,
+        self.oDlg = gtk.Dialog("Choose FileName for Exported CardSet",parent,
                           gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                           (gtk.STOCK_OK, gtk.RESPONSE_OK,
                            gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
@@ -46,7 +48,12 @@ class PhysicalCardSetExportArdbXML(CardListPlugin):
         if oResponse ==  gtk.RESPONSE_OK:
             sFileName=self.oFileChooser.get_filename()
             if sFileName is not None:
-                oCardSet=PhysicalCardSet.byName(self.view.sSetName)
+                if self.view.sSetType == 'PhysicalCardSet':
+                    oCardSet=PhysicalCardSet.byName(self.view.sSetName)
+                elif self.view.sSetType == 'AbstractCardSet':
+                    oCardSet=AbstractCardSet.byName(self.view.sSetName)
+                else:
+                    return
                 sAuthor=oCardSet.author
                 sComment=oCardSet.comment
                 oW=WriteArdbXML()
@@ -60,10 +67,9 @@ class PhysicalCardSetExportArdbXML(CardListPlugin):
     def getCards(self):
         dDict = {}
         for oCard in self.model.getCardIterator(None):
-            print oCard.abstractCard
-            oAbstractCard=oCard.abstractCard
-            dDict.setdefault((oAbstractCard.id,oAbstractCard.name),0)
-            dDict[(oAbstractCard.id,oAbstractCard.name)]+=1
+            oACard=IAbstractCard(oCard)
+            dDict.setdefault((oACard.id,oACard.name),0)
+            dDict[(oACard.id,oACard.name)]+=1
         return dDict
 
-plugin = PhysicalCardSetExportArdbXML
+plugin = CardSetExportArdbXML
