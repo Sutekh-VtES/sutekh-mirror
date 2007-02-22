@@ -134,6 +134,44 @@ class MultiGroupFilter(Filter):
     def getExpression(self):
         return IN(AbstractCard.q.group,self.__aGroups)
 
+class CapacityFilter(Filter):
+    # Should this also check y type=='Vampire|Imbued' ?
+    def __init__(self,iCap):
+        self.__iCap = iCap
+
+    def getExpression(self):
+        return AbstractCard.q.capacity == self.__iCap
+
+class MultiCapacityFilter(Filter):
+    def __init__(self,aCaps):
+        self.__aCaps = aCaps
+
+    def getExpression(self):
+        return IN(AbstractCard.q.capacity,self.__aCaps)
+
+class CostFilter(Filter):
+    # Should this excludes Vamps & Imbued, if we search for
+    # cards without cost?
+    def __init__(self,iCost):
+        self.__iCost = iCost
+
+    def getExpression(self):
+        return AbstractCard.q.cost == self.__iCost
+
+class MultiCostFilter(Filter):
+    def __init__(self,aCost):
+        self.__aCost = aCost
+
+    def getExpression(self):
+        return IN(AbstractCard.q.cost,self.__aCost)
+
+class CostTypeFilter(Filter):
+    def __init__(self,sCostType):
+        self.__sCostType = sCostType
+
+    def getExpression(self):
+        return AbstractCard.q.costtype == self.__sCostType
+
 class CardTextFilter(Filter):
     def __init__(self,sPattern):
         self.__sPattern = sPattern
