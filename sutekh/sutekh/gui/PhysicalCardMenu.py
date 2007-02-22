@@ -68,6 +68,8 @@ class PhysicalCardMenu(gtk.MenuBar,object):
                     # Plugins acts as a catchall Menu
                     wMenu.add(oMI)
         self.add(iMenu)
+        if len(wMenu.get_children())==0:
+            iMenu.set_sensitive(False)
 
     def doExport(self,widget):
         oFileChooser=ExportDialog("Save Physical Card List As",self.__oWindow)

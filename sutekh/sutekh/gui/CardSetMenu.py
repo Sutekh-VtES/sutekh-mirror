@@ -90,6 +90,8 @@ class CardSetMenu(gtk.MenuBar,object):
                     # Plugins acts as a catchall Menu
                     wMenu.add(oMI)
         self.add(iMenu)
+        if len(wMenu.get_children())==0:
+            iMenu.set_sensitive(False)
 
     def editProperites(self,widget):
         if self.__sType=='PhysicalCardSet':

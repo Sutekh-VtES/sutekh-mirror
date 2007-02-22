@@ -118,7 +118,6 @@ class MainMenu(gtk.MenuBar,object):
         wMenu = gtk.Menu()
         self.__dMenus["Plugins"]=wMenu
         iMenu.set_submenu(wMenu)
-        bShowPluginMenu=False
         # plugins
         for oPlugin in self.__oC.getPlugins():
             oMI=oPlugin.getMenuItem()
@@ -131,10 +130,10 @@ class MainMenu(gtk.MenuBar,object):
                     self.__dMenus[sMenu].add(oMI)
                 else:
                     # Plugins acts as a catchall Menu
-                    bShowPluginMenu=True
                     wMenu.add(oMI)
-        if bShowPluginMenu:
-            self.add(iMenu)
+        self.add(iMenu)
+        if len(wMenu.get_children())==0:
+            iMenu.set_sensitive(False)
 
     def setLoadPhysicalState(self,openSets):
         # Determine if physLoad should be greyed out or not
