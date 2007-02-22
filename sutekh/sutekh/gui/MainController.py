@@ -30,9 +30,13 @@ class MainController(object):
         self.__oAbstractCardWin = MainWindow(self)
         self.__oPhysicalCardWin = PhysicalCardWindow(self)
         self.__oCardTextWin = CardTextWindow(self)
+        self.__oAbstractCards = AbstractCardView(self,self.__oAbstractCardWin)
+        self.__aPlugins = []
+        for cPlugin in self.__oPluginManager.getCardListPlugins():
+            self.__aPlugins.append(cPlugin(self.__oAbstractCards,self.__oAbstractCards.getModel(),'AbstractCard'))
+
         self.__oMenu = MainMenu(self,self.__oAbstractCardWin)
         self.__oCardText = CardTextView(self)
-        self.__oAbstractCards = AbstractCardView(self,self.__oAbstractCardWin)
         self.__oPhysicalCards = PhysicalCardController(self.__oPhysicalCardWin,self)
         self.__oWinGrp.add_window(self.__oAbstractCardWin)
         self.__oWinGrp.add_window(self.__oPhysicalCardWin)
@@ -51,6 +55,9 @@ class MainController(object):
 
     def actionQuit(self):
         gtk.main_quit()
+
+    def getPlugins(self):
+        return self.__aPlugins
 
     def setCardText(self,sCardName):
         try:

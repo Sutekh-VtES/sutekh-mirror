@@ -22,15 +22,17 @@ class MainMenu(gtk.MenuBar,object):
         super(MainMenu,self).__init__()
         self.__oC = oController
         self.__oWin = oWindow
-
+        self.__dMenus={}
         self.__createFileMenu()
         self.__createCardSetMenu()
         self.__createFilterMenu()
+        self.__createPluginMenu()
 
     def __createFileMenu(self):
         # setup sub menu
         iMenu = gtk.MenuItem("File")
         wMenu = gtk.Menu()
+        self.__dMenus["File"]=wMenu
         iMenu.set_submenu(wMenu)
 
         # items
@@ -64,6 +66,7 @@ class MainMenu(gtk.MenuBar,object):
         # setup sub menu
         iMenu = gtk.MenuItem("CardSet")
         wMenu = gtk.Menu()
+        self.__dMenus["CardSet"]=wMenu
         iMenu.set_submenu(wMenu)
 
         # items
@@ -93,6 +96,7 @@ class MainMenu(gtk.MenuBar,object):
         # setup sub menu
         iMenu = gtk.MenuItem("Filter")
         wMenu = gtk.Menu()
+        self.__dMenus["Filter"]=wMenu
         iMenu.set_submenu(wMenu)
 
         # items
@@ -107,6 +111,30 @@ class MainMenu(gtk.MenuBar,object):
         self.iApply.connect('activate', self.__oC.runFilter)
 
         self.add(iMenu)
+
+    def __createPluginMenu(self):
+        # setup sub menu
+        iMenu = gtk.MenuItem("Plugins")
+        wMenu = gtk.Menu()
+        self.__dMenus["Plugins"]=wMenu
+        iMenu.set_submenu(wMenu)
+        bShowPluginMenu=False
+        # plugins
+        for oPlugin in self.__oC.getPlugins():
+            oMI=oPlugin.getMenuItem()
+            if oMI is not None:
+                sMenu=oPlugin.getDesiredMenu()
+                # Add to the requested menu if supplied
+                if sMenu in self.__dMenus.keys():
+                    if sMenu=="Plugins":
+                        bShowPluginMenu=True
+                    self.__dMenus[sMenu].add(oMI)
+                else:
+                    # Plugins acts as a catchall Menu
+                    bShowPluginMenu=True
+                    wMenu.add(oMI)
+        if bShowPluginMenu:
+            self.add(iMenu)
 
     def setLoadPhysicalState(self,openSets):
         # Determine if physLoad should be greyed out or not

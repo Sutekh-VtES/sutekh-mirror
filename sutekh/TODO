@@ -11,13 +11,13 @@ Database
  * Add Annotations field to the CardSets
 
 Gui (Functionality):
- * Improve Filter selection dialog.  (And/Or/Not)
+ * Improve Filter selection dialog.  (And/Or)
  * Add ordering selection dialog (possibly part of filtering dialog).
  * Ability to add additional columns to card list displays (capacity, group, ...).
  * Turn AnalyzeDeck into something more useful - NM
  * Finish ClusterCardList plugin.
  * Create CardSet Management Window (Abstract/Physical)
- * Compare CardSet Plugin
+ * Compare CardSet Plugin (basic version done. Could be improved)
 
 Gui (Presentation):
  * Give gui resource handling capablities to save window pos, etc - NM
