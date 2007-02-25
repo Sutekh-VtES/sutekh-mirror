@@ -4,7 +4,7 @@
 # GPL - see COPYING for details
 
 from SutekhObjects import *
-from sqlobject import AND, OR, LIKE
+from sqlobject import AND, OR, LIKE, func
 from sqlobject.sqlbuilder import Table, Alias
 
 # Filter Base Class
@@ -177,14 +177,14 @@ class CardTextFilter(Filter):
         self.__sPattern = sPattern
 
     def getExpression(self):
-        return LIKE(AbstractCard.q.text,'%' + self.__sPattern + '%')
+        return LIKE(func.LOWER(AbstractCard.q.text),'%' + self.__sPattern.lower() + '%')
 
 class CardNameFilter(Filter):
     def __init__(self,sPattern):
         self.__sPattern = sPattern
 
     def getExpression(self):
-        return LIKE(AbstractCard.q.name,'%' + self.__sPattern + '%')
+        return LIKE(func.LOWER(AbstractCard.q.name),'%' + self.__sPattern.lower() + '%')
 
 class PhysicalCardFilter(Filter):
     def __init__(self):
