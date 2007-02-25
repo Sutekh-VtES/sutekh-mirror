@@ -160,10 +160,12 @@ class EditableCardListView(CardListView):
         oColumn1 = gtk.TreeViewColumn("#",oCell1,text=1)
         oColumn1.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
         oColumn1.set_fixed_width(40)
+        oColumn1.set_sort_column_id(1)
         self.append_column(oColumn1)
 
         oColumn2 = gtk.TreeViewColumn("Cards", oCell2, text=0)
         oColumn2.set_expand(True)
+        oColumn2.set_sort_column_id(0)
         self.append_column(oColumn2)
 
         oColumn3 = gtk.TreeViewColumn("",oCell3)
