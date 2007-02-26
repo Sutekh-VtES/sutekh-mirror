@@ -40,6 +40,14 @@ class CardSetExportHTML(CardListPlugin):
             print "Unable to load deck2html.xsl style sheet."
             return None
 
+        # Check if we can enable the "Include Card Text" Option
+        try:
+            sDeckXSLwithText = os.path.join(os.path.dirname(__file__),"deck2html_with_text.xsl")
+            styledocText = libxml2.parseFile(sDeckXSLwithText)
+            self._styleText = libxslt.parseStylesheetDoc(styledocText)
+        except libxml2.parserError:
+            self._styleText=None
+
         iDF = gtk.MenuItem("Export Card Set to HTML")
         iDF.connect("activate", self.activate)
         return iDF
@@ -61,6 +69,10 @@ class CardSetExportHTML(CardListPlugin):
         self.oFileChooser=gtk.FileChooserWidget(gtk.FILE_CHOOSER_ACTION_SAVE)
         self.oFileChooser.set_do_overwrite_confirmation(True)
         self.oDlg.vbox.pack_start(self.oFileChooser)
+        if self._styleText is not None:
+            self.TextButton=gtk.CheckButton("Include Card _Texts?")
+            self.TextButton.set_active(False)
+            self.oDlg.vbox.pack_start(self.TextButton)
         self.oDlg.connect("response", self.handleResponse)
         self.oDlg.show_all()
         return self.oDlg
@@ -82,7 +94,14 @@ class CardSetExportHTML(CardListPlugin):
                         oCardSet.comment,
                         self.getCards())
                 doc = libxml2.parseDoc(oDoc.toprettyxml())
-                result = self._style.applyStylesheet(doc, None)
+                bDoText=False
+                if self._styleText is not None:
+                    if self.TextButton.get_active():
+                        bDoText=True
+                if bDoText:
+                    result = self._styleText.applyStylesheet(doc, None)
+                else:
+                    result = self._style.applyStylesheet(doc, None)
                 self._style.saveResultToFilename(sFileName, result, 0)
 
     def getCards(self):
