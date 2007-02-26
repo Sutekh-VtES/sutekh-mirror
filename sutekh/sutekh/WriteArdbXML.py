@@ -88,6 +88,9 @@ class WriteArdbXML(object):
             oCardElem.appendChild(oGrpElem)
             # Skipping titles for the moment, as
             # I don't feel like trying to scan the text for that here
+            oTextElem=oDoc.createElement('text')
+            oTextElem.appendChild(oDoc.createTextNode(oCard.text))
+            oCardElem.appendChild(oTextElem)
             oCryptElem.appendChild(oCardElem)
 
         oLibElem = oDoc.createElement('library')
@@ -119,6 +122,9 @@ class WriteArdbXML(object):
                 oDiscElem=oDoc.createElement('disciplines')
                 oDiscElem.appendChild(oDoc.createTextNode(sDisciplines))
                 oCardElem.appendChild(oDiscElem)
+            oTextElem=oDoc.createElement('text')
+            oTextElem.appendChild(oDoc.createTextNode(oCard.text))
+            oCardElem.appendChild(oTextElem)
             oLibElem.appendChild(oCardElem)
         return oDoc
 
