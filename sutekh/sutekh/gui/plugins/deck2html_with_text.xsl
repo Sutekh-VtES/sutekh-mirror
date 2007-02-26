@@ -33,6 +33,11 @@
       no-repeat scroll top right;
       }
 
+      div#cardtext
+      {
+      background: #000000
+      }
+
       h1
       {
       font-size: x-large;
@@ -178,21 +183,36 @@
        <h3 id="cardtexts"><span>Card Texts </span></h3>
 
 
+       <h4 id="librarytype">Crypt</h4>
        <xsl:for-each select="/deck/crypt/vampire[not(name=preceding-sibling::vampire/name)]">
+       <xsl:sort select="@count" data-type="number" order="descending"/>
+	    <xsl:sort select="capacity" data-type="number" order="descending"/>
+       <xsl:sort select="name"/>
 	    <xsl:variable name="xname" select="string(name)"/>
 	    <xsl:for-each select="/deck/crypt/vampire[name=$xname and not(adv=preceding-sibling::vampire[name=$xname]/adv)]">
-          <h4 id="cardname"><xsl:value-of select="name"/></h4>
-          <p><span class="cardtext"><xsl:value-of select="text"/></span></p>
+          <h5 id="cardname"><xsl:value-of select="name"/></h5>
+          <span class="clan"><xsl:value-of select="clan"/></span>:
+          <span class="capacity"><xsl:value-of select="capacity"/></span><br/>
+             <xsl:call-template name="line-breaks">
+                <xsl:with-param name="text" select="text" />
+             </xsl:call-template>
 	    </xsl:for-each>
 
     </xsl:for-each>
 
     <xsl:for-each select="/deck/library/card[not(type=preceding-sibling::card/type)]">
-	    <xsl:variable name="mytype" select="string(type)"/>
+      <xsl:sort select="type"/>
+      <h4 id="librarytype"><xsl:value-of select="type"/></h4>
+      <xsl:variable name="mytype" select="string(type)"/>
       <xsl:for-each select="//card[(type=$mytype) and not(name=preceding-sibling::card/name)]">
          <xsl:sort select="name"/>
-          <h4 id="cardname"><xsl:value-of select="name"/></h4>
-          <p><span class="cardtext"><xsl:value-of select="text"/></span></p>
+         <h5 id="cardname"><xsl:value-of select="name"/></h5>
+         <xsl:if test="cost!=''">
+             <span class="cost"><xsl:value-of select="cost"/></span><br/>
+          </xsl:if>
+             <xsl:call-template name="line-breaks">
+                <xsl:with-param name="text" select="text" />
+             </xsl:call-template>
        </xsl:for-each>
     </xsl:for-each>
 
