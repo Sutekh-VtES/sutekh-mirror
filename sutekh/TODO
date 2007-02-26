@@ -3,11 +3,10 @@ Backend:
  * Make filtering less slow (mainly for sqlite) 
       (seems OK with the indexes. Do we need more?).
  * Additional Filter (Votes, Sect, etc)
- * Handle 'Creed' and 'Life' attributes of Imbued in WhiteWolfParser (done?)
- * Export card sets to HTML. (XSL and more detailed XML export??) (done?)
+ * Handle 'Creed' and 'Life' attributes of Imbued in WhiteWolfParser 
 
 Database
- * Add title & attributes columns to Abstract Card
+ * Add title & sect columns to Abstract Card
  * Add Annotations field to the CardSets
 
 Gui (Functionality):
@@ -28,7 +27,5 @@ Website:
 
 Release Candidate tasks:
  * Check everything works on Windows again
- * Print decks (integrate ARDB's xsl transform, or roll our own?) (kinda done)
- * Add option to print current text of cards when printing decks (as for ELDB decks on lasombra?)
  * Create setup.py file (and egg?)
- * BUG: Adding cards to a card set, removing all of them and then adding more crashes Sutekh. (fixed in r212?)
+ * Improve "with text mode" option for HTML export (xsl file needs work) 

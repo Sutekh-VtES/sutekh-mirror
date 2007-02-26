@@ -1,3 +1,23 @@
+
+26 Feb 2007
+ * Basic support for adding card text to HTML file
+
+25 Feb 2007
+ * Make card text search case insensitive on all databases by using func.LOWER everywhere
+ * Allow CardListView to be sorted by number or name
+
+22 Feb 2007
+ * Add some more filters
+ * Allowed plugins to register on the main AbstractCard View
+
+20 Feb 2007
+ * Reorganise plugins to remove duplications between AbstractCardSets and PhysicalCardSets
+ * create plugin to compare two Card Sets.
+ 
+19 Feb 2007
+ * Fix crash due to not deleting invalid dictionary entries for groups in the
+   CardListView
+
 17 Feb 2007
  * Add support for dumping everything to zipfile & restoring from it
 
