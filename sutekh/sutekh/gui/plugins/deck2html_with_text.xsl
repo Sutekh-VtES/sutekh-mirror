@@ -82,6 +82,11 @@
       top: 20px;
       }
 
+      .requirement
+      {
+      font-style:italic
+      }
+
       .librarytype
       {
       
@@ -207,6 +212,9 @@
       <xsl:for-each select="//card[(type=$mytype) and not(name=preceding-sibling::card/name)]">
          <xsl:sort select="name"/>
          <h5 id="cardname"><xsl:value-of select="name"/></h5>
+         <xsl:if test="requirement!=''">
+             <span class="requirement"><xsl:value-of select="requirement"/></span><br/>
+         </xsl:if>
          <xsl:if test="cost!=''">
              <span class="cost"><xsl:value-of select="cost"/></span><br/>
           </xsl:if>

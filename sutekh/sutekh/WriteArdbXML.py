@@ -110,6 +110,13 @@ class WriteArdbXML(object):
                 oCostElem.appendChild(oDoc.createTextNode( \
                         str(oCard.cost)+" "+oCard.costtype))
                 oCardElem.appendChild(oCostElem)
+            if len(oCard.clan)>0:
+                # ARDB also strores things like "requires a prince"
+                # we don't so to bad
+                oReqElem=oDoc.createElement('requirement')
+                aClan=[x.name for x in oCard.clan]
+                oReqElem.appendChild(oDoc.createTextNode("/".join(aClan)))
+                oCardElem.appendChild(oReqElem)
             # Looks like it should be the right thing, but may not
             aTypes=[x.name for x in oCard.cardtype]
             sType="/".join(aTypes)
