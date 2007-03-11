@@ -153,8 +153,8 @@ class EditableCardListView(CardListView):
         oCell2 = gtk.CellRendererText()
         oCell2.set_property('style', pango.STYLE_ITALIC)
         oCell3 = CellRendererSutekhButton()
-        oCell4 = CellRendererSutekhButton()
         oCell3.load_icon(gtk.STOCK_GO_UP,self)
+        oCell4 = CellRendererSutekhButton()
         oCell4.load_icon(gtk.STOCK_GO_DOWN,self)
 
         oColumn1 = gtk.TreeViewColumn("#",oCell1,text=1)
@@ -163,7 +163,7 @@ class EditableCardListView(CardListView):
         oColumn1.set_sort_column_id(1)
         self.append_column(oColumn1)
 
-        oColumn2 = gtk.TreeViewColumn("Cards", oCell2, text=0)
+        oColumn2 = gtk.TreeViewColumn("Cards",oCell2,text=0)
         oColumn2.set_expand(True)
         oColumn2.set_sort_column_id(0)
         self.append_column(oColumn2)
@@ -179,6 +179,7 @@ class EditableCardListView(CardListView):
         self.append_column(oColumn4)
 
         self.set_expander_column(oColumn2)
+        self.set_grid_lines(gtk.TREE_VIEW_GRID_LINES_BOTH)
 
         # Button Clicks
         oCell3.connect('clicked',self.incCard)
