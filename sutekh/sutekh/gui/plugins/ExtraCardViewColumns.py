@@ -18,6 +18,7 @@ class ExtraCardViewColumns(CardListPlugin):
         self._dCols['Disciplines'] = self._renderDisciplines
         self._dCols['Expansions'] = self._renderExpansions
         self._dCols['Group'] = self._renderGroup
+        self._dCols['Capacity'] = self._renderCapacity
 
     # Rendering Functions
 
@@ -62,6 +63,13 @@ class ExtraCardViewColumns(CardListPlugin):
         oCard = self._getCard(oIter)
         if not oCard is None and not oCard.group is None:
             oCell.set_property("text",str(oCard.group))
+        else:
+            oCell.set_property("text","")
+
+    def _renderCapacity(self,oColumn,oCell,oModel,oIter):
+        oCard = self._getCard(oIter)
+        if not oCard is None and not oCard.capacity is None:
+            oCell.set_property("text",str(oCard.capacity))
         else:
             oCell.set_property("text","")
 
