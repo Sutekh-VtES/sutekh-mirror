@@ -35,7 +35,7 @@ class CardListTabulator(object):
          * Group and capacity are set to 0 if the card doesn't have a group or capacity.
         """
         d = {}
-        
+
         # properties from direct attributes of Abstract Cards
         d['group'] = lambda card: (card.group is not None and card.group) or 0
         d['capacity'] = lambda card: (card.capacity is not None and card.capacity) or 0
@@ -50,41 +50,41 @@ class CardListTabulator(object):
         # discipline properties
         def makeDisFunc(oTmpDis):
             return lambda card: ((oTmpDis in [oPair.discipline for oPair in card.discipline]) and 1) or 0
-            
+
         for oDis in Discipline.select():
             sName = DisciplineAdapter.keys[oDis.name][-1]
             d['discipline: ' + sName] = makeDisFunc(oDis)
-        
+
         # rarity properties
         def makeRarFunc(oTmpRar):
             return lambda card: ((oTmpRar in [oPair.rarity for oPair in card.rarity]) and 1) or 0
-        
+
         for oRar in Rarity.select():
             d['rarity: ' + oRar.name] = makeRarFunc(oRar)
-        
+
         # expansion properties
         def makeExpFunc(oTmpExp):
             return lambda card: ((oTmpExp in [oPair.expansion for oPair in card.rarity]) and 1) or 0
-        
+
         for oExp in Expansion.select():
             d['expansion: ' + oExp.name] = makeExpFunc(oExp)
-        
+
         # clan properties
         def makeClanFunc(oTmpClan):
             return lambda card: ((oTmpClan in card.clan) and 1) or 0
-        
+
         for oClan in Clan.select():
             d['clan: ' + oClan.name] = makeClanFunc(oClan)
-        
+
         # cardtype properties
         def makeCardTypeFunc(oTmpType):
             return lambda card: ((oTmpType in card.cardtype) and 1) or 0
-        
+
         for oType in CardType.select():
             d['card type: ' + oType.name] = makeCardTypeFunc(oType)
-            
+
         return d
-    
+
     def tabulate(self,aCards):
         """
         Create a table from the list of (or iterator over) cards.
@@ -93,17 +93,17 @@ class CardListTabulator(object):
         The columns are in the same order as in the aColNames list passed to __init__.
         """
         aColFuncs = [self._dPropFuncs[x] for x in self._aColNames]
-        
+
         aTable = []
-        
+
         for oC in aCards:
             oC = IAbstractCard(oC)
             aRow = []
-            
+
             for fProp in aColFuncs:
                 aRow.append(fProp(oC))
-                
+
             aTable.append(aRow)
-        
+
         return aTable
-    
+
