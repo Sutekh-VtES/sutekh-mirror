@@ -18,7 +18,7 @@ class CardListModel(gtk.TreeStore):
         super(CardListModel,self).__init__(gobject.TYPE_STRING,gobject.TYPE_INT)
         self._dName2Iter = {}
 
-        self.cardclass = AbstractCard # card class to use, or option is PhysicalCard
+        self.cardclass = AbstractCard # card class to use, other option is PhysicalCard
         self.groupby = CardTypeGrouping # grouping class to use
         self.basefilter = None # base filter defines the card list
         self.applyfilter = False # whether to apply the select filter
