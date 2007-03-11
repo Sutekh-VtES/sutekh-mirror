@@ -17,6 +17,7 @@ class ExtraCardViewColumns(CardListPlugin):
         self._dCols['Clan'] = self._renderClan
         self._dCols['Disciplines'] = self._renderDisciplines
         self._dCols['Expansions'] = self._renderExpansions
+        self._dCols['Group'] = self._renderGroup
 
     # Rendering Functions
 
@@ -41,7 +42,6 @@ class ExtraCardViewColumns(CardListPlugin):
         else:
             oCell.set_property("text","")
 
-
     def _renderDisciplines(self,oColumn,oCell,oModel,oIter):
         oCard = self._getCard(oIter)
         if not oCard is None:
@@ -55,6 +55,13 @@ class ExtraCardViewColumns(CardListPlugin):
         if not oCard is None:
             aExp = [oP.expansion.name + "(" + oP.rarity.name + ")" for oP in oCard.rarity]
             oCell.set_property("text",",".join(aExp))
+        else:
+            oCell.set_property("text","")
+
+    def _renderGroup(self,oColumn,oCell,oModel,oIter):
+        oCard = self._getCard(oIter)
+        if not oCard is None and not oCard.group is None:
+            oCell.set_property("text",str(oCard.group))
         else:
             oCell.set_property("text","")
 
