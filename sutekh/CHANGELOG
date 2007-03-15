@@ -1,3 +1,10 @@
+15 Mar 2007
+ * Setuptools setup.py file created.
+ * Made all imports absolute.
+
+11 Mar 2007
+ * Plugin for displaying additional columns in a card view.
+ * Add grid lines to card list view. They could do with some styling.
 
 26 Feb 2007
  * Basic support for adding card text to HTML file
