@@ -27,5 +27,5 @@ Website:
 
 Release Candidate tasks:
  * Check everything works on Windows again
- * Create setup.py file (and egg?)
+ - Create setup.py file with bdist_egg (needs testing)
  * Improve "with text mode" option for HTML export (xsl file needs work) 
