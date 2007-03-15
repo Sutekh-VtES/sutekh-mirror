@@ -3,7 +3,7 @@
 # Minor modifications copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-from SutekhObjects import *
+from sutekh.SutekhObjects import *
 from sqlobject import AND, OR, LIKE, func
 from sqlobject.sqlbuilder import Table, Alias
 

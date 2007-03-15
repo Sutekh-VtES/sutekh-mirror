@@ -3,8 +3,8 @@
 # GPL - see COPYING for details
 
 import gtk
-from SutekhObjects import *
-from gui.PluginManager import CardListPlugin
+from sutekh.SutekhObjects import *
+from sutekh.gui.PluginManager import CardListPlugin
 
 class DeckFromFilter(CardListPlugin):
     dTableVersions = {"PhysicalCardSet" : [2],

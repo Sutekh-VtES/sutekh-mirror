@@ -5,10 +5,10 @@
 # GPL - see COPYING for details
 
 import gtk, gobject
-from Filters import *
-from SutekhObjects import *
-from AutoScrolledWindow import AutoScrolledWindow
-from ScrolledList import ScrolledList
+from sutekh.Filters import *
+from sutekh.SutekhObjects import *
+from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
+from sutekh.gui.ScrolledList import ScrolledList
 
 class FilterDialog(gtk.Dialog):
     def __init__(self,parent):

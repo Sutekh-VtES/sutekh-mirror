@@ -4,10 +4,10 @@
 # GPL - see COPYING for details
 
 import gtk, pango
-from CardListModel import CardListModel
-from FilterDialog import FilterDialog
-from PopupMenu import PopupMenu
-from CellRendererSutekhButton import CellRendererSutekhButton
+from sutekh.gui.CardListModel import CardListModel
+from sutekh.gui.FilterDialog import FilterDialog
+from sutekh.gui.PopupMenu import PopupMenu
+from sutekh.gui.CellRendererSutekhButton import CellRendererSutekhButton
 
 class CardListView(gtk.TreeView,object):
     def __init__(self,oController,oWindow):

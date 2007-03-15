@@ -4,7 +4,7 @@
 # GPL - see COPYING for details
 
 import gtk, pango
-from CardListView import CardListView
+from sutekh.gui.CardListView import CardListView
 
 class AbstractCardView(CardListView):
     def __init__(self,oController,oWindow):

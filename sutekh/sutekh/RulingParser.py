@@ -4,7 +4,7 @@
 # GPL - see COPYING for details
 
 import HTMLParser, re
-from SutekhObjects import *
+from sutekh.SutekhObjects import *
 
 # Ruling Saver
 
@@ -33,7 +33,7 @@ class RuleDict(dict):
 
     def __init__(self):
         super(RuleDict,self).__init__()
-    
+
     def _findCard(self,sTitle):
         sTitle = self._oMasterOut.sub('',sTitle)
         sTitle = self._oCommaThe.sub('',sTitle)
@@ -42,21 +42,21 @@ class RuleDict(dict):
             return AbstractCard.byName(sTitle.encode('utf8'))
         except SQLObjectNotFound:
             pass
-            
+
         try:
             return AbstractCard.byName(self._dOddTitles[sTitle].encode('utf8'))
         except KeyError:
             pass
         except SQLObjectNotFound:
             pass
-            
+
         try:
             return AbstractCard.byName(('The ' + sTitle).encode('utf8'))
         except SQLObjectNotFound:
             pass
-        
+
         return None
-    
+
     def clearRule(self):
         dKeep = {}
         for s in self._aSectionKeys:
@@ -70,22 +70,22 @@ class RuleDict(dict):
         if not (self.has_key('title') and self.has_key('code') \
                 and self.has_key('text')):
             return
-            
+
         if not self.has_key('card'):
             self['card'] = self._findCard(self['title'])
-                
+
         if self['card'] is None:
             return
-        
+
         print self['card'].name.encode('ascii','replace')
-            
+
         oR = IRuling((self['text'],self['code']))
-        
+
         if self.has_key('url'):
             oR.url = self['url']
-        
+
         self['card'].addRuling(oR)
-                
+
 # State Base Classes
 
 class StateError(Exception):
@@ -98,10 +98,10 @@ class State(object):
 
     def transition(self,sTag,dAttr):
         raise NotImplementedError
-        
+
     def data(self,sData):
         self._sData += sData
-        
+
 class StateWithRule(State):
     def __init__(self,dInfo):
         super(StateWithRule,self).__init__()
@@ -115,7 +115,7 @@ class NoSection(State):
             return InSection(RuleDict())
         else:
             return self
-            
+
 class InSection(StateWithRule):
     def transition(self,sTag,dAttr):
         if sTag == 'b':
@@ -142,12 +142,12 @@ class SectionWithTitle(StateWithRule):
             return SectionRule(self._dInfo)
         elif sTag == 'p':
             # skip to next section
-            return InSection(RuleDict()) 
+            return InSection(RuleDict())
         elif sTag == '/p':
             return NoSection()
         else:
             return self
-            
+
 class SectionRule(StateWithRule):
     def transition(self,sTag,dAttr):
         if sTag == 'span' and dAttr.get('class') in ['ruling','errata','clarification']:
@@ -168,7 +168,7 @@ class SectionRule(StateWithRule):
                 self._dInfo['code'] = self._sData.strip()
             self._dInfo.save()
             self._dInfo.clearRule()
-            return SectionRule(self._dInfo)            
+            return SectionRule(self._dInfo)
         elif sTag == '/p':
             # handles unclosed <li> at end of section block
             # skip to next section
@@ -178,7 +178,7 @@ class SectionRule(StateWithRule):
             self._dInfo.clearRule()
             return NoSection()
         return self
-            
+
 class InRuleText(StateWithRule):
     def transition(self,sTag,dAttr):
         if sTag == 'span':
@@ -208,12 +208,12 @@ class RulingParser(HTMLParser.HTMLParser,object):
 
     def handle_starttag(self,sTag,aAttr):
         self._state = self._state.transition(sTag.lower(),dict(aAttr))
-        
+
     def handle_endtag(self,sTag):
         self._state = self._state.transition('/'+sTag.lower(),{})
-        
+
     def handle_data(self,sData):
         self._state.data(sData)
-    
+
     def handle_charref(self,sName): pass
     def handle_entityref(self,sName): pass

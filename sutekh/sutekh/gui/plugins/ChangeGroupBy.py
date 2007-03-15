@@ -3,8 +3,8 @@
 # GPL - see COPYING for details
 
 import gtk
-from Groupings import *
-from gui.PluginManager import CardListPlugin
+from sutekh.Groupings import *
+from sutekh.gui.PluginManager import CardListPlugin
 
 class GroupCardList(CardListPlugin):
     dTableVersions = {}

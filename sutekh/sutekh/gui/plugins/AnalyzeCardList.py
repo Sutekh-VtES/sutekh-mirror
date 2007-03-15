@@ -5,9 +5,9 @@
 # GPL - see COPYING for details
 
 import gtk
-from SutekhObjects import *
-from Filters import *
-from gui.PluginManager import CardListPlugin
+from sutekh.SutekhObjects import *
+from sutekh.Filters import *
+from sutekh.gui.PluginManager import CardListPlugin
 
 class AnalyzeCardList(CardListPlugin):
     dTableVersions = {"PhysicalCardSet" : [2],

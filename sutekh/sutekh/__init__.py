@@ -19,11 +19,11 @@ __all__ = [ # Sutekh Objects
            'start', 'CardListTabulator' ]
 
 # Do importing
-from SutekhObjects import *
-from Filters import *
-from Groupings import *
-from CardListTabulator import CardListTabulator
-from SutekhCli import main
+from sutekh.SutekhObjects import *
+from sutekh.Filters import *
+from sutekh.Groupings import *
+from sutekh.CardListTabulator import CardListTabulator
+from sutekh.SutekhCli import main
 
 # start() method for use when working in the Python interpreter
 def start(aArgs=['sutekh']):

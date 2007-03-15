@@ -2,18 +2,18 @@
 # Copyright 2005,2006 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
 
-import sys, optparse, os
+from sutekh.SutekhObjects import *
+from sutekh.SutekhUtility import *
+from sutekh.SutekhCli import *
+from sutekh.gui.MainController import MainController
+from sutekh.gui.DBErrorPopup import DBVerErrorPopup, NoDBErrorPopup
+from sutekh.gui.DBUpgradeDialog import DBUpgradeDialog
+from sutekh.gui.WWFilesDialog import WWFilesDialog
+from sutekh.DatabaseVersion import DatabaseVersion
+from sutekh.DatabaseUpgrade import *
 from sqlobject import *
-from SutekhObjects import *
-from SutekhUtility import *
-from SutekhCli import *
-from gui.MainController import MainController
-from gui.DBErrorPopup import DBVerErrorPopup, NoDBErrorPopup
-from gui.DBUpgradeDialog import DBUpgradeDialog
-from gui.WWFilesDialog import WWFilesDialog
-from DatabaseVersion import DatabaseVersion
-from DatabaseUpgrade import *
 import gtk
+import sys, optparse, os
 
 # Script Launching
 

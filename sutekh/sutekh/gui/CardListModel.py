@@ -4,9 +4,9 @@
 # GPL - see COPYING for details
 
 import gtk, gobject
-from Filters import *
-from Groupings import *
-from SutekhObjects import *
+from sutekh.Filters import *
+from sutekh.Groupings import *
+from sutekh.SutekhObjects import *
 
 class CardListModel(gtk.TreeStore):
     """

@@ -3,10 +3,10 @@
 # GPL - see COPYING for details
 
 import gtk
-from SutekhObjects import *
-from Filters import *
-from gui.PluginManager import CardListPlugin
-from gui.ScrolledList import ScrolledList
+from sutekh.SutekhObjects import *
+from sutekh.Filters import *
+from sutekh.gui.PluginManager import CardListPlugin
+from sutekh.gui.ScrolledList import ScrolledList
 
 class CardSetCompare(CardListPlugin):
     dTableVersions = {"AbstractCardSet" : [1,2],

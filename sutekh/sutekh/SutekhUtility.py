@@ -7,10 +7,10 @@
 
 import codecs
 from sqlobject import *
-from SutekhObjects import *
-from DatabaseVersion import DatabaseVersion
-from WhiteWolfParser import WhiteWolfParser
-from RulingParser import RulingParser
+from sutekh.SutekhObjects import *
+from sutekh.DatabaseVersion import DatabaseVersion
+from sutekh.WhiteWolfParser import WhiteWolfParser
+from sutekh.RulingParser import RulingParser
 
 def refreshTables(aTables,oConn,**kw):
     aTables.reverse()

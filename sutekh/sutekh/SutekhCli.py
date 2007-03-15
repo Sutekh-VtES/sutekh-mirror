@@ -3,20 +3,20 @@
 # Minor modifications copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-import sys, optparse, os, tempfile
+from sutekh.SutekhObjects import *
+from sutekh.SutekhUtility import *
+from sutekh.DatabaseUpgrade import *
+from sutekh.PhysicalCardParser import PhysicalCardParser
+from sutekh.PhysicalCardWriter import PhysicalCardWriter
+from sutekh.PhysicalCardSetParser import PhysicalCardSetParser
+from sutekh.PhysicalCardSetWriter import PhysicalCardSetWriter
+from sutekh.AbstractCardSetParser import AbstractCardSetParser
+from sutekh.AbstractCardSetWriter import AbstractCardSetWriter
+from sutekh.DatabaseVersion import DatabaseVersion
+from sutekh.IdentifyXMLFile import IdentifyXMLFile
 from sqlobject import *
-from SutekhObjects import *
-from SutekhUtility import *
-from DatabaseUpgrade import *
-from PhysicalCardParser import PhysicalCardParser
-from PhysicalCardWriter import PhysicalCardWriter
-from PhysicalCardSetParser import PhysicalCardSetParser
-from PhysicalCardSetWriter import PhysicalCardSetWriter
-from AbstractCardSetParser import AbstractCardSetParser
-from AbstractCardSetWriter import AbstractCardSetWriter
-from DatabaseVersion import DatabaseVersion
-from IdentifyXMLFile import IdentifyXMLFile
 import zipfile 
+import sys, optparse, os, tempfile
 
 def parseOptions(aArgs):
     oP = optparse.OptionParser(usage="usage: %prog [options]",version="%prog 0.1")

@@ -5,11 +5,11 @@
 # GPL - see COPYING for details
 
 import gtk
-from SutekhObjects import PhysicalCardSet,AbstractCardSet
-from ExportDialog import ExportDialog
-from PropDialog import PropDialog
-from AbstractCardSetWriter import AbstractCardSetWriter
-from PhysicalCardSetWriter import PhysicalCardSetWriter
+from sutekh.SutekhObjects import PhysicalCardSet,AbstractCardSet
+from sutekh.gui.ExportDialog import ExportDialog
+from sutekh.gui.PropDialog import PropDialog
+from sutekh.AbstractCardSetWriter import AbstractCardSetWriter
+from sutekh.PhysicalCardSetWriter import PhysicalCardSetWriter
 
 class CardSetMenu(gtk.MenuBar,object):
     def __init__(self,oController,oWindow,oView,sName,sType):

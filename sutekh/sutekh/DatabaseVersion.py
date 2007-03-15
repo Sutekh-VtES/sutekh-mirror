@@ -6,7 +6,7 @@
 # version management helper class
 
 from sqlobject import *
-from SutekhObjects import *
+from sutekh.SutekhObjects import *
 
 dTableMap={
         "PhysicalCardSet" : PhysicalCardSet.sqlmeta.table,

@@ -3,9 +3,9 @@
 # GPL - see COPYING for details
 
 from sqlobject import *
-from SutekhObjects import *
-from SutekhUtility import *
-from DatabaseVersion import DatabaseVersion
+from sutekh.SutekhObjects import *
+from sutekh.SutekhUtility import *
+from sutekh.DatabaseVersion import DatabaseVersion
 
 # This file handles all the grunt work of the database upgrades. We have some
 # (arguablely overly) complex trickery to read old databases, and we create a

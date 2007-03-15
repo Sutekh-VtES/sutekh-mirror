@@ -5,8 +5,8 @@
 # GPL - see COPYING for details
 
 import gtk
-from ExportDialog import ExportDialog
-from PhysicalCardWriter import PhysicalCardWriter
+from sutekh.gui.ExportDialog import ExportDialog
+from sutekh.PhysicalCardWriter import PhysicalCardWriter
 
 class PhysicalCardMenu(gtk.MenuBar,object):
     def __init__(self,oController,oWindow):

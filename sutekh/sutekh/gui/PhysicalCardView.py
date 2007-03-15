@@ -3,9 +3,9 @@
 # Copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-from CardListView import EditableCardListView
-from Filters import PhysicalCardFilter
-from SutekhObjects import PhysicalCard
+from sutekh.gui.CardListView import EditableCardListView
+from sutekh.Filters import PhysicalCardFilter
+from sutekh.SutekhObjects import PhysicalCard
 
 class PhysicalCardView(EditableCardListView):
     def __init__(self,oController,oWindow):

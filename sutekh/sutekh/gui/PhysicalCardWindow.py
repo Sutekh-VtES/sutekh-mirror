@@ -4,7 +4,7 @@
 # GPL - see COPYING for details
 
 import gtk
-from AutoScrolledWindow import AutoScrolledWindow
+from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 
 class PhysicalCardWindow(gtk.Window,object):
     def __init__(self,oController):

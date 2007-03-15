@@ -3,10 +3,10 @@
 # Copyright 2006 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
 
-from CardListView import EditableCardListView
-from DeleteCardSetDialog import *
-from Filters import PhysicalCardSetFilter, AbstractCardSetFilter
-from SutekhObjects import PhysicalCard, PhysicalCardSet, AbstractCardSet
+from sutekh.gui.CardListView import EditableCardListView
+from sutekh.gui.DeleteCardSetDialog import *
+from sutekh.Filters import PhysicalCardSetFilter, AbstractCardSetFilter
+from sutekh.SutekhObjects import PhysicalCard, PhysicalCardSet, AbstractCardSet
 
 class CardSetView(EditableCardListView):
     def __init__(self,oWindow,oController,sName,sSetType):

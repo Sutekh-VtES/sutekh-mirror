@@ -4,10 +4,10 @@
 # GPL - see COPYING for details
 
 from sqlobject import SQLObjectNotFound
-from PhysicalCardView import PhysicalCardView
-from PhysicalCardMenu import PhysicalCardMenu
-from SutekhObjects import *
-from DeleteCardDialog import DeleteCardDialog
+from sutekh.gui.PhysicalCardView import PhysicalCardView
+from sutekh.gui.PhysicalCardMenu import PhysicalCardMenu
+from sutekh.gui.DeleteCardDialog import DeleteCardDialog
+from sutekh.SutekhObjects import *
 
 class PhysicalCardController(object):
     def __init__(self,oWindow,oMasterController):

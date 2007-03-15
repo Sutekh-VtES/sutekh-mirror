@@ -3,9 +3,9 @@
 # GPL - see COPYING for details
 
 import gtk
-from SutekhObjects import *
-from gui.CreateCardSetDialog import CreateCardSetDialog
-from gui.PluginManager import CardListPlugin
+from sutekh.SutekhObjects import *
+from sutekh.gui.CreateCardSetDialog import CreateCardSetDialog
+from sutekh.gui.PluginManager import CardListPlugin
 
 class PhysicalCardSetFromAbstract(CardListPlugin):
     """Create a (as far as possible) equivilant Physical Card Set

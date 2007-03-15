@@ -11,14 +11,14 @@ looks like:
 </cards>
 """
 
-from SutekhObjects import *
+from sutekh.SutekhObjects import *
 from xml.dom.ext import PrettyPrint
 from xml.dom.minidom import getDOMImplementation
 
 class PhysicalCardWriter(object):
     def genDoc(self):
         dPhys = {}
-    
+
         for oC in PhysicalCard.select():
             oAbs = oC.abstractCard
             try:
@@ -28,7 +28,7 @@ class PhysicalCardWriter(object):
 
         oDoc = getDOMImplementation().createDocument(None,'cards',None)
         oCardsElem = oDoc.firstChild
-                
+
         for tKey, iNum in dPhys.iteritems():
             iId, sName = tKey
             oCardElem = oDoc.createElement('card')
@@ -38,7 +38,7 @@ class PhysicalCardWriter(object):
             oCardsElem.appendChild(oCardElem)
 
         return oDoc
-        
+
     def write(self,fOut):
         oDoc=self.genDoc()
         PrettyPrint(oDoc,fOut)

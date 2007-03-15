@@ -5,17 +5,17 @@
 
 import gtk
 from sqlobject import SQLObjectNotFound
-from PhysicalCardController import PhysicalCardController
-from MainWindow import MainWindow
-from CardTextWindow import CardTextWindow
-from PhysicalCardWindow import PhysicalCardWindow
-from CardSetWindow import CardSetWindow
-from CardSetController import PhysicalCardSetController, AbstractCardSetController
-from MainMenu import MainMenu
-from CardTextView import CardTextView
-from AbstractCardView import AbstractCardView
-from PluginManager import PluginManager
-from SutekhObjects import *
+from sutekh.gui.PhysicalCardController import PhysicalCardController
+from sutekh.gui.MainWindow import MainWindow
+from sutekh.gui.CardTextWindow import CardTextWindow
+from sutekh.gui.PhysicalCardWindow import PhysicalCardWindow
+from sutekh.gui.CardSetWindow import CardSetWindow
+from sutekh.gui.CardSetController import PhysicalCardSetController, AbstractCardSetController
+from sutekh.gui.MainMenu import MainMenu
+from sutekh.gui.CardTextView import CardTextView
+from sutekh.gui.AbstractCardView import AbstractCardView
+from sutekh.gui.PluginManager import PluginManager
+from sutekh.SutekhObjects import *
 
 class MainController(object):
     def __init__(self):

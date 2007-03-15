@@ -4,7 +4,7 @@
 # GPL - see COPYING for details
 
 import gtk
-from SutekhObjects import PhysicalCardSet, AbstractCardSet
+from sutekh.SutekhObjects import PhysicalCardSet, AbstractCardSet
 
 class LoadCardSetDialog(gtk.Dialog):
     def __init__(self,parent,sType):

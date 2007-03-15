@@ -5,17 +5,17 @@
 
 import gtk
 from sqlobject import sqlhub
-from SutekhObjects import PhysicalCardSet, AbstractCardSet, ObjectList
-from CreateCardSetDialog import CreateCardSetDialog
-from LoadCardSetDialog import LoadCardSetDialog
-from ImportDialog import ImportDialog
-from PhysicalCardParser import PhysicalCardParser
-from PhysicalCardSetParser import PhysicalCardSetParser
-from AbstractCardSetParser import AbstractCardSetParser
-from IdentifyXMLFile import IdentifyXMLFile
-from WWFilesDialog import WWFilesDialog
-from DatabaseUpgrade import copyToNewAbstractCardDB, createFinalCopy
-from SutekhUtility import *
+from sutekh.SutekhObjects import PhysicalCardSet, AbstractCardSet, ObjectList
+from sutekh.gui.CreateCardSetDialog import CreateCardSetDialog
+from sutekh.gui.LoadCardSetDialog import LoadCardSetDialog
+from sutekh.gui.ImportDialog import ImportDialog
+from sutekh.gui.WWFilesDialog import WWFilesDialog
+from sutekh.PhysicalCardParser import PhysicalCardParser
+from sutekh.PhysicalCardSetParser import PhysicalCardSetParser
+from sutekh.AbstractCardSetParser import AbstractCardSetParser
+from sutekh.IdentifyXMLFile import IdentifyXMLFile
+from sutekh.DatabaseUpgrade import copyToNewAbstractCardDB, createFinalCopy
+from sutekh.SutekhUtility import *
 
 class MainMenu(gtk.MenuBar,object):
     def __init__(self,oController,oWindow):

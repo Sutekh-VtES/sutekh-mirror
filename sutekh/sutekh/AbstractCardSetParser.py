@@ -13,7 +13,7 @@ looks like:
 into a AbstractCardSet
 """
 
-from SutekhObjects import *
+from sutekh.SutekhObjects import *
 from sqlobject import *
 from xml.sax import parse, parseString
 from xml.sax.handler import ContentHandler

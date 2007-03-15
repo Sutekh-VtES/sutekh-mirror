@@ -3,10 +3,10 @@
 # GPL - see COPYING for details
 
 import gtk
-from SutekhObjects import *
-from Filters import *
-from gui.PluginManager import CardListPlugin
-from WriteArdbXML import WriteArdbXML
+from sutekh.SutekhObjects import *
+from sutekh.Filters import *
+from sutekh.gui.PluginManager import CardListPlugin
+from sutekh.WriteArdbXML import WriteArdbXML
 import os
 
 try:

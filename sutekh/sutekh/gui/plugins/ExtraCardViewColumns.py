@@ -3,8 +3,8 @@
 # GPL - see COPYING for details
 
 import gtk, pango
-from gui.PluginManager import CardListPlugin
-from SutekhObjects import *
+from sutekh.gui.PluginManager import CardListPlugin
+from sutekh.SutekhObjects import *
 
 class ExtraCardViewColumns(CardListPlugin):
     dTableVersions = {}
