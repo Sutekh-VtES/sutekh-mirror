@@ -32,14 +32,18 @@ class ExtraCardViewColumns(CardListPlugin):
     def _renderCardType(self,oColumn,oCell,oModel,oIter):
         oCard = self._getCard(oIter)
         if not oCard is None:
-            oCell.set_property("text", ",".join([x.name for x in oCard.cardtype]))
+            aTypes = [x.name for x in oCard.cardtype]
+            aTypes.sort()
+            oCell.set_property("text", ",".join(aTypes))
         else:
             oCell.set_property("text","")
 
     def _renderClan(self,oColumn,oCell,oModel,oIter):
         oCard = self._getCard(oIter)
         if not oCard is None:
-            oCell.set_property("text", ",".join([x.name for x in oCard.clan]))
+            aClans = [x.name for x in oCard.clan]
+            aClans.sort()
+            oCell.set_property("text", ",".join(aClans))
         else:
             oCell.set_property("text","")
 
@@ -47,6 +51,7 @@ class ExtraCardViewColumns(CardListPlugin):
         oCard = self._getCard(oIter)
         if not oCard is None:
             aDis = [(oP.level != 'superior') and oP.discipline.name or oP.discipline.name.upper() for oP in oCard.discipline]
+            aDis.sort()
             oCell.set_property("text",",".join(aDis))
         else:
             oCell.set_property("text","")
@@ -55,6 +60,7 @@ class ExtraCardViewColumns(CardListPlugin):
         oCard = self._getCard(oIter)
         if not oCard is None:
             aExp = [oP.expansion.name + "(" + oP.rarity.name + ")" for oP in oCard.rarity]
+            aExp.sort()
             oCell.set_property("text",",".join(aExp))
         else:
             oCell.set_property("text","")
