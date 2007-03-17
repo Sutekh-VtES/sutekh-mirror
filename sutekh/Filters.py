@@ -120,6 +120,25 @@ class MultiCardTypeFilter(Filter):
         return AND(AbstractCard.q.id == oT.q.abstract_card_id,
                    IN(oT.q.card_type_id,self.__aTypeIds))
 
+class SectFilter(Filter):
+    def __init__(self,sSect):
+        self.__oSect = ISect(sSect)
+
+    def getExpression(self):
+        oT = self._makeTableAlias('abs_sect_map')
+        return AND(AbstractCard.q.id == oT.q.abstract_card_id,
+                   oT.q.sect_id == self.__oSect.id)
+
+class MultiSectFilter(Filter):
+    def __init__(self,aSects):
+        self.__aTypeIds = [ISect(x).id for x in aSects]
+
+    def getExpression(self):
+        oT = self._makeTableAlias('abs_sect_map')
+        return AND(AbstractCard.q.id == oT.q.abstract_card_id,
+                   IN(oT.q.sect_id,self.__aSectIds))
+
+
 class GroupFilter(Filter):
     def __init__(self,iGroup):
         self.__iGroup = iGroup

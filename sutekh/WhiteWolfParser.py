@@ -99,6 +99,27 @@ class CardDict(dict):
         for s in sTypes.split('/'):
             oC.addCardType(ICardType(s.strip()))
 
+    def _parseText(self,oC):
+        """Parse the CardText for Sect and Titles"""
+        oType=oC.cardtype
+        if oType[0].name != 'Vampire':
+            return
+        if oC.text.startswith('Advanced'):
+            print 'Advanced vampire, tweak tests'
+            offset=10
+        else:
+            offset=0
+        sSect='Not found'
+        if oC.text.startswith('Camarilla',offset):
+            sSect='Camarilla'
+        elif oC.text.startswith('Sabbat',offset):
+            sSect='Sabbat'
+        elif oC.text.startswith('Independent',offset):
+            sSect='Independent'
+        elif oC.text.startswith('Laibon',offset):
+            sSect='Laibon'
+        oC.addSect(ISect(sSect))
+
     def save(self):
         if not self.has_key('name'):
             return
@@ -109,10 +130,6 @@ class CardDict(dict):
         print self['name'].encode('ascii','xmlcharrefreplace')
 
         oC = self._makeCard(self['name'])
-
-        if self.has_key('text'):
-            oC.text = self['text']
-
         if self.has_key('group'):
             oC.group = int(self.oWhiteSp.sub('',self['group']),10)
 
@@ -139,7 +156,10 @@ class CardDict(dict):
 
         if self.has_key('cardtype'):
             self._addCardType(oC,self['cardtype'])
-
+        if self.has_key('text'):
+            oC.text = self['text']
+            self._parseText(oC)
+        
         oC.syncUpdate()
 
 # State Base Classes

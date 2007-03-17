@@ -20,6 +20,7 @@ class IDisciplinePair(Interface): pass
 class IDiscipline(Interface): pass
 class IClan(Interface): pass
 class ICardType(Interface): pass
+class ISect(Interface): pass
 class IRuling(Interface): pass
 
 # Table Objects
@@ -32,7 +33,7 @@ class VersionTable(SQLObject):
 class AbstractCard(SQLObject):
     advise(instancesProvide=[IAbstractCard])
 
-    tableversion = 1
+    tableversion = 2
     sqlmeta.lazyUpdate = True
 
     name = UnicodeCol(alternateID=True,length=50)
@@ -47,6 +48,7 @@ class AbstractCard(SQLObject):
     rarity = RelatedJoin('RarityPair',intermediateTable='abs_rarity_pair_map',createRelatedTable=False)
     clan = RelatedJoin('Clan',intermediateTable='abs_clan_map',createRelatedTable=False)
     cardtype = RelatedJoin('CardType',intermediateTable='abs_type_map',createRelatedTable=False)
+    sect = RelatedJoin('Sect',intermediateTable='abs_sect_map',createRelatedTable=False)
     rulings = RelatedJoin('Ruling',intermediateTable='abs_ruling_map',createRelatedTable=False)
     sets = RelatedJoin('AbstractCardSet',intermediateTable='abstract_map',createRelatedTable=False)
     physicalCards = MultipleJoin('PhysicalCard')
@@ -62,19 +64,21 @@ class PhysicalCard(SQLObject):
 class AbstractCardSet(SQLObject):
     advise(instancesProvide=[IAbstractCardSet])
 
-    tableversion = 2
+    tableversion = 3
     name = UnicodeCol(alternateID=True,length=50)
     author = UnicodeCol(length=50,default='')
     comment = UnicodeCol(default='')
+    annotations = UnicodeCol(default='')
     cards = RelatedJoin('AbstractCard',intermediateTable='abstract_map',createRelatedTable=False)
 
 class PhysicalCardSet(SQLObject):
     advise(instancesProvide=[IPhysicalCardSet])
 
-    tableversion = 2
+    tableversion = 3
     name = UnicodeCol(alternateID=True,length=50)
     author = UnicodeCol(length=50,default='')
     comment = UnicodeCol(default='')
+    annontations = UnicodeCol(default='')
     cards = RelatedJoin('PhysicalCard',intermediateTable='physical_map',createRelatedTable=False)
 
 class RarityPair(SQLObject):
@@ -113,6 +117,7 @@ class Discipline(SQLObject):
 
     tableversion = 1
     name = UnicodeCol(alternateID=True,length=30)
+    fullname = UnicodeCol(alternateID=True,length=30)
     pairs = MultipleJoin('DisciplinePair')
 
 class Clan(SQLObject):
@@ -128,6 +133,13 @@ class CardType(SQLObject):
     tableversion = 1
     name = UnicodeCol(alternateID=True,length=50)
     cards = RelatedJoin('AbstractCard',intermediateTable='abs_type_map',createRelatedTable=False)
+
+class Sect(SQLObject):
+    advise(instancesProvide=[ISect])
+
+    tableversion = 1
+    name = UnicodeCol(alternateID=True,length=50)
+    cards = RelatedJoin('AbstractCard',intermediateTable='abs_sect_map',createRelatedTable=False)
 
 class Ruling(SQLObject):
     advise(instancesProvide=[IRuling])
@@ -224,11 +236,23 @@ class MapAbstractCardToCardType(SQLObject):
     abstractCardIndex = DatabaseIndex(abstractCard,unique=False)
     cardTypeIndex = DatabaseIndex(cardType,unique=False)
 
+class MapAbstractCardToSect(SQLObject):
+    class sqlmeta:
+        table = 'abs_sect_map'
+
+    tableversion = 1
+
+    abstractCard = ForeignKey('AbstractCard',notNull=True)
+    sect = ForeignKey('Sect',notNull=True)
+
+    abstractCardIndex = DatabaseIndex(abstractCard,unique=False)
+    sectIndex = DatabaseIndex(sect,unique=False)
+
 # List of Tables to be created, dropped, etc.
 
 ObjectList = [ AbstractCard, PhysicalCard, AbstractCardSet, PhysicalCardSet,
                Expansion, Rarity, RarityPair, Discipline, DisciplinePair,
-               Clan, CardType, Ruling,
+               Clan, CardType, Sect, Ruling,
                # Mapping tables from here on out
                MapPhysicalCardToPhysicalCardSet,
                MapAbstractCardToAbstractCardSet,
@@ -236,7 +260,8 @@ ObjectList = [ AbstractCard, PhysicalCard, AbstractCardSet, PhysicalCardSet,
                MapAbstractCardToRuling,
                MapAbstractCardToClan,
                MapAbstractCardToDisciplinePair,
-               MapAbstractCardToCardType ]
+               MapAbstractCardToCardType,
+               MapAbstractCardToSect]
 
 # Adapters
 
@@ -463,6 +488,20 @@ class CardTypeAdapter(object):
     def __new__(cls,s):
         sName = cls.canonical(s)
         return cls.fetch(sName,CardType)
+
+class SectAdaptor(object):
+    __metaclass__ = StrAdaptMeta
+    advise(instancesProvide=[ISect],asAdapterForTypes=[basestring])
+
+    keys = { 'Camarilla' : [], 'Sabbat' : [], 'Independent' : [],
+             'Laibon' : [],
+             # For if we ever start handling merged vampires somehow
+             'Anarch' : [],
+           }
+
+    def __new__(cls,s):
+        sName = cls.canonical(s)
+        return cls.fetch(sName,Sect)
 
 class AbstractCardAdapter(object):
     advise(instancesProvide=[IAbstractCard],asAdapterForTypes=[basestring])

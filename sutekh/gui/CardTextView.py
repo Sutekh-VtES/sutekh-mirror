@@ -23,6 +23,7 @@ class CardTextBuffer(gtk.TextBuffer,object):
         tags.append(self.create_tag("level",style=pango.STYLE_ITALIC))
         tags.append(self.create_tag("card_type",style=pango.STYLE_ITALIC))
         tags.append(self.create_tag("clan",style=pango.STYLE_ITALIC))
+        tags.append(self.create_tag("sect",style=pango.STYLE_ITALIC))
         tags.append(self.create_tag("discipline",style=pango.STYLE_ITALIC))
         tags.append(self.create_tag("expansion",style=pango.STYLE_ITALIC))
         tags.append(self.create_tag("ruling"))
@@ -96,6 +97,10 @@ class CardTextView(gtk.TextView,object):
         if not len(oCard.clan) == 0:
             aClans = [oC.name for oC in oCard.clan]
             oBuf.labelledList("Clan",aClans,"clan")
+
+        if not len(oCard.sect) == 0:
+            aSects = [oC.name for oC in oCard.sect]
+            oBuf.labelledList("Sect",aSects,"sect")
 
         if not len(oCard.discipline) == 0:
             aDis = []
