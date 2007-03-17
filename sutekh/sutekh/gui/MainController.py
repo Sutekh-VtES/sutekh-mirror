@@ -15,10 +15,13 @@ from sutekh.gui.MainMenu import MainMenu
 from sutekh.gui.CardTextView import CardTextView
 from sutekh.gui.AbstractCardView import AbstractCardView
 from sutekh.gui.PluginManager import PluginManager
+from sutekh.SutekhObjectCache import SutekhObjectCache
 from sutekh.SutekhObjects import *
 
 class MainController(object):
     def __init__(self):
+        # Create object cache
+        self.__oSutekhObjectCache = SutekhObjectCache()
         # Create PluginManager
         self.__oPluginManager = PluginManager()
         self.__oPluginManager.loadPlugins()
