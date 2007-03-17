@@ -8,7 +8,7 @@ from sutekh.SutekhObjects import *
 
 class ExtraCardViewColumns(CardListPlugin):
     dTableVersions = {}
-    aModelsSupported = ["PhysicalCardSet","AbstractCardSet","PhysicalCard"]
+    aModelsSupported = ["PhysicalCardSet","AbstractCardSet","PhysicalCard","AbstractCard"]
 
     def __init__(self,*args,**kws):
         super(ExtraCardViewColumns,self).__init__(*args,**kws)
