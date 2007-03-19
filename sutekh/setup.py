@@ -26,8 +26,12 @@ class SutekhInfo(object):
     LICENSE = 'GPL'
 
     INSTALL_REQUIRES = [
-        'SQLObject>=0.7.1b1',
-        'PyProtocols',
+        'SQLObject',
+        'PyProtocols'
+    ]
+
+    # Install these manually
+    NON_EGG_REQUIREMENTS = [
         'pysqlite',
         'PyGTK',
         'PyXML'
