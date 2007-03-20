@@ -16,6 +16,7 @@ Gui (Functionality):
  * Finish ClusterCardList plugin.
  * Create CardSet Management Window (Abstract/Physical)
  * Compare CardSet Plugin (basic version done. Could be improved)
+ * Ability to specify the expansion a physical card comes from.
 
 Gui (Presentation):
  * Give gui resource handling capablities to save window pos, etc - NM
