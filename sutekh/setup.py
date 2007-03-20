@@ -4,7 +4,7 @@
 from setuptools import setup, find_packages
 
 class SutekhInfo(object):
-    VERSION = (0,3,1)
+    VERSION = (0,3,2)
     VERSION_STR = '.'.join([str(x) for x in VERSION])
 
     NAME = 'Sutekh'
