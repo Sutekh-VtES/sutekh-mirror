@@ -17,6 +17,7 @@ Gui (Functionality):
  * Create CardSet Management Window (Abstract/Physical)
  * Compare CardSet Plugin (basic version done. Could be improved)
  * Ability to specify the expansion a physical card comes from.
+ * Plugin for importing an abstract card set into your list of physical cards.
 
 Gui (Presentation):
  * Give gui resource handling capablities to save window pos, etc - NM
