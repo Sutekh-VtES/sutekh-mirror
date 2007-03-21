@@ -179,7 +179,8 @@ class EditableCardListView(CardListView):
         self.append_column(oColumn4)
 
         self.set_expander_column(oColumn2)
-        self.set_grid_lines(gtk.TREE_VIEW_GRID_LINES_BOTH)
+        if hasattr(self,'set_grid_lines'):
+            self.set_grid_lines(gtk.TREE_VIEW_GRID_LINES_BOTH)
 
         # Button Clicks
         oCell3.connect('clicked',self.incCard)

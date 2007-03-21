@@ -4,7 +4,7 @@
 from setuptools import setup, find_packages
 
 class SutekhInfo(object):
-    VERSION = (0,3,1)
+    VERSION = (0,3,2)
     VERSION_STR = '.'.join([str(x) for x in VERSION])
 
     NAME = 'Sutekh'
@@ -26,8 +26,12 @@ class SutekhInfo(object):
     LICENSE = 'GPL'
 
     INSTALL_REQUIRES = [
-        'SQLObject>=0.7.1b1',
-        'PyProtocols',
+        'SQLObject',
+        'PyProtocols'
+    ]
+
+    # Install these manually
+    NON_EGG_REQUIREMENTS = [
         'pysqlite',
         'PyGTK',
         'PyXML'
