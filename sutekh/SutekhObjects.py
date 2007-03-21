@@ -102,7 +102,7 @@ class Expansion(SQLObject):
 
     tableversion = 1
     name = UnicodeCol(alternateID=True,length=20)
-    shortname = UnicodeCol(length=10)
+    shortname = UnicodeCol(length=10,default=None)
     pairs = MultipleJoin('RarityPair')
 
 class Rarity(SQLObject):
@@ -125,7 +125,7 @@ class Discipline(SQLObject):
 
     tableversion = 1
     name = UnicodeCol(alternateID=True,length=30)
-    fullname = UnicodeCol(alternateID=True,length=30)
+    fullname = UnicodeCol(length=30,default=None)
     pairs = MultipleJoin('DisciplinePair')
 
 class Virtue(SQLObject):
@@ -133,21 +133,21 @@ class Virtue(SQLObject):
 
     tableversion = 1
     name = UnicodeCol(alternateID=True,length=30)
-    fullname = UnicodeCol(alternateID=True,length=30)
+    fullname = UnicodeCol(length=30,default=None)
 
 class Creed(SQLObject):
     advise(instancesProvide=[ICreed])
 
     tableversion = 1
     name = UnicodeCol(alternateID=True,length=40)
-    shortname = UnicodeCol(length=10)
+    shortname = UnicodeCol(length=10,default=None)
 
 class Clan(SQLObject):
     advise(instancesProvide=[IClan])
 
     tableversion = 1
     name = UnicodeCol(alternateID=True,length=40)
-    shortname = UnicodeCol(length=10)
+    shortname = UnicodeCol(length=10,default=None)
     cards = RelatedJoin('AbstractCard',intermediateTable='abs_clan_map',createRelatedTable=False)
 
 class CardType(SQLObject):
@@ -318,7 +318,7 @@ class MapAbstractCardToVirtue(SQLObject):
 
 ObjectList = [ AbstractCard, PhysicalCard, AbstractCardSet, PhysicalCardSet,
                Expansion, Rarity, RarityPair, Discipline, DisciplinePair,
-               Clan, CardType, Sect, Title, Ruling,
+               Clan, CardType, Sect, Title, Ruling, Virtue, Creed,
                # Mapping tables from here on out
                MapPhysicalCardToPhysicalCardSet,
                MapAbstractCardToAbstractCardSet,
@@ -328,7 +328,10 @@ ObjectList = [ AbstractCard, PhysicalCard, AbstractCardSet, PhysicalCardSet,
                MapAbstractCardToDisciplinePair,
                MapAbstractCardToCardType,
                MapAbstractCardToSect,
-               MapAbstractCardToTitle ]
+               MapAbstractCardToTitle,
+               MapAbstractCardToVirtue,
+               MapAbstractCardToCreed
+               ]
 
 # Adapters
 
@@ -403,7 +406,7 @@ class RarityAdapter(object):
              'Rare' : ['R','R1','R2','R3'],
              'Vampire' : ['V','V1','V2','V3'],
              'Tenth': ['A','B'],
-             'Precon' : ['PB','PA','PTo3','PTr','PG','PB2','PTo4','PAl2'],
+             'Precon' : ['PB','PA','PTo3','PTr','PG','PB2','PTo4','PAl2','PO3'],
              'Not Applicable' : ['NA'],
            }
 
@@ -574,12 +577,12 @@ class TitleAdapter(object):
     __metaclass__ = StrAdaptMeta
     advise(instancesProvide=[ITitle],asAdapterForTypes=[basestring])
 
-    keys = { 
+    keys = {
              # Camarilla Titles
-             'Primogen' : [], 'Prince' :  [], 'Justicar' : [], 
+             'Primogen' : [], 'Prince' :  [], 'Justicar' : [],
              'Inner Circle' : [],
              # Sabbat Titles
-             'Bishop' : [], 'Archbishop' : [], 'Priscus':[] , 
+             'Bishop' : [], 'Archbishop' : [], 'Priscus':[],
              'Cardinal' : [], 'Regent' : [],
              # Independant Titles
              'Independent with 1 vote' : [], 'Independent with 2 votes' : [], 'Independent with 3 votes' : [],
@@ -607,19 +610,22 @@ class VirtueAdapter(object):
 
     def __new__(cls,s):
         sName = cls.canonical(s)
-        return cls.fetch(sName,Discipline)
-
+        return cls.fetch(sName,Virtue)
 
 class CreedAdapter(object):
     __metaclass__ = StrAdaptMeta
-    advise(instancesProvide=[IClan],asAdapterForTypes=[basestring])
+    advise(instancesProvide=[ICreed],asAdapterForTypes=[basestring])
 
 
     keys = { # Imbued
-            'Avenger', 'Defender', 'Innocent', 'Judge',
-            'Martyr', 'Redeemer', 'Visionary'
+            'Avenger' : [], 'Defender' : [], 'Innocent' : [],
+            'Judge' : [], 'Martyr' : [], 'Redeemer' : [],
+            'Visionary' : []
             }
 
+    def __new__(cls,s):
+        sName = cls.canonical(s)
+        return cls.fetch(sName,Creed)
 
 class AbstractCardAdapter(object):
     advise(instancesProvide=[IAbstractCard],asAdapterForTypes=[basestring])
