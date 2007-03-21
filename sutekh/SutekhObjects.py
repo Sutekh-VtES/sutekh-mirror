@@ -100,7 +100,7 @@ class RarityPair(SQLObject):
 class Expansion(SQLObject):
     advise(instancesProvide=[IExpansion])
 
-    tableversion = 1
+    tableversion = 2
     name = UnicodeCol(alternateID=True,length=20)
     shortname = UnicodeCol(length=10,default=None)
     pairs = MultipleJoin('RarityPair')
@@ -123,7 +123,7 @@ class DisciplinePair(SQLObject):
 class Discipline(SQLObject):
     advise(instancesProvide=[IDiscipline])
 
-    tableversion = 1
+    tableversion = 2
     name = UnicodeCol(alternateID=True,length=30)
     fullname = UnicodeCol(length=30,default=None)
     pairs = MultipleJoin('DisciplinePair')
@@ -145,7 +145,7 @@ class Creed(SQLObject):
 class Clan(SQLObject):
     advise(instancesProvide=[IClan])
 
-    tableversion = 1
+    tableversion = 2
     name = UnicodeCol(alternateID=True,length=40)
     shortname = UnicodeCol(length=10,default=None)
     cards = RelatedJoin('AbstractCard',intermediateTable='abs_clan_map',createRelatedTable=False)
@@ -354,7 +354,7 @@ class StrAdaptMeta(type):
     def canonical(self,sName):
         return self.__dLook[sName]
 
-    def fetch(self,sName,oCls):
+    def fetch(self,sName,oCls,**keywords):
         o = self.__dCache.get(sName,None)
         if not o is None:
             return o
@@ -362,7 +362,14 @@ class StrAdaptMeta(type):
         try:
             o = oCls.byName(sName.encode('utf8'))
         except SQLObjectNotFound:
-            o = oCls(name=sName)
+            if 'fullname' in keywords.keys():
+                sFullName=keywords['fullname']
+                o = oCls(name=sName,fullname=sFullName)
+            elif 'shortname' in keywords.keys():
+                sShortName=keywords['shortname']
+                o = oCls(name=sName,shortname=sShortName)
+            else:
+                o = oCls(name=sName)
 
         self.__dCache[sName] = o
         return o
@@ -393,9 +400,14 @@ class ExpansionAdapter(object):
     def __new__(cls,s):
         if s.startswith('Promo-'):
             sName = s
+            sShortName='Promo'
         else:
             sName = cls.canonical(s)
-        return cls.fetch(sName,Expansion)
+            if cls.keys[sName]!=[]:
+                sShortName=cls.keys[sName][0]
+            else:
+                sShortName=sName
+        return cls.fetch(sName,Expansion,shortname=sShortName)
 
 class RarityAdapter(object):
     __metaclass__ = StrAdaptMeta
@@ -476,18 +488,18 @@ class DisciplineAdapter(object):
              'vic' : ['VIC','Vicissitude'],
              'vis' : ['VIS','Visceratika'],
              # Virtues (last key is full name)
-             'v_def' : ['Defense'],
-             'v_inn' : ['Innocence'],
-             'v_jud' : ['Judgment','Judgement'],
-             'v_mar' : ['Martyrdom'],
-             'v_red' : ['Redemption'],
-             'v_ven' : ['Vengeance'],
-             'v_vis' : ['Vision'],
+             #'v_def' : ['Defense'],
+             #'v_inn' : ['Innocence'],
+             #'v_jud' : ['Judgment','Judgement'],
+             #'v_mar' : ['Martyrdom'],
+             #'v_red' : ['Redemption'],
+             #'v_ven' : ['Vengeance'],
+             #'v_vis' : ['Vision'],
            }
 
     def __new__(cls,s):
         sName = cls.canonical(s)
-        return cls.fetch(sName,Discipline)
+        return cls.fetch(sName,Discipline,fullname=cls.keys[sName][1])
 
 class DisciplinePairAdapter(object):
     advise(instancesProvide=[IDisciplinePair],asAdapterForTypes=[tuple])
@@ -542,7 +554,8 @@ class ClanAdapter(object):
 
     def __new__(cls,s):
         sName = cls.canonical(s)
-        return cls.fetch(sName,Clan)
+        sShortName=sName
+        return cls.fetch(sName,Clan,shortname=sShortName)
 
 class CardTypeAdapter(object):
     __metaclass__ = StrAdaptMeta
@@ -610,7 +623,7 @@ class VirtueAdapter(object):
 
     def __new__(cls,s):
         sName = cls.canonical(s)
-        return cls.fetch(sName,Virtue)
+        return cls.fetch(sName,Virtue,fullname=cls.keys[sName][0])
 
 class CreedAdapter(object):
     __metaclass__ = StrAdaptMeta
@@ -625,7 +638,8 @@ class CreedAdapter(object):
 
     def __new__(cls,s):
         sName = cls.canonical(s)
-        return cls.fetch(sName,Creed)
+        sShortName=sName
+        return cls.fetch(sName,Creed,shortname=sShortName)
 
 class AbstractCardAdapter(object):
     advise(instancesProvide=[IAbstractCard],asAdapterForTypes=[basestring])
