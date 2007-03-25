@@ -3,11 +3,13 @@ Backend:
  * Make filtering less slow (mainly for sqlite) 
       (seems OK with the indexes. Do we need more?).
  * Additional Filter (Votes, Sect, etc)
- * Handle 'Creed' and 'Life' attributes of Imbued in WhiteWolfParser 
+ * Handle 'Creed' and 'Life' attributes of Imbued in WhiteWolfParser (done in branch)
+ * DatabasUpgrade functionality needs to be reworked to have unified way of passing 
+   errors & warnings to the user interface (either Cli or Gui)
 
 Database
- * Add title & sect columns to Abstract Card
- * Add Annotations field to the CardSets
+ * Add title & sect columns to Abstract Card (done in branch)
+ * Add Annotations field to the CardSets (done in branchi, gui aspects need work)
 
 Gui (Functionality):
  * Improve Filter selection dialog.  (And/Or)
