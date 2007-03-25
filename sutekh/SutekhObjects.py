@@ -605,7 +605,9 @@ class TitleAdapter(object):
              'Bishop' : [], 'Archbishop' : [], 'Priscus':[],
              'Cardinal' : [], 'Regent' : [],
              # Independant Titles
-             'Independent with 1 vote' : [], 'Independent with 2 votes' : [], 'Independent with 3 votes' : [],
+             'Independent with 1 vote' : [],
+             'Independent with 2 votes' : [],
+             'Independent with 3 votes' : [],
              # Laibon Titles
              'Magaji' : [],
            }
