@@ -315,17 +315,53 @@ def parseText(oCard):
     sSect=None
     if oType[0].name != 'Vampire':
         return (None,None)
-    if oCard.text.startswith('Advanced'):
-        print 'Advanced vampire, tweak tests'
+    aLines=oCard.text.splitlines()
+    if aLines[0].startswith('Advanced'):
         offset=10
     else:
         offset=0
-    if oCard.text.startswith('Camarilla',offset):
+    aClans=[x.name for x in oCard.clan]
+    if aLines[0].startswith('Camarilla',offset):
         sSect='Camarilla'
-    elif oCard.text.startswith('Sabbat',offset):
+        offset+=10
+        if aLines[0].startswith('primogen',offset):
+            sTitle='Primogen'
+        elif aLines[0].startswith('Prince of',offset):
+            sTitle='Prince'
+        elif aLines[0].startswith(aClans[0]+' Justicar',offset):
+            sTitle='Justicar'
+        elif aLines[0].startswith('Inner Circle',offset):
+            sTitle='Inner Circle'
+    elif aLines[0].startswith('Sabbat',offset):
         sSect='Sabbat'
-    elif oCard.text.startswith('Independent',offset):
+        offset+=7
+        if aLines[0].startswith('bishop',offset):
+            sTitle='Bishop'
+        elif aLines[0].startswith('Archbishop of',offset):
+            sTitle='Archbishop'
+        elif aLines[0].startswith('priscus',offset):
+            sTitle='Priscus'
+        elif aLines[0].startswith('cardinal',offset):
+            sTitle='Cardinal'
+        elif aLines[0].startswith('regent',offset):
+            sTitle='Regent'
+    elif aLines[0].startswith('Independent',offset):
         sSect='Independent'
-    elif oCard.text.startswith('Laibon',offset):
+        offset=len(oCard.name)+1
+        # Independent titles are on the next line. Of the form
+        # Name has X vote(s)
+        try:
+            if aLines[1].startswith('has 1 vote.',offset):
+                sTitle='Independent with 1 vote'
+            elif aLines[1].startswith('has 2 votes.',offset):
+                sTitle='Independent with 2 votes'
+            elif aLines[1].startswith('has 3 votes',offset):
+                sTitle='Independent with 3 votes'
+        except IndexError:
+            pass
+    elif aLines[0].startswith('Laibon',offset):
         sSect='Laibon'
+        offset+=7
+        if aLines[0].startswith('magaji',offset):
+            sTitle='Magaji'
     return (sSect,sTitle)
