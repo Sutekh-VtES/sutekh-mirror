@@ -316,52 +316,43 @@ def parseText(oCard):
     if oType[0].name != 'Vampire':
         return (None,None)
     aLines=oCard.text.splitlines()
-    if aLines[0].startswith('Advanced'):
-        offset=10
-    else:
-        offset=0
-    aClans=[x.name for x in oCard.clan]
-    if aLines[0].startswith('Camarilla',offset):
+    if aLines[0].find('Camarilla')!=-1:
         sSect='Camarilla'
-        offset+=10
-        if aLines[0].startswith('primogen',offset):
+        if aLines[0].find('primogen')!=-1:
             sTitle='Primogen'
-        elif aLines[0].startswith('Prince of',offset):
+        elif aLines[0].find('Prince of')!=-1:
             sTitle='Prince'
-        elif aLines[0].startswith(aClans[0]+' Justicar',offset):
+        elif aLines[0].find('Justicar')!=-1:
             sTitle='Justicar'
-        elif aLines[0].startswith('Inner Circle',offset):
+        elif aLines[0].find('Inner Circle')!=-1:
             sTitle='Inner Circle'
-    elif aLines[0].startswith('Sabbat',offset):
+    elif aLines[0].find('Sabbat')!=-1:
         sSect='Sabbat'
-        offset+=7
-        if aLines[0].startswith('bishop',offset):
+        if aLines[0].find('bishop')!=-1:
             sTitle='Bishop'
-        elif aLines[0].startswith('Archbishop of',offset):
+        elif aLines[0].find('Archbishop of')!=-1:
             sTitle='Archbishop'
-        elif aLines[0].startswith('priscus',offset):
+        elif aLines[0].find('priscus')!=-1:
             sTitle='Priscus'
-        elif aLines[0].startswith('cardinal',offset):
+        elif aLines[0].find('cardinal')!=-1:
             sTitle='Cardinal'
-        elif aLines[0].startswith('regent',offset):
+        elif aLines[0].find('regent')!=-1:
             sTitle='Regent'
-    elif aLines[0].startswith('Independent',offset):
+    elif aLines[0].find('Independent')!=-1:
         sSect='Independent'
-        offset=len(oCard.name)+1
         # Independent titles are on the next line. Of the form
         # Name has X vote(s)
         try:
-            if aLines[1].startswith('has 1 vote.',offset):
+            if aLines[1].find('has 1 vote')!=-1:
                 sTitle='Independent with 1 vote'
-            elif aLines[1].startswith('has 2 votes.',offset):
+            elif aLines[1].find('has 2 votes')!=-1:
                 sTitle='Independent with 2 votes'
-            elif aLines[1].startswith('has 3 votes',offset):
+            elif aLines[1].find('has 3 votes')!=-1:
                 sTitle='Independent with 3 votes'
         except IndexError:
             pass
-    elif aLines[0].startswith('Laibon',offset):
+    elif aLines[0].find('Laibon')!=-1:
         sSect='Laibon'
-        offset+=7
-        if aLines[0].startswith('magaji',offset):
+        if aLines[0].find('magaji')!=-1:
             sTitle='Magaji'
     return (sSect,sTitle)
