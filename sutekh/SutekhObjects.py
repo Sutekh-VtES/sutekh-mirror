@@ -392,6 +392,7 @@ class ExpansionAdapter(object):
              'Nights of Reckoning' : ['NoR'],
              'Sabbat' : [],
              'Sabbat Wars' : ['SW'],
+             'Sword of Caine' : [],
              'Tenth Anniversary' : ['Tenth'],
              'Third Edition' : ['Third'],
              'VTES' : [],
@@ -530,31 +531,37 @@ class ClanAdapter(object):
     advise(instancesProvide=[IClan],asAdapterForTypes=[basestring])
 
     keys = { # Camarilla
-             'Brujah' : [], 'Malkavian' : [], 'Nosferatu' : [],
-             'Toreador' : [],'Tremere' : [], 'Ventrue' : [],
-             'Caitiff' : [],
+             'Brujah' : ['Brujah'], 'Malkavian' : ['Malk'],
+             'Nosferatu' : ['Nos'], 'Toreador' : ['Tor'],
+             'Tremere' : ['Tre'], 'Ventrue' : ['Ven'],
+             'Caitiff' : ['Caitiff'],
              # Independents
-             'Abomination' : [], 'Gangrel' : [], 'Assamite' : [],
-             'Follower of Set' : [], 'Giovanni' : [], 'Ravnos' : [],
-             'Baali' : [], 'Daughter of Cacophony' : [], 'Gargoyle' : [],
-             'Nagaraja' : [], 'Salubri' :[], 'Samedi' : [],
-             'True Brujah' : [],
+             'Abomination' : ['Abom'], 'Gangrel' : ['Gangrel'],
+             'Assamite' : ['Assa'], 'Follower of Set' : ['Set'], 
+             'Giovanni' : ['Giov'], 'Ravnos' : ['Ravnos'],
+             'Baali' : ['Baali'], 'Daughter of Cacophony' : ['DoC'],
+             'Gargoyle' : ['Garg'], 'Nagaraja' : ['Naga'],
+             'Salubri' :['Salu'], 'Samedi' : ['Sam'],
+             'True Brujah' : ['TBruj'],
              # Sabbat
-             'Lasombra' : [], 'Tzimisce' : [], 'Brujah antitribu' : [],
-             'Gangrel antitribu' : [], 'Malkavian antitribu' : [], 'Nosferatu antitribu' : [],
-             'Toreador antitribu' : [], 'Tremere antitribu' : [], 'Ventrue antitribu' : [],
-             'Pander' : [], 'Ahrimanes' : [], 'Blood Brother' : [],
-             'Harbinger of Skulls' : [], 'Kiasyd' : [], 'Salubri antitribu' : [],
+             'Lasombra' : ['Lasom'], 'Tzimisce' : ['Tz'],
+             'Brujah antitribu' : ['!Brujah'], 'Gangrel antitribu' : ['!Gangrel'], 
+             'Malkavian antitribu' : ['!Malk'], 'Nosferatu antitribu' : ['!Nos'],
+             'Toreador antitribu' : ['!Tor'], 'Tremere antitribu' : ['!Tre'],
+             'Ventrue antitribu' : ['!Ven'], 'Pander' : ['Pan'],
+             'Ahrimanes' : ['Ahrimanes'], 'Blood Brother' : ['BB'],
+             'Harbinger of Skulls' : ['HoS'],
+             'Kiasyd' : ['Kias'], 'Salubri antitribu' : ['!Salu'],
              # Laibon
-             'Akunanse' : [], 'Guruhi' : [], 'Ishtarri' : [],
-             'Osebo' : [],
+             'Akunanse' : ['Aku'], 'Guruhi' : ['Guru'], 'Ishtarri' : ['Ish'],
+             'Osebo' : ['Ose'],
              # Other
-             'Ahrimane' : [],
+             'Ahrimane' : ['Ahrimane'],
            }
 
     def __new__(cls,s):
         sName = cls.canonical(s)
-        sShortName=sName
+        sShortName=cls.keys[sName][0]
         return cls.fetch(sName,Clan,shortname=sShortName)
 
 class CardTypeAdapter(object):
