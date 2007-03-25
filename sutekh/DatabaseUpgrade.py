@@ -52,7 +52,7 @@ class PhysicalCardSet_v2(SQLObject):
     comment = UnicodeCol(default='')
     cards = RelatedJoin('PhysicalCard',intermediateTable='physical_map',createRelatedTable=False)
 
-class AbstractCardSet_v1(SQLObject):
+class AbstractCard_v1(SQLObject):
     class sqlmeta:
         table=AbstractCardSet.sqlmeta.table
 
@@ -150,9 +150,9 @@ def CopyOldDiscipline(orig_conn,trans):
     oVer=DatabaseVersion()
     if oVer.checkVersions([Discipline],[Discipline.tableversion]):
         for oObj in Discipline.select(connection=orig_conn):
-            oCopy=Discipline(id=oObj.id,name=oObj.name,fullname,oObj.fullname,
+            oCopy=Discipline(id=oObj.id,name=oObj.name,fullname=oObj.fullname,
                     connection=trans)
-    elif oVer.checkVersions([Discipline],[1]) or
+    elif oVer.checkVersions([Discipline],[1]) or \
          oVer.checkVersions([Discipline],[-1]):
         for oObj in Discipline_v1.select(connection=orig_conn):
             if oObj.name[:2]=='v_':
@@ -169,7 +169,7 @@ def CopyOldClan(orig_conn,trans):
     if oVer.checkVersions([Clan],[Clan.tableversion]):
         for oObj in Clan.select(connection=orig_conn):
             oCopy=Clan(id=oObj.id,name=oObj.name,connection=trans)
-    elif oVer.checkVersions([Clan],[Clan.tableversion]) or
+    elif oVer.checkVersions([Clan],[Clan.tableversion]) or \
          oVer.checkVersions([Clan],[-1]):
         for oObj in Clan_v1.select(connection=orig_conn):
             sShortName=oObj.name
@@ -224,7 +224,7 @@ def CopyOldAbstractCard(orig_conn,trans):
             for oData in oCard.virtue:
                 oCardCopy.addVirtue(oData)
             oCardCopy.syncUpdate()
-    elif oVer.checkVersions([AbstractCard],[1]) or
+    elif oVer.checkVersions([AbstractCard],[1]) or \
          oVer.checkVersions([AbstractCard],[-1]):
         for oCard in AbstractCard_v1.select(connection=orig_conn):
             oCardCopy.group=oCard.group
@@ -235,7 +235,7 @@ def CopyOldAbstractCard(orig_conn,trans):
             for oData in oCard.rarity:
                 oCardCopy.addRarityPair(oData)
             for oData in oCard.discipline:
-                if oData.name[:2]='v_':
+                if oData.name[:2]=='v_':
                     oCardCopy.addVirtue(IVirtue(oData.name[2:]))
                 else:
                     oCardCopy.addDisciplinePair(oData)
@@ -359,7 +359,7 @@ def copyDB(orig_conn,dest_conn):
     for oObj in Rarity.select(connection=orig_conn):
         oCopy=Rarity(id=oObj.id,name=oObj.name,connection=trans)
     for oObj in Expansion.select(connection=orig_conn):
-        oCopy=Expansion(id=oObj.id,name=oObj.name,shortname=oObj.shortname,,connection=trans)
+        oCopy=Expansion(id=oObj.id,name=oObj.name,shortname=oObj.shortname,connection=trans)
     for oObj in Discipline.select(connection=orig_conn):
         oCopy=Discipline(id=oObj.id,name=oObj.name,fullname=oObj.fullname,connection=trans)
     for oObj in Clan.select(connection=orig_conn):
