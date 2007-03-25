@@ -612,7 +612,7 @@ class TitleAdapter(object):
 
     def __new__(cls,s):
         sName = cls.canonical(s)
-        return cls.fetch(sName,CardType)
+        return cls.fetch(sName,Title)
 
 class VirtueAdapter(object):
     __metaclass__ = StrAdaptMeta
