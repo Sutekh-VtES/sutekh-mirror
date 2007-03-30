@@ -8,9 +8,8 @@ from sutekh.SutekhUtility import writeAllPhysicalCardSets, writeAllAbstractCardS
                                  writePhysicalCards, writePhysicalCardSet, writeAbstractCardSet, \
                                  refreshTables, readWhiteWolfList, readRulings, \
                                  readPhysicalCardSet, readAbstractCardSet, \
-                                 readPhysicalCards, doDumpToZip, doRestoreFromZip, \
-                                 attemptDatabaseUpgrade
-#from sutekh.DatabaseUpgrade import *
+                                 readPhysicalCards, doDumpToZip, doRestoreFromZip
+from sutekh.DatabaseUpgrade import attemptDatabaseUpgrade
 from sqlobject import sqlhub, connectionForURI
 import sys, optparse, os, tempfile
 
