@@ -113,9 +113,6 @@ def writeAllAbstractCardSetsToZip(oZipfile):
         oZipfile.writestr(sZipName,oString)
     return aList
 
-
-
-
 def writeAllPhysicalCardSets(dir=''):
     oPhysicalCardSets = PhysicalCardSet.select()
     aList=[];

@@ -58,9 +58,9 @@ class PhysicalCardMenu(gtk.MenuBar,object):
         iMenu.set_submenu(wMenu)
         # plugins
         for oPlugin in self.__oC.getPlugins():
-            oMI=oPlugin.getMenuItem()
+            oMI = oPlugin.getMenuItem()
             if oMI is not None:
-                sMenu=oPlugin.getDesiredMenu()
+                sMenu = oPlugin.getDesiredMenu()
                 # Add to the requested menu if supplied
                 if sMenu in self.__dMenus.keys():
                     self.__dMenus[sMenu].add(oMI)
