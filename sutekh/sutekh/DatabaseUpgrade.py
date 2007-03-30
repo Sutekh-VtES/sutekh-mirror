@@ -284,8 +284,11 @@ def copyToNewAbstractCardDB(orig_conn,new_conn):
     # Copy the physical card list
     for oCard in PhysicalCard.select(connection=orig_conn):
         sName=oCard.abstractCard.name
-        oNewAbsCard=AbstractCard.byName(sName,connection=target)
-        oCardCopy=PhysicalCard(id=oCard.id,abstractCard=oNewAbsCard,connection=target)
+        try:
+            oNewAbsCard=AbstractCard.byName(sName,connection=target)
+            oCardCopy=PhysicalCard(id=oCard.id,abstractCard=oNewAbsCard,connection=target)
+        except SQLObjectNotFound:
+            print "Unable to find match for",sName," with id ",oCard.id
     # Copy Physical card sets
     # IDs are unchangd, since we preserve Physical Card set ids
     for oSet in PhysicalCardSet.select(connection=orig_conn):
@@ -293,7 +296,12 @@ def copyToNewAbstractCardDB(orig_conn,new_conn):
                 author=oSet.author,comment=oSet.comment,\
                 connection=target)
         for oCard in oSet.cards:
-            oCopy.addPhysicalCard(oCard.id)
+            oAbstractCard=oCard.abstractCard
+            try:
+                oNewAbsCard=AbstractCard.byName(oAbstractCard.name,connection=target)
+                oCopy.addPhysicalCard(oCard.id)
+            except SQLObjectNotFound:
+                print "Unable to add Physical card",oCard.id," name ",oAbstractCard.name,"to set",oSet.name
         oCopy.syncUpdate() # probably unnessecary
     # Copy AbstractCardSets
     # AbstractCArd is not preserved, so adjust for this
@@ -303,8 +311,11 @@ def copyToNewAbstractCardDB(orig_conn,new_conn):
                 connection=target)
         for oCard in oSet.cards:
             sName=oCard.name
-            oNewAbsCard=AbstractCard.byName(sName,connection=target)
-            oCopy.addAbstractCard(oNewAbsCard.id)
+            try:
+                oNewAbsCard=AbstractCard.byName(sName,connection=target)
+                oCopy.addAbstractCard(oNewAbsCard.id)
+            except SQLObjectNotFound:
+                print "Unable to find match for",sName
         oCopy.syncUpdate()
     target.commit()
     return True
