@@ -290,6 +290,7 @@ class ExpansionAdapter(object):
              'Nights of Reckoning' : ['NoR'],
              'Sabbat' : [],
              'Sabbat Wars' : ['SW'],
+             'Sword of Caine' : ['SoC'],
              'Tenth Anniversary' : ['Tenth'],
              'Third Edition' : ['Third'],
              'VTES' : [],
