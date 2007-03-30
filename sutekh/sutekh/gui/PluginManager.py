@@ -77,7 +77,7 @@ class CardListPlugin(object):
     def getDesiredMenu(self):
         """
         Return the name of the menu this plugin should be added to, or None
-        if no menu iterm is needed.
+        if no menu item is needed.
         """
         return None
 
