@@ -3,19 +3,15 @@
 # Minor modifications copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-from sutekh.SutekhObjects import *
-from sutekh.SutekhUtility import *
-from sutekh.DatabaseUpgrade import *
-from sutekh.PhysicalCardParser import PhysicalCardParser
-from sutekh.PhysicalCardWriter import PhysicalCardWriter
-from sutekh.PhysicalCardSetParser import PhysicalCardSetParser
-from sutekh.PhysicalCardSetWriter import PhysicalCardSetWriter
-from sutekh.AbstractCardSetParser import AbstractCardSetParser
-from sutekh.AbstractCardSetWriter import AbstractCardSetWriter
-from sutekh.DatabaseVersion import DatabaseVersion
-from sutekh.IdentifyXMLFile import IdentifyXMLFile
-from sqlobject import *
-import zipfile 
+from sutekh.SutekhObjects import Ruling, ObjectList, PhysicalCard 
+from sutekh.SutekhUtility import writeAllPhysicalCardSets, writeAllAbstractCardSets, \
+                                 writePhysicalCards, writePhysicalCardSet, writeAbstractCardSet, \
+                                 refreshTables, readWhiteWolfList, readRulings, \
+                                 readPhysicalCardSet, readAbstractCardSet, \
+                                 readPhysicalCards, doDumpToZip, doRestoreFromZip, \
+                                 attemptDatabaseUpgrade
+#from sutekh.DatabaseUpgrade import *
+from sqlobject import sqlhub, connectionForURI
 import sys, optparse, os, tempfile
 
 def parseOptions(aArgs):
@@ -185,14 +181,14 @@ def main(aArgs):
             readPhysicalCardSet(pcs)
             os.remove(pcs)
         for acs in aAbstractCardSetList:
-            readAbstrctCardSet(acs)
+            readAbstractCardSet(acs)
             os.remove(acs)
         os.rmdir(sTempdir)
 
     if oOpts.upgrade_db and oOpts.refresh_tables:
         print "Can't use --upgrade-db and --refresh-tables simulatenously"
         return 1
- 
+
     if oOpts.upgrade_db:
         attemptDatabaseUpgrade()
 

@@ -5,12 +5,22 @@
 # Misc Useful functions needed in several places. Mainly to do with database
 # management. Seperated out from SutekhCli and other places, NM, 2006
 
-import codecs
-from sqlobject import *
-from sutekh.SutekhObjects import *
+from sutekh.SutekhObjects import VersionTable, AbstractCardSet, PhysicalCardSet
 from sutekh.DatabaseVersion import DatabaseVersion
 from sutekh.WhiteWolfParser import WhiteWolfParser
 from sutekh.RulingParser import RulingParser
+from sutekh.PhysicalCardParser import PhysicalCardParser
+from sutekh.PhysicalCardSetParser import PhysicalCardSetParser
+from sutekh.AbstractCardSetParser import AbstractCardSetParser
+from sutekh.PhysicalCardWriter import PhysicalCardWriter
+from sutekh.PhysicalCardSetWriter import PhysicalCardSetWriter
+from sutekh.AbstractCardSetWriter import AbstractCardSetWriter
+from sutekh.IdentifyXMLFile import IdentifyXMLFile
+from sqlobject import sqlhub
+import codecs
+import tempfile
+import zipfile
+import os
 
 def refreshTables(aTables,oConn,**kw):
     aTables.reverse()
