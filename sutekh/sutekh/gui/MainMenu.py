@@ -204,8 +204,17 @@ class MainMenu(gtk.MenuBar,object):
     def doImportNewCardList(self,widget):
         oWWFilesDialog=WWFilesDialog(self.__oWin)
         oWWFilesDialog.run()
-        (sCLFileName,sRulingsFileName) = oWWFilesDialog.getNames()
+        (sCLFileName,sRulingsFileName,sBackupFile) = oWWFilesDialog.getNames()
         oWWFilesDialog.destroy()
+        if sBackupFile is not None:
+            try:
+                doDumpToZip(sBackupFile)
+            except Exception, e:
+                sMsg = "Failed to write backup.\n\n" + str(e)
+                Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
+                    gtk.BUTTONS_CLOSE,sMsg)
+                Complaint.run()
+                Complaint.destroy()
         if sCLFileName is not None:
             tempConn=connectionForURI("sqlite:///:memory:")
             #tempConn=connectionForURI("sqlite:///tmp/test.db")
