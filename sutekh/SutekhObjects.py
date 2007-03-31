@@ -39,7 +39,8 @@ class AbstractCard(SQLObject):
     tableversion = 2
     sqlmeta.lazyUpdate = True
 
-    name = UnicodeCol(alternateID=True,length=50)
+    cannonicalname = UnicodeCol(alternateID=True,length=50)
+    name = UnicodeCol(length=50)
     text = UnicodeCol()
     group = IntCol(default=None,dbName='grp')
     capacity = IntCol(default=None)
@@ -655,9 +656,9 @@ class AbstractCardAdapter(object):
 
     def __new__(cls,s):
         try:
-            oC = AbstractCard.byName(s.encode('utf8'))
+            oC = AbstractCard.byCannonicalName(s.encode('utf8').lower())
         except SQLObjectNotFound:
-            oC = AbstractCard(name=s,text="")
+            oC = AbstractCard(cannonicalname=s.lower(),name=s,text="")
         return oC
 
 class RulingAdapter(object):

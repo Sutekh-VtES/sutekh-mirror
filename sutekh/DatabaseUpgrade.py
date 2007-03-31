@@ -196,7 +196,7 @@ def CopyOldAbstractCard(orig_conn,trans):
     oVer=DatabaseVersion()
     if oVer.checkVersions([AbstractCard],[AbstractCard.tableversion]):
         for oCard in AbstractCard.select(connection=orig_conn):
-            oCardCopy=AbstractCard(id=oCard.id,name=oCard.name,text=oCard.text,connection=trans)
+            oCardCopy=AbstractCard(id=oCard.id,cannonicalname=oCard.cannonicalname,name=oCard.name,text=oCard.text,connection=trans)
             # If I don't do things this way, I get encoding issues
             # I don't really feel like trying to understand why
             oCardCopy.group=oCard.group
@@ -227,6 +227,7 @@ def CopyOldAbstractCard(orig_conn,trans):
     elif oVer.checkVersions([AbstractCard],[1]) or \
          oVer.checkVersions([AbstractCard],[-1]):
         for oCard in AbstractCard_v1.select(connection=orig_conn):
+            oCardCopy=AbstractCard(id=oCard.id,cannonicalname=oCard.name.lower(),name=oCard.name,text=oCard.text,connection=trans)
             oCardCopy.group=oCard.group
             oCardCopy.capacity=oCard.capacity
             oCardCopy.cost=oCard.cost
@@ -380,7 +381,7 @@ def copyDB(orig_conn,dest_conn):
     trans.commit()
     trans=dest_conn.transaction()
     for oCard in AbstractCard.select(connection=orig_conn):
-        oCardCopy=AbstractCard(id=oCard.id,name=oCard.name,text=oCard.text,connection=trans)
+        oCardCopy=AbstractCard(id=oCard.id,cannonicalname=oCard.cannonicalname,name=oCard.name,text=oCard.text,connection=trans)
         oCardCopy.group=oCard.group
         oCardCopy.capacity=oCard.capacity
         oCardCopy.cost=oCard.cost
@@ -441,9 +442,12 @@ def copyToNewAbstractCardDB(orig_conn,new_conn):
     target=new_conn.transaction()
     # Copy the physical card list
     for oCard in PhysicalCard.select(connection=orig_conn):
-        sName=oCard.abstractCard.name
-        oNewAbsCard=AbstractCard.byName(sName,connection=target)
-        oCardCopy=PhysicalCard(id=oCard.id,abstractCard=oNewAbsCard,connection=target)
+        sName=oCard.abstractCard.cannonicalname
+        try:
+            oNewAbsCard=AbstractCard.byCannonicalName(sName,connection=target)
+            oCardCopy=PhysicalCard(id=oCard.id,abstractCard=oNewAbsCard,connection=target)
+        except SQLObjectNotFound:
+            print "Unable to find match for",sName
     # Copy Physical card sets
     # IDs are unchangd, since we preserve Physical Card set ids
     for oSet in PhysicalCardSet.select(connection=orig_conn):
