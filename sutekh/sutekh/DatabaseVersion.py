@@ -5,8 +5,9 @@
 # GPL - see COPYING for details
 # version management helper class
 
-from sqlobject import *
-from sutekh.SutekhObjects import *
+from sqlobject import sqlhub
+from sutekh.SutekhObjects import PhysicalCardSet, AbstractCardSet, PhysicalCard,\
+                                 AbstractCard, VersionTable
 
 dTableMap={
         "PhysicalCardSet" : PhysicalCardSet.sqlmeta.table,
@@ -36,7 +37,7 @@ class DatabaseVersion(object):
                     VersionTable(TableName=sTableName,
                        Version=iTableVersion,connection=connection)
         elif aVer.count()>1:
-            print "Multiple version entries for ",sTablename," in the database"
+            print "Multiple version entries for ",sTableName," in the database"
             print "Giving up. I suggest dumping and reloading everything"
             return False
         return True

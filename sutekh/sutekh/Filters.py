@@ -3,8 +3,10 @@
 # Minor modifications copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-from sutekh.SutekhObjects import *
-from sqlobject import AND, OR, LIKE, func
+from sutekh.SutekhObjects import AbstractCard, PhysicalCard, ICardType, IClan,\
+                                 IAbstractCard, IPhysicalCardSet,\
+                                 IAbstractCardSet, IDiscipline, IExpansion
+from sqlobject import AND, OR, LIKE, func, IN
 from sqlobject.sqlbuilder import Table, Alias
 
 # Filter Base Class
