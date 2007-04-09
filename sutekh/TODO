@@ -3,9 +3,12 @@ Backend:
  * Make filtering less slow (mainly for sqlite) 
       (seems OK with the indexes. Do we need more?).
  * Additional Filter (Votes, Sect, etc)
+ * Add a Filter on Expansion+Rarity Pairs
  * Handle 'Creed' and 'Life' attributes of Imbued in WhiteWolfParser (done in branch)
- * DatabasUpgrade functionality needs to be reworked to have unified way of passing 
+ * DatabaseUpgrade functionality needs to be reworked to have unified way of passing 
    errors & warnings to the user interface (either Cli or Gui)
+ * Better error and exception handling
+ * Rework SutekhUtility to be less of a mess
 
 Database
  * Add title & sect columns to Abstract Card (done in branch)

@@ -1,3 +1,12 @@
+08 Apr 2007
+ * Continue removing import * statements
+
+31 Mar 2007
+ * Add an option to backup database to the "read new cardlist" dialog
+
+30 Mar 2007
+ * Add a plugin to support zipfile backups and restores of the database
+
 15 Mar 2007
  * Setuptools setup.py file created.
  * Made all imports absolute.
