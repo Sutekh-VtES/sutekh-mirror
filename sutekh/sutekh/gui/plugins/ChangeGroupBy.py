@@ -3,7 +3,8 @@
 # GPL - see COPYING for details
 
 import gtk
-from sutekh.Groupings import *
+from sutekh.Groupings import CardTypeGrouping, ClanGrouping, DisciplineGrouping,\
+                             ExpansionGrouping, RarityGrouping
 from sutekh.gui.PluginManager import CardListPlugin
 
 class GroupCardList(CardListPlugin):

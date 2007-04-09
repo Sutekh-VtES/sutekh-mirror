@@ -3,7 +3,7 @@
 # GPL - see COPYING for details
 
 import gtk
-from sutekh.SutekhObjects import *
+from sutekh.SutekhObjects import PhysicalCardSet, IAbstractCard
 from sutekh.CardListTabulator import CardListTabulator
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow

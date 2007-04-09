@@ -3,7 +3,7 @@
 # GPL - see COPYING for details
 
 import gtk
-from sutekh.SutekhObjects import *
+from sutekh.SutekhObjects import PhysicalCardSet, AbstractCardSet, PhysicalCard
 from sutekh.gui.CreateCardSetDialog import CreateCardSetDialog
 from sutekh.gui.PluginManager import CardListPlugin
 
@@ -46,7 +46,7 @@ class PhysicalCardSetFromAbstract(CardListPlugin):
                 return
             nP=PhysicalCardSet(name=sName)
             nP.author=sAuthor
-            nP.comment=sComment
+            nP.comment=sDesc
             nP.syncUpdate()
             # Copy the cards across
             for oCard in self.model.getCardIterator(None):

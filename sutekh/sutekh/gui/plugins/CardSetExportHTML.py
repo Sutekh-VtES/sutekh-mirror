@@ -3,8 +3,7 @@
 # GPL - see COPYING for details
 
 import gtk
-from sutekh.SutekhObjects import *
-from sutekh.Filters import *
+from sutekh.SutekhObjects import PhysicalCardSet, AbstractCardSet, IAbstractCard
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.WriteArdbXML import WriteArdbXML
 import os

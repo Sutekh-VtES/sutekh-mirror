@@ -5,8 +5,8 @@
 # GPL - see COPYING for details
 
 import gtk
-from sutekh.SutekhObjects import *
-from sutekh.Filters import *
+from sutekh.SutekhObjects import PhysicalCardSet, AbstractCardSet, PhysicalCard
+from sutekh.Filters import CardTypeFilter
 from sutekh.gui.PluginManager import CardListPlugin
 
 class AnalyzeCardList(CardListPlugin):
