@@ -4,7 +4,7 @@
 # GPL - see COPYING for details
 
 import gtk
-from sqlobject import sqlhub
+from sqlobject import sqlhub, connectionForURI
 from sutekh.SutekhObjects import PhysicalCardSet, AbstractCardSet, ObjectList
 from sutekh.gui.CreateCardSetDialog import CreateCardSetDialog
 from sutekh.gui.LoadCardSetDialog import LoadCardSetDialog
@@ -15,7 +15,8 @@ from sutekh.PhysicalCardSetParser import PhysicalCardSetParser
 from sutekh.AbstractCardSetParser import AbstractCardSetParser
 from sutekh.IdentifyXMLFile import IdentifyXMLFile
 from sutekh.DatabaseUpgrade import copyToNewAbstractCardDB, createFinalCopy
-from sutekh.SutekhUtility import *
+from sutekh.SutekhUtility import refreshTables, readWhiteWolfList, readRulings,\
+                                 doDumpToZip
 
 class MainMenu(gtk.MenuBar,object):
     def __init__(self,oController,oWindow):

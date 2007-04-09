@@ -4,9 +4,9 @@
 # GPL - see COPYING for details
 
 import gtk, gobject
-from sutekh.Filters import *
-from sutekh.Groupings import *
-from sutekh.SutekhObjects import *
+from sutekh.Filters import FilterAndBox, SpecificCardFilter
+from sutekh.Groupings import CardTypeGrouping
+from sutekh.SutekhObjects import AbstractCard, PhysicalCard, AbstractCardSet
 
 class CardListModel(gtk.TreeStore):
     """
@@ -207,8 +207,8 @@ class CardListModel(gtk.TreeStore):
         groups.
         """
         oFilter = self.combineFilterWithBase(self.getSelectFilter())
-        oExpr = AND(SpecificCardFilter(sCardName).getExpression(),
-                    oFilter.getExpression())
+        oFullFilter=FilterAndBox(SpecificCardFilter(sCardName),oFilter)
+        oExpr = oFullFilter.getExpression()
 
         if self.cardclass is not AbstractCardSet:
             oCardIter = self.cardclass.select(oExpr).distinct()

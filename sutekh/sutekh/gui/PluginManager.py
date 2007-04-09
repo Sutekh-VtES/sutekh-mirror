@@ -6,7 +6,6 @@ import plugins
 import os
 import glob
 import logging
-from sutekh.SutekhObjects import *
 from sutekh.DatabaseVersion import DatabaseVersion
 
 class PluginManager(object):

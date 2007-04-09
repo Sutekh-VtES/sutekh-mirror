@@ -4,9 +4,10 @@
 # GPL - see COPYING for details
 
 from sqlobject import SQLObjectNotFound
-from sutekh.gui.CardSetView import *
-from sutekh.gui.CardSetMenu import *
-from sutekh.SutekhObjects import *
+from sutekh.gui.CardSetView import CardSetView
+from sutekh.gui.CardSetMenu import CardSetMenu
+from sutekh.SutekhObjects import AbstractCardSet, PhysicalCardSet,\
+                                 AbstractCard, PhysicalCard
 
 class CardSetController(object):
     def __init__(self,oWindow,oMasterController,sName,sType):

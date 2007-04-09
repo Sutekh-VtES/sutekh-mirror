@@ -4,10 +4,13 @@
 # Copyright 2006 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
 
-import gtk, gobject
-from sutekh.Filters import *
-from sutekh.SutekhObjects import *
-from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
+import gtk
+from sutekh.Filters import MultiClanFilter, MultiDisciplineFilter,\
+                           MultiCardTypeFilter, MultiExpansionFilter,\
+                           MultiGroupFilter, CardNameFilter, CardTextFilter,\
+                           FilterAndBox
+from sutekh.SutekhObjects import Clan, Discipline, CardType, Expansion,\
+                                 DisciplineAdapter
 from sutekh.gui.ScrolledList import ScrolledList
 
 class FilterDialog(gtk.Dialog):

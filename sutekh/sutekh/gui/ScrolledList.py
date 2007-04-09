@@ -5,7 +5,6 @@
 # GPL - see COPYING for details
 
 import gtk, gobject
-from sutekh.SutekhObjects import *
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 
 class ScrolledList(gtk.Frame):

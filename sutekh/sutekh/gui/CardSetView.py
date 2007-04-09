@@ -4,7 +4,7 @@
 # GPL - see COPYING for details
 
 from sutekh.gui.CardListView import EditableCardListView
-from sutekh.gui.DeleteCardSetDialog import *
+from sutekh.gui.DeleteCardSetDialog import DeleteCardSetDialog
 from sutekh.Filters import PhysicalCardSetFilter, AbstractCardSetFilter
 from sutekh.SutekhObjects import PhysicalCard, PhysicalCardSet, AbstractCardSet
 
