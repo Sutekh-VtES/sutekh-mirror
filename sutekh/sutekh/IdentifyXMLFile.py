@@ -8,7 +8,8 @@ Attempts to identify a XML file as either PhysicalCard, PhysicalCardSet or
 AbstractCardSet
 """
 
-from sutekh.SutekhObjects import *
+from sutekh.SutekhObjects import AbstractCardSet, PhysicalCardSet, PhysicalCard
+from sqlobject import SQLObjectNotFound
 from xml.sax import parse,_exceptions,parseString
 from xml.sax.handler import ContentHandler
 

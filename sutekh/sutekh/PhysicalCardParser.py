@@ -11,8 +11,8 @@ looks like:
 </cards>
 """
 
-from sutekh.SutekhObjects import *
-from sqlobject import *
+from sutekh.SutekhObjects import PhysicalCard, AbstractCard
+from sqlobject import sqlhub
 from xml.sax import parse, parseString
 from xml.sax.handler import ContentHandler
 

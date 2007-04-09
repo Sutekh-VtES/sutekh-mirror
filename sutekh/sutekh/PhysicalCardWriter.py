@@ -11,7 +11,7 @@ looks like:
 </cards>
 """
 
-from sutekh.SutekhObjects import *
+from sutekh.SutekhObjects import PhysicalCard
 from xml.dom.ext import PrettyPrint
 from xml.dom.minidom import getDOMImplementation
 

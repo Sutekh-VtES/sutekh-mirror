@@ -2,16 +2,15 @@
 # Copyright 2005,2006 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
 
-from sutekh.SutekhObjects import *
-from sutekh.SutekhUtility import *
-from sutekh.SutekhCli import *
+from sutekh.SutekhObjects import VersionTable, ObjectList
+from sutekh.SutekhUtility import refreshTables, readRulings, readWhiteWolfList
 from sutekh.gui.MainController import MainController
 from sutekh.gui.DBErrorPopup import DBVerErrorPopup, NoDBErrorPopup
 from sutekh.gui.DBUpgradeDialog import DBUpgradeDialog
 from sutekh.gui.WWFilesDialog import WWFilesDialog
 from sutekh.DatabaseVersion import DatabaseVersion
-from sutekh.DatabaseUpgrade import *
-from sqlobject import *
+from sutekh.DatabaseUpgrade import createMemoryCopy, createFinalCopy, unknownVersion
+from sqlobject import sqlhub, connectionForURI
 import gtk
 import sys, optparse, os
 
