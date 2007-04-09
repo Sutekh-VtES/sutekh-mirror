@@ -4,7 +4,8 @@
 # GPL - see COPYING for details
 
 import HTMLParser, re
-from sutekh.SutekhObjects import *
+from sutekh.SutekhObjects import AbstractCard, IRuling
+from sqlobject import SQLObjectNotFound
 
 # Ruling Saver
 

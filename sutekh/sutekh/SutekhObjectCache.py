@@ -2,7 +2,9 @@
 # Copyright 2007 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
 
-from sutekh.SutekhObjects import *
+from sutekh.SutekhObjects import AbstractCard, RarityPair, Rarity, Clan,\
+                                 Discipline, DisciplinePair, CardType,\
+                                 Expansion, Ruling
 
 class SutekhObjectCache(object):
     """Holds references to commonly used database objects so that they don't get
