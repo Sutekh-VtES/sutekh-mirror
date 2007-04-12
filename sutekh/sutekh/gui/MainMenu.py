@@ -10,13 +10,12 @@ from sutekh.gui.CreateCardSetDialog import CreateCardSetDialog
 from sutekh.gui.LoadCardSetDialog import LoadCardSetDialog
 from sutekh.gui.ImportDialog import ImportDialog
 from sutekh.gui.WWFilesDialog import WWFilesDialog
-from sutekh.PhysicalCardParser import PhysicalCardParser
-from sutekh.PhysicalCardSetParser import PhysicalCardSetParser
-from sutekh.AbstractCardSetParser import AbstractCardSetParser
+from sutekh.XmlFileHandling import PhysicalCardXmlFile, PhysicalCardSetXmlFile, \
+                                   AbstractCardSetXmlFile
 from sutekh.IdentifyXMLFile import IdentifyXMLFile
 from sutekh.DatabaseUpgrade import copyToNewAbstractCardDB, createFinalCopy
-from sutekh.SutekhUtility import refreshTables, readWhiteWolfList, readRulings,\
-                                 doDumpToZip
+from sutekh.SutekhUtility import refreshTables, readWhiteWolfList, readRulings
+from sutekh.ZipFileWrapper import ZipFileWrapper
 
 class MainMenu(gtk.MenuBar,object):
     def __init__(self,oController,oWindow):
@@ -161,11 +160,11 @@ class MainMenu(gtk.MenuBar,object):
         sFileName=oFileChooser.getName()
         if sFileName is not None:
             oP=IdentifyXMLFile()
-            (sType,sName,bExists)=oP.parse(file(sFileName,'rU'))
+            (sType,sName,bExists)=oP.idFile(sFileName)
             if sType=='PhysicalCard':
                 if not bExists:
-                    oP=PhysicalCardParser()
-                    oP.parse(file(sFileName,'rU'))
+                    oF=PhysicalCardXmlFile(sFileName)
+                    oF.read()
                 else:
                     Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
                             gtk.BUTTONS_CLOSE,"Can only do this when the current Card List is empty")
@@ -183,7 +182,7 @@ class MainMenu(gtk.MenuBar,object):
         sFileName=oFileChooser.getName()
         if sFileName is not None:
             oP=IdentifyXMLFile()
-            (sType,sName,bExists)=oP.parse(file(sFileName,'rU'))
+            (sType,sName,bExists)=oP.idFile(sFileName)
             if sType=='PhysicalCardSet' or sType=='AbstractCardSet':
                 if bExists:
                     Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_WARNING,
@@ -193,10 +192,10 @@ class MainMenu(gtk.MenuBar,object):
                     if response==gtk.RESPONSE_CANCEL:
                         return
                 if sType=="AbstractCardSet":
-                    oP=AbstractCardSetParser()
+                    oF=AbstractCardSetXmlFile(sFileName)
                 else:
-                    oP=PhysicalCardSetParser()
-                oP.parse(file(sFileName,'rU'))
+                    oF=PhysicalCardSetXmlFile(sFileName)
+                oF.read()
             else:
                 Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
                                               gtk.BUTTONS_CLOSE,"File is not a CardSet XML File.")
@@ -207,16 +206,19 @@ class MainMenu(gtk.MenuBar,object):
         oWWFilesDialog.run()
         (sCLFileName,sRulingsFileName,sBackupFile) = oWWFilesDialog.getNames()
         oWWFilesDialog.destroy()
-        if sBackupFile is not None:
-            try:
-                doDumpToZip(sBackupFile)
-            except Exception, e:
-                sMsg = "Failed to write backup.\n\n" + str(e)
-                Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
-                    gtk.BUTTONS_CLOSE,sMsg)
-                Complaint.run()
-                Complaint.destroy()
         if sCLFileName is not None:
+            if sBackupFile is not None:
+                try:
+                    oFile=ZipFileWrapper(sBackupFile)
+                    oFile.doDumpAllToZip()
+                except Exception, e:
+                    sMsg = "Failed to write backup.\n\n" + str(e) \
+                           +"\nNot touching the database further"
+                    Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
+                       gtk.BUTTONS_CLOSE,sMsg)
+                    Complaint.run()
+                    Complaint.destroy()
+                    return
             tempConn=connectionForURI("sqlite:///:memory:")
             #tempConn=connectionForURI("sqlite:///tmp/test.db")
             oldConn=sqlhub.processConnection

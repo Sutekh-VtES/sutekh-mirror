@@ -3,15 +3,16 @@
 # Minor modifications copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-from sutekh.SutekhObjects import Ruling, ObjectList, PhysicalCard 
-from sutekh.SutekhUtility import writeAllPhysicalCardSets, writeAllAbstractCardSets, \
-                                 writePhysicalCards, writePhysicalCardSet, writeAbstractCardSet, \
-                                 refreshTables, readWhiteWolfList, readRulings, \
-                                 readPhysicalCardSet, readAbstractCardSet, \
-                                 readPhysicalCards, doDumpToZip, doRestoreFromZip
+from sutekh.SutekhObjects import Ruling, ObjectList, PhysicalCard
+from sutekh.SutekhUtility import refreshTables, readWhiteWolfList, readRulings, \
+                                 genTempdir
 from sutekh.DatabaseUpgrade import attemptDatabaseUpgrade
+from sutekh.XmlFileHandling import PhysicalCardXmlFile, PhysicalCardSetXmlFile,\
+                                   AbstractCardSetXmlFile, writeAllAbstractCardSets, \
+                                   writeAllPhysicalCardSets
+from sutekh.ZipFileWrapper import ZipFileWrapper
 from sqlobject import sqlhub, connectionForURI
-import sys, optparse, os, tempfile
+import sys, optparse, os
 
 def parseOptions(aArgs):
     oP = optparse.OptionParser(usage="usage: %prog [options]",version="%prog 0.1")
@@ -102,15 +103,11 @@ def main(aArgs):
             print "reload should be called with --refresh-tables"
             return 1
         else:
-            sTempdir=tempfile.mkdtemp('dir','sutekh')
+            sTempdir=genTempdir()
             aPhysicalCardSetList=writeAllPhysicalCardSets(sTempdir)
             aAbstractCardSetList=writeAllAbstractCardSets(sTempdir)
-            (fd, sCardList)=tempfile.mkstemp('.xml','physical_cards_',sTempdir)
-            # This may not be nessecary, but the available documentation
-            # suggests that, on Windows NT anyway, leaving the file open will
-            # cause problems when writePhysicalCards tries to reopen it
-            os.close(fd)
-            writePhysicalCards(sCardList)
+            oPCFile=PhysicalCardXmlFile(dir=sTempdir)
+            oPCFile.write()
             # We dump the databases here
             # We will reload them later
 
@@ -136,10 +133,12 @@ def main(aArgs):
         readRulings(oOpts.ruling_file)
 
     if not oOpts.read_physical_cards_from is None:
-        readPhysicalCards(oOpts.read_physical_cards_from)
+        oFile=PhysicalCardXmlFile(oOpts.rad_physical_cards_from)
+        oFile.read()
 
     if not oOpts.save_physical_cards_to is None:
-        writePhysicalCards(oOpts.save_physical_cards_to)
+        oPCF=PhysicalCardXmlFile(filename=oOpts.save_physical_cards_to)
+        oPCF.write()
 
     if oOpts.save_all_acss and not oOpts.save_acs is None:
         print "Can't use --save-acs and --save-all-acs Simulatenously"
@@ -156,32 +155,38 @@ def main(aArgs):
         writeAllPhysicalCardSets()
 
     if oOpts.dump_zip_name is not None:
-        doDumpToZip(oOpts.dump_zip_name)
+        oZ=ZipFileWrapper(oOpts.dump_zip_name)
+        oZ.doDumpAllToZip()
 
     if oOpts.restore_zip_name is not None:
-        doRestoreFromZip(oOpts.restore_zip_name)
+        oZ=ZipFileWrapper(oOpts.restore_zip_name)
+        oZ.doRestoreFromZip()
 
     if not oOpts.save_pcs is None:
-        writePhysicalCardSet(oOpts.save_pcs,oOpts.pcs_filename)
+        oFile=PhysicalCardSetXmlFile(oOpts.pcs_filename)
+        oFile.write(oOpts.save_pcs)
 
     if not oOpts.save_acs is None:
-        writeAbstractCardSet(oOpts.save_acs,oOpts.acs_filename)
+        oFile=AbstractCardSetXmlFile(oOpts.acs_filename)
+        oFile.write(oOpts.save_acs)
 
     if not oOpts.read_pcs is None:
-        readPhysicalCardSet(oOpts.read_pcs)
+        oFile=PhysicalCardSetXmlFile(oOpts.read_pcs)
+        oFile.read()
 
     if not oOpts.read_acs is None:
-        readAbstractCardSet(oOpts.read_acs)
+        oFile=AbstractCardSetXmlFile(oOpts.read_acs)
+        oFile.read()
 
     if oOpts.reload:
-        readPhysicalCards(sCardList)
-        os.remove(sCardList)
+        oPCFile.read()
+        oPCFile.delete()
         for pcs in aPhysicalCardSetList:
-            readPhysicalCardSet(pcs)
-            os.remove(pcs)
+            pcs.read()
+            pcs.delete()
         for acs in aAbstractCardSetList:
-            readAbstractCardSet(acs)
-            os.remove(acs)
+            acs.read()
+            acs.delete()
         os.rmdir(sTempdir)
 
     if oOpts.upgrade_db and oOpts.refresh_tables:

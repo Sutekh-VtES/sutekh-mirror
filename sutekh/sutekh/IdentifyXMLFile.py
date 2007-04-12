@@ -65,3 +65,9 @@ class IdentifyXMLFile(object):
         except _exceptions.SAXParseException:
             pass
         return myHandler.getDetails()
+
+    def idFile(self,sFileName):
+        fIn=file(sFileName,'rU')
+        result=self.parse(fIn)
+        fIn.close()
+        return result

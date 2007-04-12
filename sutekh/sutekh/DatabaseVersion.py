@@ -1,6 +1,6 @@
 
 # DatabaseVersion.py
-# Copyright 2006 Simon Cross <hodgestar@gmail.com>, 
+# Copyright 2006 Simon Cross <hodgestar@gmail.com>,
 #                Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 # version management helper class

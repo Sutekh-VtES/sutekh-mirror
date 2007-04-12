@@ -3,7 +3,7 @@
 # GPL - see COPYING for details
 
 from sutekh.gui.PluginManager import CardListPlugin
-from sutekh.SutekhUtility import doDumpToZip, doRestoreFromZip
+from sutekh.ZipFileWrapper import ZipFileWrapper
 import gtk
 import os
 
@@ -74,7 +74,8 @@ class FullBackup(CardListPlugin):
 
             if bContinue:
                 try:
-                    doDumpToZip(sFile)
+                    oFile=ZipFileWrapper(sFile)
+                    oFile.doDumpAllToZip()
                 except Exception, e:
                     sMsg = "Failed to write backup.\n\n" + str(e)
                     Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
@@ -118,7 +119,8 @@ class FullBackup(CardListPlugin):
 
             if bContinue:
                 try:
-                    doRestoreFromZip(sFile)
+                    oFile=ZipFileWrapper(sFile)
+                    oFile.doRestoreFromZip()
                 except Exception, e:
                     sMsg = "Failed to restore backup.\n\n" + str(e)
                     Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,

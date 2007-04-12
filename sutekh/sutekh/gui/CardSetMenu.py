@@ -8,8 +8,7 @@ import gtk
 from sutekh.SutekhObjects import PhysicalCardSet,AbstractCardSet
 from sutekh.gui.ExportDialog import ExportDialog
 from sutekh.gui.PropDialog import PropDialog
-from sutekh.AbstractCardSetWriter import AbstractCardSetWriter
-from sutekh.PhysicalCardSetWriter import PhysicalCardSetWriter
+from sutekh.XmlFileHandling import AbstractCardSetXmlFile, PhysicalCardSetXmlFile
 
 class CardSetMenu(gtk.MenuBar,object):
     def __init__(self,oController,oWindow,oView,sName,sType):
@@ -134,14 +133,12 @@ class CardSetMenu(gtk.MenuBar,object):
         oFileChooser.run()
         sFileName=oFileChooser.getName()
         if sFileName is not None:
-            if self.__sType=='PhysicalCardSet':
-                oW=PhysicalCardSetWriter()
-            else:
-                oW=AbstractCardSetWriter()
             # User has OK'd us overwriting anything
-            fOut=file(sFileName,'w')
-            oW.write(fOut,self.sSetName)
-            fOut.close()
+            if self.__sType=='PhysicalCardSet':
+                oW=PhysicalCardSetXmlFile(sFileName)
+            else:
+                oW=AbstractCardSetXmlFile(sFileName)
+            oW.write(self.sSetName)
 
     def cardSetClose(self,widget):
         self.__oWindow.closeCardSet(widget)

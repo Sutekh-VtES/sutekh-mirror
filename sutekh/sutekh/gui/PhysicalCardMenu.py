@@ -6,7 +6,7 @@
 
 import gtk
 from sutekh.gui.ExportDialog import ExportDialog
-from sutekh.PhysicalCardWriter import PhysicalCardWriter
+from sutekh.XmlFileHandling import PhysicalCardXmlFile
 
 class PhysicalCardMenu(gtk.MenuBar,object):
     def __init__(self,oController,oWindow):
@@ -76,10 +76,8 @@ class PhysicalCardMenu(gtk.MenuBar,object):
         oFileChooser.run()
         sFileName=oFileChooser.getName()
         if sFileName is not None:
-            fOut=file(sFileName,'w')
-            oW=PhysicalCardWriter()
-            oW.write(fOut)
-            fOut.close()
+            oW=PhysicalCardXmlFile(sFileName)
+            oW.write()
 
     def getApplyFilter(self):
         return self.iApply.get_active()
