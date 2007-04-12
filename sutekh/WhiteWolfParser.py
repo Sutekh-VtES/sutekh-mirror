@@ -4,7 +4,9 @@
 # GPL - see COPYING for details
 
 import HTMLParser, re
-from sutekh.SutekhObjects import *
+from sutekh.SutekhObjects import IAbstractCard, IClan, IRarityPair,\
+                                 IDisciplinePair, IVirtue, ICreed, ICardType,\
+                                 ISect, ITitle
 
 # Card Saver
 
