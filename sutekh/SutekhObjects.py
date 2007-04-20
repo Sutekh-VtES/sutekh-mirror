@@ -3,9 +3,10 @@
 # Minor modifications copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-from sqlobject import *
+from sqlobject import sqlmeta, SQLObject, IntCol, UnicodeCol, RelatedJoin, \
+                      EnumCol, MultipleJoin, SQLObjectNotFound, \
+                      DatabaseIndex, ForeignKey
 from protocols import advise, Interface
-import protocols
 
 # Interfaces
 
@@ -64,9 +65,10 @@ class AbstractCard(SQLObject):
 class PhysicalCard(SQLObject):
     advise(instancesProvide=[IPhysicalCard])
 
-    tableversion = 1
+    tableversion = 2
     abstractCard = ForeignKey('AbstractCard')
     abstractCardIndex = DatabaseIndex(abstractCard)
+    expansion = ForeignKey('Expansion',notNull=False) # Explicitly allow None as expansion
     sets = RelatedJoin('PhysicalCardSet',intermediateTable='physical_map',createRelatedTable=False)
 
 class AbstractCardSet(SQLObject):

@@ -2,9 +2,15 @@
 # Copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-from sqlobject import *
-from sutekh.SutekhObjects import *
-from sutekh.SutekhUtility import *
+from sqlobject import sqlhub, SQLObject, IntCol, UnicodeCol, RelatedJoin, \
+                      EnumCol, MultipleJoin, SQLObjectNotFound, ForeignKey, \
+                      DatabaseIndex, connectionForURI
+from sutekh.SutekhObjects import PhysicalCard, AbstractCard, AbstractCardSet,\
+                                 PhysicalCardSet, Expansion, Clan, Virtue, \
+                                 Discipline, Rarity, RarityPair, CardType, \
+                                 Ruling, ObjectList, DisciplinePair, Creed, \
+                                 IVirtue, ISect, ITitle
+from sutekh.SutekhUtility import refreshTables
 from sutekh.DatabaseVersion import DatabaseVersion
 from sutekh.WhiteWolfParser import parseText
 
@@ -89,6 +95,14 @@ class Clan_v1(SQLObject):
     name = UnicodeCol(alternateID=True,length=40)
     cards = RelatedJoin('AbstractCard',intermediateTable='abs_clan_map',createRelatedTable=False)
 
+class PhysicalCard_v1(SQLObject):
+    class sqlmeta:
+        table=PhysicalCard.sqlmeta.table
+
+    abstractCard = ForeignKey('AbstractCard')
+    abstractCardIndex = DatabaseIndex(abstractCard)
+    sets = RelatedJoin('PhysicalCardSet',intermediateTable='physical_map',createRelatedTable=False)
+
 def checkCanReadOldDB(orig_conn):
     """Can we upgrade from this database version?"""
     oVer=DatabaseVersion()
@@ -124,6 +138,7 @@ def checkCanReadOldDB(orig_conn):
            not oVer.checkVersions([AbstractCard],[-1]):
         raise unknownVersion("AbstractCard")
     if not oVer.checkVersions([PhysicalCard],[PhysicalCard.tableversion]) and \
+           not oVer.checkVersions([PhysicalCard],[1]) and \
            not oVer.checkVersions([PhysicalCard],[-1]):
         raise unknownVersion("PhysicalCard")
     if not oVer.checkVersions([PhysicalCardSet],[PhysicalCardSet.tableversion]) and \
@@ -138,13 +153,15 @@ def checkCanReadOldDB(orig_conn):
         raise unknownVersion("AbstractCardSet")
     return True
 
-def CopyOldRarity(orig_conn,trans):
+def CopyOldRarity(orig_conn,trans,aMessages):
     for oObj in Rarity.select(connection=orig_conn):
         oCopy=Rarity(id=oObj.id,name=oObj.name,connection=trans)
+    return (True,[])
 
 def CopyOldExpansion(orig_conn,trans):
     for oObj in Expansion.select(connection=orig_conn):
         oCopy=Expansion(id=oObj.id,name=oObj.name,connection=trans)
+    return (True,[])
 
 def CopyOldDiscipline(orig_conn,trans):
     oVer=DatabaseVersion()
@@ -157,12 +174,13 @@ def CopyOldDiscipline(orig_conn,trans):
         for oObj in Discipline_v1.select(connection=orig_conn):
             if oObj.name[:2]=='v_':
                 sFullName=''
-                oCopy=Virtue(name=oObj.name,fullname=sFullname,
+                oCopy=Virtue(name=oObj.name,fullname=sFullName,
                         connection=trans)
             else:
                 sFullName=''
                 oCopy=Discipline(id=oObj.id,name=oObj.name,fullname=sFullName,
                         connection=trans)
+    return (True,[])
 
 def CopyOldClan(orig_conn,trans):
     oVer=DatabaseVersion()
@@ -174,26 +192,33 @@ def CopyOldClan(orig_conn,trans):
         for oObj in Clan_v1.select(connection=orig_conn):
             sShortName=oObj.name
             oCopy=Clan(id=oObj.id,name=oObj.name,shortname=sShortName,connection=trans)
+    return (True,[])
 
 def CopyOldCardType(orig_conn,trans):
     for oObj in CardType.select(connection=orig_conn):
         oCopy=CardType(id=oObj.id,name=oObj.name,connection=trans)
+    return (True,[])
 
 def CopyOldRuling(orig_conn,trans):
     for oObj in Ruling.select(connection=orig_conn):
         oCopy=Ruling(id=oObj.id,text=oObj.text,code=oObj.code,url=oObj.url,connection=trans)
+    return (True,[])
 
 def CopyOldDisciplinePair(orig_conn,trans):
     for oObj in DisciplinePair.select(connection=orig_conn):
         oCopy=DisciplinePair(id=oObj.id,level=oObj.level,discipline=oObj.discipline,connection=trans)
+    return (True,[])
 
 def CopyOldRarityPair(orig_conn,trans):
     for oObj in RarityPair.select(connection=orig_conn):
         oCopy=RarityPair(id=oObj.id,expansion=oObj.expansion,rarity=oObj.rarity,\
                 connection=trans)
+    return (True,[])
 
 def CopyOldAbstractCard(orig_conn,trans):
     oVer=DatabaseVersion()
+    aMessages=[]
+    bFirstImbuedCreedMessage=True
     if oVer.checkVersions([AbstractCard],[AbstractCard.tableversion]):
         for oCard in AbstractCard.select(connection=orig_conn):
             oCardCopy=AbstractCard(id=oCard.id,cannonicalname=oCard.cannonicalname,name=oCard.name,text=oCard.text,connection=trans)
@@ -257,14 +282,26 @@ def CopyOldAbstractCard(orig_conn,trans):
                 oCardCopy.addTitle(ITitle(sTitle))
             aTypes=[oT.name for oT in oCard.cardtype]
             if 'Imbued' in aTypes:
-                print 'Unable to infer sensible values for life and creed for ',oCard.name.encode('ascii','xmlcharrefreplace')
-                print 'You will need to reimport the White wolf card list for these to be correct'
+                if bFirstImbuedCreedMessage:
+                    aMessages.append('Missing data for the Imbued. You will need to reimport the White wolf card list for these to be correct')
+                    bFirstImbuedCreedMessage=False
+                aMessages.append('Unable to infer sensible values for life and creed for ',oCard.name.encode('ascii','xmlcharrefreplace'))
             oCardCopy.syncUpdate()
+    return (True,aMessages)
 
 
 def CopyOldPhysicalCard(orig_conn,trans):
-    for oCard in PhysicalCard.select(connection=orig_conn):
-        oCardCopy=PhysicalCard(id=oCard.id,abstractCard=oCard.abstractCard,connection=trans)
+    oVer=DatabaseVersion()
+    if oVer.checkVersions([PhysicalCard],[PhysicalCard.tableversion]):
+        for oCard in PhysicalCard.select(connection=orig_conn):
+            oCardCopy=PhysicalCard(id=oCard.id,abstractCard=oCard.abstractCard,
+                    expansion=oCard.expansion,connection=trans)
+    elif oVer.checkVersions([PhysicalCard],[1]) or \
+           oVer.checkVersions([PhysicalCard],[-1]):
+        for oCard in PhysicalCard_v1.select(connection=orig_conn):
+            oCardCopy=PhysicalCard(id=oCard.id,abstractCard=oCard.abstractCard,
+                    expansion=None,connection=trans)
+    return (True,[])
 
 def CopyOldPhysicalCardSet(orig_conn,trans):
     oVer=DatabaseVersion()
@@ -294,6 +331,7 @@ def CopyOldPhysicalCardSet(orig_conn,trans):
             for oCard in oSet.cards:
                 oCopy.addPhysicalCard(oCard.id)
             oCopy.syncUpdate()
+    return (True,[])
 
 def CopyOldAbstractCardSet(orig_conn,trans):
     oVer=DatabaseVersion()
@@ -323,9 +361,10 @@ def CopyOldAbstractCardSet(orig_conn,trans):
             for oCard in oSet.cards:
                 oCopy.addAbstractCard(oCard.id)
             oCopy.syncUpdate()
+    return (True,[])
 
 def readOldDB(orig_conn,dest_conn):
-    """Read the old database into memory table, filling in
+    """Read the old database into new database, filling in
        blanks when needed"""
     try:
         if not checkCanReadOldDB(orig_conn):
@@ -333,28 +372,56 @@ def readOldDB(orig_conn,dest_conn):
     except unknownVersion, err:
         raise err
     # OK, version checks pass, so we should be able to deal with this
+    aMessages=[]
+    bRes=True
     trans=dest_conn.transaction()
     # Magic happens in the individual functions, as needed
-    CopyOldRarity(orig_conn,trans)
-    CopyOldExpansion(orig_conn,trans)
-    CopyOldDiscipline(orig_conn,trans)
-    CopyOldClan(orig_conn,trans)
-    CopyOldCardType(orig_conn,trans)
-    CopyOldRuling(orig_conn,trans)
-    CopyOldDisciplinePair(orig_conn,trans)
-    CopyOldRarityPair(orig_conn,trans)
-    CopyOldAbstractCard(orig_conn,trans)
-    CopyOldPhysicalCard(orig_conn,trans)
-    CopyOldPhysicalCardSet(orig_conn,trans)
-    CopyOldAbstractCardSet(orig_conn,trans)
+    (bOK,aNewMessages)=CopyOldRarity(orig_conn,trans)
+    bRes=bRes and bOK
+    aMessages+=aNewMessages
+    (bOK,aMessages)=CopyOldExpansion(orig_conn,trans,aMessages)
+    bRes=bRes and bOK
+    aMessages+=aNewMessages
+    (bOK,aNewMessages)=CopyOldDiscipline(orig_conn,trans)
+    bRes=bRes and bOK
+    aMessages+=aNewMessages
+    (bOK,aNewMessages)=CopyOldClan(orig_conn,trans)
+    bRes=bRes and bOK
+    aMessages+=aNewMessages
+    (bOK,aNewMessages)=CopyOldCardType(orig_conn,trans)
+    bRes=bRes and bOK
+    aMessages+=aNewMessages
+    (bOK,aNewMessages)=CopyOldRuling(orig_conn,trans)
+    bRes=bRes and bOK
+    aMessages+=aNewMessages
+    (bOK,aNewMessages)=CopyOldDisciplinePair(orig_conn,trans)
+    bRes=bRes and bOK
+    aMessages+=aNewMessages
+    (bOK,aNewMessages)=CopyOldRarityPair(orig_conn,trans)
+    bRes=bRes and bOK
+    aMessages+=aNewMessages
+    (bOK,aNewMessages)=CopyOldAbstractCard(orig_conn,trans)
+    bRes=bRes and bOK
+    aMessages+=aNewMessages
+    (bOK,aNewMessages)=CopyOldPhysicalCard(orig_conn,trans)
+    bRes=bRes and bOK
+    aMessages+=aNewMessages
+    (bOK,aNewMessages)=CopyOldPhysicalCardSet(orig_conn,trans)
+    bRes=bRes and bOK
+    aMessages+=aNewMessages
+    (bOK,aNewMessages)=CopyOldAbstractCardSet(orig_conn,trans)
+    bRes=bRes and bOK
+    aMessages+=aNewMessages
     trans.commit()
-    return True
+    return (bRes)
 
 def copyDB(orig_conn,dest_conn):
     # This is a straight copy, with no provision for funky stuff
     # Compataibility of database structures is assumed, but not checked
     # (probably should be fixed)
     # Copy tables needed before we can copy AbstractCard
+    bRes=True
+    aMessages=[]
     trans=dest_conn.transaction()
     # Todo: More error checking
     for oObj in Rarity.select(connection=orig_conn):
@@ -433,12 +500,14 @@ def copyDB(orig_conn,dest_conn):
             oCopy.addAbstractCard(oCard.id)
         oCopy.syncUpdate()
     trans.commit()
-    return True
+    return (bRes,aMessages)
 
 def copyToNewAbstractCardDB(orig_conn,new_conn):
     # Given an existing database, and a new database created from
     # a new cardlist, copy the PhysicalCards and the CardSets,
     # adjusting for the possibly changed id's in the AbstractCard Table
+    bRes=True
+    aMessages=[]
     target=new_conn.transaction()
     # Copy the physical card list
     for oCard in PhysicalCard.select(connection=orig_conn):
@@ -447,7 +516,8 @@ def copyToNewAbstractCardDB(orig_conn,new_conn):
             oNewAbsCard=AbstractCard.byCannonicalName(sName,connection=target)
             oCardCopy=PhysicalCard(id=oCard.id,abstractCard=oNewAbsCard,connection=target)
         except SQLObjectNotFound:
-            print "Unable to find match for",sName
+            aMessages.append("Unable to find match for "+sName)
+            bRes=False
     # Copy Physical card sets
     # IDs are unchangd, since we preserve Physical Card set ids
     for oSet in PhysicalCardSet.select(connection=orig_conn):
@@ -469,27 +539,45 @@ def copyToNewAbstractCardDB(orig_conn,new_conn):
             oCopy.addAbstractCard(oNewAbsCard.id)
         oCopy.syncUpdate()
     target.commit()
-    return True
+    return (bRes,aMessages)
 
 def createMemoryCopy(tempConn):
     # We create a temporary memory database, and create the updated
     # database in it. readOldDB is responsbile for upgrading stuff
     # as needed
-    refreshTables(ObjectList,tempConn)
-    return readOldDB (sqlhub.processConnection,tempConn)
+    if refreshTables(ObjectList,tempConn):
+        return readOldDB (sqlhub.processConnection,tempConn)
+    else:
+        return (False,["Unable to create tables"])
 
 def createFinalCopy(tempConn):
     # Copy from the memory database to the real thing
-    refreshTables(ObjectList,sqlhub.processConnection)
-    copyDB(tempConn,sqlhub.processConnection)
+    if refreshTables(ObjectList,sqlhub.processConnection):
+        return copyDB(tempConn,sqlhub.processConnection)
+    else:
+        return (False,["Unable to create tables"])
 
 def attemptDatabaseUpgrade():
     tempConn=connectionForURI("sqlite:///:memory:")
-    if createMemoryCopy(tempConn):
-        print "Copied database to memory, performing upgrade"
-        createFinalCopy(tempConn)
-        return True
+    (bOK,aMessages) = createMemoryCopy(tempConn)
+    if bOK:
+        print "Copied database to memory, performing upgrade."
+        if len(aMessages)>0:
+            print "Messages reported",aMessages
+        (bOK,aMessages)=createFinalCopy(tempConn)
+        if bOK:
+            print "Everything seems to have gone OK"
+            if len(aMessages)>0:
+                print "Messages reported",aMessages
+            return True
+        else:
+            print "Unable to perform upgrade."
+            if len(aMessages)>0:
+                print "Errors reported",aMessages
+            print "!!YOUR DATABASE MAY BE CORRUPTED!!"
+            return False
     else:
-        print "Unable to create memory copy. Database not upgraded"
+        print "Unable to create memory copy. Database not upgraded."
+        if len(aMessages)>0:
+            print "Errors reported",aMessages
         return False
-
