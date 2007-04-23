@@ -10,10 +10,13 @@ from sutekh.gui.PluginManager import CardListPlugin
 class PhysicalCardSetFromAbstract(CardListPlugin):
     """Create a (as far as possible) equivilant Physical Card Set
        from a given Abstract Card Set.
-       Ignores Cards which don't exist in Physical Cards"""
-       #Q: How should the user be informed of missing cards?
-    dTableVersions = {"PhysicalCardSet" : [2]}
+       
+       - Ignores Cards which don't exist in Physical Cards (but notifies the user)
+       - Has an option to import the cards into your card collection before creating the Physical Card Set."""
+
+    dTableVersions = {"PhysicalCardSet" : [2], "PhysicalCard" : [1] }
     aModelsSupported = ["AbstractCardSet"]
+
     def getMenuItem(self):
         """
         Overrides method from base class.
@@ -32,29 +35,61 @@ class PhysicalCardSetFromAbstract(CardListPlugin):
 
     def createPhysCardSet(self):
         parent = self.view.getWindow()
-        oAC=AbstractCardSet.byName(self.view.sSetName)
+        oAC = AbstractCardSet.byName(self.view.sSetName)
+
         oDlg = CreateCardSetDialog(parent,"PhysicalCardSet",oAC.author,oAC.comment)
+        oImport = gtk.CheckButton("Add cards to collection.")
+        oDlg.vbox.pack_start(oImport)
+        oDlg.show_all()
         oDlg.run()
+
         (sName, sAuthor, sDesc) = oDlg.getName()
-        if sName is not None:
-            NameList = PhysicalCardSet.selectBy(name=sName)
-            if NameList.count()!=0:
-                Complaint=gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
-                        gtk.BUTTONS_CLOSE,"Chosen Physical Card Set already exists")
-                Complaint.run()
-                Complaint.destroy()
-                return
-            nP=PhysicalCardSet(name=sName)
-            nP.author=sAuthor
-            nP.comment=sDesc
-            nP.syncUpdate()
-            # Copy the cards across
+
+        if sName is None:
+            Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
+                                          gtk.BUTTONS_CLOSE,
+                                          "You did not specify a name for the physical card set.")
+            Complaint.run()
+            Complaint.destroy()
+            return
+
+        aNameList = PhysicalCardSet.selectBy(name=sName)
+        if aNameList.count() != 0:
+            Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
+                                          gtk.BUTTONS_CLOSE,
+                                          "Chosen Physical Card Set already exists")
+            Complaint.run()
+            Complaint.destroy()
+            return
+
+        nP = PhysicalCardSet(name=sName)
+        nP.author=sAuthor
+        nP.comment=sDesc
+        nP.syncUpdate()
+
+        # Add cards to physical card collection if requested
+        if oImport.get_active():
             for oCard in self.model.getCardIterator(None):
-                oPhysCards=PhysicalCard.selectBy(abstractCardID=oCard.id)
-                if oPhysCards.count() > 0:
-                    for oPC in oPhysCards:
-                        if oPC not in nP.cards:
-                            nP.addPhysicalCard(oPC.id)
-                            break
+                PhysicalCard(abstractCard=oCard)
+
+        # Populate the new physical card set
+        aMissingCards = []
+        for oCard in self.model.getCardIterator(None):
+            oPhysCards = PhysicalCard.selectBy(abstractCardID=oCard.id)
+            for oPC in oPhysCards:
+                if oPC not in nP.cards:
+                    nP.addPhysicalCard(oPC.id)
+                    break
+            else:
+                aMissingCards.append(oCard)
+
+        if aMissingCards:
+            sMsg = "The following cards were not added to the physical card set " \
+                   "because they are not present in your card collection:\n\n" \
+                   + "\n".join([oC.name for oC in aMissingCards])
+            Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
+                                          gtk.BUTTONS_CLOSE,sMsg)
+            Complaint.run()
+            Complaint.destroy()
 
 plugin = PhysicalCardSetFromAbstract
