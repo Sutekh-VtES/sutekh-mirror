@@ -207,7 +207,7 @@ class CardListModel(gtk.TreeStore):
         groups.
         """
         oFilter = self.combineFilterWithBase(self.getSelectFilter())
-        oFullFilter=FilterAndBox(SpecificCardFilter(sCardName),oFilter)
+        oFullFilter = FilterAndBox([SpecificCardFilter(sCardName),oFilter])
         oExpr = oFullFilter.getExpression()
 
         if self.cardclass is not AbstractCardSet:
