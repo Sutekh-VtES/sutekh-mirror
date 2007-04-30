@@ -2,6 +2,7 @@
 # Copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
 
 import gtk
+from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 
 class EditAnnotationsDialog(gtk.Dialog):
     def __init__(self,sTitle,oParent,curName,curAnnotations):
@@ -12,17 +13,21 @@ class EditAnnotationsDialog(gtk.Dialog):
         self.connect("response",self.buttonResponse)
         nameLabel=gtk.Label("Card Set : "+curName)
         annotateLabel=gtk.Label("Annotations : ")
-        self.oAnnotations=gtk.Entry()
-        self.oAnnotations.set_text(curAnnotations)
-        self.vbox.pack_start(nameLabel)
-        self.vbox.pack_start(annotateLabel)
-        self.vbox.pack_start(self.oAnnotations)
+        oTextView=gtk.TextView()
+        self.oBuffer=oTextView.get_buffer()
+        if curAnnotations is not None:
+            self.oBuffer.set_text(curAnnotations)
+        self.vbox.pack_start(nameLabel,expand=False)
+        self.vbox.pack_start(annotateLabel,expand=False)
+        oSW=AutoScrolledWindow(oTextView)
+        self.set_default_size(500,500)
+        self.vbox.pack_start(oSW,expand=True)
         self.show_all()
         self.sAnnotations=curAnnotations
 
     def buttonResponse(self,widget,response):
         if response == gtk.RESPONSE_OK:
-            self.sAnnotations=self.oAnnotations.get_text()
+            self.sAnnotations=self.oBuffer.get_text(self.oBuffer.get_start_iter(),self.oBuffer.get_end_iter())
         self.destroy()
 
     def getData(self):
