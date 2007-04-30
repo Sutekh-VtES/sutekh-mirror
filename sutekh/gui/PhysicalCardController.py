@@ -36,7 +36,7 @@ class PhysicalCardController(object):
         Returns True if a card was successfully removed, False otherwise.
         """
         try:
-            oC = AbstractCard.byName(sName)
+            oC = AbstractCard.byCanonicalName(sName.lower())
         except SQLObjectNotFound:
             return False
 
@@ -97,7 +97,7 @@ class PhysicalCardController(object):
         Returns True if a card was successfully added, False otherwise.
         """
         try:
-            oC = AbstractCard.byName(sName)
+            oC = AbstractCard.byCanonicalName(sName.lower())
         except SQLObjectNotFound:
             return False
 
