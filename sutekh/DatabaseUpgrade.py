@@ -40,7 +40,7 @@ class PhysicalCardSet_v1(SQLObject):
     class sqlmeta:
         table=PhysicalCardSet.sqlmeta.table
     name = UnicodeCol(alternateID=True,length=50)
-    cards = RelatedJoin('PhysicalCard',intermediateTable='physical_map',createRelatedTable=False)
+    cards = RelatedJoin('PhysicalCard_v1',intermediateTable='physical_map',createRelatedTable=False)
 
 class AbstractCardSet_v2(SQLObject):
     class sqlmeta:
@@ -48,7 +48,7 @@ class AbstractCardSet_v2(SQLObject):
     name = UnicodeCol(alternateID=True,length=50)
     author = UnicodeCol(length=50,default='')
     comment = UnicodeCol(default='')
-    cards = RelatedJoin('AbstractCard',intermediateTable='abstract_map',createRelatedTable=False)
+    cards = RelatedJoin('AbstractCard_v1',intermediateTable='abstract_map',createRelatedTable=False)
 
 class PhysicalCardSet_v2(SQLObject):
     class sqlmeta:
@@ -56,11 +56,11 @@ class PhysicalCardSet_v2(SQLObject):
     name = UnicodeCol(alternateID=True,length=50)
     author = UnicodeCol(length=50,default='')
     comment = UnicodeCol(default='')
-    cards = RelatedJoin('PhysicalCard',intermediateTable='physical_map',createRelatedTable=False)
+    cards = RelatedJoin('PhysicalCard_v1',intermediateTable='physical_map',createRelatedTable=False)
 
 class AbstractCard_v1(SQLObject):
     class sqlmeta:
-        table=AbstractCardSet.sqlmeta.table
+        table=AbstractCard.sqlmeta.table
 
     name = UnicodeCol(alternateID=True,length=50)
     text = UnicodeCol()
@@ -69,12 +69,12 @@ class AbstractCard_v1(SQLObject):
     cost = IntCol(default=None)
     costtype = EnumCol(enumValues=['pool','blood','conviction',None],default=None)
     level = EnumCol(enumValues=['advanced',None],default=None)
-    discipline = RelatedJoin('DisciplinePair',intermediateTable='abs_discipline_pair_map',createRelatedTable=False)
-    rarity = RelatedJoin('RarityPair',intermediateTable='abs_rarity_pair_map',createRelatedTable=False)
-    clan = RelatedJoin('Clan',intermediateTable='abs_clan_map',createRelatedTable=False)
+    discipline = RelatedJoin('DisciplinePair_v1',intermediateTable='abs_discipline_pair_map',createRelatedTable=False)
+    rarity = RelatedJoin('RarityPair_v1',intermediateTable='abs_rarity_pair_map',createRelatedTable=False)
+    clan = RelatedJoin('Clan_v1',intermediateTable='abs_clan_map',createRelatedTable=False)
     cardtype = RelatedJoin('CardType',intermediateTable='abs_type_map',createRelatedTable=False)
     rulings = RelatedJoin('Ruling',intermediateTable='abs_ruling_map',createRelatedTable=False)
-    sets = RelatedJoin('AbstractCardSet',intermediateTable='abstract_map',createRelatedTable=False)
+    sets = RelatedJoin('AbstractCardSet_v1',intermediateTable='abstract_map',createRelatedTable=False)
     physicalCards = MultipleJoin('PhysicalCard')
 
 class Expansion_v1(SQLObject):
@@ -87,7 +87,25 @@ class Discipline_v1(SQLObject):
     class sqlmeta:
         table=Discipline.sqlmeta.table
     name = UnicodeCol(alternateID=True,length=30)
-    pairs = MultipleJoin('DisciplinePair')
+    pairs = MultipleJoin('DisciplinePair_v1')
+
+class RarityPair_v1(SQLObject):
+    class sqlmeta:
+        table=RarityPair.sqlmeta.table
+
+    expansion = ForeignKey('Expansion_v1')
+    rarity = ForeignKey('Rarity')
+    cards = RelatedJoin('AbstractCard',intermediateTable='abs_rarity_pair_map',\
+            createRelatedTable=False)
+
+class DisciplinePair_v1(SQLObject):
+    class sqlmeta:
+        table=DisciplinePair.sqlmeta.table
+
+    discipline = ForeignKey('Discipline_v1')
+    level = EnumCol(enumValues=['inferior','superior'])
+    cards = RelatedJoin('AbstractCard',intermediateTable='abs_discipline_pair_map',\
+            createRelatedTable=False)
 
 class Clan_v1(SQLObject):
     class sqlmeta:
@@ -99,7 +117,7 @@ class PhysicalCard_v1(SQLObject):
     class sqlmeta:
         table=PhysicalCard.sqlmeta.table
 
-    abstractCard = ForeignKey('AbstractCard')
+    abstractCard = ForeignKey('AbstractCard_v1')
     abstractCardIndex = DatabaseIndex(abstractCard)
     sets = RelatedJoin('PhysicalCardSet',intermediateTable='physical_map',createRelatedTable=False)
 
@@ -153,14 +171,22 @@ def checkCanReadOldDB(orig_conn):
         raise unknownVersion("AbstractCardSet")
     return True
 
-def CopyOldRarity(orig_conn,trans,aMessages):
+def CopyOldRarity(orig_conn,trans):
     for oObj in Rarity.select(connection=orig_conn):
         oCopy=Rarity(id=oObj.id,name=oObj.name,connection=trans)
     return (True,[])
 
 def CopyOldExpansion(orig_conn,trans):
-    for oObj in Expansion.select(connection=orig_conn):
-        oCopy=Expansion(id=oObj.id,name=oObj.name,connection=trans)
+    oVer=DatabaseVersion()
+    if oVer.checkVersions([Expansion],[Expansion.tableversion]):
+        for oObj in Expansion.select(connection=orig_conn):
+            oCopy=Expansion(id=oObj.id,name=oObj.name,\
+                    shortname=oObj.shortname,connection=trans)
+    elif oVer.checkVersions([Expansion],[1]) or \
+            oVer.checkVersions([Expansion],[-1]):
+        for oObj in Expansion_v1.select(connection=orig_conn):
+            sShortName=''
+            oCopy=Expansion(id=oObj.id,name=oObj.name,shortname=sShortName,connection=trans)
     return (True,[])
 
 def CopyOldDiscipline(orig_conn,trans):
@@ -173,11 +199,16 @@ def CopyOldDiscipline(orig_conn,trans):
          oVer.checkVersions([Discipline],[-1]):
         for oObj in Discipline_v1.select(connection=orig_conn):
             if oObj.name[:2]=='v_':
-                sFullName=''
-                oCopy=Virtue(name=oObj.name,fullname=sFullName,
-                        connection=trans)
+                #point adaptor at new database
+                oldconn=sqlhub.processConnection
+                sqlhub.processConnection=trans
+                oVirtue=IVirtue(oObj.name[2:])
+                sqlhub.processConnection=oldconn
+                # Let adaptor create entry for us
             else:
                 sFullName=''
+                # Not using adaptor creation as I want to preserve ID 
+                # FIXME: Tweak DisciplinePair copy not to rely on ID's?
                 oCopy=Discipline(id=oObj.id,name=oObj.name,fullname=sFullName,
                         connection=trans)
     return (True,[])
@@ -187,7 +218,7 @@ def CopyOldClan(orig_conn,trans):
     if oVer.checkVersions([Clan],[Clan.tableversion]):
         for oObj in Clan.select(connection=orig_conn):
             oCopy=Clan(id=oObj.id,name=oObj.name,connection=trans)
-    elif oVer.checkVersions([Clan],[Clan.tableversion]) or \
+    elif oVer.checkVersions([Clan],[1]) or \
          oVer.checkVersions([Clan],[-1]):
         for oObj in Clan_v1.select(connection=orig_conn):
             sShortName=oObj.name
@@ -205,13 +236,29 @@ def CopyOldRuling(orig_conn,trans):
     return (True,[])
 
 def CopyOldDisciplinePair(orig_conn,trans):
-    for oObj in DisciplinePair.select(connection=orig_conn):
-        oCopy=DisciplinePair(id=oObj.id,level=oObj.level,discipline=oObj.discipline,connection=trans)
+    oVer=DatabaseVersion()
+    if oVer.checkVersions([Discipline],[1]) or \
+          oVer.checkVersions([Discipline],[-1]):
+       for oObj in DisciplinePair_v1.select(connection=orig_conn):
+           if oObj.discipline.name[:2]!='v_':
+                oCopy=DisciplinePair(id=oObj.id,level=oObj.level,\
+                     discipline=oObj.discipline,connection=trans)
+    elif oVer.checkVersions([DisciplinePair],[DisciplinePair.tableversion]):
+       for oObj in DisciplinePair_v1.select(connection=orig_conn):
+           oCopy=DisciplinePair(id=oObj.id,level=oObj.level,\
+                   discipline=oObj.discipline,connection=trans)
     return (True,[])
 
 def CopyOldRarityPair(orig_conn,trans):
-    for oObj in RarityPair.select(connection=orig_conn):
-        oCopy=RarityPair(id=oObj.id,expansion=oObj.expansion,rarity=oObj.rarity,\
+    oVer=DatabaseVersion()
+    if oVer.checkVersions([Expansion],[1]) or \
+          oVer.checkVersions([Expansion],[-1]):
+        for oObj in RarityPair_v1.select(connection=orig_conn):
+            oCopy=RarityPair(id=oObj.id,expansion=oObj.expansion,rarity=oObj.rarity,\
+                connection=trans)
+    elif oVer.checkVersions([RarityPair],[RarityPair.tableversion]):
+        for oObj in RarityPair.select(connection=orig_conn):
+            oCopy=RarityPair(id=oObj.id,expansion=oObj.expansion,rarity=oObj.rarity,\
                 connection=trans)
     return (True,[])
 
@@ -221,7 +268,7 @@ def CopyOldAbstractCard(orig_conn,trans):
     bFirstImbuedCreedMessage=True
     if oVer.checkVersions([AbstractCard],[AbstractCard.tableversion]):
         for oCard in AbstractCard.select(connection=orig_conn):
-            oCardCopy=AbstractCard(id=oCard.id,cannonicalname=oCard.cannonicalname,name=oCard.name,text=oCard.text,connection=trans)
+            oCardCopy=AbstractCard(id=oCard.id,canonicalName=oCard.canonicalName,name=oCard.name,text=oCard.text,connection=trans)
             # If I don't do things this way, I get encoding issues
             # I don't really feel like trying to understand why
             oCardCopy.group=oCard.group
@@ -252,7 +299,7 @@ def CopyOldAbstractCard(orig_conn,trans):
     elif oVer.checkVersions([AbstractCard],[1]) or \
          oVer.checkVersions([AbstractCard],[-1]):
         for oCard in AbstractCard_v1.select(connection=orig_conn):
-            oCardCopy=AbstractCard(id=oCard.id,cannonicalname=oCard.name.lower(),name=oCard.name,text=oCard.text,connection=trans)
+            oCardCopy=AbstractCard(id=oCard.id,canonicalName=oCard.name.lower(),name=oCard.name,text=oCard.text,connection=trans)
             oCardCopy.group=oCard.group
             oCardCopy.capacity=oCard.capacity
             oCardCopy.cost=oCard.cost
@@ -260,35 +307,46 @@ def CopyOldAbstractCard(orig_conn,trans):
             oCardCopy.level=oCard.level
             for oData in oCard.rarity:
                 oCardCopy.addRarityPair(oData)
-            for oData in oCard.discipline:
-                if oData.name[:2]=='v_':
-                    oCardCopy.addVirtue(IVirtue(oData.name[2:]))
-                else:
-                    oCardCopy.addDisciplinePair(oData)
             for oData in oCard.rulings:
                 oCardCopy.addRuling(oData)
             for oData in oCard.clan:
                 oCardCopy.addClan(oData)
             for oData in oCard.cardtype:
                 oCardCopy.addCardType(oData)
-            for oData in oCard.sect:
-                oCardCopy.addSect(oData)
-            for oData in oCard.title:
-                oCardCopy.addTitle(oData)
-            (sSect,sTitle)=parseText(oCard.text)
+            oCardCopy.syncUpdate()
+            (sSect,sTitle)=parseText(oCard)
+            for oData in oCard.discipline:
+                if oData.discipline.name[:2]=='v_':
+                    # Need to point adaptors at new database
+                    oldconn=sqlhub.processConnection
+                    sqlhub.processConnection=trans
+                    oVirtue=IVirtue(oData.discipline.name[2:])
+                    sqlhub.processConnection=oldconn
+                    oCardCopy.addVirtue(oVirtue)
+                else:
+                    oCardCopy.addDisciplinePair(oData)
             if sSect is not None:
-                oCardCopy.addSect(ISect(sSect))
+                # Need to point adaptors at new database
+                oldconn=sqlhub.processConnection
+                sqlhub.processConnection=trans
+                oSect=ISect(sSect)
+                sqlhub.processConnection=oldconn
+                oCardCopy.addSect(oSect)
             if sTitle is not None:
-                oCardCopy.addTitle(ITitle(sTitle))
+                # Need to point adaptors at new database
+                oldconn=sqlhub.processConnection
+                sqlhub.processConnection=trans
+                oTitle=ITitle(sTitle)
+                sqlhub.processConnection=oldconn
+                oCardCopy.addTitle(oTitle)
             aTypes=[oT.name for oT in oCard.cardtype]
             if 'Imbued' in aTypes:
                 if bFirstImbuedCreedMessage:
                     aMessages.append('Missing data for the Imbued. You will need to reimport the White wolf card list for these to be correct')
                     bFirstImbuedCreedMessage=False
-                aMessages.append('Unable to infer sensible values for life and creed for ',oCard.name.encode('ascii','xmlcharrefreplace'))
+                aMessages.append('Unable to infer sensible values for life and creed for '+oCard.name.encode('ascii','xmlcharrefreplace'))
             oCardCopy.syncUpdate()
     return (True,aMessages)
-
 
 def CopyOldPhysicalCard(orig_conn,trans):
     oVer=DatabaseVersion()
@@ -309,7 +367,7 @@ def CopyOldPhysicalCardSet(orig_conn,trans):
         for oSet in PhysicalCardSet.select(connection=orig_conn):
             oCopy=PhysicalCardSet(id=oSet.id,name=oSet.name,\
                     author=oSet.author,comment=oSet.comment,\
-                    annotation=oSet.annotation,\
+                    annotations=oSet.annotations,\
                     connection=trans)
             for oCard in oSet.cards:
                 oCopy.addPhysicalCard(oCard.id)
@@ -318,7 +376,7 @@ def CopyOldPhysicalCardSet(orig_conn,trans):
         for oSet in PhysicalCardSet_v2.select(connection=orig_conn):
             oCopy=PhysicalCardSet(id=oSet.id,name=oSet.name,\
                     author=oSet.author,comment=oSet.comment,\
-                    annotation=None,\
+                    annotations=None,\
                     connection=trans)
             for oCard in oSet.cards:
                 oCopy.addPhysicalCard(oCard.id)
@@ -339,7 +397,7 @@ def CopyOldAbstractCardSet(orig_conn,trans):
         for oSet in AbstractCardSet.select(connection=orig_conn):
             oCopy=AbstractCardSet(id=oSet.id,name=oSet.name,\
                     author=oSet.author,comment=oSet.comment,\
-                    annotation=oSet.annotation,\
+                    annotations=oSet.annotations,\
                     connection=trans)
             for oCard in oSet.cards:
                 oCopy.addAbstractCard(oCard.id)
@@ -348,7 +406,7 @@ def CopyOldAbstractCardSet(orig_conn,trans):
         for oSet in AbstractCardSet_v2.select(connection=orig_conn):
             oCopy=AbstractCardSet(id=oSet.id,name=oSet.name,\
                     author=oSet.author,comment=oSet.comment,\
-                    annotation=None,\
+                    annotations=None,\
                     connection=trans)
             for oCard in oSet.cards:
                 oCopy.addAbstractCard(oCard.id)
@@ -379,7 +437,7 @@ def readOldDB(orig_conn,dest_conn):
     (bOK,aNewMessages)=CopyOldRarity(orig_conn,trans)
     bRes=bRes and bOK
     aMessages+=aNewMessages
-    (bOK,aMessages)=CopyOldExpansion(orig_conn,trans,aMessages)
+    (bOK,aMessages)=CopyOldExpansion(orig_conn,trans)
     bRes=bRes and bOK
     aMessages+=aNewMessages
     (bOK,aNewMessages)=CopyOldDiscipline(orig_conn,trans)
@@ -413,7 +471,7 @@ def readOldDB(orig_conn,dest_conn):
     bRes=bRes and bOK
     aMessages+=aNewMessages
     trans.commit()
-    return (bRes)
+    return (bRes,aMessages)
 
 def copyDB(orig_conn,dest_conn):
     # This is a straight copy, with no provision for funky stuff
@@ -435,7 +493,7 @@ def copyDB(orig_conn,dest_conn):
     for oObj in Creed.select(connection=orig_conn):
         oCopy=Creed(id=oObj.id,name=oObj.name,shortname=oObj.shortname,connection=trans)
     for oObj in Virtue.select(connection=orig_conn):
-        oCopy=Virtue(id=oObj.id,name=oObj.name,shortname=oObj.shortname,connection=trans)
+        oCopy=Virtue(id=oObj.id,name=oObj.name,fullname=oObj.fullname,connection=trans)
     for oObj in CardType.select(connection=orig_conn):
         oCopy=CardType(id=oObj.id,name=oObj.name,connection=trans)
     for oObj in Ruling.select(connection=orig_conn):
@@ -448,7 +506,7 @@ def copyDB(orig_conn,dest_conn):
     trans.commit()
     trans=dest_conn.transaction()
     for oCard in AbstractCard.select(connection=orig_conn):
-        oCardCopy=AbstractCard(id=oCard.id,cannonicalname=oCard.cannonicalname,name=oCard.name,text=oCard.text,connection=trans)
+        oCardCopy=AbstractCard(id=oCard.id,canonicalName=oCard.canonicalName,name=oCard.name,text=oCard.text,connection=trans)
         oCardCopy.group=oCard.group
         oCardCopy.capacity=oCard.capacity
         oCardCopy.cost=oCard.cost
@@ -477,14 +535,14 @@ def copyDB(orig_conn,dest_conn):
     trans.commit()
     trans=dest_conn.transaction()
     for oCard in PhysicalCard.select(connection=orig_conn):
-        oCardCopy=PhysicalCard(id=oCard.id,abstractCard=oCard.abstractCard,connection=trans)
+        oCardCopy=PhysicalCard(id=oCard.id,abstractCard=oCard.abstractCard,expansion=oCard.expansion,connection=trans)
     trans.commit()
     trans=dest_conn.transaction()
     # Copy Physical card sets
     for oSet in PhysicalCardSet.select(connection=orig_conn):
         oCopy=PhysicalCardSet(id=oSet.id,name=oSet.name,\
                 author=oSet.author,comment=oSet.comment,\
-                annotation=oSet.annotation,\
+                annotations=oSet.annotations,\
                 connection=trans)
         for oCard in oSet.cards:
             oCopy.addPhysicalCard(oCard.id)
@@ -494,7 +552,7 @@ def copyDB(orig_conn,dest_conn):
     for oSet in AbstractCardSet.select(connection=orig_conn):
         oCopy=AbstractCardSet(id=oSet.id,name=oSet.name,\
                 author=oSet.author,comment=oSet.comment,\
-                annotation=oSet.annotation,\
+                annotations=oSet.annotations,\
                 connection=trans)
         for oCard in oSet.cards:
             oCopy.addAbstractCard(oCard.id)
@@ -511,7 +569,7 @@ def copyToNewAbstractCardDB(orig_conn,new_conn):
     target=new_conn.transaction()
     # Copy the physical card list
     for oCard in PhysicalCard.select(connection=orig_conn):
-        sName=oCard.abstractCard.cannonicalname
+        sName=oCard.abstractCard.canonicalName
         try:
             oNewAbsCard=AbstractCard.byCannonicalName(sName,connection=target)
             oCardCopy=PhysicalCard(id=oCard.id,abstractCard=oNewAbsCard,connection=target)
@@ -535,7 +593,7 @@ def copyToNewAbstractCardDB(orig_conn,new_conn):
                 connection=target)
         for oCard in oSet.cards:
             sName=oCard.name
-            oNewAbsCard=AbstractCard.byName(sName,connection=target)
+            oNewAbsCard=AbstractCard.byCanonicalName(sName.lower(),connection=target)
             oCopy.addAbstractCard(oNewAbsCard.id)
         oCopy.syncUpdate()
     target.commit()

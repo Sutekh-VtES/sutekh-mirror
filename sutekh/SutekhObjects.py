@@ -40,7 +40,7 @@ class AbstractCard(SQLObject):
     tableversion = 2
     sqlmeta.lazyUpdate = True
 
-    cannonicalname = UnicodeCol(alternateID=True,length=50)
+    canonicalName = UnicodeCol(alternateID=True,length=50)
     name = UnicodeCol(length=50)
     text = UnicodeCol()
     group = IntCol(default=None,dbName='grp')
@@ -88,7 +88,7 @@ class PhysicalCardSet(SQLObject):
     name = UnicodeCol(alternateID=True,length=50)
     author = UnicodeCol(length=50,default='')
     comment = UnicodeCol(default='')
-    annontations = UnicodeCol(default='')
+    annotations = UnicodeCol(default='')
     cards = RelatedJoin('PhysicalCard',intermediateTable='physical_map',createRelatedTable=False)
 
 class RarityPair(SQLObject):
