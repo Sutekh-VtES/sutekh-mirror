@@ -9,7 +9,7 @@ from sutekh.SutekhObjects import PhysicalCard, AbstractCard, AbstractCardSet,\
                                  PhysicalCardSet, Expansion, Clan, Virtue, \
                                  Discipline, Rarity, RarityPair, CardType, \
                                  Ruling, ObjectList, DisciplinePair, Creed, \
-                                 IVirtue, ISect, ITitle
+                                 IVirtue, ISect, ITitle, Sect, Title
 from sutekh.SutekhUtility import refreshTables
 from sutekh.DatabaseVersion import DatabaseVersion
 from sutekh.WhiteWolfParser import parseText
@@ -503,6 +503,10 @@ def copyDB(orig_conn,dest_conn):
     for oObj in RarityPair.select(connection=orig_conn):
         oCopy=RarityPair(id=oObj.id,expansion=oObj.expansion,rarity=oObj.rarity,\
                 connection=trans)
+    for oObj in Sect.select(connection=orig_conn):
+        oCopy=Sect(id=oObj.id,name=oObj.name,connection=trans)
+    for oObj in Title.select(connection=orig_conn):
+        oCopy=Title(id=oObj.id,name=oObj.name,connection=trans)
     trans.commit()
     trans=dest_conn.transaction()
     for oCard in AbstractCard.select(connection=orig_conn):
