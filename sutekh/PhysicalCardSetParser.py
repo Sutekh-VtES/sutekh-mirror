@@ -53,7 +53,7 @@ class PhysicalCardSetHandler(ContentHandler):
             iCount = int(oAttrs.getValue('count'),10)
 
             try:
-                oAbs = AbstractCard.byName(sName.encode('utf8'))
+                oAbs = AbstractCard.byCanonicalName(sName.encode('utf8').lower())
             except SQLObjectNotFound:
                 oAbs=None
                 self.aUnknown.append(sName)
