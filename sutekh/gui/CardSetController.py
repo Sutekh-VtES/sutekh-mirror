@@ -56,7 +56,7 @@ class PhysicalCardSetController(CardSetController):
         Returns True if a card was successfully removed, False otherwise.
         """
         try:
-            oC = AbstractCard.byCannonicalName(sName.lower())
+            oC = AbstractCard.byCanonicalName(sName.lower())
         except SQLObjectNotFound:
             return False
 

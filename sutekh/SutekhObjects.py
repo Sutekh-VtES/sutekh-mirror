@@ -658,9 +658,9 @@ class AbstractCardAdapter(object):
 
     def __new__(cls,s):
         try:
-            oC = AbstractCard.byCannonicalName(s.encode('utf8').lower())
+            oC = AbstractCard.byCanonicalName(s.encode('utf8').lower())
         except SQLObjectNotFound:
-            oC = AbstractCard(cannonicalname=s.lower(),name=s,text="")
+            oC = AbstractCard(canonicalname=s.lower(),name=s,text="")
         return oC
 
 class RulingAdapter(object):
