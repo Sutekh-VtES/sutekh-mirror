@@ -6,7 +6,32 @@
 import gtk, gobject
 from sutekh.Filters import FilterAndBox, SpecificCardFilter
 from sutekh.Groupings import CardTypeGrouping
-from sutekh.SutekhObjects import AbstractCard, PhysicalCard, AbstractCardSet
+from sutekh.SutekhObjects import AbstractCard, PhysicalCard, AbstractCardSet, IAbstractCard
+
+class CardListModelListener(object):
+    """
+    Listens to updates, i.e. .load(...), .alterCardCount(...), .addNewCard(..) calls,
+    to CardListModels.
+    """
+    def load(self):
+        """
+        The CardListModel has reloaded itself.
+        """
+        pass
+
+    def alterCardCount(self,oCard,iChg):
+        """
+        The count of the given card has been altered by iChg.
+        oCard: AbstractCard for the card altered (the actual card may be a Physical Card).
+        """
+        pass
+
+    def addNewCard(self,oCard):
+        """
+        A single copy of the given card has been added.
+        oCard: AbstractCard for the card altered (the actual card may be a Physical Card).
+        """
+        pass
 
 class CardListModel(gtk.TreeStore):
     """
@@ -24,12 +49,20 @@ class CardListModel(gtk.TreeStore):
         self.applyfilter = False # whether to apply the select filter
         self.selectfilter = None # additional filters for selecting from the list
 
+        self.listeners = {} # dictionary of CardListModelListeners
+
     store = property(fget=lambda self: self._oGtkStore)
     cardclass = property(fget=lambda self: self._cCardClass, fset=lambda self,x: setattr(self,'_cCardClass',x))
     groupby = property(fget=lambda self: self._cGroupBy, fset=lambda self,x: setattr(self,'_cGroupBy',x))
     basefilter = property(fget=lambda self: self._oBaseFilter, fset=lambda self,x: setattr(self,'_oBaseFilter',x))
     applyfilter = property(fget=lambda self: self._bApplyFilter, fset=lambda self,x: setattr(self,'_bApplyFilter',x))
     selectfilter = property(fget=lambda self: self._oSelectFilter, fset=lambda self,x: setattr(self,'_oSelectFilter',x))
+
+    def addListener(self,oListener):
+        self.listeners[oListener] = None
+
+    def removeListener(self,oListener):
+        del self.listeners[oListener]
 
     def load(self):
         """
@@ -70,6 +103,10 @@ class CardListModel(gtk.TreeStore):
                 0, sGroup,
                 1, iGrpCnt
             )
+
+        # Notify Listeners
+        for oListener in self.listeners:
+            oListener.load()
 
     def getCardIterator(self,oFilter):
         """
@@ -198,6 +235,11 @@ class CardListModel(gtk.TreeStore):
         if iCnt <= 0:
             del self._dName2Iter[sCardName]
 
+        # Notify Listeners
+        oCard = IAbstractCard(sCardName)
+        for oListener in self.listeners:
+            oListener.alterCardCount(oCard,iChg)
+
     def addNewCard(self,sCardName):
         """
         If the card sCardName is not in the current list
@@ -251,3 +293,8 @@ class CardListModel(gtk.TreeStore):
             self.set(oSectionIter,
                 1, iGrpCnt
             )
+
+        # Notify Listeners
+        oCard = IAbstractCard(sCardName)
+        for oListener in self.listeners:
+            oListener.addNewCard(oCard)
