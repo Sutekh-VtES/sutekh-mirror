@@ -1,6 +1,7 @@
 02 May 2007
  * Allow plugins to place widgets in a box underneath the window menu 
    for toolbar'ish applications
+ * Add card counting plugin to CardSets using this
 
 08 Apr 2007
  * Continue removing import * statements
