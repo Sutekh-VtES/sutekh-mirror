@@ -62,6 +62,7 @@ class CardListView(gtk.TreeView,object):
 
     def getWindow(self): return self._oWin
     def getModel(self): return self._oModel
+    def getController(self): return self._oC
 
     # Activating Rows
 

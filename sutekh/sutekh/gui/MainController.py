@@ -49,8 +49,7 @@ class MainController(object):
 
         # Link
         self.__oAbstractCardWin.addParts(self.__oMenu,self.__oAbstractCards)
-        self.__oPhysicalCardWin.addParts(self.__oPhysicalCards.getMenu(), \
-                             self.__oPhysicalCards.getView())
+        self.__oPhysicalCardWin.addParts(self.__oPhysicalCards)
         self.__oCardTextWin.addParts(self.__oCardText)
 
     def run(self):

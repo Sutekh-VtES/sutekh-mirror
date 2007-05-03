@@ -6,13 +6,13 @@ Backend:
  * Add a Filter on Expansion+Rarity Pairs
  * Handle 'Creed' and 'Life' attributes of Imbued in WhiteWolfParser (done in branch)
  * DatabaseUpgrade functionality needs to be reworked to have unified way of passing 
-   errors & warnings to the user interface (either Cli or Gui)
+   errors & warnings to the user interface (either Cli or Gui) (kinda done on branch)
  * Better error and exception handling
  * Rework SutekhUtility to be less of a mess
 
 Database
  * Add title & sect columns to Abstract Card (done in branch)
- * Add Annotations field to the CardSets (done in branchi, gui aspects need work)
+ * Add Annotations field to the CardSets (done in branch)
 
 Gui (Functionality):
  * Improve Filter selection dialog.  (And/Or)
@@ -23,6 +23,10 @@ Gui (Functionality):
  * Compare CardSet Plugin (basic version done. Could be improved)
  * Ability to specify the expansion a physical card comes from.
  * Plugin for importing an abstract card set into your list of physical cards.
+ * Consolidate various dialogs - current reusablility is low
+ * Refactor gui classes somewhat - there's a fair bit code duplication ATM
+   between the different View-Window-Controller sets for instance, and this
+   looks like something worth addressing
 
 Gui (Presentation):
  * Give gui resource handling capablities to save window pos, etc - NM

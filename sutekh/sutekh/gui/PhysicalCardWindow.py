@@ -16,12 +16,21 @@ class PhysicalCardWindow(gtk.Window,object):
         self.set_title("Sutekh: Card Collection")
         self.set_default_size(400, 400)
 
-    def addParts(self,PhysMenu,oPhysicalCards):
+    def addParts(self,oPhysController):
         wMbox = gtk.VBox(False, 2)
 
-        wMbox.pack_start(PhysMenu,False,False)
+        wMbox.pack_start(oPhysController.getMenu(),False,False)
+        oToolbar=gtk.VBox(False,2)
+        bInsertToolbar=False
+        for oPlugin in oPhysController.getPlugins():
+            oW=oPlugin.getToolbarWidget()
+            if oW is not None:
+                oToolbar.pack_start(oW)
+                bInsertToolbar=True
+        if bInsertToolbar:
+            wMbox.pack_start(oToolbar, False, False)
 
-        wMbox.pack_start(AutoScrolledWindow(oPhysicalCards), expand=True)
+        wMbox.pack_start(AutoScrolledWindow(oPhysController.getView()), expand=True)
 
         self.add(wMbox)
         self.show_all()

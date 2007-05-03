@@ -73,6 +73,13 @@ class CardListPlugin(object):
         """
         return None
 
+    def getToolbarWidget(self):
+        """
+        Return an arbitary gtk.Widget which is added to a VBox between the menu
+        and the scrolled display area. Return None is no toolbar Widget is needed
+        """
+        return None
+
     def getDesiredMenu(self):
         """
         Return the name of the menu this plugin should be added to, or None

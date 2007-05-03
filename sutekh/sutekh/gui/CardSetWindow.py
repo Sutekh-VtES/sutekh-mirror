@@ -26,8 +26,20 @@ class CardSetWindow(gtk.Window,object):
         wMbox = gtk.VBox(False, 2)
 
         wMbox.pack_start(oCardSetMenu, False, False)
+
+        oToolbar=gtk.VBox(False,2)
+        bInsertToolbar=False
+        for oPlugin in oCardSetView.getController().getPlugins():
+            oW=oPlugin.getToolbarWidget()
+            if oW is not None:
+                oToolbar.pack_start(oW)
+                bInsertToolbar=True
+        if bInsertToolbar:
+            wMbox.pack_start(oToolbar, False, False)
+
         wMbox.pack_end(AutoScrolledWindow(oCardSetView), expand=True)
         self.__oView = oCardSetView
+
 
         self.add(wMbox)
         self.show_all()
