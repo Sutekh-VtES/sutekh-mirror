@@ -3,8 +3,9 @@
 # GPL - see COPYING for details
 
 import gtk
-from sutekh.Groupings import CardTypeGrouping, ClanGrouping, DisciplineGrouping,\
-                             ExpansionGrouping, RarityGrouping
+from sutekh.Groupings import CardTypeGrouping, ClanGrouping, DisciplineGrouping, \
+                             ExpansionGrouping, RarityGrouping, CryptLibraryGrouping, \
+                             NullGrouping
 from sutekh.gui.PluginManager import CardListPlugin
 
 class GroupCardList(CardListPlugin):
@@ -14,10 +15,12 @@ class GroupCardList(CardListPlugin):
         super(GroupCardList,self).__init__(*args,**kws)
         self._dGrpings = {}
         self._dGrpings['Card Type'] = CardTypeGrouping
+        self._dGrpings['Crypt or Library'] = CryptLibraryGrouping
         self._dGrpings['Clan'] = ClanGrouping
         self._dGrpings['Discipline'] = DisciplineGrouping
         self._dGrpings['Expansion'] = ExpansionGrouping
         self._dGrpings['Rarity'] = RarityGrouping
+        self._dGrpings['No Grouping'] = NullGrouping
 
     def getMenuItem(self):
         """
