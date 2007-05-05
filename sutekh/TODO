@@ -2,8 +2,6 @@ Backend:
  * Add ordering mechanism for card lists.
  * Make filtering less slow (mainly for sqlite) 
       (seems OK with the indexes. Do we need more?).
- * Additional Filter (Votes, Sect, etc)
- * Add a Filter on Expansion+Rarity Pairs
  * Handle 'Creed' and 'Life' attributes of Imbued in WhiteWolfParser (done in branch)
  * DatabaseUpgrade functionality needs to be reworked to have unified way of passing 
    errors & warnings to the user interface (either Cli or Gui) (kinda done on branch)
@@ -19,10 +17,8 @@ Gui (Functionality):
  * Add ordering selection dialog (possibly part of filtering dialog).
  * Turn AnalyzeDeck into something more useful - NM
  * Finish ClusterCardList plugin.
- * Create CardSet Management Window (Abstract/Physical)
  * Compare CardSet Plugin (basic version done. Could be improved)
  * Ability to specify the expansion a physical card comes from.
- * Plugin for importing an abstract card set into your list of physical cards.
  * Consolidate various dialogs - current reusablility is low
  * Refactor gui classes somewhat - there's a fair bit code duplication ATM
    between the different View-Window-Controller sets for instance, and this
@@ -37,7 +33,11 @@ Website:
  * Create logo for wiki.
 
 Release Candidate tasks:
- * Check everything works on Windows again
+ - Check everything works on Windows again (check with Philip before release)
  - Create setup.py file with bdist_egg (needs testing)
  * Improve "with text mode" option for HTML export (xsl file needs work)
- - Mention GPL in GUI. Maybe an About dialog?
+ * Mention GPL in GUI. Maybe an About dialog?
+ * Create Card Set Management Window (Abstract/Physical)
+ * Merge Neil's database upgrade branch.
+ * Add a Filter on Expansion + Rarity Pairs.
+ * Additional Filter (Votes, Sect, etc).
