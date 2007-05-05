@@ -281,8 +281,6 @@ class MainMenu(gtk.MenuBar,object):
         Name=Dialog.getName()
         if Name != None:
             window = self.__oC.createNewPhysicalCardSetWindow(Name)
-            if window != None:
-                window.load()
 
     def doLoadACS(self,widget):
         # Popup Load Dialog
@@ -291,9 +289,6 @@ class MainMenu(gtk.MenuBar,object):
         Name=Dialog.getName()
         if Name != None:
             window = self.__oC.createNewAbstractCardSetWindow(Name)
-            if window != None:
-                window.load()
-
 
     def getApplyFilter(self):
         return self.iApply.get_active()
