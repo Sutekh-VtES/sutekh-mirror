@@ -2,9 +2,6 @@
 # Copyright 2006 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
 
-from sutekh.SutekhObjects import *
-from sqlobject import AND, OR, LIKE
-from sqlobject.sqlbuilder import Table
 import sets
 
 # Base Grouping Class
@@ -59,3 +56,12 @@ class ExpansionGrouping(IterGrouping):
 class RarityGrouping(IterGrouping):
     def __init__(self,oIter,fGetCard=lambda x:x):
         super(RarityGrouping,self).__init__(oIter,lambda x: [y.rarity.name for y in fGetCard(x).rarity])
+
+class CryptLibraryGrouping(IterGrouping):
+    def __init__(self,oIter,fGetCard=lambda x:x):
+        # Vampires and Imbued have exactly one card type (we hope that WW don't change that)
+        super(CryptLibraryGrouping,self).__init__(oIter,lambda x: [fGetCard(x).cardtype[0].name in ["Vampire","Imbued"] and "Crypt" or "Library"])
+
+class NullGrouping(IterGrouping):
+    def __init__(self,oIter,fGetCard=lambda x:x):
+        super(NullGrouping,self).__init__(oIter,lambda x: ["All"])
