@@ -10,7 +10,16 @@ from sutekh.gui.CardListModel import CardListModelListener
 class CountCardSetCards(CardListPlugin,CardListModelListener):
     dTableVersions = {"AbstractCardSet" : [1,2],
                       "PhysicalCardSet" : [1,2]}
-    aModelsSupported = ["AbstractCardSet","PhysicalCardSet"]
+    aModelsSupported = ["AbstractCardSet","PhysicalCardSet","PhysicalCard"]
+
+    def __init__(self,*args,**kwargs):
+        super(CountCardSetCards,self).__init__(*args,**kwargs)
+
+        self.__iTot=0
+        self.__iCrypt=0
+        self.__iLibrary=0
+
+        self.model.addListener(self)
 
     def __idCard(self,oCard):
         sType=list(oCard.cardtype)[0].name
@@ -25,13 +34,13 @@ class CountCardSetCards(CardListPlugin,CardListModelListener):
         """
         if not self.checkVersions() or not self.checkModelType():
             return None
-        iHBox=gtk.HBox(False,2)
-        wTotalTextLabel=gtk.Label('Total Cards : ')
-        wCryptTextLabel=gtk.Label('Crypt Cards : ')
-        wLibraryTextLabel=gtk.Label('Library Cards : ')
-        self.wTotalLabel=gtk.Label('0')
-        self.wCryptLabel=gtk.Label('0')
-        self.wLibraryLabel=gtk.Label('0')
+        iHBox = gtk.HBox(False,2)
+        wTotalTextLabel = gtk.Label('Total Cards : ')
+        wCryptTextLabel = gtk.Label('Crypt Cards : ')
+        wLibraryTextLabel = gtk.Label('Library Cards : ')
+        self.wTotalLabel = gtk.Label('0')
+        self.wCryptLabel = gtk.Label('0')
+        self.wLibraryLabel = gtk.Label('0')
 
         iHBox.pack_start(wTotalTextLabel)
         iHBox.pack_start(self.wTotalLabel)
@@ -40,11 +49,7 @@ class CountCardSetCards(CardListPlugin,CardListModelListener):
         iHBox.pack_start(wLibraryTextLabel)
         iHBox.pack_start(self.wLibraryLabel)
 
-        self.model.addListener(self)
-
-        self.__iTot=0
-        self.__iCrypt=0
-        self.__iLibrary=0
+        self.load()
 
         return iHBox
 
@@ -54,35 +59,35 @@ class CountCardSetCards(CardListPlugin,CardListModelListener):
         self.wLibraryLabel.set_markup('<b>'+str(self.__iLibrary)+'</b>')
 
     def load(self):
-        self.__iCrypt=0
-        self.__iLibrary=0
-        aAllCards=list(self.model.getCardIterator(self.model.getSelectFilter()))
-        self.__iTot=len(aAllCards)
+        self.__iCrypt = 0
+        self.__iLibrary = 0
+        aAllCards = list(self.model.getCardIterator(self.model.getSelectFilter()))
+        self.__iTot = len(aAllCards)
         for oCard in aAllCards:
             if type(oCard) is PhysicalCard:
-                sType=self.__idCard(oCard.abstractCard)
+                sType = self.__idCard(oCard.abstractCard)
             else:
-                sType=self.__idCard(oCard)
-            if sType=='Crypt':
-                self.__iCrypt+=1
+                sType = self.__idCard(oCard)
+            if sType == 'Crypt':
+                self.__iCrypt += 1
             else:
-                self.__iLibrary+=1
+                self.__iLibrary += 1
         self.updateNumbers()
 
     def alterCardCount(self,oCard,iChg):
         self.__iTot+=iChg
-        if self.__idCard(oCard)=='Crypt':
-            self.__iCrypt+=iChg
+        if self.__idCard(oCard) == 'Crypt':
+            self.__iCrypt += iChg
         else:
-            self.__iLibrary+=iChg
+            self.__iLibrary += iChg
         self.updateNumbers()
 
     def addNewCard(self,oCard):
-        self.__iTot+=1
-        if self.__idCard(oCard)=='Crypt':
-            self.__iCrypt+=1
+        self.__iTot += 1
+        if self.__idCard(oCard) == 'Crypt':
+            self.__iCrypt += 1
         else:
-            self.__iLibrary+=1
+            self.__iLibrary += 1
         self.updateNumbers()
 
 plugin = CountCardSetCards
