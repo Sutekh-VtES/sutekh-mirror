@@ -34,11 +34,11 @@ class AbstractCardSetFromPhysical(CardListPlugin):
         oPC=PhysicalCardSet.byName(self.view.sSetName)
         oDlg = CreateCardSetDialog(parent,"AbstractCardSet",oPC.author,oPC.comment)
         oDlg.run()
+
         (sName,sAuthor,sDesc) = oDlg.getName()
+
         if sName is not None:
-	    print sName
             oNameList = AbstractCardSet.selectBy(name=sName)
-	    print oNameList
             if oNameList.count()!=0:
                 Complaint=gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
                         gtk.BUTTONS_CLOSE,"Chosen Abstract Card Set already exists")

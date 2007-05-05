@@ -44,13 +44,7 @@ class PhysicalCardSetFromAbstract(CardListPlugin):
         oDlg.run()
 
         (sName, sAuthor, sDesc) = oDlg.getName()
-
         if sName is None:
-            Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
-                                          gtk.BUTTONS_CLOSE,
-                                          "You did not specify a name for the physical card set.")
-            Complaint.run()
-            Complaint.destroy()
             return
 
         aNameList = PhysicalCardSet.selectBy(name=sName)
