@@ -19,7 +19,10 @@ class CountCardSetCards(CardListPlugin,CardListModelListener):
         self.__iCrypt=0
         self.__iLibrary=0
 
-        self.model.addListener(self)
+        # We only add listeners to windows we're going to display the toolbar
+        # on
+        if self.checkVersions() and self.checkModelType():
+            self.model.addListener(self)
 
     def __idCard(self,oCard):
         sType=list(oCard.cardtype)[0].name
@@ -34,6 +37,7 @@ class CountCardSetCards(CardListPlugin,CardListModelListener):
         """
         if not self.checkVersions() or not self.checkModelType():
             return None
+        
         iHBox = gtk.HBox(False,2)
         wTotalTextLabel = gtk.Label('Total Cards : ')
         wCryptTextLabel = gtk.Label('Crypt Cards : ')
