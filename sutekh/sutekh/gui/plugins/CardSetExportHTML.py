@@ -6,6 +6,7 @@ import gtk
 from sutekh.SutekhObjects import PhysicalCardSet, AbstractCardSet, IAbstractCard
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.WriteArdbXML import WriteArdbXML
+from pkg_resources import resource_string
 import os
 
 try:
@@ -32,8 +33,8 @@ class CardSetExportHTML(CardListPlugin):
 
         # Check we can find the deck2html.xsl file
         try:
-            sDeckXSL = os.path.join(os.path.dirname(__file__),"deck2html.xsl")
-            styledoc = libxml2.parseFile(sDeckXSL)
+            sDeckXSL = resource_string(__name__,"deck2html.xsl")
+            styledoc = libxml2.parseDoc(sDeckXSL)
             self._style = libxslt.parseStylesheetDoc(styledoc)
         except libxml2.parserError:
             print "Unable to load deck2html.xsl style sheet."
@@ -41,8 +42,8 @@ class CardSetExportHTML(CardListPlugin):
 
         # Check if we can enable the "Include Card Text" Option
         try:
-            sDeckXSLwithText = os.path.join(os.path.dirname(__file__),"deck2html_with_text.xsl")
-            styledocText = libxml2.parseFile(sDeckXSLwithText)
+            sDeckXSL = resource_string(__name__,"deck2html_with_text.xsl")
+            styledocText = libxml2.parseDoc(sDeckXSL)
             self._styleText = libxslt.parseStylesheetDoc(styledocText)
         except libxml2.parserError:
             self._styleText=None
