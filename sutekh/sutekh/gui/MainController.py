@@ -15,6 +15,7 @@ from sutekh.gui.MainMenu import MainMenu
 from sutekh.gui.CardTextView import CardTextView
 from sutekh.gui.AbstractCardView import AbstractCardView
 from sutekh.gui.PluginManager import PluginManager
+from sutekh.gui.AboutDialog import SutekhAboutDialog
 from sutekh.SutekhObjectCache import SutekhObjectCache
 from sutekh.SutekhObjects import AbstractCard
 
@@ -125,6 +126,9 @@ class MainController(object):
 
     def runFilter(self,widget):
         self.__oAbstractCards.runFilter(self.__oMenu.getApplyFilter())
+
+    def showAboutDialog(self,widget):
+        SutekhAboutDialog().run()
 
     def getPluginManager(self):
         return self.__oPluginManager
