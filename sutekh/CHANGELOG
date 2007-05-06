@@ -1,3 +1,9 @@
+06 May 2007
+ * Add simple About dialog.
+ * Add COPYING to sutekh package data.
+ * Use pkg_resources to read in XSL files and COPYING.
+ * Move SutekhInfo from setup.py into sutekh.SutekhInfo.
+
 05 May 2007
  * Add Crypt/Library grouping and null grouping.
  * Clean up card set creation dialog.

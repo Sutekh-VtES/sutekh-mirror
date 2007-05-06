@@ -23,6 +23,7 @@ Gui (Functionality):
  * Refactor gui classes somewhat - there's a fair bit code duplication ATM
    between the different View-Window-Controller sets for instance, and this
    looks like something worth addressing
+ * Improve About dialog.
 
 Gui (Presentation):
  * Give gui resource handling capablities to save window pos, etc - NM
@@ -36,7 +37,6 @@ Release Candidate tasks:
  - Check everything works on Windows again (check with Philip before release)
  - Create setup.py file with bdist_egg (needs testing)
  * Improve "with text mode" option for HTML export (xsl file needs work)
- * Mention GPL in GUI. Maybe an About dialog?
  * Create Card Set Management Window (Abstract/Physical)
  * Merge Neil's database upgrade branch.
  * Add a Filter on Expansion + Rarity Pairs.
