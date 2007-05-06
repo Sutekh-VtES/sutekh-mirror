@@ -7,7 +7,6 @@ from sutekh.SutekhObjects import PhysicalCardSet, AbstractCardSet, IAbstractCard
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.WriteArdbXML import WriteArdbXML
 from pkg_resources import resource_string
-import os
 
 try:
     import libxml2
