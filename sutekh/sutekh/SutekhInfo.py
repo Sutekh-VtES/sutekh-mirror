@@ -2,6 +2,8 @@
 # Copyright 2007 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
 
+from pkg_resources import resource_string
+
 class SutekhInfo(object):
     VERSION = (0,3,2)
     VERSION_STR = '.'.join([str(x) for x in VERSION])
@@ -23,7 +25,7 @@ class SutekhInfo(object):
     SOURCEFORGE_URL = 'http://sourceforge.net/projects/sutekh/'
 
     LICENSE = 'GPL'
-    LICENSE_TEXT = "TODO: Read this from the COPYING file."
+    LICENSE_TEXT = resource_string(__name__,'COPYING')
 
     INSTALL_REQUIRES = [
         'SQLObject',

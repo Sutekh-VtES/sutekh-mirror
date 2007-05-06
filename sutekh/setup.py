@@ -30,7 +30,9 @@ setup   (   # Metadata
             packages = find_packages(),
             package_data = {
                 # Include XSLT files from all packages
-                '': ['*.xsl']
+                '': ['*.xsl'],
+                # Include LICENSE information for sutekh package
+                'sutekh': ['COPYING'],
             },
             scripts = ['sutekh/SutekhCli.py','sutekh/SutekhGui.py']
         )
