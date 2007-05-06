@@ -24,6 +24,7 @@ class PhysicalCardSetWriter(object):
             oPCS = PhysicalCardSet.byName(sPhysicalCardSetName)
             sAuthor=oPCS.author
             sComment=oPCS.comment
+            sAnnotation=oACS.annotation
         except SQLObjectNotFound:
             return
 
@@ -40,6 +41,7 @@ class PhysicalCardSetWriter(object):
         oCardsElem.setAttribute('name',sPhysicalCardSetName)
         oCardsElem.setAttribute('author',sAuthor)
         oCardsElem.setAttribute('comment',sComment)
+        oCardsElem.setAttribute('annotation',sAnnotation)
 
         for tKey, iNum in dPhys.iteritems():
             iId, sName = tKey
