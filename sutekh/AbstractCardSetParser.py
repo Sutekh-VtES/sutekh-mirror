@@ -28,8 +28,16 @@ class AbstractCardSetHandler(ContentHandler):
     def startElement(self,sTagName,oAttrs):
         if sTagName == 'abstractcardset':
             self.acsName = oAttrs.getValue('name')
-            sAuthor=oAttrs.getValue('author')
-            sComment=oAttrs.getValue('comment')
+            aAttributes=oAttrs.getNames()
+            sAuthor=None
+            sComment=None
+            sAnnotation=None
+            if 'author' in aAttributes:
+                sAuthor=oAttrs.getValue('author')
+            if 'comment' in aAttributes:
+                sComment=oAttrs.getValue('comment')
+            if 'anootation' in aAttributes:
+                sAnnotation=oAttrs.getValue('annotation')
             # Try and add acs to AbstractCardSet
             # Make sure
             try:
@@ -38,6 +46,7 @@ class AbstractCardSetHandler(ContentHandler):
                 # part of the acs
                 acs.author=sAuthor
                 acs.comment=sComment
+                acs.annotation=sAnnotation
                 acs.syncUpdate()
                 ids=[]
                 for card in acs.cards:
