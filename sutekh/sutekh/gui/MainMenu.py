@@ -27,7 +27,7 @@ class MainMenu(gtk.MenuBar,object):
         self.__createCardSetMenu()
         self.__createFilterMenu()
         self.__createPluginMenu()
-        self.__createAboutItem()
+        self.__createAboutMenu()
 
     def __createFileMenu(self):
         # setup sub menu
@@ -136,10 +136,18 @@ class MainMenu(gtk.MenuBar,object):
         if len(wMenu.get_children())==0:
             iMenu.set_sensitive(False)
 
-    def __createAboutItem(self):
-        iAbout = gtk.MenuItem("About")
-        iAbout.connect('activate', self.__oC.showAboutDialog)
-        self.add(iAbout)
+    def __createAboutMenu(self):
+        # setup sub menu
+        iMenu = gtk.MenuItem("About")
+        wMenu = gtk.Menu()
+        self.__dMenus["About"] = wMenu
+        iMenu.set_submenu(wMenu)
+
+        self.iAbout = gtk.MenuItem("About Sutekh")
+        self.iAbout.connect('activate', self.__oC.showAboutDialog)
+        wMenu.add(self.iAbout)
+
+        self.add(iMenu)
 
     def setLoadPhysicalState(self,openSets):
         # Determine if physLoad should be greyed out or not

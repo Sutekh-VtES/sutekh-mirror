@@ -11,8 +11,6 @@ class SutekhAboutDialog(gtk.AboutDialog):
     def __init__(self,*args,**kwargs):
         super(SutekhAboutDialog,self).__init__(*args,**kwargs)
 
-        self.connect("response", self.handleResponse)
-
         self.set_name(SutekhInfo.NAME)
         self.set_version(SutekhInfo.VERSION_STR)
         self.set_copyright(SutekhInfo.LICENSE)
@@ -27,6 +25,3 @@ class SutekhAboutDialog(gtk.AboutDialog):
         # self.set_translator_credits(translator_credits)
         # self.set_logo(logo)
         # self.set_logo_icon_name(icon_name)
-
-    def handleResponse(self,oWidget,oResponse):
-        self.destroy()

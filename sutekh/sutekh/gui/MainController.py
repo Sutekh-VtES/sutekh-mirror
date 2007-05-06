@@ -128,7 +128,9 @@ class MainController(object):
         self.__oAbstractCards.runFilter(self.__oMenu.getApplyFilter())
 
     def showAboutDialog(self,widget):
-        SutekhAboutDialog().run()
+        oDlg = SutekhAboutDialog()
+        oDlg.run()
+        oDlg.destroy()
 
     def getPluginManager(self):
         return self.__oPluginManager
