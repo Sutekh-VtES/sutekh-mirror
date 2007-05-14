@@ -49,7 +49,7 @@ def main(aArgs):
         else:
             Dlg=WWFilesDialog(None)
             Dlg.run()
-            (sCLFilename,sRulingsFilename)=Dlg.getNames()
+            (sCLFilename,sRulingsFilename,bIgnore)=Dlg.getNames()
             Dlg.destroy()
             if sCLFilename is not None:
                 refreshTables(ObjectList,oConn)
