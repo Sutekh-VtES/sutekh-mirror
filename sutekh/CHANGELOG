@@ -1,3 +1,7 @@
+15 May 2007
+ * Tweak selection behaviour - should make accidently unselects when dragging
+   and dropping harder
+
 06 May 2007
  * Add simple About dialog.
  * Add COPYING to sutekh package data.

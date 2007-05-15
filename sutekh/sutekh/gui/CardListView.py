@@ -48,6 +48,7 @@ class CardListView(gtk.TreeView,object):
         self.connect('drag_data_get',self.dragCard)
         self.connect('drag_data_delete',self.dragDelete)
         self.connect('drag_data_received',self.cardDrop)
+        self.bReentrant=False
 
         # Filtering Dialog
         self._oFilterDialog = None
@@ -73,20 +74,54 @@ class CardListView(gtk.TreeView,object):
     # Selecting
 
     def cardSelected(self,oSelection):
+        if self.bReentrant:
+            # This is here because we alter the selection inside
+            # this function (resulting in a nested call).
+            # self.bReentrant is set and unset below.
+            return False
+
+        # If the selection is empty, clear everything and return
         if oSelection.count_selected_rows() <= 0:
+            self._aOldSelection = []
             return False
 
         oModel, aList = oSelection.get_selected_rows()
 
-        if len(aList) <= len(self._aOldSelection):
-           oPath = aList[-1]
+        # Non default selection behaviour. If we have multiple rows selected,
+        # and the user selects a single row that is in the selection, we
+        # DON'T change the selection
+        tCursorPos = self.get_cursor()
+        if len(aList) == 1 and len(self._aOldSelection) > 1 and \
+            tCursorPos[0] == aList[0] and aList[0] in self._aOldSelection:
+            # reset the list to it's previous state, but set
+            # displayed card to this one
+            try:
+                self.bReentrant = True
+                for oP in self._aOldSelection:
+                    oSelection.select_path(oP)
+            finally:
+                self.bReentrant = False
+            oPath = aList[0]
         else:
-            # Find the last entry in aList that's not in _aOldSelection
-            oPath = [x for x in aList if x not in self._aOldSelection][-1]
+            # prune any root nodes from the selection
+            for oP in aList:
+                if not oModel.iter_parent(oModel.get_iter(oP)):
+                    oSelection.unselect_path(oP)
+
+            oModel, aList = oSelection.get_selected_rows()
+            if not aList:
+                self._aOldSelection = []
+                return False
+
+            if len(aList) <= len(self._aOldSelection):
+                oPath = aList[-1]
+            else:
+                # Find the last entry in aList that's not in _aOldSelection
+                oPath = [x for x in aList if x not in self._aOldSelection][-1]
+            self._aOldSelection = aList
 
         sCardName = self._oModel.getCardNameFromPath(oPath)
         self._oC.setCardText(sCardName)
-        self._aOldSelection = aList
 
     # Card name searching
 
