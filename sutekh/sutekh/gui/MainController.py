@@ -9,13 +9,12 @@ from sutekh.gui.PhysicalCardController import PhysicalCardController
 from sutekh.gui.MainWindow import MainWindow
 from sutekh.gui.CardTextWindow import CardTextWindow
 from sutekh.gui.PhysicalCardWindow import PhysicalCardWindow
-from sutekh.gui.CardSetWindow import CardSetWindow
-from sutekh.gui.CardSetController import PhysicalCardSetController, AbstractCardSetController
 from sutekh.gui.MainMenu import MainMenu
 from sutekh.gui.CardTextView import CardTextView
 from sutekh.gui.AbstractCardView import AbstractCardView
 from sutekh.gui.PluginManager import PluginManager
 from sutekh.gui.AboutDialog import SutekhAboutDialog
+from sutekh.gui.CardSetManagementWindow import CardSetManagementWindow
 from sutekh.SutekhObjectCache import SutekhObjectCache
 from sutekh.SutekhObjects import AbstractCard
 
@@ -33,6 +32,7 @@ class MainController(object):
         # and they should all be blocked by the appropriate dialogs
         self.__oAbstractCardWin = MainWindow(self)
         self.__oPhysicalCardWin = PhysicalCardWindow(self)
+        self.__oCSWin = CardSetManagementWindow(self,self.__oAbstractCardWin)
         self.__oCardTextWin = CardTextWindow(self)
         self.__oAbstractCards = AbstractCardView(self,self.__oAbstractCardWin)
         self.__aPlugins = []
@@ -44,9 +44,8 @@ class MainController(object):
         self.__oPhysicalCards = PhysicalCardController(self.__oPhysicalCardWin,self)
         self.__oWinGrp.add_window(self.__oAbstractCardWin)
         self.__oWinGrp.add_window(self.__oPhysicalCardWin)
-
-        self.openPhysicalCardSets={}
-        self.openAbstractCardSets={}
+        self.__oWinGrp.add_window(self.__oCSWin)
+        self.__oWinGrp.add_window(self.__oCardTextWin)
 
         # Link
         self.__oAbstractCardWin.addParts(self.__oMenu,self.__oAbstractCards)
@@ -69,57 +68,10 @@ class MainController(object):
         except SQLObjectNotFound:
             pass
 
-    def createNewPhysicalCardSetWindow(self,sSetName):
-        # name is not already used
-        if sSetName not in self.openPhysicalCardSets.keys():
-            newPCSWindow = CardSetWindow(self,sSetName,"PhysicalCardSet")
-            newPCSController = PhysicalCardSetController(newPCSWindow,self,sSetName)
-            self.openPhysicalCardSets[sSetName] = [newPCSWindow, newPCSController]
-            newPCSWindow.addParts(newPCSController.getView(),newPCSController.getMenu())
-            self.__oMenu.setLoadPhysicalState(self.openPhysicalCardSets)
-            self.__oWinGrp.add_window(newPCSWindow)
-            return newPCSWindow
-        return None
-
-    def createNewAbstractCardSetWindow(self,sSetName):
-        # name is not already used
-        if sSetName not in self.openAbstractCardSets.keys():
-            newACSWindow = CardSetWindow(self,sSetName,"AbstractCardSet")
-            newACSController = AbstractCardSetController(newACSWindow,self,sSetName)
-            self.openAbstractCardSets[sSetName] = [newACSWindow, newACSController]
-            newACSWindow.addParts(newACSController.getView(),newACSController.getMenu())
-            self.__oMenu.setLoadAbstractState(self.openAbstractCardSets)
-            self.__oWinGrp.add_window(newACSWindow)
-            return newACSWindow
-        return None
-
-    def removeCardSetWindow(self,sSetName,sType):
-        # Check Card Set window does exist
-        if sType == "PhysicalCardSet":
-            openSets=self.openPhysicalCardSets
-        else:
-            openSets=self.openAbstractCardSets
-        if sSetName in openSets.keys():
-            self.__oWinGrp.remove_window(openSets[sSetName][0])
-            del openSets[sSetName]
-            if sType == "PhysicalCardSet":
-                self.__oMenu.setLoadPhysicalState(self.openPhysicalCardSets)
-            else:
-                self.__oMenu.setLoadAbstractState(self.openPhysicalCardSets)
-
     def reloadAll(self):
         self.__oAbstractCards.load()
         self.__oPhysicalCards.getView().load()
-        self.reloadAllPhysicalCardSets()
-        self.reloadAllAbstractCardSets()
-
-    def reloadAllPhysicalCardSets(self):
-        for window, controller in self.openPhysicalCardSets.values():
-            controller.getView().load()
-
-    def reloadAllAbstractCardSets(self):
-        for window, controller in self.openAbstractCardSets.values():
-            controller.getView().load()
+        self.__oCSWin.reloadAll()
 
     def getFilter(self,widget):
         self.__oAbstractCards.getFilter(self.__oMenu)
@@ -134,3 +86,6 @@ class MainController(object):
 
     def getPluginManager(self):
         return self.__oPluginManager
+
+    def getWinGroup(self):
+        return self.__oWinGrp

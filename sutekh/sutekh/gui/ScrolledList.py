@@ -17,7 +17,7 @@ class ScrolledList(gtk.Frame):
         self.add(myScroll)
         oCell1=gtk.CellRendererText()
         self.sNullValue=sNullValue
-        oColumn=gtk.TreeViewColumn(title,oCell1,text=0)
+        oColumn=gtk.TreeViewColumn(title,oCell1,markup=0)
         iter=self.List.append(None) # Create Null item at top of list
         if self.sNullValue is not None:
             self.List.set(iter,0,self.sNullValue)

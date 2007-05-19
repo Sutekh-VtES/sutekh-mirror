@@ -7,9 +7,9 @@ import gtk
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 
 class CardSetWindow(gtk.Window,object):
-    def __init__(self,oController,sName,sType):
+    def __init__(self,oCardSetManager,sName,sType):
         super(CardSetWindow,self).__init__()
-        self.__oC = oController
+        self.__oC = oCardSetManager
         self.sSetName = sName
         self.sSetType = sType
 
@@ -46,6 +46,7 @@ class CardSetWindow(gtk.Window,object):
 
     def closeCardSet(self,widget=None):
         self.__oC.removeCardSetWindow(self.sSetName,self.sSetType)
+        self.__oC.reloadCardSetLists()
         self.destroy()
 
     def deleteCardSet(self):

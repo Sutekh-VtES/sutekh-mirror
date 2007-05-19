@@ -24,7 +24,6 @@ class MainMenu(gtk.MenuBar,object):
         self.__oWin = oWindow
         self.__dMenus={}
         self.__createFileMenu()
-        self.__createCardSetMenu()
         self.__createFilterMenu()
         self.__createPluginMenu()
         self.__createAboutMenu()
@@ -62,36 +61,6 @@ class MainMenu(gtk.MenuBar,object):
         wMenu.add(iQuit)
 
         self.add(iMenu)
-
-    def __createCardSetMenu(self):
-        # setup sub menu
-        iMenu = gtk.MenuItem("CardSet")
-        wMenu = gtk.Menu()
-        self.__dMenus["CardSet"]=wMenu
-        iMenu.set_submenu(wMenu)
-
-        # items
-        iCreatePhysical = gtk.MenuItem("Create New Physical Card Set")
-        iCreatePhysical.connect('activate', self.doCreatePCS)
-        wMenu.add(iCreatePhysical)
-
-        iCreateAbstract= gtk.MenuItem("Create New Abstract Card Set")
-        iCreateAbstract.connect('activate', self.doCreateACS)
-        wMenu.add(iCreateAbstract)
-
-        self.physLoad=gtk.Action("PhysicalLoad","Open an Existing Physical Card Set",None,None)
-        wMenu.add(self.physLoad.create_menu_item())
-        self.physLoad.connect('activate', self.doLoadPCS)
-        self.physLoad.set_sensitive(False)
-
-        self.absLoad=gtk.Action("AbstractLoad","Open an Existing Abstract Card Set",None,None)
-        wMenu.add(self.absLoad.create_menu_item())
-        self.absLoad.connect('activate', self.doLoadACS)
-        self.absLoad.set_sensitive(False)
-
-        self.add(iMenu)
-        self.setLoadPhysicalState({})
-        self.setLoadAbstractState({}) # Call with an explicitly empty dict
 
     def __createFilterMenu(self):
         # setup sub menu
@@ -247,62 +216,6 @@ class MainMenu(gtk.MenuBar,object):
             sqlhub.processConnection=oldConn
             createFinalCopy(tempConn)
             self.__oC.reloadAll()
-
-    def doCreatePCS(self,widget):
-        # Popup Create PhysicalCardSet Dialog
-        Dialog=CreateCardSetDialog(self.__oWin,"PhysicalCardSet")
-        Dialog.run()
-        (Name,sAuthor,sDesc)=Dialog.getName()
-        if Name!=None:
-            # Check Name isn't in use
-            NameList = PhysicalCardSet.selectBy(name=Name)
-            if NameList.count() != 0:
-                # Complain about duplicate name
-                Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
-                                              gtk.BUTTONS_CLOSE,"Chosen Physical Card Set name already in use.")
-                Complaint.connect("response",lambda dlg, resp: dlg.destroy())
-                Complaint.run()
-                return
-        else:
-            return
-        PhysicalCardSet(name=Name,author=sAuthor,comment=sDesc) # Create PhysicalCardSet
-        self.__oC.createNewPhysicalCardSetWindow(Name)
-
-    def doCreateACS(self,widget):
-        # Popup Create AbstractCardSet Dialog
-        Dialog=CreateCardSetDialog(self.__oWin,"AbstractCardSet")
-        Dialog.run()
-        (Name,sAuthor,sDesc)=Dialog.getName()
-        if Name!=None:
-            # Check Name isn't in use
-            NameList = AbstractCardSet.selectBy(name=Name)
-            if NameList.count() != 0:
-                # Complain about duplicate name
-                Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
-                                              gtk.BUTTONS_CLOSE,"Chosen Abstract Card Set name already in use.")
-                Complaint.connect("response",lambda dlg, resp: dlg.destroy())
-                Complaint.run()
-                return
-        else:
-            return
-        AbstractCardSet(name=Name,author=sAuthor,comment=sDesc) # Create New Abstract Card Set
-        self.__oC.createNewAbstractCardSetWindow(Name)
-
-    def doLoadPCS(self,widget):
-        # Popup Load Dialog
-        Dialog=LoadCardSetDialog(self.__oWin,"PhysicalCardSet")
-        Dialog.run()
-        Name=Dialog.getName()
-        if Name != None:
-            window = self.__oC.createNewPhysicalCardSetWindow(Name)
-
-    def doLoadACS(self,widget):
-        # Popup Load Dialog
-        Dialog=LoadCardSetDialog(self.__oWin,"AbstractCardSet")
-        Dialog.run()
-        Name=Dialog.getName()
-        if Name != None:
-            window = self.__oC.createNewAbstractCardSetWindow(Name)
 
     def getApplyFilter(self):
         return self.iApply.get_active()
