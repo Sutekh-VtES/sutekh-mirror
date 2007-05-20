@@ -37,7 +37,7 @@ Release Candidate tasks:
  - Check everything works on Windows again (check with Philip before release)
  - Create setup.py file with bdist_egg (needs testing)
  * Improve "with text mode" option for HTML export (xsl file needs work)
- * Create Card Set Management Window (Abstract/Physical)
+ - Create Card Set Management Window (basic structure in place)
  * Merge Neil's database upgrade branch.
  * Add a Filter on Expansion + Rarity Pairs.
  * Additional Filter (Votes, Sect, etc).
