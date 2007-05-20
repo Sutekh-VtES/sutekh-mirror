@@ -150,7 +150,14 @@ class CardSetManagementWindow(gtk.Window):
         oWindow.closeCardSet()
 
     def deleteClicked(self,button):
-        print 'delete CS clicked'
+        (sName, sType) = self.getSelectedRow()
+        if sName is None:
+            return
+        oWindow = self.getCardSetWindow(sName, sType)
+        if oWindow is not None:
+            oWindow.deleteCardSet()
+        else:
+            print 'delete CS clicked'
 
     def newClicked(self,button,type):
         if type=='Abstract':
@@ -208,11 +215,21 @@ class CardSetManagementWindow(gtk.Window):
             return newWindow
         return None
 
+    def getCardSetWindow(self,sSetName,sType):
+        if sType == "PhysicalCardSet" or sType == 'Physical':
+            openSets=self.aOpenPhysicalCardSets
+        elif sType == 'AbstractCardSet' or sType == 'Abstract':
+            openSets=self.aOpenAbstractCardSets
+        if sSetName in openSets.keys():
+            window, controller = openSets[sSetName]
+            return window
+        return None
+ 
     def removeCardSetWindow(self,sSetName,sType):
         # Check Card Set window does exist
-        if sType == "PhysicalCardSet":
+        if sType == "PhysicalCardSet" or sType == 'Physical':
             openSets=self.aOpenPhysicalCardSets
-        else:
+        elif sType == 'AbstractCardSet' or sType == 'Abstract':
             openSets=self.aOpenAbstractCardSets
         if sSetName in openSets.keys():
             self.__oMC.getWinGroup().remove_window(openSets[sSetName][0])
