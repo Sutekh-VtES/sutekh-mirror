@@ -183,7 +183,7 @@ class CardSetManagementWindow(gtk.Window):
 
     def createNewCardSetWindow(self,sSetName,sType):
         newController=None
-        if sType == 'Physical':
+        if sType == 'Physical' or sType == 'PhysicalCardSet':
             if sSetName not in self.aOpenPhysicalCardSets.keys():
                 newWindow = CardSetWindow(self,sSetName,"PhysicalCardSet")
                 newController = PhysicalCardSetController(newWindow,self.__oMC,sSetName)
@@ -192,7 +192,7 @@ class CardSetManagementWindow(gtk.Window):
                 # raise the window
                 self.aOpenPhysicalCardSets[sSetName][0].present()
                 return
-        elif sType == 'Abstract':
+        elif sType == 'Abstract' or sType == 'AbstractCardSet':
             if sSetName not in self.aOpenAbstractCardSets.keys():
                 newWindow = CardSetWindow(self,sSetName,"AbstractCardSet")
                 newController = AbstractCardSetController(newWindow,self.__oMC,sSetName)
@@ -217,6 +217,22 @@ class CardSetManagementWindow(gtk.Window):
         if sSetName in openSets.keys():
             self.__oMC.getWinGroup().remove_window(openSets[sSetName][0])
             del openSets[sSetName]
+
+    def reloadACS(self,sName):
+        if sName in self.aOpenAbstractCardSets.keys():
+            window, controller = self.aOpenAbstractCardSets[sName]
+            controller.getView().load()
+
+    def reloadCS(self,sName,sSetType):
+        if sSetType == 'AbstractCardSet' or sSetType == 'Abstract':
+            self.reloadACS(sName)
+        elif sSetType == 'PhysicalCardSet' or sSetType == 'Physical':
+            self.reloadPCS(sName)
+
+    def reloadPCS(self,sName):
+        if sName in self.aOpenPhysicalCardSets.keys():
+            window, controller = self.aOpenPhysicalCardSets[sName]
+            controller.getView().load()
 
     def reloadAll(self):
         self.reloadAllPhysicalCardSets()

@@ -179,6 +179,8 @@ class MainMenu(gtk.MenuBar,object):
                 else:
                     oF=PhysicalCardSetXmlFile(sFileName)
                 oF.read()
+                self.__oC.getCSManWin().reloadCS(sName,sType)
+                self.__oC.getCSManWin().createNewCardSetWindow(sName,sType)
             else:
                 Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
                                               gtk.BUTTONS_CLOSE,"File is not a CardSet XML File.")
