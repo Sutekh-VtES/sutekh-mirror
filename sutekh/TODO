@@ -12,6 +12,13 @@ Database
  * Add title & sect columns to Abstract Card (done in branch)
  * Add Annotations field to the CardSets (done in branch)
 
+Code Cleanup
+ * Unify conventions ('Abstract' vs 'AbstractCardSet' in card set management, etc.)
+ * Consolidate various dialogs - current reusablility is low
+ * Refactor gui classes somewhat - there's a fair bit code duplication ATM
+   between the different View-Window-Controller sets for instance, and this
+   looks like something worth addressing
+
 Gui (Functionality):
  * Improve Filter selection dialog.  (And/Or)
  * Add ordering selection dialog (possibly part of filtering dialog).
@@ -19,10 +26,6 @@ Gui (Functionality):
  * Finish ClusterCardList plugin.
  * Compare CardSet Plugin (basic version done. Could be improved)
  * Ability to specify the expansion a physical card comes from.
- * Consolidate various dialogs - current reusablility is low
- * Refactor gui classes somewhat - there's a fair bit code duplication ATM
-   between the different View-Window-Controller sets for instance, and this
-   looks like something worth addressing
  * Improve About dialog.
 
 Gui (Presentation):

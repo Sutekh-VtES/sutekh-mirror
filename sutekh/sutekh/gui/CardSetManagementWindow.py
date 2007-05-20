@@ -8,6 +8,7 @@ import gtk
 from sutekh.SutekhObjects import AbstractCardSet, PhysicalCardSet
 from sutekh.gui.ScrolledList import ScrolledList
 from sutekh.gui.CreateCardSetDialog import CreateCardSetDialog
+from sutekh.gui.DeleteCardSetDialog import DeleteCardSetDialog
 from sutekh.gui.CardSetWindow import CardSetWindow
 from sutekh.gui.CardSetController import PhysicalCardSetController, AbstractCardSetController
 
@@ -157,7 +158,36 @@ class CardSetManagementWindow(gtk.Window):
         if oWindow is not None:
             oWindow.deleteCardSet()
         else:
-            print 'delete CS clicked'
+            if sType == "Physical":
+                oCS = PhysicalCardSet.byName(sName)
+                sSetType='PhysicalCardSet'
+            else:
+                oCS = AbstractCardSet.byName(sName)
+                sSetType='AbstractCardSet'
+            if len(oCS.cards)>0:
+                # Not empty, ask user if we should delete it
+                Dialog = DeleteCardSetDialog(self,sName,sSetType)
+                Dialog.run()
+                if not Dialog.getResult():
+                    return # not deleting
+
+                # User agreed, so clear the CardSet
+                if sType == "Physical":
+                    for oC in oCS.cards:
+                        oCS.removePhysicalCard(oC)
+                else:
+                    for oC in oCS.cards:
+                        oCS.removeAbstractCard(oC)
+
+
+            # Card Set now empty
+            if sType == "Physical":
+                cardSet = PhysicalCardSet.byName(sName)
+                PhysicalCardSet.delete(cardSet.id)
+            else:
+                cardSet = AbstractCardSet.byName(sName)
+                AbstractCardSet.delete(cardSet.id)
+            self.reloadCardSetLists()
 
     def newClicked(self,button,type):
         if type=='Abstract':
