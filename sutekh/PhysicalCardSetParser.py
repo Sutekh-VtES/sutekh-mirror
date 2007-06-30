@@ -32,20 +32,20 @@ class PhysicalCardSetHandler(ContentHandler):
             aAttributes=oAttrs.getNames()
             sAuthor=None
             sComment=None
-            sAnnotation=None
+            sAnnotations=None
             if 'author' in aAttributes:
                 sAuthor=oAttrs.getValue('author')
             if 'comment' in aAttributes:
                 sComment=oAttrs.getValue('comment')
             if 'anootation' in aAttributes:
-                sAnnotation=oAttrs.getValue('annotation')
+                sAnnotations=oAttrs.getValue('annotations')
             # Try and add pcs to PhysicalCardSet
             # Make sure
             try:
                 pcs=PhysicalCardSet.byName(self.pcsName.encode('utf8'))
                 pcs.author=sAuthor
                 pcs.comment=sComment
-                acs.annotation=sAnnotation
+                acs.annotations=sAnnotations
                 pcs.syncUpdate()
                 # We overwrite pcs, so we drop all cards currently
                 # part of the PhysicalCardSet

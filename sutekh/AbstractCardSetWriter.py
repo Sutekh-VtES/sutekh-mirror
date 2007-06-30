@@ -24,7 +24,7 @@ class AbstractCardSetWriter(object):
             oACS = AbstractCardSet.byName(sAbstractCardSetName)
             sAuthor=oACS.author
             sComment=oACS.comment
-            sAnnotation=oACS.annotation
+            sAnnotations=oACS.annotations
         except SQLObjectNotFound:
             return
 
@@ -37,10 +37,11 @@ class AbstractCardSetWriter(object):
         oDoc = getDOMImplementation().createDocument(None,'abstractcardset',None)
 
         oCardsElem = oDoc.firstChild
+        oCardsElem.setAttribute('sutekh_xml_version','1.0')
         oCardsElem.setAttribute('name',sAbstractCardSetName)
         oCardsElem.setAttribute('author',sAuthor)
         oCardsElem.setAttribute('comment',sComment)
-        oCardsElem.setAttribute('annotation',sAnnotation)
+        oCardsElem.setAttribute('annotations',sAnnotations)
 
         for tKey, iNum in dCards.iteritems():
             iId, sName = tKey

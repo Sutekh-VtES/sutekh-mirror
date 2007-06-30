@@ -28,6 +28,7 @@ class PhysicalCardWriter(object):
 
         oDoc = getDOMImplementation().createDocument(None,'cards',None)
         oCardsElem = oDoc.firstChild
+        oCardsElem.setAttribute('sutekh_xml_version','1.0')
 
         for tKey, iNum in dPhys.iteritems():
             iId, sName = tKey

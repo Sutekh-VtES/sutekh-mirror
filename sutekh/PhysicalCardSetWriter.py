@@ -24,7 +24,7 @@ class PhysicalCardSetWriter(object):
             oPCS = PhysicalCardSet.byName(sPhysicalCardSetName)
             sAuthor=oPCS.author
             sComment=oPCS.comment
-            sAnnotation=oACS.annotation
+            sAnnotations=oPCS.annotations
         except SQLObjectNotFound:
             return
 
@@ -38,10 +38,11 @@ class PhysicalCardSetWriter(object):
         oDoc = getDOMImplementation().createDocument(None,'physicalcardset',None)
 
         oCardsElem = oDoc.firstChild
+        oCardsElem.setAttribute('sutekh_xml_version','1.0')
         oCardsElem.setAttribute('name',sPhysicalCardSetName)
         oCardsElem.setAttribute('author',sAuthor)
         oCardsElem.setAttribute('comment',sComment)
-        oCardsElem.setAttribute('annotation',sAnnotation)
+        oCardsElem.setAttribute('annotations',sAnnotations)
 
         for tKey, iNum in dPhys.iteritems():
             iId, sName = tKey
