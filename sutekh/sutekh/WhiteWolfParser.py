@@ -1,6 +1,7 @@
 # WhiteWolfParser.py
 # WhiteWolf Parser
 # Copyright 2005,2006 Simon Cross <hodgestar@gmail.com>
+# Copyright 2007 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
 import HTMLParser, re
@@ -44,9 +45,9 @@ class CardDict(dict):
 
         for s in sDis.split():
             if s==s.lower():
-               oP = IDisciplinePair((s,'inferior'))
+                oP = IDisciplinePair((s,'inferior'))
             else:
-               oP = IDisciplinePair((s,'superior'))
+                oP = IDisciplinePair((s,'superior'))
             oCard.addDisciplinePair(oP)
 
     def _addVirtues(self,oCard,sVir):
@@ -330,10 +331,10 @@ def parseText(oCard):
             sTitle='Inner Circle'
     elif aLines[0].find('Sabbat')!=-1:
         sSect='Sabbat'
-        if aLines[0].find('bishop')!=-1:
-            sTitle='Bishop'
-        elif aLines[0].find('Archbishop of')!=-1:
+        if aLines[0].find('Archbishop of')!=-1:
             sTitle='Archbishop'
+        elif aLines[0].find('bishop')!=-1:
+            sTitle='Bishop'
         elif aLines[0].find('priscus')!=-1:
             sTitle='Priscus'
         elif aLines[0].find('cardinal')!=-1:
