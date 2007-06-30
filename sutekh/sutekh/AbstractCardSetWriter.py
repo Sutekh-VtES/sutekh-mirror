@@ -18,6 +18,8 @@ from xml.dom.ext import PrettyPrint
 from xml.dom.minidom import getDOMImplementation
 
 class AbstractCardSetWriter(object):
+    sMyVersion="1.0"
+
     def genDoc(self,sAbstractCardSetName):
         dCards = {}
 
@@ -25,6 +27,7 @@ class AbstractCardSetWriter(object):
             oACS = AbstractCardSet.byName(sAbstractCardSetName)
             sAuthor=oACS.author
             sComment=oACS.comment
+            sAnnotations=oACS.annotations
         except SQLObjectNotFound:
             return
 
@@ -37,9 +40,11 @@ class AbstractCardSetWriter(object):
         oDoc = getDOMImplementation().createDocument(None,'abstractcardset',None)
 
         oCardsElem = oDoc.firstChild
+        oCardsElem.setAttribute('sutekh_xml_version',sMyVersion)
         oCardsElem.setAttribute('name',sAbstractCardSetName)
         oCardsElem.setAttribute('author',sAuthor)
         oCardsElem.setAttribute('comment',sComment)
+        oCardsElem.setAttribute('annotations',sAnnotations)
 
         for tKey, iNum in dCards.iteritems():
             iId, sName = tKey

@@ -4,7 +4,9 @@
 # GPL - see COPYING for details
 
 import HTMLParser, re
-from sutekh.SutekhObjects import *
+from sutekh.SutekhObjects import IAbstractCard, IClan, IRarityPair,\
+                                 IDisciplinePair, IVirtue, ICreed, ICardType,\
+                                 ISect, ITitle
 
 # Card Saver
 
@@ -21,7 +23,7 @@ class CardDict(dict):
         sName = sName.strip()
         return IAbstractCard(sName)
 
-    def _addExpansions(self,oC,sExp):
+    def _addExpansions(self,oCard,sExp):
         aPairs = [x.split(':') for x in sExp.strip('[]').split(',')]
         aExp = []
         for aPair in aPairs:
@@ -33,9 +35,9 @@ class CardDict(dict):
         for sExp, sRarSet in aExp:
             for sRar in sRarSet.split('/'):
                 oP = IRarityPair((sExp,sRar))
-                oC.addRarityPair(oP)
+                oCard.addRarityPair(oP)
 
-    def _addDisciplines(self,oC,sDis):
+    def _addDisciplines(self,oCard,sDis):
         sDis = self.oDisGaps.sub(' ',sDis).strip()
 
         if sDis == '-none-' or sDis == '': return
@@ -45,28 +47,34 @@ class CardDict(dict):
                oP = IDisciplinePair((s,'inferior'))
             else:
                oP = IDisciplinePair((s,'superior'))
-            oC.addDisciplinePair(oP)
+            oCard.addDisciplinePair(oP)
 
-    def _addVirtues(self,oC,sVir):
+    def _addVirtues(self,oCard,sVir):
         sVir = self.oDisGaps.sub(' ',sVir).strip()
 
         if sVir == '-none-' or sVir == '': return
 
         for s in sVir.split():
-            if len(s) == 3:
-                s = 'v_' + s.lower()
-            oP = IDisciplinePair((s,'inferior'))
-            oC.addDisciplinePair(oP)
+            oP = IVirtue(s)
+            oCard.addVirtue(oP)
 
-    def _addClans(self,oC,sClan):
+    def _addCreeds(self,oCard,sCreed):
+        sCreed = self.oWhiteSp.sub(' ',sCreed).strip()
+
+        if sCreed == '-none-' or sCreed == '': return
+
+        for s in sCreed.split('/'):
+            oCard.addCreed(ICreed(s.strip()))
+
+    def _addClans(self,oCard,sClan):
         sClan = self.oWhiteSp.sub(' ',sClan).strip()
 
         if sClan == '-none-' or sClan == '': return
 
         for s in sClan.split('/'):
-            oC.addClan(IClan(s.strip()))
+            oCard.addClan(IClan(s.strip()))
 
-    def _addCost(self,oC,sCost):
+    def _addCost(self,oCard,sCost):
         sCost = self.oWhiteSp.sub(' ',sCost).strip()
         sAmnt, sType = sCost.split()
 
@@ -75,29 +83,38 @@ class CardDict(dict):
         else:
             iCost = int(sAmnt,10)
 
-        oC.cost = iCost
-        oC.costtype = str(sType.lower()) # make str non-unicode
+        oCard.cost = iCost
+        oCard.costtype = str(sType.lower()) # make str non-unicode
+
+    def _addLife(self,oCard,sLife):
+        sLife = self.oWhiteSp.sub(' ',sLife).strip()
+        aLife=sLife.split()
+
+        try:
+            oCard.life=int(aLife[0],10)
+        except ValueError:
+            pass
 
     def _getLevel(self,sLevel):
         return self.oWhiteSp.sub(' ',sLevel).strip().lower()
 
-    def _addLevel(self,oC,sLevel):
-        oC.level = str(self._getLevel(sLevel)) # make str non-unicode
+    def _addLevel(self,oCard,sLevel):
+        oCard.level = str(self._getLevel(sLevel)) # make str non-unicode
 
     def _addLevelToName(self,sName,sLevel):
         return sName.strip() + " (" + self._getLevel(sLevel).capitalize() + ")"
 
-    def _addCapacity(self,oC,sCap):
+    def _addCapacity(self,oCard,sCap):
         sCap = self.oWhiteSp.sub(' ',sCap).strip()
         aCap = sCap.split()
         try:
-            oC.capacity = int(aCap[0],10)
+            oCard.capacity = int(aCap[0],10)
         except ValueError:
             pass
 
-    def _addCardType(self,oC,sTypes):
+    def _addCardType(self,oCard,sTypes):
         for s in sTypes.split('/'):
-            oC.addCardType(ICardType(s.strip()))
+            oCard.addCardType(ICardType(s.strip()))
 
     def save(self):
         if not self.has_key('name'):
@@ -108,39 +125,48 @@ class CardDict(dict):
 
         print self['name'].encode('ascii','xmlcharrefreplace')
 
-        oC = self._makeCard(self['name'])
-
-        if self.has_key('text'):
-            oC.text = self['text']
-
+        oCard = self._makeCard(self['name'])
         if self.has_key('group'):
-            oC.group = int(self.oWhiteSp.sub('',self['group']),10)
+            oCard.group = int(self.oWhiteSp.sub('',self['group']),10)
 
         if self.has_key('capacity'):
-            self._addCapacity(oC,self['capacity'])
+            self._addCapacity(oCard,self['capacity'])
 
         if self.has_key('cost'):
-            self._addCost(oC,self['cost'])
+            self._addCost(oCard,self['cost'])
+
+        if self.has_key('life'):
+            self._addLife(oCard,self['life'])
 
         if self.has_key('level'):
-            self._addLevel(oC,self['level'])
+            self._addLevel(oCard,self['level'])
 
         if self.has_key('expansion'):
-            self._addExpansions(oC,self['expansion'])
+            self._addExpansions(oCard,self['expansion'])
 
         if self.has_key('discipline'):
-            self._addDisciplines(oC,self['discipline'])
+            self._addDisciplines(oCard,self['discipline'])
 
         if self.has_key('virtue'):
-            self._addVirtues(oC,self['virtue'])
+            self._addVirtues(oCard,self['virtue'])
 
         if self.has_key('clan'):
-            self._addClans(oC,self['clan'])
+            self._addClans(oCard,self['clan'])
+
+        if self.has_key('creed'):
+            self._addCreeds(oCard,self['creed'])
 
         if self.has_key('cardtype'):
-            self._addCardType(oC,self['cardtype'])
+            self._addCardType(oCard,self['cardtype'])
+        if self.has_key('text'):
+            oCard.text = self['text']
+            (sSect,sTitle)=parseText(oCard)
+            if sSect is not None:
+                oCard.addSect(ISect(sSect))
+            if sTitle is not None:
+                oCard.addTitle(ITitle(sTitle))
 
-        oC.syncUpdate()
+        oCard.syncUpdate()
 
 # State Base Classes
 
@@ -165,7 +191,7 @@ class StateWithCard(State):
 
 # State Classes
 
-class NoCard(State):
+class NoCardard(State):
     def transition(self,sTag,dAttr):
         if sTag == 'p':
             return PotentialCard()
@@ -177,7 +203,7 @@ class PotentialCard(State):
         if sTag == 'a' and dAttr.has_key('name'):
             return InCard(CardDict())
         else:
-            return NoCard()
+            return NoCardard()
 
 class InCard(StateWithCard):
     def transition(self,sTag,dAttr):
@@ -185,7 +211,7 @@ class InCard(StateWithCard):
             raise StateError()
         elif sTag == '/p':
             self._dInfo.save()
-            return NoCard()
+            return NoCardard()
         elif sTag == 'span' and dAttr.get('class') == 'cardname':
             return InCardName(self._dInfo)
         elif sTag == 'span' and dAttr.get('class') == 'exp':
@@ -264,7 +290,7 @@ class WaitingForValue(StateWithCard):
 class WhiteWolfParser(HTMLParser.HTMLParser,object):
     def reset(self):
         super(WhiteWolfParser,self).reset()
-        self._state = NoCard()
+        self._state = NoCardard()
 
     def handle_starttag(self,sTag,aAttr):
         self._state = self._state.transition(sTag.lower(),dict(aAttr))
@@ -277,3 +303,58 @@ class WhiteWolfParser(HTMLParser.HTMLParser,object):
 
     def handle_charref(self,sName): pass
     def handle_entityref(self,sName): pass
+
+# We define this as a seperate function, so it can also be used by
+# the database upgrade stuff
+# Can't define it in SutkehUtility because of the circular dependancy
+# on WhiteWolfParser that arise
+# Prepares I need a global functions file as well
+
+def parseText(oCard):
+    """Parse the CardText for Sect and Titles"""
+    oType=oCard.cardtype
+    sTitle=None
+    sSect=None
+    if oType[0].name != 'Vampire':
+        return (None,None)
+    aLines=oCard.text.splitlines()
+    if aLines[0].find('Camarilla')!=-1:
+        sSect='Camarilla'
+        if aLines[0].find('primogen')!=-1:
+            sTitle='Primogen'
+        elif aLines[0].find('Prince of')!=-1:
+            sTitle='Prince'
+        elif aLines[0].find('Justicar')!=-1:
+            sTitle='Justicar'
+        elif aLines[0].find('Inner Circle')!=-1:
+            sTitle='Inner Circle'
+    elif aLines[0].find('Sabbat')!=-1:
+        sSect='Sabbat'
+        if aLines[0].find('bishop')!=-1:
+            sTitle='Bishop'
+        elif aLines[0].find('Archbishop of')!=-1:
+            sTitle='Archbishop'
+        elif aLines[0].find('priscus')!=-1:
+            sTitle='Priscus'
+        elif aLines[0].find('cardinal')!=-1:
+            sTitle='Cardinal'
+        elif aLines[0].find('regent')!=-1:
+            sTitle='Regent'
+    elif aLines[0].find('Independent')!=-1:
+        sSect='Independent'
+        # Independent titles are on the next line. Of the form
+        # Name has X vote(s)
+        try:
+            if aLines[1].find('has 1 vote')!=-1:
+                sTitle='Independent with 1 vote'
+            elif aLines[1].find('has 2 votes')!=-1:
+                sTitle='Independent with 2 votes'
+            elif aLines[1].find('has 3 votes')!=-1:
+                sTitle='Independent with 3 votes'
+        except IndexError:
+            pass
+    elif aLines[0].find('Laibon')!=-1:
+        sSect='Laibon'
+        if aLines[0].find('magaji')!=-1:
+            sTitle='Magaji'
+    return (sSect,sTitle)

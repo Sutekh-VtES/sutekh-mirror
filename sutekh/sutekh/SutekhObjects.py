@@ -3,9 +3,10 @@
 # Minor modifications copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-from sqlobject import *
+from sqlobject import sqlmeta, SQLObject, IntCol, UnicodeCol, RelatedJoin, \
+                      EnumCol, MultipleJoin, SQLObjectNotFound, \
+                      DatabaseIndex, ForeignKey
 from protocols import advise, Interface
-import protocols
 
 # Interfaces
 
@@ -20,6 +21,10 @@ class IDisciplinePair(Interface): pass
 class IDiscipline(Interface): pass
 class IClan(Interface): pass
 class ICardType(Interface): pass
+class ISect(Interface): pass
+class ITitle(Interface): pass
+class ICreed(Interface): pass
+class IVirtue(Interface): pass
 class IRuling(Interface): pass
 
 # Table Objects
@@ -32,14 +37,16 @@ class VersionTable(SQLObject):
 class AbstractCard(SQLObject):
     advise(instancesProvide=[IAbstractCard])
 
-    tableversion = 1
+    tableversion = 2
     sqlmeta.lazyUpdate = True
 
-    name = UnicodeCol(alternateID=True,length=50)
+    canonicalName = UnicodeCol(alternateID=True,length=50)
+    name = UnicodeCol(length=50)
     text = UnicodeCol()
     group = IntCol(default=None,dbName='grp')
     capacity = IntCol(default=None)
     cost = IntCol(default=None)
+    life = IntCol(default=None)
     costtype = EnumCol(enumValues=['pool','blood','conviction',None],default=None)
     level = EnumCol(enumValues=['advanced',None],default=None)
 
@@ -47,6 +54,10 @@ class AbstractCard(SQLObject):
     rarity = RelatedJoin('RarityPair',intermediateTable='abs_rarity_pair_map',createRelatedTable=False)
     clan = RelatedJoin('Clan',intermediateTable='abs_clan_map',createRelatedTable=False)
     cardtype = RelatedJoin('CardType',intermediateTable='abs_type_map',createRelatedTable=False)
+    sect = RelatedJoin('Sect',intermediateTable='abs_sect_map',createRelatedTable=False)
+    title = RelatedJoin('Title',intermediateTable='abs_title_map',createRelatedTable=False)
+    creed = RelatedJoin('Creed',intermediateTable='abs_creed_map',createRelatedTable=False)
+    virtue = RelatedJoin('Virtue',intermediateTable='abs_virtue_map',createRelatedTable=False)
     rulings = RelatedJoin('Ruling',intermediateTable='abs_ruling_map',createRelatedTable=False)
     sets = RelatedJoin('AbstractCardSet',intermediateTable='abstract_map',createRelatedTable=False)
     physicalCards = MultipleJoin('PhysicalCard')
@@ -54,27 +65,30 @@ class AbstractCard(SQLObject):
 class PhysicalCard(SQLObject):
     advise(instancesProvide=[IPhysicalCard])
 
-    tableversion = 1
+    tableversion = 2
     abstractCard = ForeignKey('AbstractCard')
     abstractCardIndex = DatabaseIndex(abstractCard)
+    expansion = ForeignKey('Expansion',notNull=False) # Explicitly allow None as expansion
     sets = RelatedJoin('PhysicalCardSet',intermediateTable='physical_map',createRelatedTable=False)
 
 class AbstractCardSet(SQLObject):
     advise(instancesProvide=[IAbstractCardSet])
 
-    tableversion = 2
+    tableversion = 3
     name = UnicodeCol(alternateID=True,length=50)
     author = UnicodeCol(length=50,default='')
     comment = UnicodeCol(default='')
+    annotations = UnicodeCol(default='')
     cards = RelatedJoin('AbstractCard',intermediateTable='abstract_map',createRelatedTable=False)
 
 class PhysicalCardSet(SQLObject):
     advise(instancesProvide=[IPhysicalCardSet])
 
-    tableversion = 2
+    tableversion = 3
     name = UnicodeCol(alternateID=True,length=50)
     author = UnicodeCol(length=50,default='')
     comment = UnicodeCol(default='')
+    annotations = UnicodeCol(default='')
     cards = RelatedJoin('PhysicalCard',intermediateTable='physical_map',createRelatedTable=False)
 
 class RarityPair(SQLObject):
@@ -89,8 +103,9 @@ class RarityPair(SQLObject):
 class Expansion(SQLObject):
     advise(instancesProvide=[IExpansion])
 
-    tableversion = 1
+    tableversion = 2
     name = UnicodeCol(alternateID=True,length=20)
+    shortname = UnicodeCol(length=10,default=None)
     pairs = MultipleJoin('RarityPair')
 
 class Rarity(SQLObject):
@@ -111,15 +126,31 @@ class DisciplinePair(SQLObject):
 class Discipline(SQLObject):
     advise(instancesProvide=[IDiscipline])
 
+    tableversion = 2
+    name = UnicodeCol(alternateID=True,length=30)
+    fullname = UnicodeCol(length=30,default=None)
+    pairs = MultipleJoin('DisciplinePair')
+
+class Virtue(SQLObject):
+    advise(instancesProvide=[IVirtue])
+
     tableversion = 1
     name = UnicodeCol(alternateID=True,length=30)
-    pairs = MultipleJoin('DisciplinePair')
+    fullname = UnicodeCol(length=30,default=None)
+
+class Creed(SQLObject):
+    advise(instancesProvide=[ICreed])
+
+    tableversion = 1
+    name = UnicodeCol(alternateID=True,length=40)
+    shortname = UnicodeCol(length=10,default=None)
 
 class Clan(SQLObject):
     advise(instancesProvide=[IClan])
 
-    tableversion = 1
+    tableversion = 2
     name = UnicodeCol(alternateID=True,length=40)
+    shortname = UnicodeCol(length=10,default=None)
     cards = RelatedJoin('AbstractCard',intermediateTable='abs_clan_map',createRelatedTable=False)
 
 class CardType(SQLObject):
@@ -128,6 +159,20 @@ class CardType(SQLObject):
     tableversion = 1
     name = UnicodeCol(alternateID=True,length=50)
     cards = RelatedJoin('AbstractCard',intermediateTable='abs_type_map',createRelatedTable=False)
+
+class Sect(SQLObject):
+    advise(instancesProvide=[ISect])
+
+    tableversion = 1
+    name = UnicodeCol(alternateID=True,length=50)
+    cards = RelatedJoin('AbstractCard',intermediateTable='abs_sect_map',createRelatedTable=False)
+
+class Title(SQLObject):
+    advise(instancesProvide=[ITitle])
+
+    tableversion = 1
+    name = UnicodeCol(alternateID=True,length=50)
+    cards = RelatedJoin('AbstractCard',intermediateTable='abs_title_map',createRelatedTable=False)
 
 class Ruling(SQLObject):
     advise(instancesProvide=[IRuling])
@@ -224,11 +269,59 @@ class MapAbstractCardToCardType(SQLObject):
     abstractCardIndex = DatabaseIndex(abstractCard,unique=False)
     cardTypeIndex = DatabaseIndex(cardType,unique=False)
 
+class MapAbstractCardToSect(SQLObject):
+    class sqlmeta:
+        table = 'abs_sect_map'
+
+    tableversion = 1
+
+    abstractCard = ForeignKey('AbstractCard',notNull=True)
+    sect = ForeignKey('Sect',notNull=True)
+
+    abstractCardIndex = DatabaseIndex(abstractCard,unique=False)
+    sectIndex = DatabaseIndex(sect,unique=False)
+
+class MapAbstractCardToTitle(SQLObject):
+    class sqlmeta:
+        table = 'abs_title_map'
+
+    tableversion = 1
+
+    abstractCard = ForeignKey('AbstractCard',notNull=True)
+    title = ForeignKey('Title',notNull=True)
+
+    abstractCardIndex = DatabaseIndex(abstractCard,unique=False)
+    titleIndex = DatabaseIndex(title,unique=False)
+
+class MapAbstractCardToCreed(SQLObject):
+    class sqlmeta:
+        table = 'abs_creed_map'
+
+    tableversion = 1
+
+    abstractCard = ForeignKey('AbstractCard',notNull=True)
+    creed = ForeignKey('Creed',notNull=True)
+
+    abstractCardIndex = DatabaseIndex(abstractCard,unique=False)
+    creedIndex = DatabaseIndex(creed,unique=False)
+
+class MapAbstractCardToVirtue(SQLObject):
+    class sqlmeta:
+        table = 'abs_virtue_map'
+
+    tableversion = 1
+
+    abstractCard = ForeignKey('AbstractCard',notNull=True)
+    virtue = ForeignKey('Virtue',notNull=True)
+
+    abstractCardIndex = DatabaseIndex(abstractCard,unique=False)
+    virtueIndex = DatabaseIndex(virtue,unique=False)
+
 # List of Tables to be created, dropped, etc.
 
 ObjectList = [ AbstractCard, PhysicalCard, AbstractCardSet, PhysicalCardSet,
                Expansion, Rarity, RarityPair, Discipline, DisciplinePair,
-               Clan, CardType, Ruling,
+               Clan, CardType, Sect, Title, Ruling, Virtue, Creed,
                # Mapping tables from here on out
                MapPhysicalCardToPhysicalCardSet,
                MapAbstractCardToAbstractCardSet,
@@ -236,7 +329,12 @@ ObjectList = [ AbstractCard, PhysicalCard, AbstractCardSet, PhysicalCardSet,
                MapAbstractCardToRuling,
                MapAbstractCardToClan,
                MapAbstractCardToDisciplinePair,
-               MapAbstractCardToCardType ]
+               MapAbstractCardToCardType,
+               MapAbstractCardToSect,
+               MapAbstractCardToTitle,
+               MapAbstractCardToVirtue,
+               MapAbstractCardToCreed
+               ]
 
 # Adapters
 
@@ -259,7 +357,7 @@ class StrAdaptMeta(type):
     def canonical(self,sName):
         return self.__dLook[sName]
 
-    def fetch(self,sName,oCls):
+    def fetch(self,sName,oCls,**keywords):
         o = self.__dCache.get(sName,None)
         if not o is None:
             return o
@@ -267,7 +365,14 @@ class StrAdaptMeta(type):
         try:
             o = oCls.byName(sName.encode('utf8'))
         except SQLObjectNotFound:
-            o = oCls(name=sName)
+            if 'fullname' in keywords.keys():
+                sFullName=keywords['fullname']
+                o = oCls(name=sName,fullname=sFullName)
+            elif 'shortname' in keywords.keys():
+                sShortName=keywords['shortname']
+                o = oCls(name=sName,shortname=sShortName)
+            else:
+                o = oCls(name=sName)
 
         self.__dCache[sName] = o
         return o
@@ -299,9 +404,14 @@ class ExpansionAdapter(object):
     def __new__(cls,s):
         if s.startswith('Promo-'):
             sName = s
+            sShortName='Promo'
         else:
             sName = cls.canonical(s)
-        return cls.fetch(sName,Expansion)
+            if cls.keys[sName]!=[]:
+                sShortName=cls.keys[sName][0]
+            else:
+                sShortName=sName
+        return cls.fetch(sName,Expansion,shortname=sShortName)
 
 class RarityAdapter(object):
     __metaclass__ = StrAdaptMeta
@@ -312,7 +422,7 @@ class RarityAdapter(object):
              'Rare' : ['R','R1','R2','R3'],
              'Vampire' : ['V','V1','V2','V3'],
              'Tenth': ['A','B'],
-             'Precon' : ['PB','PA','PTo3','PTr','PG','PB2','PTo4','PAl2'],
+             'Precon' : ['PB','PA','PTo3','PTr','PG','PB2','PTo4','PAl2','PO3'],
              'Not Applicable' : ['NA'],
            }
 
@@ -382,18 +492,18 @@ class DisciplineAdapter(object):
              'vic' : ['VIC','Vicissitude'],
              'vis' : ['VIS','Visceratika'],
              # Virtues (last key is full name)
-             'v_def' : ['Defense'],
-             'v_inn' : ['Innocence'],
-             'v_jud' : ['Judgment','Judgement'],
-             'v_mar' : ['Martyrdom'],
-             'v_red' : ['Redemption'],
-             'v_ven' : ['Vengeance'],
-             'v_vis' : ['Vision'],
+             #'v_def' : ['Defense'],
+             #'v_inn' : ['Innocence'],
+             #'v_jud' : ['Judgment','Judgement'],
+             #'v_mar' : ['Martyrdom'],
+             #'v_red' : ['Redemption'],
+             #'v_ven' : ['Vengeance'],
+             #'v_vis' : ['Vision'],
            }
 
     def __new__(cls,s):
         sName = cls.canonical(s)
-        return cls.fetch(sName,Discipline)
+        return cls.fetch(sName,Discipline,fullname=cls.keys[sName][1])
 
 class DisciplinePairAdapter(object):
     advise(instancesProvide=[IDisciplinePair],asAdapterForTypes=[tuple])
@@ -424,31 +534,38 @@ class ClanAdapter(object):
     advise(instancesProvide=[IClan],asAdapterForTypes=[basestring])
 
     keys = { # Camarilla
-             'Brujah' : [], 'Malkavian' : [], 'Nosferatu' : [],
-             'Toreador' : [],'Tremere' : [], 'Ventrue' : [],
-             'Caitiff' : [],
+             'Brujah' : ['Brujah'], 'Malkavian' : ['Malk'],
+             'Nosferatu' : ['Nos'], 'Toreador' : ['Tor'],
+             'Tremere' : ['Tre'], 'Ventrue' : ['Ven'],
+             'Caitiff' : ['Caitiff'],
              # Independents
-             'Abomination' : [], 'Gangrel' : [], 'Assamite' : [],
-             'Follower of Set' : [], 'Giovanni' : [], 'Ravnos' : [],
-             'Baali' : [], 'Daughter of Cacophony' : [], 'Gargoyle' : [],
-             'Nagaraja' : [], 'Salubri' :[], 'Samedi' : [],
-             'True Brujah' : [],
+             'Abomination' : ['Abom'], 'Gangrel' : ['Gangrel'],
+             'Assamite' : ['Assa'], 'Follower of Set' : ['Set'], 
+             'Giovanni' : ['Giov'], 'Ravnos' : ['Ravnos'],
+             'Baali' : ['Baali'], 'Daughter of Cacophony' : ['DoC'],
+             'Gargoyle' : ['Garg'], 'Nagaraja' : ['Naga'],
+             'Salubri' :['Salu'], 'Samedi' : ['Sam'],
+             'True Brujah' : ['TBruj'],
              # Sabbat
-             'Lasombra' : [], 'Tzimisce' : [], 'Brujah antitribu' : [],
-             'Gangrel antitribu' : [], 'Malkavian antitribu' : [], 'Nosferatu antitribu' : [],
-             'Toreador antitribu' : [], 'Tremere antitribu' : [], 'Ventrue antitribu' : [],
-             'Pander' : [], 'Ahrimanes' : [], 'Blood Brother' : [],
-             'Harbinger of Skulls' : [], 'Kiasyd' : [], 'Salubri antitribu' : [],
+             'Lasombra' : ['Lasom'], 'Tzimisce' : ['Tz'],
+             'Brujah antitribu' : ['!Brujah'], 'Gangrel antitribu' : ['!Gangrel'], 
+             'Malkavian antitribu' : ['!Malk'], 'Nosferatu antitribu' : ['!Nos'],
+             'Toreador antitribu' : ['!Tor'], 'Tremere antitribu' : ['!Tre'],
+             'Ventrue antitribu' : ['!Ven'], 'Pander' : ['Pan'],
+             'Ahrimanes' : ['Ahrimanes'], 'Blood Brother' : ['BB'],
+             'Harbinger of Skulls' : ['HoS'],
+             'Kiasyd' : ['Kias'], 'Salubri antitribu' : ['!Salu'],
              # Laibon
-             'Akunanse' : [], 'Guruhi' : [], 'Ishtarri' : [],
-             'Osebo' : [],
+             'Akunanse' : ['Aku'], 'Guruhi' : ['Guru'], 'Ishtarri' : ['Ish'],
+             'Osebo' : ['Ose'],
              # Other
-             'Ahrimane' : [],
+             'Ahrimane' : ['Ahrimane'],
            }
 
     def __new__(cls,s):
         sName = cls.canonical(s)
-        return cls.fetch(sName,Clan)
+        sShortName=cls.keys[sName][0]
+        return cls.fetch(sName,Clan,shortname=sShortName)
 
 class CardTypeAdapter(object):
     __metaclass__ = StrAdaptMeta
@@ -465,14 +582,85 @@ class CardTypeAdapter(object):
         sName = cls.canonical(s)
         return cls.fetch(sName,CardType)
 
+class SectAdaptor(object):
+    __metaclass__ = StrAdaptMeta
+    advise(instancesProvide=[ISect],asAdapterForTypes=[basestring])
+
+    keys = { 'Camarilla' : [], 'Sabbat' : [], 'Independent' : [],
+             'Laibon' : [],
+             # For if we ever start handling merged vampires somehow
+             'Anarch' : [],
+           }
+
+    def __new__(cls,s):
+        sName = cls.canonical(s)
+        return cls.fetch(sName,Sect)
+
+class TitleAdapter(object):
+    __metaclass__ = StrAdaptMeta
+    advise(instancesProvide=[ITitle],asAdapterForTypes=[basestring])
+
+    keys = {
+             # Camarilla Titles
+             'Primogen' : [], 'Prince' :  [], 'Justicar' : [],
+             'Inner Circle' : [],
+             # Sabbat Titles
+             'Bishop' : [], 'Archbishop' : [], 'Priscus':[],
+             'Cardinal' : [], 'Regent' : [],
+             # Independant Titles
+             'Independent with 1 vote' : [],
+             'Independent with 2 votes' : [],
+             'Independent with 3 votes' : [],
+             # Laibon Titles
+             'Magaji' : [],
+           }
+
+    def __new__(cls,s):
+        sName = cls.canonical(s)
+        return cls.fetch(sName,Title)
+
+class VirtueAdapter(object):
+    __metaclass__ = StrAdaptMeta
+    advise(instancesProvide=[IVirtue],asAdapterForTypes=[basestring])
+
+    keys = { # Virtues (last key is full name)
+             'def' : ['Defense'],
+             'inn' : ['Innocence'],
+             'jud' : ['Judgment','Judgement'],
+             'mar' : ['Martyrdom'],
+             'red' : ['Redemption'],
+             'ven' : ['Vengeance'],
+             'vis' : ['Vision'],
+           }
+
+    def __new__(cls,s):
+        sName = cls.canonical(s)
+        return cls.fetch(sName,Virtue,fullname=cls.keys[sName][0])
+
+class CreedAdapter(object):
+    __metaclass__ = StrAdaptMeta
+    advise(instancesProvide=[ICreed],asAdapterForTypes=[basestring])
+
+
+    keys = { # Imbued
+            'Avenger' : [], 'Defender' : [], 'Innocent' : [],
+            'Judge' : [], 'Martyr' : [], 'Redeemer' : [],
+            'Visionary' : []
+            }
+
+    def __new__(cls,s):
+        sName = cls.canonical(s)
+        sShortName=sName
+        return cls.fetch(sName,Creed,shortname=sShortName)
+
 class AbstractCardAdapter(object):
     advise(instancesProvide=[IAbstractCard],asAdapterForTypes=[basestring])
 
     def __new__(cls,s):
         try:
-            oC = AbstractCard.byName(s.encode('utf8'))
+            oC = AbstractCard.byCanonicalName(s.encode('utf8').lower())
         except SQLObjectNotFound:
-            oC = AbstractCard(name=s,text="")
+            oC = AbstractCard(canonicalname=s.lower(),name=s,text="")
         return oC
 
 class RulingAdapter(object):

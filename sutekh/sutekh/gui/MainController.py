@@ -63,7 +63,7 @@ class MainController(object):
 
     def setCardText(self,sCardName):
         try:
-            oCard = AbstractCard.byName(sCardName)
+            oCard = AbstractCard.byCanonicalName(sCardName.lower())
             self.__oCardText.setCardText(oCard)
         except SQLObjectNotFound:
             pass

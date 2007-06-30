@@ -25,18 +25,34 @@ class PhysicalCardSetHandler(ContentHandler):
         self.dUnhandled={}
         self.aUnknown=[]
         self.pcsName=None
+        self.aSupportedVersions=['1.0','0.0']
 
     def startElement(self,sTagName,oAttrs):
         if sTagName == 'physicalcardset':
             self.pcsName = oAttrs.getValue('name')
-            sAuthor=oAttrs.getValue('author')
-            sComment=oAttrs.getValue('comment')
+            aAttributes=oAttrs.getNames()
+            sAuthor=None
+            sComment=None
+            sAnnotations=None
+            if 'author' in aAttributes:
+                sAuthor=oAttrs.getValue('author')
+            if 'comment' in aAttributes:
+                sComment=oAttrs.getValue('comment')
+            if 'annotations' in aAttributes:
+                sAnnotations=oAttrs.getValue('annotations')
+            if 'sutekh_xml_version' in aAttributes:
+                sThisVersion=oAttrs.getValue('sutekh_xml_version')
+            else:
+                sThisVersion='0.0'
+            if sThisVersion not in self.aSupportedVersions:
+                raise RuntimeError("Unrecognised XML file version")
             # Try and add pcs to PhysicalCardSet
             # Make sure
             try:
                 pcs=PhysicalCardSet.byName(self.pcsName.encode('utf8'))
                 pcs.author=sAuthor
                 pcs.comment=sComment
+                acs.annotations=sAnnotations
                 pcs.syncUpdate()
                 # We overwrite pcs, so we drop all cards currently
                 # part of the PhysicalCardSet
@@ -47,13 +63,17 @@ class PhysicalCardSetHandler(ContentHandler):
             except SQLObjectNotFound:
                 PhysicalCardSet(name=self.pcsName,author=sAuthor,comment=sComment)
                 self.pcsDB=True
-        if sTagName == 'card':
+        elif sTagName == 'card':
             iId = int(oAttrs.getValue('id'),10)
             sName = oAttrs.getValue('name')
             iCount = int(oAttrs.getValue('count'),10)
+            if 'expansion' in oAttrs.getNames():
+                sExpansionName=oAttrs.getValue('expansion')
+            else:
+                sExpansionName='None Specified'
 
             try:
-                oAbs = AbstractCard.byName(sName.encode('utf8'))
+                oAbs = AbstractCard.byCanonicalName(sName.encode('utf8').lower())
             except SQLObjectNotFound:
                 oAbs=None
                 self.aUnknown.append(sName)
@@ -66,16 +86,27 @@ class PhysicalCardSetHandler(ContentHandler):
                     # Get all physical IDs that match this card
                     possibleCards=PhysicalCard.selectBy(abstractCardID=oAbs.id)
                     added=False
-                    for card in possibleCards:
-                        if card not in pcs.cards:
-                            pcs.addPhysicalCard(card.id)
-                            added=True
-                            break
+                    if sExpansionName=='None Specified':
+                        for card in possibleCards:
+                            if card not in pcs.cards:
+                                pcs.addPhysicalCard(card.id)
+                                added=True
+                                break
+                    else:
+                        # Only add cards if the expansion matches
+                        # Do we need to do a best match if expansion
+                        # doesn't match??
+                        for card in possibleCards:
+                            if card not in pcs.cards and \
+                                    card.expansion==sExpansionName:
+                                pcs.addPhysicalCard(card.id)
+                                added=True
+                                break
                     if not added:
                         try:
-                            self.dUnhandled[oAbs.name]+=1
+                            self.dUnhandled[(oAbs.name,sExpansionName)]+=1
                         except KeyError:
-                            self.dUnhandled[oAbs.name]=1
+                            self.dUnhandled[(oAbs.name,sExpansionName)]=1
 
     def endElement(self,sName):
         pass
@@ -87,8 +118,9 @@ class PhysicalCardSetHandler(ContentHandler):
                 print sCardName.encode('utf-8')
         if len(self.dUnhandled)>0:
             print "The Following Cards where unable to be added to the database"
-            for sCardName, iCount in self.dUnhandled.iteritems():
-                print str(iCount)+"x "+sCardName.encode('utf-8')
+            for tKey, iCount in self.dUnhandled.iteritems():
+                sCardName,sExpansionName=tKey
+                print str(iCount)+"x "+sCardName.encode('utf-8')," from expansion ",sExpansionName
 
 class PhysicalCardSetParser(object):
     def parse(self,fIn):

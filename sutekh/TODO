@@ -25,8 +25,8 @@ Gui (Functionality):
  * Turn AnalyzeDeck into something more useful - NM
  * Finish ClusterCardList plugin.
  * Compare CardSet Plugin (basic version done. Could be improved)
- * Ability to specify the expansion a physical card comes from.
  * Improve About dialog.
+ * Ability to specify the expansion a physical card comes from.
 
 Gui (Presentation):
  * Give gui resource handling capablities to save window pos, etc - NM
@@ -41,6 +41,5 @@ Release Candidate tasks:
  - Check everything works on Windows again (check with Philip before release)
  - Create setup.py file with bdist_egg (needs testing)
  * Improve "with text mode" option for HTML export (xsl file needs work)
- * Merge Neil's database upgrade branch.
  * Add a Filter on Expansion + Rarity Pairs.
  * Additional Filter (Votes, Sect, etc).

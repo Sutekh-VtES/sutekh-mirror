@@ -9,6 +9,7 @@ from sutekh.SutekhObjects import PhysicalCardSet,AbstractCardSet
 from sutekh.gui.ExportDialog import ExportDialog
 from sutekh.gui.PropDialog import PropDialog
 from sutekh.XmlFileHandling import AbstractCardSetXmlFile, PhysicalCardSetXmlFile
+from sutekh.gui.EditAnnotationsDialog import EditAnnotationsDialog
 
 class CardSetMenu(gtk.MenuBar,object):
     def __init__(self,oController,oWindow,oView,sName,sType):
@@ -32,6 +33,9 @@ class CardSetMenu(gtk.MenuBar,object):
         self.__iProperties=gtk.MenuItem("Edit Card Set ("+self.sSetName+") properties")
         wMenu.add(self.__iProperties)
         self.__iProperties.connect('activate',self.editProperites)
+        self.__iEditAnn= gtk.MenuItem("Edit Annotations for Card Set ("+self.sSetName+")")
+        wMenu.add(self.__iEditAnn)
+        self.__iEditAnn.connect('activate', self.editAnnotations)
         self.__iExport = gtk.MenuItem("Export Card Set ("+self.sSetName+") to File")
         wMenu.add(self.__iExport)
         self.__iExport.connect('activate', self.doExport)
@@ -127,6 +131,17 @@ class CardSetMenu(gtk.MenuBar,object):
         if sComment is not None:
             oCS.comment=sComment
             oCS.syncUpdate()
+
+    def editAnnotations(self,widget):
+        if self.__sType=='PhysicalCardSet':
+            oCS=PhysicalCardSet.byName(self.sSetName)
+        else:
+            oCS=AbstractCardSet.byName(self.sSetName)
+        oEditAnn=EditAnnotationsDialog("Edit Annotations of Card Set ("+self.sSetName+")",\
+                self.__oWindow,oCS.name,oCS.annotations)
+        oEditAnn.run()
+        oCS.annotations=oEditAnn.getData()
+        oCS.syncUpdate()
 
     def doExport(self,widget):
         oFileChooser=ExportDialog("Save "+self.__sMenuType+" Card Set As",self.__oWindow)

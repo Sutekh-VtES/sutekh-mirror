@@ -57,7 +57,7 @@ class PhysicalCardSetController(CardSetController):
         Returns True if a card was successfully removed, False otherwise.
         """
         try:
-            oC = AbstractCard.byName(sName)
+            oC = AbstractCard.byCanonicalName(sName.lower())
         except SQLObjectNotFound:
             return False
 
@@ -80,7 +80,7 @@ class PhysicalCardSetController(CardSetController):
         Returns True if a card was successfully added, False otherwise.
         """
         try:
-            oC = AbstractCard.byName(sName)
+            oC = AbstractCard.byCanonicalName(sName.lower())
         except SQLObjectNotFound:
             return False
 
@@ -109,7 +109,7 @@ class AbstractCardSetController(CardSetController):
         Returns True if a card was successfully removed, False otherwise.
         """
         try:
-            oC = AbstractCard.byName(sName)
+            oC = AbstractCard.byCanonicalName(sName.lower())
         except SQLObjectNotFound:
             return False
         # find if there's a abstract card of that name in the Set
@@ -137,7 +137,7 @@ class AbstractCardSetController(CardSetController):
         Returns True if a card was successfully added, False otherwise.
         """
         try:
-            oC = AbstractCard.byName(sName)
+            oC = AbstractCard.byCanonicalName(sName.lower())
         except SQLObjectNotFound:
             return False
         # Add to the Set

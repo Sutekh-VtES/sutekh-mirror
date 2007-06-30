@@ -24,12 +24,27 @@ class AbstractCardSetHandler(ContentHandler):
         self.acsDB=False
         self.aUnknown=[]
         self.acsName=None
+        self.aSupportedVersions=['1.0','0.0']
 
     def startElement(self,sTagName,oAttrs):
         if sTagName == 'abstractcardset':
             self.acsName = oAttrs.getValue('name')
-            sAuthor=oAttrs.getValue('author')
-            sComment=oAttrs.getValue('comment')
+            aAttributes=oAttrs.getNames()
+            sAuthor=None
+            sComment=None
+            sAnnotations=None
+            if 'author' in aAttributes:
+                sAuthor=oAttrs.getValue('author')
+            if 'comment' in aAttributes:
+                sComment=oAttrs.getValue('comment')
+            if 'annotations' in aAttributes:
+                sAnnotations=oAttrs.getValue('annotations')
+            if 'sutekh_xml_version' in aAttributes:
+                sThisVersion=oAttrs.getValue('sutekh_xml_version')
+            else:
+                sThisVersion='0.0'
+            if sThisVersion not in self.aSupportedVersions:
+                raise RuntimeError("Unrecognised XML File Version")
             # Try and add acs to AbstractCardSet
             # Make sure
             try:
@@ -38,6 +53,7 @@ class AbstractCardSetHandler(ContentHandler):
                 # part of the acs
                 acs.author=sAuthor
                 acs.comment=sComment
+                acs.annotations=sAnnotations
                 acs.syncUpdate()
                 ids=[]
                 for card in acs.cards:
@@ -46,13 +62,13 @@ class AbstractCardSetHandler(ContentHandler):
             except SQLObjectNotFound:
                 AbstractCardSet(name=self.acsName,author=sAuthor,comment=sComment)
                 self.acsDB=True
-        if sTagName == 'card':
+        elif sTagName == 'card':
             iId = int(oAttrs.getValue('id'),10)
             sName = oAttrs.getValue('name')
             iCount = int(oAttrs.getValue('count'),10)
 
             try:
-                oAbs = AbstractCard.byName(sName.encode('utf8'))
+                oAbs = AbstractCard.byCanonicalName(sName.encode('utf8').lower())
             except SQLObjectNotFound:
                 self.aUnknown.append(sName)
                 oAbs=None

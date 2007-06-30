@@ -3,10 +3,11 @@
 # Minor modifications copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-from sutekh.SutekhObjects import AbstractCard, PhysicalCard, ICardType, IClan,\
-                                 IAbstractCard, IPhysicalCardSet,\
-                                 IAbstractCardSet, IDiscipline, IExpansion
-from sqlobject import AND, OR, LIKE, func, IN
+from sutekh.SutekhObjects import AbstractCard, IAbstractCard, PhysicalCard, \
+                                 ICreed, IVirtue, IClan, IDiscipline, \
+                                 IExpansion, ITitle, ISect, ICardType, \
+                                 IPhysicalCardSet, IAbstractCardSet
+from sqlobject import AND, OR, LIKE, IN, func
 from sqlobject.sqlbuilder import Table, Alias
 
 # Filter Base Class
@@ -19,9 +20,9 @@ class Filter(object):
         """
         In order to allow multiple filters to be AND together, filters need
         to create aliases of mapping tables so that, for example:
-        
+
             FilterAndBox([DisciplineFilter('dom'),DisciplineFilter('obf')])
-            
+
         produces a list of cards which have both dominate and obfuscate
         rather than an empty list.  The two discipline filters above need to
         join the abstract card table with two different copies of the
@@ -122,6 +123,78 @@ class MultiCardTypeFilter(Filter):
         return AND(AbstractCard.q.id == oT.q.abstract_card_id,
                    IN(oT.q.card_type_id,self.__aTypeIds))
 
+class SectFilter(Filter):
+    def __init__(self,sSect):
+        self.__oSect = ISect(sSect)
+
+    def getExpression(self):
+        oT = self._makeTableAlias('abs_sect_map')
+        return AND(AbstractCard.q.id == oT.q.abstract_card_id,
+                   oT.q.sect_id == self.__oSect.id)
+
+class MultiSectFilter(Filter):
+    def __init__(self,aSects):
+        self.__aTypeIds = [ISect(x).id for x in aSects]
+
+    def getExpression(self):
+        oT = self._makeTableAlias('abs_sect_map')
+        return AND(AbstractCard.q.id == oT.q.abstract_card_id,
+                   IN(oT.q.sect_id,self.__aSectIds))
+
+class TitleFilter(Filter):
+    def __init__(self,sTitle):
+        self.__oTitle = ITitle(sTitle)
+
+    def getExpression(self):
+        oT = self._makeTableAlias('abs_title_map')
+        return AND(AbstractCard.q.id == oT.q.abstract_card_id,
+                   oT.q.title_id == self.__oTitle.id)
+
+class MultiTitleFilter(Filter):
+    def __init__(self,aTitles):
+        self.__aTypeIds = [ITitle(x).id for x in aTitles]
+
+    def getExpression(self):
+        oT = self._makeTableAlias('abs_title_map')
+        return AND(AbstractCard.q.id == oT.q.abstract_card_id,
+                   IN(oT.q.title_id,self.__aTitleIds))
+
+class CreedFilter(Filter):
+    def __init__(self,sCreed):
+        self.__oCreed = ICreed(sCreed)
+
+    def getExpression(self):
+        oT = self._makeTableAlias('abs_creed_map')
+        return AND(AbstractCard.q.id == oT.q.abstract_card_id,
+                   oT.q.creed_id == self.__oCreed.id)
+
+class MultiCreedFilter(Filter):
+    def __init__(self,aCreeds):
+        self.__aTypeIds = [ICreed(x).id for x in aCreeds]
+
+    def getExpression(self):
+        oT = self._makeTableAlias('abs_creed_map')
+        return AND(AbstractCard.q.id == oT.q.abstract_card_id,
+                   IN(oT.q.creed_id,self.__aCreedIds))
+
+class VirtueFilter(Filter):
+    def __init__(self,sVirtue):
+        self.__oVirtue = IVirtue(sVirtue)
+
+    def getExpression(self):
+        oT = self._makeTableAlias('abs_virtue_map')
+        return AND(AbstractCard.q.id == oT.q.abstract_card_id,
+                   oT.q.virtue_id == self.__oVirtue.id)
+
+class MultiVirtueFilter(Filter):
+    def __init__(self,aVirtues):
+        self.__aTypeIds = [IVirtue(x).id for x in aVirtues]
+
+    def getExpression(self):
+        oT = self._makeTableAlias('abs_virtue_map')
+        return AND(AbstractCard.q.id == oT.q.abstract_card_id,
+                   IN(oT.q.virtue_id,self.__aVirtueIds))
+
 class GroupFilter(Filter):
     def __init__(self,iGroup):
         self.__iGroup = iGroup
@@ -137,7 +210,6 @@ class MultiGroupFilter(Filter):
         return IN(AbstractCard.q.group,self.__aGroups)
 
 class CapacityFilter(Filter):
-    # Should this also check y type=='Vampire|Imbued' ?
     def __init__(self,iCap):
         self.__iCap = iCap
 
@@ -152,7 +224,7 @@ class MultiCapacityFilter(Filter):
         return IN(AbstractCard.q.capacity,self.__aCaps)
 
 class CostFilter(Filter):
-    # Should this excludes Vamps & Imbued, if we search for
+    # Should this exclude Vamps & Imbued, if we search for
     # cards without cost?
     def __init__(self,iCost):
         self.__iCost = iCost
@@ -173,6 +245,21 @@ class CostTypeFilter(Filter):
 
     def getExpression(self):
         return AbstractCard.q.costtype == self.__sCostType
+
+class LifeFilter(Filter):
+    # Will only return imbued, unless we ever parse life from retainers & allies
+    def __init__(self,iLife):
+        self.__iLife = iLife
+
+    def getExpression(self):
+        return AbstractCard.q.life == self.__iLife
+
+class MultiLifeFilter(Filter):
+    def __init__(self,aLife):
+        self.__aLife = aLife
+
+    def getExpression(self):
+        return IN(AbstractCard.q.life,self.__aLife)
 
 class CardTextFilter(Filter):
     def __init__(self,sPattern):

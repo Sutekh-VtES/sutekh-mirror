@@ -18,6 +18,8 @@ from xml.dom.ext import PrettyPrint
 from xml.dom.minidom import getDOMImplementation
 
 class PhysicalCardSetWriter(object):
+    sMyVersion="1.0"
+
     def genDoc(self,sPhysicalCardSetName):
         dPhys = {}
 
@@ -25,32 +27,37 @@ class PhysicalCardSetWriter(object):
             oPCS = PhysicalCardSet.byName(sPhysicalCardSetName)
             sAuthor=oPCS.author
             sComment=oPCS.comment
+            sAnnotations=oPCS.annotations
         except SQLObjectNotFound:
             return
 
         for oC in oPCS.cards:
             oAbs = oC.abstractCard
             try:
-                dPhys[(oAbs.id, oAbs.name)] += 1
+                dPhys[(oAbs.id, oAbs.name, oC.expansion)] += 1
             except KeyError:
-                dPhys[(oAbs.id, oAbs.name)] = 1
+                dPhys[(oAbs.id, oAbs.name, oC.expansion)] = 1
 
         oDoc = getDOMImplementation().createDocument(None,'physicalcardset',None)
 
         oCardsElem = oDoc.firstChild
+        oCardsElem.setAttribute('sutekh_xml_version',self.sMyVersion)
         oCardsElem.setAttribute('name',sPhysicalCardSetName)
         oCardsElem.setAttribute('author',sAuthor)
         oCardsElem.setAttribute('comment',sComment)
+        oCardsElem.setAttribute('annotations',sAnnotations)
 
         for tKey, iNum in dPhys.iteritems():
-            iId, sName = tKey
+            iId, sName, sExpansion = tKey
             oCardElem = oDoc.createElement('card')
             oCardElem.setAttribute('id',str(iId))
             oCardElem.setAttribute('name',sName)
+            if sExpansion is None:
+                oCardElem.setAttribute('expansion','None Specified')
+            else:
+                oCardElem.setAttribute('expansion',sExpansion)
             oCardElem.setAttribute('count',str(iNum))
             oCardsElem.appendChild(oCardElem)
-
-
 
         return oDoc
 

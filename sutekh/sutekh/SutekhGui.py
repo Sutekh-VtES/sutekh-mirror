@@ -77,22 +77,48 @@ def main(aArgs):
         else:
             tempConn=connectionForURI("sqlite:///:memory:")
             try:
-                if createMemoryCopy(tempConn):
-                    diag=DBUpgradeDialog()
+                (bOK,aMessages)=createMemoryCopy(tempConn)
+                if bOK:
+                    diag=DBUpgradeDialog(aMessages)
                     res=diag.run()
                     diag.destroy()
                     if res==gtk.RESPONSE_OK:
-                        createFinalCopy(tempConn)
-                        print "Changes Committed"
+                        (bOK,aMessages)=createFinalCopy(tempConn)
+                        if bOK:
+                            diag=gtk.MessageDialog(None,0,gtk.MESSAGE_INFO,\
+                                    gtk.BUTTONS_CLOSE,None)
+                            sMesg="Changes Commited\n"
+                            if len(aMessages)>0:
+                                sMesg+="Messages reported are:\n"
+                                for sStr in aMessages:
+                                    sMesg+=sStr+"\n"
+                            else:
+                                sMesg+="Everything seems to have gone smoothly."
+                            diag.set_markup(sMesg)
+                            diag.run()
+                        else:
+                            sMesg="Unable to commit updated database!\n"
+                            for sStr in aMessages:
+                                sMesg+=sStr+"\n"
+                            sMesg+="Upgrade Failed.\nYour database may be in an inconsistent state."
+                            diag=gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,\
+                                 gtk.BUTTONS_CLOSE,None)
+                            diag.set_markup(sMesg)
+                            diag.run()
+                            return 1
                     elif res==1:
                         # Try with the upgraded database
                         sqlhub.processConnection=tempConn
                     else:
                         return 1
                 else:
+                    sMesg="Unable to create memory copy!\n"
+                    for sStr in aMessages:
+                        sMesg+=sStr+"\n"
+                    sMesg+="Upgrade Failed."
                     diag=gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,\
                             gtk.BUTTONS_CLOSE,None)
-                    diag.set_markup("Unable to create memory copy. Upgrade Failed")
+                    diag.set_markup(sMesg)
                     diag.run()
                     return 1
             except unknownVersion, err:

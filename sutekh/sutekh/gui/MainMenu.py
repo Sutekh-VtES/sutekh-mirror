@@ -213,10 +213,34 @@ class MainMenu(gtk.MenuBar,object):
             readWhiteWolfList(sCLFileName)
             if sRulingsFileName is not None:
                 readRulings(sRulingsFileName)
-            copyToNewAbstractCardDB(oldConn,tempConn)
+            bCont=False
+            (bOK,aErrors)=copyToNewAbstractCardDB(oldConn,tempConn)
+            if not bOK:
+                sMesg="There was a problem copying the cardlist to the new database\n"
+                for sStr in aErrors:
+                    sMesg+=sStr+"\n"
+                sMesg+="Attempt to Continue Anyway (This is quite possibly dangerous)?"
+                Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
+                                              gtk.BUTTONS_OK_CANCEL,sMesg)
+                response=Complaint.run()
+                Complaint.destroy()
+                if response==gtk.RESPONSE_OK:
+                    bCont=True
+            else:
+                bCont=True
             # OK, update complete, copy back from tempConn
             sqlhub.processConnection=oldConn
-            createFinalCopy(tempConn)
+            if bCont:
+                (bOK,aErrors)=createFinalCopy(tempConn)
+                if not bOK:
+                    sMesg="There was a problem updating the database\n"
+                    for sStr in aErrors:
+                        sMesg+=sStr+"\n"
+                    sMesg+="Your database may be in an inconsistent state - sorry"
+                Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
+                                              gtk.BUTTONS_OK,sMesg)
+                Complaint.run()
+                Complaint.destroy()
             self.__oC.reloadAll()
 
     def getApplyFilter(self):

@@ -40,19 +40,19 @@ class RuleDict(dict):
         sTitle = self._oCommaThe.sub('',sTitle)
 
         try:
-            return AbstractCard.byName(sTitle.encode('utf8'))
+            return AbstractCard.byCanonicalName(sTitle.encode('utf8').lower())
         except SQLObjectNotFound:
             pass
 
         try:
-            return AbstractCard.byName(self._dOddTitles[sTitle].encode('utf8'))
+            return AbstractCard.byCanonicalName(self._dOddTitles[sTitle].encode('utf8').lower())
         except KeyError:
             pass
         except SQLObjectNotFound:
             pass
 
         try:
-            return AbstractCard.byName(('The ' + sTitle).encode('utf8'))
+            return AbstractCard.byCanonicalName(('The ' + sTitle).encode('utf8').lower())
         except SQLObjectNotFound:
             pass
 

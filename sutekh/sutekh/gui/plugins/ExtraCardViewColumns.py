@@ -25,7 +25,7 @@ class ExtraCardViewColumns(CardListPlugin):
 
     def _getCard(self,oIter):
         try:
-            oCard = AbstractCard.byName(self.model.getCardNameFromIter(oIter))
+            oCard = AbstractCard.byCanonicalName(self.model.getCardNameFromIter(oIter).lower())
             return oCard
         except SQLObjectNotFound:
             return None
