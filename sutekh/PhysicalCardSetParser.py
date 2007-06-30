@@ -37,7 +37,7 @@ class PhysicalCardSetHandler(ContentHandler):
                 sAuthor=oAttrs.getValue('author')
             if 'comment' in aAttributes:
                 sComment=oAttrs.getValue('comment')
-            if 'anootation' in aAttributes:
+            if 'annotations' in aAttributes:
                 sAnnotations=oAttrs.getValue('annotations')
             # Try and add pcs to PhysicalCardSet
             # Make sure
@@ -60,6 +60,10 @@ class PhysicalCardSetHandler(ContentHandler):
             iId = int(oAttrs.getValue('id'),10)
             sName = oAttrs.getValue('name')
             iCount = int(oAttrs.getValue('count'),10)
+            if 'expansion' in oAttrs.getNames():
+                sExpansionName=oAttrs.getValue('expansion')
+            else:
+                sExpansionName='None Specified'
 
             try:
                 oAbs = AbstractCard.byCanonicalName(sName.encode('utf8').lower())
@@ -75,16 +79,27 @@ class PhysicalCardSetHandler(ContentHandler):
                     # Get all physical IDs that match this card
                     possibleCards=PhysicalCard.selectBy(abstractCardID=oAbs.id)
                     added=False
-                    for card in possibleCards:
-                        if card not in pcs.cards:
-                            pcs.addPhysicalCard(card.id)
-                            added=True
-                            break
+                    if sExpansionName=='None Specified':
+                        for card in possibleCards:
+                            if card not in pcs.cards:
+                                pcs.addPhysicalCard(card.id)
+                                added=True
+                                break
+                    else:
+                        # Only add cards if the expansion matches
+                        # Do we need to do a best match if expansion
+                        # doesn't match??
+                        for card in possibleCards:
+                            if card not in pcs.cards and \
+                                    card.expansion==sExpansionName:
+                                pcs.addPhysicalCard(card.id)
+                                added=True
+                                break
                     if not added:
                         try:
-                            self.dUnhandled[oAbs.name]+=1
+                            self.dUnhandled[(oAbs.name,sExpansionName)]+=1
                         except KeyError:
-                            self.dUnhandled[oAbs.name]=1
+                            self.dUnhandled[(oAbs.name,sExpansionName)]=1
 
     def endElement(self,sName):
         pass
@@ -96,8 +111,9 @@ class PhysicalCardSetHandler(ContentHandler):
                 print sCardName.encode('utf-8')
         if len(self.dUnhandled)>0:
             print "The Following Cards where unable to be added to the database"
-            for sCardName, iCount in self.dUnhandled.iteritems():
-                print str(iCount)+"x "+sCardName.encode('utf-8')
+            for tKey, iCount in self.dUnhandled.iteritems():
+                sCardName,sExpansionName=tKey
+                print str(iCount)+"x "+sCardName.encode('utf-8')," from expansion ",sExpansionName
 
 class PhysicalCardSetParser(object):
     def parse(self,fIn):
