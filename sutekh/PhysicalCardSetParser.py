@@ -25,6 +25,7 @@ class PhysicalCardSetHandler(ContentHandler):
         self.dUnhandled={}
         self.aUnknown=[]
         self.pcsName=None
+        self.aSupportedVersions=['1.0','0.0']
 
     def startElement(self,sTagName,oAttrs):
         if sTagName == 'physicalcardset':
@@ -39,6 +40,12 @@ class PhysicalCardSetHandler(ContentHandler):
                 sComment=oAttrs.getValue('comment')
             if 'annotations' in aAttributes:
                 sAnnotations=oAttrs.getValue('annotations')
+            if 'sutekh_xml_version' in aAttributes:
+                sThisVersion=oAttrs.getValue('sutekh_xml_version')
+            else:
+                sThisVersion='0.0'
+            if sThisVersion not in self.aSupportedVersions:
+                raise RuntimeError("Unrecognised XML file version")
             # Try and add pcs to PhysicalCardSet
             # Make sure
             try:
@@ -56,7 +63,7 @@ class PhysicalCardSetHandler(ContentHandler):
             except SQLObjectNotFound:
                 PhysicalCardSet(name=self.pcsName,author=sAuthor,comment=sComment)
                 self.pcsDB=True
-        if sTagName == 'card':
+        elif sTagName == 'card':
             iId = int(oAttrs.getValue('id'),10)
             sName = oAttrs.getValue('name')
             iCount = int(oAttrs.getValue('count'),10)
