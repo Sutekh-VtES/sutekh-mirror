@@ -36,7 +36,7 @@ class AbstractCardSetHandler(ContentHandler):
                 sAuthor=oAttrs.getValue('author')
             if 'comment' in aAttributes:
                 sComment=oAttrs.getValue('comment')
-            if 'anootation' in aAttributes:
+            if 'annotations' in aAttributes:
                 sAnnotations=oAttrs.getValue('annotations')
             # Try and add acs to AbstractCardSet
             # Make sure
