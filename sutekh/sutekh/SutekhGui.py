@@ -96,6 +96,7 @@ def main(aArgs):
                                 sMesg+="Everything seems to have gone smoothly."
                             diag.set_markup(sMesg)
                             diag.run()
+                            diag.destroy()
                         else:
                             sMesg="Unable to commit updated database!\n"
                             for sStr in aMessages:
@@ -105,6 +106,7 @@ def main(aArgs):
                                  gtk.BUTTONS_CLOSE,None)
                             diag.set_markup(sMesg)
                             diag.run()
+                            diag.destroy()
                             return 1
                     elif res==1:
                         # Try with the upgraded database
@@ -120,12 +122,14 @@ def main(aArgs):
                             gtk.BUTTONS_CLOSE,None)
                     diag.set_markup(sMesg)
                     diag.run()
+                    diag.destroy()
                     return 1
             except unknownVersion, err:
                 diag=gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,\
                         gtk.BUTTONS_CLOSE,None)
                 diag.set_markup("Upgrade Failed. "+str(err))
                 diag.run()
+                diag.destroy()
                 return 1
 
     MainController().run()
