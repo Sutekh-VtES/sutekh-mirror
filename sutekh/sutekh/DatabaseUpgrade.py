@@ -208,7 +208,8 @@ def CopyOldDiscipline(orig_conn,trans):
             else:
                 sFullName=''
                 # Not using adaptor creation as I want to preserve ID
-                # FIXME: Tweak DisciplinePair copy not to rely on ID's?
+                # FIXME: Get the actual fullname from the data.
+                # Maybe tweak DisciplinePair copy not to rely on ID's?
                 oCopy=Discipline(id=oObj.id,name=oObj.name,fullname=sFullName,
                         connection=trans)
     return (True,[])

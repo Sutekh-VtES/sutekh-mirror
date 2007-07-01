@@ -63,6 +63,9 @@ class WriteArdbXML(object):
             # these are fine for the xml2html conversion, and look meaningful
             oAdvElem=oDoc.createElement('adv')
             oNameElem=oDoc.createElement('name')
+            # FIXME: How does ARDB handle titles and sects?
+            # title is mentioned in the deck2html.xsl file, so
+            # that should be there somehow. Relook at this
             if oCard.level is not None:
                 oAdvElem.appendChild(oDoc.createTextNode("(Advanced)"))
                 # This is a bit hackish
