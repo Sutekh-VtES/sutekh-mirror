@@ -10,8 +10,8 @@ from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.ScrolledList import ScrolledList
 
 class CardSetCompare(CardListPlugin):
-    dTableVersions = {"AbstractCardSet" : [1,2],
-                      "PhysicalCardSet" : [1,2]}
+    dTableVersions = {"AbstractCardSet" : [1,2,3],
+                      "PhysicalCardSet" : [1,2,3]}
     aModelsSupported = ["AbstractCardSet","PhysicalCardSet"]
     def getMenuItem(self):
         """

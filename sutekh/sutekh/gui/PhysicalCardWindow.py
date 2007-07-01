@@ -34,3 +34,6 @@ class PhysicalCardWindow(gtk.Window,object):
 
         self.add(wMbox)
         self.show_all()
+
+    def getManager(self):
+        return self.__oC.getCSManWin()

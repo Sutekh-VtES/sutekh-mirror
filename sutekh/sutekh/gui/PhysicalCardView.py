@@ -13,6 +13,7 @@ class PhysicalCardView(EditableCardListView):
 
         self._oModel.basefilter = PhysicalCardFilter()
         self._oModel.cardclass = PhysicalCard
+        self._oWin = oWindow
         self.load()
 
     def cardDrop(self, w, context, x, y, data, info, time):
@@ -34,3 +35,6 @@ class PhysicalCardView(EditableCardListView):
             sCardName = oModel.get_value(oIter,0)
             selectData = selectData + "\n" + sCardName
         selection_data.set(selection_data.target, 8, selectData)
+
+    def getWindow(self):
+        return self._oWin

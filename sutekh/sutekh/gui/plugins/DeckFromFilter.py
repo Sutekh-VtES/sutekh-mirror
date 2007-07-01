@@ -7,10 +7,9 @@ from sutekh.SutekhObjects import PhysicalCardSet
 from sutekh.gui.PluginManager import CardListPlugin
 
 class DeckFromFilter(CardListPlugin):
-    dTableVersions = {"PhysicalCardSet" : [2],
-            "AbstractCardSet" : [2],
-            "PhysicalCard" : [1]}
-    aModelsSupported = ["PhysicalCardSet","AbstractCardSet","PhysicalCard"]
+    dTableVersions = { "PhysicalCardSet" : [2,3]}
+    aModelsSupported = ["PhysicalCardSet","AbstractCardSet","PhysicalCard",]
+
     def __init__(self,*args,**kws):
         super(DeckFromFilter,self).__init__(*args,**kws)
 
@@ -20,7 +19,7 @@ class DeckFromFilter(CardListPlugin):
         """
         if not self.checkVersions() or not self.checkModelType():
             return None
-        iDF = gtk.MenuItem("Deck From Filter")
+        iDF = gtk.MenuItem("Physical Card Set From Filter")
         iDF.connect("activate", self.activate)
         return iDF
 
@@ -34,40 +33,42 @@ class DeckFromFilter(CardListPlugin):
     def makeDialog(self):
         parent = self.view.getWindow()
 
-        self.oDlg = gtk.Dialog("Choose Deck Name",parent,
+        self.oDlg = gtk.Dialog("Choose Physical Card Set Name",parent,
                           gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                           (gtk.STOCK_OK, gtk.RESPONSE_OK,
                            gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
         self.oDlg.connect("response", self.handleResponse)
 
-        self.oDeckNameEntry = gtk.Entry(50)
-        self.oDeckNameEntry.connect("activate", self.handleResponse, gtk.RESPONSE_OK)
+        self.oPCSNameEntry = gtk.Entry(50)
+        self.oPCSNameEntry.connect("activate", self.handleResponse, gtk.RESPONSE_OK)
 
-        self.oDlg.vbox.pack_start(self.oDeckNameEntry)
+        self.oDlg.vbox.pack_start(self.oPCSNameEntry)
         self.oDlg.show_all()
 
         return self.oDlg
 
     def handleResponse(self,oWidget,oResponse):
        if oResponse ==  gtk.RESPONSE_OK:
-          sDeckName = self.oDeckNameEntry.get_text().strip()
-          self.makeDeckFromFilter(sDeckName)
+          sPCSName = self.oPCSNameEntry.get_text().strip()
+          self.makeDeckFromFilter(sPCSName)
 
        self.oDlg.destroy()
 
-    def makeDeckFromFilter(self,sDeckName):
-        # Check Deck Doesn't Exist
-        if PhysicalCardSet.selectBy(name=sDeckName).count() != 0:
+    def makeDeckFromFilter(self,sPCSName):
+        parent = self.view.getWindow()
+        # Check PCS Doesn't Exist
+        if PhysicalCardSet.selectBy(name=sPCSName).count() != 0:
             oComplaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
-                                           gtk.BUTTONS_CLOSE,"Deck %s already exists." % sDeckName)
+                                           gtk.BUTTONS_CLOSE,"Physical Card Set %s already exists." % sPCSName)
             oComplaint.connect("response",lambda oW, oResp: oW.destroy())
             oComplaint.run()
             return
 
-        # Create Deck
-        oDeck = PhysicalCardSet(name=sDeckName)
+        # Create PCS
+        oPCS = PhysicalCardSet(name=sPCSName)
 
         for oCard in self.model.getCardIterator(self.model.getSelectFilter()):
-            oDeck.addPhysicalCard(oCard)
+            oPCS.addPhysicalCard(oCard)
+        parent.getManager().reloadCardSetLists()
 
 plugin = DeckFromFilter
