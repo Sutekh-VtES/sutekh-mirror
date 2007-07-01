@@ -16,6 +16,8 @@ from xml.dom.ext import PrettyPrint
 from xml.dom.minidom import getDOMImplementation
 
 class PhysicalCardWriter(object):
+    sMyVersion='1.0'
+
     def genDoc(self):
         dPhys = {}
 
@@ -28,7 +30,7 @@ class PhysicalCardWriter(object):
 
         oDoc = getDOMImplementation().createDocument(None,'cards',None)
         oCardsElem = oDoc.firstChild
-        oCardsElem.setAttribute('sutekh_xml_version','1.0')
+        oCardsElem.setAttribute('sutekh_xml_version',self.sMyVersion)
 
         for tKey, iNum in dPhys.iteritems():
             iId, sName, sExpansion = tKey

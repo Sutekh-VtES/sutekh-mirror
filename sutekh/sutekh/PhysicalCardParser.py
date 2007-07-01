@@ -17,8 +17,18 @@ from xml.sax import parse, parseString
 from xml.sax.handler import ContentHandler
 
 class CardHandler(ContentHandler):
+    aSupportedVersions=['1.0','0.0']
+
     def startElement(self,sTagName,oAttrs):
-        if sTagName == 'card':
+        if sTagName == 'cards':
+            aAttributes=oAtters.getNames()
+            if 'sutekh_xml_version' in aAttributes:
+                sThisVersion=oAttrs.getValue('sutekh_xml_version')
+            else:
+                sThisVersion='0.0'
+            if sThisVersion not in self.aSupportedVersions:
+                raise RuntimeError("Unrecognised XML File version")
+        elif sTagName == 'card':
             iId = int(oAttrs.getValue('id'),10)
             sName = oAttrs.getValue('name')
             iCount = int(oAttrs.getValue('count'),10)
