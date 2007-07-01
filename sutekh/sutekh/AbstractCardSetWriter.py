@@ -28,7 +28,11 @@ class AbstractCardSetWriter(object):
             sAuthor=oACS.author
             sComment=oACS.comment
             sAnnotations=oACS.annotations
+            if sAnnotations is None:
+                # prettytoxml will barf if this isn't done
+                sAnnotations=''
         except SQLObjectNotFound:
+            print "Failed to find %s" % sAbstractCardSetName
             return
 
         for oAbs in oACS.cards:
@@ -37,10 +41,11 @@ class AbstractCardSetWriter(object):
             except KeyError:
                 dCards[(oAbs.id, oAbs.name)] = 1
 
+
         oDoc = getDOMImplementation().createDocument(None,'abstractcardset',None)
 
         oCardsElem = oDoc.firstChild
-        oCardsElem.setAttribute('sutekh_xml_version',sMyVersion)
+        oCardsElem.setAttribute('sutekh_xml_version',self.sMyVersion)
         oCardsElem.setAttribute('name',sAbstractCardSetName)
         oCardsElem.setAttribute('author',sAuthor)
         oCardsElem.setAttribute('comment',sComment)

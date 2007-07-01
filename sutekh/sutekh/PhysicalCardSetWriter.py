@@ -28,7 +28,11 @@ class PhysicalCardSetWriter(object):
             sAuthor=oPCS.author
             sComment=oPCS.comment
             sAnnotations=oPCS.annotations
+            if sAnnotations is None:
+                # prettytoxml will barf if this isn't done
+                sAnnotations=''
         except SQLObjectNotFound:
+            print "Failed to find %s" % sPhysicalCardSetName
             return
 
         for oC in oPCS.cards:
