@@ -16,7 +16,8 @@ except ImportError:
     bHaveXmlParser = False
 
 class CardSetExportHTML(CardListPlugin):
-    dTableVersions = {"AbstractCardSet" : [2], "PhysicalCardSet" : [2]}
+    dTableVersions = {"AbstractCardSet" : [2,3], 
+                      "PhysicalCardSet" : [2,3]}
     aModelsSupported = ["AbstractCardSet","PhysicalCardSet"]
     def getMenuItem(self):
         """

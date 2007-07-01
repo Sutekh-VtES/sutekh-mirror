@@ -8,8 +8,8 @@ from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.WriteArdbXML import WriteArdbXML
 
 class CardSetExportArdbXML(CardListPlugin):
-    dTableVersions = {"AbstractCardSet" : [2],
-                      "PhysicalCardSet" : [2]}
+    dTableVersions = {"AbstractCardSet" : [2,3],
+                      "PhysicalCardSet" : [2,3]}
     aModelsSupported = ["AbstractCardSet", "PhysicalCardSet"]
 
     def getMenuItem(self):

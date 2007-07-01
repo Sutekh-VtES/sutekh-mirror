@@ -8,8 +8,8 @@ from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.CardListModel import CardListModelListener
 
 class CountCardSetCards(CardListPlugin,CardListModelListener):
-    dTableVersions = {"AbstractCardSet" : [1,2],
-                      "PhysicalCardSet" : [1,2]}
+    dTableVersions = {"AbstractCardSet" : [1,2,3],
+                      "PhysicalCardSet" : [1,2,3]}
     aModelsSupported = ["AbstractCardSet","PhysicalCardSet","PhysicalCard"]
 
     def __init__(self,*args,**kwargs):
