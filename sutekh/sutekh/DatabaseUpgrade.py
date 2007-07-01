@@ -207,7 +207,7 @@ def CopyOldDiscipline(orig_conn,trans):
                 # Let adaptor create entry for us
             else:
                 sFullName=''
-                # Not using adaptor creation as I want to preserve ID 
+                # Not using adaptor creation as I want to preserve ID
                 # FIXME: Tweak DisciplinePair copy not to rely on ID's?
                 oCopy=Discipline(id=oObj.id,name=oObj.name,fullname=sFullName,
                         connection=trans)
@@ -372,7 +372,7 @@ def CopyOldPhysicalCardSet(orig_conn,trans):
             for oCard in oSet.cards:
                 oCopy.addPhysicalCard(oCard.id)
             oCopy.syncUpdate()
-    elif oVer.checkVersions([PhysicalCardSet],[2]): 
+    elif oVer.checkVersions([PhysicalCardSet],[2]):
         for oSet in PhysicalCardSet_v2.select(connection=orig_conn):
             oCopy=PhysicalCardSet(id=oSet.id,name=oSet.name,\
                     author=oSet.author,comment=oSet.comment,\
@@ -539,7 +539,8 @@ def copyDB(orig_conn,dest_conn):
     trans.commit()
     trans=dest_conn.transaction()
     for oCard in PhysicalCard.select(connection=orig_conn):
-        oCardCopy=PhysicalCard(id=oCard.id,abstractCard=oCard.abstractCard,expansion=oCard.expansion,connection=trans)
+        oCardCopy=PhysicalCard(id=oCard.id,abstractCard=oCard.abstractCard,\
+                expansion=oCard.expansion,connection=trans)
     trans.commit()
     trans=dest_conn.transaction()
     # Copy Physical card sets
@@ -576,7 +577,8 @@ def copyToNewAbstractCardDB(orig_conn,new_conn):
         sName=oCard.abstractCard.canonicalName
         try:
             oNewAbsCard=AbstractCard.byCanonicalName(sName,connection=target)
-            oCardCopy=PhysicalCard(id=oCard.id,abstractCard=oNewAbsCard,connection=target)
+            oCardCopy=PhysicalCard(id=oCard.id,abstractCard=oNewAbsCard,\
+                    expansion=oCard.expansion,connection=target)
         except SQLObjectNotFound:
             aMessages.append("Unable to find match for "+sName)
             bRes=False
@@ -587,9 +589,9 @@ def copyToNewAbstractCardDB(orig_conn,new_conn):
                 author=oSet.author,comment=oSet.comment,\
                 connection=target)
         for oCard in oSet.cards:
-            oAbstractCard=oCard.abstractCard
+            sName=oAbstractCard=oCard.abstractCard.canonicalName
             try:
-                oNewAbsCard=AbstractCard.byName(oAbstractCard.name,connection=target)
+                oNewAbsCard=AbstractCard.byCanonicalName(sName,connection=target)
                 oCopy.addPhysicalCard(oCard.id)
             except SQLObjectNotFound:
                 aMessages.append("Unable to add Physical card %d name %s to set %s" % (oCard.id,oAbstractCard.name,oSet.name))
