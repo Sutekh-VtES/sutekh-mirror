@@ -575,7 +575,7 @@ def copyToNewAbstractCardDB(orig_conn,new_conn):
     for oCard in PhysicalCard.select(connection=orig_conn):
         sName=oCard.abstractCard.canonicalName
         try:
-            oNewAbsCard=AbstractCard.byCannonicalName(sName,connection=target)
+            oNewAbsCard=AbstractCard.byCanonicalName(sName,connection=target)
             oCardCopy=PhysicalCard(id=oCard.id,abstractCard=oNewAbsCard,connection=target)
         except SQLObjectNotFound:
             aMessages.append("Unable to find match for "+sName)
