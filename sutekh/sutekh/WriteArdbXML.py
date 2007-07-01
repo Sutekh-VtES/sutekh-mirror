@@ -27,7 +27,7 @@ class WriteArdbXML(object):
         sDateWritten=time.strftime('%Y-%m-%d',time.localtime())
         oDeckElem.setAttribute('generator',"Sutekh [pre-release]")
         oDeckElem.setAttribute('formatVersion',"-TODO-1.0") # Claim same version as recent ARDB
-        oDeckElem.setAttribute('databaseVersion',"Sutekh-20061220")
+        oDeckElem.setAttribute('databaseVersion',"Sutekh-20070701")
         oNameElem=oDoc.createElement('name')
         oNameElem.appendChild(oDoc.createTextNode(sSetName))
         oDeckElem.appendChild(oNameElem)
