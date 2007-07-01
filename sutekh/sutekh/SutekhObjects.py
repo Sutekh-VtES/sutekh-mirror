@@ -660,7 +660,7 @@ class AbstractCardAdapter(object):
         try:
             oC = AbstractCard.byCanonicalName(s.encode('utf8').lower())
         except SQLObjectNotFound:
-            oC = AbstractCard(canonicalname=s.lower(),name=s,text="")
+            oC = AbstractCard(canonicalName=s.lower(),name=s,text="")
         return oC
 
 class RulingAdapter(object):
