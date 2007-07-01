@@ -237,8 +237,13 @@ class MainMenu(gtk.MenuBar,object):
                     for sStr in aErrors:
                         sMesg+=sStr+"\n"
                     sMesg+="Your database may be in an inconsistent state - sorry"
-                Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
+                    Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
                                               gtk.BUTTONS_OK,sMesg)
+                else:
+                    sMesg="Import Completed\n"
+                    sMesg+="Eveything seems to have gone OK"
+                    Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_INFO,
+                                              gtk.BUTTONS_CLOSE,sMesg)
                 Complaint.run()
                 Complaint.destroy()
             self.__oC.reloadAll()
