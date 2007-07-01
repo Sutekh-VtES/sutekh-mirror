@@ -10,7 +10,7 @@ from sutekh.gui.PluginManager import CardListPlugin
 class AbstractCardSetFromPhysical(CardListPlugin):
     """Create a equivilant Abstract Card Set from a given
        Physical Card Set."""
-    dTableVersions = {"AbstractCardSet" : [2]}
+    dTableVersions = {"AbstractCardSet" : [2,3]}
     aModelsSupported = ['PhysicalCardSet']
     def getMenuItem(self):
         """
@@ -52,5 +52,7 @@ class AbstractCardSetFromPhysical(CardListPlugin):
             # Copy the cards across
             for oCard in self.model.getCardIterator(None):
                 nA.addAbstractCard(oCard.abstractCardID)
+
+            parent.getManager().reloadCardSetLists()
 
 plugin = AbstractCardSetFromPhysical

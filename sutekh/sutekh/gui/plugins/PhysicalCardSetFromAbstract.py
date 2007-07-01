@@ -14,7 +14,7 @@ class PhysicalCardSetFromAbstract(CardListPlugin):
        - Ignores Cards which don't exist in Physical Cards (but notifies the user)
        - Has an option to import the cards into your card collection before creating the Physical Card Set."""
 
-    dTableVersions = {"PhysicalCardSet" : [2], "PhysicalCard" : [1] }
+    dTableVersions = {"PhysicalCardSet" : [2,3], "PhysicalCard" : [1,2] }
     aModelsSupported = ["AbstractCardSet"]
 
     def getMenuItem(self):
@@ -76,6 +76,8 @@ class PhysicalCardSetFromAbstract(CardListPlugin):
                     break
             else:
                 aMissingCards.append(oCard)
+
+        parent.getManager().reloadCardSetLists()
 
         if aMissingCards:
             sMsg = "The following cards were not added to the physical card set " \
