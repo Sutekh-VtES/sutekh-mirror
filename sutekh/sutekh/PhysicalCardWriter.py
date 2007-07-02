@@ -5,9 +5,10 @@
 """
 Write physical cards out to an XML file which
 looks like:
-<cards>
-  <card id='3' name='Some Card' count='5' />
-  <card id='5' name='Some Other Card' count='2' />  
+<cards sutekh_xml_version="1.0">
+  <card id='3' name='Some Card' count='5' Expansion="Some Expansion" />
+  <card id='3' name='Some Card' count='2' Expansion="Some Other Expansion" />
+  <card id='5' name='Some Other Card' count='2' Expansion="Some Other Expansion" />
 </cards>
 """
 

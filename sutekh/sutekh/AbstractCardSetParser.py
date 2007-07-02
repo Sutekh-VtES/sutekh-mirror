@@ -6,7 +6,7 @@
 """
 Read cards from an XML file which
 looks like:
-<abstractcardset name='AbstractCardSetName'>
+<abstractcardset name='AbstractCardSetName' author='Author' comment='Comment' annotations='annotations'>
   <card id='3' name='Some Card' count='5' />
   <card id='5' name='Some Other Card' count='2' />
 </abstractcardset>
