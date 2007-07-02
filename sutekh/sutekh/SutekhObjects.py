@@ -366,10 +366,10 @@ class StrAdaptMeta(type):
             o = oCls.byName(sName.encode('utf8'))
         except SQLObjectNotFound:
             if 'fullname' in keywords.keys():
-                sFullName=keywords['fullname']
+                sFullName = keywords['fullname']
                 o = oCls(name=sName,fullname=sFullName)
             elif 'shortname' in keywords.keys():
-                sShortName=keywords['shortname']
+                sShortName = keywords['shortname']
                 o = oCls(name=sName,shortname=sShortName)
             else:
                 o = oCls(name=sName)
@@ -404,13 +404,13 @@ class ExpansionAdapter(object):
     def __new__(cls,s):
         if s.startswith('Promo-'):
             sName = s
-            sShortName='Promo'
+            sShortName = 'Promo'
         else:
             sName = cls.canonical(s)
             if cls.keys[sName]!=[]:
-                sShortName=cls.keys[sName][0]
+                sShortName = cls.keys[sName][0]
             else:
-                sShortName=sName
+                sShortName = sName
         return cls.fetch(sName,Expansion,shortname=sShortName)
 
 class RarityAdapter(object):
@@ -540,7 +540,7 @@ class ClanAdapter(object):
              'Caitiff' : ['Caitiff'],
              # Independents
              'Abomination' : ['Abom'], 'Gangrel' : ['Gangrel'],
-             'Assamite' : ['Assa'], 'Follower of Set' : ['Set'], 
+             'Assamite' : ['Assa'], 'Follower of Set' : ['Set'],
              'Giovanni' : ['Giov'], 'Ravnos' : ['Ravnos'],
              'Baali' : ['Baali'], 'Daughter of Cacophony' : ['DoC'],
              'Gargoyle' : ['Garg'], 'Nagaraja' : ['Naga'],
@@ -548,7 +548,7 @@ class ClanAdapter(object):
              'True Brujah' : ['TBruj'],
              # Sabbat
              'Lasombra' : ['Lasom'], 'Tzimisce' : ['Tz'],
-             'Brujah antitribu' : ['!Brujah'], 'Gangrel antitribu' : ['!Gangrel'], 
+             'Brujah antitribu' : ['!Brujah'], 'Gangrel antitribu' : ['!Gangrel'],
              'Malkavian antitribu' : ['!Malk'], 'Nosferatu antitribu' : ['!Nos'],
              'Toreador antitribu' : ['!Tor'], 'Tremere antitribu' : ['!Tre'],
              'Ventrue antitribu' : ['!Ven'], 'Pander' : ['Pan'],
@@ -564,7 +564,7 @@ class ClanAdapter(object):
 
     def __new__(cls,s):
         sName = cls.canonical(s)
-        sShortName=cls.keys[sName][0]
+        sShortName = cls.keys[sName][0]
         return cls.fetch(sName,Clan,shortname=sShortName)
 
 class CardTypeAdapter(object):
@@ -650,7 +650,7 @@ class CreedAdapter(object):
 
     def __new__(cls,s):
         sName = cls.canonical(s)
-        sShortName=sName
+        sShortName = sName
         return cls.fetch(sName,Creed,shortname=sShortName)
 
 class AbstractCardAdapter(object):
@@ -680,9 +680,9 @@ class AbstractCardSetAdapter(object):
 
     def __new__(cls,s):
         try:
-           oS = AbstractCardSet.byName(s.encode('utf8'))
+            oS = AbstractCardSet.byName(s.encode('utf8'))
         except:
-           oS = AbstractCardSet(name=s)
+            oS = AbstractCardSet(name=s)
         return oS
 
 class PhysicalCardSetAdapter(object):
@@ -690,9 +690,9 @@ class PhysicalCardSetAdapter(object):
 
     def __new__(cls,s):
         try:
-           oS = PhysicalCardSet.byName(s.encode('utf8'))
+            oS = PhysicalCardSet.byName(s.encode('utf8'))
         except:
-           oS = PhysicalCardSet(name=s)
+            oS = PhysicalCardSet(name=s)
         return oS
 
 class PhysicalCardToAbstractCardAdapter(object):
