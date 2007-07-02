@@ -117,8 +117,12 @@ doesn't work.
 
 Recent svn snapshots of SQLObject work with MySQL 5, and these fixes should
 make it into SQLObject 0.8.0. The url syntax for mysql is somewhat complex, due
-to the encoding issues involved, typically looking like
-mysql://username@host/database?sqlobject_encoding=latin1
+to the encoding issues involved. We have had good results using utf8 as the 
+encoding, specified as:
+
+mysql://username@host/database?sqlobject_encoding=utf8&charset=utf8
+
+In our experience, utf8 is the most robust and portable choice.
 
 MySQL 4 or earlier will definately NOT work. This is unlikely to ever change.
 
