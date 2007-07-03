@@ -82,6 +82,8 @@ class PhysicalCardSetHandler(ContentHandler):
                 # pcs exists in databse, so we're OK
                 pcs=PhysicalCardSet.byName(self.pcsName.encode('utf8'))
                 for i in range(iCount):
+                    # FIXME: This should be made much more effecient than
+                    # it currently is
                     # We see if we can add the card, otherwise we add it to the
                     # dictionary of unhandlable cards
                     # Get all physical IDs that match this card
