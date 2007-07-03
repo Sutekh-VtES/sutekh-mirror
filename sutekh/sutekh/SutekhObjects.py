@@ -319,8 +319,9 @@ class MapAbstractCardToVirtue(SQLObject):
 
 # List of Tables to be created, dropped, etc.
 
-ObjectList = [ AbstractCard, PhysicalCard, AbstractCardSet, PhysicalCardSet,
-               Expansion, Rarity, RarityPair, Discipline, DisciplinePair,
+ObjectList = [ AbstractCard, Expansion,
+               PhysicalCard, AbstractCardSet, PhysicalCardSet,
+               Rarity, RarityPair, Discipline, DisciplinePair,
                Clan, CardType, Sect, Title, Ruling, Virtue, Creed,
                # Mapping tables from here on out
                MapPhysicalCardToPhysicalCardSet,
