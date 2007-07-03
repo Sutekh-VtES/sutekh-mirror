@@ -22,7 +22,7 @@ class CardHandler(ContentHandler):
 
     def startElement(self,sTagName,oAttrs):
         if sTagName == 'cards':
-            aAttributes=oAtters.getNames()
+            aAttributes=oAttrs.getNames()
             if 'sutekh_xml_version' in aAttributes:
                 sThisVersion=oAttrs.getValue('sutekh_xml_version')
             else:
