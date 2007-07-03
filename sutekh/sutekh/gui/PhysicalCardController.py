@@ -92,7 +92,7 @@ class PhysicalCardController(object):
         """
         return self.addCard(sName)
 
-    def addCard(self,sName):
+    def addCard(self,sName,sExpansion=None):
         """
         Returns True if a card was successfully added, False otherwise.
         """
@@ -101,7 +101,7 @@ class PhysicalCardController(object):
         except SQLObjectNotFound:
             return False
 
-        oPC = PhysicalCard(abstractCard=oC)
+        oPC = PhysicalCard(abstractCard=oC,expansion=sExpansion)
         return True
 
     def setCardText(self,sCardName):
