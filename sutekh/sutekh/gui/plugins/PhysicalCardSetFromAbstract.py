@@ -64,7 +64,7 @@ class PhysicalCardSetFromAbstract(CardListPlugin):
         # Add cards to physical card collection if requested
         if oImport.get_active():
             for oCard in self.model.getCardIterator(None):
-                PhysicalCard(abstractCard=oCard)
+                PhysicalCard(abstractCard=oCard,expansion=None)
 
         # Populate the new physical card set
         aMissingCards = []
