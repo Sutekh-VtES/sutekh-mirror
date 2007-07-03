@@ -40,9 +40,9 @@ class CardHandler(ContentHandler):
             oAbs = AbstractCard.byCanonicalName(sName.encode('utf8').lower())
             for i in range(iCount):
                 if sExpansionName!='None Specified':
-                    PhysicalCard(abstractCard=oAbs,Expansion=sExpansionName)
+                    PhysicalCard(abstractCard=oAbs,expansion=sExpansionName)
                 else:
-                    PhysicalCard(abstractCard=oAbs)
+                    PhysicalCard(abstractCard=oAbs,expansion=None)
 
     def endElement(self,sName):
         pass
