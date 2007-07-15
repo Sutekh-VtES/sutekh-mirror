@@ -10,20 +10,20 @@ from sutekh.gui.ScrolledList import ScrolledList
 from sutekh import FilterParser
 
 aFilterList = [
-        "Clan",
-        "Discipline",
-        "CardType && Clan",
-        "CardType AND Discipline",
-        "CardText",
-        "CardName",
-        "CardType in \"Vampire\" and ( Clan or Discipline )",
-        "CardType=\"Vampire\" && Clan && Group",
-        "CardType=\"Vampire\" && Discipline && Group",
-        "CardType=\"Vampire\" && Discipline && Capacity",
-        "CardType=\"Vampire\" && Sect=\"Sabbat\" && Title",
-        "CardType=\"Vampire\" && Discipline=\"Presence\",\"Dominate\" && Capacity",
-        "CardType IN \"Imbued\" AND ( Creed OR Virtue )",
-        "CardType=\"Action\" && Cost"
+        "Clan IN $foo",
+        "Discipline in $foo",
+        "CardType in $foo && Clan in $bar",
+        "CardType in $a AND Discipline in $b",
+        "CardText in $a",
+        "CardName in $name",
+        "CardType in \"Vampire\" and ( Clan in $a or Discipline in $b)",
+        "CardType in \"Vampire\" && Clan in $a && Group in $b",
+        "CardType=\"Vampire\" && Discipline = $b && Group = $c",
+        "CardType=\"Vampire\" && Discipline = $a && Capacity = $b",
+        "CardType=\"Vampire\" && Sect=\"Sabbat\" && Title = $title",
+        "CardType=\"Vampire\" && Discipline=\"Presence\",\"Dominate\" && Capacity = $cap",
+        "CardType IN \"Imbued\" AND ( Creed = $a OR Virtue = $b )",
+        "CardType= Action && Cost= $cost"
         ]
 
 class ExpFilter(CardListPlugin):
@@ -145,7 +145,7 @@ class ExpFilter(CardListPlugin):
                if sString[-1]!='=':
                    sResult+=sString[:-1]+' '
                else:
-                   sResult+=sString[:-1]
+                   sResult+=sString[:-1]+'= $foo'
                    #self.Complain()
                    #return None
            elif type(child) is gtk.Entry:
@@ -153,7 +153,7 @@ class ExpFilter(CardListPlugin):
                if sText!='':
                    sResult+=sFilterPart+'="'+sText+'"'+' '
                else:
-                   sResult+=sFilterPart
+                   sResult+=sFilterPart+'= $foo'
                    #self.Complain()
                    #return None
            else:

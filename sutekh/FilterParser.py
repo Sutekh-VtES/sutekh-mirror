@@ -96,6 +96,7 @@ class ParseFilterDefinitions(object):
             'IN',
             'LPAREN',
             'RPAREN',
+            'VARIABLE'
             )
 
     t_AND=r'\&\&'
@@ -117,7 +118,7 @@ class ParseFilterDefinitions(object):
         t.lexer.skip(1)
 
     def t_ID(self,t):
-        r'[A-Za-z]+'
+        r'[A-Za-z$]+'
         if t.value in dFilterParts.keys():
             t.type='FILTERTYPE'
         elif t.value.lower() == 'and':
@@ -126,8 +127,8 @@ class ParseFilterDefinitions(object):
             t.type='OR'
         elif t.value.lower() == 'in':
             t.type='IN'
-        elif t.value[0] != '$':
-            t.type='STRING'
+        elif t.value[0] == '$':
+            t.type='VARIABLE'
         return t
 
     # Ply docs say don't do this in __init__, so we don't
@@ -202,8 +203,8 @@ class DialogFilterYaccParser(object):
         for x in p[3]:
             p[0].append(x)
 
-    def p_filterpart_filtertype(self,p):
-        """filterpart : FILTERTYPE"""
+    def p_filterpart_filtertype_var(self,p):
+        """filterpart : FILTERTYPE IN VARIABLE"""
         aVals=getValues(p[1])
         if aVals is None:
             oWidget=gtk.Entry(100)
@@ -288,8 +289,8 @@ class FinalFilterYaccParser(object):
         """ffilterpart : FILTERTYPE IN fexpression"""
         p[0]=FilterPartNode(p[1],p[3])
 
-    def p_ffilterpart(self,p):
-        """ffilterpart : FILTERTYPE"""
+    def p_ffilterpart_var(self,p):
+        """ffilterpart : FILTERTYPE IN VARIABLE"""
         p[0]=FilterPartNode(p[1],None)
 
     def p_fexpression_comma(self,p):
