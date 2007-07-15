@@ -93,7 +93,7 @@ class ParseFilterDefinitions(object):
             'OR',
             'AND',
             'COMMA',
-            'EQUALS',
+            'IN',
             'LPAREN',
             'RPAREN',
             )
@@ -103,7 +103,7 @@ class ParseFilterDefinitions(object):
     t_STRING=r'\".*?\"'
     t_INTEGER=r'\d+'
     t_COMMA=r','
-    t_EQUALS=r'='
+    t_IN=r'='
     t_LPAREN=r'\('
     t_RPAREN=r'\)'
 
@@ -120,6 +120,14 @@ class ParseFilterDefinitions(object):
         r'[A-Za-z]+'
         if t.value in dFilterParts.keys():
             t.type='FILTERTYPE'
+        elif t.value.lower() == 'and':
+            t.type='AND'
+        elif t.value.lower() == 'or':
+            t.type='OR'
+        elif t.value.lower() == 'in':
+            t.type='IN'
+        elif t.value[0] != '$':
+            t.type='STRING'
         return t
 
     # Ply docs say don't do this in __init__, so we don't
@@ -141,11 +149,11 @@ class DialogFilterYaccParser(object):
 
     # COMMA's have higher precedence than AND + OR 
     # This shut's up most shift/reduce warnings
-    # EQUALS has quite a high precedence, to ensure we can
+    # IN has quite a high precedence, to ensure we can
     # handle FilterType = Value cases properly
     precedence=(
             ('left','AND','OR'),
-            ('left','EQUALS'),
+            ('left','IN'),
             ('left','COMMA'),
     )
 
@@ -172,7 +180,7 @@ class DialogFilterYaccParser(object):
         for x in p[1]:
             p[0].append(x)
         oWidget=gtk.Label()
-        oWidget.set_markup('<b>AND</b>')
+        oWidget.set_markup('<b>OR</b>')
         p[0].append( (oWidget,'||') )
         for x in p[3]:
             p[0].append(x)
@@ -187,7 +195,7 @@ class DialogFilterYaccParser(object):
         p[0].append((oRight,')'))
 
     def p_filterpart_filtertype_equals(self,p):
-        """filterpart : FILTERTYPE EQUALS expression"""
+        """filterpart : FILTERTYPE IN expression"""
         oFilterType=gtk.Label(p[1])
         oEqualsLabel=gtk.Label(' is ')
         p[0]=[(oFilterType,p[1]),(oEqualsLabel,'=')]
@@ -254,6 +262,7 @@ class FinalFilterYaccParser(object):
     # This shut's up most shift/reduce warnings
     precedence=(
             ('left','AND','OR'),
+            ('left','IN'),
             ('left','COMMA'),
     )
 
@@ -261,50 +270,45 @@ class FinalFilterYaccParser(object):
         """ffilter : ffilterpart
                   | fempty
         """
-        p[0] = p[1]
+        p[0] = FilterNode(p[1])
 
     def p_ffilterpart_AND(self,p):
         """ffilterpart : ffilterpart AND ffilterpart"""
-        p[0] = FilterAndBox((p[1],p[3]))
+        p[0] = BinOpNode(p[1],p[2],p[3])
 
     def p_ffilterpart_OR(self,p):
         """ffilterpart : ffilterpart OR ffilterpart"""
-        p[0] = FilterOrBox((p[1],p[3]))
+        p[0] = BinOpNode(p[1],p[2],p[3])
 
     def p_ffilterpart_brackets(self,p):
         """ffilterpart : LPAREN ffilterpart RPAREN"""
         p[0]=p[2]
 
     def p_ffilterpart_filtertype(self,p):
-        """ffilterpart : FILTERTYPE EQUALS fexpression"""
-        if p[1] in ['CardText','CardName']:
-            Filter=dFilterParts[p[1]][0](p[3][0])
-        else:
-            Filter=dFilterParts[p[1]][0](p[3])
-        p[0]=Filter
+        """ffilterpart : FILTERTYPE IN fexpression"""
+        p[0]=FilterPartNode(p[1],p[3])
+
+    def p_ffilterpart(self,p):
+        """ffilterpart : FILTERTYPE"""
+        p[0]=FilterPartNode(p[1],None)
 
     def p_fexpression_comma(self,p):
         """fexpression : fexpression COMMA fexpression"""
-        p[0]=[]
-        for x in p[1]:
-            p[0].append(x)
-        for x in p[3]:
-            p[0].append(x)
+        p[0]=CommaNode(p[1],p[2],p[3])
 
     def p_fexpression_string(self,p):
         """fexpression : STRING"""
         # Insert into a list, so commas work
-        # Strip the leading and trailing quotes
-        p[0]=[p[1][1:-1]]
+        p[0]=StringNode(p[1])
 
     def p_fexpression_integer(self,p):
         """fexpression : INTEGER"""
-        p[0]=[int(p[1])]
+        p[0]=IntegerNode(p[1])
 
     def p_fexpression_id(self,p):
         """fexpression : ID"""
         # Shouldn't actually trigger this rule with a legal filter string
-        p[0]=p[1]
+        p[0]=IdNode(p[1])
 
     def p_fempty(self,p):
         """fempty :"""
@@ -333,5 +337,68 @@ class FinalFilterParser(object):
         self.oParser = yacc.yacc(module=FinalFilterYaccParser())
 
     def apply(self,str):
-        return self.oParser.parse(str)
+        oAst=self.oParser.parse(str)
+        print oAst
+        return None
 
+# AST object (formulation inspired by Simon Cross's example, and notes 
+# from the ply documentation)
+
+class AstBaseNode(object):
+    def __init__(self,children):
+        self.children = children
+
+    def __str__(self):
+        sAttrs = '('+",".join([ str(value) for key,value \
+                in self.__dict__.items() if not key.startswith("_") and \
+                key != "children" and value not in self.children])+")"
+        s=self.__class__.__name__ + sAttrs
+        for child in self.children:
+            s+="\n" + "\n".join(["\t" + x for x in str(child).split("\n")])
+        return s
+
+class FilterNode(AstBaseNode):
+    def __init__(self,expression):
+        super(FilterNode,self).__init__([expression])
+        self.expression = expression
+
+class OperatorNode(AstBaseNode):
+    pass
+
+class TermNode(AstBaseNode):
+    pass
+
+class StringNode(TermNode):
+    def __init__(self,value):
+        super(StringNode,self).__init__([value])
+        self.value=value
+
+class IntegerNode(TermNode):
+    def __init__(self,value):
+        super(IntegerNode,self).__init__([value])
+        self.value=value
+
+class IdNode(TermNode):
+    def __init__(self,value):
+        super(IdNode,self).__init__([value])
+        self.value=value
+
+class FilterPartNode(OperatorNode):
+    def __init__(self,filtertype,filtervalues):
+        super(FilterPartNode,self).__init__([filtertype,filtervalues])
+        self.filtertype=filtertype
+        self.filtervalues=filtervalues
+
+class BinOpNode(OperatorNode):
+    def __init__(self,left,op,right):
+        super(BinOpNode,self).__init__([left,right])
+        self.op=op
+        self.left=left
+        self.right=right
+
+class CommaNode(OperatorNode):
+    def __init__(self,left,op,right):
+        super(CommaNode,self).__init__([left,right])
+        self.op=op
+        self.left=left
+        self.right=right

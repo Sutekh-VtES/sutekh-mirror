@@ -13,16 +13,16 @@ aFilterList = [
         "Clan",
         "Discipline",
         "CardType && Clan",
-        "CardType && Discipline",
+        "CardType AND Discipline",
         "CardText",
         "CardName",
-        "CardType=\"Vampire\" && ( Clan || Discipline )",
+        "CardType in \"Vampire\" and ( Clan or Discipline )",
         "CardType=\"Vampire\" && Clan && Group",
         "CardType=\"Vampire\" && Discipline && Group",
         "CardType=\"Vampire\" && Discipline && Capacity",
         "CardType=\"Vampire\" && Sect=\"Sabbat\" && Title",
         "CardType=\"Vampire\" && Discipline=\"Presence\",\"Dominate\" && Capacity",
-        "CardType=\"Imbued\" && ( Creed || Virtue )",
+        "CardType IN \"Imbued\" AND ( Creed OR Virtue )",
         "CardType=\"Action\" && Cost"
         ]
 
@@ -73,9 +73,11 @@ class ExpFilter(CardListPlugin):
         self.oDlg.vbox.pack_start(self.oExpandedArea)
         self.oDlg.vbox.pack_start(oRadioArea,)
         oParser=FilterParser.DialogFilterParser()
+        oFParser=FilterParser.FinalFilterParser()
         for sFilter in aFilterList:
             # Parse the filter into the seperate bits needed 
             self.dExpanded[sFilter]=oParser.apply(sFilter)
+            oAST=oFParser.apply(sFilter)
             oRadioButton=gtk.RadioButton(oRadioGroup)
             if oRadioGroup is None:
                 oRadioGroup=oRadioButton
@@ -104,13 +106,15 @@ class ExpFilter(CardListPlugin):
        if oResponse ==  gtk.RESPONSE_OK:
            # Construct the Final filter string
            sFinalFilter=self.parseDialogState()
-           if sFinalFilter is None:
-               return
+           #if sFinalFilter is None:
+           #    return
            print sFinalFilter
            # Push this into yacc and get the constructed filter out of
            # it
            oParser=FilterParser.FinalFilterParser()
            res=oParser.apply(sFinalFilter)
+           if res is None:
+               return
            # Needs error checking, and shouldn't kludge setting filter like
            # this
            self.model.selectfilter=res
@@ -141,15 +145,17 @@ class ExpFilter(CardListPlugin):
                if sString[-1]!='=':
                    sResult+=sString[:-1]+' '
                else:
-                   self.Complain()
-                   return None
+                   sResult+=sString[:-1]
+                   #self.Complain()
+                   #return None
            elif type(child) is gtk.Entry:
                sText=child.get_text()
                if sText!='':
                    sResult+=sFilterPart+'="'+sText+'"'+' '
                else:
-                   self.Complain()
-                   return None
+                   sResult+=sFilterPart
+                   #self.Complain()
+                   #return None
            else:
                sResult+=sFilterPart+' '
         return sResult
