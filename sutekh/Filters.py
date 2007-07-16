@@ -105,6 +105,33 @@ class MultiExpansionFilter(Filter):
         return AND(AbstractCard.q.id == oT.q.abstract_card_id,
                    IN(oT.q.rarity_pair_id, self.__aPairIds))
 
+class ExpansionRarityFilter(Filter):
+    """ Filter on Expansion & Rarity combo """
+
+    def __init__(self,tExpanRarity):
+        """ We use a tuple for Expansion and Rarity here to keep the
+            same calling convention as for the Multi Filter"""
+        sExpansion, sRarity = tExpanRarity
+
+    def getExpression(self):
+        pass
+
+class MultiExpansionRarityFilter(Filter):
+    def __init__(self,aExpansionRarities):
+        """  Called with a list of Expansion+Rarity pairs"""
+        for sExpansion, sRarity in aExpansionRarities:
+            pass
+
+    def getExpression(self):
+        pass
+
+class DisciplineLevelFilter(Filter):
+    def __init__(self,sDiscipline,sLevel):
+        pass
+
+    def getExpression(self):
+        pass
+
 class CardTypeFilter(Filter):
     def __init__(self,sCardType):
         self.__oType = ICardType(sCardType)
@@ -134,7 +161,7 @@ class SectFilter(Filter):
 
 class MultiSectFilter(Filter):
     def __init__(self,aSects):
-        self.__aTypeIds = [ISect(x).id for x in aSects]
+        self.__aSectIds = [ISect(x).id for x in aSects]
 
     def getExpression(self):
         oT = self._makeTableAlias('abs_sect_map')
@@ -152,7 +179,7 @@ class TitleFilter(Filter):
 
 class MultiTitleFilter(Filter):
     def __init__(self,aTitles):
-        self.__aTypeIds = [ITitle(x).id for x in aTitles]
+        self.__aTitleIds = [ITitle(x).id for x in aTitles]
 
     def getExpression(self):
         oT = self._makeTableAlias('abs_title_map')
@@ -170,7 +197,7 @@ class CreedFilter(Filter):
 
 class MultiCreedFilter(Filter):
     def __init__(self,aCreeds):
-        self.__aTypeIds = [ICreed(x).id for x in aCreeds]
+        self.__aCreedIds = [ICreed(x).id for x in aCreeds]
 
     def getExpression(self):
         oT = self._makeTableAlias('abs_creed_map')
@@ -188,7 +215,7 @@ class VirtueFilter(Filter):
 
 class MultiVirtueFilter(Filter):
     def __init__(self,aVirtues):
-        self.__aTypeIds = [IVirtue(x).id for x in aVirtues]
+        self.__aVirtueIds = [IVirtue(x).id for x in aVirtues]
 
     def getExpression(self):
         oT = self._makeTableAlias('abs_virtue_map')
@@ -244,7 +271,7 @@ class CostTypeFilter(Filter):
         self.__sCostType = sCostType
 
     def getExpression(self):
-        return AbstractCard.q.costtype == self.__sCostType
+        return AbstractCard.q.costtype == self.__sCostType.lower()
 
 class LifeFilter(Filter):
     # Will only return imbued, unless we ever parse life from retainers & allies
