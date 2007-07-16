@@ -4,8 +4,6 @@
 
 import ply.lex as lex
 import ply.yacc as yacc
-import gtk
-from sutekh.gui.ScrolledList import ScrolledList
 from sutekh.Filters import MultiCardTypeFilter, MultiClanFilter, \
         MultiDisciplineFilter, MultiGroupFilter, MultiCapacityFilter,\
         MultiCostFilter, MultiLifeFilter, MultiCreedFilter, MultiVirtueFilter,\
@@ -14,8 +12,7 @@ from sutekh.Filters import MultiCardTypeFilter, MultiClanFilter, \
 from sutekh.SutekhObjects import Clan, Discipline, CardType, Title,\
                                  Creed, Virtue, Sect
 
-# FIXME: The intention is to push this into the Individual Filter Objects,
-# but this dict is currently to keep this plugin self-contained
+# FIXME: The intention is to push this into the Individual Filter Objects
 
 dFilterParts = {
         "CardType" : [MultiCardTypeFilter,"Card Type"],
@@ -143,15 +140,13 @@ class ParseFilterDefinitions(object):
             if not tok: return aResults
             aResults.append(tok)
 
-# Define a yacc parser to produce the widget sets for a filter definition
+# Define a yacc parser to produce the abstract syntax tree
 
-class DialogFilterYaccParser(object):
+class FilterYaccParser(object):
     tokens=ParseFilterDefinitions.tokens
 
     # COMMA's have higher precedence than AND + OR 
     # This shut's up most shift/reduce warnings
-    # IN has quite a high precedence, to ensure we can
-    # handle FilterType = Value cases properly
     precedence=(
             ('left','AND','OR'),
             ('left','IN'),
@@ -160,154 +155,45 @@ class DialogFilterYaccParser(object):
 
     def p_filter(self,p):
         """filter : filterpart
-                  | empty
-        """
-        p[0] = p[1]
-
-    def p_filterpart_AND(self,p):
-        """filterpart : filterpart AND filterpart"""
-        p[0]=[]
-        for x in p[1]:
-            p[0].append(x)
-        oWidget=gtk.Label()
-        oWidget.set_markup('<b>AND</b>')
-        p[0].append( (oWidget,'&&') )
-        for x in p[3]:
-            p[0].append(x)
-
-    def p_filterpart_OR(self,p):
-        """filterpart : filterpart OR filterpart"""
-        p[0]=[]
-        for x in p[1]:
-            p[0].append(x)
-        oWidget=gtk.Label()
-        oWidget.set_markup('<b>OR</b>')
-        p[0].append( (oWidget,'||') )
-        for x in p[3]:
-            p[0].append(x)
-
-    def p_filterpart_brackets(self,p):
-        """filterpart : LPAREN filterpart RPAREN"""
-        oLeft=gtk.Label('(')
-        oRight=gtk.Label(')')
-        p[0]=[(oLeft,'(')]
-        for x in p[2]:
-            p[0].append(x)
-        p[0].append((oRight,')'))
-
-    def p_filterpart_filtertype_equals(self,p):
-        """filterpart : FILTERTYPE IN expression"""
-        oFilterType=gtk.Label(p[1])
-        oEqualsLabel=gtk.Label(' is ')
-        p[0]=[(oFilterType,p[1]),(oEqualsLabel,'=')]
-        for x in p[3]:
-            p[0].append(x)
-
-    def p_filterpart_filtertype_var(self,p):
-        """filterpart : FILTERTYPE IN VARIABLE"""
-        aVals=getValues(p[1])
-        if aVals is None:
-            oWidget=gtk.Entry(100)
-            oWidget.set_text(p[1])
-            oWidget.set_width_chars(30)
-        else:
-            oWidget=ScrolledList(p[1])
-            oWidget.set_size_request(160,420)
-            list=oWidget.get_list()
-            list.clear()
-            for sEntry in aVals:
-                iter=list.append(None)
-                list.set(iter,0,sEntry)
-        p[0]=[(oWidget,p[1])]
-
-    def p_expression_comma(self,p):
-        """expression : expression COMMA expression"""
-        p[0]=[]
-        for x in p[1]:
-            p[0].append(x)
-        oWidget=gtk.Label(' or ')
-        p[0].append((oWidget,','))
-        for x in p[3]:
-            p[0].append(x)
-
-    def p_expression_string(self,p):
-        """expression : STRING"""
-        oWidget=gtk.Label()
-        oWidget.set_markup('<b>'+p[1]+'</b>')
-        p[0]=[(oWidget,p[1])]
-
-    def p_expression_integer(self,p):
-        """expression : INTEGER"""
-        oWidget=gtk.Label()
-        oWidget.set_markup('<b>'+p[1]+'</b>')
-        p[0]=[(oWidget,p[1])]
-
-    def p_expression_id(self,p):
-        """expression : ID"""
-        # Shouldn't actually trigger this rule with a legal filter string
-        p[0]=p[1]
-
-    def p_empty(self,p):
-        """empty :"""
-        p[0]=None
-
-    def p_error(self,p):
-        print "Bad Syntax found by DialogFilterParser: ",p
-
-# Define a yacc parser to produce the final filter
-
-class FinalFilterYaccParser(object):
-    tokens=ParseFilterDefinitions.tokens
-
-    # COMMA's have higher precedence than AND + OR 
-    # This shut's up most shift/reduce warnings
-    precedence=(
-            ('left','AND','OR'),
-            ('left','IN'),
-            ('left','COMMA'),
-    )
-
-    def p_ffilter(self,p):
-        """ffilter : ffilterpart
                   | fempty
         """
         p[0] = FilterNode(p[1])
 
-    def p_ffilterpart_AND(self,p):
-        """ffilterpart : ffilterpart AND ffilterpart"""
-        p[0] = BinOpNode(p[1],p[2],p[3])
-
-    def p_ffilterpart_OR(self,p):
-        """ffilterpart : ffilterpart OR ffilterpart"""
-        p[0] = BinOpNode(p[1],p[2],p[3])
-
-    def p_ffilterpart_brackets(self,p):
-        """ffilterpart : LPAREN ffilterpart RPAREN"""
+    def p_filterpart_brackets(self,p):
+        """filterpart : LPAREN filterpart RPAREN"""
         p[0]=p[2]
 
-    def p_ffilterpart_filtertype(self,p):
-        """ffilterpart : FILTERTYPE IN fexpression"""
+    def p_filterpart_AND(self,p):
+        """filterpart : filterpart AND filterpart"""
+        p[0] = BinOpNode(p[1],'and',p[3])
+
+    def p_filterpart_OR(self,p):
+        """filterpart : filterpart OR filterpart"""
+        p[0] = BinOpNode(p[1],'or',p[3])
+
+    def p_filterpart_filtertype(self,p):
+        """filterpart : FILTERTYPE IN expression"""
         p[0]=FilterPartNode(p[1],p[3])
 
-    def p_ffilterpart_var(self,p):
-        """ffilterpart : FILTERTYPE IN VARIABLE"""
+    def p_filterpart_var(self,p):
+        """filterpart : FILTERTYPE IN VARIABLE"""
         p[0]=FilterPartNode(p[1],None)
 
-    def p_fexpression_comma(self,p):
-        """fexpression : fexpression COMMA fexpression"""
+    def p_expression_comma(self,p):
+        """expression : expression COMMA expression"""
         p[0]=CommaNode(p[1],p[2],p[3])
 
-    def p_fexpression_string(self,p):
-        """fexpression : STRING"""
+    def p_expression_string(self,p):
+        """expression : STRING"""
         # Insert into a list, so commas work
         p[0]=StringNode(p[1])
 
-    def p_fexpression_integer(self,p):
-        """fexpression : INTEGER"""
-        p[0]=IntegerNode(p[1])
+    def p_expression_integer(self,p):
+        """expression : INTEGER"""
+        p[0]=IntegerNode(int(p[1]))
 
-    def p_fexpression_id(self,p):
-        """fexpression : ID"""
+    def p_expression_id(self,p):
+        """expression : ID"""
         # Shouldn't actually trigger this rule with a legal filter string
         p[0]=IdNode(p[1])
 
@@ -318,29 +204,18 @@ class FinalFilterYaccParser(object):
     def p_error(self,p):
         print "Bad Syntax found by FinalFilterParser: ",p
 
-# Wrapper objects around the parsers 
+# Wrapper objects around the parser
 
-class DialogFilterParser(object):
+class FilterParser(object):
     def __init__(self):
         self.oLexer = ParseFilterDefinitions()
         self.oLexer.build()
         # yacc needs an initialised lexer
-        self.oParser = yacc.yacc(module=DialogFilterYaccParser())
+        self.oParser = yacc.yacc(module=FilterYaccParser())
 
     def apply(self,str):
-        return self.oParser.parse(str)
-
-class FinalFilterParser(object):
-    def __init__(self):
-        self.oLexer = ParseFilterDefinitions()
-        self.oLexer.build()
-        # yacc needs an initialised lexer
-        self.oParser = yacc.yacc(module=FinalFilterYaccParser())
-
-    def apply(self,str):
-        oAst=self.oParser.parse(str)
-        print oAst
-        return None
+        oAST=self.oParser.parse(str)
+        return oAST
 
 # AST object (formulation inspired by Simon Cross's example, and notes 
 # from the ply documentation)
@@ -358,10 +233,22 @@ class AstBaseNode(object):
             s+="\n" + "\n".join(["\t" + x for x in str(child).split("\n")])
         return s
 
+    def getValues(self):
+        pass
+
+    def getFilter(self):
+        pass
+
 class FilterNode(AstBaseNode):
     def __init__(self,expression):
         super(FilterNode,self).__init__([expression])
         self.expression = expression
+
+    def getValues(self):
+        return self.expression.getValues()
+
+    def getFilter(self):
+        return self.expression.getFilter()
 
 class OperatorNode(AstBaseNode):
     pass
@@ -374,21 +261,64 @@ class StringNode(TermNode):
         super(StringNode,self).__init__([value])
         self.value=value
 
+    def getValues(self):
+        return [self.value]
+
+    def getFilter(self):
+        # Strip quotes off strings for the filter
+        return [self.value[1:-1]]
+
 class IntegerNode(TermNode):
     def __init__(self,value):
         super(IntegerNode,self).__init__([value])
         self.value=value
+
+    def getValues(self):
+        return [self.value]
+
+    def getFilter(self):
+        return [self.value]
 
 class IdNode(TermNode):
     def __init__(self,value):
         super(IdNode,self).__init__([value])
         self.value=value
 
+    def getValues(self):
+        return None
+
+    def getFilter(self):
+        return None
+
 class FilterPartNode(OperatorNode):
     def __init__(self,filtertype,filtervalues):
         super(FilterPartNode,self).__init__([filtertype,filtervalues])
         self.filtertype=filtertype
         self.filtervalues=filtervalues
+
+    def getValues(self):
+        aRes=[self.filtertype+' = ']
+        if self.filtervalues is None:
+            aVals=getValues(self.filtertype)
+            # Want a list within the list for the GUI stuff to work
+            # None case for Entry boxes works as well
+            aRes.append(aVals)
+        else:
+            aRes.extend(self.filtervalues.getValues())
+        return aRes
+
+    def getFilter(self):
+        if self.filtervalues is None:
+            return None
+        aValues=self.filtervalues.getFilter()
+        FilterType=dFilterParts[self.filtertype][0]
+        if self.filtertype in ['CardText','CardName']:
+            # FIXME: Don't quite like special casing this here - MultiCardText?
+            # aValues[0] is a fragile assumption - join?
+            oFilter=FilterType(aValues[0])
+        else:
+            oFilter=FilterType(aValues)
+        return oFilter
 
 class BinOpNode(OperatorNode):
     def __init__(self,left,op,right):
@@ -397,9 +327,45 @@ class BinOpNode(OperatorNode):
         self.left=left
         self.right=right
 
+    def getValues(self):
+        # Add the extra brackets so the processing in the dialog
+        # doesn't change precedence
+        aRes=['(']
+        aRes.extend(self.left.getValues())
+        aRes.append(self.op)
+        aRes.extend(self.right.getValues())
+        aRes.append(')')
+        return aRes
+
+    def getFilter(self):
+        oLeftFilter=self.left.getFilter()
+        oRightFilter=self.right.getFilter()
+        if oLeftFilter is None:
+            return oRightFilter
+        elif oRightFilter is None:
+            return oLeftFilter
+        if self.op == 'and':
+            oFilter=FilterAndBox([oLeftFilter,oRightFilter])
+        elif self.op == 'or':
+            oFilter=FilterOrBox([oLeftFilter,oRightFilter])
+        else:
+            raise RuntimeError('Unknown operator in AST')
+        return oFilter
+
 class CommaNode(OperatorNode):
     def __init__(self,left,op,right):
         super(CommaNode,self).__init__([left,right])
         self.op=op
         self.left=left
         self.right=right
+
+    def getValues(self):
+        aRes=self.left.getValues()
+        aRes.append(',')
+        aRes.extend(self.right.getValues())
+        return aRes
+
+    def getFilter(self):
+        aRes=self.left.getFilter()
+        aRes.extend(self.right.getFilter())
+        return aRes
