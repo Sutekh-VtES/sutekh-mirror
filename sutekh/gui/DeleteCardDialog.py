@@ -8,9 +8,9 @@ import gtk
 class DeleteCardDialog(gtk.Dialog):
     def __init__(self,parent,PCSlist):
         # In retrospect, A MesgDialog would also work
-        super(DeleteCardDialog,self).__init__("Really Delete?", \
-              parent,gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT, \
-              ( gtk.STOCK_YES, gtk.RESPONSE_OK, gtk.STOCK_NO, gtk.RESPONSE_CANCEL))
+        super(DeleteCardDialog,self).__init__("Really Delete?",\
+            parent,gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,\
+            ( gtk.STOCK_YES, gtk.RESPONSE_OK, gtk.STOCK_NO, gtk.RESPONSE_CANCEL))
         Label=gtk.Label()
         text="Card Present in the following Physical Card Sets:\n"
         for sPCS in PCSlist:
@@ -31,6 +31,6 @@ class DeleteCardDialog(gtk.Dialog):
         return self.Data
 
     def buttonResponse(self,widget,response):
-       if response ==  gtk.RESPONSE_OK:
-          self.Data = True
-       self.destroy()
+        if response ==  gtk.RESPONSE_OK:
+            self.Data = True
+        self.destroy()

@@ -205,7 +205,7 @@ class CardSetManagementWindow(gtk.Window):
             if NameList.count() != 0:
                 # Complain about duplicate name
                 Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
-                                              gtk.BUTTONS_CLOSE,"Chosen "+type+" Card Set name already in use.")
+                                                gtk.BUTTONS_CLOSE,"Chosen "+type+" Card Set name already in use.")
                 Complaint.connect("response",lambda dlg, resp: dlg.destroy())
                 Complaint.run()
                 return
@@ -254,7 +254,7 @@ class CardSetManagementWindow(gtk.Window):
             window, controller = openSets[sSetName]
             return window
         return None
- 
+
     def removeCardSetWindow(self,sSetName,sType):
         # Check Card Set window does exist
         if sType == "PhysicalCardSet" or sType == 'Physical':

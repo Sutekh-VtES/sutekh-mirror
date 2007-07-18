@@ -28,8 +28,8 @@ aFilterList = [
 class FilterDialog(gtk.Dialog):
     def __init__(self,parent):
         super(FilterDialog,self).__init__("Specify Filter", \
-              parent,gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT, \
-              ( "Add New Filter", 1, gtk.STOCK_OK, gtk.RESPONSE_OK, gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL ))
+            parent,gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT, \
+            ( "Add New Filter", 1, gtk.STOCK_OK, gtk.RESPONSE_OK, gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL ))
         self.oParser=FilterParser.FilterParser()
         self.connect("response", self.buttonResponse)
         self.dExpanded={}
@@ -45,7 +45,7 @@ class FilterDialog(gtk.Dialog):
         self.vbox.pack_start(self.oExpandedArea)
         self.vbox.pack_start(self.oRadioArea)
         for sFilter in aFilterList:
-            # Parse the filter into the seperate bits needed 
+            # Parse the filter into the seperate bits needed
             try:
                 oAST=self.oParser.apply(sFilter)
             except ValueError:
@@ -62,7 +62,7 @@ class FilterDialog(gtk.Dialog):
         """When the user selects a radio button, expand
            the options"""
         if sButtonName!=self.sExpanded:
-            # Remove the previous filter 
+            # Remove the previous filter
             for child in self.oExpandedArea.get_children():
                 self.oExpandedArea.remove(child)
             self.sExpanded=sButtonName
@@ -101,53 +101,53 @@ class FilterDialog(gtk.Dialog):
         return self.wasCancelled
 
     def buttonResponse(self,widget,response):
-       if response ==  gtk.RESPONSE_OK:
-           self.wasCancelled=False
-           # Construct the Final filter string
-           oNewAST=self.__parseDialogState()
-           # Push this into yacc and get the constructed filter out of
-           # it
-           self.Data=oNewAST.getFilter()
-       elif response == 1:
-           self.doAddFilter()
-           # Recursive, not sure if that's such a good thing
-           return self.run()
-       else:
-           self.wasCancelled=True
-       self.hide()
+        if response ==  gtk.RESPONSE_OK:
+            self.wasCancelled=False
+            # Construct the Final filter string
+            oNewAST=self.__parseDialogState()
+            # Push this into yacc and get the constructed filter out of
+            # it
+            self.Data=oNewAST.getFilter()
+        elif response == 1:
+            self.doAddFilter()
+            # Recursive, not sure if that's such a good thing
+            return self.run()
+        else:
+            self.wasCancelled=True
+        self.hide()
 
     def __parseDialogState(self):
         # FIXME: Should be defined somewhere else for better maintainability
-        aNumericFilters=['Group','Cost','Capacity','Life'] 
+        aNumericFilters=['Group','Cost','Capacity','Life']
         aWithFilters=['Expansion_with_Rarity','Discipline_with_Level']
         oNewAST=copy.deepcopy(self.dASTs[self.sExpanded])
         aNewFilterValues=oNewAST.getValues()
         # Need pointers to the new nodes
         for (child,oFilterPart) in zip(self.dExpanded[self.sExpanded],aNewFilterValues):
-           if type(child) is ScrolledList:
-               # Some of this logic should be pushed down to ScrolledList
-               aVals=[]
-               Model,Selection=child.TreeView.get_selection().get_selected_rows()
-               for oPath in Selection:
-                   oIter= Model.get_iter(oPath)
-                   name = Model.get_value(oIter,0)
-                   if oFilterPart.node.filtertype not in aNumericFilters:
-                       if oFilterPart.node.filtertype in aWithFilters:
-                           sPart1,sPart2=name.split(' : ')
-                           aVals.append('"'+sPart1+'" with "'+sPart2+'"')
-                       else:
-                           aVals.append('"'+name+'"')
-                   else:
-                       if name!='X':
-                           aVals.append(name)
-                       else:
-                           aVals.append('-1')
-               if aVals!=[]:
-                   oFilterPart.node.setValues(aVals)
-           elif type(child) is gtk.Entry:
-               sText=child.get_text()
-               if sText!='':
-                   oFilterPart.node.setValues(['"'+sText+'"'])
+            if type(child) is ScrolledList:
+                # Some of this logic should be pushed down to ScrolledList
+                aVals=[]
+                Model,Selection=child.TreeView.get_selection().get_selected_rows()
+                for oPath in Selection:
+                    oIter= Model.get_iter(oPath)
+                    name = Model.get_value(oIter,0)
+                    if oFilterPart.node.filtertype not in aNumericFilters:
+                        if oFilterPart.node.filtertype in aWithFilters:
+                            sPart1,sPart2=name.split(' : ')
+                            aVals.append('"'+sPart1+'" with "'+sPart2+'"')
+                        else:
+                            aVals.append('"'+name+'"')
+                    else:
+                        if name!='X':
+                            aVals.append(name)
+                        else:
+                            aVals.append('-1')
+                if aVals!=[]:
+                    oFilterPart.node.setValues(aVals)
+            elif type(child) is gtk.Entry:
+                sText=child.get_text()
+                if sText!='':
+                    oFilterPart.node.setValues(['"'+sText+'"'])
         return oNewAST
 
     def __makeScrolledList(self,sName,aVals):

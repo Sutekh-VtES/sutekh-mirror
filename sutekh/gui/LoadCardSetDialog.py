@@ -10,10 +10,11 @@ class LoadCardSetDialog(gtk.Dialog):
     def __init__(self,parent,sType):
         # I suspect subclassing this to handle the different types
         # would be more "proper", but I'm too lazy to bother
-        super(LoadCardSetDialog,self).__init__( \
-              "Choose "+sType+" Card Set to Load", \
-              parent,gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT, \
-              ( gtk.STOCK_OK, gtk.RESPONSE_OK, gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
+        super(LoadCardSetDialog,self).__init__(\
+            "Choose "+sType+" Card Set to Load",\
+            parent,gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,\
+            ( gtk.STOCK_OK, gtk.RESPONSE_OK,\
+            gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
         self.List=gtk.combo_box_new_text()
         # I like explicitly null entries in the list, but I suspect
         # this violates some or other UI style guide
@@ -35,7 +36,7 @@ class LoadCardSetDialog(gtk.Dialog):
         return self.Data
 
     def buttonResponse(self,widget,response):
-       if response ==  gtk.RESPONSE_OK:
-          self.Data = self.List.get_active_text()
-       self.destroy()
+        if response ==  gtk.RESPONSE_OK:
+            self.Data = self.List.get_active_text()
+        self.destroy()
 
