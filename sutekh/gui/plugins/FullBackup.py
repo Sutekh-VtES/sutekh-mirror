@@ -51,8 +51,8 @@ class FullBackup(CardListPlugin):
         sName = "Choose a file to save the full backup to ..."
 
         oDlg = gtk.FileChooserDialog(sName,oParent,action=gtk.FILE_CHOOSER_ACTION_SAVE,
-                                     buttons=(gtk.STOCK_OK, gtk.RESPONSE_OK,
-                                              gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
+                buttons=(gtk.STOCK_OK, gtk.RESPONSE_OK,
+                    gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
 
         oDlg.connect("response", self.handleBackupResponse)
         oDlg.set_local_only(True)
@@ -68,7 +68,7 @@ class FullBackup(CardListPlugin):
 
             if os.path.exists(sFile):
                 Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_WARNING,
-                                              gtk.BUTTONS_OK_CANCEL,"Overwrite existing file %s?" % sFile)
+                        gtk.BUTTONS_OK_CANCEL,"Overwrite existing file %s?" % sFile)
                 bContinue = Complaint.run() != gtk.RESPONSE_CANCEL
                 Complaint.destroy()
 
@@ -79,7 +79,7 @@ class FullBackup(CardListPlugin):
                 except Exception, e:
                     sMsg = "Failed to write backup.\n\n" + str(e)
                     Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
-                                                  gtk.BUTTONS_CLOSE,sMsg)
+                            gtk.BUTTONS_CLOSE,sMsg)
                     Complaint.run()
                     Complaint.destroy()
 
@@ -96,8 +96,8 @@ class FullBackup(CardListPlugin):
         sName = "Restore a Full Backup ..."
 
         oDlg = gtk.FileChooserDialog(sName,oParent,action=gtk.FILE_CHOOSER_ACTION_OPEN,
-                                     buttons=(gtk.STOCK_OK, gtk.RESPONSE_OK,
-                                              gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
+                buttons=(gtk.STOCK_OK, gtk.RESPONSE_OK,
+                    gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
 
         oDlg.connect("response", self.handleRestoreResponse)
         oDlg.set_local_only(True)
@@ -113,7 +113,7 @@ class FullBackup(CardListPlugin):
 
             if not os.path.exists(sFile):
                 Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_WARNING,
-                                              gtk.BUTTONS_OK_CANCEL,"Backup file %s does not seem to exist." % sFile)
+                        gtk.BUTTONS_OK_CANCEL,"Backup file %s does not seem to exist." % sFile)
                 bContinue = Complaint.run() != gtk.RESPONSE_CANCEL
                 Complaint.destroy()
 
@@ -124,7 +124,7 @@ class FullBackup(CardListPlugin):
                 except Exception, e:
                     sMsg = "Failed to restore backup.\n\n" + str(e)
                     Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
-                                                  gtk.BUTTONS_CLOSE,sMsg)
+                            gtk.BUTTONS_CLOSE,sMsg)
                     Complaint.run()
                     Complaint.destroy()
 

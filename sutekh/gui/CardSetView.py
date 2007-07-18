@@ -45,14 +45,14 @@ class CardSetView(EditableCardListView):
         if data and data.format == 8 and bits[0] == "Phys":
             # Card is from the Physical card view, so we only get one
             for name in lines[1:]:
-               self.addCard(name)
+                self.addCard(name)
             context.finish(True, False, time)
         elif data and data.format == 8 and bits[0] == "Abst" \
-                  and self.sSetType == "AbstractCardSet":
+                and self.sSetType == "AbstractCardSet":
             # Abstract Card Sets can accept cards from the Abstract Card List
             # Card is from the Abstract card view, so we only get one
             for name in lines[1:]:
-               self.addCard(name)
+                self.addCard(name)
             context.finish(True, False, time)
         elif data and data.format == 8 and bits[0] == "CardSet":
             # Card is from a CardSet, so extract type and name

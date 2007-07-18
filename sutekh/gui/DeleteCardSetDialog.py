@@ -8,8 +8,8 @@ import gtk
 class DeleteCardSetDialog(gtk.Dialog):
     def __init__(self,parent,name,sType):
         super(DeleteCardSetDialog,self).__init__("Really Delete?", \
-              parent,gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT, \
-              ( gtk.STOCK_YES, gtk.RESPONSE_OK, gtk.STOCK_NO, gtk.RESPONSE_CANCEL))
+            parent,gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT, \
+            ( gtk.STOCK_YES, gtk.RESPONSE_OK, gtk.STOCK_NO, gtk.RESPONSE_CANCEL))
         Label=gtk.Label(sType+" Card Set " + name + " Not Empty - Really Delete?")
         Label.show()
         Icon=gtk.Image()
@@ -27,7 +27,6 @@ class DeleteCardSetDialog(gtk.Dialog):
         return self.Data
 
     def buttonResponse(self,widget,response):
-       if response ==  gtk.RESPONSE_OK:
-          self.Data = True
-       self.destroy()
-
+        if response ==  gtk.RESPONSE_OK:
+            self.Data = True
+        self.destroy()

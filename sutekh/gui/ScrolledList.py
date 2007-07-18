@@ -41,12 +41,12 @@ class ScrolledList(gtk.Frame):
         Model=self.TreeView.get_model()
         oIter=Model.get_iter_first()
         while oIter != None:
-           name=Model.get_value(oIter,0)
-           if name != self.sNullValue and State[name]:
-               self.TreeView.get_selection().select_iter(oIter)
-           else:
-               self.TreeView.get_selection().unselect_iter(oIter)
-           oIter=Model.iter_next(oIter)
+            name=Model.get_value(oIter,0)
+            if name != self.sNullValue and State[name]:
+                self.TreeView.get_selection().select_iter(oIter)
+            else:
+                self.TreeView.get_selection().unselect_iter(oIter)
+            oIter=Model.iter_next(oIter)
 
     def get_selection(self,selList,State):
         Model,Selection = self.TreeView.get_selection().get_selected_rows()
@@ -54,6 +54,5 @@ class ScrolledList(gtk.Frame):
             oIter = Model.get_iter(oPath)
             name = Model.get_value(oIter,0)
             if name!=self.sNullValue:
-               State[name]=True
-               selList.append(name)
-
+                State[name]=True
+                selList.append(name)
