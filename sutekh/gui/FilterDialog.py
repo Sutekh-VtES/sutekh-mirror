@@ -29,7 +29,7 @@ class FilterDialog(gtk.Dialog):
     def __init__(self,parent):
         super(FilterDialog,self).__init__("Specify Filter", \
               parent,gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT, \
-              ( gtk.STOCK_OK, gtk.RESPONSE_OK, gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
+              ( "Add New Filter", 1, gtk.STOCK_OK, gtk.RESPONSE_OK, gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL ))
         self.oParser=FilterParser.FilterParser()
         self.connect("response", self.buttonResponse)
         self.dExpanded={}
@@ -38,12 +38,12 @@ class FilterDialog(gtk.Dialog):
         self.set_default_size(800,450)
         self.Data = None
         self.wasCancelled = False
-        oRadioGroup=None
+        self.oRadioGroup=None
         self.oExpandedArea=gtk.HBox()
-        oRadioArea=gtk.VBox()
+        self.oRadioArea=gtk.VBox()
         self.sExpanded=None
         self.vbox.pack_start(self.oExpandedArea)
-        self.vbox.pack_start(oRadioArea,)
+        self.vbox.pack_start(self.oRadioArea)
         for sFilter in aFilterList:
             # Parse the filter into the seperate bits needed 
             try:
@@ -51,31 +51,11 @@ class FilterDialog(gtk.Dialog):
             except ValueError:
                 self.__doComplaint("Invalid Filter Syntax: "+sFilter)
                 continue
-            aFilterParts=oAST.getValues()
-            self.dExpanded[sFilter]=[]
-            self.dASTs[sFilter]=oAST
-            for oPart in aFilterParts:
-                if oPart.isValue():
-                    oWidget=gtk.Label(oPart.value)
-                    self.dExpanded[sFilter].append(oWidget)
-                elif oPart.isList():
-                    oWidget=self.__makeScrolledList(sPrevName,oPart.value)
-                    self.dExpanded[sFilter].append(oWidget)
-                elif oPart.isEntry():
-                    oWidget=gtk.Entry(100)
-                    oWidget.set_width_chars(30)
-                    self.dExpanded[sFilter].append(oWidget)
-                sPrevName=oPart.value
-            oRadioButton=gtk.RadioButton(oRadioGroup)
-            if oRadioGroup is None:
-                oRadioGroup=oRadioButton
+            if self.oRadioGroup is None:
                 # First filter is expanded by default
                 sToExpand=sFilter
-            oRadioButton.set_label(sFilter)
-            self.dButtons[sFilter]=oRadioButton
-            oRadioButton.connect("clicked",self.__expandFilter,sFilter)
-            oRadioArea.pack_start(oRadioButton)
-        self.__expandFilter(oRadioButton, sToExpand)
+            self.__addFilterToDialog(oAST,sFilter)
+        self.__expandFilter(self.oRadioGroup, sToExpand)
         self.show_all()
 
     def __expandFilter(self, oRadioButton, sButtonName):
@@ -89,6 +69,30 @@ class FilterDialog(gtk.Dialog):
             for child in self.dExpanded[sButtonName]:
                 self.oExpandedArea.pack_start(child)
             self.oExpandedArea.show_all()
+
+    def __addFilterToDialog(self,oAST,sFilter):
+        aFilterParts=oAST.getValues()
+        self.dExpanded[sFilter]=[]
+        self.dASTs[sFilter]=oAST
+        for oPart in aFilterParts:
+            if oPart.isValue():
+                oWidget=gtk.Label(oPart.value)
+                self.dExpanded[sFilter].append(oWidget)
+            elif oPart.isList():
+                oWidget=self.__makeScrolledList(sPrevName,oPart.value)
+                self.dExpanded[sFilter].append(oWidget)
+            elif oPart.isEntry():
+                oWidget=gtk.Entry(100)
+                oWidget.set_width_chars(30)
+                self.dExpanded[sFilter].append(oWidget)
+            sPrevName=oPart.value
+        oRadioButton=gtk.RadioButton(self.oRadioGroup)
+        if self.oRadioGroup is None:
+            self.oRadioGroup=oRadioButton
+        oRadioButton.set_label(sFilter)
+        self.dButtons[sFilter]=oRadioButton
+        oRadioButton.connect("clicked",self.__expandFilter,sFilter)
+        self.oRadioArea.pack_start(oRadioButton)
 
     def getFilter(self):
         return self.Data
@@ -104,6 +108,9 @@ class FilterDialog(gtk.Dialog):
            # Push this into yacc and get the constructed filter out of
            # it
            self.Data=oNewAST.getFilter()
+       elif response == 1:
+           self.doAddFilter()
+           self.wasCancelled=True
        else:
            self.wasCancelled=True
        self.hide()
@@ -157,3 +164,24 @@ class FilterDialog(gtk.Dialog):
                 gtk.BUTTONS_CLOSE,sMessage)
         oComplaint.run()
         oComplaint.destroy()
+
+    def doAddFilter(self):
+        oNewFilterDialog=gtk.Dialog("Enter the New Filter",self,
+                gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
+                ( gtk.STOCK_OK, gtk.RESPONSE_OK, gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL ) )
+        oEntry=gtk.Entry(300)
+        oEntry.set_width_chars(70)
+        oNewFilterDialog.vbox.pack_start(oEntry)
+        oNewFilterDialog.show_all()
+        response=oNewFilterDialog.run()
+        if response==gtk.RESPONSE_OK:
+            sFilter=oEntry.get_text()
+            try:
+                oAST=self.oParser.apply(sFilter)
+            except ValueError:
+                self.__doComplaint("Invalid Filter Syntax: "+sFilter)
+                oNewFilterDialog.destroy()
+                return
+            self.__addFilterToDialog(oAST,sFilter)
+            self.show_all()
+        oNewFilterDialog.destroy()
