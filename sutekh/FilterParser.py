@@ -8,9 +8,11 @@ from sutekh.Filters import MultiCardTypeFilter, MultiClanFilter, \
         MultiDisciplineFilter, MultiGroupFilter, MultiCapacityFilter,\
         MultiCostFilter, MultiLifeFilter, MultiCreedFilter, MultiVirtueFilter,\
         CardTextFilter, CardNameFilter, MultiSectFilter, MultiTitleFilter,\
+        MultiExpansionRarityFilter, MultiDisciplineLevelFilter, \
         FilterAndBox, FilterOrBox
 from sutekh.SutekhObjects import Clan, Discipline, CardType, Title,\
-                                 Creed, Virtue, Sect
+                                 Creed, Virtue, Sect, Expansion, \
+                                 IExpansion, RarityPair
 
 # FIXME: The intention is to push this into the Individual Filter Objects
 
@@ -28,6 +30,8 @@ dFilterParts = {
         "CardName" : [CardNameFilter,"Card Name"],
         "Sect" : [MultiSectFilter,"Sect"],
         "Title" : [MultiTitleFilter,"Title"],
+        "Expansion_with_Rarity" : [MultiExpansionRarityFilter, "Expansion with Rarity"],
+        "Discipline_with_Level" : [MultiDisciplineLevelFilter, "Discipline with Level"]
         }
 
 # This should be elsewhere
@@ -61,9 +65,25 @@ def getValues(sFilterType):
         return [x.name for x in Title.select().orderBy('name')]
     elif sFilterType == "CardType":
         return [x.name for x in CardType.select().orderBy('name')]
+    elif sFilterType == 'Expansion_with_Rarity':
+        aExpansions=[x.name for x in Expansion.select().orderBy('name') 
+                if x.name[:5]!='Promo']
+        aResults=[]
+        for sExpan in aExpansions:
+            oE=IExpansion(sExpan)
+            aRarities=[x.rarity.name for x in RarityPair.selectBy(expansion=oE)]
+            for sRarity in aRarities:
+                aResults.append(sExpan+' with rarity '+sRarity)
+        return aResults
+    elif sFilterType == 'Discipline_with_Level':
+        aDisciplines=getValues('Discipline')
+        aResults=[]
+        for disc in aDisciplines:
+            aResults.append(disc+' at inferior')
+            aResults.append(disc+' at Superior')
+        return aResults
     else:
         raise RuntimeError("Unknown Filter Type %s" % sFilterType)
-
 
 
 # Grammer:
@@ -93,13 +113,14 @@ class ParseFilterDefinitions(object):
             'IN',
             'LPAREN',
             'RPAREN',
-            'VARIABLE'
+            'VARIABLE',
+            'WITH',
             )
 
     t_AND=r'\&\&'
     t_OR=r'\|\|'
     t_STRING=r'\".*?\"'
-    t_INTEGER=r'\d+'
+    t_INTEGER=r'-?\d+'
     t_COMMA=r','
     t_IN=r'='
     t_LPAREN=r'\('
@@ -115,7 +136,7 @@ class ParseFilterDefinitions(object):
         t.lexer.skip(1)
 
     def t_ID(self,t):
-        r'[A-Za-z$]+'
+        r'[A-Za-z$_]+'
         if t.value in dFilterParts.keys():
             t.type='FILTERTYPE'
         elif t.value.lower() == 'and':
@@ -124,6 +145,8 @@ class ParseFilterDefinitions(object):
             t.type='OR'
         elif t.value.lower() == 'in':
             t.type='IN'
+        elif t.value.lower() == 'at' or t.value.lower() == 'with':
+            t.type='WITH'
         elif t.value[0] == '$':
             t.type='VARIABLE'
         return t
@@ -151,11 +174,12 @@ class FilterYaccParser(object):
             ('left','AND','OR'),
             ('left','IN'),
             ('left','COMMA'),
+            ('left','WITH')
     )
 
     def p_filter(self,p):
         """filter : filterpart
-                  | fempty
+                  | empty
         """
         p[0] = FilterNode(p[1])
 
@@ -197,8 +221,12 @@ class FilterYaccParser(object):
         # Shouldn't actually trigger this rule with a legal filter string
         p[0]=IdNode(p[1])
 
-    def p_fempty(self,p):
-        """fempty :"""
+    def p_expression_with(self,p):
+        """expression : expression WITH expression"""
+        p[0]=WithNode(p[1],p[2],p[3])
+
+    def p_empty(self,p):
+        """empty :"""
         p[0]=None
 
     def p_error(self,p):
@@ -369,3 +397,17 @@ class CommaNode(OperatorNode):
         aRes=self.left.getFilter()
         aRes.extend(self.right.getFilter())
         return aRes
+
+class WithNode(OperatorNode):
+    def __init__(self,left,op,right):
+        super(WithNode,self).__init__([left,right])
+        self.op=op
+        self.left=left
+        self.right=right
+
+    def getValues(self):
+        return [self.left[0]+' '+self.op+' '+self.right[0]]
+
+    def getFilter(self):
+        return [(self.left.getFilter()[0],self.right.getFilter()[0])]
+

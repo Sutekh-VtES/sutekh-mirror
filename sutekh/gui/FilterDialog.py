@@ -22,7 +22,9 @@ aFilterList = [
         "CardType=\"Vampire\" && Sect=\"Sabbat\" && Title = $title",
         "CardType=\"Vampire\" && Discipline=\"Presence\",\"Dominate\" && Capacity = $cap",
         "CardType IN \"Imbued\" AND ( Creed = $a OR Virtue = $b )",
-        "CardType = \"Action\" && Cost = $cost"
+        "CardType = \"Action\" && Cost = $cost",
+        "CardType = \"Vampire\" && Discipline_with_Level = $foo",
+        "Expansion_with_Rarity = $bar",
         ]
 
 class FilterDialog(gtk.Dialog):
@@ -58,11 +60,11 @@ class FilterDialog(gtk.Dialog):
                     self.dExpanded[sFilter].append((oWidget,oPart))
                 elif type(oPart) is list:
                     oWidget=self.__makeScrolledList(oPrevPart,oPart)
-                    self.dExpanded[sFilter].append((oWidget,None))
+                    self.dExpanded[sFilter].append((oWidget,oPrevPart))
                 elif oPart is None:
                     oWidget=gtk.Entry(100)
                     oWidget.set_width_chars(30)
-                    self.dExpanded[sFilter].append((oWidget,None))
+                    self.dExpanded[sFilter].append((oWidget,oPrevPart))
                 oPrevPart=oPart
             oRadioButton=gtk.RadioButton(oRadioGroup)
             if oRadioGroup is None:
@@ -118,8 +120,16 @@ class FilterDialog(gtk.Dialog):
                for oPath in Selection:
                    oIter= Model.get_iter(oPath)
                    name = Model.get_value(oIter,0)
-                   if sFilterPart not in ['Group','Cost','Capacity','Life']:
-                       sString+='"'+name+'"'+','
+                   if sFilterPart not in ['Group = ','Cost = ','Capacity = ','Life = ']:
+                       if sFilterPart == 'Discipline_with_Level = ':
+                           # Need to reformat strings to match Filter Expectations
+                           sDiscipline,sLevel=name.split(' at ')
+                           sString+='"'+sDiscipline+'"'+' at '+'"'+sLevel.lower()+'"'+','
+                       elif sFilterPart == 'Expansion_with_Rarity = ':
+                           sExpansion,sRarity=name.split(' with rarity ')
+                           sString+='"'+sExpansion+'"'+' with '+'"'+sRarity+'"'+','
+                       else:
+                           sString+='"'+name+'"'+','
                    else:
                        if name!='X':
                            sString+=name+','
