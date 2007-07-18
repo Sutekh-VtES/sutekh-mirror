@@ -214,7 +214,10 @@ class FilterYaccParser(object):
         p[0]=None
 
     def p_error(self,p):
-        raise ValueError("Invalid filter syntax: "+str(p.value))
+        if p is None:
+            raise ValueError("Invalid filter syntax: No valid identifier")
+        else:
+            raise ValueError("Invalid filter syntax: "+str(p.value))
 
 # Wrapper objects around the parser
 
