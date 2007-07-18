@@ -137,8 +137,8 @@ class MultiExpansionRarityFilter(Filter):
 class DisciplineLevelFilter(Filter):
     def __init__(self,tDiscLevel):
         sDiscipline,sLevel=tDiscLevel
-        # By construction, the list should have only 1 element 
-        self.__iDiscId = [oP.id for oP in IDiscipline(sDiscipline).pairs 
+        # By construction, the list should have only 1 element
+        self.__iDiscId = [oP.id for oP in IDiscipline(sDiscipline).pairs
                 if oP.level==sLevel][0]
 
     def getExpression(self):
@@ -150,7 +150,7 @@ class MultiDisciplineLevelFilter(Filter):
     def __init__(self,aDiscLevels):
         self.__aDiscIds=[]
         for sDiscipline,sLevel in aDiscLevels:
-            self.__aDiscIds.extend([oP.id for oP in IDiscipline(sDiscipline).pairs 
+            self.__aDiscIds.extend([oP.id for oP in IDiscipline(sDiscipline).pairs
                     if oP.level==sLevel])
 
     def getExpression(self):
