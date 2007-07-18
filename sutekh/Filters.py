@@ -6,7 +6,8 @@
 from sutekh.SutekhObjects import AbstractCard, IAbstractCard, PhysicalCard, \
                                  ICreed, IVirtue, IClan, IDiscipline, \
                                  IExpansion, ITitle, ISect, ICardType, \
-                                 IPhysicalCardSet, IAbstractCardSet
+                                 IPhysicalCardSet, IAbstractCardSet, \
+                                 IRarityPair, IRarity
 from sqlobject import AND, OR, LIKE, IN, func
 from sqlobject.sqlbuilder import Table, Alias
 
@@ -112,25 +113,50 @@ class ExpansionRarityFilter(Filter):
         """ We use a tuple for Expansion and Rarity here to keep the
             same calling convention as for the Multi Filter"""
         sExpansion, sRarity = tExpanRarity
+        self.__iExRarId = IRarityPair( (IExpansion(sExpansion),
+                IRarity(sRarity)) ).id
 
     def getExpression(self):
-        pass
+        oT = self._makeTableAlias('abs_rarity_pair_map')
+        return AND(AbstractCard.q.id == oT.q.abstract_card_id,
+                   (oT.q.rarity_pair_id == self.__iExRarId ))
 
 class MultiExpansionRarityFilter(Filter):
     def __init__(self,aExpansionRarities):
         """  Called with a list of Expansion+Rarity pairs"""
+        self.__aIds=[]
         for sExpansion, sRarity in aExpansionRarities:
-            pass
+            self.__aIds.append(IRarityPair( (IExpansion(sExpansion),
+                IRarity(sRarity)) ).id)
 
     def getExpression(self):
-        pass
+        oT = self._makeTableAlias('abs_rarity_pair_map')
+        return AND(AbstractCard.q.id == oT.q.abstract_card_id,
+                   IN (oT.q.rarity_pair_id,self.__aIds ))
 
 class DisciplineLevelFilter(Filter):
-    def __init__(self,sDiscipline,sLevel):
-        pass
+    def __init__(self,tDiscLevel):
+        sDiscipline,sLevel=tDiscLevel
+        # By construction, the list should have only 1 element 
+        self.__iDiscId = [oP.id for oP in IDiscipline(sDiscipline).pairs 
+                if oP.level==sLevel][0]
 
     def getExpression(self):
-        pass
+        oT = self._makeTableAlias('abs_discipline_pair_map')
+        return AND(AbstractCard.q.id == oT.q.abstract_card_id,
+                   (oT.q.discipline_pair_id == self.__iDiscId))
+
+class MultiDisciplineLevelFilter(Filter):
+    def __init__(self,aDiscLevels):
+        self.__aDiscIds=[]
+        for sDiscipline,sLevel in aDiscLevels:
+            self.__aDiscIds.extend([oP.id for oP in IDiscipline(sDiscipline).pairs 
+                    if oP.level==sLevel])
+
+    def getExpression(self):
+        oT = self._makeTableAlias('abs_discipline_pair_map')
+        return AND(AbstractCard.q.id == oT.q.abstract_card_id,
+                   IN(oT.q.discipline_pair_id, self.__aDiscIds))
 
 class CardTypeFilter(Filter):
     def __init__(self,sCardType):
