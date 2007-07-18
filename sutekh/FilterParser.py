@@ -1,4 +1,4 @@
-# FilterGrammer.py
+# FilterParser.py
 # Copyright Neil Muller <drnlmuller+sutekh@gmail.com>, 2007
 # GPL - see COPYING for details
 
@@ -11,35 +11,36 @@ from sutekh.Filters import MultiCardTypeFilter, MultiClanFilter, \
         MultiExpansionRarityFilter, MultiDisciplineLevelFilter, \
         FilterAndBox, FilterOrBox
 from sutekh.SutekhObjects import Clan, Discipline, CardType, Title,\
-                                 Creed, Virtue, Sect, Expansion, \
-                                 IExpansion, RarityPair
+                                 Creed, Virtue, Sect, Expansion, Rarity,\
+                                 RarityPair, IExpansion
 
 # FIXME: The intention is to push this into the Individual Filter Objects
 
 dFilterParts = {
-        "CardType" : [MultiCardTypeFilter,"Card Type"],
-        "Clan" : [MultiClanFilter,"Clan"],
-        "Discipline" : [MultiDisciplineFilter,"Discipline"],
-        "Group" : [MultiGroupFilter,"Group"],
-        "Capacity" : [MultiCapacityFilter,"Capacity"],
-        "Cost" : [MultiCostFilter,"Cost"],
-        "Life" : [MultiLifeFilter,"Life"],
-        "Creed" : [MultiCreedFilter,"Creed"],
-        "Virtue" : [MultiVirtueFilter,"Virtue"],
-        "CardText" : [CardTextFilter,"Card Text"],
-        "CardName" : [CardNameFilter,"Card Name"],
-        "Sect" : [MultiSectFilter,"Sect"],
-        "Title" : [MultiTitleFilter,"Title"],
+        "CardType" : [MultiCardTypeFilter, "Card Type"],
+        "Clan" : [MultiClanFilter, "Clan"],
+        "Discipline" : [MultiDisciplineFilter, "Discipline"],
+        "Group" : [MultiGroupFilter, "Group"],
+        "Capacity" : [MultiCapacityFilter, "Capacity"],
+        "Cost" : [MultiCostFilter, "Cost"],
+        "Life" : [MultiLifeFilter, "Life"],
+        "Creed" : [MultiCreedFilter, "Creed"],
+        "Virtue" : [MultiVirtueFilter, "Virtue"],
+        "CardText" : [CardTextFilter, "Card Text"],
+        "CardName" : [CardNameFilter, "Card Name"],
+        "Sect" : [MultiSectFilter, "Sect" ],
+        "Title" : [MultiTitleFilter, "Title" ],
         "Expansion_with_Rarity" : [MultiExpansionRarityFilter, "Expansion with Rarity"],
         "Discipline_with_Level" : [MultiDisciplineLevelFilter, "Discipline with Level"]
         }
 
-# This should be elsewhere
+# These should be elsewhere
+aEntryFilters =   ['CardText','CardName']
 
 def getValues(sFilterType):
     """Return a list of values to fill the selection dialog, or
        None if the input should be a text string"""
-    if sFilterType == "CardText" or sFilterType == "CardName":
+    if sFilterType in aEntryFilters:
         return None
     elif sFilterType == "Clan":
         return [x.name for x in Clan.select().orderBy('name')]
@@ -73,33 +74,19 @@ def getValues(sFilterType):
             oE=IExpansion(sExpan)
             aRarities=[x.rarity.name for x in RarityPair.selectBy(expansion=oE)]
             for sRarity in aRarities:
-                aResults.append(sExpan+' with rarity '+sRarity)
+                aResults.append(sExpan+' : '+sRarity)
         return aResults
     elif sFilterType == 'Discipline_with_Level':
         aDisciplines=getValues('Discipline')
         aResults=[]
         for disc in aDisciplines:
-            aResults.append(disc+' at inferior')
-            aResults.append(disc+' at Superior')
+            aResults.append(disc+' : inferior')
+            aResults.append(disc+' : superior')
         return aResults
     else:
         raise RuntimeError("Unknown Filter Type %s" % sFilterType)
 
-
-# Grammer:
-# OPS == {'&&', '||'}
-# SubClause == { Filtertype [Value for this Filter instance] }
-# Clause == SubClause [OP SubClause] ...
-# Filter == Clause | ( Clause ) OP ( Clause )
-# ()'s indicate precedence, as conventional
-# AND and OR have same precedence, so 
-# a AND b AND c OR d AND e is evaluted left to right:
-# ( (a AND b AND c) OR d ) AND e
-
 # We define an object for the lex parser
-
-# This parser is used to split up the Filter Definitions
-# It is also used by the grammar to create the final filter
 
 class ParseFilterDefinitions(object):
     tokens = (
@@ -129,7 +116,7 @@ class ParseFilterDefinitions(object):
     # Ignore whitespace and returns
     t_ignore=' \t\n'
 
-    # Simplistic error handler, to stop warnings
+    # Simplistic error handler
     def t_error(self,t):
         raise ValueError("Illegal Character '%s'" % t.value[0])
 
@@ -143,10 +130,10 @@ class ParseFilterDefinitions(object):
             t.type='OR'
         elif t.value.lower() == 'in':
             t.type='IN'
-        elif t.value.lower() == 'at' or t.value.lower() == 'with':
-            t.type='WITH'
         elif t.value[0] == '$':
             t.type='VARIABLE'
+        elif t.value.lower() == 'at' or t.value.lower() == 'with':
+            t.type='WITH'
         return t
 
     # Ply docs say don't do this in __init__, so we don't
@@ -207,7 +194,6 @@ class FilterYaccParser(object):
 
     def p_expression_string(self,p):
         """expression : STRING"""
-        # Insert into a list, so commas work
         p[0]=StringNode(p[1])
 
     def p_expression_integer(self,p):
@@ -242,6 +228,23 @@ class FilterParser(object):
     def apply(self,str):
         oAST=self.oParser.parse(str)
         return oAST
+
+# Object used by getValues representation
+# Should be made more robust
+
+class ValueObject(object):
+    def __init__(self,oValue,oNode):
+        self.value = oValue
+        self.node = oNode
+
+    def isEntry(self):
+        return self.value is None
+
+    def isList(self):
+        return type(self.value) is list
+
+    def isValue(self):
+        return type(self.value) is str
 
 # AST object (formulation inspired by Simon Cross's example, and notes 
 # from the ply documentation)
@@ -288,7 +291,7 @@ class StringNode(TermNode):
         self.value=value
 
     def getValues(self):
-        return [self.value]
+        return [ValueObject(self.value,self)]
 
     def getFilter(self):
         # Strip quotes off strings for the filter
@@ -300,7 +303,7 @@ class IntegerNode(TermNode):
         self.value=value
 
     def getValues(self):
-        return [self.value]
+        return [ValueObject(str(self.value),self)]
 
     def getFilter(self):
         return [self.value]
@@ -323,22 +326,38 @@ class FilterPartNode(OperatorNode):
         self.filtervalues=filtervalues
 
     def getValues(self):
-        aRes=[self.filtertype+' = ']
+        if self.filtertype in aEntryFilters:
+            aResults=[ValueObject(dFilterParts[self.filtertype][1]+' includes',self)]
+        else:
+            aResults=[ValueObject(dFilterParts[self.filtertype][1]+' in',self)]
         if self.filtervalues is None:
             aVals=getValues(self.filtertype)
-            # Want a list within the list for the GUI stuff to work
+            # Want a list within ValueObject for the GUI stuff to work
             # None case for Entry boxes works as well
-            aRes.append(aVals)
+            aResults.append(ValueObject(aVals,self))
         else:
-            aRes.extend(self.filtervalues.getValues())
-        return aRes
+            aResults.extend(self.filtervalues.getValues())
+        return aResults
+
+    def setValues(self,aVals):
+        if self.filtervalues is not None:
+            raise RuntimeError("Filter values already set")
+        sCommaList=",".join(aVals)
+        sInternalFilter=self.filtertype+'='+sCommaList
+        oP=FilterParser()
+        oInternalAST=oP.apply(sInternalFilter)
+        # The filter we create is trivially of the FilterType=X,Y type
+        # so this is safe, but potentially fragile in the future
+        self.filtervalues=oInternalAST.children[0].filtervalues
+        # Update AST to reflect change
+        self.children[1]=self.filtervalues
 
     def getFilter(self):
         if self.filtervalues is None:
             return None
         aValues=self.filtervalues.getFilter()
         FilterType=dFilterParts[self.filtertype][0]
-        if self.filtertype in ['CardText','CardName']:
+        if self.filtertype in aEntryFilters:
             # FIXME: Don't quite like special casing this here - MultiCardText?
             # aValues[0] is a fragile assumption - join?
             oFilter=FilterType(aValues[0])
@@ -354,14 +373,19 @@ class BinOpNode(OperatorNode):
         self.right=right
 
     def getValues(self):
-        # Add the extra brackets so the processing in the dialog
-        # doesn't change precedence
-        aRes=['(']
-        aRes.extend(self.left.getValues())
-        aRes.append(self.op)
-        aRes.extend(self.right.getValues())
-        aRes.append(')')
-        return aRes
+        aLeft=self.left.getValues()
+        aRight=self.right.getValues()
+        if aLeft is None:
+            return aRight
+        elif aRight is None:
+            return aLeft
+        else:
+            # Add the extra brackets so the display in the dialog
+            # reflects the correct precedence
+            aResults=[ValueObject('(',None)]+aLeft+\
+                    [ValueObject(') '+self.op+' (',self)]+\
+                    aRight+[ValueObject(')',None)]
+            return aResults
 
     def getFilter(self):
         oLeftFilter=self.left.getFilter()
@@ -386,15 +410,15 @@ class CommaNode(OperatorNode):
         self.right=right
 
     def getValues(self):
-        aRes=self.left.getValues()
-        aRes.append(',')
-        aRes.extend(self.right.getValues())
-        return aRes
+        aResults=self.left.getValues()
+        aResults.append(ValueObject(',',self))
+        aResults.extend(self.right.getValues())
+        return aResults
 
     def getFilter(self):
-        aRes=self.left.getFilter()
-        aRes.extend(self.right.getFilter())
-        return aRes
+        aResults=self.left.getFilter()
+        aResults.extend(self.right.getFilter())
+        return aResults
 
 class WithNode(OperatorNode):
     def __init__(self,left,op,right):
@@ -408,4 +432,3 @@ class WithNode(OperatorNode):
 
     def getFilter(self):
         return [(self.left.getFilter()[0],self.right.getFilter()[0])]
-

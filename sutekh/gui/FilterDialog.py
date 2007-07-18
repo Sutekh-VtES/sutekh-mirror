@@ -5,6 +5,7 @@
 # GPL - see COPYING for details
 
 import gtk
+import copy
 from sutekh.gui.ScrolledList import ScrolledList
 from sutekh import FilterParser
 
@@ -15,16 +16,13 @@ aFilterList = [
         "CardType in $a AND Discipline in $b",
         "CardText in $a",
         "CardName in $name",
-        "CardType in \"Vampire\" and ( Clan in $a or Discipline in $b)",
         "CardType in \"Vampire\" && Clan in $a && Group in $b",
         "CardType=\"Vampire\" && Discipline = $b && Group = $c",
-        "CardType=\"Vampire\" && Discipline = $a && Capacity = $b",
-        "CardType=\"Vampire\" && Sect=\"Sabbat\" && Title = $title",
         "CardType=\"Vampire\" && Discipline=\"Presence\",\"Dominate\" && Capacity = $cap",
         "CardType IN \"Imbued\" AND ( Creed = $a OR Virtue = $b )",
-        "CardType = \"Action\" && Cost = $cost",
-        "CardType = \"Vampire\" && Discipline_with_Level = $foo",
-        "Expansion_with_Rarity = $bar",
+        "CardType in \"Vampire\" AND Discipline_with_Level = $foo",
+        "Expansion_with_Rarity = $foo",
+        "CardType = \"Action\" && Cost = $cost"
         ]
 
 class FilterDialog(gtk.Dialog):
@@ -35,6 +33,7 @@ class FilterDialog(gtk.Dialog):
         self.oParser=FilterParser.FilterParser()
         self.connect("response", self.buttonResponse)
         self.dExpanded={}
+        self.dASTs={}
         self.dButtons={}
         self.set_default_size(800,450)
         self.Data = None
@@ -54,18 +53,19 @@ class FilterDialog(gtk.Dialog):
                 continue
             aFilterParts=oAST.getValues()
             self.dExpanded[sFilter]=[]
+            self.dASTs[sFilter]=oAST
             for oPart in aFilterParts:
-                if type(oPart) is str:
-                    oWidget=gtk.Label(oPart)
-                    self.dExpanded[sFilter].append((oWidget,oPart))
-                elif type(oPart) is list:
-                    oWidget=self.__makeScrolledList(oPrevPart,oPart)
-                    self.dExpanded[sFilter].append((oWidget,oPrevPart))
-                elif oPart is None:
+                if oPart.isValue():
+                    oWidget=gtk.Label(oPart.value)
+                    self.dExpanded[sFilter].append(oWidget)
+                elif oPart.isList():
+                    oWidget=self.__makeScrolledList(sPrevName,oPart.value)
+                    self.dExpanded[sFilter].append(oWidget)
+                elif oPart.isEntry():
                     oWidget=gtk.Entry(100)
                     oWidget.set_width_chars(30)
-                    self.dExpanded[sFilter].append((oWidget,oPrevPart))
-                oPrevPart=oPart
+                    self.dExpanded[sFilter].append(oWidget)
+                sPrevName=oPart.value
             oRadioButton=gtk.RadioButton(oRadioGroup)
             if oRadioGroup is None:
                 oRadioGroup=oRadioButton
@@ -86,7 +86,7 @@ class FilterDialog(gtk.Dialog):
             for child in self.oExpandedArea.get_children():
                 self.oExpandedArea.remove(child)
             self.sExpanded=sButtonName
-            for child,sFilterPart in self.dExpanded[sButtonName]:
+            for child in self.dExpanded[sButtonName]:
                 self.oExpandedArea.pack_start(child)
             self.oExpandedArea.show_all()
 
@@ -100,55 +100,47 @@ class FilterDialog(gtk.Dialog):
        if response ==  gtk.RESPONSE_OK:
            self.wasCancelled=False
            # Construct the Final filter string
-           sFinalFilter=self.__parseDialogState()
+           oNewAST=self.__parseDialogState()
            # Push this into yacc and get the constructed filter out of
            # it
-           oAST=self.oParser.apply(sFinalFilter)
-           self.Data=oAST.getFilter()
+           self.Data=oNewAST.getFilter()
        else:
            self.wasCancelled=True
        self.hide()
 
     def __parseDialogState(self):
-        # Ug, messier than I would like
-        sResult=''
-        for child,sFilterPart in self.dExpanded[self.sExpanded]:
+        # FIXME: Should be defined somewhere else for better maintainability
+        aNumericFilters=['Group','Cost','Capacity','Life'] 
+        aWithFilters=['Expansion_with_Rarity','Discipline_with_Level']
+        oNewAST=copy.deepcopy(self.dASTs[self.sExpanded])
+        aNewFilterValues=oNewAST.getValues()
+        # Need pointers to the new nodes
+        for (child,oFilterPart) in zip(self.dExpanded[self.sExpanded],aNewFilterValues):
            if type(child) is ScrolledList:
                # Some of this logic should be pushed down to ScrolledList
-               sString=''
+               aVals=[]
                Model,Selection=child.TreeView.get_selection().get_selected_rows()
                for oPath in Selection:
                    oIter= Model.get_iter(oPath)
                    name = Model.get_value(oIter,0)
-                   if sFilterPart not in ['Group = ','Cost = ','Capacity = ','Life = ']:
-                       if sFilterPart == 'Discipline_with_Level = ':
-                           # Need to reformat strings to match Filter Expectations
-                           sDiscipline,sLevel=name.split(' at ')
-                           sString+='"'+sDiscipline+'"'+' at '+'"'+sLevel.lower()+'"'+','
-                       elif sFilterPart == 'Expansion_with_Rarity = ':
-                           sExpansion,sRarity=name.split(' with rarity ')
-                           sString+='"'+sExpansion+'"'+' with '+'"'+sRarity+'"'+','
+                   if oFilterPart.node.filtertype not in aNumericFilters:
+                       if oFilterPart.node.filtertype in aWithFilters:
+                           sPart1,sPart2=name.split(' : ')
+                           aVals.append('"'+sPart1+'" with "'+sPart2+'"')
                        else:
-                           sString+='"'+name+'"'+','
+                           aVals.append('"'+name+'"')
                    else:
                        if name!='X':
-                           sString+=name+','
+                           aVals.append(name)
                        else:
-                           sString+='-1,'
-               if sString!='':
-                   # Trim trailing comma
-                   sResult+=sString[:-1]+' '
-               else:
-                   sResult+='$foo '
+                           aVals.append('-1')
+               if aVals!=[]:
+                   oFilterPart.node.setValues(aVals)
            elif type(child) is gtk.Entry:
                sText=child.get_text()
                if sText!='':
-                   sResult+='"'+sText+'" '
-               else:
-                   sResult+='$foo '
-           else:
-               sResult+=sFilterPart+' '
-        return sResult
+                   oFilterPart.node.setValues(['"'+sText+'"'])
+        return oNewAST
 
     def __makeScrolledList(self,sName,aVals):
         oWidget=ScrolledList(sName)
