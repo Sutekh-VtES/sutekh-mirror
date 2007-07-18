@@ -67,7 +67,7 @@ def getValues(sFilterType):
     elif sFilterType == "CardType":
         return [x.name for x in CardType.select().orderBy('name')]
     elif sFilterType == 'Expansion_with_Rarity':
-        aExpansions=[x.name for x in Expansion.select().orderBy('name') 
+        aExpansions=[x.name for x in Expansion.select().orderBy('name')
                 if x.name[:5]!='Promo']
         aResults=[]
         for sExpan in aExpansions:
@@ -134,6 +134,8 @@ class ParseFilterDefinitions(object):
             t.type='VARIABLE'
         elif t.value.lower() == 'at' or t.value.lower() == 'with':
             t.type='WITH'
+        else:
+            t.type='STRING'
         return t
 
     # Ply docs say don't do this in __init__, so we don't
@@ -153,7 +155,7 @@ class ParseFilterDefinitions(object):
 class FilterYaccParser(object):
     tokens=ParseFilterDefinitions.tokens
 
-    # COMMA's have higher precedence than AND + OR 
+    # COMMA's have higher precedence than AND + OR
     # This shut's up most shift/reduce warnings
     precedence=(
             ('left','AND','OR'),
@@ -249,7 +251,7 @@ class ValueObject(object):
     def isValue(self):
         return type(self.value) is str
 
-# AST object (formulation inspired by Simon Cross's example, and notes 
+# AST object (formulation inspired by Simon Cross's example, and notes
 # from the ply documentation)
 
 class AstBaseNode(object):
@@ -298,7 +300,10 @@ class StringNode(TermNode):
 
     def getFilter(self):
         # Strip quotes off strings for the filter
-        return [self.value[1:-1]]
+        if self.value[0]=='"' and self.value[-1]=='"':
+            return [self.value[1:-1]]
+        else:
+            return [self.value]
 
 class IntegerNode(TermNode):
     def __init__(self,value):
