@@ -90,5 +90,5 @@ class MainController(object):
     def getWinGroup(self):
         return self.__oWinGrp
 
-    def getCSManWin(self):
+    def getManager(self):
         return self.__oCSWin

@@ -4,12 +4,13 @@
 # GPL - see COPYING for details
 
 import gtk
-from sutekh.SutekhObjects import AbstractCardSet
+from sutekh.SutekhObjects import AbstractCardSet, IAbstractCard
 from sutekh.gui.PluginManager import CardListPlugin
 
 class ACSFromFilter(CardListPlugin):
     dTableVersions = { "AbstractCardSet" : [2,3]}
-    aModelsSupported = ["PhysicalCardSet","AbstractCardSet","PhysicalCard",]
+    aModelsSupported = ["PhysicalCardSet","AbstractCardSet","PhysicalCard",
+            "AbstractCard"]
 
     def __init__(self,*args,**kws):
         super(ACSFromFilter,self).__init__(*args,**kws)
@@ -69,7 +70,7 @@ class ACSFromFilter(CardListPlugin):
         oACS = AbstractCardSet(name=sACSName)
 
         for oCard in self.model.getCardIterator(self.model.getSelectFilter()):
-            oACS.addAbstractCard(oCard.abstractCard)
+            oACS.addAbstractCard(IAbstractCard(oCard))
         parent.getManager().reloadCardSetLists()
 
 plugin = ACSFromFilter
