@@ -130,10 +130,8 @@ class ParseFilterDefinitions(object):
     t_ignore=' \t\n'
 
     # Simplistic error handler, to stop warnings
-    # FIXME: Should raise Value Error - will do so when everything works 
     def t_error(self,t):
-        print "Illegal Character '%s'" % t.value[0]
-        t.lexer.skip(1)
+        raise ValueError("Illegal Character '%s'" % t.value[0])
 
     def t_ID(self,t):
         r'[A-Za-z$_]+'
@@ -219,7 +217,7 @@ class FilterYaccParser(object):
     def p_expression_id(self,p):
         """expression : ID"""
         # Shouldn't actually trigger this rule with a legal filter string
-        p[0]=IdNode(p[1])
+        raise ValueError("Invalid filter element: "+str(p[1]))
 
     def p_expression_with(self,p):
         """expression : expression WITH expression"""
@@ -230,7 +228,7 @@ class FilterYaccParser(object):
         p[0]=None
 
     def p_error(self,p):
-        print "Bad Syntax found by FinalFilterParser: ",p
+        raise ValueError("Invalid filter syntax: "+str(p.value))
 
 # Wrapper objects around the parser
 
