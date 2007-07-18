@@ -110,7 +110,8 @@ class FilterDialog(gtk.Dialog):
            self.Data=oNewAST.getFilter()
        elif response == 1:
            self.doAddFilter()
-           self.wasCancelled=True
+           # Recursive, not sure if that's such a good thing
+           return self.run()
        else:
            self.wasCancelled=True
        self.hide()
