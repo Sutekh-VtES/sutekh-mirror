@@ -9,89 +9,105 @@ import copy
 from sutekh.gui.ScrolledList import ScrolledList
 from sutekh import FilterParser
 
-aFilterList = [
+aDefaultFilterList = [
         "Clan IN $foo",
         "Discipline in $foo",
-        "CardType in $foo && Clan in $bar",
-        "CardType in $a AND Discipline in $b",
-        "CardText in $a",
-        "CardName in $name",
-        "CardType in \"Vampire\" && Clan in $a && Group in $b",
-        "CardType=\"Vampire\" && Discipline = $b && Group = $c",
-        "CardType=\"Vampire\" && Discipline=\"Presence\",\"Dominate\" && Capacity = $cap",
-        "CardType IN \"Imbued\" AND ( Creed = $a OR Virtue = $b )",
-        "CardType in \"Vampire\" AND Discipline_with_Level = $foo",
-        "Expansion_with_Rarity = $foo",
-        "CardType = \"Action\" && Cost = $cost"
+        "CardType in $foo",
+        "CardText in $foo",
+        "CardName in $foo"
         ]
 
 class FilterDialog(gtk.Dialog):
+
+    AddButtonResponse = 1
+    DeleteButtonResponse = 2
+
     def __init__(self,parent):
         super(FilterDialog,self).__init__("Specify Filter", \
-            parent,gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT, \
-            ( "Add New Filter", 1, gtk.STOCK_OK, gtk.RESPONSE_OK, gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL ))
+                parent,gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT)
+        # Need to add these buttons so we get the right order
+        self.add_button( "Add New Filter", self.AddButtonResponse)
+        # Want a reference to this button, so we can fiddle active state
+        self.oDeleteButton = self.add_button("Delete Filter",\
+                self.DeleteButtonResponse)
+        self.action_area.pack_start(gtk.VSeparator(),expand=True)
+        self.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
+        self.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
+        self.oDeleteButton.set_sensitive(False)
         self.oParser=FilterParser.FilterParser()
         self.connect("response", self.buttonResponse)
         self.dExpanded={}
         self.dASTs={}
         self.dButtons={}
-        self.set_default_size(800,450)
+        self.set_default_size(700,550)
         self.Data = None
         self.wasCancelled = False
         self.oRadioGroup=None
-        self.oExpandedArea=gtk.HBox()
+        oFrame=gtk.Frame("Current Filter to Edit")
+        oFrame.set_size_request(700,430)
+        self.oExpandedArea=gtk.HBox(spacing=5)
+        oFrame.add(self.oExpandedArea)
         self.oRadioArea=gtk.VBox()
         self.sExpanded=None
-        self.vbox.pack_start(self.oExpandedArea)
+        self.vbox.pack_start(oFrame)
         self.vbox.pack_start(self.oRadioArea)
-        for sFilter in aFilterList:
+        self.vbox.set_homogeneous(False)
+        self.aFilterList=aDefaultFilterList
+        # First filter is expanded by default
+        for sFilter in self.aFilterList:
             # Parse the filter into the seperate bits needed
             try:
                 oAST=self.oParser.apply(sFilter)
             except ValueError:
                 self.__doComplaint("Invalid Filter Syntax: "+sFilter)
                 continue
-            if self.oRadioGroup is None:
-                # First filter is expanded by default
-                sToExpand=sFilter
             self.__addFilterToDialog(oAST,sFilter)
-        self.__expandFilter(self.oRadioGroup, sToExpand)
+        self.__expandFilter(self.oRadioGroup, "0 : "+self.aFilterList[0],0)
         self.show_all()
 
-    def __expandFilter(self, oRadioButton, sButtonName):
+    def __expandFilter(self, oRadioButton, sName, iNum):
         """When the user selects a radio button, expand
            the options"""
-        if sButtonName!=self.sExpanded:
+        if sName!=self.sExpanded:
             # Remove the previous filter
             for child in self.oExpandedArea.get_children():
                 self.oExpandedArea.remove(child)
-            self.sExpanded=sButtonName
-            for child in self.dExpanded[sButtonName]:
-                self.oExpandedArea.pack_start(child)
+            self.sExpanded=sName
+            for child in self.dExpanded[sName]:
+                self.oExpandedArea.pack_start(child,expand=False)
             self.oExpandedArea.show_all()
+            if iNum>=len(aDefaultFilterList):
+                # User defined filter, can be deleted
+                self.oDeleteButton.set_sensitive(True)
+            else:
+                self.oDeleteButton.set_sensitive(False)
 
     def __addFilterToDialog(self,oAST,sFilter):
         aFilterParts=oAST.getValues()
-        self.dExpanded[sFilter]=[]
-        self.dASTs[sFilter]=oAST
+        iNum=len(self.dExpanded)
+        # Should we try harder to make sure this is unique?
+        # do .... while sName in dExpanded.keys() type construction?
+        sName=str(iNum)+" : "+sFilter
+        self.dExpanded[sName]=[]
+        self.dASTs[sName]=oAST
         for oPart in aFilterParts:
             if oPart.isValue():
                 oWidget=gtk.Label(oPart.value)
-                self.dExpanded[sFilter].append(oWidget)
+                self.dExpanded[sName].append(oWidget)
             elif oPart.isList():
                 oWidget=self.__makeScrolledList(sPrevName,oPart.value)
-                self.dExpanded[sFilter].append(oWidget)
+                self.dExpanded[sName].append(oWidget)
             elif oPart.isEntry():
                 oWidget=gtk.Entry(100)
                 oWidget.set_width_chars(30)
-                self.dExpanded[sFilter].append(oWidget)
+                self.dExpanded[sName].append(oWidget)
             sPrevName=oPart.value
         oRadioButton=gtk.RadioButton(self.oRadioGroup)
         if self.oRadioGroup is None:
             self.oRadioGroup=oRadioButton
         oRadioButton.set_label(sFilter)
-        self.dButtons[sFilter]=oRadioButton
-        oRadioButton.connect("clicked",self.__expandFilter,sFilter)
+        self.dButtons[sName]=oRadioButton
+        oRadioButton.connect("clicked",self.__expandFilter,sName, iNum)
         self.oRadioArea.pack_start(oRadioButton)
 
     def getFilter(self):
@@ -108,9 +124,12 @@ class FilterDialog(gtk.Dialog):
             # Push this into yacc and get the constructed filter out of
             # it
             self.Data=oNewAST.getFilter()
-        elif response == 1:
+        elif response == self.AddButtonResponse:
             self.doAddFilter()
             # Recursive, not sure if that's such a good thing
+            return self.run()
+        elif response == self.DeleteButtonResponse:
+            self.__doComplaint("Delete not yet implemented")
             return self.run()
         else:
             self.wasCancelled=True
