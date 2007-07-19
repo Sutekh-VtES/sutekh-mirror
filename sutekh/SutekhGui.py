@@ -11,6 +11,7 @@ from sutekh.gui.WWFilesDialog import WWFilesDialog
 from sutekh.DatabaseVersion import DatabaseVersion
 from sutekh.DatabaseUpgrade import createMemoryCopy, createFinalCopy, unknownVersion
 from sqlobject import sqlhub, connectionForURI
+from sutekh.gui.ConfigFile import ConfigFile
 import gtk
 import sys, optparse, os
 
@@ -24,6 +25,8 @@ def parseOptions(aArgs):
     oP.add_option("--ignore-db-version",action="store_true",
             dest="ignore_db_version",default=False,
             help="Ignore the database version check. Only use this if you know what you're doing")
+    oP.add_option("--rcfile",type="string",dest="sRCFile",default="sutekhrc",
+            help="Specify Alternative resources file") 
     return oP, oP.parse_args(aArgs)
 
 def main(aArgs):
@@ -35,6 +38,8 @@ def main(aArgs):
 
     if oOpts.db is None:
         oOpts.db = "sqlite://" + "/".join([os.getcwd().replace(os.sep,"/"),"sutekh.db"])
+
+    oConfig = ConfigFile(oOpts.sRCFile) 
 
     oConn = connectionForURI(oOpts.db)
     sqlhub.processConnection = oConn
@@ -132,7 +137,10 @@ def main(aArgs):
                 diag.destroy()
                 return 1
 
-    MainController().run()
+    MainController(oConfig).run()
+
+    # Save Config Changes
+    oConfig.write()
 
 
 if __name__ == "__main__":

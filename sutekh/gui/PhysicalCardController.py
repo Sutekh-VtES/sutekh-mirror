@@ -10,8 +10,8 @@ from sutekh.gui.DeleteCardDialog import DeleteCardDialog
 from sutekh.SutekhObjects import PhysicalCard, AbstractCard, PhysicalCardSet
 
 class PhysicalCardController(object):
-    def __init__(self,oWindow,oMasterController):
-        self.__oView = PhysicalCardView(self,oWindow)
+    def __init__(self,oWindow,oMasterController,oConfig):
+        self.__oView = PhysicalCardView(self,oWindow,oConfig)
         self.__oC = oMasterController
         self.__oWin = oWindow
 

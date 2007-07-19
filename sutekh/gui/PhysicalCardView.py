@@ -8,8 +8,8 @@ from sutekh.Filters import PhysicalCardFilter
 from sutekh.SutekhObjects import PhysicalCard
 
 class PhysicalCardView(EditableCardListView):
-    def __init__(self,oController,oWindow):
-        super(PhysicalCardView,self).__init__(oController,oWindow)
+    def __init__(self,oController,oWindow,oConfig):
+        super(PhysicalCardView,self).__init__(oController,oWindow,oConfig)
 
         self._oModel.basefilter = PhysicalCardFilter()
         self._oModel.cardclass = PhysicalCard

@@ -9,8 +9,8 @@ from sutekh.Filters import PhysicalCardSetFilter, AbstractCardSetFilter
 from sutekh.SutekhObjects import PhysicalCard, PhysicalCardSet, AbstractCardSet
 
 class CardSetView(EditableCardListView):
-    def __init__(self,oWindow,oController,sName,sSetType):
-        super(CardSetView,self).__init__(oController,oWindow)
+    def __init__(self,oWindow,oController,sName,sSetType,oConfig):
+        super(CardSetView,self).__init__(oController,oWindow,oConfig)
         self.sSetName = sName
         self.sSetType = sSetType
         # Needs to be PhysicalCard for both so Model does the right thing
