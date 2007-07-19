@@ -54,17 +54,17 @@ class FilterDialog(gtk.Dialog):
         self.vbox.pack_start(self.__oRadioArea)
         self.vbox.set_homogeneous(False)
         self.__iDefaultNum=len(aDefaultFilterList)
-        self.__aFilterList=aDefaultFilterList
+        self.__dFilterList={}
         # First filter is expanded by default
-        for sFilter in self.__aFilterList:
+        for sFilter in aDefaultFilterList:
             # Parse the filter into the seperate bits needed
             try:
                 oAST=self.__oParser.apply(sFilter)
             except ValueError:
                 self.__doComplaint("Invalid Filter Syntax: "+sFilter)
                 continue
-            self.__addFilterToDialog(oAST,sFilter)
-        self.__expandFilter(self.__oRadioGroup, "0 : "+self.__aFilterList[0],0)
+            sName=self.__addFilterToDialog(oAST,sFilter)
+        self.__expandFilter(self.__oRadioGroup, "0 : "+aDefaultFilterList[0],0)
         self.show_all()
 
     def __expandFilter(self, oRadioButton, sName, iNum):
@@ -90,6 +90,7 @@ class FilterDialog(gtk.Dialog):
         # Should we try harder to make sure this is unique?
         # do .... while sName in dExpanded.keys() type construction?
         sName=str(iNum)+" : "+sFilter
+        self.__dFilterList[sName]=sFilter
         self.__dExpanded[sName]=[]
         self.__dASTs[sName]=oAST
         for oPart in aFilterParts:
@@ -109,8 +110,17 @@ class FilterDialog(gtk.Dialog):
             self.__oRadioGroup=oRadioButton
         oRadioButton.set_label(sFilter)
         self.__dButtons[sName]=oRadioButton
-        oRadioButton.connect("clicked",self.__expandFilter,sName, iNum)
+        oRadioButton.connect("toggled",self.__expandFilter,sName, iNum)
         self.__oRadioArea.pack_start(oRadioButton)
+        return sName
+
+    def __removeFilterFromDialog(self,sName):
+        self.__dASTs.pop(sName)
+        self.__dExpanded.pop(sName)
+        sFilter=self.__dFilterList.pop(sName)
+        oRadioButton=self.__dButtons.pop(sName)
+        self.__oRadioArea.remove(oRadioButton)
+        self.__oConfig.removeFilter(sFilter)
 
     def getFilter(self):
         return self.__oData
@@ -122,17 +132,26 @@ class FilterDialog(gtk.Dialog):
         # For rereading config changes, etc
         aAllFilters=self.__oConfig.getFilters()
         sMessages=''
+
         for sFilter in aAllFilters:
-            if sFilter not in self.__aFilterList:
+            if sFilter not in self.__dFilterList.values():
                 try:
                     oAST=self.__oParser.apply(sFilter)
-                    self.__addFilterToDialog(oAST,sFilter)
-                    self.__aFilterList.append(sFilter)
+                    sName=self.__addFilterToDialog(oAST,sFilter)
                 except ValueError:
                     sMessages+=sFilter+"\n"
                     self.__oConfig.removeFilter(sFilter)
         if sMessages!='':
             self.__doComplaint("The Following Invalid filters have been removed from the config file:\n "+sMessages)
+        aAllFilters.extend(aDefaultFilterList)
+        aToRemove=[]
+        for sName,sFilter in self.__dFilterList.iteritems():
+            if sFilter not in aAllFilters:
+                aToRemove.append(sName)
+        for sName in aToRemove:
+            if sName == self.__sExpanded:
+                self.__oRadioGroup.clicked()
+            self.__removeFilterFromDialog(sName)
         self.show_all()
 
     def __buttonResponse(self,widget,response):
@@ -148,7 +167,7 @@ class FilterDialog(gtk.Dialog):
             # Recursive, not sure if that's such a good thing
             return self.run()
         elif response == self.__iDeleteButtonResponse:
-            self.__doComplaint("Delete not yet implemented")
+            self.__doRemoveFilter()
             return self.run()
         else:
             self.__bWasCancelled=True
@@ -216,14 +235,23 @@ class FilterDialog(gtk.Dialog):
         response=oNewFilterDialog.run()
         if response==gtk.RESPONSE_OK:
             sFilter=oEntry.get_text()
+            if sFilter in self.__dFilterList.values():
+                # Don't allow duplicates - makes remove logic simple
+                self.__doComplaint("Duplicate Filter : "+sFilter)
+                oNewFilterDialog.destroy()
+                return
             try:
                 oAST=self.__oParser.apply(sFilter)
             except ValueError:
                 self.__doComplaint("Invalid Filter Syntax: "+sFilter)
                 oNewFilterDialog.destroy()
                 return
-            self.__addFilterToDialog(oAST,sFilter)
+            sName=self.__addFilterToDialog(oAST,sFilter)
             self.__oConfig.addFilter(sFilter)
-            self.__aFilterList.append(sFilter)
             self.show_all()
         oNewFilterDialog.destroy()
+
+    def __doRemoveFilter(self):
+        sName = self.__sExpanded
+        self.__oRadioGroup.clicked()
+        self.__removeFilterFromDialog(sName)
