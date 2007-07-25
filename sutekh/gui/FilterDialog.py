@@ -195,7 +195,8 @@ class FilterDialog(gtk.Dialog,ConfigFileListener):
                     name = Model.get_value(oIter,0)
                     if oFilterPart.node.filtertype not in aNumericFilters:
                         if oFilterPart.node.filtertype in aWithFilters:
-                            sPart1,sPart2=name.split(' : ')
+                            sPart1,sPart2=name.split(' with ')
+                            # Ensure no issues with spaces, etc. 
                             aVals.append('"'+sPart1+'" with "'+sPart2+'"')
                         else:
                             aVals.append('"'+name+'"')
@@ -247,6 +248,13 @@ class FilterDialog(gtk.Dialog,ConfigFileListener):
                 except ValueError:
                     self.__doComplaint("Invalid Filter Syntax: "+sFilter)
                     # Rerun the dialog, should do the write thing
+                    continue
+                aWrongVals=oAST.getInvalidValues()
+                if aWrongVals is not None:
+                    sMessage="The following values are invalid for the filter\n"
+                    for sVal in aWrongVals:
+                        sMessage+=sVal+'\n'
+                    self.__doComplaint(sMessage)
                     continue
                 self.__oConfig.addFilter(sFilter)
             bDone=True

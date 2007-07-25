@@ -74,14 +74,14 @@ def getValues(sFilterType):
             oE=IExpansion(sExpan)
             aRarities=[x.rarity.name for x in RarityPair.selectBy(expansion=oE)]
             for sRarity in aRarities:
-                aResults.append(sExpan+' : '+sRarity)
+                aResults.append(sExpan+' with '+sRarity)
         return aResults
     elif sFilterType == 'Discipline_with_Level':
         aDisciplines=getValues('Discipline')
         aResults=[]
         for disc in aDisciplines:
-            aResults.append(disc+' : inferior')
-            aResults.append(disc+' : superior')
+            aResults.append(disc+' with inferior')
+            aResults.append(disc+' with superior')
         return aResults
     else:
         raise RuntimeError("Unknown Filter Type %s" % sFilterType)
@@ -132,7 +132,7 @@ class ParseFilterDefinitions(object):
             t.type='IN'
         elif t.value[0] == '$':
             t.type='VARIABLE'
-        elif t.value.lower() == 'at' or t.value.lower() == 'with':
+        elif t.value.lower() == 'with':
             t.type='WITH'
         else:
             t.type='STRING'
@@ -273,6 +273,9 @@ class AstBaseNode(object):
     def getFilter(self):
         pass
 
+    def getInvalidValues(self):
+        pass
+
 class FilterNode(AstBaseNode):
     def __init__(self,expression):
         super(FilterNode,self).__init__([expression])
@@ -284,6 +287,9 @@ class FilterNode(AstBaseNode):
     def getFilter(self):
         return self.expression.getFilter()
 
+    def getInvalidValues(self):
+        return self.expression.getInvalidValues()
+
 class OperatorNode(AstBaseNode):
     pass
 
@@ -293,17 +299,17 @@ class TermNode(AstBaseNode):
 class StringNode(TermNode):
     def __init__(self,value):
         super(StringNode,self).__init__([value])
-        self.value=value
+        # Strip quotes off strings
+        if value[0]=='"' and value[-1]=='"':
+            self.value=value[1:-1]
+        else:
+            self.value=value
 
     def getValues(self):
         return [ValueObject(self.value,self)]
 
     def getFilter(self):
-        # Strip quotes off strings for the filter
-        if self.value[0]=='"' and self.value[-1]=='"':
-            return [self.value[1:-1]]
-        else:
-            return [self.value]
+        return [self.value]
 
 class IntegerNode(TermNode):
     def __init__(self,value):
@@ -347,6 +353,20 @@ class FilterPartNode(OperatorNode):
             aResults.extend(self.filtervalues.getValues())
         return aResults
 
+    def getInvalidValues(self):
+        aRes=[]
+        if self.filtervalues is None or self.filtertype in aEntryFilters:
+            return None
+        aCurVals=self.filtervalues.getValues()
+        aValidVals=getValues(self.filtertype)
+        for oVal in aCurVals:
+            if oVal.value not in aValidVals:
+                aRes.append(oVal.value)
+        if len(aRes)>0:
+            return aRes
+        else:
+            return None
+
     def setValues(self,aVals):
         if self.filtervalues is not None:
             raise RuntimeError("Filter values already set")
@@ -379,6 +399,16 @@ class BinOpNode(OperatorNode):
         self.op=op
         self.left=left
         self.right=right
+
+    def getInvalidValues(self):
+        aLeft=self.left.getInvalidValues()
+        aRight=self.right.getInvalidValues()
+        if aLeft is None:
+            return aRight
+        elif aRight is None:
+            return aLeft
+        else:
+            return aLeft+aRight
 
     def getValues(self):
         aLeft=self.left.getValues()
@@ -436,7 +466,7 @@ class WithNode(OperatorNode):
         self.right=right
 
     def getValues(self):
-        return [self.left[0]+' '+self.op+' '+self.right[0]]
+        return [ValueObject(self.left.getFilter()[0]+' '+self.op+' '+self.right.getFilter()[0],self)]
 
     def getFilter(self):
         return [(self.left.getFilter()[0],self.right.getFilter()[0])]
