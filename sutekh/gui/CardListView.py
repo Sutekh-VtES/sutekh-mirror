@@ -143,9 +143,6 @@ class CardListView(gtk.TreeView,object):
         if self._oFilterDialog is None:
             self._oFilterDialog = FilterDialog(self._oWin,self._oConfig)
 
-        # Update for changes in other dialog instances
-        self._oFilterDialog.updateFilters()
-
         self._oFilterDialog.run()
 
         if self._oFilterDialog.Cancelled():

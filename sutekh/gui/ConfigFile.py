@@ -6,6 +6,17 @@
 
 from ConfigParser import RawConfigParser
 
+class ConfigFileListener(object):
+    """Listener object for config changes - inspired by CardListModeListener"""
+
+    def addFilter(self,sFilter):
+        """New Filter added"""
+        pass
+
+    def removeFilter(self,sFilter):
+        """Filter removed"""
+        pass
+
 class ConfigFile(object):
 
     __sFiltersSection = 'filters'
@@ -16,6 +27,7 @@ class ConfigFile(object):
         self.__oConfig = RawConfigParser()
         # Use read to parse file if it exists
         self.__oConfig.read(self.__sFileName)
+        self.__dListeners={}
 
         if not self.__oConfig.has_section(self.__sGUISection):
             self.__oConfig.add_section(self.__sGUISection)
@@ -27,6 +39,12 @@ class ConfigFile(object):
 
     def __str__(self):
         return "FileName : "+self.__sFileName
+
+    def addListener(self,oListener):
+        self.__dListeners[oListener]=None
+
+    def removeListener(self,oListener):
+        del self.__dListenders[oListener]
 
     def write(self):
         self.__oConfig.write(open(self.__sFileName,'w'))
@@ -42,12 +60,16 @@ class ConfigFile(object):
             self.__iNum+=1
             sKey = 'user filter '+str(self.__iNum)
         self.__oConfig.set(self.__sFiltersSection,sKey,sFilter)
+        for oListener in self.__dListeners:
+            oListener.addFilter(sFilter)
 
     def removeFilter(self,sFilter):
         # We remove the first instance of the filter we find
         for sOption,sFilterinFile in self.__oConfig.items(self.__sFiltersSection):
             if sFilterinFile == sFilter:
                 self.__oConfig.remove_option(self.__sFiltersSection,sOption)
+                for oListener in self.__dListeners:
+                    oListener.removeFilter(sFilter)
                 return
 
 
