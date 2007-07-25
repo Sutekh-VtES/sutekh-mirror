@@ -196,7 +196,7 @@ class FilterDialog(gtk.Dialog,ConfigFileListener):
                     if oFilterPart.node.filtertype not in aNumericFilters:
                         if oFilterPart.node.filtertype in aWithFilters:
                             sPart1,sPart2=name.split(' with ')
-                            # Ensure no issues with spaces, etc. 
+                            # Ensure no issues with spaces, etc.
                             aVals.append('"'+sPart1+'" with "'+sPart2+'"')
                         else:
                             aVals.append('"'+name+'"')
@@ -234,8 +234,19 @@ class FilterDialog(gtk.Dialog,ConfigFileListener):
                 gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                 ( gtk.STOCK_OK, gtk.RESPONSE_OK,
                     gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL ) )
+        sHelpText="<b>Filter Syntx</b>\n"+\
+                "<i>FilterPart</i> { <b>OP</b> <i>FilterPart</i> } .... \n"+\
+                "where <b>OP</b> is either AND or OR\n" +\
+                "and <i>FilterPart</i> is FilterType IN comma seperated list of values\n"+\
+                "or FilterType = $variable \n"+\
+                "FilterType can be any of the following\n"
+        for sFilterType,oAttributes in FilterParser.dFilterParts.iteritems():
+            sHelpText+="<b>"+sFilterType+"</b> which takes "+oAttributes[2]+"\n"
+        oHelpText=gtk.Label()
+        oHelpText.set_markup(sHelpText)
         oEntry=gtk.Entry(300)
         oEntry.set_width_chars(70)
+        oNewFilterDialog.vbox.pack_start(oHelpText)
         oNewFilterDialog.vbox.pack_start(oEntry)
         oNewFilterDialog.show_all()
         bDone=False

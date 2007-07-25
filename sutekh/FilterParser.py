@@ -17,21 +17,21 @@ from sutekh.SutekhObjects import Clan, Discipline, CardType, Title,\
 # FIXME: The intention is to push this into the Individual Filter Objects
 
 dFilterParts = {
-        "CardType" : [MultiCardTypeFilter, "Card Type"],
-        "Clan" : [MultiClanFilter, "Clan"],
-        "Discipline" : [MultiDisciplineFilter, "Discipline"],
-        "Group" : [MultiGroupFilter, "Group"],
-        "Capacity" : [MultiCapacityFilter, "Capacity"],
-        "Cost" : [MultiCostFilter, "Cost"],
-        "Life" : [MultiLifeFilter, "Life"],
-        "Creed" : [MultiCreedFilter, "Creed"],
-        "Virtue" : [MultiVirtueFilter, "Virtue"],
-        "CardText" : [CardTextFilter, "Card Text"],
-        "CardName" : [CardNameFilter, "Card Name"],
-        "Sect" : [MultiSectFilter, "Sect" ],
-        "Title" : [MultiTitleFilter, "Title" ],
-        "Expansion_with_Rarity" : [MultiExpansionRarityFilter, "Expansion with Rarity"],
-        "Discipline_with_Level" : [MultiDisciplineLevelFilter, "Discipline with Level"]
+        "CardType" : [MultiCardTypeFilter, "Card Type","a list of card type"],
+        "Clan" : [MultiClanFilter, "Clan","a list of clans"],
+        "Discipline" : [MultiDisciplineFilter, "Discipline","a list of disciplines"],
+        "Group" : [MultiGroupFilter, "Group","a list of groups"],
+        "Capacity" : [MultiCapacityFilter, "Capacity","a list of capacities"],
+        "Cost" : [MultiCostFilter, "Cost","a list of costs"],
+        "Life" : [MultiLifeFilter, "Life","a list of life values"],
+        "Creed" : [MultiCreedFilter, "Creed","a list of creeds"],
+        "Virtue" : [MultiVirtueFilter, "Virtue","a list of virtues"],
+        "CardText" : [CardTextFilter, "Card Text"," the desired card text to search for. \n   % can be used as a wildcard"],
+        "CardName" : [CardNameFilter, "Card Name"," the text to be matched against card names.\n   % can be used as a wildcard"],
+        "Sect" : [MultiSectFilter, "Sect","a list of sects"],
+        "Title" : [MultiTitleFilter, "Title","a list of titles"],
+        "Expansion_with_Rarity" : [MultiExpansionRarityFilter, "Expansion with Rarity","a list of expansions and rarities,\n   each element specified as 'expansion with associated rarity'"],
+        "Discipline_with_Level" : [MultiDisciplineLevelFilter, "Discipline with Level","a list of discipline with levels,\n   each element specified as 'discipline with level'"]
         }
 
 # These should be elsewhere
