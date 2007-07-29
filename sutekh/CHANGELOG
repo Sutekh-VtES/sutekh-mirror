@@ -1,3 +1,25 @@
+29 July 2007
+ * Merge in Enhanced Filter branch (sutekh-enhanced-filter-july-2007)
+   - Replaces the Filter Dialog with one that selects from multiple different
+     Filters
+   - Provide simple Grammar to specify additional filters
+   - Add config file to save user filters
+   - Add additional filters on Sect, Expasion with Rarity and Discipline with Level
+
+02 Jul 2007
+ * Bugfix consequences of the merge
+
+01 Jul 2007
+ * Merge in Database Upgrade Branch (sutekh-db-upgrade-march-2007)
+   - Add Sect, Vote to AbstractCard
+   - Normalise AbstractCard name to lowercase, to help prevent minor case issues 
+     causing havoc (Keep It Simple and friends)
+   - Add shortname, fullname fields to Disciplines, Expansions, etc
+   - Add expansion to PhysicalCard (No GUI support as yet)
+   - Improve Database upgrade code
+   - Add version info to xml exported files
+   - Add annotations to Card Sets
+
 20 May 2007
  * Add basic card set management window
 

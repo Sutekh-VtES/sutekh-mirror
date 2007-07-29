@@ -2,15 +2,9 @@ Backend:
  * Add ordering mechanism for card lists.
  * Make filtering less slow (mainly for sqlite) 
       (seems OK with the indexes. Do we need more?).
- * Handle 'Creed' and 'Life' attributes of Imbued in WhiteWolfParser (done in branch)
- * DatabaseUpgrade functionality needs to be reworked to have unified way of passing 
-   errors & warnings to the user interface (either Cli or Gui) (kinda done on branch)
+ * DatabaseUpgrade  could be less brittle
  * Better error and exception handling
  * Rework SutekhUtility to be less of a mess
-
-Database
- * Add title & sect columns to Abstract Card (done in branch)
- * Add Annotations field to the CardSets (done in branch)
 
 Code Cleanup
  * Unify conventions ('Abstract' vs 'AbstractCardSet' in card set management, etc.)
@@ -20,7 +14,7 @@ Code Cleanup
    looks like something worth addressing
 
 Gui (Functionality):
- * Improve Filter selection dialog.  (And/Or)
+ * Improve Current Filter dialogs - better help, more examples, "Edit existing Filter", etc.
  * Add ordering selection dialog (possibly part of filtering dialog).
  * Turn AnalyzeDeck into something more useful - NM
  * Finish ClusterCardList plugin.
@@ -41,5 +35,4 @@ Release Candidate tasks:
  - Check everything works on Windows again (check with Philip before release)
  - Create setup.py file with bdist_egg (needs testing)
  * Improve "with text mode" option for HTML export (xsl file needs work)
- * Add a Filter on Expansion + Rarity Pairs.
- * Additional Filter (Votes, Sect, etc).
+ * Filter on Votes. Other useful filters?
