@@ -29,7 +29,8 @@ class SutekhInfo(object):
 
     INSTALL_REQUIRES = [
         'SQLObject',
-        'PyProtocols'
+        'PyProtocols',
+        'Ply'
     ]
 
     # Install these manually
