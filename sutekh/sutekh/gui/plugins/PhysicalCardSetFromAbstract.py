@@ -50,8 +50,8 @@ class PhysicalCardSetFromAbstract(CardListPlugin):
         aNameList = PhysicalCardSet.selectBy(name=sName)
         if aNameList.count() != 0:
             Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
-                                          gtk.BUTTONS_CLOSE,
-                                          "Chosen Physical Card Set already exists")
+                    gtk.BUTTONS_CLOSE,
+                    "Chosen Physical Card Set already exists")
             Complaint.run()
             Complaint.destroy()
             return
@@ -81,10 +81,10 @@ class PhysicalCardSetFromAbstract(CardListPlugin):
 
         if aMissingCards:
             sMsg = "The following cards were not added to the physical card set " \
-                   "because they are not present in your card collection:\n\n" \
-                   + "\n".join([oC.name for oC in aMissingCards])
+                "because they are not present in your card collection:\n\n" \
+                + "\n".join([oC.name for oC in aMissingCards])
             Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
-                                          gtk.BUTTONS_CLOSE,sMsg)
+                    gtk.BUTTONS_CLOSE,sMsg)
             Complaint.run()
             Complaint.destroy()
 

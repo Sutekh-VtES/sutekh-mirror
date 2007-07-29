@@ -11,7 +11,7 @@ from sutekh.gui.LoadCardSetDialog import LoadCardSetDialog
 from sutekh.gui.ImportDialog import ImportDialog
 from sutekh.gui.WWFilesDialog import WWFilesDialog
 from sutekh.XmlFileHandling import PhysicalCardXmlFile, PhysicalCardSetXmlFile, \
-                                   AbstractCardSetXmlFile
+                                    AbstractCardSetXmlFile
 from sutekh.IdentifyXMLFile import IdentifyXMLFile
 from sutekh.DatabaseUpgrade import copyToNewAbstractCardDB, createFinalCopy
 from sutekh.SutekhUtility import refreshTables, readWhiteWolfList, readRulings
@@ -155,7 +155,7 @@ class MainMenu(gtk.MenuBar,object):
                     Complaint.destroy()
             else:
                 Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
-                                              gtk.BUTTONS_CLOSE,"File is not a PhysicalCard XML File.")
+                    gtk.BUTTONS_CLOSE,"File is not a PhysicalCard XML File.")
                 Complaint.connect("response",lambda dlg, resp: dlg.destroy())
                 Complaint.run()
 
@@ -179,11 +179,11 @@ class MainMenu(gtk.MenuBar,object):
                 else:
                     oF=PhysicalCardSetXmlFile(sFileName)
                 oF.read()
-                self.__oC.getCSManWin().reloadCS(sName,sType)
-                self.__oC.getCSManWin().createNewCardSetWindow(sName,sType)
+                self.__oC.getManager().reloadCS(sName,sType)
+                self.__oC.getManager().createNewCardSetWindow(sName,sType)
             else:
                 Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
-                                              gtk.BUTTONS_CLOSE,"File is not a CardSet XML File.")
+                    gtk.BUTTONS_CLOSE,"File is not a CardSet XML File.")
                 Complaint.connect("response",lambda dlg, resp: dlg.destroy())
 
     def doImportNewCardList(self,widget):
@@ -198,9 +198,9 @@ class MainMenu(gtk.MenuBar,object):
                     oFile.doDumpAllToZip()
                 except Exception, e:
                     sMsg = "Failed to write backup.\n\n" + str(e) \
-                           +"\nNot touching the database further"
+                        +"\nNot touching the database further"
                     Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
-                       gtk.BUTTONS_CLOSE,sMsg)
+                        gtk.BUTTONS_CLOSE,sMsg)
                     Complaint.run()
                     Complaint.destroy()
                     return
@@ -221,7 +221,7 @@ class MainMenu(gtk.MenuBar,object):
                     sMesg+=sStr+"\n"
                 sMesg+="Attempt to Continue Anyway (This is quite possibly dangerous)?"
                 Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
-                                              gtk.BUTTONS_OK_CANCEL,sMesg)
+                    gtk.BUTTONS_OK_CANCEL,sMesg)
                 response=Complaint.run()
                 Complaint.destroy()
                 if response==gtk.RESPONSE_OK:
@@ -238,12 +238,12 @@ class MainMenu(gtk.MenuBar,object):
                         sMesg+=sStr+"\n"
                     sMesg+="Your database may be in an inconsistent state - sorry"
                     Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
-                                              gtk.BUTTONS_OK,sMesg)
+                        gtk.BUTTONS_OK,sMesg)
                 else:
                     sMesg="Import Completed\n"
                     sMesg+="Eveything seems to have gone OK"
                     Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_INFO,
-                                              gtk.BUTTONS_CLOSE,sMesg)
+                        gtk.BUTTONS_CLOSE,sMesg)
                 Complaint.run()
                 Complaint.destroy()
             self.__oC.reloadAll()

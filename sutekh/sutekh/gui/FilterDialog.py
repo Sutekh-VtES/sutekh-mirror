@@ -5,182 +5,283 @@
 # GPL - see COPYING for details
 
 import gtk
-from sutekh.Filters import MultiClanFilter, MultiDisciplineFilter,\
-                           MultiCardTypeFilter, MultiExpansionFilter,\
-                           MultiGroupFilter, CardNameFilter, CardTextFilter,\
-                           FilterAndBox
-from sutekh.SutekhObjects import Clan, Discipline, CardType, Expansion,\
-                                 DisciplineAdapter
+import copy
 from sutekh.gui.ScrolledList import ScrolledList
+from sutekh import FilterParser
+from sutekh.gui.ConfigFile import ConfigFileListener
 
-class FilterDialog(gtk.Dialog):
-    def __init__(self,parent):
+aDefaultFilterList = [
+        "Clan IN $foo",
+        "Discipline in $foo",
+        "CardType in $foo",
+        "CardText in $foo",
+        "CardName in $foo"
+        ]
+
+class FilterDialog(gtk.Dialog,ConfigFileListener):
+
+    __iAddButtonResponse = 1
+    __iDeleteButtonResponse = 2
+
+    def __init__(self,parent,oConfig):
         super(FilterDialog,self).__init__("Specify Filter", \
-              parent,gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT, \
-              ( gtk.STOCK_OK, gtk.RESPONSE_OK, gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
-        self.set_default_size(800,450)
-        self.wasCancelled = False
-        self.State={}
-        myHBox=gtk.HBox(False,0)
-        oClanComment=gtk.Label("Any of these\nClans")
-        oDiscComment=gtk.Label("Any of these\nDisciplines")
-        oTypeComment=gtk.Label("Any of these\nCard Types")
-        oExpComment=gtk.Label("Any of these\nExpansions")
-        oGroupComment=gtk.Label("Any of these\nGroups")
-        self.clanFrame=ScrolledList('Clans','All Clans')
-        self.discFrame=ScrolledList('Disciplines','All Disciplines')
-        self.typeFrame=ScrolledList('Card Types','All Types')
-        self.expFrame=ScrolledList('Expansions','All Expansions')
-        self.groupFrame=ScrolledList('Crypt Group','All Groups')
-        textVBox=gtk.VBox(False,0)
-        self.textFrame=gtk.Frame('Includes this Card Text')
-        self.nameFrame=gtk.Frame('the Card Name includes')
-        textVBox.pack_start(gtk.Label("AND"))
-        textVBox.pack_start(oGroupComment)
-        textVBox.pack_start(self.groupFrame)
-        self.groupFrame.set_size_request(150,250)
-        textVBox.pack_start(gtk.Label("AND"))
-        textVBox.pack_start(self.nameFrame)
-        textVBox.pack_start(gtk.Label("AND"))
-        textVBox.pack_start(self.textFrame)
-        tVBox=gtk.VBox(False,0)
-        tVBox.pack_start(oClanComment)
-        tVBox.pack_start(self.clanFrame)
-        self.clanFrame.set_size_request(160,420)
-        myHBox.pack_start(tVBox)
-        tVBox=gtk.VBox(False,0)
-        tVBox.pack_start(gtk.Label("AND"))
-        tVBox.pack_start(oDiscComment)
-        tVBox.pack_start(self.discFrame)
-        self.discFrame.set_size_request(160,420)
-        myHBox.pack_start(tVBox)
-        tVBox=gtk.VBox(False,0)
-        tVBox.pack_start(gtk.Label("AND"))
-        tVBox.pack_start(oTypeComment)
-        tVBox.pack_start(self.typeFrame)
-        self.typeFrame.set_size_request(160,420)
-        myHBox.pack_start(tVBox)
-        tVBox=gtk.VBox(False,0)
-        tVBox.pack_start(gtk.Label("AND"))
-        tVBox.pack_start(oExpComment)
-        tVBox.pack_start(self.expFrame)
-        self.expFrame.set_size_request(160,420)
-        myHBox.pack_start(tVBox)
-        myHBox.pack_start(textVBox)
-        self.State['clan']={}
-        self.State['disc']={}
-        self.State['type']={}
-        self.State['exp']={}
-        self.State['group']={}
-        self.State['text']=''
-        self.State['name']=''
-        for clan in Clan.select().orderBy('name'):
-            # Add clan to the list
-            iter=self.clanFrame.get_list().append(None)
-            self.clanFrame.get_list().set(iter,0,clan.name)
-            self.State['clan'][clan.name]=False
-        for discipline in Discipline.select().orderBy('name'):
-            # add disciplie
-            name=DisciplineAdapter.keys[discipline.name][-1]
-            iter=self.discFrame.get_list().append(None)
-            self.discFrame.get_list().set(iter,0,name)
-            self.State['disc'][name]=False
-        for type in CardType.select():
-            iter=self.typeFrame.get_list().append(None)
-            self.typeFrame.get_list().set(iter,0,type.name)
-            self.State['type'][type.name]=False
-        for exp in Expansion.select():
-            iter=self.expFrame.get_list().append(None)
-            self.expFrame.get_list().set(iter,0,exp.name)
-            self.State['exp'][exp.name]=False
-        for group in range(1,5+1):
-            iter=self.groupFrame.get_list().append(None)
-            self.groupFrame.get_list().set(iter,0,str(group))
-            self.State['group'][str(group)]=False
-        self.connect("response", self.buttonResponse)
-        self.textEntry=gtk.Entry(100)
-        self.textEntry.set_width_chars(20)
-        self.textFrame.add(self.textEntry)
-        self.nameEntry=gtk.Entry(100)
-        self.nameEntry.set_width_chars(20)
-        self.nameFrame.add(self.nameEntry)
-        self.Data = None
-        self.vbox.pack_end(myHBox)
+                parent,gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT)
+        # Need to add these buttons so we get the right order
+        self.add_button( "Add New Filter", self.__iAddButtonResponse)
+        # Want a reference to this button, so we can fiddle active state
+        self.__oDeleteButton = self.add_button("Delete Filter",\
+                self.__iDeleteButtonResponse)
+        self.action_area.pack_start(gtk.VSeparator(),expand=True)
+        self.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
+        self.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
+        self.__oDeleteButton.set_sensitive(False)
+        self.__oParser=FilterParser.FilterParser()
+        self.__oConfig=oConfig
+        self.connect("response", self.__buttonResponse)
+        self.__dExpanded={}
+        self.__dASTs={}
+        self.__dButtons={}
+        self.set_default_size(700,550)
+        self.__oData = None
+        self.__bWasCancelled = False
+        self.__oRadioGroup=None
+        oFrame=gtk.Frame("Current Filter to Edit")
+        oFrame.set_size_request(700,430)
+        self.__oExpandedArea=gtk.HBox(spacing=5)
+        oFrame.add(self.__oExpandedArea)
+        self.__oRadioArea=gtk.VBox()
+        self.__sExpanded=None
+        self.vbox.pack_start(oFrame)
+        self.vbox.pack_start(self.__oRadioArea)
+        self.vbox.set_homogeneous(False)
+        self.__iDefaultNum=len(aDefaultFilterList)
+        self.__dFilterList={}
+        self.__aDefaultLabels=[]
+        # Setup default filters
+        # First filter is expanded by default
+        for sFilter in aDefaultFilterList:
+            # Parse the filter into the seperate bits needed
+            try:
+                oAST=self.__oParser.apply(sFilter)
+            except ValueError:
+                self.__doComplaint("Invalid Filter Syntax: "+sFilter)
+                continue
+            sName=self.__addFilterToDialog(oAST,sFilter)
+            self.__aDefaultLabels.append(sName)
+        self.__expandFilter(self.__oRadioGroup, "0 : "+aDefaultFilterList[0],0)
+        # Load other filters from config file
+        aAllFilters=oConfig.getFilters()
+        sMessages=''
+        for sFilter in aAllFilters:
+            try:
+                oAST=self.__oParser.apply(sFilter)
+                self.__addFilterToDialog(oAST,sFilter)
+            except ValueError:
+                sMessages+=sFilter+"\n"
+                self.__oConfig.removeFilter(sFilter)
+        if sMessages!='':
+            self.__doComplaint("The Following Invalid filters have been removed from the config file:\n "+sMessages)
         self.show_all()
+        # Add Listener, so we catch changes in future
+        oConfig.addListener(self)
+
+    def __expandFilter(self, oRadioButton, sName, iNum):
+        """When the user selects a radio button, expand
+           the options"""
+        if sName!=self.__sExpanded:
+            # Remove the previous filter
+            for child in self.__oExpandedArea.get_children():
+                self.__oExpandedArea.remove(child)
+            self.__sExpanded=sName
+            for child in self.__dExpanded[sName]:
+                self.__oExpandedArea.pack_start(child,expand=False)
+            self.__oExpandedArea.show_all()
+            if iNum>=self.__iDefaultNum:
+                # User defined filter, can be deleted
+                self.__oDeleteButton.set_sensitive(True)
+            else:
+                self.__oDeleteButton.set_sensitive(False)
+
+    def __addFilterToDialog(self,oAST,sFilter):
+        aFilterParts=oAST.getValues()
+        iNum=len(self.__dExpanded)
+        # Should we try harder to make sure this is unique?
+        # do .... while sName in dExpanded.keys() type construction?
+        sName=str(iNum)+" : "+sFilter
+        self.__dFilterList[sName]=sFilter
+        self.__dExpanded[sName]=[]
+        self.__dASTs[sName]=oAST
+        for oPart in aFilterParts:
+            if oPart.isValue():
+                oWidget=gtk.Label(oPart.value)
+                self.__dExpanded[sName].append(oWidget)
+            elif oPart.isList():
+                oWidget=self.__makeScrolledList(sPrevName,oPart.value)
+                self.__dExpanded[sName].append(oWidget)
+            elif oPart.isEntry():
+                oWidget=gtk.Entry(100)
+                oWidget.set_width_chars(30)
+                self.__dExpanded[sName].append(oWidget)
+            sPrevName=oPart.value
+        oRadioButton=gtk.RadioButton(self.__oRadioGroup)
+        if self.__oRadioGroup is None:
+            self.__oRadioGroup=oRadioButton
+        oRadioButton.set_label(sFilter)
+        self.__dButtons[sName]=oRadioButton
+        oRadioButton.connect("toggled",self.__expandFilter,sName, iNum)
+        self.__oRadioArea.pack_start(oRadioButton)
+        return sName
+
+    def __removeFilterFromDialog(self,sName):
+        sFilter=self.__dFilterList[sName]
+        self.__oConfig.removeFilter(sFilter)
+
+    def removeFilter(self,sFilter):
+        # Find first filter after default list that matches this
+        sToDel=''
+        for sName,sDiagFilter in self.__dFilterList.iteritems():
+            if sName not in self.__aDefaultLabels and \
+                    sFilter == sDiagFilter:
+                sToDel=sName
+                break
+        if sToDel!='':
+            del self.__dASTs[sName]
+            del self.__dExpanded[sName]
+            del self.__dFilterList[sName]
+            oRadioButton=self.__dButtons[sName]
+            self.__oRadioArea.remove(oRadioButton)
+            del self.__dButtons[sName]
+            self.show_all()
 
     def getFilter(self):
-        return self.Data
+        return self.__oData
 
     def Cancelled(self):
-        return self.wasCancelled
+        return self.__bWasCancelled
 
-    def buttonResponse(self,widget,response):
-       self.wasCancelled = False # Need to reset if filter is rerun
-       andData=[]
-       if response ==  gtk.RESPONSE_OK:
-           aClans = []
-           aDiscs = []
-           aTypes = []
-           aExps = []
-           aGroups = []
-           aText = []
-           # Unset state
-           for clanName in self.State['clan']:
-               self.State['clan'][clanName]=False
-           for discName in self.State['disc']:
-               self.State['disc'][discName]=False
-           for typeName in self.State['type']:
-               self.State['type'][typeName]=False
-           for expName in self.State['exp']:
-               self.State['exp'][expName]=False
-           for groupName in self.State['group']:
-               self.State['group'][groupName]=False
-           self.State['text']=''
-           self.State['name']=''
+    def __buttonResponse(self,widget,response):
+        if response ==  gtk.RESPONSE_OK:
+            self.__bWasCancelled=False
+            # Construct the Final filter string
+            oNewAST=self.__parseDialogState()
+            # Push this into yacc and get the constructed filter out of
+            # it
+            self.__oData=oNewAST.getFilter()
+        elif response == self.__iAddButtonResponse:
+            self.__doAddFilter()
+            # Recursive, not sure if that's such a good thing
+            return self.run()
+        elif response == self.__iDeleteButtonResponse:
+            self.__doRemoveFilter()
+            return self.run()
+        else:
+            self.__bWasCancelled=True
+        self.hide()
 
-           # Compile lists of clans and disciplines selected
-           self.clanFrame.get_selection(aClans,self.State['clan'])
-           if len(aClans) > 0:
-               andData.append(MultiClanFilter(aClans))
-           self.discFrame.get_selection(aDiscs,self.State['disc'])
-           if len(aDiscs) > 0:
-               andData.append(MultiDisciplineFilter(aDiscs))
-           self.typeFrame.get_selection(aTypes,self.State['type'])
-           if len(aTypes) > 0:
-               andData.append(MultiCardTypeFilter(aTypes))
-           self.expFrame.get_selection(aExps,self.State['exp'])
-           if len(aExps) > 0:
-               andData.append(MultiExpansionFilter(aExps))
-           self.groupFrame.get_selection(aGroups,self.State['group'])
-           if len(aGroups) > 0:
-               andData.append(MultiGroupFilter([int(x) for x in aGroups]))
+    def __parseDialogState(self):
+        # FIXME: Should be defined somewhere else for better maintainability
+        aNumericFilters=['Group','Cost','Capacity','Life']
+        aWithFilters=['Expansion_with_Rarity','Discipline_with_Level']
+        oNewAST=copy.deepcopy(self.__dASTs[self.__sExpanded])
+        aNewFilterValues=oNewAST.getValues()
+        # Need pointers to the new nodes
+        for (child,oFilterPart) in zip(self.__dExpanded[self.__sExpanded],aNewFilterValues):
+            if type(child) is ScrolledList:
+                # Some of this logic should be pushed down to ScrolledList
+                aVals=[]
+                Model,Selection=child.TreeView.get_selection().get_selected_rows()
+                for oPath in Selection:
+                    oIter= Model.get_iter(oPath)
+                    name = Model.get_value(oIter,0)
+                    if oFilterPart.node.filtertype not in aNumericFilters:
+                        if oFilterPart.node.filtertype in aWithFilters:
+                            sPart1,sPart2=name.split(' with ')
+                            # Ensure no issues with spaces, etc.
+                            aVals.append('"'+sPart1+'" with "'+sPart2+'"')
+                        else:
+                            aVals.append('"'+name+'"')
+                    else:
+                        if name!='X':
+                            aVals.append(name)
+                        else:
+                            aVals.append('-1')
+                if aVals!=[]:
+                    oFilterPart.node.setValues(aVals)
+            elif type(child) is gtk.Entry:
+                sText=child.get_text()
+                if sText!='':
+                    oFilterPart.node.setValues(['"'+sText+'"'])
+        return oNewAST
 
-           # Add text lookup
-           sCardText=self.textEntry.get_text()
-           if sCardText!='':
-               andData.append(CardTextFilter(sCardText))
-               self.State['text']=sCardText
+    def __makeScrolledList(self,sName,aVals):
+        oWidget=ScrolledList(sName)
+        oWidget.set_size_request(160,420)
+        aList=oWidget.get_list()
+        aList.clear()
+        for sEntry in aVals:
+            iter=aList.append(None)
+            aList.set(iter,0,sEntry)
+        return oWidget
 
-	   sPartialName=self.nameEntry.get_text()
-           if sPartialName!='':
-               andData.append(CardNameFilter(sPartialName))
-               self.State['name']=sPartialName
+    def __doComplaint(self,sMessage):
+        oComplaint=gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
+                gtk.BUTTONS_CLOSE,sMessage)
+        oComplaint.run()
+        oComplaint.destroy()
 
-           # Combine filters
-           if len(andData)>1:
-               self.Data = FilterAndBox(andData)
-           elif len(andData)==1:
-               self.Data=andData[0] # Avoid extra and
-           else:
-               self.Data = None
-       else:
-           self.clanFrame.reset(self.State['clan'])
-           self.discFrame.reset(self.State['disc'])
-           self.typeFrame.reset(self.State['type'])
-           self.expFrame.reset(self.State['exp'])
-           self.groupFrame.reset(self.State['group'])
-           self.textEntry.set_text(self.State['text'])
-           self.nameEntry.set_text(self.State['name'])
-           self.wasCancelled = True
-       self.hide()
+    def __doAddFilter(self):
+        oNewFilterDialog=gtk.Dialog("Enter the New Filter",self,
+                gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
+                ( gtk.STOCK_OK, gtk.RESPONSE_OK,
+                    gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL ) )
+        sHelpText="<b>Filter Syntx</b>\n"+\
+                "<i>FilterPart</i> { <b>OP</b> <i>FilterPart</i> } .... \n"+\
+                "where <b>OP</b> is either AND or OR\n" +\
+                "and <i>FilterPart</i> is FilterType IN comma seperated list of values\n"+\
+                "or FilterType = $variable \n"+\
+                "FilterType can be any of the following\n"
+        for sFilterType,oAttributes in FilterParser.dFilterParts.iteritems():
+            sHelpText+="<b>"+sFilterType+"</b> which takes "+oAttributes[2]+"\n"
+        oHelpText=gtk.Label()
+        oHelpText.set_markup(sHelpText)
+        oEntry=gtk.Entry(300)
+        oEntry.set_width_chars(70)
+        oNewFilterDialog.vbox.pack_start(oHelpText)
+        oNewFilterDialog.vbox.pack_start(oEntry)
+        oNewFilterDialog.show_all()
+        bDone=False
+        while not bDone:
+            response=oNewFilterDialog.run()
+            if response==gtk.RESPONSE_OK:
+                sFilter=oEntry.get_text()
+                try:
+                    oAST=self.__oParser.apply(sFilter)
+                except ValueError:
+                    self.__doComplaint("Invalid Filter Syntax: "+sFilter)
+                    # Rerun the dialog, should do the write thing
+                    continue
+                aWrongVals=oAST.getInvalidValues()
+                if aWrongVals is not None:
+                    sMessage="The following values are invalid for the filter\n"
+                    for sVal in aWrongVals:
+                        sMessage+=sVal+'\n'
+                    self.__doComplaint(sMessage)
+                    continue
+                self.__oConfig.addFilter(sFilter)
+            bDone=True
+            oNewFilterDialog.destroy()
 
+    def addFilter(self,sFilter):
+        try:
+            # Should be safe, but just in case
+            oAST=self.__oParser.apply(sFilter)
+        except ValueError:
+            self.__doComplaint("Invalid Filter Syntax: "+sFilter)
+            return
+        self.__addFilterToDialog(oAST,sFilter)
+        self.show_all()
+
+    def __doRemoveFilter(self):
+        sName = self.__sExpanded
+        self.__oRadioGroup.clicked()
+        self.__removeFilterFromDialog(sName)

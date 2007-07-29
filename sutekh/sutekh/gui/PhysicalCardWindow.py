@@ -36,4 +36,4 @@ class PhysicalCardWindow(gtk.Window,object):
         self.show_all()
 
     def getManager(self):
-        return self.__oC.getCSManWin()
+        return self.__oC.getManager()

@@ -13,10 +13,11 @@ from sutekh.gui.CardSetWindow import CardSetWindow
 from sutekh.gui.CardSetController import PhysicalCardSetController, AbstractCardSetController
 
 class CardSetManagementWindow(gtk.Window):
-    def __init__(self,oMainController,oWindow):
+    def __init__(self,oMainController,oWindow,oConfig):
         super(CardSetManagementWindow,self).__init__()
         self.__oMC = oMainController
         self.__oWin = oWindow
+        self.__oConfig = oConfig
         self.set_title("Card Set Management")
         self.bRep = False
         self.set_default_size(600,350)
@@ -205,7 +206,7 @@ class CardSetManagementWindow(gtk.Window):
             if NameList.count() != 0:
                 # Complain about duplicate name
                 Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
-                                              gtk.BUTTONS_CLOSE,"Chosen "+type+" Card Set name already in use.")
+                                                gtk.BUTTONS_CLOSE,"Chosen "+type+" Card Set name already in use.")
                 Complaint.connect("response",lambda dlg, resp: dlg.destroy())
                 Complaint.run()
                 return
@@ -223,7 +224,7 @@ class CardSetManagementWindow(gtk.Window):
         if sType == 'Physical' or sType == 'PhysicalCardSet':
             if sSetName not in self.aOpenPhysicalCardSets.keys():
                 newWindow = CardSetWindow(self,sSetName,"PhysicalCardSet")
-                newController = PhysicalCardSetController(newWindow,self.__oMC,sSetName)
+                newController = PhysicalCardSetController(newWindow,self.__oMC,sSetName,self.__oConfig)
                 self.aOpenPhysicalCardSets[sSetName] = [newWindow, newController]
             else:
                 # raise the window
@@ -232,7 +233,7 @@ class CardSetManagementWindow(gtk.Window):
         elif sType == 'Abstract' or sType == 'AbstractCardSet':
             if sSetName not in self.aOpenAbstractCardSets.keys():
                 newWindow = CardSetWindow(self,sSetName,"AbstractCardSet")
-                newController = AbstractCardSetController(newWindow,self.__oMC,sSetName)
+                newController = AbstractCardSetController(newWindow,self.__oMC,sSetName,self.__oConfig)
                 self.aOpenAbstractCardSets[sSetName] = [newWindow, newController]
             else:
                 # raise the window
@@ -254,7 +255,7 @@ class CardSetManagementWindow(gtk.Window):
             window, controller = openSets[sSetName]
             return window
         return None
- 
+
     def removeCardSetWindow(self,sSetName,sType):
         # Check Card Set window does exist
         if sType == "PhysicalCardSet" or sType == 'Physical':

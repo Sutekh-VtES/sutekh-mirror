@@ -54,8 +54,8 @@ class CardSetWindow(gtk.Window,object):
 
     def deleteCardSet(self):
         if self.__oView.deleteCardSet():
-           # Card Set was deleted, so close up
-           self.closeCardSet()
+            # Card Set was deleted, so close up
+            self.closeCardSet()
 
     def load(self):
         # Select all cards from

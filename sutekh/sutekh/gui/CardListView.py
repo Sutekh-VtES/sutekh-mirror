@@ -10,10 +10,11 @@ from sutekh.gui.PopupMenu import PopupMenu
 from sutekh.gui.CellRendererSutekhButton import CellRendererSutekhButton
 
 class CardListView(gtk.TreeView,object):
-    def __init__(self,oController,oWindow):
+    def __init__(self,oController,oWindow,oConfig):
         self._oModel = CardListModel()
         self._oC = oController
         self._oWin = oWindow
+        self._oConfig=oConfig
 
         super(CardListView,self).__init__(self._oModel)
 
@@ -140,7 +141,7 @@ class CardListView(gtk.TreeView,object):
 
     def getFilter(self,oMenu):
         if self._oFilterDialog is None:
-            self._oFilterDialog = FilterDialog(self._oWin)
+            self._oFilterDialog = FilterDialog(self._oWin,self._oConfig)
 
         self._oFilterDialog.run()
 
@@ -181,8 +182,8 @@ class CardListView(gtk.TreeView,object):
 
 
 class EditableCardListView(CardListView):
-    def __init__(self,oController,oWindow):
-        super(EditableCardListView,self).__init__(oController,oWindow)
+    def __init__(self,oController,oWindow,oConfig):
+        super(EditableCardListView,self).__init__(oController,oWindow,oConfig)
 
         oCell1 = gtk.CellRendererText()
         oCell1.set_property('style', pango.STYLE_ITALIC)

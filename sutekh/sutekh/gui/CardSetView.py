@@ -9,8 +9,8 @@ from sutekh.Filters import PhysicalCardSetFilter, AbstractCardSetFilter
 from sutekh.SutekhObjects import PhysicalCard, PhysicalCardSet, AbstractCardSet
 
 class CardSetView(EditableCardListView):
-    def __init__(self,oWindow,oController,sName,sSetType):
-        super(CardSetView,self).__init__(oController,oWindow)
+    def __init__(self,oWindow,oController,sName,sSetType,oConfig):
+        super(CardSetView,self).__init__(oController,oWindow,oConfig)
         self.sSetName = sName
         self.sSetType = sSetType
         # Needs to be PhysicalCard for both so Model does the right thing
@@ -45,14 +45,14 @@ class CardSetView(EditableCardListView):
         if data and data.format == 8 and bits[0] == "Phys":
             # Card is from the Physical card view, so we only get one
             for name in lines[1:]:
-               self.addCard(name)
+                self.addCard(name)
             context.finish(True, False, time)
         elif data and data.format == 8 and bits[0] == "Abst" \
-                  and self.sSetType == "AbstractCardSet":
+                and self.sSetType == "AbstractCardSet":
             # Abstract Card Sets can accept cards from the Abstract Card List
             # Card is from the Abstract card view, so we only get one
             for name in lines[1:]:
-               self.addCard(name)
+                self.addCard(name)
             context.finish(True, False, time)
         elif data and data.format == 8 and bits[0] == "CardSet":
             # Card is from a CardSet, so extract type and name

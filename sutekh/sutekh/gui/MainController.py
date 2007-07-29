@@ -19,7 +19,7 @@ from sutekh.SutekhObjectCache import SutekhObjectCache
 from sutekh.SutekhObjects import AbstractCard
 
 class MainController(object):
-    def __init__(self):
+    def __init__(self,oConfig):
         # Create object cache
         self.__oSutekhObjectCache = SutekhObjectCache()
         # Create PluginManager
@@ -32,16 +32,16 @@ class MainController(object):
         # and they should all be blocked by the appropriate dialogs
         self.__oAbstractCardWin = MainWindow(self)
         self.__oPhysicalCardWin = PhysicalCardWindow(self)
-        self.__oCSWin = CardSetManagementWindow(self,self.__oAbstractCardWin)
+        self.__oCSWin = CardSetManagementWindow(self,self.__oAbstractCardWin,oConfig)
         self.__oCardTextWin = CardTextWindow(self)
-        self.__oAbstractCards = AbstractCardView(self,self.__oAbstractCardWin)
+        self.__oAbstractCards = AbstractCardView(self,self.__oAbstractCardWin,oConfig)
         self.__aPlugins = []
         for cPlugin in self.__oPluginManager.getCardListPlugins():
             self.__aPlugins.append(cPlugin(self.__oAbstractCards,self.__oAbstractCards.getModel(),'AbstractCard'))
 
         self.__oMenu = MainMenu(self,self.__oAbstractCardWin)
         self.__oCardText = CardTextView(self)
-        self.__oPhysicalCards = PhysicalCardController(self.__oPhysicalCardWin,self)
+        self.__oPhysicalCards = PhysicalCardController(self.__oPhysicalCardWin,self,oConfig)
         self.__oWinGrp.add_window(self.__oAbstractCardWin)
         self.__oWinGrp.add_window(self.__oPhysicalCardWin)
         self.__oWinGrp.add_window(self.__oCSWin)
@@ -90,5 +90,5 @@ class MainController(object):
     def getWinGroup(self):
         return self.__oWinGrp
 
-    def getCSManWin(self):
+    def getManager(self):
         return self.__oCSWin

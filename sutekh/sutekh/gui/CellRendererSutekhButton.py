@@ -48,26 +48,26 @@ class CellRendererSutekhButton(gtk.GenericCellRenderer):
         return True
 
     def on_render(self,window, widget, background_area, cell_area, expose_area, flags):
-       if (self.pixbuf==None):
-          return None
-       # Render pixbuf
-       pix_rect = gtk.gdk.Rectangle()
-       pix_rect.x, pix_rect.y, pix_rect.width, pix_rect.height = \
-          self.on_get_size(widget, cell_area)
+        if (self.pixbuf==None):
+            return None
+        # Render pixbuf
+        pix_rect = gtk.gdk.Rectangle()
+        pix_rect.x, pix_rect.y, pix_rect.width, pix_rect.height = \
+            self.on_get_size(widget, cell_area)
 
-       pix_rect.x += cell_area.x
-       pix_rect.y += cell_area.y
-       pix_rect.width  -= 2 * self.get_property("xpad")
-       pix_rect.height -= 2 * self.get_property("ypad")
+        pix_rect.x += cell_area.x
+        pix_rect.y += cell_area.y
+        pix_rect.width  -= 2 * self.get_property("xpad")
+        pix_rect.height -= 2 * self.get_property("ypad")
 
-       draw_rect = cell_area.intersect(pix_rect)
-       draw_rect = expose_area.intersect(draw_rect)
+        draw_rect = cell_area.intersect(pix_rect)
+        draw_rect = expose_area.intersect(draw_rect)
 
-       window.draw_pixbuf(widget.style.black_gc, self.pixbuf, \
-          draw_rect.x-pix_rect.x, draw_rect.y-pix_rect.y, draw_rect.x, \
-          draw_rect.y+2, draw_rect.width, draw_rect.height, \
-          gtk.gdk.RGB_DITHER_NONE, 0, 0)
-       return None
+        window.draw_pixbuf(widget.style.black_gc, self.pixbuf, \
+            draw_rect.x-pix_rect.x, draw_rect.y-pix_rect.y, draw_rect.x, \
+            draw_rect.y+2, draw_rect.width, draw_rect.height, \
+            gtk.gdk.RGB_DITHER_NONE, 0, 0)
+        return None
 
 # HouseKeeping work for CellRendererStukehButton
 # Awkward stylistically, but I'm putting it here as it's
@@ -80,8 +80,8 @@ gobject.type_register(CellRendererSutekhButton)
 # Setup clicked signal -- can also be done using the __gsignals__
 # dict in the class, but I couldn't find good documentation for
 # that approach.
-gobject.signal_new("clicked", CellRendererSutekhButton,
-    gobject.SIGNAL_RUN_FIRST|gobject.SIGNAL_ACTION,
-   gobject.TYPE_NONE,
-   (gobject.TYPE_STRING,))
+gobject.signal_new("clicked", CellRendererSutekhButton,\
+    gobject.SIGNAL_RUN_FIRST|gobject.SIGNAL_ACTION,\
+    gobject.TYPE_NONE,
+    (gobject.TYPE_STRING,))
 # the callback is called as callback(self,path)

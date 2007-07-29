@@ -7,9 +7,9 @@ import gtk
 class WWFilesDialog(gtk.Dialog):
     def __init__(self,oParent):
         super(WWFilesDialog,self).__init__("Choose White Wolf Files",oParent,\
-                      gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,\
-                      (gtk.STOCK_OK, gtk.RESPONSE_OK, gtk.STOCK_CANCEL,\
-                      gtk.RESPONSE_CANCEL))
+            gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,\
+            (gtk.STOCK_OK, gtk.RESPONSE_OK, gtk.STOCK_CANCEL,\
+            gtk.RESPONSE_CANCEL))
         oCardListLabel=gtk.Label("White Wolf CardList")
         self.oCardListFileButton=gtk.FileChooserButton("White Wolf cardlist")
         oRulingsLabel=gtk.Label("White Wolf Rulings File (optional)")
@@ -18,8 +18,8 @@ class WWFilesDialog(gtk.Dialog):
         self.oBackupFileButton.set_active(False)
         self.oBackupFileLabel=gtk.Label("(None)")
         self.oBackupFileDialog=gtk.FileChooserDialog("Database Backup file",action=gtk.FILE_CHOOSER_ACTION_SAVE,
-                buttons=(gtk.STOCK_OK, gtk.RESPONSE_OK,
-                         gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
+            buttons=(gtk.STOCK_OK, gtk.RESPONSE_OK,
+                gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
         self.oBackupFileDialog.set_do_overwrite_confirmation(True)
         self.vbox.pack_start(oCardListLabel)
         self.vbox.pack_start(self.oCardListFileButton)

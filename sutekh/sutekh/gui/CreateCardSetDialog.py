@@ -8,8 +8,8 @@ import gtk
 class CreateCardSetDialog(gtk.Dialog):
     def __init__(self,parent,sType,sAuthor=None,sDesc=None):
         super(CreateCardSetDialog,self).__init__(sType+" Card Set Details",
-              parent,gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
-              (gtk.STOCK_OK, gtk.RESPONSE_OK, gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
+            parent,gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
+            (gtk.STOCK_OK, gtk.RESPONSE_OK, gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
 
         oNameLabel = gtk.Label("Card Set Name : ")
         self.oName = gtk.Entry(50)
@@ -58,8 +58,8 @@ class CreateCardSetDialog(gtk.Dialog):
                 self.sName = None
 
                 Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
-                                              gtk.BUTTONS_CLOSE,
-                                              "You did not specify a name for the %s." % self.sType)
+                    gtk.BUTTONS_CLOSE,
+                    "You did not specify a name for the %s." % self.sType)
                 Complaint.run()
                 Complaint.destroy()
 
