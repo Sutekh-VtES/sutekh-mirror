@@ -20,7 +20,9 @@ class ConfigFileListener(object):
 class ConfigFile(object):
 
     __sFiltersSection = 'filters'
-    __sGUISection = 'gui'
+    __sWinPosSection = 'Window Pos'
+    __sWinNameSection = 'Window Name'
+    __sCardSetsSection = 'Card Sets'
 
     def __init__(self,sFileName):
         self.__sFileName = sFileName
@@ -29,8 +31,14 @@ class ConfigFile(object):
         self.__oConfig.read(self.__sFileName)
         self.__dListeners={}
 
-        if not self.__oConfig.has_section(self.__sGUISection):
-            self.__oConfig.add_section(self.__sGUISection)
+        if not self.__oConfig.has_section(self.__sCardSetsSection):
+            self.__oConfig.add_section(self.__sCardSetsSection)
+
+        if not self.__oConfig.has_section(self.__sWinPosSection):
+            self.__oConfig.add_section(self.__sWinPosSection)
+
+        if not self.__oConfig.has_section(self.__sWinNameSection):
+            self.__oConfig.add_section(self.__sWinNameSection)
 
         if not self.__oConfig.has_section(self.__sFiltersSection):
             self.__oConfig.add_section(self.__sFiltersSection)
@@ -51,6 +59,58 @@ class ConfigFile(object):
 
     def getFilters(self):
         return [x[1] for x in self.__oConfig.items(self.__sFiltersSection)]
+
+    def getWinPos(self,sTitle):
+        for sKey,sName in self.__oConfig.items(self.__sWinNameSection):
+            if sName == sTitle:
+                sPos=self.__oConfig.get(self.__sWinPosSection,sKey)
+                X,Y=sPos.split(',')
+                return ( int(X), int(Y) )
+        return None
+    
+    def preSaveClear(self):
+        """Clear out old saved pos, before saving new stuff"""
+        aKeys=self.__oConfig.options(self.__sWinPosSection)
+        for sKey in aKeys:
+            self.__oConfig.remove_option(self.__sWinPosSection,sKey)
+        aKeys=self.__oConfig.options(self.__sWinNameSection)
+        for sKey in aKeys:
+            self.__oConfig.remove_option(self.__sWinNameSection,sKey)
+        aKeys=self.__oConfig.options(self.__sCardSetsSection)
+        for sKey in aKeys:
+            self.__oConfig.remove_option(self.__sCardSetsSection,sKey)
+
+    def getAllWinPos(self):
+        aRes=[]
+        for sKey,sName in self.__oConfig.iterms(self.__sWinNameSection):
+            sPos=self.__oConfig.option(self.__sWinPosSection,sKey)
+            X,Y = sPos.split(',')
+            aRes.append( ( sName, int(X), int(Y) ) )
+        return aRes
+
+    def getCardSets(self):
+        # Type is before 1st colon in the saved name
+        return [(x[1].split(':',1)) for x in self.__oConfig.items(self.__sCardSetsSection)]
+
+    def addWinPos(self,sWindowTitle,tPos):
+        sPos=str(tPos[0])+','+str(tPos[1])
+        aOptions = self.__oConfig.options(self.__sWinPosSection)
+        iNum = len(aOptions)
+        sKey = 'window '+str(iNum)
+        while sKey in aOptions:
+            iNum+=1
+            sKey = 'window '+str(iNum)
+        self.__oConfig.set(self.__sWinPosSection,sKey,sPos)
+        self.__oConfig.set(self.__sWinNameSection,sKey,sWindowTitle)
+
+    def addCardSet(self,sType,sCardSet):
+        aOptions = self.__oConfig.options(self.__sCardSetsSection)
+        iNum = len(aOptions)
+        sKey = 'card set '+str(iNum)
+        while sKey in aOptions:
+            iNum+=1
+            sKey = 'card set '+str(iNum)
+        self.__oConfig.set(self.__sCardSetsSection,sKey,sType+':'+sCardSet)
 
     def addFilter(self,sFilter):
         aOptions = self.__oConfig.options(self.__sFiltersSection)

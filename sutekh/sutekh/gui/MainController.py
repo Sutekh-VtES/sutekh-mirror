@@ -22,6 +22,7 @@ class MainController(object):
     def __init__(self,oConfig):
         # Create object cache
         self.__oSutekhObjectCache = SutekhObjectCache()
+        self.__oConfig = oConfig
         # Create PluginManager
         self.__oPluginManager = PluginManager()
         self.__oPluginManager.loadPlugins()
@@ -52,10 +53,26 @@ class MainController(object):
         self.__oPhysicalCardWin.addParts(self.__oPhysicalCards)
         self.__oCardTextWin.addParts(self.__oCardText)
 
+        # Restore Window Positions
+        for oWin in [self.__oAbstractCardWin,self.__oPhysicalCardWin,self.__oCardTextWin,self.__oCSWin]:
+            tPos = self.__oConfig.getWinPos(oWin.get_title())
+            if tPos is not None:
+                oWin.move(tPos[0],tPos[1])
+
     def run(self):
         gtk.main()
 
     def actionQuit(self):
+        # Save window Positions
+        self.__oConfig.preSaveClear()
+        for oWin in [self.__oAbstractCardWin,self.__oPhysicalCardWin,self.__oCardTextWin,self.__oCSWin]:
+            self.__oConfig.addWinPos(oWin.get_title(),oWin.get_position())
+        for sName,(oWindow,oController) in self.__oCSWin.aOpenPhysicalCardSets.iteritems():
+            self.__oConfig.addWinPos(oWindow.get_title(),oWindow.get_position())
+            self.__oConfig.addCardSet('Physical',sName)
+        for sName,(oWindow,oController) in self.__oCSWin.aOpenAbstractCardSets.iteritems():
+            self.__oConfig.addWinPos(oWindow.get_title(),oWindow.get_position())
+            self.__oConfig.addCardSet('Abstract',sName)
         gtk.main_quit()
 
     def getPlugins(self):

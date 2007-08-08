@@ -59,6 +59,8 @@ class CardSetManagementWindow(gtk.Window):
         self.aOpenPhysicalCardSets={}
         self.aOpenAbstractCardSets={}
         self.reloadCardSetLists()
+        for sType,sName in self.__oConfig.getCardSets():
+            self.createNewCardSetWindow(sName,sType)
         self.show_all()
 
     def reloadCardSetLists(self):
@@ -241,8 +243,12 @@ class CardSetManagementWindow(gtk.Window):
                 return
         if newController is not None:
             newWindow.addParts(newController.getView(),newController.getMenu())
-            self.__oMC.getWinGroup().add_window(newWindow)
             self.reloadCardSetLists()
+            tPos = self.__oConfig.getWinPos(newWindow.get_title())
+            self.__oMC.getWinGroup().add_window(newWindow)
+            if tPos is not None:
+                # Restore position of window
+                newWindow.move(tPos[0],tPos[1])
             return newWindow
         return None
 
