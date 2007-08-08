@@ -23,7 +23,7 @@ Gui (Functionality):
  * Ability to specify the expansion a physical card comes from.
 
 Gui (Presentation):
- * Give gui resource handling capablities to save window pos, etc - NM
+ * Give gui resource handling capablities to save window pos, etc - NM (kinda started)
  * Tabbed interface for Card Sets? - Need both tabs & windows?
  * Parse in a GTK rc file? (http://www.moeraki.com/pygtktutorial/pygtk2tutorial/ch-GtkRcFiles.html)
  * Imporve Create Card Set Management Window (multiple selection, right click menu, etc.)
@@ -35,4 +35,4 @@ Release Candidate tasks:
  - Check everything works on Windows again (check with Philip before release)
  - Create setup.py file with bdist_egg (needs testing)
  * Improve "with text mode" option for HTML export (xsl file needs work)
- * Filter on Votes. Other useful filters?
+ * Other useful filters?
