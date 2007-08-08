@@ -10,8 +10,8 @@ from sutekh.SutekhObjects import AbstractCardSet, PhysicalCardSet,\
         AbstractCard, PhysicalCard
 
 class CardSetController(object):
-    def __init__(self,oWindow,oMasterController,sName,sType):
-        self.__oView = CardSetView(oWindow,self,sName,sType)
+    def __init__(self,oWindow,oMasterController,sName,sType,oConfig):
+        self.__oView = CardSetView(oWindow,self,sName,sType,oConfig)
         self.__oWin= oWindow
         self.__oC = oMasterController
         self._oMenu = None
@@ -46,9 +46,9 @@ class CardSetController(object):
         self.__oView.runFilter(self._oMenu.getApplyFilter())
 
 class PhysicalCardSetController(CardSetController):
-    def __init__(self,oWindow,oMasterController,sName):
+    def __init__(self,oWindow,oMasterController,sName,oConfig):
         super(PhysicalCardSetController,self).__init__(\
-                oWindow,oMasterController,sName,"PhysicalCardSet")
+                oWindow,oMasterController,sName,"PhysicalCardSet",oConfig)
         self.__oPhysCardSet = PhysicalCardSet.byName(sName)
         self._oMenu = CardSetMenu(self,self.getWin(),self.getView(),self.__oPhysCardSet.name,"PhysicalCardSet")
 
@@ -98,9 +98,9 @@ class PhysicalCardSetController(CardSetController):
         return False
 
 class AbstractCardSetController(CardSetController):
-    def __init__(self,oWindow,oMasterController,sName):
+    def __init__(self,oWindow,oMasterController,sName,oConfig):
         super(AbstractCardSetController,self).__init__(\
-                oWindow,oMasterController,sName,"AbstractCardSet")
+                oWindow,oMasterController,sName,"AbstractCardSet",oConfig)
         self.__oAbsCardSet = AbstractCardSet.byName(sName)
         self._oMenu = CardSetMenu(self,self.getWin(),self.getView(),self.__oAbsCardSet.name,"AbstractCardSet")
 
