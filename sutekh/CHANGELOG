@@ -1,3 +1,10 @@
+14 Aug 2007
+ * Add titles to the ARDB xml export (and thus HTML exports)
+
+08 Aug 2007
+ * Fix stupid Card Set loading bug caused by config file stuff
+ * Add support for saving window positions to the config file
+
 29 July 2007
  * Merge in Enhanced Filter branch (sutekh-enhanced-filter-july-2007)
    - Replaces the Filter Dialog with one that selects from multiple different

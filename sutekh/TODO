@@ -35,4 +35,5 @@ Release Candidate tasks:
  - Check everything works on Windows again (check with Philip before release)
  - Create setup.py file with bdist_egg (needs testing)
  * Improve "with text mode" option for HTML export (xsl file needs work)
- * Other useful filters?
+ * Refactor FilterParser code - push some stuff down to the actual Filters
+ * Add Happy Families and Title support to Analyze Plugin

@@ -59,13 +59,10 @@ class WriteArdbXML(object):
             # use the name if the IDs don't match
             oCardElem.setAttribute('databaseID',str(iId))
             oCardElem.setAttribute('count',str(iNum))
-            # FIXME: It's unclear to me what values ARDB uses here, but
+            # It's unclear to me what values ARDB uses here, but
             # these are fine for the xml2html conversion, and look meaningful
             oAdvElem=oDoc.createElement('adv')
             oNameElem=oDoc.createElement('name')
-            # FIXME: How does ARDB handle titles and sects?
-            # title is mentioned in the deck2html.xsl file, so
-            # that should be there somehow. Relook at this
             if oCard.level is not None:
                 oAdvElem.appendChild(oDoc.createTextNode("(Advanced)"))
                 # This is a bit hackish
@@ -89,8 +86,15 @@ class WriteArdbXML(object):
             oGrpElem=oDoc.createElement('group')
             oGrpElem.appendChild(oDoc.createTextNode(str(oCard.group)))
             oCardElem.appendChild(oGrpElem)
-            # Skipping titles for the moment, as
-            # I don't feel like trying to scan the text for that here
+            # ARDB doesn't handle sect specifically
+            # No idea how ARDB represents independant titles -
+            # this seems set when the ARDB database is created, and is
+            # not in the ARDB codebase
+            if len(oCard.title)>0:
+                oTitleElem=oDoc.createElement('title')
+                aTitles=[oC.name for oC in oCard.title]
+                oTitleElem.appendChild(oDoc.createTextNode(aTitles[0]))
+                oCardElem.appendChild(oTitleElem)
             oTextElem=oDoc.createElement('text')
             oTextElem.appendChild(oDoc.createTextNode(oCard.text))
             oCardElem.appendChild(oTextElem)
