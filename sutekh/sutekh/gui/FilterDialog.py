@@ -180,8 +180,6 @@ class FilterDialog(gtk.Dialog,ConfigFileListener):
 
     def __parseDialogState(self):
         # FIXME: Should be defined somewhere else for better maintainability
-        aNumericFilters=['Group','Cost','Capacity','Life']
-        aWithFilters=['Expansion_with_Rarity','Discipline_with_Level']
         oNewAST=copy.deepcopy(self.__dASTs[self.__sExpanded])
         aNewFilterValues=oNewAST.getValues()
         # Need pointers to the new nodes
@@ -193,8 +191,8 @@ class FilterDialog(gtk.Dialog,ConfigFileListener):
                 for oPath in Selection:
                     oIter= Model.get_iter(oPath)
                     name = Model.get_value(oIter,0)
-                    if oFilterPart.node.filtertype not in aNumericFilters:
-                        if oFilterPart.node.filtertype in aWithFilters:
+                    if oFilterPart.node.filtertype not in FilterParser.aNumericFilters:
+                        if oFilterPart.node.filtertype in FilterParser.aWithFilters:
                             sPart1,sPart2=name.split(' with ')
                             # Ensure no issues with spaces, etc.
                             aVals.append('"'+sPart1+'" with "'+sPart2+'"')
@@ -240,8 +238,8 @@ class FilterDialog(gtk.Dialog,ConfigFileListener):
                 "and <i>FilterPart</i> is FilterType IN comma seperated list of values\n"+\
                 "or FilterType = $variable \n"+\
                 "FilterType can be any of the following\n"
-        for sFilterType,oAttributes in FilterParser.dFilterParts.iteritems():
-            sHelpText+="<b>"+sFilterType+"</b> which takes "+oAttributes[2]+"\n"
+        for oFilterType in FilterParser.aFilters:
+            sHelpText+="<b>"+oFilterType.keyword+"</b> which takes "+oFilterType.helptext+"\n"
         oHelpText=gtk.Label()
         oHelpText.set_markup(sHelpText)
         oEntry=gtk.Entry(300)

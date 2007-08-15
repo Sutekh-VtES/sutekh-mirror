@@ -2,3 +2,6 @@
 /*.xml
 /*.db
 /dist
+/sutekhrc
+/parsetab.*
+/parser.out

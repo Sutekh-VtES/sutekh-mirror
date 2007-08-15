@@ -9,86 +9,31 @@ from sutekh.Filters import MultiCardTypeFilter, MultiClanFilter, \
         MultiCostFilter, MultiLifeFilter, MultiCreedFilter, MultiVirtueFilter,\
         CardTextFilter, CardNameFilter, MultiSectFilter, MultiTitleFilter,\
         MultiExpansionRarityFilter, MultiDisciplineLevelFilter, \
-        FilterAndBox, FilterOrBox
+        MultiCostTypeFilter, FilterAndBox, FilterOrBox
 from sutekh.SutekhObjects import Clan, Discipline, CardType, Title,\
                                  Creed, Virtue, Sect, Expansion, Rarity,\
                                  RarityPair, IExpansion
 
 # FIXME: The intention is to push this into the Individual Filter Objects
 
-dFilterParts = {
-        "CardType" : [MultiCardTypeFilter, "Card Type","a list of card type"],
-        "Clan" : [MultiClanFilter, "Clan","a list of clans"],
-        "Discipline" : [MultiDisciplineFilter, "Discipline","a list of disciplines"],
-        "Group" : [MultiGroupFilter, "Group","a list of groups"],
-        "Capacity" : [MultiCapacityFilter, "Capacity","a list of capacities"],
-        "Cost" : [MultiCostFilter, "Cost","a list of costs"],
-        "Life" : [MultiLifeFilter, "Life","a list of life values"],
-        "Creed" : [MultiCreedFilter, "Creed","a list of creeds"],
-        "Virtue" : [MultiVirtueFilter, "Virtue","a list of virtues"],
-        "CardText" : [CardTextFilter, "Card Text"," the desired card text to search for. \n   % can be used as a wildcard"],
-        "CardName" : [CardNameFilter, "Card Name"," the text to be matched against card names.\n   % can be used as a wildcard"],
-        "Sect" : [MultiSectFilter, "Sect","a list of sects"],
-        "Title" : [MultiTitleFilter, "Title","a list of titles"],
-        "Expansion_with_Rarity" : [MultiExpansionRarityFilter, "Expansion with Rarity","a list of expansions and rarities,\n   each element specified as 'expansion with associated rarity'"],
-        "Discipline_with_Level" : [MultiDisciplineLevelFilter, "Discipline with Level","a list of discipline with levels,\n   each element specified as 'discipline with level'"]
-        }
+aFilters = [MultiCardTypeFilter, MultiCostTypeFilter, MultiClanFilter,
+        MultiDisciplineFilter, MultiGroupFilter, MultiCapacityFilter,
+        MultiCostFilter, MultiLifeFilter, MultiCreedFilter, MultiVirtueFilter,
+        CardTextFilter, CardNameFilter, MultiSectFilter, MultiTitleFilter,
+        MultiExpansionRarityFilter, MultiDisciplineLevelFilter]
 
-# These should be elsewhere
-aEntryFilters =   ['CardText','CardName']
+aEntryFilters = [x.keyword for x in aFilters if hasattr(x,'istextentry')]
+aWithFilters = [x.keyword for x in aFilters if hasattr(x,'iswithfilter')]
+aNumericFilters = [x.keyword for x in aFilters if hasattr(x,'isnumericfilter')]
 
-def getValues(sFilterType):
-    """Return a list of values to fill the selection dialog, or
-       None if the input should be a text string"""
-    if sFilterType in aEntryFilters:
-        return None
-    elif sFilterType == "Clan":
-        return [x.name for x in Clan.select().orderBy('name')]
-    elif sFilterType == "Discipline":
-        return [x.fullname for x in Discipline.select().orderBy('name')]
-    elif sFilterType == "Group":
-        return range(1,6)
-    elif sFilterType == "Capacity":
-        return range(1,12)
-    elif sFilterType == "Cost":
-        return range(0,7)+['X']
-    elif sFilterType == "CostType":
-        return ["blood","pool","conviction"]
-    elif sFilterType == "Life":
-        return range(1,8)
-    elif sFilterType == "Creed":
-        return [x.name for x in Creed.select().orderBy('name')]
-    elif sFilterType == "Virtue":
-        return [x.fullname for x in Virtue.select().orderBy('name')]
-    elif sFilterType == "Sect":
-        return [x.name for x in Sect.select().orderBy('name')]
-    elif sFilterType == "Title":
-        return [x.name for x in Title.select().orderBy('name')]
-    elif sFilterType == "CardType":
-        return [x.name for x in CardType.select().orderBy('name')]
-    elif sFilterType == 'Expansion_with_Rarity':
-        aExpansions=[x.name for x in Expansion.select().orderBy('name')
-                if x.name[:5]!='Promo']
-        aResults=[]
-        for sExpan in aExpansions:
-            oE=IExpansion(sExpan)
-            aRarities=[x.rarity.name for x in RarityPair.selectBy(expansion=oE)]
-            for sRarity in aRarities:
-                aResults.append(sExpan+' with '+sRarity)
-        return aResults
-    elif sFilterType == 'Discipline_with_Level':
-        aDisciplines=getValues('Discipline')
-        aResults=[]
-        for disc in aDisciplines:
-            aResults.append(disc+' with inferior')
-            aResults.append(disc+' with superior')
-        return aResults
-    else:
-        raise RuntimeError("Unknown Filter Type %s" % sFilterType)
+def getFilterType(sKeyword):
+    return [x for x in aFilters if x.keyword == sKeyword][0]
 
 # We define an object for the lex parser
 
 class ParseFilterDefinitions(object):
+    aKeywords = [x.keyword for x in aFilters]
+
     tokens = (
             'FILTERTYPE',
             'ID',
@@ -122,7 +67,7 @@ class ParseFilterDefinitions(object):
 
     def t_ID(self,t):
         r'[A-Za-z$_]+'
-        if t.value in dFilterParts.keys():
+        if t.value in self.aKeywords:
             t.type='FILTERTYPE'
         elif t.value.lower() == 'and':
             t.type='AND'
@@ -341,11 +286,12 @@ class FilterPartNode(OperatorNode):
 
     def getValues(self):
         if self.filtertype in aEntryFilters:
-            aResults=[ValueObject(dFilterParts[self.filtertype][1]+' includes',self)]
+            aResults=[ValueObject(getFilterType(self.filtertype).description+' includes',self)]
         else:
-            aResults=[ValueObject(dFilterParts[self.filtertype][1]+' in',self)]
+            aResults=[ValueObject(getFilterType(self.filtertype).description+' in',self)]
         if self.filtervalues is None:
-            aVals=getValues(self.filtertype)
+            oTemp=getFilterType(self.filtertype)([]) # Create Instance 
+            aVals=oTemp.getValues()
             # Want a list within ValueObject for the GUI stuff to work
             # None case for Entry boxes works as well
             aResults.append(ValueObject(aVals,self))
@@ -358,7 +304,8 @@ class FilterPartNode(OperatorNode):
         if self.filtervalues is None or self.filtertype in aEntryFilters:
             return None
         aCurVals=self.filtervalues.getValues()
-        aValidVals=getValues(self.filtertype)
+        oTemp=getFilterType(self.filtertype)([]) # Create Instance
+        aValidVals=oTemp.getValues()
         for oVal in aCurVals:
             if oVal.value not in aValidVals:
                 aRes.append(oVal.value)
@@ -384,7 +331,7 @@ class FilterPartNode(OperatorNode):
         if self.filtervalues is None:
             return None
         aValues=self.filtervalues.getFilter()
-        FilterType=dFilterParts[self.filtertype][0]
+        FilterType=getFilterType(self.filtertype)
         if self.filtertype in aEntryFilters:
             # FIXME: Don't quite like special casing this here - MultiCardText?
             # aValues[0] is a fragile assumption - join?
