@@ -111,11 +111,13 @@ class FilterDialog(gtk.Dialog,ConfigFileListener):
         self.__dFilterList[sName]=sFilter
         self.__dExpanded[sName]=[]
         self.__dASTs[sName]=oAST
+        sPrevName = None
         for oPart in aFilterParts:
             if oPart.isValue():
                 oWidget=gtk.Label(oPart.value)
                 self.__dExpanded[sName].append(oWidget)
             elif oPart.isList():
+                assert(sPrevName is not None)
                 oWidget=self.__makeScrolledList(sPrevName,oPart.value)
                 self.__dExpanded[sName].append(oWidget)
             elif oPart.isEntry():
