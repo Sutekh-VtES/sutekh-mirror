@@ -1,6 +1,11 @@
+16 Aug 2007
+ * Add File->Preferences to Main Menu. Makes saving window positions on exit
+   optional
+ * Various cleanups and bugfixes in preparation for the 1st release
+
 15 Aug 2007
  * Refactor FilterParser somewhat. Push info to the Filter Objects
-   rather than maintaining it in FilterParser
+   rather than maintaining it in FilterParser 
 
 14 Aug 2007
  * Add titles to the ARDB xml export (and thus HTML exports)
