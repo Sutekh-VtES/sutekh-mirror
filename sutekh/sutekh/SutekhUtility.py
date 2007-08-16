@@ -5,7 +5,7 @@
 # Misc Useful functions needed in several places. Mainly to do with database
 # management. Seperated out from SutekhCli and other places, NM, 2006
 
-from sutekh.SutekhObjects import VersionTable
+from sutekh.SutekhObjects import VersionTable, FlushCache
 from sutekh.DatabaseVersion import DatabaseVersion
 from sutekh.WhiteWolfParser import WhiteWolfParser
 from sutekh.RulingParser import RulingParser
@@ -27,6 +27,7 @@ def refreshTables(aTables,oConn,**kw):
     return True
 
 def readWhiteWolfList(sWwList):
+    FlushCache()
     oldConn=sqlhub.processConnection
     sqlhub.processConnection=oldConn.transaction()
     oP = WhiteWolfParser()
@@ -38,6 +39,7 @@ def readWhiteWolfList(sWwList):
     sqlhub.processConnection=oldConn
 
 def readRulings(sRulings):
+    FlushCache()
     oldConn=sqlhub.processConnection
     sqlhub.processConnection=oldConn.transaction()
     oP = RulingParser()

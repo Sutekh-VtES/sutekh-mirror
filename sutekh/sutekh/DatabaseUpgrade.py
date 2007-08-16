@@ -9,7 +9,8 @@ from sutekh.SutekhObjects import PhysicalCard, AbstractCard, AbstractCardSet,\
                                  PhysicalCardSet, Expansion, Clan, Virtue, \
                                  Discipline, Rarity, RarityPair, CardType, \
                                  Ruling, ObjectList, DisciplinePair, Creed, \
-                                 IVirtue, ISect, ITitle, Sect, Title
+                                 IVirtue, ISect, ITitle, Sect, Title, \
+                                 FlushCache
 from sutekh.SutekhUtility import refreshTables
 from sutekh.DatabaseVersion import DatabaseVersion
 from sutekh.WhiteWolfParser import parseText
@@ -23,7 +24,7 @@ from sutekh.WhiteWolfParser import parseText
 
 class unknownVersion(Exception):
     def __init__(self,TableName):
-        self.sTableName=TableName
+        self.sTableName = TableName
     def __str__(self):
         return "Unrecognised version for "+self.sTableName
 
@@ -32,19 +33,19 @@ class unknownVersion(Exception):
 
 class AbstractCardSet_v1(SQLObject):
     class sqlmeta:
-        table=AbstractCardSet.sqlmeta.table
+        table = AbstractCardSet.sqlmeta.table
     name = UnicodeCol(alternateID=True,length=50)
     cards = RelatedJoin('AbstractCard',intermediateTable='abstract_map',createRelatedTable=False)
 
 class PhysicalCardSet_v1(SQLObject):
     class sqlmeta:
-        table=PhysicalCardSet.sqlmeta.table
+        table = PhysicalCardSet.sqlmeta.table
     name = UnicodeCol(alternateID=True,length=50)
     cards = RelatedJoin('PhysicalCard_v1',intermediateTable='physical_map',createRelatedTable=False)
 
 class AbstractCardSet_v2(SQLObject):
     class sqlmeta:
-        table=AbstractCardSet.sqlmeta.table
+        table = AbstractCardSet.sqlmeta.table
     name = UnicodeCol(alternateID=True,length=50)
     author = UnicodeCol(length=50,default='')
     comment = UnicodeCol(default='')
@@ -52,7 +53,7 @@ class AbstractCardSet_v2(SQLObject):
 
 class PhysicalCardSet_v2(SQLObject):
     class sqlmeta:
-        table=PhysicalCardSet.sqlmeta.table
+        table = PhysicalCardSet.sqlmeta.table
     name = UnicodeCol(alternateID=True,length=50)
     author = UnicodeCol(length=50,default='')
     comment = UnicodeCol(default='')
@@ -60,7 +61,7 @@ class PhysicalCardSet_v2(SQLObject):
 
 class AbstractCard_v1(SQLObject):
     class sqlmeta:
-        table=AbstractCard.sqlmeta.table
+        table = AbstractCard.sqlmeta.table
 
     name = UnicodeCol(alternateID=True,length=50)
     text = UnicodeCol()
@@ -79,19 +80,19 @@ class AbstractCard_v1(SQLObject):
 
 class Expansion_v1(SQLObject):
     class sqlmeta:
-        table=Expansion.sqlmeta.table
+        table = Expansion.sqlmeta.table
     name = UnicodeCol(alternateID=True,length=20)
     pairs = MultipleJoin('RarityPair')
 
 class Discipline_v1(SQLObject):
     class sqlmeta:
-        table=Discipline.sqlmeta.table
+        table = Discipline.sqlmeta.table
     name = UnicodeCol(alternateID=True,length=30)
     pairs = MultipleJoin('DisciplinePair_v1')
 
 class RarityPair_v1(SQLObject):
     class sqlmeta:
-        table=RarityPair.sqlmeta.table
+        table = RarityPair.sqlmeta.table
 
     expansion = ForeignKey('Expansion_v1')
     rarity = ForeignKey('Rarity')
@@ -100,7 +101,7 @@ class RarityPair_v1(SQLObject):
 
 class DisciplinePair_v1(SQLObject):
     class sqlmeta:
-        table=DisciplinePair.sqlmeta.table
+        table = DisciplinePair.sqlmeta.table
 
     discipline = ForeignKey('Discipline_v1')
     level = EnumCol(enumValues=['inferior','superior'])
@@ -109,13 +110,13 @@ class DisciplinePair_v1(SQLObject):
 
 class Clan_v1(SQLObject):
     class sqlmeta:
-        table=Clan.sqlmeta.table
+        table = Clan.sqlmeta.table
     name = UnicodeCol(alternateID=True,length=40)
     cards = RelatedJoin('AbstractCard',intermediateTable='abs_clan_map',createRelatedTable=False)
 
 class PhysicalCard_v1(SQLObject):
     class sqlmeta:
-        table=PhysicalCard.sqlmeta.table
+        table = PhysicalCard.sqlmeta.table
 
     abstractCard = ForeignKey('AbstractCard_v1')
     abstractCardIndex = DatabaseIndex(abstractCard)
@@ -123,7 +124,7 @@ class PhysicalCard_v1(SQLObject):
 
 def checkCanReadOldDB(orig_conn):
     """Can we upgrade from this database version?"""
-    oVer=DatabaseVersion()
+    oVer = DatabaseVersion()
     if not oVer.checkVersions([Rarity],[Rarity.tableversion]) and \
            not oVer.checkVersions([Rarity],[-1]):
         raise unknownVersion("Rarity")
@@ -173,28 +174,28 @@ def checkCanReadOldDB(orig_conn):
 
 def CopyOldRarity(orig_conn,trans):
     for oObj in Rarity.select(connection=orig_conn):
-        oCopy=Rarity(id=oObj.id,name=oObj.name,connection=trans)
+        oCopy = Rarity(id=oObj.id,name=oObj.name,connection=trans)
     return (True,[])
 
 def CopyOldExpansion(orig_conn,trans):
-    oVer=DatabaseVersion()
+    oVer = DatabaseVersion()
     if oVer.checkVersions([Expansion],[Expansion.tableversion]):
         for oObj in Expansion.select(connection=orig_conn):
-            oCopy=Expansion(id=oObj.id,name=oObj.name,\
+            oCopy = Expansion(id=oObj.id,name=oObj.name,\
                     shortname=oObj.shortname,connection=trans)
     elif oVer.checkVersions([Expansion],[1]) or \
             oVer.checkVersions([Expansion],[-1]):
         for oObj in Expansion_v1.select(connection=orig_conn):
             # TODO: Fetch Shortname from expansion data in SutekhObjects.
             sShortName=''
-            oCopy=Expansion(id=oObj.id,name=oObj.name,shortname=sShortName,connection=trans)
+            oCopy = Expansion(id=oObj.id,name=oObj.name,shortname=sShortName,connection=trans)
     return (True,[])
 
 def CopyOldDiscipline(orig_conn,trans):
-    oVer=DatabaseVersion()
+    oVer = DatabaseVersion()
     if oVer.checkVersions([Discipline],[Discipline.tableversion]):
         for oObj in Discipline.select(connection=orig_conn):
-            oCopy=Discipline(id=oObj.id,name=oObj.name,fullname=oObj.fullname,
+            oCopy = Discipline(id=oObj.id,name=oObj.name,fullname=oObj.fullname,
                     connection=trans)
     elif oVer.checkVersions([Discipline],[1]) or \
          oVer.checkVersions([Discipline],[-1]):
@@ -211,61 +212,61 @@ def CopyOldDiscipline(orig_conn,trans):
                 # Not using adaptor creation as I want to preserve ID
                 # FIXME: Get the actual fullname from the data.
                 # Maybe tweak DisciplinePair copy not to rely on ID's?
-                oCopy=Discipline(id=oObj.id,name=oObj.name,fullname=sFullName,
+                oCopy = Discipline(id=oObj.id,name=oObj.name,fullname=sFullName,
                         connection=trans)
     return (True,[])
 
 def CopyOldClan(orig_conn,trans):
-    oVer=DatabaseVersion()
+    oVer = DatabaseVersion()
     if oVer.checkVersions([Clan],[Clan.tableversion]):
         for oObj in Clan.select(connection=orig_conn):
-            oCopy=Clan(id=oObj.id,name=oObj.name,connection=trans)
+            oCopy = Clan(id=oObj.id,name=oObj.name,connection=trans)
     elif oVer.checkVersions([Clan],[1]) or \
          oVer.checkVersions([Clan],[-1]):
         for oObj in Clan_v1.select(connection=orig_conn):
-            sShortName=oObj.name
-            oCopy=Clan(id=oObj.id,name=oObj.name,shortname=sShortName,connection=trans)
+            sShortName = oObj.name
+            oCopy = Clan(id=oObj.id,name=oObj.name,shortname=sShortName,connection=trans)
     return (True,[])
 
 def CopyOldCardType(orig_conn,trans):
     for oObj in CardType.select(connection=orig_conn):
-        oCopy=CardType(id=oObj.id,name=oObj.name,connection=trans)
+        oCopy = CardType(id=oObj.id,name=oObj.name,connection=trans)
     return (True,[])
 
 def CopyOldRuling(orig_conn,trans):
     for oObj in Ruling.select(connection=orig_conn):
-        oCopy=Ruling(id=oObj.id,text=oObj.text,code=oObj.code,url=oObj.url,connection=trans)
+        oCopy = Ruling(id=oObj.id,text=oObj.text,code=oObj.code,url=oObj.url,connection=trans)
     return (True,[])
 
 def CopyOldDisciplinePair(orig_conn,trans):
-    oVer=DatabaseVersion()
+    oVer = DatabaseVersion()
     if oVer.checkVersions([Discipline],[1]) or \
           oVer.checkVersions([Discipline],[-1]):
         for oObj in DisciplinePair_v1.select(connection=orig_conn):
             if oObj.discipline.name[:2]!='v_':
-                oCopy=DisciplinePair(id=oObj.id,level=oObj.level,\
+                oCopy = DisciplinePair(id=oObj.id,level=oObj.level,\
                      discipline=oObj.discipline,connection=trans)
     elif oVer.checkVersions([DisciplinePair],[DisciplinePair.tableversion]):
         for oObj in DisciplinePair_v1.select(connection=orig_conn):
-            oCopy=DisciplinePair(id=oObj.id,level=oObj.level,\
+            oCopy = DisciplinePair(id=oObj.id,level=oObj.level,\
                    discipline=oObj.discipline,connection=trans)
     return (True,[])
 
 def CopyOldRarityPair(orig_conn,trans):
-    oVer=DatabaseVersion()
+    oVer = DatabaseVersion()
     if oVer.checkVersions([Expansion],[1]) or \
           oVer.checkVersions([Expansion],[-1]):
         for oObj in RarityPair_v1.select(connection=orig_conn):
-            oCopy=RarityPair(id=oObj.id,expansion=oObj.expansion,rarity=oObj.rarity,\
+            oCopy = RarityPair(id=oObj.id,expansion=oObj.expansion,rarity=oObj.rarity,\
                 connection=trans)
     elif oVer.checkVersions([RarityPair],[RarityPair.tableversion]):
         for oObj in RarityPair.select(connection=orig_conn):
-            oCopy=RarityPair(id=oObj.id,expansion=oObj.expansion,rarity=oObj.rarity,\
+            oCopy = RarityPair(id=oObj.id,expansion=oObj.expansion,rarity=oObj.rarity,\
                 connection=trans)
     return (True,[])
 
 def CopyOldAbstractCard(orig_conn,trans):
-    oVer=DatabaseVersion()
+    oVer = DatabaseVersion()
     aMessages=[]
     bFirstImbuedCreedMessage=True
     if oVer.checkVersions([AbstractCard],[AbstractCard.tableversion]):
@@ -351,7 +352,7 @@ def CopyOldAbstractCard(orig_conn,trans):
     return (True,aMessages)
 
 def CopyOldPhysicalCard(orig_conn,trans):
-    oVer=DatabaseVersion()
+    oVer = DatabaseVersion()
     if oVer.checkVersions([PhysicalCard],[PhysicalCard.tableversion]):
         for oCard in PhysicalCard.select(connection=orig_conn):
             oCardCopy=PhysicalCard(id=oCard.id,abstractCard=oCard.abstractCard,
@@ -364,10 +365,10 @@ def CopyOldPhysicalCard(orig_conn,trans):
     return (True,[])
 
 def CopyOldPhysicalCardSet(orig_conn,trans):
-    oVer=DatabaseVersion()
+    oVer = DatabaseVersion()
     if oVer.checkVersions([PhysicalCardSet],[PhysicalCardSet.tableversion]):
         for oSet in PhysicalCardSet.select(connection=orig_conn):
-            oCopy=PhysicalCardSet(id=oSet.id,name=oSet.name,\
+            oCopy = PhysicalCardSet(id=oSet.id,name=oSet.name,\
                     author=oSet.author,comment=oSet.comment,\
                     annotations=oSet.annotations,\
                     connection=trans)
@@ -376,7 +377,7 @@ def CopyOldPhysicalCardSet(orig_conn,trans):
             oCopy.syncUpdate()
     elif oVer.checkVersions([PhysicalCardSet],[2]):
         for oSet in PhysicalCardSet_v2.select(connection=orig_conn):
-            oCopy=PhysicalCardSet(id=oSet.id,name=oSet.name,\
+            oCopy = PhysicalCardSet(id=oSet.id,name=oSet.name,\
                     author=oSet.author,comment=oSet.comment,\
                     annotations=None,\
                     connection=trans)
@@ -386,7 +387,7 @@ def CopyOldPhysicalCardSet(orig_conn,trans):
     elif oVer.checkVersions([PhysicalCardSet],[1]) or \
            oVer.checkVersions([PhysicalCardSet],[-1]):
         for oSet in PhysicalCardSet_v1.select(connection=orig_conn):
-            oCopy=PhysicalCardSet(id=oSet.id,name=oSet.name,\
+            oCopy = PhysicalCardSet(id=oSet.id,name=oSet.name,\
                     connection=trans)
             for oCard in oSet.cards:
                 oCopy.addPhysicalCard(oCard.id)
@@ -394,10 +395,10 @@ def CopyOldPhysicalCardSet(orig_conn,trans):
     return (True,[])
 
 def CopyOldAbstractCardSet(orig_conn,trans):
-    oVer=DatabaseVersion()
+    oVer = DatabaseVersion()
     if oVer.checkVersions([AbstractCardSet],[AbstractCardSet.tableversion]):
         for oSet in AbstractCardSet.select(connection=orig_conn):
-            oCopy=AbstractCardSet(id=oSet.id,name=oSet.name,\
+            oCopy = AbstractCardSet(id=oSet.id,name=oSet.name,\
                     author=oSet.author,comment=oSet.comment,\
                     annotations=oSet.annotations,\
                     connection=trans)
@@ -406,7 +407,7 @@ def CopyOldAbstractCardSet(orig_conn,trans):
             oCopy.syncUpdate()
     elif oVer.checkVersions([AbstractCardSet],[2]):
         for oSet in AbstractCardSet_v2.select(connection=orig_conn):
-            oCopy=AbstractCardSet(id=oSet.id,name=oSet.name,\
+            oCopy = AbstractCardSet(id=oSet.id,name=oSet.name,\
                     author=oSet.author,comment=oSet.comment,\
                     annotations=None,\
                     connection=trans)
@@ -416,7 +417,7 @@ def CopyOldAbstractCardSet(orig_conn,trans):
     elif oVer.checkVersions([AbstractCardSet],[1]) or \
            oVer.checkVersions([AbstractCardSet],[-1]):
         for oSet in AbstractCardSet_v1.select(connection=orig_conn):
-            oCopy=AbstractCardSet(id=oSet.id,name=oSet.name,\
+            oCopy = AbstractCardSet(id=oSet.id,name=oSet.name,\
                     connection=trans)
             for oCard in oSet.cards:
                 oCopy.addAbstractCard(oCard.id)
@@ -485,40 +486,40 @@ def copyDB(orig_conn,dest_conn):
     trans=dest_conn.transaction()
     # Todo: More error checking
     for oObj in Rarity.select(connection=orig_conn):
-        oCopy=Rarity(id=oObj.id,name=oObj.name,connection=trans)
+        oCopy = Rarity(id=oObj.id,name=oObj.name,connection=trans)
     for oObj in Expansion.select(connection=orig_conn):
-        oCopy=Expansion(id=oObj.id,name=oObj.name,shortname=oObj.shortname,connection=trans)
+        oCopy = Expansion(id=oObj.id,name=oObj.name,shortname=oObj.shortname,connection=trans)
     for oObj in Discipline.select(connection=orig_conn):
-        oCopy=Discipline(id=oObj.id,name=oObj.name,fullname=oObj.fullname,connection=trans)
+        oCopy = Discipline(id=oObj.id,name=oObj.name,fullname=oObj.fullname,connection=trans)
     for oObj in Clan.select(connection=orig_conn):
-        oCopy=Clan(id=oObj.id,name=oObj.name,shortname=oObj.shortname,connection=trans)
+        oCopy = Clan(id=oObj.id,name=oObj.name,shortname=oObj.shortname,connection=trans)
     for oObj in Creed.select(connection=orig_conn):
-        oCopy=Creed(id=oObj.id,name=oObj.name,shortname=oObj.shortname,connection=trans)
+        oCopy = Creed(id=oObj.id,name=oObj.name,shortname=oObj.shortname,connection=trans)
     for oObj in Virtue.select(connection=orig_conn):
-        oCopy=Virtue(id=oObj.id,name=oObj.name,fullname=oObj.fullname,connection=trans)
+        oCopy = Virtue(id=oObj.id,name=oObj.name,fullname=oObj.fullname,connection=trans)
     for oObj in CardType.select(connection=orig_conn):
-        oCopy=CardType(id=oObj.id,name=oObj.name,connection=trans)
+        oCopy = CardType(id=oObj.id,name=oObj.name,connection=trans)
     for oObj in Ruling.select(connection=orig_conn):
-        oCopy=Ruling(id=oObj.id,text=oObj.text,code=oObj.code,url=oObj.url,connection=trans)
+        oCopy = Ruling(id=oObj.id,text=oObj.text,code=oObj.code,url=oObj.url,connection=trans)
     for oObj in DisciplinePair.select(connection=orig_conn):
-        oCopy=DisciplinePair(id=oObj.id,level=oObj.level,discipline=oObj.discipline,connection=trans)
+        oCopy = DisciplinePair(id=oObj.id,level=oObj.level,discipline=oObj.discipline,connection=trans)
     for oObj in RarityPair.select(connection=orig_conn):
-        oCopy=RarityPair(id=oObj.id,expansion=oObj.expansion,rarity=oObj.rarity,\
+        oCopy = RarityPair(id=oObj.id,expansion=oObj.expansion,rarity=oObj.rarity,\
                 connection=trans)
     for oObj in Sect.select(connection=orig_conn):
-        oCopy=Sect(id=oObj.id,name=oObj.name,connection=trans)
+        oCopy = Sect(id=oObj.id,name=oObj.name,connection=trans)
     for oObj in Title.select(connection=orig_conn):
-        oCopy=Title(id=oObj.id,name=oObj.name,connection=trans)
+        oCopy = Title(id=oObj.id,name=oObj.name,connection=trans)
     trans.commit()
-    trans=dest_conn.transaction()
+    trans = dest_conn.transaction()
     for oCard in AbstractCard.select(connection=orig_conn):
-        oCardCopy=AbstractCard(id=oCard.id,canonicalName=oCard.canonicalName,name=oCard.name,text=oCard.text,connection=trans)
-        oCardCopy.group=oCard.group
-        oCardCopy.capacity=oCard.capacity
-        oCardCopy.cost=oCard.cost
-        oCardCopy.costtype=oCard.costtype
-        oCardCopy.life=oCard.life
-        oCardCopy.level=oCard.level
+        oCardCopy = AbstractCard(id=oCard.id,canonicalName=oCard.canonicalName,name=oCard.name,text=oCard.text,connection=trans)
+        oCardCopy.group = oCard.group
+        oCardCopy.capacity = oCard.capacity
+        oCardCopy.cost = oCard.cost
+        oCardCopy.costtype = oCard.costtype
+        oCardCopy.life = oCard.life
+        oCardCopy.level = oCard.level
         for oData in oCard.rarity:
             oCardCopy.addRarityPair(oData)
         for oData in oCard.discipline:
@@ -539,15 +540,15 @@ def copyDB(orig_conn,dest_conn):
             oCardCopy.addVirtue(oData)
         oCardCopy.syncUpdate()
     trans.commit()
-    trans=dest_conn.transaction()
+    trans = dest_conn.transaction()
     for oCard in PhysicalCard.select(connection=orig_conn):
-        oCardCopy=PhysicalCard(id=oCard.id,abstractCard=oCard.abstractCard,\
+        oCardCopy = PhysicalCard(id=oCard.id,abstractCard=oCard.abstractCard,\
                 expansion=oCard.expansion,connection=trans)
     trans.commit()
-    trans=dest_conn.transaction()
+    trans = dest_conn.transaction()
     # Copy Physical card sets
     for oSet in PhysicalCardSet.select(connection=orig_conn):
-        oCopy=PhysicalCardSet(id=oSet.id,name=oSet.name,\
+        oCopy = PhysicalCardSet(id=oSet.id,name=oSet.name,\
                 author=oSet.author,comment=oSet.comment,\
                 annotations=oSet.annotations,\
                 connection=trans)
@@ -555,9 +556,9 @@ def copyDB(orig_conn,dest_conn):
             oCopy.addPhysicalCard(oCard.id)
         oCopy.syncUpdate()
     trans.commit()
-    trans=dest_conn.transaction()
+    trans = dest_conn.transaction()
     for oSet in AbstractCardSet.select(connection=orig_conn):
-        oCopy=AbstractCardSet(id=oSet.id,name=oSet.name,\
+        oCopy = AbstractCardSet(id=oSet.id,name=oSet.name,\
                 author=oSet.author,comment=oSet.comment,\
                 annotations=oSet.annotations,\
                 connection=trans)
@@ -571,15 +572,15 @@ def copyToNewAbstractCardDB(orig_conn,new_conn):
     # Given an existing database, and a new database created from
     # a new cardlist, copy the PhysicalCards and the CardSets,
     # adjusting for the possibly changed id's in the AbstractCard Table
-    bRes=True
-    aMessages=[]
-    target=new_conn.transaction()
+    bRes = True
+    aMessages = []
+    target = new_conn.transaction()
     # Copy the physical card list
     for oCard in PhysicalCard.select(connection=orig_conn):
-        sName=oCard.abstractCard.canonicalName
+        sName = oCard.abstractCard.canonicalName
         try:
-            oNewAbsCard=AbstractCard.byCanonicalName(sName,connection=target)
-            oCardCopy=PhysicalCard(id=oCard.id,abstractCard=oNewAbsCard,\
+            oNewAbsCard = AbstractCard.byCanonicalName(sName,connection=target)
+            oCardCopy = PhysicalCard(id=oCard.id,abstractCard=oNewAbsCard,\
                     expansion=oCard.expansion,connection=target)
         except SQLObjectNotFound:
             aMessages.append("Unable to find match for "+sName)
@@ -587,13 +588,13 @@ def copyToNewAbstractCardDB(orig_conn,new_conn):
     # Copy Physical card sets
     # IDs are unchangd, since we preserve Physical Card set ids
     for oSet in PhysicalCardSet.select(connection=orig_conn):
-        oCopy=PhysicalCardSet(id=oSet.id,name=oSet.name,\
+        oCopy = PhysicalCardSet(id=oSet.id,name=oSet.name,\
                 author=oSet.author,comment=oSet.comment,\
                 connection=target)
         for oCard in oSet.cards:
-            sName=oAbstractCard=oCard.abstractCard.canonicalName
+            sName = oAbstractCard=oCard.abstractCard.canonicalName
             try:
-                oNewAbsCard=AbstractCard.byCanonicalName(sName,connection=target)
+                oNewAbsCard = AbstractCard.byCanonicalName(sName,connection=target)
                 oCopy.addPhysicalCard(oCard.id)
             except SQLObjectNotFound:
                 aMessages.append("Unable to add Physical card %d name %s to set %s" % (oCard.id,oAbstractCard.name,oSet.name))
@@ -602,13 +603,13 @@ def copyToNewAbstractCardDB(orig_conn,new_conn):
     # Copy AbstractCardSets
     # AbstractCArd is not preserved, so adjust for this
     for oSet in AbstractCardSet.select(connection=orig_conn):
-        oCopy=AbstractCardSet(id=oSet.id,name=oSet.name,\
+        oCopy = AbstractCardSet(id=oSet.id,name=oSet.name,\
                 author=oSet.author,comment=oSet.comment,\
                 connection=target)
         for oCard in oSet.cards:
-            sName=oCard.name
+            sName = oCard.name
             try:
-                oNewAbsCard=AbstractCard.byCanonicalName(sName.lower(),connection=target)
+                oNewAbsCard = AbstractCard.byCanonicalName(sName.lower(),connection=target)
                 oCopy.addAbstractCard(oNewAbsCard.id)
             except SQLObjectNotFound:
                 aMessages.append("Unable to find match for %s" % sName)
@@ -621,12 +622,14 @@ def createMemoryCopy(tempConn):
     # We create a temporary memory database, and create the updated
     # database in it. readOldDB is responsbile for upgrading stuff
     # as needed
+    FlushCache()
     if refreshTables(ObjectList,tempConn):
         return readOldDB (sqlhub.processConnection,tempConn)
     else:
         return (False,["Unable to create tables"])
 
 def createFinalCopy(tempConn):
+    FlushCache()
     # Copy from the memory database to the real thing
     if refreshTables(ObjectList,sqlhub.processConnection):
         return copyDB(tempConn,sqlhub.processConnection)
@@ -638,22 +641,22 @@ def attemptDatabaseUpgrade():
     (bOK,aMessages) = createMemoryCopy(tempConn)
     if bOK:
         print "Copied database to memory, performing upgrade."
-        if len(aMessages)>0:
+        if len(aMessages) > 0:
             print "Messages reported",aMessages
-        (bOK,aMessages)=createFinalCopy(tempConn)
+        (bOK,aMessages) = createFinalCopy(tempConn)
         if bOK:
             print "Everything seems to have gone OK"
-            if len(aMessages)>0:
+            if len(aMessages) > 0:
                 print "Messages reported",aMessages
             return True
         else:
             print "Unable to perform upgrade."
-            if len(aMessages)>0:
+            if len(aMessages) > 0:
                 print "Errors reported",aMessages
             print "!!YOUR DATABASE MAY BE CORRUPTED!!"
             return False
     else:
         print "Unable to create memory copy. Database not upgraded."
-        if len(aMessages)>0:
+        if len(aMessages) > 0:
             print "Errors reported",aMessages
         return False

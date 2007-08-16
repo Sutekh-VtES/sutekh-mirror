@@ -70,52 +70,52 @@ def main(aArgs):
     for oTable in aTables:
         aVersions.append(oTable.tableversion)
 
-    oVer=DatabaseVersion()
+    oVer = DatabaseVersion()
 
     if not oVer.checkVersions(aTables,aVersions) and not oOpts.ignore_db_version:
-        aBadTables=oVer.getBadTables(aTables,aVersions)
-        diag=DBVerErrorPopup(aBadTables)
-        res=diag.run()
+        aBadTables = oVer.getBadTables(aTables,aVersions)
+        diag = DBVerErrorPopup(aBadTables)
+        res = diag.run()
         diag.destroy()
         if res!=1:
             return 1
         else:
-            tempConn=connectionForURI("sqlite:///:memory:")
+            tempConn = connectionForURI("sqlite:///:memory:")
             try:
-                (bOK,aMessages)=createMemoryCopy(tempConn)
+                (bOK,aMessages) = createMemoryCopy(tempConn)
                 if bOK:
-                    diag=DBUpgradeDialog(aMessages)
-                    res=diag.run()
+                    diag = DBUpgradeDialog(aMessages)
+                    res = diag.run()
                     diag.destroy()
-                    if res==gtk.RESPONSE_OK:
-                        (bOK,aMessages)=createFinalCopy(tempConn)
+                    if res == gtk.RESPONSE_OK:
+                        (bOK,aMessages) = createFinalCopy(tempConn)
                         if bOK:
-                            diag=gtk.MessageDialog(None,0,gtk.MESSAGE_INFO,\
+                            diag = gtk.MessageDialog(None,0,gtk.MESSAGE_INFO,\
                                     gtk.BUTTONS_CLOSE,None)
-                            sMesg="Changes Commited\n"
+                            sMesg = "Changes Commited\n"
                             if len(aMessages)>0:
                                 sMesg+="Messages reported are:\n"
                                 for sStr in aMessages:
-                                    sMesg+=sStr+"\n"
+                                    sMesg += sStr + "\n"
                             else:
-                                sMesg+="Everything seems to have gone smoothly."
+                                sMesg += "Everything seems to have gone smoothly."
                             diag.set_markup(sMesg)
                             diag.run()
                             diag.destroy()
                         else:
                             sMesg="Unable to commit updated database!\n"
                             for sStr in aMessages:
-                                sMesg+=sStr+"\n"
-                            sMesg+="Upgrade Failed.\nYour database may be in an inconsistent state."
-                            diag=gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,\
+                                sMesg += sStr+"\n"
+                            sMesg += "Upgrade Failed.\nYour database may be in an inconsistent state."
+                            diag = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,\
                                  gtk.BUTTONS_CLOSE,None)
                             diag.set_markup(sMesg)
                             diag.run()
                             diag.destroy()
                             return 1
-                    elif res==1:
+                    elif res == 1:
                         # Try with the upgraded database
-                        sqlhub.processConnection=tempConn
+                        sqlhub.processConnection = tempConn
                     else:
                         return 1
                 else:
