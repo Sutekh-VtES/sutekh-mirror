@@ -65,7 +65,7 @@ class ClanFilter(Filter):
                    oT.q.clan_id == self.__oClan.id)
 
 class MultiClanFilter(Filter):
-    keyword = "Clan" 
+    keyword = "Clan"
     description = "Clan"
     helptext = "a list of clans"
 
@@ -145,27 +145,27 @@ class ExpansionRarityFilter(Filter):
                    (oT.q.rarity_pair_id == self.__iExRarId ))
 
 class MultiExpansionRarityFilter(Filter):
-    keyword = "Expansion_with_Rarity" 
+    keyword = "Expansion_with_Rarity"
     description = "Expansion with Rarity"
     helptext = "a list of expansions and rarities,\n   each element specified as an expansion with associated rarity'"
     iswithfilter = True
 
     def __init__(self,aExpansionRarities):
-        """  Called with a list of Expansion+Rarity pairs"""
-        self.__aIds=[]
+        """  Called with a list of Expansion + Rarity pairs"""
+        self.__aIds = []
         for sExpansion, sRarity in aExpansionRarities:
             self.__aIds.append(IRarityPair( (IExpansion(sExpansion),
                 IRarity(sRarity)) ).id)
 
     def getValues(self):
-        aExpansions=[x.name for x in Expansion.select().orderBy('name')
-                if x.name[:5]!='Promo']
-        aResults=[]
+        aExpansions = [x.name for x in Expansion.select().orderBy('name')
+                if x.name[:5] != 'Promo']
+        aResults = []
         for sExpan in aExpansions:
-            oE=IExpansion(sExpan)
-            aRarities=[x.rarity.name for x in RarityPair.selectBy(expansion=oE)]
+            oE = IExpansion(sExpan)
+            aRarities = [x.rarity.name for x in RarityPair.selectBy(expansion = oE)]
             for sRarity in aRarities:
-                aResults.append(sExpan+' with '+sRarity)
+                aResults.append(sExpan + ' with ' + sRarity)
         return aResults
 
     def getExpression(self):
@@ -175,10 +175,10 @@ class MultiExpansionRarityFilter(Filter):
 
 class DisciplineLevelFilter(Filter):
     def __init__(self,tDiscLevel):
-        sDiscipline,sLevel=tDiscLevel
+        sDiscipline,sLevel = tDiscLevel
         # By construction, the list should have only 1 element
         self.__iDiscId = [oP.id for oP in IDiscipline(sDiscipline).pairs
-                if oP.level==sLevel][0]
+                if oP.level == sLevel][0]
 
     def getExpression(self):
         oT = self._makeTableAlias('abs_discipline_pair_map')
@@ -186,24 +186,24 @@ class DisciplineLevelFilter(Filter):
                    (oT.q.discipline_pair_id == self.__iDiscId))
 
 class MultiDisciplineLevelFilter(Filter):
-    keyword = "Discipline_with_Level" 
+    keyword = "Discipline_with_Level"
     description = "Discipline with Level"
     helptext = "a list of discipline with levels,\n   each element specified as a discipline with level'"
     iswithfilter = True
 
     def __init__(self,aDiscLevels):
-        self.__aDiscIds=[]
+        self.__aDiscIds = []
         for sDiscipline,sLevel in aDiscLevels:
             self.__aDiscIds.extend([oP.id for oP in IDiscipline(sDiscipline).pairs
-                    if oP.level==sLevel])
+                    if oP.level == sLevel])
 
     def getValues(self):
         oTemp = MultiDisciplineFilter([])
-        aDisciplines=oTemp.getValues()
-        aResults=[]
+        aDisciplines = oTemp.getValues()
+        aResults = []
         for disc in aDisciplines:
-            aResults.append(disc+' with inferior')
-            aResults.append(disc+' with superior')
+            aResults.append(disc + ' with inferior')
+            aResults.append(disc + ' with superior')
         return aResults
 
     def getExpression(self):
@@ -246,7 +246,7 @@ class SectFilter(Filter):
                    oT.q.sect_id == self.__oSect.id)
 
 class MultiSectFilter(Filter):
-    keyword = "Sect" 
+    keyword = "Sect"
     description = "Sect"
     helptext = "a list of sects"
 
@@ -271,7 +271,7 @@ class TitleFilter(Filter):
                    oT.q.title_id == self.__oTitle.id)
 
 class MultiTitleFilter(Filter):
-    keyword = "Title" 
+    keyword = "Title"
     description = "Title"
     helptext = "a list of titles"
 
@@ -296,7 +296,7 @@ class CreedFilter(Filter):
                    oT.q.creed_id == self.__oCreed.id)
 
 class MultiCreedFilter(Filter):
-    keyword = "Creed" 
+    keyword = "Creed"
     description = "Creed"
     helptext = "a list of creeds"
 
@@ -321,7 +321,7 @@ class VirtueFilter(Filter):
                    oT.q.virtue_id == self.__oVirtue.id)
 
 class MultiVirtueFilter(Filter):
-    keyword = "Virtue" 
+    keyword = "Virtue"
     description = "Virtue"
     helptext = "a list of virtues"
 
@@ -344,7 +344,7 @@ class GroupFilter(Filter):
         return AbstractCard.q.group == self.__iGroup
 
 class MultiGroupFilter(Filter):
-    keyword = "Group" 
+    keyword = "Group"
     description = "Group"
     helptext = "a list of groups"
     isnumericfilter = True
@@ -366,7 +366,7 @@ class CapacityFilter(Filter):
         return AbstractCard.q.capacity == self.__iCap
 
 class MultiCapacityFilter(Filter):
-    keyword = "Capacity" 
+    keyword = "Capacity"
     description = "Capacity"
     helptext = "a list of capacities"
     isnumericfilter = True
@@ -390,7 +390,7 @@ class CostFilter(Filter):
         return AbstractCard.q.cost == self.__iCost
 
 class MultiCostFilter(Filter):
-    keyword = "Cost" 
+    keyword = "Cost"
     description = "Cost"
     helptext = "a list of costs"
     isnumericfilter = True
@@ -399,7 +399,7 @@ class MultiCostFilter(Filter):
         self.__aCost = aCost
 
     def getValues(self):
-        return range(0,7)+['X']
+        return range(0,7) + ['X']
 
     def getExpression(self):
         return IN(AbstractCard.q.cost,self.__aCost)
@@ -434,7 +434,7 @@ class LifeFilter(Filter):
         return AbstractCard.q.life == self.__iLife
 
 class MultiLifeFilter(Filter):
-    keyword = "Life" 
+    keyword = "Life"
     description = "Life"
     helptext = "a list of life values"
     isnumericfilter = True
@@ -449,7 +449,7 @@ class MultiLifeFilter(Filter):
         return IN(AbstractCard.q.life,self.__aLife)
 
 class CardTextFilter(Filter):
-    keyword = "CardText" 
+    keyword = "CardText"
     description = "Card Text"
     helptext = "the desired card text to search for. \n   % can be used as a wildcard"
     istextentry = True
@@ -464,7 +464,7 @@ class CardTextFilter(Filter):
         return LIKE(func.LOWER(AbstractCard.q.text),'%' + self.__sPattern.lower() + '%')
 
 class CardNameFilter(Filter):
-    keyword = "CardName" 
+    keyword = "CardName"
     description = "Card Name"
     helptext = "the text to be matched against card names.\n   % can be used as a wildcard"
     istextentry = True

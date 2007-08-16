@@ -17,28 +17,28 @@ from sutekh.IdentifyXMLFile import IdentifyXMLFile
 
 class ZipFileWrapper(object):
     def __init__(self,sZipFileName):
-        self.sZipFileName=sZipFileName
-        self.oZip=None
+        self.sZipFileName = sZipFileName
+        self.oZip = None
 
     def __openZipForWrite(self):
-        self.oZip=zipfile.ZipFile(self.sZipFileName,'w')
+        self.oZip = zipfile.ZipFile(self.sZipFileName,'w')
 
     def __openZipForRead(self):
-        self.oZip=zipfile.ZipFile(self.sZipFileName,'r')
+        self.oZip = zipfile.ZipFile(self.sZipFileName,'r')
 
     def __closeZip(self):
         self.oZip.close()
-        self.oZip=None
+        self.oZip = None
 
     def writePhysicalCardListToZip(self):
-        bClose=False
+        bClose = False
         if self.oZip is None:
             self.__openZipForWrite()
-            bClose=True
-        oW=PhysicalCardWriter()
+            bClose = True
+        oW = PhysicalCardWriter()
         # Zipfile doesn't handle unicode unencoded - blargh
         # Documentation suggests WinZip may not like this
-        oString=oW.genDoc().toprettyxml().encode('utf-8')
+        oString = oW.genDoc().toprettyxml().encode('utf-8')
         self.oZip.writestr('PhysicalCardList.xml',oString)
         # If oZip isn't writeable, zipfile throws a RunTime Error
         # We just let the exception handling pass this up to the caller,
@@ -47,19 +47,19 @@ class ZipFileWrapper(object):
             self.__closeZip()
 
     def writeAllAbstractCardSetsToZip(self):
-        bClose=False
+        bClose = False
         if self.oZip is None:
             self.__openZipForWrite()
-            bClose=True
+            bClose = True
         oAbstractCardSets = AbstractCardSet.select()
-        aList=[];
+        aList = [];
         for acs in oAbstractCardSets:
-            sZName=acs.name
+            sZName = acs.name
             oW = AbstractCardSetWriter()
-            oString=oW.genDoc(sZName).toprettyxml().encode('utf-8')
-            sZName=sZName.replace(" ","_")
-            sZName=sZName.replace("/","_")
-            sZipName='acs_'+sZName.encode('ascii','xmlcharrefreplace')+'.xml'
+            oString = oW.genDoc(sZName).toprettyxml().encode('utf-8')
+            sZName = sZName.replace(" ","_")
+            sZName = sZName.replace("/","_")
+            sZipName = 'acs_' + sZName.encode('ascii','xmlcharrefreplace') + '.xml'
             aList.append(sZipName)
             self.oZip.writestr(sZipName,oString)
         if bClose:
@@ -67,19 +67,19 @@ class ZipFileWrapper(object):
         return aList
 
     def writeAllPhysicalCardSetsToZip(self):
-        bClose=False
+        bClose = False
         if self.oZip is None:
             self.__openZipForWrite()
-            bClose=True
+            bClose = True
         oPhysicalCardSets = PhysicalCardSet.select()
-        aList=[];
+        aList = [];
         for pcs in oPhysicalCardSets:
-            sZName=pcs.name
+            sZName = pcs.name
             oW = PhysicalCardSetWriter()
-            oString=oW.genDoc(sZName).toprettyxml().encode('utf-8')
-            sZName=sZName.replace(" ","_")
-            sZName=sZName.replace("/","_")
-            sZipName='pcs_'+sZName.encode('ascii','xmlcharrefreplace')+'.xml'
+            oString = oW.genDoc(sZName).toprettyxml().encode('utf-8')
+            sZName = sZName.replace(" ","_")
+            sZName = sZName.replace("/","_")
+            sZipName = 'pcs_' + sZName.encode('ascii','xmlcharrefreplace') + '.xml'
             aList.append(sZipName)
             self.oZip.writestr(sZipName,oString)
         if bClose:
@@ -87,33 +87,33 @@ class ZipFileWrapper(object):
         return aList
 
     def doRestoreFromZip(self):
-        bPhysicalCardsRead=False
+        bPhysicalCardsRead = False
         self.__openZipForRead()
         # We do this so we can accomodate user created zipfiles,
         # that don't nessecarily have the ordering we want
         for oItem in self.oZip.infolist():
-            sFileName=oItem.filename.split('/')[-1]
-            oData=self.oZip.read(oItem.filename)
-            oP=IdentifyXMLFile()
-            (sType,sName,bExists)=oP.parseString(oData)
-            if sType=='PhysicalCard':
+            sFileName = oItem.filename.split('/')[-1]
+            oData = self.oZip.read(oItem.filename)
+            oP = IdentifyXMLFile()
+            (sType,sName,bExists) = oP.parseString(oData)
+            if sType == 'PhysicalCard':
                 oP = PhysicalCardParser()
                 oP.parseString(oData)
-                bPhysicalCardsRead=True
+                bPhysicalCardsRead = True
                 break
         if not bPhysicalCardsRead:
             self.__closeZip()
             raise IOError("No PhysicalCard list found in the zip file, cannot import")
         else:
             for oItem in self.oZip.infolist():
-                sFileName=oItem.filename.split('/')[-1]
-                oData=self.oZip.read(oItem.filename)
-                oP=IdentifyXMLFile()
-                (sType,sName,bExists)=oP.parseString(oData)
-                if sType=='PhysicalCardSet':
-                    oP=PhysicalCardSetParser()
-                elif sType=='AbstractCardSet':
-                    oP=AbstractCardSetParser()
+                sFileName = oItem.filename.split('/')[-1]
+                oData = self.oZip.read(oItem.filename)
+                oP = IdentifyXMLFile()
+                (sType,sName,bExists) = oP.parseString(oData)
+                if sType == 'PhysicalCardSet':
+                    oP = PhysicalCardSetParser()
+                elif sType == 'AbstractCardSet':
+                    oP = AbstractCardSetParser()
                 else:
                     continue
                 oP.parseString(oData)
@@ -122,7 +122,7 @@ class ZipFileWrapper(object):
     def doDumpAllToZip(self):
         self.__openZipForWrite()
         self.writePhysicalCardListToZip()
-        aACSList=self.writeAllAbstractCardSetsToZip()
-        aPCSList=self.writeAllPhysicalCardSetsToZip()
+        aACSList = self.writeAllAbstractCardSetsToZip()
+        aPCSList = self.writeAllPhysicalCardSetsToZip()
         self.__closeZip()
-        return aACSList+aPCSList
+        return aACSList + aPCSList
