@@ -6,8 +6,6 @@
 import gtk
 from sqlobject import sqlhub, connectionForURI
 from sutekh.SutekhObjects import PhysicalCardSet, AbstractCardSet, ObjectList
-from sutekh.gui.CreateCardSetDialog import CreateCardSetDialog
-from sutekh.gui.LoadCardSetDialog import LoadCardSetDialog
 from sutekh.gui.ImportDialog import ImportDialog
 from sutekh.gui.WWFilesDialog import WWFilesDialog
 from sutekh.XmlFileHandling import PhysicalCardXmlFile, PhysicalCardSetXmlFile, \

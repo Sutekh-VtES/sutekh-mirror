@@ -9,7 +9,7 @@ from sutekh.SutekhObjects import AbstractCard, IAbstractCard, PhysicalCard, \
                                  IPhysicalCardSet, IAbstractCardSet, \
                                  IRarityPair, IRarity, \
                                  Clan, Discipline, CardType, Title,\
-                                 Creed, Virtue, Sect, Expansion, Rarity,\
+                                 Creed, Virtue, Sect, Expansion, \
                                  RarityPair
 from sqlobject import AND, OR, LIKE, IN, func
 from sqlobject.sqlbuilder import Table, Alias

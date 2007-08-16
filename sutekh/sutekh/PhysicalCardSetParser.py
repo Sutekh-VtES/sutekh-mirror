@@ -53,7 +53,7 @@ class PhysicalCardSetHandler(ContentHandler):
                 pcs=PhysicalCardSet.byName(self.pcsName.encode('utf8'))
                 pcs.author=sAuthor
                 pcs.comment=sComment
-                acs.annotations=sAnnotations
+                pcs.annotations=sAnnotations
                 pcs.syncUpdate()
                 # We overwrite pcs, so we drop all cards currently
                 # part of the PhysicalCardSet

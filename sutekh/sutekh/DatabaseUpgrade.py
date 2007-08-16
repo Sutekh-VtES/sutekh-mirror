@@ -185,6 +185,7 @@ def CopyOldExpansion(orig_conn,trans):
     elif oVer.checkVersions([Expansion],[1]) or \
             oVer.checkVersions([Expansion],[-1]):
         for oObj in Expansion_v1.select(connection=orig_conn):
+            # TODO: Fetch Shortname from expansion data in SutekhObjects.
             sShortName=''
             oCopy=Expansion(id=oObj.id,name=oObj.name,shortname=sShortName,connection=trans)
     return (True,[])

@@ -10,9 +10,6 @@ from sutekh.Filters import MultiCardTypeFilter, MultiClanFilter, \
         CardTextFilter, CardNameFilter, MultiSectFilter, MultiTitleFilter,\
         MultiExpansionRarityFilter, MultiDisciplineLevelFilter, \
         MultiCostTypeFilter, FilterAndBox, FilterOrBox
-from sutekh.SutekhObjects import Clan, Discipline, CardType, Title,\
-                                 Creed, Virtue, Sect, Expansion, Rarity,\
-                                 RarityPair, IExpansion
 
 # FIXME: The intention is to push this into the Individual Filter Objects
 
