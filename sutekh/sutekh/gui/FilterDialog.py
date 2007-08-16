@@ -103,8 +103,8 @@ class FilterDialog(gtk.Dialog,ConfigFileListener):
                 self.__oDeleteButton.set_sensitive(False)
 
     def __addFilterToDialog(self,oAST,sFilter):
-        aFilterParts=oAST.getValues()
-        iNum=len(self.__dExpanded)
+        aFilterParts = oAST.getValues()
+        iNum = len(self.__dExpanded)
         # Should we try harder to make sure this is unique?
         # do .... while sName in dExpanded.keys() type construction?
         sName = str(iNum) + " : " + sFilter
