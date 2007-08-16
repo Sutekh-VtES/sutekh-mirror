@@ -16,11 +16,12 @@ from sutekh.SutekhUtility import refreshTables, readWhiteWolfList, readRulings
 from sutekh.ZipFileWrapper import ZipFileWrapper
 
 class MainMenu(gtk.MenuBar,object):
-    def __init__(self,oController,oWindow):
+    def __init__(self,oController,oWindow,oConfig):
         super(MainMenu,self).__init__()
         self.__oC = oController
         self.__oWin = oWindow
-        self.__dMenus={}
+        self.__dMenus = {}
+        self.__oConfig = oConfig
         self.__createFileMenu()
         self.__createFilterMenu()
         self.__createPluginMenu()
@@ -30,7 +31,7 @@ class MainMenu(gtk.MenuBar,object):
         # setup sub menu
         iMenu = gtk.MenuItem("File")
         wMenu = gtk.Menu()
-        self.__dMenus["File"]=wMenu
+        self.__dMenus["File"] = wMenu
         iMenu.set_submenu(wMenu)
 
         # items
@@ -42,7 +43,7 @@ class MainMenu(gtk.MenuBar,object):
         iImportCardSet.connect('activate', self.doImportCardSet)
         wMenu.add(iImportCardSet)
 
-        iSeperator=gtk.SeparatorMenuItem()
+        iSeperator = gtk.SeparatorMenuItem()
         wMenu.add(iSeperator)
 
         if sqlhub.processConnection.uri() != "sqlite:///:memory:":
@@ -50,8 +51,29 @@ class MainMenu(gtk.MenuBar,object):
             iImportNewCardList = gtk.MenuItem("Import new White Wolf cardlist and rulings")
             iImportNewCardList.connect('activate', self.doImportNewCardList)
             wMenu.add(iImportNewCardList)
-            iSeperator2=gtk.SeparatorMenuItem()
+            iSeperator2 = gtk.SeparatorMenuItem()
             wMenu.add(iSeperator2)
+
+        wPrefsMenu = gtk.Menu()
+        iPrefsItem = gtk.MenuItem('Preferences')
+        iPrefsItem.set_submenu(wPrefsMenu)
+        wMenu.add(iPrefsItem)
+
+        iSaveWindows = gtk.MenuItem('Save Current Window Positions')
+        iSaveWindows.connect('activate', self.doSaveWindowPos)
+        wPrefsMenu.add(iSaveWindows)
+
+        iSaveOnExit = gtk.CheckMenuItem('Save Window Positions on Exit')
+        iSaveOnExit.set_inconsistent(False)
+        if self.__oConfig.getSaveOnExit():
+            iSaveOnExit.set_active(True)
+        else:
+            iSaveOnExit.set_active(False)
+        iSaveOnExit.connect('activate', self.doToggleSaveOnExit)
+        wPrefsMenu.add(iSaveOnExit)
+
+        iSeperator3 = gtk.SeparatorMenuItem()
+        wMenu.add(iSeperator3)
 
         iQuit = gtk.MenuItem("Quit")
         iQuit.connect('activate', lambda iItem: self.__oC.actionQuit())
@@ -64,7 +86,7 @@ class MainMenu(gtk.MenuBar,object):
         # setup sub menu
         iMenu = gtk.MenuItem("Filter")
         wMenu = gtk.Menu()
-        self.__dMenus["Filter"]=wMenu
+        self.__dMenus["Filter"] = wMenu
         iMenu.set_submenu(wMenu)
 
         # items
@@ -72,7 +94,7 @@ class MainMenu(gtk.MenuBar,object):
         wMenu.add(iFilter)
         iFilter.connect('activate', self.__oC.getFilter)
 
-        self.iApply=gtk.CheckMenuItem("Apply Filter")
+        self.iApply = gtk.CheckMenuItem("Apply Filter")
         self.iApply.set_inconsistent(False)
         self.iApply.set_active(False)
         wMenu.add(self.iApply)
@@ -84,23 +106,23 @@ class MainMenu(gtk.MenuBar,object):
         # setup sub menu
         iMenu = gtk.MenuItem("Plugins")
         wMenu = gtk.Menu()
-        self.__dMenus["Plugins"]=wMenu
+        self.__dMenus["Plugins"] = wMenu
         iMenu.set_submenu(wMenu)
         # plugins
         for oPlugin in self.__oC.getPlugins():
-            oMI=oPlugin.getMenuItem()
+            oMI = oPlugin.getMenuItem()
             if oMI is not None:
-                sMenu=oPlugin.getDesiredMenu()
+                sMenu = oPlugin.getDesiredMenu()
                 # Add to the requested menu if supplied
                 if sMenu in self.__dMenus.keys():
-                    if sMenu=="Plugins":
-                        bShowPluginMenu=True
+                    if sMenu == "Plugins":
+                        bShowPluginMenu = True
                     self.__dMenus[sMenu].add(oMI)
                 else:
                     # Plugins acts as a catchall Menu
                     wMenu.add(oMI)
         self.add(iMenu)
-        if len(wMenu.get_children())==0:
+        if len(wMenu.get_children()) == 0:
             iMenu.set_sensitive(False)
 
     def __createAboutMenu(self):
@@ -136,20 +158,20 @@ class MainMenu(gtk.MenuBar,object):
         self.absLoad.set_sensitive(state)
 
     def doImportPhysicalCardList(self,widget):
-        oFileChooser=ImportDialog("Select Card List to Import",self.__oWin)
+        oFileChooser = ImportDialog("Select Card List to Import",self.__oWin)
         oFileChooser.run()
         sFileName=oFileChooser.getName()
         if sFileName is not None:
             oP=IdentifyXMLFile()
             (sType,sName,bExists)=oP.idFile(sFileName)
-            if sType=='PhysicalCard':
+            if sType == 'PhysicalCard':
                 if not bExists:
-                    oF=PhysicalCardXmlFile(sFileName)
+                    oF = PhysicalCardXmlFile(sFileName)
                     oF.read()
                 else:
                     Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
                             gtk.BUTTONS_CLOSE,"Can only do this when the current Card List is empty")
-                    response=Complaint.run()
+                    response = Complaint.run()
                     Complaint.destroy()
             else:
                 Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
@@ -158,24 +180,24 @@ class MainMenu(gtk.MenuBar,object):
                 Complaint.run()
 
     def doImportCardSet(self,widget):
-        oFileChooser=ImportDialog("Select Card Set(s) to Import",self.__oWin)
+        oFileChooser = ImportDialog("Select Card Set(s) to Import",self.__oWin)
         oFileChooser.run()
-        sFileName=oFileChooser.getName()
+        sFileName = oFileChooser.getName()
         if sFileName is not None:
-            oP=IdentifyXMLFile()
-            (sType,sName,bExists)=oP.idFile(sFileName)
-            if sType=='PhysicalCardSet' or sType=='AbstractCardSet':
+            oP = IdentifyXMLFile()
+            (sType,sName,bExists) = oP.idFile(sFileName)
+            if sType == 'PhysicalCardSet' or sType == 'AbstractCardSet':
                 if bExists:
                     Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_WARNING,
-                            gtk.BUTTONS_OK_CANCEL,"This would delete the existing CardSet "+sName)
-                    response=Complaint.run()
+                            gtk.BUTTONS_OK_CANCEL,"This would delete the existing CardSet " + sName)
+                    response = Complaint.run()
                     Complaint.destroy()
-                    if response==gtk.RESPONSE_CANCEL:
+                    if response == gtk.RESPONSE_CANCEL:
                         return
-                if sType=="AbstractCardSet":
-                    oF=AbstractCardSetXmlFile(sFileName)
+                if sType == "AbstractCardSet":
+                    oF = AbstractCardSetXmlFile(sFileName)
                 else:
-                    oF=PhysicalCardSetXmlFile(sFileName)
+                    oF = PhysicalCardSetXmlFile(sFileName)
                 oF.read()
                 self.__oC.getManager().reloadCS(sName,sType)
                 self.__oC.getManager().createNewCardSetWindow(sName,sType)
@@ -185,61 +207,60 @@ class MainMenu(gtk.MenuBar,object):
                 Complaint.connect("response",lambda dlg, resp: dlg.destroy())
 
     def doImportNewCardList(self,widget):
-        oWWFilesDialog=WWFilesDialog(self.__oWin)
+        oWWFilesDialog = WWFilesDialog(self.__oWin)
         oWWFilesDialog.run()
         (sCLFileName,sRulingsFileName,sBackupFile) = oWWFilesDialog.getNames()
         oWWFilesDialog.destroy()
         if sCLFileName is not None:
             if sBackupFile is not None:
                 try:
-                    oFile=ZipFileWrapper(sBackupFile)
+                    oFile = ZipFileWrapper(sBackupFile)
                     oFile.doDumpAllToZip()
                 except Exception, e:
                     sMsg = "Failed to write backup.\n\n" + str(e) \
-                        +"\nNot touching the database further"
+                        + "\nNot touching the database further"
                     Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
                         gtk.BUTTONS_CLOSE,sMsg)
                     Complaint.run()
                     Complaint.destroy()
                     return
-            tempConn=connectionForURI("sqlite:///:memory:")
-            #tempConn=connectionForURI("sqlite:///tmp/test.db")
-            oldConn=sqlhub.processConnection
+            tempConn = connectionForURI("sqlite:///:memory:")
+            oldConn = sqlhub.processConnection
             refreshTables(ObjectList,tempConn)
             # WhiteWolf Parser uses sqlhub connection
-            sqlhub.processConnection=tempConn
+            sqlhub.processConnection = tempConn
             readWhiteWolfList(sCLFileName)
             if sRulingsFileName is not None:
                 readRulings(sRulingsFileName)
-            bCont=False
-            (bOK,aErrors)=copyToNewAbstractCardDB(oldConn,tempConn)
+            bCont = False
+            (bOK,aErrors) = copyToNewAbstractCardDB(oldConn,tempConn)
             if not bOK:
-                sMesg="There was a problem copying the cardlist to the new database\n"
+                sMesg = "There was a problem copying the cardlist to the new database\n"
                 for sStr in aErrors:
-                    sMesg+=sStr+"\n"
-                sMesg+="Attempt to Continue Anyway (This is quite possibly dangerous)?"
+                    sMesg += sStr + "\n"
+                sMesg += "Attempt to Continue Anyway (This is quite possibly dangerous)?"
                 Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
                     gtk.BUTTONS_OK_CANCEL,sMesg)
-                response=Complaint.run()
+                response = Complaint.run()
                 Complaint.destroy()
-                if response==gtk.RESPONSE_OK:
-                    bCont=True
+                if response == gtk.RESPONSE_OK:
+                    bCont = True
             else:
-                bCont=True
+                bCont = True
             # OK, update complete, copy back from tempConn
-            sqlhub.processConnection=oldConn
+            sqlhub.processConnection = oldConn
             if bCont:
-                (bOK,aErrors)=createFinalCopy(tempConn)
+                (bOK,aErrors) = createFinalCopy(tempConn)
                 if not bOK:
-                    sMesg="There was a problem updating the database\n"
+                    sMesg = "There was a problem updating the database\n"
                     for sStr in aErrors:
-                        sMesg+=sStr+"\n"
-                    sMesg+="Your database may be in an inconsistent state - sorry"
+                        sMesg += sStr + "\n"
+                    sMesg += "Your database may be in an inconsistent state - sorry"
                     Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
                         gtk.BUTTONS_OK,sMesg)
                 else:
-                    sMesg="Import Completed\n"
-                    sMesg+="Eveything seems to have gone OK"
+                    sMesg = "Import Completed\n"
+                    sMesg += "Eveything seems to have gone OK"
                     Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_INFO,
                         gtk.BUTTONS_CLOSE,sMesg)
                 Complaint.run()
@@ -251,3 +272,11 @@ class MainMenu(gtk.MenuBar,object):
 
     def setApplyFilter(self,state):
         self.iApply.set_active(state)
+
+    def doSaveWindowPos(self,widget):
+        self.__oC.saveWindowPos()
+
+    def doToggleSaveOnExit(self,widget):
+        bChoice = not self.__oConfig.getSaveOnExit()
+        self.__oConfig.setSaveOnExit(bChoice)
+        # gtk can handle the rest for us

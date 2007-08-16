@@ -40,7 +40,7 @@ class MainController(object):
         for cPlugin in self.__oPluginManager.getCardListPlugins():
             self.__aPlugins.append(cPlugin(self.__oAbstractCards,self.__oAbstractCards.getModel(),'AbstractCard'))
 
-        self.__oMenu = MainMenu(self,self.__oAbstractCardWin)
+        self.__oMenu = MainMenu(self,self.__oAbstractCardWin,self.__oConfig)
         self.__oCardText = CardTextView(self)
         self.__oPhysicalCards = PhysicalCardController(self.__oPhysicalCardWin,self,oConfig)
         self.__oWinGrp.add_window(self.__oAbstractCardWin)
@@ -62,7 +62,7 @@ class MainController(object):
     def run(self):
         gtk.main()
 
-    def actionQuit(self):
+    def saveWindowPos(self):
         # Save window Positions
         self.__oConfig.preSaveClear()
         for oWin in [self.__oAbstractCardWin,self.__oPhysicalCardWin,self.__oCardTextWin,self.__oCSWin]:
@@ -73,6 +73,10 @@ class MainController(object):
         for sName,(oWindow,oController) in self.__oCSWin.aOpenAbstractCardSets.iteritems():
             self.__oConfig.addWinPos(oWindow.get_title(),oWindow.get_position())
             self.__oConfig.addCardSet('Abstract',sName)
+
+    def actionQuit(self):
+        if self.__oConfig.getSaveOnExit():
+            self.saveWindowPos()
         gtk.main_quit()
 
     def getPlugins(self):
