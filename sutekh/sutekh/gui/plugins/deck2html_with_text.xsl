@@ -38,6 +38,37 @@
       background: #000000
       }
 
+      div#cardtext h4
+      {
+      text-decoration: underline;
+      }
+
+      div#cardtext h5
+      {
+      font-weight: normal;
+      text-decoration: underline;
+      margin-left: 1em;
+      margin-bottom: 0.1em;
+      }
+
+      div#cardtext div.text
+      {
+      margin-left: 1em;
+      }
+
+      div#cardtext ul
+      {
+      list-style-type: none;
+      margin-top: 0.1em;
+      margin-bottom: 0.1em;
+      padding-left: 1em;
+      }
+
+      div#cardtext .label
+      {
+      font-style: italic;
+      }
+
       h1
       {
       font-size: x-large;
@@ -89,7 +120,7 @@
 
       .librarytype
       {
-      
+
       }
 
       .stats
@@ -103,14 +134,14 @@
       color: #aaaa88;
       margin: 5px
       }
- 
-      .value 
-      { 
+
+      .value
+      {
       color: #aaaa88
       }
- 
+
       hr {color: sienna}
- 
+
       p {margin-left: 60px}
 
       a
@@ -172,65 +203,77 @@
 
 
     <div id="library">
-    <h3 id="librarytitle"><span>Library </span><span class="stats" id="librarystats">[<xsl:value-of select="deck/library/@size"/> cards]</span></h3>
+      <h3 id="librarytitle"><span>Library </span><span class="stats" id="librarystats">[<xsl:value-of select="deck/library/@size"/> cards]</span></h3>
 
-
-    <xsl:for-each select="/deck/library/card[not(type=preceding-sibling::card/type)]">
-      <xsl:sort select="type"/>
-      <xsl:call-template name="LIBPART">
-        <xsl:with-param name="mytype" select="string(type)" />
-      </xsl:call-template>
-   </xsl:for-each>
-
+      <xsl:for-each select="/deck/library/card[not(type=preceding-sibling::card/type)]">
+        <xsl:sort select="type"/>
+        <xsl:call-template name="LIBPART">
+          <xsl:with-param name="mytype" select="string(type)" />
+        </xsl:call-template>
+      </xsl:for-each>
     </div>
 
-    <div id="cardtexts">
-       <h3 id="cardtexts"><span>Card Texts </span></h3>
+    <div id="cardtext">
+       <h3 class="cardtext"><span>Card Texts </span></h3>
 
+       <h4 class="librarytype">Crypt</h4>
 
-       <h4 id="librarytype">Crypt</h4>
        <xsl:for-each select="/deck/crypt/vampire[not(name=preceding-sibling::vampire/name)]">
-       <xsl:sort select="@count" data-type="number" order="descending"/>
-	    <xsl:sort select="capacity" data-type="number" order="descending"/>
-       <xsl:sort select="name"/>
-	    <xsl:variable name="xname" select="string(name)"/>
-	    <xsl:for-each select="/deck/crypt/vampire[name=$xname and not(adv=preceding-sibling::vampire[name=$xname]/adv)]">
-          <h5 id="cardname"><xsl:value-of select="name"/></h5>
-          <span class="clan"><xsl:value-of select="clan"/></span>:
-          <span class="capacity"><xsl:value-of select="capacity"/></span><br/>
-             <xsl:call-template name="line-breaks">
-                <xsl:with-param name="text" select="text" />
-             </xsl:call-template>
-	    </xsl:for-each>
-
-    </xsl:for-each>
-
-    <xsl:for-each select="/deck/library/card[not(type=preceding-sibling::card/type)]">
-      <xsl:sort select="type"/>
-      <h4 id="librarytype"><xsl:value-of select="type"/></h4>
-      <xsl:variable name="mytype" select="string(type)"/>
-      <xsl:for-each select="//card[(type=$mytype) and not(name=preceding-sibling::card/name)]">
+         <xsl:sort select="@count" data-type="number" order="descending"/>
+	     <xsl:sort select="capacity" data-type="number" order="descending"/>
          <xsl:sort select="name"/>
-         <h5 id="cardname"><xsl:value-of select="name"/></h5>
-         <xsl:if test="requirement!=''">
-             <span class="requirement"><xsl:value-of select="requirement"/></span><br/>
-         </xsl:if>
-         <xsl:if test="cost!=''">
-             <span class="cost"><xsl:value-of select="cost"/></span><br/>
-          </xsl:if>
+	     <xsl:variable name="xname" select="string(name)"/>
+	     <xsl:for-each select="/deck/crypt/vampire[name=$xname and not(adv=preceding-sibling::vampire[name=$xname]/adv)]">
+           <h5 id="cardname"><xsl:value-of select="name"/></h5>
+           <ul>
+             <li><span class="label">Capacity</span>: <span class="capacity"><xsl:value-of select="capacity"/></span></li>
+             <li><span class="label">Group</span>: <span class="group"><xsl:value-of select="group"/></span></li>
+             <li><span class="label">Clan</span>: <span class="clan"><xsl:value-of select="clan"/></span></li>
+             <li><span class="label">Disciplines</span>: <span class="disciplines"><xsl:value-of select="disciplines"/></span></li>
+           </ul>
+           <div class="text">
              <xsl:call-template name="line-breaks">
-                <xsl:with-param name="text" select="text" />
+               <xsl:with-param name="text" select="text" />
              </xsl:call-template>
+           </div>
+	     </xsl:for-each>
        </xsl:for-each>
-    </xsl:for-each>
 
- </div>
+      <xsl:for-each select="/deck/library/card[not(type=preceding-sibling::card/type)]">
+        <xsl:sort select="type"/>
+        <h4 class="librarytype"><xsl:value-of select="type"/></h4>
+        <xsl:variable name="mytype" select="string(type)"/>
+        <xsl:for-each select="//card[(type=$mytype) and not(name=preceding-sibling::card/name)]">
+          <xsl:sort select="name"/>
+          <h5 class="cardname"><xsl:value-of select="name"/></h5>
+          <ul>
+            <xsl:if test="requirement!=''">
+              <li><span class="label">Requires</span>: <span class="requirement"><xsl:value-of select="requirement"/></span></li>
+            </xsl:if>
 
+            <xsl:if test="cost!=''">
+                <li><span class="label">Cost</span>: <span class="cost"><xsl:value-of select="cost"/></span></li>
+            </xsl:if>
 
+            <xsl:if test="disciplines!=''">
+              <li><span class="label">Disciplines</span>: <span class="disciplines"><xsl:value-of select="disciplines"/></span></li>
+            </xsl:if>
+          </ul>
 
-    <div><span class="generator">Crafted with : <xsl:value-of
-    select="//deck/@generator"/><xsl:text>. [</xsl:text><xsl:value-of select="//deck/date"/><xsl:text>]</xsl:text></span><span class="taunt"> - Think you can make a better
-    stylesheet ? Then do it boy !</span>
+          <div class="text">
+            <xsl:call-template name="line-breaks">
+              <xsl:with-param name="text" select="text" />
+            </xsl:call-template>
+          </div>
+        </xsl:for-each>
+      </xsl:for-each>
+    </div>
+
+    <div>
+      <span class="generator">Crafted with :
+        <xsl:value-of select="//deck/@generator"/><xsl:text>. [</xsl:text><xsl:value-of select="//deck/date"/><xsl:text>]</xsl:text>
+      </span>
+      <span class="taunt"> - Think you can make a better stylesheet ? Then do it boy !</span>
     </div>
 
   </body>
@@ -241,8 +284,7 @@
   <xsl:param name="mytype"/>
   <xsl:if test="//card[type = $mytype]">
   <div class="librarytable">
-    <h4 class="librarytype"><span><xsl:value-of select="$mytype"/> 
-  </span><span class="stats">[<xsl:value-of select="sum (//card[type = $mytype]/@count)"/>]</span></h4>
+    <h4 class="librarytype"><span><xsl:value-of select="$mytype"/></span><span class="stats">[<xsl:value-of select="sum (//card[type = $mytype]/@count)"/>]</span></h4>
     <table><tbody>
       <xsl:for-each select="//card[(type=$mytype) and not(name=preceding-sibling::card/name)]">
         <xsl:sort select="name"/>
