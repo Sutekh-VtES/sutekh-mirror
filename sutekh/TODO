@@ -5,6 +5,7 @@ Backend:
  * DatabaseUpgrade  could be less brittle
  * Better error and exception handling
  * Rework SutekhUtility to be less of a mess
+ * Export directly to HTML.
 
 Code Cleanup
  * Unify conventions ('Abstract' vs 'AbstractCardSet' in card set management, etc.)
@@ -21,6 +22,7 @@ Gui (Functionality):
  * Compare CardSet Plugin (basic version done. Could be improved)
  * Improve About dialog.
  * Ability to specify the expansion a physical card comes from.
+ * Replace HTML export plugin with direct export to HTML.
 
 Gui (Presentation):
  * Give gui resource handling capablities to save window pos, etc - NM (kinda started)
@@ -34,5 +36,4 @@ Website:
 Release Candidate tasks:
  - Check everything works on Windows again (check with Philip before release)
  - Create setup.py file with bdist_egg (needs testing)
- * Improve "with text mode" option for HTML export (xsl file needs work)
  * Add Happy Families and Title support to Analyze Plugin

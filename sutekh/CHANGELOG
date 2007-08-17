@@ -1,3 +1,7 @@
+18 Aug 2007
+ * Improve formatting of card text listing in HTML exports and
+   make the information included a bit more complete.
+
 16 Aug 2007
  * Add File->Preferences to Main Menu. Makes saving window positions on exit
    optional
