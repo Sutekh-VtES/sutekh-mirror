@@ -7,6 +7,7 @@
 import gtk
 import copy
 from sutekh.gui.ScrolledList import ScrolledList
+from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 from sutekh import FilterParser
 from sutekh.gui.ConfigFile import ConfigFileListener
 
@@ -46,12 +47,13 @@ class FilterDialog(gtk.Dialog,ConfigFileListener):
         self.__bWasCancelled = False
         self.__oRadioGroup = None
         oFrame = gtk.Frame("Current Filter to Edit")
-        oFrame.set_size_request(700,430)
         self.__oExpandedArea = gtk.HBox(spacing=5)
         oFrame.add(self.__oExpandedArea)
         self.__oRadioArea = gtk.VBox()
         self.__sExpanded = None
-        self.vbox.pack_start(oFrame)
+        oHScrolledWindow = AutoScrolledWindow(oFrame,True)
+        oHScrolledWindow.set_size_request(680,450)
+        self.vbox.pack_start(oHScrolledWindow)
         self.vbox.pack_start(self.__oRadioArea)
         self.vbox.set_homogeneous(False)
         self.__iDefaultNum = len(aDefaultFilterList)
@@ -215,7 +217,7 @@ class FilterDialog(gtk.Dialog,ConfigFileListener):
 
     def __makeScrolledList(self,sName,aVals):
         oWidget=ScrolledList(sName)
-        oWidget.set_size_request(160,420)
+        oWidget.set_size_request(200,400)
         aList = oWidget.get_list()
         aList.clear()
         for sEntry in aVals:
