@@ -65,198 +65,369 @@ class AnalyzeCardList(CardListPlugin):
                          (gtk.STOCK_OK, gtk.RESPONSE_OK))
         dlg.connect("response", lambda dlg, resp: dlg.destroy())
         oNotebook = gtk.Notebook()
+        # Oh, popup_enable and scrollable - how I adore thee
+        oNotebook.set_scrollable(True)
+        oNotebook.popup_enable()
+
         oMainLabel = gtk.Label()
         oMainLabel.set_line_wrap(True)
         oMainLabel.set_width_chars(60)
         oHappyFamiliesLabel = gtk.Label()
         oVampiresLabel = gtk.Label()
+        oImbuedLabel = gtk.Label()
         oMastersLabel = gtk.Label()
         oCombatLabel = gtk.Label()
+        oActionsLabel = gtk.Label()
+        oActModLabel = gtk.Label()
+        oActModLabel = gtk.Label()
+        oRetainersLabel = gtk.Label()
+        oAlliesLabel = gtk.Label()
+        oEventsLabel = gtk.Label()
+        oPowConvLabel = gtk.Label()
+        oReactionLabel = gtk.Label()
 
         oNotebook.append_page(oMainLabel,gtk.Label('Basic Info'));
         oNotebook.append_page(oHappyFamiliesLabel,gtk.Label('Happy Families Analysis'));
         oNotebook.append_page(oVampiresLabel,gtk.Label('Vampires'));
+        oNotebook.append_page(oAlliesLabel,gtk.Label('Allies'));
         oNotebook.append_page(oMastersLabel,gtk.Label('Master Cards'));
-        oNotebook.append_page(oCombatLabel,gtk.Label('combat Cards'));
+        oNotebook.append_page(oCombatLabel,gtk.Label('Combat Cards'));
+        oNotebook.append_page(oActionsLabel,gtk.Label('Actions'));
+        oNotebook.append_page(oActModLabel,gtk.Label('Action Modifiers'));
+        oNotebook.append_page(oReactionLabel,gtk.Label('Reactions'));
+        oNotebook.append_page(oRetainersLabel,gtk.Label('Retainers and Equipment'));
+        oNotebook.append_page(oEventsLabel,gtk.Label('Events'));
+        oNotebook.append_page(oImbuedLabel,gtk.Label('Imbued'));
+        oNotebook.append_page(oPowConvLabel,gtk.Label('Powers and Convictions'));
 
         sMainText = "Analysis Results for deck : <b>" + deckName + "</b>\nby <i>"+sAuthor+"</i>\n"+sComment+"\n"
-        sVampText = "<b>Vampires :</b>\n"
-        sMasterText = "<b>Master Cards :</b>\n"
-        sHappyFamilyText = "<b>Happy Families Analysis :</b>\n"
-        sCombatText = "<b>Combat Cards :</b>\n"
 
-        self.iNumberUniqueVampires = 0
-        self.iNumberMult = 0
         self.iMaxGroup = -500
         self.iMinGroup = 500
-        self.dDeckVamps = {}
-        self.dDeckClans = {}
-        self.dDeckDisc = {}
-        self.dDeckTitles = {}
-        self.iVotes = 0
-        self.iTotCapacity = 0
-        self.dVampCapacity = {}
-        self.iMinCapacity = 500
-        self.iMaxCapacity = -500
+        self.iNumberMult = 0
 
         # Split out the card types of interest
         aAllCards = list(self.model.getCardIterator(None))
-        aVampireCards = list(self.model.getCardIterator(CardTypeFilter('Vampire')))
-        aCombatCards = list(self.model.getCardIterator(CardTypeFilter('Combat')))
-        aReactionCards = list(self.model.getCardIterator(CardTypeFilter('Reaction')))
-        aActionCards = list(self.model.getCardIterator(CardTypeFilter('Action')))
-        aMasterCards = list(self.model.getCardIterator(CardTypeFilter('Master')))
-
-        self.iNumberVampires = len(aVampireCards)
-        self.iNumberCombats = len(aCombatCards)
-        self.iNumberMasters = len(aMasterCards)
         self.iTotNumber = len(aAllCards)
-        self.iNumberLibrary = self.iTotNumber - self.iNumberVampires
+        # Split the cards by type
+        aVampireCards = list(self.model.getCardIterator(CardTypeFilter('Vampire')))
+        self.iNumberVampires = len(aVampireCards)
+        aImbuedCards = list(self.model.getCardIterator(CardTypeFilter('Imbued')))
+        self.iNumberImbued = len(aImbuedCards)
+        aCombatCards = list(self.model.getCardIterator(CardTypeFilter('Combat')))
+        self.iNumberCombats = len(aCombatCards)
+        aReactionCards = list(self.model.getCardIterator(CardTypeFilter('Reaction')))
+        self.iNumberReaction = len(aReactionCards)
+        aActionCards = list(self.model.getCardIterator(CardTypeFilter('Action')))
+        self.iNumberAction = len(aActionCards)
+        aActModCards = list(self.model.getCardIterator(CardTypeFilter('Action Modifier')))
+        self.iNumberActMod = len(aActModCards)
+        aRetainerCards = list(self.model.getCardIterator(CardTypeFilter('Retainer')))
+        self.iNumberRetainers = len(aRetainerCards)
+        aAlliesCards = list(self.model.getCardIterator(CardTypeFilter('Ally')))
+        self.iNumberAllies = len(aAlliesCards)
+        aEquipCards = list(self.model.getCardIterator(CardTypeFilter('Equipment')))
+        self.iNumberEquipment = len(aEquipCards)
+        aPoliticsCards = list(self.model.getCardIterator(CardTypeFilter('Political Action')))
+        self.iNumberPolitics = len(aPoliticsCards)
+        aPowerCards = list(self.model.getCardIterator(CardTypeFilter('Power')))
+        self.iNumberPower = len(aPowerCards)
+        aConvictionCards = list(self.model.getCardIterator(CardTypeFilter('Conviction')))
+        self.iNumberConviction = len(aConvictionCards)
+        aEventCards = list(self.model.getCardIterator(CardTypeFilter('Event')))
+        self.iNumberEvents = len(aEventCards)
+        aMasterCards = list(self.model.getCardIterator(CardTypeFilter('Master')))
+        self.iNumberMasters = len(aMasterCards)
 
-        for oCard in aVampireCards:
-            if type(oCard) is PhysicalCard:
-                self.processVampire(oCard.abstractCard)
-            else:
-                self.processVampire(oCard)
+        self.iNumberLibrary = self.iTotNumber - self.iNumberVampires - self.iNumberImbued
 
-        for oCard in aMasterCards:
-            if type(oCard) is PhysicalCard:
-                self.processMaster(oCard.abstractCard)
-            else:
-                self.processMaster(oCard)
+        oVampiresLabel.set_markup(self.processVampire(aVampireCards))
+        oImbuedLabel.set_markup(self.processImbued(aImbuedCards))
+        oMastersLabel.set_markup(self.processMaster(aMasterCards))
+        oCombatLabel.set_markup(self.processCombat(aCombatCards))
 
-        for oCard in aCombatCards:
-            if type(oCard) is PhysicalCard:
-                self.processCombat(oCard.abstractCard)
-            else:
-                self.processCombat(oCard)
+        oHappyFamiliesLabel.set_markup(self.happyFamiliesAnalysis(aAllCards))
 
-        sVampText += "<span foreground = \"blue\">Basic Crypt stats</span>\n"
+        # Set main notebook text
+
         sMainText += "Number of Vampires = " + str(self.iNumberVampires) + "\n"
-        sVampText += "Number of Vampires = " + str(self.iNumberVampires) + "\n"
-        sMainText += "Number of Unique Vampires = " + str(self.iNumberUniqueVampires) + "\n"
-        sVampText += "Number of Unique Vampires = " + str(self.iNumberUniqueVampires) + "\n"
+        sMainText += "Number of Imbued = " + str(self.iNumberImbued) + "\n"
+        sMainText += "Minimum Group in Crpyt = " + str(self.iMinGroup) + "\n"
+        sMainText += "Maximum Group in Crypt = " + str(self.iMaxGroup) + "\n"
 
-        if self.iNumberVampires < 12:
-            sMainText += "<span foreground = \"red\">Less than 12 Vampires</span>\n"
-            sVampText += "<span foreground = \"red\">Less than 12 Vampires</span>\n"
-
-        sVampText += "Minimum Group is : " + str(self.iMinGroup) + "\n"
-        sVampText += "Maximum Group is : " + str(self.iMaxGroup) + "\n"
+        if (self.iNumberVampires + self.iNumberImbued) < 12:
+            sMainText += "<span foreground = \"red\">Less than 12 Crypt Cards</span>\n"
 
         if self.iMaxGroup - self.iMinGroup > 1:
             sMainText += "<span foreground = \"red\">Group Range Exceeded</span>\n"
-            sVampText += "<span foreground = \"red\">Group Range Exceeded</span>\n"
 
-
-        sVampText += "\n<span foreground = \"blue\">Crypt cost</span>\n"
-
-        sVampText += "Cheapest is : " + str(self.iMinCapacity) + "\n"
-        sVampText += "Most Expensive is : " + str(self.iMaxCapacity) + "\n"
-        sVampText += "Average Capacity is : " + str(self.iTotCapacity/float(self.iNumberVampires)).ljust(5)[:5] + "\n\n"
-
-        if self.iNumberVampires > 0:
-            sVampText += "<span foreground = \"blue\">Clans</span>\n"
-            for clan, number in self.dDeckClans.iteritems():
-                sVampText += str(number) + " Vampires of clan " + str(clan) \
-                           + " (" + str(number/float(self.iNumberVampires)*100).ljust(5)[:5] \
-                           + " % of the crypt )\n"
-
-            sVampText += "\n<span foreground = \"blue\">Titles</span>\n"
-            iTitles = 0
-
-            for title, number in self.dDeckTitles.iteritems():
-                sVampText += str(number) + " vampires with the title " + str(title) \
-                           + " (" + str(self.dTitleVoteMap[title]) + ") votes\n"
-                iTitles += number
-
-            sVampText += str(self.iVotes) + " votes in the crypt. Average votes per vampire is " \
-                       + str(float(self.iVotes)/self.iNumberVampires).ljust(5)[:5] + "\n"
-
-            sVampText += str(iTitles) + " titles in the crypt (" + \
-                         str( iTitles/float(self.iNumberVampires)*100).ljust(5)[:5] + \
-                         " % of the crypt )\n\n"
-
-            sVampText += "<span foreground = \"blue\">Disciplines</span>\n"
-            for discipline, number in sorted(self.dDeckDisc.iteritems()):
-                # Maybe should sort this by number[0]?
-                sVampText += str(number[0])+" Vampires with " + discipline \
-                           + " (" + str(number[0]/float(self.iNumberVampires)*100).ljust(5)[:5] \
-                           + "%), " + str(number[1]) + " at Superior (" \
-                           + str(number[1]/float(self.iNumberVampires)*100).ljust(5)[:5] + " %)\n"
-
-        sMainText += "Total Library Size            = " + str(self.iNumberLibrary) + "\n"
+        sMainText += "Total Library Size = " + str(self.iNumberLibrary) + "\n"
 
         if self.iNumberLibrary > 0:
-            sMainText += "Number of Masters             = " + str(self.iNumberMasters) + " (" + str((self.iNumberMasters*100)/float(self.iNumberLibrary)).ljust(5)[:5] + "% of Library)\n"
-            sMasterText += "Number of Masters             = " + str(self.iNumberMasters) + " (" + str((self.iNumberMasters*100)/float(self.iNumberLibrary)).ljust(5)[:5] +"% of Library)\n"
+            sMainText += "Number of Masters = " + \
+                    str(self.iNumberMasters) + " (" + \
+                    str((self.iNumberMasters*100)/
+                            float(self.iNumberLibrary)).ljust(5)[:5] + \
+                    "% of Library)\n"
+            sMainText += "Number of Combat cards = " + \
+                    str(self.iNumberCombats) + " (" + \
+                    str((self.iNumberCombats*100)/
+                            float(self.iNumberLibrary)).ljust(5)[:5] + \
+                    "% of Library)\n"
+            sMainText += "Number of Action cards = " + \
+                    str(self.iNumberAction) + " (" + \
+                    str((self.iNumberAction*100)/
+                            float(self.iNumberLibrary)).ljust(5)[:5] + \
+                    "% of Library)\n"
+            sMainText += "Number of Action Modifiers = " + \
+                    str(self.iNumberActMod) + " (" + \
+                    str((self.iNumberActMod*100)/
+                            float(self.iNumberLibrary)).ljust(5)[:5] + \
+                    "% of Library)\n"
+            sMainText += "Number of Reaction cards = " + \
+                    str(self.iNumberReaction) + " (" + \
+                    str((self.iNumberReaction*100) /
+                            float(self.iNumberLibrary)).ljust(5)[:5] + \
+                    "% of Library)\n"
+            sMainText += "Number of Allies = " + \
+                    str(self.iNumberAllies) + " (" + \
+                    str((self.iNumberAllies*100) /
+                            float(self.iNumberLibrary)).ljust(5)[:5] + \
+                    "% of Library)\n"
+            sMainText += "Number of Retainers = " + \
+                    str(self.iNumberRetainers) + " (" + \
+                    str((self.iNumberRetainers*100) /
+                            float(self.iNumberLibrary)).ljust(5)[:5] + \
+                    "% of Library)\n"
+            sMainText += "Number of Equipment cards = " + \
+                    str(self.iNumberEquipment) + " (" + \
+                    str((self.iNumberEquipment*100)/
+                            float(self.iNumberLibrary)).ljust(5)[:5] + \
+                    "% of Library)\n"
+            sMainText += "Number of Event cards = " + \
+                    str(self.iNumberEvents) + " (" + \
+                    str((self.iNumberEvents*100)/
+                            float(self.iNumberLibrary)).ljust(5)[:5] + \
+                    "% of Library)\n"
+            sMainText += "Number of Convictions = " + \
+                    str(self.iNumberConviction) + " (" + \
+                    str((self.iNumberConviction*100)/
+                            float(self.iNumberLibrary)).ljust(5)[:5] + \
+                    "% of Library)\n"
+            sMainText += "Number of Powers = " + \
+                    str(self.iNumberPower) + " (" + \
+                    str((self.iNumberPower*100)/
+                            float(self.iNumberLibrary)).ljust(5)[:5] + \
+                    "% of Library)\n"
 
-            sMainText += "Number of Combat cards        = " + str(self.iNumberCombats) + " (" + str((self.iNumberCombats*100)/float(self.iNumberLibrary)).ljust(5)[:5] + "% of Library)\n"
-            sCombatText += "Number of Combat cards        = " + str(self.iNumberCombats) + " (" + str((self.iNumberCombats*100)/float(self.iNumberLibrary)).ljust(5)[:5] + "% of Library)\n"
+        sMainText += "Number of Multirole cards = " + \
+                str(self.iNumberMult) + " (" + \
+                str((self.iNumberMult*100)/
+                        float(self.iNumberLibrary)).ljust(5)[:5] + \
+                "% of Library)\n"
 
-        sMainText += "Number of Other Library Cards = " + str(self.iNumberLibrary - self.iNumberMasters - self.iNumberCombats) + "\n"
-        sMainText += "Number of Multirole cards = " + str(self.iNumberMult) + "\n"
-
-        print sMainText
         oMainLabel.set_markup(sMainText)
-        oVampiresLabel.set_markup(sVampText)
-        oMastersLabel.set_markup(sMasterText)
-        oHappyFamiliesLabel.set_markup(sHappyFamilyText)
-        oCombatLabel.set_markup(sCombatText)
 
         dlg.vbox.pack_start(oNotebook)
         dlg.show_all()
 
         return dlg
 
-    def processVampire(self,oAbsCard):
-        if oAbsCard.name not in self.dDeckVamps:
-            self.iNumberUniqueVampires += 1
-            self.dDeckVamps[oAbsCard.name] = 1
-        else:
-            self.dDeckVamps[oAbsCard.name] += 1
+    def processVampire(self,aCards):
 
-        self.iMaxGroup = max(self.iMaxGroup,oAbsCard.group)
-        self.iMinGroup = min(self.iMinGroup,oAbsCard.group)
+        dDeckVamps = {}
+        dVampCapacity = {}
+        dDeckTitles = {}
+        dDeckClans = {}
+        dDeckDisc = {}
 
-        self.iTotCapacity += oAbsCard.capacity
+        iTotCapacity = 0
+        iNumberUniqueVampires = 0
+        iMaxCapacity = -500
+        iMinCapacity = 500
+        iVampMinGroup = 500
+        iVampMaxGroup = -500
+        iVotes = 0
+        iTitles = 0
 
-        self.iMaxCapacity = max(self.iMaxCapacity,oAbsCard.capacity)
-        self.iMinCapacity = min(self.iMinCapacity,oAbsCard.capacity)
-
-        self.dVampCapacity.setdefault(oAbsCard.capacity,0)
-        self.dVampCapacity[oAbsCard.capacity] += 1
-
-        for clan in oAbsCard.clan:
-            if clan.name not in self.dDeckClans:
-                self.dDeckClans[clan.name] = 1
+        for oCard in aCards:
+            if type(oCard) is PhysicalCard:
+                oAbsCard = oCard.abstractCard
             else:
-                self.dDeckClans[clan.name] += 1
+                oAbsCard = oCard
 
-        for disc in oAbsCard.discipline:
-            if disc.discipline.name in self.dDeckDisc:
-                self.dDeckDisc[disc.discipline.name][0] += 1
+            if oAbsCard.name not in dDeckVamps:
+                iNumberUniqueVampires += 1
+                dDeckVamps[oAbsCard.name] = 1
             else:
-                self.dDeckDisc[disc.discipline.name] = [1,0]
+                dDeckVamps[oAbsCard.name] += 1
 
-            if disc.level == 'superior':
-                self.dDeckDisc[disc.discipline.name][1] += 1
+            self.iMaxGroup = max(self.iMaxGroup,oAbsCard.group)
+            self.iMinGroup = min(self.iMinGroup,oAbsCard.group)
+            iVampMaxGroup = max(iVampMaxGroup,oAbsCard.group)
+            iVampMinGroup = min(iVampMinGroup,oAbsCard.group)
 
-        for title in oAbsCard.title:
-            if title.name in self.dDeckTitles:
-                self.dDeckTitles[title.name] += 1
+            iTotCapacity += oAbsCard.capacity
+            iMaxCapacity = max(iMaxCapacity,oAbsCard.capacity)
+            iMinCapacity = min(iMinCapacity,oAbsCard.capacity)
+
+            dVampCapacity.setdefault(oAbsCard.capacity,0)
+            dVampCapacity[oAbsCard.capacity] += 1
+
+            for clan in oAbsCard.clan:
+                if clan.name not in dDeckClans:
+                    dDeckClans[clan.name] = 1
+                else:
+                    dDeckClans[clan.name] += 1
+
+            for disc in oAbsCard.discipline:
+                if disc.discipline.name in dDeckDisc:
+                    dDeckDisc[disc.discipline.name][0] += 1
+                else:
+                    dDeckDisc[disc.discipline.name] = [1,0]
+
+                if disc.level == 'superior':
+                    dDeckDisc[disc.discipline.name][1] += 1
+
+            for title in oAbsCard.title:
+                iTitles += 1
+                if title.name in dDeckTitles:
+                    dDeckTitles[title.name] += 1
+                else:
+                    dDeckTitles[title.name] = 1
+
+                iVotes+=self.dTitleVoteMap[title.name]
+
+        # Build up Text
+        sVampText = "<b>Vampires :</b>\n"
+        sVampText += "<span foreground = \"blue\">Basic Crypt stats</span>\n"
+        sVampText += "Number of Vampires = " + str(self.iNumberVampires) + "\n"
+        sVampText += "Number of Unique Vampires = " + str(iNumberUniqueVampires) + "\n"
+
+        if self.iNumberVampires > 0:
+            sVampText += "Minimum Group is : " + str(iVampMinGroup) + "\n"
+            sVampText += "Maximum Group is : " + str(iVampMaxGroup) + "\n"
+
+            sVampText += "\n<span foreground = \"blue\">Crypt cost</span>\n"
+            sVampText += "Cheapest is : " + str(iMinCapacity) + "\n"
+            sVampText += "Most Expensive is : " + str(iMaxCapacity) + "\n"
+            sVampText += "Average Capacity is : " + str(iTotCapacity / float(self.iNumberVampires)).ljust(5)[:5] + "\n\n"
+
+            sVampText += "<span foreground = \"blue\">Clans</span>\n"
+            for clan, number in dDeckClans.iteritems():
+                sVampText += str(number) + " Vampires of clan " + str(clan) \
+                           + " (" + str(number / float(self.iNumberVampires)*100).ljust(5)[:5] \
+                           + " % of the crypt )\n"
+
+            sVampText += "\n<span foreground = \"blue\">Titles</span>\n"
+
+            for title, number in dDeckTitles.iteritems():
+                sVampText += str(number) + " vampires with the title " + str(title) \
+                           + " (" + str(self.dTitleVoteMap[title]) + ") votes\n"
+
+            sVampText += str(iVotes) + " votes in the crypt. Average votes per vampire is " \
+                       + str(float(iVotes)/self.iNumberVampires).ljust(5)[:5] + "\n"
+
+            sVampText += str(iTitles) + " titles in the crypt (" + \
+                         str(iTitles / float(self.iNumberVampires)*100).ljust(5)[:5] + \
+                         " % of the crypt )\n\n"
+
+            sVampText += "<span foreground = \"blue\">Disciplines</span>\n"
+            for discipline, number in sorted(dDeckDisc.iteritems()):
+                # Maybe should sort this by number[0]?
+                sVampText += str(number[0])+" Vampires with " + discipline \
+                           + " (" + str(number[0] / float(self.iNumberVampires)*100).ljust(5)[:5] \
+                           + "%), " + str(number[1]) + " at Superior (" \
+                           + str(number[1] / float(self.iNumberVampires)*100).ljust(5)[:5] + " %)\n"
+
+        return sVampText
+
+    def processMaster(self,aCards):
+        for oCard in aCards:
+            if type(oCard) is PhysicalCard:
+                oAbsCard = oCard.abstractCard
             else:
-                self.dDeckTitles[title.name] = 1
+                oAbsCard = oCard
 
-            self.iVotes+=self.dTitleVoteMap[title.name]
+        # Build up Text
+        sMasterText = "<b>Master Cards :</b>\n"
+        sMasterText += "Number of Masters = " + str(self.iNumberMasters) + " (" + str((self.iNumberMasters*100) / float(self.iNumberLibrary)).ljust(5)[:5] +"% of Library)\n"
+        return sMasterText
 
-    def processMaster(self,oAbsCard):
-        pass
+    def processCombat(self,aCards):
+        for oCard in aCards:
+            if type(oCard) is PhysicalCard:
+                oAbsCard = oCard.abstractCard
+            else:
+                oAbsCard = oCard
 
-    def processCombat(self,oAbsCard):
-        pass
+        # Build up Text
+        sCombatText = "<b>Combat Cards :</b>\n"
+        sCombatText += "Number of Combat cards = " + str(self.iNumberCombats) + " (" + str((self.iNumberCombats*100) / float(self.iNumberLibrary)).ljust(5)[:5] + "% of Library)\n"
+        return sCombatText
 
-    def happyFamiliesAnalysis(self,oDeck):
-        pass
+    def processImbued(self,aCards):
+        dDeckImbued = {}
+
+        iMaxLife = -500
+        iMinLife = 500
+        iTotLife = 0
+        iImbMinGroup = 500
+        iImbMaxGroup = -500
+        iNumberUniqueImbued = 0
+
+        for oCard in aCards:
+            if type(oCard) is PhysicalCard:
+                oAbsCard = oCard.abstractCard
+            else:
+                oAbsCard = oCard
+
+            if oAbsCard.name not in dDeckImbued:
+                iNumberUniqueImbued += 1
+                dDeckImbued[oAbsCard.name] = 1
+            else:
+                dDeckImbued[oAbsCard.name] += 1
+
+            self.iMaxGroup = max(self.iMaxGroup,oAbsCard.group)
+            self.iMinGroup = min(self.iMinGroup,oAbsCard.group)
+            iImbMaxGroup = max(iImbMaxGroup,oAbsCard.group)
+            iImbMinGroup = min(iImbMinGroup,oAbsCard.group)
+
+            iTotLife += oAbsCard.life
+            iMaxLife = max(iMaxLife,oAbsCard.life)
+            iMinLife = min(iMinLife,oAbsCard.life)
+
+        # Build up Text
+        sImbuedText = "<b>Imbued</b>\n"
+        sImbuedText += "<span foreground = \"blue\">Basic Crypt stats</span>\n"
+        sImbuedText += "Number of Imbued = " + str(self.iNumberImbued) + "\n"
+        sImbuedText += "Number of Uniueq Imbued = " + str(iNumberUniqueImbued) + "\n"
+        if self.iNumberImbued > 0:
+            sImbuedText += "Minimum Group is : " + str(iImbMinGroup) + "\n"
+            sImbuedText += "Maximum Group is : " + str(iImbMaxGroup) + "\n"
+
+            sImbuedText += "\n<span foreground = \"blue\">Crypt cost</span>\n"
+
+            sImbuedText += "Cheapest is : " + str(iMinLife) + "\n"
+            sImbuedText += "Most Expensive is : " + str(iMaxLife) + "\n"
+            sImbuedText += "Average Life is : " + str(iTotLife / float(self.iNumberImbued)).ljust(5)[:5] + "\n\n"
+
+        return sImbuedText
+
+    def happyFamiliesAnalysis(self,aAllCards):
+        for oCard in aAllCards:
+            if type(oCard) is PhysicalCard:
+                oAbsCard = oCard.abstractCard
+            else:
+                oAbsCard = oCard
+
+            aTypes = [x.name for x in oAbsCard.cardtype]
+            if len(aTypes)>1:
+                # Since we examining all the cards, do this here
+                self.iNumberMult += 1
+
+        # Build up Text
+        sHappyFamilyText = "<b>Happy Families Analysis :</b>\n"
+        return sHappyFamilyText
 
 plugin = AnalyzeCardList
