@@ -5,7 +5,7 @@
 
 from sutekh.SutekhObjects import Ruling, ObjectList, PhysicalCard
 from sutekh.SutekhUtility import refreshTables, readWhiteWolfList, readRulings, \
-                                 genTempdir
+                                 genTempdir, prefsDir, ensureDirExists, sqliteUri
 from sutekh.DatabaseUpgrade import attemptDatabaseUpgrade
 from sutekh.XmlFileHandling import PhysicalCardXmlFile, PhysicalCardSetXmlFile,\
                                    AbstractCardSetXmlFile, writeAllAbstractCardSets, \
@@ -18,7 +18,7 @@ def parseOptions(aArgs):
     oP = optparse.OptionParser(usage="usage: %prog [options]",version="%prog 0.1")
     oP.add_option("-d","--db",
                   type="string",dest="db",default=None,
-                  help="Database URI. [./sutekh.db]")
+                  help="Database URI. [sqlite://$PREFSDIR$/sutekh.db]")
     oP.add_option("-r","--ww-file",
                   type="string",dest="ww_file",default=None,
                   help="HTML file (probably from WW website) to read cards from.")
@@ -84,13 +84,15 @@ intended to be used with -c and refreshing the abstract card list")
 
 def main(aArgs):
     oOptParser, (oOpts, aArgs) = parseOptions(aArgs)
+    sPrefsDir = prefsDir("Sutekh")
 
     if len(aArgs) != 1:
         oOptParser.print_help()
         return 1
 
     if oOpts.db is None:
-        oOpts.db = "sqlite://" + os.path.join(os.getcwd(),"sutekh.db")
+        ensureDirExists(sPrefsDir)
+        oOpts.db = sqliteUri(os.path.join(sPrefsDir,"sutekh.db"))
 
     oConn = connectionForURI(oOpts.db)
     sqlhub.processConnection = oConn

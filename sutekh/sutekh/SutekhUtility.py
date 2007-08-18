@@ -10,7 +10,7 @@ from sutekh.DatabaseVersion import DatabaseVersion
 from sutekh.WhiteWolfParser import WhiteWolfParser
 from sutekh.RulingParser import RulingParser
 from sqlobject import sqlhub
-import codecs, tempfile, os
+import codecs, tempfile, os, sys
 
 def refreshTables(aTables,oConn,**kw):
     aTables.reverse()
@@ -76,3 +76,33 @@ def safeFilename(sFilename):
     sSafeName = sSafeName.replace("/","_") # Prevented unexpected filesystem issues
     sSafeName = sSafeName.replace("\\","_") # ditto for windows
     return sSafeName
+
+def prefsDir(sApp):
+    """Return a suitable directory for storing preferences and other application data.
+       """
+    if sys.platform.startswith("win") and "APPDATA" in os.environ:
+        return os.path.join(os.environ["APPDATA"],sApp)
+    else:
+        return os.path.join(os.path.expanduser("~"),".%s" % sApp.lower())
+
+def ensureDirExists(sDir):
+    """Check that a directory exists and create it if it doesn't.
+       """
+    if os.path.exists(sDir):
+        assert os.path.isdir(sDir)
+    else:
+        os.makedirs(sDir)
+
+def sqliteUri(sPath):
+    """Create an SQLite db URI from the path to the db file.
+       """
+    sDbFile = sPath.replace(os.sep,"/")
+
+    sDrive, sRest = os.path.splitdrive(sDbFile)
+    if sDrive:
+        sDbFile = "/" + sDrive.rstrip(':') + "|" + sRest
+    else:
+        sDbFile = sRest
+
+    return "sqlite://" + sDbFile
+
