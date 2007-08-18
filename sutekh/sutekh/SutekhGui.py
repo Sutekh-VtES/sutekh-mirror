@@ -17,16 +17,25 @@ import sys, optparse, os
 
 # Script Launching
 
+def prefsDir(sApp):
+    """Return a suitable directory for storing preferences and other application data.
+       """
+    if sys.platform.startswith("win") and "APPDATA" in os.environ:
+        return os.path.join(os.environ["APPDATA"],sApp)
+    else:
+        return os.path.join(os.path.expanduser("~"),".%s" % sApp.lower())
+
 def parseOptions(aArgs):
     oP = optparse.OptionParser(usage="usage: %prog [options]",version="%prog 0.1")
-    oP.add_option("-d","--db",
-                  type="string",dest="db",default=None,
+    oP.add_option("-d", "--db",
+                  type="string", dest="db", default=None,
                   help="Database URI. [sqlite://$PWD/sutekh.db]")
-    oP.add_option("--ignore-db-version",action="store_true",
-            dest="ignore_db_version",default=False,
-            help="Ignore the database version check. Only use this if you know what you're doing")
-    oP.add_option("--rcfile",type="string",dest="sRCFile",default="sutekhrc",
-            help="Specify Alternative resources file")
+    oP.add_option("--ignore-db-version",
+                  action="store_true", dest="ignore_db_version", default=False,
+                  help="Ignore the database version check. Only use this if you know what you're doing.")
+    oP.add_option("--rcfile",
+                  type="string", dest="sRCFile", default=None,
+                  help="Specify Alternative resources file. [~/.sutekh/sutekhrc or $APPDATA$/Sutekh/sutekhrc]")
     return oP, oP.parse_args(aArgs)
 
 def main(aArgs):
@@ -38,6 +47,15 @@ def main(aArgs):
 
     if oOpts.db is None:
         oOpts.db = "sqlite://" + "/".join([os.getcwd().replace(os.sep,"/"),"sutekh.db"])
+
+    if oOpts.sRCFile is None:
+        sPrefsDir = prefsDir("Sutekh")
+        oOpts.sRCFile = os.path.join(sPrefsDir,"sutekhrc")
+
+        if os.path.exists(sPrefsDir):
+            assert os.path.isdir(sPrefsDir)
+        else:
+            os.makedirs(sPrefsDir)
 
     oConfig = ConfigFile(oOpts.sRCFile)
 
