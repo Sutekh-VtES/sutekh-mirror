@@ -166,14 +166,22 @@ class FilterYaccParser(object):
 # Wrapper objects around the parser
 
 class FilterParser(object):
+    _oGlobalLexer = None
+    _oGlobalParser = None
+
     def __init__(self):
-        self.oLexer = ParseFilterDefinitions()
-        self.oLexer.build()
-        # yacc needs an initialised lexer
-        self.oParser = yacc.yacc(module = FilterYaccParser())
+        if not self._oGlobalLexer:
+            self._oGlobalLexer = ParseFilterDefinitions()
+            self._oGlobalLexer.build()
+
+        if not self._oGlobalParser:
+            # yacc needs an initialised lexer
+            self._oGlobalParser = yacc.yacc(module = FilterYaccParser(),
+                                            debug=0,
+                                            write_tables=0)
 
     def apply(self,str):
-        oAST = self.oParser.parse(str)
+        oAST = self._oGlobalParser.parse(str)
         return oAST
 
 # Object used by getValues representation
