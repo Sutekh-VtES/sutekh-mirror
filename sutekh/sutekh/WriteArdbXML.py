@@ -78,10 +78,16 @@ class WriteArdbXML(object):
             oCardElem.appendChild(oDiscElem)
             aClan = [x.name for x in oCard.clan]
             oClanElem = oDoc.createElement('clan')
-            oClanElem.appendChild(oDoc.createTextNode(aClan[0]))
-            oCardElem.appendChild(oClanElem)
             oCapElem=oDoc.createElement('capacity')
-            oCapElem.appendChild(oDoc.createTextNode(str(oCard.capacity)))
+            if len(oCard.creed)>0:
+                # ARDB seems to treat all Imbued as being of the same clan
+                # Should we do an Imbued:Creed thing?
+                oClanElem.appendChild(oDoc.createTextNode("Imbued"))
+                oCapElem.appendChild(oDoc.createTextNode(str(oCard.life)))
+            else:
+                oClanElem.appendChild(oDoc.createTextNode(aClan[0]))
+                oCapElem.appendChild(oDoc.createTextNode(str(oCard.capacity)))
+            oCardElem.appendChild(oClanElem)
             oCardElem.appendChild(oCapElem)
             oGrpElem=oDoc.createElement('group')
             oGrpElem.appendChild(oDoc.createTextNode(str(oCard.group)))
@@ -152,15 +158,25 @@ class WriteArdbXML(object):
 
     def getDisc(self,oCard):
         aDisc=[]
-        if not len(oCard.discipline) ==  0:
-            for oP in oCard.discipline:
-                if oP.level == 'superior':
-                    aDisc.append(oP.discipline.name.upper())
-                else:
-                    aDisc.append(oP.discipline.name)
-            aDisc.sort() # May not be needed
-            return " ".join(aDisc)
+        aTypes = [x.name for x in oCard.cardtype]
+        if aTypes[0] == 'Vampire':
+            if not len(oCard.discipline) ==  0:
+                for oP in oCard.discipline:
+                    if oP.level == 'superior':
+                        aDisc.append(oP.discipline.name.upper())
+                    else:
+                        aDisc.append(oP.discipline.name)
+                aDisc.sort() # May not be needed
+                return " ".join(aDisc)
+            else:
+                return ""
+        elif aTypes[0] == 'Imbued':
+            if not len(oCard.virtue) == 0:
+                return " ".join([x.name for x in oCard.virtue])
+            else:
+                return ""
         else:
+            # Dunno what we got, but we can't extract discipline'ish things from it
             return ""
 
     def extractCrypt(self,dCards):
@@ -181,6 +197,14 @@ class WriteArdbXML(object):
                     iMax = oCard.capacity
                 if oCard.capacity<iMin:
                     iMin = oCard.capacity
+            if aTypes[0] == 'Imbued':
+                dVamps[tKey] = iCount
+                iCryptSize += iCount
+                fAvg += oCard.life*iCount
+                if oCard.capacity>iMax:
+                    iMax = oCard.life
+                if oCard.capacity<iMin:
+                    iMin = oCard.life
         if iCryptSize>0:
             fAvg = round(fAvg/iCryptSize,2)
         if iMin == 75:
@@ -194,7 +218,7 @@ class WriteArdbXML(object):
             iId,sName = tKey
             oCard = IAbstractCard(sName)
             aTypes = [x.name for x in oCard.cardtype]
-            if aTypes[0] != 'Vampire':
+            if aTypes[0] != 'Vampire' and aTypes[0] != 'Imbued':
                 dLib[tKey] = iCount
                 iSize += iCount
         return (dLib,iSize)
