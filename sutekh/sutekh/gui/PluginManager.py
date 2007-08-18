@@ -95,7 +95,7 @@ class CardListPlugin(object):
     def checkVersions(self):
         oDBVer = DatabaseVersion()
         for oTableName,aVersions in self.dTableVersions.iteritems():
-            iCurVer=oDBVer.getVersion(oTableName)
+            iCurVer = oDBVer.getVersion(oTableName)
             if iCurVer not in aVersions:
                 return False
         # If nothing is specified, currently we assume everything is A-OK

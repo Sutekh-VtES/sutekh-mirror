@@ -9,8 +9,8 @@ import gtk
 class PopupMenu(gtk.Menu):
     def __init__(self,oView,oPath):
         super(PopupMenu,self).__init__()
-        self.iInc=gtk.Action("IncCard","Increase Card Count",None,None)
-        self.iDec=gtk.Action("DecCard","Decrease Card Count",None,None)
+        self.iInc = gtk.Action("IncCard","Increase Card Count",None,None)
+        self.iDec = gtk.Action("DecCard","Decrease Card Count",None,None)
         self.iInc.connect("activate",oView.incCard,oPath)
         self.iDec.connect("activate",oView.decCard,oPath)
         self.iInc.set_sensitive(True)
