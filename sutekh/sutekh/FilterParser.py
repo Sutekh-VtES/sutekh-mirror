@@ -311,7 +311,11 @@ class FilterPartNode(OperatorNode):
         aCurVals = self.filtervalues.getValues()
         oTemp = getFilterType(self.filtertype)([]) # Create Instance
         aValidVals = oTemp.getValues()
+        if self.filtertype in aNumericFilters:
+            aValidVals = [str(x) for x in aValidVals]
         for oVal in aCurVals:
+            if oVal.value == ',': 
+                continue
             if oVal.value not in aValidVals:
                 aRes.append(oVal.value)
         if len(aRes)>0:
