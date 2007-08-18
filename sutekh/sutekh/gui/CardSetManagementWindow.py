@@ -1,7 +1,6 @@
-# FilterDialog.py
-# Dialog for setting Filter Parameters
-# Copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
-# Copyright 2006 Simon Cross <hodgestar@gmail.com>
+# CardSetManagementWindow.py
+# Window for Managing Physical and Abstract Card Sets
+# Copyright 2007 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
 import gtk
