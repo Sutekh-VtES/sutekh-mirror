@@ -31,6 +31,18 @@ class AnalyzeCardList(CardListPlugin):
             'Magaji' : 2,
             }
 
+    def _Percentage(self,iNum,iTot,sDesc):
+        fPrec = iNum/float(iTot)
+        return '(' + str(fPrec*100).ljust(5)[:5] + "% of " + sDesc + ')'
+
+    def _getAbstractCards(self,aCards):
+        if len(aCards)==0:
+            return []
+        if type(aCards[0]) is PhysicalCard:
+            return [x.abstractCard for x in aCards]
+        else:
+            return aCards
+
     def getMenuItem(self):
         """
         Overrides method from base class.
@@ -79,12 +91,14 @@ class AnalyzeCardList(CardListPlugin):
         oCombatLabel = gtk.Label()
         oActionsLabel = gtk.Label()
         oActModLabel = gtk.Label()
-        oActModLabel = gtk.Label()
         oRetainersLabel = gtk.Label()
         oAlliesLabel = gtk.Label()
         oEventsLabel = gtk.Label()
-        oPowConvLabel = gtk.Label()
+        oPowersLabel = gtk.Label()
+        oConvictionsLabel = gtk.Label()
         oReactionLabel = gtk.Label()
+        oEquipmentLabel = gtk.Label()
+        oPoliticalLabel = gtk.Label()
 
         oNotebook.append_page(oMainLabel,gtk.Label('Basic Info'));
         oNotebook.append_page(oHappyFamiliesLabel,gtk.Label('Happy Families Analysis'));
@@ -93,12 +107,15 @@ class AnalyzeCardList(CardListPlugin):
         oNotebook.append_page(oMastersLabel,gtk.Label('Master Cards'));
         oNotebook.append_page(oCombatLabel,gtk.Label('Combat Cards'));
         oNotebook.append_page(oActionsLabel,gtk.Label('Actions'));
+        oNotebook.append_page(oPoliticalLabel,gtk.Label('Political Actions'));
         oNotebook.append_page(oActModLabel,gtk.Label('Action Modifiers'));
         oNotebook.append_page(oReactionLabel,gtk.Label('Reactions'));
-        oNotebook.append_page(oRetainersLabel,gtk.Label('Retainers and Equipment'));
+        oNotebook.append_page(oRetainersLabel,gtk.Label('Retainers'))
+        oNotebook.append_page(oEquipmentLabel,gtk.Label('Equipment'));
         oNotebook.append_page(oEventsLabel,gtk.Label('Events'));
         oNotebook.append_page(oImbuedLabel,gtk.Label('Imbued'));
-        oNotebook.append_page(oPowConvLabel,gtk.Label('Powers and Convictions'));
+        oNotebook.append_page(oPowersLabel,gtk.Label('Powers'));
+        oNotebook.append_page(oConvictionsLabel,gtk.Label('Convictions'));
 
         sMainText = "Analysis Results for deck : <b>" + deckName + "</b>\nby <i>"+sAuthor+"</i>\n"+sComment+"\n"
 
@@ -110,30 +127,37 @@ class AnalyzeCardList(CardListPlugin):
         aAllCards = list(self.model.getCardIterator(None))
         self.iTotNumber = len(aAllCards)
         # Split the cards by type
+        # Crypt Cards
         aVampireCards = list(self.model.getCardIterator(CardTypeFilter('Vampire')))
         self.iNumberVampires = len(aVampireCards)
         aImbuedCards = list(self.model.getCardIterator(CardTypeFilter('Imbued')))
         self.iNumberImbued = len(aImbuedCards)
+        self.iCryptSize = self.iNumberImbued + self.iNumberVampires
+
+        oVampiresLabel.set_markup(self.processVampire(aVampireCards))
+        oImbuedLabel.set_markup(self.processImbued(aImbuedCards))
+
+        # Library Cards
         aCombatCards = list(self.model.getCardIterator(CardTypeFilter('Combat')))
         self.iNumberCombats = len(aCombatCards)
         aReactionCards = list(self.model.getCardIterator(CardTypeFilter('Reaction')))
-        self.iNumberReaction = len(aReactionCards)
+        self.iNumberReactions = len(aReactionCards)
         aActionCards = list(self.model.getCardIterator(CardTypeFilter('Action')))
-        self.iNumberAction = len(aActionCards)
+        self.iNumberActions = len(aActionCards)
         aActModCards = list(self.model.getCardIterator(CardTypeFilter('Action Modifier')))
-        self.iNumberActMod = len(aActModCards)
+        self.iNumberActMods = len(aActModCards)
         aRetainerCards = list(self.model.getCardIterator(CardTypeFilter('Retainer')))
         self.iNumberRetainers = len(aRetainerCards)
         aAlliesCards = list(self.model.getCardIterator(CardTypeFilter('Ally')))
         self.iNumberAllies = len(aAlliesCards)
         aEquipCards = list(self.model.getCardIterator(CardTypeFilter('Equipment')))
         self.iNumberEquipment = len(aEquipCards)
-        aPoliticsCards = list(self.model.getCardIterator(CardTypeFilter('Political Action')))
-        self.iNumberPolitics = len(aPoliticsCards)
+        aPoliticalCards = list(self.model.getCardIterator(CardTypeFilter('Political Action')))
+        self.iNumberPoliticals = len(aPoliticalCards)
         aPowerCards = list(self.model.getCardIterator(CardTypeFilter('Power')))
-        self.iNumberPower = len(aPowerCards)
+        self.iNumberPowers = len(aPowerCards)
         aConvictionCards = list(self.model.getCardIterator(CardTypeFilter('Conviction')))
-        self.iNumberConviction = len(aConvictionCards)
+        self.iNumberConvictions = len(aConvictionCards)
         aEventCards = list(self.model.getCardIterator(CardTypeFilter('Event')))
         self.iNumberEvents = len(aEventCards)
         aMasterCards = list(self.model.getCardIterator(CardTypeFilter('Master')))
@@ -141,10 +165,18 @@ class AnalyzeCardList(CardListPlugin):
 
         self.iNumberLibrary = self.iTotNumber - self.iNumberVampires - self.iNumberImbued
 
-        oVampiresLabel.set_markup(self.processVampire(aVampireCards))
-        oImbuedLabel.set_markup(self.processImbued(aImbuedCards))
-        oMastersLabel.set_markup(self.processMaster(aMasterCards))
         oCombatLabel.set_markup(self.processCombat(aCombatCards))
+        oReactionLabel.set_markup(self.processReaction(aReactionCards))
+        oActModLabel.set_markup(self.processReaction(aActModCards))
+        oAlliesLabel.set_markup(self.processReaction(aAlliesCards))
+        oEventsLabel.set_markup(self.processEvent(aEventCards))
+        oActionsLabel.set_markup(self.processAction(aActionCards))
+        oPoliticalLabel.set_markup(self.processPolitical(aPoliticalCards))
+        oRetainersLabel.set_markup(self.processRetainer(aRetainerCards))
+        oEquipmentLabel.set_markup(self.processEquipment(aEquipCards))
+        oPowersLabel.set_markup(self.processPower(aPowerCards))
+        oConvictionsLabel.set_markup(self.processConviction(aConvictionCards))
+        oMastersLabel.set_markup(self.processMaster(aMasterCards))
 
         oHappyFamiliesLabel.set_markup(self.happyFamiliesAnalysis(aAllCards))
 
@@ -152,10 +184,11 @@ class AnalyzeCardList(CardListPlugin):
 
         sMainText += "Number of Vampires = " + str(self.iNumberVampires) + "\n"
         sMainText += "Number of Imbued = " + str(self.iNumberImbued) + "\n"
+        sMainText += "Total Crypt size = " + str(self.iCryptSize) + "\n"
         sMainText += "Minimum Group in Crpyt = " + str(self.iMinGroup) + "\n"
         sMainText += "Maximum Group in Crypt = " + str(self.iMaxGroup) + "\n"
 
-        if (self.iNumberVampires + self.iNumberImbued) < 12:
+        if self.iCryptSize < 12:
             sMainText += "<span foreground = \"red\">Less than 12 Crypt Cards</span>\n"
 
         if self.iMaxGroup - self.iMinGroup > 1:
@@ -165,66 +198,58 @@ class AnalyzeCardList(CardListPlugin):
 
         if self.iNumberLibrary > 0:
             sMainText += "Number of Masters = " + \
-                    str(self.iNumberMasters) + " (" + \
-                    str((self.iNumberMasters*100)/
-                            float(self.iNumberLibrary)).ljust(5)[:5] + \
-                    "% of Library)\n"
+                    str(self.iNumberMasters) + ' ' +\
+                    self._Percentage(self.iNumberMasters,
+                            self.iNumberLibrary,"Library") + '\n'
             sMainText += "Number of Combat cards = " + \
-                    str(self.iNumberCombats) + " (" + \
-                    str((self.iNumberCombats*100)/
-                            float(self.iNumberLibrary)).ljust(5)[:5] + \
-                    "% of Library)\n"
+                    str(self.iNumberCombats) + ' ' + \
+                    self._Percentage(self.iNumberCombats,
+                            self.iNumberLibrary,"Library") + '\n'
             sMainText += "Number of Action cards = " + \
-                    str(self.iNumberAction) + " (" + \
-                    str((self.iNumberAction*100)/
-                            float(self.iNumberLibrary)).ljust(5)[:5] + \
-                    "% of Library)\n"
+                    str(self.iNumberActions) + ' ' + \
+                    self._Percentage(self.iNumberActions,
+                            self.iNumberLibrary,"Library") + '\n'
+            sMainText += "Number of Political Action cards = " + \
+                    str(self.iNumberPoliticals) + ' ' + \
+                    self._Percentage(self.iNumberPoliticals,
+                            self.iNumberLibrary,"Library") + '\n'
             sMainText += "Number of Action Modifiers = " + \
-                    str(self.iNumberActMod) + " (" + \
-                    str((self.iNumberActMod*100)/
-                            float(self.iNumberLibrary)).ljust(5)[:5] + \
-                    "% of Library)\n"
+                    str(self.iNumberActMods) + ' ' + \
+                    self._Percentage(self.iNumberActMods,
+                            self.iNumberLibrary,"Library") + '\n'
             sMainText += "Number of Reaction cards = " + \
-                    str(self.iNumberReaction) + " (" + \
-                    str((self.iNumberReaction*100) /
-                            float(self.iNumberLibrary)).ljust(5)[:5] + \
-                    "% of Library)\n"
+                    str(self.iNumberReactions) + ' ' + \
+                    self._Percentage(self.iNumberReactions,
+                            self.iNumberLibrary,"Library") + '\n'
             sMainText += "Number of Allies = " + \
-                    str(self.iNumberAllies) + " (" + \
-                    str((self.iNumberAllies*100) /
-                            float(self.iNumberLibrary)).ljust(5)[:5] + \
-                    "% of Library)\n"
+                    str(self.iNumberAllies) + ' ' + \
+                    self._Percentage(self.iNumberAllies,
+                            self.iNumberLibrary,"Library") + '\n'
             sMainText += "Number of Retainers = " + \
-                    str(self.iNumberRetainers) + " (" + \
-                    str((self.iNumberRetainers*100) /
-                            float(self.iNumberLibrary)).ljust(5)[:5] + \
-                    "% of Library)\n"
+                    str(self.iNumberRetainers) + ' ' + \
+                    self._Percentage(self.iNumberAllies,
+                            self.iNumberLibrary,"Library") + '\n'
             sMainText += "Number of Equipment cards = " + \
-                    str(self.iNumberEquipment) + " (" + \
-                    str((self.iNumberEquipment*100)/
-                            float(self.iNumberLibrary)).ljust(5)[:5] + \
-                    "% of Library)\n"
+                    str(self.iNumberEquipment) + ' ' + \
+                    self._Percentage(self.iNumberEquipment,
+                            self.iNumberLibrary,"Library") + '\n'
             sMainText += "Number of Event cards = " + \
-                    str(self.iNumberEvents) + " (" + \
-                    str((self.iNumberEvents*100)/
-                            float(self.iNumberLibrary)).ljust(5)[:5] + \
-                    "% of Library)\n"
+                    str(self.iNumberEvents) + ' ' + \
+                    self._Percentage(self.iNumberEvents,
+                            self.iNumberLibrary,"Library") + '\n'
             sMainText += "Number of Convictions = " + \
-                    str(self.iNumberConviction) + " (" + \
-                    str((self.iNumberConviction*100)/
-                            float(self.iNumberLibrary)).ljust(5)[:5] + \
-                    "% of Library)\n"
+                    str(self.iNumberConvictions) + ' ' + \
+                    self._Percentage(self.iNumberConvictions,
+                            self.iNumberLibrary,"Library") + '\n'
             sMainText += "Number of Powers = " + \
-                    str(self.iNumberPower) + " (" + \
-                    str((self.iNumberPower*100)/
-                            float(self.iNumberLibrary)).ljust(5)[:5] + \
-                    "% of Library)\n"
+                    str(self.iNumberPowers) + ' ' + \
+                    self._Percentage(self.iNumberPowers,
+                            self.iNumberLibrary,"Library") + '\n'
 
         sMainText += "Number of Multirole cards = " + \
-                str(self.iNumberMult) + " (" + \
-                str((self.iNumberMult*100)/
-                        float(self.iNumberLibrary)).ljust(5)[:5] + \
-                "% of Library)\n"
+                str(self.iNumberMult) + ' ' + \
+                self._Percentage(self.iNumberMult,
+                        self.iNumberLibrary,"Library") + '\n'
 
         oMainLabel.set_markup(sMainText)
 
@@ -250,12 +275,7 @@ class AnalyzeCardList(CardListPlugin):
         iVotes = 0
         iTitles = 0
 
-        for oCard in aCards:
-            if type(oCard) is PhysicalCard:
-                oAbsCard = oCard.abstractCard
-            else:
-                oAbsCard = oCard
-
+        for oAbsCard in self._getAbstractCards(aCards):
             if oAbsCard.name not in dDeckVamps:
                 iNumberUniqueVampires += 1
                 dDeckVamps[oAbsCard.name] = 1
@@ -301,7 +321,8 @@ class AnalyzeCardList(CardListPlugin):
         # Build up Text
         sVampText = "<b>Vampires :</b>\n"
         sVampText += "<span foreground = \"blue\">Basic Crypt stats</span>\n"
-        sVampText += "Number of Vampires = " + str(self.iNumberVampires) + "\n"
+        sVampText += "Number of Vampires = " + str(self.iNumberVampires) + \
+                self._Percentage(self.iNumberVampires,self.iCryptSize,"Crypt") + "\n"
         sVampText += "Number of Unique Vampires = " + str(iNumberUniqueVampires) + "\n"
 
         if self.iNumberVampires > 0:
@@ -311,13 +332,14 @@ class AnalyzeCardList(CardListPlugin):
             sVampText += "\n<span foreground = \"blue\">Crypt cost</span>\n"
             sVampText += "Cheapest is : " + str(iMinCapacity) + "\n"
             sVampText += "Most Expensive is : " + str(iMaxCapacity) + "\n"
-            sVampText += "Average Capacity is : " + str(iTotCapacity / float(self.iNumberVampires)).ljust(5)[:5] + "\n\n"
+            sVampText += "Average Capacity is : " + str(iTotCapacity / 
+                    float(self.iNumberVampires)).ljust(5)[:5] + "\n\n"
 
             sVampText += "<span foreground = \"blue\">Clans</span>\n"
             for clan, number in dDeckClans.iteritems():
-                sVampText += str(number) + " Vampires of clan " + str(clan) \
-                           + " (" + str(number / float(self.iNumberVampires)*100).ljust(5)[:5] \
-                           + " % of the crypt )\n"
+                sVampText += str(number) + " Vampires of clan " + str(clan) + ' ' + \
+                        self._Percentage(self.iNumberVampires,
+                            self.iCryptSize,"Crypt") + '\n'
 
             sVampText += "\n<span foreground = \"blue\">Titles</span>\n"
 
@@ -328,43 +350,142 @@ class AnalyzeCardList(CardListPlugin):
             sVampText += str(iVotes) + " votes in the crypt. Average votes per vampire is " \
                        + str(float(iVotes)/self.iNumberVampires).ljust(5)[:5] + "\n"
 
-            sVampText += str(iTitles) + " titles in the crypt (" + \
-                         str(iTitles / float(self.iNumberVampires)*100).ljust(5)[:5] + \
-                         " % of the crypt )\n\n"
+            sVampText += str(iTitles) + " titles in the crypt " + \
+                        self._Percentage(iTitles,
+                            self.iCryptSize,"Crypt") + '\n'
 
             sVampText += "<span foreground = \"blue\">Disciplines</span>\n"
             for discipline, number in sorted(dDeckDisc.iteritems()):
                 # Maybe should sort this by number[0]?
                 sVampText += str(number[0])+" Vampires with " + discipline \
-                           + " (" + str(number[0] / float(self.iNumberVampires)*100).ljust(5)[:5] \
-                           + "%), " + str(number[1]) + " at Superior (" \
-                           + str(number[1] / float(self.iNumberVampires)*100).ljust(5)[:5] + " %)\n"
+                           + ' ' + self._Percentage(number[0],
+                                   self.iCryptSize,"Crypt") + ", " \
+                           + str(number[1]) + " at Superior " + \
+                           self._Percentage(number[1],
+                                   self.iCryptSize,"Crypt") + '\n'
 
         return sVampText
 
     def processMaster(self,aCards):
-        for oCard in aCards:
-            if type(oCard) is PhysicalCard:
-                oAbsCard = oCard.abstractCard
-            else:
-                oAbsCard = oCard
+        for oAbsCard in self._getAbstractCards(aCards):
+            pass
 
         # Build up Text
         sMasterText = "<b>Master Cards :</b>\n"
-        sMasterText += "Number of Masters = " + str(self.iNumberMasters) + " (" + str((self.iNumberMasters*100) / float(self.iNumberLibrary)).ljust(5)[:5] +"% of Library)\n"
+        sMasterText += "Number of Masters = " + str(self.iNumberMasters) + ' ' + \
+                           self._Percentage(self.iNumberMasters,
+                                   self.iNumberLibrary,"Library") + '\n'
         return sMasterText
 
     def processCombat(self,aCards):
-        for oCard in aCards:
-            if type(oCard) is PhysicalCard:
-                oAbsCard = oCard.abstractCard
-            else:
-                oAbsCard = oCard
+        for oAbsCard in self._getAbstractCards(aCards):
+            pass
 
         # Build up Text
         sCombatText = "<b>Combat Cards :</b>\n"
-        sCombatText += "Number of Combat cards = " + str(self.iNumberCombats) + " (" + str((self.iNumberCombats*100) / float(self.iNumberLibrary)).ljust(5)[:5] + "% of Library)\n"
+        sCombatText += "Number of Combat cards = " + str(self.iNumberCombats) + ' '+ \
+                           self._Percentage(self.iNumberCombats,
+                                   self.iNumberLibrary,"Library") + '\n'
         return sCombatText
+
+    def processActMod(self,aCards):
+        for oAbsCard in self._getAbstractCards(aCards):
+            pass
+
+        # Build up Text
+        sActModText = "<b>Action Modifier Cards :</b>\n"
+        sActModText += "Number of Action Modifier cards = " + str(self.iNumberActMods) + ' '+ \
+                           self._Percentage(self.iNumberActMods,
+                                   self.iNumberLibrary,"Library") + '\n'
+        return sActModText
+
+    def processReaction(self,aCards):
+        for oAbsCard in self._getAbstractCards(aCards):
+            pass
+
+        # Build up Text
+        sReactionText = "<b>Reaction Cards :</b>\n"
+        sReactionText += "Number of Reaction cards = " + str(self.iNumberReactions) + ' '+ \
+                           self._Percentage(self.iNumberReactions,
+                                   self.iNumberLibrary,"Library") + '\n'
+        return sReactionText
+
+    def processEvent(self,aCards):
+        for oAbsCard in self._getAbstractCards(aCards):
+            pass
+
+        # Build up Text
+        sEventText = "<b>Event Cards :</b>\n"
+        sEventText += "Number of Event cards = " + str(self.iNumberEvents) + ' '+ \
+                           self._Percentage(self.iNumberEvents,
+                                   self.iNumberLibrary,"Library") + '\n'
+        return sEventText
+
+    def processAction(self,aCards):
+        for oAbsCard in self._getAbstractCards(aCards):
+            pass
+
+        # Build up Text
+        sActionText = "<b>Action Cards :</b>\n"
+        sActionText += "Number of Action cards = " + str(self.iNumberActions) + ' '+ \
+                           self._Percentage(self.iNumberActions,
+                                   self.iNumberLibrary,"Library") + '\n'
+        return sActionText
+
+    def processPolitical(self,aCards):
+        for oAbsCard in self._getAbstractCards(aCards):
+            pass
+
+        # Build up Text
+        sPoliticalText = "<b>Political Cards :</b>\n"
+        sPoliticalText += "Number of Political cards = " + str(self.iNumberPoliticals) + ' '+ \
+                           self._Percentage(self.iNumberPoliticals,
+                                   self.iNumberLibrary,"Library") + '\n'
+        return sPoliticalText
+
+    def processRetainer(self,aCards):
+        for oAbsCard in self._getAbstractCards(aCards):
+            pass
+
+        # Build up Text
+        sRetainerText = "<b>Retainer Cards :</b>\n"
+        sRetainerText += "Number of Retainer cards = " + str(self.iNumberRetainers) + ' '+ \
+                           self._Percentage(self.iNumberRetainers,
+                                   self.iNumberLibrary,"Library") + '\n'
+        return sRetainerText
+
+    def processEquipment(self,aCards):
+        for oAbsCard in self._getAbstractCards(aCards):
+            pass
+
+        # Build up Text
+        sEquipmentText = "<b>Equipment Cards :</b>\n"
+        sEquipmentText += "Number of Equipment cards = " + str(self.iNumberEquipment) + ' '+ \
+                           self._Percentage(self.iNumberEquipment,
+                                   self.iNumberLibrary,"Library") + '\n'
+        return sEquipmentText
+
+    def processConviction(self,aCards):
+        for oAbsCard in self._getAbstractCards(aCards):
+            pass
+
+        # Build up Text
+        sConvictionText = "<b>Conviction Cards :</b>\n"
+        sConvictionText += "Number of Conviction cards = " + str(self.iNumberConvictions) + ' '+ \
+                           self._Percentage(self.iNumberConvictions,
+                                   self.iNumberLibrary,"Library") + '\n'
+        return sConvictionText
+
+    def processPower(self,aCards):
+        for oAbsCard in self._getAbstractCards(aCards):
+            pass
+
+        # Build up Text
+        sPowerText = "<b>Power Cards :</b>\n"
+        sPowerText += "Number of Power cards = " + str(self.iNumberPowers) + ' '+ \
+                           self._Percentage(self.iNumberPowers,
+                                   self.iNumberLibrary,"Library") + '\n'
+        return sPowerText
 
     def processImbued(self,aCards):
         dDeckImbued = {}
@@ -376,12 +497,7 @@ class AnalyzeCardList(CardListPlugin):
         iImbMaxGroup = -500
         iNumberUniqueImbued = 0
 
-        for oCard in aCards:
-            if type(oCard) is PhysicalCard:
-                oAbsCard = oCard.abstractCard
-            else:
-                oAbsCard = oCard
-
+        for oAbsCard in self._getAbstractCards(aCards):
             if oAbsCard.name not in dDeckImbued:
                 iNumberUniqueImbued += 1
                 dDeckImbued[oAbsCard.name] = 1
@@ -400,7 +516,8 @@ class AnalyzeCardList(CardListPlugin):
         # Build up Text
         sImbuedText = "<b>Imbued</b>\n"
         sImbuedText += "<span foreground = \"blue\">Basic Crypt stats</span>\n"
-        sImbuedText += "Number of Imbued = " + str(self.iNumberImbued) + "\n"
+        sImbuedText += "Number of Imbued = " + str(self.iNumberImbued) + \
+                self._Percentage(self.iNumberImbued,self.iCryptSize,"Crypt") + "\n"
         sImbuedText += "Number of Uniueq Imbued = " + str(iNumberUniqueImbued) + "\n"
         if self.iNumberImbued > 0:
             sImbuedText += "Minimum Group is : " + str(iImbMinGroup) + "\n"
@@ -414,13 +531,8 @@ class AnalyzeCardList(CardListPlugin):
 
         return sImbuedText
 
-    def happyFamiliesAnalysis(self,aAllCards):
-        for oCard in aAllCards:
-            if type(oCard) is PhysicalCard:
-                oAbsCard = oCard.abstractCard
-            else:
-                oAbsCard = oCard
-
+    def happyFamiliesAnalysis(self,aCards):
+        for oAbsCard in self._getAbstractCards(aCards):
             aTypes = [x.name for x in oAbsCard.cardtype]
             if len(aTypes)>1:
                 # Since we examining all the cards, do this here
