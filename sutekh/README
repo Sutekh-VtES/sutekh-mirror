@@ -61,6 +61,29 @@ Typically used as:
 python sutekh/SutekhCli.py -c --reload -r vtes_card_file.html \
       --ruling-file vtes_ruling_file.html  
 
+=== Windows Quickstart ===
+
+Download:
+ * Python
+   - http://www.python.org/ftp/python/2.5.1/python-2.5.1.msi
+ * Setuptools
+   - http://pypi.python.org/packages/2.5/s/setuptools/setuptools-0.6c6.win32-py2.5.exe
+ * PyGTK
+   - http://gladewin32.sourceforge.net/modules/wfdownloads/visit.php?cid=14&lid=110
+   - http://ftp.gnome.org/pub/GNOME/binaries/win32/pygobject/2.12/pygobject-2.12.3-1.win32-py2.5.exe
+   - http://ftp.gnome.org/pub/GNOME/binaries/win32/pycairo/1.2/pycairo-1.2.6-1.win32-py2.5.exe
+   - http://ftp.gnome.org/pub/GNOME/binaries/win32/pygtk/2.10/pygtk-2.10.4-1.win32-py2.5.exe
+ * PyProtocols
+   - http://files.turbogears.org/eggs/PyProtocols-1.0a0-py2.5-win32.egg
+ * Sutekh
+
+And Python, then Setuptools, then PyGTK.
+
+Run easy_install PyProtocols-1.0a0-py2.5-win32.egg (easy_install is in <python install dir>/Scripts).
+Run easy_install <Sutekh Egg File>.
+
+Run <python install dir>/Scripts/SutekhGui.py.
+
 === Using Sutekh from the Python Interpreter ===
 
 I think the most useful part of Sutekh at the moment is the ability
