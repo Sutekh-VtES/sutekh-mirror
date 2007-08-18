@@ -1,0 +1,21 @@
+=== Coding Style ===
+
+Sutekh follows PEP 8: Style Guide for Python Code [1] with the following
+choices, exceptions, additions and clarifications:
+
+ * Variable names use Hungarian notation with a single letter prefix.
+   The prefixes are:
+     sMoo (string)
+     iMoo (int)
+     fMoo (float or file handle)
+     aMoo (list)
+     tMoo (tuple)
+     dMoo (dictionary)
+     oMoo (complex object)
+
+[1] http://www.python.org/dev/peps/pep-0008/
+
+=== Regular Expressions for Matching Bad Style ===
+
+ * Assignments without spaces around equals:
+   r'^\s*[A-Za-z0-9.]+=[A-Za-z0-9.]+(\([^()]*\))?$'
