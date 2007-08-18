@@ -21,47 +21,47 @@ from xml.sax.handler import ContentHandler
 class AbstractCardSetHandler(ContentHandler):
     def __init__(self):
         ContentHandler.__init__(self)
-        self.acsDB=False
-        self.aUnknown=[]
-        self.acsName=None
-        self.aSupportedVersions=['1.0','0.0']
+        self.acsDB = False
+        self.aUnknown = []
+        self.acsName = None
+        self.aSupportedVersions = ['1.0','0.0']
 
     def startElement(self,sTagName,oAttrs):
         if sTagName == 'abstractcardset':
             self.acsName = oAttrs.getValue('name')
-            aAttributes=oAttrs.getNames()
-            sAuthor=None
-            sComment=None
-            sAnnotations=None
+            aAttributes = oAttrs.getNames()
+            sAuthor = None
+            sComment = None
+            sAnnotations = None
             if 'author' in aAttributes:
-                sAuthor=oAttrs.getValue('author')
+                sAuthor = oAttrs.getValue('author')
             if 'comment' in aAttributes:
-                sComment=oAttrs.getValue('comment')
+                sComment = oAttrs.getValue('comment')
             if 'annotations' in aAttributes:
-                sAnnotations=oAttrs.getValue('annotations')
+                sAnnotations = oAttrs.getValue('annotations')
             if 'sutekh_xml_version' in aAttributes:
-                sThisVersion=oAttrs.getValue('sutekh_xml_version')
+                sThisVersion = oAttrs.getValue('sutekh_xml_version')
             else:
-                sThisVersion='0.0'
+                sThisVersion = '0.0'
             if sThisVersion not in self.aSupportedVersions:
                 raise RuntimeError("Unrecognised XML File Version")
             # Try and add acs to AbstractCardSet
             # Make sure
             try:
-                acs=AbstractCardSet.byName(self.acsName.encode('utf8'))
+                acs = AbstractCardSet.byName(self.acsName.encode('utf8'))
                 # We overwrite acs, so we drop all cards currently
                 # part of the acs
-                acs.author=sAuthor
-                acs.comment=sComment
-                acs.annotations=sAnnotations
+                acs.author = sAuthor
+                acs.comment = sComment
+                acs.annotations = sAnnotations
                 acs.syncUpdate()
-                ids=[]
+                ids = []
                 for card in acs.cards:
                     acs.removeAbstractCard(card.id)
-                self.acsDB=True
+                self.acsDB = True
             except SQLObjectNotFound:
                 AbstractCardSet(name=self.acsName,author=sAuthor,comment=sComment)
-                self.acsDB=True
+                self.acsDB = True
         elif sTagName == 'card':
             iId = int(oAttrs.getValue('id'),10)
             sName = oAttrs.getValue('name')
@@ -71,10 +71,10 @@ class AbstractCardSetHandler(ContentHandler):
                 oAbs = AbstractCard.byCanonicalName(sName.encode('utf8').lower())
             except SQLObjectNotFound:
                 self.aUnknown.append(sName)
-                oAbs=None
+                oAbs = None
             if self.acsDB and oAbs is not None:
                 # acs exists in databse, so we're OK
-                acs=AbstractCardSet.byName(self.acsName.encode('utf8'))
+                acs = AbstractCardSet.byName(self.acsName.encode('utf8'))
                 for i in range(iCount):
                     acs.addAbstractCard(oAbs.id)
 
@@ -91,17 +91,17 @@ class AbstractCardSetParser(object):
     def parse(self,fIn):
         oldConn = sqlhub.processConnection
         sqlhub.processConnection= oldConn.transaction()
-        myHandler=AbstractCardSetHandler()
+        myHandler = AbstractCardSetHandler()
         parse(fIn,myHandler)
         myHandler.printUnHandled()
         sqlhub.processConnection.commit()
-        sqlhub.processConnection=oldConn
+        sqlhub.processConnection = oldConn
 
     def parseString(self,sIn):
         oldConn = sqlhub.processConnection
         sqlhub.processConnection= oldConn.transaction()
-        myHandler=AbstractCardSetHandler()
+        myHandler = AbstractCardSetHandler()
         parseString(sIn,myHandler)
         myHandler.printUnHandled()
         sqlhub.processConnection.commit()
-        sqlhub.processConnection=oldConn
+        sqlhub.processConnection = oldConn

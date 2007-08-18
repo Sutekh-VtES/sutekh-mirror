@@ -24,12 +24,12 @@ class AbstractCardSetWriter(object):
 
         try:
             oACS = AbstractCardSet.byName(sAbstractCardSetName)
-            sAuthor=oACS.author
-            sComment=oACS.comment
-            sAnnotations=oACS.annotations
+            sAuthor = oACS.author
+            sComment = oACS.comment
+            sAnnotations = oACS.annotations
             if sAnnotations is None:
                 # prettytoxml will barf if this isn't done
-                sAnnotations=''
+                sAnnotations = ''
         except SQLObjectNotFound:
             print "Failed to find %s" % sAbstractCardSetName
             return
@@ -61,5 +61,5 @@ class AbstractCardSetWriter(object):
         return oDoc
 
     def write(self,fOut,sAbstractCardSetName):
-        oDoc=self.genDoc(sAbstractCardSetName)
+        oDoc = self.genDoc(sAbstractCardSetName)
         fOut.write(oDoc.toprettyxml())

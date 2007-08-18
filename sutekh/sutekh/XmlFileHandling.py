@@ -81,7 +81,7 @@ class PhysicalCardSetXmlFile(object):
     def write(self,sPhysicalCardSetName):
         oW = PhysicalCardSetWriter()
         if self.sXmlFile is None:
-            filename=safeFilename(sPhysicalCardSetName)
+            filename = safeFilename(sPhysicalCardSetName)
             fOut = file(filename,'w')
         else:
             fOut = file(self.sXmlFile,'w')

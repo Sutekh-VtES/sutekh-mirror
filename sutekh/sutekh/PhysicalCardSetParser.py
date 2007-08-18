@@ -22,78 +22,78 @@ from xml.sax.handler import ContentHandler
 class PhysicalCardSetHandler(ContentHandler):
     def __init__(self):
         ContentHandler.__init__(self)
-        self.pcsDB=False
-        self.dUnhandled={}
-        self.aUnknown=[]
-        self.pcsName=None
-        self.aSupportedVersions=['1.0','0.0']
+        self.pcsDB = False
+        self.dUnhandled = {}
+        self.aUnknown = []
+        self.pcsName = None
+        self.aSupportedVersions = ['1.0','0.0']
 
     def startElement(self,sTagName,oAttrs):
         if sTagName == 'physicalcardset':
             self.pcsName = oAttrs.getValue('name')
-            aAttributes=oAttrs.getNames()
-            sAuthor=None
-            sComment=None
-            sAnnotations=None
+            aAttributes = oAttrs.getNames()
+            sAuthor = None
+            sComment = None
+            sAnnotations = None
             if 'author' in aAttributes:
-                sAuthor=oAttrs.getValue('author')
+                sAuthor = oAttrs.getValue('author')
             if 'comment' in aAttributes:
-                sComment=oAttrs.getValue('comment')
+                sComment = oAttrs.getValue('comment')
             if 'annotations' in aAttributes:
-                sAnnotations=oAttrs.getValue('annotations')
+                sAnnotations = oAttrs.getValue('annotations')
             if 'sutekh_xml_version' in aAttributes:
-                sThisVersion=oAttrs.getValue('sutekh_xml_version')
+                sThisVersion = oAttrs.getValue('sutekh_xml_version')
             else:
-                sThisVersion='0.0'
+                sThisVersion = '0.0'
             if sThisVersion not in self.aSupportedVersions:
                 raise RuntimeError("Unrecognised XML file version")
             # Try and add pcs to PhysicalCardSet
             # Make sure
             try:
                 pcs=PhysicalCardSet.byName(self.pcsName.encode('utf8'))
-                pcs.author=sAuthor
-                pcs.comment=sComment
-                pcs.annotations=sAnnotations
+                pcs.author = sAuthor
+                pcs.comment = sComment
+                pcs.annotations = sAnnotations
                 pcs.syncUpdate()
                 # We overwrite pcs, so we drop all cards currently
                 # part of the PhysicalCardSet
-                ids=[]
+                ids = []
                 for card in pcs.cards:
                     pcs.removePhysicalCard(card.id)
-                self.pcsDB=True
+                self.pcsDB = True
             except SQLObjectNotFound:
                 PhysicalCardSet(name=self.pcsName,author=sAuthor,comment=sComment)
-                self.pcsDB=True
+                self.pcsDB = True
         elif sTagName == 'card':
             iId = int(oAttrs.getValue('id'),10)
             sName = oAttrs.getValue('name')
             iCount = int(oAttrs.getValue('count'),10)
             if 'expansion' in oAttrs.getNames():
-                sExpansionName=oAttrs.getValue('expansion')
+                sExpansionName = oAttrs.getValue('expansion')
             else:
-                sExpansionName='None Specified'
+                sExpansionName = 'None Specified'
 
             try:
                 oAbs = AbstractCard.byCanonicalName(sName.encode('utf8').lower())
             except SQLObjectNotFound:
-                oAbs=None
+                oAbs = None
                 self.aUnknown.append(sName)
             if self.pcsDB and oAbs is not None:
                 # pcs exists in databse, so we're OK
-                pcs=PhysicalCardSet.byName(self.pcsName.encode('utf8'))
+                pcs = PhysicalCardSet.byName(self.pcsName.encode('utf8'))
                 for i in range(iCount):
                     # FIXME: This should be made much more effecient than
                     # it currently is
                     # We see if we can add the card, otherwise we add it to the
                     # dictionary of unhandlable cards
                     # Get all physical IDs that match this card
-                    possibleCards=PhysicalCard.selectBy(abstractCardID=oAbs.id)
-                    added=False
-                    if sExpansionName=='None Specified':
+                    possibleCards = PhysicalCard.selectBy(abstractCardID=oAbs.id)
+                    added = False
+                    if sExpansionName == 'None Specified':
                         for card in possibleCards:
                             if card not in pcs.cards:
                                 pcs.addPhysicalCard(card.id)
-                                added=True
+                                added = True
                                 break
                     else:
                         # Only add cards if the expansion matches
@@ -103,7 +103,7 @@ class PhysicalCardSetHandler(ContentHandler):
                             if card not in pcs.cards and \
                                     card.expansion==sExpansionName:
                                 pcs.addPhysicalCard(card.id)
-                                added=True
+                                added = True
                                 break
                     if not added:
                         try:
@@ -129,17 +129,17 @@ class PhysicalCardSetParser(object):
     def parse(self,fIn):
         oldConn = sqlhub.processConnection
         sqlhub.processConnection= oldConn.transaction()
-        myHandler=PhysicalCardSetHandler()
+        myHandler = PhysicalCardSetHandler()
         parse(fIn,myHandler)
         myHandler.printUnHandled()
         sqlhub.processConnection.commit()
-        sqlhub.processConnection=oldConn
+        sqlhub.processConnection = oldConn
 
     def parseString(self,sIn):
         oldConn = sqlhub.processConnection
         sqlhub.processConnection= oldConn.transaction()
-        myHandler=PhysicalCardSetHandler()
+        myHandler = PhysicalCardSetHandler()
         parseString(sIn,myHandler)
         myHandler.printUnHandled()
         sqlhub.processConnection.commit()
-        sqlhub.processConnection=oldConn
+        sqlhub.processConnection = oldConn

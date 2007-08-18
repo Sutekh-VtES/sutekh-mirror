@@ -54,13 +54,13 @@ def main(aArgs):
 
     # Test on some tables where we specify the table name
     if not oConn.tableExists('abstract_map') or not oConn.tableExists('physical_map'):
-        diag=NoDBErrorPopup()
-        res=diag.run()
+        diag = NoDBErrorPopup()
+        res = diag.run()
         diag.destroy()
-        if res!=1:
+        if res != 1:
             return 1
         else:
-            Dlg=WWFilesDialog(None)
+            Dlg = WWFilesDialog(None)
             Dlg.run()
             (sCLFilename,sRulingsFilename,bIgnore)=Dlg.getNames()
             Dlg.destroy()

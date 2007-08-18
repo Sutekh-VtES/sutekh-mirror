@@ -28,16 +28,16 @@ class WriteArdbXML(object):
         oDeckElem.setAttribute('generator',"Sutekh [" + SutekhInfo.VERSION_STR + "]")
         oDeckElem.setAttribute('formatVersion',"-TODO-1.0") # Claim same version as recent ARDB
         oDeckElem.setAttribute('databaseVersion',"Sutekh-20070701")
-        oNameElem=oDoc.createElement('name')
+        oNameElem = oDoc.createElement('name')
         oNameElem.appendChild(oDoc.createTextNode(sSetName))
         oDeckElem.appendChild(oNameElem)
-        oAuthElem=oDoc.createElement('author')
+        oAuthElem = oDoc.createElement('author')
         oAuthElem.appendChild(oDoc.createTextNode(sAuthor))
         oDeckElem.appendChild(oAuthElem)
-        oDescElem=oDoc.createElement('description')
+        oDescElem = oDoc.createElement('description')
         oDescElem.appendChild(oDoc.createTextNode(sDescription))
         oDeckElem.appendChild(oDescElem)
-        oDateElem=oDoc.createElement('date')
+        oDateElem = oDoc.createElement('date')
         oDateElem.appendChild(oDoc.createTextNode(sDateWritten))
         oDeckElem.appendChild(oDateElem)
 
@@ -111,7 +111,7 @@ class WriteArdbXML(object):
         oDeckElem.appendChild(oLibElem)
         for tKey, iNum in dLib.iteritems():
             iId, sName = tKey
-            oCard=IAbstractCard(sName)
+            oCard = IAbstractCard(sName)
             oCardElem = oDoc.createElement('card')
             oCardElem.setAttribute('databaseID',str(iId))
             oCardElem.setAttribute('count',str(iNum))

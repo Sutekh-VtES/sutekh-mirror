@@ -105,10 +105,10 @@ def main(aArgs):
             print "reload should be called with --refresh-tables"
             return 1
         else:
-            sTempdir=genTempdir()
-            aPhysicalCardSetList=writeAllPhysicalCardSets(sTempdir)
-            aAbstractCardSetList=writeAllAbstractCardSets(sTempdir)
-            oPCFile=PhysicalCardXmlFile(dir=sTempdir)
+            sTempdir = genTempdir()
+            aPhysicalCardSetList = writeAllPhysicalCardSets(sTempdir)
+            aAbstractCardSetList = writeAllAbstractCardSets(sTempdir)
+            oPCFile = PhysicalCardXmlFile(dir=sTempdir)
             oPCFile.write()
             # We dump the databases here
             # We will reload them later
@@ -135,11 +135,11 @@ def main(aArgs):
         readRulings(oOpts.ruling_file)
 
     if not oOpts.read_physical_cards_from is None:
-        oFile=PhysicalCardXmlFile(oOpts.rad_physical_cards_from)
+        oFile = PhysicalCardXmlFile(oOpts.rad_physical_cards_from)
         oFile.read()
 
     if not oOpts.save_physical_cards_to is None:
-        oPCF=PhysicalCardXmlFile(filename=oOpts.save_physical_cards_to)
+        oPCF = PhysicalCardXmlFile(filename=oOpts.save_physical_cards_to)
         oPCF.write()
 
     if oOpts.save_all_acss and not oOpts.save_acs is None:
@@ -157,27 +157,27 @@ def main(aArgs):
         writeAllPhysicalCardSets()
 
     if oOpts.dump_zip_name is not None:
-        oZ=ZipFileWrapper(oOpts.dump_zip_name)
+        oZ = ZipFileWrapper(oOpts.dump_zip_name)
         oZ.doDumpAllToZip()
 
     if oOpts.restore_zip_name is not None:
-        oZ=ZipFileWrapper(oOpts.restore_zip_name)
+        oZ = ZipFileWrapper(oOpts.restore_zip_name)
         oZ.doRestoreFromZip()
 
     if not oOpts.save_pcs is None:
-        oFile=PhysicalCardSetXmlFile(oOpts.pcs_filename)
+        oFile = PhysicalCardSetXmlFile(oOpts.pcs_filename)
         oFile.write(oOpts.save_pcs)
 
     if not oOpts.save_acs is None:
-        oFile=AbstractCardSetXmlFile(oOpts.acs_filename)
+        oFile = AbstractCardSetXmlFile(oOpts.acs_filename)
         oFile.write(oOpts.save_acs)
 
     if not oOpts.read_pcs is None:
-        oFile=PhysicalCardSetXmlFile(oOpts.read_pcs)
+        oFile = PhysicalCardSetXmlFile(oOpts.read_pcs)
         oFile.read()
 
     if not oOpts.read_acs is None:
-        oFile=AbstractCardSetXmlFile(oOpts.read_acs)
+        oFile = AbstractCardSetXmlFile(oOpts.read_acs)
         oFile.read()
 
     if oOpts.reload:

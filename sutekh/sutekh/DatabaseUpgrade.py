@@ -202,10 +202,10 @@ def CopyOldDiscipline(orig_conn,trans):
         for oObj in Discipline_v1.select(connection=orig_conn):
             if oObj.name[:2]=='v_':
                 #point adaptor at new database
-                oldconn=sqlhub.processConnection
-                sqlhub.processConnection=trans
-                oVirtue=IVirtue(oObj.name[2:])
-                sqlhub.processConnection=oldconn
+                oldconn = sqlhub.processConnection
+                sqlhub.processConnection = trans
+                oVirtue = IVirtue(oObj.name[2:])
+                sqlhub.processConnection = oldconn
                 # Let adaptor create entry for us
             else:
                 sFullName=''
@@ -346,7 +346,7 @@ def CopyOldAbstractCard(orig_conn,trans):
             if 'Imbued' in aTypes:
                 if bFirstImbuedCreedMessage:
                     aMessages.append('Missing data for the Imbued. You will need to reimport the White wolf card list for these to be correct')
-                    bFirstImbuedCreedMessage=False
+                    bFirstImbuedCreedMessage = False
                 aMessages.append('Unable to infer sensible values for life and creed for '+oCard.name.encode('ascii','xmlcharrefreplace'))
             oCardCopy.syncUpdate()
     return (True,aMessages)
@@ -584,7 +584,7 @@ def copyToNewAbstractCardDB(orig_conn,new_conn):
                                      expansion=oCard.expansion,connection=target)
         except SQLObjectNotFound:
             aMessages.append("Unable to find match for "+sName)
-            bRes=False
+            bRes = False
     # Copy Physical card sets
     # IDs are unchangd, since we preserve Physical Card set ids
     for oSet in PhysicalCardSet.select(connection=orig_conn):

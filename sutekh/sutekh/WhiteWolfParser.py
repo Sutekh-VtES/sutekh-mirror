@@ -92,7 +92,7 @@ class CardDict(dict):
         aLife = sLife.split()
 
         try:
-            oCard.life=int(aLife[0],10)
+            oCard.life = int(aLife[0],10)
         except ValueError:
             pass
 

@@ -22,11 +22,11 @@ class CardHandler(ContentHandler):
 
     def startElement(self,sTagName,oAttrs):
         if sTagName == 'cards':
-            aAttributes=oAttrs.getNames()
+            aAttributes = oAttrs.getNames()
             if 'sutekh_xml_version' in aAttributes:
-                sThisVersion=oAttrs.getValue('sutekh_xml_version')
+                sThisVersion = oAttrs.getValue('sutekh_xml_version')
             else:
-                sThisVersion='0.0'
+                sThisVersion = '0.0'
             if sThisVersion not in self.aSupportedVersions:
                 raise RuntimeError("Unrecognised XML File version")
         elif sTagName == 'card':
@@ -34,7 +34,7 @@ class CardHandler(ContentHandler):
             sName = oAttrs.getValue('name')
             iCount = int(oAttrs.getValue('count'),10)
             if 'expansion' in oAttrs.getNames():
-                sExpansionName=oAttrs.getValue('expansion')
+                sExpansionName = oAttrs.getValue('expansion')
             else:
                 sExpansionName='None Specified'
             oAbs = AbstractCard.byCanonicalName(sName.encode('utf8').lower())
@@ -53,11 +53,11 @@ class PhysicalCardParser(object):
         sqlhub.processConnection= oldConn.transaction()
         parse(fIn,CardHandler())
         sqlhub.processConnection.commit()
-        sqlhub.processConnection=oldConn
+        sqlhub.processConnection = oldConn
 
     def parseString(self,sIn):
         oldConn = sqlhub.processConnection
-        sqlhub.processConnection= oldConn.transaction()
+        sqlhub.processConnection = oldConn.transaction()
         parseString(sIn, CardHandler())
         sqlhub.processConnection.commit()
-        sqlhub.processConnection=oldConn
+        sqlhub.processConnection = oldConn
