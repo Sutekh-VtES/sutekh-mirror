@@ -30,7 +30,7 @@ class PluginManager(object):
 
             # load module
             try:
-                mPlugin = __import__("gui.plugins." + sPluginName,None,None,[plugins])
+                mPlugin = __import__("sutekh.gui.plugins." + sPluginName,None,None,[plugins])
             except ImportError, e:
                 logging.warn("Failed to load plugin %s (%s)." % (sPluginName,str(e)))
                 continue
