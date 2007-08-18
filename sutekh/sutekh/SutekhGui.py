@@ -55,7 +55,15 @@ def main(aArgs):
             os.makedirs(sPrefsDir)
 
     if oOpts.db is None:
-        oOpts.db = "sqlite://" + "/".join([sPrefsDir.replace(os.sep,"/"),"sutekh.db"])
+        sDbFile = "/".join([sPrefsDir.replace(os.sep,"/"),"sutekh.db"])
+
+        sDrive, sRest = os.path.splitdrive(sDbFile)
+        if sDrive:
+            sDbFile = "/" + sDrive.rstrip(':') + "|" + sRest
+        else:
+            sDbFile = sRest
+
+        oOpts.db = "sqlite://" + sDbFile
 
     oConfig = ConfigFile(oOpts.sRCFile)
 
