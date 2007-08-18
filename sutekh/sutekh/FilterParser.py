@@ -314,7 +314,7 @@ class FilterPartNode(OperatorNode):
         if self.filtertype in aNumericFilters:
             aValidVals = [str(x) for x in aValidVals]
         for oVal in aCurVals:
-            if oVal.value == ',': 
+            if oVal.value == ',':
                 continue
             if oVal.value not in aValidVals:
                 aRes.append(oVal.value)

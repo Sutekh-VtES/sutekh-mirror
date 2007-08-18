@@ -20,13 +20,13 @@ class PhysicalCardWindow(gtk.Window,object):
         wMbox = gtk.VBox(False, 2)
 
         wMbox.pack_start(oPhysController.getMenu(),False,False)
-        oToolbar=gtk.VBox(False,2)
-        bInsertToolbar=False
+        oToolbar = gtk.VBox(False,2)
+        bInsertToolbar = False
         for oPlugin in oPhysController.getPlugins():
-            oW=oPlugin.getToolbarWidget()
+            oW = oPlugin.getToolbarWidget()
             if oW is not None:
                 oToolbar.pack_start(oW)
-                bInsertToolbar=True
+                bInsertToolbar = True
         if bInsertToolbar:
             wMbox.pack_start(oToolbar, False, False)
 
