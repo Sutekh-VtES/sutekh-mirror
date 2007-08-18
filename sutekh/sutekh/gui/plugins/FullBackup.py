@@ -24,7 +24,7 @@ class FullBackup(CardListPlugin):
             return None
 
         iMenu = gtk.MenuItem("Backup")
-        wMenu=gtk.Menu()
+        wMenu = gtk.Menu()
         iMenu.set_submenu(wMenu)
 
         iBackup = gtk.MenuItem("Save a Full Backup")
@@ -51,7 +51,7 @@ class FullBackup(CardListPlugin):
         sName = "Choose a file to save the full backup to ..."
 
         oDlg = gtk.FileChooserDialog(sName,oParent,action=gtk.FILE_CHOOSER_ACTION_SAVE,
-                buttons=(gtk.STOCK_OK, gtk.RESPONSE_OK,
+                buttons = (gtk.STOCK_OK, gtk.RESPONSE_OK,
                     gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
 
         oDlg.connect("response", self.handleBackupResponse)
@@ -74,7 +74,7 @@ class FullBackup(CardListPlugin):
 
             if bContinue:
                 try:
-                    oFile=ZipFileWrapper(sFile)
+                    oFile = ZipFileWrapper(sFile)
                     oFile.doDumpAllToZip()
                 except Exception, e:
                     sMsg = "Failed to write backup.\n\n" + str(e)
@@ -96,7 +96,7 @@ class FullBackup(CardListPlugin):
         sName = "Restore a Full Backup ..."
 
         oDlg = gtk.FileChooserDialog(sName,oParent,action=gtk.FILE_CHOOSER_ACTION_OPEN,
-                buttons=(gtk.STOCK_OK, gtk.RESPONSE_OK,
+                buttons = (gtk.STOCK_OK, gtk.RESPONSE_OK,
                     gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
 
         oDlg.connect("response", self.handleRestoreResponse)
@@ -119,7 +119,7 @@ class FullBackup(CardListPlugin):
 
             if bContinue:
                 try:
-                    oFile=ZipFileWrapper(sFile)
+                    oFile = ZipFileWrapper(sFile)
                     oFile.doRestoreFromZip()
                 except Exception, e:
                     sMsg = "Failed to restore backup.\n\n" + str(e)

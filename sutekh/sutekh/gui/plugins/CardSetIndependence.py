@@ -40,18 +40,18 @@ class CardSetIndependence(CardListPlugin):
                           gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                           (gtk.STOCK_OK, gtk.RESPONSE_OK,
                            gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
-        self.csFrame=ScrolledList('Abstract Card Sets')
+        self.csFrame = ScrolledList('Abstract Card Sets')
         self.oDlg.vbox.pack_start(self.csFrame)
         self.csFrame.set_size_request(150,300)
         if self.view.sSetType == 'AbstractCardSet':
-            oSelect=AbstractCardSet.select().orderBy('name')
+            oSelect = AbstractCardSet.select().orderBy('name')
         elif self.view.sSetType == 'PhysicalCardSet':
-            oSelect=PhysicalCardSet.select().orderBy('name')
+            oSelect = PhysicalCardSet.select().orderBy('name')
         else:
             return
         for cs in oSelect:
             if cs.name != self.view.sSetName:
-                iter=self.csFrame.get_list().append(None)
+                iter = self.csFrame.get_list().append(None)
                 self.csFrame.get_list().set(iter,0,cs.name)
         self.oDlg.connect("response", self.handleResponse)
         self.oDlg.show_all()
@@ -59,47 +59,47 @@ class CardSetIndependence(CardListPlugin):
 
     def handleResponse(self,oWidget,oResponse):
        if oResponse ==  gtk.RESPONSE_OK:
-           aCardSetNames=[self.view.sSetName]
-           dSelect={}
+           aCardSetNames = [self.view.sSetName]
+           dSelect = {}
            self.csFrame.get_selection(aCardSetNames,dSelect)
            self.testCardSets(aCardSetNames)
        self.oDlg.destroy()
 
     def testCardSets(self,aCardSetNames):
-        dMissing={}
-        dFullCardList=self.__getCardSetList(aCardSetNames)
+        dMissing = {}
+        dFullCardList = self.__getCardSetList(aCardSetNames)
         for cardid,(cardname,cardcount) in dFullCardList.iteritems():
-            oPC=list(PhysicalCard.selectBy(abstractCardID=cardid))
+            oPC = list(PhysicalCard.selectBy(abstractCardID=cardid))
             if cardcount>len(oPC):
-                dMissing[cardname]=cardcount-len(oPC)
+                dMissing[cardname] = cardcount-len(oPC)
         if len(dMissing)>0:
-            message="<span foreground=\"red\">Missing Cards</span>\n"
+            message = "<span foreground = \"red\">Missing Cards</span>\n"
             for cardname,cardcount in dMissing.iteritems():
-                message+="<span foreground=\"blue\">"+cardname+"</span> : "+str(cardcount)+"\n"
-            Results=gtk.MessageDialog(None,0,gtk.MESSAGE_INFO,\
+                message += "<span foreground = \"blue\">" + cardname + "</span> : " + str(cardcount) + "\n"
+            Results = gtk.MessageDialog(None,0,gtk.MESSAGE_INFO,\
                     gtk.BUTTONS_CLOSE,None)
             Results.set_markup(message)
         else:
-            Results=gtk.MessageDialog(None,0,gtk.MESSAGE_INFO,\
+            Results = gtk.MessageDialog(None,0,gtk.MESSAGE_INFO,\
                     gtk.BUTTONS_CLOSE,"All Cards in the PhysicalCard List")
         Results.run()
         Results.destroy()
 
     def __getCardSetList(self,aCardSetNames):
-        dFullCardList={}
+        dFullCardList = {}
         for name in aCardSetNames:
-            if self.view.sSetType=='AbstractCardSet':
-                oFilter=AbstractCardSetFilter(name)
-                oCS=AbstractCard.select(oFilter.getExpression())
-            elif self.view.sSetType=='PhysicalCardSet':
-                oFilter=PhysicalCardSetFilter(name)
-                oCS=PhysicalCard.select(oFilter.getExpression())
+            if self.view.sSetType == 'AbstractCardSet':
+                oFilter = AbstractCardSetFilter(name)
+                oCS = AbstractCard.select(oFilter.getExpression())
+            elif self.view.sSetType == 'PhysicalCardSet':
+                oFilter = PhysicalCardSetFilter(name)
+                oCS = PhysicalCard.select(oFilter.getExpression())
             for oC in oCS:
-                oAC=IAbstractCard(oC)
+                oAC = IAbstractCard(oC)
                 try:
-                    dFullCardList[oAC.id][1]+=1
+                    dFullCardList[oAC.id][1] += 1
                 except KeyError:
-                    dFullCardList[oAC.id]=[oAC.name,1]
+                    dFullCardList[oAC.id] = [oAC.name,1]
         return dFullCardList
 
 plugin = CardSetIndependence

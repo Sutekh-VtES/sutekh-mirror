@@ -16,7 +16,7 @@ except ImportError:
     bHaveXmlParser = False
 
 class CardSetExportHTML(CardListPlugin):
-    dTableVersions = {"AbstractCardSet" : [2,3], 
+    dTableVersions = {"AbstractCardSet" : [2,3],
                       "PhysicalCardSet" : [2,3]}
     aModelsSupported = ["AbstractCardSet","PhysicalCardSet"]
     def getMenuItem(self):
@@ -46,7 +46,7 @@ class CardSetExportHTML(CardListPlugin):
             styledocText = libxml2.parseDoc(sDeckXSL)
             self._styleText = libxslt.parseStylesheetDoc(styledocText)
         except libxml2.parserError:
-            self._styleText=None
+            self._styleText = None
 
         iDF = gtk.MenuItem("Export Card Set to HTML")
         iDF.connect("activate", self.activate)
@@ -66,11 +66,11 @@ class CardSetExportHTML(CardListPlugin):
                           gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                           (gtk.STOCK_OK, gtk.RESPONSE_OK,
                            gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
-        self.oFileChooser=gtk.FileChooserWidget(gtk.FILE_CHOOSER_ACTION_SAVE)
+        self.oFileChooser = gtk.FileChooserWidget(gtk.FILE_CHOOSER_ACTION_SAVE)
         self.oFileChooser.set_do_overwrite_confirmation(True)
         self.oDlg.vbox.pack_start(self.oFileChooser)
         if self._styleText is not None:
-            self.TextButton=gtk.CheckButton("Include Card _Texts?")
+            self.TextButton = gtk.CheckButton("Include Card _Texts?")
             self.TextButton.set_active(False)
             self.oDlg.vbox.pack_start(self.TextButton)
         self.oDlg.connect("response", self.handleResponse)
@@ -79,7 +79,7 @@ class CardSetExportHTML(CardListPlugin):
 
     def handleResponse(self,oWidget,oResponse):
         if oResponse ==  gtk.RESPONSE_OK:
-            sFileName=self.oFileChooser.get_filename()
+            sFileName = self.oFileChooser.get_filename()
             if sFileName is not None:
                 if self.view.sSetType == "PhysicalCardSet":
                     oCardSet = PhysicalCardSet.byName(self.view.sSetName)
@@ -94,10 +94,10 @@ class CardSetExportHTML(CardListPlugin):
                         oCardSet.comment,
                         self.getCards())
                 doc = libxml2.parseDoc(oDoc.toprettyxml())
-                bDoText=False
+                bDoText = False
                 if self._styleText is not None:
                     if self.TextButton.get_active():
-                        bDoText=True
+                        bDoText = True
                 if bDoText:
                     result = self._styleText.applyStylesheet(doc, None)
                 else:
@@ -109,7 +109,7 @@ class CardSetExportHTML(CardListPlugin):
         for oCard in self.model.getCardIterator(None):
             oCard = IAbstractCard(oCard)
             dDict.setdefault((oCard.id,oCard.name),0)
-            dDict[(oCard.id,oCard.name)]+=1
+            dDict[(oCard.id,oCard.name)] += 1
         return dDict
 
 plugin = CardSetExportHTML

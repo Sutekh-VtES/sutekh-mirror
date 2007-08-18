@@ -10,7 +10,7 @@ from sutekh.gui.PluginManager import CardListPlugin
 class PhysicalCardSetFromAbstract(CardListPlugin):
     """Create a (as far as possible) equivilant Physical Card Set
        from a given Abstract Card Set.
-       
+
        - Ignores Cards which don't exist in Physical Cards (but notifies the user)
        - Has an option to import the cards into your card collection before creating the Physical Card Set."""
 
@@ -57,8 +57,8 @@ class PhysicalCardSetFromAbstract(CardListPlugin):
             return
 
         nP = PhysicalCardSet(name=sName)
-        nP.author=sAuthor
-        nP.comment=sDesc
+        nP.author = sAuthor
+        nP.comment = sDesc
         nP.syncUpdate()
 
         # Add cards to physical card collection if requested

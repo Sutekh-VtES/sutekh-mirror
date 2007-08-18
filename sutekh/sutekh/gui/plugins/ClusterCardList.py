@@ -196,7 +196,7 @@ class ClusterCardList(CardListPlugin):
         iHeaderRows = 1
         iExtraCols = 4
 
-        oTable = gtk.Table(rows=iNX*iNY,columns=len(aColNames)+2)
+        oTable = gtk.Table(rows=iNX * iNY,columns=len(aColNames) + 2)
 
         # Headings
         oLabel = gtk.Label()
@@ -206,21 +206,21 @@ class ClusterCardList(CardListPlugin):
         for k, sColName in enumerate(aColNames):
             oLabel = gtk.Label()
             oLabel.set_markup('<b>%s</b>' % sColName)
-            oTable.attach(oLabel,k+iExtraCols,k+iExtraCols+1,0,1,xpadding=3)
+            oTable.attach(oLabel,k + iExtraCols,k + iExtraCols + 1,0,1,xpadding=3)
 
         # Data
         self._dDeckMakingButtons = {}
         for i in range(iNX):
             for j in range(iNY):
-                iRow = i*iNY+j+iHeaderRows
+                iRow = i * iNY + j + iHeaderRows
                 oBut = gtk.CheckButton('')
                 self._dDeckMakingButtons[(i,j)] = oBut
-                oTable.attach(oBut,0,1,iRow,iRow+1)
-                oTable.attach(gtk.Label(str(i)),1,2,iRow,iRow+1)
-                oTable.attach(gtk.Label(str(j)),2,3,iRow,iRow+1)
-                oTable.attach(gtk.Label(str(dClusterCounts.get((i,j),0))),3,4,iRow,iRow+1)
+                oTable.attach(oBut,0,1,iRow,iRow + 1)
+                oTable.attach(gtk.Label(str(i)),1,2,iRow,iRow + 1)
+                oTable.attach(gtk.Label(str(j)),2,3,iRow,iRow + 1)
+                oTable.attach(gtk.Label(str(dClusterCounts.get((i,j),0))),3,4,iRow,iRow + 1)
                 for k, x in enumerate(aCellData[i][j]):
-                    oTable.attach(gtk.Label(str(x)),k+iExtraCols,k+iExtraCols+1,iRow,iRow+1)
+                    oTable.attach(gtk.Label(str(x)),k + iExtraCols,k + iExtraCols + 1,iRow,iRow + 1)
 
         self._oResultsVbox.pack_start(AutoScrolledWindow(oTable,True)) # top align, using viewport to scroll
 

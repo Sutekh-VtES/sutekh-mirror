@@ -36,7 +36,7 @@ class CardSetExportArdbXML(CardListPlugin):
                           gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                           (gtk.STOCK_OK, gtk.RESPONSE_OK,
                            gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
-        self.oFileChooser=gtk.FileChooserWidget(gtk.FILE_CHOOSER_ACTION_SAVE)
+        self.oFileChooser = gtk.FileChooserWidget(gtk.FILE_CHOOSER_ACTION_SAVE)
         self.oFileChooser.set_do_overwrite_confirmation(True)
         self.oDlg.vbox.pack_start(self.oFileChooser)
         self.oDlg.connect("response", self.handleResponse)
@@ -45,18 +45,18 @@ class CardSetExportArdbXML(CardListPlugin):
 
     def handleResponse(self,oWidget,oResponse):
         if oResponse ==  gtk.RESPONSE_OK:
-            sFileName=self.oFileChooser.get_filename()
+            sFileName = self.oFileChooser.get_filename()
             if sFileName is not None:
                 if self.view.sSetType == 'PhysicalCardSet':
-                    oCardSet=PhysicalCardSet.byName(self.view.sSetName)
+                    oCardSet = PhysicalCardSet.byName(self.view.sSetName)
                 elif self.view.sSetType == 'AbstractCardSet':
-                    oCardSet=AbstractCardSet.byName(self.view.sSetName)
+                    oCardSet = AbstractCardSet.byName(self.view.sSetName)
                 else:
                     return
-                sAuthor=oCardSet.author
-                sComment=oCardSet.comment
-                oW=WriteArdbXML()
-                fOut=file(sFileName,"w")
+                sAuthor = oCardSet.author
+                sComment = oCardSet.comment
+                oW = WriteArdbXML()
+                fOut = file(sFileName,"w")
                 oW.write(fOut,self.view.sSetName,\
                         sAuthor,\
                         sComment,\
@@ -66,9 +66,9 @@ class CardSetExportArdbXML(CardListPlugin):
     def getCards(self):
         dDict = {}
         for oCard in self.model.getCardIterator(None):
-            oACard=IAbstractCard(oCard)
+            oACard = IAbstractCard(oCard)
             dDict.setdefault((oACard.id,oACard.name),0)
-            dDict[(oACard.id,oACard.name)]+=1
+            dDict[(oACard.id,oACard.name)] += 1
         return dDict
 
 plugin = CardSetExportArdbXML

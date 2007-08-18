@@ -28,7 +28,7 @@ class GroupCardList(CardListPlugin):
         """
         if not self.checkVersions() or not self.checkModelType():
             return None
-        iGrouping= gtk.MenuItem("Change Grouping")
+        iGrouping = gtk.MenuItem("Change Grouping")
         iGrouping.connect("activate", self.activate)
         return iGrouping
 

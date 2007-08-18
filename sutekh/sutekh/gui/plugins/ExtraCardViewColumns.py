@@ -143,7 +143,7 @@ class ExtraCardViewColumns(CardListPlugin):
         for i, sCol in enumerate(aCols):
             oCell = gtk.CellRendererText()
             oCell.set_property('style', pango.STYLE_ITALIC)
-            self.view.insert_column_with_data_func(i+2,sCol,oCell,self._dCols[sCol])
+            self.view.insert_column_with_data_func(i + 2,sCol,oCell,self._dCols[sCol])
 
     def getColsInUse(self):
         return [oCol.get_property("title") for oCol in self._getColObjects()]

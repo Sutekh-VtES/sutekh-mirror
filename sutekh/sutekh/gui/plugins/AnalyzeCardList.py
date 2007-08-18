@@ -35,11 +35,11 @@ class AnalyzeCardList(CardListPlugin):
         if iTot>0:
             fPrec = iNum/float(iTot)
         else:
-            fPrec = 0.0 
+            fPrec = 0.0
         return '(' + str(fPrec*100).ljust(5)[:5] + "% of " + sDesc + ')'
 
     def _getAbstractCards(self,aCards):
-        if len(aCards)==0:
+        if len(aCards) == 0:
             return []
         if type(aCards[0]) is PhysicalCard:
             return [x.abstractCard for x in aCards]
@@ -128,7 +128,6 @@ class AnalyzeCardList(CardListPlugin):
         self.iMaxGroup = -500
         self.iMinGroup = 500
         self.iNumberMult = 0
-        
         self.dCryptDisc = {}
 
         # Split out the card types of interest
@@ -340,7 +339,7 @@ class AnalyzeCardList(CardListPlugin):
             sVampText += "\n<span foreground = \"blue\">Crypt cost</span>\n"
             sVampText += "Cheapest is : " + str(iMinCapacity) + "\n"
             sVampText += "Most Expensive is : " + str(iMaxCapacity) + "\n"
-            sVampText += "Average Capacity is : " + str(iTotCapacity / 
+            sVampText += "Average Capacity is : " + str(iTotCapacity / \
                     float(self.iNumberVampires)).ljust(5)[:5] + "\n\n"
 
             sVampText += "<span foreground = \"blue\">Clans</span>\n"
@@ -407,7 +406,6 @@ class AnalyzeCardList(CardListPlugin):
             sMasterText += "Number of Masters with a Clan requirement = " + str(iClanRequirement) + ' ' + \
                     self._Percentage(iClanRequirement,
                             self.iNumberMasters,"Masters") + '\n'
-                
         return sMasterText
 
     def processCombat(self,aCards):

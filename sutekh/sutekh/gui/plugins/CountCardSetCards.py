@@ -15,9 +15,9 @@ class CountCardSetCards(CardListPlugin,CardListModelListener):
     def __init__(self,*args,**kwargs):
         super(CountCardSetCards,self).__init__(*args,**kwargs)
 
-        self.__iTot=0
-        self.__iCrypt=0
-        self.__iLibrary=0
+        self.__iTot = 0
+        self.__iCrypt = 0
+        self.__iLibrary = 0
 
         # We only add listeners to windows we're going to display the toolbar
         # on
@@ -25,8 +25,8 @@ class CountCardSetCards(CardListPlugin,CardListModelListener):
             self.model.addListener(self)
 
     def __idCard(self,oCard):
-        sType=list(oCard.cardtype)[0].name
-        if sType=='Vampire' or sType=='Imbued':
+        sType = list(oCard.cardtype)[0].name
+        if sType == 'Vampire' or sType == 'Imbued':
             return 'Crypt'
         else:
             return 'Library'
@@ -37,7 +37,7 @@ class CountCardSetCards(CardListPlugin,CardListModelListener):
         """
         if not self.checkVersions() or not self.checkModelType():
             return None
-        
+
         iHBox = gtk.HBox(False,2)
         wTotalTextLabel = gtk.Label('Total Cards : ')
         wCryptTextLabel = gtk.Label('Crypt Cards : ')
@@ -58,9 +58,9 @@ class CountCardSetCards(CardListPlugin,CardListModelListener):
         return iHBox
 
     def updateNumbers(self):
-        self.wTotalLabel.set_markup('<b>'+str(self.__iTot)+'</b>')
-        self.wCryptLabel.set_markup('<b>'+str(self.__iCrypt)+'</b>')
-        self.wLibraryLabel.set_markup('<b>'+str(self.__iLibrary)+'</b>')
+        self.wTotalLabel.set_markup('<b>' + str(self.__iTot) + '</b>')
+        self.wCryptLabel.set_markup('<b>' + str(self.__iCrypt) + '</b>')
+        self.wLibraryLabel.set_markup('<b>' + str(self.__iLibrary) + '</b>')
 
     def load(self):
         self.__iCrypt = 0
@@ -79,7 +79,7 @@ class CountCardSetCards(CardListPlugin,CardListModelListener):
         self.updateNumbers()
 
     def alterCardCount(self,oCard,iChg):
-        self.__iTot+=iChg
+        self.__iTot += iChg
         if self.__idCard(oCard) == 'Crypt':
             self.__iCrypt += iChg
         else:
