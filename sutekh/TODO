@@ -2,7 +2,7 @@ Backend:
  * Add ordering mechanism for card lists.
  * Make filtering less slow (mainly for sqlite) 
       (seems OK with the indexes. Do we need more?).
- * DatabaseUpgrade  could be less brittle
+ * DatabaseUpgrade could be less brittle
  * Better error and exception handling
  * Rework SutekhUtility to be less of a mess
  * Export directly to HTML.
@@ -26,10 +26,9 @@ Gui (Functionality):
  * Plugins for calling out to other VtES utilities as appropriate (http://ashheap.storageannex.com/utilities.htm)
 
 Gui (Presentation):
- * Give gui resource handling capablities to save window pos, etc - NM (kinda started)
- * Tabbed interface for Card Sets? - Need both tabs & windows?
+ * Replace Multi-window GUI with one based on multiple panes
  * Parse in a GTK rc file? (http://www.moeraki.com/pygtktutorial/pygtk2tutorial/ch-GtkRcFiles.html)
- * Imporve Create Card Set Management Window (multiple selection, right click menu, etc.)
+ * Improve Create Card Set Management Window (multiple selection, right click menu, etc.)
 
 Website:
  * Create logo for wiki.
@@ -37,4 +36,4 @@ Website:
 Release Candidate tasks:
  - Check everything works on Windows again (check with Philip before release)
  - Create setup.py file with bdist_egg (needs testing)
- * Add Happy Families and Title support to Analyze Plugin
+ * Add Happy Families support to Analyze Plugin
