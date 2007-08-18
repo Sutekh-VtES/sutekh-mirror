@@ -10,7 +10,6 @@ the Anarch Revolt Deck Builder
 """
 
 from sutekh.SutekhObjects import IAbstractCard
-from xml.dom.ext import PrettyPrint
 from xml.dom.minidom import getDOMImplementation
 import time
 
@@ -154,7 +153,7 @@ class WriteArdbXML(object):
         dCard[(id,name)]=count
         """
         oDoc = self.genDoc(sSetName,sAuthor,sDescription,dCards)
-        PrettyPrint(oDoc,fOut)
+        fOut.write(oDoc.toprettyxml())
 
     def getDisc(self,oCard):
         aDisc=[]

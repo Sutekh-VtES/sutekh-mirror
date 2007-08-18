@@ -14,7 +14,6 @@ looks like:
 
 from sutekh.SutekhObjects import AbstractCardSet
 from sqlobject import SQLObjectNotFound
-from xml.dom.ext import PrettyPrint
 from xml.dom.minidom import getDOMImplementation
 
 class AbstractCardSetWriter(object):
@@ -63,4 +62,4 @@ class AbstractCardSetWriter(object):
 
     def write(self,fOut,sAbstractCardSetName):
         oDoc=self.genDoc(sAbstractCardSetName)
-        PrettyPrint(oDoc,fOut)
+        fOut.write(oDoc.toprettyxml())

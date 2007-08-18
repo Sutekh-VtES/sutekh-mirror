@@ -15,7 +15,6 @@ looks like:
 
 from sutekh.SutekhObjects import PhysicalCardSet
 from sqlobject import SQLObjectNotFound
-from xml.dom.ext import PrettyPrint
 from xml.dom.minidom import getDOMImplementation
 
 class PhysicalCardSetWriter(object):
@@ -68,4 +67,4 @@ class PhysicalCardSetWriter(object):
 
     def write(self,fOut,sPhysicalCardSetName):
         oDoc=self.genDoc(sPhysicalCardSetName)
-        PrettyPrint(oDoc,fOut)
+        fOut.write(oDoc.toprettyxml())

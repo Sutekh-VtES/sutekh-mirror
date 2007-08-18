@@ -13,7 +13,6 @@ looks like:
 """
 
 from sutekh.SutekhObjects import PhysicalCard
-from xml.dom.ext import PrettyPrint
 from xml.dom.minidom import getDOMImplementation
 
 class PhysicalCardWriter(object):
@@ -49,4 +48,4 @@ class PhysicalCardWriter(object):
 
     def write(self,fOut):
         oDoc=self.genDoc()
-        PrettyPrint(oDoc,fOut)
+        fOut.write(oDoc.toprettyxml())
