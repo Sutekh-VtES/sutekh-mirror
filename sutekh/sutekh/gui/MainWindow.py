@@ -22,13 +22,13 @@ class MainWindow(gtk.Window,object):
 
         wMbox.pack_start(oMenu, False, False)
 
-        oToolbar=gtk.VBox(False,2)
-        bInsertToolbar=False
+        oToolbar = gtk.VBox(False,2)
+        bInsertToolbar = False
         for oPlugin in self.__oC.getPlugins():
-            oW=oPlugin.getToolbarWidget()
+            oW = oPlugin.getToolbarWidget()
             if oW is not None:
                 oToolbar.pack_start(oW)
-                bInsertToolbar=True
+                bInsertToolbar = True
         if bInsertToolbar:
             wMbox.pack_start(oToolbar, False, False)
 

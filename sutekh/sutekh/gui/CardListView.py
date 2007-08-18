@@ -49,7 +49,7 @@ class CardListView(gtk.TreeView,object):
         self.connect('drag_data_get',self.dragCard)
         self.connect('drag_data_delete',self.dragDelete)
         self.connect('drag_data_received',self.cardDrop)
-        self.bReentrant=False
+        self.bReentrant = False
 
         # Filtering Dialog
         self._oFilterDialog = None
@@ -255,7 +255,7 @@ class EditableCardListView(CardListView):
                 path, col, cellx, celly = pthinfo
                 treeview.grab_focus()
                 treeview.set_cursor( path, col, False)
-                popupMenu=PopupMenu(self,path)
+                popupMenu = PopupMenu(self,path)
                 popupMenu.popup( None, None, None, event.button, time)
                 return True # Don't propogate to buttons
         return False

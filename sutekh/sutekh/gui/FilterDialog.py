@@ -72,8 +72,8 @@ class FilterDialog(gtk.Dialog,ConfigFileListener):
             self.__aDefaultLabels.append(sName)
         self.__expandFilter(self.__oRadioGroup, "0 : "+aDefaultFilterList[0],0)
         # Load other filters from config file
-        aAllFilters=oConfig.getFilters()
-        sMessages=''
+        aAllFilters = oConfig.getFilters()
+        sMessages = ''
         for sFilter in aAllFilters:
             try:
                 oAST = self.__oParser.apply(sFilter)
@@ -216,7 +216,7 @@ class FilterDialog(gtk.Dialog,ConfigFileListener):
         return oNewAST
 
     def __makeScrolledList(self,sName,aVals):
-        oWidget=ScrolledList(sName)
+        oWidget = ScrolledList(sName)
         oWidget.set_size_request(200,400)
         aList = oWidget.get_list()
         aList.clear()

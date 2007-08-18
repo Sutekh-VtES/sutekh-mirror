@@ -43,7 +43,7 @@ class PhysicalCardMenu(gtk.MenuBar,object):
         wMenu.add(iFilter)
         iFilter.connect('activate', self.__oC.getFilter)
 
-        self.iApply=gtk.CheckMenuItem("Apply Filter")
+        self.iApply = gtk.CheckMenuItem("Apply Filter")
         self.iApply.set_inconsistent(False)
         self.iApply.set_active(False)
         wMenu.add(self.iApply)
@@ -72,11 +72,11 @@ class PhysicalCardMenu(gtk.MenuBar,object):
             iMenu.set_sensitive(False)
 
     def doExport(self,widget):
-        oFileChooser=ExportDialog("Save Physical Card List As",self.__oWindow)
+        oFileChooser = ExportDialog("Save Physical Card List As",self.__oWindow)
         oFileChooser.run()
-        sFileName=oFileChooser.getName()
+        sFileName = oFileChooser.getName()
         if sFileName is not None:
-            oW=PhysicalCardXmlFile(sFileName)
+            oW = PhysicalCardXmlFile(sFileName)
             oW.write()
 
     def getApplyFilter(self):

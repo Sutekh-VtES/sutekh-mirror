@@ -117,14 +117,14 @@ class CardSetManagementWindow(gtk.Window):
         oAbsSelection=self.oAbsCardSets.TreeView.get_selection()
         if oAbsSelection.count_selected_rows()>0:
             sType = 'Abstract'
-            (oM,oIter)=oAbsSelection.get_selected()
-            oTestIter1=self.oAbsOpenedIter
-            oTestIter2=self.oAbsAvailIter
+            (oM,oIter) = oAbsSelection.get_selected()
+            oTestIter1 = self.oAbsOpenedIter
+            oTestIter2 = self.oAbsAvailIter
         elif oPhysSelection.count_selected_rows()>0:
             sType = 'Physical'
-            (oM,oIter)=oPhysSelection.get_selected()
-            oTestIter1=self.oPhysOpenedIter
-            oTestIter2=self.oPhysAvailIter
+            (oM,oIter) = oPhysSelection.get_selected()
+            oTestIter1 = self.oPhysOpenedIter
+            oTestIter2 = self.oPhysAvailIter
         else:
             return (None, None)
         oPath = oM.get_path(oIter)
@@ -192,13 +192,13 @@ class CardSetManagementWindow(gtk.Window):
             self.reloadCardSetLists()
 
     def newClicked(self,button,type):
-        if type=='Abstract':
-            Dialog=CreateCardSetDialog(self.__oWin,"AbstractCardSet")
+        if type == 'Abstract':
+            Dialog = CreateCardSetDialog(self.__oWin,"AbstractCardSet")
         else:
-            Dialog=CreateCardSetDialog(self.__oWin,"PhysicalCardSet")
+            Dialog = CreateCardSetDialog(self.__oWin,"PhysicalCardSet")
         Dialog.run()
-        (Name,sAuthor,sDesc)=Dialog.getName()
-        if Name!=None:
+        (Name,sAuthor,sDesc) = Dialog.getName()
+        if not Name is None:
             # Check Name isn't in use
             if type == 'Absttract':
                 NameList = AbstractCardSet.selectBy(name=Name)
@@ -221,7 +221,7 @@ class CardSetManagementWindow(gtk.Window):
             self.createNewCardSetWindow(Name,'Physical')
 
     def createNewCardSetWindow(self,sSetName,sType):
-        newController=None
+        newController = None
         if sType == 'Physical' or sType == 'PhysicalCardSet':
             if sSetName not in self.aOpenPhysicalCardSets.keys():
                 newWindow = CardSetWindow(self,sSetName,"PhysicalCardSet")
@@ -253,9 +253,9 @@ class CardSetManagementWindow(gtk.Window):
 
     def getCardSetWindow(self,sSetName,sType):
         if sType == "PhysicalCardSet" or sType == 'Physical':
-            openSets=self.aOpenPhysicalCardSets
+            openSets = self.aOpenPhysicalCardSets
         elif sType == 'AbstractCardSet' or sType == 'Abstract':
-            openSets=self.aOpenAbstractCardSets
+            openSets = self.aOpenAbstractCardSets
         if sSetName in openSets.keys():
             window, controller = openSets[sSetName]
             return window
@@ -264,9 +264,9 @@ class CardSetManagementWindow(gtk.Window):
     def removeCardSetWindow(self,sSetName,sType):
         # Check Card Set window does exist
         if sType == "PhysicalCardSet" or sType == 'Physical':
-            openSets=self.aOpenPhysicalCardSets
+            openSets = self.aOpenPhysicalCardSets
         elif sType == 'AbstractCardSet' or sType == 'Abstract':
-            openSets=self.aOpenAbstractCardSets
+            openSets = self.aOpenAbstractCardSets
         if sSetName in openSets.keys():
             self.__oMC.getWinGroup().remove_window(openSets[sSetName][0])
             del openSets[sSetName]

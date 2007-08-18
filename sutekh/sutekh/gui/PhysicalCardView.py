@@ -18,7 +18,7 @@ class PhysicalCardView(EditableCardListView):
 
     def cardDrop(self, w, context, x, y, data, info, time):
         if data and data.format == 8 and data.data[:5] == "Abst:":
-            cards=data.data.splitlines()
+            cards = data.data.splitlines()
             for name in cards[1:]:
                 self.addCard(name)
             context.finish(True, False, time)

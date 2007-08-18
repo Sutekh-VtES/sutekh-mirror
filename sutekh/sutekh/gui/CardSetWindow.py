@@ -22,7 +22,7 @@ class CardSetWindow(gtk.Window,object):
         return self.__oC
 
     def updateName(self,sNewName):
-        self.sSetName=sNewName
+        self.sSetName = sNewName
         self.set_title("Sutekh:" + self.sSetType + " Card Set : " + self.sSetName)
 
     def addParts(self,oCardSetView,oCardSetMenu):
@@ -30,13 +30,13 @@ class CardSetWindow(gtk.Window,object):
 
         wMbox.pack_start(oCardSetMenu, False, False)
 
-        oToolbar=gtk.VBox(False,2)
-        bInsertToolbar=False
+        oToolbar = gtk.VBox(False,2)
+        bInsertToolbar = False
         for oPlugin in oCardSetView.getController().getPlugins():
-            oW=oPlugin.getToolbarWidget()
+            oW = oPlugin.getToolbarWidget()
             if oW is not None:
                 oToolbar.pack_start(oW)
-                bInsertToolbar=True
+                bInsertToolbar = True
         if bInsertToolbar:
             wMbox.pack_start(oToolbar, False, False)
 

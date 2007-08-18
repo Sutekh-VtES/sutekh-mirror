@@ -160,10 +160,10 @@ class MainMenu(gtk.MenuBar,object):
     def doImportPhysicalCardList(self,widget):
         oFileChooser = ImportDialog("Select Card List to Import",self.__oWin)
         oFileChooser.run()
-        sFileName=oFileChooser.getName()
+        sFileName = oFileChooser.getName()
         if sFileName is not None:
-            oP=IdentifyXMLFile()
-            (sType,sName,bExists)=oP.idFile(sFileName)
+            oP = IdentifyXMLFile()
+            (sType,sName,bExists) = oP.idFile(sFileName)
             if sType == 'PhysicalCard':
                 if not bExists:
                     oF = PhysicalCardXmlFile(sFileName)

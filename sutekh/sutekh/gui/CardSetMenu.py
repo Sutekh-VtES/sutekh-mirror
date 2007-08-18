@@ -27,13 +27,13 @@ class CardSetMenu(gtk.MenuBar,object):
 
     def __createCardSetMenu(self):
         iMenu = gtk.MenuItem(self.__sMenuType+" Card Set Actions")
-        wMenu=gtk.Menu()
-        self.__dMenus["CardSet"]=wMenu
+        wMenu = gtk.Menu()
+        self.__dMenus["CardSet"] = wMenu
         iMenu.set_submenu(wMenu)
-        self.__iProperties=gtk.MenuItem("Edit Card Set ("+self.sSetName+") properties")
+        self.__iProperties = gtk.MenuItem("Edit Card Set ("+self.sSetName+") properties")
         wMenu.add(self.__iProperties)
         self.__iProperties.connect('activate',self.editProperites)
-        self.__iEditAnn= gtk.MenuItem("Edit Annotations for Card Set ("+self.sSetName+")")
+        self.__iEditAnn = gtk.MenuItem("Edit Annotations for Card Set ("+self.sSetName+")")
         wMenu.add(self.__iEditAnn)
         self.__iEditAnn.connect('activate', self.editAnnotations)
         self.__iExport = gtk.MenuItem("Export Card Set ("+self.sSetName+") to File")
@@ -67,7 +67,7 @@ class CardSetMenu(gtk.MenuBar,object):
         iFilter = gtk.MenuItem("Specify Filter")
         wMenu.add(iFilter)
         iFilter.connect('activate', self.__oC.getFilter)
-        self.iApply=gtk.CheckMenuItem("Apply Filter")
+        self.iApply = gtk.CheckMenuItem("Apply Filter")
         self.iApply.set_inconsistent(False)
         self.iApply.set_active(False)
         wMenu.add(self.iApply)
@@ -79,13 +79,13 @@ class CardSetMenu(gtk.MenuBar,object):
         # setup sub menu
         iMenu = gtk.MenuItem("Plugins")
         wMenu = gtk.Menu()
-        self.__dMenus["Plugins"]=wMenu
+        self.__dMenus["Plugins"] = wMenu
         iMenu.set_submenu(wMenu)
         # plugins
         for oPlugin in self.__oC.getPlugins():
-            oMI=oPlugin.getMenuItem()
+            oMI = oPlugin.getMenuItem()
             if oMI is not None:
-                sMenu=oPlugin.getDesiredMenu()
+                sMenu = oPlugin.getDesiredMenu()
                 # Add to the requested menu if supplied
                 if sMenu in self.__dMenus.keys():
                     self.__dMenus[sMenu].add(oMI)
@@ -93,66 +93,66 @@ class CardSetMenu(gtk.MenuBar,object):
                     # Plugins acts as a catchall Menu
                     wMenu.add(oMI)
         self.add(iMenu)
-        if len(wMenu.get_children())==0:
+        if len(wMenu.get_children()) == 0:
             iMenu.set_sensitive(False)
 
     def editProperites(self,widget):
-        if self.__sType=='PhysicalCardSet':
-            oCS=PhysicalCardSet.byName(self.sSetName)
+        if self.__sType == 'PhysicalCardSet':
+            oCS = PhysicalCardSet.byName(self.sSetName)
         else:
-            oCS=AbstractCardSet.byName(self.sSetName)
-        oProp=PropDialog("Edit Card Set ("+self.sSetName+") Propeties",\
-                self.__oWindow,oCS.name,oCS.author,oCS.comment)
+            oCS = AbstractCardSet.byName(self.sSetName)
+        oProp = PropDialog("Edit Card Set ("+self.sSetName+") Propeties",
+                         self.__oWindow,oCS.name,oCS.author,oCS.comment)
         oProp.run()
         (sName,sAuthor,sComment)=oProp.getData()
         if sName is not None and sName != self.sSetName and len(sName)>0:
             # Check new name is not in use
-            if self.__sType=='PhysicalCardSet':
-                oNameList=PhysicalCardSet.selectBy(name=sName)
+            if self.__sType == 'PhysicalCardSet':
+                oNameList = PhysicalCardSet.selectBy(name=sName)
             else:
-                oNameList=AbstractCardSet.selectBy(name=sName)
+                oNameList = AbstractCardSet.selectBy(name=sName)
             if oNameList.count()>0:
-                Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,\
-                    gtk.BUTTONS_CLOSE,\
-                    "Chosen "+self.__sMenuType+" Card Set name already in use.")
+                Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
+                                    gtk.BUTTONS_CLOSE,
+                                    "Chosen "+self.__sMenuType+" Card Set name already in use.")
                 Complaint.connect("response",lambda dlg, resp: dlg.destroy())
                 Complaint.run()
                 return
             else:
-                oCS.name=sName
-                self.__oView.sSetName=sName
-                self.sSetName=sName
+                oCS.name = sName
+                self.__oView.sSetName = sName
+                self.sSetName = sName
                 self.__updateCardSetMenu()
                 self.__oWindow.updateName(self.sSetName)
                 oCS.syncUpdate()
         if sAuthor is not None:
-            oCS.author=sAuthor
+            oCS.author = sAuthor
             oCS.syncUpdate()
         if sComment is not None:
-            oCS.comment=sComment
+            oCS.comment = sComment
             oCS.syncUpdate()
 
     def editAnnotations(self,widget):
-        if self.__sType=='PhysicalCardSet':
-            oCS=PhysicalCardSet.byName(self.sSetName)
+        if self.__sType == 'PhysicalCardSet':
+            oCS = PhysicalCardSet.byName(self.sSetName)
         else:
-            oCS=AbstractCardSet.byName(self.sSetName)
-        oEditAnn=EditAnnotationsDialog("Edit Annotations of Card Set ("+self.sSetName+")",\
-                self.__oWindow,oCS.name,oCS.annotations)
+            oCS = AbstractCardSet.byName(self.sSetName)
+        oEditAnn = EditAnnotationsDialog("Edit Annotations of Card Set ("+self.sSetName+")",
+                                         self.__oWindow,oCS.name,oCS.annotations)
         oEditAnn.run()
-        oCS.annotations=oEditAnn.getData()
+        oCS.annotations = oEditAnn.getData()
         oCS.syncUpdate()
 
     def doExport(self,widget):
-        oFileChooser=ExportDialog("Save "+self.__sMenuType+" Card Set As",self.__oWindow)
+        oFileChooser = ExportDialog("Save "+self.__sMenuType+" Card Set As",self.__oWindow)
         oFileChooser.run()
-        sFileName=oFileChooser.getName()
+        sFileName = oFileChooser.getName()
         if sFileName is not None:
             # User has OK'd us overwriting anything
-            if self.__sType=='PhysicalCardSet':
-                oW=PhysicalCardSetXmlFile(sFileName)
+            if self.__sType == 'PhysicalCardSet':
+                oW = PhysicalCardSetXmlFile(sFileName)
             else:
-                oW=AbstractCardSetXmlFile(sFileName)
+                oW = AbstractCardSetXmlFile(sFileName)
             oW.write(self.sSetName)
 
     def cardSetClose(self,widget):

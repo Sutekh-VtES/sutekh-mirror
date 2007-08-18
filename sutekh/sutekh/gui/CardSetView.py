@@ -39,9 +39,9 @@ class CardSetView(EditableCardListView):
         selection_data.set(selection_data.target, 8, selectData)
 
     def cardDrop(self, w, context, x, y, data, info, time):
-        lines=data.data.splitlines()
+        lines = data.data.splitlines()
         # We need to do things in this order as cardNames can include :
-        bits=lines[0].split(":")
+        bits = lines[0].split(":")
         if data and data.format == 8 and bits[0] == "Phys":
             # Card is from the Physical card view, so we only get one
             for name in lines[1:]:

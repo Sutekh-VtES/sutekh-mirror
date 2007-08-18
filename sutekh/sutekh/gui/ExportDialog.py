@@ -12,11 +12,11 @@ class ExportDialog(gtk.FileChooserDialog):
         self.connect("response",self.buttonResponse)
         self.set_local_only(True)
         self.set_do_overwrite_confirmation(True)
-        self.Name=None
+        self.Name = None
 
     def buttonResponse(self,widget,response):
         if response == gtk.RESPONSE_OK:
-            self.Name=self.get_filename()
+            self.Name = self.get_filename()
         self.destroy()
 
     def getName(self):
