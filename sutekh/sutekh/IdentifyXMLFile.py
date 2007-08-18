@@ -16,32 +16,32 @@ from xml.sax.handler import ContentHandler
 class IdentifyXMLHandler(ContentHandler):
     def __init__(self):
         ContentHandler.__init__(self)
-        self.sType='Unknown'
-        self.sName=None
-        self.bExists=False
+        self.sType = 'Unknown'
+        self.sName = None
+        self.bExists = False
 
     def startElement(self,sTagName,oAttrs):
         if sTagName == 'abstractcardset':
-            self.sType='AbstractCardSet'
+            self.sType ='AbstractCardSet'
             self.sName = oAttrs.getValue('name')
             try:
-                acs=AbstractCardSet.byName(self.sName.encode('utf8'))
-                self.bExists=True
+                acs = AbstractCardSet.byName(self.sName.encode('utf8'))
+                self.bExists = True
             except SQLObjectNotFound:
-                self.bExists=False
+                self.bExists = False
         if sTagName == 'physicalcardset':
-            self.sType='PhysicalCardSet'
+            self.sType ='PhysicalCardSet'
             self.sName = oAttrs.getValue('name')
             try:
-                acs=PhysicalCardSet.byName(self.sName.encode('utf8'))
-                self.bExists=True
+                acs = PhysicalCardSet.byName(self.sName.encode('utf8'))
+                self.bExists = True
             except SQLObjectNotFound:
-                self.bExists=False
+                self.bExists = False
         if sTagName == 'cards':
-            self.sType='PhysicalCard'
+            self.sType = 'PhysicalCard'
             # There is only 1 PhysicalCard List, so it exists if it's
             # not empty
-            self.bExists=PhysicalCard.select().count()>0
+            self.bExists = PhysicalCard.select().count() > 0
 
     def endElement(self,sName):
         pass
@@ -51,7 +51,7 @@ class IdentifyXMLHandler(ContentHandler):
 
 class IdentifyXMLFile(object):
     def parse(self,fIn):
-        myHandler=IdentifyXMLHandler()
+        myHandler = IdentifyXMLHandler()
         try:
             parse(fIn,myHandler)
         except _exceptions.SAXParseException:
@@ -59,7 +59,7 @@ class IdentifyXMLFile(object):
         return myHandler.getDetails()
 
     def parseString(self,sIn):
-        myHandler=IdentifyXMLHandler()
+        myHandler = IdentifyXMLHandler()
         try:
             parseString(sIn,myHandler)
         except _exceptions.SAXParseException:
@@ -67,7 +67,7 @@ class IdentifyXMLFile(object):
         return myHandler.getDetails()
 
     def idFile(self,sFileName):
-        fIn=file(sFileName,'rU')
-        result=self.parse(fIn)
+        fIn = file(sFileName,'rU')
+        result = self.parse(fIn)
         fIn.close()
         return result

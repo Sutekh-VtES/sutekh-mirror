@@ -9,7 +9,7 @@ from sutekh.gui.DBErrorPopup import DBVerErrorPopup, NoDBErrorPopup
 from sutekh.gui.DBUpgradeDialog import DBUpgradeDialog
 from sutekh.gui.WWFilesDialog import WWFilesDialog
 from sutekh.DatabaseVersion import DatabaseVersion
-from sutekh.DatabaseUpgrade import createMemoryCopy, createFinalCopy, unknownVersion
+from sutekh.DatabaseUpgrade import createMemoryCopy, createFinalCopy, UnknownVersion
 from sqlobject import sqlhub, connectionForURI
 from sutekh.gui.ConfigFile import ConfigFile
 import gtk
@@ -155,7 +155,7 @@ def main(aArgs):
                     diag.run()
                     diag.destroy()
                     return 1
-            except unknownVersion, err:
+            except UnknownVersion, err:
                 diag=gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,\
                         gtk.BUTTONS_CLOSE,None)
                 diag.set_markup("Upgrade Failed. "+str(err))

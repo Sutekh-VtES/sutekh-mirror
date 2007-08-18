@@ -16,7 +16,7 @@ from sutekh.SutekhObjects import PhysicalCard
 from xml.dom.minidom import getDOMImplementation
 
 class PhysicalCardWriter(object):
-    sMyVersion='1.0'
+    sMyVersion = '1.0'
 
     def genDoc(self):
         dPhys = {}
@@ -47,5 +47,5 @@ class PhysicalCardWriter(object):
         return oDoc
 
     def write(self,fOut):
-        oDoc=self.genDoc()
+        oDoc = self.genDoc()
         fOut.write(oDoc.toprettyxml())

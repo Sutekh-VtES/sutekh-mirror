@@ -89,7 +89,7 @@ class CardDict(dict):
 
     def _addLife(self,oCard,sLife):
         sLife = self.oWhiteSp.sub(' ',sLife).strip()
-        aLife=sLife.split()
+        aLife = sLife.split()
 
         try:
             oCard.life=int(aLife[0],10)
@@ -313,49 +313,49 @@ class WhiteWolfParser(HTMLParser.HTMLParser,object):
 
 def parseText(oCard):
     """Parse the CardText for Sect and Titles"""
-    oType=oCard.cardtype
-    sTitle=None
-    sSect=None
+    oType = oCard.cardtype
+    sTitle = None
+    sSect = None
     if oType[0].name != 'Vampire':
         return (None,None)
-    aLines=oCard.text.splitlines()
-    if aLines[0].find('Camarilla')!=-1:
-        sSect='Camarilla'
-        if aLines[0].find('primogen')!=-1:
-            sTitle='Primogen'
-        elif aLines[0].find('Prince of')!=-1:
-            sTitle='Prince'
-        elif aLines[0].find('Justicar')!=-1:
-            sTitle='Justicar'
-        elif aLines[0].find('Inner Circle')!=-1:
-            sTitle='Inner Circle'
-    elif aLines[0].find('Sabbat')!=-1:
+    aLines = oCard.text.splitlines()
+    if aLines[0].find('Camarilla') != -1:
+        sSect = 'Camarilla'
+        if aLines[0].find('primogen') != -1:
+            sTitle = 'Primogen'
+        elif aLines[0].find('Prince of') != -1:
+            sTitle = 'Prince'
+        elif aLines[0].find('Justicar') != -1:
+            sTitle = 'Justicar'
+        elif aLines[0].find('Inner Circle') != -1:
+            sTitle = 'Inner Circle'
+    elif aLines[0].find('Sabbat') != -1:
         sSect='Sabbat'
-        if aLines[0].find('Archbishop of')!=-1:
-            sTitle='Archbishop'
-        elif aLines[0].find('bishop')!=-1:
-            sTitle='Bishop'
-        elif aLines[0].find('priscus')!=-1:
-            sTitle='Priscus'
-        elif aLines[0].find('cardinal')!=-1:
-            sTitle='Cardinal'
-        elif aLines[0].find('regent')!=-1:
-            sTitle='Regent'
-    elif aLines[0].find('Independent')!=-1:
-        sSect='Independent'
+        if aLines[0].find('Archbishop of') != -1:
+            sTitle = 'Archbishop'
+        elif aLines[0].find('bishop') != -1:
+            sTitle = 'Bishop'
+        elif aLines[0].find('priscus') != -1:
+            sTitle = 'Priscus'
+        elif aLines[0].find('cardinal') != -1:
+            sTitle = 'Cardinal'
+        elif aLines[0].find('regent') != -1:
+            sTitle = 'Regent'
+    elif aLines[0].find('Independent') != -1:
+        sSect = 'Independent'
         # Independent titles are on the next line. Of the form
         # Name has X vote(s)
         try:
-            if aLines[1].find('has 1 vote')!=-1:
-                sTitle='Independent with 1 vote'
-            elif aLines[1].find('has 2 votes')!=-1:
-                sTitle='Independent with 2 votes'
-            elif aLines[1].find('has 3 votes')!=-1:
-                sTitle='Independent with 3 votes'
+            if aLines[1].find('has 1 vote') != -1:
+                sTitle = 'Independent with 1 vote'
+            elif aLines[1].find('has 2 votes') != -1:
+                sTitle = 'Independent with 2 votes'
+            elif aLines[1].find('has 3 votes') != -1:
+                sTitle = 'Independent with 3 votes'
         except IndexError:
             pass
-    elif aLines[0].find('Laibon')!=-1:
-        sSect='Laibon'
-        if aLines[0].find('magaji')!=-1:
-            sTitle='Magaji'
+    elif aLines[0].find('Laibon') != -1:
+        sSect = 'Laibon'
+        if aLines[0].find('magaji') != -1:
+            sTitle = 'Magaji'
     return (sSect,sTitle)

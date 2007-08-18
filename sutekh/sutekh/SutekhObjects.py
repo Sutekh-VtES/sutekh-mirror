@@ -706,7 +706,7 @@ class PhysicalCardToAbstractCardAdapter(object):
 def FlushCache():
     # Flush all the object caches - needed before importing new card lists
     # and such
-    for cAdaptor in [ExpansionAdapter,RarityAdapter,DisciplineAdapter,
-            ClanAdapter,CardTypeAdapter,SectAdaptor,TitleAdapter,VirtueAdapter,
-            CreedAdapter]:
+    for cAdaptor in [ ExpansionAdapter, RarityAdapter, DisciplineAdapter,
+                      ClanAdapter, CardTypeAdapter, SectAdaptor, TitleAdapter,
+                      VirtueAdapter, CreedAdapter ]:
         cAdaptor.makeObjectCache()

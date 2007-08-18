@@ -78,7 +78,7 @@ class WriteArdbXML(object):
             oCardElem.appendChild(oDiscElem)
             aClan = [x.name for x in oCard.clan]
             oClanElem = oDoc.createElement('clan')
-            oCapElem=oDoc.createElement('capacity')
+            oCapElem = oDoc.createElement('capacity')
             if len(oCard.creed)>0:
                 # ARDB seems to treat all Imbued as being of the same clan
                 # Should we do an Imbued:Creed thing?
@@ -89,7 +89,7 @@ class WriteArdbXML(object):
                 oCapElem.appendChild(oDoc.createTextNode(str(oCard.capacity)))
             oCardElem.appendChild(oClanElem)
             oCardElem.appendChild(oCapElem)
-            oGrpElem=oDoc.createElement('group')
+            oGrpElem = oDoc.createElement('group')
             oGrpElem.appendChild(oDoc.createTextNode(str(oCard.group)))
             oCardElem.appendChild(oGrpElem)
             # ARDB doesn't handle sect specifically
@@ -126,8 +126,8 @@ class WriteArdbXML(object):
             if len(oCard.clan)>0:
                 # ARDB also strores things like "requires a prince"
                 # we don't so to bad
-                oReqElem=oDoc.createElement('requirement')
-                aClan=[x.name for x in oCard.clan]
+                oReqElem = oDoc.createElement('requirement')
+                aClan = [x.name for x in oCard.clan]
                 oReqElem.appendChild(oDoc.createTextNode("/".join(aClan)))
                 oCardElem.appendChild(oReqElem)
             # Looks like it should be the right thing, but may not
@@ -137,7 +137,7 @@ class WriteArdbXML(object):
             oTypeElem.appendChild(oDoc.createTextNode(sType))
             oCardElem.appendChild(oTypeElem)
             # Not sure if this does quite the right thing here
-            sDisciplines=self.getDisc(oCard)
+            sDisciplines = self.getDisc(oCard)
             if sDisciplines != '':
                 oDiscElem = oDoc.createElement('disciplines')
                 oDiscElem.appendChild(oDoc.createTextNode(sDisciplines))
@@ -157,7 +157,7 @@ class WriteArdbXML(object):
         fOut.write(oDoc.toprettyxml())
 
     def getDisc(self,oCard):
-        aDisc=[]
+        aDisc = []
         aTypes = [x.name for x in oCard.cardtype]
         if aTypes[0] == 'Vampire':
             if not len(oCard.discipline) ==  0:

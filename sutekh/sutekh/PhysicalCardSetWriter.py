@@ -18,19 +18,19 @@ from sqlobject import SQLObjectNotFound
 from xml.dom.minidom import getDOMImplementation
 
 class PhysicalCardSetWriter(object):
-    sMyVersion="1.0"
+    sMyVersion = "1.0"
 
     def genDoc(self,sPhysicalCardSetName):
         dPhys = {}
 
         try:
             oPCS = PhysicalCardSet.byName(sPhysicalCardSetName)
-            sAuthor=oPCS.author
-            sComment=oPCS.comment
-            sAnnotations=oPCS.annotations
+            sAuthor = oPCS.author
+            sComment = oPCS.comment
+            sAnnotations = oPCS.annotations
             if sAnnotations is None:
                 # prettytoxml will barf if this isn't done
-                sAnnotations=''
+                sAnnotations = ''
         except SQLObjectNotFound:
             print "Failed to find %s" % sPhysicalCardSetName
             return
@@ -66,5 +66,5 @@ class PhysicalCardSetWriter(object):
         return oDoc
 
     def write(self,fOut,sPhysicalCardSetName):
-        oDoc=self.genDoc(sPhysicalCardSetName)
+        oDoc = self.genDoc(sPhysicalCardSetName)
         fOut.write(oDoc.toprettyxml())

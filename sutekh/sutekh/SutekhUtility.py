@@ -17,7 +17,7 @@ def refreshTables(aTables,oConn,**kw):
     for cCls in aTables:
         cCls.dropTable(ifExists=True,connection=oConn)
     aTables.reverse()
-    oVerHandler=DatabaseVersion(oConn)
+    oVerHandler = DatabaseVersion(oConn)
     if not oVerHandler.setVersion(VersionTable,VersionTable.tableversion,oConn):
         return False
     for cCls in aTables:
@@ -28,32 +28,32 @@ def refreshTables(aTables,oConn,**kw):
 
 def readWhiteWolfList(sWwList):
     FlushCache()
-    oldConn=sqlhub.processConnection
-    sqlhub.processConnection=oldConn.transaction()
+    oldConn = sqlhub.processConnection
+    sqlhub.processConnection = oldConn.transaction()
     oP = WhiteWolfParser()
     fIn = codecs.open(sWwList,'rU','cp1252')
     for sLine in fIn:
         oP.feed(sLine)
     fIn.close()
     sqlhub.processConnection.commit()
-    sqlhub.processConnection=oldConn
+    sqlhub.processConnection = oldConn
 
 def readRulings(sRulings):
     FlushCache()
-    oldConn=sqlhub.processConnection
-    sqlhub.processConnection=oldConn.transaction()
+    oldConn = sqlhub.processConnection
+    sqlhub.processConnection = oldConn.transaction()
     oP = RulingParser()
     fIn = codecs.open(sRulings,'rU','cp1252')
     for sLine in fIn:
         oP.feed(sLine)
     fIn.close()
     sqlhub.processConnection.commit()
-    sqlhub.processConnection=oldConn
+    sqlhub.processConnection = oldConn
 
 def genTempFile(sBaseName,sDir):
     """Simple wrapper around tempfile creation - generates the name and closes
        the file"""
-    (fd, sFilename)=tempfile.mkstemp('.xml',sBaseName,sDir)
+    (fd, sFilename) = tempfile.mkstemp('.xml',sBaseName,sDir)
     # This may not be nessecary, but the available documentation
     # suggests that, on Windows NT anyway, leaving the file open will
     # cause problems when writePhysicalCards tries to reopen it
@@ -65,14 +65,14 @@ def genTempFile(sBaseName,sDir):
     return sFilename
 
 def genTempdir():
-    sTempdir=tempfile.mkdtemp('dir','sutekh')
+    sTempdir = tempfile.mkdtemp('dir','sutekh')
     return sTempdir
 
 def safeFilename(sFilename):
     """Replace potentially dangerous and annoying characters in the name -
        used to automatically generate sensible filenames from card set names"""
-    sSafeName=sFilename
-    sSafeName=sSafeName.replace(" ","_") # I dislike spaces in filenames
-    sSafeName=sSafeName.replace("/","_") # Prevented unexpected filesystem issues
-    sSafeName=sSafeName.replace("\\","_") # ditto for windows
+    sSafeName = sFilename
+    sSafeName = sSafeName.replace(" ","_") # I dislike spaces in filenames
+    sSafeName = sSafeName.replace("/","_") # Prevented unexpected filesystem issues
+    sSafeName = sSafeName.replace("\\","_") # ditto for windows
     return sSafeName

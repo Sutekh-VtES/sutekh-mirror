@@ -18,11 +18,11 @@ import os
 class PhysicalCardXmlFile(object):
     def __init__(self,filename=None,dir=None):
         if filename is not None:
-            self.sXmlFile=filename
+            self.sXmlFile = filename
         else:
             if dir is None:
-                dir=genTempdir()
-            self.sXmlFile=genTempFile('physical_cards_',dir)
+                dir = genTempdir()
+            self.sXmlFile = genTempFile('physical_cards_',dir)
 
     def read(self):
         if self.sXmlFile is None:
@@ -45,7 +45,7 @@ class PhysicalCardXmlFile(object):
 
 class AbstractCardSetXmlFile(object):
     def __init__(self,filename=None):
-        self.sXmlFile=filename
+        self.sXmlFile = filename
 
     def read(self):
         if self.sXmlFile is None:
@@ -56,10 +56,10 @@ class AbstractCardSetXmlFile(object):
     def write(self,sAbstractCardSetName):
         oW = AbstractCardSetWriter()
         if self.sXmlFile is None:
-            filename=safeFilename(sAbstractCardSetName)
-            fOut=file(filename,'w')
+            filename = safeFilename(sAbstractCardSetName)
+            fOut = file(filename,'w')
         else:
-            fOut=file(self.sXmlFile,'w')
+            fOut = file(self.sXmlFile,'w')
         oW.write(fOut,sAbstractCardSetName)
         fOut.close()
 
@@ -70,7 +70,7 @@ class AbstractCardSetXmlFile(object):
 
 class PhysicalCardSetXmlFile(object):
     def __init__(self,filename=None):
-        self.sXmlFile=filename
+        self.sXmlFile = filename
 
     def read(self):
         if self.sXmlFile is None:
@@ -82,9 +82,9 @@ class PhysicalCardSetXmlFile(object):
         oW = PhysicalCardSetWriter()
         if self.sXmlFile is None:
             filename=safeFilename(sPhysicalCardSetName)
-            fOut=file(filename,'w')
+            fOut = file(filename,'w')
         else:
-            fOut=file(self.sXmlFile,'w')
+            fOut = file(self.sXmlFile,'w')
         oW.write(fOut,sPhysicalCardSetName)
         fOut.close()
 
@@ -95,22 +95,22 @@ class PhysicalCardSetXmlFile(object):
 
 def writeAllAbstractCardSets(dir=''):
     oAbstractCardSets = AbstractCardSet.select()
-    aList=[];
+    aList = []
     for acs in oAbstractCardSets:
-        sFName=safeFilename(acs.name)
-        filename=genTempFile('acs_'+sFName+'_',dir)
-        oW=AbstractCardSetXmlFile(filename)
+        sFName = safeFilename(acs.name)
+        filename = genTempFile('acs_'+sFName+'_',dir)
+        oW = AbstractCardSetXmlFile(filename)
         aList.append(oW)
         oW.write(acs.name)
     return aList
 
 def writeAllPhysicalCardSets(dir=''):
     oPhysicalCardSets = PhysicalCardSet.select()
-    aList=[];
+    aList = []
     for pcs in oPhysicalCardSets:
-        sFName=safeFilename(pcs.name)
-        filename=genTempFile('pcs_'+sFName+'_',dir)
-        oW=PhysicalCardSetXmlFile(filename)
+        sFName = safeFilename(pcs.name)
+        filename = genTempFile('pcs_'+sFName+'_',dir)
+        oW = PhysicalCardSetXmlFile(filename)
         aList.append(oW)
         oW.write(pcs.name)
     return aList
