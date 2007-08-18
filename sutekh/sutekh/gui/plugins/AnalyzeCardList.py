@@ -32,7 +32,10 @@ class AnalyzeCardList(CardListPlugin):
             }
 
     def _Percentage(self,iNum,iTot,sDesc):
-        fPrec = iNum/float(iTot)
+        if iTot>0:
+            fPrec = iNum/float(iTot)
+        else:
+            fPrec = 0.0 
         return '(' + str(fPrec*100).ljust(5)[:5] + "% of " + sDesc + ')'
 
     def _getAbstractCards(self,aCards):
@@ -42,6 +45,9 @@ class AnalyzeCardList(CardListPlugin):
             return [x.abstractCard for x in aCards]
         else:
             return aCards
+
+    def _getSortKey(self,x):
+        return x[1][0]
 
     def getMenuItem(self):
         """
@@ -122,6 +128,8 @@ class AnalyzeCardList(CardListPlugin):
         self.iMaxGroup = -500
         self.iMinGroup = 500
         self.iNumberMult = 0
+        
+        self.dCryptDisc = {}
 
         # Split out the card types of interest
         aAllCards = list(self.model.getCardIterator(None))
@@ -301,13 +309,13 @@ class AnalyzeCardList(CardListPlugin):
                     dDeckClans[clan.name] += 1
 
             for disc in oAbsCard.discipline:
-                if disc.discipline.name in dDeckDisc:
-                    dDeckDisc[disc.discipline.name][0] += 1
+                if disc.discipline.fullname in dDeckDisc:
+                    dDeckDisc[disc.discipline.fullname][0] += 1
                 else:
-                    dDeckDisc[disc.discipline.name] = [1,0]
+                    dDeckDisc[disc.discipline.fullname] = [1,0]
 
                 if disc.level == 'superior':
-                    dDeckDisc[disc.discipline.name][1] += 1
+                    dDeckDisc[disc.discipline.fullname][1] += 1
 
             for title in oAbsCard.title:
                 iTitles += 1
@@ -348,33 +356,58 @@ class AnalyzeCardList(CardListPlugin):
                            + " (" + str(self.dTitleVoteMap[title]) + ") votes\n"
 
             sVampText += str(iVotes) + " votes in the crypt. Average votes per vampire is " \
-                       + str(float(iVotes)/self.iNumberVampires).ljust(5)[:5] + "\n"
+                       + str(iVotes / float(self.iNumberVampires)).ljust(5)[:5] + "\n"
 
             sVampText += str(iTitles) + " titles in the crypt " + \
                         self._Percentage(iTitles,
                             self.iCryptSize,"Crypt") + '\n'
 
             sVampText += "<span foreground = \"blue\">Disciplines</span>\n"
-            for discipline, number in sorted(dDeckDisc.iteritems()):
-                # Maybe should sort this by number[0]?
+            for discipline, number in sorted(dDeckDisc.iteritems(),key=self._getSortKey,reverse=True):
                 sVampText += str(number[0])+" Vampires with " + discipline \
                            + ' ' + self._Percentage(number[0],
                                    self.iCryptSize,"Crypt") + ", " \
                            + str(number[1]) + " at Superior " + \
                            self._Percentage(number[1],
                                    self.iCryptSize,"Crypt") + '\n'
+                self.dCryptDisc.setdefault(number[0],[])
+                self.dCryptDisc[number[0]].append(discipline)
 
         return sVampText
 
     def processMaster(self,aCards):
+        iMaxCost = 0
+        iVarCostNumber = 0
+        iTotCost = 0
+        iClanRequirement = 0
+
         for oAbsCard in self._getAbstractCards(aCards):
-            pass
+            if oAbsCard.cost is not None:
+                if oAbsCard.cost == -1:
+                    iVarCostNumber += 1
+                else:
+                    iMaxCost = max(iMaxCost,oAbsCard.cost)
+                    iTotCost += oAbsCard.cost
+
+            if not len(oAbsCard.clan) == 0:
+                iClanRequirement += 1
 
         # Build up Text
         sMasterText = "<b>Master Cards :</b>\n"
         sMasterText += "Number of Masters = " + str(self.iNumberMasters) + ' ' + \
-                           self._Percentage(self.iNumberMasters,
-                                   self.iNumberLibrary,"Library") + '\n'
+                self._Percentage(self.iNumberMasters,
+                        self.iNumberLibrary,"Library") + '\n'
+        if self.iNumberMasters > 0:
+            sMasterText += "Most Expensive Master = " + str(iMaxCost) +'\n'
+            sMasterText += "Masters with Variable Cost = " + str(iVarCostNumber) + ' ' + \
+                    self._Percentage(iVarCostNumber,
+                            self.iNumberMasters,"Masters") + '\n'
+            sMasterText += "Average Master Cost = " + str( iTotCost / \
+                    float(self.iNumberMasters)).ljust(5)[:5] + '\n'
+            sMasterText += "Number of Masters with a Clan requirement = " + str(iClanRequirement) + ' ' + \
+                    self._Percentage(iClanRequirement,
+                            self.iNumberMasters,"Masters") + '\n'
+                
         return sMasterText
 
     def processCombat(self,aCards):
@@ -489,6 +522,7 @@ class AnalyzeCardList(CardListPlugin):
 
     def processImbued(self,aCards):
         dDeckImbued = {}
+        dDeckVirt = {}
 
         iMaxLife = -500
         iMinLife = 500
@@ -503,6 +537,11 @@ class AnalyzeCardList(CardListPlugin):
                 dDeckImbued[oAbsCard.name] = 1
             else:
                 dDeckImbued[oAbsCard.name] += 1
+
+            for virtue in oAbsCard.virtue:
+                dDeckVirt.setdefault(virtue.fullname,[0])
+                # List, so we can use _getSortKey
+                dDeckVirt[virtue.fullname][0] += 1
 
             self.iMaxGroup = max(self.iMaxGroup,oAbsCard.group)
             self.iMinGroup = min(self.iMinGroup,oAbsCard.group)
@@ -529,17 +568,63 @@ class AnalyzeCardList(CardListPlugin):
             sImbuedText += "Most Expensive is : " + str(iMaxLife) + "\n"
             sImbuedText += "Average Life is : " + str(iTotLife / float(self.iNumberImbued)).ljust(5)[:5] + "\n\n"
 
+            for virtue, number in sorted(dDeckVirt.iteritems(),key=self._getSortKey,reverse=True):
+                sImbuedText += str(number[0])+" Imbued with " + virtue \
+                           + ' ' + self._Percentage(number[0],
+                                   self.iCryptSize,"Crypt") + '\n'
+                # Treat virtues as inferior disciplines for happy families
+                self.dCryptDisc.setdefault(number[0],[])
+                self.dCryptDisc[number[0]].append(virtue)
+
         return sImbuedText
 
     def happyFamiliesAnalysis(self,aCards):
+        dLibDisc = {}
+
         for oAbsCard in self._getAbstractCards(aCards):
             aTypes = [x.name for x in oAbsCard.cardtype]
             if len(aTypes)>1:
                 # Since we examining all the cards, do this here
                 self.iNumberMult += 1
+            if aTypes[0] != 'Vampire' and aTypes[0] != 'Imbued' \
+                    and aTypes[0] != 'Master':
+                # Non-Master Library card, so extract disciplines
+                if len(oAbsCard.discipline) > 0:
+                    for disc in oAbsCard.discipline:
+                        dLibDisc.setdefault(disc.discipline.fullname,0)
+                        dLibDisc[disc.discipline.fullname] += 1
+                elif len(oAbsCard.virtue) > 0:
+                    for virtue in oAbsCard.virtue:
+                        dLibDisc.setdefault(virtue.fullname,0)
+                        dLibDisc[virtue.fullname] += 1
+                else:
+                    dLibDisc.setdefault('No Discipline',0)
+                    dLibDisc['No Discipline'] += 1
 
         # Build up Text
         sHappyFamilyText = "<b>Happy Families Analysis :</b>\n"
+        if self.iNumberImbued > 0:
+            sHappyFamilyText += "\n<span foreground = \"red\">This is not optimised for Imbued, and treats them as small vampires</span>\n"
+
+        iHFMasters = int(round(0.2 * self.iNumberLibrary))
+
+        sHappyFamilyText += "\n<b>Master Cards</b>\n\n"
+        sHappyFamilyText += str(self.iNumberMasters) + " Masters " + \
+                self._Percentage(self.iNumberMasters,
+                        self.iNumberLibrary,"Library") + \
+                ",\nHappy Families recommends 20%, which would be " + \
+                str(iHFMasters) + '\n'
+
+        sHappyFamilyText += "<span foreground = \"blue\">Difference = " + \
+                str(abs(iHFMasters - self.iNumberMasters)) + "</span>\n\n"
+
+        sHappyFamilyText += "<b>2 Discipline Case</b>\n\n"
+        # self.dCryptDisc and dLibDisc have the info we need about the disciplines
+
+        sHappyFamilyText += "<b>3 Discipline Case</b>\n\n"
+
+        sHappyFamilyText += "<b>4 Discipline Case</b>\n\n"
+
         return sHappyFamilyText
 
 plugin = AnalyzeCardList
