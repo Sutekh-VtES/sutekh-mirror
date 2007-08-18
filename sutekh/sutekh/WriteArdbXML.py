@@ -10,6 +10,7 @@ the Anarch Revolt Deck Builder
 """
 
 from sutekh.SutekhObjects import IAbstractCard
+from sutekh.SutekhInfo import SutekhInfo
 from xml.dom.minidom import getDOMImplementation
 import time
 
@@ -24,7 +25,7 @@ class WriteArdbXML(object):
 
         oDeckElem = oDoc.firstChild
         sDateWritten = time.strftime('%Y-%m-%d',time.localtime())
-        oDeckElem.setAttribute('generator',"Sutekh [pre-release]")
+        oDeckElem.setAttribute('generator',"Sutekh [" + SutekhInfo.VERSION_STR + "]")
         oDeckElem.setAttribute('formatVersion',"-TODO-1.0") # Claim same version as recent ARDB
         oDeckElem.setAttribute('databaseVersion',"Sutekh-20070701")
         oNameElem=oDoc.createElement('name')
