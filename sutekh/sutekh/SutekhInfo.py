@@ -5,7 +5,7 @@
 from pkg_resources import resource_string
 
 class SutekhInfo(object):
-    VERSION = (0,3,2)
+    VERSION = (0,4,0)
     VERSION_STR = '.'.join([str(x) for x in VERSION])
 
     NAME = 'Sutekh'
@@ -28,14 +28,14 @@ class SutekhInfo(object):
     LICENSE_TEXT = resource_string(__name__,'COPYING')
 
     INSTALL_REQUIRES = [
-        'SQLObject',
+        'SQLObject == 0.9.1', # fetching 0.10dev requires svn (which is a bit crazy as an install requirement)
         'PyProtocols',
-        'Ply'
+        'ply',
     ]
 
     # Install these manually
     NON_EGG_REQUIREMENTS = [
-        'pysqlite',
+        'setuptools',
+        'pysqlite', # sqlite3 is installed by default in Python >= 2.5
         'PyGTK',
-        'PyXML'
     ]
