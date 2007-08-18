@@ -4,6 +4,7 @@
  * Ensure imbued are semi-sensibly handled by the HTML export
  * Rework Analyze Card Set dialog code's structure. Add many more blanks
    to be filled in
+ * Add initial stab at Happy Families analysis to Card Set
  * Prevent creation of parsetab.py and parser.put
  * Use prefrences directory for sutekhrc
  * Further pre-release cleanups

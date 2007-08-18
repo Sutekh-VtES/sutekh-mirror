@@ -581,6 +581,8 @@ class AnalyzeCardList(CardListPlugin):
     def happyFamiliesAnalysis(self,aCards):
         dLibDisc = {}
 
+        dLibDisc.setdefault('No Discipline',0)
+
         for oAbsCard in self._getAbstractCards(aCards):
             aTypes = [x.name for x in oAbsCard.cardtype]
             if len(aTypes)>1:
@@ -598,7 +600,6 @@ class AnalyzeCardList(CardListPlugin):
                         dLibDisc.setdefault(virtue.fullname,0)
                         dLibDisc[virtue.fullname] += 1
                 else:
-                    dLibDisc.setdefault('No Discipline',0)
                     dLibDisc['No Discipline'] += 1
 
         # Build up Text
@@ -606,24 +607,67 @@ class AnalyzeCardList(CardListPlugin):
         if self.iNumberImbued > 0:
             sHappyFamilyText += "\n<span foreground = \"red\">This is not optimised for Imbued, and treats them as small vampires</span>\n"
 
+        if self.iCryptSize == 0:
+            sHappyFamilyText += "\n<span foreground = \"red\">Need to have a crypt to do the analysis</span>\n"
+            return sHappyFamilyText
+
         iHFMasters = int(round(0.2 * self.iNumberLibrary))
 
-        sHappyFamilyText += "\n<b>Master Cards</b>\n\n"
+        iNonMasters = self.iNumberLibrary - self.iNumberMasters
+
+        sHappyFamilyText += "\n<b>Master Cards</b>\n"
         sHappyFamilyText += str(self.iNumberMasters) + " Masters " + \
                 self._Percentage(self.iNumberMasters,
                         self.iNumberLibrary,"Library") + \
                 ",\nHappy Families recommends 20%, which would be " + \
-                str(iHFMasters) + '\n'
+                str(iHFMasters) + '  : '
 
         sHappyFamilyText += "<span foreground = \"blue\">Difference = " + \
-                str(abs(iHFMasters - self.iNumberMasters)) + "</span>\n\n"
+                str(abs(iHFMasters - self.iNumberMasters)) + "</span>\n"
 
-        sHappyFamilyText += "<b>2 Discipline Case</b>\n\n"
+        aTopVampireDisc = sorted(self.dCryptDisc.keys(),reverse=True)
+        aMajorDisc = []
+        for number in aTopVampireDisc:
+            for disc in self.dCryptDisc[number]:
+                aMajorDisc.append( (number, disc ) )
+                dLibDisc.setdefault(disc,0) # Need to ensure all these are defined
+
+        # Todo - handle case of a == b == c better than currently
+
         # self.dCryptDisc and dLibDisc have the info we need about the disciplines
+        for iNumberToShow in range(2,5):
+            if len(aMajorDisc) >= iNumberToShow:
+                sHappyFamilyText += "<b>" + str(iNumberToShow) + " Discipline Case</b>\n"
+                fDemon = float(self.iCryptSize)
+                for j in range(iNumberToShow):
+                    fDemon += aMajorDisc[j][0]
+                iHFNoDiscipline = int((iNonMasters * self.iCryptSize / fDemon ))
+                iDiff = iNonMasters - iHFNoDiscipline
+                aDiscNumbers = []
+                for j in range(iNumberToShow):
+                    iDisc = int(iNonMasters * aMajorDisc[j][0] / fDemon )
+                    aDiscNumbers.append(iDisc)
+                    iDiff -= iDisc
 
-        sHappyFamilyText += "<b>3 Discipline Case</b>\n\n"
+                if iDiff > 0:
+                    iHFNoDiscipline += iDiff # Shove rounding errors here
 
-        sHappyFamilyText += "<b>4 Discipline Case</b>\n\n"
+                sHappyFamilyText += "Number of Cards requiring No discipline : " + \
+                        str( dLibDisc['No Discipline']) + '\n'
+                sHappyFamilyText += "Happy Families recommends " + \
+                        str(iHFNoDiscipline) + ' : '
+                sHappyFamilyText += "<span foreground = \"blue\">Difference = " + \
+                        str(abs(iHFNoDiscipline - dLibDisc['No Discipline'])) + "</span>\n"
+                for j in range(iNumberToShow):
+                    disc = aMajorDisc[j][1]
+                    number = aMajorDisc[j][0]
+                    sHappyFamilyText += "Number of Cards requiring " + disc + " : " + \
+                            str( dLibDisc[disc]) + \
+                            " (" + str(aMajorDisc[j][0]) + " crypt members)\n"
+                    sHappyFamilyText += "Happy Families recommends " + \
+                            str(aDiscNumbers[j]) + '  : '
+                    sHappyFamilyText += "<span foreground = \"blue\">Difference = " + \
+                            str(abs(aDiscNumbers[j] - dLibDisc[disc])) + "</span>\n"
 
         return sHappyFamilyText
 
