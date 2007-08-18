@@ -29,7 +29,7 @@ def parseOptions(aArgs):
     oP = optparse.OptionParser(usage="usage: %prog [options]",version="%prog 0.1")
     oP.add_option("-d", "--db",
                   type="string", dest="db", default=None,
-                  help="Database URI. [sqlite://$PWD/sutekh.db]")
+                  help="Database URI. [sqlite://$PREFSDIR$/sutekh.db]")
     oP.add_option("--ignore-db-version",
                   action="store_true", dest="ignore_db_version", default=False,
                   help="Ignore the database version check. Only use this if you know what you're doing.")
@@ -40,22 +40,22 @@ def parseOptions(aArgs):
 
 def main(aArgs):
     oOptParser, (oOpts, aArgs) = parseOptions(aArgs)
+    sPrefsDir = prefsDir("Sutekh")
 
     if len(aArgs) != 1:
         oOptParser.print_help()
         return 1
 
-    if oOpts.db is None:
-        oOpts.db = "sqlite://" + "/".join([os.getcwd().replace(os.sep,"/"),"sutekh.db"])
-
     if oOpts.sRCFile is None:
-        sPrefsDir = prefsDir("Sutekh")
         oOpts.sRCFile = os.path.join(sPrefsDir,"sutekhrc")
 
         if os.path.exists(sPrefsDir):
             assert os.path.isdir(sPrefsDir)
         else:
             os.makedirs(sPrefsDir)
+
+    if oOpts.db is None:
+        oOpts.db = "sqlite://" + "/".join([sPrefsDir.replace(os.sep,"/"),"sutekh.db"])
 
     oConfig = ConfigFile(oOpts.sRCFile)
 
