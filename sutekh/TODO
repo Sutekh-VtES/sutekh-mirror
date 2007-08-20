@@ -32,6 +32,8 @@ Gui (Presentation):
  * Replace Multi-window GUI with one based on multiple panes
  * Parse in a GTK rc file? (http://www.moeraki.com/pygtktutorial/pygtk2tutorial/ch-GtkRcFiles.html)
  * Improve Create Card Set Management Window (multiple selection, right click menu, etc.)
+ * Allow some way of marking card sets as active, and displaying used cards or 
+   filtering on unused cards in the physical card list
 
 Website:
  * Create logo for wiki.
