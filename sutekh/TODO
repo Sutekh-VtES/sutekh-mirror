@@ -6,6 +6,7 @@ Backend:
  * Better error and exception handling
  * Rework SutekhUtility to be less of a mess
  * Export directly to HTML.
+ * ELDB HTML import needs to handle special characters in card names properly.
 
 Code Cleanup
  * Unify conventions ('Abstract' vs 'AbstractCardSet' in card set management, etc.)
