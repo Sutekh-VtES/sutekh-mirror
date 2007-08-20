@@ -111,7 +111,18 @@ class ACSFromELDBHTML(CardListPlugin):
                 return
 
         # Create ACS
-        oHolder.createACS()
+        try:
+            oHolder.createACS()
+        except RuntimeError, e:
+            sMsg = "Creating the card set failed with the following error:\n"
+            sMsg += str(e) + "\n"
+            sMsg += "The file is probably not in the format the ELDB Parser expects\n"
+            sMsg += "Aborting"
+            oComplaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
+                                           gtk.BUTTONS_OK, sMsg)
+            oComplaint.connect("response",lambda oW, oResp: oW.destroy())
+            oComplaint.run()
+            return
 
         parent = self.view.getWindow()
         parent.getManager().reloadCardSetLists()

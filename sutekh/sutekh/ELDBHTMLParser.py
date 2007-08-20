@@ -42,6 +42,8 @@ class ACSHolder(object):
     def createACS(self):
         """Create an Abstract Card Set.
            """
+        if self.name is None:
+            raise RuntimeError("No name for the card set")
         oACS = AbstractCardSet(name=self.name.encode('utf8'),
                                author=self.author, comment=self.comment,
                                annotations=self.annotations)
