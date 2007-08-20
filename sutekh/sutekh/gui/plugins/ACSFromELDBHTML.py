@@ -41,18 +41,19 @@ class ACSFromELDBHTML(CardListPlugin):
                 (gtk.STOCK_OK, gtk.RESPONSE_OK,
                  gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
 
-        self.oDlg.vbox.pack_start(gtk.Label("URL:"))
+        self.oDlg.vbox.pack_start(gtk.Label("URL:"),expand=False)
 
-        self.oUri = gtk.Entry(50)
+        self.oUri = gtk.Entry(150)
         self.oUri.connect("activate", self.handleResponse, gtk.RESPONSE_OK)
-        self.oDlg.vbox.pack_start(self.oUri)
+        self.oDlg.vbox.pack_start(self.oUri,expand=False)
 
-        self.oDlg.vbox.pack_start(gtk.Label("OR"))
+        self.oDlg.vbox.pack_start(gtk.Label("OR"),expand=False)
 
         self.oFileChooser = gtk.FileChooserWidget(gtk.FILE_CHOOSER_ACTION_OPEN)
         self.oDlg.vbox.pack_start(self.oFileChooser)
 
         self.oDlg.connect("response", self.handleResponse)
+        self.oDlg.set_size_request(400,300)
         self.oDlg.show_all()
 
         return self.oDlg
