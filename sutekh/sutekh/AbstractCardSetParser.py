@@ -90,7 +90,7 @@ class AbstractCardSetHandler(ContentHandler):
 class AbstractCardSetParser(object):
     def parse(self,fIn):
         oldConn = sqlhub.processConnection
-        sqlhub.processConnection= oldConn.transaction()
+        sqlhub.processConnection = oldConn.transaction()
         myHandler = AbstractCardSetHandler()
         parse(fIn,myHandler)
         myHandler.printUnHandled()
@@ -99,7 +99,7 @@ class AbstractCardSetParser(object):
 
     def parseString(self,sIn):
         oldConn = sqlhub.processConnection
-        sqlhub.processConnection= oldConn.transaction()
+        sqlhub.processConnection = oldConn.transaction()
         myHandler = AbstractCardSetHandler()
         parseString(sIn,myHandler)
         myHandler.printUnHandled()
