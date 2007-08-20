@@ -90,12 +90,25 @@ class ACSFromELDBHTML(CardListPlugin):
 
         # Check ACS Doesn't Exist
         if AbstractCardSet.selectBy(name=oHolder.name).count() != 0:
+            sMsg = "Abstract Card Set %s already exists." % oHolder.name
             oComplaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
-                                           gtk.BUTTONS_CLOSE,
-                                           "Abstract Card Set %s already exists." % oHolder.name)
+                                           gtk.BUTTONS_CLOSE, sMsg)
             oComplaint.connect("response",lambda oW, oResp: oW.destroy())
             oComplaint.run()
             return
+
+        # Warn about unparse-able cards
+        aUnknown = oHolder.unknownCards()
+        if aUnknown:
+            sMsg = "The following card names could not be found:\n"
+            sMsg += "\n".join(["%dx %s" % (iCnt, sName) for (iCnt, sName) in aUnknown])
+            sMsg += "\nCreate card set anyway?"
+            oComplaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
+                                           gtk.BUTTONS_OK_CANCEL, sMsg)
+            oComplaint.connect("response",lambda oW, oResp: oW.destroy())
+            bContinue = oComplaint.run() != gtk.RESPONSE_CANCEL
+            if not bContinue:
+                return
 
         # Create ACS
         oHolder.createACS()
