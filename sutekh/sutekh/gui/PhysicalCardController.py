@@ -83,7 +83,7 @@ class PhysicalCardController(object):
                 oPC.removePhysicalCard(idtodel)
             PhysicalCard.delete(idtodel)
             # Reload everything
-            self.__oC.reloadAllPhysicalCardSets()
+            self.__oC.getManager().reloadAllPhysicalCardSets()
             return True
 
     def incCard(self,sName):
