@@ -130,7 +130,9 @@ class CardItem(State):
             return self
         elif sTag == '/a':
             assert(self._iCnt is not None)
-            self._oHolder.addCards(self._iCnt,self._sData.strip())
+            sName = self._sData.strip()
+            sName = sName.replace("`","'")
+            self._oHolder.addCards(self._iCnt,sName)
             self._iCnt = None
             self._sData = ""
             return Collecting(self._oHolder)
