@@ -77,7 +77,7 @@ Download:
    - http://files.turbogears.org/eggs/PyProtocols-1.0a0-py2.5-win32.egg
  * Sutekh
 
-And Python, then Setuptools, then PyGTK.
+And install Python, then Setuptools, then PyGTK.
 
 Run easy_install PyProtocols-1.0a0-py2.5-win32.egg (easy_install is in <python install dir>/Scripts).
 Run easy_install <Sutekh Egg File>.
