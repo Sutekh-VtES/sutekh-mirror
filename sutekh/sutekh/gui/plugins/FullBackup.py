@@ -93,12 +93,15 @@ class FullBackup(CardListPlugin):
 
     def makeRestoreDialog(self):
         oParent = self.view.getWindow()
-        sName = "Restore a Full Backup ..."
+        sName = "Restore a Full Backup ...."
 
         oDlg = gtk.FileChooserDialog(sName,oParent,action=gtk.FILE_CHOOSER_ACTION_OPEN,
                 buttons = (gtk.STOCK_OK, gtk.RESPONSE_OK,
                     gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
 
+        oWarning = gtk.Label("This will delete all existing Physical Cards and Card Sets")
+        oDlg.vbox.pack_start(oWarning,expand=False)
+        oDlg.vbox.reorder_child(oWarning,0)
         oDlg.connect("response", self.handleRestoreResponse)
         oDlg.set_local_only(True)
         oDlg.set_select_multiple(False)
@@ -121,6 +124,8 @@ class FullBackup(CardListPlugin):
                 try:
                     oFile = ZipFileWrapper(sFile)
                     oFile.doRestoreFromZip()
+                    # restore successful, refresh display
+                    self.view.getController().reloadAll()
                 except Exception, e:
                     sMsg = "Failed to restore backup.\n\n" + str(e)
                     Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
