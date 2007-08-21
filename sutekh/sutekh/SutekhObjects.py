@@ -337,6 +337,8 @@ ObjectList = [ AbstractCard, Expansion,
                MapAbstractCardToCreed
                ]
 
+PhysicalList = [PhysicalCard, PhysicalCardSet, MapPhysicalCardToPhysicalCardSet]
+
 # Adapters
 
 class StrAdaptMeta(type):
