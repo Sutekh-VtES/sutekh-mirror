@@ -93,6 +93,7 @@ class MainController(object):
         self.__oAbstractCards.load()
         self.__oPhysicalCards.getView().load()
         self.__oCSWin.reloadAll()
+        self.__oCSWin.reloadCardSetLists()
 
     def getFilter(self,widget):
         self.__oAbstractCards.getFilter(self.__oMenu)

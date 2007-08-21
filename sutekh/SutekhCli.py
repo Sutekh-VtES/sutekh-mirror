@@ -3,7 +3,7 @@
 # Minor modifications copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-from sutekh.SutekhObjects import Ruling, ObjectList, PhysicalCard
+from sutekh.SutekhObjects import Ruling, ObjectList, PhysicalList
 from sutekh.SutekhUtility import refreshTables, readWhiteWolfList, readRulings, \
                                  genTempdir, prefsDir, ensureDirExists, sqliteUri
 from sutekh.DatabaseUpgrade import attemptDatabaseUpgrade
@@ -124,7 +124,7 @@ def main(aArgs):
             return 1
 
     if oOpts.refresh_physical_card_tables:
-        if not refreshTables([PhysicalCard],sqlhub.processConnection):
+        if not refreshTables(PhysicalList,sqlhub.processConnection):
             print "refresh failed"
             return 1
 
