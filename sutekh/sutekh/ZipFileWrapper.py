@@ -6,7 +6,9 @@
 # Split off from SutekhUtility.py and refactored, April 2007  - NM
 
 import zipfile
-from sutekh.SutekhObjects import AbstractCardSet, PhysicalCardSet
+from sqlobject import sqlhub
+from sutekh.SutekhObjects import AbstractCardSet, PhysicalCardSet, PhysicalList
+from sutekh.SutekhUtility import refreshTables
 from sutekh.PhysicalCardParser import PhysicalCardParser
 from sutekh.PhysicalCardSetParser import PhysicalCardSetParser
 from sutekh.AbstractCardSetParser import AbstractCardSetParser
@@ -97,6 +99,12 @@ class ZipFileWrapper(object):
             oP = IdentifyXMLFile()
             (sType,sName,bExists) = oP.parseString(oData)
             if sType == 'PhysicalCard':
+                # We delete the Physical Card List
+                # Since this is restoring the contents of a zip file,
+                # hopefully this is safe to do
+                # if we fail, the database will be in an inconsitent state,
+                # but that's going to be true anyway
+                refreshTables(PhysicalList,sqlhub.processConnection)
                 oP = PhysicalCardParser()
                 oP.parseString(oData)
                 bPhysicalCardsRead = True
