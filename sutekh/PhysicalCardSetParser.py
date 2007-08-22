@@ -62,7 +62,9 @@ class PhysicalCardSetHandler(ContentHandler):
                     pcs.removePhysicalCard(card.id)
                 self.pcsDB = True
             except SQLObjectNotFound:
-                PhysicalCardSet(name=self.pcsName,author=sAuthor,comment=sComment)
+                pcs = PhysicalCardSet(name=self.pcsName,author=sAuthor,comment=sComment)
+                pcs.annotations = sAnnotations
+                pcs.syncUpdate()
                 self.pcsDB = True
         elif sTagName == 'card':
             iId = int(oAttrs.getValue('id'),10)

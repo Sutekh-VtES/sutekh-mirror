@@ -60,7 +60,9 @@ class AbstractCardSetHandler(ContentHandler):
                     acs.removeAbstractCard(card.id)
                 self.acsDB = True
             except SQLObjectNotFound:
-                AbstractCardSet(name=self.acsName,author=sAuthor,comment=sComment)
+                acs = AbstractCardSet(name=self.acsName,author=sAuthor,comment=sComment)
+                acs.annotations = sAnnotations
+                acs.syncUpdate()
                 self.acsDB = True
         elif sTagName == 'card':
             iId = int(oAttrs.getValue('id'),10)
