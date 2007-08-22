@@ -22,6 +22,7 @@ class CardSetWindow(gtk.Window,object):
         return self.__oC
 
     def updateName(self,sNewName):
+        self.__oC.updateName(self.sSetType,self.sSetName,sNewName)
         self.sSetName = sNewName
         self.set_title("Sutekh:" + self.sSetType + " Card Set : " + self.sSetName)
 

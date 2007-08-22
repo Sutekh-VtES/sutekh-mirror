@@ -271,6 +271,18 @@ class CardSetManagementWindow(gtk.Window):
             self.__oMC.getWinGroup().remove_window(openSets[sSetName][0])
             del openSets[sSetName]
 
+    def updateName(self,sType,sOldName,sNewName):
+        if sType == "PhysicalCardSet" or sType == 'Physical':
+            openSets = self.aOpenPhysicalCardSets
+        elif sType == 'AbstractCardSet' or sType == 'Abstract':
+            openSets = self.aOpenAbstractCardSets
+        else:
+            return
+        if sOldName not in openSets.keys():
+            return
+        # Change key
+        openSets[sNewName] = openSets.pop(sOldName) 
+
     def reloadACS(self,sName):
         if sName in self.aOpenAbstractCardSets.keys():
             window, controller = self.aOpenAbstractCardSets[sName]
