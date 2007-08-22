@@ -122,8 +122,8 @@ class CardSetMenu(gtk.MenuBar,object):
                 oCS.name = sName
                 self.__oView.sSetName = sName
                 self.sSetName = sName
-                self.__updateCardSetMenu()
                 self.__oWindow.updateName(self.sSetName)
+                self.__updateCardSetMenu()
                 oCS.syncUpdate()
         if sAuthor is not None:
             oCS.author = sAuthor

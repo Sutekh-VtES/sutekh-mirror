@@ -47,7 +47,7 @@ class ClanGrouping(IterGrouping):
 
 class DisciplineGrouping(IterGrouping):
     def __init__(self,oIter,fGetCard=lambda x:x):
-        super(DisciplineGrouping,self).__init__(oIter,lambda x: [y.discipline.name for y in fGetCard(x).discipline])
+        super(DisciplineGrouping,self).__init__(oIter,lambda x: [y.discipline.fullname for y in fGetCard(x).discipline])
 
 class ExpansionGrouping(IterGrouping):
     def __init__(self,oIter,fGetCard=lambda x:x):
