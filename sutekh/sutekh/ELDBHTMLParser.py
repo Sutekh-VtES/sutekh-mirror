@@ -19,51 +19,6 @@
 
 import HTMLParser
 import re
-from sqlobject import SQLObjectNotFound
-from sutekh.SutekhObjects import AbstractCardSet, AbstractCard
-
-# Abstract Card Set Holder
-
-class ACSHolder(object):
-    def __init__(self):
-        self._sName, self._sAuthor, self._sComment, self._sAnnotations = None, None, None, None
-        self._aCards = [] # list of (#, Abstract Card) tuples
-        self._aUnknownCards = [] # list of (#, Card Name) tuples for cards which weren't found
-
-    def addCards(self,iCnt,sName):
-        """Append cards to either the known or unknown card list.
-           """
-        try:
-            oAbs = AbstractCard.byCanonicalName(sName.encode('utf8').lower())
-            self._aCards.append((iCnt,oAbs))
-        except SQLObjectNotFound:
-            self._aUnknownCards.append((iCnt,sName))
-
-    def createACS(self):
-        """Create an Abstract Card Set.
-           """
-        if self.name is None:
-            raise RuntimeError("No name for the card set")
-        oACS = AbstractCardSet(name=self.name.encode('utf8'),
-                               author=self.author, comment=self.comment,
-                               annotations=self.annotations)
-        oACS.syncUpdate()
-
-        for iCnt, oAbs in self._aCards:
-            for i in range(iCnt):
-                oACS.addAbstractCard(oAbs)
-
-    def unknownCards(self):
-        """Retrieve the list of unknown card names (and the number of each card included).
-        
-           Return looks like [ (3, 'Some Unknown Card), (4, 'Another Unknown Card'), ... ].
-           """
-        return self._aUnknownCards
-
-    name = property(fget = lambda self: self._sName, fset = lambda self, x: setattr(self,'_sName',x))
-    author = property(fget = lambda self: self._sAuthor, fset = lambda self, x: setattr(self,'_sAuthor',x))
-    comment = property(fget = lambda self: self._sComment, fset = lambda self, x: setattr(self,'_sComment',x))
-    annotations = property(fget = lambda self: self._sAnnotations, fset = lambda self, x: setattr(self,'_sAnnotations',x))
 
 # State Base Classes
 
@@ -134,7 +89,7 @@ class CardItem(State):
             assert(self._iCnt is not None)
             sName = self._sData.strip()
             sName = sName.replace("`","'")
-            self._oHolder.addCards(self._iCnt,sName)
+            self._oHolder.add(self._iCnt,sName)
             self._iCnt = None
             self._sData = ""
             return Collecting(self._oHolder)
@@ -146,9 +101,16 @@ class CardItem(State):
 # Parser
 
 class ELDBHTMLParser(HTMLParser.HTMLParser,object):
+    def __init__(self,oHolder):
+        """Create an ELDBHTMLParser.
+        
+           oHolder is a sutekh.CardSetHolder.CardSetHolder object (or similar).
+           """
+        self._oHolder = oHolder
+        super(ELDBHTMLParser,self).__init__()
+
     def reset(self):
         super(ELDBHTMLParser,self).reset()
-        self._oHolder = ACSHolder()
         self._state = Collecting(self._oHolder)
 
     def handle_starttag(self,sTag,aAttr):
@@ -162,6 +124,3 @@ class ELDBHTMLParser(HTMLParser.HTMLParser,object):
 
     def handle_charref(self,sName): pass
     def handle_entityref(self,sName): pass
-
-    def holder(self):
-        return self._oHolder

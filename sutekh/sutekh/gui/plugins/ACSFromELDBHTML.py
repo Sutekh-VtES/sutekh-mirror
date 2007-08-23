@@ -7,7 +7,9 @@ import gtk
 import urllib2
 from sutekh.ELDBHTMLParser import ELDBHTMLParser
 from sutekh.SutekhObjects import AbstractCardSet
-from sutekh.Filters import CardNameFilter
+from sutekh.CardSetHolder import CardSetHolder
+from sutekh.CardLookup import LookupFailed
+from sutekh.gui.GuiCardLookup import GuiLookup
 from sutekh.gui.PluginManager import CardListPlugin
 
 class ACSFromELDBHTML(CardListPlugin):
@@ -85,10 +87,11 @@ class ACSFromELDBHTML(CardListPlugin):
             fIn.close()
 
     def makeACS(self,fIn):
-        oP = ELDBHTMLParser()
+        oHolder = CardSetHolder()
+
+        oP = ELDBHTMLParser(oHolder)
         for sLine in fIn:
             oP.feed(sLine)
-        oHolder = oP.holder()
 
         # Check ACS Doesn't Exist
         if AbstractCardSet.selectBy(name=oHolder.name).count() != 0:
@@ -99,23 +102,9 @@ class ACSFromELDBHTML(CardListPlugin):
             oComplaint.run()
             return
 
-        # Warn about unparse-able cards
-        aUnknown = oHolder.unknownCards()
-        if aUnknown:
-            bContinue = self.doHandleUnknown(aUnknown,oHolder)
-#            sMsg = "The following card names could not be found:\n"
-#            sMsg += "\n".join(["%dx %s" % (iCnt, sName) for (iCnt, sName) in aUnknown])
-#            sMsg += "\nCreate card set anyway?"
-#            oComplaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
-#                                           gtk.BUTTONS_OK_CANCEL, sMsg)
-#            oComplaint.connect("response",lambda oW, oResp: oW.destroy())
-#            bContinue = oComplaint.run() != gtk.RESPONSE_CANCEL
-            if not bContinue:
-                return
-
         # Create ACS
         try:
-            oHolder.createACS()
+            oHolder.createACS(oCardLookup=GuiLookup(self.view))
         except RuntimeError, e:
             sMsg = "Creating the card set failed with the following error:\n"
             sMsg += str(e) + "\n"
@@ -126,112 +115,10 @@ class ACSFromELDBHTML(CardListPlugin):
             oComplaint.connect("response",lambda oW, oResp: oW.destroy())
             oComplaint.run()
             return
+        except LookupFailed, e:
+            return
 
         parent = self.view.getWindow()
         parent.getManager().reloadCardSetLists()
-
-    def doHandleUnknown(self,aUnknownCards,oHolder):
-        """Handle the list of unknown cards - we allow the user to
-           select the correct replacements from the Abstract Card List"""
-
-        oUnknownDialog = gtk.Dialog("Unknown cards found",None,
-                gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
-                (gtk.STOCK_OK, gtk.RESPONSE_OK,
-                    gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
-
-        oMesgLabel1 = gtk.Label()
-        oMesgLabel2 = gtk.Label()
-
-        sMsg1 = "The following card names could not be found:\n"
-        sMsg1 += "\nChoose how to handle these cards?\n"
-        sMsg2 = "OK creates the card set, Cancel aborts the creation of the card set"
-
-        oMesgLabel1.set_text(sMsg1)
-        oUnknownDialog.vbox.pack_start(oMesgLabel1)
-        # Fill in the Cards and options
-        dReplacement = {}
-        for iCnt,sName in aUnknownCards:
-            oBox = gtk.HBox()
-            oLabel = gtk.Label(str(iCnt) + "x %s is Unknown: Replace with " % sName)
-            oBox.pack_start(oLabel)
-            dReplacement[sName] = gtk.Label("No Card")
-            oBox.pack_start(dReplacement[sName])
-            oUnknownDialog.vbox.pack_start(oBox)
-
-            oBox = gtk.HButtonBox()
-            Button1 = gtk.Button("Use selected Abstract Card")
-            Button2 = gtk.Button("Ignore this Card")
-            Button3 = gtk.Button("Filter Abstract Cards with best guess")
-            Button1.connect("clicked",self.setToSelection,dReplacement[sName])
-            Button2.connect("clicked",self.setIgnore,dReplacement[sName])
-            Button3.connect("clicked",self.setFilter,sName)
-            oBox.pack_start(Button1)
-            oBox.pack_start(Button2)
-            oBox.pack_start(Button3)
-            oUnknownDialog.vbox.pack_start(oBox)
-
-        oMesgLabel2.set_text(sMsg2)
-
-        oUnknownDialog.vbox.pack_start(oMesgLabel2)
-        oUnknownDialog.vbox.show_all()
-
-        response = oUnknownDialog.run()
-
-        oUnknownDialog.destroy()
-
-        if response == gtk.RESPONSE_OK:
-            # For cards marked as replaced, add them to the Holder
-            for iCnt,sName in aUnknownCards:
-                sNewName = dReplacement[sName].get_text()
-                if sNewName != "No Card":
-                    oHolder.addCards(iCnt,sNewName)
-            return True
-        else:
-            return False
-
-    def setToSelection(self,oButton,oRepLabel):
-        oModel,aSelection = self.view.get_selection().get_selected_rows()
-        if len(aSelection) != 1:
-            oComplaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
-                gtk.BUTTONS_OK, "This requires that only ONE item be selected")
-            oComplaint.connect("response",lambda oW, oResp: oW.destroy())
-            oComplaint.run()
-            return
-        for oPath in aSelection:
-            oIter = oModel.get_iter(oPath)
-            sNewName = oModel.get_value(oIter,0)
-        oRepLabel.hide()
-        oRepLabel.set_text(sNewName)
-        oRepLabel.show()
-
-    def setFilter(self,oButton,sName):
-        # Set the filter on the Abstract Card List to one the does a
-        # Best guess search
-        sFilterString = ' '+sName.lower()+' '
-        # Kill the's in the string
-        sFilterString = sFilterString.replace(' the ','')
-        # Kill commas, as possible issues
-        sFilterString = sFilterString.replace(',','')
-        # Wildcard spaces
-        sFilterString = sFilterString.replace(' ','%').lower()
-        # Stolen semi-concept from soundex - replace vowels with wildcards
-        # Should these be %'s ??
-        # (Should at least handle the Rotscheck variation as it stands)
-        sFilterString = sFilterString.replace('a','_')
-        sFilterString = sFilterString.replace('e','_')
-        sFilterString = sFilterString.replace('i','_')
-        sFilterString = sFilterString.replace('o','_')
-        sFilterString = sFilterString.replace('u','_')
-        oFilter = CardNameFilter(sFilterString)
-        self.view.getModel().selectfilter = oFilter
-        self.view.getModel().applyfilter = True
-        # Run the filter
-        self.view.load()
-        pass
-
-    def setIgnore(self,oButton,oRepLabel):
-        oRepLabel.hide()
-        oRepLabel.set_text("No Card")
-        oRepLabel.show()
 
 plugin = ACSFromELDBHTML
