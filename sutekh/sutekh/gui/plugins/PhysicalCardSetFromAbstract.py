@@ -3,7 +3,7 @@
 # GPL - see COPYING for details
 
 import gtk
-from sutekh.SutekhObjects import PhysicalCardSet, AbstractCardSet, PhysicalCard
+from sutekh.core.SutekhObjects import PhysicalCardSet, AbstractCardSet, PhysicalCard
 from sutekh.gui.CreateCardSetDialog import CreateCardSetDialog
 from sutekh.gui.PluginManager import CardListPlugin
 

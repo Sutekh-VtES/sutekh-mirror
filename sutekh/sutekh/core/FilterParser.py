@@ -4,7 +4,7 @@
 
 import ply.lex as lex
 import ply.yacc as yacc
-from sutekh.Filters import MultiCardTypeFilter, MultiClanFilter, \
+from sutekh.core.Filters import MultiCardTypeFilter, MultiClanFilter, \
         MultiDisciplineFilter, MultiGroupFilter, MultiCapacityFilter,\
         MultiCostFilter, MultiLifeFilter, MultiCreedFilter, MultiVirtueFilter,\
         CardTextFilter, CardNameFilter, MultiSectFilter, MultiTitleFilter,\

@@ -4,7 +4,7 @@
 
 import gtk, pango
 from sutekh.gui.PluginManager import CardListPlugin
-from sutekh.SutekhObjects import AbstractCard
+from sutekh.core.SutekhObjects import AbstractCard
 from sqlobject import SQLObjectNotFound
 
 class ExtraCardViewColumns(CardListPlugin):

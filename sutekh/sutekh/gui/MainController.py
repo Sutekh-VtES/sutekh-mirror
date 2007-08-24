@@ -15,8 +15,8 @@ from sutekh.gui.AbstractCardView import AbstractCardView
 from sutekh.gui.PluginManager import PluginManager
 from sutekh.gui.AboutDialog import SutekhAboutDialog
 from sutekh.gui.CardSetManagementWindow import CardSetManagementWindow
-from sutekh.SutekhObjectCache import SutekhObjectCache
-from sutekh.SutekhObjects import AbstractCard
+from sutekh.core.SutekhObjectCache import SutekhObjectCache
+from sutekh.core.SutekhObjects import AbstractCard
 
 class MainController(object):
     def __init__(self,oConfig):

@@ -6,7 +6,7 @@
    """
 
 from sqlobject import SQLObjectNotFound
-from sutekh.SutekhObjects import AbstractCard
+from sutekh.core.SutekhObjects import AbstractCard
 
 class LookupFailed(Exception):
     """Raised when an AbstractCard lookup fails completed.

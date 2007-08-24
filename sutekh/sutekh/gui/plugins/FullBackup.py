@@ -3,7 +3,7 @@
 # GPL - see COPYING for details
 
 from sutekh.gui.PluginManager import CardListPlugin
-from sutekh.ZipFileWrapper import ZipFileWrapper
+from sutekh.io.ZipFileWrapper import ZipFileWrapper
 import gtk
 import os
 

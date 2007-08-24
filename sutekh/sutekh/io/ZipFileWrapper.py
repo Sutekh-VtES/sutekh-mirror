@@ -7,15 +7,15 @@
 
 import zipfile
 from sqlobject import sqlhub
-from sutekh.SutekhObjects import AbstractCardSet, PhysicalCardSet, PhysicalList
+from sutekh.core.SutekhObjects import AbstractCardSet, PhysicalCardSet, PhysicalList
 from sutekh.SutekhUtility import refreshTables
-from sutekh.PhysicalCardParser import PhysicalCardParser
-from sutekh.PhysicalCardSetParser import PhysicalCardSetParser
-from sutekh.AbstractCardSetParser import AbstractCardSetParser
-from sutekh.PhysicalCardWriter import PhysicalCardWriter
-from sutekh.PhysicalCardSetWriter import PhysicalCardSetWriter
-from sutekh.AbstractCardSetWriter import AbstractCardSetWriter
-from sutekh.IdentifyXMLFile import IdentifyXMLFile
+from sutekh.io.PhysicalCardParser import PhysicalCardParser
+from sutekh.io.PhysicalCardSetParser import PhysicalCardSetParser
+from sutekh.io.AbstractCardSetParser import AbstractCardSetParser
+from sutekh.io.PhysicalCardWriter import PhysicalCardWriter
+from sutekh.io.PhysicalCardSetWriter import PhysicalCardSetWriter
+from sutekh.io.AbstractCardSetWriter import AbstractCardSetWriter
+from sutekh.io.IdentifyXMLFile import IdentifyXMLFile
 
 class ZipFileWrapper(object):
     def __init__(self,sZipFileName):

@@ -5,8 +5,8 @@
 """Holder for card set (Abstract or Physical) data before it is committed to a database.
    """
 
-from sutekh.CardLookup import DEFAULT_LOOKUP
-from sutekh.SutekhObjects import AbstractCardSet
+from sutekh.core.CardLookup import DEFAULT_LOOKUP
+from sutekh.core.SutekhObjects import AbstractCardSet
 
 class CardSetHolder(object):
     def __init__(self):

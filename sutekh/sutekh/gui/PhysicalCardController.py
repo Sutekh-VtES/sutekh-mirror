@@ -7,7 +7,7 @@ from sqlobject import SQLObjectNotFound
 from sutekh.gui.PhysicalCardView import PhysicalCardView
 from sutekh.gui.PhysicalCardMenu import PhysicalCardMenu
 from sutekh.gui.DeleteCardDialog import DeleteCardDialog
-from sutekh.SutekhObjects import PhysicalCard, AbstractCard, PhysicalCardSet
+from sutekh.core.SutekhObjects import PhysicalCard, AbstractCard, PhysicalCardSet
 
 class PhysicalCardController(object):
     def __init__(self,oWindow,oMasterController,oConfig):

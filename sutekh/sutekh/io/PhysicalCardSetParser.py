@@ -14,7 +14,7 @@ looks like:
 into a PhysicalCardSet
 """
 
-from sutekh.SutekhObjects import PhysicalCardSet, AbstractCard, PhysicalCard
+from sutekh.core.SutekhObjects import PhysicalCardSet, AbstractCard, PhysicalCard
 from sqlobject import sqlhub, SQLObjectNotFound
 from xml.sax import parse, parseString
 from xml.sax.handler import ContentHandler

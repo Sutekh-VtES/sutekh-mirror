@@ -4,7 +4,7 @@
 # GPL - see COPYING for details
 
 import gtk
-from sutekh.SutekhObjects import AbstractCardSet, PhysicalCardSet
+from sutekh.core.SutekhObjects import AbstractCardSet, PhysicalCardSet
 from sutekh.gui.ScrolledList import ScrolledList
 from sutekh.gui.CreateCardSetDialog import CreateCardSetDialog
 from sutekh.gui.DeleteCardSetDialog import DeleteCardSetDialog

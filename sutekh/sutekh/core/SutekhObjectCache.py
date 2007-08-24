@@ -1,8 +1,8 @@
-# SutekhObjects.py
+# SutekhObjectCache.py
 # Copyright 2007 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
 
-from sutekh.SutekhObjects import AbstractCard, RarityPair, Rarity, Clan,\
+from sutekh.core.SutekhObjects import AbstractCard, RarityPair, Rarity, Clan,\
                                  Discipline, DisciplinePair, CardType,\
                                  Expansion, Ruling
 

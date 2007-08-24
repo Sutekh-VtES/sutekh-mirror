@@ -5,15 +5,15 @@
 from sqlobject import sqlhub, SQLObject, IntCol, UnicodeCol, RelatedJoin, \
                       EnumCol, MultipleJoin, SQLObjectNotFound, ForeignKey, \
                       DatabaseIndex, connectionForURI
-from sutekh.SutekhObjects import PhysicalCard, AbstractCard, AbstractCardSet,\
+from sutekh.core.SutekhObjects import PhysicalCard, AbstractCard, AbstractCardSet,\
                                  PhysicalCardSet, Expansion, Clan, Virtue, \
                                  Discipline, Rarity, RarityPair, CardType, \
                                  Ruling, ObjectList, DisciplinePair, Creed, \
                                  IVirtue, ISect, ITitle, Sect, Title, \
                                  FlushCache
 from sutekh.SutekhUtility import refreshTables
-from sutekh.DatabaseVersion import DatabaseVersion
-from sutekh.WhiteWolfParser import parseText
+from sutekh.core.DatabaseVersion import DatabaseVersion
+from sutekh.io.WhiteWolfParser import parseText
 
 # This file handles all the grunt work of the database upgrades. We have some
 # (arguablely overly) complex trickery to read old databases, and we create a

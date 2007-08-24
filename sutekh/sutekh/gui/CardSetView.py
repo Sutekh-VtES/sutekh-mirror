@@ -5,8 +5,8 @@
 
 from sutekh.gui.CardListView import EditableCardListView
 from sutekh.gui.DeleteCardSetDialog import DeleteCardSetDialog
-from sutekh.Filters import PhysicalCardSetFilter, AbstractCardSetFilter
-from sutekh.SutekhObjects import PhysicalCard, PhysicalCardSet, AbstractCardSet
+from sutekh.core.Filters import PhysicalCardSetFilter, AbstractCardSetFilter
+from sutekh.core.SutekhObjects import PhysicalCard, PhysicalCardSet, AbstractCardSet
 
 class CardSetView(EditableCardListView):
     def __init__(self,oWindow,oController,sName,sSetType,oConfig):

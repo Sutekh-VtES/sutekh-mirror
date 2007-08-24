@@ -8,7 +8,7 @@ import gtk
 import copy
 from sutekh.gui.ScrolledList import ScrolledList
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
-from sutekh import FilterParser
+from sutekh.core import FilterParser
 from sutekh.gui.ConfigFile import ConfigFileListener
 
 aDefaultFilterList = [

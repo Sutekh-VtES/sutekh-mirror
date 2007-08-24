@@ -2,3 +2,5 @@
 # Copyright 2005,2006 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
 
+"""This is the sutekh.gui package.
+   """

@@ -5,10 +5,10 @@
 
 import gtk
 import urllib2
-from sutekh.ELDBHTMLParser import ELDBHTMLParser
-from sutekh.SutekhObjects import AbstractCardSet
-from sutekh.CardSetHolder import CardSetHolder
-from sutekh.CardLookup import LookupFailed
+from sutekh.io.ELDBHTMLParser import ELDBHTMLParser
+from sutekh.core.SutekhObjects import AbstractCardSet
+from sutekh.core.CardSetHolder import CardSetHolder
+from sutekh.core.CardLookup import LookupFailed
 from sutekh.gui.GuiCardLookup import GuiLookup
 from sutekh.gui.PluginManager import CardListPlugin
 

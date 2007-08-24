@@ -12,7 +12,7 @@ looks like:
 </cards>
 """
 
-from sutekh.SutekhObjects import PhysicalCard
+from sutekh.core.SutekhObjects import PhysicalCard
 from xml.dom.minidom import getDOMImplementation
 
 class PhysicalCardWriter(object):

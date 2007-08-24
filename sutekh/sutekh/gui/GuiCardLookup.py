@@ -8,9 +8,9 @@
 
 import gtk
 from sqlobject import SQLObjectNotFound
-from sutekh.SutekhObjects import AbstractCard
-from sutekh.CardLookup import AbstractCardLookup, LookupFailed
-from sutekh.Filters import CardNameFilter
+from sutekh.core.SutekhObjects import AbstractCard
+from sutekh.core.CardLookup import AbstractCardLookup, LookupFailed
+from sutekh.core.Filters import CardNameFilter
 
 class GuiLookup(AbstractCardLookup):
     """Lookup AbstractCards. Use the user as the AI if a simple lookup fails.

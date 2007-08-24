@@ -4,9 +4,9 @@
 # GPL - see COPYING for details
 
 import gtk, gobject
-from sutekh.Filters import FilterAndBox, SpecificCardFilter
-from sutekh.Groupings import CardTypeGrouping
-from sutekh.SutekhObjects import AbstractCard, PhysicalCard, AbstractCardSet, IAbstractCard
+from sutekh.core.Filters import FilterAndBox, SpecificCardFilter
+from sutekh.core.Groupings import CardTypeGrouping
+from sutekh.core.SutekhObjects import AbstractCard, PhysicalCard, AbstractCardSet, IAbstractCard
 
 class CardListModelListener(object):
     """

@@ -5,14 +5,14 @@
 # Routines for writing and reading from XML files - used by Gui and Cli
 # Split off from SutekhUtility as being somewhat clearer, April 2007 - NM
 
-from sutekh.SutekhObjects import AbstractCardSet, PhysicalCardSet
+from sutekh.core.SutekhObjects import AbstractCardSet, PhysicalCardSet
 from sutekh.SutekhUtility import genTempFile, genTempdir, safeFilename
-from sutekh.PhysicalCardParser import PhysicalCardParser
-from sutekh.PhysicalCardSetParser import PhysicalCardSetParser
-from sutekh.AbstractCardSetParser import AbstractCardSetParser
-from sutekh.PhysicalCardWriter import PhysicalCardWriter
-from sutekh.PhysicalCardSetWriter import PhysicalCardSetWriter
-from sutekh.AbstractCardSetWriter import AbstractCardSetWriter
+from sutekh.io.PhysicalCardParser import PhysicalCardParser
+from sutekh.io.PhysicalCardSetParser import PhysicalCardSetParser
+from sutekh.io.AbstractCardSetParser import AbstractCardSetParser
+from sutekh.io.PhysicalCardWriter import PhysicalCardWriter
+from sutekh.io.PhysicalCardSetWriter import PhysicalCardSetWriter
+from sutekh.io.AbstractCardSetWriter import AbstractCardSetWriter
 import os
 
 class PhysicalCardXmlFile(object):

@@ -9,7 +9,7 @@ Give a list of Abstract Cards in a set, write a XML file compatable with
 the Anarch Revolt Deck Builder
 """
 
-from sutekh.SutekhObjects import IAbstractCard
+from sutekh.core.SutekhObjects import IAbstractCard
 from sutekh.SutekhInfo import SutekhInfo
 from xml.dom.minidom import getDOMImplementation
 import time

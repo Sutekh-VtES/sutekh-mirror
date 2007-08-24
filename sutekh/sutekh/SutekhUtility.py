@@ -5,10 +5,10 @@
 # Misc Useful functions needed in several places. Mainly to do with database
 # management. Seperated out from SutekhCli and other places, NM, 2006
 
-from sutekh.SutekhObjects import VersionTable, FlushCache
-from sutekh.DatabaseVersion import DatabaseVersion
-from sutekh.WhiteWolfParser import WhiteWolfParser
-from sutekh.RulingParser import RulingParser
+from sutekh.core.SutekhObjects import VersionTable, FlushCache
+from sutekh.core.DatabaseVersion import DatabaseVersion
+from sutekh.io.WhiteWolfParser import WhiteWolfParser
+from sutekh.io.RulingParser import RulingParser
 from sqlobject import sqlhub
 import codecs, tempfile, os, sys
 

@@ -3,7 +3,7 @@
 # GPL - see COPYING for details
 
 import gtk
-from sutekh.Groupings import CardTypeGrouping, ClanGrouping, DisciplineGrouping, \
+from sutekh.core.Groupings import CardTypeGrouping, ClanGrouping, DisciplineGrouping, \
                              ExpansionGrouping, RarityGrouping, CryptLibraryGrouping, \
                              NullGrouping
 from sutekh.gui.PluginManager import CardListPlugin

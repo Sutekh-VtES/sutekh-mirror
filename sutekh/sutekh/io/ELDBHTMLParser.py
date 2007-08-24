@@ -104,7 +104,7 @@ class ELDBHTMLParser(HTMLParser.HTMLParser,object):
     def __init__(self,oHolder):
         """Create an ELDBHTMLParser.
         
-           oHolder is a sutekh.CardSetHolder.CardSetHolder object (or similar).
+           oHolder is a sutekh.core.CardSetHolder.CardSetHolder object (or similar).
            """
         self._oHolder = oHolder
         super(ELDBHTMLParser,self).__init__()

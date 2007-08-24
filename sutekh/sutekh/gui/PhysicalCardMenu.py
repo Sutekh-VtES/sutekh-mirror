@@ -6,7 +6,7 @@
 
 import gtk
 from sutekh.gui.ExportDialog import ExportDialog
-from sutekh.XmlFileHandling import PhysicalCardXmlFile
+from sutekh.io.XmlFileHandling import PhysicalCardXmlFile
 
 class PhysicalCardMenu(gtk.MenuBar,object):
     def __init__(self,oController,oWindow):

@@ -3,9 +3,9 @@
 # GPL - see COPYING for details
 
 import gtk
-from sutekh.SutekhObjects import PhysicalCard, AbstractCardSet,\
+from sutekh.core.SutekhObjects import PhysicalCard, AbstractCardSet,\
                                  PhysicalCardSet, AbstractCard, IAbstractCard
-from sutekh.Filters import PhysicalCardSetFilter, AbstractCardSetFilter
+from sutekh.core.Filters import PhysicalCardSetFilter, AbstractCardSetFilter
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.ScrolledList import ScrolledList
 

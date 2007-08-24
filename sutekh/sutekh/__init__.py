@@ -2,14 +2,17 @@
 # Copyright 2005,2006,2007 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
 
+"""This is the sutekh package.
+   """
+
 # Do importing
 
-from sutekh.SutekhObjects import AbstractCard, PhysicalCard, \
+from sutekh.core.SutekhObjects import AbstractCard, PhysicalCard, \
                     AbstractCardSet, PhysicalCardSet, RarityPair, \
                     Expansion, Rarity, DisciplinePair, Discipline, \
                     Clan, CardType, Ruling
 
-from sutekh.Filters import FilterAndBox, FilterOrBox, ClanFilter, \
+from sutekh.core.Filters import FilterAndBox, FilterOrBox, ClanFilter, \
                     DisciplineFilter, CardTypeFilter, CardTextFilter, \
                     MultiCardTypeFilter, MultiDisciplineFilter, \
                     MultiClanFilter, PhysicalCardSetFilter, \
@@ -17,11 +20,11 @@ from sutekh.Filters import FilterAndBox, FilterOrBox, ClanFilter, \
                     ExpansionFilter, MultiExpansionFilter, \
                     AbstractCardSetFilter
 
-from sutekh.Groupings import CardTypeGrouping, ClanGrouping, \
+from sutekh.core.Groupings import CardTypeGrouping, ClanGrouping, \
                     DisciplineGrouping, ExpansionGrouping, \
                     RarityGrouping
 
-from sutekh.CardListTabulator import CardListTabulator
+from sutekh.core.CardListTabulator import CardListTabulator
 
 from sutekh.SutekhCli import main
 

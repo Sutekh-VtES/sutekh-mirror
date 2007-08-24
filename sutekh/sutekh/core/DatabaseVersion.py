@@ -6,8 +6,8 @@
 # version management helper class
 
 from sqlobject import sqlhub
-from sutekh.SutekhObjects import PhysicalCardSet, AbstractCardSet, PhysicalCard,\
-                                 AbstractCard, VersionTable
+from sutekh.core.SutekhObjects import PhysicalCardSet, AbstractCardSet, \
+                        PhysicalCard, AbstractCard, VersionTable
 
 dTableMap = {
         "PhysicalCardSet" : PhysicalCardSet.sqlmeta.table,

@@ -5,15 +5,15 @@
 
 import gtk
 from sqlobject import sqlhub, connectionForURI
-from sutekh.SutekhObjects import PhysicalCardSet, AbstractCardSet, ObjectList
+from sutekh.core.SutekhObjects import PhysicalCardSet, AbstractCardSet, ObjectList
 from sutekh.gui.ImportDialog import ImportDialog
 from sutekh.gui.WWFilesDialog import WWFilesDialog
-from sutekh.XmlFileHandling import PhysicalCardXmlFile, PhysicalCardSetXmlFile, \
+from sutekh.io.XmlFileHandling import PhysicalCardXmlFile, PhysicalCardSetXmlFile, \
                                     AbstractCardSetXmlFile
-from sutekh.IdentifyXMLFile import IdentifyXMLFile
-from sutekh.DatabaseUpgrade import copyToNewAbstractCardDB, createFinalCopy
+from sutekh.io.IdentifyXMLFile import IdentifyXMLFile
+from sutekh.core.DatabaseUpgrade import copyToNewAbstractCardDB, createFinalCopy
 from sutekh.SutekhUtility import refreshTables, readWhiteWolfList, readRulings
-from sutekh.ZipFileWrapper import ZipFileWrapper
+from sutekh.io.ZipFileWrapper import ZipFileWrapper
 
 class MainMenu(gtk.MenuBar,object):
     def __init__(self,oController,oWindow,oConfig):

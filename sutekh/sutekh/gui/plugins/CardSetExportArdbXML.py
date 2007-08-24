@@ -3,9 +3,9 @@
 # GPL - see COPYING for details
 
 import gtk
-from sutekh.SutekhObjects import PhysicalCardSet, AbstractCardSet, IAbstractCard
+from sutekh.core.SutekhObjects import PhysicalCardSet, AbstractCardSet, IAbstractCard
 from sutekh.gui.PluginManager import CardListPlugin
-from sutekh.WriteArdbXML import WriteArdbXML
+from sutekh.io.WriteArdbXML import WriteArdbXML
 
 class CardSetExportArdbXML(CardListPlugin):
     dTableVersions = {"AbstractCardSet" : [2,3],

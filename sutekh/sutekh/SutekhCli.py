@@ -3,14 +3,14 @@
 # Minor modifications copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-from sutekh.SutekhObjects import Ruling, ObjectList, PhysicalList
+from sutekh.core.SutekhObjects import Ruling, ObjectList, PhysicalList
 from sutekh.SutekhUtility import refreshTables, readWhiteWolfList, readRulings, \
                                  genTempdir, prefsDir, ensureDirExists, sqliteUri
-from sutekh.DatabaseUpgrade import attemptDatabaseUpgrade
-from sutekh.XmlFileHandling import PhysicalCardXmlFile, PhysicalCardSetXmlFile,\
+from sutekh.core.DatabaseUpgrade import attemptDatabaseUpgrade
+from sutekh.io.XmlFileHandling import PhysicalCardXmlFile, PhysicalCardSetXmlFile,\
                                    AbstractCardSetXmlFile, writeAllAbstractCardSets, \
                                    writeAllPhysicalCardSets
-from sutekh.ZipFileWrapper import ZipFileWrapper
+from sutekh.io.ZipFileWrapper import ZipFileWrapper
 from sqlobject import sqlhub, connectionForURI
 import sys, optparse, os
 

@@ -3,7 +3,7 @@
 # Minor modifications copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-from sutekh.SutekhObjects import AbstractCard, IAbstractCard, PhysicalCard, \
+from sutekh.core.SutekhObjects import AbstractCard, IAbstractCard, PhysicalCard, \
                                  ICreed, IVirtue, IClan, IDiscipline, \
                                  IExpansion, ITitle, ISect, ICardType, \
                                  IPhysicalCardSet, IAbstractCardSet, \

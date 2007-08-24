@@ -13,7 +13,7 @@ looks like:
 </physicalcardset>
 """
 
-from sutekh.SutekhObjects import PhysicalCardSet
+from sutekh.core.SutekhObjects import PhysicalCardSet
 from sqlobject import SQLObjectNotFound
 from xml.dom.minidom import getDOMImplementation
 

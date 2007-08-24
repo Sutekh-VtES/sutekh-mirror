@@ -5,10 +5,10 @@
 # GPL - see COPYING for details
 
 import gtk
-from sutekh.SutekhObjects import PhysicalCardSet,AbstractCardSet
+from sutekh.core.SutekhObjects import PhysicalCardSet,AbstractCardSet
 from sutekh.gui.ExportDialog import ExportDialog
 from sutekh.gui.PropDialog import PropDialog
-from sutekh.XmlFileHandling import AbstractCardSetXmlFile, PhysicalCardSetXmlFile
+from sutekh.io.XmlFileHandling import AbstractCardSetXmlFile, PhysicalCardSetXmlFile
 from sutekh.gui.EditAnnotationsDialog import EditAnnotationsDialog
 
 class CardSetMenu(gtk.MenuBar,object):

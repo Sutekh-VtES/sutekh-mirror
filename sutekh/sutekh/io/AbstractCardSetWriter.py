@@ -12,7 +12,7 @@ looks like:
 </abstractcardset>
 """
 
-from sutekh.SutekhObjects import AbstractCardSet
+from sutekh.core.SutekhObjects import AbstractCardSet
 from sqlobject import SQLObjectNotFound
 from xml.dom.minidom import getDOMImplementation
 

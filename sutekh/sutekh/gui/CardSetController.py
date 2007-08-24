@@ -6,7 +6,7 @@
 from sqlobject import SQLObjectNotFound
 from sutekh.gui.CardSetView import CardSetView
 from sutekh.gui.CardSetMenu import CardSetMenu
-from sutekh.SutekhObjects import AbstractCardSet, PhysicalCardSet,\
+from sutekh.core.SutekhObjects import AbstractCardSet, PhysicalCardSet,\
         AbstractCard, PhysicalCard
 
 class CardSetController(object):
