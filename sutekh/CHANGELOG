@@ -1,3 +1,9 @@
+24 Aug 2007
+ * Add CardSetHolder for manipulating card sets which aren't in the
+   database yet.
+ * Add CardLookup for translating card names into abstract cards.
+ * Move ELDBHTMLParser and plugin over to CardSetHolder and CardLookup.
+
 18 Aug 2007
  * Improve formatting of card text listing in HTML exports and
    make the information included a bit more complete.

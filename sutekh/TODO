@@ -6,7 +6,7 @@ Backend:
  * Better error and exception handling
  * Rework SutekhUtility to be less of a mess
  * Export directly to HTML.
- * ELDB HTML import needs to handle special characters in card names properly.
+ * Move other card set importers over to CardSetHolder and CardLookup.
 
 Code Cleanup
  * Unify conventions ('Abstract' vs 'AbstractCardSet' in card set management, etc.)
@@ -27,6 +27,7 @@ Gui (Functionality):
  * Plugins for calling out to other VtES utilities as appropriate (http://ashheap.storageannex.com/utilities.htm)
  * Improve Happy Families analysis (select number of disciplines to display,
    disciplines to use, etc)
+ * Move other card set importers over to CardSetHolder and CardLookup.
 
 Gui (Presentation):
  * Replace Multi-window GUI with one based on multiple panes
@@ -38,6 +39,5 @@ Gui (Presentation):
 Website:
  * Create logo for wiki.
 
-Release Candidate tasks:
- - Check everything works on Windows again (check with Philip before release)
- - Create setup.py file with bdist_egg (needs testing)
+Other Tasks:
+ * Find some users and developers interested in Sutekh on Windows.
