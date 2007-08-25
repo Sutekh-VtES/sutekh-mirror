@@ -46,7 +46,7 @@ class PhysicalCardController(object):
         cardCands = PhysicalCard.selectBy(abstractCardID=oC.id)
 
         # check we found something?
-        if cardCands.count()==0:
+        if cardCands.count() == 0:
             return False
 
         # Loop throgh list and see if we can find a card
@@ -55,22 +55,22 @@ class PhysicalCardController(object):
         aPhysicalCardSets = PhysicalCardSet.select()
         for card in cardCands.reversed():
             idtodel = card.id
-            dPCS[idtodel]=[0,[]]
+            dPCS[idtodel] = [0,[]]
             for oPCS in aPhysicalCardSets:
-                subset=[x for x in oPCS.cards if x.id == idtodel]
+                subset = [x for x in oPCS.cards if x.id == idtodel]
                 if len(subset)>0:
-                    dPCS[idtodel][0]+=1;
+                    dPCS[idtodel][0] += 1;
                     dPCS[idtodel][1].append(oPCS.name)
-            if dPCS[idtodel][0]==0:
+            if dPCS[idtodel][0] == 0:
                 # OK, can delete this one and be done with it
                 PhysicalCard.delete(idtodel)
                 return True
         # All physical cards are assigned to PhysicalCardSets, so find the
         # one in the fewest
-        T=min(dPCS.values())
-        aList=[x for x in dPCS if T is dPCS[x]]
-        idtodel=aList[-1]
-        candtodel=dPCS[idtodel]
+        T = min(dPCS.values())
+        aList = [x for x in dPCS if T is dPCS[x]]
+        idtodel = aList[-1]
+        candtodel = dPCS[idtodel]
         # This is probably overcomplicated, need to revisit this sometime
         # Prompt the user for confirmation
         Dialog = DeleteCardDialog(self.__oWin,candtodel[1])

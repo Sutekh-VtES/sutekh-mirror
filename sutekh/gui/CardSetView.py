@@ -56,7 +56,7 @@ class CardSetView(EditableCardListView):
             context.finish(True, False, time)
         elif data and data.format == 8 and bits[0] == "CardSet":
             # Card is from a CardSet, so extract type and name
-            sourceType=bits[1]
+            sourceType = bits[1]
             sourceSetName = bits[2]
             if sourceSetName != self.sSetName or sourceType != self.sSetType:
                 # different Set, so try and add number cards
@@ -92,7 +92,7 @@ class CardSetView(EditableCardListView):
                     oCS.removeAbstractCard(oC)
 
         # Card Set now empty
-        if self.sSetType =="PhysicalCardSet":
+        if self.sSetType == "PhysicalCardSet":
             cardSet = PhysicalCardSet.byName(self.sSetName)
             PhysicalCardSet.delete(cardSet.id)
         else:

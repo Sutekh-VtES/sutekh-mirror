@@ -22,11 +22,11 @@ class CellRendererSutekhButton(gtk.GenericCellRenderer):
 
     def load_icon(self,name,widget):
         # Load the icon specified in name
-        self.pixbuf=widget.render_icon(name,gtk.ICON_SIZE_SMALL_TOOLBAR)
+        self.pixbuf = widget.render_icon(name,gtk.ICON_SIZE_SMALL_TOOLBAR)
 
 
     def on_get_size(self,widget,cell_area):
-        if self.pixbuf==None:
+        if self.pixbuf == None:
             return 0, 0, 0, 0
         pixbuf_width  = self.pixbuf.get_width()
         pixbuf_height = self.pixbuf.get_height()
@@ -48,7 +48,7 @@ class CellRendererSutekhButton(gtk.GenericCellRenderer):
         return True
 
     def on_render(self,window, widget, background_area, cell_area, expose_area, flags):
-        if (self.pixbuf==None):
+        if (self.pixbuf == None):
             return None
         # Render pixbuf
         pix_rect = gtk.gdk.Rectangle()

@@ -90,13 +90,13 @@ class CardSetManagementWindow(gtk.Window):
         if self.bRep:
             return False
         try:
-            self.bRep= True
+            self.bRep = True
             if type == 'Abstract':
                 self.oPhysCardSets.TreeView.get_selection().unselect_all()
             else:
                 self.oAbsCardSets.TreeView.get_selection().unselect_all()
         finally:
-            self.bRep= False
+            self.bRep = False
 
     def rowClicked(self, oTreeView, oPath, oColumn, sType):
         oM = oTreeView.get_model()
@@ -162,10 +162,10 @@ class CardSetManagementWindow(gtk.Window):
         else:
             if sType == "Physical":
                 oCS = PhysicalCardSet.byName(sName)
-                sSetType='PhysicalCardSet'
+                sSetType = 'PhysicalCardSet'
             else:
                 oCS = AbstractCardSet.byName(sName)
-                sSetType='AbstractCardSet'
+                sSetType = 'AbstractCardSet'
             if len(oCS.cards)>0:
                 # Not empty, ask user if we should delete it
                 Dialog = DeleteCardSetDialog(self,sName,sSetType)
@@ -281,7 +281,7 @@ class CardSetManagementWindow(gtk.Window):
         if sOldName not in openSets.keys():
             return
         # Change key
-        openSets[sNewName] = openSets.pop(sOldName) 
+        openSets[sNewName] = openSets.pop(sOldName)
 
     def reloadACS(self,sName):
         if sName in self.aOpenAbstractCardSets.keys():

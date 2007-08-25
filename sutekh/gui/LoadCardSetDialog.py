@@ -15,7 +15,7 @@ class LoadCardSetDialog(gtk.Dialog):
             parent,gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,\
             ( gtk.STOCK_OK, gtk.RESPONSE_OK,\
             gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
-        self.List=gtk.combo_box_new_text()
+        self.List = gtk.combo_box_new_text()
         # I like explicitly null entries in the list, but I suspect
         # this violates some or other UI style guide
         self.List.append_text('')
@@ -31,7 +31,7 @@ class LoadCardSetDialog(gtk.Dialog):
         self.show_all()
 
     def getName(self):
-        if self.Data=='':
+        if self.Data == '':
             return None
         return self.Data
 

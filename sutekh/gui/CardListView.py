@@ -14,7 +14,7 @@ class CardListView(gtk.TreeView,object):
         self._oModel = CardListModel()
         self._oC = oController
         self._oWin = oWindow
-        self._oConfig=oConfig
+        self._oConfig = oConfig
 
         super(CardListView,self).__init__(self._oModel)
 
