@@ -60,7 +60,6 @@ class FilterDialog(gtk.Dialog,ConfigFileListener):
         self.vbox.pack_start(oHScrolledWindow)
         self.vbox.pack_start(self.__oRadioArea)
         self.vbox.set_homogeneous(False)
-        self.__iDefaultNum = len(aDefaultFilterList)
         self.__dFilterList = {}
         self.__aDefaultLabels = []
         # Setup default filters
@@ -72,16 +71,16 @@ class FilterDialog(gtk.Dialog,ConfigFileListener):
             except ValueError:
                 self.__doComplaint("Invalid Filter Syntax: "+sFilter)
                 continue
-            sName = self.__addFilterToDialog(oAST,sFilter)
-            self.__aDefaultLabels.append(sName)
-        self.__expandFilter(self.__oRadioGroup, "0 : "+aDefaultFilterList[0],0)
+            sId = self.__addFilterToDialog(oAST,sFilter)
+            self.__aDefaultLabels.append(sId)
+        self.__expandFilter(self.__oRadioGroup, self.__aDefaultLabels[0])
         # Load other filters from config file
-        aAllFilters = oConfig.getFilters()
+        aAllFilters = oConfig.getFiltersKeys()
         sMessages = ''
-        for sFilter in aAllFilters:
+        for sId,sFilter in aAllFilters:
             try:
                 oAST = self.__oParser.apply(sFilter)
-                self.__addFilterToDialog(oAST,sFilter)
+                self.__addFilterToDialog(oAST,sFilter,sId)
             except ValueError:
                 sMessages += sFilter + "\n"
                 self.__oConfig.removeFilter(sFilter)
@@ -91,18 +90,18 @@ class FilterDialog(gtk.Dialog,ConfigFileListener):
         # Add Listener, so we catch changes in future
         oConfig.addListener(self)
 
-    def __expandFilter(self, oRadioButton, sName, iNum):
+    def __expandFilter(self, oRadioButton, sId):
         """When the user selects a radio button, expand
            the options"""
-        if sName != self.__sExpanded:
+        if sId != self.__sExpanded:
             # Remove the previous filter
             for child in self.__oExpandedArea.get_children():
                 self.__oExpandedArea.remove(child)
-            self.__sExpanded = sName
-            for child in self.__dExpanded[sName]:
+            self.__sExpanded = sId
+            for child in self.__dExpanded[sId]:
                 self.__oExpandedArea.pack_start(child,expand=False)
             self.__oExpandedArea.show_all()
-            if iNum >= self.__iDefaultNum:
+            if sId not in self.__aDefaultLabels:
                 # User defined filter, can be deleted & edited
                 self.__oDeleteButton.set_sensitive(True)
                 self.__oEditButton.set_sensitive(True)
@@ -110,83 +109,68 @@ class FilterDialog(gtk.Dialog,ConfigFileListener):
                 self.__oDeleteButton.set_sensitive(False)
                 self.__oEditButton.set_sensitive(False)
 
-    def __addFilterToDialog(self,oAST,sFilter):
+    def __addFilterToDialog(self,oAST,sFilter,sId=''):
         aFilterParts = oAST.getValues()
-        iNum = len(self.__dExpanded)
-        # Should we try harder to make sure this is unique?
-        # do .... while sName in dExpanded.keys() type construction?
-        sName = str(iNum) + " : " + sFilter
-        self.__dFilterList[sName] = (sFilter, iNum)
-        self.__dExpanded[sName] = []
-        self.__dASTs[sName] = oAST
-        self.__addPartsToDialog(aFilterParts,sFilter,sName,iNum)
-        return sName
+        if sId == '' or sId in self.__dExpanded.keys():
+            # ensure we have a unique key here
+            iNum = len(self.__dExpanded)
+            sId = 'Filter '+str(iNum)
+            while sId in self.__dExpanded.keys():
+                iNum += 1
+                sId = 'Filter '+str(iNum)
+        self.__dFilterList[sId] = sFilter
+        self.__dExpanded[sId] = []
+        self.__dASTs[sId] = oAST
+        self.__addPartsToDialog(aFilterParts,sFilter,sId)
+        return sId
 
-    def __replaceFilterInDialog(self,oAST,sOldFilter,sNewFilter):
+    def __replaceFilterInDialog(self,oAST,sOldFilter,sNewFilter,sId):
         aFilterParts = oAST.getValues()
-        sToReplace = ''
-        for sName,tFilter in self.__dFilterList.iteritems():
-            (sDiagFilter, iNum) = tFilter
-            if sName not in self.__aDefaultLabels and \
-                    sOldFilter == sDiagFilter:
-                sToReplace = sName
-                break
-        if sToReplace != '':
-            iNum = self.__dFilterList[sToReplace][1]
-            self.__dFilterList[sToReplace] = (sNewFilter, iNum)
-            self.__dExpanded[sToReplace] = []
-            self.__dASTs[sToReplace] = oAST
-            oRadioButton = self.__dButtons[sToReplace]
-            self.__oRadioArea.remove(oRadioButton)
-            del self.__dButtons[sToReplace]
-            self.__addPartsToDialog(aFilterParts,sNewFilter,sToReplace,iNum)
-            self.__oRadioGroup.clicked()
-            self.__dButtons[sToReplace].clicked()
+        self.__dFilterList[sId] = sNewFilter
+        self.__dExpanded[sId] = []
+        self.__dASTs[sId] = oAST
+        oRadioButton = self.__dButtons[sId]
+        self.__oRadioArea.remove(oRadioButton)
+        del self.__dButtons[sId]
+        self.__addPartsToDialog(aFilterParts,sNewFilter,sId)
+        self.__oRadioGroup.clicked()
+        self.__dButtons[sId].clicked()
 
-    def __addPartsToDialog(self,aFilterParts,sFilter,sName,iNum):
+    def __addPartsToDialog(self,aFilterParts,sFilter,sId):
         sPrevName = None
         for oPart in aFilterParts:
             if oPart.isValue():
                 oWidget = gtk.Label(oPart.value)
-                self.__dExpanded[sName].append(oWidget)
+                self.__dExpanded[sId].append(oWidget)
             elif oPart.isList():
                 assert(sPrevName is not None)
                 oWidget = self.__makeScrolledList(sPrevName,oPart.value)
-                self.__dExpanded[sName].append(oWidget)
+                self.__dExpanded[sId].append(oWidget)
             elif oPart.isEntry():
                 oWidget = gtk.Entry(100)
                 oWidget.set_width_chars(30)
-                self.__dExpanded[sName].append(oWidget)
+                self.__dExpanded[sId].append(oWidget)
             sPrevName = oPart.value
         oRadioButton = gtk.RadioButton(self.__oRadioGroup)
         if self.__oRadioGroup is None:
             self.__oRadioGroup = oRadioButton
         oRadioButton.set_label(sFilter)
-        self.__dButtons[sName] = oRadioButton
-        oRadioButton.connect("toggled",self.__expandFilter,sName, iNum)
+        self.__dButtons[sId] = oRadioButton
+        oRadioButton.connect("toggled",self.__expandFilter,sId)
         self.__oRadioArea.pack_start(oRadioButton)
 
-    def __removeFilterFromDialog(self,sName):
-        (sFilter,iNum) = self.__dFilterList[sName]
-        self.__oConfig.removeFilter(sFilter)
+    def __removeFilterFromDialog(self,sId):
+        sFilter = self.__dFilterList[sId]
+        self.__oConfig.removeFilter(sFilter,sId)
 
-    def removeFilter(self,sFilter):
-        # Find first filter after default list that matches this
-        sToDel = ''
-        for sName,tFilter in self.__dFilterList.iteritems():
-            (sDiagFilter, iNum) = tFilter
-            if sName not in self.__aDefaultLabels and \
-                    sFilter == sDiagFilter:
-                sToDel = sName
-                break
-        if sToDel != '':
-            del self.__dASTs[sName]
-            del self.__dExpanded[sName]
-            del self.__dFilterList[sName]
-            oRadioButton = self.__dButtons[sName]
-            self.__oRadioArea.remove(oRadioButton)
-            del self.__dButtons[sName]
-            self.show_all()
+    def removeFilter(self,sFilter,sId):
+        del self.__dASTs[sId]
+        del self.__dExpanded[sId]
+        del self.__dFilterList[sId]
+        oRadioButton = self.__dButtons[sId]
+        self.__oRadioArea.remove(oRadioButton)
+        del self.__dButtons[sId]
+        self.show_all()
 
     def getFilter(self):
         return self.__oData
@@ -210,7 +194,7 @@ class FilterDialog(gtk.Dialog,ConfigFileListener):
             self.__doRemoveFilter()
             return self.run()
         elif response == self.__iEditButtonResponse:
-            sFilter = self.__dFilterList[self.__sExpanded][0]
+            sFilter = self.__dFilterList[self.__sExpanded]
             self.__doAddEditFilterDialog(sFilter)
             return self.run()
         else:
@@ -312,31 +296,32 @@ class FilterDialog(gtk.Dialog,ConfigFileListener):
                 if sEditFilter == '':
                     self.__oConfig.addFilter(sFilter)
                 else:
-                    self.__oConfig.replaceFilter(sEditFilter,sFilter)
+                    self.__oConfig.replaceFilter(sEditFilter,sFilter,self.__sExpanded)
             bDone = True
             oEditFilterDialog.destroy()
 
-    def replaceFilter(self,sOldFilter,sNewFilter):
+    def replaceFilter(self,sOldFilter,sNewFilter,sId):
         try:
             # Should be safe, but just in case
             oAST = self.__oParser.apply(sNewFilter)
         except ValueError:
             self.__doComplaint("Invalid Filter Syntax: " + sNewFilter)
             return
-        self.__replaceFilterInDialog(oAST,sOldFilter,sNewFilter)
+        self.__replaceFilterInDialog(oAST,sOldFilter,sNewFilter,sId)
         self.show_all()
- 
-    def addFilter(self,sFilter):
+
+    def addFilter(self,sFilter,sId):
         try:
             # Should be safe, but just in case
             oAST = self.__oParser.apply(sFilter)
         except ValueError:
             self.__doComplaint("Invalid Filter Syntax: " + sFilter)
             return
-        self.__addFilterToDialog(oAST,sFilter)
+        self.__addFilterToDialog(oAST,sFilter,sId)
         self.show_all()
 
     def __doRemoveFilter(self):
-        sName = self.__sExpanded
+        sId = self.__sExpanded
+        # Needed because this changes self.__sExpanded
         self.__oRadioGroup.clicked()
-        self.__removeFilterFromDialog(sName)
+        self.__removeFilterFromDialog(sId)

@@ -9,15 +9,15 @@ from ConfigParser import RawConfigParser
 class ConfigFileListener(object):
     """Listener object for config changes - inspired by CardListModeListener"""
 
-    def addFilter(self,sFilter):
+    def addFilter(self,sFilter,sKey):
         """New Filter added"""
         pass
 
-    def removeFilter(self,sFilter):
+    def removeFilter(self,sFilter,sKey):
         """Filter removed"""
         pass
 
-    def replaceFilter(self,sOldFilter,sNewFilter):
+    def replaceFilter(self,sOldFilter,sNewFilter,sKey):
         """A Filter has been replaced"""
         pass
 
@@ -69,6 +69,9 @@ class ConfigFile(object):
 
     def getFilters(self):
         return [x[1] for x in self.__oConfig.items(self.__sFiltersSection)]
+
+    def getFiltersKeys(self):
+        return self.__oConfig.items(self.__sFiltersSection)
 
     def getWinPos(self,sTitle):
         for sKey,sName in self.__oConfig.items(self.__sWinNameSection):
@@ -134,32 +137,31 @@ class ConfigFile(object):
     def addFilter(self,sFilter):
         aOptions = self.__oConfig.options(self.__sFiltersSection)
         self.__iNum += 1
-        sKey = 'user filter ' + str(self.__iNum)
+        sKey = 'User Filter ' + str(self.__iNum)
         while sKey in aOptions:
             self.__iNum += 1
-            sKey = 'user filter ' + str(self.__iNum)
+            sKey = 'User Filter ' + str(self.__iNum)
         self.__oConfig.set(self.__sFiltersSection,sKey,sFilter)
         for oListener in self.__dListeners:
-            oListener.addFilter(sFilter)
+            oListener.addFilter(sFilter,sKey)
 
-    def removeFilter(self,sFilter):
-        # We remove the first instance of the filter we find
-        for sOption,sFilterinFile in self.__oConfig.items(self.__sFiltersSection):
-            if sFilterinFile == sFilter:
-                self.__oConfig.remove_option(self.__sFiltersSection,sOption)
-                for oListener in self.__dListeners:
-                    oListener.removeFilter(sFilter)
-                return
+    def removeFilter(self,sFilter,sKey):
+        # Make sure Filer and key match
+        if sKey in self.__oConfig.options(self.__sFiltersSection) and \
+                sFilter == self.__oConfig.get(self.__sFiltersSection,sKey):
+            self.__oConfig.remove_option(self.__sFiltersSection,sKey)
+            for oListener in self.__dListeners:
+                oListener.removeFilter(sFilter,sKey)
+            return
 
-    def replaceFilter(self,sOldFilter,sNewFilter):
-        # We replace the first instance of the filter we find
-        for sOption,sFilterinFile in self.__oConfig.items(self.__sFiltersSection):
-            if sFilterinFile == sOldFilter:
-                self.__oConfig.remove_option(self.__sFiltersSection,sOption)
-                self.__oConfig.set(self.__sFiltersSection,sOption,sNewFilter)
-                for oListener in self.__dListeners:
-                    oListener.replaceFilter(sOldFilter,sNewFilter)
-                return
+    def replaceFilter(self,sOldFilter,sNewFilter,sKey):
+        if sKey in self.__oConfig.options(self.__sFiltersSection) and \
+                sOldFilter == self.__oConfig.get(self.__sFiltersSection,sKey):
+            self.__oConfig.remove_option(self.__sFiltersSection,sKey)
+            self.__oConfig.set(self.__sFiltersSection,sKey,sNewFilter)
+            for oListener in self.__dListeners:
+                oListener.replaceFilter(sOldFilter,sNewFilter,sKey)
+            return
 
 
 
