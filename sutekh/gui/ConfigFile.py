@@ -137,10 +137,10 @@ class ConfigFile(object):
     def addFilter(self,sFilter):
         aOptions = self.__oConfig.options(self.__sFiltersSection)
         self.__iNum += 1
-        sKey = 'User Filter ' + str(self.__iNum)
+        sKey = 'user filter ' + str(self.__iNum)
         while sKey in aOptions:
             self.__iNum += 1
-            sKey = 'User Filter ' + str(self.__iNum)
+            sKey = 'user filter ' + str(self.__iNum)
         self.__oConfig.set(self.__sFiltersSection,sKey,sFilter)
         for oListener in self.__dListeners:
             oListener.addFilter(sFilter,sKey)
