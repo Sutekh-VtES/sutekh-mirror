@@ -18,9 +18,9 @@ class CardSetMenu(gtk.MenuBar,object):
         self.__oWindow = oWindow
         self.__oView = oView
         self.sSetName = sName
-        self.__sType=sType
-        self.__sMenuType=sType.replace('CardSet','')
-        self.__dMenus={}
+        self.__sType = sType
+        self.__sMenuType = sType.replace('CardSet','')
+        self.__dMenus = {}
         self.__createCardSetMenu()
         self.__createFilterMenu()
         self.__createPluginMenu()
@@ -39,10 +39,10 @@ class CardSetMenu(gtk.MenuBar,object):
         self.__iExport = gtk.MenuItem("Export Card Set ("+self.sSetName+") to File")
         wMenu.add(self.__iExport)
         self.__iExport.connect('activate', self.doExport)
-        self.__iClose=gtk.MenuItem("Close Card Set ("+self.sSetName+")")
+        self.__iClose = gtk.MenuItem("Close Card Set ("+self.sSetName+")")
         wMenu.add(self.__iClose)
         self.__iClose.connect("activate", self.cardSetClose)
-        self.__iDelete=gtk.MenuItem("Delete Card Set ("+self.sSetName+")")
+        self.__iDelete = gtk.MenuItem("Delete Card Set ("+self.sSetName+")")
         # Possible enhancement, make card set names italic.
         # Looks like it requires playing with menuitem attributes
         # (or maybe gtk.Action)
@@ -60,7 +60,7 @@ class CardSetMenu(gtk.MenuBar,object):
         # setup sub menu
         iMenu = gtk.MenuItem("Filter")
         wMenu = gtk.Menu()
-        self.__dMenus["Filter"]=wMenu
+        self.__dMenus["Filter"] = wMenu
         iMenu.set_submenu(wMenu)
 
         # items
@@ -104,7 +104,7 @@ class CardSetMenu(gtk.MenuBar,object):
         oProp = PropDialog("Edit Card Set ("+self.sSetName+") Propeties",
                          self.__oWindow,oCS.name,oCS.author,oCS.comment)
         oProp.run()
-        (sName,sAuthor,sComment)=oProp.getData()
+        (sName,sAuthor,sComment) = oProp.getData()
         if sName is not None and sName != self.sSetName and len(sName)>0:
             # Check new name is not in use
             if self.__sType == 'PhysicalCardSet':

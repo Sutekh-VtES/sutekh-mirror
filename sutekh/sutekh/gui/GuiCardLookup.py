@@ -53,7 +53,7 @@ class GuiLookup(AbstractCardLookup):
 
     def _doHandleUnknown(self,dUnknownCards):
         """Handle the list of unknown cards.
-        
+
            We allow the user to select the correct replacements from the Abstract
            Card List
            """

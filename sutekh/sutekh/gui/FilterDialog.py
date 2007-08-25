@@ -179,7 +179,7 @@ class FilterDialog(gtk.Dialog,ConfigFileListener):
             self.__doRemoveFilter()
             return self.run()
         else:
-            self.__bWasCancelled=True
+            self.__bWasCancelled = True
         self.hide()
 
     def __parseDialogState(self):
