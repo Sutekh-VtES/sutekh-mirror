@@ -1,3 +1,6 @@
+25 Aug 2007
+ * Make User-specified Filters in the FilterDialog Editable
+
 24 Aug 2007
  * Add CardSetHolder for manipulating card sets which aren't in the
    database yet.

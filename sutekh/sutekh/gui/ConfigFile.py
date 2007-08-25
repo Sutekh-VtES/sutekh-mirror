@@ -17,6 +17,10 @@ class ConfigFileListener(object):
         """Filter removed"""
         pass
 
+    def replaceFilter(self,sOldFilter,sNewFilter):
+        """A Filter has been replaced"""
+        pass
+
 class ConfigFile(object):
 
     __sFiltersSection = 'filters'
@@ -146,5 +150,17 @@ class ConfigFile(object):
                 for oListener in self.__dListeners:
                     oListener.removeFilter(sFilter)
                 return
+
+    def replaceFilter(self,sOldFilter,sNewFilter):
+        # We replace the first instance of the filter we find
+        for sOption,sFilterinFile in self.__oConfig.items(self.__sFiltersSection):
+            if sFilterinFile == sOldFilter:
+                self.__oConfig.remove_option(self.__sFiltersSection,sOption)
+                self.__oConfig.set(self.__sFiltersSection,sOption,sNewFilter)
+                for oListener in self.__dListeners:
+                    oListener.replaceFilter(sOldFilter,sNewFilter)
+                return
+
+
 
 
