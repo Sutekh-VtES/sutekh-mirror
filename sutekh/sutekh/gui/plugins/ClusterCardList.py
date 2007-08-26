@@ -9,9 +9,10 @@ from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 
 # find a cluster module
-for module in ['Pycluster','Bio.Cluster']:
+# Bio.Cluster needs a fromlist to do the right thing
+for module,aFromlist in [('Pycluster',None),('Bio.Cluster',['Cluster'])]:
     try:
-        Cluster = __import__(module)
+        Cluster = __import__(module,None,None,aFromlist)
         break
     except ImportError:
         pass
@@ -311,5 +312,7 @@ class ClusterCardList(CardListPlugin):
         for oCard, aCardCluster in zip(self._aCards,self._aClusterIds):
             if aClusterId[0] == aCardCluster[0] and aClusterId[1] == aCardCluster[1]:
                 oDeck.addPhysicalCard(oCard)
+
+        self.view.getWindow().getManager().reloadCardSetLists()
 
 plugin = ClusterCardList
