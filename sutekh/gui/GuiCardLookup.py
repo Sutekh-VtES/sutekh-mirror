@@ -149,6 +149,7 @@ class GuiLookup(AbstractCardLookup):
         oFilter = CardNameFilter(sFilterString)
         self._oAbsCardView.getModel().selectfilter = oFilter
         self._oAbsCardView.getModel().applyfilter = True
+        self._oAbsCardView.getController().getMenu().setApplyFilter(True)
         # Run the filter
         self._oAbsCardView.load()
         pass
