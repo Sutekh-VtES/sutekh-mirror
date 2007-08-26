@@ -101,6 +101,9 @@ class MainController(object):
     def runFilter(self,widget):
         self.__oAbstractCards.runFilter(self.__oMenu.getApplyFilter())
 
+    def getMenu(self):
+        return self.__oMenu
+
     def showAboutDialog(self,widget):
         oDlg = SutekhAboutDialog()
         oDlg.run()
