@@ -16,17 +16,17 @@ Code Cleanup
    looks like something worth addressing
 
 Gui (Functionality):
- * Improve Current Filter dialogs - better help, more examples, "Edit existing Filter", etc.
+ * Improve Current Filter dialogs - better help, more examples, etc.
  * Add ordering selection dialog (possibly part of filtering dialog).
  * Turn AnalyzeDeck into something more useful - NM
+   * Improve Happy Families analysis (select number of disciplines to display,
+     disciplines to use, etc)
  * Finish ClusterCardList plugin.
  * Compare CardSet Plugin (basic version done. Could be improved)
  * Improve About dialog.
  * Ability to specify the expansion a physical card comes from.
  * Replace HTML export plugin with direct export to HTML.
  * Plugins for calling out to other VtES utilities as appropriate (http://ashheap.storageannex.com/utilities.htm)
- * Improve Happy Families analysis (select number of disciplines to display,
-   disciplines to use, etc)
  * Move other card set importers over to CardSetHolder and CardLookup.
 
 Gui (Presentation):
