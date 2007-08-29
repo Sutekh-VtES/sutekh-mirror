@@ -1,83 +1,87 @@
 # SutekhCli.py
-# Copyright 2005,2006 Simon Cross <hodgestar@gmail.com>
+# Copyright 2005, 2006 Simon Cross <hodgestar@gmail.com>
 # Minor modifications copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-from sutekh.core.SutekhObjects import Ruling, ObjectList, PhysicalList
-from sutekh.SutekhUtility import refreshTables, readWhiteWolfList, readRulings, \
-                                 genTempdir, prefsDir, ensureDirExists, sqliteUri
-from sutekh.core.DatabaseUpgrade import attemptDatabaseUpgrade
-from sutekh.io.XmlFileHandling import PhysicalCardXmlFile, PhysicalCardSetXmlFile,\
-                                   AbstractCardSetXmlFile, writeAllAbstractCardSets, \
-                                   writeAllPhysicalCardSets
-from sutekh.io.ZipFileWrapper import ZipFileWrapper
-from sqlobject import sqlhub, connectionForURI
 import sys, optparse, os
+from sqlobject import sqlhub, connectionForURI
+from sutekh.core.SutekhObjects import Ruling, ObjectList, PhysicalList
+from sutekh.SutekhUtility import refreshTables, readWhiteWolfList, \
+        readRulings, genTempdir, prefsDir, ensureDirExists, sqliteUri
+from sutekh.core.DatabaseUpgrade import attemptDatabaseUpgrade
+from sutekh.io.XmlFileHandling import PhysicalCardXmlFile, \
+        PhysicalCardSetXmlFile, AbstractCardSetXmlFile, \
+        writeAllAbstractCardSets, writeAllPhysicalCardSets
+from sutekh.io.ZipFileWrapper import ZipFileWrapper
 
 def parseOptions(aArgs):
-    oP = optparse.OptionParser(usage="usage: %prog [options]",version="%prog 0.1")
-    oP.add_option("-d","--db",
-                  type="string",dest="db",default=None,
+    oP = optparse.OptionParser(usage="usage: %prog [options]",
+            version="%prog 0.1")
+    oP.add_option("-d", "--db",
+                  type="string", dest="db", default=None,
                   help="Database URI. [sqlite://$PREFSDIR$/sutekh.db]")
-    oP.add_option("-r","--ww-file",
-                  type="string",dest="ww_file",default=None,
+    oP.add_option("-r", "--ww-file",
+                  type="string", dest="ww_file", default=None,
                   help="HTML file (probably from WW website) to read cards from.")
     oP.add_option("--ruling-file",
-                  type="string",dest="ruling_file",default=None,
+                  type="string", dest="ruling_file", default=None,
                   help="HTML file (probably from WW website) to read rulings from.")
-    oP.add_option("-c","--refresh-tables",
-                  action="store_true",dest="refresh_tables",default=False,
+    oP.add_option("-c", "--refresh-tables",
+                  action="store_true", dest="refresh_tables", default=False,
                   help="Drop (if possible) and recreate database tables.")
     oP.add_option("--refresh-ruling-tables",
-                  action="store_true",dest="refresh_ruling_tables",default=False,
+                  action="store_true", dest="refresh_ruling_tables",
+                  default=False,
                   help="Drop (if possible) and recreate rulings tables only.")
     oP.add_option("--refresh-physical-card-tables",
-                  action="store_true",dest="refresh_physical_card_tables",default=False,
+                  action="store_true", dest="refresh_physical_card_tables",
+                  default=False,
                   help="Drop (if possible) and recreate physical card tables only.")
     oP.add_option("--sql-debug",
-                  action="store_true",dest="sql_debug",default=False,
+                  action="store_true", dest="sql_debug", default=False,
                   help="Print out SQL statements.")
-    oP.add_option("-s","--save-physical-cards-to",
-                  type="string",dest="save_physical_cards_to",default=None,
+    oP.add_option("-s", "--save-physical-cards-to",
+                  type="string", dest="save_physical_cards_to", default=None,
                   help="Write an XML description of the list of physical cards to the given file.")
-    oP.add_option("-l","--read-physical-cards-from",
-                  type="string",dest="read_physical_cards_from",default=None,
+    oP.add_option("-l", "--read-physical-cards-from",
+                  type="string", dest="read_physical_cards_from", default=None,
                   help="Read physical card list from the given XML file.")
     oP.add_option("--save-pcs",
-                  type="string",dest="save_pcs",default=None,
+                  type="string", dest="save_pcs", default=None,
                   help="Save the given Physical Card Set to an XML file (by default named <pcsname>.xml).")
     oP.add_option("--pcs-filename",
-                  type="string",dest="pcs_filename",default=None,
+                  type="string", dest="pcs_filename", default=None,
                   help="Give an alternative filename to save the Physical Card Set as")
     oP.add_option("--save-all-pcs",
-                  action="store_true",dest="save_all_pcss",default=False,
+                  action="store_true", dest="save_all_pcss", default=False,
                   help="Save all Physical Card Sets in the database to files - Cannot be used with --save-pcs.")
     oP.add_option("--read-pcs",
-                  type="string",dest="read_pcs",default=None,
+                  type="string", dest="read_pcs", default=None,
                   help="Load a Physical Card Set from the given XML file.")
     oP.add_option("--save-acs",
-                  type="string",dest="save_acs",default=None,
+                  type="string", dest="save_acs", default=None,
                   help="Save the given Abstract Card Set to an XML file (by default named <acsname>.xml).")
     oP.add_option("--acs-filename",
-                  type="string",dest="acs_filename",default=None,
+                  type="string", dest="acs_filename", default=None,
                   help="Give an alternative filename to save the Abstract Card Set as")
     oP.add_option("--save-all-acs",
-                  action="store_true",dest="save_all_acss",default=False,
+                  action="store_true", dest="save_all_acss", default=False,
                   help="Save all Abstract Card Sets in the database to files - Cannot be used with --save-acs.")
     oP.add_option("--read-acs",
-                  type="string",dest="read_acs",default=None,
+                  type="string", dest="read_acs", default=None,
                   help="Load an Abstract Card Set from the given XML file.")
-    oP.add_option("--reload",action="store_true",dest="reload",default=False,
+    oP.add_option("--reload", action="store_true", dest="reload",
+                  default=False,
                   help="Dump the physical card list and all card sets and reload them - \
 intended to be used with -c and refreshing the abstract card list")
-    oP.add_option("--upgrade-db",\
-                  action="store_true",dest="upgrade_db",default=False,\
+    oP.add_option("--upgrade-db",
+                  action="store_true", dest="upgrade_db", default=False,
                   help="Attempt to upgrade a database to the latest version. Cannot be used with --refresh-tables")
-    oP.add_option("--dump-zip",\
-            type="string",dest="dump_zip_name",default=None,\
-            help="Dump the PhysicalCard list and all the CardSets to the given zipfile")
-    oP.add_option("--restore-zip",\
-            type="string",dest="restore_zip_name",default=None,\
+    oP.add_option("--dump-zip",
+                  type="string", dest="dump_zip_name", default=None,
+                  help="Dump the PhysicalCard list and all the CardSets to the given zipfile")
+    oP.add_option("--restore-zip",
+            type="string", dest="restore_zip_name", default=None,
             help="Restore everything from the given zipfile")
 
     return oP, oP.parse_args(aArgs)
@@ -92,7 +96,7 @@ def main(aArgs):
 
     if oOpts.db is None:
         ensureDirExists(sPrefsDir)
-        oOpts.db = sqliteUri(os.path.join(sPrefsDir,"sutekh.db"))
+        oOpts.db = sqliteUri(os.path.join(sPrefsDir, "sutekh.db"))
 
     oConn = connectionForURI(oOpts.db)
     sqlhub.processConnection = oConn
@@ -114,17 +118,17 @@ def main(aArgs):
             # We will reload them later
 
     if oOpts.refresh_ruling_tables:
-        if not refreshTables([Ruling],sqlhub.processConnection):
+        if not refreshTables([Ruling], sqlhub.processConnection):
             print "refresh failed"
             return 1
 
     if oOpts.refresh_tables:
-        if not refreshTables(ObjectList,sqlhub.processConnection):
+        if not refreshTables(ObjectList, sqlhub.processConnection):
             print "refresh failed"
             return 1
 
     if oOpts.refresh_physical_card_tables:
-        if not refreshTables(PhysicalList,sqlhub.processConnection):
+        if not refreshTables(PhysicalList, sqlhub.processConnection):
             print "refresh failed"
             return 1
 
@@ -157,12 +161,12 @@ def main(aArgs):
         writeAllPhysicalCardSets()
 
     if oOpts.dump_zip_name is not None:
-        oZ = ZipFileWrapper(oOpts.dump_zip_name)
-        oZ.doDumpAllToZip()
+        oZipFile = ZipFileWrapper(oOpts.dump_zip_name)
+        oZipFile.doDumpAllToZip()
 
     if oOpts.restore_zip_name is not None:
-        oZ = ZipFileWrapper(oOpts.restore_zip_name)
-        oZ.doRestoreFromZip()
+        oZipFile = ZipFileWrapper(oOpts.restore_zip_name)
+        oZipFile.doRestoreFromZip()
 
     if not oOpts.save_pcs is None:
         oFile = PhysicalCardSetXmlFile(oOpts.pcs_filename)
@@ -183,12 +187,12 @@ def main(aArgs):
     if oOpts.reload:
         oPCFile.read()
         oPCFile.delete()
-        for pcs in aPhysicalCardSetList:
-            pcs.read()
-            pcs.delete()
-        for acs in aAbstractCardSetList:
-            acs.read()
-            acs.delete()
+        for oPCSet in aPhysicalCardSetList:
+            oPCSet.read()
+            oPCSet.delete()
+        for oACSet in aAbstractCardSetList:
+            oACSet.read()
+            oACSet.delete()
         os.rmdir(sTempdir)
 
     if oOpts.upgrade_db and oOpts.refresh_tables:
