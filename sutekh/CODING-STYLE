@@ -12,6 +12,7 @@ choices, exceptions, additions and clarifications:
      tMoo (tuple)
      dMoo (dictionary)
      oMoo (complex object)
+     bMoo (boolean)
 
 [1] http://www.python.org/dev/peps/pep-0008/
 
@@ -19,3 +20,18 @@ choices, exceptions, additions and clarifications:
 
  * Assignments without spaces around equals:
    r'^\s*[A-Za-z0-9.]+=[A-Za-z0-9.]+(\([^()]*\))?$'
+
+=== Pylint options ====
+
+While pylint doesn't handle some of the inheritence cases well (especially 
+involving dialogs from gtk), it is useful for detecting some style and syntax
+issues.
+
+I use the following pylintrc file to teach pylint about the variable naming
+scheme (this does not enforce the typing convention)
+
+[BASIC]
+variable-rgx = [_]{0,2}[a,b,d,f,i,o,s,t][A-Z][A-z0-9]{1,20}$
+argument-rgx = [_]{0,2}[a,b,d,f,i,o,s,t][A-Z][A-z0-9]{1,20}$|self|cls
+attr-rgx = [_]{0,2}[a,b,d,f,i,o,s,t][A-Z][A-z0-9]{1,20}$
+const-rgx = [_]{0,2}[a,b,d,f,i,o,s,t][A-Z][A-z0-9]{1,20}$
