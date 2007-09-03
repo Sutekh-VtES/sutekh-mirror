@@ -20,7 +20,7 @@ from xml.dom.minidom import getDOMImplementation
 class PhysicalCardSetWriter(object):
     sMyVersion = "1.0"
 
-    def genDoc(self,sPhysicalCardSetName):
+    def genDoc(self, sPhysicalCardSetName):
         dPhys = {}
 
         try:
@@ -35,36 +35,36 @@ class PhysicalCardSetWriter(object):
             print "Failed to find %s" % sPhysicalCardSetName
             return
 
-        for oC in oPCS.cards:
-            oAbs = oC.abstractCard
+        for oCard in oPCS.cards:
+            oAbs = oCard.abstractCard
             try:
-                dPhys[(oAbs.id, oAbs.name, oC.expansion)] += 1
+                dPhys[(oAbs.id, oAbs.name, oCard.expansion)] += 1
             except KeyError:
-                dPhys[(oAbs.id, oAbs.name, oC.expansion)] = 1
+                dPhys[(oAbs.id, oAbs.name, oCard.expansion)] = 1
 
-        oDoc = getDOMImplementation().createDocument(None,'physicalcardset',None)
+        oDoc = getDOMImplementation().createDocument(None, 'physicalcardset', None)
 
         oCardsElem = oDoc.firstChild
-        oCardsElem.setAttribute('sutekh_xml_version',self.sMyVersion)
-        oCardsElem.setAttribute('name',sPhysicalCardSetName)
-        oCardsElem.setAttribute('author',sAuthor)
-        oCardsElem.setAttribute('comment',sComment)
-        oCardsElem.setAttribute('annotations',sAnnotations)
+        oCardsElem.setAttribute('sutekh_xml_version', self.sMyVersion)
+        oCardsElem.setAttribute('name', sPhysicalCardSetName)
+        oCardsElem.setAttribute('author', sAuthor)
+        oCardsElem.setAttribute('comment', sComment)
+        oCardsElem.setAttribute('annotations', sAnnotations)
 
         for tKey, iNum in dPhys.iteritems():
             iId, sName, sExpansion = tKey
             oCardElem = oDoc.createElement('card')
-            oCardElem.setAttribute('id',str(iId))
-            oCardElem.setAttribute('name',sName)
+            oCardElem.setAttribute('id', str(iId))
+            oCardElem.setAttribute('name', sName)
             if sExpansion is None:
-                oCardElem.setAttribute('expansion','None Specified')
+                oCardElem.setAttribute('expansion', 'None Specified')
             else:
-                oCardElem.setAttribute('expansion',sExpansion)
-            oCardElem.setAttribute('count',str(iNum))
+                oCardElem.setAttribute('expansion', sExpansion)
+            oCardElem.setAttribute('count', str(iNum))
             oCardsElem.appendChild(oCardElem)
 
         return oDoc
 
-    def write(self,fOut,sPhysicalCardSetName):
+    def write(self, fOut, sPhysicalCardSetName):
         oDoc = self.genDoc(sPhysicalCardSetName)
         fOut.write(oDoc.toprettyxml())

@@ -17,9 +17,9 @@ from sqlobject import SQLObjectNotFound
 from xml.dom.minidom import getDOMImplementation
 
 class AbstractCardSetWriter(object):
-    sMyVersion="1.0"
+    sMyVersion = "1.0"
 
-    def genDoc(self,sAbstractCardSetName):
+    def genDoc(self, sAbstractCardSetName):
         dCards = {}
 
         try:
@@ -41,25 +41,25 @@ class AbstractCardSetWriter(object):
                 dCards[(oAbs.id, oAbs.name)] = 1
 
 
-        oDoc = getDOMImplementation().createDocument(None,'abstractcardset',None)
+        oDoc = getDOMImplementation().createDocument(None, 'abstractcardset', None)
 
         oCardsElem = oDoc.firstChild
-        oCardsElem.setAttribute('sutekh_xml_version',self.sMyVersion)
-        oCardsElem.setAttribute('name',sAbstractCardSetName)
-        oCardsElem.setAttribute('author',sAuthor)
-        oCardsElem.setAttribute('comment',sComment)
-        oCardsElem.setAttribute('annotations',sAnnotations)
+        oCardsElem.setAttribute('sutekh_xml_version', self.sMyVersion)
+        oCardsElem.setAttribute('name', sAbstractCardSetName)
+        oCardsElem.setAttribute('author', sAuthor)
+        oCardsElem.setAttribute('comment', sComment)
+        oCardsElem.setAttribute('annotations', sAnnotations)
 
         for tKey, iNum in dCards.iteritems():
             iId, sName = tKey
             oCardElem = oDoc.createElement('card')
-            oCardElem.setAttribute('id',str(iId))
-            oCardElem.setAttribute('name',sName)
-            oCardElem.setAttribute('count',str(iNum))
+            oCardElem.setAttribute('id', str(iId))
+            oCardElem.setAttribute('name', sName)
+            oCardElem.setAttribute('count', str(iNum))
             oCardsElem.appendChild(oCardElem)
 
         return oDoc
 
-    def write(self,fOut,sAbstractCardSetName):
+    def write(self, fOut, sAbstractCardSetName):
         oDoc = self.genDoc(sAbstractCardSetName)
         fOut.write(oDoc.toprettyxml())
