@@ -6,27 +6,28 @@
 import gtk
 
 class DeleteCardSetDialog(gtk.Dialog):
-    def __init__(self,parent,name,sType):
-        super(DeleteCardSetDialog,self).__init__("Really Delete?", \
-            parent,gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT, \
-            ( gtk.STOCK_YES, gtk.RESPONSE_OK, gtk.STOCK_NO, gtk.RESPONSE_CANCEL))
-        Label = gtk.Label(sType+" Card Set " + name + " Not Empty - Really Delete?")
-        Label.show()
-        Icon = gtk.Image()
-        Icon.set_from_stock(gtk.STOCK_DIALOG_QUESTION,gtk.ICON_SIZE_DIALOG)
-        Icon.show()
-        HBox = gtk.HBox(False,0)
-        HBox.pack_start(Icon,False,False)
-        HBox.pack_end(Label,True,False)
-        HBox.show()
-        self.vbox.pack_start(HBox)
+    def __init__(self, oParent, sName, sType):
+        super(DeleteCardSetDialog, self).__init__("Really Delete?",
+            oParent, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
+            (gtk.STOCK_YES, gtk.RESPONSE_OK, gtk.STOCK_NO, gtk.RESPONSE_CANCEL))
+        oLabel = gtk.Label(sType + " Card Set " + sName + \
+                " Not Empty - Really Delete?")
+        oLabel.show()
+        oIcon = gtk.Image()
+        oIcon.set_from_stock(gtk.STOCK_DIALOG_QUESTION, gtk.ICON_SIZE_DIALOG)
+        oIcon.show()
+        oHBox = gtk.HBox(False, 0)
+        oHBox.pack_start(oIcon, False, False)
+        oHBox.pack_end(oLabel, True, False)
+        oHBox.show()
+        self.vbox.pack_start(oHBox)
         self.connect("response", self.buttonResponse)
-        self.Data = False
+        self.bData = False
 
     def getResult(self):
-        return self.Data
+        return self.bData
 
-    def buttonResponse(self,widget,response):
-        if response ==  gtk.RESPONSE_OK:
-            self.Data = True
+    def buttonResponse(self, oWidget, iResponse):
+        if iResponse ==  gtk.RESPONSE_OK:
+            self.bData = True
         self.destroy()

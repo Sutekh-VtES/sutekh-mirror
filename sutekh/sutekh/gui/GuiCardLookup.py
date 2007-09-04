@@ -16,12 +16,12 @@ class GuiLookup(AbstractCardLookup):
     """Lookup AbstractCards. Use the user as the AI if a simple lookup fails.
        """
 
-    def __init__(self,oAbsCardView):
+    def __init__(self, oAbsCardView):
         # FIXME: Should this create an abstract card list view inside the
         #        dialog? For times when the abstract card list isn't visible?
         self._oAbsCardView = oAbsCardView
 
-    def lookup(self,aNames):
+    def lookup(self, aNames):
         dCards = {}
         dUnknownCards = {}
 
@@ -51,13 +51,13 @@ class GuiLookup(AbstractCardLookup):
 
         return [(sName in dCards and dCards[sName] or dUnknownCards[sName]) for sName in aNames]
 
-    def _doHandleUnknown(self,dUnknownCards):
+    def _doHandleUnknown(self, dUnknownCards):
         """Handle the list of unknown cards.
 
            We allow the user to select the correct replacements from the Abstract
            Card List
            """
-        oUnknownDialog = gtk.Dialog("Unknown cards found",None,
+        oUnknownDialog = gtk.Dialog("Unknown cards found", None,
                 gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                 (gtk.STOCK_OK, gtk.RESPONSE_OK,
                  gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
@@ -67,7 +67,8 @@ class GuiLookup(AbstractCardLookup):
 
         sMsg1 = "The following card names could not be found:\n"
         sMsg1 += "\nChoose how to handle these cards?\n"
-        sMsg2 = "OK creates the card set, Cancel aborts the creation of the card set"
+        sMsg2 = "OK creates the card set, "
+        sMsg2 += "Cancel aborts the creation of the card set"
 
         oMesgLabel1.set_text(sMsg1)
         oUnknownDialog.vbox.pack_start(oMesgLabel1)
@@ -83,15 +84,17 @@ class GuiLookup(AbstractCardLookup):
             oUnknownDialog.vbox.pack_start(oBox)
 
             oBox = gtk.HButtonBox()
-            Button1 = gtk.Button("Use selected Abstract Card")
-            Button2 = gtk.Button("Ignore this Card")
-            Button3 = gtk.Button("Filter Abstract Cards with best guess")
-            Button1.connect("clicked",self._setToSelection,dReplacement[sName])
-            Button2.connect("clicked",self._setIgnore,dReplacement[sName])
-            Button3.connect("clicked",self._setFilter,sName)
-            oBox.pack_start(Button1)
-            oBox.pack_start(Button2)
-            oBox.pack_start(Button3)
+            oButton1 = gtk.Button("Use selected Abstract Card")
+            oButton2 = gtk.Button("Ignore this Card")
+            oButton3 = gtk.Button("Filter Abstract Cards with best guess")
+            oButton1.connect("clicked", self._set_to_selection,
+                    dReplacement[sName])
+            oButton2.connect("clicked", self._set_ignore,
+                    dReplacement[sName])
+            oButton3.connect("clicked", self._set_filter, sName)
+            oBox.pack_start(oButton1)
+            oBox.pack_start(oButton2)
+            oBox.pack_start(oButton3)
             oUnknownDialog.vbox.pack_start(oBox)
 
         oMesgLabel2.set_text(sMsg2)
@@ -99,11 +102,11 @@ class GuiLookup(AbstractCardLookup):
         oUnknownDialog.vbox.pack_start(oMesgLabel2)
         oUnknownDialog.vbox.show_all()
 
-        response = oUnknownDialog.run()
+        iResponse = oUnknownDialog.run()
 
         oUnknownDialog.destroy()
 
-        if response == gtk.RESPONSE_OK:
+        if iResponse == gtk.RESPONSE_OK:
             # For cards marked as replaced, add them to the Holder
             for sName in dUnknownCards:
                 sNewName = dReplacement[sName].get_text()
@@ -113,48 +116,48 @@ class GuiLookup(AbstractCardLookup):
         else:
             return False
 
-    def _setToSelection(self,oButton,oRepLabel):
-        oModel, aSelection = self._oAbsCardView.get_selection().get_selected_rows()
+    def _set_to_selection(self, oButton, oRepLabel):
+        oModel, aSelection = \
+                self._oAbsCardView.get_selection().get_selected_rows()
         if len(aSelection) != 1:
-            oComplaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
+            oComplaint = gtk.MessageDialog(None, 0, gtk.MESSAGE_ERROR,
                 gtk.BUTTONS_OK, "This requires that only ONE item be selected")
-            oComplaint.connect("response",lambda oW, oResp: oW.destroy())
+            oComplaint.connect("response", lambda oW, oResp: oW.destroy())
             oComplaint.run()
             return
         for oPath in aSelection:
             oIter = oModel.get_iter(oPath)
-            sNewName = oModel.get_value(oIter,0)
+            sNewName = oModel.get_value(oIter, 0)
         oRepLabel.hide()
         oRepLabel.set_text(sNewName)
         oRepLabel.show()
 
-    def _setFilter(self,oButton,sName):
+    def _set_filter(self, oButton, sName):
         # Set the filter on the Abstract Card List to one the does a
         # Best guess search
-        sFilterString = ' '+sName.lower()+' '
+        sFilterString = ' ' + sName.lower() + ' '
         # Kill the's in the string
-        sFilterString = sFilterString.replace(' the ','')
+        sFilterString = sFilterString.replace(' the ', '')
         # Kill commas, as possible issues
-        sFilterString = sFilterString.replace(',','')
+        sFilterString = sFilterString.replace(',', '')
         # Wildcard spaces
-        sFilterString = sFilterString.replace(' ','%').lower()
+        sFilterString = sFilterString.replace(' ', '%').lower()
         # Stolen semi-concept from soundex - replace vowels with wildcards
         # Should these be %'s ??
         # (Should at least handle the Rotscheck variation as it stands)
-        sFilterString = sFilterString.replace('a','_')
-        sFilterString = sFilterString.replace('e','_')
-        sFilterString = sFilterString.replace('i','_')
-        sFilterString = sFilterString.replace('o','_')
-        sFilterString = sFilterString.replace('u','_')
+        sFilterString = sFilterString.replace('a', '_')
+        sFilterString = sFilterString.replace('e', '_')
+        sFilterString = sFilterString.replace('i', '_')
+        sFilterString = sFilterString.replace('o', '_')
+        sFilterString = sFilterString.replace('u', '_')
         oFilter = CardNameFilter(sFilterString)
         self._oAbsCardView.getModel().selectfilter = oFilter
         self._oAbsCardView.getModel().applyfilter = True
         self._oAbsCardView.getController().getMenu().setApplyFilter(True)
         # Run the filter
         self._oAbsCardView.load()
-        pass
 
-    def _setIgnore(self,oButton,oRepLabel):
+    def _set_ignore(self, oButton, oRepLabel):
         oRepLabel.hide()
         oRepLabel.set_text("No Card")
         oRepLabel.show()
