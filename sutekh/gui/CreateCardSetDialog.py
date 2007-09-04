@@ -6,10 +6,11 @@
 import gtk
 
 class CreateCardSetDialog(gtk.Dialog):
-    def __init__(self,parent,sType,sAuthor=None,sDesc=None):
-        super(CreateCardSetDialog,self).__init__(sType+" Card Set Details",
-            parent,gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
-            (gtk.STOCK_OK, gtk.RESPONSE_OK, gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
+    def __init__(self, oParent, sType, sAuthor=None, sDesc=None):
+        super(CreateCardSetDialog, self).__init__(sType + " Card Set Details",
+            oParent, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
+            (gtk.STOCK_OK, gtk.RESPONSE_OK,
+                gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
 
         oNameLabel = gtk.Label("Card Set Name : ")
         self.oName = gtk.Entry(50)
@@ -29,10 +30,10 @@ class CreateCardSetDialog(gtk.Dialog):
         self.oName.connect("activate", self.buttonResponse, gtk.RESPONSE_OK)
 
         if sAuthor is not None:
-	        self.oAuthor.set_text(sAuthor)
+            self.oAuthor.set_text(sAuthor)
 
         if sDesc is not None:
-	        self.oDesc.set_text(sDesc)
+            self.oDesc.set_text(sDesc)
 
         self.sName = None
         self.sAuthor = None
@@ -44,8 +45,8 @@ class CreateCardSetDialog(gtk.Dialog):
     def getName(self):
         return (self.sName, self.sAuthor, self.sDesc)
 
-    def buttonResponse(self,oWidget,oResponse):
-        if oResponse == gtk.RESPONSE_OK:
+    def buttonResponse(self, oWidget, iResponse):
+        if iResponse == gtk.RESPONSE_OK:
             self.sName = self.oName.get_text()
             if len(self.sName) > 0:
                 self.sAuthor = self.oAuthor.get_text()
@@ -57,10 +58,10 @@ class CreateCardSetDialog(gtk.Dialog):
                 # We don't allow empty names
                 self.sName = None
 
-                Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
+                oComplaint = gtk.MessageDialog(None, 0, gtk.MESSAGE_ERROR,
                     gtk.BUTTONS_CLOSE,
                     "You did not specify a name for the %s." % self.sType)
-                Complaint.run()
-                Complaint.destroy()
+                oComplaint.run()
+                oComplaint.destroy()
 
         self.destroy()

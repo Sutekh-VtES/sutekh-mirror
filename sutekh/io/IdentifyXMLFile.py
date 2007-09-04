@@ -10,7 +10,7 @@ AbstractCardSet
 
 from sutekh.core.SutekhObjects import AbstractCardSet, PhysicalCardSet, PhysicalCard
 from sqlobject import SQLObjectNotFound
-from xml.sax import parse,_exceptions,parseString
+from xml.sax import parse, _exceptions, parseString
 from xml.sax.handler import ContentHandler
 
 class IdentifyXMLHandler(ContentHandler):
@@ -20,20 +20,20 @@ class IdentifyXMLHandler(ContentHandler):
         self.sName = None
         self.bExists = False
 
-    def startElement(self,sTagName,oAttrs):
+    def startElement(self, sTagName, oAttrs):
         if sTagName == 'abstractcardset':
-            self.sType ='AbstractCardSet'
+            self.sType = 'AbstractCardSet'
             self.sName = oAttrs.getValue('name')
             try:
-                acs = AbstractCardSet.byName(self.sName.encode('utf8'))
+                oACSet = AbstractCardSet.byName(self.sName.encode('utf8'))
                 self.bExists = True
             except SQLObjectNotFound:
                 self.bExists = False
         if sTagName == 'physicalcardset':
-            self.sType ='PhysicalCardSet'
+            self.sType = 'PhysicalCardSet'
             self.sName = oAttrs.getValue('name')
             try:
-                acs = PhysicalCardSet.byName(self.sName.encode('utf8'))
+                oPCSet = PhysicalCardSet.byName(self.sName.encode('utf8'))
                 self.bExists = True
             except SQLObjectNotFound:
                 self.bExists = False
@@ -47,27 +47,27 @@ class IdentifyXMLHandler(ContentHandler):
         pass
 
     def getDetails(self):
-        return (self.sType,self.sName,self.bExists)
+        return (self.sType, self.sName, self.bExists)
 
 class IdentifyXMLFile(object):
-    def parse(self,fIn):
+    def parse(self, fIn):
         myHandler = IdentifyXMLHandler()
         try:
-            parse(fIn,myHandler)
+            parse(fIn, myHandler)
         except _exceptions.SAXParseException:
             pass
         return myHandler.getDetails()
 
-    def parseString(self,sIn):
+    def parseString(self, sIn):
         myHandler = IdentifyXMLHandler()
         try:
-            parseString(sIn,myHandler)
+            parseString(sIn, myHandler)
         except _exceptions.SAXParseException:
             pass
         return myHandler.getDetails()
 
-    def idFile(self,sFileName):
-        fIn = file(sFileName,'rU')
-        result = self.parse(fIn)
+    def idFile(self, sFileName):
+        fIn = file(sFileName, 'rU')
+        tResult = self.parse(fIn)
         fIn.close()
-        return result
+        return tResult
