@@ -1,3 +1,8 @@
+19 Sep 2007
+ * Importing the Physical Card List and Card Sets now uses CardSetHolder
+ * Add physical_lookup method to CardLookup, so the user can be queried
+   when cards in a physical card set can't be found in the Physical Card List
+
 25 Aug 2007
  * Make User-specified Filters in the FilterDialog Editable
 

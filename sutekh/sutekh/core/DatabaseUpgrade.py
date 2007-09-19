@@ -581,7 +581,7 @@ def copyToNewAbstractCardDB(orig_conn, new_conn, oCardLookup):
     # Copy the physical card list
     oPhysListCS = CardSetHolder()
     for oCard in PhysicalCard.select(connection=orig_conn):
-        oPhysListCS.add(1, sName, oCard.expansion)
+        oPhysListCS.add(1, oCard.abstractCard.canonicalName, oCard.expansion)
     # Copy Physical card sets
     # IDs are unchangd, since we preserve Physical Card set ids
     for oSet in PhysicalCardSet.select(connection=orig_conn):
@@ -591,7 +591,7 @@ def copyToNewAbstractCardDB(orig_conn, new_conn, oCardLookup):
         oCS.comment = oSet.comment
         oCS.annotations = oSet.annotations
         for oCard in oSet.cards:
-            oCS.add(1, oCard.abstractCard.cononicalName, oCard.expansion)
+            oCS.add(1, oCard.abstractCard.canonicalName, oCard.expansion)
         aPhysCardSets.append(oCS)
     # Copy AbstractCardSets
     for oSet in AbstractCardSet.select(connection=orig_conn):
@@ -601,7 +601,7 @@ def copyToNewAbstractCardDB(orig_conn, new_conn, oCardLookup):
         oCS.comment = oSet.comment
         oCS.annotations = oSet.annotations
         for oCard in oSet.cards:
-            oCS.add(1, oCard.abstractCard.cononicalName)
+            oCS.add(1, oCard.canonicalName)
         aAbsCardSets.append(oCS)
     oTarget = new_conn.transaction()
     sqlhub.processConnection = oTarget
