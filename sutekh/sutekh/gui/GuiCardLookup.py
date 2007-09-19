@@ -8,18 +8,20 @@
 
 import gtk
 from sqlobject import SQLObjectNotFound
-from sutekh.core.SutekhObjects import AbstractCard
-from sutekh.core.CardLookup import AbstractCardLookup, LookupFailed
+from sutekh.core.SutekhObjects import AbstractCard, PhysicalCard
+from sutekh.core.CardLookup import AbstractCardLookup, PhysicalCardLookup, \
+        LookupFailed
 from sutekh.core.Filters import CardNameFilter
 
-class GuiLookup(AbstractCardLookup):
+class GuiLookup(AbstractCardLookup, PhysicalCardLookup):
     """Lookup AbstractCards. Use the user as the AI if a simple lookup fails.
        """
 
-    def __init__(self, oAbsCardView):
+    def __init__(self, oAbsCardView, oPhysCardView):
         # FIXME: Should this create an abstract card list view inside the
         #        dialog? For times when the abstract card list isn't visible?
         self._oAbsCardView = oAbsCardView
+        self._oPhysCardView = oPhysCardView
 
     def lookup(self, aNames):
         dCards = {}
@@ -50,6 +52,38 @@ class GuiLookup(AbstractCardLookup):
                 raise RuntimeError("Unexpectedly encountered missing abstract card '%s'." % sName)
 
         return [(sName in dCards and dCards[sName] or dUnknownCards[sName]) for sName in aNames]
+
+    def physical_lookup(self, dCardExpansions, dNameCards):
+        aCards = []
+        dUnknownCards = {}
+        for sName in dCardExpansions:
+            oAbs = dNameCards[sName]
+            if oAbs is not None:
+                try:
+                    aPhysCards = PhysicalCard.selectBy(abstractCardID=oAbs.id)
+                    for sExpansion in dCardExpansions[sName]:
+                        iCnt = dCardExpansions[sName][sExpansion]
+                        for oPhys in aPhysCards:
+                            if oPhys not in aPhysCards \
+                                    and oPhys.expansion == sExpansion \
+                                    and iCnt > 0:
+                                aCards.append(oPhys)
+                                iCnt -= 1
+                                if iCnt == 0:
+                                    break
+                        if iCnt > 0:
+                            dUnknownCards.setdefault(sName,{})
+                            dUnknownCards[sName][sExpansion] = iCnt
+                except SQLObjectNotFound:
+                    for sExpansion in dCardExpansions[sName]:
+                        iCnt = dCardExpansions[sName][sExpansion]
+                        if iCnt > 0:
+                            dUnknownCards.setdefault(sName,{})
+                            dUnknownCards[sName][sExpansion] = iCnt
+        if dUnknownCards:
+            # We need to lookup cards in the physical card view
+            pass
+        return aCards
 
     def _doHandleUnknown(self, dUnknownCards):
         """Handle the list of unknown cards.

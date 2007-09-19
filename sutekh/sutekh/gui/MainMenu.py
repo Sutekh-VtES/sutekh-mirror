@@ -8,6 +8,7 @@ from sqlobject import sqlhub, connectionForURI
 from sutekh.core.SutekhObjects import PhysicalCardSet, AbstractCardSet, ObjectList
 from sutekh.gui.ImportDialog import ImportDialog
 from sutekh.gui.WWFilesDialog import WWFilesDialog
+from sutekh.gui.GuiCardLookup import GuiLookup
 from sutekh.io.XmlFileHandling import PhysicalCardXmlFile, PhysicalCardSetXmlFile, \
                                     AbstractCardSetXmlFile
 from sutekh.io.IdentifyXMLFile import IdentifyXMLFile
@@ -16,7 +17,7 @@ from sutekh.SutekhUtility import refreshTables, readWhiteWolfList, readRulings
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
 
 class MainMenu(gtk.MenuBar,object):
-    def __init__(self,oController,oWindow,oConfig):
+    def __init__(self,oController, oWindow, oConfig, oAbsView, oPhysView):
         super(MainMenu,self).__init__()
         self.__oC = oController
         self.__oWin = oWindow
@@ -26,6 +27,7 @@ class MainMenu(gtk.MenuBar,object):
         self.__createFilterMenu()
         self.__createPluginMenu()
         self.__createAboutMenu()
+        self.__oCardLookup = GuiLookup(oAbsView, oPhysView)
 
     def __createFileMenu(self):
         # setup sub menu
@@ -166,13 +168,14 @@ class MainMenu(gtk.MenuBar,object):
             (sType,sName,bExists) = oP.idFile(sFileName)
             if sType == 'PhysicalCard':
                 if not bExists:
-                    oF = PhysicalCardXmlFile(sFileName)
+                    oF = PhysicalCardXmlFile(sFileName, lookup=self.__oCardLookup)
                     oF.read()
+                    self.__oC.reloadAll()
                 else:
                     Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
                             gtk.BUTTONS_CLOSE,"Can only do this when the current Card List is empty")
-                    response = Complaint.run()
-                    Complaint.destroy()
+                    Complaint.connect("response",lambda dlg, resp: dlg.destroy())
+                    Complaint.run()
             else:
                 Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
                     gtk.BUTTONS_CLOSE,"File is not a PhysicalCard XML File.")
@@ -195,9 +198,9 @@ class MainMenu(gtk.MenuBar,object):
                     if response == gtk.RESPONSE_CANCEL:
                         return
                 if sType == "AbstractCardSet":
-                    oF = AbstractCardSetXmlFile(sFileName)
+                    oF = AbstractCardSetXmlFile(sFileName, lookup=self.__oCardLookup)
                 else:
-                    oF = PhysicalCardSetXmlFile(sFileName)
+                    oF = PhysicalCardSetXmlFile(sFileName, lookup=self.__oCardLookup)
                 oF.read()
                 self.__oC.getManager().reloadCS(sName,sType)
                 self.__oC.getManager().createNewCardSetWindow(sName,sType)
@@ -205,6 +208,7 @@ class MainMenu(gtk.MenuBar,object):
                 Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
                     gtk.BUTTONS_CLOSE,"File is not a CardSet XML File.")
                 Complaint.connect("response",lambda dlg, resp: dlg.destroy())
+                Complaint.run()
 
     def doImportNewCardList(self,widget):
         oWWFilesDialog = WWFilesDialog(self.__oWin)
@@ -233,7 +237,7 @@ class MainMenu(gtk.MenuBar,object):
             if sRulingsFileName is not None:
                 readRulings(sRulingsFileName)
             bCont = False
-            (bOK,aErrors) = copyToNewAbstractCardDB(oldConn,tempConn)
+            (bOK,aErrors) = copyToNewAbstractCardDB(oldConn, tempConn, self.__oCardLookup)
             if not bOK:
                 sMesg = "There was a problem copying the cardlist to the new database\n"
                 for sStr in aErrors:

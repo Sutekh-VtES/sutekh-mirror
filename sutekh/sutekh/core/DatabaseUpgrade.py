@@ -11,6 +11,7 @@ from sutekh.core.SutekhObjects import PhysicalCard, AbstractCard, AbstractCardSe
                                  Ruling, ObjectList, DisciplinePair, Creed, \
                                  IVirtue, ISect, ITitle, Sect, Title, \
                                  FlushCache
+from sutekh.core.CardSetHolder import CardSetHolder
 from sutekh.SutekhUtility import refreshTables
 from sutekh.core.DatabaseVersion import DatabaseVersion
 from sutekh.io.WhiteWolfParser import parseText
@@ -568,54 +569,50 @@ def copyDB(orig_conn,dest_conn):
     trans.commit()
     return (bRes,aMessages)
 
-def copyToNewAbstractCardDB(orig_conn,new_conn):
+def copyToNewAbstractCardDB(orig_conn, new_conn, oCardLookup):
     # Given an existing database, and a new database created from
     # a new cardlist, copy the PhysicalCards and the CardSets,
-    # adjusting for the possibly changed id's in the AbstractCard Table
+    # going via CardSetHolders, so we can adapt to changed names, etc.
     bRes = True
     aMessages = []
-    target = new_conn.transaction()
+    aPhysCardSets = []
+    aAbsCardSets = []
+    oOldConn = sqlhub.processConnection
     # Copy the physical card list
+    oPhysListCS = CardSetHolder()
     for oCard in PhysicalCard.select(connection=orig_conn):
-        sName = oCard.abstractCard.canonicalName
-        try:
-            oNewAbsCard = AbstractCard.byCanonicalName(sName,connection=target)
-            oCardCopy = PhysicalCard(id=oCard.id,abstractCard=oNewAbsCard,
-                                     expansion=oCard.expansion,connection=target)
-        except SQLObjectNotFound:
-            aMessages.append("Unable to find match for "+sName)
-            bRes = False
+        oPhysListCS.add(1, sName, oCard.expansion)
     # Copy Physical card sets
     # IDs are unchangd, since we preserve Physical Card set ids
     for oSet in PhysicalCardSet.select(connection=orig_conn):
-        oCopy = PhysicalCardSet(id=oSet.id,name=oSet.name,
-                                author=oSet.author,comment=oSet.comment,
-                                connection=target)
+        oCS = CardSetHolder()
+        oCS.name = oSet.name
+        oCS.author = oSet.author
+        oCS.comment = oSet.comment
+        oCS.annotations = oSet.annotations
         for oCard in oSet.cards:
-            sName = oAbstractCard=oCard.abstractCard.canonicalName
-            try:
-                oNewAbsCard = AbstractCard.byCanonicalName(sName,connection=target)
-                oCopy.addPhysicalCard(oCard.id)
-            except SQLObjectNotFound:
-                aMessages.append("Unable to add Physical card %d name %s to set %s" % (oCard.id,oAbstractCard.name,oSet.name))
-                bRes = False
-        oCopy.syncUpdate() # probably unnessecary
+            oCS.add(1, oCard.abstractCard.cononicalName, oCard.expansion)
+        aPhysCardSets.append(oCS)
     # Copy AbstractCardSets
-    # AbstractCArd is not preserved, so adjust for this
     for oSet in AbstractCardSet.select(connection=orig_conn):
-        oCopy = AbstractCardSet(id=oSet.id,name=oSet.name,
-                                author=oSet.author,comment=oSet.comment,
-                                connection=target)
+        oCS = CardSetHolder()
+        oCS.name = oSet.name
+        oCS.author = oSet.author
+        oCS.comment = oSet.comment
+        oCS.annotations = oSet.annotations
         for oCard in oSet.cards:
-            sName = oCard.name
-            try:
-                oNewAbsCard = AbstractCard.byCanonicalName(sName.lower(),connection=target)
-                oCopy.addAbstractCard(oNewAbsCard.id)
-            except SQLObjectNotFound:
-                aMessages.append("Unable to find match for %s" % sName)
-                bRes = False
-        oCopy.syncUpdate()
-    target.commit()
+            oCS.add(1, oCard.abstractCard.cononicalName)
+        aAbsCardSets.append(oCS)
+    oTarget = new_conn.transaction()
+    sqlhub.processConnection = oTarget
+    # Create the cardsets from the holders
+    for oSet in aAbsCardSets:
+        oSet.createACS(oCardLookup)
+    oPhysListCS.createPhysicalCardList(oCardLookup)
+    for oSet in aPhysCardSets:
+        oSet.createPCS(oCardLookup)
+    oTarget.commit()
+    sqlhub.processConnection = oOldConn
     return (bRes,aMessages)
 
 def createMemoryCopy(tempConn):

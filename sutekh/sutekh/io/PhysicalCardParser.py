@@ -1,5 +1,6 @@
 # PhysicalCardParser.py
-# Copyright 2005,2006 Simon Cross <hodgestar@gmail.com>
+# Copyright 2005,2006,2007 Simon Cross <hodgestar@gmail.com>
+#                     2007 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
 """
@@ -12,15 +13,19 @@ looks like:
 </cards>
 """
 
-from sutekh.core.SutekhObjects import PhysicalCard, AbstractCard
+from sutekh.core.CardSetHolder import CardSetHolder
+from sutekh.core.CardLookup import DEFAULT_LOOKUP
 from sqlobject import sqlhub
 from xml.sax import parse, parseString
 from xml.sax.handler import ContentHandler
 
 class CardHandler(ContentHandler):
-    aSupportedVersions=['1.0','0.0']
+    aSupportedVersions = ['1.0', '0.0']
 
-    def startElement(self,sTagName,oAttrs):
+    def __init__(self):
+        self.oCS = CardSetHolder()
+
+    def startElement(self, sTagName, oAttrs):
         if sTagName == 'cards':
             aAttributes = oAttrs.getNames()
             if 'sutekh_xml_version' in aAttributes:
@@ -30,34 +35,35 @@ class CardHandler(ContentHandler):
             if sThisVersion not in self.aSupportedVersions:
                 raise RuntimeError("Unrecognised XML File version")
         elif sTagName == 'card':
-            iId = int(oAttrs.getValue('id'),10)
             sName = oAttrs.getValue('name')
-            iCount = int(oAttrs.getValue('count'),10)
+            iCount = int(oAttrs.getValue('count'), 10)
             if 'expansion' in oAttrs.getNames():
                 sExpansionName = oAttrs.getValue('expansion')
             else:
-                sExpansionName='None Specified'
-            oAbs = AbstractCard.byCanonicalName(sName.encode('utf8').lower())
-            for i in range(iCount):
-                if sExpansionName!='None Specified':
-                    PhysicalCard(abstractCard=oAbs,expansion=sExpansionName)
-                else:
-                    PhysicalCard(abstractCard=oAbs,expansion=None)
+                sExpansionName = 'None Specified'
+            if sExpansionName == 'None Specified':
+                self.oCS.add(iCount, sName, None)
+            else:
+                self.oCS.add(iCount, sName, sExpansionName)
 
-    def endElement(self,sName):
+    def endElement(self, sName):
         pass
 
 class PhysicalCardParser(object):
-    def parse(self,fIn):
-        oldConn = sqlhub.processConnection
-        sqlhub.processConnection= oldConn.transaction()
-        parse(fIn,CardHandler())
+    def parse(self, fIn, oCardLookup=DEFAULT_LOOKUP):
+        oMyHandler = CardHandler()
+        parse(fIn, oMyHandler)
+        oOldConn = sqlhub.processConnection
+        sqlhub.processConnection = oOldConn.transaction()
+        oMyHandler.oCS.createPhysicalCardList(oCardLookup)
         sqlhub.processConnection.commit()
-        sqlhub.processConnection = oldConn
+        sqlhub.processConnection = oOldConn
 
-    def parseString(self,sIn):
-        oldConn = sqlhub.processConnection
-        sqlhub.processConnection = oldConn.transaction()
-        parseString(sIn, CardHandler())
+    def parseString(self, sIn, oCardLookup=DEFAULT_LOOKUP):
+        oMyHandler = CardHandler()
+        parseString(sIn, oMyHandler)
+        oOldConn = sqlhub.processConnection
+        sqlhub.processConnection = oOldConn.transaction()
+        oMyHandler.oCS.createPhysicalCardList(oCardLookup)
         sqlhub.processConnection.commit()
-        sqlhub.processConnection = oldConn
+        sqlhub.processConnection = oOldConn

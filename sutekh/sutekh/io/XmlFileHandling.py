@@ -6,6 +6,7 @@
 # Split off from SutekhUtility as being somewhat clearer, April 2007 - NM
 
 from sutekh.core.SutekhObjects import AbstractCardSet, PhysicalCardSet
+from sutekh.core.CardLookup import DEFAULT_LOOKUP
 from sutekh.SutekhUtility import genTempFile, genTempdir, safeFilename
 from sutekh.io.PhysicalCardParser import PhysicalCardParser
 from sutekh.io.PhysicalCardSetParser import PhysicalCardSetParser
@@ -16,7 +17,8 @@ from sutekh.io.AbstractCardSetWriter import AbstractCardSetWriter
 import os
 
 class PhysicalCardXmlFile(object):
-    def __init__(self,filename=None,dir=None):
+    def __init__(self,filename=None,dir=None,lookup=DEFAULT_LOOKUP):
+        self.oCardLookup=lookup
         if filename is not None:
             self.sXmlFile = filename
         else:
@@ -28,7 +30,7 @@ class PhysicalCardXmlFile(object):
         if self.sXmlFile is None:
             raise RuntimeError("No Filename specified")
         oP = PhysicalCardParser()
-        oP.parse(file(self.sXmlFile,'rU'))
+        oP.parse(file(self.sXmlFile,'rU'),self.oCardLookup)
 
     def write(self):
         if self.sXmlFile is None:
@@ -44,14 +46,15 @@ class PhysicalCardXmlFile(object):
         os.remove(self.sXmlFile)
 
 class AbstractCardSetXmlFile(object):
-    def __init__(self,filename=None):
+    def __init__(self,filename=None,oCardLookup=None,lookup=DEFAULT_LOOKUP):
+        self.oCardLookup=lookup
         self.sXmlFile = filename
 
     def read(self):
         if self.sXmlFile is None:
             raise RuntimeError("No Filename specified")
         oP = AbstractCardSetParser()
-        oP.parse(file(self.sXmlFile,'rU'))
+        oP.parse(file(self.sXmlFile,'rU'),self.oCardLookup)
 
     def write(self,sAbstractCardSetName):
         oW = AbstractCardSetWriter()
@@ -69,14 +72,15 @@ class AbstractCardSetXmlFile(object):
         os.remove(self.sXmlFile)
 
 class PhysicalCardSetXmlFile(object):
-    def __init__(self,filename=None):
+    def __init__(self,filename=None,lookup=DEFAULT_LOOKUP):
+        self.oCardLookup=lookup
         self.sXmlFile = filename
 
     def read(self):
         if self.sXmlFile is None:
             raise RuntimeError("No Filename specified")
         oP = PhysicalCardSetParser()
-        oP.parse(file(self.sXmlFile,'rU'))
+        oP.parse(file(self.sXmlFile,'rU'),self.oCardLookup)
 
     def write(self,sPhysicalCardSetName):
         oW = PhysicalCardSetWriter()
