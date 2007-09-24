@@ -7,7 +7,9 @@
 
 import zipfile
 from sqlobject import sqlhub
-from sutekh.core.SutekhObjects import AbstractCardSet, PhysicalCardSet, PhysicalList
+from sutekh.core.SutekhObjects import AbstractCardSet, PhysicalCardSet, \
+        PhysicalList, AbstractCardSetList
+from sutekh.core.CardLookup import DEFAULT_LOOKUP
 from sutekh.SutekhUtility import refreshTables
 from sutekh.io.PhysicalCardParser import PhysicalCardParser
 from sutekh.io.PhysicalCardSetParser import PhysicalCardSetParser
@@ -88,7 +90,7 @@ class ZipFileWrapper(object):
             self.__closeZip()
         return aList
 
-    def doRestoreFromZip(self):
+    def doRestoreFromZip(self,oCardLookup=DEFAULT_LOOKUP):
         bPhysicalCardsRead = False
         self.__openZipForRead()
         # We do this so we can accomodate user created zipfiles,
@@ -105,8 +107,9 @@ class ZipFileWrapper(object):
                 # if we fail, the database will be in an inconsitent state,
                 # but that's going to be true anyway
                 refreshTables(PhysicalList, sqlhub.processConnection)
+                refreshTables(AbstractCardSetList, sqlhub.processConnection)
                 oParser = PhysicalCardParser()
-                oParser.parseString(oData)
+                oParser.parseString(oData,oCardLookup)
                 bPhysicalCardsRead = True
                 break
         if not bPhysicalCardsRead:
@@ -124,7 +127,7 @@ class ZipFileWrapper(object):
                     oParser = AbstractCardSetParser()
                 else:
                     continue
-                oParser.parseString(oData)
+                oParser.parseString(oData,oCardLookup)
         self.__closeZip()
 
     def doDumpAllToZip(self):

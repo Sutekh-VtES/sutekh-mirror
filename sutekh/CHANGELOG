@@ -1,5 +1,10 @@
+24 Spe 2007
+ * Finish 1st draft of physical_lookup - doesn't support expansion issues yet
+ * Change Restore from Backup to use CardSetHolder
+
 19 Sep 2007
  * Importing the Physical Card List and Card Sets now uses CardSetHolder
+ * Importing new WW lists also uses CardSetHolder
  * Add physical_lookup method to CardLookup, so the user can be queried
    when cards in a physical card set can't be found in the Physical Card List
 

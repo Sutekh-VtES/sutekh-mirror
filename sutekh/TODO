@@ -25,10 +25,11 @@ Gui (Functionality):
  * Compare CardSet Plugin (basic version done. Could be improved)
  * Improve About dialog.
  * Ability to specify the expansion a physical card comes from.
+   * Fix physical_lookup in GuiCardLookup to deal with expansions as well
+   * Filter support for physical card expansions
  * Replace HTML export plugin with direct export to HTML.
  * Plugins for calling out to other VtES utilities as appropriate (http://ashheap.storageannex.com/utilities.htm)
  * Add decent keyboard shortcuts
- * Finish GUI implementation of physical_lookup 
 
 Gui (Presentation):
  * Replace Multi-window GUI with one based on multiple panes

@@ -64,7 +64,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup):
                     for sExpansion in dCardExpansions[sName]:
                         iCnt = dCardExpansions[sName][sExpansion]
                         for oPhys in aPhysCards:
-                            if oPhys not in aPhysCards \
+                            if oPhys not in aCards \
                                     and oPhys.expansion == sExpansion \
                                     and iCnt > 0:
                                 aCards.append(oPhys)

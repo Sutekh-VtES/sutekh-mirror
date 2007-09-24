@@ -338,6 +338,7 @@ ObjectList = [ AbstractCard, Expansion,
                ]
 
 PhysicalList = [PhysicalCard, PhysicalCardSet, MapPhysicalCardToPhysicalCardSet]
+AbstractCardSetList = [AbstractCardSet, MapAbstractCardToAbstractCardSet]
 
 # Adapters
 

@@ -29,6 +29,9 @@ class MainMenu(gtk.MenuBar,object):
         self.__createAboutMenu()
         self.__oCardLookup = GuiLookup(oAbsView, oPhysView)
 
+    # Needed for Backup plugin
+    cardLookup = property(fget=lambda self: self.__oCardLookup)
+
     def __createFileMenu(self):
         # setup sub menu
         iMenu = gtk.MenuItem("File")
