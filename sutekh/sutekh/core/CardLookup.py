@@ -17,7 +17,7 @@ class AbstractCardLookup(object):
     """Base class for objects which translate card names into abstract card objects.
        """
 
-    def lookup(self, aNames):
+    def lookup(self, aNames, sInfo):
         """Return a list of AbstractCards, one for each item in aNames.
         
            Names for which AbstractCards could not be found will be marked with
@@ -32,7 +32,7 @@ class PhysicalCardLookup(object):
        into physical card objects
        """
 
-    def physical_lookup(self, dCardExpansions, dNameCards):
+    def physical_lookup(self, dCardExpansions, dNameCards, sInfo):
         """Returns a list of physical cards. Since physical cards can't
            be repeated, this is a list of statisfable requests. 
 
@@ -56,7 +56,7 @@ class SimpleLookup(AbstractCardLookup, PhysicalCardLookup):
        The default when we don't have a more cunning plan.
        """
 
-    def lookup(self, aNames):
+    def lookup(self, aNames, sInfo):
         aCards = []
         for sName in aNames:
             try:
@@ -66,7 +66,7 @@ class SimpleLookup(AbstractCardLookup, PhysicalCardLookup):
                 aCards.append(None)
         return aCards
 
-    def physical_lookup(self, dCardExpansions, dNameCards):
+    def physical_lookup(self, dCardExpansions, dNameCards, sInfo):
         aCards = []
         for sName in dCardExpansions:
             oAbs = dNameCards[sName]

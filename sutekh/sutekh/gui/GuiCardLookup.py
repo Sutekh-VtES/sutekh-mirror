@@ -23,7 +23,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup):
         self._oAbsCardView = oAbsCardView
         self._oPhysCardView = oPhysCardView
 
-    def lookup(self, aNames):
+    def lookup(self, aNames, sInfo):
         dCards = {}
         dUnknownCards = {}
 
@@ -35,7 +35,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup):
                 dUnknownCards[sName] = None
 
         if dUnknownCards:
-            bContinue = self._doHandleUnknown(dUnknownCards)
+            bContinue = self._doHandleUnknown(dUnknownCards, sInfo)
         else:
             bContinue = True
 
@@ -53,7 +53,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup):
 
         return [(sName in dCards and dCards[sName] or dUnknownCards[sName]) for sName in aNames]
 
-    def physical_lookup(self, dCardExpansions, dNameCards):
+    def physical_lookup(self, dCardExpansions, dNameCards, sInfo):
         aCards = []
         dUnknownCards = {}
         for sName in dCardExpansions:
@@ -82,19 +82,19 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup):
                             dUnknownCards[(sName, sExpansion)] = iCnt
         if dUnknownCards:
             # We need to lookup cards in the physical card view
-            if not self._doHandleUnknownPhysCards(dUnknownCards, aCards):
+            if not self._doHandleUnknownPhysCards(dUnknownCards, aCards, sInfo):
                 raise LookupFailed("Lookup of missing cards aborted by the user.")
 
         return aCards
 
-    def _doHandleUnknownPhysCards(self, dUnknownCards, aPhysCards):
+    def _doHandleUnknownPhysCards(self, dUnknownCards, aPhysCards, sInfo):
         """Handle unknwon physical cards
 
            We allow the user to select the correct replacements from the
            Physical Card List
         """
 
-        oUnknownDialog = gtk.Dialog("Unknown Physical cards found", None,
+        oUnknownDialog = gtk.Dialog("Unknown Physical cards found importing " + sInfo, None,
                 gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                 (gtk.STOCK_OK, gtk.RESPONSE_OK,
                  gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
@@ -102,7 +102,8 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup):
         oMesgLabel1 = gtk.Label()
         oMesgLabel2 = gtk.Label()
 
-        sMsg1 = "The following card could not be found in the Physical Card List:\n"
+        sMsg1 = "While importing " + sInfo + "\n"
+        sMsg1 += "The following cards could not be found in the Physical Card List:"
         sMsg1 += "\nChoose how to handle these cards?\n"
         sMsg2 = "OK creates the card set, "
         sMsg2 += "Cancel aborts the creation of the card set"
@@ -165,13 +166,13 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup):
             return False
 
 
-    def _doHandleUnknown(self, dUnknownCards):
+    def _doHandleUnknown(self, dUnknownCards, sInfo):
         """Handle the list of unknown cards.
 
            We allow the user to select the correct replacements from the Abstract
            Card List
            """
-        oUnknownDialog = gtk.Dialog("Unknown cards found", None,
+        oUnknownDialog = gtk.Dialog("Unknown cards found importing " + sInfo, None,
                 gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                 (gtk.STOCK_OK, gtk.RESPONSE_OK,
                  gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
@@ -179,7 +180,8 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup):
         oMesgLabel1 = gtk.Label()
         oMesgLabel2 = gtk.Label()
 
-        sMsg1 = "The following card names could not be found:\n"
+        sMsg1 = "While importing " + sInfo + "\n"
+        sMsg1 += "The following card names could not be found:"
         sMsg1 += "\nChoose how to handle these cards?\n"
         sMsg2 = "OK creates the card set, "
         sMsg2 += "Cancel aborts the creation of the card set"

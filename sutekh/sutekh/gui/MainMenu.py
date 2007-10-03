@@ -16,8 +16,8 @@ from sutekh.core.DatabaseUpgrade import copyToNewAbstractCardDB, createFinalCopy
 from sutekh.SutekhUtility import refreshTables, readWhiteWolfList, readRulings
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
 
-class MainMenu(gtk.MenuBar,object):
-    def __init__(self,oController, oWindow, oConfig, oAbsView, oPhysView):
+class MainMenu(gtk.MenuBar, object):
+    def __init__(self, oController, oWindow, oConfig, oAbsView, oPhysView):
         super(MainMenu,self).__init__()
         self.__oC = oController
         self.__oWin = oWindow
@@ -240,6 +240,8 @@ class MainMenu(gtk.MenuBar,object):
             if sRulingsFileName is not None:
                 readRulings(sRulingsFileName)
             bCont = False
+            # Refresh abstract card view for card lookups
+            self.__oC.reloadAll()
             (bOK,aErrors) = copyToNewAbstractCardDB(oldConn, tempConn, self.__oCardLookup)
             if not bOK:
                 sMesg = "There was a problem copying the cardlist to the new database\n"

@@ -53,7 +53,7 @@ class CardSetHolder(object):
             raise RuntimeError("No name for the card set")
 
         aCardCnts = self._dCards.items()
-        aAbsCards = oCardLookup.lookup([tCardCnt[0] for tCardCnt in aCardCnts])
+        aAbsCards = oCardLookup.lookup([tCardCnt[0] for tCardCnt in aCardCnts], "Abstract Card Set " + self.name)
 
         oACS = AbstractCardSet(name=self.name.encode('utf8'),
                                author=self.author, comment=self.comment,
@@ -72,7 +72,7 @@ class CardSetHolder(object):
         """
 
         aCardCnts = self._dCards.items()
-        aAbsCards = oCardLookup.lookup([tCardCnt[0] for tCardCnt in aCardCnts])
+        aAbsCards = oCardLookup.lookup([tCardCnt[0] for tCardCnt in aCardCnts], "Physical Card List")
 
         for oAbs, (sName, iCnt) in zip(aAbsCards,aCardCnts):
             if not oAbs:
@@ -88,10 +88,10 @@ class CardSetHolder(object):
             raise RuntimeError("No name for the card set")
 
         aCardCnts = self._dCards.items()
-        aAbsCards = oCardLookup.lookup([tCardCnt[0] for tCardCnt in aCardCnts])
+        aAbsCards = oCardLookup.lookup([tCardCnt[0] for tCardCnt in aCardCnts], "Physical Card Set " +  self.name)
         dNameCards = dict(zip(self._dCards.keys(), aAbsCards))
         aPhysCards = oCardLookup.physical_lookup(self._dCardExpansions,
-                dNameCards)
+                dNameCards, "Physical Card Set " + self.name)
 
         oPCS = PhysicalCardSet(name=self.name.encode('utf8'),
                                author=self.author, comment=self.comment,
