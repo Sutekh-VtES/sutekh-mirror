@@ -396,6 +396,7 @@ class ExpansionAdapter(object):
              'Jyhad' : [],
              'Kindred Most Wanted' : ['KMW'],
              'Legacy of Blood' : ['LoB'],
+             'Lords of the Night' : ['LotN'],
              'Nights of Reckoning' : ['NoR'],
              'Sabbat' : [],
              'Sabbat Wars' : ['SW'],
