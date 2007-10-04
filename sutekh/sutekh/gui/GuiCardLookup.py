@@ -72,14 +72,14 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup):
                                 if iCnt == 0:
                                     break
                         if iCnt > 0:
-                            dUnknownCards.setdefault((sName, sExpansion), 0)
-                            dUnknownCards[(sName, sExpansion)] = iCnt
+                            dUnknownCards.setdefault((oAbs.name, sExpansion), 0)
+                            dUnknownCards[(oAbs.name, sExpansion)] = iCnt
                 except SQLObjectNotFound:
                     for sExpansion in dCardExpansions[sName]:
                         iCnt = dCardExpansions[sName][sExpansion]
                         if iCnt > 0:
-                            dUnknownCards.setdefault((sName, sExpansion), 0)
-                            dUnknownCards[(sName, sExpansion)] = iCnt
+                            dUnknownCards.setdefault((oAbs.name, sExpansion), 0)
+                            dUnknownCards[(oAbs.name, sExpansion)] = iCnt
         if dUnknownCards:
             # We need to lookup cards in the physical card view
             if not self._doHandleUnknownPhysCards(dUnknownCards, aCards, sInfo):
@@ -107,6 +107,9 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup):
         sMsg1 += "\nChoose how to handle these cards?\n"
         sMsg2 = "OK creates the card set, "
         sMsg2 += "Cancel aborts the creation of the card set"
+
+        oMesgLabel1.set_text(sMsg1)
+        oUnknownDialog.vbox.pack_start(oMesgLabel1)
 
         dReplacement = {}
         for sName, sExpansion in dUnknownCards:
@@ -259,7 +262,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup):
         if sType == 'Physical' and \
                 not self._check_physical_cards(sNewName, iCnt, aPhysCards):
             oComplaint = gtk.MessageDialog(None, 0, gtk.MESSAGE_ERROR,
-                gtk.BUTTONS_OK, "Not enough copies of ")
+                gtk.BUTTONS_OK, "Not enough copies of " + sNewName)
             oComplaint.connect("response", lambda oW, oResp: oW.destroy())
             oComplaint.run()
             return
