@@ -104,7 +104,7 @@ class ACSFromELDBHTML(CardListPlugin):
 
         # Create ACS
         try:
-            oHolder.createACS(oCardLookup=GuiLookup(self.view))
+            oHolder.createACS(oCardLookup=GuiLookup(self.view,self.view))
         except RuntimeError, e:
             sMsg = "Creating the card set failed with the following error:\n"
             sMsg += str(e) + "\n"

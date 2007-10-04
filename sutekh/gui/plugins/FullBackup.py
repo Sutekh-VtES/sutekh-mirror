@@ -123,7 +123,8 @@ class FullBackup(CardListPlugin):
             if bContinue:
                 try:
                     oFile = ZipFileWrapper(sFile)
-                    oFile.doRestoreFromZip()
+                    oCardLookup = self.view.getController().getMenu().cardLookup
+                    oFile.doRestoreFromZip(oCardLookup)
                     # restore successful, refresh display
                     self.view.getController().reloadAll()
                 except Exception, e:

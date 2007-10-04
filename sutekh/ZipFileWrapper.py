@@ -7,7 +7,9 @@
 
 import zipfile
 from sqlobject import sqlhub
-from sutekh.SutekhObjects import AbstractCardSet, PhysicalCardSet, PhysicalList
+from sutekh.SutekhObjects import AbstractCardSet, PhysicalCardSet, \
+        PhysicalList, AbstractCardSetList
+from sutekh.CardLookup import DEFAULT_LOOKUP
 from sutekh.SutekhUtility import refreshTables
 from sutekh.PhysicalCardParser import PhysicalCardParser
 from sutekh.PhysicalCardSetParser import PhysicalCardSetParser
@@ -18,7 +20,7 @@ from sutekh.AbstractCardSetWriter import AbstractCardSetWriter
 from sutekh.IdentifyXMLFile import IdentifyXMLFile
 
 class ZipFileWrapper(object):
-    def __init__(self,sZipFileName):
+    def __init__(self, sZipFileName):
         self.sZipFileName = sZipFileName
         self.oZip = None
 
@@ -37,11 +39,11 @@ class ZipFileWrapper(object):
         if self.oZip is None:
             self.__openZipForWrite()
             bClose = True
-        oW = PhysicalCardWriter()
+        oWriter = PhysicalCardWriter()
         # Zipfile doesn't handle unicode unencoded - blargh
         # Documentation suggests WinZip may not like this
-        oString = oW.genDoc().toprettyxml().encode('utf-8')
-        self.oZip.writestr('PhysicalCardList.xml',oString)
+        oString = oWriter.genDoc().toprettyxml().encode('utf-8')
+        self.oZip.writestr('PhysicalCardList.xml', oString)
         # If oZip isn't writeable, zipfile throws a RunTime Error
         # We just let the exception handling pass this up to the caller,
         # since we can't really do anything about this here
@@ -55,13 +57,13 @@ class ZipFileWrapper(object):
             bClose = True
         oAbstractCardSets = AbstractCardSet.select()
         aList = [];
-        for acs in oAbstractCardSets:
-            sZName = acs.name
-            oW = AbstractCardSetWriter()
-            oString = oW.genDoc(sZName).toprettyxml().encode('utf-8')
-            sZName = sZName.replace(" ","_")
-            sZName = sZName.replace("/","_")
-            sZipName = 'acs_' + sZName.encode('ascii','xmlcharrefreplace') + '.xml'
+        for oACSet in oAbstractCardSets:
+            sZName = oACSet.name
+            oWriter = AbstractCardSetWriter()
+            oString = oWriter.genDoc(sZName).toprettyxml().encode('utf-8')
+            sZName = sZName.replace(" ", "_")
+            sZName = sZName.replace("/", "_")
+            sZipName = 'acs_' + sZName.encode('ascii', 'xmlcharrefreplace') + '.xml'
             aList.append(sZipName)
             self.oZip.writestr(sZipName,oString)
         if bClose:
@@ -75,20 +77,20 @@ class ZipFileWrapper(object):
             bClose = True
         oPhysicalCardSets = PhysicalCardSet.select()
         aList = [];
-        for pcs in oPhysicalCardSets:
-            sZName = pcs.name
-            oW = PhysicalCardSetWriter()
-            oString = oW.genDoc(sZName).toprettyxml().encode('utf-8')
-            sZName = sZName.replace(" ","_")
-            sZName = sZName.replace("/","_")
-            sZipName = 'pcs_' + sZName.encode('ascii','xmlcharrefreplace') + '.xml'
+        for oPCSet in oPhysicalCardSets:
+            sZName = oPCSet.name
+            oWriter = PhysicalCardSetWriter()
+            oString = oWriter.genDoc(sZName).toprettyxml().encode('utf-8')
+            sZName = sZName.replace(" ", "_")
+            sZName = sZName.replace("/", "_")
+            sZipName = 'pcs_' + sZName.encode('ascii', 'xmlcharrefreplace') + '.xml'
             aList.append(sZipName)
-            self.oZip.writestr(sZipName,oString)
+            self.oZip.writestr(sZipName, oString)
         if bClose:
             self.__closeZip()
         return aList
 
-    def doRestoreFromZip(self):
+    def doRestoreFromZip(self,oCardLookup=DEFAULT_LOOKUP):
         bPhysicalCardsRead = False
         self.__openZipForRead()
         # We do this so we can accomodate user created zipfiles,
@@ -96,17 +98,18 @@ class ZipFileWrapper(object):
         for oItem in self.oZip.infolist():
             sFileName = oItem.filename.split('/')[-1]
             oData = self.oZip.read(oItem.filename)
-            oP = IdentifyXMLFile()
-            (sType,sName,bExists) = oP.parseString(oData)
+            oParser = IdentifyXMLFile()
+            (sType, sName, bExists) = oParser.parseString(oData)
             if sType == 'PhysicalCard':
                 # We delete the Physical Card List
                 # Since this is restoring the contents of a zip file,
                 # hopefully this is safe to do
                 # if we fail, the database will be in an inconsitent state,
                 # but that's going to be true anyway
-                refreshTables(PhysicalList,sqlhub.processConnection)
-                oP = PhysicalCardParser()
-                oP.parseString(oData)
+                refreshTables(PhysicalList, sqlhub.processConnection)
+                refreshTables(AbstractCardSetList, sqlhub.processConnection)
+                oParser = PhysicalCardParser()
+                oParser.parseString(oData,oCardLookup)
                 bPhysicalCardsRead = True
                 break
         if not bPhysicalCardsRead:
@@ -116,15 +119,15 @@ class ZipFileWrapper(object):
             for oItem in self.oZip.infolist():
                 sFileName = oItem.filename.split('/')[-1]
                 oData = self.oZip.read(oItem.filename)
-                oP = IdentifyXMLFile()
-                (sType,sName,bExists) = oP.parseString(oData)
+                oParser = IdentifyXMLFile()
+                (sType, sName, bExists) = oParser.parseString(oData)
                 if sType == 'PhysicalCardSet':
-                    oP = PhysicalCardSetParser()
+                    oParser = PhysicalCardSetParser()
                 elif sType == 'AbstractCardSet':
-                    oP = AbstractCardSetParser()
+                    oParser = AbstractCardSetParser()
                 else:
                     continue
-                oP.parseString(oData)
+                oParser.parseString(oData,oCardLookup)
         self.__closeZip()
 
     def doDumpAllToZip(self):
