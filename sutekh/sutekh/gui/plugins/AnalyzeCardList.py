@@ -345,7 +345,7 @@ class AnalyzeCardList(CardListPlugin):
             sVampText += "<span foreground = \"blue\">Clans</span>\n"
             for clan, number in dDeckClans.iteritems():
                 sVampText += str(number) + " Vampires of clan " + str(clan) + ' ' + \
-                        self._Percentage(self.iNumberVampires,
+                        self._Percentage(number,
                             self.iCryptSize,"Crypt") + '\n'
 
             sVampText += "\n<span foreground = \"blue\">Titles</span>\n"
