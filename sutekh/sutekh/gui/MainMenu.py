@@ -200,6 +200,18 @@ class MainMenu(gtk.MenuBar, object):
                     Complaint.destroy()
                     if response == gtk.RESPONSE_CANCEL:
                         return
+                    else: 
+                        # Delete the card set
+                        if sType == 'PhysicalCardSet':
+                            oCardSet = PhysicalCardSet.byName(sName)
+                            for oCard in oCardSet.cards:
+                                oCardSet.removePhysicalCard(oCard)
+                            PhysicalCardSet.delete(oCardSet.id)
+                        else:
+                            oCardSet = AbstractCardSet.byName(sName)
+                            for oCard in oCardSet.cards:
+                                oCardSet.removeAbstractCard(oCard)
+                            AbstractCardSet.delete(oCardSet.id)
                 if sType == "AbstractCardSet":
                     oF = AbstractCardSetXmlFile(sFileName, lookup=self.__oCardLookup)
                 else:
