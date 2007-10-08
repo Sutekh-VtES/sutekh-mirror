@@ -1,3 +1,11 @@
+05 Oct 2007
+ * Fix some issues identified in testing the stable-branch before Sutekh 
+   0.4.2's release
+
+03 Oct 2007
+ * Add support for the Lords of the Night expansion
+ * Makr the GuiCardLookup dialog more informative
+
 24 Sep 2007
  * Finish 1st draft of physical_lookup - doesn't support expansion issues yet
  * Change Restore from Backup to use CardSetHolder
