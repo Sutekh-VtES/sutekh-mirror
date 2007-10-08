@@ -5,7 +5,7 @@
 from pkg_resources import resource_string
 
 class SutekhInfo(object):
-    VERSION = (0,4,0)
+    VERSION = (0,5,0)
     VERSION_STR = '.'.join([str(x) for x in VERSION])
 
     NAME = 'Sutekh'

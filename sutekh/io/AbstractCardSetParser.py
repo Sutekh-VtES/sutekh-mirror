@@ -13,7 +13,8 @@ looks like:
 into a AbstractCardSet
 """
 
-from sutekh.core.SutekhObjects import AbstractCardSet, AbstractCard
+from sutekh.core.CardSetHolder import CardSetHolder
+from sutekh.core.CardLookup import DEFAULT_LOOKUP
 from sqlobject import sqlhub, SQLObjectNotFound
 from xml.sax import parse, parseString
 from xml.sax.handler import ContentHandler
@@ -23,12 +24,13 @@ class AbstractCardSetHandler(ContentHandler):
         ContentHandler.__init__(self)
         self.acsDB = False
         self.aUnknown = []
-        self.acsName = None
-        self.aSupportedVersions = ['1.0','0.0']
+        self.sACSName = None
+        self.aSupportedVersions = ['1.0', '0.0']
+        self.oCS = None
 
-    def startElement(self,sTagName,oAttrs):
+    def startElement(self, sTagName, oAttrs):
         if sTagName == 'abstractcardset':
-            self.acsName = oAttrs.getValue('name')
+            self.sACSName = oAttrs.getValue('name')
             aAttributes = oAttrs.getNames()
             sAuthor = None
             sComment = None
@@ -45,65 +47,38 @@ class AbstractCardSetHandler(ContentHandler):
                 sThisVersion = '0.0'
             if sThisVersion not in self.aSupportedVersions:
                 raise RuntimeError("Unrecognised XML File Version")
-            # Try and add acs to AbstractCardSet
-            # Make sure
-            try:
-                acs = AbstractCardSet.byName(self.acsName.encode('utf8'))
-                # We overwrite acs, so we drop all cards currently
-                # part of the acs
-                acs.author = sAuthor
-                acs.comment = sComment
-                acs.annotations = sAnnotations
-                acs.syncUpdate()
-                ids = []
-                for card in acs.cards:
-                    acs.removeAbstractCard(card.id)
-                self.acsDB = True
-            except SQLObjectNotFound:
-                acs = AbstractCardSet(name=self.acsName,author=sAuthor,comment=sComment)
-                acs.annotations = sAnnotations
-                acs.syncUpdate()
-                self.acsDB = True
+            # Setup the virtual cardset
+            self.oCS = CardSetHolder()
+            self.oCS.name = self.sACSName
+            self.oCS.author = sAuthor
+            self.oCS.comment = sComment
+            self.oCS.annotations = sAnnotations
         elif sTagName == 'card':
-            iId = int(oAttrs.getValue('id'),10)
             sName = oAttrs.getValue('name')
-            iCount = int(oAttrs.getValue('count'),10)
+            iCount = int(oAttrs.getValue('count'), 10)
 
-            try:
-                oAbs = AbstractCard.byCanonicalName(sName.encode('utf8').lower())
-            except SQLObjectNotFound:
-                self.aUnknown.append(sName)
-                oAbs = None
-            if self.acsDB and oAbs is not None:
-                # acs exists in databse, so we're OK
-                acs = AbstractCardSet.byName(self.acsName.encode('utf8'))
-                for i in range(iCount):
-                    acs.addAbstractCard(oAbs.id)
+            if self.oCS is not None:
+                # Add card to virtual cardset
+                self.oCS.add(iCount, sName)
 
-    def endElement(self,sName):
+    def endElement(self, sName):
         pass
 
-    def printUnHandled(self):
-        if len(self.aUnknown)>0:
-            print "The Following Cards are unknown"
-            for sCardName in self.aUnknown:
-                print sCardName.encode('utf-8')
-
 class AbstractCardSetParser(object):
-    def parse(self,fIn):
-        oldConn = sqlhub.processConnection
-        sqlhub.processConnection = oldConn.transaction()
-        myHandler = AbstractCardSetHandler()
-        parse(fIn,myHandler)
-        myHandler.printUnHandled()
+    def parse(self, fIn, oCardLookup=DEFAULT_LOOKUP):
+        oMyHandler = AbstractCardSetHandler()
+        parse(fIn, oMyHandler)
+        oOldConn = sqlhub.processConnection
+        sqlhub.processConnection = oOldConn.transaction()
+        oMyHandler.oCS.createACS(oCardLookup)
         sqlhub.processConnection.commit()
-        sqlhub.processConnection = oldConn
+        sqlhub.processConnection = oOldConn
 
-    def parseString(self,sIn):
-        oldConn = sqlhub.processConnection
-        sqlhub.processConnection = oldConn.transaction()
-        myHandler = AbstractCardSetHandler()
-        parseString(sIn,myHandler)
-        myHandler.printUnHandled()
+    def parseString(self, sIn, oCardLookup=DEFAULT_LOOKUP):
+        oMyHandler = AbstractCardSetHandler()
+        parseString(sIn, oMyHandler)
+        oOldConn = sqlhub.processConnection
+        sqlhub.processConnection = oOldConn.transaction()
+        oMyHandler.oCS.createACS(oCardLookup)
         sqlhub.processConnection.commit()
-        sqlhub.processConnection = oldConn
+        sqlhub.processConnection = oOldConn

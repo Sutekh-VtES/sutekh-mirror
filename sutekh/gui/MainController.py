@@ -40,7 +40,6 @@ class MainController(object):
         for cPlugin in self.__oPluginManager.getCardListPlugins():
             self.__aPlugins.append(cPlugin(self.__oAbstractCards,self.__oAbstractCards.getModel(),'AbstractCard'))
 
-        self.__oMenu = MainMenu(self,self.__oAbstractCardWin,self.__oConfig)
         self.__oCardText = CardTextView(self)
         self.__oPhysicalCards = PhysicalCardController(self.__oPhysicalCardWin,self,oConfig)
         self.__oWinGrp.add_window(self.__oAbstractCardWin)
@@ -48,6 +47,7 @@ class MainController(object):
         self.__oWinGrp.add_window(self.__oCSWin)
         self.__oWinGrp.add_window(self.__oCardTextWin)
 
+        self.__oMenu = MainMenu(self, self.__oAbstractCardWin, self.__oConfig, self.__oAbstractCards, self.__oPhysicalCards.getView())
         # Link
         self.__oAbstractCardWin.addParts(self.__oMenu,self.__oAbstractCards)
         self.__oPhysicalCardWin.addParts(self.__oPhysicalCards)

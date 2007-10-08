@@ -14,23 +14,22 @@ looks like:
 into a PhysicalCardSet
 """
 
-from sutekh.core.SutekhObjects import PhysicalCardSet, AbstractCard, PhysicalCard
-from sqlobject import sqlhub, SQLObjectNotFound
+from sutekh.core.CardSetHolder import CardSetHolder
+from sutekh.core.CardLookup import DEFAULT_LOOKUP
+from sqlobject import sqlhub
 from xml.sax import parse, parseString
 from xml.sax.handler import ContentHandler
 
 class PhysicalCardSetHandler(ContentHandler):
+    aSupportedVersions = ['1.0', '0.0']
+
     def __init__(self):
         ContentHandler.__init__(self)
-        self.pcsDB = False
-        self.dUnhandled = {}
-        self.aUnknown = []
-        self.pcsName = None
-        self.aSupportedVersions = ['1.0','0.0']
+        self.oCS = CardSetHolder()
 
-    def startElement(self,sTagName,oAttrs):
+    def startElement(self, sTagName, oAttrs):
         if sTagName == 'physicalcardset':
-            self.pcsName = oAttrs.getValue('name')
+            sPCSName = oAttrs.getValue('name')
             aAttributes = oAttrs.getNames()
             sAuthor = None
             sComment = None
@@ -47,101 +46,40 @@ class PhysicalCardSetHandler(ContentHandler):
                 sThisVersion = '0.0'
             if sThisVersion not in self.aSupportedVersions:
                 raise RuntimeError("Unrecognised XML file version")
-            # Try and add pcs to PhysicalCardSet
-            # Make sure
-            try:
-                pcs=PhysicalCardSet.byName(self.pcsName.encode('utf8'))
-                pcs.author = sAuthor
-                pcs.comment = sComment
-                pcs.annotations = sAnnotations
-                pcs.syncUpdate()
-                # We overwrite pcs, so we drop all cards currently
-                # part of the PhysicalCardSet
-                ids = []
-                for card in pcs.cards:
-                    pcs.removePhysicalCard(card.id)
-                self.pcsDB = True
-            except SQLObjectNotFound:
-                pcs = PhysicalCardSet(name=self.pcsName,author=sAuthor,comment=sComment)
-                pcs.annotations = sAnnotations
-                pcs.syncUpdate()
-                self.pcsDB = True
+            self.oCS.name = sPCSName
+            self.oCS.author = sAuthor
+            self.oCS.comment = sComment
+            self.oCS.annotations = sAnnotations
         elif sTagName == 'card':
-            iId = int(oAttrs.getValue('id'),10)
             sName = oAttrs.getValue('name')
-            iCount = int(oAttrs.getValue('count'),10)
+            iCount = int(oAttrs.getValue('count'), 10)
             if 'expansion' in oAttrs.getNames():
                 sExpansionName = oAttrs.getValue('expansion')
             else:
                 sExpansionName = 'None Specified'
+            if sExpansionName == 'None Specified':
+                self.oCS.add(iCount, sName, None)
+            else:
+                self.oCS.add(iCount, sName, sExpansionName)
 
-            try:
-                oAbs = AbstractCard.byCanonicalName(sName.encode('utf8').lower())
-            except SQLObjectNotFound:
-                oAbs = None
-                self.aUnknown.append(sName)
-            if self.pcsDB and oAbs is not None:
-                # pcs exists in databse, so we're OK
-                pcs = PhysicalCardSet.byName(self.pcsName.encode('utf8'))
-                for i in range(iCount):
-                    # FIXME: This should be made much more effecient than
-                    # it currently is
-                    # We see if we can add the card, otherwise we add it to the
-                    # dictionary of unhandlable cards
-                    # Get all physical IDs that match this card
-                    possibleCards = PhysicalCard.selectBy(abstractCardID=oAbs.id)
-                    added = False
-                    if sExpansionName == 'None Specified':
-                        for card in possibleCards:
-                            if card not in pcs.cards:
-                                pcs.addPhysicalCard(card.id)
-                                added = True
-                                break
-                    else:
-                        # Only add cards if the expansion matches
-                        # Do we need to do a best match if expansion
-                        # doesn't match??
-                        for card in possibleCards:
-                            if card not in pcs.cards and \
-                                    card.expansion==sExpansionName:
-                                pcs.addPhysicalCard(card.id)
-                                added = True
-                                break
-                    if not added:
-                        try:
-                            self.dUnhandled[(oAbs.name,sExpansionName)]+=1
-                        except KeyError:
-                            self.dUnhandled[(oAbs.name,sExpansionName)]=1
-
-    def endElement(self,sName):
+    def endElement(self, sName):
         pass
 
-    def printUnHandled(self):
-        if len(self.aUnknown)>0:
-            print "The Following Cards are unknown"
-            for sCardName in self.aUnknown:
-                print sCardName.encode('utf-8')
-        if len(self.dUnhandled)>0:
-            print "The Following Cards where unable to be added to the database"
-            for tKey, iCount in self.dUnhandled.iteritems():
-                sCardName,sExpansionName=tKey
-                print str(iCount)+"x "+sCardName.encode('utf-8')," from expansion ",sExpansionName
-
 class PhysicalCardSetParser(object):
-    def parse(self,fIn):
-        oldConn = sqlhub.processConnection
-        sqlhub.processConnection= oldConn.transaction()
-        myHandler = PhysicalCardSetHandler()
-        parse(fIn,myHandler)
-        myHandler.printUnHandled()
+    def parse(self, fIn, oCardLookup=DEFAULT_LOOKUP):
+        oMyHandler = PhysicalCardSetHandler()
+        parse(fIn, oMyHandler)
+        oOldConn = sqlhub.processConnection
+        sqlhub.processConnection = oOldConn.transaction()
+        oMyHandler.oCS.createPCS(oCardLookup)
         sqlhub.processConnection.commit()
-        sqlhub.processConnection = oldConn
+        sqlhub.processConnection = oOldConn
 
-    def parseString(self,sIn):
-        oldConn = sqlhub.processConnection
-        sqlhub.processConnection= oldConn.transaction()
-        myHandler = PhysicalCardSetHandler()
-        parseString(sIn,myHandler)
-        myHandler.printUnHandled()
+    def parseString(self, sIn, oCardLookup=DEFAULT_LOOKUP):
+        oMyHandler = PhysicalCardSetHandler()
+        parseString(sIn, oMyHandler)
+        oOldConn = sqlhub.processConnection
+        sqlhub.processConnection = oOldConn.transaction()
+        oMyHandler.oCS.createPCS(oCardLookup)
         sqlhub.processConnection.commit()
-        sqlhub.processConnection = oldConn
+        sqlhub.processConnection = oOldConn
