@@ -59,12 +59,12 @@ class CardSetCompare(CardListPlugin):
         return self.oDlg
 
     def handleResponse(self,oWidget,oResponse):
-       if oResponse ==  gtk.RESPONSE_OK:
-           aCardSetNames = [self.view.sSetName]
-           dSelect = {}
-           self.csFrame.get_selection(aCardSetNames,dSelect)
-           self.compCardSets(aCardSetNames)
-       self.oDlg.destroy()
+        if oResponse ==  gtk.RESPONSE_OK:
+            aCardSetNames = [self.view.sSetName]
+            dSelect = {}
+            self.csFrame.get_selection(aCardSetNames,dSelect)
+            self.compCardSets(aCardSetNames)
+        self.oDlg.destroy()
 
     def compCardSets(self,aCardSetNames):
         (dDifferences,aCommon) = self.__getCardSetList(aCardSetNames)

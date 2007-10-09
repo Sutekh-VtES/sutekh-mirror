@@ -58,12 +58,12 @@ class CardSetIndependence(CardListPlugin):
         return self.oDlg
 
     def handleResponse(self,oWidget,oResponse):
-       if oResponse ==  gtk.RESPONSE_OK:
-           aCardSetNames = [self.view.sSetName]
-           dSelect = {}
-           self.csFrame.get_selection(aCardSetNames,dSelect)
-           self.testCardSets(aCardSetNames)
-       self.oDlg.destroy()
+        if oResponse ==  gtk.RESPONSE_OK:
+            aCardSetNames = [self.view.sSetName]
+            dSelect = {}
+            self.csFrame.get_selection(aCardSetNames,dSelect)
+            self.testCardSets(aCardSetNames)
+        self.oDlg.destroy()
 
     def testCardSets(self,aCardSetNames):
         dMissing = {}
