@@ -488,7 +488,7 @@ class PhysicalCardFilter(Filter):
         return [LEFTJOINOn(None, AbstractCard, AbstractCard.q.id == oT.abstract_card_id)]
 
     def _getExpression(self):
-        return 1
+        return True
 
 class PhysicalCardSetFilter(Filter):
     def __init__(self,sName):
