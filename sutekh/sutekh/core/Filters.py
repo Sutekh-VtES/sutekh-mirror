@@ -3,7 +3,7 @@
 # Minor modifications copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-from sutekh.core.SutekhObjects import AbstractCard, IAbstractCard, PhysicalCard, \
+from sutekh.core.SutekhObjects import AbstractCard, IAbstractCard, \
                                  ICreed, IVirtue, IClan, IDiscipline, \
                                  IExpansion, ITitle, ISect, ICardType, \
                                  IPhysicalCardSet, IAbstractCardSet, \
@@ -12,7 +12,7 @@ from sutekh.core.SutekhObjects import AbstractCard, IAbstractCard, PhysicalCard,
                                  Creed, Virtue, Sect, Expansion, \
                                  RarityPair
 from sqlobject import AND, OR, LIKE, IN, func
-from sqlobject.sqlbuilder import Table, Alias
+from sqlobject.sqlbuilder import Table, Alias, LEFTJOINOn
 
 # Filter Base Class
 
@@ -23,7 +23,14 @@ class Filter(object):
         # to fill in the values most times
         raise NotImplementedError
 
-    def getExpression(self):
+    def select(self,CardClass):
+        """CardClass.select(...) applying the filter to the selection."""
+        return CardClass.select(self._getExpression(),join=self._getJoins())
+
+    def _getExpression(self):
+        raise NotImplementedError
+
+    def _getJoins(self):
         raise NotImplementedError
 
     def _makeTableAlias(self,sTable):
@@ -43,53 +50,97 @@ class Filter(object):
 # Collections of Filters
 
 class FilterBox(Filter,list):
-    pass
+    """Base class for filter collections."""
+
+    def _getJoins(self):
+        aJoins = []
+        for x in self:
+            aJoins.extend(x._getJoins())
+        return aJoins
 
 class FilterAndBox(FilterBox):
-    def getExpression(self):
-        return AND(*[x.getExpression() for x in self])
+    """AND a list of filters."""
+
+    def _getExpression(self):
+        return AND(*[x._getExpression() for x in self])
 
 class FilterOrBox(FilterBox):
-    def getExpression(self):
-        return OR(*[x.getExpression() for x in self])
+    """OR a list of filters."""
+
+    def _getExpression(self):
+        return OR(*[x._getExpression() for x in self])
+
+# Null Filter
+
+class NullFilter(Filter):
+    """Return everything."""
+
+    def _getExpression(self):
+        return None
+
+    def _getJoins(self):
+        return []
+
+# Base Classes for Common Filter Idioms
+
+class SingleFilter(Filter):
+    """Base class for filters on single items which connect to AbstractCard via a mapping table.
+    
+       Sub-class should set self._oMapTable, self._oMapField and self._oId.
+       """
+
+    def _getJoins(self):
+        return [LEFTJOINOn(None, self._oMapTable, AbstractCard.q.id == self._oMapTable.q.abstract_card_id)]
+
+    def _getExpression(self):
+        return self._oIdField == self._oId
+
+class MultiFilter(Filter):
+    """Base class for filters on multiple items which connect to AbstractCard via a mapping table.
+    
+       Sub-class should set self._oMapTable, self._oMapField and self._aIds.
+       """
+
+    def _getJoins(self):
+        return [LEFTJOINOn(None, self._oMapTable, AbstractCard.q.id == self._oMapTable.q.abstract_card_id)]
+
+    def _getExpression(self):
+        return IN(self._oIdField,self._aIds)
+
+class DirectFilter(Filter):
+    """Base class for filters which query AbstractTable directly."""
+
+    def _getJoins(self):
+        return []
 
 # Individual Filters
 
-class ClanFilter(Filter):
+class ClanFilter(SingleFilter):
     def __init__(self,sClan):
-        self.__oClan = IClan(sClan)
+        self._oId = IClan(sClan).id
+        self._oMapTable = self._makeTableAlias('abs_clan_map')
+        self._oIdField = self._oMapTable.q.clan_id
 
-    def getExpression(self):
-        oT = self._makeTableAlias('abs_clan_map')
-        return AND(AbstractCard.q.id == oT.q.abstract_card_id,
-                   oT.q.clan_id == self.__oClan.id)
-
-class MultiClanFilter(Filter):
+class MultiClanFilter(MultiFilter):
     keyword = "Clan"
     description = "Clan"
     helptext = "a list of clans"
 
     def __init__(self,aClans):
-        self.__aClanIds = [IClan(x).id for x in aClans]
+        self._aIds = [IClan(x).id for x in aClans]
+        self._oMapTable = self._makeTableAlias('abs_clan_map')
+        self._oIdField = self._oMapTable.q.clan_id
 
     def getValues(self):
         return [x.name for x in Clan.select().orderBy('name')]
 
-    def getExpression(self):
-        oT = self._makeTableAlias('abs_clan_map')
-        return AND(AbstractCard.q.id == oT.q.abstract_card_id,
-                   IN(oT.q.clan_id,self.__aClanIds))
-
-class DisciplineFilter(Filter):
+class DisciplineFilter(MultiFilter):
     def __init__(self,sDiscipline):
-        self.__aPairIds = [oP.id for oP in IDiscipline(sDiscipline).pairs]
+        self._aIds = [oP.id for oP in IDiscipline(sDiscipline).pairs]
+        self._oMapTable = self._makeTableAlias('abs_discipline_pair_map')
+        self._oIdField = self._oMapTable.q.discipline_pair_id
 
-    def getExpression(self):
-        oT = self._makeTableAlias('abs_discipline_pair_map')
-        return AND(AbstractCard.q.id == oT.q.abstract_card_id,
-                   IN(oT.q.discipline_pair_id, self.__aPairIds))
-
-class MultiDisciplineFilter(Filter):
+class MultiDisciplineFilter(MultiFilter):
     keyword = "Discipline"
     description = "Discipline"
     helptext = "a list of disciplines"
@@ -98,53 +149,40 @@ class MultiDisciplineFilter(Filter):
         oPairs = []
         for sDis in aDisciplines:
             oPairs += IDiscipline(sDis).pairs
-        self.__aPairIds = [oP.id for oP in oPairs]
+        self._aIds = [oP.id for oP in oPairs]
+        self._oMapTable = self._makeTableAlias('abs_discipline_pair_map')
+        self._oIdField = self._oMapTable.q.discipline_pair_id
 
     def getValues(self):
         return [x.fullname for x in Discipline.select().orderBy('name')]
 
-    def getExpression(self):
-        oT = self._makeTableAlias('abs_discipline_pair_map')
-        return AND(AbstractCard.q.id == oT.q.abstract_card_id,
-                   IN(oT.q.discipline_pair_id, self.__aPairIds))
-
-class ExpansionFilter(Filter):
+class ExpansionFilter(MultiFilter):
     def __init__(self,sExpansion):
-        self.__aPairIds = [oP.id for oP in IExpansion(sExpansion).pairs]
+        self._aIds = [oP.id for oP in IExpansion(sExpansion).pairs]
+        self._oMapTable = self._makeTableAlias('abs_rarity_pair_map')
+        self._oIdField = self._oMapTable.q.rarity_pair_id
 
-    def getExpression(self):
-        oT = self._makeTableAlias('abs_rarity_pair_map')
-        return AND(AbstractCard.q.id == oT.q.abstract_card_id,
-                   IN(oT.q.rarity_pair_id, self._aPairIds))
-
-class MultiExpansionFilter(Filter):
+class MultiExpansionFilter(MultiFilter):
     def __init__(self,aExpansions):
         oPairs = []
         for sExp in aExpansions:
             oPairs += IExpansion(sExp).pairs
-        self.__aPairIds = [oP.id for oP in oPairs]
+        self._aIds = [oP.id for oP in oPairs]
+        self._oMapTable = self._makeTableAlias('abs_rarity_pair_map')
+        self._oIdField = self._oMapTable.q.rarity_pair_id
 
-    def getExpression(self):
-        oT = self._makeTableAlias('abs_rarity_pair_map')
-        return AND(AbstractCard.q.id == oT.q.abstract_card_id,
-                   IN(oT.q.rarity_pair_id, self.__aPairIds))
-
-class ExpansionRarityFilter(Filter):
+class ExpansionRarityFilter(SingleFilter):
     """ Filter on Expansion & Rarity combo """
 
     def __init__(self,tExpanRarity):
         """ We use a tuple for Expansion and Rarity here to keep the
             same calling convention as for the Multi Filter"""
         sExpansion, sRarity = tExpanRarity
-        self.__iExRarId = IRarityPair( (IExpansion(sExpansion),
-                IRarity(sRarity)) ).id
+        self._oId = IRarityPair((IExpansion(sExpansion),IRarity(sRarity))).id
+        self._oMapTable = self._makeTableAlias('abs_rarity_pair_map')
+        self._oIdField = self._oMapTable.q.rarity_pair_id
 
-    def getExpression(self):
-        oT = self._makeTableAlias('abs_rarity_pair_map')
-        return AND(AbstractCard.q.id == oT.q.abstract_card_id,
-                   (oT.q.rarity_pair_id == self.__iExRarId ))
-
-class MultiExpansionRarityFilter(Filter):
+class MultiExpansionRarityFilter(MultiFilter):
     keyword = "Expansion_with_Rarity"
     description = "Expansion with Rarity"
     helptext = "a list of expansions and rarities,\n   each element specified as an expansion with associated rarity'"
@@ -152,10 +190,12 @@ class MultiExpansionRarityFilter(Filter):
 
     def __init__(self,aExpansionRarities):
         """  Called with a list of Expansion + Rarity pairs"""
-        self.__aIds = []
+        self._aIds = []
         for sExpansion, sRarity in aExpansionRarities:
-            self.__aIds.append(IRarityPair( (IExpansion(sExpansion),
+            self._aIds.append(IRarityPair( (IExpansion(sExpansion),
                 IRarity(sRarity)) ).id)
+        self._oMapTable = self._makeTableAlias('abs_rarity_pair_map')
+        self._oIdField = self._oMapTable.q.rarity_pair_id
 
     def getValues(self):
         aExpansions = [x.name for x in Expansion.select().orderBy('name')
@@ -168,34 +208,28 @@ class MultiExpansionRarityFilter(Filter):
                 aResults.append(sExpan + ' with ' + sRarity)
         return aResults
 
-    def getExpression(self):
-        oT = self._makeTableAlias('abs_rarity_pair_map')
-        return AND(AbstractCard.q.id == oT.q.abstract_card_id,
-                   IN (oT.q.rarity_pair_id,self.__aIds ))
-
-class DisciplineLevelFilter(Filter):
+class DisciplineLevelFilter(SingleFilter):
     def __init__(self,tDiscLevel):
         sDiscipline,sLevel = tDiscLevel
         # By construction, the list should have only 1 element
-        self.__iDiscId = [oP.id for oP in IDiscipline(sDiscipline).pairs
+        self._oId = [oP.id for oP in IDiscipline(sDiscipline).pairs
                 if oP.level == sLevel][0]
+        self._oMapTable = self._makeTableAlias('abs_discipline_pair_map')
+        self._oIdField = self._oMapTable.q.discipline_pair_id
 
-    def getExpression(self):
-        oT = self._makeTableAlias('abs_discipline_pair_map')
-        return AND(AbstractCard.q.id == oT.q.abstract_card_id,
-                   (oT.q.discipline_pair_id == self.__iDiscId))
-
-class MultiDisciplineLevelFilter(Filter):
+class MultiDisciplineLevelFilter(MultiFilter):
     keyword = "Discipline_with_Level"
     description = "Discipline with Level"
     helptext = "a list of discipline with levels,\n   each element specified as a discipline with level'"
     iswithfilter = True
 
     def __init__(self,aDiscLevels):
-        self.__aDiscIds = []
+        self._aIds = []
         for sDiscipline,sLevel in aDiscLevels:
-            self.__aDiscIds.extend([oP.id for oP in IDiscipline(sDiscipline).pairs
+            self._aIds.extend([oP.id for oP in IDiscipline(sDiscipline).pairs
                     if oP.level == sLevel])
+        self._oMapTable = self._makeTableAlias('abs_discipline_pair_map')
+        self._oIdField = self._oMapTable.q.discipline_pair_id
 
     def getValues(self):
         oTemp = MultiDisciplineFilter([])
@@ -206,144 +240,109 @@ class MultiDisciplineLevelFilter(Filter):
             aResults.append(disc + ' with superior')
         return aResults
 
-    def getExpression(self):
-        oT = self._makeTableAlias('abs_discipline_pair_map')
-        return AND(AbstractCard.q.id == oT.q.abstract_card_id,
-                   IN(oT.q.discipline_pair_id, self.__aDiscIds))
-
-class CardTypeFilter(Filter):
+class CardTypeFilter(SingleFilter):
     def __init__(self,sCardType):
-        self.__oType = ICardType(sCardType)
+        self._oId = ICardType(sCardType).id
+        self._oMapTable = self._makeTableAlias('abs_type_map')
+        self._oIdField = self._oMapTable.q.card_type_id
 
-    def getExpression(self):
-        oT = self._makeTableAlias('abs_type_map')
-        return AND(AbstractCard.q.id == oT.q.abstract_card_id,
-                   oT.q.card_type_id == self.__oType.id)
-
-class MultiCardTypeFilter(Filter):
+class MultiCardTypeFilter(MultiFilter):
     keyword = "CardType"
     description = "Card Type"
     helptext = "a list of card types"
 
     def __init__(self,aCardTypes):
-        self.__aTypeIds = [ICardType(x).id for x in aCardTypes]
+        self._aIds = [ICardType(x).id for x in aCardTypes]
+        self._oMapTable = self._makeTableAlias('abs_type_map')
+        self._oIdField = self._oMapTable.q.card_type_id
 
     def getValues(self):
         return [x.name for x in CardType.select().orderBy('name')]
 
-    def getExpression(self):
-        oT = self._makeTableAlias('abs_type_map')
-        return AND(AbstractCard.q.id == oT.q.abstract_card_id,
-                   IN(oT.q.card_type_id,self.__aTypeIds))
-
-class SectFilter(Filter):
+class SectFilter(SingleFilter):
     def __init__(self,sSect):
-        self.__oSect = ISect(sSect)
+        self._oId = ISect(sSect).id
+        self._oMapTable = self._makeTableAlias('abs_sect_map')
+        self._oIdField = self._oMapTable.q.sect_id
 
-    def getExpression(self):
-        oT = self._makeTableAlias('abs_sect_map')
-        return AND(AbstractCard.q.id == oT.q.abstract_card_id,
-                   oT.q.sect_id == self.__oSect.id)
-
-class MultiSectFilter(Filter):
+class MultiSectFilter(MultiFilter):
     keyword = "Sect"
     description = "Sect"
     helptext = "a list of sects"
 
     def __init__(self,aSects):
-        self.__aSectIds = [ISect(x).id for x in aSects]
+        self._aIds = [ISect(x).id for x in aSects]
+        self._oMapTable = self._makeTableAlias('abs_sect_map')
+        self._oIdField = self._oMapTable.q.sect_id
 
     def getValues(self):
         return [x.name for x in Sect.select().orderBy('name')]
 
-    def getExpression(self):
-        oT = self._makeTableAlias('abs_sect_map')
-        return AND(AbstractCard.q.id == oT.q.abstract_card_id,
-                   IN(oT.q.sect_id,self.__aSectIds))
-
-class TitleFilter(Filter):
+class TitleFilter(SingleFilter):
     def __init__(self,sTitle):
-        self.__oTitle = ITitle(sTitle)
+        self._oId = ITitle(sTitle).id
+        self._oMapTable = self._makeTableAlias('abs_title_map')
+        self._oIdField = self._oMapTable.q.title_id
 
-    def getExpression(self):
-        oT = self._makeTableAlias('abs_title_map')
-        return AND(AbstractCard.q.id == oT.q.abstract_card_id,
-                   oT.q.title_id == self.__oTitle.id)
-
-class MultiTitleFilter(Filter):
+class MultiTitleFilter(MultiFilter):
     keyword = "Title"
     description = "Title"
     helptext = "a list of titles"
 
     def __init__(self,aTitles):
-        self.__aTitleIds = [ITitle(x).id for x in aTitles]
+        self._aIds = [ITitle(x).id for x in aTitles]
+        self._oMapTable = self._makeTableAlias('abs_title_map')
+        self._oIdField = self._oMapTable.q.title_id
 
     def getValues(self):
         return [x.name for x in Title.select().orderBy('name')]
 
-    def getExpression(self):
-        oT = self._makeTableAlias('abs_title_map')
-        return AND(AbstractCard.q.id == oT.q.abstract_card_id,
-                   IN(oT.q.title_id,self.__aTitleIds))
-
-class CreedFilter(Filter):
+class CreedFilter(SingleFilter):
     def __init__(self,sCreed):
-        self.__oCreed = ICreed(sCreed)
+        self._oId = ICreed(sCreed).id
+        self._oMapTable = self._makeTableAlias('abs_creed_map')
+        self._oIdField = self._oMapTable.q.creed_id
 
-    def getExpression(self):
-        oT = self._makeTableAlias('abs_creed_map')
-        return AND(AbstractCard.q.id == oT.q.abstract_card_id,
-                   oT.q.creed_id == self.__oCreed.id)
-
-class MultiCreedFilter(Filter):
+class MultiCreedFilter(MultiFilter):
     keyword = "Creed"
     description = "Creed"
     helptext = "a list of creeds"
 
     def __init__(self,aCreeds):
-        self.__aCreedIds = [ICreed(x).id for x in aCreeds]
+        self._aIds = [ICreed(x).id for x in aCreeds]
+        self._oMapTable = self._makeTableAlias('abs_creed_map')
+        self._oIdField = self._oMapTable.q.creed_id
 
     def getValues(self):
         return [x.name for x in Creed.select().orderBy('name')]
 
-    def getExpression(self):
-        oT = self._makeTableAlias('abs_creed_map')
-        return AND(AbstractCard.q.id == oT.q.abstract_card_id,
-                   IN(oT.q.creed_id,self.__aCreedIds))
-
-class VirtueFilter(Filter):
+class VirtueFilter(SingleFilter):
     def __init__(self,sVirtue):
-        self.__oVirtue = IVirtue(sVirtue)
+        self._oId = IVirtue(sVirtue).id
+        self._oMapTable = self._makeTableAlias('abs_virtue_map')
+        self._oIdField = self._oMapTable.q.virtue_id
 
-    def getExpression(self):
-        oT = self._makeTableAlias('abs_virtue_map')
-        return AND(AbstractCard.q.id == oT.q.abstract_card_id,
-                   oT.q.virtue_id == self.__oVirtue.id)
-
-class MultiVirtueFilter(Filter):
+class MultiVirtueFilter(MultiFilter):
     keyword = "Virtue"
     description = "Virtue"
     helptext = "a list of virtues"
 
     def __init__(self,aVirtues):
-        self.__aVirtueIds = [IVirtue(x).id for x in aVirtues]
+        self._aIds = [IVirtue(x).id for x in aVirtues]
+        self._oMapTable = self._makeTableAlias('abs_virtue_map')
+        self._oIdField = self._oMapTable.q.virtue_id
 
     def getValues(self):
         return [x.fullname for x in Virtue.select().orderBy('name')]
 
-    def getExpression(self):
-        oT = self._makeTableAlias('abs_virtue_map')
-        return AND(AbstractCard.q.id == oT.q.abstract_card_id,
-                   IN(oT.q.virtue_id,self.__aVirtueIds))
-
-class GroupFilter(Filter):
+class GroupFilter(DirectFilter):
     def __init__(self,iGroup):
         self.__iGroup = iGroup
 
-    def getExpression(self):
+    def _getExpression(self):
         return AbstractCard.q.group == self.__iGroup
 
-class MultiGroupFilter(Filter):
+class MultiGroupFilter(DirectFilter):
     keyword = "Group"
     description = "Group"
     helptext = "a list of groups"
@@ -355,17 +354,17 @@ class MultiGroupFilter(Filter):
     def getValues(self):
         return range(1,6)
 
-    def getExpression(self):
+    def _getExpression(self):
         return IN(AbstractCard.q.group,self.__aGroups)
 
-class CapacityFilter(Filter):
+class CapacityFilter(DirectFilter):
     def __init__(self,iCap):
         self.__iCap = iCap
 
-    def getExpression(self):
+    def _getExpression(self):
         return AbstractCard.q.capacity == self.__iCap
 
-class MultiCapacityFilter(Filter):
+class MultiCapacityFilter(DirectFilter):
     keyword = "Capacity"
     description = "Capacity"
     helptext = "a list of capacities"
@@ -377,19 +376,19 @@ class MultiCapacityFilter(Filter):
     def getValues(self):
         return range(1,12)
 
-    def getExpression(self):
+    def _getExpression(self):
         return IN(AbstractCard.q.capacity,self.__aCaps)
 
-class CostFilter(Filter):
+class CostFilter(DirectFilter):
     # Should this exclude Vamps & Imbued, if we search for
     # cards without cost?
     def __init__(self,iCost):
         self.__iCost = iCost
 
-    def getExpression(self):
+    def _getExpression(self):
         return AbstractCard.q.cost == self.__iCost
 
-class MultiCostFilter(Filter):
+class MultiCostFilter(DirectFilter):
     keyword = "Cost"
     description = "Cost"
     helptext = "a list of costs"
@@ -401,17 +400,17 @@ class MultiCostFilter(Filter):
     def getValues(self):
         return range(0,7) + ['X']
 
-    def getExpression(self):
+    def _getExpression(self):
         return IN(AbstractCard.q.cost,self.__aCost)
 
-class CostTypeFilter(Filter):
+class CostTypeFilter(DirectFilter):
     def __init__(self,sCostType):
         self.__sCostType = sCostType
 
-    def getExpression(self):
+    def _getExpression(self):
         return AbstractCard.q.costtype == self.__sCostType.lower()
 
-class MultiCostTypeFilter(Filter):
+class MultiCostTypeFilter(DirectFilter):
     keyword = "CostType"
     description = "Cost Type"
     helptext = "a list of cost types"
@@ -422,18 +421,18 @@ class MultiCostTypeFilter(Filter):
     def getValues(self):
         return ["blood","pool","conviction"]
 
-    def getExpression(self):
+    def _getExpression(self):
         return IN(AbstractCard.q.costtype,self.__aCostTypes)
 
-class LifeFilter(Filter):
+class LifeFilter(DirectFilter):
     # Will only return imbued, unless we ever parse life from retainers & allies
     def __init__(self,iLife):
         self.__iLife = iLife
 
-    def getExpression(self):
+    def _getExpression(self):
         return AbstractCard.q.life == self.__iLife
 
-class MultiLifeFilter(Filter):
+class MultiLifeFilter(DirectFilter):
     keyword = "Life"
     description = "Life"
     helptext = "a list of life values"
@@ -445,10 +444,10 @@ class MultiLifeFilter(Filter):
     def getValues(self):
         return range(1,8)
 
-    def getExpression(self):
+    def _getExpression(self):
         return IN(AbstractCard.q.life,self.__aLife)
 
-class CardTextFilter(Filter):
+class CardTextFilter(DirectFilter):
     keyword = "CardText"
     description = "Card Text"
     helptext = "the desired card text to search for. \n   % can be used as a wildcard"
@@ -460,10 +459,10 @@ class CardTextFilter(Filter):
     def getValues(self):
         return None
 
-    def getExpression(self):
+    def _getExpression(self):
         return LIKE(func.LOWER(AbstractCard.q.text),'%' + self.__sPattern.lower() + '%')
 
-class CardNameFilter(Filter):
+class CardNameFilter(DirectFilter):
     keyword = "CardName"
     description = "Card Name"
     helptext = "the text to be matched against card names.\n   % can be used as a wildcard"
@@ -475,7 +474,7 @@ class CardNameFilter(Filter):
     def getValues(self):
         return None
 
-    def getExpression(self):
+    def _getExpression(self):
         return LIKE(func.LOWER(AbstractCard.q.name),'%' + self.__sPattern.lower() + '%')
 
 class PhysicalCardFilter(Filter):
@@ -483,36 +482,39 @@ class PhysicalCardFilter(Filter):
         # Specifies Physical Cards, intended to be anded with other filters
         pass
 
-    def getExpression(self):
+    def _getJoins(self):
+        # This at PhysicalCardSetFilter are the only filters allowed to pass the AbstractCard table as a joining table.
         oT = Table('physical_card')
-        return AND(AbstractCard.q.id == oT.abstract_card_id)
+        return [LEFTJOINOn(None, AbstractCard, AbstractCard.q.id == oT.abstract_card_id)]
+
+    def _getExpression(self):
+        return 1
 
 class PhysicalCardSetFilter(Filter):
     def __init__(self,sName):
         # Select cards belonging to a PhysicalCardSet
         self.__iDeckId = IPhysicalCardSet(sName).id
+        self.__oT = self._makeTableAlias('physical_map')
+        self.__oPT = Table('physical_card')
 
-    def getExpression(self):
-        oT = self._makeTableAlias('physical_map')
-        oPT = Table('physical_card')
-        return AND(oT.q.physical_card_set_id == self.__iDeckId,
-                   PhysicalCard.q.id == oT.q.physical_card_id,
-                   AbstractCard.q.id == oPT.abstract_card_id)
+    def _getJoins(self):
+        # This and PhysicalCardFilter are the only filters allowed to pass the AbstractCard table as a joining table.
+        return [LEFTJOINOn(None, AbstractCard, AbstractCard.q.id == self.__oPT.abstract_card_id),
+                LEFTJOINOn(None, self.__oT, self.__oPT.id == self.__oT.q.physical_card_id)]
 
-class AbstractCardSetFilter(Filter):
+    def _getExpression(self):
+        return self.__oT.q.physical_card_set_id == self.__iDeckId
+
+class AbstractCardSetFilter(SingleFilter):
     def __init__(self,sName):
         # Select cards belonging to a AbstractCardSet
-        self.__iASCId = IAbstractCardSet(sName).id
+        self._oId = IAbstractCardSet(sName).id
+        self._oMapTable = self._makeTableAlias('abstract_map')
+        self._oIdField = self._oMapTable.q.abstract_card_set_id
 
-    def getExpression(self):
-        oT = self._makeTableAlias('abstract_map')
-        oAT = Table('abstract_card')
-        return AND(oT.q.abstract_card_set_id == self.__iASCId,
-                oAT.id == oT.q.abstract_card_id)
-
-class SpecificCardFilter(Filter):
+class SpecificCardFilter(DirectFilter):
     def __init__(self,oCard):
         self.__iCardId = IAbstractCard(oCard).id
 
-    def getExpression(self):
-        return (AbstractCard.q.id == self.__iCardId)
+    def _getExpression(self):
+        return AbstractCard.q.id == self.__iCardId

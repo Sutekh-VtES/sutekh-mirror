@@ -90,10 +90,10 @@ class CardSetIndependence(CardListPlugin):
         for name in aCardSetNames:
             if self.view.sSetType == 'AbstractCardSet':
                 oFilter = AbstractCardSetFilter(name)
-                oCS = AbstractCard.select(oFilter.getExpression())
+                oCS = oFilter.select(AbstractCard)
             elif self.view.sSetType == 'PhysicalCardSet':
                 oFilter = PhysicalCardSetFilter(name)
-                oCS = PhysicalCard.select(oFilter.getExpression())
+                oCS = oFilter.select(PhysicalCard)
             for oC in oCS:
                 oAC = IAbstractCard(oC)
                 try:

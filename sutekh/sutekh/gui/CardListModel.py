@@ -4,7 +4,7 @@
 # GPL - see COPYING for details
 
 import gtk, gobject
-from sutekh.core.Filters import FilterAndBox, SpecificCardFilter
+from sutekh.core.Filters import FilterAndBox, SpecificCardFilter, NullFilter
 from sutekh.core.Groupings import CardTypeGrouping
 from sutekh.core.SutekhObjects import AbstractCard, PhysicalCard, AbstractCardSet, IAbstractCard
 
@@ -116,15 +116,10 @@ class CardListModel(gtk.TreeStore):
         """
         oFilter = self.combineFilterWithBase(oFilter)
 
-        if not oFilter is None:
-            oExpr = oFilter.getExpression()
-        else:
-            oExpr = None
-
         if self.cardclass is not AbstractCardSet:
-            return self.cardclass.select(oExpr).distinct()
+            return oFilter.select(self.cardclass).distinct()
         else:
-            return AbstractCard.select(oExpr) # Allowed Multiples here
+            return oFilter.select(AbstractCard) # Allowed Multiples here
 
     def groupedCardIterator(self,oCardIter):
         """
@@ -174,7 +169,9 @@ class CardListModel(gtk.TreeStore):
             return None
 
     def combineFilterWithBase(self,oOtherFilter):
-        if self.basefilter is None:
+        if self.basefilter is None and oOtherFilter is None:
+            return NullFilter()
+        elif self.basefilter is None:
             return oOtherFilter
         elif oOtherFilter is None:
             return self.basefilter
@@ -250,12 +247,11 @@ class CardListModel(gtk.TreeStore):
         """
         oFilter = self.combineFilterWithBase(self.getSelectFilter())
         oFullFilter = FilterAndBox([SpecificCardFilter(sCardName),oFilter])
-        oExpr = oFullFilter.getExpression()
 
         if self.cardclass is not AbstractCardSet:
-            oCardIter = self.cardclass.select(oExpr).distinct()
+            oCardIter = oFullFilter.select(self.cardclass).distinct()
         else:
-            oCardIter = AbstractCard.select(oExpr)
+            oCardIter = oFullFilter.select(AbstractCard)
 
         fGetCard, fGetCount, oGroupedIter = self.groupedCardIterator(oCardIter)
 
