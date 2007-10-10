@@ -15,7 +15,7 @@ into a AbstractCardSet
 
 from sutekh.core.CardSetHolder import CardSetHolder
 from sutekh.core.CardLookup import DEFAULT_LOOKUP
-from sqlobject import sqlhub, SQLObjectNotFound
+from sqlobject import sqlhub
 from xml.sax import parse, parseString
 from xml.sax.handler import ContentHandler
 
