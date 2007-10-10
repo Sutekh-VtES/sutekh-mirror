@@ -30,6 +30,9 @@ def parseOptions(aArgs):
     oP.add_option("--rcfile",
                   type="string", dest="sRCFile", default=None,
                   help="Specify Alternative resources file. [~/.sutekh/sutekhrc or $APPDATA$/Sutekh/sutekhrc]")
+    oP.add_option("--sql-debug",
+                  action="store_true", dest="sql_debug", default=False,
+                  help="Print out SQL statements.")
     return oP, oP.parse_args(aArgs)
 
 def main(aArgs):
@@ -52,6 +55,9 @@ def main(aArgs):
 
     oConn = connectionForURI(oOpts.db)
     sqlhub.processConnection = oConn
+
+    if oOpts.sql_debug:
+        oConn.debug = True
 
     # Test on some tables where we specify the table name
     if not oConn.tableExists('abstract_map') or not oConn.tableExists('physical_map'):
