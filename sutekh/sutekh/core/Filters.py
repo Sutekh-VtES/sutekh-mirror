@@ -76,7 +76,7 @@ class NullFilter(Filter):
     """Return everything."""
 
     def _getExpression(self):
-        return None
+        return "1 = 1" # SQLite doesn't like True. Postgres doesn't like 1.
 
     def _getJoins(self):
         return []
@@ -488,7 +488,7 @@ class PhysicalCardFilter(Filter):
         return [LEFTJOINOn(None, AbstractCard, AbstractCard.q.id == oT.abstract_card_id)]
 
     def _getExpression(self):
-        return True
+        return "1 = 1" # SQLite doesn't like True. Postgres doesn't like 1.
 
 class PhysicalCardSetFilter(Filter):
     def __init__(self,sName):
