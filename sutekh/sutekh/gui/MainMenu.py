@@ -200,7 +200,7 @@ class MainMenu(gtk.MenuBar, object):
                     Complaint.destroy()
                     if response == gtk.RESPONSE_CANCEL:
                         return
-                    else: 
+                    else:
                         # Delete the card set
                         if sType == 'PhysicalCardSet':
                             oCardSet = PhysicalCardSet.byName(sName)
