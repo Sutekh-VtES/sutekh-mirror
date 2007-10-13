@@ -10,13 +10,17 @@ from sutekh.gui.AbstractCardListFrame import AbstractCardListFrame
 from sutekh.gui.PhysicalCardFrame import PhysicalCardFrame
 from sutekh.gui.CardTextFrame import CardTextFrame
 from sutekh.gui.CardSetFrame import CardSetFrame
+from sutekh.gui.AboutDialog import SutekhAboutDialog
+from sutekh.core.SutekhObjectCache import SutekhObjectCache
 
 class MultiPaneWindow(gtk.Window):
     """Window that has a configurable number of panes."""
     def __init__(self, oConfig):
         super(MultiPaneWindow,self).__init__(gtk.WINDOW_TOPLEVEL)
-        self.oFocussed = None
+        self._oFocussed = None
         self._oConfig = oConfig
+        # Create object cache
+        self.__oSutekhObjectCache = SutekhObjectCache()
         self.set_title("Sutekh")
         self.connect("destroy", self.action_quit)
         self.set_border_width(5)
@@ -29,6 +33,9 @@ class MultiPaneWindow(gtk.Window):
         self.add(self.oVBox)
         self.show()
         self._iNumOpenPanes = 0
+        # CardText frame is special, and there is only ever one of it
+        self._bCardTextShown = False
+        self._oCardTextPane = CardTextFrame(self)
         for iNumber, sType, sName in self._oConfig.getAllPanes():
             if sType == 'Physical Card Set':
                 self.add_physical_card_set(sName)
@@ -48,7 +55,7 @@ class MultiPaneWindow(gtk.Window):
         pass
 
     def add_abstract_card_list(self):
-        oWidget = AbstractCardListFrame(self)
+        oWidget = AbstractCardListFrame(self, self._oConfig)
         self.add_pane(oWidget)
 
     def add_physical_card_list(self):
@@ -56,11 +63,12 @@ class MultiPaneWindow(gtk.Window):
         self.add_pane(oWidget)
 
     def add_card_text(self):
-        oWidget = CardTextFrame(self)
-        self.add_pane(oWidget)
+        if not self._bCardTextShown:
+            self.add_pane(self._oCardTextPane)
+            self._bCardTextShown = True
 
     def win_focus(self, oWidget, oEvent, oFrame):
-        self.oFocussed = oFrame
+        self._oFocussed = oFrame
 
     def run(self):
         gtk.main()
@@ -73,8 +81,11 @@ class MultiPaneWindow(gtk.Window):
     def save_panes(self):
         pass
 
+    def set_card_text(self, oCard):
+        self._oCardTextPane.textview.setCardText(oCard)
+
     def add_pane(self, oWidget):
-        oWidget.show()
+        oWidget.show_all()
         oWidget.connect('focus-in-event', self.win_focus, oWidget)
         if self._iNumOpenPanes < 1:
             # We have a blank space to fill, so just plonk in the widget
@@ -100,10 +111,10 @@ class MultiPaneWindow(gtk.Window):
         self.oVBox.show()
         #self.delMenuItem.set_sensitive(True)
         width, height = self.get_size()
-        self.oFocussed = None
+        self._oFocussed = None
 
     def remove_pane(self, oWidget):
-        if self.oFocussed is not None:
+        if self._oFocussed is not None:
             if self._iNumOpenPanes == 1:
                 # Removing last widget, so just clear the vbox
                 oWidget = self.oVBox.get_children()[0]
@@ -112,14 +123,14 @@ class MultiPaneWindow(gtk.Window):
                 # Removing from the only pane, so keep the unfocussed pane
                 oPane = self._aPanes[0] # Only pane
                 self._aPanes.remove(oPane)
-                oKept = [x for x in oPane.get_children() if x != self.oFocussed][0]
+                oKept = [x for x in oPane.get_children() if x != self._oFocussed][0]
                 # clear out pane
-                oPane.remove(self.oFocussed)
+                oPane.remove(self._oFocussed)
                 oPane.remove(oKept)
                 self.oVBox.remove(oPane)
                 self.oVBox.pack_start(oKept)
             else:
-                oFocussedPane = [x for x in self._aPanes if self.oFocussed in x.get_children()][0]
+                oFocussedPane = [x for x in self._aPanes if self._oFocussed in x.get_children()][0]
                 if oFocussedPane == self._aPanes[-1]:
                     # Removing last Pane, and thus last Window
                     self.oVBox.remove(oFocussedPane)
@@ -128,16 +139,19 @@ class MultiPaneWindow(gtk.Window):
                     self.oVBox.show()
                 else:
                     # Removing First pane, need to check which child to keep
-                    oKept = [x for x in oFocussedPane.get_children() if x != self.oFocussed][0]
+                    oKept = [x for x in oFocussedPane.get_children() if x != self._oFocussed][0]
                     iIndex = self._aPanes.index(oFocussedPane)
                     self._aPanes[iIndex+1].remove(oFocussedPane) # Safe, since this is not the last pane
                     oFocussedPane.remove(oKept)
                     self._aPanes[iIndex+1].add1(oKept)
                 # Housekeeping
-                oFocussedPane.remove(self.oFocussed)
+                oFocussedPane.remove(self._oFocussed)
                 self._aPanes.remove(oFocussedPane)
+
             self.oVBox.show()
             self._iNumOpenPanes -= 1
             #if self._iNumOpenPanes == 0:
             #    self.delMenuItem.set_sensitive(False)
-            self.oFocussed = None
+            if self._oFocussed == self._oCardTextPane:
+                self._bCardTextShown = False
+            self._oFocussed = None

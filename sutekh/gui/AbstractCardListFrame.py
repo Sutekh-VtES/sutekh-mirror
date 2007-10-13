@@ -6,28 +6,28 @@
 
 import gtk
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
+from sutekh.gui.AbstractCardListController import AbstractCardListController
 
 class AbstractCardListFrame(gtk.Frame, object):
-    def __init__(self, oMainWindow):
+    def __init__(self, oMainWindow, oConfig):
         super(AbstractCardListFrame,self).__init__()
         self.__oMainWindow = oMainWindow
 
         self.set_label("Whitewolf CardList")
+        self.__oC = AbstractCardListController(self, oConfig, oMainWindow)
 
-    def addParts(self, oMenu, oAbstractCards):
+    def addParts(self, oAbstractCards):
         wMbox = gtk.VBox(False, 2)
-
-        wMbox.pack_start(oMenu, False, False)
 
         oToolbar = gtk.VBox(False,2)
         bInsertToolbar = False
-        for oPlugin in self.__oC.getPlugins():
-            oW = oPlugin.getToolbarWidget()
-            if oW is not None:
-                oToolbar.pack_start(oW)
-                bInsertToolbar = True
-        if bInsertToolbar:
-            wMbox.pack_start(oToolbar, False, False)
+        #for oPlugin in self.__oC.getPlugins():
+        #    oW = oPlugin.getToolbarWidget()
+        #    if oW is not None:
+        #        oToolbar.pack_start(oW)
+        #        bInsertToolbar = True
+        #if bInsertToolbar:
+        #    wMbox.pack_start(oToolbar, False, False)
 
         wMbox.pack_start(AutoScrolledWindow(oAbstractCards), True, True)
 

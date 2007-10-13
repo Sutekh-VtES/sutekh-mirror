@@ -10,7 +10,7 @@ from sutekh.gui.PopupMenu import PopupMenu
 from sutekh.gui.CellRendererSutekhButton import CellRendererSutekhButton
 
 class CardListView(gtk.TreeView,object):
-    def __init__(self,oController,oWindow,oConfig):
+    def __init__(self, oController, oWindow, oConfig):
         self._oModel = CardListModel()
         self._oC = oController
         self._oWin = oWindow

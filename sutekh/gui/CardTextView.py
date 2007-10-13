@@ -54,7 +54,7 @@ class CardTextBuffer(gtk.TextBuffer,object):
         self._oIter = self.get_iter_at_offset(0)
 
 class CardTextView(gtk.TextView,object):
-    def __init__(self,oController):
+    def __init__(self, oController):
         super(CardTextView,self).__init__()
         self.__oC = oController
         self.__oBuf = CardTextBuffer()

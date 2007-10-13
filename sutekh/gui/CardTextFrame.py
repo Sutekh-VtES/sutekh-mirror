@@ -6,12 +6,17 @@
 
 import gtk
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
+from sutekh.gui.CardTextView import CardTextView
 
 class CardTextFrame(gtk.Frame, object):
     def __init__(self, oMainWindow):
         super(CardTextFrame,self).__init__()
         self.__oMainWindow = oMainWindow
         self.set_label('Card Text')
+        self.__oTextView = CardTextView(oMainWindow)
+        self.addParts(self.__oTextView)
+
+    textview = property(fget=lambda self: self.__oTextView)
 
     def addParts(self, oCardText):
         wMbox = gtk.VBox(False, 2)
