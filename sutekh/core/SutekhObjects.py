@@ -3,6 +3,8 @@
 # Minor modifications copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
+from sutekh.core.CachedRelatedJoin import CachedRelatedJoin, \
+                                          SOCachedRelatedJoin
 from sqlobject import sqlmeta, SQLObject, IntCol, UnicodeCol, RelatedJoin, \
                       EnumCol, MultipleJoin, SQLObjectNotFound, \
                       DatabaseIndex, ForeignKey
@@ -50,15 +52,16 @@ class AbstractCard(SQLObject):
     costtype = EnumCol(enumValues=['pool','blood','conviction',None],default=None)
     level = EnumCol(enumValues=['advanced',None],default=None)
 
-    discipline = RelatedJoin('DisciplinePair',intermediateTable='abs_discipline_pair_map',createRelatedTable=False)
-    rarity = RelatedJoin('RarityPair',intermediateTable='abs_rarity_pair_map',createRelatedTable=False)
-    clan = RelatedJoin('Clan',intermediateTable='abs_clan_map',createRelatedTable=False)
-    cardtype = RelatedJoin('CardType',intermediateTable='abs_type_map',createRelatedTable=False)
-    sect = RelatedJoin('Sect',intermediateTable='abs_sect_map',createRelatedTable=False)
-    title = RelatedJoin('Title',intermediateTable='abs_title_map',createRelatedTable=False)
-    creed = RelatedJoin('Creed',intermediateTable='abs_creed_map',createRelatedTable=False)
-    virtue = RelatedJoin('Virtue',intermediateTable='abs_virtue_map',createRelatedTable=False)
-    rulings = RelatedJoin('Ruling',intermediateTable='abs_ruling_map',createRelatedTable=False)
+    discipline = CachedRelatedJoin('DisciplinePair',intermediateTable='abs_discipline_pair_map',createRelatedTable=False)
+    rarity = CachedRelatedJoin('RarityPair',intermediateTable='abs_rarity_pair_map',createRelatedTable=False)
+    clan = CachedRelatedJoin('Clan',intermediateTable='abs_clan_map',createRelatedTable=False)
+    cardtype = CachedRelatedJoin('CardType',intermediateTable='abs_type_map',createRelatedTable=False)
+    sect = CachedRelatedJoin('Sect',intermediateTable='abs_sect_map',createRelatedTable=False)
+    title = CachedRelatedJoin('Title',intermediateTable='abs_title_map',createRelatedTable=False)
+    creed = CachedRelatedJoin('Creed',intermediateTable='abs_creed_map',createRelatedTable=False)
+    virtue = CachedRelatedJoin('Virtue',intermediateTable='abs_virtue_map',createRelatedTable=False)
+    rulings = CachedRelatedJoin('Ruling',intermediateTable='abs_ruling_map',createRelatedTable=False)
+
     sets = RelatedJoin('AbstractCardSet',intermediateTable='abstract_map',createRelatedTable=False)
     physicalCards = MultipleJoin('PhysicalCard')
 
@@ -714,3 +717,7 @@ def FlushCache():
                       ClanAdapter, CardTypeAdapter, SectAdaptor, TitleAdapter,
                       VirtueAdapter, CreedAdapter ]:
         cAdaptor.makeObjectCache()
+
+    for oJoin in AbstractCard.sqlmeta.joins:
+        if type(oJoin) is SOCachedRelatedJoin:
+            oJoin.flushCache()

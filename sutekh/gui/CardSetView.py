@@ -6,19 +6,21 @@
 from sutekh.gui.CardListView import EditableCardListView
 from sutekh.gui.DeleteCardSetDialog import DeleteCardSetDialog
 from sutekh.core.Filters import PhysicalCardSetFilter, AbstractCardSetFilter
-from sutekh.core.SutekhObjects import PhysicalCard, PhysicalCardSet, AbstractCardSet
+from sutekh.core.SutekhObjects import PhysicalCard, PhysicalCardSet, AbstractCardSet, \
+        MapAbstractCardToAbstractCardSet
 
 class CardSetView(EditableCardListView):
     def __init__(self,oWindow,oController,sName,sSetType,oConfig):
         super(CardSetView,self).__init__(oController,oWindow,oConfig)
         self.sSetName = sName
         self.sSetType = sSetType
-        # Needs to be PhysicalCard for both so Model does the right thing
         if sSetType == "PhysicalCardSet":
+            # cardclass is the actual physicalcard
             self._oModel.cardclass = PhysicalCard
             self._oModel.basefilter = PhysicalCardSetFilter(self.sSetName)
         elif sSetType == "AbstractCardSet":
-            self._oModel.cardclass = AbstractCardSet
+            # Need MapAbstractCardToAbstractCardSet here, so filters do the right hing
+            self._oModel.cardclass = MapAbstractCardToAbstractCardSet
             self._oModel.basefilter = AbstractCardSetFilter(self.sSetName)
         else:
             # Should this be an error condition?

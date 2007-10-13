@@ -59,12 +59,12 @@ class CardSetCompare(CardListPlugin):
         return self.oDlg
 
     def handleResponse(self,oWidget,oResponse):
-       if oResponse ==  gtk.RESPONSE_OK:
-           aCardSetNames = [self.view.sSetName]
-           dSelect = {}
-           self.csFrame.get_selection(aCardSetNames,dSelect)
-           self.compCardSets(aCardSetNames)
-       self.oDlg.destroy()
+        if oResponse ==  gtk.RESPONSE_OK:
+            aCardSetNames = [self.view.sSetName]
+            dSelect = {}
+            self.csFrame.get_selection(aCardSetNames,dSelect)
+            self.compCardSets(aCardSetNames)
+        self.oDlg.destroy()
 
     def compCardSets(self,aCardSetNames):
         (dDifferences,aCommon) = self.__getCardSetList(aCardSetNames)
@@ -116,10 +116,10 @@ class CardSetCompare(CardListPlugin):
         for name in aCardSetNames:
             if self.view.sSetType == 'AbstractCardSet':
                 oFilter = AbstractCardSetFilter(name)
-                oCS = AbstractCard.select(oFilter.getExpression())
+                oCS = oFilter.select(AbstractCard)
             elif self.view.sSetType == 'PhysicalCardSet':
                 oFilter = PhysicalCardSetFilter(name)
-                oCS = PhysicalCard.select(oFilter.getExpression())
+                oCS = oFilter.select(PhysicalCard)
             for oC in oCS:
                 oAC = IAbstractCard(oC)
                 try:

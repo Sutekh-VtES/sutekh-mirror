@@ -3,7 +3,7 @@
 # GPL - see COPYING for details
 
 import gtk
-from sutekh.core.SutekhObjects import PhysicalCard
+from sutekh.core.SutekhObjects import AbstractCard
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.CardListModel import CardListModelListener
 
@@ -68,10 +68,10 @@ class CountCardSetCards(CardListPlugin,CardListModelListener):
         aAllCards = list(self.model.getCardIterator(self.model.getSelectFilter()))
         self.__iTot = len(aAllCards)
         for oCard in aAllCards:
-            if type(oCard) is PhysicalCard:
-                sType = self.__idCard(oCard.abstractCard)
-            else:
+            if type(oCard) is AbstractCard:
                 sType = self.__idCard(oCard)
+            else:
+                sType = self.__idCard(oCard.abstractCard)
             if sType == 'Crypt':
                 self.__iCrypt += 1
             else:

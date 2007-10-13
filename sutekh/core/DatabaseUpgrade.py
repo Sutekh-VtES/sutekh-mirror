@@ -3,7 +3,7 @@
 # GPL - see COPYING for details
 
 from sqlobject import sqlhub, SQLObject, IntCol, UnicodeCol, RelatedJoin, \
-                      EnumCol, MultipleJoin, SQLObjectNotFound, ForeignKey, \
+                      EnumCol, MultipleJoin, ForeignKey, \
                       DatabaseIndex, connectionForURI
 from sutekh.core.SutekhObjects import PhysicalCard, AbstractCard, AbstractCardSet,\
                                  PhysicalCardSet, Expansion, Clan, Virtue, \
