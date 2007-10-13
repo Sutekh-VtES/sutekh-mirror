@@ -1,7 +1,5 @@
 Backend:
  * Add ordering mechanism for card lists.
- * Make filtering less slow (mainly for sqlite) 
-      (seems OK with the indexes. Do we need more?).
  * DatabaseUpgrade could be less brittle
  * Better error and exception handling
  * Rework SutekhUtility to be less of a mess

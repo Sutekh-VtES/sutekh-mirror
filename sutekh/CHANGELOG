@@ -1,3 +1,14 @@
+13 Oct 2007
+ * Tweak support for joins for AbstractCardSet
+
+11 Oct 2007
+ * Add CachedRelatedJoins for additional speed increase
+ * Tweaks to some of the filters to accomodate different databases
+
+10 Oct 2007
+ * Add explicit joins to filtering - significantly improves speed of 
+   filtering queries
+
 05 Oct 2007
  * Fix some issues identified in testing the stable-branch before Sutekh 
    0.4.2's release
