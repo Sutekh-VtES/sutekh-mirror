@@ -509,8 +509,11 @@ class AbstractCardSetFilter(SingleFilter):
     def __init__(self,sName):
         # Select cards belonging to a AbstractCardSet
         self._oId = IAbstractCardSet(sName).id
-        self._oMapTable = self._makeTableAlias('abstract_map')
-        self._oIdField = self._oMapTable.q.abstract_card_set_id
+        self._oMapTable = Table('abstract_map')
+        self._oIdField = self._oMapTable.abstract_card_set_id
+
+    def _getJoins(self):
+        return [LEFTJOINOn(None, AbstractCard, AbstractCard.q.id == self._oMapTable.abstract_card_id)]
 
 class SpecificCardFilter(DirectFilter):
     def __init__(self,oCard):

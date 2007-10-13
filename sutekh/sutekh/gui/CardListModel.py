@@ -6,7 +6,7 @@
 import gtk, gobject
 from sutekh.core.Filters import FilterAndBox, SpecificCardFilter, NullFilter
 from sutekh.core.Groupings import CardTypeGrouping
-from sutekh.core.SutekhObjects import AbstractCard, PhysicalCard, AbstractCardSet, IAbstractCard
+from sutekh.core.SutekhObjects import AbstractCard, IAbstractCard
 
 class CardListModelListener(object):
     """
@@ -43,7 +43,7 @@ class CardListModel(gtk.TreeStore):
         super(CardListModel,self).__init__(gobject.TYPE_STRING,gobject.TYPE_INT)
         self._dName2Iter = {}
 
-        self.cardclass = AbstractCard # card class to use, other option is PhysicalCard
+        self.cardclass = AbstractCard # card class to use
         self.groupby = CardTypeGrouping # grouping class to use
         self.basefilter = None # base filter defines the card list
         self.applyfilter = False # whether to apply the select filter
@@ -116,10 +116,7 @@ class CardListModel(gtk.TreeStore):
         """
         oFilter = self.combineFilterWithBase(oFilter)
 
-        if self.cardclass is not AbstractCardSet:
-            return oFilter.select(self.cardclass).distinct()
-        else:
-            return oFilter.select(AbstractCard) # Allowed Multiples here
+        return oFilter.select(self.cardclass).distinct()
 
     def groupedCardIterator(self,oCardIter):
         """
@@ -130,7 +127,11 @@ class CardListModel(gtk.TreeStore):
         over the card groups)
         """
         # Define iterable and grouping function based on cardclass
-        if self.cardclass is PhysicalCard:
+        if self.cardclass is AbstractCard:
+            fGetCard = lambda x:x
+            fGetCount = lambda x:0
+            aCards = oCardIter
+        else:
             fGetCard = lambda x:x[0]
             fGetCount = lambda x:x[1]
 
@@ -142,22 +143,6 @@ class CardListModel(gtk.TreeStore):
 
             aCards = list(dAbsCards.iteritems())
             aCards.sort(lambda x,y: cmp(x[0].name,y[0].name))
-        elif self.cardclass is AbstractCardSet:
-            fGetCard = lambda x:x[0]
-            fGetCount = lambda x:x[1]
-
-            # Count by Abstract Card
-            dAbsCards = {}
-            for oCard in oCardIter:
-                dAbsCards.setdefault(oCard,0)
-                dAbsCards[oCard] += 1
-
-            aCards = list(dAbsCards.iteritems())
-            aCards.sort(lambda x,y: cmp(x[0].name,y[0].name))
-        else:
-            fGetCard = lambda x:x
-            fGetCount = lambda x:0
-            aCards = oCardIter
 
         # Iterate over groups
         return fGetCard, fGetCount, self.groupby(aCards,fGetCard)
@@ -248,10 +233,7 @@ class CardListModel(gtk.TreeStore):
         oFilter = self.combineFilterWithBase(self.getSelectFilter())
         oFullFilter = FilterAndBox([SpecificCardFilter(sCardName),oFilter])
 
-        if self.cardclass is not AbstractCardSet:
-            oCardIter = oFullFilter.select(self.cardclass).distinct()
-        else:
-            oCardIter = oFullFilter.select(AbstractCard)
+        oCardIter = oFullFilter.select(self.cardclass).distinct()
 
         fGetCard, fGetCount, oGroupedIter = self.groupedCardIterator(oCardIter)
 
