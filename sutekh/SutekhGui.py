@@ -5,7 +5,7 @@
 from sutekh.core.SutekhObjects import VersionTable, ObjectList
 from sutekh.SutekhUtility import refreshTables, readRulings, readWhiteWolfList, \
                                  prefsDir, ensureDirExists, sqliteUri
-from sutekh.gui.MainController import MainController
+from sutekh.gui.MultiPaneWindow import MultiPaneWindow
 from sutekh.gui.DBErrorPopup import DBVerErrorPopup, NoDBErrorPopup
 from sutekh.gui.DBUpgradeDialog import DBUpgradeDialog
 from sutekh.gui.WWFilesDialog import WWFilesDialog
@@ -153,7 +153,7 @@ def main(aArgs):
                 oDialog.destroy()
                 return 1
 
-    MainController(oConfig).run()
+    MultiPaneWindow(oConfig).run()
 
     # Save Config Changes
     oConfig.write()
