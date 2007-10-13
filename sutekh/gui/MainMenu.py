@@ -8,7 +8,6 @@ from sqlobject import sqlhub, connectionForURI
 from sutekh.core.SutekhObjects import PhysicalCardSet, AbstractCardSet, ObjectList
 from sutekh.gui.ImportDialog import ImportDialog
 from sutekh.gui.WWFilesDialog import WWFilesDialog
-from sutekh.gui.GuiCardLookup import GuiLookup
 from sutekh.io.XmlFileHandling import PhysicalCardXmlFile, PhysicalCardSetXmlFile, \
                                     AbstractCardSetXmlFile
 from sutekh.io.IdentifyXMLFile import IdentifyXMLFile
@@ -17,22 +16,16 @@ from sutekh.SutekhUtility import refreshTables, readWhiteWolfList, readRulings
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
 
 class MainMenu(gtk.MenuBar, object):
-    def __init__(self, oController, oWindow, oConfig, oAbsView, oPhysView):
+    def __init__(self, oWindow, oConfig):
         super(MainMenu,self).__init__()
-        self.__oC = oController
         self.__oWin = oWindow
         self.__dMenus = {}
         self.__oConfig = oConfig
-        self.__createFileMenu()
-        self.__createFilterMenu()
-        self.__createPluginMenu()
-        self.__createAboutMenu()
-        self.__oCardLookup = GuiLookup(oAbsView, oPhysView)
+        self.__create_file_menu()
+        self.__create_pane_menu()
+        self.__create_about_menu()
 
-    # Needed for Backup plugin
-    cardLookup = property(fget=lambda self: self.__oCardLookup)
-
-    def __createFileMenu(self):
+    def __create_file_menu(self):
         # setup sub menu
         iMenu = gtk.MenuItem("File")
         wMenu = gtk.Menu()
@@ -81,56 +74,44 @@ class MainMenu(gtk.MenuBar, object):
         wMenu.add(iSeperator3)
 
         iQuit = gtk.MenuItem("Quit")
-        iQuit.connect('activate', lambda iItem: self.__oC.actionQuit())
+        iQuit.connect('activate', lambda iItem: self.__oWin.action_quit(self.__oWin))
 
         wMenu.add(iQuit)
 
         self.add(iMenu)
 
-    def __createFilterMenu(self):
-        # setup sub menu
-        iMenu = gtk.MenuItem("Filter")
+    def __create_pane_menu(self):
+        iMenu = gtk.MenuItem("Pane Actions")
         wMenu = gtk.Menu()
-        self.__dMenus["Filter"] = wMenu
+        self.__dMenus["Pane"] = wMenu
         iMenu.set_submenu(wMenu)
 
-        # items
-        iFilter = gtk.MenuItem("Specify Filter")
-        wMenu.add(iFilter)
-        iFilter.connect('activate', self.__oC.getFilter)
+        iAddACLPane = gtk.MenuItem("Add Abstract Card List Pane")
+        iAddPCLPane = gtk.MenuItem("Add Physical Card List Pane")
+        self.iAddCardText = gtk.MenuItem("Add Card Text Pane")
+        self.iDelPane = gtk.MenuItem("Remove currently focussed pane")
 
-        self.iApply = gtk.CheckMenuItem("Apply Filter")
-        self.iApply.set_inconsistent(False)
-        self.iApply.set_active(False)
-        wMenu.add(self.iApply)
-        self.iApply.connect('activate', self.__oC.runFilter)
+        wMenu.add(iAddACLPane)
+        iAddACLPane.connect("activate", self.__oWin.add_abstract_card_list)
+        wMenu.add(iAddPCLPane)
+        iAddPCLPane.connect("activate", self.__oWin.add_physical_card_list)
+        wMenu.add(self.iAddCardText)
+        self.iAddCardText.connect("activate", self.__oWin.add_card_text)
+        wMenu.add(self.iDelPane)
+        self.iDelPane.connect("activate", self.__oWin.remove_pane)
+
+        self.iDelPane.set_sensitive(False)
+        self.iAddCardText.set_sensitive(False)
 
         self.add(iMenu)
 
-    def __createPluginMenu(self):
-        # setup sub menu
-        iMenu = gtk.MenuItem("Plugins")
-        wMenu = gtk.Menu()
-        self.__dMenus["Plugins"] = wMenu
-        iMenu.set_submenu(wMenu)
-        # plugins
-        for oPlugin in self.__oC.getPlugins():
-            oMI = oPlugin.getMenuItem()
-            if oMI is not None:
-                sMenu = oPlugin.getDesiredMenu()
-                # Add to the requested menu if supplied
-                if sMenu in self.__dMenus.keys():
-                    if sMenu == "Plugins":
-                        bShowPluginMenu = True
-                    self.__dMenus[sMenu].add(oMI)
-                else:
-                    # Plugins acts as a catchall Menu
-                    wMenu.add(oMI)
-        self.add(iMenu)
-        if len(wMenu.get_children()) == 0:
-            iMenu.set_sensitive(False)
+    def del_pane_set_sensitive(self, bValue):
+        self.iDelPane.set_sensitive(bValue)
 
-    def __createAboutMenu(self):
+    def add_card_text_set_sensitive(self, bValue):
+        self.iAddCardText.set_sensitive(bValue)
+
+    def __create_about_menu(self):
         # setup sub menu
         iMenu = gtk.MenuItem("About")
         wMenu = gtk.Menu()
@@ -138,29 +119,10 @@ class MainMenu(gtk.MenuBar, object):
         iMenu.set_submenu(wMenu)
 
         self.iAbout = gtk.MenuItem("About Sutekh")
-        self.iAbout.connect('activate', self.__oC.showAboutDialog)
+        self.iAbout.connect('activate', self.__oWin.show_about_dialog)
         wMenu.add(self.iAbout)
 
         self.add(iMenu)
-
-    def setLoadPhysicalState(self,openSets):
-        # Determine if physLoad should be greyed out or not
-        # physLoad is active if a PhysicalCardSet exists that isn't open
-        state = False
-        oSets = PhysicalCardSet.select()
-        for oPCS in oSets:
-            if oPCS.name not in openSets.keys():
-                state = True
-        self.physLoad.set_sensitive(state)
-
-    def setLoadAbstractState(self,openSets):
-        # Determine if loadAbs should be greyed out or not (as for loadPhys)
-        state = False
-        oSets = AbstractCardSet.select()
-        for oACS in oSets:
-            if oACS.name not in openSets.keys():
-                state = True
-        self.absLoad.set_sensitive(state)
 
     def doImportPhysicalCardList(self,widget):
         oFileChooser = ImportDialog("Select Card List to Import",self.__oWin)

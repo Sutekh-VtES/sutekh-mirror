@@ -16,6 +16,8 @@ class AbstractCardListFrame(gtk.Frame, object):
         self.set_label("Whitewolf CardList")
         self.__oC = AbstractCardListController(self, oConfig, oMainWindow)
 
+    view = property(fget=lambda self: self.__oC.view, doc="Associated View Object")
+
     def addParts(self, oAbstractCards):
         wMbox = gtk.VBox(False, 2)
 

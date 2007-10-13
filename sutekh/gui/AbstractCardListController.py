@@ -5,7 +5,6 @@
 # GPL - see COPYING for details
 
 import gtk
-from sqlobject import SQLObjectNotFound
 from sutekh.gui.AbstractCardView import AbstractCardView
 from sutekh.gui.PluginManager import PluginManager
 from sutekh.core.SutekhObjects import AbstractCard
@@ -28,16 +27,14 @@ class AbstractCardListController(object):
         #    self.__aPlugins.append(cPlugin(self.__oAbstractCards,self.__oAbstractCards.getModel(),'AbstractCard'))
         self.__oFrame.addParts(self.__oAbstractCards)
 
+    view = property(fget=lambda self: self.__oAbstractCards, doc="Associated View")
+
     def getPlugins(self):
         return self.__aPlugins
 
     def setCardText(self, sCardName):
-        try:
-            oCard = AbstractCard.byCanonicalName(sCardName.lower())
-            self.__oMainWindow.set_card_text(oCard)
-        except SQLObjectNotFound:
-            pass
-
+        self.__oMainWindow.set_card_text(sCardName)
+        
     def getFilter(self,widget):
         self.__oAbstractCards.getFilter(self.__oMenu)
 

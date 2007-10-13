@@ -6,12 +6,16 @@
 import pygtk
 pygtk.require('2.0')
 import gtk, gobject
+from sqlobject import SQLObjectNotFound
+from sutekh.core.SutekhObjectCache import SutekhObjectCache
+from sutekh.core.SutekhObjects import AbstractCard
 from sutekh.gui.AbstractCardListFrame import AbstractCardListFrame
 from sutekh.gui.PhysicalCardFrame import PhysicalCardFrame
 from sutekh.gui.CardTextFrame import CardTextFrame
 from sutekh.gui.CardSetFrame import CardSetFrame
 from sutekh.gui.AboutDialog import SutekhAboutDialog
-from sutekh.core.SutekhObjectCache import SutekhObjectCache
+from sutekh.gui.MainMenu import MainMenu
+from sutekh.gui.GuiCardLookup import GuiLookup
 
 class MultiPaneWindow(gtk.Window):
     """Window that has a configurable number of panes."""
@@ -28,10 +32,12 @@ class MultiPaneWindow(gtk.Window):
         self.set_size_request(-1,-1)
         self.oVBox = gtk.VBox()
         self._aPanes = []
+        self.__oMenu = MainMenu(self, oConfig)
         self.iPaneNum = 0
         self.oVBox.show()
         self.add(self.oVBox)
-        self.show()
+        self.oVBox.pack_start(self.__oMenu)
+        self.show_all()
         self._iNumOpenPanes = 0
         # CardText frame is special, and there is only ever one of it
         self._bCardTextShown = False
@@ -42,11 +48,15 @@ class MultiPaneWindow(gtk.Window):
             elif sType == 'Abstract Card Set':
                 self.add_abstract_card_set(sName)
             elif sType == 'Abstract Cards':
-                self.add_abstract_card_list()
+                self.add_abstract_card_list(None)
             elif sType == 'Card Text':
-                self.add_card_text()
+                self.add_card_text(None)
             elif sType == 'Physical Cards':
-                self.add_physical_card_list()
+                self.add_physical_card_list(None)
+        self.__oCardLookup = GuiLookup()
+
+    # Needed for Backup plugin
+    cardLookup = property(fget=lambda self: self.__oCardLookup)
 
     def add_physical_card_set(self,sName):
         pass
@@ -54,18 +64,19 @@ class MultiPaneWindow(gtk.Window):
     def add_abstract_card_set(self,sName):
         pass
 
-    def add_abstract_card_list(self):
+    def add_abstract_card_list(self, oWidget):
         oWidget = AbstractCardListFrame(self, self._oConfig)
         self.add_pane(oWidget)
 
-    def add_physical_card_list(self):
-        oWidget = PhysicalCardFrame(self)
+    def add_physical_card_list(self, oWidget):
+        oWidget = PhysicalCardFrame(self, self._oConfig)
         self.add_pane(oWidget)
 
-    def add_card_text(self):
+    def add_card_text(self, oWidget):
         if not self._bCardTextShown:
             self.add_pane(self._oCardTextPane)
             self._bCardTextShown = True
+            self.__oMenu.add_card_text_set_sensitive(False)
 
     def win_focus(self, oWidget, oEvent, oFrame):
         self._oFocussed = oFrame
@@ -81,12 +92,16 @@ class MultiPaneWindow(gtk.Window):
     def save_panes(self):
         pass
 
-    def set_card_text(self, oCard):
-        self._oCardTextPane.textview.setCardText(oCard)
+    def set_card_text(self, sCardName):
+        try:
+            oCard = AbstractCard.byCanonicalName(sCardName.lower())
+            self._oCardTextPane.view.setCardText(oCard)
+        except SQLObjectNotFound:
+            pass
 
     def add_pane(self, oWidget):
         oWidget.show_all()
-        oWidget.connect('focus-in-event', self.win_focus, oWidget)
+        oWidget.view.connect('focus-in-event', self.win_focus, oWidget)
         if self._iNumOpenPanes < 1:
             # We have a blank space to fill, so just plonk in the widget
             self.oVBox.pack_start(oWidget)
@@ -98,8 +113,9 @@ class MultiPaneWindow(gtk.Window):
                 # new hpane - we add data to the right HS
                 oPart1 = self._aPanes[-1] # Last & thus top pane
             else:
-                # This is the first pane, so vbox has 1 child
-                oPart1 = self.oVBox.get_children()[0]
+                # This is the first pane, so vbox has 2 children 
+                # The menu, and the one we want
+                oPart1 = [x for x in self.oVBox.get_children() if x != self.__oMenu][0]
             self.oVBox.remove(oPart1)
             oNewPane.add1(oPart1)
             oNewPane.add2(oWidget)
@@ -109,15 +125,18 @@ class MultiPaneWindow(gtk.Window):
             self._aPanes.append(oNewPane)
         self._iNumOpenPanes += 1
         self.oVBox.show()
-        #self.delMenuItem.set_sensitive(True)
+        self.__oMenu.del_pane_set_sensitive(True)
         width, height = self.get_size()
         self._oFocussed = None
 
     def remove_pane(self, oWidget):
+        print self._oFocussed
+        print oWidget
+        print self._iNumOpenPanes
         if self._oFocussed is not None:
             if self._iNumOpenPanes == 1:
                 # Removing last widget, so just clear the vbox
-                oWidget = self.oVBox.get_children()[0]
+                oWidget = [x for x in self.oVBox.get_children() if x != self.__oMenu][0]
                 self.oVBox.remove(oWidget)
             elif self._iNumOpenPanes == 2:
                 # Removing from the only pane, so keep the unfocussed pane
@@ -150,8 +169,14 @@ class MultiPaneWindow(gtk.Window):
 
             self.oVBox.show()
             self._iNumOpenPanes -= 1
-            #if self._iNumOpenPanes == 0:
-            #    self.delMenuItem.set_sensitive(False)
+            if self._iNumOpenPanes == 0:
+                self.__oMenu.del_pane_set_sensitive(False)
             if self._oFocussed == self._oCardTextPane:
                 self._bCardTextShown = False
+                self.__oMenu.add_card_text_set_sensitive(True)
             self._oFocussed = None
+
+    def show_about_dialog(self, oWidget):
+        oDlg = SutekhAboutDialog()
+        oDlg.run()
+        oDlg.destroy()

@@ -10,26 +10,22 @@ from sutekh.gui.DeleteCardDialog import DeleteCardDialog
 from sutekh.core.SutekhObjects import PhysicalCard, AbstractCard, PhysicalCardSet
 
 class PhysicalCardController(object):
-    def __init__(self,oWindow,oMasterController,oConfig):
-        self.__oView = PhysicalCardView(self,oWindow,oConfig)
-        self.__oC = oMasterController
-        self.__oWin = oWindow
+    def __init__(self, oFrame, oConfig, oMainWindow):
+        self.__oView = PhysicalCardView(self, oMainWindow, oConfig)
+        self.__oMainWin = oMainWindow
+        self.__oFrame = oFrame
 
         # setup plugins before the menu (which needs a list of plugins)
-        self.__aPlugins = []
-        for cPlugin in oMasterController.getPluginManager().getCardListPlugins():
-            self.__aPlugins.append(cPlugin(self.__oView,self.__oView.getModel(),'PhysicalCard'))
+        #self.__aPlugins = []
+        #for cPlugin in oMasterController.getPluginManager().getCardListPlugins():
+        #    self.__aPlugins.append(cPlugin(self.__oView,self.__oView.getModel(),'PhysicalCard'))
 
-        self.__oMenu = PhysicalCardMenu(self,self.__oWin)
+        #self.__oMenu = PhysicalCardMenu(self,self.__oWin)
+
+    view = property(fget=lambda self: self.__oView, doc="Associated View")
 
     def getView(self):
         return self.__oView
-
-    def getMenu(self):
-        return self.__oMenu
-
-    def getPlugins(self):
-        return self.__aPlugins
 
     def decCard(self,sName):
         """
@@ -105,7 +101,7 @@ class PhysicalCardController(object):
         return True
 
     def setCardText(self,sCardName):
-        self.__oC.setCardText(sCardName)
+        self.__oMainWin.set_card_text(sCardName)
 
     def getFilter(self,oWidget):
         self.__oView.getFilter(self.__oMenu)

@@ -17,11 +17,11 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup):
     """Lookup AbstractCards. Use the user as the AI if a simple lookup fails.
        """
 
-    def __init__(self, oAbsCardView, oPhysCardView):
-        # FIXME: Should this create an abstract card list view inside the
-        #        dialog? For times when the abstract card list isn't visible?
-        self._oAbsCardView = oAbsCardView
-        self._oPhysCardView = oPhysCardView
+    def __init__(self):
+        # FIXME: This should create an abstract card list view inside the
+        #        dialog
+        self._oAbsCardView = None
+        self._oPhysCardView = None
 
     def lookup(self, aNames, sInfo):
         dCards = {}
