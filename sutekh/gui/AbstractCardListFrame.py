@@ -1,13 +1,13 @@
-# MainWindow.py
-# The Main App Window
-# Copyright 2005,2006 Simon Cross <hodgestar@gmail.com>
-# Copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
+# AbstractCardListFrame.py
+# Display the Abstract Card List
+# Copyright 2005,2006,2007 Simon Cross <hodgestar@gmail.com>
+# Copyright 2006,2007 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
 import gtk
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 
-class MainWindow(gtk.Window,object):
+class MainWindow(gtk.Frame,object):
     def __init__(self,oController):
         super(MainWindow,self).__init__()
         self.__oC = oController

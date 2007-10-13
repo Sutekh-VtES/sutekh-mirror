@@ -1,6 +1,7 @@
-P#!/usr/bin/env python
-
-# Hack togeth extenable pane thingy
+# MultiPaneWindow.py
+# Handle the multi pane UI for Sutkeh
+# Copyright 2007, Neil Muller <drnlmuller+sutekh@gmail.com>
+# GPL - See COPYING for details
 
 import pygtk
 pygtk.require('2.0')
@@ -8,7 +9,7 @@ import gtk, gobject
 
 class MultiPaneWindow(gtk.Window):
     """Window that has a configurable number of panes."""
-    def __init__(self,oConfig):
+    def __init__(self, oConfig):
         super(MultiPaneWindow,self).__init__(gtk.WINDOW_TOPLEVEL)
         self.oFocussed = None
         self._oConfig = oConfig
@@ -24,15 +25,21 @@ class MultiPaneWindow(gtk.Window):
         self.show()
         self._iNumOpenPanes = 0
 
-    def win_focus(self,widget,event,oFrame):
+    def win_focus(self, oWidget, oEvent, oFrame):
         self.oFocussed = oFrame
 
-    def action_quit(self):
-        if self.__oConfig.getSaveOnExit():
-            self.saveWindowPos()
+    def run(self):
+        gtk.main()
+
+    def action_quit(self, oWidget):
+        if self._oConfig.getSaveOnExit():
+            self.save_panes()
         gtk.main_quit()
 
-    def add_pane(self,oWidget):
+    def save_panes(self):
+        pass
+
+    def add_pane(self, oWidget):
         oWidget.show()
         if self._iNumOpenPanes < 1:
             # We have a blank space to fill, so just plonk in the widget
@@ -60,13 +67,13 @@ class MultiPaneWindow(gtk.Window):
         width, height = self.get_size()
         self.oFocussed = None
 
-    def delPane(self,widget):
+    def remove_pane(self, oWidget):
         if self.oFocussed is not None:
             if self._iNumOpenPanes == 1:
                 # Removing last widget, so just clear the vbox
                 oWidget = self.oVBox.get_children()[0]
                 self.oVBox.remove(oWidget)
-            else if self._iNumOpenPanes == 2:
+            elif self._iNumOpenPanes == 2:
                 # Removing from the only pane, so keep the unfocussed pane
                 oPane = self._aPanes[0] # Only pane
                 self._aPanes.remove(oPane)
@@ -99,11 +106,3 @@ class MultiPaneWindow(gtk.Window):
             if self._iNumOpenPanes == 0:
                 self.delMenuItem.set_sensitive(False)
             self.oFocussed = None
-
-def main():
-    gtk.main()
-    return 0
-
-if __name__ == "__main__":
-    MultiPane()
-    main()

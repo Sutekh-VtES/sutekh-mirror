@@ -1,4 +1,5 @@
-# MainController.py
+# AbstractCardListController.py
+# Controller for the Abstract Card List
 # Copyright 2005,2006 Simon Cross <hodgestar@gmail.com>
 # Copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
@@ -7,10 +8,7 @@ import gtk
 from sqlobject import SQLObjectNotFound
 from sutekh.gui.PhysicalCardController import PhysicalCardController
 from sutekh.gui.MainWindow import MainWindow
-from sutekh.gui.CardTextWindow import CardTextWindow
 from sutekh.gui.PhysicalCardWindow import PhysicalCardWindow
-from sutekh.gui.MainMenu import MainMenu
-from sutekh.gui.CardTextView import CardTextView
 from sutekh.gui.AbstractCardView import AbstractCardView
 from sutekh.gui.PluginManager import PluginManager
 from sutekh.gui.AboutDialog import SutekhAboutDialog
@@ -58,9 +56,6 @@ class MainController(object):
             tPos = self.__oConfig.getWinPos(oWin.get_title())
             if tPos is not None:
                 oWin.move(tPos[0],tPos[1])
-
-    def run(self):
-        gtk.main()
 
     def saveWindowPos(self):
         # Save window Positions

@@ -93,12 +93,11 @@ class ConfigFile(object):
         else:
             self.__oConfig.set(self.__sPrefsSection,'save on exit','no')
 
-    def addPane(self,sType,sName,iPaneNumber):
+    def addPane(self,iPaneNumber,sType,sName):
         aOptions = self.__oConfig.options(self.__sPanesSection)
         sKey = 'pane ' + str(iPaneNumber)
         sValue = sType + ':' + sName
-        self.__oConfig.set(self.__sPaneSection,sKey,sValue)
-        self.__oConfig.set(self.__sWinNameSection,sKey,sWindowTitle)
+        self.__oConfig.set(self.__sPanesSection,sKey,sValue)
 
     def addFilter(self,sFilter):
         aOptions = self.__oConfig.options(self.__sFiltersSection)

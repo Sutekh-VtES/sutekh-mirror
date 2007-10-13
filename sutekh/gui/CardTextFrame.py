@@ -1,7 +1,7 @@
-# CardTextWindow.py
-# The Card Text Window
+# CardTextFrame.py
+# The Card Text Frame
 # Copyright 2005,2006,2007 Simon Cross <hodgestar@gmail.com>
-# Copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
+# Copyright 2006,2007 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
 import gtk
