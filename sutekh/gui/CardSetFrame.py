@@ -7,23 +7,18 @@
 import gtk
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 
-class CardSetWindow(gtk.Window,object):
-    def __init__(self,oCardSetManager,sName,sType):
-        super(CardSetWindow,self).__init__()
-        self.__oC = oCardSetManager
+class CardSetFrame(gtk.Frame, object):
+    def __init__(self, oMainWindow, sName, sType):
+        super(CardSetFrame, self).__init__()
+        self.__oMainWindow = oMainWindow
         self.sSetName = sName
         self.sSetType = sType
 
         self.connect('destroy', self.closeCardSet)
 
-        self.set_title("Sutekh:" + sType + " Card Set : " + sName)
-        self.set_default_size(400, 400)
-
-    def getManager(self):
-        return self.__oC
+        self.set_label(sType + " Card Set : " + sName)
 
     def updateName(self,sNewName):
-        self.__oC.updateName(self.sSetType,self.sSetName,sNewName)
         self.sSetName = sNewName
         self.set_title("Sutekh:" + self.sSetType + " Card Set : " + self.sSetName)
 

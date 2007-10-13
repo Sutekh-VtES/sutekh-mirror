@@ -7,17 +7,13 @@
 import gtk
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 
-class CardTextWindow(gtk.Window,object):
-    def __init__(self,oController):
-        super(CardTextWindow,self).__init__()
-        self.__oC = oController
+class CardTextFrame(gtk.Frame, object):
+    def __init__(self, oMainWindow):
+        super(CardTextFrame,self).__init__()
+        self.__oMainWindow = oMainWindow
+        self.set_label('Card Text')
 
-        self.connect('destroy', lambda wWin: self.__oC.actionQuit())
-
-        self.set_title("Sutekh: Card Text")
-        self.set_default_size(300, 600)
-
-    def addParts(self,oCardText):
+    def addParts(self, oCardText):
         wMbox = gtk.VBox(False, 2)
 
         wMbox.pack_start(AutoScrolledWindow(oCardText), True, True)

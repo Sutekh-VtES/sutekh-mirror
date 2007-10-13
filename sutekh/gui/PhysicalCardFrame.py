@@ -7,17 +7,13 @@
 import gtk
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 
-class PhysicalCardWindow(gtk.Window,object):
-    def __init__(self,oController):
-        super(PhysicalCardWindow,self).__init__()
-        self.__oC = oController
+class PhysicalCardFrame(gtk.Frame, object):
+    def __init__(self, oMainWindow):
+        super(PhysicalCardFrame, self).__init__()
+        self.__oMainWindow = oMainWindow
+        self.set_label('Physical Card List')
 
-        self.connect('destroy', lambda wWin: self.__oC.actionQuit())
-
-        self.set_title("Sutekh: Card Collection")
-        self.set_default_size(400, 400)
-
-    def addParts(self,oPhysController):
+    def addParts(self, oPhysController):
         wMbox = gtk.VBox(False, 2)
 
         wMbox.pack_start(oPhysController.getMenu(),False,False)

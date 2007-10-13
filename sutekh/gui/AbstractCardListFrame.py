@@ -7,17 +7,14 @@
 import gtk
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 
-class MainWindow(gtk.Frame,object):
-    def __init__(self,oController):
-        super(MainWindow,self).__init__()
-        self.__oC = oController
+class AbstractCardListFrame(gtk.Frame, object):
+    def __init__(self, oMainWindow):
+        super(AbstractCardListFrame,self).__init__()
+        self.__oMainWindow = oMainWindow
 
-        self.connect('destroy', lambda wWin: self.__oC.actionQuit())
+        self.set_label("Whitewolf CardList")
 
-        self.set_title("Sutekh: Whitewolf CardList")
-        self.set_default_size(300, 600)
-
-    def addParts(self,oMenu,oAbstractCards):
+    def addParts(self, oMenu, oAbstractCards):
         wMbox = gtk.VBox(False, 2)
 
         wMbox.pack_start(oMenu, False, False)
@@ -36,6 +33,3 @@ class MainWindow(gtk.Frame,object):
 
         self.add(wMbox)
         self.show_all()
-
-    def getManager(self):
-        return self.__oC.getManager()

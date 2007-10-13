@@ -77,7 +77,7 @@ class ConfigFile(object):
 
     def getAllPanes(self):
         aRes = []
-        for sKey,sValue in self.__oConfig.items(self.__sPanesSecion):
+        for sKey,sValue in self.__oConfig.items(self.__sPanesSection):
             iPaneNumber = int(sKey.split(' ')[1])
             # Type is before 1st colon in the name
             sType,sName = sValue.split(':',1)

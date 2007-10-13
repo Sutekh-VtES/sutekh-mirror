@@ -6,6 +6,10 @@
 import pygtk
 pygtk.require('2.0')
 import gtk, gobject
+from sutekh.gui.AbstractCardListFrame import AbstractCardListFrame
+from sutekh.gui.PhysicalCardFrame import PhysicalCardFrame
+from sutekh.gui.CardTextFrame import CardTextFrame
+from sutekh.gui.CardSetFrame import CardSetFrame
 
 class MultiPaneWindow(gtk.Window):
     """Window that has a configurable number of panes."""
@@ -22,8 +26,38 @@ class MultiPaneWindow(gtk.Window):
         self._aPanes = []
         self.iPaneNum = 0
         self.oVBox.show()
+        self.add(self.oVBox)
         self.show()
         self._iNumOpenPanes = 0
+        for iNumber, sType, sName in self._oConfig.getAllPanes():
+            if sType == 'Physical Card Set':
+                self.add_physical_card_set(sName)
+            elif sType == 'Abstract Card Set':
+                self.add_abstract_card_set(sName)
+            elif sType == 'Abstract Cards':
+                self.add_abstract_card_list()
+            elif sType == 'Card Text':
+                self.add_card_text()
+            elif sType == 'Physical Cards':
+                self.add_physical_card_list()
+
+    def add_physical_card_set(self,sName):
+        pass
+
+    def add_abstract_card_set(self,sName):
+        pass
+
+    def add_abstract_card_list(self):
+        oWidget = AbstractCardListFrame(self)
+        self.add_pane(oWidget)
+
+    def add_physical_card_list(self):
+        oWidget = PhysicalCardFrame(self)
+        self.add_pane(oWidget)
+
+    def add_card_text(self):
+        oWidget = CardTextFrame(self)
+        self.add_pane(oWidget)
 
     def win_focus(self, oWidget, oEvent, oFrame):
         self.oFocussed = oFrame
@@ -41,6 +75,7 @@ class MultiPaneWindow(gtk.Window):
 
     def add_pane(self, oWidget):
         oWidget.show()
+        oWidget.connect('focus-in-event', self.win_focus, oWidget)
         if self._iNumOpenPanes < 1:
             # We have a blank space to fill, so just plonk in the widget
             self.oVBox.pack_start(oWidget)
@@ -63,7 +98,7 @@ class MultiPaneWindow(gtk.Window):
             self._aPanes.append(oNewPane)
         self._iNumOpenPanes += 1
         self.oVBox.show()
-        self.delMenuItem.set_sensitive(True)
+        #self.delMenuItem.set_sensitive(True)
         width, height = self.get_size()
         self.oFocussed = None
 
@@ -103,6 +138,6 @@ class MultiPaneWindow(gtk.Window):
                 self._aPanes.remove(oFocussedPane)
             self.oVBox.show()
             self._iNumOpenPanes -= 1
-            if self._iNumOpenPanes == 0:
-                self.delMenuItem.set_sensitive(False)
+            #if self._iNumOpenPanes == 0:
+            #    self.delMenuItem.set_sensitive(False)
             self.oFocussed = None
