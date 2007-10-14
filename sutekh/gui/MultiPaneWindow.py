@@ -16,6 +16,8 @@ from sutekh.gui.CardSetFrame import CardSetFrame
 from sutekh.gui.AboutDialog import SutekhAboutDialog
 from sutekh.gui.MainMenu import MainMenu
 from sutekh.gui.GuiCardLookup import GuiLookup
+from sutekh.gui.CardSetManagementFrame import PhysicalCardSetListFrame, \
+        AbstractCardSetListFrame
 
 class MultiPaneWindow(gtk.Window):
     """Window that has a configurable number of panes."""
@@ -28,15 +30,16 @@ class MultiPaneWindow(gtk.Window):
         self.set_title("Sutekh")
         self.connect("destroy", self.action_quit)
         self.set_border_width(5)
-        self.set_default_size(450, 400)
+        self.set_default_size(700, 500)
         self.set_size_request(-1,-1)
-        self.oVBox = gtk.VBox()
+        self.oVBox = gtk.VBox(False, 1)
         self._aPanes = []
+        self._aFrames = []
         self.__oMenu = MainMenu(self, oConfig)
         self.iPaneNum = 0
         self.oVBox.show()
         self.add(self.oVBox)
-        self.oVBox.pack_start(self.__oMenu)
+        self.oVBox.pack_start(self.__oMenu, False, False)
         self.show_all()
         self._iNumOpenPanes = 0
         # CardText frame is special, and there is only ever one of it
@@ -64,13 +67,21 @@ class MultiPaneWindow(gtk.Window):
     def add_abstract_card_set(self,sName):
         pass
 
+    def add_pcs_list(self, oWidget):
+        oPane = PhysicalCardSetListFrame(self)
+        self.add_pane(oPane)
+
+    def add_acs_list(self, oWidget):
+        oPane = AbstractCardSetListFrame(self)
+        self.add_pane(oPane)
+
     def add_abstract_card_list(self, oWidget):
-        oWidget = AbstractCardListFrame(self, self._oConfig)
-        self.add_pane(oWidget)
+        oPane = AbstractCardListFrame(self, self._oConfig)
+        self.add_pane(oPane)
 
     def add_physical_card_list(self, oWidget):
-        oWidget = PhysicalCardFrame(self, self._oConfig)
-        self.add_pane(oWidget)
+        oPane = PhysicalCardFrame(self, self._oConfig)
+        self.add_pane(oPane)
 
     def add_card_text(self, oWidget):
         if not self._bCardTextShown:
@@ -102,6 +113,7 @@ class MultiPaneWindow(gtk.Window):
     def add_pane(self, oWidget):
         oWidget.show_all()
         oWidget.view.connect('focus-in-event', self.win_focus, oWidget)
+        self._aFrames.append(oWidget)
         if self._iNumOpenPanes < 1:
             # We have a blank space to fill, so just plonk in the widget
             self.oVBox.pack_start(oWidget)
@@ -174,6 +186,7 @@ class MultiPaneWindow(gtk.Window):
             if self._oFocussed == self._oCardTextPane:
                 self._bCardTextShown = False
                 self.__oMenu.add_card_text_set_sensitive(True)
+            self._aFrames.remove(self._oFocussed)
             self._oFocussed = None
 
     def show_about_dialog(self, oWidget):

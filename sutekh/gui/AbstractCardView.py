@@ -7,8 +7,8 @@ import gtk, pango
 from sutekh.gui.CardListView import CardListView
 
 class AbstractCardView(CardListView):
-    def __init__(self, oController, oFrame, oConfig):
-        super(AbstractCardView,self).__init__(oController, oFrame, oConfig)
+    def __init__(self, oController, oMainWindow, oConfig):
+        super(AbstractCardView,self).__init__(oController, oMainWindow, oConfig)
 
         oCell = gtk.CellRendererText()
         oCell.set_property('style', pango.STYLE_ITALIC)

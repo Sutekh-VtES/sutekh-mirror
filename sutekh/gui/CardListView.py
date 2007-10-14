@@ -7,13 +7,12 @@ import gtk, pango
 from sutekh.gui.CardListModel import CardListModel
 from sutekh.gui.FilterDialog import FilterDialog
 from sutekh.gui.PopupMenu import PopupMenu
-from sutekh.gui.CellRendererSutekhButton import CellRendererSutekhButton
 
-class CardListView(gtk.TreeView,object):
-    def __init__(self, oController, oWindow, oConfig):
+class CardListView(gtk.TreeView, object):
+    def __init__(self, oController, oMainWindow, oConfig):
         self._oModel = CardListModel()
         self._oC = oController
-        self._oWin = oWindow
+        self._oMainWin = oMainWindow
         self._oConfig = oConfig
 
         super(CardListView,self).__init__(self._oModel)
@@ -62,7 +61,7 @@ class CardListView(gtk.TreeView,object):
 
     # Introspection
 
-    def getWindow(self): return self._oWin
+    def getWindow(self): return self._oMainWin
     def getModel(self): return self._oModel
     def getController(self): return self._oC
 
@@ -141,7 +140,7 @@ class CardListView(gtk.TreeView,object):
 
     def getFilter(self,oMenu):
         if self._oFilterDialog is None:
-            self._oFilterDialog = FilterDialog(self._oWin,self._oConfig)
+            self._oFilterDialog = FilterDialog(self._oMainWin,self._oConfig)
 
         self._oFilterDialog.run()
 
@@ -189,10 +188,6 @@ class EditableCardListView(CardListView):
         oCell1.set_property('style', pango.STYLE_ITALIC)
         oCell2 = gtk.CellRendererText()
         oCell2.set_property('style', pango.STYLE_ITALIC)
-        oCell3 = CellRendererSutekhButton()
-        oCell3.load_icon(gtk.STOCK_GO_UP,self)
-        oCell4 = CellRendererSutekhButton()
-        oCell4.load_icon(gtk.STOCK_GO_DOWN,self)
 
         oColumn1 = gtk.TreeViewColumn("#",oCell1,text=1)
         oColumn1.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
@@ -205,24 +200,9 @@ class EditableCardListView(CardListView):
         oColumn2.set_sort_column_id(0)
         self.append_column(oColumn2)
 
-        oColumn3 = gtk.TreeViewColumn("",oCell3)
-        oColumn3.set_fixed_width(20)
-        oColumn3.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
-        self.append_column(oColumn3)
-
-        oColumn4 = gtk.TreeViewColumn("",oCell4)
-        oColumn4.set_fixed_width(20)
-        oColumn4.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
-        self.append_column(oColumn4)
-
         self.set_expander_column(oColumn2)
         if hasattr(self,'set_grid_lines'):
             self.set_grid_lines(gtk.TREE_VIEW_GRID_LINES_BOTH)
-
-        # Button Clicks
-        oCell3.connect('clicked',self.incCard)
-        oCell4.connect('clicked',self.decCard)
-        self.connect('button_press_event',self.pressButton)
 
     # Card Inc and Dec
 
@@ -243,19 +223,3 @@ class EditableCardListView(CardListView):
         if bSucc:
             self._oModel.incCardByName(sCardName)
 
-    # Popup Menu
-
-    def pressButton(self, treeview, event):
-        if event.button == 3:
-            x = int(event.x)
-            y = int(event.y)
-            time = event.time
-            pthinfo = treeview.get_path_at_pos(x, y)
-            if pthinfo != None:
-                path, col, cellx, celly = pthinfo
-                treeview.grab_focus()
-                treeview.set_cursor( path, col, False)
-                popupMenu = PopupMenu(self,path)
-                popupMenu.popup( None, None, None, event.button, time)
-                return True # Don't propogate to buttons
-        return False

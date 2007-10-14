@@ -10,8 +10,8 @@ from sutekh.core.SutekhObjects import PhysicalCard, PhysicalCardSet, AbstractCar
         MapAbstractCardToAbstractCardSet
 
 class CardSetView(EditableCardListView):
-    def __init__(self,oWindow,oController,sName,sSetType,oConfig):
-        super(CardSetView,self).__init__(oController,oWindow,oConfig)
+    def __init__(self, oMainWindow, oController, sName, sSetType, oConfig):
+        super(CardSetView,self).__init__(oController, oMainWindow, oConfig)
         self.sSetName = sName
         self.sSetType = sSetType
         if sSetType == "PhysicalCardSet":

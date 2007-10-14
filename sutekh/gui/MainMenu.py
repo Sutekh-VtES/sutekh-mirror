@@ -86,17 +86,31 @@ class MainMenu(gtk.MenuBar, object):
         self.__dMenus["Pane"] = wMenu
         iMenu.set_submenu(wMenu)
 
-        iAddACLPane = gtk.MenuItem("Add Abstract Card List Pane")
-        iAddPCLPane = gtk.MenuItem("Add Physical Card List Pane")
-        self.iAddCardText = gtk.MenuItem("Add Card Text Pane")
-        self.iDelPane = gtk.MenuItem("Remove currently focussed pane")
 
+        iAddACLPane = gtk.MenuItem("Add Whitewolf Card List")
         wMenu.add(iAddACLPane)
         iAddACLPane.connect("activate", self.__oWin.add_abstract_card_list)
+
+        iAddPCLPane = gtk.MenuItem("Add Physical Card Collection List")
         wMenu.add(iAddPCLPane)
         iAddPCLPane.connect("activate", self.__oWin.add_physical_card_list)
+
+        self.iAddCardText = gtk.MenuItem("Add Card Text Pane")
         wMenu.add(self.iAddCardText)
         self.iAddCardText.connect("activate", self.__oWin.add_card_text)
+
+        iAddACSListPane = gtk.MenuItem("Add Abstract Card Set List")
+        wMenu.add(iAddACSListPane)
+        iAddACSListPane.connect("activate", self.__oWin.add_acs_list)
+
+        iAddPCSListPane = gtk.MenuItem("Add Physical Card Set List")
+        wMenu.add(iAddPCSListPane)
+        iAddPCSListPane.connect("activate", self.__oWin.add_pcs_list)
+
+        iSeperator = gtk.SeparatorMenuItem()
+        wMenu.add(iSeperator)
+
+        self.iDelPane = gtk.MenuItem("Remove currently focussed pane")
         wMenu.add(self.iDelPane)
         self.iDelPane.connect("activate", self.__oWin.remove_pane)
 

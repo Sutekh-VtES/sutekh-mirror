@@ -21,13 +21,14 @@ class AbstractCardListController(object):
         # Create Views
         # Need a group as we'll be adding and removing Card Set View windows,
         # and they should all be blocked by the appropriate dialogs
-        self.__oAbstractCards = AbstractCardView(self, self.__oFrame, self.__oConfig)
+        self.__oAbstractCards = AbstractCardView(self, self.__oMainWindow, self.__oConfig)
         #self.__aPlugins = []
         #for cPlugin in self.__oPluginManager.getCardListPlugins():
         #    self.__aPlugins.append(cPlugin(self.__oAbstractCards,self.__oAbstractCards.getModel(),'AbstractCard'))
         self.__oFrame.addParts(self.__oAbstractCards)
 
     view = property(fget=lambda self: self.__oAbstractCards, doc="Associated View")
+    frame = property(fget=lambda self: self.__oFrame, doc="Associated Frame")
 
     def getPlugins(self):
         return self.__aPlugins

@@ -12,11 +12,13 @@ class CardTextFrame(gtk.Frame, object):
     def __init__(self, oMainWindow):
         super(CardTextFrame,self).__init__()
         self.__oMainWindow = oMainWindow
-        self.set_label('Card Text')
+        self.set_label("Card Text")
+        self.__sName = "Card Text"
         self.__oTextView = CardTextView(oMainWindow)
         self.addParts(self.__oTextView)
 
     view = property(fget=lambda self: self.__oTextView, doc="Associated View Object")
+    name = property(fget=lambda self: self.__sName, doc="Frame Name")
 
     def addParts(self, oCardText):
         wMbox = gtk.VBox(False, 2)

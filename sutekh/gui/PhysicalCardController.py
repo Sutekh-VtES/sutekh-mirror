@@ -11,9 +11,9 @@ from sutekh.core.SutekhObjects import PhysicalCard, AbstractCard, PhysicalCardSe
 
 class PhysicalCardController(object):
     def __init__(self, oFrame, oConfig, oMainWindow):
-        self.__oView = PhysicalCardView(self, oMainWindow, oConfig)
         self.__oMainWin = oMainWindow
         self.__oFrame = oFrame
+        self.__oView = PhysicalCardView(self, oMainWindow, oConfig)
 
         # setup plugins before the menu (which needs a list of plugins)
         #self.__aPlugins = []
@@ -23,6 +23,7 @@ class PhysicalCardController(object):
         #self.__oMenu = PhysicalCardMenu(self,self.__oWin)
 
     view = property(fget=lambda self: self.__oView, doc="Associated View")
+    frame = property(fget=lambda self: self.__oFrame, doc="Associated Frame")
 
     def getView(self):
         return self.__oView

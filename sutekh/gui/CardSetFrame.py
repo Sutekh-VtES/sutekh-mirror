@@ -13,10 +13,15 @@ class CardSetFrame(gtk.Frame, object):
         self.__oMainWindow = oMainWindow
         self.sSetName = sName
         self.sSetType = sType
+        self.__oView = None
 
         self.connect('destroy', self.closeCardSet)
 
         self.set_label(sType + " Card Set : " + sName)
+        self.__sName = sType + " Card Set : " + sName
+
+    view = property(fget=lambda self: self.__oView, doc="Associated View Object")
+    name = property(fget=lambda self: self.__sName, doc="Frame Name")
 
     def updateName(self,sNewName):
         self.sSetName = sNewName

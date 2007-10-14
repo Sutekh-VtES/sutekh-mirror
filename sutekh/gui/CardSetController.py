@@ -10,16 +10,19 @@ from sutekh.core.SutekhObjects import AbstractCardSet, PhysicalCardSet,\
         AbstractCard, PhysicalCard
 
 class CardSetController(object):
-    def __init__(self,oWindow,oMasterController,sName,sType,oConfig):
-        self.__oView = CardSetView(oWindow,self,sName,sType,oConfig)
-        self.__oWin= oWindow
+    def __init__(self, oController, sName, sType, oConfig, oMainWindow):
+        self.__oView = CardSetView(oMainWindow, oController, self,sName, sType, oConfig)
+        self.__oWin= oMainWindow
         self.__oC = oMasterController
         self._oMenu = None
 
         # setup plugins before the menu (which needs a list of plugins)
-        self.__aPlugins = []
-        for cPlugin in oMasterController.getPluginManager().getCardListPlugins():
-            self.__aPlugins.append(cPlugin(self.__oView,self.__oView.getModel(),sType))
+        #self.__aPlugins = []
+        #for cPlugin in oMasterController.getPluginManager().getCardListPlugins():
+        #    self.__aPlugins.append(cPlugin(self.__oView,self.__oView.getModel(),sType))
+
+    view = property(fget=lambda self: self.__oView, doc="Associated View")
+    frame = property(fget=lambda self: self.__oFrame, doc="Associated Frame")
 
     def getView(self):
         return self.__oView
