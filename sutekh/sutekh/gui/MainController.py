@@ -95,6 +95,9 @@ class MainController(object):
         self.__oCSWin.reloadAll()
         self.__oCSWin.reloadCardSetLists()
 
+    def reloadPhysical(self):
+        self.__oPhysicalCards.getView().load()
+
     def getFilter(self,widget):
         self.__oAbstractCards.getFilter(self.__oMenu)
 

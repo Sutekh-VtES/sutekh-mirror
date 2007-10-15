@@ -33,6 +33,9 @@ class CardSetController(object):
     def getMenu(self):
         return self._oMenu
 
+    def getController(self):
+        return self.__oC
+
     def getPlugins(self):
         return self.__aPlugins
 
