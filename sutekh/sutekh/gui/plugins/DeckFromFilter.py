@@ -48,11 +48,11 @@ class DeckFromFilter(CardListPlugin):
         return self.oDlg
 
     def handleResponse(self,oWidget,oResponse):
-       if oResponse ==  gtk.RESPONSE_OK:
-          sPCSName = self.oPCSNameEntry.get_text().strip()
-          self.makeDeckFromFilter(sPCSName)
+        if oResponse ==  gtk.RESPONSE_OK:
+            sPCSName = self.oPCSNameEntry.get_text().strip()
+            self.makeDeckFromFilter(sPCSName)
 
-       self.oDlg.destroy()
+        self.oDlg.destroy()
 
     def makeDeckFromFilter(self,sPCSName):
         parent = self.view.getWindow()
