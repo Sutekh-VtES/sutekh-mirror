@@ -1,3 +1,7 @@
+16 Oct 2007
+ * Fix plugins which relied on ACSes .getCardIterator(...) returning a list
+   of AbstractCards.
+
 13 Oct 2007
  * Tweak support for joins for AbstractCardSet
 
