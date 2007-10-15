@@ -709,6 +709,11 @@ class PhysicalCardToAbstractCardAdapter(object):
     def __new__(cls,oPhysCard):
         return oPhysCard.abstractCard
 
+class MapAbstractCardToAbstractCardSetToAbstractCardAdapter(object):
+    advise(instancesProvide=[IAbstractCard],asAdapterForTypes=[MapAbstractCardToAbstractCardSet])
+
+    def __new__(cls,oAbstractMapEntry):
+        return oAbstractMapEntry.abstractCard
 
 def FlushCache():
     # Flush all the object caches - needed before importing new card lists
