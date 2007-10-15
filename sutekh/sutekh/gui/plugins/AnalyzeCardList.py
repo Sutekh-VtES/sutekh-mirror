@@ -5,7 +5,7 @@
 # GPL - see COPYING for details
 
 import gtk
-from sutekh.core.SutekhObjects import PhysicalCardSet, AbstractCardSet, AbstractCard
+from sutekh.core.SutekhObjects import PhysicalCardSet, AbstractCardSet, IAbstractCard
 from sutekh.core.Filters import CardTypeFilter
 from sutekh.gui.PluginManager import CardListPlugin
 
@@ -39,12 +39,7 @@ class AnalyzeCardList(CardListPlugin):
         return '(' + str(fPrec*100).ljust(5)[:5] + "% of " + sDesc + ')'
 
     def _getAbstractCards(self,aCards):
-        if len(aCards) == 0:
-            return []
-        if type(aCards[0]) is AbstractCard:
-            return aCards
-        else:
-            return [x.abstractCard for x in aCards]
+        return [IAbstractCard(x) for x in aCards]
 
     def _getSortKey(self,x):
         return x[1][0]

@@ -3,7 +3,8 @@
 # GPL - see COPYING for details
 
 import gtk
-from sutekh.core.SutekhObjects import PhysicalCardSet, AbstractCardSet, PhysicalCard
+from sutekh.core.SutekhObjects import PhysicalCardSet, AbstractCardSet, PhysicalCard, \
+                                      IAbstractCard
 from sutekh.gui.CreateCardSetDialog import CreateCardSetDialog
 from sutekh.gui.PluginManager import CardListPlugin
 
@@ -64,18 +65,23 @@ class PhysicalCardSetFromAbstract(CardListPlugin):
         # Add cards to physical card collection if requested
         if oImport.get_active():
             for oCard in self.model.getCardIterator(None):
-                PhysicalCard(abstractCard=oCard,expansion=None)
+                oAC = IAbstractCard(oCard)
+                PhysicalCard(abstractCard=oAC,expansion=None)
+            # FIXME: Nasty (we need a means of getting at some sort of central
+            #               controller for the GUI)
+            self.view.getController().getController().reloadPhysical()
 
         # Populate the new physical card set
         aMissingCards = []
         for oCard in self.model.getCardIterator(None):
-            oPhysCards = PhysicalCard.selectBy(abstractCardID=oCard.id)
+            oACard = IAbstractCard(oCard)
+            oPhysCards = PhysicalCard.selectBy(abstractCardID=oACard.id)
             for oPC in oPhysCards:
                 if oPC not in nP.cards:
                     nP.addPhysicalCard(oPC.id)
                     break
             else:
-                aMissingCards.append(oCard)
+                aMissingCards.append(oACard)
 
         parent.getManager().reloadCardSetLists()
 
