@@ -21,6 +21,9 @@ class PhysicalCardFrame(gtk.Frame, object):
     view = property(fget=lambda self: self.__oC.view, doc="Associated View Object")
     name = property(fget=lambda self: self.__sName, doc="Frame Name")
 
+    def cleanup(self):
+        pass
+
     def addParts(self, oPhysController):
         wMbox = gtk.VBox(False, 2)
 

@@ -4,6 +4,7 @@
 # GPL - see COPYING for details
 
 import gtk, gobject
+from sutekh.gui.SQLObjectEvents import IncCardSignal, DecCardSignal
 from sutekh.core.Filters import FilterAndBox, SpecificCardFilter, NullFilter
 from sutekh.core.Groupings import CardTypeGrouping
 from sutekh.core.SutekhObjects import AbstractCard, IAbstractCard
@@ -44,6 +45,7 @@ class CardListModel(gtk.TreeStore):
         self._dName2Iter = {}
 
         self.cardclass = AbstractCard # card class to use
+        self.listenclass = AbstractCard # card class to listen for events on
         self.groupby = CardTypeGrouping # grouping class to use
         self.basefilter = None # base filter defines the card list
         self.applyfilter = False # whether to apply the select filter
@@ -53,6 +55,7 @@ class CardListModel(gtk.TreeStore):
 
     store = property(fget=lambda self: self._oGtkStore)
     cardclass = property(fget=lambda self: self._cCardClass, fset=lambda self,x: setattr(self,'_cCardClass',x))
+    listenclass = property(fget=lambda self: self._cListenClass, fset=lambda self,x: setattr(self,'_cListenClass',x))
     groupby = property(fget=lambda self: self._cGroupBy, fset=lambda self,x: setattr(self,'_cGroupBy',x))
     basefilter = property(fget=lambda self: self._oBaseFilter, fset=lambda self,x: setattr(self,'_oBaseFilter',x))
     applyfilter = property(fget=lambda self: self._bApplyFilter, fset=lambda self,x: setattr(self,'_bApplyFilter',x))
@@ -107,6 +110,10 @@ class CardListModel(gtk.TreeStore):
         # Notify Listeners
         for oListener in self.listeners:
             oListener.load()
+
+    def listenIncCard(self, sCardName, iChg):
+        """listen for a IncCard Signal on listenclass"""
+
 
     def getCardIterator(self,oFilter):
         """

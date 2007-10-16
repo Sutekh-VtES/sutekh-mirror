@@ -4,8 +4,11 @@
 # GPL - see COPYING for details
 
 import gtk
+from sqlobject.events import listen
 from sutekh.core.SutekhObjects import AbstractCardSet, PhysicalCardSet
 from sutekh.gui.ScrolledList import ScrolledList
+from sutekh.gui.SQLObjectEvents import RowDestroySignal, RowUpdateSignal, \
+        RowCreatedSignal, CardSetOpenedSignal, CardSetClosedSignal
 
 class CardSetManagementFrame(gtk.Frame, object):
     def __init__(self, oMainWindow):
@@ -21,6 +24,9 @@ class CardSetManagementFrame(gtk.Frame, object):
     open_card_sets = property(fget=lambda self: self._dOpenCardSets,
             doc="Dictionary of currently open card sets")
 
+    def cleanup(self):
+        pass
+
     def add_parts(self):
         """Add a list object to the frame"""
         self._oScrolledList = ScrolledList(self._sName,'')
@@ -30,6 +36,35 @@ class CardSetManagementFrame(gtk.Frame, object):
         self.add(self._oScrolledList)
         self.reload_card_set_list()
         self.show_all()
+        listen(self.listenOpened, self._oSetClass, CardSetOpenedSignal)
+        listen(self.listenClosed, self._oSetClass, CardSetClosedSignal)
+        listen(self.listenChanged, self._oSetClass, RowUpdateSignal)
+        listen(self.listenDestroy, self._oSetClass, RowDestroySignal)
+        listen(self.listenCreated, self._oSetClass, RowCreatedSignal)
+
+    def listenOpened(self, sSetName):
+        if sSetName not in self._dOpenCardSets:
+            self._dOpenCardSets[sSetName] = 1
+        else:
+            self._dOpenCardSets[sSetName] += 1
+        self.reload_card_set_list()
+
+    def listenClosed(self, sSetName):
+        self._dOpenCardSets[sSetName] -= 1
+        if self._dOpenCardSets[sSetName] == 0:
+            self._dOpenCardSets.pop(sSetName)
+        self.reload_card_set_list()
+
+    def listenChanged(self, args, **kw):
+        print "Changed signal", args
+        print "kw", kw
+
+    def listenDestroy(self, kw):
+        print "Destroy", kw
+
+    def listenCreated(self, args, **kw):
+        print "Created",args
+        print "kw", kw
 
     def reload_card_set_list(self):
         oThisList = self._oScrolledList.get_list()
@@ -42,7 +77,7 @@ class CardSetManagementFrame(gtk.Frame, object):
             if oCS.name not in self._dOpenCardSets.keys():
                 iter = oThisList.append(None)
             else:
-                iter = oThisList.insert_before(self._oAbsAvailIter)
+                iter = oThisList.insert_before(self._oAvailIter)
             oThisList.set(iter,0,oCS.name)
 
     def row_clicked(self, oTreeView, oPath, oColumn):
@@ -58,6 +93,7 @@ class CardSetManagementFrame(gtk.Frame, object):
             self._oMainWin.add_physical_card_set(sName)
         elif self._sSetType == 'Abstract Card Set':
             self._oMainWin.add_abstract_card_set(sName)
+        self._oSetClass.sqlmeta.send(CardSetOpenedSignal, sName)
 
 class PhysicalCardSetListFrame(CardSetManagementFrame):
     def __init__(self, oMainWindow):

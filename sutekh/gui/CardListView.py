@@ -205,21 +205,25 @@ class EditableCardListView(CardListView):
             self.set_grid_lines(gtk.TREE_VIEW_GRID_LINES_BOTH)
 
     # Card Inc and Dec
+    # The call to the controller updates the correct database
+    # table - we rely on SQLObject's events to then call the
+    # events on the model. This gives automatic syncronisation
+    # between different views of the same model
 
     def incCard(self,oCell,oPath):
         sCardName = self._oModel.getCardNameFromPath(oPath)
         bSucc = self._oC.incCard(sCardName)
-        if bSucc:
-            self._oModel.incCard(oPath)
+        #if bSucc:
+        #    self._oModel.incCard(oPath)
 
     def decCard(self,oCell,oPath):
         sCardName = self._oModel.getCardNameFromPath(oPath)
         bSucc = self._oC.decCard(sCardName)
-        if bSucc:
-            self._oModel.decCard(oPath)
+        #if bSucc:
+        #    self._oModel.decCard(oPath)
 
     def addCard(self,sCardName):
         bSucc = self._oC.addCard(sCardName)
-        if bSucc:
-            self._oModel.incCardByName(sCardName)
+        #if bSucc:
+        #    self._oModel.incCardByName(sCardName)
 

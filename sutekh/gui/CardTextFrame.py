@@ -20,6 +20,9 @@ class CardTextFrame(gtk.Frame, object):
     view = property(fget=lambda self: self.__oTextView, doc="Associated View Object")
     name = property(fget=lambda self: self.__sName, doc="Frame Name")
 
+    def cleanup(self):
+        pass
+
     def addParts(self, oCardText):
         wMbox = gtk.VBox(False, 2)
 
