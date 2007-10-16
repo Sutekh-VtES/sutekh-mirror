@@ -19,6 +19,7 @@ class CardTextFrame(gtk.Frame, object):
 
     view = property(fget=lambda self: self.__oTextView, doc="Associated View Object")
     name = property(fget=lambda self: self.__sName, doc="Frame Name")
+    type = property(fget=lambda self: self.__sName, doc="Frame Type")
 
     def cleanup(self):
         pass

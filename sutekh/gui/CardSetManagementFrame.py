@@ -23,6 +23,7 @@ class CardSetManagementFrame(gtk.Frame, object):
     view = property(fget=lambda self: self._oView, doc="Associated View Object")
     open_card_sets = property(fget=lambda self: self._dOpenCardSets,
             doc="Dictionary of currently open card sets")
+    type = property(fget=lambda self: self._sName, doc="Frame Type")
 
     def cleanup(self):
         pass
@@ -43,16 +44,9 @@ class CardSetManagementFrame(gtk.Frame, object):
         listen(self.listenCreated, self._oSetClass, RowCreatedSignal)
 
     def listenOpened(self, sSetName):
-        if sSetName not in self._dOpenCardSets:
-            self._dOpenCardSets[sSetName] = 1
-        else:
-            self._dOpenCardSets[sSetName] += 1
         self.reload_card_set_list()
 
     def listenClosed(self, sSetName):
-        self._dOpenCardSets[sSetName] -= 1
-        if self._dOpenCardSets[sSetName] == 0:
-            self._dOpenCardSets.pop(sSetName)
         self.reload_card_set_list()
 
     def listenChanged(self, args, **kw):
@@ -93,7 +87,6 @@ class CardSetManagementFrame(gtk.Frame, object):
             self._oMainWin.add_physical_card_set(sName)
         elif self._sSetType == 'Abstract Card Set':
             self._oMainWin.add_abstract_card_set(sName)
-        self._oSetClass.sqlmeta.send(CardSetOpenedSignal, sName)
 
 class PhysicalCardSetListFrame(CardSetManagementFrame):
     def __init__(self, oMainWindow):
@@ -101,6 +94,7 @@ class PhysicalCardSetListFrame(CardSetManagementFrame):
         self._sSetType = 'Physical Card Set'
         self._sName = 'Physical Card Set List'
         self._oSetClass = PhysicalCardSet
+        self._dOpenCardSets = oMainWindow.dOpenPCS
         self.add_parts()
 
 class AbstractCardSetListFrame(CardSetManagementFrame):
@@ -109,6 +103,7 @@ class AbstractCardSetListFrame(CardSetManagementFrame):
         self._sSetType = 'Abstract Card Set'
         self._sName = 'Abstract Card Set List'
         self._oSetClass = AbstractCardSet
+        self._dOpenCardSets = oMainWindow.dOpenACS
         self.add_parts()
 
 

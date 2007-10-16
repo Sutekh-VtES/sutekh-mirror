@@ -15,6 +15,7 @@ class PhysicalCardFrame(gtk.Frame, object):
         self.__oConfig = oConfig
         self.set_label("Physical Card List")
         self.__sName = "Physical Card List"
+        self._sType = "Physical Cards"
         self.__oC = PhysicalCardController(self, oConfig, oMainWindow)
 
         self._aPlugins = []
@@ -26,6 +27,7 @@ class PhysicalCardFrame(gtk.Frame, object):
 
     view = property(fget=lambda self: self.__oC.view, doc="Associated View Object")
     name = property(fget=lambda self: self.__sName, doc="Frame Name")
+    type = property(fget=lambda self: self._sType, doc="Frame Type")
 
     def cleanup(self):
         pass

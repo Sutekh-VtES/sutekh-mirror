@@ -30,7 +30,7 @@ class MultiPaneWindow(gtk.Window):
         self.__oSutekhObjectCache = SutekhObjectCache()
         self.set_title("Sutekh")
         self.connect("destroy", self.action_quit)
-        self.set_border_width(5)
+        self.set_border_width(2)
         self.set_default_size(700, 500)
         self.set_size_request(-1,-1)
         self.oVBox = gtk.VBox(False, 1)
@@ -45,6 +45,9 @@ class MultiPaneWindow(gtk.Window):
         self._iNumOpenPanes = 0
         self._oPluginManager = PluginManager()
         self._oPluginManager.loadPlugins()
+        # Need to keep track of open card sets globally
+        self.dOpenACS = {}
+        self.dOpenPCS = {}
         # CardText frame is special, and there is only ever one of it
         self._bCardTextShown = False
         self._oCardTextPane = CardTextFrame(self)
@@ -59,6 +62,10 @@ class MultiPaneWindow(gtk.Window):
                 self.add_card_text(None)
             elif sType == 'Physical Cards':
                 self.add_physical_card_list(None)
+            elif sType == 'Abstract Card Set List':
+                self.add_acs_list(None)
+            elif sType == 'Physical Card Set List':
+                self.add_pcs_list(None)
         self.__oCardLookup = GuiLookup()
 
     # Needed for Backup plugin
@@ -108,7 +115,10 @@ class MultiPaneWindow(gtk.Window):
         gtk.main_quit()
 
     def save_panes(self):
-        pass
+        iNum = 1
+        for oWidget in self._aFrames:
+            self._oConfig.addPane(iNum, oWidget.type, oWidget.name)
+            iNum += 1
 
     def set_card_text(self, sCardName):
         try:
@@ -145,7 +155,7 @@ class MultiPaneWindow(gtk.Window):
         self._iNumOpenPanes += 1
         self.oVBox.show()
         self.__oMenu.del_pane_set_sensitive(True)
-        width, height = self.get_size()
+        #width, height = self.get_size()
         self._oFocussed = None
 
     def remove_pane(self, oWidget):

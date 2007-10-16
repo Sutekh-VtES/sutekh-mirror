@@ -17,7 +17,7 @@ class CardListView(gtk.TreeView, object):
 
         super(CardListView,self).__init__(self._oModel)
 
-        self.set_size_request(200, -1)
+        self.set_size_request(-1, -1)
 
         # Selecting rows
         self._oSelection = self.get_selection()
