@@ -14,11 +14,11 @@ class CardSetView(EditableCardListView):
         super(CardSetView,self).__init__(oController, oMainWindow, oConfig)
         self.sSetName = sName
         self.sSetType = sSetType
-        if sSetType == "PhysicalCardSet":
+        if sSetType == "Physical Card Set":
             # cardclass is the actual physicalcard
             self._oModel.cardclass = PhysicalCard
             self._oModel.basefilter = PhysicalCardSetFilter(self.sSetName)
-        elif sSetType == "AbstractCardSet":
+        elif sSetType == "Abstract Card Set":
             # Need MapAbstractCardToAbstractCardSet here, so filters do the right hing
             self._oModel.cardclass = MapAbstractCardToAbstractCardSet
             self._oModel.basefilter = AbstractCardSetFilter(self.sSetName)
@@ -50,7 +50,7 @@ class CardSetView(EditableCardListView):
                 self.addCard(name)
             context.finish(True, False, time)
         elif data and data.format == 8 and bits[0] == "Abst" \
-                and self.sSetType == "AbstractCardSet":
+                and self.sSetType == "Abstract Card Set":
             # Abstract Card Sets can accept cards from the Abstract Card List
             # Card is from the Abstract card view, so we only get one
             for name in lines[1:]:
@@ -74,7 +74,7 @@ class CardSetView(EditableCardListView):
 
     def deleteCardSet(self):
         # Check if CardSet is empty
-        if self.sSetType == "PhysicalCardSet":
+        if self.sSetType == "Physical Card Set":
             oCS = PhysicalCardSet.byName(self.sSetName)
         else:
             oCS = AbstractCardSet.byName(self.sSetName)
@@ -86,7 +86,7 @@ class CardSetView(EditableCardListView):
                 return False # not deleting
 
             # User agreed, so clear the CardSet
-            if self.sSetType == "PhysicalCardSet":
+            if self.sSetType == "Physical Card Set":
                 for oC in oCS.cards:
                     oCS.removePhysicalCard(oC)
             else:
@@ -94,7 +94,7 @@ class CardSetView(EditableCardListView):
                     oCS.removeAbstractCard(oC)
 
         # Card Set now empty
-        if self.sSetType == "PhysicalCardSet":
+        if self.sSetType == "Physical Card Set":
             cardSet = PhysicalCardSet.byName(self.sSetName)
             PhysicalCardSet.delete(cardSet.id)
         else:

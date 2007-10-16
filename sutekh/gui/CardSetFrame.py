@@ -6,44 +6,54 @@
 
 import gtk
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
+from sutekh.gui.CardSetController import PhysicalCardSetController, \
+        AbstractCardSetController
 
 class CardSetFrame(gtk.Frame, object):
-    def __init__(self, oMainWindow, sName, sType):
+    sPCSType = "Physical Card Set"
+    sACSType = "Abstract Card Set"
+
+    def __init__(self, oMainWindow, sName, sType, oConfig):
         super(CardSetFrame, self).__init__()
-        self.__oMainWindow = oMainWindow
-        self.sSetName = sName
+        self._oMainWindow = oMainWindow
         self.sSetType = sType
-        self.__oView = None
+        self._oConfig = oConfig
+        self._oView = None
+        if self.sSetType == self.sPCSType:
+            self._oC = PhysicalCardSetController(sName, oConfig,
+                    oMainWindow, self)
+        elif self.sSetType == self.sACSType:
+            self._oC = AbstractCardSetController(sName, oConfig,
+                    oMainWindow, self)
+        else:
+            raise RuntimeError("Unknown Card Set type %s" % sType)
 
-        self.connect('destroy', self.closeCardSet)
+        self.updateName(sName)
+        self.addParts(self._oC.view)
 
-        self.set_label(sType + " Card Set : " + sName)
-        self.__sName = sType + " Card Set : " + sName
+    view = property(fget=lambda self: self._oView, doc="Associated View Object")
+    name = property(fget=lambda self: self._sName, doc="Frame Name")
 
-    view = property(fget=lambda self: self.__oView, doc="Associated View Object")
-    name = property(fget=lambda self: self.__sName, doc="Frame Name")
-
-    def updateName(self,sNewName):
+    def updateName(self, sNewName):
         self.sSetName = sNewName
-        self.set_title("Sutekh:" + self.sSetType + " Card Set : " + self.sSetName)
+        self.set_label(self.sSetType + " Card Set : " + self.sSetName)
+        self._sName = self.sSetType + " Card Set : " + self.sSetName
 
-    def addParts(self,oCardSetView,oCardSetMenu):
+    def addParts(self, oCardSetView):
         wMbox = gtk.VBox(False, 2)
 
-        wMbox.pack_start(oCardSetMenu, False, False)
-
-        oToolbar = gtk.VBox(False,2)
-        bInsertToolbar = False
-        for oPlugin in oCardSetView.getController().getPlugins():
-            oW = oPlugin.getToolbarWidget()
-            if oW is not None:
-                oToolbar.pack_start(oW)
-                bInsertToolbar = True
-        if bInsertToolbar:
-            wMbox.pack_start(oToolbar, False, False)
+        #oToolbar = gtk.VBox(False,2)
+        #bInsertToolbar = False
+        #for oPlugin in oCardSetView.getController().getPlugins():
+        #    oW = oPlugin.getToolbarWidget()
+        #    if oW is not None:
+        #        oToolbar.pack_start(oW)
+        #        bInsertToolbar = True
+        #if bInsertToolbar:
+        #    wMbox.pack_start(oToolbar, False, False)
 
         wMbox.pack_end(AutoScrolledWindow(oCardSetView), expand=True)
-        self.__oView = oCardSetView
+        self._oView = oCardSetView
 
 
         self.add(wMbox)

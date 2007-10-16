@@ -10,25 +10,25 @@ from sutekh.core.SutekhObjects import AbstractCardSet, PhysicalCardSet,\
         AbstractCard, PhysicalCard
 
 class CardSetController(object):
-    def __init__(self, oController, sName, sType, oConfig, oMainWindow):
-        self.__oView = CardSetView(oMainWindow, oController, self,sName, sType, oConfig)
-        self.__oWin= oMainWindow
-        self.__oC = oMasterController
+    def __init__(self, sName, sType, oConfig, oMainWindow, oFrame):
+        self._oMainWin= oMainWindow
         self._oMenu = None
+        self._oFrame = oFrame
+        self._oView = CardSetView(oMainWindow, self, sName, sType, oConfig)
 
         # setup plugins before the menu (which needs a list of plugins)
         #self.__aPlugins = []
         #for cPlugin in oMasterController.getPluginManager().getCardListPlugins():
-        #    self.__aPlugins.append(cPlugin(self.__oView,self.__oView.getModel(),sType))
+        #    self.__aPlugins.append(cPlugin(self._oView,self._oView.getModel(),sType))
 
-    view = property(fget=lambda self: self.__oView, doc="Associated View")
-    frame = property(fget=lambda self: self.__oFrame, doc="Associated Frame")
+    view = property(fget=lambda self: self._oView, doc="Associated View")
+    frame = property(fget=lambda self: self._oFrame, doc="Associated Frame")
 
     def getView(self):
-        return self.__oView
+        return self._oView
 
     def getModel(self):
-        return self.__oView._oModel
+        return self._oView._oModel
 
     def getWin(self):
         return self.__oWin
@@ -43,17 +43,17 @@ class CardSetController(object):
         self.__oC.setCardText(sCardName)
 
     def getFilter(self,widget):
-        self.__oView.getFilter(self._oMenu)
+        self._oView.getFilter(self._oMenu)
 
     def runFilter(self,widget):
-        self.__oView.runFilter(self._oMenu.getApplyFilter())
+        self._oView.runFilter(self._oMenu.getApplyFilter())
 
 class PhysicalCardSetController(CardSetController):
-    def __init__(self,oWindow,oMasterController,sName,oConfig):
-        super(PhysicalCardSetController,self).__init__(\
-                oWindow,oMasterController,sName,"PhysicalCardSet",oConfig)
+    def __init__(self, sName, oConfig, oMainWindow, oFrame):
+        super(PhysicalCardSetController,self).__init__(
+                sName, "Physical Card Set", oConfig, oMainWindow, oFrame)
         self.__oPhysCardSet = PhysicalCardSet.byName(sName)
-        self._oMenu = CardSetMenu(self,self.getWin(),self.getView(),self.__oPhysCardSet.name,"PhysicalCardSet")
+        #self._oMenu = CardSetMenu(self,self.getWin(),self.getView(),self.__oPhysCardSet.name,"Physical Card Set")
 
     def decCard(self,sName):
         """
@@ -101,11 +101,11 @@ class PhysicalCardSetController(CardSetController):
         return False
 
 class AbstractCardSetController(CardSetController):
-    def __init__(self,oWindow,oMasterController,sName,oConfig):
-        super(AbstractCardSetController,self).__init__(\
-                oWindow,oMasterController,sName,"AbstractCardSet",oConfig)
+    def __init__(self, sName, oConfig, oMainWindow, oFrame):
+        super(AbstractCardSetController,self).__init__(
+                sName, "Abstract Card Set", oConfig, oMainWindow, oFrame)
         self.__oAbsCardSet = AbstractCardSet.byName(sName)
-        self._oMenu = CardSetMenu(self,self.getWin(),self.getView(),self.__oAbsCardSet.name,"AbstractCardSet")
+        #self._oMenu = CardSetMenu(self,self.getWin(),self.getView(),self.__oAbsCardSet.name,"Abstract Card Set")
 
     def decCard(self,sName):
         """

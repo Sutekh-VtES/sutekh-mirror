@@ -54,9 +54,9 @@ class CardSetManagementFrame(gtk.Frame, object):
            return
         oIter = oM.get_iter(oPath)
         sName = oM.get_value(oIter,0)
-        if self._sSetType == 'PhysicalCardSet':
+        if self._sSetType == 'Physical Card Set':
             self._oMainWin.add_physical_card_set(sName)
-        elif self._sSetType == 'AbstractCardSet':
+        elif self._sSetType == 'Abstract Card Set':
             self._oMainWin.add_abstract_card_set(sName)
 
 class PhysicalCardSetListFrame(CardSetManagementFrame):
