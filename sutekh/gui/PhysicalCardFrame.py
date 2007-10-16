@@ -16,6 +16,12 @@ class PhysicalCardFrame(gtk.Frame, object):
         self.set_label("Physical Card List")
         self.__sName = "Physical Card List"
         self.__oC = PhysicalCardController(self, oConfig, oMainWindow)
+
+        self._aPlugins = []
+        for cPlugin in self.__oMainWindow.plugin_manager.getCardListPlugins():
+            self._aPlugins.append(cPlugin(self.__oC.view,
+                self.__oC.view.getModel(),"PhysicalCard"))
+
         self.addParts(self.__oC)
 
     view = property(fget=lambda self: self.__oC.view, doc="Associated View Object")
@@ -26,6 +32,16 @@ class PhysicalCardFrame(gtk.Frame, object):
 
     def addParts(self, oPhysController):
         wMbox = gtk.VBox(False, 2)
+
+        oToolbar = gtk.VBox(False,2)
+        bInsertToolbar = False
+        for oPlugin in self._aPlugins:
+            oW = oPlugin.getToolbarWidget()
+            if oW is not None:
+                oToolbar.pack_start(oW)
+                bInsertToolbar = True
+        if bInsertToolbar:
+            wMbox.pack_start(oToolbar, False, False)
 
         wMbox.pack_start(AutoScrolledWindow(oPhysController.view), expand=True)
 

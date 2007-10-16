@@ -38,7 +38,9 @@ class CountCardSetCards(CardListPlugin,CardListModelListener):
         if not self.checkVersions() or not self.checkModelType():
             return None
 
-        iHBox = gtk.HBox(False,2)
+        iVBox = gtk.VBox(False,0)
+        iHBox1 = gtk.HBox(False,2)
+        iHBox2 = gtk.HBox(False,2)
         wTotalTextLabel = gtk.Label('Total Cards : ')
         wCryptTextLabel = gtk.Label('Crypt Cards : ')
         wLibraryTextLabel = gtk.Label('Library Cards : ')
@@ -46,21 +48,24 @@ class CountCardSetCards(CardListPlugin,CardListModelListener):
         self.wCryptLabel = gtk.Label('0')
         self.wLibraryLabel = gtk.Label('0')
 
-        iHBox.pack_start(wTotalTextLabel)
-        iHBox.pack_start(self.wTotalLabel)
-        iHBox.pack_start(wCryptTextLabel)
-        iHBox.pack_start(self.wCryptLabel)
-        iHBox.pack_start(wLibraryTextLabel)
-        iHBox.pack_start(self.wLibraryLabel)
+        iHBox2.pack_start(wTotalTextLabel, False, False)
+        iHBox2.pack_start(self.wTotalLabel, False, False)
+        iHBox1.pack_start(wCryptTextLabel, False, False)
+        iHBox1.pack_start(self.wCryptLabel, False, False)
+        iHBox1.pack_start(wLibraryTextLabel, False, False)
+        iHBox1.pack_start(self.wLibraryLabel, False, False)
+
+        iVBox.pack_start(iHBox1, False, False)
+        iVBox.pack_start(iHBox2, False, False)
 
         self.load()
 
-        return iHBox
+        return iVBox
 
     def updateNumbers(self):
-        self.wTotalLabel.set_markup('<b>' + str(self.__iTot) + '</b>')
-        self.wCryptLabel.set_markup('<b>' + str(self.__iCrypt) + '</b>')
-        self.wLibraryLabel.set_markup('<b>' + str(self.__iLibrary) + '</b>')
+        self.wTotalLabel.set_markup(' <b>' + str(self.__iTot) + '</b>  ')
+        self.wCryptLabel.set_markup(' <b>' + str(self.__iCrypt) + '</b>  ')
+        self.wLibraryLabel.set_markup(' <b>' + str(self.__iLibrary) + '</b>  ')
 
     def load(self):
         self.__iCrypt = 0
