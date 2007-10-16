@@ -11,7 +11,7 @@ from sutekh.core.SutekhObjects import AbstractCardSet, PhysicalCardSet,\
 
 class CardSetController(object):
     def __init__(self, sName, sType, oConfig, oMainWindow, oFrame):
-        self._oMainWin= oMainWindow
+        self._oMainWindow = oMainWindow
         self._oMenu = None
         self._oFrame = oFrame
         self._oView = CardSetView(oMainWindow, self, sName, sType, oConfig)
@@ -40,7 +40,7 @@ class CardSetController(object):
         return self.__aPlugins
 
     def setCardText(self,sCardName):
-        self.__oC.setCardText(sCardName)
+        self._oMainWindow.set_card_text(sCardName)
 
     def getFilter(self,widget):
         self._oView.getFilter(self._oMenu)

@@ -18,6 +18,7 @@ from sutekh.gui.MainMenu import MainMenu
 from sutekh.gui.GuiCardLookup import GuiLookup
 from sutekh.gui.CardSetManagementFrame import PhysicalCardSetListFrame, \
         AbstractCardSetListFrame
+from sutekh.gui.PluginManager import PluginManager
 
 class MultiPaneWindow(gtk.Window):
     """Window that has a configurable number of panes."""
@@ -42,6 +43,8 @@ class MultiPaneWindow(gtk.Window):
         self.oVBox.pack_start(self.__oMenu, False, False)
         self.show_all()
         self._iNumOpenPanes = 0
+        self._oPluginManager = PluginManager()
+        self._oPluginManager.loadPlugins()
         # CardText frame is special, and there is only ever one of it
         self._bCardTextShown = False
         self._oCardTextPane = CardTextFrame(self)
@@ -60,6 +63,8 @@ class MultiPaneWindow(gtk.Window):
 
     # Needed for Backup plugin
     cardLookup = property(fget=lambda self: self.__oCardLookup)
+    # Needed for plugins
+    plugin_manager = property(fget=lambda self: self._oPluginManager)
 
     def add_physical_card_set(self, sName):
         oPane = CardSetFrame(self, sName, CardSetFrame.sPCSType, self._oConfig)
@@ -186,6 +191,8 @@ class MultiPaneWindow(gtk.Window):
                 self._bCardTextShown = False
                 self.__oMenu.add_card_text_set_sensitive(True)
             self._aFrames.remove(self._oFocussed)
+            # Any cleanup events we need?
+            self._oFocussed.cleanup()
             self._oFocussed = None
 
     def show_about_dialog(self, oWidget):

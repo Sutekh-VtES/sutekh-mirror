@@ -5,9 +5,11 @@
 # GPL - see COPYING for details
 
 import gtk
+from sutekh.core.SutekhObjects import PhysicalCardSet, AbstractCardSet
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 from sutekh.gui.CardSetController import PhysicalCardSetController, \
         AbstractCardSetController
+from sutekh.gui.SQLObjectEvents import CardSetClosedSignal
 
 class CardSetFrame(gtk.Frame, object):
     sPCSType = "Physical Card Set"
@@ -22,17 +24,30 @@ class CardSetFrame(gtk.Frame, object):
         if self.sSetType == self.sPCSType:
             self._oC = PhysicalCardSetController(sName, oConfig,
                     oMainWindow, self)
+            self.oSignalClass = PhysicalCardSet
         elif self.sSetType == self.sACSType:
             self._oC = AbstractCardSetController(sName, oConfig,
                     oMainWindow, self)
+            self.oSignalClass = AbstractCardSet
         else:
             raise RuntimeError("Unknown Card Set type %s" % sType)
 
         self.updateName(sName)
+
+        self._aPlugins = []
+        for cPlugin in self._oMainWindow.plugin_manager.getCardListPlugins():
+            self._aPlugins.append(cPlugin(self._oC.view,
+                self._oC.view.getModel(),self.sSetType))
+
         self.addParts(self._oC.view)
 
     view = property(fget=lambda self: self._oView, doc="Associated View Object")
     name = property(fget=lambda self: self._sName, doc="Frame Name")
+
+    def cleanup(self):
+        """Cleanup function called before pane is removed by the
+           Main Window"""
+        self.oSignalClass.sqlmeta.send(CardSetClosedSignal, self.sSetName)
 
     def updateName(self, sNewName):
         self.sSetName = sNewName
@@ -42,15 +57,15 @@ class CardSetFrame(gtk.Frame, object):
     def addParts(self, oCardSetView):
         wMbox = gtk.VBox(False, 2)
 
-        #oToolbar = gtk.VBox(False,2)
-        #bInsertToolbar = False
-        #for oPlugin in oCardSetView.getController().getPlugins():
-        #    oW = oPlugin.getToolbarWidget()
-        #    if oW is not None:
-        #        oToolbar.pack_start(oW)
-        #        bInsertToolbar = True
-        #if bInsertToolbar:
-        #    wMbox.pack_start(oToolbar, False, False)
+        oToolbar = gtk.VBox(False,2)
+        bInsertToolbar = False
+        for oPlugin in self._aPlugins:
+            oW = oPlugin.getToolbarWidget()
+            if oW is not None:
+                oToolbar.pack_start(oW)
+                bInsertToolbar = True
+        if bInsertToolbar:
+            wMbox.pack_start(oToolbar, False, False)
 
         wMbox.pack_end(AutoScrolledWindow(oCardSetView), expand=True)
         self._oView = oCardSetView

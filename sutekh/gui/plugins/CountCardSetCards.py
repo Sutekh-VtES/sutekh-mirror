@@ -10,7 +10,7 @@ from sutekh.gui.CardListModel import CardListModelListener
 class CountCardSetCards(CardListPlugin,CardListModelListener):
     dTableVersions = {"AbstractCardSet" : [1,2,3],
                       "PhysicalCardSet" : [1,2,3]}
-    aModelsSupported = ["AbstractCardSet","PhysicalCardSet","PhysicalCard"]
+    aModelsSupported = ["Abstract Card Set","Physical Card Set","PhysicalCard"]
 
     def __init__(self,*args,**kwargs):
         super(CountCardSetCards,self).__init__(*args,**kwargs)
