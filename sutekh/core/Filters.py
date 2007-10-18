@@ -454,13 +454,13 @@ class CardTextFilter(DirectFilter):
     istextentry = True
 
     def __init__(self,sPattern):
-        self.__sPattern = sPattern
+        self.__sPattern = sPattern.lower()
 
     def getValues(self):
         return None
 
     def _getExpression(self):
-        return LIKE(func.LOWER(AbstractCard.q.text),'%' + self.__sPattern.lower() + '%')
+        return LIKE(func.LOWER(AbstractCard.q.text),'%' + self.__sPattern + '%')
 
 class CardNameFilter(DirectFilter):
     keyword = "CardName"
@@ -469,13 +469,13 @@ class CardNameFilter(DirectFilter):
     istextentry = True
 
     def __init__(self,sPattern):
-        self.__sPattern = sPattern
+        self.__sPattern = sPattern.lower()
 
     def getValues(self):
         return None
 
     def _getExpression(self):
-        return LIKE(func.LOWER(AbstractCard.q.name),'%' + self.__sPattern.lower() + '%')
+        return LIKE(AbstractCard.q.canonical_name,'%' + self.__sPattern + '%')
 
 class PhysicalCardFilter(Filter):
     def __init__(self):
@@ -483,12 +483,26 @@ class PhysicalCardFilter(Filter):
         pass
 
     def _getJoins(self):
-        # This at PhysicalCardSetFilter are the only filters allowed to pass the AbstractCard table as a joining table.
+        # This and PhysicalCardSetFilter are the only filters allowed to pass the AbstractCard table as a joining table.
         oT = Table('physical_card')
         return [LEFTJOINOn(None, AbstractCard, AbstractCard.q.id == oT.abstract_card_id)]
 
     def _getExpression(self):
         return "1 = 1" # SQLite doesn't like True. Postgres doesn't like 1.
+
+class PhysicalExpansionFilter(DirectFilter):
+    # We must be calling this with a PhysicalCardFilter for sensible results,
+    # so we don't need any special join magic
+    def __init__(self,sExpansion):
+        if sExpansion is not None:
+            self._iId = IExpansion(sExpansion).id
+        else:
+            # physical Expansion can explicity be None
+            self._iId = None
+
+    def _getExpression(self):
+        oT = Table('physical_card')
+        return oT.expansion_id == self._iId
 
 class PhysicalCardSetFilter(Filter):
     def __init__(self,sName):
