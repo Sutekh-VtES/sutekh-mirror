@@ -67,6 +67,7 @@ class MultiPaneWindow(gtk.Window):
             elif sType == 'Physical Card Set List':
                 self.add_pcs_list(None)
         self.__oCardLookup = GuiLookup()
+        self.__oMenu.add_card_text_set_sensitive(True)
 
     # Needed for Backup plugin
     cardLookup = property(fget=lambda self: self.__oCardLookup)
@@ -111,6 +112,7 @@ class MultiPaneWindow(gtk.Window):
 
     def action_quit(self, oWidget):
         if self._oConfig.getSaveOnExit():
+            self._oConfig.preSaveClear()
             self.save_panes()
         gtk.main_quit()
 
@@ -159,6 +161,9 @@ class MultiPaneWindow(gtk.Window):
         self._oFocussed = None
 
     def remove_pane(self, oWidget):
+        oRect = self._oFocussed.get_allocation()
+        oCur = self.get_allocation()
+        self.resize(oCur.width-oRect.width, oCur.height)
         if self._oFocussed is not None:
             if self._iNumOpenPanes == 1:
                 # Removing last widget, so just clear the vbox
