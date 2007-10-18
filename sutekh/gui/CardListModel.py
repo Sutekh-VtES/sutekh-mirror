@@ -42,7 +42,8 @@ class CardListModel(gtk.TreeStore):
 
     def __init__(self):
         # STRING is the card name, INT is the card count
-        super(CardListModel,self).__init__(gobject.TYPE_STRING,gobject.TYPE_INT)
+        super(CardListModel,self).__init__(gobject.TYPE_STRING,gobject.TYPE_INT,
+                gobject.TYPE_BOOLEAN,gobject.TYPE_BOOLEAN)
         self._dName2Iter = {}
 
         self.cardclass = AbstractCard # card class to use
@@ -101,7 +102,9 @@ class CardListModel(gtk.TreeStore):
                 oChildIter = self.append(oSectionIter)
                 self.set(oChildIter,
                     0, oCard.name,
-                    1, iCnt
+                    1, iCnt,
+                    2, True,
+                    3, True
                 )
                 if self.bExpansions:
                     # fill in the numbers for all possible expansions for
@@ -110,13 +113,17 @@ class CardListModel(gtk.TreeStore):
                         oExpansionIter = self.append(oChildIter)
                         self.set(oExpansionIter,
                                 0, sExpansion,
-                                1, iExpCnt)
+                                1, iExpCnt,
+                                2, True,
+                                3, iExpCnt > 0)
                 self._dName2Iter.setdefault(oCard.name,[]).append(oChildIter)
 
             # Update Group Section
             self.set(oSectionIter,
                 0, sGroup,
-                1, iGrpCnt
+                1, iGrpCnt,
+                2, False,
+                3, False
             )
 
         # Notify Listeners

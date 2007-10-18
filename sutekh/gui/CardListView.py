@@ -222,12 +222,12 @@ class EditNumbersCardListView(EditableCardListView):
         oCell4 = CellRendererSutekhButton()
         oCell4.load_icon(gtk.STOCK_GO_DOWN,self)
 
-        oColumn3 = gtk.TreeViewColumn("",oCell3)
+        oColumn3 = gtk.TreeViewColumn("",oCell3,showicon=2)
         oColumn3.set_fixed_width(20)
         oColumn3.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
         self.append_column(oColumn3)
 
-        oColumn4 = gtk.TreeViewColumn("",oCell4)
+        oColumn4 = gtk.TreeViewColumn("",oCell4,showicon=3)
         oColumn4.set_fixed_width(20)
         oColumn4.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
         self.append_column(oColumn4)
