@@ -14,6 +14,7 @@ class PhysicalCardView(EditableCardListView):
         self._oModel.basefilter = PhysicalCardFilter()
         self._oModel.cardclass = PhysicalCard
         self._oWin = oWindow
+        self._oModel.bExpansions = True
         self._oC = oController
         self.load()
 

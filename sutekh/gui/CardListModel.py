@@ -4,8 +4,9 @@
 # GPL - see COPYING for details
 
 import gtk, gobject
+import sets
 from sutekh.gui.SQLObjectEvents import IncCardSignal, DecCardSignal
-from sutekh.core.Filters import FilterAndBox, SpecificCardFilter, NullFilter
+from sutekh.core.Filters import FilterAndBox, SpecificCardFilter, NullFilter, PhysicalExpansionFilter
 from sutekh.core.Groupings import CardTypeGrouping
 from sutekh.core.SutekhObjects import AbstractCard, IAbstractCard
 
@@ -53,6 +54,9 @@ class CardListModel(gtk.TreeStore):
 
         self.listeners = {} # dictionary of CardListModelListeners
 
+        self.bExpansions = False
+        self.bAllExpansions = False
+
     store = property(fget=lambda self: self._oGtkStore)
     cardclass = property(fget=lambda self: self._cCardClass, fset=lambda self,x: setattr(self,'_cCardClass',x))
     listenclass = property(fget=lambda self: self._cListenClass, fset=lambda self,x: setattr(self,'_cListenClass',x))
@@ -76,7 +80,7 @@ class CardListModel(gtk.TreeStore):
         self._dName2Iter = {}
         self._dGroupName2Iter = {}
 
-        oCardIter = self.getCardIterator(self.getSelectFilter())
+        oCardIter = self.getCardIterator(self.getCurrentFilter())
         fGetCard, fGetCount, oGroupedIter = self.groupedCardIterator(oCardIter)
 
         # Iterate over groups
@@ -99,6 +103,14 @@ class CardListModel(gtk.TreeStore):
                     0, oCard.name,
                     1, iCnt
                 )
+                if self.bExpansions:
+                    # fill in the numbers for all possible expansions for
+                    # the card
+                    for sExpansion, iExpCnt in self.getExpansionInfo(oCard):
+                        oExpansionIter = self.append(oChildIter)
+                        self.set(oExpansionIter,
+                                0, sExpansion,
+                                1, iExpCnt)
                 self._dName2Iter.setdefault(oCard.name,[]).append(oChildIter)
 
             # Update Group Section
@@ -110,6 +122,19 @@ class CardListModel(gtk.TreeStore):
         # Notify Listeners
         for oListener in self.listeners:
             oListener.load()
+
+    def getExpansionInfo(self, oCard):
+        aResult = []
+        aExpansions = sets.Set([oP.expansion.name for oP in oCard.rarity]+[None])
+        for sExpansion in sorted(aExpansions):
+             oFilter = self.combineFilterWithBase(SpecificCardFilter(oCard.name))
+             oFullFilter = FilterAndBox([oFilter,PhysicalExpansionFilter(sExpansion)])
+             iExpCnt = oFullFilter.select(self.cardclass).distinct().count()
+             if self.bAllExpansions or iExpCnt > 0:
+                  if sExpansion is None:
+                       sExpansion = 'Unspecified Expansion'
+                  aResult.append((sExpansion,iExpCnt))
+        return aResult
 
     def listenIncCard(self, sCardName, iChg):
         """listen for a IncCard Signal on listenclass"""
@@ -154,7 +179,7 @@ class CardListModel(gtk.TreeStore):
         # Iterate over groups
         return fGetCard, fGetCount, self.groupby(aCards,fGetCard)
 
-    def getSelectFilter(self):
+    def getCurrentFilter(self):
         if self.applyfilter:
             return self.selectfilter
         else:
@@ -172,9 +197,20 @@ class CardListModel(gtk.TreeStore):
 
     def getCardNameFromPath(self,oPath):
         oIter = self.get_iter(oPath)
-        return self.getCardNameFromIter(oIter)
+        if self.iter_depth(oIter) == 2:
+            # Expansion section - we want the card before this
+            # according to the docs this is assured to be the
+            # correct path to it
+            oIter = self.get_iter(oPath[0:2])
+        return self.getNameFromIter(oIter)
 
-    def getCardNameFromIter(self,oIter):
+    def getExpansionNameFromPath(self,oPath):
+        oIter = self.get_iter(oPath)
+        if self.iter_depth(oIter) != 2:
+            return None
+        return self.getNameFromIter(oIter)
+
+    def getNameFromIter(self,oIter):
         # For some reason the string comes back from the
         # tree store having been encoded *again* despite
         # displaying correctly, so we decode it here.
@@ -237,7 +273,7 @@ class CardListModel(gtk.TreeStore):
         visible. If it should be visible, add it to the appropriate
         groups.
         """
-        oFilter = self.combineFilterWithBase(self.getSelectFilter())
+        oFilter = self.combineFilterWithBase(self.getCurrentFilter())
         oFullFilter = FilterAndBox([SpecificCardFilter(sCardName),oFilter])
 
         oCardIter = oFullFilter.select(self.cardclass).distinct()

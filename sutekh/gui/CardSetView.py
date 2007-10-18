@@ -18,6 +18,7 @@ class CardSetView(EditableCardListView):
             # cardclass is the actual physicalcard
             self._oModel.cardclass = PhysicalCard
             self._oModel.basefilter = PhysicalCardSetFilter(self.sSetName)
+            self._oModel.bExpansions = True
         elif sSetType == "Abstract Card Set":
             # Need MapAbstractCardToAbstractCardSet here, so filters do the right hing
             self._oModel.cardclass = MapAbstractCardToAbstractCardSet

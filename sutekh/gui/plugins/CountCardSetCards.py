@@ -52,7 +52,7 @@ class CountCardSetCards(CardListPlugin,CardListModelListener):
     def load(self):
         self.__iCrypt = 0
         self.__iLibrary = 0
-        aAllCards = list(self.model.getCardIterator(self.model.getSelectFilter()))
+        aAllCards = list(self.model.getCardIterator(self.model.getCurrentFilter()))
         self.__iTot = len(aAllCards)
         for oCard in aAllCards:
             if type(oCard) is AbstractCard:

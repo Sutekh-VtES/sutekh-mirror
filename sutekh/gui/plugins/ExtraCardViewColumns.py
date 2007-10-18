@@ -24,10 +24,14 @@ class ExtraCardViewColumns(CardListPlugin):
     # Rendering Functions
 
     def _getCard(self,oIter):
-        try:
-            oCard = AbstractCard.byCanonicalName(self.model.getCardNameFromIter(oIter).lower())
-            return oCard
-        except SQLObjectNotFound:
+        if self.model.iter_depth(oIter) == 1:
+            # Only try and lookup things that look like they should be cards
+            try:
+                oCard = AbstractCard.byCanonicalName(self.model.getNameFromIter(oIter).lower())
+                return oCard
+            except SQLObjectNotFound:
+                return None
+        else:
             return None
 
     def _renderCardType(self,oColumn,oCell,oModel,oIter):

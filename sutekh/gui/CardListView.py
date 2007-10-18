@@ -7,6 +7,7 @@ import gtk, pango
 from sutekh.gui.CardListModel import CardListModel
 from sutekh.gui.FilterDialog import FilterDialog
 from sutekh.gui.PopupMenu import PopupMenu
+from sutekh.gui.CellRendererSutekhButton import CellRendererSutekhButton
 
 class CardListView(gtk.TreeView, object):
     def __init__(self, oController, oMainWindow, oConfig):
@@ -126,11 +127,11 @@ class CardListView(gtk.TreeView, object):
     # Card name searching
 
     def compare(self,oModel,iColumn,sKey,oIter,oData):
-        if oModel.iter_depth(oIter) == 0:
-            # Don't succeed for top level items
+        if oModel.iter_depth(oIter) == 0 or oModel.iter_depth(oIter) == 2:
+            # Don't succeed for top level items or expansion items
             return True
 
-        sCardName = self._oModel.getCardNameFromIter(oIter).lower()
+        sCardName = self._oModel.getNameFromIter(oIter).lower()
         if sCardName.startswith(sKey.lower()):
             return False
 
@@ -179,11 +180,11 @@ class CardListView(gtk.TreeView, object):
     def cardDrop(self, w, context, x, y, data, info, time):
         pass
 
-
 class EditableCardListView(CardListView):
-    def __init__(self,oController,oWindow,oConfig):
-        super(EditableCardListView,self).__init__(oController,oWindow,oConfig)
+    def __init__(self, oController, oWindow, oConfig):
+        super(EditableCardListView,self).__init__(oController, oWindow, oConfig)
 
+        # Setup columns for default view
         oCell1 = gtk.CellRendererText()
         oCell1.set_property('style', pango.STYLE_ITALIC)
         oCell2 = gtk.CellRendererText()
@@ -203,27 +204,49 @@ class EditableCardListView(CardListView):
         self.set_expander_column(oColumn2)
         if hasattr(self,'set_grid_lines'):
             self.set_grid_lines(gtk.TREE_VIEW_GRID_LINES_BOTH)
+     
+    # Used by card dragging handlers
+    def addCard(self,sCardName):
+        bSucc = self._oC.addCard(sCardName)
 
-    # Card Inc and Dec
-    # The call to the controller updates the correct database
-    # table - we rely on SQLObject's events to then call the
-    # events on the model. This gives automatic syncronisation
-    # between different views of the same model
+class EditNumbersCardListView(EditableCardListView):
+    """View used to edit the card numbers - has arrows for inc'ing
+       and decresing counts"""
+
+    def __init__(self, oController, oWindow, oConfig):
+        super(EditNumbersCardListView, self).__init__(oController, oWindow, oConfig)
+
+        # Arrow cells
+        oCell3 = CellRendererSutekhButton()
+        oCell3.load_icon(gtk.STOCK_GO_UP,self)
+        oCell4 = CellRendererSutekhButton()
+        oCell4.load_icon(gtk.STOCK_GO_DOWN,self)
+
+        oColumn3 = gtk.TreeViewColumn("",oCell3)
+        oColumn3.set_fixed_width(20)
+        oColumn3.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
+        self.append_column(oColumn3)
+
+        oColumn4 = gtk.TreeViewColumn("",oCell4)
+        oColumn4.set_fixed_width(20)
+        oColumn4.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
+        self.append_column(oColumn4)
+
+        oCell3.connect('clicked',self.incCard)
+        oCell4.connect('clicked',self.decCard)
+
+    # This is used in the edit popup, processing the results is done by
+    # the view calling the edit popup (on commit or OK), so no database
+    # changes done by this
 
     def incCard(self,oCell,oPath):
         sCardName = self._oModel.getCardNameFromPath(oPath)
         bSucc = self._oC.incCard(sCardName)
-        #if bSucc:
-        #    self._oModel.incCard(oPath)
+        if bSucc:
+            self._oModel.incCard(oPath)
 
     def decCard(self,oCell,oPath):
         sCardName = self._oModel.getCardNameFromPath(oPath)
         bSucc = self._oC.decCard(sCardName)
-        #if bSucc:
-        #    self._oModel.decCard(oPath)
-
-    def addCard(self,sCardName):
-        bSucc = self._oC.addCard(sCardName)
-        #if bSucc:
-        #    self._oModel.incCardByName(sCardName)
-
+        if bSucc:
+            self._oModel.decCard(oPath)
