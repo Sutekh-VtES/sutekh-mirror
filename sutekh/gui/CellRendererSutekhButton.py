@@ -15,15 +15,33 @@ import gtk, gobject
 # but that is currently not a priority
 
 class CellRendererSutekhButton(gtk.GenericCellRenderer):
+
+    __gproperties__ = {
+            'showicon' : (gobject.TYPE_BOOLEAN, 'showicon property',
+                'whether to show the icon', 0, gobject.PARAM_READWRITE)
+            }
+
     def __init__(self):
         self.__gobject_init__()
         self.oPixbuf = None
         self.set_property("mode", gtk.CELL_RENDERER_MODE_ACTIVATABLE)
+        self.show_icon = False
 
     def load_icon(self, sName, oWidget):
         # Load the icon specified in name
         self.oPixbuf = oWidget.render_icon(sName, gtk.ICON_SIZE_SMALL_TOOLBAR)
 
+    def do_get_property(self, oProp):
+        if oProp.name == 'showicon':
+            return self.show_icon
+        else:
+            raise AttributeError, 'unknown property %s' % oProp.name
+
+    def do_set_property(self, oProp, oValue):
+        if oProp.name == 'showicon':
+            self.show_icon = oValue
+        else:
+            raise AttributeError, 'unknown property %s' % oProp.name
 
     def on_get_size(self, oWidget, oCellArea):
         if self.oPixbuf is None:
@@ -52,7 +70,9 @@ class CellRendererSutekhButton(gtk.GenericCellRenderer):
             oCellArea, oExposeArea, iFlags):
         if self.oPixbuf is None:
             return None
-        # Render pixbuf
+        if not self.show_icon:
+            # Draw nothing
+            return None
         oPixRect = gtk.gdk.Rectangle()
         oPixRect.x, oPixRect.y, oPixRect.width, oPixRect.height = \
             self.on_get_size(oWidget, oCellArea)
