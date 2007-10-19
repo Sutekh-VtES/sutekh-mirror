@@ -109,13 +109,17 @@ class CardListModel(gtk.TreeStore):
                 if self.bExpansions:
                     # fill in the numbers for all possible expansions for
                     # the card
-                    for sExpansion, iExpCnt in self.getExpansionInfo(oCard):
+                    dExpansionInfo = self.getExpansionInfo(oCard)
+                    for sExpansion in dExpansionInfo.keys():
                         oExpansionIter = self.append(oChildIter)
+                        # FIXME - values for showicon columns should
+                        # be in dExpansionInfo as well
+                        iExpCnt = dExpansionInfo[sExpansion]
                         self.set(oExpansionIter,
                                 0, sExpansion,
                                 1, iExpCnt,
                                 2, True,
-                                3, iExpCnt > 0)
+                                3, True)
                 self._dName2Iter.setdefault(oCard.name,[]).append(oChildIter)
 
             # Update Group Section
@@ -131,17 +135,26 @@ class CardListModel(gtk.TreeStore):
             oListener.load()
 
     def getExpansionInfo(self, oCard):
-        aResult = []
-        aExpansions = sets.Set([oP.expansion.name for oP in oCard.rarity]+[None])
-        for sExpansion in sorted(aExpansions):
-             oFilter = self.combineFilterWithBase(SpecificCardFilter(oCard.name))
-             oFullFilter = FilterAndBox([oFilter,PhysicalExpansionFilter(sExpansion)])
-             iExpCnt = oFullFilter.select(self.cardclass).distinct().count()
-             if self.bAllExpansions or iExpCnt > 0:
-                  if sExpansion is None:
-                       sExpansion = 'Unspecified Expansion'
-                  aResult.append((sExpansion,iExpCnt))
-        return aResult
+        sUnknown = '  Unspecified Expansion'
+        # FIXME: Use spaces to ensure it sorts first, and is 
+        # visually distinct. Very much the wrong solution, I feel
+        oFilter = self.combineFilterWithBase(SpecificCardFilter(oCard.name))
+        aCards = oFilter.select(self.cardclass).distinct()
+        # We always list Unspecfied expansions, even when there
+        # are none
+        dExpansions = {sUnknown : 0}
+        if self.bAllExpansions:
+            # All expansions listed in the dictionary
+            for oP in oCard.rarity:
+                dExpansions.setdefault(oP.expansion.name,0)
+        for oThisCard in aCards:
+            if oThisCard.expansion is not None:
+                sExpansion = oThisCard.expansion.name
+                dExpansions.setdefault(sExpansion,0)
+                dExpansions[sExpansion] += 1
+            else:
+                dExpansions[sUnknown] += 1
+        return dExpansions
 
     def listenIncCard(self, sCardName, iChg):
         """listen for a IncCard Signal on listenclass"""
