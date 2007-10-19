@@ -187,13 +187,13 @@ class CardListModel(gtk.TreeStore):
 
             # Count by Abstract Card
             dAbsCards = {}
-            dExpandInfo = {}
             for oCard in oCardIter:
-                dAbsCards.setdefault(oCard.abstractCard,[0,dExpandInfo])
+                dAbsCards.setdefault(oCard.abstractCard,[0,{}])
                 dAbsCards[oCard.abstractCard][0] += 1
                 if self.bExpansions:
-                    dExpandInfo.setdefault(oCard.expansion,0)
-                    dExpandInfo[oCard.expansion]+=1
+                    dExpanInfo = dAbsCards[oCard.abstractCard][1]
+                    dExpanInfo.setdefault(oCard.expansion,0)
+                    dExpanInfo[oCard.expansion]+=1
 
             aCards = list(dAbsCards.iteritems())
             aCards.sort(lambda x,y: cmp(x[0].name,y[0].name))
