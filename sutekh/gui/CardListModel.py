@@ -82,7 +82,7 @@ class CardListModel(gtk.TreeStore):
         self._dGroupName2Iter = {}
 
         oCardIter = self.getCardIterator(self.getCurrentFilter())
-        fGetCard, fGetCount, oGroupedIter = self.groupedCardIterator(oCardIter)
+        fGetCard, fGetCount, fGetExpanInfo, oGroupedIter = self.groupedCardIterator(oCardIter)
 
         # Iterate over groups
         for sGroup, oGroupIter in oGroupedIter:
@@ -109,8 +109,8 @@ class CardListModel(gtk.TreeStore):
                 if self.bExpansions:
                     # fill in the numbers for all possible expansions for
                     # the card
-                    dExpansionInfo = self.getExpansionInfo(oCard)
-                    for sExpansion in dExpansionInfo.keys():
+                    dExpansionInfo = self.getExpansionInfo(oCard,fGetExpanInfo(oItem))
+                    for sExpansion in sorted(dExpansionInfo.keys()):
                         oExpansionIter = self.append(oChildIter)
                         # FIXME - values for showicon columns should
                         # be in dExpansionInfo as well
@@ -134,12 +134,10 @@ class CardListModel(gtk.TreeStore):
         for oListener in self.listeners:
             oListener.load()
 
-    def getExpansionInfo(self, oCard):
+    def getExpansionInfo(self, oCard, dExpanInfo):
         sUnknown = '  Unspecified Expansion'
         # FIXME: Use spaces to ensure it sorts first, and is 
         # visually distinct. Very much the wrong solution, I feel
-        oFilter = self.combineFilterWithBase(SpecificCardFilter(oCard.name))
-        aCards = oFilter.select(self.cardclass).distinct()
         # We always list Unspecfied expansions, even when there
         # are none
         dExpansions = {sUnknown : 0}
@@ -147,13 +145,11 @@ class CardListModel(gtk.TreeStore):
             # All expansions listed in the dictionary
             for oP in oCard.rarity:
                 dExpansions.setdefault(oP.expansion.name,0)
-        for oThisCard in aCards:
-            if oThisCard.expansion is not None:
-                sExpansion = oThisCard.expansion.name
-                dExpansions.setdefault(sExpansion,0)
-                dExpansions[sExpansion] += 1
+        for oExpansion, iCnt in dExpanInfo.iteritems():
+            if oExpansion is not None:
+                dExpansions[oExpansion.name] = iCnt
             else:
-                dExpansions[sUnknown] += 1
+                dExpansions[sUnknown] = iCnt
         return dExpansions
 
     def listenIncCard(self, sCardName, iChg):
@@ -182,22 +178,28 @@ class CardListModel(gtk.TreeStore):
         if self.cardclass is AbstractCard:
             fGetCard = lambda x:x
             fGetCount = lambda x:0
+            fGetExpanInfo = lambda x:{}
             aCards = oCardIter
         else:
             fGetCard = lambda x:x[0]
-            fGetCount = lambda x:x[1]
+            fGetCount = lambda x:x[1][0]
+            fGetExpanInfo = lambda x:x[1][1]
 
             # Count by Abstract Card
             dAbsCards = {}
+            dExpandInfo = {}
             for oCard in oCardIter:
-                dAbsCards.setdefault(oCard.abstractCard,0)
-                dAbsCards[oCard.abstractCard] += 1
+                dAbsCards.setdefault(oCard.abstractCard,[0,dExpandInfo])
+                dAbsCards[oCard.abstractCard][0] += 1
+                if self.bExpansions:
+                    dExpandInfo.setdefault(oCard.expansion,0)
+                    dExpandInfo[oCard.expansion]+=1
 
             aCards = list(dAbsCards.iteritems())
             aCards.sort(lambda x,y: cmp(x[0].name,y[0].name))
 
         # Iterate over groups
-        return fGetCard, fGetCount, self.groupby(aCards,fGetCard)
+        return fGetCard, fGetCount, fGetExpanInfo, self.groupby(aCards,fGetCard)
 
     def getCurrentFilter(self):
         if self.applyfilter:
@@ -298,7 +300,7 @@ class CardListModel(gtk.TreeStore):
 
         oCardIter = oFullFilter.select(self.cardclass).distinct()
 
-        fGetCard, fGetCount, oGroupedIter = self.groupedCardIterator(oCardIter)
+        fGetCard, fGetCount, fExpanInfo, oGroupedIter = self.groupedCardIterator(oCardIter)
 
         # Iterate over groups
         for sGroup, oGroupIter in oGroupedIter:
