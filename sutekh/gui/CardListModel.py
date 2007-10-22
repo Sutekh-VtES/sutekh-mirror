@@ -6,9 +6,11 @@
 import gtk, gobject
 import sets
 from sutekh.gui.SQLObjectEvents import IncCardSignal, DecCardSignal
-from sutekh.core.Filters import FilterAndBox, SpecificCardFilter, NullFilter, PhysicalExpansionFilter
+from sutekh.core.Filters import FilterAndBox, SpecificCardFilter, NullFilter, PhysicalExpansionFilter, \
+        PhysicalCardFilter
 from sutekh.core.Groupings import CardTypeGrouping
-from sutekh.core.SutekhObjects import AbstractCard, IAbstractCard
+from sutekh.core.SutekhObjects import AbstractCard, IAbstractCard, PhysicalCardSet, \
+        PhysicalCard
 
 class CardListModelListener(object):
     """
@@ -56,7 +58,7 @@ class CardListModel(gtk.TreeStore):
         self.listeners = {} # dictionary of CardListModelListeners
 
         self.bExpansions = False
-        self.bAllExpansions = False
+        self.bEditable = False
 
     store = property(fget=lambda self: self._oGtkStore)
     cardclass = property(fget=lambda self: self._cCardClass, fset=lambda self,x: setattr(self,'_cCardClass',x))
@@ -100,11 +102,23 @@ class CardListModel(gtk.TreeStore):
                 oCard, iCnt = fGetCard(oItem), fGetCount(oItem)
                 iGrpCnt += iCnt
                 oChildIter = self.append(oSectionIter)
+                if self.bEditable:
+                    bDecCard = True
+                    if self.cardclass is not PhysicalCardSet:
+                        bIncCard = True
+                    else:
+                        oFilter = FilterAndBox([SpecificCardFilter(oCard),
+                                PhysicalCardFilter()])
+                        # Can't inc if there are no physical cards
+                        bIncCard = iCnt < oFilter.select(PhysicalCard).count()
+                else:
+                    bIncCard = False
+                    bDecCard = False
                 self.set(oChildIter,
                     0, oCard.name,
                     1, iCnt,
-                    2, True,
-                    3, True
+                    2, bDecCard,
+                    3, bIncCard
                 )
                 if self.bExpansions:
                     # fill in the numbers for all possible expansions for
@@ -112,14 +126,12 @@ class CardListModel(gtk.TreeStore):
                     dExpansionInfo = self.getExpansionInfo(oCard,fGetExpanInfo(oItem))
                     for sExpansion in sorted(dExpansionInfo.keys()):
                         oExpansionIter = self.append(oChildIter)
-                        # FIXME - values for showicon columns should
-                        # be in dExpansionInfo as well
-                        iExpCnt = dExpansionInfo[sExpansion]
+                        iExpCnt, bDecCard, bIncCard = dExpansionInfo[sExpansion]
                         self.set(oExpansionIter,
                                 0, sExpansion,
                                 1, iExpCnt,
-                                2, True,
-                                3, True)
+                                2, bDecCard,
+                                3, bIncCard)
                 self._dName2Iter.setdefault(oCard.name,[]).append(oChildIter)
 
             # Update Group Section
@@ -140,16 +152,49 @@ class CardListModel(gtk.TreeStore):
         # visually distinct. Very much the wrong solution, I feel
         # We always list Unspecfied expansions, even when there
         # are none
-        dExpansions = {sUnknown : 0}
-        if self.bAllExpansions:
-            # All expansions listed in the dictionary
-            for oP in oCard.rarity:
-                dExpansions.setdefault(oP.expansion.name,0)
-        for oExpansion, iCnt in dExpanInfo.iteritems():
-            if oExpansion is not None:
-                dExpansions[oExpansion.name] = iCnt
+        dExpansions = {sUnknown : [0,False,False]}
+        if self.bEditable:
+            oFilter = FilterAndBox([SpecificCardFilter(oCard), 
+                PhysicalCardFilter(), 
+                PhysicalExpansionFilter(None)])
+            iNoneCnt = oFilter.select(PhysicalCard).count()
+            # All possible expansions listed in the dictionary when editing
+            if self.cardclass is PhysicalCardSet:
+                oFilter = FilterAndBox([SpecificCardFilter(oCard), 
+                        PhysicalCardFilter()])
+                for oPC in oFilter.select(PhysicalCard):
+                    dExpansions.setdefault(oPC.expansion.name,[0, True, False])
             else:
-                dExpansions[sUnknown] = iCnt
+                for oP in oCard.rarity:
+                    dExpansions.setdefault(oP.expansion.name,[0, iNoneCnt > 0, False])
+        for oExpansion, iCnt in dExpanInfo.iteritems():
+            bDecCard = False
+            bIncCard = False
+            if oExpansion is not None:
+                sKey = oExpansion.name
+                if self.bEditable:
+                    if self.cardclass is PhysicalCardSet:
+                        oFilter = FilterAndBox(SpecificCardFilter(oCard), 
+                            PhysicalCardFilter(), 
+                            PhysicalExpansionFilter(sKey))
+                        iCardCnt = oFilter.select(PhysicalCard).count()
+                        bDecCard = iCnt > 0
+                        # Cards of the expansion available to select
+                        bIncCard = iCnt < iCardCnt 
+                    else:
+                        bDecCard = iCnt > 0
+                        # Can only increase a expansion if there are unknown
+                        # cards to move across
+                        bIncCard = iNoneCnt > 0
+            else:
+                sKey = sUnknown
+                if self.bEditable and self.cardclass is PhysicalCardSet:
+                    bDecCard = iCnt > 0
+                    # Cards of the expansion available to select
+                    bIncCard = iCnt < iNoneCnt
+                # For PhysicalCardList, we never touch Unknown directly
+                # It's manipulated by changing other expansions
+            dExpansions[sKey] = [iCnt, bDecCard, bIncCard]
         return dExpansions
 
     def listenIncCard(self, sCardName, iChg):
