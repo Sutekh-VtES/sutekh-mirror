@@ -10,7 +10,7 @@ from sutekh.gui.PluginManager import CardListPlugin
 
 class GroupCardList(CardListPlugin):
     dTableVersions = {}
-    aModelsSupported = ["PhysicalCardSet","AbstractCardSet","PhysicalCard"]
+    aModelsSupported = ["Physical Card Set","Abstract Card Set","Physical Cards","Abstract Cards"]
     def __init__(self,*args,**kws):
         super(GroupCardList,self).__init__(*args,**kws)
         self._dGrpings = {}

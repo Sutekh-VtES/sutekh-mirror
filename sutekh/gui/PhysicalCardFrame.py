@@ -7,6 +7,7 @@
 import gtk
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 from sutekh.gui.PhysicalCardController import PhysicalCardController
+from sutekh.gui.PhysicalCardMenu import PhysicalCardMenu
 
 class PhysicalCardFrame(gtk.Frame, object):
     def __init__(self, oMainWindow, oConfig):
@@ -23,17 +24,21 @@ class PhysicalCardFrame(gtk.Frame, object):
             self._aPlugins.append(cPlugin(self.__oC.view,
                 self.__oC.view.getModel(),"PhysicalCard"))
 
-        self.addParts(self.__oC)
+        self._oMenu = PhysicalCardMenu(self, self.__oC, oMainWindow)
+        self.addParts()
 
     view = property(fget=lambda self: self.__oC.view, doc="Associated View Object")
     name = property(fget=lambda self: self.__sName, doc="Frame Name")
     type = property(fget=lambda self: self._sType, doc="Frame Type")
+    menu = property(fget=lambda self: self._oMenu, doc="Frame Menu")
 
     def cleanup(self):
         pass
 
-    def addParts(self, oPhysController):
+    def addParts(self):
         wMbox = gtk.VBox(False, 2)
+
+        wMbox.pack_start(self._oMenu, False, False)
 
         oToolbar = gtk.VBox(False,2)
         bInsertToolbar = False
@@ -45,7 +50,7 @@ class PhysicalCardFrame(gtk.Frame, object):
         if bInsertToolbar:
             wMbox.pack_start(oToolbar, False, False)
 
-        wMbox.pack_start(AutoScrolledWindow(oPhysController.view), expand=True)
+        wMbox.pack_start(AutoScrolledWindow(self.__oC.view), expand=True)
 
         self.add(wMbox)
         self.show_all()

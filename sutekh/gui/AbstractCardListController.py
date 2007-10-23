@@ -25,7 +25,6 @@ class AbstractCardListController(object):
         #self.__aPlugins = []
         #for cPlugin in self.__oPluginManager.getCardListPlugins():
         #    self.__aPlugins.append(cPlugin(self.__oAbstractCards,self.__oAbstractCards.getModel(),'AbstractCard'))
-        self.__oFrame.addParts(self.__oAbstractCards)
 
     view = property(fget=lambda self: self.__oAbstractCards, doc="Associated View")
     frame = property(fget=lambda self: self.__oFrame, doc="Associated Frame")

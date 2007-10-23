@@ -11,12 +11,13 @@ from sutekh.gui.PropDialog import PropDialog
 from sutekh.io.XmlFileHandling import AbstractCardSetXmlFile, PhysicalCardSetXmlFile
 from sutekh.gui.EditAnnotationsDialog import EditAnnotationsDialog
 
-class CardSetMenu(gtk.MenuBar,object):
-    def __init__(self,oController,oWindow,oView,sName,sType):
-        super(CardSetMenu,self).__init__()
+class CardSetMenu(gtk.MenuBar, object):
+    def __init__(self, oFrame, oController, oWindow, oView, sName, sType):
+        super(CardSetMenu, self).__init__()
         self.__oC = oController
         self.__oWindow = oWindow
         self.__oView = oView
+        self.__oFrame = oFrame
         self.sSetName = sName
         self.__sType = sType
         self.__sMenuType = sType.replace('CardSet','')
@@ -29,7 +30,6 @@ class CardSetMenu(gtk.MenuBar,object):
         iMenu = gtk.MenuItem(self.__sMenuType+" Card Set Actions")
         wMenu = gtk.Menu()
         self.__dMenus["CardSet"] = wMenu
-        iMenu.set_submenu(wMenu)
         self.__iProperties = gtk.MenuItem("Edit Card Set ("+self.sSetName+") properties")
         wMenu.add(self.__iProperties)
         self.__iProperties.connect('activate',self.editProperites)
@@ -48,6 +48,7 @@ class CardSetMenu(gtk.MenuBar,object):
         # (or maybe gtk.Action)
         self.__iDelete.connect("activate", self.cardSetDelete)
         wMenu.add(self.__iDelete)
+        iMenu.set_submenu(wMenu)
         self.add(iMenu)
 
     def __updateCardSetMenu(self):
@@ -57,11 +58,10 @@ class CardSetMenu(gtk.MenuBar,object):
         self.__iDelete.get_child().set_label("Delete Card Set ("+self.sSetName+")")
 
     def __createFilterMenu(self):
-        # setup sub menu
+        # setup sub menun
         iMenu = gtk.MenuItem("Filter")
         wMenu = gtk.Menu()
         self.__dMenus["Filter"] = wMenu
-        iMenu.set_submenu(wMenu)
 
         # items
         iFilter = gtk.MenuItem("Specify Filter")
@@ -73,6 +73,7 @@ class CardSetMenu(gtk.MenuBar,object):
         wMenu.add(self.iApply)
         self.iApply.connect('activate', self.__oC.runFilter)
         # Add the Menu
+        iMenu.set_submenu(wMenu)
         self.add(iMenu)
 
     def __createPluginMenu(self):
@@ -80,9 +81,8 @@ class CardSetMenu(gtk.MenuBar,object):
         iMenu = gtk.MenuItem("Plugins")
         wMenu = gtk.Menu()
         self.__dMenus["Plugins"] = wMenu
-        iMenu.set_submenu(wMenu)
         # plugins
-        for oPlugin in self.__oC.getPlugins():
+        for oPlugin in self.__oFrame._aPlugins:
             oMI = oPlugin.getMenuItem()
             if oMI is not None:
                 sMenu = oPlugin.getDesiredMenu()
@@ -92,12 +92,13 @@ class CardSetMenu(gtk.MenuBar,object):
                 else:
                     # Plugins acts as a catchall Menu
                     wMenu.add(oMI)
+        iMenu.set_submenu(wMenu)
         self.add(iMenu)
         if len(wMenu.get_children()) == 0:
             iMenu.set_sensitive(False)
 
     def editProperites(self,widget):
-        if self.__sType == 'PhysicalCardSet':
+        if self.__sType == 'Physical Card Set':
             oCS = PhysicalCardSet.byName(self.sSetName)
         else:
             oCS = AbstractCardSet.byName(self.sSetName)
@@ -107,7 +108,7 @@ class CardSetMenu(gtk.MenuBar,object):
         (sName,sAuthor,sComment) = oProp.getData()
         if sName is not None and sName != self.sSetName and len(sName)>0:
             # Check new name is not in use
-            if self.__sType == 'PhysicalCardSet':
+            if self.__sType == 'Physical Card Set':
                 oNameList = PhysicalCardSet.selectBy(name=sName)
             else:
                 oNameList = AbstractCardSet.selectBy(name=sName)
@@ -133,7 +134,7 @@ class CardSetMenu(gtk.MenuBar,object):
             oCS.syncUpdate()
 
     def editAnnotations(self,widget):
-        if self.__sType == 'PhysicalCardSet':
+        if self.__sType == 'Physical Card Set':
             oCS = PhysicalCardSet.byName(self.sSetName)
         else:
             oCS = AbstractCardSet.byName(self.sSetName)
@@ -149,7 +150,7 @@ class CardSetMenu(gtk.MenuBar,object):
         sFileName = oFileChooser.getName()
         if sFileName is not None:
             # User has OK'd us overwriting anything
-            if self.__sType == 'PhysicalCardSet':
+            if self.__sType == 'Physical Card Set':
                 oW = PhysicalCardSetXmlFile(sFileName)
             else:
                 oW = AbstractCardSetXmlFile(sFileName)

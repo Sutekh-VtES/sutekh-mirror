@@ -1,37 +1,30 @@
-# PhysicalCardMenu.py
-# Menu for the Physical Card View
+# AbstractCardListMenu.py
 # Copyright 2005,2006 Simon Cross <hodgestar@gmail.com>
 # Copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
 import gtk
-from sutekh.gui.ExportDialog import ExportDialog
-from sutekh.io.XmlFileHandling import PhysicalCardXmlFile
+from sqlobject import sqlhub, connectionForURI
+from sutekh.core.SutekhObjects import PhysicalCardSet, AbstractCardSet, ObjectList
+from sutekh.gui.ImportDialog import ImportDialog
+from sutekh.gui.WWFilesDialog import WWFilesDialog
+from sutekh.io.XmlFileHandling import PhysicalCardXmlFile, PhysicalCardSetXmlFile, \
+                                    AbstractCardSetXmlFile
+from sutekh.io.IdentifyXMLFile import IdentifyXMLFile
+from sutekh.core.DatabaseUpgrade import copyToNewAbstractCardDB, createFinalCopy
+from sutekh.SutekhUtility import refreshTables, readWhiteWolfList, readRulings
+from sutekh.io.ZipFileWrapper import ZipFileWrapper
 
-class PhysicalCardMenu(gtk.MenuBar,object):
+class AbstractCardListMenu(gtk.MenuBar, object):
     def __init__(self, oFrame, oController, oWindow):
-        super(PhysicalCardMenu,self).__init__()
+        super(AbstractCardListMenu,self).__init__()
         self.__oC = oController
         self.__oWindow = oWindow
         self.__oFrame = oFrame
-
         self.__dMenus = {}
-        self.__createPCLMenu()
+
         self.__createFilterMenu()
         self.__createPluginMenu()
-
-    def __createPCLMenu(self):
-        # setup sub menu
-        iMenu = gtk.MenuItem("Physical Card List Actions")
-        wMenu = gtk.Menu()
-        self.__dMenus["PCS"] = wMenu
-        iMenu.set_submenu(wMenu)
-        # items
-        iExport = gtk.MenuItem("Export Physical Card List to File")
-        wMenu.add(iExport)
-        iExport.connect('activate', self.doExport)
-
-        self.add(iMenu)
 
     def __createFilterMenu(self):
         # setup sub menu
@@ -71,14 +64,6 @@ class PhysicalCardMenu(gtk.MenuBar,object):
         self.add(iMenu)
         if len(wMenu.get_children()) == 0:
             iMenu.set_sensitive(False)
-
-    def doExport(self,widget):
-        oFileChooser = ExportDialog("Save Physical Card List As",self.__oWindow)
-        oFileChooser.run()
-        sFileName = oFileChooser.getName()
-        if sFileName is not None:
-            oW = PhysicalCardXmlFile(sFileName)
-            oW.write()
 
     def getApplyFilter(self):
         return self.iApply.get_active()

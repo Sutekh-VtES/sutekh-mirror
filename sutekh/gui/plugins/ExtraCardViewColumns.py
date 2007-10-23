@@ -9,7 +9,7 @@ from sqlobject import SQLObjectNotFound
 
 class ExtraCardViewColumns(CardListPlugin):
     dTableVersions = {}
-    aModelsSupported = ["PhysicalCardSet","AbstractCardSet","PhysicalCard","AbstractCard"]
+    aModelsSupported = ["Physical Card Set","Abstract Card Set","Physical Cards","Abstract Cards"]
 
     def __init__(self,*args,**kws):
         super(ExtraCardViewColumns,self).__init__(*args,**kws)

@@ -15,13 +15,6 @@ class PhysicalCardController(object):
         self.__oFrame = oFrame
         self.__oView = PhysicalCardView(self, oMainWindow, oConfig)
 
-        # setup plugins before the menu (which needs a list of plugins)
-        #self.__aPlugins = []
-        #for cPlugin in oMasterController.getPluginManager().getCardListPlugins():
-        #    self.__aPlugins.append(cPlugin(self.__oView,self.__oView.getModel(),'PhysicalCard'))
-
-        #self.__oMenu = PhysicalCardMenu(self,self.__oWin)
-
     view = property(fget=lambda self: self.__oView, doc="Associated View")
     frame = property(fget=lambda self: self.__oFrame, doc="Associated Frame")
 

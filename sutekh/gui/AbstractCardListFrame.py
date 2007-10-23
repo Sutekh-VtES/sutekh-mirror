@@ -7,6 +7,7 @@
 import gtk
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 from sutekh.gui.AbstractCardListController import AbstractCardListController
+from sutekh.gui.AbstractCardListMenu import AbstractCardListMenu
 
 class AbstractCardListFrame(gtk.Frame, object):
     def __init__(self, oMainWindow, oConfig):
@@ -18,27 +19,39 @@ class AbstractCardListFrame(gtk.Frame, object):
         self.__sType = "Abstract Cards"
         self.__oC = AbstractCardListController(self, oConfig, oMainWindow)
 
+        self._aPlugins = []
+        for cPlugin in self.__oMainWindow.plugin_manager.getCardListPlugins():
+            self._aPlugins.append(cPlugin(self.__oC.view,
+                self.__oC.view.getModel(),"Abstract Cards"))
+
+        self._oMenu = AbstractCardListMenu(self, self.__oC, oMainWindow)
+
+        self.addParts()
+
     view = property(fget=lambda self: self.__oC.view, doc="Associated View Object")
     name = property(fget=lambda self: self.__sName, doc="Frame Name")
     type = property(fget=lambda self: self.__sType, doc="Frame Type")
+    menu = property(fget=lambda self: self._oMenu, doc="Frame Menu")
 
     def cleanup(self):
         pass
 
-    def addParts(self, oAbstractCards):
+    def addParts(self):
         wMbox = gtk.VBox(False, 2)
+
+        wMbox.pack_start(self._oMenu, False, False)
 
         oToolbar = gtk.VBox(False,2)
         bInsertToolbar = False
-        #for oPlugin in self.__oC.getPlugins():
-        #    oW = oPlugin.getToolbarWidget()
-        #    if oW is not None:
-        #        oToolbar.pack_start(oW)
-        #        bInsertToolbar = True
-        #if bInsertToolbar:
-        #    wMbox.pack_start(oToolbar, False, False)
+        for oPlugin in self._aPlugins:
+            oW = oPlugin.getToolbarWidget()
+            if oW is not None:
+                oToolbar.pack_start(oW)
+                bInsertToolbar = True
+        if bInsertToolbar:
+            wMbox.pack_start(oToolbar, False, False)
 
-        wMbox.pack_start(AutoScrolledWindow(oAbstractCards), True, True)
+        wMbox.pack_start(AutoScrolledWindow(self.__oC.view), True, True)
 
         self.add(wMbox)
         self.show_all()
