@@ -454,13 +454,13 @@ class CardTextFilter(DirectFilter):
     istextentry = True
 
     def __init__(self,sPattern):
-        self.__sPattern = sPattern.lower()
+        self.__sPattern = sPattern
 
     def getValues(self):
         return None
 
     def _getExpression(self):
-        return LIKE(func.LOWER(AbstractCard.q.text),'%' + self.__sPattern + '%')
+        return LIKE(func.LOWER(AbstractCard.q.text),'%' + self.__sPattern.lower() + '%')
 
 class CardNameFilter(DirectFilter):
     keyword = "CardName"
@@ -469,13 +469,13 @@ class CardNameFilter(DirectFilter):
     istextentry = True
 
     def __init__(self,sPattern):
-        self.__sPattern = sPattern.lower()
+        self.__sPattern = sPattern
 
     def getValues(self):
         return None
 
     def _getExpression(self):
-        return LIKE(AbstractCard.q.canonical_name,'%' + self.__sPattern + '%')
+        return LIKE(AbstractCard.q.canonical_name,'%' + self.__sPattern.lower() + '%')
 
 class PhysicalCardFilter(Filter):
     def __init__(self):
