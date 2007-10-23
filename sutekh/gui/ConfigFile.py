@@ -82,6 +82,7 @@ class ConfigFile(object):
             # Type is before 1st colon in the name
             sType,sName = sValue.split(':',1)
             aRes.append((iPaneNumber, sType, sName))
+        aRes.sort() # Numbers denote ordering
         return aRes
 
     def getSaveOnExit(self):
