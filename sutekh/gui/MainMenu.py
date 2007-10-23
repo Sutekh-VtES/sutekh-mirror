@@ -57,11 +57,11 @@ class MainMenu(gtk.MenuBar, object):
         iPrefsItem.set_submenu(wPrefsMenu)
         wMenu.add(iPrefsItem)
 
-        iSaveWindows = gtk.MenuItem('Save Current Window Positions')
-        iSaveWindows.connect('activate', self.doSaveWindowPos)
+        iSaveWindows = gtk.MenuItem('Save Current Pane Set')
+        iSaveWindows.connect('activate', self.doSavePaneSet)
         wPrefsMenu.add(iSaveWindows)
 
-        iSaveOnExit = gtk.CheckMenuItem('Save Window Positions on Exit')
+        iSaveOnExit = gtk.CheckMenuItem('Save Pane Set on Exit')
         iSaveOnExit.set_inconsistent(False)
         if self.__oConfig.getSaveOnExit():
             iSaveOnExit.set_active(True)
@@ -270,8 +270,8 @@ class MainMenu(gtk.MenuBar, object):
     def setApplyFilter(self,state):
         self.iApply.set_active(state)
 
-    def doSaveWindowPos(self,widget):
-        self.__oC.saveWindowPos()
+    def doSavePaneSet(self,widget):
+        self.__oWin.save_panes()
 
     def doToggleSaveOnExit(self,widget):
         bChoice = not self.__oConfig.getSaveOnExit()

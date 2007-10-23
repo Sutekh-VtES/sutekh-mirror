@@ -39,8 +39,8 @@ class MultiPaneWindow(gtk.Window):
         self.__oMenu = MainMenu(self, oConfig)
         self.iPaneNum = 0
         self.oVBox.show()
-        self.add(self.oVBox)
         self.oVBox.pack_start(self.__oMenu, False, False)
+        self.add(self.oVBox)
         self.show_all()
         self._iNumOpenPanes = 0
         self._oPluginManager = PluginManager()
@@ -112,11 +112,11 @@ class MultiPaneWindow(gtk.Window):
 
     def action_quit(self, oWidget):
         if self._oConfig.getSaveOnExit():
-            self._oConfig.preSaveClear()
             self.save_panes()
         gtk.main_quit()
 
     def save_panes(self):
+        self._oConfig.preSaveClear()
         iNum = 1
         for oWidget in self._aFrames:
             self._oConfig.addPane(iNum, oWidget.type, oWidget.name)
