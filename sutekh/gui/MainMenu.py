@@ -264,12 +264,6 @@ class MainMenu(gtk.MenuBar, object):
                 Complaint.destroy()
             self.__oC.reloadAll()
 
-    def getApplyFilter(self):
-        return self.iApply.get_active()
-
-    def setApplyFilter(self,state):
-        self.iApply.set_active(state)
-
     def doSavePaneSet(self,widget):
         self.__oWin.save_panes()
 

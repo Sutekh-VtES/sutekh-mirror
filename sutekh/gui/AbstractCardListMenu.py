@@ -35,13 +35,13 @@ class AbstractCardListMenu(gtk.MenuBar, object):
         # items
         iFilter = gtk.MenuItem("Specify Filter")
         wMenu.add(iFilter)
-        iFilter.connect('activate', self.__oC.getFilter)
+        iFilter.connect('activate', self.setFilter)
 
         self.iApply = gtk.CheckMenuItem("Apply Filter")
         self.iApply.set_inconsistent(False)
         self.iApply.set_active(False)
         wMenu.add(self.iApply)
-        self.iApply.connect('activate', self.__oC.runFilter)
+        self.iApply.connect('toggled', self.toggleApply)
         self.add(iMenu)
 
     def __createPluginMenu(self):
@@ -65,8 +65,11 @@ class AbstractCardListMenu(gtk.MenuBar, object):
         if len(wMenu.get_children()) == 0:
             iMenu.set_sensitive(False)
 
-    def getApplyFilter(self):
-        return self.iApply.get_active()
-
     def setApplyFilter(self,state):
         self.iApply.set_active(state)
+
+    def toggleApply(self, oWidget):
+        self.__oC.view.runFilter(oWidget.active)
+
+    def setFilter(self, oWidget):
+        self.__oC.view.getFilter(self)

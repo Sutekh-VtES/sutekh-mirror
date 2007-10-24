@@ -18,8 +18,6 @@ class CardListView(gtk.TreeView, object):
 
         super(CardListView,self).__init__(self._oModel)
 
-        self.set_size_request(-1, -1)
-
         # Selecting rows
         self._oSelection = self.get_selection()
         self._oSelection.set_mode(gtk.SELECTION_MULTIPLE)
@@ -139,9 +137,9 @@ class CardListView(gtk.TreeView, object):
 
     # Filtering
 
-    def getFilter(self,oMenu):
+    def getFilter(self, oMenu):
         if self._oFilterDialog is None:
-            self._oFilterDialog = FilterDialog(self._oMainWin,self._oConfig)
+            self._oFilterDialog = FilterDialog(self._oMainWin, self._oConfig)
 
         self._oFilterDialog.run()
 
@@ -153,17 +151,17 @@ class CardListView(gtk.TreeView, object):
             self._oModel.selectfilter = oFilter
             if not self._oModel.applyfilter:
                 oMenu.setApplyFilter(True) # If a filter is set, automatically apply
-                self.runFilter(True)
+                #self.runFilter(True)
             else:
                 self.load() # Filter Changed, so reload
         else:
             # Filter is set to blank, so we treat this as disabling
             # Filter
             oMenu.setApplyFilter(False)
-            self.runFilter(False)
+            #self.runFilter(False)
             self.load()
 
-    def runFilter(self,bState):
+    def runFilter(self, bState):
         if self._oModel.applyfilter != bState:
             self._oModel.applyfilter = bState
             self.load()
