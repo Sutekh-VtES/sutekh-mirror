@@ -15,6 +15,7 @@ class CardSetController(object):
         self._oMenu = None
         self._oFrame = oFrame
         self._oView = CardSetView(oMainWindow, self, sName, sType, oConfig)
+        self._sFilterType = None
 
         # setup plugins before the menu (which needs a list of plugins)
         #self.__aPlugins = []
@@ -23,6 +24,7 @@ class CardSetController(object):
 
     view = property(fget=lambda self: self._oView, doc="Associated View")
     frame = property(fget=lambda self: self._oFrame, doc="Associated Frame")
+    filtertype = property(fget=lambda self: self._sFilterType, doc="Associated Type")
 
     def getView(self):
         return self._oView
@@ -42,18 +44,12 @@ class CardSetController(object):
     def setCardText(self,sCardName):
         self._oMainWindow.set_card_text(sCardName)
 
-    def getFilter(self,widget):
-        self._oView.getFilter(self._oMenu)
-
-    def runFilter(self,widget):
-        self._oView.runFilter(self._oMenu.getApplyFilter())
-
 class PhysicalCardSetController(CardSetController):
     def __init__(self, sName, oConfig, oMainWindow, oFrame):
         super(PhysicalCardSetController,self).__init__(
                 sName, "Physical Card Set", oConfig, oMainWindow, oFrame)
         self.__oPhysCardSet = PhysicalCardSet.byName(sName)
-        #self._oMenu = CardSetMenu(self,self.getWin(),self.getView(),self.__oPhysCardSet.name,"Physical Card Set")
+        self._sFilterType = 'PhysicalCard'
 
     def decCard(self,sName):
         """
@@ -105,7 +101,7 @@ class AbstractCardSetController(CardSetController):
         super(AbstractCardSetController,self).__init__(
                 sName, "Abstract Card Set", oConfig, oMainWindow, oFrame)
         self.__oAbsCardSet = AbstractCardSet.byName(sName)
-        #self._oMenu = CardSetMenu(self,self.getWin(),self.getView(),self.__oAbsCardSet.name,"Abstract Card Set")
+        self._sFilterType = 'AbstractCard'
 
     def decCard(self,sName):
         """

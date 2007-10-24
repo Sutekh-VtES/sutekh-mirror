@@ -83,11 +83,11 @@ class MultiPaneWindow(gtk.Window):
         self.add_pane(oPane)
 
     def add_pcs_list(self, oWidget):
-        oPane = PhysicalCardSetListFrame(self)
+        oPane = PhysicalCardSetListFrame(self, self._oConfig)
         self.add_pane(oPane)
 
     def add_acs_list(self, oWidget):
-        oPane = AbstractCardSetListFrame(self)
+        oPane = AbstractCardSetListFrame(self, self._oConfig)
         self.add_pane(oPane)
 
     def add_abstract_card_list(self, oWidget):

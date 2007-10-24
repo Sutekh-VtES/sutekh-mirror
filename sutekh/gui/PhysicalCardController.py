@@ -14,9 +14,11 @@ class PhysicalCardController(object):
         self.__oMainWin = oMainWindow
         self.__oFrame = oFrame
         self.__oView = PhysicalCardView(self, oMainWindow, oConfig)
+        self._sFilterType = 'PhysicalCard'
 
     view = property(fget=lambda self: self.__oView, doc="Associated View")
     frame = property(fget=lambda self: self.__oFrame, doc="Associated Frame")
+    filtertype = property(fget=lambda self: self._sFilterType, doc="Associated Type")
 
     def getView(self):
         return self.__oView
@@ -97,8 +99,3 @@ class PhysicalCardController(object):
     def setCardText(self,sCardName):
         self.__oMainWin.set_card_text(sCardName)
 
-    def getFilter(self,oWidget):
-        self.__oView.getFilter(self.__oMenu)
-
-    def runFilter(self,oWidget):
-        self.__oView.runFilter(self.__oMenu.getApplyFilter())

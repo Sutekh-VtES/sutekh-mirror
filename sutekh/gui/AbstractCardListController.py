@@ -14,6 +14,7 @@ class AbstractCardListController(object):
         self.__oConfig = oConfig
         self.__oFrame = oFrame
         self.__oMainWindow = oMainWindow
+        self._sFilterType = 'AbstractCard'
         # Create PluginManager
         #self.__oPluginManager = PluginManager()
         #self.__oPluginManager.loadPlugins()
@@ -28,6 +29,7 @@ class AbstractCardListController(object):
 
     view = property(fget=lambda self: self.__oAbstractCards, doc="Associated View")
     frame = property(fget=lambda self: self.__oFrame, doc="Associated Frame")
+    filtertype = property(fget=lambda self: self._sFilterType, doc="Associated Type")
 
     def getPlugins(self):
         return self.__aPlugins
@@ -35,12 +37,6 @@ class AbstractCardListController(object):
     def setCardText(self, sCardName):
         self.__oMainWindow.set_card_text(sCardName)
         
-    def getFilter(self,widget):
-        self.__oAbstractCards.getFilter(self.__oMenu)
-
-    def runFilter(self,widget):
-        self.__oAbstractCards.runFilter(self.__oMenu.getApplyFilter())
-
     def getMenu(self):
         return self.__oMenu
 

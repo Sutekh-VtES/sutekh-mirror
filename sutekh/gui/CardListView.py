@@ -139,7 +139,7 @@ class CardListView(gtk.TreeView, object):
 
     def getFilter(self, oMenu):
         if self._oFilterDialog is None:
-            self._oFilterDialog = FilterDialog(self._oMainWin, self._oConfig)
+            self._oFilterDialog = FilterDialog(self._oMainWin, self._oConfig, self._oC.filtertype)
 
         self._oFilterDialog.run()
 
