@@ -46,8 +46,20 @@ class CardSetMenu(gtk.MenuBar, object):
         # Possible enhancement, make card set names italic.
         # Looks like it requires playing with menuitem attributes
         # (or maybe gtk.Action)
+        if self.__sMenuType == 'Physical Card Set':
+            oSep = gtk.SeparatorMenuItem()
+            wMenu.add(oSep)
+            self.iViewExpansions = gtk.CheckMenuItem('Show Card Expansions in the Pane')
+            self.iViewExpansions.set_inconsistent(False)
+            self.iViewExpansions.set_active(True)
+            self.iViewExpansions.connect('toggled', self.toggleExpansion)
+            wMenu.add(self.iViewExpansions)
+
+        oSep = gtk.SeparatorMenuItem()
+        wMenu.add(oSep)
         self.__iDelete.connect("activate", self.cardSetDelete)
         wMenu.add(self.__iDelete)
+
         iMenu.set_submenu(wMenu)
         self.add(iMenu)
 
@@ -167,6 +179,11 @@ class CardSetMenu(gtk.MenuBar, object):
 
     def toggleApply(self, oWidget):
         self.__oC.view.runFilter(oWidget.active)
+
+    def toggleExpansion(self, oWidget):
+        self.__oC.view._oModel.bExpansions = oWidget.active
+        self.__oC.view.load()
+
 
     def setFilter(self, oWidget):
         self.__oC.view.getFilter(self)

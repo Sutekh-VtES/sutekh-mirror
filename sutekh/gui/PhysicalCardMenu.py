@@ -31,6 +31,12 @@ class PhysicalCardMenu(gtk.MenuBar,object):
         wMenu.add(iExport)
         iExport.connect('activate', self.doExport)
 
+        self.iViewExpansions = gtk.CheckMenuItem('Show Card Expansions in the Pane')
+        self.iViewExpansions.set_inconsistent(False)
+        self.iViewExpansions.set_active(True)
+        self.iViewExpansions.connect('toggled', self.toggleExpansion)
+        wMenu.add(self.iViewExpansions)
+
         self.add(iMenu)
 
     def __createFilterMenu(self):
@@ -85,6 +91,10 @@ class PhysicalCardMenu(gtk.MenuBar,object):
 
     def toggleApply(self, oWidget):
         self.__oC.view.runFilter(oWidget.active)
+
+    def toggleExpansion(self, oWidget):
+        self.__oC.view._oModel.bExpansions = oWidget.active
+        self.__oC.view.load()
 
     def setFilter(self, oWidget):
         self.__oC.view.getFilter(self)
