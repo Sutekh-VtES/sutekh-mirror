@@ -14,7 +14,7 @@ from sutekh.core.Filters import MultiCardTypeFilter, MultiClanFilter, \
         PhysicalCardSetAuthorFilter, AbstractCardSetDescriptionFilter, \
         PhysicalCardSetDescriptionFilter, AbstractCardSetAnnotationsFilter, \
         PhysicalCardSetAnnotationsFilter, MultiCostTypeFilter, \
-        FilterAndBox, FilterOrBox
+        MultiPhysicalCardSetFilter, FilterAndBox, FilterOrBox
 
 # FIXME: The intention is to push this into the Individual Filter Objects
 
@@ -27,7 +27,7 @@ aFilters = [MultiCardTypeFilter, MultiCostTypeFilter, MultiClanFilter,
         PhysicalCardSetNameFilter, AbstractCardSetAuthorFilter,
         PhysicalCardSetAuthorFilter, AbstractCardSetDescriptionFilter,
         PhysicalCardSetDescriptionFilter, AbstractCardSetAnnotationsFilter,
-        PhysicalCardSetAnnotationsFilter]
+        PhysicalCardSetAnnotationsFilter, MultiPhysicalCardSetFilter]
 
 aEntryFilters = [x.keyword for x in aFilters if hasattr(x,'istextentry')]
 aWithFilters = [x.keyword for x in aFilters if hasattr(x,'iswithfilter')]

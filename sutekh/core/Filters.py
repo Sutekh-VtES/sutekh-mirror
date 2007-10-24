@@ -10,7 +10,7 @@ from sutekh.core.SutekhObjects import AbstractCard, IAbstractCard, \
                                  IRarityPair, IRarity, \
                                  Clan, Discipline, CardType, Title,\
                                  Creed, Virtue, Sect, Expansion, \
-                                 RarityPair
+                                 RarityPair, PhysicalCardSet
 from sqlobject import AND, OR, LIKE, IN, func
 from sqlobject.sqlbuilder import Table, Alias, LEFTJOINOn
 
@@ -564,6 +564,33 @@ class PhysicalCardSetFilter(Filter):
 
     def _getExpression(self):
         return self.__oT.q.physical_card_set_id == self.__iDeckId
+
+class MultiPhysicalCardSetFilter(Filter):
+    keyword = "PhysicalSet"
+    description = "Physical Sets"
+    helptext = "List of physical cards in the specified Physical Card Sets"
+    types = ['PhysicalCard']
+
+    def __init__(self,aNames):
+        # Select cards belonging to the PhysicalCardSet
+        self.__aDeckIds = []
+        for sName in aNames:
+            self.__aDeckIds.append(IPhysicalCardSet(sName).id)
+        self.__oT = self._makeTableAlias('physical_map')
+        self.__oPT = Table('physical_card')
+
+    def getValues(self):
+        aNames = []
+        for oCS in PhysicalCardSet.select():
+            aNames.append(oCS.name)
+        return aNames
+
+    def _getJoins(self):
+        return [LEFTJOINOn(None, self.__oT, self.__oPT.id == self.__oT.q.physical_card_id)]
+
+    def _getExpression(self):
+        return IN(self.__oT.q.physical_card_set_id,self.__aDeckIds)
+
 
 class AbstractCardSetFilter(SingleFilter):
     def __init__(self,sName):
