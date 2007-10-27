@@ -9,7 +9,7 @@ from sutekh.core.Filters import MultiCardTypeFilter, MultiClanFilter, \
         MultiCostFilter, MultiLifeFilter, MultiCreedFilter, MultiVirtueFilter,\
         CardTextFilter, CardNameFilter, MultiSectFilter, MultiTitleFilter,\
         MultiExpansionRarityFilter, MultiDisciplineLevelFilter, \
-        MultiCostTypeFilter, FilterAndBox, FilterOrBox
+        MultiCostTypeFilter, FilterAndBox, FilterOrBox, FilterNot
 
 # FIXME: The intention is to push this into the Individual Filter Objects
 
@@ -32,6 +32,7 @@ class ParseFilterDefinitions(object):
     aKeywords = [x.keyword for x in aFilters]
 
     tokens = (
+            'NOT',
             'FILTERTYPE',
             'ID',
             'INTEGER',
@@ -72,6 +73,8 @@ class ParseFilterDefinitions(object):
             t.type = 'OR'
         elif t.value.lower() == 'in':
             t.type = 'IN'
+        elif t.value.lower() == 'not':
+            t.type = 'NOT'
         elif t.value[0] == '$':
             t.type = 'VARIABLE'
         elif t.value.lower() == 'with':
@@ -101,6 +104,7 @@ class FilterYaccParser(object):
     # This shut's up most shift/reduce warnings
     precedence = (
             ('left','AND','OR'),
+            ('left','NOT'),
             ('left','IN'),
             ('left','COMMA'),
             ('left','WITH')
@@ -123,6 +127,10 @@ class FilterYaccParser(object):
     def p_filterpart_OR(self,p):
         """filterpart : filterpart OR filterpart"""
         p[0] = BinOpNode(p[1],'or',p[3])
+
+    def p_filterpart_NOT(self,p):
+        """filterpart : NOT filterpart"""
+        p[0] = NotOpNode(p[2])
 
     def p_filterpart_filtertype(self,p):
         """filterpart : FILTERTYPE IN expression"""
@@ -348,6 +356,26 @@ class FilterPartNode(OperatorNode):
         else:
             oFilter = FilterType(aValues)
         return oFilter
+
+class NotOpNode(OperatorNode):
+    def __init__(self, subexpression):
+        super(NotOpNode, self).__init__([subexpression])
+        self.subexpression = subexpression
+
+    def getInvalidValues(self):
+        return self.subexpression.getInvalidValues()
+
+    def getValues(self):
+        aResults = [ValueObject('NOT (', None)] + \
+                 self.subexpression.getValues() +\
+                 [ValueObject(')', None)]
+        return aResults
+
+    def getFilter(self):
+        return FilterNot(self.subexpression.getFilter())
+
+    def getType(self):
+        return self.subexpression.getType()
 
 class BinOpNode(OperatorNode):
     def __init__(self,left,op,right):

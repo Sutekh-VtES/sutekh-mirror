@@ -11,8 +11,8 @@ from sutekh.core.SutekhObjects import AbstractCard, IAbstractCard, \
                                  Clan, Discipline, CardType, Title,\
                                  Creed, Virtue, Sect, Expansion, \
                                  RarityPair
-from sqlobject import AND, OR, LIKE, IN, func
-from sqlobject.sqlbuilder import Table, Alias, LEFTJOINOn
+from sqlobject import AND, OR, NOT, LIKE, IN, func
+from sqlobject.sqlbuilder import Table, Alias, LEFTJOINOn, Select
 
 # Filter Base Class
 
@@ -69,6 +69,22 @@ class FilterOrBox(FilterBox):
 
     def _getExpression(self):
         return OR(*[x._getExpression() for x in self])
+
+# NOT Filter
+
+class FilterNot(Filter):
+    """NOT (negate) a filter."""
+
+    def __init__(self,oSubFilter):
+        self.__oSubFilter = oSubFilter
+
+    def _getJoins(self):
+        return []
+
+    def _getExpression(self):
+        oX = self.__oSubFilter._getExpression()
+        aJ = self.__oSubFilter._getJoins()
+        return NOT(IN(AbstractCard.q.id,Select(AbstractCard.q.id,oX,join=aJ)))
 
 # Null Filter
 

@@ -1,3 +1,6 @@
+27 Oct 2007
+ * Add NOT filter.
+
 16 Oct 2007
  * Fix plugins which relied on ACSes .getCardIterator(...) returning a list
    of AbstractCards.

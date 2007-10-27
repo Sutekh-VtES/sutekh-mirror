@@ -266,6 +266,7 @@ class FilterDialog(gtk.Dialog, ConfigFileListener):
                 "where <b>OP</b> is either AND or OR\n" \
                 "and <i>FilterPart</i> is FilterType IN comma seperated list of values\n" \
                 "or FilterType = $variable \n" \
+                "NOT FilterType will invert the meaning of the filter.\n" \
                 "FilterType can be any of the following\n"
         for oFilterType in FilterParser.aFilters:
             sHelpText += "<b>" + oFilterType.keyword + "</b> which takes " \
