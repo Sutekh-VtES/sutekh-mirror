@@ -655,7 +655,7 @@ class CardSetNameFilter(DirectFilter):
         return None
 
     def _getExpression(self):
-        return LIKE(self._oT.name,'%' + self.__sPattern.lower() + '%')
+        return LIKE(func.LOWER(self._oT.name), '%' + self.__sPattern.lower() + '%')
 
 class CardSetDescriptionFilter(DirectFilter):
     keyword = "CardSetDescription"
@@ -672,7 +672,7 @@ class CardSetDescriptionFilter(DirectFilter):
         return None
 
     def _getExpression(self):
-        return LIKE(self._oT.comment,'%' + self.__sPattern.lower() + '%')
+        return LIKE(func.LOWER(self._oT.comment), '%' + self.__sPattern.lower() + '%')
 
 class CardSetAuthorFilter(DirectFilter):
     keyword = "CardSetAuthor"
@@ -689,7 +689,7 @@ class CardSetAuthorFilter(DirectFilter):
         return None
 
     def _getExpression(self):
-        return LIKE(self._oT.author,'%' + self.__sPattern.lower() + '%')
+        return LIKE(func.LOWER(self._oT.author), '%' + self.__sPattern.lower() + '%')
 
 class CardSetAnnotationsFilter(DirectFilter):
     keyword = "CardSetAnnotations"
@@ -706,7 +706,7 @@ class CardSetAnnotationsFilter(DirectFilter):
         return None
 
     def _getExpression(self):
-        return LIKE(self._oT.annotations,'%' + self.__sPattern.lower() + '%')
+        return LIKE(func.LOWER(self._oT.annotations), '%' + self.__sPattern.lower() + '%')
 
 # Abstract Card Set subclasses
 
