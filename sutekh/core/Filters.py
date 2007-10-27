@@ -13,7 +13,7 @@ from sutekh.core.SutekhObjects import AbstractCard, IAbstractCard, \
                                  RarityPair, PhysicalCardSet, PhysicalCard, \
                                  AbstractCardSet
 from sqlobject import AND, OR, NOT, LIKE, IN, func
-from sqlobject.sqlbuilder import Table, Alias, LEFTJOINOn, Select
+from sqlobject.sqlbuilder import Table, Alias, LEFTJOINOn, Select, TRUE
 
 # Filter Base Class
 
@@ -100,7 +100,7 @@ class NullFilter(Filter):
     """Return everything."""
 
     def _getExpression(self):
-        return "1 = 1" # SQLite doesn't like True. Postgres doesn't like 1.
+        return TRUE # SQLite doesn't like True. Postgres doesn't like 1.
 
     def _getJoins(self):
         return []
@@ -528,7 +528,7 @@ class PhysicalCardFilter(Filter):
         return [LEFTJOINOn(None, AbstractCard, AbstractCard.q.id == oT.abstract_card_id)]
 
     def _getExpression(self):
-        return "1 = 1" # SQLite doesn't like True. Postgres doesn't like 1.
+        return TRUE # SQLite doesn't like True. Postgres doesn't like 1.
 
 class PhysicalExpansionFilter(DirectFilter):
     # We must be calling this with a PhysicalCardFilter for sensible results,
@@ -569,8 +569,11 @@ class MultiPhysicalExpansionFilter(DirectFilter):
     def _getExpression(self):
         oT = Table('physical_card')
         # None in the IN statement doesn't do the right thing for me
-        if self.__bOrUnspec:
+        if self.__bOrUnspec and len(self._aIds) > 0:
             return OR(IN(oT.expansion_id,self._aIds),oT.expansion_id == None)
+        elif self.__bOrUnspec:
+            # Psycopg2 doesn't like IN(a,[]) constructions
+            return oT.expansion_id == None
         else:
             return IN(oT.expansion_id,self._aIds)
 
