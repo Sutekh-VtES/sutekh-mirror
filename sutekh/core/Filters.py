@@ -10,7 +10,8 @@ from sutekh.core.SutekhObjects import AbstractCard, IAbstractCard, \
                                  IRarityPair, IRarity, \
                                  Clan, Discipline, CardType, Title,\
                                  Creed, Virtue, Sect, Expansion, \
-                                 RarityPair, PhysicalCardSet
+                                 RarityPair, PhysicalCardSet, PhysicalCard, \
+                                 AbstractCardSet
 from sqlobject import AND, OR, NOT, LIKE, IN, func
 from sqlobject.sqlbuilder import Table, Alias, LEFTJOINOn, Select
 
@@ -84,7 +85,14 @@ class FilterNot(Filter):
     def _getExpression(self):
         oX = self.__oSubFilter._getExpression()
         aJ = self.__oSubFilter._getJoins()
-        return NOT(IN(AbstractCard.q.id,Select(AbstractCard.q.id,oX,join=aJ)))
+        if 'AbstractCard' in self.__oSubFilter.types:
+            return NOT(IN(AbstractCard.q.id,Select(AbstractCard.q.id,oX,join=aJ)))
+        elif 'PhysicalCard' in self.__oSubFilter.types:
+            return NOT(IN(PhysicalCard.q.id, Select(PhysicalCard.q.id, oX, join=aJ)))
+        elif 'PhysicalCardSet' in self.__oSubFilter.types:
+            return NOT(IN(PhysicalCardSet.q.id, Select(PhysicalCardSet.q.id, oX, join=aJ)))
+        elif 'AbstractCardSet' in self.__oSubFilter.types:
+            return NOT(IN(AbstractCardSet.q.id, Select(AbstractCardSet.q.id, oX, join=aJ)))
 
 # Null Filter
 
