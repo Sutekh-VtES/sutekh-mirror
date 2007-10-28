@@ -108,8 +108,8 @@ class CardSetExportHTML(CardListPlugin):
         dDict = {}
         for oCard in self.model.getCardIterator(None):
             oACard = IAbstractCard(oCard)
-            dDict.setdefault((oACard.id,oCard.name),0)
-            dDict[(oACard.id,oCard.name)] += 1
+            dDict.setdefault((oACard.id,oACard.name),0)
+            dDict[(oACard.id,oACard.name)] += 1
         return dDict
 
 plugin = CardSetExportHTML
