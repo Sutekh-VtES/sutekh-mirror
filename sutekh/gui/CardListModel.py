@@ -42,6 +42,8 @@ class CardListModel(gtk.TreeStore):
     Provides a card list specific API for accessing a gtk.TreeStore.
     """
 
+    sUnknownExpansion = '  Unspecified Expansion'
+
     def __init__(self):
         # STRING is the card name, INT is the card count
         super(CardListModel,self).__init__(gobject.TYPE_STRING,gobject.TYPE_INT,
@@ -147,12 +149,11 @@ class CardListModel(gtk.TreeStore):
             oListener.load()
 
     def getExpansionInfo(self, oCard, dExpanInfo):
-        sUnknown = '  Unspecified Expansion'
         # FIXME: Use spaces to ensure it sorts first, and is 
         # visually distinct. Very much the wrong solution, I feel
         # We always list Unspecfied expansions, even when there
         # are none
-        dExpansions = {sUnknown : [0,False,False]}
+        dExpansions = {self.sUnknownExpansion : [0,False,False]}
         if self.bEditable:
             oFilter = FilterAndBox([SpecificCardFilter(oCard), 
                 PhysicalCardFilter(), 
@@ -187,7 +188,7 @@ class CardListModel(gtk.TreeStore):
                         # cards to move across
                         bIncCard = iNoneCnt > 0
             else:
-                sKey = sUnknown
+                sKey = self.sUnknownExpansion
                 if self.bEditable and self.cardclass is PhysicalCardSet:
                     bDecCard = iCnt > 0
                     # Cards of the expansion available to select
@@ -262,7 +263,7 @@ class CardListModel(gtk.TreeStore):
         else:
             return FilterAndBox([self.basefilter,oOtherFilter])
 
-    def getCardNameFromPath(self,oPath):
+    def getCardNameFromPath(self, oPath):
         oIter = self.get_iter(oPath)
         if self.iter_depth(oIter) == 2:
             # Expansion section - we want the card before this
@@ -271,18 +272,30 @@ class CardListModel(gtk.TreeStore):
             oIter = self.get_iter(oPath[0:2])
         return self.getNameFromIter(oIter)
 
+    def getAllFromPath(self, oPath):
+        oIter = self.get_iter(oPath)
+        iDepth = self.iter_depth(oIter)
+        if iDepth == 2:
+            sName = self.getNameFromIter(self.get_iter(oPath[0:2]))
+            sExpansion = self.get_value(oIter, 0)
+        else:
+            sName = self.getNameFromIter(oIter)
+            sExpansion = self.sUnknownExpansion
+        iCount = self.get_value(oIter, 1)
+        return sName, sExpansion, iCount, iDepth
+
     def getExpansionNameFromPath(self,oPath):
         oIter = self.get_iter(oPath)
         if self.iter_depth(oIter) != 2:
-            return None
+            return self.sUnknownExpasion
         return self.getNameFromIter(oIter)
 
-    def getNameFromIter(self,oIter):
+    def getNameFromIter(self, oIter):
         # For some reason the string comes back from the
         # tree store having been encoded *again* despite
         # displaying correctly, so we decode it here.
         # I hope all systems encode with utf-8. :(
-        sCardName = self.get_value(oIter,0).decode("utf-8")
+        sCardName = self.get_value(oIter, 0).decode("utf-8")
         return sCardName
 
     def incCard(self,oPath):
