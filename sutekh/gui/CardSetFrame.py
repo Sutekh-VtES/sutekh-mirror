@@ -13,43 +13,38 @@ from sutekh.gui.CardSetController import PhysicalCardSetController, \
 from sutekh.gui.SQLObjectEvents import CardSetOpenedSignal, CardSetClosedSignal
 
 class CardSetFrame(gtk.Frame, object):
-    sPCSType = "Physical Card Set"
-    sACSType = "Abstract Card Set"
-
     def __init__(self, oMainWindow, sName, sType, oConfig):
         super(CardSetFrame, self).__init__()
         self._oMainWindow = oMainWindow
         self.sSetType = sType
         self._oConfig = oConfig
-        if self.sSetType == self.sPCSType:
+        if self.sSetType == PhysicalCardSet.sqlmeta.table:
             self._oC = PhysicalCardSetController(sName, oConfig,
                     oMainWindow, self)
             self.oSignalClass = PhysicalCardSet
             self._dOpenCardSets = oMainWindow.dOpenPCS
-        elif self.sSetType == self.sACSType:
+        elif self.sSetType == AbstractCardSet.sqlmeta.table:
             self._oC = AbstractCardSetController(sName, oConfig,
                     oMainWindow, self)
             self.oSignalClass = AbstractCardSet
             self._dOpenCardSets = oMainWindow.dOpenACS
         else:
             raise RuntimeError("Unknown Card Set type %s" % sType)
-
-        self.updateName(sName)
-
-        if self.sSetName not in self._dOpenCardSets:
-            self._dOpenCardSets[self.sSetName] = 1
+        if sName not in self._dOpenCardSets:
+            self._dOpenCardSets[sName] = 1
         else:
-            self._dOpenCardSets[self.sSetName] += 1
+            self._dOpenCardSets[sName] += 1
 
         self._aPlugins = []
         for cPlugin in self._oMainWindow.plugin_manager.getCardListPlugins():
             self._aPlugins.append(cPlugin(self._oC.view,
-                self._oC.view.getModel(),self.sSetType))
+                self._oC.view.getModel(), self.sSetType))
 
-        self.oSignalClass.sqlmeta.send(CardSetOpenedSignal, self.sSetName)
+        self.oSignalClass.sqlmeta.send(CardSetOpenedSignal, sName)
         self._oMenu = CardSetMenu(self, self._oC, self._oMainWindow, self._oC.view,
-                self.sSetName, self.sSetType)
+                sName, self.sSetType)
         self.addParts()
+        self.updateName(sName)
 
     view = property(fget=lambda self: self._oC.view, doc="Associated View Object")
     name = property(fget=lambda self: self.sSetName, doc="Frame Name")
@@ -67,10 +62,16 @@ class CardSetFrame(gtk.Frame, object):
 
     def updateName(self, sNewName):
         self.sSetName = sNewName
-        self.set_label(self.sSetType + ": " + self.sSetName)
+        if self.sSetType == PhysicalCardSet.sqlmeta.table:
+            self.__oTitle.set_text('PCS:' + self.sSetName)
+        else:
+            self.__oTitle.set_text('ACS:' + self.sSetName)
 
     def addParts(self):
         wMbox = gtk.VBox(False, 2)
+
+        self.__oTitle = gtk.Label()
+        wMbox.pack_start(self.__oTitle, False, False)
 
         wMbox.pack_start(self._oMenu, False, False)
 
@@ -102,3 +103,13 @@ class CardSetFrame(gtk.Frame, object):
     def load(self):
         # Select all cards from
         self._oC.view.load()
+
+class AbstractCardSetFrame(CardSetFrame):
+    def __init__(self, oMainWindow, sName, oConfig):
+        super(AbstractCardSetFrame, self).__init__(oMainWindow, sName, 
+                AbstractCardSet.sqlmeta.table, oConfig)
+
+class PhysicalCardSetFrame(CardSetFrame):
+    def __init__(self, oMainWindow, sName, oConfig):
+        super(PhysicalCardSetFrame, self).__init__(oMainWindow, sName, 
+                PhysicalCardSet.sqlmeta.table, oConfig)

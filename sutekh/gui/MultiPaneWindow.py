@@ -8,11 +8,12 @@ pygtk.require('2.0')
 import gtk, gobject
 from sqlobject import SQLObjectNotFound
 from sutekh.core.SutekhObjectCache import SutekhObjectCache
-from sutekh.core.SutekhObjects import AbstractCard
+from sutekh.core.SutekhObjects import AbstractCard, PhysicalCardSet, \
+        AbstractCardSet
 from sutekh.gui.AbstractCardListFrame import AbstractCardListFrame
 from sutekh.gui.PhysicalCardFrame import PhysicalCardFrame
 from sutekh.gui.CardTextFrame import CardTextFrame
-from sutekh.gui.CardSetFrame import CardSetFrame
+from sutekh.gui.CardSetFrame import AbstractCardSetFrame, PhysicalCardSetFrame
 from sutekh.gui.AboutDialog import SutekhAboutDialog
 from sutekh.gui.MainMenu import MainMenu
 from sutekh.gui.GuiCardLookup import GuiLookup
@@ -52,9 +53,9 @@ class MultiPaneWindow(gtk.Window):
         self._bCardTextShown = False
         self._oCardTextPane = CardTextFrame(self)
         for iNumber, sType, sName in self._oConfig.getAllPanes():
-            if sType == 'Physical Card Set':
+            if sType == PhysicalCardSet.sqlmeta.table:
                 self.add_physical_card_set(sName)
-            elif sType == 'Abstract Card Set':
+            elif sType == AbstractCardSet.sqlmeta.table:
                 self.add_abstract_card_set(sName)
             elif sType == 'Abstract Cards':
                 self.add_abstract_card_list(None)
@@ -75,11 +76,11 @@ class MultiPaneWindow(gtk.Window):
     plugin_manager = property(fget=lambda self: self._oPluginManager)
 
     def add_physical_card_set(self, sName):
-        oPane = CardSetFrame(self, sName, CardSetFrame.sPCSType, self._oConfig)
+        oPane = PhysicalCardSetFrame(self, sName, self._oConfig)
         self.add_pane(oPane)
 
     def add_abstract_card_set(self, sName):
-        oPane = CardSetFrame(self, sName, CardSetFrame.sACSType, self._oConfig)
+        oPane = AbstractCardSetFrame(self, sName, self._oConfig)
         self.add_pane(oPane)
 
     def add_pcs_list(self, oWidget):

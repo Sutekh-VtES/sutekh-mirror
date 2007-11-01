@@ -10,9 +10,10 @@ from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.ScrolledList import ScrolledList
 
 class CardSetCompare(CardListPlugin):
-    dTableVersions = {"AbstractCardSet" : [1,2,3],
-                      "PhysicalCardSet" : [1,2,3]}
-    aModelsSupported = ["AbstractCardSet","PhysicalCardSet"]
+    dTableVersions = {AbstractCardSet.sqlmeta.table : [1,2,3],
+                      PhysicalCardSet.sqlmeta.table : [1,2,3]}
+    aModelsSupported = [AbstractCardSet.sqlmeta.table,
+            PhysicalCardSet.sqlmeta.table]
     def getMenuItem(self):
         """
         Overrides method from base class.
@@ -40,16 +41,17 @@ class CardSetCompare(CardListPlugin):
                           gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                           (gtk.STOCK_OK, gtk.RESPONSE_OK,
                            gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
-        self.csFrame = ScrolledList('Abstract Card Sets')
+        if self._sModelType == AbstractCardSet.sqlmeta.table:
+            oSelect = AbstractCardSet.select().orderBy('name')
+            self.csFrame = ScrolledList('Abstract Card Sets')
+        elif self._sModelType == PhysicalCardSet.sqlmeta.table:
+            oSelect = PhysicalCardSet.select().orderBy('name')
+            self.csFrame = ScrolledList('Physical Card Sets')
+        else:
+            return
         self.csFrame.set_select_single()
         self.oDlg.vbox.pack_start(self.csFrame)
         self.csFrame.set_size_request(150,300)
-        if self.view.sSetType == 'AbstractCardSet':
-            oSelect = AbstractCardSet.select().orderBy('name')
-        elif self.view.sSetType == 'PhysicalCardSet':
-            oSelect = PhysicalCardSet.select().orderBy('name')
-        else:
-            return
         for cs in oSelect:
             if cs.name != self.view.sSetName:
                 iter = self.csFrame.get_list().append(None)
@@ -66,8 +68,8 @@ class CardSetCompare(CardListPlugin):
             self.compCardSets(aCardSetNames)
         self.oDlg.destroy()
 
-    def compCardSets(self,aCardSetNames):
-        (dDifferences,aCommon) = self.__getCardSetList(aCardSetNames)
+    def compCardSets(self, aCardSetNames):
+        (dDifferences, aCommon) = self.__getCardSetList(aCardSetNames)
         parent = self.view.getWindow()
         Results = gtk.Dialog("Card Comparison",parent,gtk.DIALOG_MODAL | \
                 gtk.DIALOG_DESTROY_WITH_PARENT, \
@@ -114,10 +116,10 @@ class CardSetCompare(CardListPlugin):
         name1 = aCardSetNames[0]
         name2 = aCardSetNames[1]
         for name in aCardSetNames:
-            if self.view.sSetType == 'AbstractCardSet':
+            if self._sModelType == AbstractCardSet.sqlmeta.table:
                 oFilter = AbstractCardSetFilter(name)
                 oCS = oFilter.select(AbstractCard)
-            elif self.view.sSetType == 'PhysicalCardSet':
+            elif self._sModelType == PhysicalCardSet.sqlmeta.table:
                 oFilter = PhysicalCardSetFilter(name)
                 oCS = oFilter.select(PhysicalCard)
             for oC in oCS:

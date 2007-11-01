@@ -3,16 +3,17 @@
 # GPL - see COPYING for details
 
 import gtk
-from sutekh.core.SutekhObjects import AbstractCardSet, PhysicalCardSet,\
+from sutekh.core.SutekhObjects import AbstractCardSet, PhysicalCardSet, \
                                  AbstractCard, PhysicalCard, IAbstractCard
 from sutekh.core.Filters import AbstractCardSetFilter, PhysicalCardSetFilter
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.ScrolledList import ScrolledList
 
 class CardSetIndependence(CardListPlugin):
-    dTableVersions = {"AbstractCardSet" : [1,2,3],
-                      "PhysicalCardSet" : [1,2,3]}
-    aModelsSupported = ["AbstractCardSet","PhysicalCardSet"]
+    dTableVersions = {AbstractCardSet.sqlmeta.table : [1,2,3],
+                      PhysicalCardSet.sqlmeta.table : [1,2,3]}
+    aModelsSupported = [AbstractCardSet.sqlmeta.table,
+            PhysicalCardSet.sqlmeta.table]
     def getMenuItem(self):
         """
         Overrides method from base class.
@@ -26,10 +27,9 @@ class CardSetIndependence(CardListPlugin):
     def getDesiredMenu(self):
         return "Plugins"
 
-    def activate(self,oWidget):
+    def activate(self, oWidget):
         oDlg = self.makeDialog()
         oDlg.run()
-        # only do stuff for AbstractCardSets
 
     def makeDialog(self):
         """
@@ -40,15 +40,16 @@ class CardSetIndependence(CardListPlugin):
                           gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                           (gtk.STOCK_OK, gtk.RESPONSE_OK,
                            gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
-        self.csFrame = ScrolledList('Abstract Card Sets')
-        self.oDlg.vbox.pack_start(self.csFrame)
-        self.csFrame.set_size_request(150,300)
-        if self.view.sSetType == 'AbstractCardSet':
+        if self._sModelType == AbstractCardSet.sqlmeta.table:
             oSelect = AbstractCardSet.select().orderBy('name')
-        elif self.view.sSetType == 'PhysicalCardSet':
+            self.csFrame = ScrolledList('Abstract Card Sets')
+        elif self._sModelType == PhysicalCardSet.sqlmeta.table:
             oSelect = PhysicalCardSet.select().orderBy('name')
+            self.csFrame = ScrolledList('Physical Card Sets')
         else:
             return
+        self.oDlg.vbox.pack_start(self.csFrame)
+        self.csFrame.set_size_request(150,300)
         for cs in oSelect:
             if cs.name != self.view.sSetName:
                 iter = self.csFrame.get_list().append(None)
@@ -61,45 +62,87 @@ class CardSetIndependence(CardListPlugin):
         if oResponse ==  gtk.RESPONSE_OK:
             aCardSetNames = [self.view.sSetName]
             dSelect = {}
-            self.csFrame.get_selection(aCardSetNames,dSelect)
-            self.testCardSets(aCardSetNames)
+            self.csFrame.get_selection(aCardSetNames, dSelect)
+            if self._sModelType == AbstractCardSet.sqlmeta.table:
+                self.testAbstractCardSets(aCardSetNames)
+            else:
+                self.testPhysicalCardSets(aCardSetNames)
         self.oDlg.destroy()
 
-    def testCardSets(self,aCardSetNames):
+    def testAbstractCardSets(self, aCardSetNames):
+        """Test if all the Abstract Cards selected can be realised
+            independently"""
         dMissing = {}
-        dFullCardList = self.__getCardSetList(aCardSetNames)
-        for cardid,(cardname,cardcount) in dFullCardList.iteritems():
-            oPC = list(PhysicalCard.selectBy(abstractCardID=cardid))
-            if cardcount>len(oPC):
-                dMissing[cardname] = cardcount-len(oPC)
-        if len(dMissing)>0:
-            message = "<span foreground = \"red\">Missing Cards</span>\n"
+        dFullCardList = self.__getAbstractCardSetList(aCardSetNames)
+        for iCardId, (sCardName, iCount) in dFullCardList.iteritems():
+            oPC = list(PhysicalCard.selectBy(abstractCardID=iCardId))
+            if cardcount > len(oPC):
+                dMissing[sCardName] = iCount - len(oPC)
+        if len(dMissing) > 0:
+            message = "<span foreground = \"red\"> Missing Cards </span>\n"
             for cardname,cardcount in dMissing.iteritems():
                 message += "<span foreground = \"blue\">" + cardname + "</span> : " + str(cardcount) + "\n"
-            Results = gtk.MessageDialog(None,0,gtk.MESSAGE_INFO,\
-                    gtk.BUTTONS_CLOSE,None)
+            Results = gtk.MessageDialog(None, 0, gtk.MESSAGE_INFO,
+                    gtk.BUTTONS_CLOSE, None)
             Results.set_markup(message)
         else:
-            Results = gtk.MessageDialog(None,0,gtk.MESSAGE_INFO,\
-                    gtk.BUTTONS_CLOSE,"All Cards in the PhysicalCard List")
+            Results = gtk.MessageDialog(None, 0, gtk.MESSAGE_INFO,
+                    gtk.BUTTONS_CLOSE, "All Cards in the PhysicalCard List")
         Results.run()
         Results.destroy()
 
-    def __getCardSetList(self,aCardSetNames):
+    def testPhysicalCardSets(self, aCardSetNames):
+        """Test if the Physical Card Sets are actaully independent by
+           looking for cards common to the sets"""
+        dFullCardList = self.__getPhysicalCardSetList(aCardSetNames)
+        dMissing = {}
+        for oCard, (sName, iCount) in dFullCardList:
+            if iCount > 1:
+                if oCard.expansion is not None:
+                    dMissing[(sName, oCard.expansion.name)] = iCount
+                else:
+                    dMissing[(sName, '(unspecified expansion)')] = iCount
+        if len(dMissing) > 0:
+            message = "<span foreground = \"red\"> Duplicate Cards </span>\n"
+            for (sCardName, sExpansion), iCount in dMissing.iteritems():
+                message += "<span foreground = \"blue\">" + sCardName \
+                        + " (from expansion: " + sExpansion \
+                        + ")</span> : used " + str(iCount) + " times\n"
+            Results = gtk.MessageDialog(None, 0, gtk.MESSAGE_INFO,
+                    gtk.BUTTONS_CLOSE, None)
+            Results.set_markup(message)
+        else:
+            Results = gtk.MessageDialog(None, 0, gtk.MESSAGE_INFO,
+                    gtk.BUTTONS_CLOSE, "No cards duplicated")
+        Results.run()
+        Results.destroy()
+
+
+
+    def __getAbstractCardSetList(self, aCardSetNames):
         dFullCardList = {}
-        for name in aCardSetNames:
-            if self.view.sSetType == 'AbstractCardSet':
-                oFilter = AbstractCardSetFilter(name)
-                oCS = oFilter.select(AbstractCard)
-            elif self.view.sSetType == 'PhysicalCardSet':
-                oFilter = PhysicalCardSetFilter(name)
-                oCS = oFilter.select(PhysicalCard)
+        for sName in aCardSetNames:
+            oFilter = AbstractCardSetFilter(sName)
+            oCS = oFilter.select(AbstractCard)
             for oC in oCS:
                 oAC = IAbstractCard(oC)
                 try:
                     dFullCardList[oAC.id][1] += 1
                 except KeyError:
-                    dFullCardList[oAC.id] = [oAC.name,1]
+                    dFullCardList[oAC.id] = [oAC.name, 1]
+        return dFullCardList
+
+    def __getPhysicalCardSetList(self, aCardSetNames):
+        dFullCardList = {}
+        for sName in aCardSetNames:
+            oFilter = PhysicalCardSetFilter(sName)
+            oCS = oFilter.select(PhysicalCard)
+            for oC in oCS:
+                oAC = IAbstractCard(oC)
+                try:
+                    dFullCardList[oC][1] += 1
+                except KeyError:
+                    dFullCardList[oC] = [oAC.name, 1]
         return dFullCardList
 
 plugin = CardSetIndependence

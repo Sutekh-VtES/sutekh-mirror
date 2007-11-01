@@ -3,14 +3,16 @@
 # GPL - see COPYING for details
 
 import gtk
-from sutekh.core.SutekhObjects import AbstractCard
+from sutekh.core.SutekhObjects import AbstractCard, PhysicalCardSet, \
+        AbstractCardSet, PhysicalCard
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.CardListModel import CardListModelListener
 
 class CountCardSetCards(CardListPlugin,CardListModelListener):
-    dTableVersions = {"AbstractCardSet" : [1,2,3],
-                      "PhysicalCardSet" : [1,2,3]}
-    aModelsSupported = ["Abstract Card Set","Physical Card Set","PhysicalCard"]
+    dTableVersions = {PhysicalCardSet.sqlmeta.table : [1,2,3,4],
+                      AbstractCardSet.sqlmeta.table : [1,2,3]}
+    aModelsSupported = [AbstractCardSet.sqlmeta.table, PhysicalCardSet.sqlmeta.table,
+            PhysicalCard.sqlmeta.table]
 
     def __init__(self,*args,**kwargs):
         super(CountCardSetCards,self).__init__(*args,**kwargs)

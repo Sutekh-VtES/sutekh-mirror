@@ -56,7 +56,7 @@ class CardListPlugin(object):
     dTableVersions = {}
     aModelsSupported = []
 
-    def __init__(self,oCardListView,oCardListModel,sModelType='Unknown'):
+    def __init__(self,oCardListView, oCardListModel, sModelType='Unknown'):
         """
         oCardListModel - card list model for this plugin to operate on.
         """
@@ -94,8 +94,8 @@ class CardListPlugin(object):
 
     def checkVersions(self):
         oDBVer = DatabaseVersion()
-        for oTableName,aVersions in self.dTableVersions.iteritems():
-            iCurVer = oDBVer.getVersion(oTableName)
+        for sTableName, aVersions in self.dTableVersions.iteritems():
+            iCurVer = oDBVer.getVersion(sTableName)
             if iCurVer not in aVersions:
                 return False
         # If nothing is specified, currently we assume everything is A-OK

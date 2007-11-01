@@ -6,7 +6,7 @@
 from sqlobject import SQLObjectNotFound
 from sutekh.gui.CardSetView import CardSetView
 from sutekh.gui.CardSetMenu import CardSetMenu
-from sutekh.core.SutekhObjects import AbstractCardSet, PhysicalCardSet,\
+from sutekh.core.SutekhObjects import AbstractCardSet, PhysicalCardSet, \
         AbstractCard, PhysicalCard
 
 class CardSetController(object):
@@ -16,11 +16,6 @@ class CardSetController(object):
         self._oFrame = oFrame
         self._oView = CardSetView(oMainWindow, self, sName, sType, oConfig)
         self._sFilterType = None
-
-        # setup plugins before the menu (which needs a list of plugins)
-        #self.__aPlugins = []
-        #for cPlugin in oMasterController.getPluginManager().getCardListPlugins():
-        #    self.__aPlugins.append(cPlugin(self._oView,self._oView.getModel(),sType))
 
     view = property(fget=lambda self: self._oView, doc="Associated View")
     frame = property(fget=lambda self: self._oFrame, doc="Associated Frame")
@@ -47,7 +42,7 @@ class CardSetController(object):
 class PhysicalCardSetController(CardSetController):
     def __init__(self, sName, oConfig, oMainWindow, oFrame):
         super(PhysicalCardSetController,self).__init__(
-                sName, "Physical Card Set", oConfig, oMainWindow, oFrame)
+                sName, PhysicalCardSet.sqlmeta.table, oConfig, oMainWindow, oFrame)
         self.__oPhysCardSet = PhysicalCardSet.byName(sName)
         self._sFilterType = 'PhysicalCard'
 
@@ -99,7 +94,7 @@ class PhysicalCardSetController(CardSetController):
 class AbstractCardSetController(CardSetController):
     def __init__(self, sName, oConfig, oMainWindow, oFrame):
         super(AbstractCardSetController,self).__init__(
-                sName, "Abstract Card Set", oConfig, oMainWindow, oFrame)
+                sName, AbstractCardSet.sqlmeta.table, oConfig, oMainWindow, oFrame)
         self.__oAbsCardSet = AbstractCardSet.byName(sName)
         self._sFilterType = 'AbstractCard'
 

@@ -5,7 +5,7 @@
 # GPL - see COPYING for details
 
 import gtk
-from sutekh.core.SutekhObjects import PhysicalCardSet,AbstractCardSet
+from sutekh.core.SutekhObjects import PhysicalCardSet, AbstractCardSet
 from sutekh.gui.ExportDialog import ExportDialog
 from sutekh.gui.PropDialog import PropDialog
 from sutekh.io.XmlFileHandling import AbstractCardSetXmlFile, PhysicalCardSetXmlFile
@@ -19,8 +19,11 @@ class CardSetMenu(gtk.MenuBar, object):
         self.__oView = oView
         self.__oFrame = oFrame
         self.sSetName = sName
-        self.__sType = sType
-        self.__sMenuType = sType.replace('CardSet','')
+        self.__sSetType = sType
+        if sType == AbstractCardSet.sqlmeta.table:
+            self.__sMenuType = 'Abstract'
+        else:
+            self.__sMenuType = 'Physical'
         self.__dMenus = {}
         self.__createCardSetMenu()
         self.__createFilterMenu()
@@ -46,7 +49,7 @@ class CardSetMenu(gtk.MenuBar, object):
         # Possible enhancement, make card set names italic.
         # Looks like it requires playing with menuitem attributes
         # (or maybe gtk.Action)
-        if self.__sMenuType == 'Physical Card Set':
+        if self.__sSetType == PhysicalCardSet.sqlmeta.table:
             oSep = gtk.SeparatorMenuItem()
             wMenu.add(oSep)
             self.iViewExpansions = gtk.CheckMenuItem('Show Card Expansions in the Pane')
@@ -54,6 +57,12 @@ class CardSetMenu(gtk.MenuBar, object):
             self.iViewExpansions.set_active(True)
             self.iViewExpansions.connect('toggled', self.toggleExpansion)
             wMenu.add(self.iViewExpansions)
+
+        self.iEditable = gtk.CheckMenuItem('Card Set is Editable')
+        self.iEditable.set_inconsistent(False)
+        self.iEditable.set_active(False)
+        self.iEditable.connect('toggled', self.toggleEditable)
+        wMenu.add(self.iEditable)
 
         oSep = gtk.SeparatorMenuItem()
         wMenu.add(oSep)
@@ -110,24 +119,24 @@ class CardSetMenu(gtk.MenuBar, object):
             iMenu.set_sensitive(False)
 
     def editProperites(self,widget):
-        if self.__sType == 'Physical Card Set':
+        if self.__sSetType == PhysicalCardSet.sqlmeta.table:
             oCS = PhysicalCardSet.byName(self.sSetName)
         else:
             oCS = AbstractCardSet.byName(self.sSetName)
-        oProp = PropDialog("Edit Card Set ("+self.sSetName+") Propeties",
+        oProp = PropDialog("Edit Card Set (" + self.sSetName + ") Propeties",
                          self.__oWindow,oCS.name,oCS.author,oCS.comment)
         oProp.run()
         (sName,sAuthor,sComment) = oProp.getData()
         if sName is not None and sName != self.sSetName and len(sName)>0:
             # Check new name is not in use
-            if self.__sType == 'Physical Card Set':
+            if self.__sSetType == PhysicalCardSet.sqlmeta.table:
                 oNameList = PhysicalCardSet.selectBy(name=sName)
             else:
                 oNameList = AbstractCardSet.selectBy(name=sName)
             if oNameList.count()>0:
                 Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
                                     gtk.BUTTONS_CLOSE,
-                                    "Chosen "+self.__sMenuType+" Card Set name already in use.")
+                                    "Chosen " + self.__sMenuType + " Card Set name already in use.")
                 Complaint.connect("response",lambda dlg, resp: dlg.destroy())
                 Complaint.run()
                 return
@@ -146,7 +155,7 @@ class CardSetMenu(gtk.MenuBar, object):
             oCS.syncUpdate()
 
     def editAnnotations(self,widget):
-        if self.__sType == 'Physical Card Set':
+        if self.__sSetType == PhysicalCardSet.sqlmeta.table:
             oCS = PhysicalCardSet.byName(self.sSetName)
         else:
             oCS = AbstractCardSet.byName(self.sSetName)
@@ -157,12 +166,12 @@ class CardSetMenu(gtk.MenuBar, object):
         oCS.syncUpdate()
 
     def doExport(self,widget):
-        oFileChooser = ExportDialog("Save "+self.__sMenuType+" Card Set As",self.__oWindow)
+        oFileChooser = ExportDialog("Save " + self.__sMenuType + " Card Set As",self.__oWindow)
         oFileChooser.run()
         sFileName = oFileChooser.getName()
         if sFileName is not None:
             # User has OK'd us overwriting anything
-            if self.__sType == 'Physical Card Set':
+            if self.__sSetType == PhysicalCardSet.sqlmeta.table:
                 oW = PhysicalCardSetXmlFile(sFileName)
             else:
                 oW = AbstractCardSetXmlFile(sFileName)
@@ -184,6 +193,9 @@ class CardSetMenu(gtk.MenuBar, object):
         self.__oC.view._oModel.bExpansions = oWidget.active
         self.__oC.view.load()
 
+    def toggleEditable(self, oWidget):
+        self.__oC.view._oModel.bEditable = oWidget.active
+        self.__oC.view.load()
 
     def setFilter(self, oWidget):
         self.__oC.view.getFilter(self)
