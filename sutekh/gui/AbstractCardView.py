@@ -15,15 +15,6 @@ class AbstractCardView(CardListView):
         oColumn = gtk.TreeViewColumn("Collection", oCell, text=0)
         self.append_column(oColumn)
 
-        self.load()
+        self.sDragPrefix = 'Abst:'
 
-    def dragCard(self, btn, context, selection_data, info, time):
-        if self._oSelection.count_selected_rows()<1:
-            return
-        oModel, oPathList = self._oSelection.get_selected_rows()
-        selectData = "Abst:"
-        for oPath in oPathList:
-            oIter = oModel.get_iter(oPath)
-            sCardName = oModel.get_value(oIter,0)
-            selectData = selectData + "\n" + sCardName
-        selection_data.set(selection_data.target, 8, selectData)
+        self.load()
