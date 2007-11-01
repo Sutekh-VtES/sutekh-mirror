@@ -16,27 +16,25 @@ class PhysicalCardView(EditableCardListView):
         self._oWin = oWindow
         self._oModel.bExpansions = True
         self._oC = oController
+        self.sDragPrefix = 'Phys:'
         self.load()
 
     def cardDrop(self, w, context, x, y, data, info, time):
-        if data and data.format == 8 and data.data[:5] == "Abst:":
-            cards = data.data.splitlines()
-            for name in cards[1:]:
-                self.addCard(name)
-            context.finish(True, False, time)
-        else:
+        if not self._oModel.bEditable or not data or data.format != 8:
+            # Don't accept cards when editable
             context.finish(False, False, time)
-
-    def dragCard(self, btn, context, selection_data, info, time):
-        if self._oSelection.count_selected_rows()<1:
-            return
-        oModel, oPathList = self._oSelection.get_selected_rows()
-        selectData = "Phys:"
-        for oPath in oPathList:
-            oIter = oModel.get_iter(oPath)
-            sCardName = oModel.get_value(oIter,0)
-            selectData = selectData + "\n" + sCardName
-        selection_data.set(selection_data.target, 8, selectData)
+        else:
+            sSource, aCardInfo = self.split_selection_data(data.data)
+            print sSource
+            print aCardInfo
+            if sSource in []:
+                # Add the cards
+                for iCount, sCardName, sExpansion in aCardInfo:
+                    # We are adding new cards, so only 1 of each
+                    self.addCard(sCardName, sExpansion)
+                context.finish(True, False, time)
+            else:
+                context.finish(False, False, time)
 
     def getWindow(self):
         return self._oWin

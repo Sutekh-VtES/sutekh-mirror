@@ -37,6 +37,12 @@ class PhysicalCardMenu(gtk.MenuBar,object):
         self.iViewExpansions.connect('toggled', self.toggleExpansion)
         wMenu.add(self.iViewExpansions)
 
+        self.iEditable = gtk.CheckMenuItem('List is Editable')
+        self.iEditable.set_inconsistent(False)
+        self.iEditable.set_active(False)
+        self.iEditable.connect('toggled', self.toggleEditable)
+        wMenu.add(self.iEditable)
+
         self.add(iMenu)
 
     def __createFilterMenu(self):
@@ -95,6 +101,11 @@ class PhysicalCardMenu(gtk.MenuBar,object):
     def toggleExpansion(self, oWidget):
         self.__oC.view._oModel.bExpansions = oWidget.active
         self.__oC.view.load()
+
+    def toggleEditable(self, oWidget):
+        self.__oC.view._oModel.bEditable = oWidget.active
+        self.__oC.view.load()
+
 
     def setFilter(self, oWidget):
         self.__oC.view.getFilter(self)
