@@ -170,7 +170,47 @@ class CardListView(gtk.TreeView, object):
     # Sub-classes should override as needed.
 
     def dragCard(self, btn, context, selection_data, info, time):
-        pass
+        if self._oSelection.count_selected_rows()<1:
+            return
+        oModel, oPathList = self._oSelection.get_selected_rows()
+        dSelectedData = {}
+        for oPath in oPathList:
+            sCardName, sExpansion, iCount, iDepth = oModel.getAllFromPath(oPath)
+            if iDepth == 0:
+                # Skip top level items, since dragging them is meaningless
+                continue
+            # if a card is selected, and some of it's children (which are
+            # the expansions) are selected, the top-level selection is updated
+            # to account for the children selection
+            dSelectedData.setdefault(sCardName,{})
+            if iDepth == 1:
+                dSelectedData[sCardName]['0'] = iCount
+            else:
+                dSelectedData[sCardName][sExpansion] = iCount
+                if '0' in dSelectedData[sCardName].keys():
+                    dSelectedData[sCardName]['0'] -= iCount
+                    if dSelectedData[sCardName]['0'] == 0:
+                        # dSelectedData[sCardName]['0'] < 0 shouldn't
+                        # be possible 
+                        # All children selected, so remove from selection
+                        del dSelectedData[sCardName]['0']
+        # Create selection data structure
+        # Need to bung everything into a string, alas
+        sSelectData = self.sDragPrefix
+        for sCardName in dSelectedData:
+            for sExpansion, iCount in dSelectedData[sCardName].iteritems():
+                sSelectData = sSelectData + "\n" + \
+                        str(iCount) + '\n' + \
+                        sCardName + "\n" + sExpansion
+        selection_data.set(selection_data.target, 8, sSelectData)
+
+    def split_selection_data(self, sSelectionData):
+        """Helper function to subdivide selection string into bits again"""
+        aLines = sSelectionData.splitlines()
+        sSource = aLines[0]
+        # Construct list of (iCount, sCardName, sExpansion) tuples
+        aCardInfo = zip(aLines[1::3],aLines[2::3],aLines[3::3])
+        return sSource, aCardInfo
 
     def dragDelete(self, btn, context, data):
         pass
@@ -199,21 +239,6 @@ class EditableCardListView(CardListView):
         oColumn2.set_sort_column_id(0)
         self.append_column(oColumn2)
 
-        self.set_expander_column(oColumn2)
-        if hasattr(self,'set_grid_lines'):
-            self.set_grid_lines(gtk.TREE_VIEW_GRID_LINES_BOTH)
-     
-    # Used by card dragging handlers
-    def addCard(self,sCardName):
-        bSucc = self._oC.addCard(sCardName)
-
-class EditNumbersCardListView(EditableCardListView):
-    """View used to edit the card numbers - has arrows for inc'ing
-       and decresing counts"""
-
-    def __init__(self, oController, oWindow, oConfig):
-        super(EditNumbersCardListView, self).__init__(oController, oWindow, oConfig)
-
         # Arrow cells
         oCell3 = CellRendererSutekhButton()
         oCell3.load_icon(gtk.STOCK_GO_UP,self)
@@ -233,18 +258,29 @@ class EditNumbersCardListView(EditableCardListView):
         oCell3.connect('clicked',self.incCard)
         oCell4.connect('clicked',self.decCard)
 
-    # This is used in the edit popup, processing the results is done by
-    # the view calling the edit popup (on commit or OK), so no database
-    # changes done by this
+        self.set_expander_column(oColumn2)
+        if hasattr(self,'set_grid_lines'):
+            self.set_grid_lines(gtk.TREE_VIEW_GRID_LINES_BOTH)
+     
+    # Used by card dragging handlers
+    def addCard(self,sCardName):
+        if self._oModel.bEditable:
+            bSucc = self._oC.addCard(sCardName)
+
+    # When editing cards, we pass info to the controller to
+    # update stuff in the database, and rely on the model
+    # watching events on the database to update itself and the 
+    # view. This uses the SQLObject events to ensure
+    # multiple views of the database are kept in sync.
 
     def incCard(self,oCell,oPath):
-        sCardName = self._oModel.getCardNameFromPath(oPath)
-        bSucc = self._oC.incCard(sCardName)
-        if bSucc:
-            self._oModel.incCard(oPath)
+        if self._oModel.bEditable:
+            sCardName = self._oModel.getCardNameFromPath(oPath)
+            sExpansion = self._oModel.getExpansionNameFromPath(oPath)
+            bSucc = self._oC.incCard(sCardName, sExpansion)
 
     def decCard(self,oCell,oPath):
-        sCardName = self._oModel.getCardNameFromPath(oPath)
-        bSucc = self._oC.decCard(sCardName)
-        if bSucc:
-            self._oModel.decCard(oPath)
+        if self._oModel.bEditable:
+            sCardName = self._oModel.getCardNameFromPath(oPath)
+            sExpansion = self._oModel.getExpansionNameFromPath(oPath)
+            bSucc = self._oC.decCard(sCardName, sExpansion)
