@@ -10,11 +10,11 @@ from sutekh.core.SutekhObjects import AbstractCardSet, PhysicalCardSet, \
         AbstractCard, PhysicalCard
 
 class CardSetController(object):
-    def __init__(self, sName, sType, oConfig, oMainWindow, oFrame):
+    def __init__(self, sName, cType, oConfig, oMainWindow, oFrame):
         self._oMainWindow = oMainWindow
         self._oMenu = None
         self._oFrame = oFrame
-        self._oView = CardSetView(oMainWindow, self, sName, sType, oConfig)
+        self._oView = CardSetView(oMainWindow, self, sName, cType, oConfig)
         self._sFilterType = None
 
     view = property(fget=lambda self: self._oView, doc="Associated View")
@@ -42,7 +42,7 @@ class CardSetController(object):
 class PhysicalCardSetController(CardSetController):
     def __init__(self, sName, oConfig, oMainWindow, oFrame):
         super(PhysicalCardSetController,self).__init__(
-                sName, PhysicalCardSet.sqlmeta.table, oConfig, oMainWindow, oFrame)
+                sName, PhysicalCardSet, oConfig, oMainWindow, oFrame)
         self.__oPhysCardSet = PhysicalCardSet.byName(sName)
         self._sFilterType = 'PhysicalCard'
 
@@ -94,7 +94,7 @@ class PhysicalCardSetController(CardSetController):
 class AbstractCardSetController(CardSetController):
     def __init__(self, sName, oConfig, oMainWindow, oFrame):
         super(AbstractCardSetController,self).__init__(
-                sName, AbstractCardSet.sqlmeta.table, oConfig, oMainWindow, oFrame)
+                sName, AbstractCardSet, oConfig, oMainWindow, oFrame)
         self.__oAbsCardSet = AbstractCardSet.byName(sName)
         self._sFilterType = 'AbstractCard'
 

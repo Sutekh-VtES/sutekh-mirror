@@ -1,17 +1,18 @@
 # AbstractCardListFrame.py
 # Display the Abstract Card List
-# Copyright 2005,2006,2007 Simon Cross <hodgestar@gmail.com>
-# Copyright 2006,2007 Neil Muller <drnlmuller+sutekh@gmail.com>
+# Copyright 2005, 2006, 2007 Simon Cross <hodgestar@gmail.com>
+# Copyright 2006, 2007 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
 import gtk
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 from sutekh.gui.AbstractCardListController import AbstractCardListController
 from sutekh.gui.AbstractCardListMenu import AbstractCardListMenu
+from sutekh.core.SutekhObjects import AbstractCard
 
 class AbstractCardListFrame(gtk.Frame, object):
     def __init__(self, oMainWindow, oConfig):
-        super(AbstractCardListFrame,self).__init__()
+        super(AbstractCardListFrame, self).__init__()
         self.__oMainWindow = oMainWindow
 
         self.set_label("Whitewolf CardList")
@@ -22,7 +23,7 @@ class AbstractCardListFrame(gtk.Frame, object):
         self._aPlugins = []
         for cPlugin in self.__oMainWindow.plugin_manager.getCardListPlugins():
             self._aPlugins.append(cPlugin(self.__oC.view,
-                self.__oC.view.getModel(),"Abstract Cards"))
+                self.__oC.view.getModel(), AbstractCard))
 
         self._oMenu = AbstractCardListMenu(self, self.__oC, oMainWindow)
 
@@ -41,7 +42,7 @@ class AbstractCardListFrame(gtk.Frame, object):
 
         wMbox.pack_start(self._oMenu, False, False)
 
-        oToolbar = gtk.VBox(False,2)
+        oToolbar = gtk.VBox(False, 2)
         bInsertToolbar = False
         for oPlugin in self._aPlugins:
             oW = oPlugin.getToolbarWidget()

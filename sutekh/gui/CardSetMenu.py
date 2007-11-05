@@ -12,15 +12,15 @@ from sutekh.io.XmlFileHandling import AbstractCardSetXmlFile, PhysicalCardSetXml
 from sutekh.gui.EditAnnotationsDialog import EditAnnotationsDialog
 
 class CardSetMenu(gtk.MenuBar, object):
-    def __init__(self, oFrame, oController, oWindow, oView, sName, sType):
+    def __init__(self, oFrame, oController, oWindow, oView, sName, cType):
         super(CardSetMenu, self).__init__()
         self.__oC = oController
         self.__oWindow = oWindow
         self.__oView = oView
         self.__oFrame = oFrame
         self.sSetName = sName
-        self.__sSetType = sType
-        if sType == AbstractCardSet.sqlmeta.table:
+        self.__cSetType = cType
+        if cType == AbstractCardSet:
             self.__sMenuType = 'Abstract'
         else:
             self.__sMenuType = 'Physical'
@@ -49,7 +49,7 @@ class CardSetMenu(gtk.MenuBar, object):
         # Possible enhancement, make card set names italic.
         # Looks like it requires playing with menuitem attributes
         # (or maybe gtk.Action)
-        if self.__sSetType == PhysicalCardSet.sqlmeta.table:
+        if self.__cSetType is PhysicalCardSet:
             oSep = gtk.SeparatorMenuItem()
             wMenu.add(oSep)
             self.iViewExpansions = gtk.CheckMenuItem('Show Card Expansions in the Pane')
@@ -119,20 +119,14 @@ class CardSetMenu(gtk.MenuBar, object):
             iMenu.set_sensitive(False)
 
     def editProperites(self,widget):
-        if self.__sSetType == PhysicalCardSet.sqlmeta.table:
-            oCS = PhysicalCardSet.byName(self.sSetName)
-        else:
-            oCS = AbstractCardSet.byName(self.sSetName)
+        oCS = self.__cSetType.byName(self.sSetName)
         oProp = PropDialog("Edit Card Set (" + self.sSetName + ") Propeties",
                          self.__oWindow,oCS.name,oCS.author,oCS.comment)
         oProp.run()
         (sName,sAuthor,sComment) = oProp.getData()
         if sName is not None and sName != self.sSetName and len(sName)>0:
             # Check new name is not in use
-            if self.__sSetType == PhysicalCardSet.sqlmeta.table:
-                oNameList = PhysicalCardSet.selectBy(name=sName)
-            else:
-                oNameList = AbstractCardSet.selectBy(name=sName)
+            oNameList = self.__cSetType.selectBy(name=sName)
             if oNameList.count()>0:
                 Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
                                     gtk.BUTTONS_CLOSE,
@@ -155,10 +149,7 @@ class CardSetMenu(gtk.MenuBar, object):
             oCS.syncUpdate()
 
     def editAnnotations(self,widget):
-        if self.__sSetType == PhysicalCardSet.sqlmeta.table:
-            oCS = PhysicalCardSet.byName(self.sSetName)
-        else:
-            oCS = AbstractCardSet.byName(self.sSetName)
+        oCS = self.__cSetType.byName(self.sSetName)
         oEditAnn = EditAnnotationsDialog("Edit Annotations of Card Set ("+self.sSetName+")",
                                          self.__oWindow,oCS.name,oCS.annotations)
         oEditAnn.run()
@@ -171,7 +162,7 @@ class CardSetMenu(gtk.MenuBar, object):
         sFileName = oFileChooser.getName()
         if sFileName is not None:
             # User has OK'd us overwriting anything
-            if self.__sSetType == PhysicalCardSet.sqlmeta.table:
+            if self.__cSetType is PhysicalCardSet:
                 oW = PhysicalCardSetXmlFile(sFileName)
             else:
                 oW = AbstractCardSetXmlFile(sFileName)

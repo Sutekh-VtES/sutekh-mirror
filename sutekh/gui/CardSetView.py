@@ -10,16 +10,16 @@ from sutekh.core.SutekhObjects import PhysicalCard, PhysicalCardSet, AbstractCar
         MapAbstractCardToAbstractCardSet
 
 class CardSetView(EditableCardListView):
-    def __init__(self, oMainWindow, oController, sName, sSetType, oConfig):
+    def __init__(self, oMainWindow, oController, sName, cSetType, oConfig):
         super(CardSetView,self).__init__(oController, oMainWindow, oConfig)
         self.sSetName = sName
-        self.sSetType = sSetType
-        if sSetType == PhysicalCardSet.sqlmeta.table:
+        self.cSetType = cSetType
+        if cSetType == PhysicalCardSet:
             # cardclass is the actual physicalcard
             self._oModel.cardclass = PhysicalCard
             self._oModel.basefilter = PhysicalCardSetFilter(self.sSetName)
             self._oModel.bExpansions = True
-        elif sSetType == AbstractCardSet.sqlmeta.table:
+        elif cSetType == AbstractCardSet:
             # Need MapAbstractCardToAbstractCardSet here, so filters do the right hing
             self._oModel.cardclass = MapAbstractCardToAbstractCardSet
             self._oModel.basefilter = AbstractCardSetFilter(self.sSetName)
@@ -27,7 +27,7 @@ class CardSetView(EditableCardListView):
             # Should this be an error condition?
             self._oModel.basefilter = None
 
-        self.sDragPrefix = self.sSetType + ":" + self.sSetName
+        self.sDragPrefix = self.cSetType.sqlmeta.table + ":" + self.sSetName
         self.load()
 
     def cardDrop(self, w, context, x, y, data, info, time):
@@ -54,7 +54,7 @@ class CardSetView(EditableCardListView):
 
     def deleteCardSet(self):
         # Check if CardSet is empty
-        if self.sSetType == PhysicalCardSet.sqlmeta.table:
+        if self.cSetType == PhysicalCardSet:
             oCS = PhysicalCardSet.byName(self.sSetName)
             Dialog = DeleteCardSetDialog(self._oWin, self.sSetName, "Physical Card Set")
         else:
@@ -66,14 +66,14 @@ class CardSetView(EditableCardListView):
             if not Dialog.getResult():
                 return False # not deleting
             # User agreed, so clear the CardSet
-            if self.sSetType == PhysicalCardSet.sqlmeta.table:
+            if self.cSetType == PhysicalCardSet:
                 for oC in oCS.cards:
                     oCS.removePhysicalCard(oC)
             else:
                 for oC in oCS.cards:
                     oCS.removeAbstractCard(oC)
         # Card Set now empty
-        if self.sSetType == PhysicalCardSet.sqlmeta.table:
+        if self.cSetType == PhysicalCardSet:
             cardSet = PhysicalCardSet.byName(self.sSetName)
             PhysicalCardSet.delete(cardSet.id)
         else:
