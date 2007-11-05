@@ -10,10 +10,10 @@ from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.ScrolledList import ScrolledList
 
 class CardSetCompare(CardListPlugin):
-    dTableVersions = {AbstractCardSet.sqlmeta.table : [1,2,3],
-                      PhysicalCardSet.sqlmeta.table : [1,2,3]}
-    aModelsSupported = [AbstractCardSet.sqlmeta.table,
-            PhysicalCardSet.sqlmeta.table]
+    dTableVersions = {AbstractCardSet : [1,2,3],
+                      PhysicalCardSet : [1,2,3]}
+    aModelsSupported = [AbstractCardSet,
+            PhysicalCardSet]
     def getMenuItem(self):
         """
         Overrides method from base class.
@@ -41,10 +41,10 @@ class CardSetCompare(CardListPlugin):
                           gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                           (gtk.STOCK_OK, gtk.RESPONSE_OK,
                            gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
-        if self._sModelType == AbstractCardSet.sqlmeta.table:
+        if self._cModelType is AbstractCardSet:
             oSelect = AbstractCardSet.select().orderBy('name')
             self.csFrame = ScrolledList('Abstract Card Sets')
-        elif self._sModelType == PhysicalCardSet.sqlmeta.table:
+        elif self._cModelType is PhysicalCardSet:
             oSelect = PhysicalCardSet.select().orderBy('name')
             self.csFrame = ScrolledList('Physical Card Sets')
         else:
@@ -116,10 +116,10 @@ class CardSetCompare(CardListPlugin):
         name1 = aCardSetNames[0]
         name2 = aCardSetNames[1]
         for name in aCardSetNames:
-            if self._sModelType == AbstractCardSet.sqlmeta.table:
+            if self._cModelType is AbstractCardSet:
                 oFilter = AbstractCardSetFilter(name)
                 oCS = oFilter.select(AbstractCard)
-            elif self._sModelType == PhysicalCardSet.sqlmeta.table:
+            elif self._cModelType is PhysicalCardSet:
                 oFilter = PhysicalCardSetFilter(name)
                 oCS = oFilter.select(PhysicalCard)
             for oC in oCS:

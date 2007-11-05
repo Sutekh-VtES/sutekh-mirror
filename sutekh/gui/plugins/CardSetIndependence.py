@@ -10,10 +10,10 @@ from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.ScrolledList import ScrolledList
 
 class CardSetIndependence(CardListPlugin):
-    dTableVersions = {AbstractCardSet.sqlmeta.table : [1,2,3],
-                      PhysicalCardSet.sqlmeta.table : [1,2,3]}
-    aModelsSupported = [AbstractCardSet.sqlmeta.table,
-            PhysicalCardSet.sqlmeta.table]
+    dTableVersions = {AbstractCardSet : [1,2,3],
+                      PhysicalCardSet : [1,2,3]}
+    aModelsSupported = [AbstractCardSet,
+            PhysicalCardSet]
     def getMenuItem(self):
         """
         Overrides method from base class.
@@ -40,10 +40,10 @@ class CardSetIndependence(CardListPlugin):
                           gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                           (gtk.STOCK_OK, gtk.RESPONSE_OK,
                            gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
-        if self._sModelType == AbstractCardSet.sqlmeta.table:
+        if self._cModelType is AbstractCardSet:
             oSelect = AbstractCardSet.select().orderBy('name')
             self.csFrame = ScrolledList('Abstract Card Sets')
-        elif self._sModelType == PhysicalCardSet.sqlmeta.table:
+        elif self._cModelType is PhysicalCardSet:
             oSelect = PhysicalCardSet.select().orderBy('name')
             self.csFrame = ScrolledList('Physical Card Sets')
         else:
@@ -63,7 +63,7 @@ class CardSetIndependence(CardListPlugin):
             aCardSetNames = [self.view.sSetName]
             dSelect = {}
             self.csFrame.get_selection(aCardSetNames, dSelect)
-            if self._sModelType == AbstractCardSet.sqlmeta.table:
+            if self._cModelType is AbstractCardSet:
                 self.testAbstractCardSets(aCardSetNames)
             else:
                 self.testPhysicalCardSets(aCardSetNames)
@@ -76,12 +76,12 @@ class CardSetIndependence(CardListPlugin):
         dFullCardList = self.__getAbstractCardSetList(aCardSetNames)
         for iCardId, (sCardName, iCount) in dFullCardList.iteritems():
             oPC = list(PhysicalCard.selectBy(abstractCardID=iCardId))
-            if cardcount > len(oPC):
+            if iCount > len(oPC):
                 dMissing[sCardName] = iCount - len(oPC)
         if len(dMissing) > 0:
             message = "<span foreground = \"red\"> Missing Cards </span>\n"
-            for cardname,cardcount in dMissing.iteritems():
-                message += "<span foreground = \"blue\">" + cardname + "</span> : " + str(cardcount) + "\n"
+            for sCardName, iCount in dMissing.iteritems():
+                message += "<span foreground = \"blue\">" + sCardName + "</span> : " + str(iCount) + "\n"
             Results = gtk.MessageDialog(None, 0, gtk.MESSAGE_INFO,
                     gtk.BUTTONS_CLOSE, None)
             Results.set_markup(message)

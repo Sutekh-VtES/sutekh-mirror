@@ -10,10 +10,10 @@ from sutekh.core.Filters import CardTypeFilter
 from sutekh.gui.PluginManager import CardListPlugin
 
 class AnalyzeCardList(CardListPlugin):
-    dTableVersions = {PhysicalCardSet.sqlmeta.table : [3,4],
-            AbstractCardSet.sqlmeta.table : [3]}
-    aModelsSupported = [PhysicalCardSet.sqlmeta.table,
-            AbstractCardSet.sqlmeta.table]
+    dTableVersions = {PhysicalCardSet : [3,4],
+            AbstractCardSet : [3]}
+    aModelsSupported = [PhysicalCardSet,
+            AbstractCardSet]
 
     # Should this be defined in SutekhObjects??
     dTitleVoteMap = {
@@ -66,10 +66,7 @@ class AnalyzeCardList(CardListPlugin):
         parent = self.view.getWindow()
         name = "Analysis of Card List"
         deckName = self.view.sSetName
-        if self._sModelType == PhysicalCardSet.sqlmeta.table:
-            oCS = PhysicalCardSet.byName(self.view.sSetName)
-        else:
-            oCS = AbstractCardSet.byName(self.view.sSetName)
+        oCS = self._cModelType.byName(self.view.sSetName)
 
         sComment = oCS.comment.replace('&','&amp;')
         sAuthor = oCS.author

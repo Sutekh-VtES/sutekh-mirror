@@ -9,10 +9,10 @@ from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.CardListModel import CardListModelListener
 
 class CountCardSetCards(CardListPlugin,CardListModelListener):
-    dTableVersions = {PhysicalCardSet.sqlmeta.table : [1,2,3,4],
-                      AbstractCardSet.sqlmeta.table : [1,2,3]}
-    aModelsSupported = [AbstractCardSet.sqlmeta.table, PhysicalCardSet.sqlmeta.table,
-            PhysicalCard.sqlmeta.table]
+    dTableVersions = {PhysicalCardSet : [1,2,3,4],
+                      AbstractCardSet : [1,2,3]}
+    aModelsSupported = [AbstractCardSet, PhysicalCardSet,
+            PhysicalCard]
 
     def __init__(self,*args,**kwargs):
         super(CountCardSetCards,self).__init__(*args,**kwargs)

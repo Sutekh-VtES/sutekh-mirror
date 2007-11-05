@@ -56,13 +56,13 @@ class CardListPlugin(object):
     dTableVersions = {}
     aModelsSupported = []
 
-    def __init__(self,oCardListView, oCardListModel, sModelType='Unknown'):
+    def __init__(self,oCardListView, oCardListModel, cModelType=None):
         """
         oCardListModel - card list model for this plugin to operate on.
         """
         self._oView = oCardListView
         self._oModel = oCardListModel
-        self._sModelType = sModelType
+        self._cModelType = cModelType
 
     view = property(fget=lambda self: self._oView,doc="Associated CardListView object.")
     model = property(fget=lambda self: self._oModel,doc="Associated CardModel object.")
@@ -88,7 +88,7 @@ class CardListPlugin(object):
         return None
 
     def checkModelType(self):
-        if self._sModelType in self.aModelsSupported:
+        if self._cModelType in self.aModelsSupported:
             return True
         return False
 
