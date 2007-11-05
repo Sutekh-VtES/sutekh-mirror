@@ -4,23 +4,21 @@
 # GPL - see COPYING for details
 
 import gtk
-from sqlobject.events import listen
+from sqlobject.events import listen, RowDestroySignal, \
+        RowCreatedSignal, RowUpdateSignal
 from sutekh.core.SutekhObjects import AbstractCardSet, PhysicalCardSet
 from sutekh.core.Filters import NullFilter
 from sutekh.gui.ScrolledList import ScrolledList
 from sutekh.gui.FilterDialog import FilterDialog
-from sutekh.gui.SQLObjectEvents import RowDestroySignal, RowUpdateSignal, \
-        RowCreatedSignal, CardSetOpenedSignal, CardSetClosedSignal
 
 class CardSetManagementFrame(gtk.Frame, object):
     def __init__(self, oMainWindow, oConfig):
         super(CardSetManagementFrame, self).__init__()
         self._oMainWin = oMainWindow
         self._oConfig = oConfig
-        self._sSetType = None
+        self._cSetType = None
         self._sName = 'Card Set List'
         self._oView = None
-        self._dOpenCardSets = {}
         self._oMenu = gtk.MenuBar()
         self._oFilter = NullFilter()
         self._oFilterDialog = None
@@ -40,8 +38,6 @@ class CardSetManagementFrame(gtk.Frame, object):
 
     name = property(fget=lambda self: self._sName, doc="Frame Name")
     view = property(fget=lambda self: self._oView, doc="Associated View Object")
-    open_card_sets = property(fget=lambda self: self._dOpenCardSets,
-            doc="Dictionary of currently open card sets")
     type = property(fget=lambda self: self._sName, doc="Frame Type")
     menu = property(fget=lambda self: self._oMenu, doc="Frame Menu")
 
@@ -62,28 +58,20 @@ class CardSetManagementFrame(gtk.Frame, object):
         wMbox.pack_start(self._oScrolledList, expand=True)
         self.add(wMbox)
         self.show_all()
-        listen(self.listenOpened, self._oSetClass, CardSetOpenedSignal)
-        listen(self.listenClosed, self._oSetClass, CardSetClosedSignal)
+        # User can modify the card set list via properties dialog, plugins, etc.
+        # We need to respond to this
         listen(self.listenChanged, self._oSetClass, RowUpdateSignal)
         listen(self.listenDestroy, self._oSetClass, RowDestroySignal)
         listen(self.listenCreated, self._oSetClass, RowCreatedSignal)
 
-    def listenOpened(self, sSetName):
-        self.reload_card_set_list()
-
-    def listenClosed(self, sSetName):
-        self.reload_card_set_list()
-
     def listenChanged(self, args, **kw):
-        print "Changed signal", args
-        print "kw", kw
+        self.reload_card_set_list()
 
     def listenDestroy(self, kw):
-        print "Destroy", kw
+        self.reload_card_set_list()
 
     def listenCreated(self, args, **kw):
-        print "Created",args
-        print "kw", kw
+        self.reload_card_set_list()
 
     def reload_card_set_list(self):
         oThisList = self._oScrolledList.get_list()
@@ -97,11 +85,15 @@ class CardSetManagementFrame(gtk.Frame, object):
         else:
             oSelectFilter = NullFilter()
         for oCS in oSelectFilter.select(self._oSetClass).orderBy('name'):
-            if oCS.name not in self._dOpenCardSets.keys():
+            if self._cSetType is PhysicalCardSet:
+                sKey = 'PCS:' + oCS.name
+            else:
+                sKey = 'ACS:' + oCS.name
+            if sKey not in self._oMainWin.dOpenPanes.values():
                 iter = oThisList.append(None)
             else:
                 iter = oThisList.insert_before(self._oAvailIter)
-            oThisList.set(iter,0,oCS.name)
+            oThisList.set(iter, 0, oCS.name)
 
     def set_filter(self, oWidget):
         if self._oFilterDialog is None:
@@ -145,29 +137,27 @@ class CardSetManagementFrame(gtk.Frame, object):
            return
         oIter = oM.get_iter(oPath)
         sName = oM.get_value(oIter,0)
-        if self._sSetType == 'Physical Card Set':
+        if self._cSetType is PhysicalCardSet:
             self._oMainWin.add_physical_card_set(sName)
-        elif self._sSetType == 'Abstract Card Set':
+        elif self._cSetType is AbstractCardSet:
             self._oMainWin.add_abstract_card_set(sName)
 
 class PhysicalCardSetListFrame(CardSetManagementFrame):
     def __init__(self, oMainWindow, oConfig):
         super(PhysicalCardSetListFrame, self).__init__(oMainWindow, oConfig)
-        self._sSetType = 'Physical Card Set'
+        self._cSetType = PhysicalCardSet
         self._sFilterType = 'PhysicalCardSet'
         self._sName = 'Physical Card Set List'
         self._oSetClass = PhysicalCardSet
-        self._dOpenCardSets = oMainWindow.dOpenPCS
         self.add_parts()
 
 class AbstractCardSetListFrame(CardSetManagementFrame):
     def __init__(self, oMainWindow, oConfig):
         super(AbstractCardSetListFrame, self).__init__(oMainWindow, oConfig)
-        self._sSetType = 'Abstract Card Set'
+        self._cSetType = AbstractCardSet
         self._sFilterType = 'AbstractCardSet'
         self._sName = 'Abstract Card Set List'
         self._oSetClass = AbstractCardSet
-        self._dOpenCardSets = oMainWindow.dOpenACS
         self.add_parts()
 
 

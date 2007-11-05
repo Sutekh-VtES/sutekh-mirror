@@ -47,11 +47,12 @@ class MultiPaneWindow(gtk.Window):
         self._oPluginManager = PluginManager()
         self._oPluginManager.loadPlugins()
         # Need to keep track of open card sets globally
-        self.dOpenACS = {}
-        self.dOpenPCS = {}
+        self.dOpenPanes = {}
         # CardText frame is special, and there is only ever one of it
         self._bCardTextShown = False
         self._oCardTextPane = CardTextFrame(self)
+        self._oPCSListPane = None
+        self._oACSListPane = None
         for iNumber, sType, sName in self._oConfig.getAllPanes():
             if sType == PhysicalCardSet.sqlmeta.table:
                 self.add_physical_card_set(sName)
@@ -68,7 +69,6 @@ class MultiPaneWindow(gtk.Window):
             elif sType == 'Physical Card Set List':
                 self.add_pcs_list(None)
         self.__oCardLookup = GuiLookup()
-        self.__oMenu.add_card_text_set_sensitive(True)
 
     # Needed for Backup plugin
     cardLookup = property(fget=lambda self: self.__oCardLookup)
@@ -76,34 +76,62 @@ class MultiPaneWindow(gtk.Window):
     plugin_manager = property(fget=lambda self: self._oPluginManager)
 
     def add_physical_card_set(self, sName):
-        oPane = PhysicalCardSetFrame(self, sName, self._oConfig)
-        self.add_pane(oPane)
+        sMenuFlag = "PCS:" + sName
+        if sMenuFlag not in self.dOpenPanes.values():
+            oPane = PhysicalCardSetFrame(self, sName, self._oConfig)
+            self.add_pane(oPane, sMenuFlag)
+            self.reload_pcs_list()
 
     def add_abstract_card_set(self, sName):
-        oPane = AbstractCardSetFrame(self, sName, self._oConfig)
-        self.add_pane(oPane)
+        sMenuFlag = "ACS:" + sName
+        if sMenuFlag not in self.dOpenPanes.values():
+            oPane = AbstractCardSetFrame(self, sName, self._oConfig)
+            self.add_pane(oPane, sMenuFlag)
+            self.reload_acs_list()
 
     def add_pcs_list(self, oWidget):
-        oPane = PhysicalCardSetListFrame(self, self._oConfig)
-        self.add_pane(oPane)
+        sMenuFlag = "PCS List"
+        if sMenuFlag not in self.dOpenPanes.values():
+            oPane = PhysicalCardSetListFrame(self, self._oConfig)
+            self.add_pane(oPane, sMenuFlag)
+            self._oPCSListPane = oPane
+            self.__oMenu.iAddPCSListPane.set_sensitive(False)
 
     def add_acs_list(self, oWidget):
-        oPane = AbstractCardSetListFrame(self, self._oConfig)
-        self.add_pane(oPane)
+        sMenuFlag = "ACS List"
+        if sMenuFlag not in self.dOpenPanes.values():
+            oPane = AbstractCardSetListFrame(self, self._oConfig)
+            self.add_pane(oPane, sMenuFlag)
+            self._oACSListPane = oPane
+            self.__oMenu.iAddACSListPane.set_sensitive(False)
 
     def add_abstract_card_list(self, oWidget):
-        oPane = AbstractCardListFrame(self, self._oConfig)
-        self.add_pane(oPane)
+        sMenuFlag = "Abstract Card List"
+        if sMenuFlag not in self.dOpenPanes.values():
+            oPane = AbstractCardListFrame(self, self._oConfig)
+            self.add_pane(oPane, sMenuFlag)
+            self.__oMenu.iAddACLPane.set_sensitive(False)
 
     def add_physical_card_list(self, oWidget):
-        oPane = PhysicalCardFrame(self, self._oConfig)
-        self.add_pane(oPane)
+        sMenuFlag = "Physical Card List"
+        if sMenuFlag not in self.dOpenPanes.values():
+            oPane = PhysicalCardFrame(self, self._oConfig)
+            self.add_pane(oPane, sMenuFlag)
+            self.__oMenu.iAddPCLPane.set_sensitive(False)
 
     def add_card_text(self, oWidget):
-        if not self._bCardTextShown:
-            self.add_pane(self._oCardTextPane)
-            self._bCardTextShown = True
+        sMenuFlag = "Card Text"
+        if sMenuFlag not in self.dOpenPanes.values():
+            self.add_pane(self._oCardTextPane, sMenuFlag)
             self.__oMenu.add_card_text_set_sensitive(False)
+
+    def reload_pcs_list(self):
+        if self._oPCSListPane is not None:
+            self._oPCSListPane.reload_card_set_list()
+
+    def reload_acs_list(self):
+        if self._oACSListPane is not None:
+            self._oACSListPane.reload_card_set_list()
 
     def win_focus(self, oWidget, oEvent, oFrame):
         self._oFocussed = oFrame
@@ -130,10 +158,11 @@ class MultiPaneWindow(gtk.Window):
         except SQLObjectNotFound:
             pass
 
-    def add_pane(self, oWidget):
+    def add_pane(self, oWidget, sMenuFlag):
         oWidget.show_all()
         oWidget.view.connect('focus-in-event', self.win_focus, oWidget)
         self._aFrames.append(oWidget)
+        self.dOpenPanes[oWidget] = sMenuFlag
         if self._iNumOpenPanes < 1:
             # We have a blank space to fill, so just plonk in the widget
             self.oVBox.pack_start(oWidget)
@@ -203,10 +232,22 @@ class MultiPaneWindow(gtk.Window):
             self._iNumOpenPanes -= 1
             if self._iNumOpenPanes == 0:
                 self.__oMenu.del_pane_set_sensitive(False)
-            if self._oFocussed == self._oCardTextPane:
-                self._bCardTextShown = False
-                self.__oMenu.add_card_text_set_sensitive(True)
             self._aFrames.remove(self._oFocussed)
+            # Remove from dictionary of open panes
+            sMenuFlag = self.dOpenPanes[self._oFocussed]
+            del self.dOpenPanes[self._oFocussed]
+            if sMenuFlag == "PCS List":
+                self.__oMenu.iAddPCSListPane.set_sensitive(True)
+                self._oPCSListPane = None
+            elif sMenuFlag == "ACS List":
+                self.__oMenu.iAddACSListPane.set_sensitive(True)
+                self._oACSListPane = None
+            elif sMenuFlag == "Card Text":
+                self.__oMenu.add_card_text_set_sensitive(True)
+            elif sMenuFlag == "Abstract Card List":
+                self.__oMenu.iAddACLPane.set_sensitive(True)
+            elif sMenuFlag == "Physical Card List":
+                self.__oMenu.iAddPCLPane.set_sensitive(True)
             # Any cleanup events we need?
             self._oFocussed.cleanup()
             self._oFocussed = None

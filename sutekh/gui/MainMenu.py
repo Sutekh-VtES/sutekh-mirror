@@ -86,26 +86,30 @@ class MainMenu(gtk.MenuBar, object):
         self.__dMenus["Pane"] = wMenu
         iMenu.set_submenu(wMenu)
 
+        self.iAddACLPane = gtk.MenuItem("Add Whitewolf Card List")
+        wMenu.add(self.iAddACLPane)
+        self.iAddACLPane.connect("activate", self.__oWin.add_abstract_card_list)
+        self.iAddACLPane.set_sensitive(True)
 
-        iAddACLPane = gtk.MenuItem("Add Whitewolf Card List")
-        wMenu.add(iAddACLPane)
-        iAddACLPane.connect("activate", self.__oWin.add_abstract_card_list)
-
-        iAddPCLPane = gtk.MenuItem("Add Physical Card Collection List")
-        wMenu.add(iAddPCLPane)
-        iAddPCLPane.connect("activate", self.__oWin.add_physical_card_list)
+        self.iAddPCLPane = gtk.MenuItem("Add Physical Card Collection List")
+        wMenu.add(self.iAddPCLPane)
+        self.iAddPCLPane.connect("activate", self.__oWin.add_physical_card_list)
+        self.iAddPCLPane.set_sensitive(True)
 
         self.iAddCardText = gtk.MenuItem("Add Card Text Pane")
         wMenu.add(self.iAddCardText)
         self.iAddCardText.connect("activate", self.__oWin.add_card_text)
+        self.iAddCardText.set_sensitive(True)
 
-        iAddACSListPane = gtk.MenuItem("Add Abstract Card Set List")
-        wMenu.add(iAddACSListPane)
-        iAddACSListPane.connect("activate", self.__oWin.add_acs_list)
+        self.iAddACSListPane = gtk.MenuItem("Add Abstract Card Set List")
+        wMenu.add(self.iAddACSListPane)
+        self.iAddACSListPane.connect("activate", self.__oWin.add_acs_list)
+        self.iAddACSListPane.set_sensitive(True)
 
-        iAddPCSListPane = gtk.MenuItem("Add Physical Card Set List")
-        wMenu.add(iAddPCSListPane)
-        iAddPCSListPane.connect("activate", self.__oWin.add_pcs_list)
+        self.iAddPCSListPane = gtk.MenuItem("Add Physical Card Set List")
+        wMenu.add(self.iAddPCSListPane)
+        self.iAddPCSListPane.connect("activate", self.__oWin.add_pcs_list)
+        self.iAddPCSListPane.set_sensitive(True)
 
         iSeperator = gtk.SeparatorMenuItem()
         wMenu.add(iSeperator)
@@ -113,9 +117,7 @@ class MainMenu(gtk.MenuBar, object):
         self.iDelPane = gtk.MenuItem("Remove currently focussed pane")
         wMenu.add(self.iDelPane)
         self.iDelPane.connect("activate", self.__oWin.remove_pane)
-
         self.iDelPane.set_sensitive(False)
-        self.iAddCardText.set_sensitive(False)
 
         self.add(iMenu)
 

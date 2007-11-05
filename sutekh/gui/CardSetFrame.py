@@ -10,59 +10,48 @@ from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 from sutekh.gui.CardSetMenu import CardSetMenu
 from sutekh.gui.CardSetController import PhysicalCardSetController, \
         AbstractCardSetController
-from sutekh.gui.SQLObjectEvents import CardSetOpenedSignal, CardSetClosedSignal
 
 class CardSetFrame(gtk.Frame, object):
-    def __init__(self, oMainWindow, sName, sType, oConfig):
+    def __init__(self, oMainWindow, sName, cType, oConfig):
         super(CardSetFrame, self).__init__()
         self._oMainWindow = oMainWindow
-        self.sSetType = sType
+        self.cSetType = cType
         self._oConfig = oConfig
-        if self.sSetType == PhysicalCardSet.sqlmeta.table:
+        if self.cSetType is PhysicalCardSet:
             self._oC = PhysicalCardSetController(sName, oConfig,
                     oMainWindow, self)
-            self.oSignalClass = PhysicalCardSet
-            self._dOpenCardSets = oMainWindow.dOpenPCS
-        elif self.sSetType == AbstractCardSet.sqlmeta.table:
+        elif self.cSetType is AbstractCardSet:
             self._oC = AbstractCardSetController(sName, oConfig,
                     oMainWindow, self)
-            self.oSignalClass = AbstractCardSet
-            self._dOpenCardSets = oMainWindow.dOpenACS
         else:
-            raise RuntimeError("Unknown Card Set type %s" % sType)
-        if sName not in self._dOpenCardSets:
-            self._dOpenCardSets[sName] = 1
-        else:
-            self._dOpenCardSets[sName] += 1
+            raise RuntimeError("Unknown Card Set type %s" % str(cType))
 
         self._aPlugins = []
         for cPlugin in self._oMainWindow.plugin_manager.getCardListPlugins():
             self._aPlugins.append(cPlugin(self._oC.view,
-                self._oC.view.getModel(), self.sSetType))
+                self._oC.view.getModel(), self.cSetType))
 
-        self.oSignalClass.sqlmeta.send(CardSetOpenedSignal, sName)
         self._oMenu = CardSetMenu(self, self._oC, self._oMainWindow, self._oC.view,
-                sName, self.sSetType)
+                sName, self.cSetType)
         self.addParts()
         self.updateName(sName)
 
     view = property(fget=lambda self: self._oC.view, doc="Associated View Object")
     name = property(fget=lambda self: self.sSetName, doc="Frame Name")
-    type = property(fget=lambda self: self.sSetType, doc="Frame Type")
+    type = property(fget=lambda self: self.cSetType.sqlmeta.table, doc="Frame Type")
     menu = property(fget=lambda self: self._oMenu, doc="Frame Menu")
 
     def cleanup(self):
         """Cleanup function called before pane is removed by the
            Main Window"""
-        if self._dOpenCardSets[self.sSetName] == 1:
-            del self._dOpenCardSets[self.sSetName]
+        if self.cSetType is PhysicalCardSet:
+            self._oMainWindow.reload_pcs_list()
         else:
-            self._dOpenCardSets[self.sSetName] -= 1
-        self.oSignalClass.sqlmeta.send(CardSetClosedSignal, self.sSetName)
+            self._oMainWindow.reload_acs_list()
 
     def updateName(self, sNewName):
         self.sSetName = sNewName
-        if self.sSetType == PhysicalCardSet.sqlmeta.table:
+        if self.cSetType is PhysicalCardSet:
             self.__oTitle.set_text('PCS:' + self.sSetName)
         else:
             self.__oTitle.set_text('ACS:' + self.sSetName)
@@ -90,9 +79,8 @@ class CardSetFrame(gtk.Frame, object):
         self.add(wMbox)
         self.show_all()
 
-    def closeCardSet(self,widget=None):
-        self.__oC.removeCardSetWindow(self.sSetName,self.sSetType)
-        self.__oC.reloadCardSetLists()
+    def closeCardSet(self, widget=None):
+        # FIXME: Update to frame based stuff
         self.destroy()
 
     def deleteCardSet(self):
@@ -107,9 +95,9 @@ class CardSetFrame(gtk.Frame, object):
 class AbstractCardSetFrame(CardSetFrame):
     def __init__(self, oMainWindow, sName, oConfig):
         super(AbstractCardSetFrame, self).__init__(oMainWindow, sName, 
-                AbstractCardSet.sqlmeta.table, oConfig)
+                AbstractCardSet, oConfig)
 
 class PhysicalCardSetFrame(CardSetFrame):
     def __init__(self, oMainWindow, sName, oConfig):
         super(PhysicalCardSetFrame, self).__init__(oMainWindow, sName, 
-                PhysicalCardSet.sqlmeta.table, oConfig)
+                PhysicalCardSet, oConfig)
