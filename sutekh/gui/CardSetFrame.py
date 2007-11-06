@@ -81,16 +81,17 @@ class CardSetFrame(gtk.Frame, object):
 
     def closeCardSet(self, widget=None):
         # FIXME: Update to frame based stuff
+        self._oMainWindow.remove_pane(self)
+        if self.cSetType is PhysicalCardSet:
+            self._oMainWindow.reload_pcs_list()
+        else:
+            self._oMainWindow.reload_acs_list()
         self.destroy()
 
     def deleteCardSet(self):
         if self._oC.view.deleteCardSet():
             # Card Set was deleted, so close up
             self.closeCardSet()
-
-    def load(self):
-        # Select all cards from
-        self._oC.view.load()
 
 class AbstractCardSetFrame(CardSetFrame):
     def __init__(self, oMainWindow, sName, oConfig):

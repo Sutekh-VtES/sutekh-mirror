@@ -20,7 +20,7 @@ class CardSetMenu(gtk.MenuBar, object):
         self.__oFrame = oFrame
         self.sSetName = sName
         self.__cSetType = cType
-        if cType == AbstractCardSet:
+        if cType is AbstractCardSet:
             self.__sMenuType = 'Abstract'
         else:
             self.__sMenuType = 'Physical'
@@ -169,10 +169,10 @@ class CardSetMenu(gtk.MenuBar, object):
             oW.write(self.sSetName)
 
     def cardSetClose(self,widget):
-        self.__oWindow.closeCardSet(widget)
+        self.__oFrame.closeCardSet(widget)
 
     def cardSetDelete(self,widget):
-        self.__oWindow.deleteCardSet()
+        self.__oFrame.deleteCardSet()
 
     def setApplyFilter(self,state):
         self.iApply.set_active(state)

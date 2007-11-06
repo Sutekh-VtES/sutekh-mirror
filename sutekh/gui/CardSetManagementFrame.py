@@ -4,14 +4,20 @@
 # GPL - see COPYING for details
 
 import gtk
+from sqlobject import SQLObjectNotFound
 from sqlobject.events import listen, RowDestroySignal, \
         RowCreatedSignal, RowUpdateSignal
+from sutekh.SutekhUtility import delete_physical_card_set, delete_abstract_card_set
 from sutekh.core.SutekhObjects import AbstractCardSet, PhysicalCardSet
 from sutekh.core.Filters import NullFilter
 from sutekh.gui.ScrolledList import ScrolledList
 from sutekh.gui.FilterDialog import FilterDialog
 
 class CardSetManagementFrame(gtk.Frame, object):
+
+    __sOpen = "<b>Opened</b>"
+    __sAvail = "<b>Available</b>"
+
     def __init__(self, oMainWindow, oConfig):
         super(CardSetManagementFrame, self).__init__()
         self._oMainWin = oMainWindow
@@ -23,6 +29,31 @@ class CardSetManagementFrame(gtk.Frame, object):
         self._oFilter = NullFilter()
         self._oFilterDialog = None
         self._sFilterType = None
+
+    name = property(fget=lambda self: self._sName, doc="Frame Name")
+    view = property(fget=lambda self: self._oView, doc="Associated View Object")
+    type = property(fget=lambda self: self._sName, doc="Frame Type")
+    menu = property(fget=lambda self: self._oMenu, doc="Frame Menu")
+
+    def add_actions_menu(self):
+        iMenu = gtk.MenuItem(self._sName + ' Actions')
+        wMenu = gtk.Menu()
+        iMenu.set_submenu(wMenu)
+        sSetName = self._sName.replace(' List', '')
+        iCreate = gtk.MenuItem('Create New ' + sSetName)
+        wMenu.add(iCreate)
+        iCreate.connect('activate', self.create_new_card_set)
+        iDelete = gtk.MenuItem('Delete selected ' + sSetName)
+        wMenu.add(iDelete)
+        iDelete.connect('activate', self.delete_card_set)
+        iSep = gtk.SeparatorMenuItem()
+        wMenu.add(iSep)
+        iClose = gtk.MenuItem('Close Pane')
+        wMenu.add(iClose)
+        iClose.connect('activate', self.remove)
+        self._oMenu.add(iMenu)
+
+    def add_filter_menu(self):
         iMenu = gtk.MenuItem('Filter')
         wMenu = gtk.Menu()
         iMenu.set_submenu(wMenu)
@@ -36,50 +67,63 @@ class CardSetManagementFrame(gtk.Frame, object):
         self.iApply.connect('toggled', self.toggle_apply)
         self._oMenu.add(iMenu)
 
-    name = property(fget=lambda self: self._sName, doc="Frame Name")
-    view = property(fget=lambda self: self._oView, doc="Associated View Object")
-    type = property(fget=lambda self: self._sName, doc="Frame Type")
-    menu = property(fget=lambda self: self._oMenu, doc="Frame Menu")
-
     def cleanup(self):
         pass
+
+    def remove(self, oMenuWidget):
+        self._oMainWin.remove_pane(self)
+        self.destroy()
 
     def add_parts(self):
         """Add a list object to the frame"""
         wMbox = gtk.VBox(False, 2)
 
+        self.add_actions_menu()
+        self.add_filter_menu()
+
         wMbox.pack_start(self._oMenu, False, False)
 
-        self._oScrolledList = ScrolledList(self._sName,'')
-        self._oView = self._oScrolledList.TreeView
+        self._oScrolledList = ScrolledList(self._sName, '')
+        self._oView = self._oScrolledList.view
         self._oScrolledList.set_select_single()
-        self._oView.connect('row_activated',self.row_clicked)
+        self._oView.connect('row_activated', self.row_clicked)
         self.reload_card_set_list()
         wMbox.pack_start(self._oScrolledList, expand=True)
         self.add(wMbox)
         self.show_all()
-        # User can modify the card set list via properties dialog, plugins, etc.
-        # We need to respond to this
-        listen(self.listenChanged, self._oSetClass, RowUpdateSignal)
-        listen(self.listenDestroy, self._oSetClass, RowDestroySignal)
-        listen(self.listenCreated, self._oSetClass, RowCreatedSignal)
 
-    def listenChanged(self, args, **kw):
-        self.reload_card_set_list()
+    def create_new_card_set(self, oWidget):
+        pass
 
-    def listenDestroy(self, kw):
-        self.reload_card_set_list()
-
-    def listenCreated(self, args, **kw):
+    def delete_card_set(self, oWidget):
+        aSelection = self._oScrolledList.get_selection()
+        if len(aSelection) != 1:
+            return
+        else:
+            sSetName = aSelection[0]
+        try:
+            oCS = self._cSetType.byName(sSetName)
+        except SQLObjectNotFound:
+            return
+        if len(oCS.cards) > 0:
+            oDialog = gtk.MessageDialog(None, 0, gtk.MESSAGE_WARNING,
+                    gtk.BUTTONS_OK_CANCEL, "Card Set " + sSetName +
+                    " Not Empty. Really Delete?")
+            iResponse = oDialog.run()
+            oDialog.destroy()
+            if iResponse == gtk.RESPONSE_CANCEL:
+                # Don't delete
+                return
+        # Got here, so delete the card set
+        if self._cSetType is PhysicalCardSet:
+            delete_physical_card_set(sSetName)
+        else:
+            delete_abstract_card_set(sSetName)
         self.reload_card_set_list()
 
     def reload_card_set_list(self):
-        oThisList = self._oScrolledList.get_list()
-        oThisList.clear()
-        self._oOpenIter=oThisList.append(None)
-        oThisList.set(self._oOpenIter,0, '<b>Opened</b>')
-        self._oAvailIter=oThisList.append(None)
-        oThisList.set(self._oAvailIter,0,'<b>Available</b>')
+        aVals = [self.__sOpen, self.__sAvail]
+        iAvailIndex = 1
         if self.iApply.active:
             oSelectFilter = self._oFilter
         else:
@@ -90,10 +134,11 @@ class CardSetManagementFrame(gtk.Frame, object):
             else:
                 sKey = 'ACS:' + oCS.name
             if sKey not in self._oMainWin.dOpenPanes.values():
-                iter = oThisList.append(None)
+                aVals.append(oCS.name)
             else:
-                iter = oThisList.insert_before(self._oAvailIter)
-            oThisList.set(iter, 0, oCS.name)
+                aVals.insert(iAvailIndex, oCS.name)
+                iAvailIndex += 1
+        self._oScrolledList.fill_list(aVals)
 
     def set_filter(self, oWidget):
         if self._oFilterDialog is None:
@@ -132,11 +177,10 @@ class CardSetManagementFrame(gtk.Frame, object):
         oM = oTreeView.get_model()
         # We are pointing to a ListStore, so the iters should always be valid
         # Need to dereference to the actual path though, as iters not unique
-        if oPath == oM.get_path(self._oOpenIter) or \
-                oPath == oM.get_path(self._oAvailIter):
-           return
         oIter = oM.get_iter(oPath)
-        sName = oM.get_value(oIter,0)
+        sName = oM.get_value(oIter, 0)
+        if sName == self.__sAvail or sName == self.__sOpen:
+            return
         if self._cSetType is PhysicalCardSet:
             self._oMainWin.add_physical_card_set(sName)
         elif self._cSetType is AbstractCardSet:

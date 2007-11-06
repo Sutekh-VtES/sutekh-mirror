@@ -3,23 +3,24 @@
 # Copyright 2006 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
 
+import gtk
 from sutekh.gui.CardListView import EditableCardListView
-from sutekh.gui.DeleteCardSetDialog import DeleteCardSetDialog
 from sutekh.core.Filters import PhysicalCardSetFilter, AbstractCardSetFilter
-from sutekh.core.SutekhObjects import PhysicalCard, PhysicalCardSet, AbstractCardSet, \
-        MapAbstractCardToAbstractCardSet
+from sutekh.core.SutekhObjects import PhysicalCard, PhysicalCardSet, \
+        AbstractCardSet, MapAbstractCardToAbstractCardSet
+from sutekh.SutekhUtility import delete_physical_card_set, delete_abstract_card_set
 
 class CardSetView(EditableCardListView):
     def __init__(self, oMainWindow, oController, sName, cSetType, oConfig):
-        super(CardSetView,self).__init__(oController, oMainWindow, oConfig)
+        super(CardSetView, self).__init__(oController, oMainWindow, oConfig)
         self.sSetName = sName
         self.cSetType = cSetType
-        if cSetType == PhysicalCardSet:
+        if cSetType is PhysicalCardSet:
             # cardclass is the actual physicalcard
             self._oModel.cardclass = PhysicalCard
             self._oModel.basefilter = PhysicalCardSetFilter(self.sSetName)
             self._oModel.bExpansions = True
-        elif cSetType == AbstractCardSet:
+        elif cSetType is AbstractCardSet:
             # Need MapAbstractCardToAbstractCardSet here, so filters do the right hing
             self._oModel.cardclass = MapAbstractCardToAbstractCardSet
             self._oModel.basefilter = AbstractCardSetFilter(self.sSetName)
@@ -54,30 +55,18 @@ class CardSetView(EditableCardListView):
 
     def deleteCardSet(self):
         # Check if CardSet is empty
-        if self.cSetType == PhysicalCardSet:
-            oCS = PhysicalCardSet.byName(self.sSetName)
-            Dialog = DeleteCardSetDialog(self._oWin, self.sSetName, "Physical Card Set")
-        else:
-            oCS = AbstractCardSet.byName(self.sSetName)
-            Dialog = DeleteCardSetDialog(self._oWin, self.sSetName, "Abstract Card Set")
+        oCS = self.cSetType.byName(self.sSetName)
         if len(oCS.cards)>0:
-            # Not empty, ask user if we should delete it
-            Dialog.run()
-            if not Dialog.getResult():
+            oDialog = gtk.MessageDialog(None, 0, gtk.MESSAGE_WARNING,
+                    gtk.BUTTONS_OK_CANCEL, "Card Set Not Empty. Really Delete?")
+            iResponse = oDialog.run()
+            oDialog.destroy()
+            if iResponse == gtk.RESPONSE_CANCEL:
                 return False # not deleting
-            # User agreed, so clear the CardSet
-            if self.cSetType == PhysicalCardSet:
-                for oC in oCS.cards:
-                    oCS.removePhysicalCard(oC)
-            else:
-                for oC in oCS.cards:
-                    oCS.removeAbstractCard(oC)
-        # Card Set now empty
-        if self.cSetType == PhysicalCardSet:
-            cardSet = PhysicalCardSet.byName(self.sSetName)
-            PhysicalCardSet.delete(cardSet.id)
+        # Got this far, so delete the card set
+        if self.cSetType is PhysicalCardSet:
+            delete_physical_card_set(self.sSetName)
         else:
-            cardSet = AbstractCardSet.byName(self.sSetName)
-            AbstractCardSet.delete(cardSet.id)
+            delete_abstract_card_set(self.sSetName)
         # Tell Window to clean up
         return True
