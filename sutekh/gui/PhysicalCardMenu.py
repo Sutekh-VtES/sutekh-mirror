@@ -43,6 +43,10 @@ class PhysicalCardMenu(gtk.MenuBar,object):
         self.iEditable.connect('toggled', self.toggleEditable)
         wMenu.add(self.iEditable)
 
+        __iClose = gtk.MenuItem("Close List")
+        wMenu.add(__iClose)
+        __iClose.connect("activate", self.close_list)
+
         self.add(iMenu)
 
     def __createFilterMenu(self):
@@ -92,6 +96,9 @@ class PhysicalCardMenu(gtk.MenuBar,object):
             oW = PhysicalCardXmlFile(sFileName)
             oW.write()
 
+    def close_list(self, widget):
+        self.__oFrame.close_frame()
+
     def setApplyFilter(self,state):
         self.iApply.set_active(state)
 
@@ -105,7 +112,6 @@ class PhysicalCardMenu(gtk.MenuBar,object):
     def toggleEditable(self, oWidget):
         self.__oC.view._oModel.bEditable = oWidget.active
         self.__oC.view.load()
-
 
     def setFilter(self, oWidget):
         self.__oC.view.getFilter(self)

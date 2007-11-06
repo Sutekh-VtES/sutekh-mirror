@@ -36,6 +36,10 @@ class PhysicalCardFrame(gtk.Frame, object):
     def cleanup(self):
         pass
 
+    def close_frame(self):
+        self.__oMainWindow.remove_pane(self)
+        self.destroy()
+
     def addParts(self):
         wMbox = gtk.VBox(False, 2)
 

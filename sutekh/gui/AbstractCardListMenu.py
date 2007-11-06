@@ -23,8 +23,22 @@ class AbstractCardListMenu(gtk.MenuBar, object):
         self.__oFrame = oFrame
         self.__dMenus = {}
 
+        self.__createACLMenu()
         self.__createFilterMenu()
         self.__createPluginMenu()
+
+    def __createACLMenu(self):
+        # setup sub menu
+        iMenu = gtk.MenuItem("Abstract Card List Actions")
+        wMenu = gtk.Menu()
+        self.__dMenus["ACS"] = wMenu
+        iMenu.set_submenu(wMenu)
+        # items
+        __iClose = gtk.MenuItem("Close List")
+        wMenu.add(__iClose)
+        __iClose.connect("activate", self.close_list)
+
+        self.add(iMenu)
 
     def __createFilterMenu(self):
         # setup sub menu
@@ -64,6 +78,9 @@ class AbstractCardListMenu(gtk.MenuBar, object):
         self.add(iMenu)
         if len(wMenu.get_children()) == 0:
             iMenu.set_sensitive(False)
+
+    def close_list(self, widget):
+        self.__oFrame.close_frame()
 
     def setApplyFilter(self,state):
         self.iApply.set_active(state)

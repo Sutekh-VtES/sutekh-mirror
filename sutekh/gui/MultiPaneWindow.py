@@ -191,7 +191,7 @@ class MultiPaneWindow(gtk.Window):
         self._oFocussed = None
 
     def menu_remove_pane(self, oMenuWidget):
-        self.remove_pane(self._oFoccussed)
+        self.remove_pane(self._oFocussed)
 
     def remove_pane(self, oFrame):
         if oFrame is not None:
