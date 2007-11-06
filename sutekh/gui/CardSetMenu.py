@@ -42,6 +42,15 @@ class CardSetMenu(gtk.MenuBar, object):
         self.__iExport = gtk.MenuItem("Export Card Set ("+self.sSetName+") to File")
         wMenu.add(self.__iExport)
         self.__iExport.connect('activate', self.doExport)
+
+        iExpand = gtk.MenuItem("Expand All (Ctrl+)")
+        wMenu.add(iExpand)
+        iExpand.connect("activate", self.expand_all)
+
+        iCollapse = gtk.MenuItem("Collapse All (Ctrl-)")
+        wMenu.add(iCollapse)
+        iCollapse.connect("activate", self.collapse_all)
+
         self.__iClose = gtk.MenuItem("Close Card Set ("+self.sSetName+")")
         wMenu.add(self.__iClose)
         self.__iClose.connect("activate", self.cardSetClose)
@@ -194,3 +203,9 @@ class CardSetMenu(gtk.MenuBar, object):
 
     def setFilter(self, oWidget):
         self.__oC.view.getFilter(self)
+
+    def expand_all(self, oWidget):
+        self.__oC.view.expand_all()
+
+    def collapse_all(self, oWidget):
+        self.__oC.view.collapse_all()

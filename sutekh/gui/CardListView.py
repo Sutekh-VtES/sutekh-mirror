@@ -26,7 +26,10 @@ class CardListView(gtk.TreeView, object):
         self._oSelection.connect('changed',self.cardSelected)
 
         # Activating rows
-        self.connect('row-activated',self.cardActivated)
+        self.connect('row-activated',self.card_activated)
+
+        # Key combination for expanding and collapsing all rows
+        self.connect('key-release-event', self.key_released)
 
         # Text searching of card names
         self.set_search_equal_func(self.compare,None)
@@ -66,9 +69,22 @@ class CardListView(gtk.TreeView, object):
 
     # Activating Rows
 
-    def cardActivated(self, wTree, oPath, oColumn):
+    def card_activated(self, wTree, oPath, oColumn):
         sCardName = self._oModel.getCardNameFromPath(oPath)
         self._oC.setCardText(sCardName)
+
+    # Key combinations
+
+    def key_released(self, oWidget, oEvent):
+        if oEvent.get_state() == gtk.gdk.CONTROL_MASK:
+            if oEvent.string == '+':
+                self.expand_all()
+                return True
+            elif oEvent.string == '-':
+                self.collapse_all()
+                return True
+        # Let other key handles take charge
+        return False
 
     # Selecting
 
