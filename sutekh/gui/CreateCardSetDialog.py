@@ -26,8 +26,7 @@ class CreateCardSetDialog(gtk.Dialog):
         self.vbox.pack_start(oDescriptionLabel)
         self.vbox.pack_start(self.oDesc)
 
-        self.connect("response", self.buttonResponse)
-        self.oName.connect("activate", self.buttonResponse, gtk.RESPONSE_OK)
+        self.connect("response", self.button_response)
 
         if sAuthor is not None:
             self.oAuthor.set_text(sAuthor)
@@ -42,25 +41,26 @@ class CreateCardSetDialog(gtk.Dialog):
 
         self.show_all()
 
-    def getName(self):
+    def get_data(self):
         return (self.sName, self.sAuthor, self.sDesc)
 
-    def buttonResponse(self, oWidget, iResponse):
+    def button_response(self, oWidget, iResponse):
         if iResponse == gtk.RESPONSE_OK:
             self.sName = self.oName.get_text()
             if len(self.sName) > 0:
                 self.sAuthor = self.oAuthor.get_text()
                 self.sDesc = self.oDesc.get_text()
-                # We use _ as a deliminator for dragging (see CardSetView)
-                # so change any _'s to spaces
-                self.sName = self.sName.replace("_"," ")
+                # We don't allow < or > in the name, since
+                # pygtk uses that for markup
+                self.sName = self.sName.replace("<", "(")
+                self.sName = self.sName.replace(">", ")")
             else:
                 # We don't allow empty names
                 self.sName = None
 
                 oComplaint = gtk.MessageDialog(None, 0, gtk.MESSAGE_ERROR,
                     gtk.BUTTONS_CLOSE,
-                    "You did not specify a name for the %s." % self.sType)
+                    "You did not specify a name for the %s Card Set." % self.sType)
                 oComplaint.run()
                 oComplaint.destroy()
 

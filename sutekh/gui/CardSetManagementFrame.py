@@ -12,6 +12,7 @@ from sutekh.core.SutekhObjects import AbstractCardSet, PhysicalCardSet
 from sutekh.core.Filters import NullFilter
 from sutekh.gui.ScrolledList import ScrolledList
 from sutekh.gui.FilterDialog import FilterDialog
+from sutekh.gui.CreateCardSetDialog import CreateCardSetDialog
 
 class CardSetManagementFrame(gtk.Frame, object):
 
@@ -93,7 +94,25 @@ class CardSetManagementFrame(gtk.Frame, object):
         self.show_all()
 
     def create_new_card_set(self, oWidget):
-        pass
+        if self._cSetType is PhysicalCardSet:
+            oDialog = CreateCardSetDialog(self._oMainWin, 'Physical')
+            open_card_set = self._oMainWin.add_physical_card_set
+        else:
+            oDialog = CreateCardSetDialog(self._oMainWin, 'Abstract')
+            open_card_set = self._oMainWin.add_abstract_card_set
+        oDialog.run()
+        (sName, sAuthor, sDescription) = oDialog.get_data()
+        oDialog.destroy()
+        if sName is not None:
+            iCnt = self._cSetType.selectBy(name=sName).count()
+            if iCnt > 0:
+                oComplaint = gtk.MessageDialog(None, 0, gtk.MESSAGE_ERROR,
+                        gtk.BUTTONS_CLOSE, "Chosen Card Set Name is already in use.")
+                oComplaint.run()
+                oComplaint.destroy()
+            else:
+                oCS = self._cSetType(name=sName, author=sAuthor, comment=sDescription)
+                open_card_set(sName)
 
     def delete_card_set(self, oWidget):
         aSelection = self._oScrolledList.get_selection()
