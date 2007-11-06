@@ -193,6 +193,14 @@ class MultiPaneWindow(gtk.Window):
     def menu_remove_pane(self, oMenuWidget):
         self.remove_pane(self._oFocussed)
 
+    def remove_pane_by_name(self, sName):
+        try:
+            iIndex = self.dOpenPanes.values().index(sName)
+            oPane = self.dOpenPanes.keys()[iIndex]
+            self.remove_pane(oPane)
+        except ValueError:
+            return
+
     def remove_pane(self, oFrame):
         if oFrame is not None:
             oRect = oFrame.get_allocation()

@@ -21,7 +21,7 @@ class CardSetManagementFrame(gtk.Frame, object):
 
     def __init__(self, oMainWindow, oConfig):
         super(CardSetManagementFrame, self).__init__()
-        self._oMainWin = oMainWindow
+        self._oMainWindow = oMainWindow
         self._oConfig = oConfig
         self._cSetType = None
         self._sName = 'Card Set List'
@@ -72,7 +72,7 @@ class CardSetManagementFrame(gtk.Frame, object):
         pass
 
     def remove(self, oMenuWidget):
-        self._oMainWin.remove_pane(self)
+        self._oMainWindow.remove_pane(self)
         self.destroy()
 
     def add_parts(self):
@@ -95,11 +95,11 @@ class CardSetManagementFrame(gtk.Frame, object):
 
     def create_new_card_set(self, oWidget):
         if self._cSetType is PhysicalCardSet:
-            oDialog = CreateCardSetDialog(self._oMainWin, 'Physical')
-            open_card_set = self._oMainWin.add_physical_card_set
+            oDialog = CreateCardSetDialog(self._oMainWindow, 'Physical')
+            open_card_set = self._oMainWindow.add_physical_card_set
         else:
-            oDialog = CreateCardSetDialog(self._oMainWin, 'Abstract')
-            open_card_set = self._oMainWin.add_abstract_card_set
+            oDialog = CreateCardSetDialog(self._oMainWindow, 'Abstract')
+            open_card_set = self._oMainWindow.add_abstract_card_set
         oDialog.run()
         (sName, sAuthor, sDescription) = oDialog.get_data()
         oDialog.destroy()
@@ -135,9 +135,12 @@ class CardSetManagementFrame(gtk.Frame, object):
                 return
         # Got here, so delete the card set
         if self._cSetType is PhysicalCardSet:
+            sPaneName = 'PCS:' + sSetName
             delete_physical_card_set(sSetName)
         else:
+            sPaneName = 'ACS:' + sSetName
             delete_abstract_card_set(sSetName)
+        self._oMainWindow.remove_pane_by_name(sPaneName)
         self.reload_card_set_list()
 
     def reload_card_set_list(self):
@@ -149,10 +152,10 @@ class CardSetManagementFrame(gtk.Frame, object):
             oSelectFilter = NullFilter()
         for oCS in oSelectFilter.select(self._oSetClass).orderBy('name'):
             if self._cSetType is PhysicalCardSet:
-                sKey = 'PCS:' + oCS.name
+                sPaneName = 'PCS:' + oCS.name
             else:
-                sKey = 'ACS:' + oCS.name
-            if sKey not in self._oMainWin.dOpenPanes.values():
+                sPaneName = 'ACS:' + oCS.name
+            if sPaneName not in self._oMainWindow.dOpenPanes.values():
                 aVals.append(oCS.name)
             else:
                 aVals.insert(iAvailIndex, oCS.name)
@@ -161,7 +164,7 @@ class CardSetManagementFrame(gtk.Frame, object):
 
     def set_filter(self, oWidget):
         if self._oFilterDialog is None:
-            self._oFilterDialog = FilterDialog(self._oMainWin, self._oConfig, self._sFilterType)
+            self._oFilterDialog = FilterDialog(self._oMainWindow, self._oConfig, self._sFilterType)
 
         self._oFilterDialog.run()
 
@@ -201,9 +204,9 @@ class CardSetManagementFrame(gtk.Frame, object):
         if sName == self.__sAvail or sName == self.__sOpen:
             return
         if self._cSetType is PhysicalCardSet:
-            self._oMainWin.add_physical_card_set(sName)
+            self._oMainWindow.add_physical_card_set(sName)
         elif self._cSetType is AbstractCardSet:
-            self._oMainWin.add_abstract_card_set(sName)
+            self._oMainWindow.add_abstract_card_set(sName)
 
 class PhysicalCardSetListFrame(CardSetManagementFrame):
     def __init__(self, oMainWindow, oConfig):
