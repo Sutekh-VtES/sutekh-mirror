@@ -222,10 +222,8 @@ class FilterDialog(gtk.Dialog, ConfigFileListener):
             if type(oChild) is ScrolledList:
                 # Some of this logic should be pushed down to ScrolledList
                 aVals = []
-                oModel, aSelection = oChild.TreeView.get_selection().get_selected_rows()
-                for oPath in aSelection:
-                    oIter = oModel.get_iter(oPath)
-                    sName = oModel.get_value(oIter, 0)
+                aSelection = oChild.get_selection()
+                for sName in aSelection:
                     if oFilterPart.node.filtertype not in FilterParser.aNumericFilters:
                         if oFilterPart.node.filtertype in FilterParser.aWithFilters:
                             sPart1, sPart2 = sName.split(' with ')
@@ -249,11 +247,7 @@ class FilterDialog(gtk.Dialog, ConfigFileListener):
     def __makeScrolledList(self, sName, aVals):
         oWidget = ScrolledList(sName)
         oWidget.set_size_request(200, 400)
-        aList = oWidget.get_list()
-        aList.clear()
-        for sEntry in aVals:
-            oIter = aList.append(None)
-            aList.set(oIter, 0, sEntry)
+        oWidget.fill_list(aVals)
         return oWidget
 
     def __doComplaint(self, sMessage):
