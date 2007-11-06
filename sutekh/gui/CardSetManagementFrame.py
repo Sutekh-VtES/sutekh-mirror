@@ -79,12 +79,15 @@ class CardSetManagementFrame(gtk.Frame, object):
         """Add a list object to the frame"""
         wMbox = gtk.VBox(False, 2)
 
+        self.__oTitle = gtk.Label(self._sName)
+        wMbox.pack_start(self.__oTitle, False, False)
+
         self.add_actions_menu()
         self.add_filter_menu()
 
         wMbox.pack_start(self._oMenu, False, False)
 
-        self._oScrolledList = ScrolledList(self._sName, '')
+        self._oScrolledList = ScrolledList(self._sName)
         self._oView = self._oScrolledList.view
         self._oScrolledList.set_select_single()
         self._oView.connect('row_activated', self.row_clicked)
@@ -92,6 +95,18 @@ class CardSetManagementFrame(gtk.Frame, object):
         wMbox.pack_start(self._oScrolledList, expand=True)
         self.add(wMbox)
         self.show_all()
+
+        self.__oBaseStyle = self.__oTitle.get_style().copy()
+        self.__oFocStyle = self.__oTitle.get_style().copy()
+        oMap = self.__oTitle.get_colormap()
+        oGreen = oMap.alloc_color("purple")
+        self.__oFocStyle.fg[gtk.STATE_NORMAL] = oGreen
+
+    def set_focussed_title(self):
+        self.__oTitle.set_style(self.__oFocStyle)
+
+    def set_unfocussed_title(self):
+        self.__oTitle.set_style(self.__oBaseStyle)
 
     def create_new_card_set(self, oWidget):
         if self._cSetType is PhysicalCardSet:

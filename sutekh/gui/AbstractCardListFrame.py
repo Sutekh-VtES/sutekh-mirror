@@ -15,7 +15,8 @@ class AbstractCardListFrame(gtk.Frame, object):
         super(AbstractCardListFrame, self).__init__()
         self.__oMainWindow = oMainWindow
 
-        self.set_label("Whitewolf CardList")
+        self.__oTitle = gtk.Label("White Wolf CardList")
+
         self.__sName = "Whitewolf CardList"
         self.__sType = "Abstract Cards"
         self.__oC = AbstractCardListController(self, oConfig, oMainWindow)
@@ -28,6 +29,12 @@ class AbstractCardListFrame(gtk.Frame, object):
         self._oMenu = AbstractCardListMenu(self, self.__oC, oMainWindow)
 
         self.addParts()
+
+        self.__oBaseStyle = self.__oTitle.get_style().copy()
+        self.__oFocStyle = self.__oTitle.get_style().copy()
+        oMap = self.__oTitle.get_colormap()
+        oGreen = oMap.alloc_color("purple")
+        self.__oFocStyle.fg[gtk.STATE_NORMAL] = oGreen
 
     view = property(fget=lambda self: self.__oC.view, doc="Associated View Object")
     name = property(fget=lambda self: self.__sName, doc="Frame Name")
@@ -43,6 +50,8 @@ class AbstractCardListFrame(gtk.Frame, object):
 
     def addParts(self):
         wMbox = gtk.VBox(False, 2)
+
+        wMbox.pack_start(self.__oTitle, False, False)
 
         wMbox.pack_start(self._oMenu, False, False)
 
@@ -60,3 +69,9 @@ class AbstractCardListFrame(gtk.Frame, object):
 
         self.add(wMbox)
         self.show_all()
+
+    def set_focussed_title(self):
+        self.__oTitle.set_style(self.__oFocStyle)
+
+    def set_unfocussed_title(self):
+        self.__oTitle.set_style(self.__oBaseStyle)

@@ -134,7 +134,10 @@ class MultiPaneWindow(gtk.Window):
             self._oACSListPane.reload_card_set_list()
 
     def win_focus(self, oWidget, oEvent, oFrame):
+        if self._oFocussed is not None:
+            self._oFocussed.set_unfocussed_title()
         self._oFocussed = oFrame
+        self._oFocussed.set_focussed_title()
 
     def run(self):
         gtk.main()

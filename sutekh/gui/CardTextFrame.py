@@ -12,10 +12,16 @@ class CardTextFrame(gtk.Frame, object):
     def __init__(self, oMainWindow):
         super(CardTextFrame,self).__init__()
         self.__oMainWindow = oMainWindow
-        self.set_label("Card Text")
+        self.__oTitle = gtk.Label("Card Text")
         self.__sName = "Card Text"
         self.__oTextView = CardTextView(oMainWindow)
-        self.addParts(self.__oTextView)
+        self.add_parts(self.__oTextView)
+
+        self.__oBaseStyle = self.__oTitle.get_style().copy()
+        self.__oFocStyle = self.__oTitle.get_style().copy()
+        oMap = self.__oTitle.get_colormap()
+        oGreen = oMap.alloc_color("purple")
+        self.__oFocStyle.fg[gtk.STATE_NORMAL] = oGreen
 
     view = property(fget=lambda self: self.__oTextView, doc="Associated View Object")
     name = property(fget=lambda self: self.__sName, doc="Frame Name")
@@ -24,10 +30,18 @@ class CardTextFrame(gtk.Frame, object):
     def cleanup(self):
         pass
 
-    def addParts(self, oCardText):
+    def add_parts(self, oCardText):
         wMbox = gtk.VBox(False, 2)
+
+        wMbox.pack_start(self.__oTitle, False, False)
 
         wMbox.pack_start(AutoScrolledWindow(oCardText), True, True)
 
         self.add(wMbox)
         self.show_all()
+
+    def set_focussed_title(self):
+        self.__oTitle.set_style(self.__oFocStyle)
+
+    def set_unfocussed_title(self):
+        self.__oTitle.set_style(self.__oBaseStyle)

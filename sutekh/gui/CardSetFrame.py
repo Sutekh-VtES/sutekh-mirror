@@ -33,8 +33,14 @@ class CardSetFrame(gtk.Frame, object):
 
         self._oMenu = CardSetMenu(self, self._oC, self._oMainWindow, self._oC.view,
                 sName, self.cSetType)
-        self.addParts()
+        self.add_parts()
         self.updateName(sName)
+
+        self.__oBaseStyle = self.__oTitle.get_style().copy()
+        self.__oFocStyle = self.__oTitle.get_style().copy()
+        oMap = self.__oTitle.get_colormap()
+        oGreen = oMap.alloc_color("purple")
+        self.__oFocStyle.fg[gtk.STATE_NORMAL] = oGreen
 
     view = property(fget=lambda self: self._oC.view, doc="Associated View Object")
     name = property(fget=lambda self: self.sSetName, doc="Frame Name")
@@ -56,7 +62,7 @@ class CardSetFrame(gtk.Frame, object):
         else:
             self.__oTitle.set_text('ACS:' + self.sSetName)
 
-    def addParts(self):
+    def add_parts(self):
         wMbox = gtk.VBox(False, 2)
 
         self.__oTitle = gtk.Label()
@@ -78,6 +84,12 @@ class CardSetFrame(gtk.Frame, object):
 
         self.add(wMbox)
         self.show_all()
+
+    def set_focussed_title(self):
+        self.__oTitle.set_style(self.__oFocStyle)
+
+    def set_unfocussed_title(self):
+        self.__oTitle.set_style(self.__oBaseStyle)
 
     def closeCardSet(self, widget=None):
         # FIXME: Update to frame based stuff
