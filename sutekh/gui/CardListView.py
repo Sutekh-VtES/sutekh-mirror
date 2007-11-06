@@ -66,7 +66,7 @@ class CardListView(gtk.TreeView, object):
 
     # Activating Rows
 
-    def cardActivated(self,wTree,oPath,oColumn):
+    def cardActivated(self, wTree, oPath, oColumn):
         sCardName = self._oModel.getCardNameFromPath(oPath)
         self._oC.setCardText(sCardName)
 
@@ -124,7 +124,7 @@ class CardListView(gtk.TreeView, object):
 
     # Card name searching
 
-    def compare(self,oModel,iColumn,sKey,oIter,oData):
+    def compare(self, oModel, iColumn, sKey, oIter,oData):
         if oModel.iter_depth(oIter) == 0 or oModel.iter_depth(oIter) == 2:
             # Don't succeed for top level items or expansion items
             return True
@@ -151,15 +151,15 @@ class CardListView(gtk.TreeView, object):
             self._oModel.selectfilter = oFilter
             if not self._oModel.applyfilter:
                 oMenu.setApplyFilter(True) # If a filter is set, automatically apply
-                #self.runFilter(True)
             else:
                 self.load() # Filter Changed, so reload
         else:
             # Filter is set to blank, so we treat this as disabling
             # Filter
-            oMenu.setApplyFilter(False)
-            #self.runFilter(False)
-            self.load()
+            if self._oModel.applyfilter:
+                oMenu.setApplyFilter(False)
+            else:
+                self.load()
 
     def runFilter(self, bState):
         if self._oModel.applyfilter != bState:
@@ -228,7 +228,7 @@ class EditableCardListView(CardListView):
         oCell2 = gtk.CellRendererText()
         oCell2.set_property('style', pango.STYLE_ITALIC)
 
-        oColumn1 = gtk.TreeViewColumn("#",oCell1,text=1)
+        oColumn1 = gtk.TreeViewColumn("#", oCell1, text=1)
         oColumn1.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
         oColumn1.set_fixed_width(40)
         oColumn1.set_sort_column_id(1)
@@ -261,6 +261,12 @@ class EditableCardListView(CardListView):
         self.set_expander_column(oColumn2)
         if hasattr(self,'set_grid_lines'):
             self.set_grid_lines(gtk.TREE_VIEW_GRID_LINES_BOTH)
+
+        self.__oBaseStyle = self.get_style().copy()
+        self.__oRedStyle = self.get_style().copy()
+        oMap = oWindow.get_colormap()
+        oRed = oMap.alloc_color("red")
+        self.__oRedStyle.fg[gtk.STATE_NORMAL] = oRed
      
     # Used by card dragging handlers
     def addCard(self,sCardName):
@@ -284,3 +290,10 @@ class EditableCardListView(CardListView):
             sCardName = self._oModel.getCardNameFromPath(oPath)
             sExpansion = self._oModel.getExpansionNameFromPath(oPath)
             bSucc = self._oC.decCard(sCardName, sExpansion)
+
+    def set_color_red(self):
+        self.set_style(self.__oRedStyle)
+
+    def set_color_normal(self):
+        self.set_style(self.__oBaseStyle)
+

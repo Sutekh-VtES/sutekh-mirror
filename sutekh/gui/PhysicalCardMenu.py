@@ -112,6 +112,10 @@ class PhysicalCardMenu(gtk.MenuBar,object):
     def toggleEditable(self, oWidget):
         self.__oC.view._oModel.bEditable = oWidget.active
         self.__oC.view.load()
+        if oWidget.active:
+            self.__oC.view.set_color_red()
+        else:
+            self.__oC.view.set_color_normal()
 
     def setFilter(self, oWidget):
         self.__oC.view.getFilter(self)
