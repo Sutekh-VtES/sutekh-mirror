@@ -12,7 +12,8 @@ from sutekh.io.XmlFileHandling import PhysicalCardXmlFile, PhysicalCardSetXmlFil
                                     AbstractCardSetXmlFile
 from sutekh.io.IdentifyXMLFile import IdentifyXMLFile
 from sutekh.core.DatabaseUpgrade import copyToNewAbstractCardDB, createFinalCopy
-from sutekh.SutekhUtility import refreshTables, readWhiteWolfList, readRulings
+from sutekh.SutekhUtility import refreshTables, readWhiteWolfList, readRulings, \
+        delete_physical_card_set, delete_abstract_card_set
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
 
 class MainMenu(gtk.MenuBar, object):
@@ -116,7 +117,7 @@ class MainMenu(gtk.MenuBar, object):
 
         self.iDelPane = gtk.MenuItem("Remove currently focussed pane")
         wMenu.add(self.iDelPane)
-        self.iDelPane.connect("activate", self.__oWin.remove_pane)
+        self.iDelPane.connect("activate", self.__oWin.menu_remove_pane)
         self.iDelPane.set_sensitive(False)
 
         self.add(iMenu)
@@ -181,15 +182,9 @@ class MainMenu(gtk.MenuBar, object):
                     else:
                         # Delete the card set
                         if sType == 'PhysicalCardSet':
-                            oCardSet = PhysicalCardSet.byName(sName)
-                            for oCard in oCardSet.cards:
-                                oCardSet.removePhysicalCard(oCard)
-                            PhysicalCardSet.delete(oCardSet.id)
+                            delete_physical_card_set(sName)
                         else:
-                            oCardSet = AbstractCardSet.byName(sName)
-                            for oCard in oCardSet.cards:
-                                oCardSet.removeAbstractCard(oCard)
-                            AbstractCardSet.delete(oCardSet.id)
+                            delete_abstract_card_set(sName)
                 if sType == "AbstractCardSet":
                     oF = AbstractCardSetXmlFile(sFileName, lookup=self.__oCardLookup)
                 else:

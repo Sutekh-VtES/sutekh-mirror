@@ -190,27 +190,30 @@ class MultiPaneWindow(gtk.Window):
         #width, height = self.get_size()
         self._oFocussed = None
 
-    def remove_pane(self, oWidget):
-        oRect = self._oFocussed.get_allocation()
-        oCur = self.get_allocation()
-        self.resize(oCur.width-oRect.width, oCur.height)
-        if self._oFocussed is not None:
+    def menu_remove_pane(self, oMenuWidget):
+        self.remove_pane(self._oFoccussed)
+
+    def remove_pane(self, oFrame):
+        if oFrame is not None:
+            oRect = oFrame.get_allocation()
+            oCur = self.get_allocation()
+            self.resize(oCur.width-oRect.width, oCur.height)
             if self._iNumOpenPanes == 1:
                 # Removing last widget, so just clear the vbox
                 oWidget = [x for x in self.oVBox.get_children() if x != self.__oMenu][0]
                 self.oVBox.remove(oWidget)
             elif self._iNumOpenPanes == 2:
                 # Removing from the only pane, so keep the unfocussed pane
-                oPane = self._aPanes[0] # Only pane
-                self._aPanes.remove(oPane)
-                oKept = [x for x in oPane.get_children() if x != self._oFocussed][0]
+                oThisPane = self._aPanes[0] # Only pane
+                self._aPanes.remove(oThisPane)
+                oKept = [x for x in oThisPane.get_children() if x != oFrame][0]
                 # clear out pane
-                oPane.remove(self._oFocussed)
-                oPane.remove(oKept)
-                self.oVBox.remove(oPane)
+                oThisPane.remove(oFrame)
+                oThisPane.remove(oKept)
+                self.oVBox.remove(oThisPane)
                 self.oVBox.pack_start(oKept)
             else:
-                oFocussedPane = [x for x in self._aPanes if self._oFocussed in x.get_children()][0]
+                oFocussedPane = [x for x in self._aPanes if oFrame in x.get_children()][0]
                 if oFocussedPane == self._aPanes[-1]:
                     # Removing last Pane, and thus last Window
                     self.oVBox.remove(oFocussedPane)
@@ -219,23 +222,23 @@ class MultiPaneWindow(gtk.Window):
                     self.oVBox.show()
                 else:
                     # Removing First pane, need to check which child to keep
-                    oKept = [x for x in oFocussedPane.get_children() if x != self._oFocussed][0]
+                    oKept = [x for x in oFocussedPane.get_children() if x != oFrame][0]
                     iIndex = self._aPanes.index(oFocussedPane)
                     self._aPanes[iIndex+1].remove(oFocussedPane) # Safe, since this is not the last pane
                     oFocussedPane.remove(oKept)
                     self._aPanes[iIndex+1].add1(oKept)
                 # Housekeeping
-                oFocussedPane.remove(self._oFocussed)
+                oFocussedPane.remove(oFrame)
                 self._aPanes.remove(oFocussedPane)
 
             self.oVBox.show()
             self._iNumOpenPanes -= 1
             if self._iNumOpenPanes == 0:
                 self.__oMenu.del_pane_set_sensitive(False)
-            self._aFrames.remove(self._oFocussed)
+            self._aFrames.remove(oFrame)
             # Remove from dictionary of open panes
-            sMenuFlag = self.dOpenPanes[self._oFocussed]
-            del self.dOpenPanes[self._oFocussed]
+            sMenuFlag = self.dOpenPanes[oFrame]
+            del self.dOpenPanes[oFrame]
             if sMenuFlag == "PCS List":
                 self.__oMenu.iAddPCSListPane.set_sensitive(True)
                 self._oPCSListPane = None
@@ -249,8 +252,9 @@ class MultiPaneWindow(gtk.Window):
             elif sMenuFlag == "Physical Card List":
                 self.__oMenu.iAddPCLPane.set_sensitive(True)
             # Any cleanup events we need?
-            self._oFocussed.cleanup()
-            self._oFocussed = None
+            oFrame.cleanup()
+            if oFrame == self._oFocussed:
+                self._oFocussed = None
 
     def show_about_dialog(self, oWidget):
         oDlg = SutekhAboutDialog()
