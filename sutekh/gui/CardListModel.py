@@ -6,7 +6,7 @@
 import gtk, gobject
 import sets
 from sutekh.core.Filters import FilterAndBox, SpecificCardFilter, NullFilter, PhysicalExpansionFilter, \
-        PhysicalCardFilter
+        PhysicalCardFilter, PhysicalCardSetFilter
 from sutekh.core.Groupings import CardTypeGrouping
 from sutekh.core.SutekhObjects import AbstractCard, IAbstractCard, PhysicalCardSet, \
         PhysicalCard
@@ -40,7 +40,9 @@ class CardListModel(gtk.TreeStore):
     """
     Provides a card list specific API for accessing a gtk.TreeStore.
     """
-
+    # FIXME: Use spaces to ensure it sorts first, and is 
+    # visually distinct. Very much the wrong solution, I feel
+ 
     sUnknownExpansion = '  Unspecified Expansion'
 
     def __init__(self):
@@ -105,36 +107,39 @@ class CardListModel(gtk.TreeStore):
                 oCard, iCnt = fGetCard(oItem), fGetCount(oItem)
                 iGrpCnt += iCnt
                 oChildIter = self.append(oSectionIter)
+                aFilterRes = []
                 if self.bEditable:
                     bDecCard = True
-                    if self.cardclass is not PhysicalCardSet:
-                        bIncCard = True
-                    else:
-                        oFilter = FilterAndBox([SpecificCardFilter(oCard),
-                                PhysicalCardFilter()])
+                    if type(self.basefilter) is PhysicalCardSetFilter:
                         # Can't inc if there are no physical cards
-                        bIncCard = iCnt < oFilter.select(PhysicalCard).count()
+                        # Cache this, since we'll need the info in getExpansionInfo
+                        aFilterRes = list(PhysicalCard.selectBy(abstractCardID=oCard.id))
+                        bIncCard = iCnt < len(aFilterRes)
+                    else:
+                        # always possible for PhysicalCardList and 
+                        # AbstractCardSet's 
+                        bIncCard = True
                 else:
                     bIncCard = False
                     bDecCard = False
                 self.set(oChildIter,
                     0, oCard.name,
                     1, iCnt,
-                    2, bDecCard,
-                    3, bIncCard
+                    2, bIncCard,
+                    3, bDecCard
                 )
                 if self.bExpansions:
                     # fill in the numbers for all possible expansions for
                     # the card
-                    dExpansionInfo = self.getExpansionInfo(oCard, fGetExpanInfo(oItem))
+                    dExpansionInfo = self.getExpansionInfo(oCard, fGetExpanInfo(oItem), aFilterRes)
                     for sExpansion in sorted(dExpansionInfo.keys()):
                         oExpansionIter = self.append(oChildIter)
                         iExpCnt, bDecCard, bIncCard = dExpansionInfo[sExpansion]
                         self.set(oExpansionIter,
                                 0, sExpansion,
                                 1, iExpCnt,
-                                2, bDecCard,
-                                3, bIncCard)
+                                2, bIncCard,
+                                3, bDecCard)
                         self._dNameExpansion2Iter.setdefault(oCard.name, 
                                 {}).setdefault(sExpansion, 
                                         []).append(oExpansionIter)
@@ -152,24 +157,26 @@ class CardListModel(gtk.TreeStore):
         for oListener in self.listeners:
             oListener.load()
 
-    def getExpansionInfo(self, oCard, dExpanInfo):
-        # FIXME: Use spaces to ensure it sorts first, and is 
-        # visually distinct. Very much the wrong solution, I feel
+    def getExpansionInfo(self, oCard, dExpanInfo, aFilterRes):
         # We always list Unspecfied expansions, even when there
         # are none
         dExpansions = {self.sUnknownExpansion : [0, False, False]}
+        dCount = {self.sUnknownExpansion : 0}
         if self.bEditable:
-            oFilter = FilterAndBox([SpecificCardFilter(oCard), 
-                PhysicalCardFilter(), 
-                PhysicalExpansionFilter(None)])
-            iNoneCnt = oFilter.select(PhysicalCard).count()
             # All possible expansions listed in the dictionary when editing
-            if self.cardclass is PhysicalCardSet:
-                oFilter = FilterAndBox([SpecificCardFilter(oCard), 
-                        PhysicalCardFilter()])
-                for oPC in oFilter.select(PhysicalCard):
-                    dExpansions.setdefault(oPC.expansion.name, [0, True, False])
+            if type(self.basefilter) is PhysicalCardSetFilter:
+                for oPC in aFilterRes:
+                    if oPC.expansion is not None:
+                        sName = oPC.expansion.name
+                    else:
+                        sName = self.sUnknownExpansion
+                    dExpansions.setdefault(sName, [0, False, False])
+                    dCount.setdefault(sName, 0)
+                    dCount[sName] += 1
             else:
+                # We don't need the join filter's give us, since we have oCard
+                iNoneCnt = PhysicalCard.selectBy(abstractCardID=oCard.id,
+                        expansionID=None).count()
                 for oP in oCard.rarity:
                     dExpansions.setdefault(oP.expansion.name, [0, iNoneCnt > 0, False])
         for oExpansion, iCnt in dExpanInfo.iteritems():
@@ -177,28 +184,25 @@ class CardListModel(gtk.TreeStore):
             bIncCard = False
             if oExpansion is not None:
                 sKey = oExpansion.name
-                if self.bEditable:
-                    if self.cardclass is PhysicalCardSet:
-                        oFilter = FilterAndBox(SpecificCardFilter(oCard), 
-                            PhysicalCardFilter(), 
-                            PhysicalExpansionFilter(sKey))
-                        iCardCnt = oFilter.select(PhysicalCard).count()
-                        bDecCard = iCnt > 0
-                        # Cards of the expansion available to select
-                        bIncCard = iCnt < iCardCnt 
+            else:
+                sKey = self.sUnknownExpansion
+            if self.bEditable:
+                if type(self.basefilter) is PhysicalCardSetFilter:
+                    if sKey in dCount.keys():
+                        iCardCnt = dCount[sKey]
                     else:
+                        iCardCnt = 0
+                    bDecCard = iCnt > 0
+                    # Cards of the expansion available to select
+                    bIncCard = iCnt < iCardCnt 
+                else:
+                    if oExpansion is not None:
                         bDecCard = iCnt > 0
                         # Can only increase a expansion if there are unknown
                         # cards to move across
                         bIncCard = iNoneCnt > 0
-            else:
-                sKey = self.sUnknownExpansion
-                if self.bEditable and self.cardclass is PhysicalCardSet:
-                    bDecCard = iCnt > 0
-                    # Cards of the expansion available to select
-                    bIncCard = iCnt < iNoneCnt
-                # For PhysicalCardList, we never touch Unknown directly
-                # It's manipulated by changing other expansions
+                    # For PhysicalCardList, we never touch Unknown directly
+                    # It's manipulated by changing other expansions
             dExpansions[sKey] = [iCnt, bDecCard, bIncCard]
         return dExpansions
 
