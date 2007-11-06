@@ -9,7 +9,7 @@ from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 
 class ScrolledList(gtk.Frame):
     """Frame containing an auto scrolled list"""
-    def __init__(self, sTitle, sNullValue=None):
+    def __init__(self, sTitle):
         super(ScrolledList, self).__init__(None)
         self._aList = gtk.ListStore(gobject.TYPE_STRING)
         self._oTreeView = gtk.TreeView(self._aList)
@@ -17,11 +17,7 @@ class ScrolledList(gtk.Frame):
         oMyScroll = AutoScrolledWindow(self._oTreeView)
         self.add(oMyScroll)
         oCell1 = gtk.CellRendererText()
-        self.sNullValue = sNullValue
         oColumn = gtk.TreeViewColumn(sTitle, oCell1, markup=0)
-        oIter = self._aList.append(None) # Create Null item at top of list
-        if self.sNullValue is not None:
-            self._aList.set(oIter, 0, self.sNullValue)
         self._oTreeView.append_column(oColumn)
         self.set_shadow_type(gtk.SHADOW_NONE)
         self.show_all()
@@ -45,8 +41,7 @@ class ScrolledList(gtk.Frame):
         for oPath in oSelection:
             oIter = oModel.get_iter(oPath)
             sName = oModel.get_value(oIter, 0)
-            if sName != self.sNullValue:
-                aSelectedList.append(sName)
+            aSelectedList.append(sName)
         return aSelectedList
 
     def fill_list(self, aVals):
