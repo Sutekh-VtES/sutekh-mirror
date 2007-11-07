@@ -19,15 +19,15 @@ class PhysicalCardView(EditableCardListView):
         self.sDragPrefix = 'Phys:'
         self.load()
 
-    def cardDrop(self, w, context, x, y, data, info, time):
+    def card_drop(self, w, context, x, y, data, info, time):
         if not self._oModel.bEditable or not data or data.format != 8:
             # Don't accept cards when editable
             context.finish(False, False, time)
         else:
             sSource, aCardInfo = self.split_selection_data(data.data)
-            print sSource
-            print aCardInfo
-            if sSource in []:
+            # We can only drag from the AbstractCard List
+            # We can't drag from the card sets
+            if sSource in ['Abst:']:
                 # Add the cards
                 for iCount, sCardName, sExpansion in aCardInfo:
                     # We are adding new cards, so only 1 of each

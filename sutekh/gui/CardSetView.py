@@ -31,24 +31,28 @@ class CardSetView(EditableCardListView):
         self.sDragPrefix = self.cSetType.sqlmeta.table + ":" + self.sSetName
         self.load()
 
-    def cardDrop(self, w, context, x, y, data, info, time):
+    def card_drop(self, w, context, x, y, data, info, time):
         if not self._oModel.bEditable or not data or data.format != 8:
             # Don't accept cards when editable
             context.finish(False, False, time)
         else:
             sSource, aCardInfo = self.split_selection_data(data.data)
-            print sSource
-            print aCardInfo
-            if sSource in []:
-                # Add the cards
+            if sSource == self.sDragPrefix:
+                # Can't drag to oneself
+                context.finish(False, False, time)
+            # Rules are - we can always drag from the PhysicalCard List
+            # and from cardsets of the same type,
+            # but only ACS's can recieve cards from the AbstractCard List
+            aSources=sSource.split(':')
+            if aSources[0] in ["Phys", self.cSetType.sqlmeta.table]:
+                # Add the cards, Count Matters
                 for iCount, sCardName, sExpansion in aCardInfo:
-                    if sSource == 'Abs':
-                        # from Abstract list, so iCount doesn't matter
+                    for iLoop in range(iCount):
                         self.addCard(sCardName, sExpansion)
-                    else:
-                        # iCount matters
-                        for iLoop in range(iCount):
-                            self.addCard(sCardName, sExpansion)
+                context.finish(True, False, time)
+            elif aSources[0] == 'Abst' and self.cSetType is AbstractCardSet:
+                # from Abstract list, so iCount doesn't matter
+                self.addCard(sCardName, sExpansion)
                 context.finish(True, False, time)
             else:
                 context.finish(False, False, time)

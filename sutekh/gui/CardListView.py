@@ -1,6 +1,6 @@
 # CardListView.py
-# Copyright 2005,2006 Simon Cross <hodgestar@gmail.com>
-# Copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
+# Copyright 2005, 2006, 2007 Simon Cross <hodgestar@gmail.com>
+# Copyright 2006, 2007 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
 import gtk, pango
@@ -16,23 +16,23 @@ class CardListView(gtk.TreeView, object):
         self._oMainWin = oMainWindow
         self._oConfig = oConfig
 
-        super(CardListView,self).__init__(self._oModel)
+        super(CardListView, self).__init__(self._oModel)
 
         # Selecting rows
         self._oSelection = self.get_selection()
         self._oSelection.set_mode(gtk.SELECTION_MULTIPLE)
         self._aOldSelection = []
 
-        self._oSelection.connect('changed',self.cardSelected)
+        self._oSelection.connect('changed', self.card_selected)
 
         # Activating rows
-        self.connect('row-activated',self.card_activated)
+        self.connect('row-activated', self.card_activated)
 
         # Key combination for expanding and collapsing all rows
         self.connect('key-release-event', self.key_released)
 
         # Text searching of card names
-        self.set_search_equal_func(self.compare,None)
+        self.set_search_equal_func(self.compare, None)
         self.set_enable_search(True)
 
         # Drag and Drop
@@ -47,9 +47,9 @@ class CardListView(gtk.TreeView, object):
                            aTargets,
                            gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
 
-        self.connect('drag_data_get',self.dragCard)
-        self.connect('drag_data_delete',self.dragDelete)
-        self.connect('drag_data_received',self.cardDrop)
+        self.connect('drag_data_get', self.drag_card)
+        self.connect('drag_data_delete', self.drag_delete)
+        self.connect('drag_data_received', self.card_drop)
         self.bReentrant = False
 
         # Filtering Dialog
@@ -88,7 +88,7 @@ class CardListView(gtk.TreeView, object):
 
     # Selecting
 
-    def cardSelected(self,oSelection):
+    def card_selected(self, oSelection):
         if self.bReentrant:
             # This is here because we alter the selection inside
             # this function (resulting in a nested call).
@@ -140,7 +140,7 @@ class CardListView(gtk.TreeView, object):
 
     # Card name searching
 
-    def compare(self, oModel, iColumn, sKey, oIter,oData):
+    def compare(self, oModel, iColumn, sKey, oIter, oData):
         if oModel.iter_depth(oIter) == 0 or oModel.iter_depth(oIter) == 2:
             # Don't succeed for top level items or expansion items
             return True
@@ -185,7 +185,7 @@ class CardListView(gtk.TreeView, object):
     # Drag and Drop
     # Sub-classes should override as needed.
 
-    def dragCard(self, btn, context, selection_data, info, time):
+    def drag_card(self, btn, context, selection_data, info, time):
         if self._oSelection.count_selected_rows()<1:
             return
         oModel, oPathList = self._oSelection.get_selected_rows()
@@ -198,7 +198,7 @@ class CardListView(gtk.TreeView, object):
             # if a card is selected, and some of it's children (which are
             # the expansions) are selected, the top-level selection is updated
             # to account for the children selection
-            dSelectedData.setdefault(sCardName,{})
+            dSelectedData.setdefault(sCardName, {})
             if iDepth == 1:
                 dSelectedData[sCardName]['0'] = iCount
             else:
@@ -225,18 +225,29 @@ class CardListView(gtk.TreeView, object):
         aLines = sSelectionData.splitlines()
         sSource = aLines[0]
         # Construct list of (iCount, sCardName, sExpansion) tuples
-        aCardInfo = zip(aLines[1::3],aLines[2::3],aLines[3::3])
+        def true_expansion(sExpand):
+            """Convert back from the '0' for None placeholder in the string"""
+            # The logic goes that, if the user has dragged the top level cards,
+            # Then either all the cards are going to be copied, or there is
+            # no expansion info, so the expansion might as well be none.
+            if sExpand == '0':
+                return None
+            else:
+                return sExpand
+
+        aCardInfo = zip([int(x) for x in aLines[1::3]], aLines[2::3], 
+                [true_expansion(x) for x in aLines[3::3]])
         return sSource, aCardInfo
 
-    def dragDelete(self, btn, context, data):
+    def drag_delete(self, btn, context, data):
         pass
 
-    def cardDrop(self, w, context, x, y, data, info, time):
+    def card_drop(self, w, context, x, y, data, info, time):
         pass
 
 class EditableCardListView(CardListView):
     def __init__(self, oController, oWindow, oConfig):
-        super(EditableCardListView,self).__init__(oController, oWindow, oConfig)
+        super(EditableCardListView, self).__init__(oController, oWindow, oConfig)
 
         # Setup columns for default view
         oCell1 = gtk.CellRendererText()
@@ -250,32 +261,32 @@ class EditableCardListView(CardListView):
         oColumn1.set_sort_column_id(1)
         self.append_column(oColumn1)
 
-        oColumn2 = gtk.TreeViewColumn("Cards",oCell2,text=0)
+        oColumn2 = gtk.TreeViewColumn("Cards", oCell2, text=0)
         oColumn2.set_expand(True)
         oColumn2.set_sort_column_id(0)
         self.append_column(oColumn2)
 
         # Arrow cells
         oCell3 = CellRendererSutekhButton()
-        oCell3.load_icon(gtk.STOCK_GO_UP,self)
+        oCell3.load_icon(gtk.STOCK_GO_UP, self)
         oCell4 = CellRendererSutekhButton()
-        oCell4.load_icon(gtk.STOCK_GO_DOWN,self)
+        oCell4.load_icon(gtk.STOCK_GO_DOWN, self)
 
-        oColumn3 = gtk.TreeViewColumn("",oCell3,showicon=2)
+        oColumn3 = gtk.TreeViewColumn("", oCell3, showicon=2)
         oColumn3.set_fixed_width(20)
         oColumn3.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
         self.append_column(oColumn3)
 
-        oColumn4 = gtk.TreeViewColumn("",oCell4,showicon=3)
+        oColumn4 = gtk.TreeViewColumn("", oCell4, showicon=3)
         oColumn4.set_fixed_width(20)
         oColumn4.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
         self.append_column(oColumn4)
 
-        oCell3.connect('clicked',self.incCard)
-        oCell4.connect('clicked',self.decCard)
+        oCell3.connect('clicked', self.incCard)
+        oCell4.connect('clicked', self.decCard)
 
         self.set_expander_column(oColumn2)
-        if hasattr(self,'set_grid_lines'):
+        if hasattr(self, 'set_grid_lines'):
             self.set_grid_lines(gtk.TREE_VIEW_GRID_LINES_BOTH)
 
         self.__oBaseStyle = self.get_style().copy()
@@ -285,27 +296,26 @@ class EditableCardListView(CardListView):
         self.__oRedStyle.fg[gtk.STATE_NORMAL] = oRed
      
     # Used by card dragging handlers
-    def addCard(self,sCardName):
+    def addCard(self, sCardName, sExpansion):
         if self._oModel.bEditable:
-            bSucc = self._oC.addCard(sCardName)
+            bSucc = self._oC.addCard(sCardName, sExpansion)
 
     # When editing cards, we pass info to the controller to
-    # update stuff in the database, and rely on the model
-    # watching events on the database to update itself and the 
-    # view. This uses the SQLObject events to ensure
-    # multiple views of the database are kept in sync.
+    # update stuff in the database
+    # The Controller is responsible for updating the model,
+    # since it defines the logic for handling expansions, etc.
 
-    def incCard(self,oCell,oPath):
+    def incCard(self, oCell, oPath):
         if self._oModel.bEditable:
             sCardName = self._oModel.getCardNameFromPath(oPath)
             sExpansion = self._oModel.getExpansionNameFromPath(oPath)
-            bSucc = self._oC.incCard(sCardName, sExpansion)
+            self._oC.incCard(sCardName, sExpansion)
 
-    def decCard(self,oCell,oPath):
+    def decCard(self, oCell, oPath):
         if self._oModel.bEditable:
             sCardName = self._oModel.getCardNameFromPath(oPath)
             sExpansion = self._oModel.getExpansionNameFromPath(oPath)
-            bSucc = self._oC.decCard(sCardName, sExpansion)
+            self._oC.decCard(sCardName, sExpansion)
 
     def set_color_red(self):
         self.set_style(self.__oRedStyle)

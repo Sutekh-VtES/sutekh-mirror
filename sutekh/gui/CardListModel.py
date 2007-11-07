@@ -178,7 +178,7 @@ class CardListModel(gtk.TreeStore):
                 iNoneCnt = PhysicalCard.selectBy(abstractCardID=oCard.id,
                         expansionID=None).count()
                 for oP in oCard.rarity:
-                    dExpansions.setdefault(oP.expansion.name, [0, iNoneCnt > 0, False])
+                    dExpansions.setdefault(oP.expansion.name, [0, False, iNoneCnt > 0])
         for oExpansion, iCnt in dExpanInfo.iteritems():
             bDecCard = False
             bIncCard = False

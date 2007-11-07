@@ -4,6 +4,7 @@
 # GPL - see COPYING for details
 
 from sqlobject import SQLObjectNotFound
+from sqlobject.events import listen, RowUpdateSignal, RowDestroySignal
 from sutekh.gui.CardSetView import CardSetView
 from sutekh.gui.CardSetMenu import CardSetMenu
 from sutekh.core.SutekhObjects import AbstractCardSet, PhysicalCardSet, \
@@ -45,11 +46,27 @@ class PhysicalCardSetController(CardSetController):
                 sName, PhysicalCardSet, oConfig, oMainWindow, oFrame)
         self.__oPhysCardSet = PhysicalCardSet.byName(sName)
         self._sFilterType = 'PhysicalCard'
+        listen(self.physical_card_deleted, PhysicalCard, RowDestroySignal)
+        listen(self.physical_card_changed, PhysicalCard, RowUpdateSignal)
 
-    def decCard(self,sName):
+    def physical_card_deleted(self, oPhysCard):
+        """Listen on physical card removals. Needed so we can
+           updated the model if a card in this set is deleted
+        """
+        print oPhysCard
+
+    def physical_card_changed(self, oPhysCard, dChanges):
+        """Listen on physical cards changed. Needed so we can
+           update the model if a card in this set is changed
+        """
+        print oPhysCard, dChanges
+
+    def decCard(self, sName, sExpansion):
         """
         Returns True if a card was successfully removed, False otherwise.
         """
+        print "PCS: decCard", sName, sExpansion
+        return
         try:
             oC = AbstractCard.byCanonicalName(sName.lower())
         except SQLObjectNotFound:
@@ -63,16 +80,18 @@ class PhysicalCardSetController(CardSetController):
             return True
         return False
 
-    def incCard(self,sName):
+    def incCard(self, sName, sExpansion):
         """
         Returns True if a card was successfully added, False otherwise.
         """
-        return self.addCard(sName)
+        return self.addCard(sName, sExpansion)
 
-    def addCard(self,sName):
+    def addCard(self, sName, sExpansion):
         """
         Returns True if a card was successfully added, False otherwise.
         """
+        print "PCS: addCard", sName, sExpansion
+        return
         try:
             oC = AbstractCard.byCanonicalName(sName.lower())
         except SQLObjectNotFound:
@@ -98,10 +117,12 @@ class AbstractCardSetController(CardSetController):
         self.__oAbsCardSet = AbstractCardSet.byName(sName)
         self._sFilterType = 'AbstractCard'
 
-    def decCard(self,sName):
+    def decCard(self, sName, sExpansion):
         """
         Returns True if a card was successfully removed, False otherwise.
         """
+        print "ACS: decCard", sName, sExpansion
+        return
         try:
             oC = AbstractCard.byCanonicalName(sName.lower())
         except SQLObjectNotFound:
@@ -109,27 +130,24 @@ class AbstractCardSetController(CardSetController):
         # find if there's a abstract card of that name in the Set
         aSubset = [x for x in self.__oAbsCardSet.cards if x.id == oC.id]
         if len(aSubset) > 0:
-            # FIXME: This currently removes all the cards and restore
-            # X-1 of them, because of the way removeAbstractCard works
-            # for AbstractCardSets. Need to get at the id field of the
-            # join to avoid this
-            # Remove card
             self.__oAbsCardSet.removeAbstractCard(aSubset[-1].id)
             for j in range(len(aSubset)-1):
                 self.__oAbsCardSet.addAbstractCard(oC.id)
             return True
         return False
 
-    def incCard(self,sName):
+    def incCard(self, sName, sExpansion):
         """
         Returns True if a card was successfully added, False otherwise.
         """
-        return self.addCard(sName)
+        return self.addCard(sName, sExpansion)
 
-    def addCard(self,sName):
+    def addCard(self, sName, sExpansion):
         """
         Returns True if a card was successfully added, False otherwise.
         """
+        print "ACS: addCard", sName, sExpansion
+        return
         try:
             oC = AbstractCard.byCanonicalName(sName.lower())
         except SQLObjectNotFound:

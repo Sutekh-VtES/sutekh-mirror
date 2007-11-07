@@ -23,10 +23,12 @@ class PhysicalCardController(object):
     def getView(self):
         return self.__oView
 
-    def decCard(self,sName):
+    def decCard(self, sName, sExpansion):
         """
         Returns True if a card was successfully removed, False otherwise.
         """
+        print "decCard", sName, sExpansion
+        return
         try:
             oC = AbstractCard.byCanonicalName(sName.lower())
         except SQLObjectNotFound:
@@ -78,16 +80,18 @@ class PhysicalCardController(object):
             self.__oC.getManager().reloadAllPhysicalCardSets()
             return True
 
-    def incCard(self,sName):
+    def incCard(self, sName, sExpansion):
         """
         Returns True if a card was successfully added, False otherwise.
         """
-        return self.addCard(sName)
+        return self.addCard(sName, sExpansion)
 
-    def addCard(self,sName,sExpansion=None):
+    def addCard(self, sName, sExpansion):
         """
         Returns True if a card was successfully added, False otherwise.
         """
+        print "addCard", sName, sExpansion
+        return 
         try:
             oC = AbstractCard.byCanonicalName(sName.lower())
         except SQLObjectNotFound:
