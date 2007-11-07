@@ -53,13 +53,13 @@ class PhysicalCardSetController(CardSetController):
         """Listen on physical card removals. Needed so we can
            updated the model if a card in this set is deleted
         """
-        print oPhysCard
+        print "physical_card_deleted",oPhysCard
 
     def physical_card_changed(self, oPhysCard, dChanges):
         """Listen on physical cards changed. Needed so we can
            update the model if a card in this set is changed
         """
-        print oPhysCard, dChanges
+        print "physical_card_changed",oPhysCard, dChanges
 
     def decCard(self, sName, sExpansion):
         """

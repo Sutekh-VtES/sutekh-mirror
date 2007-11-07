@@ -91,13 +91,16 @@ class PhysicalCardController(object):
         Returns True if a card was successfully added, False otherwise.
         """
         print "addCard", sName, sExpansion
-        return 
         try:
             oC = AbstractCard.byCanonicalName(sName.lower())
         except SQLObjectNotFound:
             return False
 
-        oPC = PhysicalCard(abstractCard=oC,expansion=sExpansion)
+        if sExpansion is None:
+            # Adding a new card to the list
+            oPC = PhysicalCard(abstractCard=oC,expansion=None)
+            self.view._oModel.incCardByName(oC.name)
+            self.view._oModel.incCardExpansionByName(oC.name, sExpansion)
         return True
 
     def setCardText(self,sCardName):
