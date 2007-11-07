@@ -121,18 +121,17 @@ class AbstractCardSetController(CardSetController):
         """
         Returns True if a card was successfully removed, False otherwise.
         """
-        print "ACS: decCard", sName, sExpansion
-        return
         try:
             oC = AbstractCard.byCanonicalName(sName.lower())
         except SQLObjectNotFound:
             return False
         # find if there's a abstract card of that name in the Set
-        aSubset = [x for x in self.__oAbsCardSet.cards if x.id == oC.id]
-        if len(aSubset) > 0:
-            self.__oAbsCardSet.removeAbstractCard(aSubset[-1].id)
-            for j in range(len(aSubset)-1):
-                self.__oAbsCardSet.addAbstractCard(oC.id)
+        oDBClass = self.view._oModel.cardclass
+        aSubSet = list(oDBClass.selectBy(abstractCardID=oC.id,
+            abstractCardSetID=self.__oAbsCardSet.id))
+        if len(aSubSet) > 0:
+            oDBClass.delete(aSubSet[-1].id)
+            self.view._oModel.alterCardCount(oC.name, -1)
             return True
         return False
 
@@ -146,8 +145,6 @@ class AbstractCardSetController(CardSetController):
         """
         Returns True if a card was successfully added, False otherwise.
         """
-        print "ACS: addCard", sName, sExpansion
-        return
         try:
             oC = AbstractCard.byCanonicalName(sName.lower())
         except SQLObjectNotFound:
@@ -156,4 +153,5 @@ class AbstractCardSetController(CardSetController):
         # This is much simpler than for PhysicalCardSets, as we don't have
         # to worry about whether the card exists in PhysicalCards or not
         self.__oAbsCardSet.addAbstractCard(oC.id)
+        self.view._oModel.incCardByName(oC.name)
         return True

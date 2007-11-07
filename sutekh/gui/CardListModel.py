@@ -78,6 +78,20 @@ class CardListModel(gtk.TreeStore):
     def removeListener(self, oListener):
         del self.listeners[oListener]
 
+    def check_inc_card(self, oCard):
+        """Helper function to check whether card can be incremented"""
+        if type(self.basefilter) is PhysicalCardSetFilter:
+            # Can't inc if there are no physical cards
+            # Cache this, since we'll need the info in getExpansionInfo
+            aFilterRes = list(PhysicalCard.selectBy(abstractCardID=oCard.id))
+            bIncCard = iCnt < len(aFilterRes)
+        else:
+            # always possible for PhysicalCardList and 
+            # AbstractCardSet's 
+            aFilterRes = []
+            bIncCard = True
+        return bIncCard, aFilterRes
+
     def load(self):
         """
         Clear and reload the underlying store. For use after initialisation or when
@@ -110,15 +124,7 @@ class CardListModel(gtk.TreeStore):
                 aFilterRes = []
                 if self.bEditable:
                     bDecCard = True
-                    if type(self.basefilter) is PhysicalCardSetFilter:
-                        # Can't inc if there are no physical cards
-                        # Cache this, since we'll need the info in getExpansionInfo
-                        aFilterRes = list(PhysicalCard.selectBy(abstractCardID=oCard.id))
-                        bIncCard = iCnt < len(aFilterRes)
-                    else:
-                        # always possible for PhysicalCardList and 
-                        # AbstractCardSet's 
-                        bIncCard = True
+                    bIncCard, aFilterRes = self.check_inc_card(oCard)
                 else:
                     bIncCard = False
                     bDecCard = False
@@ -355,6 +361,7 @@ class CardListModel(gtk.TreeStore):
         current list (i.e. in the card set and not filtered
         out) by iChg.
         """
+        oCard = IAbstractCard(sCardName)
         for oIter in self._dName2Iter[sCardName]:
             oGrpIter = self.iter_parent(oIter)
             iCnt = self.get_value(oIter, 1) + iChg
@@ -362,7 +369,13 @@ class CardListModel(gtk.TreeStore):
 
             if iCnt > 0:
                 self.set(oIter, 1, iCnt)
+                if self.bEditable:
+                    # Same logic as in load
+                    self.set(oIter, 3, True)
+                    bIncCard, aFilterRes = self.check_inc_card(oCard)
+                    self.set(oIter, 2, bIncCard)
             else:
+                # Going away, so clean up expansions if needed
                 if self._dNameExpansion2Iter.has_key(sCardName):
                     for sExpansion in self._dNameExpansion2Iter[sCardName].keys():
                         for oExpIter in self._dNameExpansion2Iter[sCardName][sExpansion]:
@@ -382,7 +395,6 @@ class CardListModel(gtk.TreeStore):
             del self._dName2Iter[sCardName]
 
         # Notify Listeners
-        oCard = IAbstractCard(sCardName)
         for oListener in self.listeners:
             oListener.alterCardCount(oCard, iChg)
 
@@ -425,9 +437,17 @@ class CardListModel(gtk.TreeStore):
                 oCard, iCnt = fGetCard(oItem), fGetCount(oItem)
                 iGrpCnt += iCnt
                 oChildIter = self.append(oSectionIter)
+                if self.bEditable:
+                    bDecCard = True
+                    bIncCard, aTemp = self.check_inc_card(oCard)
+                else:
+                    bDecCard = False
+                    bIncCard = False
                 self.set(oChildIter,
                     0, oCard.name,
-                    1, iCnt
+                    1, iCnt,
+                    2, bIncCard,
+                    3, bDecCard
                 )
                 self._dName2Iter.setdefault(oCard.name, []).append(oChildIter)
 

@@ -52,7 +52,8 @@ class CardSetView(EditableCardListView):
                 context.finish(True, False, time)
             elif aSources[0] == 'Abst' and self.cSetType is AbstractCardSet:
                 # from Abstract list, so iCount doesn't matter
-                self.addCard(sCardName, sExpansion)
+                for iCount, sCardName, sExpansion in aCardInfo:
+                    self.addCard(sCardName, sExpansion)
                 context.finish(True, False, time)
             else:
                 context.finish(False, False, time)
