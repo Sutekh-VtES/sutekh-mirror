@@ -27,7 +27,7 @@ setup   (   # Metadata
             install_requires = SutekhInfo.INSTALL_REQUIRES,
 
             # Files
-            packages = find_packages(),
+            packages = find_packages(exclude=['sutekh.tests']),
             package_data = {
                 # Include XSLT files from all packages
                 '': ['*.xsl'],
