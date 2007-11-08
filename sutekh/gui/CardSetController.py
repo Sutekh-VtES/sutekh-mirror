@@ -7,8 +7,10 @@ from sqlobject import SQLObjectNotFound
 from sqlobject.events import listen, RowUpdateSignal, RowDestroySignal
 from sutekh.gui.CardSetView import CardSetView
 from sutekh.gui.CardSetMenu import CardSetMenu
+from sutekh.gui.PhysicalCardController import ReloadSignal
 from sutekh.core.SutekhObjects import AbstractCardSet, PhysicalCardSet, \
-        AbstractCard, PhysicalCard, MapPhysicalCardToPhysicalCardSet, Expansion
+        AbstractCard, PhysicalCard, MapPhysicalCardToPhysicalCardSet, \
+        IExpansion, Expansion
 
 class CardSetController(object):
     def __init__(self, sName, cType, oConfig, oMainWindow, oFrame):
@@ -62,6 +64,17 @@ class PhysicalCardSetController(CardSetController):
         self._sFilterType = 'PhysicalCard'
         listen(self.physical_card_deleted, PhysicalCard, RowDestroySignal)
         listen(self.physical_card_changed, PhysicalCard, RowUpdateSignal)
+        listen(self.reload_if_editable, PhysicalCard, ReloadSignal)
+
+    def reload_if_editable(self, oAbsCard):
+        """If the current card set is editable, then we need to reload
+           when the physical card list changes so that the model is
+           consistent
+        """
+        if self.view._oModel.bEditable:
+            aAbsCards = [x.abstractCard for x in self.__oPhysCardSet.cards]
+            if oAbsCard in aAbsCards:
+                self.view._oModel.load()
 
     def physical_card_deleted(self, oPhysCard):
         """Listen on physical card removals. Needed so we can
@@ -82,6 +95,7 @@ class PhysicalCardSetController(CardSetController):
            update the model if a card in this set is changed
         """
         if oPhysCard.id in self.__aPhysCardIds and 'expansionID' in dChanges.keys():
+            # Changing a card assigned to the card list
             iNewID = dChanges['expansionID']
             oAC = oPhysCard.abstractCard
             if oPhysCard.expansion is not None:
@@ -119,27 +133,48 @@ class PhysicalCardSetController(CardSetController):
         Returns True if a card was successfully added, False otherwise.
         """
         print "PCS: addCard", sName, sExpansion
-        return
         try:
             oC = AbstractCard.byCanonicalName(sName.lower())
         except SQLObjectNotFound:
             return False
 
-        # Find all Physicalcards with this name
-        oExpansion = IExpansion(sExpansion)
-        aPhysCards = PhysicalCard.selectBy(abstractCardID=oC.id)
-        if aPhysCards.count() > 0:
-            dCandCards = {}
+        if sExpansion is not None:
+            # Specific Expansion specified by the user, so
+            # just need to consider those cards
+            if sExpansion == self.view._oModel.sUnknownExpansion:
+                aPhysCards = PhysicalCard.selectBy(abstractCardID=oC.id,
+                        expansionID = None)
+            else:
+                iExpID = IExpansion(sExpansion).id
+                aPhysCards = PhysicalCard.selectBy(abstractCardID=oC.id,
+                        expansionID = iExpID)
+        else:
+            # Need to consider all PhysicalCards
+            aPhysCards = PhysicalCard.selectBy(abstractCardID=oC.id)
+        if aPhysCards.count()>0:
+            aCandCards = []
             for oCard in aPhysCards:
+                # We want to add a card that's not in this expansion,
                 # Should be effecient due to the Cached joins
                 if oCard not in self.__oPhysCardSet.cards:
                     # We want the card in the fewest other card sets
-                    aCardSets = MapPhysicalCardToPhysicalCardSet.selectBy
-                # Add first Physical card not already in Set
-                # Limits us to number of cards in PhysicalCards
-                if oCard not in self.__oPhysCardSet.cards:
-                    self.__oPhysCardSet.addPhysicalCard(oCard.id)
-                    return True
+                    aCandCards.append((oCard, 
+                        MapPhysicalCardToPhysicalCardSet.selectBy(physicalCardID = oCard.id).count()))
+            if len(aCandCards) < 1:
+                # No card to be added
+                return False
+            aCandCards.sort(key=lambda x: x[1]) # sort by count
+            oCard = aCandCards[0][0]
+            self.__oPhysCardSet.addPhysicalCard(oCard.id)
+            self.__oPhysCardSet.sync()
+            self.__aPhysCardIds.append(oCard.id)
+            # Update Model
+            self.view._oModel.incCardByName(oC.name)
+            if oCard.expansion is not None:
+                self.view._oModel.incCardExpansionByName(oC.name, oCard.expansion.name)
+            else:
+                self.view._oModel.incCardExpansionByName(oC.name, None)
+            return True
         # Got here, so we failed to add
         return False
 
