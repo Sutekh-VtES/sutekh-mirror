@@ -13,6 +13,8 @@ Code Cleanup
  * Refactor gui classes somewhat - there's a fair bit code duplication ATM
    between the different View-Window-Controller sets for instance, and this
    looks like something worth addressing
+ * Change function names to foo_bar convention.
+ * Add encoding lines to all .py files.
 
 Gui (Functionality):
  * Improve Current Filter dialogs - better help, more examples, etc.
