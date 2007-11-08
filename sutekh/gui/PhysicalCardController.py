@@ -68,13 +68,16 @@ class PhysicalCardController(object):
                 return True
             # All physical cards are assigned to PhysicalCardSets, so find the
             # one in the fewest
-            T = min(dPCS.values())
-            aList = [x for x in dPCS if T is dPCS[x]]
-            oPhysCard = aList[-1]
+            aList = sorted(dPCS.items(),key=lambda x: x[1][0], reverse=True)
+            # Sort by count, take the last one as smallest
+            oPhysCard, (iCnt, aPCS) = aList[-1]
             # This is probably overcomplicated, need to revisit this sometime
             # Prompt the user for confirmation
-            sText = "Card Present in the following Physical Card Sets:\n"
-            for oPCS in dPCS[oPhysCard][1]:
+            if iCnt > 1:
+                sText = "Card Present in the following %d Physical Card Sets:\n" % iCnt
+            else:
+                sText = "Card Present in the following Physical Card Set:\n"
+            for oPCS in aPCS:
                 sText += "<span foreground = \"blue\">" + oPCS.name + "</span>\n"
             sText += "<b>Really Delete?</b>"
             oDialog = gtk.MessageDialog(None, 0, gtk.MESSAGE_QUESTION,
@@ -85,7 +88,7 @@ class PhysicalCardController(object):
             if iResponse == gtk.RESPONSE_YES:
                 # User agrees
                 # Delete card from all the PhysicalCardSets first
-                for oPCS in dPCS[oPhysCard][1]:
+                for oPCS in aPCS:
                     oPCS.removePhysicalCard(oPhysCard.id)
                 if oPhysCard.expansion is not None:
                     self.view._oModel.decCardExpansionByName(oC.name, oPhysCard.expansion.name)
