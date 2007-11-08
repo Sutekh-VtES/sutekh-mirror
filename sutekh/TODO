@@ -5,6 +5,7 @@ Backend:
  * Rework SutekhUtility to be less of a mess
  * Export directly to HTML.
  * Cache results from lookups when doing a restore/import of new card list?
+ * Add database support for burn option and reflex card attributes.
 
 Code Cleanup
  * Unify conventions ('Abstract' vs 'AbstractCardSet' in card set management, etc.)
@@ -32,9 +33,10 @@ Gui (Functionality):
 Gui (Presentation):
  * Replace Multi-window GUI with one based on multiple panes
  * Parse in a GTK rc file? (http://www.moeraki.com/pygtktutorial/pygtk2tutorial/ch-GtkRcFiles.html)
- * Improve Create Card Set Management Window (multiple selection, right click menu, etc.)
+ * Improve Card Set Management Window (multiple selection, right click menu, etc.)
  * Allow some way of marking card sets as active, and displaying used cards or 
    filtering on unused cards in the physical card list
+ * Parse icons out of http://www.white-wolf.com/vtes/index.php?line=icons and use them in the GUI.
 
 Website:
  * Create logo for wiki.
