@@ -1,6 +1,6 @@
 # PhysicalCardView.py
-# Copyright 2005,2006 Simon Cross <hodgestar@gmail.com>
-# Copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
+# Copyright 2005, 2006, 2007 Simon Cross <hodgestar@gmail.com>
+# Copyright 2006, 2007 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
 from sutekh.gui.CardListView import EditableCardListView

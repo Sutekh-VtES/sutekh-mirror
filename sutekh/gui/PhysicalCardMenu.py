@@ -1,6 +1,6 @@
 # PhysicalCardMenu.py
 # Menu for the Physical Card View
-# Copyright 2005,2006 Simon Cross <hodgestar@gmail.com>
+# Copyright 2005, 2006 Simon Cross <hodgestar@gmail.com>
 # Copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
@@ -8,9 +8,9 @@ import gtk
 from sutekh.gui.ExportDialog import ExportDialog
 from sutekh.io.XmlFileHandling import PhysicalCardXmlFile
 
-class PhysicalCardMenu(gtk.MenuBar,object):
+class PhysicalCardMenu(gtk.MenuBar, object):
     def __init__(self, oFrame, oController, oWindow):
-        super(PhysicalCardMenu,self).__init__()
+        super(PhysicalCardMenu, self).__init__()
         self.__oC = oController
         self.__oWindow = oWindow
         self.__oFrame = oFrame
@@ -96,8 +96,8 @@ class PhysicalCardMenu(gtk.MenuBar,object):
         if len(wMenu.get_children()) == 0:
             iMenu.set_sensitive(False)
 
-    def doExport(self,widget):
-        oFileChooser = ExportDialog("Save Physical Card List As",self.__oWindow)
+    def doExport(self, oWidget):
+        oFileChooser = ExportDialog("Save Physical Card List As", self.__oWindow)
         oFileChooser.run()
         sFileName = oFileChooser.getName()
         if sFileName is not None:
@@ -107,8 +107,8 @@ class PhysicalCardMenu(gtk.MenuBar,object):
     def close_list(self, widget):
         self.__oFrame.close_frame()
 
-    def setApplyFilter(self,state):
-        self.iApply.set_active(state)
+    def setApplyFilter(self, bState):
+        self.iApply.set_active(bState)
 
     def toggleApply(self, oWidget):
         self.__oC.view.runFilter(oWidget.active)

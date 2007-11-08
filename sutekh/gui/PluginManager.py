@@ -23,27 +23,27 @@ class PluginManager(object):
         """
         sPluginDir = os.path.dirname(plugins.__file__)
 
-        for sPluginPath in glob.glob(os.path.join(sPluginDir,"*.py")):
+        for sPluginPath in glob.glob(os.path.join(sPluginDir, "*.py")):
             sPluginName = os.path.basename(sPluginPath)[:-len(".py")]
 
             if sPluginName == "__init__": continue
 
             # load module
             try:
-                mPlugin = __import__("sutekh.gui.plugins." + sPluginName,None,None,[plugins])
+                mPlugin = __import__("sutekh.gui.plugins." + sPluginName, None, None, [plugins])
             except ImportError, e:
-                logging.warn("Failed to load plugin %s (%s)." % (sPluginName,str(e)))
+                logging.warn("Failed to load plugin %s (%s)." % (sPluginName, str(e)))
                 continue
 
             # find plugin class
             try:
                 cPlugin = mPlugin.plugin
             except AttributeError, e:
-                logging.warn("Plugin module %s appears not to contain a plugin (%s)." % (sPluginName,str(e)))
+                logging.warn("Plugin module %s appears not to contain a plugin (%s)." % (sPluginName, str(e)))
                 continue
 
             # add to appropriate plugin lists
-            if issubclass(cPlugin,CardListPlugin):
+            if issubclass(cPlugin, CardListPlugin):
                 self._aCardListPlugins.append(cPlugin)
 
     def getCardListPlugins(self):
@@ -56,7 +56,7 @@ class CardListPlugin(object):
     dTableVersions = {}
     aModelsSupported = []
 
-    def __init__(self,oCardListView, oCardListModel, cModelType=None):
+    def __init__(self, oCardListView, oCardListModel, cModelType=None):
         """
         oCardListModel - card list model for this plugin to operate on.
         """
@@ -64,8 +64,8 @@ class CardListPlugin(object):
         self._oModel = oCardListModel
         self._cModelType = cModelType
 
-    view = property(fget=lambda self: self._oView,doc="Associated CardListView object.")
-    model = property(fget=lambda self: self._oModel,doc="Associated CardModel object.")
+    view = property(fget=lambda self: self._oView, doc="Associated CardListView object.")
+    model = property(fget=lambda self: self._oModel, doc="Associated CardModel object.")
 
     def getMenuItem(self):
         """

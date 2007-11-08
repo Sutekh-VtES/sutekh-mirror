@@ -1,6 +1,6 @@
 # MainMenu.py
-# Copyright 2005,2006 Simon Cross <hodgestar@gmail.com>
-# Copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
+# Copyright 2005, 2006, 2007 Simon Cross <hodgestar@gmail.com>
+# Copyright 2006, 2007 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
 import gtk
@@ -18,7 +18,7 @@ from sutekh.io.ZipFileWrapper import ZipFileWrapper
 
 class MainMenu(gtk.MenuBar, object):
     def __init__(self, oWindow, oConfig):
-        super(MainMenu,self).__init__()
+        super(MainMenu, self).__init__()
         self.__oWin = oWindow
         self.__dMenus = {}
         self.__oConfig = oConfig
@@ -153,40 +153,40 @@ class MainMenu(gtk.MenuBar, object):
 
         self.add(iMenu)
 
-    def doImportPhysicalCardList(self,widget):
-        oFileChooser = ImportDialog("Select Card List to Import",self.__oWin)
+    def doImportPhysicalCardList(self, oWidget):
+        oFileChooser = ImportDialog("Select Card List to Import", self.__oWin)
         oFileChooser.run()
         sFileName = oFileChooser.getName()
         if sFileName is not None:
             oP = IdentifyXMLFile()
-            (sType,sName,bExists) = oP.idFile(sFileName)
+            (sType, sName, bExists) = oP.idFile(sFileName)
             if sType == 'PhysicalCard':
                 if not bExists:
                     oF = PhysicalCardXmlFile(sFileName, lookup=self.__oCardLookup)
                     oF.read()
                     self.__oC.reloadAll()
                 else:
-                    Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
-                            gtk.BUTTONS_CLOSE,"Can only do this when the current Card List is empty")
-                    Complaint.connect("response",lambda dlg, resp: dlg.destroy())
+                    Complaint = gtk.MessageDialog(None, 0, gtk.MESSAGE_ERROR,
+                            gtk.BUTTONS_CLOSE, "Can only do this when the current Card List is empty")
+                    Complaint.connect("response", lambda dlg, resp: dlg.destroy())
                     Complaint.run()
             else:
-                Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
-                    gtk.BUTTONS_CLOSE,"File is not a PhysicalCard XML File.")
-                Complaint.connect("response",lambda dlg, resp: dlg.destroy())
+                Complaint = gtk.MessageDialog(None, 0, gtk.MESSAGE_ERROR,
+                    gtk.BUTTONS_CLOSE, "File is not a PhysicalCard XML File.")
+                Complaint.connect("response", lambda dlg, resp: dlg.destroy())
                 Complaint.run()
 
-    def doImportCardSet(self,widget):
-        oFileChooser = ImportDialog("Select Card Set(s) to Import",self.__oWin)
+    def doImportCardSet(self, oWidget):
+        oFileChooser = ImportDialog("Select Card Set(s) to Import", self.__oWin)
         oFileChooser.run()
         sFileName = oFileChooser.getName()
         if sFileName is not None:
             oP = IdentifyXMLFile()
-            (sType,sName,bExists) = oP.idFile(sFileName)
+            (sType, sName, bExists) = oP.idFile(sFileName)
             if sType == 'PhysicalCardSet' or sType == 'AbstractCardSet':
                 if bExists:
-                    Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_WARNING,
-                            gtk.BUTTONS_OK_CANCEL,"This would delete the existing CardSet " + sName)
+                    Complaint = gtk.MessageDialog(None, 0, gtk.MESSAGE_WARNING,
+                            gtk.BUTTONS_OK_CANCEL, "This would delete the existing CardSet " + sName)
                     response = Complaint.run()
                     Complaint.destroy()
                     if response == gtk.RESPONSE_CANCEL:
@@ -202,18 +202,18 @@ class MainMenu(gtk.MenuBar, object):
                 else:
                     oF = PhysicalCardSetXmlFile(sFileName, lookup=self.__oCardLookup)
                 oF.read()
-                self.__oC.getManager().reloadCS(sName,sType)
-                self.__oC.getManager().createNewCardSetWindow(sName,sType)
+                self.__oC.getManager().reloadCS(sName, sType)
+                self.__oC.getManager().createNewCardSetWindow(sName, sType)
             else:
-                Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
-                    gtk.BUTTONS_CLOSE,"File is not a CardSet XML File.")
-                Complaint.connect("response",lambda dlg, resp: dlg.destroy())
+                Complaint = gtk.MessageDialog(None, 0, gtk.MESSAGE_ERROR,
+                    gtk.BUTTONS_CLOSE, "File is not a CardSet XML File.")
+                Complaint.connect("response", lambda dlg, resp: dlg.destroy())
                 Complaint.run()
 
-    def doImportNewCardList(self,widget):
+    def doImportNewCardList(self, oWidget):
         oWWFilesDialog = WWFilesDialog(self.__oWin)
         oWWFilesDialog.run()
-        (sCLFileName,sRulingsFileName,sBackupFile) = oWWFilesDialog.getNames()
+        (sCLFileName, sRulingsFileName, sBackupFile) = oWWFilesDialog.getNames()
         oWWFilesDialog.destroy()
         if sCLFileName is not None:
             if sBackupFile is not None:
@@ -223,14 +223,14 @@ class MainMenu(gtk.MenuBar, object):
                 except Exception, e:
                     sMsg = "Failed to write backup.\n\n" + str(e) \
                         + "\nNot touching the database further"
-                    Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
-                        gtk.BUTTONS_CLOSE,sMsg)
+                    Complaint = gtk.MessageDialog(None, 0, gtk.MESSAGE_ERROR,
+                        gtk.BUTTONS_CLOSE, sMsg)
                     Complaint.run()
                     Complaint.destroy()
                     return
             tempConn = connectionForURI("sqlite:///:memory:")
             oldConn = sqlhub.processConnection
-            refreshTables(ObjectList,tempConn)
+            refreshTables(ObjectList, tempConn)
             # WhiteWolf Parser uses sqlhub connection
             sqlhub.processConnection = tempConn
             readWhiteWolfList(sCLFileName)
@@ -239,14 +239,14 @@ class MainMenu(gtk.MenuBar, object):
             bCont = False
             # Refresh abstract card view for card lookups
             self.__oC.reloadAll()
-            (bOK,aErrors) = copyToNewAbstractCardDB(oldConn, tempConn, self.__oCardLookup)
+            (bOK, aErrors) = copyToNewAbstractCardDB(oldConn, tempConn, self.__oCardLookup)
             if not bOK:
                 sMesg = "There was a problem copying the cardlist to the new database\n"
                 for sStr in aErrors:
                     sMesg += sStr + "\n"
                 sMesg += "Attempt to Continue Anyway (This is quite possibly dangerous)?"
-                Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
-                    gtk.BUTTONS_OK_CANCEL,sMesg)
+                Complaint = gtk.MessageDialog(None, 0, gtk.MESSAGE_ERROR,
+                    gtk.BUTTONS_OK_CANCEL, sMesg)
                 response = Complaint.run()
                 Complaint.destroy()
                 if response == gtk.RESPONSE_OK:
@@ -256,27 +256,27 @@ class MainMenu(gtk.MenuBar, object):
             # OK, update complete, copy back from tempConn
             sqlhub.processConnection = oldConn
             if bCont:
-                (bOK,aErrors) = createFinalCopy(tempConn)
+                (bOK, aErrors) = createFinalCopy(tempConn)
                 if not bOK:
                     sMesg = "There was a problem updating the database\n"
                     for sStr in aErrors:
                         sMesg += sStr + "\n"
                     sMesg += "Your database may be in an inconsistent state - sorry"
-                    Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
-                        gtk.BUTTONS_OK,sMesg)
+                    Complaint = gtk.MessageDialog(None, 0, gtk.MESSAGE_ERROR,
+                        gtk.BUTTONS_CLOSE, sMesg)
                 else:
                     sMesg = "Import Completed\n"
                     sMesg += "Eveything seems to have gone OK"
-                    Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_INFO,
-                        gtk.BUTTONS_CLOSE,sMesg)
+                    Complaint = gtk.MessageDialog(None, 0, gtk.MESSAGE_INFO,
+                        gtk.BUTTONS_CLOSE, sMesg)
                 Complaint.run()
                 Complaint.destroy()
             self.__oC.reloadAll()
 
-    def do_save_pane_set(self,widget):
+    def do_save_pane_set(self, oWidget):
         self.__oWin.save_panes()
 
-    def do_toggle_save_on_exit(self,widget):
+    def do_toggle_save_on_exit(self, oWidget):
         bChoice = not self.__oConfig.getSaveOnExit()
         self.__oConfig.setSaveOnExit(bChoice)
         # gtk can handle the rest for us

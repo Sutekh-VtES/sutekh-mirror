@@ -24,7 +24,7 @@ from sutekh.gui.PluginManager import PluginManager
 class MultiPaneWindow(gtk.Window):
     """Window that has a configurable number of panes."""
     def __init__(self, oConfig):
-        super(MultiPaneWindow,self).__init__(gtk.WINDOW_TOPLEVEL)
+        super(MultiPaneWindow, self).__init__(gtk.WINDOW_TOPLEVEL)
         self._oFocussed = None
         self._oConfig = oConfig
         # Create object cache
@@ -33,7 +33,7 @@ class MultiPaneWindow(gtk.Window):
         self.connect("destroy", self.action_quit)
         self.set_border_width(2)
         self.set_default_size(700, 500)
-        self.set_size_request(-1,-1)
+        self.set_size_request(-1, -1)
         self.oVBox = gtk.VBox(False, 1)
         self._aPanes = []
         self._aFrames = []

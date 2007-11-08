@@ -29,7 +29,7 @@ class FilterDialog(gtk.Dialog, ConfigFileListener):
     __iEditButtonResponse = 3
 
     def __init__(self, oParent, oConfig, sFilterType):
-        super(FilterDialog,self).__init__("Specify Filter",
+        super(FilterDialog, self).__init__("Specify Filter",
                 oParent, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT)
         # Need to add these buttons so we get the right order
         self.add_button( "Add New Filter", self.__iAddButtonResponse)
@@ -81,7 +81,7 @@ class FilterDialog(gtk.Dialog, ConfigFileListener):
         # Load other filters from config file
         aAllFilters = oConfig.getFiltersKeys()
         sMessages = ''
-        for sId,sFilter in aAllFilters:
+        for sId, sFilter in aAllFilters:
             try:
                 oAST = self.__oParser.apply(sFilter)
                 self.__addFilterToDialog(oAST, sFilter, sId)

@@ -1,5 +1,5 @@
 # PhysicalCardController.py
-# Copyright 2005,2006 Simon Cross <hodgestar@gmail.com>
+# Copyright 2005, 2006 Simon Cross <hodgestar@gmail.com>
 # Copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
@@ -49,7 +49,7 @@ class PhysicalCardController(object):
         aPhysicalCardSets = PhysicalCardSet.select()
         for card in cardCands.reversed():
             idtodel = card.id
-            dPCS[idtodel] = [0,[]]
+            dPCS[idtodel] = [0, []]
             for oPCS in aPhysicalCardSets:
                 subset = [x for x in oPCS.cards if x.id == idtodel]
                 if len(subset)>0:
@@ -67,7 +67,7 @@ class PhysicalCardController(object):
         candtodel = dPCS[idtodel]
         # This is probably overcomplicated, need to revisit this sometime
         # Prompt the user for confirmation
-        Dialog = DeleteCardDialog(self.__oWin,candtodel[1])
+        Dialog = DeleteCardDialog(self.__oWin, candtodel[1])
         Dialog.run()
         if Dialog.getResult():
             # User agrees
@@ -98,11 +98,11 @@ class PhysicalCardController(object):
 
         if sExpansion is None:
             # Adding a new card to the list
-            oPC = PhysicalCard(abstractCard=oC,expansion=None)
+            oPC = PhysicalCard(abstractCard=oC, expansion=None)
             self.view._oModel.incCardByName(oC.name)
             self.view._oModel.incCardExpansionByName(oC.name, sExpansion)
         return True
 
-    def setCardText(self,sCardName):
+    def setCardText(self, sCardName):
         self.__oMainWin.set_card_text(sCardName)
 
