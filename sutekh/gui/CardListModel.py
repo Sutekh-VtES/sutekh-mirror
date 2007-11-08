@@ -11,6 +11,19 @@ from sutekh.core.Groupings import CardTypeGrouping
 from sutekh.core.SutekhObjects import AbstractCard, IAbstractCard, PhysicalCardSet, \
         PhysicalCard
 
+def norm_path(oPath):
+    """Transform string paths to tuple paths"""
+    # Some widgets give us a path string, others a tuple,
+    # to deal with tuples when moving between expansions and
+    # card names
+    if type(oPath) is str:
+        oNormPath = tuple([int(x) for x in oPath.split(':')])
+    else:
+        oNormPath = oPath
+    return oNormPath
+
+ 
+
 class CardListModelListener(object):
     """
     Listens to updates, i.e. .load(...), .alterCardCount(...), .addNewCard(..) calls,
@@ -173,8 +186,8 @@ class CardListModel(gtk.TreeStore):
         else:
             if sExpansion != self.sUnknownExpansion:
                 bDecCard = iCnt > 0
-                bIncCard = iCnt < PhysicalCard.selectBy(abstractCardID=oCard.id,
-                        expansionID=None).count()
+                bIncCard = PhysicalCard.selectBy(abstractCardID=oCard.id,
+                        expansionID=None).count() > 0
             else:
                 bDecCard = False
                 bIncCard = False
@@ -300,14 +313,14 @@ class CardListModel(gtk.TreeStore):
             # Expansion section - we want the card before this
             # according to the docs this is assured to be the
             # correct path to it
-            oIter = self.get_iter(oPath[0:2])
+            oIter = self.get_iter(norm_path(oPath)[0:2])
         return self.getNameFromIter(oIter)
 
     def getAllFromPath(self, oPath):
         oIter = self.get_iter(oPath)
         iDepth = self.iter_depth(oIter)
         if iDepth == 2:
-            sName = self.getNameFromIter(self.get_iter(oPath[0:2]))
+            sName = self.getNameFromIter(self.get_iter(norm_path(oPath)[0:2]))
             sExpansion = self.get_value(oIter, 0)
         else:
             sName = self.getNameFromIter(oIter)
@@ -349,12 +362,14 @@ class CardListModel(gtk.TreeStore):
                 self._dNameExpansion2Iter[sCardName].has_key(sExpansion):
             self.alterCardExpansionCount(sCardName, sExpansion, +1)
 
-    def delCardExpansionByName(self, sCardName, sExpansion):
+    def decCardExpansionByName(self, sCardName, sExpansion):
         """Decreases the expansion count for this card without
            changing total card count. Should be paired with
            calls to decCardByName or incCardExpansionByName for 
            consistency
         """
+        if sExpansion is None:
+            sExpansion = self.sUnknownExpansion
         if self._dNameExpansion2Iter.has_key(sCardName) and \
                 self._dNameExpansion2Iter[sCardName].has_key(sExpansion):
             self.alterCardExpansionCount(sCardName, sExpansion, -1)
@@ -368,17 +383,22 @@ class CardListModel(gtk.TreeStore):
             self.addNewCard(sCardName)
 
     def alterCardExpansionCount(self, sCardName, sExpansion, iChg):
-        for oIter in self._dNameExpansion2Iter[sCardName][sExpansion]:
-            iCnt = self.get_value(oIter, 1) + iChg
-            # Since we are just counting
-            if iCnt >= 0:
-                self.set(oIter, 1, iCnt)
+        # Need to readjust inc, dec flags for all these cards
+        oCard = IAbstractCard(sCardName)
+        for sThisExp, aList in self._dNameExpansion2Iter[sCardName].iteritems():
+            for oIter in aList:
+                iCnt = self.get_value(oIter, 1)
+                if sThisExp == sExpansion:
+                    iCnt += iChg
                 if self.bEditable:
                     bIncCard, bDecCard = self.check_inc_dec_expansion(
-                            IAbstractCard(sCardName), sExpansion, iCnt)
-                    self.set(oIter,
-                            2, bIncCard,
-                            3, bDecCard)
+                            oCard, sThisExp, iCnt)
+                else:
+                    bIncCard, bDecCard = False, False
+                self.set(oIter,
+                        1, iCnt,
+                        2, bIncCard,
+                        3, bDecCard)
 
     def alterCardCount(self, sCardName, iChg):
         """

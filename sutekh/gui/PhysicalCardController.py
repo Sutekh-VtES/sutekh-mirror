@@ -7,7 +7,8 @@ from sqlobject import SQLObjectNotFound
 from sutekh.gui.PhysicalCardView import PhysicalCardView
 from sutekh.gui.PhysicalCardMenu import PhysicalCardMenu
 from sutekh.gui.DeleteCardDialog import DeleteCardDialog
-from sutekh.core.SutekhObjects import PhysicalCard, AbstractCard, PhysicalCardSet
+from sutekh.core.SutekhObjects import PhysicalCard, \
+        AbstractCard, PhysicalCardSet, IExpansion
 
 class PhysicalCardController(object):
     def __init__(self, oFrame, oConfig, oMainWindow):
@@ -100,6 +101,17 @@ class PhysicalCardController(object):
             # Adding a new card to the list
             oPC = PhysicalCard(abstractCard=oC, expansion=None)
             self.view._oModel.incCardByName(oC.name)
+            self.view._oModel.incCardExpansionByName(oC.name, sExpansion)
+        else:
+            # We are fiddling between the expansions
+            # Find a card with no expansion
+            aPhysCards = list(PhysicalCard.selectBy(abstractCardID=oC.id, expansionID=None))
+            oThisCard = aPhysCards[-1] # last card, general principles
+            # Update card
+            oThisCard.expansion = IExpansion(sExpansion)
+            oThisCard.sync()
+            # Update model
+            self.view._oModel.decCardExpansionByName(oC.name, None)
             self.view._oModel.incCardExpansionByName(oC.name, sExpansion)
         return True
 
