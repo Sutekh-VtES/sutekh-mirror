@@ -29,7 +29,6 @@ class PhysicalCardController(object):
         """
         Returns True if a card was successfully removed, False otherwise.
         """
-        print "decCard", sName, sExpansion
         try:
             oC = AbstractCard.byCanonicalName(sName.lower())
         except SQLObjectNotFound:
@@ -120,7 +119,6 @@ class PhysicalCardController(object):
         """
         Returns True if a card was successfully added, False otherwise.
         """
-        print "addCard", sName, sExpansion
         try:
             oC = AbstractCard.byCanonicalName(sName.lower())
         except SQLObjectNotFound:
