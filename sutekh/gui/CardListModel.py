@@ -382,6 +382,10 @@ class CardListModel(gtk.TreeStore):
             # new card
             self.addNewCard(sCardName)
 
+    def decCardByName(self, sCardName):
+        if self._dName2Iter.has_key(sCardName):
+            self.alterCardCount(sCardName, -1)
+
     def alterCardExpansionCount(self, sCardName, sExpansion, iChg):
         # Need to readjust inc, dec flags for all these cards
         oCard = IAbstractCard(sCardName)
