@@ -8,7 +8,7 @@ from sqlobject.events import listen, RowUpdateSignal, RowDestroySignal
 from sutekh.gui.CardSetView import CardSetView
 from sutekh.gui.CardSetMenu import CardSetMenu
 from sutekh.core.SutekhObjects import AbstractCardSet, PhysicalCardSet, \
-        AbstractCard, PhysicalCard
+        AbstractCard, PhysicalCard, MapPhysicalCardToPhysicalCardSet, Expansion
 
 class CardSetController(object):
     def __init__(self, sName, cType, oConfig, oMainWindow, oFrame):
@@ -40,11 +40,25 @@ class CardSetController(object):
     def setCardText(self,sCardName):
         self._oMainWindow.set_card_text(sCardName)
 
+    def incCard(self, sName, sExpansion):
+        """
+        Returns True if a card was successfully added, False otherwise.
+        """
+        return self.addCard(sName, sExpansion)
+
+    def decCard(self, sName, sExpansion):
+        pass
+
+    def addCard(self, sName, sExpansion):
+        pass
+
 class PhysicalCardSetController(CardSetController):
     def __init__(self, sName, oConfig, oMainWindow, oFrame):
         super(PhysicalCardSetController,self).__init__(
                 sName, PhysicalCardSet, oConfig, oMainWindow, oFrame)
         self.__oPhysCardSet = PhysicalCardSet.byName(sName)
+        # We need to cache this for physical_card_deleted checks
+        self.__aPhysCardIds = [x.id for x in self.__oPhysCardSet.cards]
         self._sFilterType = 'PhysicalCard'
         listen(self.physical_card_deleted, PhysicalCard, RowDestroySignal)
         listen(self.physical_card_changed, PhysicalCard, RowUpdateSignal)
@@ -53,13 +67,33 @@ class PhysicalCardSetController(CardSetController):
         """Listen on physical card removals. Needed so we can
            updated the model if a card in this set is deleted
         """
-        print "physical_card_deleted",oPhysCard
+        # We get here after we have removed the card from the card set,
+        # but before it is finally deleted from the table, so it's no
+        # longer in self.__oPhysCards.
+        if oPhysCard.id in self.__aPhysCardIds:
+            self.__aPhysCardIds.remove(oPhysCard.id)
+            oAC = oPhysCard.abstractCard
+            # Update model
+            self.view._oModel.decCardExpansionByName(oAC.name, oPhysCard.expansion.name)
+            self.view._oModel.decCardByName(oAC.name)
 
     def physical_card_changed(self, oPhysCard, dChanges):
         """Listen on physical cards changed. Needed so we can
            update the model if a card in this set is changed
         """
-        print "physical_card_changed",oPhysCard, dChanges
+        if oPhysCard.id in self.__aPhysCardIds and 'expansionID' in dChanges.keys():
+            iNewID = dChanges['expansionID']
+            oAC = oPhysCard.abstractCard
+            if oPhysCard.expansion is not None:
+                self.view._oModel.decCardExpansionByName(oAC.name, oPhysCard.expansion.name)
+            else:
+                self.view._oModel.decCardExpansionByName(oAC.name, None)
+            if iNewID is not None:
+                oNewExpansion = list(Expansion.selectBy(id=iNewID))[0]
+                sExpName = oNewExpansion.name
+            else:
+                sExpName = None
+            self.view._oModel.incCardExpansionByName(oAC.name, sExpName)
 
     def decCard(self, sName, sExpansion):
         """
@@ -80,12 +114,6 @@ class PhysicalCardSetController(CardSetController):
             return True
         return False
 
-    def incCard(self, sName, sExpansion):
-        """
-        Returns True if a card was successfully added, False otherwise.
-        """
-        return self.addCard(sName, sExpansion)
-
     def addCard(self, sName, sExpansion):
         """
         Returns True if a card was successfully added, False otherwise.
@@ -98,10 +126,15 @@ class PhysicalCardSetController(CardSetController):
             return False
 
         # Find all Physicalcards with this name
-        oPhysCards = PhysicalCard.selectBy(abstractCardID=oC.id)
-        if oPhysCards.count() > 0:
-            # Card exists
-            for oCard in oPhysCards:
+        oExpansion = IExpansion(sExpansion)
+        aPhysCards = PhysicalCard.selectBy(abstractCardID=oC.id)
+        if aPhysCards.count() > 0:
+            dCandCards = {}
+            for oCard in aPhysCards:
+                # Should be effecient due to the Cached joins
+                if oCard not in self.__oPhysCardSet.cards:
+                    # We want the card in the fewest other card sets
+                    aCardSets = MapPhysicalCardToPhysicalCardSet.selectBy
                 # Add first Physical card not already in Set
                 # Limits us to number of cards in PhysicalCards
                 if oCard not in self.__oPhysCardSet.cards:
@@ -134,12 +167,6 @@ class AbstractCardSetController(CardSetController):
             self.view._oModel.alterCardCount(oC.name, -1)
             return True
         return False
-
-    def incCard(self, sName, sExpansion):
-        """
-        Returns True if a card was successfully added, False otherwise.
-        """
-        return self.addCard(sName, sExpansion)
 
     def addCard(self, sName, sExpansion):
         """
