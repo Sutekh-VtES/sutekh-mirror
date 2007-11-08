@@ -29,20 +29,33 @@ class PhysicalCardController(object):
         Returns True if a card was successfully removed, False otherwise.
         """
         print "decCard", sName, sExpansion
-        return
         try:
             oC = AbstractCard.byCanonicalName(sName.lower())
         except SQLObjectNotFound:
             return False
 
-        # Go from Name to Abstract Card ID to Physical card ID
-        # which is needed for delete
-        # find Physical cards cards with this name
-        cardCands = PhysicalCard.selectBy(abstractCardID=oC.id)
-
-        # check we found something?
-        if cardCands.count() == 0:
-            return False
+        if sExpansion is None:
+            # Removing a card in the list
+            cardCands = PhysicalCard.selectBy(abstractCardID=oC.id)
+            # check we found something?
+            if cardCands.count() == 0:
+                return False
+            # Logic is:
+            # Prefer cards in fewest PCS's
+            # Prefer cards with no expansion set
+            return 
+        else:
+            # We are fiddling between the expansions
+            oThisExpansion = IExpansion(sExpansion)
+            aPhysCards = list(PhysicalCard.selectBy(abstractCardID=oC.id, expansionID=oThisExpansion.id))
+            oThisCard = aPhysCards[-1] # last card, general principles
+            # Update card
+            oThisCard.expansion = None
+            oThisCard.sync()
+            # Update model
+            self.view._oModel.decCardExpansionByName(oC.name, sExpansion)
+            self.view._oModel.incCardExpansionByName(oC.name, None)
+            return True
 
         # Loop throgh list and see if we can find a card
         # not present in any PCS
