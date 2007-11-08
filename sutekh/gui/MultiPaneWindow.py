@@ -95,7 +95,7 @@ class MultiPaneWindow(gtk.Window):
             oPane = PhysicalCardSetListFrame(self, self._oConfig)
             self.add_pane(oPane, sMenuFlag)
             self._oPCSListPane = oPane
-            self.__oMenu.iAddPCSListPane.set_sensitive(False)
+            self.__oMenu.pcs_list_pane_set_sensitive(False)
 
     def add_acs_list(self, oWidget):
         sMenuFlag = "ACS List"
@@ -103,21 +103,21 @@ class MultiPaneWindow(gtk.Window):
             oPane = AbstractCardSetListFrame(self, self._oConfig)
             self.add_pane(oPane, sMenuFlag)
             self._oACSListPane = oPane
-            self.__oMenu.iAddACSListPane.set_sensitive(False)
+            self.__oMenu.acs_list_pane_set_sensitive(False)
 
     def add_abstract_card_list(self, oWidget):
         sMenuFlag = "Abstract Card List"
         if sMenuFlag not in self.dOpenPanes.values():
             oPane = AbstractCardListFrame(self, self._oConfig)
             self.add_pane(oPane, sMenuFlag)
-            self.__oMenu.iAddACLPane.set_sensitive(False)
+            self.__oMenu.abstract_card_list_set_sensitive(False)
 
     def add_physical_card_list(self, oWidget):
         sMenuFlag = "Physical Card List"
         if sMenuFlag not in self.dOpenPanes.values():
             oPane = PhysicalCardFrame(self, self._oConfig)
             self.add_pane(oPane, sMenuFlag)
-            self.__oMenu.iAddPCLPane.set_sensitive(False)
+            self.__oMenu.physical_card_list_set_sensitive(False)
 
     def add_card_text(self, oWidget):
         sMenuFlag = "Card Text"
@@ -251,17 +251,17 @@ class MultiPaneWindow(gtk.Window):
             sMenuFlag = self.dOpenPanes[oFrame]
             del self.dOpenPanes[oFrame]
             if sMenuFlag == "PCS List":
-                self.__oMenu.iAddPCSListPane.set_sensitive(True)
+                self.__oMenu.pcs_list_pane_set_sensitive(True)
                 self._oPCSListPane = None
             elif sMenuFlag == "ACS List":
-                self.__oMenu.iAddACSListPane.set_sensitive(True)
+                self.__oMenu.acs_list_pane_set_sensitive(True)
                 self._oACSListPane = None
             elif sMenuFlag == "Card Text":
                 self.__oMenu.add_card_text_set_sensitive(True)
             elif sMenuFlag == "Abstract Card List":
-                self.__oMenu.iAddACLPane.set_sensitive(True)
+                self.__oMenu.abstract_card_list_set_sensitive(True)
             elif sMenuFlag == "Physical Card List":
-                self.__oMenu.iAddPCLPane.set_sensitive(True)
+                self.__oMenu.physical_card_list_set_sensitive(True)
             # Any cleanup events we need?
             oFrame.cleanup()
             if oFrame == self._oFocussed:

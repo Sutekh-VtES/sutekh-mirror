@@ -59,7 +59,7 @@ class MainMenu(gtk.MenuBar, object):
         wMenu.add(iPrefsItem)
 
         iSaveWindows = gtk.MenuItem('Save Current Pane Set')
-        iSaveWindows.connect('activate', self.doSavePaneSet)
+        iSaveWindows.connect('activate', self.do_save_pane_set)
         wPrefsMenu.add(iSaveWindows)
 
         iSaveOnExit = gtk.CheckMenuItem('Save Pane Set on Exit')
@@ -68,7 +68,7 @@ class MainMenu(gtk.MenuBar, object):
             iSaveOnExit.set_active(True)
         else:
             iSaveOnExit.set_active(False)
-        iSaveOnExit.connect('activate', self.doToggleSaveOnExit)
+        iSaveOnExit.connect('activate', self.do_toggle_save_on_exit)
         wPrefsMenu.add(iSaveOnExit)
 
         iSeperator3 = gtk.SeparatorMenuItem()
@@ -87,46 +87,58 @@ class MainMenu(gtk.MenuBar, object):
         self.__dMenus["Pane"] = wMenu
         iMenu.set_submenu(wMenu)
 
-        self.iAddACLPane = gtk.MenuItem("Add Whitewolf Card List")
-        wMenu.add(self.iAddACLPane)
-        self.iAddACLPane.connect("activate", self.__oWin.add_abstract_card_list)
-        self.iAddACLPane.set_sensitive(True)
+        self.__oAddACLPane = gtk.MenuItem("Add Whitewolf Card List")
+        wMenu.add(self.__oAddACLPane)
+        self.__oAddACLPane.connect("activate", self.__oWin.add_abstract_card_list)
+        self.__oAddACLPane.set_sensitive(True)
 
-        self.iAddPCLPane = gtk.MenuItem("Add Physical Card Collection List")
-        wMenu.add(self.iAddPCLPane)
-        self.iAddPCLPane.connect("activate", self.__oWin.add_physical_card_list)
-        self.iAddPCLPane.set_sensitive(True)
+        self.__oAddPCLPane = gtk.MenuItem("Add Physical Card Collection List")
+        wMenu.add(self.__oAddPCLPane)
+        self.__oAddPCLPane.connect("activate", self.__oWin.add_physical_card_list)
+        self.__oAddPCLPane.set_sensitive(True)
 
-        self.iAddCardText = gtk.MenuItem("Add Card Text Pane")
-        wMenu.add(self.iAddCardText)
-        self.iAddCardText.connect("activate", self.__oWin.add_card_text)
-        self.iAddCardText.set_sensitive(True)
+        self.__oAddCardText = gtk.MenuItem("Add Card Text Pane")
+        wMenu.add(self.__oAddCardText)
+        self.__oAddCardText.connect("activate", self.__oWin.add_card_text)
+        self.__oAddCardText.set_sensitive(True)
 
-        self.iAddACSListPane = gtk.MenuItem("Add Abstract Card Set List")
-        wMenu.add(self.iAddACSListPane)
-        self.iAddACSListPane.connect("activate", self.__oWin.add_acs_list)
-        self.iAddACSListPane.set_sensitive(True)
+        self.__oAddACSListPane = gtk.MenuItem("Add Abstract Card Set List")
+        wMenu.add(self.__oAddACSListPane)
+        self.__oAddACSListPane.connect("activate", self.__oWin.add_acs_list)
+        self.__oAddACSListPane.set_sensitive(True)
 
-        self.iAddPCSListPane = gtk.MenuItem("Add Physical Card Set List")
-        wMenu.add(self.iAddPCSListPane)
-        self.iAddPCSListPane.connect("activate", self.__oWin.add_pcs_list)
-        self.iAddPCSListPane.set_sensitive(True)
+        self.__oAddPCSListPane = gtk.MenuItem("Add Physical Card Set List")
+        wMenu.add(self.__oAddPCSListPane)
+        self.__oAddPCSListPane.connect("activate", self.__oWin.add_pcs_list)
+        self.__oAddPCSListPane.set_sensitive(True)
 
         iSeperator = gtk.SeparatorMenuItem()
         wMenu.add(iSeperator)
 
-        self.iDelPane = gtk.MenuItem("Remove currently focussed pane")
-        wMenu.add(self.iDelPane)
-        self.iDelPane.connect("activate", self.__oWin.menu_remove_pane)
-        self.iDelPane.set_sensitive(False)
+        self.__oDelPane = gtk.MenuItem("Remove currently focussed pane")
+        wMenu.add(self.__oDelPane)
+        self.__oDelPane.connect("activate", self.__oWin.menu_remove_pane)
+        self.__oDelPane.set_sensitive(False)
 
         self.add(iMenu)
 
     def del_pane_set_sensitive(self, bValue):
-        self.iDelPane.set_sensitive(bValue)
+        self.__oDelPane.set_sensitive(bValue)
 
     def add_card_text_set_sensitive(self, bValue):
-        self.iAddCardText.set_sensitive(bValue)
+        self.__oAddCardText.set_sensitive(bValue)
+
+    def pcs_list_pane_set_sensitive(self, bValue):
+        self.__oAddPCLPane.set_sensitive(bValue)
+
+    def acs_list_pane_set_sensitive(self, bValue):
+        self.__oAddACLPane.set_sensitive(bValue)
+
+    def abstract_card_list_set_sensitive(self, bValue):
+        self.__oAddACLPane.set_sensitive(bValue)
+
+    def physical_card_list_set_sensitive(self, bValue):
+        self.__oAddPCLPane.set_sensitive(bValue)
 
     def __create_about_menu(self):
         # setup sub menu
@@ -261,10 +273,10 @@ class MainMenu(gtk.MenuBar, object):
                 Complaint.destroy()
             self.__oC.reloadAll()
 
-    def doSavePaneSet(self,widget):
+    def do_save_pane_set(self,widget):
         self.__oWin.save_panes()
 
-    def doToggleSaveOnExit(self,widget):
+    def do_toggle_save_on_exit(self,widget):
         bChoice = not self.__oConfig.getSaveOnExit()
         self.__oConfig.setSaveOnExit(bChoice)
         # gtk can handle the rest for us
