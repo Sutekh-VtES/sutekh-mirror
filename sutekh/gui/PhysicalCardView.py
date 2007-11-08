@@ -13,7 +13,6 @@ class PhysicalCardView(EditableCardListView):
 
         self._oModel.basefilter = PhysicalCardFilter()
         self._oModel.cardclass = PhysicalCard
-        self._oWin = oWindow
         self._oModel.bExpansions = True
         self._oC = oController
         self.sDragPrefix = 'Phys:'
@@ -35,12 +34,3 @@ class PhysicalCardView(EditableCardListView):
                 context.finish(True, False, time)
             else:
                 context.finish(False, False, time)
-
-    def getWindow(self):
-        return self._oWin
-
-    def getModel(self):
-        return self._oModel
-
-    def getController(self):
-        return self._oC
