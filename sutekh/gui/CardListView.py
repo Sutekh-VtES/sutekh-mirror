@@ -61,6 +61,36 @@ class CardListView(gtk.TreeView, object):
         """
         self._oModel.load()
 
+    # Help functions used by reload_keep_expanded
+    def __get_row_status(self, oModel, oPath, oIter, dExpandedDict):
+        if self.row_expanded(oPath):
+            dExpandedDict.setdefault(oPath, self._oModel.getCardNameFromPath(oPath))
+        return False # Need to process the whole list
+
+    def __set_row_status(self, oModel, oPath, oIter, dExpandedDict):
+        if dExpandedDict.has_key(oPath):
+            try:
+                sCardName = self._oModel.getCardNameFromPath(oPath)
+                if sCardName == dExpandedDict[oPath]:
+                    self.expand_to_path(oPath)
+            except ValueError:
+                # Paths may disappear, so this error can be ignored
+                return False
+        return False
+
+    def reload_keep_expanded(self):
+        """Attempt to reload the card list, keeping the existing
+           structure of expanded rows
+        """
+        # Internal helper functions
+        # See what's expanded
+        dExpandedDict = {}
+        self._oModel.foreach(self.__get_row_status, dExpandedDict)
+        # Reload
+        self.load()
+        # Re-expand stuff
+        self._oModel.foreach(self.__set_row_status, dExpandedDict)
+
     # Introspection
 
     def getWindow(self): return self._oMainWin
