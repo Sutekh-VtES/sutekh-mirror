@@ -191,7 +191,7 @@ class StateWithCard(State):
 
 # State Classes
 
-class NoCardard(State):
+class NoCard(State):
     def transition(self,sTag,dAttr):
         if sTag == 'p':
             return PotentialCard()
@@ -203,7 +203,7 @@ class PotentialCard(State):
         if sTag == 'a' and dAttr.has_key('name'):
             return InCard(CardDict())
         else:
-            return NoCardard()
+            return NoCard()
 
 class InCard(StateWithCard):
     def transition(self,sTag,dAttr):
@@ -211,7 +211,7 @@ class InCard(StateWithCard):
             raise StateError()
         elif sTag == '/p':
             self._dInfo.save()
-            return NoCardard()
+            return NoCard()
         elif sTag == 'span' and dAttr.get('class') == 'cardname':
             return InCardName(self._dInfo)
         elif sTag == 'span' and dAttr.get('class') == 'exp':
@@ -290,7 +290,7 @@ class WaitingForValue(StateWithCard):
 class WhiteWolfParser(HTMLParser.HTMLParser,object):
     def reset(self):
         super(WhiteWolfParser,self).reset()
-        self._state = NoCardard()
+        self._state = NoCard()
 
     def handle_starttag(self,sTag,aAttr):
         self._state = self._state.transition(sTag.lower(),dict(aAttr))
