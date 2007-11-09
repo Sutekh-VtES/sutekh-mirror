@@ -5,9 +5,7 @@
 # GPL - see COPYING for details
 
 import HTMLParser, re
-from sutekh.core.SutekhObjects import IAbstractCard, IClan, IRarityPair,\
-                                      IDisciplinePair, IVirtue, ICreed,\
-                                      ICardType, ISect, ITitle
+from sutekh.core.SutekhObjects import SutekhObjectMaker
 
 # Card Saver
 
@@ -18,11 +16,11 @@ class CardDict(dict):
 
     def __init__(self):
         super(CardDict,self).__init__()
+        self._oMaker = SutekhObjectMaker()
 
     def _makeCard(self,sName):
         sName = self.oDispCard.sub('',sName)
-        sName = sName.strip()
-        return IAbstractCard(sName)
+        return self._oMaker.makeAbstractCard(sName)
 
     def _addExpansions(self,oCard,sExp):
         aPairs = [x.split(':') for x in sExp.strip('[]').split(',')]
@@ -35,7 +33,7 @@ class CardDict(dict):
 
         for sExp, sRarSet in aExp:
             for sRar in sRarSet.split('/'):
-                oP = IRarityPair((sExp,sRar))
+                oP = self._oMaker.makeRarityPair(sExp,sRar)
                 oCard.addRarityPair(oP)
 
     def _addDisciplines(self,oCard,sDis):
@@ -45,9 +43,9 @@ class CardDict(dict):
 
         for s in sDis.split():
             if s==s.lower():
-                oP = IDisciplinePair((s,'inferior'))
+                oP = self._oMaker.makeDisciplinePair(s,'inferior')
             else:
-                oP = IDisciplinePair((s,'superior'))
+                oP = self._oMaker.makeDisciplinePair(s,'superior')
             oCard.addDisciplinePair(oP)
 
     def _addVirtues(self,oCard,sVir):
@@ -56,7 +54,7 @@ class CardDict(dict):
         if sVir == '-none-' or sVir == '': return
 
         for s in sVir.split():
-            oP = IVirtue(s)
+            oP = self._oMaker.makeVirtue(s)
             oCard.addVirtue(oP)
 
     def _addCreeds(self,oCard,sCreed):
@@ -65,7 +63,7 @@ class CardDict(dict):
         if sCreed == '-none-' or sCreed == '': return
 
         for s in sCreed.split('/'):
-            oCard.addCreed(ICreed(s.strip()))
+            oCard.addCreed(self._oMaker.makeCreed(s.strip()))
 
     def _addClans(self,oCard,sClan):
         sClan = self.oWhiteSp.sub(' ',sClan).strip()
@@ -73,7 +71,7 @@ class CardDict(dict):
         if sClan == '-none-' or sClan == '': return
 
         for s in sClan.split('/'):
-            oCard.addClan(IClan(s.strip()))
+            oCard.addClan(self._oMaker.makeClan(s.strip()))
 
     def _addCost(self,oCard,sCost):
         sCost = self.oWhiteSp.sub(' ',sCost).strip()
@@ -115,7 +113,7 @@ class CardDict(dict):
 
     def _addCardType(self,oCard,sTypes):
         for s in sTypes.split('/'):
-            oCard.addCardType(ICardType(s.strip()))
+            oCard.addCardType(self._oMaker.makeCardType(s.strip()))
 
     def save(self):
         if not self.has_key('name'):
@@ -163,9 +161,9 @@ class CardDict(dict):
             oCard.text = self['text']
             (sSect,sTitle)=parseText(oCard)
             if sSect is not None:
-                oCard.addSect(ISect(sSect))
+                oCard.addSect(self._oMaker.makeSect(sSect))
             if sTitle is not None:
-                oCard.addTitle(ITitle(sTitle))
+                oCard.addTitle(self._oMaker.makeTitle(sTitle))
 
         oCard.syncUpdate()
 

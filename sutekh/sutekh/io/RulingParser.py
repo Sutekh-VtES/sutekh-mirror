@@ -4,7 +4,7 @@
 # GPL - see COPYING for details
 
 import HTMLParser, re
-from sutekh.core.SutekhObjects import AbstractCard, IRuling
+from sutekh.core.SutekhObjects import IAbstractCard, SutekhObjectMaker
 from sqlobject import SQLObjectNotFound
 
 # Ruling Saver
@@ -34,25 +34,26 @@ class RuleDict(dict):
 
     def __init__(self):
         super(RuleDict,self).__init__()
+        self._oMaker = SutekhObjectMaker()
 
     def _findCard(self,sTitle):
         sTitle = self._oMasterOut.sub('',sTitle)
         sTitle = self._oCommaThe.sub('',sTitle)
 
         try:
-            return AbstractCard.byCanonicalName(sTitle.encode('utf8').lower())
+            return IAbstractCard(sTitle)
         except SQLObjectNotFound:
             pass
 
         try:
-            return AbstractCard.byCanonicalName(self._dOddTitles[sTitle].encode('utf8').lower())
+            return IAbstractCard(self._dOddTitles[sTitle])
         except KeyError:
             pass
         except SQLObjectNotFound:
             pass
 
         try:
-            return AbstractCard.byCanonicalName(('The ' + sTitle).encode('utf8').lower())
+            return IAbstractCard(('The ' + sTitle))
         except SQLObjectNotFound:
             pass
 
@@ -80,7 +81,7 @@ class RuleDict(dict):
 
         print self['card'].name.encode('ascii','replace')
 
-        oR = IRuling((self['text'],self['code']))
+        oR = self._oMaker.makeRuling(self['text'],self['code'])
 
         if self.has_key('url'):
             oR.url = self['url']

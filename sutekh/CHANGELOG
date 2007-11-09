@@ -1,4 +1,7 @@
 10 Nov 2007
+ * Move card attribute abbreviation lists in sutekh.core.Abbreviations.
+ * Modified adaptors to not create database objects if they don't exist.
+ * Add API for constructing SutekhObjects.
  * Add basic testing framework, including tests for WhiteWolf card list and rulings parsers and filtering.
 
 27 Oct 2007
