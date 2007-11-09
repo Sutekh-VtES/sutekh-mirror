@@ -17,7 +17,8 @@ from sqlobject.sqlbuilder import Table, Alias, LEFTJOINOn, Select
 # Filter Base Class
 
 class Filter(object):
-    def getValues(self):
+    @classmethod
+    def getValues(cls):
         """Used by GUI tools and FilterParser to get/check acceptable values"""
         # We can't do this as an attribute, since we need a database connection
         # to fill in the values most times
@@ -147,7 +148,8 @@ class MultiClanFilter(MultiFilter):
         self._oMapTable = self._makeTableAlias('abs_clan_map')
         self._oIdField = self._oMapTable.q.clan_id
 
-    def getValues(self):
+    @classmethod
+    def getValues(cls):
         return [x.name for x in Clan.select().orderBy('name')]
 
 class DisciplineFilter(MultiFilter):
@@ -169,7 +171,8 @@ class MultiDisciplineFilter(MultiFilter):
         self._oMapTable = self._makeTableAlias('abs_discipline_pair_map')
         self._oIdField = self._oMapTable.q.discipline_pair_id
 
-    def getValues(self):
+    @classmethod
+    def getValues(cls):
         return [x.fullname for x in Discipline.select().orderBy('name')]
 
 class ExpansionFilter(MultiFilter):
@@ -213,7 +216,8 @@ class MultiExpansionRarityFilter(MultiFilter):
         self._oMapTable = self._makeTableAlias('abs_rarity_pair_map')
         self._oIdField = self._oMapTable.q.rarity_pair_id
 
-    def getValues(self):
+    @classmethod
+    def getValues(cls):
         aExpansions = [x.name for x in Expansion.select().orderBy('name')
                 if x.name[:5] != 'Promo']
         aResults = []
@@ -224,12 +228,13 @@ class MultiExpansionRarityFilter(MultiFilter):
                 aResults.append(sExpan + ' with ' + sRarity)
         return aResults
 
-class DisciplineLevelFilter(SingleFilter):
+class DisciplineLevelFilter(MultiFilter):
     def __init__(self,tDiscLevel):
-        sDiscipline,sLevel = tDiscLevel
-        # By construction, the list should have only 1 element
-        self._oId = [oP.id for oP in IDiscipline(sDiscipline).pairs
-                if oP.level == sLevel][0]
+        sDiscipline, sLevel = tDiscLevel
+        sLevel = sLevel.lower()
+        assert sLevel in ['inferior','superior']
+        # There will be 0 or 1 ids
+        self._aIds = [oP.id for oP in IDiscipline(sDiscipline).pairs if oP.level == sLevel]
         self._oMapTable = self._makeTableAlias('abs_discipline_pair_map')
         self._oIdField = self._oMapTable.q.discipline_pair_id
 
@@ -241,13 +246,16 @@ class MultiDisciplineLevelFilter(MultiFilter):
 
     def __init__(self,aDiscLevels):
         self._aIds = []
-        for sDiscipline,sLevel in aDiscLevels:
+        for sDiscipline, sLevel in aDiscLevels:
+            sLevel = sLevel.lower()
+            assert sLevel in ['inferior','superior']
             self._aIds.extend([oP.id for oP in IDiscipline(sDiscipline).pairs
                     if oP.level == sLevel])
         self._oMapTable = self._makeTableAlias('abs_discipline_pair_map')
         self._oIdField = self._oMapTable.q.discipline_pair_id
 
-    def getValues(self):
+    @classmethod
+    def getValues(cls):
         oTemp = MultiDisciplineFilter([])
         aDisciplines = oTemp.getValues()
         aResults = []
@@ -272,7 +280,8 @@ class MultiCardTypeFilter(MultiFilter):
         self._oMapTable = self._makeTableAlias('abs_type_map')
         self._oIdField = self._oMapTable.q.card_type_id
 
-    def getValues(self):
+    @classmethod
+    def getValues(cls):
         return [x.name for x in CardType.select().orderBy('name')]
 
 class SectFilter(SingleFilter):
@@ -291,7 +300,8 @@ class MultiSectFilter(MultiFilter):
         self._oMapTable = self._makeTableAlias('abs_sect_map')
         self._oIdField = self._oMapTable.q.sect_id
 
-    def getValues(self):
+    @classmethod
+    def getValues(cls):
         return [x.name for x in Sect.select().orderBy('name')]
 
 class TitleFilter(SingleFilter):
@@ -310,7 +320,8 @@ class MultiTitleFilter(MultiFilter):
         self._oMapTable = self._makeTableAlias('abs_title_map')
         self._oIdField = self._oMapTable.q.title_id
 
-    def getValues(self):
+    @classmethod
+    def getValues(cls):
         return [x.name for x in Title.select().orderBy('name')]
 
 class CreedFilter(SingleFilter):
@@ -329,7 +340,8 @@ class MultiCreedFilter(MultiFilter):
         self._oMapTable = self._makeTableAlias('abs_creed_map')
         self._oIdField = self._oMapTable.q.creed_id
 
-    def getValues(self):
+    @classmethod
+    def getValues(cls):
         return [x.name for x in Creed.select().orderBy('name')]
 
 class VirtueFilter(SingleFilter):
@@ -348,7 +360,8 @@ class MultiVirtueFilter(MultiFilter):
         self._oMapTable = self._makeTableAlias('abs_virtue_map')
         self._oIdField = self._oMapTable.q.virtue_id
 
-    def getValues(self):
+    @classmethod
+    def getValues(cls):
         return [x.fullname for x in Virtue.select().orderBy('name')]
 
 class GroupFilter(DirectFilter):
@@ -367,7 +380,8 @@ class MultiGroupFilter(DirectFilter):
     def __init__(self,aGroups):
         self.__aGroups = aGroups
 
-    def getValues(self):
+    @classmethod
+    def getValues(cls):
         return range(1,6)
 
     def _getExpression(self):
@@ -389,7 +403,8 @@ class MultiCapacityFilter(DirectFilter):
     def __init__(self,aCaps):
         self.__aCaps = aCaps
 
-    def getValues(self):
+    @classmethod
+    def getValues(cls):
         return range(1,12)
 
     def _getExpression(self):
@@ -413,7 +428,8 @@ class MultiCostFilter(DirectFilter):
     def __init__(self,aCost):
         self.__aCost = aCost
 
-    def getValues(self):
+    @classmethod
+    def getValues(cls):
         return range(0,7) + ['X']
 
     def _getExpression(self):
@@ -421,7 +437,8 @@ class MultiCostFilter(DirectFilter):
 
 class CostTypeFilter(DirectFilter):
     def __init__(self,sCostType):
-        self.__sCostType = sCostType
+        self.__sCostType = sCostType.lower()
+        assert self.__sCostType in ["blood", "pool", "conviction", None]
 
     def _getExpression(self):
         return AbstractCard.q.costtype == self.__sCostType.lower()
@@ -432,9 +449,14 @@ class MultiCostTypeFilter(DirectFilter):
     helptext = "a list of cost types"
 
     def __init__(self,aCostTypes):
-        self.__aCostTypes = [x.lower() for x in aCostTypes]
+        self.__aCostTypes = [x.lower() for x in aCostTypes if x is not None]
+        for sCostType in self.__aCostTypes:
+            assert sCostType in ["blood", "pool", "conviction"]
+        if None in aCostTypes:
+            self.__aCostTypes.append(None)
 
-    def getValues(self):
+    @classmethod
+    def getValues(cls):
         return ["blood","pool","conviction"]
 
     def _getExpression(self):
@@ -457,7 +479,8 @@ class MultiLifeFilter(DirectFilter):
     def __init__(self,aLife):
         self.__aLife = aLife
 
-    def getValues(self):
+    @classmethod
+    def getValues(cls):
         return range(1,8)
 
     def _getExpression(self):
@@ -472,7 +495,8 @@ class CardTextFilter(DirectFilter):
     def __init__(self,sPattern):
         self.__sPattern = sPattern
 
-    def getValues(self):
+    @classmethod
+    def getValues(cls):
         return None
 
     def _getExpression(self):
@@ -487,7 +511,8 @@ class CardNameFilter(DirectFilter):
     def __init__(self,sPattern):
         self.__sPattern = sPattern
 
-    def getValues(self):
+    @classmethod
+    def getValues(cls):
         return None
 
     def _getExpression(self):
