@@ -17,14 +17,17 @@ class RulingParserTests(SutekhTest):
 
         self.assertEqual([oR.code for oR in aRulings],self.aExpectedRulings)
 
-        oR = aRulings.pop(0)
+        oR = aRulings[0]
         self.failUnless(oR.text.startswith(u"Cannot use his "))
 
-        oR = aRulings.pop(0)
+        oR = aRulings[1]
         self.failUnless(oR.text.startswith(u"Cannot be used "))
 
-        oR = aRulings.pop(0)
+        oR = aRulings[2]
         self.failUnless(oR.text.startswith(u"The AK-47 provides "))
+
+        oR = IRuling((aRulings[0].text,aRulings[0].code))
+        self.assertEqual(oR.code,self.aExpectedRulings[0])
 
 if __name__ == "__main__":
     unittest.main()
