@@ -99,8 +99,8 @@ class CardSetManagementFrame(gtk.Frame, object):
         self.__oBaseStyle = self.__oTitle.get_style().copy()
         self.__oFocStyle = self.__oTitle.get_style().copy()
         oMap = self.__oTitle.get_colormap()
-        oGreen = oMap.alloc_color("purple")
-        self.__oFocStyle.fg[gtk.STATE_NORMAL] = oGreen
+        oHighlighted = oMap.alloc_color("purple")
+        self.__oFocStyle.fg[gtk.STATE_NORMAL] = oHighlighted
 
     def set_focussed_title(self):
         self.__oTitle.set_style(self.__oFocStyle)

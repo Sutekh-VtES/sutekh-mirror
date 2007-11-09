@@ -320,10 +320,10 @@ class EditableCardListView(CardListView):
             self.set_grid_lines(gtk.TREE_VIEW_GRID_LINES_BOTH)
 
         self.__oBaseStyle = self.get_style().copy()
-        self.__oRedStyle = self.get_style().copy()
+        self.__oEditCueStyle = self.get_style().copy()
         oMap = oWindow.get_colormap()
         oRed = oMap.alloc_color("red")
-        self.__oRedStyle.fg[gtk.STATE_NORMAL] = oRed
+        self.__oEditCueStyle.fg[gtk.STATE_NORMAL] = oRed
      
     # Used by card dragging handlers
     def addCard(self, sCardName, sExpansion):
@@ -347,8 +347,8 @@ class EditableCardListView(CardListView):
             sExpansion = self._oModel.getExpansionNameFromPath(oPath)
             self._oC.decCard(sCardName, sExpansion)
 
-    def set_color_red(self):
-        self.set_style(self.__oRedStyle)
+    def set_color_edit_cue(self):
+        self.set_style(self.__oEditCueStyle)
 
     def set_color_normal(self):
         self.set_style(self.__oBaseStyle)

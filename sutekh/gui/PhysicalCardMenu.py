@@ -121,7 +121,7 @@ class PhysicalCardMenu(gtk.MenuBar, object):
         self.__oC.model.bEditable = oWidget.active
         self.__oC.view.reload_keep_expanded()
         if oWidget.active:
-            self.__oC.view.set_color_red()
+            self.__oC.view.set_color_edit_cue()
         else:
             self.__oC.view.set_color_normal()
 

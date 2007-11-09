@@ -39,8 +39,8 @@ class CardSetFrame(gtk.Frame, object):
         self.__oBaseStyle = self.__oTitle.get_style().copy()
         self.__oFocStyle = self.__oTitle.get_style().copy()
         oMap = self.__oTitle.get_colormap()
-        oGreen = oMap.alloc_color("purple")
-        self.__oFocStyle.fg[gtk.STATE_NORMAL] = oGreen
+        oHighlighted = oMap.alloc_color("purple")
+        self.__oFocStyle.fg[gtk.STATE_NORMAL] = oHighlighted
 
     view = property(fget=lambda self: self._oC.view, doc="Associated View Object")
     name = property(fget=lambda self: self.sSetName, doc="Frame Name")
