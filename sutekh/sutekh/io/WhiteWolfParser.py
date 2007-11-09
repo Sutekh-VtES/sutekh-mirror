@@ -157,9 +157,10 @@ class CardDict(dict):
 
         if self.has_key('cardtype'):
             self._addCardType(oCard,self['cardtype'])
+
         if self.has_key('text'):
             oCard.text = self['text']
-            (sSect,sTitle)=parseText(oCard)
+            (sSect,sTitle) = parseText(oCard)
             if sSect is not None:
                 oCard.addSect(self._oMaker.makeSect(sSect))
             if sTitle is not None:
