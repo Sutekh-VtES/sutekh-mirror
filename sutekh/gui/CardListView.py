@@ -67,15 +67,15 @@ class CardListView(gtk.TreeView, object):
             dExpandedDict.setdefault(oPath, self._oModel.getCardNameFromPath(oPath))
         return False # Need to process the whole list
 
-    def __set_row_status(self, oModel, oPath, oIter, dExpandedDict):
-        if dExpandedDict.has_key(oPath):
+    def __set_row_status(self, dExpandedDict):
+        for oPath in dExpandedDict:
             try:
                 sCardName = self._oModel.getCardNameFromPath(oPath)
                 if sCardName == dExpandedDict[oPath]:
                     self.expand_to_path(oPath)
             except ValueError:
                 # Paths may disappear, so this error can be ignored
-                return False
+                pass
         return False
 
     def reload_keep_expanded(self):
@@ -89,7 +89,7 @@ class CardListView(gtk.TreeView, object):
         # Reload
         self.load()
         # Re-expand stuff
-        self._oModel.foreach(self.__set_row_status, dExpandedDict)
+        self.__set_row_status(dExpandedDict)
 
     # Introspection
 
