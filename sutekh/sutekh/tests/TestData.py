@@ -167,13 +167,13 @@ TEST_CARD_LIST = """
 <p>
 <a name="card_15"><span class="cardname">Lázár Dobrescu</span></a>
 <span class="exp">[AH:V3, FN:PR]</span><br />
-<table border=0 cellpadding=0 cellspacing=0><tr><td width=1><span class="key">Cardtype:</span> </td><td>Vampire<br /></td></tr>
-<tr><td width=1><span class="key">Clan:</span> </td><td>Ravnos<br /></td></tr>
-<tr><td width=1><span class="key">Group:</span> </td><td>2<br /></td></tr>
-<tr><td width=1><span class="key">Capacity:</span> </td><td>3<br /></td></tr>
-<tr><td width=1><span class="key">Discipline:</span> </td><td>for<br /></td></tr>
+<table><tr><td width=1><span class="key">Cardtype:</span> </td><td>Vampire<br /></td></tr>
+<tr><td><span class="key">Clan:</span> </td><td>Ravnos<br /></td></tr>
+<tr><td><span class="key">Group:</span> </td><td>2<br /></td></tr>
+<tr><td><span class="key">Capacity:</span> </td><td>3<br /></td></tr>
+<tr><td><span class="key">Discipline:</span> </td><td>for<br /></td></tr>
 <tr><td colspan=2><b>Independent:</b> <n>Lázár may move one blood from <span class="clarification">&lt;an uncontrolled minion&gt;</span> in your prey's uncontrolled region to a vampire in your uncontrolled region as a (D) action.<br />
-<tr><td width=1><span class="key">Artist:</span> </td><td>Rebecca Guay<br /></td></tr>
+<tr><td><span class="key">Artist:</span> </td><td>Rebecca Guay<br /></td></tr>
 </table>
 </p>
 
