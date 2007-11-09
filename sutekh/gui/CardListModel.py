@@ -206,7 +206,8 @@ class CardListModel(gtk.TreeStore):
                         sName = oPC.expansion.name
                     else:
                         sName = self.sUnknownExpansion
-                    dExpansions.setdefault(sName, [0, False, False])
+                    # There is a card here, so by default incCard must be true
+                    dExpansions.setdefault(sName, [0, False, True])
                     dCount.setdefault(sName, 0)
                     dCount[sName] += 1
             else:

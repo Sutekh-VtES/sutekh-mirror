@@ -69,7 +69,7 @@ class PhysicalCardSetController(CardSetController):
         if self.model.bEditable:
             aAbsCards = [x.abstractCard for x in self.__oPhysCardSet.cards]
             if oAbsCard in aAbsCards:
-                self.reload_keep_expanded()
+                self.view.reload_keep_expanded()
 
     def physical_card_deleted(self, oPhysCard):
         """Listen on physical card removals. Needed so we can
