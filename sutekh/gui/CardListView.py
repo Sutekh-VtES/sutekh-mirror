@@ -71,7 +71,7 @@ class CardListView(gtk.TreeView, object):
 
     def card_activated(self, wTree, oPath, oColumn):
         sCardName = self._oModel.getCardNameFromPath(oPath)
-        self._oC.setCardText(sCardName)
+        self._oC.set_card_text(sCardName)
 
     # Key combinations
 
@@ -136,7 +136,7 @@ class CardListView(gtk.TreeView, object):
             self._aOldSelection = aList
 
         sCardName = self._oModel.getCardNameFromPath(oPath)
-        self._oC.setCardText(sCardName)
+        self._oC.set_card_text(sCardName)
 
     # Card name searching
 

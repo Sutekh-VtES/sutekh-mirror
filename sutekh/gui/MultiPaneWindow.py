@@ -157,7 +157,7 @@ class MultiPaneWindow(gtk.Window):
     def set_card_text(self, sCardName):
         try:
             oCard = AbstractCard.byCanonicalName(sCardName.lower())
-            self._oCardTextPane.view.setCardText(oCard)
+            self._oCardTextPane.view.set_card_text(oCard)
         except SQLObjectNotFound:
             pass
 

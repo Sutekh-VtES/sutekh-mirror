@@ -190,11 +190,11 @@ class CardSetMenu(gtk.MenuBar, object):
         self.__oC.view.runFilter(oWidget.active)
 
     def toggleExpansion(self, oWidget):
-        self.__oC.view._oModel.bExpansions = oWidget.active
+        self.__oC.model.bExpansions = oWidget.active
         self.__oC.view.load()
 
     def toggleEditable(self, oWidget):
-        self.__oC.view._oModel.bEditable = oWidget.active
+        self.__oC.model.bEditable = oWidget.active
         self.__oC.view.load()
         if oWidget.active:
             self.__oC.view.set_color_red()

@@ -34,7 +34,7 @@ class AbstractCardListController(object):
     def getPlugins(self):
         return self.__aPlugins
 
-    def setCardText(self, sCardName):
+    def set_card_text(self, sCardName):
         self.__oMainWindow.set_card_text(sCardName)
         
     def getMenu(self):

@@ -64,7 +64,7 @@ class CardTextView(gtk.TextView,object):
         self.set_cursor_visible(False)
         self.set_wrap_mode(gtk.WRAP_WORD)
 
-    def setCardText(self,oCard):
+    def set_card_text(self,oCard):
         oStart, oEnd = self.__oBuf.get_bounds()
         self.__oBuf.delete(oStart,oEnd)
         self.printCardToBuffer(oCard,self.__oBuf)

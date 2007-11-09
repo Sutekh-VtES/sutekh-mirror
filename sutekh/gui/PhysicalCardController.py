@@ -26,6 +26,7 @@ class PhysicalCardController(object):
         self._sFilterType = 'PhysicalCard'
 
     view = property(fget=lambda self: self.__oView, doc="Associated View")
+    model = property(fget=lambda self: self.__oView._oModel, doc="View's Model")
     frame = property(fget=lambda self: self.__oFrame, doc="Associated Frame")
     filtertype = property(fget=lambda self: self._sFilterType, doc="Associated Type")
 
@@ -59,8 +60,8 @@ class PhysicalCardController(object):
                 if iCount == 0:
                     if oPhysCard.expansion is None:
                         # OK, can delete this one and be done with it
-                        self.view._oModel.decCardExpansionByName(oC.name, None)
-                        self.view._oModel.decCardByName(oC.name)
+                        self.model.decCardExpansionByName(oC.name, None)
+                        self.model.decCardByName(oC.name)
                         PhysicalCard.delete(oPhysCard.id)
                         PhysicalCard.sqlmeta.send(ReloadSignal, oC)
                         return True
@@ -70,8 +71,8 @@ class PhysicalCardController(object):
             if len(aCandsExpansion) > 0:
                 # ditto
                 oPhysCard = aCandsExpansion[-1]
-                self.view._oModel.decCardExpansionByName(oC.name, oPhysCard.expansion.name)
-                self.view._oModel.decCardByName(oC.name)
+                self.model.decCardExpansionByName(oC.name, oPhysCard.expansion.name)
+                self.model.decCardByName(oC.name)
                 PhysicalCard.delete(oPhysCard.id)
                 PhysicalCard.sqlmeta.send(ReloadSignal, oC)
                 return True
@@ -100,10 +101,10 @@ class PhysicalCardController(object):
                 for oPCS in aPCS:
                     oPCS.removePhysicalCard(oPhysCard.id)
                 if oPhysCard.expansion is not None:
-                    self.view._oModel.decCardExpansionByName(oC.name, oPhysCard.expansion.name)
+                    self.model.decCardExpansionByName(oC.name, oPhysCard.expansion.name)
                 else:
-                    self.view._oModel.decCardExpansionByName(oC.name, None)
-                self.view._oModel.decCardByName(oC.name)
+                    self.model.decCardExpansionByName(oC.name, None)
+                self.model.decCardByName(oC.name)
                 PhysicalCard.delete(oPhysCard.id)
                 # SQLObject Events should take care of updating any open card sets
                 PhysicalCard.sqlmeta.send(ReloadSignal, oC)
@@ -118,8 +119,8 @@ class PhysicalCardController(object):
             oThisCard.expansion = None
             oThisCard.sync()
             # Update model
-            self.view._oModel.decCardExpansionByName(oC.name, sExpansion)
-            self.view._oModel.incCardExpansionByName(oC.name, None)
+            self.model.decCardExpansionByName(oC.name, sExpansion)
+            self.model.incCardExpansionByName(oC.name, None)
             PhysicalCard.sqlmeta.send(ReloadSignal, oC)
             return True
 
@@ -141,8 +142,8 @@ class PhysicalCardController(object):
         if sExpansion is None:
             # Adding a new card to the list
             oPC = PhysicalCard(abstractCard=oC, expansion=None)
-            self.view._oModel.incCardByName(oC.name)
-            self.view._oModel.incCardExpansionByName(oC.name, sExpansion)
+            self.model.incCardByName(oC.name)
+            self.model.incCardExpansionByName(oC.name, sExpansion)
             PhysicalCard.sqlmeta.send(ReloadSignal, oC)
         else:
             # We are fiddling between the expansions
@@ -155,11 +156,11 @@ class PhysicalCardController(object):
             oThisCard.expansion = IExpansion(sExpansion)
             oThisCard.sync()
             # Update model
-            self.view._oModel.decCardExpansionByName(oC.name, None)
-            self.view._oModel.incCardExpansionByName(oC.name, sExpansion)
+            self.model.decCardExpansionByName(oC.name, None)
+            self.model.incCardExpansionByName(oC.name, sExpansion)
             PhysicalCard.sqlmeta.send(ReloadSignal, oC)
         return True
 
-    def setCardText(self, sCardName):
+    def set_card_text(self, sCardName):
         self.__oMainWin.set_card_text(sCardName)
 
