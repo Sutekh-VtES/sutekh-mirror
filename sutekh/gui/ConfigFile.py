@@ -42,8 +42,8 @@ class ConfigFile(object):
         if not self.__oConfig.has_section(self.__sPanesSection):
             self.__oConfig.add_section(self.__sPanesSection)
             # No panes information, so we set 'sensible' defaults
-            self.addPane(1, 'Abstract Cards', 'Abstract Cards')
-            self.addPane(2, 'Physical Cards', 'Physical Cards')
+            self.addPane(1, 'abstract_card', 'Abstract Cards')
+            self.addPane(2, 'physical_card', 'Physical Cards')
             self.addPane(3, 'Card Text', 'Card Text')
 
         if not self.__oConfig.has_section(self.__sFiltersSection):

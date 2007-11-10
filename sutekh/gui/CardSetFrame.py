@@ -6,104 +6,53 @@
 
 import gtk
 from sutekh.core.SutekhObjects import PhysicalCardSet, AbstractCardSet
-from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
+from sutekh.gui.CardListFrame import CardListFrame
 from sutekh.gui.CardSetMenu import CardSetMenu
 from sutekh.gui.CardSetController import PhysicalCardSetController, \
         AbstractCardSetController
 
-class CardSetFrame(gtk.Frame, object):
+class CardSetFrame(CardListFrame, object):
     def __init__(self, oMainWindow, sName, cType, oConfig):
-        super(CardSetFrame, self).__init__()
-        self._oMainWindow = oMainWindow
-        self.cSetType = cType
-        self._oConfig = oConfig
-        if self.cSetType is PhysicalCardSet:
+        super(CardSetFrame, self).__init__(oMainWindow, oConfig)
+        self._cModelType = cType
+        if self._cModelType is PhysicalCardSet:
             self._oC = PhysicalCardSetController(sName, oConfig,
                     oMainWindow, self)
-        elif self.cSetType is AbstractCardSet:
+        elif self._cModelType is AbstractCardSet:
             self._oC = AbstractCardSetController(sName, oConfig,
                     oMainWindow, self)
         else:
             raise RuntimeError("Unknown Card Set type %s" % str(cType))
 
-        self._aPlugins = []
-        for cPlugin in self._oMainWindow.plugin_manager.getCardListPlugins():
-            self._aPlugins.append(cPlugin(self._oC.view,
-                self._oC.view.getModel(), self.cSetType))
+        self.init_plugins()
 
         self._oMenu = CardSetMenu(self, self._oC, self._oMainWindow, self._oC.view,
-                sName, self.cSetType)
+                sName, self._cModelType)
         self.add_parts()
-        self.updateName(sName)
 
-        self.__oBaseStyle = self.__oTitle.get_style().copy()
-        self.__oFocStyle = self.__oTitle.get_style().copy()
-        oMap = self.__oTitle.get_colormap()
-        oHighlighted = oMap.alloc_color("purple")
-        self.__oFocStyle.fg[gtk.STATE_NORMAL] = oHighlighted
+        self.update_name(sName)
 
-    view = property(fget=lambda self: self._oC.view, doc="Associated View Object")
-    name = property(fget=lambda self: self.sSetName, doc="Frame Name")
-    type = property(fget=lambda self: self.cSetType.sqlmeta.table, doc="Frame Type")
-    menu = property(fget=lambda self: self._oMenu, doc="Frame Menu")
 
     def cleanup(self):
         """Cleanup function called before pane is removed by the
            Main Window"""
-        if self.cSetType is PhysicalCardSet:
+        if self._cModelType is PhysicalCardSet:
             self._oMainWindow.reload_pcs_list()
         else:
             self._oMainWindow.reload_acs_list()
 
-    def updateName(self, sNewName):
+    def update_name(self, sNewName):
         self.sSetName = sNewName
-        if self.cSetType is PhysicalCardSet:
-            self.__oTitle.set_text('PCS:' + self.sSetName)
+        self._sName = sNewName
+        if self._cModelType is PhysicalCardSet:
+            self.set_title('PCS:' + self.sSetName)
         else:
-            self.__oTitle.set_text('ACS:' + self.sSetName)
-
-    def add_parts(self):
-        wMbox = gtk.VBox(False, 2)
-
-        self.__oTitle = gtk.Label()
-        wMbox.pack_start(self.__oTitle, False, False)
-
-        wMbox.pack_start(self._oMenu, False, False)
-
-        oToolbar = gtk.VBox(False,2)
-        bInsertToolbar = False
-        for oPlugin in self._aPlugins:
-            oW = oPlugin.getToolbarWidget()
-            if oW is not None:
-                oToolbar.pack_start(oW, False, False)
-                bInsertToolbar = True
-        if bInsertToolbar:
-            wMbox.pack_start(oToolbar, False, False)
-
-        wMbox.pack_end(AutoScrolledWindow(self._oC.view), expand=True)
-
-        self.add(wMbox)
-        self.show_all()
-
-    def set_focussed_title(self):
-        self.__oTitle.set_style(self.__oFocStyle)
-
-    def set_unfocussed_title(self):
-        self.__oTitle.set_style(self.__oBaseStyle)
-
-    def closeCardSet(self, widget=None):
-        # FIXME: Update to frame based stuff
-        self._oMainWindow.remove_pane(self)
-        if self.cSetType is PhysicalCardSet:
-            self._oMainWindow.reload_pcs_list()
-        else:
-            self._oMainWindow.reload_acs_list()
-        self.destroy()
+            self.set_title('ACS:' + self.sSetName)
 
     def deleteCardSet(self):
         if self._oC.view.deleteCardSet():
             # Card Set was deleted, so close up
-            self.closeCardSet()
+            self.close_frame()
 
 class AbstractCardSetFrame(CardSetFrame):
     def __init__(self, oMainWindow, sName, oConfig):

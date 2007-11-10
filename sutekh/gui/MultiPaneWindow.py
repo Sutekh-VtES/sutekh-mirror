@@ -9,7 +9,7 @@ import gtk, gobject
 from sqlobject import SQLObjectNotFound
 from sutekh.core.SutekhObjectCache import SutekhObjectCache
 from sutekh.core.SutekhObjects import AbstractCard, PhysicalCardSet, \
-        AbstractCardSet
+        AbstractCardSet, PhysicalCard
 from sutekh.gui.AbstractCardListFrame import AbstractCardListFrame
 from sutekh.gui.PhysicalCardFrame import PhysicalCardFrame
 from sutekh.gui.CardTextFrame import CardTextFrame
@@ -45,7 +45,7 @@ class MultiPaneWindow(gtk.Window):
         self.show_all()
         self._iNumOpenPanes = 0
         self._oPluginManager = PluginManager()
-        self._oPluginManager.loadPlugins()
+        self._oPluginManager.load_plugins()
         # Need to keep track of open card sets globally
         self.dOpenPanes = {}
         # CardText frame is special, and there is only ever one of it
@@ -58,11 +58,11 @@ class MultiPaneWindow(gtk.Window):
                 self.add_physical_card_set(sName)
             elif sType == AbstractCardSet.sqlmeta.table:
                 self.add_abstract_card_set(sName)
-            elif sType == 'Abstract Cards':
+            elif sType == AbstractCard.sqlmeta.table:
                 self.add_abstract_card_list(None)
             elif sType == 'Card Text':
                 self.add_card_text(None)
-            elif sType == 'Physical Cards':
+            elif sType == PhysicalCard.sqlmeta.table:
                 self.add_physical_card_list(None)
             elif sType == 'Abstract Card Set List':
                 self.add_acs_list(None)
@@ -190,8 +190,6 @@ class MultiPaneWindow(gtk.Window):
         self._iNumOpenPanes += 1
         self.oVBox.show()
         self.__oMenu.del_pane_set_sensitive(True)
-        #width, height = self.get_size()
-        self._oFocussed = None
 
     def menu_remove_pane(self, oMenuWidget):
         self.remove_pane(self._oFocussed)
