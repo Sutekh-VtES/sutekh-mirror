@@ -4,10 +4,9 @@
 # GPL - see COPYING for details
 
 from sqlobject import SQLObjectNotFound
-from sqlobject.events import listen, RowUpdateSignal, RowDestroySignal
 from sutekh.gui.CardSetView import CardSetView
 from sutekh.gui.CardSetMenu import CardSetMenu
-from sutekh.gui.PhysicalCardController import ReloadSignal
+from sutekh.gui.DBSignals import ReloadSignal, listen, RowUpdateSignal, RowDestroySignal
 from sutekh.core.SutekhObjects import AbstractCardSet, PhysicalCardSet, \
         AbstractCard, PhysicalCard, MapPhysicalCardToPhysicalCardSet, \
         IExpansion, Expansion
@@ -59,17 +58,17 @@ class PhysicalCardSetController(CardSetController):
         self._sFilterType = 'PhysicalCard'
         listen(self.physical_card_deleted, PhysicalCard, RowDestroySignal)
         listen(self.physical_card_changed, PhysicalCard, RowUpdateSignal)
-        listen(self.reload_if_editable, PhysicalCard, ReloadSignal)
+        listen(self.reload_card_set, PhysicalCard, ReloadSignal)
 
-    def reload_if_editable(self, oAbsCard):
-        """If the current card set is editable, then we need to reload
-           when the physical card list changes so that the model is
-           consistent
+    def reload_card_set(self, oAbsCard):
         """
-        if self.model.bEditable:
-            aAbsCards = [x.abstractCard for x in self.__oPhysCardSet.cards]
-            if oAbsCard in aAbsCards:
-                self.view.reload_keep_expanded()
+        When changes happen that may effect this, reload.
+        Cases are when card numbers in PCS change while this is editable,
+        or the allocation of cards to physical card sets changes.
+        """
+        aAbsCards = [x.abstractCard for x in self.__oPhysCardSet.cards]
+        if oAbsCard in aAbsCards:
+            self.view.reload_keep_expanded()
 
     def physical_card_deleted(self, oPhysCard):
         """Listen on physical card removals. Needed so we can

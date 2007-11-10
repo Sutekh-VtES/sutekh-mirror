@@ -5,18 +5,12 @@
 
 import gtk
 from sqlobject import SQLObjectNotFound
-from sqlobject.events import Signal
+from sutekh.gui.DBSignals import send_reload_signal
 from sutekh.gui.PhysicalCardView import PhysicalCardView
 from sutekh.gui.PhysicalCardMenu import PhysicalCardMenu
 from sutekh.core.SutekhObjects import PhysicalCard, \
         AbstractCard, PhysicalCardSet, IExpansion, \
         MapPhysicalCardToPhysicalCardSet
-
-class ReloadSignal(Signal):
-    """Syncronisation signal for card sets. Needs to be sent after
-       changes are commited to the database, so card sets can reload
-       properly
-    """
 
 class PhysicalCardController(object):
     def __init__(self, oFrame, oConfig, oMainWindow):
@@ -63,7 +57,7 @@ class PhysicalCardController(object):
                         self.model.decCardExpansionByName(oC.name, None)
                         self.model.decCardByName(oC.name)
                         PhysicalCard.delete(oPhysCard.id)
-                        PhysicalCard.sqlmeta.send(ReloadSignal, oC)
+                        send_reload_signal(oC)
                         return True
                     else:
                         aCandsExpansion.append(oPhysCard)
@@ -74,7 +68,7 @@ class PhysicalCardController(object):
                 self.model.decCardExpansionByName(oC.name, oPhysCard.expansion.name)
                 self.model.decCardByName(oC.name)
                 PhysicalCard.delete(oPhysCard.id)
-                PhysicalCard.sqlmeta.send(ReloadSignal, oC)
+                send_reload_signal(oC)
                 return True
             # All physical cards are assigned to PhysicalCardSets, so find the
             # one in the fewest
@@ -107,7 +101,7 @@ class PhysicalCardController(object):
                 self.model.decCardByName(oC.name)
                 PhysicalCard.delete(oPhysCard.id)
                 # SQLObject Events should take care of updating any open card sets
-                PhysicalCard.sqlmeta.send(ReloadSignal, oC)
+                send_reload_signal(oC)
         else:
             # We are fiddling between the expansions
             oThisExpansion = IExpansion(sExpansion)
@@ -121,7 +115,7 @@ class PhysicalCardController(object):
             # Update model
             self.model.decCardExpansionByName(oC.name, sExpansion)
             self.model.incCardExpansionByName(oC.name, None)
-            PhysicalCard.sqlmeta.send(ReloadSignal, oC)
+            send_reload_signal(oC)
             return True
 
     def incCard(self, sName, sExpansion):
@@ -144,7 +138,7 @@ class PhysicalCardController(object):
             oPC = PhysicalCard(abstractCard=oC, expansion=None)
             self.model.incCardByName(oC.name)
             self.model.incCardExpansionByName(oC.name, sExpansion)
-            PhysicalCard.sqlmeta.send(ReloadSignal, oC)
+            send_reload_signal(oC)
         else:
             # We are fiddling between the expansions
             # Find a card with no expansion
@@ -158,7 +152,7 @@ class PhysicalCardController(object):
             # Update model
             self.model.decCardExpansionByName(oC.name, None)
             self.model.incCardExpansionByName(oC.name, sExpansion)
-            PhysicalCard.sqlmeta.send(ReloadSignal, oC)
+            send_reload_signal(oC)
         return True
 
     def set_card_text(self, sCardName):
