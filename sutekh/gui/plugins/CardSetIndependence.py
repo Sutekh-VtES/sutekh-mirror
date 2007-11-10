@@ -10,70 +10,68 @@ from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.ScrolledList import ScrolledList
 
 class CardSetIndependence(CardListPlugin):
-    dTableVersions = {AbstractCardSet : [1,2,3],
-                      PhysicalCardSet : [1,2,3]}
+    dTableVersions = {AbstractCardSet : [1, 2, 3],
+                      PhysicalCardSet : [1, 2, 3]}
     aModelsSupported = [AbstractCardSet,
             PhysicalCardSet]
-    def getMenuItem(self):
+
+    def get_menu_item(self):
         """
         Overrides method from base class.
         """
-        if not self.checkVersions() or not self.checkModelType():
+        if not self.check_versions() or not self.check_model_type():
             return None
         iDF = gtk.MenuItem("Test Card Set Independence")
         iDF.connect("activate", self.activate)
         return iDF
 
-    def getDesiredMenu(self):
+    def get_desired_menu(self):
         return "Plugins"
 
     def activate(self, oWidget):
-        oDlg = self.makeDialog()
+        oDlg = self.make_dialog()
         oDlg.run()
 
-    def makeDialog(self):
+    def make_dialog(self):
         """
         Create the list of card sets to select
         """
-        parent = self.view.getWindow()
-        self.oDlg = gtk.Dialog("Choose Card Sets to Test",parent,
+        oParent = self.view.getWindow()
+        self.oDlg = gtk.Dialog("Choose Card Sets to Test", oParent,
                           gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                           (gtk.STOCK_OK, gtk.RESPONSE_OK,
                            gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
         if self._cModelType is AbstractCardSet:
             oSelect = AbstractCardSet.select().orderBy('name')
-            self.csFrame = ScrolledList('Abstract Card Sets')
+            self.oCSList = ScrolledList('Abstract Card Sets')
         elif self._cModelType is PhysicalCardSet:
             oSelect = PhysicalCardSet.select().orderBy('name')
-            self.csFrame = ScrolledList('Physical Card Sets')
+            self.oCSList = ScrolledList('Physical Card Sets')
         else:
             return
-        self.oDlg.vbox.pack_start(self.csFrame)
-        self.csFrame.set_size_request(150,300)
-        for cs in oSelect:
-            if cs.name != self.view.sSetName:
-                iter = self.csFrame.get_list().append(None)
-                self.csFrame.get_list().set(iter,0,cs.name)
-        self.oDlg.connect("response", self.handleResponse)
+        self.oDlg.vbox.pack_start(self.oCSList)
+        self.oCSList.set_size_request(150, 300)
+        aNames = [oCS.name for oCS in oSelect if oCS.name != self.view.sSetName]
+        self.oCSList.fill_list(aNames)
+        self.oDlg.connect("response", self.handle_response)
         self.oDlg.show_all()
         return self.oDlg
 
-    def handleResponse(self,oWidget,oResponse):
+    def handle_response(self, oWidget, oResponse):
         if oResponse ==  gtk.RESPONSE_OK:
             aCardSetNames = [self.view.sSetName]
-            dSelect = {}
-            self.csFrame.get_selection(aCardSetNames, dSelect)
+            aCardSetNames.extend(self.oCSList.get_selection())
             if self._cModelType is AbstractCardSet:
-                self.testAbstractCardSets(aCardSetNames)
+                self.test_abstract_card_sets(aCardSetNames)
             else:
-                self.testPhysicalCardSets(aCardSetNames)
+                self.test_physical_card_sets(aCardSetNames)
         self.oDlg.destroy()
 
-    def testAbstractCardSets(self, aCardSetNames):
+    def test_abstract_card_sets(self, aCardSetNames):
         """Test if all the Abstract Cards selected can be realised
             independently"""
         dMissing = {}
-        dFullCardList = self.__getAbstractCardSetList(aCardSetNames)
+        dFullCardList = self.__get_abstract_card_set_list(aCardSetNames)
         for iCardId, (sCardName, iCount) in dFullCardList.iteritems():
             oPC = list(PhysicalCard.selectBy(abstractCardID=iCardId))
             if iCount > len(oPC):
@@ -91,10 +89,10 @@ class CardSetIndependence(CardListPlugin):
         Results.run()
         Results.destroy()
 
-    def testPhysicalCardSets(self, aCardSetNames):
+    def test_physical_card_sets(self, aCardSetNames):
         """Test if the Physical Card Sets are actaully independent by
            looking for cards common to the sets"""
-        dFullCardList = self.__getPhysicalCardSetList(aCardSetNames)
+        dFullCardList = self.__get_physical_card_set_list(aCardSetNames)
         dMissing = {}
         for oCard, (sName, iCount) in dFullCardList:
             if iCount > 1:
@@ -117,9 +115,7 @@ class CardSetIndependence(CardListPlugin):
         Results.run()
         Results.destroy()
 
-
-
-    def __getAbstractCardSetList(self, aCardSetNames):
+    def __get_abstract_card_set_list(self, aCardSetNames):
         dFullCardList = {}
         for sName in aCardSetNames:
             oFilter = AbstractCardSetFilter(sName)
@@ -132,7 +128,7 @@ class CardSetIndependence(CardListPlugin):
                     dFullCardList[oAC.id] = [oAC.name, 1]
         return dFullCardList
 
-    def __getPhysicalCardSetList(self, aCardSetNames):
+    def __get_physical_card_set_list(self, aCardSetNames):
         dFullCardList = {}
         for sName in aCardSetNames:
             oFilter = PhysicalCardSetFilter(sName)

@@ -23,21 +23,21 @@ class CountCardSetCards(CardListPlugin,CardListModelListener):
 
         # We only add listeners to windows we're going to display the toolbar
         # on
-        if self.checkVersions() and self.checkModelType():
+        if self.check_versions() and self.check_model_type():
             self.model.addListener(self)
 
-    def __idCard(self,oCard):
+    def __id_card(self,oCard):
         sType = list(oCard.cardtype)[0].name
         if sType == 'Vampire' or sType == 'Imbued':
             return 'Crypt'
         else:
             return 'Library'
 
-    def getToolbarWidget(self):
+    def get_toolbar_widget(self):
         """
         Overrides method from base class.
         """
-        if not self.checkVersions() or not self.checkModelType():
+        if not self.check_versions() or not self.check_model_type():
             return None
 
         self.oTextLabel = gtk.Label('Total Cards : 0 Crypt Cards : 0 Library Cards : 0')
@@ -48,7 +48,7 @@ class CountCardSetCards(CardListPlugin,CardListModelListener):
 
         return self.oTextLabel
 
-    def updateNumbers(self):
+    def update_numbers(self):
         self.oTextLabel.set_markup('Total Cards : <b>' + str(self.__iTot) +
                 '</b>  Crypt Cards : <b>' + str(self.__iCrypt) +
                 '</b> Library Cards : <b>' + str(self.__iLibrary) + '</b>')
@@ -58,26 +58,26 @@ class CountCardSetCards(CardListPlugin,CardListModelListener):
         self.__iLibrary = 0
         self.__iTot = len(aAbsCards)
         for oAbsCard in aAbsCards:
-            if self.__idCard(oAbsCard) == 'Crypt':
+            if self.__id_card(oAbsCard) == 'Crypt':
                 self.__iCrypt += 1
             else:
                 self.__iLibrary += 1
-        self.updateNumbers()
+        self.update_numbers()
 
     def alterCardCount(self, oCard, iChg):
         self.__iTot += iChg
-        if self.__idCard(oCard) == 'Crypt':
+        if self.__id_card(oCard) == 'Crypt':
             self.__iCrypt += iChg
         else:
             self.__iLibrary += iChg
-        self.updateNumbers()
+        self.update_numbers()
 
     def addNewCard(self, oCard):
         self.__iTot += 1
-        if self.__idCard(oCard) == 'Crypt':
+        if self.__id_card(oCard) == 'Crypt':
             self.__iCrypt += 1
         else:
             self.__iLibrary += 1
-        self.updateNumbers()
+        self.update_numbers()
 
 plugin = CountCardSetCards
