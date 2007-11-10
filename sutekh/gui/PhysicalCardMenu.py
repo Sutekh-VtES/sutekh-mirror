@@ -6,6 +6,7 @@
 
 import gtk
 from sutekh.gui.ExportDialog import ExportDialog
+from sutekh.gui.EditPhysicalCardMappingDialog import EditPhysicalCardMappingDialog
 from sutekh.io.XmlFileHandling import PhysicalCardXmlFile
 
 class PhysicalCardMenu(gtk.MenuBar, object):
@@ -54,6 +55,10 @@ class PhysicalCardMenu(gtk.MenuBar, object):
         iClose = gtk.MenuItem("Close List")
         wMenu.add(iClose)
         iClose.connect("activate", self.close_list)
+
+        iEditAllocation = gtk.MenuItem('Edit allocation of cards to PCS')
+        wMenu.add(iEditAllocation)
+        iEditAllocation.connect('activate', self.do_edit_card_set_allocation)
 
         self.add(iMenu)
 
@@ -109,6 +114,15 @@ class PhysicalCardMenu(gtk.MenuBar, object):
 
     def setApplyFilter(self, bState):
         self.iApply.set_active(bState)
+
+    def do_edit_card_set_allocation(self, oWidget):
+        """Popup the edit allocation dialog"""
+        dSelectedCards = self.__oC.view.process_selection()
+        if len(dSelectedCards) == 0:
+            return
+        oEditAllocation = EditPhysicalCardMappingDialog(self.__oWindow,
+                dSelectedCards)
+        oEditAllocation.run()
 
     def toggleApply(self, oWidget):
         self.__oC.view.runFilter(oWidget.active)
