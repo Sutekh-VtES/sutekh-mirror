@@ -6,7 +6,6 @@
 import gtk, pango
 from sutekh.gui.CardListModel import CardListModel
 from sutekh.gui.FilterDialog import FilterDialog
-from sutekh.gui.PopupMenu import PopupMenu
 from sutekh.gui.CellRendererSutekhButton import CellRendererSutekhButton
 
 class CardListView(gtk.TreeView, object):
