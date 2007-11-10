@@ -17,11 +17,11 @@ class PhysicalCardMenu(gtk.MenuBar, object):
         self.__oFrame = oFrame
 
         self.__dMenus = {}
-        self.__createPCLMenu()
-        self.__createFilterMenu()
-        self.__createPluginMenu()
+        self.__create_PCL_menu()
+        self.__create_filter_menu()
+        self.__create_plugin_menu()
 
-    def __createPCLMenu(self):
+    def __create_PCL_menu(self):
         # setup sub menu
         iMenu = gtk.MenuItem("Physical Card List Actions")
         wMenu = gtk.Menu()
@@ -62,7 +62,7 @@ class PhysicalCardMenu(gtk.MenuBar, object):
 
         self.add(iMenu)
 
-    def __createFilterMenu(self):
+    def __create_filter_menu(self):
         # setup sub menu
         iMenu = gtk.MenuItem("Filter")
         wMenu = gtk.Menu()
@@ -80,7 +80,7 @@ class PhysicalCardMenu(gtk.MenuBar, object):
         self.iApply.connect('toggled', self.toggleApply)
         self.add(iMenu)
 
-    def __createPluginMenu(self):
+    def __create_plugin_menu(self):
         # setup sub menu
         iMenu = gtk.MenuItem("Plugins")
         wMenu = gtk.Menu()
@@ -88,9 +88,9 @@ class PhysicalCardMenu(gtk.MenuBar, object):
         iMenu.set_submenu(wMenu)
         # plugins
         for oPlugin in self.__oFrame._aPlugins:
-            oMI = oPlugin.getMenuItem()
+            oMI = oPlugin.get_menu_item()
             if oMI is not None:
-                sMenu = oPlugin.getDesiredMenu()
+                sMenu = oPlugin.get_desired_menu()
                 # Add to the requested menu if supplied
                 if sMenu in self.__dMenus.keys():
                     self.__dMenus[sMenu].add(oMI)

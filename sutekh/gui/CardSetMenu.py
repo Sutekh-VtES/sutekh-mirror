@@ -25,11 +25,11 @@ class CardSetMenu(gtk.MenuBar, object):
         else:
             self.__sMenuType = 'Physical'
         self.__dMenus = {}
-        self.__createCardSetMenu()
-        self.__createFilterMenu()
-        self.__createPluginMenu()
+        self.__create_card_set_menu()
+        self.__create_filter_menu()
+        self.__create_plugin_menu()
 
-    def __createCardSetMenu(self):
+    def __create_card_set_menu(self):
         iMenu = gtk.MenuItem(self.__sMenuType+" Card Set Actions")
         wMenu = gtk.Menu()
         self.__dMenus["CardSet"] = wMenu
@@ -87,7 +87,7 @@ class CardSetMenu(gtk.MenuBar, object):
         self.__iClose.get_child().set_label("Close Card Set ("+self.sSetName+")")
         self.__iDelete.get_child().set_label("Delete Card Set ("+self.sSetName+")")
 
-    def __createFilterMenu(self):
+    def __create_filter_menu(self):
         # setup sub menun
         iMenu = gtk.MenuItem("Filter")
         wMenu = gtk.Menu()
@@ -106,16 +106,16 @@ class CardSetMenu(gtk.MenuBar, object):
         iMenu.set_submenu(wMenu)
         self.add(iMenu)
 
-    def __createPluginMenu(self):
+    def __create_plugin_menu(self):
         # setup sub menu
         iMenu = gtk.MenuItem("Plugins")
         wMenu = gtk.Menu()
         self.__dMenus["Plugins"] = wMenu
         # plugins
         for oPlugin in self.__oFrame._aPlugins:
-            oMI = oPlugin.getMenuItem()
+            oMI = oPlugin.get_menu_item()
             if oMI is not None:
-                sMenu = oPlugin.getDesiredMenu()
+                sMenu = oPlugin.get_desired_menu()
                 # Add to the requested menu if supplied
                 if sMenu in self.__dMenus.keys():
                     self.__dMenus[sMenu].add(oMI)
@@ -147,7 +147,7 @@ class CardSetMenu(gtk.MenuBar, object):
                 oCS.name = sName
                 self.__oView.sSetName = sName
                 self.sSetName = sName
-                self.__oWindow.updateName(self.sSetName)
+                self.__oFrame.update_name(self.sSetName)
                 self.__updateCardSetMenu()
                 oCS.syncUpdate()
         if sAuthor is not None:
@@ -178,7 +178,7 @@ class CardSetMenu(gtk.MenuBar, object):
             oW.write(self.sSetName)
 
     def cardSetClose(self,widget):
-        self.__oFrame.closeCardSet(widget)
+        self.__oFrame.close_frame(widget)
 
     def cardSetDelete(self,widget):
         self.__oFrame.deleteCardSet()

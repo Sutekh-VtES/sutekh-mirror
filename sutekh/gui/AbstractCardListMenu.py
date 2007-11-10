@@ -23,11 +23,11 @@ class AbstractCardListMenu(gtk.MenuBar, object):
         self.__oFrame = oFrame
         self.__dMenus = {}
 
-        self.__createACLMenu()
-        self.__createFilterMenu()
-        self.__createPluginMenu()
+        self.__create_ACL_menu()
+        self.__create_filter_menu()
+        self.__create_plugin_menu()
 
-    def __createACLMenu(self):
+    def __create_ACL_menu(self):
         # setup sub menu
         iMenu = gtk.MenuItem("Abstract Card List Actions")
         wMenu = gtk.Menu()
@@ -49,7 +49,7 @@ class AbstractCardListMenu(gtk.MenuBar, object):
 
         self.add(iMenu)
 
-    def __createFilterMenu(self):
+    def __create_filter_menu(self):
         # setup sub menu
         iMenu = gtk.MenuItem("Filter")
         wMenu = gtk.Menu()
@@ -67,7 +67,7 @@ class AbstractCardListMenu(gtk.MenuBar, object):
         self.iApply.connect('toggled', self.toggleApply)
         self.add(iMenu)
 
-    def __createPluginMenu(self):
+    def __create_plugin_menu(self):
         # setup sub menu
         iMenu = gtk.MenuItem("Plugins")
         wMenu = gtk.Menu()
@@ -75,9 +75,9 @@ class AbstractCardListMenu(gtk.MenuBar, object):
         iMenu.set_submenu(wMenu)
         # plugins
         for oPlugin in self.__oFrame._aPlugins:
-            oMI = oPlugin.getMenuItem()
+            oMI = oPlugin.get_menu_item()
             if oMI is not None:
-                sMenu = oPlugin.getDesiredMenu()
+                sMenu = oPlugin.get_desired_menu()
                 # Add to the requested menu if supplied
                 if sMenu in self.__dMenus.keys():
                     self.__dMenus[sMenu].add(oMI)

@@ -17,7 +17,7 @@ class PluginManager(object):
     def __init__(self):
         self._aCardListPlugins = []
 
-    def loadPlugins(self):
+    def load_plugins(self):
         """
         Load list of Plugin Classes from plugin dir.
         """
@@ -46,7 +46,7 @@ class PluginManager(object):
             if issubclass(cPlugin, CardListPlugin):
                 self._aCardListPlugins.append(cPlugin)
 
-    def getCardListPlugins(self):
+    def get_card_list_plugins(self):
         return list(self._aCardListPlugins)
 
 class CardListPlugin(object):
@@ -67,32 +67,32 @@ class CardListPlugin(object):
     view = property(fget=lambda self: self._oView, doc="Associated CardListView object.")
     model = property(fget=lambda self: self._oModel, doc="Associated CardModel object.")
 
-    def getMenuItem(self):
+    def get_menu_item(self):
         """
         Return a gtk.MenuItem for the plugin or None if no menu item is needed.
         """
         return None
 
-    def getToolbarWidget(self):
+    def get_toolbar_widget(self):
         """
         Return an arbitary gtk.Widget which is added to a VBox between the menu
         and the scrolled display area. Return None is no toolbar Widget is needed
         """
         return None
 
-    def getDesiredMenu(self):
+    def get_desired_menu(self):
         """
         Return the name of the menu this plugin should be added to, or None
         if no menu item is needed.
         """
         return None
 
-    def checkModelType(self):
+    def check_model_type(self):
         if self._cModelType in self.aModelsSupported:
             return True
         return False
 
-    def checkVersions(self):
+    def check_versions(self):
         oDBVer = DatabaseVersion()
         for sTableName, aVersions in self.dTableVersions.iteritems():
             iCurVer = oDBVer.getVersion(sTableName)
