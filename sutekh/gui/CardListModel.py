@@ -474,7 +474,7 @@ class CardListModel(gtk.TreeStore):
 
         oCardIter = oFullFilter.select(self.cardclass).distinct()
 
-        fGetCard, fGetCount, fGetExpanInfo, oGroupedIter = self.groupedCardIterator(oCardIter)
+        fGetCard, fGetCount, fGetExpanInfo, oGroupedIter, aAbsCards = self.groupedCardIterator(oCardIter)
         # Iterate over groups
         for sGroup, oGroupIter in oGroupedIter:
             # Check for null group
