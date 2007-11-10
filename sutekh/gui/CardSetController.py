@@ -27,12 +27,6 @@ class CardSetController(object):
     def getWin(self):
         return self.__oWin
 
-    def getMenu(self):
-        return self._oMenu
-
-    def getPlugins(self):
-        return self.__aPlugins
-
     def set_card_text(self,sCardName):
         self._oMainWindow.set_card_text(sCardName)
 

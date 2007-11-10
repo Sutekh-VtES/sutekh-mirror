@@ -24,9 +24,6 @@ class PhysicalCardController(object):
     frame = property(fget=lambda self: self.__oFrame, doc="Associated Frame")
     filtertype = property(fget=lambda self: self._sFilterType, doc="Associated Type")
 
-    def getView(self):
-        return self.__oView
-
     def decCard(self, sName, sExpansion):
         """
         Returns True if a card was successfully removed, False otherwise.
