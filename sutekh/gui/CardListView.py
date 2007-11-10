@@ -10,8 +10,8 @@ from sutekh.gui.PopupMenu import PopupMenu
 from sutekh.gui.CellRendererSutekhButton import CellRendererSutekhButton
 
 class CardListView(gtk.TreeView, object):
-    def __init__(self, oController, oMainWindow, oConfig):
-        self._oModel = CardListModel()
+    def __init__(self, oController, oMainWindow, oConfig, oModel):
+        self._oModel = oModel
         self._oC = oController
         self._oMainWin = oMainWindow
         self._oConfig = oConfig
@@ -86,7 +86,7 @@ class CardListView(gtk.TreeView, object):
         # See what's expanded
         dExpandedDict = {}
         self._oModel.foreach(self.__get_row_status, dExpandedDict)
-        # Reload
+        # Reload, but use cached info
         self.load()
         # Re-expand stuff
         self.__set_row_status(dExpandedDict)
@@ -221,7 +221,7 @@ class CardListView(gtk.TreeView, object):
         oModel, oPathList = self._oSelection.get_selected_rows()
         dSelectedData = {}
         for oPath in oPathList:
-            sCardName, sExpansion, iCount, iDepth = oModel.getAllFromPath(oPath)
+            sCardName, sExpansion, iCount, iDepth = oModel.get_all_from_path(oPath)
             if iDepth == 0:
                 # Skip top level items, since dragging them is meaningless
                 continue
@@ -276,8 +276,8 @@ class CardListView(gtk.TreeView, object):
         pass
 
 class EditableCardListView(CardListView):
-    def __init__(self, oController, oWindow, oConfig):
-        super(EditableCardListView, self).__init__(oController, oWindow, oConfig)
+    def __init__(self, oController, oWindow, oConfig, oModel):
+        super(EditableCardListView, self).__init__(oController, oWindow, oConfig, oModel)
 
         # Setup columns for default view
         oCell1 = gtk.CellRendererText()

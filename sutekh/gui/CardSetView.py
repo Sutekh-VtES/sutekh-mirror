@@ -5,6 +5,7 @@
 
 import gtk
 from sutekh.gui.CardListView import EditableCardListView
+from sutekh.gui.CardListModel import PhysicalCardSetCardListModel, CardListModel
 from sutekh.core.Filters import PhysicalCardSetFilter, AbstractCardSetFilter
 from sutekh.core.SutekhObjects import PhysicalCard, PhysicalCardSet, \
         AbstractCardSet, MapAbstractCardToAbstractCardSet
@@ -12,22 +13,18 @@ from sutekh.SutekhUtility import delete_physical_card_set, delete_abstract_card_
 
 class CardSetView(EditableCardListView):
     def __init__(self, oMainWindow, oController, sName, cSetType, oConfig):
-        super(CardSetView, self).__init__(oController, oMainWindow, oConfig)
-        self.sSetName = sName
-        self.cSetType = cSetType
         if cSetType is PhysicalCardSet:
             # cardclass is the actual physicalcard
-            self._oModel.cardclass = PhysicalCard
-            self._oModel.basefilter = PhysicalCardSetFilter(self.sSetName)
-            self._oModel.bExpansions = True
+            oModel = PhysicalCardSetCardListModel(sName)
         elif cSetType is AbstractCardSet:
             # Need MapAbstractCardToAbstractCardSet here, so filters do the right hing
+            oModel = CardListModel()
+        super(CardSetView, self).__init__(oController, oMainWindow, oConfig, oModel)
+        self.sSetName = sName
+        self.cSetType = cSetType
+        if cSetType is AbstractCardSet:
             self._oModel.cardclass = MapAbstractCardToAbstractCardSet
             self._oModel.basefilter = AbstractCardSetFilter(self.sSetName)
-        else:
-            # Should this be an error condition?
-            self._oModel.basefilter = None
-
         self.sDragPrefix = self.cSetType.sqlmeta.table + ":" + self.sSetName
         self.load()
 

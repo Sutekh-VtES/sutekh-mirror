@@ -21,8 +21,6 @@ def norm_path(oPath):
         oNormPath = oPath
     return oNormPath
 
- 
-
 class CardListModelListener(object):
     """
     Listens to updates, i.e. .load(...), .alterCardCount(...), .addNewCard(..) calls,
@@ -31,6 +29,7 @@ class CardListModelListener(object):
     def load(self):
         """
         The CardListModel has reloaded itself.
+        aAbsCards is a list of the AbstractCards in the set.
         """
         pass
 
@@ -79,7 +78,6 @@ class CardListModel(gtk.TreeStore):
         self._dNameExpansion2Iter = {}
 
         self.cardclass = AbstractCard # card class to use
-        self.listenclass = AbstractCard # card class to listen for events on
         self.groupby = CardTypeGrouping # grouping class to use
         self.basefilter = None # base filter defines the card list
         self.applyfilter = False # whether to apply the select filter
@@ -90,9 +88,7 @@ class CardListModel(gtk.TreeStore):
         self.bExpansions = False
         self.bEditable = False
 
-    store = property(fget=lambda self: self._oGtkStore)
     cardclass = property(fget=lambda self: self._cCardClass, fset=lambda self, x: setattr(self, '_cCardClass', x))
-    listenclass = property(fget=lambda self: self._cListenClass, fset=lambda self, x: setattr(self, '_cListenClass', x))
     groupby = property(fget=lambda self: self._cGroupBy, fset=lambda self, x: setattr(self, '_cGroupBy', x))
     basefilter = property(fget=lambda self: self._oBaseFilter, fset=lambda self, x: setattr(self, '_oBaseFilter', x))
     applyfilter = property(fget=lambda self: self._bApplyFilter, fset=lambda self, x: setattr(self, '_bApplyFilter', x))
@@ -104,16 +100,30 @@ class CardListModel(gtk.TreeStore):
     def removeListener(self, oListener):
         del self.listeners[oListener]
 
-    def check_inc_card(self, oCard, iCnt):
+    def check_inc_dec_card(self, oCard, iCnt):
         """Helper function to check whether card can be incremented"""
-        if type(self.basefilter) is PhysicalCardSetFilter:
-            # Can't inc if there are no physical cards
-            bIncCard = iCnt < PhysicalCard.selectBy(abstractCardID=oCard.id).count()
+        if self.bEditable:
+            return True, iCnt > 0
         else:
-            # always possible for PhysicalCardList and 
-            # AbstractCardSet's 
-            bIncCard = True
-        return bIncCard
+            return False, False
+
+    def check_inc_dec_expansion(self, oCard, sExpansion, iCnt):
+        """Helper function to check status of expansions"""
+        # No-op for AbtractCardList and AbstractCardSet
+        return False, False
+
+    def get_add_card_expansion_info(oCard, dExpanInfo):
+        """Get the expansions to list for a newly added card"""
+        return []
+
+    def get_expansion_info(self, oCard, dExpanInfo):
+        """Get information about expansions"""
+        # For AbstractCardSets and the AbstractCardList, this is basically a NOP
+        return {}
+
+    def check_expansion_iter_stays(self, oCard, sExpansion, iCnt):
+        """Check if the expansion entry should remain in the table"""
+        return False
 
     def load(self):
         """
@@ -144,33 +154,27 @@ class CardListModel(gtk.TreeStore):
                 oCard, iCnt = fGetCard(oItem), fGetCount(oItem)
                 iGrpCnt += iCnt
                 oChildIter = self.append(oSectionIter)
-                if self.bEditable:
-                    bDecCard = True
-                    bIncCard = self.check_inc_card(oCard, iCnt)
-                else:
-                    bIncCard = False
-                    bDecCard = False
+                bIncCard, bDecCard = self.check_inc_dec_card(oCard, iCnt)
                 self.set(oChildIter,
                     0, oCard.name,
                     1, iCnt,
                     2, bIncCard,
                     3, bDecCard
                 )
-                if self.bExpansions:
-                    # fill in the numbers for all possible expansions for
-                    # the card
-                    dExpansionInfo = self.getExpansionInfo(oCard, fGetExpanInfo(oItem))
-                    for sExpansion in sorted(dExpansionInfo.keys()):
-                        oExpansionIter = self.append(oChildIter)
-                        iExpCnt, bDecCard, bIncCard = dExpansionInfo[sExpansion]
-                        self.set(oExpansionIter,
-                                0, sExpansion,
-                                1, iExpCnt,
-                                2, bIncCard,
-                                3, bDecCard)
-                        self._dNameExpansion2Iter.setdefault(oCard.name, 
-                                {}).setdefault(sExpansion, 
-                                        []).append(oExpansionIter)
+                dExpansionInfo = self.get_expansion_info(oCard, fGetExpanInfo(oItem))
+                # fill in the numbers for all possible expansions for
+                # the card
+                for sExpansion in sorted(dExpansionInfo.keys()):
+                    oExpansionIter = self.append(oChildIter)
+                    iExpCnt, bDecCard, bIncCard = dExpansionInfo[sExpansion]
+                    self.set(oExpansionIter,
+                            0, sExpansion,
+                            1, iExpCnt,
+                            2, bIncCard,
+                            3, bDecCard)
+                    self._dNameExpansion2Iter.setdefault(oCard.name, 
+                            {}).setdefault(sExpansion, 
+                                    []).append(oExpansionIter)
                 self._dName2Iter.setdefault(oCard.name, []).append(oChildIter)
 
             # Update Group Section
@@ -184,82 +188,6 @@ class CardListModel(gtk.TreeStore):
         # Notify Listeners
         for oListener in self.listeners:
             oListener.load()
-
-    def check_inc_dec_expansion(self, oCard, sExpansion, iCnt):
-        if type(self.basefilter) is PhysicalCardSetFilter:
-            if sExpansion != self.sUnknownExpansion:
-                iThisExpID = IExpansion(sExpansion).id
-                iCardCnt = PhysicalCard.selectBy(abstractCardID=oCard.id,
-                        expansionID=iThisExpID).count()
-            else:
-                iCardCnt = PhysicalCard.selectBy(abstractCardID=oCard.id,
-                        expansionID=None).count()
-            bDecCard = iCnt > 0
-            bIncCard = iCnt < iCardCnt
-        else:
-            if sExpansion != self.sUnknownExpansion:
-                bDecCard = iCnt > 0
-                bIncCard = PhysicalCard.selectBy(abstractCardID=oCard.id,
-                        expansionID=None).count() > 0
-            else:
-                bDecCard = False
-                bIncCard = False
-        return bIncCard, bDecCard
-
-    def getExpansionInfo(self, oCard, dExpanInfo):
-        # We always list Unspecfied expansions, even when there
-        # are none
-        dExpansions = {}
-        if self.bEditable:
-            # All possible expansions listed in the dictionary when editing
-            if type(self.basefilter) is PhysicalCardSetFilter:
-                dCount = {}
-                for oPC in PhysicalCard.selectBy(abstractCardID=oCard.id):
-                    if oPC.expansion is not None:
-                        sName = oPC.expansion.name
-                    else:
-                        sName = self.sUnknownExpansion
-                    # There is a card here, so by default incCard must be true
-                    dExpansions.setdefault(sName, [0, False, True])
-                    dCount.setdefault(sName, 0)
-                    dCount[sName] += 1
-            else:
-                # None entry always shows for Physical Card List when editable
-                dExpansions = {self.sUnknownExpansion : [0, False, False]}
-                # We don't need the join filter's give us, since we have oCard
-                iNoneCnt = PhysicalCard.selectBy(abstractCardID=oCard.id,
-                        expansionID=None).count()
-                for oP in oCard.rarity:
-                    dExpansions.setdefault(oP.expansion.name, [0, False, iNoneCnt > 0])
-        for oExpansion, iCnt in dExpanInfo.iteritems():
-            bDecCard = False
-            bIncCard = False
-            if oExpansion is not None:
-                sKey = oExpansion.name
-            else:
-                sKey = self.sUnknownExpansion
-            if self.bEditable:
-                if type(self.basefilter) is PhysicalCardSetFilter:
-                    if sKey in dCount.keys():
-                        iCardCnt = dCount[sKey]
-                    else:
-                        iCardCnt = 0
-                    bDecCard = iCnt > 0
-                    # Cards of the expansion available to select
-                    bIncCard = iCnt < iCardCnt 
-                else:
-                    if oExpansion is not None:
-                        bDecCard = iCnt > 0
-                        # Can only increase a expansion if there are unknown
-                        # cards to move across
-                        bIncCard = iNoneCnt > 0
-                    # For PhysicalCardList, we never touch Unknown directly
-                    # It's manipulated by changing other expansions
-            dExpansions[sKey] = [iCnt, bDecCard, bIncCard]
-        return dExpansions
-
-    def listenIncCard(self, sCardName, iChg):
-        """listen for a IncCard Signal on listenclass"""
 
     def getCardIterator(self, oFilter):
         """
@@ -335,7 +263,7 @@ class CardListModel(gtk.TreeStore):
             oIter = self.get_iter(norm_path(oPath)[0:2])
         return self.getNameFromIter(oIter)
 
-    def getAllFromPath(self, oPath):
+    def get_all_from_path(self, oPath):
         """
         Get all relevent information about the current path.
         Returns the tuple (CardName, Expansion info, Card Count,
@@ -349,7 +277,7 @@ class CardListModel(gtk.TreeStore):
             sExpansion = self.get_value(oIter, 0)
         else:
             sName = self.getNameFromIter(oIter)
-            sExpansion = self.sUnknownExpansion
+            sExpansion = None
         iCount = self.get_value(oIter, 1)
         return sName, sExpansion, iCount, iDepth
 
@@ -427,29 +355,6 @@ class CardListModel(gtk.TreeStore):
         if self._dName2Iter.has_key(sCardName):
             self.alterCardCount(sCardName, -1)
 
-    def check_expansion_iter_stays(self, oCard, sExpansion, iCnt):
-        """Check if the expansion entry should remain in the table"""
-        if iCnt > 0:
-            # Trivially so
-            return True
-        if self.bEditable:
-            if type(self.basefilter) is not PhysicalCardSetFilter:
-                # All expansions visible when editing PhysicalCardList
-                return True
-            else:
-                # Only stays visible if cards in the PhysicalCardList with this expansion
-                if sExpansion != self.sUnknownExpansion:
-                    iThisExpID = IExpansion(sExpansion).id
-                    iCardCnt = PhysicalCard.selectBy(abstractCardID=oCard.id,
-                            expansionID=iThisExpID).count()
-                else:
-                    iCardCnt = PhysicalCard.selectBy(abstractCardID=oCard.id,
-                            expansionID=None).count()
-                return iCardCnt > 0
-        else:
-            # Not editable, and iCnt == 0, so remove
-            return False
-
     def add_new_card_expansion(self, sCardName, sExpansion):
         """Add a card with expansion to the model"""
         oCard = IAbstractCard(sCardName)
@@ -525,11 +430,9 @@ class CardListModel(gtk.TreeStore):
 
             if iCnt > 0:
                 self.set(oIter, 1, iCnt)
-                if self.bEditable:
-                    # Same logic as in load
-                    bIncCard = self.check_inc_card(oCard, iCnt)
-                    self.set(oIter, 2, bIncCard)
-                    self.set(oIter, 3, True)
+                bIncCard, bDecCard = self.check_inc_dec_card(oCard, iCnt)
+                self.set(oIter, 2, bIncCard)
+                self.set(oIter, 3, bDecCard)
             else:
                 # Going away, so clean up expansions if needed
                 if self._dNameExpansion2Iter.has_key(sCardName):
@@ -593,12 +496,7 @@ class CardListModel(gtk.TreeStore):
                 oCard, iCnt = fGetCard(oItem), fGetCount(oItem)
                 iGrpCnt += iCnt
                 oChildIter = self.append(oSectionIter)
-                if self.bEditable:
-                    bDecCard = True
-                    bIncCard = self.check_inc_card(oCard, iCnt)
-                else:
-                    bDecCard = False
-                    bIncCard = False
+                bIncCard, bDecCard = self.check_inc_dec_card(oCard, iCnt)
                 self.set(oChildIter,
                     0, oCard.name,
                     1, iCnt,
@@ -607,51 +505,22 @@ class CardListModel(gtk.TreeStore):
                 )
                 self._dName2Iter.setdefault(oCard.name, []).append(oChildIter)
 
-                if self.bExpansions:
-                    # Create Space for children, which alterExpansionCount
-                    # calls will sort out the values of
-                    self._dNameExpansion2Iter.setdefault(oCard.name,{})
-                    if self.bEditable:
-                        if type(self.basefilter) is PhysicalCardSetFilter:
-                            aAddedExpansions = []
-                            for oPC in PhysicalCard.selectBy(abstractCardID=oCard.id):
-                                if oPC.expansion is not None:
-                                    sExpName = oPC.expansion.name
-                                else:
-                                    sExpName = self.sUnknownExpansion
-                                if sExpName not in aAddedExpansions:
-                                    # Only add an iterator for each expansion once
-                                    aAddedExpansions.append(sExpName)
-                                    oExpandIter = self.append(oChildIter)
-                                    self._dNameExpansion2Iter[oCard.name].setdefault(sExpName, []).append(oExpandIter)
-                                    bIncCard, bDecCard = self.check_inc_dec_expansion(
-                                            oCard, sExpName, 0)
-                                    self.set(oExpandIter,
-                                            0, sExpName,
-                                            1, 0,
-                                            2, bIncCard,
-                                            3, bDecCard
-                                            )
-                        else:
-                            aList = [self.sUnknownExpansion] + sorted([oP.expansion.name for oP in oCard.rarity])
-                            for sExpName in aList:
-                                oExpandIter = self.append(oChildIter)
-                                self._dNameExpansion2Iter[oCard.name].setdefault(sExpName, []).append(oExpandIter)
-                                bIncCard, bDecCard = self.check_inc_dec_expansion(
-                                        oCard, sExpName, 0)
-                                self.set(oExpandIter,
-                                        0, sExpName,
-                                        1, 0,
-                                        2, bIncCard,
-                                        3, bDecCard
-                                        )
-                    else:
-                        for sExpName, iCnt in fGetExpanInfo(oItem):
-                            oExpandIter = self.append(oChildIter)
-                            self._dNameExpansion2Iter[oCard.name].setdefault(sExpName, []).append(oExpandIter)
-                            self.set(oExpandIter,
-                                    0, sExpName,
-                                    1, 0)
+                aExpansions = self.get_add_card_expansion_info(oCard, fGetExpanInfo(oItem))
+
+                for sExpName in aExpansions:
+                    self._dNameExpansion2Iter.setdefault(oCard.name, {})
+                    oExpandIter = self.append(oChildIter)
+                    # For models with expansions, this will be paired with a
+                    # call to inc Expansion count. We rely on this to sort 
+                    # out details - here we just create the needed space.
+                    self.set(oExpandIter,
+                            0, sExpName,
+                            1, 0,
+                            2, False,
+                            3, False
+                            )
+                    self._dNameExpansion2Iter[oCard.name].setdefault(sExpName, []).append(oExpandIter)
+
 
             # Update Group Section
             self.set(oSectionIter,
@@ -662,3 +531,167 @@ class CardListModel(gtk.TreeStore):
         oCard = IAbstractCard(sCardName)
         for oListener in self.listeners:
             oListener.addNewCard(oCard)
+
+class PhysicalCardListModel(CardListModel):
+    def __init__(self):
+        super(PhysicalCardListModel, self).__init__()
+        self._oBaseFilter = PhysicalCardFilter()
+        self._cCardClass = PhysicalCard
+        self.bExpansions = True
+ 
+    def check_inc_dec_expansion(self, oCard, sExpansion, iCnt):
+        """Helper function to check status of expansions"""
+        if sExpansion != self.sUnknownExpansion:
+            bDecCard = iCnt > 0
+            bIncCard = PhysicalCard.selectBy(abstractCardID=oCard.id,
+                    expansionID=None).count() > 0
+        else:
+            bDecCard = False
+            bIncCard = False
+        return bIncCard, bDecCard
+
+    def get_expansion_info(self, oCard, dExpanInfo):
+        """Get information about expansions"""
+        dExpansions = {}
+        if not self.bExpansions:
+            return dExpansions
+        if self.bEditable:
+            # All possible expansions listed in the dictionary when editing
+            # None entry always shows for Physical Card List when editable
+            dExpansions[self.sUnknownExpansion] = [0, False, False]
+            # We don't need the join filters give us, since we have oCard
+            iNoneCnt = PhysicalCard.selectBy(abstractCardID=oCard.id,
+                    expansionID=None).count()
+            for oP in oCard.rarity:
+                dExpansions.setdefault(oP.expansion.name, [0, False, iNoneCnt > 0])
+        for oExpansion, iCnt in dExpanInfo.iteritems():
+            bDecCard = False
+            bIncCard = False
+            if oExpansion is not None:
+                sKey = oExpansion.name
+            else:
+                sKey = self.sUnknownExpansion
+            # For PhysicalCardList, we never touch Unknown directly
+            # It's manipulated by changing other expansions
+            if self.bEditable and oExpansion is not None:
+                # Can only increase a expansion if there are unknown
+                # cards to move across
+                bIncCard = iNoneCnt > 0
+                bDecCard = iCnt > 0
+            dExpansions[sKey] = [iCnt, bDecCard, bIncCard]
+        return dExpansions
+
+    def check_expansion_iter_stays(self, oCard, sExpansion, iCnt):
+        """Check if the expansion entry should remain in the table"""
+        if iCnt > 0 or self.bEditable:
+            # All expansions visible when editing the PhysicalCardList
+            return True
+        else:
+            return False
+
+    def get_add_card_expansion_info(oCard, dExpanInfo):
+        """Get the expansions to list for a newly added card"""
+        if not self.bExpansions:
+            return []
+        if self.bEditable:
+            aList = [self.sUnknownExpansion] + sorted([oP.expansion.name for oP in oCard.rarity])
+        else:
+            aList = dExpanInfo.keys()
+        return aList
+
+class PhysicalCardSetCardListModel(CardListModel):
+    def __init__(self, sSetName):
+        super(PhysicalCardSetCardListModel, self).__init__()
+        self._cCardClass = PhysicalCard
+        self._oBaseFilter = PhysicalCardSetFilter(sSetName)
+        self.bExpansions = True
+
+    def check_inc_dec_card(self, oCard, iCnt):
+        """Helper function to check whether card can be incremented"""
+        if not self.bEditable:
+            return False, False
+        else:
+            return iCnt < PhysicalCard.selectBy(abstractCardID=oCard.id).count(), iCnt > 0
+
+    def check_inc_dec_expansion(self, oCard, sExpansion, iCnt):
+        """Helper function to check status of expansions"""
+        if sExpansion != self.sUnknownExpansion:
+            iThisExpID = IExpansion(sExpansion).id
+            iCardCnt = PhysicalCard.selectBy(abstractCardID=oCard.id,
+                    expansionID=iThisExpID).count()
+        else:
+            iCardCnt = PhysicalCard.selectBy(abstractCardID=oCard.id,
+                    expansionID=None).count()
+        bDecCard = iCnt > 0
+        bIncCard = iCnt < iCardCnt
+        return bIncCard, bDecCard
+
+    def get_expansion_info(self, oCard, dExpanInfo):
+        """Get information about expansions"""
+        dExpansions = {}
+        if not self.bExpansions:
+            return dExpansions
+        if self.bEditable:
+            # Need to find all possible expansions in the PhysicalCard List
+            dCount = {}
+            for oPC in PhysicalCard.selectBy(abstractCardID=oCard.id):
+                if oPC.expansion is not None:
+                    sName = oPC.expansion.name
+                else:
+                    sName = self.sUnknownExpansion
+                # There is a Physical Card here, so by default bIncCard must 
+                # be true. Loop below will correct this when needed
+                dExpansions.setdefault(sName, [0, False, True])
+                dCount.setdefault(sName, 0)
+                dCount[sName] += 1
+        for oExpansion, iCnt in dExpanInfo.iteritems():
+            bDecCard = False
+            bIncCard = False
+            if oExpansion is not None:
+                sKey = oExpansion.name
+            else:
+                sKey = self.sUnknownExpansion
+            if self.bEditable:
+                iCardCnt = dCount[sKey] # dCount superset of dExpansions
+                bDecCard = iCnt > 0
+                # Are cards of this expansion still available in the PC list?
+                bIncCard = iCnt < iCardCnt 
+            dExpansions[sKey] = [iCnt, bDecCard, bIncCard]
+        return dExpansions
+
+    def check_expansion_iter_stays(self, oCard, sExpansion, iCnt):
+        """Check if the expansion entry should remain in the table"""
+        if iCnt > 0:
+            return True
+        if self.bEditable:
+            # Only stays visible if cards in the PhysicalCardList with this expansion
+            if sExpansion != self.sUnknownExpansion:
+                iThisExpID = IExpansion(sExpansion).id
+                iCardCnt = PhysicalCard.selectBy(abstractCardID=oCard.id,
+                        expansionID=iThisExpID).count()
+            else:
+                iCardCnt = PhysicalCard.selectBy(abstractCardID=oCard.id,
+                        expansionID=None).count()
+            return iCardCnt > 0
+        else:
+            # Not editable, and iCnt == 0, so remove
+            return False
+
+    def get_add_card_expansion_info(oCard, dExpanInfo):
+        """Get the expansions to list for a newly added card"""
+        if not self.bExpansions:
+            return []
+        if self.bEditable:
+            aAddedExpansions = []
+            for oPC in PhysicalCard.selectBy(abstractCardID=oCard.id):
+                if oPC.expansion is not None:
+                    sExpName = oPC.expansion.name
+                else:
+                    sExpName = self.sUnknownExpansion
+                if sExpName not in aAddedExpansions:
+                    # Only each expansion once
+                    aAddedExpansions.append(sExpName)
+        else:
+            aAddedExpansions = dExpanInfo.keys()
+        return aAddedExpansions
+

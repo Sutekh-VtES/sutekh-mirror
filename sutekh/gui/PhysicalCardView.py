@@ -4,16 +4,16 @@
 # GPL - see COPYING for details
 
 from sutekh.gui.CardListView import EditableCardListView
+from sutekh.gui.CardListModel import PhysicalCardListModel
 from sutekh.core.Filters import PhysicalCardFilter
 from sutekh.core.SutekhObjects import PhysicalCard
 
 class PhysicalCardView(EditableCardListView):
     def __init__(self, oController, oWindow, oConfig):
-        super(PhysicalCardView, self).__init__(oController, oWindow, oConfig)
 
-        self._oModel.basefilter = PhysicalCardFilter()
-        self._oModel.cardclass = PhysicalCard
-        self._oModel.bExpansions = True
+        oModel = PhysicalCardListModel()
+        super(PhysicalCardView, self).__init__(oController, oWindow, oConfig, oModel)
+
         self._oC = oController
         self.sDragPrefix = 'Phys:'
         self.load()
