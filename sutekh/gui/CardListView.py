@@ -212,34 +212,44 @@ class CardListView(gtk.TreeView, object):
             self._oModel.applyfilter = bState
             self.load()
 
-    # Drag and Drop
-    # Sub-classes should override as needed.
-
-    def drag_card(self, btn, context, selection_data, info, time):
-        if self._oSelection.count_selected_rows()<1:
-            return
+    def process_selection(self):
+        """
+        Create a dictionary from the selection.
+        with entries of the form sCardName : {sExpansion1 : iCount1, ... }
+        for use in drag-'n drop and elsewhere
+        """        
         oModel, oPathList = self._oSelection.get_selected_rows()
         dSelectedData = {}
         for oPath in oPathList:
             sCardName, sExpansion, iCount, iDepth = oModel.get_all_from_path(oPath)
             if iDepth == 0:
-                # Skip top level items, since dragging them is meaningless
+                # Skip top level items, since they're meaningless for the selection
                 continue
-            # if a card is selected, and some of it's children (which are
-            # the expansions) are selected, the top-level selection is updated
-            # to account for the children selection
+            # if a card is selected, then it's children (which are
+            # the expansions) which are selected are ignored, since
+            # We always treat this as all cards selected
             dSelectedData.setdefault(sCardName, {})
             if iDepth == 1:
-                dSelectedData[sCardName]['0'] = iCount
+                # Remove anything already assigned to this,
+                # since parent overrides all
+                dSelectedData[sCardName].clear()
+                dSelectedData[sCardName]['None'] = iCount
             else:
+                if 'None' in dSelectedData[sCardName].keys():
+                    continue
                 dSelectedData[sCardName][sExpansion] = iCount
-                if '0' in dSelectedData[sCardName].keys():
-                    dSelectedData[sCardName]['0'] -= iCount
-                    if dSelectedData[sCardName]['0'] == 0:
-                        # dSelectedData[sCardName]['0'] < 0 shouldn't
-                        # be possible 
-                        # All children selected, so remove from selection
-                        del dSelectedData[sCardName]['0']
+        return dSelectedData
+
+    # Drag and Drop
+    # Sub-classes should override as needed.
+
+    def drag_card(self, btn, context, selection_data, info, time):
+        """
+        Create string represntation of the sec ltion for drag-n-drop code
+        """
+        if self._oSelection.count_selected_rows()<1:
+            return
+        dSelectedData = self.process_selection()
         # Create selection data structure
         # Need to bung everything into a string, alas
         sSelectData = self.sDragPrefix
@@ -256,11 +266,11 @@ class CardListView(gtk.TreeView, object):
         sSource = aLines[0]
         # Construct list of (iCount, sCardName, sExpansion) tuples
         def true_expansion(sExpand):
-            """Convert back from the '0' for None placeholder in the string"""
+            """Convert back from the 'None' for None placeholder in the string"""
             # The logic goes that, if the user has dragged the top level cards,
             # Then either all the cards are going to be copied, or there is
             # no expansion info, so the expansion might as well be none.
-            if sExpand == '0':
+            if sExpand == 'None':
                 return None
             else:
                 return sExpand
