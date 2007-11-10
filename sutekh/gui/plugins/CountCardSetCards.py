@@ -4,7 +4,7 @@
 
 import gtk
 from sutekh.core.SutekhObjects import AbstractCard, PhysicalCardSet, \
-        AbstractCardSet, PhysicalCard
+        AbstractCardSet, PhysicalCard, IAbstractCard
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.CardListModel import CardListModelListener
 
@@ -42,7 +42,9 @@ class CountCardSetCards(CardListPlugin,CardListModelListener):
 
         self.oTextLabel = gtk.Label('Total Cards : 0 Crypt Cards : 0 Library Cards : 0')
 
-        self.load()
+        aAbsCards = [IAbstractCard(x) for x in 
+                self.model.getCardIterator(self.model.getCurrentFilter())]
+        self.load(aAbsCards)
 
         return self.oTextLabel
 
@@ -51,23 +53,18 @@ class CountCardSetCards(CardListPlugin,CardListModelListener):
                 '</b>  Crypt Cards : <b>' + str(self.__iCrypt) +
                 '</b> Library Cards : <b>' + str(self.__iLibrary) + '</b>')
 
-    def load(self):
+    def load(self, aAbsCards):
         self.__iCrypt = 0
         self.__iLibrary = 0
-        aAllCards = list(self.model.getCardIterator(self.model.getCurrentFilter()))
-        self.__iTot = len(aAllCards)
-        for oCard in aAllCards:
-            if type(oCard) is AbstractCard:
-                sType = self.__idCard(oCard)
-            else:
-                sType = self.__idCard(oCard.abstractCard)
-            if sType == 'Crypt':
+        self.__iTot = len(aAbsCards)
+        for oAbsCard in aAbsCards:
+            if self.__idCard(oAbsCard) == 'Crypt':
                 self.__iCrypt += 1
             else:
                 self.__iLibrary += 1
         self.updateNumbers()
 
-    def alterCardCount(self,oCard,iChg):
+    def alterCardCount(self, oCard, iChg):
         self.__iTot += iChg
         if self.__idCard(oCard) == 'Crypt':
             self.__iCrypt += iChg
@@ -75,7 +72,7 @@ class CountCardSetCards(CardListPlugin,CardListModelListener):
             self.__iLibrary += iChg
         self.updateNumbers()
 
-    def addNewCard(self,oCard):
+    def addNewCard(self, oCard):
         self.__iTot += 1
         if self.__idCard(oCard) == 'Crypt':
             self.__iCrypt += 1

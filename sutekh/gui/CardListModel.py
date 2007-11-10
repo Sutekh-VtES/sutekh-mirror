@@ -26,10 +26,10 @@ class CardListModelListener(object):
     Listens to updates, i.e. .load(...), .alterCardCount(...), .addNewCard(..) calls,
     to CardListModels.
     """
-    def load(self):
+    def load(self, aAbsCards):
         """
         The CardListModel has reloaded itself.
-        aAbsCards is a list of the AbstractCards in the set.
+        aAbsCards is the list of AbstractCards loaded
         """
         pass
 
@@ -136,7 +136,7 @@ class CardListModel(gtk.TreeStore):
         self._dGroupName2Iter = {}
 
         oCardIter = self.getCardIterator(self.getCurrentFilter())
-        fGetCard, fGetCount, fGetExpanInfo, oGroupedIter = self.groupedCardIterator(oCardIter)
+        fGetCard, fGetCount, fGetExpanInfo, oGroupedIter, aAbsCards = self.groupedCardIterator(oCardIter)
 
         # Iterate over groups
         for sGroup, oGroupIter in oGroupedIter:
@@ -187,7 +187,7 @@ class CardListModel(gtk.TreeStore):
 
         # Notify Listeners
         for oListener in self.listeners:
-            oListener.load()
+            oListener.load(aAbsCards)
 
     def getCardIterator(self, oFilter):
         """
@@ -213,7 +213,9 @@ class CardListModel(gtk.TreeStore):
             fGetCount = lambda x:0
             fGetExpanInfo = lambda x:{}
             aCards = oCardIter
+            aAbsCards = list(aCards)
         else:
+            aAbsCards = []
             fGetCard = lambda x:x[0]
             fGetCount = lambda x:x[1][0]
             fGetExpanInfo = lambda x:x[1][1]
@@ -221,10 +223,12 @@ class CardListModel(gtk.TreeStore):
             # Count by Abstract Card
             dAbsCards = {}
             for oCard in oCardIter:
-                dAbsCards.setdefault(oCard.abstractCard, [0, {}])
-                dAbsCards[oCard.abstractCard][0] += 1
+                oAbsCard = oCard.abstractCard
+                aAbsCards.append(oAbsCard)
+                dAbsCards.setdefault(oAbsCard, [0, {}])
+                dAbsCards[oAbsCard][0] += 1
                 if self.bExpansions:
-                    dExpanInfo = dAbsCards[oCard.abstractCard][1]
+                    dExpanInfo = dAbsCards[oAbsCard][1]
                     dExpanInfo.setdefault(oCard.expansion, 0)
                     dExpanInfo[oCard.expansion] += 1
 
@@ -232,7 +236,7 @@ class CardListModel(gtk.TreeStore):
             aCards.sort(lambda x, y: cmp(x[0].name, y[0].name))
 
         # Iterate over groups
-        return fGetCard, fGetCount, fGetExpanInfo, self.groupby(aCards, fGetCard)
+        return fGetCard, fGetCount, fGetExpanInfo, self.groupby(aCards, fGetCard), aAbsCards
 
     def getCurrentFilter(self):
         if self.applyfilter:
@@ -471,7 +475,6 @@ class CardListModel(gtk.TreeStore):
         oCardIter = oFullFilter.select(self.cardclass).distinct()
 
         fGetCard, fGetCount, fGetExpanInfo, oGroupedIter = self.groupedCardIterator(oCardIter)
-
         # Iterate over groups
         for sGroup, oGroupIter in oGroupedIter:
             # Check for null group
@@ -652,7 +655,7 @@ class PhysicalCardSetCardListModel(CardListModel):
             else:
                 sKey = self.sUnknownExpansion
             if self.bEditable:
-                iCardCnt = dCount[sKey] # dCount superset of dExpansions
+                iCardCnt = dCount.get(sKey, 0) # Return 0 for unknown keys
                 bDecCard = iCnt > 0
                 # Are cards of this expansion still available in the PC list?
                 bIncCard = iCnt < iCardCnt 
