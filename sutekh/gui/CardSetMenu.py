@@ -178,7 +178,7 @@ class CardSetMenu(gtk.MenuBar, object):
             oW.write(self.sSetName)
 
     def cardSetClose(self,widget):
-        self.__oFrame.close_frame(widget)
+        self.__oFrame.close_frame()
 
     def cardSetDelete(self,widget):
         self.__oFrame.deleteCardSet()
