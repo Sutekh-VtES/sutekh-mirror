@@ -4,7 +4,7 @@
 
 from sutekh.core.SutekhObjects import AbstractCard, RarityPair, Rarity, Clan,\
                                  Discipline, DisciplinePair, CardType,\
-                                 Expansion, Ruling
+                                 Expansion, Ruling, InitCache
 
 class SutekhObjectCache(object):
     """Holds references to commonly used database objects so that they don't get
@@ -25,3 +25,5 @@ class SutekhObjectCache(object):
         self._dCache = {}
         for cType in aTypesToCache:
             self._dCache[cType] = list(cType.select())
+
+        InitCache()

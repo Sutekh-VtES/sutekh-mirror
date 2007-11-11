@@ -144,6 +144,7 @@ class Virtue(SQLObject):
     tableversion = 1
     name = UnicodeCol(alternateID=True,length=30)
     fullname = UnicodeCol(length=30,default=None)
+    cards = RelatedJoin('AbstractCard',intermediateTable='abs_virtue_map',createRelatedTable=False)
 
 class Creed(SQLObject):
     advise(instancesProvide=[ICreed])
@@ -151,6 +152,7 @@ class Creed(SQLObject):
     tableversion = 1
     name = UnicodeCol(alternateID=True,length=40)
     shortname = UnicodeCol(length=10,default=None)
+    cards = RelatedJoin('AbstractCard',intermediateTable='abs_creed_map',createRelatedTable=False)
 
 class Clan(SQLObject):
     advise(instancesProvide=[IClan])
@@ -587,3 +589,8 @@ def FlushCache():
     for oJoin in AbstractCard.sqlmeta.joins:
         if type(oJoin) is SOCachedRelatedJoin:
             oJoin.flushCache()
+
+def InitCache():
+    for oJoin in AbstractCard.sqlmeta.joins:
+        if type(oJoin) is SOCachedRelatedJoin:
+            oJoin.initCache()

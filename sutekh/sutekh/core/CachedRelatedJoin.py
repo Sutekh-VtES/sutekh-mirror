@@ -23,6 +23,20 @@ class SOCachedRelatedJoin(joins.SORelatedJoin):
     def flushCache(self):
         self._dJoinCache = {}
 
+    def initCache(self):
+        aJoins = [oJ for oJ in self.otherClass.sqlmeta.joins if oJ.otherClass is self.soClass]
+        assert len(aJoins) == 1
+        oOtherJoin = aJoins[0]
+
+        for oOther in self.otherClass.select():
+            for inst in oOtherJoin.performJoin(oOther):
+                self._dJoinCache.setdefault(inst,[])
+                self._dJoinCache[inst].append(oOther)
+
+        # Apply ordering (we assume it won't change later)
+        for inst in self._dJoinCache:
+            self._dJoinCache[inst] = self._applyOrderBy(self._dJoinCache[inst], self.otherClass)
+
     def performJoin(self, inst):
         if not inst in self._dJoinCache:
             self._dJoinCache[inst] = joins.SORelatedJoin.performJoin(self,inst)
