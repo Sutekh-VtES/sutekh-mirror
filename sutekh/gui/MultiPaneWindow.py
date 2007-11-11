@@ -68,12 +68,19 @@ class MultiPaneWindow(gtk.Window):
                 self.add_acs_list(None)
             elif sType == 'Physical Card Set List':
                 self.add_pcs_list(None)
-        self.__oCardLookup = GuiLookup()
+        self._oCardLookup = GuiLookup()
 
     # Needed for Backup plugin
-    cardLookup = property(fget=lambda self: self.__oCardLookup)
+    cardLookup = property(fget=lambda self: self._oCardLookup)
     # Needed for plugins
     plugin_manager = property(fget=lambda self: self._oPluginManager)
+
+    def find_pane_by_name(self, sName):
+        try:
+            iIndex = self.dOpenPanes.values().index(sName)
+            oPane = self.dOpenPanes.keys()[iIndex]
+        except ValueError:
+            return None
 
     def add_physical_card_set(self, sName):
         sMenuFlag = "PCS:" + sName
@@ -81,6 +88,9 @@ class MultiPaneWindow(gtk.Window):
             oPane = PhysicalCardSetFrame(self, sName, self._oConfig)
             self.add_pane(oPane, sMenuFlag)
             self.reload_pcs_list()
+        else:
+            oPane = self.find_pane_by_name(sMenuFlag)
+            oPane.reload()
 
     def add_abstract_card_set(self, sName):
         sMenuFlag = "ACS:" + sName
@@ -88,6 +98,9 @@ class MultiPaneWindow(gtk.Window):
             oPane = AbstractCardSetFrame(self, sName, self._oConfig)
             self.add_pane(oPane, sMenuFlag)
             self.reload_acs_list()
+        else:
+            oPane = self.find_pane_by_name(sMenuFlag)
+            oPane.reload()
 
     def add_pcs_list(self, oWidget):
         sMenuFlag = "PCS List"
@@ -132,6 +145,10 @@ class MultiPaneWindow(gtk.Window):
     def reload_acs_list(self):
         if self._oACSListPane is not None:
             self._oACSListPane.reload_card_set_list()
+
+    def reload_all(self):
+        for oPane in self.dOpenPanes:
+            oPane.reload()
 
     def win_focus(self, oWidget, oEvent, oFrame):
         if self._oFocussed is not None:
@@ -195,12 +212,9 @@ class MultiPaneWindow(gtk.Window):
         self.remove_pane(self._oFocussed)
 
     def remove_pane_by_name(self, sName):
-        try:
-            iIndex = self.dOpenPanes.values().index(sName)
-            oPane = self.dOpenPanes.keys()[iIndex]
+        oPane = self.find_pane_by_name(sName)
+        if oPane is not None:
             self.remove_pane(oPane)
-        except ValueError:
-            return
 
     def remove_pane(self, oFrame):
         if oFrame is not None:
