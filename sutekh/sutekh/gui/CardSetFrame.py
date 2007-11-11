@@ -5,7 +5,9 @@
 # GPL - see COPYING for details
 
 import gtk
-from sutekh.core.SutekhObjects import PhysicalCardSet, AbstractCardSet
+from sqlobject import SQLObjectNotFound
+from sutekh.core.SutekhObjects import PhysicalCardSet, AbstractCardSet, \
+        IPhysicalCardSet, IAbstractCardSet
 from sutekh.gui.CardListFrame import CardListFrame
 from sutekh.gui.CardSetMenu import CardSetMenu
 from sutekh.gui.CardSetController import PhysicalCardSetController, \
@@ -15,6 +17,13 @@ class CardSetFrame(CardListFrame, object):
     def __init__(self, oMainWindow, sName, cType, oConfig):
         super(CardSetFrame, self).__init__(oMainWindow, oConfig)
         self._cModelType = cType
+        try:
+            if self._cModelType is PhysicalCardSet:
+                oCS = IPhysicalCardSet(sName)
+            else:
+                oCS = IAbstractCardSet(sName)
+        except SQLObjectNotFound:
+            raise RuntimeError("Card Set %s does not exist" % sName)
         if self._cModelType is PhysicalCardSet:
             self._oC = PhysicalCardSetController(sName, oConfig,
                     oMainWindow, self)

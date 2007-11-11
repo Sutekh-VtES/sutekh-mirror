@@ -86,9 +86,13 @@ class MultiPaneWindow(gtk.Window):
     def add_physical_card_set(self, sName):
         sMenuFlag = "PCS:" + sName
         if sMenuFlag not in self.dOpenPanes.values():
-            oPane = PhysicalCardSetFrame(self, sName, self._oConfig)
-            self.add_pane(oPane, sMenuFlag)
-            self.reload_pcs_list()
+            try:
+                oPane = PhysicalCardSetFrame(self, sName, self._oConfig)
+                self.add_pane(oPane, sMenuFlag)
+                self.reload_pcs_list()
+            except RuntimeError, e:
+                # add warning dialog?
+                pass
         else:
             oPane = self.find_pane_by_name(sMenuFlag)
             oPane.reload()
@@ -96,9 +100,13 @@ class MultiPaneWindow(gtk.Window):
     def add_abstract_card_set(self, sName):
         sMenuFlag = "ACS:" + sName
         if sMenuFlag not in self.dOpenPanes.values():
-            oPane = AbstractCardSetFrame(self, sName, self._oConfig)
-            self.add_pane(oPane, sMenuFlag)
-            self.reload_acs_list()
+            try:
+               oPane = AbstractCardSetFrame(self, sName, self._oConfig)
+               self.add_pane(oPane, sMenuFlag)
+               self.reload_acs_list()
+            except RuntimeError, e:
+                # add warning dialog?
+                pass
         else:
             oPane = self.find_pane_by_name(sMenuFlag)
             oPane.reload()
