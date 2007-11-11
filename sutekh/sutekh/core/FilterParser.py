@@ -9,7 +9,12 @@ from sutekh.core.Filters import MultiCardTypeFilter, MultiClanFilter, \
         MultiCostFilter, MultiLifeFilter, MultiCreedFilter, MultiVirtueFilter,\
         CardTextFilter, CardNameFilter, MultiSectFilter, MultiTitleFilter,\
         MultiExpansionRarityFilter, MultiDisciplineLevelFilter, \
-        MultiCostTypeFilter, FilterAndBox, FilterOrBox, FilterNot
+        MultiPhysicalExpansionFilter, AbstractCardSetNameFilter, \
+        PhysicalCardSetNameFilter, AbstractCardSetAuthorFilter, \
+        PhysicalCardSetAuthorFilter, AbstractCardSetDescriptionFilter, \
+        PhysicalCardSetDescriptionFilter, AbstractCardSetAnnotationsFilter, \
+        PhysicalCardSetAnnotationsFilter, MultiCostTypeFilter, \
+        MultiPhysicalCardSetFilter, FilterAndBox, FilterOrBox, FilterNot
 
 # FIXME: The intention is to push this into the Individual Filter Objects
 
@@ -17,7 +22,12 @@ aFilters = [MultiCardTypeFilter, MultiCostTypeFilter, MultiClanFilter,
         MultiDisciplineFilter, MultiGroupFilter, MultiCapacityFilter,
         MultiCostFilter, MultiLifeFilter, MultiCreedFilter, MultiVirtueFilter,
         CardTextFilter, CardNameFilter, MultiSectFilter, MultiTitleFilter,
-        MultiExpansionRarityFilter, MultiDisciplineLevelFilter]
+        MultiExpansionRarityFilter, MultiDisciplineLevelFilter,
+        MultiPhysicalExpansionFilter, AbstractCardSetNameFilter,
+        PhysicalCardSetNameFilter, AbstractCardSetAuthorFilter,
+        PhysicalCardSetAuthorFilter, AbstractCardSetDescriptionFilter,
+        PhysicalCardSetDescriptionFilter, AbstractCardSetAnnotationsFilter,
+        PhysicalCardSetAnnotationsFilter, MultiPhysicalCardSetFilter]
 
 aEntryFilters = [x.keyword for x in aFilters if hasattr(x,'istextentry')]
 aWithFilters = [x.keyword for x in aFilters if hasattr(x,'iswithfilter')]
@@ -234,6 +244,9 @@ class AstBaseNode(object):
     def getInvalidValues(self):
         pass
 
+    def getType(self):
+        pass
+
 class FilterNode(AstBaseNode):
     def __init__(self,expression):
         super(FilterNode,self).__init__([expression])
@@ -248,11 +261,16 @@ class FilterNode(AstBaseNode):
     def getInvalidValues(self):
         return self.expression.getInvalidValues()
 
+    def getType(self):
+        return self.expression.getType()
+
 class OperatorNode(AstBaseNode):
     pass
 
 class TermNode(AstBaseNode):
-    pass
+    # Value nodes have no type - only Filters have this info
+    def getType(self):
+        return None
 
 class StringNode(TermNode):
     def __init__(self,value):
@@ -357,6 +375,9 @@ class FilterPartNode(OperatorNode):
             oFilter = FilterType(aValues)
         return oFilter
 
+    def getType(self):
+        return getFilterType(self.filtertype).types
+
 class NotOpNode(OperatorNode):
     def __init__(self, subexpression):
         super(NotOpNode, self).__init__([subexpression])
@@ -424,6 +445,20 @@ class BinOpNode(OperatorNode):
             raise RuntimeError('Unknown operator in AST')
         return oFilter
 
+    def getType(self):
+        aLeftTypes = self.left.getType()
+        aRightTypes = self.right.getType()
+        if aRightTypes is None:
+            return aLeftTypes
+        if aLeftTypes is None:
+            return aRightTypes
+        aRes = []
+        # Type must be the intersection of sub-filter types
+        for sType in aLeftTypes:
+            if sType in aRightTypes:
+                aRes.append(sType)
+        return aRes
+
 class CommaNode(OperatorNode):
     def __init__(self,left,op,right):
         super(CommaNode,self).__init__([left,right])
@@ -442,6 +477,10 @@ class CommaNode(OperatorNode):
         aResults.extend(self.right.getFilter())
         return aResults
 
+    def getType(self):
+        # Syntax ensures , only in value lists, which have no type
+        return None
+
 class WithNode(OperatorNode):
     def __init__(self,left,op,right):
         super(WithNode,self).__init__([left,right])
@@ -454,3 +493,7 @@ class WithNode(OperatorNode):
 
     def getFilter(self):
         return [(self.left.getFilter()[0],self.right.getFilter()[0])]
+
+    def getType(self):
+        # Syntax ensures with only in value lists, which have no type
+        return None

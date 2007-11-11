@@ -34,6 +34,11 @@ Gui (Functionality):
 
 Gui (Presentation):
  * Replace Multi-window GUI with one based on multiple panes
+ * Cleanup various dialogs, including
+   * Replace some dialogs with gtk.MessageDialogs
+   * Unify some of the other dialogs and make various bits more reusable 
+     (cf. CreateCardSetDialog hack in plugins)
+ * Clean up the currently overly tangled controller/view/model interactions
  * Parse in a GTK rc file? (http://www.moeraki.com/pygtktutorial/pygtk2tutorial/ch-GtkRcFiles.html)
  * Improve Card Set Management Window (multiple selection, right click menu, etc.)
  * Allow some way of marking card sets as active, and displaying used cards or 

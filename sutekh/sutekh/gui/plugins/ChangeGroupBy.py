@@ -10,7 +10,7 @@ from sutekh.gui.PluginManager import CardListPlugin
 
 class GroupCardList(CardListPlugin):
     dTableVersions = {}
-    aModelsSupported = ["PhysicalCardSet","AbstractCardSet","PhysicalCard"]
+    aModelsSupported = ["Physical Card Set","Abstract Card Set","Physical Cards","Abstract Cards"]
     def __init__(self,*args,**kws):
         super(GroupCardList,self).__init__(*args,**kws)
         self._dGrpings = {}
@@ -26,7 +26,7 @@ class GroupCardList(CardListPlugin):
         """
         Overrides method from base class.
         """
-        if not self.checkVersions() or not self.checkModelType():
+        if not self.check_versions() or not self.check_model_type():
             return None
         iGrouping = gtk.MenuItem("Change Grouping")
         iGrouping.connect("activate", self.activate)

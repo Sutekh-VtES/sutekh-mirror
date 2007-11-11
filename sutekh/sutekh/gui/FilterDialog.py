@@ -16,7 +16,10 @@ aDefaultFilterList = [
         "Discipline in $foo",
         "CardType in $foo",
         "CardText in $foo",
-        "CardName in $foo"
+        "CardName in $foo",
+        "AbstractCardSetName in $foo",
+        "PhysicalCardSetName in $foo",
+        "PhysicalExpansion in $foo"
         ]
 
 class FilterDialog(gtk.Dialog, ConfigFileListener):
@@ -25,8 +28,8 @@ class FilterDialog(gtk.Dialog, ConfigFileListener):
     __iDeleteButtonResponse = 2
     __iEditButtonResponse = 3
 
-    def __init__(self, oParent, oConfig):
-        super(FilterDialog,self).__init__("Specify Filter",
+    def __init__(self, oParent, oConfig, sFilterType):
+        super(FilterDialog, self).__init__("Specify Filter",
                 oParent, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT)
         # Need to add these buttons so we get the right order
         self.add_button( "Add New Filter", self.__iAddButtonResponse)
@@ -42,6 +45,7 @@ class FilterDialog(gtk.Dialog, ConfigFileListener):
         self.__oEditButton.set_sensitive(False)
         self.__oParser = FilterParser.FilterParser()
         self.__oConfig = oConfig
+        self.__sFilterType = sFilterType
         self.connect("response", self.__buttonResponse)
         self.__dExpanded = {}
         self.__dASTs = {}
@@ -77,7 +81,7 @@ class FilterDialog(gtk.Dialog, ConfigFileListener):
         # Load other filters from config file
         aAllFilters = oConfig.getFiltersKeys()
         sMessages = ''
-        for sId,sFilter in aAllFilters:
+        for sId, sFilter in aAllFilters:
             try:
                 oAST = self.__oParser.apply(sFilter)
                 self.__addFilterToDialog(oAST, sFilter, sId)
@@ -93,7 +97,7 @@ class FilterDialog(gtk.Dialog, ConfigFileListener):
     def __expandFilter(self, oRadioButton, sId):
         """When the user selects a radio button, expand
            the options"""
-        if sId != self.__sExpanded:
+        if sId != self.__sExpanded and sId in self.__dExpanded.keys():
             # Remove the previous filter
             for oChild in self.__oExpandedArea.get_children():
                 self.__oExpandedArea.remove(oChild)
@@ -110,7 +114,6 @@ class FilterDialog(gtk.Dialog, ConfigFileListener):
                 self.__oEditButton.set_sensitive(False)
 
     def __addFilterToDialog(self, oAST, sFilter, sId=''):
-        aFilterParts = oAST.getValues()
         if sId == '' or sId in self.__dExpanded.keys():
             # ensure we have a unique key here
             iNum = len(self.__dExpanded)
@@ -119,22 +122,28 @@ class FilterDialog(gtk.Dialog, ConfigFileListener):
                 iNum += 1
                 sId = 'Filter '+str(iNum)
         self.__dFilterList[sId] = sFilter
+        if self.__sFilterType not in oAST.getType():
+            return sId
         self.__dExpanded[sId] = []
         self.__dASTs[sId] = oAST
+        aFilterParts = oAST.getValues()
         self.__addPartsToDialog(aFilterParts, sFilter, sId)
         return sId
 
     def __replaceFilterInDialog(self, oAST, sOldFilter, sNewFilter, sId):
-        aFilterParts = oAST.getValues()
         self.__dFilterList[sId] = sNewFilter
-        self.__dExpanded[sId] = []
-        self.__dASTs[sId] = oAST
-        oRadioButton = self.__dButtons[sId]
-        self.__oRadioArea.remove(oRadioButton)
-        del self.__dButtons[sId]
-        self.__addPartsToDialog(aFilterParts, sNewFilter, sId)
-        self.__oRadioGroup.clicked()
-        self.__dButtons[sId].clicked()
+        if self.__sFilterType in oAST.getType():
+            aFilterParts = oAST.getValues()
+            if sId in self.__dExpanded.keys():
+                self.__dExpanded[sId] = []
+                self.__dASTs[sId] = oAST
+                oRadioButton = self.__dButtons[sId]
+                self.__oRadioArea.remove(oRadioButton)
+                del self.__dButtons[sId]
+                self.__addPartsToDialog(aFilterParts, sNewFilter, sId)
+                self.__oRadioGroup.clicked()
+                self.__dButtons[sId].clicked()
+            # FIXME: should handle else conditions
 
     def __addPartsToDialog(self, aFilterParts, sFilter, sId):
         sPrevName = None
@@ -164,14 +173,15 @@ class FilterDialog(gtk.Dialog, ConfigFileListener):
         self.__oConfig.removeFilter(sFilter, sId)
 
     def removeFilter(self, sFilter, sId):
-        del self.__dASTs[sId]
-        del self.__dExpanded[sId]
         del self.__dFilterList[sId]
-        oRadioButton = self.__dButtons[sId]
-        self.__oRadioArea.remove(oRadioButton)
-        del self.__dButtons[sId]
-        self.__oRadioGroup.clicked()
-        self.__oRadioArea.show_all()
+        if sId in self.__dASTs:
+            del self.__dASTs[sId]
+            del self.__dExpanded[sId]
+            oRadioButton = self.__dButtons[sId]
+            self.__oRadioArea.remove(oRadioButton)
+            del self.__dButtons[sId]
+            self.__oRadioGroup.clicked()
+            self.__oRadioArea.show_all()
 
     def getFilter(self):
         return self.__oData
@@ -212,10 +222,8 @@ class FilterDialog(gtk.Dialog, ConfigFileListener):
             if type(oChild) is ScrolledList:
                 # Some of this logic should be pushed down to ScrolledList
                 aVals = []
-                oModel, aSelection = oChild.TreeView.get_selection().get_selected_rows()
-                for oPath in aSelection:
-                    oIter = oModel.get_iter(oPath)
-                    sName = oModel.get_value(oIter, 0)
+                aSelection = oChild.get_selection()
+                for sName in aSelection:
                     if oFilterPart.node.filtertype not in FilterParser.aNumericFilters:
                         if oFilterPart.node.filtertype in FilterParser.aWithFilters:
                             sPart1, sPart2 = sName.split(' with ')
@@ -239,11 +247,7 @@ class FilterDialog(gtk.Dialog, ConfigFileListener):
     def __makeScrolledList(self, sName, aVals):
         oWidget = ScrolledList(sName)
         oWidget.set_size_request(200, 400)
-        aList = oWidget.get_list()
-        aList.clear()
-        for sEntry in aVals:
-            oIter = aList.append(None)
-            aList.set(oIter, 0, sEntry)
+        oWidget.fill_list(aVals)
         return oWidget
 
     def __doComplaint(self, sMessage):
@@ -269,8 +273,9 @@ class FilterDialog(gtk.Dialog, ConfigFileListener):
                 "NOT FilterType will invert the meaning of the filter.\n" \
                 "FilterType can be any of the following\n"
         for oFilterType in FilterParser.aFilters:
-            sHelpText += "<b>" + oFilterType.keyword + "</b> which takes " \
-                    + oFilterType.helptext + "\n"
+            if self.__sFilterType in oFilterType.types:
+                sHelpText += "<b>" + oFilterType.keyword + "</b> which takes " \
+                        + oFilterType.helptext + "\n"
         oHelpText = gtk.Label()
         oHelpText.set_markup(sHelpText)
         oEntry = gtk.Entry(300)
@@ -295,6 +300,10 @@ class FilterDialog(gtk.Dialog, ConfigFileListener):
                     sMessage = "The following values are invalid for the filter\n"
                     for sVal in aWrongVals:
                         sMessage += sVal + '\n'
+                    self.__doComplaint(sMessage)
+                    continue
+                if self.__sFilterType not in oAST.getType():
+                    sMessage = "Filter isn't valid for this pane\n"
                     self.__doComplaint(sMessage)
                     continue
                 if sEditFilter == '':

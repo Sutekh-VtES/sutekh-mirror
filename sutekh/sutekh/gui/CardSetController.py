@@ -6,56 +6,98 @@
 from sqlobject import SQLObjectNotFound
 from sutekh.gui.CardSetView import CardSetView
 from sutekh.gui.CardSetMenu import CardSetMenu
-from sutekh.core.SutekhObjects import AbstractCardSet, PhysicalCardSet,\
-        AbstractCard, PhysicalCard
+from sutekh.gui.DBSignals import ReloadSignal, listen, RowUpdateSignal, RowDestroySignal
+from sutekh.core.SutekhObjects import AbstractCardSet, PhysicalCardSet, \
+        AbstractCard, PhysicalCard, MapPhysicalCardToPhysicalCardSet, \
+        IExpansion, Expansion
 
 class CardSetController(object):
-    def __init__(self,oWindow,oMasterController,sName,sType,oConfig):
-        self.__oView = CardSetView(oWindow,self,sName,sType,oConfig)
-        self.__oWin= oWindow
-        self.__oC = oMasterController
+    def __init__(self, sName, cType, oConfig, oMainWindow, oFrame):
+        self._oMainWindow = oMainWindow
         self._oMenu = None
+        self._oFrame = oFrame
+        self._oView = CardSetView(oMainWindow, self, sName, cType, oConfig)
+        self._sFilterType = None
 
-        # setup plugins before the menu (which needs a list of plugins)
-        self.__aPlugins = []
-        for cPlugin in oMasterController.getPluginManager().getCardListPlugins():
-            self.__aPlugins.append(cPlugin(self.__oView,self.__oView.getModel(),sType))
-
-    def getView(self):
-        return self.__oView
-
-    def getModel(self):
-        return self.__oView._oModel
+    view = property(fget=lambda self: self._oView, doc="Associated View")
+    model = property(fget=lambda self: self._oView._oModel, doc="View's Model")
+    frame = property(fget=lambda self: self._oFrame, doc="Associated Frame")
+    filtertype = property(fget=lambda self: self._sFilterType, doc="Associated Type")
 
     def getWin(self):
         return self.__oWin
 
-    def getMenu(self):
-        return self._oMenu
+    def set_card_text(self,sCardName):
+        self._oMainWindow.set_card_text(sCardName)
 
-    def getController(self):
-        return self.__oC
+    def incCard(self, sName, sExpansion):
+        """
+        Returns True if a card was successfully added, False otherwise.
+        """
+        return self.addCard(sName, sExpansion)
 
-    def getPlugins(self):
-        return self.__aPlugins
+    def decCard(self, sName, sExpansion):
+        pass
 
-    def setCardText(self,sCardName):
-        self.__oC.setCardText(sCardName)
-
-    def getFilter(self,widget):
-        self.__oView.getFilter(self._oMenu)
-
-    def runFilter(self,widget):
-        self.__oView.runFilter(self._oMenu.getApplyFilter())
+    def addCard(self, sName, sExpansion):
+        pass
 
 class PhysicalCardSetController(CardSetController):
-    def __init__(self,oWindow,oMasterController,sName,oConfig):
-        super(PhysicalCardSetController,self).__init__(\
-                oWindow,oMasterController,sName,"PhysicalCardSet",oConfig)
+    def __init__(self, sName, oConfig, oMainWindow, oFrame):
+        super(PhysicalCardSetController,self).__init__(
+                sName, PhysicalCardSet, oConfig, oMainWindow, oFrame)
         self.__oPhysCardSet = PhysicalCardSet.byName(sName)
-        self._oMenu = CardSetMenu(self,self.getWin(),self.getView(),self.__oPhysCardSet.name,"PhysicalCardSet")
+        # We need to cache this for physical_card_deleted checks
+        self.__aPhysCardIds = [x.id for x in self.__oPhysCardSet.cards]
+        self._sFilterType = 'PhysicalCard'
+        listen(self.physical_card_deleted, PhysicalCard, RowDestroySignal)
+        listen(self.physical_card_changed, PhysicalCard, RowUpdateSignal)
+        listen(self.reload_card_set, PhysicalCard, ReloadSignal)
 
-    def decCard(self,sName):
+    def reload_card_set(self, oAbsCard):
+        """
+        When changes happen that may effect this, reload.
+        Cases are when card numbers in PCS change while this is editable,
+        or the allocation of cards to physical card sets changes.
+        """
+        aAbsCards = [x.abstractCard for x in self.__oPhysCardSet.cards]
+        if oAbsCard in aAbsCards:
+            self.view.reload_keep_expanded()
+
+    def physical_card_deleted(self, oPhysCard):
+        """Listen on physical card removals. Needed so we can
+           updated the model if a card in this set is deleted
+        """
+        # We get here after we have removed the card from the card set,
+        # but before it is finally deleted from the table, so it's no
+        # longer in self.__oPhysCards.
+        if oPhysCard.id in self.__aPhysCardIds:
+            self.__aPhysCardIds.remove(oPhysCard.id)
+            oAC = oPhysCard.abstractCard
+            # Update model
+            self.model.decCardExpansionByName(oAC.name, oPhysCard.expansion.name)
+            self.model.decCardByName(oAC.name)
+
+    def physical_card_changed(self, oPhysCard, dChanges):
+        """Listen on physical cards changed. Needed so we can
+           update the model if a card in this set is changed
+        """
+        if oPhysCard.id in self.__aPhysCardIds and 'expansionID' in dChanges.keys():
+            # Changing a card assigned to the card list
+            iNewID = dChanges['expansionID']
+            oAC = oPhysCard.abstractCard
+            if oPhysCard.expansion is not None:
+                self.model.decCardExpansionByName(oAC.name, oPhysCard.expansion.name)
+            else:
+                self.model.decCardExpansionByName(oAC.name, None)
+            if iNewID is not None:
+                oNewExpansion = list(Expansion.selectBy(id=iNewID))[0]
+                sExpName = oNewExpansion.name
+            else:
+                sExpName = None
+            self.model.incCardExpansionByName(oAC.name, sExpName)
+
+    def decCard(self, sName, sExpansion):
         """
         Returns True if a card was successfully removed, False otherwise.
         """
@@ -65,20 +107,35 @@ class PhysicalCardSetController(CardSetController):
             return False
 
         # find if there's a physical card of that name in the Set
-        aSubset = [x for x in self.__oPhysCardSet.cards if x.abstractCardID == oC.id]
-        if len(aSubset) > 0:
-            # Remove last card (habit)
-            self.__oPhysCardSet.removePhysicalCard(aSubset[-1].id)
-            return True
+        if sExpansion is not None:
+            # Specific Expansion specified by the user, so
+            # just need to consider those cards
+            if sExpansion == self.model.sUnknownExpansion:
+                aPhysCards = PhysicalCard.selectBy(abstractCardID=oC.id,
+                        expansionID = None)
+            else:
+                iExpID = IExpansion(sExpansion).id
+                aPhysCards = PhysicalCard.selectBy(abstractCardID=oC.id,
+                        expansionID = iExpID)
+        else:
+            # Need to consider all PhysicalCards
+            aPhysCards = PhysicalCard.selectBy(abstractCardID=oC.id)
+        if aPhysCards.count()>0:
+            for oCard in aPhysCards:
+                if oCard in self.__oPhysCardSet.cards:
+                    # Found one, so remove it
+                    self.__oPhysCardSet.removePhysicalCard(oCard.id)
+                    # Update Model
+                    self.model.decCardByName(oC.name)
+                    if oCard.expansion is not None:
+                        self.model.decCardExpansionByName(oC.name,
+                                oCard.expansion.name)
+                    else:
+                        self.model.decCardExpansionByName(oC.name, None)
+                    return True
         return False
 
-    def incCard(self,sName):
-        """
-        Returns True if a card was successfully added, False otherwise.
-        """
-        return self.addCard(sName)
-
-    def addCard(self,sName):
+    def addCard(self, sName, sExpansion):
         """
         Returns True if a card was successfully added, False otherwise.
         """
@@ -87,27 +144,54 @@ class PhysicalCardSetController(CardSetController):
         except SQLObjectNotFound:
             return False
 
-        # Find all Physicalcards with this name
-        oPhysCards = PhysicalCard.selectBy(abstractCardID=oC.id)
-        if oPhysCards.count() > 0:
-            # Card exists
-            for oCard in oPhysCards:
-                # Add first Physical card not already in Set
-                # Limits us to number of cards in PhysicalCards
+        if sExpansion is not None:
+            # Specific Expansion specified by the user, so
+            # just need to consider those cards
+            if sExpansion == self.model.sUnknownExpansion:
+                aPhysCards = PhysicalCard.selectBy(abstractCardID=oC.id,
+                        expansionID = None)
+            else:
+                iExpID = IExpansion(sExpansion).id
+                aPhysCards = PhysicalCard.selectBy(abstractCardID=oC.id,
+                        expansionID = iExpID)
+        else:
+            # Need to consider all PhysicalCards
+            aPhysCards = PhysicalCard.selectBy(abstractCardID=oC.id)
+        if aPhysCards.count()>0:
+            aCandCards = []
+            for oCard in aPhysCards:
+                # We want to add a card that's not in this expansion,
+                # Should be effecient due to the Cached joins
                 if oCard not in self.__oPhysCardSet.cards:
-                    self.__oPhysCardSet.addPhysicalCard(oCard.id)
-                    return True
+                    # We want the card in the fewest other card sets
+                    aCandCards.append((oCard,
+                        MapPhysicalCardToPhysicalCardSet.selectBy(physicalCardID = oCard.id).count()))
+            if len(aCandCards) < 1:
+                # No card to be added
+                return False
+            aCandCards.sort(key=lambda x: x[1]) # sort by count
+            oCard = aCandCards[0][0]
+            self.__oPhysCardSet.addPhysicalCard(oCard.id)
+            self.__oPhysCardSet.sync()
+            self.__aPhysCardIds.append(oCard.id)
+            # Update Model
+            self.model.incCardByName(oC.name)
+            if oCard.expansion is not None:
+                self.model.incCardExpansionByName(oC.name, oCard.expansion.name)
+            else:
+                self.model.incCardExpansionByName(oC.name, None)
+            return True
         # Got here, so we failed to add
         return False
 
 class AbstractCardSetController(CardSetController):
-    def __init__(self,oWindow,oMasterController,sName,oConfig):
-        super(AbstractCardSetController,self).__init__(\
-                oWindow,oMasterController,sName,"AbstractCardSet",oConfig)
+    def __init__(self, sName, oConfig, oMainWindow, oFrame):
+        super(AbstractCardSetController,self).__init__(
+                sName, AbstractCardSet, oConfig, oMainWindow, oFrame)
         self.__oAbsCardSet = AbstractCardSet.byName(sName)
-        self._oMenu = CardSetMenu(self,self.getWin(),self.getView(),self.__oAbsCardSet.name,"AbstractCardSet")
+        self._sFilterType = 'AbstractCard'
 
-    def decCard(self,sName):
+    def decCard(self, sName, sExpansion):
         """
         Returns True if a card was successfully removed, False otherwise.
         """
@@ -116,26 +200,16 @@ class AbstractCardSetController(CardSetController):
         except SQLObjectNotFound:
             return False
         # find if there's a abstract card of that name in the Set
-        aSubset = [x for x in self.__oAbsCardSet.cards if x.id == oC.id]
-        if len(aSubset) > 0:
-            # FIXME: This currently removes all the cards and restore
-            # X-1 of them, because of the way removeAbstractCard works
-            # for AbstractCardSets. Need to get at the id field of the
-            # join to avoid this
-            # Remove card
-            self.__oAbsCardSet.removeAbstractCard(aSubset[-1].id)
-            for j in range(len(aSubset)-1):
-                self.__oAbsCardSet.addAbstractCard(oC.id)
+        oDBClass = self.model.cardclass
+        aSubSet = list(oDBClass.selectBy(abstractCardID=oC.id,
+            abstractCardSetID=self.__oAbsCardSet.id))
+        if len(aSubSet) > 0:
+            oDBClass.delete(aSubSet[-1].id)
+            self.model.alterCardCount(oC.name, -1)
             return True
         return False
 
-    def incCard(self,sName):
-        """
-        Returns True if a card was successfully added, False otherwise.
-        """
-        return self.addCard(sName)
-
-    def addCard(self,sName):
+    def addCard(self, sName, sExpansion):
         """
         Returns True if a card was successfully added, False otherwise.
         """
@@ -147,4 +221,5 @@ class AbstractCardSetController(CardSetController):
         # This is much simpler than for PhysicalCardSets, as we don't have
         # to worry about whether the card exists in PhysicalCards or not
         self.__oAbsCardSet.addAbstractCard(oC.id)
+        self.model.incCardByName(oC.name)
         return True

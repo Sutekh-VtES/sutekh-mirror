@@ -1,48 +1,39 @@
-# PhysicalCardMenu.py
-# Menu for the Physical Card View
-# Copyright 2005, 2006 Simon Cross <hodgestar@gmail.com>
+# AbstractCardListMenu.py
+# Copyright 2005,2006 Simon Cross <hodgestar@gmail.com>
 # Copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
 import gtk
-from sutekh.gui.ExportDialog import ExportDialog
-from sutekh.gui.EditPhysicalCardMappingDialog import EditPhysicalCardMappingDialog
-from sutekh.io.XmlFileHandling import PhysicalCardXmlFile
+from sqlobject import sqlhub, connectionForURI
+from sutekh.core.SutekhObjects import PhysicalCardSet, AbstractCardSet, ObjectList
+from sutekh.gui.ImportDialog import ImportDialog
+from sutekh.gui.WWFilesDialog import WWFilesDialog
+from sutekh.io.XmlFileHandling import PhysicalCardXmlFile, PhysicalCardSetXmlFile, \
+                                    AbstractCardSetXmlFile
+from sutekh.io.IdentifyXMLFile import IdentifyXMLFile
+from sutekh.core.DatabaseUpgrade import copyToNewAbstractCardDB, createFinalCopy
+from sutekh.SutekhUtility import refreshTables, readWhiteWolfList, readRulings
+from sutekh.io.ZipFileWrapper import ZipFileWrapper
 
-class PhysicalCardMenu(gtk.MenuBar, object):
+class AbstractCardListMenu(gtk.MenuBar, object):
     def __init__(self, oFrame, oController, oWindow):
-        super(PhysicalCardMenu, self).__init__()
+        super(AbstractCardListMenu,self).__init__()
         self.__oC = oController
         self.__oWindow = oWindow
         self.__oFrame = oFrame
-
         self.__dMenus = {}
-        self.__create_PCL_menu()
+
+        self.__create_ACL_menu()
         self.__create_filter_menu()
         self.__create_plugin_menu()
 
-    def __create_PCL_menu(self):
+    def __create_ACL_menu(self):
         # setup sub menu
-        iMenu = gtk.MenuItem("Physical Card List Actions")
+        iMenu = gtk.MenuItem("Abstract Card List Actions")
         wMenu = gtk.Menu()
-        self.__dMenus["PCS"] = wMenu
+        self.__dMenus["ACS"] = wMenu
         iMenu.set_submenu(wMenu)
         # items
-        iExport = gtk.MenuItem("Export Physical Card List to File")
-        wMenu.add(iExport)
-        iExport.connect('activate', self.doExport)
-
-        self.iViewExpansions = gtk.CheckMenuItem('Show Card Expansions in the Pane')
-        self.iViewExpansions.set_inconsistent(False)
-        self.iViewExpansions.set_active(True)
-        self.iViewExpansions.connect('toggled', self.toggleExpansion)
-        wMenu.add(self.iViewExpansions)
-
-        self.iEditable = gtk.CheckMenuItem('List is Editable')
-        self.iEditable.set_inconsistent(False)
-        self.iEditable.set_active(False)
-        self.iEditable.connect('toggled', self.toggleEditable)
-        wMenu.add(self.iEditable)
 
         iExpand = gtk.MenuItem("Expand All (Ctrl+)")
         wMenu.add(iExpand)
@@ -55,10 +46,6 @@ class PhysicalCardMenu(gtk.MenuBar, object):
         iClose = gtk.MenuItem("Close List")
         wMenu.add(iClose)
         iClose.connect("activate", self.close_list)
-
-        iEditAllocation = gtk.MenuItem('Edit allocation of cards to PCS')
-        wMenu.add(iEditAllocation)
-        iEditAllocation.connect('activate', self.do_edit_card_set_allocation)
 
         self.add(iMenu)
 
@@ -101,43 +88,14 @@ class PhysicalCardMenu(gtk.MenuBar, object):
         if len(wMenu.get_children()) == 0:
             iMenu.set_sensitive(False)
 
-    def doExport(self, oWidget):
-        oFileChooser = ExportDialog("Save Physical Card List As", self.__oWindow)
-        oFileChooser.run()
-        sFileName = oFileChooser.getName()
-        if sFileName is not None:
-            oW = PhysicalCardXmlFile(sFileName)
-            oW.write()
-
     def close_list(self, widget):
         self.__oFrame.close_frame()
 
-    def setApplyFilter(self, bState):
-        self.iApply.set_active(bState)
-
-    def do_edit_card_set_allocation(self, oWidget):
-        """Popup the edit allocation dialog"""
-        dSelectedCards = self.__oC.view.process_selection()
-        if len(dSelectedCards) == 0:
-            return
-        oEditAllocation = EditPhysicalCardMappingDialog(self.__oWindow,
-                dSelectedCards)
-        oEditAllocation.run()
+    def setApplyFilter(self,state):
+        self.iApply.set_active(state)
 
     def toggleApply(self, oWidget):
         self.__oC.view.runFilter(oWidget.active)
-
-    def toggleExpansion(self, oWidget):
-        self.__oC.model.bExpansions = oWidget.active
-        self.__oC.view.reload_keep_expanded()
-
-    def toggleEditable(self, oWidget):
-        self.__oC.model.bEditable = oWidget.active
-        self.__oC.view.reload_keep_expanded()
-        if oWidget.active:
-            self.__oC.view.set_color_edit_cue()
-        else:
-            self.__oC.view.set_color_normal()
 
     def setFilter(self, oWidget):
         self.__oC.view.getFilter(self)

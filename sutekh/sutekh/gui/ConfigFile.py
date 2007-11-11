@@ -9,27 +9,25 @@ from ConfigParser import RawConfigParser
 class ConfigFileListener(object):
     """Listener object for config changes - inspired by CardListModeListener"""
 
-    def addFilter(self,sFilter,sKey):
+    def addFilter(self, sFilter, sKey):
         """New Filter added"""
         pass
 
-    def removeFilter(self,sFilter,sKey):
+    def removeFilter(self, sFilter, sKey):
         """Filter removed"""
         pass
 
-    def replaceFilter(self,sOldFilter,sNewFilter,sKey):
+    def replaceFilter(self, sOldFilter, sNewFilter, sKey):
         """A Filter has been replaced"""
         pass
 
 class ConfigFile(object):
 
-    __sFiltersSection = 'filters'
-    __sWinPosSection = 'Window Pos'
-    __sWinNameSection = 'Window Name'
-    __sCardSetsSection = 'Card Sets'
+    __sFiltersSection = 'Filters'
+    __sPanesSection = 'Open Panes'
     __sPrefsSection = 'GUI Preferences'
 
-    def __init__(self,sFileName):
+    def __init__(self, sFileName):
         self.__sFileName = sFileName
         self.__oConfig = RawConfigParser()
         # Use read to parse file if it exists
@@ -41,14 +39,12 @@ class ConfigFile(object):
             # default to saving on exit
             self.setSaveOnExit(True)
 
-        if not self.__oConfig.has_section(self.__sCardSetsSection):
-            self.__oConfig.add_section(self.__sCardSetsSection)
-
-        if not self.__oConfig.has_section(self.__sWinPosSection):
-            self.__oConfig.add_section(self.__sWinPosSection)
-
-        if not self.__oConfig.has_section(self.__sWinNameSection):
-            self.__oConfig.add_section(self.__sWinNameSection)
+        if not self.__oConfig.has_section(self.__sPanesSection):
+            self.__oConfig.add_section(self.__sPanesSection)
+            # No panes information, so we set 'sensible' defaults
+            self.addPane(1, 'abstract_card', 'Abstract Cards')
+            self.addPane(2, 'physical_card', 'Physical Cards')
+            self.addPane(3, 'Card Text', 'Card Text')
 
         if not self.__oConfig.has_section(self.__sFiltersSection):
             self.__oConfig.add_section(self.__sFiltersSection)
@@ -58,14 +54,14 @@ class ConfigFile(object):
     def __str__(self):
         return "FileName : " + self.__sFileName
 
-    def addListener(self,oListener):
+    def addListener(self, oListener):
         self.__dListeners[oListener] = None
 
-    def removeListener(self,oListener):
+    def removeListener(self, oListener):
         del self.__dListenders[oListener]
 
     def write(self):
-        self.__oConfig.write(open(self.__sFileName,'w'))
+        self.__oConfig.write(open(self.__sFileName, 'w'))
 
     def getFilters(self):
         return [x[1] for x in self.__oConfig.items(self.__sFiltersSection)]
@@ -73,94 +69,64 @@ class ConfigFile(object):
     def getFiltersKeys(self):
         return self.__oConfig.items(self.__sFiltersSection)
 
-    def getWinPos(self,sTitle):
-        for sKey,sName in self.__oConfig.items(self.__sWinNameSection):
-            if sName == sTitle:
-                sPos = self.__oConfig.get(self.__sWinPosSection,sKey)
-                X,Y = sPos.split(',')
-                return ( int(X), int(Y) )
-        return None
-
     def preSaveClear(self):
         """Clear out old saved pos, before saving new stuff"""
-        aKeys = self.__oConfig.options(self.__sWinPosSection)
+        aKeys = self.__oConfig.options(self.__sPanesSection)
         for sKey in aKeys:
-            self.__oConfig.remove_option(self.__sWinPosSection,sKey)
-        aKeys = self.__oConfig.options(self.__sWinNameSection)
-        for sKey in aKeys:
-            self.__oConfig.remove_option(self.__sWinNameSection,sKey)
-        aKeys = self.__oConfig.options(self.__sCardSetsSection)
-        for sKey in aKeys:
-            self.__oConfig.remove_option(self.__sCardSetsSection,sKey)
+            self.__oConfig.remove_option(self.__sPanesSection, sKey)
 
-    def getAllWinPos(self):
+    def getAllPanes(self):
         aRes = []
-        for sKey,sName in self.__oConfig.items(self.__sWinNameSection):
-            sPos = self.__oConfig.get(self.__sWinPosSection,sKey)
-            X,Y = sPos.split(',')
-            aRes.append( ( sName, int(X), int(Y) ) )
+        for sKey, sValue in self.__oConfig.items(self.__sPanesSection):
+            iPaneNumber = int(sKey.split(' ')[1])
+            # Type is before 1st colon in the name
+            sType, sName = sValue.split(':', 1)
+            aRes.append((iPaneNumber, sType, sName))
+        aRes.sort() # Numbers denote ordering
         return aRes
 
     def getSaveOnExit(self):
-        return self.__oConfig.get(self.__sPrefsSection,'save on exit') == 'yes'
+        return self.__oConfig.get(self.__sPrefsSection, 'save on exit') == 'yes'
 
-    def setSaveOnExit(self,bSaveOnExit):
+    def setSaveOnExit(self, bSaveOnExit):
         if bSaveOnExit:
-            self.__oConfig.set(self.__sPrefsSection,'save on exit','yes')
+            self.__oConfig.set(self.__sPrefsSection, 'save on exit', 'yes')
         else:
-            self.__oConfig.set(self.__sPrefsSection,'save on exit','no')
+            self.__oConfig.set(self.__sPrefsSection, 'save on exit', 'no')
 
-    def getCardSets(self):
-        # Type is before 1st colon in the saved name
-        return [(x[1].split(':',1)) for x in self.__oConfig.items(self.__sCardSetsSection)]
+    def addPane(self, iPaneNumber, sType, sName):
+        aOptions = self.__oConfig.options(self.__sPanesSection)
+        sKey = 'pane ' + str(iPaneNumber)
+        sValue = sType + ':' + sName
+        self.__oConfig.set(self.__sPanesSection, sKey, sValue)
 
-    def addWinPos(self,sWindowTitle,tPos):
-        sPos = str(tPos[0]) + ',' + str(tPos[1])
-        aOptions = self.__oConfig.options(self.__sWinPosSection)
-        iNum = len(aOptions)
-        sKey = 'window ' + str(iNum)
-        while sKey in aOptions:
-            iNum += 1
-            sKey = 'window ' + str(iNum)
-        self.__oConfig.set(self.__sWinPosSection,sKey,sPos)
-        self.__oConfig.set(self.__sWinNameSection,sKey,sWindowTitle)
-
-    def addCardSet(self,sType,sCardSet):
-        aOptions = self.__oConfig.options(self.__sCardSetsSection)
-        iNum = len(aOptions)
-        sKey = 'card set ' + str(iNum)
-        while sKey in aOptions:
-            iNum += 1
-            sKey = 'card set ' + str(iNum)
-        self.__oConfig.set(self.__sCardSetsSection,sKey,sType + ':' + sCardSet)
-
-    def addFilter(self,sFilter):
+    def addFilter(self, sFilter):
         aOptions = self.__oConfig.options(self.__sFiltersSection)
         self.__iNum += 1
         sKey = 'user filter ' + str(self.__iNum)
         while sKey in aOptions:
             self.__iNum += 1
             sKey = 'user filter ' + str(self.__iNum)
-        self.__oConfig.set(self.__sFiltersSection,sKey,sFilter)
+        self.__oConfig.set(self.__sFiltersSection, sKey, sFilter)
         for oListener in self.__dListeners:
-            oListener.addFilter(sFilter,sKey)
+            oListener.addFilter(sFilter, sKey)
 
-    def removeFilter(self,sFilter,sKey):
+    def removeFilter(self, sFilter, sKey):
         # Make sure Filer and key match
         if sKey in self.__oConfig.options(self.__sFiltersSection) and \
-                sFilter == self.__oConfig.get(self.__sFiltersSection,sKey):
-            self.__oConfig.remove_option(self.__sFiltersSection,sKey)
+                sFilter == self.__oConfig.get(self.__sFiltersSection, sKey):
+            self.__oConfig.remove_option(self.__sFiltersSection, sKey)
             for oListener in self.__dListeners:
-                oListener.removeFilter(sFilter,sKey)
+                oListener.removeFilter(sFilter, sKey)
             return
 
-    def replaceFilter(self,sOldFilter,sNewFilter,sKey):
+    def replaceFilter(self, sOldFilter, sNewFilter, sKey):
         if sKey in self.__oConfig.options(self.__sFiltersSection) and \
-                sOldFilter == self.__oConfig.get(self.__sFiltersSection,sKey):
-            self.__oConfig.remove_option(self.__sFiltersSection,sKey)
-            self.__oConfig.set(self.__sFiltersSection,sKey,sNewFilter)
+                sOldFilter == self.__oConfig.get(self.__sFiltersSection, sKey):
+            self.__oConfig.remove_option(self.__sFiltersSection, sKey)
+            self.__oConfig.set(self.__sFiltersSection, sKey, sNewFilter)
             for oListener in self.__dListeners:
-                oListener.replaceFilter(sOldFilter,sNewFilter,sKey)
+                oListener.replaceFilter(sOldFilter, sNewFilter, sKey)
             return
 
 

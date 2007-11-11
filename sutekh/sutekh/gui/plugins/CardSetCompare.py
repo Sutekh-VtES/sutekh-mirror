@@ -3,103 +3,103 @@
 # GPL - see COPYING for details
 
 import gtk
-from sutekh.core.SutekhObjects import PhysicalCard, AbstractCardSet,\
+from sutekh.core.SutekhObjects import PhysicalCard, AbstractCardSet, \
                                  PhysicalCardSet, AbstractCard, IAbstractCard
 from sutekh.core.Filters import PhysicalCardSetFilter, AbstractCardSetFilter
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.ScrolledList import ScrolledList
 
 class CardSetCompare(CardListPlugin):
-    dTableVersions = {"AbstractCardSet" : [1,2,3],
-                      "PhysicalCardSet" : [1,2,3]}
-    aModelsSupported = ["AbstractCardSet","PhysicalCardSet"]
-    def getMenuItem(self):
+    dTableVersions = {AbstractCardSet : [1, 2, 3],
+                      PhysicalCardSet : [1, 2, 3]}
+    aModelsSupported = [AbstractCardSet,
+            PhysicalCardSet]
+
+    def get_menu_item(self):
         """
         Overrides method from base class.
         """
-        if not self.checkVersions() or not self.checkModelType():
+        if not self.check_versions() or not self.check_model_type():
             return None
         iDF = gtk.MenuItem("Compare with another Card Set")
         iDF.connect("activate", self.activate)
         return iDF
 
-    def getDesiredMenu(self):
+    def get_desired_menu(self):
         return "Plugins"
 
-    def activate(self,oWidget):
-        oDlg = self.makeDialog()
+    def activate(self, oWidget):
+        oDlg = self.make_dialog()
         oDlg.run()
         # only do stuff for AbstractCardSets
 
-    def makeDialog(self):
+    def make_dialog(self):
         """
         Create the list of card sets to select
         """
-        parent = self.view.getWindow()
-        self.oDlg = gtk.Dialog("Choose Card Set to Compare with",parent,
+        oParent = self.view.getWindow()
+        self.oDlg = gtk.Dialog("Choose Card Set to Compare with", oParent,
                           gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                           (gtk.STOCK_OK, gtk.RESPONSE_OK,
                            gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
-        self.csFrame = ScrolledList('Abstract Card Sets')
-        self.csFrame.set_select_single()
-        self.oDlg.vbox.pack_start(self.csFrame)
-        self.csFrame.set_size_request(150,300)
-        if self.view.sSetType == 'AbstractCardSet':
+        if self._cModelType is AbstractCardSet:
             oSelect = AbstractCardSet.select().orderBy('name')
-        elif self.view.sSetType == 'PhysicalCardSet':
+            self.oCSList = ScrolledList('Abstract Card Sets')
+        elif self._cModelType is PhysicalCardSet:
             oSelect = PhysicalCardSet.select().orderBy('name')
+            self.oCSList = ScrolledList('Physical Card Sets')
         else:
             return
-        for cs in oSelect:
-            if cs.name != self.view.sSetName:
-                iter = self.csFrame.get_list().append(None)
-                self.csFrame.get_list().set(iter,0,cs.name)
-        self.oDlg.connect("response", self.handleResponse)
+        self.oCSList.set_select_single()
+        self.oDlg.vbox.pack_start(self.oCSList)
+        self.oCSList.set_size_request(150, 300)
+        aVals = [oCS.name for oCS in oSelect if oCS.name != self.view.sSetName]
+        self.oCSList.fill_list(aVals)
+        self.oDlg.connect("response", self.handle_response)
         self.oDlg.show_all()
         return self.oDlg
 
-    def handleResponse(self,oWidget,oResponse):
+    def handle_response(self, oWidget, oResponse):
         if oResponse ==  gtk.RESPONSE_OK:
             aCardSetNames = [self.view.sSetName]
-            dSelect = {}
-            self.csFrame.get_selection(aCardSetNames,dSelect)
-            self.compCardSets(aCardSetNames)
+            aCardSetNames.extend(self.oCSList.get_selection())
+            self.comp_card_sets(aCardSetNames)
         self.oDlg.destroy()
 
-    def compCardSets(self,aCardSetNames):
-        (dDifferences,aCommon) = self.__getCardSetList(aCardSetNames)
-        parent = self.view.getWindow()
-        Results = gtk.Dialog("Card Comparison",parent,gtk.DIALOG_MODAL | \
+    def comp_card_sets(self, aCardSetNames):
+        (dDifferences, aCommon) = self.__get_card_set_list(aCardSetNames)
+        oParent = self.view.getWindow()
+        Results = gtk.Dialog("Card Comparison", oParent, gtk.DIALOG_MODAL | \
                 gtk.DIALOG_DESTROY_WITH_PARENT, \
                 (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
-        myHBox = gtk.HBox(False,0)
-        if len(aCommon)>0:
+        myHBox = gtk.HBox(False, 0)
+        if len(aCommon) > 0:
             oFrame = gtk.Frame("placeholder")
             oFrame.get_label_widget().set_markup("<span foreground = \"blue\">Common Cards</span>")
             message = ""
-            for cardname,cardcount in aCommon:
-                message += "<span foreground = \"green\">" + cardname + \
-                        "</span> : " + str(cardcount) + "\n"
+            for sCardName, iCount in aCommon:
+                message += "<span foreground = \"green\">" + sCardName + \
+                        "</span> : " + str(iCount) + "\n"
             myLabel = gtk.Label()
             myLabel.set_markup(message)
             oFrame.add(myLabel)
             myHBox.pack_start(oFrame)
-        if len(dDifferences[aCardSetNames[0]])>0:
+        if len(dDifferences[aCardSetNames[0]]) > 0:
             oFrame = gtk.Frame("placeholder")
             oFrame.get_label_widget().set_markup("<span foreground = \"red\">Cards only in " + aCardSetNames[0] + "</span>")
             message = ""
-            for cardname,cardcount in dDifferences[aCardSetNames[0]]:
-                message += "<span foreground = \"blue\">" + cardname + "</span> : " + str(cardcount) + "\n"
+            for sCardName, iCount in dDifferences[aCardSetNames[0]]:
+                message += "<span foreground = \"blue\">" + sCardName + "</span> : " + str(iCount) + "\n"
             myLabel = gtk.Label()
             myLabel.set_markup(message)
             oFrame.add(myLabel)
             myHBox.pack_start(oFrame)
-        if len(dDifferences[aCardSetNames[1]])>0:
+        if len(dDifferences[aCardSetNames[1]]) > 0:
             oFrame = gtk.Frame("placeholder")
             oFrame.get_label_widget().set_markup("<span foreground = \"red\">Cards only in " + aCardSetNames[1] + "</span>")
             message = ""
-            for cardname,cardcount in dDifferences[aCardSetNames[1]]:
-                message += "<span foreground = \"blue\">" + cardname + "</span> : " + str(cardcount) + "\n"
+            for sCardName, iCount in dDifferences[aCardSetNames[1]]:
+                message += "<span foreground = \"blue\">" + sCardName + "</span> : " + str(iCount) + "\n"
             myLabel = gtk.Label()
             myLabel.set_markup(message)
             oFrame.add(myLabel)
@@ -109,37 +109,32 @@ class CardSetCompare(CardListPlugin):
         Results.run()
         Results.destroy()
 
-    def __getCardSetList(self,aCardSetNames):
+    def __get_card_set_list(self, aCardSetNames):
         dFullCardList = {}
-        name1 = aCardSetNames[0]
-        name2 = aCardSetNames[1]
-        for name in aCardSetNames:
-            if self.view.sSetType == 'AbstractCardSet':
-                oFilter = AbstractCardSetFilter(name)
+        sCardSetName1 = aCardSetNames[0]
+        sCardSetName2 = aCardSetNames[1]
+        for sCardSetName in aCardSetNames:
+            if self._cModelType is AbstractCardSet:
+                oFilter = AbstractCardSetFilter(sCardSetName)
                 oCS = oFilter.select(AbstractCard)
-            elif self.view.sSetType == 'PhysicalCardSet':
-                oFilter = PhysicalCardSetFilter(name)
+            elif self._cModelType is PhysicalCardSet:
+                oFilter = PhysicalCardSetFilter(sCardSetName)
                 oCS = oFilter.select(PhysicalCard)
             for oC in oCS:
                 oAC = IAbstractCard(oC)
-                try:
-                    dFullCardList[oAC.name][name] += 1
-                except KeyError:
-                    dFullCardList[oAC.name] = {}
-                    dFullCardList[oAC.name][name1] = 0
-                    dFullCardList[oAC.name][name2] = 0
-                    dFullCardList[oAC.name][name] += 1
-        dDifferences = { name1 : [], name2 : [] }
+                dFullCardList.setdefault(oAC.name, {sCardSetName1 : 0, sCardSetName2 : 0})
+                dFullCardList[oAC.name][sCardSetName] += 1
+        dDifferences = { sCardSetName1 : [], sCardSetName2 : [] }
         aCommon = []
-        for card in dFullCardList.keys():
-            diff = dFullCardList[card][name1] - dFullCardList[card][name2]
-            common = min(dFullCardList[card][name1],dFullCardList[card][name2])
-            if diff>0:
-                dDifferences[name1].append( (card,diff) )
-            elif diff<0:
-                dDifferences[name2].append( (card,abs(diff)) )
-            if common>0:
-                aCommon.append((card,common))
-        return (dDifferences,aCommon)
+        for sCardName in dFullCardList.keys():
+            iDiff = dFullCardList[sCardName][sCardSetName1] - dFullCardList[sCardName][sCardSetName2]
+            iCommon = min(dFullCardList[sCardName][sCardSetName1], dFullCardList[sCardName][sCardSetName2])
+            if iDiff > 0:
+                dDifferences[sCardSetName1].append( (sCardName, iDiff) )
+            elif iDiff < 0:
+                dDifferences[sCardSetName2].append( (sCardName, abs(iDiff)) )
+            if iCommon > 0:
+                aCommon.append((sCardName, iCommon))
+        return (dDifferences, aCommon)
 
 plugin = CardSetCompare

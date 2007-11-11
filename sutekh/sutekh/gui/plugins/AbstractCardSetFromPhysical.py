@@ -16,7 +16,7 @@ class AbstractCardSetFromPhysical(CardListPlugin):
         """
         Overrides method from base class.
         """
-        if not self.checkVersions() or not self.checkModelType():
+        if not self.check_versions() or not self.check_model_type():
             return None
         iDF = gtk.MenuItem("Generate a Abstract Card Set")
         iDF.connect("activate", self.activate)

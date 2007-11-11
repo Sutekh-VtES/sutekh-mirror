@@ -9,7 +9,7 @@ from sqlobject import SQLObjectNotFound
 
 class ExtraCardViewColumns(CardListPlugin):
     dTableVersions = {}
-    aModelsSupported = ["PhysicalCardSet","AbstractCardSet","PhysicalCard","AbstractCard"]
+    aModelsSupported = ["Physical Card Set","Abstract Card Set","Physical Cards","Abstract Cards"]
 
     def __init__(self,*args,**kws):
         super(ExtraCardViewColumns,self).__init__(*args,**kws)
@@ -24,10 +24,14 @@ class ExtraCardViewColumns(CardListPlugin):
     # Rendering Functions
 
     def _getCard(self,oIter):
-        try:
-            oCard = AbstractCard.byCanonicalName(self.model.getCardNameFromIter(oIter).lower())
-            return oCard
-        except SQLObjectNotFound:
+        if self.model.iter_depth(oIter) == 1:
+            # Only try and lookup things that look like they should be cards
+            try:
+                oCard = AbstractCard.byCanonicalName(self.model.getNameFromIter(oIter).lower())
+                return oCard
+            except SQLObjectNotFound:
+                return None
+        else:
             return None
 
     def _renderCardType(self,oColumn,oCell,oModel,oIter):
@@ -86,7 +90,7 @@ class ExtraCardViewColumns(CardListPlugin):
         """
         Overrides method from base class.
         """
-        if not self.checkVersions() or not self.checkModelType():
+        if not self.check_versions() or not self.check_model_type():
             return None
         iSelector = gtk.MenuItem("Select Extra Columns")
         iSelector.connect("activate", self.activate)

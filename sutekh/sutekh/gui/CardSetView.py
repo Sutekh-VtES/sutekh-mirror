@@ -3,102 +3,72 @@
 # Copyright 2006 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
 
+import gtk
 from sutekh.gui.CardListView import EditableCardListView
-from sutekh.gui.DeleteCardSetDialog import DeleteCardSetDialog
+from sutekh.gui.CardListModel import PhysicalCardSetCardListModel, CardListModel
 from sutekh.core.Filters import PhysicalCardSetFilter, AbstractCardSetFilter
-from sutekh.core.SutekhObjects import PhysicalCard, PhysicalCardSet, AbstractCardSet, \
-        MapAbstractCardToAbstractCardSet
+from sutekh.core.SutekhObjects import PhysicalCard, PhysicalCardSet, \
+        AbstractCardSet, MapAbstractCardToAbstractCardSet
+from sutekh.SutekhUtility import delete_physical_card_set, delete_abstract_card_set
 
 class CardSetView(EditableCardListView):
-    def __init__(self,oWindow,oController,sName,sSetType,oConfig):
-        super(CardSetView,self).__init__(oController,oWindow,oConfig)
-        self.sSetName = sName
-        self.sSetType = sSetType
-        if sSetType == "PhysicalCardSet":
+    def __init__(self, oMainWindow, oController, sName, cSetType, oConfig):
+        if cSetType is PhysicalCardSet:
             # cardclass is the actual physicalcard
-            self._oModel.cardclass = PhysicalCard
-            self._oModel.basefilter = PhysicalCardSetFilter(self.sSetName)
-        elif sSetType == "AbstractCardSet":
+            oModel = PhysicalCardSetCardListModel(sName)
+        elif cSetType is AbstractCardSet:
             # Need MapAbstractCardToAbstractCardSet here, so filters do the right hing
+            oModel = CardListModel()
+        super(CardSetView, self).__init__(oController, oMainWindow, oConfig, oModel)
+        self.sSetName = sName
+        self.cSetType = cSetType
+        if cSetType is AbstractCardSet:
             self._oModel.cardclass = MapAbstractCardToAbstractCardSet
             self._oModel.basefilter = AbstractCardSetFilter(self.sSetName)
-        else:
-            # Should this be an error condition?
-            self._oModel.basefilter = None
-
+        self.sDragPrefix = self.cSetType.sqlmeta.table + ":" + self.sSetName
         self.load()
 
-    def dragCard(self, btn, context, selection_data, info, time):
-        if self._oSelection.count_selected_rows()<1:
-            return
-        oModel, oPathList = self._oSelection.get_selected_rows()
-        selectData = "CardSet:"+self.sSetType+":"+self.sSetName
-        for oPath in oPathList:
-            oIter = oModel.get_iter(oPath)
-            sCardName = oModel.get_value(oIter,0)
-            number = str(oModel.get_value(oIter,1))
-            selectData = selectData + "\n" + number + "_" + sCardName
-        selection_data.set(selection_data.target, 8, selectData)
-
-    def cardDrop(self, w, context, x, y, data, info, time):
-        lines = data.data.splitlines()
-        # We need to do things in this order as cardNames can include :
-        bits = lines[0].split(":")
-        if data and data.format == 8 and bits[0] == "Phys":
-            # Card is from the Physical card view, so we only get one
-            for name in lines[1:]:
-                self.addCard(name)
-            context.finish(True, False, time)
-        elif data and data.format == 8 and bits[0] == "Abst" \
-                and self.sSetType == "AbstractCardSet":
-            # Abstract Card Sets can accept cards from the Abstract Card List
-            # Card is from the Abstract card view, so we only get one
-            for name in lines[1:]:
-                self.addCard(name)
-            context.finish(True, False, time)
-        elif data and data.format == 8 and bits[0] == "CardSet":
-            # Card is from a CardSet, so extract type and name
-            sourceType = bits[1]
-            sourceSetName = bits[2]
-            if sourceSetName != self.sSetName or sourceType != self.sSetType:
-                # different Set, so try and add number cards
-                # We rely on addCard to prevent stuff becoming
-                # inconsistent
-                for candidate in lines[1:]:
-                    [number, name] = candidate.split('_')
-                    for j in range(int(number)):
-                        self.addCard(name)
-            context.finish(True,False, time)
-        else:
+    def card_drop(self, w, context, x, y, data, info, time):
+        if not self._oModel.bEditable or not data or data.format != 8:
+            # Don't accept cards when editable
             context.finish(False, False, time)
+        else:
+            sSource, aCardInfo = self.split_selection_data(data.data)
+            if sSource == self.sDragPrefix:
+                # Can't drag to oneself
+                context.finish(False, False, time)
+            # Rules are - we can always drag from the PhysicalCard List
+            # and from cardsets of the same type,
+            # but only ACS's can recieve cards from the AbstractCard List
+            aSources=sSource.split(':')
+            if aSources[0] in ["Phys", self.cSetType.sqlmeta.table]:
+                # Add the cards, Count Matters
+                for iCount, sCardName, sExpansion in aCardInfo:
+                    for iLoop in range(iCount):
+                        self.addCard(sCardName, sExpansion)
+                context.finish(True, False, time)
+            elif aSources[0] == "Abst" and self.cSetType is AbstractCardSet:
+                # from Abstract list, so iCount doesn't matter
+                for iCount, sCardName, sExpansion in aCardInfo:
+                    self.addCard(sCardName, sExpansion)
+                context.finish(True, False, time)
+            else:
+                context.finish(False, False, time)
 
     def deleteCardSet(self):
         # Check if CardSet is empty
-        if self.sSetType == "PhysicalCardSet":
-            oCS = PhysicalCardSet.byName(self.sSetName)
-        else:
-            oCS = AbstractCardSet.byName(self.sSetName)
+        oCS = self.cSetType.byName(self.sSetName)
         if len(oCS.cards)>0:
-            # Not empty, ask user if we should delete it
-            Dialog = DeleteCardSetDialog(self._oWin,self.sSetName,self.sSetType)
-            Dialog.run()
-            if not Dialog.getResult():
+            oDialog = gtk.MessageDialog(None, 0, gtk.MESSAGE_WARNING,
+                    gtk.BUTTONS_OK_CANCEL, "Card Set Not Empty. Really Delete?")
+            iResponse = oDialog.run()
+            oDialog.destroy()
+            if iResponse == gtk.RESPONSE_CANCEL:
                 return False # not deleting
-
-            # User agreed, so clear the CardSet
-            if self.sSetType == "PhysicalCardSet":
-                for oC in oCS.cards:
-                    oCS.removePhysicalCard(oC)
-            else:
-                for oC in oCS.cards:
-                    oCS.removeAbstractCard(oC)
-
-        # Card Set now empty
-        if self.sSetType == "PhysicalCardSet":
-            cardSet = PhysicalCardSet.byName(self.sSetName)
-            PhysicalCardSet.delete(cardSet.id)
+        # Got this far, so delete the card set
+        if self.cSetType is PhysicalCardSet:
+            delete_physical_card_set(self.sSetName)
         else:
-            cardSet = AbstractCardSet.byName(self.sSetName)
-            AbstractCardSet.delete(cardSet.id)
+            delete_abstract_card_set(self.sSetName)
         # Tell Window to clean up
         return True

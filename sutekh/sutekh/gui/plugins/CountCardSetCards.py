@@ -3,14 +3,16 @@
 # GPL - see COPYING for details
 
 import gtk
-from sutekh.core.SutekhObjects import IAbstractCard
+from sutekh.core.SutekhObjects import IAbstractCard, AbstractCardSet, \
+                                      PhysicalCard, PhysicalCardSet
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.CardListModel import CardListModelListener
 
 class CountCardSetCards(CardListPlugin,CardListModelListener):
-    dTableVersions = {"AbstractCardSet" : [1,2,3],
-                      "PhysicalCardSet" : [1,2,3]}
-    aModelsSupported = ["AbstractCardSet","PhysicalCardSet","PhysicalCard"]
+    dTableVersions = {PhysicalCardSet : [1,2,3,4],
+                      AbstractCardSet : [1,2,3]}
+    aModelsSupported = [AbstractCardSet, PhysicalCardSet,
+            PhysicalCard]
 
     def __init__(self,*args,**kwargs):
         super(CountCardSetCards,self).__init__(*args,**kwargs)
@@ -21,74 +23,61 @@ class CountCardSetCards(CardListPlugin,CardListModelListener):
 
         # We only add listeners to windows we're going to display the toolbar
         # on
-        if self.checkVersions() and self.checkModelType():
+        if self.check_versions() and self.check_model_type():
             self.model.addListener(self)
 
-    def __idCard(self,oCard):
+    def __id_card(self,oCard):
         sType = list(oCard.cardtype)[0].name
         if sType == 'Vampire' or sType == 'Imbued':
             return 'Crypt'
         else:
             return 'Library'
 
-    def getToolbarWidget(self):
+    def get_toolbar_widget(self):
         """
         Overrides method from base class.
         """
-        if not self.checkVersions() or not self.checkModelType():
+        if not self.check_versions() or not self.check_model_type():
             return None
 
-        iHBox = gtk.HBox(False,2)
-        wTotalTextLabel = gtk.Label('Total Cards : ')
-        wCryptTextLabel = gtk.Label('Crypt Cards : ')
-        wLibraryTextLabel = gtk.Label('Library Cards : ')
-        self.wTotalLabel = gtk.Label('0')
-        self.wCryptLabel = gtk.Label('0')
-        self.wLibraryLabel = gtk.Label('0')
+        self.oTextLabel = gtk.Label('Total Cards : 0 Crypt Cards : 0 Library Cards : 0')
 
-        iHBox.pack_start(wTotalTextLabel)
-        iHBox.pack_start(self.wTotalLabel)
-        iHBox.pack_start(wCryptTextLabel)
-        iHBox.pack_start(self.wCryptLabel)
-        iHBox.pack_start(wLibraryTextLabel)
-        iHBox.pack_start(self.wLibraryLabel)
+        aAbsCards = [IAbstractCard(x) for x in 
+                self.model.getCardIterator(self.model.getCurrentFilter())]
+        self.load(aAbsCards)
 
-        self.load()
+        return self.oTextLabel
 
-        return iHBox
+    def update_numbers(self):
+        self.oTextLabel.set_markup('Total Cards : <b>' + str(self.__iTot) +
+                '</b>  Crypt Cards : <b>' + str(self.__iCrypt) +
+                '</b> Library Cards : <b>' + str(self.__iLibrary) + '</b>')
 
-    def updateNumbers(self):
-        self.wTotalLabel.set_markup('<b>' + str(self.__iTot) + '</b>')
-        self.wCryptLabel.set_markup('<b>' + str(self.__iCrypt) + '</b>')
-        self.wLibraryLabel.set_markup('<b>' + str(self.__iLibrary) + '</b>')
-
-    def load(self):
+    def load(self, aAbsCards):
         self.__iCrypt = 0
         self.__iLibrary = 0
-        aAllCards = list(self.model.getCardIterator(self.model.getSelectFilter()))
-        self.__iTot = len(aAllCards)
-        for oCard in aAllCards:
-            sType = self.__idCard(IAbstractCard(oCard))
-            if sType == 'Crypt':
+        self.__iTot = len(aAbsCards)
+        for oAbsCard in aAbsCards:
+            if self.__id_card(oAbsCard) == 'Crypt':
                 self.__iCrypt += 1
             else:
                 self.__iLibrary += 1
-        self.updateNumbers()
+        self.update_numbers()
 
-    def alterCardCount(self,oCard,iChg):
+    def alterCardCount(self, oCard, iChg):
         self.__iTot += iChg
-        if self.__idCard(oCard) == 'Crypt':
+        if self.__id_card(oCard) == 'Crypt':
             self.__iCrypt += iChg
         else:
             self.__iLibrary += iChg
-        self.updateNumbers()
+        self.update_numbers()
 
-    def addNewCard(self,oCard):
+    def addNewCard(self, oCard):
         self.__iTot += 1
-        if self.__idCard(oCard) == 'Crypt':
+        if self.__id_card(oCard) == 'Crypt':
             self.__iCrypt += 1
         else:
             self.__iLibrary += 1
-        self.updateNumbers()
+        self.update_numbers()
 
 plugin = CountCardSetCards

@@ -10,9 +10,10 @@ from sutekh.core.Filters import CardTypeFilter
 from sutekh.gui.PluginManager import CardListPlugin
 
 class AnalyzeCardList(CardListPlugin):
-    dTableVersions = {"PhysicalCardSet" : [3],
-            "AbstractCardSet" : [3]}
-    aModelsSupported = ["PhysicalCardSet","AbstractCardSet"]
+    dTableVersions = {PhysicalCardSet : [3,4],
+            AbstractCardSet : [3]}
+    aModelsSupported = [PhysicalCardSet,
+            AbstractCardSet]
 
     # Should this be defined in SutekhObjects??
     dTitleVoteMap = {
@@ -41,14 +42,14 @@ class AnalyzeCardList(CardListPlugin):
     def _getAbstractCards(self,aCards):
         return [IAbstractCard(x) for x in aCards]
 
-    def _getSortKey(self,x):
+    def _getSortKey(self, x):
         return x[1][0]
 
     def getMenuItem(self):
         """
         Overrides method from base class.
         """
-        if not self.checkVersions() or not self.checkModelType():
+        if not self.check_versions() or not self.check_model_type():
             return None
         iAnalyze = gtk.MenuItem("Analyze Deck")
         iAnalyze.connect("activate", self.activate)
@@ -65,10 +66,7 @@ class AnalyzeCardList(CardListPlugin):
         parent = self.view.getWindow()
         name = "Analysis of Card List"
         deckName = self.view.sSetName
-        if self.view.sSetType == 'PhysicalCardSet':
-            oCS = PhysicalCardSet.byName(self.view.sSetName)
-        else:
-            oCS = AbstractCardSet.byName(self.view.sSetName)
+        oCS = self._cModelType.byName(self.view.sSetName)
 
         sComment = oCS.comment.replace('&','&amp;')
         sAuthor = oCS.author
@@ -357,7 +355,8 @@ class AnalyzeCardList(CardListPlugin):
                             self.iCryptSize,"Crypt") + '\n'
 
             sVampText += "<span foreground = \"blue\">Disciplines</span>\n"
-            for discipline, number in sorted(dDeckDisc.iteritems(),key=self._getSortKey,reverse=True):
+            for discipline, number in sorted(dDeckDisc.iteritems(),
+                    key=self._getSortKey, reverse=True):
                 sVampText += str(number[0])+" Vampires with " + discipline \
                            + ' ' + self._Percentage(number[0],
                                    self.iCryptSize,"Crypt") + ", " \
@@ -561,7 +560,8 @@ class AnalyzeCardList(CardListPlugin):
             sImbuedText += "Most Expensive is : " + str(iMaxLife) + "\n"
             sImbuedText += "Average Life is : " + str(iTotLife / float(self.iNumberImbued)).ljust(5)[:5] + "\n\n"
 
-            for virtue, number in sorted(dDeckVirt.iteritems(),key=self._getSortKey,reverse=True):
+            for virtue, number in sorted(dDeckVirt.iteritems(),
+                    key=self._getSortKey, reverse=True):
                 sImbuedText += str(number[0])+" Imbued with " + virtue \
                            + ' ' + self._Percentage(number[0],
                                    self.iCryptSize,"Crypt") + '\n'
