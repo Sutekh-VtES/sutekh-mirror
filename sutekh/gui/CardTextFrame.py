@@ -32,6 +32,9 @@ class CardTextFrame(gtk.Frame, object):
     def cleanup(self):
         pass
 
+    def reload(self):
+        pass
+
     def add_parts(self, oCardText):
         wMbox = gtk.VBox(False, 2)
 

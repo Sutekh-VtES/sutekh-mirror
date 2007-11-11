@@ -32,10 +32,11 @@ class CardSetFrame(CardListFrame, object):
 
         self.update_name(sName)
 
-
     def cleanup(self):
-        """Cleanup function called before pane is removed by the
-           Main Window"""
+        """
+        Cleanup function called before pane is removed by the
+        Main Window
+        """
         if self._cModelType is PhysicalCardSet:
             self._oMainWindow.reload_pcs_list()
         else:

@@ -51,7 +51,7 @@ class CardSetManagementFrame(gtk.Frame, object):
         wMenu.add(iSep)
         iClose = gtk.MenuItem('Close Pane')
         wMenu.add(iClose)
-        iClose.connect('activate', self.remove)
+        iClose.connect('activate', self.close_menu_item)
         self._oMenu.add(iMenu)
 
     def add_filter_menu(self):
@@ -71,9 +71,15 @@ class CardSetManagementFrame(gtk.Frame, object):
     def cleanup(self):
         pass
 
-    def remove(self, oMenuWidget):
+    def reload(self):
+        pass
+
+    def close_pane(self):
         self._oMainWindow.remove_pane(self)
         self.destroy()
+
+    def close_menu_item(self, oMenuWidget):
+        self.close_pane()
 
     def add_parts(self):
         """Add a list object to the frame"""

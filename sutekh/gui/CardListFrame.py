@@ -41,6 +41,11 @@ class CardListFrame(gtk.Frame, object):
     def cleanup(self):
         pass
 
+    def reload(self):
+        """Reload frame contents"""
+        # Needs to be exposed to the main window for major database changes
+        self._oC.view.reload_keep_expanded()
+
     def close_frame(self):
         self._oMainWindow.remove_pane(self)
         self.destroy()

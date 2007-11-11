@@ -79,6 +79,7 @@ class MultiPaneWindow(gtk.Window):
         try:
             iIndex = self.dOpenPanes.values().index(sName)
             oPane = self.dOpenPanes.keys()[iIndex]
+            return oPane
         except ValueError:
             return None
 
