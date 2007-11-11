@@ -35,11 +35,11 @@ class MainMenu(gtk.MenuBar, object):
 
         # items
         iImportPhysical = gtk.MenuItem("Import Physical Card List from File")
-        iImportPhysical.connect('activate', self.doImportPhysicalCardList)
+        iImportPhysical.connect('activate', self.do_import_physical_card_list)
         wMenu.add(iImportPhysical)
 
         iImportCardSet = gtk.MenuItem("Import Card Set from File")
-        iImportCardSet.connect('activate', self.doImportCardSet)
+        iImportCardSet.connect('activate', self.do_import_card_set)
         wMenu.add(iImportCardSet)
 
         iSeperator = gtk.SeparatorMenuItem()
@@ -48,7 +48,7 @@ class MainMenu(gtk.MenuBar, object):
         if sqlhub.processConnection.uri() != "sqlite:///:memory:":
             # Need to have memory connection available for this
             iImportNewCardList = gtk.MenuItem("Import new White Wolf cardlist and rulings")
-            iImportNewCardList.connect('activate', self.doImportNewCardList)
+            iImportNewCardList.connect('activate', self.do_import_new_card_list)
             wMenu.add(iImportNewCardList)
             iSeperator2 = gtk.SeparatorMenuItem()
             wMenu.add(iSeperator2)
@@ -153,7 +153,7 @@ class MainMenu(gtk.MenuBar, object):
 
         self.add(iMenu)
 
-    def doImportPhysicalCardList(self, oWidget):
+    def do_import_physical_card_list(self, oWidget):
         oFileChooser = ImportDialog("Select Card List to Import", self.__oWin)
         oFileChooser.run()
         sFileName = oFileChooser.getName()
@@ -162,9 +162,9 @@ class MainMenu(gtk.MenuBar, object):
             (sType, sName, bExists) = oP.idFile(sFileName)
             if sType == 'PhysicalCard':
                 if not bExists:
-                    oF = PhysicalCardXmlFile(sFileName, lookup=self.__oCardLookup)
+                    oF = PhysicalCardXmlFile(sFileName, lookup=self.__oWin.cardLookup)
                     oF.read()
-                    self.__oC.reloadAll()
+                    self.__oWin.reload_all()
                 else:
                     Complaint = gtk.MessageDialog(None, 0, gtk.MESSAGE_ERROR,
                             gtk.BUTTONS_CLOSE, "Can only do this when the current Card List is empty")
@@ -176,7 +176,7 @@ class MainMenu(gtk.MenuBar, object):
                 Complaint.connect("response", lambda dlg, resp: dlg.destroy())
                 Complaint.run()
 
-    def doImportCardSet(self, oWidget):
+    def do_import_card_set(self, oWidget):
         oFileChooser = ImportDialog("Select Card Set(s) to Import", self.__oWin)
         oFileChooser.run()
         sFileName = oFileChooser.getName()
@@ -198,19 +198,20 @@ class MainMenu(gtk.MenuBar, object):
                         else:
                             delete_abstract_card_set(sName)
                 if sType == "AbstractCardSet":
-                    oF = AbstractCardSetXmlFile(sFileName, lookup=self.__oCardLookup)
+                    oF = AbstractCardSetXmlFile(sFileName, lookup=self.__oWin.cardLookup)
+                    oF.read()
+                    self.__oWin.add_abstract_card_set(sName)
                 else:
-                    oF = PhysicalCardSetXmlFile(sFileName, lookup=self.__oCardLookup)
-                oF.read()
-                self.__oC.getManager().reloadCS(sName, sType)
-                self.__oC.getManager().createNewCardSetWindow(sName, sType)
+                    oF = PhysicalCardSetXmlFile(sFileName, lookup=self.__oWin.cardLookup)
+                    oF.read()
+                    self.__oWin.add_physical_card_set(sName)
             else:
                 Complaint = gtk.MessageDialog(None, 0, gtk.MESSAGE_ERROR,
                     gtk.BUTTONS_CLOSE, "File is not a CardSet XML File.")
                 Complaint.connect("response", lambda dlg, resp: dlg.destroy())
                 Complaint.run()
 
-    def doImportNewCardList(self, oWidget):
+    def do_import_new_card_list(self, oWidget):
         oWWFilesDialog = WWFilesDialog(self.__oWin)
         oWWFilesDialog.run()
         (sCLFileName, sRulingsFileName, sBackupFile) = oWWFilesDialog.getNames()
@@ -238,8 +239,8 @@ class MainMenu(gtk.MenuBar, object):
                 readRulings(sRulingsFileName)
             bCont = False
             # Refresh abstract card view for card lookups
-            self.__oC.reloadAll()
-            (bOK, aErrors) = copyToNewAbstractCardDB(oldConn, tempConn, self.__oCardLookup)
+            self.__oWin.reload_all()
+            (bOK, aErrors) = copyToNewAbstractCardDB(oldConn, tempConn, self.__oWin.cardLookup)
             if not bOK:
                 sMesg = "There was a problem copying the cardlist to the new database\n"
                 for sStr in aErrors:
@@ -271,7 +272,7 @@ class MainMenu(gtk.MenuBar, object):
                         gtk.BUTTONS_CLOSE, sMesg)
                 Complaint.run()
                 Complaint.destroy()
-            self.__oC.reloadAll()
+            self.__oWin.reload_all()
 
     def do_save_pane_set(self, oWidget):
         self.__oWin.save_panes()

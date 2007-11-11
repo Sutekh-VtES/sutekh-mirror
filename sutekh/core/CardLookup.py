@@ -73,8 +73,8 @@ class SimpleLookup(AbstractCardLookup, PhysicalCardLookup):
             if oAbs is not None:
                 try:
                     aPhysCards = PhysicalCard.selectBy(abstractCardID=oAbs.id)
-                    for sExpansion in dCardExpansions[sName]:
-                        iCnt = dCardExpansions[sName][sExpansion]
+                    for oExpansion in dCardExpansions[sName]:
+                        iCnt = dCardExpansions[sName][oExpansion]
                         # We treat None as specifying the same as specifying
                         # an expansion - the card (A, None) doesn't match a
                         # card in the physical card list (A, '3rd Ed')
@@ -87,7 +87,7 @@ class SimpleLookup(AbstractCardLookup, PhysicalCardLookup):
                         # most often
                         for oPhys in aPhysCards:
                             if oPhys not in aCards \
-                                    and oPhys.expansion == sExpansion:
+                                    and oPhys.expansion == oExpansion:
                                 aCards.append(oPhys)
                                 iCnt -= 1
                                 if iCnt == 0:

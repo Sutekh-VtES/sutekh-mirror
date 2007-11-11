@@ -13,6 +13,7 @@ looks like:
 </cards>
 """
 
+from sutekh.core.SutekhObjects import IExpansion
 from sutekh.core.CardSetHolder import CardSetHolder
 from sutekh.core.CardLookup import DEFAULT_LOOKUP
 from sqlobject import sqlhub
@@ -44,7 +45,8 @@ class CardHandler(ContentHandler):
             if sExpansionName == 'None Specified':
                 self.oCS.add(iCount, sName, None)
             else:
-                self.oCS.add(iCount, sName, sExpansionName)
+                oExpansion = IExpansion(sExpansionName)
+                self.oCS.add(iCount, sName, oExpansion)
 
     def endElement(self, sName):
         pass

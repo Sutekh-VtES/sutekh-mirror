@@ -15,6 +15,7 @@ into a PhysicalCardSet
 """
 
 from sutekh.core.CardSetHolder import CardSetHolder
+from sutekh.core.SutekhObjects import IExpansion
 from sutekh.core.CardLookup import DEFAULT_LOOKUP
 from sqlobject import sqlhub
 from xml.sax import parse, parseString
@@ -60,7 +61,8 @@ class PhysicalCardSetHandler(ContentHandler):
             if sExpansionName == 'None Specified':
                 self.oCS.add(iCount, sName, None)
             else:
-                self.oCS.add(iCount, sName, sExpansionName)
+                oExpansion = IExpansion(sExpansionName)
+                self.oCS.add(iCount, sName, oExpansion)
 
     def endElement(self, sName):
         pass
