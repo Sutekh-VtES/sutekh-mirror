@@ -52,14 +52,14 @@ class PhysicalCardSetWriter(object):
         oCardsElem.setAttribute('annotations', sAnnotations)
 
         for tKey, iNum in dPhys.iteritems():
-            iId, sName, sExpansion = tKey
+            iId, sName, oExpansion = tKey
             oCardElem = oDoc.createElement('card')
             oCardElem.setAttribute('id', str(iId))
             oCardElem.setAttribute('name', sName)
-            if sExpansion is None:
+            if oExpansion is None:
                 oCardElem.setAttribute('expansion', 'None Specified')
             else:
-                oCardElem.setAttribute('expansion', sExpansion)
+                oCardElem.setAttribute('expansion', oExpansion.name)
             oCardElem.setAttribute('count', str(iNum))
             oCardsElem.appendChild(oCardElem)
 
