@@ -215,7 +215,7 @@ class CardListView(gtk.TreeView, object):
         Create a dictionary from the selection.
         with entries of the form sCardName : {sExpansion1 : iCount1, ... }
         for use in drag-'n drop and elsewhere
-        """        
+        """
         oModel, oPathList = self._oSelection.get_selected_rows()
         dSelectedData = {}
         for oPath in oPathList:
@@ -273,7 +273,7 @@ class CardListView(gtk.TreeView, object):
             else:
                 return sExpand
 
-        aCardInfo = zip([int(x) for x in aLines[1::3]], aLines[2::3], 
+        aCardInfo = zip([int(x) for x in aLines[1::3]], aLines[2::3],
                 [true_expansion(x) for x in aLines[3::3]])
         return sSource, aCardInfo
 
@@ -332,7 +332,7 @@ class EditableCardListView(CardListView):
         oMap = oWindow.get_colormap()
         oRed = oMap.alloc_color("red")
         self.__oEditCueStyle.fg[gtk.STATE_NORMAL] = oRed
-     
+
     # Used by card dragging handlers
     def addCard(self, sCardName, sExpansion):
         if self._oModel.bEditable:

@@ -103,9 +103,9 @@ class MultiPaneWindow(gtk.Window):
         sMenuFlag = "ACS:" + sName
         if sMenuFlag not in self.dOpenPanes.values():
             try:
-               oPane = AbstractCardSetFrame(self, sName, self._oConfig)
-               self.add_pane(oPane, sMenuFlag)
-               self.reload_acs_list()
+                oPane = AbstractCardSetFrame(self, sName, self._oConfig)
+                self.add_pane(oPane, sMenuFlag)
+                self.reload_acs_list()
             except RuntimeError, e:
                 # add warning dialog?
                 pass

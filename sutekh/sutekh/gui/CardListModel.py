@@ -67,7 +67,7 @@ class CardListModel(gtk.TreeStore):
     """
     # FIXME: Use spaces to ensure it sorts first, and is 
     # visually distinct. Very much the wrong solution, I feel
- 
+
     sUnknownExpansion = '  Unspecified Expansion'
 
     def __init__(self):
@@ -541,7 +541,7 @@ class PhysicalCardListModel(CardListModel):
         self._oBaseFilter = PhysicalCardFilter()
         self._cCardClass = PhysicalCard
         self.bExpansions = True
- 
+
     def check_inc_dec_expansion(self, oCard, sExpansion, iCnt):
         """Helper function to check status of expansions"""
         if sExpansion != self.sUnknownExpansion:
@@ -658,7 +658,7 @@ class PhysicalCardSetCardListModel(CardListModel):
                 iCardCnt = dCount.get(sKey, 0) # Return 0 for unknown keys
                 bDecCard = iCnt > 0
                 # Are cards of this expansion still available in the PC list?
-                bIncCard = iCnt < iCardCnt 
+                bIncCard = iCnt < iCardCnt
             dExpansions[sKey] = [iCnt, bDecCard, bIncCard]
         return dExpansions
 
