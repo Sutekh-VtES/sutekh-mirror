@@ -3,6 +3,8 @@
 # GPL - see COPYING for details
 
 import gtk
+from sutekh.core.SutekhObjects import AbstractCard, PhysicalCard, \
+                                      AbstractCardSet, PhysicalCardSet
 from sutekh.core.Groupings import CardTypeGrouping, ClanGrouping, DisciplineGrouping, \
                              ExpansionGrouping, RarityGrouping, CryptLibraryGrouping, \
                              NullGrouping
@@ -10,7 +12,8 @@ from sutekh.gui.PluginManager import CardListPlugin
 
 class GroupCardList(CardListPlugin):
     dTableVersions = {}
-    aModelsSupported = ["Physical Card Set","Abstract Card Set","Physical Cards","Abstract Cards"]
+    aModelsSupported = [AbstractCard, PhysicalCard, AbstractCardSet, PhysicalCardSet]
+
     def __init__(self,*args,**kws):
         super(GroupCardList,self).__init__(*args,**kws)
         self._dGrpings = {}
@@ -22,7 +25,7 @@ class GroupCardList(CardListPlugin):
         self._dGrpings['Rarity'] = RarityGrouping
         self._dGrpings['No Grouping'] = NullGrouping
 
-    def getMenuItem(self):
+    def get_menu_item(self):
         """
         Overrides method from base class.
         """
@@ -32,7 +35,7 @@ class GroupCardList(CardListPlugin):
         iGrouping.connect("activate", self.activate)
         return iGrouping
 
-    def getDesiredMenu(self):
+    def get_desired_menu(self):
         return "Plugins"
 
     def activate(self,oWidget):
