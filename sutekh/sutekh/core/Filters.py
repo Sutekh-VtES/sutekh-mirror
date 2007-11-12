@@ -60,6 +60,21 @@ class FilterBox(Filter,list):
             aJoins.extend(x._getJoins())
         return aJoins
 
+    def _getTypes(self):
+        """
+        Get types for a composite filter.
+        This is the intersection of the types of the subfilters
+        """
+        aTypes = []
+        if len(self) > 0:
+            for sType in self[0].types:
+                iLen = len([x for x in self if sType in x.types])
+                if iLen == len(self):
+                    aTypes.append(sType)
+        return aTypes
+
+    types = property(fget= lambda self: self.__getTypes())
+
 class FilterAndBox(FilterBox):
     """AND a list of filters."""
 
@@ -83,6 +98,8 @@ class FilterNot(Filter):
     def _getJoins(self):
         return []
 
+    types = property(fget= lambda self: self.__oSubFilter.types)
+
     def _getExpression(self):
         oX = self.__oSubFilter._getExpression()
         aJ = self.__oSubFilter._getJoins()
@@ -99,6 +116,8 @@ class FilterNot(Filter):
 
 class NullFilter(Filter):
     """Return everything."""
+
+    types = ['AbstractCard', 'PhysicalCard', 'AbstractCardSet', 'PhysicalCardSet']
 
     def _getExpression(self):
         return TRUE # SQLite doesn't like True. Postgres doesn't like 1.
