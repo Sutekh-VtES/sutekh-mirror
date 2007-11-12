@@ -4,12 +4,13 @@
 
 import gtk, pango
 from sutekh.gui.PluginManager import CardListPlugin
-from sutekh.core.SutekhObjects import AbstractCard
+from sutekh.core.SutekhObjects import AbstractCard, PhysicalCard, \
+                                      AbstractCardSet, PhysicalCardSet
 from sqlobject import SQLObjectNotFound
 
 class ExtraCardViewColumns(CardListPlugin):
     dTableVersions = {}
-    aModelsSupported = ["Physical Card Set","Abstract Card Set","Physical Cards","Abstract Cards"]
+    aModelsSupported = [AbstractCard, PhysicalCard, AbstractCardSet, PhysicalCardSet]
 
     def __init__(self,*args,**kws):
         super(ExtraCardViewColumns,self).__init__(*args,**kws)
@@ -64,7 +65,7 @@ class ExtraCardViewColumns(CardListPlugin):
     def _renderExpansions(self,oColumn,oCell,oModel,oIter):
         oCard = self._getCard(oIter)
         if not oCard is None:
-            aExp = [oP.expansion.name + "(" + oP.rarity.name + ")" for oP in oCard.rarity]
+            aExp = [oP.expansion.shortname + "(" + oP.rarity.name + ")" for oP in oCard.rarity]
             aExp.sort()
             oCell.set_property("text",",".join(aExp))
         else:
@@ -86,7 +87,7 @@ class ExtraCardViewColumns(CardListPlugin):
 
     # Dialog and Menu Item Creation
 
-    def getMenuItem(self):
+    def get_menu_item(self):
         """
         Overrides method from base class.
         """
@@ -96,7 +97,7 @@ class ExtraCardViewColumns(CardListPlugin):
         iSelector.connect("activate", self.activate)
         return iSelector
 
-    def getDesiredMenu(self):
+    def get_desired_menu(self):
         return "Plugins"
 
     def activate(self,oWidget):
