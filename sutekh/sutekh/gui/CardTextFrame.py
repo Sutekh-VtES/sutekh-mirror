@@ -7,46 +7,24 @@
 import gtk
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 from sutekh.gui.CardTextView import CardTextView
+from sutekh.gui.BasicFrame import BasicFrame
 
-class CardTextFrame(gtk.Frame, object):
+class CardTextFrame(BasicFrame):
     def __init__(self, oMainWindow):
-        super(CardTextFrame,self).__init__()
-        self.__oMainWindow = oMainWindow
-        self.__oTitle = gtk.Label("Card Text")
-        self.__sName = "Card Text"
-        self.__oTextView = CardTextView(oMainWindow)
-        self.add_parts(self.__oTextView)
+        super(CardTextFrame, self).__init__(oMainWindow)
+        self._oTextView = CardTextView(oMainWindow)
+        self.add_parts()
 
-        self.__oBaseStyle = self.__oTitle.get_style().copy()
-        self.__oFocStyle = self.__oTitle.get_style().copy()
-        # Don't start overly narrow
-        self.set_size_request(200, 100)
-        oMap = self.__oTitle.get_colormap()
-        oHighlighted = oMap.alloc_color("purple")
-        self.__oFocStyle.fg[gtk.STATE_NORMAL] = oHighlighted
+    view = property(fget=lambda self: self._oTextView, doc="Associated View Object")
+    type = "Card Text"
 
-    view = property(fget=lambda self: self.__oTextView, doc="Associated View Object")
-    name = property(fget=lambda self: self.__sName, doc="Frame Name")
-    type = property(fget=lambda self: self.__sName, doc="Frame Type")
-
-    def cleanup(self):
-        pass
-
-    def reload(self):
-        pass
-
-    def add_parts(self, oCardText):
+    def add_parts(self):
         wMbox = gtk.VBox(False, 2)
+        self.set_title("Card Text")
 
-        wMbox.pack_start(self.__oTitle, False, False)
+        wMbox.pack_start(self._oTitle, False, False)
 
-        wMbox.pack_start(AutoScrolledWindow(oCardText), True, True)
+        wMbox.pack_start(AutoScrolledWindow(self._oTextView), True, True)
 
         self.add(wMbox)
         self.show_all()
-
-    def set_focussed_title(self):
-        self.__oTitle.set_style(self.__oFocStyle)
-
-    def set_unfocussed_title(self):
-        self.__oTitle.set_style(self.__oBaseStyle)

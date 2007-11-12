@@ -51,9 +51,9 @@ class CardSetMenu(gtk.MenuBar, object):
         wMenu.add(iCollapse)
         iCollapse.connect("activate", self.collapse_all)
 
-        self.__iClose = gtk.MenuItem("Close Card Set ("+self.sSetName+")")
+        self.__iClose = gtk.MenuItem("Remove This Pane")
         wMenu.add(self.__iClose)
-        self.__iClose.connect("activate", self.cardSetClose)
+        self.__iClose.connect("activate", self.__oFrame.close_menu_item)
         self.__iDelete = gtk.MenuItem("Delete Card Set ("+self.sSetName+")")
         # Possible enhancement, make card set names italic.
         # Looks like it requires playing with menuitem attributes
@@ -84,7 +84,6 @@ class CardSetMenu(gtk.MenuBar, object):
     def __updateCardSetMenu(self):
         self.__iProperties.get_child().set_label("Edit Card Set ("+self.sSetName+") properties")
         self.__iExport.get_child().set_label("Export Card Set ("+self.sSetName+") to File")
-        self.__iClose.get_child().set_label("Close Card Set ("+self.sSetName+")")
         self.__iDelete.get_child().set_label("Delete Card Set ("+self.sSetName+")")
 
     def __create_filter_menu(self):
@@ -176,9 +175,6 @@ class CardSetMenu(gtk.MenuBar, object):
             else:
                 oW = AbstractCardSetXmlFile(sFileName)
             oW.write(self.sSetName)
-
-    def cardSetClose(self,widget):
-        self.__oFrame.close_frame()
 
     def cardSetDelete(self,widget):
         self.__oFrame.deleteCardSet()

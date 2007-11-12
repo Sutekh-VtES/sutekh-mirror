@@ -33,9 +33,9 @@ class AbstractCardListMenu(gtk.MenuBar, object):
         wMenu.add(iCollapse)
         iCollapse.connect("activate", self.collapse_all)
 
-        iClose = gtk.MenuItem("Close List")
+        iClose = gtk.MenuItem("Remove This Pane")
         wMenu.add(iClose)
-        iClose.connect("activate", self.close_list)
+        iClose.connect("activate", self.__oFrame.close_menu_item)
 
         self.add(iMenu)
 
@@ -77,9 +77,6 @@ class AbstractCardListMenu(gtk.MenuBar, object):
         self.add(iMenu)
         if len(wMenu.get_children()) == 0:
             iMenu.set_sensitive(False)
-
-    def close_list(self, widget):
-        self.__oFrame.close_frame()
 
     def setApplyFilter(self,state):
         self.iApply.set_active(state)

@@ -40,6 +40,9 @@ class CardSetFrame(CardListFrame, object):
 
         self.update_name(sName)
 
+
+    name = property(fget=lambda self: self._sName, doc="Frame Name")
+
     def cleanup(self):
         """
         Cleanup function called before pane is removed by the

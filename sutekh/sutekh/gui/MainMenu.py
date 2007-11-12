@@ -115,7 +115,7 @@ class MainMenu(gtk.MenuBar, object):
         iSeperator = gtk.SeparatorMenuItem()
         wMenu.add(iSeperator)
 
-        self.__oDelPane = gtk.MenuItem("Remove currently focussed pane")
+        self.__oDelPane = gtk.MenuItem("Remove Currently Focussed pane")
         wMenu.add(self.__oDelPane)
         self.__oDelPane.connect("activate", self.__oWin.menu_remove_pane)
         self.__oDelPane.set_sensitive(False)

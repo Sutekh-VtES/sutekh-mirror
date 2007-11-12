@@ -32,8 +32,10 @@ class MultiPaneWindow(gtk.Window):
         self.set_title("Sutekh")
         self.connect("destroy", self.action_quit)
         self.set_border_width(2)
+        # We can shrink the window quite small
+        self.set_size_request(100, 100)
+        # But we start at a reasonable size
         self.set_default_size(700, 500)
-        self.set_size_request(-1, -1)
         self.oVBox = gtk.VBox(False, 1)
         self._aPanes = []
         self._aFrames = []
@@ -149,11 +151,11 @@ class MultiPaneWindow(gtk.Window):
 
     def reload_pcs_list(self):
         if self._oPCSListPane is not None:
-            self._oPCSListPane.reload_card_set_list()
+            self._oPCSListPane.reload()
 
     def reload_acs_list(self):
         if self._oACSListPane is not None:
-            self._oACSListPane.reload_card_set_list()
+            self._oACSListPane.reload()
 
     def reload_all(self):
         for oPane in self.dOpenPanes:

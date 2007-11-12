@@ -32,13 +32,13 @@ class PhysicalCardMenu(gtk.MenuBar, object):
         wMenu.add(iExport)
         iExport.connect('activate', self.doExport)
 
-        self.iViewExpansions = gtk.CheckMenuItem('Show Card Expansions in the Pane')
+        self.iViewExpansions = gtk.CheckMenuItem('Show Card Expansions')
         self.iViewExpansions.set_inconsistent(False)
         self.iViewExpansions.set_active(True)
         self.iViewExpansions.connect('toggled', self.toggleExpansion)
         wMenu.add(self.iViewExpansions)
 
-        self.iEditable = gtk.CheckMenuItem('List is Editable')
+        self.iEditable = gtk.CheckMenuItem('Physical Card List is Editable')
         self.iEditable.set_inconsistent(False)
         self.iEditable.set_active(False)
         self.iEditable.connect('toggled', self.toggleEditable)
@@ -52,9 +52,9 @@ class PhysicalCardMenu(gtk.MenuBar, object):
         wMenu.add(iCollapse)
         iCollapse.connect("activate", self.collapse_all)
 
-        iClose = gtk.MenuItem("Close List")
+        iClose = gtk.MenuItem("Remove This Pane")
         wMenu.add(iClose)
-        iClose.connect("activate", self.close_list)
+        iClose.connect("activate", self.__oFrame.close_menu_item)
 
         iEditAllocation = gtk.MenuItem('Edit allocation of cards to PCS')
         wMenu.add(iEditAllocation)
@@ -108,9 +108,6 @@ class PhysicalCardMenu(gtk.MenuBar, object):
         if sFileName is not None:
             oW = PhysicalCardXmlFile(sFileName)
             oW.write()
-
-    def close_list(self, widget):
-        self.__oFrame.close_frame()
 
     def setApplyFilter(self, bState):
         self.iApply.set_active(bState)
