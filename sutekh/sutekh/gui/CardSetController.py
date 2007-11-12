@@ -5,8 +5,8 @@
 
 from sqlobject import SQLObjectNotFound
 from sutekh.gui.CardSetView import CardSetView
-from sutekh.gui.CardSetMenu import CardSetMenu
-from sutekh.gui.DBSignals import ReloadSignal, listen, RowUpdateSignal, RowDestroySignal
+from sutekh.gui.DBSignals import listen_reload, listen_row_destroy, \
+                                 listen_row_update
 from sutekh.core.SutekhObjects import AbstractCardSet, PhysicalCardSet, \
         AbstractCard, PhysicalCard, MapPhysicalCardToPhysicalCardSet, \
         IExpansion, Expansion
@@ -50,9 +50,9 @@ class PhysicalCardSetController(CardSetController):
         # We need to cache this for physical_card_deleted checks
         self.__aPhysCardIds = [x.id for x in self.__oPhysCardSet.cards]
         self._sFilterType = 'PhysicalCard'
-        listen(self.physical_card_deleted, PhysicalCard, RowDestroySignal)
-        listen(self.physical_card_changed, PhysicalCard, RowUpdateSignal)
-        listen(self.reload_card_set, PhysicalCard, ReloadSignal)
+        listen_row_destroy(self.physical_card_deleted, PhysicalCard)
+        listen_row_update(self.physical_card_changed, PhysicalCard)
+        listen_reload(self.reload_card_set, PhysicalCard)
 
     def reload_card_set(self, oAbsCard):
         """

@@ -7,9 +7,8 @@ import gtk
 from sqlobject import SQLObjectNotFound
 from sutekh.gui.DBSignals import send_reload_signal
 from sutekh.gui.PhysicalCardView import PhysicalCardView
-from sutekh.gui.PhysicalCardMenu import PhysicalCardMenu
 from sutekh.core.SutekhObjects import PhysicalCard, \
-        AbstractCard, PhysicalCardSet, IExpansion, \
+        AbstractCard, IExpansion, \
         MapPhysicalCardToPhysicalCardSet
 
 class PhysicalCardController(object):

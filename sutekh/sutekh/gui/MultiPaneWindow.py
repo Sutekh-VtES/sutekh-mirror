@@ -5,7 +5,7 @@
 
 import pygtk
 pygtk.require('2.0')
-import gtk, gobject
+import gtk
 from sqlobject import SQLObjectNotFound
 from sutekh.core.SutekhObjectCache import SutekhObjectCache
 from sutekh.core.SutekhObjects import AbstractCard, PhysicalCardSet, \

@@ -4,10 +4,7 @@
 # Copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-import gtk
 from sutekh.gui.AbstractCardView import AbstractCardView
-from sutekh.gui.PluginManager import PluginManager
-from sutekh.core.SutekhObjects import AbstractCard
 
 class AbstractCardListController(object):
     def __init__(self, oFrame, oConfig, oMainWindow):

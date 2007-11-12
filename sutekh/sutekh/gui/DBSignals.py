@@ -9,6 +9,19 @@ class ReloadSignal(Signal):
        properly
     """
 
-def send_reload_signal(oAbstractCard):
-    PhysicalCard.sqlmeta.send(ReloadSignal, oAbstractCard)
+# Senders
+
+def send_reload_signal(oAbstractCard, cClass=PhysicalCard):
+    cClass.sqlmeta.send(ReloadSignal, oAbstractCard)
+
+# Listeners
+
+def listen_reload(fListener, cClass):
+    listen(fListener, cClass, ReloadSignal)
+
+def listen_row_destroy(fListener, cClass):
+    listen(fListener, cClass, RowDestroySignal)
+
+def listen_row_update(fListener, cClass):
+    listen(fListener, cClass, RowUpdateSignal)
 

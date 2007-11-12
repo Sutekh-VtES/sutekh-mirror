@@ -5,8 +5,6 @@
 
 import gtk
 from sqlobject import SQLObjectNotFound
-from sqlobject.events import listen, RowDestroySignal, \
-        RowCreatedSignal, RowUpdateSignal
 from sutekh.SutekhUtility import delete_physical_card_set, delete_abstract_card_set
 from sutekh.core.SutekhObjects import AbstractCardSet, PhysicalCardSet
 from sutekh.core.Filters import NullFilter

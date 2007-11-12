@@ -3,10 +3,9 @@
 # Copyright 2007 Neil Muller <drnlmuller+sutekh@gmail.com>
 
 import gtk
-from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 from sutekh.gui.DBSignals import send_reload_signal
 from sutekh.core.SutekhObjects import PhysicalCard, IAbstractCard, \
-        PhysicalCardSet, IExpansion, MapPhysicalCardToPhysicalCardSet
+        IExpansion, MapPhysicalCardToPhysicalCardSet
 
 class EditPhysicalCardMappingDialog(gtk.Dialog):
     """

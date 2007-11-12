@@ -6,8 +6,8 @@
 import gtk
 from sutekh.gui.CardListView import EditableCardListView
 from sutekh.gui.CardListModel import PhysicalCardSetCardListModel, CardListModel
-from sutekh.core.Filters import PhysicalCardSetFilter, AbstractCardSetFilter
-from sutekh.core.SutekhObjects import PhysicalCard, PhysicalCardSet, \
+from sutekh.core.Filters import AbstractCardSetFilter
+from sutekh.core.SutekhObjects import PhysicalCardSet, \
         AbstractCardSet, MapAbstractCardToAbstractCardSet
 from sutekh.SutekhUtility import delete_physical_card_set, delete_abstract_card_set
 

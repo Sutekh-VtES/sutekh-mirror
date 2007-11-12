@@ -4,7 +4,6 @@
 # Copyright 2006, 2007 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-import gtk
 from sutekh.core.SutekhObjects import AbstractCard
 from sutekh.gui.CardListFrame import CardListFrame
 from sutekh.gui.AbstractCardListController import AbstractCardListController

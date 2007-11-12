@@ -5,8 +5,6 @@
 
 from sutekh.gui.CardListView import EditableCardListView
 from sutekh.gui.CardListModel import PhysicalCardListModel
-from sutekh.core.Filters import PhysicalCardFilter
-from sutekh.core.SutekhObjects import PhysicalCard
 
 class PhysicalCardView(EditableCardListView):
     def __init__(self, oController, oWindow, oConfig):

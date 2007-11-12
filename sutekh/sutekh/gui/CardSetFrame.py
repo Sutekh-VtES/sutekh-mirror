@@ -4,7 +4,6 @@
 # Copyright 2006 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
 
-import gtk
 from sqlobject import SQLObjectNotFound
 from sutekh.core.SutekhObjects import PhysicalCardSet, AbstractCardSet, \
         IPhysicalCardSet, IAbstractCardSet

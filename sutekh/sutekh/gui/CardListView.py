@@ -4,7 +4,6 @@
 # GPL - see COPYING for details
 
 import gtk, pango
-from sutekh.gui.CardListModel import CardListModel
 from sutekh.gui.FilterDialog import FilterDialog
 from sutekh.gui.CellRendererSutekhButton import CellRendererSutekhButton
 

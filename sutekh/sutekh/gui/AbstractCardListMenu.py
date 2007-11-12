@@ -4,16 +4,6 @@
 # GPL - see COPYING for details
 
 import gtk
-from sqlobject import sqlhub, connectionForURI
-from sutekh.core.SutekhObjects import PhysicalCardSet, AbstractCardSet, ObjectList
-from sutekh.gui.ImportDialog import ImportDialog
-from sutekh.gui.WWFilesDialog import WWFilesDialog
-from sutekh.io.XmlFileHandling import PhysicalCardXmlFile, PhysicalCardSetXmlFile, \
-                                    AbstractCardSetXmlFile
-from sutekh.io.IdentifyXMLFile import IdentifyXMLFile
-from sutekh.core.DatabaseUpgrade import copyToNewAbstractCardDB, createFinalCopy
-from sutekh.SutekhUtility import refreshTables, readWhiteWolfList, readRulings
-from sutekh.io.ZipFileWrapper import ZipFileWrapper
 
 class AbstractCardListMenu(gtk.MenuBar, object):
     def __init__(self, oFrame, oController, oWindow):
