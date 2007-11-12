@@ -540,7 +540,7 @@ class CardNameFilter(DirectFilter):
         return None
 
     def _getExpression(self):
-        return LIKE(AbstractCard.q.canonical_name,'%' + self.__sPattern.lower() + '%')
+        return LIKE(AbstractCard.q.canonicalName,'%' + self.__sPattern.lower() + '%')
 
 class PhysicalCardFilter(Filter):
     def __init__(self):
