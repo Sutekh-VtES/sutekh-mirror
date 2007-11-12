@@ -1,6 +1,6 @@
 # Filters.py
-# Copyright 2005,2006 Simon Cross <hodgestar@gmail.com>
-# Minor modifications copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
+# Copyright 2005, 2006, 2007 Simon Cross <hodgestar@gmail.com>
+# Copyright 2006, 2007 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
 from sutekh.core.SutekhObjects import AbstractCard, IAbstractCard, \
@@ -8,7 +8,7 @@ from sutekh.core.SutekhObjects import AbstractCard, IAbstractCard, \
                                  IExpansion, ITitle, ISect, ICardType, \
                                  IPhysicalCardSet, IAbstractCardSet, \
                                  IRarityPair, IRarity, \
-                                 Clan, Discipline, CardType, Title,\
+                                 Clan, Discipline, CardType, Title, \
                                  Creed, Virtue, Sect, Expansion, \
                                  RarityPair, PhysicalCardSet, PhysicalCard, \
                                  AbstractCardSet
@@ -25,9 +25,9 @@ class Filter(object):
         # to fill in the values most times
         raise NotImplementedError
 
-    def select(self,CardClass):
+    def select(self, CardClass):
         """CardClass.select(...) applying the filter to the selection."""
-        return CardClass.select(self._getExpression(),join=self._getJoins())
+        return CardClass.select(self._getExpression(), join=self._getJoins())
 
     def _getExpression(self):
         raise NotImplementedError
@@ -35,12 +35,12 @@ class Filter(object):
     def _getJoins(self):
         raise NotImplementedError
 
-    def _makeTableAlias(self,sTable):
+    def _makeTableAlias(self, sTable):
         """
         In order to allow multiple filters to be AND together, filters need
         to create aliases of mapping tables so that, for example:
 
-            FilterAndBox([DisciplineFilter('dom'),DisciplineFilter('obf')])
+            FilterAndBox([DisciplineFilter('dom'), DisciplineFilter('obf')])
 
         produces a list of cards which have both dominate and obfuscate
         rather than an empty list.  The two discipline filters above need to
@@ -51,7 +51,7 @@ class Filter(object):
 
 # Collections of Filters
 
-class FilterBox(Filter,list):
+class FilterBox(Filter, list):
     """Base class for filter collections."""
 
     def _getJoins(self):
@@ -92,7 +92,7 @@ class FilterOrBox(FilterBox):
 class FilterNot(Filter):
     """NOT (negate) a filter."""
 
-    def __init__(self,oSubFilter):
+    def __init__(self, oSubFilter):
         self.__oSubFilter = oSubFilter
 
     def _getJoins(self):
@@ -104,7 +104,7 @@ class FilterNot(Filter):
         oX = self.__oSubFilter._getExpression()
         aJ = self.__oSubFilter._getJoins()
         if 'AbstractCard' in self.__oSubFilter.types:
-            return NOT(IN(AbstractCard.q.id,Select(AbstractCard.q.id,oX,join=aJ)))
+            return NOT(IN(AbstractCard.q.id, Select(AbstractCard.q.id, oX, join=aJ)))
         elif 'PhysicalCard' in self.__oSubFilter.types:
             return NOT(IN(PhysicalCard.q.id, Select(PhysicalCard.q.id, oX, join=aJ)))
         elif 'PhysicalCardSet' in self.__oSubFilter.types:
@@ -149,7 +149,7 @@ class MultiFilter(Filter):
         return [LEFTJOINOn(None, self._oMapTable, AbstractCard.q.id == self._oMapTable.q.abstract_card_id)]
 
     def _getExpression(self):
-        return IN(self._oIdField,self._aIds)
+        return IN(self._oIdField, self._aIds)
 
 class DirectFilter(Filter):
     """Base class for filters which query AbstractTable directly."""
@@ -160,7 +160,8 @@ class DirectFilter(Filter):
 # Individual Filters
 
 class ClanFilter(SingleFilter):
-    def __init__(self,sClan):
+    types = ['AbstractCard', 'PhysicalCard']
+    def __init__(self, sClan):
         self._oId = IClan(sClan).id
         self._oMapTable = self._makeTableAlias('abs_clan_map')
         self._oIdField = self._oMapTable.q.clan_id
@@ -169,9 +170,9 @@ class MultiClanFilter(MultiFilter):
     keyword = "Clan"
     description = "Clan"
     helptext = "a list of clans"
-    types = ['AbstractCard','PhysicalCard']
+    types = ['AbstractCard', 'PhysicalCard']
 
-    def __init__(self,aClans):
+    def __init__(self, aClans):
         self._aIds = [IClan(x).id for x in aClans]
         self._oMapTable = self._makeTableAlias('abs_clan_map')
         self._oIdField = self._oMapTable.q.clan_id
@@ -181,7 +182,8 @@ class MultiClanFilter(MultiFilter):
         return [x.name for x in Clan.select().orderBy('name')]
 
 class DisciplineFilter(MultiFilter):
-    def __init__(self,sDiscipline):
+    types = ['AbstractCard', 'PhysicalCard']
+    def __init__(self, sDiscipline):
         self._aIds = [oP.id for oP in IDiscipline(sDiscipline).pairs]
         self._oMapTable = self._makeTableAlias('abs_discipline_pair_map')
         self._oIdField = self._oMapTable.q.discipline_pair_id
@@ -190,9 +192,9 @@ class MultiDisciplineFilter(MultiFilter):
     keyword = "Discipline"
     description = "Discipline"
     helptext = "a list of disciplines"
-    types = ['AbstractCard','PhysicalCard']
+    types = ['AbstractCard', 'PhysicalCard']
 
-    def __init__(self,aDisciplines):
+    def __init__(self, aDisciplines):
         oPairs = []
         for sDis in aDisciplines:
             oPairs += IDiscipline(sDis).pairs
@@ -205,13 +207,15 @@ class MultiDisciplineFilter(MultiFilter):
         return [x.fullname for x in Discipline.select().orderBy('name')]
 
 class ExpansionFilter(MultiFilter):
-    def __init__(self,sExpansion):
+    types = ['AbstractCard', 'PhysicalCard']
+    def __init__(self, sExpansion):
         self._aIds = [oP.id for oP in IExpansion(sExpansion).pairs]
         self._oMapTable = self._makeTableAlias('abs_rarity_pair_map')
         self._oIdField = self._oMapTable.q.rarity_pair_id
 
 class MultiExpansionFilter(MultiFilter):
-    def __init__(self,aExpansions):
+    types = ['AbstractCard', 'PhysicalCard']
+    def __init__(self, aExpansions):
         oPairs = []
         for sExp in aExpansions:
             oPairs += IExpansion(sExp).pairs
@@ -220,13 +224,14 @@ class MultiExpansionFilter(MultiFilter):
         self._oIdField = self._oMapTable.q.rarity_pair_id
 
 class ExpansionRarityFilter(SingleFilter):
+    types = ['AbstractCard', 'PhysicalCard']
     """ Filter on Expansion & Rarity combo """
 
-    def __init__(self,tExpanRarity):
+    def __init__(self, tExpanRarity):
         """ We use a tuple for Expansion and Rarity here to keep the
             same calling convention as for the Multi Filter"""
         sExpansion, sRarity = tExpanRarity
-        self._oId = IRarityPair((IExpansion(sExpansion),IRarity(sRarity))).id
+        self._oId = IRarityPair((IExpansion(sExpansion), IRarity(sRarity))).id
         self._oMapTable = self._makeTableAlias('abs_rarity_pair_map')
         self._oIdField = self._oMapTable.q.rarity_pair_id
 
@@ -235,9 +240,9 @@ class MultiExpansionRarityFilter(MultiFilter):
     description = "Expansion with Rarity"
     helptext = "a list of expansions and rarities,\n   each element specified as an expansion with associated rarity'"
     iswithfilter = True
-    types = ['AbstractCard','PhysicalCard']
+    types = ['AbstractCard', 'PhysicalCard']
 
-    def __init__(self,aExpansionRarities):
+    def __init__(self, aExpansionRarities):
         """  Called with a list of Expansion + Rarity pairs"""
         self._aIds = []
         for sExpansion, sRarity in aExpansionRarities:
@@ -259,10 +264,11 @@ class MultiExpansionRarityFilter(MultiFilter):
         return aResults
 
 class DisciplineLevelFilter(MultiFilter):
-    def __init__(self,tDiscLevel):
+    types = ['AbstractCard', 'PhysicalCard']
+    def __init__(self, tDiscLevel):
         sDiscipline, sLevel = tDiscLevel
         sLevel = sLevel.lower()
-        assert sLevel in ['inferior','superior']
+        assert sLevel in ['inferior', 'superior']
         # There will be 0 or 1 ids
         self._aIds = [oP.id for oP in IDiscipline(sDiscipline).pairs if oP.level == sLevel]
         self._oMapTable = self._makeTableAlias('abs_discipline_pair_map')
@@ -273,13 +279,13 @@ class MultiDisciplineLevelFilter(MultiFilter):
     description = "Discipline with Level"
     helptext = "a list of discipline with levels,\n   each element specified as a discipline with level'"
     iswithfilter = True
-    types = ['AbstractCard','PhysicalCard']
+    types = ['AbstractCard', 'PhysicalCard']
 
-    def __init__(self,aDiscLevels):
+    def __init__(self, aDiscLevels):
         self._aIds = []
         for sDiscipline, sLevel in aDiscLevels:
             sLevel = sLevel.lower()
-            assert sLevel in ['inferior','superior']
+            assert sLevel in ['inferior', 'superior']
             self._aIds.extend([oP.id for oP in IDiscipline(sDiscipline).pairs
                     if oP.level == sLevel])
         self._oMapTable = self._makeTableAlias('abs_discipline_pair_map')
@@ -296,7 +302,8 @@ class MultiDisciplineLevelFilter(MultiFilter):
         return aResults
 
 class CardTypeFilter(SingleFilter):
-    def __init__(self,sCardType):
+    types = ['AbstractCard', 'PhysicalCard']
+    def __init__(self, sCardType):
         self._oId = ICardType(sCardType).id
         self._oMapTable = self._makeTableAlias('abs_type_map')
         self._oIdField = self._oMapTable.q.card_type_id
@@ -305,9 +312,9 @@ class MultiCardTypeFilter(MultiFilter):
     keyword = "CardType"
     description = "Card Type"
     helptext = "a list of card types"
-    types = ['AbstractCard','PhysicalCard']
+    types = ['AbstractCard', 'PhysicalCard']
 
-    def __init__(self,aCardTypes):
+    def __init__(self, aCardTypes):
         self._aIds = [ICardType(x).id for x in aCardTypes]
         self._oMapTable = self._makeTableAlias('abs_type_map')
         self._oIdField = self._oMapTable.q.card_type_id
@@ -317,7 +324,8 @@ class MultiCardTypeFilter(MultiFilter):
         return [x.name for x in CardType.select().orderBy('name')]
 
 class SectFilter(SingleFilter):
-    def __init__(self,sSect):
+    types = ['AbstractCard', 'PhysicalCard']
+    def __init__(self, sSect):
         self._oId = ISect(sSect).id
         self._oMapTable = self._makeTableAlias('abs_sect_map')
         self._oIdField = self._oMapTable.q.sect_id
@@ -326,9 +334,9 @@ class MultiSectFilter(MultiFilter):
     keyword = "Sect"
     description = "Sect"
     helptext = "a list of sects"
-    types = ['AbstractCard','PhysicalCard']
+    types = ['AbstractCard', 'PhysicalCard']
 
-    def __init__(self,aSects):
+    def __init__(self, aSects):
         self._aIds = [ISect(x).id for x in aSects]
         self._oMapTable = self._makeTableAlias('abs_sect_map')
         self._oIdField = self._oMapTable.q.sect_id
@@ -338,7 +346,8 @@ class MultiSectFilter(MultiFilter):
         return [x.name for x in Sect.select().orderBy('name')]
 
 class TitleFilter(SingleFilter):
-    def __init__(self,sTitle):
+    types = ['AbstractCard', 'PhysicalCard']
+    def __init__(self, sTitle):
         self._oId = ITitle(sTitle).id
         self._oMapTable = self._makeTableAlias('abs_title_map')
         self._oIdField = self._oMapTable.q.title_id
@@ -347,9 +356,9 @@ class MultiTitleFilter(MultiFilter):
     keyword = "Title"
     description = "Title"
     helptext = "a list of titles"
-    types = ['AbstractCard','PhysicalCard']
+    types = ['AbstractCard', 'PhysicalCard']
 
-    def __init__(self,aTitles):
+    def __init__(self, aTitles):
         self._aIds = [ITitle(x).id for x in aTitles]
         self._oMapTable = self._makeTableAlias('abs_title_map')
         self._oIdField = self._oMapTable.q.title_id
@@ -359,7 +368,8 @@ class MultiTitleFilter(MultiFilter):
         return [x.name for x in Title.select().orderBy('name')]
 
 class CreedFilter(SingleFilter):
-    def __init__(self,sCreed):
+    types = ['AbstractCard', 'PhysicalCard']
+    def __init__(self, sCreed):
         self._oId = ICreed(sCreed).id
         self._oMapTable = self._makeTableAlias('abs_creed_map')
         self._oIdField = self._oMapTable.q.creed_id
@@ -368,9 +378,9 @@ class MultiCreedFilter(MultiFilter):
     keyword = "Creed"
     description = "Creed"
     helptext = "a list of creeds"
-    types = ['AbstractCard','PhysicalCard']
+    types = ['AbstractCard', 'PhysicalCard']
 
-    def __init__(self,aCreeds):
+    def __init__(self, aCreeds):
         self._aIds = [ICreed(x).id for x in aCreeds]
         self._oMapTable = self._makeTableAlias('abs_creed_map')
         self._oIdField = self._oMapTable.q.creed_id
@@ -380,7 +390,8 @@ class MultiCreedFilter(MultiFilter):
         return [x.name for x in Creed.select().orderBy('name')]
 
 class VirtueFilter(SingleFilter):
-    def __init__(self,sVirtue):
+    types = ['AbstractCard', 'PhysicalCard']
+    def __init__(self, sVirtue):
         self._oId = IVirtue(sVirtue).id
         self._oMapTable = self._makeTableAlias('abs_virtue_map')
         self._oIdField = self._oMapTable.q.virtue_id
@@ -389,9 +400,9 @@ class MultiVirtueFilter(MultiFilter):
     keyword = "Virtue"
     description = "Virtue"
     helptext = "a list of virtues"
-    types = ['AbstractCard','PhysicalCard']
+    types = ['AbstractCard', 'PhysicalCard']
 
-    def __init__(self,aVirtues):
+    def __init__(self, aVirtues):
         self._aIds = [IVirtue(x).id for x in aVirtues]
         self._oMapTable = self._makeTableAlias('abs_virtue_map')
         self._oIdField = self._oMapTable.q.virtue_id
@@ -401,7 +412,8 @@ class MultiVirtueFilter(MultiFilter):
         return [x.fullname for x in Virtue.select().orderBy('name')]
 
 class GroupFilter(DirectFilter):
-    def __init__(self,iGroup):
+    types = ['AbstractCard', 'PhysicalCard']
+    def __init__(self, iGroup):
         self.__iGroup = iGroup
 
     def _getExpression(self):
@@ -412,20 +424,21 @@ class MultiGroupFilter(DirectFilter):
     description = "Group"
     helptext = "a list of groups"
     isnumericfilter = True
-    types = ['AbstractCard','PhysicalCard']
+    types = ['AbstractCard', 'PhysicalCard']
 
-    def __init__(self,aGroups):
-        self.__aGroups = aGroups
+    def __init__(self, aGroups):
+        self.__aGroups = [int(sV) for sV in aGroups]
 
     @classmethod
     def getValues(cls):
-        return range(1,6)
+        return range(1, 6)
 
     def _getExpression(self):
-        return IN(AbstractCard.q.group,self.__aGroups)
+        return IN(AbstractCard.q.group, self.__aGroups)
 
 class CapacityFilter(DirectFilter):
-    def __init__(self,iCap):
+    types = ['AbstractCard', 'PhysicalCard']
+    def __init__(self, iCap):
         self.__iCap = iCap
 
     def _getExpression(self):
@@ -436,22 +449,23 @@ class MultiCapacityFilter(DirectFilter):
     description = "Capacity"
     helptext = "a list of capacities"
     isnumericfilter = True
-    types = ['AbstractCard','PhysicalCard']
+    types = ['AbstractCard', 'PhysicalCard']
 
-    def __init__(self,aCaps):
-        self.__aCaps = aCaps
+    def __init__(self, aCaps):
+        self.__aCaps = [int(sV) for sV in aCaps]
 
     @classmethod
     def getValues(cls):
-        return range(1,12)
+        return range(1, 12)
 
     def _getExpression(self):
-        return IN(AbstractCard.q.capacity,self.__aCaps)
+        return IN(AbstractCard.q.capacity, self.__aCaps)
 
 class CostFilter(DirectFilter):
+    types = ['AbstractCard', 'PhysicalCard']
     # Should this exclude Vamps & Imbued, if we search for
     # cards without cost?
-    def __init__(self,iCost):
+    def __init__(self, iCost):
         self.__iCost = iCost
 
     def _getExpression(self):
@@ -462,20 +476,23 @@ class MultiCostFilter(DirectFilter):
     description = "Cost"
     helptext = "a list of costs"
     isnumericfilter = True
-    types = ['AbstractCard','PhysicalCard']
+    types = ['AbstractCard', 'PhysicalCard']
 
-    def __init__(self,aCost):
-        self.__aCost = aCost
+    def __init__(self, aCost):
+        self.__aCost = [int(sV) for sV in aCost if sV != 'X']
+        if 'X' in aCost:
+            self.__aCost.append(-1)
 
     @classmethod
     def getValues(cls):
-        return range(0,7) + ['X']
+        return range(0, 7) + ['X']
 
     def _getExpression(self):
-        return IN(AbstractCard.q.cost,self.__aCost)
+        return IN(AbstractCard.q.cost, self.__aCost)
 
 class CostTypeFilter(DirectFilter):
-    def __init__(self,sCostType):
+    types = ['AbstractCard', 'PhysicalCard']
+    def __init__(self, sCostType):
         self.__sCostType = sCostType.lower()
         assert self.__sCostType in ["blood", "pool", "conviction", None]
 
@@ -486,9 +503,9 @@ class MultiCostTypeFilter(DirectFilter):
     keyword = "CostType"
     description = "Cost Type"
     helptext = "a list of cost types"
-    types = ['AbstractCard','PhysicalCard']
+    types = ['AbstractCard', 'PhysicalCard']
 
-    def __init__(self,aCostTypes):
+    def __init__(self, aCostTypes):
         self.__aCostTypes = [x.lower() for x in aCostTypes if x is not None]
         for sCostType in self.__aCostTypes:
             assert sCostType in ["blood", "pool", "conviction"]
@@ -497,14 +514,15 @@ class MultiCostTypeFilter(DirectFilter):
 
     @classmethod
     def getValues(cls):
-        return ["blood","pool","conviction"]
+        return ["blood", "pool", "conviction"]
 
     def _getExpression(self):
-        return IN(AbstractCard.q.costtype,self.__aCostTypes)
+        return IN(AbstractCard.q.costtype, self.__aCostTypes)
 
 class LifeFilter(DirectFilter):
+    types = ['AbstractCard', 'PhysicalCard']
     # Will only return imbued, unless we ever parse life from retainers & allies
-    def __init__(self,iLife):
+    def __init__(self, iLife):
         self.__iLife = iLife
 
     def _getExpression(self):
@@ -515,26 +533,26 @@ class MultiLifeFilter(DirectFilter):
     description = "Life"
     helptext = "a list of life values"
     isnumericfilter = True
-    types = ['AbstractCard','PhysicalCard']
+    types = ['AbstractCard', 'PhysicalCard']
 
-    def __init__(self,aLife):
-        self.__aLife = aLife
+    def __init__(self, aLife):
+        self.__aLife = [int(sV) for sV in aLife]
 
     @classmethod
     def getValues(cls):
-        return range(1,8)
+        return range(1, 8)
 
     def _getExpression(self):
-        return IN(AbstractCard.q.life,self.__aLife)
+        return IN(AbstractCard.q.life, self.__aLife)
 
 class CardTextFilter(DirectFilter):
     keyword = "CardText"
     description = "Card Text"
     helptext = "the desired card text to search for. \n   % can be used as a wildcard"
     istextentry = True
-    types = ['AbstractCard','PhysicalCard']
+    types = ['AbstractCard', 'PhysicalCard']
 
-    def __init__(self,sPattern):
+    def __init__(self, sPattern):
         self.__sPattern = sPattern
 
     @classmethod
@@ -542,16 +560,16 @@ class CardTextFilter(DirectFilter):
         return None
 
     def _getExpression(self):
-        return LIKE(func.LOWER(AbstractCard.q.text),'%' + self.__sPattern.lower() + '%')
+        return LIKE(func.LOWER(AbstractCard.q.text), '%' + self.__sPattern.lower() + '%')
 
 class CardNameFilter(DirectFilter):
     keyword = "CardName"
     description = "Card Name"
     helptext = "the text to be matched against card names.\n   % can be used as a wildcard"
     istextentry = True
-    types = ['AbstractCard','PhysicalCard']
+    types = ['AbstractCard', 'PhysicalCard']
 
-    def __init__(self,sPattern):
+    def __init__(self, sPattern):
         self.__sPattern = sPattern
 
     @classmethod
@@ -559,7 +577,7 @@ class CardNameFilter(DirectFilter):
         return None
 
     def _getExpression(self):
-        return LIKE(AbstractCard.q.canonicalName,'%' + self.__sPattern.lower() + '%')
+        return LIKE(AbstractCard.q.canonicalName, '%' + self.__sPattern.lower() + '%')
 
 class PhysicalCardFilter(Filter):
     def __init__(self):
@@ -575,9 +593,10 @@ class PhysicalCardFilter(Filter):
         return TRUE # SQLite doesn't like True. Postgres doesn't like 1.
 
 class PhysicalExpansionFilter(DirectFilter):
+    types = ['PhysicalCard']
     # We must be calling this with a PhysicalCardFilter for sensible results,
     # so we don't need any special join magic
-    def __init__(self,sExpansion):
+    def __init__(self, sExpansion):
         if sExpansion is not None:
             self._iId = IExpansion(sExpansion).id
         else:
@@ -594,7 +613,7 @@ class MultiPhysicalExpansionFilter(DirectFilter):
     helptext = "List of physical cards with in the specified expansion"
     types = ['PhysicalCard']
 
-    def __init__(self,aExpansions):
+    def __init__(self, aExpansions):
         self._aIds = []
         self.__sUnspec = '  Unspecified Expansion'
         self.__bOrUnspec = False
@@ -614,15 +633,16 @@ class MultiPhysicalExpansionFilter(DirectFilter):
         oT = Table('physical_card')
         # None in the IN statement doesn't do the right thing for me
         if self.__bOrUnspec and len(self._aIds) > 0:
-            return OR(IN(oT.expansion_id,self._aIds),oT.expansion_id == None)
+            return OR(IN(oT.expansion_id, self._aIds), oT.expansion_id == None)
         elif self.__bOrUnspec:
-            # Psycopg2 doesn't like IN(a,[]) constructions
+            # Psycopg2 doesn't like IN(a, []) constructions
             return oT.expansion_id == None
         else:
-            return IN(oT.expansion_id,self._aIds)
+            return IN(oT.expansion_id, self._aIds)
 
 class PhysicalCardSetFilter(Filter):
-    def __init__(self,sName):
+    types = ['PhysicalCard']
+    def __init__(self, sName):
         # Select cards belonging to a PhysicalCardSet
         self.__iDeckId = IPhysicalCardSet(sName).id
         self.__oT = self._makeTableAlias('physical_map')
@@ -642,7 +662,7 @@ class MultiPhysicalCardSetFilter(Filter):
     helptext = "List of physical cards in the specified Physical Card Sets"
     types = ['PhysicalCard']
 
-    def __init__(self,aNames):
+    def __init__(self, aNames):
         # Select cards belonging to the PhysicalCardSet
         self.__aDeckIds = []
         for sName in aNames:
@@ -660,11 +680,11 @@ class MultiPhysicalCardSetFilter(Filter):
         return [LEFTJOINOn(None, self.__oT, self.__oPT.id == self.__oT.q.physical_card_id)]
 
     def _getExpression(self):
-        return IN(self.__oT.q.physical_card_set_id,self.__aDeckIds)
-
+        return IN(self.__oT.q.physical_card_set_id, self.__aDeckIds)
 
 class AbstractCardSetFilter(SingleFilter):
-    def __init__(self,sName):
+    types = ['AbstractCard', 'PhysicalCard']
+    def __init__(self, sName):
         # Select cards belonging to a AbstractCardSet
         self._oId = IAbstractCardSet(sName).id
         self._oMapTable = Table('abstract_map')
@@ -674,7 +694,8 @@ class AbstractCardSetFilter(SingleFilter):
         return [LEFTJOINOn(None, AbstractCard, AbstractCard.q.id == self._oMapTable.abstract_card_id)]
 
 class SpecificCardFilter(DirectFilter):
-    def __init__(self,oCard):
+    types = ['AbstractCard', 'PhysicalCard']
+    def __init__(self, oCard):
         self.__iCardId = IAbstractCard(oCard).id
 
     def _getExpression(self):
@@ -693,7 +714,7 @@ class CardSetNameFilter(DirectFilter):
     helptext = "the text to be matched against card set names.\n   % can be used as a wildcard"
     istextentry = True
 
-    def __init__(self,sPattern):
+    def __init__(self, sPattern):
         self.__sPattern = sPattern
         # Subclasses will replace this with the correct table
         self._oT = None
@@ -710,7 +731,7 @@ class CardSetDescriptionFilter(DirectFilter):
     helptext = "the text to be matched against card set description.\n   % can be used as a wildcard"
     istextentry = True
 
-    def __init__(self,sPattern):
+    def __init__(self, sPattern):
         self.__sPattern = sPattern
         # Subclasses will replace this with the correct table
         self._oT = None
@@ -727,7 +748,7 @@ class CardSetAuthorFilter(DirectFilter):
     helptext = "the text to be matched against card set Author.\n   % can be used as a wildcard"
     istextentry = True
 
-    def __init__(self,sPattern):
+    def __init__(self, sPattern):
         self.__sPattern = sPattern
         # Subclasses will replace this with the correct table
         self._oT = None
@@ -744,7 +765,7 @@ class CardSetAnnotationsFilter(DirectFilter):
     helptext = "the text to be matched against card set annotations.\n   % can be used as a wildcard"
     istextentry = True
 
-    def __init__(self,sPattern):
+    def __init__(self, sPattern):
         self.__sPattern = sPattern
         # Subclasses will replace this with the correct table
         self._oT = None

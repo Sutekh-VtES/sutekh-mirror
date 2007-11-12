@@ -224,18 +224,12 @@ class FilterDialog(gtk.Dialog, ConfigFileListener):
                 aVals = []
                 aSelection = oChild.get_selection()
                 for sName in aSelection:
-                    if oFilterPart.node.filtertype not in FilterParser.aNumericFilters:
-                        if oFilterPart.node.filtertype in FilterParser.aWithFilters:
-                            sPart1, sPart2 = sName.split(' with ')
-                            # Ensure no issues with spaces, etc.
-                            aVals.append('"' + sPart1 + '" with "' + sPart2 + '"')
-                        else:
-                            aVals.append('"' + sName + '"')
+                    if oFilterPart.node.filtertype in FilterParser.aWithFilters:
+                        sPart1, sPart2 = sName.split(' with ')
+                        # Ensure no issues with spaces, etc.
+                        aVals.append('"' + sPart1 + '" with "' + sPart2 + '"')
                     else:
-                        if sName != 'X':
-                            aVals.append(sName)
-                        else:
-                            aVals.append('-1')
+                        aVals.append('"' + sName + '"')
                 if aVals != []:
                     oFilterPart.node.setValues(aVals)
             elif type(oChild) is gtk.Entry:

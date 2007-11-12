@@ -45,7 +45,6 @@ class ParseFilterDefinitions(object):
             'NOT',
             'FILTERTYPE',
             'ID',
-            'INTEGER',
             'STRING',
             'OR',
             'AND',
@@ -60,7 +59,6 @@ class ParseFilterDefinitions(object):
     t_AND = r'\&\&'
     t_OR = r'\|\|'
     t_STRING = r'\".*?\"'
-    t_INTEGER = r'-?\d+'
     t_COMMA = r','
     t_IN = r'='
     t_LPAREN = r'\('
@@ -74,7 +72,7 @@ class ParseFilterDefinitions(object):
         raise ValueError("Illegal Character '%s'" % t.value[0])
 
     def t_ID(self,t):
-        r'[A-Za-z$_]+'
+        r'[A-Za-z0-9><$_]+'
         if t.value in self.aKeywords:
             t.type = 'FILTERTYPE'
         elif t.value.lower() == 'and':
@@ -157,10 +155,6 @@ class FilterYaccParser(object):
     def p_expression_string(self,p):
         """expression : STRING"""
         p[0] = StringNode(p[1])
-
-    def p_expression_integer(self,p):
-        """expression : INTEGER"""
-        p[0] = IntegerNode(int(p[1]))
 
     def p_expression_id(self,p):
         """expression : ID"""
@@ -282,18 +276,7 @@ class StringNode(TermNode):
             self.value = value
 
     def getValues(self):
-        return [ValueObject(self.value,self)]
-
-    def getFilter(self):
-        return [self.value]
-
-class IntegerNode(TermNode):
-    def __init__(self,value):
-        super(IntegerNode,self).__init__([value])
-        self.value = value
-
-    def getValues(self):
-        return [ValueObject(str(self.value),self)]
+        return [ValueObject(self.value, self)]
 
     def getFilter(self):
         return [self.value]
