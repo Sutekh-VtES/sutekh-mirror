@@ -4,18 +4,20 @@
 # GPL - see COPYING for details
 
 import gtk
-from sutekh.core.SutekhObjects import AbstractCardSet, IAbstractCard
+from sutekh.core.SutekhObjects import AbstractCardSet, PhysicalCardSet, \
+                                      AbstractCard, PhysicalCard, \
+                                      IAbstractCard
 from sutekh.gui.PluginManager import CardListPlugin
 
 class ACSFromFilter(CardListPlugin):
-    dTableVersions = { "AbstractCardSet" : [2,3]}
-    aModelsSupported = ["PhysicalCardSet","AbstractCardSet","PhysicalCard",
-            "AbstractCard"]
+    dTableVersions = { AbstractCardSet : [2,3]}
+    aModelsSupported = [PhysicalCardSet, AbstractCardSet,
+                        PhysicalCard, AbstractCard]
 
     def __init__(self,*args,**kws):
         super(ACSFromFilter,self).__init__(*args,**kws)
 
-    def getMenuItem(self):
+    def get_menu_item(self):
         """
         Overrides method from base class.
         """
@@ -25,7 +27,7 @@ class ACSFromFilter(CardListPlugin):
         iDF.connect("activate", self.activate)
         return iDF
 
-    def getDesiredMenu(self):
+    def get_desired_menu(self):
         return "Filter"
 
     def activate(self,oWidget):
@@ -57,7 +59,6 @@ class ACSFromFilter(CardListPlugin):
         self.oDlg.destroy()
 
     def makeACSFromFilter(self,sACSName):
-        parent = self.view.getWindow()
         # Check ACS Doesn't Exist
         if AbstractCardSet.selectBy(name=sACSName).count() != 0:
             oComplaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
@@ -69,8 +70,9 @@ class ACSFromFilter(CardListPlugin):
         # Create ACS
         oACS = AbstractCardSet(name=sACSName)
 
-        for oCard in self.model.getCardIterator(self.model.getSelectFilter()):
+        for oCard in self.model.getCardIterator(self.model.getCurrentFilter()):
             oACS.addAbstractCard(IAbstractCard(oCard))
-        parent.getManager().reloadCardSetLists()
+
+        self.view.getWindow().add_abstract_card_set(sACSName)
 
 plugin = ACSFromFilter
