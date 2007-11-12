@@ -8,11 +8,11 @@ from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.io.WriteArdbXML import WriteArdbXML
 
 class CardSetExportArdbXML(CardListPlugin):
-    dTableVersions = {"AbstractCardSet" : [2,3],
-                      "PhysicalCardSet" : [2,3]}
-    aModelsSupported = ["AbstractCardSet", "PhysicalCardSet"]
+    dTableVersions = { AbstractCardSet: [2,3],
+                       PhysicalCardSet: [2,3]}
+    aModelsSupported = [AbstractCardSet, PhysicalCardSet]
 
-    def getMenuItem(self):
+    def get_menu_item(self):
         """
         Overrides method from base class.
         """
@@ -22,7 +22,7 @@ class CardSetExportArdbXML(CardListPlugin):
         iDF.connect("activate", self.activate)
         return iDF
 
-    def getDesiredMenu(self):
+    def get_desired_menu(self):
         return "CardSet"
 
     def activate(self,oWidget):
@@ -47,9 +47,9 @@ class CardSetExportArdbXML(CardListPlugin):
         if oResponse ==  gtk.RESPONSE_OK:
             sFileName = self.oFileChooser.get_filename()
             if sFileName is not None:
-                if self.view.sSetType == 'PhysicalCardSet':
+                if self.view.cSetType == PhysicalCardSet:
                     oCardSet = PhysicalCardSet.byName(self.view.sSetName)
-                elif self.view.sSetType == 'AbstractCardSet':
+                elif self.view.cSetType == AbstractCardSet:
                     oCardSet = AbstractCardSet.byName(self.view.sSetName)
                 else:
                     return

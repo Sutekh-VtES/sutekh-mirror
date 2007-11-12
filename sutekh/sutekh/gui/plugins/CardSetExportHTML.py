@@ -16,10 +16,11 @@ except ImportError:
     bHaveXmlParser = False
 
 class CardSetExportHTML(CardListPlugin):
-    dTableVersions = {"AbstractCardSet" : [2,3],
-                      "PhysicalCardSet" : [2,3]}
-    aModelsSupported = ["AbstractCardSet","PhysicalCardSet"]
-    def getMenuItem(self):
+    dTableVersions = { AbstractCardSet: [2,3],
+                       PhysicalCardSet: [2,3]}
+    aModelsSupported = [AbstractCardSet, PhysicalCardSet]
+
+    def get_menu_item(self):
         """
         Overrides method from base class.
         """
@@ -52,7 +53,7 @@ class CardSetExportHTML(CardListPlugin):
         iDF.connect("activate", self.activate)
         return iDF
 
-    def getDesiredMenu(self):
+    def get_desired_menu(self):
         return "CardSet"
 
     def activate(self,oWidget):
@@ -81,9 +82,9 @@ class CardSetExportHTML(CardListPlugin):
         if oResponse ==  gtk.RESPONSE_OK:
             sFileName = self.oFileChooser.get_filename()
             if sFileName is not None:
-                if self.view.sSetType == "PhysicalCardSet":
+                if self.view.cSetType == PhysicalCardSet:
                     oCardSet = PhysicalCardSet.byName(self.view.sSetName)
-                elif self.view.sSetType == "AbstractCardSet":
+                elif self.view.cSetType == AbstractCardSet:
                     oCardSet = AbstractCardSet.byName(self.view.sSetName)
                 else:
                     # TODO: alert user to error somehow
