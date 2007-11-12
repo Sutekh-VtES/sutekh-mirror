@@ -10,9 +10,10 @@ from sutekh.gui.PluginManager import CardListPlugin
 class AbstractCardSetFromPhysical(CardListPlugin):
     """Create a equivilant Abstract Card Set from a given
        Physical Card Set."""
-    dTableVersions = {"AbstractCardSet" : [2,3]}
-    aModelsSupported = ['PhysicalCardSet']
-    def getMenuItem(self):
+    dTableVersions = { AbstractCardSet : [2,3]}
+    aModelsSupported = [PhysicalCardSet]
+
+    def get_menu_item(self):
         """
         Overrides method from base class.
         """
@@ -23,7 +24,7 @@ class AbstractCardSetFromPhysical(CardListPlugin):
 
         return iDF
 
-    def getDesiredMenu(self):
+    def get_desired_menu(self):
         return "CardSet"
 
     def activate(self,oWidget):
@@ -35,7 +36,7 @@ class AbstractCardSetFromPhysical(CardListPlugin):
         oDlg = CreateCardSetDialog(parent,"AbstractCardSet",oPC.author,oPC.comment)
         oDlg.run()
 
-        (sName,sAuthor,sDesc) = oDlg.getName()
+        (sName,sAuthor,sDesc) = oDlg.get_data()
 
         if sName is not None:
             oNameList = AbstractCardSet.selectBy(name=sName)
@@ -53,6 +54,6 @@ class AbstractCardSetFromPhysical(CardListPlugin):
             for oCard in self.model.getCardIterator(None):
                 nA.addAbstractCard(oCard.abstractCardID)
 
-            parent.getManager().reloadCardSetLists()
+            parent.add_abstract_card_set(sName)
 
 plugin = AbstractCardSetFromPhysical

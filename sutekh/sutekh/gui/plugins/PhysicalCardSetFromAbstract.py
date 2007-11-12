@@ -15,10 +15,10 @@ class PhysicalCardSetFromAbstract(CardListPlugin):
        - Ignores Cards which don't exist in Physical Cards (but notifies the user)
        - Has an option to import the cards into your card collection before creating the Physical Card Set."""
 
-    dTableVersions = {"PhysicalCardSet" : [2,3], "PhysicalCard" : [1,2] }
-    aModelsSupported = ["AbstractCardSet"]
+    dTableVersions = { PhysicalCardSet: [2,3], PhysicalCard: [1,2] }
+    aModelsSupported = [AbstractCardSet]
 
-    def getMenuItem(self):
+    def get_menu_item(self):
         """
         Overrides method from base class.
         """
@@ -28,7 +28,7 @@ class PhysicalCardSetFromAbstract(CardListPlugin):
         iDF.connect("activate", self.activate)
         return iDF
 
-    def getDesiredMenu(self):
+    def get_desired_menu(self):
         return "CardSet"
 
     def activate(self,oWidget):
@@ -44,7 +44,7 @@ class PhysicalCardSetFromAbstract(CardListPlugin):
         oDlg.show_all()
         oDlg.run()
 
-        (sName, sAuthor, sDesc) = oDlg.getName()
+        (sName, sAuthor, sDesc) = oDlg.get_data()
         if sName is None:
             return
 
@@ -83,7 +83,7 @@ class PhysicalCardSetFromAbstract(CardListPlugin):
             else:
                 aMissingCards.append(oACard)
 
-        parent.getManager().reloadCardSetLists()
+        parent.add_physical_card_set(sName)
 
         if aMissingCards:
             sMsg = "The following cards were not added to the physical card set " \
