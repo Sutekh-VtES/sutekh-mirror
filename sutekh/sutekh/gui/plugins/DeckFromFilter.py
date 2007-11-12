@@ -3,17 +3,17 @@
 # GPL - see COPYING for details
 
 import gtk
-from sutekh.core.SutekhObjects import PhysicalCardSet
+from sutekh.core.SutekhObjects import PhysicalCardSet, PhysicalCard
 from sutekh.gui.PluginManager import CardListPlugin
 
 class DeckFromFilter(CardListPlugin):
-    dTableVersions = { "PhysicalCardSet" : [2,3]}
-    aModelsSupported = ["PhysicalCardSet","AbstractCardSet","PhysicalCard",]
+    dTableVersions = { PhysicalCardSet : [2,3]}
+    aModelsSupported = [PhysicalCardSet, PhysicalCard]
 
     def __init__(self,*args,**kws):
         super(DeckFromFilter,self).__init__(*args,**kws)
 
-    def getMenuItem(self):
+    def get_menu_item(self):
         """
         Overrides method from base class.
         """
@@ -23,7 +23,7 @@ class DeckFromFilter(CardListPlugin):
         iDF.connect("activate", self.activate)
         return iDF
 
-    def getDesiredMenu(self):
+    def get_desired_menu(self):
         return "Filter"
 
     def activate(self,oWidget):
@@ -55,7 +55,6 @@ class DeckFromFilter(CardListPlugin):
         self.oDlg.destroy()
 
     def makeDeckFromFilter(self,sPCSName):
-        parent = self.view.getWindow()
         # Check PCS Doesn't Exist
         if PhysicalCardSet.selectBy(name=sPCSName).count() != 0:
             oComplaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
@@ -67,8 +66,9 @@ class DeckFromFilter(CardListPlugin):
         # Create PCS
         oPCS = PhysicalCardSet(name=sPCSName)
 
-        for oCard in self.model.getCardIterator(self.model.getSelectFilter()):
+        for oCard in self.model.getCardIterator(self.model.getCurrentFilter()):
             oPCS.addPhysicalCard(oCard)
-        parent.getManager().reloadCardSetLists()
+
+        self.view.getWindow().add_physical_card_set(sPCSName)
 
 plugin = DeckFromFilter
