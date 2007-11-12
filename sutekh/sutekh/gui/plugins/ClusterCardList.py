@@ -3,14 +3,16 @@
 # GPL - see COPYING for details
 
 import gtk
-from sutekh.core.SutekhObjects import PhysicalCardSet, IAbstractCard
+from sutekh.core.SutekhObjects import AbstractCard, PhysicalCard, \
+                                      AbstractCardSet, PhysicalCardSet, \
+                                      IAbstractCard
 from sutekh.core.CardListTabulator import CardListTabulator
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 
 # find a cluster module
 # Bio.Cluster needs a fromlist to do the right thing
-for module,aFromlist in [('Pycluster',None),('Bio.Cluster',['Cluster'])]:
+for module, aFromlist in [('Pycluster',None),('Bio.Cluster',['Cluster'])]:
     try:
         Cluster = __import__(module,None,None,aFromlist)
         break
@@ -21,11 +23,16 @@ else:
 
 class ClusterCardList(CardListPlugin):
     dTableVersions = {}
-    aModelsSupported = ["PhysicalCard"]
+    aModelsSupported = [AbstractCard, PhysicalCard, PhysicalCardSet, AbstractCardSet]
+
     def __init__(self,*args,**kws):
         super(ClusterCardList,self).__init__(*args,**kws)
+        if self.model.cardclass is PhysicalCard:
+            self._makeCardSetFromCluster = self.makeDeckFromCluster
+        else:
+            self._makeCardSetFromCluster = self.makeACSFromCluster
 
-    def getMenuItem(self):
+    def get_menu_item(self):
         """
         Overrides method from base class.
         """
@@ -35,7 +42,7 @@ class ClusterCardList(CardListPlugin):
         iCluster.connect("activate", self.activate)
         return iCluster
 
-    def getDesiredMenu(self):
+    def get_desired_menu(self):
         return "Plugins"
 
     def activate(self,oWidget):
@@ -210,12 +217,12 @@ class ClusterCardList(CardListPlugin):
             oTable.attach(oLabel,k + iExtraCols,k + iExtraCols + 1,0,1,xpadding=3)
 
         # Data
-        self._dDeckMakingButtons = {}
+        self._dCardSetMakingButtons = {}
         for i in range(iNX):
             for j in range(iNY):
                 iRow = i * iNY + j + iHeaderRows
                 oBut = gtk.CheckButton('')
-                self._dDeckMakingButtons[(i,j)] = oBut
+                self._dCardSetMakingButtons[(i,j)] = oBut
                 oTable.attach(oBut,0,1,iRow,iRow + 1)
                 oTable.attach(gtk.Label(str(i)),1,2,iRow,iRow + 1)
                 oTable.attach(gtk.Label(str(j)),2,3,iRow,iRow + 1)
@@ -225,9 +232,9 @@ class ClusterCardList(CardListPlugin):
 
         self._oResultsVbox.pack_start(AutoScrolledWindow(oTable,True)) # top align, using viewport to scroll
 
-        oMakeDeckButton = gtk.Button("Make Decks from Selected Clusters")
-        oMakeDeckButton.connect("clicked",self.handleMakeDecks)
-        self._oResultsVbox.pack_end(oMakeDeckButton,False) # bottom align
+        oMakeCardSetsButton = gtk.Button("Make Card Sets from Selected Clusters")
+        oMakeCardSetsButton.connect("clicked",self.handleMakeCardSets)
+        self._oResultsVbox.pack_end(oMakeCardSetsButton,False) # bottom align
 
         self._oResultsVbox.show_all()
 
@@ -239,10 +246,10 @@ class ClusterCardList(CardListPlugin):
         elif oResponse == gtk.RESPONSE_APPLY:
             self.doClustering()
 
-    def handleMakeDecks(self,oSomeObj):
-        for tId, oBut in self._dDeckMakingButtons.iteritems():
+    def handleMakeCardSets(self,oSomeObj):
+        for tId, oBut in self._dCardSetMakingButtons.iteritems():
             if oBut.get_active():
-                self.makeDeckFromCluster(tId)
+                self._makeCardSetFromCluster(tId)
 
     def doClustering(self):
         # gather cards
@@ -263,7 +270,7 @@ class ClusterCardList(CardListPlugin):
         oTab = CardListTabulator(aColNames,dPropFuncs)
         aTable = oTab.tabulate(aCards)
 
-        # make date file
+        # make data file
         oDatFile = Cluster.DataFile()
         oDatFile.geneid = [oC.id for oC in aCards]
         oDatFile.genename = [IAbstractCard(oC).name.encode('ascii','replace') for oC in aCards]
@@ -313,6 +320,27 @@ class ClusterCardList(CardListPlugin):
             if aClusterId[0] == aCardCluster[0] and aClusterId[1] == aCardCluster[1]:
                 oDeck.addPhysicalCard(oCard)
 
-        self.view.getWindow().getManager().reloadCardSetLists()
+        self.view.getWindow().add_physical_card_set(sDeckName)
+
+    def makeACSFromCluster(self,aClusterId):
+        sACSName = '_cluster_acs_%d_%d' % (aClusterId[0],aClusterId[1])
+
+        # Check ACS Doesn't Exist
+        if AbstractCardSet.selectBy(name=sACSName).count() != 0:
+            oComplaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
+                                          gtk.BUTTONS_CLOSE,"Abstract Card Set %s already exists." % sACSName)
+            oComplaint.connect("response",lambda oW, oResp: oW.destroy())
+            oComplaint.run()
+            return
+
+        # Create ACS
+        oACS = AbstractCardSet(name=sACSName)
+
+        for oCard, aCardCluster in zip(self._aCards,self._aClusterIds):
+            oCard = IAbstractCard(oCard)
+            if aClusterId[0] == aCardCluster[0] and aClusterId[1] == aCardCluster[1]:
+                oACS.addAbstractCard(oCard)
+
+        self.view.getWindow().add_abstract_card_set(sACSName)
 
 plugin = ClusterCardList
