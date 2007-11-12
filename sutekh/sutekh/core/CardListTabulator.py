@@ -53,8 +53,7 @@ class CardListTabulator(object):
             return lambda card: ((oTmpDis in [oPair.discipline for oPair in card.discipline]) and 1) or 0
 
         for oDis in Discipline.select():
-            sName = DisciplineAdapter.keys[oDis.name][-1]
-            d['discipline: ' + sName] = makeDisFunc(oDis)
+            d['discipline: ' + oDis.fullname] = makeDisFunc(oDis)
 
         # rarity properties
         def makeRarFunc(oTmpRar):
