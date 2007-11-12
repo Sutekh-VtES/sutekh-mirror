@@ -45,7 +45,7 @@ class AnalyzeCardList(CardListPlugin):
     def _getSortKey(self, x):
         return x[1][0]
 
-    def getMenuItem(self):
+    def get_menu_item(self):
         """
         Overrides method from base class.
         """
@@ -55,7 +55,7 @@ class AnalyzeCardList(CardListPlugin):
         iAnalyze.connect("activate", self.activate)
         return iAnalyze
 
-    def getDesiredMenu(self):
+    def get_desired_menu(self):
         return "Plugins"
 
     def activate(self,oWidget):
