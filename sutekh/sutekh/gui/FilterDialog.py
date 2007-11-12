@@ -278,6 +278,7 @@ class FilterDialog(gtk.Dialog, ConfigFileListener):
                         + oFilterType.helptext + "\n"
         oHelpText = gtk.Label()
         oHelpText.set_markup(sHelpText)
+        oHelpText.set_selectable(True)
         oEntry = gtk.Entry(300)
         oEntry.set_text(sEditFilter)
         oEntry.set_width_chars(70)
