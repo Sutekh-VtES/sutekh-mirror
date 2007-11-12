@@ -6,20 +6,20 @@
 import gtk
 import urllib2
 from sutekh.io.ELDBHTMLParser import ELDBHTMLParser
-from sutekh.core.SutekhObjects import AbstractCardSet
+from sutekh.core.SutekhObjects import AbstractCard, AbstractCardSet
 from sutekh.core.CardSetHolder import CardSetHolder
 from sutekh.core.CardLookup import LookupFailed
 from sutekh.gui.GuiCardLookup import GuiLookup
 from sutekh.gui.PluginManager import CardListPlugin
 
 class ACSFromELDBHTML(CardListPlugin):
-    dTableVersions = { "AbstractCardSet" : [2,3]}
-    aModelsSupported = ["AbstractCard"]
+    dTableVersions = { AbstractCardSet: [2,3]}
+    aModelsSupported = [AbstractCard]
 
     def __init__(self,*args,**kws):
         super(ACSFromELDBHTML,self).__init__(*args,**kws)
 
-    def getMenuItem(self):
+    def get_menu_item(self):
         """
         Overrides method from base class.
         """
@@ -29,7 +29,7 @@ class ACSFromELDBHTML(CardListPlugin):
         iDF.connect("activate", self.activate)
         return iDF
 
-    def getDesiredMenu(self):
+    def get_desired_menu(self):
         return "Plugin"
 
     def activate(self,oWidget):
@@ -105,7 +105,7 @@ class ACSFromELDBHTML(CardListPlugin):
         # Create ACS
         try:
             # Never need the physical_lookup, so the bogus view is OK
-            oHolder.createACS(oCardLookup=GuiLookup(self.view,self.view))
+            oHolder.createACS(oCardLookup=GuiLookup())
         except RuntimeError, e:
             sMsg = "Creating the card set failed with the following error:\n"
             sMsg += str(e) + "\n"
@@ -120,6 +120,6 @@ class ACSFromELDBHTML(CardListPlugin):
             return
 
         parent = self.view.getWindow()
-        parent.getManager().reloadCardSetLists()
+        parent.add_abstract_card_set(oHolder.name)
 
 plugin = ACSFromELDBHTML

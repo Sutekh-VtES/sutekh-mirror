@@ -3,20 +3,22 @@
 # GPL - see COPYING for details
 
 from sutekh.gui.PluginManager import CardListPlugin
+from sutekh.core.SutekhObjects import AbstractCard
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
+from sutekh.gui.GuiCardLookup import GuiLookup
 import gtk
 import os
 
 class FullBackup(CardListPlugin):
     dTableVersions = {}
-    aModelsSupported = ["AbstractCard"]
+    aModelsSupported = [AbstractCard]
 
     def __init__(self,*args,**kws):
         super(FullBackup,self).__init__(*args,**kws)
 
     # Dialog and Menu Item Creation
 
-    def getMenuItem(self):
+    def get_menu_item(self):
         """
         Overrides method from base class.
         """
@@ -37,7 +39,7 @@ class FullBackup(CardListPlugin):
 
         return iMenu
 
-    def getDesiredMenu(self):
+    def get_desired_menu(self):
         return "Plugin"
 
     # Backup
@@ -123,10 +125,9 @@ class FullBackup(CardListPlugin):
             if bContinue:
                 try:
                     oFile = ZipFileWrapper(sFile)
-                    oCardLookup = self.view.getController().getMenu().cardLookup
-                    oFile.doRestoreFromZip(oCardLookup)
+                    oFile.doRestoreFromZip(oCardLookup=GuiLookup())
                     # restore successful, refresh display
-                    self.view.getController().reloadAll()
+                    self.view.getWindow().reload_all()
                 except Exception, e:
                     sMsg = "Failed to restore backup.\n\n" + str(e)
                     Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
