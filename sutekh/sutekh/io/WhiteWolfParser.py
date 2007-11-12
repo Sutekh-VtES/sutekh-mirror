@@ -317,44 +317,54 @@ def parseText(oCard):
     sSect = None
     if oType[0].name != 'Vampire':
         return (None,None)
-    aLines = oCard.text.splitlines()
+    # Card text for vampires is either Sect attributes. or
+    # Sect attributes: more text. Title is in the attributes
+    aLines = oCard.text.split(':')
     if aLines[0].find('Camarilla') != -1:
         sSect = 'Camarilla'
-        if aLines[0].find('primogen') != -1:
+        if aLines[0].find('Camarilla primogen') != -1:
             sTitle = 'Primogen'
-        elif aLines[0].find('Prince of') != -1:
+        elif aLines[0].find('Camarilla Prince of') != -1:
             sTitle = 'Prince'
         elif aLines[0].find('Justicar') != -1:
-            sTitle = 'Justicar'
-        elif aLines[0].find('Inner Circle') != -1:
+            # Since Justicar titles are of the form Camarilla <Clan> Justicar
+            oJusticar = re.compile('Camarilla [A-Z][a-z]* Justicar')
+            if oJusticar.search(aLines[0]) is not None:
+                sTitle = 'Justicar'
+        elif aLines[0].find('Camarilla Inner Circle') != -1:
             sTitle = 'Inner Circle'
     elif aLines[0].find('Sabbat') != -1:
         sSect='Sabbat'
-        if aLines[0].find('Archbishop of') != -1:
+        if aLines[0].find('Sabbat Archbishop of') != -1:
             sTitle = 'Archbishop'
-        elif aLines[0].find('bishop') != -1:
+        elif aLines[0].find('Sabbat bishop') != -1:
             sTitle = 'Bishop'
-        elif aLines[0].find('priscus') != -1:
+        elif aLines[0].find('sabbat priscus') != -1:
             sTitle = 'Priscus'
-        elif aLines[0].find('cardinal') != -1:
+        elif aLines[0].find('Sabbat cardinal') != -1:
             sTitle = 'Cardinal'
-        elif aLines[0].find('regent') != -1:
+        elif aLines[0].find('Sabbat regent') != -1:
             sTitle = 'Regent'
     elif aLines[0].find('Independent') != -1:
         sSect = 'Independent'
         # Independent titles are on the next line. Of the form
         # Name has X vote(s)
         try:
-            if aLines[1].find('has 1 vote') != -1:
-                sTitle = 'Independent with 1 vote'
-            elif aLines[1].find('has 2 votes') != -1:
-                sTitle = 'Independent with 2 votes'
-            elif aLines[1].find('has 3 votes') != -1:
-                sTitle = 'Independent with 3 votes'
+            # Special cases 'The Baron' and 'Ur-Shulgi' mean we don't
+            # anchor the regexp
+            oIndTitle = re.compile('[A-Z][a-z]* has ([0-9]) vote')
+            oMatch = oIndTitle.search(aLines[1])
+            if oMatch is not None:
+                if oMatch.groups()[0] == '1':
+                   sTitle = 'Independent with 1 vote'
+                elif oMatch.groups()[0] == '2':
+                   sTitle = 'Independent with 2 votes'
+                elif oMatch.groups()[0] == '3':
+                   sTitle = 'Independent with 3 votes'
         except IndexError:
             pass
     elif aLines[0].find('Laibon') != -1:
         sSect = 'Laibon'
-        if aLines[0].find('magaji') != -1:
+        if aLines[0].find('Laibon magaji') != -1:
             sTitle = 'Magaji'
     return (sSect,sTitle)
