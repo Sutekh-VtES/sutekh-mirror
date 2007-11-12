@@ -4,10 +4,10 @@
 # GPL - see COPYING for details
 
 import gtk, gobject
-from sutekh.core.Filters import FilterAndBox, SpecificCardFilter, NullFilter, PhysicalExpansionFilter, \
+from sutekh.core.Filters import FilterAndBox, SpecificCardFilter, NullFilter, \
         PhysicalCardFilter, PhysicalCardSetFilter
 from sutekh.core.Groupings import CardTypeGrouping
-from sutekh.core.SutekhObjects import AbstractCard, IAbstractCard, PhysicalCardSet, \
+from sutekh.core.SutekhObjects import AbstractCard, IAbstractCard, \
         PhysicalCard, IExpansion
 
 def norm_path(oPath):
@@ -592,7 +592,7 @@ class PhysicalCardListModel(CardListModel):
         else:
             return False
 
-    def get_add_card_expansion_info(oCard, dExpanInfo):
+    def get_add_card_expansion_info(self, oCard, dExpanInfo):
         """Get the expansions to list for a newly added card"""
         if not self.bExpansions:
             return []
@@ -680,7 +680,7 @@ class PhysicalCardSetCardListModel(CardListModel):
             # Not editable, and iCnt == 0, so remove
             return False
 
-    def get_add_card_expansion_info(oCard, dExpanInfo):
+    def get_add_card_expansion_info(self, oCard, dExpanInfo):
         """Get the expansions to list for a newly added card"""
         if not self.bExpansions:
             return []
