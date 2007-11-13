@@ -18,25 +18,29 @@ class CardSetHolder(object):
 
     # Manipulate Virtual Card Set
 
-    def add(self, iCnt, sName, sExpansion=None):
+    def add(self, iCnt, sName, oExpansion=None):
         """Append cards to the virtual set.
            """
         self._dCards.setdefault(sName, 0)
         self._dCards[sName] += iCnt
         self._dCardExpansions.setdefault(sName,{})
-        self._dCardExpansions[sName].setdefault(sExpansion, 0)
-        self._dCardExpansions[sName][sExpansion] += iCnt
+        self._dCardExpansions[sName].setdefault(oExpansion, 0)
+        self._dCardExpansions[sName][oExpansion] += iCnt
 
-    def remove(self, iCnt, sName, sExpansion=None):
+    def remove(self, iCnt, sName, oExpansion=None):
         """Remove cards from the virtual set.
            """
+        if oExpansion is None:
+            sExpName = 'No Expansion'
+        else:
+            sExpName = oExpansion.name
         if not sName in self._dCards or self._dCards[sName] < iCnt:
             raise RuntimeError("Not enough of card '%s' to remove '%d'." % (sName,iCnt))
         elif not sName in self._dCardExpansions \
-                or sExpansion not in self._dCardExpansions[sName] \
-                or self._dCardExpansions[sName][sExpansion] < iCnt:
-            raise RuntimeError("Not enough of card '%s' from expansion '%s' to remove '%d'." % (sName,sExpansion,iCnt))
-        self._dCardExpansions[sName][sExpansion] -= iCnt
+                or oExpansion not in self._dCardExpansions[sName] \
+                or self._dCardExpansions[sName][oExpansion] < iCnt:
+            raise RuntimeError("Not enough of card '%s' from expansion '%s' to remove '%d'." % (sName, sExpName, iCnt))
+        self._dCardExpansions[sName][oExpansion] -= iCnt
         self._dCards[sName] -= iCnt
 
     name = property(fget = lambda self: self._sName, fset = lambda self, x: setattr(self,'_sName',x))
@@ -77,9 +81,9 @@ class CardSetHolder(object):
         for oAbs, (sName, iCnt) in zip(aAbsCards,aCardCnts):
             if not oAbs:
                 continue
-            for sExpansion, iExtCnt in self._dCardExpansions[sName].iteritems():
+            for oExpansion, iExtCnt in self._dCardExpansions[sName].iteritems():
                 for i in range(iExtCnt):
-                    PhysicalCard(abstractCard=oAbs,expansion=sExpansion)
+                    PhysicalCard(abstractCard=oAbs, expansion=oExpansion)
 
     def createPCS(self, oCardLookup=DEFAULT_LOOKUP):
         """Create a Physical Card Set.
