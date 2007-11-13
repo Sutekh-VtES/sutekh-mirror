@@ -12,11 +12,10 @@ from sutekh.gui.BasicFrame import BasicFrame
 class CardTextFrame(BasicFrame):
     def __init__(self, oMainWindow):
         super(CardTextFrame, self).__init__(oMainWindow)
-        self._oTextView = CardTextView(oMainWindow)
+        self._oView = CardTextView(oMainWindow)
         self.add_parts()
 
-    view = property(fget=lambda self: self._oTextView, doc="Associated View Object")
-    type = "Card Text"
+    type = property(fget=lambda self: "Card Text", doc="Frame Type")
 
     def add_parts(self):
         wMbox = gtk.VBox(False, 2)
@@ -24,7 +23,7 @@ class CardTextFrame(BasicFrame):
 
         wMbox.pack_start(self._oTitle, False, False)
 
-        wMbox.pack_start(AutoScrolledWindow(self._oTextView), True, True)
+        wMbox.pack_start(AutoScrolledWindow(self._oView), True, True)
 
         self.add(wMbox)
         self.show_all()

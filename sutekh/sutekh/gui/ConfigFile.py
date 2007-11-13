@@ -42,9 +42,9 @@ class ConfigFile(object):
         if not self.__oConfig.has_section(self.__sPanesSection):
             self.__oConfig.add_section(self.__sPanesSection)
             # No panes information, so we set 'sensible' defaults
-            self.addPane(1, 'abstract_card', 'Abstract Cards')
-            self.addPane(2, 'physical_card', 'Physical Cards')
-            self.addPane(3, 'Card Text', 'Card Text')
+            self.add_frame(1, 'abstract_card', 'Abstract Cards')
+            self.add_frame(2, 'physical_card', 'Physical Cards')
+            self.add_frame(3, 'Card Text', 'Card Text')
 
         if not self.__oConfig.has_section(self.__sFiltersSection):
             self.__oConfig.add_section(self.__sFiltersSection)
@@ -94,9 +94,9 @@ class ConfigFile(object):
         else:
             self.__oConfig.set(self.__sPrefsSection, 'save on exit', 'no')
 
-    def addPane(self, iPaneNumber, sType, sName):
+    def add_frame(self, iFrameNumber, sType, sName):
         aOptions = self.__oConfig.options(self.__sPanesSection)
-        sKey = 'pane ' + str(iPaneNumber)
+        sKey = 'pane ' + str(iFrameNumber)
         sValue = sType + ':' + sName
         self.__oConfig.set(self.__sPanesSection, sKey, sValue)
 

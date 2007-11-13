@@ -16,6 +16,11 @@ class BasicFrame(gtk.Frame, object):
         self._oTitle = gtk.EventBox()
         self._oTitleLabel = gtk.Label('Blank Frame')
         self._oTitle.add(self._oTitleLabel)
+        oBuf = gtk.TextBuffer()
+        self._oView = gtk.TextView()
+        self._oView.set_editable(False)
+        self._oView.set_cursor_visible(False)
+        self._oView.get_buffer().set_text('')
 
         aDragTargets = [ ('STRING', 0, 0),
                          ('text/plain', 0, 0) ]
@@ -39,6 +44,8 @@ class BasicFrame(gtk.Frame, object):
 
     title = property(fget=lambda self: self._oTitleLabel.get_text(), doc="Frame Title")
     name = property(fget=lambda self: self._oTitleLabel.get_text(), doc="Frame Name")
+    type = property(fget=lambda self: "Blank Frame", doc="Frame Type")
+    view = property(fget=lambda self: self._oView, doc="Associated View Object")
 
     def set_title(self, sTitle):
         self._oTitleLabel.set_text(sTitle)
@@ -46,7 +53,17 @@ class BasicFrame(gtk.Frame, object):
     def drag_drop_handler(self, oWindow, oDragContext, x, y, oSelectionData, oInfo, oTime):
         #print "Do something sensbible here"
         #print oSelectionData
-        return False
+        if not oSelectionData and oSelectionData.format != 8:
+            oDragContext.finish(False, False, oTime)
+        else:
+            aData =  oSelectionData.data.splitlines()
+            if aData[0] != 'Sutekh Pane:':
+                oDragContext.finish(False, False, oTime)
+            else:
+                sOtherName = aData[1]
+                oOtherFrame = self._oMainWindow.find_pane_by_name(sOtherName)
+                if oOtherFrame is not None:
+                    self._oMainWindow.swap_frames(self, oOtherFrame)
 
     def init_plugins(self):
         self._aPlugins = []
@@ -62,7 +79,7 @@ class BasicFrame(gtk.Frame, object):
         pass
 
     def close_frame(self):
-        self._oMainWindow.remove_pane(self)
+        self._oMainWindow.remove_frame(self)
         self.destroy()
 
     def close_menu_item(self, oMenuWidget):
@@ -72,6 +89,8 @@ class BasicFrame(gtk.Frame, object):
         wMbox = gtk.VBox(False, 2)
 
         wMbox.pack_start(self._oTitle, False, False)
+        # Blanks view placeholder fills everything it can
+        wMbox.pack_start(self._oView, True, True)
 
         self.add(wMbox)
         self.show_all()

@@ -29,7 +29,6 @@ class CardSetManagementFrame(BasicFrame):
         self._oFilterDialog = None
         self._sFilterType = None
 
-    view = property(fget=lambda self: self._oView, doc="Associated View Object")
     type = property(fget=lambda self: self._sName, doc="Frame Type")
     menu = property(fget=lambda self: self._oMenu, doc="Frame Menu")
 
@@ -95,12 +94,12 @@ class CardSetManagementFrame(BasicFrame):
                 return
         # Got here, so delete the card set
         if self._cSetType is PhysicalCardSet:
-            sPaneName = 'PCS:' + sSetName
+            sFrameName = 'PCS:' + sSetName
             delete_physical_card_set(sSetName)
         else:
-            sPaneName = 'ACS:' + sSetName
+            sFrameName = 'ACS:' + sSetName
             delete_abstract_card_set(sSetName)
-        self._oMainWindow.remove_pane_by_name(sPaneName)
+        self._oMainWindow.remove_frame_by_name(sFrameName)
         self.reload()
 
     def reload(self):
@@ -112,10 +111,10 @@ class CardSetManagementFrame(BasicFrame):
             oSelectFilter = NullFilter()
         for oCS in oSelectFilter.select(self._oSetClass).orderBy('name'):
             if self._cSetType is PhysicalCardSet:
-                sPaneName = 'PCS:' + oCS.name
+                sFrameName = 'PCS:' + oCS.name
             else:
-                sPaneName = 'ACS:' + oCS.name
-            if sPaneName not in self._oMainWindow.dOpenPanes.values():
+                sFrameName = 'ACS:' + oCS.name
+            if sFrameName not in self._oMainWindow.dOpenFrames.values():
                 aVals.append(oCS.name)
             else:
                 aVals.insert(iAvailIndex, oCS.name)
