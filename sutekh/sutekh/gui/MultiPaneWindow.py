@@ -285,12 +285,13 @@ class MultiPaneWindow(gtk.Window):
                 else:
                     oParent.remove(oPart1)
                     oParent.add2(oNewPane)
+                    iParPos = oParent.get_position()
+                    oCur = oParent.get_allocation()
             oNewPane.add1(oPart1)
             oNewPane.add2(oWidget)
             oPart1.show()
             oNewPane.show()
             oParent.show()
-            # We always try and split in the middle
             self._aPanes.append(oNewPane)
         self._iNumOpenFrames += 1
         self.oVBox.show_all()
@@ -326,19 +327,11 @@ class MultiPaneWindow(gtk.Window):
                 self.oVBox.pack_start(oKept)
             else:
                 oFocussedPane = [x for x in self._aPanes if oFrame in x.get_children()][0]
-                if oFocussedPane == self._aPanes[-1]:
-                    # Removing last Pane, and thus last Window
-                    self.oVBox.remove(oFocussedPane)
-                    oFocussedPane.remove(self._aPanes[-2]) # Clear from window
-                    self.oVBox.pack_start(self._aPanes[-2])  # safe due to num checks
-                    self.oVBox.show()
-                else:
-                    # Removing First pane, need to check which child to keep
-                    oKept = [x for x in oFocussedPane.get_children() if x != oFrame][0]
-                    iIndex = self._aPanes.index(oFocussedPane)
-                    self._aPanes[iIndex+1].remove(oFocussedPane) # Safe, since this is not the last pane
-                    oFocussedPane.remove(oKept)
-                    self._aPanes[iIndex+1].add1(oKept)
+                oKept = [x for x in oFocussedPane.get_children() if x != oFrame][0]
+                oParent = oFocussedPane.get_parent()
+                oParent.remove(oFocussedPane)
+                oFocussedPane.remove(oKept)
+                oParent.add(oKept)
                 # Housekeeping
                 oFocussedPane.remove(oFrame)
                 self._aPanes.remove(oFocussedPane)
