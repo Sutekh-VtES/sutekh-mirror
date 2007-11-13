@@ -612,10 +612,10 @@ class MultiPhysicalExpansionFilter(DirectFilter):
     description = "Physical Expansion"
     helptext = "List of physical cards with in the specified expansion"
     types = ['PhysicalCard']
+    __sUnspec = '  Unspecified Expansion'
 
     def __init__(self, aExpansions):
         self._aIds = []
-        self.__sUnspec = '  Unspecified Expansion'
         self.__bOrUnspec = False
         for sExpansion in aExpansions:
             if sExpansion is not None and sExpansion != self.__sUnspec:
@@ -623,8 +623,9 @@ class MultiPhysicalExpansionFilter(DirectFilter):
             else:
                 self.__bOrUnspec = True
 
-    def getValues(self):
-        aExpansions = [self.__sUnspec]
+    @classmethod
+    def getValues(cls):
+        aExpansions = [cls.__sUnspec]
         aExpansions.extend([x.name for x in Expansion.select().orderBy('name')
                 if x.name[:5] != 'Promo'])
         return aExpansions
@@ -670,7 +671,8 @@ class MultiPhysicalCardSetFilter(Filter):
         self.__oT = self._makeTableAlias('physical_map')
         self.__oPT = Table('physical_card')
 
-    def getValues(self):
+    @classmethod
+    def getValues(cls):
         aNames = []
         for oCS in PhysicalCardSet.select():
             aNames.append(oCS.name)
@@ -719,7 +721,8 @@ class CardSetNameFilter(DirectFilter):
         # Subclasses will replace this with the correct table
         self._oT = None
 
-    def getValues(self):
+    @classmethod
+    def getValues(cls):
         return None
 
     def _getExpression(self):
@@ -736,7 +739,8 @@ class CardSetDescriptionFilter(DirectFilter):
         # Subclasses will replace this with the correct table
         self._oT = None
 
-    def getValues(self):
+    @classmethod
+    def getValues(cls):
         return None
 
     def _getExpression(self):
@@ -753,7 +757,8 @@ class CardSetAuthorFilter(DirectFilter):
         # Subclasses will replace this with the correct table
         self._oT = None
 
-    def getValues(self):
+    @classmethod
+    def getValues(cls):
         return None
 
     def _getExpression(self):
@@ -770,7 +775,8 @@ class CardSetAnnotationsFilter(DirectFilter):
         # Subclasses will replace this with the correct table
         self._oT = None
 
-    def getValues(self):
+    @classmethod
+    def getValues(cls):
         return None
 
     def _getExpression(self):

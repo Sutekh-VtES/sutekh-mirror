@@ -5,9 +5,9 @@
 import ply.lex as lex
 import ply.yacc as yacc
 from sutekh.core.Filters import MultiCardTypeFilter, MultiClanFilter, \
-        MultiDisciplineFilter, MultiGroupFilter, MultiCapacityFilter,\
-        MultiCostFilter, MultiLifeFilter, MultiCreedFilter, MultiVirtueFilter,\
-        CardTextFilter, CardNameFilter, MultiSectFilter, MultiTitleFilter,\
+        MultiDisciplineFilter, MultiGroupFilter, MultiCapacityFilter, \
+        MultiCostFilter, MultiLifeFilter, MultiCreedFilter, MultiVirtueFilter, \
+        CardTextFilter, CardNameFilter, MultiSectFilter, MultiTitleFilter, \
         MultiExpansionRarityFilter, MultiDisciplineLevelFilter, \
         MultiPhysicalExpansionFilter, AbstractCardSetNameFilter, \
         PhysicalCardSetNameFilter, AbstractCardSetAuthorFilter, \
@@ -68,10 +68,10 @@ class ParseFilterDefinitions(object):
     t_ignore = ' \t\n'
 
     # Simplistic error handler
-    def t_error(self,t):
+    def t_error(self, t):
         raise ValueError("Illegal Character '%s'" % t.value[0])
 
-    def t_ID(self,t):
+    def t_ID(self, t):
         r'[A-Za-z0-9><$_]+'
         if t.value in self.aKeywords:
             t.type = 'FILTERTYPE'
@@ -92,10 +92,10 @@ class ParseFilterDefinitions(object):
         return t
 
     # Ply docs say don't do this in __init__, so we don't
-    def build(self,**kwargs):
-        self.lexer = lex.lex(object = self,**kwargs)
+    def build(self, **kwargs):
+        self.lexer = lex.lex(object = self, **kwargs)
 
-    def apply(self,data):
+    def apply(self, data):
         self.lexer.input(data)
         aResults = []
         while 1:
@@ -118,58 +118,58 @@ class FilterYaccParser(object):
             ('left','WITH')
     )
 
-    def p_filter(self,p):
+    def p_filter(self, p):
         """filter : filterpart
                   | empty
         """
         p[0] = FilterNode(p[1])
 
-    def p_filterpart_brackets(self,p):
+    def p_filterpart_brackets(self, p):
         """filterpart : LPAREN filterpart RPAREN"""
         p[0] = p[2]
 
-    def p_filterpart_AND(self,p):
+    def p_filterpart_AND(self, p):
         """filterpart : filterpart AND filterpart"""
-        p[0] = BinOpNode(p[1],'and',p[3])
+        p[0] = BinOpNode(p[1], 'and', p[3])
 
-    def p_filterpart_OR(self,p):
+    def p_filterpart_OR(self, p):
         """filterpart : filterpart OR filterpart"""
-        p[0] = BinOpNode(p[1],'or',p[3])
+        p[0] = BinOpNode(p[1], 'or', p[3])
 
-    def p_filterpart_NOT(self,p):
+    def p_filterpart_NOT(self, p):
         """filterpart : NOT filterpart"""
         p[0] = NotOpNode(p[2])
 
-    def p_filterpart_filtertype(self,p):
+    def p_filterpart_filtertype(self, p):
         """filterpart : FILTERTYPE IN expression"""
-        p[0] = FilterPartNode(p[1],p[3])
+        p[0] = FilterPartNode(p[1], p[3])
 
-    def p_filterpart_var(self,p):
+    def p_filterpart_var(self, p):
         """filterpart : FILTERTYPE IN VARIABLE"""
-        p[0] = FilterPartNode(p[1],None)
+        p[0] = FilterPartNode(p[1], None)
 
-    def p_expression_comma(self,p):
+    def p_expression_comma(self, p):
         """expression : expression COMMA expression"""
-        p[0] = CommaNode(p[1],p[2],p[3])
+        p[0] = CommaNode(p[1], p[2], p[3])
 
-    def p_expression_string(self,p):
+    def p_expression_string(self, p):
         """expression : STRING"""
         p[0] = StringNode(p[1])
 
-    def p_expression_id(self,p):
+    def p_expression_id(self, p):
         """expression : ID"""
         # Shouldn't actually trigger this rule with a legal filter string
         raise ValueError("Invalid filter element: " + str(p[1]))
 
-    def p_expression_with(self,p):
+    def p_expression_with(self, p):
         """expression : expression WITH expression"""
-        p[0] = WithNode(p[1],p[2],p[3])
+        p[0] = WithNode(p[1], p[2], p[3])
 
-    def p_empty(self,p):
+    def p_empty(self, p):
         """empty :"""
         p[0] = None
 
-    def p_error(self,p):
+    def p_error(self, p):
         if p is None:
             raise ValueError("Invalid filter syntax: No valid identifier")
         else:
@@ -192,7 +192,7 @@ class FilterParser(object):
                                             debug=0,
                                             write_tables=0)
 
-    def apply(self,str):
+    def apply(self, str):
         oAST = self._oGlobalParser.parse(str)
         return oAST
 
@@ -200,7 +200,7 @@ class FilterParser(object):
 # Should be made more robust
 
 class ValueObject(object):
-    def __init__(self,oValue,oNode):
+    def __init__(self, oValue, oNode):
         self.value = oValue
         self.node = oNode
 
@@ -217,11 +217,11 @@ class ValueObject(object):
 # from the ply documentation)
 
 class AstBaseNode(object):
-    def __init__(self,children):
+    def __init__(self, children):
         self.children = children
 
     def __str__(self):
-        sAttrs = '(' + ",".join([ str(value) for key,value \
+        sAttrs = '(' + ",".join([ str(value) for key, value \
                 in self.__dict__.items() if not key.startswith("_") and \
                 key != "children" and value not in self.children]) + ")"
         s = self.__class__.__name__ + sAttrs
@@ -242,8 +242,8 @@ class AstBaseNode(object):
         pass
 
 class FilterNode(AstBaseNode):
-    def __init__(self,expression):
-        super(FilterNode,self).__init__([expression])
+    def __init__(self, expression):
+        super(FilterNode, self).__init__([expression])
         self.expression = expression
 
     def getValues(self):
@@ -267,8 +267,8 @@ class TermNode(AstBaseNode):
         return None
 
 class StringNode(TermNode):
-    def __init__(self,value):
-        super(StringNode,self).__init__([value])
+    def __init__(self, value):
+        super(StringNode, self).__init__([value])
         # Strip quotes off strings
         if value[0] == '"' and value[-1] == '"':
             self.value = value[1:-1]
@@ -282,8 +282,8 @@ class StringNode(TermNode):
         return [self.value]
 
 class IdNode(TermNode):
-    def __init__(self,value):
-        super(IdNode,self).__init__([value])
+    def __init__(self, value):
+        super(IdNode, self).__init__([value])
         self.value = value
 
     def getValues(self):
@@ -293,22 +293,21 @@ class IdNode(TermNode):
         return None
 
 class FilterPartNode(OperatorNode):
-    def __init__(self,filtertype,filtervalues):
-        super(FilterPartNode,self).__init__([filtertype,filtervalues])
+    def __init__(self, filtertype, filtervalues):
+        super(FilterPartNode, self).__init__([filtertype, filtervalues])
         self.filtertype = filtertype
         self.filtervalues = filtervalues
 
     def getValues(self):
         if self.filtertype in aEntryFilters:
-            aResults = [ValueObject(getFilterType(self.filtertype).description + ' includes',self)]
+            aResults = [ValueObject(getFilterType(self.filtertype).description + ' includes', self)]
         else:
-            aResults = [ValueObject(getFilterType(self.filtertype).description + ' in',self)]
+            aResults = [ValueObject(getFilterType(self.filtertype).description + ' in', self)]
         if self.filtervalues is None:
-            oTemp = getFilterType(self.filtertype)([]) # Create Instance
-            aVals = oTemp.getValues()
+            aVals = getFilterType(self.filtertype).getValues()
             # Want a list within ValueObject for the GUI stuff to work
             # None case for Entry boxes works as well
-            aResults.append(ValueObject(aVals,self))
+            aResults.append(ValueObject(aVals, self))
         else:
             aResults.extend(self.filtervalues.getValues())
         return aResults
@@ -332,14 +331,14 @@ class FilterPartNode(OperatorNode):
         else:
             return None
 
-    def setValues(self,aVals):
+    def setValues(self, aVals):
         if self.filtervalues is not None:
             raise RuntimeError("Filter values already set")
         sCommaList = ",".join(aVals)
         sInternalFilter = self.filtertype + '=' + sCommaList
         oP = FilterParser()
         oInternalAST = oP.apply(sInternalFilter)
-        # The filter we create is trivially of the FilterType = X,Y type
+        # The filter we create is trivially of the FilterType = X, Y type
         # so this is safe, but potentially fragile in the future
         self.filtervalues = oInternalAST.children[0].filtervalues
         # Update AST to reflect change
@@ -382,8 +381,8 @@ class NotOpNode(OperatorNode):
         return self.subexpression.getType()
 
 class BinOpNode(OperatorNode):
-    def __init__(self,left,op,right):
-        super(BinOpNode,self).__init__([left,right])
+    def __init__(self, left, op, right):
+        super(BinOpNode, self).__init__([left, right])
         self.op = op
         self.left = left
         self.right = right
@@ -408,9 +407,9 @@ class BinOpNode(OperatorNode):
         else:
             # Add the extra brackets so the display in the dialog
             # reflects the correct precedence
-            aResults = [ValueObject('(',None)] + aLeft +\
-                    [ValueObject(') ' + self.op + ' (',self)] +\
-                    aRight + [ValueObject(')',None)]
+            aResults = [ValueObject('(', None)] + aLeft +\
+                    [ValueObject(') ' + self.op + ' (', self)] +\
+                    aRight + [ValueObject(')', None)]
             return aResults
 
     def getFilter(self):
@@ -421,9 +420,9 @@ class BinOpNode(OperatorNode):
         elif oRightFilter is None:
             return oLeftFilter
         if self.op == 'and':
-            oFilter = FilterAndBox([oLeftFilter,oRightFilter])
+            oFilter = FilterAndBox([oLeftFilter, oRightFilter])
         elif self.op == 'or':
-            oFilter = FilterOrBox([oLeftFilter,oRightFilter])
+            oFilter = FilterOrBox([oLeftFilter, oRightFilter])
         else:
             raise RuntimeError('Unknown operator in AST')
         return oFilter
@@ -443,15 +442,15 @@ class BinOpNode(OperatorNode):
         return aRes
 
 class CommaNode(OperatorNode):
-    def __init__(self,left,op,right):
-        super(CommaNode,self).__init__([left,right])
+    def __init__(self, left, op, right):
+        super(CommaNode, self).__init__([left, right])
         self.op = op
         self.left = left
         self.right = right
 
     def getValues(self):
         aResults = self.left.getValues()
-        aResults.append(ValueObject(',',self))
+        aResults.append(ValueObject(',', self))
         aResults.extend(self.right.getValues())
         return aResults
 
@@ -465,17 +464,17 @@ class CommaNode(OperatorNode):
         return None
 
 class WithNode(OperatorNode):
-    def __init__(self,left,op,right):
-        super(WithNode,self).__init__([left,right])
+    def __init__(self, left, op, right):
+        super(WithNode, self).__init__([left, right])
         self.op = op
         self.left = left
         self.right = right
 
     def getValues(self):
-        return [ValueObject(self.left.getFilter()[0] + ' ' + self.op + ' ' + self.right.getFilter()[0],self)]
+        return [ValueObject(self.left.getFilter()[0] + ' ' + self.op + ' ' + self.right.getFilter()[0], self)]
 
     def getFilter(self):
-        return [(self.left.getFilter()[0],self.right.getFilter()[0])]
+        return [(self.left.getFilter()[0], self.right.getFilter()[0])]
 
     def getType(self):
         # Syntax ensures with only in value lists, which have no type
