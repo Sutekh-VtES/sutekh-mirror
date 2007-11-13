@@ -25,5 +25,17 @@ class CardTextFrame(BasicFrame):
 
         wMbox.pack_start(AutoScrolledWindow(self._oView), True, True)
 
+
+        aDragTargets = [ ('STRING', 0, 0),
+                         ('text/plain', 0, 0) ]
+
+        self._oView.drag_dest_set(gtk.DEST_DEFAULT_ALL,
+                aDragTargets,
+                gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
+
+        self._oView.connect('drag-data-received', self.drag_drop_handler)
+        self._oView.connect('drag-motion', self.drag_motion)
+
         self.add(wMbox)
         self.show_all()
+

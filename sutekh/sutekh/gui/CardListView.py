@@ -262,6 +262,8 @@ class CardListView(gtk.TreeView, object):
         """Helper function to subdivide selection string into bits again"""
         aLines = sSelectionData.splitlines()
         sSource = aLines[0]
+        if sSource == "Sutekh Pane:":
+            return sSource, aLines
         # Construct list of (iCount, sCardName, sExpansion) tuples
         def true_expansion(sExpand):
             """Convert back from the 'None' for None placeholder in the string"""
@@ -281,7 +283,8 @@ class CardListView(gtk.TreeView, object):
         pass
 
     def card_drop(self, w, context, x, y, data, info, time):
-        pass
+        # Pass off to the Frame Handler
+        self._oC.frame.drag_drop_handler(w, context, x, y, data, info, time)
 
 class EditableCardListView(CardListView):
     def __init__(self, oController, oWindow, oConfig, oModel):

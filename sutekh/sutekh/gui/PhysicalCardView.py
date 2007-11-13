@@ -17,14 +17,16 @@ class PhysicalCardView(EditableCardListView):
         self.load()
 
     def card_drop(self, w, context, x, y, data, info, time):
-        if not self._oModel.bEditable or not data or data.format != 8:
+        if not data or data.format != 8:
             # Don't accept cards when editable
             context.finish(False, False, time)
         else:
             sSource, aCardInfo = self.split_selection_data(data.data)
-            # We can only drag from the AbstractCard List
-            # We can't drag from the card sets
-            if sSource in ['Abst:']:
+            if sSource == "Sutekh Pane:":
+                self._oC.frame.drag_drop_handler(w, context, x, y, data, info, time)
+            elif self._oModel.bEditable and sSource in ['Abst:']:
+                # We can only drag from the AbstractCard List
+                # We can't drag from the card sets
                 # Add the cards
                 for iCount, sCardName, sExpansion in aCardInfo:
                     # We are adding new cards, so only 1 of each

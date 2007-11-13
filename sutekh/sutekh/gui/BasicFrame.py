@@ -20,7 +20,6 @@ class BasicFrame(gtk.Frame, object):
         self._oView = gtk.TextView()
         self._oView.set_editable(False)
         self._oView.set_cursor_visible(False)
-        self._oView.get_buffer().set_text('')
 
         aDragTargets = [ ('STRING', 0, 0),
                          ('text/plain', 0, 0) ]
@@ -35,6 +34,13 @@ class BasicFrame(gtk.Frame, object):
 
         self._oTitle.connect('drag-data-received', self.drag_drop_handler)
         self._oTitle.connect('drag-data-get', self.create_drag_data)
+
+        self._oView.drag_dest_set(gtk.DEST_DEFAULT_ALL,
+                aDragTargets,
+                gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
+
+        self._oView.connect('drag-data-received', self.drag_drop_handler)
+        self._oView.connect('drag-motion', self.drag_motion)
 
         self._oBaseStyle = self._oTitle.get_style().copy()
         self._oFocStyle = self._oTitle.get_style().copy()
@@ -51,8 +57,6 @@ class BasicFrame(gtk.Frame, object):
         self._oTitleLabel.set_text(sTitle)
 
     def drag_drop_handler(self, oWindow, oDragContext, x, y, oSelectionData, oInfo, oTime):
-        #print "Do something sensbible here"
-        #print oSelectionData
         if not oSelectionData and oSelectionData.format != 8:
             oDragContext.finish(False, False, oTime)
         else:
@@ -60,10 +64,13 @@ class BasicFrame(gtk.Frame, object):
             if aData[0] != 'Sutekh Pane:':
                 oDragContext.finish(False, False, oTime)
             else:
-                sOtherName = aData[1]
-                oOtherFrame = self._oMainWindow.find_pane_by_name(sOtherName)
-                if oOtherFrame is not None:
-                    self._oMainWindow.swap_frames(self, oOtherFrame)
+                self.do_swap(aData)
+
+    def do_swap(self, aData):
+        sOtherName = aData[1]
+        oOtherFrame = self._oMainWindow.find_pane_by_name(sOtherName)
+        if oOtherFrame is not None:
+            self._oMainWindow.swap_frames(self, oOtherFrame)
 
     def init_plugins(self):
         self._aPlugins = []
@@ -107,3 +114,8 @@ class BasicFrame(gtk.Frame, object):
         """
         sData = 'Sutekh Pane:\n' + self.title
         oSelectionData.set(oSelectionData.target, 8, sData)
+
+    def drag_motion(self, widget, drag_context, x, y, timestamp):
+        if 'STRING' in drag_context.targets:
+            drag_context.drag_status(gtk.gdk.ACTION_COPY)
+            return True

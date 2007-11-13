@@ -29,12 +29,16 @@ class CardSetView(EditableCardListView):
         self.load()
 
     def card_drop(self, w, context, x, y, data, info, time):
-        if not self._oModel.bEditable or not data or data.format != 8:
+        if not data or data.format != 8:
             # Don't accept cards when editable
             context.finish(False, False, time)
         else:
             sSource, aCardInfo = self.split_selection_data(data.data)
-            if sSource == self.sDragPrefix:
+            if sSource == "Sutekh Pane:":
+                self._oC.frame.drag_drop_handler(w, context, x, y, data, info, time)
+            elif not self._oModel.bEditable:
+                context.finish(False, False, time)
+            elif sSource == self.sDragPrefix:
                 # Can't drag to oneself
                 context.finish(False, False, time)
             # Rules are - we can always drag from the PhysicalCard List
