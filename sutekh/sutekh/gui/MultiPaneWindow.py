@@ -40,7 +40,6 @@ class MultiPaneWindow(gtk.Window):
         self.oVBox = gtk.VBox(False, 1)
         self._aPanes = []
         self.__oMenu = MainMenu(self, oConfig)
-        self.iPaneNum = 0
         self.oVBox.show()
         self.oVBox.pack_start(self.__oMenu, False, False)
         self.add(self.oVBox)
@@ -56,6 +55,14 @@ class MultiPaneWindow(gtk.Window):
         self._oCardTextPane = CardTextFrame(self)
         self._oPCSListPane = None
         self._oACSListPane = None
+
+        self.__dMenus = {
+                "Physical Card List" : self.__oMenu.physical_card_list_set_sensitive,
+                "White Wolf CardList" : self.__oMenu.abstract_card_list_set_sensitive,
+                "Physical Card Set List" : self.__oMenu.pcs_list_pane_set_sensitive,
+                "Abstract Card Set List" : self.__oMenu.acs_list_pane_set_sensitive,
+                "Card Text" : self.__oMenu.add_card_text_set_sensitive
+                }
         for iNumber, sType, sName in self._oConfig.getAllPanes():
             if sType == PhysicalCardSet.sqlmeta.table:
                 self._oFocussed = self.add_pane()
@@ -80,6 +87,9 @@ class MultiPaneWindow(gtk.Window):
                 self.replace_with_pcs_list(None)
             elif sType == 'Blank Frame':
                 self._oFocussed = self.add_pane()
+        if self._iNumOpenFrames == 0:
+            # We always have at least one pane
+            self.add_pane()
         self._oCardLookup = GuiLookup(self._oConfig)
 
     # Needed for Backup plugin
@@ -129,7 +139,6 @@ class MultiPaneWindow(gtk.Window):
             oPane = PhysicalCardSetListFrame(self, self._oConfig)
             self.replace_frame(self._oFocussed, oPane, sMenuFlag)
             self._oPCSListPane = oPane
-            self.__oMenu.pcs_list_pane_set_sensitive(False)
 
     def replace_with_acs_list(self, oWidget):
         sMenuFlag = "Abstract Card Set List"
@@ -137,27 +146,23 @@ class MultiPaneWindow(gtk.Window):
             oPane = AbstractCardSetListFrame(self, self._oConfig)
             self.replace_frame(self._oFocussed, oPane, sMenuFlag)
             self._oACSListPane = oPane
-            self.__oMenu.acs_list_pane_set_sensitive(False)
 
     def replace_with_abstract_card_list(self, oWidget):
-        sMenuFlag = "Abstract Card List"
+        sMenuFlag = "White Wolf CardList"
         if sMenuFlag not in self.dOpenFrames.values() and self._oFocussed:
             oPane = AbstractCardListFrame(self, self._oConfig)
             self.replace_frame(self._oFocussed, oPane, sMenuFlag)
-            self.__oMenu.abstract_card_list_set_sensitive(False)
 
     def replace_with_physical_card_list(self, oWidget):
         sMenuFlag = "Physical Card List"
         if sMenuFlag not in self.dOpenFrames.values() and self._oFocussed:
             oPane = PhysicalCardFrame(self, self._oConfig)
             self.replace_frame(self._oFocussed, oPane, sMenuFlag)
-            self.__oMenu.physical_card_list_set_sensitive(False)
 
     def replace_with_card_text(self, oWidget):
         sMenuFlag = "Card Text"
         if sMenuFlag not in self.dOpenFrames.values() and self._oFocussed:
             self.replace_frame(self._oFocussed, self._oCardTextPane, sMenuFlag)
-            self.__oMenu.add_card_text_set_sensitive(False)
 
     def reload_pcs_list(self):
         if self._oPCSListPane is not None:
@@ -209,6 +214,7 @@ class MultiPaneWindow(gtk.Window):
         self.dOpenFrames[oNewFrame] = sMenuFlag
         if self._oFocussed == oOldFrame:
             self._oFocussed = None
+        self.reset_menu()
 
     def swap_frames(self, oFrame1, oFrame2):
         if oFrame1 != oFrame2:
@@ -301,9 +307,9 @@ class MultiPaneWindow(gtk.Window):
 
     def remove_frame(self, oFrame):
         if oFrame is not None:
-            oRect = oFrame.get_allocation()
-            oCur = self.get_allocation()
-            self.resize(oCur.width-oRect.width, oCur.height)
+            #oRect = oFrame.get_allocation()
+            #oCur = self.get_allocation()
+            #self.resize(oCur.width-oRect.width, oCur.height)
             if self._iNumOpenFrames == 1:
                 # Removing last widget, so just clear the vbox
                 oWidget = [x for x in self.oVBox.get_children() if x != self.__oMenu][0]
@@ -336,30 +342,30 @@ class MultiPaneWindow(gtk.Window):
                 # Housekeeping
                 oFocussedPane.remove(oFrame)
                 self._aPanes.remove(oFocussedPane)
-
             self.oVBox.show()
             self._iNumOpenFrames -= 1
-            if self._iNumOpenFrames == 0:
-                self.__oMenu.del_pane_set_sensitive(False)
             # Remove from dictionary of open panes
             sMenuFlag = self.dOpenFrames[oFrame]
             del self.dOpenFrames[oFrame]
-            if sMenuFlag == "PCS List":
-                self.__oMenu.pcs_list_pane_set_sensitive(True)
-                self._oPCSListPane = None
-            elif sMenuFlag == "ACS List":
-                self.__oMenu.acs_list_pane_set_sensitive(True)
-                self._oACSListPane = None
-            elif sMenuFlag == "Card Text":
-                self.__oMenu.add_card_text_set_sensitive(True)
-            elif sMenuFlag == "Abstract Card List":
-                self.__oMenu.abstract_card_list_set_sensitive(True)
-            elif sMenuFlag == "Physical Card List":
-                self.__oMenu.physical_card_list_set_sensitive(True)
             # Any cleanup events we need?
             oFrame.cleanup()
+            self.reset_menu()
             if oFrame == self._oFocussed:
                 self._oFocussed = None
+            if self._iNumOpenFrames == 0:
+                # Always have one to replace
+                self.add_pane()
+
+    def reset_menu(self):
+        for sMenu, fSetSensitiveFunc in self.__dMenus.iteritems():
+            if sMenu in self.dOpenFrames.values():
+                fSetSensitiveFunc(False)
+            else:
+                fSetSensitiveFunc(True)
+        if self._iNumOpenFrames == 0:
+            self.__oMenu.del_pane_set_sensitive(False)
+        else:
+            self.__oMenu.del_pane_set_sensitive(True)
 
     def show_about_dialog(self, oWidget):
         oDlg = SutekhAboutDialog()

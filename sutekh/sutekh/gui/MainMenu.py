@@ -133,10 +133,10 @@ class MainMenu(gtk.MenuBar, object):
         self.__oReplaceWithCardText.set_sensitive(bValue)
 
     def pcs_list_pane_set_sensitive(self, bValue):
-        self.__oReplaceWithPCLPane.set_sensitive(bValue)
+        self.__oReplaceWithPCSListPane.set_sensitive(bValue)
 
     def acs_list_pane_set_sensitive(self, bValue):
-        self.__oReplaceWithACLPane.set_sensitive(bValue)
+        self.__oReplaceWithACSListPane.set_sensitive(bValue)
 
     def abstract_card_list_set_sensitive(self, bValue):
         self.__oReplaceWithACLPane.set_sensitive(bValue)
