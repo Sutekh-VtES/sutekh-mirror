@@ -6,8 +6,7 @@
 # version management helper class
 
 from sqlobject import sqlhub
-from sutekh.core.SutekhObjects import PhysicalCardSet, AbstractCardSet, \
-                        PhysicalCard, AbstractCard, VersionTable
+from sutekh.core.SutekhObjects import VersionTable
 
 class DatabaseVersion(object):
     def __init__(self, connection=None):
