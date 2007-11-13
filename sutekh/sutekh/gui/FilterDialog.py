@@ -87,7 +87,7 @@ class FilterDialog(gtk.Dialog, ConfigFileListener):
                 self.__addFilterToDialog(oAST, sFilter, sId)
             except ValueError:
                 sMessages += sFilter + "\n"
-                self.__oConfig.removeFilter(sFilter)
+                self.__oConfig.removeFilter(sFilter, sId)
         if sMessages != '':
             self.__doComplaint("The Following Invalid filters have been removed from the config file:\n " + sMessages)
         self.show_all()
