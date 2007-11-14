@@ -588,6 +588,43 @@ class PhysicalCardFilter(Filter):
     def _getExpression(self):
         return TRUE # SQLite doesn't like True. Postgres doesn't like 1.
 
+class MultiPhysicalCardCountFilter(DirectFilter):
+    keyword = "PhysicalCardCount"
+    description = "Filter on numer of cards in the Physical Card list"
+    helptext = "a list of card numbers"
+    types = ['AbstractCard', 'PhysicalCard']
+
+    def __init__(self, aCounts):
+        # Selects cards with a count in the range specified by aCounts
+        aCounts = set(aCounts)
+        self._oFilters = []
+        if '0' in aCounts:
+            aCounts.remove('0')
+            # Doesn't seem to be a way to do a DISTINCT using sqlbuilder.Select,
+            # so we fudge it with GROUP BY
+            oZeroQuery = NOT(IN(AbstractCard.q.id, Select(PhysicalCard.q.abstractCardID,
+                groupBy=PhysicalCard.q.abstractCardID)))
+            self._oFilters.append(oZeroQuery)
+        if '>30' in aCounts:
+            aCounts.remove('>30')
+            oGreater30Query = IN(AbstractCard.q.id, Select(PhysicalCard.q.abstractCardID,
+                groupBy=PhysicalCard.q.abstractCardID,
+                having=func.COUNT(PhysicalCard.q.abstractCardID) > 30))
+            self._oFilters.append(oGreater30Query)
+        if len(aCounts) > 0:
+            oCountFilter = IN(AbstractCard.q.id, Select(PhysicalCard.q.abstractCardID,
+                groupBy=PhysicalCard.q.abstractCardID,
+                having=IN(func.COUNT(PhysicalCard.q.abstractCardID), aCounts)))
+            self._oFilters.append(oCountFilter)
+
+    @classmethod
+    def getValues(cls):
+        # Should this have a more staggered range split? 0..20, 20-30, 30-40, >40 type thing?
+        return [str(x) for x in range(0, 30)] + ['>30']
+
+    def _getExpression(self):
+        return OR(*self._oFilters)
+
 class PhysicalExpansionFilter(DirectFilter):
     types = ['PhysicalCard']
     # We must be calling this with a PhysicalCardFilter for sensible results,
