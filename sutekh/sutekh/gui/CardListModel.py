@@ -125,6 +125,14 @@ class CardListModel(gtk.TreeStore):
         """Check if the expansion entry should remain in the table"""
         return False
 
+    def init_info_cache(self):
+        """Batch queries about the cardlist for faster processing"""
+        pass
+
+    def clear_info_cache(self):
+        """Clean up the cache"""
+        pass
+
     def load(self):
         """
         Clear and reload the underlying store. For use after initialisation or when
@@ -137,6 +145,8 @@ class CardListModel(gtk.TreeStore):
 
         oCardIter = self.getCardIterator(self.getCurrentFilter())
         fGetCard, fGetCount, fGetExpanInfo, oGroupedIter, aAbsCards = self.groupedCardIterator(oCardIter)
+
+        self.init_info_cache()
 
         # Iterate over groups
         for sGroup, oGroupIter in oGroupedIter:
@@ -188,6 +198,8 @@ class CardListModel(gtk.TreeStore):
         # Notify Listeners
         for oListener in self.listeners:
             oListener.load(aAbsCards)
+
+        self.clear_info_cache
 
     def getCardIterator(self, oFilter):
         """
@@ -542,6 +554,16 @@ class PhysicalCardListModel(CardListModel):
         self._cCardClass = PhysicalCard
         self.bExpansions = True
 
+    def init_info_cache(self):
+        self._dNoneCountCache = {}
+        if self.bEditable:
+            for oPhysCard in PhysicalCard.selectBy(expansionID=None):
+                self._dNoneCountCache.setdefault(oPhysCard.abstractCard, 0)
+                self._dNoneCountCache[oPhysCard.abstractCard] += 1
+    
+    def clear_info_cache(self):
+        del self._dNoneCountCache
+
     def check_inc_dec_expansion(self, oCard, sExpansion, iCnt):
         """Helper function to check status of expansions"""
         if sExpansion != self.sUnknownExpansion:
@@ -562,9 +584,8 @@ class PhysicalCardListModel(CardListModel):
             # All possible expansions listed in the dictionary when editing
             # None entry always shows for Physical Card List when editable
             dExpansions[self.sUnknownExpansion] = [0, False, False]
-            # We don't need the join filters give us, since we have oCard
-            iNoneCnt = PhysicalCard.selectBy(abstractCardID=oCard.id,
-                    expansionID=None).count()
+            # Cards may be missing from _dNoneCountCache (show all abstract cards, etc.)
+            iNoneCnt = self._dNoneCountCache.get(oCard, 0)
             for oP in oCard.rarity:
                 dExpansions.setdefault(oP.expansion.name, [0, False, iNoneCnt > 0])
         for oExpansion, iCnt in dExpanInfo.iteritems():
