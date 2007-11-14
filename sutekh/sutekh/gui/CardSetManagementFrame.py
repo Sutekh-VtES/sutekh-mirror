@@ -55,10 +55,10 @@ class CardSetManagementFrame(BasicFrame):
     def create_new_card_set(self, oWidget):
         if self._cSetType is PhysicalCardSet:
             oDialog = CreateCardSetDialog(self._oMainWindow, 'Physical')
-            open_card_set = self._oMainWindow.add_physical_card_set
+            open_card_set = self._oMainWindow.replace_with_physical_card_set
         else:
             oDialog = CreateCardSetDialog(self._oMainWindow, 'Abstract')
-            open_card_set = self._oMainWindow.add_abstract_card_set
+            open_card_set = self._oMainWindow.replace_with_abstract_card_set
         oDialog.run()
         (sName, sAuthor, sDescription) = oDialog.get_data()
         oDialog.destroy()
@@ -71,6 +71,7 @@ class CardSetManagementFrame(BasicFrame):
                 oComplaint.destroy()
             else:
                 oCS = self._cSetType(name=sName, author=sAuthor, comment=sDescription)
+                self._oMainWindow._oFocussed = self._oMainWindow.add_pane()
                 open_card_set(sName)
 
     def delete_card_set(self, oWidget):
@@ -156,10 +157,11 @@ class CardSetManagementFrame(BasicFrame):
         sName = oM.get_value(oIter, 0)
         if sName == self.__sAvail or sName == self.__sOpen:
             return
+        self._oMainWindow._oFocussed = self._oMainWindow.add_pane()
         if self._cSetType is PhysicalCardSet:
-            self._oMainWindow.add_physical_card_set(sName)
+            self._oMainWindow.replace_with_physical_card_set(sName)
         elif self._cSetType is AbstractCardSet:
-            self._oMainWindow.add_abstract_card_set(sName)
+            self._oMainWindow.replace_with_abstract_card_set(sName)
 
 class PhysicalCardSetListFrame(CardSetManagementFrame):
     def __init__(self, oMainWindow, oConfig):
