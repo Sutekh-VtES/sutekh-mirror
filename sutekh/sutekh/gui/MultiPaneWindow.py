@@ -65,11 +65,11 @@ class MultiPaneWindow(gtk.Window):
                 }
         for iNumber, sType, sName in self._oConfig.getAllPanes():
             if sType == PhysicalCardSet.sqlmeta.table:
-                self._oFocussed = self.add_pane()
-                self.replace_with_physical_card_set(sName)
+                oF = self.add_pane()
+                self.replace_with_physical_card_set(sName, oF)
             elif sType == AbstractCardSet.sqlmeta.table:
-                self._oFocussed = self.add_pane()
-                self.replace_with_abstract_card_set(sName)
+                oF = self.add_pane()
+                self.replace_with_abstract_card_set(sName, oF)
             elif sType == AbstractCard.sqlmeta.table:
                 self._oFocussed = self.add_pane()
                 self.replace_with_abstract_card_list(None)
@@ -105,33 +105,33 @@ class MultiPaneWindow(gtk.Window):
         except ValueError:
             return None
 
-    def replace_with_physical_card_set(self, sName):
+    def replace_with_physical_card_set(self, sName, oFrame):
         sMenuFlag = "PCS:" + sName
-        if sMenuFlag not in self.dOpenFrames.values() and self._oFocussed:
+        if sMenuFlag not in self.dOpenFrames.values() and oFrame:
             try:
                 oPane = PhysicalCardSetFrame(self, sName, self._oConfig)
-                self.replace_frame(self._oFocussed, oPane, sMenuFlag)
-                self.reload_pcs_list()
+                self.replace_frame(oFrame, oPane, sMenuFlag)
             except RuntimeError, e:
                 # add warning dialog?
                 pass
         else:
             oPane = self.find_pane_by_name(sMenuFlag)
-            oPane.reload()
+            if oPane:
+                oPane.reload()
 
-    def replace_with_abstract_card_set(self, sName):
+    def replace_with_abstract_card_set(self, sName, oFrame):
         sMenuFlag = "ACS:" + sName
-        if sMenuFlag not in self.dOpenFrames.values() and self._oFocussed:
+        if sMenuFlag not in self.dOpenFrames.values() and oFrame:
             try:
                 oPane = AbstractCardSetFrame(self, sName, self._oConfig)
-                self.replace_frame(self._oFocussed, oPane, sMenuFlag)
-                self.reload_acs_list()
+                self.replace_frame(oFrame, oPane, sMenuFlag)
             except RuntimeError, e:
                 # add warning dialog?
                 pass
         else:
             oPane = self.find_pane_by_name(sMenuFlag)
-            oPane.reload()
+            if oPane:
+                oPane.reload()
 
     def replace_with_pcs_list(self, oWidget):
         sMenuFlag = "Physical Card Set List"
@@ -215,6 +215,9 @@ class MultiPaneWindow(gtk.Window):
         if self._oFocussed == oOldFrame:
             self._oFocussed = None
         self.reset_menu()
+        # Open card lists may have changed because of the frame we've kicked out
+        self.reload_pcs_list()
+        self.reload_acs_list()
 
     def swap_frames(self, oFrame1, oFrame2):
         if oFrame1 != oFrame2:

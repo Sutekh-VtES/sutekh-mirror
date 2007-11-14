@@ -64,13 +64,27 @@ class BasicFrame(gtk.Frame, object):
             if aData[0] != 'Sutekh Pane:':
                 oDragContext.finish(False, False, oTime)
             else:
-                self.do_swap(aData)
+                if self.do_swap(aData):
+                    oDragContext.finish(True, False, oTime)
+                else:
+                    oDragContext.finish(False, False, oTime)
 
     def do_swap(self, aData):
-        sOtherName = aData[1]
-        oOtherFrame = self._oMainWindow.find_pane_by_name(sOtherName)
-        if oOtherFrame is not None:
-            self._oMainWindow.swap_frames(self, oOtherFrame)
+        if aData[1] != 'Card Set Pane:':
+            # We swap ourself with the other pane
+            oOtherFrame = self._oMainWindow.find_pane_by_name(aData[1])
+            if oOtherFrame is not None:
+                 self._oMainWindow.swap_frames(self, oOtherFrame)
+                 return True
+        else:
+            # We replace otherselves with the card set
+            if aData[2] == 'PCS:':
+                self._oMainWindow.replace_with_physical_card_set(aData[3], self)
+                return True
+            elif aData[2] == 'ACS:':
+                self._oMainWindow.replace_with_abstract_card_set(aData[3], self)
+                return True
+        return False
 
     def init_plugins(self):
         self._aPlugins = []
@@ -119,3 +133,4 @@ class BasicFrame(gtk.Frame, object):
         if 'STRING' in drag_context.targets:
             drag_context.drag_status(gtk.gdk.ACTION_COPY)
             return True
+        return False

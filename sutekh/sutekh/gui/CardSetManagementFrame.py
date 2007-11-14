@@ -49,8 +49,42 @@ class CardSetManagementFrame(BasicFrame):
         self._oView.connect('row_activated', self.row_clicked)
         self.reload()
         wMbox.pack_start(self._oScrolledList, expand=True)
+
+        aDragTargets = [ ('STRING', 0, 0),
+                         ('text/plain', 0, 0) ]
+
+        self._oView.drag_source_set(gtk.gdk.BUTTON1_MASK | gtk.gdk.BUTTON3_MASK, 
+                aDragTargets,
+                gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
+
+        self._oView.connect('drag-data-get', self.drag_card_set)
+
+        self._oView.drag_dest_set(gtk.DEST_DEFAULT_ALL,
+                aDragTargets,
+                gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
+
+        self._oView.connect('drag-data-received', self.drag_drop_handler)
+
         self.add(wMbox)
         self.show_all()
+
+    def drag_card_set(self, oBtn, oDragContext, oSelectionData, oInfo, oTime):
+        aSelection = self._oScrolledList.get_selection()
+        if len(aSelection) != 1:
+            return
+        # Don't respond to the dragging of an already open card set, and so on
+        if aSelection[0] in [self.__sOpen, self.__sAvail]:
+            return
+        sSetName = aSelection[0]
+        if self._cSetType is PhysicalCardSet:
+            sPrefix = 'PCS:'
+        else:
+            sPrefix = 'ACS:'
+        sFrameName = sPrefix + sSetName
+        if sFrameName in self._oMainWindow.dOpenFrames.values():
+            return
+        sData = "\n".join(['Sutekh Pane:', 'Card Set Pane:', sPrefix, sSetName])
+        oSelectionData.set(oSelectionData.target, 8, sData)
 
     def create_new_card_set(self, oWidget):
         if self._cSetType is PhysicalCardSet:
@@ -71,8 +105,8 @@ class CardSetManagementFrame(BasicFrame):
                 oComplaint.destroy()
             else:
                 oCS = self._cSetType(name=sName, author=sAuthor, comment=sDescription)
-                self._oMainWindow._oFocussed = self._oMainWindow.add_pane()
-                open_card_set(sName)
+                oF = self._oMainWindow.add_pane()
+                open_card_set(sName, oF)
 
     def delete_card_set(self, oWidget):
         aSelection = self._oScrolledList.get_selection()
@@ -157,11 +191,11 @@ class CardSetManagementFrame(BasicFrame):
         sName = oM.get_value(oIter, 0)
         if sName == self.__sAvail or sName == self.__sOpen:
             return
-        self._oMainWindow._oFocussed = self._oMainWindow.add_pane()
+        oF = self._oMainWindow.add_pane()
         if self._cSetType is PhysicalCardSet:
-            self._oMainWindow.replace_with_physical_card_set(sName)
+            self._oMainWindow.replace_with_physical_card_set(sName, oF)
         elif self._cSetType is AbstractCardSet:
-            self._oMainWindow.replace_with_abstract_card_set(sName)
+            self._oMainWindow.replace_with_abstract_card_set(sName, oF)
 
 class PhysicalCardSetListFrame(CardSetManagementFrame):
     def __init__(self, oMainWindow, oConfig):
