@@ -1,3 +1,30 @@
+14 Nov 2007
+ * Add PhysicalCardCount Filter
+ * Add Menu option to display all AbstractCards in the Physical Card List
+
+13 Nov 2007
+ * Remaining plugins fixed
+ * Change pane semenatics to - split pane to create a new blank pane,
+   and replace panes with other panes
+ * Allow panes to be dragged to reorder them
+ * Make text in FilterDialog help selectable
+
+12 Nov 2007
+ * Improve parsing of titles and sects for WW cardlist
+ * Fix several plugins to work with redone gui work
+
+11 Nov 2007
+ * Merge in sutekh-gui-rework-september-2007 branch
+   - almost all GUI classes reworked.
+   - Replace multiple windows with single window with panes
+   - Allow filtering on card set lists
+   - Allow expansion information in physical cards to be edited
+   - Add dialog so the mapping between physical cards and physical card sets can
+     be carefllu controlled.
+   - Card List and card sets not editable by default. Editing is enabled by
+     a menu option
+   - some dialogs replaced with gtk.MessageDialog calls
+
 10 Nov 2007
  * Move card attribute abbreviation lists in sutekh.core.Abbreviations.
  * Modified adaptors to not create database objects if they don't exist.

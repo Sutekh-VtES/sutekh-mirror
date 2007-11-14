@@ -9,7 +9,6 @@ Backend:
 
 Code Cleanup
  * Unify conventions ('Abstract' vs 'AbstractCardSet' in card set management, etc.)
- * Consolidate various dialogs - current reusablility is low
  * Refactor gui classes somewhat - there's a fair bit code duplication ATM
    between the different View-Window-Controller sets for instance, and this
    looks like something worth addressing
@@ -17,7 +16,8 @@ Code Cleanup
  * Add encoding lines to all .py files.
 
 Gui (Functionality):
- * Improve Current Filter dialogs - better help, more examples, etc.
+ * Improve Current Filter dialogs:
+    - Provide better help 
  * Add ordering selection dialog (possibly part of filtering dialog).
  * Turn AnalyzeDeck into something more useful - NM
    * Improve Happy Families analysis (select number of disciplines to display,
@@ -25,22 +25,24 @@ Gui (Functionality):
  * Finish ClusterCardList plugin.
  * Compare CardSet Plugin (basic version done. Could be improved)
  * Improve About dialog.
- * Ability to specify the expansion a physical card comes from.
-   * Fix physical_lookup in GuiCardLookup to deal with expansions as well
-   * Filter support for physical card expansions
+ * Fix physical_lookup in GuiCardLookup to deal with expansions as well
  * Replace HTML export plugin with direct export to HTML.
  * Plugins for calling out to other VtES utilities as appropriate (http://ashheap.storageannex.com/utilities.htm)
  * Add decent keyboard shortcuts
+ * Fix GuiCardLookup
 
 Gui (Presentation):
- * Replace Multi-window GUI with one based on multiple panes
  * Cleanup various dialogs, including
    * Replace some dialogs with gtk.MessageDialogs
    * Unify some of the other dialogs and make various bits more reusable 
      (cf. CreateCardSetDialog hack in plugins)
+   * Unified Complaint message dialog function?
+ * Change current pane structure to allow arbitarty pane splitting
+   * Split current pane horizontally or vertically
+   * Don't resize window on adding (or removing?) pane
+ * Allow pane layout to be be saved
  * Clean up the currently overly tangled controller/view/model interactions
  * Parse in a GTK rc file? (http://www.moeraki.com/pygtktutorial/pygtk2tutorial/ch-GtkRcFiles.html)
- * Improve Card Set Management Window (multiple selection, right click menu, etc.)
  * Allow some way of marking card sets as active, and displaying used cards or 
    filtering on unused cards in the physical card list
  * Parse icons out of http://www.white-wolf.com/vtes/index.php?line=icons and use them in the GUI.
