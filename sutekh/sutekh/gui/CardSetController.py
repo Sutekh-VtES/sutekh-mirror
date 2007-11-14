@@ -75,7 +75,10 @@ class PhysicalCardSetController(CardSetController):
             self.__aPhysCardIds.remove(oPhysCard.id)
             oAC = oPhysCard.abstractCard
             # Update model
-            self.model.decCardExpansionByName(oAC.name, oPhysCard.expansion.name)
+            if oPhysCard.expansion is not None:
+                self.model.decCardExpansionByName(oAC.name, oPhysCard.expansion.name)
+            else:
+                self.model.decCardExpansionByName(oAC.name, oPhysCard.expansion)
             self.model.decCardByName(oAC.name)
 
     def physical_card_changed(self, oPhysCard, dChanges):
