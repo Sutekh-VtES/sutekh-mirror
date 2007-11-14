@@ -31,7 +31,6 @@ aFilters = [MultiCardTypeFilter, MultiCostTypeFilter, MultiClanFilter,
 
 aEntryFilters = [x.keyword for x in aFilters if hasattr(x,'istextentry')]
 aWithFilters = [x.keyword for x in aFilters if hasattr(x,'iswithfilter')]
-aNumericFilters = [x.keyword for x in aFilters if hasattr(x,'isnumericfilter')]
 
 def getFilterType(sKeyword):
     return [x for x in aFilters if x.keyword == sKeyword][0]
@@ -319,8 +318,6 @@ class FilterPartNode(OperatorNode):
         aCurVals = self.filtervalues.getValues()
         oTemp = getFilterType(self.filtertype)([]) # Create Instance
         aValidVals = oTemp.getValues()
-        if self.filtertype in aNumericFilters:
-            aValidVals = [str(x) for x in aValidVals]
         for oVal in aCurVals:
             if oVal.value == ',':
                 continue

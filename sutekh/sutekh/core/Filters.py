@@ -423,7 +423,6 @@ class MultiGroupFilter(DirectFilter):
     keyword = "Group"
     description = "Group"
     helptext = "a list of groups"
-    isnumericfilter = True
     types = ['AbstractCard', 'PhysicalCard']
 
     def __init__(self, aGroups):
@@ -431,7 +430,7 @@ class MultiGroupFilter(DirectFilter):
 
     @classmethod
     def getValues(cls):
-        return range(1, 6)
+        return [str(x) for x in range(1, 6)]
 
     def _getExpression(self):
         return IN(AbstractCard.q.group, self.__aGroups)
@@ -448,7 +447,6 @@ class MultiCapacityFilter(DirectFilter):
     keyword = "Capacity"
     description = "Capacity"
     helptext = "a list of capacities"
-    isnumericfilter = True
     types = ['AbstractCard', 'PhysicalCard']
 
     def __init__(self, aCaps):
@@ -456,7 +454,7 @@ class MultiCapacityFilter(DirectFilter):
 
     @classmethod
     def getValues(cls):
-        return range(1, 12)
+        return [str(x) for x in range(1, 12)]
 
     def _getExpression(self):
         return IN(AbstractCard.q.capacity, self.__aCaps)
@@ -475,7 +473,6 @@ class MultiCostFilter(DirectFilter):
     keyword = "Cost"
     description = "Cost"
     helptext = "a list of costs"
-    isnumericfilter = True
     types = ['AbstractCard', 'PhysicalCard']
 
     def __init__(self, aCost):
@@ -485,7 +482,7 @@ class MultiCostFilter(DirectFilter):
 
     @classmethod
     def getValues(cls):
-        return range(0, 7) + ['X']
+        return [str(x) for x in range(0, 7)] + ['X']
 
     def _getExpression(self):
         return IN(AbstractCard.q.cost, self.__aCost)
@@ -532,7 +529,6 @@ class MultiLifeFilter(DirectFilter):
     keyword = "Life"
     description = "Life"
     helptext = "a list of life values"
-    isnumericfilter = True
     types = ['AbstractCard', 'PhysicalCard']
 
     def __init__(self, aLife):
@@ -540,7 +536,7 @@ class MultiLifeFilter(DirectFilter):
 
     @classmethod
     def getValues(cls):
-        return range(1, 8)
+        return [str(x) for x in range(1, 8)]
 
     def _getExpression(self):
         return IN(AbstractCard.q.life, self.__aLife)
@@ -553,14 +549,14 @@ class CardTextFilter(DirectFilter):
     types = ['AbstractCard', 'PhysicalCard']
 
     def __init__(self, sPattern):
-        self.__sPattern = sPattern
+        self.__sPattern = sPattern.lower()
 
     @classmethod
     def getValues(cls):
         return None
 
     def _getExpression(self):
-        return LIKE(func.LOWER(AbstractCard.q.text), '%' + self.__sPattern.lower() + '%')
+        return LIKE(func.LOWER(AbstractCard.q.text), '%' + self.__sPattern + '%')
 
 class CardNameFilter(DirectFilter):
     keyword = "CardName"
@@ -717,7 +713,7 @@ class CardSetNameFilter(DirectFilter):
     istextentry = True
 
     def __init__(self, sPattern):
-        self.__sPattern = sPattern
+        self.__sPattern = sPattern.lower()
         # Subclasses will replace this with the correct table
         self._oT = None
 
@@ -726,7 +722,7 @@ class CardSetNameFilter(DirectFilter):
         return None
 
     def _getExpression(self):
-        return LIKE(func.LOWER(self._oT.name), '%' + self.__sPattern.lower() + '%')
+        return LIKE(func.LOWER(self._oT.name), '%' + self.__sPattern + '%')
 
 class CardSetDescriptionFilter(DirectFilter):
     keyword = "CardSetDescription"
@@ -735,7 +731,7 @@ class CardSetDescriptionFilter(DirectFilter):
     istextentry = True
 
     def __init__(self, sPattern):
-        self.__sPattern = sPattern
+        self.__sPattern = sPattern.lower()
         # Subclasses will replace this with the correct table
         self._oT = None
 
@@ -744,7 +740,7 @@ class CardSetDescriptionFilter(DirectFilter):
         return None
 
     def _getExpression(self):
-        return LIKE(func.LOWER(self._oT.comment), '%' + self.__sPattern.lower() + '%')
+        return LIKE(func.LOWER(self._oT.comment), '%' + self.__sPattern + '%')
 
 class CardSetAuthorFilter(DirectFilter):
     keyword = "CardSetAuthor"
@@ -753,7 +749,7 @@ class CardSetAuthorFilter(DirectFilter):
     istextentry = True
 
     def __init__(self, sPattern):
-        self.__sPattern = sPattern
+        self.__sPattern = sPattern.lower()
         # Subclasses will replace this with the correct table
         self._oT = None
 
@@ -762,7 +758,7 @@ class CardSetAuthorFilter(DirectFilter):
         return None
 
     def _getExpression(self):
-        return LIKE(func.LOWER(self._oT.author), '%' + self.__sPattern.lower() + '%')
+        return LIKE(func.LOWER(self._oT.author), '%' + self.__sPattern + '%')
 
 class CardSetAnnotationsFilter(DirectFilter):
     keyword = "CardSetAnnotations"
@@ -771,7 +767,7 @@ class CardSetAnnotationsFilter(DirectFilter):
     istextentry = True
 
     def __init__(self, sPattern):
-        self.__sPattern = sPattern
+        self.__sPattern = sPattern.lower()
         # Subclasses will replace this with the correct table
         self._oT = None
 
@@ -780,7 +776,7 @@ class CardSetAnnotationsFilter(DirectFilter):
         return None
 
     def _getExpression(self):
-        return LIKE(func.LOWER(self._oT.annotations), '%' + self.__sPattern.lower() + '%')
+        return LIKE(func.LOWER(self._oT.annotations), '%' + self.__sPattern + '%')
 
 # Abstract Card Set subclasses
 
