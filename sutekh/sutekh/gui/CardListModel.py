@@ -87,6 +87,7 @@ class CardListModel(gtk.TreeStore):
 
         self.bExpansions = False
         self.bEditable = False
+        self.bAddAllAbstractCards = False
 
     cardclass = property(fget=lambda self: self._cCardClass, fset=lambda self, x: setattr(self, '_cCardClass', x))
     groupby = property(fget=lambda self: self._cGroupBy, fset=lambda self, x: setattr(self, '_cGroupBy', x))
@@ -187,6 +188,7 @@ class CardListModel(gtk.TreeStore):
                                     []).append(oExpansionIter)
                 self._dName2Iter.setdefault(oCard.name, []).append(oChildIter)
 
+
             # Update Group Section
             self.set(oSectionIter,
                 0, sGroup,
@@ -234,6 +236,17 @@ class CardListModel(gtk.TreeStore):
 
             # Count by Abstract Card
             dAbsCards = {}
+
+            if self.bAddAllAbstractCards:
+                # Also include all the abstract cards
+                oAbsFilter = self.getCurrentFilter()
+                if oAbsFilter is None:
+                    oAbsFilter = NullFilter()
+                if 'AbstractCard' in oAbsFilter.types:
+                    oAbsCardIter = oAbsFilter.select(AbstractCard)
+                    for oAbsCard in oAbsCardIter:
+                        dAbsCards.setdefault(oAbsCard, [0, {}])
+
             for oCard in oCardIter:
                 oAbsCard = oCard.abstractCard
                 aAbsCards.append(oAbsCard)
@@ -444,11 +457,24 @@ class CardListModel(gtk.TreeStore):
             iCnt = self.get_value(oIter, 1) + iChg
             iGrpCnt = self.get_value(oGrpIter, 1) + iChg
 
-            if iCnt > 0:
+            if iCnt > 0: 
                 self.set(oIter, 1, iCnt)
                 bIncCard, bDecCard = self.check_inc_dec_card(oCard, iCnt)
                 self.set(oIter, 2, bIncCard)
                 self.set(oIter, 3, bDecCard)
+            elif self.bAddAllAbstractCards:
+                # Need to clean up all the children
+                self.set(oIter, 1, iCnt)
+                bIncCard, bDecCard = self.check_inc_dec_card(oCard, iCnt)
+                self.set(oIter, 2, bIncCard)
+                self.set(oIter, 3, bDecCard)
+                if self._dNameExpansion2Iter.has_key(sCardName):
+                    for sExpansion in self._dNameExpansion2Iter[sCardName].keys():
+                        for oExpIter in self._dNameExpansion2Iter[sCardName][sExpansion]:
+                            # No cards, so impossible to manipulate expansions
+                            self.set(oExpIter, 1, 0,
+                                    2, False,
+                                    3, False)
             else:
                 # Going away, so clean up expansions if needed
                 if self._dNameExpansion2Iter.has_key(sCardName):
@@ -466,7 +492,7 @@ class CardListModel(gtk.TreeStore):
                 del self._dGroupName2Iter[sGroupName]
                 self.remove(oGrpIter)
 
-        if iCnt <= 0:
+        if iCnt <= 0 and not self.bAddAllAbstractCards:
             del self._dName2Iter[sCardName]
 
         # Notify Listeners

@@ -30,18 +30,25 @@ class PhysicalCardMenu(gtk.MenuBar, object):
         # items
         iExport = gtk.MenuItem("Export Physical Card List to File")
         wMenu.add(iExport)
-        iExport.connect('activate', self.doExport)
+        iExport.connect('activate', self.do_export)
+
+
+        self.iViewAllAbstractCards = gtk.CheckMenuItem("Show cards with a count of 0")
+        self.iViewAllAbstractCards.set_inconsistent(False)
+        self.iViewAllAbstractCards.set_active(False)
+        self.iViewAllAbstractCards.connect('toggled', self.toggle_all_abstract_cards)
+        wMenu.add(self.iViewAllAbstractCards)
 
         self.iViewExpansions = gtk.CheckMenuItem('Show Card Expansions')
         self.iViewExpansions.set_inconsistent(False)
         self.iViewExpansions.set_active(True)
-        self.iViewExpansions.connect('toggled', self.toggleExpansion)
+        self.iViewExpansions.connect('toggled', self.toggle_expansion)
         wMenu.add(self.iViewExpansions)
 
         self.iEditable = gtk.CheckMenuItem('Physical Card List is Editable')
         self.iEditable.set_inconsistent(False)
         self.iEditable.set_active(False)
-        self.iEditable.connect('toggled', self.toggleEditable)
+        self.iEditable.connect('toggled', self.toggle_editable)
         wMenu.add(self.iEditable)
 
         iExpand = gtk.MenuItem("Expand All (Ctrl+)")
@@ -101,7 +108,7 @@ class PhysicalCardMenu(gtk.MenuBar, object):
         if len(wMenu.get_children()) == 0:
             iMenu.set_sensitive(False)
 
-    def doExport(self, oWidget):
+    def do_export(self, oWidget):
         oFileChooser = ExportDialog("Save Physical Card List As", self.__oWindow)
         oFileChooser.run()
         sFileName = oFileChooser.getName()
@@ -124,17 +131,21 @@ class PhysicalCardMenu(gtk.MenuBar, object):
     def toggleApply(self, oWidget):
         self.__oC.view.runFilter(oWidget.active)
 
-    def toggleExpansion(self, oWidget):
+    def toggle_expansion(self, oWidget):
         self.__oC.model.bExpansions = oWidget.active
         self.__oC.view.reload_keep_expanded()
 
-    def toggleEditable(self, oWidget):
+    def toggle_editable(self, oWidget):
         self.__oC.model.bEditable = oWidget.active
         self.__oC.view.reload_keep_expanded()
         if oWidget.active:
             self.__oC.view.set_color_edit_cue()
         else:
             self.__oC.view.set_color_normal()
+
+    def toggle_all_abstract_cards(self, oWidget):
+        self.__oC.model.bAddAllAbstractCards = oWidget.active
+        self.__oC.view.reload_keep_expanded()
 
     def setFilter(self, oWidget):
         self.__oC.view.getFilter(self)
