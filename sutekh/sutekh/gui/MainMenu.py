@@ -92,9 +92,15 @@ class MainMenu(gtk.MenuBar, object):
         oEqualizePanes.connect("activate", self.equalize_panes)
 
 
-        oAddPane = gtk.MenuItem("Split current pane")
+        oAddPane = gtk.MenuItem("Split current pane horizontally")
         wMenu.add(oAddPane)
-        oAddPane.connect("activate", self.__oWin.menu_add_pane)
+        oAddPane.connect("activate", self.__oWin.menu_add_pane_horizontal)
+
+        self.__oAddVertPane = gtk.MenuItem("Split current pane vertically")
+        wMenu.add(self.__oAddVertPane)
+        self.__oAddVertPane.connect("activate", self.__oWin.menu_add_pane_vertical)
+        self.__oAddVertPane.set_sensitive(False)
+
         self.__oReplaceWithACLPane = gtk.MenuItem("Replace current Pane with Whitewolf Card List")
         wMenu.add(self.__oReplaceWithACLPane)
         self.__oReplaceWithACLPane.connect("activate", self.__oWin.replace_with_abstract_card_list)
@@ -147,6 +153,9 @@ class MainMenu(gtk.MenuBar, object):
 
     def physical_card_list_set_sensitive(self, bValue):
         self.__oReplaceWithPCLPane.set_sensitive(bValue)
+
+    def set_split_vertical_active(self, bValue):
+        self.__oAddVertPane.set_sensitive(bValue)
 
     def __create_about_menu(self):
         # setup sub menu
