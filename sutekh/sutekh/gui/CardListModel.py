@@ -113,7 +113,7 @@ class CardListModel(gtk.TreeStore):
         # No-op for AbtractCardList and AbstractCardSet
         return False, False
 
-    def get_add_card_expansion_info(oCard, dExpanInfo):
+    def get_add_card_expansion_info(self, oCard, dExpanInfo):
         """Get the expansions to list for a newly added card"""
         return []
 
