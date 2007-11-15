@@ -6,6 +6,7 @@ Backend:
  * Export directly to HTML.
  * Cache results from lookups when doing a restore/import of new card list?
  * Add database support for burn option and reflex card attributes.
+ * Add database support for rarity short names.
 
 Code Cleanup
  * Unify conventions ('Abstract' vs 'AbstractCardSet' in card set management, etc.)
