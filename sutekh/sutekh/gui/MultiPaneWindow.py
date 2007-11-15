@@ -176,10 +176,18 @@ class MultiPaneWindow(gtk.Window):
             self._oACSListPane.reload()
 
     def reload_all(self):
+        """
+        Reload all open frames. Useful for major DB changes
+        """
+        
         for oPane in self.dOpenFrames:
             oPane.reload()
 
     def win_focus(self, oWidget, oEvent, oFrame):
+        """
+        Response to focus change events. Keep track of focussed pane,
+        update menus and handle highlighting
+        """
         if self._oFocussed is not None:
             self._oFocussed.set_unfocussed_title()
         self._oFocussed = oFrame
@@ -187,6 +195,7 @@ class MultiPaneWindow(gtk.Window):
         self.reset_menu()
  
     def run(self):
+        """gtk entry point"""
         gtk.main()
 
     def action_quit(self, oWidget):
@@ -195,9 +204,19 @@ class MultiPaneWindow(gtk.Window):
         gtk.main_quit()
 
     def save_frames(self):
+        """
+        save the current frame layout
+        """
         self._oConfig.preSaveClear()
 
         def save_children(oPane, oConfig, bVert, iNum, iPos):
+            """
+            Walk the tree of HPanes + VPanes, and save their info.
+            """
+            # oPane.get_position() gives us the position relative to the paned
+            # we're contained in. However, when we recreate the layout, we
+            # don't split panes in the same order, hence the fancy foot-keeping
+            # work to convert the obtained positions to those needed for restoring
             if type(oPane) is gtk.HPaned:
                 oChild1 = oPane.get_child1()
                 oChild2 = oPane.get_child2()
@@ -208,7 +227,6 @@ class MultiPaneWindow(gtk.Window):
                     iChildPos = oPane.get_position()
                 else:
                     iChildPos = iMyPos
-                print iMyPos, iChildPos
                 if iMyPos < 1:
                     # Setting pos to < 1 doesn't do what we want
                     iMyPos = 1
@@ -242,6 +260,7 @@ class MultiPaneWindow(gtk.Window):
             pass
 
     def replace_frame(self, oOldFrame, oNewFrame, sMenuFlag):
+        """Replace oOldFrame with oNewFrame + update menus"""
         oNewFrame.show_all()
         oNewFrame.view.connect('focus-in-event', self.win_focus, oNewFrame)
         oParent = oOldFrame.get_parent()
@@ -257,6 +276,7 @@ class MultiPaneWindow(gtk.Window):
         self.reload_acs_list()
 
     def swap_frames(self, oFrame1, oFrame2):
+        """swap two frames - used by drag-n-drop code"""
         if oFrame1 != oFrame2:
             oParent1 = oFrame1.get_parent()
             oParent2 = oFrame2.get_parent()
@@ -282,6 +302,12 @@ class MultiPaneWindow(gtk.Window):
             self.reset_menu()
 
     def get_current_pane(self):
+        """
+        Get the parent HPane of the focussed pane.
+        If there's no Focussed Pane, return the 
+        last added pane, which does the right thing for
+        restore_from_config
+        """
         if self._oFocussed:
             oParent = self._oFocussed.get_parent()
             if type(oParent) is gtk.VPaned:
@@ -293,6 +319,13 @@ class MultiPaneWindow(gtk.Window):
             return self._aHPanes[-1]
 
     def add_pane(self, bVertical=False, iConfigPos=-1):
+        """
+        Add a blank frame to the window.
+        bVertical -> set True to split the current pane vertically
+        iConfigPos -> Layout parameter for restoring positions.
+        if iConfigPos == -1, the currently focussed frame is
+        halved in size.
+        """
         oWidget = BasicFrame(self)
         oWidget.add_parts()
         oWidget.view.connect('focus-in-event', self.win_focus, oWidget)
@@ -437,6 +470,9 @@ class MultiPaneWindow(gtk.Window):
             self.reset_menu()
 
     def reset_menu(self):
+        """
+        Ensure menu state is correct
+        """
         for sMenu, fSetSensitiveFunc in self.__dMenus.iteritems():
             if sMenu in self.dOpenFrames.values():
                 fSetSensitiveFunc(False)
@@ -477,6 +513,10 @@ class MultiPaneWindow(gtk.Window):
         oMenuAlloc = self.__oMenu.get_allocation()
         iVertPos = (oCurAlloc.height - oMenuAlloc.height) / 2
         def set_pos_children(oPane, iPos, iVertPos):
+            """
+            Walk the tree breadth first, setting positions
+            accordingly
+            """
             oChild1 = oPane.get_child1()
             oChild2 = oPane.get_child2()
             if type(oChild1) is gtk.HPaned:
