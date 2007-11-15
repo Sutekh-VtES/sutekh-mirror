@@ -74,7 +74,7 @@ class Description(State):
             return self
 
 class Cards(State):
-    _oCardRe = re.compile(r'\s*(?P<cnt>[0-9]+)x\s+(?P<name>[^\t\n]+)')
+    _oCardRe = re.compile(r'\s*(?P<cnt>[0-9]+)x\s+(?P<name>[^\t\r\n]+)')
 
     def transition(self,sLine):
         oM = self._oCardRe.match(sLine)
