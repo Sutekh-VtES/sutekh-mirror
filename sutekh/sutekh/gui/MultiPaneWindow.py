@@ -315,9 +315,8 @@ class MultiPaneWindow(gtk.Window):
                             # We want to split ourselves into equally sized
                             # sections
                             oCur = self.oVBox.get_allocation()
-                            iPos = oCur.width/(self._iNumberOpenFrames + 1)
-                            for oThatPane in self._aHPanes:
-                                oThatPane.set_position(iPos)
+                            iPos = oCur.width / (len(self._aHPanes) + 2)
+                            self.set_pos_for_all_hpanes(iPos)
                         else:
                             iPos = (oCur.width - oParent.get_position())/2
             else:
@@ -432,7 +431,23 @@ class MultiPaneWindow(gtk.Window):
         else:
             oCurAlloc = self.oVBox.get_allocation()
             iNewPos = oCurAlloc.width / (len(self._aHPanes) + 1)
-            # This needs to walk the tree properly, so stuff is set in
-            # the correct order, but we'll do this for now
-            for oPane in self._aHPanes:
-                oPane.set_position(iNewPos)
+            self.set_pos_for_all_hpanes(iNewPos)
+    
+    def set_pos_for_all_hpanes(self, iNewPos):
+        """Set all the panes to the same Position value"""
+        def set_pos_children(oPane, iPos):
+            oChild1 = oPane.get_child1()
+            oChild2 = oPane.get_child2()
+            if type(oChild1) is gtk.HPaned:
+                iMyPos = iPos + set_pos_children(oChild1, iPos)
+            else:
+                iMyPos = iPos
+            oPane.set_position(iMyPos)
+            if type(oChild2) is gtk.HPaned:
+                iMyPos += set_pos_children(oChild2, iPos)
+            return iMyPos
+
+        aTopLevelPane = [x for x in self.oVBox.get_children() if type(x) is gtk.HPaned]
+        for oPane in aTopLevelPane:
+            # Should only be 1 here
+            set_pos_children(oPane, iNewPos)
