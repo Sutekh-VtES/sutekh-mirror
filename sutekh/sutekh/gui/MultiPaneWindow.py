@@ -217,7 +217,7 @@ class MultiPaneWindow(gtk.Window):
 
         aTopLevelPane = [x for x in self.oVBox.get_children() if x != self.__oMenu]
         for oPane in aTopLevelPane:
-            save_children(oPane, self._oConfig, False, 1, -10)
+            save_children(oPane, self._oConfig, False, 1, -1)
 
 
 
@@ -324,7 +324,7 @@ class MultiPaneWindow(gtk.Window):
                     oParent.add2(oNewPane)
                     oCur = oParent.get_allocation()
                     if not bVertical:
-                        if oCur.width == 1 and oParent.get_position() > 1 and iConfigPos == -10:
+                        if oCur.width == 1 and oParent.get_position() > 1 and iConfigPos == -1:
                             # we are in early startup, so we can move the
                             # Parent as well
                             # We want to split ourselves into equally sized
@@ -353,7 +353,7 @@ class MultiPaneWindow(gtk.Window):
             oParent.show()
             if not bVertical:
                 self._aHPanes.append(oNewPane)
-            if iConfigPos == -10:
+            if iConfigPos == -1:
                 oNewPane.set_position(iPos)
             else:
                 oNewPane.set_position(iConfigPos)
