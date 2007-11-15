@@ -35,9 +35,7 @@ class ACSFromFilter(CardListPlugin):
         oDlg.run()
 
     def makeDialog(self):
-        parent = self.view.getWindow()
-
-        self.oDlg = gtk.Dialog("Choose Abstract Card Set Name",parent,
+        self.oDlg = gtk.Dialog("Choose Abstract Card Set Name",self.parent,
                 gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                 (gtk.STOCK_OK, gtk.RESPONSE_OK,
                     gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
@@ -73,6 +71,6 @@ class ACSFromFilter(CardListPlugin):
         for oCard in self.model.getCardIterator(self.model.getCurrentFilter()):
             oACS.addAbstractCard(IAbstractCard(oCard))
 
-        self.view.getWindow().add_abstract_card_set(sACSName)
+        self.open_acs(sACSName)
 
 plugin = ACSFromFilter

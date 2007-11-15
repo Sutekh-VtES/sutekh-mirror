@@ -31,9 +31,8 @@ class AbstractCardSetFromPhysical(CardListPlugin):
         self.createAbsCardSet()
 
     def createAbsCardSet(self):
-        parent = self.view.getWindow()
         oPC = PhysicalCardSet.byName(self.view.sSetName)
-        oDlg = CreateCardSetDialog(parent,"AbstractCardSet",oPC.author,oPC.comment)
+        oDlg = CreateCardSetDialog(self.parent,"AbstractCardSet",oPC.author,oPC.comment)
         oDlg.run()
 
         (sName,sAuthor,sDesc) = oDlg.get_data()
@@ -54,6 +53,6 @@ class AbstractCardSetFromPhysical(CardListPlugin):
             for oCard in self.model.getCardIterator(None):
                 nA.addAbstractCard(oCard.abstractCardID)
 
-            parent.add_abstract_card_set(sName)
+            self.open_acs(sName)
 
 plugin = AbstractCardSetFromPhysical

@@ -43,10 +43,9 @@ class GroupCardList(CardListPlugin):
         dlg.run()
 
     def makeDialog(self):
-        parent = self.view.getWindow()
         name = "Change Card List Grouping..."
 
-        oDlg = gtk.Dialog(name,parent,
+        oDlg = gtk.Dialog(name,self.parent,
                           gtk.DIALOG_DESTROY_WITH_PARENT)
         oDlg.add_button(gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE)
         oDlg.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)

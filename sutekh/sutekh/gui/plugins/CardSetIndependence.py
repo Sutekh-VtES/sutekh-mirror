@@ -36,8 +36,7 @@ class CardSetIndependence(CardListPlugin):
         """
         Create the list of card sets to select
         """
-        oParent = self.view.getWindow()
-        self.oDlg = gtk.Dialog("Choose Card Sets to Test", oParent,
+        self.oDlg = gtk.Dialog("Choose Card Sets to Test", self.parent,
                           gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                           (gtk.STOCK_OK, gtk.RESPONSE_OK,
                            gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))

@@ -62,8 +62,7 @@ class CardSetExportHTML(CardListPlugin):
         oDlg.destroy()
 
     def makeDialog(self):
-        parent = self.view.getWindow()
-        self.oDlg = gtk.Dialog("Filename to save as",parent,
+        self.oDlg = gtk.Dialog("Filename to save as",self.parent,
                           gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                           (gtk.STOCK_OK, gtk.RESPONSE_OK,
                            gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))

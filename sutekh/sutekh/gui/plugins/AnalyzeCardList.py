@@ -63,7 +63,6 @@ class AnalyzeCardList(CardListPlugin):
         dlg.run()
 
     def makeDialog(self):
-        parent = self.view.getWindow()
         name = "Analysis of Card List"
         deckName = self.view.sSetName
         oCS = self._cModelType.byName(self.view.sSetName)
@@ -71,7 +70,7 @@ class AnalyzeCardList(CardListPlugin):
         sComment = oCS.comment.replace('&','&amp;')
         sAuthor = oCS.author
 
-        dlg = gtk.Dialog(name,parent,
+        dlg = gtk.Dialog(name,self.parent,
                          gtk.DIALOG_DESTROY_WITH_PARENT,
                          (gtk.STOCK_OK, gtk.RESPONSE_OK))
         dlg.connect("response", lambda dlg, resp: dlg.destroy())

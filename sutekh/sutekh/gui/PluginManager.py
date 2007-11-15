@@ -64,8 +64,10 @@ class CardListPlugin(object):
         self._oModel = oCardListModel
         self._cModelType = cModelType
 
+    parent = property(fget=lambda self: self._oView.getWindow(), doc="Parent window to use when creating dialogs.")
     view = property(fget=lambda self: self._oView, doc="Associated CardListView object.")
     model = property(fget=lambda self: self._oModel, doc="Associated CardModel object.")
+    cardlookup = property(fget=lambda self: self.parent.cardLookup, doc="GUI CardLookup.")
 
     def get_menu_item(self):
         """
@@ -87,6 +89,8 @@ class CardListPlugin(object):
         """
         return None
 
+    # Utility Functions / Plugin API
+
     def check_model_type(self):
         if self._cModelType in self.aModelsSupported:
             return True
@@ -100,3 +104,35 @@ class CardListPlugin(object):
                 return False
         # If nothing is specified, currently we assume everything is A-OK
         return True
+
+    def open_acs(self, sACS):
+        """
+        Open an abstract card set in the GUI.
+        """
+        oF = self.parent.add_pane()
+        self.parent.replace_with_abstract_card_set(sACS, oF)
+
+    def open_pcs(self, sPCS):
+        """
+        Open a physical card set in the GUI.
+        """
+        oF = self.parent.add_pane()
+        self.parent.replace_with_physical_card_set(sPCS, oF)
+
+    def reload_acs_list(self):
+        """
+        Refresh the abstract card set list if it is visible.
+        """
+        self.parent.reload_acs_list()
+
+    def reload_pcs_list(self):
+        """
+        Refresh the physical card set list if it is visible.
+        """
+        self.parent.reload_pcs_list()
+
+    def reload_all(self):
+        """
+        Reload all views.
+        """
+        self.parent.reload_all()

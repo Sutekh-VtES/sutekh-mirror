@@ -50,12 +50,11 @@ class ClusterCardList(CardListPlugin):
         dlg.run()
 
     def makeDialog(self):
-        parent = self.view.getWindow()
         name = "Cluster Cards in List"
 
         self.makePropGroups()
 
-        oDlg = gtk.Dialog(name,parent,
+        oDlg = gtk.Dialog(name,self.parent,
                           gtk.DIALOG_DESTROY_WITH_PARENT)
         oDlg.add_button(gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE)
         oDlg.add_button(gtk.STOCK_EXECUTE, gtk.RESPONSE_APPLY)
@@ -320,7 +319,7 @@ class ClusterCardList(CardListPlugin):
             if aClusterId[0] == aCardCluster[0] and aClusterId[1] == aCardCluster[1]:
                 oDeck.addPhysicalCard(oCard)
 
-        self.view.getWindow().add_physical_card_set(sDeckName)
+        self.open_pcs(sDeckName)
 
     def makeACSFromCluster(self,aClusterId):
         sACSName = '_cluster_acs_%d_%d' % (aClusterId[0],aClusterId[1])
@@ -341,6 +340,6 @@ class ClusterCardList(CardListPlugin):
             if aClusterId[0] == aCardCluster[0] and aClusterId[1] == aCardCluster[1]:
                 oACS.addAbstractCard(oCard)
 
-        self.view.getWindow().add_abstract_card_set(sACSName)
+        self.open_acs(sACSName)
 
 plugin = ClusterCardList

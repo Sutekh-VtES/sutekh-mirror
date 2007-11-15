@@ -31,8 +31,7 @@ class CardSetExportArdbXML(CardListPlugin):
         oDlg.destroy()
 
     def makeDialog(self):
-        parent = self.view.getWindow()
-        self.oDlg = gtk.Dialog("Choose FileName for Exported CardSet",parent,
+        self.oDlg = gtk.Dialog("Choose FileName for Exported CardSet",self.parent,
                           gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                           (gtk.STOCK_OK, gtk.RESPONSE_OK,
                            gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))

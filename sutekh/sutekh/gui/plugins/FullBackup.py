@@ -5,7 +5,6 @@
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.core.SutekhObjects import AbstractCard
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
-from sutekh.gui.GuiCardLookup import GuiLookup
 import gtk
 import os
 
@@ -49,10 +48,9 @@ class FullBackup(CardListPlugin):
         dlg.run()
 
     def makeBackupDialog(self):
-        oParent = self.view.getWindow()
         sName = "Choose a file to save the full backup to ..."
 
-        oDlg = gtk.FileChooserDialog(sName,oParent,action=gtk.FILE_CHOOSER_ACTION_SAVE,
+        oDlg = gtk.FileChooserDialog(sName,self.parent,action=gtk.FILE_CHOOSER_ACTION_SAVE,
                 buttons = (gtk.STOCK_OK, gtk.RESPONSE_OK,
                     gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
 
@@ -94,10 +92,9 @@ class FullBackup(CardListPlugin):
         dlg.run()
 
     def makeRestoreDialog(self):
-        oParent = self.view.getWindow()
         sName = "Restore a Full Backup ...."
 
-        oDlg = gtk.FileChooserDialog(sName,oParent,action=gtk.FILE_CHOOSER_ACTION_OPEN,
+        oDlg = gtk.FileChooserDialog(sName,self.parent,action=gtk.FILE_CHOOSER_ACTION_OPEN,
                 buttons = (gtk.STOCK_OK, gtk.RESPONSE_OK,
                     gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
 
@@ -125,9 +122,9 @@ class FullBackup(CardListPlugin):
             if bContinue:
                 try:
                     oFile = ZipFileWrapper(sFile)
-                    oFile.doRestoreFromZip(oCardLookup=GuiLookup())
+                    oFile.doRestoreFromZip(oCardLookup=self.cardlookup)
                     # restore successful, refresh display
-                    self.view.getWindow().reload_all()
+                    self.reload_all()
                 except Exception, e:
                     sMsg = "Failed to restore backup.\n\n" + str(e)
                     Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,

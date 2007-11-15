@@ -1,4 +1,4 @@
-# ACSFromFilter.py
+# ACSFromELDBHTML.py
 # Copyright 2006 Simon Cross <hodgestar@gmail.com>
 # Copyright 2007 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
@@ -9,7 +9,6 @@ from sutekh.io.ELDBHTMLParser import ELDBHTMLParser
 from sutekh.core.SutekhObjects import AbstractCard, AbstractCardSet
 from sutekh.core.CardSetHolder import CardSetHolder
 from sutekh.core.CardLookup import LookupFailed
-from sutekh.gui.GuiCardLookup import GuiLookup
 from sutekh.gui.PluginManager import CardListPlugin
 
 class ACSFromELDBHTML(CardListPlugin):
@@ -37,8 +36,6 @@ class ACSFromELDBHTML(CardListPlugin):
         oDlg.run()
 
     def makeDialog(self):
-        parent = self.view.getWindow()
-
         self.oDlg = gtk.Dialog("Choose ELDB HTML File",None,
                 gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                 (gtk.STOCK_OK, gtk.RESPONSE_OK,
@@ -104,8 +101,7 @@ class ACSFromELDBHTML(CardListPlugin):
 
         # Create ACS
         try:
-            # Never need the physical_lookup, so the bogus view is OK
-            oHolder.createACS(oCardLookup=GuiLookup())
+            oHolder.createACS(oCardLookup=self.cardLookup)
         except RuntimeError, e:
             sMsg = "Creating the card set failed with the following error:\n"
             sMsg += str(e) + "\n"
@@ -119,7 +115,6 @@ class ACSFromELDBHTML(CardListPlugin):
         except LookupFailed, e:
             return
 
-        parent = self.view.getWindow()
-        parent.add_abstract_card_set(oHolder.name)
+        self.open_acs(oHolder.name)
 
 plugin = ACSFromELDBHTML

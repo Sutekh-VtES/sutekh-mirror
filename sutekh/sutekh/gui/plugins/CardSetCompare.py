@@ -37,8 +37,7 @@ class CardSetCompare(CardListPlugin):
         """
         Create the list of card sets to select
         """
-        oParent = self.view.getWindow()
-        self.oDlg = gtk.Dialog("Choose Card Set to Compare with", oParent,
+        self.oDlg = gtk.Dialog("Choose Card Set to Compare with", self.parent,
                           gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                           (gtk.STOCK_OK, gtk.RESPONSE_OK,
                            gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
@@ -68,8 +67,7 @@ class CardSetCompare(CardListPlugin):
 
     def comp_card_sets(self, aCardSetNames):
         (dDifferences, aCommon) = self.__get_card_set_list(aCardSetNames)
-        oParent = self.view.getWindow()
-        Results = gtk.Dialog("Card Comparison", oParent, gtk.DIALOG_MODAL | \
+        Results = gtk.Dialog("Card Comparison", self.parent, gtk.DIALOG_MODAL | \
                 gtk.DIALOG_DESTROY_WITH_PARENT, \
                 (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
         myHBox = gtk.HBox(False, 0)

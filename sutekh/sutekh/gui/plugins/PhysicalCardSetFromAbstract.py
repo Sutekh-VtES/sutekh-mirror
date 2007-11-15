@@ -35,10 +35,9 @@ class PhysicalCardSetFromAbstract(CardListPlugin):
         self.createPhysCardSet()
 
     def createPhysCardSet(self):
-        parent = self.view.getWindow()
         oAC = AbstractCardSet.byName(self.view.sSetName)
 
-        oDlg = CreateCardSetDialog(parent,"PhysicalCardSet",oAC.author,oAC.comment)
+        oDlg = CreateCardSetDialog(self.parent,"PhysicalCardSet",oAC.author,oAC.comment)
         oImport = gtk.CheckButton("Add cards to collection.")
         oDlg.vbox.pack_start(oImport)
         oDlg.show_all()
@@ -67,9 +66,7 @@ class PhysicalCardSetFromAbstract(CardListPlugin):
             for oCard in self.model.getCardIterator(None):
                 oAC = IAbstractCard(oCard)
                 PhysicalCard(abstractCard=oAC,expansion=None)
-            # FIXME: Nasty (we need a means of getting at some sort of central
-            #               controller for the GUI)
-            self.view.getController().getController().reloadPhysical()
+            self.reload_all()
 
         # Populate the new physical card set
         aMissingCards = []
@@ -83,7 +80,7 @@ class PhysicalCardSetFromAbstract(CardListPlugin):
             else:
                 aMissingCards.append(oACard)
 
-        parent.add_physical_card_set(sName)
+        self.open_pcs(sName)
 
         if aMissingCards:
             sMsg = "The following cards were not added to the physical card set " \
