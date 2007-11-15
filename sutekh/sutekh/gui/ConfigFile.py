@@ -39,12 +39,15 @@ class ConfigFile(object):
             # default to saving on exit
             self.setSaveOnExit(True)
 
+        if 'save pane sizes' not in self.__oConfig.options(self.__sPrefsSection):
+            self.set_save_precise_pos(True)
+
         if not self.__oConfig.has_section(self.__sPanesSection):
             self.__oConfig.add_section(self.__sPanesSection)
             # No panes information, so we set 'sensible' defaults
-            self.add_frame(1, 'abstract_card', 'Abstract Cards')
-            self.add_frame(2, 'physical_card', 'Physical Cards')
-            self.add_frame(3, 'Card Text', 'Card Text')
+            self.add_frame(1, 'abstract_card', 'Abstract Cards', False, -1)
+            self.add_frame(2, 'physical_card', 'Physical Cards', False, -1)
+            self.add_frame(3, 'Card Text', 'Card Text', False, -1)
 
         if not self.__oConfig.has_section(self.__sFiltersSection):
             self.__oConfig.add_section(self.__sFiltersSection)
@@ -80,8 +83,22 @@ class ConfigFile(object):
         for sKey, sValue in self.__oConfig.items(self.__sPanesSection):
             iPaneNumber = int(sKey.split(' ')[1])
             # Type is before 1st colon in the name
-            sType, sName = sValue.split(':', 1)
-            aRes.append((iPaneNumber, sType, sName))
+            sData, sName = sValue.split(':', 1)
+            aData = sData.split('.')
+            sType = aData[0]
+            sPos = '-1'
+            bVertical = False
+            if len(aData) > 1:
+                if aData[1] == 'V':
+                    bVertical = True
+                    if len(aData) > 2: sPos = aData[2]
+                else:
+                    sPos = aData[1]
+            try:
+                iPos = int(sPos)
+            except ValueError:
+                iPos = -1
+            aRes.append((iPaneNumber, sType, sName, bVertical, iPos))
         aRes.sort() # Numbers denote ordering
         return aRes
 
@@ -94,10 +111,24 @@ class ConfigFile(object):
         else:
             self.__oConfig.set(self.__sPrefsSection, 'save on exit', 'no')
 
-    def add_frame(self, iFrameNumber, sType, sName):
+    def get_save_precise_pos(self):
+        return self.__oConfig.get(self.__sPrefsSection, 'save pane sizes') == 'yes'
+
+    def set_save_precise_pos(self, bSavePos):
+        if bSavePos:
+            self.__oConfig.set(self.__sPrefsSection, 'save pane sizes', 'yes') 
+        else:
+            self.__oConfig.set(self.__sPrefsSection, 'save pane sizes', 'no') 
+
+    def add_frame(self, iFrameNumber, sType, sName, bVertical, iPos):
         aOptions = self.__oConfig.options(self.__sPanesSection)
         sKey = 'pane ' + str(iFrameNumber)
-        sValue = sType + ':' + sName
+        sData = sType
+        if bVertical:
+            sData += '.V'
+        if iPos > 0 and self.get_save_precise_pos():
+            sData += '.' + str(iPos)
+        sValue = sData + ':' + sName
         self.__oConfig.set(self.__sPanesSection, sKey, sValue)
 
     def addFilter(self, sFilter):

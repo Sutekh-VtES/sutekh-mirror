@@ -65,40 +65,43 @@ class MultiPaneWindow(gtk.Window):
                 "Abstract Card Set List" : self.__oMenu.acs_list_pane_set_sensitive,
                 "Card Text" : self.__oMenu.add_card_text_set_sensitive
                 }
-        for iNumber, sType, sName in self._oConfig.getAllPanes():
-            # Need to force allocations to work
-            if sType == PhysicalCardSet.sqlmeta.table:
-                oF = self.add_pane()
-                self.replace_with_physical_card_set(sName, oF)
-            elif sType == AbstractCardSet.sqlmeta.table:
-                oF = self.add_pane()
-                self.replace_with_abstract_card_set(sName, oF)
-            elif sType == AbstractCard.sqlmeta.table:
-                self._oFocussed = self.add_pane()
-                self.replace_with_abstract_card_list(None)
-            elif sType == 'Card Text':
-                self._oFocussed = self.add_pane()
-                self.replace_with_card_text(None)
-            elif sType == PhysicalCard.sqlmeta.table:
-                self._oFocussed = self.add_pane()
-                self.replace_with_physical_card_list(None)
-            elif sType == 'Abstract Card Set List':
-                self._oFocussed = self.add_pane()
-                self.replace_with_acs_list(None)
-            elif sType == 'Physical Card Set List':
-                self._oFocussed = self.add_pane()
-                self.replace_with_pcs_list(None)
-            elif sType == 'Blank Frame':
-                self.add_pane()
-        if self._iNumberOpenFrames == 0:
-            # We always have at least one pane
-            self.add_pane()
         self._oCardLookup = GuiLookup(self._oConfig)
+        self.restore_from_config()
+
 
     # Needed for Backup plugin
     cardLookup = property(fget=lambda self: self._oCardLookup)
     # Needed for plugins
     plugin_manager = property(fget=lambda self: self._oPluginManager)
+
+    def restore_from_config(self):
+        for iNumber, sType, sName, bVert, iPos in self._oConfig.getAllPanes():
+            if sType == PhysicalCardSet.sqlmeta.table:
+                oF = self.add_pane(bVert)
+                self.replace_with_physical_card_set(sName, oF)
+            elif sType == AbstractCardSet.sqlmeta.table:
+                oF = self.add_pane(bVert)
+                self.replace_with_abstract_card_set(sName, oF)
+            elif sType == AbstractCard.sqlmeta.table:
+                self._oFocussed = self.add_pane(bVert)
+                self.replace_with_abstract_card_list(None)
+            elif sType == 'Card Text':
+                self._oFocussed = self.add_pane(bVert)
+                self.replace_with_card_text(None)
+            elif sType == PhysicalCard.sqlmeta.table:
+                self._oFocussed = self.add_pane(bVert)
+                self.replace_with_physical_card_list(None)
+            elif sType == 'Abstract Card Set List':
+                self._oFocussed = self.add_pane(bVert)
+                self.replace_with_acs_list(None)
+            elif sType == 'Physical Card Set List':
+                self._oFocussed = self.add_pane(bVert)
+                self.replace_with_pcs_list(None)
+            elif sType == 'Blank Frame':
+                self.add_pane(bVert)
+        if self._iNumberOpenFrames == 0:
+            # We always have at least one pane
+            self.add_pane()
 
     def find_pane_by_name(self, sName):
         try:
@@ -196,10 +199,26 @@ class MultiPaneWindow(gtk.Window):
 
     def save_frames(self):
         self._oConfig.preSaveClear()
-        iNum = 1
-        for oFrame in self.dOpenFrames.keys():
-            self._oConfig.add_frame(iNum, oFrame.type, oFrame.name)
-            iNum += 1
+
+        def save_children(oPane, oConfig, bVert, iNum):
+            if type(oPane) is gtk.HPaned or type(oPane) is gtk.VPaned:
+                oChild1 = oPane.get_child1()
+                oChild2 = oPane.get_child2()
+                iNum = save_children(oChild1, oConfig, False, iNum)
+                if type(oPane) is gtk.HPaned:
+                    iNum = save_children(oChild2, oConfig, False, iNum)
+                else:
+                    iNum = save_children(oChild2, oConfig, True, iNum)
+            else:
+                oConfig.add_frame(iNum, oPane.type, oPane.name, bVert, -1)
+                iNum += 1
+            return iNum
+
+        aTopLevelPane = [x for x in self.oVBox.get_children() if x != self.__oMenu]
+        for oPane in aTopLevelPane:
+            save_children(oPane, self._oConfig, False, 1)
+
+
 
     def set_card_text(self, sCardName):
         try:
