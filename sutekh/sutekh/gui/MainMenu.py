@@ -87,6 +87,10 @@ class MainMenu(gtk.MenuBar, object):
         self.__dMenus["Pane"] = wMenu
         iMenu.set_submenu(wMenu)
 
+        oEqualizePanes = gtk.MenuItem("Equalize pane sizes")
+        wMenu.add(oEqualizePanes)
+        oEqualizePanes.connect("activate", self.equalize_panes)
+
 
         oAddPane = gtk.MenuItem("Split current pane")
         wMenu.add(oAddPane)
@@ -285,3 +289,6 @@ class MainMenu(gtk.MenuBar, object):
         bChoice = not self.__oConfig.getSaveOnExit()
         self.__oConfig.setSaveOnExit(bChoice)
         # gtk can handle the rest for us
+
+    def equalize_panes(self, oMenuWidget):
+        self.__oWin.set_all_panes_equal()
