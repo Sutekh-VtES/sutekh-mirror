@@ -2,7 +2,7 @@
 # Copyright 2006 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
 
-from sutekh.core.SutekhObjects import Discipline, DisciplineAdapter, Clan,\
+from sutekh.core.SutekhObjects import Discipline, Clan, \
                                  Rarity, Expansion, CardType, IAbstractCard
 
 class CardListTabulator(object):
