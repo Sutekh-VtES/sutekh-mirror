@@ -198,22 +198,35 @@ class MultiPaneWindow(gtk.Window):
         self._oConfig.preSaveClear()
 
         def save_children(oPane, oConfig, bVert, iNum, iPos):
-            if type(oPane) is gtk.HPaned or type(oPane) is gtk.VPaned:
+            if type(oPane) is gtk.HPaned:
                 oChild1 = oPane.get_child1()
                 oChild2 = oPane.get_child2()
-                iNum = save_children(oChild1, oConfig, False, iNum, iPos)
+                iNum, iChildPos = save_children(oChild1, oConfig, False, iNum, iPos)
                 iMyPos = oPane.get_position()
+                if type(oChild1) is gtk.HPaned:
+                    iMyPos = iMyPos - iChildPos
+                    iChildPos = oPane.get_position()
+                else:
+                    iChildPos = iMyPos
+                print iMyPos, iChildPos
                 if iMyPos < 1:
                     # Setting pos to < 1 doesn't do what we want
                     iMyPos = 1
-                if type(oPane) is gtk.HPaned:
-                    iNum = save_children(oChild2, oConfig, False, iNum, iMyPos)
-                else:
-                    iNum = save_children(oChild2, oConfig, True, iNum, iMyPos)
+                iNum, iChild2Pos = save_children(oChild2, oConfig, False, iNum, iMyPos)
+                if type(oChild2) is gtk.HPaned:
+                    iChildPos += iChild2Pos
+            elif type(oPane) is gtk.VPaned:
+                oChild1 = oPane.get_child1()
+                oChild2 = oPane.get_child2()
+                iMyPos = oPane.get_position()
+                iNum, iTemp = save_children(oChild2, oConfig, False, iNum, iPos)
+                iNum, iTemp = save_children(oChild2, oConfig, True, iNum, iMyPos)
+                iChildPos = iPos
             else:
                 oConfig.add_frame(iNum, oPane.type, oPane.name, bVert, iPos)
                 iNum += 1
-            return iNum
+                iChildPos = iPos
+            return iNum, iChildPos
 
         aTopLevelPane = [x for x in self.oVBox.get_children() if x != self.__oMenu]
         for oPane in aTopLevelPane:
@@ -430,7 +443,6 @@ class MultiPaneWindow(gtk.Window):
             else:
                 fSetSensitiveFunc(True)
         if self._oFocussed:
-            self.__oMenu.del_pane_set_sensitive(True)
             # Can always split horizontally
             self.__oMenu.set_split_horizontal_active(True)
             # But we can't split vertically more than once
@@ -438,6 +450,10 @@ class MultiPaneWindow(gtk.Window):
                 self.__oMenu.set_split_vertical_active(False)
             else:
                 self.__oMenu.set_split_vertical_active(True)
+            if self._iNumberOpenFrames > 1:
+                self.__oMenu.del_pane_set_sensitive(True)
+            else:
+                self.__oMenu.del_pane_set_sensitive(False)
         else:
             # Can't split when no pane chosen
             self.__oMenu.set_split_vertical_active(False)
