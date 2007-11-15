@@ -38,10 +38,6 @@ Gui (Presentation):
    * Unify some of the other dialogs and make various bits more reusable 
      (cf. CreateCardSetDialog hack in plugins)
    * Unified Complaint message dialog function?
- * Change current pane structure to allow arbitarty pane splitting
-   * Split current pane horizontally or vertically
-   * Don't resize window on adding (or removing?) pane
- * Allow pane layout to be be saved
  * Clean up the currently overly tangled controller/view/model interactions
  * Parse in a GTK rc file? (http://www.moeraki.com/pygtktutorial/pygtk2tutorial/ch-GtkRcFiles.html)
  * Allow some way of marking card sets as active, and displaying used cards or 

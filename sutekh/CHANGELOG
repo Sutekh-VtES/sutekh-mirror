@@ -1,3 +1,9 @@
+15 Nov 2007
+ * Allow panes to be split vertically or horizontally
+ * Save pane configuration and postions properly
+ * Replace ACSFromELDBHTML Plugin with more generic parser plugin
+ * Add parser for ARDB Text format
+
 14 Nov 2007
  * Add PhysicalCardCount Filter
  * Add Menu option to display all AbstractCards in the Physical Card List
