@@ -1,4 +1,4 @@
-# ACSFromELDBHTML.py
+# ACSImporter.py
 # Copyright 2006 Simon Cross <hodgestar@gmail.com>
 # Copyright 2007 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
@@ -6,17 +6,24 @@
 import gtk
 import urllib2
 from sutekh.io.ELDBHTMLParser import ELDBHTMLParser
+from sutekh.io.ARDBTextParser import ARDBTextParser
 from sutekh.core.SutekhObjects import AbstractCard, AbstractCardSet
 from sutekh.core.CardSetHolder import CardSetHolder
 from sutekh.core.CardLookup import LookupFailed
 from sutekh.gui.PluginManager import CardListPlugin
 
-class ACSFromELDBHTML(CardListPlugin):
+class ACSImporter(CardListPlugin):
     dTableVersions = { AbstractCardSet: [2,3]}
     aModelsSupported = [AbstractCard]
 
     def __init__(self,*args,**kws):
-        super(ACSFromELDBHTML,self).__init__(*args,**kws)
+        super(ACSImporter,self).__init__(*args,**kws)
+        # Parser classes should be instantiable using Parser(oCardSetHolder)
+        # Parser objects should have a .feed(sLine) method
+        self._dParsers = {
+            'ELDB HTML File': ELDBHTMLParser,
+            'ARDB Text File': ARDBTextParser,
+        }
 
     def get_menu_item(self):
         """
@@ -24,7 +31,7 @@ class ACSFromELDBHTML(CardListPlugin):
         """
         if not self.check_versions() or not self.check_model_type():
             return None
-        iDF = gtk.MenuItem("Abstract Card Set From ELDB HTML")
+        iDF = gtk.MenuItem("Import Abstract Card Set")
         iDF.connect("activate", self.activate)
         return iDF
 
@@ -36,7 +43,7 @@ class ACSFromELDBHTML(CardListPlugin):
         oDlg.run()
 
     def makeDialog(self):
-        self.oDlg = gtk.Dialog("Choose ELDB HTML File",None,
+        self.oDlg = gtk.Dialog("Choose Card Set File or URL",None,
                 gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                 (gtk.STOCK_OK, gtk.RESPONSE_OK,
                  gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
@@ -52,8 +59,18 @@ class ACSFromELDBHTML(CardListPlugin):
         self.oFileChooser = gtk.FileChooserWidget(gtk.FILE_CHOOSER_ACTION_OPEN)
         self.oDlg.vbox.pack_start(self.oFileChooser)
 
+        oIter = self._dParsers.iteritems()
+        for sName, cParser in oIter:
+            self._oFirstBut = gtk.RadioButton(None,sName,False)
+            self._oFirstBut.set_active(True)
+            self.oDlg.vbox.pack_start(self._oFirstBut)
+            break
+        for sName, cParser in oIter:
+            oBut = gtk.RadioButton(self._oFirstBut,sName)
+            self.oDlg.vbox.pack_start(oBut)
+
         self.oDlg.connect("response", self.handleResponse)
-        self.oDlg.set_size_request(400,300)
+        self.oDlg.set_size_request(400,400)
         self.oDlg.show_all()
 
         return self.oDlg
@@ -62,31 +79,36 @@ class ACSFromELDBHTML(CardListPlugin):
         if oResponse == gtk.RESPONSE_OK:
             sUri = self.oUri.get_text().strip()
             sFile = self.oFileChooser.get_filename()
+
+            for oBut in self._oFirstBut.get_group():
+                sName = oBut.get_label()
+                cParser = self._dParsers[sName]
+
             if sUri:
-                self.makeACSFromUri(sUri)
+                self.makeACSFromUri(sUri,cParser)
             elif sFile:
-                self.makeACSFromFile(sFile)
+                self.makeACSFromFile(sFile,cParser)
 
         self.oDlg.destroy()
 
-    def makeACSFromUri(self,sUri):
+    def makeACSFromUri(self,sUri,cParser):
         fIn = urllib2.urlopen(sUri)
         try:
-            self.makeACS(fIn)
+            self.makeACS(fIn,cParser)
         finally:
             fIn.close()
 
-    def makeACSFromFile(self,sFile):
+    def makeACSFromFile(self,sFile,cParser):
         fIn = file(sFile,"rb")
         try:
-            self.makeACS(fIn)
+            self.makeACS(fIn,cParser)
         finally:
             fIn.close()
 
-    def makeACS(self,fIn):
+    def makeACS(self,fIn,cParser):
         oHolder = CardSetHolder()
 
-        oP = ELDBHTMLParser(oHolder)
+        oP = cParser(oHolder)
         for sLine in fIn:
             oP.feed(sLine)
 
@@ -101,7 +123,7 @@ class ACSFromELDBHTML(CardListPlugin):
 
         # Create ACS
         try:
-            oHolder.createACS(oCardLookup=self.cardLookup)
+            oHolder.createACS(oCardLookup=self.cardlookup)
         except RuntimeError, e:
             sMsg = "Creating the card set failed with the following error:\n"
             sMsg += str(e) + "\n"
@@ -117,4 +139,4 @@ class ACSFromELDBHTML(CardListPlugin):
 
         self.open_acs(oHolder.name)
 
-plugin = ACSFromELDBHTML
+plugin = ACSImporter
