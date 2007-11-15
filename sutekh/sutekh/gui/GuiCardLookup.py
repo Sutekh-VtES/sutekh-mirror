@@ -12,14 +12,13 @@ from sutekh.core.SutekhObjects import AbstractCard, PhysicalCard
 from sutekh.core.CardLookup import AbstractCardLookup, PhysicalCardLookup, \
         LookupFailed
 from sutekh.core.Filters import CardNameFilter
-from sutekh.gui.AbstractCardView import AbstractCardView
 from sutekh.gui.PhysicalCardView import PhysicalCardView
 
 class dummyController(object):
     """Dummy controller class, so we can use the card views directly"""
     def __init__(self, sFilterType):
         self.sFilterType = sFilterType
-        
+
     filtertype = property(fget=lambda self: self.sFilterType)
 
     def set_card_text(self, sCardName):
@@ -30,8 +29,8 @@ class PCLwithNumbersView(PhysicalCardView):
     Also show current allocation of cards in the physical card view
     """
     def __init__(self, oDialogWindow, oConfig):
-        oController = dummmyController(oDialogWindow, 'PhysicalCard')
-        super(PCLwithNumbers, self).__init__(oController, oDialogWindow, oConfig)
+        oController = dummyController(oDialogWindow, 'PhysicalCard')
+        super(PCLwithNumbersView, self).__init__(oController, oDialogWindow, oConfig)
 
 class GuiLookup(AbstractCardLookup, PhysicalCardLookup):
     """Lookup AbstractCards. Use the user as the AI if a simple lookup fails.
