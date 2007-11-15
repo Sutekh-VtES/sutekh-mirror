@@ -92,13 +92,14 @@ class MainMenu(gtk.MenuBar, object):
         oEqualizePanes.connect("activate", self.equalize_panes)
 
 
-        oAddPane = gtk.MenuItem("Split current pane horizontally")
-        wMenu.add(oAddPane)
-        oAddPane.connect("activate", self.__oWin.menu_add_pane_horizontal)
+        self.__oAddHorzPane = gtk.MenuItem("Split current pane horizontally")
+        wMenu.add(self.__oAddHorzPane)
+        self.__oAddHorzPane.connect("activate", self.add_pane_horizontal)
+        self.__oAddHorzPane.set_sensitive(False)
 
         self.__oAddVertPane = gtk.MenuItem("Split current pane vertically")
         wMenu.add(self.__oAddVertPane)
-        self.__oAddVertPane.connect("activate", self.__oWin.menu_add_pane_vertical)
+        self.__oAddVertPane.connect("activate", self.add_pane_vertical)
         self.__oAddVertPane.set_sensitive(False)
 
         self.__oReplaceWithACLPane = gtk.MenuItem("Replace current Pane with Whitewolf Card List")
@@ -156,6 +157,9 @@ class MainMenu(gtk.MenuBar, object):
 
     def set_split_vertical_active(self, bValue):
         self.__oAddVertPane.set_sensitive(bValue)
+
+    def set_split_horizontal_active(self, bValue):
+        self.__oAddHorzPane.set_sensitive(bValue)
 
     def __create_about_menu(self):
         # setup sub menu
@@ -301,3 +305,11 @@ class MainMenu(gtk.MenuBar, object):
 
     def equalize_panes(self, oMenuWidget):
         self.__oWin.set_all_panes_equal()
+
+    def add_pane_horizontal(self, oMenuWidget):
+        self.__oWin.add_pane(False)
+
+    def add_pane_vertical(self, oMenuWidget):
+        self.__oWin.add_pane(True)
+
+

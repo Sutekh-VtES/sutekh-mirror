@@ -89,7 +89,7 @@ class MultiPaneWindow(gtk.Window):
                 self._oFocussed = self.add_pane()
                 self.replace_with_pcs_list(None)
             elif sType == 'Blank Frame':
-                self._oFocussed = self.add_pane()
+                self.add_pane()
         if self._iNumberOpenFrames == 0:
             # We always have at least one pane
             self.add_pane()
@@ -259,12 +259,6 @@ class MultiPaneWindow(gtk.Window):
             # Return the last added pane
             return self._aHPanes[-1]
 
-    def menu_add_pane_horizontal(self, oMenuWidget):
-        self.add_pane(False)
-
-    def menu_add_pane_vertical(self, oMenuWidget):
-        self.add_pane(True)
-
     def add_pane(self, bVertical=False):
         oWidget = BasicFrame(self)
         oWidget.add_parts()
@@ -280,8 +274,9 @@ class MultiPaneWindow(gtk.Window):
             # We already have a widget, so we add a pane
             if bVertical:
                 oNewPane = gtk.VPaned()
-                oCur = self.oVBox.get_allocation()
-                iPos = oCur.height/2
+                oCurAlloc = self.oVBox.get_allocation()
+                oMenuAlloc = self.__oMenu.get_allocation()
+                iPos = (oCurAlloc.height - oMenuAlloc.height) / 2
             else:
                 oNewPane = gtk.HPaned()
             if len(self._aHPanes) > 0:
@@ -407,18 +402,21 @@ class MultiPaneWindow(gtk.Window):
                 fSetSensitiveFunc(False)
             else:
                 fSetSensitiveFunc(True)
-        if self._iNumberOpenFrames == 1:
-            self.__oMenu.del_pane_set_sensitive(False)
-        else:
-            self.__oMenu.del_pane_set_sensitive(True)
         if self._oFocussed:
+            self.__oMenu.del_pane_set_sensitive(True)
+            # Can always split horizontally
+            self.__oMenu.set_split_horizontal_active(True)
+            # But we can't split vertically more than once
             if type(self._oFocussed.get_parent()) is gtk.VPaned:
                 self.__oMenu.set_split_vertical_active(False)
             else:
                 self.__oMenu.set_split_vertical_active(True)
         else:
-            # Can't split veritically when no pane chosen
+            # Can't split when no pane chosen
             self.__oMenu.set_split_vertical_active(False)
+            self.__oMenu.set_split_horizontal_active(False)
+            # Can't delete either
+            self.__oMenu.del_pane_set_sensitive(False)
 
     def show_about_dialog(self, oWidget):
         oDlg = SutekhAboutDialog()
@@ -426,28 +424,36 @@ class MultiPaneWindow(gtk.Window):
         oDlg.destroy()
 
     def set_all_panes_equal(self):
-        if len(self._aHPanes) < 1:
-            return
-        else:
-            oCurAlloc = self.oVBox.get_allocation()
-            iNewPos = oCurAlloc.width / (len(self._aHPanes) + 1)
-            self.set_pos_for_all_hpanes(iNewPos)
+        oCurAlloc = self.oVBox.get_allocation()
+        iNewPos = oCurAlloc.width / (len(self._aHPanes) + 1)
+        self.set_pos_for_all_hpanes(iNewPos)
     
     def set_pos_for_all_hpanes(self, iNewPos):
         """Set all the panes to the same Position value"""
-        def set_pos_children(oPane, iPos):
+        oCurAlloc = self.oVBox.get_allocation()
+        oMenuAlloc = self.__oMenu.get_allocation()
+        iVertPos = (oCurAlloc.height - oMenuAlloc.height) / 2
+        def set_pos_children(oPane, iPos, iVertPos):
             oChild1 = oPane.get_child1()
             oChild2 = oPane.get_child2()
             if type(oChild1) is gtk.HPaned:
-                iMyPos = iPos + set_pos_children(oChild1, iPos)
+                iMyPos = iPos + set_pos_children(oChild1, iPos, iVertPos)
             else:
+                if type(oChild1) is gtk.VPaned:
+                    oChild1.set_position(iVertPos)
                 iMyPos = iPos
             oPane.set_position(iMyPos)
             if type(oChild2) is gtk.HPaned:
-                iMyPos += set_pos_children(oChild2, iPos)
+                iMyPos += set_pos_children(oChild2, iPos, iVertPos)
+            elif type(oChild2) is gtk.VPaned:
+                oChild2.set_position(iVertPos)
             return iMyPos
 
-        aTopLevelPane = [x for x in self.oVBox.get_children() if type(x) is gtk.HPaned]
+        aTopLevelPane = [x for x in self.oVBox.get_children() if x != self.__oMenu]
         for oPane in aTopLevelPane:
             # Should only be 1 here
-            set_pos_children(oPane, iNewPos)
+            if type(oPane) is gtk.HPaned:
+                set_pos_children(oPane, iNewPos, iVertPos)
+            elif type(oPane) is gtk.VPaned:
+                # Do something sensible for single VPane case
+                oPane.set_position(iVertPos)
