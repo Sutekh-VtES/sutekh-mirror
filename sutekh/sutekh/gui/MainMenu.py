@@ -58,9 +58,9 @@ class MainMenu(gtk.MenuBar, object):
         iPrefsItem.set_submenu(wPrefsMenu)
         wMenu.add(iPrefsItem)
 
-        iSaveWindows = gtk.MenuItem('Save Current Pane Set')
-        iSaveWindows.connect('activate', self.do_save_pane_set)
-        wPrefsMenu.add(iSaveWindows)
+        iSavePanes = gtk.MenuItem('Save Current Pane Set')
+        iSavePanes.connect('activate', self.do_save_pane_set)
+        wPrefsMenu.add(iSavePanes)
 
         iSaveOnExit = gtk.CheckMenuItem('Save Pane Set on Exit')
         iSaveOnExit.set_inconsistent(False)
@@ -70,6 +70,19 @@ class MainMenu(gtk.MenuBar, object):
             iSaveOnExit.set_active(False)
         iSaveOnExit.connect('activate', self.do_toggle_save_on_exit)
         wPrefsMenu.add(iSaveOnExit)
+
+        iSavePos = gtk.CheckMenuItem('Save Exact Pane Positions')
+        iSavePos.set_inconsistent(False)
+        if self.__oConfig.get_save_precise_pos():
+            iSavePos.set_active(True)
+        else:
+            iSavePos.set_active(False)
+        iSavePos.connect('activate', self.do_toggle_save_precise_pos)
+        wPrefsMenu.add(iSavePos)
+
+        iRestoreConfig = gtk.MenuItem('Restore saved configuration')
+        wMenu.add(iRestoreConfig)
+        iRestoreConfig.connect('activate', self.do_restore)
 
         iSeperator3 = gtk.SeparatorMenuItem()
         wMenu.add(iSeperator3)
@@ -303,6 +316,10 @@ class MainMenu(gtk.MenuBar, object):
         self.__oConfig.setSaveOnExit(bChoice)
         # gtk can handle the rest for us
 
+    def do_toggle_save_precise_pos(self, oWidget):
+        bChoice = not self.__oConfig.get_save_precise_pos()
+        self.__oConfig.set_save_precise_pos(bChoice)
+
     def equalize_panes(self, oMenuWidget):
         self.__oWin.set_all_panes_equal()
 
@@ -312,4 +329,5 @@ class MainMenu(gtk.MenuBar, object):
     def add_pane_vertical(self, oMenuWidget):
         self.__oWin.add_pane(True)
 
-
+    def do_restore(self, oMenuWidget):
+        self.__oWin.restore_from_config()

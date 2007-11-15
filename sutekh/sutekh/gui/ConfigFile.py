@@ -45,9 +45,9 @@ class ConfigFile(object):
         if not self.__oConfig.has_section(self.__sPanesSection):
             self.__oConfig.add_section(self.__sPanesSection)
             # No panes information, so we set 'sensible' defaults
-            self.add_frame(1, 'abstract_card', 'Abstract Cards', False, -1)
-            self.add_frame(2, 'physical_card', 'Physical Cards', False, -1)
-            self.add_frame(3, 'Card Text', 'Card Text', False, -1)
+            self.add_frame(1, 'abstract_card', 'Abstract Cards', False, -10)
+            self.add_frame(2, 'physical_card', 'Physical Cards', False, -10)
+            self.add_frame(3, 'Card Text', 'Card Text', False, -10)
 
         if not self.__oConfig.has_section(self.__sFiltersSection):
             self.__oConfig.add_section(self.__sFiltersSection)
@@ -86,7 +86,7 @@ class ConfigFile(object):
             sData, sName = sValue.split(':', 1)
             aData = sData.split('.')
             sType = aData[0]
-            sPos = '-1'
+            sPos = '-10'
             bVertical = False
             if len(aData) > 1:
                 if aData[1] == 'V':
@@ -97,7 +97,7 @@ class ConfigFile(object):
             try:
                 iPos = int(sPos)
             except ValueError:
-                iPos = -1
+                iPos = -10
             aRes.append((iPaneNumber, sType, sName, bVertical, iPos))
         aRes.sort() # Numbers denote ordering
         return aRes

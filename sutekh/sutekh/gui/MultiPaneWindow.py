@@ -75,30 +75,27 @@ class MultiPaneWindow(gtk.Window):
     plugin_manager = property(fget=lambda self: self._oPluginManager)
 
     def restore_from_config(self):
+        if self._iNumberOpenFrames > 0:
+            # Clear out all existing frames
+            for oFrame in self.dOpenFrames.keys():
+                self.remove_frame(oFrame, True)
         for iNumber, sType, sName, bVert, iPos in self._oConfig.getAllPanes():
+            oF = self.add_pane(bVert, iPos)
+            self._oFocussed = oF
             if sType == PhysicalCardSet.sqlmeta.table:
-                oF = self.add_pane(bVert)
                 self.replace_with_physical_card_set(sName, oF)
             elif sType == AbstractCardSet.sqlmeta.table:
-                oF = self.add_pane(bVert)
                 self.replace_with_abstract_card_set(sName, oF)
             elif sType == AbstractCard.sqlmeta.table:
-                self._oFocussed = self.add_pane(bVert)
                 self.replace_with_abstract_card_list(None)
             elif sType == 'Card Text':
-                self._oFocussed = self.add_pane(bVert)
                 self.replace_with_card_text(None)
             elif sType == PhysicalCard.sqlmeta.table:
-                self._oFocussed = self.add_pane(bVert)
                 self.replace_with_physical_card_list(None)
             elif sType == 'Abstract Card Set List':
-                self._oFocussed = self.add_pane(bVert)
                 self.replace_with_acs_list(None)
             elif sType == 'Physical Card Set List':
-                self._oFocussed = self.add_pane(bVert)
                 self.replace_with_pcs_list(None)
-            elif sType == 'Blank Frame':
-                self.add_pane(bVert)
         if self._iNumberOpenFrames == 0:
             # We always have at least one pane
             self.add_pane()
@@ -200,23 +197,27 @@ class MultiPaneWindow(gtk.Window):
     def save_frames(self):
         self._oConfig.preSaveClear()
 
-        def save_children(oPane, oConfig, bVert, iNum):
+        def save_children(oPane, oConfig, bVert, iNum, iPos):
             if type(oPane) is gtk.HPaned or type(oPane) is gtk.VPaned:
                 oChild1 = oPane.get_child1()
                 oChild2 = oPane.get_child2()
-                iNum = save_children(oChild1, oConfig, False, iNum)
+                iNum = save_children(oChild1, oConfig, False, iNum, iPos)
+                iMyPos = oPane.get_position()
+                if iMyPos < 1:
+                    # Setting pos to < 1 doesn't do what we want
+                    iMyPos = 1
                 if type(oPane) is gtk.HPaned:
-                    iNum = save_children(oChild2, oConfig, False, iNum)
+                    iNum = save_children(oChild2, oConfig, False, iNum, iMyPos)
                 else:
-                    iNum = save_children(oChild2, oConfig, True, iNum)
+                    iNum = save_children(oChild2, oConfig, True, iNum, iMyPos)
             else:
-                oConfig.add_frame(iNum, oPane.type, oPane.name, bVert, -1)
+                oConfig.add_frame(iNum, oPane.type, oPane.name, bVert, iPos)
                 iNum += 1
             return iNum
 
         aTopLevelPane = [x for x in self.oVBox.get_children() if x != self.__oMenu]
         for oPane in aTopLevelPane:
-            save_children(oPane, self._oConfig, False, 1)
+            save_children(oPane, self._oConfig, False, 1, -10)
 
 
 
@@ -275,10 +276,10 @@ class MultiPaneWindow(gtk.Window):
                 oParent = oParent.get_parent()
             return oParent
         else:
-            # Return the last added pane
+            # Return the last added pane, for automatic adds
             return self._aHPanes[-1]
 
-    def add_pane(self, bVertical=False):
+    def add_pane(self, bVertical=False, iConfigPos=-1):
         oWidget = BasicFrame(self)
         oWidget.add_parts()
         oWidget.view.connect('focus-in-event', self.win_focus, oWidget)
@@ -323,7 +324,7 @@ class MultiPaneWindow(gtk.Window):
                     oParent.add2(oNewPane)
                     oCur = oParent.get_allocation()
                     if not bVertical:
-                        if oCur.width == 1 and oParent.get_position() > 1:
+                        if oCur.width == 1 and oParent.get_position() > 1 and iConfigPos == -10:
                             # we are in early startup, so we can move the
                             # Parent as well
                             # We want to split ourselves into equally sized
@@ -352,7 +353,10 @@ class MultiPaneWindow(gtk.Window):
             oParent.show()
             if not bVertical:
                 self._aHPanes.append(oNewPane)
-            oNewPane.set_position(iPos)
+            if iConfigPos == -10:
+                oNewPane.set_position(iPos)
+            else:
+                oNewPane.set_position(iConfigPos)
         self._iNumberOpenFrames += 1
         self.oVBox.show_all()
         self.reset_menu()
@@ -366,9 +370,16 @@ class MultiPaneWindow(gtk.Window):
         if oPane is not None:
             self.remove_frame(oPane)
 
-    def remove_frame(self, oFrame):
+    def remove_frame(self, oFrame, bForceZero=False):
+        """
+        Remove the Frame oFrame from the window.
+        bForceZero is used to force the removal of the last widget in the window
+        """
         if oFrame is not None:
             if self._iNumberOpenFrames == 1:
+                if not bForceZero:
+                    # Break out, as we do nothing
+                    return
                 # Removing last widget, so just clear the vbox
                 oWidget = [x for x in self.oVBox.get_children() if x != self.__oMenu][0]
                 self.oVBox.remove(oWidget)
@@ -410,9 +421,6 @@ class MultiPaneWindow(gtk.Window):
             oFrame.cleanup()
             if oFrame == self._oFocussed:
                 self._oFocussed = None
-            if self._iNumberOpenFrames == 0:
-                # Always have one to replace
-                self.add_pane()
             self.reset_menu()
 
     def reset_menu(self):
