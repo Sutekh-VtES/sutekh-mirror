@@ -215,7 +215,7 @@ class MultiPaneWindow(gtk.Window):
             """
             # oPane.get_position() gives us the position relative to the paned
             # we're contained in. However, when we recreate the layout, we
-            # don't split panes in the same order, hence the fancy foot-keeping
+            # don't split panes in the same order, hence the fancy score-keeping
             # work to convert the obtained positions to those needed for restoring
             if type(oPane) is gtk.HPaned:
                 oChild1 = oPane.get_child1()
@@ -514,8 +514,7 @@ class MultiPaneWindow(gtk.Window):
         iVertPos = (oCurAlloc.height - oMenuAlloc.height) / 2
         def set_pos_children(oPane, iPos, iVertPos):
             """
-            Walk the tree breadth first, setting positions
-            accordingly
+            Walk the tree in display order, setting positions accordingly
             """
             oChild1 = oPane.get_child1()
             oChild2 = oPane.get_child2()

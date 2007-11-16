@@ -86,12 +86,6 @@ class BasicFrame(gtk.Frame, object):
                 return True
         return False
 
-    def init_plugins(self):
-        self._aPlugins = []
-        for cPlugin in self._oMainWindow.plugin_manager.get_card_list_plugins():
-            self._aPlugins.append(cPlugin(self._oC.view,
-                self._oC.view.getModel(), self._cModelType))
-
     def cleanup(self):
         pass
 
