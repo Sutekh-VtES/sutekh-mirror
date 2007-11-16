@@ -13,6 +13,8 @@ from sutekh.core.CardLookup import AbstractCardLookup, PhysicalCardLookup, \
         LookupFailed
 from sutekh.core.Filters import CardNameFilter
 from sutekh.gui.PhysicalCardView import PhysicalCardView
+from sutekh.gui.AbstractCardView import AbstractCardView
+from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 
 class dummyController(object):
     """Dummy controller class, so we can use the card views directly"""
@@ -24,23 +26,50 @@ class dummyController(object):
     def set_card_text(self, sCardName):
         pass
 
+class ACLlookupView(AbstractCardView):
+    """
+    Specialised version for the Card Lookup
+    """
+    def __init__(self, oDialogWindow, oConfig):
+        oController = dummyController('AbstractCard')
+        super(ACLlookupView, self).__init__(oController, oDialogWindow, oConfig)
+        self.get_selection().set_mode(gtk.SELECTION_SINGLE)
+
+    def get_selected_card(self):
+        sNewName = 'No Card'
+        oModel, aSelection = self.get_selection().get_selected_rows()
+        for oPath in aSelection:
+            sNewName = self._oModel.getCardNameFromPath(oPath)
+        return sNewName
+
 class PCLwithNumbersView(PhysicalCardView):
     """
     Also show current allocation of cards in the physical card view
     """
     def __init__(self, oDialogWindow, oConfig):
-        oController = dummyController(oDialogWindow, 'PhysicalCard')
+        oController = dummyController('PhysicalCard')
         super(PCLwithNumbersView, self).__init__(oController, oDialogWindow, oConfig)
+        self.get_selection().set_mode(gtk.SELECTION_SINGLE)
+
+    def get_selected_card(self):
+        sNewName = 'No Card'
+        sExpansion = '  Unpecified Expansion'
+        oModel, aSelection = self.get_selection().get_selected_rows()
+        for oPath in aSelection:
+            sNewName, sExpansion, iCount, iDepth = self._oModel.get_all_from_path(oPath)
+        if sExpansion is None:
+            sExpansion = ''
+        return sNewName, sExpansion
+
+    def set_card_set_holder_numbers(self, aPhysCards):
+        """Mark numbers already found for the card set in the model"""
+        pass
 
 class GuiLookup(AbstractCardLookup, PhysicalCardLookup):
     """Lookup AbstractCards. Use the user as the AI if a simple lookup fails.
        """
 
     def __init__(self, oConfig):
-        # FIXME: This should create an abstract card list view inside the
-        #        dialog
-        self._oAbsCardView = None
-        self._oPhysCardView = None
         self._oConfig = oConfig
 
     def lookup(self, aNames, sInfo):
@@ -55,7 +84,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup):
                 dUnknownCards[sName] = None
 
         if dUnknownCards:
-            bContinue = self._doHandleUnknown(dUnknownCards, sInfo)
+            bContinue = self._do_handle_unknown_abstract_cards(dUnknownCards, sInfo)
         else:
             bContinue = True
 
@@ -106,22 +135,24 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup):
                             dUnknownCards[(oAbs.name, oExpansion)] = iCnt
         if dUnknownCards:
             # We need to lookup cards in the physical card view
-            if not self._doHandleUnknownPhysCards(dUnknownCards, aCards, sInfo):
+            if not self._do_handle_unknown_physical_cards(dUnknownCards, aCards, sInfo):
                 raise LookupFailed("Lookup of missing cards aborted by the user.")
 
         return aCards
 
-    def _doHandleUnknownPhysCards(self, dUnknownCards, aPhysCards, sInfo):
+    def _do_handle_unknown_physical_cards(self, dUnknownCards, aPhysCards, sInfo):
         """Handle unknwon physical cards
 
            We allow the user to select the correct replacements from the
            Physical Card List
         """
 
-        oUnknownDialog = gtk.Dialog("Unknown Physical cards found importing " + sInfo, None,
+        oUnknownDialog = gtk.Dialog("Unknown Physical cards found importing %s" % sInfo, None,
                 gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                 (gtk.STOCK_OK, gtk.RESPONSE_OK,
                  gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
+
+        oPhysCardView = PCLwithNumbersView(oUnknownDialog, self._oConfig)
 
         oMesgLabel1 = gtk.Label()
         oMesgLabel2 = gtk.Label()
@@ -178,14 +209,26 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup):
         if iResponse == gtk.RESPONSE_OK:
             # For cards marked as replaced, add them to the list of Physical Cards 
             for sName, oExpansion in dUnknownCards:
-                sNewName = dReplacement[(sName, oExpansion)].get_text()
+                aNames = dReplacement[sName].get_text().split('  exp: ')
+                sNewNames = aNames[0]
+                if len(aNames) > 1:
+                    sExpName = aNames[1]
+                    try:
+                        iExpID = IExpansion(sExpName).id
+                    except SQLObjectNotFound:
+                        iExpID = None
+                else:
+                    sExpName = ''
                 iCnt = dUnknownCards[(sName, oExpansion)]
                 if sNewName != "No Card":
                     # Find First physical card that matches this name
                     # that's not in aPhysCards
                     # FIXME: will break with proper expansion support
                     oAbs = AbstractCard.byCanonicalName(sNewName.encode('utf8').lower())
-                    aCandPhysCards = PhysicalCard.selectBy(abstractCardID=oAbs.id)
+                    if sExpName != '':
+                        aCandPhysCards = PhysicalCard.selectBy(abstractCardID=oAbs.id, expansionID=iExpID)
+                    else:
+                        aCandPhysCards = PhysicalCard.selectBy(abstractCardID=oAbs.id)
                     for oCard in aCandPhysCards:
                         if oCard not in aPhysCards:
                             if iCnt > 0:
@@ -195,29 +238,44 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup):
         else:
             return False
 
-
-    def _doHandleUnknown(self, dUnknownCards, sInfo):
-        """Handle the list of unknown cards.
+    def _do_handle_unknown_abstract_cards(self, dUnknownCards, sInfo):
+        """Handle the list of unknown abstract cards.
 
            We allow the user to select the correct replacements from the Abstract
            Card List
            """
-        oUnknownDialog = gtk.Dialog("Unknown cards found importing " + sInfo, None,
+        oUnknownDialog = gtk.Dialog("Unknown cards found importing %s" % sInfo, None,
                 gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                 (gtk.STOCK_OK, gtk.RESPONSE_OK,
                  gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
 
+        oAbsCardView = ACLlookupView(oUnknownDialog, self._oConfig)
         oMesgLabel1 = gtk.Label()
         oMesgLabel2 = gtk.Label()
 
-        sMsg1 = "While importing " + sInfo + "\n"
-        sMsg1 += "The following card names could not be found:"
-        sMsg1 += "\nChoose how to handle these cards?\n"
-        sMsg2 = "OK creates the card set, "
-        sMsg2 += "Cancel aborts the creation of the card set"
+        sMsg1 = "While importing %s\n" \
+                "The following card names could not be found:\n" \
+                "Choose how to handle these cards?\n" % (sInfo)
+        sMsg2 = "OK creates the card set, " \
+                "Cancel aborts the creation of the card set"
 
         oMesgLabel1.set_text(sMsg1)
-        oUnknownDialog.vbox.pack_start(oMesgLabel1)
+        oUnknownDialog.vbox.pack_start(oMesgLabel1, False, False)
+
+        oButtonBox = gtk.VBox()
+        oHBox = gtk.HBox()
+        oViewWin = AutoScrolledWindow(oAbsCardView)
+        oViewWin.set_size_request(200, 600)
+        oHBox.pack_start(oViewWin, True, True)
+
+        oFilterDialogButton = gtk.Button("Specify Filter")
+        oFilterApplyButton = gtk.CheckButton("Apply Filter to view")
+        oFilterButtons = gtk.HBox()
+
+        oFilterButtons.pack_start(oFilterDialogButton)
+        oFilterButtons.pack_start(oFilterApplyButton)
+        oFilterDialogButton.connect('clicked', self._run_filter_dialog, oAbsCardView, oFilterApplyButton)
+        oFilterApplyButton.connect("toggled", self._toggle_apply_filter, oAbsCardView)
 
         # Fill in the Cards and options
         dReplacement = {}
@@ -227,7 +285,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup):
             oBox.pack_start(oLabel)
             dReplacement[sName] = gtk.Label("No Card")
             oBox.pack_start(dReplacement[sName])
-            oUnknownDialog.vbox.pack_start(oBox)
+            oButtonBox.pack_start(oBox)
 
             oBox = gtk.HButtonBox()
             oButton1 = gtk.Button("Use selected Abstract Card")
@@ -235,14 +293,21 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup):
             oButton3 = gtk.Button("Filter Abstract Cards with best guess")
             # Count and physical card list don't matter here, so stub values
             oButton1.connect("clicked", self._set_to_selection,
-                    dReplacement[sName], 'Abstract', 1, [])
+                    dReplacement[sName], 'Abstract', 1, oAbsCardView, [])
             oButton2.connect("clicked", self._set_ignore,
                     dReplacement[sName])
-            oButton3.connect("clicked", self._set_filter, sName, 'Abstract')
+            oButton3.connect("clicked", self._set_filter, oAbsCardView, sName, oFilterApplyButton)
             oBox.pack_start(oButton1)
             oBox.pack_start(oButton2)
             oBox.pack_start(oButton3)
-            oUnknownDialog.vbox.pack_start(oBox)
+            oButtonBox.pack_start(oBox)
+
+        oButtonBox.pack_start(gtk.HSeparator())
+        oButtonBox.pack_start(oFilterButtons)
+
+        oHBox.pack_start(oButtonBox, False, False)
+        
+        oUnknownDialog.vbox.pack_start(oHBox, True, True)
 
         oMesgLabel2.set_text(sMsg2)
 
@@ -256,45 +321,44 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup):
         if iResponse == gtk.RESPONSE_OK:
             # For cards marked as replaced, add them to the Holder
             for sName in dUnknownCards:
-                sNewName = dReplacement[sName].get_text()
+                aNames = dReplacement[sName].get_text().split('  exp: ')
+                sNewName = aNames[0]
                 if sNewName != "No Card":
                     dUnknownCards[sName] = sNewName
             return True
         else:
             return False
 
-    def _set_to_selection(self, oButton, oRepLabel, sType, iCnt, aPhysCards):
+    def _set_to_selection(self, oButton, oRepLabel, sType, iCnt, oView, aPhysCards):
         """Set the replacement to the selected entry"""
-        # FIXME: The logic for Physical card sets assumes 
-        # that we will be filling in like for like. This will break
-        # with expansions (replace 5 of No Expansion with 3 LoB and 
-        # 2 Bloodline cases)
-        # FIXME: We currently totally ignore the expansion of the selected 
-        # card - needs to corrected when GUI supports expansions
-        if sType == 'Abstract':
-            oModel, aSelection = \
-                    self._oAbsCardView.get_selection().get_selected_rows()
-        else:
-            oModel, aSelection = \
-                    self._oPhysCardView.get_selection().get_selected_rows()
-        if len(aSelection) != 1:
-            oComplaint = gtk.MessageDialog(None, 0, gtk.MESSAGE_ERROR,
-                gtk.BUTTONS_OK, "This requires that only ONE item be selected")
-            oComplaint.connect("response", lambda oW, oResp: oW.destroy())
-            oComplaint.run()
-            return
-        for oPath in aSelection:
-            oIter = oModel.get_iter(oPath)
-            sNewName = oModel.get_value(oIter, 0)
+        # We hanlde PhysicalCards on a like-for-like matching case.
+        # For cases where the user selects an expansion with too few
+        # cards, but where there are enough phyiscal cards, we do the best we can
+        sExpansion = ''
+        sNewName = oView.get_selected_card()
+        
         if sType == 'Physical' and \
                 not self._check_physical_cards(sNewName, iCnt, aPhysCards):
             oComplaint = gtk.MessageDialog(None, 0, gtk.MESSAGE_ERROR,
-                gtk.BUTTONS_OK, "Not enough copies of " + sNewName)
+                gtk.BUTTONS_OK, "Not enough copies of %s" % sNewName)
             oComplaint.connect("response", lambda oW, oResp: oW.destroy())
             oComplaint.run()
             return
+        elif sType == 'Physical' and \
+                not self._check_physical_cards_with_expansion(sNewName,
+                        sExpansion, iCnt, aPhysCards):
+            oComplaint = gtk.MessageDialog(None, 0, gtk.MESSAGE_ERROR,
+                gtk.BUTTONS_OK,
+                "Not enough copies of %s from expansion %s\n." \
+                "Ignoring the expansion specification" % (sNewName, sExpansion))
+            oComplaint.connect("response", lambda oW, oResp: oW.destroy())
+            oComplaint.run()
+            sExpansion = ''
         oRepLabel.hide()
-        oRepLabel.set_text(sNewName)
+        if sExpansion != '':
+            oRepLabel.set_text(sNewName + "  exp: " + sExpansion)
+        else:
+            oRepLabel.set_text(sNewName)
         oRepLabel.show()
 
     def _check_physical_cards(self, sName, iCnt, aPhysCards):
@@ -311,8 +375,46 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup):
                     return True # Can fulfill the request
         return False
 
-    def _set_filter(self, oButton, sName, sType):
-        # Set the filter on the Abstract Card List to one the does a
+    def _check_physical_cards_with_expansion(self, sName, sExpansion, iCnt, aPhysCards):
+        """Check that there are enough physical cards of the specified expansion
+           to fulfill the request
+        """
+        oAbs = AbstractCard.byCanonicalName(sName.encode('utf8').lower())
+        try:
+            iExpID = IExpansion(sExpansion).id
+        except SQLObjectNotFound:
+            iExpID = None
+        aCandPhysCards = PhysicalCard.selectBy(abstractCardID=oAbs.id, expansionID=iExpID)
+        for oCard in aCandPhysCards:
+            if oCard not in aPhysCards:
+                # Card is a feasible replacement
+                iCnt -= 1
+                if iCnt == 0:
+                    return True # Can fulfill the request
+        return False
+
+    def _run_filter_dialog(self, oButton, oView, oToggleButton):
+        oView.getFilter(None)
+        if oToggleButton.get_active() != oView._oModel.applyfilter:
+            oToggleButton.set_active(oView._oModel.applyfilter)
+
+    def _run_filter(self, oView, oFilter, oToggleButton):
+        oView.getModel().selectfilter = oFilter
+        if not oToggleButton.get_active():
+            oToggleButton.set_active(True)
+        else:
+            oView.load()
+
+    def _toggle_apply_filter(self, oButton, oView):
+        oView.getModel().applyfilter = oButton.get_active()
+        oView.load()
+
+    def _set_filter(self, oButton, oView, sName, oToggleButton):
+        oFilter = self._best_guess_filter(sName)
+        self._run_filter(oView, oFilter, oToggleButton)
+
+    def _best_guess_filter(self, sName):
+        # Set the filter on the Card List to one the does a
         # Best guess search
         sFilterString = ' ' + sName.lower() + ' '
         # Kill the's in the string
@@ -329,16 +431,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup):
         sFilterString = sFilterString.replace('i', '_')
         sFilterString = sFilterString.replace('o', '_')
         sFilterString = sFilterString.replace('u', '_')
-        oFilter = CardNameFilter(sFilterString)
-        if sType == 'Abstract':
-            oView = self._oAbsCardView
-        else:
-            oView = self._oPhysCardView
-        oView.getModel().selectfilter = oFilter
-        oView.getModel().applyfilter = True
-        oView.getController().getMenu().setApplyFilter(True)
-        # Run the filter
-        oView.load()
+        return CardNameFilter(sFilterString)
 
     def _set_ignore(self, oButton, oRepLabel):
         oRepLabel.hide()
