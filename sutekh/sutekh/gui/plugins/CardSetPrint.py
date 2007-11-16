@@ -7,6 +7,11 @@ import pango
 from sutekh.core.SutekhObjects import PhysicalCardSet, AbstractCardSet, IAbstractCard, ICardType
 from sutekh.gui.PluginManager import CardListPlugin
 
+try:
+    gtk.PrintOperation
+except AttributeError:
+    raise ImportError("GTK version does not contain PrintOperation. Try PyGTK >= 2.10.")
+
 class CardSetPrint(CardListPlugin):
     dTableVersions = { AbstractCardSet: [2,3],
                        PhysicalCardSet: [2,3]}
