@@ -237,7 +237,7 @@ class MultiPaneWindow(gtk.Window):
                 oChild1 = oPane.get_child1()
                 oChild2 = oPane.get_child2()
                 iMyPos = oPane.get_position()
-                iNum, iTemp = save_children(oChild2, oConfig, False, iNum, iPos)
+                iNum, iTemp = save_children(oChild1, oConfig, False, iNum, iPos)
                 iNum, iTemp = save_children(oChild2, oConfig, True, iNum, iMyPos)
                 iChildPos = iPos
             else:
