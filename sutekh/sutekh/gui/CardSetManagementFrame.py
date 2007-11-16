@@ -172,7 +172,7 @@ class CardSetManagementFrame(BasicFrame):
                 self.reload()
             else:
                 # Let toggle reload for us
-                self._oMenu.set_apply_filter(False)
+                self._oMenu.set_apply_filter(True)
         else:
             self._oFilter = NullFilter()
             # Filter is set to blank, so we treat this as disabling
