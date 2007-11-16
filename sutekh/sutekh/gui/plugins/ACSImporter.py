@@ -82,7 +82,7 @@ class ACSImporter(CardListPlugin):
 
             for oBut in self._oFirstBut.get_group():
                 sName = oBut.get_label()
-                cParser = self._dParsers[sName]
+                if oBut.get_active(): cParser = self._dParsers[sName]
 
             if sUri:
                 self.makeACSFromUri(sUri,cParser)
