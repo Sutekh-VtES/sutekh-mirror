@@ -231,14 +231,15 @@ class MainMenu(gtk.MenuBar, object):
                             delete_physical_card_set(sName)
                         else:
                             delete_abstract_card_set(sName)
+                oFrame = self.__oWin.add_pane()
                 if sType == "AbstractCardSet":
                     oF = AbstractCardSetXmlFile(sFileName, lookup=self.__oWin.cardLookup)
                     oF.read()
-                    self.__oWin.replace_with_abstract_card_set(sName)
+                    self.__oWin.replace_with_abstract_card_set(sName, oFrame)
                 else:
                     oF = PhysicalCardSetXmlFile(sFileName, lookup=self.__oWin.cardLookup)
                     oF.read()
-                    self.__oWin.replace_with_physical_card_set(sName)
+                    self.__oWin.replace_with_physical_card_set(sName, oFrame)
             else:
                 Complaint = gtk.MessageDialog(None, 0, gtk.MESSAGE_ERROR,
                     gtk.BUTTONS_CLOSE, "File is not a CardSet XML File.")
