@@ -192,6 +192,7 @@ class MultiPaneWindow(gtk.Window):
             self._oFocussed.set_unfocussed_title()
         self._oFocussed = oFrame
         self._oFocussed.set_focussed_title()
+        self._oFocussed.view.grab_focus()
         self.reset_menu()
  
     def run(self):
