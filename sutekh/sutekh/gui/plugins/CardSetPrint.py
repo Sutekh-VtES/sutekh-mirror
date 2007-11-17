@@ -32,7 +32,7 @@ class CardSetPrint(CardListPlugin):
         return iDF
 
     def get_desired_menu(self):
-        return "CardSet"
+        return "Actions"
 
     def activate(self,oWidget):
         oPrintOp = gtk.PrintOperation()

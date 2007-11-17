@@ -54,7 +54,7 @@ class CardSetExportHTML(CardListPlugin):
         return iDF
 
     def get_desired_menu(self):
-        return "CardSet"
+        return "Plugins"
 
     def activate(self,oWidget):
         oDlg = self.makeDialog()

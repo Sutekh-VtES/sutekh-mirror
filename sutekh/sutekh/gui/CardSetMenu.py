@@ -30,9 +30,9 @@ class CardSetMenu(gtk.MenuBar, object):
         self.__create_plugin_menu()
 
     def __create_card_set_menu(self):
-        iMenu = gtk.MenuItem(self.__sMenuType+" Card Set Actions")
+        iMenu = gtk.MenuItem("Actions")
         wMenu = gtk.Menu()
-        self.__dMenus["CardSet"] = wMenu
+        self.__dMenus["Actions"] = wMenu
         self.__iProperties = gtk.MenuItem("Edit Card Set ("+self.sSetName+") properties")
         wMenu.add(self.__iProperties)
         self.__iProperties.connect('activate',self.editProperites)

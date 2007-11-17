@@ -28,7 +28,7 @@ class MainMenu(gtk.MenuBar, object):
 
     def __create_file_menu(self):
         # setup sub menu
-        iMenu = gtk.MenuItem("File")
+        iMenu = gtk.MenuItem("_File")
         wMenu = gtk.Menu()
         self.__dMenus["File"] = wMenu
         iMenu.set_submenu(wMenu)
@@ -95,7 +95,7 @@ class MainMenu(gtk.MenuBar, object):
         self.add(iMenu)
 
     def __create_pane_menu(self):
-        iMenu = gtk.MenuItem("Pane Actions")
+        iMenu = gtk.MenuItem("Pane _Actions")
         wMenu = gtk.Menu()
         self.__dMenus["Pane"] = wMenu
         iMenu.set_submenu(wMenu)
@@ -105,17 +105,17 @@ class MainMenu(gtk.MenuBar, object):
         oEqualizePanes.connect("activate", self.equalize_panes)
 
 
-        self.__oAddHorzPane = gtk.MenuItem("Split current pane horizontally")
+        self.__oAddHorzPane = gtk.MenuItem("Split current pane _horizontally")
         wMenu.add(self.__oAddHorzPane)
         self.__oAddHorzPane.connect("activate", self.add_pane_horizontal)
         self.__oAddHorzPane.set_sensitive(False)
 
-        self.__oAddVertPane = gtk.MenuItem("Split current pane vertically")
+        self.__oAddVertPane = gtk.MenuItem("Split current pane _vertically")
         wMenu.add(self.__oAddVertPane)
         self.__oAddVertPane.connect("activate", self.add_pane_vertical)
         self.__oAddVertPane.set_sensitive(False)
 
-        self.__oReplaceWithACLPane = gtk.MenuItem("Replace current Pane with Whitewolf Card List")
+        self.__oReplaceWithACLPane = gtk.MenuItem("Replace current pane with Whitewolf Card List")
         wMenu.add(self.__oReplaceWithACLPane)
         self.__oReplaceWithACLPane.connect("activate", self.__oWin.replace_with_abstract_card_list)
         self.__oReplaceWithACLPane.set_sensitive(True)
@@ -143,7 +143,7 @@ class MainMenu(gtk.MenuBar, object):
         iSeperator = gtk.SeparatorMenuItem()
         wMenu.add(iSeperator)
 
-        self.__oDelPane = gtk.MenuItem("Remove Currently Focussed pane")
+        self.__oDelPane = gtk.MenuItem("_Remove current pane")
         wMenu.add(self.__oDelPane)
         self.__oDelPane.connect("activate", self.__oWin.menu_remove_frame)
         self.__oDelPane.set_sensitive(False)

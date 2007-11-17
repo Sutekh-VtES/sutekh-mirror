@@ -36,7 +36,7 @@ class ACSImporter(CardListPlugin):
         return iDF
 
     def get_desired_menu(self):
-        return "Plugin"
+        return "Plugins"
 
     def activate(self,oWidget):
         oDlg = self.makeDialog()

@@ -23,9 +23,9 @@ class PhysicalCardMenu(gtk.MenuBar, object):
 
     def __create_PCL_menu(self):
         # setup sub menu
-        iMenu = gtk.MenuItem("Physical Card List Actions")
+        iMenu = gtk.MenuItem("Actions")
         wMenu = gtk.Menu()
-        self.__dMenus["PCS"] = wMenu
+        self.__dMenus["Actions"] = wMenu
         iMenu.set_submenu(wMenu)
         # items
         iExport = gtk.MenuItem("Export Physical Card List to File")

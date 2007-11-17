@@ -19,9 +19,9 @@ class AbstractCardListMenu(gtk.MenuBar, object):
 
     def __create_ACL_menu(self):
         # setup sub menu
-        iMenu = gtk.MenuItem("Abstract Card List Actions")
+        iMenu = gtk.MenuItem("Actions")
         wMenu = gtk.Menu()
-        self.__dMenus["ACS"] = wMenu
+        self.__dMenus["Actions"] = wMenu
         iMenu.set_submenu(wMenu)
         # items
 

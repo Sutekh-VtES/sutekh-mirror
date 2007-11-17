@@ -39,7 +39,7 @@ class FullBackup(CardListPlugin):
         return iMenu
 
     def get_desired_menu(self):
-        return "Plugin"
+        return "Plugins"
 
     # Backup
 

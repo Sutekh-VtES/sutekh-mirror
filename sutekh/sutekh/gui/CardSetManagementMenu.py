@@ -13,13 +13,15 @@ class CardSetManagementMenu(gtk.MenuBar, object):
         self.__oFrame = oFrame
         self.__sName = sName
         self.__sSetName = sName.replace(' List', '')
+        self.__dMenus = {}
         self.add_actions_menu()
         self.add_filter_menu()
 
     def add_actions_menu(self):
-        iMenu = gtk.MenuItem(self.__sName + ' Actions')
+        iMenu = gtk.MenuItem("Actions")
         wMenu = gtk.Menu()
         iMenu.set_submenu(wMenu)
+        self.__dMenus["Actions"] = wMenu
         iCreate = gtk.MenuItem('Create New ' + self.__sSetName)
         wMenu.add(iCreate)
         iCreate.connect('activate', self.__oFrame.create_new_card_set)
@@ -36,6 +38,7 @@ class CardSetManagementMenu(gtk.MenuBar, object):
     def add_filter_menu(self):
         iMenu = gtk.MenuItem('Filter')
         wMenu = gtk.Menu()
+        self.__dMenus["Filter"] = wMenu
         iMenu.set_submenu(wMenu)
         iFilter = gtk.MenuItem('Specify Filter')
         wMenu.add(iFilter)
