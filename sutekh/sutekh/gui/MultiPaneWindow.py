@@ -250,8 +250,6 @@ class MultiPaneWindow(gtk.Window):
         for oPane in aTopLevelPane:
             save_children(oPane, self._oConfig, False, 1, -1)
 
-
-
     def set_card_text(self, sCardName):
         try:
             oCard = AbstractCard.byCanonicalName(sCardName.lower())
@@ -262,7 +260,7 @@ class MultiPaneWindow(gtk.Window):
     def replace_frame(self, oOldFrame, oNewFrame, sMenuFlag):
         """Replace oOldFrame with oNewFrame + update menus"""
         oNewFrame.show_all()
-        oNewFrame.view.connect('focus-in-event', self.win_focus, oNewFrame)
+        oNewFrame.set_focus_handler(self.win_focus)
         oParent = oOldFrame.get_parent()
         oParent.remove(oOldFrame)
         oParent.add(oNewFrame)
@@ -328,7 +326,7 @@ class MultiPaneWindow(gtk.Window):
         """
         oWidget = BasicFrame(self)
         oWidget.add_parts()
-        oWidget.view.connect('focus-in-event', self.win_focus, oWidget)
+        oWidget.set_focus_handler(self.win_focus)
         self._iCount += 1
         sKey = 'Blank Pane:' + str(self._iCount)
         oWidget.set_title(sKey)

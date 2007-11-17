@@ -52,9 +52,24 @@ class BasicFrame(gtk.Frame, object):
     name = property(fget=lambda self: self._oTitleLabel.get_text(), doc="Frame Name")
     type = property(fget=lambda self: "Blank Frame", doc="Frame Type")
     view = property(fget=lambda self: self._oView, doc="Associated View Object")
+    menu = property(fget=lambda self: None, doc="Frame's menu")
 
     def set_title(self, sTitle):
         self._oTitleLabel.set_text(sTitle)
+
+    def set_focus_handler(self, oFunc):
+        self.connect('button-press-event', self.call_focus, oFunc)
+        # Need both, otherwise clicking on a title and the clicking on the previous
+        # tree does the wrong thing
+        self.view.connect('button-press-event', self.call_focus, oFunc)
+        self.view.connect('focus-in-event', oFunc, self)
+
+    def call_focus(self, oWidget, oEvent, oFocusFunc):
+        """
+        Call MultiPaneWindow focus handler for button events
+        """
+        oFocusFunc(self, oEvent, self)
+        return False
 
     def drag_drop_handler(self, oWindow, oDragContext, x, y, oSelectionData, oInfo, oTime):
         if not oSelectionData and oSelectionData.format != 8:

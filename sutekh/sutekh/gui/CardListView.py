@@ -53,6 +53,10 @@ class CardListView(gtk.TreeView, object):
         # Filtering Dialog
         self._oFilterDialog = None
 
+    def column_clicked(self, oColumn):
+        self.emit('button-press-event', gtk.gdk.Event(gtk.gdk.BUTTON_PRESS_MASK))
+        return False
+
     def load(self):
         """
         Called when the model needs to be reloaded.
@@ -302,10 +306,13 @@ class EditableCardListView(CardListView):
         oColumn1.set_sort_column_id(1)
         self.append_column(oColumn1)
 
+        oColumn1.connect('clicked', self.column_clicked)
+
         oColumn2 = gtk.TreeViewColumn("Cards", oCell2, text=0)
         oColumn2.set_expand(True)
         oColumn2.set_sort_column_id(0)
         self.append_column(oColumn2)
+        oColumn2.connect('clicked', self.column_clicked)
 
         # Arrow cells
         oCell3 = CellRendererSutekhButton()
