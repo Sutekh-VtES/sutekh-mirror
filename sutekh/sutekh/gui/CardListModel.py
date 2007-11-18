@@ -4,6 +4,7 @@
 # GPL - see COPYING for details
 
 import gtk, gobject
+import sets
 from sutekh.core.Filters import FilterAndBox, SpecificCardFilter, NullFilter, \
         PhysicalCardFilter, PhysicalCardSetFilter
 from sutekh.core.Groupings import CardTypeGrouping
@@ -644,7 +645,8 @@ class PhysicalCardListModel(CardListModel):
         if not self.bExpansions:
             return []
         if self.bEditable:
-            aList = [self.sUnknownExpansion] + sorted([oP.expansion.name for oP in oCard.rarity])
+            aExpansions = sets.Set([oP.expansion.name for oP in oCard.rarity])
+            aList = [self.sUnknownExpansion] + sorted(list(aExpansions))
         else:
             aList = dExpanInfo.keys()
         return aList
