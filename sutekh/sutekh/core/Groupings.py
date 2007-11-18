@@ -2,8 +2,6 @@
 # Copyright 2006 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
 
-import sets
-
 # Base Grouping Class
 
 class IterGrouping(object):
@@ -19,7 +17,7 @@ class IterGrouping(object):
     def __iter__(self):
         dKeyItem = {}
         for x in self.__oIter:
-            a = sets.Set(self.__fKeys(x))
+            a = set(self.__fKeys(x))
             if len(a) == 0:
                 dKeyItem.setdefault(None,[]).append(x)
             else:
