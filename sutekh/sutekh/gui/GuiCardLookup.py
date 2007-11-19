@@ -50,6 +50,10 @@ class PCLwithNumbersView(PhysicalCardView):
         oController = dummyController('PhysicalCard')
         super(PCLwithNumbersView, self).__init__(oController, oDialogWindow, oConfig)
         self.get_selection().set_mode(gtk.SELECTION_SINGLE)
+        self.dAssignedCards = {}
+        oCell1 = gtk.CellRendererText()
+        self.oCardCountCol = gtk.TreeViewColumn("Set #", oCell1)
+        self.oCardCountCol.set_cell_data_func(oCell1, self._render_cardcount_column)
 
     def get_selected_card(self):
         sNewName = 'No Card'
@@ -61,9 +65,71 @@ class PCLwithNumbersView(PhysicalCardView):
             sExpansion = ''
         return sNewName, sExpansion
 
-    def set_card_set_holder_numbers(self, aPhysCards):
-        """Mark numbers already found for the card set in the model"""
-        pass
+    def set_card_set_holder_numbers(self, aPhysCards, dCandCards):
+        """
+        Mark numbers already found for the card set in the model
+        aPhysCards is those cards assigned without any issue by physical_lookup
+        dCandCards is those cards currently selected by the user to be added
+        """
+        self.dAssignedCards = {}
+        aCandCards = []
+        for oKey, aTheseCards in dCandCards.iteritems():
+            aCandCards.extend(aTheseCards)
+        for oCard in aPhysCards + aCandCards:
+            sName = oCard.abstractCard.name
+            self.dAssignedCards.setdefault(sName, {})
+            if oCard.expansion is None:
+                sExpansion = '  Unspecified Expansion'
+            else:
+                sExpansion = oCard.expansion.name
+            self.dAssignedCards[sName].setdefault(sExpansion, 0)
+            self.dAssignedCards[sName][sExpansion] += 1
+            for oType in oCard.abstractCard.cardtype:
+                # Also do the right thing for esction headers
+                self.dAssignedCards.setdefault(oType.name, 0)
+                self.dAssignedCards[oType.name] += 1
+
+    def remove_card_set_column(self):
+        self.remove_column(self.oCardCountCol)
+
+    def add_card_set_count_column(self):
+        self.insert_column(self.oCardCountCol, 1)
+
+    def _render_cardcount_column(self, oColumn, oCell, oModel, oIter):
+        iCnt = self._get_cardcount_data(oIter)
+        if iCnt is not None:
+            oCell.set_property("text", str(iCnt))
+        else:
+            oCell.set_property("text", "")
+
+    def _get_cardcount_data(self, oIter):
+        if self._oModel.iter_depth(oIter) == 0:
+            sSectionName = self._oModel.getNameFromIter(oIter)
+            if sSectionName in self.dAssignedCards.keys():
+                return self.dAssignedCards[sSectionName]
+        elif self._oModel.iter_depth(oIter) == 1:
+            # Get Card Name from this
+            sCardName = self._oModel.getNameFromIter(oIter)
+            if sCardName in self.dAssignedCards.keys():
+                # Get total for this card
+                iTot = 0
+                for sExpansion, iCnt in self.dAssignedCards[sCardName].iteritems():
+                    iTot += iCnt
+                return iTot
+            else:
+                return None
+        elif self._oModel.iter_depth(oIter) == 2:
+            oPath = self._oModel.get_path(oIter)
+            sCardName, sExpansion, iCnt, iDepth = self._oModel.get_all_from_path(oPath)
+            if sCardName in self.dAssignedCards.keys():
+                if sExpansion in self.dAssignedCards[sCardName]:
+                    return self.dAssignedCards[sCardName][sExpansion]
+                else:
+                    return 0
+            else:
+                return None
+        else:
+            return None
 
 class GuiLookup(AbstractCardLookup, PhysicalCardLookup):
     """Lookup AbstractCards. Use the user as the AI if a simple lookup fails.
@@ -171,6 +237,8 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup):
         oMesgLabel1 = gtk.Label()
         oMesgLabel2 = gtk.Label()
 
+        dCandCards = {}
+
         sMsg1 = "While importing %s\n" \
             "The following cards could not be found in the Physical Card List:" \
             "\nChoose how to handle these cards?\n" % sInfo
@@ -188,6 +256,11 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup):
         oFilterButtons.pack_start(oFilterApplyButton)
         oFilterDialogButton.connect('clicked', self._run_filter_dialog, oPhysCardView, oFilterApplyButton)
         oFilterApplyButton.connect("toggled", self._toggle_apply_filter, oPhysCardView)
+
+        oShowCountsButton = gtk.CheckButton("Show cards assigned to this card set")
+        oFilterButtons.pack_start(oShowCountsButton)
+        oShowCountsButton.connect("toggled", self._toggle_show_cardcount, oPhysCardView, aPhysCards, dCandCards)
+        oShowCountsButton.set_active(True)
 
         dReplacement = {}
         for sName, sExpName in dUnknownCards:
@@ -208,9 +281,9 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup):
             oButton2 = gtk.Button("Ignore this Card")
             oButton3 = gtk.Button("Filter Physical Cards with best guess")
             oButton1.connect("clicked", self._set_to_selection,
-                    dReplacement[(sName, sExpName)], 'Physical', iCnt, oPhysCardView, aPhysCards)
+                    dReplacement[(sName, sExpName)], 'Physical', iCnt, oPhysCardView, aPhysCards, dCandCards)
             oButton2.connect("clicked", self._set_ignore,
-                    dReplacement[(sName, sExpName)])
+                    dReplacement[(sName, sExpName)], oPhysCardView, aPhysCards, dCandCards)
             oButton3.connect("clicked", self._set_filter, oPhysCardView, sName, oFilterApplyButton)
             oBox.pack_start(oButton1)
             oBox.pack_start(oButton2)
@@ -221,7 +294,6 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup):
         oButtonBox.pack_start(oFilterButtons)
 
         oHBox.pack_start(oButtonBox, False, False)
-        
         oUnknownDialog.vbox.pack_start(oHBox, True, True)
 
         oMesgLabel2.set_text(sMsg2)
@@ -234,7 +306,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup):
         oUnknownDialog.destroy()
 
         if iResponse == gtk.RESPONSE_OK:
-            # For cards marked as replaced, add them to the list of Physical Cards 
+            # For cards marked as replaced, add them to the list of Physical Cards
             for sName, sOldExpName in dUnknownCards:
                 aNames = dReplacement[(sName, sOldExpName)].get_text().split('  exp: ')
                 sNewName = aNames[0]
@@ -321,9 +393,9 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup):
             oButton3 = gtk.Button("Filter Abstract Cards with best guess")
             # Count and physical card list don't matter here, so stub values
             oButton1.connect("clicked", self._set_to_selection,
-                    dReplacement[sName], 'Abstract', 1, oAbsCardView, [])
+                    dReplacement[sName], 'Abstract', 1, oAbsCardView)
             oButton2.connect("clicked", self._set_ignore,
-                    dReplacement[sName])
+                    dReplacement[sName], oAbsCardView)
             oButton3.connect("clicked", self._set_filter, oAbsCardView, sName, oFilterApplyButton)
             oBox.pack_start(oButton1)
             oBox.pack_start(oButton2)
@@ -334,7 +406,6 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup):
         oButtonBox.pack_start(oFilterButtons)
 
         oHBox.pack_start(oButtonBox, False, False)
-        
         oUnknownDialog.vbox.pack_start(oHBox, True, True)
 
         oMesgLabel2.set_text(sMsg2)
@@ -357,15 +428,21 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup):
         else:
             return False
 
-    def _set_to_selection(self, oButton, oRepLabel, sType, iCnt, oView, aPhysCards):
+    def _set_to_selection(self, oButton, oRepLabel, sType, iCnt, oView, aPhysCards=[], dCandCards={}):
         """Set the replacement to the selected entry"""
         # We hanlde PhysicalCards on a like-for-like matching case.
         # For cases where the user selects an expansion with too few
         # cards, but where there are enough phyiscal cards, we do the best we can
         sNewName, sExpansion = oView.get_selected_card()
-        
+        if sType == 'Physical':
+            aTheseCards = []
+            dCandCards[oRepLabel] = aTheseCards
+            aAssignedCards = []
+            for oKey, aButtonCards in dCandCards.iteritems():
+                aAssignedCards.extend(aButtonCards)
         if sType == 'Physical' and \
-                not self._check_physical_cards(sNewName, iCnt, aPhysCards):
+                not self._check_physical_cards(sNewName, iCnt, aPhysCards,
+                        aAssignedCards, aTheseCards):
             oComplaint = gtk.MessageDialog(None, 0, gtk.MESSAGE_ERROR,
                 gtk.BUTTONS_OK, "Not enough copies of %s" % sNewName)
             oComplaint.connect("response", lambda oW, oResp: oW.destroy())
@@ -373,7 +450,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup):
             return
         elif sType == 'Physical' and \
                 not self._check_physical_cards_with_expansion(sNewName,
-                        sExpansion, iCnt, aPhysCards):
+                        sExpansion, iCnt, aPhysCards, aAssignedCards, aTheseCards):
             oComplaint = gtk.MessageDialog(None, 0, gtk.MESSAGE_ERROR,
                 gtk.BUTTONS_OK,
                 "Not enough copies of %s from expansion %s\n." \
@@ -381,6 +458,9 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup):
             oComplaint.connect("response", lambda oW, oResp: oW.destroy())
             oComplaint.run()
             sExpansion = ''
+        if sType == 'Physical':
+            oView.set_card_set_holder_numbers(aPhysCards, dCandCards)
+            oView.queue_draw()
         oRepLabel.hide()
         if sExpansion != '':
             oRepLabel.set_text(sNewName + "  exp: " + sExpansion)
@@ -388,21 +468,24 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup):
             oRepLabel.set_text(sNewName)
         oRepLabel.show()
 
-    def _check_physical_cards(self, sName, iCnt, aPhysCards):
+    def _check_physical_cards(self, sName, iCnt, aPhysCards, aAssignedCards, aSelectedCards):
         """Check that there are enough physical cards to fulfill the
            request
         """
         oAbs = AbstractCard.byCanonicalName(sName.encode('utf8').lower())
         aCandPhysCards = PhysicalCard.selectBy(abstractCardID=oAbs.id)
         for oCard in aCandPhysCards:
-            if oCard not in aPhysCards:
+            if oCard not in aPhysCards and oCard not in aAssignedCards:
                 # Card is a feasible replacement
                 iCnt -= 1
+                aSelectedCards.append(oCard)
                 if iCnt == 0:
                     return True # Can fulfill the request
+        # We can't fulfill this request, so nothing is allocated
+        aSelectedCards = []
         return False
 
-    def _check_physical_cards_with_expansion(self, sName, sExpansion, iCnt, aPhysCards):
+    def _check_physical_cards_with_expansion(self, sName, sExpansion, iCnt, aPhysCards, aAssignedCards, aSelectedCards):
         """Check that there are enough physical cards of the specified expansion
            to fulfill the request
         """
@@ -415,9 +498,12 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup):
             iExpID = None
         aCandPhysCards = PhysicalCard.selectBy(abstractCardID=oAbs.id, expansionID=iExpID)
         for oCard in aCandPhysCards:
-            if oCard not in aPhysCards:
+            if oCard not in aPhysCards and oCard not in aAssignedCards:
                 # Card is a feasible replacement
                 iCnt -= 1
+                # Cycle set of currently selected cards
+                aSelectedCards.insert(0,oCard)
+                aSelectedCards.pop()
                 if iCnt == 0:
                     return True # Can fulfill the request
         return False
@@ -437,6 +523,14 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup):
     def _toggle_apply_filter(self, oButton, oView):
         oView.getModel().applyfilter = oButton.get_active()
         oView.load()
+
+    def _toggle_show_cardcount(self, oButton, oView, aPhysCards, dCandCards):
+        if oButton.get_active():
+            oView.set_card_set_holder_numbers(aPhysCards, dCandCards)
+            oView.add_card_set_count_column()
+            oView.queue_draw()
+        else:
+            oView.remove_card_set_column()
 
     def _set_filter(self, oButton, oView, sName, oToggleButton):
         oFilter = self._best_guess_filter(sName)
@@ -462,7 +556,11 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup):
         sFilterString = sFilterString.replace('u', '_')
         return CardNameFilter(sFilterString)
 
-    def _set_ignore(self, oButton, oRepLabel):
+    def _set_ignore(self, oButton, oRepLabel, oView, aPhysCards=[], dCandCards={}):
         oRepLabel.hide()
+        if oRepLabel in dCandCards.keys():
+            del dCandCards[oRepLabel]
+            oView.set_card_set_holder_numbers(aPhysCards, dCandCards)
+            oView.queue_draw()
         oRepLabel.set_text("No Card")
         oRepLabel.show()
