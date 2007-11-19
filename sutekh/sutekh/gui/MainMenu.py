@@ -6,6 +6,7 @@
 import gtk
 from sqlobject import sqlhub, connectionForURI
 from sutekh.core.SutekhObjects import ObjectList
+from sutekh.core.CardLookup import LookupFailed
 from sutekh.gui.ImportDialog import ImportDialog
 from sutekh.gui.WWFilesDialog import WWFilesDialog
 from sutekh.io.XmlFileHandling import PhysicalCardXmlFile, PhysicalCardSetXmlFile, \
@@ -232,14 +233,23 @@ class MainMenu(gtk.MenuBar, object):
                         else:
                             delete_abstract_card_set(sName)
                 oFrame = self.__oWin.add_pane()
-                if sType == "AbstractCardSet":
-                    oF = AbstractCardSetXmlFile(sFileName, lookup=self.__oWin.cardLookup)
-                    oF.read()
-                    self.__oWin.replace_with_abstract_card_set(sName, oFrame)
-                else:
-                    oF = PhysicalCardSetXmlFile(sFileName, lookup=self.__oWin.cardLookup)
-                    oF.read()
-                    self.__oWin.replace_with_physical_card_set(sName, oFrame)
+                try:
+                    if sType == "AbstractCardSet":
+                        oF = AbstractCardSetXmlFile(sFileName, lookup=self.__oWin.cardLookup)
+                        oF.read()
+                        self.__oWin.replace_with_abstract_card_set(sName, oFrame)
+                    else:
+                        oF = PhysicalCardSetXmlFile(sFileName, lookup=self.__oWin.cardLookup)
+                        oF.read()
+                        self.__oWin.replace_with_physical_card_set(sName, oFrame)
+                except LookupFailed:
+                    # Remove window, since we didn't succeed
+                    # Should this dialog be here?
+                    Complaint = gtk.MessageDialog(None, 0, gtk.MESSAGE_ERROR,
+                        gtk.BUTTONS_CLOSE, "Import failed. Unable to find matches for all the cards in the cardset.")
+                    Complaint.connect("response", lambda dlg, resp: dlg.destroy())
+                    Complaint.run()
+                    self.__oWin.remove_frame(oFrame)
             else:
                 Complaint = gtk.MessageDialog(None, 0, gtk.MESSAGE_ERROR,
                     gtk.BUTTONS_CLOSE, "File is not a CardSet XML File.")
