@@ -13,18 +13,25 @@ class ScrolledList(gtk.Frame):
         super(ScrolledList, self).__init__(None)
         self._aList = gtk.ListStore(gobject.TYPE_STRING)
         self._oTreeView = gtk.TreeView(self._aList)
+        oCell1 = gtk.CellRendererText()
+        oColumn1 = gtk.TreeViewColumn(sTitle, oCell1, markup=0)
+        self._oTreeView.append_column(oColumn1)
         self._oTreeView.get_selection().set_mode(gtk.SELECTION_MULTIPLE)
         oMyScroll = AutoScrolledWindow(self._oTreeView)
         self.add(oMyScroll)
-        oCell1 = gtk.CellRendererText()
-        oColumn = gtk.TreeViewColumn(sTitle, oCell1, markup=0)
-        self._oTreeView.append_column(oColumn)
         self.set_shadow_type(gtk.SHADOW_NONE)
         self.show_all()
 
     view = property(fget=lambda self: self._oTreeView,
             doc="Associated View Object")
     itemlist = property(fget=lambda self: self._aList, doc="List of values")
+
+    def add_second_column(self, sTitle):
+        oCell2 = gtk.CellRendererText()
+        oColumn2 = gtk.TreeViewColumn(sTitle, oCell2)
+        self._oTreeView.append_column(oColumn2)
+        oColumn2.set_cell_data_func(oCell2, self._render_second_column)
+        self.dSecondColVals = {}
 
     def set_select_single(self):
         """set selection to single mode"""
@@ -50,3 +57,17 @@ class ScrolledList(gtk.Frame):
         for sEntry in aVals:
             oIter = self._aList.append(None)
             self._aList.set(oIter, 0, sEntry)
+
+    def fill_second_column(self, dVals):
+        self.dSecondColValues = dVals
+        self._oTreeView.queue_draw()
+
+    def _render_second_column(self, oColumn, oCell, oModel, oIter):
+        sKey = oModel.get_value(oIter, 0)
+        if sKey in self.dSecondColVals.keys():
+            oCell.set_property("markup", self.dSecondColVals[sKey])
+        else:
+            oCell.set_property("markup", "")
+
+
+

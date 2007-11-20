@@ -42,8 +42,10 @@ class CardSetManagementFrame(BasicFrame):
         self._oMenu = CardSetManagementMenu(self, self._oMainWindow, self._sName)
 
         wMbox.pack_start(self._oMenu, False, False)
-
         self._oScrolledList = ScrolledList(self._sName)
+
+        if self._cSetType is PhysicalCardSet:
+            self._oScrolledList.add_second_column("In Use")
         self._oView = self._oScrolledList.view
         self._oScrolledList.set_select_single()
         self._oView.connect('row_activated', self.row_clicked)
