@@ -11,7 +11,7 @@ from sutekh.core.SutekhObjects import PhysicalCard, AbstractCard, AbstractCardSe
                                  Ruling, ObjectList, DisciplinePair, Creed, \
                                  IVirtue, ISect, ITitle, Sect, Title, \
                                  FlushCache
-from sutekh.core.CardSetHolder import CardSetHolder
+from sutekh.core.CardSetHolder import CachedCardSetHolder
 from sutekh.SutekhUtility import refreshTables
 from sutekh.core.DatabaseVersion import DatabaseVersion
 from sutekh.io.WhiteWolfParser import parseText
@@ -579,13 +579,13 @@ def copyToNewAbstractCardDB(orig_conn, new_conn, oCardLookup):
     aAbsCardSets = []
     oOldConn = sqlhub.processConnection
     # Copy the physical card list
-    oPhysListCS = CardSetHolder()
+    oPhysListCS = CachedCardSetHolder()
     for oCard in PhysicalCard.select(connection=orig_conn):
         oPhysListCS.add(1, oCard.abstractCard.canonicalName, oCard.expansion)
     # Copy Physical card sets
     # IDs are unchangd, since we preserve Physical Card set ids
     for oSet in PhysicalCardSet.select(connection=orig_conn):
-        oCS = CardSetHolder()
+        oCS = CachedCardSetHolder()
         oCS.name = oSet.name
         oCS.author = oSet.author
         oCS.comment = oSet.comment
@@ -595,7 +595,7 @@ def copyToNewAbstractCardDB(orig_conn, new_conn, oCardLookup):
         aPhysCardSets.append(oCS)
     # Copy AbstractCardSets
     for oSet in AbstractCardSet.select(connection=orig_conn):
-        oCS = CardSetHolder()
+        oCS = CachedCardSetHolder()
         oCS.name = oSet.name
         oCS.author = oSet.author
         oCS.comment = oSet.comment
@@ -606,11 +606,11 @@ def copyToNewAbstractCardDB(orig_conn, new_conn, oCardLookup):
     oTarget = new_conn.transaction()
     sqlhub.processConnection = oTarget
     # Create the cardsets from the holders
+    dLookupCache = oPhysListCS.createPhysicalCardList(oCardLookup)
     for oSet in aAbsCardSets:
-        oSet.createACS(oCardLookup)
-    oPhysListCS.createPhysicalCardList(oCardLookup)
+        oSet.createACS(oCardLookup, dLookupCache)
     for oSet in aPhysCardSets:
-        oSet.createPCS(oCardLookup)
+        oSet.createPCS(oCardLookup, dLookupCache)
     oTarget.commit()
     sqlhub.processConnection = oOldConn
     return (bRes,aMessages)

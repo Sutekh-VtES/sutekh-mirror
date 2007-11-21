@@ -8,7 +8,8 @@
 
 import gtk
 from sqlobject import SQLObjectNotFound
-from sutekh.core.SutekhObjects import AbstractCard, PhysicalCard, IExpansion
+from sutekh.core.SutekhObjects import AbstractCard, PhysicalCard, IExpansion, \
+        MapPhysicalCardToPhysicalCardSet
 from sutekh.core.CardLookup import AbstractCardLookup, PhysicalCardLookup, \
         LookupFailed
 from sutekh.core.Filters import CardNameFilter
@@ -143,11 +144,15 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup):
         dUnknownCards = {}
 
         for sName in aNames:
-            try:
-                oAbs = AbstractCard.byCanonicalName(sName.encode('utf8').lower())
-                dCards[sName] = oAbs
-            except SQLObjectNotFound:
-                dUnknownCards[sName] = None
+            if not sName:
+                # None here is an explicit ignore from the lookup cache
+                dCards[sName] = None
+            else:
+                try:
+                    oAbs = AbstractCard.byCanonicalName(sName.encode('utf8').lower())
+                    dCards[sName] = oAbs
+                except SQLObjectNotFound:
+                    dUnknownCards[sName] = None
 
         if dUnknownCards:
             bContinue = self._do_handle_unknown_abstract_cards(dUnknownCards, sInfo)
@@ -164,7 +169,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup):
                 oAbs = AbstractCard.byCanonicalName(sNewName.encode('utf8').lower())
                 dUnknownCards[sName] = oAbs
             except SQLObjectNotFound:
-                raise RuntimeError("Unexpectedly encountered missing abstract card '%s'." % sName)
+                raise RuntimeError("Unexpectedly encountered missing abstract card '%s'." % sNewName)
 
         return [(sName in dCards and dCards[sName] or dUnknownCards[sName]) for sName in aNames]
 
@@ -183,7 +188,13 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup):
                         else:
                             aPhysCards = PhysicalCard.selectBy(abstractCardID=oAbs.id,
                                     expansionID=None)
-                        for oPhys in aPhysCards:
+                        dCardSetCounts = {}
+                        for oCard in aPhysCards:
+                            iCSCount = MapPhysicalCardToPhysicalCardSet.selectBy(physicalCardID=oCard.id).count()
+                            dCardSetCounts[oCard] = iCSCount
+                        # Order by count, so we try cards in the fewest card sets first
+                        aPossCards = sorted(dCardSetCounts.items(), key=lambda t: t[1])
+                        for oPhys, iCSCount in aPossCards:
                             if oPhys not in aCards \
                                     and iCnt > 0:
                                 aCards.append(oPhys)

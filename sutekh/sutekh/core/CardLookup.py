@@ -59,10 +59,13 @@ class SimpleLookup(AbstractCardLookup, PhysicalCardLookup):
     def lookup(self, aNames, sInfo):
         aCards = []
         for sName in aNames:
-            try:
-                oAbs = AbstractCard.byCanonicalName(sName.encode('utf8').lower())
-                aCards.append(oAbs)
-            except SQLObjectNotFound:
+            if not sName:
+                try:
+                    oAbs = AbstractCard.byCanonicalName(sName.encode('utf8').lower())
+                    aCards.append(oAbs)
+                except SQLObjectNotFound:
+                    aCards.append(None)
+            else:
                 aCards.append(None)
         return aCards
 

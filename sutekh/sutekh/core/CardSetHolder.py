@@ -69,6 +69,7 @@ class CardSetHolder(object):
                 continue
             for i in range(iCnt):
                 oACS.addAbstractCard(oAbs)
+        oACS.syncUpdate()
 
     def createPhysicalCardList(self, oCardLookup=DEFAULT_LOOKUP):
         """Create the Physical Card List from this Card Set.
@@ -106,3 +107,85 @@ class CardSetHolder(object):
             if not oPhysCard:
                 continue
             oPCS.addPhysicalCard(oPhysCard.id)
+        oPCS.syncUpdate()
+
+class CachedCardSetHolder(CardSetHolder):
+    """
+    CardSetHolder class which supports creating and using a cached
+    dctionary of Lookup results.
+    """
+
+    def createACS(self, oCardLookup=DEFAULT_LOOKUP, dLookupCache={}):
+        """Create an Abstract Card Set.
+           """
+        if self.name is None:
+            raise RuntimeError("No name for the card set")
+
+        aCardCnts = self._dCards.items()
+        aAbsCards = oCardLookup.lookup([dLookupCache.get(tCardCnt[0], tCardCnt[0]) for tCardCnt in aCardCnts], "Abstract Card Set " + self.name)
+
+        oACS = AbstractCardSet(name=self.name.encode('utf8'),
+                               author=self.author, comment=self.comment,
+                               annotations=self.annotations)
+        oACS.syncUpdate()
+
+        for oAbs, (sName, iCnt) in zip(aAbsCards,aCardCnts):
+            if not oAbs:
+                dLookupCache[sName] = None
+                continue
+            if oAbs.canonicalName != sName and sName not in dLookupCache.keys():
+                # Update the cache
+                # Should we cache None responses, so to avoid prompting on those
+                # again?
+                dLookupCache[sName] = oAbs.canonicalName
+            for i in range(iCnt):
+                oACS.addAbstractCard(oAbs)
+        oACS.syncUpdate()
+        return dLookupCache
+
+    def createPhysicalCardList(self, oCardLookup=DEFAULT_LOOKUP, dLookupCache={}):
+        """Create the Physical Card List from this Card Set.
+           Intended for updating WW card lists when WW rename cards, etc.
+        """
+
+        aCardCnts = self._dCards.items()
+        aAbsCards = oCardLookup.lookup([dLookupCache.get(tCardCnt[0], tCardCnt[0]) for tCardCnt in aCardCnts], "Physical Card List")
+
+        for oAbs, (sName, iCnt) in zip(aAbsCards,aCardCnts):
+            if not oAbs:
+                dLookupCache[sName] = None
+                continue
+            if oAbs.canonicalName != sName and sName not in dLookupCache.keys():
+                dLookupCache[sName] = oAbs.canonicalName
+                # Update the cache
+            for oExpansion, iExtCnt in self._dCardExpansions[sName].iteritems():
+                for i in range(iExtCnt):
+                    PhysicalCard(abstractCard=oAbs, expansion=oExpansion)
+        return dLookupCache
+
+    def createPCS(self, oCardLookup=DEFAULT_LOOKUP, dLookupCache={}):
+        """Create a Physical Card Set.
+           """
+        if self.name is None:
+            raise RuntimeError("No name for the card set")
+
+        aCardCnts = self._dCards.items()
+        aAbsCards = oCardLookup.lookup([dLookupCache.get(tCardCnt[0], tCardCnt[0]) for tCardCnt in aCardCnts], "Physical Card Set " + self.name)
+        dNameCards = dict(zip(self._dCards.keys(), aAbsCards))
+        aPhysCards = oCardLookup.physical_lookup(self._dCardExpansions,
+                dNameCards, "Physical Card Set " + self.name)
+
+        # Since we are dealing with the PhysicalCardSets, we assume that
+        # dLookupCache has any answers required from the PhysicalCardList,
+        # so there's now point in updating the cache here.
+
+        oPCS = PhysicalCardSet(name=self.name.encode('utf8'),
+                               author=self.author, comment=self.comment,
+                               annotations=self.annotations)
+        oPCS.syncUpdate()
+
+        for oPhysCard in aPhysCards:
+            if not oPhysCard:
+                continue
+            oPCS.addPhysicalCard(oPhysCard.id)
+        oPCS.syncUpdate()
