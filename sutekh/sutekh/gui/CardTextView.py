@@ -22,6 +22,7 @@ class CardTextBuffer(gtk.TextBuffer, object):
         tags.append(self.create_tag("capacity", style=pango.STYLE_ITALIC))
         tags.append(self.create_tag("group", style=pango.STYLE_ITALIC))
         tags.append(self.create_tag("level", style=pango.STYLE_ITALIC))
+        tags.append(self.create_tag("burn_option", style=pango.STYLE_ITALIC))
         tags.append(self.create_tag("card_type", style=pango.STYLE_ITALIC))
         tags.append(self.create_tag("clan", style=pango.STYLE_ITALIC))
         tags.append(self.create_tag("sect", style=pango.STYLE_ITALIC))
@@ -99,6 +100,9 @@ class CardTextView(gtk.TextView, object):
         else:
             aTypes = [oT.name for oT in oCard.cardtype]
         oBuf.labelledList("Card Type", aTypes, "card_type")
+
+        if oCard.burnoption:
+            oBuf.labelledValue("Burn Option:", "Yes", "burn_option")
 
         if not len(oCard.clan) == 0:
             aClans = [oC.name for oC in oCard.clan]

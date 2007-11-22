@@ -4,8 +4,7 @@ Backend:
  * Better error and exception handling
  * Rework SutekhUtility to be less of a mess
  * Export directly to HTML.
- * Add database support for burn option and reflex card attributes.
- * Add database support for rarity short names.
+ * Parse reflex card attributes (as additional card type? other property?).
 
 Code Cleanup
  * Unify conventions ('Abstract' vs 'AbstractCardSet' in card set management, etc.)
@@ -25,11 +24,9 @@ Gui (Functionality):
  * Finish ClusterCardList plugin.
  * Compare CardSet Plugin (basic version done. Could be improved)
  * Improve About dialog.
- * Fix physical_lookup in GuiCardLookup to deal with expansions as well
  * Replace HTML export plugin with direct export to HTML.
  * Plugins for calling out to other VtES utilities as appropriate (http://ashheap.storageannex.com/utilities.htm)
  * Add decent keyboard shortcuts
- * Fix GuiCardLookup
 
 Gui (Presentation):
  * Cleanup various dialogs, including

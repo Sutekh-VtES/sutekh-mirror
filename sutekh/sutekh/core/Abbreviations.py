@@ -196,6 +196,10 @@ class Rarities(AbbreviationLookup):
             return 'Precon'
         return cls._dLook[sName]
 
+    @classmethod
+    def shortname(cls,sCanonical):
+        return cls.dKeys[sCanonical][0]
+
 class Sects(AbbreviationLookup):
     dKeys = {
         'Camarilla' : [], 'Sabbat' : [], 'Independent' : [],

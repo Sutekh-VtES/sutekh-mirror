@@ -10,7 +10,7 @@ from sutekh.core.Abbreviations import CardTypes, Clans, Creeds, \
                                       Rarities, Sects, Titles, \
                                       Virtues
 from sqlobject import sqlmeta, SQLObject, IntCol, UnicodeCol, RelatedJoin, \
-                      EnumCol, MultipleJoin, \
+                      EnumCol, MultipleJoin, BoolCol, \
                       DatabaseIndex, ForeignKey, SQLObjectNotFound
 from protocols import advise, Interface
 
@@ -43,7 +43,7 @@ class VersionTable(SQLObject):
 class AbstractCard(SQLObject):
     advise(instancesProvide=[IAbstractCard])
 
-    tableversion = 2
+    tableversion = 3
     sqlmeta.lazyUpdate = True
 
     canonicalName = UnicodeCol(alternateID=True,length=50)
@@ -55,6 +55,7 @@ class AbstractCard(SQLObject):
     life = IntCol(default=None)
     costtype = EnumCol(enumValues=['pool','blood','conviction',None],default=None)
     level = EnumCol(enumValues=['advanced',None],default=None)
+    burnoption = BoolCol(default=False)
 
     discipline = CachedRelatedJoin('DisciplinePair',intermediateTable='abs_discipline_pair_map',createRelatedTable=False)
     rarity = CachedRelatedJoin('RarityPair',intermediateTable='abs_rarity_pair_map',createRelatedTable=False)
@@ -91,11 +92,12 @@ class AbstractCardSet(SQLObject):
 class PhysicalCardSet(SQLObject):
     advise(instancesProvide=[IPhysicalCardSet])
 
-    tableversion = 3
+    tableversion = 4
     name = UnicodeCol(alternateID=True,length=50)
     author = UnicodeCol(length=50,default='')
     comment = UnicodeCol(default='')
     annotations = UnicodeCol(default='')
+    inuse = BoolCol(default=False)
     cards = RelatedJoin('PhysicalCard',intermediateTable='physical_map',createRelatedTable=False)
 
 class RarityPair(SQLObject):
@@ -118,8 +120,9 @@ class Expansion(SQLObject):
 class Rarity(SQLObject):
     advise(instancesProvide=[IRarity])
 
-    tableversion = 1
+    tableversion = 2
     name = UnicodeCol(alternateID=True,length=20)
+    shortname = UnicodeCol(alternateID=True,length=20)
 
 class DisciplinePair(SQLObject):
     advise(instancesProvide=[IDisciplinePair])
@@ -385,7 +388,7 @@ class SutekhObjectMaker(object):
         return self._makeObject(Expansion,IExpansion,Expansions,sExpansion,bShortname=True)
 
     def makeRarity(self,sRarity):
-        return self._makeObject(Rarity,IRarity,Rarities,sRarity)
+        return self._makeObject(Rarity,IRarity,Rarities,sRarity,bShortname=True)
 
     def makeSect(self,sSect):
         return self._makeObject(Sect,ISect,Sects,sSect)

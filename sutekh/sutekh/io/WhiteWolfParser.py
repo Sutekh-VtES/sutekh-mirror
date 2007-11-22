@@ -158,6 +158,9 @@ class CardDict(dict):
         if self.has_key('cardtype'):
             self._addCardType(oCard,self['cardtype'])
 
+        if self.has_key('burn option'):
+            oCard.burnoption = True
+
         if self.has_key('text'):
             oCard.text = self['text']
             (sSect,sTitle) = parseText(oCard)
