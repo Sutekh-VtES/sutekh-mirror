@@ -1,3 +1,27 @@
+24 Nov 2007
+ * Refactor card text parsing for WhitewolfParser
+ * Interpret reflex attribute as a cardtype
+
+22 Nov 2007
+ * Bump database version
+    - Add shortname to Rarity
+    - Add burn option column to AbstractCard
+    - Add inues column to the PhysicalCardSet
+ * Add parsing burn option form cardlist
+ * Rework DatabaseUpgrade 
+    - Combine repetive code
+    - Upgrade to current changes
+    - remove support for version pre 0.4.x
+ * Add plugin for showing discipline spread across clans
+
+21 Nov 2007
+ * Add CachedCardSetHolder, so user isn't repeatedly prompted for 
+   AbstractCard name lookups on WW cardlist changes
+
+16 Nov 2007
+ * Direct printing plugin
+ * Rework GuiCardLookup to incude appropriate views in the dialog
+
 15 Nov 2007
  * Allow panes to be split vertically or horizontally
  * Save pane configuration and postions properly

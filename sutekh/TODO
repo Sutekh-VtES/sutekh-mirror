@@ -4,7 +4,6 @@ Backend:
  * Better error and exception handling
  * Rework SutekhUtility to be less of a mess
  * Export directly to HTML.
- * Parse reflex card attributes (as additional card type? other property?).
 
 Code Cleanup
  * Unify conventions ('Abstract' vs 'AbstractCardSet' in card set management, etc.)
@@ -34,10 +33,15 @@ Gui (Presentation):
    * Unify some of the other dialogs and make various bits more reusable 
      (cf. CreateCardSetDialog hack in plugins)
    * Unified Complaint message dialog function?
+   * Standardised call to set_name for dialogs
  * Clean up the currently overly tangled controller/view/model interactions
  * Parse in a GTK rc file? (http://www.moeraki.com/pygtktutorial/pygtk2tutorial/ch-GtkRcFiles.html)
- * Allow some way of marking card sets as active, and displaying used cards or 
-   filtering on unused cards in the physical card list
+   * call set_name where appropriate, so Sutekh can be influenced by gtkrc file
+ * Complete inuse flag work 
+   * Add support to gui for setting + displaying status
+   * Add filter on inuse card sets
+   * Add support to CardSetHolder (for reloading cardlist's and restoring from file)
+   * Save inuse status to XML file
  * Parse icons out of http://www.white-wolf.com/vtes/index.php?line=icons and use them in the GUI.
 
 Website:

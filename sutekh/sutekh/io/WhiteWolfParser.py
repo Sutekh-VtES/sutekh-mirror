@@ -18,6 +18,80 @@ class CardDict(dict):
         super(CardDict,self).__init__()
         self._oMaker = SutekhObjectMaker()
 
+    def _parseText(self):
+        """Parse the CardText for Sect and Titles"""
+        sType = None
+        if self.has_key('cardtype'):
+            sTypes = self['cardtype']
+            # Determine if vampire is one of the card types
+            for s in sTypes.split('/'):
+                if s == 'Vampire':
+                    sType = s
+        sTitle = None
+        sSect = None
+        # Check for REFLEX card type
+        if self['text'].find(' [REFLEX] ') != -1:
+            if self.has_key('cardtype'):
+                # append to card types
+                self['cardtype'] += '/Reflex'
+            else:
+                self['cardtype'] = 'Reflex'
+        if sType == 'Vampire':
+            # Card text for vampires is either Sect attributes. or
+            # Sect attributes: more text. Title is in the attributes
+            aLines = self['text'].split(':')
+            if aLines[0].find('Camarilla') != -1:
+                sSect = 'Camarilla'
+                if aLines[0].find('Camarilla primogen') != -1:
+                    sTitle = 'Primogen'
+                elif aLines[0].find('Camarilla Prince of') != -1:
+                    sTitle = 'Prince'
+                elif aLines[0].find('Justicar') != -1:
+                    # Since Justicar titles are of the form Camarilla <Clan> Justicar
+                    oJusticar = re.compile('Camarilla [A-Z][a-z]* Justicar')
+                    if oJusticar.search(aLines[0]) is not None:
+                        sTitle = 'Justicar'
+                elif aLines[0].find('Camarilla Inner Circle') != -1:
+                    sTitle = 'Inner Circle'
+            elif aLines[0].find('Sabbat') != -1:
+                sSect='Sabbat'
+                if aLines[0].find('Sabbat Archbishop of') != -1:
+                    sTitle = 'Archbishop'
+                elif aLines[0].find('Sabbat bishop') != -1:
+                    sTitle = 'Bishop'
+                elif aLines[0].find('sabbat priscus') != -1:
+                    sTitle = 'Priscus'
+                elif aLines[0].find('Sabbat cardinal') != -1:
+                    sTitle = 'Cardinal'
+                elif aLines[0].find('Sabbat regent') != -1:
+                    sTitle = 'Regent'
+            elif aLines[0].find('Independent') != -1:
+                sSect = 'Independent'
+                # Independent titles are on the next line. Of the form
+                # Name has X vote(s)
+                try:
+                    # Special cases 'The Baron' and 'Ur-Shulgi' mean we don't
+                    # anchor the regexp
+                    oIndTitle = re.compile('[A-Z][a-z]* has ([0-9]) vote')
+                    oMatch = oIndTitle.search(aLines[1])
+                    if oMatch is not None:
+                        if oMatch.groups()[0] == '1':
+                           sTitle = 'Independent with 1 vote'
+                        elif oMatch.groups()[0] == '2':
+                           sTitle = 'Independent with 2 votes'
+                        elif oMatch.groups()[0] == '3':
+                           sTitle = 'Independent with 3 votes'
+                except IndexError:
+                    pass
+            elif aLines[0].find('Laibon') != -1:
+                sSect = 'Laibon'
+                if aLines[0].find('Laibon magaji') != -1:
+                    sTitle = 'Magaji'
+        if sSect is not None:
+            self['sect'] = sSect
+        if sTitle is not None:
+            self['title'] = sTitle
+
     def _makeCard(self,sName):
         sName = self.oDispCard.sub('',sName)
         return self._oMaker.makeAbstractCard(sName)
@@ -111,13 +185,22 @@ class CardDict(dict):
         except ValueError:
             pass
 
-    def _addCardType(self,oCard,sTypes):
+    def _addCardType(self, oCard, sTypes):
         for s in sTypes.split('/'):
             oCard.addCardType(self._oMaker.makeCardType(s.strip()))
+
+    def _addTitle(self, oCard, sTitle):
+        oCard.addTitle(self._oMaker.makeTitle(sTitle))
+
+    def _addSect(self, oCard, sSect):
+        oCard.addSect(self._oMaker.makeSect(sSect))
 
     def save(self):
         if not self.has_key('name'):
             return
+
+        if self.has_key('text'):
+            self._parseText()
 
         if self.has_key('level'):
             self['name'] = self._addLevelToName(self['name'],self['level'])
@@ -161,14 +244,14 @@ class CardDict(dict):
         if self.has_key('burn option'):
             oCard.burnoption = True
 
+        if self.has_key('title'):
+            self._addTitle(oCard, self['title'])
+
+        if self.has_key('sect'):
+            self._addSect(oCard, self['sect'])
+
         if self.has_key('text'):
             oCard.text = self['text']
-            (sSect,sTitle) = parseText(oCard)
-            if sSect is not None:
-                oCard.addSect(self._oMaker.makeSect(sSect))
-            if sTitle is not None:
-                oCard.addTitle(self._oMaker.makeTitle(sTitle))
-
         oCard.syncUpdate()
 
 # State Base Classes
@@ -307,67 +390,4 @@ class WhiteWolfParser(HTMLParser.HTMLParser,object):
     def handle_charref(self,sName): pass
     def handle_entityref(self,sName): pass
 
-# We define this as a seperate function, so it can also be used by
-# the database upgrade stuff
-# Can't define it in SutkehUtility because of the circular dependancy
-# on WhiteWolfParser that arise
-# Prepares I need a global functions file as well
 
-def parseText(oCard):
-    """Parse the CardText for Sect and Titles"""
-    oType = oCard.cardtype
-    sTitle = None
-    sSect = None
-    if oType[0].name != 'Vampire':
-        return (None,None)
-    # Card text for vampires is either Sect attributes. or
-    # Sect attributes: more text. Title is in the attributes
-    aLines = oCard.text.split(':')
-    if aLines[0].find('Camarilla') != -1:
-        sSect = 'Camarilla'
-        if aLines[0].find('Camarilla primogen') != -1:
-            sTitle = 'Primogen'
-        elif aLines[0].find('Camarilla Prince of') != -1:
-            sTitle = 'Prince'
-        elif aLines[0].find('Justicar') != -1:
-            # Since Justicar titles are of the form Camarilla <Clan> Justicar
-            oJusticar = re.compile('Camarilla [A-Z][a-z]* Justicar')
-            if oJusticar.search(aLines[0]) is not None:
-                sTitle = 'Justicar'
-        elif aLines[0].find('Camarilla Inner Circle') != -1:
-            sTitle = 'Inner Circle'
-    elif aLines[0].find('Sabbat') != -1:
-        sSect='Sabbat'
-        if aLines[0].find('Sabbat Archbishop of') != -1:
-            sTitle = 'Archbishop'
-        elif aLines[0].find('Sabbat bishop') != -1:
-            sTitle = 'Bishop'
-        elif aLines[0].find('sabbat priscus') != -1:
-            sTitle = 'Priscus'
-        elif aLines[0].find('Sabbat cardinal') != -1:
-            sTitle = 'Cardinal'
-        elif aLines[0].find('Sabbat regent') != -1:
-            sTitle = 'Regent'
-    elif aLines[0].find('Independent') != -1:
-        sSect = 'Independent'
-        # Independent titles are on the next line. Of the form
-        # Name has X vote(s)
-        try:
-            # Special cases 'The Baron' and 'Ur-Shulgi' mean we don't
-            # anchor the regexp
-            oIndTitle = re.compile('[A-Z][a-z]* has ([0-9]) vote')
-            oMatch = oIndTitle.search(aLines[1])
-            if oMatch is not None:
-                if oMatch.groups()[0] == '1':
-                   sTitle = 'Independent with 1 vote'
-                elif oMatch.groups()[0] == '2':
-                   sTitle = 'Independent with 2 votes'
-                elif oMatch.groups()[0] == '3':
-                   sTitle = 'Independent with 3 votes'
-        except IndexError:
-            pass
-    elif aLines[0].find('Laibon') != -1:
-        sSect = 'Laibon'
-        if aLines[0].find('Laibon magaji') != -1:
-            sTitle = 'Magaji'
-    return (sSect,sTitle)
