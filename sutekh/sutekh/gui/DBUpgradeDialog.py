@@ -4,8 +4,9 @@
 # GPL - see COPYING for details
 
 import gtk
+from sutekh.gui.SutekhDialog import SutekhDialog
 
-class DBUpgradeDialog(gtk.Dialog):
+class DBUpgradeDialog(SutekhDialog):
     def __init__(self, aMessages):
         # Create Dialog
         super(DBUpgradeDialog, self).__init__("Memory Copy Created", None,

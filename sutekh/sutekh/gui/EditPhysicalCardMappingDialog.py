@@ -4,10 +4,11 @@
 
 import gtk
 from sutekh.gui.DBSignals import send_reload_signal
+from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 from sutekh.core.SutekhObjects import PhysicalCard, IAbstractCard, \
         IExpansion, MapPhysicalCardToPhysicalCardSet
 
-class EditPhysicalCardMappingDialog(gtk.Dialog):
+class EditPhysicalCardMappingDialog(SutekhDialog):
     """
     Allow the user to change how the Physical Cards are allocated
     across the PhysicalCardSets. This does not allow the user to
@@ -135,10 +136,7 @@ class EditPhysicalCardMappingDialog(gtk.Dialog):
     def button_response(self, oWidget, iResponse):
         if iResponse == gtk.RESPONSE_OK:
             if len(self.aNumbersNotMatched) > 0:
-                oComplaint = gtk.MessageDialog(None, 0, gtk.MESSAGE_ERROR,
-                        gtk.BUTTONS_CLOSE, "New allocation doesn't match on the numbers")
-                oComplaint.connect("response", lambda dlg, resp: dlg.destroy())
-                oComplaint.run()
+                do_complaint_error("New allocation doesn't match on the numbers")
                 return
             else:
                 # OK, numbers match, so now re-assign the cards 

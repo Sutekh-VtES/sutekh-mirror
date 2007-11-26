@@ -5,6 +5,7 @@
 import gtk
 from sutekh.core.SutekhObjects import PhysicalCardSet, AbstractCardSet, PhysicalCard, \
                                       IAbstractCard
+from sutekh.gui.SutekhDialog import do_complaint_error
 from sutekh.gui.CreateCardSetDialog import CreateCardSetDialog
 from sutekh.gui.PluginManager import CardListPlugin
 
@@ -49,11 +50,7 @@ class PhysicalCardSetFromAbstract(CardListPlugin):
 
         aNameList = PhysicalCardSet.selectBy(name=sName)
         if aNameList.count() != 0:
-            Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
-                    gtk.BUTTONS_CLOSE,
-                    "Chosen Physical Card Set already exists")
-            Complaint.run()
-            Complaint.destroy()
+            do_complaint_error("Chosen Physical Card Set already exists")
             return
 
         nP = PhysicalCardSet(name=sName)
@@ -86,9 +83,6 @@ class PhysicalCardSetFromAbstract(CardListPlugin):
             sMsg = "The following cards were not added to the physical card set " \
                 "because they are not present in your card collection:\n\n" \
                 + "\n".join([oC.name for oC in aMissingCards])
-            Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
-                    gtk.BUTTONS_CLOSE,sMsg)
-            Complaint.run()
-            Complaint.destroy()
+            do_complaint_error(sMsg)
 
 plugin = PhysicalCardSetFromAbstract

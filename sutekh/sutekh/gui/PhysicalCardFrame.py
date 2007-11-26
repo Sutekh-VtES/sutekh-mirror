@@ -14,6 +14,7 @@ class PhysicalCardFrame(CardListFrame):
         super(PhysicalCardFrame, self).__init__(oMainWindow, oConfig)
         self._sName = "Physical Card List"
         self.set_title(self._sName)
+        self.set_name("physical card list")
 
         self._oC = PhysicalCardController(self, oConfig, oMainWindow)
 

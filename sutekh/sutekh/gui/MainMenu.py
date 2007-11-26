@@ -7,6 +7,7 @@ import gtk
 from sqlobject import sqlhub, connectionForURI
 from sutekh.core.SutekhObjects import ObjectList
 from sutekh.core.CardLookup import LookupFailed
+from sutekh.gui.SutekhDialog import do_complaint_error, do_complaint_warning
 from sutekh.gui.ImportDialog import ImportDialog
 from sutekh.gui.WWFilesDialog import WWFilesDialog
 from sutekh.io.XmlFileHandling import PhysicalCardXmlFile, PhysicalCardSetXmlFile, \
@@ -201,15 +202,9 @@ class MainMenu(gtk.MenuBar, object):
                     oF.read()
                     self.__oWin.reload_all()
                 else:
-                    Complaint = gtk.MessageDialog(None, 0, gtk.MESSAGE_ERROR,
-                            gtk.BUTTONS_CLOSE, "Can only do this when the current Card List is empty")
-                    Complaint.connect("response", lambda dlg, resp: dlg.destroy())
-                    Complaint.run()
+                    do_complaint_error ( "Can only do this when the current Card List is empty")
             else:
-                Complaint = gtk.MessageDialog(None, 0, gtk.MESSAGE_ERROR,
-                    gtk.BUTTONS_CLOSE, "File is not a PhysicalCard XML File.")
-                Complaint.connect("response", lambda dlg, resp: dlg.destroy())
-                Complaint.run()
+                do_complaint_error("File is not a PhysicalCard XML File.")
 
     def do_import_card_set(self, oWidget):
         oFileChooser = ImportDialog("Select Card Set(s) to Import", self.__oWin)
@@ -220,11 +215,8 @@ class MainMenu(gtk.MenuBar, object):
             (sType, sName, bExists) = oP.idFile(sFileName)
             if sType == 'PhysicalCardSet' or sType == 'AbstractCardSet':
                 if bExists:
-                    Complaint = gtk.MessageDialog(None, 0, gtk.MESSAGE_WARNING,
-                            gtk.BUTTONS_OK_CANCEL, "This would delete the existing CardSet " + sName)
-                    response = Complaint.run()
-                    Complaint.destroy()
-                    if response == gtk.RESPONSE_CANCEL:
+                    iResponse = do_complaint_warning("This would delete the existing CardSet " + sName)
+                    if iResponse == gtk.RESPONSE_CANCEL:
                         return
                     else:
                         # Delete the card set
@@ -245,16 +237,10 @@ class MainMenu(gtk.MenuBar, object):
                 except LookupFailed:
                     # Remove window, since we didn't succeed
                     # Should this dialog be here?
-                    Complaint = gtk.MessageDialog(None, 0, gtk.MESSAGE_ERROR,
-                        gtk.BUTTONS_CLOSE, "Import failed. Unable to find matches for all the cards in the cardset.")
-                    Complaint.connect("response", lambda dlg, resp: dlg.destroy())
-                    Complaint.run()
+                    do_complaint_error("Import failed. Unable to find matches for all the cards in the cardset.")
                     self.__oWin.remove_frame(oFrame)
             else:
-                Complaint = gtk.MessageDialog(None, 0, gtk.MESSAGE_ERROR,
-                    gtk.BUTTONS_CLOSE, "File is not a CardSet XML File.")
-                Complaint.connect("response", lambda dlg, resp: dlg.destroy())
-                Complaint.run()
+                do_complaint_error("File is not a CardSet XML File.")
 
     def do_import_new_card_list(self, oWidget):
         oWWFilesDialog = WWFilesDialog(self.__oWin)
@@ -269,10 +255,7 @@ class MainMenu(gtk.MenuBar, object):
                 except Exception, e:
                     sMsg = "Failed to write backup.\n\n" + str(e) \
                         + "\nNot touching the database further"
-                    Complaint = gtk.MessageDialog(None, 0, gtk.MESSAGE_ERROR,
-                        gtk.BUTTONS_CLOSE, sMsg)
-                    Complaint.run()
-                    Complaint.destroy()
+                    do_complaint_error(sMsg)
                     return
             tempConn = connectionForURI("sqlite:///:memory:")
             oldConn = sqlhub.processConnection
@@ -291,11 +274,8 @@ class MainMenu(gtk.MenuBar, object):
                 for sStr in aErrors:
                     sMesg += sStr + "\n"
                 sMesg += "Attempt to Continue Anyway (This is quite possibly dangerous)?"
-                Complaint = gtk.MessageDialog(None, 0, gtk.MESSAGE_ERROR,
-                    gtk.BUTTONS_OK_CANCEL, sMesg)
-                response = Complaint.run()
-                Complaint.destroy()
-                if response == gtk.RESPONSE_OK:
+                iResponse = do_complaint_warning(sMesg)
+                if iResponse == gtk.RESPONSE_OK:
                     bCont = True
             else:
                 bCont = True
@@ -308,15 +288,11 @@ class MainMenu(gtk.MenuBar, object):
                     for sStr in aErrors:
                         sMesg += sStr + "\n"
                     sMesg += "Your database may be in an inconsistent state - sorry"
-                    Complaint = gtk.MessageDialog(None, 0, gtk.MESSAGE_ERROR,
-                        gtk.BUTTONS_CLOSE, sMesg)
+                    do_complaint_error(sMesg)
                 else:
                     sMesg = "Import Completed\n"
                     sMesg += "Eveything seems to have gone OK"
-                    Complaint = gtk.MessageDialog(None, 0, gtk.MESSAGE_INFO,
-                        gtk.BUTTONS_CLOSE, sMesg)
-                Complaint.run()
-                Complaint.destroy()
+                    do_complaint_error(sMesg)
             self.__oWin.reload_all()
 
     def do_save_pane_set(self, oWidget):

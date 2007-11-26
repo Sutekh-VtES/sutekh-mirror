@@ -6,6 +6,7 @@ import gtk
 import pango
 from sutekh.core.SutekhObjects import PhysicalCardSet, AbstractCardSet, IAbstractCard, ICardType
 from sutekh.gui.PluginManager import CardListPlugin
+from sutekh.gui.SutekhDialog import do_complaint_error
 
 try:
     gtk.PrintOperation
@@ -48,11 +49,7 @@ class CardSetPrint(CardListPlugin):
 
 
         if oRes == gtk.PRINT_OPERATION_RESULT_ERROR:
-            oMsg = gtk.MessageDialog(self.parent, gtk.DIALOG_DESTROY_WITH_PARENT,
-                                     gtk.MESSAGE_ERROR, gtk.BUTTONS_CLOSE,
-                                     "Error printing card set:\n")
-            oMsg.connect("response", lambda w,id: w.destroy())
-            oMsg.show()
+            do_complaint_error("Error printing card set:\n")
         elif oRes == gtk.PRINT_OPERATION_RESULT_APPLY:
             self._oSettings = oPrintOp.get_print_settings()
 

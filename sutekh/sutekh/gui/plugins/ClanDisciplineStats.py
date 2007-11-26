@@ -13,6 +13,7 @@ import pango
 import gobject
 from sutekh.core.SutekhObjects import AbstractCard, Clan, ICardType
 from sutekh.gui.PluginManager import CardListPlugin
+from sutekh.gui.SutekhDialog import SutekhDialog
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 
 class ClanDisciplineStats(CardListPlugin):
@@ -38,8 +39,8 @@ class ClanDisciplineStats(CardListPlugin):
         self._oStatsVbox = None
 
     def make_dialog(self):
-        oDlg = gtk.Dialog("Clan Vampire Statistics",self.parent,
-                          gtk.DIALOG_DESTROY_WITH_PARENT)
+        oDlg = SutekhDialog("Clan Vampire Statistics",self.parent,
+                gtk.DIALOG_DESTROY_WITH_PARENT)
 
         oDlg.add_button(gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE)
         oDlg.connect("response", lambda oW, oR: oDlg.destroy())

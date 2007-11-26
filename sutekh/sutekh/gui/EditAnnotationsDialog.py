@@ -2,9 +2,10 @@
 # Copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
 
 import gtk
+from sutekh.gui.SutekhDialog import SutekhDialog
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 
-class EditAnnotationsDialog(gtk.Dialog):
+class EditAnnotationsDialog(SutekhDialog):
     def __init__(self, sTitle, oParent, sCurName, sCurAnnotations):
         super(EditAnnotationsDialog, self).__init__(sTitle, oParent,
                 gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,

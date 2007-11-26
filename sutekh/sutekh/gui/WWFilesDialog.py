@@ -3,8 +3,9 @@
 # Copyright 2007 Neil Muller <drnlmuller+sutekh@gmail.com>
 
 import gtk
+from sutekh.gui.SutekhDialog import SutekhDialog
 
-class WWFilesDialog(gtk.Dialog):
+class WWFilesDialog(SutekhDialog):
     def __init__(self, oParent):
         super(WWFilesDialog, self).__init__("Choose White Wolf Files", oParent,
             gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,

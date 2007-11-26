@@ -8,6 +8,7 @@ from sutekh.core.SutekhObjects import AbstractCardSet, PhysicalCardSet, \
                                       AbstractCard, PhysicalCard, \
                                       IAbstractCard
 from sutekh.gui.PluginManager import CardListPlugin
+from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 
 class ACSFromFilter(CardListPlugin):
     dTableVersions = { AbstractCardSet : [2,3]}
@@ -35,7 +36,7 @@ class ACSFromFilter(CardListPlugin):
         oDlg.run()
 
     def makeDialog(self):
-        self.oDlg = gtk.Dialog("Choose Abstract Card Set Name",self.parent,
+        self.oDlg = SutekhDialog("Choose Abstract Card Set Name",self.parent,
                 gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                 (gtk.STOCK_OK, gtk.RESPONSE_OK,
                     gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
@@ -59,10 +60,7 @@ class ACSFromFilter(CardListPlugin):
     def makeACSFromFilter(self,sACSName):
         # Check ACS Doesn't Exist
         if AbstractCardSet.selectBy(name=sACSName).count() != 0:
-            oComplaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
-                    gtk.BUTTONS_CLOSE,"Abstract Card Set %s already exists." % sACSName)
-            oComplaint.connect("response",lambda oW, oResp: oW.destroy())
-            oComplaint.run()
+            do_complaint_error("Abstract Card Set %s already exists." % sACSName)
             return
 
         # Create ACS

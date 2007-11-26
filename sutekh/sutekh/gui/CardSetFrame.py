@@ -70,8 +70,10 @@ class AbstractCardSetFrame(CardSetFrame):
     def __init__(self, oMainWindow, sName, oConfig):
         super(AbstractCardSetFrame, self).__init__(oMainWindow, sName, 
                 AbstractCardSet, oConfig)
+        self.set_name("abstract card set card list")
 
 class PhysicalCardSetFrame(CardSetFrame):
     def __init__(self, oMainWindow, sName, oConfig):
         super(PhysicalCardSetFrame, self).__init__(oMainWindow, sName, 
                 PhysicalCardSet, oConfig)
+        self.set_name("physical card set card list")

@@ -8,6 +8,7 @@ from sutekh.core.SutekhObjects import AbstractCardSet, PhysicalCardSet, \
 from sutekh.core.Filters import AbstractCardSetFilter, PhysicalCardSetFilter
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.ScrolledList import ScrolledList
+from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint
 
 class CardSetIndependence(CardListPlugin):
     dTableVersions = {AbstractCardSet : [1, 2, 3],
@@ -36,7 +37,7 @@ class CardSetIndependence(CardListPlugin):
         """
         Create the list of card sets to select
         """
-        self.oDlg = gtk.Dialog("Choose Card Sets to Test", self.parent,
+        self.oDlg = SutekhDialog("Choose Card Sets to Test", self.parent,
                           gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                           (gtk.STOCK_OK, gtk.RESPONSE_OK,
                            gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
@@ -76,17 +77,12 @@ class CardSetIndependence(CardListPlugin):
             if iCount > len(oPC):
                 dMissing[sCardName] = iCount - len(oPC)
         if len(dMissing) > 0:
-            message = "<span foreground = \"red\"> Missing Cards </span>\n"
+            sMessage = "<span foreground = \"red\"> Missing Cards </span>\n"
             for sCardName, iCount in dMissing.iteritems():
-                message += "<span foreground = \"blue\">" + sCardName + "</span> : " + str(iCount) + "\n"
-            Results = gtk.MessageDialog(None, 0, gtk.MESSAGE_INFO,
-                    gtk.BUTTONS_CLOSE, None)
-            Results.set_markup(message)
+                sMessage += "<span foreground = \"blue\">" + sCardName + "</span> : " + str(iCount) + "\n"
         else:
-            Results = gtk.MessageDialog(None, 0, gtk.MESSAGE_INFO,
-                    gtk.BUTTONS_CLOSE, "All Cards in the PhysicalCard List")
-        Results.run()
-        Results.destroy()
+            sMessage = "All Cards in the PhysicalCard List"
+        do_complaint(sMessage, gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, True)
 
     def test_physical_card_sets(self, aCardSetNames):
         """Test if the Physical Card Sets are actaully independent by
@@ -100,19 +96,14 @@ class CardSetIndependence(CardListPlugin):
                 else:
                     dMissing[(sName, '(unspecified expansion)')] = iCount
         if len(dMissing) > 0:
-            message = "<span foreground = \"red\"> Duplicate Cards </span>\n"
+            sMessage = "<span foreground = \"red\"> Duplicate Cards </span>\n"
             for (sCardName, sExpansion), iCount in dMissing.iteritems():
-                message += "<span foreground = \"blue\">" + sCardName \
+                sMessage += "<span foreground = \"blue\">" + sCardName \
                         + " (from expansion: " + sExpansion \
                         + ")</span> : used " + str(iCount) + " times\n"
-            Results = gtk.MessageDialog(None, 0, gtk.MESSAGE_INFO,
-                    gtk.BUTTONS_CLOSE, None)
-            Results.set_markup(message)
         else:
-            Results = gtk.MessageDialog(None, 0, gtk.MESSAGE_INFO,
-                    gtk.BUTTONS_CLOSE, "No cards duplicated")
-        Results.run()
-        Results.destroy()
+            sMessage = "No cards duplicated"
+        do_complaint(sMessage, gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, True)
 
     def __get_abstract_card_set_list(self, aCardSetNames):
         dFullCardList = {}

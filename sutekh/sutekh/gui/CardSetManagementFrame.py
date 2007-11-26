@@ -8,6 +8,7 @@ from sqlobject import SQLObjectNotFound
 from sutekh.SutekhUtility import delete_physical_card_set, delete_abstract_card_set
 from sutekh.core.SutekhObjects import AbstractCardSet, PhysicalCardSet
 from sutekh.core.Filters import NullFilter
+from sutekh.gui.SutekhDialog import do_complaint_error, do_complaint_warning
 from sutekh.gui.ScrolledList import ScrolledList
 from sutekh.gui.BasicFrame import BasicFrame
 from sutekh.gui.FilterDialog import FilterDialog
@@ -101,10 +102,7 @@ class CardSetManagementFrame(BasicFrame):
         if sName is not None:
             iCnt = self._cSetType.selectBy(name=sName).count()
             if iCnt > 0:
-                oComplaint = gtk.MessageDialog(None, 0, gtk.MESSAGE_ERROR,
-                        gtk.BUTTONS_CLOSE, "Chosen Card Set Name is already in use.")
-                oComplaint.run()
-                oComplaint.destroy()
+                do_complaint_error("Chosen Card Set Name is already in use.")
             else:
                 oCS = self._cSetType(name=sName, author=sAuthor, comment=sDescription)
                 oF = self._oMainWindow.add_pane()
@@ -121,11 +119,7 @@ class CardSetManagementFrame(BasicFrame):
         except SQLObjectNotFound:
             return
         if len(oCS.cards) > 0:
-            oDialog = gtk.MessageDialog(None, 0, gtk.MESSAGE_WARNING,
-                    gtk.BUTTONS_OK_CANCEL, "Card Set " + sSetName +
-                    " Not Empty. Really Delete?")
-            iResponse = oDialog.run()
-            oDialog.destroy()
+            iResponse = do_complaint_warning("Card Set %s Not Empty. Really Delete?" % sSetName)
             if iResponse == gtk.RESPONSE_CANCEL:
                 # Don't delete
                 return
@@ -206,6 +200,7 @@ class PhysicalCardSetListFrame(CardSetManagementFrame):
         self._sFilterType = 'PhysicalCardSet'
         self._sName = 'Physical Card Set List'
         self._oSetClass = PhysicalCardSet
+        self.set_name("physical card sets list")
         self.add_parts()
 
 class AbstractCardSetListFrame(CardSetManagementFrame):
@@ -215,6 +210,7 @@ class AbstractCardSetListFrame(CardSetManagementFrame):
         self._sFilterType = 'AbstractCardSet'
         self._sName = 'Abstract Card Set List'
         self._oSetClass = AbstractCardSet
+        self.set_name("abstract card sets list")
         self.add_parts()
 
 

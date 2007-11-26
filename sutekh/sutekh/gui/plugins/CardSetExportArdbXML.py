@@ -5,6 +5,7 @@
 import gtk
 from sutekh.core.SutekhObjects import PhysicalCardSet, AbstractCardSet, IAbstractCard
 from sutekh.gui.PluginManager import CardListPlugin
+from sutekh.gui.SutekhDialog import SutekhDialog
 from sutekh.io.WriteArdbXML import WriteArdbXML
 
 class CardSetExportArdbXML(CardListPlugin):
@@ -31,10 +32,10 @@ class CardSetExportArdbXML(CardListPlugin):
         oDlg.destroy()
 
     def makeDialog(self):
-        self.oDlg = gtk.Dialog("Choose FileName for Exported CardSet",self.parent,
-                          gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
-                          (gtk.STOCK_OK, gtk.RESPONSE_OK,
-                           gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
+        self.oDlg = SutekhDialog("Choose FileName for Exported CardSet", self.parent,
+                gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
+                (gtk.STOCK_OK, gtk.RESPONSE_OK,
+                    gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
         self.oFileChooser = gtk.FileChooserWidget(gtk.FILE_CHOOSER_ACTION_SAVE)
         self.oFileChooser.set_do_overwrite_confirmation(True)
         self.oDlg.vbox.pack_start(self.oFileChooser)

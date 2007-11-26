@@ -4,6 +4,7 @@
 
 import gtk, pango
 from sutekh.gui.PluginManager import CardListPlugin
+from sutekh.gui.SutekhDialog import SutekhDialog
 from sutekh.core.SutekhObjects import AbstractCard, PhysicalCard, \
                                       AbstractCardSet, PhysicalCardSet
 from sqlobject import SQLObjectNotFound
@@ -107,8 +108,8 @@ class ExtraCardViewColumns(CardListPlugin):
     def makeDialog(self):
         name = "Select Extra Columns ..."
 
-        oDlg = gtk.Dialog(name,self.parent,
-                          gtk.DIALOG_DESTROY_WITH_PARENT)
+        oDlg = SutekhDialog(name,self.parent,
+                gtk.DIALOG_DESTROY_WITH_PARENT)
         oDlg.add_button(gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE)
         oDlg.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
 

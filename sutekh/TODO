@@ -32,8 +32,6 @@ Gui (Presentation):
    * Replace some dialogs with gtk.MessageDialogs
    * Unify some of the other dialogs and make various bits more reusable 
      (cf. CreateCardSetDialog hack in plugins)
-   * Unified Complaint message dialog function?
-   * Standardised call to set_name for dialogs
  * Clean up the currently overly tangled controller/view/model interactions
  * Parse in a GTK rc file? (http://www.moeraki.com/pygtktutorial/pygtk2tutorial/ch-GtkRcFiles.html)
    * call set_name where appropriate, so Sutekh can be influenced by gtkrc file

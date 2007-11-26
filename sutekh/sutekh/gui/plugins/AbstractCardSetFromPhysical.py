@@ -6,6 +6,7 @@ import gtk
 from sutekh.core.SutekhObjects import AbstractCardSet, PhysicalCardSet
 from sutekh.gui.CreateCardSetDialog import CreateCardSetDialog
 from sutekh.gui.PluginManager import CardListPlugin
+from sutekh.gui.SutekhDialog import do_complaint_error
 
 class AbstractCardSetFromPhysical(CardListPlugin):
     """Create a equivilant Abstract Card Set from a given
@@ -40,10 +41,7 @@ class AbstractCardSetFromPhysical(CardListPlugin):
         if sName is not None:
             oNameList = AbstractCardSet.selectBy(name=sName)
             if oNameList.count() != 0:
-                Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
-                        gtk.BUTTONS_CLOSE,"Chosen Abstract Card Set already exists")
-                Complaint.run()
-                Complaint.destroy()
+                do_complaint_error("Chosen Abstract Card Set already exists")
                 return
             nA = AbstractCardSet(name=sName)
             nA.author = sAuthor

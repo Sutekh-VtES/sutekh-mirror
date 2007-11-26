@@ -3,6 +3,7 @@
 # GPL - see COPYING for details
 
 from sutekh.gui.PluginManager import CardListPlugin
+from sutekh.gui.SutekhDialog import do_complaint_error, do_complaint_warning
 from sutekh.core.SutekhObjects import AbstractCard
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
 import gtk
@@ -53,6 +54,7 @@ class FullBackup(CardListPlugin):
         oDlg = gtk.FileChooserDialog(sName,self.parent,action=gtk.FILE_CHOOSER_ACTION_SAVE,
                 buttons = (gtk.STOCK_OK, gtk.RESPONSE_OK,
                     gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
+        oDlg.set_name("Sutekh.dialog")
 
         oDlg.connect("response", self.handleBackupResponse)
         oDlg.set_local_only(True)
@@ -67,21 +69,15 @@ class FullBackup(CardListPlugin):
             bContinue = True
 
             if os.path.exists(sFile):
-                Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_WARNING,
-                        gtk.BUTTONS_OK_CANCEL,"Overwrite existing file %s?" % sFile)
-                bContinue = Complaint.run() != gtk.RESPONSE_CANCEL
-                Complaint.destroy()
+                iResponse = do_complaint_warning("Overwrite existing file %s?" % sFile)
 
-            if bContinue:
+            if iResponse != gtk.RESPONSE_CANCEL:
                 try:
                     oFile = ZipFileWrapper(sFile)
                     oFile.doDumpAllToZip()
                 except Exception, e:
                     sMsg = "Failed to write backup.\n\n" + str(e)
-                    Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
-                            gtk.BUTTONS_CLOSE,sMsg)
-                    Complaint.run()
-                    Complaint.destroy()
+                    do_complaint_error(sMsg)
 
         oDlg.destroy()
 
@@ -97,6 +93,7 @@ class FullBackup(CardListPlugin):
         oDlg = gtk.FileChooserDialog(sName,self.parent,action=gtk.FILE_CHOOSER_ACTION_OPEN,
                 buttons = (gtk.STOCK_OK, gtk.RESPONSE_OK,
                     gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
+        oDlg.set_name("Sutekh.dialog")
 
         oWarning = gtk.Label("This will delete all existing Physical Cards and Card Sets")
         oDlg.vbox.pack_start(oWarning,expand=False)
@@ -114,12 +111,9 @@ class FullBackup(CardListPlugin):
             bContinue = True
 
             if not os.path.exists(sFile):
-                Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_WARNING,
-                        gtk.BUTTONS_OK_CANCEL,"Backup file %s does not seem to exist." % sFile)
-                bContinue = Complaint.run() != gtk.RESPONSE_CANCEL
-                Complaint.destroy()
+                iResponse = do_complaint_warning("Backup file %s does not seem to exist." % sFile)
 
-            if bContinue:
+            if iResponse != gtk.RESPONSE_CANCEL:
                 try:
                     oFile = ZipFileWrapper(sFile)
                     oFile.doRestoreFromZip(oCardLookup=self.cardlookup)
@@ -127,10 +121,7 @@ class FullBackup(CardListPlugin):
                     self.reload_all()
                 except Exception, e:
                     sMsg = "Failed to restore backup.\n\n" + str(e)
-                    Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
-                            gtk.BUTTONS_CLOSE,sMsg)
-                    Complaint.run()
-                    Complaint.destroy()
+                    do_complaint_error(sMsg)
 
         oDlg.destroy()
 

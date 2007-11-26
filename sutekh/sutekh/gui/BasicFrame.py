@@ -10,11 +10,13 @@ class BasicFrame(gtk.Frame, object):
     def __init__(self, oMainWindow):
         super(BasicFrame, self).__init__()
         self._oMainWindow = oMainWindow
+        self.set_name("blank frame")
 
         # Ensure new panes aren't completely hidden
 
         self._oTitle = gtk.EventBox()
         self._oTitleLabel = gtk.Label('Blank Frame')
+        self._oTitleLabel.set_name('title')
         self._oTitle.add(self._oTitleLabel)
         oBuf = gtk.TextBuffer()
         self._oView = gtk.TextView()

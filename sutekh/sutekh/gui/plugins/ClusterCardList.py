@@ -9,6 +9,7 @@ from sutekh.core.SutekhObjects import AbstractCard, PhysicalCard, \
 from sutekh.core.CardListTabulator import CardListTabulator
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
+from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 
 # find a cluster module
 # Bio.Cluster needs a fromlist to do the right thing
@@ -54,8 +55,8 @@ class ClusterCardList(CardListPlugin):
 
         self.makePropGroups()
 
-        oDlg = gtk.Dialog(name,self.parent,
-                          gtk.DIALOG_DESTROY_WITH_PARENT)
+        oDlg = SutekhDialog(name,self.parent,
+                gtk.DIALOG_DESTROY_WITH_PARENT)
         oDlg.add_button(gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE)
         oDlg.add_button(gtk.STOCK_EXECUTE, gtk.RESPONSE_APPLY)
 
@@ -306,10 +307,7 @@ class ClusterCardList(CardListPlugin):
 
         # Check Deck Doesn't Exist
         if PhysicalCardSet.selectBy(name=sDeckName).count() != 0:
-            oComplaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
-                                          gtk.BUTTONS_CLOSE,"Deck %s already exists." % sDeckName)
-            oComplaint.connect("response",lambda oW, oResp: oW.destroy())
-            oComplaint.run()
+            do_complaint_error("Physical Card Set %s already exists." % sDeckName)
             return
 
         # Create Deck
@@ -326,10 +324,7 @@ class ClusterCardList(CardListPlugin):
 
         # Check ACS Doesn't Exist
         if AbstractCardSet.selectBy(name=sACSName).count() != 0:
-            oComplaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
-                                          gtk.BUTTONS_CLOSE,"Abstract Card Set %s already exists." % sACSName)
-            oComplaint.connect("response",lambda oW, oResp: oW.destroy())
-            oComplaint.run()
+            do_complaint_error("Abstract Card Set %s already exists." % sACSName)
             return
 
         # Create ACS

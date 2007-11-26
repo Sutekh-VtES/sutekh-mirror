@@ -6,6 +6,7 @@
 import gtk
 from sqlobject import SQLObjectNotFound
 from sutekh.gui.DBSignals import send_reload_signal
+from sutekh.gui.SutekhDialog import do_complaint
 from sutekh.gui.PhysicalCardView import PhysicalCardView
 from sutekh.core.SutekhObjects import PhysicalCard, \
         AbstractCard, IExpansion, \
@@ -80,11 +81,8 @@ class PhysicalCardController(object):
             for oPCS in aPCS:
                 sText += "<span foreground = \"blue\">" + oPCS.name + "</span>\n"
             sText += "<b>Really Delete?</b>"
-            oDialog = gtk.MessageDialog(None, 0, gtk.MESSAGE_QUESTION,
-                    gtk.BUTTONS_YES_NO, None)
-            oDialog.set_markup(sText)
-            iResponse = oDialog.run()
-            oDialog.destroy()
+            iResponse = do_complaint(sText, gtk.MESSAGE_QUESTION,
+                    gtk.BUTTONS_YES_NO, True)
             if iResponse == gtk.RESPONSE_YES:
                 # User agrees
                 # Delete card from all the PhysicalCardSets first

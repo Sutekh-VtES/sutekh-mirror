@@ -13,6 +13,7 @@ from sutekh.core.SutekhObjects import AbstractCard, PhysicalCard, IExpansion, \
 from sutekh.core.CardLookup import AbstractCardLookup, PhysicalCardLookup, \
         LookupFailed
 from sutekh.core.Filters import CardNameFilter
+from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 from sutekh.gui.PhysicalCardView import PhysicalCardView
 from sutekh.gui.AbstractCardView import AbstractCardView
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
@@ -232,7 +233,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup):
            Physical Card List
         """
 
-        oUnknownDialog = gtk.Dialog("Unknown Physical cards found importing %s" % sInfo, None,
+        oUnknownDialog = SutekhDialog("Unknown Physical cards found importing %s" % sInfo, None,
                 gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                 (gtk.STOCK_OK, gtk.RESPONSE_OK,
                  gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
@@ -355,7 +356,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup):
            We allow the user to select the correct replacements from the Abstract
            Card List
            """
-        oUnknownDialog = gtk.Dialog("Unknown cards found importing %s" % sInfo, None,
+        oUnknownDialog = SutekhDialog("Unknown cards found importing %s" % sInfo, None,
                 gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                 (gtk.STOCK_OK, gtk.RESPONSE_OK,
                  gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
@@ -454,20 +455,13 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup):
         if sType == 'Physical' and \
                 not self._check_physical_cards(sNewName, iCnt, aPhysCards,
                         aAssignedCards, aTheseCards):
-            oComplaint = gtk.MessageDialog(None, 0, gtk.MESSAGE_ERROR,
-                gtk.BUTTONS_OK, "Not enough copies of %s" % sNewName)
-            oComplaint.connect("response", lambda oW, oResp: oW.destroy())
-            oComplaint.run()
+            do_complaint_error("Not enough copies of %s" % sNewName)
             return
         elif sType == 'Physical' and \
                 not self._check_physical_cards_with_expansion(sNewName,
                         sExpansion, iCnt, aPhysCards, aAssignedCards, aTheseCards):
-            oComplaint = gtk.MessageDialog(None, 0, gtk.MESSAGE_ERROR,
-                gtk.BUTTONS_OK,
-                "Not enough copies of %s from expansion %s\n." \
-                "Ignoring the expansion specification" % (sNewName, sExpansion))
-            oComplaint.connect("response", lambda oW, oResp: oW.destroy())
-            oComplaint.run()
+            do_complaint_error("Not enough copies of %s from expansion %s\n." \
+                    "Ignoring the expansion specification" % (sNewName, sExpansion))
             sExpansion = ''
         if sType == 'Physical':
             oView.set_card_set_holder_numbers(aPhysCards, dCandCards)

@@ -4,6 +4,7 @@
 # GPL - see COPYING for details
 
 import gtk
+from sutekh.gui.SutekhDialog import do_complaint_warning
 from sutekh.gui.CardListView import EditableCardListView
 from sutekh.gui.CardListModel import PhysicalCardSetCardListModel, CardListModel
 from sutekh.core.Filters import AbstractCardSetFilter
@@ -63,10 +64,7 @@ class CardSetView(EditableCardListView):
         # Check if CardSet is empty
         oCS = self.cSetType.byName(self.sSetName)
         if len(oCS.cards)>0:
-            oDialog = gtk.MessageDialog(None, 0, gtk.MESSAGE_WARNING,
-                    gtk.BUTTONS_OK_CANCEL, "Card Set Not Empty. Really Delete?")
-            iResponse = oDialog.run()
-            oDialog.destroy()
+            iResponse = do_complaint_warning("Card Set Not Empty. Really Delete?")
             if iResponse == gtk.RESPONSE_CANCEL:
                 return False # not deleting
         # Got this far, so delete the card set

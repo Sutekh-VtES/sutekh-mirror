@@ -9,6 +9,7 @@ from sutekh.core.Groupings import CardTypeGrouping, ClanGrouping, DisciplineGrou
                              ExpansionGrouping, RarityGrouping, CryptLibraryGrouping, \
                              NullGrouping
 from sutekh.gui.PluginManager import CardListPlugin
+from sutekh.gui.SutekhDialog import SutekhDialog
 
 class GroupCardList(CardListPlugin):
     dTableVersions = {}
@@ -45,8 +46,8 @@ class GroupCardList(CardListPlugin):
     def makeDialog(self):
         name = "Change Card List Grouping..."
 
-        oDlg = gtk.Dialog(name,self.parent,
-                          gtk.DIALOG_DESTROY_WITH_PARENT)
+        oDlg = SutekhDialog(name,self.parent,
+                gtk.DIALOG_DESTROY_WITH_PARENT)
         oDlg.add_button(gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE)
         oDlg.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
 

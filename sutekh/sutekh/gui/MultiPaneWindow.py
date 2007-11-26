@@ -26,6 +26,7 @@ class MultiPaneWindow(gtk.Window):
     """Window that has a configurable number of panes."""
     def __init__(self, oConfig):
         super(MultiPaneWindow, self).__init__(gtk.WINDOW_TOPLEVEL)
+        self.set_name("Sutekh")
         self._oFocussed = None
         self._oConfig = oConfig
         # Create object cache

@@ -8,6 +8,7 @@ import gtk
 from sutekh.core.SutekhObjects import PhysicalCardSet, AbstractCardSet, IAbstractCard
 from sutekh.core.Filters import CardTypeFilter
 from sutekh.gui.PluginManager import CardListPlugin
+from sutekh.gui.SutekhDialog import SutekhDialog
 
 class AnalyzeCardList(CardListPlugin):
     dTableVersions = {PhysicalCardSet : [3,4],
@@ -70,9 +71,9 @@ class AnalyzeCardList(CardListPlugin):
         sComment = oCS.comment.replace('&','&amp;')
         sAuthor = oCS.author
 
-        dlg = gtk.Dialog(name,self.parent,
-                         gtk.DIALOG_DESTROY_WITH_PARENT,
-                         (gtk.STOCK_OK, gtk.RESPONSE_OK))
+        dlg = SutekhDialog(name, self.parent,
+                gtk.DIALOG_DESTROY_WITH_PARENT,
+                (gtk.STOCK_OK, gtk.RESPONSE_OK))
         dlg.connect("response", lambda dlg, resp: dlg.destroy())
         oNotebook = gtk.Notebook()
         # Oh, popup_enable and scrollable - how I adore thee

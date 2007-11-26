@@ -15,6 +15,7 @@ class AbstractCardListFrame(CardListFrame):
 
         self._sName = "White Wolf CardList"
         self.set_title(self._sName)
+        self.set_name("abstract card list")
 
         self._oC = AbstractCardListController(self, oConfig, oMainWindow)
 

@@ -7,6 +7,7 @@ from sutekh.core.SutekhObjects import PhysicalCard, AbstractCardSet, \
                                  PhysicalCardSet, AbstractCard, IAbstractCard
 from sutekh.core.Filters import PhysicalCardSetFilter, AbstractCardSetFilter
 from sutekh.gui.PluginManager import CardListPlugin
+from sutekh.gui.SutekhDialog import SutekhDialog
 from sutekh.gui.ScrolledList import ScrolledList
 
 class CardSetCompare(CardListPlugin):
@@ -37,10 +38,10 @@ class CardSetCompare(CardListPlugin):
         """
         Create the list of card sets to select
         """
-        self.oDlg = gtk.Dialog("Choose Card Set to Compare with", self.parent,
-                          gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
-                          (gtk.STOCK_OK, gtk.RESPONSE_OK,
-                           gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
+        self.oDlg = SutekhDialog("Choose Card Set to Compare with", self.parent,
+                gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
+                (gtk.STOCK_OK, gtk.RESPONSE_OK,
+                    gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
         if self._cModelType is AbstractCardSet:
             oSelect = AbstractCardSet.select().orderBy('name')
             self.oCSList = ScrolledList('Abstract Card Sets')
@@ -67,7 +68,7 @@ class CardSetCompare(CardListPlugin):
 
     def comp_card_sets(self, aCardSetNames):
         (dDifferences, aCommon) = self.__get_card_set_list(aCardSetNames)
-        Results = gtk.Dialog("Card Comparison", self.parent, gtk.DIALOG_MODAL | \
+        Results = SutekhDialog("Card Comparison", self.parent, gtk.DIALOG_MODAL | \
                 gtk.DIALOG_DESTROY_WITH_PARENT, \
                 (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
         myHBox = gtk.HBox(False, 0)

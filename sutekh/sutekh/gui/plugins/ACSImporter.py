@@ -11,6 +11,7 @@ from sutekh.core.SutekhObjects import AbstractCard, AbstractCardSet
 from sutekh.core.CardSetHolder import CardSetHolder
 from sutekh.core.CardLookup import LookupFailed
 from sutekh.gui.PluginManager import CardListPlugin
+from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 
 class ACSImporter(CardListPlugin):
     dTableVersions = { AbstractCardSet: [2,3]}
@@ -43,7 +44,7 @@ class ACSImporter(CardListPlugin):
         oDlg.run()
 
     def makeDialog(self):
-        self.oDlg = gtk.Dialog("Choose Card Set File or URL",None,
+        self.oDlg = SutekhDialog("Choose Card Set File or URL",None,
                 gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                 (gtk.STOCK_OK, gtk.RESPONSE_OK,
                  gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
@@ -115,10 +116,7 @@ class ACSImporter(CardListPlugin):
         # Check ACS Doesn't Exist
         if AbstractCardSet.selectBy(name=oHolder.name).count() != 0:
             sMsg = "Abstract Card Set %s already exists." % oHolder.name
-            oComplaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
-                                           gtk.BUTTONS_CLOSE, sMsg)
-            oComplaint.connect("response",lambda oW, oResp: oW.destroy())
-            oComplaint.run()
+            do_complaint_error(sMsg)
             return
 
         # Create ACS
@@ -129,10 +127,7 @@ class ACSImporter(CardListPlugin):
             sMsg += str(e) + "\n"
             sMsg += "The file is probably not in the format the ELDB Parser expects\n"
             sMsg += "Aborting"
-            oComplaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
-                                           gtk.BUTTONS_OK, sMsg)
-            oComplaint.connect("response",lambda oW, oResp: oW.destroy())
-            oComplaint.run()
+            do_complaint_error(sMsg)
             return
         except LookupFailed, e:
             return

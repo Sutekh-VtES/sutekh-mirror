@@ -2,8 +2,9 @@
 # Copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
 
 import gtk
+from sutekh.gui.SutekhDialog import SutekhDialog
 
-class PropDialog(gtk.Dialog):
+class PropDialog(SutekhDialog):
     def __init__(self, sTitle, oParent, sCurName, sCurAuthor, sCurComment):
         super(PropDialog, self).__init__(sTitle, oParent,
                 gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,

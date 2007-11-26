@@ -4,8 +4,9 @@
 # GPL - see COPYING for details
 
 import gtk
+from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 
-class CreateCardSetDialog(gtk.Dialog):
+class CreateCardSetDialog(SutekhDialog):
     def __init__(self, oParent, sType, sAuthor=None, sDesc=None):
         super(CreateCardSetDialog, self).__init__(sType + " Card Set Details",
             oParent, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
@@ -58,10 +59,6 @@ class CreateCardSetDialog(gtk.Dialog):
                 # We don't allow empty names
                 self.sName = None
 
-                oComplaint = gtk.MessageDialog(None, 0, gtk.MESSAGE_ERROR,
-                    gtk.BUTTONS_CLOSE,
-                    "You did not specify a name for the %s Card Set." % self.sType)
-                oComplaint.run()
-                oComplaint.destroy()
+                do_complaint_error("You did not specify a name for the %s Card Set." % self.sType)
 
         self.destroy()

@@ -5,6 +5,7 @@
 import gtk
 from sutekh.core.SutekhObjects import PhysicalCardSet, PhysicalCard
 from sutekh.gui.PluginManager import CardListPlugin
+from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 
 class DeckFromFilter(CardListPlugin):
     dTableVersions = { PhysicalCardSet : [2,3]}
@@ -31,7 +32,7 @@ class DeckFromFilter(CardListPlugin):
         oDlg.run()
 
     def makeDialog(self):
-        self.oDlg = gtk.Dialog("Choose Physical Card Set Name",self.parent,
+        self.oDlg = SutekhDialog("Choose Physical Card Set Name", self.parent,
                           gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                           (gtk.STOCK_OK, gtk.RESPONSE_OK,
                            gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
@@ -55,10 +56,7 @@ class DeckFromFilter(CardListPlugin):
     def makeDeckFromFilter(self,sPCSName):
         # Check PCS Doesn't Exist
         if PhysicalCardSet.selectBy(name=sPCSName).count() != 0:
-            oComplaint = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
-                                           gtk.BUTTONS_CLOSE,"Physical Card Set %s already exists." % sPCSName)
-            oComplaint.connect("response",lambda oW, oResp: oW.destroy())
-            oComplaint.run()
+            do_complaint_error("Physical Card Set %s already exists." % sPCSName)
             return
 
         # Create PCS

@@ -7,6 +7,7 @@
 import gtk
 import copy
 from sutekh.gui.ScrolledList import ScrolledList
+from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 from sutekh.core import FilterParser
 from sutekh.gui.ConfigFile import ConfigFileListener
@@ -22,7 +23,7 @@ aDefaultFilterList = [
         "PhysicalExpansion in $foo"
         ]
 
-class FilterDialog(gtk.Dialog, ConfigFileListener):
+class FilterDialog(SutekhDialog, ConfigFileListener):
 
     __iAddButtonResponse = 1
     __iDeleteButtonResponse = 2
@@ -73,7 +74,7 @@ class FilterDialog(gtk.Dialog, ConfigFileListener):
             try:
                 oAST = self.__oParser.apply(sFilter)
             except ValueError:
-                self.__doComplaint("Invalid Filter Syntax: " + sFilter)
+                do_complaint_error("Invalid Filter Syntax: " + sFilter)
                 continue
             sId = self.__addFilterToDialog(oAST, sFilter)
             self.__aDefaultLabels.append(sId)
@@ -89,7 +90,7 @@ class FilterDialog(gtk.Dialog, ConfigFileListener):
                 sMessages += sFilter + "\n"
                 self.__oConfig.removeFilter(sFilter, sId)
         if sMessages != '':
-            self.__doComplaint("The Following Invalid filters have been removed from the config file:\n " + sMessages)
+            do_complaint_error("The Following Invalid filters have been removed from the config file:\n " + sMessages)
         self.show_all()
         # Add Listener, so we catch changes in future
         oConfig.addListener(self)
@@ -244,18 +245,12 @@ class FilterDialog(gtk.Dialog, ConfigFileListener):
         oWidget.fill_list(aVals)
         return oWidget
 
-    def __doComplaint(self, sMessage):
-        oComplaint = gtk.MessageDialog(None, 0, gtk.MESSAGE_ERROR,
-                gtk.BUTTONS_CLOSE, sMessage)
-        oComplaint.run()
-        oComplaint.destroy()
-
     def __doAddEditFilterDialog(self, sEditFilter=''):
         if sEditFilter == '':
             sTitle = "Enter the New Filter"
         else:
             sTitle = "Edit the Filter"
-        oEditFilterDialog = gtk.Dialog(sTitle, self,
+        oEditFilterDialog = SutekhDialog(sTitle, self,
                 gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                 (gtk.STOCK_OK, gtk.RESPONSE_OK,
                     gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
@@ -287,7 +282,7 @@ class FilterDialog(gtk.Dialog, ConfigFileListener):
                 try:
                     oAST = self.__oParser.apply(sFilter)
                 except ValueError:
-                    self.__doComplaint("Invalid Filter Syntax: " + sFilter)
+                    do_complaint_error("Invalid Filter Syntax: " + sFilter)
                     # Rerun the dialog, should do the right thing
                     continue
                 aWrongVals = oAST.getInvalidValues()
@@ -295,11 +290,11 @@ class FilterDialog(gtk.Dialog, ConfigFileListener):
                     sMessage = "The following values are invalid for the filter\n"
                     for sVal in aWrongVals:
                         sMessage += sVal + '\n'
-                    self.__doComplaint(sMessage)
+                    do_complaint_error(sMessage)
                     continue
                 if self.__sFilterType not in oAST.getType():
                     sMessage = "Filter isn't valid for this pane\n"
-                    self.__doComplaint(sMessage)
+                    do_complaint_error(sMessage)
                     continue
                 if sEditFilter == '':
                     self.__oConfig.addFilter(sFilter)
@@ -314,7 +309,7 @@ class FilterDialog(gtk.Dialog, ConfigFileListener):
             # Should be safe, but just in case
             oAST = self.__oParser.apply(sNewFilter)
         except ValueError:
-            self.__doComplaint("Invalid Filter Syntax: " + sNewFilter)
+            do_complaint_error("Invalid Filter Syntax: " + sNewFilter)
             return
         self.__replaceFilterInDialog(oAST, sOldFilter, sNewFilter, sId)
         self.__oRadioArea.show_all()
@@ -324,7 +319,7 @@ class FilterDialog(gtk.Dialog, ConfigFileListener):
             # Should be safe, but just in case
             oAST = self.__oParser.apply(sFilter)
         except ValueError:
-            self.__doComplaint("Invalid Filter Syntax: " + sFilter)
+            do_complaint_error("Invalid Filter Syntax: " + sFilter)
             return
         self.__addFilterToDialog(oAST, sFilter, sId)
         self.__oRadioArea.show_all()
