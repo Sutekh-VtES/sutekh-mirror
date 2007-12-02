@@ -69,9 +69,9 @@ class FullBackup(CardListPlugin):
             bContinue = True
 
             if os.path.exists(sFile):
-                iResponse = do_complaint_warning("Overwrite existing file %s?" % sFile)
+                bContinue = do_complaint_warning("Overwrite existing file %s?" % sFile) != gtk.RESPONSE_CANCEL
 
-            if iResponse != gtk.RESPONSE_CANCEL:
+            if bContinue:
                 try:
                     oFile = ZipFileWrapper(sFile)
                     oFile.doDumpAllToZip()
@@ -111,9 +111,9 @@ class FullBackup(CardListPlugin):
             bContinue = True
 
             if not os.path.exists(sFile):
-                iResponse = do_complaint_warning("Backup file %s does not seem to exist." % sFile)
+                bContinue = do_complaint_warning("Backup file %s does not seem to exist." % sFile) != gtk.RESPONSE_CANCEL
 
-            if iResponse != gtk.RESPONSE_CANCEL:
+            if bContinue:
                 try:
                     oFile = ZipFileWrapper(sFile)
                     oFile.doRestoreFromZip(oCardLookup=self.cardlookup)
