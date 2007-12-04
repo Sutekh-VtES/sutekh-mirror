@@ -156,12 +156,8 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup):
                     dUnknownCards[sName] = None
 
         if dUnknownCards:
-            bContinue = self._do_handle_unknown_abstract_cards(dUnknownCards, sInfo)
-        else:
-            bContinue = True
-
-        if not bContinue:
-            raise LookupFailed("Lookup of missing cards aborted by the user.")
+            if not self._do_handle_unknown_abstract_cards(dUnknownCards, sInfo):
+                raise LookupFailed("Lookup of missing cards aborted by the user.")
 
         for sName, sNewName in dUnknownCards.items():
             if sNewName is None:
