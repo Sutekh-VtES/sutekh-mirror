@@ -16,12 +16,6 @@ class CardListFrame(BasicFrame):
         self._oC = None
         self._cModelType = None
 
-        self._oBaseStyle = self._oTitle.get_style().copy()
-        self._oFocStyle = self._oTitle.get_style().copy()
-        oMap = self._oTitle.get_colormap()
-        oHighlighted = oMap.alloc_color("purple")
-        self._oFocStyle.fg[gtk.STATE_NORMAL] = oHighlighted
-
     view = property(fget=lambda self: self._oC.view, doc="Associated View Object")
     menu = property(fget=lambda self: self._oMenu, doc="Frame Menu")
     type = property(fget=lambda self: self._cModelType.sqlmeta.table, doc="Frame Type")
