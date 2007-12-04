@@ -26,6 +26,7 @@ class MainMenu(gtk.MenuBar, object):
         self.__oConfig = oConfig
         self.__create_file_menu()
         self.__create_pane_menu()
+        self.__create_plugin_menu()
         self.__create_about_menu()
 
     def __create_file_menu(self):
@@ -151,6 +152,27 @@ class MainMenu(gtk.MenuBar, object):
         self.__oDelPane.set_sensitive(False)
 
         self.add(iMenu)
+
+    def __create_plugin_menu(self):
+        # setup sub menu
+        iMenu = gtk.MenuItem("Plugins")
+        wMenu = gtk.Menu()
+        self.__dMenus["Plugins"] = wMenu
+        # plugins
+        for oPlugin in self.__oWin._aPlugins:
+            oMI = oPlugin.get_menu_item()
+            if oMI is not None:
+                sMenu = oPlugin.get_desired_menu()
+                # Add to the requested menu if supplied
+                if sMenu in self.__dMenus.keys():
+                    self.__dMenus[sMenu].add(oMI)
+                else:
+                    # Plugins acts as a catchall Menu
+                    wMenu.add(oMI)
+        iMenu.set_submenu(wMenu)
+        self.add(iMenu)
+        if len(wMenu.get_children()) == 0:
+            iMenu.set_sensitive(False)
 
     def del_pane_set_sensitive(self, bValue):
         self.__oDelPane.set_sensitive(bValue)

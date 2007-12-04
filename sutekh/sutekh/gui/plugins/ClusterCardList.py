@@ -28,7 +28,9 @@ class ClusterCardList(CardListPlugin):
 
     def __init__(self,*args,**kws):
         super(ClusterCardList,self).__init__(*args,**kws)
-        if self.model.cardclass is PhysicalCard:
+        if not self.model:
+            self._makeCardSetFromCluster = None
+        elif self.model.cardclass is PhysicalCard:
             self._makeCardSetFromCluster = self.makeDeckFromCluster
         else:
             self._makeCardSetFromCluster = self.makeACSFromCluster

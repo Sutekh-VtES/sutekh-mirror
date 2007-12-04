@@ -40,14 +40,19 @@ class MultiPaneWindow(gtk.Window):
         self.set_default_size(800, 600)
         self.oVBox = gtk.VBox(False, 1)
         self._aHPanes = []
+        self._aPlugins = []
+        self._oPluginManager = PluginManager()
+        self._oPluginManager.load_plugins()
+        for cPlugin in self._oPluginManager.get_card_list_plugins():
+            # Find plugins that will work on the Main Window
+            self._aPlugins.append(cPlugin(None, None,
+                "MainWindow"))
         self.__oMenu = MainMenu(self, oConfig)
         self.oVBox.show()
         self.oVBox.pack_start(self.__oMenu, False, False)
         self.add(self.oVBox)
         # Need this so allocations happen properly in add_pane
         self._iNumberOpenFrames = 0
-        self._oPluginManager = PluginManager()
-        self._oPluginManager.load_plugins()
         self._iCount = 0
         # Need to keep track of open card sets globally
         self.dOpenFrames = {}

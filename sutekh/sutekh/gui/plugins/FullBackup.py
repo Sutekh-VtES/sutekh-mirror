@@ -4,14 +4,13 @@
 
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhDialog import do_complaint_error, do_complaint_warning
-from sutekh.core.SutekhObjects import AbstractCard
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
 import gtk
 import os
 
 class FullBackup(CardListPlugin):
     dTableVersions = {}
-    aModelsSupported = [AbstractCard]
+    aModelsSupported = ["MainWindow"]
 
     def __init__(self,*args,**kws):
         super(FullBackup,self).__init__(*args,**kws)

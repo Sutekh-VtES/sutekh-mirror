@@ -3,7 +3,7 @@ Backend:
  * DatabaseUpgrade could be less brittle
  * Better error and exception handling
  * Rework SutekhUtility to be less of a mess
- * Export directly to HTML.
+ * Use elementtree to handle XML parsing, as being more portable
 
 Code Cleanup
  * Unify conventions ('Abstract' vs 'AbstractCardSet' in card set management, etc.)
@@ -34,7 +34,6 @@ Gui (Presentation):
      (cf. CreateCardSetDialog hack in plugins)
  * Clean up the currently overly tangled controller/view/model interactions
  * Parse in a GTK rc file? (http://www.moeraki.com/pygtktutorial/pygtk2tutorial/ch-GtkRcFiles.html)
-   * call set_name where appropriate, so Sutekh can be influenced by gtkrc file
  * Complete inuse flag work 
    * Add support to gui for setting + displaying status
    * Add filter on inuse card sets
