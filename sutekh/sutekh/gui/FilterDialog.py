@@ -160,6 +160,9 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
                 oWidget = gtk.Entry(100)
                 oWidget.set_width_chars(30)
                 self.__dExpanded[sId].append(oWidget)
+            elif oPart.isNone():
+                oWidget = gtk.Label(oPart.value)
+                self.__dExpanded[sId].append(oWidget)
             sPrevName = oPart.value
         oRadioButton = gtk.RadioButton(self.__oRadioGroup)
         if self.__oRadioGroup is None:

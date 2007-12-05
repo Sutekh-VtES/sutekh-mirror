@@ -31,8 +31,9 @@ aFilters = [MultiCardTypeFilter, MultiCostTypeFilter, MultiClanFilter,
         PhysicalCardSetAnnotationsFilter, MultiPhysicalCardSetFilter,
         MultiPhysicalCardCountFilter]
 
-aEntryFilters = [x.keyword for x in aFilters if hasattr(x,'istextentry')]
-aWithFilters = [x.keyword for x in aFilters if hasattr(x,'iswithfilter')]
+aEntryFilters = [x.keyword for x in aFilters if hasattr(x,'istextentry') and x.istextentry]
+aWithFilters = [x.keyword for x in aFilters if hasattr(x,'iswithfilter') and x.iswithfilter]
+aListFilters = [x.keyword for x in aFilters if hasattr(x,'islistfilter') and x.islistfilter]
 
 def getFilterType(sKeyword):
     return [x for x in aFilters if x.keyword == sKeyword][0]
@@ -149,6 +150,16 @@ class FilterYaccParser(object):
         """filterpart : FILTERTYPE IN VARIABLE"""
         p[0] = FilterPartNode(p[1], None)
 
+    def p_filterpart(self, p):
+        """filterpart : FILTERTYPE"""
+        oNode = FilterPartNode(p[1], None)
+        aRes = oNode.getValues()
+        if aRes[0].isNone():
+            # Filter that takes no type, so legal
+            p[0] = FilterPartNode(p[1], None)
+        else:
+            raise ValueError("Invalid filter syntax: Missing values or variable for filter")
+
     def p_expression_comma(self, p):
         """expression : expression COMMA expression"""
         p[0] = CommaNode(p[1], p[2], p[3])
@@ -206,13 +217,16 @@ class ValueObject(object):
         self.node = oNode
 
     def isEntry(self):
-        return self.value is None
+        return type(self.value) is str and self.value == ''
 
     def isList(self):
         return type(self.value) is list
 
     def isValue(self):
-        return type(self.value) is str
+        return type(self.value) is str and self.value != ''
+
+    def isNone(self):
+        return self.value is None
 
 # AST object (formulation inspired by Simon Cross's example, and notes
 # from the ply documentation)
@@ -302,12 +316,15 @@ class FilterPartNode(OperatorNode):
     def getValues(self):
         if self.filtertype in aEntryFilters:
             aResults = [ValueObject(getFilterType(self.filtertype).description + ' includes', self)]
-        else:
+        elif self.filtertype in aListFilters:
             aResults = [ValueObject(getFilterType(self.filtertype).description + ' in', self)]
+        else:
+            # We don't take any input for this filter, so there are no values to return
+            return [ValueObject(getFilterType(self.filtertype).description, self)]
         if self.filtervalues is None:
             aVals = getFilterType(self.filtertype).getValues()
             # Want a list within ValueObject for the GUI stuff to work
-            # None case for Entry boxes works as well
+            # '' case for Entry boxes works as well
             aResults.append(ValueObject(aVals, self))
         else:
             aResults.extend(self.filtervalues.getValues())
@@ -315,7 +332,7 @@ class FilterPartNode(OperatorNode):
 
     def getInvalidValues(self):
         aRes = []
-        if self.filtervalues is None or self.filtertype in aEntryFilters:
+        if self.filtervalues is None or self.filtertype not in aListFilters:
             return None
         aCurVals = self.filtervalues.getValues()
         oTemp = getFilterType(self.filtertype)([]) # Create Instance

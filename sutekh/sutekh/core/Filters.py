@@ -168,6 +168,7 @@ class ClanFilter(SingleFilter):
 
 class MultiClanFilter(MultiFilter):
     keyword = "Clan"
+    islistfilter = True
     description = "Clan"
     helptext = "a list of clans"
     types = ['AbstractCard', 'PhysicalCard']
@@ -192,6 +193,7 @@ class MultiDisciplineFilter(MultiFilter):
     keyword = "Discipline"
     description = "Discipline"
     helptext = "a list of disciplines"
+    islistfilter = True
     types = ['AbstractCard', 'PhysicalCard']
 
     def __init__(self, aDisciplines):
@@ -240,6 +242,7 @@ class MultiExpansionRarityFilter(MultiFilter):
     description = "Expansion with Rarity"
     helptext = "a list of expansions and rarities,\n   each element specified as an expansion with associated rarity'"
     iswithfilter = True
+    islistfilter = True
     types = ['AbstractCard', 'PhysicalCard']
 
     def __init__(self, aExpansionRarities):
@@ -279,6 +282,7 @@ class MultiDisciplineLevelFilter(MultiFilter):
     description = "Discipline with Level"
     helptext = "a list of discipline with levels,\n   each element specified as a discipline with level'"
     iswithfilter = True
+    islistfilter = True
     types = ['AbstractCard', 'PhysicalCard']
 
     def __init__(self, aDiscLevels):
@@ -312,6 +316,7 @@ class MultiCardTypeFilter(MultiFilter):
     keyword = "CardType"
     description = "Card Type"
     helptext = "a list of card types"
+    islistfilter = True
     types = ['AbstractCard', 'PhysicalCard']
 
     def __init__(self, aCardTypes):
@@ -334,6 +339,7 @@ class MultiSectFilter(MultiFilter):
     keyword = "Sect"
     description = "Sect"
     helptext = "a list of sects"
+    islistfilter = True
     types = ['AbstractCard', 'PhysicalCard']
 
     def __init__(self, aSects):
@@ -356,6 +362,7 @@ class MultiTitleFilter(MultiFilter):
     keyword = "Title"
     description = "Title"
     helptext = "a list of titles"
+    islistfilter = True
     types = ['AbstractCard', 'PhysicalCard']
 
     def __init__(self, aTitles):
@@ -378,6 +385,7 @@ class MultiCreedFilter(MultiFilter):
     keyword = "Creed"
     description = "Creed"
     helptext = "a list of creeds"
+    islistfilter = True
     types = ['AbstractCard', 'PhysicalCard']
 
     def __init__(self, aCreeds):
@@ -400,6 +408,7 @@ class MultiVirtueFilter(MultiFilter):
     keyword = "Virtue"
     description = "Virtue"
     helptext = "a list of virtues"
+    islistfilter = True
     types = ['AbstractCard', 'PhysicalCard']
 
     def __init__(self, aVirtues):
@@ -423,6 +432,7 @@ class MultiGroupFilter(DirectFilter):
     keyword = "Group"
     description = "Group"
     helptext = "a list of groups"
+    islistfilter = True
     types = ['AbstractCard', 'PhysicalCard']
 
     def __init__(self, aGroups):
@@ -447,6 +457,7 @@ class MultiCapacityFilter(DirectFilter):
     keyword = "Capacity"
     description = "Capacity"
     helptext = "a list of capacities"
+    islistfilter = True
     types = ['AbstractCard', 'PhysicalCard']
 
     def __init__(self, aCaps):
@@ -473,6 +484,7 @@ class MultiCostFilter(DirectFilter):
     keyword = "Cost"
     description = "Cost"
     helptext = "a list of costs"
+    islistfilter = True
     types = ['AbstractCard', 'PhysicalCard']
 
     def __init__(self, aCost):
@@ -498,6 +510,7 @@ class CostTypeFilter(DirectFilter):
 
 class MultiCostTypeFilter(DirectFilter):
     keyword = "CostType"
+    islistfilter = True
     description = "Cost Type"
     helptext = "a list of cost types"
     types = ['AbstractCard', 'PhysicalCard']
@@ -529,6 +542,7 @@ class MultiLifeFilter(DirectFilter):
     keyword = "Life"
     description = "Life"
     helptext = "a list of life values"
+    islistfilter = True
     types = ['AbstractCard', 'PhysicalCard']
 
     def __init__(self, aLife):
@@ -553,7 +567,7 @@ class CardTextFilter(DirectFilter):
 
     @classmethod
     def getValues(cls):
-        return None
+        return ''
 
     def _getExpression(self):
         return LIKE(func.LOWER(AbstractCard.q.text), '%' + self.__sPattern + '%')
@@ -570,7 +584,7 @@ class CardNameFilter(DirectFilter):
 
     @classmethod
     def getValues(cls):
-        return None
+        return ''
 
     def _getExpression(self):
         return LIKE(AbstractCard.q.canonicalName, '%' + self.__sPattern.lower() + '%')
@@ -592,6 +606,7 @@ class MultiPhysicalCardCountFilter(DirectFilter):
     keyword = "PhysicalCardCount"
     description = "Filter on numer of cards in the Physical Card list"
     helptext = "a list of card numbers"
+    islistfilter = True
     types = ['AbstractCard', 'PhysicalCard']
 
     def __init__(self, aCounts):
@@ -645,6 +660,7 @@ class MultiPhysicalExpansionFilter(DirectFilter):
     description = "Physical Expansion"
     helptext = "List of physical cards with in the specified expansion"
     types = ['PhysicalCard']
+    islistfilter = True
     __sUnspec = '  Unspecified Expansion'
 
     def __init__(self, aExpansions):
@@ -694,6 +710,7 @@ class MultiPhysicalCardSetFilter(Filter):
     keyword = "PhysicalSet"
     description = "Physical Sets"
     helptext = "List of physical cards in the specified Physical Card Sets"
+    islistfilter = True
     types = ['PhysicalCard']
 
     def __init__(self, aNames):
@@ -756,7 +773,7 @@ class CardSetNameFilter(DirectFilter):
 
     @classmethod
     def getValues(cls):
-        return None
+        return ''
 
     def _getExpression(self):
         return LIKE(func.LOWER(self._oT.name), '%' + self.__sPattern + '%')
@@ -774,7 +791,7 @@ class CardSetDescriptionFilter(DirectFilter):
 
     @classmethod
     def getValues(cls):
-        return None
+        return ''
 
     def _getExpression(self):
         return LIKE(func.LOWER(self._oT.comment), '%' + self.__sPattern + '%')
@@ -792,7 +809,7 @@ class CardSetAuthorFilter(DirectFilter):
 
     @classmethod
     def getValues(cls):
-        return None
+        return ''
 
     def _getExpression(self):
         return LIKE(func.LOWER(self._oT.author), '%' + self.__sPattern + '%')
@@ -810,7 +827,7 @@ class CardSetAnnotationsFilter(DirectFilter):
 
     @classmethod
     def getValues(cls):
-        return None
+        return ''
 
     def _getExpression(self):
         return LIKE(func.LOWER(self._oT.annotations), '%' + self.__sPattern + '%')
