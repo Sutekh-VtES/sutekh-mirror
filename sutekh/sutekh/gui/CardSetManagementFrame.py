@@ -140,9 +140,12 @@ class CardSetManagementFrame(BasicFrame):
             oSelectFilter = self._oFilter
         else:
             oSelectFilter = NullFilter()
+        dInUse = {}
         for oCS in oSelectFilter.select(self._oSetClass).orderBy('name'):
             if self._cSetType is PhysicalCardSet:
                 sFrameName = 'PCS:' + oCS.name
+                if oCS.inuse:
+                    dInUse[oCS.name] = 'Yes'
             else:
                 sFrameName = 'ACS:' + oCS.name
             if sFrameName not in self._oMainWindow.dOpenFrames.values():
@@ -151,6 +154,7 @@ class CardSetManagementFrame(BasicFrame):
                 aVals.insert(iAvailIndex, oCS.name)
                 iAvailIndex += 1
         self._oScrolledList.fill_list(aVals)
+        self._oScrolledList.fill_second_column(dInUse)
 
     def set_filter(self, oWidget):
         if self._oFilterDialog is None:
@@ -202,6 +206,23 @@ class PhysicalCardSetListFrame(CardSetManagementFrame):
         self._oSetClass = PhysicalCardSet
         self.set_name("physical card sets list")
         self.add_parts()
+
+    def toggle_in_use_flag(self, oMenuItem):
+        """Toggle the in-use status of the card set"""
+        aSelection = self._oScrolledList.get_selection()
+        if len(aSelection) != 1:
+            return
+        else:
+            sSetName = aSelection[0]
+        try:
+            oCS = self._cSetType.byName(sSetName)
+        except SQLObjectNotFound:
+            return
+        oCS.inuse = not oCS.inuse
+        oCS.syncUpdate()
+        self.reload()
+        # Restore selection
+        self._oScrolledList.set_selected(oCS.name)
 
 class AbstractCardSetListFrame(CardSetManagementFrame):
     def __init__(self, oMainWindow, oConfig):

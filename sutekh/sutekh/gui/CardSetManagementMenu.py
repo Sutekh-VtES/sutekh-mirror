@@ -12,7 +12,7 @@ class CardSetManagementMenu(gtk.MenuBar, object):
         self.__oWindow = oWindow
         self.__oFrame = oFrame
         self.__sName = sName
-        self.__sSetName = sName.replace(' List', '')
+        self.__sSetTypeName = sName.replace(' List', '')
         self.__dMenus = {}
         self.add_actions_menu()
         self.add_filter_menu()
@@ -22,10 +22,14 @@ class CardSetManagementMenu(gtk.MenuBar, object):
         wMenu = gtk.Menu()
         iMenu.set_submenu(wMenu)
         self.__dMenus["Actions"] = wMenu
-        iCreate = gtk.MenuItem('Create New ' + self.__sSetName)
+        iCreate = gtk.MenuItem('Create New ' + self.__sSetTypeName)
         wMenu.add(iCreate)
         iCreate.connect('activate', self.__oFrame.create_new_card_set)
-        iDelete = gtk.MenuItem('Delete selected ' + self.__sSetName)
+        if self.__sSetTypeName == "Physical Card Set":
+            iInUse = gtk.MenuItem('Mark/UnMark ' + self.__sSetTypeName + ' as in use')
+            wMenu.add(iInUse)
+            iInUse.connect('activate', self.__oFrame.toggle_in_use_flag)
+        iDelete = gtk.MenuItem('Delete selected ' + self.__sSetTypeName)
         wMenu.add(iDelete)
         iDelete.connect('activate', self.__oFrame.delete_card_set)
         iSep = gtk.SeparatorMenuItem()

@@ -11,8 +11,8 @@ class ScrolledList(gtk.Frame):
     """Frame containing an auto scrolled list"""
     def __init__(self, sTitle):
         super(ScrolledList, self).__init__(None)
-        self._aList = gtk.ListStore(gobject.TYPE_STRING)
-        self._oTreeView = gtk.TreeView(self._aList)
+        self._oListStore = gtk.ListStore(gobject.TYPE_STRING)
+        self._oTreeView = gtk.TreeView(self._oListStore)
         oCell1 = gtk.CellRendererText()
         oColumn1 = gtk.TreeViewColumn(sTitle, oCell1, markup=0)
         self._oTreeView.append_column(oColumn1)
@@ -24,7 +24,7 @@ class ScrolledList(gtk.Frame):
 
     view = property(fget=lambda self: self._oTreeView,
             doc="Associated View Object")
-    itemlist = property(fget=lambda self: self._aList, doc="List of values")
+    itemlist = property(fget=lambda self: self._oListStore, doc="List of values")
 
     def add_second_column(self, sTitle):
         oCell2 = gtk.CellRendererText()
@@ -51,15 +51,26 @@ class ScrolledList(gtk.Frame):
             aSelectedList.append(sName)
         return aSelectedList
 
+    def set_selected(self, sEntry):
+        """Select the current entry"""
+        oIter = self._oListStore.get_iter_first()
+        while oIter is not None:
+            sName = self._oListStore.get_value(oIter, 0)
+            if sName == sEntry:
+                oPath = self._oListStore.get_path(oIter)
+                self._oTreeView.set_cursor(oPath)
+                return
+            oIter = self._oListStore.iter_next(oIter)
+
     def fill_list(self, aVals):
         """Fill the list store with the given values"""
-        self._aList.clear()
+        self._oListStore.clear()
         for sEntry in aVals:
-            oIter = self._aList.append(None)
-            self._aList.set(oIter, 0, sEntry)
+            oIter = self._oListStore.append(None)
+            self._oListStore.set(oIter, 0, sEntry)
 
     def fill_second_column(self, dVals):
-        self.dSecondColValues = dVals
+        self.dSecondColVals = dVals
         self._oTreeView.queue_draw()
 
     def _render_second_column(self, oColumn, oCell, oModel, oIter):

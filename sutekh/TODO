@@ -35,7 +35,6 @@ Gui (Presentation):
  * Clean up the currently overly tangled controller/view/model interactions
  * Parse in a GTK rc file? (http://www.moeraki.com/pygtktutorial/pygtk2tutorial/ch-GtkRcFiles.html)
  * Complete inuse flag work 
-   * Add support to gui for setting + displaying status
    * Add filter on inuse card sets
    * Add support to CardSetHolder (for reloading cardlist's and restoring from file)
    * Save inuse status to XML file
