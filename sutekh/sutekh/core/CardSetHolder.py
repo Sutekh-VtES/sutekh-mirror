@@ -184,7 +184,8 @@ class CachedCardSetHolder(CardSetHolder):
 
         oPCS = PhysicalCardSet(name=self.name.encode('utf8'),
                                author=self.author, comment=self.comment,
-                               annotations=self.annotations)
+                               annotations=self.annotations,
+                               inuse=self.inuse)
         oPCS.syncUpdate()
 
         for oPhysCard in aPhysCards:

@@ -36,8 +36,6 @@ Gui (Presentation):
  * Parse in a GTK rc file? (http://www.moeraki.com/pygtktutorial/pygtk2tutorial/ch-GtkRcFiles.html)
  * Complete inuse flag work 
    * Add filter on inuse card sets
-   * Add support to CardSetHolder (for reloading cardlist's and restoring from file)
-   * Save inuse status to XML file
  * Parse icons out of http://www.white-wolf.com/vtes/index.php?line=icons and use them in the GUI.
 
 Website:

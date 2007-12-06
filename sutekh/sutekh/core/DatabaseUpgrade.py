@@ -642,6 +642,7 @@ def copyToNewAbstractCardDB(orig_conn, new_conn, oCardLookup):
         oCS.author = oSet.author
         oCS.comment = oSet.comment
         oCS.annotations = oSet.annotations
+        oCS.inuse = oSet.inuse
         for oCard in oSet.cards:
             oCS.add(1, oCard.abstractCard.canonicalName, oCard.expansion)
         aPhysCardSets.append(oCS)
