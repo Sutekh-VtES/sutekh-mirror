@@ -28,6 +28,7 @@ class PhysicalCardSetWriter(object):
             sAuthor = oPCS.author
             sComment = oPCS.comment
             sAnnotations = oPCS.annotations
+            bInUse = oPCS.inuse
             if sAnnotations is None:
                 # prettytoxml will barf if this isn't done
                 sAnnotations = ''
@@ -50,6 +51,8 @@ class PhysicalCardSetWriter(object):
         oCardsElem.setAttribute('author', sAuthor)
         oCardsElem.setAttribute('comment', sComment)
         oCardsElem.setAttribute('annotations', sAnnotations)
+        if bInUse:
+            oCardsElem.setAttribute('inuse', 'Yes')
 
         for tKey, iNum in dPhys.iteritems():
             iId, sName, oExpansion = tKey

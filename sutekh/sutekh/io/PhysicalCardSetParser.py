@@ -35,12 +35,17 @@ class PhysicalCardSetHandler(ContentHandler):
             sAuthor = None
             sComment = None
             sAnnotations = None
+            bInUse = False
             if 'author' in aAttributes:
                 sAuthor = oAttrs.getValue('author')
             if 'comment' in aAttributes:
                 sComment = oAttrs.getValue('comment')
             if 'annotations' in aAttributes:
                 sAnnotations = oAttrs.getValue('annotations')
+            if 'inuse' in aAttributes:
+                sInUse = oAttrs.getValue('inuse')
+                if sInUse.lower() == 'yes':
+                    bInUse = True
             if 'sutekh_xml_version' in aAttributes:
                 sThisVersion = oAttrs.getValue('sutekh_xml_version')
             else:
@@ -51,6 +56,7 @@ class PhysicalCardSetHandler(ContentHandler):
             self.oCS.author = sAuthor
             self.oCS.comment = sComment
             self.oCS.annotations = sAnnotations
+            self.oCS.inuse = bInUse
         elif sTagName == 'card':
             sName = oAttrs.getValue('name')
             iCount = int(oAttrs.getValue('count'), 10)

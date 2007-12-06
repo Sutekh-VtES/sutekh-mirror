@@ -11,6 +11,7 @@ from sutekh.core.SutekhObjects import AbstractCardSet, PhysicalCardSet, Physical
 class CardSetHolder(object):
     def __init__(self):
         self._sName, self._sAuthor, self._sComment, self._sAnnotations = None, None, None, None
+        self._bInUse = False
         self._dCards = {} # card name -> count
         # (card name, expansion) -> count, used  for physical card sets 
         # and the physical card list
@@ -47,6 +48,7 @@ class CardSetHolder(object):
     author = property(fget = lambda self: self._sAuthor, fset = lambda self, x: setattr(self,'_sAuthor',x))
     comment = property(fget = lambda self: self._sComment, fset = lambda self, x: setattr(self,'_sComment',x))
     annotations = property(fget = lambda self: self._sAnnotations, fset = lambda self, x: setattr(self,'_sAnnotations',x))
+    inuse = property(fget = lambda self: self._bInUse, fset = lambda self, x: setattr(self,'_bInUse',x))
 
     # Save Virtual Card Set to Database in Various Ways
 
@@ -100,7 +102,8 @@ class CardSetHolder(object):
 
         oPCS = PhysicalCardSet(name=self.name.encode('utf8'),
                                author=self.author, comment=self.comment,
-                               annotations=self.annotations)
+                               annotations=self.annotations,
+                               inuse=self.inuse)
         oPCS.syncUpdate()
 
         for oPhysCard in aPhysCards:
