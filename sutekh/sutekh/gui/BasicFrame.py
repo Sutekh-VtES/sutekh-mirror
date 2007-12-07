@@ -136,6 +136,7 @@ class BasicFrame(gtk.Frame, object):
                 self) 
         # Bit of a hack, but get's matches to before the title specific bits of the path
 
+        oSpecificStyle = self._oTitleLabel.rc_get_style()
         if oSpecificStyle == oDefaultSutekhStyle or oDefaultSutekhStyle is None:
             # No specific style which affects highlighted titles set, so create
             # one
