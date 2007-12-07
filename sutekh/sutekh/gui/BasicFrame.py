@@ -4,7 +4,7 @@
 # GPL - see COPYING for details
 
 
-import gtk
+import gtk, gobject
 
 class BasicFrame(gtk.Frame, object):
     def __init__(self, oMainWindow):
@@ -16,8 +16,10 @@ class BasicFrame(gtk.Frame, object):
 
         self._oTitle = gtk.EventBox()
         self._oTitleLabel = gtk.Label('Blank Frame')
-        self._oTitleLabel.set_name('title')
+        self._oTitleLabel.set_name('frame_title')
         self._oTitle.add(self._oTitleLabel)
+        # Allows setting background colours for title easily
+        self._oTitle.set_name('frame_title') 
         oBuf = gtk.TextBuffer()
         self._oView = gtk.TextView()
         self._oView.set_editable(False)
@@ -44,11 +46,6 @@ class BasicFrame(gtk.Frame, object):
         self._oView.connect('drag-data-received', self.drag_drop_handler)
         self._oView.connect('drag-motion', self.drag_motion)
 
-        self._oBaseStyle = self._oTitle.get_style().copy()
-        self._oFocStyle = self._oTitle.get_style().copy()
-        oMap = self._oTitle.get_colormap()
-        oHighlighted = oMap.alloc_color("purple")
-        self._oFocStyle.fg[gtk.STATE_NORMAL] = oHighlighted
 
     title = property(fget=lambda self: self._oTitleLabel.get_text(), doc="Frame Title")
     name = property(fget=lambda self: self._oTitleLabel.get_text(), doc="Frame Name")
@@ -128,10 +125,43 @@ class BasicFrame(gtk.Frame, object):
         self.show_all()
 
     def set_focussed_title(self):
-        self._oTitleLabel.set_style(self._oFocStyle)
+        oCurStyle = self._oTitleLabel.rc_get_style()
+        self._oTitleLabel.set_name('selected_title')
+        # We can't have this name be a superset of the title name,
+        # otherwise any style set on 'title' automatically applies
+        # here, which is not what we want. 
+        
+        oDefaultSutekhStyle = gtk.rc_get_style_by_paths(self._oTitleLabel.get_settings(),
+                self.path()+'.', self.class_path(),
+                self) 
+        # Bit of a hack, but get's matches to before the title specific bits of the path
+
+        if oSpecificStyle == oDefaultSutekhStyle or oDefaultSutekhStyle is None:
+            # No specific style which affects highlighted titles set, so create
+            # one
+            oMap = self._oTitleLabel.get_colormap()
+            sColour = 'purple'
+            if oMap.alloc_color(sColour).pixel == oCurStyle.fg[gtk.STATE_NORMAL].pixel:
+                    sColour = 'green' 
+                    # Prevent collisions. If the person is using
+                    # purple on a green background, they deserve 
+                    # invisible text
+            sStyleInfo = """
+            style "internal_sutekh_hlstyle" {
+                fg[NORMAL] = "%(colour)s"
+                }
+            widget "%(path)s" style "internal_sutekh_hlstyle"
+            """ % { 'colour' : sColour, 'path' : self._oTitleLabel.path() }
+            gtk.rc_parse_string(sStyleInfo)
+            # We use gtk's style machinery to do the update.
+            # This seems the only way of ensuring we will actually do
+            # the right thing with themes, while still allowing flexiblity
+        # Here, as this forces gtk to re-asses styles of widget and children
+        self._oTitle.set_name('selected_title')
 
     def set_unfocussed_title(self):
-        self._oTitleLabel.set_style(self._oBaseStyle)
+        self._oTitleLabel.set_name('frame_title')
+        self._oTitle.set_name('frame_title')
 
     def create_drag_data(self, oBtn, oContext, oSelectionData, oInfo, oTime):
         """

@@ -14,6 +14,7 @@ class CardTextFrame(BasicFrame):
         super(CardTextFrame, self).__init__(oMainWindow)
         self._oView = CardTextView(oMainWindow)
         self.add_parts()
+        self.set_name('card text')
 
     type = property(fget=lambda self: "Card Text", doc="Frame Type")
 

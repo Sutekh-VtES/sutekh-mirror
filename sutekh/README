@@ -196,4 +196,35 @@ and PhysicalCard. AbstractCard models a conceptual card (e.g. ".44 Magnum")
 while PhysicalCard stores information about an actual rectangular piece of
 cardboard (e.g. My third copy of a .44 Magnum from the VTES expansion).
 
+=== Other Notes ===
+
+==== Sutekh and gtk themes ====
+
+It is possible to customise the look and feel of Sutekh quite extensively
+via gtk's theming mechanism. Sutekh uses "Sutekh" as the application name
+for such purposes. All the dialogs use Sutekh.dialog.
+
+Of specific note, the pane title's are named 'frame_title' when not selected 
+and 'selected_title' when the pane is selected. This allows customising
+the look of panes when selected easily. For instance, by putting:
+
+style "title_selected" {
+   fg[NORMAL] = "red"
+}
+
+widget "Sutekh.*.selected_title" style "title_selected"
+
+in your gtkrc file, the selected panes will use red text to mark selected panes.
+
+The other specially named widgets are the card list widgets.
+
+The various frames are named respectively:
+
+"abstract card list", "physical card list", "physical card set card list",
+"abstract card set card list", "card text", "abstract card sets list",
+"physical card sets list"
+
+The TreeView widgets used by the card lists (AbstractCard, PhysicalCard and card
+sets) are named "normal_view", but, in editable mode, they are named
+"editable_view".
 

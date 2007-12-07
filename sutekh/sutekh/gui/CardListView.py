@@ -52,6 +52,7 @@ class CardListView(gtk.TreeView, object):
 
         # Filtering Dialog
         self._oFilterDialog = None
+        self.set_name('normal_view')
 
     def column_clicked(self, oColumn):
         self.emit('button-press-event', gtk.gdk.Event(gtk.gdk.BUTTON_PRESS_MASK))
@@ -337,12 +338,6 @@ class EditableCardListView(CardListView):
         if hasattr(self, 'set_grid_lines'):
             self.set_grid_lines(gtk.TREE_VIEW_GRID_LINES_BOTH)
 
-        self.__oBaseStyle = self.get_style().copy()
-        self.__oEditCueStyle = self.get_style().copy()
-        oMap = oWindow.get_colormap()
-        oRed = oMap.alloc_color("red")
-        self.__oEditCueStyle.fg[gtk.STATE_NORMAL] = oRed
-
     # Used by card dragging handlers
     def addCard(self, sCardName, sExpansion):
         if self._oModel.bEditable:
@@ -366,8 +361,29 @@ class EditableCardListView(CardListView):
             self._oC.decCard(sCardName, sExpansion)
 
     def set_color_edit_cue(self):
-        self.set_style(self.__oEditCueStyle)
+        oCurStyle = self.rc_get_style()
+        self.set_name('editable_view')
+        oParent = self.get_parent()
+        oDefaultSutekhStyle = gtk.rc_get_style_by_paths(self.get_settings(),
+                oParent.path()+'.', oParent.class_path(),
+                oParent)
+        oSpecificStyle = self.rc_get_style()
+        if oSpecificStyle == oDefaultSutekhStyle or oDefaultSutekhStyle is None:
+            # No specific style set
+            oMap = self.get_colormap()
+            sColour = 'red'
+            if oMap.alloc_color(sColour).pixel == oCurStyle.fg[gtk.STATE_NORMAL].pixel:
+                    sColour = 'green' 
+            sStyleInfo = """
+            style "internal_sutekh_editstyle" {
+                fg[NORMAL] = "%(colour)s"
+                }
+            widget "%(path)s" style "internal_sutekh_editstyle"
+            """ % { 'colour' : sColour, 'path' : self.path() }
+            gtk.rc_parse_string(sStyleInfo)
+            # Need to force re-assesment of styles
+            self.set_name('editable_view') 
 
     def set_color_normal(self):
-        self.set_style(self.__oBaseStyle)
+        self.set_name('normal_view')
 
