@@ -45,7 +45,7 @@ class MultiPaneWindow(gtk.Window):
         self._oPluginManager.load_plugins()
         for cPlugin in self._oPluginManager.get_card_list_plugins():
             # Find plugins that will work on the Main Window
-            self._aPlugins.append(cPlugin(None, None,
+            self._aPlugins.append(cPlugin(self, None,
                 "MainWindow"))
         self.__oMenu = MainMenu(self, oConfig)
         self.oVBox.show()
@@ -74,11 +74,13 @@ class MultiPaneWindow(gtk.Window):
         self._oCardLookup = GuiLookup(self._oConfig)
         self.restore_from_config()
 
-
     # Needed for Backup plugin
     cardLookup = property(fget=lambda self: self._oCardLookup)
+
     # Needed for plugins
     plugin_manager = property(fget=lambda self: self._oPluginManager)
+    def getWindow(self):
+    	return self
 
     def restore_from_config(self):
         if self._iNumberOpenFrames > 0:
