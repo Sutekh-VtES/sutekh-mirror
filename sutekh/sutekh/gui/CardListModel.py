@@ -310,6 +310,13 @@ class CardListModel(gtk.TreeStore):
         iCount = self.get_value(oIter, 1)
         return sName, sExpansion, iCount, iDepth
 
+    def get_inc_dec_flags_from_path(self, oPath):
+        """Get the settings of the inc + dec flags for the current path"""
+        oIter = self.get_iter(oPath)
+        bInc = self.get_value(oIter, 2)
+        bDec = self.get_value(oIter, 3)
+        return (bInc, bDec)
+
     def getExpansionNameFromPath(self, oPath):
         """
         Get the expansion information from the model, returing None

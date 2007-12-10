@@ -341,7 +341,9 @@ class EditableCardListView(CardListView):
     # Used by card dragging handlers
     def addCard(self, sCardName, sExpansion):
         if self._oModel.bEditable:
-            bSucc = self._oC.addCard(sCardName, sExpansion)
+            bInc, bDec = self._oModel.get_inc_dec_flags_from_path(oPath)
+            if bInc:
+                bSucc = self._oC.addCard(sCardName, sExpansion)
 
     # When editing cards, we pass info to the controller to
     # update stuff in the database
@@ -350,15 +352,19 @@ class EditableCardListView(CardListView):
 
     def incCard(self, oCell, oPath):
         if self._oModel.bEditable:
-            sCardName = self._oModel.getCardNameFromPath(oPath)
-            sExpansion = self._oModel.getExpansionNameFromPath(oPath)
-            self._oC.incCard(sCardName, sExpansion)
+            bInc, bDec = self._oModel.get_inc_dec_flags_from_path(oPath)
+            if bInc:
+                sCardName = self._oModel.getCardNameFromPath(oPath)
+                sExpansion = self._oModel.getExpansionNameFromPath(oPath)
+                self._oC.incCard(sCardName, sExpansion)
 
     def decCard(self, oCell, oPath):
         if self._oModel.bEditable:
-            sCardName = self._oModel.getCardNameFromPath(oPath)
-            sExpansion = self._oModel.getExpansionNameFromPath(oPath)
-            self._oC.decCard(sCardName, sExpansion)
+            bInc, bDec = self._oModel.get_inc_dec_flags_from_path(oPath)
+            if bDec:
+                sCardName = self._oModel.getCardNameFromPath(oPath)
+                sExpansion = self._oModel.getExpansionNameFromPath(oPath)
+                self._oC.decCard(sCardName, sExpansion)
 
     def set_color_edit_cue(self):
         oCurStyle = self.rc_get_style()
