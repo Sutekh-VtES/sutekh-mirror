@@ -133,7 +133,7 @@ class BasicFrame(gtk.Frame, object):
         
         oDefaultSutekhStyle = gtk.rc_get_style_by_paths(self._oTitleLabel.get_settings(),
                 self.path()+'.', self.class_path(),
-                self) 
+                self._oTitleLabel) 
         # Bit of a hack, but get's matches to before the title specific bits of the path
 
         oSpecificStyle = self._oTitleLabel.rc_get_style()
