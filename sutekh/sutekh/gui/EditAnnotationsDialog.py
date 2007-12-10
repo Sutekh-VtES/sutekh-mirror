@@ -9,7 +9,7 @@ class EditAnnotationsDialog(SutekhDialog):
     def __init__(self, sTitle, oParent, sCurName, sCurAnnotations):
         super(EditAnnotationsDialog, self).__init__(sTitle, oParent,
                 gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
-                buttons=(gtk.STOCK_OK, gtk.RESPONSE_OK,
+                (gtk.STOCK_OK, gtk.RESPONSE_OK,
                         gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
         self.connect("response", self.buttonResponse)
         oNameLabel = gtk.Label("Card Set : " + sCurName)
