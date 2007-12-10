@@ -51,9 +51,9 @@ class PhysicalCardController(object):
                 if iCount == 0:
                     if oPhysCard.expansion is None:
                         # OK, can delete this one and be done with it
+                        PhysicalCard.delete(oPhysCard.id)
                         self.model.decCardExpansionByName(oC.name, None)
                         self.model.decCardByName(oC.name)
-                        PhysicalCard.delete(oPhysCard.id)
                         send_reload_signal(oC)
                         return True
                     else:
@@ -62,9 +62,10 @@ class PhysicalCardController(object):
             if len(aCandsExpansion) > 0:
                 # ditto
                 oPhysCard = aCandsExpansion[-1]
-                self.model.decCardExpansionByName(oC.name, oPhysCard.expansion.name)
-                self.model.decCardByName(oC.name)
+                sExpName = oPhysCard.expansion.name
                 PhysicalCard.delete(oPhysCard.id)
+                self.model.decCardExpansionByName(oC.name, sExpName)
+                self.model.decCardByName(oC.name)
                 send_reload_signal(oC)
                 return True
             # All physical cards are assigned to PhysicalCardSets, so find the
@@ -88,12 +89,13 @@ class PhysicalCardController(object):
                 # Delete card from all the PhysicalCardSets first
                 for oPCS in aPCS:
                     oPCS.removePhysicalCard(oPhysCard.id)
-                if oPhysCard.expansion is not None:
-                    self.model.decCardExpansionByName(oC.name, oPhysCard.expansion.name)
+                oExpansion = oPhysCard.expansion
+                PhysicalCard.delete(oPhysCard.id)
+                if oExpansion is not None:
+                    self.model.decCardExpansionByName(oC.name, oExpansion.name)
                 else:
                     self.model.decCardExpansionByName(oC.name, None)
                 self.model.decCardByName(oC.name)
-                PhysicalCard.delete(oPhysCard.id)
                 # SQLObject Events should take care of updating any open card sets
                 send_reload_signal(oC)
         else:
