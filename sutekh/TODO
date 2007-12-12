@@ -26,6 +26,7 @@ Gui (Functionality):
  * Replace HTML export plugin with direct export to HTML.
  * Plugins for calling out to other VtES utilities as appropriate (http://ashheap.storageannex.com/utilities.htm)
  * Add decent keyboard shortcuts
+ * Plugin for automatically setting all single expansion cards
 
 Gui (Presentation):
  * Cleanup various dialogs, including
@@ -34,8 +35,6 @@ Gui (Presentation):
      (cf. CreateCardSetDialog hack in plugins)
  * Clean up the currently overly tangled controller/view/model interactions
  * Parse in a GTK rc file? (http://www.moeraki.com/pygtktutorial/pygtk2tutorial/ch-GtkRcFiles.html)
- * Complete inuse flag work 
-   * Add filter on inuse card sets
  * Parse icons out of http://www.white-wolf.com/vtes/index.php?line=icons and use them in the GUI.
 
 Website:

@@ -1,3 +1,14 @@
+12 Dec 2007
+ * Add filter for inuse card sets. Finishes up work on the inuse flag
+
+early Dec 2007
+ * Add support for inuse flag to gui and XML files
+ * Add set_name calls so everything is in the Sutekh namespace for gtkrc files
+ * Add support for dealing with themes in a way that isn't completely broken
+   (although it is rather fragile, and at best semi-sane).
+ * Allow plugins to register themselves on the main window's menu
+ * Various bugfixes 
+
 24 Nov 2007
  * Refactor card text parsing for WhitewolfParser
  * Interpret reflex attribute as a cardtype
@@ -6,7 +17,7 @@
  * Bump database version
     - Add shortname to Rarity
     - Add burn option column to AbstractCard
-    - Add inues column to the PhysicalCardSet
+    - Add inuse column to the PhysicalCardSet
  * Add parsing burn option form cardlist
  * Rework DatabaseUpgrade 
     - Combine repetive code
