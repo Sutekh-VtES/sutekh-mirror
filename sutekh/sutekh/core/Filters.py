@@ -734,6 +734,32 @@ class MultiPhysicalCardSetFilter(Filter):
     def _getExpression(self):
         return IN(self.__oT.q.physical_card_set_id, self.__aDeckIds)
 
+class PhysicalCardSetInUseFilter(Filter):
+    keyword = "SetsInUse"
+    description = "Physical Sets in use"
+    helptext = "Selects physical cards in the Physical Card Sets marked as in use. This filter takes no parameters."
+    types = ['PhysicalCard']
+
+    def __init__(self):
+        # Select cards belonging to the PhysicalCardSet in use
+        self.__aDeckIds = []
+        for oCS in PhysicalCardSet.select():
+            if oCS.inuse:
+                self.__aDeckIds.append(oCS.id)
+        print self.__aDeckIds
+        self.__oT = self._makeTableAlias('physical_map')
+        self.__oPT = Table('physical_card')
+
+    @classmethod
+    def getValues(cls):
+        return None
+
+    def _getJoins(self):
+        return [LEFTJOINOn(None, self.__oT, self.__oPT.id == self.__oT.q.physical_card_id)]
+
+    def _getExpression(self):
+        return IN(self.__oT.q.physical_card_set_id, self.__aDeckIds)
+
 class AbstractCardSetFilter(SingleFilter):
     types = ['AbstractCard', 'PhysicalCard']
     def __init__(self, sName):

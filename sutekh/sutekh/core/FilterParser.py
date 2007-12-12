@@ -15,7 +15,7 @@ from sutekh.core.Filters import MultiCardTypeFilter, MultiClanFilter, \
         PhysicalCardSetDescriptionFilter, AbstractCardSetAnnotationsFilter, \
         PhysicalCardSetAnnotationsFilter, MultiCostTypeFilter, \
         MultiPhysicalCardSetFilter, FilterAndBox, FilterOrBox, FilterNot, \
-        MultiPhysicalCardCountFilter
+        MultiPhysicalCardCountFilter, PhysicalCardSetInUseFilter
 
 # FIXME: The intention is to push this into the Individual Filter Objects
 
@@ -29,7 +29,7 @@ aFilters = [MultiCardTypeFilter, MultiCostTypeFilter, MultiClanFilter,
         PhysicalCardSetAuthorFilter, AbstractCardSetDescriptionFilter,
         PhysicalCardSetDescriptionFilter, AbstractCardSetAnnotationsFilter,
         PhysicalCardSetAnnotationsFilter, MultiPhysicalCardSetFilter,
-        MultiPhysicalCardCountFilter]
+        MultiPhysicalCardCountFilter, PhysicalCardSetInUseFilter]
 
 aEntryFilters = [x.keyword for x in aFilters if hasattr(x,'istextentry') and x.istextentry]
 aWithFilters = [x.keyword for x in aFilters if hasattr(x,'iswithfilter') and x.iswithfilter]
@@ -154,7 +154,7 @@ class FilterYaccParser(object):
         """filterpart : FILTERTYPE"""
         oNode = FilterPartNode(p[1], None)
         aRes = oNode.getValues()
-        if aRes[0].isNone():
+        if aRes[1].isNone():
             # Filter that takes no type, so legal
             p[0] = FilterPartNode(p[1], None)
         else:
@@ -320,7 +320,8 @@ class FilterPartNode(OperatorNode):
             aResults = [ValueObject(getFilterType(self.filtertype).description + ' in', self)]
         else:
             # We don't take any input for this filter, so there are no values to return
-            return [ValueObject(getFilterType(self.filtertype).description, self)]
+            return [ValueObject(getFilterType(self.filtertype).description, self),
+                    ValueObject(None, self)]
         if self.filtervalues is None:
             aVals = getFilterType(self.filtertype).getValues()
             # Want a list within ValueObject for the GUI stuff to work
@@ -361,16 +362,21 @@ class FilterPartNode(OperatorNode):
         self.children[1] = self.filtervalues
 
     def getFilter(self):
-        if self.filtervalues is None:
-            return None
-        aValues = self.filtervalues.getFilter()
+        if self.filtertype in aEntryFilters or self.filtertype in aListFilters:
+            if self.filtervalues is None:
+                return None
         FilterType = getFilterType(self.filtertype)
-        if self.filtertype in aEntryFilters:
-            # FIXME: Don't quite like special casing this here - MultiCardText?
-            # aValues[0] is a fragile assumption - join?
-            oFilter = FilterType(aValues[0])
+        if self.filtervalues:
+            aValues = self.filtervalues.getFilter()
+            if self.filtertype in aEntryFilters:
+                # FIXME: Don't quite like special casing this here - MultiCardText?
+                # aValues[0] is a fragile assumption - join?
+                oFilter = FilterType(aValues[0])
+            else:
+                oFilter = FilterType(aValues)
         else:
-            oFilter = FilterType(aValues)
+            # This Filter takes no argument
+            oFilter = FilterType()
         return oFilter
 
     def getType(self):
