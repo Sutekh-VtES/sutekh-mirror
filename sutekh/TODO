@@ -26,7 +26,6 @@ Gui (Functionality):
  * Replace HTML export plugin with direct export to HTML.
  * Plugins for calling out to other VtES utilities as appropriate (http://ashheap.storageannex.com/utilities.htm)
  * Add decent keyboard shortcuts
- * Plugin for automatically setting all single expansion cards
 
 Gui (Presentation):
  * Cleanup various dialogs, including
