@@ -341,9 +341,7 @@ class EditableCardListView(CardListView):
     # Used by card dragging handlers
     def addCard(self, sCardName, sExpansion):
         if self._oModel.bEditable:
-            bInc, bDec = self._oModel.get_inc_dec_flags_from_path(oPath)
-            if bInc:
-                bSucc = self._oC.addCard(sCardName, sExpansion)
+            bSucc = self._oC.addCard(sCardName, sExpansion)
 
     # When editing cards, we pass info to the controller to
     # update stuff in the database
