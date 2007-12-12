@@ -48,16 +48,17 @@ class CellRendererSutekhButton(gtk.GenericCellRenderer):
             return 0, 0, 0, 0
         iPixbufWidth  = self.oPixbuf.get_width()
         iPixbufHeight = self.oPixbuf.get_height()
-        iCalcWidth  = self.get_property("xpad") * 2 + iPixbufWidth
-        iCalcHeight = self.get_property("ypad") * 2 + iPixbufHeight
+        fCalcWidth  = self.get_property("xpad") * 2 + iPixbufWidth
+        fCalcHeight = self.get_property("ypad") * 2 + iPixbufHeight
         iXOffset = 0
         iYOffset = 0
         if oCellArea is not None and iPixbufWidth > 0 and iPixbufHeight > 0:
-            iXOffset = self.get_property("xalign") * (oCellArea.width - \
-                iCalcWidth -  self.get_property("xpad"))
-            iYOffset = self.get_property("yalign") * (oCellArea.height - \
-                iCalcHeight -  self.get_property("ypad"))
-        return iXOffset, iYOffset, iCalcWidth, iCalcHeight
+            iXOffset = int(self.get_property("xalign") * (oCellArea.width - \
+                fCalcWidth -  self.get_property("xpad")))
+            iYOffset = int(self.get_property("yalign") * (oCellArea.height - \
+                fCalcHeight -  self.get_property("ypad")))
+        # gtk want's ints here
+        return iXOffset, iYOffset, int(fCalcWidth), int(fCalcHeight)
 
     def on_activate(self, oEvent, oWidget, oPath, oBackgroundArea,
             oCellArea, iFlags):
@@ -79,8 +80,9 @@ class CellRendererSutekhButton(gtk.GenericCellRenderer):
 
         oPixRect.x += oCellArea.x
         oPixRect.y += oCellArea.y
-        oPixRect.width  -= 2 * self.get_property("xpad")
-        oPixRect.height -= 2 * self.get_property("ypad")
+        # xpad, ypad are floats, ut gtk.gdk.Rectangle needs int's
+        oPixRect.width  -= int(2 * self.get_property("xpad"))
+        oPixRect.height -= int(2 * self.get_property("ypad"))
 
         oDrawRect = oCellArea.intersect(oPixRect)
         oDrawRect = oExposeArea.intersect(oDrawRect)
