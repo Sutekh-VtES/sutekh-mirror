@@ -36,9 +36,10 @@ class SetSingleExpansionCards(CardListPlugin):
         for oCard in self.model.getCardIterator(None):
             if oCard.expansion is None:
                 oAC = oCard.abstractCard
-                aExpansion = [oRP.expansion for oRP in oAC.rarity]
+                aExpansion = set([oRP.expansion for oRP in oAC.rarity])
                 if len(aExpansion) == 1:
-                    oCard.expansion = aExpansion[0]
+                    oExp = aExpansion.pop()
+                    oCard.expansion = oExp
                     oCard.syncUpdate()
         self.view.reload_keep_expanded()
 
