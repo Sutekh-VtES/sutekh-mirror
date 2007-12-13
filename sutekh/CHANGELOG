@@ -1,5 +1,10 @@
+14 Dec 2007:
+ * Add NSIS script for generating a Windows installer.
+
 12 Dec 2007
- * Add filter for inuse card sets. Finishes up work on the inuse flag
+ * Add filter for inuse card sets. Finishes up work on the inuse flag.
+ * Add plugin to set the expansion for single expansion cards.
+ * Fix bug in displaying multiple rarities from the same expansion properly.
 
 early Dec 2007
  * Add support for inuse flag to gui and XML files
