@@ -15,7 +15,7 @@ except AttributeError:
 
 class CardSetPrint(CardListPlugin):
     dTableVersions = { AbstractCardSet: [2,3],
-                       PhysicalCardSet: [2,3]}
+                       PhysicalCardSet: [2,3,4]}
     aModelsSupported = [AbstractCardSet, PhysicalCardSet]
 
     def get_menu_item(self):
