@@ -604,7 +604,7 @@ class PhysicalCardFilter(Filter):
 
 class MultiPhysicalCardCountFilter(DirectFilter):
     keyword = "PhysicalCardCount"
-    description = "Filter on numer of cards in the Physical Card list"
+    description = "Filter on number of cards in the Physical Card list"
     helptext = "a list of card numbers"
     islistfilter = True
     types = ['AbstractCard', 'PhysicalCard']
