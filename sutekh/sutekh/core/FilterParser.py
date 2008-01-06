@@ -121,9 +121,7 @@ class FilterYaccParser(object):
     )
 
     def p_filter(self, p):
-        """filter : filterpart
-                  | empty
-        """
+        """filter : filterpart"""
         p[0] = FilterNode(p[1])
 
     def p_filterpart_brackets(self, p):
@@ -176,10 +174,6 @@ class FilterYaccParser(object):
     def p_expression_with(self, p):
         """expression : expression WITH expression"""
         p[0] = WithNode(p[1], p[2], p[3])
-
-    def p_empty(self, p):
-        """empty :"""
-        p[0] = None
 
     def p_error(self, p):
         if p is None:
