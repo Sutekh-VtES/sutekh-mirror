@@ -226,8 +226,9 @@ class CardListModel(gtk.TreeStore):
             fGetCard = lambda x:x
             fGetCount = lambda x:0
             fGetExpanInfo = lambda x:{}
-            aCards = oCardIter
-            aAbsCards = list(aCards)
+            aCards = list(oCardIter)
+            aCards.sort(lambda x, y: cmp(x.name, y.name))
+            aAbsCards = aCards
         else:
             aAbsCards = []
             fGetCard = lambda x:x[0]
