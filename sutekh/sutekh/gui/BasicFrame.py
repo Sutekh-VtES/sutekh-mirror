@@ -19,7 +19,7 @@ class BasicFrame(gtk.Frame, object):
         self._oTitleLabel.set_name('frame_title')
         self._oTitle.add(self._oTitleLabel)
         # Allows setting background colours for title easily
-        self._oTitle.set_name('frame_title') 
+        self._oTitle.set_name('frame_title')
         oBuf = gtk.TextBuffer()
         self._oView = gtk.TextView()
         self._oView.set_editable(False)
@@ -28,7 +28,7 @@ class BasicFrame(gtk.Frame, object):
         aDragTargets = [ ('STRING', 0, 0),
                          ('text/plain', 0, 0) ]
 
-        self._oTitle.drag_source_set(gtk.gdk.BUTTON1_MASK | gtk.gdk.BUTTON3_MASK, 
+        self._oTitle.drag_source_set(gtk.gdk.BUTTON1_MASK | gtk.gdk.BUTTON3_MASK,
                 aDragTargets,
                 gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
 
@@ -129,11 +129,11 @@ class BasicFrame(gtk.Frame, object):
         self._oTitleLabel.set_name('selected_title')
         # We can't have this name be a superset of the title name,
         # otherwise any style set on 'title' automatically applies
-        # here, which is not what we want. 
-        
+        # here, which is not what we want.
+
         oDefaultSutekhStyle = gtk.rc_get_style_by_paths(self._oTitleLabel.get_settings(),
                 self.path()+'.', self.class_path(),
-                self._oTitleLabel) 
+                self._oTitleLabel)
         # Bit of a hack, but get's matches to before the title specific bits of the path
 
         oSpecificStyle = self._oTitleLabel.rc_get_style()
@@ -143,9 +143,9 @@ class BasicFrame(gtk.Frame, object):
             oMap = self._oTitleLabel.get_colormap()
             sColour = 'purple'
             if oMap.alloc_color(sColour).pixel == oCurStyle.fg[gtk.STATE_NORMAL].pixel:
-                    sColour = 'green' 
+                    sColour = 'green'
                     # Prevent collisions. If the person is using
-                    # purple on a green background, they deserve 
+                    # purple on a green background, they deserve
                     # invisible text
             sStyleInfo = """
             style "internal_sutekh_hlstyle" {

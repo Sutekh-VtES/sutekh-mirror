@@ -13,9 +13,9 @@ class CardSetHolder(object):
         self._sName, self._sAuthor, self._sComment, self._sAnnotations = None, None, None, None
         self._bInUse = False
         self._dCards = {} # card name -> count
-        # (card name, expansion) -> count, used  for physical card sets 
+        # (card name, expansion) -> count, used  for physical card sets
         # and the physical card list
-        self._dCardExpansions = {} 
+        self._dCardExpansions = {}
 
     # Manipulate Virtual Card Set
 

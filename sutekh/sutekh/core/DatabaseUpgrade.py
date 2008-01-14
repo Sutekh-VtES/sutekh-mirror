@@ -635,7 +635,7 @@ def copyToNewAbstractCardDB(orig_conn, new_conn, oCardLookup):
         oPhysListCS.add(1, oCard.abstractCard.canonicalName, oCard.expansion)
     # Copy Physical card sets
     # FIXME: Manual mappings of physical cards to the individual card sets
-    # will be lost in this process. 
+    # will be lost in this process.
     for oSet in PhysicalCardSet.select(connection=orig_conn):
         oCS = CachedCardSetHolder()
         oCS.name = oSet.name

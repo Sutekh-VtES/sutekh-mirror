@@ -1,4 +1,4 @@
-# Define the reload singal we need 
+# Define the reload singal we need
 
 from sqlobject.events import Signal, listen, RowUpdateSignal, RowDestroySignal
 from sutekh.core.SutekhObjects import PhysicalCard

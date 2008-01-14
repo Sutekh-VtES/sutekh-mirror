@@ -1,5 +1,5 @@
 # CardSetFrame.py
-# Frame holding a CardSet 
+# Frame holding a CardSet
 # Copyright 2006,2007 Neil Muller <drnlmuller+sutekh@gmail.com>
 # Copyright 2006 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
@@ -68,12 +68,12 @@ class CardSetFrame(CardListFrame, object):
 
 class AbstractCardSetFrame(CardSetFrame):
     def __init__(self, oMainWindow, sName, oConfig):
-        super(AbstractCardSetFrame, self).__init__(oMainWindow, sName, 
+        super(AbstractCardSetFrame, self).__init__(oMainWindow, sName,
                 AbstractCardSet, oConfig)
         self.set_name("abstract card set card list")
 
 class PhysicalCardSetFrame(CardSetFrame):
     def __init__(self, oMainWindow, sName, oConfig):
-        super(PhysicalCardSetFrame, self).__init__(oMainWindow, sName, 
+        super(PhysicalCardSetFrame, self).__init__(oMainWindow, sName,
                 PhysicalCardSet, oConfig)
         self.set_name("physical card set card list")

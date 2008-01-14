@@ -50,14 +50,14 @@ class WhiteWolfParserTests(SutekhTest):
         self.assertEqual(oDob.level,None)
 
         # Things still to check:
-        #discipline 
+        #discipline
         #rarity
         #clan
-        #cardtype 
+        #cardtype
         #sect
         #title
         #creed
-        #virtue 
+        #virtue
         #rulings
 
 

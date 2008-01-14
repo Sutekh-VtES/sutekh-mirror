@@ -19,7 +19,7 @@ class AbstractCardLookup(object):
 
     def lookup(self, aNames, sInfo):
         """Return a list of AbstractCards, one for each item in aNames.
-        
+
            Names for which AbstractCards could not be found will be marked with
            a None in the returned list. The method may raise LookupFailed if the
            entire list should be considered invalid (e.g. if the names are
@@ -28,13 +28,13 @@ class AbstractCardLookup(object):
         raise NotImplementedError
 
 class PhysicalCardLookup(object):
-    """Base class for objects which translate card names and expansions 
+    """Base class for objects which translate card names and expansions
        into physical card objects
        """
 
     def physical_lookup(self, dCardExpansions, dNameCards, sInfo):
         """Returns a list of physical cards. Since physical cards can't
-           be repeated, this is a list of statisfable requests. 
+           be repeated, this is a list of statisfable requests.
 
            dCardExpansions[Name][Expansion] is the number of cards requested,
            and dNameCards is a list of card name to abstract card mappings
@@ -52,7 +52,7 @@ class PhysicalCardLookup(object):
 
 class SimpleLookup(AbstractCardLookup, PhysicalCardLookup):
     """A really straightforward lookup of AbstractCards and PhysicalCards.
-    
+
        The default when we don't have a more cunning plan.
        """
 
@@ -81,7 +81,7 @@ class SimpleLookup(AbstractCardLookup, PhysicalCardLookup):
                         # We treat None as specifying the same as specifying
                         # an expansion - the card (A, None) doesn't match a
                         # card in the physical card list (A, '3rd Ed')
-                        # This works under the assumption that we're 
+                        # This works under the assumption that we're
                         # importing card sets back into the same physical
                         # card list. There are numerous ways this can break,
                         # but I claim this approach best matches principles
@@ -96,8 +96,8 @@ class SimpleLookup(AbstractCardLookup, PhysicalCardLookup):
                                 if iCnt == 0:
                                     break # We done with this expansion
                 except SQLObjectNotFound:
-                    # This card is missing from the PhysicalCard list, so skipped 
-                    pass 
+                    # This card is missing from the PhysicalCard list, so skipped
+                    pass
         return aCards
 
 DEFAULT_LOOKUP = SimpleLookup()

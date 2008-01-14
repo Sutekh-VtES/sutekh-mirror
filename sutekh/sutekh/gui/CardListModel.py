@@ -65,7 +65,7 @@ class CardListModel(gtk.TreeStore):
     """
     Provides a card list specific API for accessing a gtk.TreeStore.
     """
-    # FIXME: Use spaces to ensure it sorts first, and is 
+    # FIXME: Use spaces to ensure it sorts first, and is
     # visually distinct. Very much the wrong solution, I feel
 
     sUnknownExpansion = '  Unspecified Expansion'
@@ -183,8 +183,8 @@ class CardListModel(gtk.TreeStore):
                             1, iExpCnt,
                             2, bIncCard,
                             3, bDecCard)
-                    self._dNameExpansion2Iter.setdefault(oCard.name, 
-                            {}).setdefault(sExpansion, 
+                    self._dNameExpansion2Iter.setdefault(oCard.name,
+                            {}).setdefault(sExpansion,
                                     []).append(oExpansionIter)
                 self._dName2Iter.setdefault(oCard.name, []).append(oChildIter)
 
@@ -281,7 +281,7 @@ class CardListModel(gtk.TreeStore):
 
     def getCardNameFromPath(self, oPath):
         """
-        Get the card name associated with the current path. Handle 
+        Get the card name associated with the current path. Handle
         the expansion level transparently.
         """
         oIter = self.get_iter(oPath)
@@ -329,7 +329,7 @@ class CardListModel(gtk.TreeStore):
 
     def getNameFromIter(self, oIter):
         """
-        Extract the value at oIter from the model, correcting for encoding 
+        Extract the value at oIter from the model, correcting for encoding
         issues
         """
         # For some reason the string comes back from the
@@ -355,8 +355,8 @@ class CardListModel(gtk.TreeStore):
 
     def incCardExpansionByName(self, sCardName, sExpansion):
         """
-        Increases the expansion count for this card without changing the 
-        total card count. Should be paired with calls to incCardByName 
+        Increases the expansion count for this card without changing the
+        total card count. Should be paired with calls to incCardByName
         or decCardExpansionByName for consistency
         """
         if sExpansion is None:
@@ -369,7 +369,7 @@ class CardListModel(gtk.TreeStore):
 
     def decCardExpansionByName(self, sCardName, sExpansion):
         """
-        Decreases the expansion count for this card without changing total 
+        Decreases the expansion count for this card without changing total
         card count. Should be paired with calls to decCardByName or
         incCardExpansionByName for consistency
         """
@@ -464,7 +464,7 @@ class CardListModel(gtk.TreeStore):
             iCnt = self.get_value(oIter, 1) + iChg
             iGrpCnt = self.get_value(oGrpIter, 1) + iChg
 
-            if iCnt > 0: 
+            if iCnt > 0:
                 self.set(oIter, 1, iCnt)
                 bIncCard, bDecCard = self.check_inc_dec_card(oCard, iCnt)
                 self.set(oIter, 2, bIncCard)
@@ -559,7 +559,7 @@ class CardListModel(gtk.TreeStore):
                     self._dNameExpansion2Iter.setdefault(oCard.name, {})
                     oExpandIter = self.append(oChildIter)
                     # For models with expansions, this will be paired with a
-                    # call to inc Expansion count. We rely on this to sort 
+                    # call to inc Expansion count. We rely on this to sort
                     # out details - here we just create the needed space.
                     self.set(oExpandIter,
                             0, sExpName,
@@ -593,7 +593,7 @@ class PhysicalCardListModel(CardListModel):
             for oPhysCard in PhysicalCard.selectBy(expansionID=None):
                 self._dNoneCountCache.setdefault(oPhysCard.abstractCard, 0)
                 self._dNoneCountCache[oPhysCard.abstractCard] += 1
-    
+
     def clear_info_cache(self):
         del self._dNoneCountCache
 
@@ -697,7 +697,7 @@ class PhysicalCardSetCardListModel(CardListModel):
                     sName = oPC.expansion.name
                 else:
                     sName = self.sUnknownExpansion
-                # There is a Physical Card here, so by default bIncCard must 
+                # There is a Physical Card here, so by default bIncCard must
                 # be true. Loop below will correct this when needed
                 dExpansions.setdefault(sName, [0, False, True])
                 dCount.setdefault(sName, 0)

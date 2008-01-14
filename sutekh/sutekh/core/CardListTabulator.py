@@ -8,7 +8,7 @@ from sutekh.core.SutekhObjects import Discipline, Clan, \
 class CardListTabulator(object):
     """
     Creates a table of cards from a card list.
-    Each row of the table corresponds to a card in the list.   
+    Each row of the table corresponds to a card in the list.
     Each column of the table represents a numerical property of the card (pool cost, blood cost, discipline levels etc).
     """
 
@@ -30,7 +30,7 @@ class CardListTabulator(object):
         Since a new dictionary is created every time this function is called it's safe to edit it to include just
         the functions you want.
 
-        Notes:        
+        Notes:
          * For blood, pool and conviction costs, a cost of X is represented by a value of -1.
          * Boolean attributes (disciplines, rarities, expansions, clans and cardtypes) are represented by values of 0 or 1.
          * Group and capacity are set to 0 if the card doesn't have a group or capacity.

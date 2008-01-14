@@ -187,7 +187,7 @@ class MultiPaneWindow(gtk.Window):
         """
         Reload all open frames. Useful for major DB changes
         """
-        
+
         for oPane in self.dOpenFrames:
             oPane.reload()
 
@@ -202,7 +202,7 @@ class MultiPaneWindow(gtk.Window):
         self._oFocussed.set_focussed_title()
         self._oFocussed.view.grab_focus()
         self.reset_menu()
- 
+
     def run(self):
         """gtk entry point"""
         gtk.main()
@@ -311,7 +311,7 @@ class MultiPaneWindow(gtk.Window):
     def get_current_pane(self):
         """
         Get the parent HPane of the focussed pane.
-        If there's no Focussed Pane, return the 
+        If there's no Focussed Pane, return the
         last added pane, which does the right thing for
         restore_from_config
         """
@@ -353,8 +353,8 @@ class MultiPaneWindow(gtk.Window):
             else:
                 oNewPane = gtk.HPaned()
             if len(self._aHPanes) > 0:
-                # We pop out the current frame, and plonk it in 
-                # the new pane - we add the new widget to the other 
+                # We pop out the current frame, and plonk it in
+                # the new pane - we add the new widget to the other
                 # part
                 oParent = self.get_current_pane()
                 # Must be a hpane, by construction
@@ -388,8 +388,8 @@ class MultiPaneWindow(gtk.Window):
                         else:
                             iPos = (oCur.width - oParent.get_position())/2
             else:
-                # This is the first HPane, or the 1st VPane we add, so 
-                # vbox has 2 children 
+                # This is the first HPane, or the 1st VPane we add, so
+                # vbox has 2 children
                 # The menu, and the one we want
                 oPart1 = [x for x in self.oVBox.get_children() if x != self.__oMenu][0]
                 oParent = self.oVBox
@@ -513,7 +513,7 @@ class MultiPaneWindow(gtk.Window):
         oCurAlloc = self.oVBox.get_allocation()
         iNewPos = oCurAlloc.width / (len(self._aHPanes) + 1)
         self.set_pos_for_all_hpanes(iNewPos)
-    
+
     def set_pos_for_all_hpanes(self, iNewPos):
         """Set all the panes to the same Position value"""
         oCurAlloc = self.oVBox.get_allocation()

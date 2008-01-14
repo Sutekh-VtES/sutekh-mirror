@@ -56,7 +56,7 @@ class CardSetManagementFrame(BasicFrame):
         aDragTargets = [ ('STRING', 0, 0),
                          ('text/plain', 0, 0) ]
 
-        self._oView.drag_source_set(gtk.gdk.BUTTON1_MASK | gtk.gdk.BUTTON3_MASK, 
+        self._oView.drag_source_set(gtk.gdk.BUTTON1_MASK | gtk.gdk.BUTTON3_MASK,
                 aDragTargets,
                 gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
 

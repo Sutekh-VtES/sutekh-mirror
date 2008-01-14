@@ -129,7 +129,7 @@ class NullFilter(Filter):
 
 class SingleFilter(Filter):
     """Base class for filters on single items which connect to AbstractCard via a mapping table.
-    
+
        Sub-class should set self._oMapTable, self._oMapField and self._oId.
        """
 
@@ -141,7 +141,7 @@ class SingleFilter(Filter):
 
 class MultiFilter(Filter):
     """Base class for filters on multiple items which connect to AbstractCard via a mapping table.
-    
+
        Sub-class should set self._oMapTable, self._oMapField and self._aIds.
        """
 
@@ -782,9 +782,9 @@ class SpecificCardFilter(DirectFilter):
 
 # Card Set Filters
 # These filters are designed to select card sets from the database
-# rather than cards, hence they aren't intended to be joined 
+# rather than cards, hence they aren't intended to be joined
 
-# base filters, to be subclassed to PhysicalCardSet or AbstractClassSet 
+# base filters, to be subclassed to PhysicalCardSet or AbstractClassSet
 # as needed
 class CardSetNameFilter(DirectFilter):
     keyword = "CardSetName"

@@ -96,7 +96,7 @@ class EditPhysicalCardMappingDialog(SutekhDialog):
                             oAlignBox.add(oCheckBox)
                             self.oTable.attach(oAlignBox, j, j+1, k, k+1)
                             k += 1
-                            oCheckBox.connect('toggled', self.do_toggle, oTotalLabel, 
+                            oCheckBox.connect('toggled', self.do_toggle, oTotalLabel,
                                     oCardSet, oAbstractCard, aCardSets)
                     else:
                         oTotalLabel = gtk.Label('0')
@@ -139,11 +139,11 @@ class EditPhysicalCardMappingDialog(SutekhDialog):
                 do_complaint_error("New allocation doesn't match on the numbers")
                 return
             else:
-                # OK, numbers match, so now re-assign the cards 
+                # OK, numbers match, so now re-assign the cards
                 for oAbstractCard, dPhysMap in self.dPhysCards.iteritems():
                     bSignal = False
                     for oPhysCard, aNewCardSets in dPhysMap.iteritems():
-                        aOldCardSets = [x.physicalCardSet for x in 
+                        aOldCardSets = [x.physicalCardSet for x in
                                 MapPhysicalCardToPhysicalCardSet.selectBy(physicalCardID=oPhysCard.id)]
                         for oCardSet in aOldCardSets:
                             if oCardSet not in aNewCardSets:

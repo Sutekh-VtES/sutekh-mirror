@@ -377,7 +377,7 @@ class EditableCardListView(CardListView):
             oMap = self.get_colormap()
             sColour = 'red'
             if oMap.alloc_color(sColour).pixel == oCurStyle.fg[gtk.STATE_NORMAL].pixel:
-                    sColour = 'green' 
+                    sColour = 'green'
             sStyleInfo = """
             style "internal_sutekh_editstyle" {
                 fg[NORMAL] = "%(colour)s"
@@ -386,7 +386,7 @@ class EditableCardListView(CardListView):
             """ % { 'colour' : sColour, 'path' : self.path() }
             gtk.rc_parse_string(sStyleInfo)
             # Need to force re-assesment of styles
-            self.set_name('editable_view') 
+            self.set_name('editable_view')
 
     def set_color_normal(self):
         self.set_name('normal_view')

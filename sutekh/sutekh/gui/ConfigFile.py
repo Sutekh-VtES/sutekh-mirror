@@ -116,9 +116,9 @@ class ConfigFile(object):
 
     def set_save_precise_pos(self, bSavePos):
         if bSavePos:
-            self.__oConfig.set(self.__sPrefsSection, 'save pane sizes', 'yes') 
+            self.__oConfig.set(self.__sPrefsSection, 'save pane sizes', 'yes')
         else:
-            self.__oConfig.set(self.__sPrefsSection, 'save pane sizes', 'no') 
+            self.__oConfig.set(self.__sPrefsSection, 'save pane sizes', 'no')
 
     def add_frame(self, iFrameNumber, sType, sName, bVertical, iPos):
         aOptions = self.__oConfig.options(self.__sPanesSection)

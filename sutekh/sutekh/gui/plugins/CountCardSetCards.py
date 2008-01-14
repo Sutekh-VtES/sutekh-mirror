@@ -42,15 +42,15 @@ class CountCardSetCards(CardListPlugin,CardListModelListener):
 
         self.oTextLabel = gtk.Label('Total Cards : 0 Crypt Cards : 0 Library Cards : 0')
 
-        aAbsCards = [IAbstractCard(x) for x in 
+        aAbsCards = [IAbstractCard(x) for x in
                 self.model.getCardIterator(self.model.getCurrentFilter())]
         self.load(aAbsCards)
 
         return self.oTextLabel
 
     def update_numbers(self):
-        self.oTextLabel.set_markup('Total Cards : <b>' + str(self.__iTot) +
-                '</b>  Crypt Cards : <b>' + str(self.__iCrypt) +
+        self.oTextLabel.set_markup('Total Cards : <b>' + str(self.__iTot)
+                '</b>  Crypt Cards : <b>' + str(self.__iCrypt)
                 '</b> Library Cards : <b>' + str(self.__iLibrary) + '</b>')
 
     def load(self, aAbsCards):
