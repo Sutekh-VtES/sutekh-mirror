@@ -49,8 +49,8 @@ class CountCardSetCards(CardListPlugin,CardListModelListener):
         return self.oTextLabel
 
     def update_numbers(self):
-        self.oTextLabel.set_markup('Total Cards : <b>' + str(self.__iTot)
-                '</b>  Crypt Cards : <b>' + str(self.__iCrypt)
+        self.oTextLabel.set_markup('Total Cards : <b>' + str(self.__iTot) +
+                '</b>  Crypt Cards : <b>' + str(self.__iCrypt) +
                 '</b> Library Cards : <b>' + str(self.__iLibrary) + '</b>')
 
     def load(self, aAbsCards):
