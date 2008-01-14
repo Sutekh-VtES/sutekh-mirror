@@ -18,7 +18,7 @@ from sqlobject import SQLObjectNotFound
 from xml.dom.minidom import getDOMImplementation
 
 class PhysicalCardSetWriter(object):
-    sMyVersion = "1.0"
+    sMyVersion = "1.1"
 
     def genDoc(self, sPhysicalCardSetName):
         dPhys = {}
@@ -50,7 +50,9 @@ class PhysicalCardSetWriter(object):
         oCardsElem.setAttribute('name', sPhysicalCardSetName)
         oCardsElem.setAttribute('author', sAuthor)
         oCardsElem.setAttribute('comment', sComment)
-        oCardsElem.setAttribute('annotations', sAnnotations)
+        oAnnotationNode = oDoc.createElement('annotations')
+        oAnnotationNode.appendChild(oDoc.createTextNode(sAnnotations))
+        oCardsElem.appendChild(oAnnotationNode)
         if bInUse:
             oCardsElem.setAttribute('inuse', 'Yes')
 

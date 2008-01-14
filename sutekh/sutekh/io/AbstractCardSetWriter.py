@@ -17,7 +17,7 @@ from sqlobject import SQLObjectNotFound
 from xml.dom.minidom import getDOMImplementation
 
 class AbstractCardSetWriter(object):
-    sMyVersion = "1.0"
+    sMyVersion = "1.1"
 
     def genDoc(self, sAbstractCardSetName):
         dCards = {}
@@ -48,7 +48,9 @@ class AbstractCardSetWriter(object):
         oCardsElem.setAttribute('name', sAbstractCardSetName)
         oCardsElem.setAttribute('author', sAuthor)
         oCardsElem.setAttribute('comment', sComment)
-        oCardsElem.setAttribute('annotations', sAnnotations)
+        oAnnotationNode = oDoc.createElement('annotations')
+        oAnnotationNode.appendChild(oDoc.createTextNode(sAnnotations))
+        oCardsElem.appendChild(oAnnotationNode)
 
         for tKey, iNum in dCards.iteritems():
             iId, sName = tKey

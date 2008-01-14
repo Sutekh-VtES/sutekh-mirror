@@ -25,8 +25,9 @@ class AbstractCardSetHandler(ContentHandler):
         self.acsDB = False
         self.aUnknown = []
         self.sACSName = None
-        self.aSupportedVersions = ['1.0', '0.0']
+        self.aSupportedVersions = ['1.1', '1.0', '0.0']
         self.oCS = None
+        self.bInAnnotations = False
 
     def startElement(self, sTagName, oAttrs):
         if sTagName == 'abstractcardset':
@@ -53,6 +54,8 @@ class AbstractCardSetHandler(ContentHandler):
             self.oCS.author = sAuthor
             self.oCS.comment = sComment
             self.oCS.annotations = sAnnotations
+        elif sTagName == 'annotations':
+            self.bInAnnotations = True
         elif sTagName == 'card':
             sName = oAttrs.getValue('name')
             iCount = int(oAttrs.getValue('count'), 10)
@@ -61,8 +64,17 @@ class AbstractCardSetHandler(ContentHandler):
                 # Add card to virtual cardset
                 self.oCS.add(iCount, sName)
 
+    def characters(self, sContent):
+        if self.bInAnnotations:
+            if self.oCS.annotations is not None:
+                sAnnotations = self.oCS.annotations
+                self.oCS.annotations = sAnnotations + sContent
+            else:
+                self.oCS.annotations = sContent
+
     def endElement(self, sName):
-        pass
+        if sName == 'annotations':
+            self.bInAnnotations = False
 
 class AbstractCardSetParser(object):
     def parse(self, fIn, oCardLookup=DEFAULT_LOOKUP):

@@ -22,11 +22,12 @@ from xml.sax import parse, parseString
 from xml.sax.handler import ContentHandler
 
 class PhysicalCardSetHandler(ContentHandler):
-    aSupportedVersions = ['1.0', '0.0']
+    aSupportedVersions = ['1.1', '1.0', '0.0']
 
     def __init__(self):
         ContentHandler.__init__(self)
         self.oCS = CardSetHolder()
+        self.bInAnnotations = False
 
     def startElement(self, sTagName, oAttrs):
         if sTagName == 'physicalcardset':
@@ -57,6 +58,8 @@ class PhysicalCardSetHandler(ContentHandler):
             self.oCS.comment = sComment
             self.oCS.annotations = sAnnotations
             self.oCS.inuse = bInUse
+        elif sTagName == 'annotations':
+            self.bInAnnotations = True
         elif sTagName == 'card':
             sName = oAttrs.getValue('name')
             iCount = int(oAttrs.getValue('count'), 10)
@@ -70,8 +73,17 @@ class PhysicalCardSetHandler(ContentHandler):
                 oExpansion = IExpansion(sExpansionName)
                 self.oCS.add(iCount, sName, oExpansion)
 
+    def characters(self, sContent):
+        if self.bInAnnotations:
+            if self.oCS.annotations is not None:
+                sAnnotations = self.oCS.annotations
+                self.oCS.annotations = sAnnotations + sContent
+            else:
+                self.oCS.annotations = sContent
+
     def endElement(self, sName):
-        pass
+        if sName == 'annotations':
+            self.bInAnnotations = False
 
 class PhysicalCardSetParser(object):
     def parse(self, fIn, oCardLookup=DEFAULT_LOOKUP):
