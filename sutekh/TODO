@@ -4,6 +4,8 @@ Backend:
  * Better error and exception handling
  * Rework SutekhUtility to be less of a mess
  * Use elementtree to handle XML parsing, as being more portable
+ * Consider using SQLObject's new .throughTo method for populating / caching
+   the objects abstract cards join to.
 
 Code Cleanup
  * Unify conventions ('Abstract' vs 'AbstractCardSet' in card set management, etc.)
