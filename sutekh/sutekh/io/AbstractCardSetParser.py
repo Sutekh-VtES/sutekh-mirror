@@ -6,7 +6,10 @@
 """
 Read cards from an XML file which
 looks like:
-<abstractcardset name='AbstractCardSetName' author='Author' comment='Comment' annotations='annotations'>
+<abstractcardset sutekh_xml_version='1.0' name='AbstractCardSetName' author='Author' comment='Comment'>
+  <annotations>
+  Annotations
+  </annotations>
   <card id='3' name='Some Card' count='5' />
   <card id='5' name='Some Other Card' count='2' />
 </abstractcardset>
@@ -16,81 +19,50 @@ into a AbstractCardSet
 from sutekh.core.CardSetHolder import CardSetHolder
 from sutekh.core.CardLookup import DEFAULT_LOOKUP
 from sqlobject import sqlhub
-from xml.sax import parse, parseString
-from xml.sax.handler import ContentHandler
+try:
+    from xml.etree.ElementTree import parse, fromstring, ElementTree
+except ImportError:
+    from elementtree.ElementTree import parse, fromstring, ElementTree
 
-class AbstractCardSetHandler(ContentHandler):
+class AbstractCardSetParser(object):
     def __init__(self):
-        ContentHandler.__init__(self)
-        self.acsDB = False
-        self.aUnknown = []
-        self.sACSName = None
-        self.aSupportedVersions = ['1.1', '1.0', '0.0']
-        self.oCS = None
-        self.bInAnnotations = False
+        self.aSupportedVersions = ['1.1', '1.0']
+        self.oCS = CardSetHolder()
+        self.oTree = None
 
-    def startElement(self, sTagName, oAttrs):
-        if sTagName == 'abstractcardset':
-            self.sACSName = oAttrs.getValue('name')
-            aAttributes = oAttrs.getNames()
-            sAuthor = None
-            sComment = None
-            sAnnotations = None
-            if 'author' in aAttributes:
-                sAuthor = oAttrs.getValue('author')
-            if 'comment' in aAttributes:
-                sComment = oAttrs.getValue('comment')
-            if 'annotations' in aAttributes:
-                sAnnotations = oAttrs.getValue('annotations')
-            if 'sutekh_xml_version' in aAttributes:
-                sThisVersion = oAttrs.getValue('sutekh_xml_version')
-            else:
-                sThisVersion = '0.0'
-            if sThisVersion not in self.aSupportedVersions:
-                raise RuntimeError("Unrecognised XML File Version")
-            # Setup the virtual cardset
-            self.oCS = CardSetHolder()
-            self.oCS.name = self.sACSName
-            self.oCS.author = sAuthor
-            self.oCS.comment = sComment
-            self.oCS.annotations = sAnnotations
-        elif sTagName == 'annotations':
-            self.bInAnnotations = True
-        elif sTagName == 'card':
-            sName = oAttrs.getValue('name')
-            iCount = int(oAttrs.getValue('count'), 10)
-
-            if self.oCS is not None:
+    def _convert_tree(self):
+        """Convert the ElementTree into a CardSetHolder"""
+        oRoot = self.oTree.getroot()
+        if oRoot.tag != 'abstractcardset':
+            raise RuntimeError("Not a Abstract Card Set list")
+        if oRoot.attrib['sutekh_xml_version'] not in self.aSupportedVersions:
+            raise RuntimeError("Unrecognised XML File version")
+        self.oCS.name = oRoot.attrib['name']
+        self.oCS.author = oRoot.attrib['author']
+        self.oCS.comment = oRoot.attrib['comment']
+        self.oCS.inuse = False
+        for oElem in oRoot:
+            if oElem.tag == 'annotations':
+                self.oCS.annotations = oElem.text
+            elif oElem.tag == 'card':
+                iCount = int(oElem.attrib['count'], 10)
+                sName = oElem.attrib['name']
                 # Add card to virtual cardset
                 self.oCS.add(iCount, sName)
 
-    def characters(self, sContent):
-        if self.bInAnnotations:
-            if self.oCS.annotations is not None:
-                sAnnotations = self.oCS.annotations
-                self.oCS.annotations = sAnnotations + sContent
-            else:
-                self.oCS.annotations = sContent
+    def _commit_tree(self, oCardLookup):
+        oOldConn = sqlhub.processConnection
+        sqlhub.processConnection = oOldConn.transaction()
+        self.oCS.createACS(oCardLookup)
+        sqlhub.processConnection.commit()
+        sqlhub.processConnection = oOldConn
 
-    def endElement(self, sName):
-        if sName == 'annotations':
-            self.bInAnnotations = False
-
-class AbstractCardSetParser(object):
     def parse(self, fIn, oCardLookup=DEFAULT_LOOKUP):
-        oMyHandler = AbstractCardSetHandler()
-        parse(fIn, oMyHandler)
-        oOldConn = sqlhub.processConnection
-        sqlhub.processConnection = oOldConn.transaction()
-        oMyHandler.oCS.createACS(oCardLookup)
-        sqlhub.processConnection.commit()
-        sqlhub.processConnection = oOldConn
+        self.oTree = parse(fIn)
+        self._convert_tree()
+        self._commit_tree(oCardLookup)
 
-    def parseString(self, sIn, oCardLookup=DEFAULT_LOOKUP):
-        oMyHandler = AbstractCardSetHandler()
-        parseString(sIn, oMyHandler)
-        oOldConn = sqlhub.processConnection
-        sqlhub.processConnection = oOldConn.transaction()
-        oMyHandler.oCS.createACS(oCardLookup)
-        sqlhub.processConnection.commit()
-        sqlhub.processConnection = oOldConn
+    def parse_string(self, sIn, oCardLookup=DEFAULT_LOOKUP):
+        self.oTree = ElementTree(fromstring(sIn))
+        self._convert_tree()
+        self._commit_tree(oCardLookup)

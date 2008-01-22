@@ -10,61 +10,50 @@ AbstractCardSet
 
 from sutekh.core.SutekhObjects import AbstractCardSet, PhysicalCardSet, PhysicalCard
 from sqlobject import SQLObjectNotFound
-from xml.sax import parse, _exceptions, parseString
-from xml.sax.handler import ContentHandler
-
-class IdentifyXMLHandler(ContentHandler):
-    def __init__(self):
-        ContentHandler.__init__(self)
-        self.sType = 'Unknown'
-        self.sName = None
-        self.bExists = False
-
-    def startElement(self, sTagName, oAttrs):
-        if sTagName == 'abstractcardset':
-            self.sType = 'AbstractCardSet'
-            self.sName = oAttrs.getValue('name')
-            try:
-                oACSet = AbstractCardSet.byName(self.sName.encode('utf8'))
-                self.bExists = True
-            except SQLObjectNotFound:
-                self.bExists = False
-        if sTagName == 'physicalcardset':
-            self.sType = 'PhysicalCardSet'
-            self.sName = oAttrs.getValue('name')
-            try:
-                oPCSet = PhysicalCardSet.byName(self.sName.encode('utf8'))
-                self.bExists = True
-            except SQLObjectNotFound:
-                self.bExists = False
-        if sTagName == 'cards':
-            self.sType = 'PhysicalCard'
-            # There is only 1 PhysicalCard List, so it exists if it's
-            # not empty
-            self.bExists = PhysicalCard.select().count() > 0
-
-    def endElement(self,sName):
-        pass
-
-    def getDetails(self):
-        return (self.sType, self.sName, self.bExists)
+try:
+    from xml.etree.ElementTree import parse, fromstring, ElementTree
+except ImportError:
+    from elementtree.ElementTree import parse, fromstring, ElementTree
 
 class IdentifyXMLFile(object):
-    def parse(self, fIn):
-        myHandler = IdentifyXMLHandler()
-        try:
-            parse(fIn, myHandler)
-        except _exceptions.SAXParseException:
-            pass
-        return myHandler.getDetails()
+    def __init__(self):
+        self.oTree = None
 
-    def parseString(self, sIn):
-        myHandler = IdentifyXMLHandler()
-        try:
-            parseString(sIn, myHandler)
-        except _exceptions.SAXParseException:
-            pass
-        return myHandler.getDetails()
+    def identify_tree(self):
+        oRoot = self.oTree.getroot()
+        sType = 'Unknown'
+        sName = None
+        bExists = False
+        if oRoot.tag == 'abstractcardset':
+            sType = 'AbstractCardSet'
+            sName = oRoot.attrib['name']
+            try:
+                AbstractCardSet.byName(sName.encode('utf8'))
+                bExists = True
+            except SQLObjectNotFound:
+                bExists = False
+        elif oRoot.tag == 'physicalcardset':
+            sType = 'PhysicalCardSet'
+            sName = oRoot.attrib['name']
+            try:
+                PhysicalCardSet.byName(sName.encode('utf8'))
+                bExists = True
+            except SQLObjectNotFound:
+                bExists = False
+        elif oRoot.tag == 'cards':
+            sType = 'PhysicalCard'
+            # There is only 1 PhysicalCard List, so it exists if it's
+            # not empty
+            bExists = PhysicalCard.select().count() > 0
+        return (sType, sName, bExists)
+
+    def parse(self, fIn):
+        self.oTree = parse(fIn)
+        return self.identify_tree()
+
+    def parse_string(self, sIn):
+        self.oTree = ElementTree(fromstring(sIn))
+        return self.identify_tree()
 
     def idFile(self, sFileName):
         fIn = file(sFileName, 'rU')

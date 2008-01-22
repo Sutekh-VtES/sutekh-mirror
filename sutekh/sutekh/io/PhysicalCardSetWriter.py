@@ -6,7 +6,10 @@
 """
 Write physical cards from a PhysicalCardSet out to an XML file which
 looks like:
-<physicalcardset name='SetName' author='Author' comment='Comment' annotations='annotations'>
+<physicalcardset sutekh_xml_version='1.1' name='SetName' author='Author' comment='Comment'>
+  <annotations> Various annotations
+  More annotations
+  </annotations>
   <card id='3' name='Some Card' count='5' expansion='Some Expansion' />
   <card id='3' name='Some Card' count='2' expansion='Some Other Expansion' />
   <card id='5' name='Some Other Card' count='2' expansion='Some Other Expansion' />
@@ -15,61 +18,57 @@ looks like:
 
 from sutekh.core.SutekhObjects import PhysicalCardSet
 from sqlobject import SQLObjectNotFound
-from xml.dom.minidom import getDOMImplementation
+from sutekh.SutekhUtility import pretty_xml
+try:
+    from xml.etree.ElementTree import Element, SubElement, ElementTree, tostring
+except ImportError:
+    from elementtree.ElementTree import Element, SubElement, ElementTree, tostring
 
 class PhysicalCardSetWriter(object):
     sMyVersion = "1.1"
 
-    def genDoc(self, sPhysicalCardSetName):
+    def make_tree(self, sPhysicalCardSetName):
         dPhys = {}
-
         try:
             oPCS = PhysicalCardSet.byName(sPhysicalCardSetName)
-            sAuthor = oPCS.author
-            sComment = oPCS.comment
-            sAnnotations = oPCS.annotations
             bInUse = oPCS.inuse
-            if sAnnotations is None:
-                # prettytoxml will barf if this isn't done
-                sAnnotations = ''
         except SQLObjectNotFound:
-            print "Failed to find %s" % sPhysicalCardSetName
-            return
+            raise RuntimeError('Unable to find card set %s' % sPhysicalCardSetName)
+
+        oRoot = Element('physicalcardset', sutekh_xml_version=self.sMyVersion,
+                name=sPhysicalCardSetName, author=oPCS.author, comment=oPCS.comment)
+        oAnnotationNode = SubElement(oRoot, 'annotations')
+        oAnnotationNode.text = oPCS.annotations
+
+        if bInUse:
+            oRoot.attrib['inuse'] = 'Yes'
 
         for oCard in oPCS.cards:
+            # ElementTree 1.2 doesn't support searching for attributes,
+            # so this is easier than using the tree directly. For
+            # elementtree 1.3, this should be reworked
             oAbs = oCard.abstractCard
             try:
                 dPhys[(oAbs.id, oAbs.name, oCard.expansion)] += 1
             except KeyError:
                 dPhys[(oAbs.id, oAbs.name, oCard.expansion)] = 1
 
-        oDoc = getDOMImplementation().createDocument(None, 'physicalcardset', None)
-
-        oCardsElem = oDoc.firstChild
-        oCardsElem.setAttribute('sutekh_xml_version', self.sMyVersion)
-        oCardsElem.setAttribute('name', sPhysicalCardSetName)
-        oCardsElem.setAttribute('author', sAuthor)
-        oCardsElem.setAttribute('comment', sComment)
-        oAnnotationNode = oDoc.createElement('annotations')
-        oAnnotationNode.appendChild(oDoc.createTextNode(sAnnotations))
-        oCardsElem.appendChild(oAnnotationNode)
-        if bInUse:
-            oCardsElem.setAttribute('inuse', 'Yes')
-
         for tKey, iNum in dPhys.iteritems():
             iId, sName, oExpansion = tKey
-            oCardElem = oDoc.createElement('card')
-            oCardElem.setAttribute('id', str(iId))
-            oCardElem.setAttribute('name', sName)
+            oCardElem = SubElement(oRoot, 'card', id=str(iId), name=sName,
+                    count = str(iNum))
             if oExpansion is None:
-                oCardElem.setAttribute('expansion', 'None Specified')
+                oCardElem.attrib['expansion'] =  'None Specified'
             else:
-                oCardElem.setAttribute('expansion', oExpansion.name)
-            oCardElem.setAttribute('count', str(iNum))
-            oCardsElem.appendChild(oCardElem)
+                oCardElem.attrib['expansion'] = oExpansion.name
 
-        return oDoc
+        return oRoot
 
-    def write(self, fOut, sPhysicalCardSetName):
-        oDoc = self.genDoc(sPhysicalCardSetName)
-        fOut.write(oDoc.toprettyxml())
+    def gen_xml_string(self, sPhysicalCardSetName):
+        oRoot = self.make_tree(sPhysicalCardSetName)
+        return tostring(oRoot)
+
+    def write(self,fOut, sPhysicalCardSetName):
+        oRoot = self.make_tree(sPhysicalCardSetName)
+        pretty_xml(oRoot)
+        ElementTree(oRoot).write(fOut)

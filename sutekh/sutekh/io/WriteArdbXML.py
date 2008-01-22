@@ -11,153 +11,125 @@ the Anarch Revolt Deck Builder
 
 from sutekh.core.SutekhObjects import IAbstractCard
 from sutekh.SutekhInfo import SutekhInfo
-from xml.dom.minidom import getDOMImplementation
+from sutekh.SutekhUtility import pretty_xml
 import time
+try:
+    from xml.etree.ElementTree import Element, SubElement, ElementTree
+except ImportError:
+    from elementtree.ElementTree import Element, SubElement, ElementTree
 
 class WriteArdbXML(object):
-
-    def genDoc(self, sSetName, sAuthor, sDescription, dCards):
+    def gen_tree(self, sSetName, sAuthor, sDescription, dCards):
         """
         Creates the actual XML document into memory. Allows for conversion
         to HTML without using a Temporary file
         """
-        oDoc = getDOMImplementation().createDocument(None, 'deck', None)
+        oRoot = Element('deck')
 
-        oDeckElem = oDoc.firstChild
         sDateWritten = time.strftime('%Y-%m-%d', time.localtime())
-        oDeckElem.setAttribute('generator', "Sutekh [" + SutekhInfo.VERSION_STR + "]")
-        oDeckElem.setAttribute('formatVersion', "-TODO-1.0") # Claim same version as recent ARDB
+        oRoot.attrib['generator'] = "Sutekh [ %s ]" % SutekhInfo.VERSION_STR
+        oRoot.attrib['formatVersion'] = "-TODO-1.0" # Claim same version as recent ARDB
         # Should this be an attribute of VersionTable?
-        oDeckElem.setAttribute('databaseVersion', "Sutekh-20070701")
-        oNameElem = oDoc.createElement('name')
-        oNameElem.appendChild(oDoc.createTextNode(sSetName))
-        oDeckElem.appendChild(oNameElem)
-        oAuthElem = oDoc.createElement('author')
-        oAuthElem.appendChild(oDoc.createTextNode(sAuthor))
-        oDeckElem.appendChild(oAuthElem)
-        oDescElem = oDoc.createElement('description')
-        oDescElem.appendChild(oDoc.createTextNode(sDescription))
-        oDeckElem.appendChild(oDescElem)
-        oDateElem = oDoc.createElement('date')
-        oDateElem.appendChild(oDoc.createTextNode(sDateWritten))
-        oDeckElem.appendChild(oDateElem)
+        oRoot.attrib['databaseVersion'] = "Sutekh-20071201"
+        oNameElem = SubElement(oRoot, 'name')
+        oNameElem.text  = sSetName
+        oAuthElem = SubElement(oRoot, 'author')
+        oAuthElem.text = sAuthor
+        oDescElem = SubElement(oRoot, 'description')
+        oDescElem.text = sDescription
+        oDateElem = SubElement(oRoot, 'date')
+        oDateElem.text = sDateWritten
 
-        (dVamps, iCryptSize, iMin, iMax, fAvg) = self.extractCrypt(dCards)
-        (dLib, iLibSize) = self.extractLibrary(dCards)
+        (dVamps, iCryptSize, iMin, iMax, fAvg) = self.extract_crypt(dCards)
+        (dLib, iLibSize) = self.extract_library(dCards)
 
-        oCryptElem = oDoc.createElement('crypt')
-        oCryptElem.setAttribute('size', str(iCryptSize))
-        oCryptElem.setAttribute('min', str(iMin))
-        oCryptElem.setAttribute('max', str(iMax))
-        oCryptElem.setAttribute('avg', str(fAvg))
-        oDeckElem.appendChild(oCryptElem)
+        oCryptElem = SubElement(oRoot, 'crypt', size=str(iCryptSize),
+                min=str(iMin), max=str(iMax), avg=str(fAvg))
         for tKey, iNum in dVamps.iteritems():
             iId, sName = tKey
             oCard = IAbstractCard(sName)
-            oCardElem = oDoc.createElement('vampire')
+            oCardElem = SubElement(oCryptElem, 'vampire',
+                    databaseID=str(iId), count=str(iNum))
             # This won't match the ARDB ID's, unless by chance.
             # It looks like that should not be an issue as ARDB will
             # use the name if the IDs don't match
-            oCardElem.setAttribute('databaseID', str(iId))
-            oCardElem.setAttribute('count', str(iNum))
             # It's unclear to me what values ARDB uses here, but
             # these are fine for the xml2html conversion, and look meaningful
-            oAdvElem = oDoc.createElement('adv')
-            oNameElem = oDoc.createElement('name')
+            oAdvElem = SubElement(oCardElem, 'adv')
+            oNameElem = SubElement(oCardElem, 'name')
             if oCard.level is not None:
-                oAdvElem.appendChild(oDoc.createTextNode("(Advanced)"))
+                oAdvElem.text = '(Advanced)'
                 # This is a bit hackish
-                oNameElem.appendChild(oDoc.createTextNode(\
-                        sName.replace(' (Advanced)', '')))
+                oNameElem.text = sName.replace(' (Advanced)', '')
             else:
-                oNameElem.appendChild(oDoc.createTextNode(sName))
-            oCardElem.appendChild(oAdvElem)
-            oCardElem.appendChild(oNameElem)
-            oDiscElem = oDoc.createElement('disciplines')
-            sDisciplines = self.getDisc(oCard)
-            oDiscElem.appendChild(oDoc.createTextNode(sDisciplines))
-            oCardElem.appendChild(oDiscElem)
+                oNameElem.text = sName
+            oDiscElem = SubElement(oCardElem, 'disciplines')
+            sDisciplines = self.get_disciplines(oCard)
+            oDiscElem.text = sDisciplines
             aClan = [x.name for x in oCard.clan]
-            oClanElem = oDoc.createElement('clan')
-            oCapElem = oDoc.createElement('capacity')
+            oClanElem = SubElement(oCardElem, 'clan')
+            oCapElem = SubElement(oCardElem, 'capacity')
             if len(oCard.creed) > 0:
                 # ARDB seems to treat all Imbued as being of the same clan
                 # Should we do an Imbued:Creed thing?
-                oClanElem.appendChild(oDoc.createTextNode("Imbued"))
-                oCapElem.appendChild(oDoc.createTextNode(str(oCard.life)))
+                oClanElem.text = 'Imbued'
+                oCapElem.text = str(oCard.life)
             else:
-                oClanElem.appendChild(oDoc.createTextNode(aClan[0]))
-                oCapElem.appendChild(oDoc.createTextNode(str(oCard.capacity)))
-            oCardElem.appendChild(oClanElem)
-            oCardElem.appendChild(oCapElem)
-            oGrpElem = oDoc.createElement('group')
-            oGrpElem.appendChild(oDoc.createTextNode(str(oCard.group)))
-            oCardElem.appendChild(oGrpElem)
+                oClanElem.text = aClan[0]
+                oCapElem.text = str(oCard.capacity)
+            oGrpElem = SubElement(oCardElem, 'group')
+            oGrpElem.text = str(oCard.group)
             # ARDB doesn't handle sect specifically
             # No idea how ARDB represents independant titles -
             # this seems set when the ARDB database is created, and is
             # not in the ARDB codebase
             if len(oCard.title) > 0:
-                oTitleElem = oDoc.createElement('title')
+                oTitleElem = SubElement(oCardElem, 'title')
                 aTitles = [oC.name for oC in oCard.title]
-                oTitleElem.appendChild(oDoc.createTextNode(aTitles[0]))
-                oCardElem.appendChild(oTitleElem)
-            oTextElem = oDoc.createElement('text')
-            oTextElem.appendChild(oDoc.createTextNode(oCard.text))
-            oCardElem.appendChild(oTextElem)
-            oCryptElem.appendChild(oCardElem)
+                oTitleElem.text = aTitles[0]
+            oTextElem = SubElement(oCardElem, 'text')
+            oTextElem.text = oCard.text
 
-        oLibElem = oDoc.createElement('library')
-        oLibElem.setAttribute('size', str(iLibSize))
-        oDeckElem.appendChild(oLibElem)
+        oLibElem = SubElement(oRoot, 'library', size=str(iLibSize))
         for tKey, iNum in dLib.iteritems():
             iId, sName = tKey
             oCard = IAbstractCard(sName)
-            oCardElem = oDoc.createElement('card')
-            oCardElem.setAttribute('databaseID', str(iId))
-            oCardElem.setAttribute('count', str(iNum))
-            oNameElem = oDoc.createElement('name')
-            oNameElem.appendChild(oDoc.createTextNode(sName))
-            oCardElem.appendChild(oNameElem)
+            oCardElem = SubElement(oLibElem, 'card', databaseID=str(iId),
+                    count=str(iNum))
+            oNameElem = SubElement(oCardElem, 'name')
+            oNameElem.text = sName
             if oCard.costtype is not None:
-                oCostElem = oDoc.createElement('cost')
-                oCostElem.appendChild(oDoc.createTextNode(
-                        str(oCard.cost) + " " + oCard.costtype))
-                oCardElem.appendChild(oCostElem)
+                oCostElem = SubElement(oCardElem, 'cost')
+                oCostElem.text = "%s %s " % (str(oCard.cost), oCard.costtype )
             if len(oCard.clan) > 0:
                 # ARDB also strores things like "requires a prince"
-                # we don't so to bad
-                oReqElem = oDoc.createElement('requirement')
+                # we don't so too bad
+                oReqElem = SubElement(oCardElem, 'requirement')
                 aClan = [x.name for x in oCard.clan]
-                oReqElem.appendChild(oDoc.createTextNode("/".join(aClan)))
-                oCardElem.appendChild(oReqElem)
+                oReqElem.text = "/".join(aClan)
             # Looks like it should be the right thing, but may not
             aTypes = [x.name for x in oCard.cardtype]
-            sType = "/".join(aTypes)
-            oTypeElem = oDoc.createElement('type')
-            oTypeElem.appendChild(oDoc.createTextNode(sType))
-            oCardElem.appendChild(oTypeElem)
+            oTypeElem = SubElement(oCardElem, 'type')
+            oTypeElem.text = "/".join(aTypes)
             # Not sure if this does quite the right thing here
-            sDisciplines = self.getDisc(oCard)
+            sDisciplines = self.get_disciplines(oCard)
             if sDisciplines != '':
-                oDiscElem = oDoc.createElement('disciplines')
-                oDiscElem.appendChild(oDoc.createTextNode(sDisciplines))
-                oCardElem.appendChild(oDiscElem)
-            oTextElem = oDoc.createElement('text')
-            oTextElem.appendChild(oDoc.createTextNode(oCard.text))
-            oCardElem.appendChild(oTextElem)
-            oLibElem.appendChild(oCardElem)
-        return oDoc
+                oDiscElem = SubElement(oCardElem, 'disciplines')
+                oDiscElem.text = sDisciplines
+            oTextElem = SubElement(oCardElem, 'text')
+            oTextElem.text = oCard.text
+        return oRoot
 
     def write(self, fOut, sSetName, sAuthor, sDescription, dCards):
         """
         Takes filename, deck details and a dictionary of cards, of the form
         dCard[(id,name)]=count
         """
-        oDoc = self.genDoc(sSetName, sAuthor, sDescription, dCards)
-        fOut.write(oDoc.toprettyxml())
+        oRoot = self.gen_tree(sSetName, sAuthor, sDescription, dCards)
+        pretty_xml(oRoot)
+        ElementTree(oRoot).write(fOut)
 
-    def getDisc(self, oCard):
+    def get_disciplines(self, oCard):
         aDisc = []
         aTypes = [x.name for x in oCard.cardtype]
         if aTypes[0] == 'Vampire':
@@ -180,7 +152,7 @@ class WriteArdbXML(object):
             # Dunno what we got, but we can't extract discipline'ish things from it
             return ""
 
-    def extractCrypt(self, dCards):
+    def extract_crypt(self, dCards):
         iCryptSize = 0
         iMax = 0
         iMin = 75
@@ -212,7 +184,7 @@ class WriteArdbXML(object):
             iMin = 0
         return (dVamps, iCryptSize, iMin, iMax, fAvg)
 
-    def extractLibrary(self, dCards):
+    def extract_library(self, dCards):
         iSize = 0
         dLib = {}
         for tKey, iCount in dCards.iteritems():

@@ -17,55 +17,54 @@ from sutekh.core.SutekhObjects import IExpansion
 from sutekh.core.CardSetHolder import CardSetHolder
 from sutekh.core.CardLookup import DEFAULT_LOOKUP
 from sqlobject import sqlhub
-from xml.sax import parse, parseString
-from xml.sax.handler import ContentHandler
+try:
+    from xml.etree.ElementTree import parse, fromstring, ElementTree
+except ImportError:
+    from elementtree.ElementTree import parse, fromstring, ElementTree
 
-class CardHandler(ContentHandler):
+class PhysicalCardParser(object):
     aSupportedVersions = ['1.0', '0.0']
 
     def __init__(self):
         self.oCS = CardSetHolder()
+        self.oTree = None
 
-    def startElement(self, sTagName, oAttrs):
-        if sTagName == 'cards':
-            aAttributes = oAttrs.getNames()
-            if 'sutekh_xml_version' in aAttributes:
-                sThisVersion = oAttrs.getValue('sutekh_xml_version')
-            else:
-                sThisVersion = '0.0'
-            if sThisVersion not in self.aSupportedVersions:
-                raise RuntimeError("Unrecognised XML File version")
-        elif sTagName == 'card':
-            sName = oAttrs.getValue('name')
-            iCount = int(oAttrs.getValue('count'), 10)
-            if 'expansion' in oAttrs.getNames():
-                sExpansionName = oAttrs.getValue('expansion')
-            else:
-                sExpansionName = 'None Specified'
-            if sExpansionName == 'None Specified':
-                self.oCS.add(iCount, sName, None)
-            else:
-                oExpansion = IExpansion(sExpansionName)
-                self.oCS.add(iCount, sName, oExpansion)
+    def _convertTree(self):
+        """parse the elementtree into a card set holder"""
+        oRoot = self.oTree.getroot()
+        if oRoot.tag != 'cards':
+            raise RuntimeError("Not a Physical card list")
+        if oRoot.attrib['sutekh_xml_version'] not in self.aSupportedVersions:
+            raise RuntimeError("Unrecognised XML File version")
+        for oElem in oRoot:
+            if oElem.tag == 'card':
+                iCount = int(oElem.attrib['count'], 10)
+                sName = oElem.attrib['name']
+                try:
+                    sExpansionName = oElem.attrib['expansion']
+                except KeyError:
+                    sExpansionName = 'None Specified'
+                if sExpansionName == 'None Specified':
+                    self.oCS.add(iCount, sName, None)
+                else:
+                    oExpansion = IExpansion(sExpansionName)
+                    self.oCS.add(iCount, sName, oExpansion)
 
-    def endElement(self, sName):
-        pass
+    def _commitTree(self, oCardLookup):
+        """Commit contents of the card set holder to
+           the database"""
+        oOldConn = sqlhub.processConnection
+        sqlhub.processConnection = oOldConn.transaction()
+        self.oCS.createPhysicalCardList(oCardLookup)
+        sqlhub.processConnection.commit()
+        sqlhub.processConnection = oOldConn
 
-class PhysicalCardParser(object):
     def parse(self, fIn, oCardLookup=DEFAULT_LOOKUP):
-        oMyHandler = CardHandler()
-        parse(fIn, oMyHandler)
-        oOldConn = sqlhub.processConnection
-        sqlhub.processConnection = oOldConn.transaction()
-        oMyHandler.oCS.createPhysicalCardList(oCardLookup)
-        sqlhub.processConnection.commit()
-        sqlhub.processConnection = oOldConn
+        self.oTree = parse(fIn)
+        self._convertTree()
+        self._commitTree(oCardLookup)
 
-    def parseString(self, sIn, oCardLookup=DEFAULT_LOOKUP):
-        oMyHandler = CardHandler()
-        parseString(sIn, oMyHandler)
-        oOldConn = sqlhub.processConnection
-        sqlhub.processConnection = oOldConn.transaction()
-        oMyHandler.oCS.createPhysicalCardList(oCardLookup)
-        sqlhub.processConnection.commit()
-        sqlhub.processConnection = oOldConn
+    def parse_string(self, sIn, oCardLookup=DEFAULT_LOOKUP):
+        self.oTree = ElementTree(fromstring(sIn))
+        self._convertTree()
+        self._commitTree(oCardLookup)

@@ -135,3 +135,21 @@ def delete_abstract_card_set(sSetName):
         return True
     except SQLObjectNotFound:
         return False
+
+def pretty_xml(oElement, iIndentLevel=0):
+    """
+    Helper function to add whitespace text attributes to a ElementTree.
+    Makes for 'pretty' indented XML output.
+    Based on the example indent function at http://effbot.org/zone/element-lib.htm [22/01/2008]
+    """
+    sIndent = "\n" + iIndentLevel * "  "
+    if len(oElement):
+        if not oElement.text or not oElement.text.strip():
+            oElement.text = sIndent + "  "
+            for oElement in oElement:
+                pretty_xml(oElement, iIndentLevel + 1)
+            if not oElement.tail or not oElement.tail.strip():
+                oElement.tail = sIndent
+    else:
+        if iIndentLevel and (not oElement.tail or not oElement.tail.strip()):
+            oElement.tail = sIndent

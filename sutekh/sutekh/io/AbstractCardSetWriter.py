@@ -6,7 +6,10 @@
 """
 Write cards from a AbstractCardSet out to an XML file which
 looks like:
-<abstractcardset name='AbstractCardSetName' author='Author' comment='Comment' annotations='annotations'>
+<abstractcardset sutekh_xml_version='1.1' name='AbstractCardSetName' author='Author' comment='Comment' >
+  <annotations> Various annotations
+  More annotations
+  </annotations>
   <card id='3' name='Some Card' count='5' />
   <card id='5' name='Some Other Card' count='2' />
 </abstractcardset>
@@ -14,25 +17,21 @@ looks like:
 
 from sutekh.core.SutekhObjects import AbstractCardSet
 from sqlobject import SQLObjectNotFound
-from xml.dom.minidom import getDOMImplementation
+from sutekh.SutekhUtility import pretty_xml
+try:
+    from xml.etree.ElementTree import Element, SubElement, ElementTree, tostring
+except ImportError:
+    from elementtree.ElementTree import Element, SubElement, ElementTree, tostring
 
 class AbstractCardSetWriter(object):
     sMyVersion = "1.1"
 
-    def genDoc(self, sAbstractCardSetName):
+    def make_tree(self, sAbstractCardSetName):
         dCards = {}
-
         try:
             oACS = AbstractCardSet.byName(sAbstractCardSetName)
-            sAuthor = oACS.author
-            sComment = oACS.comment
-            sAnnotations = oACS.annotations
-            if sAnnotations is None:
-                # prettytoxml will barf if this isn't done
-                sAnnotations = ''
         except SQLObjectNotFound:
-            print "Failed to find %s" % sAbstractCardSetName
-            return
+            raise RuntimeError('Unable to find card set %s' % sAbstractCardSetName)
 
         for oAbs in oACS.cards:
             try:
@@ -40,28 +39,25 @@ class AbstractCardSetWriter(object):
             except KeyError:
                 dCards[(oAbs.id, oAbs.name)] = 1
 
+        oRoot = Element('abstractcardset', sutekh_xml_version=self.sMyVersion,
+                author = oACS.author, name=sAbstractCardSetName, 
+                comment = oACS.comment)
 
-        oDoc = getDOMImplementation().createDocument(None, 'abstractcardset', None)
-
-        oCardsElem = oDoc.firstChild
-        oCardsElem.setAttribute('sutekh_xml_version', self.sMyVersion)
-        oCardsElem.setAttribute('name', sAbstractCardSetName)
-        oCardsElem.setAttribute('author', sAuthor)
-        oCardsElem.setAttribute('comment', sComment)
-        oAnnotationNode = oDoc.createElement('annotations')
-        oAnnotationNode.appendChild(oDoc.createTextNode(sAnnotations))
-        oCardsElem.appendChild(oAnnotationNode)
+        oAnnotationNode = SubElement(oRoot, 'annotations')
+        oAnnotationNode.text = oACS.annotations
 
         for tKey, iNum in dCards.iteritems():
             iId, sName = tKey
-            oCardElem = oDoc.createElement('card')
-            oCardElem.setAttribute('id', str(iId))
-            oCardElem.setAttribute('name', sName)
-            oCardElem.setAttribute('count', str(iNum))
-            oCardsElem.appendChild(oCardElem)
+            oCardElem = SubElement(oRoot, 'card', id=str(iId), name=sName, 
+                    count=str(iNum))
 
-        return oDoc
+        return oRoot
+
+    def gen_xml_string(self, sAbstractCardSetName):
+        oRoot = self.make_tree(sAbstractCardSetName)
+        return tostring(oRoot)
 
     def write(self, fOut, sAbstractCardSetName):
-        oDoc = self.genDoc(sAbstractCardSetName)
-        fOut.write(oDoc.toprettyxml())
+        oRoot = self.make_tree(sAbstractCardSetName)
+        pretty_xml(oRoot)
+        ElementTree(oRoot).write(fOut)

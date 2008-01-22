@@ -13,12 +13,16 @@ looks like:
 """
 
 from sutekh.core.SutekhObjects import PhysicalCard
-from xml.dom.minidom import getDOMImplementation
+from sutekh.SutekhUtility import pretty_xml
+try:
+    from xml.etree.ElementTree import Element, SubElement, ElementTree, tostring
+except ImportError:
+    from elementtree.ElementTree import Element, SubElement, ElementTree, tostring
 
 class PhysicalCardWriter(object):
     sMyVersion = '1.0'
 
-    def genDoc(self):
+    def make_tree(self):
         dPhys = {}
 
         for oC in PhysicalCard.select():
@@ -28,24 +32,29 @@ class PhysicalCardWriter(object):
             except KeyError:
                 dPhys[(oAbs.id, oAbs.name, oC.expansion)] = 1
 
-        oDoc = getDOMImplementation().createDocument(None,'cards',None)
-        oCardsElem = oDoc.firstChild
-        oCardsElem.setAttribute('sutekh_xml_version',self.sMyVersion)
+        oRoot = Element('cards', sutekh_xml_version=self.sMyVersion)
 
         for tKey, iNum in dPhys.iteritems():
             iId, sName, oExpansion = tKey
-            oCardElem = oDoc.createElement('card')
-            oCardElem.setAttribute('id',str(iId))
-            oCardElem.setAttribute('name',sName)
+            oCardElem = SubElement(oRoot,'card', id=str(iId))
+            oCardElem.attrib['name'] = sName
             if oExpansion is None:
-                oCardElem.setAttribute('expansion','None Specified')
+                oCardElem.attrib['expansion'] = 'None Specified'
             else:
-                oCardElem.setAttribute('expansion',oExpansion.name)
-            oCardElem.setAttribute('count',str(iNum))
-            oCardsElem.appendChild(oCardElem)
+                oCardElem.attrib['expansion']= oExpansion.name
+            oCardElem.attrib['count'] = str(iNum)
 
-        return oDoc
+        return oRoot
+
+    def gen_xml_string(self):
+        oRoot = self.make_tree()
+        # For zip files, we don't bother with prettifying output
+        if oRoot:
+            return tostring(oRoot)
+        else:
+            return ''
 
     def write(self,fOut):
-        oDoc = self.genDoc()
-        fOut.write(oDoc.toprettyxml())
+        oRoot = self.make_tree()
+        pretty_xml(oRoot)
+        ElementTree(oRoot).write(fOut)

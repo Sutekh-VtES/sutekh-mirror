@@ -6,7 +6,10 @@
 """
 Read physical cards from an XML file which
 looks like:
-<physicalcardset name='SetName' author='Author' comment='Comment' annotations='annotations'>
+<physicalcardset sutekh_xml_version='1.1' name='SetName' author='Author' comment='Comment'>
+  <annotations>
+  Annotations
+  </annotations>
   <card id='3' name='Some Card' count='5' expansion='Some Expansion' />
   <card id='3' name='Some Card' count='2' expansion='Some Other Expansion' />
   <card id='5' name='Some Other Card' count='2' expansion='Some Other Expansion' />
@@ -18,88 +21,62 @@ from sutekh.core.CardSetHolder import CardSetHolder
 from sutekh.core.SutekhObjects import IExpansion
 from sutekh.core.CardLookup import DEFAULT_LOOKUP
 from sqlobject import sqlhub
-from xml.sax import parse, parseString
-from xml.sax.handler import ContentHandler
-
-class PhysicalCardSetHandler(ContentHandler):
-    aSupportedVersions = ['1.1', '1.0', '0.0']
-
-    def __init__(self):
-        ContentHandler.__init__(self)
-        self.oCS = CardSetHolder()
-        self.bInAnnotations = False
-
-    def startElement(self, sTagName, oAttrs):
-        if sTagName == 'physicalcardset':
-            sPCSName = oAttrs.getValue('name')
-            aAttributes = oAttrs.getNames()
-            sAuthor = None
-            sComment = None
-            sAnnotations = None
-            bInUse = False
-            if 'author' in aAttributes:
-                sAuthor = oAttrs.getValue('author')
-            if 'comment' in aAttributes:
-                sComment = oAttrs.getValue('comment')
-            if 'annotations' in aAttributes:
-                sAnnotations = oAttrs.getValue('annotations')
-            if 'inuse' in aAttributes:
-                sInUse = oAttrs.getValue('inuse')
-                if sInUse.lower() == 'yes':
-                    bInUse = True
-            if 'sutekh_xml_version' in aAttributes:
-                sThisVersion = oAttrs.getValue('sutekh_xml_version')
-            else:
-                sThisVersion = '0.0'
-            if sThisVersion not in self.aSupportedVersions:
-                raise RuntimeError("Unrecognised XML file version")
-            self.oCS.name = sPCSName
-            self.oCS.author = sAuthor
-            self.oCS.comment = sComment
-            self.oCS.annotations = sAnnotations
-            self.oCS.inuse = bInUse
-        elif sTagName == 'annotations':
-            self.bInAnnotations = True
-        elif sTagName == 'card':
-            sName = oAttrs.getValue('name')
-            iCount = int(oAttrs.getValue('count'), 10)
-            if 'expansion' in oAttrs.getNames():
-                sExpansionName = oAttrs.getValue('expansion')
-            else:
-                sExpansionName = 'None Specified'
-            if sExpansionName == 'None Specified':
-                self.oCS.add(iCount, sName, None)
-            else:
-                oExpansion = IExpansion(sExpansionName)
-                self.oCS.add(iCount, sName, oExpansion)
-
-    def characters(self, sContent):
-        if self.bInAnnotations:
-            if self.oCS.annotations is not None:
-                sAnnotations = self.oCS.annotations
-                self.oCS.annotations = sAnnotations + sContent
-            else:
-                self.oCS.annotations = sContent
-
-    def endElement(self, sName):
-        if sName == 'annotations':
-            self.bInAnnotations = False
+try:
+    from xml.etree.ElementTree import parse, fromstring, ElementTree
+except ImportError:
+    from elementtree.ElementTree import parse, fromstring, ElementTree
 
 class PhysicalCardSetParser(object):
-    def parse(self, fIn, oCardLookup=DEFAULT_LOOKUP):
-        oMyHandler = PhysicalCardSetHandler()
-        parse(fIn, oMyHandler)
+    def __init__(self):
+        self.aSupportedVersions = ['1.1', '1.0']
+        self.oCS = CardSetHolder()
+        self.oTree = None
+
+    def _convert_tree(self):
+        """Convert the ElementTree into a CardSetHolder"""
+        oRoot = self.oTree.getroot()
+        if oRoot.tag != 'physicalcardset':
+            raise RuntimeError("Not a Physical Card Set list")
+        if oRoot.attrib['sutekh_xml_version'] not in self.aSupportedVersions:
+            raise RuntimeError("Unrecognised XML File version")
+        self.oCS.name = oRoot.attrib['name']
+        self.oCS.author = oRoot.attrib['author']
+        self.oCS.comment = oRoot.attrib['comment']
+        self.oCS.inuse = False
+        try:
+            if oRoot.attrib['inuse'] == 'Yes':
+                self.oCS.inuse = True
+        except KeyError:
+            pass
+        for oElem in oRoot:
+            if oElem.tag == 'annotations':
+                self.oCS.annotations = oElem.text
+            elif oElem.tag == 'card':
+                iCount = int(oElem.attrib['count'], 10)
+                sName = oElem.attrib['name']
+                try:
+                    sExpansionName = oElem.attrib['expansion']
+                except KeyError:
+                    sExpansionName = 'None Specified'
+                if sExpansionName == 'None Specified':
+                    self.oCS.add(iCount, sName, None)
+                else:
+                    oExpansion = IExpansion(sExpansionName)
+                    self.oCS.add(iCount, sName, oExpansion)
+
+    def _commit_tree(self, oCardLookup):
         oOldConn = sqlhub.processConnection
         sqlhub.processConnection = oOldConn.transaction()
-        oMyHandler.oCS.createPCS(oCardLookup)
+        self.oCS.createPCS(oCardLookup)
         sqlhub.processConnection.commit()
         sqlhub.processConnection = oOldConn
 
-    def parseString(self, sIn, oCardLookup=DEFAULT_LOOKUP):
-        oMyHandler = PhysicalCardSetHandler()
-        parseString(sIn, oMyHandler)
-        oOldConn = sqlhub.processConnection
-        sqlhub.processConnection = oOldConn.transaction()
-        oMyHandler.oCS.createPCS(oCardLookup)
-        sqlhub.processConnection.commit()
-        sqlhub.processConnection = oOldConn
+    def parse(self, fIn, oCardLookup=DEFAULT_LOOKUP):
+        self.oTree = parse(fIn)
+        self._convert_tree()
+        self._commit_tree(oCardLookup)
+
+    def parse_string(self, sIn, oCardLookup=DEFAULT_LOOKUP):
+        self.oTree = ElementTree(fromstring(sIn))
+        self._convert_tree()
+        self._commit_tree(oCardLookup)
