@@ -27,11 +27,11 @@ class CardSetExportArdbXML(CardListPlugin):
         return "Plugins"
 
     def activate(self,oWidget):
-        oDlg = self.makeDialog()
+        oDlg = self.make_dialog()
         oDlg.run()
         oDlg.destroy()
 
-    def makeDialog(self):
+    def make_dialog(self):
         self.oDlg = SutekhDialog("Choose FileName for Exported CardSet", self.parent,
                 gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                 (gtk.STOCK_OK, gtk.RESPONSE_OK,
@@ -39,11 +39,11 @@ class CardSetExportArdbXML(CardListPlugin):
         self.oFileChooser = gtk.FileChooserWidget(gtk.FILE_CHOOSER_ACTION_SAVE)
         self.oFileChooser.set_do_overwrite_confirmation(True)
         self.oDlg.vbox.pack_start(self.oFileChooser)
-        self.oDlg.connect("response", self.handleResponse)
+        self.oDlg.connect("response", self.handle_response)
         self.oDlg.show_all()
         return self.oDlg
 
-    def handleResponse(self,oWidget,oResponse):
+    def handle_response(self,oWidget,oResponse):
         if oResponse ==  gtk.RESPONSE_OK:
             sFileName = self.oFileChooser.get_filename()
             if sFileName is not None:
@@ -60,14 +60,14 @@ class CardSetExportArdbXML(CardListPlugin):
                 oW.write(fOut,self.view.sSetName,\
                         sAuthor,\
                         sComment,\
-                        self.getCards())
+                        self.get_cards())
                 fOut.close()
 
-    def getCards(self):
+    def get_cards(self):
         dDict = {}
         for oCard in self.model.getCardIterator(None):
             oACard = IAbstractCard(oCard)
-            dDict.setdefault((oACard.id,oACard.name),0)
+            dDict.setdefault((oACard.id, oACard.name),0)
             dDict[(oACard.id,oACard.name)] += 1
         return dDict
 
