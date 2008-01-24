@@ -14,9 +14,9 @@ from sutekh.SutekhInfo import SutekhInfo
 from sutekh.SutekhUtility import pretty_xml
 import time
 try:
-    from xml.etree.ElementTree import Element, SubElement, ElementTree
+    from xml.etree.ElementTree import Element, SubElement, ElementTree, tostring
 except ImportError:
-    from elementtree.ElementTree import Element, SubElement, ElementTree
+    from elementtree.ElementTree import Element, SubElement, ElementTree, tostring
 
 class WriteArdbXML(object):
     def gen_tree(self, sSetName, sAuthor, sDescription, dCards):
@@ -92,7 +92,7 @@ class WriteArdbXML(object):
 
         oLibElem = SubElement(oRoot, 'library', size=str(iLibSize))
         for tKey, iNum in dLib.iteritems():
-            iId, sName = tKey
+            iId, sName, sTypeString = tKey
             oCard = IAbstractCard(sName)
             oCardElem = SubElement(oLibElem, 'card', databaseID=str(iId),
                     count=str(iNum))
@@ -100,17 +100,15 @@ class WriteArdbXML(object):
             oNameElem.text = sName
             if oCard.costtype is not None:
                 oCostElem = SubElement(oCardElem, 'cost')
-                oCostElem.text = "%s %s " % (str(oCard.cost), oCard.costtype )
+                oCostElem.text = "%d %s " % (oCard.cost, oCard.costtype )
             if len(oCard.clan) > 0:
                 # ARDB also strores things like "requires a prince"
                 # we don't so too bad
                 oReqElem = SubElement(oCardElem, 'requirement')
                 aClan = [x.name for x in oCard.clan]
                 oReqElem.text = "/".join(aClan)
-            # Looks like it should be the right thing, but may not
-            aTypes = [x.name for x in oCard.cardtype]
             oTypeElem = SubElement(oCardElem, 'type')
-            oTypeElem.text = "/".join(aTypes)
+            oTypeElem.text = sTypeString
             # Not sure if this does quite the right thing here
             sDisciplines = self.get_disciplines(oCard)
             if sDisciplines != '':
@@ -129,28 +127,24 @@ class WriteArdbXML(object):
         pretty_xml(oRoot)
         ElementTree(oRoot).write(fOut)
 
+    def gen_xml_string(self, sSetName, sAuthor, sDescription, dCards):
+        """Generate string XML representation"""
+        oRoot = self.gen_tree(sSetName, sAuthor, sDescription, dCards)
+        return tostring(oRoot)
+
     def get_disciplines(self, oCard):
-        aDisc = []
-        aTypes = [x.name for x in oCard.cardtype]
-        if aTypes[0] == 'Vampire':
-            if not len(oCard.discipline) ==  0:
-                for oDisc in oCard.discipline:
-                    if oDisc.level == 'superior':
-                        aDisc.append(oDisc.discipline.name.upper())
-                    else:
-                        aDisc.append(oDisc.discipline.name)
-                aDisc.sort() # May not be needed
-                return " ".join(aDisc)
-            else:
-                return ""
-        elif aTypes[0] == 'Imbued':
-            if not len(oCard.virtue) == 0:
-                return " ".join([x.name for x in oCard.virtue])
-            else:
-                return ""
-        else:
-            # Dunno what we got, but we can't extract discipline'ish things from it
-            return ""
+        if len(oCard.discipline) > 0:
+            aDisc = []
+            for oDisc in oCard.discipline:
+                if oDisc.level == 'superior':
+                    aDisc.append(oDisc.discipline.name.upper())
+                else:
+                    aDisc.append(oDisc.discipline.name)
+            aDisc.sort() # May not be needed
+            return " ".join(aDisc)
+        elif len(oCard.virtue) > 0:
+            return " ".join([x.name for x in oCard.virtue])
+        return ""
 
     def extract_crypt(self, dCards):
         iCryptSize = 0
@@ -192,6 +186,10 @@ class WriteArdbXML(object):
             oCard = IAbstractCard(sName)
             aTypes = [x.name for x in oCard.cardtype]
             if aTypes[0] != 'Vampire' and aTypes[0] != 'Imbued':
-                dLib[tKey] = iCount
+                # Looks like it should be the right thing, but may not
+                sTypeString = "/".join(aTypes)
+                # We want to be able to sort over types easily, so
+                # we add them to the keys
+                dLib[(iId, sName, sTypeString)] = iCount
                 iSize += iCount
         return (dLib, iSize)
