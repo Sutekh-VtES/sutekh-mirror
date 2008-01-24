@@ -90,11 +90,11 @@ class CardSetExportHTML(CardListPlugin):
                     # TODO: alert user to error somehow
                     return
                 oW = WriteArdbXML()
-                oDoc = oW.genDoc(self.view.sSetName,
+                oDoc = oW.gen_xml_string(self.view.sSetName,
                         oCardSet.author,
                         oCardSet.comment,
                         self.getCards())
-                doc = libxml2.parseDoc(oDoc.toprettyxml())
+                doc = libxml2.parseDoc(oDoc)
                 bDoText = False
                 if self._styleText is not None:
                     if self.TextButton.get_active():
