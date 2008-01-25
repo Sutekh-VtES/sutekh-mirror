@@ -160,13 +160,13 @@ class PhysicalCardSetController(CardSetController):
         else:
             # Need to consider all PhysicalCards
             aPhysCards = PhysicalCard.selectBy(abstractCardID=oC.id)
-        if aPhysCards.count()>0:
+        if aPhysCards.count() > 0:
             aCandCards = []
             for oCard in aPhysCards:
                 # We want to add a card that's not in this expansion,
-                # Should be effecient due to the Cached joins
-                if oCard not in self.__oPhysCardSet.cards:
+                if oCard.id not in self.__aPhysCardIds:
                     # We want the card in the fewest other card sets
+                    # Should be effecient due to the Cached joins
                     aCandCards.append((oCard,
                         MapPhysicalCardToPhysicalCardSet.selectBy(physicalCardID = oCard.id).count()))
             if len(aCandCards) < 1:
