@@ -123,19 +123,20 @@ class PhysicalCardSetController(CardSetController):
         else:
             # Need to consider all PhysicalCards
             aPhysCards = PhysicalCard.selectBy(abstractCardID=oC.id)
-        if aPhysCards.count()>0:
-            for oCard in aPhysCards:
-                if oCard in self.__oPhysCardSet.cards:
-                    # Found one, so remove it
-                    self.__oPhysCardSet.removePhysicalCard(oCard.id)
-                    # Update Model
-                    self.model.decCardByName(oC.name)
-                    if oCard.expansion is not None:
-                        self.model.decCardExpansionByName(oC.name,
-                                oCard.expansion.name)
-                    else:
-                        self.model.decCardExpansionByName(oC.name, None)
-                    return True
+        for oCard in aPhysCards:
+            if oCard.id in self.__aPhysCardIds:
+                # Found one, so remove it
+                self.__oPhysCardSet.removePhysicalCard(oCard.id)
+                # Update Model
+                self.model.decCardByName(oC.name)
+                # Update internal card list
+                self.__aPhysCardIds.remove(oCard.id)
+                if oCard.expansion is not None:
+                    self.model.decCardExpansionByName(oC.name,
+                            oCard.expansion.name)
+                else:
+                    self.model.decCardExpansionByName(oC.name, None)
+                return True
         return False
 
     def addCard(self, sName, sExpansion):
