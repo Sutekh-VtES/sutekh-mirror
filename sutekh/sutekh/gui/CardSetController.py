@@ -53,7 +53,7 @@ class PhysicalCardSetController(CardSetController):
         for oPC in self.__oPhysCardSet.cards:
             oAC = oPC.abstractCard
             self.__aAbsCardIds.append(oAC.id)
-            self.__aPhysCardIds.append(oAC.id)
+            self.__aPhysCardIds.append(oPC.id)
         self._sFilterType = 'PhysicalCard'
         listen_row_destroy(self.physical_card_deleted, PhysicalCard)
         listen_row_update(self.physical_card_changed, PhysicalCard)
@@ -167,6 +167,7 @@ class PhysicalCardSetController(CardSetController):
         else:
             # Need to consider all PhysicalCards
             aPhysCards = PhysicalCard.selectBy(abstractCardID=oC.id)
+
         if aPhysCards.count() > 0:
             aCandCards = []
             for oCard in aPhysCards:
