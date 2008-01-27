@@ -46,9 +46,9 @@ class ZipFileWrapper(object):
         oWriter = PhysicalCardWriter()
         # Zipfile doesn't handle unicode unencoded - blargh
         # Documentation suggests WinZip may not like this
-        # We encode here, and not in gen_xml_string, as this is
-        # a zip specific issue
-        oString = oWriter.gen_xml_string().encode('utf-8')
+        # elementtree's tostring seems to do the right thing, so we
+        # trust it
+        oString = oWriter.gen_xml_string()
         self.oZip.writestr('PhysicalCardList.xml', oString)
         # If oZip isn't writeable, zipfile throws a RunTime Error
         # We just let the exception handling pass this up to the caller,
@@ -67,11 +67,11 @@ class ZipFileWrapper(object):
         for oACSet in oAbstractCardSets:
             sZName = oACSet.name
             oWriter = AbstractCardSetWriter()
-            oString = oWriter.gen_xml_string(sZName).encode('utf-8')
+            oString = oWriter.gen_xml_string(sZName)
             sZName = sZName.replace(" ", "_")
             sZName = sZName.replace("/", "_")
-            sZName.encode('ascii', 'xmlcharrefreplace')
             sZipName = 'acs_%s.xml' % sZName
+            sZipName = sZipName.encode('ascii', 'xmlcharrefreplace')
             aList.append(sZipName)
             self.oZip.writestr(sZipName, oString)
         if bClose:
@@ -89,11 +89,11 @@ class ZipFileWrapper(object):
         for oPCSet in oPhysicalCardSets:
             sZName = oPCSet.name
             oWriter = PhysicalCardSetWriter()
-            oString = oWriter.gen_xml_string(sZName).encode('utf-8')
+            oString = oWriter.gen_xml_string(sZName)
             sZName = sZName.replace(" ", "_")
             sZName = sZName.replace("/", "_")
-            sZName.encode('ascii', 'xmlcharrefreplace')
             sZipName = 'pcs_%s.xml' % sZName
+            sZipName = sZipName.encode('ascii', 'xmlcharrefreplace')
             aList.append(sZipName)
             self.oZip.writestr(sZipName, oString)
         if bClose:
