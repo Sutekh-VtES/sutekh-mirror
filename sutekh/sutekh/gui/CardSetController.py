@@ -48,7 +48,12 @@ class PhysicalCardSetController(CardSetController):
                 sName, PhysicalCardSet, oConfig, oMainWindow, oFrame)
         self.__oPhysCardSet = PhysicalCardSet.byName(sName)
         # We need to cache this for physical_card_deleted checks
-        self.__aPhysCardIds = [x.id for x in self.__oPhysCardSet.cards]
+        self.__aPhysCardIds = []
+        self.__aAbsCardIds = []
+        for oPC in self.__oPhysCardSet.cards:
+            oAC = oPC.abstractCard
+            self.__aAbsCardIds.append(oAC.id)
+            self.__aPhysCardIds.append(oAC.id)
         self._sFilterType = 'PhysicalCard'
         listen_row_destroy(self.physical_card_deleted, PhysicalCard)
         listen_row_update(self.physical_card_changed, PhysicalCard)
@@ -60,8 +65,7 @@ class PhysicalCardSetController(CardSetController):
         Cases are when card numbers in PCS change while this is editable,
         or the allocation of cards to physical card sets changes.
         """
-        aAbsCards = [x.abstractCard for x in self.__oPhysCardSet.cards]
-        if oAbsCard in aAbsCards:
+        if oAbsCard.id in self.__aAbsCardIds:
             self.view.reload_keep_expanded()
 
     def physical_card_deleted(self, oPhysCard):
@@ -74,6 +78,7 @@ class PhysicalCardSetController(CardSetController):
         if oPhysCard.id in self.__aPhysCardIds:
             self.__aPhysCardIds.remove(oPhysCard.id)
             oAC = oPhysCard.abstractCard
+            self.__aAbsCardIds.remove(oAC.id)
             # Update model
             if oPhysCard.expansion is not None:
                 self.model.decCardExpansionByName(oAC.name, oPhysCard.expansion.name)
@@ -131,6 +136,7 @@ class PhysicalCardSetController(CardSetController):
                 self.model.decCardByName(oC.name)
                 # Update internal card list
                 self.__aPhysCardIds.remove(oCard.id)
+                self._aAbsCardIds.remove(oC.id)
                 if oCard.expansion is not None:
                     self.model.decCardExpansionByName(oC.name,
                             oCard.expansion.name)
@@ -178,6 +184,7 @@ class PhysicalCardSetController(CardSetController):
             self.__oPhysCardSet.addPhysicalCard(oCard.id)
             self.__oPhysCardSet.sync()
             self.__aPhysCardIds.append(oCard.id)
+            self.__aAbsCardIds.append(oC.id)
             # Update Model
             self.model.incCardByName(oC.name)
             if oCard.expansion is not None:
