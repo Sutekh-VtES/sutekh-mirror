@@ -1,4 +1,26 @@
+27 Jan 2008:
+ * Add additional caching to CardSetController - avoids some additional 
+   database hits, especially when reload events are triggered
+ * remove some no longer needed encode lines from ZipFileHandler.
+ * fix encoding of internal filenames in ZipFileHandler.
+
+25 Jan 2008:
+ * Improve usage of cached card info in CardSetcontroller - speeds up 
+   adding + deleting cards by avoiding some extra database lookups
+ * Replace CardSetExportHTML.py with a version that uses ElementTree
+   to generate the HTML. removes the dependancy on libxslt, at the cost
+   of complexity in the plugin.
+
+22 Jan 2008
+ * Change {Abstract,Physical}CardSet{Write,Parser}, PhysicalCard{Writer,Parser},
+   and WriteArdbXML to use ElementTree.
+
+15 Jan 2008
+ * Change annotations to be a fully-fleged element in the XML files. This 
+   will allow formatting to be preserved.
+
 14 Dec 2007:
+ * Tage Sutekh 0.5.0 release
  * Add NSIS script for generating a Windows installer.
 
 12 Dec 2007
