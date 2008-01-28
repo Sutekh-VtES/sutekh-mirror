@@ -61,8 +61,8 @@ class CardSetExportHTML(CardListPlugin):
             if sFileName is not None:
                 if os.path.exists(sFileName):
                     bContinue = do_complaint_warning("Overwrite existing file %s?" % sFileName) != gtk.RESPONSE_CANCEL
-                if not bContinue:
-                    return
+                    if not bContinue:
+                        return
                 else:
                     try:
                         fOut = file(sFileName, "w")
