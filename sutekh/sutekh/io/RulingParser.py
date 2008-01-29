@@ -4,6 +4,7 @@
 # GPL - see COPYING for details
 
 import HTMLParser, re
+from logging import Logger
 from sutekh.core.SutekhObjects import IAbstractCard, SutekhObjectMaker
 from sqlobject import SQLObjectNotFound
 
@@ -32,7 +33,10 @@ class RuleDict(dict):
         'Ur-Shulgi' : 'Ur-Shulgi, The Shepherd',
     }
 
-    def __init__(self):
+    def __init__(self, oLogHandler=None):
+        self.oLogger = Logger('WW Rulings parser')
+        if oLogHandler is not None:
+            self.oLogger.addHandler(oLogHandler)
         super(RuleDict,self).__init__()
         self._oMaker = SutekhObjectMaker()
 
@@ -79,7 +83,7 @@ class RuleDict(dict):
         if self['card'] is None:
             return
 
-        print self['card'].name.encode('ascii','replace')
+        self.oLogger.info('Card: %s', self['card'])
 
         oR = self._oMaker.makeRuling(self['text'],self['code'])
 
@@ -94,9 +98,10 @@ class StateError(Exception):
     pass
 
 class State(object):
-    def __init__(self):
+    def __init__(self, oLogHandler):
         super(State,self).__init__()
         self._sData = ""
+        self.oLogHandler = oLogHandler
 
     def transition(self,sTag,dAttr):
         raise NotImplementedError
@@ -105,8 +110,8 @@ class State(object):
         self._sData += sData
 
 class StateWithRule(State):
-    def __init__(self,dInfo):
-        super(StateWithRule,self).__init__()
+    def __init__(self, dInfo, oLogHandler):
+        super(StateWithRule,self).__init__(oLogHandler)
         self._dInfo = dInfo
 
 # State Classes
@@ -114,19 +119,19 @@ class StateWithRule(State):
 class NoSection(State):
     def transition(self,sTag,dAttr):
         if sTag == 'p':
-            return InSection(RuleDict())
+            return InSection(RuleDict(self.oLogHandler), self.oLogHandler)
         else:
             return self
 
 class InSection(StateWithRule):
     def transition(self,sTag,dAttr):
         if sTag == 'b':
-            return SectionTitle(self._dInfo)
+            return SectionTitle(self._dInfo, self.oLogHandler)
         elif sTag == 'p':
             # skip to next section
-            return InSection(RuleDict())
+            return InSection(RuleDict(self.oLogHandler), self.oLogHandler)
         else:
-            return NoSection()
+            return NoSection(self.oLogHandler)
 
 class SectionTitle(StateWithRule):
     def transition(self,sTag,dAttr):
@@ -134,35 +139,35 @@ class SectionTitle(StateWithRule):
             raise StateError()
         elif sTag == '/b':
             self._dInfo['title'] = self._sData.strip().strip(':')
-            return SectionWithTitle(self._dInfo)
+            return SectionWithTitle(self._dInfo, self.oLogHandler)
         else:
             return self
 
 class SectionWithTitle(StateWithRule):
     def transition(self,sTag,dAttr):
         if sTag == 'li':
-            return SectionRule(self._dInfo)
+            return SectionRule(self._dInfo, self.oLogHandler)
         elif sTag == 'p':
             # skip to next section
-            return InSection(RuleDict())
+            return InSection(RuleDict(self.oLogHandler), self.oLogHandler)
         elif sTag == '/p':
-            return NoSection()
+            return NoSection(self.oLogHandler)
         else:
             return self
 
 class SectionRule(StateWithRule):
     def transition(self,sTag,dAttr):
         if sTag == 'span' and dAttr.get('class') in ['ruling','errata','clarification']:
-            return InRuleText(self._dInfo)
+            return InRuleText(self._dInfo, self.oLogHandler)
         elif sTag == 'a':
             self._dInfo['url'] = dAttr['href']
-            return InRuleUrl(self._dInfo)
+            return InRuleUrl(self._dInfo, self.oLogHandler)
         elif sTag == '/li':
             if not self._dInfo.has_key('code'):
                 self._dInfo['code'] = self._sData.strip()
             self._dInfo.save()
             self._dInfo.clearRule()
-            return SectionWithTitle(self._dInfo)
+            return SectionWithTitle(self._dInfo, self.oLogHandler)
         elif sTag == 'li':
             # handles unclosed <li> inside section block
             # skip to next rule
@@ -170,7 +175,7 @@ class SectionRule(StateWithRule):
                 self._dInfo['code'] = self._sData.strip()
             self._dInfo.save()
             self._dInfo.clearRule()
-            return SectionRule(self._dInfo)
+            return SectionRule(self._dInfo, self.oLogHandler)
         elif sTag == '/p':
             # handles unclosed <li> at end of section block
             # skip to next section
@@ -178,7 +183,7 @@ class SectionRule(StateWithRule):
                 self._dInfo['code'] = self._sData.strip()
             self._dInfo.save()
             self._dInfo.clearRule()
-            return NoSection()
+            return NoSection(self.oLogHandler)
         return self
 
 class InRuleText(StateWithRule):
@@ -187,7 +192,7 @@ class InRuleText(StateWithRule):
             raise StateError()
         elif sTag == '/span':
             self._dInfo['text'] = self._sData.strip()
-            return SectionRule(self._dInfo)
+            return SectionRule(self._dInfo, self.oLogHandler)
         else:
             return self
 
@@ -197,16 +202,21 @@ class InRuleUrl(StateWithRule):
             raise StateError()
         elif sTag == '/a':
             self._dInfo['code'] = self._sData.strip()
-            return SectionRule(self._dInfo)
+            return SectionRule(self._dInfo, self.oLogHandler)
         else:
             return self
 
 # Parser
 
 class RulingParser(HTMLParser.HTMLParser,object):
+    def __init__(self, oLogHandler):
+        # super().__init__ calls reset, so we need this first
+        self.oLogHandler = oLogHandler
+        super(RulingParser, self).__init__()
+
     def reset(self):
         super(RulingParser,self).reset()
-        self._state = NoSection()
+        self._state = NoSection(self.oLogHandler)
 
     def handle_starttag(self,sTag,aAttr):
         self._state = self._state.transition(sTag.lower(),dict(aAttr))

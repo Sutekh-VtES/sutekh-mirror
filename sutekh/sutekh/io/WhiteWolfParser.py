@@ -5,6 +5,8 @@
 # GPL - see COPYING for details
 
 import HTMLParser, re
+from logging import Logger
+import sys
 from sutekh.core.SutekhObjects import SutekhObjectMaker
 
 # Card Saver
@@ -14,8 +16,11 @@ class CardDict(dict):
     oWhiteSp = re.compile(r'[{}\s]+')
     oDispCard = re.compile(r'\[[^\]]+\]$')
 
-    def __init__(self):
+    def __init__(self, oLogHandler=None):
         super(CardDict,self).__init__()
+        self.oLogger = Logger('White wolf card parser')
+        if oLogHandler is not None:
+            self.oLogger.addHandler(oLogHandler)
         self._oMaker = SutekhObjectMaker()
 
     def _parseText(self):
@@ -205,7 +210,8 @@ class CardDict(dict):
         if self.has_key('level'):
             self['name'] = self._addLevelToName(self['name'],self['level'])
 
-        print self['name'].encode('ascii','xmlcharrefreplace')
+        #sLogName = self['name'].encode('ascii','xmlcharrefreplace')
+        self.oLogger.info('Card: %s', self['name'])
 
         oCard = self._makeCard(self['name'])
         if self.has_key('group'):
@@ -260,9 +266,10 @@ class StateError(Exception):
     pass
 
 class State(object):
-    def __init__(self):
+    def __init__(self, oLogHandler):
         super(State,self).__init__()
         self._sData = ""
+        self.oLogHandler = oLogHandler
 
     def transition(self,sTag,dAttr):
         raise NotImplementedError
@@ -271,8 +278,8 @@ class State(object):
         self._sData += sData
 
 class StateWithCard(State):
-    def __init__(self,dInfo):
-        super(StateWithCard,self).__init__()
+    def __init__(self, dInfo, oLogHandler):
+        super(StateWithCard,self).__init__(oLogHandler)
         self._dInfo = dInfo
 
 # State Classes
@@ -280,16 +287,16 @@ class StateWithCard(State):
 class NoCard(State):
     def transition(self,sTag,dAttr):
         if sTag == 'p':
-            return PotentialCard()
+            return PotentialCard(self.oLogHandler)
         else:
             return self
 
 class PotentialCard(State):
     def transition(self,sTag,dAttr):
         if sTag == 'a' and dAttr.has_key('name'):
-            return InCard(CardDict())
+            return InCard(CardDict(self.oLogHandler), self.oLogHandler)
         else:
-            return NoCard()
+            return NoCard(self.oLogHandler)
 
 class InCard(StateWithCard):
     def transition(self,sTag,dAttr):
@@ -297,15 +304,15 @@ class InCard(StateWithCard):
             raise StateError()
         elif sTag == '/p':
             self._dInfo.save()
-            return NoCard()
+            return NoCard(self.oLogHandler)
         elif sTag == 'span' and dAttr.get('class') == 'cardname':
-            return InCardName(self._dInfo)
+            return InCardName(self._dInfo, self.oLogHandler)
         elif sTag == 'span' and dAttr.get('class') == 'exp':
-            return InExpansion(self._dInfo)
+            return InExpansion(self._dInfo, self.oLogHandler)
         elif sTag == 'span' and dAttr.get('class') == 'key':
-            return InKeyValue(self._dInfo)
+            return InKeyValue(self._dInfo, self.oLogHandler)
         elif sTag == 'td' and dAttr.get('colspan') == '2':
-            return InCardText(self._dInfo)
+            return InCardText(self._dInfo, self.oLogHandler)
         else:
             return self
 
@@ -313,7 +320,7 @@ class InCardName(StateWithCard):
     def transition(self,sTag,dAttr):
         if sTag == '/span':
             self._dInfo['name'] = self._sData.strip()
-            return InCard(self._dInfo)
+            return InCard(self._dInfo, self.oLogHandler)
         elif sTag == 'span':
             raise StateError()
         else:
@@ -323,7 +330,7 @@ class InExpansion(StateWithCard):
     def transition(self,sTag,dAttr):
         if sTag == '/span':
             self._dInfo['expansion'] = self._sData.strip()
-            return InCard(self._dInfo)
+            return InCard(self._dInfo, self.oLogHandler)
         elif sTag == 'span':
             raise StateError()
         else:
@@ -333,7 +340,7 @@ class InCardText(StateWithCard):
     def transition(self,sTag,dAttr):
         if sTag == '/td' or sTag == 'tr' or sTag == '/tr' or sTag == '/table':
             self._dInfo['text'] = self._sData.strip()
-            return InCard(self._dInfo)
+            return InCard(self._dInfo, self.oLogHandler)
         elif sTag == 'td':
             raise StateError()
         else:
@@ -343,15 +350,15 @@ class InKeyValue(StateWithCard):
     def transition(self,sTag,dAttr):
         if sTag == '/span':
             sKey = self._sData.strip().strip(':').lower()
-            return WaitingForValue(sKey,self._dInfo)
+            return WaitingForValue(sKey,self._dInfo, self.oLogHandler)
         elif sTag == 'span':
             raise StateError()
         else:
             return self
 
 class WaitingForValue(StateWithCard):
-    def __init__(self,sKey,dInfo):
-        super(WaitingForValue,self).__init__(dInfo)
+    def __init__(self,sKey,dInfo, oLogHandler):
+        super(WaitingForValue,self).__init__(dInfo, oLogHandler)
         self._sKey = sKey
         self._bGotTd = False
 
@@ -362,10 +369,10 @@ class WaitingForValue(StateWithCard):
             return self
         elif sTag == '/td' and self._bGotTd:
             self._dInfo[self._sKey] = self._sData.strip()
-            return InCard(self._dInfo)
+            return InCard(self._dInfo, self.oLogHandler)
         elif sTag == '/tr':
             self._dInfo[self._sKey] = None
-            return InCard(self._dInfo)
+            return InCard(self._dInfo, self.oLogHandler)
         elif sTag == 'tr':
             raise StateError()
         else:
@@ -374,9 +381,14 @@ class WaitingForValue(StateWithCard):
 # Parser
 
 class WhiteWolfParser(HTMLParser.HTMLParser,object):
+    def __init__(self, oLogHandler):
+        # super().__init__ calls reset, so we need this first
+        self.oLogHandler = oLogHandler
+        super(WhiteWolfParser, self).__init__()
+
     def reset(self):
         super(WhiteWolfParser,self).reset()
-        self._state = NoCard()
+        self._state = NoCard(self.oLogHandler)
 
     def handle_starttag(self,sTag,aAttr):
         self._state = self._state.transition(sTag.lower(),dict(aAttr))

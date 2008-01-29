@@ -12,6 +12,7 @@ from sutekh.io.WhiteWolfParser import WhiteWolfParser
 from sutekh.io.RulingParser import RulingParser
 from sqlobject import sqlhub, SQLObjectNotFound
 import codecs, tempfile, os, sys
+from logging import StreamHandler
 
 def refreshTables(aTables, oConn, **kw):
     """Drop and recreate the given list of tables"""
@@ -29,12 +30,14 @@ def refreshTables(aTables, oConn, **kw):
     FlushCache()
     return True
 
-def readWhiteWolfList(sWwList):
+def readWhiteWolfList(sWwList, oLogHandler=None):
     """Parse in  a new White Wolf CardList"""
     FlushCache()
+    if oLogHandler is None:
+        oLogHandler = StreamHandler(sys.stdout)
     oOldConn = sqlhub.processConnection
     sqlhub.processConnection = oOldConn.transaction()
-    oParser = WhiteWolfParser()
+    oParser = WhiteWolfParser(oLogHandler)
     fIn = codecs.open(sWwList, 'rU', 'cp1252')
     for sLine in fIn:
         oParser.feed(sLine)
@@ -42,12 +45,14 @@ def readWhiteWolfList(sWwList):
     sqlhub.processConnection.commit()
     sqlhub.processConnection = oOldConn
 
-def readRulings(sRulings):
+def readRulings(sRulings, oLogHandler=None):
     """Parse a new White Wolf rulings file"""
     FlushCache()
+    if oLogHandler is None:
+        oLogHandler = StreamHandler(sys.stdout)
     oOldConn = sqlhub.processConnection
     sqlhub.processConnection = oOldConn.transaction()
-    oParser = RulingParser()
+    oParser = RulingParser(oLogHandler)
     fIn = codecs.open(sRulings, 'rU', 'cp1252')
     for sLine in fIn:
         oParser.feed(sLine)
