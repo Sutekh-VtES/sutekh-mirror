@@ -1,5 +1,5 @@
 # SutekhObjects.py
-# Copyright 2005,2006 Simon Cross <hodgestar@gmail.com>
+# Copyright 2005, 2006 Simon Cross <hodgestar@gmail.com>
 # Minor modifications copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
@@ -36,7 +36,7 @@ class IRuling(Interface): pass
 # Table Objects
 
 class VersionTable(SQLObject):
-    TableName = UnicodeCol(alternateID=True,length=50)
+    TableName = UnicodeCol(alternateID=True, length=50)
     Version = IntCol(default=None)
     tableversion = 1
 
@@ -46,7 +46,7 @@ class AbstractCard(SQLObject):
     tableversion = 3
     sqlmeta.lazyUpdate = True
 
-    canonicalName = UnicodeCol(alternateID=True,length=50)
+    canonicalName = UnicodeCol(alternateID=True, length=50)
     name = UnicodeCol(length=50)
     text = UnicodeCol()
     group = IntCol(default=None,dbName='grp')
@@ -432,9 +432,9 @@ class SutekhObjectMaker(object):
 
 class StrAdaptMeta(type):
     def __init__(self, sName, aBases, dDict):
-        self.makeObjectCache()
+        self.make_object_cache()
 
-    def makeObjectCache(self):
+    def make_object_cache(self):
         self.__dCache = {}
 
     def fetch(self,sName,oCls):
@@ -454,58 +454,58 @@ class CardTypeAdapter(object):
 
 class ClanAdapter(object):
     __metaclass__ = StrAdaptMeta
-    advise(instancesProvide=[IClan],asAdapterForTypes=[basestring])
+    advise(instancesProvide=[IClan], asAdapterForTypes=[basestring])
 
-    def __new__(cls,s):
-        return cls.fetch(Clans.canonical(s),Clan)
+    def __new__(cls, s):
+        return cls.fetch(Clans.canonical(s), Clan)
 
 class CreedAdapter(object):
     __metaclass__ = StrAdaptMeta
-    advise(instancesProvide=[ICreed],asAdapterForTypes=[basestring])
+    advise(instancesProvide=[ICreed], asAdapterForTypes=[basestring])
 
-    def __new__(cls,s):
-        return cls.fetch(Creeds.canonical(s),Creed)
+    def __new__(cls, s):
+        return cls.fetch(Creeds.canonical(s), Creed)
 
 class DisciplineAdapter(object):
     __metaclass__ = StrAdaptMeta
-    advise(instancesProvide=[IDiscipline],asAdapterForTypes=[basestring])
+    advise(instancesProvide=[IDiscipline], asAdapterForTypes=[basestring])
 
-    def __new__(cls,s):
-        return cls.fetch(Disciplines.canonical(s),Discipline)
+    def __new__(cls, s):
+        return cls.fetch(Disciplines.canonical(s), Discipline)
 
 class ExpansionAdapter(object):
     __metaclass__ = StrAdaptMeta
-    advise(instancesProvide=[IExpansion],asAdapterForTypes=[basestring])
+    advise(instancesProvide=[IExpansion], asAdapterForTypes=[basestring])
 
-    def __new__(cls,s):
-        return cls.fetch(Expansions.canonical(s),Expansion)
+    def __new__(cls, s):
+        return cls.fetch(Expansions.canonical(s), Expansion)
 
 class RarityAdapter(object):
     __metaclass__ = StrAdaptMeta
-    advise(instancesProvide=[IRarity],asAdapterForTypes=[basestring])
+    advise(instancesProvide=[IRarity], asAdapterForTypes=[basestring])
 
-    def __new__(cls,s):
-        return cls.fetch(Rarities.canonical(s),Rarity)
+    def __new__(cls, s):
+        return cls.fetch(Rarities.canonical(s), Rarity)
 
 class SectAdaptor(object):
     __metaclass__ = StrAdaptMeta
-    advise(instancesProvide=[ISect],asAdapterForTypes=[basestring])
+    advise(instancesProvide=[ISect], asAdapterForTypes=[basestring])
 
-    def __new__(cls,s):
-        return cls.fetch(Sects.canonical(s),Sect)
+    def __new__(cls, s):
+        return cls.fetch(Sects.canonical(s), Sect)
 
 class TitleAdapter(object):
     __metaclass__ = StrAdaptMeta
-    advise(instancesProvide=[ITitle],asAdapterForTypes=[basestring])
+    advise(instancesProvide=[ITitle], asAdapterForTypes=[basestring])
 
-    def __new__(cls,s):
-        return cls.fetch(Titles.canonical(s),Title)
+    def __new__(cls, s):
+        return cls.fetch(Titles.canonical(s), Title)
 
 class VirtueAdapter(object):
     __metaclass__ = StrAdaptMeta
-    advise(instancesProvide=[IVirtue],asAdapterForTypes=[basestring])
+    advise(instancesProvide=[IVirtue], asAdapterForTypes=[basestring])
 
-    def __new__(cls,s):
+    def __new__(cls, s):
         return cls.fetch(Virtues.canonical(s),Virtue)
 
 # Other Adapters
@@ -514,6 +514,10 @@ class RarityPairAdapter(object):
     advise(instancesProvide=[IRarityPair],asAdapterForTypes=[tuple])
 
     __dCache = {}
+
+    @classmethod
+    def make_object_cache(cls):
+        cls.__dCache = {}
 
     def __new__(cls,t):
         oE = IExpansion(t[0])
@@ -531,6 +535,10 @@ class DisciplinePairAdapter(object):
 
     __dCache = {}
 
+    @classmethod
+    def make_object_cache(cls):
+        cls.__dCache = {}
+
     def __new__(cls,t):
         oD = IDiscipline(t[0])
         sLevel = str(t[1])
@@ -545,38 +553,38 @@ class DisciplinePairAdapter(object):
 class AbstractCardAdapter(object):
     advise(instancesProvide=[IAbstractCard],asAdapterForTypes=[basestring])
 
-    def __new__(cls,s):
+    def __new__(cls, s):
         return AbstractCard.byCanonicalName(s.encode('utf8').lower())
 
 class RulingAdapter(object):
-    advise(instancesProvide=[IRuling],asAdapterForTypes=[tuple])
+    advise(instancesProvide=[IRuling], asAdapterForTypes=[tuple])
 
-    def __new__(cls,t):
+    def __new__(cls, t):
         sText, sCode = t
         return Ruling.byText(sText.encode('utf8'))
 
 class AbstractCardSetAdapter(object):
-    advise(instancesProvide=[IAbstractCardSet],asAdapterForTypes=[basestring])
+    advise(instancesProvide=[IAbstractCardSet], asAdapterForTypes=[basestring])
 
-    def __new__(cls,s):
+    def __new__(cls, s):
         return AbstractCardSet.byName(s.encode('utf8'))
 
 class PhysicalCardSetAdapter(object):
-    advise(instancesProvide=[IPhysicalCardSet],asAdapterForTypes=[basestring])
+    advise(instancesProvide=[IPhysicalCardSet], asAdapterForTypes=[basestring])
 
-    def __new__(cls,s):
+    def __new__(cls, s):
         return PhysicalCardSet.byName(s.encode('utf8'))
 
 class PhysicalCardToAbstractCardAdapter(object):
-    advise(instancesProvide=[IAbstractCard],asAdapterForTypes=[PhysicalCard])
+    advise(instancesProvide=[IAbstractCard], asAdapterForTypes=[PhysicalCard])
 
-    def __new__(cls,oPhysCard):
+    def __new__(cls, oPhysCard):
         return oPhysCard.abstractCard
 
 class MapAbstractCardToAbstractCardSetToAbstractCardAdapter(object):
-    advise(instancesProvide=[IAbstractCard],asAdapterForTypes=[MapAbstractCardToAbstractCardSet])
+    advise(instancesProvide=[IAbstractCard], asAdapterForTypes=[MapAbstractCardToAbstractCardSet])
 
-    def __new__(cls,oAbstractMapEntry):
+    def __new__(cls, oAbstractMapEntry):
         return oAbstractMapEntry.abstractCard
 
 # Flushing
@@ -586,8 +594,9 @@ def FlushCache():
     # and such
     for cAdaptor in [ ExpansionAdapter, RarityAdapter, DisciplineAdapter,
                       ClanAdapter, CardTypeAdapter, SectAdaptor, TitleAdapter,
-                      VirtueAdapter, CreedAdapter ]:
-        cAdaptor.makeObjectCache()
+                      VirtueAdapter, CreedAdapter, DisciplinePairAdapter,
+                      RarityPairAdapter ]:
+        cAdaptor.make_object_cache()
 
     for oJoin in AbstractCard.sqlmeta.joins:
         if type(oJoin) is SOCachedRelatedJoin:

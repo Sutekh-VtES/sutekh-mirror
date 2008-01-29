@@ -26,6 +26,7 @@ def refreshTables(aTables, oConn, **kw):
         cCls.createTable(connection=oConn)
         if not oVerHandler.setVersion(cCls, cCls.tableversion, oConn):
             return False
+    FlushCache()
     return True
 
 def readWhiteWolfList(sWwList):

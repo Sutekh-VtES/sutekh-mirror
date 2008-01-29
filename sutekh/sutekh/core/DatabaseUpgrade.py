@@ -7,7 +7,7 @@ from sqlobject import sqlhub, SQLObject, IntCol, UnicodeCol, RelatedJoin, \
 from sutekh.core.SutekhObjects import PhysicalCard, AbstractCard, AbstractCardSet, \
         PhysicalCardSet, Expansion, Clan, Virtue, Discipline, Rarity, \
         RarityPair, CardType, Ruling, ObjectList, DisciplinePair, Creed, \
-        Sect, Title, FlushCache
+        Sect, Title
 from sutekh.core.CardSetHolder import CachedCardSetHolder
 from sutekh.SutekhUtility import refreshTables
 from sutekh.core.DatabaseVersion import DatabaseVersion
@@ -605,17 +605,18 @@ def copyDB(orig_conn, dest_conn):
     copy_Sect(orig_conn, trans)
     copy_Title(orig_conn, trans)
     trans.commit()
-    trans = dest_conn.transaction()
+    trans.cache.clear()
     copy_AbstractCard(orig_conn, trans)
     trans.commit()
+    trans.cache.clear()
     trans = dest_conn.transaction()
     copy_PhysicalCard(orig_conn, trans)
     trans.commit()
-    trans = dest_conn.transaction()
+    trans.cache.clear()
     # Copy Physical card sets
     copy_PhysicalCardSet(orig_conn, trans)
     trans.commit()
-    trans = dest_conn.transaction()
+    trans.cache.clear()
     copy_AbstractCardSet(orig_conn, trans)
     trans.commit()
     return (bRes, aMessages)
@@ -672,14 +673,12 @@ def createMemoryCopy(tempConn):
     # We create a temporary memory database, and create the updated
     # database in it. readOldDB is responsbile for upgrading stuff
     # as needed
-    FlushCache()
     if refreshTables(ObjectList, tempConn):
         return readOldDB (sqlhub.processConnection, tempConn)
     else:
         return (False, ["Unable to create tables"])
 
 def createFinalCopy(tempConn):
-    FlushCache()
     # Copy from the memory database to the real thing
     if refreshTables(ObjectList, sqlhub.processConnection):
         return copyDB(tempConn, sqlhub.processConnection)
