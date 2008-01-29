@@ -10,6 +10,7 @@ from sutekh.core.CardLookup import LookupFailed
 from sutekh.gui.SutekhDialog import do_complaint_error, do_complaint_warning
 from sutekh.gui.ImportDialog import ImportDialog
 from sutekh.gui.WWFilesDialog import WWFilesDialog
+from sutekh.gui.ProgressDialog import ProgressDialog
 from sutekh.io.XmlFileHandling import PhysicalCardXmlFile, PhysicalCardSetXmlFile, \
                                     AbstractCardSetXmlFile
 from sutekh.io.IdentifyXMLFile import IdentifyXMLFile
@@ -17,6 +18,12 @@ from sutekh.core.DatabaseUpgrade import copyToNewAbstractCardDB, createFinalCopy
 from sutekh.SutekhUtility import refreshTables, readWhiteWolfList, readRulings, \
         delete_physical_card_set, delete_abstract_card_set
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
+
+
+# Values for use by the progress bar
+# FIXME: Should infer these from the files somehow?
+iVampCardCount = 3000
+iRulingsCount = 350
 
 class MainMenu(gtk.MenuBar, object):
     def __init__(self, oWindow, oConfig):
@@ -284,9 +291,17 @@ class MainMenu(gtk.MenuBar, object):
             refreshTables(ObjectList, tempConn)
             # WhiteWolf Parser uses sqlhub connection
             sqlhub.processConnection = tempConn
-            readWhiteWolfList(sCLFileName)
+            oProgressDialog = ProgressDialog(self.__oWin, "Reading WW Cardlist", iVampCardCount)
+            oProgressDialog.show()
+            readWhiteWolfList(sCLFileName, oProgressDialog.log_handler)
+            oProgressDialog.set_complete()
+            oProgressDialog.destroy()
             if sRulingsFileName is not None:
-                readRulings(sRulingsFileName)
+                oProgressDialog = ProgressDialog(self.__oWin, "Reading WW Rulings List", iRulingsCount)
+                oProgressDialog.show()
+                readRulings(sRulingsFileName, oProgressDialog.log_handler)
+                oProgressDialog.set_complete()
+                oProgressDialog.destroy()
             bCont = False
             # Refresh abstract card view for card lookups
             self.__oWin.reload_all()
