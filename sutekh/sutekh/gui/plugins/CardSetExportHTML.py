@@ -63,13 +63,12 @@ class CardSetExportHTML(CardListPlugin):
                     bContinue = do_complaint_warning("Overwrite existing file %s?" % sFileName) != gtk.RESPONSE_CANCEL
                     if not bContinue:
                         return
-                else:
-                    try:
-                        fOut = file(sFileName, "w")
-                    except Exception, oExp:
-                        sMsg = "Failed to open output file.\n\n" + str(oExp)
-                        do_complaint_error(sMsg)
-                        return
+                try:
+                    fOut = file(sFileName, "w")
+                except Exception, oExp:
+                    sMsg = "Failed to open output file.\n\n" + str(oExp)
+                    do_complaint_error(sMsg)
+                    return
                 if self.view.cSetType == PhysicalCardSet:
                     oCardSet = PhysicalCardSet.byName(self.view.sSetName)
                 elif self.view.cSetType == AbstractCardSet:
