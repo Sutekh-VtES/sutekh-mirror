@@ -73,7 +73,7 @@ class FilterBox(Filter, list):
                     aTypes.append(sType)
         return aTypes
 
-    types = property(fget= lambda self: self.__getTypes())
+    types = property(fget= lambda self: self._getTypes())
 
 class FilterAndBox(FilterBox):
     """AND a list of filters."""
