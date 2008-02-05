@@ -10,15 +10,16 @@ from sutekh.core.CardLookup import LookupFailed
 from sutekh.gui.SutekhDialog import do_complaint_error, do_complaint_warning
 from sutekh.gui.ImportDialog import ImportDialog
 from sutekh.gui.WWFilesDialog import WWFilesDialog
-from sutekh.gui.ProgressDialog import ProgressDialog, SutekhHTMLLogger
+from sutekh.gui.ProgressDialog import ProgressDialog, SutekhHTMLLogHandler, \
+        SutekhDBUpgradeLogHandler
 from sutekh.io.XmlFileHandling import PhysicalCardXmlFile, PhysicalCardSetXmlFile, \
-                                    AbstractCardSetXmlFile
+        AbstractCardSetXmlFile
 from sutekh.io.IdentifyXMLFile import IdentifyXMLFile
-from sutekh.core.DatabaseUpgrade import copyToNewAbstractCardDB, createFinalCopy
+from sutekh.core.DatabaseUpgrade import copy_to_new_AbstractCardDB, \
+        create_final_copy
 from sutekh.SutekhUtility import refreshTables, readWhiteWolfList, readRulings, \
         delete_physical_card_set, delete_abstract_card_set
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
-
 
 
 class MainMenu(gtk.MenuBar, object):
@@ -287,24 +288,28 @@ class MainMenu(gtk.MenuBar, object):
             refreshTables(ObjectList, tempConn)
             # WhiteWolf Parser uses sqlhub connection
             sqlhub.processConnection = tempConn
-            oLogger = SutekhHTMLLogger()
-            oProgressDialog = ProgressDialog(self.__oWin)
+            oLogHandler = SutekhHTMLLogHandler()
+            oProgressDialog = ProgressDialog()
             oProgressDialog.set_description("Reading WW Cardlist")
             oProgressDialog.show()
-            oLogger.set_dialog(oProgressDialog)
-            readWhiteWolfList(sCLFileName, oLogger)
+            oLogHandler.set_dialog(oProgressDialog)
+            readWhiteWolfList(sCLFileName, oLogHandler)
             oProgressDialog.set_complete()
             if sRulingsFileName is not None:
                 oProgressDialog.reset()
                 oProgressDialog.set_description("Reading WW Rulings List")
-                oLogger.set_dialog(oProgressDialog)
-                readRulings(sRulingsFileName, oLogger)
+                oLogHandler.set_dialog(oProgressDialog)
+                readRulings(sRulingsFileName, oLogHandler)
                 oProgressDialog.set_complete()
-            oProgressDialog.destroy()
             bCont = False
             # Refresh abstract card view for card lookups
             self.__oWin.reload_all()
-            (bOK, aErrors) = copyToNewAbstractCardDB(oldConn, tempConn, self.__oWin.cardLookup)
+            oProgressDialog.reset()
+            oProgressDialog.set_description("Reloading card list and card sets")
+            oLogHandler = SutekhDBUpgradeLogHandler()
+            oLogHandler.set_dialog(oProgressDialog)
+            (bOK, aErrors) = copy_to_new_AbstractCardDB(oldConn, tempConn, self.__oWin.cardLookup, oLogHandler)
+            oProgressDialog.set_complete()
             if not bOK:
                 sMesg = "There was a problem copying the cardlist to the new database\n"
                 for sStr in aErrors:
@@ -318,7 +323,11 @@ class MainMenu(gtk.MenuBar, object):
             # OK, update complete, copy back from tempConn
             sqlhub.processConnection = oldConn
             if bCont:
-                (bOK, aErrors) = createFinalCopy(tempConn)
+                oProgressDialog.reset()
+                oProgressDialog.set_description("Finalizing import")
+                oLogHandler = SutekhDBUpgradeLogHandler()
+                oLogHandler.set_dialog(oProgressDialog)
+                (bOK, aErrors) = create_final_copy(tempConn, oLogHandler)
                 if not bOK:
                     sMesg = "There was a problem updating the database\n"
                     for sStr in aErrors:
@@ -329,6 +338,7 @@ class MainMenu(gtk.MenuBar, object):
                     sMesg = "Import Completed\n"
                     sMesg += "Eveything seems to have gone OK"
                     do_complaint_error(sMesg)
+            oProgressDialog.destroy()
             self.__oWin.reload_all()
 
     def do_save_pane_set(self, oWidget):

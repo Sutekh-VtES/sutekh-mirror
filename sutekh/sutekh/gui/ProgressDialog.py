@@ -6,30 +6,43 @@ import string
 from logging import Handler
 
 
-class SutekhLogger(Handler, object):
+class SutekhLogHandler(Handler, object):
+    """Base class for loggers to talk to the dialog"""
     # We explicitly inherit from object, since Handler is a classic class
     def __init__(self):
-        super(SutekhLogger, self).__init__()
+        super(SutekhLogHandler, self).__init__()
         self.oDialog = None
 
     def set_dialog(self, oDialog):
         self.oDialog = oDialog
 
-class SutekhHTMLLogger(SutekhLogger):
+    def emit(self, oRecord):
+        pass
+
+class SutekhHTMLLogHandler(SutekhLogHandler):
+    """
+    Logging class for cardlist and rulings parser.
+    Converts messages of the form Card: X into a approximate 
+    progress measure
+    """
     def __init__(self):
-        super(SutekhHTMLLogger, self).__init__()
+        super(SutekhHTMLLogHandler, self).__init__()
 
     # Massage messages from HTMLParser into Dialog updates
-    def emit(self, record):
+    def emit(self, oRecord):
+        """
+        Massage message into progress value.
+        Skip difficult cases (The X, non-ascii characters, etc.)
+        """
         if self.oDialog is None:
             return # No point
-        sString = record.getMessage()
+        sString = oRecord.getMessage()
         # We skip considering the 'The' cases, as that gets messy
         if sString.startswith('Card: The '):
             return
         sBase = sString[6:8]
         sStart = string.upper(sBase)
-        # The cardlist considers case in ordering - AK before Aabat, etc. 
+        # The cardlist considers case in ordering - AK before Aabat, etc.
         # This causes jumps, so we ignore these, as there aren't enough
         # to make this worthwhile (9 out 3009, Jan 2008 - NM)
         if sStart == sBase:
@@ -43,15 +56,37 @@ class SutekhHTMLLogger(SutekhLogger):
         fBarPos = iPos/float(26*26)
         self.oDialog.update_bar(fBarPos)
 
+class SutekhDBUpgradeLogHandler(SutekhLogHandler):
+    """
+    LogHandler class for dealing with database upgrade messages
+    Each message (Card List, card set, etc). is taken as a step
+    in the process.
+    """
+    def __init__(self):
+        super(SutekhDBUpgradeLogHandler, self).__init__()
+        self.iCount = 0
+        self.fTot = 0
+
+    def set_total(self, iTot):
+        self.fTot = float(iTot)
+
+    def emit(self, oRecord):
+        if self.oDialog is None:
+            return # No point
+        self.iCount += 1
+        fBarPos = self.iCount/self.fTot
+        self.oDialog.update_bar(fBarPos)
+
 class ProgressDialog(gtk.Window):
     """
     Show a window with a single progress bar.
     """
-    # This is not a proper dialog, since we don't want the blocking 
+    # This is not a proper dialog, since we don't want the blocking
     # behaviour of Dialog.run()
-    def __init__(self, oParent):
+    def __init__(self):
         super(ProgressDialog, self).__init__()
         self.set_title('Progress')
+        self.set_name('Sutekh.dialog')
         self.oProgressBar = gtk.ProgressBar()
         self.oProgressBar.set_orientation(gtk.PROGRESS_LEFT_TO_RIGHT)
         self.oProgressBar.set_text('% done')
@@ -77,13 +112,16 @@ class ProgressDialog(gtk.Window):
         self.show_all()
 
     def reset(self):
+        """
+        Reset the progress bar to zero
+        """
         self.update_bar(0.0)
 
     def set_complete(self):
-         """
-         Set the progress bar as being complete
-         """
-         self.update_bar(1.0)
+        """
+        Set the progress bar as being complete
+        """
+        self.update_bar(1.0)
 
     def update_bar(self, fStep):
         """

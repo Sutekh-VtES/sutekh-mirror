@@ -8,7 +8,7 @@ from sqlobject import sqlhub, connectionForURI
 from sutekh.core.SutekhObjects import Ruling, ObjectList, PhysicalList
 from sutekh.SutekhUtility import refreshTables, readWhiteWolfList, \
         readRulings, genTempdir, prefsDir, ensureDirExists, sqliteUri
-from sutekh.core.DatabaseUpgrade import attemptDatabaseUpgrade
+from sutekh.core.DatabaseUpgrade import attempt_database_upgrade
 from sutekh.io.XmlFileHandling import PhysicalCardXmlFile, \
         PhysicalCardSetXmlFile, AbstractCardSetXmlFile, \
         writeAllAbstractCardSets, writeAllPhysicalCardSets
@@ -200,7 +200,7 @@ def main(aArgs):
         return 1
 
     if oOpts.upgrade_db:
-        attemptDatabaseUpgrade()
+        attempt_database_upgrade()
 
     return 0
 

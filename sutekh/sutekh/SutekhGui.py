@@ -10,7 +10,8 @@ from sutekh.gui.DBUpgradeDialog import DBUpgradeDialog
 from sutekh.gui.SutekhDialog import do_complaint_buttons, do_complaint_error, do_complaint
 from sutekh.gui.WWFilesDialog import WWFilesDialog
 from sutekh.core.DatabaseVersion import DatabaseVersion
-from sutekh.core.DatabaseUpgrade import createMemoryCopy, createFinalCopy, UnknownVersion
+from sutekh.core.DatabaseUpgrade import create_memory_copy, create_final_copy, \
+        UnknownVersion
 from sqlobject import sqlhub, connectionForURI
 from sutekh.gui.ConfigFile import ConfigFile
 import gtk
@@ -101,13 +102,13 @@ def main(aArgs):
         else:
             oTempConn = connectionForURI("sqlite:///:memory:")
             try:
-                (bOK, aMessages) = createMemoryCopy(oTempConn)
+                (bOK, aMessages) = create_memory_copy(oTempConn)
                 if bOK:
                     oDialog = DBUpgradeDialog(aMessages)
                     iRes = oDialog.run()
                     oDialog.destroy()
                     if iRes == gtk.RESPONSE_OK:
-                        (bOK, aMessages) = createFinalCopy(oTempConn)
+                        (bOK, aMessages) = create_final_copy(oTempConn)
                         if bOK:
                             sMesg = "Changes Commited\n"
                             if len(aMessages)>0:
