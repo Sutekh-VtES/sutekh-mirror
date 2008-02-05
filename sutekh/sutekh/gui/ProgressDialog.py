@@ -2,17 +2,47 @@
 # Copyright 2007 Neil Muller <drnlmuller+sutekh@gmail.com>
 
 import gtk
+import string
 from logging import Handler
 
+
 class SutekhLogger(Handler):
-    # Use messages sent to the logger to update a progress bar
-    def __init__(self, oDialog):
+    def __init__(self):
         # Handler is a classic class, so super doesn't work. Blergh
         Handler.__init__(self)
+        self.oDialog = None
+
+    def set_dialog(self, oDialog):
         self.oDialog = oDialog
 
+class SutekhHTMLLogger(SutekhLogger):
+    # And the classic class begat more classic classes.
+    def __init__(self):
+        SutekhLogger.__init__(self)
+
+    # Massage messages from HTMLParser into Dialog updates
     def emit(self, record):
-        self.oDialog.step_bar()
+        if self.oDialog is None:
+            return # No point
+        sString = record.getMessage()
+        # We skip considering the 'The' cases, as that gets messy
+        if sString.startswith('Card: The '):
+            return
+        sBase = sString[6:8]
+        sStart = string.upper(sBase)
+        # The cardlist considers case in ordering - AK before Aabat, etc. 
+        # This causes jumps, so we ignore these, as there aren't enough
+        # to make this worthwhile (9 out 3009, Jan 2008 - NM)
+        if sStart == sBase:
+            return
+        # Skip the difficult, non-ascii encoding cases
+        if sStart[0] not in string.ascii_uppercase or \
+                sStart[1] not in string.ascii_uppercase:
+            return
+        # This is now safe, if not a particularly good idea
+        iPos = ord(sStart[0])*26+ord(sStart[1])-(ord('A')*27)
+        fBarPos = iPos/float(26*26)
+        self.oDialog.update_bar(fBarPos)
 
 class ProgressDialog(gtk.Window):
     """
@@ -20,46 +50,35 @@ class ProgressDialog(gtk.Window):
     """
     # This is not a proper dialog, since we don't want the blocking 
     # behaviour of Dialog.run()
-    def __init__(self, oParent, sDescription, iMax):
+    def __init__(self, oParent):
         super(ProgressDialog, self).__init__()
         self.set_title('Progress')
-        self._oLogHandler = SutekhLogger(self)
-        oDescription = gtk.Label(sDescription)
         self.oProgressBar = gtk.ProgressBar()
         self.oProgressBar.set_orientation(gtk.PROGRESS_LEFT_TO_RIGHT)
         self.oProgressBar.set_text('% done')
         self.oProgressBar.set_fraction(0.0)
         self.oProgressBar.set_size_request(350, 50)
         self.set_default_size(400, 100)
-        oVBox = gtk.VBox()
-        self.fMax = float(iMax)
-        self.iStep = 0
+        self.oVBox = gtk.VBox()
+        self.oDescription = gtk.Label('Unknown')
+        self.oVBox.pack_start(self.oDescription)
         # Centre the progress bar horizontally
         oAlign = gtk.Alignment(xalign=0.5, yalign=0.0)
         oAlign.add(self.oProgressBar)
-        oVBox.pack_start(oDescription)
-        oVBox.pack_start(oAlign)
-        self.add(oVBox)
+        self.oVBox.pack_end(oAlign)
+        self.add(self.oVBox)
         self.show_all()
         self.set_modal(True)
 
-
-    log_handler = property(fget=lambda self: self._oLogHandler, doc="LogHandler object")
+    def set_description(self, sDescription):
+        """Change the description of a dialog"""
+        self.oVBox.remove(self.oDescription)
+        self.oDescription = gtk.Label(sDescription)
+        self.oVBox.pack_start(self.oDescription)
+        self.show_all()
 
     def reset(self):
-        self.iStep = 0
-        self.update_bar(0)
-
-    def step_bar(self):
-        """
-        Bump the counter by 1
-        """
-        self.iStep += 1
-        if self.iStep > self.fMax:
-            fCurStep = 1.0 # gtk.ProgressBar dislikes values > 1.0
-        else:
-            fCurStep = self.iStep / self.fMax
-        self.update_bar(fCurStep)
+        self.update_bar(0.0)
 
     def set_complete(self):
          """
@@ -71,7 +90,13 @@ class ProgressDialog(gtk.Window):
         """
         update the progress bar to the given fStep value
         """
-        self.oProgressBar.set_fraction(fStep)
+        # Progress bar doesn't like values < 0.0 or > 1.0
+        if fStep > 1.0:
+            self.oProgressBar.set_fraction(1.0)
+        elif fStep < 0.0:
+            self.oProgressBar.set_fraction(0.0)
+        else:
+            self.oProgressBar.set_fraction(fStep)
         # Since Sutekh is single threaded, and some IO bound
         # task has the gtk.main loop process, we fudge the
         # required behaviour to get the update drawn

@@ -10,7 +10,7 @@ from sutekh.core.CardLookup import LookupFailed
 from sutekh.gui.SutekhDialog import do_complaint_error, do_complaint_warning
 from sutekh.gui.ImportDialog import ImportDialog
 from sutekh.gui.WWFilesDialog import WWFilesDialog
-from sutekh.gui.ProgressDialog import ProgressDialog
+from sutekh.gui.ProgressDialog import ProgressDialog, SutekhHTMLLogger
 from sutekh.io.XmlFileHandling import PhysicalCardXmlFile, PhysicalCardSetXmlFile, \
                                     AbstractCardSetXmlFile
 from sutekh.io.IdentifyXMLFile import IdentifyXMLFile
@@ -20,10 +20,6 @@ from sutekh.SutekhUtility import refreshTables, readWhiteWolfList, readRulings, 
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
 
 
-# Values for use by the progress bar
-# FIXME: Should infer these from the files somehow?
-iVampCardCount = 3000
-iRulingsCount = 350
 
 class MainMenu(gtk.MenuBar, object):
     def __init__(self, oWindow, oConfig):
@@ -291,17 +287,20 @@ class MainMenu(gtk.MenuBar, object):
             refreshTables(ObjectList, tempConn)
             # WhiteWolf Parser uses sqlhub connection
             sqlhub.processConnection = tempConn
-            oProgressDialog = ProgressDialog(self.__oWin, "Reading WW Cardlist", iVampCardCount)
+            oLogger = SutekhHTMLLogger()
+            oProgressDialog = ProgressDialog(self.__oWin)
+            oProgressDialog.set_description("Reading WW Cardlist")
             oProgressDialog.show()
-            readWhiteWolfList(sCLFileName, oProgressDialog.log_handler)
+            oLogger.set_dialog(oProgressDialog)
+            readWhiteWolfList(sCLFileName, oLogger)
             oProgressDialog.set_complete()
-            oProgressDialog.destroy()
             if sRulingsFileName is not None:
-                oProgressDialog = ProgressDialog(self.__oWin, "Reading WW Rulings List", iRulingsCount)
-                oProgressDialog.show()
-                readRulings(sRulingsFileName, oProgressDialog.log_handler)
+                oProgressDialog.reset()
+                oProgressDialog.set_description("Reading WW Rulings List")
+                oLogger.set_dialog(oProgressDialog)
+                readRulings(sRulingsFileName, oLogger)
                 oProgressDialog.set_complete()
-                oProgressDialog.destroy()
+            oProgressDialog.destroy()
             bCont = False
             # Refresh abstract card view for card lookups
             self.__oWin.reload_all()

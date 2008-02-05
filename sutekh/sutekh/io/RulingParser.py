@@ -83,7 +83,7 @@ class RuleDict(dict):
         if self['card'] is None:
             return
 
-        self.oLogger.info('Card: %s', self['card'])
+        self.oLogger.info('Card: %s', self['card'].name)
 
         oR = self._oMaker.makeRuling(self['text'],self['code'])
 
