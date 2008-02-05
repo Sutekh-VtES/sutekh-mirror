@@ -174,9 +174,27 @@ class CardListView(gtk.TreeView, object):
     # Card name searching
 
     def compare(self, oModel, iColumn, sKey, oIter, oData):
-        if oModel.iter_depth(oIter) == 0 or oModel.iter_depth(oIter) == 2:
-            # Don't succeed for top level items or expansion items
+        if oModel.iter_depth(oIter) == 2:
+            # Don't succeed for expansion items
             return True
+
+        oPath = oModel.get_path(oIter)
+
+        if oModel.iter_depth(oIter) == 0:
+            if self.row_expanded(oPath):
+                # Don't succeed for expanded top level items
+                return True
+            else:
+                # Need to check if any of the children match
+                for iChildCount in range(oModel.iter_n_children(oIter)):
+                    oChildIter = oModel.iter_nth_child(oIter, iChildCount)
+                    sChildName = self._oModel.getNameFromIter(oChildIter).lower()
+                    if sChildName.startswith(sKey.lower()):
+                        # Expand the row
+                        self.expand_to_path(oPath)
+                        # Bail out, as compare will find the match for us
+                        return True
+                return True # No matches, so bail
 
         sCardName = self._oModel.getNameFromIter(oIter).lower()
         if sCardName.startswith(sKey.lower()):

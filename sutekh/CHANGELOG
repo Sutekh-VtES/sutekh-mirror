@@ -1,3 +1,6 @@
+05 Feb 2008:
+ * Searching will now expand trees to find matches
+
 27 Jan 2008:
  * Add additional caching to CardSetController - avoids some additional 
    database hits, especially when reload events are triggered
