@@ -6,19 +6,18 @@ import string
 from logging import Handler
 
 
-class SutekhLogger(Handler):
+class SutekhLogger(Handler, object):
+    # We explicitly inherit from object, since Handler is a classic class
     def __init__(self):
-        # Handler is a classic class, so super doesn't work. Blergh
-        Handler.__init__(self)
+        super(SutekhLogger, self).__init__()
         self.oDialog = None
 
     def set_dialog(self, oDialog):
         self.oDialog = oDialog
 
 class SutekhHTMLLogger(SutekhLogger):
-    # And the classic class begat more classic classes.
     def __init__(self):
-        SutekhLogger.__init__(self)
+        super(SutekhHTMLLogger, self).__init__()
 
     # Massage messages from HTMLParser into Dialog updates
     def emit(self, record):
