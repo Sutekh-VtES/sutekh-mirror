@@ -56,14 +56,14 @@ class SutekhHTMLLogHandler(SutekhLogHandler):
         fBarPos = iPos/float(26*26)
         self.oDialog.update_bar(fBarPos)
 
-class SutekhDBUpgradeLogHandler(SutekhLogHandler):
+class SutekhCountLogHandler(SutekhLogHandler):
     """
     LogHandler class for dealing with database upgrade messages
     Each message (Card List, card set, etc). is taken as a step
     in the process.
     """
     def __init__(self):
-        super(SutekhDBUpgradeLogHandler, self).__init__()
+        super(SutekhCountLogHandler, self).__init__()
         self.iCount = 0
         self.fTot = 0
 

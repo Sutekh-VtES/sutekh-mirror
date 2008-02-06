@@ -4,6 +4,7 @@
 
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhDialog import do_complaint_error, do_complaint_warning
+from sutekh.gui.ProgressDialog import ProgressDialog, SutekhCountLogHandler
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
 import gtk
 import os
@@ -72,8 +73,14 @@ class FullBackup(CardListPlugin):
 
             if bContinue:
                 try:
+                    oLogHandler = SutekhCountLogHandler()
+                    oProgressDialog = ProgressDialog()
+                    oProgressDialog.set_description("Saving backup")
+                    oLogHandler.set_dialog(oProgressDialog)
+                    oProgressDialog.show()
                     oFile = ZipFileWrapper(sFile)
-                    oFile.doDumpAllToZip()
+                    oFile.doDumpAllToZip(oLogHandler)
+                    oProgressDialog.destroy()
                 except Exception, e:
                     sMsg = "Failed to write backup.\n\n" + str(e)
                     do_complaint_error(sMsg)
@@ -114,10 +121,16 @@ class FullBackup(CardListPlugin):
 
             if bContinue:
                 try:
+                    oLogHandler = SutekhCountLogHandler()
+                    oProgressDialog = ProgressDialog()
+                    oProgressDialog.set_description("Restoring backup")
+                    oLogHandler.set_dialog(oProgressDialog)
+                    oProgressDialog.show()
                     oFile = ZipFileWrapper(sFile)
-                    oFile.doRestoreFromZip(oCardLookup=self.cardlookup)
+                    oFile.doRestoreFromZip(self.cardlookup, oLogHandler)
                     # restore successful, refresh display
                     self.reload_all()
+                    oProgressDialog.destroy()
                 except Exception, e:
                     sMsg = "Failed to restore backup.\n\n" + str(e)
                     do_complaint_error(sMsg)

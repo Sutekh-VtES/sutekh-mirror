@@ -11,7 +11,7 @@ from sutekh.gui.SutekhDialog import do_complaint_error, do_complaint_warning
 from sutekh.gui.ImportDialog import ImportDialog
 from sutekh.gui.WWFilesDialog import WWFilesDialog
 from sutekh.gui.ProgressDialog import ProgressDialog, SutekhHTMLLogHandler, \
-        SutekhDBUpgradeLogHandler
+        SutekhCountLogHandler
 from sutekh.io.XmlFileHandling import PhysicalCardXmlFile, PhysicalCardSetXmlFile, \
         AbstractCardSetXmlFile
 from sutekh.io.IdentifyXMLFile import IdentifyXMLFile
@@ -306,7 +306,7 @@ class MainMenu(gtk.MenuBar, object):
             self.__oWin.reload_all()
             oProgressDialog.reset()
             oProgressDialog.set_description("Reloading card list and card sets")
-            oLogHandler = SutekhDBUpgradeLogHandler()
+            oLogHandler = SutekhCountLogHandler()
             oLogHandler.set_dialog(oProgressDialog)
             (bOK, aErrors) = copy_to_new_AbstractCardDB(oldConn, tempConn, self.__oWin.cardLookup, oLogHandler)
             oProgressDialog.set_complete()
@@ -325,7 +325,7 @@ class MainMenu(gtk.MenuBar, object):
             if bCont:
                 oProgressDialog.reset()
                 oProgressDialog.set_description("Finalizing import")
-                oLogHandler = SutekhDBUpgradeLogHandler()
+                oLogHandler = SutekhCountLogHandler()
                 oLogHandler.set_dialog(oProgressDialog)
                 (bOK, aErrors) = create_final_copy(tempConn, oLogHandler)
                 if not bOK:

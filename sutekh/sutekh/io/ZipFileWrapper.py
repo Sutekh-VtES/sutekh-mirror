@@ -6,6 +6,7 @@
 # Split off from SutekhUtility.py and refactored, April 2007  - NM
 
 import zipfile
+from logging import Logger
 from sqlobject import sqlhub
 from sutekh.core.SutekhObjects import AbstractCardSet, PhysicalCardSet, \
         PhysicalList, AbstractCardSetList
@@ -37,7 +38,7 @@ class ZipFileWrapper(object):
         self.oZip.close()
         self.oZip = None
 
-    def write_physical_card_list_to_zip(self):
+    def write_physical_card_list_to_zip(self, oLogger):
         """Add the contents of the physical card list to the zip file"""
         bClose = False
         if self.oZip is None:
@@ -50,13 +51,14 @@ class ZipFileWrapper(object):
         # trust it
         oString = oWriter.gen_xml_string()
         self.oZip.writestr('PhysicalCardList.xml', oString)
+        oLogger.info('Physical Card Set written')
         # If oZip isn't writeable, zipfile throws a RunTime Error
         # We just let the exception handling pass this up to the caller,
         # since we can't really do anything about this here
         if bClose:
             self.__close_zip()
 
-    def write_all_acs_to_zip(self):
+    def write_all_acs_to_zip(self, oLogger):
         """Add all the abstract card sets to the zip file"""
         bClose = False
         if self.oZip is None:
@@ -74,11 +76,12 @@ class ZipFileWrapper(object):
             sZipName = sZipName.encode('ascii', 'xmlcharrefreplace')
             aList.append(sZipName)
             self.oZip.writestr(sZipName, oString)
+            oLogger.info('ACS: %s written', oACSet.name)
         if bClose:
             self.__close_zip()
         return aList
 
-    def write_all_pcs_to_zip(self):
+    def write_all_pcs_to_zip(self, oLogger):
         """Add all the physical card sets to the zip file"""
         bClose = False
         if self.oZip is None:
@@ -96,14 +99,20 @@ class ZipFileWrapper(object):
             sZipName = sZipName.encode('ascii', 'xmlcharrefreplace')
             aList.append(sZipName)
             self.oZip.writestr(sZipName, oString)
+            oLogger.info('PCS: %s written', oPCSet.name)
         if bClose:
             self.__close_zip()
         return aList
 
-    def doRestoreFromZip(self, oCardLookup=DEFAULT_LOOKUP):
+    def doRestoreFromZip(self, oCardLookup=DEFAULT_LOOKUP, oLogHandler=None):
         """Recover data from the zip file"""
         bPhysicalCardsRead = False
         self.__open_zip_for_read()
+        oLogger = Logger('Restore zip file')
+        if oLogHandler is not None:
+            oLogger.addHandler(oLogHandler)
+            if hasattr(oLogHandler,'set_total'):
+                oLogHandler.set_total(len(self.oZip.infolist()))
         # We do this so we can accomodate user created zipfiles,
         # that don't nessecarily have the ordering we want
         for oItem in self.oZip.infolist():
@@ -121,6 +130,7 @@ class ZipFileWrapper(object):
                 oParser = PhysicalCardParser()
                 oParser.parse_string(oData, oCardLookup)
                 bPhysicalCardsRead = True
+                oLogger.info('Physical Card List read')
                 break
         if not bPhysicalCardsRead:
             self.__close_zip()
@@ -137,13 +147,20 @@ class ZipFileWrapper(object):
                 else:
                     continue
                 oParser.parse_string(oData, oCardLookup)
+                oLogger.info('%s %s read', sType, oItem.filename)
         self.__close_zip()
 
-    def doDumpAllToZip(self):
+    def doDumpAllToZip(self, oLogHandler=None):
         """Dump all the database contents to the zip file"""
         self.__open_zip_for_write()
-        self.write_physical_card_list_to_zip()
-        aACSList = self.write_all_acs_to_zip()
-        aPCSList = self.write_all_pcs_to_zip()
+        oLogger = Logger('Restore zip file')
+        if oLogHandler is not None:
+            oLogger.addHandler(oLogHandler)
+            if hasattr(oLogHandler,'set_total'):
+                iTotal = 1 + AbstractCardSet.select().count() + PhysicalCardSet.select().count()
+                oLogHandler.set_total(iTotal)
+        self.write_physical_card_list_to_zip(oLogger)
+        aACSList = self.write_all_acs_to_zip(oLogger)
+        aPCSList = self.write_all_pcs_to_zip(oLogger)
         self.__close_zip()
         return aACSList + aPCSList
