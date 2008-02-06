@@ -4,23 +4,15 @@
 # GPL - see COPYING for details
 
 import gtk
-from sqlobject import sqlhub, connectionForURI
-from sutekh.core.SutekhObjects import ObjectList
+from sqlobject import sqlhub
 from sutekh.core.CardLookup import LookupFailed
 from sutekh.gui.SutekhDialog import do_complaint_error, do_complaint_warning
 from sutekh.gui.ImportDialog import ImportDialog
-from sutekh.gui.WWFilesDialog import WWFilesDialog
-from sutekh.gui.ProgressDialog import ProgressDialog, SutekhHTMLLogHandler, \
-        SutekhCountLogHandler
+from sutekh.gui.GuiDBManagement import refresh_WW_card_list
 from sutekh.io.XmlFileHandling import PhysicalCardXmlFile, PhysicalCardSetXmlFile, \
         AbstractCardSetXmlFile
 from sutekh.io.IdentifyXMLFile import IdentifyXMLFile
-from sutekh.core.DatabaseUpgrade import copy_to_new_AbstractCardDB, \
-        create_final_copy
-from sutekh.SutekhUtility import refreshTables, readWhiteWolfList, readRulings, \
-        delete_physical_card_set, delete_abstract_card_set
-from sutekh.io.ZipFileWrapper import ZipFileWrapper
-
+from sutekh.SutekhUtility import delete_physical_card_set, delete_abstract_card_set
 
 class MainMenu(gtk.MenuBar, object):
     def __init__(self, oWindow, oConfig):
@@ -269,76 +261,7 @@ class MainMenu(gtk.MenuBar, object):
                 do_complaint_error("File is not a CardSet XML File.")
 
     def do_import_new_card_list(self, oWidget):
-        oWWFilesDialog = WWFilesDialog(self.__oWin)
-        oWWFilesDialog.run()
-        (sCLFileName, sRulingsFileName, sBackupFile) = oWWFilesDialog.getNames()
-        oWWFilesDialog.destroy()
-        if sCLFileName is not None:
-            if sBackupFile is not None:
-                try:
-                    oFile = ZipFileWrapper(sBackupFile)
-                    oFile.doDumpAllToZip()
-                except Exception, e:
-                    sMsg = "Failed to write backup.\n\n" + str(e) \
-                        + "\nNot touching the database further"
-                    do_complaint_error(sMsg)
-                    return
-            tempConn = connectionForURI("sqlite:///:memory:")
-            oldConn = sqlhub.processConnection
-            refreshTables(ObjectList, tempConn)
-            # WhiteWolf Parser uses sqlhub connection
-            sqlhub.processConnection = tempConn
-            oLogHandler = SutekhHTMLLogHandler()
-            oProgressDialog = ProgressDialog()
-            oProgressDialog.set_description("Reading WW Cardlist")
-            oProgressDialog.show()
-            oLogHandler.set_dialog(oProgressDialog)
-            readWhiteWolfList(sCLFileName, oLogHandler)
-            oProgressDialog.set_complete()
-            if sRulingsFileName is not None:
-                oProgressDialog.reset()
-                oProgressDialog.set_description("Reading WW Rulings List")
-                oLogHandler.set_dialog(oProgressDialog)
-                readRulings(sRulingsFileName, oLogHandler)
-                oProgressDialog.set_complete()
-            bCont = False
-            # Refresh abstract card view for card lookups
-            self.__oWin.reload_all()
-            oProgressDialog.reset()
-            oProgressDialog.set_description("Reloading card list and card sets")
-            oLogHandler = SutekhCountLogHandler()
-            oLogHandler.set_dialog(oProgressDialog)
-            (bOK, aErrors) = copy_to_new_AbstractCardDB(oldConn, tempConn, self.__oWin.cardLookup, oLogHandler)
-            oProgressDialog.set_complete()
-            if not bOK:
-                sMesg = "There was a problem copying the cardlist to the new database\n"
-                for sStr in aErrors:
-                    sMesg += sStr + "\n"
-                sMesg += "Attempt to Continue Anyway (This is quite possibly dangerous)?"
-                iResponse = do_complaint_warning(sMesg)
-                if iResponse == gtk.RESPONSE_OK:
-                    bCont = True
-            else:
-                bCont = True
-            # OK, update complete, copy back from tempConn
-            sqlhub.processConnection = oldConn
-            if bCont:
-                oProgressDialog.reset()
-                oProgressDialog.set_description("Finalizing import")
-                oLogHandler = SutekhCountLogHandler()
-                oLogHandler.set_dialog(oProgressDialog)
-                (bOK, aErrors) = create_final_copy(tempConn, oLogHandler)
-                if not bOK:
-                    sMesg = "There was a problem updating the database\n"
-                    for sStr in aErrors:
-                        sMesg += sStr + "\n"
-                    sMesg += "Your database may be in an inconsistent state - sorry"
-                    do_complaint_error(sMesg)
-                else:
-                    sMesg = "Import Completed\n"
-                    sMesg += "Eveything seems to have gone OK"
-                    do_complaint_error(sMesg)
-            oProgressDialog.destroy()
+        if refresh_WW_card_list(self.__oWin):
             self.__oWin.reload_all()
 
     def do_save_pane_set(self, oWidget):

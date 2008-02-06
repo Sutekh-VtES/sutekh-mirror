@@ -131,6 +131,26 @@ def check_can_read_old_DB(oOrigConn):
         raise UnknownVersion("AbstractCardSet")
     return True
 
+def old_DB_count(oOrigConn):
+    """
+    Check number of items in old DB fro progress bars, etc.
+    """
+    oVer = DatabaseVersion()
+    iCount = 12 # Card property tables
+    if oVer.checkVersions([AbstractCard], [AbstractCard.tableversion]):
+        iCount += AbstractCard.select().count()
+    elif oVer.checkVersions([AbstractCard], [2]):
+        iCount += AbstractCard_v2.select().count()
+    if oVer.checkVersions([PhysicalCard], [PhysicalCard.tableversion]):
+        iCount += PhysicalCard.select().count()
+    if oVer.checkVersions([PhysicalCardSet], [PhysicalCardSet.tableversion]):
+        iCount += PhysicalCardSet.select().count()
+    elif oVer.checkVersions([PhysicalCardSet], [3]):
+        iCount += PhysicalCardSet_v3.select().count()
+    if oVer.checkVersions([AbstractCardSet], [AbstractCardSet.tableversion]):
+        iCount += AbstractCardSet.select().count()
+    return iCount
+
 def copy_Rarity(oOrigConn, oTrans):
     """
     Copy rarity tables, assumings same version
@@ -357,7 +377,7 @@ def copy_old_Title(oOrigConn, oTrans):
         return (False, ["Unknown Title Version"])
     return (True, [])
 
-def copy_AbstractCard(oOrigConn, oTrans):
+def copy_AbstractCard(oOrigConn, oTrans, oLogger):
     """
     Copy AbstractCard, assuming versions match
     """
@@ -392,15 +412,16 @@ def copy_AbstractCard(oOrigConn, oTrans):
         for oData in oCard.virtue:
             oCardCopy.addVirtue(oData)
         oCardCopy.syncUpdate()
+        oLogger.info('copied AC %s', oCardCopy.name)
 
-def copy_old_AbstractCard(oOrigConn, oTrans):
+def copy_old_AbstractCard(oOrigConn, oTrans, oLogger):
     """
     Copy AbstractCard, upgrading as needed
     """
     oVer = DatabaseVersion()
     aMessages = []
     if oVer.checkVersions([AbstractCard], [AbstractCard.tableversion]):
-        copy_AbstractCard(oOrigConn, oTrans)
+        copy_AbstractCard(oOrigConn, oTrans, oLogger)
     elif oVer.checkVersions([AbstractCard], [2]):
         aMessages.append('Missing data for the Burn Option on cards. You will need to reimport the White wolf card list for these to be correct')
         for oCard in AbstractCard_v2.select(connection=oOrigConn):
@@ -434,11 +455,12 @@ def copy_old_AbstractCard(oOrigConn, oTrans):
             for oData in oCard.virtue:
                 oCardCopy.addVirtue(oData)
             oCardCopy.syncUpdate()
+            oLogger.info('copied AC %s', oCardCopy.name)
     else:
         return (False, ["Unknown AbstractCard version"])
     return (True, aMessages)
 
-def copy_PhysicalCard(oOrigConn, oTrans):
+def copy_PhysicalCard(oOrigConn, oTrans, oLogger):
     """
     Copy PhysicalCard, assuming version match
     """
@@ -447,16 +469,17 @@ def copy_PhysicalCard(oOrigConn, oTrans):
     for oCard in PhysicalCard.select(connection=oOrigConn):
         oCardCopy = PhysicalCard(id=oCard.id, abstractCardID=oCard.abstractCardID,
                 expansionID=oCard.expansionID, connection=oTrans)
+        oLogger.info('copied PC %s', oCardCopy.id)
 
-def copy_old_PhysicalCard(oOrigConn, oTrans):
+def copy_old_PhysicalCard(oOrigConn, oTrans, oLogger):
     oVer = DatabaseVersion()
     if oVer.checkVersions([PhysicalCard], [PhysicalCard.tableversion]):
-        copy_PhysicalCard(oOrigConn, oTrans)
+        copy_PhysicalCard(oOrigConn, oTrans, oLogger)
     else:
         return (False, ["Unknown PhysicalCard version"])
     return (True, [])
 
-def copy_PhysicalCardSet(oOrigConn, oTrans):
+def copy_PhysicalCardSet(oOrigConn, oTrans, oLogger):
     """
     Copy PCS, assuming versions match
     """
@@ -468,15 +491,16 @@ def copy_PhysicalCardSet(oOrigConn, oTrans):
         for oCard in oSet.cards:
             oCopy.addPhysicalCard(oCard.id)
         oCopy.syncUpdate()
+        oLogger.info('Copied PCS %s', oCopy.name)
 
-def copy_old_PhysicalCardSet(oOrigConn, oTrans):
+def copy_old_PhysicalCardSet(oOrigConn, oTrans, oLogger):
     """
     Copy PCS, upgrading as needed
     """
     oVer = DatabaseVersion()
     if oVer.checkVersions([PhysicalCardSet], [PhysicalCardSet.tableversion]) \
             and oVer.checkVersions([PhysicalCard], [PhysicalCard.tableversion]):
-        copy_PhysicalCardSet(oOrigConn, oTrans)
+        copy_PhysicalCardSet(oOrigConn, oTrans, oLogger)
     elif oVer.checkVersions([PhysicalCardSet], [3]):
         for oSet in PhysicalCardSet_v3.select(connection=oOrigConn):
             oCopy = PhysicalCardSet(id=oSet.id, name=oSet.name,
@@ -486,11 +510,12 @@ def copy_old_PhysicalCardSet(oOrigConn, oTrans):
             for oCard in oSet.cards:
                 oCopy.addPhysicalCard(oCard.id)
             oCopy.syncUpdate()
+            oLogger.info('Copied PCS %s', oCopy.name)
     else:
         return (False, ["Unknown PhysicalCardSet version"])
     return (True, [])
 
-def copy_AbstractCardSet(oOrigConn, oTrans):
+def copy_AbstractCardSet(oOrigConn, oTrans, oLogger):
     """
     Copy AbstractCardSet, assuming versions match
     """
@@ -501,12 +526,13 @@ def copy_AbstractCardSet(oOrigConn, oTrans):
         for oCard in oSet.cards:
             oCopy.addAbstractCard(oCard.id)
         oCopy.syncUpdate()
+        oLogger.info('Copied ACS %s', oCopy.name)
 
-def copy_old_AbstractCardSet(oOrigConn, oTrans):
+def copy_old_AbstractCardSet(oOrigConn, oTrans, oLogger):
     oVer = DatabaseVersion()
     if oVer.checkVersions([AbstractCardSet], [AbstractCardSet.tableversion]) \
             and oVer.checkVersions([AbstractCard], [AbstractCard.tableversion]):
-        copy_AbstractCardSet(oOrigConn, oTrans)
+        copy_AbstractCardSet(oOrigConn, oTrans, oLogger)
     elif oVer.checkVersions([AbstractCard], [2]):
         # Upgrade from previous AbstractCard class
         for oSet in AbstractCardSet_ACv2.select(connection=oOrigConn):
@@ -516,6 +542,7 @@ def copy_old_AbstractCardSet(oOrigConn, oTrans):
             for oCard in oSet.cards:
                 oCopy.addAbstractCard(oCard.id)
             oCopy.syncUpdate()
+            oLogger.info('Copied ACS %s', oCopy.name)
     else:
         return (False, ["Unknown AbstractCardSet version"])
     return (True, [])
@@ -531,6 +558,8 @@ def read_old_database(oOrigConn, oDestConnn, oLogHandler=None):
     oLogger = Logger('read Old DB')
     if oLogHandler:
         oLogger.addHandler(oLogHandler)
+        if hasattr(oLogHandler, 'set_total'):
+            oLogHandler.set_total(old_DB_count(oOrigConn))
     # OK, version checks pass, so we should be able to deal with this
     aMessages = []
     bRes = True
@@ -539,49 +568,61 @@ def read_old_database(oOrigConn, oDestConnn, oLogHandler=None):
     (bOK, aNewMessages) = copy_old_Rarity(oOrigConn, oTrans)
     bRes = bRes and bOK
     aMessages += aNewMessages
+    oLogger.info('Rarity table copied')
     (bOK, aMessages) = copy_old_Expansion(oOrigConn, oTrans)
     bRes = bRes and bOK
     aMessages += aNewMessages
+    oLogger.info('Expansion table copied')
     (bOK, aNewMessages) = copy_old_Discipline(oOrigConn, oTrans)
     bRes = bRes and bOK
     aMessages += aNewMessages
+    oLogger.info('Discipline table copied')
     (bOK, aNewMessages) = copy_old_Clan(oOrigConn, oTrans)
     bRes = bRes and bOK
     aMessages += aNewMessages
+    oLogger.info('Clan table copied')
     (bOK, aNewMessages) = copy_old_Creed(oOrigConn, oTrans)
     bRes = bRes and bOK
     aMessages += aNewMessages
+    oLogger.info('Creed table copied')
     (bOK, aNewMessages) = copy_old_Virtue(oOrigConn, oTrans)
     bRes = bRes and bOK
     aMessages += aNewMessages
+    oLogger.info('Virtue table copied')
     (bOK, aNewMessages) = copy_old_CardType(oOrigConn, oTrans)
     bRes = bRes and bOK
     aMessages += aNewMessages
+    oLogger.info('CardType table copied')
     (bOK, aNewMessages) = copy_old_Ruling(oOrigConn, oTrans)
     bRes = bRes and bOK
     aMessages += aNewMessages
+    oLogger.info('Ruling table copied')
     (bOK, aNewMessages) = copy_old_DisciplinePair(oOrigConn, oTrans)
     bRes = bRes and bOK
     aMessages += aNewMessages
+    oLogger.info('DisciplinePair table copied')
     (bOK, aNewMessages) = copy_old_RarityPair(oOrigConn, oTrans)
     bRes = bRes and bOK
     aMessages += aNewMessages
+    oLogger.info('RarityPair table copied')
     (bOK, aNewMessages) = copy_old_Sect(oOrigConn, oTrans)
     bRes = bRes and bOK
     aMessages += aNewMessages
+    oLogger.info('Sect table copied')
     (bOK, aNewMessages) = copy_old_Title(oOrigConn, oTrans)
     bRes = bRes and bOK
     aMessages += aNewMessages
-    (bOK, aNewMessages) = copy_old_AbstractCard(oOrigConn, oTrans)
+    oLogger.info('Title table copied')
+    (bOK, aNewMessages) = copy_old_AbstractCard(oOrigConn, oTrans, oLogger)
     bRes = bRes and bOK
     aMessages += aNewMessages
-    (bOK, aNewMessages) = copy_old_PhysicalCard(oOrigConn, oTrans)
+    (bOK, aNewMessages) = copy_old_PhysicalCard(oOrigConn, oTrans, oLogger)
     bRes = bRes and bOK
     aMessages += aNewMessages
-    (bOK, aNewMessages) = copy_old_PhysicalCardSet(oOrigConn, oTrans)
+    (bOK, aNewMessages) = copy_old_PhysicalCardSet(oOrigConn, oTrans, oLogger)
     bRes = bRes and bOK
     aMessages += aNewMessages
-    (bOK, aNewMessages) = copy_old_AbstractCardSet(oOrigConn, oTrans)
+    (bOK, aNewMessages) = copy_old_AbstractCardSet(oOrigConn, oTrans, oLogger)
     bRes = bRes and bOK
     aMessages += aNewMessages
     oTrans.commit()
@@ -596,43 +637,54 @@ def copy_database(oOrigConn, oDestConnn, oLogHandler=None):
     if oLogHandler:
         oLogger.addHandler(oLogHandler)
         if hasattr(oLogHandler, 'set_total'):
-            oLogHandler.set_total(5)
+            iTotal = 12 + AbstractCard.select(connection=oOrigConn).count() + \
+                    PhysicalCard.select(connection=oOrigConn).count() + \
+                    PhysicalCardSet.select(connection=oOrigConn).count() + \
+                    AbstractCardSet.select(connection=oOrigConn).count()
+            oLogHandler.set_total(iTotal)
     bRes = True
     aMessages = []
     oTrans = oDestConnn.transaction()
     # Todo: More error checking
     copy_Rarity(oOrigConn, oTrans)
+    oLogger.info('Rarity table copied')
     copy_Expansion(oOrigConn, oTrans)
+    oLogger.info('Expansion table copied')
     copy_Discipline(oOrigConn, oTrans)
+    oLogger.info('Discipline table copied')
     copy_Clan(oOrigConn, oTrans)
+    oLogger.info('Clan table copied')
     copy_Creed(oOrigConn, oTrans)
+    oLogger.info('Creed table copied')
     copy_Virtue(oOrigConn, oTrans)
+    oLogger.info('Virtue table copied')
     copy_CardType(oOrigConn, oTrans)
+    oLogger.info('CardType table copied')
     copy_Ruling(oOrigConn, oTrans)
+    oLogger.info('Ruling table copied')
     copy_DisciplinePair(oOrigConn, oTrans)
+    oLogger.info('DisciplinePair table copied')
     copy_RarityPair(oOrigConn, oTrans)
+    oLogger.info('RarityPair table copied')
     copy_Sect(oOrigConn, oTrans)
+    oLogger.info('Sect table copied')
     copy_Title(oOrigConn, oTrans)
+    oLogger.info('Title table copied')
     oTrans.commit()
-    oLogger.info('Card property tables copied')
     oTrans.cache.clear()
-    copy_AbstractCard(oOrigConn, oTrans)
+    copy_AbstractCard(oOrigConn, oTrans, oLogger)
     oTrans.commit()
-    oLogger.info('Abstract Cards copied')
     oTrans.cache.clear()
     oTrans = oDestConnn.transaction()
-    copy_PhysicalCard(oOrigConn, oTrans)
+    copy_PhysicalCard(oOrigConn, oTrans, oLogger)
     oTrans.commit()
-    oLogger.info('Physical Cards copied')
     oTrans.cache.clear()
     # Copy Physical card sets
-    copy_PhysicalCardSet(oOrigConn, oTrans)
+    copy_PhysicalCardSet(oOrigConn, oTrans, oLogger)
     oTrans.commit()
-    oLogger.info('Physical Card Sets copied')
     oTrans.cache.clear()
-    copy_AbstractCardSet(oOrigConn, oTrans)
+    copy_AbstractCardSet(oOrigConn, oTrans, oLogger)
     oTrans.commit()
-    oLogger.info('Abstract Card Sets copied')
     return (bRes, aMessages)
 
 def copy_to_new_AbstractCardDB(oOrigConn, oNewConn, oCardLookup, oLogHandler=None):

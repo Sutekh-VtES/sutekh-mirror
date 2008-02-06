@@ -29,7 +29,6 @@ Gui (Functionality):
    - del to delete all selected cards from cardlist
    - copy + paste shortcuts?
  * Add option for downloading of cardlist and rulings from WW site when importing.
- * Display progress bar when importing cardlist and rulings files.
 
 Gui (Presentation):
  * Cleanup various dialogs, including

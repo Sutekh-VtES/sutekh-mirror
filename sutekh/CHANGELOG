@@ -1,3 +1,7 @@
+06 Feb 2008:
+ * Display progress bar for import new cardlists, upgrading DB and
+   saving and restoring backups
+
 05 Feb 2008:
  * Searching will now expand trees to find matches
 

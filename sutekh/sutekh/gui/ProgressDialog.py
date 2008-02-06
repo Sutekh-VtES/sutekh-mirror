@@ -69,6 +69,7 @@ class SutekhCountLogHandler(SutekhLogHandler):
 
     def set_total(self, iTot):
         self.fTot = float(iTot)
+        self.iCount = 0
 
     def emit(self, oRecord):
         if self.oDialog is None:
