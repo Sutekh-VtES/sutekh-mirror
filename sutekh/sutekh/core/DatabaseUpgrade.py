@@ -528,6 +528,9 @@ def read_old_database(oOrigConn, oDestConnn, oLogHandler=None):
             return False
     except UnknownVersion, err:
         raise err
+    oLogger = Logger('read Old DB')
+    if oLogHandler:
+        oLogger.addHandler(oLogHandler)
     # OK, version checks pass, so we should be able to deal with this
     aMessages = []
     bRes = True
@@ -590,9 +593,10 @@ def copy_database(oOrigConn, oDestConnn, oLogHandler=None):
     # (probably should be fixed)
     # Copy tables needed before we can copy AbstractCard
     oLogger = Logger('copy DB')
-    if oLogHandler and hasattr(oLogHandler, 'set_total'):
-        oLogHandler.set_total(5)
+    if oLogHandler:
         oLogger.addHandler(oLogHandler)
+        if hasattr(oLogHandler, 'set_total'):
+            oLogHandler.set_total(5)
     bRes = True
     aMessages = []
     oTrans = oDestConnn.transaction()
@@ -642,12 +646,13 @@ def copy_to_new_AbstractCardDB(oOrigConn, oNewConn, oCardLookup, oLogHandler=Non
     oOldConn = sqlhub.processConnection
     # Copy the physical card list
     oPhysListCS = CachedCardSetHolder()
-    oLogger = Logger('copyToNewAbstractCardDB')
-    if oLogHandler and hasattr(oLogHandler, 'set_total'):
-        iTotal = 2 + PhysicalCardSet.select(connection=oOrigConn).count() + \
-                AbstractCardSet.select(connection=oOrigConn).count()
-        oLogHandler.set_total(iTotal)
+    oLogger = Logger('copy to new abstract card DB')
+    if oLogHandler:
         oLogger.addHandler(oLogHandler)
+        if hasattr(oLogHandler, 'set_total'):
+            iTotal = 2 + PhysicalCardSet.select(connection=oOrigConn).count() + \
+                    AbstractCardSet.select(connection=oOrigConn).count()
+            oLogHandler.set_total(iTotal)
     for oCard in PhysicalCard.select(connection=oOrigConn):
         oPhysListCS.add(1, oCard.abstractCard.canonicalName, oCard.expansion)
     # Copy Physical card sets
@@ -707,25 +712,28 @@ def create_final_copy(oTempConn, oLogHandler=None):
 
 def attempt_database_upgrade(oLogHandler=None):
     oTempConn = connectionForURI("sqlite:///:memory:")
-    (bOK, aMessages) = create_memory_copy(oTempConn)
+    oLogger = Logger('attempt upgrade')
+    if oLogHandler:
+        oLogger.addHandler(oLogHandler)
+    (bOK, aMessages) = create_memory_copy(oTempConn, oLogHandler)
     if bOK:
-        print "Copied database to memory, performing upgrade."
+        oLogger.info("Copied database to memory, performing upgrade.")
         if len(aMessages) > 0:
-            print "Messages reported", aMessages
-        (bOK, aMessages) = create_final_copy(oTempConn)
+            oLogger.info ("Messages reported: %s", aMessages)
+        (bOK, aMessages) = create_final_copy(oTempConn, oLogHandler)
         if bOK:
-            print "Everything seems to have gone OK"
+            oLogger.info ("Everything seems to have gone OK")
             if len(aMessages) > 0:
-                print "Messages reported", aMessages
+                oLogger.info ("Messages reported %s", aMessages)
             return True
         else:
-            print "Unable to perform upgrade."
+            oLogger.critical("Unable to perform upgrade.")
             if len(aMessages) > 0:
-                print "Errors reported", aMessages
-            print "!!YOUR DATABASE MAY BE CORRUPTED!!"
+                oLogger.error("Errors reported: %s", aMessages)
+            oLogger.critical("!!YOUR DATABASE MAY BE CORRUPTED!!")
             return False
     else:
-        print "Unable to create memory copy. Database not upgraded."
+        oLogger.error("Unable to create memory copy. Database not upgraded.")
         if len(aMessages) > 0:
-            print "Errors reported", aMessages
+            oLogger.error("Errors reported %s", aMessages)
         return False
