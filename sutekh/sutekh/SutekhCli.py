@@ -4,6 +4,7 @@
 # GPL - see COPYING for details
 
 import sys, optparse, os
+from logging import StreamHandler
 from sqlobject import sqlhub, connectionForURI
 from sutekh.core.SutekhObjects import Ruling, ObjectList, PhysicalList
 from sutekh.SutekhUtility import refreshTables, readWhiteWolfList, \
@@ -90,6 +91,8 @@ def main(aArgs):
     oOptParser, (oOpts, aArgs) = parseOptions(aArgs)
     sPrefsDir = prefsDir("Sutekh")
 
+    oLogHandler = StreamHandler(sys.stdout)
+
     if len(aArgs) != 1:
         oOptParser.print_help()
         return 1
@@ -133,10 +136,10 @@ def main(aArgs):
             return 1
 
     if not oOpts.ww_file is None:
-        readWhiteWolfList(oOpts.ww_file)
+        readWhiteWolfList(oOpts.ww_file, oLogHandler)
 
     if not oOpts.ruling_file is None:
-        readRulings(oOpts.ruling_file)
+        readRulings(oOpts.ruling_file, oLogHandler)
 
     if not oOpts.read_physical_cards_from is None:
         oFile = PhysicalCardXmlFile(oOpts.rad_physical_cards_from)
@@ -162,11 +165,11 @@ def main(aArgs):
 
     if oOpts.dump_zip_name is not None:
         oZipFile = ZipFileWrapper(oOpts.dump_zip_name)
-        oZipFile.doDumpAllToZip()
+        oZipFile.doDumpAllToZip(oLogHandler)
 
     if oOpts.restore_zip_name is not None:
         oZipFile = ZipFileWrapper(oOpts.restore_zip_name)
-        oZipFile.doRestoreFromZip()
+        oZipFile.doRestoreFromZip(oLogHandler)
 
     if not oOpts.save_pcs is None:
         oFile = PhysicalCardSetXmlFile(oOpts.pcs_filename)
@@ -200,7 +203,7 @@ def main(aArgs):
         return 1
 
     if oOpts.upgrade_db:
-        attempt_database_upgrade()
+        attempt_database_upgrade(oLogHandler)
 
     return 0
 
