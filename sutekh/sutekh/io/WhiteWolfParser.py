@@ -16,11 +16,9 @@ class CardDict(dict):
     oWhiteSp = re.compile(r'[{}\s]+')
     oDispCard = re.compile(r'\[[^\]]+\]$')
 
-    def __init__(self, oLogHandler=None):
+    def __init__(self, oLogger):
+        self.oLogger = oLogger
         super(CardDict,self).__init__()
-        self.oLogger = Logger('White wolf card parser')
-        if oLogHandler is not None:
-            self.oLogger.addHandler(oLogHandler)
         self._oMaker = SutekhObjectMaker()
 
     def _parseText(self):
@@ -266,10 +264,10 @@ class StateError(Exception):
     pass
 
 class State(object):
-    def __init__(self, oLogHandler):
+    def __init__(self, oLogger):
         super(State,self).__init__()
         self._sData = ""
-        self.oLogHandler = oLogHandler
+        self.oLogger = oLogger
 
     def transition(self,sTag,dAttr):
         raise NotImplementedError
@@ -278,8 +276,8 @@ class State(object):
         self._sData += sData
 
 class StateWithCard(State):
-    def __init__(self, dInfo, oLogHandler):
-        super(StateWithCard,self).__init__(oLogHandler)
+    def __init__(self, dInfo, oLogger):
+        super(StateWithCard,self).__init__(oLogger)
         self._dInfo = dInfo
 
 # State Classes
@@ -287,16 +285,16 @@ class StateWithCard(State):
 class NoCard(State):
     def transition(self,sTag,dAttr):
         if sTag == 'p':
-            return PotentialCard(self.oLogHandler)
+            return PotentialCard(self.oLogger)
         else:
             return self
 
 class PotentialCard(State):
     def transition(self,sTag,dAttr):
         if sTag == 'a' and dAttr.has_key('name'):
-            return InCard(CardDict(self.oLogHandler), self.oLogHandler)
+            return InCard(CardDict(self.oLogger), self.oLogger)
         else:
-            return NoCard(self.oLogHandler)
+            return NoCard(self.oLogger)
 
 class InCard(StateWithCard):
     def transition(self,sTag,dAttr):
@@ -304,15 +302,15 @@ class InCard(StateWithCard):
             raise StateError()
         elif sTag == '/p':
             self._dInfo.save()
-            return NoCard(self.oLogHandler)
+            return NoCard(self.oLogger)
         elif sTag == 'span' and dAttr.get('class') == 'cardname':
-            return InCardName(self._dInfo, self.oLogHandler)
+            return InCardName(self._dInfo, self.oLogger)
         elif sTag == 'span' and dAttr.get('class') == 'exp':
-            return InExpansion(self._dInfo, self.oLogHandler)
+            return InExpansion(self._dInfo, self.oLogger)
         elif sTag == 'span' and dAttr.get('class') == 'key':
-            return InKeyValue(self._dInfo, self.oLogHandler)
+            return InKeyValue(self._dInfo, self.oLogger)
         elif sTag == 'td' and dAttr.get('colspan') == '2':
-            return InCardText(self._dInfo, self.oLogHandler)
+            return InCardText(self._dInfo, self.oLogger)
         else:
             return self
 
@@ -320,7 +318,7 @@ class InCardName(StateWithCard):
     def transition(self,sTag,dAttr):
         if sTag == '/span':
             self._dInfo['name'] = self._sData.strip()
-            return InCard(self._dInfo, self.oLogHandler)
+            return InCard(self._dInfo, self.oLogger)
         elif sTag == 'span':
             raise StateError()
         else:
@@ -330,7 +328,7 @@ class InExpansion(StateWithCard):
     def transition(self,sTag,dAttr):
         if sTag == '/span':
             self._dInfo['expansion'] = self._sData.strip()
-            return InCard(self._dInfo, self.oLogHandler)
+            return InCard(self._dInfo, self.oLogger)
         elif sTag == 'span':
             raise StateError()
         else:
@@ -340,7 +338,7 @@ class InCardText(StateWithCard):
     def transition(self,sTag,dAttr):
         if sTag == '/td' or sTag == 'tr' or sTag == '/tr' or sTag == '/table':
             self._dInfo['text'] = self._sData.strip()
-            return InCard(self._dInfo, self.oLogHandler)
+            return InCard(self._dInfo, self.oLogger)
         elif sTag == 'td':
             raise StateError()
         else:
@@ -350,7 +348,7 @@ class InKeyValue(StateWithCard):
     def transition(self,sTag,dAttr):
         if sTag == '/span':
             sKey = self._sData.strip().strip(':').lower()
-            return WaitingForValue(sKey,self._dInfo, self.oLogHandler)
+            return WaitingForValue(sKey,self._dInfo, self.oLogger)
         elif sTag == 'span':
             raise StateError()
         else:
@@ -369,10 +367,10 @@ class WaitingForValue(StateWithCard):
             return self
         elif sTag == '/td' and self._bGotTd:
             self._dInfo[self._sKey] = self._sData.strip()
-            return InCard(self._dInfo, self.oLogHandler)
+            return InCard(self._dInfo, self.oLogger)
         elif sTag == '/tr':
             self._dInfo[self._sKey] = None
-            return InCard(self._dInfo, self.oLogHandler)
+            return InCard(self._dInfo, self.oLogger)
         elif sTag == 'tr':
             raise StateError()
         else:
@@ -383,12 +381,14 @@ class WaitingForValue(StateWithCard):
 class WhiteWolfParser(HTMLParser.HTMLParser,object):
     def __init__(self, oLogHandler):
         # super().__init__ calls reset, so we need this first
-        self.oLogHandler = oLogHandler
+        self.oLogger = Logger('White wolf card parser')
+        if oLogHandler is not None:
+            self.oLogger.addHandler(oLogHandler)
         super(WhiteWolfParser, self).__init__()
 
     def reset(self):
         super(WhiteWolfParser,self).reset()
-        self._state = NoCard(self.oLogHandler)
+        self._state = NoCard(self.oLogger)
 
     def handle_starttag(self,sTag,aAttr):
         self._state = self._state.transition(sTag.lower(),dict(aAttr))
