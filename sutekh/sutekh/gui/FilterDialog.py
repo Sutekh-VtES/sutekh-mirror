@@ -137,8 +137,8 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
             aFilterParts = oAST.getValues()
             if sId in self.__dExpanded.keys():
                 # Temporary copy of the values, so we can reuse the values
-                oOldFilterWidgets = self.__dExpanded[sId]
-                oOldAST = self.__dASTs[sId]
+                aOldFilterWidgets = self.__dExpanded[sId]
+                aOldASTValues = self.__dASTs[sId].getValues()
                 self.__dExpanded[sId] = []
                 self.__dASTs[sId] = oAST
                 oRadioButton = self.__dButtons[sId]
@@ -149,8 +149,25 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
                 self.__dButtons[sId].clicked()
                 # We update the new filter with values from the old filter where
                 # appropriate 
-            # FIXME: should handle else conditions
+                aNewValues = oAST.getValues()
+                self.__copy_values(zip(self.__dExpanded[sId], aNewValues),
+                        zip(aOldFilterWidgets, aOldASTValues))
+           # FIXME: should handle else conditions
 
+    def __copy_values(self, aNewFilterVals, aOldFilterVals):
+        for oWidget, oFilterPart in aNewFilterVals:
+            if type(oWidget) is ScrolledList or type(oWidget) is gtk.Entry:
+                for oOldWidget, oOldPart in aOldFilterVals:
+                    if type(oOldWidget) is ScrolledList or \
+                            type(oOldWidget) is gtk.Entry:
+                        if oOldPart.node.filtertype == oFilterPart.node.filtertype and \
+                                oOldPart.node.get_name() == oFilterPart.node.get_name():
+                            if type(oWidget) is ScrolledList:
+                                aSelection = oOldWidget.get_selection()
+                                oWidget.set_selection(aSelection)
+                            else:
+                                oWidget.set_text(oOldWidget.get_text())
+ 
     def __addPartsToDialog(self, aFilterParts, sFilter, sId):
         sPrevName = None
         for oPart in aFilterParts:
