@@ -9,7 +9,6 @@ from sutekh.core.DatabaseVersion import DatabaseVersion
 from sqlobject import sqlhub, connectionForURI
 from sutekh.gui.ConfigFile import ConfigFile
 from sutekh.gui.GuiDBManagement import do_db_upgrade, initialize_db
-import gtk
 import sys, optparse, os
 
 # Script Launching

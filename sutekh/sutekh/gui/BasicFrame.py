@@ -3,8 +3,7 @@
 # Copyright 2007 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-
-import gtk, gobject
+import gtk
 
 class BasicFrame(gtk.Frame, object):
     def __init__(self, oMainWindow):

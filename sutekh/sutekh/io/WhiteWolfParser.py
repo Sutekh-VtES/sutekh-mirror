@@ -6,7 +6,6 @@
 
 import HTMLParser, re
 from logging import Logger
-import sys
 from sutekh.core.SutekhObjects import SutekhObjectMaker
 
 # Card Saver
