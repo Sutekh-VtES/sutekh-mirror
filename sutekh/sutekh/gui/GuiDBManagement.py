@@ -13,22 +13,23 @@ from sutekh.gui.ProgressDialog import ProgressDialog, SutekhHTMLLogHandler, \
 from sutekh.core.DatabaseUpgrade import create_memory_copy, create_final_copy, \
         UnknownVersion, copy_to_new_AbstractCardDB
 from sutekh.gui.SutekhDialog import do_complaint_buttons, do_complaint_error, \
-        do_complaint
+        do_complaint, do_complaint_warning
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
+from sutekh.io.WwFile import WwFile
 from sutekh.core.SutekhObjects import ObjectList
 from sutekh.SutekhUtility import refreshTables, readRulings, readWhiteWolfList
 
 
-def read_cardlist(sCardList, oProgressDialog, oLogHandler):
+def read_cardlist(oCardList, oProgressDialog, oLogHandler):
     oProgressDialog.set_description("Reading WW Cardlist")
     oProgressDialog.show()
-    readWhiteWolfList(sCardList, oLogHandler)
+    readWhiteWolfList(oCardList, oLogHandler)
     oProgressDialog.set_complete()
 
-def read_rulings(sRulings, oProgressDialog, oLogHandler):
+def read_rulings(oRulings, oProgressDialog, oLogHandler):
     oProgressDialog.reset()
     oProgressDialog.set_description("Reading WW Rulings List")
-    readRulings(sRulings, oLogHandler)
+    readRulings(oRulings, oLogHandler)
     oProgressDialog.set_complete()
 
 def copy_to_new_db(oOldConn, oTempConn, oWin, oProgressDialog, oLogHandler):
@@ -38,7 +39,7 @@ def copy_to_new_db(oOldConn, oTempConn, oWin, oProgressDialog, oLogHandler):
     oProgressDialog.set_complete()
     if not bOK:
         sMesg = "\n".join (["There was a problem copying the cardlist to the new database"] +
-                aErrors + 
+                aErrors +
                 ["Attempt to Continue Anyway (This is quite possibly dangerous)?"])
         iResponse = do_complaint_warning(sMesg)
         if iResponse == gtk.RESPONSE_OK:
@@ -57,16 +58,18 @@ def initialize_db():
     else:
         oDialog = WWFilesDialog(None)
         oDialog.run()
-        (sCLFileName, sRulingsFileName, sIgnore) = oDialog.getNames()
+        (sCLFileName, bCLIsUrl, sRulingsFileName, bRulingsIsUrl, sIgnore) = oDialog.getNames()
         oDialog.destroy()
         if sCLFileName is not None:
             refreshTables(ObjectList, sqlhub.processConnection)
             oLogHandler = SutekhHTMLLogHandler()
             oProgressDialog = ProgressDialog()
             oLogHandler.set_dialog(oProgressDialog)
-            read_cardlist(sCLFileName, oProgressDialog, oLogHandler)
+            oCLFile = WwFile(sCLFileName,bUrl=bCLIsUrl)
+            read_cardlist(oCLFile, oProgressDialog, oLogHandler)
             if sRulingsFileName is not None:
-                read_rulings(sRulingsFileName, oProgressDialog,  oLogHandler)
+                oRulingsFile = WwFile(sRulingsFileName, bUrl=bRulingsIsUrl)
+                read_rulings(oRulingsFile, oProgressDialog,  oLogHandler)
         else:
             return False
     return True
@@ -75,7 +78,7 @@ def refresh_WW_card_list(oWin):
     """Handle grunt work of refreshing the card lists"""
     oWWFilesDialog = WWFilesDialog(oWin)
     oWWFilesDialog.run()
-    (sCLFileName, sRulingsFileName, sBackupFile) = oWWFilesDialog.getNames()
+    (sCLFileName, bCLIsUrl, sRulingsFileName, bRulingsIsUrl, sBackupFile) = oWWFilesDialog.getNames()
     oWWFilesDialog.destroy()
     if sCLFileName is not None:
         oProgressDialog = ProgressDialog()
@@ -101,9 +104,11 @@ def refresh_WW_card_list(oWin):
         sqlhub.processConnection = oTempConn
         oLogHandler = SutekhHTMLLogHandler()
         oLogHandler.set_dialog(oProgressDialog)
-        read_cardlist(sCLFileName, oProgressDialog, oLogHandler)
+        oCLFile = WwFile(sCLFileName,bUrl=bCLIsUrl)
+        read_cardlist(oCLFile, oProgressDialog, oLogHandler)
         if sRulingsFileName is not None:
-                read_rulings(sRulingsFileName, oProgressDialog,  oLogHandler)
+                oRulingsFile = WwFile(sRulingsFileName, bUrl=bRulingsIsUrl)
+                read_rulings(oRulingsFile, oProgressDialog,  oLogHandler)
         bCont = False
         # Refresh abstract card view for card lookups
         oWin.reload_all()

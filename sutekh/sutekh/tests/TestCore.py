@@ -6,6 +6,7 @@
 from sutekh.tests.TestData import TEST_CARD_LIST, TEST_RULINGS
 from sutekh.SutekhUtility import readWhiteWolfList, readRulings, refreshTables
 from sutekh.core.SutekhObjects import ObjectList
+from sutekh.io.WwFile import WwFile
 from sqlobject import sqlhub, connectionForURI
 import unittest
 import tempfile
@@ -48,8 +49,8 @@ class SutekhTest(unittest.TestCase):
 
         assert refreshTables(ObjectList, oConn)
 
-        readWhiteWolfList(sCardList)
-        readRulings(sRulings)
+        readWhiteWolfList(WwFile(sCardList))
+        readRulings(WwFile(sRulings))
 
     def tearDown(self):
         sqlhub.processConnection = None

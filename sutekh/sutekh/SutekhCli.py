@@ -14,6 +14,7 @@ from sutekh.io.XmlFileHandling import PhysicalCardXmlFile, \
         PhysicalCardSetXmlFile, AbstractCardSetXmlFile, \
         writeAllAbstractCardSets, writeAllPhysicalCardSets
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
+from sutekh.io.WwFile import WwFile
 
 def parseOptions(aArgs):
     oP = optparse.OptionParser(usage="usage: %prog [options]",
@@ -136,10 +137,10 @@ def main(aArgs):
             return 1
 
     if not oOpts.ww_file is None:
-        readWhiteWolfList(oOpts.ww_file, oLogHandler)
+        readWhiteWolfList(WwFile(oOpts.ww_file), oLogHandler)
 
     if not oOpts.ruling_file is None:
-        readRulings(oOpts.ruling_file, oLogHandler)
+        readRulings(WwFile(oOpts.ruling_file), oLogHandler)
 
     if not oOpts.read_physical_cards_from is None:
         oFile = PhysicalCardXmlFile(oOpts.rad_physical_cards_from)
