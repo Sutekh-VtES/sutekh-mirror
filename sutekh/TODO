@@ -28,7 +28,6 @@ Gui (Functionality):
  * Add decent keyboard shortcuts
    - del to delete all selected cards from cardlist
    - copy + paste shortcuts?
- * Add option for downloading of cardlist and rulings from WW site when importing.
 
 Gui (Presentation):
  * Cleanup various dialogs, including

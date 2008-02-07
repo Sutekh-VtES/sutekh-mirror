@@ -5,9 +5,11 @@
 import gtk
 import time
 import os
-from sutekh.core.SutekhObjects import PhysicalCardSet, AbstractCardSet, IAbstractCard
+from sutekh.core.SutekhObjects import PhysicalCardSet, AbstractCardSet, \
+        IAbstractCard
 from sutekh.gui.PluginManager import CardListPlugin
-from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error, do_complaint_warning
+from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error, \
+        do_complaint_warning
 from sutekh.io.WriteArdbXML import WriteArdbXML
 from sutekh.SutekhInfo import SutekhInfo
 from sutekh.SutekhUtility import pretty_xml

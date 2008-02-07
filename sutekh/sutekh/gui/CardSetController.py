@@ -69,8 +69,9 @@ class PhysicalCardSetController(CardSetController):
             self.view.reload_keep_expanded()
 
     def physical_card_deleted(self, oPhysCard):
-        """Listen on physical card removals. Needed so we can
-           updated the model if a card in this set is deleted
+        """
+        Listen on physical card removals. Needed so we can
+        updated the model if a card in this set is deleted
         """
         # We get here after we have removed the card from the card set,
         # but before it is finally deleted from the table, so it's no
@@ -87,8 +88,9 @@ class PhysicalCardSetController(CardSetController):
             self.model.decCardByName(oAC.name)
 
     def physical_card_changed(self, oPhysCard, dChanges):
-        """Listen on physical cards changed. Needed so we can
-           update the model if a card in this set is changed
+        """
+        Listen on physical cards changed. Needed so we can
+        update the model if a card in this set is changed
         """
         if oPhysCard.id in self.__aPhysCardIds and 'expansionID' in dChanges.keys():
             # Changing a card assigned to the card list

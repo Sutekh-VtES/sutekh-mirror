@@ -1,16 +1,21 @@
 # DatabaseUpgrade.py
-# Copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
+# Copyright 2006,2007,2008 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
+"""
+Handles the heavy lifting of upgrading the database
+Holds methods to copy database contents around, utility classes
+to talk to old database versions, and so forth
+"""
 
 from sqlobject import sqlhub, SQLObject, IntCol, UnicodeCol, RelatedJoin, \
         EnumCol, MultipleJoin, connectionForURI, ForeignKey
 from logging import Logger
-from sutekh.core.SutekhObjects import PhysicalCard, AbstractCard, AbstractCardSet, \
-        PhysicalCardSet, Expansion, Clan, Virtue, Discipline, Rarity, \
-        RarityPair, CardType, Ruling, ObjectList, DisciplinePair, Creed, \
-        Sect, Title
+from sutekh.core.SutekhObjects import PhysicalCard, AbstractCard, \
+        AbstractCardSet, PhysicalCardSet, Expansion, Clan, Virtue, \
+        Discipline, Rarity, RarityPair, CardType, Ruling, ObjectList, \
+        DisciplinePair, Creed, Sect, Title
 from sutekh.core.CardSetHolder import CachedCardSetHolder
-from sutekh.SutekhUtility import refreshTables
+from sutekh.SutekhUtility import refresh_tables
 from sutekh.core.DatabaseVersion import DatabaseVersion
 from sutekh.core.Abbreviations import Rarities
 
@@ -22,7 +27,9 @@ from sutekh.core.Abbreviations import Rarities
 
 class UnknownVersion(Exception):
     def __init__(self, TableName):
+        super(UnknownVersion, self).__init__()
         self.sTableName = TableName
+
     def __str__(self):
         return "Unrecognised version for " + self.sTableName
 
@@ -36,7 +43,8 @@ class PhysicalCardSet_v3(SQLObject):
     author = UnicodeCol(length=50, default='')
     comment = UnicodeCol(default='')
     annotations = UnicodeCol(default='')
-    cards = RelatedJoin('PhysicalCard', intermediateTable='physical_map', createRelatedTable=False)
+    cards = RelatedJoin('PhysicalCard', intermediateTable='physical_map',
+            createRelatedTable=False)
 
 class AbstractCard_v2(SQLObject):
     class sqlmeta:
@@ -49,18 +57,30 @@ class AbstractCard_v2(SQLObject):
     capacity = IntCol(default=None)
     cost = IntCol(default=None)
     life = IntCol(default=None)
-    costtype = EnumCol(enumValues=['pool', 'blood', 'conviction', None], default=None)
+    costtype = EnumCol(enumValues=['pool', 'blood', 'conviction', None],
+            default=None)
     level = EnumCol(enumValues=['advanced', None], default=None)
-    discipline = RelatedJoin('DisciplinePair', intermediateTable='abs_discipline_pair_map', createRelatedTable=False)
-    rarity = RelatedJoin('RarityPair', intermediateTable='abs_rarity_pair_map', createRelatedTable=False)
-    clan = RelatedJoin('Clan', intermediateTable='abs_clan_map', createRelatedTable=False)
-    cardtype = RelatedJoin('CardType', intermediateTable='abs_type_map', createRelatedTable=False)
-    sect = RelatedJoin('Sect', intermediateTable='abs_sect_map', createRelatedTable=False)
-    title = RelatedJoin('Title', intermediateTable='abs_title_map', createRelatedTable=False)
-    creed = RelatedJoin('Creed', intermediateTable='abs_creed_map', createRelatedTable=False)
-    virtue = RelatedJoin('Virtue', intermediateTable='abs_virtue_map', createRelatedTable=False)
-    rulings = RelatedJoin('Ruling', intermediateTable='abs_ruling_map', createRelatedTable=False)
-    sets = RelatedJoin('AbstractCardSet', intermediateTable='abstract_map', createRelatedTable=False)
+    discipline = RelatedJoin('DisciplinePair',
+            intermediateTable='abs_discipline_pair_map',
+            createRelatedTable=False)
+    rarity = RelatedJoin('RarityPair',
+            intermediateTable='abs_rarity_pair_map', createRelatedTable=False)
+    clan = RelatedJoin('Clan', intermediateTable='abs_clan_map',
+            createRelatedTable=False)
+    cardtype = RelatedJoin('CardType', intermediateTable='abs_type_map',
+            createRelatedTable=False)
+    sect = RelatedJoin('Sect', intermediateTable='abs_sect_map',
+            createRelatedTable=False)
+    title = RelatedJoin('Title', intermediateTable='abs_title_map',
+            createRelatedTable=False)
+    creed = RelatedJoin('Creed', intermediateTable='abs_creed_map',
+            createRelatedTable=False)
+    virtue = RelatedJoin('Virtue', intermediateTable='abs_virtue_map',
+            createRelatedTable=False)
+    rulings = RelatedJoin('Ruling', intermediateTable='abs_ruling_map',
+            createRelatedTable=False)
+    sets = RelatedJoin('AbstractCardSet', intermediateTable='abstract_map',
+            createRelatedTable=False)
     physicalCards = MultipleJoin('PhysicalCard')
 
 class Rarity_v1(SQLObject):
@@ -75,7 +95,8 @@ class RarityPair_Rv1(SQLObject):
 
     expansion = ForeignKey('Expansion')
     rarity = ForeignKey('Rarity_v1')
-    cards = RelatedJoin('AbstractCard_v2', intermediateTable='abs_rarity_pair_map', createRelatedTable=False)
+    cards = RelatedJoin('AbstractCard_v2',
+            intermediateTable='abs_rarity_pair_map', createRelatedTable=False)
 
 class AbstractCardSet_ACv2(SQLObject):
     class sqlmeta:
@@ -86,9 +107,10 @@ class AbstractCardSet_ACv2(SQLObject):
     comment = UnicodeCol(default='')
     annotations = UnicodeCol(default='')
     # Provides a join to AbstractCard_v2, needed to read old DB
-    cards = RelatedJoin('AbstractCard_v2', intermediateTable='abstract_map', createRelatedTable=False)
+    cards = RelatedJoin('AbstractCard_v2',
+            intermediateTable='abstract_map', createRelatedTable=False)
 
-def check_can_read_old_DB(oOrigConn):
+def check_can_read_old_database():
     """
     Can we upgrade from this database version?
     Sutekh 0.5.x can upgrade from the versions in Sutekh 0.4.x, but no earlier
@@ -131,7 +153,7 @@ def check_can_read_old_DB(oOrigConn):
         raise UnknownVersion("AbstractCardSet")
     return True
 
-def old_DB_count(oOrigConn):
+def old_database_count():
     """
     Check number of items in old DB fro progress bars, etc.
     """
@@ -551,15 +573,15 @@ def read_old_database(oOrigConn, oDestConnn, oLogHandler=None):
     """Read the old database into new database, filling in
        blanks when needed"""
     try:
-        if not check_can_read_old_DB(oOrigConn):
+        if not check_can_read_old_database():
             return False
-    except UnknownVersion, err:
-        raise err
+    except UnknownVersion, oErr:
+        raise oErr
     oLogger = Logger('read Old DB')
     if oLogHandler:
         oLogger.addHandler(oLogHandler)
         if hasattr(oLogHandler, 'set_total'):
-            oLogHandler.set_total(old_DB_count(oOrigConn))
+            oLogHandler.set_total(old_database_count())
     # OK, version checks pass, so we should be able to deal with this
     aMessages = []
     bRes = True
@@ -750,14 +772,14 @@ def create_memory_copy(oTempConn, oLogHandler=None):
     # We create a temporary memory database, and create the updated
     # database in it. readOldDB is responsbile for upgrading stuff
     # as needed
-    if refreshTables(ObjectList, oTempConn):
+    if refresh_tables(ObjectList, oTempConn):
         return read_old_database(sqlhub.processConnection, oTempConn, oLogHandler)
     else:
         return (False, ["Unable to create tables"])
 
 def create_final_copy(oTempConn, oLogHandler=None):
     # Copy from the memory database to the real thing
-    if refreshTables(ObjectList, sqlhub.processConnection):
+    if refresh_tables(ObjectList, sqlhub.processConnection):
         return copy_database(oTempConn, sqlhub.processConnection, oLogHandler)
     else:
         return (False, ["Unable to create tables"])

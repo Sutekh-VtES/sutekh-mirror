@@ -5,6 +5,8 @@
  * Convert readWhiteWolfList and readRulings to use WwFile
    and add loading of cardlist and rulings for the WW site to the
    gui.
+ * Tweak Editing filters so already selected values are retained 
+   when feasible
 
 06 Feb 2008:
  * Display progress bar for import new cardlists, upgrading DB and

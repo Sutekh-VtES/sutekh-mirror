@@ -11,8 +11,8 @@ class SutekhDialog(gtk.Dialog):
     wrapper class for gtk.Dialog
     """
     def __init__(self, sTitle, oParent=None, iFlags=0, oButtons=None):
-       super(SutekhDialog, self).__init__(sTitle, oParent, iFlags, oButtons)
-       self.set_name("Sutekh.dialog")
+        super(SutekhDialog, self).__init__(sTitle, oParent, iFlags, oButtons)
+        self.set_name("Sutekh.dialog")
 
 def do_complaint(sMessage, oDialogType, oButtonType, bMarkup=False):
     """

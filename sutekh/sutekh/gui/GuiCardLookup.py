@@ -2,9 +2,10 @@
 # Copyright 2007 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
 
-"""Lookup AbstractCards for a list of card names, presenting the user with a GUI
-   to pick unknown cards from.
-   """
+"""
+Lookup AbstractCards for a list of card names, presenting the user with a GUI
+to pick unknown cards from.
+"""
 
 import gtk
 from sqlobject import SQLObjectNotFound
@@ -135,7 +136,7 @@ class PCLwithNumbersView(PhysicalCardView):
 
 class GuiLookup(AbstractCardLookup, PhysicalCardLookup):
     """Lookup AbstractCards. Use the user as the AI if a simple lookup fails.
-       """
+    """
 
     def __init__(self, oConfig):
         self._oConfig = oConfig

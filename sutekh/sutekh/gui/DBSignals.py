@@ -4,9 +4,10 @@ from sqlobject.events import Signal, listen, RowUpdateSignal, RowDestroySignal
 from sutekh.core.SutekhObjects import PhysicalCard
 
 class ReloadSignal(Signal):
-    """Syncronisation signal for card sets. Needs to be sent after
-       changes are commited to the database, so card sets can reload
-       properly
+    """
+    Syncronisation signal for card sets. Needs to be sent after
+    changes are commited to the database, so card sets can reload
+    properly
     """
 
 # Senders

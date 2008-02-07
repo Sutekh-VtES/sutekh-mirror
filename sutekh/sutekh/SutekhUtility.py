@@ -13,7 +13,7 @@ from sutekh.io.RulingParser import RulingParser
 from sqlobject import sqlhub, SQLObjectNotFound
 import tempfile, os, sys
 
-def refreshTables(aTables, oConn, **kw):
+def refresh_tables(aTables, oConn, **kw):
     """Drop and recreate the given list of tables"""
     aTables.reverse()
     for cCls in aTables:
@@ -29,7 +29,7 @@ def refreshTables(aTables, oConn, **kw):
     FlushCache()
     return True
 
-def readWhiteWolfList(oWwList, oLogHandler=None):
+def read_white_wolf_list(oWwList, oLogHandler=None):
     """Parse in a new White Wolf cardlist
     
        oWwList is an object with a .open() method (e.g. a sutekh.io.WwFile.WwFile)
@@ -45,7 +45,7 @@ def readWhiteWolfList(oWwList, oLogHandler=None):
     sqlhub.processConnection.commit()
     sqlhub.processConnection = oOldConn
 
-def readRulings(oRulings, oLogHandler=None):
+def read_rulings(oRulings, oLogHandler=None):
     """Parse a new White Wolf rulings file
     
        oRulings is an object with a .open() method (e.g. a sutekh.io.WwFile.WwFile)
@@ -61,7 +61,7 @@ def readRulings(oRulings, oLogHandler=None):
     sqlhub.processConnection.commit()
     sqlhub.processConnection = oOldConn
 
-def genTempFile(sBaseName, sDir):
+def gen_temp_file(sBaseName, sDir):
     """Simple wrapper around tempfile creation - generates the name and closes
        the file
        """
@@ -76,12 +76,12 @@ def genTempFile(sBaseName, sDir):
     # I don't see it being triggered accidently
     return sFilename
 
-def genTempdir():
+def gen_temp_dir():
     """Create a temporary directory using mkdtemp"""
     sTempdir = tempfile.mkdtemp('dir', 'sutekh')
     return sTempdir
 
-def safeFilename(sFilename):
+def safe_filename(sFilename):
     """Replace potentially dangerous and annoying characters in the name -
        used to automatically generate sensible filenames from card set names
        """
@@ -91,7 +91,7 @@ def safeFilename(sFilename):
     sSafeName = sSafeName.replace("\\", "_") # ditto for windows
     return sSafeName
 
-def prefsDir(sApp):
+def prefs_dir(sApp):
     """Return a suitable directory for storing preferences and other application data.
        """
     if sys.platform.startswith("win") and "APPDATA" in os.environ:
@@ -99,7 +99,7 @@ def prefsDir(sApp):
     else:
         return os.path.join(os.path.expanduser("~"), ".%s" % sApp.lower())
 
-def ensureDirExists(sDir):
+def ensure_dir_exists(sDir):
     """Check that a directory exists and create it if it doesn't.
        """
     if os.path.exists(sDir):
@@ -107,7 +107,7 @@ def ensureDirExists(sDir):
     else:
         os.makedirs(sDir)
 
-def sqliteUri(sPath):
+def sqlite_uri(sPath):
     """Create an SQLite db URI from the path to the db file.
        """
     sDbFile = sPath.replace(os.sep, "/")

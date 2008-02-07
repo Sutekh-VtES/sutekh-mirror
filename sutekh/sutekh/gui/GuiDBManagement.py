@@ -17,19 +17,19 @@ from sutekh.gui.SutekhDialog import do_complaint_buttons, do_complaint_error, \
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
 from sutekh.io.WwFile import WwFile
 from sutekh.core.SutekhObjects import ObjectList
-from sutekh.SutekhUtility import refreshTables, readRulings, readWhiteWolfList
+from sutekh.SutekhUtility import refresh_tables, read_rulings, read_white_wolf_list
 
 
 def read_cardlist(oCardList, oProgressDialog, oLogHandler):
     oProgressDialog.set_description("Reading WW Cardlist")
     oProgressDialog.show()
-    readWhiteWolfList(oCardList, oLogHandler)
+    read_white_wolf_list(oCardList, oLogHandler)
     oProgressDialog.set_complete()
 
-def read_rulings(oRulings, oProgressDialog, oLogHandler):
+def read_ww_rulings(oRulings, oProgressDialog, oLogHandler):
     oProgressDialog.reset()
     oProgressDialog.set_description("Reading WW Rulings List")
-    readRulings(oRulings, oLogHandler)
+    read_rulings(oRulings, oLogHandler)
     oProgressDialog.set_complete()
 
 def copy_to_new_db(oOldConn, oTempConn, oWin, oProgressDialog, oLogHandler):
@@ -61,15 +61,15 @@ def initialize_db():
         (sCLFileName, bCLIsUrl, sRulingsFileName, bRulingsIsUrl, sIgnore) = oDialog.getNames()
         oDialog.destroy()
         if sCLFileName is not None:
-            refreshTables(ObjectList, sqlhub.processConnection)
+            refresh_tables(ObjectList, sqlhub.processConnection)
             oLogHandler = SutekhHTMLLogHandler()
             oProgressDialog = ProgressDialog()
             oLogHandler.set_dialog(oProgressDialog)
-            oCLFile = WwFile(sCLFileName,bUrl=bCLIsUrl)
+            oCLFile = WwFile(sCLFileName, bUrl=bCLIsUrl)
             read_cardlist(oCLFile, oProgressDialog, oLogHandler)
             if sRulingsFileName is not None:
                 oRulingsFile = WwFile(sRulingsFileName, bUrl=bRulingsIsUrl)
-                read_rulings(oRulingsFile, oProgressDialog,  oLogHandler)
+                read_ww_rulings(oRulingsFile, oProgressDialog,  oLogHandler)
         else:
             return False
     return True
@@ -91,24 +91,24 @@ def refresh_WW_card_list(oWin):
                 oFile = ZipFileWrapper(sBackupFile)
                 oFile.doDumpAllToZip(oLogHandler)
                 oProgressDialog.set_complete()
-            except Exception, e:
-                sMsg = "Failed to write backup.\n\n" + str(e) \
+            except Exception, oErr:
+                sMsg = "Failed to write backup.\n\n" + str(oErr) \
                     + "\nNot touching the database further"
                 do_complaint_error(sMsg)
                 return False
         oTempConn = connectionForURI("sqlite:///:memory:")
         oOldConn = sqlhub.processConnection
-        refreshTables(ObjectList, oTempConn)
+        refresh_tables(ObjectList, oTempConn)
         oProgressDialog.reset()
         # WhiteWolf Parser uses sqlhub connection
         sqlhub.processConnection = oTempConn
         oLogHandler = SutekhHTMLLogHandler()
         oLogHandler.set_dialog(oProgressDialog)
-        oCLFile = WwFile(sCLFileName,bUrl=bCLIsUrl)
+        oCLFile = WwFile(sCLFileName, bUrl=bCLIsUrl)
         read_cardlist(oCLFile, oProgressDialog, oLogHandler)
         if sRulingsFileName is not None:
                 oRulingsFile = WwFile(sRulingsFileName, bUrl=bRulingsIsUrl)
-                read_rulings(oRulingsFile, oProgressDialog,  oLogHandler)
+                read_ww_rulings(oRulingsFile, oProgressDialog,  oLogHandler)
         bCont = False
         # Refresh abstract card view for card lookups
         oWin.reload_all()
@@ -142,7 +142,7 @@ def do_db_upgrade(aBadTables):
             "The following tables need to be upgraded:\n"
     sMesg += "\n".join(aBadTables)
     iRes = do_complaint_buttons(sMesg, gtk.MESSAGE_ERROR,
-            (gtk.STOCK_QUIT, gtk.RESPONSE_CLOSE, 
+            (gtk.STOCK_QUIT, gtk.RESPONSE_CLOSE,
                 "Attempt Automatic Database Upgrade", 1))
     if iRes != 1:
         return False
@@ -167,14 +167,14 @@ def do_db_upgrade(aBadTables):
                 if bOK:
                     sMesg = "Changes Commited\n"
                     if len(aMessages)>0:
-                        sMesg += '\n'.join(["Messages reported are:"] + 
+                        sMesg += '\n'.join(["Messages reported are:"] +
                                 aMessages)
                     else:
                         sMesg += "Everything seems to have gone smoothly."
                     do_complaint(sMesg, gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, True)
                     return True
                 else:
-                    sMesg = '\n'.join(["Unable to commit updated database!"] + 
+                    sMesg = '\n'.join(["Unable to commit updated database!"] +
                             aMessages +
                             ["Upgrade Failed.", "Your database may be in an inconsistent state."])
                     return False
@@ -185,11 +185,11 @@ def do_db_upgrade(aBadTables):
             else:
                 return False
         else:
-            sMesg = '\n'.join(["Unable to create memory copy!"] + 
+            sMesg = '\n'.join(["Unable to create memory copy!"] +
                     aMessages + ["Upgrade Failed."])
             do_complaint_error(sMesg)
             return False
-    except UnknownVersion, err:
+    except UnknownVersion, oErr:
         oProgressDialog.destroy()
-        do_complaint_error("Upgrade Failed. " + str(err))
+        do_complaint_error("Upgrade Failed. " + str(oErr))
         return False

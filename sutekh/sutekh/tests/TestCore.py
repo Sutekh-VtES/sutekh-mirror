@@ -4,7 +4,8 @@
 # GPL - see COPYING for details
 
 from sutekh.tests.TestData import TEST_CARD_LIST, TEST_RULINGS
-from sutekh.SutekhUtility import readWhiteWolfList, readRulings, refreshTables
+from sutekh.SutekhUtility import read_white_wolf_list, read_rulings, \
+        refresh_tables
 from sutekh.core.SutekhObjects import ObjectList
 from sutekh.io.WwFile import WwFile
 from sqlobject import sqlhub, connectionForURI
@@ -47,10 +48,10 @@ class SutekhTest(unittest.TestCase):
         oConn = connectionForURI("sqlite:///:memory:")
         sqlhub.processConnection = oConn
 
-        assert refreshTables(ObjectList, oConn)
+        assert refresh_tables(ObjectList, oConn)
 
-        readWhiteWolfList(WwFile(sCardList))
-        readRulings(WwFile(sRulings))
+        read_white_wolf_list(WwFile(sCardList))
+        read_rulings(WwFile(sRulings))
 
     def tearDown(self):
         sqlhub.processConnection = None

@@ -11,7 +11,7 @@ from sqlobject import sqlhub
 from sutekh.core.SutekhObjects import AbstractCardSet, PhysicalCardSet, \
         PhysicalList, AbstractCardSetList
 from sutekh.core.CardLookup import DEFAULT_LOOKUP
-from sutekh.SutekhUtility import refreshTables
+from sutekh.SutekhUtility import refresh_tables
 from sutekh.io.PhysicalCardParser import PhysicalCardParser
 from sutekh.io.PhysicalCardSetParser import PhysicalCardSetParser
 from sutekh.io.AbstractCardSetParser import AbstractCardSetParser
@@ -125,8 +125,8 @@ class ZipFileWrapper(object):
                 # hopefully this is safe to do
                 # if we fail, the database will be in an inconsitent state,
                 # but that's going to be true anyway
-                refreshTables(PhysicalList, sqlhub.processConnection)
-                refreshTables(AbstractCardSetList, sqlhub.processConnection)
+                refresh_tables(PhysicalList, sqlhub.processConnection)
+                refresh_tables(AbstractCardSetList, sqlhub.processConnection)
                 oParser = PhysicalCardParser()
                 oParser.parse_string(oData, oCardLookup)
                 bPhysicalCardsRead = True

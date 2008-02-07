@@ -7,7 +7,7 @@
 
 from sutekh.core.SutekhObjects import AbstractCardSet, PhysicalCardSet
 from sutekh.core.CardLookup import DEFAULT_LOOKUP
-from sutekh.SutekhUtility import genTempFile, genTempdir, safeFilename
+from sutekh.SutekhUtility import gen_temp_file, gen_temp_dir, safe_filename
 from sutekh.io.PhysicalCardParser import PhysicalCardParser
 from sutekh.io.PhysicalCardSetParser import PhysicalCardSetParser
 from sutekh.io.AbstractCardSetParser import AbstractCardSetParser
@@ -23,8 +23,8 @@ class PhysicalCardXmlFile(object):
             self.sXmlFile = filename
         else:
             if dir is None:
-                dir = genTempdir()
-            self.sXmlFile = genTempFile('physical_cards_', dir)
+                dir = gen_temp_dir()
+            self.sXmlFile = gen_temp_file('physical_cards_', dir)
 
     def read(self):
         if self.sXmlFile is None:
@@ -59,7 +59,7 @@ class AbstractCardSetXmlFile(object):
     def write(self, sAbstractCardSetName):
         oW = AbstractCardSetWriter()
         if self.sXmlFile is None:
-            filename = safeFilename(sAbstractCardSetName)
+            filename = safe_filename(sAbstractCardSetName)
             fOut = file(filename,'w')
         else:
             fOut = file(self.sXmlFile,'w')
@@ -85,7 +85,7 @@ class PhysicalCardSetXmlFile(object):
     def write(self, sPhysicalCardSetName):
         oW = PhysicalCardSetWriter()
         if self.sXmlFile is None:
-            filename = safeFilename(sPhysicalCardSetName)
+            filename = safe_filename(sPhysicalCardSetName)
             fOut = file(filename,'w')
         else:
             fOut = file(self.sXmlFile,'w')
@@ -101,8 +101,8 @@ def writeAllAbstractCardSets(dir=''):
     oAbstractCardSets = AbstractCardSet.select()
     aList = []
     for acs in oAbstractCardSets:
-        sFName = safeFilename(acs.name)
-        filename = genTempFile('acs_'+sFName+'_', dir)
+        sFName = safe_filename(acs.name)
+        filename = gen_temp_file('acs_'+sFName+'_', dir)
         oW = AbstractCardSetXmlFile(filename)
         aList.append(oW)
         oW.write(acs.name)
@@ -112,8 +112,8 @@ def writeAllPhysicalCardSets(dir=''):
     oPhysicalCardSets = PhysicalCardSet.select()
     aList = []
     for pcs in oPhysicalCardSets:
-        sFName = safeFilename(pcs.name)
-        filename = genTempFile('pcs_'+sFName+'_', dir)
+        sFName = safe_filename(pcs.name)
+        filename = gen_temp_file('pcs_'+sFName+'_', dir)
         oW = PhysicalCardSetXmlFile(filename)
         aList.append(oW)
         oW.write(pcs.name)

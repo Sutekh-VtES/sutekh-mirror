@@ -82,8 +82,9 @@ class CardListView(gtk.TreeView, object):
         return False
 
     def reload_keep_expanded(self):
-        """Attempt to reload the card list, keeping the existing
-           structure of expanded rows
+        """
+        Attempt to reload the card list, keeping the existing
+        structure of expanded rows
         """
         # Internal helper functions
         # See what's expanded

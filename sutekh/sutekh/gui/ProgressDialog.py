@@ -22,7 +22,7 @@ class SutekhLogHandler(Handler, object):
 class SutekhHTMLLogHandler(SutekhLogHandler):
     """
     Logging class for cardlist and rulings parser.
-    Converts messages of the form Card: X into a approximate 
+    Converts messages of the form Card: X into a approximate
     progress measure
     """
     def __init__(self):

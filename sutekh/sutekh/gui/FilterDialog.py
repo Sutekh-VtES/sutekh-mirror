@@ -47,7 +47,7 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
         self.__oParser = FilterParser.FilterParser()
         self.__oConfig = oConfig
         self.__sFilterType = sFilterType
-        self.connect("response", self.__buttonResponse)
+        self.connect("response", self.__button_response)
         self.__dExpanded = {}
         self.__dASTs = {}
         self.__dButtons = {}
@@ -76,16 +76,16 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
             except ValueError, oExcep:
                 do_complaint_error("Invalid Filter: %s\n Error: %s" % (sFilter, str(oExcep)))
                 continue
-            sId = self.__addFilterToDialog(oAST, sFilter)
+            sId = self.__add_filter_to_dialog(oAST, sFilter)
             self.__aDefaultLabels.append(sId)
-        self.__expandFilter(self.__oRadioGroup, self.__aDefaultLabels[0])
+        self.__expand_filter(self.__oRadioGroup, self.__aDefaultLabels[0])
         # Load other filters from config file
         aAllFilters = oConfig.getFiltersKeys()
         sMessages = ''
         for sId, sFilter in aAllFilters:
             try:
                 oAST = self.__oParser.apply(sFilter)
-                self.__addFilterToDialog(oAST, sFilter, sId)
+                self.__add_filter_to_dialog(oAST, sFilter, sId)
             except ValueError:
                 sMessages += sFilter + "\n"
                 self.__oConfig.removeFilter(sFilter, sId)
@@ -95,9 +95,11 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
         # Add Listener, so we catch changes in future
         oConfig.addListener(self)
 
-    def __expandFilter(self, oRadioButton, sId):
-        """When the user selects a radio button, expand
-           the options"""
+    def __expand_filter(self, oRadioButton, sId):
+        """
+        When the user selects a radio button, expand
+        the options
+        """
         if sId != self.__sExpanded and sId in self.__dExpanded.keys():
             # Remove the previous filter
             for oChild in self.__oExpandedArea.get_children():
@@ -114,7 +116,7 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
                 self.__oDeleteButton.set_sensitive(False)
                 self.__oEditButton.set_sensitive(False)
 
-    def __addFilterToDialog(self, oAST, sFilter, sId=''):
+    def __add_filter_to_dialog(self, oAST, sFilter, sId=''):
         if sId == '' or sId in self.__dExpanded.keys():
             # ensure we have a unique key here
             iNum = len(self.__dExpanded)
@@ -128,10 +130,14 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
         self.__dExpanded[sId] = []
         self.__dASTs[sId] = oAST
         aFilterParts = oAST.getValues()
-        self.__addPartsToDialog(aFilterParts, sFilter, sId)
+        self.__add_parts_to_dialog(aFilterParts, sFilter, sId)
         return sId
 
-    def __replaceFilterInDialog(self, oAST, sOldFilter, sNewFilter, sId):
+    def __replace_filter_in_dialog(self, oAST, sOldFilter, sNewFilter, sId):
+        """
+        Replace an existing filter with the new one
+        Preserve selections if possible
+        """
         self.__dFilterList[sId] = sNewFilter
         if self.__sFilterType in oAST.getType():
             aFilterParts = oAST.getValues()
@@ -144,15 +150,15 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
                 oRadioButton = self.__dButtons[sId]
                 self.__oRadioArea.remove(oRadioButton)
                 del self.__dButtons[sId]
-                self.__addPartsToDialog(aFilterParts, sNewFilter, sId)
+                self.__add_parts_to_dialog(aFilterParts, sNewFilter, sId)
                 self.__oRadioGroup.clicked()
                 self.__dButtons[sId].clicked()
                 # We update the new filter with values from the old filter where
-                # appropriate 
+                # appropriate
                 aNewValues = oAST.getValues()
                 self.__copy_values(zip(self.__dExpanded[sId], aNewValues),
                         zip(aOldFilterWidgets, aOldASTValues))
-           # FIXME: should handle else conditions
+            # FIXME: should handle else conditions
 
     def __copy_values(self, aNewFilterVals, aOldFilterVals):
         for oWidget, oFilterPart in aNewFilterVals:
@@ -167,8 +173,8 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
                                 oWidget.set_selection(aSelection)
                             else:
                                 oWidget.set_text(oOldWidget.get_text())
- 
-    def __addPartsToDialog(self, aFilterParts, sFilter, sId):
+
+    def __add_parts_to_dialog(self, aFilterParts, sFilter, sId):
         sPrevName = None
         for oPart in aFilterParts:
             if oPart.isValue():
@@ -176,7 +182,7 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
                 self.__dExpanded[sId].append(oWidget)
             elif oPart.isList():
                 assert(sPrevName is not None)
-                oWidget = self.__makeScrolledList(sPrevName, oPart.value)
+                oWidget = self.__make_scrolled_list(sPrevName, oPart.value)
                 self.__dExpanded[sId].append(oWidget)
             elif oPart.isEntry():
                 oWidget = gtk.Entry(100)
@@ -191,10 +197,10 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
             self.__oRadioGroup = oRadioButton
         oRadioButton.set_label(sFilter)
         self.__dButtons[sId] = oRadioButton
-        oRadioButton.connect("toggled", self.__expandFilter, sId)
+        oRadioButton.connect("toggled", self.__expand_filter, sId)
         self.__oRadioArea.pack_start(oRadioButton)
 
-    def __removeFilterFromDialog(self, sId):
+    def __remove_filter_from_dialog(self, sId):
         sFilter = self.__dFilterList[sId]
         self.__oConfig.removeFilter(sFilter, sId)
 
@@ -215,30 +221,30 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
     def Cancelled(self):
         return self.__bWasCancelled
 
-    def __buttonResponse(self, oWidget, iResponse):
+    def __button_response(self, oWidget, iResponse):
         if iResponse ==  gtk.RESPONSE_OK:
             self.__bWasCancelled = False
             # Construct the Final filter string
-            oNewAST = self.__parseDialogState()
+            oNewAST = self.__parse_dialog_state()
             # Push this into yacc and get the constructed filter out of
             # it
             self.__oData = oNewAST.getFilter()
         elif iResponse == self.__iAddButtonResponse:
-            self.__doAddEditFilterDialog()
+            self.__do_add_edit_filter_dialog()
             # Recursive, not sure if that's such a good thing
             return self.run()
         elif iResponse == self.__iDeleteButtonResponse:
-            self.__doRemoveFilter()
+            self.__do_remove_filter()
             return self.run()
         elif iResponse == self.__iEditButtonResponse:
             sFilter = self.__dFilterList[self.__sExpanded]
-            self.__doAddEditFilterDialog(sFilter)
+            self.__do_add_edit_filter_dialog(sFilter)
             return self.run()
         else:
             self.__bWasCancelled = True
         self.hide()
 
-    def __parseDialogState(self):
+    def __parse_dialog_state(self):
         # FIXME: Should be defined somewhere else for better maintainability
         oNewAST = copy.deepcopy(self.__dASTs[self.__sExpanded])
         aNewFilterValues = oNewAST.getValues()
@@ -264,13 +270,13 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
                     oFilterPart.node.setValues(['"' + sText + '"'])
         return oNewAST
 
-    def __makeScrolledList(self, sName, aVals):
+    def __make_scrolled_list(self, sName, aVals):
         oWidget = ScrolledList(sName)
         oWidget.set_size_request(200, 400)
         oWidget.fill_list(aVals)
         return oWidget
 
-    def __doAddEditFilterDialog(self, sEditFilter=''):
+    def __do_add_edit_filter_dialog(self, sEditFilter=''):
         if sEditFilter == '':
             sTitle = "Enter the New Filter"
         else:
@@ -336,7 +342,7 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
         except ValueError, oExcep:
             do_complaint_error("Invalid Filter: %s\n Error: %s" % (sNewFilter, str(oExcep)))
             return
-        self.__replaceFilterInDialog(oAST, sOldFilter, sNewFilter, sId)
+        self.__replace_filter_in_dialog(oAST, sOldFilter, sNewFilter, sId)
         self.__oRadioArea.show_all()
 
     def addFilter(self, sFilter, sId):
@@ -346,10 +352,10 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
         except ValueError, oExcep:
             do_complaint_error("Invalid Filter: %s\n Error: %s" % (sFilter, str(oExcep)))
             return
-        self.__addFilterToDialog(oAST, sFilter, sId)
+        self.__add_filter_to_dialog(oAST, sFilter, sId)
         self.__oRadioArea.show_all()
 
-    def __doRemoveFilter(self):
+    def __do_remove_filter(self):
         sId = self.__sExpanded
         # Needed because this changes self.__sExpanded
-        self.__removeFilterFromDialog(sId)
+        self.__remove_filter_from_dialog(sId)
