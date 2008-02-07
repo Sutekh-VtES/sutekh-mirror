@@ -51,6 +51,15 @@ class ScrolledList(gtk.Frame):
             aSelectedList.append(sName)
         return aSelectedList
 
+    def set_selection(self, aRowsToSelect):
+        oIter = self._oListStore.get_iter_first()
+        oTreeSelection = self._oTreeView.get_selection()
+        while oIter is not None:
+            sName = self._oListStore.get_value(oIter, 0)
+            if sName in aRowsToSelect:
+                oTreeSelection.select_iter(oIter)
+            oIter = self._oListStore.iter_next(oIter)
+
     def set_selected(self, sEntry):
         """Select the current entry"""
         oIter = self._oListStore.get_iter_first()
