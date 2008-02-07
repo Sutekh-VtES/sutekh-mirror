@@ -64,8 +64,8 @@ class SutekhCountLogHandler(SutekhLogHandler):
     """
     def __init__(self):
         super(SutekhCountLogHandler, self).__init__()
-        self.iCount = 0
-        self.fTot = 0
+        self.iCount = None
+        self.fTot = None
 
     def set_total(self, iTot):
         self.fTot = float(iTot)
