@@ -73,8 +73,8 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
             # Parse the filter into the seperate bits needed
             try:
                 oAST = self.__oParser.apply(sFilter)
-            except ValueError:
-                do_complaint_error("Invalid Filter Syntax: " + sFilter)
+            except ValueError, oExcep:
+                do_complaint_error("Invalid Filter: %s\n Error: %s" % (sFilter, str(oExcep)))
                 continue
             sId = self.__addFilterToDialog(oAST, sFilter)
             self.__aDefaultLabels.append(sId)
@@ -136,6 +136,9 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
         if self.__sFilterType in oAST.getType():
             aFilterParts = oAST.getValues()
             if sId in self.__dExpanded.keys():
+                # Temporary copy of the values, so we can reuse the values
+                oOldFilterWidgets = self.__dExpanded[sId]
+                oOldAST = self.__dASTs[sId]
                 self.__dExpanded[sId] = []
                 self.__dASTs[sId] = oAST
                 oRadioButton = self.__dButtons[sId]
@@ -144,6 +147,8 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
                 self.__addPartsToDialog(aFilterParts, sNewFilter, sId)
                 self.__oRadioGroup.clicked()
                 self.__dButtons[sId].clicked()
+                # We update the new filter with values from the old filter where
+                # appropriate 
             # FIXME: should handle else conditions
 
     def __addPartsToDialog(self, aFilterParts, sFilter, sId):
@@ -284,8 +289,8 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
                 sFilter = oEntry.get_text()
                 try:
                     oAST = self.__oParser.apply(sFilter)
-                except ValueError:
-                    do_complaint_error("Invalid Filter Syntax: " + sFilter)
+                except ValueError, oExcep:
+                    do_complaint_error("Invalid Filter: %s\n Error: %s" % (sFilter, str(oExcep)))
                     # Rerun the dialog, should do the right thing
                     continue
                 aWrongVals = oAST.getInvalidValues()
@@ -311,8 +316,8 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
         try:
             # Should be safe, but just in case
             oAST = self.__oParser.apply(sNewFilter)
-        except ValueError:
-            do_complaint_error("Invalid Filter Syntax: " + sNewFilter)
+        except ValueError, oExcep:
+            do_complaint_error("Invalid Filter: %s\n Error: %s" % (sNewFilter, str(oExcep)))
             return
         self.__replaceFilterInDialog(oAST, sOldFilter, sNewFilter, sId)
         self.__oRadioArea.show_all()
@@ -321,8 +326,8 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
         try:
             # Should be safe, but just in case
             oAST = self.__oParser.apply(sFilter)
-        except ValueError:
-            do_complaint_error("Invalid Filter Syntax: " + sFilter)
+        except ValueError, oExcep:
+            do_complaint_error("Invalid Filter: %s\n Error: %s" % (sFilter, str(oExcep)))
             return
         self.__addFilterToDialog(oAST, sFilter, sId)
         self.__oRadioArea.show_all()

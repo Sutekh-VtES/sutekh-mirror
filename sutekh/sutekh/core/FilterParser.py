@@ -109,6 +109,7 @@ class ParseFilterDefinitions(object):
 
 class FilterYaccParser(object):
     tokens = ParseFilterDefinitions.tokens
+    aUsedVariables = []
 
     # COMMA's have higher precedence than AND + OR
     # This shut's up most shift/reduce warnings
@@ -119,6 +120,9 @@ class FilterYaccParser(object):
             ('left','COMMA'),
             ('left','WITH')
     )
+
+    def reset(self):
+        self.aUsedVariables = []
 
     def p_filter(self, p):
         """filter : filterpart"""
@@ -142,21 +146,27 @@ class FilterYaccParser(object):
 
     def p_filterpart_filtertype(self, p):
         """filterpart : FILTERTYPE IN expression"""
-        p[0] = FilterPartNode(p[1], p[3])
+        p[0] = FilterPartNode(p[1], p[3], None)
 
     def p_filterpart_var(self, p):
         """filterpart : FILTERTYPE IN VARIABLE"""
-        p[0] = FilterPartNode(p[1], None)
+        if p[3] not in self.aUsedVariables and p[3] != '$':
+            p[0] = FilterPartNode(p[1], None, p[3])
+            self.aUsedVariables.append(p[3])
+        elif p[3] != '$':
+            raise ValueError("Duplicate variable name %s" % p[3])
+        else:
+            raise ValueError("Missing variable name for %s" % p[3])
 
     def p_filterpart(self, p):
         """filterpart : FILTERTYPE"""
-        oNode = FilterPartNode(p[1], None)
+        oNode = FilterPartNode(p[1], None, None)
         aRes = oNode.getValues()
         if aRes[1].isNone():
             # Filter that takes no type, so legal
-            p[0] = FilterPartNode(p[1], None)
+            p[0] = FilterPartNode(p[1], None, None)
         else:
-            raise ValueError("Invalid filter syntax: Missing values or variable for filter")
+            raise ValueError("Missing values or variable for filter")
 
     def p_expression_comma(self, p):
         """expression : expression COMMA expression"""
@@ -169,7 +179,7 @@ class FilterYaccParser(object):
     def p_expression_id(self, p):
         """expression : ID"""
         # Shouldn't actually trigger this rule with a legal filter string
-        raise ValueError("Invalid filter element: " + str(p[1]))
+        raise ValueError("Invalid filter element: %s" % p[1])
 
     def p_expression_with(self, p):
         """expression : expression WITH expression"""
@@ -177,15 +187,16 @@ class FilterYaccParser(object):
 
     def p_error(self, p):
         if p is None:
-            raise ValueError("Invalid filter syntax: No valid identifier")
+            raise ValueError("No valid identifier or missing variable name")
         else:
-            raise ValueError("Invalid filter syntax: " + str(p.value))
+            raise ValueError("Invalid identifier: %s " % p.value)
 
 # Wrapper objects around the parser
 
 class FilterParser(object):
     _oGlobalLexer = None
     _oGlobalParser = None
+    _oGlobalFilterParser = None
 
     def __init__(self):
         if not self._oGlobalLexer:
@@ -194,11 +205,13 @@ class FilterParser(object):
 
         if not self._oGlobalParser:
             # yacc needs an initialised lexer
-            self._oGlobalParser = yacc.yacc(module = FilterYaccParser(),
+            self._oGlobalFilterParser = FilterYaccParser()
+            self._oGlobalParser = yacc.yacc(module = self._oGlobalFilterParser,
                                             debug=0,
                                             write_tables=0)
 
     def apply(self, str):
+        self._oGlobalFilterParser.reset()
         oAST = self._oGlobalParser.parse(str)
         return oAST
 
@@ -302,10 +315,14 @@ class IdNode(TermNode):
         return None
 
 class FilterPartNode(OperatorNode):
-    def __init__(self, filtertype, filtervalues):
+    def __init__(self, filtertype, filtervalues, sVariableName):
         super(FilterPartNode, self).__init__([filtertype, filtervalues])
         self.filtertype = filtertype
         self.filtervalues = filtervalues
+        self.sVariableName = sVariableName
+
+    def get_name(self):
+        return self.sVariableName
 
     def getValues(self):
         if self.filtertype in aEntryFilters:
