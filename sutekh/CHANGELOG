@@ -1,3 +1,8 @@
+07 Feb 2008:
+ * Add sutkeh.io.WwFile convenience module for reading data from
+   WW website cardlists and rulings (including directly from the
+   website using urllib2.urlopen).
+
 06 Feb 2008:
  * Display progress bar for import new cardlists, upgrading DB and
    saving and restoring backups
