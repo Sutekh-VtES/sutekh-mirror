@@ -49,25 +49,38 @@ class AbstractCard(SQLObject):
     canonicalName = UnicodeCol(alternateID=True, length=50)
     name = UnicodeCol(length=50)
     text = UnicodeCol()
-    group = IntCol(default=None,dbName='grp')
+    group = IntCol(default=None, dbName='grp')
     capacity = IntCol(default=None)
     cost = IntCol(default=None)
     life = IntCol(default=None)
-    costtype = EnumCol(enumValues=['pool','blood','conviction',None],default=None)
-    level = EnumCol(enumValues=['advanced',None],default=None)
+    costtype = EnumCol(enumValues=['pool', 'blood', 'conviction', None],
+            default=None)
+    level = EnumCol(enumValues=['advanced', None], default=None)
     burnoption = BoolCol(default=False)
 
-    discipline = CachedRelatedJoin('DisciplinePair',intermediateTable='abs_discipline_pair_map',createRelatedTable=False)
-    rarity = CachedRelatedJoin('RarityPair',intermediateTable='abs_rarity_pair_map',createRelatedTable=False)
-    clan = CachedRelatedJoin('Clan',intermediateTable='abs_clan_map',createRelatedTable=False)
-    cardtype = CachedRelatedJoin('CardType',intermediateTable='abs_type_map',createRelatedTable=False)
-    sect = CachedRelatedJoin('Sect',intermediateTable='abs_sect_map',createRelatedTable=False)
-    title = CachedRelatedJoin('Title',intermediateTable='abs_title_map',createRelatedTable=False)
-    creed = CachedRelatedJoin('Creed',intermediateTable='abs_creed_map',createRelatedTable=False)
-    virtue = CachedRelatedJoin('Virtue',intermediateTable='abs_virtue_map',createRelatedTable=False)
-    rulings = CachedRelatedJoin('Ruling',intermediateTable='abs_ruling_map',createRelatedTable=False)
+    discipline = CachedRelatedJoin('DisciplinePair',
+            intermediateTable='abs_discipline_pair_map',
+            createRelatedTable=False)
+    rarity = CachedRelatedJoin('RarityPair',
+            intermediateTable='abs_rarity_pair_map',
+            createRelatedTable=False)
+    clan = CachedRelatedJoin('Clan',
+            intermediateTable='abs_clan_map', createRelatedTable=False)
+    cardtype = CachedRelatedJoin('CardType', intermediateTable='abs_type_map',
+            createRelatedTable=False)
+    sect = CachedRelatedJoin('Sect', intermediateTable='abs_sect_map',
+            createRelatedTable=False)
+    title = CachedRelatedJoin('Title', intermediateTable='abs_title_map',
+            createRelatedTable=False)
+    creed = CachedRelatedJoin('Creed', intermediateTable='abs_creed_map',
+            createRelatedTable=False)
+    virtue = CachedRelatedJoin('Virtue', intermediateTable='abs_virtue_map',
+            createRelatedTable=False)
+    rulings = CachedRelatedJoin('Ruling', intermediateTable='abs_ruling_map',
+            createRelatedTable=False)
 
-    sets = RelatedJoin('AbstractCardSet',intermediateTable='abstract_map',createRelatedTable=False)
+    sets = RelatedJoin('AbstractCardSet', intermediateTable='abstract_map',
+            createRelatedTable=False)
     physicalCards = MultipleJoin('PhysicalCard')
 
 class PhysicalCard(SQLObject):
@@ -76,29 +89,33 @@ class PhysicalCard(SQLObject):
     tableversion = 2
     abstractCard = ForeignKey('AbstractCard')
     abstractCardIndex = DatabaseIndex(abstractCard)
-    expansion = ForeignKey('Expansion',notNull=False) # Explicitly allow None as expansion
-    sets = RelatedJoin('PhysicalCardSet',intermediateTable='physical_map',createRelatedTable=False)
+    # Explicitly allow None as expansion
+    expansion = ForeignKey('Expansion', notNull=False) 
+    sets = RelatedJoin('PhysicalCardSet', intermediateTable='physical_map',
+            createRelatedTable=False)
 
 class AbstractCardSet(SQLObject):
     advise(instancesProvide=[IAbstractCardSet])
 
     tableversion = 3
-    name = UnicodeCol(alternateID=True,length=50)
-    author = UnicodeCol(length=50,default='')
+    name = UnicodeCol(alternateID=True, length=50)
+    author = UnicodeCol(length=50, default='')
     comment = UnicodeCol(default='')
     annotations = UnicodeCol(default='')
-    cards = RelatedJoin('AbstractCard',intermediateTable='abstract_map',createRelatedTable=False)
+    cards = RelatedJoin('AbstractCard', intermediateTable='abstract_map',
+            createRelatedTable=False)
 
 class PhysicalCardSet(SQLObject):
     advise(instancesProvide=[IPhysicalCardSet])
 
     tableversion = 4
-    name = UnicodeCol(alternateID=True,length=50)
-    author = UnicodeCol(length=50,default='')
+    name = UnicodeCol(alternateID=True, length=50)
+    author = UnicodeCol(length=50, default='')
     comment = UnicodeCol(default='')
     annotations = UnicodeCol(default='')
     inuse = BoolCol(default=False)
-    cards = RelatedJoin('PhysicalCard',intermediateTable='physical_map',createRelatedTable=False)
+    cards = RelatedJoin('PhysicalCard', intermediateTable='physical_map',
+            createRelatedTable=False)
 
 class RarityPair(SQLObject):
     advise(instancesProvide=[IRarityPair])
@@ -106,94 +123,104 @@ class RarityPair(SQLObject):
     tableversion = 1
     expansion = ForeignKey('Expansion')
     rarity = ForeignKey('Rarity')
-    cards = RelatedJoin('AbstractCard',intermediateTable='abs_rarity_pair_map',createRelatedTable=False)
-    expansionRarityIndex = DatabaseIndex(expansion,rarity,unique=True)
+    cards = RelatedJoin('AbstractCard', intermediateTable='abs_rarity_pair_map',
+            createRelatedTable=False)
+    expansionRarityIndex = DatabaseIndex(expansion, rarity, unique=True)
 
 class Expansion(SQLObject):
     advise(instancesProvide=[IExpansion])
 
     tableversion = 2
-    name = UnicodeCol(alternateID=True,length=20)
-    shortname = UnicodeCol(length=10,default=None)
+    name = UnicodeCol(alternateID=True, length=20)
+    shortname = UnicodeCol(length=10, default=None)
     pairs = MultipleJoin('RarityPair')
 
 class Rarity(SQLObject):
     advise(instancesProvide=[IRarity])
 
     tableversion = 2
-    name = UnicodeCol(alternateID=True,length=20)
-    shortname = UnicodeCol(alternateID=True,length=20)
+    name = UnicodeCol(alternateID=True, length=20)
+    shortname = UnicodeCol(alternateID=True, length=20)
 
 class DisciplinePair(SQLObject):
     advise(instancesProvide=[IDisciplinePair])
 
     tableversion = 1
     discipline = ForeignKey('Discipline')
-    level = EnumCol(enumValues=['inferior','superior'])
-    disciplineLevelIndex = DatabaseIndex(discipline,level,unique=True)
-    cards = RelatedJoin('AbstractCard',intermediateTable='abs_discipline_pair_map',createRelatedTable=False)
+    level = EnumCol(enumValues=['inferior', 'superior'])
+    disciplineLevelIndex = DatabaseIndex(discipline, level, unique=True)
+    cards = RelatedJoin('AbstractCard',
+            intermediateTable='abs_discipline_pair_map',
+            createRelatedTable=False)
 
 class Discipline(SQLObject):
     advise(instancesProvide=[IDiscipline])
 
     tableversion = 2
-    name = UnicodeCol(alternateID=True,length=30)
-    fullname = UnicodeCol(length=30,default=None)
+    name = UnicodeCol(alternateID=True, length=30)
+    fullname = UnicodeCol(length=30, default=None)
     pairs = MultipleJoin('DisciplinePair')
 
 class Virtue(SQLObject):
     advise(instancesProvide=[IVirtue])
 
     tableversion = 1
-    name = UnicodeCol(alternateID=True,length=30)
-    fullname = UnicodeCol(length=30,default=None)
-    cards = RelatedJoin('AbstractCard',intermediateTable='abs_virtue_map',createRelatedTable=False)
+    name = UnicodeCol(alternateID=True, length=30)
+    fullname = UnicodeCol(length=30, default=None)
+    cards = RelatedJoin('AbstractCard', intermediateTable='abs_virtue_map',
+            createRelatedTable=False)
 
 class Creed(SQLObject):
     advise(instancesProvide=[ICreed])
 
     tableversion = 1
-    name = UnicodeCol(alternateID=True,length=40)
-    shortname = UnicodeCol(length=10,default=None)
-    cards = RelatedJoin('AbstractCard',intermediateTable='abs_creed_map',createRelatedTable=False)
+    name = UnicodeCol(alternateID=True, length=40)
+    shortname = UnicodeCol(length=10, default=None)
+    cards = RelatedJoin('AbstractCard', intermediateTable='abs_creed_map',
+            createRelatedTable=False)
 
 class Clan(SQLObject):
     advise(instancesProvide=[IClan])
 
     tableversion = 2
-    name = UnicodeCol(alternateID=True,length=40)
-    shortname = UnicodeCol(length=10,default=None)
-    cards = RelatedJoin('AbstractCard',intermediateTable='abs_clan_map',createRelatedTable=False)
+    name = UnicodeCol(alternateID=True, length=40)
+    shortname = UnicodeCol(length=10, default=None)
+    cards = RelatedJoin('AbstractCard', intermediateTable='abs_clan_map',
+            createRelatedTable=False)
 
 class CardType(SQLObject):
     advise(instancesProvide=[ICardType])
 
     tableversion = 1
-    name = UnicodeCol(alternateID=True,length=50)
-    cards = RelatedJoin('AbstractCard',intermediateTable='abs_type_map',createRelatedTable=False)
+    name = UnicodeCol(alternateID=True, length=50)
+    cards = RelatedJoin('AbstractCard', intermediateTable='abs_type_map',
+            createRelatedTable=False)
 
 class Sect(SQLObject):
     advise(instancesProvide=[ISect])
 
     tableversion = 1
-    name = UnicodeCol(alternateID=True,length=50)
-    cards = RelatedJoin('AbstractCard',intermediateTable='abs_sect_map',createRelatedTable=False)
+    name = UnicodeCol(alternateID=True, length=50)
+    cards = RelatedJoin('AbstractCard', intermediateTable='abs_sect_map',
+            createRelatedTable=False)
 
 class Title(SQLObject):
     advise(instancesProvide=[ITitle])
 
     tableversion = 1
-    name = UnicodeCol(alternateID=True,length=50)
-    cards = RelatedJoin('AbstractCard',intermediateTable='abs_title_map',createRelatedTable=False)
+    name = UnicodeCol(alternateID=True, length=50)
+    cards = RelatedJoin('AbstractCard', intermediateTable='abs_title_map',
+            createRelatedTable=False)
 
 class Ruling(SQLObject):
     advise(instancesProvide=[IRuling])
 
     tableversion = 1
-    text = UnicodeCol(alternateID=True,length=512)
+    text = UnicodeCol(alternateID=True, length=512)
     code = UnicodeCol(length=50)
-    url = UnicodeCol(length=256,default=None)
-    cards = RelatedJoin('AbstractCard',intermediateTable='abs_ruling_map',createRelatedTable=False)
+    url = UnicodeCol(length=256, default=None)
+    cards = RelatedJoin('AbstractCard', intermediateTable='abs_ruling_map',
+            createRelatedTable=False)
 
 # Mapping Tables
 
@@ -203,23 +230,23 @@ class MapPhysicalCardToPhysicalCardSet(SQLObject):
 
     tableversion = 1
 
-    physicalCard = ForeignKey('PhysicalCard',notNull=True)
-    physicalCardSet = ForeignKey('PhysicalCardSet',notNull=True)
+    physicalCard = ForeignKey('PhysicalCard', notNull=True)
+    physicalCardSet = ForeignKey('PhysicalCardSet', notNull=True)
 
-    physicalCardIndex = DatabaseIndex(physicalCard,unique=False)
-    physicalCardSetIndex = DatabaseIndex(physicalCardSet,unique=False)
-    jointIndex = DatabaseIndex(physicalCard,physicalCardSet,unique=False)
+    physicalCardIndex = DatabaseIndex(physicalCard, unique=False)
+    physicalCardSetIndex = DatabaseIndex(physicalCardSet, unique=False)
+    jointIndex = DatabaseIndex(physicalCard, physicalCardSet, unique=False)
 
 class MapAbstractCardToAbstractCardSet(SQLObject):
     class sqlmeta:
         table = 'abstract_map'
 
     tableversion = 1
-    abstractCard = ForeignKey('AbstractCard',notNull=True)
-    abstractCardSet = ForeignKey('AbstractCardSet',notNull=True)
+    abstractCard = ForeignKey('AbstractCard', notNull=True)
+    abstractCardSet = ForeignKey('AbstractCardSet', notNull=True)
 
-    abstractCardIndex = DatabaseIndex(abstractCard,unique=False)
-    abstractCardSetIndex = DatabaseIndex(abstractCardSet,unique=False)
+    abstractCardIndex = DatabaseIndex(abstractCard, unique=False)
+    abstractCardSetIndex = DatabaseIndex(abstractCardSet, unique=False)
 
 class MapAbstractCardToRarityPair(SQLObject):
     class sqlmeta:
@@ -227,11 +254,11 @@ class MapAbstractCardToRarityPair(SQLObject):
 
     tableversion = 1
 
-    abstractCard = ForeignKey('AbstractCard',notNull=True)
-    rarityPair = ForeignKey('RarityPair',notNull=True)
+    abstractCard = ForeignKey('AbstractCard', notNull=True)
+    rarityPair = ForeignKey('RarityPair', notNull=True)
 
-    abstractCardIndex = DatabaseIndex(abstractCard,unique=False)
-    rarityPairIndex = DatabaseIndex(rarityPair,unique=False)
+    abstractCardIndex = DatabaseIndex(abstractCard, unique=False)
+    rarityPairIndex = DatabaseIndex(rarityPair, unique=False)
 
 class MapAbstractCardToRuling(SQLObject):
     class sqlmeta:
@@ -239,11 +266,11 @@ class MapAbstractCardToRuling(SQLObject):
 
     tableversion = 1
 
-    abstractCard = ForeignKey('AbstractCard',notNull=True)
-    ruling = ForeignKey('Ruling',notNull=True)
+    abstractCard = ForeignKey('AbstractCard', notNull=True)
+    ruling = ForeignKey('Ruling', notNull=True)
 
-    abstractCardIndex = DatabaseIndex(abstractCard,unique=False)
-    rulingIndex = DatabaseIndex(ruling,unique=False)
+    abstractCardIndex = DatabaseIndex(abstractCard, unique=False)
+    rulingIndex = DatabaseIndex(ruling, unique=False)
 
 class MapAbstractCardToClan(SQLObject):
     class sqlmeta:
@@ -251,11 +278,11 @@ class MapAbstractCardToClan(SQLObject):
 
     tableversion = 1
 
-    abstractCard = ForeignKey('AbstractCard',notNull=True)
-    clan = ForeignKey('Clan',notNull=True)
+    abstractCard = ForeignKey('AbstractCard', notNull=True)
+    clan = ForeignKey('Clan', notNull=True)
 
-    abstractCardIndex = DatabaseIndex(abstractCard,unique=False)
-    clanIndex = DatabaseIndex(clan,unique=False)
+    abstractCardIndex = DatabaseIndex(abstractCard, unique=False)
+    clanIndex = DatabaseIndex(clan, unique=False)
 
 class MapAbstractCardToDisciplinePair(SQLObject):
     class sqlmeta:
@@ -263,11 +290,11 @@ class MapAbstractCardToDisciplinePair(SQLObject):
 
     tableversion = 1
 
-    abstractCard = ForeignKey('AbstractCard',notNull=True)
-    disciplinePair = ForeignKey('DisciplinePair',notNull=True)
+    abstractCard = ForeignKey('AbstractCard', notNull=True)
+    disciplinePair = ForeignKey('DisciplinePair', notNull=True)
 
-    abstractCardIndex = DatabaseIndex(abstractCard,unique=False)
-    disciplinePairIndex = DatabaseIndex(disciplinePair,unique=False)
+    abstractCardIndex = DatabaseIndex(abstractCard, unique=False)
+    disciplinePairIndex = DatabaseIndex(disciplinePair, unique=False)
 
 class MapAbstractCardToCardType(SQLObject):
     class sqlmeta:
@@ -275,11 +302,11 @@ class MapAbstractCardToCardType(SQLObject):
 
     tableversion = 1
 
-    abstractCard = ForeignKey('AbstractCard',notNull=True)
-    cardType = ForeignKey('CardType',notNull=True)
+    abstractCard = ForeignKey('AbstractCard', notNull=True)
+    cardType = ForeignKey('CardType', notNull=True)
 
-    abstractCardIndex = DatabaseIndex(abstractCard,unique=False)
-    cardTypeIndex = DatabaseIndex(cardType,unique=False)
+    abstractCardIndex = DatabaseIndex(abstractCard, unique=False)
+    cardTypeIndex = DatabaseIndex(cardType, unique=False)
 
 class MapAbstractCardToSect(SQLObject):
     class sqlmeta:
@@ -287,11 +314,11 @@ class MapAbstractCardToSect(SQLObject):
 
     tableversion = 1
 
-    abstractCard = ForeignKey('AbstractCard',notNull=True)
-    sect = ForeignKey('Sect',notNull=True)
+    abstractCard = ForeignKey('AbstractCard', notNull=True)
+    sect = ForeignKey('Sect', notNull=True)
 
-    abstractCardIndex = DatabaseIndex(abstractCard,unique=False)
-    sectIndex = DatabaseIndex(sect,unique=False)
+    abstractCardIndex = DatabaseIndex(abstractCard, unique=False)
+    sectIndex = DatabaseIndex(sect, unique=False)
 
 class MapAbstractCardToTitle(SQLObject):
     class sqlmeta:
@@ -299,11 +326,11 @@ class MapAbstractCardToTitle(SQLObject):
 
     tableversion = 1
 
-    abstractCard = ForeignKey('AbstractCard',notNull=True)
-    title = ForeignKey('Title',notNull=True)
+    abstractCard = ForeignKey('AbstractCard', notNull=True)
+    title = ForeignKey('Title', notNull=True)
 
-    abstractCardIndex = DatabaseIndex(abstractCard,unique=False)
-    titleIndex = DatabaseIndex(title,unique=False)
+    abstractCardIndex = DatabaseIndex(abstractCard, unique=False)
+    titleIndex = DatabaseIndex(title, unique=False)
 
 class MapAbstractCardToCreed(SQLObject):
     class sqlmeta:
@@ -311,11 +338,11 @@ class MapAbstractCardToCreed(SQLObject):
 
     tableversion = 1
 
-    abstractCard = ForeignKey('AbstractCard',notNull=True)
-    creed = ForeignKey('Creed',notNull=True)
+    abstractCard = ForeignKey('AbstractCard', notNull=True)
+    creed = ForeignKey('Creed', notNull=True)
 
-    abstractCardIndex = DatabaseIndex(abstractCard,unique=False)
-    creedIndex = DatabaseIndex(creed,unique=False)
+    abstractCardIndex = DatabaseIndex(abstractCard, unique=False)
+    creedIndex = DatabaseIndex(creed, unique=False)
 
 class MapAbstractCardToVirtue(SQLObject):
     class sqlmeta:
@@ -323,11 +350,11 @@ class MapAbstractCardToVirtue(SQLObject):
 
     tableversion = 1
 
-    abstractCard = ForeignKey('AbstractCard',notNull=True)
-    virtue = ForeignKey('Virtue',notNull=True)
+    abstractCard = ForeignKey('AbstractCard', notNull=True)
+    virtue = ForeignKey('Virtue', notNull=True)
 
-    abstractCardIndex = DatabaseIndex(abstractCard,unique=False)
-    virtueIndex = DatabaseIndex(virtue,unique=False)
+    abstractCardIndex = DatabaseIndex(abstractCard, unique=False)
+    virtueIndex = DatabaseIndex(virtue, unique=False)
 
 # List of Tables to be created, dropped, etc.
 
@@ -356,11 +383,12 @@ AbstractCardSetList = [AbstractCardSet, MapAbstractCardToAbstractCardSet]
 
 class SutekhObjectMaker(object):
     """Creates all kinds of SutekhObjects from simple strings.
-    
+
        All the methods will return either a copy of an existing object
        or a new object.
        """
-    def _makeObject(self,cObjClass,cInterface,cAbbreviation,sObj,bShortname=False,bFullname=False):
+    def _make_object(self, cObjClass, cInterface, cAbbreviation, sObj,
+            bShortname=False, bFullname=False):
         try:
             return cInterface(sObj)
         except SQLObjectNotFound:
@@ -372,61 +400,65 @@ class SutekhObjectMaker(object):
                 dKw['fullname'] = cAbbreviation.fullname(sObj)
             return cObjClass(**dKw)
 
-    def makeCardType(self,sType):
-        return self._makeObject(CardType,ICardType,CardTypes,sType)
+    def makeCardType(self, sType):
+        return self._make_object(CardType, ICardType, CardTypes, sType)
 
-    def makeClan(self,sClan):
-        return self._makeObject(Clan,IClan,Clans,sClan,bShortname=True)
+    def makeClan(self, sClan):
+        return self._make_object(Clan, IClan, Clans, sClan, bShortname=True)
 
-    def makeCreed(self,sCreed):
-        return self._makeObject(Creed,ICreed,Creeds,sCreed,bShortname=True)
+    def makeCreed(self, sCreed):
+        return self._make_object(Creed, ICreed, Creeds, sCreed, bShortname=True)
 
-    def makeDiscipline(self,sDis):
-        return self._makeObject(Discipline,IDiscipline,Disciplines,sDis,bFullname=True)
+    def makeDiscipline(self, sDis):
+        return self._make_object(Discipline, IDiscipline, Disciplines, sDis,
+                bFullname=True)
 
-    def makeExpansion(self,sExpansion):
-        return self._makeObject(Expansion,IExpansion,Expansions,sExpansion,bShortname=True)
+    def makeExpansion(self, sExpansion):
+        return self._make_object(Expansion, IExpansion, Expansions, sExpansion,
+                bShortname=True)
 
-    def makeRarity(self,sRarity):
-        return self._makeObject(Rarity,IRarity,Rarities,sRarity,bShortname=True)
+    def makeRarity(self, sRarity):
+        return self._make_object(Rarity, IRarity, Rarities, sRarity,
+                bShortname=True)
 
-    def makeSect(self,sSect):
-        return self._makeObject(Sect,ISect,Sects,sSect)
+    def makeSect(self, sSect):
+        return self._make_object(Sect, ISect, Sects, sSect)
 
-    def makeTitle(self,sTitle):
-        return self._makeObject(Title,ITitle,Titles,sTitle)
+    def makeTitle(self, sTitle):
+        return self._make_object(Title, ITitle, Titles, sTitle)
 
-    def makeVirtue(self,sVirtue):
-        return self._makeObject(Virtue,IVirtue,Virtues,sVirtue,bFullname=True)
+    def makeVirtue(self, sVirtue):
+        return self._make_object(Virtue, IVirtue, Virtues, sVirtue,
+                bFullname=True)
 
-    def makeAbstractCard(self,sCard):
+    def makeAbstractCard(self, sCard):
         try:
             return IAbstractCard(sCard)
         except SQLObjectNotFound:
             sName = sCard.strip()
             sCanonical = sName.lower()
-            return AbstractCard(canonicalName=sCanonical,name=sName,text="")
+            return AbstractCard(canonicalName=sCanonical, name=sName, text="")
 
-    def makeRarityPair(self,sExp,sRarity):
+    def makeRarityPair(self, sExp, sRarity):
         try:
-            return IRarityPair((sExp,sRarity))
+            return IRarityPair((sExp, sRarity))
         except SQLObjectNotFound:
-            oE = self.makeExpansion(sExp)
-            oR = self.makeRarity(sRarity)
-            return RarityPair(expansion=oE,rarity=oR)
+            oExp = self.makeExpansion(sExp)
+            oRarity = self.makeRarity(sRarity)
+            return RarityPair(expansion=oExp, rarity=oRarity)
 
-    def makeDisciplinePair(self,sDiscipline,sLevel):
+    def makeDisciplinePair(self, sDiscipline, sLevel):
         try:
-            return IDisciplinePair((sDiscipline,sLevel))
+            return IDisciplinePair((sDiscipline, sLevel))
         except SQLObjectNotFound:
-            oD = self.makeDiscipline(sDiscipline)
-            return DisciplinePair(discipline=oD,level=sLevel)
+            oDis = self.makeDiscipline(sDiscipline)
+            return DisciplinePair(discipline=oDis, level=sLevel)
 
-    def makeRuling(self,sText,sCode):
+    def makeRuling(self, sText, sCode):
         try:
-            return IRuling((sText,sCode))
+            return IRuling((sText, sCode))
         except SQLObjectNotFound:
-            return Ruling(text=sText,code=sCode)
+            return Ruling(text=sText, code=sCode)
 
 # Abbreviation lookup based adapters
 
@@ -437,81 +469,81 @@ class StrAdaptMeta(type):
     def make_object_cache(self):
         self.__dCache = {}
 
-    def fetch(self,sName,oCls):
-        o = self.__dCache.get(sName,None)
-        if o is None:
-            o = oCls.byName(sName.encode('utf8'))
-            self.__dCache[sName] = o
+    def fetch(self, sName, oCls):
+        oObj = self.__dCache.get(sName, None)
+        if oObj is None:
+            oObj = oCls.byName(sName.encode('utf8'))
+            self.__dCache[sName] = oObj
 
-        return o
+        return oObj
 
 class CardTypeAdapter(object):
     __metaclass__ = StrAdaptMeta
-    advise(instancesProvide=[ICardType],asAdapterForTypes=[basestring])
+    advise(instancesProvide=[ICardType], asAdapterForTypes=[basestring])
 
-    def __new__(cls,s):
-        return cls.fetch(CardTypes.canonical(s),CardType)
+    def __new__(cls, sName):
+        return cls.fetch(CardTypes.canonical(sName), CardType)
 
 class ClanAdapter(object):
     __metaclass__ = StrAdaptMeta
     advise(instancesProvide=[IClan], asAdapterForTypes=[basestring])
 
-    def __new__(cls, s):
-        return cls.fetch(Clans.canonical(s), Clan)
+    def __new__(cls, sName):
+        return cls.fetch(Clans.canonical(sName), Clan)
 
 class CreedAdapter(object):
     __metaclass__ = StrAdaptMeta
     advise(instancesProvide=[ICreed], asAdapterForTypes=[basestring])
 
-    def __new__(cls, s):
-        return cls.fetch(Creeds.canonical(s), Creed)
+    def __new__(cls, sName):
+        return cls.fetch(Creeds.canonical(sName), Creed)
 
 class DisciplineAdapter(object):
     __metaclass__ = StrAdaptMeta
     advise(instancesProvide=[IDiscipline], asAdapterForTypes=[basestring])
 
-    def __new__(cls, s):
-        return cls.fetch(Disciplines.canonical(s), Discipline)
+    def __new__(cls, sName):
+        return cls.fetch(Disciplines.canonical(sName), Discipline)
 
 class ExpansionAdapter(object):
     __metaclass__ = StrAdaptMeta
     advise(instancesProvide=[IExpansion], asAdapterForTypes=[basestring])
 
-    def __new__(cls, s):
-        return cls.fetch(Expansions.canonical(s), Expansion)
+    def __new__(cls, sName):
+        return cls.fetch(Expansions.canonical(sName), Expansion)
 
 class RarityAdapter(object):
     __metaclass__ = StrAdaptMeta
     advise(instancesProvide=[IRarity], asAdapterForTypes=[basestring])
 
-    def __new__(cls, s):
-        return cls.fetch(Rarities.canonical(s), Rarity)
+    def __new__(cls, sName):
+        return cls.fetch(Rarities.canonical(sName), Rarity)
 
 class SectAdaptor(object):
     __metaclass__ = StrAdaptMeta
     advise(instancesProvide=[ISect], asAdapterForTypes=[basestring])
 
-    def __new__(cls, s):
-        return cls.fetch(Sects.canonical(s), Sect)
+    def __new__(cls, sName):
+        return cls.fetch(Sects.canonical(sName), Sect)
 
 class TitleAdapter(object):
     __metaclass__ = StrAdaptMeta
     advise(instancesProvide=[ITitle], asAdapterForTypes=[basestring])
 
-    def __new__(cls, s):
-        return cls.fetch(Titles.canonical(s), Title)
+    def __new__(cls, sName):
+        return cls.fetch(Titles.canonical(sName), Title)
 
 class VirtueAdapter(object):
     __metaclass__ = StrAdaptMeta
     advise(instancesProvide=[IVirtue], asAdapterForTypes=[basestring])
 
-    def __new__(cls, s):
-        return cls.fetch(Virtues.canonical(s),Virtue)
+    def __new__(cls, sName):
+        return cls.fetch(Virtues.canonical(sName), Virtue)
 
 # Other Adapters
 
 class RarityPairAdapter(object):
-    advise(instancesProvide=[IRarityPair],asAdapterForTypes=[tuple])
+    advise(instancesProvide=[IRarityPair], asAdapterForTypes=[tuple])
 
     __dCache = {}
 
@@ -519,19 +551,19 @@ class RarityPairAdapter(object):
     def make_object_cache(cls):
         cls.__dCache = {}
 
-    def __new__(cls,t):
-        oE = IExpansion(t[0])
-        oR = IRarity(t[1])
+    def __new__(cls, tData):
+        oExp = IExpansion(tData[0])
+        oRarity = IRarity(tData[1])
 
-        oP = cls.__dCache.get((oE.id,oR.id),None)
-        if oP is None:
-            oP = RarityPair.selectBy(expansion=oE,rarity=oR).getOne()
-            cls.__dCache[(oE.id,oR.id)] = oP
+        oPair = cls.__dCache.get((oExp.id, oRarity.id), None)
+        if oPair is None:
+            oPair = RarityPair.selectBy(expansion=oExp, rarity=oRarity).getOne()
+            cls.__dCache[(oExp.id, oRarity.id)] = oPair
 
-        return oP
+        return oPair
 
 class DisciplinePairAdapter(object):
-    advise(instancesProvide=[IDisciplinePair],asAdapterForTypes=[tuple])
+    advise(instancesProvide=[IDisciplinePair], asAdapterForTypes=[tuple])
 
     __dCache = {}
 
@@ -539,41 +571,41 @@ class DisciplinePairAdapter(object):
     def make_object_cache(cls):
         cls.__dCache = {}
 
-    def __new__(cls,t):
-        oD = IDiscipline(t[0])
-        sLevel = str(t[1])
+    def __new__(cls, tData):
+        oDis = IDiscipline(tData[0])
+        sLevel = str(tData[1])
 
-        oP = cls.__dCache.get((oD.id,sLevel),None)
-        if oP is None:
-            oP = DisciplinePair.selectBy(discipline=oD,level=sLevel).getOne()
-            cls.__dCache[(oD.id,sLevel)] = oP
+        oPair = cls.__dCache.get((oDis.id, sLevel), None)
+        if oPair is None:
+            oPair = DisciplinePair.selectBy(discipline=oDis, level=sLevel).getOne()
+            cls.__dCache[(oDis.id, sLevel)] = oPair
 
-        return oP
+        return oPair
 
 class AbstractCardAdapter(object):
-    advise(instancesProvide=[IAbstractCard],asAdapterForTypes=[basestring])
+    advise(instancesProvide=[IAbstractCard], asAdapterForTypes=[basestring])
 
-    def __new__(cls, s):
-        return AbstractCard.byCanonicalName(s.encode('utf8').lower())
+    def __new__(cls, sName):
+        return AbstractCard.byCanonicalName(sName.encode('utf8').lower())
 
 class RulingAdapter(object):
     advise(instancesProvide=[IRuling], asAdapterForTypes=[tuple])
 
-    def __new__(cls, t):
-        sText, sCode = t
+    def __new__(cls, tData):
+        sText, sCode = tData
         return Ruling.byText(sText.encode('utf8'))
 
 class AbstractCardSetAdapter(object):
     advise(instancesProvide=[IAbstractCardSet], asAdapterForTypes=[basestring])
 
-    def __new__(cls, s):
-        return AbstractCardSet.byName(s.encode('utf8'))
+    def __new__(cls, sName):
+        return AbstractCardSet.byName(sName.encode('utf8'))
 
 class PhysicalCardSetAdapter(object):
     advise(instancesProvide=[IPhysicalCardSet], asAdapterForTypes=[basestring])
 
-    def __new__(cls, s):
-        return PhysicalCardSet.byName(s.encode('utf8'))
+    def __new__(cls, sName):
+        return PhysicalCardSet.byName(sName.encode('utf8'))
 
 class PhysicalCardToAbstractCardAdapter(object):
     advise(instancesProvide=[IAbstractCard], asAdapterForTypes=[PhysicalCard])
@@ -582,7 +614,8 @@ class PhysicalCardToAbstractCardAdapter(object):
         return oPhysCard.abstractCard
 
 class MapAbstractCardToAbstractCardSetToAbstractCardAdapter(object):
-    advise(instancesProvide=[IAbstractCard], asAdapterForTypes=[MapAbstractCardToAbstractCardSet])
+    advise(instancesProvide=[IAbstractCard],
+            asAdapterForTypes=[MapAbstractCardToAbstractCardSet])
 
     def __new__(cls, oAbstractMapEntry):
         return oAbstractMapEntry.abstractCard
