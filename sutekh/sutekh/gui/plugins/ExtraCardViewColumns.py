@@ -208,7 +208,13 @@ class ExtraCardViewColumns(CardListPlugin):
         elif oVal1 > oVal2:
             return 1
         else:
-            return 0
+            if oCard1 is None or oCard2 is None:
+                # Not comparing cards
+                return 0
+            if oCard1.name < oCard2.name:
+                return -1
+            else:
+                return 1 # Card names assumed to be unique
 
     def getColsInUse(self):
         return [oCol.get_property("title") for oCol in self._getColObjects()]
