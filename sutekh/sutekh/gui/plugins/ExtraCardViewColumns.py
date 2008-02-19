@@ -201,20 +201,26 @@ class ExtraCardViewColumns(CardListPlugin):
         """
         oCard1 = self._getCard(oIter1)
         oCard2 = self._getCard(oIter2)
+        if oCard1 is None or oCard2 is None:
+            # Not comparing cards
+            sName1 = self.model.getNameFromIter(oIter1).lower()
+            sName2 = self.model.getNameFromIter(oIter2).lower()
+            if sName1 < sName2:
+                return -1
+            elif sName1 > sName2:
+                return 1
+            else:
+                return 0
         oVal1 = oGetData(oCard1)
         oVal2 = oGetData(oCard2)
         if oVal1 < oVal2:
             return -1
         elif oVal1 > oVal2:
             return 1
+        elif oCard1.name < oCard2.name:
+            return -1
         else:
-            if oCard1 is None or oCard2 is None:
-                # Not comparing cards
-                return 0
-            if oCard1.name < oCard2.name:
-                return -1
-            else:
-                return 1 # Card names assumed to be unique
+            return 1 # Card names assumed to be unique
 
     def getColsInUse(self):
         return [oCol.get_property("title") for oCol in self._getColObjects()]
