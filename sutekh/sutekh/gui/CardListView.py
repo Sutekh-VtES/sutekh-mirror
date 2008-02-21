@@ -23,6 +23,8 @@ class CardListView(gtk.TreeView, object):
 
         self._oSelection.connect('changed', self.card_selected)
 
+        self._oSelection.set_select_function(self.can_select)
+
         # Activating rows
         self.connect('row-activated', self.card_activated)
 
@@ -55,7 +57,8 @@ class CardListView(gtk.TreeView, object):
         self.set_name('normal_view')
 
     def column_clicked(self, oColumn):
-        self.emit('button-press-event', gtk.gdk.Event(gtk.gdk.BUTTON_PRESS_MASK))
+        self.emit('button-press-event',
+                gtk.gdk.Event(gtk.gdk.BUTTON_PRESS_MASK))
         return False
 
     def load(self):
@@ -67,7 +70,8 @@ class CardListView(gtk.TreeView, object):
     # Help functions used by reload_keep_expanded
     def __get_row_status(self, oModel, oPath, oIter, dExpandedDict):
         if self.row_expanded(oPath):
-            dExpandedDict.setdefault(oPath, self._oModel.getCardNameFromPath(oPath))
+            dExpandedDict.setdefault(oPath,
+                    self._oModel.getCardNameFromPath(oPath))
         return False # Need to process the whole list
 
     def __set_row_status(self, dExpandedDict):
@@ -122,6 +126,10 @@ class CardListView(gtk.TreeView, object):
 
     # Selecting
 
+    def can_select(self, oPath):
+        """disable selecting top level rows"""
+        return self._oModel.iter_parent(self._oModel.get_iter(oPath)) is not None
+
     def card_selected(self, oSelection):
         if self.bReentrant:
             # This is here because we alter the selection inside
@@ -152,11 +160,6 @@ class CardListView(gtk.TreeView, object):
                 self.bReentrant = False
             oPath = aList[0]
         else:
-            # prune any root nodes from the selection
-            for oP in aList:
-                if not oModel.iter_parent(oModel.get_iter(oP)):
-                    oSelection.unselect_path(oP)
-
             oModel, aList = oSelection.get_selected_rows()
             if not aList:
                 self._aOldSelection = []
@@ -207,7 +210,8 @@ class CardListView(gtk.TreeView, object):
 
     def getFilter(self, oMenu):
         if self._oFilterDialog is None:
-            self._oFilterDialog = FilterDialog(self._oMainWin, self._oConfig, self._oC.filtertype)
+            self._oFilterDialog = FilterDialog(self._oMainWin,
+                    self._oConfig, self._oC.filtertype)
 
         self._oFilterDialog.run()
 
@@ -218,9 +222,11 @@ class CardListView(gtk.TreeView, object):
         if oFilter != None:
             self._oModel.selectfilter = oFilter
             if not self._oModel.applyfilter:
-                oMenu.setApplyFilter(True) # If a filter is set, automatically apply
+                # If a filter is set, automatically apply
+                oMenu.setApplyFilter(True)
             else:
-                self.load() # Filter Changed, so reload
+                # Filter Changed, so reload
+                self.load()
         else:
             # Filter is set to blank, so we treat this as disabling
             # Filter
@@ -243,7 +249,8 @@ class CardListView(gtk.TreeView, object):
         oModel, oPathList = self._oSelection.get_selected_rows()
         dSelectedData = {}
         for oPath in oPathList:
-            sCardName, sExpansion, iCount, iDepth = oModel.get_all_from_path(oPath)
+            sCardName, sExpansion, iCount, iDepth = \
+                    oModel.get_all_from_path(oPath)
             if iDepth == 0:
                 # Skip top level items, since they're meaningless for the selection
                 continue
@@ -312,7 +319,8 @@ class CardListView(gtk.TreeView, object):
 
 class EditableCardListView(CardListView):
     def __init__(self, oController, oWindow, oConfig, oModel):
-        super(EditableCardListView, self).__init__(oController, oWindow, oConfig, oModel)
+        super(EditableCardListView, self).__init__(oController, oWindow,
+                oConfig, oModel)
 
         # Setup columns for default view
         oCell1 = gtk.CellRendererText()
@@ -391,12 +399,14 @@ class EditableCardListView(CardListView):
                 oParent.path()+'.', oParent.class_path(),
                 oParent)
         oSpecificStyle = self.rc_get_style()
-        if oSpecificStyle == oDefaultSutekhStyle or oDefaultSutekhStyle is None:
+        if oSpecificStyle == oDefaultSutekhStyle or \
+                oDefaultSutekhStyle is None:
             # No specific style set
             oMap = self.get_colormap()
             sColour = 'red'
-            if oMap.alloc_color(sColour).pixel == oCurStyle.fg[gtk.STATE_NORMAL].pixel:
-                    sColour = 'green'
+            if oMap.alloc_color(sColour).pixel == \
+                    oCurStyle.fg[gtk.STATE_NORMAL].pixel:
+                sColour = 'green'
             sStyleInfo = """
             style "internal_sutekh_editstyle" {
                 fg[NORMAL] = "%(colour)s"
