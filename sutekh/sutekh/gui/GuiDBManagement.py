@@ -70,6 +70,7 @@ def initialize_db():
             if sRulingsFileName is not None:
                 oRulingsFile = WwFile(sRulingsFileName, bUrl=bRulingsIsUrl)
                 read_ww_rulings(oRulingsFile, oProgressDialog,  oLogHandler)
+            oProgressDialog.destroy()
         else:
             return False
     return True
