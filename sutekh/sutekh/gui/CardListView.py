@@ -24,12 +24,22 @@ class CardListView(gtk.TreeView, object):
         self._oSelection.connect('changed', self.card_selected)
 
         self._oSelection.set_select_function(self.can_select)
+        tGtkVersion = gtk.gtk_version
+        if tGtkVersion[0] == 2 and \
+                ((tGtkVersion[1] > 6 and tGtkVersion[1] < 12) or \
+                (tGtkVersion[1] == 12 and tGtkVersion[2] == 0)):
+            # gtk versions from 2.8 to 2.12.0 have a bug with handling
+            # cursor movements, excluded selects and multiple select mode
+            # ( http://bugzilla.gnome.org/show_bug.cgi?id=483730 )
+            # We kludge around it via move_cursr
+            self.connect('move-cursor', self.force_cursor_move)
 
         # Activating rows
         self.connect('row-activated', self.card_activated)
 
         # Key combination for expanding and collapsing all rows
         self.connect('key-release-event', self.key_released)
+
 
         # Text searching of card names
         self.set_search_equal_func(self.compare, None)
@@ -51,6 +61,7 @@ class CardListView(gtk.TreeView, object):
         self.connect('drag_data_delete', self.drag_delete)
         self.connect('drag_data_received', self.card_drop)
         self.bReentrant = False
+        self.bSelectTop = 0
 
         # Filtering Dialog
         self._oFilterDialog = None
@@ -126,8 +137,31 @@ class CardListView(gtk.TreeView, object):
 
     # Selecting
 
+    def force_cursor_move(self, treeview, step, count):
+        """
+        Special handling for move events for buggy gtk events. 
+        We need to allow the selection of top level items when 
+        moving the cursor over them
+        """
+        (oCurPath, oColumn) = self.get_cursor()
+        if self._oModel.iter_parent(self._oModel.get_iter(oCurPath)) is None:
+            # Root node, so need to force the move
+            self.bSelectTop = 2
+            # Need to succeed twice - once to select, once to unselect
+            # I don't quite understand why this works this way, but it
+            # does
+            self._oSelection.select_path(oCurPath)
+        # Let gtk handle the rest of the move, since we're not doing
+        # anything else funky
+        return False
+
     def can_select(self, oPath):
         """disable selecting top level rows"""
+        if self.bSelectTop > 0:
+            # Buggy gtk version work-around
+            self.bSelectTop -= 1
+            return True 
+        # In general, we don't allow the top level nodes to be selected
         return self._oModel.iter_parent(self._oModel.get_iter(oPath)) is not None
 
     def card_selected(self, oSelection):
