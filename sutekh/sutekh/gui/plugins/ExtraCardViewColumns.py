@@ -6,7 +6,7 @@ import gtk, pango
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog
 from sutekh.core.SutekhObjects import AbstractCard, PhysicalCard, \
-                                      AbstractCardSet, PhysicalCardSet, IAbstractCard
+                                      AbstractCardSet, PhysicalCardSet
 from sqlobject import SQLObjectNotFound
 
 class ExtraCardViewColumns(CardListPlugin):
@@ -42,7 +42,8 @@ class ExtraCardViewColumns(CardListPlugin):
                 sCardName = self.model.getNameFromIter(oIter).lower()
                 # Cache lookups, so we don't hit the database so hard when sorting
                 if not self._dCardCache.has_key(sCardName):
-                     self._dCardCache[sCardName] = IAbstractCard(sCardName)
+                     self._dCardCache[sCardName] = \
+                             AbstractCard.byCanonicalName(sCardName)
                 return self._dCardCache[sCardName]
             except SQLObjectNotFound:
                 return None
