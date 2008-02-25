@@ -290,6 +290,7 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
                 "and <i>FilterPart</i> is FilterType IN comma seperated list of values\n" \
                 "or FilterType = $variable \n" \
                 "NOT FilterType will invert the meaning of the filter.\n" \
+                "FilterType NOT = $var will also work\n" \
                 "FilterType can be any of the following\n"
         for oFilterType in FilterParser.aFilters:
             if self.__sFilterType in oFilterType.types:

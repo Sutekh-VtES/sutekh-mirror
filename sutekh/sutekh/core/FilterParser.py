@@ -171,18 +171,32 @@ class FilterYaccParser(object):
         p[0] = NotOpNode(p[2])
 
     def p_filterpart_filtertype(self, p):
-        """filterpart : FILTERTYPE IN expression"""
-        p[0] = FilterPartNode(p[1], p[3], None)
+        """filterpart : FILTERTYPE IN expression
+                      | FILTERTYPE NOT IN expression"""
+        if len(p) == 4:
+            p[0] = FilterPartNode(p[1], p[3], None)
+        else:
+            p[0] = NotOpNode(FilterPartNode(p[1], p[4], None))
 
     def p_filterpart_var(self, p):
-        """filterpart : FILTERTYPE IN VARIABLE"""
-        if p[3] not in self.aUsedVariables and p[3] != '$':
-            p[0] = FilterPartNode(p[1], None, p[3])
-            self.aUsedVariables.append(p[3])
-        elif p[3] != '$':
-            raise ValueError("Duplicate variable name %s" % p[3])
+        """filterpart : FILTERTYPE IN VARIABLE
+                      | FILTERTYPE NOT IN VARIABLE"""
+        if len(p) == 4:
+            if p[3] not in self.aUsedVariables and p[3] != '$':
+                p[0] = FilterPartNode(p[1], None, p[3])
+                self.aUsedVariables.append(p[3])
+            elif p[3] != '$':
+                raise ValueError("Duplicate variable name %s" % p[3])
+            else:
+                raise ValueError("Missing variable name for %s" % p[3])
         else:
-            raise ValueError("Missing variable name for %s" % p[3])
+            if p[4] not in self.aUsedVariables and p[4] != '$':
+                p[0] = NotOpNode(FilterPartNode(p[1], None, p[4]))
+                self.aUsedVariables.append(p[3])
+            elif p[4] != '$':
+                raise ValueError("Duplicate variable name %s" % p[4])
+            else:
+                raise ValueError("Missing variable name for %s" % p[4])
 
     def p_filterpart(self, p):
         """filterpart : FILTERTYPE"""

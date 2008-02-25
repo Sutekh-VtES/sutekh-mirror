@@ -56,6 +56,8 @@ class FilterTests(SutekhTest):
                     [u".44 Magnum", u"AK-47", u"Aaron's Feeding Razor", u"Abjure"]),
             ('NOT CardType in Equipment, Vampire',
                     [u"Abandoning the Flesh", u"Abbot", u"Abjure", u"Ablative Skin", u"Abombwe"]),
+            ('CardType not in Equipment, Vampire',
+                    [u"Abandoning the Flesh", u"Abbot", u"Abjure", u"Ablative Skin", u"Abombwe"]),
         ]
 
         # Abstract Card Filtering Tests
