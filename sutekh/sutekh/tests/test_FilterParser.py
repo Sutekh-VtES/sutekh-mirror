@@ -48,6 +48,7 @@ class FilterTests(SutekhTest):
             # Text Entry Filters Filters
             ('CardText in strike', [u".44 Magnum", u"AK-47"]),
             ('CardName in cameron', [u"Aaron Duggan, Cameron's Toady"]),
+            (u'CardName in "L\xe1z\xe1r"', [u"L\xe1z\xe1r Dobrescu"]),
 
             # Compound Filters
             ('CardType in Equipment AND Cost in 5', [u"AK-47"]),
