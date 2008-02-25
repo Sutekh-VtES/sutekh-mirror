@@ -23,10 +23,13 @@ def parse_options(aArgs):
                   help="Database URI. [sqlite://$PREFSDIR$/sutekh.db]")
     oOptParser.add_option("--ignore-db-version",
                   action="store_true", dest="ignore_db_version", default=False,
-                  help="Ignore the database version check. Only use this if you know what you're doing.")
+                  help="Ignore the database version check. Only use this if " \
+                          "you know what you're doing.")
     oOptParser.add_option("--rcfile",
                   type="string", dest="sRCFile", default=None,
-                  help="Specify Alternative resources file. [~/.sutekh/sutekhrc or $APPDATA$/Sutekh/sutekhrc]")
+                  help="Specify Alternative resources file. " \
+                          "[~/.sutekh/sutekhrc or " \
+                          "$APPDATA$/Sutekh/sutekhrc]")
     oOptParser.add_option("--sql-debug",
                   action="store_true", dest="sql_debug", default=False,
                   help="Print out SQL statements.")

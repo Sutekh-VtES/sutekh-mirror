@@ -2,6 +2,10 @@
 # Copyright 2005, 2006 Simon Cross <hodgestar@gmail.com>
 # Minor modifications copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
+"""
+SutekhCli.py: command-line interface to much of Sutekh's database 
+management functionality
+"""
 
 import sys, optparse, os
 from logging import StreamHandler
@@ -17,6 +21,7 @@ from sutekh.io.ZipFileWrapper import ZipFileWrapper
 from sutekh.io.WwFile import WwFile
 
 def parse_options(aArgs):
+    """Handle the command line options"""
     oOptParser = optparse.OptionParser(usage="usage: %prog [options]",
             version="%prog 0.1")
     oOptParser.add_option("-d", "--db",
@@ -24,10 +29,12 @@ def parse_options(aArgs):
                   help="Database URI. [sqlite://$PREFSDIR$/sutekh.db]")
     oOptParser.add_option("-r", "--ww-file",
                   type="string", dest="ww_file", default=None,
-                  help="HTML file (probably from WW website) to read cards from.")
+                  help="HTML file (probably from WW website) to read " \
+                          "cards from.")
     oOptParser.add_option("--ruling-file",
                   type="string", dest="ruling_file", default=None,
-                  help="HTML file (probably from WW website) to read rulings from.")
+                  help="HTML file (probably from WW website) to read " \
+                          "rulings from.")
     oOptParser.add_option("-c", "--refresh-tables",
                   action="store_true", dest="refresh_tables", default=False,
                   help="Drop (if possible) and recreate database tables.")
@@ -38,50 +45,61 @@ def parse_options(aArgs):
     oOptParser.add_option("--refresh-physical-card-tables",
                   action="store_true", dest="refresh_physical_card_tables",
                   default=False,
-                  help="Drop (if possible) and recreate physical card tables only.")
+                  help="Drop (if possible) and recreate physical card " \
+                          "tables only.")
     oOptParser.add_option("--sql-debug",
                   action="store_true", dest="sql_debug", default=False,
                   help="Print out SQL statements.")
     oOptParser.add_option("-s", "--save-physical-cards-to",
                   type="string", dest="save_physical_cards_to", default=None,
-                  help="Write an XML description of the list of physical cards to the given file.")
+                  help="Write an XML description of the list of physical " \
+                          "cards to the given file.")
     oOptParser.add_option("-l", "--read-physical-cards-from",
                   type="string", dest="read_physical_cards_from", default=None,
                   help="Read physical card list from the given XML file.")
     oOptParser.add_option("--save-pcs",
                   type="string", dest="save_pcs", default=None,
-                  help="Save the given Physical Card Set to an XML file (by default named <pcsname>.xml).")
+                  help="Save the given Physical Card Set to an XML file " \
+                          "(by default named <pcsname>.xml).")
     oOptParser.add_option("--pcs-filename",
                   type="string", dest="pcs_filename", default=None,
-                  help="Give an alternative filename to save the Physical Card Set as")
+                  help="Give an alternative filename to save the Physical " \
+                          "Card Set as")
     oOptParser.add_option("--save-all-pcs",
                   action="store_true", dest="save_all_pcss", default=False,
-                  help="Save all Physical Card Sets in the database to files - Cannot be used with --save-pcs.")
+                  help="Save all Physical Card Sets in the database to files " \
+                          "- Cannot be used with --save-pcs.")
     oOptParser.add_option("--read-pcs",
                   type="string", dest="read_pcs", default=None,
                   help="Load a Physical Card Set from the given XML file.")
     oOptParser.add_option("--save-acs",
                   type="string", dest="save_acs", default=None,
-                  help="Save the given Abstract Card Set to an XML file (by default named <acsname>.xml).")
+                  help="Save the given Abstract Card Set to an XML file " \
+                          "(by default named <acsname>.xml).")
     oOptParser.add_option("--acs-filename",
                   type="string", dest="acs_filename", default=None,
-                  help="Give an alternative filename to save the Abstract Card Set as")
+                  help="Give an alternative filename to save the Abstract " \
+                          "Card Set as")
     oOptParser.add_option("--save-all-acs",
                   action="store_true", dest="save_all_acss", default=False,
-                  help="Save all Abstract Card Sets in the database to files - Cannot be used with --save-acs.")
+                  help="Save all Abstract Card Sets in the database to files " \
+                          "- Cannot be used with --save-acs.")
     oOptParser.add_option("--read-acs",
                   type="string", dest="read_acs", default=None,
                   help="Load an Abstract Card Set from the given XML file.")
     oOptParser.add_option("--reload", action="store_true", dest="reload",
                   default=False,
-                  help="Dump the physical card list and all card sets and reload them - \
-intended to be used with -c and refreshing the abstract card list")
+                  help="Dump the physical card list and all card sets and " \
+                          "reload them - intended to be used with -c and " \
+                          "refreshing the abstract card list")
     oOptParser.add_option("--upgrade-db",
                   action="store_true", dest="upgrade_db", default=False,
-                  help="Attempt to upgrade a database to the latest version. Cannot be used with --refresh-tables")
+                  help="Attempt to upgrade a database to the latest version. " \
+                          "Cannot be used with --refresh-tables")
     oOptParser.add_option("--dump-zip",
                   type="string", dest="dump_zip_name", default=None,
-                  help="Dump the PhysicalCard list and all the CardSets to the given zipfile")
+                  help="Dump the PhysicalCard list and all the CardSets " \
+                          "to the given zipfile")
     oOptParser.add_option("--restore-zip",
             type="string", dest="restore_zip_name", default=None,
             help="Restore everything from the given zipfile")
@@ -89,6 +107,12 @@ intended to be used with -c and refreshing the abstract card list")
     return oOptParser, oOptParser.parse_args(aArgs)
 
 def main(aArgs):
+    """
+    Main function: Loop through the options and process the database 
+    accordingly.
+    """
+    # Turn off some pylint refactoring warnings
+    # pylint: disable-msg=R0915, R0912, R0911
     oOptParser, (oOpts, aArgs) = parse_options(aArgs)
     sPrefsDir = prefs_dir("Sutekh")
 
