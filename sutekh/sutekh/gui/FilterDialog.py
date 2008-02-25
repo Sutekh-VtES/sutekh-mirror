@@ -125,11 +125,11 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
                 iNum += 1
                 sId = 'Filter '+str(iNum)
         self.__dFilterList[sId] = sFilter
-        if self.__sFilterType not in oAST.getType():
+        if self.__sFilterType not in oAST.get_type():
             return sId
         self.__dExpanded[sId] = []
         self.__dASTs[sId] = oAST
-        aFilterParts = oAST.getValues()
+        aFilterParts = oAST.get_values()
         self.__add_parts_to_dialog(aFilterParts, sFilter, sId)
         return sId
 
@@ -139,12 +139,12 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
         Preserve selections if possible
         """
         self.__dFilterList[sId] = sNewFilter
-        if self.__sFilterType in oAST.getType():
-            aFilterParts = oAST.getValues()
+        if self.__sFilterType in oAST.get_type():
+            aFilterParts = oAST.get_values()
             if sId in self.__dExpanded.keys():
                 # Temporary copy of the values, so we can reuse the values
                 aOldFilterWidgets = self.__dExpanded[sId]
-                aOldASTValues = self.__dASTs[sId].getValues()
+                aOldASTValues = self.__dASTs[sId].get_values()
                 self.__dExpanded[sId] = []
                 self.__dASTs[sId] = oAST
                 oRadioButton = self.__dButtons[sId]
@@ -155,10 +155,9 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
                 self.__dButtons[sId].clicked()
                 # We update the new filter with values from the old filter where
                 # appropriate
-                aNewValues = oAST.getValues()
+                aNewValues = oAST.get_values()
                 self.__copy_values(zip(self.__dExpanded[sId], aNewValues),
                         zip(aOldFilterWidgets, aOldASTValues))
-            # FIXME: should handle else conditions
 
     def __copy_values(self, aNewFilterVals, aOldFilterVals):
         for oWidget, oFilterPart in aNewFilterVals:
@@ -177,18 +176,18 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
     def __add_parts_to_dialog(self, aFilterParts, sFilter, sId):
         sPrevName = None
         for oPart in aFilterParts:
-            if oPart.isValue():
+            if oPart.is_value():
                 oWidget = gtk.Label(oPart.value)
                 self.__dExpanded[sId].append(oWidget)
-            elif oPart.isList():
+            elif oPart.is_list():
                 assert(sPrevName is not None)
                 oWidget = self.__make_scrolled_list(sPrevName, oPart.value)
                 self.__dExpanded[sId].append(oWidget)
-            elif oPart.isEntry():
+            elif oPart.is_entry():
                 oWidget = gtk.Entry(100)
                 oWidget.set_width_chars(30)
                 self.__dExpanded[sId].append(oWidget)
-            elif oPart.isNone():
+            elif oPart.is_None():
                 oWidget = gtk.Label('')
                 self.__dExpanded[sId].append(oWidget)
             sPrevName = oPart.value
@@ -228,7 +227,7 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
             oNewAST = self.__parse_dialog_state()
             # Push this into yacc and get the constructed filter out of
             # it
-            self.__oData = oNewAST.getFilter()
+            self.__oData = oNewAST.get_filter()
         elif iResponse == self.__iAddButtonResponse:
             self.__do_add_edit_filter_dialog()
             # Recursive, not sure if that's such a good thing
@@ -247,7 +246,7 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
     def __parse_dialog_state(self):
         # FIXME: Should be defined somewhere else for better maintainability
         oNewAST = copy.deepcopy(self.__dASTs[self.__sExpanded])
-        aNewFilterValues = oNewAST.getValues()
+        aNewFilterValues = oNewAST.get_values()
         # Need pointers to the new nodes
         for (oChild, oFilterPart) in zip(self.__dExpanded[self.__sExpanded],
                 aNewFilterValues):
@@ -316,14 +315,14 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
                     do_complaint_error("Invalid Filter: %s\n Error: %s" % (sFilter, str(oExcep)))
                     # Rerun the dialog, should do the right thing
                     continue
-                aWrongVals = oAST.getInvalidValues()
+                aWrongVals = oAST.get_invalid_values()
                 if aWrongVals is not None:
                     sMessage = "The following values are invalid for the filter\n"
                     for sVal in aWrongVals:
                         sMessage += sVal + '\n'
                     do_complaint_error(sMessage)
                     continue
-                if self.__sFilterType not in oAST.getType():
+                if self.__sFilterType not in oAST.get_type():
                     sMessage = "Filter isn't valid for this pane\n"
                     do_complaint_error(sMessage)
                     continue

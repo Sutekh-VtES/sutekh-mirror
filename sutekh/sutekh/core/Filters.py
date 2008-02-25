@@ -19,7 +19,7 @@ from sqlobject.sqlbuilder import Table, Alias, LEFTJOINOn, Select, TRUE
 
 class Filter(object):
     @classmethod
-    def getValues(cls):
+    def get_values(cls):
         """Used by GUI tools and FilterParser to get/check acceptable values"""
         # We can't do this as an attribute, since we need a database connection
         # to fill in the values most times
@@ -179,7 +179,7 @@ class MultiClanFilter(MultiFilter):
         self._oIdField = self._oMapTable.q.clan_id
 
     @classmethod
-    def getValues(cls):
+    def get_values(cls):
         return [x.name for x in Clan.select().orderBy('name')]
 
 class DisciplineFilter(MultiFilter):
@@ -205,7 +205,7 @@ class MultiDisciplineFilter(MultiFilter):
         self._oIdField = self._oMapTable.q.discipline_pair_id
 
     @classmethod
-    def getValues(cls):
+    def get_values(cls):
         return [x.fullname for x in Discipline.select().orderBy('name')]
 
 class ExpansionFilter(MultiFilter):
@@ -255,7 +255,7 @@ class MultiExpansionRarityFilter(MultiFilter):
         self._oIdField = self._oMapTable.q.rarity_pair_id
 
     @classmethod
-    def getValues(cls):
+    def get_values(cls):
         aExpansions = [x.name for x in Expansion.select().orderBy('name')
                 if x.name[:5] != 'Promo']
         aResults = []
@@ -296,9 +296,9 @@ class MultiDisciplineLevelFilter(MultiFilter):
         self._oIdField = self._oMapTable.q.discipline_pair_id
 
     @classmethod
-    def getValues(cls):
+    def get_values(cls):
         oTemp = MultiDisciplineFilter([])
-        aDisciplines = oTemp.getValues()
+        aDisciplines = oTemp.get_values()
         aResults = []
         for disc in aDisciplines:
             aResults.append(disc + ' with inferior')
@@ -325,7 +325,7 @@ class MultiCardTypeFilter(MultiFilter):
         self._oIdField = self._oMapTable.q.card_type_id
 
     @classmethod
-    def getValues(cls):
+    def get_values(cls):
         return [x.name for x in CardType.select().orderBy('name')]
 
 class SectFilter(SingleFilter):
@@ -348,7 +348,7 @@ class MultiSectFilter(MultiFilter):
         self._oIdField = self._oMapTable.q.sect_id
 
     @classmethod
-    def getValues(cls):
+    def get_values(cls):
         return [x.name for x in Sect.select().orderBy('name')]
 
 class TitleFilter(SingleFilter):
@@ -371,7 +371,7 @@ class MultiTitleFilter(MultiFilter):
         self._oIdField = self._oMapTable.q.title_id
 
     @classmethod
-    def getValues(cls):
+    def get_values(cls):
         return [x.name for x in Title.select().orderBy('name')]
 
 class CreedFilter(SingleFilter):
@@ -394,7 +394,7 @@ class MultiCreedFilter(MultiFilter):
         self._oIdField = self._oMapTable.q.creed_id
 
     @classmethod
-    def getValues(cls):
+    def get_values(cls):
         return [x.name for x in Creed.select().orderBy('name')]
 
 class VirtueFilter(SingleFilter):
@@ -417,7 +417,7 @@ class MultiVirtueFilter(MultiFilter):
         self._oIdField = self._oMapTable.q.virtue_id
 
     @classmethod
-    def getValues(cls):
+    def get_values(cls):
         return [x.fullname for x in Virtue.select().orderBy('name')]
 
 class GroupFilter(DirectFilter):
@@ -439,7 +439,7 @@ class MultiGroupFilter(DirectFilter):
         self.__aGroups = [int(sV) for sV in aGroups]
 
     @classmethod
-    def getValues(cls):
+    def get_values(cls):
         return [str(x) for x in range(1, 6)]
 
     def _getExpression(self):
@@ -464,7 +464,7 @@ class MultiCapacityFilter(DirectFilter):
         self.__aCaps = [int(sV) for sV in aCaps]
 
     @classmethod
-    def getValues(cls):
+    def get_values(cls):
         return [str(x) for x in range(1, 12)]
 
     def _getExpression(self):
@@ -493,7 +493,7 @@ class MultiCostFilter(DirectFilter):
             self.__aCost.append(-1)
 
     @classmethod
-    def getValues(cls):
+    def get_values(cls):
         return [str(x) for x in range(0, 7)] + ['X']
 
     def _getExpression(self):
@@ -523,7 +523,7 @@ class MultiCostTypeFilter(DirectFilter):
             self.__aCostTypes.append(None)
 
     @classmethod
-    def getValues(cls):
+    def get_values(cls):
         return ["blood", "pool", "conviction"]
 
     def _getExpression(self):
@@ -549,7 +549,7 @@ class MultiLifeFilter(DirectFilter):
         self.__aLife = [int(sV) for sV in aLife]
 
     @classmethod
-    def getValues(cls):
+    def get_values(cls):
         return [str(x) for x in range(1, 8)]
 
     def _getExpression(self):
@@ -566,7 +566,7 @@ class CardTextFilter(DirectFilter):
         self.__sPattern = sPattern.lower()
 
     @classmethod
-    def getValues(cls):
+    def get_values(cls):
         return ''
 
     def _getExpression(self):
@@ -583,7 +583,7 @@ class CardNameFilter(DirectFilter):
         self.__sPattern = sPattern
 
     @classmethod
-    def getValues(cls):
+    def get_values(cls):
         return ''
 
     def _getExpression(self):
@@ -633,7 +633,7 @@ class MultiPhysicalCardCountFilter(DirectFilter):
             self._oFilters.append(oCountFilter)
 
     @classmethod
-    def getValues(cls):
+    def get_values(cls):
         # Should this have a more staggered range split? 0..20, 20-30, 30-40, >40 type thing?
         return [str(x) for x in range(0, 30)] + ['>30']
 
@@ -673,7 +673,7 @@ class MultiPhysicalExpansionFilter(DirectFilter):
                 self.__bOrUnspec = True
 
     @classmethod
-    def getValues(cls):
+    def get_values(cls):
         aExpansions = [cls.__sUnspec]
         aExpansions.extend([x.name for x in Expansion.select().orderBy('name')
                 if x.name[:5] != 'Promo'])
@@ -722,7 +722,7 @@ class MultiPhysicalCardSetFilter(Filter):
         self.__oPT = Table('physical_card')
 
     @classmethod
-    def getValues(cls):
+    def get_values(cls):
         aNames = []
         for oCS in PhysicalCardSet.select():
             aNames.append(oCS.name)
@@ -751,7 +751,7 @@ class PhysicalCardSetInUseFilter(Filter):
         self.__oPT = Table('physical_card')
 
     @classmethod
-    def getValues(cls):
+    def get_values(cls):
         return None
 
     def _getJoins(self):
@@ -798,7 +798,7 @@ class CardSetNameFilter(DirectFilter):
         self._oT = None
 
     @classmethod
-    def getValues(cls):
+    def get_values(cls):
         return ''
 
     def _getExpression(self):
@@ -816,7 +816,7 @@ class CardSetDescriptionFilter(DirectFilter):
         self._oT = None
 
     @classmethod
-    def getValues(cls):
+    def get_values(cls):
         return ''
 
     def _getExpression(self):
@@ -834,7 +834,7 @@ class CardSetAuthorFilter(DirectFilter):
         self._oT = None
 
     @classmethod
-    def getValues(cls):
+    def get_values(cls):
         return ''
 
     def _getExpression(self):
@@ -852,7 +852,7 @@ class CardSetAnnotationsFilter(DirectFilter):
         self._oT = None
 
     @classmethod
-    def getValues(cls):
+    def get_values(cls):
         return ''
 
     def _getExpression(self):
