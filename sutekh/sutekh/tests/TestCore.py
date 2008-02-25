@@ -12,6 +12,8 @@ from sqlobject import sqlhub, connectionForURI
 import unittest
 import tempfile
 import os
+import sys
+from logging import StreamHandler
 
 class SutekhTest(unittest.TestCase):
     def _createTmpFile(self,sData=None):
@@ -50,8 +52,9 @@ class SutekhTest(unittest.TestCase):
 
         assert refresh_tables(ObjectList, oConn)
 
-        read_white_wolf_list(WwFile(sCardList))
-        read_rulings(WwFile(sRulings))
+        oLogHandler = StreamHandler(sys.stdout)
+        read_white_wolf_list(WwFile(sCardList), oLogHandler)
+        read_rulings(WwFile(sRulings), oLogHandler)
 
     def tearDown(self):
         sqlhub.processConnection = None
