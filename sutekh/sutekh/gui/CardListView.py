@@ -7,12 +7,26 @@ import gtk, pango
 from sutekh.gui.FilterDialog import FilterDialog
 from sutekh.gui.CellRendererSutekhButton import CellRendererSutekhButton
 
+class CardListViewListener(object):
+    """
+    Listens to changes, i.e. .set_card_text(...)
+    to CardListViews.
+    """
+    def set_card_text(self, sCardName):
+        """
+        The CardListViw has called set_card_text on the CardText pane
+        """
+        pass
+
 class CardListView(gtk.TreeView, object):
     def __init__(self, oController, oMainWindow, oConfig, oModel):
         self._oModel = oModel
         self._oC = oController
         self._oMainWin = oMainWindow
         self._oConfig = oConfig
+
+
+        self.dListeners = {} # dictionary of CardListViewListeners
 
         super(CardListView, self).__init__(self._oModel)
 
@@ -66,6 +80,15 @@ class CardListView(gtk.TreeView, object):
         # Filtering Dialog
         self._oFilterDialog = None
         self.set_name('normal_view')
+
+    # Listener helper functions
+
+    def add_listener(self, oListener):
+        self.dListeners[oListener] = None
+
+    def remove_listener(self, oListener):
+        del self.dListeners[oListener]
+
 
     def column_clicked(self, oColumn):
         self.emit('button-press-event',
@@ -121,6 +144,8 @@ class CardListView(gtk.TreeView, object):
     def card_activated(self, wTree, oPath, oColumn):
         sCardName = self._oModel.getCardNameFromPath(oPath)
         self._oC.set_card_text(sCardName)
+        for oListener in self.dListeners:
+            oListener.set_card_text(sCardName)
 
     # Key combinations
 
@@ -208,6 +233,8 @@ class CardListView(gtk.TreeView, object):
 
         sCardName = self._oModel.getCardNameFromPath(oPath)
         self._oC.set_card_text(sCardName)
+        for oListener in self.dListeners:
+            oListener.set_card_text(sCardName)
 
     # Card name searching
 
