@@ -41,6 +41,7 @@ class MultiPaneWindow(gtk.Window):
         self.oVBox = gtk.VBox(False, 1)
         self._aHPanes = []
         self._aPlugins = []
+        self.__dMenus = {}
         self._oPluginManager = PluginManager()
         self._oPluginManager.load_plugins()
         for cPlugin in self._oPluginManager.get_card_list_plugins():
@@ -64,13 +65,6 @@ class MultiPaneWindow(gtk.Window):
 
         self.show_all()
 
-        self.__dMenus = {
-                "Physical Card List" : self.__oMenu.physical_card_list_set_sensitive,
-                "White Wolf CardList" : self.__oMenu.abstract_card_list_set_sensitive,
-                "Physical Card Set List" : self.__oMenu.pcs_list_pane_set_sensitive,
-                "Abstract Card Set List" : self.__oMenu.acs_list_pane_set_sensitive,
-                "Card Text" : self.__oMenu.add_card_text_set_sensitive
-                }
         self._oCardLookup = GuiLookup(self._oConfig)
         self.restore_from_config()
 
@@ -79,8 +73,19 @@ class MultiPaneWindow(gtk.Window):
 
     # Needed for plugins
     plugin_manager = property(fget=lambda self: self._oPluginManager)
+
+    config_file = property(fget=lambda self: self._oConfig)
+
+    focussed_pane = property(fget=lambda self: self._oFocussed)
+
     def getWindow(self):
-    	return self
+        return self
+
+    def add_to_menu_list(self, sMenuFlag, oMenuActiveFunc):
+        if not self.__dMenus.has_key(sMenuFlag):
+            self.__dMenus[sMenuFlag] = oMenuActiveFunc
+
+    # Config file handling
 
     def restore_from_config(self):
         if self._iNumberOpenFrames > 0:
@@ -104,6 +109,13 @@ class MultiPaneWindow(gtk.Window):
                 self.replace_with_acs_list(None)
             elif sType == 'Physical Card Set List':
                 self.replace_with_pcs_list(None)
+            else:
+                # See if one of the plugins claims this type
+                for oPlugin in self._aPlugins:
+                    tResult = oPlugin.get_frame_from_config(sType)
+                    if tResult:
+                        oFrame, sMenuFlag = tResult
+                        self.replace_frame(oF, oFrame, sMenuFlag)
         if self._iNumberOpenFrames == 0:
             # We always have at least one pane
             self.add_pane()

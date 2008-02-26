@@ -25,7 +25,17 @@ class MainMenu(gtk.MenuBar, object):
         self.__create_pane_menu()
         self.__create_plugin_menu()
         self.__create_about_menu()
-
+        oWindow.add_to_menu_list("Physical Card List",
+                self.physical_card_list_set_sensitive)
+        oWindow.add_to_menu_list("White Wolf CardList",
+                self.abstract_card_list_set_sensitive)
+        oWindow.add_to_menu_list("Physical Card Set List",
+                self.pcs_list_pane_set_sensitive)
+        oWindow.add_to_menu_list("Abstract Card Set List",
+                self.acs_list_pane_set_sensitive)
+        oWindow.add_to_menu_list("Card Text",
+                self.add_card_text_set_sensitive)
+ 
     def __create_file_menu(self):
         # setup sub menu
         iMenu = gtk.MenuItem("_File")

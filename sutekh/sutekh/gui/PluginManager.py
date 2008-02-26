@@ -89,6 +89,13 @@ class CardListPlugin(object):
         """
         return None
 
+    def get_frame_from_config(self, sType):
+        """
+        Hook for plugins which supply a frame in the Main window.
+        Allows them to restore from the config file properly
+        """
+        return None
+
     # Utility Functions / Plugin API
 
     def check_model_type(self):
