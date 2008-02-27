@@ -40,7 +40,7 @@ class CardImageFrame(BasicFrame, CardListViewListener):
 
         oBox.connect('drag-data-received', self.drag_drop_handler)
         oBox.connect('drag-motion', self.drag_motion)
-        self._oImage.set_alignment(0, 0) # Image in top left
+        self._oImage.set_alignment(0.5, 0.5) # Centre Image
 
     type = property(fget=lambda self: "Card Image Frame", doc="Frame Type")
 
