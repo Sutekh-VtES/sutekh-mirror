@@ -582,11 +582,12 @@ class CardListModel(gtk.TreeStore):
             oListener.addNewCard(oCard)
 
 class PhysicalCardListModel(CardListModel):
-    def __init__(self):
+    def __init__(self,bAddAllAbstractCards):
         super(PhysicalCardListModel, self).__init__()
         self._oBaseFilter = PhysicalCardFilter()
         self._cCardClass = PhysicalCard
         self.bExpansions = True
+        self.bAddAllAbstractCards = bAddAllAbstractCards
 
     def init_info_cache(self):
         self._dNoneCountCache = {}

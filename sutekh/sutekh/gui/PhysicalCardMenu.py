@@ -35,7 +35,7 @@ class PhysicalCardMenu(gtk.MenuBar, object):
 
         self.iViewAllAbstractCards = gtk.CheckMenuItem("Show cards with a count of 0")
         self.iViewAllAbstractCards.set_inconsistent(False)
-        self.iViewAllAbstractCards.set_active(False)
+        self.iViewAllAbstractCards.set_active(self.__oC.model.bAddAllAbstractCards)
         self.iViewAllAbstractCards.connect('toggled', self.toggle_all_abstract_cards)
         wMenu.add(self.iViewAllAbstractCards)
 
@@ -145,6 +145,7 @@ class PhysicalCardMenu(gtk.MenuBar, object):
 
     def toggle_all_abstract_cards(self, oWidget):
         self.__oC.model.bAddAllAbstractCards = oWidget.active
+        self.__oC.config_file.set_show_zero_count_cards(oWidget.active)
         self.__oC.view.reload_keep_expanded()
 
     def setFilter(self, oWidget):

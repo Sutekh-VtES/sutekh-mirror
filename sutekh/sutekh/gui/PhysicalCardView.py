@@ -9,7 +9,7 @@ from sutekh.gui.CardListModel import PhysicalCardListModel
 class PhysicalCardView(EditableCardListView):
     def __init__(self, oController, oWindow, oConfig):
 
-        oModel = PhysicalCardListModel()
+        oModel = PhysicalCardListModel(oConfig.get_show_zero_count_cards())
         super(PhysicalCardView, self).__init__(oController, oWindow, oConfig, oModel)
 
         self._oC = oController

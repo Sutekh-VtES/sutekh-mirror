@@ -15,6 +15,7 @@ from sutekh.core.SutekhObjects import PhysicalCard, \
 class PhysicalCardController(object):
     def __init__(self, oFrame, oConfig, oMainWindow):
         self.__oMainWin = oMainWindow
+        self.__oConfig = oConfig
         self.__oFrame = oFrame
         self.__oView = PhysicalCardView(self, oMainWindow, oConfig)
         self._sFilterType = 'PhysicalCard'
@@ -22,6 +23,7 @@ class PhysicalCardController(object):
     view = property(fget=lambda self: self.__oView, doc="Associated View")
     model = property(fget=lambda self: self.__oView._oModel, doc="View's Model")
     frame = property(fget=lambda self: self.__oFrame, doc="Associated Frame")
+    config_file = property(fget=lambda self: self.__oConfig)
     filtertype = property(fget=lambda self: self._sFilterType, doc="Associated Type")
 
     def decCard(self, sName, sExpansion):

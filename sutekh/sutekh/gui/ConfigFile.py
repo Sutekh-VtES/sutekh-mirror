@@ -42,6 +42,9 @@ class ConfigFile(object):
         if 'save pane sizes' not in self.__oConfig.options(self.__sPrefsSection):
             self.set_save_precise_pos(True)
 
+        if 'show zero count cards' not in self.__oConfig.options(self.__sPrefsSection):
+            self.set_show_zero_count_cards(False)
+
         if not self.__oConfig.has_section(self.__sPanesSection):
             self.__oConfig.add_section(self.__sPanesSection)
             # No panes information, so we set 'sensible' defaults
@@ -119,6 +122,15 @@ class ConfigFile(object):
             self.__oConfig.set(self.__sPrefsSection, 'save pane sizes', 'yes')
         else:
             self.__oConfig.set(self.__sPrefsSection, 'save pane sizes', 'no')
+
+    def get_show_zero_count_cards(self):
+        return self.__oConfig.get(self.__sPrefsSection, 'show zero count cards') == 'yes'
+
+    def set_show_zero_count_cards(self, bShowZero):
+        if bShowZero:
+            self.__oConfig.set(self.__sPrefsSection, 'show zero count cards', 'yes')
+        else:
+            self.__oConfig.set(self.__sPrefsSection, 'show zero count cards', 'no')
 
     def add_frame(self, iFrameNumber, sType, sName, bVertical, iPos):
         aOptions = self.__oConfig.options(self.__sPanesSection)
