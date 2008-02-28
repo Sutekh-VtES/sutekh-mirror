@@ -1,6 +1,13 @@
-# Dialog for handling Physical Card Set allocation across
+# EditPhysicalCardMappingDialog.py
+# -*- coding: utf8 -*-
+# vim:fileencoding=utf8 ai ts=4 sts=4 et sw=4
 # Physical Card Sets
 # Copyright 2007 Neil Muller <drnlmuller+sutekh@gmail.com>
+# GPL - see COPYING for details
+"""
+Dialog for handling the allocation of Physical Cards 
+across the different Physical Card Sets
+"""
 
 import gtk
 from sutekh.gui.DBSignals import send_reload_signal

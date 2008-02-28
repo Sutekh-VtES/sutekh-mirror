@@ -1,4 +1,6 @@
 # CardSetFrame.py
+# -*- coding: utf8 -*-
+# vim:fileencoding=utf8 ai ts=4 sts=4 et sw=4
 # Frame holding a CardSet
 # Copyright 2006,2007 Neil Muller <drnlmuller+sutekh@gmail.com>
 # Copyright 2006 Simon Cross <hodgestar@gmail.com>

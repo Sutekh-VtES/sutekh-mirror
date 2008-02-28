@@ -1,7 +1,9 @@
 # ConfigFile.py
+# -*- coding: utf8 -*-
+# vim:fileencoding=utf8 ai ts=4 sts=4 et sw=4
 # Config File handling object
 # Wrapper around ConfigParser with some hooks for Sutekh purposes
-# Copyright Neil Muller <drnlmuller+sutekh@gmail.com> 2007
+# Copyright 2007 Neil Muller <drnlmuller+sutekh@gmail.com>
 # License: GPL. See COPYRIGHT file for details
 
 from ConfigParser import RawConfigParser

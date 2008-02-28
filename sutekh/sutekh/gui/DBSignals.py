@@ -1,4 +1,10 @@
+# DBSignals.py
+# -*- coding: utf8 -*-
+# vim:fileencoding=utf8 ai ts=4 sts=4 et sw=4
 # Define the reload singal we need
+# Copyright 2007 Simon Cross <hodgestar@gmail.com>,
+#                Neil Muller <drnlmuller+sutekh@gmail.com>
+# GPL - see COPYING for details
 
 from sqlobject.events import Signal, listen, RowUpdateSignal, RowDestroySignal
 from sutekh.core.SutekhObjects import PhysicalCard

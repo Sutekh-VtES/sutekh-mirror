@@ -1,3 +1,23 @@
+28 Feb 2008:
+ * Add encoding lines to all *.py files
+ * Misc cleanups of file header comments
+ * Save "Display zero count" status in PCL in config file
+
+26 Feb 2008:
+ * Add plugin for displaying card images, using the image database
+   from ARDB
+ * Add hooks so plugins can register a frame on the main window
+
+25 Feb 2008
+ * Tweak filter parser so "X NOT IN $foor" is legal syntax
+
+19 Feb 2008
+ * Fix keyboard navigation behaviour in the TreeView. Workaround 
+   http://bugzilla.gnome.org/show_bug.cgi?id=483730 where needed
+
+18 Feb 2008:
+ * Allow gtk to sort on the extra columns added via the plugin
+
 07 Feb 2008:
  * Add sutkeh.io.WwFile convenience module for reading data from
    WW website cardlists and rulings (including directly from the

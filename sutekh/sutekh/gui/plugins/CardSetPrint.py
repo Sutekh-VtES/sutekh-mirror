@@ -1,10 +1,13 @@
-# CardSetExportHTML.py
-# Copyright 2007 Neil Muller <drnlmuller+sutekh@gmail.com>
+# CardSetPrint.py
+# -*- coding: utf8 -*-
+# vim:fileencoding=utf8 ai ts=4 sts=4 et sw=4
+# Copyright 2007 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
 
 import gtk
 import pango
-from sutekh.core.SutekhObjects import PhysicalCardSet, AbstractCardSet, IAbstractCard, ICardType
+from sutekh.core.SutekhObjects import PhysicalCardSet, AbstractCardSet, \
+        IAbstractCard, ICardType
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhDialog import do_complaint_error
 

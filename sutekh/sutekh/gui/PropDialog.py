@@ -1,5 +1,9 @@
+# PropDialog.py
+# -*- coding: utf8 -*-
+# vim:fileencoding=utf8 ai ts=4 sts=4 et sw=4
 # Dialog for handling Card Set Properties
 # Copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
+# GPL - see COPYING for details
 
 import gtk
 from sutekh.gui.SutekhDialog import SutekhDialog

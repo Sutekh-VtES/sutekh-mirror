@@ -1,5 +1,7 @@
 # FilterParser.py
-# Copyright Neil Muller <drnlmuller+sutekh@gmail.com>, 2007
+# -*- coding: utf8 -*-
+# vim:fileencoding=utf8 ai ts=4 sts=4 et sw=4
+# Copyright 2007 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
 """

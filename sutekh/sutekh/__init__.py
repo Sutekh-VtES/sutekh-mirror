@@ -1,4 +1,6 @@
 # __init__.py
+# -*- coding: utf8 -*-
+# vim:fileencoding=utf8 ai ts=4 sts=4 et sw=4
 # Copyright 2005,2006,2007 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
 
@@ -36,6 +38,7 @@ from sutekh.core.CardListTabulator import CardListTabulator
 from sutekh.SutekhCli import main
 
 # start() method for use when working in the Python interpreter
+# pylint: disable-msg=C0111, W0102
 
 def start(aArgs=['sutekh']):
     main(aArgs)

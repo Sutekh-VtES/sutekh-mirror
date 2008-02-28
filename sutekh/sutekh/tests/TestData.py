@@ -1,5 +1,6 @@
 # TestData.py
 # -*- coding: cp1252 -*-
+# vim:fileencoding=cp1252 ai ts=4 sts=4 et sw=4
 # Based on the card data published by WhiteWolf at:
 #  * http://www.white-wolf.com/vtes/index.php?line=cardlist
 #  * http://www.white-wolf.com/vtes/index.php?line=rulings

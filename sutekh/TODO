@@ -12,7 +12,6 @@ Code Cleanup
    between the different View-Window-Controller sets for instance, and this
    looks like something worth addressing
  * Change function names to foo_bar convention.
- * Add encoding lines to all .py files.
 
 Gui (Functionality):
  * Improve Current Filter dialogs:

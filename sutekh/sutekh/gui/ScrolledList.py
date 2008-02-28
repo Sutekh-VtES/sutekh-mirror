@@ -1,8 +1,11 @@
-"""Generic Scrolled List, used in the Filter Dialo and elsewhere"""
 # ScrolledList.py
+# -*- coding: utf8 -*-
+# vim:fileencoding=utf8 ai ts=4 sts=4 et sw=4
 # Copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
 # Copyright 2006 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
+
+"""Generic Scrolled List, used in the Filter Dialo and elsewhere"""
 
 import gtk, gobject
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow

@@ -1,4 +1,6 @@
 # CreateCardSetDialog.py
+# -*- coding: utf8 -*-
+# vim:fileencoding=utf8 ai ts=4 sts=4 et sw=4
 # Dialog to create a new PhysicalCardSet or AbstrctCardSet
 # Copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
