@@ -4,7 +4,7 @@
 # Config File handling object
 # Wrapper around ConfigParser with some hooks for Sutekh purposes
 # Copyright 2007 Neil Muller <drnlmuller+sutekh@gmail.com>
-# License: GPL. See COPYRIGHT file for details
+# License: GPL - See COPYRIGHT file for details
 
 from ConfigParser import RawConfigParser
 

@@ -2,7 +2,7 @@
 # -*- coding: utf8 -*-
 # vim:fileencoding=utf8 ai ts=4 sts=4 et sw=4
 # Copyright 2007 Simon Cross <hodgestar@gmail.com>,
-#                Neil Muller <drnlmuller+sutekh@gmail.com>
+# Copyright 2007, 2008 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 # Routines for writing and reading from XML files - used by Gui and Cli
 # Split off from SutekhUtility as being somewhat clearer, April 2007 - NM

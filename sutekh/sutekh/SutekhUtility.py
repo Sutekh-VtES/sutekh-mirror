@@ -2,7 +2,7 @@
 # -*- coding: utf8 -*-
 # vim:fileencoding=utf8 ai ts=4 sts=4 et sw=4
 # Copyright 2006 Simon Cross <hodgestar@gmail.com>
-# Minor modifications copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
+# Copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 # Misc Useful functions needed in several places. Mainly to do with database
 # management. Seperated out from SutekhCli and other places, NM, 2006

@@ -2,7 +2,7 @@
 # -*- coding: utf8 -*-
 # vim:fileencoding=utf8 ai ts=4 sts=4 et sw=4
 # WhiteWolf Parser
-# Copyright 2005,2006 Simon Cross <hodgestar@gmail.com>
+# Copyright 2005, 2006 Simon Cross <hodgestar@gmail.com>
 # Copyright 2007 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 

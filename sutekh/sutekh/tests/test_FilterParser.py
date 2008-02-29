@@ -1,7 +1,7 @@
 # test_FilterParser.py
 # -*- coding: utf8 -*-
 # vim:fileencoding=utf8 ai ts=4 sts=4 et sw=4
-# Copyright 2007,2008 Simon Cross <hodgestar@gmail.com>,
+# Copyright 2007, 2008 Simon Cross <hodgestar@gmail.com>,
 # Copyright 2008 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
