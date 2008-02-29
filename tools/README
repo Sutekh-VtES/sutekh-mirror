@@ -1,0 +1,14 @@
+This directory is for various useful tools.
+
+The follwoing are currently included:
+
+sutekh_pylint - A rc file for pylint which enforces Sutekh's naming convention.
+          Use as pylint --rcfile sutekh_pylint
+
+check_header.py - A simple script that checks if the comment headers match the
+          required style. Checks for coding line, vim modeline, 
+          copyright notice, reference to the license and wether the first
+          line corresponds to the file name. Usage check_headers -f file
+          Intended to be used via find's exec option (something like
+          find <dir> -name "*py" -exec python check_header.py -f \{\} \;)
+
