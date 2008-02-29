@@ -49,6 +49,7 @@ class ClanDisciplineStats(CardListPlugin):
         self._oStatsVbox = gtk.VBox(False,0)
 
         oDlg.vbox.pack_start(self._oStatsVbox)
+        oDlg.set_size_request(600, 400)
         oDlg.show_all()
 
         self.populate_stats_box()
