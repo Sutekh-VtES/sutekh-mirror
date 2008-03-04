@@ -140,7 +140,7 @@ class PhysicalCardSetController(CardSetController):
                 self.model.decCardByName(oC.name)
                 # Update internal card list
                 self.__aPhysCardIds.remove(oCard.id)
-                self._aAbsCardIds.remove(oC.id)
+                self.__aAbsCardIds.remove(oC.id)
                 if oCard.expansion is not None:
                     self.model.decCardExpansionByName(oC.name,
                             oCard.expansion.name)
