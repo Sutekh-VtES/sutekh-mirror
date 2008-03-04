@@ -193,6 +193,14 @@ class CardSetManagementFrame(BasicFrame):
         sName = oM.get_value(oIter, 0)
         if sName == self.__sAvail or sName == self.__sOpen:
             return
+        # check if card set is open before opening again
+        if self._cSetType is PhysicalCardSet:
+            sFrameName = 'PCS:' + sName
+        else:
+            sFrameName = 'ACS:' + sName
+        oPane = self._oMainWindow.find_pane_by_name(sFrameName)
+        if oPane is not None:
+            return # Already open, so do nothing
         oF = self._oMainWindow.add_pane()
         if self._cSetType is PhysicalCardSet:
             self._oMainWindow.replace_with_physical_card_set(sName, oF)
