@@ -67,8 +67,9 @@ class CardListModel(gtk.TreeStore):
     """
     Provides a card list specific API for accessing a gtk.TreeStore.
     """
-    # FIXME: Use spaces to ensure it sorts first, and is
-    # visually distinct. Very much the wrong solution, I feel
+    # Use spaces to ensure it sorts first
+    # Could possibly be more visually distinct, but users can filter
+    # on unknown expansions if needed.
 
     sUnknownExpansion = '  Unspecified Expansion'
 
