@@ -14,10 +14,10 @@ class FilterEditor(gtk.Frame):
     """
     GTK component for editing Sutekh filter ASTs.
     """
-    def __init__(self,oAST,sFilterType):
-        super(FilterEditor,self).__init__(" Filter Editor ")
+    def __init__(self, oAST, sFilterType):
+        super(FilterEditor, self).__init__(" Filter Editor ")
         self.__sFilterType = sFilterType
-        self.__oBoxModel = FilterBoxModel(oAST,sFilterType)
+        self.__oBoxModel = FilterBoxModel(oAST, sFilterType)
         self.__oBoxEditor = FilterBoxModelEditor(self.__oBoxModel)
         self.add(self.__oBoxEditor)
 
@@ -59,7 +59,7 @@ class FilterEditor(gtk.Frame):
 class FilterBoxModel(list):
     """
     Converts a filter AST into a simple nest box model.
-    
+
     Each box either ANDs or ORs all of its contained filters.
     Each contained filter may optionally be negated.
     Values are retained for each contained filter.
@@ -67,7 +67,7 @@ class FilterBoxModel(list):
 
     AND, OR = 'and', 'or'
 
-    def __init__(self,oAST,sFilterType,oVarNameMaker=None):
+    def __init__(self, oAST, sFilterType, oVarNameMaker=None):
         """
         Initialise a filter box from an AST filter representation.
         """
@@ -99,25 +99,25 @@ class FilterBoxModel(list):
             # support for completely empty boxes
             self.sBoxType = self.AND
         else:
-            raise ValueError("FilterBoxModel cannot represent AST %s of type %s" % (oAST,type(oAST)))
+            raise ValueError("FilterBoxModel cannot represent AST %s of type %s" % (oAST, type(oAST)))
 
         assert self.sBoxType in [self.AND, self.OR]
 
         if bVarMakerNeedsInit:
             self.oVarNameMaker.update(self.get_variable_names())
 
-    def _init_binop(self,oBinOp):
+    def _init_binop(self, oBinOp):
         for oChild in [oBinOp.oLeft, oBinOp.oRight]:
             if type(oChild) is BinOpNode and oChild.oOp == oBinOp.oOp:
                 self._init_binop(oChild)
             elif type(oChild) is BinOpNode:
-                self.append(FilterBoxModel(oChild,self.sFilterType,self.oVarNameMaker))
+                self.append(FilterBoxModel(oChild, self.sFilterType, self.oVarNameMaker))
             elif type(oChild) in [NotOpNode, FilterPartNode]:
                 self.append(FilterBoxItem(oChild))
             else:
-                raise ValueError("FilterBoxModel encountered unsupported AST node type %s (%s) while examing BinOpNode tree." % (type(oChild),oChild))
+                raise ValueError("FilterBoxModel encountered unsupported AST node type %s (%s) while examing BinOpNode tree." % (type(oChild), oChild))
 
-    def set_boxtype(self,sBoxType,bNegate=False):
+    def set_boxtype(self, sBoxType, bNegate=False):
         self.sBoxType = sBoxType
         self.bNegate = bNegate
 
@@ -139,9 +139,9 @@ class FilterBoxModel(list):
         elif len(aChildASTs) == 1:
             oAST = aChildASTs[0]
         else:
-            oAST = BinOpNode(aChildASTs[0],self.sBoxType,aChildASTs[1])
+            oAST = BinOpNode(aChildASTs[0], self.sBoxType, aChildASTs[1])
             for oChild in aChildASTs[2:]:
-                oAST = BinOpNode(oAST,self.sBoxType,oChild)
+                oAST = BinOpNode(oAST, self.sBoxType, oChild)
 
         if self.bNegate and oAST is not None:
             oAST = NotOpNode(oAST)
@@ -170,21 +170,21 @@ class FilterBoxModel(list):
     def get_filter_types(self):
         return [oFilterType for oFilterType in FilterParser.aFilters if self.sFilterType in oFilterType.types]
 
-    def add_child_box(self,sChildBoxType):
+    def add_child_box(self, sChildBoxType):
         assert sChildBoxType in [self.AND, self.OR]
-        oChildBox = FilterBoxModel(None,self.sFilterType,self.oVarNameMaker)
+        oChildBox = FilterBoxModel(None, self.sFilterType, self.oVarNameMaker)
         oChildBox.sBoxType = sChildBoxType
         self.append(oChildBox)
         return oChildBox
 
-    def add_child_item(self,sChildTypeKeyword):
+    def add_child_item(self, sChildTypeKeyword):
         sVarName = self.oVarNameMaker.generate_name()
         oAST = FilterPartNode(sChildTypeKeyword, None, sVarName)
         oChildItem = FilterBoxItem(oAST)
         self.append(oChildItem)
         return oChildItem
 
-    def remove_child(self,oChild):
+    def remove_child(self, oChild):
         self.remove(oChild)
 
 class FilterBoxModelEditor(gtk.VBox):
@@ -200,14 +200,14 @@ class FilterBoxModelEditor(gtk.VBox):
         'None of ...',
     ]
 
-    def __init__(self,oBoxModel):
-        super(FilterBoxModelEditor,self).__init__(spacing=5)
+    def __init__(self, oBoxModel):
+        super(FilterBoxModelEditor, self).__init__(spacing=5)
         self.__oBoxModel = oBoxModel
         self.__aChildren = []
         self.__fRemoveBox = None # set by parent (if any)
 
         self.__oBoxTypeSelector = gtk.combo_box_new_text()
-        self.pack_start(self.__oBoxTypeSelector,expand=False)
+        self.pack_start(self.__oBoxTypeSelector, expand=False)
 
         for i, sDesc in enumerate(self.BOXTYPE_ORDER):
             self.__oBoxTypeSelector.append_text(sDesc)
@@ -216,38 +216,38 @@ class FilterBoxModelEditor(gtk.VBox):
                and self.__oBoxModel.bNegate == bNegate:
                 self.__oBoxTypeSelector.set_active(i)
 
-        self.__oBoxTypeSelector.connect('changed',self.__change_boxtype)
+        self.__oBoxTypeSelector.connect('changed', self.__change_boxtype)
 
         oChildHBox = gtk.HBox(spacing=10)
-        oChildHBox.pack_start(gtk.VSeparator(),expand=False)
+        oChildHBox.pack_start(gtk.VSeparator(), expand=False)
         self.__oChildArea = gtk.VBox(spacing=5)
         oChildHBox.pack_start(self.__oChildArea)
-        self.pack_start(oChildHBox,expand=False)
+        self.pack_start(oChildHBox, expand=False)
 
         for oChild in self.__oBoxModel:
             if type(oChild) is FilterBoxModel:
                 oModelEditor = FilterBoxModelEditor(oChild)
                 oModelEditor.register_remove_box(self.__remove_model)
                 self.__aChildren.append(oModelEditor)
-                self.__oChildArea.pack_start(oModelEditor,expand=False)
+                self.__oChildArea.pack_start(oModelEditor, expand=False)
             else:
                 oItemEditor = FilterBoxItemEditor(oChild)
                 oItemEditor.connect_remove_button(self.__remove_filter_part)
                 self.__aChildren.append(oItemEditor)
-                self.__oChildArea.pack_start(oItemEditor,expand=False)
+                self.__oChildArea.pack_start(oItemEditor, expand=False)
 
-        self.pack_start(gtk.HSeparator(),expand=False)
+        self.pack_start(gtk.HSeparator(), expand=False)
 
         oHBox = gtk.HBox()
-        self.pack_start(oHBox,expand=False)
+        self.pack_start(oHBox, expand=False)
 
         oAddButton = gtk.Button("+")
-        oHBox.pack_start(oAddButton,expand=False)
+        oHBox.pack_start(oAddButton, expand=False)
 
         oTypeSelector = gtk.combo_box_new_text()
-        oHBox.pack_start(oTypeSelector,expand=False)
+        oHBox.pack_start(oTypeSelector, expand=False)
 
-        oAddButton.connect('clicked',self.__add_filter_part,oTypeSelector)
+        oAddButton.connect('clicked', self.__add_filter_part, oTypeSelector)
 
         for oFilterType in self.__oBoxModel.get_filter_types():
             oTypeSelector.append_text(oFilterType.keyword)
@@ -270,20 +270,20 @@ class FilterBoxModelEditor(gtk.VBox):
             dVars.update(oChild.get_current_values())
         return dVars
 
-    def set_current_values(self,dVars):
+    def set_current_values(self, dVars):
         """
         Set the current list values using variable names in the given dictionary.
-        
+
         dVars is a mapping sVariableName -> [ list of string values ]
         """
         for oChild in self.__aChildren:
             oChild.set_current_values(dVars)
 
-    def register_remove_box(self,fRemoveBox):
+    def register_remove_box(self, fRemoveBox):
         """
         Register a function for removing this box from it's parent editor.
-        
-        fRemoveBox(oBoxEditor,oBoxModel)
+
+        fRemoveBox(oBoxEditor, oBoxModel)
         """
         self.__fRemoveBox = fRemoveBox
         self.__oBoxTypeSelector.append_text("Remove Sub-Filter")
@@ -292,10 +292,10 @@ class FilterBoxModelEditor(gtk.VBox):
     def __change_boxtype(self, oBoxTypeSelector):
         sType = oBoxTypeSelector.get_active_text()
         if sType == "Remove Sub-Filter":
-            self.__fRemoveBox(self,self.__oBoxModel)
+            self.__fRemoveBox(self, self.__oBoxModel)
         else:
             sBoxType, bNegate = self.BOXTYPE[sType]
-            self.__oBoxModel.set_boxtype(sBoxType,bNegate)
+            self.__oBoxModel.set_boxtype(sBoxType, bNegate)
 
     def __add_filter_part(self, oAddButton, oTypeSelector):
         sType = oTypeSelector.get_active_text()
@@ -311,7 +311,7 @@ class FilterBoxModelEditor(gtk.VBox):
             oChildEditor = FilterBoxItemEditor(oChildItem)
             oChildEditor.connect_remove_button(self.__remove_filter_part)
         self.__aChildren.append(oChildEditor)
-        self.__oChildArea.pack_start(oChildEditor,expand=False)
+        self.__oChildArea.pack_start(oChildEditor, expand=False)
         self.show_all()
 
     def __remove_filter_part(self, oRemoveButton, oEditor, oModelOrItem):
@@ -320,10 +320,10 @@ class FilterBoxModelEditor(gtk.VBox):
         self.__oChildArea.remove(oEditor)
 
     def __remove_model(self, oEditor, oModel):
-        self.__remove_filter_part(None,oEditor,oModel)
+        self.__remove_filter_part(None, oEditor, oModel)
 
 class FilterBoxItem(object):
-    def __init__(self,oAST):
+    def __init__(self, oAST):
         if type(oAST) is NotOpNode:
             self.bNegated = True
             oAST = oAST.oSubExpression
@@ -357,7 +357,7 @@ class FilterBoxItem(object):
         """
         Return an AST respresentation of the filter.
         """
-        oAST = FilterPartNode(self.sFilterType,self.aFilterValues,self.sVariableName)
+        oAST = FilterPartNode(self.sFilterType, self.aFilterValues, self.sVariableName)
         if self.bNegated:
             oAST = NotOpNode(oAST)
         return oAST
@@ -366,28 +366,28 @@ class FilterBoxItem(object):
         """
         Return a text representation of the filter.
         """
-        sText = "%s in %s" % (self.sFilterType,self.sVariableName)
+        sText = "%s in %s" % (self.sFilterType, self.sVariableName)
         return sText
 
 class FilterBoxItemEditor(gtk.HBox):
-    def __init__(self,oBoxItem):
-        super(FilterBoxItemEditor,self).__init__(spacing=5)
+    def __init__(self, oBoxItem):
+        super(FilterBoxItemEditor, self).__init__(spacing=5)
         self.__oBoxItem = oBoxItem
 
         self.__oRemoveButton = gtk.Button("-")
-        self.pack_start(self.__oRemoveButton,expand=False)
+        self.pack_start(self.__oRemoveButton, expand=False)
 
         self.__oNegateButton = gtk.CheckButton("NOT")
         self.__oNegateButton.set_active(self.__oBoxItem.bNegated)
-        self.__oNegateButton.connect('toggled',self.__toggle_negated)
-        self.pack_start(self.__oNegateButton,expand=False)
+        self.__oNegateButton.connect('toggled', self.__toggle_negated)
+        self.pack_start(self.__oNegateButton, expand=False)
 
-        self.pack_start(gtk.Label(self.__oBoxItem.sLabel),expand=False)
+        self.pack_start(gtk.Label(self.__oBoxItem.sLabel), expand=False)
 
         if self.__oBoxItem.aValues:
             oWidget = MultiSelectComboBox()
             oWidget.fill_list(self.__oBoxItem.aValues)
-            oWidget.set_list_size(200,400)
+            oWidget.set_list_size(200, 400)
         else:
             oWidget = gtk.Entry(100)
             oWidget.set_width_chars(30)
@@ -395,9 +395,9 @@ class FilterBoxItemEditor(gtk.HBox):
         self.__oEntryWidget = oWidget
         self.pack_start(oWidget)
 
-    def connect_remove_button(self,fHandler):
+    def connect_remove_button(self, fHandler):
         if self.__oRemoveButton is not None:
-            self.__oRemoveButton.connect('clicked',fHandler,self,self.__oBoxItem)
+            self.__oRemoveButton.connect('clicked', fHandler, self, self.__oBoxItem)
 
     def get_current_values(self):
         dVars = {}
@@ -416,7 +416,7 @@ class FilterBoxItemEditor(gtk.HBox):
                 dVars[sName] = ['"' + sText + '"']
         return dVars
 
-    def set_current_values(self,dVars):
+    def set_current_values(self, dVars):
         sName = self.__oBoxItem.sVariableName
         if not sName in dVars:
             return
@@ -426,14 +426,14 @@ class FilterBoxItemEditor(gtk.HBox):
         else:
             self.__oEntryWidget.set_text(dVars[sName][0].strip('"'))
 
-    def __toggle_negated(self,oWidget):
+    def __toggle_negated(self, oWidget):
         self.__oBoxItem.bNegated = self.__oNegateButton.get_active()
 
 class VariableNameGenerator(set):
     KEYFORM = "$var%s"
 
     def __init__(self):
-        super(VariableNameGenerator,self).__init__()
+        super(VariableNameGenerator, self).__init__()
         self.__iNum = 0
 
     def generate_name(self):
