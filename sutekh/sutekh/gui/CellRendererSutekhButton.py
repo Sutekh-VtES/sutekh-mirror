@@ -65,6 +65,7 @@ class CellRendererSutekhButton(gtk.GenericCellRenderer):
 
     def on_activate(self, oEvent, oWidget, oPath, oBackgroundArea,
             oCellArea, iFlags):
+        "Activate signal recieved from the TreeView"
         # Note that we need to offset button
         self.bClicked = True
         self.oClickedBackgroundArea = oBackgroundArea
@@ -74,6 +75,17 @@ class CellRendererSutekhButton(gtk.GenericCellRenderer):
 
     def on_render(self, oWindow, oWidget, oBackgroundArea,
             oCellArea, oExposeArea, iFlags):
+        "Render the icon for the button"
+        bDrawOffset = False
+        # Need to ensure that self.bClicked is unset before any early return
+        if self.bClicked:
+            # Offset when button is clicked
+            if oBackgroundArea.x == self.oClickedBackgroundArea.x and \
+                    oBackgroundArea.y == self.oClickedBackgroundArea.y:
+                # Rendering the same area as was clicked, so we need to offset
+                bDrawOffset = True
+                # reset clicked state
+                self.bClicked = False
         if self.oPixbuf is None:
             return None
         if not self.bShowIcon:
@@ -89,15 +101,9 @@ class CellRendererSutekhButton(gtk.GenericCellRenderer):
         oPixRect.width  -= int(2 * self.get_property("xpad"))
         oPixRect.height -= int(2 * self.get_property("ypad"))
 
-        if self.bClicked:
-            # Offset when button is clicked
-            if oBackgroundArea.x == self.oClickedBackgroundArea.x and \
-                    oBackgroundArea.y == self.oClickedBackgroundArea.y:
-                # Rendering the same area as was clicked
-                oPixRect.x += 2
-                oPixRect.y += 2
-                # reset state
-                self.bClicked = False
+        if bDrawOffset:
+            oPixRect.x += 2
+            oPixRect.y += 2
 
         oDrawRect = oCellArea.intersect(oPixRect)
         oDrawRect = oExposeArea.intersect(oDrawRect)
