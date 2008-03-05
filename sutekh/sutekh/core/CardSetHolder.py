@@ -8,7 +8,8 @@
    """
 
 from sutekh.core.CardLookup import DEFAULT_LOOKUP
-from sutekh.core.SutekhObjects import AbstractCardSet, PhysicalCardSet, PhysicalCard
+from sutekh.core.SutekhObjects import AbstractCardSet, PhysicalCardSet, \
+        PhysicalCard
 
 class CardSetHolder(object):
     def __init__(self):
@@ -195,3 +196,4 @@ class CachedCardSetHolder(CardSetHolder):
                 continue
             oPCS.addPhysicalCard(oPhysCard.id)
         oPCS.syncUpdate()
+

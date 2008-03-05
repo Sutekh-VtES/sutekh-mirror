@@ -47,6 +47,10 @@ class IdentifyXMLFile(object):
             # There is only 1 PhysicalCard List, so it exists if it's
             # not empty
             bExists = PhysicalCard.select().count() > 0
+        elif oRoot.tag == 'cardmapping':
+            sType = 'PhysicalCardSetMappingTable'
+            sName = sType
+            bExists = False # Always want to try applying the mapping table
         return (sType, sName, bExists)
 
     def parse(self, fIn):

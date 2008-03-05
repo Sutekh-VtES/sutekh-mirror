@@ -13,6 +13,7 @@ from sqlobject import sqlhub
 from sutekh.core.SutekhObjects import AbstractCardSet, PhysicalCardSet, \
         PhysicalList, AbstractCardSetList
 from sutekh.core.CardLookup import DEFAULT_LOOKUP
+from sutekh.core.PhysicalCardMappingHolder import PhysicalCardMappingHolder
 from sutekh.SutekhUtility import refresh_tables
 from sutekh.io.PhysicalCardParser import PhysicalCardParser
 from sutekh.io.PhysicalCardSetParser import PhysicalCardSetParser
@@ -106,6 +107,21 @@ class ZipFileWrapper(object):
             self.__close_zip()
         return aList
 
+    def write_mapping_to_zip(self, oLogger):
+        bClose = False
+        if self.oZip is None:
+            self.__open_zip_for_write()
+            bClose = True
+        sMappingName = '_Physical_Card_Mapping_Table.xml'
+        oMappingObject = PhysicalCardMappingHolder()
+        oMappingObject.fill_from_db(sqlhub.processConnection)
+        oString = oMappingObject.get_string()
+        self.oZip.writestr(sMappingName, oString)
+        oLogger.info('Mapping Table written')
+        if bClose:
+            self.__close_zip()
+
+
     def doRestoreFromZip(self, oCardLookup=DEFAULT_LOOKUP, oLogHandler=None):
         """Recover data from the zip file"""
         bPhysicalCardsRead = False
@@ -150,6 +166,15 @@ class ZipFileWrapper(object):
                     continue
                 oParser.parse_string(oData, oCardLookup)
                 oLogger.info('%s %s read', sType, oItem.filename)
+        # Try to restore the physical card mapping table
+        for oItem in self.oZip.infolist():
+            oData = self.oZip.read(oItem.filename)
+            (sType, sName, bExists) = oParser.parse_string(oData)
+            if sType == 'PhysicalCardSetMappingTable':
+                oMappingObject = PhysicalCardMappingHolder()
+                oMappingObject.fill_from_string(oData)
+                oMappingObject.commit_to_db(sqlhub.processConnection)
+                oLogger.info('%s %s read', sType, oItem.filename)
         self.__close_zip()
 
     def doDumpAllToZip(self, oLogHandler=None):
@@ -159,10 +184,11 @@ class ZipFileWrapper(object):
         if oLogHandler is not None:
             oLogger.addHandler(oLogHandler)
             if hasattr(oLogHandler,'set_total'):
-                iTotal = 1 + AbstractCardSet.select().count() + PhysicalCardSet.select().count()
+                iTotal = 2 + AbstractCardSet.select().count() + PhysicalCardSet.select().count()
                 oLogHandler.set_total(iTotal)
         self.write_physical_card_list_to_zip(oLogger)
         aACSList = self.write_all_acs_to_zip(oLogger)
         aPCSList = self.write_all_pcs_to_zip(oLogger)
+        self.write_mapping_to_zip(oLogger)
         self.__close_zip()
         return aACSList + aPCSList

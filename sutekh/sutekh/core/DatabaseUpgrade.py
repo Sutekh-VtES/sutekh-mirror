@@ -17,6 +17,7 @@ from sutekh.core.SutekhObjects import PhysicalCard, AbstractCard, \
         Discipline, Rarity, RarityPair, CardType, Ruling, ObjectList, \
         DisciplinePair, Creed, Sect, Title
 from sutekh.core.CardSetHolder import CachedCardSetHolder
+from sutekh.core.PhysicalCardMappingHolder import PhysicalCardMappingHolder
 from sutekh.SutekhUtility import refresh_tables
 from sutekh.core.DatabaseVersion import DatabaseVersion
 from sutekh.core.Abbreviations import Rarities
@@ -732,8 +733,6 @@ def copy_to_new_AbstractCardDB(oOrigConn, oNewConn, oCardLookup, oLogHandler=Non
     for oCard in PhysicalCard.select(connection=oOrigConn):
         oPhysListCS.add(1, oCard.abstractCard.canonicalName, oCard.expansion)
     # Copy Physical card sets
-    # FIXME: Manual mappings of physical cards to the individual card sets
-    # will be lost in this process.
     for oSet in PhysicalCardSet.select(connection=oOrigConn):
         oCS = CachedCardSetHolder()
         oCS.name = oSet.name
@@ -754,6 +753,9 @@ def copy_to_new_AbstractCardDB(oOrigConn, oNewConn, oCardLookup, oLogHandler=Non
         for oCard in oSet.cards:
             oCS.add(1, oCard.canonicalName)
         aAbsCardSets.append(oCS)
+    # Save the current mapping
+    oMapping = PhysicalCardMappingHolder()
+    oMapping.fill_from_db(oOrigConn)
     oLogger.info('Memory copies made')
     oTarget = oNewConn.transaction()
     sqlhub.processConnection = oTarget
@@ -766,6 +768,10 @@ def copy_to_new_AbstractCardDB(oOrigConn, oNewConn, oCardLookup, oLogHandler=Non
     for oSet in aPhysCardSets:
         oSet.createPCS(oCardLookup, dLookupCache)
         oLogger.info('Physical Card Set: %s', oSet.name)
+    oTarget.commit()
+    # Restore mapping
+    oTarget = oNewConn.transaction()
+    oMapping.commit_to_db(oTarget, dLookupCache)
     oTarget.commit()
     sqlhub.processConnection = oOldConn
     return (bRes, aMessages)

@@ -1,3 +1,7 @@
+05 Mar 2008:
+ * Ensure the mapping between physical card sets and physical cards is
+   restored correctly across backups and importing new WW cardlists
+
 28 Feb 2008:
  * Add encoding lines to all *.py files
  * Misc cleanups of file header comments
