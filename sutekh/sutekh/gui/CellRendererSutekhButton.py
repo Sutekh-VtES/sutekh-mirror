@@ -27,7 +27,8 @@ class CellRendererSutekhButton(gtk.GenericCellRenderer):
         self.__gobject_init__()
         self.oPixbuf = None
         self.set_property("mode", gtk.CELL_RENDERER_MODE_ACTIVATABLE)
-        self.show_icon = False
+        self.bShowIcon = False
+        self.bClicked = False
 
     def load_icon(self, sName, oWidget):
         # Load the icon specified in name
@@ -35,13 +36,13 @@ class CellRendererSutekhButton(gtk.GenericCellRenderer):
 
     def do_get_property(self, oProp):
         if oProp.name == 'showicon':
-            return self.show_icon
+            return self.bShowIcon
         else:
             raise AttributeError, 'unknown property %s' % oProp.name
 
     def do_set_property(self, oProp, oValue):
         if oProp.name == 'showicon':
-            self.show_icon = oValue
+            self.bShowIcon = oValue
         else:
             raise AttributeError, 'unknown property %s' % oProp.name
 
@@ -64,7 +65,9 @@ class CellRendererSutekhButton(gtk.GenericCellRenderer):
 
     def on_activate(self, oEvent, oWidget, oPath, oBackgroundArea,
             oCellArea, iFlags):
-        # TODO - setup drawing of clicked image
+        # Note that we need to offset button
+        self.bClicked = True
+        self.oClickedBackgroundArea = oBackgroundArea
         # clicked callback should be called
         self.emit('clicked', oPath)
         return True
@@ -73,7 +76,7 @@ class CellRendererSutekhButton(gtk.GenericCellRenderer):
             oCellArea, oExposeArea, iFlags):
         if self.oPixbuf is None:
             return None
-        if not self.show_icon:
+        if not self.bShowIcon:
             # Draw nothing
             return None
         oPixRect = gtk.gdk.Rectangle()
@@ -85,6 +88,16 @@ class CellRendererSutekhButton(gtk.GenericCellRenderer):
         # xpad, ypad are floats, ut gtk.gdk.Rectangle needs int's
         oPixRect.width  -= int(2 * self.get_property("xpad"))
         oPixRect.height -= int(2 * self.get_property("ypad"))
+
+        if self.bClicked:
+            # Offset when button is clicked
+            if oBackgroundArea.x == self.oClickedBackgroundArea.x and \
+                    oBackgroundArea.y == self.oClickedBackgroundArea.y:
+                # Rendering the same area as was clicked
+                oPixRect.x += 2
+                oPixRect.y += 2
+                # reset state
+                self.bClicked = False
 
         oDrawRect = oCellArea.intersect(oPixRect)
         oDrawRect = oExposeArea.intersect(oDrawRect)
