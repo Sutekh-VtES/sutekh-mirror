@@ -83,8 +83,8 @@ def main(aArgs):
 
     if not oVer.checkVersions(aTables, aVersions) and \
             not oOpts.ignore_db_version:
-        aBadTables =  oVer.getBadTables(aTables, aVersions)
-        if not do_db_upgrade(aBadTables):
+        aLowerTables, aHigherTables =  oVer.getBadTables(aTables, aVersions)
+        if not do_db_upgrade(aLowerTables, aHigherTables):
             return 1
     MultiPaneWindow(oConfig).run()
 

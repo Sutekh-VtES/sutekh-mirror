@@ -140,11 +140,21 @@ def refresh_WW_card_list(oWin):
         oProgressDialog.destroy()
         return True
 
-def do_db_upgrade(aBadTables):
+def do_db_upgrade(aLowerTables, aHigherTables):
     """Attempt to upgrade the database"""
+
+    if len(aHigherTables) > 0:
+        sMesg = "Database version error. Cannot continue\n" \
+                "The following tables have a higher version than expected:\n"
+        sMesg += "\n".join(aHigherTables)
+        do_complaint_buttons(sMesg, gtk.MESSAGE_ERROR,
+                (gtk.STOCK_QUIT, gtk.RESPONSE_CLOSE))
+        # No sensible default here - user can override using
+        # --ignore-db-version if desired
+        return False
     sMesg = "Database version error. Cannot continue\n" \
             "The following tables need to be upgraded:\n"
-    sMesg += "\n".join(aBadTables)
+    sMesg += "\n".join(aLowerTables)
     iRes = do_complaint_buttons(sMesg, gtk.MESSAGE_ERROR,
             (gtk.STOCK_QUIT, gtk.RESPONSE_CLOSE,
                 "Attempt Automatic Database Upgrade", 1))
