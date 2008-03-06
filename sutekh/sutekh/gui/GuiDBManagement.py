@@ -147,8 +147,9 @@ def do_db_upgrade(aLowerTables, aHigherTables):
         sMesg = "Database version error. Cannot continue\n" \
                 "The following tables have a higher version than expected:\n"
         sMesg += "\n".join(aHigherTables)
+        sMesg += "\n\n<b>Unable to continue</b>"
         do_complaint_buttons(sMesg, gtk.MESSAGE_ERROR,
-                (gtk.STOCK_QUIT, gtk.RESPONSE_CLOSE))
+                (gtk.STOCK_QUIT, gtk.RESPONSE_CLOSE), True)
         # No sensible default here - user can override using
         # --ignore-db-version if desired
         return False
