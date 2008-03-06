@@ -8,4 +8,5 @@ good-names=kwargs, cls, __all__
 max-public-methods=30
 min-public-methods=0
 
-
+[MASTER]
+#load-plugins=dict_keys_check

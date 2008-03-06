@@ -12,3 +12,7 @@ check_header.py - A simple script that checks if the comment headers match the
           Intended to be used via find's exec option (something like
           find <dir> -name "*py" -exec python check_header.py -f \{\} \;)
 
+dict_keys_check.py - A plugin to pylint to warn about using 
+          "for x in dict.keys()" syntax. Ensure the directory with this
+          file is in the PYTHONPATH, and uncomment the load-plugins line
+          in sutekh_pylint
