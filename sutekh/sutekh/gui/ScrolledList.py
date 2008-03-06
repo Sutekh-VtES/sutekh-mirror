@@ -55,8 +55,10 @@ class ScrolledList(gtk.Frame):
         return aSelectedList
 
     def set_selection(self, aRowsToSelect):
+        aRowsToSelect = set(aRowsToSelect)
         oIter = self._oListStore.get_iter_first()
         oTreeSelection = self._oTreeView.get_selection()
+        oTreeSelection.unselect_all()
         while oIter is not None:
             sName = self._oListStore.get_value(oIter, 0)
             if sName in aRowsToSelect:
