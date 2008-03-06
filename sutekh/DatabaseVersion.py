@@ -70,10 +70,13 @@ class DatabaseVersion(object):
             bRes = bRes and self.getVersion(oTable,connection=connection) == iVersion
         return bRes
 
-    def getBadTables(self,aTable,aTableVersion,connection=None):
-        aBadTables = []
-        for oTable,iVersion in zip(aTable,aTableVersion):
-            if not self.getVersion(oTable,connection=connection) == iVersion:
-                aBadTables.append(oTable.sqlmeta.table)
-        return aBadTables
+    def getBadTables(self, aTable, aTableVersion, connection=None):
+        aLowerTables = []
+        aHigherTables = []
+        for oTable, iVersion in zip(aTable, aTableVersion):
+            if self.getVersion(oTable,connection=connection) < iVersion:
+                aLowerTables.append(oTable.sqlmeta.table)
+            elif self.getVersion(oTable,connection=connection) > iVersion:
+                aHigherTables.append(oTable.sqlmeta.table)
+        return aLowerTables, aHigherTables
 

@@ -81,8 +81,19 @@ def main(aArgs):
     oVer = DatabaseVersion()
 
     if not oVer.checkVersions(aTables,aVersions) and not oOpts.ignore_db_version:
-        aBadTables = oVer.getBadTables(aTables,aVersions)
-        diag = DBVerErrorPopup(aBadTables)
+        aLowerTables, aHigherTables = oVer.getBadTables(aTables,aVersions)
+        if len(aHigherTables) > 0: 
+            sMesg = "Database version error. Cannot continue\n" \
+                "The following tables have a higher version than expected:\n"
+            sMesg += "\n".join(aHigherTables)
+            sMesg += "\n\n<b>Unable to continue</b>"
+            diag = gtk.MessageDialog(None,0,gtk.MESSAGE_ERROR,
+                    gtk.BUTTONS_CLOSE,None)
+            diag.set_markup(sMesg)
+            diag.run()
+            diag.destroy()
+            return 1
+        diag = DBVerErrorPopup(aLowerTables)
         res = diag.run()
         diag.destroy()
         if res!=1:
