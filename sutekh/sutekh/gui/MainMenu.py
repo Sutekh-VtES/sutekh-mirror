@@ -186,7 +186,7 @@ class MainMenu(gtk.MenuBar, object):
             if oMI is not None:
                 sMenu = oPlugin.get_desired_menu()
                 # Add to the requested menu if supplied
-                if sMenu in self.__dMenus.keys():
+                if sMenu in self.__dMenus:
                     self.__dMenus[sMenu].add(oMI)
                 else:
                     # Plugins acts as a catchall Menu

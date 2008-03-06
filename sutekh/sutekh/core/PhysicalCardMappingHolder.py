@@ -105,7 +105,7 @@ class PhysicalCardMappingHolder(object):
                 if len(oExpansionNode) == 1:
                     continue
                 # Get current database information
-                if oCardNode.attrib['cardname'] in dCardLookupCache.keys():
+                if oCardNode.attrib['cardname'] in dCardLookupCache:
                     sCardName = dCardLookupCache[oCardNode.attrib['cardname']]
                 else:
                     sCardName = oCardNode.attrib['cardname']

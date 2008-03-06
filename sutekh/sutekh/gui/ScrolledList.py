@@ -89,7 +89,7 @@ class ScrolledList(gtk.Frame):
 
     def _render_second_column(self, oColumn, oCell, oModel, oIter):
         sKey = oModel.get_value(oIter, 0)
-        if sKey in self.dSecondColVals.keys():
+        if sKey in self.dSecondColVals:
             oCell.set_property("markup", self.dSecondColVals[sKey])
         else:
             oCell.set_property("markup", "")

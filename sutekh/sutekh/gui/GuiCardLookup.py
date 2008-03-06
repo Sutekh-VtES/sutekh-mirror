@@ -110,12 +110,12 @@ class PCLwithNumbersView(PhysicalCardView):
     def _get_cardcount_data(self, oIter):
         if self._oModel.iter_depth(oIter) == 0:
             sSectionName = self._oModel.getNameFromIter(oIter)
-            if sSectionName in self.dAssignedCards.keys():
+            if sSectionName in self.dAssignedCards:
                 return self.dAssignedCards[sSectionName]
         elif self._oModel.iter_depth(oIter) == 1:
             # Get Card Name from this
             sCardName = self._oModel.getNameFromIter(oIter)
-            if sCardName in self.dAssignedCards.keys():
+            if sCardName in self.dAssignedCards:
                 # Get total for this card
                 iTot = 0
                 for sExpansion, iCnt in self.dAssignedCards[sCardName].iteritems():
@@ -126,7 +126,7 @@ class PCLwithNumbersView(PhysicalCardView):
         elif self._oModel.iter_depth(oIter) == 2:
             oPath = self._oModel.get_path(oIter)
             sCardName, sExpansion, iCnt, iDepth = self._oModel.get_all_from_path(oPath)
-            if sCardName in self.dAssignedCards.keys():
+            if sCardName in self.dAssignedCards:
                 if sExpansion in self.dAssignedCards[sCardName]:
                     return self.dAssignedCards[sCardName][sExpansion]
                 else:
@@ -562,7 +562,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup):
 
     def _set_ignore(self, oButton, oRepLabel, oView, aPhysCards=[], dCandCards={}):
         oRepLabel.hide()
-        if oRepLabel in dCandCards.keys():
+        if oRepLabel in dCandCards:
             del dCandCards[oRepLabel]
             oView.set_card_set_holder_numbers(aPhysCards, dCandCards)
             oView.queue_draw()

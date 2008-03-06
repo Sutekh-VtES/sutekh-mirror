@@ -139,7 +139,7 @@ class CachedCardSetHolder(CardSetHolder):
             if not oAbs:
                 dLookupCache[sName] = None
                 continue
-            if oAbs.canonicalName != sName and sName not in dLookupCache.keys():
+            if oAbs.canonicalName != sName and sName not in dLookupCache:
                 # Update the cache
                 # Should we cache None responses, so to avoid prompting on those
                 # again?
@@ -161,7 +161,7 @@ class CachedCardSetHolder(CardSetHolder):
             if not oAbs:
                 dLookupCache[sName] = None
                 continue
-            if oAbs.canonicalName != sName and sName not in dLookupCache.keys():
+            if oAbs.canonicalName != sName and sName not in dLookupCache:
                 dLookupCache[sName] = oAbs.canonicalName
                 # Update the cache
             for oExpansion, iExtCnt in self._dCardExpansions[sName].iteritems():

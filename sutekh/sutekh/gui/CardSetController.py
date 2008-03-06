@@ -94,7 +94,7 @@ class PhysicalCardSetController(CardSetController):
         Listen on physical cards changed. Needed so we can
         update the model if a card in this set is changed
         """
-        if oPhysCard.id in self.__aPhysCardIds and 'expansionID' in dChanges.keys():
+        if oPhysCard.id in self.__aPhysCardIds and 'expansionID' in dChanges:
             # Changing a card assigned to the card list
             iNewID = dChanges['expansionID']
             oAC = oPhysCard.abstractCard

@@ -327,7 +327,7 @@ class CardListView(gtk.TreeView, object):
                 dSelectedData[sCardName].clear()
                 dSelectedData[sCardName]['None'] = iCount
             else:
-                if 'None' in dSelectedData[sCardName].keys():
+                if 'None' in dSelectedData[sCardName]:
                     continue
                 dSelectedData[sCardName][sExpansion] = iCount
         return dSelectedData
