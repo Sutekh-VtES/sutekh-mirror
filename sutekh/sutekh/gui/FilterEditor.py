@@ -19,6 +19,7 @@ class FilterEditor(gtk.Frame):
         self.__sFilterType = sFilterType
         self.__oBoxModel = FilterBoxModel(oAST, sFilterType)
         self.__oBoxEditor = FilterBoxModelEditor(self.__oBoxModel)
+        # TODO: add button and dialog for editing filter text directly
         self.add(self.__oBoxEditor)
 
     def get_filter(self):
