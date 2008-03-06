@@ -66,4 +66,5 @@ class PhysicalCardParser(object):
         sqlhub.processConnection = oOldConn.transaction()
         oMyHandler.oCS.createPhysicalCardList(oCardLookup)
         sqlhub.processConnection.commit()
+        sqlhub.processConnection.cache.clear()
         sqlhub.processConnection = oOldConn

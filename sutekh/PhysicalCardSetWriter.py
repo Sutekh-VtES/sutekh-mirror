@@ -6,7 +6,10 @@
 """
 Write physical cards from a PhysicalCardSet out to an XML file which
 looks like:
-<physicalcardset name='SetName' author='Author' comment='Comment' annotations='annotations'>
+<physicalcardset name='SetName' author='Author' comment='Comment'>
+  <annotations>
+  Annotatiaons
+  </annotations'>
   <card id='3' name='Some Card' count='5' expansion='Some Expansion' />
   <card id='3' name='Some Card' count='2' expansion='Some Other Expansion' />
   <card id='5' name='Some Other Card' count='2' expansion='Some Other Expansion' />
@@ -18,9 +21,9 @@ from sqlobject import SQLObjectNotFound
 from xml.dom.minidom import getDOMImplementation
 
 class PhysicalCardSetWriter(object):
-    sMyVersion = "1.0"
+    sMyVersion = "1.1"
 
-    def genDoc(self,sPhysicalCardSetName):
+    def genDoc(self, sPhysicalCardSetName):
         dPhys = {}
 
         try:
@@ -35,36 +38,38 @@ class PhysicalCardSetWriter(object):
             print "Failed to find %s" % sPhysicalCardSetName
             return
 
-        for oC in oPCS.cards:
-            oAbs = oC.abstractCard
+        for oCard in oPCS.cards:
+            oAbs = oCard.abstractCard
             try:
-                dPhys[(oAbs.id, oAbs.name, oC.expansion)] += 1
+                dPhys[(oAbs.id, oAbs.name, oCard.expansion)] += 1
             except KeyError:
-                dPhys[(oAbs.id, oAbs.name, oC.expansion)] = 1
+                dPhys[(oAbs.id, oAbs.name, oCard.expansion)] = 1
 
-        oDoc = getDOMImplementation().createDocument(None,'physicalcardset',None)
+        oDoc = getDOMImplementation().createDocument(None, 'physicalcardset', None)
 
         oCardsElem = oDoc.firstChild
-        oCardsElem.setAttribute('sutekh_xml_version',self.sMyVersion)
-        oCardsElem.setAttribute('name',sPhysicalCardSetName)
-        oCardsElem.setAttribute('author',sAuthor)
-        oCardsElem.setAttribute('comment',sComment)
-        oCardsElem.setAttribute('annotations',sAnnotations)
+        oCardsElem.setAttribute('sutekh_xml_version', self.sMyVersion)
+        oCardsElem.setAttribute('name', sPhysicalCardSetName)
+        oCardsElem.setAttribute('author', sAuthor)
+        oCardsElem.setAttribute('comment', sComment)
+        oAnnotationNode = oDoc.createElement('annotations')
+        oAnnotationNode.appendChild(oDoc.createTextNode(sAnnotations))
+        oCardsElem.appendChild(oAnnotationNode)
 
         for tKey, iNum in dPhys.iteritems():
-            iId, sName, sExpansion = tKey
+            iId, sName, oExpansion = tKey
             oCardElem = oDoc.createElement('card')
-            oCardElem.setAttribute('id',str(iId))
-            oCardElem.setAttribute('name',sName)
-            if sExpansion is None:
-                oCardElem.setAttribute('expansion','None Specified')
+            oCardElem.setAttribute('id', str(iId))
+            oCardElem.setAttribute('name', sName)
+            if oExpansion is None:
+                oCardElem.setAttribute('expansion', 'None Specified')
             else:
-                oCardElem.setAttribute('expansion',sExpansion)
-            oCardElem.setAttribute('count',str(iNum))
+                oCardElem.setAttribute('expansion', oExpansion.name)
+            oCardElem.setAttribute('count', str(iNum))
             oCardsElem.appendChild(oCardElem)
 
         return oDoc
 
-    def write(self,fOut,sPhysicalCardSetName):
+    def write(self, fOut, sPhysicalCardSetName):
         oDoc = self.genDoc(sPhysicalCardSetName)
         fOut.write(oDoc.toprettyxml())

@@ -6,7 +6,10 @@
 """
 Write cards from a AbstractCardSet out to an XML file which
 looks like:
-<abstractcardset name='AbstractCardSetName' author='Author' comment='Comment' annotations='annotations'>
+<abstractcardset name='AbstractCardSetName' author='Author' comment='Comment' sutekh_xml_version='1.1'>
+  <annotations>
+  Annotations
+  </annotations>
   <card id='3' name='Some Card' count='5' />
   <card id='5' name='Some Other Card' count='2' />
 </abstractcardset>
@@ -17,9 +20,9 @@ from sqlobject import SQLObjectNotFound
 from xml.dom.minidom import getDOMImplementation
 
 class AbstractCardSetWriter(object):
-    sMyVersion="1.0"
+    sMyVersion = "1.1"
 
-    def genDoc(self,sAbstractCardSetName):
+    def genDoc(self, sAbstractCardSetName):
         dCards = {}
 
         try:
@@ -41,25 +44,27 @@ class AbstractCardSetWriter(object):
                 dCards[(oAbs.id, oAbs.name)] = 1
 
 
-        oDoc = getDOMImplementation().createDocument(None,'abstractcardset',None)
+        oDoc = getDOMImplementation().createDocument(None, 'abstractcardset', None)
 
         oCardsElem = oDoc.firstChild
-        oCardsElem.setAttribute('sutekh_xml_version',self.sMyVersion)
-        oCardsElem.setAttribute('name',sAbstractCardSetName)
-        oCardsElem.setAttribute('author',sAuthor)
-        oCardsElem.setAttribute('comment',sComment)
-        oCardsElem.setAttribute('annotations',sAnnotations)
+        oCardsElem.setAttribute('sutekh_xml_version', self.sMyVersion)
+        oCardsElem.setAttribute('name', sAbstractCardSetName)
+        oCardsElem.setAttribute('author', sAuthor)
+        oCardsElem.setAttribute('comment', sComment)
+        oAnnotationNode = oDoc.createElement('annotations')
+        oAnnotationNode.appendChild(oDoc.createTextNode(sAnnotations))
+        oCardsElem.appendChild(oAnnotationNode)
 
         for tKey, iNum in dCards.iteritems():
             iId, sName = tKey
             oCardElem = oDoc.createElement('card')
-            oCardElem.setAttribute('id',str(iId))
-            oCardElem.setAttribute('name',sName)
-            oCardElem.setAttribute('count',str(iNum))
+            oCardElem.setAttribute('id', str(iId))
+            oCardElem.setAttribute('name', sName)
+            oCardElem.setAttribute('count', str(iNum))
             oCardsElem.appendChild(oCardElem)
 
         return oDoc
 
-    def write(self,fOut,sAbstractCardSetName):
+    def write(self, fOut, sAbstractCardSetName):
         oDoc = self.genDoc(sAbstractCardSetName)
         fOut.write(oDoc.toprettyxml())

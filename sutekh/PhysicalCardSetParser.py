@@ -6,7 +6,10 @@
 """
 Read physical cards from an XML file which
 looks like:
-<physicalcardset name='SetName' author='Author' comment='Comment' annotations='annotations'>
+<physicalcardset name='SetName' author='Author' comment='Comment'>
+  <annotations>
+  Annotations
+  </annotations>
   <card id='3' name='Some Card' count='5' expansion='Some Expansion' />
   <card id='3' name='Some Card' count='2' expansion='Some Other Expansion' />
   <card id='5' name='Some Other Card' count='2' expansion='Some Other Expansion' />
@@ -15,17 +18,19 @@ into a PhysicalCardSet
 """
 
 from sutekh.CardSetHolder import CardSetHolder
+from sutekh.SutekhObjects import IExpansion
 from sutekh.CardLookup import DEFAULT_LOOKUP
 from sqlobject import sqlhub
 from xml.sax import parse, parseString
 from xml.sax.handler import ContentHandler
 
 class PhysicalCardSetHandler(ContentHandler):
-    aSupportedVersions = ['1.0', '0.0']
+    aSupportedVersions = ['1.1', '1.0', '0.0']
 
     def __init__(self):
         ContentHandler.__init__(self)
         self.oCS = CardSetHolder()
+        self.bInAnnotations = False
 
     def startElement(self, sTagName, oAttrs):
         if sTagName == 'physicalcardset':
@@ -50,6 +55,8 @@ class PhysicalCardSetHandler(ContentHandler):
             self.oCS.author = sAuthor
             self.oCS.comment = sComment
             self.oCS.annotations = sAnnotations
+        elif sTagName == 'annotations':
+            self.bInAnnotations = True
         elif sTagName == 'card':
             sName = oAttrs.getValue('name')
             iCount = int(oAttrs.getValue('count'), 10)
@@ -60,10 +67,20 @@ class PhysicalCardSetHandler(ContentHandler):
             if sExpansionName == 'None Specified':
                 self.oCS.add(iCount, sName, None)
             else:
-                self.oCS.add(iCount, sName, sExpansionName)
+                oExpansion = IExpansion(sExpansionName)
+                self.oCS.add(iCount, sName, oExpansion)
+
+    def characters(self, sContent):
+        if self.bInAnnotations:
+            if self.oCS.annotations is not None:
+                sAnnotations = self.oCS.annotations
+                self.oCS.annotations = sAnnotations + sContent
+            else:
+                self.oCS.annotations = sContent
 
     def endElement(self, sName):
-        pass
+        if sName == 'annotations':
+            self.bInAnnotations = False
 
 class PhysicalCardSetParser(object):
     def parse(self, fIn, oCardLookup=DEFAULT_LOOKUP):

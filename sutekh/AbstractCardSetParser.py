@@ -6,7 +6,10 @@
 """
 Read cards from an XML file which
 looks like:
-<abstractcardset name='AbstractCardSetName' author='Author' comment='Comment' annotations='annotations'>
+<abstractcardset name='AbstractCardSetName' author='Author' comment='Comment'>
+  <annotations>
+  Annotations
+  </annotations>
   <card id='3' name='Some Card' count='5' />
   <card id='5' name='Some Other Card' count='2' />
 </abstractcardset>
@@ -15,7 +18,7 @@ into a AbstractCardSet
 
 from sutekh.CardSetHolder import CardSetHolder
 from sutekh.CardLookup import DEFAULT_LOOKUP
-from sqlobject import sqlhub, SQLObjectNotFound
+from sqlobject import sqlhub
 from xml.sax import parse, parseString
 from xml.sax.handler import ContentHandler
 
@@ -25,8 +28,9 @@ class AbstractCardSetHandler(ContentHandler):
         self.acsDB = False
         self.aUnknown = []
         self.sACSName = None
-        self.aSupportedVersions = ['1.0', '0.0']
+        self.aSupportedVersions = ['1.1', '1.0', '0.0']
         self.oCS = None
+        self.bInAnnotations = False
 
     def startElement(self, sTagName, oAttrs):
         if sTagName == 'abstractcardset':
@@ -53,6 +57,8 @@ class AbstractCardSetHandler(ContentHandler):
             self.oCS.author = sAuthor
             self.oCS.comment = sComment
             self.oCS.annotations = sAnnotations
+        elif sTagName == 'annotations':
+            self.bInAnnotations = True
         elif sTagName == 'card':
             sName = oAttrs.getValue('name')
             iCount = int(oAttrs.getValue('count'), 10)
@@ -61,8 +67,17 @@ class AbstractCardSetHandler(ContentHandler):
                 # Add card to virtual cardset
                 self.oCS.add(iCount, sName)
 
+    def characters(self, sContent):
+        if self.bInAnnotations:
+            if self.oCS.annotations is not None:
+                sAnnotations = self.oCS.annotations
+                self.oCS.annotations = sAnnotations + sContent
+            else:
+                self.oCS.annotations = sContent
+
     def endElement(self, sName):
-        pass
+        if sName == 'annotations':
+            self.bInAnnotations = False
 
 class AbstractCardSetParser(object):
     def parse(self, fIn, oCardLookup=DEFAULT_LOOKUP):
