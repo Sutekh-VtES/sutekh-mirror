@@ -35,11 +35,13 @@ class MultiSelectComboBox(gtk.HBox):
         self._oDialog.set_decorated(False)
         self._oDialog.action_area.set_size_request(-1, 0)
         self._oDialog.vbox.pack_start(self._oScrolled)
-        self._oDialog.connect('key-press-event', self.__hide_list)
+        self._oDialog.connect('key-press-event', self.__hide_on_return)
 
-        # self.set_shadow_type(gtk.SHADOW_NONE)
+        # TODO: Hook up row_activate so that double-clicking selects the item and closes the list
 
     def __show_list(self, oButton):
+        self._aOldSelection = self.get_selection()
+
         oParent = self.get_parent_window()
 
         tWinPos = oParent.get_origin() # Need coordinates relative to root window
@@ -53,16 +55,20 @@ class MultiSelectComboBox(gtk.HBox):
         self._oDialog.show_all()
         # WM behaviour means that move is unlikely to work before _oDialog is shown
         self._oDialog.move(*tDialogPos)
-        # oDialog.run()
 
-    def __hide_list(self, oWidget, oEvent):
-        # TODO: figure out a better way to handle key presses
+    def __hide_list(self):
+        self._oDialog.hide_all()
+        self._oButton.set_label(", ".join(self.get_selection()))
+
+    def __hide_on_return(self, oWidget, oEvent):
         if oEvent.type is gtk.gdk.KEY_PRESS:
-            if gtk.gdk.keyval_name(oEvent.keyval) == 'Escape':
-                self._oDialog.hide_all()
-                self._oButton.set_label(", ".join(self.get_selection()))
-                return False
-        return True
+            sKeyName = gtk.gdk.keyval_name(oEvent.keyval)
+            if sKeyName in ['Return','Escape']:
+                if sKeyName == 'Escape':
+                    self.set_selection(self._aOldSelection)
+                self.__hide_list()
+                return True # event handled
+        return False # process further
 
     def fill_list(self, aVals):
         """Fill the list store with the given values"""
@@ -88,6 +94,7 @@ class MultiSelectComboBox(gtk.HBox):
         aRowsToSelect = set(aRowsToSelect)
         oIter = self._oListStore.get_iter_first()
         oTreeSelection = self._oTreeView.get_selection()
+        oTreeSelection.unselect_all()
         while oIter is not None:
             sName = self._oListStore.get_value(oIter, 0)
             if sName in aRowsToSelect:
