@@ -42,11 +42,9 @@ class MultiSelectComboBox(gtk.HBox):
     def __show_list(self, oButton):
         oParent = self.get_parent_window()
 
-        # TODO: list position sometimes seems a bit wonky
-
         tWinPos = oParent.get_origin() # Need coordinates relative to root window
         tButtonPos = (self._oButton.allocation.x, self._oButton.allocation.y)
-        tShift = (4, self._oButton.allocation.height + 23)
+        tShift = (5, self._oButton.allocation.height)
 
         tDialogPos = ( tWinPos[0] + tButtonPos[0] + tShift[0],
                        tWinPos[1] + tButtonPos[1] + tShift[1] )
