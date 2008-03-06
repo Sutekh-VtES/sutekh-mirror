@@ -6,7 +6,8 @@
    """
 
 from sutekh.CardLookup import DEFAULT_LOOKUP
-from sutekh.SutekhObjects import AbstractCardSet, PhysicalCardSet, PhysicalCard
+from sutekh.SutekhObjects import AbstractCardSet, PhysicalCardSet, \
+        PhysicalCard, IExpansion
 
 class CardSetHolder(object):
     def __init__(self):
@@ -65,6 +66,7 @@ class CardSetHolder(object):
                 continue
             for i in range(iCnt):
                 oACS.addAbstractCard(oAbs)
+        oACS.syncUpdate()
 
     def createPhysicalCardList(self, oCardLookup=DEFAULT_LOOKUP):
         """Create the Physical Card List from this Card Set.
@@ -78,8 +80,12 @@ class CardSetHolder(object):
             if not oAbs:
                 continue
             for sExpansion, iExtCnt in self._dCardExpansions[sName].iteritems():
+                if sExpansion != 'None Specified':
+                    oExpansion = IExpansion(sExpansion)
+                else:
+                    oExpansion = None
                 for i in range(iExtCnt):
-                    PhysicalCard(abstractCard=oAbs,expansion=sExpansion)
+                    PhysicalCard(abstractCard=oAbs,expansion=oExpansion)
 
     def createPCS(self, oCardLookup=DEFAULT_LOOKUP):
         """Create a Physical Card Set.
@@ -102,3 +108,4 @@ class CardSetHolder(object):
             if not oPhysCard:
                 continue
             oPCS.addPhysicalCard(oPhysCard.id)
+        oPCS.syncUpdate()

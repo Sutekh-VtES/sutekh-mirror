@@ -24,6 +24,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup):
         self._oPhysCardView = oPhysCardView
 
     def lookup(self, aNames, sInfo):
+        self._oAbsCardView.load() # ensure we're up to date
         dCards = {}
         dUnknownCards = {}
 
@@ -54,6 +55,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup):
         return [(sName in dCards and dCards[sName] or dUnknownCards[sName]) for sName in aNames]
 
     def physical_lookup(self, dCardExpansions, dNameCards, sInfo):
+        self._oPhysCardView.load() # ensure we're up to date
         aCards = []
         dUnknownCards = {}
         for sName in dCardExpansions:
@@ -61,19 +63,24 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup):
             if oAbs is not None:
                 try:
                     aPhysCards = PhysicalCard.selectBy(abstractCardID=oAbs.id)
-                    for sExpansion in dCardExpansions[sName]:
-                        iCnt = dCardExpansions[sName][sExpansion]
+                    for oExpansion in dCardExpansions[sName]:
+                        iCnt = dCardExpansions[sName][oExpansion]
                         for oPhys in aPhysCards:
-                            if oPhys not in aCards \
-                                    and oPhys.expansion == sExpansion \
-                                    and iCnt > 0:
-                                aCards.append(oPhys)
-                                iCnt -= 1
-                                if iCnt == 0:
-                                    break
+                            if oPhys not in aCards and iCnt > 0:
+                                bExpansionMatch = False
+                                if oPhys.expansion:
+                                    if oExpansion:
+                                        bExpansionMatch = oPhys.expansion.id == oExpansion.id
+                                elif oExpansion is None:
+                                    bExpansionMatch = True
+                                if bExpansionMatch:
+                                    aCards.append(oPhys)
+                                    iCnt -= 1
+                                    if iCnt == 0:
+                                        break
                         if iCnt > 0:
-                            dUnknownCards.setdefault((oAbs.name, sExpansion), 0)
-                            dUnknownCards[(oAbs.name, sExpansion)] = iCnt
+                            dUnknownCards.setdefault((oAbs.name, oExpansion), 0)
+                            dUnknownCards[(oAbs.name, oExpansion)] = iCnt
                 except SQLObjectNotFound:
                     for sExpansion in dCardExpansions[sName]:
                         iCnt = dCardExpansions[sName][sExpansion]
@@ -95,7 +102,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup):
         """
 
         oUnknownDialog = gtk.Dialog("Unknown Physical cards found importing " + sInfo, None,
-                gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
+                gtk.DIALOG_DESTROY_WITH_PARENT,
                 (gtk.STOCK_OK, gtk.RESPONSE_OK,
                  gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
 
@@ -176,7 +183,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup):
            Card List
            """
         oUnknownDialog = gtk.Dialog("Unknown cards found importing " + sInfo, None,
-                gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
+                gtk.DIALOG_DESTROY_WITH_PARENT,
                 (gtk.STOCK_OK, gtk.RESPONSE_OK,
                  gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
 
