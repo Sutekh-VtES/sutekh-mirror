@@ -11,9 +11,12 @@ from sutekh.core.Abbreviations import CardTypes, Clans, Creeds, \
                                       Disciplines, Expansions, \
                                       Rarities, Sects, Titles, \
                                       Virtues
+# pylint: disable-msg=E0611
+# pylint doesn't parse sqlobject's column declaration magic correctly
 from sqlobject import sqlmeta, SQLObject, IntCol, UnicodeCol, RelatedJoin, \
                       EnumCol, MultipleJoin, BoolCol, \
                       DatabaseIndex, ForeignKey, SQLObjectNotFound
+# pylint: enable-msg=E0611
 from protocols import advise, Interface
 
 # Interfaces
