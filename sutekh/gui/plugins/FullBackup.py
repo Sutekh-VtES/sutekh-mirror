@@ -113,7 +113,11 @@ class FullBackup(CardListPlugin):
         if oResponse == gtk.RESPONSE_OK:
             sFile = oDlg.get_filename()
             bContinue = True
+        else:
+            sFile = None
+        oDlg.destroy()
 
+        if sFile:
             if not os.path.exists(sFile):
                 Complaint = gtk.MessageDialog(None,0,gtk.MESSAGE_WARNING,
                         gtk.BUTTONS_OK_CANCEL,"Backup file %s does not seem to exist." % sFile)
@@ -134,6 +138,5 @@ class FullBackup(CardListPlugin):
                     Complaint.run()
                     Complaint.destroy()
 
-        oDlg.destroy()
 
 plugin = FullBackup
