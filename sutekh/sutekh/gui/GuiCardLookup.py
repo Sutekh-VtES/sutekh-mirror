@@ -445,6 +445,9 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup):
         # For cases where the user selects an expansion with too few
         # cards, but where there are enough phyiscal cards, we do the best we can
         sNewName, sExpansion = oView.get_selected_card()
+        if sNewName == 'No Card':
+            do_complaint_error("Please select a card")
+            return
         if sType == 'Physical':
             aTheseCards = []
             dCandCards[oRepLabel] = aTheseCards
@@ -476,7 +479,11 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup):
         """Check that there are enough physical cards to fulfill the
            request
         """
-        oAbs = AbstractCard.byCanonicalName(sName.encode('utf8').lower())
+        try:
+            oAbs = AbstractCard.byCanonicalName(sName.encode('utf8').lower())
+        except SQLObjectNotFound:
+            # Can't find the card, so can't fulfil the request
+            return False
         aCandPhysCards = PhysicalCard.selectBy(abstractCardID=oAbs.id)
         for oCard in aCandPhysCards:
             if oCard not in aPhysCards and oCard not in aAssignedCards:
