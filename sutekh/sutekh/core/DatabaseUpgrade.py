@@ -670,7 +670,7 @@ def copy_database(oOrigConn, oDestConnn, oLogHandler=None):
     bRes = True
     aMessages = []
     oTrans = oDestConnn.transaction()
-    # Todo: More error checking
+    # TODO: More error checking
     copy_Rarity(oOrigConn, oTrans)
     oLogger.info('Rarity table copied')
     copy_Expansion(oOrigConn, oTrans)

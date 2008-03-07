@@ -627,7 +627,7 @@ class AnalyzeCardList(CardListPlugin):
                 aMajorDisc.append( (number, disc ) )
                 dLibDisc.setdefault(disc,0) # Need to ensure all these are defined
 
-        # Todo - handle case of a == b == c better than currently
+        # TODO - handle case of a == b == c better than currently
 
         # self.dCryptDisc and dLibDisc have the info we need about the disciplines
         for iNumberToShow in range(2,5):
