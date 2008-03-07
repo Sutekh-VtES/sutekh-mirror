@@ -49,7 +49,16 @@ class CardImageFrame(BasicFrame, CardListViewListener):
 
         self._oImage.set_alignment(0.5, 0.5) # Centre image
 
+        self.sPrefsPath = self._oConfigFile.get_plugin_key('card image path')
+        if self.sPrefsPath is None:
+            self.sPrefsPath = os.path.join(prefs_dir('Sutekh'), 'cardimages')
+            self._oConfigFile.set_plugin_key('card image path', self.sPrefsPath)
+
     type = property(fget=lambda self: "Card Image Frame", doc="Frame Type")
+
+    def update_config_path(self, sNewPath):
+        self.sPrefsPath = sNewPath
+        self._oConfigFile.set_plugin_key('card image path', sNewPath)
 
     def unaccent(self, sCardName):
         """
@@ -74,7 +83,7 @@ class CardImageFrame(BasicFrame, CardListViewListener):
         for sChar in [" ", ".", ",", "'", "(", ")", "-", ":", "!", '"', "/"]:
             sFilename = sFilename.replace(sChar, '')
         sFilename = sFilename + '.jpg'
-        return os.path.join(prefs_dir('Sutekh'), 'cardimages', sFilename)
+        return os.path.join(self.sPrefsPath, sFilename)
 
     def check_cardname(self, sCardName):
         """

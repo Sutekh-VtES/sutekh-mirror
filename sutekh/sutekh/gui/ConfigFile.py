@@ -28,6 +28,7 @@ class ConfigFile(object):
     __sFiltersSection = 'Filters'
     __sPanesSection = 'Open Panes'
     __sPrefsSection = 'GUI Preferences'
+    __sPluginsSection = 'Plugin Options'
 
     def __init__(self, sFileName):
         self.__sFileName = sFileName
@@ -58,6 +59,9 @@ class ConfigFile(object):
             self.__oConfig.add_section(self.__sFiltersSection)
 
         self.__iNum = len(self.__oConfig.items(self.__sFiltersSection))
+
+        if not self.__oConfig.has_section(self.__sPluginsSection):
+            self.__oConfig.add_section(self.__sPluginsSection)
 
     def __str__(self):
         return "FileName : " + self.__sFileName
@@ -184,6 +188,17 @@ class ConfigFile(object):
                 oListener.replaceFilter(sOldFilter, sNewFilter, sKey)
             return
 
+    def get_plugin_key(self, sKey):
+        """
+        Get an option from the plugins section.
+        Return None if no option is set
+        """
+        try:
+            sResult = self.__oConfig.get(self.__sPluginsSection, sKey)
+        except NoOptionError:
+            sResult = None
+        return sResult
 
-
-
+    def set_plugin_key(self, sKey, sValue):
+        "Set a vlue in the plugin section"
+        self.__oConfig.set(self.__sPluginsSection, sKey, sValue)
