@@ -55,11 +55,16 @@ def main(aArgs):
         ensure_dir_exists(sPrefsDir)
         oOpts.sRCFile = os.path.join(sPrefsDir, "sutekhrc")
 
+    oConfig = ConfigFile(oOpts.sRCFile)
+
     if oOpts.db is None:
+        oOpts.db = oConfig.get_databaseURI()
+
+    if oOpts.db is None:
+        # No commandline + no rc entry
         ensure_dir_exists(sPrefsDir)
         oOpts.db = sqlite_uri(os.path.join(sPrefsDir, "sutekh.db"))
-
-    oConfig = ConfigFile(oOpts.sRCFile)
+        oConfig.set_databaseURI(oOpts.db)
 
     oConn = connectionForURI(oOpts.db)
     sqlhub.processConnection = oConn

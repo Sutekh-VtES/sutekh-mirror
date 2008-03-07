@@ -6,7 +6,7 @@
 # Copyright 2007 Neil Muller <drnlmuller+sutekh@gmail.com>
 # License: GPL - See COPYRIGHT file for details
 
-from ConfigParser import RawConfigParser
+from ConfigParser import RawConfigParser, NoOptionError
 
 class ConfigFileListener(object):
     """Listener object for config changes - inspired by CardListModeListener"""
@@ -144,6 +144,16 @@ class ConfigFile(object):
             sData += '.' + str(iPos)
         sValue = sData + ':' + sName
         self.__oConfig.set(self.__sPanesSection, sKey, sValue)
+
+    def set_databaseURI(self, sDatabaseURI):
+        self.__oConfig.set(self.__sPrefsSection, "database url", sDatabaseURI)
+
+    def get_databaseURI(self):
+        try:
+            sResult = self.__oConfig.get(self.__sPrefsSection, "database url")
+        except NoOptionError:
+            sResult = None
+        return sResult
 
     def addFilter(self, sFilter):
         aOptions = self.__oConfig.options(self.__sFiltersSection)
