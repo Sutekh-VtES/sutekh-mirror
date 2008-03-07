@@ -80,7 +80,7 @@ class CardSetHolder(object):
             if not oAbs:
                 continue
             for sExpansion, iExtCnt in self._dCardExpansions[sName].iteritems():
-                if sExpansion != 'None Specified':
+                if sExpansion != 'None Specified' and sExpansion is not None:
                     oExpansion = IExpansion(sExpansion)
                 else:
                     oExpansion = None
