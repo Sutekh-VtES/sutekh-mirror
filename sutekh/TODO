@@ -1,5 +1,4 @@
 Backend:
- * Add ordering mechanism for card lists.
  * DatabaseUpgrade could be less brittle
  * Better error and exception handling
  * Rework SutekhUtility to be less of a mess
@@ -16,7 +15,6 @@ Code Cleanup
 Gui (Functionality):
  * Improve Current Filter dialogs:
     - Provide better help 
- * Add ordering selection dialog (possibly part of filtering dialog).
  * Turn AnalyzeDeck into something more useful - NM
    * Improve Happy Families analysis (select number of disciplines to display,
      disciplines to use, etc)
@@ -36,6 +34,7 @@ Gui (Presentation):
  * Clean up the currently overly tangled controller/view/model interactions
  * Parse in a GTK rc file? (http://www.moeraki.com/pygtktutorial/pygtk2tutorial/ch-GtkRcFiles.html)
  * Parse icons out of http://www.white-wolf.com/vtes/index.php?line=icons and use them in the GUI.
+ * Create icon for executable.
 
 Website:
  * Create logo for wiki.
