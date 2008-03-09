@@ -22,6 +22,13 @@ class EditPhysicalCardMappingDialog(SutekhDialog):
     change the numbers assigned.
     """
     def __init__(self, oParent, dSelectedCards):
+        """
+        Create the dialog.
+        For each abstract card, set up a table of cards and card sets
+        with toggle buttons to control the mapping between the cards.
+        The user can change the distribution within each abstract card
+        freely, but can't change the number allocated to each card set
+        """
         super(EditPhysicalCardMappingDialog, self).__init__(
                 'Physical Card Set card allocation', oParent,
                 gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT)
@@ -43,7 +50,7 @@ class EditPhysicalCardMappingDialog(SutekhDialog):
                 else:
                     aPhysCards = PhysicalCard.selectBy(abstractCardID=oAbstractCard.id)
                 for oPhysCard in aPhysCards:
-                    self.dPhysCards[oAbstractCard].setdefault(oPhysCard,[])
+                    self.dPhysCards[oAbstractCard].setdefault(oPhysCard, [])
                     for oMap in MapPhysicalCardToPhysicalCardSet.selectBy(physicalCardID=oPhysCard.id):
                         oCS = oMap.physicalCardSet
                         self.dPhysCards[oAbstractCard][oPhysCard].append(oCS)
@@ -76,7 +83,7 @@ class EditPhysicalCardMappingDialog(SutekhDialog):
             k = 1
             for oAbstractCard, dPhysMap in self.dPhysCards.iteritems():
                 self.oTable.resize(k, iTableWidth)
-                for oPhysCard in dPhysMap.keys():
+                for oPhysCard in sorted(dPhysMap, key=self.__gen_key):
                     if oPhysCard.expansion is not None:
                         sLabel = oAbstractCard.name + ':' + oPhysCard.expansion.name
                     else:
@@ -89,14 +96,15 @@ class EditPhysicalCardMappingDialog(SutekhDialog):
                 self.oTable.attach(oLabel, 0, 1, k, k+1)
                 k += 1
             j = 1
-            for oCardSet in self.dCardSets.keys():
+            for oCardSet in sorted(self.dCardSets):
                 oLabel = gtk.Label(oCardSet.name)
                 self.oTable.attach(oLabel, j, j+1, 0, 1, xpadding=2)
                 k = 1
                 for oAbstractCard, dPhysMap in self.dPhysCards.iteritems():
                     if self.dCardSets[oCardSet].has_key(oAbstractCard):
                         oTotalLabel = gtk.Label(str(self.dCardSets[oCardSet][oAbstractCard]))
-                        for oPhysCard, aCardSets in dPhysMap.iteritems():
+                        for oPhysCard in sorted(dPhysMap, key=self.__gen_key):
+                            aCardSets = dPhysMap[oPhysCard]
                             oCheckBox = gtk.CheckButton()
                             oCheckBox.set_active(oCardSet in aCardSets)
                             oAlignBox = gtk.Alignment(xalign=0.5)
@@ -107,8 +115,7 @@ class EditPhysicalCardMappingDialog(SutekhDialog):
                                     oCardSet, oAbstractCard, aCardSets)
                     else:
                         oTotalLabel = gtk.Label('0')
-                        for oPhysCard, aCardSets in dPhysMap.iteritems():
-                            k += 1
+                        k += len(dPhysMap)
                     self.oTable.attach(oTotalLabel, j, j+1, k, k+1)
                     k += 1
                 j += 1
@@ -116,7 +123,24 @@ class EditPhysicalCardMappingDialog(SutekhDialog):
             self.aNumbersNotMatched = []
         self.show_all()
 
+    def __gen_key(self, oPhysCard):
+        """
+        We Generate a sort key - card name, expansion, card id
+        This is to ensure stable ordering in the dialog
+        """
+        sName = oPhysCard.abstractCard.canonicalName
+        if oPhysCard.expansion is None:
+            sExpansion = ' Unspecified Expansion'
+        else:
+            sExpansion = oPhysCard.expansion.name
+        sId = str(oPhysCard.id)
+        return sName + ':' + sExpansion + ':' + sId
+
     def do_toggle(self, oWidget, oTotLabel, oCardSet, oAbsCard, aCardSetMapping):
+        """
+        Handle toggle button actions
+        Update the associated lists, and the displayed totals
+        """
         sLabel = oTotLabel.get_label()
         iTot = int(sLabel.split(':')[0])
         if oWidget.get_active():
@@ -141,6 +165,9 @@ class EditPhysicalCardMappingDialog(SutekhDialog):
         oTotLabel.show()
 
     def button_response(self, oWidget, iResponse):
+        """
+        Update the card sets in response to the user pressing OK
+        """
         if iResponse == gtk.RESPONSE_OK:
             if len(self.aNumbersNotMatched) > 0:
                 do_complaint_error("New allocation doesn't match on the numbers")
@@ -149,6 +176,7 @@ class EditPhysicalCardMappingDialog(SutekhDialog):
                 # OK, numbers match, so now re-assign the cards
                 for oAbstractCard, dPhysMap in self.dPhysCards.iteritems():
                     bSignal = False
+                    # Not touching the GUI, so sorted not needed
                     for oPhysCard, aNewCardSets in dPhysMap.iteritems():
                         aOldCardSets = [x.physicalCardSet for x in
                                 MapPhysicalCardToPhysicalCardSet.selectBy(physicalCardID=oPhysCard.id)]
