@@ -254,7 +254,7 @@ class ExpansionRarityFilter(SingleFilter):
 class MultiExpansionRarityFilter(MultiFilter):
     keyword = "Expansion_with_Rarity"
     description = "Expansion with Rarity"
-    helptext = "a list of expansions and rarities,\n   each element specified as an expansion with associated rarity'"
+    helptext = "a list of expansions and rarities (each element specified as an expansion with associated rarity)"
     iswithfilter = True
     islistfilter = True
     types = ['AbstractCard', 'PhysicalCard']
@@ -298,7 +298,7 @@ class DisciplineLevelFilter(MultiFilter):
 class MultiDisciplineLevelFilter(MultiFilter):
     keyword = "Discipline_with_Level"
     description = "Discipline with Level"
-    helptext = "a list of discipline with levels,\n   each element specified as a discipline with level'"
+    helptext = "a list of disciplines with levels (each element specified as a discipline with associated level, i.e. superior or inferior)"
     iswithfilter = True
     islistfilter = True
     types = ['AbstractCard', 'PhysicalCard']
@@ -580,7 +580,7 @@ class MultiLifeFilter(DirectFilter):
 class CardTextFilter(DirectFilter):
     keyword = "CardText"
     description = "Card Text"
-    helptext = "the desired card text to search for. \n   % can be used as a wildcard"
+    helptext = "the desired card text to search for (% can be used as a wildcard)"
     istextentry = True
     types = ['AbstractCard', 'PhysicalCard']
 
@@ -597,7 +597,7 @@ class CardTextFilter(DirectFilter):
 class CardNameFilter(DirectFilter):
     keyword = "CardName"
     description = "Card Name"
-    helptext = "the text to be matched against card names.\n   % can be used as a wildcard"
+    helptext = "the text to be matched against card names (% can be used as a wildcard)"
     istextentry = True
     types = ['AbstractCard', 'PhysicalCard']
 
@@ -626,8 +626,8 @@ class PhysicalCardFilter(Filter):
 
 class MultiPhysicalCardCountFilter(DirectFilter):
     keyword = "PhysicalCardCount"
-    description = "Filter on number of cards in the Physical Card list"
-    helptext = "a list of card numbers"
+    description = "Physical Card Count"
+    helptext = "a list of card numbers (filters on number of cards in the Physical Card list)"
     islistfilter = True
     types = ['AbstractCard', 'PhysicalCard']
 
@@ -680,7 +680,7 @@ class PhysicalExpansionFilter(DirectFilter):
 class MultiPhysicalExpansionFilter(DirectFilter):
     keyword = "PhysicalExpansion"
     description = "Physical Expansion"
-    helptext = "List of physical cards with in the specified expansion"
+    helptext = "a list of expansions (selects of physical cards with in the specified expansion)"
     types = ['PhysicalCard']
     islistfilter = True
     __sUnspec = '  Unspecified Expansion'
@@ -731,7 +731,7 @@ class PhysicalCardSetFilter(Filter):
 class MultiPhysicalCardSetFilter(Filter):
     keyword = "PhysicalSet"
     description = "Physical Sets"
-    helptext = "List of physical cards in the specified Physical Card Sets"
+    helptext = "a list of deck names (selects physical cards in the specified decks)"
     islistfilter = True
     types = ['PhysicalCard']
 
@@ -758,7 +758,7 @@ class MultiPhysicalCardSetFilter(Filter):
 
 class PhysicalCardSetInUseFilter(Filter):
     keyword = "SetsInUse"
-    description = "Physical Sets in use"
+    description = "Physical Sets in Use"
     helptext = "Selects physical cards in the Physical Card Sets marked as in use. This filter takes no parameters."
     types = ['PhysicalCard']
 
