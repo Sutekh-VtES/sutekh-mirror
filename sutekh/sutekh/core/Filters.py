@@ -748,7 +748,6 @@ class PhysicalCardSetInUseFilter(Filter):
         for oCS in PhysicalCardSet.select():
             if oCS.inuse:
                 self.__aDeckIds.append(oCS.id)
-        print self.__aDeckIds
         self.__oT = self._makeTableAlias('physical_map')
         self.__oPT = Table('physical_card')
 
