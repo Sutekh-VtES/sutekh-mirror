@@ -6,21 +6,39 @@
 # GPL - see COPYING for details
 
 from sutekh.gui.MultiSelectComboBox import MultiSelectComboBox
+from sutekh.gui.SutekhDialog import SutekhDialog
 from sutekh.core.FilterParser import FilterNode, BinOpNode, NotOpNode, FilterPartNode
 from sutekh.core import FilterParser
 import gtk
+import pango
 
 class FilterEditor(gtk.Frame):
     """
     GTK component for editing Sutekh filter ASTs.
     """
-    def __init__(self, oAST, sFilterType):
+    def __init__(self, oAST, sFilterType, oParent):
         super(FilterEditor, self).__init__(" Filter Editor ")
         self.__sFilterType = sFilterType
+        self.__oParent = oParent
+
         self.__oBoxModel = FilterBoxModel(oAST, sFilterType)
         self.__oBoxEditor = FilterBoxModelEditor(self.__oBoxModel)
-        # TODO: add button and dialog for editing filter text directly
-        self.add(self.__oBoxEditor)
+
+        oTextEditorButton = gtk.Button("Edit Query Text")
+        oTextEditorButton.connect("clicked",self.__show_text_editor)
+        oHelpButton = gtk.Button("Help")
+        oHelpButton.connect("clicked",self.__show_help_dialog)
+
+        oHBox = gtk.HBox(spacing=5)
+        oHBox.pack_end(oHelpButton,expand=False)
+        oHBox.pack_end(oTextEditorButton,expand=False)
+
+        oVBox = gtk.VBox(spacing=5)
+        oVBox.pack_start(self.__oBoxEditor)
+        oVBox.pack_end(oHBox,expand=False)
+        oVBox.pack_end(gtk.HSeparator(),expand=False)
+
+        self.add(oVBox)
 
     def get_filter(self):
         oAST = self.get_current_ast()
@@ -56,6 +74,45 @@ class FilterEditor(gtk.Frame):
 
     def get_current_text(self):
         return self.__oBoxModel.get_text()
+
+    def __show_text_editor(self,oTextEditorButton):
+        oDlg = SutekhDialog("Query Editor", self.__oParent,
+                gtk.DIALOG_DESTROY_WITH_PARENT,
+                (gtk.STOCK_OK, gtk.RESPONSE_OK,
+                 gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
+
+        oDlg.set_default_size(600,-1)
+
+        oEntry = gtk.Entry()
+        oEntry.set_text(self.get_current_text())
+        oDlg.vbox.pack_start(oEntry)
+        oDlg.show_all()
+
+        try:
+            iResponse = oDlg.run()
+            if iResponse == gtk.RESPONSE_OK:
+                sNewFilter = oEntry.get_text()
+                # TODO: save returned filter
+                print sNewFilter
+        finally:
+            oDlg.destroy()
+
+    def __show_help_dialog(self,oHelpButton):
+        oDlg = SutekhDialog("Help on Filters", self.__oParent,
+                gtk.DIALOG_DESTROY_WITH_PARENT,
+                (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
+
+        oDlg.set_default_size(600,-1)
+
+        oHelpView = FilterHelpTextView(self.__oBoxModel.get_filter_types())
+        oDlg.vbox.pack_start(oHelpView)
+        oDlg.show_all()
+
+        try:
+            iResponse = oDlg.run()
+        finally:
+            oDlg.destroy()
+
 
 class FilterBoxModel(list):
     """
@@ -250,9 +307,9 @@ class FilterBoxModelEditor(gtk.VBox):
 
         oAddButton.connect('clicked', self.__add_filter_part, oTypeSelector)
 
+        # TODO: replace keyword with description in oTypeSelector
         for oFilterType in self.__oBoxModel.get_filter_types():
             oTypeSelector.append_text(oFilterType.keyword)
-            # TODO: display FilterType.helptext somewhere
 
         oTypeSelector.append_text("Sub-Filter")
 
@@ -453,3 +510,53 @@ class VariableNameGenerator(set):
             sName = self.KEYFORM % self.__iNum
         self.add(sName)
         return sName
+
+class FilterHelpBuffer(gtk.TextBuffer, object):
+    def __init__(self):
+        super(FilterHelpBuffer, self).__init__(None)
+
+        # See http://www.pygtk.org/pygtk2reference/class-gtktexttag.html
+        # for some possible properties
+
+        self.create_tag("description", weight=pango.WEIGHT_BOLD)
+        self.create_tag("keyword", style=pango.STYLE_ITALIC)
+        self.create_tag("helptext", left_margin=10)
+
+    def tag_text(self, *args, **kwargs):
+        self.insert_with_tags_by_name(self._oIter, *args, **kwargs)
+
+    def add_help_text(self, description, keyword, helptext):
+        self.tag_text(description,"description")
+        self.tag_text(" (")
+        self.tag_text(keyword,"keyword")
+        self.tag_text(") :\n")
+        self.tag_text(helptext,"helptext")
+        self.tag_text("\n")
+
+    def reset_iter(self):
+        self._oIter = self.get_iter_at_offset(0)
+
+class FilterHelpTextView(gtk.TextView, object):
+    def __init__(self,aFilterTypes):
+        super(FilterHelpTextView, self).__init__()
+        oBuf = FilterHelpBuffer()
+
+        self.set_buffer(oBuf)
+        self.set_editable(False)
+        self.set_cursor_visible(False)
+        self.set_wrap_mode(gtk.WRAP_WORD)
+
+        oBuf.reset_iter()
+
+        oBuf.tag_text(
+            "The available filtering options are listed below. " \
+            "The first line of each item shows the description " \
+            "you'll see in the filter editor in bold with the" \
+            "keyword to use in query strings in italics afterwards." \
+            "The rest of the description describes the arguments " \
+            "the filter takes and the results it produces." \
+            "\n\n"
+        )
+
+        for oF in aFilterTypes:
+            oBuf.add_help_text(oF.description,oF.keyword,oF.helptext)
