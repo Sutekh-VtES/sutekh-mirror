@@ -159,6 +159,18 @@ class DirectFilter(Filter):
     def _getJoins(self):
         return []
 
+# Useful utiltiy function for filters using with
+def split_list(aList):
+    """Split a list of 'X with Y' strings into (X, Y) tuples"""
+    aResults = []
+    for sWithString in aList:
+        try:
+            sVal1, sVal2 = sWithString.split(' with ')
+            aResults.append( (sVal1, sVal2) )
+        except ValueError:
+            return []
+    return aResults
+
 # Individual Filters
 
 class ClanFilter(SingleFilter):
@@ -250,7 +262,11 @@ class MultiExpansionRarityFilter(MultiFilter):
     def __init__(self, aExpansionRarities):
         """  Called with a list of Expansion + Rarity pairs"""
         self._aIds = []
-        for sExpansion, sRarity in aExpansionRarities:
+        if type(aExpansionRarities[0]) is str:
+            aValues = split_list(aExpansionRarities)
+        else:
+            aValues = aExpansionRarities
+        for sExpansion, sRarity in aValues:
             self._aIds.append(IRarityPair( (IExpansion(sExpansion),
                 IRarity(sRarity)) ).id)
         self._oMapTable = self._makeTableAlias('abs_rarity_pair_map')
@@ -289,7 +305,11 @@ class MultiDisciplineLevelFilter(MultiFilter):
 
     def __init__(self, aDiscLevels):
         self._aIds = []
-        for sDiscipline, sLevel in aDiscLevels:
+        if type(aDiscLevels[0]) is str:
+            aValues = split_list(aDiscLevels)
+        else:
+            aValues = aDiscLevels
+        for sDiscipline, sLevel in aValues:
             sLevel = sLevel.lower()
             assert sLevel in ['inferior', 'superior']
             self._aIds.extend([oP.id for oP in IDiscipline(sDiscipline).pairs
