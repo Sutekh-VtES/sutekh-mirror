@@ -11,30 +11,29 @@ import pango
 class CardTextBuffer(gtk.TextBuffer, object):
     def __init__(self):
         super(CardTextBuffer, self).__init__(None)
-        tags = []
 
         # See http://www.pygtk.org/pygtk2reference/class-gtktexttag.html
         # for some possible properties
 
-        tags.append(self.create_tag("label", underline=pango.UNDERLINE_SINGLE))
+        self.create_tag("label", underline=pango.UNDERLINE_SINGLE)
 
-        tags.append(self.create_tag("card_name", weight=pango.WEIGHT_BOLD))
-        tags.append(self.create_tag("cost", style=pango.STYLE_ITALIC))
-        tags.append(self.create_tag("life", style=pango.STYLE_ITALIC))
-        tags.append(self.create_tag("capacity", style=pango.STYLE_ITALIC))
-        tags.append(self.create_tag("group", style=pango.STYLE_ITALIC))
-        tags.append(self.create_tag("level", style=pango.STYLE_ITALIC))
-        tags.append(self.create_tag("burn_option", style=pango.STYLE_ITALIC))
-        tags.append(self.create_tag("card_type", style=pango.STYLE_ITALIC))
-        tags.append(self.create_tag("clan", style=pango.STYLE_ITALIC))
-        tags.append(self.create_tag("sect", style=pango.STYLE_ITALIC))
-        tags.append(self.create_tag("title", style=pango.STYLE_ITALIC))
-        tags.append(self.create_tag("creed", style=pango.STYLE_ITALIC))
-        tags.append(self.create_tag("discipline", style=pango.STYLE_ITALIC))
-        tags.append(self.create_tag("virtue", style=pango.STYLE_ITALIC))
-        tags.append(self.create_tag("expansion", style=pango.STYLE_ITALIC))
-        tags.append(self.create_tag("ruling"))
-        tags.append(self.create_tag("card_text", style=pango.STYLE_ITALIC))
+        self.create_tag("card_name", weight=pango.WEIGHT_BOLD)
+        self.create_tag("cost", style=pango.STYLE_ITALIC)
+        self.create_tag("life", style=pango.STYLE_ITALIC)
+        self.create_tag("capacity", style=pango.STYLE_ITALIC)
+        self.create_tag("group", style=pango.STYLE_ITALIC)
+        self.create_tag("level", style=pango.STYLE_ITALIC)
+        self.create_tag("burn_option", style=pango.STYLE_ITALIC)
+        self.create_tag("card_type", style=pango.STYLE_ITALIC)
+        self.create_tag("clan", style=pango.STYLE_ITALIC)
+        self.create_tag("sect", style=pango.STYLE_ITALIC)
+        self.create_tag("title", style=pango.STYLE_ITALIC)
+        self.create_tag("creed", style=pango.STYLE_ITALIC)
+        self.create_tag("discipline", style=pango.STYLE_ITALIC)
+        self.create_tag("virtue", style=pango.STYLE_ITALIC)
+        self.create_tag("expansion", style=pango.STYLE_ITALIC)
+        self.create_tag("ruling")
+        self.create_tag("card_text", style=pango.STYLE_ITALIC)
 
     def tagText(self, *args, **kwargs):
         self.insert_with_tags_by_name(self._oIter, *args, **kwargs)
