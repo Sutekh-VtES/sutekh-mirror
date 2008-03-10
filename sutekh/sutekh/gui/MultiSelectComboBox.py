@@ -36,8 +36,52 @@ class MultiSelectComboBox(gtk.HBox):
         self._oDialog.action_area.set_size_request(-1, 0)
         self._oDialog.vbox.pack_start(self._oScrolled)
         self._oDialog.connect('key-press-event', self.__hide_on_return)
+        # Catch tail of the event queue to handle pressing to close
+        self._oDialog.connect('event-after', self.__grab_event)
 
-        # TODO: Hook up row_activate so that double-clicking selects the item and closes the list
+        self._bInButton = False
+
+    def __mouse_in_button(self):
+        "Check if mouse pointer is inside the button"
+        (iX, iY) = self._oButton.get_pointer() # mouse pos relative to button
+        oButtonGeom = self._oButton.allocation
+        return (iX >= 0) and (iY >= 0) and \
+                (iX < oButtonGeom.width) and (iY < oButtonGeom.height)
+
+    def __grab_event(self, oWidget, oEvent):
+        """
+        Hook into the event-after chain, so we can check if any 
+        uncaught events refer to the original button.
+        """
+        # This is a bit convuluted, but seems the best
+        # we can do.
+        # If the popup dialog isn't modal, it can't reliably receive focus, and
+        # there are undesireable interactions with the default keybindings on
+        # the parent dialog. 
+        # If it's modal, the button can't catch any events. Thus we fake
+        # limited non-modality here by testing for each event of interest
+        # ourselves. This will all go away if the popup is redone as a
+        # widget, rather than as a tweaked dialog window
+        if oEvent.type == gtk.gdk.BUTTON_PRESS:
+            # Mouse clicked
+            if self.__mouse_in_button():
+                if oEvent.button == 1:
+                    # Left button
+                    self.__hide_list()
+                # Ignore other buttons
+                # Should right button act the same as escape?
+        elif oEvent.type == gtk.gdk.ENTER_NOTIFY:
+            # Mouse has entered the button, so mark as active
+            if self.__mouse_in_button():
+                self._bInButton = True
+                self._oButton.set_state(gtk.STATE_PRELIGHT)
+        elif oEvent.type == gtk.gdk.LEAVE_NOTIFY and self._bInButton:
+            # Leave the button, so unhighlight
+            self._bInButton = False
+            self._oButton.set_state(gtk.STATE_NORMAL)
+        # always propogate events onward, which should be completely
+        # safe, since we're in event-after
+        return False
 
     def __show_list(self, oButton):
         self._aOldSelection = self.get_selection()
@@ -55,6 +99,7 @@ class MultiSelectComboBox(gtk.HBox):
         self._oDialog.show_all()
         # WM behaviour means that move is unlikely to work before _oDialog is shown
         self._oDialog.move(*tDialogPos)
+        self._bInButton = False
 
     def __hide_list(self):
         self._oDialog.hide_all()
