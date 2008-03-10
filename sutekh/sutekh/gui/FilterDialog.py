@@ -117,7 +117,8 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
                 sId = 'Filter '+str(iNum)
 
         self.__dFilterList[sId] = sFilter
-        if self.__sFilterType not in oAST.get_type():
+        if oAST.get_filter_expression() is not None and \
+                self.__sFilterType not in oAST.get_type():
             return sId
         self.__dFilterEditors[sId] = FilterEditor(oAST,self.__sFilterType)
 
@@ -163,8 +164,8 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
             # Construct the Final filter (may be None)
             self.__oFilter = self.__dFilterEditors[sId].get_filter()
         elif iResponse == self.__iAddButtonResponse:
-            # TODO: Add a blank filter, select the new filter automatically
-            self.__oConfig.addFilter('CardType in $var0')
+            # Add a blank filter
+            self.__oConfig.addFilter('')
             return self.run()
         elif iResponse == self.__iCopyButtonResponse:
             sCurr = self.__dFilterEditors[sId].get_current_text()
