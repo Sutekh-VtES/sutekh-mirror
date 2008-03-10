@@ -25,6 +25,8 @@ Gui (Functionality):
  * Add decent keyboard shortcuts
    - del to delete all selected cards from cardlist
    - copy + paste shortcuts?
+ * CSV import plugin
+ * Card draw simulator plugin
 
 Gui (Presentation):
  * Cleanup various dialogs, including
