@@ -27,6 +27,7 @@ class FilterTests(SutekhTest):
             (Filters.MultiExpansionRarityFilter([('Third','Uncommon'),('Jyhad','Rare')]), [u"Aaron's Feeding Razor", u"Abbot"]),
             (Filters.DisciplineLevelFilter(('cel','superior')), [u"Abd al-Rashid"]),
             (Filters.MultiDisciplineLevelFilter([('obt','inferior'),('pot','inferior'),('obf','superior')]), [u"Aaron Bathurst", u"Aaron Duggan, Cameron's Toady"]),
+            (Filters.MultiDisciplineLevelFilter(['obt with inferior','pot with inferior','obf with superior']), [u"Aaron Bathurst", u"Aaron Duggan, Cameron's Toady"]),
             (Filters.CardTypeFilter('Equipment'), [u".44 Magnum", u"AK-47", u"Aaron's Feeding Razor"]),
             (Filters.MultiCardTypeFilter(['Power','Action']), [u"Abbot", u"Abjure", u"Ablative Skin"]),
             (Filters.SectFilter('Sabbat'), [u"Aaron Bathurst", u"Aaron Duggan, Cameron's Toady"]),
@@ -70,12 +71,12 @@ class FilterTests(SutekhTest):
             self.assertEqual(aNames,aExpectedNames,"Filter Object %s failed. %s != %s." % (oFilter,aNames,aExpectedNames))
 
         # Filter values Tests
-        self.assertEqual(Filters.MultiClanFilter.getValues(),[u"Assamite", u"Follower of Set", u"Lasombra", u"Nosferatu antitribu", u"Ravnos", u"Samedi"])
-        self.assertEqual(Filters.MultiDisciplineFilter.getValues(),[u"Celerity", u"Dementation", u"Fortitude", u"Necromancy", u"Obfuscate", u"Obtenebration", u"Potence", u"Presence", u"Quietus", u"Serpentis", u"Thanatosis"])
-        self.assertEqual(Filters.MultiCardTypeFilter.getValues(),[u"Action", u"Combat", u"Equipment", u"Master", u"Power", u"Reaction", u"Vampire"])
-        self.assertEqual(Filters.MultiTitleFilter.getValues(),[])
-        self.assertEqual(Filters.MultiCreedFilter.getValues(),[])
-        self.assertEqual(Filters.MultiVirtueFilter.getValues(),[u"Redemption"])
+        self.assertEqual(Filters.MultiClanFilter.get_values(),[u"Assamite", u"Follower of Set", u"Lasombra", u"Nosferatu antitribu", u"Ravnos", u"Samedi"])
+        self.assertEqual(Filters.MultiDisciplineFilter.get_values(),[u"Celerity", u"Dementation", u"Fortitude", u"Necromancy", u"Obfuscate", u"Obtenebration", u"Potence", u"Presence", u"Quietus", u"Serpentis", u"Thanatosis"])
+        self.assertEqual(Filters.MultiCardTypeFilter.get_values(),[u"Action", u"Combat", u"Equipment", u"Master", u"Power", u"Reaction", u"Vampire"])
+        self.assertEqual(Filters.MultiTitleFilter.get_values(),[])
+        self.assertEqual(Filters.MultiCreedFilter.get_values(),[])
+        self.assertEqual(Filters.MultiVirtueFilter.get_values(),[u"Redemption"])
 
         # TODO: Add tests for:
         #   PhysicalCardFilter
