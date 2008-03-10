@@ -336,6 +336,7 @@ class FilterBoxItem(object):
         self.sFilterType = oAST.filtertype
         self.sVariableName = oAST.sVariableName
         self.aFilterValues = oAST.filtervalues
+        self.bNoneFilter = False
 
         # process values
         self.sLabel, self.aValues = None, None
@@ -347,6 +348,9 @@ class FilterBoxItem(object):
                 assert self.aValues is None
                 self.aValues = oValue.value
             elif oValue.is_entry():
+                pass
+            elif oValue.is_None():
+                self.bNoneFilter = True
                 pass
 
         assert self.sLabel is not None
@@ -367,7 +371,10 @@ class FilterBoxItem(object):
         """
         Return a text representation of the filter.
         """
-        sText = "%s in %s" % (self.sFilterType, self.sVariableName)
+        if self.bNoneFilter:
+            sText = self.sFilterType
+        else:
+            sText = "%s in %s" % (self.sFilterType, self.sVariableName)
         return sText
 
 class FilterBoxItemEditor(gtk.HBox):
@@ -389,6 +396,8 @@ class FilterBoxItemEditor(gtk.HBox):
             oWidget = MultiSelectComboBox()
             oWidget.fill_list(self.__oBoxItem.aValues)
             oWidget.set_list_size(200, 400)
+        elif self.__oBoxItem.bNoneFilter:
+            oWidget = gtk.Label('  < No user data required > ')
         else:
             oWidget = gtk.Entry(100)
             oWidget.set_width_chars(30)
