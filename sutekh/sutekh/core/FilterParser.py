@@ -153,7 +153,8 @@ class FilterYaccParser(object):
         self.aUsedVariables = []
 
     def p_filter(self, p):
-        """filter : filterpart"""
+        """filter : filterpart
+                  | empty"""
         p[0] = FilterNode(p[1])
 
     def p_filterpart_brackets(self, p):
@@ -227,6 +228,10 @@ class FilterYaccParser(object):
         """expression : expression WITH expression"""
         p[0] = WithNode(p[1], p[2], p[3])
 
+    def p_empty(self, p):
+        """empty :"""
+        pass
+
     def p_error(self, p):
         """Parsing error handler"""
         if p is None:
@@ -262,7 +267,11 @@ class FilterParser(object):
     def apply(self, sFilter):
         """Apply the parser to the string sFilter"""
         self._oGlobalFilterParser.reset()
-        oAST = self._oGlobalParser.parse(sFilter)
+        if sFilter != '':
+            oAST = self._oGlobalParser.parse(sFilter)
+        else:
+            # '' can cause the lexer to bomb out, so we avoid it
+            oAST = self._oGlobalParser.parse(' ')
         return oAST
 
 # Object used by get_values representation
@@ -300,6 +309,10 @@ class AstBaseNode(object):
         self.aChildren = aChildren
 
     def __str__(self):
+        """
+        String representation of the AST
+        Useful for debugging
+        """
         sAttrs = '(' + ",".join([ str(oValue) for sKey, oValue \
                 in self.__dict__.items() if not sKey.startswith("_") and \
                 sKey != "aChildren" and oValue not in self.aChildren]) + ")"
@@ -332,6 +345,10 @@ class FilterNode(AstBaseNode):
         """Set filter oExpression"""
         super(FilterNode, self).__init__([oExpression])
         self.oExpression = oExpression
+
+    def get_filter_expression(self):
+        "Get the actual final filter expression"
+        return self.oExpression
 
     def get_values(self):
         """Get ilter values"""
