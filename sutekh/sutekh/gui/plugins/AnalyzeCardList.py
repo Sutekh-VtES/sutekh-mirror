@@ -230,8 +230,8 @@ class AnalyzeCardList(CardListPlugin):
                     self._percentage(self.iNumberPoliticals,
                             self.iNumberLibrary, "Library") + '\n'
             sMainText += "Number of Action Modifiers = " + \
-                    str(self.iNumberActMods) + ' ' + \
-                    self._percentage(self.iNumberActMods,
+                    str(self.iNumberReactions) + ' ' + \
+                    self._percentage(self.iNumberReactions,
                             self.iNumberLibrary, "Library") + '\n'
             sMainText += "Number of Reaction cards = " + \
                     str(self.iNumberReactions) + ' ' + \
@@ -279,13 +279,15 @@ class AnalyzeCardList(CardListPlugin):
         """
         Calculate the cost of the list of Abstract Cards
         Return lists of costs, for pool, blood and convictions
-        Each list contains: Number with variable cost, Maximum Cost, Total Cost
+        Each list contains: Number with variable cost, Maximum Cost, Total Cost,
+        Number of cards with a cost
         """
         dCosts = {}
         for sType in ['blood', 'pool', 'conviction']:
-            dCosts.setdefault(sType, [0, 0, 0])
+            dCosts.setdefault(sType, [0, 0, 0, 0])
         for oAbsCard in aAbsCards:
             if oAbsCard.cost is not None:
+                dCosts[oAbsCard.costtype][3] += 1
                 if oAbsCard.cost == -1:
                     dCosts[oAbsCard.costtype][0] += 1
                 else:
@@ -321,16 +323,20 @@ class AnalyzeCardList(CardListPlugin):
         return dDisciplines, dVirtues, iNoneCount
 
     def _format_cost_numbers(self, sCardType, sCostString, aCost, iNum):
-        sVarPercent = self._percentage(aCost[0], iNum, '%s Cards' % sCardType)
+        sVarPercent = self._percentage(aCost[0], iNum, '%s cards' % sCardType)
+        sNumPercent = self._percentage(aCost[3], iNum, '%s cards' % sCardType)
         sText = "Most Expensive %(name)s Card  (%(type)s) = %(max)d\n" \
                 "Cards with variable cost = %(var)d %(per)s\n" \
-                "Average %(name)s cost (%(type)s) = %(avg)5.3f\n" % {
+                "Cards with %(type)s cost = %(numcost)d %(percost)s\n" \
+                "Average %(name)s card %(type)s cost = %(avg)5.3f\n" % {
                         'name' : sCardType,
                         'type' : sCostString,
                         'var' : aCost[0],
                         'per' : sVarPercent,
                         'max' : aCost[1],
                         'avg' : aCost[2] / float(iNum),
+                        'numcost' : aCost[3],
+                        'percost' : sNumPercent,
                         }
         return sText
 
@@ -463,81 +469,82 @@ class AnalyzeCardList(CardListPlugin):
                 iClanRequirement += 1
 
         # Build up Text
-        sMasterText = "<b>Master Cards :</b>\n"
-        sMasterText += "Number of Masters = " + str(self.iNumberMasters) + ' ' + \
+        sText = "<b>Master Cards :</b>\n"
+        sText += "Number of Masters = " + str(self.iNumberMasters) + ' ' + \
                 self._percentage(self.iNumberMasters,
                         self.iNumberLibrary, "Library") + '\n'
         if self.iNumberMasters > 0:
-            sMasterText += self._format_cost_numbers('Master', 'pool',
+            sText += self._format_cost_numbers('Master', 'pool',
                     aPool, self.iNumberMasters)
             if iClanRequirement > 0:
-                sMasterText += "Number of Masters with a Clan requirement = " + str(iClanRequirement) + ' ' + \
+                sText += "Number of Masters with a Clan requirement = " + str(iClanRequirement) + ' ' + \
                         self._percentage(iClanRequirement,
                                 self.iNumberMasters, "Masters") + '\n'
-        return sMasterText
+        return sText
 
-    def process_combat(self, aCards):
-        aAbsCards = self._get_abstract_cards(aCards)
+    def _default_text(self, aAbsCards, sType, iNum):
         aBlood, aPool, aConviction = self._get_card_costs(aAbsCards)
         iClanRequirement = 0
-        dDisciplines, dVirtues, iNoneCount = self._get_card_disciplines(aAbsCards)
+        dDisciplines, dVirtues, iNoneCount = \
+                self._get_card_disciplines(aAbsCards)
+        dClan = {}
         for oAbsCard in aAbsCards:
             if not len(oAbsCard.clan) == 0:
                 iClanRequirement += 1
+                aClan = [x.name for x in oAbsCard.clan]
+                for sClan in aClan:
+                    dClan.setdefault(sClan, 0)
+                    dClan[sClan] += 1
 
         # Build up Text
-        sCombatText = "<b>Combat Cards :</b>\n"
-        sCombatText += "Number of Combat cards = " + str(self.iNumberCombats) + ' '+ \
-                           self._percentage(self.iNumberCombats,
-                                   self.iNumberLibrary, "Library") + '\n'
-        if self.iNumberCombats > 0:
+        sPerCards = self._percentage(iNum, self.iNumberLibrary, 'Library')
+        sText = "<b>%(type)s Cards :</b>\n" \
+                "Number of %(type)s cards = %(num)d %(per)s\n" % {
+                        'type' : sType,
+                        'num' : iNum,
+                        'per' : sPerCards
+                        }
+        if iNum > 0:
             if aBlood[1] > 0: 
-               sCombatText += self._format_cost_numbers('Combat', 'blood',
-                       aBlood, self.iNumberCombats)
+               sText += self._format_cost_numbers(sType, 'blood',
+                       aBlood, iNum)
             if aConviction[1] > 0:
-               sCombatText += self._format_cost_numbers('Combat', 'conviction',
-                       aConviction, self.iNumberCombats)
+               sText += self._format_cost_numbers(sType, 'conviction',
+                       aConviction, iNum)
             if aPool[1] > 0:
-               sCombatText += self._format_cost_numbers('Combat', 'pool',
-                       aPool, self.iNumberCombats)
+               sText += self._format_cost_numbers(sType, 'pool',
+                       aPool, iNum)
             if iClanRequirement > 0:
-                sCombatText += "Number of Combat cards with a Clan requirement = " \
-                        + str(iClanRequirement) + ' ' + \
-                        self._percentage(iClanRequirement,
-                                self.iNumberCombats, "Combat cards") + '\n'
-            sCombatText += 'Number of cards with no discipline/virtue requirement = %d\n' % iNoneCount
+                sPerClan = self._percentage(iClanRequirement,
+                                iNum , "%s cards" % sType) 
+                sText += "Number of %s cards with a Clan requirement = %d %s\n" \
+                        % (sType, iClanRequirement, sPerClan)
+                for sClan, iNum in sorted(dClan.items(), key=lambda x: x[1], reverse=True):
+                    sText += 'Number of cards requiring clan %s = %d\n' % (sClan, iNum)
+            sText += 'Number of cards with no discipline/virtue requirement = %d\n' % iNoneCount
             if len(dDisciplines) > 0:
-                sCombatText += self._format_disciplines('discipline', dDisciplines, self.iNumberCombats)
+                sText += self._format_disciplines('discipline', dDisciplines, iNum)
             if len(dVirtues) > 0:
-                sCombatText += self._format_disciplines('virtue', dVirtues, self.iNumberCombats)
-        return sCombatText
+                sText += self._format_disciplines('virtue', dVirtues, iNum)
+        return sText
+
+    def process_combat(self, aCards):
+        aAbsCards = self._get_abstract_cards(aCards)
+        sText = self._default_text(aAbsCards, 'Combat', self.iNumberCombats)
+        return sText
 
     def process_action_modifier(self, aCards):
-        for oAbsCard in self._get_abstract_cards(aCards):
-            pass
-
-        # Build up Text
-        sActModText = "<b>Action Modifier Cards :</b>\n"
-        sActModText += "Number of Action Modifier cards = " + str(self.iNumberActMods) + ' '+ \
-                           self._percentage(self.iNumberActMods,
-                                   self.iNumberLibrary, "Library") + '\n'
-        return sActModText
+        aAbsCards = self._get_abstract_cards(aCards)
+        sText = self._default_text(aAbsCards, 'Action Modifier', self.iNumberActMods)
+        return sText
 
     def process_reaction(self, aCards):
-        for oAbsCard in self._get_abstract_cards(aCards):
-            pass
-
-        # Build up Text
-        sReactionText = "<b>Reaction Cards :</b>\n"
-        sReactionText += "Number of Reaction cards = " + str(self.iNumberReactions) + ' '+ \
-                           self._percentage(self.iNumberReactions,
-                                   self.iNumberLibrary, "Library") + '\n'
-        return sReactionText
+        aAbsCards = self._get_abstract_cards(aCards)
+        sText = self._default_text(aAbsCards, 'Reaction', self.iNumberReactions)
+        return sText
 
     def process_event(self, aCards):
-        for oAbsCard in self._get_abstract_cards(aCards):
-            pass
-
+        aAbsCards = self._get_abstract_cards(aCards)
         # Build up Text
         sEventText = "<b>Event Cards :</b>\n"
         sEventText += "Number of Event cards = " + str(self.iNumberEvents) + ' '+ \
@@ -546,82 +553,39 @@ class AnalyzeCardList(CardListPlugin):
         return sEventText
 
     def process_action(self, aCards):
-        for oAbsCard in self._get_abstract_cards(aCards):
-            pass
-
-        # Build up Text
-        sActionText = "<b>Action Cards :</b>\n"
-        sActionText += "Number of Action cards = " + str(self.iNumberActions) + ' '+ \
-                           self._percentage(self.iNumberActions,
-                                   self.iNumberLibrary, "Library") + '\n'
-        return sActionText
+        aAbsCards = self._get_abstract_cards(aCards)
+        sText = self._default_text(aAbsCards, 'Action', self.iNumberActions)
+        return sText
 
     def process_political_action(self, aCards):
-        for oAbsCard in self._get_abstract_cards(aCards):
-            pass
-
-        # Build up Text
-        sPoliticalText = "<b>Political Cards :</b>\n"
-        sPoliticalText += "Number of Political cards = " + str(self.iNumberPoliticals) + ' '+ \
-                           self._percentage(self.iNumberPoliticals,
-                                   self.iNumberLibrary, "Library") + '\n'
-        return sPoliticalText
+        aAbsCards = self._get_abstract_cards(aCards)
+        sText = self._default_text(aAbsCards, 'Political Action', self.iNumberPoliticals)
+        return sText
 
     def process_allies(self, aCards):
-        for oAbsCard in self._get_abstract_cards(aCards):
-            pass
-
-        # Build up Text
-        sAlliesText = "<b>Allies Cards :</b>\n"
-        sAlliesText += "Number of Allies cards = " + str(self.iNumberAllies) + ' '+ \
-                           self._percentage(self.iNumberAllies,
-                                   self.iNumberLibrary, "Library") + '\n'
-        return sAlliesText
-
+        aAbsCards = self._get_abstract_cards(aCards)
+        sText = self._default_text(aAbsCards, 'Ally', self.iNumberAllies)
+        return sText
 
     def process_retainer(self, aCards):
-        for oAbsCard in self._get_abstract_cards(aCards):
-            pass
-
-        # Build up Text
-        sRetainerText = "<b>Retainer Cards :</b>\n"
-        sRetainerText += "Number of Retainer cards = " + str(self.iNumberRetainers) + ' '+ \
-                           self._percentage(self.iNumberRetainers,
-                                   self.iNumberLibrary, "Library") + '\n'
-        return sRetainerText
+        aAbsCards = self._get_abstract_cards(aCards)
+        sText = self._default_text(aAbsCards, 'Retainer', self.iNumberRetainers)
+        return sText
 
     def process_equipment(self, aCards):
-        for oAbsCard in self._get_abstract_cards(aCards):
-            pass
-
-        # Build up Text
-        sEquipmentText = "<b>Equipment Cards :</b>\n"
-        sEquipmentText += "Number of Equipment cards = " + str(self.iNumberEquipment) + ' '+ \
-                           self._percentage(self.iNumberEquipment,
-                                   self.iNumberLibrary, "Library") + '\n'
-        return sEquipmentText
+        aAbsCards = self._get_abstract_cards(aCards)
+        sText = self._default_text(aAbsCards, 'Equipment', self.iNumberEquipment)
+        return sText
 
     def process_conviction(self, aCards):
-        for oAbsCard in self._get_abstract_cards(aCards):
-            pass
-
-        # Build up Text
-        sConvictionText = "<b>Conviction Cards :</b>\n"
-        sConvictionText += "Number of Conviction cards = " + str(self.iNumberConvictions) + ' '+ \
-                           self._percentage(self.iNumberConvictions,
-                                   self.iNumberLibrary, "Library") + '\n'
-        return sConvictionText
+        aAbsCards = self._get_abstract_cards(aCards)
+        sText = self._default_text(aAbsCards, 'Conviction', self.iNumberConvictions)
+        return sText
 
     def process_power(self, aCards):
-        for oAbsCard in self._get_abstract_cards(aCards):
-            pass
-
-        # Build up Text
-        sPowerText = "<b>Power Cards :</b>\n"
-        sPowerText += "Number of Power cards = " + str(self.iNumberPowers) + ' '+ \
-                           self._percentage(self.iNumberPowers,
-                                   self.iNumberLibrary, "Library") + '\n'
-        return sPowerText
+        aAbsCards = self._get_abstract_cards(aCards)
+        sText = self._default_text(aAbsCards, 'Power', self.iNumberPowers)
+        return sText
 
     def process_imbued(self, aCards):
         dDeckImbued = {}
@@ -660,7 +624,7 @@ class AnalyzeCardList(CardListPlugin):
         sImbuedText += "<span foreground = \"blue\">Basic Crypt stats</span>\n"
         sImbuedText += "Number of Imbued = " + str(self.iNumberImbued) + \
                 self._percentage(self.iNumberImbued, self.iCryptSize, "Crypt") + "\n"
-        sImbuedText += "Number of Uniueq Imbued = " + str(iNumberUniqueImbued) + "\n"
+        sImbuedText += "Number of Unique Imbued = " + str(iNumberUniqueImbued) + "\n"
         if self.iNumberImbued > 0:
             sImbuedText += "Minimum Group is : " + str(iImbMinGroup) + "\n"
             sImbuedText += "Maximum Group is : " + str(iImbMaxGroup) + "\n"
