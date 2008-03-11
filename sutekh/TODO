@@ -4,6 +4,8 @@ Backend:
  * Rework SutekhUtility to be less of a mess
  * Consider using SQLObject's new .throughTo method for populating / caching
    the objects abstract cards join to.
+ * Factor out things like the lists of expansions and disciplines in SutekhObjects
+   to a seperate file
 
 Code Cleanup
  * Unify conventions ('Abstract' vs 'AbstractCardSet' in card set management, etc.)
@@ -11,6 +13,7 @@ Code Cleanup
    between the different View-Window-Controller sets for instance, and this
    looks like something worth addressing
  * Change function names to foo_bar convention.
+ * More tests
 
 Gui (Functionality):
  * Improve Current Filter dialogs:
@@ -27,6 +30,8 @@ Gui (Functionality):
    - copy + paste shortcuts?
  * CSV import plugin
  * Card draw simulator plugin
+ * Allow easy setting of the expansion for all selected cards and when importing
+   cards from file 
 
 Gui (Presentation):
  * Cleanup various dialogs, including
