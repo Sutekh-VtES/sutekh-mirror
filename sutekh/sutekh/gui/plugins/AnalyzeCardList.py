@@ -49,7 +49,7 @@ class AnalyzeCardList(CardListPlugin):
             fPrec = iNum/float(iTot)
         else:
             fPrec = 0.0
-        return '(' + str(fPrec*100).ljust(5)[:5] + "% of " + sDesc + ')'
+        return '(%5.3f %% of %s)' % (fPrec*100, sDesc)
 
     def _get_abstract_cards(self, aCards):
         "Get the asbtract cards given the list of names"
@@ -275,7 +275,7 @@ class AnalyzeCardList(CardListPlugin):
         return dlg
 
 
-    def get_card_costs(self, aAbsCards):
+    def _get_card_costs(self, aAbsCards):
         """
         Calculate the cost of the list of Abstract Cards
         Return lists of costs, for pool, blood and convictions
@@ -293,6 +293,55 @@ class AnalyzeCardList(CardListPlugin):
                     dCosts[oAbsCard.costtype][1] = max(iMaxCost, oAbsCard.cost)
                     dCosts[oAbsCard.costtype][2] += oAbsCard.cost
         return dCosts['blood'], dCosts['pool'], dCosts['conviction']
+
+    def _get_card_disciplines(self, aAbsCards):
+        """
+        Extract the set of disciplines and virtues from the cards
+        """
+        dDisciplines = {}
+        dVirtues = {}
+        iNoneCount = 0
+        for oAbsCard in aAbsCards:
+            if not len(oAbsCard.discipline) == 0:
+                aThisDisc = [oP.discipline.fullname for oP in oAbsCard.discipline]
+            else:
+                aThisDisc = []
+            if not len(oAbsCard.virtue) == 0:
+                aThisVirtue = [oV.fullname for oV in oAbsCard.virtue]
+            else:
+                aThisVirtue = []
+            for sDisc in aThisDisc:
+                dDisciplines.setdefault(sDisc, 0)
+                dDisciplines[sDisc] += 1
+            for sVirtue in aThisVirtue:
+                dVirtues.setdefault(sVirtue, 0)
+                dVirtues[sVirtue] += 1
+            if len(oAbsCard.discipline) == 0 and len(oAbsCard.virtue) == 0:
+                iNoneCount += 1
+        return dDisciplines, dVirtues, iNoneCount
+
+    def _format_cost_numbers(self, sCardType, sCostString, aCost, iNum):
+        sVarPercent = self._percentage(aCost[0], iNum, '%s Cards' % sCardType)
+        sText = "Most Expensive %(name)s Card  (%(type)s) = %(max)d\n" \
+                "Cards with variable cost = %(var)d %(per)s\n" \
+                "Average %(name)s cost (%(type)s) = %(avg)5.3f\n" % {
+                        'name' : sCardType,
+                        'type' : sCostString,
+                        'var' : aCost[0],
+                        'per' : sVarPercent,
+                        'max' : aCost[1],
+                        'avg' : aCost[2] / float(iNum),
+                        }
+        return sText
+
+    def _format_disciplines(self, sDiscType, dDisc, iNum):
+        """
+        Format the display of disciplines and virtues
+        """
+        sText = ''
+        for sDisc, iNum in sorted(dDisc.items(), key=lambda x: x[1], reverse=True):
+            sText += 'Number of cards requiring %s %s = %d\n' % (sDiscType, sDisc, iNum)
+        return sText
 
     def process_vampire(self, aCards):
         """Process the list of vampires"""
@@ -407,7 +456,7 @@ class AnalyzeCardList(CardListPlugin):
     def process_master(self, aCards):
         iClanRequirement = 0
         aAbsCards = self._get_abstract_cards(aCards)
-        aBlood, aPool, aConviction = self.get_card_costs(aAbsCards)
+        aBlood, aPool, aConviction = self._get_card_costs(aAbsCards)
 
         for oAbsCard in aAbsCards:
             if not len(oAbsCard.clan) == 0:
@@ -419,26 +468,48 @@ class AnalyzeCardList(CardListPlugin):
                 self._percentage(self.iNumberMasters,
                         self.iNumberLibrary, "Library") + '\n'
         if self.iNumberMasters > 0:
-            sMasterText += "Most Expensive Master = " + str(aPool[1]) +'\n'
-            sMasterText += "Masters with Variable Cost = " + str(aPool[0]) + ' ' + \
-                    self._percentage(aPool[0],
-                            self.iNumberMasters, "Masters") + '\n'
-            sMasterText += "Average Master Cost = " + str(aPool[2] / \
-                    float(self.iNumberMasters)).ljust(5)[:5] + '\n'
-            sMasterText += "Number of Masters with a Clan requirement = " + str(iClanRequirement) + ' ' + \
-                    self._percentage(iClanRequirement,
-                            self.iNumberMasters, "Masters") + '\n'
+            sMasterText += self._format_cost_numbers('Master', 'pool',
+                    aPool, self.iNumberMasters)
+            if iClanRequirement > 0:
+                sMasterText += "Number of Masters with a Clan requirement = " + str(iClanRequirement) + ' ' + \
+                        self._percentage(iClanRequirement,
+                                self.iNumberMasters, "Masters") + '\n'
         return sMasterText
 
     def process_combat(self, aCards):
-        for oAbsCard in self._get_abstract_cards(aCards):
-            pass
+        aAbsCards = self._get_abstract_cards(aCards)
+        aBlood, aPool, aConviction = self._get_card_costs(aAbsCards)
+        iClanRequirement = 0
+        dDisciplines, dVirtues, iNoneCount = self._get_card_disciplines(aAbsCards)
+        for oAbsCard in aAbsCards:
+            if not len(oAbsCard.clan) == 0:
+                iClanRequirement += 1
 
         # Build up Text
         sCombatText = "<b>Combat Cards :</b>\n"
         sCombatText += "Number of Combat cards = " + str(self.iNumberCombats) + ' '+ \
                            self._percentage(self.iNumberCombats,
                                    self.iNumberLibrary, "Library") + '\n'
+        if self.iNumberCombats > 0:
+            if aBlood[1] > 0: 
+               sCombatText += self._format_cost_numbers('Combat', 'blood',
+                       aBlood, self.iNumberCombats)
+            if aConviction[1] > 0:
+               sCombatText += self._format_cost_numbers('Combat', 'conviction',
+                       aConviction, self.iNumberCombats)
+            if aPool[1] > 0:
+               sCombatText += self._format_cost_numbers('Combat', 'pool',
+                       aPool, self.iNumberCombats)
+            if iClanRequirement > 0:
+                sCombatText += "Number of Combat cards with a Clan requirement = " \
+                        + str(iClanRequirement) + ' ' + \
+                        self._percentage(iClanRequirement,
+                                self.iNumberCombats, "Combat cards") + '\n'
+            sCombatText += 'Number of cards with no discipline/virtue requirement = %d\n' % iNoneCount
+            if len(dDisciplines) > 0:
+                sCombatText += self._format_disciplines('discipline', dDisciplines, self.iNumberCombats)
+            if len(dVirtues) > 0:
+                sCombatText += self._format_disciplines('virtue', dVirtues, self.iNumberCombats)
         return sCombatText
 
     def process_action_modifier(self, aCards):
