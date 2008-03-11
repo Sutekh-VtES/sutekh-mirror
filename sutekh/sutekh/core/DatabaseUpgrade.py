@@ -10,7 +10,7 @@ to talk to old database versions, and so forth
 """
 
 from sqlobject import sqlhub, SQLObject, IntCol, UnicodeCol, RelatedJoin, \
-        EnumCol, MultipleJoin, connectionForURI, ForeignKey
+        EnumCol, MultipleJoin, connectionForURI, ForeignKey, SQLObjectNotFound
 from logging import Logger
 from sutekh.core.SutekhObjects import PhysicalCard, AbstractCard, \
         AbstractCardSet, PhysicalCardSet, Expansion, Clan, Virtue, \
@@ -590,67 +590,40 @@ def read_old_database(oOrigConn, oDestConnn, oLogHandler=None):
     bRes = True
     oTrans = oDestConnn.transaction()
     # Magic happens in the individual functions, as needed
-    (bOK, aNewMessages) = copy_old_Rarity(oOrigConn, oTrans)
-    bRes = bRes and bOK
-    aMessages += aNewMessages
-    oLogger.info('Rarity table copied')
-    (bOK, aMessages) = copy_old_Expansion(oOrigConn, oTrans)
-    bRes = bRes and bOK
-    aMessages += aNewMessages
-    oLogger.info('Expansion table copied')
-    (bOK, aNewMessages) = copy_old_Discipline(oOrigConn, oTrans)
-    bRes = bRes and bOK
-    aMessages += aNewMessages
-    oLogger.info('Discipline table copied')
-    (bOK, aNewMessages) = copy_old_Clan(oOrigConn, oTrans)
-    bRes = bRes and bOK
-    aMessages += aNewMessages
-    oLogger.info('Clan table copied')
-    (bOK, aNewMessages) = copy_old_Creed(oOrigConn, oTrans)
-    bRes = bRes and bOK
-    aMessages += aNewMessages
-    oLogger.info('Creed table copied')
-    (bOK, aNewMessages) = copy_old_Virtue(oOrigConn, oTrans)
-    bRes = bRes and bOK
-    aMessages += aNewMessages
-    oLogger.info('Virtue table copied')
-    (bOK, aNewMessages) = copy_old_CardType(oOrigConn, oTrans)
-    bRes = bRes and bOK
-    aMessages += aNewMessages
-    oLogger.info('CardType table copied')
-    (bOK, aNewMessages) = copy_old_Ruling(oOrigConn, oTrans)
-    bRes = bRes and bOK
-    aMessages += aNewMessages
-    oLogger.info('Ruling table copied')
-    (bOK, aNewMessages) = copy_old_DisciplinePair(oOrigConn, oTrans)
-    bRes = bRes and bOK
-    aMessages += aNewMessages
-    oLogger.info('DisciplinePair table copied')
-    (bOK, aNewMessages) = copy_old_RarityPair(oOrigConn, oTrans)
-    bRes = bRes and bOK
-    aMessages += aNewMessages
-    oLogger.info('RarityPair table copied')
-    (bOK, aNewMessages) = copy_old_Sect(oOrigConn, oTrans)
-    bRes = bRes and bOK
-    aMessages += aNewMessages
-    oLogger.info('Sect table copied')
-    (bOK, aNewMessages) = copy_old_Title(oOrigConn, oTrans)
-    bRes = bRes and bOK
-    aMessages += aNewMessages
-    oLogger.info('Title table copied')
-    (bOK, aNewMessages) = copy_old_AbstractCard(oOrigConn, oTrans, oLogger)
-    bRes = bRes and bOK
-    aMessages += aNewMessages
-    (bOK, aNewMessages) = copy_old_PhysicalCard(oOrigConn, oTrans, oLogger)
-    bRes = bRes and bOK
-    aMessages += aNewMessages
-    (bOK, aNewMessages) = copy_old_PhysicalCardSet(oOrigConn, oTrans, oLogger)
-    bRes = bRes and bOK
-    aMessages += aNewMessages
-    (bOK, aNewMessages) = copy_old_AbstractCardSet(oOrigConn, oTrans, oLogger)
-    bRes = bRes and bOK
-    aMessages += aNewMessages
-    oTrans.commit()
+    aToCopy = [
+            (copy_old_Rarity, 'Rarity table', False),
+            (copy_old_Expansion, 'Expansion table', False),
+            (copy_old_Discipline, 'Discipline table', False),
+            (copy_old_Clan, 'Clan table', False),
+            (copy_old_Creed, 'Creed table', False),
+            (copy_old_Virtue, 'Virtue table', False),
+            (copy_old_CardType, 'CardType table', False),
+            (copy_old_Ruling, 'Ruling table', False),
+            (copy_old_DisciplinePair, 'DisciplinePair table', False),
+            (copy_old_RarityPair, 'RarityPair table', False),
+            (copy_old_Sect, 'Sect table', False),
+            (copy_old_Title, 'Title table', False),
+            (copy_old_AbstractCard, 'AbstractCard table', True),
+            (copy_old_PhysicalCard, 'PhysicalCard table', True),
+            (copy_old_PhysicalCardSet, 'PhysicalCardSet table', True),
+            (copy_old_AbstractCardSet, 'AbstractCardSet table', True),
+            ]
+    for copy_func, sName, bPassLogger in aToCopy:
+        try:
+            if bPassLogger:
+                (bOK, aNewMessages) = copy_func(oOrigConn, oTrans, oLogger)
+            else:
+                (bOK, aNewMessages) = copy_func(oOrigConn, oTrans)
+        except SQLObjectNotFound, e:
+            bOK = False
+            aNewMessages = ['Unable to copy %s: Error %s' % (sName, str(e))]
+        else:
+            if not bPassLogger:
+                oLogger.info('%s copied' % sName)
+        bRes = bRes and bOK
+        aMessages += aNewMessages
+        oTrans.commit()
+        oTrans.cache.clear()
     return (bRes, aMessages)
 
 def copy_database(oOrigConn, oDestConnn, oLogHandler=None):
@@ -670,47 +643,42 @@ def copy_database(oOrigConn, oDestConnn, oLogHandler=None):
     bRes = True
     aMessages = []
     oTrans = oDestConnn.transaction()
-    # TODO: More error checking
-    copy_Rarity(oOrigConn, oTrans)
-    oLogger.info('Rarity table copied')
-    copy_Expansion(oOrigConn, oTrans)
-    oLogger.info('Expansion table copied')
-    copy_Discipline(oOrigConn, oTrans)
-    oLogger.info('Discipline table copied')
-    copy_Clan(oOrigConn, oTrans)
-    oLogger.info('Clan table copied')
-    copy_Creed(oOrigConn, oTrans)
-    oLogger.info('Creed table copied')
-    copy_Virtue(oOrigConn, oTrans)
-    oLogger.info('Virtue table copied')
-    copy_CardType(oOrigConn, oTrans)
-    oLogger.info('CardType table copied')
-    copy_Ruling(oOrigConn, oTrans)
-    oLogger.info('Ruling table copied')
-    copy_DisciplinePair(oOrigConn, oTrans)
-    oLogger.info('DisciplinePair table copied')
-    copy_RarityPair(oOrigConn, oTrans)
-    oLogger.info('RarityPair table copied')
-    copy_Sect(oOrigConn, oTrans)
-    oLogger.info('Sect table copied')
-    copy_Title(oOrigConn, oTrans)
-    oLogger.info('Title table copied')
-    oTrans.commit()
-    oTrans.cache.clear()
-    copy_AbstractCard(oOrigConn, oTrans, oLogger)
-    oTrans.commit()
-    oTrans.cache.clear()
-    oTrans = oDestConnn.transaction()
-    copy_PhysicalCard(oOrigConn, oTrans, oLogger)
-    oTrans.commit()
-    oTrans.cache.clear()
-    # Copy Physical card sets
-    copy_PhysicalCardSet(oOrigConn, oTrans, oLogger)
-    oTrans.commit()
-    oTrans.cache.clear()
-    copy_AbstractCardSet(oOrigConn, oTrans, oLogger)
-    oTrans.commit()
-    return (bRes, aMessages)
+    aToCopy = [
+            (copy_Rarity, 'Rarity table', False),
+            (copy_Expansion, 'Expansion table', False),
+            (copy_Discipline, 'Discipline table', False),
+            (copy_Clan, 'Clan table', False),
+            (copy_Creed, 'Creed table', False),
+            (copy_Virtue, 'Virtue table', False),
+            (copy_CardType, 'CardType table', False),
+            (copy_Ruling, 'Ruling table', False),
+            (copy_DisciplinePair, 'DisciplinePair table', False),
+            (copy_RarityPair, 'RarityPair table', False),
+            (copy_Sect, 'Sect table', False),
+            (copy_Title, 'Title table', False),
+            (copy_AbstractCard, 'AbstractCard table', True),
+            (copy_PhysicalCard, 'PhysicalCard table', True),
+            (copy_PhysicalCardSet, 'PhysicalCardSet table', True),
+            (copy_AbstractCardSet, 'AbstractCardSet table', True),
+            ]
+
+    for copy_func, sName, bPassLogger in aToCopy:
+        try:
+            if bRes:
+                if bPassLogger:
+                    copy_func(oOrigConn, oTrans, oLogger)
+                else:
+                    copy_func(oOrigConn, oTrans)
+        except SQLObjectNotFound, e:
+            bRes = False
+            aMessages.append ('Unable to copy %s: Aborting with error: %s'
+                    % (sName, str(e)))
+        else:
+            oTrans.commit()
+            oTrans.cache.clear()
+            if not bPassLogger:
+                oLogger.info('%s copied' % sName)
+    return bRes, aMessages
 
 def copy_to_new_AbstractCardDB(oOrigConn, oNewConn, oCardLookup, oLogHandler=None):
     # Given an existing database, and a new database created from
