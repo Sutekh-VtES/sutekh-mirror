@@ -103,7 +103,7 @@ class MultiSelectComboBox(gtk.HBox):
 
     def __hide_list(self):
         self._oDialog.hide_all()
-        self._oButton.set_label(", ".join(self.get_selection()))
+        self.__update_button_text()
 
     def __hide_on_return(self, oWidget, oEvent):
         if oEvent.type is gtk.gdk.KEY_PRESS:
@@ -114,6 +114,13 @@ class MultiSelectComboBox(gtk.HBox):
                 self.__hide_list()
                 return True # event handled
         return False # process further
+
+    def __update_button_text(self):
+        aSelection = self.get_selection()
+        if aSelection:
+            self._oButton.set_label(", ".join(aSelection))
+        else:
+            self._oButton.set_label(" - ")
 
     def fill_list(self, aVals):
         """Fill the list store with the given values"""
@@ -145,3 +152,4 @@ class MultiSelectComboBox(gtk.HBox):
             if sName in aRowsToSelect:
                 oTreeSelection.select_iter(oIter)
             oIter = self._oListStore.iter_next(oIter)
+        self.__update_button_text()
