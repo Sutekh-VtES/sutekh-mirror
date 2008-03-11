@@ -424,6 +424,9 @@ class FilterBoxModelEditor(gtk.VBox):
         self.__remove_filter_part(None, oEditor, oModel)
 
 class FilterBoxItem(object):
+
+    NONE, ENTRY, LIST = range(3)
+
     def __init__(self, oAST):
         if type(oAST) is NotOpNode:
             self.bNegated = True
@@ -436,7 +439,7 @@ class FilterBoxItem(object):
         self.sFilterType = oAST.filtertype
         self.sVariableName = oAST.sVariableName
         self.aFilterValues = oAST.filtervalues
-        self.bNoneFilter = False
+        self.iValueType = None
 
         # process values
         self.sLabel, self.aValues = None, None
@@ -445,15 +448,18 @@ class FilterBoxItem(object):
                 assert self.sLabel is None
                 self.sLabel = oValue.value
             elif oValue.is_list():
-                assert self.aValues is None
+                assert self.iValueType is None
                 self.aValues = oValue.value
+                self.iValueType = self.LIST
             elif oValue.is_entry():
-                pass
+                assert self.iValueType is None
+                self.iValueType = self.ENTRY
             elif oValue.is_None():
-                self.bNoneFilter = True
-                pass
+                assert self.iValueType is None
+                self.iValueType = self.NONE
 
         assert self.sLabel is not None
+        assert self.iValueType is not None
 
     def get_variable_names(self):
         return set([self.sVariableName])
@@ -471,7 +477,7 @@ class FilterBoxItem(object):
         """
         Return a text representation of the filter.
         """
-        if self.bNoneFilter:
+        if self.iValueType == self.NONE:
             sText = self.sFilterType
         else:
             sText = "%s in %s" % (self.sFilterType, self.sVariableName)
@@ -492,15 +498,17 @@ class FilterBoxItemEditor(gtk.HBox):
 
         self.pack_start(gtk.Label(self.__oBoxItem.sLabel), expand=False)
 
-        if self.__oBoxItem.aValues:
+        if self.__oBoxItem.iValueType == FilterBoxItem.LIST:
             oWidget = MultiSelectComboBox()
             oWidget.fill_list(self.__oBoxItem.aValues)
             oWidget.set_list_size(200, 400)
-        elif self.__oBoxItem.bNoneFilter:
+        elif self.__oBoxItem.iValueType == FilterBoxItem.NONE:
             oWidget = gtk.Label('  < No user data required > ')
-        else:
+        elif self.__oBoxItem.iValueType == FilterBoxItem.ENTRY:
             oWidget = gtk.Entry(100)
             oWidget.set_width_chars(30)
+        else:
+            raise RuntimeError("Unknown FilterBoxItem ValueType %s" % (self.__oBoxItem.iValueType,))
 
         self.__oEntryWidget = oWidget
         self.pack_start(oWidget)
