@@ -71,9 +71,5 @@ class PhysicalCardTests(SutekhTest):
         oP.parse_string(sExpected)
         self.assertEqual(oW.gen_xml_string(), sExpected)
 
-        # test filtering
-
-
-
 if __name__ == "__main__":
     unittest.main()
