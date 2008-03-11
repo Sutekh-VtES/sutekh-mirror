@@ -58,8 +58,9 @@ class FilterEditor(gtk.Frame):
         dValues = self.get_current_values()
         for sName, aVals in dValues.items():
             if not aVals:
-                # TODO: warn user about missing values or disable OK button
-                #       when values not filled in
+                do_complaint_error("Some filter values have not been " \
+                                   "filled in so the selected filter " \
+                                   "will be ignored")
                 return None
 
         aNewValues = oNewAST.get_values()
