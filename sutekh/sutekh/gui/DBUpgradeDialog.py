@@ -24,8 +24,9 @@ class DBUpgradeDialog(SutekhDialog):
         if len(aMessages) > 0:
             sLabelInfo = "The following messages were reported in creating the copy:\n"
             for sStr in aMessages:
-                sLabelInfo += sStr + "\n"
-            oInfolabel = gtk.Label(sLabelInfo)
+                sLabelInfo += '<b>' + sStr + "</b>\n"
+            oInfolabel = gtk.Label()
+            oInfolabel.set_markup(sLabelInfo)
             self.vbox.pack_start(oInfolabel)
         self.add_button("Test upgraded database?\n" \
                 "(No changes are committed)", 1)

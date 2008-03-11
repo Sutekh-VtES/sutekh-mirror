@@ -20,7 +20,8 @@ from sutekh.gui.SutekhDialog import do_complaint_buttons, do_complaint_error, \
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
 from sutekh.io.WwFile import WwFile
 from sutekh.core.SutekhObjects import ObjectList
-from sutekh.SutekhUtility import refresh_tables, read_rulings, read_white_wolf_list
+from sutekh.SutekhUtility import refresh_tables, read_rulings, \
+        read_white_wolf_list
 
 
 def read_cardlist(oCardList, oProgressDialog, oLogHandler):
