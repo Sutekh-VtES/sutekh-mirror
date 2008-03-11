@@ -6,7 +6,7 @@
 # GPL - see COPYING for details
 
 from sutekh.gui.MultiSelectComboBox import MultiSelectComboBox
-from sutekh.gui.SutekhDialog import SutekhDialog
+from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 from sutekh.core.FilterParser import FilterNode, BinOpNode, NotOpNode, FilterPartNode
 from sutekh.core import FilterParser
 import gtk
@@ -21,9 +21,10 @@ class FilterEditor(gtk.Frame):
         super(FilterEditor, self).__init__(" Filter Editor ")
         self.__sFilterType = sFilterType
         self.__oParent = oParent
+        self.__oParser = FilterParser.FilterParser()
 
-        self.__oBoxModel = FilterBoxModel(oAST, sFilterType)
-        self.__oBoxEditor = FilterBoxModelEditor(self.__oBoxModel)
+        self.__oBoxModel = None
+        self.__oBoxEditor = None
 
         oTextEditorButton = gtk.Button("Edit Query Text")
         oTextEditorButton.connect("clicked",self.__show_text_editor)
@@ -34,12 +35,13 @@ class FilterEditor(gtk.Frame):
         oHBox.pack_end(oHelpButton,expand=False)
         oHBox.pack_end(oTextEditorButton,expand=False)
 
-        oVBox = gtk.VBox(spacing=5)
-        oVBox.pack_start(self.__oBoxEditor)
-        oVBox.pack_end(oHBox,expand=False)
-        oVBox.pack_end(gtk.HSeparator(),expand=False)
+        self.__oVBox = gtk.VBox(spacing=5)
+        self.__oVBox.pack_end(oHBox,expand=False)
+        self.__oVBox.pack_end(gtk.HSeparator(),expand=False)
 
-        self.add(oVBox)
+        self.add(self.__oVBox)
+
+        self.replace_ast(oAST)
 
     def get_filter(self):
         oAST = self.get_current_ast()
@@ -67,6 +69,25 @@ class FilterEditor(gtk.Frame):
 
         return oNewAST
 
+    def replace_ast(self,oAST):
+        """Replace the current AST with a new one and update the GUI,
+           preserving variable values if possible.
+           
+           Also used to setup the filter initially.
+           """
+        if self.__oBoxEditor is None:
+            dVars = {}
+        else:
+            dVars = self.get_current_values()
+            self.__oVBox.remove(self.__oBoxEditor)
+
+        self.__oBoxModel = FilterBoxModel(oAST, self.__sFilterType)
+        self.__oBoxEditor = FilterBoxModelEditor(self.__oBoxModel)
+        self.__oVBox.pack_start(self.__oBoxEditor)
+        self.show_all()
+
+        self.set_current_values(dVars)
+
     def get_current_values(self):
         return self.__oBoxEditor.get_current_values()
 
@@ -93,8 +114,12 @@ class FilterEditor(gtk.Frame):
             iResponse = oDlg.run()
             if iResponse == gtk.RESPONSE_OK:
                 sNewFilter = oEntry.get_text()
-                # TODO: save returned filter
-                print sNewFilter
+                try:
+                    oAST = self.__oParser.apply(sNewFilter)
+                except ValueError, oExcep:
+                    do_complaint_error("Invalid Filter: %s\n Error: %s" % (sNewFilter, str(oExcep)))
+                else:
+                    self.replace_ast(oAST)
         finally:
             oDlg.destroy()
 
