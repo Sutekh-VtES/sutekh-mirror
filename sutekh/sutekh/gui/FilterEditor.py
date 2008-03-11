@@ -17,11 +17,11 @@ class FilterEditor(gtk.Frame):
     """
     GTK component for editing Sutekh filter ASTs.
     """
-    def __init__(self, oAST, sFilterType, oParent):
+    def __init__(self, oAST, sFilterType, oParent, oParser):
         super(FilterEditor, self).__init__(" Filter Editor ")
         self.__sFilterType = sFilterType
         self.__oParent = oParent
-        self.__oParser = FilterParser.FilterParser()
+        self.__oParser = oParser
 
         self.__oBoxModel = None
         self.__oBoxEditor = None

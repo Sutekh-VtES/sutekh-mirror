@@ -122,7 +122,7 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
         if oAST.get_filter_expression() is not None and \
                 self.__sFilterType not in oAST.get_type():
             return sId
-        self.__dFilterEditors[sId] = FilterEditor(oAST,self.__sFilterType,self.__oParent)
+        self.__dFilterEditors[sId] = FilterEditor(oAST,self.__sFilterType,self.__oParent,self.__oParser)
 
         oRadioButton = gtk.RadioButton(self.__oRadioGroup)
         if self.__oRadioGroup is None:
@@ -216,7 +216,7 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
         else:
             # was in editors before and should still be there, replace it
             dOldVars = self.__dFilterEditors[sId].get_current_values()
-            self.__dFilterEditors[sId] = FilterEditor(oAST,self.__sFilterType,self.__oParent)
+            self.__dFilterEditors[sId] = FilterEditor(oAST,self.__sFilterType,self.__oParent,self__oParser)
             self.__dFilterEditors[sId].set_current_values(dOldVars)
 
             self.__dButtons[sId].set_label(sNewFilter)
