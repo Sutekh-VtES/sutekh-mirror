@@ -61,7 +61,7 @@ class SimpleLookup(AbstractCardLookup, PhysicalCardLookup):
     def lookup(self, aNames, sInfo):
         aCards = []
         for sName in aNames:
-            if not sName:
+            if sName:
                 try:
                     oAbs = AbstractCard.byCanonicalName(sName.encode('utf8').lower())
                     aCards.append(oAbs)
