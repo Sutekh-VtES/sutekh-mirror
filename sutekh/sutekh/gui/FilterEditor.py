@@ -11,6 +11,7 @@ from sutekh.core.FilterParser import FilterNode, BinOpNode, NotOpNode, FilterPar
 from sutekh.core import FilterParser
 import gtk
 import pango
+import gobject
 
 class FilterEditor(gtk.Frame):
     """
@@ -302,16 +303,25 @@ class FilterBoxModelEditor(gtk.VBox):
         oAddButton = gtk.Button("+")
         oHBox.pack_start(oAddButton, expand=False)
 
-        oTypeSelector = gtk.combo_box_new_text()
+        oTypeStore = gtk.ListStore(gobject.TYPE_STRING,gobject.TYPE_STRING,)
+        oTypeSelector = gtk.ComboBox(oTypeStore)
         oHBox.pack_start(oTypeSelector, expand=False)
+
+        oCell = gtk.CellRendererText()
+        oTypeSelector.pack_start(oCell,True)
+        oTypeSelector.add_attribute(oCell,'text',0)
 
         oAddButton.connect('clicked', self.__add_filter_part, oTypeSelector)
 
-        # TODO: replace keyword with description in oTypeSelector
         for oFilterType in self.__oBoxModel.get_filter_types():
-            oTypeSelector.append_text(oFilterType.keyword)
+            oIter = oTypeStore.append(None)
+            oTypeStore.set(oIter, 0, oFilterType.description,
+                                  1, oFilterType.keyword)
 
-        oTypeSelector.append_text("Sub-Filter")
+        oIter = oTypeStore.append(None)
+        oTypeStore.set(oIter, 0, "Sub-Filter",
+                              1, None)
+
 
     def get_title(self):
         if self.__oBoxModel.sBoxType == FilterBoxModel.AND:
@@ -356,18 +366,25 @@ class FilterBoxModelEditor(gtk.VBox):
             self.__oBoxModel.set_boxtype(sBoxType, bNegate)
 
     def __add_filter_part(self, oAddButton, oTypeSelector):
-        sType = oTypeSelector.get_active_text()
-        if not sType:
+        oIter = oTypeSelector.get_active_iter()
+        oModel = oTypeSelector.get_model()
+
+        if not oIter:
             # ignore add button clicks when a type isn't selected
             return
-        if sType == "Sub-Filter":
+
+        sDescription = oModel.get_value(oIter,0)
+        sKeyword = oModel.get_value(oIter,1)
+
+        if sDescription == "Sub-Filter":
             oChildBoxModel = self.__oBoxModel.add_child_box(FilterBoxModel.AND)
             oChildEditor = FilterBoxModelEditor(oChildBoxModel)
             oChildEditor.register_remove_box(self.__remove_model)
         else:
-            oChildItem = self.__oBoxModel.add_child_item(sType)
+            oChildItem = self.__oBoxModel.add_child_item(sKeyword)
             oChildEditor = FilterBoxItemEditor(oChildItem)
             oChildEditor.connect_remove_button(self.__remove_filter_part)
+
         self.__aChildren.append(oChildEditor)
         self.__oChildArea.pack_start(oChildEditor, expand=False)
         self.show_all()
