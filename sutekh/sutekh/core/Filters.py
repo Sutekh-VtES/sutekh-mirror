@@ -649,9 +649,11 @@ class MultiPhysicalCardCountFilter(DirectFilter):
                 having=func.COUNT(PhysicalCard.q.abstractCardID) > 30))
             self._oFilters.append(oGreater30Query)
         if len(aCounts) > 0:
+            # SQLite doesn't like strings here, so convert to int
             oCountFilter = IN(AbstractCard.q.id, Select(PhysicalCard.q.abstractCardID,
                 groupBy=PhysicalCard.q.abstractCardID,
-                having=IN(func.COUNT(PhysicalCard.q.abstractCardID), aCounts)))
+                having=IN(func.COUNT(PhysicalCard.q.abstractCardID),
+                    [int(x) for x in aCounts])))
             self._oFilters.append(oCountFilter)
 
     @classmethod

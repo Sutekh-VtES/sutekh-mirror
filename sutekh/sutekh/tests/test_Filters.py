@@ -92,10 +92,10 @@ class FilterTests(SutekhTest):
             self.assertEqual(aNames, aExpectedNames, "Filter Object %s failed. %s != %s." % (oFilter, aNames, aExpectedNames))
 
         # test filtering on expansion
-        aCardExpansions = [('.44 magnum', 'Jyhad'),
-                ('ak-47', 'LotN'),
-                ('abbot', 'Third Edition'),
-                ('abombwe', 'Legacy of Blood')]
+        aCardExpansions = [('.44 Magnum', 'Jyhad'),
+                ('AK-47', 'LotN'),
+                ('Abbot', 'Third Edition'),
+                ('Abombwe', 'Legacy of Blood')]
 
         aExpansionTests = [
                 (Filters.PhysicalExpansionFilter('Jyhad'), ['.44 Magnum']),
@@ -116,6 +116,29 @@ class FilterTests(SutekhTest):
             aCards = oFullFilter.select(PhysicalCard).distinct()
             aNames = sorted([oC.abstractCard.name for oC in aCards])
             self.assertEqual(aNames, aExpectedNames, "Filter Object %s failed. %s != %s." % (oFilter, aNames, aExpectedNames))
+
+        aCardsWithExpansions = [x[0] for x in aCardExpansions]
+        aSingle = [x for x in self.aExpectedCards if x not in aCardsWithExpansions]
+        aDoubles = []
+        for sName in aCardsWithExpansions:
+            aDoubles.append(sName)
+            aDoubles.append(sName)
+        aNumberTests = [
+                (Filters.MultiPhysicalCardCountFilter(['1']),
+                    aSingle, aSingle),
+                (Filters.MultiPhysicalCardCountFilter(['2']),
+                    aDoubles, aCardsWithExpansions),
+                    ]
+
+        for oFilter, aExpectedNames, aAbstractExpectedNames in aNumberTests:
+            oFullFilter = Filters.FilterAndBox([Filters.PhysicalCardFilter(), oFilter])
+            aCards = oFullFilter.select(PhysicalCard).distinct()
+            aNames = sorted([oC.abstractCard.name for oC in aCards])
+            self.assertEqual(aNames, aExpectedNames, "Filter Object %s failed. %s != %s." % (oFilter, aNames, aExpectedNames))
+            # Also test Abstract card selects
+            aCards = oFilter.select(AbstractCard).distinct()
+            aNames = sorted([oC.name for oC in aCards])
+            self.assertEqual(aNames, aAbstractExpectedNames, "Filter Object %s failed. %s != %s." % (oFilter, aNames, aAbstractExpectedNames))
 
         # TODO: Add tests for:
         #   PhysicalCardSetFilter
