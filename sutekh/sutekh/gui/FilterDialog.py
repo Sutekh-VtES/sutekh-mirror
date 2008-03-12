@@ -205,7 +205,7 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
             # wasn't in editors before, might be okay now, try add it
             self.__add_filter_to_dialog(self, oAST, sNewFilter, sId)
             self.__oRadioGroup.show_all()
-        elif self.__sFilterType not in oAST.get_type():
+        elif oAST.get_type() and self.__sFilterType not in oAST.get_type():
             # was in editors before, but shouldn't be now, remove it
             del self.__dFilterEditors[sId]
             oRadioButton = self.__dButtons[sId]
@@ -215,6 +215,7 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
             self.__oRadioArea.show_all()
         else:
             # was in editors before and should still be there, replace it
+            # We treat oAST.get_type() is None as a catch-all type
             dOldVars = self.__dFilterEditors[sId].get_current_values()
             self.__dFilterEditors[sId] = FilterEditor(oAST,self.__sFilterType, self.__oParent, self.__oParser)
             self.__dFilterEditors[sId].set_current_values(dOldVars)
