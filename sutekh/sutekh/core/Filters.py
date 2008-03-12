@@ -617,7 +617,8 @@ class PhysicalCardFilter(Filter):
         pass
 
     def _getJoins(self):
-        # This and AbstractCardSetFilter are the only filters allowed to pass the AbstractCard table as a joining table.
+        # This, AbstractCardSetFilter and PhysicalCardSetFilter are the only filters allowed to pass the AbstractCard table as a joining table.
+        # The join is needed so filtering on abstract card properties can work
         oT = Table('physical_card')
         return [LEFTJOINOn(None, AbstractCard, AbstractCard.q.id == oT.abstract_card_id)]
 
@@ -723,7 +724,13 @@ class PhysicalCardSetFilter(Filter):
         self.__oPT = Table('physical_card')
 
     def _getJoins(self):
-        return [LEFTJOINOn(None, self.__oT, self.__oPT.id == self.__oT.q.physical_card_id)]
+        # The join on the AbstractCard table is needed to enable filtering physical
+        # card sets on abstract card propeties, since the base class for
+        # physical card sets is the mapping table
+        # Only this, PhysicalCardFilter and AbstractCardSetFilter can join to
+        # the AbstractCard table like this
+        return [LEFTJOINOn(None, AbstractCard, AbstractCard.q.id == self.__oPT.abstract_card_id),
+                LEFTJOINOn(None, self.__oT, self.__oPT.id == self.__oT.q.physical_card_id)]
 
     def _getExpression(self):
         return self.__oT.q.physical_card_set_id == self.__iDeckId
@@ -734,6 +741,9 @@ class MultiPhysicalCardSetFilter(Filter):
     helptext = "a list of deck names (selects physical cards in the specified decks)"
     islistfilter = True
     types = ['PhysicalCard']
+
+    # We don't need the join as in PhysicalCardSetFilter, because this is
+    # never the base filter in the gui
 
     def __init__(self, aNames):
         # Select cards belonging to the PhysicalCardSet
@@ -790,7 +800,8 @@ class AbstractCardSetFilter(SingleFilter):
         self._oIdField = self._oMapTable.abstract_card_set_id
 
     def _getJoins(self):
-        # This and PhysicalCardFilter are the only filters allowed to pass the AbstractCard table as a joining table.
+        # This, PhysicalCardSetFilter and PhysicalCardFilter are the only filters allowed to pass the AbstractCard table as a joining table.
+        # The join is needed so filtering on abstract card properties can work
         return [LEFTJOINOn(None, AbstractCard, AbstractCard.q.id == self._oMapTable.abstract_card_id)]
 
 class SpecificCardFilter(DirectFilter):
