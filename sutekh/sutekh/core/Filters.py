@@ -15,7 +15,7 @@ from sutekh.core.SutekhObjects import AbstractCard, IAbstractCard, \
                                  RarityPair, PhysicalCardSet, PhysicalCard, \
                                  AbstractCardSet
 from sqlobject import AND, OR, NOT, LIKE, IN, func
-from sqlobject.sqlbuilder import Table, Alias, LEFTJOINOn, Select, TRUE
+from sqlobject.sqlbuilder import Table, Alias, LEFTJOINOn, Select, TRUE, FALSE
 
 # Filter Base Class
 
@@ -789,7 +789,14 @@ class PhysicalCardSetInUseFilter(Filter):
         return [LEFTJOINOn(None, self.__oT, self.__oPT.id == self.__oT.q.physical_card_id)]
 
     def _getExpression(self):
-        return IN(self.__oT.q.physical_card_set_id, self.__aDeckIds)
+        # We avoid IN(a, []) as it is fragile.
+        # This + MultiPhysicalExpansionFilter are the only filters
+        # the gui calls where this is possible with valid input, so
+        # we treat as a special cases.
+        if len(self.__aDeckIds) > 0:        
+            return IN(self.__oT.q.physical_card_set_id, self.__aDeckIds)
+        else:                                                   
+            return FALSE # IN(a, []) is false
 
 class AbstractCardSetFilter(SingleFilter):
     types = ['AbstractCard', 'PhysicalCard']
