@@ -617,7 +617,7 @@ class PhysicalCardFilter(Filter):
         pass
 
     def _getJoins(self):
-        # This and PhysicalCardSetFilter are the only filters allowed to pass the AbstractCard table as a joining table.
+        # This and AbstractCardSetFilter are the only filters allowed to pass the AbstractCard table as a joining table.
         oT = Table('physical_card')
         return [LEFTJOINOn(None, AbstractCard, AbstractCard.q.id == oT.abstract_card_id)]
 
@@ -723,9 +723,7 @@ class PhysicalCardSetFilter(Filter):
         self.__oPT = Table('physical_card')
 
     def _getJoins(self):
-        # This and PhysicalCardFilter are the only filters allowed to pass the AbstractCard table as a joining table.
-        return [LEFTJOINOn(None, AbstractCard, AbstractCard.q.id == self.__oPT.abstract_card_id),
-                LEFTJOINOn(None, self.__oT, self.__oPT.id == self.__oT.q.physical_card_id)]
+        return [LEFTJOINOn(None, self.__oT, self.__oPT.id == self.__oT.q.physical_card_id)]
 
     def _getExpression(self):
         return self.__oT.q.physical_card_set_id == self.__iDeckId
@@ -792,6 +790,7 @@ class AbstractCardSetFilter(SingleFilter):
         self._oIdField = self._oMapTable.abstract_card_set_id
 
     def _getJoins(self):
+        # This and PhysicalCardFilter are the only filters allowed to pass the AbstractCard table as a joining table.
         return [LEFTJOINOn(None, AbstractCard, AbstractCard.q.id == self._oMapTable.abstract_card_id)]
 
 class SpecificCardFilter(DirectFilter):
