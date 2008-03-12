@@ -99,7 +99,6 @@ class AnalyzeCardList(CardListPlugin):
         oMainLabel = gtk.Label()
         oMainLabel.set_line_wrap(True)
         oMainLabel.set_width_chars(60)
-        oHappyFamiliesLabel = gtk.Label()
         oVampiresLabel = gtk.Label()
         oImbuedLabel = gtk.Label()
         oMastersLabel = gtk.Label()
@@ -115,8 +114,10 @@ class AnalyzeCardList(CardListPlugin):
         oEquipmentLabel = gtk.Label()
         oPoliticalLabel = gtk.Label()
 
+        oHappyBox = gtk.VBox(False, 2)
+
         oNotebook.append_page(oMainLabel, gtk.Label('Basic Info'));
-        oNotebook.append_page(oHappyFamiliesLabel, gtk.Label('Happy Families Analysis'));
+        oNotebook.append_page(oHappyBox, gtk.Label('Happy Families Analysis'));
         oNotebook.append_page(oVampiresLabel, gtk.Label('Vampires'));
         oNotebook.append_page(oAlliesLabel, gtk.Label('Allies'));
         oNotebook.append_page(oMastersLabel, gtk.Label('Master Cards'));
@@ -138,6 +139,7 @@ class AnalyzeCardList(CardListPlugin):
         self.iMinGroup = 500
         self.iNumberMult = 0
         self.dCryptDisc = {}
+        self.dDeckDisc = {}
 
         # Split out the card types of interest
         aAllCards = list(self.model.getCardIterator(None))
@@ -179,7 +181,8 @@ class AnalyzeCardList(CardListPlugin):
         aMasterCards = list(self.model.getCardIterator(CardTypeFilter('Master')))
         self.iNumberMasters = len(aMasterCards)
 
-        self.iNumberLibrary = self.iTotNumber - self.iNumberVampires - self.iNumberImbued
+        self.iNumberLibrary = self.iTotNumber - self.iNumberVampires \
+                - self.iNumberImbued
 
         oCombatLabel.set_markup(self.process_combat(aCombatCards))
         oReactionLabel.set_markup(self.process_reaction(aReactionCards))
@@ -194,7 +197,7 @@ class AnalyzeCardList(CardListPlugin):
         oConvictionsLabel.set_markup(self.process_conviction(aConvictionCards))
         oMastersLabel.set_markup(self.process_master(aMasterCards))
 
-        oHappyFamiliesLabel.set_markup(self.happyFamiliesAnalysis(aAllCards))
+        self.happy_families_analysis(aAllCards, oHappyBox)
 
         # Set main notebook text
 
@@ -355,7 +358,6 @@ class AnalyzeCardList(CardListPlugin):
         dVampCapacity = {}
         dDeckTitles = {}
         dDeckClans = {}
-        dDeckDisc = {}
 
         iTotCapacity = 0
         iNumberUniqueVampires = 0
@@ -391,14 +393,11 @@ class AnalyzeCardList(CardListPlugin):
                 else:
                     dDeckClans[clan.name] += 1
 
-            for disc in oAbsCard.discipline:
-                if disc.discipline.fullname in dDeckDisc:
-                    dDeckDisc[disc.discipline.fullname][0] += 1
-                else:
-                    dDeckDisc[disc.discipline.fullname] = [1, 0]
-
-                if disc.level == 'superior':
-                    dDeckDisc[disc.discipline.fullname][1] += 1
+            for oDisc in oAbsCard.discipline:
+                self.dDeckDisc.setdefault(oDisc.discipline.fullname, [1, 0])
+                self.dDeckDisc[oDisc.discipline.fullname][0] += 1
+                if oDisc.level == 'superior':
+                    self.dDeckDisc[oDisc.discipline.fullname][1] += 1
 
             for title in oAbsCard.title:
                 iTitles += 1
@@ -446,7 +445,7 @@ class AnalyzeCardList(CardListPlugin):
                             self.iCryptSize, "Crypt") + '\n'
 
             sVampText += "<span foreground = \"blue\">Disciplines</span>\n"
-            for discipline, number in sorted(dDeckDisc.iteritems(),
+            for discipline, number in sorted(self.dDeckDisc.iteritems(),
                     key=self._get_sort_key, reverse=True):
                 sVampText += str(number[0])+" Vampires with " + discipline \
                            + ' ' + self._percentage(number[0],
@@ -646,8 +645,12 @@ class AnalyzeCardList(CardListPlugin):
 
         return sImbuedText
 
-    def happyFamiliesAnalysis(self, aCards):
+    def happy_families_analysis(self, aCards, oWidget):
         dLibDisc = {}
+
+        oMainLabel = gtk.Label()
+
+        oWidget.pack_start(oMainLabel)
 
         dLibDisc.setdefault('No Discipline', 0)
 
@@ -677,7 +680,23 @@ class AnalyzeCardList(CardListPlugin):
 
         if self.iCryptSize == 0:
             sHappyFamilyText += "\n<span foreground = \"red\">Need to have a crypt to do the analysis</span>\n"
-            return sHappyFamilyText
+            oMainLabel.set_markup(sHappyFamilyText)
+            oWidget.show_all()
+            return 
+
+        if len(self.dDeckDisc) < 2:
+            sHappyFamilyText += "\n<span foreground = \"red\">Analysis not relevant to mono-discipline crypts</span>\n"
+            oMainLabel.set_markup(sHappyFamilyText)
+            oWidget.show_all()
+            return 
+
+        aTopVampireDisc = sorted(self.dCryptDisc, reverse=True)
+        aSortedDiscs = []
+        for iNum in aTopVampireDisc:
+            for sDisc in self.dCryptDisc[iNum]:
+                aSortedDiscs.append(sDisc)
+        for sDisc in self.dDeckDisc:
+            dLibDisc.setdefault(sDisc, 0) # Need to ensure all these are defined
 
         iHFMasters = int(round(0.2 * self.iNumberLibrary))
 
@@ -693,50 +712,71 @@ class AnalyzeCardList(CardListPlugin):
         sHappyFamilyText += "<span foreground = \"blue\">Difference = " + \
                 str(abs(iHFMasters - self.iNumberMasters)) + "</span>\n"
 
-        aTopVampireDisc = sorted(self.dCryptDisc.keys(), reverse=True)
-        aMajorDisc = []
-        for number in aTopVampireDisc:
-            for disc in self.dCryptDisc[number]:
-                aMajorDisc.append( (number, disc ) )
-                dLibDisc.setdefault(disc, 0) # Need to ensure all these are defined
+        oMainLabel.set_markup(sHappyFamilyText)
 
-        # TODO - handle case of a == b == c better than currently
+        oHBox = gtk.HBox(False, 2)
 
         # self.dCryptDisc and dLibDisc have the info we need about the disciplines
-        for iNumberToShow in range(2, 5):
-            if len(aMajorDisc) >= iNumberToShow:
-                sHappyFamilyText += "<b>" + str(iNumberToShow) + " Discipline Case</b>\n"
-                fDemon = float(self.iCryptSize)
-                for j in range(iNumberToShow):
-                    fDemon += aMajorDisc[j][0]
-                iHFNoDiscipline = int((iNonMasters * self.iCryptSize / fDemon ))
-                iDiff = iNonMasters - iHFNoDiscipline
-                aDiscNumbers = []
-                for j in range(iNumberToShow):
-                    iDisc = int(iNonMasters * aMajorDisc[j][0] / fDemon )
-                    aDiscNumbers.append(iDisc)
-                    iDiff -= iDisc
 
-                if iDiff > 0:
-                    iHFNoDiscipline += iDiff # Shove rounding errors here
+        oComboBox = gtk.combo_box_new_text()
+        iMax = min(6, len(self.dDeckDisc)) + 1
+        for iNum in range(2, iMax):
+            oComboBox.append_text(str(iNum))
 
-                sHappyFamilyText += "Number of Cards requiring No discipline : " + \
-                        str( dLibDisc['No Discipline']) + '\n'
-                sHappyFamilyText += "Happy Families recommends " + \
-                        str(iHFNoDiscipline) + ' : '
-                sHappyFamilyText += "<span foreground = \"blue\">Difference = " + \
-                        str(abs(iHFNoDiscipline - dLibDisc['No Discipline'])) + "</span>\n"
-                for j in range(iNumberToShow):
-                    disc = aMajorDisc[j][1]
-                    number = aMajorDisc[j][0]
-                    sHappyFamilyText += "Number of Cards requiring " + disc + " : " + \
-                            str( dLibDisc[disc]) + \
-                            " (" + str(aMajorDisc[j][0]) + " crypt members)\n"
-                    sHappyFamilyText += "Happy Families recommends " + \
-                            str(aDiscNumbers[j]) + '  : '
-                    sHappyFamilyText += "<span foreground = \"blue\">Difference = " + \
-                            str(abs(aDiscNumbers[j] - dLibDisc[disc])) + "</span>\n"
+        oHBox.pack_start(gtk.Label('Number of Disciplines'))
+        oHBox.pack_start(oComboBox)
+        oHBox.pack_start(gtk.Label(' or select discipline to use : '))
 
+        oWidget.pack_start(oHBox, False, False)
+
+        iNumberToShow = 2
+
+        oResLabel = gtk.Label()
+        oResLabel.set_markup(self._happy_lib_analysis(aSortedDiscs[:2], 
+            iNonMasters, dLibDisc))
+
+        oWidget.pack_start(oResLabel)
+        oWidget.show_all()
+
+    def _happy_lib_analysis(self, aDiscsToUse, iNonMasters, dLibDisc):
+
+        iNumberToShow = len(aDiscsToUse)
+
+        sHappyFamilyText = "<b>" + str(iNumberToShow) + " Discipline Case</b>\n"
+        fDemon = float(self.iCryptSize)
+        dDiscs = {}
+        for sDisc in aDiscsToUse:
+            fDemon += self.dDeckDisc[sDisc][0]
+        iHFNoDiscipline = int((iNonMasters * self.iCryptSize / fDemon ))
+        iDiff = iNonMasters - iHFNoDiscipline
+        dDiscNumbers = {}
+        for sDisc in aDiscsToUse:
+            iHFNumber = int(iNonMasters * self.dDeckDisc[sDisc][0] / fDemon )
+            dDiscNumbers[sDisc] = iHFNumber
+            iDiff -= iHFNumber
+
+            if iDiff > 0:
+                iHFNoDiscipline += iDiff # Shove rounding errors here
+
+        sHappyFamilyText += "Number of Cards requiring No discipline : " + \
+                str( dLibDisc['No Discipline']) + '\n'
+        sHappyFamilyText += "Happy Families recommends " + \
+                str(iHFNoDiscipline) + ' : '
+        sHappyFamilyText += "<span foreground = \"blue\">Difference = " + \
+                str(abs(iHFNoDiscipline - dLibDisc['No Discipline'])) + \
+                "</span>\n"
+        for sDisc in aDiscsToUse:
+            iCryptNum = self.dDeckDisc[sDisc][0]
+            iHFNum = dDiscNumbers[sDisc]
+            sHappyFamilyText += "Number of Cards requiring " + sDisc + " : " + \
+                    str( dLibDisc[sDisc]) + \
+                    " (" + str(iCryptNum) + " crypt members)\n"
+            sHappyFamilyText += "Happy Families recommends " + \
+                    str(iHFNum) + '  : '
+            sHappyFamilyText += "<span foreground = \"blue\">Difference = " + \
+                    str(abs(iHFNum - dLibDisc[sDisc])) + "</span>\n"
         return sHappyFamilyText
+
+
 
 plugin = AnalyzeCardList
