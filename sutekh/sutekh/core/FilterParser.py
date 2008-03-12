@@ -352,19 +352,31 @@ class FilterNode(AstBaseNode):
 
     def get_values(self):
         """Get ilter values"""
-        return self.oExpression.get_values()
+        if self.oExpression:
+            return self.oExpression.get_values()
+        else:
+            return None
 
     def get_filter(self):
         """Get filter"""
-        return self.oExpression.get_filter()
+        if self.oExpression:
+            return self.oExpression.get_filter()
+        else:
+            return None
 
     def get_invalid_values(self):
         """Get values that are invlaid for this filter"""
-        return self.oExpression.get_invalid_values()
+        if self.oExpression:
+            return self.oExpression.get_invalid_values()
+        else:
+            return None
 
     def get_type(self):
         """Get filter type"""
-        return self.oExpression.get_type()
+        if self.oExpression:
+            return self.oExpression.get_type()
+        else:
+            return None
 
 class OperatorNode(AstBaseNode):
     """Base class for nodes involving operators"""
