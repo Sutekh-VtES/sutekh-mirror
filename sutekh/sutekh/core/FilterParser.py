@@ -23,7 +23,8 @@ from sutekh.core.Filters import MultiCardTypeFilter, MultiClanFilter, \
         PhysicalCardSetDescriptionFilter, AbstractCardSetAnnotationsFilter, \
         PhysicalCardSetAnnotationsFilter, MultiCostTypeFilter, \
         MultiPhysicalCardSetFilter, FilterAndBox, FilterOrBox, FilterNot, \
-        MultiPhysicalCardCountFilter, PhysicalCardSetInUseFilter
+        MultiPhysicalCardCountFilter, PhysicalCardSetInUseFilter, \
+        PCSPhysicalCardSetInUseFilter
 
 # Not completely happy with this big list approach. Can this be inferred
 # from the filter objects?
@@ -38,7 +39,8 @@ aFilters = [MultiCardTypeFilter, MultiCostTypeFilter, MultiClanFilter,
         PhysicalCardSetAuthorFilter, AbstractCardSetDescriptionFilter,
         PhysicalCardSetDescriptionFilter, AbstractCardSetAnnotationsFilter,
         PhysicalCardSetAnnotationsFilter, MultiPhysicalCardSetFilter,
-        MultiPhysicalCardCountFilter, PhysicalCardSetInUseFilter]
+        MultiPhysicalCardCountFilter, PhysicalCardSetInUseFilter,
+        PCSPhysicalCardSetInUseFilter]
 
 aEntryFilters = [x.keyword for x in aFilters if hasattr(x,'istextentry')
         and x.istextentry]

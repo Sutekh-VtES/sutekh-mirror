@@ -768,7 +768,7 @@ class MultiPhysicalCardSetFilter(Filter):
 
 class PhysicalCardSetInUseFilter(Filter):
     keyword = "SetsInUse"
-    description = "Physical Sets in Use"
+    description = "In Physical Card Sets in Use"
     helptext = "Selects physical cards in the Physical Card Sets marked as in use. This filter takes no parameters."
     types = ['PhysicalCard']
 
@@ -973,3 +973,17 @@ class PhysicalCardSetAnnotationsFilter(CardSetAnnotationsFilter):
     def __init__(self, sPattern):
         super(PhysicalCardSetAnnotationsFilter, self).__init__(sPattern)
         self._oT = Table('physical_card_set')
+
+class PCSPhysicalCardSetInUseFilter(DirectFilter):
+    keyword = "PCSSetsInUse"
+    description = "Physical Card Set Marked as in Use"
+    helptext = "Selects those Physical Card Sets in the Physical Card Set List that are marked as in use. This filter takes no parameters."
+    types = ['PhysicalCardSet']
+
+    @classmethod
+    def get_values(cls):
+        return None
+
+    def _getExpression(self):
+        return PhysicalCardSet.q.inuse == True
+
