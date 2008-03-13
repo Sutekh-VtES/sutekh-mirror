@@ -117,25 +117,6 @@ class AnalyzeCardList(CardListPlugin):
 
         oHappyBox = gtk.VBox(False, 2)
 
-        oNotebook.append_page(oMainLabel, gtk.Label('Basic Info'));
-        oNotebook.append_page(oHappyBox, gtk.Label('Happy Families Analysis'));
-        oNotebook.append_page(oVampiresLabel, gtk.Label('Vampires'));
-        oNotebook.append_page(oAlliesLabel, gtk.Label('Allies'));
-        oNotebook.append_page(oMastersLabel, gtk.Label('Master Cards'));
-        oNotebook.append_page(oCombatLabel, gtk.Label('Combat Cards'));
-        oNotebook.append_page(oActionsLabel, gtk.Label('Actions'));
-        oNotebook.append_page(oPoliticalLabel, gtk.Label('Political Actions'));
-        oNotebook.append_page(oActModLabel, gtk.Label('Action Modifiers'));
-        oNotebook.append_page(oReactionLabel, gtk.Label('Reactions'));
-        oNotebook.append_page(oRetainersLabel, gtk.Label('Retainers'))
-        oNotebook.append_page(oEquipmentLabel, gtk.Label('Equipment'));
-        oNotebook.append_page(oEventsLabel, gtk.Label('Events'));
-        oNotebook.append_page(oImbuedLabel, gtk.Label('Imbued'));
-        oNotebook.append_page(oPowersLabel, gtk.Label('Powers'));
-        oNotebook.append_page(oConvictionsLabel, gtk.Label('Convictions'));
-
-        sMainText = "Analysis Results for deck : <b>" + deckName + "</b>\nby <i>"+sAuthor+"</i>\n"+sComment+"\n"
-
         self.iMaxGroup = -500
         self.iMinGroup = 500
         self.iNumberMult = 0
@@ -185,6 +166,8 @@ class AnalyzeCardList(CardListPlugin):
         self.iNumberLibrary = self.iTotNumber - self.iNumberVampires \
                 - self.iNumberImbued
 
+        # Set markup for all labels
+
         oCombatLabel.set_markup(self.process_combat(aCombatCards))
         oReactionLabel.set_markup(self.process_reaction(aReactionCards))
         oActModLabel.set_markup(self.process_action_modifier(aActModCards))
@@ -197,6 +180,41 @@ class AnalyzeCardList(CardListPlugin):
         oPowersLabel.set_markup(self.process_power(aPowerCards))
         oConvictionsLabel.set_markup(self.process_conviction(aConvictionCards))
         oMastersLabel.set_markup(self.process_master(aMasterCards))
+
+
+        oNotebook.append_page(oMainLabel, gtk.Label('Basic Info'));
+        oNotebook.append_page(oHappyBox, gtk.Label('Happy Families Analysis'));
+        if self.iNumberVampires > 0:
+            oNotebook.append_page(oVampiresLabel, gtk.Label('Vampires'));
+        if self.iNumberAllies > 0:
+            oNotebook.append_page(oAlliesLabel, gtk.Label('Allies'));
+        if self.iNumberMasters > 0:
+            oNotebook.append_page(oMastersLabel, gtk.Label('Master Cards'));
+        if self.iNumberCombats > 0:
+            oNotebook.append_page(oCombatLabel, gtk.Label('Combat Cards'));
+        if self.iNumberActions > 0:
+            oNotebook.append_page(oActionsLabel, gtk.Label('Actions'));
+        if self.iNumberPoliticals > 0:
+            oNotebook.append_page(oPoliticalLabel, gtk.Label('Political Actions'));
+        if self.iNumberActMods > 0:
+            oNotebook.append_page(oActModLabel, gtk.Label('Action Modifiers'));
+        if self.iNumberReactions > 0:
+            oNotebook.append_page(oReactionLabel, gtk.Label('Reactions'));
+        if self.iNumberRetainers > 0:
+            oNotebook.append_page(oRetainersLabel, gtk.Label('Retainers'))
+        if self.iNumberEquipment > 0:
+            oNotebook.append_page(oEquipmentLabel, gtk.Label('Equipment'));
+        if self.iNumberImbued > 0:
+            oNotebook.append_page(oImbuedLabel, gtk.Label('Imbued'));
+        if self.iNumberPowers > 0:
+            oNotebook.append_page(oPowersLabel, gtk.Label('Powers'));
+        if self.iNumberConvictions > 0:
+            oNotebook.append_page(oConvictionsLabel, gtk.Label('Convictions'));
+        if self.iNumberEvents > 0:
+            oNotebook.append_page(oEventsLabel, gtk.Label('Events'));
+
+        sMainText = "Analysis Results for deck : <b>" + deckName + "</b>\nby <i>"+sAuthor+"</i>\n"+sComment+"\n"
+
 
         self.happy_families_analysis(aAllCards, oHappyBox)
 
