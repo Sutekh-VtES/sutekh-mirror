@@ -625,6 +625,10 @@ class CardNameFilter(DirectFilter):
         return LIKE(AbstractCard.q.canonicalName, '%' + self.__sPattern.lower() + '%')
 
 class PhysicalCardFilter(Filter):
+    """
+    Filter for converting a filter on abstract cards to a filter
+    on physical cards
+    """
     def __init__(self):
         # Specifies Physical Cards, intended to be anded with other filters
         pass
@@ -637,6 +641,32 @@ class PhysicalCardFilter(Filter):
 
     def _getExpression(self):
         return TRUE # SQLite doesn't like True. Postgres doesn't like 1.
+
+class AbstractCardFilter(Filter):
+    """
+    Filter for converting a filter on physical cards to a filter on
+    abstract cards.
+    """
+    # Not used in the gui, as it's quite fragile due to database differences. 
+    # Kept for documentation purposes and for use when directly using the 
+    # Filters.
+    # Because of how SQL handles NULLs, combining this filter with 
+    # FilterNot(PhysicalX) will still only match cards in the PhysicalCard 
+    # list. This is hard to fix, partly due to the database differences mentioned.
+    #
+    # FilterBox([AbstractCardFilter, PhysicalCardFilter, X]) is almost
+    # certainly not going to do the right thing, due to the multiple joins
+    # involved. We should never do that.
+    def __init__(self):
+        # speficies AbstractCards, intended to be and'ed with other filters
+        pass
+
+    def _getJoins(self):
+        oT = Table('abstract_card')
+        return [LEFTJOINOn(None, PhysicalCard, PhysicalCard.q.abstractCardID == oT.id)]
+
+    def _getExpression(self):
+        return TRUE # See PhysicalCardFilter
 
 class MultiPhysicalCardCountFilter(DirectFilter):
     keyword = "PhysicalCardCount"

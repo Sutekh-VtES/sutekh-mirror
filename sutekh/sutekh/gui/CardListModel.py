@@ -250,6 +250,9 @@ class CardListModel(gtk.TreeStore):
                     oAbsCardIter = oAbsFilter.select(AbstractCard)
                     for oAbsCard in oAbsCardIter:
                         dAbsCards.setdefault(oAbsCard, [0, {}])
+                # If the filter is PhysicalCard specific we ignore it, as
+                # AbstractCards don't have that information, so we cannot
+                # decide when to display 0 counts properly
 
             for oCard in oCardIter:
                 oAbsCard = oCard.abstractCard
