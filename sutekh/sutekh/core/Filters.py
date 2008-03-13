@@ -806,9 +806,9 @@ class PhysicalCardSetInUseFilter(Filter):
         # This + MultiPhysicalExpansionFilter are the only filters
         # the gui calls where this is possible with valid input, so
         # we treat as a special cases.
-        if len(self.__aDeckIds) > 0:        
+        if len(self.__aDeckIds) > 0:
             return IN(self.__oT.q.physical_card_set_id, self.__aDeckIds)
-        else:                                                   
+        else:
             return FALSE # IN(a, []) is false
 
 class AbstractCardSetFilter(SingleFilter):
