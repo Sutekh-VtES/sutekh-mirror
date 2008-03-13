@@ -14,8 +14,21 @@ from sutekh.core.SutekhObjects import AbstractCard, IAbstractCard, \
                                  Creed, Virtue, Sect, Expansion, \
                                  RarityPair, PhysicalCardSet, PhysicalCard, \
                                  AbstractCardSet
-from sqlobject import AND, OR, NOT, LIKE, IN, func
+from sqlobject import AND, OR, NOT, LIKE, func, IN as SQLOBJ_IN
 from sqlobject.sqlbuilder import Table, Alias, LEFTJOINOn, Select, TRUE, FALSE
+
+# Compability Patches
+
+def IN(oCol,oListOrSelect):
+    """Check explicitly for empty lists passed to the IN operator.
+    
+       Some databases engines (MySQL) don't handle them so just return False
+       instead.
+       """
+    if not oListOrSelect:
+        return False
+    else:
+        return SQLOBJ_IN(oCol,oListOrSelect)
 
 # Filter Base Class
 
