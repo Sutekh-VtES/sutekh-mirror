@@ -132,6 +132,10 @@ class MultiSelectComboBox(gtk.HBox):
     def set_list_size(self, iW, iH):
         self._oDialog.set_size_request(iW, iH)
 
+    def set_sensitive(self, bValue):
+        """Control the sensitivity of the button"""
+        self._oButton.set_sensitive(bValue)
+
     def get_selection(self):
         """Return a list of the selected elements of the list"""
         aSelectedList = []
