@@ -4,6 +4,7 @@ Backend:
  * Rework SutekhUtility to be less of a mess
  * Consider using SQLObject's new .throughTo method for populating / caching
    the objects abstract cards join to.
+ * Make sure sutekh works properly with sqlobject 0.10
  * Factor out things like the lists of expansions and disciplines in SutekhObjects
    to a seperate file
 
@@ -18,9 +19,6 @@ Code Cleanup
 Gui (Functionality):
  * Improve Current Filter dialogs:
     - Provide better help 
- * Turn AnalyzeDeck into something more useful - NM
-   * Improve Happy Families analysis (select number of disciplines to display,
-     disciplines to use, etc)
  * Finish ClusterCardList plugin.
  * Compare CardSet Plugin (basic version done. Could be improved)
  * Improve About dialog.
