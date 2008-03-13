@@ -621,6 +621,6 @@ class FilterHelpTextView(gtk.TextView, object):
             "of cards with zero counts (assuming it is turned on) "
             "in the physical card list since there are no "
             "associated physical cards on which to base the query. "
-            "Filters affects by this are: Physical Expansion, "
+            "Filters affected by this are: Physical Expansion, "
             "Physical Sets and In Physical Card Sets in Use."
         )
