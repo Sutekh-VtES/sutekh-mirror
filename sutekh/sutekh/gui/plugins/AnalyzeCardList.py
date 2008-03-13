@@ -14,6 +14,7 @@ from sutekh.core.SutekhObjects import PhysicalCardSet, AbstractCardSet, IAbstrac
 from sutekh.core.Filters import CardTypeFilter
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog
+from sutekh.gui.MultiSelectComboBox import MultiSelectComboBox
 
 class AnalyzeCardList(CardListPlugin):
     """
@@ -645,12 +646,12 @@ class AnalyzeCardList(CardListPlugin):
 
         return sImbuedText
 
-    def happy_families_analysis(self, aCards, oWidget):
+    def happy_families_analysis(self, aCards, oHFVBox):
         dLibDisc = {}
 
         oMainLabel = gtk.Label()
 
-        oWidget.pack_start(oMainLabel)
+        oHFVBox.pack_start(oMainLabel)
 
         dLibDisc.setdefault('No Discipline', 0)
 
@@ -681,13 +682,14 @@ class AnalyzeCardList(CardListPlugin):
         if self.iCryptSize == 0:
             sHappyFamilyText += "\n<span foreground = \"red\">Need to have a crypt to do the analysis</span>\n"
             oMainLabel.set_markup(sHappyFamilyText)
-            oWidget.show_all()
+            oHFVBox.show_all()
             return 
 
-        if len(self.dDeckDisc) < 2:
-            sHappyFamilyText += "\n<span foreground = \"red\">Analysis not relevant to mono-discipline crypts</span>\n"
+        if len(self.dDeckDisc) < 1:
+            # Crypt only has Smudge, for example
+            sHappyFamilyText += "\n<span foreground = \"red\">Need disciplines to do analysis</span>\n"
             oMainLabel.set_markup(sHappyFamilyText)
-            oWidget.show_all()
+            oHFVBox.show_all()
             return 
 
         aTopVampireDisc = sorted(self.dCryptDisc, reverse=True)
@@ -720,23 +722,65 @@ class AnalyzeCardList(CardListPlugin):
 
         oComboBox = gtk.combo_box_new_text()
         iMax = min(6, len(self.dDeckDisc)) + 1
-        for iNum in range(2, iMax):
+        for iNum in range(1, iMax):
             oComboBox.append_text(str(iNum))
+        oComboBox.append_text('Use list of disciplines')
+        oComboBox.set_active(1)
 
         oHBox.pack_start(gtk.Label('Number of Disciplines'))
         oHBox.pack_start(oComboBox)
-        oHBox.pack_start(gtk.Label(' or select discipline to use : '))
+        oHBox.pack_start(gtk.Label(' : '))
 
-        oWidget.pack_start(oHBox, False, False)
+        oDiscWidget = MultiSelectComboBox()
+        oDiscWidget.fill_list(aSortedDiscs)
 
-        iNumberToShow = 2
+        oDiscWidget.set_sensitive(False)
+
+        oDiscWidget.set_list_size(200, 400)
+
+        oHBox.pack_start(oDiscWidget)
+
+        oHFVBox.pack_start(oHBox, False, False)
+
+        oComboBox.connect('changed', self._combo_changed, oDiscWidget)
 
         oResLabel = gtk.Label()
+
+        oButton = gtk.Button('Recalculate Happy Family Analysis')
+
+        oButton.connect('clicked', self._redo_happy_family, oHFVBox, oComboBox,
+                oDiscWidget, oResLabel, aSortedDiscs, iNonMasters, dLibDisc)
+
+        oHFVBox.pack_start(oButton, False, False)
+
         oResLabel.set_markup(self._happy_lib_analysis(aSortedDiscs[:2], 
             iNonMasters, dLibDisc))
 
-        oWidget.pack_start(oResLabel)
-        oWidget.show_all()
+        oHFVBox.pack_start(oResLabel)
+        oHFVBox.show_all()
+
+    def _combo_changed(self, oComboBox, oDiscWidget):
+        """Toggle the sensitivity of the Discipline select widget as needed"""
+        if oComboBox.get_active_text() == 'Use list of disciplines':
+            oDiscWidget.set_sensitive(True)
+        else:
+            oDiscWidget.set_sensitive(False)
+
+    def _redo_happy_family(self, oButton, oHFVBox, oComboBox, oDiscWidget,
+            oResLabel, aSortedDiscs, iNonMasters, dLibDisc):
+        """Redo the HF analysis based on button press"""
+        if oComboBox.get_active_text() == 'Use list of disciplines':
+            aTheseDiscs = oDiscWidget.get_selection()
+            if not aTheseDiscs:
+                return # Just ignore the zero selection case
+        else:
+            iNumDiscs = int(oComboBox.get_active_text())
+            aTheseDiscs = aSortedDiscs[:iNumDiscs]
+        oResLabel.hide()
+        oResLabel.set_markup(self._happy_lib_analysis(aTheseDiscs, iNonMasters,
+            dLibDisc))
+        oResLabel.show()
+        oHFVBox.show_all()
 
     def _happy_lib_analysis(self, aDiscsToUse, iNonMasters, dLibDisc):
 
