@@ -395,7 +395,7 @@ class AnalyzeCardList(CardListPlugin):
                     dDeckClans[clan.name] += 1
 
             for oDisc in oAbsCard.discipline:
-                self.dDeckDisc.setdefault(oDisc.discipline.fullname, [1, 0])
+                self.dDeckDisc.setdefault(oDisc.discipline.fullname, [0, 0])
                 self.dDeckDisc[oDisc.discipline.fullname][0] += 1
                 if oDisc.level == 'superior':
                     self.dDeckDisc[oDisc.discipline.fullname][1] += 1
@@ -787,6 +787,7 @@ class AnalyzeCardList(CardListPlugin):
         iNumberToShow = len(aDiscsToUse)
 
         sHappyFamilyText = "<b>" + str(iNumberToShow) + " Discipline Case</b>\n"
+        sHappyFamilyText += "Disciplines : <i>%s</i>\n" % ",".join(aDiscsToUse)
         fDemon = float(self.iCryptSize)
         dDiscs = {}
         for sDisc in aDiscsToUse:
@@ -799,8 +800,8 @@ class AnalyzeCardList(CardListPlugin):
             dDiscNumbers[sDisc] = iHFNumber
             iDiff -= iHFNumber
 
-            if iDiff > 0:
-                iHFNoDiscipline += iDiff # Shove rounding errors here
+        if iDiff > 0:
+            iHFNoDiscipline += iDiff # Shove rounding errors here
 
         sHappyFamilyText += "Number of Cards requiring No discipline : " + \
                 str( dLibDisc['No Discipline']) + '\n'
