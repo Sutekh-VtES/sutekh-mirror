@@ -50,7 +50,7 @@ class AnalyzeCardList(CardListPlugin):
             fPrec = iNum/float(iTot)
         else:
             fPrec = 0.0
-        return '(%5.3f %% of %s)' % (fPrec*100, sDesc)
+        return '<i>(%5.3f %% of %s)</i>' % (fPrec*100, sDesc)
 
     def _get_abstract_cards(self, aCards):
         "Get the asbtract cards given the list of names"
@@ -326,7 +326,7 @@ class AnalyzeCardList(CardListPlugin):
     def _format_card_line(self, sString, iNum):
         """Format card lines for notebook"""
         sPer = self._percentage(iNum, self.iNumberLibrary, "Library")
-        return "Number of %(type)s = %(num)d <i>%(per)s</i>\n" % {
+        return "Number of %(type)s = %(num)d %(per)s\n" % {
                 'type' : sString,
                 'num' : iNum,
                 'per' : sPer,
@@ -379,6 +379,29 @@ class AnalyzeCardList(CardListPlugin):
                 iNoneCount += 1
         return dDisciplines, dVirtues, iNoneCount
 
+    def _get_card_clan_multi(self, aAbsCards):
+        """
+        Extra the clan requirements and the multi discipline cards
+        form the list of Abstract Cards
+        """
+        dClan = {}
+        iClanRequirement = 0
+        dMulti = {}
+
+        for oAbsCard in aAbsCards:
+            if not len(oAbsCard.clan) == 0:
+                iClanRequirement += 1
+                aClans = [x.name for x in oAbsCard.clan]
+                for sClan in aClans:
+                    dClan.setdefault(sClan, 0)
+                    dClan[sClan] += 1
+            aTypes = [x.name for x in oAbsCard.cardtype]
+            if len(aTypes) > 1:
+                sKey = "/".join(sorted(aTypes))
+                dMulti.setdefault(sKey, 0)
+                dMulti[sKey] += 1
+        return iClanRequirement, dClan, dMulti
+
     def _format_cost_numbers(self, sCardType, sCostString, aCost, iNum):
         sVarPercent = self._percentage(aCost[0], iNum, '%s cards' % sCardType)
         sNumPercent = self._percentage(aCost[3], iNum, '%s cards' % sCardType)
@@ -404,6 +427,40 @@ class AnalyzeCardList(CardListPlugin):
         sText = ''
         for sDisc, iNum in sorted(dDisc.items(), key=lambda x: x[1], reverse=True):
             sText += 'Number of cards requiring %s %s = %d\n' % (sDiscType, sDisc, iNum)
+        return sText
+
+    def _format_clan(self, sCardType, iClanRequirement, dClan, iNum):
+        sText = ''
+        if iClanRequirement > 0:
+            sPer = self._percentage(iClanRequirement, iNum, 'Library')
+            sText += "Number of %(type)s with a Clan requirement = %(num)d %(per)s\n" % {
+                    'type' : sCardType,
+                    'num' : iClanRequirement,
+                    'per' : sPer,
+                    }
+            for sClan, iClanNum in sorted(dClan.items(), key=lambda x: x[1],
+                    reverse=True):
+                sPer = self._percentage(iClanNum, iNum, '%s cards' % sCardType)
+                sText += 'Number of %(type)s requiring %(clan)s = %(num)d %(per)s\n' % {
+                        'type' : sCardType,
+                        'clan' : sClan,
+                        'num' : iClanNum,
+                        'per' : sPer,
+                        }
+        return sText
+
+    def _format_multi(self, sCardType, dMulti, iNum):
+        sText = ''
+        if len(dMulti) > 0:
+            for sType, iMulti in sorted(dMulti.items(), key=lambda x: x[1],
+                    reverse=True):
+                sPer = self._percentage(iMulti, iNum, '%s cards' % sCardType)
+                sText += '%(num)d %(type)s cards are %(multitype)s cards %(per)s\n' % {
+                        'num' : iMulti,
+                        'type' : sCardType,
+                        'multitype' : sType,
+                        'per' : sPer,
+                        }
         return sText
 
     def process_vampire(self, aCards):
@@ -513,13 +570,10 @@ class AnalyzeCardList(CardListPlugin):
         return sVampText
 
     def process_master(self, aCards):
-        iClanRequirement = 0
         aAbsCards = self._get_abstract_cards(aCards)
         aBlood, aPool, aConviction = self._get_card_costs(aAbsCards)
 
-        for oAbsCard in aAbsCards:
-            if not len(oAbsCard.clan) == 0:
-                iClanRequirement += 1
+        iClanRequirement, dClan, dMulti = self._get_card_clan_multi(aAbsCards)
 
         # Build up Text
         sText = "<b>Master Cards :</b>\n"
@@ -529,10 +583,9 @@ class AnalyzeCardList(CardListPlugin):
         if self.iNumberMasters > 0:
             sText += self._format_cost_numbers('Master', 'pool',
                     aPool, self.iNumberMasters)
-            if iClanRequirement > 0:
-                sText += "Number of Masters with a Clan requirement = " + str(iClanRequirement) + ' ' + \
-                        self._percentage(iClanRequirement,
-                                self.iNumberMasters, "Masters") + '\n'
+            sText += self._format_clan('Master', iClanRequirement,
+                    dClan, self.iNumberMasters)
+            sText += self._format_multi('Master', dMulti, self.iNumberMasters)
         return sText
 
     def _default_text(self, aAbsCards, sType, iNum):
@@ -540,14 +593,8 @@ class AnalyzeCardList(CardListPlugin):
         iClanRequirement = 0
         dDisciplines, dVirtues, iNoneCount = \
                 self._get_card_disciplines(aAbsCards)
-        dClan = {}
-        for oAbsCard in aAbsCards:
-            if not len(oAbsCard.clan) == 0:
-                iClanRequirement += 1
-                aClan = [x.name for x in oAbsCard.clan]
-                for sClan in aClan:
-                    dClan.setdefault(sClan, 0)
-                    dClan[sClan] += 1
+
+        iClanRequirement, dClan, dMulti = self._get_card_clan_multi(aAbsCards)
 
         # Build up Text
         sPerCards = self._percentage(iNum, self.iNumberLibrary, 'Library')
@@ -567,18 +614,15 @@ class AnalyzeCardList(CardListPlugin):
             if aPool[1] > 0:
                sText += self._format_cost_numbers(sType, 'pool',
                        aPool, iNum)
-            if iClanRequirement > 0:
-                sPerClan = self._percentage(iClanRequirement,
-                                iNum , "%s cards" % sType)
-                sText += "Number of %s cards with a Clan requirement = %d %s\n" \
-                        % (sType, iClanRequirement, sPerClan)
-                for sClan, iNum in sorted(dClan.items(), key=lambda x: x[1], reverse=True):
-                    sText += 'Number of cards requiring clan %s = %d\n' % (sClan, iNum)
+
+            sText += self._format_clan(sType, iClanRequirement,
+                    dClan, iNum)
             sText += 'Number of cards with no discipline/virtue requirement = %d\n' % iNoneCount
             if len(dDisciplines) > 0:
                 sText += self._format_disciplines('discipline', dDisciplines, iNum)
             if len(dVirtues) > 0:
                 sText += self._format_disciplines('virtue', dVirtues, iNum)
+            sText += self._format_multi(sType, dMulti, iNum)
         return sText
 
     def process_combat(self, aCards):
@@ -597,8 +641,6 @@ class AnalyzeCardList(CardListPlugin):
         return sText
 
     def process_event(self, aCards):
-        aAbsCards = self._get_abstract_cards(aCards)
-        # Build up Text
         sEventText = "<b>Event Cards :</b>\n"
         sEventText += "Number of Event cards = " + str(self.iNumberEvents) + ' '+ \
                            self._percentage(self.iNumberEvents,
@@ -639,6 +681,37 @@ class AnalyzeCardList(CardListPlugin):
         aAbsCards = self._get_abstract_cards(aCards)
         sText = self._default_text(aAbsCards, 'Power', self.iNumberPowers)
         return sText
+
+
+    def process_multi(self, aCards):
+        """Stats about the multirole cards"""
+        aAbsCards = self._get_abstract_cards(aCards)
+        dMulti = {}
+        sPerCards = self._percentage(self.iNumberMult, self.iNumberLibrary,
+                'Library')
+        sText = "<b>Multirole Cards :</b>\n" \
+                "Number of Multirole cards = %(num)d %(per)s\n" % {
+                        'num' : self.iNumberMult,
+                        'per' : sPerCards
+                        }
+        for oAbsCard in aAbsCards:
+            aTypes = [x.name for x in oAbsCard.cardtype]
+            if len(aTypes) > 1:
+                sKey = "/".join(sorted(aTypes))
+                dMulti.setdefault(sKey, 0)
+                dMulti[sKey] += 1
+        print dMulti, dMulti.items()
+        for sMultiType, iNum in sorted(dMulti.items(), key=lambda x: x[1],
+                reverse=True):
+            sPer = self._percentage(iNum, self.iNumberLibrary, 'Library')
+            sText += 'Number of %(multitype)s cards = %(num)d %(per)s\n' % {
+                    'multitype' : sMultiType,
+                    'num' : iNum,
+                    'per' : sPer,
+                    }
+
+        return sText
+
 
     def process_imbued(self, aCards):
         dDeckImbued = {}
@@ -884,10 +957,6 @@ class AnalyzeCardList(CardListPlugin):
             sHappyFamilyText += "<span foreground = \"blue\">Difference = " + \
                     str(abs(iHFNum - self.dLibDisc[sDisc])) + "</span>\n"
         return sHappyFamilyText
-
-    def process_multi(self, aCards):
-        """Stats about the multirole cards"""
-        return ''
 
 
 
