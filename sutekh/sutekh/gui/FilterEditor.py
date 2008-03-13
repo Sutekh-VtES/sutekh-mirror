@@ -596,18 +596,31 @@ class FilterHelpTextView(gtk.TextView, object):
         self.set_editable(False)
         self.set_cursor_visible(False)
         self.set_wrap_mode(gtk.WRAP_WORD)
+        self.set_border_width(5)
+        self.modify_bg(gtk.STATE_NORMAL,gtk.gdk.color_parse("white"))
 
         oBuf.reset_iter()
 
         oBuf.tag_text(
-            "The available filtering options are listed below. " \
-            "The first line of each item shows the description " \
-            "you'll see in the filter editor in bold with the" \
-            "keyword to use in query strings in italics afterwards." \
-            "The rest of the description describes the arguments " \
-            "the filter takes and the results it produces." \
+            "The available filtering options are listed below. "
+            "The first line of each item shows the description "
+            "you'll see in the filter editor in bold with the"
+            "keyword to use in query strings in italics afterwards."
+            "The rest of the description describes the arguments "
+            "the filter takes and the results it produces."
             "\n\n"
         )
 
         for oF in aFilterTypes:
             oBuf.add_help_text(oF.description,oF.keyword,oF.helptext)
+
+        oBuf.tag_text(
+            "\n"
+            "Note: Using filters which require information about "
+            "physical cards will temporarily turn off displaying "
+            "of cards with zero counts (assuming it is turned on) "
+            "in the physical card list since there are no "
+            "associated physical cards on which to base the query. "
+            "Filters affects by this are: Physical Expansion, "
+            "Physical Sets and In Physical Card Sets in Use."
+        )
