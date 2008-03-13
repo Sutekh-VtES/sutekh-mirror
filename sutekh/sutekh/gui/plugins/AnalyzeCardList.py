@@ -114,12 +114,14 @@ class AnalyzeCardList(CardListPlugin):
         oReactionLabel = gtk.Label()
         oEquipmentLabel = gtk.Label()
         oPoliticalLabel = gtk.Label()
+        oMultiLabel = gtk.Label()
 
         oHappyBox = gtk.VBox(False, 2)
 
         self.iMaxGroup = -500
         self.iMinGroup = 500
         self.iNumberMult = 0
+        self.aMultiCards = []
         self.dCryptDisc = {}
         self.dDeckDisc = {}
 
@@ -166,6 +168,9 @@ class AnalyzeCardList(CardListPlugin):
         self.iNumberLibrary = self.iTotNumber - self.iNumberVampires \
                 - self.iNumberImbued
 
+        # Do happy family analysis, since that also does multi-card count
+        self.happy_families_analysis(aAllCards, oHappyBox)
+
         # Set markup for all labels
 
         oCombatLabel.set_markup(self.process_combat(aCombatCards))
@@ -180,9 +185,11 @@ class AnalyzeCardList(CardListPlugin):
         oPowersLabel.set_markup(self.process_power(aPowerCards))
         oConvictionsLabel.set_markup(self.process_conviction(aConvictionCards))
         oMastersLabel.set_markup(self.process_master(aMasterCards))
+        oMultiLabel.set_markup(self.process_multi(self.aMultiCards))
 
+        oMainBox = gtk.VBox(False, 2)
 
-        oNotebook.append_page(oMainLabel, gtk.Label('Basic Info'));
+        oNotebook.append_page(oMainBox, gtk.Label('Basic Info'));
         oNotebook.append_page(oHappyBox, gtk.Label('Happy Families Analysis'));
         if self.iNumberVampires > 0:
             oNotebook.append_page(oVampiresLabel, gtk.Label('Vampires'));
@@ -212,11 +219,10 @@ class AnalyzeCardList(CardListPlugin):
             oNotebook.append_page(oConvictionsLabel, gtk.Label('Convictions'));
         if self.iNumberEvents > 0:
             oNotebook.append_page(oEventsLabel, gtk.Label('Events'));
+        if self.iNumberMult > 0:
+            oNotebook.append_page(oMultiLabel, gtk.Label('Multi-Role Cards'));
 
         sMainText = "Analysis Results for deck : <b>" + deckName + "</b>\nby <i>"+sAuthor+"</i>\n"+sComment+"\n"
-
-
-        self.happy_families_analysis(aAllCards, oHappyBox)
 
         # Set main notebook text
 
@@ -234,68 +240,59 @@ class AnalyzeCardList(CardListPlugin):
 
         sMainText += "Total Library Size = " + str(self.iNumberLibrary) + "\n"
 
-        if self.iNumberLibrary > 0:
-            sMainText += "Number of Masters = " + \
-                    str(self.iNumberMasters) + ' ' +\
-                    self._percentage(self.iNumberMasters,
-                            self.iNumberLibrary, "Library") + '\n'
-            sMainText += "Number of Combat cards = " + \
-                    str(self.iNumberCombats) + ' ' + \
-                    self._percentage(self.iNumberCombats,
-                            self.iNumberLibrary, "Library") + '\n'
-            sMainText += "Number of Action cards = " + \
-                    str(self.iNumberActions) + ' ' + \
-                    self._percentage(self.iNumberActions,
-                            self.iNumberLibrary, "Library") + '\n'
-            sMainText += "Number of Political Action cards = " + \
-                    str(self.iNumberPoliticals) + ' ' + \
-                    self._percentage(self.iNumberPoliticals,
-                            self.iNumberLibrary, "Library") + '\n'
-            sMainText += "Number of Action Modifiers = " + \
-                    str(self.iNumberReactions) + ' ' + \
-                    self._percentage(self.iNumberReactions,
-                            self.iNumberLibrary, "Library") + '\n'
-            sMainText += "Number of Reaction cards = " + \
-                    str(self.iNumberReactions) + ' ' + \
-                    self._percentage(self.iNumberReactions,
-                            self.iNumberLibrary, "Library") + '\n'
-            sMainText += "Number of Allies = " + \
-                    str(self.iNumberAllies) + ' ' + \
-                    self._percentage(self.iNumberAllies,
-                            self.iNumberLibrary, "Library") + '\n'
-            sMainText += "Number of Retainers = " + \
-                    str(self.iNumberRetainers) + ' ' + \
-                    self._percentage(self.iNumberAllies,
-                            self.iNumberLibrary, "Library") + '\n'
-            sMainText += "Number of Equipment cards = " + \
-                    str(self.iNumberEquipment) + ' ' + \
-                    self._percentage(self.iNumberEquipment,
-                            self.iNumberLibrary, "Library") + '\n'
-            sMainText += "Number of Event cards = " + \
-                    str(self.iNumberEvents) + ' ' + \
-                    self._percentage(self.iNumberEvents,
-                            self.iNumberLibrary, "Library") + '\n'
-            sMainText += "Number of Convictions = " + \
-                    str(self.iNumberConvictions) + ' ' + \
-                    self._percentage(self.iNumberConvictions,
-                            self.iNumberLibrary, "Library") + '\n'
-            sMainText += "Number of Powers = " + \
-                    str(self.iNumberPowers) + ' ' + \
-                    self._percentage(self.iNumberPowers,
-                            self.iNumberLibrary, "Library") + '\n'
+        oMainBox.pack_start(oMainLabel)
 
-        sMainText += "Number of Multirole cards = " + \
-                str(self.iNumberMult) + ' ' + \
-                self._percentage(self.iNumberMult,
-                        self.iNumberLibrary, "Library") + '\n'
+        if self.iNumberLibrary > 0:
+            oLibNotebook = gtk.Notebook()
+            oMainBox.pack_start(oLibNotebook)
+
+            oTypeLabel = gtk.Label()
+            oDiscLabel = gtk.Label()
+            oClanLabel = gtk.Label()
+
+            oLibNotebook.append_page(oTypeLabel, gtk.Label('Card Types'));
+            oLibNotebook.append_page(oDiscLabel, gtk.Label('Disciplines'));
+            oLibNotebook.append_page(oClanLabel, gtk.Label('Clan Requirements'));
+
+            sTypeText = self._format_card_line('Action', self.iNumberActions)
+            sTypeText += self._format_card_line('Action Modifier',
+                    self.iNumberActMods)
+            sTypeText += self._format_card_line('Ally', self.iNumberAllies)
+            sTypeText += self._format_card_line('Combat', self.iNumberCombats)
+            sTypeText += self._format_card_line('Convictions',
+                    self.iNumberConvictions)
+            sTypeText += self._format_card_line('Equipment',
+                    self.iNumberEquipment)
+            sTypeText += self._format_card_line('Event', self.iNumberEvents)
+            sTypeText += self._format_card_line('Master', self.iNumberMasters)
+            sTypeText += self._format_card_line('Political Action',
+                    self.iNumberPoliticals)
+            sTypeText += self._format_card_line('Power', self.iNumberPowers)
+            sTypeText += self._format_card_line('Reaction',
+                    self.iNumberReactions)
+            sTypeText += self._format_card_line('Retainer',
+                    self.iNumberRetainers) +'\n'
+
+            sTypeText += self._format_card_line('Multirole', self.iNumberMult)
+
+            oTypeLabel.set_markup(sTypeText)
 
         oMainLabel.set_markup(sMainText)
+
 
         dlg.vbox.pack_start(oNotebook)
         dlg.show_all()
 
         return dlg
 
+    def _format_card_line(self, sString, iNum):
+        """Format card lines for notebook"""
+        sPer = self._percentage(iNum, self.iNumberLibrary, "Library")
+        return "Number of %(type)s cards = %(num)d <i>%(per)s</i>\n" % {
+                'type' : sString,
+                'num' : iNum,
+                'per' : sPer,
+                }
 
     def _get_card_costs(self, aAbsCards):
         """
@@ -678,6 +675,7 @@ class AnalyzeCardList(CardListPlugin):
             if len(aTypes)>1:
                 # Since we examining all the cards, do this here
                 self.iNumberMult += 1
+                self.aMultiCards.append(oAbsCard)
             if aTypes[0] != 'Vampire' and aTypes[0] != 'Imbued' \
                     and aTypes[0] != 'Master':
                 # Non-Master Library card, so extract disciplines
@@ -839,6 +837,10 @@ class AnalyzeCardList(CardListPlugin):
             sHappyFamilyText += "<span foreground = \"blue\">Difference = " + \
                     str(abs(iHFNum - dLibDisc[sDisc])) + "</span>\n"
         return sHappyFamilyText
+
+    def process_multi(self, aCards):
+        """Stats about the multirole cards"""
+        return ''
 
 
 
