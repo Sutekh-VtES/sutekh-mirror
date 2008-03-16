@@ -91,6 +91,14 @@ class CardDict(dict):
                 sSect = 'Laibon'
                 if aLines[0].find('Laibon magaji') != -1:
                     sTitle = 'Magaji'
+            # check if the vampire has flight (text ends has Flight [FLIGHT].)
+            oFlightRexegp = re.compile('Flight \[FLIGHT\]\.')
+            oMatch = oFlightRexegp.search(aLines[-1])
+            if oMatch:
+                if self.has_key('discipline'):
+                    self['discipline'] += ' fli'
+                else:
+                    self['discipline'] = 'fli'
         if sSect is not None:
             self['sect'] = sSect
         if sTitle is not None:
