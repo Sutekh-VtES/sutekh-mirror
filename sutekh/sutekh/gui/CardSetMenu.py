@@ -115,15 +115,7 @@ class CardSetMenu(gtk.MenuBar, object):
         self.__dMenus["Plugins"] = wMenu
         # plugins
         for oPlugin in self.__oFrame._aPlugins:
-            oMI = oPlugin.get_menu_item()
-            if oMI is not None:
-                sMenu = oPlugin.get_desired_menu()
-                # Add to the requested menu if supplied
-                if sMenu in self.__dMenus:
-                    self.__dMenus[sMenu].add(oMI)
-                else:
-                    # Plugins acts as a catchall Menu
-                    wMenu.add(oMI)
+            oPlugin.add_to_menu(self.__dMenus, wMenu)
         iMenu.set_submenu(wMenu)
         self.add(iMenu)
         if len(wMenu.get_children()) == 0:

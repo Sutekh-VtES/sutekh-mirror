@@ -182,15 +182,7 @@ class MainMenu(gtk.MenuBar, object):
         self.__dMenus["Plugins"] = oMenu
         # plugins
         for oPlugin in self.__oWin._aPlugins:
-            oMI = oPlugin.get_menu_item()
-            if oMI is not None:
-                sMenu = oPlugin.get_desired_menu()
-                # Add to the requested menu if supplied
-                if sMenu in self.__dMenus:
-                    self.__dMenus[sMenu].add(oMI)
-                else:
-                    # Plugins acts as a catchall Menu
-                    oMenu.add(oMI)
+            oPlugin.add_to_menu(self.__dMenus, oMenu)
         iMenu.set_submenu(oMenu)
         self.add(iMenu)
         if len(oMenu.get_children()) == 0:

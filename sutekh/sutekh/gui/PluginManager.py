@@ -73,9 +73,26 @@ class CardListPlugin(object):
 
     def get_menu_item(self):
         """
-        Return a gtk.MenuItem for the plugin or None if no menu item is needed.
+        Return a list of gtk.MenuItems for the plugin or None if 
+        no menu item is needed.
         """
         return None
+
+    def add_to_menu(self, dAllMenus, oCatchAllMenu):
+        "Grunt work of adding menu item to the frame"
+        aMenuItems = self.get_menu_item()
+        if aMenuItems is not None:
+            sMenu = self.get_desired_menu()
+            # Add to the requested menu if supplied
+            if not hasattr(aMenuItems, '__getitem__'):
+                # Not an iterable object, so turn it into a list
+                aMenuItems=[aMenuItems]
+            for oMenuItem in aMenuItems:
+                if sMenu in dAllMenus:
+                    dAllMenus[sMenu].add(oMenuItem)
+                else:
+                    # Plugins acts as a catchall Menu
+                    oCatchAllMenu.add(oMenuItem)
 
     def get_toolbar_widget(self):
         """
