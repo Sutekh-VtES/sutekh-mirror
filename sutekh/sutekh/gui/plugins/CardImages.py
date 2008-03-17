@@ -14,6 +14,7 @@ from sutekh.core.SutekhObjects import AbstractCard, AbstractCardSet, \
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.CardListView import CardListViewListener
 from sutekh.gui.BasicFrame import BasicFrame
+from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_buttons
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 from sutekh.SutekhUtility import prefs_dir
 
@@ -71,7 +72,7 @@ class CardImageFrame(BasicFrame, CardListViewListener):
         # Drop non-ascii characters
         return "".join(b for b in sNormed.encode('utf8') if ord(b) < 128)
 
-    def convert_cardname(self, sCardName):
+    def convert_cardname(self, sCardName, sTestPath=''):
         """ 
         Convert sCardName to the form used by the card image list
         """
@@ -83,13 +84,16 @@ class CardImageFrame(BasicFrame, CardListViewListener):
         for sChar in [" ", ".", ",", "'", "(", ")", "-", ":", "!", '"', "/"]:
             sFilename = sFilename.replace(sChar, '')
         sFilename = sFilename + '.jpg'
-        return os.path.join(self.sPrefsPath, sFilename)
+        if sTestPath == '':
+            return os.path.join(self.sPrefsPath, sFilename)
+        else:
+            return os.path.join(sTestPath, sFilename)
 
-    def check_cardname(self, sCardName):
+    def check_cardname(self, sCardName, sTestPath=''):
         """
         Check if the file associated with sCardName can be found
         """
-        sFullFilename = self.convert_cardname(sCardName)
+        sFullFilename = self.convert_cardname(sCardName, sTestPath)
         bRes = True
         try:
             fTest = file(sFullFilename, 'rb')
@@ -168,20 +172,78 @@ class CardImagePlugin(CardListPlugin):
         """
         if not self.check_versions() or not self.check_model_type():
             return None
-        if not oImageFrame.check_cardname('Acrobatics'):
-            # Don't allow the menu option if we can't find the images
-            return None
         self._oMenuItem = gtk.MenuItem("Replace with Card Image Frame")
         self._oMenuItem.connect("activate", self.activate)
         self.parent.add_to_menu_list('Card Image Frame',
                 self.add_image_frame_active)
-        return self._oMenuItem
+        self._oConfigMenuItem = gtk.MenuItem("Configure Card Images Plugin")
+        self._oConfigMenuItem.connect("activate", self.config_activate)
+        if not oImageFrame.check_cardname('Acrobatics'):
+            # Don't allow the menu option if we can't find the images
+            self.add_image_frame_active(False)
+        return self._oConfigMenuItem, self._oMenuItem
+
+    def config_activate(self, oMenuWidget):
+        """
+        Configure the plugin dialog
+        """
+        oDialog = SutekhDialog('Configure Card Images Plugin', self.parent,
+                gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
+                (gtk.STOCK_OK, gtk.RESPONSE_OK, gtk.STOCK_CANCEL,
+                    gtk.RESPONSE_CANCEL))
+        oDesc = gtk.Label('Choose directory containing the card images')
+        oDialog.vbox.pack_start(oDesc)
+        oFileWidget = gtk.FileChooserWidget(
+                action=gtk.FILE_CHOOSER_ACTION_CREATE_FOLDER)
+        oDialog.vbox.pack_start(oFileWidget)
+        sPrefsPath = self.parent.config_file.get_plugin_key('card image path')
+        if sPrefsPath is not None:
+            oFileWidget.set_current_name(sPrefsPath)
+            oFileWidget.set_current_folder(sPrefsPath)
+        oDialog.show_all()
+        iResponse = oDialog.run()
+        if iResponse == gtk.RESPONSE_OK:
+            sTestPath = oFileWidget.get_filename()
+            if sTestPath is not None:
+                # Test if path is OK
+                if not os.path.exists(sTestPath):
+                    iQuery = do_complaint_buttons(
+                            "Folder does not exist\n"
+                            "Create it?", gtk.MESSAGE_QUESTION,
+                            (gtk.STOCK_YES, gtk.RESPONSE_YES,
+                                gtk.STOCK_NO, gtk.RESPONSE_NO))
+                    if iQuery == gtk.RESPONSE_NO:
+                        # treat as canceling
+                        oDialog.destroy()
+                        return
+                    else:
+                        os.makedirs(sTestPath)
+                elif not oImageFrame.check_cardname('Acrobatics', sTestPath):
+                    iQuery = do_complaint_buttons(
+                            "Folder does not seem to contain images\n"
+                            "Are you sure?", gtk.MESSAGE_QUESTION,
+                            (gtk.STOCK_YES, gtk.RESPONSE_YES,
+                                gtk.STOCK_NO, gtk.RESPONSE_NO))
+                    if iQuery == gtk.RESPONSE_NO:
+                        # treat as canceling
+                        oDialog.destroy()
+                        return
+                # Update preferences
+                oImageFrame.update_config_path(sTestPath)
+                if self._sMenuFlag not in self.parent.dOpenFrames.values():
+                    # Pane is not open, so try to enable menu
+                    self.add_image_frame_active(True)
+        oDialog.destroy()
 
     def add_image_frame_active(self, bValue):
         """
         Toggle the sensitivity of the menu item
         """
-        self._oMenuItem.set_sensitive(bValue)
+        if bValue and not oImageFrame.check_cardname('Acrobatics'):
+            # Can only be set true if check_cardname returns true
+            self._oMenuItem.set_sensitive(False)
+        else:
+            self._oMenuItem.set_sensitive(bValue)
 
     def get_desired_menu(self):
         'Attach to the default Plugin menu'
