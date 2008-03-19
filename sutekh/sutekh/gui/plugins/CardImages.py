@@ -71,6 +71,9 @@ class CardImageFrame(BasicFrame, CardListViewListener):
             self._oConfigFile.set_plugin_key('card image path', self.sPrefsPath)
         self.bShowExpansions = self.have_expansions()
         self.sCurExpansion = ''
+        self.aExpansions = []
+        self.iExpansionPos = 0
+        self.sCardName = ''
 
     type = property(fget=lambda self: "Card Image Frame", doc="Frame Type")
 
@@ -78,7 +81,6 @@ class CardImageFrame(BasicFrame, CardListViewListener):
         """
         Test if directory contains expansion/image structure used by ARDB
         """
-           
         if sTestPath == '':
             sTestFile = os.path.join(self.sPrefsPath, 'bh', 'acrobatics.jpg')
         else:
@@ -120,11 +122,18 @@ class CardImageFrame(BasicFrame, CardListViewListener):
 
     def get_cur_expansion_path(self, sCardName):
         "Get the current expansion path to use"
-        # if self.sCurExpansion is '', get the first
-        # expansion for the card, otherwise, get the next
-        # expansion path
         oAbsCard = IAbstractCard(sCardName)
-        # TODO: finish routine
+        if len(oAbsCard.rarity) > 0:
+            self.aExpansions = [oP.expansion.name for oP in oAbsCard.rarity]
+        else:
+            self.sCurExpansion = ''
+            self.aExpansions = []
+            self.iExpansionPos = 0
+            return ''
+        if self.sCurExpansion == '':
+            self.sCurExpansion = self.aExpansions[-1] # Show most recent expansion
+        self.iExpansionPos = self.aExpansions.index(self.sCurExpansion) 
+        return self.convert_expansion(self.sCurExpansion)
 
     def convert_cardname(self, sCardName, sTestPath=''):
         """
@@ -152,6 +161,7 @@ class CardImageFrame(BasicFrame, CardListViewListener):
         Set the image in response to a set card name event
         """
         self.sCurExpansion = sExpansionName
+        self.sCardName = sCardName
         sFullFilename = self.convert_cardname(sCardName)
         self.load_image(sFullFilename)
 
@@ -159,7 +169,7 @@ class CardImageFrame(BasicFrame, CardListViewListener):
         "Load an image into the pane, show broken image if needed"
         try:
             if self.bShowExpansions:
-                self.oExpansionLabel.set_text('<i>Image from expansion : </i>'
+                self.oExpansionLabel.set_markup('<i>Image from expansion : </i>'
                         ' %s' % self.sCurExpansion)
                 self.oExpansionLabel.show()
             oPixbuf = gtk.gdk.pixbuf_new_from_file(sFullFilename)
@@ -193,7 +203,12 @@ class CardImageFrame(BasicFrame, CardListViewListener):
     def cycle_expansion(self, oWidget, oEvent):
         "On a button click, move to the next expansion"
         if oEvent.button == 1:
-            pass
+            if len(self.aExpansions) > 1:
+                self.iExpansionPos += 1
+                if self.iExpansionPos >= len(self.aExpansions):
+                    self.iExpansionPos = 0
+                self.sCurExpansion = self.aExpansions[self.iExpansionPos]
+                self.set_card_text(self.sCardName, self.sCurExpansion)
 
 oImageFrame = None
 
