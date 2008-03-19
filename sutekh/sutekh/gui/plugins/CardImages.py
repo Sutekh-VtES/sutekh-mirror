@@ -44,7 +44,7 @@ class CardImageFrame(BasicFrame, CardListViewListener):
         oVBox = gtk.VBox(False, 2)
         oBox = gtk.EventBox()
         self.oExpansionLabel = gtk.Label()
-        oVBox.pack_start(self.oExpansionLabel)
+        oVBox.pack_start(self.oExpansionLabel, False, False)
         oVBox.pack_start(oBox)
         self._oView = AutoScrolledWindow(oVBox, True)
         self._oImage = gtk.Image()
@@ -117,30 +117,36 @@ class CardImageFrame(BasicFrame, CardListViewListener):
 
     def convert_expansion(self, sExpansionName):
         "Convert the Full Expansion name into the abbrevation needed"
+        if sExpansionName == '':
+            return ''
         oExpansion = IExpansion(sExpansionName)
         return oExpansion.shortname.lower()
 
-    def get_cur_expansion_path(self, sCardName):
-        "Get the current expansion path to use"
+    def set_expansion_info(self, sCardName):
+        "Set the expansion info"
         oAbsCard = IAbstractCard(sCardName)
         if len(oAbsCard.rarity) > 0:
-            self.aExpansions = [oP.expansion.name for oP in oAbsCard.rarity]
+            aExp = [oP.expansion.name for oP in oAbsCard.rarity]
+            self.aExpansions = list(set(aExp)) # remove duplicates
+            self.sCurExpansion = self.aExpansions[0] 
+            self.iExpansionPos = 0
         else:
             self.sCurExpansion = ''
             self.aExpansions = []
             self.iExpansionPos = 0
-            return ''
-        if self.sCurExpansion == '':
-            self.sCurExpansion = self.aExpansions[-1] # Show most recent expansion
-        self.iExpansionPos = self.aExpansions.index(self.sCurExpansion) 
-        return self.convert_expansion(self.sCurExpansion)
 
     def convert_cardname(self, sCardName, sTestPath=''):
         """
         Convert sCardName to the form used by the card image list
         """
         if self.bShowExpansions:
-            sCurExpansionPath = self.get_cur_expansion_path(sCardName)
+            if sCardName != self.sCardName:
+                self.set_expansion_info(sCardName)
+                self.sCardName = sCardName
+            if self.sCurExpansion == '' and len(self.aExpansions) > 0:
+                self.sCurExpansion = self.aExpansions[0]
+                self.iExpansionPos = 0
+            sCurExpansionPath = self.convert_expansion(self.sCurExpansion)
         else:
             sCurExpansionPath = ''
         sFilename = self.unaccent(sCardName.lower())
@@ -161,7 +167,6 @@ class CardImageFrame(BasicFrame, CardListViewListener):
         Set the image in response to a set card name event
         """
         self.sCurExpansion = sExpansionName
-        self.sCardName = sCardName
         sFullFilename = self.convert_cardname(sCardName)
         self.load_image(sFullFilename)
 
@@ -202,13 +207,24 @@ class CardImageFrame(BasicFrame, CardListViewListener):
 
     def cycle_expansion(self, oWidget, oEvent):
         "On a button click, move to the next expansion"
+        bRedraw = False
+        if len(self.aExpansions) < 2:
+            return # nothing to scroll through
         if oEvent.button == 1:
-            if len(self.aExpansions) > 1:
-                self.iExpansionPos += 1
-                if self.iExpansionPos >= len(self.aExpansions):
-                    self.iExpansionPos = 0
-                self.sCurExpansion = self.aExpansions[self.iExpansionPos]
-                self.set_card_text(self.sCardName, self.sCurExpansion)
+            # left button
+            self.iExpansionPos += 1
+            if self.iExpansionPos >= len(self.aExpansions):
+                self.iExpansionPos = 0
+            bRedraw = True
+        elif oEvent.button == 3:
+            # Right button, go backwards
+            self.iExpansionPos -= 1
+            if self.iExpansionPos < 0:
+                self.iExpansionPos += len(self.aExpansions)
+            bRedraw = True
+        if bRedraw:
+            self.sCurExpansion = self.aExpansions[self.iExpansionPos]
+            self.set_card_text(self.sCardName, self.sCurExpansion)
 
 oImageFrame = None
 
