@@ -9,6 +9,7 @@
 import gtk, gobject
 import unicodedata
 import os
+import time
 from sutekh.core.SutekhObjects import AbstractCard, AbstractCardSet, \
                                       PhysicalCard, PhysicalCardSet, \
                                       IAbstractCard, IExpansion
@@ -117,7 +118,7 @@ class CardImageFrame(BasicFrame, CardListViewListener):
 
     def convert_expansion(self, sExpansionName):
         "Convert the Full Expansion name into the abbrevation needed"
-        if sExpansionName == '':
+        if sExpansionName == '' or not self.bShowExpansions:
             return ''
         oExpansion = IExpansion(sExpansionName)
         return oExpansion.shortname.lower()
@@ -128,28 +129,19 @@ class CardImageFrame(BasicFrame, CardListViewListener):
         if len(oAbsCard.rarity) > 0:
             aExp = [oP.expansion.name for oP in oAbsCard.rarity]
             self.aExpansions = list(set(aExp)) # remove duplicates
-            self.sCurExpansion = self.aExpansions[0] 
             self.iExpansionPos = 0
+            self.sCurExpansion = self.aExpansions[0] 
         else:
             self.sCurExpansion = ''
             self.aExpansions = []
             self.iExpansionPos = 0
 
-    def convert_cardname(self, sCardName, sTestPath=''):
+    def convert_cardname(self):
         """
         Convert sCardName to the form used by the card image list
         """
-        if self.bShowExpansions:
-            if sCardName != self.sCardName:
-                self.set_expansion_info(sCardName)
-                self.sCardName = sCardName
-            if self.sCurExpansion == '' and len(self.aExpansions) > 0:
-                self.sCurExpansion = self.aExpansions[0]
-                self.iExpansionPos = 0
-            sCurExpansionPath = self.convert_expansion(self.sCurExpansion)
-        else:
-            sCurExpansionPath = ''
-        sFilename = self.unaccent(sCardName.lower())
+        sCurExpansionPath = self.convert_expansion(self.sCurExpansion)
+        sFilename = self.unaccent(self.sCardName.lower())
         if sFilename.find('the ') == 0:
             sFilename = sFilename[4:] + 'the'
         sFilename = sFilename.replace('(advanced)', 'adv')
@@ -157,17 +149,27 @@ class CardImageFrame(BasicFrame, CardListViewListener):
         for sChar in [" ", ".", ",", "'", "(", ")", "-", ":", "!", '"', "/"]:
             sFilename = sFilename.replace(sChar, '')
         sFilename = sFilename + '.jpg'
-        if sTestPath == '':
-            return os.path.join(self.sPrefsPath, sCurExpansionPath, sFilename)
-        else:
-            return os.path.join(sTestPath, sCurExpansionPath, sFilename)
+        return os.path.join(self.sPrefsPath, sCurExpansionPath, sFilename)
 
     def set_card_text(self, sCardName, sExpansionName=''):
         """
         Set the image in response to a set card name event
         """
-        self.sCurExpansion = sExpansionName
-        sFullFilename = self.convert_cardname(sCardName)
+
+        if sCardName != self.sCardName:
+            self.set_expansion_info(sCardName)
+            self.sCardName = sCardName
+        if len(self.aExpansions) > 0:
+            if sExpansionName in self.aExpansions:
+                # Honour expansion from set_card_text
+                self.sCurExpansion = sExpansionName
+                self.iExpansionPos = self.aExpansions.index(sExpansionName)
+            elif self.sCurExpansion == '' or \
+                    self.sCurExpansion not in self.aExpansions:
+                # Set self.sCurExpansion to a valid value
+                self.sCurExpansion = self.aExpansions[0]
+                self.iExpansionPos = 0
+        sFullFilename = self.convert_cardname()
         self.load_image(sFullFilename)
 
     def load_image(self, sFullFilename):
@@ -177,6 +179,8 @@ class CardImageFrame(BasicFrame, CardListViewListener):
                 self.oExpansionLabel.set_markup('<i>Image from expansion : </i>'
                         ' %s' % self.sCurExpansion)
                 self.oExpansionLabel.show()
+            else:
+                self.oExpansionLabel.hide() # config chanes can cause this
             oPixbuf = gtk.gdk.pixbuf_new_from_file(sFullFilename)
             iWidth = oPixbuf.get_width()
             iHeight = oPixbuf.get_height()
@@ -209,9 +213,11 @@ class CardImageFrame(BasicFrame, CardListViewListener):
         "On a button click, move to the next expansion"
         bRedraw = False
         if len(self.aExpansions) < 2:
-            return # nothing to scroll through
+            return True # nothing to scroll through
+        if oEvent.type != gtk.gdk.BUTTON_PRESS:
+            return True # don't jump twice on double or triple clicks
         if oEvent.button == 1:
-            # left button
+            # left button, go forward
             self.iExpansionPos += 1
             if self.iExpansionPos >= len(self.aExpansions):
                 self.iExpansionPos = 0
@@ -224,7 +230,9 @@ class CardImageFrame(BasicFrame, CardListViewListener):
             bRedraw = True
         if bRedraw:
             self.sCurExpansion = self.aExpansions[self.iExpansionPos]
-            self.set_card_text(self.sCardName, self.sCurExpansion)
+            sFullFilename = self.convert_cardname()
+            self.load_image(sFullFilename)
+        return True
 
 oImageFrame = None
 
