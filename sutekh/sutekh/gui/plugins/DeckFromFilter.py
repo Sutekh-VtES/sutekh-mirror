@@ -4,17 +4,20 @@
 # Copyright 2006 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
 
+"Converts a filter into a card set"
+
 import gtk
 from sutekh.core.SutekhObjects import PhysicalCardSet, PhysicalCard
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 
 class DeckFromFilter(CardListPlugin):
-    dTableVersions = { PhysicalCardSet : [2,3]}
-    aModelsSupported = [PhysicalCardSet, PhysicalCard]
+    """
+    Converts a filter into a Physical Card Set
+    """
 
-    def __init__(self,*args,**kws):
-        super(DeckFromFilter,self).__init__(*args,**kws)
+    dTableVersions = { PhysicalCardSet : [2, 3, 4]}
+    aModelsSupported = [PhysicalCardSet, PhysicalCard]
 
     def get_menu_item(self):
         """
@@ -27,46 +30,74 @@ class DeckFromFilter(CardListPlugin):
         return iDF
 
     def get_desired_menu(self):
+        "Over method from base class. egister on Plugin's Menu"
         return "Filter"
 
-    def activate(self,oWidget):
-        oDlg = self.makeDialog()
+    # pylint: disable-msg=W0613
+    # oWidget required by gtk function signature
+    def activate(self, oWidget):
+        "Handle menu activation"
+        oDlg = self.make_dialog()
         oDlg.run()
+    # pylint: enable-msg=W0613
 
-    def makeDialog(self):
-        self.oDlg = SutekhDialog("Choose Physical Card Set Name", self.parent,
+    def make_dialog(self):
+        """
+        Create the dialog to prompt for Physical Card Set
+        Properties, and so forth
+        """
+        oDlg = SutekhDialog("Choose Physical Card Set Name", self.parent,
                           gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                           (gtk.STOCK_OK, gtk.RESPONSE_OK,
                            gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
-        self.oDlg.connect("response", self.handleResponse)
 
-        self.oPCSNameEntry = gtk.Entry(50)
-        self.oPCSNameEntry.connect("activate", self.handleResponse, gtk.RESPONSE_OK)
+        oEntry = gtk.Entry(50)
+        oEntry.connect("activate", self.handle_response,
+                gtk.RESPONSE_OK, oDlg, oEntry)
+        oDlg.connect("response", self.handle_response, oDlg, oEntry)
 
-        self.oDlg.vbox.pack_start(self.oPCSNameEntry)
-        self.oDlg.show_all()
+        # pylint: disable-msg=E1101
+        # pylint misses vbox methods
+        oDlg.vbox.pack_start(oEntry)
+        oDlg.show_all()
 
-        return self.oDlg
+        return oDlg
 
-    def handleResponse(self,oWidget,oResponse):
+    # pylint: disable-msg=W0613
+    # oWidget required by gtk function signature
+    def handle_response(self, oWidget, oResponse, oDlg, oEntry):
+        """
+        Handle the user response from make_dialog
+        call make_deck_from_filter to create the PCS if needed
+        """
         if oResponse ==  gtk.RESPONSE_OK:
-            sPCSName = self.oPCSNameEntry.get_text().strip()
-            self.makeDeckFromFilter(sPCSName)
+            sPCSName = oEntry.get_text().strip()
+            self.make_deck_from_filter(sPCSName)
 
-        self.oDlg.destroy()
+        oDlg.destroy()
+    # pylint: enable-msg=W0613
 
-    def makeDeckFromFilter(self,sPCSName):
+    def make_deck_from_filter(self, sPCSName):
+        """
+        Create the actual PCS
+        """
         # Check PCS Doesn't Exist
+        # pylint: disable-msg=E1101
+        # pylint misses PhysicalCardSet methods
         if PhysicalCardSet.selectBy(name=sPCSName).count() != 0:
-            do_complaint_error("Physical Card Set %s already exists." % sPCSName)
+            do_complaint_error("Physical Card Set %s already exists." 
+                    % sPCSName)
             return
 
         # Create PCS
         oPCS = PhysicalCardSet(name=sPCSName)
 
+        # E1101 is still disabled for this
         for oCard in self.model.getCardIterator(self.model.getCurrentFilter()):
             oPCS.addPhysicalCard(oCard)
 
         self.open_pcs(sPCSName)
 
+# pylint: disable-msg=C0103
+# accept plugin name
 plugin = DeckFromFilter
