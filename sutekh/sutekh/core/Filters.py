@@ -5,34 +5,43 @@
 # Copyright 2006, 2007 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-from sutekh.core.SutekhObjects import AbstractCard, IAbstractCard, \
-                                 ICreed, IVirtue, IClan, IDiscipline, \
-                                 IExpansion, ITitle, ISect, ICardType, \
-                                 IPhysicalCardSet, IAbstractCardSet, \
-                                 IRarityPair, IRarity, \
-                                 Clan, Discipline, CardType, Title, \
-                                 Creed, Virtue, Sect, Expansion, \
-                                 RarityPair, PhysicalCardSet, PhysicalCard, \
-                                 AbstractCardSet
+# pylint: disable-msg=W0231, W0223, C0302
+# W0231 - the base classes don't have useful __init__ methods, so we
+# generally don't call __init__ when creating a new filter
+# W0223 - not every abstract method is immediately overridden
+# C0302 - the module is long, but keeping the filters together is the best
+# option
+
+"Define all the filters provided in sutekh"
+
+from sutekh.core.SutekhObjects import AbstractCard, IAbstractCard, ICreed, \
+        IVirtue, IClan, IDiscipline, IExpansion, ITitle, ISect, ICardType, \
+        IPhysicalCardSet, IAbstractCardSet, IRarityPair, IRarity, Clan, \
+        Discipline, CardType, Title, Creed, Virtue, Sect, Expansion, \
+        RarityPair, PhysicalCardSet, PhysicalCard, AbstractCardSet
 from sqlobject import AND, OR, NOT, LIKE, func, IN as SQLOBJ_IN
-from sqlobject.sqlbuilder import Table, Alias, LEFTJOINOn, Select, TRUE, FALSE
+from sqlobject.sqlbuilder import Table, Alias, LEFTJOINOn, Select, TRUE
 
 # Compability Patches
 
-def IN(oCol,oListOrSelect):
+# pylint: disable-msg=C0103
+# IN name is from SQLObject
+def IN(oCol, oListOrSelect):
     """Check explicitly for empty lists passed to the IN operator.
-    
+
        Some databases engines (MySQL) don't handle them so just return False
        instead.
        """
     if not oListOrSelect:
         return False
     else:
-        return SQLOBJ_IN(oCol,oListOrSelect)
+        return SQLOBJ_IN(oCol, oListOrSelect)
+# pylint: enable-msg=C0103
 
 # Filter Base Class
 
 class Filter(object):
+    "Base class for all filters"
     @classmethod
     def get_values(cls):
         """Used by GUI tools and FilterParser to get/check acceptable values"""
@@ -40,17 +49,19 @@ class Filter(object):
         # to fill in the values most times
         raise NotImplementedError
 
-    def select(self, CardClass):
-        """CardClass.select(...) applying the filter to the selection."""
-        return CardClass.select(self._getExpression(), join=self._getJoins())
+    def select(self, cCardClass):
+        """cCardClass.select(...) applying the filter to the selection."""
+        return cCardClass.select(self._get_expression(), join=self._get_joins())
 
-    def _getExpression(self):
+    def _get_expression(self):
+        "Actual filter expression"
         raise NotImplementedError
 
-    def _getJoins(self):
+    def _get_joins(self):
+        "joins needed by the filter"
         raise NotImplementedError
 
-    def _makeTableAlias(self, sTable):
+    def _make_table_alias(self, sTable):
         """
         In order to allow multiple filters to be AND together, filters need
         to create aliases of mapping tables so that, for example:
@@ -69,13 +80,19 @@ class Filter(object):
 class FilterBox(Filter, list):
     """Base class for filter collections."""
 
-    def _getJoins(self):
+    # pylint: disable-msg=W0212
+    # we delibrately access protected members
+    def _get_joins(self):
+        """
+        The joins required for the composite filter
+        This is the union of the joins of the subfilters
+        """
         aJoins = []
-        for x in self:
-            aJoins.extend(x._getJoins())
+        for oSubFilter in self:
+            aJoins.extend(oSubFilter._get_joins())
         return aJoins
 
-    def _getTypes(self):
+    def _get_types(self):
         """
         Get types for a composite filter.
         This is the intersection of the types of the subfilters
@@ -88,19 +105,29 @@ class FilterBox(Filter, list):
                     aTypes.append(sType)
         return aTypes
 
-    types = property(fget= lambda self: self._getTypes())
+    # W0212 applies here too
+    types = property(fget= lambda self: self._get_types(),
+            doc="types supported by this filter")
 
 class FilterAndBox(FilterBox):
     """AND a list of filters."""
 
-    def _getExpression(self):
-        return AND(*[x._getExpression() for x in self])
+    # pylint: disable-msg=W0142, W0212
+    # W0142 - *magic is needed by SQLObject
+    # W0212 - we intentinally access protected members
+    def _get_expression(self):
+        "Combine filters with AND"
+        return AND(*[x._get_expression() for x in self])
 
 class FilterOrBox(FilterBox):
     """OR a list of filters."""
 
-    def _getExpression(self):
-        return OR(*[x._getExpression() for x in self])
+    # pylint: disable-msg=W0142, W0212
+    # W0142 - *magic is needed by SQLObject
+    # W0212 - we intentinally access protected members
+    def _get_expression(self):
+        "Combine filters with OR"
+        return OR(*[x._get_expression() for x in self])
 
 # NOT Filter
 
@@ -110,66 +137,92 @@ class FilterNot(Filter):
     def __init__(self, oSubFilter):
         self.__oSubFilter = oSubFilter
 
-    def _getJoins(self):
+    def _get_joins(self):
+        "Joins for not is null, as they are used in the sub-select"
         return []
 
-    types = property(fget= lambda self: self.__oSubFilter.types)
+    # pylint: disable-msg=W0212
+    # W0212 - we are delibrately accesing protected members her
+    # and in _get_expression
+    types = property(fget= lambda self: self.__oSubFilter.types,
+            doc="types supported by this filter")
 
-    def _getExpression(self):
-        oX = self.__oSubFilter._getExpression()
-        aJ = self.__oSubFilter._getJoins()
+    def _get_expression(self):
+        """
+        The expression for the NOT filter.
+        We generate a suitable subselect from self._oSubFilter, and
+        negate the results of that.
+        """
+        # pylint: disable-msg=E1101
+        # E1101 - avoid SQLObject method not detected problems
+        oExpression = self.__oSubFilter._get_expression()
+        aJoins = self.__oSubFilter._get_joins()
         if 'AbstractCard' in self.__oSubFilter.types:
-            return NOT(IN(AbstractCard.q.id, Select(AbstractCard.q.id, oX, join=aJ)))
+            return NOT(IN(AbstractCard.q.id, Select(AbstractCard.q.id,
+                oExpression, join=aJoins)))
         elif 'PhysicalCard' in self.__oSubFilter.types:
-            return NOT(IN(PhysicalCard.q.id, Select(PhysicalCard.q.id, oX, join=aJ)))
+            return NOT(IN(PhysicalCard.q.id, Select(PhysicalCard.q.id,
+                oExpression, join=aJoins)))
         elif 'PhysicalCardSet' in self.__oSubFilter.types:
-            return NOT(IN(PhysicalCardSet.q.id, Select(PhysicalCardSet.q.id, oX, join=aJ)))
+            return NOT(IN(PhysicalCardSet.q.id, Select(PhysicalCardSet.q.id,
+                oExpression, join=aJoins)))
         elif 'AbstractCardSet' in self.__oSubFilter.types:
-            return NOT(IN(AbstractCardSet.q.id, Select(AbstractCardSet.q.id, oX, join=aJ)))
+            return NOT(IN(AbstractCardSet.q.id, Select(AbstractCardSet.q.id,
+                oExpression, join=aJoins)))
 
 # Null Filter
 
 class NullFilter(Filter):
     """Return everything."""
 
-    types = ['AbstractCard', 'PhysicalCard', 'AbstractCardSet', 'PhysicalCardSet']
+    types = ['AbstractCard', 'PhysicalCard', 'AbstractCardSet',
+            'PhysicalCardSet']
 
-    def _getExpression(self):
+    def _get_expression(self):
         return TRUE # SQLite doesn't like True. Postgres doesn't like 1.
 
-    def _getJoins(self):
+    def _get_joins(self):
         return []
 
 # Base Classes for Common Filter Idioms
 
 class SingleFilter(Filter):
-    """Base class for filters on single items which connect to AbstractCard via a mapping table.
+    """
+    Base class for filters on single items which connect to AbstractCard
+    via a mapping table.
 
-       Sub-class should set self._oMapTable, self._oMapField and self._oId.
-       """
+    Sub-class should set self._oMapTable, self._oMapField and self._oId.
+    """
+    # pylint: disable-msg=E1101
+    # We expect subclasses to provide _oMapTable and friends
+    def _get_joins(self):
+        return [LEFTJOINOn(None, self._oMapTable,
+            AbstractCard.q.id == self._oMapTable.q.abstract_card_id)]
 
-    def _getJoins(self):
-        return [LEFTJOINOn(None, self._oMapTable, AbstractCard.q.id == self._oMapTable.q.abstract_card_id)]
-
-    def _getExpression(self):
+    def _get_expression(self):
         return self._oIdField == self._oId
 
 class MultiFilter(Filter):
-    """Base class for filters on multiple items which connect to AbstractCard via a mapping table.
+    """
+    Base class for filters on multiple items which connect to AbstractCard via
+    a mapping table.
 
-       Sub-class should set self._oMapTable, self._oMapField and self._aIds.
-       """
+    Sub-class should set self._oMapTable, self._oMapField and self._aIds.
+    """
 
-    def _getJoins(self):
-        return [LEFTJOINOn(None, self._oMapTable, AbstractCard.q.id == self._oMapTable.q.abstract_card_id)]
+    # pylint: disable-msg=E1101
+    # We expect subclasses to provide self._aIds, et al.
+    def _get_joins(self):
+        return [LEFTJOINOn(None, self._oMapTable,
+            AbstractCard.q.id == self._oMapTable.q.abstract_card_id)]
 
-    def _getExpression(self):
+    def _get_expression(self):
         return IN(self._oIdField, self._aIds)
 
 class DirectFilter(Filter):
     """Base class for filters which query AbstractTable directly."""
 
-    def _getJoins(self):
+    def _get_joins(self):
         return []
 
 # Useful utiltiy function for filters using with
@@ -189,8 +242,10 @@ def split_list(aList):
 class ClanFilter(SingleFilter):
     types = ['AbstractCard', 'PhysicalCard']
     def __init__(self, sClan):
+        # pylint: disable-msg=E1101
+        # SQLObject methods not detected by plylint
         self._oId = IClan(sClan).id
-        self._oMapTable = self._makeTableAlias('abs_clan_map')
+        self._oMapTable = self._make_table_alias('abs_clan_map')
         self._oIdField = self._oMapTable.q.clan_id
 
 class MultiClanFilter(MultiFilter):
@@ -201,8 +256,10 @@ class MultiClanFilter(MultiFilter):
     types = ['AbstractCard', 'PhysicalCard']
 
     def __init__(self, aClans):
+        # pylint: disable-msg=E1101
+        # SQLObject methods not detected by plylint
         self._aIds = [IClan(x).id for x in aClans]
-        self._oMapTable = self._makeTableAlias('abs_clan_map')
+        self._oMapTable = self._make_table_alias('abs_clan_map')
         self._oIdField = self._oMapTable.q.clan_id
 
     @classmethod
@@ -212,8 +269,10 @@ class MultiClanFilter(MultiFilter):
 class DisciplineFilter(MultiFilter):
     types = ['AbstractCard', 'PhysicalCard']
     def __init__(self, sDiscipline):
+        # pylint: disable-msg=E1101
+        # SQLObject methods not detected by plylint
         self._aIds = [oP.id for oP in IDiscipline(sDiscipline).pairs]
-        self._oMapTable = self._makeTableAlias('abs_discipline_pair_map')
+        self._oMapTable = self._make_table_alias('abs_discipline_pair_map')
         self._oIdField = self._oMapTable.q.discipline_pair_id
 
 class MultiDisciplineFilter(MultiFilter):
@@ -224,11 +283,13 @@ class MultiDisciplineFilter(MultiFilter):
     types = ['AbstractCard', 'PhysicalCard']
 
     def __init__(self, aDisciplines):
+        # pylint: disable-msg=E1101
+        # SQLObject methods not detected by plylint
         oPairs = []
         for sDis in aDisciplines:
             oPairs += IDiscipline(sDis).pairs
         self._aIds = [oP.id for oP in oPairs]
-        self._oMapTable = self._makeTableAlias('abs_discipline_pair_map')
+        self._oMapTable = self._make_table_alias('abs_discipline_pair_map')
         self._oIdField = self._oMapTable.q.discipline_pair_id
 
     @classmethod
@@ -238,42 +299,51 @@ class MultiDisciplineFilter(MultiFilter):
 class ExpansionFilter(MultiFilter):
     types = ['AbstractCard', 'PhysicalCard']
     def __init__(self, sExpansion):
+        # pylint: disable-msg=E1101
+        # SQLObject methods not detected by plylint
         self._aIds = [oP.id for oP in IExpansion(sExpansion).pairs]
-        self._oMapTable = self._makeTableAlias('abs_rarity_pair_map')
+        self._oMapTable = self._make_table_alias('abs_rarity_pair_map')
         self._oIdField = self._oMapTable.q.rarity_pair_id
 
 class MultiExpansionFilter(MultiFilter):
     types = ['AbstractCard', 'PhysicalCard']
     def __init__(self, aExpansions):
+        # pylint: disable-msg=E1101
+        # SQLObject methods not detected by plylint
         oPairs = []
         for sExp in aExpansions:
             oPairs += IExpansion(sExp).pairs
         self._aIds = [oP.id for oP in oPairs]
-        self._oMapTable = self._makeTableAlias('abs_rarity_pair_map')
+        self._oMapTable = self._make_table_alias('abs_rarity_pair_map')
         self._oIdField = self._oMapTable.q.rarity_pair_id
 
 class ExpansionRarityFilter(SingleFilter):
+    """Filter on Expansion & Rarity combo """
     types = ['AbstractCard', 'PhysicalCard']
-    """ Filter on Expansion & Rarity combo """
 
     def __init__(self, tExpanRarity):
         """ We use a tuple for Expansion and Rarity here to keep the
             same calling convention as for the Multi Filter"""
+        # pylint: disable-msg=E1101
+        # SQLObject methods not detected by plylint
         sExpansion, sRarity = tExpanRarity
         self._oId = IRarityPair((IExpansion(sExpansion), IRarity(sRarity))).id
-        self._oMapTable = self._makeTableAlias('abs_rarity_pair_map')
+        self._oMapTable = self._make_table_alias('abs_rarity_pair_map')
         self._oIdField = self._oMapTable.q.rarity_pair_id
 
 class MultiExpansionRarityFilter(MultiFilter):
     keyword = "Expansion_with_Rarity"
     description = "Expansion with Rarity"
-    helptext = "a list of expansions and rarities (each element specified as an expansion with associated rarity)"
+    helptext = "a list of expansions and rarities (each element specified" \
+            " as an expansion with associated rarity)"
     iswithfilter = True
     islistfilter = True
     types = ['AbstractCard', 'PhysicalCard']
 
     def __init__(self, aExpansionRarities):
         """  Called with a list of Expansion + Rarity pairs"""
+        # pylint: disable-msg=E1101
+        # SQLObject methods not detected by plylint
         self._aIds = []
         if type(aExpansionRarities[0]) is str:
             aValues = split_list(aExpansionRarities)
@@ -282,7 +352,7 @@ class MultiExpansionRarityFilter(MultiFilter):
         for sExpansion, sRarity in aValues:
             self._aIds.append(IRarityPair( (IExpansion(sExpansion),
                 IRarity(sRarity)) ).id)
-        self._oMapTable = self._makeTableAlias('abs_rarity_pair_map')
+        self._oMapTable = self._make_table_alias('abs_rarity_pair_map')
         self._oIdField = self._oMapTable.q.rarity_pair_id
 
     @classmethod
@@ -292,7 +362,8 @@ class MultiExpansionRarityFilter(MultiFilter):
         aResults = []
         for sExpan in aExpansions:
             oE = IExpansion(sExpan)
-            aRarities = [x.rarity.name for x in RarityPair.selectBy(expansion = oE)]
+            aRarities = [x.rarity.name for x in
+                    RarityPair.selectBy(expansion = oE)]
             for sRarity in aRarities:
                 aResults.append(sExpan + ' with ' + sRarity)
         return aResults
@@ -300,23 +371,30 @@ class MultiExpansionRarityFilter(MultiFilter):
 class DisciplineLevelFilter(MultiFilter):
     types = ['AbstractCard', 'PhysicalCard']
     def __init__(self, tDiscLevel):
+        # pylint: disable-msg=E1101
+        # SQLObject methods not detected by plylint
         sDiscipline, sLevel = tDiscLevel
         sLevel = sLevel.lower()
         assert sLevel in ['inferior', 'superior']
         # There will be 0 or 1 ids
-        self._aIds = [oP.id for oP in IDiscipline(sDiscipline).pairs if oP.level == sLevel]
-        self._oMapTable = self._makeTableAlias('abs_discipline_pair_map')
+        self._aIds = [oP.id for oP in IDiscipline(sDiscipline).pairs if
+                oP.level == sLevel]
+        self._oMapTable = self._make_table_alias('abs_discipline_pair_map')
         self._oIdField = self._oMapTable.q.discipline_pair_id
 
 class MultiDisciplineLevelFilter(MultiFilter):
     keyword = "Discipline_with_Level"
     description = "Discipline with Level"
-    helptext = "a list of disciplines with levels (each element specified as a discipline with associated level, i.e. superior or inferior)"
+    helptext = "a list of disciplines with levels (each element specified" \
+            " as a discipline with associated level, i.e. superior or" \
+            " inferior)"
     iswithfilter = True
     islistfilter = True
     types = ['AbstractCard', 'PhysicalCard']
 
     def __init__(self, aDiscLevels):
+        # pylint: disable-msg=E1101
+        # SQLObject methods not detected by plylint
         self._aIds = []
         if type(aDiscLevels[0]) is str:
             aValues = split_list(aDiscLevels)
@@ -327,7 +405,7 @@ class MultiDisciplineLevelFilter(MultiFilter):
             assert sLevel in ['inferior', 'superior']
             self._aIds.extend([oP.id for oP in IDiscipline(sDiscipline).pairs
                     if oP.level == sLevel])
-        self._oMapTable = self._makeTableAlias('abs_discipline_pair_map')
+        self._oMapTable = self._make_table_alias('abs_discipline_pair_map')
         self._oIdField = self._oMapTable.q.discipline_pair_id
 
     @classmethod
@@ -343,8 +421,10 @@ class MultiDisciplineLevelFilter(MultiFilter):
 class CardTypeFilter(SingleFilter):
     types = ['AbstractCard', 'PhysicalCard']
     def __init__(self, sCardType):
+        # pylint: disable-msg=E1101
+        # SQLObject methods not detected by plylint
         self._oId = ICardType(sCardType).id
-        self._oMapTable = self._makeTableAlias('abs_type_map')
+        self._oMapTable = self._make_table_alias('abs_type_map')
         self._oIdField = self._oMapTable.q.card_type_id
 
 class MultiCardTypeFilter(MultiFilter):
@@ -355,8 +435,10 @@ class MultiCardTypeFilter(MultiFilter):
     types = ['AbstractCard', 'PhysicalCard']
 
     def __init__(self, aCardTypes):
+        # pylint: disable-msg=E1101
+        # SQLObject methods not detected by plylint
         self._aIds = [ICardType(x).id for x in aCardTypes]
-        self._oMapTable = self._makeTableAlias('abs_type_map')
+        self._oMapTable = self._make_table_alias('abs_type_map')
         self._oIdField = self._oMapTable.q.card_type_id
 
     @classmethod
@@ -366,8 +448,10 @@ class MultiCardTypeFilter(MultiFilter):
 class SectFilter(SingleFilter):
     types = ['AbstractCard', 'PhysicalCard']
     def __init__(self, sSect):
+        # pylint: disable-msg=E1101
+        # SQLObject methods not detected by plylint
         self._oId = ISect(sSect).id
-        self._oMapTable = self._makeTableAlias('abs_sect_map')
+        self._oMapTable = self._make_table_alias('abs_sect_map')
         self._oIdField = self._oMapTable.q.sect_id
 
 class MultiSectFilter(MultiFilter):
@@ -378,8 +462,10 @@ class MultiSectFilter(MultiFilter):
     types = ['AbstractCard', 'PhysicalCard']
 
     def __init__(self, aSects):
+        # pylint: disable-msg=E1101
+        # SQLObject methods not detected by plylint
         self._aIds = [ISect(x).id for x in aSects]
-        self._oMapTable = self._makeTableAlias('abs_sect_map')
+        self._oMapTable = self._make_table_alias('abs_sect_map')
         self._oIdField = self._oMapTable.q.sect_id
 
     @classmethod
@@ -389,8 +475,10 @@ class MultiSectFilter(MultiFilter):
 class TitleFilter(SingleFilter):
     types = ['AbstractCard', 'PhysicalCard']
     def __init__(self, sTitle):
+        # pylint: disable-msg=E1101
+        # SQLObject methods not detected by plylint
         self._oId = ITitle(sTitle).id
-        self._oMapTable = self._makeTableAlias('abs_title_map')
+        self._oMapTable = self._make_table_alias('abs_title_map')
         self._oIdField = self._oMapTable.q.title_id
 
 class MultiTitleFilter(MultiFilter):
@@ -401,8 +489,10 @@ class MultiTitleFilter(MultiFilter):
     types = ['AbstractCard', 'PhysicalCard']
 
     def __init__(self, aTitles):
+        # pylint: disable-msg=E1101
+        # SQLObject methods not detected by plylint
         self._aIds = [ITitle(x).id for x in aTitles]
-        self._oMapTable = self._makeTableAlias('abs_title_map')
+        self._oMapTable = self._make_table_alias('abs_title_map')
         self._oIdField = self._oMapTable.q.title_id
 
     @classmethod
@@ -412,8 +502,10 @@ class MultiTitleFilter(MultiFilter):
 class CreedFilter(SingleFilter):
     types = ['AbstractCard', 'PhysicalCard']
     def __init__(self, sCreed):
+        # pylint: disable-msg=E1101
+        # SQLObject methods not detected by plylint
         self._oId = ICreed(sCreed).id
-        self._oMapTable = self._makeTableAlias('abs_creed_map')
+        self._oMapTable = self._make_table_alias('abs_creed_map')
         self._oIdField = self._oMapTable.q.creed_id
 
 class MultiCreedFilter(MultiFilter):
@@ -424,8 +516,10 @@ class MultiCreedFilter(MultiFilter):
     types = ['AbstractCard', 'PhysicalCard']
 
     def __init__(self, aCreeds):
+        # pylint: disable-msg=E1101
+        # SQLObject methods not detected by plylint
         self._aIds = [ICreed(x).id for x in aCreeds]
-        self._oMapTable = self._makeTableAlias('abs_creed_map')
+        self._oMapTable = self._make_table_alias('abs_creed_map')
         self._oIdField = self._oMapTable.q.creed_id
 
     @classmethod
@@ -435,8 +529,10 @@ class MultiCreedFilter(MultiFilter):
 class VirtueFilter(SingleFilter):
     types = ['AbstractCard', 'PhysicalCard']
     def __init__(self, sVirtue):
+        # pylint: disable-msg=E1101
+        # SQLObject methods not detected by plylint
         self._oId = IVirtue(sVirtue).id
-        self._oMapTable = self._makeTableAlias('abs_virtue_map')
+        self._oMapTable = self._make_table_alias('abs_virtue_map')
         self._oIdField = self._oMapTable.q.virtue_id
 
 class MultiVirtueFilter(MultiFilter):
@@ -447,8 +543,10 @@ class MultiVirtueFilter(MultiFilter):
     types = ['AbstractCard', 'PhysicalCard']
 
     def __init__(self, aVirtues):
+        # pylint: disable-msg=E1101
+        # SQLObject methods not detected by plylint
         self._aIds = [IVirtue(x).id for x in aVirtues]
-        self._oMapTable = self._makeTableAlias('abs_virtue_map')
+        self._oMapTable = self._make_table_alias('abs_virtue_map')
         self._oIdField = self._oMapTable.q.virtue_id
 
     @classmethod
@@ -460,7 +558,9 @@ class GroupFilter(DirectFilter):
     def __init__(self, iGroup):
         self.__iGroup = iGroup
 
-    def _getExpression(self):
+    def _get_expression(self):
+        # pylint: disable-msg=E1101
+        # SQLObject methods not detected by plylint
         return AbstractCard.q.group == self.__iGroup
 
 class MultiGroupFilter(DirectFilter):
@@ -477,7 +577,9 @@ class MultiGroupFilter(DirectFilter):
     def get_values(cls):
         return [str(x) for x in range(1, 6)]
 
-    def _getExpression(self):
+    def _get_expression(self):
+        # pylint: disable-msg=E1101
+        # SQLObject methods not detected by plylint
         return IN(AbstractCard.q.group, self.__aGroups)
 
 class CapacityFilter(DirectFilter):
@@ -485,7 +587,9 @@ class CapacityFilter(DirectFilter):
     def __init__(self, iCap):
         self.__iCap = iCap
 
-    def _getExpression(self):
+    def _get_expression(self):
+        # pylint: disable-msg=E1101
+        # SQLObject methods not detected by plylint
         return AbstractCard.q.capacity == self.__iCap
 
 class MultiCapacityFilter(DirectFilter):
@@ -502,7 +606,9 @@ class MultiCapacityFilter(DirectFilter):
     def get_values(cls):
         return [str(x) for x in range(1, 12)]
 
-    def _getExpression(self):
+    def _get_expression(self):
+        # pylint: disable-msg=E1101
+        # SQLObject methods not detected by plylint
         return IN(AbstractCard.q.capacity, self.__aCaps)
 
 class CostFilter(DirectFilter):
@@ -512,7 +618,9 @@ class CostFilter(DirectFilter):
     def __init__(self, iCost):
         self.__iCost = iCost
 
-    def _getExpression(self):
+    def _get_expression(self):
+        # pylint: disable-msg=E1101
+        # SQLObject methods not detected by plylint
         return AbstractCard.q.cost == self.__iCost
 
 class MultiCostFilter(DirectFilter):
@@ -531,7 +639,9 @@ class MultiCostFilter(DirectFilter):
     def get_values(cls):
         return [str(x) for x in range(0, 7)] + ['X']
 
-    def _getExpression(self):
+    def _get_expression(self):
+        # pylint: disable-msg=E1101
+        # SQLObject methods not detected by plylint
         return IN(AbstractCard.q.cost, self.__aCost)
 
 class CostTypeFilter(DirectFilter):
@@ -540,7 +650,9 @@ class CostTypeFilter(DirectFilter):
         self.__sCostType = sCostType.lower()
         assert self.__sCostType in ["blood", "pool", "conviction", None]
 
-    def _getExpression(self):
+    def _get_expression(self):
+        # pylint: disable-msg=E1101
+        # SQLObject methods not detected by plylint
         return AbstractCard.q.costtype == self.__sCostType.lower()
 
 class MultiCostTypeFilter(DirectFilter):
@@ -561,7 +673,9 @@ class MultiCostTypeFilter(DirectFilter):
     def get_values(cls):
         return ["blood", "pool", "conviction"]
 
-    def _getExpression(self):
+    def _get_expression(self):
+        # pylint: disable-msg=E1101
+        # SQLObject methods not detected by plylint
         return IN(AbstractCard.q.costtype, self.__aCostTypes)
 
 class LifeFilter(DirectFilter):
@@ -570,7 +684,9 @@ class LifeFilter(DirectFilter):
     def __init__(self, iLife):
         self.__iLife = iLife
 
-    def _getExpression(self):
+    def _get_expression(self):
+        # pylint: disable-msg=E1101
+        # SQLObject methods not detected by plylint
         return AbstractCard.q.life == self.__iLife
 
 class MultiLifeFilter(DirectFilter):
@@ -587,13 +703,16 @@ class MultiLifeFilter(DirectFilter):
     def get_values(cls):
         return [str(x) for x in range(1, 8)]
 
-    def _getExpression(self):
+    def _get_expression(self):
+        # pylint: disable-msg=E1101
+        # SQLObject methods not detected by plylint
         return IN(AbstractCard.q.life, self.__aLife)
 
 class CardTextFilter(DirectFilter):
     keyword = "CardText"
     description = "Card Text"
-    helptext = "the desired card text to search for (% can be used as a wildcard)"
+    helptext = "the desired card text to search for (% can be used as a " \
+            "wildcard)"
     istextentry = True
     types = ['AbstractCard', 'PhysicalCard']
 
@@ -604,14 +723,18 @@ class CardTextFilter(DirectFilter):
     def get_values(cls):
         return ''
 
-    def _getExpression(self):
-        return LIKE(func.LOWER(AbstractCard.q.text), '%' + self.__sPattern + '%')
+    def _get_expression(self):
+        # pylint: disable-msg=E1101
+        # SQLObject methods not detected by plylint
+        return LIKE(func.LOWER(AbstractCard.q.text),
+                '%' + self.__sPattern + '%')
 
 class CardNameFilter(DirectFilter):
     "Filter on the name of the card"
     keyword = "CardName"
     description = "Card Name"
-    helptext = "the text to be matched against card names (% can be used as a wildcard)"
+    helptext = "the text to be matched against card names (% can be used" \
+            " as a wildcard)"
     istextentry = True
     types = ['AbstractCard', 'PhysicalCard']
 
@@ -622,8 +745,11 @@ class CardNameFilter(DirectFilter):
     def get_values(cls):
         return ''
 
-    def _getExpression(self):
-        return LIKE(AbstractCard.q.canonicalName, '%' + self.__sPattern.lower() + '%')
+    def _get_expression(self):
+        # pylint: disable-msg=E1101
+        # SQLObject methods not detected by plylint
+        return LIKE(AbstractCard.q.canonicalName,
+                '%' + self.__sPattern.lower() + '%')
 
 class CardFunctionFilter(DirectFilter):
     """
@@ -638,16 +764,16 @@ class CardFunctionFilter(DirectFilter):
     # Implementation discussion
     # Because we want flexiblity here, we define these filters in terms
     # of the existing filters - this avoids needing fancy
-    # logic in _getJoins, and so forth
+    # logic in _get_joins, and so forth
     # The filters can only be specificed after the database connection is
     # established, hence the list of contants and if .. constuction
     # in __init__, rather than using a class dictionary or similiar scheme
 
-    __sStealth = 'Stealth' 
+    __sStealth = 'Stealth'
     __sIntercept = 'Intercept'
-    __sUntap = 'Untap' 
+    __sUntap = 'Untap'
     __sBounce = 'Bleed Bounce'
-    __sEnterCombat = 'Enter combat' 
+    __sEnterCombat = 'Enter combat'
     __sBleedModifier = 'Increase bleed action modifiers'
     __sBleedAction = 'Increased bleed actions'
     __sBleedReduction = 'Bleed reduction'
@@ -671,17 +797,22 @@ class CardFunctionFilter(DirectFilter):
 
     @classmethod
     def get_values(cls):
+        "Values supported by this filter"
         aVals = sorted([cls.__sStealth, cls.__sIntercept, cls.__sUntap,
             #cls.__sBounce, cls.__sEnterCombat, cls.__sBleedModifier,
-            #cls.__sBleedAction, cls.__sBleedReduction, 
+            #cls.__sBleedAction, cls.__sBleedReduction,
             ])
         return aVals
 
-    def _getJoins(self):
-        return self._oFilter._getJoins()
+    # pylint: disable-msg=W0212
+    # we access protexted members intentionally
+    def _get_joins(self):
+        "Joins for the constructed filter"
+        return self._oFilter._get_joins()
 
-    def _getExpression(self):
-        return self._oFilter._getExpression()
+    def _get_expression(self):
+        "Expression for the constructed filter"
+        return self._oFilter._get_expression()
 
 class PhysicalCardFilter(Filter):
     """
@@ -692,13 +823,18 @@ class PhysicalCardFilter(Filter):
         # Specifies Physical Cards, intended to be anded with other filters
         pass
 
-    def _getJoins(self):
-        # This, AbstractCardSetFilter and PhysicalCardSetFilter are the only filters allowed to pass the AbstractCard table as a joining table.
+    def _get_joins(self):
+        # pylint: disable-msg=E1101
+        # SQLObject methods not detected by plylint
+        # This, AbstractCardSetFilter and PhysicalCardSetFilter are the
+        # only filters allowed to pass the AbstractCard table as a
+        # joining table.
         # The join is needed so filtering on abstract card properties can work
         oT = Table('physical_card')
-        return [LEFTJOINOn(None, AbstractCard, AbstractCard.q.id == oT.abstract_card_id)]
+        return [LEFTJOINOn(None, AbstractCard,
+            AbstractCard.q.id == oT.abstract_card_id)]
 
-    def _getExpression(self):
+    def _get_expression(self):
         return TRUE # SQLite doesn't like True. Postgres doesn't like 1.
 
 class AbstractCardFilter(Filter):
@@ -706,12 +842,13 @@ class AbstractCardFilter(Filter):
     Filter for converting a filter on physical cards to a filter on
     abstract cards.
     """
-    # Not used in the gui, as it's quite fragile due to database differences. 
-    # Kept for documentation purposes and for use when directly using the 
+    # Not used in the gui, as it's quite fragile due to database differences.
+    # Kept for documentation purposes and for use when directly using the
     # Filters.
-    # Because of how SQL handles NULLs, combining this filter with 
-    # FilterNot(PhysicalX) will still only match cards in the PhysicalCard 
-    # list. This is hard to fix, partly due to the database differences mentioned.
+    # Because of how SQL handles NULLs, combining this filter with
+    # FilterNot(PhysicalX) will still only match cards in the PhysicalCard
+    # list. This is hard to fix, partly due to the database differences 
+    # mentioned.
     #
     # FilterBox([AbstractCardFilter, PhysicalCardFilter, X]) is almost
     # certainly not going to do the right thing, due to the multiple joins
@@ -720,40 +857,49 @@ class AbstractCardFilter(Filter):
         # speficies AbstractCards, intended to be and'ed with other filters
         pass
 
-    def _getJoins(self):
+    def _get_joins(self):
+        # pylint: disable-msg=E1101
+        # SQLObject methods not detected by plylint
         oT = Table('abstract_card')
-        return [LEFTJOINOn(None, PhysicalCard, PhysicalCard.q.abstractCardID == oT.id)]
+        return [LEFTJOINOn(None, PhysicalCard,
+            PhysicalCard.q.abstractCardID == oT.id)]
 
-    def _getExpression(self):
+    def _get_expression(self):
         return TRUE # See PhysicalCardFilter
 
 class MultiPhysicalCardCountFilter(DirectFilter):
     keyword = "PhysicalCardCount"
     description = "Physical Card Count"
-    helptext = "a list of card numbers (filters on number of cards in the Physical Card list)"
+    helptext = "a list of card numbers (filters on number of cards in the " \
+            "Physical Card list)"
     islistfilter = True
     types = ['AbstractCard', 'PhysicalCard']
 
     def __init__(self, aCounts):
         # Selects cards with a count in the range specified by aCounts
+        # pylint: disable-msg=E1101
+        # SQLObject methods not detected by plylint
         aCounts = set(aCounts)
         self._oFilters = []
         if '0' in aCounts:
             aCounts.remove('0')
             # Doesn't seem to be a way to do a DISTINCT using sqlbuilder.Select,
             # so we fudge it with GROUP BY
-            oZeroQuery = NOT(IN(AbstractCard.q.id, Select(PhysicalCard.q.abstractCardID,
+            oZeroQuery = NOT(IN(AbstractCard.q.id, Select(
+                PhysicalCard.q.abstractCardID,
                 groupBy=PhysicalCard.q.abstractCardID)))
             self._oFilters.append(oZeroQuery)
         if '>30' in aCounts:
             aCounts.remove('>30')
-            oGreater30Query = IN(AbstractCard.q.id, Select(PhysicalCard.q.abstractCardID,
+            oGreater30Query = IN(AbstractCard.q.id, Select(
+                PhysicalCard.q.abstractCardID,
                 groupBy=PhysicalCard.q.abstractCardID,
                 having=func.COUNT(PhysicalCard.q.abstractCardID) > 30))
             self._oFilters.append(oGreater30Query)
         if len(aCounts) > 0:
             # SQLite doesn't like strings here, so convert to int
-            oCountFilter = IN(AbstractCard.q.id, Select(PhysicalCard.q.abstractCardID,
+            oCountFilter = IN(AbstractCard.q.id, Select(
+                PhysicalCard.q.abstractCardID,
                 groupBy=PhysicalCard.q.abstractCardID,
                 having=IN(func.COUNT(PhysicalCard.q.abstractCardID),
                     [int(x) for x in aCounts])))
@@ -761,10 +907,13 @@ class MultiPhysicalCardCountFilter(DirectFilter):
 
     @classmethod
     def get_values(cls):
-        # Should this have a more staggered range split? 0..20, 20-30, 30-40, >40 type thing?
+        # Should this have a more staggered range split? 0..20, 20-30,
+        # 30-40, >40 type thing?
         return [str(x) for x in range(0, 30)] + ['>30']
 
-    def _getExpression(self):
+    # pylint: disable-msg=W0142
+    # *magic is needed by SQLObject
+    def _get_expression(self):
         return OR(*self._oFilters)
 
 class PhysicalExpansionFilter(DirectFilter):
@@ -772,25 +921,30 @@ class PhysicalExpansionFilter(DirectFilter):
     # We must be calling this with a PhysicalCardFilter for sensible results,
     # so we don't need any special join magic
     def __init__(self, sExpansion):
+        # pylint: disable-msg=E1101
+        # SQLObject methods not detected by plylint
         if sExpansion is not None:
             self._iId = IExpansion(sExpansion).id
         else:
             # physical Expansion can explicity be None
             self._iId = None
 
-    def _getExpression(self):
+    def _get_expression(self):
         oT = Table('physical_card')
         return oT.expansion_id == self._iId
 
 class MultiPhysicalExpansionFilter(DirectFilter):
     keyword = "PhysicalExpansion"
     description = "Physical Expansion"
-    helptext = "a list of expansions (selects of physical cards with in the specified expansion)"
+    helptext = "a list of expansions (selects of physical cards with "\
+            "their expansion set to the chosen expansions)"
     types = ['PhysicalCard']
     islistfilter = True
     __sUnspec = '  Unspecified Expansion'
 
     def __init__(self, aExpansions):
+        # pylint: disable-msg=E1101
+        # SQLObject methods not detected by plylint
         self._aIds = []
         self.__bOrUnspec = False
         for sExpansion in aExpansions:
@@ -806,7 +960,7 @@ class MultiPhysicalExpansionFilter(DirectFilter):
                 if x.name[:5] != 'Promo'])
         return aExpansions
 
-    def _getExpression(self):
+    def _get_expression(self):
         oT = Table('physical_card')
         # None in the IN statement doesn't do the right thing for me
         if self.__bOrUnspec and len(self._aIds) > 0:
@@ -821,26 +975,33 @@ class PhysicalCardSetFilter(Filter):
     types = ['PhysicalCard']
     def __init__(self, sName):
         # Select cards belonging to a PhysicalCardSet
+        # pylint: disable-msg=E1101
+        # SQLObject methods not detected by plylint
         self.__iDeckId = IPhysicalCardSet(sName).id
-        self.__oT = self._makeTableAlias('physical_map')
+        self.__oT = self._make_table_alias('physical_map')
         self.__oPT = Table('physical_card')
 
-    def _getJoins(self):
-        # The join on the AbstractCard table is needed to enable filtering physical
-        # card sets on abstract card propeties, since the base class for
-        # physical card sets is the mapping table
+    def _get_joins(self):
+        # The join on the AbstractCard table is needed to enable filtering
+        # physical card sets on abstract card propeties, since the base class
+        # for physical card sets is the mapping table.
         # Only this, PhysicalCardFilter and AbstractCardSetFilter can join to
         # the AbstractCard table like this
-        return [LEFTJOINOn(None, AbstractCard, AbstractCard.q.id == self.__oPT.abstract_card_id),
-                LEFTJOINOn(None, self.__oT, self.__oPT.id == self.__oT.q.physical_card_id)]
+        # pylint: disable-msg=E1101
+        # SQLObject methods not detected by plylint
+        return [LEFTJOINOn(None, AbstractCard,
+            AbstractCard.q.id == self.__oPT.abstract_card_id),
+            LEFTJOINOn(None, self.__oT,
+                self.__oPT.id == self.__oT.q.physical_card_id)]
 
-    def _getExpression(self):
+    def _get_expression(self):
         return self.__oT.q.physical_card_set_id == self.__iDeckId
 
 class MultiPhysicalCardSetFilter(Filter):
     keyword = "PhysicalSet"
     description = "Physical Sets"
-    helptext = "a list of deck names (selects physical cards in the specified decks)"
+    helptext = "a list of deck names (selects physical cards in the " \
+            "specified decks)"
     islistfilter = True
     types = ['PhysicalCard']
 
@@ -849,10 +1010,12 @@ class MultiPhysicalCardSetFilter(Filter):
 
     def __init__(self, aNames):
         # Select cards belonging to the PhysicalCardSet
+        # pylint: disable-msg=E1101
+        # SQLObject methods not detected by plylint
         self.__aDeckIds = []
         for sName in aNames:
             self.__aDeckIds.append(IPhysicalCardSet(sName).id)
-        self.__oT = self._makeTableAlias('physical_map')
+        self.__oT = self._make_table_alias('physical_map')
         self.__oPT = Table('physical_card')
 
     @classmethod
@@ -862,16 +1025,18 @@ class MultiPhysicalCardSetFilter(Filter):
             aNames.append(oCS.name)
         return aNames
 
-    def _getJoins(self):
-        return [LEFTJOINOn(None, self.__oT, self.__oPT.id == self.__oT.q.physical_card_id)]
+    def _get_joins(self):
+        return [LEFTJOINOn(None, self.__oT,
+            self.__oPT.id == self.__oT.q.physical_card_id)]
 
-    def _getExpression(self):
+    def _get_expression(self):
         return IN(self.__oT.q.physical_card_set_id, self.__aDeckIds)
 
 class PhysicalCardSetInUseFilter(Filter):
     keyword = "SetsInUse"
     description = "In Physical Card Sets in Use"
-    helptext = "Selects physical cards in the Physical Card Sets marked as in use. This filter takes no parameters."
+    helptext = "Selects physical cards in the Physical Card Sets marked " \
+            "as in use. This filter takes no parameters."
     types = ['PhysicalCard']
 
     def __init__(self):
@@ -880,25 +1045,19 @@ class PhysicalCardSetInUseFilter(Filter):
         for oCS in PhysicalCardSet.select():
             if oCS.inuse:
                 self.__aDeckIds.append(oCS.id)
-        self.__oT = self._makeTableAlias('physical_map')
+        self.__oT = self._make_table_alias('physical_map')
         self.__oPT = Table('physical_card')
 
     @classmethod
     def get_values(cls):
         return None
 
-    def _getJoins(self):
-        return [LEFTJOINOn(None, self.__oT, self.__oPT.id == self.__oT.q.physical_card_id)]
+    def _get_joins(self):
+        return [LEFTJOINOn(None, self.__oT,
+            self.__oPT.id == self.__oT.q.physical_card_id)]
 
-    def _getExpression(self):
-        # We avoid IN(a, []) as it is fragile.
-        # This + MultiPhysicalExpansionFilter are the only filters
-        # the gui calls where this is possible with valid input, so
-        # we treat as a special cases.
-        if len(self.__aDeckIds) > 0:
-            return IN(self.__oT.q.physical_card_set_id, self.__aDeckIds)
-        else:
-            return FALSE # IN(a, []) is false
+    def _get_expression(self):
+        return IN(self.__oT.q.physical_card_set_id, self.__aDeckIds)
 
 class AbstractCardSetFilter(SingleFilter):
     """
@@ -907,25 +1066,37 @@ class AbstractCardSetFilter(SingleFilter):
     types = ['AbstractCard', 'PhysicalCard']
     def __init__(self, sName):
         # Select cards belonging to a AbstractCardSet
+        # pylint: disable-msg=E1101
+        # SQLObject methods not detected by plylint
         self._oId = IAbstractCardSet(sName).id
         self._oMapTable = Table('abstract_map')
         self._oIdField = self._oMapTable.abstract_card_set_id
 
-    def _getJoins(self):
-        # This, PhysicalCardSetFilter and PhysicalCardFilter are the only filters allowed to pass the AbstractCard table as a joining table.
+    def _get_joins(self):
+        "Return a join suitable for combining with the AbstractCardSet table"
+        # This, PhysicalCardSetFilter and PhysicalCardFilter are the only
+        # filters allowed to pass the AbstractCard table as a joining table.
         # The join is needed so filtering on abstract card properties can work
-        return [LEFTJOINOn(None, AbstractCard, AbstractCard.q.id == self._oMapTable.abstract_card_id)]
+        # pylint: disable-msg=E1101
+        # SQLObject methods not detected by plylint
+        return [LEFTJOINOn(None, AbstractCard,
+            AbstractCard.q.id == self._oMapTable.abstract_card_id)]
 
 class SpecificCardFilter(DirectFilter):
     """
-    This filter matches a single card. 
+    This filter matches a single card.
     It is used in the GUI to test if a card is in the filter results set.
     """
     types = ['AbstractCard', 'PhysicalCard']
+
     def __init__(self, oCard):
+        # pylint: disable-msg=E1101
+        # SQLObject methods not detected by plylint
         self.__iCardId = IAbstractCard(oCard).id
 
-    def _getExpression(self):
+    def _get_expression(self):
+        # pylint: disable-msg=E1101
+        # SQLObject methods not detected by plylint
         return AbstractCard.q.id == self.__iCardId
 
 
@@ -938,7 +1109,8 @@ class SpecificCardFilter(DirectFilter):
 class CardSetNameFilter(DirectFilter):
     keyword = "CardSetName"
     description = "Card Set Name"
-    helptext = "the text to be matched against card set names.\n   % can be used as a wildcard"
+    helptext = "the text to be matched against card set names.\n" \
+            "% can be used as a wildcard"
     istextentry = True
 
     def __init__(self, sPattern):
@@ -950,13 +1122,14 @@ class CardSetNameFilter(DirectFilter):
     def get_values(cls):
         return ''
 
-    def _getExpression(self):
+    def _get_expression(self):
         return LIKE(func.LOWER(self._oT.name), '%' + self.__sPattern + '%')
 
 class CardSetDescriptionFilter(DirectFilter):
     keyword = "CardSetDescription"
     description = "Card Set Description"
-    helptext = "the text to be matched against card set description.\n   % can be used as a wildcard"
+    helptext = "the text to be matched against card set description.\n" \
+            "% can be used as a wildcard"
     istextentry = True
 
     def __init__(self, sPattern):
@@ -968,13 +1141,14 @@ class CardSetDescriptionFilter(DirectFilter):
     def get_values(cls):
         return ''
 
-    def _getExpression(self):
+    def _get_expression(self):
         return LIKE(func.LOWER(self._oT.comment), '%' + self.__sPattern + '%')
 
 class CardSetAuthorFilter(DirectFilter):
     keyword = "CardSetAuthor"
     description = "Card Set Author"
-    helptext = "the text to be matched against card set Author.\n   % can be used as a wildcard"
+    helptext = "the text to be matched against card set Author.\n" \
+            "% can be used as a wildcard"
     istextentry = True
 
     def __init__(self, sPattern):
@@ -986,13 +1160,14 @@ class CardSetAuthorFilter(DirectFilter):
     def get_values(cls):
         return ''
 
-    def _getExpression(self):
+    def _get_expression(self):
         return LIKE(func.LOWER(self._oT.author), '%' + self.__sPattern + '%')
 
 class CardSetAnnotationsFilter(DirectFilter):
     keyword = "CardSetAnnotations"
     description = "Card Set Annotations"
-    helptext = "the text to be matched against card set annotations.\n   % can be used as a wildcard"
+    helptext = "the text to be matched against card set annotations.\n" \
+            "% can be used as a wildcard"
     istextentry = True
 
     def __init__(self, sPattern):
@@ -1004,8 +1179,9 @@ class CardSetAnnotationsFilter(DirectFilter):
     def get_values(cls):
         return ''
 
-    def _getExpression(self):
-        return LIKE(func.LOWER(self._oT.annotations), '%' + self.__sPattern + '%')
+    def _get_expression(self):
+        return LIKE(func.LOWER(self._oT.annotations),
+                '%' + self.__sPattern + '%')
 
 # Abstract Card Set subclasses
 
@@ -1086,13 +1262,16 @@ class PhysicalCardSetAnnotationsFilter(CardSetAnnotationsFilter):
 class PCSPhysicalCardSetInUseFilter(DirectFilter):
     keyword = "PCSSetsInUse"
     description = "Physical Card Set Marked as in Use"
-    helptext = "Selects those Physical Card Sets in the Physical Card Set List that are marked as in use. This filter takes no parameters."
+    helptext = "Selects those Physical Card Sets in the Physical Card Set" \
+            "List that are marked as in use. This filter takes no parameters."
     types = ['PhysicalCardSet']
 
     @classmethod
     def get_values(cls):
         return None
 
-    def _getExpression(self):
+    def _get_expression(self):
+        # pylint: disable-msg=E1101
+        # SQLObject methods not detected by plylint
         return PhysicalCardSet.q.inuse == True
 
