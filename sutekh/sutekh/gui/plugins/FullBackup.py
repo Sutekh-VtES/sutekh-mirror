@@ -3,6 +3,7 @@
 # vim:fileencoding=utf8 ai ts=4 sts=4 et sw=4
 # Copyright 2007 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
+"Plugin to wrap zipfile backup and restre methods"
 
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhDialog import do_complaint_error, do_complaint_warning
@@ -12,11 +13,14 @@ import gtk
 import os
 
 class FullBackup(CardListPlugin):
+    """"
+    Provide access to ZipFileWrapper's backup and restore methods.
+    Handle GUI aspects associated with restoring (ensuring everything
+    reloads, etc.)
+    """
+
     dTableVersions = {}
     aModelsSupported = ["MainWindow"]
-
-    def __init__(self,*args,**kws):
-        super(FullBackup,self).__init__(*args,**kws)
 
     # Dialog and Menu Item Creation
 
@@ -28,50 +32,69 @@ class FullBackup(CardListPlugin):
             return None
 
         iMenu = gtk.MenuItem("Backup")
-        wMenu = gtk.Menu()
-        iMenu.set_submenu(wMenu)
+        oMenu = gtk.Menu()
+        iMenu.set_submenu(oMenu)
 
         iBackup = gtk.MenuItem("Save a Full Backup")
-        iBackup.connect("activate", self.activateBackup)
+        iBackup.connect("activate", self.activate_backup)
         iRestore = gtk.MenuItem("Restore a Full Backup")
-        iRestore.connect("activate", self.activateRestore)
+        iRestore.connect("activate", self.activate_restore)
 
-        wMenu.add(iBackup)
-        wMenu.add(iRestore)
+        oMenu.add(iBackup)
+        oMenu.add(iRestore)
 
         return iMenu
 
     def get_desired_menu(self):
+        "Over base class. Register on the plugins menu"
         return "Plugins"
+
+    # Menu responses
+
+    # pylint: disable-msg=W0613
+    # oWidget needed by gtk function signature
+    def activate_backup(self, oWidget):
+        "Handle backup request"
+        oDlg = self.make_backup_dialog()
+        oDlg.run()
+
+    # oWidget needed by gtk function signature
+    def activate_restore(self, oWidget):
+        "Handle restore request"
+        oDlg = self.make_restore_dialog()
+        oDlg.run()
+    # pylint: enable-msg=W0613
 
     # Backup
 
-    def activateBackup(self,oWidget):
-        dlg = self.makeBackupDialog()
-        dlg.run()
-
-    def makeBackupDialog(self):
+    def make_backup_dialog(self):
+        "Create file dialog for backup"
         sName = "Choose a file to save the full backup to ..."
 
-        oDlg = gtk.FileChooserDialog(sName,self.parent,action=gtk.FILE_CHOOSER_ACTION_SAVE,
+        oDlg = gtk.FileChooserDialog(sName, self.parent,
+                action=gtk.FILE_CHOOSER_ACTION_SAVE,
                 buttons = (gtk.STOCK_OK, gtk.RESPONSE_OK,
                     gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
         oDlg.set_name("Sutekh.dialog")
 
-        oDlg.connect("response", self.handleBackupResponse)
+        oDlg.connect("response", self.handle_backup_response)
         oDlg.set_local_only(True)
         oDlg.set_select_multiple(False)
         oDlg.show_all()
 
         return oDlg
 
-    def handleBackupResponse(self,oDlg,oResponse):
+    # pylint: disable-msg=R0201
+    # This could be a function, but that won't add any clarity to this code
+    def handle_backup_response(self, oDlg, oResponse):
+        "Handle response from backup dialog"
         if oResponse == gtk.RESPONSE_OK:
             sFile = oDlg.get_filename()
             bContinue = True
 
             if os.path.exists(sFile):
-                bContinue = do_complaint_warning("Overwrite existing file %s?" % sFile) != gtk.RESPONSE_CANCEL
+                bContinue = do_complaint_warning("Overwrite existing file %s?" 
+                        % sFile) != gtk.RESPONSE_CANCEL
 
             if bContinue:
                 try:
@@ -83,43 +106,50 @@ class FullBackup(CardListPlugin):
                     oFile = ZipFileWrapper(sFile)
                     oFile.doDumpAllToZip(oLogHandler)
                     oProgressDialog.destroy()
-                except Exception, e:
-                    sMsg = "Failed to write backup.\n\n" + str(e)
+                # pylint: disable-msg=W0703
+                # we really do want all the exceptions
+                except Exception, oException:
+                    sMsg = "Failed to write backup.\n\n" + str(oException)
                     do_complaint_error(sMsg)
 
         oDlg.destroy()
+    # pylint: enable-msg=R0201
 
     # Restore
 
-    def activateRestore(self,oWidget):
-        dlg = self.makeRestoreDialog()
-        dlg.run()
-
-    def makeRestoreDialog(self):
+    def make_restore_dialog(self):
+        "Create file chooser dialog for restore"
         sName = "Restore a Full Backup ...."
 
-        oDlg = gtk.FileChooserDialog(sName,self.parent,action=gtk.FILE_CHOOSER_ACTION_OPEN,
+        oDlg = gtk.FileChooserDialog(sName, self.parent,
+                action=gtk.FILE_CHOOSER_ACTION_OPEN,
                 buttons = (gtk.STOCK_OK, gtk.RESPONSE_OK,
                     gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
         oDlg.set_name("Sutekh.dialog")
 
-        oWarning = gtk.Label("This will delete all existing Physical Cards and Card Sets")
-        oDlg.vbox.pack_start(oWarning,expand=False)
-        oDlg.vbox.reorder_child(oWarning,0)
-        oDlg.connect("response", self.handleRestoreResponse)
+        oWarning = gtk.Label("This will delete all existing Physical Cards"
+                " and Card Sets")
+        # pylint: disable-msg=E1101
+        # plint doesn't pick up vbox methods correctly
+        oDlg.vbox.pack_start(oWarning, expand=False)
+        oDlg.vbox.reorder_child(oWarning, 0)
+        oDlg.connect("response", self.handle_restore_response)
         oDlg.set_local_only(True)
         oDlg.set_select_multiple(False)
         oDlg.show_all()
 
         return oDlg
 
-    def handleRestoreResponse(self,oDlg,oResponse):
+    def handle_restore_response(self, oDlg, oResponse):
+        "Handle response from the restore dialog"
         if oResponse == gtk.RESPONSE_OK:
             sFile = oDlg.get_filename()
             bContinue = True
 
             if not os.path.exists(sFile):
-                bContinue = do_complaint_warning("Backup file %s does not seem to exist." % sFile) != gtk.RESPONSE_CANCEL
+                bContinue = do_complaint_warning(
+                        "Backup file %s does not seem to exist." 
+                        % sFile) != gtk.RESPONSE_CANCEL
 
             if bContinue:
                 try:
@@ -133,10 +163,14 @@ class FullBackup(CardListPlugin):
                     # restore successful, refresh display
                     self.reload_all()
                     oProgressDialog.destroy()
-                except Exception, e:
-                    sMsg = "Failed to restore backup.\n\n" + str(e)
+                # pylint: disable-msg=W0703
+                # we really do want all the exceptions
+                except Exception, oException:
+                    sMsg = "Failed to restore backup.\n\n" + str(oException)
                     do_complaint_error(sMsg)
 
         oDlg.destroy()
 
+# pylint: disable-msg=C0103
+# accept plugin name
 plugin = FullBackup

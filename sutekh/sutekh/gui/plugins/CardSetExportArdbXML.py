@@ -73,4 +73,6 @@ class CardSetExportArdbXML(CardListPlugin):
             dDict[(oACard.id,oACard.name)] += 1
         return dDict
 
+# pylint: disable-msg=C0103
+# accept plugin name
 plugin = CardSetExportArdbXML

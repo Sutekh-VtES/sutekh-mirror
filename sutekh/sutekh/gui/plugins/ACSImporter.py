@@ -136,4 +136,6 @@ class ACSImporter(CardListPlugin):
 
         self.open_acs(oHolder.name)
 
+# pylint: disable-msg=C0103
+# accept plugin name
 plugin = ACSImporter

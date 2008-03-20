@@ -133,4 +133,6 @@ class CardSetIndependence(CardListPlugin):
                     dFullCardList[oC] = [oAC.name, 1]
         return dFullCardList
 
+# pylint: disable-msg=C0103
+# accept plugin name
 plugin = CardSetIndependence

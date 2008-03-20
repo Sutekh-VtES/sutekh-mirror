@@ -194,4 +194,6 @@ class CardSetPrint(CardListPlugin):
 
         return aCrypt, aLibrary
 
+# pylint: disable-msg=C0103
+# accept plugin name
 plugin = CardSetPrint

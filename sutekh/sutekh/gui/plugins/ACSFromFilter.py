@@ -73,4 +73,6 @@ class ACSFromFilter(CardListPlugin):
 
         self.open_acs(sACSName)
 
+# pylint: disable-msg=C0103
+# accept plugin name
 plugin = ACSFromFilter

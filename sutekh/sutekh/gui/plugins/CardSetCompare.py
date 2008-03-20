@@ -138,4 +138,6 @@ class CardSetCompare(CardListPlugin):
                 aCommon.append((sCardName, iCommon))
         return (dDifferences, aCommon)
 
+# pylint: disable-msg=C0103
+# accept plugin name
 plugin = CardSetCompare

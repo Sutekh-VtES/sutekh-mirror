@@ -87,4 +87,6 @@ class PhysicalCardSetFromAbstract(CardListPlugin):
                 + "\n".join([oC.name for oC in aMissingCards])
             do_complaint_error(sMsg)
 
+# pylint: disable-msg=C0103
+# accept plugin name
 plugin = PhysicalCardSetFromAbstract

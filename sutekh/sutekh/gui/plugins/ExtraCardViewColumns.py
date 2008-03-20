@@ -231,4 +231,6 @@ class ExtraCardViewColumns(CardListPlugin):
     def _getColObjects(self):
         return [oCol for oCol in self.view.get_columns() if oCol.get_property("title") in self._dCols]
 
+# pylint: disable-msg=C0103
+# accept plugin name
 plugin = ExtraCardViewColumns
