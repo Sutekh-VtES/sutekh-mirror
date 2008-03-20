@@ -14,7 +14,7 @@ class CardListViewListener(object):
     Listens to changes, i.e. .set_card_text(...)
     to CardListViews.
     """
-    def set_card_text(self, sCardName):
+    def set_card_text(self, sCardName, sExpansion):
         """
         The CardListViw has called set_card_text on the CardText pane
         """
@@ -147,7 +147,7 @@ class CardListView(gtk.TreeView, object):
         sCardName = self._oModel.getCardNameFromPath(oPath)
         self._oC.set_card_text(sCardName)
         for oListener in self.dListeners:
-            oListener.set_card_text(sCardName)
+            oListener.set_card_text(sCardName, '')
 
     # Key combinations
 
@@ -235,8 +235,11 @@ class CardListView(gtk.TreeView, object):
 
         sCardName = self._oModel.getCardNameFromPath(oPath)
         self._oC.set_card_text(sCardName)
+        sExpansion = self._oModel.getExpansionNameFromPath(oPath)
+        if not sExpansion:
+            sExpansion = ''
         for oListener in self.dListeners:
-            oListener.set_card_text(sCardName)
+            oListener.set_card_text(sCardName, sExpansion)
 
     # Card name searching
 
