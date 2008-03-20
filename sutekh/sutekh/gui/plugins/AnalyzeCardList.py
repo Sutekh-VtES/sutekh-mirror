@@ -700,7 +700,6 @@ class AnalyzeCardList(CardListPlugin):
                 sKey = "/".join(sorted(aTypes))
                 dMulti.setdefault(sKey, 0)
                 dMulti[sKey] += 1
-        print dMulti, dMulti.items()
         for sMultiType, iNum in sorted(dMulti.items(), key=lambda x: x[1],
                 reverse=True):
             sPer = self._percentage(iNum, self.iNumberLibrary, 'Library')
