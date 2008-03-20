@@ -24,7 +24,7 @@ from sutekh.core.Filters import MultiCardTypeFilter, MultiClanFilter, \
         PhysicalCardSetAnnotationsFilter, MultiCostTypeFilter, \
         MultiPhysicalCardSetFilter, FilterAndBox, FilterOrBox, FilterNot, \
         MultiPhysicalCardCountFilter, PhysicalCardSetInUseFilter, \
-        PCSPhysicalCardSetInUseFilter
+        PCSPhysicalCardSetInUseFilter, CardFunctionFilter
 
 # Not completely happy with this big list approach. Can this be inferred
 # from the filter objects?
@@ -40,7 +40,7 @@ aFilters = [MultiCardTypeFilter, MultiCostTypeFilter, MultiClanFilter,
         PhysicalCardSetDescriptionFilter, AbstractCardSetAnnotationsFilter,
         PhysicalCardSetAnnotationsFilter, MultiPhysicalCardSetFilter,
         MultiPhysicalCardCountFilter, PhysicalCardSetInUseFilter,
-        PCSPhysicalCardSetInUseFilter]
+        PCSPhysicalCardSetInUseFilter, CardFunctionFilter]
 
 aEntryFilters = [x.keyword for x in aFilters if hasattr(x,'istextentry')
         and x.istextentry]
@@ -249,6 +249,7 @@ class FilterParser(object):
     Parser Objects
     """
     # pylint: disable-msg=R0903
+    # This really does only need the 1 public method
     _oGlobalLexer = None
     _oGlobalParser = None
     _oGlobalFilterParser = None

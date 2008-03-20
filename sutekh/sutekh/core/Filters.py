@@ -608,6 +608,7 @@ class CardTextFilter(DirectFilter):
         return LIKE(func.LOWER(AbstractCard.q.text), '%' + self.__sPattern + '%')
 
 class CardNameFilter(DirectFilter):
+    "Filter on the name of the card"
     keyword = "CardName"
     description = "Card Name"
     helptext = "the text to be matched against card names (% can be used as a wildcard)"
@@ -623,6 +624,64 @@ class CardNameFilter(DirectFilter):
 
     def _getExpression(self):
         return LIKE(AbstractCard.q.canonicalName, '%' + self.__sPattern.lower() + '%')
+
+class CardFunctionFilter(DirectFilter):
+    """
+    Filter for various interesting card properties - untap, intercept, etc.
+    """
+    keyword = "CardFunction"
+    description = "Card Function"
+    helptext = "the chosen function from the list of supported types"
+    islistfilter = True
+    types = ['AbstractCard', 'PhysicalCard']
+
+    # Implementation discussion
+    # Because we want flexiblity here, we define these filters in terms
+    # of the existing filters - this avoids needing fancy
+    # logic in _getJoins, and so forth
+    # The filters can only be specificed after the database connection is
+    # established, hence the list of contants and if .. constuction
+    # in __init__, rather than using a class dictionary or similiar scheme
+
+    __sStealth = 'Stealth' 
+    __sIntercept = 'Intercept'
+    __sUntap = 'Untap' 
+    __sBounce = 'Bleed Bounce'
+    __sEnterCombat = 'Enter combat' 
+    __sBleedModifier = 'Increase bleed action modifiers'
+    __sBleedAction = 'Increased bleed actions'
+    __sBleedReduction = 'Bleed reduction'
+
+    def __init__(self, aTypes):
+        aFilters = []
+        if self.__sStealth in aTypes:
+            aFilters.append(FilterAndBox([CardTypeFilter('Action Modifier'),
+                CardTextFilter('+_ stealth')]))
+        if self.__sIntercept in aTypes:
+            aFilters.append(FilterAndBox([CardTypeFilter('Reaction'),
+                CardTextFilter('+_ intercept')]))
+        if self.__sUntap in aTypes:
+            aFilters.append(FilterAndBox([CardTypeFilter('Reaction'),
+                FilterOrBox([CardTextFilter('this vampire untaps'),
+                    CardTextFilter('this reacting vampire untaps'),
+                    CardTextFilter('untap this vampire'),
+                    CardTextFilter('untap this reacting vampire'),
+                    CardTextFilter('as though untapped')])]))
+        self._oFilter = FilterOrBox(aFilters)
+
+    @classmethod
+    def get_values(cls):
+        aVals = sorted([cls.__sStealth, cls.__sIntercept, cls.__sUntap,
+            #cls.__sBounce, cls.__sEnterCombat, cls.__sBleedModifier,
+            #cls.__sBleedAction, cls.__sBleedReduction, 
+            ])
+        return aVals
+
+    def _getJoins(self):
+        return self._oFilter._getJoins()
+
+    def _getExpression(self):
+        return self._oFilter._getExpression()
 
 class PhysicalCardFilter(Filter):
     """
@@ -842,6 +901,9 @@ class PhysicalCardSetInUseFilter(Filter):
             return FALSE # IN(a, []) is false
 
 class AbstractCardSetFilter(SingleFilter):
+    """
+    Select all cards in an Abstract Card Set
+    """
     types = ['AbstractCard', 'PhysicalCard']
     def __init__(self, sName):
         # Select cards belonging to a AbstractCardSet
@@ -855,6 +917,10 @@ class AbstractCardSetFilter(SingleFilter):
         return [LEFTJOINOn(None, AbstractCard, AbstractCard.q.id == self._oMapTable.abstract_card_id)]
 
 class SpecificCardFilter(DirectFilter):
+    """
+    This filter matches a single card. 
+    It is used in the GUI to test if a card is in the filter results set.
+    """
     types = ['AbstractCard', 'PhysicalCard']
     def __init__(self, oCard):
         self.__iCardId = IAbstractCard(oCard).id
