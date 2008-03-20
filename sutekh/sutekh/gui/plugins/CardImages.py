@@ -9,7 +9,6 @@
 import gtk, gobject
 import unicodedata
 import os
-import time
 from sutekh.core.SutekhObjects import AbstractCard, AbstractCardSet, \
                                       PhysicalCard, PhysicalCardSet, \
                                       IAbstractCard, IExpansion
@@ -30,9 +29,21 @@ def check_file(sFileName):
         bRes = False
     return bRes
 
+def unaccent(sCardName):
+    """
+    Remove unicode accents
+    """
+    # Inspired by a post by renaud turned up by google
+    # Unicode Normed decomposed form
+    sNormed = unicodedata.normalize('NFD',
+            unicode(sCardName.encode('utf8'), encoding='utf-8'))
+    # Drop non-ascii characters
+    return "".join(b for b in sNormed.encode('utf8') if ord(b) < 128)
+
 class CardImageFrame(BasicFrame, CardListViewListener):
-    # pylint: disable-msg=R0901, R0904
-    # can't not trigger these warning with pygtk
+    # pylint: disable-msg=R0901, R0904, R0902
+    # R0901, R0904 - can't not trigger these warning with pygtk
+    # R0902 - we need to keep quite a lot of internal state
     """
     Frame which displays the image.
     We wrap a gtk.Image in an EventBox (for focus & DnD events)
@@ -52,7 +63,6 @@ class CardImageFrame(BasicFrame, CardListViewListener):
         self._oImage.set_from_stock(gtk.STOCK_MISSING_IMAGE,
                 gtk.ICON_SIZE_DIALOG)
         oBox.add(self._oImage)
-        self.bShowExpansions = False
 
         # Enable DnD handling, same as for BasicFrame
         aDragTargets = [ ('STRING', 0, 0),
@@ -62,86 +72,63 @@ class CardImageFrame(BasicFrame, CardListViewListener):
                 gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
         oBox.connect('drag-data-received', self.drag_drop_handler)
         oBox.connect('drag-motion', self.drag_motion)
-        oBox.connect('button-press-event', self.cycle_expansion)
+        oBox.connect('button-press-event', self.__cycle_expansion)
 
         self._oImage.set_alignment(0.5, 0.5) # Centre image
 
-        self.sPrefsPath = self._oConfigFile.get_plugin_key('card image path')
-        if self.sPrefsPath is None:
-            self.sPrefsPath = os.path.join(prefs_dir('Sutekh'), 'cardimages')
-            self._oConfigFile.set_plugin_key('card image path', self.sPrefsPath)
-        self.bShowExpansions = self.have_expansions()
-        self.sCurExpansion = ''
-        self.aExpansions = []
-        self.iExpansionPos = 0
-        self.sCardName = ''
+        self.__sPrefsPath = self._oConfigFile.get_plugin_key('card image path')
+        if self.__sPrefsPath is None:
+            self.__sPrefsPath = os.path.join(prefs_dir('Sutekh'), 'cardimages')
+            self._oConfigFile.set_plugin_key('card image path',
+                    self.__sPrefsPath)
+        self.__bShowExpansions = self.__have_expansions()
+        self.__sCurExpansion = ''
+        self.__aExpansions = []
+        self.__iExpansionPos = 0
+        self.__sCardName = ''
 
     type = property(fget=lambda self: "Card Image Frame", doc="Frame Type")
 
-    def have_expansions(self, sTestPath=''):
+    def __have_expansions(self, sTestPath=''):
         """
         Test if directory contains expansion/image structure used by ARDB
         """
         if sTestPath == '':
-            sTestFile = os.path.join(self.sPrefsPath, 'bh', 'acrobatics.jpg')
+            sTestFile = os.path.join(self.__sPrefsPath, 'bh', 'acrobatics.jpg')
         else:
             sTestFile = os.path.join(sTestPath, 'bh', 'acrobatics.jpg')
         return check_file(sTestFile)
 
-    def check_images(self, sTestPath=''):
-        """Check if dir contains images in the right structure"""
-        self.bShowExpansions = self.have_expansions(sTestPath)
-        if self.bShowExpansions:
-            return True
-        if sTestPath == '':
-            sTestFile = os.path.join(self.sPrefsPath, 'acrobatics.jpg')
-        else:
-            sTestFile = os.path.join(sTestPath, 'acrobatics.jpg')
-        return check_file(sTestFile)
-
-    def update_config_path(self, sNewPath):
-        "Update the path we use to search for expansions"
-        self.sPrefsPath = sNewPath
-        self._oConfigFile.set_plugin_key('card image path', sNewPath)
-        self.bShowExpansions = self.have_expansions()
-
-    def unaccent(self, sCardName):
-        """
-        Remove unicode accents
-        """
-        # Inspired by a post by renaud turned up by google
-        # Unicode Normed decomposed form
-        sNormed = unicodedata.normalize('NFD',
-                unicode(sCardName.encode('utf8'), encoding='utf-8'))
-        # Drop non-ascii characters
-        return "".join(b for b in sNormed.encode('utf8') if ord(b) < 128)
-
-    def convert_expansion(self, sExpansionName):
+    def __convert_expansion(self, sExpansionName):
         "Convert the Full Expansion name into the abbrevation needed"
-        if sExpansionName == '' or not self.bShowExpansions:
+        if sExpansionName == '' or not self.__bShowExpansions:
             return ''
+        # pylint: disable-msg=E1101
+        # pylint doesn't pick up IExpansion methods correctly
         oExpansion = IExpansion(sExpansionName)
         return oExpansion.shortname.lower()
 
-    def set_expansion_info(self, sCardName):
+    def __set_expansion_info(self, sCardName):
         "Set the expansion info"
+        # pylint: disable-msg=E1101
+        # pylint doesn't pick up IAbstractCard methods correctly
         oAbsCard = IAbstractCard(sCardName)
         if len(oAbsCard.rarity) > 0:
             aExp = [oP.expansion.name for oP in oAbsCard.rarity]
-            self.aExpansions = list(set(aExp)) # remove duplicates
-            self.iExpansionPos = 0
-            self.sCurExpansion = self.aExpansions[0] 
+            self.__aExpansions = list(set(aExp)) # remove duplicates
+            self.__iExpansionPos = 0
+            self.__sCurExpansion = self.__aExpansions[0] 
         else:
-            self.sCurExpansion = ''
-            self.aExpansions = []
-            self.iExpansionPos = 0
+            self.__sCurExpansion = ''
+            self.__aExpansions = []
+            self.__iExpansionPos = 0
 
-    def convert_cardname(self):
+    def __convert_cardname(self):
         """
         Convert sCardName to the form used by the card image list
         """
-        sCurExpansionPath = self.convert_expansion(self.sCurExpansion)
-        sFilename = self.unaccent(self.sCardName.lower())
+        sCurExpansionPath = self.__convert_expansion(self.__sCurExpansion)
+        sFilename = unaccent(self.__sCardName.lower())
         if sFilename.find('the ') == 0:
             sFilename = sFilename[4:] + 'the'
         sFilename = sFilename.replace('(advanced)', 'adv')
@@ -149,35 +136,14 @@ class CardImageFrame(BasicFrame, CardListViewListener):
         for sChar in [" ", ".", ",", "'", "(", ")", "-", ":", "!", '"', "/"]:
             sFilename = sFilename.replace(sChar, '')
         sFilename = sFilename + '.jpg'
-        return os.path.join(self.sPrefsPath, sCurExpansionPath, sFilename)
+        return os.path.join(self.__sPrefsPath, sCurExpansionPath, sFilename)
 
-    def set_card_text(self, sCardName, sExpansionName=''):
-        """
-        Set the image in response to a set card name event
-        """
-
-        if sCardName != self.sCardName:
-            self.set_expansion_info(sCardName)
-            self.sCardName = sCardName
-        if len(self.aExpansions) > 0:
-            if sExpansionName in self.aExpansions:
-                # Honour expansion from set_card_text
-                self.sCurExpansion = sExpansionName
-                self.iExpansionPos = self.aExpansions.index(sExpansionName)
-            elif self.sCurExpansion == '' or \
-                    self.sCurExpansion not in self.aExpansions:
-                # Set self.sCurExpansion to a valid value
-                self.sCurExpansion = self.aExpansions[0]
-                self.iExpansionPos = 0
-        sFullFilename = self.convert_cardname()
-        self.load_image(sFullFilename)
-
-    def load_image(self, sFullFilename):
+    def __load_image(self, sFullFilename):
         "Load an image into the pane, show broken image if needed"
         try:
-            if self.bShowExpansions:
+            if self.__bShowExpansions:
                 self.oExpansionLabel.set_markup('<i>Image from expansion : </i>'
-                        ' %s' % self.sCurExpansion)
+                        ' %s' % self.__sCurExpansion)
                 self.oExpansionLabel.show()
             else:
                 self.oExpansionLabel.hide() # config chanes can cause this
@@ -209,29 +175,69 @@ class CardImageFrame(BasicFrame, CardListViewListener):
                     gtk.ICON_SIZE_DIALOG)
         self._oImage.queue_draw()
 
-    def cycle_expansion(self, oWidget, oEvent):
+    def check_images(self, sTestPath=''):
+        """Check if dir contains images in the right structure"""
+        self.__bShowExpansions = self.__have_expansions(sTestPath)
+        if self.__bShowExpansions:
+            return True
+        if sTestPath == '':
+            sTestFile = os.path.join(self.__sPrefsPath, 'acrobatics.jpg')
+        else:
+            sTestFile = os.path.join(sTestPath, 'acrobatics.jpg')
+        return check_file(sTestFile)
+
+    def update_config_path(self, sNewPath):
+        "Update the path we use to search for expansions"
+        self.__sPrefsPath = sNewPath
+        self._oConfigFile.set_plugin_key('card image path', sNewPath)
+        self.__bShowExpansions = self.__have_expansions()
+
+    def set_card_text(self, sCardName, sExpansionName=''):
+        """
+        Set the image in response to a set card name event
+        """
+        if sCardName != self.__sCardName:
+            self.__set_expansion_info(sCardName)
+            self.__sCardName = sCardName
+        if len(self.__aExpansions) > 0:
+            if sExpansionName in self.__aExpansions:
+                # Honour expansion from set_card_text
+                self.__sCurExpansion = sExpansionName
+                self.__iExpansionPos = self.__aExpansions.index(sExpansionName)
+            elif self.__sCurExpansion == '' or \
+                    self.__sCurExpansion not in self.__aExpansions:
+                # Set self.__sCurExpansion to a valid value
+                self.__sCurExpansion = self.__aExpansions[0]
+                self.__iExpansionPos = 0
+        sFullFilename = self.__convert_cardname()
+        self.__load_image(sFullFilename)
+
+
+    # pylint: disable-msg=W0613
+    # oWidget needed by gtk function signature
+    def __cycle_expansion(self, oWidget, oEvent):
         "On a button click, move to the next expansion"
         bRedraw = False
-        if len(self.aExpansions) < 2:
+        if len(self.__aExpansions) < 2:
             return True # nothing to scroll through
         if oEvent.type != gtk.gdk.BUTTON_PRESS:
             return True # don't jump twice on double or triple clicks
         if oEvent.button == 1:
             # left button, go forward
-            self.iExpansionPos += 1
-            if self.iExpansionPos >= len(self.aExpansions):
-                self.iExpansionPos = 0
+            self.__iExpansionPos += 1
+            if self.__iExpansionPos >= len(self.__aExpansions):
+                self.__iExpansionPos = 0
             bRedraw = True
         elif oEvent.button == 3:
             # Right button, go backwards
-            self.iExpansionPos -= 1
-            if self.iExpansionPos < 0:
-                self.iExpansionPos += len(self.aExpansions)
+            self.__iExpansionPos -= 1
+            if self.__iExpansionPos < 0:
+                self.__iExpansionPos += len(self.__aExpansions)
             bRedraw = True
         if bRedraw:
-            self.sCurExpansion = self.aExpansions[self.iExpansionPos]
-            sFullFilename = self.convert_cardname()
-            self.load_image(sFullFilename)
+            self.__sCurExpansion = self.__aExpansions[self.__iExpansionPos]
+            sFullFilename = self.__convert_cardname()
+            self.__load_image(sFullFilename)
         return True
 
 class CardImagePlugin(CardListPlugin):
@@ -257,8 +263,10 @@ class CardImagePlugin(CardListPlugin):
         if self._cModelType in self.aListenViews:
             self.view.add_listener(self.image_frame)
         self._oMenuItem = None
+        self._oConfigMenuItem = None
 
-    image_frame = property(fget=lambda self: self.get_image_frame(), doc="The image frame")
+    image_frame = property(fget=lambda self: self.get_image_frame(),
+            doc="The image frame")
 
     @classmethod
     def get_image_frame(cls):
@@ -267,8 +275,10 @@ class CardImagePlugin(CardListPlugin):
 
     @classmethod
     def init_image_frame(cls, oCur):
+        "Setup the global image frame"
         if not cls.oImageFrame:
-            cls.oImageFrame = CardImageFrame(oCur.parent, oCur.parent.config_file)
+            cls.oImageFrame = CardImageFrame(oCur.parent,
+                    oCur.parent.config_file)
             cls.oImageFrame.set_title(cls._sMenuFlag)
             cls.oImageFrame.add_parts()
 
@@ -291,10 +301,23 @@ class CardImagePlugin(CardListPlugin):
             self.add_image_frame_active(False)
         return self._oConfigMenuItem, self._oMenuItem
 
+    # pylint: disable-msg=W0613
+    # oMenuWidget needed by gtk function signature
     def config_activate(self, oMenuWidget):
         """
         Configure the plugin dialog
         """
+        # Internal helper function
+        def _radio_toggled(oRadioButton, oDialog, oChoiceBox,
+                oFileWidget):
+            "Display the correct file widget when radio buttons change"
+            if oRadioButton.get_active():
+                for oChild in oChoiceBox.get_children():
+                    oChoiceBox.remove(oChild)
+                if oFileWidget:
+                    oChoiceBox.pack_start(oFileWidget)
+                oDialog.show_all()
+
         oDialog = SutekhDialog('Configure Card Images Plugin', self.parent,
                 gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                 (gtk.STOCK_OK, gtk.RESPONSE_OK, gtk.STOCK_CANCEL,
@@ -314,11 +337,11 @@ class CardImagePlugin(CardListPlugin):
                 action=gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER)
         oFileChoiceWidget = gtk.FileChooserWidget(
                 action=gtk.FILE_CHOOSER_ACTION_OPEN)
-        oChoiceDownload.connect('toggled', self._radio_toggled, oDialog,
+        oChoiceDownload.connect('toggled', _radio_toggled, oDialog,
                 oChoiceBox, None)
-        oChoiceLocalCopy.connect('toggled', self._radio_toggled, oDialog,
+        oChoiceLocalCopy.connect('toggled', _radio_toggled, oDialog,
                 oChoiceBox, oFileChoiceWidget)
-        oChoiceNewDir.connect('toggled', self._radio_toggled, oDialog,
+        oChoiceNewDir.connect('toggled', _radio_toggled, oDialog,
                 oChoiceBox, oDirChoiceWidget)
 
         oChoiceDownload.set_active(True)
@@ -353,35 +376,30 @@ class CardImagePlugin(CardListPlugin):
                 pass
             else: 
                 sTestPath = oDirChoiceWidget.get_filename()
-                if sTestPath is not None:
-                    # Test if path has images
-                    if not self.image_frame.check_images(sTestPath):
-                        iQuery = do_complaint_buttons(
-                                "Folder does not seem to contain images\n"
-                                "Are you sure?", gtk.MESSAGE_QUESTION,
-                                (gtk.STOCK_YES, gtk.RESPONSE_YES,
-                                    gtk.STOCK_NO, gtk.RESPONSE_NO))
-                        if iQuery == gtk.RESPONSE_NO:
-                            # treat as canceling
-                            self.image_frame.check_images() # reset bHaveExpansions
-                            oDialog.destroy()
-                            return
+                if self._accept_path(sTestPath):
                     # Update preferences
                     self.image_frame.update_config_path(sTestPath)
                     if self._sMenuFlag not in self.parent.dOpenFrames.values():
                         # Pane is not open, so try to enable menu
                         self.add_image_frame_active(True)
-        oDialog.destroy()
+        oDialog.destroy() # get rid of the dialog
 
-    def _radio_toggled(self, oRadioButton, oDialog, oChoiceBox, oFileWidget):
-        "Display the correct file widget when radio buttons change"
-        if oRadioButton.get_active():
-            for oChild in oChoiceBox.get_children():
-                oChoiceBox.remove(oChild)
-            if oFileWidget:
-                oChoiceBox.pack_start(oFileWidget)
-            oDialog.show_all()
-
+    def _accept_path(self, sTestPath):
+        "Check if the path from user is OK"
+        if sTestPath is not None:
+            # Test if path has images
+            if not self.image_frame.check_images(sTestPath):
+                iQuery = do_complaint_buttons(
+                        "Folder does not seem to contain images\n"
+                        "Are you sure?", gtk.MESSAGE_QUESTION,
+                        (gtk.STOCK_YES, gtk.RESPONSE_YES,
+                            gtk.STOCK_NO, gtk.RESPONSE_NO))
+                if iQuery == gtk.RESPONSE_NO:
+                    # Treat as cancelling
+                    return False
+            return True 
+        return False # No path, can't be OK
+    
     def add_image_frame_active(self, bValue):
         """
         Toggle the sensitivity of the menu item
