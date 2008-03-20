@@ -1,8 +1,11 @@
 # CountCardSetCards.py
 # -*- coding: utf8 -*-
 # vim:fileencoding=utf8 ai ts=4 sts=4 et sw=4
-# Copyright 2006 Simon Cross <hodgestar@gmail.com>, Neil Muller <drnlmuller+sutekh@gmail.com>
+# Copyright 2006 Simon Cross <hodgestar@gmail.com>,
+# Copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
+
+"Display a running total of the cards in a card set"
 
 import gtk
 from sutekh.core.SutekhObjects import IAbstractCard, AbstractCardSet, \
@@ -10,30 +13,43 @@ from sutekh.core.SutekhObjects import IAbstractCard, AbstractCardSet, \
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.CardListModel import CardListModelListener
 
-class CountCardSetCards(CardListPlugin,CardListModelListener):
-    dTableVersions = {PhysicalCardSet : [1,2,3,4],
-                      AbstractCardSet : [1,2,3]}
+def _id_card(oCard):
+    "Idenitfy the card type"
+    sType = list(oCard.cardtype)[0].name
+    if sType == 'Vampire' or sType == 'Imbued':
+        return 'Crypt'
+    else:
+        return 'Library'
+
+
+
+class CountCardSetCards(CardListPlugin, CardListModelListener):
+    """
+    Listen to changes on the card list views, and display a
+    toolbar containing a label with a running count of the
+    cards in the card set, the library cards and the crypt cards
+    """
+    dTableVersions = {PhysicalCardSet : [1, 2, 3, 4],
+                      AbstractCardSet : [1, 2, 3]}
     aModelsSupported = [AbstractCardSet, PhysicalCardSet,
             PhysicalCard]
 
-    def __init__(self,*args,**kwargs):
-        super(CountCardSetCards,self).__init__(*args,**kwargs)
+
+    # pylint: disable-msg=W0142
+    # **magic OK here
+    def __init__(self, *aArgs, **kwargs):
+        super(CountCardSetCards, self).__init__(*aArgs, **kwargs)
 
         self.__iTot = 0
         self.__iCrypt = 0
         self.__iLibrary = 0
+        self.__oTextLabel = None
 
         # We only add listeners to windows we're going to display the toolbar
         # on
         if self.check_versions() and self.check_model_type():
             self.model.addListener(self)
-
-    def __id_card(self,oCard):
-        sType = list(oCard.cardtype)[0].name
-        if sType == 'Vampire' or sType == 'Imbued':
-            return 'Crypt'
-        else:
-            return 'Library'
+    # pylint: enable-msg=W0142
 
     def get_toolbar_widget(self):
         """
@@ -42,41 +58,46 @@ class CountCardSetCards(CardListPlugin,CardListModelListener):
         if not self.check_versions() or not self.check_model_type():
             return None
 
-        self.oTextLabel = gtk.Label('Total Cards : 0 Crypt Cards : 0 Library Cards : 0')
+        self.__oTextLabel = gtk.Label('Total Cards : 0 Crypt Cards : 0 Library'
+                ' Cards : 0')
 
         aAbsCards = [IAbstractCard(x) for x in
                 self.model.getCardIterator(self.model.getCurrentFilter())]
         self.load(aAbsCards)
 
-        return self.oTextLabel
+        return self.__oTextLabel
 
     def update_numbers(self):
-        self.oTextLabel.set_markup('Total Cards : <b>' + str(self.__iTot) +
-                '</b>  Crypt Cards : <b>' + str(self.__iCrypt) +
-                '</b> Library Cards : <b>' + str(self.__iLibrary) + '</b>')
+        "Update the label"
+        self.__oTextLabel.set_markup('Total Cards : <b>%d</b> Crypt Cards : '
+                '<b>%d</b> Library Cards : <b>%d</b>' % (self.__iTot,
+                    self.__iCrypt, self.__iLibrary))
 
     def load(self, aAbsCards):
+        "Listen on load events & update counts"
         self.__iCrypt = 0
         self.__iLibrary = 0
         self.__iTot = len(aAbsCards)
         for oAbsCard in aAbsCards:
-            if self.__id_card(oAbsCard) == 'Crypt':
+            if _id_card(oAbsCard) == 'Crypt':
                 self.__iCrypt += 1
             else:
                 self.__iLibrary += 1
         self.update_numbers()
 
     def alterCardCount(self, oCard, iChg):
+        "respond to alter_card_count events"
         self.__iTot += iChg
-        if self.__id_card(oCard) == 'Crypt':
+        if _id_card(oCard) == 'Crypt':
             self.__iCrypt += iChg
         else:
             self.__iLibrary += iChg
         self.update_numbers()
 
     def addNewCard(self, oCard):
+        "response to add_new_card events"
         self.__iTot += 1
-        if self.__id_card(oCard) == 'Crypt':
+        if _id_card(oCard) == 'Crypt':
             self.__iCrypt += 1
         else:
             self.__iLibrary += 1
