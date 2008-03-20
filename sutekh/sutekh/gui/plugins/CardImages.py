@@ -234,8 +234,6 @@ class CardImageFrame(BasicFrame, CardListViewListener):
             self.load_image(sFullFilename)
         return True
 
-oImageFrame = None
-
 class CardImagePlugin(CardListPlugin):
     """
     Plugin providing access to CardImageFrame
@@ -245,6 +243,8 @@ class CardImagePlugin(CardListPlugin):
     aListenViews = [AbstractCardSet, PhysicalCardSet,
             PhysicalCard, AbstractCard]
 
+    oImageFrame = None
+
     _sMenuFlag = 'Card Image Frame'
 
     # pylint: disable-msg=W0142
@@ -252,14 +252,25 @@ class CardImagePlugin(CardListPlugin):
     def __init__(self, *aArgs, **kwargs):
         super(CardImagePlugin, self).__init__(*aArgs, **kwargs)
         # Add listeners to the appropriate views
-        global oImageFrame
-        if not oImageFrame:
-            oImageFrame = CardImageFrame(self.parent, self.parent.config_file)
-            oImageFrame.set_title(self._sMenuFlag)
-            oImageFrame.add_parts()
+        if not self.image_frame:
+            self.init_image_frame(self)
         if self._cModelType in self.aListenViews:
-            self.view.add_listener(oImageFrame)
+            self.view.add_listener(self.image_frame)
         self._oMenuItem = None
+
+    image_frame = property(fget=lambda self: self.get_image_frame(), doc="The image frame")
+
+    @classmethod
+    def get_image_frame(cls):
+        "Return the global ImageFrame"
+        return cls.oImageFrame
+
+    @classmethod
+    def init_image_frame(cls, oCur):
+        if not cls.oImageFrame:
+            cls.oImageFrame = CardImageFrame(oCur.parent, oCur.parent.config_file)
+            cls.oImageFrame.set_title(cls._sMenuFlag)
+            cls.oImageFrame.add_parts()
 
     def get_menu_item(self):
         """
@@ -275,7 +286,7 @@ class CardImagePlugin(CardListPlugin):
                 self.add_image_frame_active)
         self._oConfigMenuItem = gtk.MenuItem("Configure Card Images Plugin")
         self._oConfigMenuItem.connect("activate", self.config_activate)
-        if not oImageFrame.check_images():
+        if not self.image_frame.check_images():
             # Don't allow the menu option if we can't find the images
             self.add_image_frame_active(False)
         return self._oConfigMenuItem, self._oMenuItem
@@ -344,7 +355,7 @@ class CardImagePlugin(CardListPlugin):
                 sTestPath = oDirChoiceWidget.get_filename()
                 if sTestPath is not None:
                     # Test if path has images
-                    if not oImageFrame.check_images(sTestPath):
+                    if not self.image_frame.check_images(sTestPath):
                         iQuery = do_complaint_buttons(
                                 "Folder does not seem to contain images\n"
                                 "Are you sure?", gtk.MESSAGE_QUESTION,
@@ -352,11 +363,11 @@ class CardImagePlugin(CardListPlugin):
                                     gtk.STOCK_NO, gtk.RESPONSE_NO))
                         if iQuery == gtk.RESPONSE_NO:
                             # treat as canceling
-                            oImageFrame.check_images() # reset bHaveExpansions
+                            self.image_frame.check_images() # reset bHaveExpansions
                             oDialog.destroy()
                             return
                     # Update preferences
-                    oImageFrame.update_config_path(sTestPath)
+                    self.image_frame.update_config_path(sTestPath)
                     if self._sMenuFlag not in self.parent.dOpenFrames.values():
                         # Pane is not open, so try to enable menu
                         self.add_image_frame_active(True)
@@ -375,7 +386,7 @@ class CardImagePlugin(CardListPlugin):
         """
         Toggle the sensitivity of the menu item
         """
-        if bValue and not oImageFrame.check_images():
+        if bValue and not self.image_frame.check_images():
             # Can only be set true if check_images returns true
             self._oMenuItem.set_sensitive(False)
         else:
@@ -390,7 +401,7 @@ class CardImagePlugin(CardListPlugin):
         Add the frame if it's been saved in the config file
         """
         if sType == self._sMenuFlag:
-            return (oImageFrame, self._sMenuFlag)
+            return (self.image_frame, self._sMenuFlag)
         else:
             return None
 
@@ -403,7 +414,7 @@ class CardImagePlugin(CardListPlugin):
         if self._sMenuFlag not in self.parent.dOpenFrames.values():
             oNewPane = self.parent.focussed_pane
             if oNewPane:
-                self.parent.replace_frame(oNewPane, oImageFrame,
+                self.parent.replace_frame(oNewPane, self.image_frame,
                         self._sMenuFlag)
 
 # pylint: disable-msg=C0103
