@@ -33,7 +33,8 @@ class WhitespaceEOLChecker(BaseChecker):
         for (iLineNo, sLine) in enumerate(aStream):
             sText = sLine[:-1] # Ignore final newline
             if sText != sText.rstrip():
-                self.add_message('C9968', line=iLineNo)
+                # iLineNo starts at 0, so need to add 1
+                self.add_message('C9968', line=(iLineNo + 1))
 
 
 def register(oLinter):
