@@ -4,6 +4,7 @@
 # Copyright 2006 Simon Cross <hodgestar@gmail.com>,
 # Copyright 2007 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
+"Convert a filter on an Abstract Card Set"
 
 import gtk
 from sutekh.core.SutekhObjects import AbstractCardSet, PhysicalCardSet, \
@@ -13,12 +14,12 @@ from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 
 class ACSFromFilter(CardListPlugin):
-    dTableVersions = { AbstractCardSet : [2,3]}
+    """
+    Converts a filter into a Abstract Card Set
+    """
+    dTableVersions = { AbstractCardSet : [2, 3]}
     aModelsSupported = [PhysicalCardSet, AbstractCardSet,
                         PhysicalCard, AbstractCard]
-
-    def __init__(self,*args,**kws):
-        super(ACSFromFilter,self).__init__(*args,**kws)
 
     def get_menu_item(self):
         """
@@ -31,38 +32,52 @@ class ACSFromFilter(CardListPlugin):
         return iDF
 
     def get_desired_menu(self):
+        "Override method from base class. register on the 'Filter' menu"
         return "Filter"
 
-    def activate(self,oWidget):
-        oDlg = self.makeDialog()
-        oDlg.run()
-
-    def makeDialog(self):
-        self.oDlg = SutekhDialog("Choose Abstract Card Set Name",self.parent,
+    # pylint: disable-msg=W0613
+    # oWidget required by gtk function signature
+    def activate(self, oWidget):
+        "Create the dialog in response to the menu"
+        oDlg = SutekhDialog("Choose Abstract Card Set Name", self.parent,
                 gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                 (gtk.STOCK_OK, gtk.RESPONSE_OK,
                     gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
-        self.oDlg.connect("response", self.handleResponse)
 
-        self.oACSNameEntry = gtk.Entry(50)
-        self.oACSNameEntry.connect("activate", self.handleResponse, gtk.RESPONSE_OK)
+        oEntry = gtk.Entry(50)
+        oEntry.connect("activate", self.handle_response,
+                gtk.RESPONSE_OK, oDlg, oEntry)
 
-        self.oDlg.vbox.pack_start(self.oACSNameEntry)
-        self.oDlg.show_all()
+        oDlg.connect("response", self.handle_response, oDlg, oEntry)
 
-        return self.oDlg
+        # pylint: disable-msg=E1101
+        # pylint misses vbox methods
+        oDlg.vbox.pack_start(oEntry)
+        oDlg.show_all()
 
-    def handleResponse(self,oWidget,oResponse):
+        oDlg.run()
+
+    def handle_response(self, oWidget, oResponse, oDlg, oEntry):
+        """
+        Handle the user response from make_dialog
+        call make_acs_from_filter to create the ACS if needed
+        """
         if oResponse ==  gtk.RESPONSE_OK:
-            sACSName = self.oACSNameEntry.get_text().strip()
-            self.makeACSFromFilter(sACSName)
+            sACSName = oEntry.get_text().strip()
+            self.make_acs_from_filter(sACSName)
 
-        self.oDlg.destroy()
+        oDlg.destroy()
 
-    def makeACSFromFilter(self,sACSName):
+    def make_acs_from_filter(self, sACSName):
+        """
+        Create the actual ACS
+        """
         # Check ACS Doesn't Exist
+        # pylint: disable-msg=E1101
+        # pylint misses AbstractCardSet methods
         if AbstractCardSet.selectBy(name=sACSName).count() != 0:
-            do_complaint_error("Abstract Card Set %s already exists." % sACSName)
+            do_complaint_error("Abstract Card Set %s already exists."
+                    % sACSName)
             return
 
         # Create ACS

@@ -30,7 +30,7 @@ class DeckFromFilter(CardListPlugin):
         return iDF
 
     def get_desired_menu(self):
-        "Over method from base class. egister on Plugin's Menu"
+        "Over method from base class. Register on 'Filter' Menu"
         return "Filter"
 
     # pylint: disable-msg=W0613
@@ -68,16 +68,16 @@ class DeckFromFilter(CardListPlugin):
     def handle_response(self, oWidget, oResponse, oDlg, oEntry):
         """
         Handle the user response from make_dialog
-        call make_deck_from_filter to create the PCS if needed
+        call make_pcs_from_filter to create the PCS if needed
         """
         if oResponse ==  gtk.RESPONSE_OK:
             sPCSName = oEntry.get_text().strip()
-            self.make_deck_from_filter(sPCSName)
+            self.make_pcs_from_filter(sPCSName)
 
         oDlg.destroy()
     # pylint: enable-msg=W0613
 
-    def make_deck_from_filter(self, sPCSName):
+    def make_pcs_from_filter(self, sPCSName):
         """
         Create the actual PCS
         """
@@ -85,7 +85,7 @@ class DeckFromFilter(CardListPlugin):
         # pylint: disable-msg=E1101
         # pylint misses PhysicalCardSet methods
         if PhysicalCardSet.selectBy(name=sPCSName).count() != 0:
-            do_complaint_error("Physical Card Set %s already exists." 
+            do_complaint_error("Physical Card Set %s already exists."
                     % sPCSName)
             return
 
