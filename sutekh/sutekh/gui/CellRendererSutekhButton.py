@@ -6,6 +6,8 @@
 # Copyright 2006 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
 
+"Render a icon in a TreeView"
+
 import gtk, gobject
 
 # This is heavily cribbed from the example in the pygtk FAQ
@@ -16,37 +18,54 @@ import gtk, gobject
 # To be generically useful, should be extended to abitary pixmaps,
 # but that is currently not a priority
 
+# pylint: disable-msg=R0904
+# gtk widget, so we must have a lot of public methods
 class CellRendererSutekhButton(gtk.GenericCellRenderer):
+    """
+    Render a icon in a cell in a TreeView.
 
+    Used to render the arrows for incrementing and decrementing cards
+    in the CardListView's
+    """
+
+    # Register a showicon property - used to control wether the arrow
+    # is visible or not
     __gproperties__ = {
             'showicon' : (gobject.TYPE_BOOLEAN, 'showicon property',
                 'whether to show the icon', 0, gobject.PARAM_READWRITE)
             }
 
     def __init__(self):
+        super(CellRendererSutekhButton, self).__init__()
         self.__gobject_init__()
         self.oPixbuf = None
         self.set_property("mode", gtk.CELL_RENDERER_MODE_ACTIVATABLE)
         self.bShowIcon = False
         self.bClicked = False
+        self.oClickedBackgroundArea = None
 
     def load_icon(self, sName, oWidget):
-        # Load the icon specified in name
+        "Load the icon specified in name"
         self.oPixbuf = oWidget.render_icon(sName, gtk.ICON_SIZE_SMALL_TOOLBAR)
 
     def do_get_property(self, oProp):
+        "Allow reading the showicon property"
         if oProp.name == 'showicon':
             return self.bShowIcon
         else:
             raise AttributeError, 'unknown property %s' % oProp.name
 
     def do_set_property(self, oProp, oValue):
+        "Allow setting the showicon property"
         if oProp.name == 'showicon':
             self.bShowIcon = oValue
         else:
             raise AttributeError, 'unknown property %s' % oProp.name
 
+    # pylint: disable-msg=W0613
+    # oWidget equired by function signature
     def on_get_size(self, oWidget, oCellArea):
+        "Handle get_size requests"
         if self.oPixbuf is None:
             return 0, 0, 0, 0
         iPixbufWidth  = self.oPixbuf.get_width()
@@ -63,6 +82,9 @@ class CellRendererSutekhButton(gtk.GenericCellRenderer):
         # gtk want's ints here
         return iXOffset, iYOffset, int(fCalcWidth), int(fCalcHeight)
 
+    # pylint: disable-msg=W0613, R0913
+    # R0913 - number of parameters needed by function signature
+    # iFlags, oWidget, oEvent, oCellArea required by function signature
     def on_activate(self, oEvent, oWidget, oPath, oBackgroundArea,
             oCellArea, iFlags):
         "Activate signal recieved from the TreeView"
@@ -73,6 +95,9 @@ class CellRendererSutekhButton(gtk.GenericCellRenderer):
         self.emit('clicked', oPath)
         return True
 
+    # pylint: disable-msg=W0613, R0913
+    # R0913 - number of parameters needed by function signature
+    # iFlags required by function signature
     def on_render(self, oWindow, oWidget, oBackgroundArea,
             oCellArea, oExposeArea, iFlags):
         "Render the icon for the button"
