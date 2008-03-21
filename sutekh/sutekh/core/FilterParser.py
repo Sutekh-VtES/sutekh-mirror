@@ -129,7 +129,7 @@ class ParseFilterDefinitions(object):
         aResults = []
         while 1:
             oToken = self.oLexer.token()
-            if not oToken: 
+            if not oToken:
                 return aResults
             aResults.append(oToken)
 
@@ -152,6 +152,7 @@ class FilterYaccParser(object):
     )
 
     def reset(self):
+        "Reset the used variables history"
         self.aUsedVariables = []
 
     def p_filter(self, p):
@@ -285,21 +286,25 @@ class ValueObject(object):
 
     def __init__(self, oValue, oNode):
         """Initialize ValueObject with oValue and AST node oNode"""
-        self.value = oValue
-        self.node = oNode
+        self.oValue = oValue
+        self.oNode = oNode
 
     def is_entry(self):
-        return type(self.value) is str and self.value == ''
+        "Does this represent a text entry?"
+        return type(self.oValue) is str and self.oValue == ''
 
     def is_list(self):
-        return type(self.value) is list
+        "Does this represent a list?"
+        return type(self.oValue) is list
 
     def is_value(self):
-        return type(self.value) is str and self.value != ''
+        "Does this represent a assigned string value?"
+        return type(self.oValue) is str and self.oValue != ''
 
     # pylint: disable-msg=C0103
     def is_None(self):
-        return self.value is None
+        "Is this node's value None?"
+        return self.oValue is None
 
 # AST object (formulation inspired by Simon Cross's example, and notes
 # from the ply documentation)
@@ -389,7 +394,7 @@ class TermNode(AstBaseNode):
     """Node to represnt values in the AST"""
 
     def get_type(self):
-        """Return type. 
+        """Return type.
         Always returns None as values nodes have no value - only
         filters have meaningful type information
         """
@@ -422,7 +427,7 @@ class IdNode(TermNode):
     def __init__(self, sValue):
         """Initiliase IdNode. sValue == name of variable"""
         super(IdNode, self).__init__([sValue])
-        self.value = sValue
+        self.oValue = sValue
 
     def get_values(self):
         """IdNode has no values"""
@@ -435,10 +440,10 @@ class IdNode(TermNode):
 class FilterPartNode(OperatorNode):
     """A Filter = $X expression in the AST"""
 
-    def __init__(self, filtertype, filtervalues, sVariableName):
-        super(FilterPartNode, self).__init__([filtertype, filtervalues])
-        self.filtertype = filtertype
-        self.filtervalues = filtervalues
+    def __init__(self, sFilterType, aFilterValues, sVariableName):
+        super(FilterPartNode, self).__init__([sFilterType, aFilterValues])
+        self.sFilterType = sFilterType
+        self.aFilterValues = aFilterValues
         self.sVariableName = sVariableName
 
     def get_name(self):
@@ -447,38 +452,38 @@ class FilterPartNode(OperatorNode):
 
     def get_values(self):
         """
-        List of ValueObjects describing the filter and its 
+        List of ValueObjects describing the filter and its
         associated values.
         """
-        if self.filtertype in aEntryFilters:
+        if self.sFilterType in aEntryFilters:
             aResults = \
-                    [ValueObject(get_filter_type(self.filtertype).description
+                    [ValueObject(get_filter_type(self.sFilterType).description
                         + ' includes', self)]
-        elif self.filtertype in aListFilters:
+        elif self.sFilterType in aListFilters:
             aResults = \
-                    [ValueObject(get_filter_type(self.filtertype).description
+                    [ValueObject(get_filter_type(self.sFilterType).description
                         + ' in', self)]
         else:
-            # We don't take any input for this filter, so there are no 
+            # We don't take any input for this filter, so there are no
             # values to return
-            return [ValueObject(get_filter_type(self.filtertype).description,
+            return [ValueObject(get_filter_type(self.sFilterType).description,
                 self), ValueObject(None, self)]
-        if self.filtervalues is None:
-            aVals = get_filter_type(self.filtertype).get_values()
+        if self.aFilterValues is None:
+            aVals = get_filter_type(self.sFilterType).get_values()
             # Want a list within ValueObject for the GUI stuff to work
             # '' case for Entry boxes works as well
             aResults.append(ValueObject(aVals, self))
         else:
-            aResults.extend(self.filtervalues.get_values())
+            aResults.extend(self.aFilterValues.get_values())
         return aResults
 
     def get_invalid_values(self):
         """List of illegal values associated with this filter"""
         aRes = []
-        if self.filtervalues is None or self.filtertype not in aListFilters:
+        if self.aFilterValues is None or self.sFilterType not in aListFilters:
             return None
-        aCurVals = self.filtervalues.get_values()
-        oTemp = get_filter_type(self.filtertype)([]) # Create Instance
+        aCurVals = self.aFilterValues.get_values()
+        oTemp = get_filter_type(self.sFilterType)([]) # Create Instance
         aValidVals = oTemp.get_values()
         for oVal in aCurVals:
             if oVal.value == ',':
@@ -490,29 +495,30 @@ class FilterPartNode(OperatorNode):
         else:
             return None
 
-    def setValues(self, aVals):
+    def set_values(self, aVals):
         """Set values for this filter"""
-        if self.filtervalues is not None:
+        if self.aFilterValues is not None:
             raise RuntimeError("Filter values already set")
         sCommaList = ",".join(aVals)
-        sInternalFilter = self.filtertype + '=' + sCommaList
+        sInternalFilter = self.sFilterType + '=' + sCommaList
         oParser = FilterParser()
         oInternalAST = oParser.apply(sInternalFilter)
         # The filter we create is trivially of the FilterType = X, Y type
         # so this is safe, but potentially fragile in the future
-        self.filtervalues = oInternalAST.aChildren[0].filtervalues
+        self.aFilterValues = oInternalAST.aChildren[0].aFilterValues
         # Update AST to reflect change
-        self.aChildren[1] = self.filtervalues
+        self.aChildren[1] = self.aFilterValues
 
     def get_filter(self):
         """Get Filter object for this Filter"""
-        if self.filtertype in aEntryFilters or self.filtertype in aListFilters:
-            if self.filtervalues is None:
+        if self.sFilterType in aEntryFilters or \
+                self.sFilterType in aListFilters:
+            if self.aFilterValues is None:
                 return None
-        cFilterType = get_filter_type(self.filtertype)
-        if self.filtervalues:
-            aValues = self.filtervalues.get_filter()
-            if self.filtertype in aEntryFilters:
+        cFilterType = get_filter_type(self.sFilterType)
+        if self.aFilterValues:
+            aValues = self.aFilterValues.get_filter()
+            if self.sFilterType in aEntryFilters:
                 # Filter takes a single string as input
                 # by construction, this is aValues[0]
                 oFilter = cFilterType(aValues[0])
@@ -525,29 +531,35 @@ class FilterPartNode(OperatorNode):
 
     def get_type(self):
         """Get allowed types for this filter"""
-        return get_filter_type(self.filtertype).types
+        return get_filter_type(self.sFilterType).types
 
 class NotOpNode(OperatorNode):
+    "AST node for NOT(X)"
     def __init__(self, oSubExpression):
         super(NotOpNode, self).__init__([oSubExpression])
         self.oSubExpression = oSubExpression
 
     def get_invalid_values(self):
+        "NOT(X)'s invalid values are the subfilter's invalid values"
         return self.oSubExpression.get_invalid_values()
 
     def get_values(self):
+        "NOT(X)'s values are the subfilter's values"
         aResults = [ValueObject('NOT (', None)] + \
                  self.oSubExpression.get_values() +\
                  [ValueObject(')', None)]
         return aResults
 
     def get_filter(self):
+        "Get the filter expression"
         return FilterNot(self.oSubExpression.get_filter())
 
     def get_type(self):
+        "Get the filter type (same as subfilter)"
         return self.oSubExpression.get_type()
 
 class BinOpNode(OperatorNode):
+    "AST node for binary operations (AND, OR)"
     def __init__(self, oLeft, oOp, oRight):
         super(BinOpNode, self).__init__([oLeft, oRight])
         self.oOp = oOp
@@ -555,6 +567,7 @@ class BinOpNode(OperatorNode):
         self.oRight = oRight
 
     def get_invalid_values(self):
+        "Get invalid values from both children"
         aLeft = self.oLeft.get_invalid_values()
         aRight = self.oRight.get_invalid_values()
         if aLeft is None:
@@ -565,6 +578,7 @@ class BinOpNode(OperatorNode):
             return aLeft + aRight
 
     def get_values(self):
+        "Get values from both children"
         aLeft = self.oLeft.get_values()
         aRight = self.oRight.get_values()
         if aLeft is None:
@@ -580,6 +594,7 @@ class BinOpNode(OperatorNode):
             return aResults
 
     def get_filter(self):
+        "Get the filter expression. Handle None children"
         oLeftFilter = self.oLeft.get_filter()
         oRightFilter = self.oRight.get_filter()
         if oLeftFilter is None:
@@ -595,6 +610,7 @@ class BinOpNode(OperatorNode):
         return oFilter
 
     def get_type(self):
+        "Get the type of the filter - intersection of the children's types"
         aLeftTypes = self.oLeft.get_type()
         aRightTypes = self.oRight.get_type()
         if aRightTypes is None:
@@ -609,6 +625,7 @@ class BinOpNode(OperatorNode):
         return aRes
 
 class CommaNode(OperatorNode):
+    "AST node for comma seperator (Val1, Val2)"
     def __init__(self, oLeft, oOp, oRight):
         super(CommaNode, self).__init__([oLeft, oRight])
         self.oOp = oOp
@@ -616,21 +633,25 @@ class CommaNode(OperatorNode):
         self.oRight = oRight
 
     def get_values(self):
+        "Get values - union of children's values"
         aResults = self.oLeft.get_values()
         aResults.append(ValueObject(',', self))
         aResults.extend(self.oRight.get_values())
         return aResults
 
     def get_filter(self):
+        "Get filter expression"
         aResults = self.oLeft.get_filter()
         aResults.extend(self.oRight.get_filter())
         return aResults
 
     def get_type(self):
+        "Get type - children are values, so always None"
         # Syntax ensures , only in value lists, which have no type
         return None
 
 class WithNode(OperatorNode):
+    "AST node for values of the form 'X with Y'"
     def __init__(self, oLeft, oOp, oRight):
         super(WithNode, self).__init__([oLeft, oRight])
         self.oOp = oOp
@@ -638,12 +659,15 @@ class WithNode(OperatorNode):
         self.oRight = oRight
 
     def get_values(self):
+        "Get values"
         return [ValueObject(self.oLeft.get_filter()[0] + ' ' + self.oOp +
             ' ' + self.oRight.get_filter()[0], self)]
 
     def get_filter(self):
+        "Get filter expression"
         return [(self.oLeft.get_filter()[0], self.oRight.get_filter()[0])]
 
     def get_type(self):
+        "Get filter type - these are values, so always None"
         # Syntax ensures with only in value lists, which have no type
         return None

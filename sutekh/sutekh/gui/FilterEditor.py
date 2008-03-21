@@ -66,7 +66,7 @@ class FilterEditor(gtk.Frame):
         aNewValues = oNewAST.get_values()
         for oValue in aNewValues:
             if oValue.is_entry() or oValue.is_list():
-                oValue.node.setValues(dValues[oValue.node.get_name()])
+                oValue.oNode.set_values(dValues[oValue.oNode.get_name()])
 
         return oNewAST
 
@@ -436,9 +436,9 @@ class FilterBoxItem(object):
 
         assert type(oAST) is FilterPartNode
 
-        self.sFilterType = oAST.filtertype
+        self.sFilterType = oAST.sFilterType
         self.sVariableName = oAST.sVariableName
-        self.aFilterValues = oAST.filtervalues
+        self.aFilterValues = oAST.aFilterValues
         self.iValueType = None
 
         # process values
@@ -446,10 +446,10 @@ class FilterBoxItem(object):
         for oValue in oAST.get_values():
             if oValue.is_value():
                 assert self.sLabel is None
-                self.sLabel = oValue.value
+                self.sLabel = oValue.oValue
             elif oValue.is_list():
                 assert self.iValueType is None
-                self.aValues = oValue.value
+                self.aValues = oValue.oValue
                 self.iValueType = self.LIST
             elif oValue.is_entry():
                 assert self.iValueType is None
