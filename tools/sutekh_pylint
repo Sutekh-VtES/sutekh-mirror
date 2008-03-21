@@ -5,8 +5,11 @@ attr-rgx = [_]{0,2}[a,b,c,d,f,i,o,s,t][A-Z][A-z0-9]{1,20}$
 const-rgx = [_]{0,2}[a,b,c,d,f,i,o,s,t][A-Z][A-z0-9]{1,20}$
 good-names=kwargs, cls, __all__
 
+[DESIGN]
 max-public-methods=30
 min-public-methods=0
+# Need to allow quite deep inheritence trees for gtk
+max-parents=10
 
 [MASTER]
 #load-plugins=dict_keys_check
