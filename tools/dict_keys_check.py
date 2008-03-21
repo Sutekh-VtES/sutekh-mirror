@@ -1,6 +1,10 @@
 
 """Custom checker for pylint - warn about about 'in Dict.keys()' usage"""
 
+# Copyright Neil Muller, 2008 <drnlmuller+sutekh@gmail.com>
+# Based on custom.py from pylint, so the license is
+# GPL v2 or later (see COPYRIGHT file for sutekh)
+
 # Add this pylintrc using load-plugins
 # The path to this file needs to be in PYTHONPATH as pylint must be able
 # to import this
