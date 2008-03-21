@@ -61,19 +61,6 @@ class Filter(object):
         "joins needed by the filter"
         raise NotImplementedError
 
-    def _make_table_alias(self, sTable):
-        """
-        In order to allow multiple filters to be AND together, filters need
-        to create aliases of mapping tables so that, for example:
-
-            FilterAndBox([DisciplineFilter('dom'), DisciplineFilter('obf')])
-
-        produces a list of cards which have both dominate and obfuscate
-        rather than an empty list.  The two discipline filters above need to
-        join the abstract card table with two different copies of the
-        mapping table to discipline pairs.
-        """
-        return Alias(sTable)
 
 # Collections of Filters
 
@@ -178,6 +165,8 @@ class NullFilter(Filter):
     types = ['AbstractCard', 'PhysicalCard', 'AbstractCardSet',
             'PhysicalCardSet']
 
+    # pylint: disable-msg=C0111
+    # don't need docstrings for _get_expression, get_values & _get_joins
     def _get_expression(self):
         return TRUE # SQLite doesn't like True. Postgres doesn't like 1.
 
@@ -193,8 +182,9 @@ class SingleFilter(Filter):
 
     Sub-class should set self._oMapTable, self._oMapField and self._oId.
     """
-    # pylint: disable-msg=E1101
-    # We expect subclasses to provide _oMapTable and friends
+    # pylint: disable-msg=E1101, C0111
+    # E1101 - We expect subclasses to provide _oMapTable and friends
+    # C0111 - don't need docstrings for _get_expression & _get_joins
     def _get_joins(self):
         return [LEFTJOINOn(None, self._oMapTable,
             AbstractCard.q.id == self._oMapTable.q.abstract_card_id)]
@@ -210,8 +200,9 @@ class MultiFilter(Filter):
     Sub-class should set self._oMapTable, self._oMapField and self._aIds.
     """
 
-    # pylint: disable-msg=E1101
-    # We expect subclasses to provide self._aIds, et al.
+    # pylint: disable-msg=E1101, C0111
+    # E1101 - We expect subclasses to provide _oMapTable and friends
+    # C0111 - don't need docstrings for _get_expression & _get_joins
     def _get_joins(self):
         return [LEFTJOINOn(None, self._oMapTable,
             AbstractCard.q.id == self._oMapTable.q.abstract_card_id)]
@@ -222,6 +213,8 @@ class MultiFilter(Filter):
 class DirectFilter(Filter):
     """Base class for filters which query AbstractTable directly."""
 
+    # pylint: disable-msg=C0111
+    # don't need docstrings for _get_expression, get_values & _get_joins
     def _get_joins(self):
         return []
 
@@ -237,18 +230,34 @@ def split_list(aList):
             return []
     return aResults
 
+def make_table_alias(sTable):
+    """
+    In order to allow multiple filters to be AND together, filters need
+    to create aliases of mapping tables so that, for example:
+
+        FilterAndBox([DisciplineFilter('dom'), DisciplineFilter('obf')])
+
+    produces a list of cards which have both dominate and obfuscate
+    rather than an empty list.  The two discipline filters above need to
+    join the abstract card table with two different copies of the
+    mapping table to discipline pairs.
+    """
+    return Alias(sTable)
+
 # Individual Filters
 
 class ClanFilter(SingleFilter):
+    "Filter on Card's clan"
     types = ['AbstractCard', 'PhysicalCard']
     def __init__(self, sClan):
         # pylint: disable-msg=E1101
         # SQLObject methods not detected by plylint
         self._oId = IClan(sClan).id
-        self._oMapTable = self._make_table_alias('abs_clan_map')
+        self._oMapTable = make_table_alias('abs_clan_map')
         self._oIdField = self._oMapTable.q.clan_id
 
 class MultiClanFilter(MultiFilter):
+    "Filter on multiple clans"
     keyword = "Clan"
     islistfilter = True
     description = "Clan"
@@ -259,23 +268,27 @@ class MultiClanFilter(MultiFilter):
         # pylint: disable-msg=E1101
         # SQLObject methods not detected by plylint
         self._aIds = [IClan(x).id for x in aClans]
-        self._oMapTable = self._make_table_alias('abs_clan_map')
+        self._oMapTable = make_table_alias('abs_clan_map')
         self._oIdField = self._oMapTable.q.clan_id
 
+    # pylint: disable-msg=C0111
+    # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
         return [x.name for x in Clan.select().orderBy('name')]
 
 class DisciplineFilter(MultiFilter):
+    "Filter on a card's disciplines"
     types = ['AbstractCard', 'PhysicalCard']
     def __init__(self, sDiscipline):
         # pylint: disable-msg=E1101
         # SQLObject methods not detected by plylint
         self._aIds = [oP.id for oP in IDiscipline(sDiscipline).pairs]
-        self._oMapTable = self._make_table_alias('abs_discipline_pair_map')
+        self._oMapTable = make_table_alias('abs_discipline_pair_map')
         self._oIdField = self._oMapTable.q.discipline_pair_id
 
 class MultiDisciplineFilter(MultiFilter):
+    "Filter on multiple disciplines"
     keyword = "Discipline"
     description = "Discipline"
     helptext = "a list of disciplines"
@@ -289,23 +302,27 @@ class MultiDisciplineFilter(MultiFilter):
         for sDis in aDisciplines:
             oPairs += IDiscipline(sDis).pairs
         self._aIds = [oP.id for oP in oPairs]
-        self._oMapTable = self._make_table_alias('abs_discipline_pair_map')
+        self._oMapTable = make_table_alias('abs_discipline_pair_map')
         self._oIdField = self._oMapTable.q.discipline_pair_id
 
+    # pylint: disable-msg=C0111
+    # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
         return [x.fullname for x in Discipline.select().orderBy('name')]
 
 class ExpansionFilter(MultiFilter):
+    "Filter AbstractCard on Expansion name"
     types = ['AbstractCard', 'PhysicalCard']
     def __init__(self, sExpansion):
         # pylint: disable-msg=E1101
         # SQLObject methods not detected by plylint
         self._aIds = [oP.id for oP in IExpansion(sExpansion).pairs]
-        self._oMapTable = self._make_table_alias('abs_rarity_pair_map')
+        self._oMapTable = make_table_alias('abs_rarity_pair_map')
         self._oIdField = self._oMapTable.q.rarity_pair_id
 
 class MultiExpansionFilter(MultiFilter):
+    "Filter AbstractCard on multiple Expansion names"
     types = ['AbstractCard', 'PhysicalCard']
     def __init__(self, aExpansions):
         # pylint: disable-msg=E1101
@@ -314,7 +331,7 @@ class MultiExpansionFilter(MultiFilter):
         for sExp in aExpansions:
             oPairs += IExpansion(sExp).pairs
         self._aIds = [oP.id for oP in oPairs]
-        self._oMapTable = self._make_table_alias('abs_rarity_pair_map')
+        self._oMapTable = make_table_alias('abs_rarity_pair_map')
         self._oIdField = self._oMapTable.q.rarity_pair_id
 
 class ExpansionRarityFilter(SingleFilter):
@@ -328,10 +345,11 @@ class ExpansionRarityFilter(SingleFilter):
         # SQLObject methods not detected by plylint
         sExpansion, sRarity = tExpanRarity
         self._oId = IRarityPair((IExpansion(sExpansion), IRarity(sRarity))).id
-        self._oMapTable = self._make_table_alias('abs_rarity_pair_map')
+        self._oMapTable = make_table_alias('abs_rarity_pair_map')
         self._oIdField = self._oMapTable.q.rarity_pair_id
 
 class MultiExpansionRarityFilter(MultiFilter):
+    """Filter on multiple Expansion & Rarity combos"""
     keyword = "Expansion_with_Rarity"
     description = "Expansion with Rarity"
     helptext = "a list of expansions and rarities (each element specified" \
@@ -352,9 +370,11 @@ class MultiExpansionRarityFilter(MultiFilter):
         for sExpansion, sRarity in aValues:
             self._aIds.append(IRarityPair( (IExpansion(sExpansion),
                 IRarity(sRarity)) ).id)
-        self._oMapTable = self._make_table_alias('abs_rarity_pair_map')
+        self._oMapTable = make_table_alias('abs_rarity_pair_map')
         self._oIdField = self._oMapTable.q.rarity_pair_id
 
+    # pylint: disable-msg=C0111
+    # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
         aExpansions = [x.name for x in Expansion.select().orderBy('name')
@@ -369,6 +389,7 @@ class MultiExpansionRarityFilter(MultiFilter):
         return aResults
 
 class DisciplineLevelFilter(MultiFilter):
+    "Filter on discipline & level combo"
     types = ['AbstractCard', 'PhysicalCard']
     def __init__(self, tDiscLevel):
         # pylint: disable-msg=E1101
@@ -379,10 +400,11 @@ class DisciplineLevelFilter(MultiFilter):
         # There will be 0 or 1 ids
         self._aIds = [oP.id for oP in IDiscipline(sDiscipline).pairs if
                 oP.level == sLevel]
-        self._oMapTable = self._make_table_alias('abs_discipline_pair_map')
+        self._oMapTable = make_table_alias('abs_discipline_pair_map')
         self._oIdField = self._oMapTable.q.discipline_pair_id
 
 class MultiDisciplineLevelFilter(MultiFilter):
+    "Filter on mulitple discipline & level combos"
     keyword = "Discipline_with_Level"
     description = "Discipline with Level"
     helptext = "a list of disciplines with levels (each element specified" \
@@ -405,9 +427,11 @@ class MultiDisciplineLevelFilter(MultiFilter):
             assert sLevel in ['inferior', 'superior']
             self._aIds.extend([oP.id for oP in IDiscipline(sDiscipline).pairs
                     if oP.level == sLevel])
-        self._oMapTable = self._make_table_alias('abs_discipline_pair_map')
+        self._oMapTable = make_table_alias('abs_discipline_pair_map')
         self._oIdField = self._oMapTable.q.discipline_pair_id
 
+    # pylint: disable-msg=C0111
+    # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
         oTemp = MultiDisciplineFilter([])
@@ -419,15 +443,17 @@ class MultiDisciplineLevelFilter(MultiFilter):
         return aResults
 
 class CardTypeFilter(SingleFilter):
+    "Filter on card type"
     types = ['AbstractCard', 'PhysicalCard']
     def __init__(self, sCardType):
         # pylint: disable-msg=E1101
         # SQLObject methods not detected by plylint
         self._oId = ICardType(sCardType).id
-        self._oMapTable = self._make_table_alias('abs_type_map')
+        self._oMapTable = make_table_alias('abs_type_map')
         self._oIdField = self._oMapTable.q.card_type_id
 
 class MultiCardTypeFilter(MultiFilter):
+    "Filter on multiple card types"
     keyword = "CardType"
     description = "Card Type"
     helptext = "a list of card types"
@@ -438,23 +464,27 @@ class MultiCardTypeFilter(MultiFilter):
         # pylint: disable-msg=E1101
         # SQLObject methods not detected by plylint
         self._aIds = [ICardType(x).id for x in aCardTypes]
-        self._oMapTable = self._make_table_alias('abs_type_map')
+        self._oMapTable = make_table_alias('abs_type_map')
         self._oIdField = self._oMapTable.q.card_type_id
 
+    # pylint: disable-msg=C0111
+    # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
         return [x.name for x in CardType.select().orderBy('name')]
 
 class SectFilter(SingleFilter):
+    "Filter on Sect"
     types = ['AbstractCard', 'PhysicalCard']
     def __init__(self, sSect):
         # pylint: disable-msg=E1101
         # SQLObject methods not detected by plylint
         self._oId = ISect(sSect).id
-        self._oMapTable = self._make_table_alias('abs_sect_map')
+        self._oMapTable = make_table_alias('abs_sect_map')
         self._oIdField = self._oMapTable.q.sect_id
 
 class MultiSectFilter(MultiFilter):
+    "Filter on Multiple Sects"
     keyword = "Sect"
     description = "Sect"
     helptext = "a list of sects"
@@ -465,23 +495,27 @@ class MultiSectFilter(MultiFilter):
         # pylint: disable-msg=E1101
         # SQLObject methods not detected by plylint
         self._aIds = [ISect(x).id for x in aSects]
-        self._oMapTable = self._make_table_alias('abs_sect_map')
+        self._oMapTable = make_table_alias('abs_sect_map')
         self._oIdField = self._oMapTable.q.sect_id
 
+    # pylint: disable-msg=C0111
+    # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
         return [x.name for x in Sect.select().orderBy('name')]
 
 class TitleFilter(SingleFilter):
+    "Filter on Title"
     types = ['AbstractCard', 'PhysicalCard']
     def __init__(self, sTitle):
         # pylint: disable-msg=E1101
         # SQLObject methods not detected by plylint
         self._oId = ITitle(sTitle).id
-        self._oMapTable = self._make_table_alias('abs_title_map')
+        self._oMapTable = make_table_alias('abs_title_map')
         self._oIdField = self._oMapTable.q.title_id
 
 class MultiTitleFilter(MultiFilter):
+    "Filter on Multiple Titles"
     keyword = "Title"
     description = "Title"
     helptext = "a list of titles"
@@ -492,23 +526,27 @@ class MultiTitleFilter(MultiFilter):
         # pylint: disable-msg=E1101
         # SQLObject methods not detected by plylint
         self._aIds = [ITitle(x).id for x in aTitles]
-        self._oMapTable = self._make_table_alias('abs_title_map')
+        self._oMapTable = make_table_alias('abs_title_map')
         self._oIdField = self._oMapTable.q.title_id
 
+    # pylint: disable-msg=C0111
+    # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
         return [x.name for x in Title.select().orderBy('name')]
 
 class CreedFilter(SingleFilter):
+    "Filter on Creed"
     types = ['AbstractCard', 'PhysicalCard']
     def __init__(self, sCreed):
         # pylint: disable-msg=E1101
         # SQLObject methods not detected by plylint
         self._oId = ICreed(sCreed).id
-        self._oMapTable = self._make_table_alias('abs_creed_map')
+        self._oMapTable = make_table_alias('abs_creed_map')
         self._oIdField = self._oMapTable.q.creed_id
 
 class MultiCreedFilter(MultiFilter):
+    "Filter on Multiple Creed"
     keyword = "Creed"
     description = "Creed"
     helptext = "a list of creeds"
@@ -519,23 +557,27 @@ class MultiCreedFilter(MultiFilter):
         # pylint: disable-msg=E1101
         # SQLObject methods not detected by plylint
         self._aIds = [ICreed(x).id for x in aCreeds]
-        self._oMapTable = self._make_table_alias('abs_creed_map')
+        self._oMapTable = make_table_alias('abs_creed_map')
         self._oIdField = self._oMapTable.q.creed_id
 
+    # pylint: disable-msg=C0111
+    # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
         return [x.name for x in Creed.select().orderBy('name')]
 
 class VirtueFilter(SingleFilter):
+    "Filter on Virtue"
     types = ['AbstractCard', 'PhysicalCard']
     def __init__(self, sVirtue):
         # pylint: disable-msg=E1101
         # SQLObject methods not detected by plylint
         self._oId = IVirtue(sVirtue).id
-        self._oMapTable = self._make_table_alias('abs_virtue_map')
+        self._oMapTable = make_table_alias('abs_virtue_map')
         self._oIdField = self._oMapTable.q.virtue_id
 
 class MultiVirtueFilter(MultiFilter):
+    "Filter on Multiple Virtues"
     keyword = "Virtue"
     description = "Virtue"
     helptext = "a list of virtues"
@@ -546,24 +588,30 @@ class MultiVirtueFilter(MultiFilter):
         # pylint: disable-msg=E1101
         # SQLObject methods not detected by plylint
         self._aIds = [IVirtue(x).id for x in aVirtues]
-        self._oMapTable = self._make_table_alias('abs_virtue_map')
+        self._oMapTable = make_table_alias('abs_virtue_map')
         self._oIdField = self._oMapTable.q.virtue_id
 
+    # pylint: disable-msg=C0111
+    # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
         return [x.fullname for x in Virtue.select().orderBy('name')]
 
 class GroupFilter(DirectFilter):
+    "Filter on Group"
     types = ['AbstractCard', 'PhysicalCard']
     def __init__(self, iGroup):
         self.__iGroup = iGroup
 
+    # pylint: disable-msg=C0111
+    # don't need docstrings for _get_expression, get_values & _get_joins
     def _get_expression(self):
         # pylint: disable-msg=E1101
         # SQLObject methods not detected by plylint
         return AbstractCard.q.group == self.__iGroup
 
 class MultiGroupFilter(DirectFilter):
+    "Filter on multiple Groups"
     keyword = "Group"
     description = "Group"
     helptext = "a list of groups"
@@ -573,6 +621,8 @@ class MultiGroupFilter(DirectFilter):
     def __init__(self, aGroups):
         self.__aGroups = [int(sV) for sV in aGroups]
 
+    # pylint: disable-msg=C0111
+    # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
         return [str(x) for x in range(1, 6)]
@@ -583,16 +633,20 @@ class MultiGroupFilter(DirectFilter):
         return IN(AbstractCard.q.group, self.__aGroups)
 
 class CapacityFilter(DirectFilter):
+    "Filter on Capacity"
     types = ['AbstractCard', 'PhysicalCard']
     def __init__(self, iCap):
         self.__iCap = iCap
 
+    # pylint: disable-msg=C0111
+    # don't need docstrings for _get_expression, get_values & _get_joins
     def _get_expression(self):
         # pylint: disable-msg=E1101
         # SQLObject methods not detected by plylint
         return AbstractCard.q.capacity == self.__iCap
 
 class MultiCapacityFilter(DirectFilter):
+    "Filter on a list of Capacities"
     keyword = "Capacity"
     description = "Capacity"
     helptext = "a list of capacities"
@@ -602,6 +656,8 @@ class MultiCapacityFilter(DirectFilter):
     def __init__(self, aCaps):
         self.__aCaps = [int(sV) for sV in aCaps]
 
+    # pylint: disable-msg=C0111
+    # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
         return [str(x) for x in range(1, 12)]
@@ -612,18 +668,22 @@ class MultiCapacityFilter(DirectFilter):
         return IN(AbstractCard.q.capacity, self.__aCaps)
 
 class CostFilter(DirectFilter):
+    "Filter on Cost"
     types = ['AbstractCard', 'PhysicalCard']
     # Should this exclude Vamps & Imbued, if we search for
     # cards without cost?
     def __init__(self, iCost):
         self.__iCost = iCost
 
+    # pylint: disable-msg=C0111
+    # don't need docstrings for _get_expression, get_values & _get_joins
     def _get_expression(self):
         # pylint: disable-msg=E1101
         # SQLObject methods not detected by plylint
         return AbstractCard.q.cost == self.__iCost
 
 class MultiCostFilter(DirectFilter):
+    "Filter on a list of Costs"
     keyword = "Cost"
     description = "Cost"
     helptext = "a list of costs"
@@ -635,6 +695,8 @@ class MultiCostFilter(DirectFilter):
         if 'X' in aCost:
             self.__aCost.append(-1)
 
+    # pylint: disable-msg=C0111
+    # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
         return [str(x) for x in range(0, 7)] + ['X']
@@ -645,17 +707,21 @@ class MultiCostFilter(DirectFilter):
         return IN(AbstractCard.q.cost, self.__aCost)
 
 class CostTypeFilter(DirectFilter):
+    "Filter on cost type"
     types = ['AbstractCard', 'PhysicalCard']
     def __init__(self, sCostType):
         self.__sCostType = sCostType.lower()
         assert self.__sCostType in ["blood", "pool", "conviction", None]
 
+    # pylint: disable-msg=C0111
+    # don't need docstrings for _get_expression, get_values & _get_joins
     def _get_expression(self):
         # pylint: disable-msg=E1101
         # SQLObject methods not detected by plylint
         return AbstractCard.q.costtype == self.__sCostType.lower()
 
 class MultiCostTypeFilter(DirectFilter):
+    "Filter on a list of cost types"
     keyword = "CostType"
     islistfilter = True
     description = "Cost Type"
@@ -669,6 +735,8 @@ class MultiCostTypeFilter(DirectFilter):
         if None in aCostTypes:
             self.__aCostTypes.append(None)
 
+    # pylint: disable-msg=C0111
+    # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
         return ["blood", "pool", "conviction"]
@@ -679,17 +747,21 @@ class MultiCostTypeFilter(DirectFilter):
         return IN(AbstractCard.q.costtype, self.__aCostTypes)
 
 class LifeFilter(DirectFilter):
+    "Filter on life"
     types = ['AbstractCard', 'PhysicalCard']
     # Will only return imbued, unless we ever parse life from retainers & allies
     def __init__(self, iLife):
         self.__iLife = iLife
 
+    # pylint: disable-msg=C0111
+    # don't need docstrings for _get_expression, get_values & _get_joins
     def _get_expression(self):
         # pylint: disable-msg=E1101
         # SQLObject methods not detected by plylint
         return AbstractCard.q.life == self.__iLife
 
 class MultiLifeFilter(DirectFilter):
+    "filter on a list of list values"
     keyword = "Life"
     description = "Life"
     helptext = "a list of life values"
@@ -699,6 +771,8 @@ class MultiLifeFilter(DirectFilter):
     def __init__(self, aLife):
         self.__aLife = [int(sV) for sV in aLife]
 
+    # pylint: disable-msg=C0111
+    # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
         return [str(x) for x in range(1, 8)]
@@ -709,6 +783,7 @@ class MultiLifeFilter(DirectFilter):
         return IN(AbstractCard.q.life, self.__aLife)
 
 class CardTextFilter(DirectFilter):
+    "filter on Card Text"
     keyword = "CardText"
     description = "Card Text"
     helptext = "the desired card text to search for (% can be used as a " \
@@ -719,6 +794,8 @@ class CardTextFilter(DirectFilter):
     def __init__(self, sPattern):
         self.__sPattern = sPattern.lower()
 
+    # pylint: disable-msg=C0111
+    # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
         return ''
@@ -741,6 +818,8 @@ class CardNameFilter(DirectFilter):
     def __init__(self, sPattern):
         self.__sPattern = sPattern
 
+    # pylint: disable-msg=C0111
+    # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
         return ''
@@ -795,6 +874,8 @@ class CardFunctionFilter(DirectFilter):
                     CardTextFilter('as though untapped')])]))
         self._oFilter = FilterOrBox(aFilters)
 
+    # pylint: disable-msg=C0111
+    # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
         "Values supported by this filter"
@@ -823,6 +904,8 @@ class PhysicalCardFilter(Filter):
         # Specifies Physical Cards, intended to be anded with other filters
         pass
 
+    # pylint: disable-msg=C0111
+    # don't need docstrings for _get_expression, get_values & _get_joins
     def _get_joins(self):
         # pylint: disable-msg=E1101
         # SQLObject methods not detected by plylint
@@ -847,7 +930,7 @@ class AbstractCardFilter(Filter):
     # Filters.
     # Because of how SQL handles NULLs, combining this filter with
     # FilterNot(PhysicalX) will still only match cards in the PhysicalCard
-    # list. This is hard to fix, partly due to the database differences 
+    # list. This is hard to fix, partly due to the database differences
     # mentioned.
     #
     # FilterBox([AbstractCardFilter, PhysicalCardFilter, X]) is almost
@@ -857,6 +940,8 @@ class AbstractCardFilter(Filter):
         # speficies AbstractCards, intended to be and'ed with other filters
         pass
 
+    # pylint: disable-msg=C0111
+    # don't need docstrings for _get_expression, get_values & _get_joins
     def _get_joins(self):
         # pylint: disable-msg=E1101
         # SQLObject methods not detected by plylint
@@ -868,6 +953,7 @@ class AbstractCardFilter(Filter):
         return TRUE # See PhysicalCardFilter
 
 class MultiPhysicalCardCountFilter(DirectFilter):
+    "Filter on number of cards in the Physical Card Set"
     keyword = "PhysicalCardCount"
     description = "Physical Card Count"
     helptext = "a list of card numbers (filters on number of cards in the " \
@@ -905,6 +991,8 @@ class MultiPhysicalCardCountFilter(DirectFilter):
                     [int(x) for x in aCounts])))
             self._oFilters.append(oCountFilter)
 
+    # pylint: disable-msg=C0111
+    # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
         # Should this have a more staggered range split? 0..20, 20-30,
@@ -917,6 +1005,7 @@ class MultiPhysicalCardCountFilter(DirectFilter):
         return OR(*self._oFilters)
 
 class PhysicalExpansionFilter(DirectFilter):
+    "Filter PhysicalCard based on the PhysicalCard expansion"
     types = ['PhysicalCard']
     # We must be calling this with a PhysicalCardFilter for sensible results,
     # so we don't need any special join magic
@@ -929,11 +1018,14 @@ class PhysicalExpansionFilter(DirectFilter):
             # physical Expansion can explicity be None
             self._iId = None
 
+    # pylint: disable-msg=C0111
+    # don't need docstrings for _get_expression, get_values & _get_joins
     def _get_expression(self):
         oT = Table('physical_card')
         return oT.expansion_id == self._iId
 
 class MultiPhysicalExpansionFilter(DirectFilter):
+    "Filter PhysicalCard based on a list of PhysicalCard expansions"
     keyword = "PhysicalExpansion"
     description = "Physical Expansion"
     helptext = "a list of expansions (selects of physical cards with "\
@@ -953,6 +1045,8 @@ class MultiPhysicalExpansionFilter(DirectFilter):
             else:
                 self.__bOrUnspec = True
 
+    # pylint: disable-msg=C0111
+    # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
         aExpansions = [cls.__sUnspec]
@@ -972,15 +1066,18 @@ class MultiPhysicalExpansionFilter(DirectFilter):
             return IN(oT.expansion_id, self._aIds)
 
 class PhysicalCardSetFilter(Filter):
+    "Filter on Physical Card Set membership"
     types = ['PhysicalCard']
     def __init__(self, sName):
         # Select cards belonging to a PhysicalCardSet
         # pylint: disable-msg=E1101
         # SQLObject methods not detected by plylint
         self.__iDeckId = IPhysicalCardSet(sName).id
-        self.__oT = self._make_table_alias('physical_map')
+        self.__oT = make_table_alias('physical_map')
         self.__oPT = Table('physical_card')
 
+    # pylint: disable-msg=C0111
+    # don't need docstrings for _get_expression, get_values & _get_joins
     def _get_joins(self):
         # The join on the AbstractCard table is needed to enable filtering
         # physical card sets on abstract card propeties, since the base class
@@ -998,6 +1095,7 @@ class PhysicalCardSetFilter(Filter):
         return self.__oT.q.physical_card_set_id == self.__iDeckId
 
 class MultiPhysicalCardSetFilter(Filter):
+    "Filter on a list of Physical Card Sets"
     keyword = "PhysicalSet"
     description = "Physical Sets"
     helptext = "a list of deck names (selects physical cards in the " \
@@ -1015,9 +1113,11 @@ class MultiPhysicalCardSetFilter(Filter):
         self.__aDeckIds = []
         for sName in aNames:
             self.__aDeckIds.append(IPhysicalCardSet(sName).id)
-        self.__oT = self._make_table_alias('physical_map')
+        self.__oT = make_table_alias('physical_map')
         self.__oPT = Table('physical_card')
 
+    # pylint: disable-msg=C0111
+    # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
         aNames = []
@@ -1033,6 +1133,7 @@ class MultiPhysicalCardSetFilter(Filter):
         return IN(self.__oT.q.physical_card_set_id, self.__aDeckIds)
 
 class PhysicalCardSetInUseFilter(Filter):
+    "Filter on a membership of Physical Card Sets marked in use"
     keyword = "SetsInUse"
     description = "In Physical Card Sets in Use"
     helptext = "Selects physical cards in the Physical Card Sets marked " \
@@ -1045,9 +1146,11 @@ class PhysicalCardSetInUseFilter(Filter):
         for oCS in PhysicalCardSet.select():
             if oCS.inuse:
                 self.__aDeckIds.append(oCS.id)
-        self.__oT = self._make_table_alias('physical_map')
+        self.__oT = make_table_alias('physical_map')
         self.__oPT = Table('physical_card')
 
+    # pylint: disable-msg=C0111
+    # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
         return None
@@ -1094,6 +1197,8 @@ class SpecificCardFilter(DirectFilter):
         # SQLObject methods not detected by plylint
         self.__iCardId = IAbstractCard(oCard).id
 
+    # pylint: disable-msg=C0111
+    # don't need docstrings for _get_expression, get_values & _get_joins
     def _get_expression(self):
         # pylint: disable-msg=E1101
         # SQLObject methods not detected by plylint
@@ -1107,6 +1212,7 @@ class SpecificCardFilter(DirectFilter):
 # base filters, to be subclassed to PhysicalCardSet or AbstractClassSet
 # as needed
 class CardSetNameFilter(DirectFilter):
+    "Base class for CardSet filters on Card Set Name"
     keyword = "CardSetName"
     description = "Card Set Name"
     helptext = "the text to be matched against card set names.\n" \
@@ -1118,6 +1224,8 @@ class CardSetNameFilter(DirectFilter):
         # Subclasses will replace this with the correct table
         self._oT = None
 
+    # pylint: disable-msg=C0111
+    # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
         return ''
@@ -1126,6 +1234,7 @@ class CardSetNameFilter(DirectFilter):
         return LIKE(func.LOWER(self._oT.name), '%' + self.__sPattern + '%')
 
 class CardSetDescriptionFilter(DirectFilter):
+    "Base class for CardSet filters on Card Set Description"
     keyword = "CardSetDescription"
     description = "Card Set Description"
     helptext = "the text to be matched against card set description.\n" \
@@ -1137,6 +1246,8 @@ class CardSetDescriptionFilter(DirectFilter):
         # Subclasses will replace this with the correct table
         self._oT = None
 
+    # pylint: disable-msg=C0111
+    # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
         return ''
@@ -1145,6 +1256,7 @@ class CardSetDescriptionFilter(DirectFilter):
         return LIKE(func.LOWER(self._oT.comment), '%' + self.__sPattern + '%')
 
 class CardSetAuthorFilter(DirectFilter):
+    "Base class for CardSet filters on Card Set Author"
     keyword = "CardSetAuthor"
     description = "Card Set Author"
     helptext = "the text to be matched against card set Author.\n" \
@@ -1156,6 +1268,8 @@ class CardSetAuthorFilter(DirectFilter):
         # Subclasses will replace this with the correct table
         self._oT = None
 
+    # pylint: disable-msg=C0111
+    # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
         return ''
@@ -1164,6 +1278,7 @@ class CardSetAuthorFilter(DirectFilter):
         return LIKE(func.LOWER(self._oT.author), '%' + self.__sPattern + '%')
 
 class CardSetAnnotationsFilter(DirectFilter):
+    "Base class for CardSet filters on Card Set Annotations"
     keyword = "CardSetAnnotations"
     description = "Card Set Annotations"
     helptext = "the text to be matched against card set annotations.\n" \
@@ -1175,6 +1290,8 @@ class CardSetAnnotationsFilter(DirectFilter):
         # Subclasses will replace this with the correct table
         self._oT = None
 
+    # pylint: disable-msg=C0111
+    # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
         return ''
@@ -1186,6 +1303,7 @@ class CardSetAnnotationsFilter(DirectFilter):
 # Abstract Card Set subclasses
 
 class AbstractCardSetNameFilter(CardSetNameFilter):
+    "Filter Abstract Card Set on Name"
     keyword = "AbstractCardSetName"
     description = "Abstract Card Set Name"
     types = ['AbstractCardSet']
@@ -1195,6 +1313,7 @@ class AbstractCardSetNameFilter(CardSetNameFilter):
         self._oT = Table('abstract_card_set')
 
 class AbstractCardSetDescriptionFilter(CardSetDescriptionFilter):
+    "Filter Abstract Card Set on Description"
     keyword = "AbstractCardSetDescription"
     description = "Abstract Card Set Description"
     types = ['AbstractCardSet']
@@ -1204,6 +1323,7 @@ class AbstractCardSetDescriptionFilter(CardSetDescriptionFilter):
         self._oT = Table('abstract_card_set')
 
 class AbstractCardSetAuthorFilter(CardSetAuthorFilter):
+    "Filter Abstract Card Set on Author"
     keyword = "AbstractCardSetAuthor"
     description = "Abstract Card Set Author"
     types = ['AbstractCardSet']
@@ -1213,6 +1333,7 @@ class AbstractCardSetAuthorFilter(CardSetAuthorFilter):
         self._oT = Table('abstract_card_set')
 
 class AbstractCardSetAnnotationsFilter(CardSetAnnotationsFilter):
+    "Filter Abstract Card Set on Annotations"
     keyword = "AbstractCardSetAnnotations"
     description = "Abstract Card Set Annotations"
     types = ['AbstractCardSet']
@@ -1224,6 +1345,7 @@ class AbstractCardSetAnnotationsFilter(CardSetAnnotationsFilter):
 # Physical Card Set subclasses
 
 class PhysicalCardSetNameFilter(CardSetNameFilter):
+    "Filter Physical Card Set on Name"
     keyword = "PhysicalCardSetName"
     description = "Physical Card Set Name"
     types = ['PhysicalCardSet']
@@ -1233,6 +1355,7 @@ class PhysicalCardSetNameFilter(CardSetNameFilter):
         self._oT = Table('physical_card_set')
 
 class PhysicalCardSetDescriptionFilter(CardSetDescriptionFilter):
+    "Filter Physical Card Set on Description"
     keyword = "PhysicalCardSetDescription"
     description = "Physical Card Set Description"
     types = ['PhysicalCardSet']
@@ -1242,6 +1365,7 @@ class PhysicalCardSetDescriptionFilter(CardSetDescriptionFilter):
         self._oT = Table('physical_card_set')
 
 class PhysicalCardSetAuthorFilter(CardSetAuthorFilter):
+    "Filter Physical Card Set on Author"
     keyword = "PhysicalCardSetAuthor"
     description = "Physical Card Set Author"
     types = ['PhysicalCardSet']
@@ -1251,6 +1375,7 @@ class PhysicalCardSetAuthorFilter(CardSetAuthorFilter):
         self._oT = Table('physical_card_set')
 
 class PhysicalCardSetAnnotationsFilter(CardSetAnnotationsFilter):
+    "Filter Physical Card Set on Annotations"
     keyword = "PhysicalCardSetAnnotations"
     description = "Physical Card Set Annotations"
     types = ['PhysicalCardSet']
@@ -1260,12 +1385,15 @@ class PhysicalCardSetAnnotationsFilter(CardSetAnnotationsFilter):
         self._oT = Table('physical_card_set')
 
 class PCSPhysicalCardSetInUseFilter(DirectFilter):
+    "Filter Physical Card Set on inuse status"
     keyword = "PCSSetsInUse"
     description = "Physical Card Set Marked as in Use"
     helptext = "Selects those Physical Card Sets in the Physical Card Set" \
             "List that are marked as in use. This filter takes no parameters."
     types = ['PhysicalCardSet']
 
+    # pylint: disable-msg=C0111
+    # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
         return None
