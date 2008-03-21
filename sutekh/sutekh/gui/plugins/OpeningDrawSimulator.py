@@ -101,7 +101,7 @@ class OpeningHandSimulator(CardListPlugin):
     # pylint: disable-msg=W0142
     # **magic OK here
     def __init__(self, *aArgs, **kwargs):
-        super(OpeningHandSimulator, self).__init__(aArgs, kwargs)
+        super(OpeningHandSimulator, self).__init__(*aArgs, **kwargs)
         self.dCardTypes = {}
         self.dCardProperties = {}
         self.aLibrary = []
