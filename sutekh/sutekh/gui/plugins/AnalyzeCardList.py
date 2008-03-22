@@ -16,6 +16,23 @@ from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog
 from sutekh.gui.MultiSelectComboBox import MultiSelectComboBox
 
+# utility functions
+def percentage(iNum, iTot, sDesc):
+    "Utility function for calculating percentages"
+    if iTot > 0:
+        fPrec = iNum/float(iTot)
+    else:
+        fPrec = 0.0
+    return '<i>(%5.3f %% of %s)</i>' % (fPrec*100, sDesc)
+
+def get_abstract_cards(aCards):
+    "Get the asbtract cards given the list of names"
+    return [IAbstractCard(x) for x in aCards]
+
+def get_sort_key(oKey):
+    "Ensure we sort on the right key"
+    return oKey[1][0]
+
 class AnalyzeCardList(CardListPlugin):
     """
     Plugin to analyze card sets.
@@ -44,22 +61,6 @@ class AnalyzeCardList(CardListPlugin):
             'Magaji' : 2,
             }
 
-    def _percentage(self, iNum, iTot, sDesc):
-        "Utility function for calculating percentages"
-        if iTot>0:
-            fPrec = iNum/float(iTot)
-        else:
-            fPrec = 0.0
-        return '<i>(%5.3f %% of %s)</i>' % (fPrec*100, sDesc)
-
-    def _get_abstract_cards(self, aCards):
-        "Get the asbtract cards given the list of names"
-        return [IAbstractCard(x) for x in aCards]
-
-    def _get_sort_key(self, x):
-        "Ensure we sort on the right key"
-        return x[1][0]
-
     def get_menu_item(self):
         """
         Overrides method from base class.
@@ -74,24 +75,20 @@ class AnalyzeCardList(CardListPlugin):
         "Menu to associate with"
         return "Plugins"
 
+    # pylint: disable-msg=W0613
+    # oWidget required by gtk function signature
     def activate(self, oWidget):
-        "Run the plugin"
-        dlg = self.make_dialog()
-        dlg.run()
-
-    def make_dialog(self):
         "Create the actual dialog, and populate it"
-        name = "Analysis of Card List"
-        deckName = self.view.sSetName
+        sDeckName = self.view.sSetName
         oCS = self._cModelType.byName(self.view.sSetName)
 
         sComment = oCS.comment.replace('&', '&amp;')
         sAuthor = oCS.author
 
-        dlg = SutekhDialog(name, self.parent,
+        oDlg = SutekhDialog( "Analysis of Card List", self.parent,
                 gtk.DIALOG_DESTROY_WITH_PARENT,
                 (gtk.STOCK_OK, gtk.RESPONSE_OK))
-        dlg.connect("response", lambda dlg, resp: dlg.destroy())
+        oDlg.connect("response", lambda oDlg, resp: oDlg.destroy())
         oNotebook = gtk.Notebook()
         # Oh, popup_enable and scrollable - how I adore thee
         oNotebook.set_scrollable(True)
@@ -191,40 +188,40 @@ class AnalyzeCardList(CardListPlugin):
 
         oMainBox = gtk.VBox(False, 2)
 
-        oNotebook.append_page(oMainBox, gtk.Label('Basic Info'));
-        oNotebook.append_page(oHappyBox, gtk.Label('Happy Families Analysis'));
+        oNotebook.append_page(oMainBox, gtk.Label('Basic Info'))
+        oNotebook.append_page(oHappyBox, gtk.Label('Happy Families Analysis'))
         if self.iNumberVampires > 0:
-            oNotebook.append_page(oVampiresLabel, gtk.Label('Vampires'));
+            oNotebook.append_page(oVampiresLabel, gtk.Label('Vampires'))
         if self.iNumberAllies > 0:
-            oNotebook.append_page(oAlliesLabel, gtk.Label('Allies'));
+            oNotebook.append_page(oAlliesLabel, gtk.Label('Allies'))
         if self.iNumberMasters > 0:
-            oNotebook.append_page(oMastersLabel, gtk.Label('Master Cards'));
+            oNotebook.append_page(oMastersLabel, gtk.Label('Master Cards'))
         if self.iNumberCombats > 0:
-            oNotebook.append_page(oCombatLabel, gtk.Label('Combat Cards'));
+            oNotebook.append_page(oCombatLabel, gtk.Label('Combat Cards'))
         if self.iNumberActions > 0:
-            oNotebook.append_page(oActionsLabel, gtk.Label('Actions'));
+            oNotebook.append_page(oActionsLabel, gtk.Label('Actions'))
         if self.iNumberPoliticals > 0:
-            oNotebook.append_page(oPoliticalLabel, gtk.Label('Political Actions'));
+            oNotebook.append_page(oPoliticalLabel, gtk.Label('Political Actions'))
         if self.iNumberActMods > 0:
-            oNotebook.append_page(oActModLabel, gtk.Label('Action Modifiers'));
+            oNotebook.append_page(oActModLabel, gtk.Label('Action Modifiers'))
         if self.iNumberReactions > 0:
-            oNotebook.append_page(oReactionLabel, gtk.Label('Reactions'));
+            oNotebook.append_page(oReactionLabel, gtk.Label('Reactions'))
         if self.iNumberRetainers > 0:
             oNotebook.append_page(oRetainersLabel, gtk.Label('Retainers'))
         if self.iNumberEquipment > 0:
-            oNotebook.append_page(oEquipmentLabel, gtk.Label('Equipment'));
+            oNotebook.append_page(oEquipmentLabel, gtk.Label('Equipment'))
         if self.iNumberImbued > 0:
-            oNotebook.append_page(oImbuedLabel, gtk.Label('Imbued'));
+            oNotebook.append_page(oImbuedLabel, gtk.Label('Imbued'))
         if self.iNumberPowers > 0:
-            oNotebook.append_page(oPowersLabel, gtk.Label('Powers'));
+            oNotebook.append_page(oPowersLabel, gtk.Label('Powers'))
         if self.iNumberConvictions > 0:
-            oNotebook.append_page(oConvictionsLabel, gtk.Label('Convictions'));
+            oNotebook.append_page(oConvictionsLabel, gtk.Label('Convictions'))
         if self.iNumberEvents > 0:
-            oNotebook.append_page(oEventsLabel, gtk.Label('Events'));
+            oNotebook.append_page(oEventsLabel, gtk.Label('Events'))
         if self.iNumberMult > 0:
-            oNotebook.append_page(oMultiLabel, gtk.Label('Multi-Role Cards'));
+            oNotebook.append_page(oMultiLabel, gtk.Label('Multi-Role Cards'))
 
-        sMainText = "Analysis Results for deck : <b>" + deckName + "</b>\nby <i>"+sAuthor+"</i>\n"+sComment+"\n"
+        sMainText = "Analysis Results for deck : <b>" + sDeckName + "</b>\nby <i>"+sAuthor+"</i>\n"+sComment+"\n"
 
         # Set main notebook text
 
@@ -252,9 +249,9 @@ class AnalyzeCardList(CardListPlugin):
             oDiscLabel = gtk.Label()
             oClanLabel = gtk.Label()
 
-            oLibNotebook.append_page(oTypeLabel, gtk.Label('Card Types'));
-            oLibNotebook.append_page(oDiscLabel, gtk.Label('Disciplines'));
-            oLibNotebook.append_page(oClanLabel, gtk.Label('Clan Requirements'));
+            oLibNotebook.append_page(oTypeLabel, gtk.Label('Card Types'))
+            oLibNotebook.append_page(oDiscLabel, gtk.Label('Disciplines'))
+            oLibNotebook.append_page(oClanLabel, gtk.Label('Clan Requirements'))
 
             # Stats by card type
 
@@ -317,15 +314,18 @@ class AnalyzeCardList(CardListPlugin):
 
         oMainLabel.set_markup(sMainText)
 
-        dlg.vbox.pack_start(oNotebook)
-        dlg.show_all()
+        # pylint: disable-msg=E1101
+        # vbox methods not seen
+        oDlg.vbox.pack_start(oNotebook)
+        oDlg.show_all()
         oNotebook.set_current_page(0)
 
-        return dlg
+        oDlg.run()
+    # pylint: enable-msg=W0613
 
     def _format_card_line(self, sString, iNum):
         """Format card lines for notebook"""
-        sPer = self._percentage(iNum, self.iNumberLibrary, "Library")
+        sPer = percentage(iNum, self.iNumberLibrary, "Library")
         return "Number of %(type)s = %(num)d %(per)s\n" % {
                 'type' : sString,
                 'num' : iNum,
@@ -403,8 +403,8 @@ class AnalyzeCardList(CardListPlugin):
         return iClanRequirement, dClan, dMulti
 
     def _format_cost_numbers(self, sCardType, sCostString, aCost, iNum):
-        sVarPercent = self._percentage(aCost[0], iNum, '%s cards' % sCardType)
-        sNumPercent = self._percentage(aCost[3], iNum, '%s cards' % sCardType)
+        sVarPercent = percentage(aCost[0], iNum, '%s cards' % sCardType)
+        sNumPercent = percentage(aCost[3], iNum, '%s cards' % sCardType)
         sText = "Most Expensive %(name)s Card  (%(type)s) = %(max)d\n" \
                 "Cards with variable cost = %(var)d %(per)s\n" \
                 "Cards with %(type)s cost = %(numcost)d %(percost)s\n" \
@@ -430,9 +430,10 @@ class AnalyzeCardList(CardListPlugin):
         return sText
 
     def _format_clan(self, sCardType, iClanRequirement, dClan, iNum):
+        "Format the clan requirements list for display"
         sText = ''
         if iClanRequirement > 0:
-            sPer = self._percentage(iClanRequirement, iNum, 'Library')
+            sPer = percentage(iClanRequirement, iNum, 'Library')
             sText += "Number of %(type)s with a Clan requirement = %(num)d %(per)s\n" % {
                     'type' : sCardType,
                     'num' : iClanRequirement,
@@ -440,7 +441,7 @@ class AnalyzeCardList(CardListPlugin):
                     }
             for sClan, iClanNum in sorted(dClan.items(), key=lambda x: x[1],
                     reverse=True):
-                sPer = self._percentage(iClanNum, iNum, '%s cards' % sCardType)
+                sPer = percentage(iClanNum, iNum, '%s cards' % sCardType)
                 sText += 'Number of %(type)s requiring %(clan)s = %(num)d %(per)s\n' % {
                         'type' : sCardType,
                         'clan' : sClan,
@@ -450,11 +451,12 @@ class AnalyzeCardList(CardListPlugin):
         return sText
 
     def _format_multi(self, sCardType, dMulti, iNum):
+        "Format the multi-role cards list for display"
         sText = ''
         if len(dMulti) > 0:
             for sType, iMulti in sorted(dMulti.items(), key=lambda x: x[1],
                     reverse=True):
-                sPer = self._percentage(iMulti, iNum, '%s cards' % sCardType)
+                sPer = percentage(iMulti, iNum, '%s cards' % sCardType)
                 sText += '%(num)d %(type)s cards are %(multitype)s cards %(per)s\n' % {
                         'num' : iMulti,
                         'type' : sCardType,
@@ -479,7 +481,7 @@ class AnalyzeCardList(CardListPlugin):
         iVotes = 0
         iTitles = 0
 
-        for oAbsCard in self._get_abstract_cards(aCards):
+        for oAbsCard in get_abstract_cards(aCards):
             if oAbsCard.name not in dDeckVamps:
                 iNumberUniqueVampires += 1
                 dDeckVamps[oAbsCard.name] = 1
@@ -498,11 +500,11 @@ class AnalyzeCardList(CardListPlugin):
             dVampCapacity.setdefault(oAbsCard.capacity, 0)
             dVampCapacity[oAbsCard.capacity] += 1
 
-            for clan in oAbsCard.clan:
-                if clan.name not in dDeckClans:
-                    dDeckClans[clan.name] = 1
+            for oClan in oAbsCard.clan:
+                if oClan.name not in dDeckClans:
+                    dDeckClans[oClan.name] = 1
                 else:
-                    dDeckClans[clan.name] += 1
+                    dDeckClans[oClan.name] += 1
 
             for oDisc in oAbsCard.discipline:
                 self.dDeckDisc.setdefault(oDisc.discipline.fullname, [0, 0])
@@ -510,67 +512,68 @@ class AnalyzeCardList(CardListPlugin):
                 if oDisc.level == 'superior':
                     self.dDeckDisc[oDisc.discipline.fullname][1] += 1
 
-            for title in oAbsCard.title:
+            for oTitle in oAbsCard.title:
                 iTitles += 1
-                if title.name in dDeckTitles:
-                    dDeckTitles[title.name] += 1
+                if oTitle.name in dDeckTitles:
+                    dDeckTitles[oTitle.name] += 1
                 else:
-                    dDeckTitles[title.name] = 1
+                    dDeckTitles[oTitle.name] = 1
 
-                iVotes+=self.dTitleVoteMap[title.name]
+                iVotes += self.dTitleVoteMap[oTitle.name]
 
         # Build up Text
         sVampText = "<b>Vampires :</b>\n"
-        sVampText += "<span foreground = \"blue\">Basic Crypt stats</span>\n"
+        sVampText += '<span foreground = "blue">Basic Crypt stats</span>\n'
         sVampText += "Number of Vampires = " + str(self.iNumberVampires) + \
-                self._percentage(self.iNumberVampires, self.iCryptSize, "Crypt") + "\n"
+                percentage(self.iNumberVampires, self.iCryptSize, "Crypt") + "\n"
         sVampText += "Number of Unique Vampires = " + str(iNumberUniqueVampires) + "\n"
 
         if self.iNumberVampires > 0:
             sVampText += "Minimum Group is : " + str(iVampMinGroup) + "\n"
             sVampText += "Maximum Group is : " + str(iVampMaxGroup) + "\n"
 
-            sVampText += "\n<span foreground = \"blue\">Crypt cost</span>\n"
+            sVampText += '\n<span foreground = "blue">Crypt cost</span>\n'
             sVampText += "Cheapest is : " + str(iMinCapacity) + "\n"
             sVampText += "Most Expensive is : " + str(iMaxCapacity) + "\n"
             sVampText += "Average Capacity is : " + str(iTotCapacity / \
                     float(self.iNumberVampires)).ljust(5)[:5] + "\n\n"
 
-            sVampText += "<span foreground = \"blue\">Clans</span>\n"
-            for clan, number in dDeckClans.iteritems():
-                sVampText += str(number) + " Vampires of clan " + str(clan) + ' ' + \
-                        self._percentage(number,
+            sVampText += '<span foreground = "blue">Clans</span>\n'
+            for sClan, iNumber in dDeckClans.iteritems():
+                sVampText += str(iNumber) + " Vampires of clan " + str(sClan) + ' ' + \
+                        percentage(iNumber,
                             self.iCryptSize, "Crypt") + '\n'
 
-            sVampText += "\n<span foreground = \"blue\">Titles</span>\n"
+            sVampText += '\n<span foreground = "blue">Titles</span>\n'
 
             for title, number in dDeckTitles.iteritems():
                 sVampText += str(number) + " vampires with the title " + str(title) \
                            + " (" + str(self.dTitleVoteMap[title]) + ") votes\n"
 
-            sVampText += str(iVotes) + " votes in the crypt. Average votes per vampire is " \
-                       + str(iVotes / float(self.iNumberVampires)).ljust(5)[:5] + "\n"
+            sVampText += "%d votes in the crypt. Average votes per vampire" \
+                    " is %2.3f\n" % (iVotes,
+                            iVotes / float(self.iNumberVampires))
 
             sVampText += str(iTitles) + " titles in the crypt " + \
-                        self._percentage(iTitles,
+                        percentage(iTitles,
                             self.iCryptSize, "Crypt") + '\n'
 
-            sVampText += "<span foreground = \"blue\">Disciplines</span>\n"
-            for discipline, number in sorted(self.dDeckDisc.iteritems(),
-                    key=self._get_sort_key, reverse=True):
-                sVampText += str(number[0])+" Vampires with " + discipline \
-                           + ' ' + self._percentage(number[0],
+            sVampText += '<span foreground = "blue">Disciplines</span>\n'
+            for sDiscipline, aNumbers in sorted(self.dDeckDisc.iteritems(),
+                    key=get_sort_key, reverse=True):
+                sVampText += str(aNumbers[0])+" Vampires with " + sDiscipline \
+                           + ' ' + percentage(aNumbers[0],
                                    self.iCryptSize, "Crypt") + ", " \
-                           + str(number[1]) + " at Superior " + \
-                           self._percentage(number[1],
+                           + str(aNumbers[1]) + " at Superior " + \
+                           percentage(aNumbers[1],
                                    self.iCryptSize, "Crypt") + '\n'
-                self.dCryptDisc.setdefault(number[0], [])
-                self.dCryptDisc[number[0]].append(discipline)
+                self.dCryptDisc.setdefault(aNumbers[0], [])
+                self.dCryptDisc[aNumbers[0]].append(sDiscipline)
 
         return sVampText
 
     def process_master(self, aCards):
-        aAbsCards = self._get_abstract_cards(aCards)
+        aAbsCards = get_abstract_cards(aCards)
         aBlood, aPool, aConviction = self._get_card_costs(aAbsCards)
 
         iClanRequirement, dClan, dMulti = self._get_card_clan_multi(aAbsCards)
@@ -578,7 +581,7 @@ class AnalyzeCardList(CardListPlugin):
         # Build up Text
         sText = "<b>Master Cards :</b>\n"
         sText += "Number of Masters = " + str(self.iNumberMasters) + ' ' + \
-                self._percentage(self.iNumberMasters,
+                percentage(self.iNumberMasters,
                         self.iNumberLibrary, "Library") + '\n'
         if self.iNumberMasters > 0:
             sText += self._format_cost_numbers('Master', 'pool',
@@ -597,7 +600,7 @@ class AnalyzeCardList(CardListPlugin):
         iClanRequirement, dClan, dMulti = self._get_card_clan_multi(aAbsCards)
 
         # Build up Text
-        sPerCards = self._percentage(iNum, self.iNumberLibrary, 'Library')
+        sPerCards = percentage(iNum, self.iNumberLibrary, 'Library')
         sText = "<b>%(type)s Cards :</b>\n" \
                 "Number of %(type)s cards = %(num)d %(per)s\n" % {
                         'type' : sType,
@@ -606,88 +609,103 @@ class AnalyzeCardList(CardListPlugin):
                         }
         if iNum > 0:
             if aBlood[1] > 0:
-               sText += self._format_cost_numbers(sType, 'blood',
-                       aBlood, iNum)
+                sText += self._format_cost_numbers(sType, 'blood',
+                        aBlood, iNum)
             if aConviction[1] > 0:
-               sText += self._format_cost_numbers(sType, 'conviction',
-                       aConviction, iNum)
+                sText += self._format_cost_numbers(sType, 'conviction',
+                        aConviction, iNum)
             if aPool[1] > 0:
-               sText += self._format_cost_numbers(sType, 'pool',
-                       aPool, iNum)
+                sText += self._format_cost_numbers(sType, 'pool',
+                        aPool, iNum)
 
             sText += self._format_clan(sType, iClanRequirement,
                     dClan, iNum)
-            sText += 'Number of cards with no discipline/virtue requirement = %d\n' % iNoneCount
+            sText += 'Number of cards with no discipline/virtue requirement' \
+                    ' = %d\n' % iNoneCount
             if len(dDisciplines) > 0:
-                sText += self._format_disciplines('discipline', dDisciplines, iNum)
+                sText += self._format_disciplines('discipline', dDisciplines,
+                        iNum)
             if len(dVirtues) > 0:
                 sText += self._format_disciplines('virtue', dVirtues, iNum)
             sText += self._format_multi(sType, dMulti, iNum)
         return sText
 
     def process_combat(self, aCards):
-        aAbsCards = self._get_abstract_cards(aCards)
+        "Fill the combat tab"
+        aAbsCards = get_abstract_cards(aCards)
         sText = self._default_text(aAbsCards, 'Combat', self.iNumberCombats)
         return sText
 
     def process_action_modifier(self, aCards):
-        aAbsCards = self._get_abstract_cards(aCards)
-        sText = self._default_text(aAbsCards, 'Action Modifier', self.iNumberActMods)
+        "Fill the Action Modifier tab"
+        aAbsCards = get_abstract_cards(aCards)
+        sText = self._default_text(aAbsCards, 'Action Modifier',
+                self.iNumberActMods)
         return sText
 
     def process_reaction(self, aCards):
-        aAbsCards = self._get_abstract_cards(aCards)
+        "Fill the reaction tab"
+        aAbsCards = get_abstract_cards(aCards)
         sText = self._default_text(aAbsCards, 'Reaction', self.iNumberReactions)
         return sText
 
     def process_event(self, aCards):
+        "Fill the events tab"
         sEventText = "<b>Event Cards :</b>\n"
-        sEventText += "Number of Event cards = " + str(self.iNumberEvents) + ' '+ \
-                           self._percentage(self.iNumberEvents,
-                                   self.iNumberLibrary, "Library") + '\n'
+        sEventText += "Number of Event cards = %d %s\n" % (self.iNumberEvents,
+                percentage(self.iNumberEvents, self.iNumberLibrary, "Library"))
         return sEventText
 
     def process_action(self, aCards):
-        aAbsCards = self._get_abstract_cards(aCards)
+        "Fill the actions tab"
+        aAbsCards = get_abstract_cards(aCards)
         sText = self._default_text(aAbsCards, 'Action', self.iNumberActions)
         return sText
 
     def process_political_action(self, aCards):
-        aAbsCards = self._get_abstract_cards(aCards)
-        sText = self._default_text(aAbsCards, 'Political Action', self.iNumberPoliticals)
+        "Fill the Political Actions tab"
+        aAbsCards = get_abstract_cards(aCards)
+        sText = self._default_text(aAbsCards, 'Political Action',
+                self.iNumberPoliticals)
         return sText
 
     def process_allies(self, aCards):
-        aAbsCards = self._get_abstract_cards(aCards)
+        "Fill the allies tab"
+        aAbsCards = get_abstract_cards(aCards)
         sText = self._default_text(aAbsCards, 'Ally', self.iNumberAllies)
         return sText
 
     def process_retainer(self, aCards):
-        aAbsCards = self._get_abstract_cards(aCards)
+        "Fill the retainer tab"
+        aAbsCards = get_abstract_cards(aCards)
         sText = self._default_text(aAbsCards, 'Retainer', self.iNumberRetainers)
         return sText
 
     def process_equipment(self, aCards):
-        aAbsCards = self._get_abstract_cards(aCards)
-        sText = self._default_text(aAbsCards, 'Equipment', self.iNumberEquipment)
+        "Fill the equipment tab"
+        aAbsCards = get_abstract_cards(aCards)
+        sText = self._default_text(aAbsCards, 'Equipment',
+                self.iNumberEquipment)
         return sText
 
     def process_conviction(self, aCards):
-        aAbsCards = self._get_abstract_cards(aCards)
-        sText = self._default_text(aAbsCards, 'Conviction', self.iNumberConvictions)
+        "Fill the conviction tab"
+        aAbsCards = get_abstract_cards(aCards)
+        sText = self._default_text(aAbsCards, 'Conviction',
+                self.iNumberConvictions)
         return sText
 
     def process_power(self, aCards):
-        aAbsCards = self._get_abstract_cards(aCards)
+        "Fill the power tab"
+        aAbsCards = get_abstract_cards(aCards)
         sText = self._default_text(aAbsCards, 'Power', self.iNumberPowers)
         return sText
 
-
     def process_multi(self, aCards):
-        """Stats about the multirole cards"""
-        aAbsCards = self._get_abstract_cards(aCards)
+        "Fill the multirole card tab"
+        aAbsCards = get_abstract_cards(aCards)
         dMulti = {}
-        sPerCards = self._percentage(self.iNumberMult, self.iNumberLibrary,
+        sPerCards = percentage(self.iNumberMult, self.iNumberLibrary,
                 'Library')
         sText = "<b>Multirole Cards :</b>\n" \
                 "Number of Multirole cards = %(num)d %(per)s\n" % {
@@ -702,7 +720,7 @@ class AnalyzeCardList(CardListPlugin):
                 dMulti[sKey] += 1
         for sMultiType, iNum in sorted(dMulti.items(), key=lambda x: x[1],
                 reverse=True):
-            sPer = self._percentage(iNum, self.iNumberLibrary, 'Library')
+            sPer = percentage(iNum, self.iNumberLibrary, 'Library')
             sText += 'Number of %(multitype)s cards = %(num)d %(per)s\n' % {
                     'multitype' : sMultiType,
                     'num' : iNum,
@@ -713,6 +731,7 @@ class AnalyzeCardList(CardListPlugin):
 
 
     def process_imbued(self, aCards):
+        "Fill the Imbued tab"
         dDeckImbued = {}
         dDeckVirt = {}
 
@@ -723,17 +742,17 @@ class AnalyzeCardList(CardListPlugin):
         iImbMaxGroup = -500
         iNumberUniqueImbued = 0
 
-        for oAbsCard in self._get_abstract_cards(aCards):
+        for oAbsCard in get_abstract_cards(aCards):
             if oAbsCard.name not in dDeckImbued:
                 iNumberUniqueImbued += 1
                 dDeckImbued[oAbsCard.name] = 1
             else:
                 dDeckImbued[oAbsCard.name] += 1
 
-            for virtue in oAbsCard.virtue:
-                dDeckVirt.setdefault(virtue.fullname, [0])
-                # List, so we can use _get_sort_key
-                dDeckVirt[virtue.fullname][0] += 1
+            for oVirtue in oAbsCard.virtue:
+                dDeckVirt.setdefault(oVirtue.fullname, [0])
+                # List, so we can use get_sort_key
+                dDeckVirt[oVirtue.fullname][0] += 1
 
             self.iMaxGroup = max(self.iMaxGroup, oAbsCard.group)
             self.iMinGroup = min(self.iMinGroup, oAbsCard.group)
@@ -746,28 +765,29 @@ class AnalyzeCardList(CardListPlugin):
 
         # Build up Text
         sImbuedText = "<b>Imbued</b>\n"
-        sImbuedText += "<span foreground = \"blue\">Basic Crypt stats</span>\n"
-        sImbuedText += "Number of Imbued = " + str(self.iNumberImbued) + \
-                self._percentage(self.iNumberImbued, self.iCryptSize, "Crypt") + "\n"
-        sImbuedText += "Number of Unique Imbued = " + str(iNumberUniqueImbued) + "\n"
+        sImbuedText += '<span foreground = "blue">Basic Crypt stats</span>\n'
+        sImbuedText += "Number of Imbued = %d %s\n" % (self.iNumberImbued,
+                percentage(self.iNumberImbued, self.iCryptSize, "Crypt"))
+        sImbuedText += "Number of Unique Imbued = %d\n" % iNumberUniqueImbued
         if self.iNumberImbued > 0:
-            sImbuedText += "Minimum Group is : " + str(iImbMinGroup) + "\n"
-            sImbuedText += "Maximum Group is : " + str(iImbMaxGroup) + "\n"
+            sImbuedText += 'Minimum Group is : %d\n' % iImbMinGroup
+            sImbuedText += 'Maximum Group is : %d\n' % iImbMaxGroup
 
-            sImbuedText += "\n<span foreground = \"blue\">Crypt cost</span>\n"
+            sImbuedText += '\n<span foreground = "blue">Crypt cost</span>\n'
 
-            sImbuedText += "Cheapest is : " + str(iMinLife) + "\n"
-            sImbuedText += "Most Expensive is : " + str(iMaxLife) + "\n"
-            sImbuedText += "Average Life is : " + str(iTotLife / float(self.iNumberImbued)).ljust(5)[:5] + "\n\n"
+            sImbuedText += "Cheapest is : %d\n" % iMinLife
+            sImbuedText += "Most Expensive is : %d\n" % iMaxLife
+            sImbuedText += "Average Life is : %2.3f\n\n" % (iTotLife /
+                    float(self.iNumberImbued))
 
-            for virtue, number in sorted(dDeckVirt.iteritems(),
-                    key=self._get_sort_key, reverse=True):
-                sImbuedText += str(number[0])+" Imbued with " + virtue \
-                           + ' ' + self._percentage(number[0],
+            for sVirtue, aNumbers in sorted(dDeckVirt.iteritems(),
+                    key=get_sort_key, reverse=True):
+                sImbuedText += str(aNumbers[0])+" Imbued with " + sVirtue \
+                           + ' ' + percentage(aNumbers[0],
                                    self.iCryptSize, "Crypt") + '\n'
                 # Treat virtues as inferior disciplines for happy families
-                self.dCryptDisc.setdefault(number[0], [])
-                self.dCryptDisc[number[0]].append(virtue)
+                self.dCryptDisc.setdefault(aNumbers[0], [])
+                self.dCryptDisc[aNumbers[0]].append(sVirtue)
 
         return sImbuedText
 
@@ -780,7 +800,7 @@ class AnalyzeCardList(CardListPlugin):
         self.dLibDisc.setdefault('No Discipline', 0)
         self.dLibClan.setdefault('No Clan', 0)
 
-        for oAbsCard in self._get_abstract_cards(aCards):
+        for oAbsCard in get_abstract_cards(aCards):
             aTypes = [x.name for x in oAbsCard.cardtype]
             if len(aTypes)>1:
                 # Since we examining all the cards, do this here
@@ -794,9 +814,9 @@ class AnalyzeCardList(CardListPlugin):
                         self.dLibDisc.setdefault(disc.discipline.fullname, 0)
                         self.dLibDisc[disc.discipline.fullname] += 1
                 elif len(oAbsCard.virtue) > 0:
-                    for virtue in oAbsCard.virtue:
-                        self.dLibDisc.setdefault(virtue.fullname, 0)
-                        self.dLibDisc[virtue.fullname] += 1
+                    for oVirtue in oAbsCard.virtue:
+                        self.dLibDisc.setdefault(oVirtue.fullname, 0)
+                        self.dLibDisc[oVirtue.fullname] += 1
                 else:
                     self.dLibDisc['No Discipline'] += 1
 
@@ -813,17 +833,21 @@ class AnalyzeCardList(CardListPlugin):
         # Build up Text
         sHappyFamilyText = "<b>Happy Families Analysis :</b>\n"
         if self.iNumberImbued > 0:
-            sHappyFamilyText += "\n<span foreground = \"red\">This is not optimised for Imbued, and treats them as small vampires</span>\n"
+            sHappyFamilyText += '\n<span foreground = "red">This is not' \
+                    ' optimised for Imbued, and treats them as small ' \
+                    'vampires</span>\n'
 
         if self.iCryptSize == 0:
-            sHappyFamilyText += "\n<span foreground = \"red\">Need to have a crypt to do the analysis</span>\n"
+            sHappyFamilyText += '\n<span foreground = "red">Need to have' \
+                    ' a crypt to do the analysis</span>\n'
             oMainLabel.set_markup(sHappyFamilyText)
             oHFVBox.show_all()
             return
 
         if len(self.dDeckDisc) < 1:
             # Crypt only has Smudge, for example
-            sHappyFamilyText += "\n<span foreground = \"red\">Need disciplines to do analysis</span>\n"
+            sHappyFamilyText += '\n<span foreground = "red">Need disciplines' \
+                    'to do analysis</span>\n'
             oMainLabel.set_markup(sHappyFamilyText)
             oHFVBox.show_all()
             return
@@ -834,7 +858,8 @@ class AnalyzeCardList(CardListPlugin):
             for sDisc in self.dCryptDisc[iNum]:
                 aSortedDiscs.append(sDisc)
         for sDisc in self.dDeckDisc:
-            self.dLibDisc.setdefault(sDisc, 0) # Need to ensure all these are defined
+            # Need to ensure all these are defined
+            self.dLibDisc.setdefault(sDisc, 0)
 
         iHFMasters = int(round(0.2 * self.iNumberLibrary))
 
@@ -842,7 +867,7 @@ class AnalyzeCardList(CardListPlugin):
 
         sHappyFamilyText += "\n<b>Master Cards</b>\n"
         sHappyFamilyText += str(self.iNumberMasters) + " Masters " + \
-                self._percentage(self.iNumberMasters,
+                percentage(self.iNumberMasters,
                         self.iNumberLibrary, "Library") + \
                 ",\nHappy Families recommends 20%, which would be " + \
                 str(iHFMasters) + '  : '
@@ -854,7 +879,7 @@ class AnalyzeCardList(CardListPlugin):
 
         oHBox = gtk.HBox(False, 2)
 
-        # self.dCryptDisc and dLibDisc have the info we need about the disciplines
+        # self.dCryptDisc and dLibDisc have the info about the disciplines
 
         oComboBox = gtk.combo_box_new_text()
         iMax = min(6, len(self.dDeckDisc)) + 1
@@ -918,6 +943,7 @@ class AnalyzeCardList(CardListPlugin):
         oHFVBox.show_all()
 
     def _happy_lib_analysis(self, aDiscsToUse, iNonMasters):
+        "Heavy lifting of the HF analysis"
 
         iNumberToShow = len(aDiscsToUse)
 
@@ -957,6 +983,6 @@ class AnalyzeCardList(CardListPlugin):
                     str(abs(iHFNum - self.dLibDisc[sDisc])) + "</span>\n"
         return sHappyFamilyText
 
-
-
+# pylint: disable-msg=C0103
+# accept plugin name
 plugin = AnalyzeCardList
