@@ -117,7 +117,7 @@ class CardImageFrame(BasicFrame, CardListViewListener):
             aExp = [oP.expansion.name for oP in oAbsCard.rarity]
             self.__aExpansions = list(set(aExp)) # remove duplicates
             self.__iExpansionPos = 0
-            self.__sCurExpansion = self.__aExpansions[0] 
+            self.__sCurExpansion = self.__aExpansions[0]
         else:
             self.__sCurExpansion = ''
             self.__aExpansions = []
@@ -240,6 +240,87 @@ class CardImageFrame(BasicFrame, CardListViewListener):
             self.__load_image(sFullFilename)
         return True
 
+# pylint: disable-msg=R0904
+# R0904 - gtk Widget, so has many public methods
+class ImageConfigDialog(SutekhDialog):
+    """
+    Dialog for configuring the Image plugin
+    """
+    def __init__(self, oParent):
+        super(ImageConfigDialog, self).__init__('Configure Card Images Plugin',
+                oParent, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
+                (gtk.STOCK_OK, gtk.RESPONSE_OK, gtk.STOCK_CANCEL,
+                    gtk.RESPONSE_CANCEL))
+        oDescLabel = gtk.Label()
+        oDescLabel.set_markup('<b>Choose how to configure the cardimages'
+                ' plugin</b>')
+        self.oChoiceDownload = gtk.RadioButton(
+                label='Download and install cardimages from feldb.extra.hu')
+        self.oChoiceLocalCopy = gtk.RadioButton(self.oChoiceDownload,
+                label='Install images from a local zip file')
+        self.oChoiceNewDir = gtk.RadioButton(self.oChoiceDownload,
+                label='Choose a directory containing the images')
+        oChoiceBox = gtk.VBox(False, 2)
+        self.oDirChoiceWidget = gtk.FileChooserWidget(
+                action=gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER)
+        self.oFileChoiceWidget = gtk.FileChooserWidget(
+                action=gtk.FILE_CHOOSER_ACTION_OPEN)
+        self.oChoiceDownload.connect('toggled', self._radio_toggled,
+                oChoiceBox, None)
+        self.oChoiceLocalCopy.connect('toggled', self._radio_toggled,
+                oChoiceBox, self.oFileChoiceWidget)
+        self.oChoiceNewDir.connect('toggled', self._radio_toggled, oChoiceBox,
+                self.oDirChoiceWidget)
+
+        self.oChoiceDownload.set_active(True)
+        # pylint: disable-msg=E1101
+        # pylint doesn't pick up vbox methods correctly
+        self.vbox.pack_start(oDescLabel, False, False)
+        self.vbox.pack_start(self.oChoiceDownload, False, False)
+        self.vbox.pack_start(self.oChoiceLocalCopy, False, False)
+        self.vbox.pack_start(self.oChoiceNewDir, False, False)
+        self.vbox.pack_start(oChoiceBox)
+        self.set_size_request(600, 600)
+
+        #oDialog.vbox.pack_start(oFileWidget)
+        sPrefsPath = oParent.config_file.get_plugin_key('card image path')
+        if sPrefsPath is not None:
+            if os.path.exists(sPrefsPath) and os.path.isdir(sPrefsPath):
+                # File widget doesn't like being pointed at non-dirs
+                # when in SELECT_FOLDER mode
+                self.oDirChoiceWidget.set_current_folder(sPrefsPath)
+        oZipFilter = gtk.FileFilter()
+        oZipFilter.add_pattern('*.zip')
+        oZipFilter.add_pattern('*.ZIP')
+        self.oFileChoiceWidget.add_filter(oZipFilter)
+        self.show_all()
+
+    def _radio_toggled(self, oRadioButton, oChoiceBox, oFileWidget):
+        "Display the correct file widget when radio buttons change"
+        if oRadioButton.get_active():
+            for oChild in oChoiceBox.get_children():
+                oChoiceBox.remove(oChild)
+            if oFileWidget:
+                oChoiceBox.pack_start(oFileWidget)
+            self.show_all()
+
+    def get_path(self):
+        "Get the path from oDirChoiceWidget"
+        return self.oDirChoiceWidget.get_filename()
+
+    def get_file(self):
+        "Get the file from oFileChoiceWidget"
+        return self.oFileChoiceWidget.get_filename()
+
+    def get_choice(self):
+        "Get which of the RadioButtons was active"
+        if self.oChoiceDownload.get_active():
+            return 'Download'
+        elif self.oChoiceLocalCopy.get_active():
+            return 'Local copy'
+        else:
+            return 'New directory'
+
 class CardImagePlugin(CardListPlugin):
     """
     Plugin providing access to CardImageFrame
@@ -307,82 +388,48 @@ class CardImagePlugin(CardListPlugin):
         """
         Configure the plugin dialog
         """
-        # Internal helper function
-        def _radio_toggled(oRadioButton, oDialog, oChoiceBox,
-                oFileWidget):
-            "Display the correct file widget when radio buttons change"
-            if oRadioButton.get_active():
-                for oChild in oChoiceBox.get_children():
-                    oChoiceBox.remove(oChild)
-                if oFileWidget:
-                    oChoiceBox.pack_start(oFileWidget)
-                oDialog.show_all()
-
-        oDialog = SutekhDialog('Configure Card Images Plugin', self.parent,
-                gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
-                (gtk.STOCK_OK, gtk.RESPONSE_OK, gtk.STOCK_CANCEL,
-                    gtk.RESPONSE_CANCEL))
-        oDescLabel = gtk.Label()
-        oDescLabel.set_markup('<b>Choose how to configure the cardimages'
-                ' plugin</b>')
-        oChoiceDownload = gtk.RadioButton(
-                label='Download and install cardimages from feldb.extra.hu')
-        # Download and install http://feldb.extra.hu/pictures.zip
-        oChoiceLocalCopy = gtk.RadioButton(oChoiceDownload,
-                label='Install images from a local zip file')
-        oChoiceNewDir = gtk.RadioButton(oChoiceDownload,
-                label='Choose a directory containing the images')
-        oChoiceBox = gtk.VBox(False, 2)
-        oDirChoiceWidget = gtk.FileChooserWidget(
-                action=gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER)
-        oFileChoiceWidget = gtk.FileChooserWidget(
-                action=gtk.FILE_CHOOSER_ACTION_OPEN)
-        oChoiceDownload.connect('toggled', _radio_toggled, oDialog,
-                oChoiceBox, None)
-        oChoiceLocalCopy.connect('toggled', _radio_toggled, oDialog,
-                oChoiceBox, oFileChoiceWidget)
-        oChoiceNewDir.connect('toggled', _radio_toggled, oDialog,
-                oChoiceBox, oDirChoiceWidget)
-
-        oChoiceDownload.set_active(True)
-        # pylint: disable-msg=E1101
-        # pylint doesn't pick up vbox methods correctly
-        oDialog.vbox.pack_start(oDescLabel, False, False)
-        oDialog.vbox.pack_start(oChoiceDownload, False, False)
-        oDialog.vbox.pack_start(oChoiceLocalCopy, False, False)
-        oDialog.vbox.pack_start(oChoiceNewDir, False, False)
-        oDialog.vbox.pack_start(oChoiceBox)
-        oDialog.set_size_request(600, 600)
-
-        #oDialog.vbox.pack_start(oFileWidget)
-        sPrefsPath = self.parent.config_file.get_plugin_key('card image path')
-        if sPrefsPath is not None:
-            if os.path.exists(sPrefsPath) and os.path.isdir(sPrefsPath):
-                # File widget doesn't like being pointed at non-dirs
-                # when in SELECT_FOLDER mode
-                oDirChoiceWidget.set_current_folder(sPrefsPath)
-        oZipFilter = gtk.FileFilter()
-        oZipFilter.add_pattern('*.zip')
-        oZipFilter.add_pattern('*.ZIP')
-        oFileChoiceWidget.add_filter(oZipFilter)
-        oDialog.show_all()
+        oDialog = ImageConfigDialog(self.parent)
         iResponse = oDialog.run()
+        bActivateMenu = False
         if iResponse == gtk.RESPONSE_OK:
-            if oChoiceDownload.get_active():
-                # TODO: download the images
-                pass
-            elif oChoiceLocalCopy.get_active():
-                # TODO: unzip the file
-                pass
-            else: 
-                sTestPath = oDirChoiceWidget.get_filename()
+            sChoice = oDialog.get_choice()
+            if sChoice == 'Download':
+                sFileName = self._download_file()
+                if sFileName != '' and self._unzip_file(sFileName):
+                    bActivateMenu = True
+                # Cleanup temporary file
+            elif sChoice == 'Local copy':
+                sFileName = oDialog.get_file()
+                if self._unzip_file(sFileName):
+                    bActivateMenu = True
+            else:
+                # New directory
+                sTestPath = oDialog.get_path()
                 if self._accept_path(sTestPath):
                     # Update preferences
                     self.image_frame.update_config_path(sTestPath)
-                    if self._sMenuFlag not in self.parent.dOpenFrames.values():
-                        # Pane is not open, so try to enable menu
-                        self.add_image_frame_active(True)
-        oDialog.destroy() # get rid of the dialog
+                    bActivateMenu = True
+        if bActivateMenu:
+            # Update the menu display if needed
+            if self._sMenuFlag not in self.parent.dOpenFrames.values():
+                # Pane is not open, so try to enable menu
+                self.add_image_frame_active(True)
+        # get rid of the dialog
+        oDialog.destroy() 
+
+    def _download_file(self):
+        "Download a zip file containing the images"
+        # Download and install http://feldb.extra.hu/pictures.zip
+        # TODO: download the images
+        return ''
+
+    def _unzip_file(self, sFileName):
+        "Unzip a file containing the images"
+        if sFileName == '':
+            return False # failed download
+        # Check file exists
+        # TODO: unzip the file
+        return False
 
     def _accept_path(self, sTestPath):
         "Check if the path from user is OK"
@@ -397,9 +444,9 @@ class CardImagePlugin(CardListPlugin):
                 if iQuery == gtk.RESPONSE_NO:
                     # Treat as cancelling
                     return False
-            return True 
+            return True
         return False # No path, can't be OK
-    
+
     def add_image_frame_active(self, bValue):
         """
         Toggle the sensitivity of the menu item
