@@ -17,7 +17,7 @@ import re
 # Handling three cases, so we exceed the 20 method pylint limit
 class MyDictKeyChecker(BaseChecker):
     """Check for "for a in Dict.keys()" usage"""
-    
+
     __implements__ = IASTNGChecker
 
     name = 'custom_dict_keys'
@@ -37,15 +37,15 @@ class MyDictKeyChecker(BaseChecker):
             self.add_message('W9967', line=oNode.lineno)
 
     def visit_for(self, oNode):
-        "Check for loops"
+        """Check for loops"""
         self.__internal_test(oNode)
 
     def visit_listcompfor(self, oNode):
-        "Check [x for x in d] list comprehensions"
+        """Check [x for x in d] list comprehensions"""
         self.__internal_test(oNode)
 
     def visit_genexpfor(self, oNode):
-        "Check (x for x in d) generator expressions"
+        """Check (x for x in d) generator expressions"""
         self.__internal_test(oNode)
 
     # Uncomment for testing
@@ -58,4 +58,4 @@ class MyDictKeyChecker(BaseChecker):
 def register(oLinter):
     """required method to auto register this checker"""
     oLinter.register_checker(MyDictKeyChecker(oLinter))
-        
+

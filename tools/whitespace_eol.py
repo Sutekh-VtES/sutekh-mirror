@@ -13,9 +13,7 @@ from pylint.interfaces import IRawChecker
 from pylint.checkers import BaseChecker
 
 class WhitespaceEOLChecker(BaseChecker):
-    """
-    Check for whitespace at the end of a line
-    """
+    """Check for whitespace at the end of a line."""
 
     __implements__ = IRawChecker
 
@@ -27,9 +25,7 @@ class WhitespaceEOLChecker(BaseChecker):
     options = ()
 
     def process_module(self, aStream):
-        """
-        process a module
-        """
+        """process a module."""
         for (iLineNo, sLine) in enumerate(aStream):
             sText = sLine[:-1] # Ignore final newline
             if sText != sText.rstrip():
@@ -38,6 +34,6 @@ class WhitespaceEOLChecker(BaseChecker):
 
 
 def register(oLinter):
-    """required method to auto register this checker"""
+    """required method to auto register this checker."""
     oLinter.register_checker(WhitespaceEOLChecker(oLinter))
 

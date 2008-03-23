@@ -5,14 +5,14 @@
 # Copyright 2008 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see license file for details
 
-"""
-Simple script to check that the comment headers are correct.
-This script checks that the headers have a encoding line, a 
-vim modeline, a copyright notice, and a comment mentioning 
-the correct filename. There are some heuristics to detect
-incorrectly formatted copyright lines
-"""
-   
+"""Simple script to check that the comment headers are correct.
+
+   This script checks that the headers have a encoding line, a
+   vim modeline, a copyright notice, and a comment mentioning
+   the correct filename. There are some heuristics to detect
+   incorrectly formatted copyright lines.
+   """
+
 
 import optparse
 import sys
@@ -20,7 +20,7 @@ import re
 import os
 
 def parse_options(aArgs):
-    'Parse aArgs for the options to the script'
+    """Parse aArgs for the options to the script"""
     oParser = optparse.OptionParser(usage="usage %prog [options]",
             version="%prog 0.1")
     oParser.add_option('-f', '--file',
@@ -29,9 +29,7 @@ def parse_options(aArgs):
     return oParser, oParser.parse_args(aArgs)
 
 def file_check(sFileName):
-    """
-    Actully do the checks. sFileName is the file to check
-    """
+    """Actully do the checks. sFileName is the file to check."""
     try:
         oFile = file(sFileName, 'r')
     except IOError:
@@ -131,16 +129,13 @@ def file_check(sFileName):
         print '%s: One of the coding lines must be in " \
                 "the 1st 2 lines of the file' % sFileName
 
-    return not (iCodingLine == 1 | iCopyright == 1 | 
-            iModeline == 1 | iLicense == 1 | 
+    return not (iCodingLine == 1 | iCopyright == 1 |
+            iModeline == 1 | iLicense == 1 |
             iNameHeader == 1 | iEnCodingLine == 2 |
             iWrongCopyright == 0 | bValidCoding)
 
 def main(aArgs):
-    """
-    Main function. Parse aArgs for the filename, and call 
-    file_check
-    """
+    """Main function. Parse aArgs for the filename, and call file_check."""
     oOptParser, (oOpts, aArgs) = parse_options(aArgs)
 
     if len(aArgs) != 1 or oOpts.sFileName is None:
