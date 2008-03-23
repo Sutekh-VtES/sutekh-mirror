@@ -16,7 +16,7 @@
  * Simple card draw probablities plugin
 
 13 Mar 2008:
- * Various improvements to the AnalyzeCarList plugin
+ * Various improvements to the AnalyzeCardList plugin
  * Provide wrapper around SQLObject's IN(..) to handle IN(a, []) case
    safely in Filters
  * Add SetsInUse filter for the PhysicalCardSet list
@@ -24,11 +24,11 @@
    PhysicalCardSetFilter
 
 12 Mar 2008
- * Fix MultiPhysicalCardCountFilter to wok with sqlite
+ * Fix MultiPhysicalCardCountFilter to work with sqlite
  * Improve filter box item type detection
 
 11 Mar 2008
- * Add test cases for PhysicalCard's
+ * Add test cases for PhysicalCards
  * Rework DatabaseUpgrade to hopefully be more robust. Improve the error 
    reporting
  * Complain about missing values in the filter dialog
@@ -39,7 +39,7 @@
  * Use button to close MultiSelectComboBox
 
 07 Mar 2008
- * Rework EditPhysicalCardSetMaping dialog so ordering is more stable
+ * Rework EditPhysicalCardSetMapping dialog so ordering is more stable
 
 05 Mar 2008:
  * Ensure the mapping between physical card sets and physical cards is
