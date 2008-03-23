@@ -1,5 +1,5 @@
 #!/bin/sh
-# Very simple heck for single line docstrings without """
+# Very simple check for single line docstrings without """
 # We rely on pygettext to pull out the doc-strings, and grep
 # to check for """
 pyfile=${1?'No file specified'}
