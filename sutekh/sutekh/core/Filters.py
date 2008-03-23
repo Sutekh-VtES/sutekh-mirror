@@ -884,7 +884,7 @@ class CardFunctionFilter(DirectFilter):
         if self.__sBleedAction in aTypes:
             aFilters.append(FilterAndBox([CardTypeFilter('Action'),
                 CardTextFilter('bleed at +_ bleed'), CardTextFilter(
-                    'bledd with +_ bleed')]))
+                    'bleed with +_ bleed')]))
         if self.__sBleedReduction in aTypes:
             # Ordering of bleed and reduce not consistent, so we
             # use an AND filter, rather than 'reduce%bleed'
