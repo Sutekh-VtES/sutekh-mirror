@@ -1,3 +1,46 @@
+23 March 2008:
+ * Add more cases to CardFunctionFilter
+
+22 March 2008:
+ * Initial version of a CSV file reader
+
+21 March 2008:
+ * Opening hand simulation plugin
+ * Add a filter on CardFunction
+ * Clean up several pylint warnings
+
+20 March 2008:
+ * Add support for ARDB's images with expansions
+
+16 March 2008:
+ * Simple card draw probablities plugin
+
+13 Mar 2008:
+ * Various improvements to the AnalyzeCarList plugin
+ * Provide wrapper around SQLObject's IN(..) to handle IN(a, []) case
+   safely in Filters
+ * Add SetsInUse filter for the PhysicalCardSet list
+ * Add comments to clarify PhysicalCardFilter, AbstractCardSetFilter and
+   PhysicalCardSetFilter
+
+12 Mar 2008
+ * Fix MultiPhysicalCardCountFilter to wok with sqlite
+ * Improve filter box item type detection
+
+11 Mar 2008
+ * Add test cases for PhysicalCard's
+ * Rework DatabaseUpgrade to hopefully be more robust. Improve the error 
+   reporting
+ * Complain about missing values in the filter dialog
+ * Various improvements to FilterDialog
+
+09 Mar 2008
+ * Various improvements to the FilterDialog.
+ * Use button to close MultiSelectComboBox
+
+07 Mar 2008
+ * Rework EditPhysicalCardSetMaping dialog so ordering is more stable
+
 05 Mar 2008:
  * Ensure the mapping between physical card sets and physical cards is
    restored correctly across backups and importing new WW cardlists
