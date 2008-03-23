@@ -17,57 +17,59 @@ from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 from sutekh.core.Filters import CardTypeFilter, MultiCardTypeFilter, \
-        CardFunctionFilter
+        CardFunctionFilter, FilterNot
 
 # Utility functions
 
-def get_library(aAllCards):
-    "Extract the library cards from the list"
-    aLibrary = []
-    for oCard in aAllCards:
-        # pylint: disable-msg=E1101
-        # pylint doesn't see IAbstractCard methods
-        oAbsCard = IAbstractCard(oCard)
-        aTypes = [x.name for x in oAbsCard.cardtype]
-        if aTypes[0] != 'Vampire' and aTypes[0] != 'Imbued':
-            aLibrary.append(oAbsCard)
-    return aLibrary
-
 def convert_to_abs(aCards):
-    "Convert a list of possibly physical cards to a list of AbstractCards"
+    """Convert a list of possibly physical cards to a list of AbstractCards"""
     aRes = []
     for oCard in aCards:
         aRes.append(IAbstractCard(oCard))
     return aRes
 
 def get_cards_filter(oModel, oFilter):
-    "Get abstract card list for the given filter"
+    """Get abstract card list for the given filter"""
     return convert_to_abs(list(oModel.getCardIterator(oFilter)))
 
+def get_probs(dLibProbs, dToCheck, dGroupedProbs):
+    """Calculate the probablilties for the card groups"""
+    for sCardName, fMean in dLibProbs.iteritems():
+        for sGroup, aCards in dToCheck.iteritems():
+            if sCardName in aCards:
+                dGroupedProbs.setdefault(sGroup, {'avg' : 0.0,
+                    'cards' : []})
+                # Cumlative average
+                dGroupedProbs[sGroup]['avg'] += fMean
+                # Need this for the sublists in view
+                dGroupedProbs[sGroup]['cards'].append(sCardName)
 
-def check_card(oAbsCard, dToCheck, dCounts, dCards):
-    "Process a drawn card"
-    for sKey, aList in dToCheck.iteritems():
-        if oAbsCard in aList:
-            dCounts[sKey] += 1
-            dCards[sKey].setdefault(oAbsCard.name, 0)
-            dCards[sKey][oAbsCard.name] += 1
+def hypergeometric_mean(iItems, iDraws, iTotal):
+    """Mean of the hypergeometric distribution for a population of iTotal
+       with iItems of interest and drawing iDraws items.
+       In the usual notation, iItems=n, iDraws=m, iTotal=N
+       """
+    return iItems * iDraws / float(iTotal) # mean = nm/N
 
+def fill_store(oStore, dLibProbs, dGroupedProbs):
+    """Fill oStore with the stats about the opening hand"""
+    for sName, dEntry in dGroupedProbs.iteritems():
+        fMean = dEntry['avg']
+        sVal = '%2.2f' % fMean
+        oParentIter = oStore.append(None, (sName, sVal, 100*fMean / 7))
+        # Need percentage from mean out of 7
+        for sCardName in dEntry['cards']:
+            fMean = dLibProbs[sCardName]
+            sVal = '%2.2f' % fMean
+            oStore.append(oParentIter, (sCardName, sVal, 100*fMean / 7))
 
-def setup_view(dCounts, dCards, sHeading):
-    "Setup the TreeStore and TreeView for the results"
+def setup_view(dLibProbs, dGroupedProbs, sHeading):
+    """Setup the TreeStore and TreeView for the results"""
     oStore = gtk.TreeStore(gobject.TYPE_STRING, gobject.TYPE_STRING,
             gobject.TYPE_FLOAT)
+    fill_store(oStore, dLibProbs, dGroupedProbs)
+
     oView = gtk.TreeView(oStore)
-    # fill in data
-    for sName, iVal in dCounts.iteritems():
-        sVal = '%2.2f' % (iVal / 1000.0)
-        oParentIter = oStore.append(None, (sName, sVal, iVal / 70.0))
-        # Need percentage out of 7 (100 / (7*1000.0))
-        for sCardName, iVal in dCards[sName].iteritems():
-            sVal = '%2.2f' % (iVal / 1000.0)
-            oStore.append(oParentIter, (sCardName, sVal,
-                iVal / 70.0))
 
     oTextCol = gtk.TreeViewColumn(sHeading)
     oTextCell = gtk.CellRendererText()
@@ -82,6 +84,9 @@ def setup_view(dCounts, dCards, sHeading):
     oTextCol.set_min_width(300)
     oTextCol.set_sort_column_id(0)
     oValCol.set_sort_column_id(1)
+    # limit space taken by progress bars
+    oValCol.set_max_width(70)
+    oValCol.set_min_width(40)
     oView.append_column(oTextCol)
     oView.append_column(oValCol)
     # set suitable default sort
@@ -113,7 +118,7 @@ class OpeningHandSimulator(CardListPlugin):
         """
         if not self.check_versions() or not self.check_model_type():
             return None
-        iCardDraw = gtk.MenuItem("Smulate opening hand")
+        iCardDraw = gtk.MenuItem("Simulate opening hand")
         iCardDraw.connect("activate", self.activate)
         return iCardDraw
 
@@ -126,24 +131,24 @@ class OpeningHandSimulator(CardListPlugin):
     def activate(self, oWidget):
         "Create the actual dialog, and populate it"
         sDiagName = "Opening Hand"
-        aAllCards = list(self.model.getCardIterator(None))
+        oLibFilter = FilterNot(MultiCardTypeFilter(['Imbued', 'Vampire']))
 
-        self.aLibrary = get_library(aAllCards)
+        self.aLibrary = get_cards_filter(self.model, oLibFilter)
 
         if len(self.aLibrary) < 7:
             do_complaint_error('Library needs to be larger than opening hand')
             return
 
-
         for sType in MultiCardTypeFilter.get_values():
             aList = get_cards_filter(self.model, CardTypeFilter(sType))
             if len(aList) > 0 and aList[0] in self.aLibrary:
-                self.dCardTypes[sType] = aList
+                self.dCardTypes[sType] = set([oC.name for oC in aList])
 
         for sFunction in CardFunctionFilter.get_values():
             aList = get_cards_filter(self.model, CardFunctionFilter(sFunction))
             if len(aList) > 0:
-                self.dCardProperties[sFunction] = aList
+                self.dCardProperties[sFunction] = set([oC.name for oC in
+                    aList])
 
         oDialog = SutekhDialog(sDiagName, self.parent,
                 gtk.DIALOG_MODAL|gtk.DIALOG_DESTROY_WITH_PARENT,
@@ -169,37 +174,34 @@ class OpeningHandSimulator(CardListPlugin):
     def _fill_stats(self, oDialog):
         "Fill in the stats from the draws"
         # Get stats from 100 hand draws
-        dTypeCounts = {}
-        dTypeCards = {}
-        dPropCounts = {}
-        dPropCards = {}
-        for sKey in self.dCardTypes:
-            dTypeCounts[sKey] = 0
-            dTypeCards[sKey] = {}
-        for sKey in self.dCardProperties:
-            dPropCounts[sKey] = 0
-            dPropCards[sKey] = {}
-        # pylint: disable-msg=W0612
-        # iDraw, iCard are just loop counters, and are ignored
-        for iDraw in range(1000):
-            aThisLib = copy(self.aLibrary)
-            for iCard in range(7):
-                oCard = choice(aThisLib)
-                aThisLib.remove(oCard) # drawing without replacement
-                check_card(oCard, self.dCardTypes, dTypeCounts, dTypeCards)
-                check_card(oCard, self.dCardProperties, dPropCounts, dPropCards)
-        # setup display widgets
+        dTypeProbs = {}
+        dPropProbs = {}
+        dLibProbs = self._get_lib_props()
+        get_probs(dLibProbs, self.dCardTypes, dTypeProbs)
+        get_probs(dLibProbs, self.dCardProperties, dPropProbs)
 
+        # setup display widgets
         oHBox = gtk.HBox(False, 3)
         # pylint: disable-msg=E1101
         # vbox methods not detected by pylint
         oDialog.vbox.pack_start(oHBox)
-
-        oHBox.pack_start(AutoScrolledWindow(setup_view(dTypeCounts,
-            dTypeCards, 'Card Types')))
-        oHBox.pack_start(AutoScrolledWindow(setup_view(dPropCounts,
-            dPropCards, 'Card Properties')))
+        oHBox.pack_start(AutoScrolledWindow(setup_view(dLibProbs,
+            dTypeProbs, 'Card Types')))
+        oHBox.pack_start(AutoScrolledWindow(setup_view(dLibProbs,
+            dPropProbs, 'Card Properties')))
         oHBox.show_all()
+
+    def _get_lib_props(self):
+        """Calculate the expected number of each card in the opening hand"""
+        dLibCount = {}
+        for oCard in self.aLibrary:
+            dLibCount.setdefault(oCard.name, 0)
+            dLibCount[oCard.name] += 1
+        dLibProbs = {}
+        iTot = len(self.aLibrary)
+        for sName, iCount in dLibCount.iteritems():
+            dLibProbs[sName] = hypergeometric_mean(iCount, 7, iTot)
+        return dLibProbs
 
     # pylint: disable-msg=W0613
     # oButton required by function signature
