@@ -34,8 +34,6 @@
   !define PYGTK_INSTALLER "pygtk-2.10.4-1.win32-py2.5.exe"
   !define PYCAIRO_INSTALLER "pycairo-1.2.6-1.win32-py2.5.exe"
   !define PYGOBJECT_INSTALLER "pygobject-2.12.3-1.win32-py2.5.exe"
-  !define LIBXML_INSTALLER "libxml2-python-2.6.27.win32-py2.5.exe"
-  !define PYXML_INSTALLER "PyXML-0.8.4.win32-py2.5.exe"
   !define SETUPTOOLS_INSTALLER "setuptools-0.6c7.win32-py2.5.exe"
   !define PYPROTOCOLS_EGG "PyProtocols-1.0a0-py2.5-win32.egg"
   !define PLY_EGG "ply-2.3-py2.5.egg"
@@ -111,26 +109,6 @@ Section "PyGTK, PyCairo and PyGObject"
   delete $INSTDIR\${PYGTK_INSTALLER}
   delete $INSTDIR\${PYCAIRO_INSTALLER}
   delete $INSTDIR\${PYGOBJECT_INSTALLER}
-SectionEnd
-
-Section "LibXML2"
-  SetOutPath "$INSTDIR"
- 
-  File ${LIBXML_INSTALLER}
-
-  ExecWait $INSTDIR\${LIBXML_INSTALLER}
-
-  delete $INSTDIR\${LIBXML_INSTALLER}
-SectionEnd
-
-Section "PyXML"
-  SetOutPath "$INSTDIR"
- 
-  File ${PYXML_INSTALLER}
-
-  ExecWait $INSTDIR\${PYXML_INSTALLER}
-
-  delete $INSTDIR\${PYXML_INSTALLER}
 SectionEnd
 
 Section "Setuptools"
@@ -215,7 +193,7 @@ Section "Uninstall"
   ExecWait '"$INSTDIR\Python\Removepycairo.exe"'
   ExecWait '"$INSTDIR\Python\Removepygobject.exe"'
 
-  ; Final Clean up (no point doing them while the uninstall is incomplete
+  ; Final Clean up (no point doing them while the uninstall is incomplete)
   ; Delete "$INSTDIR\Uninstall.exe"
   ; RMDir "$INSTDIR"
 SectionEnd
