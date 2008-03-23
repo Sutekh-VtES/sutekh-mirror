@@ -872,6 +872,24 @@ class CardFunctionFilter(DirectFilter):
                     CardTextFilter('untap this vampire'),
                     CardTextFilter('untap this reacting vampire'),
                     CardTextFilter('as though untapped')])]))
+        if self.__sBounce in aTypes:
+            aFilters.append(FilterAndBox([CardTypeFilter('Reaction'),
+                CardTextFilter('is now bleeding')]))
+        if self.__sEnterCombat in aTypes:
+            aFilters.append(FilterAndBox([CardTypeFilter('Action'),
+                CardTextFilter('(D) Enter combat')]))
+        if self.__sBleedModifier in aTypes:
+            aFilters.append(FilterAndBox([CardTypeFilter('Action Modifier'),
+                CardTextFilter('+_ bleed')]))
+        if self.__sBleedAction in aTypes:
+            aFilters.append(FilterAndBox([CardTypeFilter('Action'),
+                CardTextFilter('bleed at +_ bleed'), CardTextFilter(
+                    'bledd with +_ bleed')]))
+        if self.__sBleedReduction in aTypes:
+            # Ordering of bleed and reduce not consistent, so we
+            # use an AND filter, rather than 'reduce%bleed'
+            aFilters.append(FilterAndBox([CardTypeFilter('Reaction'),
+                CardTextFilter('bleed'),CardTextFilter('reduce')]))
         self._oFilter = FilterOrBox(aFilters)
 
     # pylint: disable-msg=C0111
@@ -880,8 +898,8 @@ class CardFunctionFilter(DirectFilter):
     def get_values(cls):
         "Values supported by this filter"
         aVals = sorted([cls.__sStealth, cls.__sIntercept, cls.__sUntap,
-            #cls.__sBounce, cls.__sEnterCombat, cls.__sBleedModifier,
-            #cls.__sBleedAction, cls.__sBleedReduction,
+            cls.__sBounce, cls.__sEnterCombat, cls.__sBleedModifier,
+            cls.__sBleedAction, cls.__sBleedReduction,
             ])
         return aVals
 
