@@ -13,3 +13,7 @@ max-parents=10
 
 [MASTER]
 #load-plugins=dict_keys_check
+
+[FORMAT]
+# PEP 008 says 79, not 80
+max-line-length=79
