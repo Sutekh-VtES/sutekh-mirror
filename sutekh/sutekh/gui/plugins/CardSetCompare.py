@@ -78,7 +78,7 @@ class CardSetCompare(CardListPlugin):
     def comp_card_sets(self, aCardSetNames):
         """Display the results of comparing the card sets."""
         def format_list(aList, sColor):
-            "Format the list of cards for display"
+            """Format the list of cards for display."""
             oLabel = gtk.Label()
             oAlign = gtk.Alignment()
             oAlign.add(oLabel)
