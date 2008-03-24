@@ -9,11 +9,13 @@ Calculate probailibities for drawing the current selection
 """
 
 import gtk
+from copy import copy
 from sutekh.core.SutekhObjects import PhysicalCardSet, AbstractCardSet, \
         IAbstractCard
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
+
 
 def choose(iChoices, iTotal):
     """
@@ -30,39 +32,76 @@ def choose(iChoices, iTotal):
         iDenom *= iNum
     return iNumerator / iDenom
 
-def hyper_prob(iFound, iDraws, iObjects, iTotal):
+def num_choices(dCardList, iTotal):
+    """Calculate the maximum number of rows needed"""
+    # We don't list all combinations, but we do list 0 cards and all
+    # the selected cards, and combinations up to mininum number for all
+    aCounts = [x[1] for x in dCardList.iteritems()] # card counts
+    if len(aCounts) == 1:
+        return iTotal # only 1 card
+    iMin = min(aCounts)
+    return choose(iMin * len(aCounts), iTotal) + 2
+
+def multi_hyper_prob(aFound, iDraws, aObjects, iTotal):
     """
-    Returns the probablity of drawing exactly iFound from iObjects objects of
-    interest from iTotal objects in iDraw draws
+    Multivariate hypergeometric probability:
+    Given a list of draw numbers: aFound = [iFound1, iFound2 ... iFoundN]
+    form aObjects = [iObjects1, iObjects2 ... iObjectsN]
+    return the probably of seeing exactly aFound from iDraws
     """
     # Complain about impossible cases
-    if iObjects <= 0 or iFound < 0 or iTotal <= 0 or iDraws <= 0 or \
-            iObjects > iTotal or iDraws > iTotal:
-        raise RuntimeError('Invalid values for hypergeomtric probability'
-                'calculation: iFound: %d iDraws: %d iObjects: %d iTotal: %d' % (
-                    iFound, iDraws, iObjects, iTotal))
+    if len(aFound) != len(aObjects):
+        raise RuntimeError('Invalid input: aFound : %s, aObjects: %s' % (
+            ','.join([str(x) for x in aFound]), ','.join([str(x) for x in
+                aObjects])))
+    if sum(aFound) < 0 or min(aFound) < 0 or sum(aObjects) < 0 or \
+            iTotal <= 0 or iDraws <= 0 or min(aObjects) < 0 or \
+            sum(aObjects) > iTotal or iDraws > iTotal:
+        raise RuntimeError('Invalid values for multivariate hypergeomtric'
+                ' probability calculation: aFound: %s iDraws: %d'
+                ' aObjects: %s iTotal: %d' % (','.join([str(x) for x in
+                    aFound]), iDraws, ','.join([str(x) for x in aObjects]),
+                    iTotal))
     # Eliminate trivial cases
-    if iFound > iDraws:
+    if sum(aFound) > iDraws:
         return 0.0
-    if iFound > iObjects:
-        return 0.0
-    # Hypergeomtric probability: P(X = iFound) = choose iFound from iObjects *
+    for iFound, iObjects in zip(aFound, aObjects):
+        if iFound > iObjects:
+            return 0.0
+    # Hypergeomteric probability: P(X = iFound) = choose iFound from iObjects *
     #           choose (iDraws - iFound) from (iTotal - iObjects) /
     #           choose iDraws from iTotal
-    return choose(iFound, iObjects) * \
-            choose(iDraws - iFound, iTotal - iObjects) \
-            / float(choose(iDraws, iTotal))
+    # Multivariate: P(X_i = iFound[i]) = choose(iFound1, iObjects1) *
+    #           choose(iFound2, iObject2) * ... / choose(iDraws, iTotal)
+    fDemon = float(choose(iDraws, iTotal))
+    # Ensure we handle last entry
+    iRemObjects = iTotal - sum(aObjects)
+    iRemFound = iDraws - sum(aFound)
+    fNumerator = 1.0
+    for iFound, iObjects in zip(aFound, aObjects):
+        fNumerator *= choose(iFound, iObjects)
+    if iRemFound > 0 and iRemObjects > 0:
+        fNumerator *= choose(iRemFound, iRemObjects)
+    return fNumerator / fDemon
 
-def hyper_prob_at_least(iFound, iDraws, iObjects, iTotal):
+def hyper_prob_at_least(aFound, iDraws, aObjects, iTotal):
     """
-    Returns the probablity of drawing at lieast iFound from iObjects objects
+    Returns the probablity of drawing at least aFound from aObjects objects
     of interest from iTotal objects in iDraw draws
     """
     # This is the sum of hyper_prob(iCur, Draws, iObjects, iTotal) where
     # iCur in [iFound, min(iDraws, iObjects)]
+    if len(aFound) != len(aObjects):
+        raise RuntimeError('Invalid input: aFound : %s, aObjects: %s' % (
+            ','.join([str(x) for x in aFound]), ','.join([str(x) for x in
+                aObjects])))
     fProb = 0
-    for iCur in range(iFound, min(iDraws, iObjects)+1):
-        fProb += hyper_prob(iCur, iDraws, iObjects, iTotal)
+    for iCol, (iFound, iObjects) in enumerate(zip(aFound, aObjects)):
+        aThisFound = copy(aFound)
+        for iCur in range(iFound, min(iDraws, iObjects)+1):
+            aThisFound[iCol] = iCur
+            fProb += multi_hyper_prob(aThisFound, iDraws,
+                    aObjects, iTotal)
     return fProb
 
 class CardDrawSimPlugin(CardListPlugin):
@@ -88,8 +127,10 @@ class CardDrawSimPlugin(CardListPlugin):
         "Menu to associate with"
         return "Plugins"
 
-    # pylint: disable-msg=W0613
-    # oWidget has to be here, although it's unused
+    # pylint: disable-msg=W0613, W0201
+    # W0613 - oWidget has to be here, although it's unused
+    # W0201 - we define lots of things here, rather than __init__, since this
+    # is the plugin's entry point, and they need to reflect the curretn state
     def activate(self, oWidget):
         "Create the actual dialog, and populate it"
         sDiagName = "Card Draw probablities"
@@ -107,70 +148,38 @@ class CardDrawSimPlugin(CardListPlugin):
                     " Crypt and Library cards")
             return
 
-        # setup
-        aAllCards = list(self.model.getCardIterator(None))
-        aAllAbsCards = [IAbstractCard(oCard) for oCard in aAllCards]
-        iCryptSize = 0
-        iLibrarySize = 0
-        self.dSelectedCounts = {}
-        self.iSelectedCount = 0
-        for oCard in aAllAbsCards:
-            aTypes = [oType.name for oType in oCard.cardtype]
-            if aTypes[0] == 'Vampire' or aTypes[0] == 'Imbued':
-                iCryptSize += 1
-            else:
-                iLibrarySize += 1
-            if oCard in aSelectedCards:
-                self.dSelectedCounts.setdefault(oCard, 0)
-                self.dSelectedCounts[oCard] += 1
-                self.iSelectedCount += 1
-            # The assumption is that the user is interested in all copies of the
-            # selected cards (as it seems the most useful), so we treat the
-            # selection of any instance of the card in the list as selecting
-            # all of them
+        self._setup_cardlists(aSelectedCards, bCrypt)
 
         oMainTitle = gtk.Label()
         if bCrypt:
             oMainTitle.set_markup('<b>Crypt:</b> Drawing from <b>%d</b>'
-                    'cards' % iCryptSize)
+                    'cards' % self.iTotal)
             self.iOpeningDraw = 4
-            self.iTotal = iCryptSize
-            self.iNumSteps = min(2, iCryptSize-self.iOpeningDraw)
+            self.iNumSteps = min(2, self.iTotal - self.iOpeningDraw)
         else:
             oMainTitle.set_markup('<b>Library:</b> Drawing from <b>%d</b>'
-                    'cards' % iLibrarySize)
+                    'cards' % self.iTotal)
             self.iOpeningDraw = 7
             # Look 15 cards into the deck by default, seems good start
-            self.iNumSteps = min(8, iLibrarySize-self.iOpeningDraw) 
-            self.iTotal = iLibrarySize
-        self.iMax = min(15, self.iTotal-self.iOpeningDraw)
+            self.iNumSteps = min(8, self.iTotal - self.iOpeningDraw)
+        self.iMax = min(15, self.iTotal - self.iOpeningDraw)
         self.iDrawStep = 1 # Increments to use in table
-        self.iCardsToDraw = min(10, self.iSelectedCount)
+        self.iCardsToDraw = min(10, num_choices(self.dSelectedCounts,
+            self.iSelectedCount))
 
         if self.iTotal <= self.iOpeningDraw:
             if bLibrary:
                 do_complaint_error("Library must be larger than the opening"
                         "hand")
             else:
-                do_complaint_error("Crypt must be larger than the opening draw")
+                do_complaint_error("Crypt must be larger than"
+                        " the opening draw")
             return
 
         oDialog = SutekhDialog(sDiagName, self.parent,
                 gtk.DIALOG_DESTROY_WITH_PARENT,
                 (gtk.STOCK_OK, gtk.RESPONSE_OK))
         oDialog.connect("response", lambda oDialog, resp: oDialog.destroy())
-
-        aNames = [x.name for x in self.dSelectedCounts]
-        oProbLabel = gtk.Label()
-        if len(aNames) > 1:
-            oProbLabel.set_markup('Probablities of selecting any of: '
-                    '<i>%s</i> (%d cards)' % (
-                        "; ".join(aNames), self.iSelectedCount))
-        else:
-            oProbLabel.set_markup('Probablity of selecting <i>%s</i> '
-                    '(%d cards)' % (aNames[0], self.iSelectedCount))
-        oProbLabel.set_line_wrap(True)
-        oProbLabel.set_size_request(600, -1)
 
         oWidgetBox = gtk.HBox(False, 2)
         oNumDraws = gtk.combo_box_new_text()
@@ -216,10 +225,10 @@ class CardDrawSimPlugin(CardListPlugin):
                 "rows are the number of cards (Y)\n"
                 "For the first row (0 cards), the entry is the possiblity of"
                 "Not drawing any of the selected cards by the X'th draw\n"
-                "For the other rows, the entries are the probability of"
-                "seeing at least Y cards from the selection by the X\'th draw\n"
-                "with the number in brackets being the probablity of"
-                "seeing eactly Y cards by the X'th draw\n"
+                "For the other rows, the entries are the probability of "
+                "seeing at least the list number of cards from the selection\n"
+                "by the X\'th draw with the number in brackets being the "
+                "probablity of seeing eactly the listed cards\n"
                 "The first column represents the opening hand or crypt draw")
 
         oTitleLabel = gtk.Label('Draw results :')
@@ -233,7 +242,7 @@ class CardDrawSimPlugin(CardListPlugin):
             True))
 
         oDialog.vbox.pack_start(oMainTitle, False, False)
-        oDialog.vbox.pack_start(oProbLabel, False, False)
+        oDialog.vbox.pack_start(gtk.Label('Card Probablities'), False, False)
         oDialog.vbox.pack_start(oDescLabel, False, False)
         oDialog.vbox.pack_start(oWidgetBox, False, False)
         oDialog.vbox.pack_start(self.oResultsBox)
@@ -242,7 +251,34 @@ class CardDrawSimPlugin(CardListPlugin):
         oDialog.show_all()
 
         oDialog.run()
-    # pylint: enable-msg=W0613
+    # pylint: enable-msg=W0613, W0201
+
+    def _setup_cardlists(self, aSelectedCards, bCrypt):
+        """Extract the needed card info from the model"""
+        aAllCards = list(self.model.getCardIterator(None))
+        aAllAbsCards = [IAbstractCard(oCard) for oCard in aAllCards]
+        iCryptSize = 0
+        iLibrarySize = 0
+        self.dSelectedCounts = {}
+        self.iSelectedCount = 0
+        for oCard in aAllAbsCards:
+            aTypes = [oType.name for oType in oCard.cardtype]
+            if aTypes[0] == 'Vampire' or aTypes[0] == 'Imbued':
+                iCryptSize += 1
+            else:
+                iLibrarySize += 1
+            if oCard in aSelectedCards:
+                self.dSelectedCounts.setdefault(oCard, 0)
+                self.dSelectedCounts[oCard] += 1
+                self.iSelectedCount += 1
+            # The assumption is that the user is interested in all copies of
+            # the selected cards (as it seems the most useful), so we treat
+            # the selection of any instance of the card in the list as
+            # selecting all of them
+        if bCrypt:
+            self.iTotal = iCryptSize
+        else:
+            self.iTotal = iLibrarySize
 
     def _get_selected_cards(self):
         "Extract selected cards from the selection"
@@ -262,6 +298,7 @@ class CardDrawSimPlugin(CardListPlugin):
             else:
                 bLibrary = True
             aSelectedCards.append(oCard)
+
         return aSelectedCards, bCrypt, bLibrary
 
     def _steps_changed(self, oComboBox):
@@ -295,8 +332,9 @@ class CardDrawSimPlugin(CardListPlugin):
         oLeftLabel.set_angle(270)
         self.oResultsTable.attach(oTopLabel, 0, 2*self.iNumSteps+4, 0, 1)
         self.oResultsTable.attach(oLeftLabel, 0, 1, 0, 2*self.iCardsToDraw+6)
-        self.oResultsTable.attach(gtk.HSeparator(), 0, 2*self.iNumSteps+4, 1, 2,
-                xpadding=0, ypadding=0, xoptions=gtk.FILL, yoptions=gtk.FILL)
+        self.oResultsTable.attach(gtk.HSeparator(), 0, 2*self.iNumSteps+4, 1,
+                2, xpadding=0, ypadding=0, xoptions=gtk.FILL,
+                yoptions=gtk.FILL)
         self.oResultsTable.attach(gtk.VSeparator(), 1, 2, 1,
                 2 * self.iCardsToDraw + 6, xpadding=0, ypadding=0,
                 xoptions=gtk.FILL, yoptions=gtk.FILL)
@@ -324,21 +362,27 @@ class CardDrawSimPlugin(CardListPlugin):
         # Fill in zero row
         for iCol in range(self.iNumSteps):
             iNumDraws = iCol * self.iDrawStep + self.iOpeningDraw
-            fProbExact = hyper_prob(0, iNumDraws,
-                    self.iSelectedCount, self.iTotal)*100
-            oResLabel = gtk.Label('%3.2f' % fProbExact)
+            if iNumDraws < self.iTotal:
+                fProbExact = multi_hyper_prob([0], iNumDraws,
+                        [self.iSelectedCount], self.iTotal)*100
+                oResLabel = gtk.Label('%3.2f' % fProbExact)
+            else:
+                oResLabel = gtk.Label('all cards drawn')
             self.oResultsTable.attach(oResLabel, 2*iCol+4, 2*iCol+5, 4, 5)
         # Fill in other rows
         for iRow in range(self.iCardsToDraw):
             for iCol in range(self.iNumSteps):
                 iThisDraw = iRow+1
                 iNumDraws = iCol * self.iDrawStep + self.iOpeningDraw
-                fProbExact = hyper_prob(iThisDraw, iNumDraws,
-                        self.iSelectedCount, self.iTotal)*100
-                fProbAccum = hyper_prob_at_least(iThisDraw, iNumDraws,
-                        self.iSelectedCount, self.iTotal)*100
-                oResLabel = gtk.Label('%3.2f (%3.2f)' % (fProbAccum,
-                    fProbExact))
+                if iNumDraws < self.iTotal:
+                    fProbExact = multi_hyper_prob([iThisDraw], iNumDraws,
+                            [self.iSelectedCount], self.iTotal)*100
+                    fProbAccum = hyper_prob_at_least([iThisDraw], iNumDraws,
+                            [self.iSelectedCount], self.iTotal)*100
+                    oResLabel = gtk.Label('%3.2f (%3.2f)' % (fProbAccum,
+                        fProbExact))
+                else:
+                    oResLabel = gtk.Label('')
                 self.oResultsTable.attach(oResLabel, 2*iCol+4, 2*iCol+5,
                         2*iRow+6, 2*iRow+7)
         self.oResultsTable.show_all()
