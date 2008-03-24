@@ -4,11 +4,6 @@ Backend:
  * Rework SutekhUtility to be less of a mess
  * Consider using SQLObject's new .throughTo method for populating / caching
    the objects abstract cards join to.
- * Make sure sutekh works properly with sqlobject 0.10
- * Factor out things like the lists of expansions and disciplines in SutekhObjects
-   to a seperate file
- * Have CardSetHolder take the expansion name rather than an expansion object
-   when adding cards.
 
 Code Cleanup
  * Unify conventions ('Abstract' vs 'AbstractCardSet' in card set management, etc.)
@@ -19,17 +14,9 @@ Code Cleanup
  * More tests
 
 Gui (Functionality):
- * Improve Current Filter dialogs:
-    - Provide better help 
  * Finish ClusterCardList plugin.
  * Compare CardSet Plugin (basic version done. Could be improved)
- * Improve About dialog.
  * Plugins for calling out to other VtES utilities as appropriate (http://ashheap.storageannex.com/utilities.htm)
- * Add decent keyboard shortcuts
-   - del to delete all selected cards from cardlist
-   - copy + paste shortcuts?
- * CSV import plugin
- * Card draw simulator plugin
  * Allow easy setting of the expansion for all selected cards and when importing
    cards from file 
 
@@ -41,10 +28,27 @@ Gui (Presentation):
  * Clean up the currently overly tangled controller/view/model interactions
  * Parse in a GTK rc file? (http://www.moeraki.com/pygtktutorial/pygtk2tutorial/ch-GtkRcFiles.html)
  * Parse icons out of http://www.white-wolf.com/vtes/index.php?line=icons and use them in the GUI.
- * Create icon for executable.
 
 Website:
- * Create logo for wiki.
+ * Create documentation.
+ * Consider switching to Trac. 
 
 Other Tasks:
  * Find some users and developers interested in Sutekh on Windows.
+
+For 0.6:
+ * Make sure sutekh works properly with sqlobject 0.10
+ * Factor out things like the lists of expansions and disciplines in SutekhObjects
+   to a seperate file
+ * Have CardSetHolder take the expansion name rather than an expansion object
+   when adding cards.
+ * Improve Current Filter dialogs:
+    - Provide better help 
+ * Improve About dialog.
+ * Add decent keyboard shortcuts
+   - del to delete all selected cards from cardlist
+   - copy + paste shortcuts?
+ * CSV import plugin
+ * Card draw simulator plugin
+ * Create icon for executable.
+ * Create logo for wiki.
