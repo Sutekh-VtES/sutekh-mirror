@@ -105,7 +105,7 @@ class CardImageFrame(BasicFrame, CardListViewListener):
         return check_file(sTestFile)
 
     def __convert_expansion(self, sExpansionName):
-        "Convert the Full Expansion name into the abbrevation needed"
+        """Convert the Full Expansion name into the abbrevation needed."""
         if sExpansionName == '' or not self.__bShowExpansions:
             return ''
         # pylint: disable-msg=E1101
@@ -114,7 +114,7 @@ class CardImageFrame(BasicFrame, CardListViewListener):
         return oExpansion.shortname.lower()
 
     def __set_expansion_info(self, sCardName):
-        "Set the expansion info"
+        """Set the expansion info."""
         # pylint: disable-msg=E1101
         # pylint doesn't pick up IAbstractCard methods correctly
         oAbsCard = IAbstractCard(sCardName)
@@ -192,15 +192,13 @@ class CardImageFrame(BasicFrame, CardListViewListener):
         return check_file(sTestFile)
 
     def update_config_path(self, sNewPath):
-        "Update the path we use to search for expansions"
+        """Update the path we use to search for expansions."""
         self.__sPrefsPath = sNewPath
         self._oConfigFile.set_plugin_key('card image path', sNewPath)
         self.__bShowExpansions = self.__have_expansions()
 
     def set_card_text(self, sCardName, sExpansionName=''):
-        """
-        Set the image in response to a set card name event
-        """
+        """Set the image in response to a set card name event."""
         if sCardName != self.__sCardName:
             self.__set_expansion_info(sCardName)
             self.__sCardName = sCardName
@@ -221,7 +219,7 @@ class CardImageFrame(BasicFrame, CardListViewListener):
     # pylint: disable-msg=W0613
     # oWidget needed by gtk function signature
     def __cycle_expansion(self, oWidget, oEvent):
-        "On a button click, move to the next expansion"
+        """On a button click, move to the next expansion."""
         bRedraw = False
         if len(self.__aExpansions) < 2:
             return True # nothing to scroll through
@@ -310,15 +308,15 @@ class ImageConfigDialog(SutekhDialog):
             self.show_all()
 
     def get_path(self):
-        "Get the path from oDirChoiceWidget"
+        """Get the path from oDirChoiceWidget."""
         return self.oDirChoiceWidget.get_filename()
 
     def get_file(self):
-        "Get the file from oFileChoiceWidget"
+        """Get the file from oFileChoiceWidget."""
         return self.oFileChoiceWidget.get_filename()
 
     def get_choice(self):
-        "Get which of the RadioButtons was active"
+        """Get which of the RadioButtons was active."""
         if self.oChoiceDownload.get_active():
             return 'Download'
         elif self.oChoiceLocalCopy.get_active():
@@ -356,12 +354,12 @@ class CardImagePlugin(CardListPlugin):
 
     @classmethod
     def get_image_frame(cls):
-        "Return the global ImageFrame"
+        """Return the global ImageFrame."""
         return cls.oImageFrame
 
     @classmethod
     def init_image_frame(cls, oCur):
-        "Setup the global image frame"
+        """Setup the global image frame."""
         if not cls.oImageFrame:
             cls.oImageFrame = CardImageFrame(oCur.parent,
                     oCur.parent.config_file)
@@ -369,11 +367,10 @@ class CardImagePlugin(CardListPlugin):
             cls.oImageFrame.add_parts()
 
     def get_menu_item(self):
-        """
-        Overrides method from base class.
-        Adds the menu item on the MainWindow if the images
-        can be found.
-        """
+        """Overrides method from base class.
+
+           Adds the menu item on the MainWindow if the images can be found.
+           """
         if not self.check_versions() or not self.check_model_type():
             return None
         self._oMenuItem = gtk.MenuItem("Replace with Card Image Frame")
@@ -427,7 +424,7 @@ class CardImagePlugin(CardListPlugin):
         oDialog.destroy()
 
     def _download_file(self):
-        "Download a zip file containing the images"
+        """Download a zip file containing the images."""
         # Download and install http://feldb.extra.hu/pictures.zip
         sUrl = 'http://feldb.extra.hu/pictures.zip'
         oFile = urllib2.urlopen(sUrl)
@@ -463,7 +460,7 @@ class CardImagePlugin(CardListPlugin):
         return bRet
 
     def _unzip_file(self, sFileName):
-        "Unzip a file containing the images"
+        """Unzip a file containing the images."""
         if check_file(sFileName):
             try:
                 oZipFile = zipfile.ZipFile(sFileName, 'r')
@@ -501,7 +498,7 @@ class CardImagePlugin(CardListPlugin):
         return False
 
     def _accept_path(self, sTestPath):
-        "Check if the path from user is OK"
+        """Check if the path from user is OK."""
         if sTestPath is not None:
             # Test if path has images
             if not self.image_frame.check_images(sTestPath):
