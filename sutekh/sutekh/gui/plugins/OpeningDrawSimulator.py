@@ -44,6 +44,23 @@ def get_probs(dLibProbs, dToCheck, dGroupedProbs):
                 # Need this for the sublists in view
                 dGroupedProbs[sGroup]['cards'].append(sCardName)
 
+def check_card(sCardName, dToCheck, dCount):
+    """Check if a card is in the list and update dCount."""
+    for sToCheck, aList in dToCheck.iteritems():
+        if sCardName in aList:
+            dCount.setdefault(sToCheck, 0)
+            dCount[sToCheck] += 1
+
+def fill_string(dGroups, aSortedList, dToCheck):
+    """Construct a string to display for type info"""
+    sResult = ''
+    for sGroup, iNum in dGroups.iteritems():
+        sResult += u'%d \u00D7 %s\n' % (iNum, sGroup)
+        for sCardName, iNum in aSortedList:
+            if sCardName in dToCheck[sGroup]:
+                sResult += u'<i>\t%d \u00D7 %s</i>\n' % (iNum, sCardName)
+    return sResult
+
 def hypergeometric_mean(iItems, iDraws, iTotal):
     """Mean of the hypergeometric distribution for a population of iTotal
        with iItems of interest and drawing iDraws items.
@@ -103,7 +120,7 @@ class OpeningHandSimulator(CardListPlugin):
     aModelsSupported = [PhysicalCardSet,
             AbstractCardSet]
     # responses for the hand dialog
-    BACK, FORWARD = range(1, 3)
+    BACK, FORWARD, BREAKDOWN = range(1, 4)
 
     # pylint: disable-msg=W0142
     # **magic OK here
@@ -115,6 +132,7 @@ class OpeningHandSimulator(CardListPlugin):
         self.iTotHands = 0
         self.iCurHand = 0
         self.aDrawnHands = []
+        self.bShowDetails = False
 
     def get_menu_item(self):
         """
@@ -219,61 +237,82 @@ class OpeningHandSimulator(CardListPlugin):
         oDialog = SutekhDialog ('Sample Hands', self.parent,
                 gtk.DIALOG_MODAL|gtk.DIALOG_DESTROY_WITH_PARENT)
         # We need to have access to the back button
+        # pylint: disable-msg=E1101
+        # pylint doesn't see vbox + action_area methods
+        oShowButton = oDialog.add_button('Show details', self.BREAKDOWN)
+        oDialog.action_area.pack_start(gtk.VSeparator(), expand=True)
         oBackButton = oDialog.add_button(gtk.STOCK_GO_BACK, self.BACK)
         oBackButton.set_sensitive(False)
         oDialog.add_button(gtk.STOCK_GO_FORWARD, self.FORWARD)
         oDialog.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
+        self.bShowDetails = False
         if len(self.aDrawnHands) > 0:
             self.iCurHand = self.iTotHands
             oHandBox = self._redraw_hand()
             if self.iTotHands > 1:
                 oBackButton.set_sensitive(True)
         else:
-            oHandBox = self._draw_hand() # construct the hand
-        # pylint: disable-msg=E1101
-        # pylint doesn't see vbox methods
-        oDialog.vbox.pack_start(oHandBox, False, False)
-        oDialog.connect('response', self._next_hand, oBackButton)
+            oHandBox = self._draw_new_hand() # construct the hand
+        oDialog.vbox.pack_start(oHandBox)
+        oDialog.connect('response', self._next_hand, oBackButton, oShowButton)
 
         oDialog.show_all()
         oDialog.run()
 
-    def _next_hand(self, oDialog, iResponse, oBackButton):
+    # pylint: disable-msg=R0912
+    # We need to handle all the responses, so the number of branches is large
+    def _next_hand(self, oDialog, iResponse, oBackButton, oShowButton):
         """Change the shown hand in the dialog."""
-        def change_hand(oVBox, oNewHand):
+        def change_hand(oVBox, oNewHand, oDetailBox):
             """Replace the existing widget in oVBox with oNewHand."""
             for oChild in oVBox.get_children():
                 if type(oChild) is gtk.VBox:
                     oVBox.remove(oChild)
-            oVBox.pack_start(oNewHand)
+            oVBox.pack_start(oNewHand, False, False)
+            if oDetailBox:
+                oVBox.pack_start(oDetailBox)
 
+        oDetailBox = None
         if iResponse == self.BACK:
             self.iCurHand -= 1
-            oNewHand = self._redraw_hand()
-            change_hand(oDialog.vbox, oNewHand)
             if self.iCurHand == 1:
                 oBackButton.set_sensitive(False)
-            oDialog.show_all()
+            oNewHand = self._redraw_hand()
         elif iResponse == self.FORWARD:
+            oBackButton.set_sensitive(True)
             if self.iCurHand == self.iTotHands:
                 # Create a new hand
-                oNewHand = self._draw_hand()
+                oNewHand = self._draw_new_hand()
             else:
                 self.iCurHand += 1
                 oNewHand = self._redraw_hand()
-            change_hand(oDialog.vbox, oNewHand)
-            oBackButton.set_sensitive(True)
-            oDialog.show_all()
+        elif iResponse == self.BREAKDOWN:
+            # show / hide the detailed breakdown
+            oNewHand = self._redraw_hand()
+            if self.bShowDetails:
+                self.bShowDetails = False
+                oShowButton.set_label('Show details')
+            else:
+                self.bShowDetails = True
+                oShowButton.set_label('Hide details')
         else:
             # OK response
-            oDialog.hide()
+            oDialog.destroy()
+            return
 
-    def _draw_hand(self):
+        if self.bShowDetails:
+            oDetailBox = self._redraw_detail_box()
+        change_hand(oDialog.vbox, oNewHand, oDetailBox)
+        oDialog.show_all()
+
+    def _draw_new_hand(self):
         "Create a new sample hand"
         self.iTotHands += 1
         self.iCurHand += 1
         aThisLib = copy(self.aLibrary)
         dHand = {}
+        dProps = {}
+        dTypes = {}
         # pylint: disable-msg=W0612
         # iCard is a loop counter, and is ignored
         for iCard in range(7):
@@ -281,23 +320,49 @@ class OpeningHandSimulator(CardListPlugin):
             aThisLib.remove(oCard) # drawing without replacement
             dHand.setdefault(oCard.name, 0)
             dHand[oCard.name] += 1
+            check_card(oCard.name, self.dCardTypes, dTypes)
+            check_card(oCard.name, self.dCardProperties, dProps)
         sHand = ''
-        for sName, iNum in sorted(dHand.items(), key=lambda x: x[1],
-                reverse=True):
-            sHand += u'\t%d \u00D7 %s\n' % (iNum, sName)
-        self.aDrawnHands.append(sHand)
+        aSortedList = sorted(dHand.items(), key=lambda x: (x[1], x[0]),
+                reverse=True)
+        for sName, iNum in aSortedList:
+            sHand += u'%d \u00D7 %s\n' % (iNum, sName)
+        sTypes = fill_string(dTypes, aSortedList, self.dCardTypes)
+        sProps = fill_string(dProps, aSortedList, self.dCardProperties)
+        self.aDrawnHands.append([sHand, sTypes, sProps])
         return self._redraw_hand()
 
     def _redraw_hand(self):
         """Create a gtk.HBox holding a hand"""
-        oHandBox = gtk.VBox(False, False)
+        oHandBox = gtk.VBox(False, 2)
         oDrawLabel = gtk.Label()
         oHandLabel = gtk.Label()
         oDrawLabel.set_markup('<b>Hand Number %d :</b>' % self.iCurHand)
-        oHandLabel.set_markup(self.aDrawnHands[self.iCurHand - 1])
-        oHandBox.pack_start(oDrawLabel)
+        oHandLabel.set_markup(self.aDrawnHands[self.iCurHand - 1][0])
+        oHandBox.pack_start(oDrawLabel, False, False)
+        oAlign = gtk.Alignment(xalign=0.5, xscale=0.7)
+        oAlign.add(gtk.HSeparator())
+        oHandBox.pack_start(oAlign, False, False)
         oHandBox.pack_start(oHandLabel)
         return oHandBox
+
+    def _redraw_detail_box(self):
+        """Fill in the details for the given hand"""
+        def fill_frame(sDetails, sHeading):
+            """Draw a gtk.Frame for the given detail type"""
+            oFrame = gtk.Frame(sHeading)
+            oLabel = gtk.Label()
+            oLabel.set_markup(sDetails)
+            oFrame.add(oLabel)
+            return oFrame
+        oDetailBox = gtk.VBox(False, 2)
+        oHBox = gtk.HBox(False, 2)
+        oHBox.pack_start(fill_frame(self.aDrawnHands[self.iCurHand -1][1],
+            'Card Types'))
+        oHBox.pack_start(fill_frame(self.aDrawnHands[self.iCurHand -1][2],
+            'Card Properties'))
+        oDetailBox.pack_start(oHBox)
+        return oDetailBox
 
 # pylint: disable-msg=C0103
 # plugin name doesn't match rule
