@@ -6,18 +6,23 @@
 
 """Adds a frame which will display card images from ARDB in the GUI"""
 
-import gtk, gobject
+import gtk
+import gobject
 import unicodedata
 import os
+import zipfile
+import urllib2
+import tempfile
 from sutekh.core.SutekhObjects import AbstractCard, AbstractCardSet, \
-                                      PhysicalCard, PhysicalCardSet, \
-                                      IAbstractCard, IExpansion
+        PhysicalCard, PhysicalCardSet, IAbstractCard, IExpansion
 from sutekh.gui.PluginManager import CardListPlugin
+from sutekh.gui.ProgressDialog import ProgressDialog
 from sutekh.gui.CardListView import CardListViewListener
 from sutekh.gui.BasicFrame import BasicFrame
-from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_buttons
+from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_buttons, \
+        do_complaint_error
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
-from sutekh.SutekhUtility import prefs_dir
+from sutekh.SutekhUtility import prefs_dir, ensure_dir_exists
 
 def check_file(sFileName):
     """Check if file exists and is readable"""
@@ -142,8 +147,8 @@ class CardImageFrame(BasicFrame, CardListViewListener):
         "Load an image into the pane, show broken image if needed"
         try:
             if self.__bShowExpansions:
-                self.oExpansionLabel.set_markup('<i>Image from expansion : </i>'
-                        ' %s' % self.__sCurExpansion)
+                self.oExpansionLabel.set_markup('<i>Image from expansion :'
+                        ' </i> %s' % self.__sCurExpansion)
                 self.oExpansionLabel.show()
             else:
                 self.oExpansionLabel.hide() # config chanes can cause this
@@ -394,14 +399,18 @@ class CardImagePlugin(CardListPlugin):
         if iResponse == gtk.RESPONSE_OK:
             sChoice = oDialog.get_choice()
             if sChoice == 'Download':
-                sFileName = self._download_file()
-                if sFileName != '' and self._unzip_file(sFileName):
+                if self._download_file():
                     bActivateMenu = True
-                # Cleanup temporary file
+                else:
+                    do_complaint_error('Unable to successfully download'
+                            ' and install zipfile')
             elif sChoice == 'Local copy':
                 sFileName = oDialog.get_file()
                 if self._unzip_file(sFileName):
                     bActivateMenu = True
+                else:
+                    do_complaint_error('Unable to successfully install '
+                            ' zipfile %s' % sFileName)
             else:
                 # New directory
                 sTestPath = oDialog.get_path()
@@ -415,20 +424,80 @@ class CardImagePlugin(CardListPlugin):
                 # Pane is not open, so try to enable menu
                 self.add_image_frame_active(True)
         # get rid of the dialog
-        oDialog.destroy() 
+        oDialog.destroy()
 
     def _download_file(self):
         "Download a zip file containing the images"
         # Download and install http://feldb.extra.hu/pictures.zip
-        # TODO: download the images
-        return ''
+        sUrl = 'http://feldb.extra.hu/pictures.zip'
+        oFile = urllib2.urlopen(sUrl)
+        sDownloadDir = prefs_dir('Sutekh')
+        ensure_dir_exists(sDownloadDir)
+        fTemp = tempfile.TemporaryFile()
+        sLength = oFile.info().getheader('Content-Length')
+        if sLength:
+            iLength = int(sLength)
+            oProgress = ProgressDialog()
+            oProgress.set_description('Download progress')
+            iTotal = 0
+            bCont = True
+            while bCont:
+                oInf = oFile.read(10000)
+                iTotal += 10000
+                oProgress.update_bar(float(iTotal) / iLength)
+                if oInf:
+                    fTemp.write(oInf)
+                else:
+                    bCont = False
+                    oProgress.destroy()
+        else:
+            # Just try and download
+            fTemp.write(oFile.read())
+        try:
+            oZipFile = zipfile.ZipFile(fTemp, 'r')
+            bRet = self._unzip_heart(oZipFile)
+        except zipfile.BadZipfile:
+            bRet = False
+        # cleanup file
+        fTemp.close()
+        return bRet
 
     def _unzip_file(self, sFileName):
         "Unzip a file containing the images"
-        if sFileName == '':
-            return False # failed download
-        # Check file exists
-        # TODO: unzip the file
+        if check_file(sFileName):
+            try:
+                oZipFile = zipfile.ZipFile(sFileName, 'r')
+            except zipfile.BadZipfile:
+                return False
+            return self._unzip_heart(oZipFile)
+        return False
+
+    def _unzip_heart(self, oZipFile):
+        """Heavy lifting of unzipping a file"""
+        sPrefsPath = self.parent.config_file.get_plugin_key('card image path')
+        ensure_dir_exists(sPrefsPath)
+        iNumber = len(oZipFile.infolist())
+        if iNumber < 300:
+            # zipfile too short, so don't bother
+            return False
+        oProgressDialog = ProgressDialog()
+        oProgressDialog.set_description('Unzipping')
+        iCur = 0
+        for oItem in oZipFile.infolist():
+            iCur += 1
+            oProgressDialog.update_bar(float(iCur) / iNumber)
+            oData = oZipFile.read(oItem.filename)
+            # Should I also test for cardimages\ ?
+            sFileName = os.path.join(sPrefsPath,
+                    oItem.filename.replace('cardimages/',''))
+            sDir = sFileName.rsplit(os.path.sep, 1)[0]
+            ensure_dir_exists(sDir)
+            oOutputFile = file(sFileName, 'w+')
+            oOutputFile.write(oData)
+            oOutputFile.close()
+        oProgressDialog.destroy()
+        if self.image_frame.check_images(sPrefsPath):
+            return True
         return False
 
     def _accept_path(self, sTestPath):
