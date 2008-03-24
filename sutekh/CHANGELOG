@@ -1,3 +1,8 @@
+24 March 2008:
+ * Change CardDrawSimulator to show multivariate hypergeometric probablities
+   when multiple cards are selected
+ * Hook up 'del' to delete all cards in current selection from a card list
+
 23 March 2008:
  * Add more cases to CardFunctionFilter
 

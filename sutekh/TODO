@@ -46,7 +46,6 @@ For 0.6:
     - Provide better help 
  * Improve About dialog.
  * Add decent keyboard shortcuts
-   - del to delete all selected cards from cardlist
    - copy + paste shortcuts?
  * CSV import plugin
  * Create icon for executable.

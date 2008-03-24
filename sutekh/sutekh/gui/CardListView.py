@@ -152,13 +152,30 @@ class CardListView(gtk.TreeView, object):
     # Key combinations
 
     def key_released(self, oWidget, oEvent):
-        if oEvent.get_state() == gtk.gdk.CONTROL_MASK:
-            if oEvent.string == '+':
+        """Hook into the key processsing loop to do interesting things."""
+        oCtrlAlt = (gtk.gdk.CONTROL_MASK | gtk.gdk.MOD1_MASK)
+        # We ignore shift, since we need it for Ctrl+ and such
+        if oEvent.get_state() & oCtrlAlt == \
+                gtk.gdk.CONTROL_MASK:
+            # control key was pressed
+            if oEvent.keyval == gtk.gdk.keyval_from_name('plus'):
                 self.expand_all()
                 return True
-            elif oEvent.string == '-':
+            elif oEvent.keyval == gtk.gdk.keyval_from_name('minus'):
                 self.collapse_all()
                 return True
+            elif gtk.gdk.keyval_to_lower(oEvent.keyval) == \
+                    gtk.gdk.keyval_from_name('c'):
+                # TODO: copy selection
+                pass
+            elif gtk.gdk.keyval_to_lower(oEvent.keyval) == \
+                    gtk.gdk.keyval_from_name('v'):
+                pass
+                # TODO: paste selection
+        elif oEvent.get_state() & oCtrlAlt == 0:
+            # No modifiers of interest pressed
+            if oEvent.keyval == gtk.gdk.keyval_from_name('Delete'):
+                self.del_selection()
         # Let other key handles take charge
         return False
 
@@ -334,6 +351,18 @@ class CardListView(gtk.TreeView, object):
                     continue
                 dSelectedData[sCardName][sExpansion] = iCount
         return dSelectedData
+
+    def del_selection(self):
+        """try to delete all the cards in the current selection"""
+        if self._oModel.bEditable:
+            dSelectedData = self.process_selection()
+            for sCardName in dSelectedData:
+                for sExpansion, iCount in dSelectedData[sCardName].iteritems():
+                    for iAttempt in range(iCount):
+                        if sExpansion != 'None':
+                            self._oC.decCard(sCardName, sExpansion)
+                        else:
+                            self._oC.decCard(sCardName, None)
 
     # Drag and Drop
     # Sub-classes should override as needed.
