@@ -112,7 +112,6 @@ def hyper_prob_at_least(aFound, iDraws, aObjects, iTotal, iCurCol=0):
             fProb += hyper_prob_at_least(aThisFound, iDraws,
                     aObjects, iTotal, iCurCol + 1)
         else:
-            print aThisFound
             fProb += multi_hyper_prob(aThisFound, iDraws, aObjects, iTotal)
     return fProb
 
