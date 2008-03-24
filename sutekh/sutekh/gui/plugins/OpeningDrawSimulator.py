@@ -102,6 +102,8 @@ class OpeningHandSimulator(CardListPlugin):
             AbstractCardSet : [3]}
     aModelsSupported = [PhysicalCardSet,
             AbstractCardSet]
+    # responses for the hand dialog
+    BACK, FORWARD = range(1, 3)
 
     # pylint: disable-msg=W0142
     # **magic OK here
@@ -110,7 +112,9 @@ class OpeningHandSimulator(CardListPlugin):
         self.dCardTypes = {}
         self.dCardProperties = {}
         self.aLibrary = []
-        self.iNumHands = 10
+        self.iTotHands = 0
+        self.iCurHand = 0
+        self.aDrawnHands = []
 
     def get_menu_item(self):
         """
@@ -156,7 +160,7 @@ class OpeningHandSimulator(CardListPlugin):
 
         self._fill_stats(oDialog)
 
-        oShowButton = gtk.Button('show 10 sample hands')
+        oShowButton = gtk.Button('draw sample hands')
         oShowButton.connect('clicked', self._fill_dialog)
 
         # pylint: disable-msg=E1101
@@ -169,17 +173,22 @@ class OpeningHandSimulator(CardListPlugin):
 
         oDialog.run()
         oDialog.destroy()
+        # clean up
+        self.dCardTypes = {}
+        self.dCardProperties = {}
+        self.aLibrary = []
+        self.iTotHands = 0
+        self.iCurHand = 0
+        self.aDrawnHands = []
     # pylint: enable-msg=W0613
 
     def _fill_stats(self, oDialog):
         "Fill in the stats from the draws"
-        # Get stats from 100 hand draws
         dTypeProbs = {}
         dPropProbs = {}
         dLibProbs = self._get_lib_props()
         get_probs(dLibProbs, self.dCardTypes, dTypeProbs)
         get_probs(dLibProbs, self.dCardProperties, dPropProbs)
-
         # setup display widgets
         oHBox = gtk.HBox(False, 3)
         # pylint: disable-msg=E1101
@@ -208,30 +217,63 @@ class OpeningHandSimulator(CardListPlugin):
     def _fill_dialog(self, oButton):
         "Fill the dialog with the draw results"
         oDialog = SutekhDialog ('Sample Hands', self.parent,
-                gtk.DIALOG_MODAL|gtk.DIALOG_DESTROY_WITH_PARENT,
-                (gtk.STOCK_OK, gtk.RESPONSE_OK))
-        oResultsTable = gtk.Table(5, 2)
+                gtk.DIALOG_MODAL|gtk.DIALOG_DESTROY_WITH_PARENT)
+        # We need to have access to the back button
+        oBackButton = oDialog.add_button(gtk.STOCK_GO_BACK, self.BACK)
+        oBackButton.set_sensitive(False)
+        oDialog.add_button(gtk.STOCK_GO_FORWARD, self.FORWARD)
+        oDialog.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
+        if len(self.aDrawnHands) > 0:
+            self.iCurHand = self.iTotHands
+            oHandBox = self._redraw_hand()
+            if self.iTotHands > 1:
+                oBackButton.set_sensitive(True)
+        else:
+            oHandBox = self._draw_hand() # construct the hand
         # pylint: disable-msg=E1101
         # pylint doesn't see vbox methods
-        oDialog.vbox.pack_start(oResultsTable, False, False)
-        for iDraw in range(self.iNumHands):
-            oHandBox = gtk.VBox(False, 2)
-            oDrawLabel = gtk.Label()
-            oDrawLabel.set_markup('<b>Hand Number %d :</b>' % (iDraw + 1))
-            oHandBox.pack_start(oDrawLabel)
-            oHandBox.pack_start(self._draw_hand(), False, False)
-            iCol = iDraw / 5
-            iRow = iDraw % 5
-            oResultsTable.attach(oHandBox, iRow, iRow+1, iCol, iCol+1)
+        oDialog.vbox.pack_start(oHandBox, False, False)
+        oDialog.connect('response', self._next_hand, oBackButton)
+
         oDialog.show_all()
         oDialog.run()
-        oDialog.destroy()
+
+    def _next_hand(self, oDialog, iResponse, oBackButton):
+        """Change the shown hand in the dialog."""
+        def change_hand(oVBox, oNewHand):
+            """Replace the existing widget in oVBox with oNewHand."""
+            for oChild in oVBox.get_children():
+                if type(oChild) is gtk.VBox:
+                    oVBox.remove(oChild)
+            oVBox.pack_start(oNewHand)
+
+        if iResponse == self.BACK:
+            self.iCurHand -= 1
+            oNewHand = self._redraw_hand()
+            change_hand(oDialog.vbox, oNewHand)
+            if self.iCurHand == 1:
+                oBackButton.set_sensitive(False)
+            oDialog.show_all()
+        elif iResponse == self.FORWARD:
+            if self.iCurHand == self.iTotHands:
+                # Create a new hand
+                oNewHand = self._draw_hand()
+            else:
+                self.iCurHand += 1
+                oNewHand = self._redraw_hand()
+            change_hand(oDialog.vbox, oNewHand)
+            oBackButton.set_sensitive(True)
+            oDialog.show_all()
+        else:
+            # OK response
+            oDialog.hide()
 
     def _draw_hand(self):
-        "Create a gtk.Label containing a sample hand"
+        "Create a new sample hand"
+        self.iTotHands += 1
+        self.iCurHand += 1
         aThisLib = copy(self.aLibrary)
         dHand = {}
-        oHandLabel = gtk.Label()
         # pylint: disable-msg=W0612
         # iCard is a loop counter, and is ignored
         for iCard in range(7):
@@ -242,9 +284,20 @@ class OpeningHandSimulator(CardListPlugin):
         sHand = ''
         for sName, iNum in sorted(dHand.items(), key=lambda x: x[1],
                 reverse=True):
-            sHand += '\t%d X %s\n' % (iNum, sName)
-        oHandLabel.set_markup(sHand)
-        return oHandLabel
+            sHand += u'\t%d \u00D7 %s\n' % (iNum, sName)
+        self.aDrawnHands.append(sHand)
+        return self._redraw_hand()
+
+    def _redraw_hand(self):
+        """Create a gtk.HBox holding a hand"""
+        oHandBox = gtk.VBox(False, False)
+        oDrawLabel = gtk.Label()
+        oHandLabel = gtk.Label()
+        oDrawLabel.set_markup('<b>Hand Number %d :</b>' % self.iCurHand)
+        oHandLabel.set_markup(self.aDrawnHands[self.iCurHand - 1])
+        oHandBox.pack_start(oDrawLabel)
+        oHandBox.pack_start(oHandLabel)
+        return oHandBox
 
 # pylint: disable-msg=C0103
 # plugin name doesn't match rule
