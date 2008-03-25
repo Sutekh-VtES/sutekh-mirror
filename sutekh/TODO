@@ -37,7 +37,6 @@ Other Tasks:
  * Find some users and developers interested in Sutekh on Windows.
 
 For 0.6:
- * Make sure sutekh works properly with sqlobject 0.10
  * Factor out things like the lists of expansions and disciplines in SutekhObjects
    to a seperate file
  * Have CardSetHolder take the expansion name rather than an expansion object
