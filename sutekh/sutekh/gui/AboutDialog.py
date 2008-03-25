@@ -4,8 +4,9 @@
 # Copyright 2007 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
 
-import gtk
+from sutekh.gui import SutekhIcon
 from sutekh.SutekhInfo import SutekhInfo
+import gtk
 
 class SutekhAboutDialog(gtk.AboutDialog):
     """About dialog for Sutekh."""
@@ -20,10 +21,9 @@ class SutekhAboutDialog(gtk.AboutDialog):
         self.set_license(SutekhInfo.LICENSE_TEXT)
         self.set_wrap_license(False) # don't automatically wrap license text
         self.set_website(SutekhInfo.SOURCEFORGE_URL)
-        # self.set_website_label(website_label)
+        self.set_website_label("Website")
         self.set_authors([tAuth[0] for tAuth in SutekhInfo.AUTHORS])
-        # self.set_documenters(documenters)
-        # self.set_artists(artists)
+        self.set_documenters([tAuth[0] for tAuth in SutekhInfo.DOCUMENTERS])
+        self.set_artists([tAuth[0] for tAuth in SutekhInfo.ARTISTS])
+        self.set_logo(SutekhIcon.SUTEKH_ICON)
         # self.set_translator_credits(translator_credits)
-        # self.set_logo(logo)
-        # self.set_logo_icon_name(icon_name)
