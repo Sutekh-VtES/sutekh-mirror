@@ -20,7 +20,8 @@ from sutekh.core.SutekhObjects import AbstractCard, IAbstractCard, ICreed, \
         Discipline, CardType, Title, Creed, Virtue, Sect, Expansion, \
         RarityPair, PhysicalCardSet, PhysicalCard, AbstractCardSet
 from sqlobject import AND, OR, NOT, LIKE, func, IN as SQLOBJ_IN
-from sqlobject.sqlbuilder import Table, Alias, LEFTJOINOn, Select, TRUE
+from sqlobject.sqlbuilder import Table, Alias, LEFTJOINOn, Select
+from sqlobject.sqlbuilder import SQLTrueClause as TRUE
 
 # Compability Patches
 
