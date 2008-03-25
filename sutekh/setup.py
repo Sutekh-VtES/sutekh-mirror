@@ -31,8 +31,8 @@ setup   (   # Metadata
             # Files
             packages = find_packages(exclude=['sutekh.tests']),
             package_data = {
-                # Include XSLT files from all packages
-                '': ['*.xsl'],
+                # Include SVG files from all packages
+                '': ['*.svg'],
                 # Include LICENSE information for sutekh package
                 'sutekh': ['COPYING'],
             },
