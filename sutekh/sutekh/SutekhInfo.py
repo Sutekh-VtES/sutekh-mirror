@@ -29,6 +29,10 @@ class SutekhInfo(object):
     MAINTAINER_NAME = MAINTAINERS[0][0]
     MAINTAINER_EMAIL = MAINTAINERS[0][1]
 
+    ARTISTS = [ AUTHORS[0] ] # Simon
+
+    DOCUMENTERS = [ AUTHORS[1] ] # Neil
+
     SOURCEFORGE_URL = 'http://sourceforge.net/projects/sutekh/'
 
     LICENSE = 'GPL'
