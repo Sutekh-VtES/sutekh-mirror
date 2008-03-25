@@ -23,6 +23,7 @@ from sutekh.gui.GuiCardLookup import GuiLookup
 from sutekh.gui.CardSetManagementFrame import PhysicalCardSetListFrame, \
         AbstractCardSetListFrame
 from sutekh.gui.PluginManager import PluginManager
+from sutekh.gui import SutekhIcon
 
 class MultiPaneWindow(gtk.Window):
     """Window that has a configurable number of panes."""
@@ -31,6 +32,8 @@ class MultiPaneWindow(gtk.Window):
         self.set_name("Sutekh")
         self._oFocussed = None
         self._oConfig = oConfig
+	# Set Default Window Icon for all Windows
+        gtk.window_set_default_icon(SutekhIcon.SUTEKH_ICON)
         # Create object cache
         self.__oSutekhObjectCache = SutekhObjectCache()
         self.set_title("Sutekh")
