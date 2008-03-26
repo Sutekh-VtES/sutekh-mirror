@@ -9,7 +9,6 @@
 Parse cards from a CSV file.
 """
 
-from sutekh.core.SutekhObjects import IExpansion
 from sutekh.core.CardSetHolder import CardSetHolder
 from sutekh.core.CardLookup import DEFAULT_LOOKUP
 from sqlobject import sqlhub
@@ -63,13 +62,9 @@ class CSVParser(object):
         if self.iExpansionColumn is not None:
             sExpansionName = aRow[self.iExpansionColumn].strip()
         else:
-            sExpansionName = 'None Specified'
+            sExpansionName = None
 
-        if sExpansionName == 'None Specified':
-            self.oCS.add(iCount, sName, None)
-        else:
-            oExpansion = IExpansion(sExpansionName)
-            self.oCS.add(iCount, sName, oExpansion)
+        self.oCS.add(iCount, sName, sExpansionName)
 
     def parse(self, fIn, sCardSetName, oCardLookup=DEFAULT_LOOKUP):
         oCsvFile = csv.reader(fIn)

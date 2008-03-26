@@ -12,9 +12,9 @@ to pick unknown cards from.
 import gtk
 from sqlobject import SQLObjectNotFound
 from sutekh.core.SutekhObjects import AbstractCard, PhysicalCard, IExpansion, \
-        MapPhysicalCardToPhysicalCardSet
+        MapPhysicalCardToPhysicalCardSet, Expansion
 from sutekh.core.CardLookup import AbstractCardLookup, PhysicalCardLookup, \
-        LookupFailed
+        ExpansionLookup, LookupFailed
 from sutekh.core.Filters import CardNameFilter
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 from sutekh.gui.PhysicalCardView import PhysicalCardView
@@ -136,7 +136,7 @@ class PCLwithNumbersView(PhysicalCardView):
         else:
             return None
 
-class GuiLookup(AbstractCardLookup, PhysicalCardLookup):
+class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
     """Lookup AbstractCards. Use the user as the AI if a simple lookup fails.
     """
 
@@ -171,17 +171,25 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup):
             except SQLObjectNotFound:
                 raise RuntimeError("Unexpectedly encountered missing abstract card '%s'." % sNewName)
 
-        return [(sName in dCards and dCards[sName] or dUnknownCards[sName]) for sName in aNames]
+        # emulate python 2.5's a = x if C else y
+        def new_card(sName):
+            if sName in dCards:
+                return dCards[sName]
+            else:
+                return dUnknownCards[sName]
 
-    def physical_lookup(self, dCardExpansions, dNameCards, sInfo):
+        return [new_card(sName) for sName in aNames]
+
+    def physical_lookup(self, dCardExpansions, dNameCards, dNameExps, sInfo):
         aCards = []
         dUnknownCards = {}
         for sName in dCardExpansions:
             oAbs = dNameCards[sName]
             if oAbs is not None:
                 try:
-                    for oExpansion in dCardExpansions[sName]:
-                        iCnt = dCardExpansions[sName][oExpansion]
+                    for sExpansionName in dCardExpansions[sName]:
+                        iCnt = dCardExpansions[sName][sExpansionName]
+                        oExpansion = dNameExps[sExpansionName]
                         if oExpansion is not None:
                             aPhysCards = PhysicalCard.selectBy(abstractCardID=oAbs.id,
                                     expansionID=oExpansion.id)
@@ -202,28 +210,57 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup):
                                 if iCnt == 0:
                                     break
                         if iCnt > 0:
-                            if oExpansion is None:
-                                sExpName = 'Unspecified Expansion'
-                            else:
-                                sExpName = oExpansion.name
-                            dUnknownCards.setdefault((oAbs.name, sExpName), 0)
-                            dUnknownCards[(oAbs.name, sExpName)] = iCnt
+                            dUnknownCards.setdefault((oAbs.name, sExpansionName), 0)
+                            dUnknownCards[(oAbs.name, sExpansionName)] = iCnt
                 except SQLObjectNotFound:
-                    for oExpansion in dCardExpansions[sName]:
-                        if oExpansion:
-                            sExpName = oExpansion.name
-                        else:
-                            sExpName = 'Unspecified Expansion'
-                        iCnt = dCardExpansions[sName][sExpName]
+                    for sExpansionName in dCardExpansions[sName]:
+                        iCnt = dCardExpansions[sName][sExpansionName]
+                        oExpansion = dNameExps[sExpansionName]
                         if iCnt > 0:
-                            dUnknownCards.setdefault((oAbs.name, sExpName), 0)
-                            dUnknownCards[(oAbs.name, sExpName)] = iCnt
+                            dUnknownCards.setdefault((oAbs.name, sExpansionName), 0)
+                            dUnknownCards[(oAbs.name, sExpansionName)] = iCnt
         if dUnknownCards:
             # We need to lookup cards in the physical card view
             if not self._do_handle_unknown_physical_cards(dUnknownCards, aCards, sInfo):
                 raise LookupFailed("Lookup of missing cards aborted by the user.")
 
         return aCards
+
+    def expansion_lookup(self, aExpansionNames, sInfo):
+        dExps = {}
+        dUnknownExps = {}
+
+        for sExp in aExpansionNames:
+            if not sExp:
+                dExps[sExp] = None
+            else:
+                try:
+                    oExp = IExpansion(sExp)
+                    dExps[sExp] = oExp
+                except KeyError:
+                    dUnknownExps[sExp] = None
+
+        if dUnknownExps:
+            if not self._do_handle_unknown_expansions(dUnknownExps, sInfo):
+                raise LookupFailed("Lookup of missing expansions aborted by the user.")
+
+        for sName, sNewName in dUnknownExps.items():
+            if sNewName is None:
+                continue
+            try:
+                oExp = IExpansion(sNewName)
+                dUnknownExps[sName] = oExp
+            except KeyError:
+                raise RuntimeError("Unexpectedly encountered missing expansion '%s'." % sNewName)
+
+        # emulate python 2.5's a = x if C else y
+        def new_exp(sName):
+            if sName in dExps:
+                return dExps[sName]
+            else:
+                return dUnknownExps[sName]
+
+        return [new_exp(sName) for sName in aExpansionNames]
 
     def _do_handle_unknown_physical_cards(self, dUnknownCards, aPhysCards, sInfo):
         """Handle unknwon physical cards
@@ -435,6 +472,71 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup):
                 sNewName = aNames[0]
                 if sNewName != "No Card":
                     dUnknownCards[sName] = sNewName
+            return True
+        else:
+            return False
+
+    def _do_handle_unknown_expansions(self, dUnknownExps, sInfo):
+        """Handle the list of unknown expansions.
+
+           We allow the user to select the correct replacements from the
+           expansions listed in the database.
+           """
+        oUnknownDialog = SutekhDialog("Unknown expansions found importing %s" % sInfo, None,
+                gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
+                (gtk.STOCK_OK, gtk.RESPONSE_OK,
+                 gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
+
+        aKnownExpansions = list(Expansion.select())
+
+        oMesgLabel1 = gtk.Label()
+        oMesgLabel2 = gtk.Label()
+
+        sMsg1 = "While importing %s\n" \
+                "The following expansions could not be found:\n" \
+                "Choose how to handle these expansions?\n" % (sInfo)
+        sMsg2 = "OK continues the card set creation process, " \
+                "Cancel aborts the creation of the card set"
+
+        oMesgLabel1.set_text(sMsg1)
+        oUnknownDialog.vbox.pack_start(oMesgLabel1, False, False)
+
+        oButtonBox = gtk.VBox()
+
+        # Fill in the Expansions and options
+        dReplacement = {}
+        for sName in dUnknownExps:
+            oBox = gtk.HBox()
+            oLabel = gtk.Label("%s is Unknown: Replace with " % sName)
+            oBox.pack_start(oLabel)
+
+            oSelector = gtk.combo_box_new_text()
+            oSelector.append_text("No Expansion")
+            for oExp in aKnownExpansions:
+                oSelector.append_text(oExp.name)
+
+            dReplacement[sName] = oSelector
+
+            oBox.pack_start(dReplacement[sName])
+            oButtonBox.pack_start(oBox)
+
+        oUnknownDialog.vbox.pack_start(oButtonBox, True, True)
+
+        oMesgLabel2.set_text(sMsg2)
+
+        oUnknownDialog.vbox.pack_start(oMesgLabel2)
+        oUnknownDialog.vbox.show_all()
+
+        iResponse = oUnknownDialog.run()
+
+        oUnknownDialog.destroy()
+
+        if iResponse == gtk.RESPONSE_OK:
+            # For cards marked as replaced, add them to the Holder
+            for sName in dUnknownExps:
+                sNewName = dReplacement[sName].get_active_text()
+                if sNewName != "No Expansion":
+                    dUnknownExps[sName] = sNewName
             return True
         else:
             return False

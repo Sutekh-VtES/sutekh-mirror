@@ -15,7 +15,6 @@ looks like:
 </cards>
 """
 
-from sutekh.core.SutekhObjects import IExpansion
 from sutekh.core.CardSetHolder import CardSetHolder
 from sutekh.core.CardLookup import DEFAULT_LOOKUP
 from sqlobject import sqlhub
@@ -44,13 +43,11 @@ class PhysicalCardParser(object):
                 sName = oElem.attrib['name']
                 try:
                     sExpansionName = oElem.attrib['expansion']
+                    if sExpansionName == "None Specified":
+                        sExpansionName = None
                 except KeyError:
-                    sExpansionName = 'None Specified'
-                if sExpansionName == 'None Specified':
-                    self.oCS.add(iCount, sName, None)
-                else:
-                    oExpansion = IExpansion(sExpansionName)
-                    self.oCS.add(iCount, sName, oExpansion)
+                    sExpansionName = None
+                self.oCS.add(iCount, sName, sExpansionName)
 
     def _commitTree(self, oCardLookup):
         """Commit contents of the card set holder to

@@ -8,7 +8,7 @@
    """
 
 from sqlobject import SQLObjectNotFound
-from sutekh.core.SutekhObjects import AbstractCard, PhysicalCard
+from sutekh.core.SutekhObjects import AbstractCard, PhysicalCard, IExpansion
 
 class LookupFailed(Exception):
     """Raised when an AbstractCard lookup fails completed.
@@ -30,16 +30,18 @@ class AbstractCardLookup(object):
         raise NotImplementedError
 
 class PhysicalCardLookup(object):
-    """Base class for objects which translate card names and expansions
+    """Base class for objects which translate card and expansion names
        into physical card objects
        """
 
-    def physical_lookup(self, dCardExpansions, dNameCards, sInfo):
+    def physical_lookup(self, dCardExpansions, dNameCards, dNameExps, sInfo):
         """Returns a list of physical cards. Since physical cards can't
            be repeated, this is a list of statisfable requests.
 
            dCardExpansions[Name][Expansion] is the number of cards requested,
-           and dNameCards is a list of card name to abstract card mappings
+           dNameCards is a dictionary of card name to abstract card mappings
+           and dNameExps is a dictionary of expansion name to expansion object
+           mappings. 
 
            Note that len(list returned) =< sum(all requests in dCardExpansions)
 
@@ -52,7 +54,22 @@ class PhysicalCardLookup(object):
            """
         raise NotImplementedError
 
-class SimpleLookup(AbstractCardLookup, PhysicalCardLookup):
+class ExpansionLookup(object):
+    """Base class for objects which translate expansion names into expansion
+       objects
+       """
+
+    def expansion_lookup(self, aExpansionNames, sInfo):
+        """Return a list of Expansions, one for each item in aExpansionNames.
+
+           Names for which Expansions could not be found will be marked with
+           a None in the returned list. The method may raise LookupFailed if the
+           entire list should be considered invalid (e.g. if the names are
+           presented to a user who then cancels the operation).
+           """
+        raise NotImplementedError
+
+class SimpleLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
     """A really straightforward lookup of AbstractCards and PhysicalCards.
 
        The default when we don't have a more cunning plan.
@@ -71,15 +88,16 @@ class SimpleLookup(AbstractCardLookup, PhysicalCardLookup):
                 aCards.append(None)
         return aCards
 
-    def physical_lookup(self, dCardExpansions, dNameCards, sInfo):
+    def physical_lookup(self, dCardExpansions, dNameCards, dNameExps, sInfo):
         aCards = []
         for sName in dCardExpansions:
             oAbs = dNameCards[sName]
             if oAbs is not None:
                 try:
                     aPhysCards = PhysicalCard.selectBy(abstractCardID=oAbs.id)
-                    for oExpansion in dCardExpansions[sName]:
-                        iCnt = dCardExpansions[sName][oExpansion]
+                    for sExpansionName in dCardExpansions[sName]:
+                        iCnt = dCardExpansions[sName][sExpansionName]
+                        oExpansion = dNameExps[sExpansionName]
                         # We treat None as specifying the same as specifying
                         # an expansion - the card (A, None) doesn't match a
                         # card in the physical card list (A, '3rd Ed')
@@ -101,5 +119,19 @@ class SimpleLookup(AbstractCardLookup, PhysicalCardLookup):
                     # This card is missing from the PhysicalCard list, so skipped
                     pass
         return aCards
+
+    def expansion_lookup(self, aExpansionNames, sInfo):
+        aExps = []
+        for sExp in aExpansionNames:
+            if sExp:
+                try:
+                    oExp = IExpansion(sExp)
+                    aExps.append(oExp)
+                except KeyError:
+                    aExps.append(None)
+            else:
+                aExps.append(None)
+        return aExps
+
 
 DEFAULT_LOOKUP = SimpleLookup()

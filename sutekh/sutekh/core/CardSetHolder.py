@@ -16,35 +16,36 @@ class CardSetHolder(object):
         self._sName, self._sAuthor, self._sComment, self._sAnnotations = None, None, None, None
         self._bInUse = False
         self._dCards = {} # card name -> count
-        # (card name, expansion) -> count, used  for physical card sets
+        self._dExpansions = {} # expansion name -> count
+        # (card name, expansion name) -> count, used  for physical card sets
         # and the physical card list
+        # The expansion name may be None to indicate an unspecified expansion
         self._dCardExpansions = {}
 
     # Manipulate Virtual Card Set
 
-    def add(self, iCnt, sName, oExpansion=None):
+    def add(self, iCnt, sName, sExpansionName=None):
         """Append cards to the virtual set.
            """
         self._dCards.setdefault(sName, 0)
         self._dCards[sName] += iCnt
+        self._dExpansions.setdefault(sExpansionName, 0)
+        self._dExpansions[sExpansionName] += iCnt
         self._dCardExpansions.setdefault(sName,{})
-        self._dCardExpansions[sName].setdefault(oExpansion, 0)
-        self._dCardExpansions[sName][oExpansion] += iCnt
+        self._dCardExpansions[sName].setdefault(sExpansionName, 0)
+        self._dCardExpansions[sName][sExpansionName] += iCnt
 
-    def remove(self, iCnt, sName, oExpansion=None):
+    def remove(self, iCnt, sName, sExpansionName=None):
         """Remove cards from the virtual set.
            """
-        if oExpansion is None:
-            sExpName = 'No Expansion'
-        else:
-            sExpName = oExpansion.name
         if not sName in self._dCards or self._dCards[sName] < iCnt:
             raise RuntimeError("Not enough of card '%s' to remove '%d'." % (sName,iCnt))
         elif not sName in self._dCardExpansions \
-                or oExpansion not in self._dCardExpansions[sName] \
-                or self._dCardExpansions[sName][oExpansion] < iCnt:
-            raise RuntimeError("Not enough of card '%s' from expansion '%s' to remove '%d'." % (sName, sExpName, iCnt))
-        self._dCardExpansions[sName][oExpansion] -= iCnt
+                or sExpansionName not in self._dCardExpansions[sName] \
+                or self._dCardExpansions[sName][sExpansionName] < iCnt:
+            raise RuntimeError("Not enough of card '%s' from expansion '%s' to remove '%d'." % (sName, sExpansionName, iCnt))
+        self._dCardExpansions[sName][sExpansionName] -= iCnt
+        self._dExpansions[sExpansionName] -= iCnt # should be covered by check on self._dCardExpansions
         self._dCards[sName] -= iCnt
 
     name = property(fget = lambda self: self._sName, fset = lambda self, x: setattr(self,'_sName',x))
@@ -84,10 +85,15 @@ class CardSetHolder(object):
         aCardCnts = self._dCards.items()
         aAbsCards = oCardLookup.lookup([tCardCnt[0] for tCardCnt in aCardCnts], "Physical Card List")
 
+        aExpNames = self._dExpansions.keys()
+        aExps = oCardLookup.expansion_lookup(aExpNames, "Physical Card List")
+        dExpansionLookup = dict(zip(aExpNames,aExps))
+
         for oAbs, (sName, iCnt) in zip(aAbsCards,aCardCnts):
             if not oAbs:
                 continue
-            for oExpansion, iExtCnt in self._dCardExpansions[sName].iteritems():
+            for sExpansionName, iExtCnt in self._dCardExpansions[sName].iteritems():
+                oExpansion = dExpansionLookup[sExpansionName]
                 for i in range(iExtCnt):
                     PhysicalCard(abstractCard=oAbs, expansion=oExpansion)
 
@@ -100,8 +106,13 @@ class CardSetHolder(object):
         aCardCnts = self._dCards.items()
         aAbsCards = oCardLookup.lookup([tCardCnt[0] for tCardCnt in aCardCnts], "Physical Card Set " +  self.name)
         dNameCards = dict(zip(self._dCards.keys(), aAbsCards))
+
+        aExpNames = self._dExpansions.keys()
+        aExps = oCardLookup.expansion_lookup(aExpNames, "Physical Card List")
+        dExpansionLookup = dict(zip(aExpNames,aExps))
+
         aPhysCards = oCardLookup.physical_lookup(self._dCardExpansions,
-                dNameCards, "Physical Card Set " + self.name)
+                dNameCards, dExpansionLookup, "Physical Card Set " + self.name)
 
         oPCS = PhysicalCardSet(name=self.name.encode('utf8'),
                                author=self.author, comment=self.comment,
@@ -118,7 +129,7 @@ class CardSetHolder(object):
 class CachedCardSetHolder(CardSetHolder):
     """
     CardSetHolder class which supports creating and using a cached
-    dctionary of Lookup results.
+    dictionary of Lookup results.
     """
 
     def createACS(self, oCardLookup=DEFAULT_LOOKUP, dLookupCache={}):
@@ -157,6 +168,10 @@ class CachedCardSetHolder(CardSetHolder):
         aCardCnts = self._dCards.items()
         aAbsCards = oCardLookup.lookup([dLookupCache.get(tCardCnt[0], tCardCnt[0]) for tCardCnt in aCardCnts], "Physical Card List")
 
+        aExpNames = self._dExpansions.keys()
+        aExps = oCardLookup.expansion_lookup(aExpNames, "Physical Card List")
+        dExpansionLookup = dict(zip(aExpNames,aExps))
+
         for oAbs, (sName, iCnt) in zip(aAbsCards,aCardCnts):
             if not oAbs:
                 dLookupCache[sName] = None
@@ -164,7 +179,8 @@ class CachedCardSetHolder(CardSetHolder):
             if oAbs.canonicalName != sName and sName not in dLookupCache:
                 dLookupCache[sName] = oAbs.canonicalName
                 # Update the cache
-            for oExpansion, iExtCnt in self._dCardExpansions[sName].iteritems():
+            for sExpansion, iExtCnt in self._dCardExpansions[sName].iteritems():
+                oExpansion = dExpansionLookup[sExpansion]
                 for i in range(iExtCnt):
                     PhysicalCard(abstractCard=oAbs, expansion=oExpansion)
         return dLookupCache
@@ -178,8 +194,13 @@ class CachedCardSetHolder(CardSetHolder):
         aCardCnts = self._dCards.items()
         aAbsCards = oCardLookup.lookup([dLookupCache.get(tCardCnt[0], tCardCnt[0]) for tCardCnt in aCardCnts], "Physical Card Set " + self.name)
         dNameCards = dict(zip(self._dCards.keys(), aAbsCards))
+
+        aExpNames = self._dExpansions.keys()
+        aExps = oCardLookup.expansion_lookup(aExpNames, "Physical Card List")
+        dExpansionLookup = dict(zip(aExpNames,aExps))
+
         aPhysCards = oCardLookup.physical_lookup(self._dCardExpansions,
-                dNameCards, "Physical Card Set " + self.name)
+                dNameCards, dExpansionLookup, "Physical Card Set " + self.name)
 
         # Since we are dealing with the PhysicalCardSets, we assume that
         # dLookupCache has any answers required from the PhysicalCardList,

@@ -39,8 +39,6 @@ Other Tasks:
 For 0.6:
  * Factor out things like the lists of expansions and disciplines in SutekhObjects
    to a seperate file
- * Have CardSetHolder take the expansion name rather than an expansion object
-   when adding cards.
  * Improve Current Filter dialogs:
     - Provide better help 
  * Add decent keyboard shortcuts

@@ -699,7 +699,7 @@ def copy_to_new_AbstractCardDB(oOrigConn, oNewConn, oCardLookup, oLogHandler=Non
                     AbstractCardSet.select(connection=oOrigConn).count()
             oLogHandler.set_total(iTotal)
     for oCard in PhysicalCard.select(connection=oOrigConn):
-        oPhysListCS.add(1, oCard.abstractCard.canonicalName, oCard.expansion)
+        oPhysListCS.add(1, oCard.abstractCard.canonicalName, oCard.expansion.name)
     # Copy Physical card sets
     for oSet in PhysicalCardSet.select(connection=oOrigConn):
         oCS = CachedCardSetHolder()
@@ -709,7 +709,7 @@ def copy_to_new_AbstractCardDB(oOrigConn, oNewConn, oCardLookup, oLogHandler=Non
         oCS.annotations = oSet.annotations
         oCS.inuse = oSet.inuse
         for oCard in oSet.cards:
-            oCS.add(1, oCard.abstractCard.canonicalName, oCard.expansion)
+            oCS.add(1, oCard.abstractCard.canonicalName, oCard.expansion.name)
         aPhysCardSets.append(oCS)
     # Copy AbstractCardSets
     for oSet in AbstractCardSet.select(connection=oOrigConn):
