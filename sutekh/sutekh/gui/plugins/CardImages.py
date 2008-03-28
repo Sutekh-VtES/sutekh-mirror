@@ -13,6 +13,7 @@ import os
 import zipfile
 import urllib2
 import tempfile
+from sqlobject import SQLObjectNotFound
 from sutekh.core.SutekhObjects import AbstractCard, AbstractCardSet, \
         PhysicalCard, PhysicalCardSet, IAbstractCard, IExpansion
 from sutekh.gui.PluginManager import CardListPlugin
@@ -117,8 +118,12 @@ class CardImageFrame(BasicFrame, CardListViewListener):
         """Set the expansion info."""
         # pylint: disable-msg=E1101
         # pylint doesn't pick up IAbstractCard methods correctly
-        oAbsCard = IAbstractCard(sCardName)
-        if len(oAbsCard.rarity) > 0:
+        try:
+            oAbsCard = IAbstractCard(sCardName)
+            bHasInfo = len(oAbsCard.rarity) > 0
+        except SQLObjectNotFound:
+            bHasInfo = False
+        if bHasInfo:
             aExp = [oP.expansion.name for oP in oAbsCard.rarity]
             self.__aExpansions = list(set(aExp)) # remove duplicates
             self.__iExpansionPos = 0
