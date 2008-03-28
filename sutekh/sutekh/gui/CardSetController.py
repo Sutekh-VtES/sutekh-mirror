@@ -70,7 +70,7 @@ class PhysicalCardSetController(CardSetController):
         if oAbsCard.id in self.__aAbsCardIds:
             self.view.reload_keep_expanded()
 
-    def physical_card_deleted(self, oPhysCard):
+    def physical_card_deleted(self, oPhysCard, post_funcs=None):
         """
         Listen on physical card removals. Needed so we can
         updated the model if a card in this set is deleted
@@ -78,6 +78,7 @@ class PhysicalCardSetController(CardSetController):
         # We get here after we have removed the card from the card set,
         # but before it is finally deleted from the table, so it's no
         # longer in self.__oPhysCards.
+        # post_funcs is passed by SQLObject 0.10, but not by 0.9
         if oPhysCard.id in self.__aPhysCardIds:
             self.__aPhysCardIds.remove(oPhysCard.id)
             oAC = oPhysCard.abstractCard
