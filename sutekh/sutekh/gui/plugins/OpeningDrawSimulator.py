@@ -51,14 +51,25 @@ def check_card(sCardName, dToCheck, dCount):
             dCount.setdefault(sToCheck, 0)
             dCount[sToCheck] += 1
 
-def fill_string(dGroups, aSortedList, dToCheck):
+def fill_string(dGroups, dInfo, dToCheck):
     """Construct a string to display for type info"""
     sResult = ''
+    aSortedList = sorted(dInfo.items(), key=lambda x: (x[1], x[0]),
+            reverse=True)
     for sGroup, iNum in dGroups.iteritems():
         sResult += u'%d \u00D7 %s\n' % (iNum, sGroup)
         for sCardName, iNum in aSortedList:
             if sCardName in dToCheck[sGroup]:
                 sResult += u'<i>\t%d \u00D7 %s</i>\n' % (iNum, sCardName)
+    return sResult
+
+def format_dict(dInfo):
+    """Construct a string for the dictionary of names and card numbers"""
+    sResult = ''
+    aSortedList = sorted(dInfo.items(), key=lambda x: (x[1], x[0]),
+            reverse=True)
+    for sName, iNum in aSortedList:
+        sResult += u'%d \u00D7 %s\n' % (iNum, sName)
     return sResult
 
 def hypergeometric_mean(iItems, iDraws, iTotal):
@@ -129,6 +140,7 @@ class OpeningHandSimulator(CardListPlugin):
         self.dCardTypes = {}
         self.dCardProperties = {}
         self.aLibrary = []
+        self.aCrypt = []
         self.iTotHands = 0
         self.iCurHand = 0
         self.aDrawnHands = []
@@ -153,13 +165,18 @@ class OpeningHandSimulator(CardListPlugin):
     def activate(self, oWidget):
         "Create the actual dialog, and populate it"
         sDiagName = "Opening Hand"
-        oLibFilter = FilterNot(MultiCardTypeFilter(['Imbued', 'Vampire']))
+        oCryptFilter = MultiCardTypeFilter(['Imbued', 'Vampire'])
 
-        self.aLibrary = get_cards_filter(self.model, oLibFilter)
+        self.aCrypt = get_cards_filter(self.model, oCryptFilter)
+        self.aLibrary = get_cards_filter(self.model, FilterNot(oCryptFilter))
 
         if len(self.aLibrary) < 7:
-            do_complaint_error('Library needs to be larger than opening hand')
+            do_complaint_error('Library needs to be at least as large as the'
+                    ' opening hand')
             return
+        if len(self.aCrypt) < 4:
+            do_complaint_error('Crypt needs to be at least as large as the'
+                    ' opening draw')
 
         for sType in MultiCardTypeFilter.get_values():
             aList = get_cards_filter(self.model, CardTypeFilter(sType))
@@ -198,6 +215,8 @@ class OpeningHandSimulator(CardListPlugin):
         self.iTotHands = 0
         self.iCurHand = 0
         self.aDrawnHands = []
+
+
     # pylint: enable-msg=W0613
 
     def _fill_stats(self, oDialog):
@@ -310,6 +329,7 @@ class OpeningHandSimulator(CardListPlugin):
         self.iTotHands += 1
         self.iCurHand += 1
         aThisLib = copy(self.aLibrary)
+        aThisCrypt = copy(self.aCrypt)
         dHand = {}
         dProps = {}
         dTypes = {}
@@ -322,28 +342,39 @@ class OpeningHandSimulator(CardListPlugin):
             dHand[oCard.name] += 1
             check_card(oCard.name, self.dCardTypes, dTypes)
             check_card(oCard.name, self.dCardProperties, dProps)
-        sHand = ''
-        aSortedList = sorted(dHand.items(), key=lambda x: (x[1], x[0]),
-                reverse=True)
-        for sName, iNum in aSortedList:
-            sHand += u'%d \u00D7 %s\n' % (iNum, sName)
-        sTypes = fill_string(dTypes, aSortedList, self.dCardTypes)
-        sProps = fill_string(dProps, aSortedList, self.dCardProperties)
-        self.aDrawnHands.append([sHand, sTypes, sProps])
+        dCrypt = {}
+        for iCard in range(4):
+            oCard = choice(aThisCrypt)
+            aThisCrypt.remove(oCard) # drawing without replacement
+            dCrypt.setdefault(oCard.name, 0)
+            dCrypt[oCard.name] += 1
+        self.aDrawnHands.append([format_dict(dHand),
+            fill_string(dTypes, dHand, self.dCardTypes),
+            fill_string(dProps, dHand, self.dCardProperties),
+            format_dict(dCrypt)])
         return self._redraw_hand()
 
     def _redraw_hand(self):
         """Create a gtk.HBox holding a hand"""
         oHandBox = gtk.VBox(False, 2)
         oDrawLabel = gtk.Label()
+        oHBox = gtk.HBox()
         oHandLabel = gtk.Label()
         oDrawLabel.set_markup('<b>Hand Number %d :</b>' % self.iCurHand)
         oHandLabel.set_markup(self.aDrawnHands[self.iCurHand - 1][0])
+        oCryptLabel = gtk.Label()
+        oCryptLabel.set_markup(self.aDrawnHands[self.iCurHand - 1][3])
         oHandBox.pack_start(oDrawLabel, False, False)
         oAlign = gtk.Alignment(xalign=0.5, xscale=0.7)
         oAlign.add(gtk.HSeparator())
         oHandBox.pack_start(oAlign, False, False)
-        oHandBox.pack_start(oHandLabel)
+        oFrame = gtk.Frame('Opening Hand')
+        oFrame.add(oHandLabel)
+        oHBox.pack_start(oFrame)
+        oFrame = gtk.Frame('Opening Crypt Draw')
+        oFrame.add(oCryptLabel)
+        oHBox.pack_start(oFrame)
+        oHandBox.pack_start(oHBox)
         return oHandBox
 
     def _redraw_detail_box(self):
