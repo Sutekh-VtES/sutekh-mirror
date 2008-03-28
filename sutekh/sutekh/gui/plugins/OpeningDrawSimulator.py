@@ -92,13 +92,16 @@ def fill_store(oStore, dLibProbs, dGroupedProbs):
             oStore.append(oParentIter, (sCardName, sVal, 100*fMean / 7))
 
 def setup_view(dLibProbs, dGroupedProbs, sHeading):
-    """Setup the TreeStore and TreeView for the results"""
+    """Setup the TreeStore for the results"""
     oStore = gtk.TreeStore(gobject.TYPE_STRING, gobject.TYPE_STRING,
             gobject.TYPE_FLOAT)
     fill_store(oStore, dLibProbs, dGroupedProbs)
 
+    return create_view(oStore, sHeading)
+    
+def create_view(oStore, sHeading):
+    """Setup the TreeView for the results"""
     oView = gtk.TreeView(oStore)
-
     oTextCol = gtk.TreeViewColumn(sHeading)
     oTextCell = gtk.CellRendererText()
     oTextCol.pack_start(oTextCell, True)
@@ -108,13 +111,14 @@ def setup_view(dLibProbs, dGroupedProbs, sHeading):
     oValCol.pack_start(oValProgCell, True)
     oValCol.add_attribute(oValProgCell, 'value', 2)
     oValCol.add_attribute(oValProgCell, 'text', 1)
-    # size request is 800x600, so grab about 3/4 of the column
-    oTextCol.set_min_width(300)
+    # size request is 900x600, cols are about 300, so gran most of the column
+    oTextCol.set_min_width(230)
     oTextCol.set_sort_column_id(0)
+    oTextCol.set_expand(True)
     oValCol.set_sort_column_id(1)
     # limit space taken by progress bars
-    oValCol.set_max_width(70)
-    oValCol.set_min_width(40)
+    oValCol.set_max_width(60)
+    oValCol.set_expand(False)
     oView.append_column(oTextCol)
     oView.append_column(oValCol)
     # set suitable default sort
@@ -192,6 +196,7 @@ class OpeningHandSimulator(CardListPlugin):
         oDialog = SutekhDialog(sDiagName, self.parent,
                 gtk.DIALOG_MODAL|gtk.DIALOG_DESTROY_WITH_PARENT,
                 (gtk.STOCK_OK, gtk.RESPONSE_OK))
+        oDialog.set_size_request(900, 600)
 
         self._fill_stats(oDialog)
 
@@ -202,7 +207,6 @@ class OpeningHandSimulator(CardListPlugin):
         # vbox methods not detected by pylint
         oDialog.vbox.pack_start(oShowButton, False, False)
 
-        oDialog.set_size_request(800, 600)
 
         oDialog.show_all()
 
@@ -216,7 +220,24 @@ class OpeningHandSimulator(CardListPlugin):
         self.iCurHand = 0
         self.aDrawnHands = []
 
+    def setup_crypt_view(self):
+        """Format a column of the crypt stats"""
+        dCrypt = {}
+        iTot = len(self.aCrypt)
 
+        for oCard in self.aCrypt:
+            dCrypt.setdefault(oCard.name, 0)
+            dCrypt[oCard.name] += 1
+
+        oStore = gtk.TreeStore(gobject.TYPE_STRING, gobject.TYPE_STRING,
+                gobject.TYPE_FLOAT)
+
+        for sCardName, iCount in dCrypt.iteritems():
+            fMean = hypergeometric_mean(iCount, 4, iTot)
+            sVal = '%2.2f' % fMean
+            oStore.append(None, (sCardName, sVal, 100*fMean / 4))
+
+        return create_view(oStore, 'Crypt Card')
     # pylint: enable-msg=W0613
 
     def _fill_stats(self, oDialog):
@@ -227,7 +248,7 @@ class OpeningHandSimulator(CardListPlugin):
         get_probs(dLibProbs, self.dCardTypes, dTypeProbs)
         get_probs(dLibProbs, self.dCardProperties, dPropProbs)
         # setup display widgets
-        oHBox = gtk.HBox(False, 3)
+        oHBox = gtk.HBox(True, 3)
         # pylint: disable-msg=E1101
         # vbox methods not detected by pylint
         oDialog.vbox.pack_start(oHBox)
@@ -235,6 +256,7 @@ class OpeningHandSimulator(CardListPlugin):
             dTypeProbs, 'Card Types')))
         oHBox.pack_start(AutoScrolledWindow(setup_view(dLibProbs,
             dPropProbs, 'Card Properties')))
+        oHBox.pack_start(AutoScrolledWindow(self.setup_crypt_view()))
         oHBox.show_all()
 
     def _get_lib_props(self):
