@@ -111,7 +111,7 @@ class MainMenu(gtk.MenuBar, object):
         iSeperator3 = gtk.SeparatorMenuItem()
         oMenu.add(iSeperator3)
 
-        iQuit = gtk.MenuItem("Quit")
+        iQuit = gtk.MenuItem("_Quit")
         iQuit.connect('activate',
                 lambda iItem: self.__oWin.action_quit(self.__oWin))
 
