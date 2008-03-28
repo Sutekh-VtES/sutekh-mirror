@@ -48,6 +48,9 @@ class ConfigFile(object):
         if 'show zero count cards' not in self.__oConfig.options(self.__sPrefsSection):
             self.set_show_zero_count_cards(False)
 
+        if 'save window size' not in self.__oConfig.options(self.__sPrefsSection):
+            self.set_save_window_size(True)
+
         if not self.__oConfig.has_section(self.__sPanesSection):
             self.__oConfig.add_section(self.__sPanesSection)
             # No panes information, so we set 'sensible' defaults
@@ -66,11 +69,23 @@ class ConfigFile(object):
     def __str__(self):
         return "FileName : " + self.__sFileName
 
+    def _get_bool_key(self, sSection, sKey):
+        """Test if a boolean key is set or not"""
+        return self.__oConfig.get(sSection, sKey) == 'yes'
+
+
+    def _set_bool_key(self, sSection, sKey, bValue):
+        """Set a boolean key"""
+        if bValue:
+            self.__oConfig.set(sSection, sKey, 'yes')
+        else:
+            self.__oConfig.set(sSection, sKey, 'no')
+
     def addListener(self, oListener):
         self.__dListeners[oListener] = None
 
     def removeListener(self, oListener):
-        del self.__dListenders[oListener]
+        del self.__dListeners[oListener]
 
     def write(self):
         self.__oConfig.write(open(self.__sFileName, 'w'))
@@ -112,34 +127,41 @@ class ConfigFile(object):
         return aRes
 
     def getSaveOnExit(self):
-        return self.__oConfig.get(self.__sPrefsSection, 'save on exit') == 'yes'
+        """Query the 'save on exit' option."""
+        return self._get_bool_key(self.__sPrefsSection, 'save on exit')
 
     def setSaveOnExit(self, bSaveOnExit):
-        if bSaveOnExit:
-            self.__oConfig.set(self.__sPrefsSection, 'save on exit', 'yes')
-        else:
-            self.__oConfig.set(self.__sPrefsSection, 'save on exit', 'no')
+        """Set the 'save on exit' option."""
+        self._set_bool_key(self.__sPrefsSection, 'save on exit', bSaveOnExit)
 
     def get_save_precise_pos(self):
-        return self.__oConfig.get(self.__sPrefsSection, 'save pane sizes') == 'yes'
+        """Query the 'save pane sizes' option."""
+        return self._get_bool_key(self.__sPrefsSection, 'save pane sizes')
 
     def set_save_precise_pos(self, bSavePos):
-        if bSavePos:
-            self.__oConfig.set(self.__sPrefsSection, 'save pane sizes', 'yes')
-        else:
-            self.__oConfig.set(self.__sPrefsSection, 'save pane sizes', 'no')
+        """Set the 'save pane sizes' option."""
+        self._set_bool_key(self.__sPrefsSection, 'save pane sizes', bSavePos)
+
+    def get_save_window_size(self):
+        """Query the 'save window size' option."""
+        return self._get_bool_key(self.__sPrefsSection, 'save window size')
+
+    def set_save_window_size(self, bSavePos):
+        """Set the 'save window size' option."""
+        self._set_bool_key(self.__sPrefsSection, 'save window size', bSavePos)
 
     def get_show_zero_count_cards(self):
-        return self.__oConfig.get(self.__sPrefsSection, 'show zero count cards') == 'yes'
+        """Query the 'show zero count cards' option."""
+        return self._get_bool_key(self.__sPrefsSection,
+                'show zero count cards')
 
     def set_show_zero_count_cards(self, bShowZero):
-        if bShowZero:
-            self.__oConfig.set(self.__sPrefsSection, 'show zero count cards', 'yes')
-        else:
-            self.__oConfig.set(self.__sPrefsSection, 'show zero count cards', 'no')
+        """Set the 'show zero count cards' option."""
+        self._set_bool_key(self.__sPrefsSection, 'show zero count cards',
+                bShowZero)
 
     def add_frame(self, iFrameNumber, sType, sName, bVertical, iPos):
-        aOptions = self.__oConfig.options(self.__sPanesSection)
+        """Add a frame to the config file"""
         sKey = 'pane ' + str(iFrameNumber)
         sData = sType
         if bVertical:
@@ -150,16 +172,31 @@ class ConfigFile(object):
         self.__oConfig.set(self.__sPanesSection, sKey, sValue)
 
     def set_databaseURI(self, sDatabaseURI):
+        """Set the configured database URI"""
         self.__oConfig.set(self.__sPrefsSection, "database url", sDatabaseURI)
 
     def get_databaseURI(self):
+        """Get database URI from the config file"""
         try:
             sResult = self.__oConfig.get(self.__sPrefsSection, "database url")
         except NoOptionError:
             sResult = None
         return sResult
 
+    def get_window_size(self):
+        try:
+            sResult = self.__oConfig.get(self.__sPrefsSection, 'window size')
+            iX, iY = [int(x) for x in sResult.split(',')]
+        except NoOptionError:
+            iX, iY = -1, -1
+        return iX, iY
+
+    def save_window_size(self, tSize):
+        sPos = '%d, %d' % (tSize[0], tSize[1])
+        self.__oConfig.set(self.__sPrefsSection, 'window size', sPos)
+
     def addFilter(self, sFilter):
+        """Add a filter to the file, handling automatic numbering"""
         aOptions = self.__oConfig.options(self.__sFiltersSection)
         self.__iNum += 1
         sKey = 'user filter ' + str(self.__iNum)
@@ -171,6 +208,7 @@ class ConfigFile(object):
             oListener.addFilter(sFilter, sKey)
 
     def removeFilter(self, sFilter, sKey):
+        """Remove a filter from the file"""
         # Make sure Filer and key match
         if sKey in self.__oConfig.options(self.__sFiltersSection) and \
                 sFilter == self.__oConfig.get(self.__sFiltersSection, sKey):
@@ -180,6 +218,7 @@ class ConfigFile(object):
             return
 
     def replaceFilter(self, sOldFilter, sNewFilter, sKey):
+        """Replace a filter in the file with new filter"""
         if sKey in self.__oConfig.options(self.__sFiltersSection) and \
                 sOldFilter == self.__oConfig.get(self.__sFiltersSection, sKey):
             self.__oConfig.remove_option(self.__sFiltersSection, sKey)
@@ -200,5 +239,5 @@ class ConfigFile(object):
         return sResult
 
     def set_plugin_key(self, sKey, sValue):
-        "Set a vlue in the plugin section"
+        """Set a value in the plugin section"""
         self.__oConfig.set(self.__sPluginsSection, sKey, sValue)

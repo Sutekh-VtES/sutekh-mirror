@@ -97,6 +97,9 @@ class MultiPaneWindow(gtk.Window):
             # Clear out all existing frames
             for oFrame in self.dOpenFrames.keys():
                 self.remove_frame(oFrame, True)
+        iWidth, iHeight = self._oConfig.get_window_size()
+        if iWidth > 0 and iHeight > 0:
+            self.resize(iWidth, iHeight)
         for iNumber, sType, sName, bVert, iPos in self._oConfig.getAllPanes():
             oF = self.add_pane(bVert, iPos)
             self._oFocussed = oF
@@ -227,7 +230,12 @@ class MultiPaneWindow(gtk.Window):
     def action_quit(self, oWidget):
         if self._oConfig.getSaveOnExit():
             self.save_frames()
+        if self._oConfig.get_save_window_size():
+            self.save_window_size()
         gtk.main_quit()
+
+    def save_window_size(self):
+        self._oConfig.save_window_size(self.get_size())
 
     def save_frames(self):
         """

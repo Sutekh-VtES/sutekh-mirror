@@ -94,6 +94,16 @@ class MainMenu(gtk.MenuBar, object):
         iSavePos.connect('activate', self.do_toggle_save_precise_pos)
         wPrefsMenu.add(iSavePos)
 
+        iSaveWinSize = gtk.CheckMenuItem('Save Window Size')
+        iSaveWinSize.set_inconsistent(False)
+        if self.__oConfig.get_save_window_size():
+            iSaveWinSize.set_active(True)
+        else:
+            iSaveWinSize.set_active(False)
+        iSaveOnExit.connect('activate', self.do_toggle_save_window_size)
+        wPrefsMenu.add(iSaveWinSize)
+
+
         iRestoreConfig = gtk.MenuItem('Restore saved configuration')
         oMenu.add(iRestoreConfig)
         iRestoreConfig.connect('activate', self.do_restore)
@@ -291,8 +301,15 @@ class MainMenu(gtk.MenuBar, object):
         # gtk can handle the rest for us
 
     def do_toggle_save_precise_pos(self, oWidget):
+        """Toggle save precise pane positions option"""
         bChoice = not self.__oConfig.get_save_precise_pos()
         self.__oConfig.set_save_precise_pos(bChoice)
+
+
+    def do_toggle_save_window_size(self, oWidget):
+        """Toggle save window size option"""
+        bChoice = not self.__oConfig.get_save_window_size()
+        self.__oConfig.set_save_window_size(bChoice)
 
     def equalize_panes(self, oMenuWidget):
         self.__oWin.set_all_panes_equal()
