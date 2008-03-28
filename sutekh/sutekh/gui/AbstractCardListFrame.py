@@ -15,7 +15,7 @@ class AbstractCardListFrame(CardListFrame):
     def __init__(self, oMainWindow, oConfig):
         super(AbstractCardListFrame, self).__init__(oMainWindow, oConfig)
 
-        self._sName = "White Wolf CardList"
+        self._sName = "White Wolf Card List"
         self.set_title(self._sName)
         self.set_name("abstract card list")
 

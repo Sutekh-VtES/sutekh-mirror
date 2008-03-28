@@ -29,7 +29,7 @@ class MainMenu(gtk.MenuBar, object):
         self.__create_about_menu()
         oWindow.add_to_menu_list("Physical Card List",
                 self.physical_card_list_set_sensitive)
-        oWindow.add_to_menu_list("White Wolf CardList",
+        oWindow.add_to_menu_list("White Wolf Card List",
                 self.abstract_card_list_set_sensitive)
         oWindow.add_to_menu_list("Physical Card Set List",
                 self.pcs_list_pane_set_sensitive)
@@ -37,7 +37,7 @@ class MainMenu(gtk.MenuBar, object):
                 self.acs_list_pane_set_sensitive)
         oWindow.add_to_menu_list("Card Text",
                 self.add_card_text_set_sensitive)
- 
+
     def __create_file_menu(self):
         # setup sub menu
         iMenu = gtk.MenuItem("_File")
@@ -141,7 +141,7 @@ class MainMenu(gtk.MenuBar, object):
         self.__oAddVertPane.set_sensitive(False)
 
         self.__oReplaceWithACLPane = gtk.MenuItem(
-                "Replace current pane with Whitewolf Card List")
+                "Replace current pane with White Wolf Card List")
         oMenu.add(self.__oReplaceWithACLPane)
         self.__oReplaceWithACLPane.connect("activate",
                 self.__oWin.replace_with_abstract_card_list)
