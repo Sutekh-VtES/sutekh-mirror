@@ -287,7 +287,7 @@ class AnalyzeCardList(CardListPlugin):
                     self.iNumberAllies)
             sTypeText += self._format_card_line('Combat cards',
                     self.iNumberCombats)
-            sTypeText += self._format_card_line('Convictions cards',
+            sTypeText += self._format_card_line('Conviction cards',
                     self.iNumberConvictions)
             sTypeText += self._format_card_line('Equipment cards',
                     self.iNumberEquipment)
@@ -462,8 +462,8 @@ class AnalyzeCardList(CardListPlugin):
         sText = ''
         if iClanRequirement > 0:
             sPer = percentage(iClanRequirement, iNum, 'Library')
-            sText += "Number of %(type)s with a Clan requirement = %(num)d ' \
-                    '%(per)s\n" % {
+            sText += "Number of %(type)s with a Clan requirement = %(num)d " \
+                    "%(per)s\n" % {
                     'type' : sCardType,
                     'num' : iClanRequirement,
                     'per' : sPer,
@@ -588,7 +588,7 @@ class AnalyzeCardList(CardListPlugin):
                         percentage(iTitles,
                             self.iCryptSize, "Crypt") + '\n'
 
-            sVampText += '<span foreground = "blue">Disciplines</span>\n'
+            sVampText += '\n<span foreground = "blue">Disciplines</span>\n'
             for sDiscipline, aNumbers in sorted(self.dDeckDisc.iteritems(),
                     key=get_sort_key, reverse=True):
                 sVampText += "%(infcount)d Vampires with %(disc)s %(iper)s" \
