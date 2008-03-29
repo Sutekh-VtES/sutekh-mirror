@@ -135,15 +135,13 @@ class CardListPlugin(object):
         """
         Open an abstract card set in the GUI.
         """
-        oF = self.parent.add_pane()
-        self.parent.replace_with_abstract_card_set(sACS, oF)
+        self.parent.add_new_abstract_card_set(sACS)
 
     def open_pcs(self, sPCS):
         """
         Open a physical card set in the GUI.
         """
-        oF = self.parent.add_pane()
-        self.parent.replace_with_physical_card_set(sPCS, oF)
+        self.parent.add_new_physical_card_set(sPCS)
 
     def reload_acs_list(self):
         """

@@ -60,7 +60,7 @@ class MainMenu(gtk.MenuBar, object):
         if sqlhub.processConnection.uri() != "sqlite:///:memory:":
             # Need to have memory connection available for this
             iImportNewCardList = gtk.MenuItem(
-                    "Import new White Wolf cardlist and rulings")
+                    "Import new White Wolf Card List and rulings")
             iImportNewCardList.connect('activate',
                     self.do_import_new_card_list)
             oMenu.add(iImportNewCardList)
@@ -140,40 +140,8 @@ class MainMenu(gtk.MenuBar, object):
         self.__oAddVertPane.connect("activate", self.add_pane_vertical)
         self.__oAddVertPane.set_sensitive(False)
 
-        self.__oReplaceWithACLPane = gtk.MenuItem(
-                "Replace current pane with White Wolf Card List")
-        oMenu.add(self.__oReplaceWithACLPane)
-        self.__oReplaceWithACLPane.connect("activate",
-                self.__oWin.replace_with_abstract_card_list)
-        self.__oReplaceWithACLPane.set_sensitive(True)
-
-        self.__oReplaceWithPCLPane = gtk.MenuItem(
-                "Replace current pane with Physical Card Collection List")
-        oMenu.add(self.__oReplaceWithPCLPane)
-        self.__oReplaceWithPCLPane.connect("activate",
-                self.__oWin.replace_with_physical_card_list)
-        self.__oReplaceWithPCLPane.set_sensitive(True)
-
-        self.__oReplaceWithCardText = gtk.MenuItem(
-                "Replace current pane with Card Text Pane")
-        oMenu.add(self.__oReplaceWithCardText)
-        self.__oReplaceWithCardText.connect("activate",
-                self.__oWin.replace_with_card_text)
-        self.__oReplaceWithCardText.set_sensitive(True)
-
-        self.__oReplaceWithACSListPane = gtk.MenuItem(
-                "Replace current pane with Abstract Card Set List")
-        oMenu.add(self.__oReplaceWithACSListPane)
-        self.__oReplaceWithACSListPane.connect("activate",
-                self.__oWin.replace_with_acs_list)
-        self.__oReplaceWithACSListPane.set_sensitive(True)
-
-        self.__oReplaceWithPCSListPane = gtk.MenuItem(
-                "Replace current pane with Physical Card Set List")
-        oMenu.add(self.__oReplaceWithPCSListPane)
-        self.__oReplaceWithPCSListPane.connect("activate",
-                self.__oWin.replace_with_pcs_list)
-        self.__oReplaceWithPCSListPane.set_sensitive(True)
+        self._add_add_submenu(oMenu)
+        self._add_replace_submenu(oMenu)
 
         iSeperator = gtk.SeparatorMenuItem()
         oMenu.add(iSeperator)
@@ -184,6 +152,92 @@ class MainMenu(gtk.MenuBar, object):
         self.__oDelPane.set_sensitive(False)
 
         self.add(iMenu)
+
+
+    def _add_add_submenu(self, oMenuWidget):
+        """Create a submenu for the add pane options"""
+        wAddMenu = gtk.Menu()
+        oAddMenu = gtk.MenuItem('Add New Pane')
+        oAddMenu.set_submenu(wAddMenu)
+        oMenuWidget.add(oAddMenu)
+
+        self.__oAddACLPane = gtk.MenuItem(
+                "Add White Wolf Card List")
+        wAddMenu.add(self.__oAddACLPane)
+        self.__oAddACLPane.connect("activate",
+                self.__oWin.add_new_abstract_card_list)
+        self.__oAddACLPane.set_sensitive(True)
+
+        self.__oAddPCLPane = gtk.MenuItem(
+                "Add Physical Card Collection List")
+        wAddMenu.add(self.__oAddPCLPane)
+        self.__oAddPCLPane.connect("activate",
+                self.__oWin.add_new_physical_card_list)
+        self.__oAddPCLPane.set_sensitive(True)
+
+        self.__oAddCardText = gtk.MenuItem(
+                "Add Card Text Pane")
+        wAddMenu.add(self.__oAddCardText)
+        self.__oAddCardText.connect("activate",
+                self.__oWin.add_new_card_text)
+        self.__oAddCardText.set_sensitive(True)
+
+        self.__oAddACSListPane = gtk.MenuItem(
+                "Add Abstract Card Set List")
+        wAddMenu.add(self.__oAddACSListPane)
+        self.__oAddACSListPane.connect("activate",
+                self.__oWin.add_new_acs_list)
+        self.__oAddACSListPane.set_sensitive(True)
+
+        self.__oAddPCSListPane = gtk.MenuItem(
+                "Add Physical Card Set List")
+        wAddMenu.add(self.__oAddPCSListPane)
+        self.__oAddPCSListPane.connect("activate",
+                self.__oWin.add_new_pcs_list)
+        self.__oAddPCSListPane.set_sensitive(True)
+
+    def _add_replace_submenu(self, oMenuWidget):
+        """Create a submenu for the replace pane options"""
+        wReplaceMenu = gtk.Menu()
+        oReplaceMenu = gtk.MenuItem('Replace Pane')
+        oReplaceMenu.set_submenu(wReplaceMenu)
+        oMenuWidget.add(oReplaceMenu)
+
+        self.__oReplaceWithACLPane = gtk.MenuItem(
+                "Replace current pane with White Wolf Card List")
+        wReplaceMenu.add(self.__oReplaceWithACLPane)
+        self.__oReplaceWithACLPane.connect("activate",
+                self.__oWin.replace_with_abstract_card_list)
+        self.__oReplaceWithACLPane.set_sensitive(True)
+
+        self.__oReplaceWithPCLPane = gtk.MenuItem(
+                "Replace current pane with Physical Card Collection List")
+        wReplaceMenu.add(self.__oReplaceWithPCLPane)
+        self.__oReplaceWithPCLPane.connect("activate",
+                self.__oWin.replace_with_physical_card_list)
+        self.__oReplaceWithPCLPane.set_sensitive(True)
+
+        self.__oReplaceWithCardText = gtk.MenuItem(
+                "Replace current pane with Card Text Pane")
+        wReplaceMenu.add(self.__oReplaceWithCardText)
+        self.__oReplaceWithCardText.connect("activate",
+                self.__oWin.replace_with_card_text)
+        self.__oReplaceWithCardText.set_sensitive(True)
+
+        self.__oReplaceWithACSListPane = gtk.MenuItem(
+                "Replace current pane with Abstract Card Set List")
+        wReplaceMenu.add(self.__oReplaceWithACSListPane)
+        self.__oReplaceWithACSListPane.connect("activate",
+                self.__oWin.replace_with_acs_list)
+        self.__oReplaceWithACSListPane.set_sensitive(True)
+
+        self.__oReplaceWithPCSListPane = gtk.MenuItem(
+                "Replace current pane with Physical Card Set List")
+        wReplaceMenu.add(self.__oReplaceWithPCSListPane)
+        self.__oReplaceWithPCSListPane.connect("activate",
+                self.__oWin.replace_with_pcs_list)
+        self.__oReplaceWithPCSListPane.set_sensitive(True)
+
 
     def __create_plugin_menu(self):
         # setup sub menu
@@ -203,18 +257,23 @@ class MainMenu(gtk.MenuBar, object):
 
     def add_card_text_set_sensitive(self, bValue):
         self.__oReplaceWithCardText.set_sensitive(bValue)
+        self.__oAddCardText.set_sensitive(bValue)
 
     def pcs_list_pane_set_sensitive(self, bValue):
         self.__oReplaceWithPCSListPane.set_sensitive(bValue)
+        self.__oAddPCSListPane.set_sensitive(bValue)
 
     def acs_list_pane_set_sensitive(self, bValue):
         self.__oReplaceWithACSListPane.set_sensitive(bValue)
+        self.__oAddACSListPane.set_sensitive(bValue)
 
     def abstract_card_list_set_sensitive(self, bValue):
         self.__oReplaceWithACLPane.set_sensitive(bValue)
+        self.__oAddACLPane.set_sensitive(bValue)
 
     def physical_card_list_set_sensitive(self, bValue):
         self.__oReplaceWithPCLPane.set_sensitive(bValue)
+        self.__oAddPCLPane.set_sensitive(bValue)
 
     def set_split_vertical_active(self, bValue):
         self.__oAddVertPane.set_sensitive(bValue)
@@ -270,7 +329,7 @@ class MainMenu(gtk.MenuBar, object):
                             delete_physical_card_set(sName)
                         else:
                             delete_abstract_card_set(sName)
-                oFrame = self.__oWin.add_pane()
+                oFrame = self.__oWin.add_pane_end()
                 try:
                     if sType == "AbstractCardSet":
                         oFile = AbstractCardSetXmlFile(sFileName, lookup=self.__oWin.cardLookup)

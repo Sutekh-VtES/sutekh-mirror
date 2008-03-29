@@ -94,10 +94,10 @@ class CardSetManagementFrame(BasicFrame):
     def create_new_card_set(self, oWidget):
         if self._cSetType is PhysicalCardSet:
             oDialog = CreateCardSetDialog(self._oMainWindow, 'Physical')
-            open_card_set = self._oMainWindow.replace_with_physical_card_set
+            open_card_set = self._oMainWindow.add_new_physical_card_set
         else:
             oDialog = CreateCardSetDialog(self._oMainWindow, 'Abstract')
-            open_card_set = self._oMainWindow.replace_with_abstract_card_set
+            open_card_set = self._oMainWindow.add_new_abstract_card_set
         oDialog.run()
         (sName, sAuthor, sDescription) = oDialog.get_data()
         oDialog.destroy()
@@ -107,8 +107,7 @@ class CardSetManagementFrame(BasicFrame):
                 do_complaint_error("Chosen Card Set Name is already in use.")
             else:
                 oCS = self._cSetType(name=sName, author=sAuthor, comment=sDescription)
-                oF = self._oMainWindow.add_pane()
-                open_card_set(sName, oF)
+                open_card_set(sName)
 
     def delete_card_set(self, oWidget):
         aSelection = self._oScrolledList.get_selection()
@@ -201,7 +200,7 @@ class CardSetManagementFrame(BasicFrame):
         oPane = self._oMainWindow.find_pane_by_name(sFrameName)
         if oPane is not None:
             return # Already open, so do nothing
-        oF = self._oMainWindow.add_pane()
+        oF = self._oMainWindow.add_pane_end()
         if self._cSetType is PhysicalCardSet:
             self._oMainWindow.replace_with_physical_card_set(sName, oF)
         elif self._cSetType is AbstractCardSet:

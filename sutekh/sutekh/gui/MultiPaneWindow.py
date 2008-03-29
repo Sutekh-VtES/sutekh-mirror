@@ -150,6 +150,10 @@ class MultiPaneWindow(gtk.Window):
             if oPane:
                 oPane.reload()
 
+    def add_new_physical_card_set(self, sName):
+        oFrame = self.add_pane_end()
+        self.replace_with_physical_card_set(sName, oFrame)
+
     def replace_with_abstract_card_set(self, sName, oFrame):
         sMenuFlag = "ACS:" + sName
         if sMenuFlag not in self.dOpenFrames.values() and oFrame:
@@ -164,12 +168,22 @@ class MultiPaneWindow(gtk.Window):
             if oPane:
                 oPane.reload()
 
+    def add_new_abstract_card_set(self, sName):
+        oFrame = self.add_pane_end()
+        self.replace_with_abstract_card_set(sName, oFrame)
+
     def replace_with_pcs_list(self, oWidget):
         sMenuFlag = "Physical Card Set List"
         if sMenuFlag not in self.dOpenFrames.values() and self._oFocussed:
             oPane = PhysicalCardSetListFrame(self, self._oConfig)
             self.replace_frame(self._oFocussed, oPane, sMenuFlag)
             self._oPCSListPane = oPane
+
+    def add_new_pcs_list(self, oMenuWidget):
+        oCurFocus = self._oFocussed
+        self._oFocussed = self.add_pane_end()
+        self.replace_with_pcs_list(oMenuWidget)
+        self._oFocussed = oCurFocus
 
     def replace_with_acs_list(self, oWidget):
         sMenuFlag = "Abstract Card Set List"
@@ -178,11 +192,23 @@ class MultiPaneWindow(gtk.Window):
             self.replace_frame(self._oFocussed, oPane, sMenuFlag)
             self._oACSListPane = oPane
 
+    def add_new_acs_list(self, oMenuWidget):
+        oCurFocus = self._oFocussed
+        self._oFocussed = self.add_pane_end()
+        self.replace_with_acs_list(oMenuWidget)
+        self._oFocussed = oCurFocus
+
     def replace_with_abstract_card_list(self, oWidget):
-        sMenuFlag = "White Wolf CardList"
+        sMenuFlag = "White Wolf Card List"
         if sMenuFlag not in self.dOpenFrames.values() and self._oFocussed:
             oPane = AbstractCardListFrame(self, self._oConfig)
             self.replace_frame(self._oFocussed, oPane, sMenuFlag)
+
+    def add_new_abstract_card_list(self, oMenuWidget):
+        oCurFocus = self._oFocussed
+        self._oFocussed = self.add_pane_end()
+        self.replace_with_abstract_card_list(oMenuWidget)
+        self._oFocussed = oCurFocus
 
     def replace_with_physical_card_list(self, oWidget):
         sMenuFlag = "Physical Card List"
@@ -190,10 +216,22 @@ class MultiPaneWindow(gtk.Window):
             oPane = PhysicalCardFrame(self, self._oConfig)
             self.replace_frame(self._oFocussed, oPane, sMenuFlag)
 
+    def add_new_physical_card_list(self, oMenuWidget):
+        oCurFocus = self._oFocussed
+        self._oFocussed = self.add_pane_end()
+        self.replace_with_physical_card_list(oMenuWidget)
+        self._oFocussed = oCurFocus
+
     def replace_with_card_text(self, oWidget):
         sMenuFlag = "Card Text"
         if sMenuFlag not in self.dOpenFrames.values() and self._oFocussed:
             self.replace_frame(self._oFocussed, self._oCardTextPane, sMenuFlag)
+
+    def add_new_card_text(self, oMenuWidget):
+        oCurFocus = self._oFocussed
+        self._oFocussed = self.add_pane_end()
+        self.replace_with_card_text(oMenuWidget)
+        self._oFocussed = oCurFocus
 
     def reload_pcs_list(self):
         if self._oPCSListPane is not None:
@@ -349,6 +387,22 @@ class MultiPaneWindow(gtk.Window):
         else:
             # Return the last added pane, for automatic adds
             return self._aHPanes[-1]
+
+    def add_pane_end(self):
+        """Add a pane to the right edge of the window.
+
+        Used for the add pane menu items and double clicking on card set
+        names
+        """
+        if self._iNumberOpenFrames < 1:
+            oPane = None
+        else:
+            # Descend the right child of the panes, until we get a non-paned item
+            oPane = [x for x in self.oVBox.get_children() if x != self.__oMenu][0]
+            while type(oPane) is gtk.HPaned or type(oPane) is gtk.VPaned:
+                oPane = oPane.get_child2()
+        self._oFocussed = oPane
+        return self.add_pane()
 
     def add_pane(self, bVertical=False, iConfigPos=-1):
         """
