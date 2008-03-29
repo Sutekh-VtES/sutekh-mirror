@@ -26,13 +26,22 @@ class PhysicalCardView(EditableCardListView):
             sSource, aCardInfo = self.split_selection_data(data.data)
             if sSource == "Sutekh Pane:":
                 self._oC.frame.drag_drop_handler(w, context, x, y, data, info, time)
-            elif self._oModel.bEditable and sSource in ['Abst:']:
-                # We can only drag from the AbstractCard List
-                # We can't drag from the card sets
-                # Add the cards
-                for iCount, sCardName, sExpansion in aCardInfo:
-                    # We are adding new cards, so only 1 of each
-                    self.addCard(sCardName, sExpansion)
-                context.finish(True, False, time)
+            elif self._oModel.bEditable and \
+                    self.add_paste_data(sSource, aCardInfo):
+                context.finish(True, False, time) # paste successful
             else:
-                context.finish(False, False, time)
+                context.finish(False, False, time) # not successful
+
+    def add_paste_data(self, sSource, aCards):
+        """Helper function for drag+drop + copy+paste.
+
+           We can only drag from the AbstractCard List
+           We can't drag from the card sets 
+           """
+        if sSource in ['Abst:']:
+            for iCount, sCardName, sExpansion in aCards:
+                # We are adding new cards, so only 1 of each
+                self.addCard(sCardName, sExpansion)
+            return True
+        else:
+            return False

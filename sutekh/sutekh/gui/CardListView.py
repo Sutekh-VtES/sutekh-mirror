@@ -10,24 +10,18 @@ from sutekh.gui.FilterDialog import FilterDialog
 from sutekh.gui.CellRendererSutekhButton import CellRendererSutekhButton
 
 class CardListViewListener(object):
-    """
-    Listens to changes, i.e. .set_card_text(...)
-    to CardListViews.
-    """
+    """Listens to changes, i.e. .set_card_text(...) to CardListViews."""
     def set_card_text(self, sCardName, sExpansion):
-        """
-        The CardListViw has called set_card_text on the CardText pane
-        """
+        """The CardListViw has called set_card_text on the CardText pane"""
         pass
 
 class CardListView(gtk.TreeView, object):
+    """Base class for all the card list views in Sutekh."""
     def __init__(self, oController, oMainWindow, oConfig, oModel):
         self._oModel = oModel
         self._oC = oController
         self._oMainWin = oMainWindow
         self._oConfig = oConfig
-
-
         self.dListeners = {} # dictionary of CardListViewListeners
 
         super(CardListView, self).__init__(self._oModel)
@@ -52,10 +46,8 @@ class CardListView(gtk.TreeView, object):
 
         # Activating rows
         self.connect('row-activated', self.card_activated)
-
         # Key combination for expanding and collapsing all rows
         self.connect('key-release-event', self.key_released)
-
 
         # Text searching of card names
         self.set_search_equal_func(self.compare, None)
@@ -86,11 +78,12 @@ class CardListView(gtk.TreeView, object):
     # Listener helper functions
 
     def add_listener(self, oListener):
+        """Add a listener to the list."""
         self.dListeners[oListener] = None
 
     def remove_listener(self, oListener):
+        """Remove a listener from the list."""
         del self.dListeners[oListener]
-
 
     def column_clicked(self, oColumn):
         self.emit('button-press-event',
@@ -98,19 +91,19 @@ class CardListView(gtk.TreeView, object):
         return False
 
     def load(self):
-        """
-        Called when the model needs to be reloaded.
-        """
+        """Called when the model needs to be reloaded."""
         self._oModel.load()
 
     # Help functions used by reload_keep_expanded
     def __get_row_status(self, oModel, oPath, oIter, dExpandedDict):
+        """Create a dictionary of rows and their expanded status."""
         if self.row_expanded(oPath):
             dExpandedDict.setdefault(oPath,
                     self._oModel.getCardNameFromPath(oPath))
         return False # Need to process the whole list
 
     def __set_row_status(self, dExpandedDict):
+        """Attempt to expand the rows listed in dExpandedDict."""
         for oPath in dExpandedDict:
             try:
                 sCardName = self._oModel.getCardNameFromPath(oPath)
@@ -122,10 +115,11 @@ class CardListView(gtk.TreeView, object):
         return False
 
     def reload_keep_expanded(self):
-        """
-        Attempt to reload the card list, keeping the existing
-        structure of expanded rows
-        """
+        """Reload with current expanded state.
+
+           Attempt to reload the card list, keeping the existing structure
+           of expanded rows.
+           """
         # Internal helper functions
         # See what's expanded
         dExpandedDict = {}
@@ -144,6 +138,7 @@ class CardListView(gtk.TreeView, object):
     # Activating Rows
 
     def card_activated(self, wTree, oPath, oColumn):
+        """Update card text and notify listeners when a card is selected."""
         sCardName = self._oModel.getCardNameFromPath(oPath)
         self._oC.set_card_text(sCardName)
         for oListener in self.dListeners:
@@ -166,12 +161,16 @@ class CardListView(gtk.TreeView, object):
                 return True
             elif gtk.gdk.keyval_to_lower(oEvent.keyval) == \
                     gtk.gdk.keyval_from_name('c'):
-                # TODO: copy selection
-                pass
+                sSelection = self.get_selection_as_string()
+                self._oMainWin.set_selection_text(sSelection)
             elif gtk.gdk.keyval_to_lower(oEvent.keyval) == \
                     gtk.gdk.keyval_from_name('v'):
-                pass
-                # TODO: paste selection
+                if self._oModel.bEditable:
+                    sSelection = self._oMainWin.get_selection_text()
+                    sSource, aCards = self.split_selection_data(sSelection)
+                    if sSource != self.sDragPrefix:
+                        # Prevent pasting into oneself
+                        self.add_paste_data(sSource, aCards)
         elif oEvent.get_state() & oCtrlAlt == 0:
             # No modifiers of interest pressed
             if oEvent.keyval == gtk.gdk.keyval_from_name('Delete'):
@@ -182,11 +181,11 @@ class CardListView(gtk.TreeView, object):
     # Selecting
 
     def force_cursor_move(self, treeview, step, count):
-        """
-        Special handling for move events for buggy gtk events. 
-        We need to allow the selection of top level items when 
-        moving the cursor over them
-        """
+        """Special handling for move events for buggy gtk events.
+
+           We need to allow the selection of top level items when
+           moving the cursor over them
+           """
         (oCurPath, oColumn) = self.get_cursor()
         if self._oModel.iter_parent(self._oModel.get_iter(oCurPath)) is None:
             # Root node, so need to force the move
@@ -204,11 +203,17 @@ class CardListView(gtk.TreeView, object):
         if self.bSelectTop > 0:
             # Buggy gtk version work-around
             self.bSelectTop -= 1
-            return True 
+            return True
         # In general, we don't allow the top level nodes to be selected
         return self._oModel.iter_parent(self._oModel.get_iter(oPath)) is not None
 
     def card_selected(self, oSelection):
+        """Change the selection behaviour.
+
+           If we have multiple rows selected, and the user selects
+           a single row that is in the selection, we DON'T change
+           the selection, but we do update the card text and so on.
+           """
         if self.bReentrant:
             # This is here because we alter the selection inside
             # this function (resulting in a nested call).
@@ -221,10 +226,7 @@ class CardListView(gtk.TreeView, object):
             return False
 
         oModel, aList = oSelection.get_selected_rows()
-
-        # Non default selection behaviour. If we have multiple rows selected,
-        # and the user selects a single row that is in the selection, we
-        # DON'T change the selection
+        # Implement the non default selection behaviour.
         tCursorPos = self.get_cursor()
         if len(aList) == 1 and len(self._aOldSelection) > 1 and \
             tCursorPos[0] == aList[0] and aList[0] in self._aOldSelection:
@@ -261,6 +263,7 @@ class CardListView(gtk.TreeView, object):
     # Card name searching
 
     def compare(self, oModel, iColumn, sKey, oIter, oData):
+        """Compare the entered text to the card names."""
         if oModel.iter_depth(oIter) == 2:
             # Don't succeed for expansion items
             return True
@@ -324,11 +327,11 @@ class CardListView(gtk.TreeView, object):
             self.load()
 
     def process_selection(self):
-        """
-        Create a dictionary from the selection.
-        with entries of the form sCardName : {sExpansion1 : iCount1, ... }
-        for use in drag-'n drop and elsewhere
-        """
+        """Create a dictionary from the selection.
+
+           Entries are of the form sCardName : {sExpansion1 : iCount1, ... }
+           for use in drag-'n drop and elsewhere.
+           """
         oModel, oPathList = self._oSelection.get_selected_rows()
         dSelectedData = {}
         for oPath in oPathList:
@@ -352,6 +355,23 @@ class CardListView(gtk.TreeView, object):
                 dSelectedData[sCardName][sExpansion] = iCount
         return dSelectedData
 
+    def get_selection_as_string(self):
+        """Get a string representing the current selection."""
+        if self._oSelection.count_selected_rows()<1:
+            return ''
+        dSelectedData = self.process_selection()
+        # Create selection data structure
+        # Need to bung everything into a string, alas
+        sSelectData = self.sDragPrefix
+        for sCardName in dSelectedData:
+            for sExpansion, iCount in dSelectedData[sCardName].iteritems():
+                sSelectData += '\n%(count)d\n%(name)s\n%(expansion)s' % {
+                        'count' : iCount,
+                        'name' : sCardName,
+                        'expansion' : sExpansion,
+                        }
+        return sSelectData
+
     def del_selection(self):
         """try to delete all the cards in the current selection"""
         if self._oModel.bEditable:
@@ -368,20 +388,10 @@ class CardListView(gtk.TreeView, object):
     # Sub-classes should override as needed.
 
     def drag_card(self, btn, context, selection_data, info, time):
-        """
-        Create string represntation of the sec ltion for drag-n-drop code
-        """
-        if self._oSelection.count_selected_rows()<1:
+        """Create string represntation of the sec ltion for drag-n-drop code"""
+        sSelectData = self.get_selection_as_string()
+        if sSelectData == '':
             return
-        dSelectedData = self.process_selection()
-        # Create selection data structure
-        # Need to bung everything into a string, alas
-        sSelectData = self.sDragPrefix
-        for sCardName in dSelectedData:
-            for sExpansion, iCount in dSelectedData[sCardName].iteritems():
-                sSelectData = sSelectData + "\n" + \
-                        str(iCount) + '\n' + \
-                        sCardName + "\n" + sExpansion
         selection_data.set(selection_data.target, 8, sSelectData)
 
     def split_selection_data(self, sSelectionData):
@@ -392,7 +402,7 @@ class CardListView(gtk.TreeView, object):
             return sSource, aLines
         # Construct list of (iCount, sCardName, sExpansion) tuples
         def true_expansion(sExpand):
-            """Convert back from the 'None' for None placeholder in the string"""
+            """Convert back from the 'None' placeholder in the string"""
             # The logic goes that, if the user has dragged the top level cards,
             # Then either all the cards are going to be copied, or there is
             # no expansion info, so the expansion might as well be none.
@@ -411,6 +421,14 @@ class CardListView(gtk.TreeView, object):
     def card_drop(self, w, context, x, y, data, info, time):
         # Pass off to the Frame Handler
         self._oC.frame.drag_drop_handler(w, context, x, y, data, info, time)
+
+    def add_paste_data(self, sSource, aCards):
+        """Helper function for copy+paste and drag+drop.
+
+           Handle the heavy lifting of adding cards to the actual card
+           list model, and so on.
+           """
+        return False # do nothing
 
 class EditableCardListView(CardListView):
     def __init__(self, oController, oWindow, oConfig, oModel):

@@ -32,7 +32,7 @@ class MultiPaneWindow(gtk.Window):
         self.set_name("Sutekh")
         self._oFocussed = None
         self._oConfig = oConfig
-	# Set Default Window Icon for all Windows
+        # Set Default Window Icon for all Windows
         gtk.window_set_default_icon(SutekhIcon.SUTEKH_ICON)
         # Create object cache
         self.__oSutekhObjectCache = SutekhObjectCache()
@@ -44,6 +44,7 @@ class MultiPaneWindow(gtk.Window):
         # But we start at a reasonable size
         self.set_default_size(800, 600)
         self.oVBox = gtk.VBox(False, 1)
+        self._sCardSelection = '' # copy + paste selection
         self._aHPanes = []
         self._aPlugins = []
         self.__dMenus = {}
@@ -84,15 +85,18 @@ class MultiPaneWindow(gtk.Window):
     focussed_pane = property(fget=lambda self: self._oFocussed)
 
     def getWindow(self):
+        """Return reference to the window - used by plugins."""
         return self
 
     def add_to_menu_list(self, sMenuFlag, oMenuActiveFunc):
+        """Add a key to the list of menu items to manage."""
         if not self.__dMenus.has_key(sMenuFlag):
             self.__dMenus[sMenuFlag] = oMenuActiveFunc
 
     # Config file handling
 
     def restore_from_config(self):
+        """Restore all the frame form the config file."""
         if self._iNumberOpenFrames > 0:
             # Clear out all existing frames
             for oFrame in self.dOpenFrames.keys():
@@ -101,12 +105,12 @@ class MultiPaneWindow(gtk.Window):
         if iWidth > 0 and iHeight > 0:
             self.resize(iWidth, iHeight)
         for iNumber, sType, sName, bVert, iPos in self._oConfig.getAllPanes():
-            oF = self.add_pane(bVert, iPos)
-            self._oFocussed = oF
+            oNewFrame = self.add_pane(bVert, iPos)
+            self._oFocussed = oNewFrame
             if sType == PhysicalCardSet.sqlmeta.table:
-                self.replace_with_physical_card_set(sName, oF)
+                self.replace_with_physical_card_set(sName, oNewFrame)
             elif sType == AbstractCardSet.sqlmeta.table:
-                self.replace_with_abstract_card_set(sName, oF)
+                self.replace_with_abstract_card_set(sName, oNewFrame)
             elif sType == AbstractCard.sqlmeta.table:
                 self.replace_with_abstract_card_list(None)
             elif sType == 'Card Text':
@@ -123,7 +127,7 @@ class MultiPaneWindow(gtk.Window):
                     tResult = oPlugin.get_frame_from_config(sType)
                     if tResult:
                         oFrame, sMenuFlag = tResult
-                        self.replace_frame(oF, oFrame, sMenuFlag)
+                        self.replace_frame(oNewFrame, oFrame, sMenuFlag)
         if self._iNumberOpenFrames == 0:
             # We always have at least one pane
             self.add_pane()
@@ -146,7 +150,7 @@ class MultiPaneWindow(gtk.Window):
             try:
                 oPane = PhysicalCardSetFrame(self, sName, self._oConfig)
                 self.replace_frame(oFrame, oPane, sMenuFlag)
-            except RuntimeError, e:
+            except RuntimeError:
                 # add warning dialog?
                 pass
         else:
@@ -166,7 +170,7 @@ class MultiPaneWindow(gtk.Window):
             try:
                 oPane = AbstractCardSetFrame(self, sName, self._oConfig)
                 self.replace_frame(oFrame, oPane, sMenuFlag)
-            except RuntimeError, e:
+            except RuntimeError:
                 # add warning dialog?
                 pass
         else:
@@ -250,6 +254,8 @@ class MultiPaneWindow(gtk.Window):
         self.replace_with_card_text(oMenuWidget)
         self._oFocussed = oCurFocus
 
+    # state manipulation
+
     def reload_pcs_list(self):
         """Reload the list of physical card sets."""
         if self._oPCSListPane is not None:
@@ -277,6 +283,50 @@ class MultiPaneWindow(gtk.Window):
         self._oFocussed.view.grab_focus()
         self.reset_menu()
 
+    def set_card_text(self, sCardName):
+        """Update the card text frame to the currently selected card."""
+        try:
+            oCard = AbstractCard.byCanonicalName(sCardName.lower())
+            self._oCardTextPane.view.set_card_text(oCard)
+        except SQLObjectNotFound:
+            pass
+
+    def reset_menu(self):
+        """Ensure menu state is correct."""
+        for sMenu, fSetSensitiveFunc in self.__dMenus.iteritems():
+            if sMenu in self.dOpenFrames.values():
+                fSetSensitiveFunc(False)
+            else:
+                fSetSensitiveFunc(True)
+        if self._oFocussed:
+            # Can always split horizontally
+            self.__oMenu.set_split_horizontal_active(True)
+            # But we can't split vertically more than once
+            if type(self._oFocussed.get_parent()) is gtk.VPaned:
+                self.__oMenu.set_split_vertical_active(False)
+            else:
+                self.__oMenu.set_split_vertical_active(True)
+            if self._iNumberOpenFrames > 1:
+                self.__oMenu.del_pane_set_sensitive(True)
+            else:
+                self.__oMenu.del_pane_set_sensitive(False)
+        else:
+            # Can't split when no pane chosen
+            self.__oMenu.set_split_vertical_active(False)
+            self.__oMenu.set_split_horizontal_active(False)
+            # Can't delete either
+            self.__oMenu.del_pane_set_sensitive(False)
+
+    def set_selection_text(self, sText):
+        """Set the current selection text for copy+paste."""
+        self._sCardSelection = sText
+
+    def get_selection_text(self):
+        """Get the current selection for copy+paste."""
+        return self._sCardSelection
+
+    # startup, exit and other misc functions
+
     def run(self):
         """gtk entry point"""
         gtk.main()
@@ -301,12 +351,14 @@ class MultiPaneWindow(gtk.Window):
             """Walk the tree of HPanes + VPanes, and save their info."""
             # oPane.get_position() gives us the position relative to the paned
             # we're contained in. However, when we recreate the layout, we
-            # don't split panes in the same order, hence the fancy score-keeping
-            # work to convert the obtained positions to those needed for restoring
+            # don't split panes in the same order, hence the fancy
+            # score-keeping work to convert the obtained positions to those
+            # needed for restoring
             if type(oPane) is gtk.HPaned:
                 oChild1 = oPane.get_child1()
                 oChild2 = oPane.get_child2()
-                iNum, iChildPos = save_children(oChild1, oConfig, False, iNum, iPos)
+                iNum, iChildPos = save_children(oChild1, oConfig, False,
+                        iNum, iPos)
                 iMyPos = oPane.get_position()
                 if type(oChild1) is gtk.HPaned:
                     iMyPos = iMyPos - iChildPos
@@ -316,15 +368,20 @@ class MultiPaneWindow(gtk.Window):
                 if iMyPos < 1:
                     # Setting pos to < 1 doesn't do what we want
                     iMyPos = 1
-                iNum, iChild2Pos = save_children(oChild2, oConfig, False, iNum, iMyPos)
+                iNum, iChild2Pos = save_children(oChild2, oConfig, False,
+                        iNum, iMyPos)
                 if type(oChild2) is gtk.HPaned:
                     iChildPos += iChild2Pos
             elif type(oPane) is gtk.VPaned:
                 oChild1 = oPane.get_child1()
                 oChild2 = oPane.get_child2()
                 iMyPos = oPane.get_position()
-                iNum, iTemp = save_children(oChild1, oConfig, False, iNum, iPos)
-                iNum, iTemp = save_children(oChild2, oConfig, True, iNum, iMyPos)
+                # pylint: disable-msg=W0612
+                # iTemp is unused
+                iNum, iTemp = save_children(oChild1, oConfig, False, iNum,
+                        iPos)
+                iNum, iTemp = save_children(oChild2, oConfig, True, iNum,
+                        iMyPos)
                 iChildPos = iPos
             else:
                 oConfig.add_frame(iNum, oPane.type, oPane.name, bVert, iPos)
@@ -332,17 +389,18 @@ class MultiPaneWindow(gtk.Window):
                 iChildPos = iPos
             return iNum, iChildPos
 
-        aTopLevelPane = [x for x in self.oVBox.get_children() if x != self.__oMenu]
+        aTopLevelPane = [x for x in self.oVBox.get_children() if
+                x != self.__oMenu]
         for oPane in aTopLevelPane:
             save_children(oPane, self._oConfig, False, 1, -1)
 
-    def set_card_text(self, sCardName):
-        """Update the card text frame to the currently selected card."""
-        try:
-            oCard = AbstractCard.byCanonicalName(sCardName.lower())
-            self._oCardTextPane.view.set_card_text(oCard)
-        except SQLObjectNotFound:
-            pass
+    def show_about_dialog(self, oWidget):
+        """Display the about dialog"""
+        oDlg = SutekhAboutDialog()
+        oDlg.run()
+        oDlg.destroy()
+
+    # frame management functions
 
     def replace_frame(self, oOldFrame, oNewFrame, sMenuFlag):
         """Replace oOldFrame with oNewFrame + update menus"""
@@ -356,7 +414,8 @@ class MultiPaneWindow(gtk.Window):
         if self._oFocussed == oOldFrame:
             self._oFocussed = None
         self.reset_menu()
-        # Open card lists may have changed because of the frame we've kicked out
+        # Open card lists may have changed because of the frame we've
+        # kicked out
         self.reload_pcs_list()
         self.reload_acs_list()
 
@@ -411,8 +470,10 @@ class MultiPaneWindow(gtk.Window):
         if self._iNumberOpenFrames < 1:
             oPane = None
         else:
-            # Descend the right child of the panes, until we get a non-paned item
-            oPane = [x for x in self.oVBox.get_children() if x != self.__oMenu][0]
+            # Descend the right child of the panes, until we get a
+            # non-paned item
+            oPane = [x for x in self.oVBox.get_children() if
+                    x != self.__oMenu][0]
             while type(oPane) is gtk.HPaned or type(oPane) is gtk.VPaned:
                 oPane = oPane.get_child2()
         self._oFocussed = oPane
@@ -454,10 +515,12 @@ class MultiPaneWindow(gtk.Window):
                 if self._oFocussed:
                     oPart1 = self._oFocussed
                     if type(oPart1.get_parent()) is gtk.VPaned:
-                        # Veritical pane, so we need to use the pane, not the Frame
+                        # Veritical pane, so we need to use the pane, not
+                        # the Frame
                         oPart1 = oPart1.get_parent()
                 else:
-                    # Replace right child of last added pane when no obvious option
+                    # Replace right child of last added pane when no
+                    # obvious option
                     oPart1 = oParent.get_child2()
                 if oPart1 == oParent.get_child1():
                     oParent.remove(oPart1)
@@ -470,7 +533,8 @@ class MultiPaneWindow(gtk.Window):
                     oParent.add2(oNewPane)
                     oCur = oParent.get_allocation()
                     if not bVertical:
-                        if oCur.width == 1 and oParent.get_position() > 1 and iConfigPos == -1:
+                        if oCur.width == 1 and oParent.get_position() > 1 and \
+                                iConfigPos == -1:
                             # we are in early startup, so we can move the
                             # Parent as well
                             # We want to split ourselves into equally sized
@@ -484,7 +548,8 @@ class MultiPaneWindow(gtk.Window):
                 # This is the first HPane, or the 1st VPane we add, so
                 # vbox has 2 children
                 # The menu, and the one we want
-                oPart1 = [x for x in self.oVBox.get_children() if x != self.__oMenu][0]
+                oPart1 = [x for x in self.oVBox.get_children() if
+                        x != self.__oMenu][0]
                 oParent = self.oVBox
                 # Just split the window
                 oCur = oParent.get_allocation()
@@ -530,7 +595,8 @@ class MultiPaneWindow(gtk.Window):
                     # Break out, as we do nothing
                     return
                 # Removing last widget, so just clear the vbox
-                oWidget = [x for x in self.oVBox.get_children() if x != self.__oMenu][0]
+                oWidget = [x for x in self.oVBox.get_children() if
+                        x != self.__oMenu][0]
                 self.oVBox.remove(oWidget)
             elif type(oFrame.get_parent()) is gtk.VPaned:
                 # Removing a vertical frame, keep the correct child
@@ -552,8 +618,10 @@ class MultiPaneWindow(gtk.Window):
                 self.oVBox.remove(oThisPane)
                 self.oVBox.pack_start(oKept)
             else:
-                oFocussedPane = [x for x in self._aHPanes if oFrame in x.get_children()][0]
-                oKept = [x for x in oFocussedPane.get_children() if x != oFrame][0]
+                oFocussedPane = [x for x in self._aHPanes if oFrame in
+                        x.get_children()][0]
+                oKept = [x for x in oFocussedPane.get_children() if
+                        x != oFrame][0]
                 oParent = oFocussedPane.get_parent()
                 oParent.remove(oFocussedPane)
                 oFocussedPane.remove(oKept)
@@ -571,38 +639,6 @@ class MultiPaneWindow(gtk.Window):
             if oFrame == self._oFocussed:
                 self._oFocussed = None
             self.reset_menu()
-
-    def reset_menu(self):
-        """Ensure menu state is correct."""
-        for sMenu, fSetSensitiveFunc in self.__dMenus.iteritems():
-            if sMenu in self.dOpenFrames.values():
-                fSetSensitiveFunc(False)
-            else:
-                fSetSensitiveFunc(True)
-        if self._oFocussed:
-            # Can always split horizontally
-            self.__oMenu.set_split_horizontal_active(True)
-            # But we can't split vertically more than once
-            if type(self._oFocussed.get_parent()) is gtk.VPaned:
-                self.__oMenu.set_split_vertical_active(False)
-            else:
-                self.__oMenu.set_split_vertical_active(True)
-            if self._iNumberOpenFrames > 1:
-                self.__oMenu.del_pane_set_sensitive(True)
-            else:
-                self.__oMenu.del_pane_set_sensitive(False)
-        else:
-            # Can't split when no pane chosen
-            self.__oMenu.set_split_vertical_active(False)
-            self.__oMenu.set_split_horizontal_active(False)
-            # Can't delete either
-            self.__oMenu.del_pane_set_sensitive(False)
-
-    def show_about_dialog(self, oWidget):
-        """Display the about dialog"""
-        oDlg = SutekhAboutDialog()
-        oDlg.run()
-        oDlg.destroy()
 
     def set_all_panes_equal(self):
         """Evenly distribute the space between all the frames."""
@@ -632,7 +668,8 @@ class MultiPaneWindow(gtk.Window):
                 oChild2.set_position(iVertPos)
             return iMyPos
 
-        aTopLevelPane = [x for x in self.oVBox.get_children() if x != self.__oMenu]
+        aTopLevelPane = [x for x in self.oVBox.get_children() if
+                x != self.__oMenu]
         for oPane in aTopLevelPane:
             # Should only be 1 here
             if type(oPane) is gtk.HPaned:

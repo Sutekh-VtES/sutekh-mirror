@@ -44,23 +44,33 @@ class CardSetView(EditableCardListView):
             elif sSource == self.sDragPrefix:
                 # Can't drag to oneself
                 context.finish(False, False, time)
-            # Rules are - we can always drag from the PhysicalCard List
-            # and from cardsets of the same type,
-            # but only ACS's can recieve cards from the AbstractCard List
-            aSources=sSource.split(':')
-            if aSources[0] in ["Phys", self.cSetType.sqlmeta.table]:
-                # Add the cards, Count Matters
-                for iCount, sCardName, sExpansion in aCardInfo:
-                    for iLoop in range(iCount):
-                        self.addCard(sCardName, sExpansion)
-                context.finish(True, False, time)
-            elif aSources[0] == "Abst" and self.cSetType is AbstractCardSet:
-                # from Abstract list, so iCount doesn't matter
-                for iCount, sCardName, sExpansion in aCardInfo:
-                    self.addCard(sCardName, sExpansion)
-                context.finish(True, False, time)
+            # pass off to helper function
+            if self.add_paste_data(sSource, aCardInfo):
+                context.finish(True, False, time) # paste successful
             else:
-                context.finish(False, False, time)
+                context.finish(False, False, time) # not successful
+
+    def add_paste_data(self, sSource, aCards):
+        """Helper function for drag+drop and copy+paste.
+
+           Rules are - we can always drag from the PhysicalCard List and
+           from cardsets of the same type, but only ACS's can recieve cards
+           from the AbstractCard List
+           """
+        aSources=sSource.split(':')
+        if aSources[0] in ["Phys", self.cSetType.sqlmeta.table]:
+            # Add the cards, Count Matters
+            for iCount, sCardName, sExpansion in aCards:
+                for iLoop in range(iCount):
+                    self.addCard(sCardName, sExpansion)
+            return True
+        elif aSources[0] == "Abst" and self.cSetType is AbstractCardSet:
+            # from Abstract list, so iCount doesn't matter
+            for iCount, sCardName, sExpansion in aCards:
+                self.addCard(sCardName, sExpansion)
+            return True
+        else:
+            return False
 
     def deleteCardSet(self):
         # Check if CardSet is empty
