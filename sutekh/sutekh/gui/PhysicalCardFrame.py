@@ -14,7 +14,7 @@ from sutekh.gui.PhysicalCardMenu import PhysicalCardMenu
 class PhysicalCardFrame(CardListFrame):
     def __init__(self, oMainWindow, oConfig):
         super(PhysicalCardFrame, self).__init__(oMainWindow, oConfig)
-        self._sName = "Physical Card List"
+        self._sName = "My Collection"
         self.set_title(self._sName)
         self.set_name("physical card list")
 

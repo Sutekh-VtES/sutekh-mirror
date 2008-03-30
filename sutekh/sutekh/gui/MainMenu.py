@@ -27,7 +27,7 @@ class MainMenu(gtk.MenuBar, object):
         self.__create_pane_menu()
         self.__create_plugin_menu()
         self.__create_about_menu()
-        oWindow.add_to_menu_list("Physical Card List",
+        oWindow.add_to_menu_list("My Collection",
                 self.physical_card_list_set_sensitive)
         oWindow.add_to_menu_list("White Wolf Card List",
                 self.abstract_card_list_set_sensitive)
@@ -46,7 +46,7 @@ class MainMenu(gtk.MenuBar, object):
         iMenu.set_submenu(oMenu)
 
         # items
-        iImportPhysical = gtk.MenuItem("Import Physical Card List from File")
+        iImportPhysical = gtk.MenuItem("Import Collection from File")
         iImportPhysical.connect('activate', self.do_import_physical_card_list)
         oMenu.add(iImportPhysical)
 
@@ -176,7 +176,7 @@ class MainMenu(gtk.MenuBar, object):
         self.__oAddACLPane.set_sensitive(True)
 
         self.__oAddPCLPane = gtk.MenuItem(
-                "Add Physical Card Collection List")
+                "Add My Collection List")
         wAddMenu.add(self.__oAddPCLPane)
         self.__oAddPCLPane.connect("activate",
                 self.__oWin.add_new_physical_card_list)
@@ -218,7 +218,7 @@ class MainMenu(gtk.MenuBar, object):
         self.__oReplaceWithACLPane.set_sensitive(True)
 
         self.__oReplaceWithPCLPane = gtk.MenuItem(
-                "Replace current pane with Physical Card Collection List")
+                "Replace current pane with My Collection List")
         wReplaceMenu.add(self.__oReplaceWithPCLPane)
         self.__oReplaceWithPCLPane.connect("activate",
                 self.__oWin.replace_with_physical_card_list)

@@ -30,7 +30,7 @@ class PhysicalCardMenu(gtk.MenuBar, object):
         self.__dMenus["Actions"] = wMenu
         iMenu.set_submenu(wMenu)
         # items
-        iExport = gtk.MenuItem("Export Physical Card List to File")
+        iExport = gtk.MenuItem("Export Collection to File")
         wMenu.add(iExport)
         iExport.connect('activate', self.do_export)
 
@@ -47,7 +47,7 @@ class PhysicalCardMenu(gtk.MenuBar, object):
         self.iViewExpansions.connect('toggled', self.toggle_expansion)
         wMenu.add(self.iViewExpansions)
 
-        self.iEditable = gtk.CheckMenuItem('Physical Card List is Editable')
+        self.iEditable = gtk.CheckMenuItem('Collection is Editable')
         self.iEditable.set_inconsistent(False)
         self.iEditable.set_active(False)
         self.iEditable.connect('toggled', self.toggle_editable)
@@ -104,7 +104,7 @@ class PhysicalCardMenu(gtk.MenuBar, object):
             iMenu.set_sensitive(False)
 
     def do_export(self, oWidget):
-        oFileChooser = ExportDialog("Save Physical Card List As", self.__oWindow)
+        oFileChooser = ExportDialog("Save Collection As", self.__oWindow)
         oFileChooser.run()
         sFileName = oFileChooser.getName()
         if sFileName is not None:
