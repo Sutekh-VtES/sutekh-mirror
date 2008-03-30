@@ -130,12 +130,12 @@ class MainMenu(gtk.MenuBar, object):
         oEqualizePanes.connect("activate", self.equalize_panes)
 
 
-        self.__oAddHorzPane = gtk.MenuItem("Split current pane _horizontally")
+        self.__oAddHorzPane = gtk.MenuItem("Split current pane _horizontally (|)")
         oMenu.add(self.__oAddHorzPane)
         self.__oAddHorzPane.connect("activate", self.add_pane_horizontal)
         self.__oAddHorzPane.set_sensitive(False)
 
-        self.__oAddVertPane = gtk.MenuItem("Split current pane _vertically")
+        self.__oAddVertPane = gtk.MenuItem("Split current pane _vertically (-)")
         oMenu.add(self.__oAddVertPane)
         self.__oAddVertPane.connect("activate", self.add_pane_vertical)
         self.__oAddVertPane.set_sensitive(False)
@@ -160,6 +160,13 @@ class MainMenu(gtk.MenuBar, object):
         oAddMenu = gtk.MenuItem('Add New Pane')
         oAddMenu.set_submenu(wAddMenu)
         oMenuWidget.add(oAddMenu)
+
+
+        oAddNewPane = gtk.MenuItem(
+                "Add New Blank Pane")
+        wAddMenu.add(oAddNewPane)
+        oAddNewPane.connect("activate",
+                self.__oWin.add_pane_end)
 
         self.__oAddACLPane = gtk.MenuItem(
                 "Add White Wolf Card List")
