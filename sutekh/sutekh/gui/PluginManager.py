@@ -19,7 +19,7 @@ class PluginManager(object):
     def __init__(self):
         self._aCardListPlugins = []
 
-    def load_plugins(self):
+    def load_plugins(self, bVerbose):
         """
         Load list of Plugin Classes from plugin dir.
         """
@@ -34,14 +34,16 @@ class PluginManager(object):
             try:
                 mPlugin = __import__("sutekh.gui.plugins." + sPluginName, None, None, [plugins])
             except ImportError, e:
-                logging.warn("Failed to load plugin %s (%s)." % (sPluginName, str(e)))
+                if bVerbose:
+                    logging.warn("Failed to load plugin %s (%s)." % (sPluginName, str(e)))
                 continue
 
             # find plugin class
             try:
                 cPlugin = mPlugin.plugin
             except AttributeError, e:
-                logging.warn("Plugin module %s appears not to contain a plugin (%s)." % (sPluginName, str(e)))
+                if bVerbose:
+                    logging.warn("Plugin module %s appears not to contain a plugin (%s)." % (sPluginName, str(e)))
                 continue
 
             # add to appropriate plugin lists

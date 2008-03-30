@@ -17,7 +17,7 @@ import sys, optparse, os
 # Script Launching
 
 def parse_options(aArgs):
-    "SutekhGui's option parsing"
+    """SutekhGui's option parsing"""
     oOptParser = optparse.OptionParser(usage="usage: %prog [options]",
             version="%prog 0.1")
     oOptParser.add_option("-d", "--db",
@@ -35,15 +35,18 @@ def parse_options(aArgs):
     oOptParser.add_option("--sql-debug",
                   action="store_true", dest="sql_debug", default=False,
                   help="Print out SQL statements.")
+    oOptParser.add_option("--verbose",
+            action="store_true", dest="verbose", default=False,
+            help="Display warning messages")
     return oOptParser, oOptParser.parse_args(aArgs)
 
 def main(aArgs):
-    """
-    Start the Sutekh Gui.
-    Check that database exists, doesn't need to be upgraded, then
-    pass control off to MultiPaneWindow.
-    Save preferences on exit if needed
-    """
+    """Start the Sutekh Gui.
+
+       Check that database exists, doesn't need to be upgraded, then
+       pass control off to MultiPaneWindow.
+       Save preferences on exit if needed
+       """
     oOptParser, (oOpts, aArgs) = parse_options(aArgs)
     sPrefsDir = prefs_dir("Sutekh")
 
@@ -91,7 +94,7 @@ def main(aArgs):
         aLowerTables, aHigherTables =  oVer.getBadTables(aTables, aVersions)
         if not do_db_upgrade(aLowerTables, aHigherTables):
             return 1
-    MultiPaneWindow(oConfig).run()
+    MultiPaneWindow(oConfig, oOpts.verbose).run()
 
     # Save Config Changes
     oConfig.write()

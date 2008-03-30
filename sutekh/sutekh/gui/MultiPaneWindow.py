@@ -27,7 +27,7 @@ from sutekh.gui import SutekhIcon
 
 class MultiPaneWindow(gtk.Window):
     """Window that has a configurable number of panes."""
-    def __init__(self, oConfig):
+    def __init__(self, oConfig, bVerbose=False):
         super(MultiPaneWindow, self).__init__(gtk.WINDOW_TOPLEVEL)
         self.set_name("Sutekh")
         self._oFocussed = None
@@ -49,7 +49,7 @@ class MultiPaneWindow(gtk.Window):
         self._aPlugins = []
         self.__dMenus = {}
         self._oPluginManager = PluginManager()
-        self._oPluginManager.load_plugins()
+        self._oPluginManager.load_plugins(bVerbose)
         for cPlugin in self._oPluginManager.get_card_list_plugins():
             # Find plugins that will work on the Main Window
             self._aPlugins.append(cPlugin(self, None,
@@ -461,7 +461,7 @@ class MultiPaneWindow(gtk.Window):
             # Return the last added pane, for automatic adds
             return self._aHPanes[-1]
 
-    def add_pane_end(self):
+    def add_pane_end(self, oWidget=None):
         """Add a pane to the right edge of the window.
 
            Used for the add pane menu items and double clicking on card set
