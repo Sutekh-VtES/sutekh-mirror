@@ -42,6 +42,8 @@ class CardSetFrame(CardListFrame, object):
 
         self.update_name(sName)
 
+        self._oC.view.check_editable()
+
 
     name = property(fget=lambda self: self._sName, doc="Frame Name")
 

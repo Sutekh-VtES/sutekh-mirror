@@ -482,6 +482,17 @@ class EditableCardListView(CardListView):
         if hasattr(self, 'set_grid_lines'):
             self.set_grid_lines(gtk.TREE_VIEW_GRID_LINES_BOTH)
 
+    def load(self):
+        """Called when the model needs to be reloaded."""
+        self._oModel.load()
+        if self.get_parent(): # This isn't true when creating the card list
+            self.check_editable()
+
+    def check_editable(self):
+        """Set the card list to be editable if it's empty"""
+        if self._oModel.getCardIterator(None).count() == 0:
+            self._set_editable(True)
+
     # Used by card dragging handlers
     def addCard(self, sCardName, sExpansion):
         if self._oModel.bEditable:
@@ -537,15 +548,20 @@ class EditableCardListView(CardListView):
     def set_color_normal(self):
         self.set_name('normal_view')
 
-    def toggle_editable(self, bValue):
+    def _set_editable(self, bValue):
+        """Update the view and menu when the editable status changes"""
         self._oModel.bEditable = bValue
         if self._oMenuEditWidget is not None:
             self._oMenuEditWidget.set_active(bValue)
-        self.reload_keep_expanded()
         if bValue:
             self.set_color_edit_cue()
         else:
             self.set_color_normal()
+
+    def toggle_editable(self, bValue):
+        """Reload the view and update status when editable status changes"""
+        self._set_editable(bValue)
+        self.reload_keep_expanded()
 
     def set_edit_menu_item(self, oMenuWidget):
         self._oMenuEditWidget = oMenuWidget
