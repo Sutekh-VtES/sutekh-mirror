@@ -17,11 +17,12 @@ class FilterEditor(gtk.Frame):
     """
     GTK component for editing Sutekh filter ASTs.
     """
-    def __init__(self, oAST, sFilterType, oParent, oParser):
+    def __init__(self, oAST, sFilterType, oMainWindow, oParser, oFilterDialog):
         super(FilterEditor, self).__init__(" Filter Editor ")
         self.__sFilterType = sFilterType
-        self.__oParent = oParent
+        self.__oParent = oMainWindow # Sutekh Main Window
         self.__oParser = oParser
+        self.__oFilterDialog = oFilterDialog # Dialog we're a child of
 
         self.__oBoxModel = None
         self.__oBoxEditor = None
@@ -83,7 +84,7 @@ class FilterEditor(gtk.Frame):
             self.__oVBox.remove(self.__oBoxEditor)
 
         self.__oBoxModel = FilterBoxModel(oAST, self.__sFilterType)
-        self.__oBoxEditor = FilterBoxModelEditor(self.__oBoxModel)
+        self.__oBoxEditor = FilterBoxModelEditor(self.__oBoxModel, self.__oFilterDialog)
         self.__oVBox.pack_start(self.__oBoxEditor)
         self.show_all()
 
@@ -99,7 +100,7 @@ class FilterEditor(gtk.Frame):
         return self.__oBoxModel.get_text()
 
     def __show_text_editor(self,oTextEditorButton):
-        oDlg = SutekhDialog("Query Editor", self.__oParent,
+        oDlg = SutekhDialog("Query Editor", self.__oMainWindow,
                 gtk.DIALOG_DESTROY_WITH_PARENT,
                 (gtk.STOCK_OK, gtk.RESPONSE_OK,
                  gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
@@ -125,7 +126,7 @@ class FilterEditor(gtk.Frame):
             oDlg.destroy()
 
     def __show_help_dialog(self,oHelpButton):
-        oDlg = SutekhDialog("Help on Filters", self.__oParent,
+        oDlg = SutekhDialog("Help on Filters", self.__oMainWindow,
                 gtk.DIALOG_DESTROY_WITH_PARENT,
                 (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
 
@@ -285,11 +286,12 @@ class FilterBoxModelEditor(gtk.VBox):
         'None of ...',
     ]
 
-    def __init__(self, oBoxModel):
+    def __init__(self, oBoxModel, oParentWin):
         super(FilterBoxModelEditor, self).__init__(spacing=5)
         self.__oBoxModel = oBoxModel
         self.__aChildren = []
         self.__fRemoveBox = None # set by parent (if any)
+        self.__oParentWin = oParentWin
 
         self.__oBoxTypeSelector = gtk.combo_box_new_text()
         self.pack_start(self.__oBoxTypeSelector, expand=False)
@@ -311,12 +313,12 @@ class FilterBoxModelEditor(gtk.VBox):
 
         for oChild in self.__oBoxModel:
             if type(oChild) is FilterBoxModel:
-                oModelEditor = FilterBoxModelEditor(oChild)
+                oModelEditor = FilterBoxModelEditor(oChild, self.__oParentWin)
                 oModelEditor.register_remove_box(self.__remove_model)
                 self.__aChildren.append(oModelEditor)
                 self.__oChildArea.pack_start(oModelEditor, expand=False)
             else:
-                oItemEditor = FilterBoxItemEditor(oChild)
+                oItemEditor = FilterBoxItemEditor(oChild, self.__oParentWin)
                 oItemEditor.connect_remove_button(self.__remove_filter_part)
                 self.__aChildren.append(oItemEditor)
                 self.__oChildArea.pack_start(oItemEditor, expand=False)
@@ -404,11 +406,11 @@ class FilterBoxModelEditor(gtk.VBox):
 
         if sDescription == "Sub-Filter":
             oChildBoxModel = self.__oBoxModel.add_child_box(FilterBoxModel.AND)
-            oChildEditor = FilterBoxModelEditor(oChildBoxModel)
+            oChildEditor = FilterBoxModelEditor(oChildBoxModel, self.__oParentWin)
             oChildEditor.register_remove_box(self.__remove_model)
         else:
             oChildItem = self.__oBoxModel.add_child_item(sKeyword)
-            oChildEditor = FilterBoxItemEditor(oChildItem)
+            oChildEditor = FilterBoxItemEditor(oChildItem, self.__oParentWin)
             oChildEditor.connect_remove_button(self.__remove_filter_part)
 
         self.__aChildren.append(oChildEditor)
@@ -484,7 +486,7 @@ class FilterBoxItem(object):
         return sText
 
 class FilterBoxItemEditor(gtk.HBox):
-    def __init__(self, oBoxItem):
+    def __init__(self, oBoxItem, oParent):
         super(FilterBoxItemEditor, self).__init__(spacing=5)
         self.__oBoxItem = oBoxItem
 
@@ -499,7 +501,7 @@ class FilterBoxItemEditor(gtk.HBox):
         self.pack_start(gtk.Label(self.__oBoxItem.sLabel), expand=False)
 
         if self.__oBoxItem.iValueType == FilterBoxItem.LIST:
-            oWidget = MultiSelectComboBox()
+            oWidget = MultiSelectComboBox(oParent)
             oWidget.fill_list(self.__oBoxItem.aValues)
             oWidget.set_list_size(200, 400)
         elif self.__oBoxItem.iValueType == FilterBoxItem.NONE:

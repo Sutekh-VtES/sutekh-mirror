@@ -14,7 +14,7 @@ class MultiSelectComboBox(gtk.HBox):
     Implementation of a multiselect combo box widget.
     """
 
-    def __init__(self):
+    def __init__(self, oParentWin):
         super(MultiSelectComboBox, self).__init__()
 
         self._oButton = gtk.Button(" - ")
@@ -31,7 +31,9 @@ class MultiSelectComboBox(gtk.HBox):
 
         self._oScrolled = AutoScrolledWindow(self._oTreeView)
 
-        self._oDialog = gtk.Dialog("Select ...", None, gtk.DIALOG_MODAL | gtk.DIALOG_NO_SEPARATOR | gtk.DIALOG_DESTROY_WITH_PARENT)
+        self._oDialog = gtk.Dialog("Select ...", None,
+                gtk.DIALOG_MODAL | gtk.DIALOG_NO_SEPARATOR |
+                gtk.DIALOG_DESTROY_WITH_PARENT)
         self._oDialog.set_decorated(False)
         self._oDialog.action_area.set_size_request(-1, 0)
         self._oDialog.vbox.pack_start(self._oScrolled)
@@ -40,6 +42,7 @@ class MultiSelectComboBox(gtk.HBox):
         self._oDialog.connect('event-after', self.__grab_event)
 
         self._bInButton = False
+        self._oParentWin = oParentWin
 
     def __mouse_in_button(self):
         "Check if mouse pointer is inside the button"
@@ -96,6 +99,7 @@ class MultiSelectComboBox(gtk.HBox):
                        tWinPos[1] + tButtonPos[1] + tShift[1] )
 
         self._oDialog.set_keep_above(True) # Keep this above the dialog
+        self._oDialog.set_transient_for(self._oParentWin)
         self._oDialog.show_all()
         # WM behaviour means that move is unlikely to work before _oDialog is shown
         self._oDialog.move(*tDialogPos)
