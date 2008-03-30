@@ -165,6 +165,8 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
             self.__bWasCancelled = False
             # Construct the Final filter (may be None)
             self.__oFilter = self.__dFilterEditors[sId].get_filter()
+            if self.__oFilter is None:
+                return self.run()
         elif iResponse == self.__iAddButtonResponse:
             # Add a blank filter
             self.__oConfig.addFilter('')
@@ -180,7 +182,7 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
             else:
                 self.__oConfig.replaceFilter(sOld,sOld,sId)
             self.__expand_filter(None,sId)
-            self.run()
+            return self.run()
         elif iResponse == self.__iSaveButtonResponse:
             sCurr = self.__dFilterEditors[sId].get_current_text()
             self.__oConfig.replaceFilter(sOld,sCurr,sId)
