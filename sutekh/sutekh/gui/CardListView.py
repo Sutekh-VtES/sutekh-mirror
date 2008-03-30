@@ -476,6 +476,8 @@ class EditableCardListView(CardListView):
         oCell3.connect('clicked', self.incCard)
         oCell4.connect('clicked', self.decCard)
 
+        self._oMenuEditWidget = None
+
         self.set_expander_column(oColumn2)
         if hasattr(self, 'set_grid_lines'):
             self.set_grid_lines(gtk.TREE_VIEW_GRID_LINES_BOTH)
@@ -534,4 +536,17 @@ class EditableCardListView(CardListView):
 
     def set_color_normal(self):
         self.set_name('normal_view')
+
+    def toggle_editable(self, bValue):
+        self._oModel.bEditable = bValue
+        if self._oMenuEditWidget is not None:
+            self._oMenuEditWidget.set_active(bValue)
+        self.reload_keep_expanded()
+        if bValue:
+            self.set_color_edit_cue()
+        else:
+            self.set_color_normal()
+
+    def set_edit_menu_item(self, oMenuWidget):
+        self._oMenuEditWidget = oMenuWidget
 

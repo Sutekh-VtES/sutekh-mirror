@@ -73,7 +73,8 @@ class CardSetMenu(gtk.MenuBar, object):
         self.iEditable = gtk.CheckMenuItem('Card Set is Editable')
         self.iEditable.set_inconsistent(False)
         self.iEditable.set_active(False)
-        self.iEditable.connect('toggled', self.toggleEditable)
+        self.iEditable.connect('toggled', self.toggle_editable)
+        self.__oC.view.set_edit_menu_item(self.iEditable)
         wMenu.add(self.iEditable)
 
         oSep = gtk.SeparatorMenuItem()
@@ -180,13 +181,9 @@ class CardSetMenu(gtk.MenuBar, object):
         self.__oC.model.bExpansions = oWidget.active
         self.__oC.view.reload_keep_expanded()
 
-    def toggleEditable(self, oWidget):
-        self.__oC.model.bEditable = oWidget.active
-        self.__oC.view.reload_keep_expanded()
-        if oWidget.active:
-            self.__oC.view.set_color_edit_cue()
-        else:
-            self.__oC.view.set_color_normal()
+    def toggle_editable(self, oWidget):
+        if self.__oC.model.bEditable != oWidget.active:
+            self.__oC.view.toggle_editable(oWidget.active)
 
     def setFilter(self, oWidget):
         self.__oC.view.getFilter(self)
