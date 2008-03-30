@@ -396,6 +396,8 @@ class CardListView(gtk.TreeView, object):
 
     def split_selection_data(self, sSelectionData):
         """Helper function to subdivide selection string into bits again"""
+        if sSelectionData == '':
+            return 'None', ['']
         aLines = sSelectionData.splitlines()
         sSource = aLines[0]
         if sSource == "Sutekh Pane:":
@@ -457,17 +459,17 @@ class EditableCardListView(CardListView):
 
         # Arrow cells
         oCell3 = CellRendererSutekhButton()
-        oCell3.load_icon(gtk.STOCK_GO_UP, self)
+        oCell3.load_icon(gtk.STOCK_ADD, self)
         oCell4 = CellRendererSutekhButton()
-        oCell4.load_icon(gtk.STOCK_GO_DOWN, self)
+        oCell4.load_icon(gtk.STOCK_REMOVE, self)
 
         oColumn3 = gtk.TreeViewColumn("", oCell3, showicon=2)
-        oColumn3.set_fixed_width(20)
+        oColumn3.set_fixed_width(22)
         oColumn3.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
         self.append_column(oColumn3)
 
         oColumn4 = gtk.TreeViewColumn("", oCell4, showicon=3)
-        oColumn4.set_fixed_width(20)
+        oColumn4.set_fixed_width(22)
         oColumn4.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
         self.append_column(oColumn4)
 
