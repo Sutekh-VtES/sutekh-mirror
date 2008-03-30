@@ -135,7 +135,13 @@ class PhysicalCardController(object):
 
         if sExpansion is None:
             # Adding a new card to the list
-            oPC = PhysicalCard(abstractCard=oC, expansion=None)
+            aExpansion = set([oRP.expansion for oRP in oC.rarity])
+            if len(aExpansion) == 1:
+                oExpansion = aExpansion.pop()
+                sExpansion = oExpansion.name
+            else:
+                oExpansion = None
+            oPC = PhysicalCard(abstractCard=oC, expansion=oExpansion)
             self.model.incCardByName(oC.name)
             self.model.incCardExpansionByName(oC.name, sExpansion)
             send_reload_signal(oC)
