@@ -9,6 +9,13 @@
 import gtk, gobject
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 
+def mouse_in_button(oButton):
+    """Check if mouse pointer is inside the button"""
+    (iX, iY) = oButton.get_pointer() # mouse pos relative to button
+    oButtonGeom = oButton.allocation
+    return (iX >= 0) and (iY >= 0) and \
+            (iX < oButtonGeom.width) and (iY < oButtonGeom.height)
+
 class MultiSelectComboBox(gtk.HBox):
     """
     Implementation of a multiselect combo box widget.
@@ -44,13 +51,6 @@ class MultiSelectComboBox(gtk.HBox):
         self._bInButton = False
         self._oParentWin = oParentWin
 
-    def __mouse_in_button(self):
-        "Check if mouse pointer is inside the button"
-        (iX, iY) = self._oButton.get_pointer() # mouse pos relative to button
-        oButtonGeom = self._oButton.allocation
-        return (iX >= 0) and (iY >= 0) and \
-                (iX < oButtonGeom.width) and (iY < oButtonGeom.height)
-
     def __grab_event(self, oWidget, oEvent):
         """
         Hook into the event-after chain, so we can check if any 
@@ -67,15 +67,19 @@ class MultiSelectComboBox(gtk.HBox):
         # widget, rather than as a tweaked dialog window
         if oEvent.type == gtk.gdk.BUTTON_PRESS:
             # Mouse clicked
-            if self.__mouse_in_button():
-                if oEvent.button == 1:
+            if oEvent.button == 1:
+                if mouse_in_button(self._oButton):
                     # Left button
                     self.__hide_list()
                 # Ignore other buttons
                 # Should right button act the same as escape?
+                elif mouse_in_button(self._oParentWin.oCancelButton):
+                    self.set_selection(self._aOldSelection)
+                    self.__hide_list()
+                    self._oParentWin.forced_cancel()
         elif oEvent.type == gtk.gdk.ENTER_NOTIFY:
             # Mouse has entered the button, so mark as active
-            if self.__mouse_in_button():
+            if mouse_in_button(self._oButton):
                 self._bInButton = True
                 self._oButton.set_state(gtk.STATE_PRELIGHT)
         elif oEvent.type == gtk.gdk.LEAVE_NOTIFY and self._bInButton:
@@ -112,7 +116,7 @@ class MultiSelectComboBox(gtk.HBox):
     def __hide_on_return(self, oWidget, oEvent):
         if oEvent.type is gtk.gdk.KEY_PRESS:
             sKeyName = gtk.gdk.keyval_name(oEvent.keyval)
-            if sKeyName in ['Return','Escape']:
+            if sKeyName in ['Return', 'Escape']:
                 if sKeyName == 'Escape':
                     self.set_selection(self._aOldSelection)
                 self.__hide_list()

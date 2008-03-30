@@ -49,7 +49,8 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
                 self.__iDeleteButtonResponse)
         self.action_area.pack_start(gtk.VSeparator(), expand=True)
         self.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
-        self.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
+        self.oCancelButton = self.add_button(gtk.STOCK_CANCEL,
+                gtk.RESPONSE_CANCEL)
         self.connect("response", self.__button_response)
 
         self.__oParser = FilterParser.FilterParser()
@@ -195,6 +196,11 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
             self.__bWasCancelled = True
         self.hide()
 
+    def forced_cancel(self):
+        """Emulate Cancelling button press."""
+        self.__bWasCancelled = True
+        self.hide()
+
     def __replace_filter_in_dialog(self, oAST, sOldFilter, sNewFilter, sId):
         """
         Replace an existing filter with the new one
@@ -234,6 +240,8 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
 
     def Cancelled(self):
         return self.__bWasCancelled
+
+    # Cancel button query for multiselect combo
 
     # Config File Listener methods
 
