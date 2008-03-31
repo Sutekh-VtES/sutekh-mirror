@@ -1,4 +1,4 @@
-# CardDrawSimluator.py
+# CardDrawSimulator.py
 # -*- coding: utf8 -*-
 # vim:fileencoding=utf8 ai ts=4 sts=4 et sw=4
 # Dialog to display deck analysis software
