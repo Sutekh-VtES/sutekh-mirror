@@ -184,7 +184,7 @@ class ExtraCardViewColumns(CardListPlugin):
 
         oDlg = SutekhDialog(sName, self.parent,
                 gtk.DIALOG_DESTROY_WITH_PARENT)
-        oDlg.add_button(gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE)
+        oDlg.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
         oDlg.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
 
         oDlg.connect("response", self.handle_response)
@@ -209,7 +209,7 @@ class ExtraCardViewColumns(CardListPlugin):
 
     def handle_response(self, oDlg, oResponse):
         "Handle user response from the dialog"
-        if oResponse == gtk.RESPONSE_CLOSE:
+        if oResponse == gtk.RESPONSE_CANCEL:
             oDlg.destroy()
         elif oResponse == gtk.RESPONSE_OK:
             aColsInUse = []

@@ -50,7 +50,7 @@ class GroupCardList(CardListPlugin):
 
         oDlg = SutekhDialog(name,self.parent,
                 gtk.DIALOG_DESTROY_WITH_PARENT)
-        oDlg.add_button(gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE)
+        oDlg.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
         oDlg.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
 
         oDlg.connect("response", self.handleResponse)
@@ -74,7 +74,7 @@ class GroupCardList(CardListPlugin):
     # Actions
 
     def handleResponse(self,oDlg,oResponse):
-        if oResponse == gtk.RESPONSE_CLOSE:
+        if oResponse == gtk.RESPONSE_CANCEL:
             oDlg.destroy()
         elif oResponse == gtk.RESPONSE_OK:
             for oBut in self._oFirstBut.get_group():
