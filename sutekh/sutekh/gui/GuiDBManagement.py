@@ -25,24 +25,24 @@ from sutekh.SutekhUtility import refresh_tables, read_rulings, \
 
 
 def read_cardlist(oCardList, oProgressDialog, oLogHandler):
-    oProgressDialog.set_description("Reading WW Cardlist")
+    oProgressDialog.set_description("Reading White Wolf Card List")
     oProgressDialog.show()
     read_white_wolf_list(oCardList, oLogHandler)
     oProgressDialog.set_complete()
 
 def read_ww_rulings(oRulings, oProgressDialog, oLogHandler):
     oProgressDialog.reset()
-    oProgressDialog.set_description("Reading WW Rulings List")
+    oProgressDialog.set_description("Reading White Wolf Rulings")
     read_rulings(oRulings, oLogHandler)
     oProgressDialog.set_complete()
 
 def copy_to_new_db(oOldConn, oTempConn, oWin, oProgressDialog, oLogHandler):
     oProgressDialog.reset()
-    oProgressDialog.set_description("Reloading card list and card sets")
+    oProgressDialog.set_description("Reloading card collection and card sets")
     (bOK, aErrors) = copy_to_new_AbstractCardDB(oOldConn, oTempConn, oWin.cardLookup, oLogHandler)
     oProgressDialog.set_complete()
     if not bOK:
-        sMesg = "\n".join (["There was a problem copying the cardlist to the new database"] +
+        sMesg = "\n".join (["There was a problem copying your collection to the new database"] +
                 aErrors +
                 ["Attempt to Continue Anyway (This is quite possibly dangerous)?"])
         iResponse = do_complaint_warning(sMesg)

@@ -15,8 +15,8 @@ class WWFilesDialog(SutekhDialog):
             gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
             (gtk.STOCK_OK, gtk.RESPONSE_OK, gtk.STOCK_CANCEL,
             gtk.RESPONSE_CANCEL))
-        oCardListLabel = gtk.Label("White Wolf CardList File:")
-        self.oCardListFileButton = gtk.FileChooserButton("White Wolf cardlist")
+        oCardListLabel = gtk.Label("White Wolf Card List File:")
+        self.oCardListFileButton = gtk.FileChooserButton("White Wolf Card List")
         self.oUseWwCardListButton = gtk.CheckButton(label="Grab cardlist from White Wolf website?")
 
         oRulingsLabel = gtk.Label("White Wolf Rulings File (optional):")
