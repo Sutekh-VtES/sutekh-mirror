@@ -1,7 +1,9 @@
 #!/bin/sh
+# Neil Muller <drnlmuller+sutekh@gmail.com>, 2008
 # Very simple check for single line docstrings without """
 # We rely on pygettext to pull out the doc-strings, and grep
 # to check for """
+# GPL license, see COPYRIGHT file for details.
 pyfile=${1?'No file specified'}
 if [ ! -f $pyfile ]; then
    echo "No file found" >&2

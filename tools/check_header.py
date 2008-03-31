@@ -13,7 +13,6 @@
    incorrectly formatted copyright lines.
    """
 
-
 import optparse
 import sys
 import re
@@ -28,33 +27,21 @@ def parse_options(aArgs):
             help="File to check")
     return oParser, oParser.parse_args(aArgs)
 
-def file_check(sFileName):
-    """Actully do the checks. sFileName is the file to check."""
-    try:
-        oFile = file(sFileName, 'r')
-    except IOError:
-        print 'Unable to open file %s ' % sFileName
-        return False
-    sName = sFileName.split(os.path.sep)[-1]
+def search_file(oFile, dScores, aWrongCopyrights, sFileName):
+    """Loop through the comments header and assign the scores."""
 
+    # Setup test expressions
+    sName = sFileName.split(os.path.sep)[-1]
     oCopyright = re.compile('^# Copyright [0-9]{4,}(, [0-9]{4,})*'
             ' \S+?.* <.*@.*>')
     oWrongCopyright = re.compile('.*<.*@.*> .*[0-9]*|.*[0-9]*.*<.*@.*>'
             '|^# Copyright.*')
+    # Possible copyright notice (email + possible date), but not in
+    # right form
     oVimModeline = re.compile('^# vim:fileencoding=.* ai ts=4 sts=4 et sw=4')
     oCodingLine = re.compile('^# -\*- coding: ')
     oEnCodingLine = re.compile('^# -\*- coding: |^# vim:fileencoding=')
-    # Possible copyright notice (email + possible date), but not in
-    # right form
     sCommentHeader = '# %s\n' % sName
-    iCopyright = 0
-    iLicense = 0
-    iModeline = 0
-    iCodingLine = 0
-    iEnCodingLine = 0
-    iNameHeader = 0
-    iWrongCopyright = 0
-    aWrongCopyrights = []
     bValidCoding = False
 
     iLineCount = 0
@@ -66,73 +53,105 @@ def file_check(sFileName):
         iLineCount += 1
 
         if sLine == sCommentHeader:
-            iNameHeader += 1
+            dScores['filename'] += 1
 
         if oCodingLine.search(sLine) is not None:
-            iCodingLine += 1
+            dScores['coding lines'] += 1
             # Encoding declaration must be one of the 1st
             # two lines (see python docs)
             if (iLineCount < 3):
                 bValidCoding = True
 
         if oCopyright.search(sLine) is not None:
-            iCopyright += 1
+            dScores['copyright'] += 1
         elif oWrongCopyright.search(sLine) is not None:
             aWrongCopyrights.append(sLine)
-            iWrongCopyright += 1
+            dScores['wrong copyright'] += 1
 
         if sLine.find(' GPL ') != -1:
-            iLicense += 1
+            dScores['license'] += 1
 
         if oVimModeline.search(sLine) is not None:
-            iModeline += 1
+            dScores['modeline'] += 1
             if (iLineCount < 3):
                 bValidCoding = True
 
         if oEnCodingLine.search(sLine) is not None:
-            iEnCodingLine += 1
+            dScores['encoding'] += 1
 
-    oFile.close()
-    if iNameHeader < 1:
+    return bValidCoding
+
+def print_search_results(dScores, aWrongCopyrights, bValidCoding, sFileName):
+    """Display any errors found in the file"""
+    if dScores['filename'] < 1:
         print '%s is missing # Name Header' % sFileName
-    elif iNameHeader > 1:
+    elif dScores['filename'] > 1:
         print '%s has multiple # Name Headers' % sFileName
 
-    if iLicense < 1:
+    if dScores['license'] < 1:
         print '%s is missing reference to the license' % sFileName
-    elif iLicense > 1:
+    elif dScores['license'] > 1:
         print '%s has multiple reference to the license' % sFileName
 
-    if iModeline < 1:
+    if dScores['modeline'] < 1:
         print '%s is missing the vim modeline' % sFileName
-    elif iModeline > 1:
+    elif dScores['modeline'] > 1:
         print '%s has multiple modelines' % sFileName
 
-    if iCopyright < 1:
+    if dScores['copyright'] < 1:
         print '%s is missing a copyright statement' % sFileName
 
-    if iWrongCopyright > 0:
+    if dScores['wrong copyright'] > 0:
         print '%s has possible copyright notices in the incorrect form ' \
                 % sFileName
         print '(not "Copyright Years Name <email>")'
         print 'Possibly incorrect line(s) : ', aWrongCopyrights
 
-    if iCodingLine < 1:
+    if dScores['coding lines'] < 1:
         print '%s is is missing a -*- coding lines' % sFileName
 
-    if iEnCodingLine < 2:
+    if dScores['encoding'] < 2:
         print '%s is missing an encoding line' % sFileName
-    elif iEnCodingLine > 2:
+    elif dScores['encoding'] > 2:
         print '%s is has multiple a -*- coding lines' % sFileName
 
-    if not bValidCoding and iEnCodingLine > 1:
+    if not bValidCoding and dScores['encoding'] > 1:
         print '%s: One of the coding lines must be in " \
                 "the 1st 2 lines of the file' % sFileName
 
-    return not (iCodingLine == 1 | iCopyright == 1 |
-            iModeline == 1 | iLicense == 1 |
-            iNameHeader == 1 | iEnCodingLine == 2 |
-            iWrongCopyright == 0 | bValidCoding)
+def score_failed(dScores):
+    """Test if the file fails the test criteria"""
+    return (dScores['coding lines'] == 1 | dScores['copyright'] == 1 |
+            dScores['modeline'] == 1 | dScores['license'] == 1 |
+            dScores['filename'] == 1 | dScores['encoding'] == 2 |
+            dScores['wrong copyright'] == 0)
+
+def file_check(sFileName):
+    """Actully do the checks. sFileName is the file to check."""
+    try:
+        oFile = file(sFileName, 'r')
+    except IOError:
+        print 'Unable to open file %s ' % sFileName
+        return False
+
+    dScores = {
+            'copyright' : 0,
+            'license' : 0,
+            'modeline' : 0,
+            'coding lines' : 0,
+            'encoding' : 0,
+            'filename' : 0,
+            'wrong copyright' : 0,
+            }
+    aWrongCopyrights = []
+
+    bValidCoding = search_file(oFile, dScores, aWrongCopyrights, sFileName)
+
+    oFile.close()
+
+    print_search_results(dScores, aWrongCopyrights, bValidCoding, sFileName)
+
+    return not (score_failed(dScores) | bValidCoding)
 
 def main(aArgs):
     """Main function. Parse aArgs for the filename, and call file_check."""
