@@ -4,31 +4,38 @@
 # Copyright 2007 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
 
+"""Test the Sutekh ruling parser"""
+
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.core.SutekhObjects import Ruling, IRuling
 import unittest
 
 class RulingParserTests(SutekhTest):
+    """Check the results of the ruling parser call in SutekhTest SetUp"""
     aExpectedRulings = [
         u"[LSJ19990215]", u"[LSJ19990216]", u"[LSJ20070928]",
     ]
 
-    def testBasic(self):
-        aRulings = sorted(list(Ruling.select()),cmp=lambda oR1,oR2: cmp(oR1.code,oR2.code))
+    def test_basic(self):
+        """Basic test method for ruling parser tests."""
+        aRulings = sorted(list(Ruling.select()), cmp=lambda oR1, oR2:
+                cmp(oR1.code, oR2.code))
 
-        self.assertEqual([oR.code for oR in aRulings],self.aExpectedRulings)
+        self.assertEqual([oR.code for oR in aRulings], self.aExpectedRulings)
 
-        oR = aRulings[0]
-        self.failUnless(oR.text.startswith(u"Cannot use his "))
+        oRuling = aRulings[0]
+        self.failUnless(oRuling.text.startswith(u"Cannot use his "))
 
-        oR = aRulings[1]
-        self.failUnless(oR.text.startswith(u"Cannot be used "))
+        oRuling = aRulings[1]
+        self.failUnless(oRuling.text.startswith(u"Cannot be used "))
 
-        oR = aRulings[2]
-        self.failUnless(oR.text.startswith(u"The AK-47 provides "))
+        oRuling = aRulings[2]
+        self.failUnless(oRuling.text.startswith(u"The AK-47 provides "))
 
-        oR = IRuling((aRulings[0].text,aRulings[0].code))
-        self.assertEqual(oR.code,self.aExpectedRulings[0])
+        # pylint: disable-msg=E1101
+        # IRuling confuses pylint
+        oRuling = IRuling((aRulings[0].text, aRulings[0].code))
+        self.assertEqual(oRuling.code, self.aExpectedRulings[0])
 
 if __name__ == "__main__":
     unittest.main()

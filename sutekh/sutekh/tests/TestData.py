@@ -5,6 +5,10 @@
 #  * http://www.white-wolf.com/vtes/index.php?line=cardlist
 #  * http://www.white-wolf.com/vtes/index.php?line=rulings
 
+"""Data used for test cases"""
+# pylint: disable-msg=C0103
+# don't care about naming conventions here
+
 TEST_CARD_LIST = """
 <html>
 <head><title>Sutekh Test Cards</title></head>
