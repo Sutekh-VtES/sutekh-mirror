@@ -1,9 +1,12 @@
 This directory is for various useful tools.
 
-The follwoing are currently included:
+The following are currently included:
 
 sutekh_pylint - A rc file for pylint which enforces Sutekh's naming convention.
           Use as pylint --rcfile sutekh_pylint
+
+run_all_tests.sh - a simple bash script that can be used to run all the test
+         cases for Sutekh.
 
 check_header.py - A simple script that checks if the comment headers match the
           required style. Checks for coding line, vim modeline, 
@@ -11,6 +14,10 @@ check_header.py - A simple script that checks if the comment headers match the
           line corresponds to the file name. Usage check_headers -f file
           Intended to be used via find's exec option (something like
           find <dir> -name "*py" -exec python check_header.py -f \{\} \;)
+
+chec_single_line_docstring_format.sh - Shell script thet attempts to detect
+          docstrings not using the """ format. While this is reasonably
+          accurate, it can produce false positives. 
 
 dict_keys_check.py - A plugin to pylint to warn about using 
           "for x in dict.keys()" syntax. Ensure the directory with this
