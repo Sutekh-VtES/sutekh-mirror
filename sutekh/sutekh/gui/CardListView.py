@@ -75,6 +75,11 @@ class CardListView(gtk.TreeView, object):
         self._oFilterDialog = None
         self.set_name('normal_view')
 
+        # Grid Lines
+        if hasattr(self, 'set_grid_lines'):
+            self.set_grid_lines(gtk.TREE_VIEW_GRID_LINES_BOTH)
+
+
     # Listener helper functions
 
     def add_listener(self, oListener):
@@ -479,8 +484,6 @@ class EditableCardListView(CardListView):
         self._oMenuEditWidget = None
 
         self.set_expander_column(oColumn2)
-        if hasattr(self, 'set_grid_lines'):
-            self.set_grid_lines(gtk.TREE_VIEW_GRID_LINES_BOTH)
 
     def load(self):
         """Called when the model needs to be reloaded."""
