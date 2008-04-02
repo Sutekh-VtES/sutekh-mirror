@@ -213,10 +213,10 @@ class CardImageFrame(BasicFrame, CardListViewListener):
             self.__aExpansions = []
             self.__iExpansionPos = 0
 
-    def __redraw(self):
+    def __redraw(self, bPause):
         """Redraw the current card"""
         # If further events are pending, don't try and redraw
-        if gtk.gdk.events_pending():
+        if bPause and gtk.gdk.events_pending():
             return
         sFullFilename = self.__convert_cardname()
         self.__load_image(sFullFilename)
@@ -310,7 +310,7 @@ class CardImageFrame(BasicFrame, CardListViewListener):
                 # Set self.__sCurExpansion to a valid value
                 self.__sCurExpansion = self.__aExpansions[0]
                 self.__iExpansionPos = 0
-        self.__redraw()
+        self.__redraw(False)
 
     def do_cycle_expansion(self, iDir):
         """Change the expansion image to a different one in the list."""
@@ -325,12 +325,12 @@ class CardImageFrame(BasicFrame, CardListViewListener):
             if self.__iExpansionPos < 0:
                 self.__iExpansionPos = len(self.__aExpansions) - 1
         self.__sCurExpansion = self.__aExpansions[self.__iExpansionPos]
-        self.__redraw()
+        self.__redraw(False)
 
     def set_zoom_mode(self, iScale):
         """Update the zoom mode."""
         self.__iZoomMode = iScale
-        self.__redraw()
+        self.__redraw(False)
 
     # pylint: disable-msg=W0613
     # oWidget needed by gtk function signature
@@ -352,7 +352,7 @@ class CardImageFrame(BasicFrame, CardListViewListener):
     def _pane_adjust(self, oAdjust):
         """Redraw the image if needed when the pane size changes."""
         if self.__iZoomMode == _iFIT:
-            self.__redraw()
+            self.__redraw(True)
 
 # pylint: disable-msg=R0904
 # R0904 - gtk Widget, so has many public methods
