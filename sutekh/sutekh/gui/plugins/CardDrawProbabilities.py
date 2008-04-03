@@ -17,7 +17,7 @@ from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 
 
-def choose(iChoices, iTotal):
+def _choose(iChoices, iTotal):
     """
     Returns number of unordered combinations of iChoices objects from iTotal
       (iTotal)(iTotal-1)...(iTotal-iChoices+1)/iChoices!
@@ -32,7 +32,7 @@ def choose(iChoices, iTotal):
         iDenom *= iNum
     return iNumerator / iDenom
 
-def gen_choice_list(dSelectedCounts):
+def _gen_choice_list(dSelectedCounts):
     """Recursively generate all possible choices"""
     aList = []
     aSelectOrder = sorted(dSelectedCounts.items(), key=lambda x: (x[1], x[0]),
@@ -41,7 +41,7 @@ def gen_choice_list(dSelectedCounts):
     if len(dSelectedCounts) > 1:
         dNew = copy(dSelectedCounts)
         del dNew[sThisItem]
-        aSubLists = gen_choice_list(dNew)
+        aSubLists = _gen_choice_list(dNew)
         for iChoice in range(dSelectedCounts[sThisItem]+1):
             for aChoices in aSubLists:
                 aThisList = [iChoice]
@@ -49,9 +49,10 @@ def gen_choice_list(dSelectedCounts):
                 aList.append(aThisList)
     else:
         aList = [[x] for x in range(dSelectedCounts[sThisItem]+1)]
+    aList.sort(key=lambda x: [sum(x)]+x)
     return aList
 
-def multi_hyper_prob(aFound, iDraws, aObjects, iTotal):
+def _multi_hyper_prob(aFound, iDraws, aObjects, iTotal):
     """
     Multivariate hypergeometric probability:
     Given a list of draw numbers: aFound = [iFound1, iFound2 ... iFoundN]
@@ -82,18 +83,18 @@ def multi_hyper_prob(aFound, iDraws, aObjects, iTotal):
     #           choose iDraws from iTotal
     # Multivariate: P(X_i = iFound[i]) = choose(iFound1, iObjects1) *
     #           choose(iFound2, iObject2) * ... / choose(iDraws, iTotal)
-    fDemon = float(choose(iDraws, iTotal))
+    fDemon = float(_choose(iDraws, iTotal))
     # Ensure we handle last entry
     iRemObjects = iTotal - sum(aObjects)
     iRemFound = iDraws - sum(aFound)
     fNumerator = 1.0
     for iFound, iObjects in zip(aFound, aObjects):
-        fNumerator *= choose(iFound, iObjects)
+        fNumerator *= _choose(iFound, iObjects)
     if iRemFound > 0 and iRemObjects > 0:
-        fNumerator *= choose(iRemFound, iRemObjects)
+        fNumerator *= _choose(iRemFound, iRemObjects)
     return fNumerator / fDemon
 
-def hyper_prob_at_least(aFound, iDraws, aObjects, iTotal, iCurCol=0):
+def _hyper_prob_at_least(aFound, iDraws, aObjects, iTotal, iCurCol=0):
     """
     Returns the probablity of drawing at least aFound from aObjects objects
     of interest from iTotal objects in iDraw draws
@@ -109,16 +110,18 @@ def hyper_prob_at_least(aFound, iDraws, aObjects, iTotal, iCurCol=0):
     for iCur in range(aFound[iCurCol], min(iDraws, aObjects[iCurCol]) + 1):
         aThisFound[iCurCol] = iCur
         if iCurCol < len(aFound) - 1:
-            fProb += hyper_prob_at_least(aThisFound, iDraws,
+            fProb += _hyper_prob_at_least(aThisFound, iDraws,
                     aObjects, iTotal, iCurCol + 1)
         else:
-            fProb += multi_hyper_prob(aThisFound, iDraws, aObjects, iTotal)
+            fProb += _multi_hyper_prob(aThisFound, iDraws, aObjects, iTotal)
     return fProb
 
 class CardDrawSimPlugin(CardListPlugin):
     """
     Displays the probabilities for drawing cards from the current selection
     """
+    # pylint: disable-msg=R0902
+    # we use a lot of attributes to parse the data around
     dTableVersions = {PhysicalCardSet : [3, 4],
             AbstractCardSet : [3]}
     aModelsSupported = [PhysicalCardSet,
@@ -142,7 +145,6 @@ class CardDrawSimPlugin(CardListPlugin):
     # is the plugin's entry point, and they need to reflect the current state
     def activate(self, oWidget):
         """Create the actual dialog, and populate it."""
-        sDiagName = "Card Draw probablities"
         self.iTotal = 0
         self.dSelectedCounts = {}
         self.iSelectedCount = 0
@@ -164,20 +166,20 @@ class CardDrawSimPlugin(CardListPlugin):
 
         oMainTitle = gtk.Label()
         if bCrypt:
-            oMainTitle.set_markup('<b>Crypt:</b> Drawing from <b>%d</b>'
+            oMainTitle.set_markup('<b>Crypt:</b> Drawing from <b>%d</b> '
                     'cards' % self.iTotal)
             self.iOpeningDraw = 4
             self.iNumSteps = min(2, self.iTotal - self.iOpeningDraw)
         else:
-            oMainTitle.set_markup('<b>Library:</b> Drawing from <b>%d</b>'
+            oMainTitle.set_markup('<b>Library:</b> Drawing from <b>%d</b> '
                     'cards' % self.iTotal)
             self.iOpeningDraw = 7
             # Look 15 cards into the deck by default, seems good start
             self.iNumSteps = min(8, self.iTotal - self.iOpeningDraw)
         self.iMax = min(15, self.iTotal - self.iOpeningDraw)
         self.iDrawStep = 1 # Increments to use in table
-        self.aAllChoices = gen_choice_list(self.dSelectedCounts)
-        self.iCardsToDraw = min(10, len(self.aAllChoices))
+        self.aAllChoices = _gen_choice_list(self.dSelectedCounts)
+        self.iCardsToDraw = min(3, self.iSelectedCount)
 
         if self.iTotal <= self.iOpeningDraw:
             if bLibrary:
@@ -188,9 +190,21 @@ class CardDrawSimPlugin(CardListPlugin):
                         " the opening draw")
             return
 
-        oDialog = SutekhDialog(sDiagName, self.parent,
-                gtk.DIALOG_DESTROY_WITH_PARENT,
-                (gtk.STOCK_OK, gtk.RESPONSE_OK))
+        self.oResultsTable = gtk.Table()
+        oDialog = self._make_dialog(oMainTitle, bCrypt)
+        self._fill_table(self, bCrypt)
+        oDialog.set_size_request(800, 600)
+        oDialog.show_all()
+
+        oDialog.run()
+
+    # pylint: enable-msg=W0613, W0201
+
+    def _make_dialog(self, oMainTitle, bCrypt):
+        """Create the dialog box."""
+        oDialog = SutekhDialog( "Card Draw probablities", self.parent,
+            gtk.DIALOG_DESTROY_WITH_PARENT,
+            (gtk.STOCK_OK, gtk.RESPONSE_OK))
         oDialog.connect("response", lambda oDialog, resp: oDialog.destroy())
 
         oWidgetBox = gtk.HBox(False, 2)
@@ -211,7 +225,7 @@ class CardDrawSimPlugin(CardListPlugin):
 
         iIndex = 0
         oCardToDrawCount = gtk.combo_box_new_text()
-        for iNum in range(1, len(self.aAllChoices) + 1):
+        for iNum in range(1, self.iSelectedCount + 1):
             oCardToDrawCount.append_text(str(iNum))
             if iNum < self.iCardsToDraw:
                 iIndex += 1
@@ -226,44 +240,38 @@ class CardDrawSimPlugin(CardListPlugin):
         oWidgetBox.pack_start(oNumDraws)
         oWidgetBox.pack_start(gtk.Label(' Step between columns : '))
         oWidgetBox.pack_start(oStepSize)
-        oWidgetBox.pack_start(gtk.Label(' rows in table : '))
+        oWidgetBox.pack_start(gtk.Label(' cards of interest : '))
         oWidgetBox.pack_start(oCardToDrawCount)
         oWidgetBox.pack_start(gtk.Label(' : '))
         oWidgetBox.pack_start(oRecalcButton)
-
-        self.oResultsBox = gtk.VBox(False, 2)
 
         oDescLabel = gtk.Label("Columns are number of draws (X)\n"
                 "rows are the number of cards (Y)\n"
                 "For the first row (0 cards), the entry is the possiblity of"
                 "Not drawing any of the selected cards by the X'th draw\n"
                 "For the other rows, the entries are the probability of "
-                "seeing at least the list number of cards from the selection\n"
+                "seeing at least the listed cards from the selection\n"
                 "by the X\'th draw with the number in brackets being the "
                 "probablity of seeing eactly the listed cards\n"
                 "The first column represents the opening hand or crypt draw")
 
         oTitleLabel = gtk.Label('Draw results :')
-        self.oResultsBox.pack_start(oTitleLabel, False, False)
+        oResultsBox = gtk.VBox(False, 2)
+        oResultsBox.pack_start(oTitleLabel, False, False)
 
         # pylint: disable-msg=E1101
         # pylint doesn't detect gtk methods correctly
 
-        self.oResultsTable = gtk.Table()
-        self.oResultsBox.pack_start(AutoScrolledWindow(self.oResultsTable,
+        oResultsBox.pack_start(AutoScrolledWindow(self.oResultsTable,
             True))
 
         oDialog.vbox.pack_start(oMainTitle, False, False)
         oDialog.vbox.pack_start(gtk.Label('Card Probablities'), False, False)
         oDialog.vbox.pack_start(oDescLabel, False, False)
         oDialog.vbox.pack_start(oWidgetBox, False, False)
-        oDialog.vbox.pack_start(self.oResultsBox)
-        self._fill_table(self, bCrypt)
-        oDialog.set_size_request(800, 600)
-        oDialog.show_all()
+        oDialog.vbox.pack_start(oResultsBox)
+        return oDialog
 
-        oDialog.run()
-    # pylint: enable-msg=W0613, W0201
 
     def _setup_cardlists(self, aSelectedCards, bCrypt):
         """Extract the needed card info from the model"""
@@ -326,7 +334,7 @@ class CardDrawSimPlugin(CardListPlugin):
         self.iNumSteps = int(oComboBox.get_active_text())
 
     # pylint: disable-msg=W0613
-    # oWidget is dielibrately unused
+    # oWidget is intentionally unused
     def _fill_table(self, oWidget, bCrypt):
         """Fill Results Box with the draw results.
 
@@ -334,74 +342,116 @@ class CardDrawSimPlugin(CardListPlugin):
            'connect' signal.
            """
         # This is messy, but does the job
-        for oChild in self.oResultsTable.get_children():
-            self.oResultsTable.remove(oChild)
+        iNumCardRows = len([sum(x) for x in self.aAllChoices if
+                sum(x) <= self.iCardsToDraw])
+        iNumRows = 2 * iNumCardRows + 5
+        if len(self.aAllChoices[0]) > 1:
+            iNumCols = 2 * self.iNumSteps + 5
+            iOffset = 2
+        else:
+            iNumCols = 2 * self.iNumSteps + 3
+            iOffset = 0
+        self._setup_table(iNumRows, iNumCols)
+        if iOffset > 0:
+            self.oResultsTable.attach(gtk.VSeparator(), 3, 4, 2, iNumRows,
+                    xpadding=0, ypadding=0, xoptions=gtk.FILL,
+                    yoptions=gtk.FILL)
+            oLabel = gtk.Label('Count')
+            self.oResultsTable.attach(oLabel, 2, 3, 2, 3)
+            self._setup_count_rows()
+        if bCrypt:
+            oLabel = gtk.Label('Opening Draw')
+        else:
+            oLabel = gtk.Label('Opening Hand')
+        self.oResultsTable.attach(oLabel, 4 + iOffset, 5 + iOffset,
+                2, 3)
+        self.oResultsTable.attach(gtk.HSeparator(), iOffset, iNumCols, 1,
+                2, xpadding=0, ypadding=0, xoptions=gtk.FILL,
+                yoptions=gtk.FILL)
+        self.oResultsTable.attach(gtk.VSeparator(), 1, 2, 1, iNumRows,
+                xpadding=0, ypadding=0, xoptions=gtk.FILL, yoptions=gtk.FILL)
+        self.oResultsTable.attach(gtk.VSeparator(), 3 + iOffset, 4 + iOffset,
+                2, iNumRows, xpadding=0, ypadding=0, xoptions=gtk.FILL,
+                yoptions=gtk.FILL)
+        for iCol in range(1, self.iNumSteps):
+            oLabel = gtk.Label('+ %d' % (iCol * self.iDrawStep))
+            iTableCol = 2 * iCol + 3 + iOffset
+            self.oResultsTable.attach(gtk.VSeparator(), iTableCol,
+                    iTableCol + 1, 2, iNumRows, xpadding=0, ypadding=0,
+                    xoptions=gtk.FILL, yoptions=gtk.FILL)
+            self.oResultsTable.attach(oLabel, iTableCol + 1, iTableCol + 2,
+                    2, 3)
+
         aSelectOrder = sorted(self.dSelectedCounts.items(),
                 key=lambda x: (x[1], x[0]), reverse=True)
-        self.oResultsTable.resize(2*self.iCardsToDraw+5, 2*self.iNumSteps+3)
+        for iRow in range(iNumCardRows):
+            oLabel = gtk.Label(self._gen_row_label(iRow, aSelectOrder))
+            iTableRow = 2 * iRow + 3
+            self.oResultsTable.attach(gtk.HSeparator(), 1 + iOffset,
+                    iNumCols, iTableRow, iTableRow + 1, xpadding=0, ypadding=0,
+                    xoptions=gtk.FILL, yoptions=gtk.FILL)
+            self.oResultsTable.attach(oLabel, 2 + iOffset, 3 + iOffset,
+                    iTableRow + 1, iTableRow + 2)
+        # Fill in zero row
+        aCardCounts = [x[1] for x in aSelectOrder]
+        self._fill_row(0, iOffset, True, aCardCounts)
+        # Fill in other rows
+        for iRow in range(1, iNumCardRows):
+            self._fill_row(iRow, iOffset, False, aCardCounts)
+        self.oResultsTable.show_all()
+    # pylint: enable-msg=W0613
+
+    def _setup_table(self, iNumRows, iNumCols):
+        """Clear the table, and setup constant entries."""
+        for oChild in self.oResultsTable.get_children():
+            self.oResultsTable.remove(oChild)
+        self.oResultsTable.resize(iNumRows, iNumCols)
         self.oResultsTable.set_col_spacings(0)
         self.oResultsTable.set_row_spacings(0)
         oTopLabel = gtk.Label('Cards drawn')
         oLeftLabel = gtk.Label('Number of cards seen')
         oLeftLabel.set_angle(270)
-        self.oResultsTable.attach(oTopLabel, 0, 2*self.iNumSteps+4, 0, 1)
-        self.oResultsTable.attach(oLeftLabel, 0, 1, 0, 2*self.iCardsToDraw+6)
-        self.oResultsTable.attach(gtk.HSeparator(), 0, 2*self.iNumSteps+4, 1,
-                2, xpadding=0, ypadding=0, xoptions=gtk.FILL,
-                yoptions=gtk.FILL)
-        self.oResultsTable.attach(gtk.VSeparator(), 1, 2, 1,
-                2 * self.iCardsToDraw + 6, xpadding=0, ypadding=0,
-                xoptions=gtk.FILL, yoptions=gtk.FILL)
-        if bCrypt:
-            oOpeningLabel = gtk.Label('Opening Draw')
-        else:
-            oOpeningLabel = gtk.Label('Opening Hand')
-        self.oResultsTable.attach(gtk.VSeparator(), 3, 4, 2,
-                2 * self.iCardsToDraw + 6, xpadding=0, ypadding=0,
-                xoptions=gtk.FILL, yoptions=gtk.FILL)
-        self.oResultsTable.attach(oOpeningLabel, 4, 5, 2, 3)
-        for iCol in range(1, self.iNumSteps):
-            oLabel = gtk.Label('+ %d' % (iCol * self.iDrawStep))
-            self.oResultsTable.attach(gtk.VSeparator(), 2 * iCol + 3,
-                    2 * iCol + 4, 2, 2*self.iCardsToDraw+6, xpadding=0,
-                    ypadding=0, xoptions=gtk.FILL, yoptions=gtk.FILL)
-            self.oResultsTable.attach(oLabel, 2 * iCol + 4, 2 * iCol + 5, 2, 3)
-        for iRow in range(self.iCardsToDraw):
-            oLabel = gtk.Label(self._gen_row_label(iRow, aSelectOrder))
-            self.oResultsTable.attach(gtk.HSeparator(), 1,
-                    2 * self.iNumSteps + 4, 2 * iRow + 3, 2 * iRow + 4,
-                    xpadding=0, ypadding=0, xoptions=gtk.FILL,
+        self.oResultsTable.attach(oTopLabel, 0, iNumCols, 0, 1)
+        self.oResultsTable.attach(oLeftLabel, 0, 1, 1, iNumRows)
+
+    def _setup_count_rows(self):
+        """Fill in the culmative count rows."""
+        iBottomRow = 3
+        for iCardRow in range(self.iCardsToDraw + 1):
+            self.oResultsTable.attach(gtk.HSeparator(), 1, 3, iBottomRow,
+                    iBottomRow + 1, xpadding=0, ypadding=0, xoptions=gtk.FILL,
                     yoptions=gtk.FILL)
-            self.oResultsTable.attach(oLabel, 2, 3, 2 * iRow + 4, 2 * iRow + 5)
-        # Fill in zero row
+            oLabel = gtk.Label('%d' % iCardRow)
+            iNumRows = len([x for x in self.aAllChoices if
+                sum(x) == iCardRow])
+            iTopRow = iBottomRow + 2 * iNumRows
+            self.oResultsTable.attach(oLabel, 2 , 3, iBottomRow + 1, iTopRow)
+            iBottomRow = iTopRow
+
+    def _fill_row(self, iRow, iOffset, bZero, aCardCounts):
+        """Fill a single row of the results table"""
+        iTableRow = 2 * iRow + 4
+        aThisDraw = self._gen_draw(iRow)
         for iCol in range(self.iNumSteps):
             iNumDraws = iCol * self.iDrawStep + self.iOpeningDraw
             if iNumDraws < self.iTotal:
-                fProbExact = multi_hyper_prob([0], iNumDraws,
-                        [self.iSelectedCount], self.iTotal)*100
-                oResLabel = gtk.Label('%3.2f' % fProbExact)
-            else:
-                oResLabel = gtk.Label('all cards drawn')
-            self.oResultsTable.attach(oResLabel, 2*iCol+4, 2*iCol+5, 4, 5)
-        # Fill in other rows
-        aCardCounts = [x[1] for x in aSelectOrder]
-        for iRow in range(1, self.iCardsToDraw):
-            aThisDraw = self._gen_draw(iRow)
-            for iCol in range(self.iNumSteps):
-                iNumDraws = iCol * self.iDrawStep + self.iOpeningDraw
-                if iNumDraws < self.iTotal:
-                    fProbExact = multi_hyper_prob(aThisDraw, iNumDraws,
-                            aCardCounts, self.iTotal)*100
-                    fProbAccum = hyper_prob_at_least(aThisDraw, iNumDraws,
+                fProbExact = _multi_hyper_prob(aThisDraw, iNumDraws,
+                        aCardCounts, self.iTotal)*100
+                if not bZero:
+                    fProbAccum = _hyper_prob_at_least(aThisDraw, iNumDraws,
                             aCardCounts, self.iTotal)*100
                     oResLabel = gtk.Label('%3.2f (%3.2f)' % (fProbAccum,
                         fProbExact))
                 else:
+                    oResLabel = gtk.Label('%3.2f' % fProbExact)
+            else:
+                if bZero:
+                    oResLabel = gtk.Label('all cards drawn')
+                else:
                     oResLabel = gtk.Label('')
-                self.oResultsTable.attach(oResLabel, 2*iCol+4, 2*iCol+5,
-                        2*iRow+4, 2*iRow+5)
-        self.oResultsTable.show_all()
-    # pylint: enable-msg=W0613
+            iTableCol = 2 * iCol + 4 + iOffset
+            self.oResultsTable.attach(oResLabel, iTableCol, iTableCol + 1,
+                    iTableRow, iTableRow + 1)
 
     def _gen_draw(self, iRow):
         """Construct the card draw for the row"""
@@ -410,7 +460,7 @@ class CardDrawSimPlugin(CardListPlugin):
     def _gen_row_label(self, iRow, aSelectOrder):
         """Construct the label."""
         if iRow == 0:
-            return '0 cards'
+            return 'None of the cards'
         aThisRow = self._gen_draw(iRow)
         sLabel = ''
         for oItem, iCount in zip(aSelectOrder, aThisRow):
