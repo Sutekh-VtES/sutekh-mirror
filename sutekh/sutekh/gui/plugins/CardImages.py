@@ -171,7 +171,7 @@ class CardImageFrame(BasicFrame, CardListViewListener):
         self.__iExpansionPos = 0
         self.__sCardName = ''
         self.__iZoomMode = _iFIT
-        self.tOldSize = (0, 0)
+        self._tPaneSize = (0, 0)
 
     type = property(fget=lambda self: "Card Image Frame", doc="Frame Type")
 
@@ -264,6 +264,8 @@ class CardImageFrame(BasicFrame, CardListViewListener):
                         iPaneWidth, iPaneHeight)
                 self._oImage.set_from_pixbuf(oPixbuf.scale_simple(iDestWidth,
                     iDestHeight, gtk.gdk.INTERP_HYPER))
+                self._tPaneSize = (self._oView.get_hadjustment().page_size,
+                        self._oView.get_vadjustment().page_size)
             elif self.__iZoomMode == _iVIEW_FIXED:
                 iDestWidth, iDestHeight = _scale_dims(iWidth, iHeight,
                         _tRATIO[0], _tRATIO[1])
@@ -352,7 +354,11 @@ class CardImageFrame(BasicFrame, CardListViewListener):
     def _pane_adjust(self, oAdjust):
         """Redraw the image if needed when the pane size changes."""
         if self.__iZoomMode == _iFIT:
-            self.__redraw(True)
+            tCurSize = (self._oView.get_hadjustment().page_size,
+                self._oView.get_vadjustment().page_size)
+            if tCurSize[0] != self._tPaneSize[0] or \
+                    tCurSize[1] != self._tPaneSize[1]:
+                self.__redraw(True)
 
 # pylint: disable-msg=R0904
 # R0904 - gtk Widget, so has many public methods
