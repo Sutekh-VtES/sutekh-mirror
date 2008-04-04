@@ -73,7 +73,8 @@ class MultiSelectComboBox(gtk.HBox):
                     self.__hide_list()
                 # Ignore other buttons
                 # Should right button act the same as escape?
-                elif mouse_in_button(self._oParentWin.oCancelButton):
+                elif hasattr(self._oParentWin, 'oCancelButton') and \
+                        mouse_in_button(self._oParentWin.oCancelButton):
                     self.set_selection(self._aOldSelection)
                     self.__hide_list()
                     self._oParentWin.forced_cancel()

@@ -89,10 +89,10 @@ class AnalyzeCardList(CardListPlugin):
         sComment = oCS.comment.replace('&', '&amp;')
         sAuthor = oCS.author
 
-        oDlg = SutekhDialog( "Analysis of Card List", self.parent,
+        self.oDlg = SutekhDialog( "Analysis of Card List", self.parent,
                 gtk.DIALOG_DESTROY_WITH_PARENT,
                 (gtk.STOCK_OK, gtk.RESPONSE_OK))
-        oDlg.connect("response", lambda oDlg, resp: oDlg.destroy())
+        self.oDlg.connect("response", lambda oDlg, resp: oDlg.destroy())
         oNotebook = gtk.Notebook()
         # Oh, popup_enable and scrollable - how I adore thee
         oNotebook.set_scrollable(True)
@@ -340,11 +340,11 @@ class AnalyzeCardList(CardListPlugin):
 
         # pylint: disable-msg=E1101
         # vbox methods not seen
-        oDlg.vbox.pack_start(oNotebook)
-        oDlg.show_all()
+        self.oDlg.vbox.pack_start(oNotebook)
+        self.oDlg.show_all()
         oNotebook.set_current_page(0)
 
-        oDlg.run()
+        self.oDlg.run()
     # pylint: enable-msg=W0613
 
     def _format_card_line(self, sString, iNum):
@@ -930,7 +930,7 @@ class AnalyzeCardList(CardListPlugin):
         oHBox.pack_start(oComboBox)
         oHBox.pack_start(gtk.Label(' : '))
 
-        oDiscWidget = MultiSelectComboBox()
+        oDiscWidget = MultiSelectComboBox(self.oDlg)
         oDiscWidget.fill_list(aSortedDiscs)
 
         oDiscWidget.set_sensitive(False)
