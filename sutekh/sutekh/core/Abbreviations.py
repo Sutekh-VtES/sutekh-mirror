@@ -24,6 +24,8 @@ class AbbrevMeta(type):
             for sAlt in aAlts:
                 self._dLook[sAlt] = sKey
 
+# pylint: disable-msg=E1101
+# meta-class magic with _dLook confuses pylint
 class AbbreviationLookup(object):
     __metaclass__ = AbbrevMeta
 
@@ -32,24 +34,28 @@ class AbbreviationLookup(object):
     dKeys = None
 
     @classmethod
-    def canonical(cls,sName):
+    def canonical(cls, sName):
         """Translate a possibly abbreviated name into a canonical one.
            """
         return cls._dLook[sName]
 
     @classmethod
-    def fullname(cls,sCanonical):
+    def fullname(cls, sCanonical):
         """Translate a canonical name into a full name.
            """
         raise NotImplementedError
 
     @classmethod
-    def shortname(cls,sCanonical):
+    def shortname(cls, sCanonical):
         """Translate a canonical name into a short name.
            """
         raise NotImplementedError
 
 # Abbreviation Lookups
+
+# pylint: disable-msg=W0223
+# We don't override all the abstract methods in all the classes
+# this is OK, since we control the use cases
 
 class CardTypes(AbbreviationLookup):
     dKeys = {
@@ -92,7 +98,7 @@ class Clans(AbbreviationLookup):
     }
 
     @classmethod
-    def shortname(cls,sCanonical):
+    def shortname(cls, sCanonical):
         return cls.dKeys[sCanonical][0]
 
 class Creeds(AbbreviationLookup):
@@ -104,7 +110,7 @@ class Creeds(AbbreviationLookup):
     }
 
     @classmethod
-    def shortname(cls,sCanonical):
+    def shortname(cls, sCanonical):
         return sCanonical
 
 class Disciplines(AbbreviationLookup):
@@ -141,7 +147,7 @@ class Disciplines(AbbreviationLookup):
     }
 
     @classmethod
-    def fullname(cls,sCanonical):
+    def fullname(cls, sCanonical):
         return cls.dKeys[sCanonical][1]
 
 class Expansions(AbbreviationLookup):
@@ -168,13 +174,13 @@ class Expansions(AbbreviationLookup):
     }
 
     @classmethod
-    def canonical(cls,sName):
+    def canonical(cls, sName):
         if sName.startswith('Promo-'):
             return sName
         return cls._dLook[sName]
 
     @classmethod
-    def shortname(cls,sCanonical):
+    def shortname(cls, sCanonical):
         if sCanonical.startswith('Promo-'):
             return 'Promo'
         if cls.dKeys[sCanonical]:
@@ -193,13 +199,13 @@ class Rarities(AbbreviationLookup):
     }
 
     @classmethod
-    def canonical(cls,sName):
+    def canonical(cls, sName):
         if sName.startswith('P'):
             return 'Precon'
         return cls._dLook[sName]
 
     @classmethod
-    def shortname(cls,sCanonical):
+    def shortname(cls, sCanonical):
         return cls.dKeys[sCanonical][0]
 
 class Sects(AbbreviationLookup):
@@ -239,5 +245,5 @@ class Virtues(AbbreviationLookup):
     }
 
     @classmethod
-    def fullname(cls,sCanonical):
+    def fullname(cls, sCanonical):
         return cls.dKeys[sCanonical][0]

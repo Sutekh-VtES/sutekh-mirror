@@ -22,6 +22,8 @@ class CreateCardSetDialog(SutekhDialog):
         oDescriptionLabel = gtk.Label("Description : ")
         self.oDesc = gtk.Entry(50)
 
+        # pylint: disable-msg=E1101
+        # vbox confuses pylint
         self.vbox.pack_start(oNameLabel)
         self.vbox.pack_start(self.oName)
         self.vbox.pack_start(oAuthorLabel)
@@ -60,7 +62,7 @@ class CreateCardSetDialog(SutekhDialog):
             else:
                 # We don't allow empty names
                 self.sName = None
-
-                do_complaint_error("You did not specify a name for the %s Card Set." % self.sType)
+                do_complaint_error("You did not specify a name for the"
+                        " %s Card Set." % self.sType)
 
         self.destroy()

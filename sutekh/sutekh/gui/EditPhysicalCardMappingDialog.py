@@ -5,7 +5,7 @@
 # Copyright 2007 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 """
-Dialog for handling the allocation of Physical Cards 
+Dialog for handling the allocation of Physical Cards
 across the different Physical Card Sets
 """
 
@@ -16,6 +16,8 @@ from sutekh.core.SutekhObjects import PhysicalCard, IAbstractCard, \
         IExpansion, MapPhysicalCardToPhysicalCardSet
 
 class EditPhysicalCardMappingDialog(SutekhDialog):
+    # pylint: disable-msg=R0904
+    # gtk class, so many pulic methods
     """
     Allow the user to change how the Physical Cards are allocated
     across the PhysicalCardSets. This does not allow the user to
@@ -36,6 +38,8 @@ class EditPhysicalCardMappingDialog(SutekhDialog):
         # flitering work to get proper joins
         self.dPhysCards = {}
         self.dCardSets = {}
+        # pylint: disable-msg=E1101
+        # vbox & IExpansion confuses pylint
         for sAbsCardName, dExpansions in dSelectedCards.iteritems():
             oAbstractCard = IAbstractCard(sAbsCardName)
             self.dPhysCards.setdefault(oAbstractCard, {})
@@ -45,10 +49,12 @@ class EditPhysicalCardMappingDialog(SutekhDialog):
                         iThisExpID = None
                     else:
                         iThisExpID = IExpansion(sExpansion).id
-                    aPhysCards = PhysicalCard.selectBy(abstractCardID=oAbstractCard.id,
-                        expansionID=iThisExpID)
+                    aPhysCards = PhysicalCard.selectBy(
+                            abstractCardID=oAbstractCard.id,
+                            expansionID=iThisExpID)
                 else:
-                    aPhysCards = PhysicalCard.selectBy(abstractCardID=oAbstractCard.id)
+                    aPhysCards = PhysicalCard.selectBy(
+                            abstractCardID=oAbstractCard.id)
                 for oPhysCard in aPhysCards:
                     self.dPhysCards[oAbstractCard].setdefault(oPhysCard, [])
                     for oMap in MapPhysicalCardToPhysicalCardSet.selectBy(physicalCardID=oPhysCard.id):
@@ -85,7 +91,8 @@ class EditPhysicalCardMappingDialog(SutekhDialog):
                 self.oTable.resize(k, iTableWidth)
                 for oPhysCard in sorted(dPhysMap, key=self.__gen_key):
                     if oPhysCard.expansion is not None:
-                        sLabel = oAbstractCard.name + ':' + oPhysCard.expansion.name
+                        sLabel = oAbstractCard.name + ':' + \
+                                oPhysCard.expansion.name
                     else:
                         sLabel = oAbstractCard.name + ': Unspecified expansion'
                     oLabel = gtk.Label(sLabel)
@@ -102,7 +109,8 @@ class EditPhysicalCardMappingDialog(SutekhDialog):
                 k = 1
                 for oAbstractCard, dPhysMap in self.dPhysCards.iteritems():
                     if self.dCardSets[oCardSet].has_key(oAbstractCard):
-                        oTotalLabel = gtk.Label(str(self.dCardSets[oCardSet][oAbstractCard]))
+                        oTotalLabel = gtk.Label(str(self.dCardSets[oCardSet]
+                            [oAbstractCard]))
                         for oPhysCard in sorted(dPhysMap, key=self.__gen_key):
                             aCardSets = dPhysMap[oPhysCard]
                             oCheckBox = gtk.CheckButton()
@@ -111,8 +119,9 @@ class EditPhysicalCardMappingDialog(SutekhDialog):
                             oAlignBox.add(oCheckBox)
                             self.oTable.attach(oAlignBox, j, j+1, k, k+1)
                             k += 1
-                            oCheckBox.connect('toggled', self.do_toggle, oTotalLabel,
-                                    oCardSet, oAbstractCard, aCardSets)
+                            oCheckBox.connect('toggled', self.do_toggle,
+                                    oTotalLabel, oCardSet, oAbstractCard,
+                                    aCardSets)
                     else:
                         oTotalLabel = gtk.Label('0')
                         k += len(dPhysMap)
@@ -150,12 +159,13 @@ class EditPhysicalCardMappingDialog(SutekhDialog):
             iTot -= 1
             aCardSetMapping.remove(oCardSet)
         iCorrectTotal = self.dCardSets[oCardSet][oAbsCard]
-        if iTot > iCorrectTotal:
-            oTotLabel.set_markup(str(iTot)+':<b> +'+str(iTot - iCorrectTotal)+'</b>')
-            if oTotLabel not in self.aNumbersNotMatched:
-                self.aNumbersNotMatched.append(oTotLabel)
-        elif iTot < iCorrectTotal:
-            oTotLabel.set_markup(str(iTot)+':<b> -'+str(iCorrectTotal - iTot)+'</b>')
+        if iTot != iCorrectTotal:
+            if iTot < iCorrectTotal:
+                sSign = '-'
+            else:
+                sSign = ''
+            oTotLabel.set_markup('%d:<b>%s%d</b>' % (iTot, sSign,
+                abs(iCorrectTotal - iTot)))
             if oTotLabel not in self.aNumbersNotMatched:
                 self.aNumbersNotMatched.append(oTotLabel)
         else:
@@ -170,7 +180,8 @@ class EditPhysicalCardMappingDialog(SutekhDialog):
         """
         if iResponse == gtk.RESPONSE_OK:
             if len(self.aNumbersNotMatched) > 0:
-                do_complaint_error("New allocation doesn't match on the numbers")
+                do_complaint_error("New allocation doesn't match on the"
+                        " numbers")
                 return
             else:
                 # OK, numbers match, so now re-assign the cards
@@ -179,7 +190,8 @@ class EditPhysicalCardMappingDialog(SutekhDialog):
                     # Not touching the GUI, so sorted not needed
                     for oPhysCard, aNewCardSets in dPhysMap.iteritems():
                         aOldCardSets = [x.physicalCardSet for x in
-                                MapPhysicalCardToPhysicalCardSet.selectBy(physicalCardID=oPhysCard.id)]
+                                MapPhysicalCardToPhysicalCardSet.selectBy(
+                                    physicalCardID=oPhysCard.id)]
                         for oCardSet in aOldCardSets:
                             if oCardSet not in aNewCardSets:
                                 oCardSet.removePhysicalCard(oPhysCard.id)

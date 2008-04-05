@@ -127,7 +127,7 @@ class CardSetMenu(gtk.MenuBar, object):
         oProp = PropDialog("Edit Card Set (" + self.sSetName + ") Propeties",
                          self.__oWindow,oCS.name,oCS.author,oCS.comment)
         oProp.run()
-        (sName,sAuthor,sComment) = oProp.getData()
+        (sName,sAuthor,sComment) = oProp.get_data()
         if sName is not None and sName != self.sSetName and len(sName)>0:
             # Check new name is not in use
             oNameList = self.__cSetType.selectBy(name=sName)
@@ -153,7 +153,7 @@ class CardSetMenu(gtk.MenuBar, object):
         oEditAnn = EditAnnotationsDialog("Edit Annotations of Card Set ("+self.sSetName+")",
                                          self.__oWindow,oCS.name,oCS.annotations)
         oEditAnn.run()
-        oCS.annotations = oEditAnn.getData()
+        oCS.annotations = oEditAnn.get_data()
         oCS.syncUpdate()
 
     def doExport(self,widget):

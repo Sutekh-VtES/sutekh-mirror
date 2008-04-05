@@ -4,15 +4,21 @@
 # Copyright 2007 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
 
+"""Simple about dialog for Sutekh"""
+
 from sutekh.gui import SutekhIcon
 from sutekh.SutekhInfo import SutekhInfo
 import gtk
 
+# pylint: disable-msg=R0904
+# R0904 - gtk Widget, so has many public methods
 class SutekhAboutDialog(gtk.AboutDialog):
     """About dialog for Sutekh."""
 
-    def __init__(self,*args,**kwargs):
-        super(SutekhAboutDialog,self).__init__(*args,**kwargs)
+    # pylint: disable-msg=W0142
+    # ** magic OK here
+    def __init__(self, *aArgs, **kwargs):
+        super(SutekhAboutDialog, self).__init__(*aArgs, **kwargs)
 
         self.set_name(SutekhInfo.NAME)
         self.set_version(SutekhInfo.VERSION_STR)

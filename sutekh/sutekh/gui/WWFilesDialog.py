@@ -5,25 +5,34 @@
 # Copyright 2007 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
+"""File selection dialog for choosing cardlist and rulings files"""
+
 import gtk
 from sutekh.gui.SutekhDialog import SutekhDialog
 from sutekh.io.WwFile import WW_CARDLIST_URL, WW_RULINGS_URL
 
 class WWFilesDialog(SutekhDialog):
+    """Actual dailog widget"""
+
     def __init__(self, oParent):
         super(WWFilesDialog, self).__init__("Choose White Wolf Files", oParent,
             gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
             (gtk.STOCK_OK, gtk.RESPONSE_OK, gtk.STOCK_CANCEL,
             gtk.RESPONSE_CANCEL))
         oCardListLabel = gtk.Label("White Wolf Card List File:")
-        self.oCardListFileButton = gtk.FileChooserButton("White Wolf Card List")
-        self.oUseWwCardListButton = gtk.CheckButton(label="Grab cardlist from White Wolf website?")
+        self.oCardListFileButton = gtk.FileChooserButton(
+                "White Wolf Card List")
+        self.oUseWwCardListButton = gtk.CheckButton(label=
+                "Grab cardlist from White Wolf website?")
 
         oRulingsLabel = gtk.Label("White Wolf Rulings File (optional):")
-        self.oRulingsFileButton = gtk.FileChooserButton("White Wolf rulings file")
-        self.oUseWwRulingsButton = gtk.CheckButton(label="Grab rulings from White Wolf website?")
+        self.oRulingsFileButton = gtk.FileChooserButton("White Wolf rulings"
+                " file")
+        self.oUseWwRulingsButton = gtk.CheckButton(label=
+                "Grab rulings from White Wolf website?")
 
-        self.oBackupFileButton = gtk.CheckButton(label="Backup database contents to File?")
+        self.oBackupFileButton = gtk.CheckButton(label=
+                "Backup database contents to File?")
         self.oBackupFileButton.set_active(False)
         self.oBackupFileLabel = gtk.Label("(None)")
         self.oBackupFileDialog = gtk.FileChooserDialog("Database Backup file",
@@ -32,6 +41,8 @@ class WWFilesDialog(SutekhDialog):
                     gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
         self.oBackupFileDialog.set_do_overwrite_confirmation(True)
 
+        # pylint: disable-msg=E1101
+        # vbox confuses pylint
         self.vbox.pack_start(oCardListLabel)
         self.vbox.pack_start(self.oCardListFileButton)
         self.vbox.pack_start(self.oUseWwCardListButton)
@@ -41,9 +52,11 @@ class WWFilesDialog(SutekhDialog):
         self.vbox.pack_start(self.oBackupFileButton)
         self.vbox.pack_start(self.oBackupFileLabel)
 
-        self.oBackupFileButton.connect("toggled", self.handleCheckButton)
-        self.oUseWwCardListButton.connect("toggled", self.handleUseWwCardListToggle)
-        self.oUseWwRulingsButton.connect("toggled", self.handleUseWwRulingsToggle)
+        self.oBackupFileButton.connect("toggled", self.backup_file_toggled)
+        self.oUseWwCardListButton.connect("toggled",
+                self.use_ww_cardlist_toggled)
+        self.oUseWwRulingsButton.connect("toggled",
+                self.use_ww_rulings_toggled)
         self.connect("response", self.handleResponse)
 
         self.show_all()
@@ -75,7 +88,8 @@ class WWFilesDialog(SutekhDialog):
     def getNames(self):
         return (self.sCLName, self.bCLIsUrl, self.sRulingsName, self.bRulingsIsUrl, self.sBackupFileName)
 
-    def handleCheckButton(self, oWidget):
+    def backup_file_toggled(self, oWidget):
+        """Update status if user toggles the 'make backup' checkbox"""
         if self.oBackupFileButton.get_active():
             self.oBackupFileDialog.run()
             self.oBackupFileDialog.hide()
@@ -88,13 +102,15 @@ class WWFilesDialog(SutekhDialog):
         else:
             self.oBackupFileLabel.set_text("(None)")
 
-    def handleUseWwCardListToggle(self, oWidget):
+    def use_ww_cardlist_toggled(self, oWidget):
+        """Update state if user toggles the 'Use WW cardlist' checkbox"""
         if self.oUseWwCardListButton.get_active():
             self.oCardListFileButton.hide()
         else:
             self.oCardListFileButton.show()
 
-    def handleUseWwRulingsToggle(self, oWidget):
+    def use_ww_rulings_toggled(self, oWidget):
+        """Update state if the user toggles the 'Use WW rulings' checkbox"""
         if self.oUseWwRulingsButton.get_active():
             self.oRulingsFileButton.hide()
         else:
