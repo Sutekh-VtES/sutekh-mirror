@@ -1,7 +1,8 @@
 # CardSetIndependence.py
 # -*- coding: utf8 -*-
 # vim:fileencoding=utf8 ai ts=4 sts=4 et sw=4
-# Copyright 2006 Simon Cross <hodgestar@gmail.com>, Neil Muller <drnlmuller+sutekh@gmail.com>
+# Copyright 2006 Simon Cross <hodgestar@gmail.com>,
+# Copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
 import gtk
@@ -13,8 +14,15 @@ from sutekh.gui.ScrolledList import ScrolledList
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint
 
 class CardSetIndependence(CardListPlugin):
-    dTableVersions = {AbstractCardSet : [1, 2, 3],
-                      PhysicalCardSet : [1, 2, 3]}
+    """Provides a plugin for testing whether card sets are independant.
+
+       Independence in this cases means that there are enought cards in
+       the card collection to construct all the card sets simulatenously.
+       For physical card sets, this doesn't consider the current card
+       assignment, just whether enough cards are present.
+       """
+    dTableVersions = {AbstractCardSet : [1, 2, 3, 4],
+                      PhysicalCardSet : [1, 2, 3, 4]}
     aModelsSupported = [AbstractCardSet,
             PhysicalCardSet]
 
@@ -36,9 +44,7 @@ class CardSetIndependence(CardListPlugin):
         oDlg.run()
 
     def make_dialog(self):
-        """
-        Create the list of card sets to select
-        """
+        """Create the list of card sets to select"""
         self.oDlg = SutekhDialog("Choose Card Sets to Test", self.parent,
                           gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                           (gtk.STOCK_OK, gtk.RESPONSE_OK,
@@ -51,9 +57,12 @@ class CardSetIndependence(CardListPlugin):
             self.oCSList = ScrolledList('Physical Card Sets')
         else:
             return
+        # pylint: disable-msg=E1101
+        # vbox confuses pylint
         self.oDlg.vbox.pack_start(self.oCSList)
         self.oCSList.set_size_request(150, 300)
-        aNames = [oCS.name for oCS in oSelect if oCS.name != self.view.sSetName]
+        aNames = [oCS.name for oCS in oSelect if oCS.name !=
+                self.view.sSetName]
         self.oCSList.fill_list(aNames)
         self.oDlg.connect("response", self.handle_response)
         self.oDlg.show_all()
@@ -81,7 +90,8 @@ class CardSetIndependence(CardListPlugin):
         if len(dMissing) > 0:
             sMessage = "<span foreground = \"red\"> Missing Cards </span>\n"
             for sCardName, iCount in dMissing.iteritems():
-                sMessage += "<span foreground = \"blue\">" + sCardName + "</span> : " + str(iCount) + "\n"
+                sMessage += "<span foreground = \"blue\">" + sCardName + \
+                        "</span> : " + str(iCount) + "\n"
         else:
             sMessage = "All Cards in the PhysicalCard List"
         do_complaint(sMessage, gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, True)
@@ -108,12 +118,14 @@ class CardSetIndependence(CardListPlugin):
         do_complaint(sMessage, gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, True)
 
     def __get_abstract_card_set_list(self, aCardSetNames):
+        # pylint: disable-msg=E1101
+        # SQLObject + pyprotocol methods confuse pylint
         dFullCardList = {}
         for sName in aCardSetNames:
             oFilter = AbstractCardSetFilter(sName)
             oCS = oFilter.select(AbstractCard)
-            for oC in oCS:
-                oAC = IAbstractCard(oC)
+            for oCard in oCS:
+                oAC = IAbstractCard(oCard)
                 try:
                     dFullCardList[oAC.id][1] += 1
                 except KeyError:
@@ -121,16 +133,18 @@ class CardSetIndependence(CardListPlugin):
         return dFullCardList
 
     def __get_physical_card_set_list(self, aCardSetNames):
+        # pylint: disable-msg=E1101
+        # SQLObject + pyprotocol methods confuse pylint
         dFullCardList = {}
         for sName in aCardSetNames:
             oFilter = PhysicalCardSetFilter(sName)
             oCS = oFilter.select(PhysicalCard)
-            for oC in oCS:
-                oAC = IAbstractCard(oC)
+            for oCard in oCS:
+                oAC = IAbstractCard(oCard)
                 try:
-                    dFullCardList[oC][1] += 1
+                    dFullCardList[oCard][1] += 1
                 except KeyError:
-                    dFullCardList[oC] = [oAC.name, 1]
+                    dFullCardList[oCard] = [oAC.name, 1]
         return dFullCardList
 
 # pylint: disable-msg=C0103

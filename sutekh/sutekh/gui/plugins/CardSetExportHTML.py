@@ -12,13 +12,17 @@ from sutekh.core.SutekhObjects import PhysicalCardSet, AbstractCardSet, \
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error, \
         do_complaint_warning
-from sutekh.io.WriteArdbXML import WriteArdbXML
+from sutekh.io.WriteArdbXML import extract_crypt, extract_library, \
+        get_disciplines
 from sutekh.SutekhInfo import SutekhInfo
 from sutekh.SutekhUtility import pretty_xml
+# pylint: disable-msg=F0401, E0611
+# the allowe failures here makes pylint unhappy
 try:
     from xml.etree.ElementTree import ElementTree, Element, SubElement
 except ImportError:
     from elementtree.ElementTree import ElementTree, Element, SubElement
+# pylint: enable-msg=F0401, E0611
 
 class CardSetExportHTML(CardListPlugin):
     dTableVersions = { AbstractCardSet: [2, 3],
@@ -51,6 +55,8 @@ class CardSetExportHTML(CardListPlugin):
                 (gtk.STOCK_OK, gtk.RESPONSE_OK,
                     gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
         self.oFileChooser = gtk.FileChooserWidget(gtk.FILE_CHOOSER_ACTION_SAVE)
+        # pylint: disable-msg=E1101
+        # vbox confuses pylint
         oDlg.vbox.pack_start(self.oFileChooser)
         self.oTextButton = gtk.CheckButton("Include Card _Texts?")
         self.oTextButton.set_active(False)
@@ -60,11 +66,14 @@ class CardSetExportHTML(CardListPlugin):
         return oDlg
 
     def handle_response(self, oWidget, oResponse):
+        # pylint: disable-msg=E1101
+        # SQLObject methods confuse pylint
         if oResponse ==  gtk.RESPONSE_OK:
             sFileName = self.oFileChooser.get_filename()
             if sFileName is not None:
                 if os.path.exists(sFileName):
-                    bContinue = do_complaint_warning("Overwrite existing file %s?" % sFileName) != gtk.RESPONSE_CANCEL
+                    bContinue = do_complaint_warning("Overwrite existing file"
+                            " %s?" % sFileName) != gtk.RESPONSE_CANCEL
                     if not bContinue:
                         return
                 try:
@@ -91,7 +100,9 @@ class CardSetExportHTML(CardListPlugin):
                         self.get_cards(),
                         bDoText)
                 # We're producing XHTML output, so we need a doctype header
-                fOut.write('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"\n "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">\n')
+                fOut.write('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0'
+                        ' Strict//EN"\n "http://www.w3.org/TR/xhtml1/DTD/'
+                        'xhtml1-strict.dtd">\n')
                 # We have the elementree with the needed information,
                 # need to produce decent HTML output
                 oETree.write(fOut)
@@ -99,13 +110,13 @@ class CardSetExportHTML(CardListPlugin):
 
     def gen_tree(self, sSetName, sAuthor, sComment, dCards, bDoText):
         """Convert the Cards to a element tree containing 'nice' HTML"""
-        oDocRoot = Element('html', xmlns='http://www.w3.org/1999/xhtml', lang='en')
+        oDocRoot = Element('html', xmlns='http://www.w3.org/1999/xhtml',
+                lang='en')
         oDocRoot.attrib["xml:lang"] = 'en'
         oHead = SubElement(oDocRoot, 'head')
         oStyle = SubElement(oHead, 'style', type="text/css")
-        oArdbXMLObj = WriteArdbXML()
-        (dVamps, iCryptSize, iMin, iMax, fAvg) = oArdbXMLObj.extract_crypt(dCards)
-        (dLib, iLibSize) = oArdbXMLObj.extract_library(dCards)
+        (dVamps, iCryptSize, iMin, iMax, fAvg) = extract_crypt(dCards)
+        (dLib, iLibSize) = extract_library(dCards)
         # Is there a better idea here?
         oStyle.text = """
                   body {
@@ -216,6 +227,8 @@ class CardSetExportHTML(CardListPlugin):
         oTitle = SubElement(oHead, "title")
         oTitle.text = "VTES deck : %s by %s" % (sSetName, sAuthor)
 
+        # pylint: disable-msg=E1101
+        # PyProtocol methods confuse pylint
         oBody = SubElement(oDocRoot, "body")
         oInfo = SubElement(oBody, "div", id="info")
         oName = SubElement(oInfo, "h1", id="nametitle")
@@ -245,10 +258,11 @@ class CardSetExportHTML(CardListPlugin):
         oSpan.text = "Crypt "
         oSpan = SubElement(oCryptTitle, "span", id="cryptstats")
         oSpan.attrib["class"] = "stats"
-        oSpan.text = "[%d vampires] Capacity min : %d max : %d average : %.2f" \
-                % (iCryptSize, iMin, iMax, fAvg)
+        oSpan.text = "[%d vampires] Capacity min : %d max : %d average : " \
+                "%.2f" % (iCryptSize, iMin, iMax, fAvg)
         oCryptTable = SubElement(oCrypt, "div", id="crypttable")
-        oTheTable = SubElement(oCryptTable, "table", summary="Crypt card table")
+        oTheTable = SubElement(oCryptTable, "table",
+                summary="Crypt card table")
         oCryptTBody = SubElement(oTheTable, "tbody")
 
         # Need to sort vampires by number, then capacity
@@ -262,7 +276,8 @@ class CardSetExportHTML(CardListPlugin):
             else:
                 iCapacity = oCard.capacity
                 sClan = [oClan.name for oClan in oCard.clan][0]
-            aSortedVampires.append((iCount, iCapacity, sVampName, oCard, sClan))
+            aSortedVampires.append((iCount, iCapacity, sVampName, oCard,
+                sClan))
         # We reverse sort by Capacity and Count, by normal sort by name
         # fortunately, python's sort is stable, so this works
         aSortedVampires.sort(key=lambda x: x[2])
@@ -282,11 +297,14 @@ class CardSetExportHTML(CardListPlugin):
             oSpan.attrib["class"] = "tablevalue"
             if oCard.level is not None:
                 sName = sVampName.replace(' (Advanced)', '')
-                sMongerURL = "http://monger.vekn.org/showcard.html?NAME=%s ADV" % sName
+                sMongerURL = "http://monger.vekn.org/showcard.html?NAME=%s " \
+                        "ADV" % sName
             else:
                 sName = sVampName
-                sMongerURL = "http://monger.vekn.org/showcard.html?NAME=%s" % sVampName
-            sMongerURL = sMongerURL.replace(' ', '%20') # May be able to get away without this, but being safe
+                sMongerURL = "http://monger.vekn.org/showcard.html?NAME=%s" \
+                        % sVampName
+            sMongerURL = sMongerURL.replace(' ', '%20')
+            # May be able to get away without this, but being safe
             oMongerHREF = SubElement(oSpan, "a", href=sMongerURL)
             oMongerHREF.text = sName
             oTD = SubElement(oTR, "td")
@@ -305,7 +323,7 @@ class CardSetExportHTML(CardListPlugin):
             oTD = SubElement(oTR, "td")
             oSpan = SubElement(oTD, "span")
             oSpan.attrib["class"] = "tablevalue"
-            oSpan.text = oArdbXMLObj.get_disciplines(oCard)
+            oSpan.text = get_disciplines(oCard)
             # Title
             oTD = SubElement(oTR, "td")
             oSpan = Element("span")
@@ -350,7 +368,8 @@ class CardSetExportHTML(CardListPlugin):
             oSpan = SubElement(oTypeHead, "span")
             oSpan.attrib["class"] = "stats"
             oSpan.text = "[%d]" % aList[0]
-            oTable = SubElement(oLibTable, "table", summary="Library card table")
+            oTable = SubElement(oLibTable, "table",
+                    summary="Library card table")
             oTBody = SubElement(oTable, "tbody")
             # Sort alphabetically within cards
             for iCount, sName in sorted(aList[1:], key=lambda x: x[1]):
@@ -362,8 +381,10 @@ class CardSetExportHTML(CardListPlugin):
                 oTD = SubElement(oTR, "td")
                 oSpan = SubElement(oTD, "span")
                 oSpan.attrib["class"] = "tablevalue"
-                sMongerURL = "http://monger.vekn.org/showcard.html?NAME=%s" % sName
-                sMongerURL = sMongerURL.replace(' ', '%20') # May be able to get away without this, but being safe
+                sMongerURL = "http://monger.vekn.org/showcard.html?NAME=%s" \
+                        % sName
+                sMongerURL = sMongerURL.replace(' ', '%20')
+                # May be able to get away without this, but being safe
                 oMongerHRef = SubElement(oSpan, "a", href=sMongerURL)
                 oMongerHRef.text = sName
 
@@ -412,7 +433,7 @@ class CardSetExportHTML(CardListPlugin):
                 oSpan.text = "Disciplines:"
                 oSpan = SubElement(oListItem, "span")
                 oSpan.attrib["class"] = "disciplines"
-                oSpan.text = oArdbXMLObj.get_disciplines(oCard)
+                oSpan.text = get_disciplines(oCard)
                 # Text
                 oTextDiv = SubElement(oCardText, "div")
                 oTextDiv.attrib["class"] = "text"
@@ -430,7 +451,8 @@ class CardSetExportHTML(CardListPlugin):
                     oCardHead = SubElement(oCardText, "h5")
                     oCardHead.attrib["class"] = "cardname"
                     oCardHead.text = sName
-                    oList = Element("ul") # We'll add this to oCardText if it's not empty
+                    oList = Element("ul")
+                    # We'll add this to oCardText if it's not empty
                     # Requirements
                     aClan = [x.name for x in oCard.clan]
                     if len(aClan) > 0:
@@ -443,6 +465,8 @@ class CardSetExportHTML(CardListPlugin):
                         oSpan.text = "/".join(aClan)
                     # Cost
                     if oCard.costtype is not None:
+                        # pylint: disable-msg=E1103
+                        # SQLObject methods confuse pylint
                         oListItem = SubElement(oList, "li")
                         oSpan = SubElement(oListItem, "span")
                         oSpan.attrib["class"] = "label"
@@ -451,7 +475,7 @@ class CardSetExportHTML(CardListPlugin):
                         oSpan.attrib["class"] = "cost"
                         oSpan.text = "%d %s" % (oCard.cost, oCard.costtype)
                     # Disciplines
-                    sDisciplines = oArdbXMLObj.get_disciplines(oCard)
+                    sDisciplines = get_disciplines(oCard)
                     if sDisciplines != "":
                         oListItem = SubElement(oList, "li")
                         oSpan = SubElement(oListItem, "span")
@@ -482,6 +506,8 @@ class CardSetExportHTML(CardListPlugin):
         return ElementTree(oDocRoot)
 
     def get_cards(self):
+        # pylint: disable-msg=E1101
+        # PyProtocol methods confuse pylint
         dDict = {}
         for oCard in self.model.getCardIterator(None):
             oACard = IAbstractCard(oCard)

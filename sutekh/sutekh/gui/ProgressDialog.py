@@ -5,10 +5,14 @@
 # Copyright 2007 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-import gtk
-import string
-from logging import Handler
+"""classes needed for the progress dialog"""
 
+import gtk
+# pylint: disable-msg=W0402
+# we need data from the string module
+import string
+# pylint: enable-msg=W0402
+from logging import Handler
 
 class SutekhLogHandler(Handler, object):
     """Base class for loggers to talk to the dialog"""
@@ -18,26 +22,30 @@ class SutekhLogHandler(Handler, object):
         self.oDialog = None
 
     def set_dialog(self, oDialog):
+        """point to the progress dialog"""
         self.oDialog = oDialog
 
+    # pylint: disable-msg=W0613
+    # oRecord required by function signature
     def emit(self, oRecord):
+        """Default emit handler"""
         pass
 
 class SutekhHTMLLogHandler(SutekhLogHandler):
-    """
-    Logging class for cardlist and rulings parser.
-    Converts messages of the form Card: X into a approximate
-    progress measure
-    """
+    """Logging class for cardlist and rulings parser.
+
+       Converts messages of the form 'Card: X' into an approximate
+       progress measure
+       """
     def __init__(self):
         super(SutekhHTMLLogHandler, self).__init__()
 
     # Massage messages from HTMLParser into Dialog updates
     def emit(self, oRecord):
-        """
-        Massage message into progress value.
-        Skip difficult cases (The X, non-ascii characters, etc.)
-        """
+        """Massage message into progress value.
+
+           Skip difficult cases (The X, non-ascii characters, etc.)
+           """
         if self.oDialog is None:
             return # No point
         sString = oRecord.getMessage()
@@ -72,10 +80,14 @@ class SutekhCountLogHandler(SutekhLogHandler):
         self.fTot = None
 
     def set_total(self, iTot):
+        """Set the total number of steps."""
         self.fTot = float(iTot)
         self.iCount = 0
 
+    # pylint: disable-msg=W0613
+    # oRecord required by function signature
     def emit(self, oRecord):
+        """Handle a emitted signal, updating the progress count."""
         if self.oDialog is None:
             return # No point
         self.iCount += 1
@@ -83,6 +95,8 @@ class SutekhCountLogHandler(SutekhLogHandler):
         self.oDialog.update_bar(fBarPos)
 
 class ProgressDialog(gtk.Window):
+    # pylint: disable-msg=R0904
+    # gtk.Widget, so many public methods
     """
     Show a window with a single progress bar.
     """

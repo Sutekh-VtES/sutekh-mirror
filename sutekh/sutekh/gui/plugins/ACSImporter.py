@@ -16,11 +16,13 @@ from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 
 class ACSImporter(CardListPlugin):
-    dTableVersions = { AbstractCardSet: [2,3]}
+    dTableVersions = { AbstractCardSet: [2, 3]}
     aModelsSupported = [AbstractCard]
 
-    def __init__(self,*args,**kws):
-        super(ACSImporter,self).__init__(*args,**kws)
+    # pylint: disable-msg=W0142
+    # ** magic OK
+    def __init__(self, *aArgs, **kwargs):
+        super(ACSImporter, self).__init__(*aArgs, **kwargs)
         # Parser classes should be instantiable using Parser(oCardSetHolder)
         # Parser objects should have a .feed(sLine) method
         self._dParsers = {
@@ -41,44 +43,46 @@ class ACSImporter(CardListPlugin):
     def get_desired_menu(self):
         return "Plugins"
 
-    def activate(self,oWidget):
-        oDlg = self.makeDialog()
+    def activate(self, oWidget):
+        oDlg = self.make_dialog()
         oDlg.run()
 
-    def makeDialog(self):
-        self.oDlg = SutekhDialog("Choose Card Set File or URL",None,
+    def make_dialog(self):
+        self.oDlg = SutekhDialog("Choose Card Set File or URL", None,
                 gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                 (gtk.STOCK_OK, gtk.RESPONSE_OK,
                  gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
 
-        self.oDlg.vbox.pack_start(gtk.Label("URL:"),expand=False)
+        # pylint: disable-msg=E1101
+        # vbox confuses pylint
+        self.oDlg.vbox.pack_start(gtk.Label("URL:"), expand=False)
 
         self.oUri = gtk.Entry(150)
         self.oUri.connect("activate", self.handleResponse, gtk.RESPONSE_OK)
-        self.oDlg.vbox.pack_start(self.oUri,expand=False)
+        self.oDlg.vbox.pack_start(self.oUri, expand=False)
 
-        self.oDlg.vbox.pack_start(gtk.Label("OR"),expand=False)
+        self.oDlg.vbox.pack_start(gtk.Label("OR"), expand=False)
 
         self.oFileChooser = gtk.FileChooserWidget(gtk.FILE_CHOOSER_ACTION_OPEN)
         self.oDlg.vbox.pack_start(self.oFileChooser)
 
         oIter = self._dParsers.iteritems()
         for sName, cParser in oIter:
-            self._oFirstBut = gtk.RadioButton(None,sName,False)
+            self._oFirstBut = gtk.RadioButton(None, sName, False)
             self._oFirstBut.set_active(True)
             self.oDlg.vbox.pack_start(self._oFirstBut)
             break
         for sName, cParser in oIter:
-            oBut = gtk.RadioButton(self._oFirstBut,sName)
+            oBut = gtk.RadioButton(self._oFirstBut, sName)
             self.oDlg.vbox.pack_start(oBut)
 
         self.oDlg.connect("response", self.handleResponse)
-        self.oDlg.set_size_request(400,400)
+        self.oDlg.set_size_request(400, 400)
         self.oDlg.show_all()
 
         return self.oDlg
 
-    def handleResponse(self,oWidget,oResponse):
+    def handleResponse(self, oWidget, oResponse):
         if oResponse == gtk.RESPONSE_OK:
             sUri = self.oUri.get_text().strip()
             sFile = self.oFileChooser.get_filename()
@@ -88,27 +92,27 @@ class ACSImporter(CardListPlugin):
                 if oBut.get_active(): cParser = self._dParsers[sName]
 
             if sUri:
-                self.makeACSFromUri(sUri,cParser)
+                self.makeACSFromUri(sUri, cParser)
             elif sFile:
-                self.makeACSFromFile(sFile,cParser)
+                self.makeACSFromFile(sFile, cParser)
 
         self.oDlg.destroy()
 
-    def makeACSFromUri(self,sUri,cParser):
+    def makeACSFromUri(self, sUri, cParser):
         fIn = urllib2.urlopen(sUri)
         try:
-            self.makeACS(fIn,cParser)
+            self.makeACS(fIn, cParser)
         finally:
             fIn.close()
 
-    def makeACSFromFile(self,sFile,cParser):
-        fIn = file(sFile,"rb")
+    def makeACSFromFile(self, sFile, cParser):
+        fIn = file(sFile, "rb")
         try:
-            self.makeACS(fIn,cParser)
+            self.makeACS(fIn, cParser)
         finally:
             fIn.close()
 
-    def makeACS(self,fIn,cParser):
+    def makeACS(self, fIn, cParser):
         oHolder = CardSetHolder()
 
         oP = cParser(oHolder)
@@ -127,7 +131,8 @@ class ACSImporter(CardListPlugin):
         except RuntimeError, e:
             sMsg = "Creating the card set failed with the following error:\n"
             sMsg += str(e) + "\n"
-            sMsg += "The file is probably not in the format the ELDB Parser expects\n"
+            sMsg += "The file is probably not in the format the ELDB Parser" \
+                    " expects\n"
             sMsg += "Aborting"
             do_complaint_error(sMsg)
             return

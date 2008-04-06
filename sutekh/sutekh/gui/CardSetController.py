@@ -21,15 +21,16 @@ class CardSetController(object):
         self._oView = CardSetView(oMainWindow, self, sName, cType, oConfig)
         self._sFilterType = None
 
+    # pylint: disable-msg=W0212
+    # explicitly allow access to these values via thesep properties
     view = property(fget=lambda self: self._oView, doc="Associated View")
     model = property(fget=lambda self: self._oView._oModel, doc="View's Model")
     frame = property(fget=lambda self: self._oFrame, doc="Associated Frame")
-    filtertype = property(fget=lambda self: self._sFilterType, doc="Associated Type")
+    filtertype = property(fget=lambda self: self._sFilterType,
+            doc="Associated Type")
+    # pylint: enable-msg=W0212
 
-    def getWin(self):
-        return self.__oWin
-
-    def set_card_text(self,sCardName):
+    def set_card_text(self, sCardName):
         self._oMainWindow.set_card_text(sCardName)
 
     def incCard(self, sName, sExpansion):
@@ -46,7 +47,9 @@ class CardSetController(object):
 
 class PhysicalCardSetController(CardSetController):
     def __init__(self, sName, oConfig, oMainWindow, oFrame):
-        super(PhysicalCardSetController,self).__init__(
+        # pylint: disable-msg=E1101
+        # SQLObject methods confuse pylint
+        super(PhysicalCardSetController, self).__init__(
                 sName, PhysicalCardSet, oConfig, oMainWindow, oFrame)
         self.__oPhysCardSet = PhysicalCardSet.byName(sName)
         # We need to cache this for physical_card_deleted checks
@@ -70,7 +73,9 @@ class PhysicalCardSetController(CardSetController):
         if oAbsCard.id in self.__aAbsCardIds:
             self.view.reload_keep_expanded()
 
-    def physical_card_deleted(self, oPhysCard, post_funcs=None):
+    # pylint: disable-msg=W0613
+    # fPostFuncs is passed by SQLObject 0.10, but not by 0.9
+    def physical_card_deleted(self, oPhysCard, fPostFuncs=None):
         """
         Listen on physical card removals. Needed so we can
         updated the model if a card in this set is deleted
@@ -78,16 +83,17 @@ class PhysicalCardSetController(CardSetController):
         # We get here after we have removed the card from the card set,
         # but before it is finally deleted from the table, so it's no
         # longer in self.__oPhysCards.
-        # post_funcs is passed by SQLObject 0.10, but not by 0.9
         if oPhysCard.id in self.__aPhysCardIds:
             self.__aPhysCardIds.remove(oPhysCard.id)
             oAC = oPhysCard.abstractCard
             self.__aAbsCardIds.remove(oAC.id)
             # Update model
             if oPhysCard.expansion is not None:
-                self.model.decCardExpansionByName(oAC.name, oPhysCard.expansion.name)
+                self.model.decCardExpansionByName(oAC.name,
+                        oPhysCard.expansion.name)
             else:
-                self.model.decCardExpansionByName(oAC.name, oPhysCard.expansion)
+                self.model.decCardExpansionByName(oAC.name,
+                        oPhysCard.expansion)
             self.model.decCardByName(oAC.name)
 
     def physical_card_changed(self, oPhysCard, dChanges):
@@ -100,7 +106,8 @@ class PhysicalCardSetController(CardSetController):
             iNewID = dChanges['expansionID']
             oAC = oPhysCard.abstractCard
             if oPhysCard.expansion is not None:
-                self.model.decCardExpansionByName(oAC.name, oPhysCard.expansion.name)
+                self.model.decCardExpansionByName(oAC.name,
+                        oPhysCard.expansion.name)
             else:
                 self.model.decCardExpansionByName(oAC.name, None)
             if iNewID is not None:
@@ -114,6 +121,8 @@ class PhysicalCardSetController(CardSetController):
         """
         Returns True if a card was successfully removed, False otherwise.
         """
+        # pylint: disable-msg=E1101
+        # SQLObject methods confuse pylint
         try:
             oC = AbstractCard.byCanonicalName(sName.lower())
         except SQLObjectNotFound:
@@ -154,6 +163,8 @@ class PhysicalCardSetController(CardSetController):
         """
         Returns True if a card was successfully added, False otherwise.
         """
+        # pylint: disable-msg=E1101
+        # SQLObject methods confuse pylint
         try:
             oC = AbstractCard.byCanonicalName(sName.lower())
         except SQLObjectNotFound:
@@ -181,7 +192,8 @@ class PhysicalCardSetController(CardSetController):
                     # We want the card in the fewest other card sets
                     # Should be effecient due to the Cached joins
                     aCandCards.append((oCard,
-                        MapPhysicalCardToPhysicalCardSet.selectBy(physicalCardID = oCard.id).count()))
+                        MapPhysicalCardToPhysicalCardSet.selectBy(
+                            physicalCardID = oCard.id).count()))
             if len(aCandCards) < 1:
                 # No card to be added
                 return False
@@ -194,7 +206,8 @@ class PhysicalCardSetController(CardSetController):
             # Update Model
             self.model.incCardByName(oC.name)
             if oCard.expansion is not None:
-                self.model.incCardExpansionByName(oC.name, oCard.expansion.name)
+                self.model.incCardExpansionByName(oC.name,
+                        oCard.expansion.name)
             else:
                 self.model.incCardExpansionByName(oC.name, None)
             return True
@@ -203,15 +216,21 @@ class PhysicalCardSetController(CardSetController):
 
 class AbstractCardSetController(CardSetController):
     def __init__(self, sName, oConfig, oMainWindow, oFrame):
-        super(AbstractCardSetController,self).__init__(
+        # pylint: disable-msg=E1101
+        # SQLObject methods confuse pylint
+        super(AbstractCardSetController, self).__init__(
                 sName, AbstractCardSet, oConfig, oMainWindow, oFrame)
         self.__oAbsCardSet = AbstractCardSet.byName(sName)
         self._sFilterType = 'AbstractCard'
 
+    # pylint: disable-msg=W0613
+    # sExpansion needed by function signature
     def decCard(self, sName, sExpansion):
         """
         Returns True if a card was successfully removed, False otherwise.
         """
+        # pylint: disable-msg=E1101
+        # SQLObject methods confuse pylint
         try:
             oC = AbstractCard.byCanonicalName(sName.lower())
         except SQLObjectNotFound:
@@ -226,10 +245,14 @@ class AbstractCardSetController(CardSetController):
             return True
         return False
 
+    # pylint: disable-msg=W0613
+    # sExpansion needed by function signature
     def addCard(self, sName, sExpansion):
         """
         Returns True if a card was successfully added, False otherwise.
         """
+        # pylint: disable-msg=E1101
+        # SQLObject methods confuse pylint
         try:
             oC = AbstractCard.byCanonicalName(sName.lower())
         except SQLObjectNotFound:

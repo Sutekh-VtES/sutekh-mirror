@@ -481,6 +481,8 @@ class EditableCardListView(CardListView):
         oCell3.connect('clicked', self.incCard)
         oCell4.connect('clicked', self.decCard)
 
+        self.connect('map-event', self.mapped)
+
         self._oMenuEditWidget = None
 
         self.set_expander_column(oColumn2)
@@ -490,6 +492,11 @@ class EditableCardListView(CardListView):
         self._oModel.load()
         if self.get_parent(): # This isn't true when creating the card list
             self.check_editable()
+
+    def mapped(self, oWidget, oEvent):
+        # Called when the view has been mapped, so see if we need to 
+        # be editable
+        self.check_editable()
 
     def check_editable(self):
         """Set the card list to be editable if it's empty"""
