@@ -159,7 +159,7 @@ class CardSetMenu(gtk.MenuBar, object):
     def doExport(self,widget):
         oFileChooser = ExportDialog("Save " + self.__sMenuType + " Card Set As",self.__oWindow)
         oFileChooser.run()
-        sFileName = oFileChooser.getName()
+        sFileName = oFileChooser.get_name()
         if sFileName is not None:
             # User has OK'd us overwriting anything
             if self.__cSetType is PhysicalCardSet:

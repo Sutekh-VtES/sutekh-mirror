@@ -20,7 +20,10 @@ import re
 import warnings
 import operator
 import xml.sax, xml.sax.handler
+# pylint: disable-msg=E0611
+# pylint doesn't see resource_stream here, for some reason
 from pkg_resources import resource_stream
+# pylint: enable-msg=E0611
 from sutekh.gui.SutekhDialog import SutekhDialog
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 
@@ -40,6 +43,8 @@ def _parse_css_color(sColor):
         return gtk.gdk.color_parse(sColor)
 
 class HtmlHandler(xml.sax.handler.ContentHandler):
+    # pylint: disable-msg=R0201
+    # can't break these into functions
     """Parse the HTML imput and update the gtk.TextView"""
     def __init__(self, textview, startiter):
         xml.sax.handler.ContentHandler.__init__(self)
@@ -53,10 +58,12 @@ class HtmlHandler(xml.sax.handler.ContentHandler):
         self._bInTitle = False
 
     def _parse_style_color(self, oTag, sValue):
+        """Convert style value to TextView foreground color"""
         oColor = _parse_css_color(sValue)
         oTag.set_property("foreground-gdk", oColor)
 
     def _parse_style_background_color(self, oTag, sValue):
+        """Convert background value to TextView background color."""
         oColor = _parse_css_color(sValue)
         oTag.set_property("background-gdk", oColor)
         if gtk.gtk_version >= (2, 8):
@@ -66,6 +73,7 @@ class HtmlHandler(xml.sax.handler.ContentHandler):
     if gtk.gtk_version >= (2, 8, 5) or gobject.pygtk_version >= (2, 8, 1):
 
         def _get_current_attributes(self):
+            """Get current attributes."""
             aAttrs = self._oTextView.get_default_attributes()
             self._oIter.backward_char()
             self._oIter.get_attributes(aAttrs)
@@ -78,10 +86,10 @@ class HtmlHandler(xml.sax.handler.ContentHandler):
         def _get_current_style_attr(self, propname, comb_oper=None):
             aTags = [oTag for oTag in self.styles if oTag is not None]
             aTags.reverse()
-            is_set_name = propname + "-set"
+            sIsSetName = propname + "-set"
             oValue = None
             for oTag in aTags:
-                if oTag.get_property(is_set_name):
+                if oTag.get_property(sIsSetName):
                     if oValue is None:
                         oValue = oTag.get_property(propname)
                         if comb_oper is None:
@@ -95,6 +103,9 @@ class HtmlHandler(xml.sax.handler.ContentHandler):
             __slots__ = ("font", "font_scale")
 
         def _get_current_attributes(self):
+            """Get current attributes."""
+            # pylint: disable-msg=C0103
+            # font, font-scale required by design
             aAttrs = self._FakeAttrs()
             aAttrs.font_scale = self._get_current_style_attr("scale",
                                                             operator.mul)
@@ -154,9 +165,10 @@ class HtmlHandler(xml.sax.handler.ContentHandler):
         else:
             warnings.warn("Unable to parse length value '%s'" % value)
 
+    @staticmethod
     def __parse_font_size_cb(length, oTag):
+        """Callback for font size calculations."""
         oTag.set_property("size-points", length/fResolution)
-    __parse_font_size_cb = staticmethod(__parse_font_size_cb)
 
     def _parse_style_font_size(self, oTag, value):
         try:
@@ -195,9 +207,9 @@ class HtmlHandler(xml.sax.handler.ContentHandler):
         else:
             oTag.set_property("style", style)
 
+    @staticmethod
     def __frac_length_tag_cb(length, oTag, propname):
         oTag.set_property(propname, length)
-    __frac_length_tag_cb = staticmethod(__frac_length_tag_cb)
 
     def _parse_style_margin_left(self, oTag, value):
         self._parse_length(value, False, self.__frac_length_tag_cb,
@@ -532,6 +544,8 @@ if gobject.pygtk_version < (2, 8):
     gobject.type_register(HTMLTextView)
 
 class HTMLViewDialog(SutekhDialog):
+    # pylint: disable-msg=R0904
+    # gtk.Widget, so many public methods
     """Dialog Window that wraps the HTMLTextView
 
        Used to show HTML Manuals in Sutekh.
@@ -594,7 +608,6 @@ class HTMLViewDialog(SutekhDialog):
         """Go backwards through the list of visited urls"""
         if len(self._aPastUrls) == 0:
             return
-        print self._aPastUrls
         self._aFutureUrls.append(self._fCurrent)
         self._fCurrent = self._aPastUrls.pop()
         self._update_view()

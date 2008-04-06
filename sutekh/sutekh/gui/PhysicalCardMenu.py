@@ -106,7 +106,7 @@ class PhysicalCardMenu(gtk.MenuBar, object):
     def do_export(self, oWidget):
         oFileChooser = ExportDialog("Save Collection As", self.__oWindow)
         oFileChooser.run()
-        sFileName = oFileChooser.getName()
+        sFileName = oFileChooser.get_name()
         if sFileName is not None:
             oW = PhysicalCardXmlFile(sFileName)
             oW.write()

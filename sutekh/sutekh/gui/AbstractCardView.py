@@ -10,6 +10,8 @@ from sutekh.gui.CardListView import CardListView
 from sutekh.gui.CardListModel import CardListModel
 
 class AbstractCardView(CardListView):
+    # pylint: disable-msg=R0904
+    # gtk.Widget, so many public methods
     def __init__(self, oController, oMainWindow, oConfig):
         oModel = CardListModel()
         super(AbstractCardView,self).__init__(oController, oMainWindow, oConfig, oModel)

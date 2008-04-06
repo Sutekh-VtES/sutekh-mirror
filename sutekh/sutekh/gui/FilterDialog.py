@@ -3,8 +3,10 @@
 # vim:fileencoding=utf8 ai ts=4 sts=4 et sw=4
 # Dialog for setting Filter Parameters
 # Copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
-# Copyright 2006 Simon Cross <hodgestar@gmail.com>
+# Copyright 2006, 2008 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
+
+"""Allow the user to specify a filter."""
 
 import gtk
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
@@ -25,6 +27,8 @@ DEFAULT_FILTERS = (
         )
 
 class FilterDialog(SutekhDialog, ConfigFileListener):
+    # pylint: disable-msg=R0904
+    # gtk.Widget, so many public methods
 
     __iAddButtonResponse = 1
     __iCopyButtonResponse = 2
@@ -47,6 +51,8 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
                 self.__iSaveButtonResponse)
         self.__oDeleteButton = self.add_button("Delete Filter",
                 self.__iDeleteButtonResponse)
+        # pylint: disable-msg=E1101
+        # vbox, action_area confuse pylint
         self.action_area.pack_start(gtk.VSeparator(), expand=True)
         self.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
         self.oCancelButton = self.add_button(gtk.STOCK_CANCEL,
@@ -82,7 +88,8 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
             try:
                 oAST = self.__oParser.apply(sFilter)
             except ValueError, oExcep:
-                do_complaint_error("Invalid Filter: %s\n Error: %s" % (sFilter, str(oExcep)))
+                do_complaint_error("Invalid Filter: %s\n Error: %s" % (sFilter,
+                    oExcep))
                 continue
             sId = self.__add_filter_to_dialog(oAST, sFilter)
             self.__aDefaultFilterIds.append(sId)
@@ -99,7 +106,8 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
                 sMessages += sFilter + "\n"
                 self.__oConfig.removeFilter(sFilter, sId)
         if sMessages != '':
-            do_complaint_error("The Following Invalid filters have been removed from the config file:\n " + sMessages)
+            do_complaint_error("The Following Invalid filters have been"
+                    " removed from the config file:\n " + sMessages)
         self.show_all()
 
         # Add Listener, so we catch changes in future
@@ -108,7 +116,7 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
     def __add_filter_to_dialog(self, oAST, sFilter, sId=''):
         """
         Register a filter with the dialog, creating necessary components.
-        
+
         Don't inform the ConfigFile.
         """
         if sId == '' or sId in self.__dFilterEditors:
@@ -123,7 +131,8 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
         if oAST.get_filter_expression() is not None and \
                 self.__sFilterType not in oAST.get_type():
             return sId
-        self.__dFilterEditors[sId] = FilterEditor(oAST,self.__sFilterType,self.__oParent,self.__oParser, self)
+        self.__dFilterEditors[sId] = FilterEditor(oAST,
+                self.__sFilterType, self.__oParent, self.__oParser, self)
 
         oRadioButton = gtk.RadioButton(self.__oRadioGroup)
         if self.__oRadioGroup is None:
@@ -179,18 +188,18 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
         elif iResponse == self.__iRevertButtonResponse:
             if sId in self.__aDefaultFilterIds:
                 # TODO: Do other filter dialogs need to be notified somehow?
-                self.replaceFilter(sOld,sOld,sId)
+                self.replaceFilter(sOld, sOld, sId)
             else:
-                self.__oConfig.replaceFilter(sOld,sOld,sId)
-            self.__expand_filter(None,sId)
+                self.__oConfig.replaceFilter(sOld, sOld, sId)
+            self.__expand_filter(None, sId)
             return self.run()
         elif iResponse == self.__iSaveButtonResponse:
             sCurr = self.__dFilterEditors[sId].get_current_text()
-            self.__oConfig.replaceFilter(sOld,sCurr,sId)
-            self.__expand_filter(None,sId)
+            self.__oConfig.replaceFilter(sOld, sCurr, sId)
+            self.__expand_filter(None, sId)
             return self.run()
         elif iResponse == self.__iDeleteButtonResponse:
-            self.__oConfig.removeFilter(self.__dFilterList[sId],sId)
+            self.__oConfig.removeFilter(self.__dFilterList[sId], sId)
             return self.run()
         else:
             self.__bWasCancelled = True
@@ -225,13 +234,14 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
             # was in editors before and should still be there, replace it
             # We treat oAST.get_type() is None as a catch-all type
             dOldVars = self.__dFilterEditors[sId].get_current_values()
-            self.__dFilterEditors[sId] = FilterEditor(oAST,self.__sFilterType, self.__oParent, self.__oParser, self)
+            self.__dFilterEditors[sId] = FilterEditor(oAST,
+                    self.__sFilterType, self.__oParent, self.__oParser, self)
             self.__dFilterEditors[sId].set_current_values(dOldVars)
 
             self.__dButtons[sId].set_label(sNewFilter)
             self.__oRadioArea.show_all()
             self.__sExpanded = None
-            self.__expand_filter(None,sId)
+            self.__expand_filter(None, sId)
 
     # Dialog result retrievel methods
 
@@ -250,7 +260,8 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
             # Should be safe, but just in case
             oAST = self.__oParser.apply(sNewFilter)
         except ValueError, oExcep:
-            do_complaint_error("Invalid Filter: %s\n Error: %s" % (sNewFilter, str(oExcep)))
+            do_complaint_error("Invalid Filter: %s\n Error: %s" % (sNewFilter,
+                oExcep))
             return
         self.__replace_filter_in_dialog(oAST, sOldFilter, sNewFilter, sId)
         self.__oRadioArea.show_all()
@@ -260,7 +271,8 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
             # Should be safe, but just in case
             oAST = self.__oParser.apply(sFilter)
         except ValueError, oExcep:
-            do_complaint_error("Invalid Filter: %s\n Error: %s" % (sFilter, str(oExcep)))
+            do_complaint_error("Invalid Filter: %s\n Error: %s" % (sFilter,
+                oExcep))
             return
         self.__add_filter_to_dialog(oAST, sFilter, sId)
         self.__oRadioArea.show_all()

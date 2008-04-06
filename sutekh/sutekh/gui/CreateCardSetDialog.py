@@ -5,10 +5,18 @@
 # Copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
+"""Get details for a new card set"""
+
 import gtk
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 
 class CreateCardSetDialog(SutekhDialog):
+    # pylint: disable-msg=R0904
+    # gtk.Widget, so many public methods
+    """Prompt the user for the name of a new card set.
+
+       Optionally, get Author + Description.
+       """
     def __init__(self, oParent, sType, sAuthor=None, sDesc=None):
         super(CreateCardSetDialog, self).__init__(sType + " Card Set Details",
             oParent, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
@@ -47,9 +55,13 @@ class CreateCardSetDialog(SutekhDialog):
         self.show_all()
 
     def get_data(self):
+        """Return data about the new card set to the caller."""
         return (self.sName, self.sAuthor, self.sDesc)
 
+    # pylint: disable-msg=W0613
+    # oWidget required by function signature
     def button_response(self, oWidget, iResponse):
+        """Handle button press from the dialog."""
         if iResponse == gtk.RESPONSE_OK:
             self.sName = self.oName.get_text()
             if len(self.sName) > 0:
@@ -64,5 +76,4 @@ class CreateCardSetDialog(SutekhDialog):
                 self.sName = None
                 do_complaint_error("You did not specify a name for the"
                         " %s Card Set." % self.sType)
-
         self.destroy()

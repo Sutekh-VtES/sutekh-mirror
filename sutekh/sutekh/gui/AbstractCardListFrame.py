@@ -6,12 +6,17 @@
 # Copyright 2006, 2007 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
+"""Frame for the WW Card List"""
+
 from sutekh.core.SutekhObjects import AbstractCard
 from sutekh.gui.CardListFrame import CardListFrame
 from sutekh.gui.AbstractCardListController import AbstractCardListController
 from sutekh.gui.AbstractCardListMenu import AbstractCardListMenu
 
 class AbstractCardListFrame(CardListFrame):
+    """Frame for the WW Card List."""
+    # pylint: disable-msg=R0904
+    # gtk.Widget, so many public methods
     def __init__(self, oMainWindow, oConfig):
         super(AbstractCardListFrame, self).__init__(oMainWindow, oConfig)
 

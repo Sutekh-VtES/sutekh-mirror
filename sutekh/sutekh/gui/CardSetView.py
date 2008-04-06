@@ -15,6 +15,8 @@ from sutekh.core.SutekhObjects import PhysicalCardSet, \
 from sutekh.SutekhUtility import delete_physical_card_set, delete_abstract_card_set
 
 class CardSetView(EditableCardListView):
+    # pylint: disable-msg=R0904
+    # gtk.Widget, so many public methods
     def __init__(self, oMainWindow, oController, sName, cSetType, oConfig):
         if cSetType is PhysicalCardSet:
             # cardclass is the actual physicalcard

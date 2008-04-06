@@ -15,6 +15,8 @@ from sutekh.gui.CardSetController import PhysicalCardSetController, \
         AbstractCardSetController
 
 class CardSetFrame(CardListFrame, object):
+    # pylint: disable-msg=R0904
+    # gtk.Widget, so many public methods
     def __init__(self, oMainWindow, sName, cType, oConfig):
         super(CardSetFrame, self).__init__(oMainWindow, oConfig)
         self._cModelType = cType
@@ -71,12 +73,16 @@ class CardSetFrame(CardListFrame, object):
             self.close_frame()
 
 class AbstractCardSetFrame(CardSetFrame):
+    # pylint: disable-msg=R0904
+    # gtk.Widget, so many public methods
     def __init__(self, oMainWindow, sName, oConfig):
         super(AbstractCardSetFrame, self).__init__(oMainWindow, sName,
                 AbstractCardSet, oConfig)
         self.set_name("abstract card set card list")
 
 class PhysicalCardSetFrame(CardSetFrame):
+    # pylint: disable-msg=R0904
+    # gtk.Widget, so many public methods
     def __init__(self, oMainWindow, sName, oConfig):
         super(PhysicalCardSetFrame, self).__init__(oMainWindow, sName,
                 PhysicalCardSet, oConfig)

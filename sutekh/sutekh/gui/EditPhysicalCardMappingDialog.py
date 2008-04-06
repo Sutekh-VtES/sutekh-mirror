@@ -15,6 +15,20 @@ from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 from sutekh.core.SutekhObjects import PhysicalCard, IAbstractCard, \
         IExpansion, MapPhysicalCardToPhysicalCardSet
 
+def _gen_key(oPhysCard):
+    """Generate a sort key
+
+       We Generate a sort key - card name, expansion, card id
+       This is to ensure stable ordering in the dialog
+       """
+    sName = oPhysCard.abstractCard.canonicalName
+    if oPhysCard.expansion is None:
+        sExpansion = ' Unspecified Expansion'
+    else:
+        sExpansion = oPhysCard.expansion.name
+    sId = str(oPhysCard.id)
+    return sName + ':' + sExpansion + ':' + sId
+
 class EditPhysicalCardMappingDialog(SutekhDialog):
     # pylint: disable-msg=R0904
     # gtk class, so many pulic methods
@@ -43,7 +57,7 @@ class EditPhysicalCardMappingDialog(SutekhDialog):
         for sAbsCardName, dExpansions in dSelectedCards.iteritems():
             oAbstractCard = IAbstractCard(sAbsCardName)
             self.dPhysCards.setdefault(oAbstractCard, {})
-            for sExpansion, iCnt in dExpansions.iteritems():
+            for sExpansion in dExpansions:
                 if sExpansion != 'None':
                     if sExpansion == '  Unspecified Expansion':
                         iThisExpID = None
@@ -57,7 +71,8 @@ class EditPhysicalCardMappingDialog(SutekhDialog):
                             abstractCardID=oAbstractCard.id)
                 for oPhysCard in aPhysCards:
                     self.dPhysCards[oAbstractCard].setdefault(oPhysCard, [])
-                    for oMap in MapPhysicalCardToPhysicalCardSet.selectBy(physicalCardID=oPhysCard.id):
+                    for oMap in MapPhysicalCardToPhysicalCardSet.selectBy(
+                            physicalCardID=oPhysCard.id):
                         oCS = oMap.physicalCardSet
                         self.dPhysCards[oAbstractCard][oPhysCard].append(oCS)
                         self.dCardSets.setdefault(oCS, {})
@@ -89,7 +104,7 @@ class EditPhysicalCardMappingDialog(SutekhDialog):
             k = 1
             for oAbstractCard, dPhysMap in self.dPhysCards.iteritems():
                 self.oTable.resize(k, iTableWidth)
-                for oPhysCard in sorted(dPhysMap, key=self.__gen_key):
+                for oPhysCard in sorted(dPhysMap, key=_gen_key):
                     if oPhysCard.expansion is not None:
                         sLabel = oAbstractCard.name + ':' + \
                                 oPhysCard.expansion.name
@@ -111,7 +126,7 @@ class EditPhysicalCardMappingDialog(SutekhDialog):
                     if self.dCardSets[oCardSet].has_key(oAbstractCard):
                         oTotalLabel = gtk.Label(str(self.dCardSets[oCardSet]
                             [oAbstractCard]))
-                        for oPhysCard in sorted(dPhysMap, key=self.__gen_key):
+                        for oPhysCard in sorted(dPhysMap, key=_gen_key):
                             aCardSets = dPhysMap[oPhysCard]
                             oCheckBox = gtk.CheckButton()
                             oCheckBox.set_active(oCardSet in aCardSets)
@@ -132,20 +147,9 @@ class EditPhysicalCardMappingDialog(SutekhDialog):
             self.aNumbersNotMatched = []
         self.show_all()
 
-    def __gen_key(self, oPhysCard):
-        """
-        We Generate a sort key - card name, expansion, card id
-        This is to ensure stable ordering in the dialog
-        """
-        sName = oPhysCard.abstractCard.canonicalName
-        if oPhysCard.expansion is None:
-            sExpansion = ' Unspecified Expansion'
-        else:
-            sExpansion = oPhysCard.expansion.name
-        sId = str(oPhysCard.id)
-        return sName + ':' + sExpansion + ':' + sId
 
-    def do_toggle(self, oWidget, oTotLabel, oCardSet, oAbsCard, aCardSetMapping):
+    def do_toggle(self, oWidget, oTotLabel, oCardSet, oAbsCard,
+            aCardSetMapping):
         """
         Handle toggle button actions
         Update the associated lists, and the displayed totals
@@ -174,6 +178,8 @@ class EditPhysicalCardMappingDialog(SutekhDialog):
                 self.aNumbersNotMatched.remove(oTotLabel)
         oTotLabel.show()
 
+    # pylint: disable-msg=W0613
+    # oWidget required by function signature
     def button_response(self, oWidget, iResponse):
         """
         Update the card sets in response to the user pressing OK

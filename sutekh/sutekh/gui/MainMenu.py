@@ -312,7 +312,7 @@ class MainMenu(gtk.MenuBar, object):
     def do_import_physical_card_list(self, oWidget):
         oFileChooser = ImportDialog("Select Card List to Import", self.__oWin)
         oFileChooser.run()
-        sFileName = oFileChooser.getName()
+        sFileName = oFileChooser.get_name()
         if sFileName is not None:
             oParser = IdentifyXMLFile()
             (sType, sName, bExists) = oParser.idFile(sFileName)
@@ -329,7 +329,7 @@ class MainMenu(gtk.MenuBar, object):
     def do_import_card_set(self, oWidget):
         oFileChooser = ImportDialog("Select Card Set(s) to Import", self.__oWin)
         oFileChooser.run()
-        sFileName = oFileChooser.getName()
+        sFileName = oFileChooser.get_name()
         if sFileName is not None:
             oParser = IdentifyXMLFile()
             (sType, sName, bExists) = oParser.idFile(sFileName)
