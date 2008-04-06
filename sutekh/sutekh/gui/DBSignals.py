@@ -6,6 +6,9 @@
 # Copyright 2007 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
+"""Wrappers around SQLObject signals needed to keep card sets and the card
+collection in sync."""
+
 from sqlobject.events import Signal, listen, RowUpdateSignal, RowDestroySignal
 from sutekh.core.SutekhObjects import PhysicalCard
 
@@ -13,22 +16,27 @@ class ReloadSignal(Signal):
     """
     Syncronisation signal for card sets. Needs to be sent after
     changes are commited to the database, so card sets can reload
-    properly
+    properly.
+    Used so card sets always reflect correct available count when editable.
     """
 
 # Senders
 
 def send_reload_signal(oAbstractCard, cClass=PhysicalCard):
+    """Sent when card counts change, so card sets may need to reload."""
     cClass.sqlmeta.send(ReloadSignal, oAbstractCard)
 
 # Listeners
 
 def listen_reload(fListener, cClass):
+    """Listens for the reload_signal."""
     listen(fListener, cClass, ReloadSignal)
 
 def listen_row_destroy(fListener, cClass):
+    """listen for the row destoryed signal sent when a card is deleted."""
     listen(fListener, cClass, RowDestroySignal)
 
 def listen_row_update(fListener, cClass):
+    """listen for the row updated signal sent when a card is modified."""
     listen(fListener, cClass, RowUpdateSignal)
 

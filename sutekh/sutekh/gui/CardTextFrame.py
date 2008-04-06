@@ -12,6 +12,8 @@ from sutekh.gui.CardTextView import CardTextView
 from sutekh.gui.BasicFrame import BasicFrame
 
 class CardTextFrame(BasicFrame):
+    # pylint: disable-msg=R0904
+    # gtk.Widget, so lots of public methods
     def __init__(self, oMainWindow):
         super(CardTextFrame, self).__init__(oMainWindow)
         self._oView = CardTextView(oMainWindow)

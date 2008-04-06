@@ -18,6 +18,8 @@ from sutekh.gui.CreateCardSetDialog import CreateCardSetDialog
 from sutekh.gui.CardSetManagementMenu import CardSetManagementMenu
 
 class CardSetManagementFrame(BasicFrame):
+    # pylint: disable-msg=R0904
+    # gtk.Widget, so lots of public methods
 
     __sOpen = "<b>Opened</b>"
     __sAvail = "<b>Available</b>"
@@ -32,8 +34,11 @@ class CardSetManagementFrame(BasicFrame):
         self._oFilterDialog = None
         self._sFilterType = None
 
+    # pylint: disable-msg=W0212
+    # We allow access via these properties
     type = property(fget=lambda self: self._sName, doc="Frame Type")
     menu = property(fget=lambda self: self._oMenu, doc="Frame Menu")
+    # pylint: enable-msg=W0212
 
     def add_parts(self):
         """Add a list object to the frame"""

@@ -5,26 +5,41 @@
 # Copyright 2007 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
+"""Basic Card List Frame."""
 
 import gtk
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 from sutekh.gui.BasicFrame import BasicFrame
 
 class CardListFrame(BasicFrame):
+    # pylint: disable-msg=R0904
+    # gtk.Widget, so lots of public methods
+    """Base class for all the Card Lists.
+
+       Provide common methods and basic parameters common to all the
+       different CardList Frames.
+       """
     def __init__(self, oMainWindow, oConfig):
         super(CardListFrame, self).__init__(oMainWindow)
+        self._aPlugins = []
         self._oConfig = oConfig
 
         self._oC = None
         self._cModelType = None
 
-    view = property(fget=lambda self: self._oC.view, doc="Associated View Object")
+    # pylint: disable-msg=W0212
+    # We allow access via these properties
+    view = property(fget=lambda self: self._oC.view,
+            doc="Associated View Object")
     menu = property(fget=lambda self: self._oMenu, doc="Frame Menu")
-    type = property(fget=lambda self: self._cModelType.sqlmeta.table, doc="Frame Type")
+    type = property(fget=lambda self: self._cModelType.sqlmeta.table,
+            doc="Frame Type")
+    # pylint: enable-msg=W0212
 
     def init_plugins(self):
-        self._aPlugins = []
-        for cPlugin in self._oMainWindow.plugin_manager.get_card_list_plugins():
+        """Loop through the plugins, and enable those appropriate for us."""
+        for cPlugin in \
+                self._oMainWindow.plugin_manager.get_card_list_plugins():
             self._aPlugins.append(cPlugin(self._oC.view,
                 self._oC.view.getModel(), self._cModelType))
 
@@ -34,12 +49,13 @@ class CardListFrame(BasicFrame):
         self._oC.view.reload_keep_expanded()
 
     def get_toolbar_plugins(self):
+        """Register plugins on the frame toolbar."""
         oToolbar = gtk.VBox(False, 2)
         bInsertToolbar = False
         for oPlugin in self._aPlugins:
-            oW = oPlugin.get_toolbar_widget()
-            if oW is not None:
-                oToolbar.pack_start(oW)
+            oWidget = oPlugin.get_toolbar_widget()
+            if oWidget is not None:
+                oToolbar.pack_start(oWidget)
                 bInsertToolbar = True
         if bInsertToolbar:
             return oToolbar
@@ -47,16 +63,17 @@ class CardListFrame(BasicFrame):
             return None
 
     def add_parts(self):
-        wMbox = gtk.VBox(False, 2)
+        """Add the elements to the Frame."""
+        oMbox = gtk.VBox(False, 2)
 
-        wMbox.pack_start(self._oTitle, False, False)
-        wMbox.pack_start(self._oMenu, False, False)
+        oMbox.pack_start(self._oTitle, False, False)
+        oMbox.pack_start(self._oMenu, False, False)
 
         oToolbar = self.get_toolbar_plugins()
         if oToolbar is not None:
-            wMbox.pack_start(oToolbar, False, False)
+            oMbox.pack_start(oToolbar, False, False)
 
-        wMbox.pack_start(AutoScrolledWindow(self._oC.view), expand=True)
+        oMbox.pack_start(AutoScrolledWindow(self._oC.view), expand=True)
 
-        self.add(wMbox)
+        self.add(oMbox)
         self.show_all()

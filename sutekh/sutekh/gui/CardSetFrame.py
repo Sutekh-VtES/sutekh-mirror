@@ -47,7 +47,10 @@ class CardSetFrame(CardListFrame, object):
         self._oC.view.check_editable()
 
 
+    # pylint: disable-msg=W0212
+    # We allow access via these properties
     name = property(fget=lambda self: self._sName, doc="Frame Name")
+    # pylint: enable-msg=W0212
 
     def cleanup(self):
         """

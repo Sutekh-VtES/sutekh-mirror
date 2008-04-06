@@ -5,6 +5,8 @@
 # Copyright 2006 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
 
+"""Controller for the card sets"""
+
 from sqlobject import SQLObjectNotFound
 from sutekh.gui.CardSetView import CardSetView
 from sutekh.gui.DBSignals import listen_reload, listen_row_destroy, \
@@ -14,6 +16,11 @@ from sutekh.core.SutekhObjects import AbstractCardSet, PhysicalCardSet, \
         IExpansion, Expansion
 
 class CardSetController(object):
+    """Card Set Controller object.
+
+       This is the base class for the Physical and Abstract Card Set
+       Controllers.
+       """
     def __init__(self, sName, cType, oConfig, oMainWindow, oFrame):
         self._oMainWindow = oMainWindow
         self._oMenu = None
@@ -31,21 +38,23 @@ class CardSetController(object):
     # pylint: enable-msg=W0212
 
     def set_card_text(self, sCardName):
+        """Set card text to reflect selected card."""
         self._oMainWindow.set_card_text(sCardName)
 
     def incCard(self, sName, sExpansion):
-        """
-        Returns True if a card was successfully added, False otherwise.
-        """
+        """Returns True if a card was successfully added, False otherwise."""
         return self.addCard(sName, sExpansion)
 
     def decCard(self, sName, sExpansion):
+        """Remove a card, implemented in derived classes"""
         pass
 
     def addCard(self, sName, sExpansion):
+        """Add a card, implemented in derived classes"""
         pass
 
 class PhysicalCardSetController(CardSetController):
+    """Controller class for PhysicalCardSets."""
     def __init__(self, sName, oConfig, oMainWindow, oFrame):
         # pylint: disable-msg=E1101
         # SQLObject methods confuse pylint
@@ -65,21 +74,22 @@ class PhysicalCardSetController(CardSetController):
         listen_reload(self.reload_card_set, PhysicalCard)
 
     def reload_card_set(self, oAbsCard):
-        """
-        When changes happen that may effect this, reload.
-        Cases are when card numbers in PCS change while this is editable,
-        or the allocation of cards to physical card sets changes.
-        """
+        """When changes happen that may effect this, reload.
+
+           Cases are when card numbers in PCS change while this is editable,
+           or the allocation of cards to physical card sets changes.
+           """
         if oAbsCard.id in self.__aAbsCardIds:
             self.view.reload_keep_expanded()
 
     # pylint: disable-msg=W0613
     # fPostFuncs is passed by SQLObject 0.10, but not by 0.9
     def physical_card_deleted(self, oPhysCard, fPostFuncs=None):
-        """
-        Listen on physical card removals. Needed so we can
-        updated the model if a card in this set is deleted
-        """
+        """Listen on physical card removals.
+
+           Needed so we can updated the model if a card in this set
+           is deleted.
+           """
         # We get here after we have removed the card from the card set,
         # but before it is finally deleted from the table, so it's no
         # longer in self.__oPhysCards.
@@ -97,10 +107,11 @@ class PhysicalCardSetController(CardSetController):
             self.model.decCardByName(oAC.name)
 
     def physical_card_changed(self, oPhysCard, dChanges):
-        """
-        Listen on physical cards changed. Needed so we can
-        update the model if a card in this set is changed
-        """
+        """Listen on physical cards changed.
+
+           Needed so we can update the model if a card in this set is
+           changed.
+           """
         if oPhysCard.id in self.__aPhysCardIds and 'expansionID' in dChanges:
             # Changing a card assigned to the card list
             iNewID = dChanges['expansionID']
@@ -118,13 +129,11 @@ class PhysicalCardSetController(CardSetController):
             self.model.incCardExpansionByName(oAC.name, sExpName)
 
     def decCard(self, sName, sExpansion):
-        """
-        Returns True if a card was successfully removed, False otherwise.
-        """
+        """Returns True if a card was successfully removed, False otherwise."""
         # pylint: disable-msg=E1101
         # SQLObject methods confuse pylint
         try:
-            oC = AbstractCard.byCanonicalName(sName.lower())
+            oAbsCard = AbstractCard.byCanonicalName(sName.lower())
         except SQLObjectNotFound:
             return False
 
@@ -133,40 +142,38 @@ class PhysicalCardSetController(CardSetController):
             # Specific Expansion specified by the user, so
             # just need to consider those cards
             if sExpansion == self.model.sUnknownExpansion:
-                aPhysCards = PhysicalCard.selectBy(abstractCardID=oC.id,
+                aPhysCards = PhysicalCard.selectBy(abstractCardID=oAbsCard.id,
                         expansionID = None)
             else:
                 iExpID = IExpansion(sExpansion).id
-                aPhysCards = PhysicalCard.selectBy(abstractCardID=oC.id,
+                aPhysCards = PhysicalCard.selectBy(abstractCardID=oAbsCard.id,
                         expansionID = iExpID)
         else:
             # Need to consider all PhysicalCards
-            aPhysCards = PhysicalCard.selectBy(abstractCardID=oC.id)
+            aPhysCards = PhysicalCard.selectBy(abstractCardID=oAbsCard.id)
         for oCard in aPhysCards:
             if oCard.id in self.__aPhysCardIds:
                 # Found one, so remove it
                 self.__oPhysCardSet.removePhysicalCard(oCard.id)
                 # Update Model
-                self.model.decCardByName(oC.name)
+                self.model.decCardByName(oAbsCard.name)
                 # Update internal card list
                 self.__aPhysCardIds.remove(oCard.id)
-                self.__aAbsCardIds.remove(oC.id)
+                self.__aAbsCardIds.remove(oAbsCard.id)
                 if oCard.expansion is not None:
-                    self.model.decCardExpansionByName(oC.name,
+                    self.model.decCardExpansionByName(oAbsCard.name,
                             oCard.expansion.name)
                 else:
-                    self.model.decCardExpansionByName(oC.name, None)
+                    self.model.decCardExpansionByName(oAbsCard.name, None)
                 return True
         return False
 
     def addCard(self, sName, sExpansion):
-        """
-        Returns True if a card was successfully added, False otherwise.
-        """
+        """Returns True if a card was successfully added, False otherwise."""
         # pylint: disable-msg=E1101
         # SQLObject methods confuse pylint
         try:
-            oC = AbstractCard.byCanonicalName(sName.lower())
+            oAbsCard = AbstractCard.byCanonicalName(sName.lower())
         except SQLObjectNotFound:
             return False
 
@@ -174,15 +181,15 @@ class PhysicalCardSetController(CardSetController):
             # Specific Expansion specified by the user, so
             # just need to consider those cards
             if sExpansion == self.model.sUnknownExpansion:
-                aPhysCards = PhysicalCard.selectBy(abstractCardID=oC.id,
+                aPhysCards = PhysicalCard.selectBy(abstractCardID=oAbsCard.id,
                         expansionID = None)
             else:
                 iExpID = IExpansion(sExpansion).id
-                aPhysCards = PhysicalCard.selectBy(abstractCardID=oC.id,
+                aPhysCards = PhysicalCard.selectBy(abstractCardID=oAbsCard.id,
                         expansionID = iExpID)
         else:
             # Need to consider all PhysicalCards
-            aPhysCards = PhysicalCard.selectBy(abstractCardID=oC.id)
+            aPhysCards = PhysicalCard.selectBy(abstractCardID=oAbsCard.id)
 
         if aPhysCards.count() > 0:
             aCandCards = []
@@ -202,19 +209,20 @@ class PhysicalCardSetController(CardSetController):
             self.__oPhysCardSet.addPhysicalCard(oCard.id)
             self.__oPhysCardSet.sync()
             self.__aPhysCardIds.append(oCard.id)
-            self.__aAbsCardIds.append(oC.id)
+            self.__aAbsCardIds.append(oAbsCard.id)
             # Update Model
-            self.model.incCardByName(oC.name)
+            self.model.incCardByName(oAbsCard.name)
             if oCard.expansion is not None:
-                self.model.incCardExpansionByName(oC.name,
+                self.model.incCardExpansionByName(oAbsCard.name,
                         oCard.expansion.name)
             else:
-                self.model.incCardExpansionByName(oC.name, None)
+                self.model.incCardExpansionByName(oAbsCard.name, None)
             return True
         # Got here, so we failed to add
         return False
 
 class AbstractCardSetController(CardSetController):
+    """Controller class for AbstractCardSets."""
     def __init__(self, sName, oConfig, oMainWindow, oFrame):
         # pylint: disable-msg=E1101
         # SQLObject methods confuse pylint
@@ -226,40 +234,36 @@ class AbstractCardSetController(CardSetController):
     # pylint: disable-msg=W0613
     # sExpansion needed by function signature
     def decCard(self, sName, sExpansion):
-        """
-        Returns True if a card was successfully removed, False otherwise.
-        """
+        """Returns True if a card was successfully removed, False otherwise."""
         # pylint: disable-msg=E1101
         # SQLObject methods confuse pylint
         try:
-            oC = AbstractCard.byCanonicalName(sName.lower())
+            oAbsCard = AbstractCard.byCanonicalName(sName.lower())
         except SQLObjectNotFound:
             return False
         # find if there's a abstract card of that name in the Set
         oDBClass = self.model.cardclass
-        aSubSet = list(oDBClass.selectBy(abstractCardID=oC.id,
+        aSubSet = list(oDBClass.selectBy(abstractCardID=oAbsCard.id,
             abstractCardSetID=self.__oAbsCardSet.id))
         if len(aSubSet) > 0:
             oDBClass.delete(aSubSet[-1].id)
-            self.model.alterCardCount(oC.name, -1)
+            self.model.alterCardCount(oAbsCard.name, -1)
             return True
         return False
 
     # pylint: disable-msg=W0613
     # sExpansion needed by function signature
     def addCard(self, sName, sExpansion):
-        """
-        Returns True if a card was successfully added, False otherwise.
-        """
+        """Returns True if a card was successfully added, False otherwise."""
         # pylint: disable-msg=E1101
         # SQLObject methods confuse pylint
         try:
-            oC = AbstractCard.byCanonicalName(sName.lower())
+            oAbsCard = AbstractCard.byCanonicalName(sName.lower())
         except SQLObjectNotFound:
             return False
         # Add to the Set
         # This is much simpler than for PhysicalCardSets, as we don't have
         # to worry about whether the card exists in PhysicalCards or not
-        self.__oAbsCardSet.addAbstractCard(oC.id)
-        self.model.incCardByName(oC.name)
+        self.__oAbsCardSet.addAbstractCard(oAbsCard.id)
+        self.model.incCardByName(oAbsCard.name)
         return True
