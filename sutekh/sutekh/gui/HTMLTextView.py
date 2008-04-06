@@ -537,15 +537,28 @@ class HTMLViewDialog(SutekhDialog):
        Used to show HTML Manuals in Sutekh.
        """
 
-    def __init__(self, oParent, fHTMLInput):
+    def __init__(self, oParent, fInput):
         super(HTMLViewDialog, self).__init__('Help', oParent,
                 oButtons=(gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
         # pylint: disable-msg=E1101
         # vbox confuses pylint
+        oDirButtons = gtk.HButtonBox()
+        self._oBackButton = gtk.Button(stock=gtk.STOCK_GO_BACK)
+        self._oBackButton.connect('pressed', self._go_back)
+        self._oForwardButton = gtk.Button(stock=gtk.STOCK_GO_FORWARD)
+        self._oForwardButton.connect('pressed', self._go_forward)
+        oDirButtons.pack_start(self._oBackButton)
+        oDirButtons.pack_start(self._oForwardButton)
+        self._oBackButton.set_sensitive(False)
+        self._oForwardButton.set_sensitive(False)
+        self._fCurrent = fInput
+        self._aPastUrls=[]
+        self._aFutureUrls=[]
+        self.vbox.pack_start(oDirButtons, False, False)
         self._oHTMLTextView = HTMLTextView()
         self._oView = AutoScrolledWindow(self._oHTMLTextView)
         self.set_default_size(400, 600)
-        self._oHTMLTextView.display_html(fHTMLInput)
+        self._oHTMLTextView.display_html(fInput)
         self.vbox.pack_start(self._oView, True,
                 True)
         self._oHTMLTextView.connect('url-clicked', self._url_clicked)
@@ -554,11 +567,42 @@ class HTMLViewDialog(SutekhDialog):
     def _url_clicked(self, oWidget, sUrl, oType):
         """Update the HTML widget with the new url"""
         fInput = resource_stream(__name__, '../docs/' + sUrl)
+        self._aPastUrls.append(self._fCurrent)
+        self._aFutureUrls = [] # Forward history is lost
+        self._fCurrent = fInput
+        self._update_view()
+
+    def _update_view(self):
+        """Redraw the pane with the contents of self._fCurrent"""
+        self._fCurrent.seek(0)
         self._oView.remove(self._oHTMLTextView)
         self._oHTMLTextView = HTMLTextView()
-        self._oHTMLTextView.display_html(fInput)
+        self._oHTMLTextView.display_html(self._fCurrent)
         self._oHTMLTextView.connect('url-clicked', self._url_clicked)
         self._oView.add(self._oHTMLTextView)
+        if len(self._aPastUrls) > 0:
+            self._oBackButton.set_sensitive(True)
+        else:
+            self._oBackButton.set_sensitive(False)
+        if len(self._aFutureUrls) > 0:
+            self._oForwardButton.set_sensitive(True)
+        else:
+            self._oForwardButton.set_sensitive(False)
         self.show_all()
 
-        
+    def _go_back(self, oWidget):
+        """Go backwards through the list of visited urls"""
+        if len(self._aPastUrls) == 0:
+            return
+        print self._aPastUrls
+        self._aFutureUrls.append(self._fCurrent)
+        self._fCurrent = self._aPastUrls.pop()
+        self._update_view()
+
+    def _go_forward(self, oWidget):
+        """Go forward through the list of visited urls"""
+        if len(self._aFutureUrls) == 0:
+            return
+        self._aPastUrls.append(self._fCurrent)
+        self._fCurrent = self._aFutureUrls.pop()
+        self._update_view()
