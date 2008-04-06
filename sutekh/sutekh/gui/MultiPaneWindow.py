@@ -8,6 +8,10 @@
 import pygtk
 pygtk.require('2.0')
 import gtk
+# pylint: disable-msg=E0611
+# pylint doesn't see resource_stream here, for some reason
+from pkg_resources import resource_stream
+# pylint: enable-msg=E0611
 from sqlobject import SQLObjectNotFound
 from sutekh.core.SutekhObjectCache import SutekhObjectCache
 from sutekh.core.SutekhObjects import AbstractCard, PhysicalCardSet, \
@@ -24,6 +28,7 @@ from sutekh.gui.CardSetManagementFrame import PhysicalCardSetListFrame, \
         AbstractCardSetListFrame
 from sutekh.gui.PluginManager import PluginManager
 from sutekh.gui import SutekhIcon
+from sutekh.gui.HTMLTextView import HTMLViewDialog
 
 class MultiPaneWindow(gtk.Window):
     """Window that has a configurable number of panes."""
@@ -399,6 +404,23 @@ class MultiPaneWindow(gtk.Window):
         oDlg = SutekhAboutDialog()
         oDlg.run()
         oDlg.destroy()
+
+    def show_tutorial(self, oMenuWidget):
+        """Show the HTML Tutorial"""
+        fTutorial = resource_stream(__name__, '../docs/Tutorial.html')
+        self._do_html_dialog(fTutorial)
+
+    def show_manual(self, oMenuWidget):
+        """Show the HTML Manual"""
+        fManual = resource_stream(__name__, '../docs/Manual.html')
+        self._do_html_dialog(fManual)
+
+    def _do_html_dialog(self, fInput):
+        """Popup and run HTML Dialog widget"""
+        oDlg = HTMLViewDialog(self, fInput)
+        oDlg.run()
+        oDlg.destroy()
+
 
     # frame management functions
 

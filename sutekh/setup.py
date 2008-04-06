@@ -35,6 +35,8 @@ setup   (   # Metadata
                 '': ['*.svg'],
                 # Include LICENSE information for sutekh package
                 'sutekh': ['COPYING'],
+                # Include everything under the docs directory
+                'sutekh': ['docs/*'],
             },
             scripts = ['sutekh/SutekhCli.py','sutekh/SutekhGui.py']
         )

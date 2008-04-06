@@ -290,10 +290,18 @@ class MainMenu(gtk.MenuBar, object):
 
     def __create_about_menu(self):
         # setup sub menu
-        iMenu = gtk.MenuItem("About")
+        iMenu = gtk.MenuItem("_Help")
+        iMenu.set_right_justified(True)
         oMenu = gtk.Menu()
-        self.__dMenus["About"] = oMenu
+        self.__dMenus["Help"] = oMenu
         iMenu.set_submenu(oMenu)
+
+        self.iHelpTutorial = gtk.MenuItem("Sutekh Tutorial")
+        self.iHelpTutorial.connect('activate', self.__oWin.show_tutorial)
+        oMenu.add(self.iHelpTutorial)
+        self.iHelpManual = gtk.MenuItem("Sutekh Manual")
+        self.iHelpManual.connect('activate', self.__oWin.show_manual)
+        oMenu.add(self.iHelpManual)
 
         self.iAbout = gtk.MenuItem("About Sutekh")
         self.iAbout.connect('activate', self.__oWin.show_about_dialog)

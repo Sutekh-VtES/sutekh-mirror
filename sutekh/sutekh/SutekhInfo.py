@@ -39,7 +39,7 @@ class SutekhInfo(object):
     LICENSE_TEXT = resource_string(__name__, 'COPYING')
 
     INSTALL_REQUIRES = [
-        'SQLObject >= 0.9.0, < 0.10', # fetching 0.10dev requires svn (which is a 
+        'SQLObject >= 0.9.0, < 0.11', # fetching 0.10dev requires svn (which is a 
                               # bit crazy as an install requirement)
         'PyProtocols',
         'ply',
