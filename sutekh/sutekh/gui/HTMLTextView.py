@@ -46,13 +46,13 @@ class HtmlHandler(xml.sax.handler.ContentHandler):
     # pylint: disable-msg=R0201
     # can't break these into functions
     """Parse the HTML imput and update the gtk.TextView"""
-    def __init__(self, textview, startiter):
+    def __init__(self, oTextView, oStartIter):
         xml.sax.handler.ContentHandler.__init__(self)
-        self._oTextBuf = textview.get_buffer()
-        self._oTextView = textview
-        self._oIter = startiter
+        self._oTextBuf = oTextView.get_buffer()
+        self._oTextView = oTextView
+        self._oIter = oStartIter
         self._sText = ''
-        self.styles = [] # a gtk.TextTag or None, for each span level
+        self._aStyles = [] # a gtk.TextTag or None, for each span level
         self._aListCounters = [] # stack (top at head) of list
                                 # counters, or None for unordered list
         self._bInTitle = False
@@ -83,19 +83,21 @@ class HtmlHandler(xml.sax.handler.ContentHandler):
     else:
 
         ## Workaround http://bugzilla.gnome.org/show_bug.cgi?id=317455
-        def _get_current_style_attr(self, propname, comb_oper=None):
-            aTags = [oTag for oTag in self.styles if oTag is not None]
+        def _get_current_style_attr(self, sPropName, fCombOper=None):
+            """Get the current style attributes."""
+            aTags = [oTag for oTag in self._aStyles if oTag is not None]
             aTags.reverse()
-            sIsSetName = propname + "-set"
+            sIsSetName = sPropName + "-set"
             oValue = None
             for oTag in aTags:
                 if oTag.get_property(sIsSetName):
                     if oValue is None:
-                        oValue = oTag.get_property(propname)
-                        if comb_oper is None:
+                        oValue = oTag.get_property(sPropName)
+                        if fCombOper is None:
                             return oValue
                     else:
-                        oValue = comb_oper(oValue, oTag.get_property(propname))
+                        oValue = fCombOper(oValue,
+                                oTag.get_property(sPropName))
             return oValue
 
         class _FakeAttrs(object):
@@ -116,63 +118,63 @@ class HtmlHandler(xml.sax.handler.ContentHandler):
                 aAttrs.font = self._oTextView.style.font_desc
             return aAttrs
 
-    def __parse_length_frac_size_allocate(self, textview, allocation,
-                                          frac, callback, args):
-        callback(allocation.width*frac, *args)
+    def __parse_length_frac_size_allocate(self, oTextView, oAllocation,
+            fFrac, fCallback, aArgs):
+        # pylint: disable-msg=W0142
+        # *magic required here
+        fCallback(oAllocation.width * fFrac, *aArgs)
 
-    def _parse_length(self, value, font_relative, callback, *args):
+    def _parse_length(self, sValue, bFontRelative, fCallback, *aArgs):
         """Parse/calc length, converting to pixels.
 
-           calls callback(length, *args) when the length is first computed
+           calls callback(length, *aArgs) when the length is first computed
            or changes
            """
-        if value.endswith('%'):
-            frac = float(value[:-1])/100
-            if font_relative:
-                attrs = self._get_current_attributes()
-                font_size = attrs.font.get_size() / pango.SCALE
-                callback(frac*fResolution*font_size, *args)
+        # pylint: disable-msg=W0142
+        # *magic required here
+        if sValue.endswith('%'):
+            fFrac = float(sValue[:-1])/100
+            if bFontRelative:
+                oAttrs = self._get_current_attributes()
+                fFontSize = oAttrs.font.get_size() / pango.SCALE
+                fCallback(fFrac * fResolution * fFontSize, *aArgs)
             else:
                 ## CSS says "Percentage values: refer to width of the closest
                 ##           block-level ancestor"
                 ## This is difficult/impossible to implement, so we use
                 ## textview width instead; a reasonable approximation..
-                alloc = self._oTextView.get_allocation()
-                self.__parse_length_frac_size_allocate(self._oTextView, alloc,
-                                                       frac, callback, args)
+                oAlloc = self._oTextView.get_allocation()
+                self.__parse_length_frac_size_allocate(self._oTextView, oAlloc,
+                        fFrac, fCallback, aArgs)
                 self._oTextView.connect("size-allocate",
-                                      self.__parse_length_frac_size_allocate,
-                                      frac, callback, args)
+                        self.__parse_length_frac_size_allocate, fFrac,
+                        fCallback, aArgs)
 
-        elif value.endswith('pt'): # points
-            callback(float(value[:-2])*fResolution, *args)
-
-        elif value.endswith('em'): # ems, the height of the element's font
-            attrs = self._get_current_attributes()
-            font_size = attrs.font.get_size() / pango.SCALE
-            callback(float(value[:-2])*fResolution*font_size, *args)
-
-        elif value.endswith('ex'): # x-height, ~ the height of the letter 'x'
+        elif sValue.endswith('pt'): # points
+            fCallback(float(sValue[:-2]) * fResolution, *aArgs)
+        elif sValue.endswith('em'): # ems, the height of the element's font
+            oAttrs = self._get_current_attributes()
+            fFontSize = oAttrs.font.get_size() / pango.SCALE
+            fCallback(float(sValue[:-2]) * fResolution * fFontSize, *aArgs)
+        elif sValue.endswith('ex'): # x-height, ~ the height of the letter 'x'
             ## FIXME: figure out how to calculate this correctly
             ##        for now 'em' size is used as approximation
-            attrs = self._get_current_attributes()
-            font_size = attrs.font.get_size() / pango.SCALE
-            callback(float(value[:-2])*fResolution*font_size, *args)
-
-        elif value.endswith('px'): # pixels
-            callback(int(value[:-2]), *args)
-
+            oAttrs = self._get_current_attributes()
+            fFontSize = oAttrs.font.get_size() / pango.SCALE
+            fCallback(float(sValue[:-2]) * fResolution * fFontSize, *aArgs)
+        elif sValue.endswith('px'): # pixels
+            fCallback(int(sValue[:-2]), *aArgs)
         else:
-            warnings.warn("Unable to parse length value '%s'" % value)
+            warnings.warn("Unable to parse length value '%s'" % sValue)
 
     @staticmethod
-    def __parse_font_size_cb(length, oTag):
+    def __parse_font_size_cb(fLength, oTag):
         """Callback for font size calculations."""
-        oTag.set_property("size-points", length/fResolution)
+        oTag.set_property("size-points", fLength/fResolution)
 
-    def _parse_style_font_size(self, oTag, value):
+    def _parse_style_font_size(self, oTag, sValue):
         try:
-            scale = {
+            iScale = {
                 "xx-small": pango.SCALE_XX_SMALL,
                 "x-small": pango.SCALE_X_SMALL,
                 "small": pango.SCALE_SMALL,
@@ -180,49 +182,49 @@ class HtmlHandler(xml.sax.handler.ContentHandler):
                 "large": pango.SCALE_LARGE,
                 "x-large": pango.SCALE_X_LARGE,
                 "xx-large": pango.SCALE_XX_LARGE,
-                } [value]
+                } [sValue]
         except KeyError:
             pass
         else:
-            attrs = self._get_current_attributes()
-            oTag.set_property("scale", scale / attrs.font_scale)
+            oAttrs = self._get_current_attributes()
+            oTag.set_property("scale", iScale / oAttrs.font_scale)
             return
-        if value == 'smaller':
+        if sValue == 'smaller':
             oTag.set_property("scale", pango.SCALE_SMALL)
             return
-        if value == 'larger':
+        if sValue == 'larger':
             oTag.set_property("scale", pango.SCALE_LARGE)
             return
-        self._parse_length(value, True, self.__parse_font_size_cb, oTag)
+        self._parse_length(sValue, True, self.__parse_font_size_cb, oTag)
 
-    def _parse_style_font_style(self, oTag, value):
+    def _parse_style_font_style(self, oTag, sValue):
         try:
-            style = {
+            iStyle = {
                 "normal": pango.STYLE_NORMAL,
                 "italic": pango.STYLE_ITALIC,
                 "oblique": pango.STYLE_OBLIQUE,
-                } [value]
+                } [sValue]
         except KeyError:
-            warnings.warn("unknown font-style %s" % value)
+            warnings.warn("unknown font-style %s" % sValue)
         else:
-            oTag.set_property("style", style)
+            oTag.set_property("style", iStyle)
 
     @staticmethod
-    def __frac_length_tag_cb(length, oTag, propname):
-        oTag.set_property(propname, length)
+    def __frac_length_tag_cb(fLength, oTag, sPropName):
+        oTag.set_property(sPropName, fLength)
 
-    def _parse_style_margin_left(self, oTag, value):
-        self._parse_length(value, False, self.__frac_length_tag_cb,
-                           oTag, "left-margin")
+    def _parse_style_margin_left(self, oTag, sValue):
+        self._parse_length(sValue, False, self.__frac_length_tag_cb, oTag,
+                "left-margin")
 
-    def _parse_style_margin_right(self, oTag, value):
-        self._parse_length(value, False, self.__frac_length_tag_cb,
-                           oTag, "right-margin")
+    def _parse_style_margin_right(self, oTag, sValue):
+        self._parse_length(sValue, False, self.__frac_length_tag_cb, oTag,
+                "right-margin")
 
-    def _parse_style_font_weight(self, oTag, value):
+    def _parse_style_font_weight(self, oTag, sValue):
         ## TODO: missing 'bolder' and 'lighter'
         try:
-            weight = {
+            iWeight = {
                 '100': pango.WEIGHT_ULTRALIGHT,
                 '200': pango.WEIGHT_ULTRALIGHT,
                 '300': pango.WEIGHT_LIGHT,
@@ -234,118 +236,128 @@ class HtmlHandler(xml.sax.handler.ContentHandler):
                 '900': pango.WEIGHT_HEAVY,
                 'normal': pango.WEIGHT_NORMAL,
                 'bold': pango.WEIGHT_BOLD,
-                } [value]
+                } [sValue]
         except KeyError:
-            warnings.warn("unknown font-style %s" % value)
+            warnings.warn("unknown font-style %s" % sValue)
         else:
-            oTag.set_property("weight", weight)
+            oTag.set_property("weight", iWeight)
 
-    def _parse_style_font_family(self, oTag, value):
-        oTag.set_property("family", value)
+    def _parse_style_font_family(self, oTag, sValue):
+        oTag.set_property("family", sValue)
 
-    def _parse_style_text_align(self, oTag, value):
+    def _parse_style_text_align(self, oTag, sValue):
         try:
-            align = {
+            iAlign = {
                 'left': gtk.JUSTIFY_LEFT,
                 'right': gtk.JUSTIFY_RIGHT,
                 'center': gtk.JUSTIFY_CENTER,
                 'justify': gtk.JUSTIFY_FILL,
-                } [value]
+                } [sValue]
         except KeyError:
-            warnings.warn("Invalid text-align:%s requested" % value)
+            warnings.warn("Invalid text-align:%s requested" % sValue)
         else:
-            oTag.set_property("justification", align)
+            oTag.set_property("justification", iAlign)
 
-    def _parse_style_text_decoration(self, oTag, value):
-        if value == "none":
+    def _parse_style_text_decoration(self, oTag, sValue):
+        if sValue == "none":
             oTag.set_property("underline", pango.UNDERLINE_NONE)
             oTag.set_property("strikethrough", False)
-        elif value == "underline":
+        elif sValue == "underline":
             oTag.set_property("underline", pango.UNDERLINE_SINGLE)
             oTag.set_property("strikethrough", False)
-        elif value == "overline":
+        elif sValue == "overline":
             warnings.warn("text-decoration:overline not implemented")
             oTag.set_property("underline", pango.UNDERLINE_NONE)
             oTag.set_property("strikethrough", False)
-        elif value == "line-through":
+        elif sValue == "line-through":
             oTag.set_property("underline", pango.UNDERLINE_NONE)
             oTag.set_property("strikethrough", True)
-        elif value == "blink":
+        elif sValue == "blink":
             warnings.warn("text-decoration:blink not implemented")
         else:
-            warnings.warn("text-decoration:%s not implemented" % value)
+            warnings.warn("text-decoration:%s not implemented" % sValue)
 
 
     ## build a dictionary mapping styles to methods, for greater speed
     __style_methods = dict()
-    for style in ["background-color", "color", "font-family", "font-size",
+    for sStyle in ["background-color", "color", "font-family", "font-size",
                   "font-style", "font-weight", "margin-left", "margin-right",
                   "text-align", "text-decoration"]:
         try:
-            method = locals()["_parse_style_%s" % style.replace('-', '_')]
+            fMethod = locals()["_parse_style_%s" % sStyle.replace('-', '_')]
         except KeyError:
-            warnings.warn("Style attribute '%s' not yet implemented" % style)
+            warnings.warn("Style attribute '%s' not yet implemented" % sStyle)
         else:
-            __style_methods[style] = method
+            __style_methods[sStyle] = fMethod
 
     def _get_style_tags(self):
-        return [oTag for oTag in self.styles if oTag is not None]
+        return [oTag for oTag in self._aStyles if oTag is not None]
 
-    def _begin_span(self, style, oTag=None):
-        if style is None:
-            self.styles.append(oTag)
+    def _begin_span(self, sStyle, oTag=None):
+        if sStyle is None:
+            self._aStyles.append(oTag)
             return None
         if oTag is None:
             oTag = self._oTextBuf.create_tag()
-        for attr, val in [item.split(':', 1) for item in style.split(';')]:
-            attr = attr.strip().lower()
-            val = val.strip()
+        for sAttr, sVal in [item.split(':', 1) for item in sStyle.split(';')]:
+            aAttr = sAttr.strip().lower()
+            sVal = sVal.strip()
             try:
-                method = self.__style_methods[attr]
+                fMethod = self.__style_methods[sAttr]
             except KeyError:
                 warnings.warn("Style attribute '%s' requested "
-                              "but not yet implemented" % attr)
+                              "but not yet implemented" % sAttr)
             else:
-                method(self, oTag, val)
-        self.styles.append(oTag)
+                fMethod(self, oTag, sVal)
+        self._aStyles.append(oTag)
 
     def _end_span(self):
-        self.styles.pop(-1)
+        self._aStyles.pop(-1)
 
-    def _insert_text(self, text):
-        tags = self._get_style_tags()
-        if tags:
-            self._oTextBuf.insert_with_tags(self._oIter, text, *tags)
+    def _insert_text(self, sText):
+        """Insert text into the TextBuffer"""
+        aTags = self._get_style_tags()
+        if aTags:
+            # pylint: disable-msg=W0142
+            # * magic required
+            self._oTextBuf.insert_with_tags(self._oIter, sText, *aTags)
         else:
-            self._oTextBuf.insert(self._oIter, text)
+            self._oTextBuf.insert(self._oIter, sText)
 
     def _flush_text(self):
+        """Flush any pending text."""
         if not self._sText:
             return
         self._insert_text(self._sText.replace('\n', ''))
         self._sText = ''
 
-    def _anchor_event(self, oTag, textview, event, iter, href, type_):
-        if event.type == gtk.gdk.BUTTON_PRESS and event.button == 1:
-            self._oTextView.emit("url-clicked", href, type_)
+    def _anchor_event(self, oTag, oTextview, oEvent, oIter, oHref, oType_):
+        if oEvent.type == gtk.gdk.BUTTON_PRESS and oEvent.button == 1:
+            self._oTextView.emit("url-clicked", oHref, oType_)
             return True
         return False
 
-    def characters(self, content):
-        if oAllWhiteSpaceRegex.match(content) is not None:
+    def characters(self, sContent):
+        """Process the character comments of an element."""
+        if oAllWhiteSpaceRegex.match(sContent) is not None:
             return
         if self._bInTitle:
             return
         #if self._sText:
         #    self._sText += ' '
-        self._sText += oWhiteSpaceRegex.sub(' ', content)
+        self._sText += oWhiteSpaceRegex.sub(' ', sContent)
 
-    def startElement(self, sName, attrs):
+    # pylint: disable-msg=C0103
+    # startElement, endElement names are require
+    def startElement(self, sName, oAttrs):
+        """Parser start element handler"""
+        # pylint: disable-msg=R0912, R0915
+        # sax content parser, so it is is a massive if..elif.. statement
         self._flush_text()
         try:
-            style = attrs['style']
+            oStyle = oAttrs['style']
         except KeyError:
-            style = None
+            oStyle = None
 
         oTag = None
         if sName == 'a':
@@ -353,10 +365,10 @@ class HtmlHandler(xml.sax.handler.ContentHandler):
             oTag.set_property('foreground', '#0000ff')
             oTag.set_property('underline', pango.UNDERLINE_SINGLE)
             try:
-                type_ = attrs['type']
+                oType_ = oAttrs['type']
             except KeyError:
-                type_ = None
-            oTag.connect('event', self._anchor_event, attrs['href'], type_)
+                oType_ = None
+            oTag.connect('event', self._anchor_event, oAttrs['href'], oType_)
             oTag.is_anchor = True
         elif sName in ['h1', 'h2', 'h3', 'h4', 'h5', 'h6']:
             oTag = self._oTextBuf.create_tag()
@@ -373,7 +385,7 @@ class HtmlHandler(xml.sax.handler.ContentHandler):
             self._bInTitle = True
             return
 
-        self._begin_span(style, oTag)
+        self._begin_span(oStyle, oTag)
 
         if sName == 'br':
             pass # handled in endElement
@@ -395,38 +407,38 @@ class HtmlHandler(xml.sax.handler.ContentHandler):
             self._aListCounters.insert(0, 0)
         elif sName == 'li':
             if self._aListCounters[0] is None:
-                li_head = unichr(0x2022)
+                sListHead = unichr(0x2022)
             else:
                 self._aListCounters[0] += 1
-                li_head = "%i." % self._aListCounters[0]
-            self._sText = ' '*len(self._aListCounters)*4 + li_head + ' '
+                sListHead = "%i." % self._aListCounters[0]
+            self._sText = ' '*len(self._aListCounters)*4 + sListHead + ' '
         elif sName == 'img':
             try:
                 # FIXME: Fix this to avoid the ../docs/ hack
-                oFile = resource_stream(__name__, '../docs/' + attrs['src'])
+                oFile = resource_stream(__name__, '../docs/' + oAttrs['src'])
                 oLoader = gtk.gdk.PixbufLoader()
                 oLoader.write(oFile.read())
                 oLoader.close()
                 oPixbuf = oLoader.get_pixbuf()
-            except Exception, ex:
+            except Exception, oExp:
                 oPixbuf = None
                 try:
-                    sAlt = attrs['alt']
+                    sAlt = oAttrs['alt']
                 except KeyError:
                     sAlt = "Broken image"
             if oPixbuf is not None:
-                tags = self._get_style_tags()
-                if tags:
-                    tmpmark = self._oTextBuf.create_mark(None, self._oIter,
+                aTags = self._get_style_tags()
+                if aTags:
+                    oTmpMark = self._oTextBuf.create_mark(None, self._oIter,
                             True)
 
                 self._oTextBuf.insert_pixbuf(self._oIter, oPixbuf)
 
-                if tags:
-                    start = self._oTextBuf.get_iter_at_mark(tmpmark)
-                    for oTag in tags:
-                        self._oTextBuf.apply_tag(oTag, start, self._oIter)
-                    self._oTextBuf.delete_mark(tmpmark)
+                if aTags:
+                    oStart = self._oTextBuf.get_iter_at_mark(oTmpMark)
+                    for oTag in aTags:
+                        self._oTextBuf.apply_tag(oTag, oStart, self._oIter)
+                    self._oTextBuf.delete_mark(oTmpMark)
             else:
                 self._insert_text("[IMG: %s]" % sAlt)
         elif sName == 'body':
@@ -443,6 +455,9 @@ class HtmlHandler(xml.sax.handler.ContentHandler):
             warnings.warn("Unhandled element '%s'" % sName)
 
     def endElement(self, sName):
+        """Handle the end of a tag"""
+        # pylint: disable-msg=R0912, R0915
+        # sax content parser, so it is is a massive if..elif.. statement
         if sName == 'title':
             self._bInTitle = False
             return
@@ -483,6 +498,8 @@ class HtmlHandler(xml.sax.handler.ContentHandler):
         self._end_span()
 
 class HTMLTextView(gtk.TextView):
+    # pylint: disable-msg=R0904
+    # gtk.Widget, so many public methods
     """TextView subclass to display HTML"""
     __gtype_name__ = 'HTMLTextView'
     __gsignals__ = {
@@ -501,16 +518,18 @@ class HTMLTextView(gtk.TextView):
         self.set_pixels_above_lines(3)
         self.set_pixels_below_lines(3)
 
-    def __leave_event(self, widget, event):
+    def __leave_event(self, oWidget, oEvent):
+        """Cursor has left the widget."""
         if self._bChangedCursor:
-            window = widget.get_window(gtk.TEXT_WINDOW_TEXT)
-            window.set_cursor(gtk.gdk.Cursor(gtk.gdk.XTERM))
+            oWindow = oWidget.get_window(gtk.TEXT_WINDOW_TEXT)
+            oWindow.set_cursor(gtk.gdk.Cursor(gtk.gdk.XTERM))
             self._bChangedCursor = False
 
-    def __motion_notify_event(self, widget, event):
-        iX, iY, _ = widget.window.get_pointer()
-        iX, iY = widget.window_to_buffer_coords(gtk.TEXT_WINDOW_TEXT, iX, iY)
-        aTags = widget.get_iter_at_location(iX, iY).get_tags()
+    def __motion_notify_event(self, oWidget, oEvent):
+        iXPos, iYPos, _ = oWidget.window.get_pointer()
+        iXPos, iYPos = oWidget.window_to_buffer_coords(gtk.TEXT_WINDOW_TEXT,
+                iXPos, iYPos)
+        aTags = oWidget.get_iter_at_location(iXPos, iYPos).get_tags()
         for oTag in aTags:
             if getattr(oTag, 'is_anchor', False):
                 bOverAnchor = True
@@ -518,12 +537,12 @@ class HTMLTextView(gtk.TextView):
         else:
             bOverAnchor = False
         if not self._bChangedCursor and bOverAnchor:
-            window = widget.get_window(gtk.TEXT_WINDOW_TEXT)
-            window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND2))
+            oWindow = oWidget.get_window(gtk.TEXT_WINDOW_TEXT)
+            oWindow.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND2))
             self._bChangedCursor = True
         elif self._bChangedCursor and not bOverAnchor:
-            window = widget.get_window(gtk.TEXT_WINDOW_TEXT)
-            window.set_cursor(gtk.gdk.Cursor(gtk.gdk.XTERM))
+            oWindow = oWidget.get_window(gtk.TEXT_WINDOW_TEXT)
+            oWindow.set_cursor(gtk.gdk.Cursor(gtk.gdk.XTERM))
             self._bChangedCursor = False
         return False
 
@@ -531,11 +550,9 @@ class HTMLTextView(gtk.TextView):
         """Displa the HTML from the file-like object fHTMLInput"""
         oBuffer = self.get_buffer()
         oEndOfBuf = oBuffer.get_end_iter()
-        parser = xml.sax.make_parser()
-        # parser.setFeature(xml.sax.handler.feature_validation, True)
-        parser.setContentHandler(HtmlHandler(self, oEndOfBuf))
-        #parser.setEntityResolver(HtmlEntityResolver())
-        parser.parse(fHTMLInput)
+        oParser = xml.sax.make_parser()
+        oParser.setContentHandler(HtmlHandler(self, oEndOfBuf))
+        oParser.parse(fHTMLInput)
 
         if not oEndOfBuf.starts_line():
             oBuffer.insert(oEndOfBuf, "\n")
@@ -566,8 +583,8 @@ class HTMLViewDialog(SutekhDialog):
         self._oBackButton.set_sensitive(False)
         self._oForwardButton.set_sensitive(False)
         self._fCurrent = fInput
-        self._aPastUrls=[]
-        self._aFutureUrls=[]
+        self._aPastUrls = []
+        self._aFutureUrls = []
         self.vbox.pack_start(oDirButtons, False, False)
         self._oHTMLTextView = HTMLTextView()
         self._oView = AutoScrolledWindow(self._oHTMLTextView)
@@ -577,14 +594,6 @@ class HTMLViewDialog(SutekhDialog):
                 True)
         self._oHTMLTextView.connect('url-clicked', self._url_clicked)
         self.show_all()
-
-    def _url_clicked(self, oWidget, sUrl, oType):
-        """Update the HTML widget with the new url"""
-        fInput = resource_stream(__name__, '../docs/' + sUrl)
-        self._aPastUrls.append(self._fCurrent)
-        self._aFutureUrls = [] # Forward history is lost
-        self._fCurrent = fInput
-        self._update_view()
 
     def _update_view(self):
         """Redraw the pane with the contents of self._fCurrent"""
@@ -603,6 +612,16 @@ class HTMLViewDialog(SutekhDialog):
         else:
             self._oForwardButton.set_sensitive(False)
         self.show_all()
+
+    # pylint: disable-msg=W0613
+    # oWidget, oType required by function signature
+    def _url_clicked(self, oWidget, sUrl, oType):
+        """Update the HTML widget with the new url"""
+        fInput = resource_stream(__name__, '../docs/' + sUrl)
+        self._aPastUrls.append(self._fCurrent)
+        self._aFutureUrls = [] # Forward history is lost
+        self._fCurrent = fInput
+        self._update_view()
 
     def _go_back(self, oWidget):
         """Go backwards through the list of visited urls"""
