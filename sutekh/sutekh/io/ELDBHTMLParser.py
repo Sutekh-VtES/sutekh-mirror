@@ -5,10 +5,12 @@
 # Copyright 2007 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
 
+# pylint: disable-msg=C0301
+# documentation, so line length ignored
 """Parser for ELDB HTML format.
 
    Example HTML:
-   
+
    <TR><TD WIDTH=130>Deck Name:</TD><TD WIDTH=520>Osebo Preconstructed Starter Deck</TD></TR>
    <TR><TD WIDTH=130>Created By:</TD><TD WIDTH=520>L. Scott Johnson</TD></TR>
    <TR><TD WIDTH=130 VALIGN="top">Description:</TD><TD WIDTH=520>The Osebo Preconstructed Starter Deck from Legacies of Blood.</TD></TR>
@@ -18,6 +20,7 @@
    ...
    <TR><TD COLSPAN=2 WIDTH=650>2&nbsp;&nbsp;<a href="http://monger.vekn.org/showcard.html?ID=109" class="textLink">Blood Doll</a></TD></TR>
    """
+# pylint: enable-msg=C0301
 
 import HTMLParser
 import re
@@ -25,24 +28,30 @@ import re
 # State Base Classes
 
 class StateError(Exception):
+    """Error case in the state true"""
     pass
 
 class State(object):
-    def __init__(self,oHolder):
-        super(State,self).__init__()
+    """Base class for parser states"""
+    def __init__(self, oHolder):
+        super(State, self).__init__()
         self._sData = ""
         self._oHolder = oHolder
 
-    def transition(self,sTag,dAttr):
+    def transition(self, sTag, dAttr):
+        """Transition from one state to another"""
         raise NotImplementedError
 
-    def data(self,sData):
+    def data(self, sData):
+        """Add data to the state"""
         self._sData += sData
 
 # State Classes
 
 class Collecting(State):
-    def transition(self,sTag,dAttr):
+    """Default state - transitions to other states as needed"""
+    def transition(self, sTag, dAttr):
+        """Transition to CardItem of DeckInfoItem as needed."""
         if sTag == 'td' and dAttr.get('colspan') == '2':
             return CardItem(self._oHolder)
         elif sTag == 'td':
@@ -51,9 +60,11 @@ class Collecting(State):
             return self
 
 class DeckInfoItem(State):
-    def transition(self,sTag,dAttr):
+    """States for the table rows describing the deck."""
+    def transition(self, sTag, dAttr):
+        """Transition back to Collecting if needed"""
         if sTag == '/tr':
-            aParts = self._sData.split(':',1)
+            aParts = self._sData.split(':', 1)
 
             if len(aParts) != 2:
                 return Collecting(self._oHolder)
@@ -72,17 +83,20 @@ class DeckInfoItem(State):
             return self
 
 class CardItem(State):
+    """State for the table rows listing the cards in the deck."""
     _oCountRegex = re.compile(r'^[^0-9]*(?P<cnt>[0-9]+)[^0-9]*')
 
-    def __init__(self,oHolder):
-        super(CardItem,self).__init__(oHolder)
+    def __init__(self, oHolder):
+        super(CardItem, self).__init__(oHolder)
         self._iCnt = None
 
-    def transition(self,sTag,dAttr):
+    def transition(self, sTag, dAttr):
+        """Extract card data and add it back to the CardSetHolder if possible,
+           and transtion back to Collecting if needed."""
         if sTag == 'a':
-            oM = self._oCountRegex.match(self._sData)
-            if oM:
-                self._iCnt = int(oM.group('cnt'))
+            oMatch = self._oCountRegex.match(self._sData)
+            if oMatch:
+                self._iCnt = int(oMatch.group('cnt'))
             else:
                 self._iCnt = 1
             self._sData = ""
@@ -90,8 +104,8 @@ class CardItem(State):
         elif sTag == '/a':
             assert(self._iCnt is not None)
             sName = self._sData.strip()
-            sName = sName.replace("`","'")
-            self._oHolder.add(self._iCnt,sName)
+            sName = sName.replace("`", "'")
+            self._oHolder.add(self._iCnt, sName)
             self._iCnt = None
             self._sData = ""
             return Collecting(self._oHolder)
@@ -102,27 +116,33 @@ class CardItem(State):
 
 # Parser
 
-class ELDBHTMLParser(HTMLParser.HTMLParser,object):
-    def __init__(self,oHolder):
+class ELDBHTMLParser(HTMLParser.HTMLParser, object):
+    """Actual Parser for the ELDB HTML files."""
+    def __init__(self, oHolder):
         """Create an ELDBHTMLParser.
-        
-           oHolder is a sutekh.core.CardSetHolder.CardSetHolder object (or similar).
+
+           oHolder is a sutekh.core.CardSetHolder.CardSetHolder object
+           (or similar).
            """
         self._oHolder = oHolder
-        super(ELDBHTMLParser,self).__init__()
+        self._oState = None
+        super(ELDBHTMLParser, self).__init__()
 
     def reset(self):
-        super(ELDBHTMLParser,self).reset()
-        self._state = Collecting(self._oHolder)
+        """Reset the parser"""
+        super(ELDBHTMLParser, self).reset()
+        self._oState = Collecting(self._oHolder)
 
-    def handle_starttag(self,sTag,aAttr):
-        self._state = self._state.transition(sTag.lower(),dict(aAttr))
+    # pylint: disable-msg=C0111
+    # names are as listed in HTMLParser docs, so no need for docstrings
+    def handle_starttag(self, sTag, aAttr):
+        self._oState = self._oState.transition(sTag.lower(), dict(aAttr))
 
-    def handle_endtag(self,sTag):
-        self._state = self._state.transition('/'+sTag.lower(),{})
+    def handle_endtag(self, sTag):
+        self._oState = self._oState.transition('/'+sTag.lower(), {})
 
-    def handle_data(self,sData):
-        self._state.data(sData)
+    def handle_data(self, sData):
+        self._oState.data(sData)
 
-    def handle_charref(self,sName): pass
-    def handle_entityref(self,sName): pass
+    def handle_charref(self, sName): pass
+    def handle_entityref(self, sName): pass

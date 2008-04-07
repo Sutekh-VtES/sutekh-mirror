@@ -6,66 +6,97 @@
 # GPL - see COPYING for details
 # version management helper class
 
+"""Versioning support for Sutekh"""
+
 from sqlobject import sqlhub
 from sutekh.core.SutekhObjects import VersionTable
 
-class DatabaseVersion(object):
-    def __init__(self, connection=None):
-        if connection is None:
-            connection = sqlhub.processConnection
-        VersionTable.createTable(ifNotExists=True, connection=connection)
+def _get_connection(oConn):
+    """Ensure we have a vaild connection object"""
+    if oConn is None:
+        return sqlhub.processConnection
+    else:
+        return oConn
 
-    def setVersion(self, oTable, iTableVersion, connection=None):
-        if connection is None:
-            connection = sqlhub.processConnection
+class DatabaseVersion(object):
+    """Class to handle all the database manipulation aspects."""
+
+    def __init__(self, oConn=None):
+        oConn = _get_connection(oConn)
+        VersionTable.createTable(ifNotExists=True, connection=oConn)
+
+    def setVersion(self, oTable, iTableVersion, oConn=None):
+        """Set the version for oTable to iTableVersion"""
+        oConn = _get_connection(oConn)
         try:
             sTableName = oTable.sqlmeta.table
         except AttributeError:
             return False
-        aVer = VersionTable.selectBy(TableName=sTableName, connection=connection)
+        aVer = VersionTable.selectBy(TableName=sTableName, connection=oConn)
         if aVer.count() == 0:
             VersionTable(TableName=sTableName,
-                         Version=iTableVersion, connection=connection)
+                         Version=iTableVersion, connection=oConn)
         elif aVer.count() == 1:
-            for version in aVer:
-                if version.Version != iTableVersion:
-                    VersionTable.delete(version.id, connection=connection)
+            for oVersion in aVer:
+                if oVersion.Version != iTableVersion:
+                    VersionTable.delete(oVersion.id, connection=oConn)
                     VersionTable(TableName=sTableName,
-                                 Version=iTableVersion, connection=connection)
+                                 Version=iTableVersion, connection=oConn)
         elif aVer.count() > 1:
-            print "Multiple version entries for ", sTableName, " in the database"
+            print "Multiple version entries for %s in the database" \
+                    % sTableName
             print "Giving up. I suggest dumping and reloading everything"
             return False
         return True
 
-    def getVersion(self, oTable, connection=None):
-        if connection is None:
-            connection = sqlhub.processConnection
-        ver = -1
+    def getVersion(self, oTable, oConn=None):
+        """Get the version number for oTable.
+
+           returns -1 if no version info exists.
+           """
+        oConn = _get_connection(oConn)
+        iTableVersion = -1
         try:
             sName = oTable.sqlmeta.table
         except AttributeError:
-            return ver
-        aVer = VersionTable.selectBy(TableName=sName, connection=connection)
+            return iTableVersion
+        aVer = VersionTable.selectBy(TableName=sName, connection=oConn)
         if aVer.count() < 1:
-            ver = -1
+            iTableVersion = -1
         elif aVer.count() == 1:
-            for version in aVer:
-                ver = version.Version
+            for oVersion in aVer:
+                iTableVersion = oVersion.Version
         else:
-            print "Multiple version entries for ", oTable.sqlmeta.table, " in the database"
+            print "Multiple version entries for %s in the database" \
+                    % oTable.sqlmeta.table
             print "Giving up. I suggest dumping and reloading everything"
             # Should this be an exception?
-            ver = -999
-        return ver
+            iTableVersion = -999
+        return iTableVersion
 
-    def checkVersions(self, aTable, aTableVersion, connection=None):
+    def checkVersions(self, aTable, aTableVersion, oConn=None):
+        """Check version numbers.
+
+           aTable is the list of tables to check
+           aTableVersion is a list of version numbers to matched.
+           It's assumed that aTable and aTableVersions are sorted the same.
+           """
         bRes = True
         for oTable, iVersion in zip(aTable, aTableVersion):
-            bRes = bRes and self.getVersion(oTable, connection=connection) == iVersion
+            bRes = bRes and \
+                    self.getVersion(oTable, connection=oConn) == iVersion
         return bRes
 
     def getBadTables(self, aTable, aTableVersion, oConnection=None):
+        """Get tables that don't match the list of version numbers
+
+           aTable is the list of tables to check
+           aTableVersion is a list of version numbers to matched.
+           It's assumed that aTable and aTableVersions are sorted the same.
+           Returns two lists, aLowerTables and aHigherTables, where
+           aLowerTables is those with a lower version number, and
+           aHigherTables is those with a higher number.
+           """
         aLowerTables = []
         aHigherTables = []
         for oTable, iVersion in zip(aTable, aTableVersion):
