@@ -2,10 +2,10 @@
 # -*- coding: utf8 -*-
 # vim:fileencoding=utf8 ai ts=4 sts=4 et sw=4
 # Copyright 2005, 2006 Simon Cross <hodgestar@gmail.com>
-# Copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com> (minor modifications)
+# Copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com> (minor tweaks)
 # GPL - see COPYING for details
 """
-SutekhCli.py: command-line interface to much of Sutekh's database 
+SutekhCli.py: command-line interface to much of Sutekh's database
 management functionality
 """
 
@@ -69,8 +69,8 @@ def parse_options(aArgs):
                           "Card Set as")
     oOptParser.add_option("--save-all-pcs",
                   action="store_true", dest="save_all_pcss", default=False,
-                  help="Save all Physical Card Sets in the database to files " \
-                          "- Cannot be used with --save-pcs.")
+                  help="Save all Physical Card Sets in the database to files" \
+                          " - Cannot be used with --save-pcs.")
     oOptParser.add_option("--read-pcs",
                   type="string", dest="read_pcs", default=None,
                   help="Load a Physical Card Set from the given XML file.")
@@ -84,8 +84,8 @@ def parse_options(aArgs):
                           "Card Set as")
     oOptParser.add_option("--save-all-acs",
                   action="store_true", dest="save_all_acss", default=False,
-                  help="Save all Abstract Card Sets in the database to files " \
-                          "- Cannot be used with --save-acs.")
+                  help="Save all Abstract Card Sets in the database to files" \
+                          " - Cannot be used with --save-acs.")
     oOptParser.add_option("--read-acs",
                   type="string", dest="read_acs", default=None,
                   help="Load an Abstract Card Set from the given XML file.")
@@ -96,8 +96,8 @@ def parse_options(aArgs):
                           "refreshing the abstract card list")
     oOptParser.add_option("--upgrade-db",
                   action="store_true", dest="upgrade_db", default=False,
-                  help="Attempt to upgrade a database to the latest version. " \
-                          "Cannot be used with --refresh-tables")
+                  help="Attempt to upgrade a database to the latest version." \
+                          " Cannot be used with --refresh-tables")
     oOptParser.add_option("--dump-zip",
                   type="string", dest="dump_zip_name", default=None,
                   help="Dump the PhysicalCard list and all the CardSets " \
@@ -110,7 +110,7 @@ def parse_options(aArgs):
 
 def main(aArgs):
     """
-    Main function: Loop through the options and process the database 
+    Main function: Loop through the options and process the database
     accordingly.
     """
     # Turn off some pylint refactoring warnings

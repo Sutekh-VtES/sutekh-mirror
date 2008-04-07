@@ -36,16 +36,10 @@ class DeckFromFilter(CardListPlugin):
     # pylint: disable-msg=W0613
     # oWidget required by gtk function signature
     def activate(self, oWidget):
-        "Handle menu activation"
-        oDlg = self.make_dialog()
-        oDlg.run()
-    # pylint: enable-msg=W0613
+        """Create the dialog.
 
-    def make_dialog(self):
-        """
-        Create the dialog to prompt for Physical Card Set
-        Properties, and so forth
-        """
+           Prompt the user for Physical Card Set Properties, and so forth.
+           """
         oDlg = SutekhDialog("Choose Physical Card Set Name", self.parent,
                           gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                           (gtk.STOCK_OK, gtk.RESPONSE_OK,
@@ -61,10 +55,8 @@ class DeckFromFilter(CardListPlugin):
         oDlg.vbox.pack_start(oEntry)
         oDlg.show_all()
 
-        return oDlg
+        oDlg.run()
 
-    # pylint: disable-msg=W0613
-    # oWidget required by gtk function signature
     def handle_response(self, oWidget, oResponse, oDlg, oEntry):
         """
         Handle the user response from make_dialog

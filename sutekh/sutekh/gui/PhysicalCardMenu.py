@@ -6,144 +6,178 @@
 # Copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
+"""Menu for the Physical card collection."""
+
 import gtk
 from sutekh.gui.ExportDialog import ExportDialog
-from sutekh.gui.EditPhysicalCardMappingDialog import EditPhysicalCardMappingDialog
+from sutekh.gui.EditPhysicalCardMappingDialog import \
+        EditPhysicalCardMappingDialog
 from sutekh.io.XmlFileHandling import PhysicalCardXmlFile
 
 class PhysicalCardMenu(gtk.MenuBar, object):
+    """Menu for the Physical card collection.
+
+       Enables actions specific to the physical card collection (export to
+       file, etc), filtering and plugins.
+       """
+    # pylint: disable-msg=R0904
+    # gtk.Widget, so menu public methods
     def __init__(self, oFrame, oController, oWindow):
         super(PhysicalCardMenu, self).__init__()
-        self.__oC = oController
+        self.__oController = oController
         self.__oWindow = oWindow
         self.__oFrame = oFrame
 
         self.__dMenus = {}
-        self.__create_PCL_menu()
+        self.__create_physical_cl_menu()
         self.__create_filter_menu()
         self.__create_plugin_menu()
 
-    def __create_PCL_menu(self):
+    # pylint: disable-msg=W0201
+    # called from __init__, so OK
+    def __create_physical_cl_menu(self):
+        """Create the Actions menu for the card list."""
         # setup sub menu
-        iMenu = gtk.MenuItem("Actions")
-        wMenu = gtk.Menu()
-        self.__dMenus["Actions"] = wMenu
-        iMenu.set_submenu(wMenu)
+        oMenuItem = gtk.MenuItem("Actions")
+        oMenu = gtk.Menu()
+        self.__dMenus["Actions"] = oMenu
+        oMenuItem.set_submenu(oMenu)
         # items
         iExport = gtk.MenuItem("Export Collection to File")
-        wMenu.add(iExport)
-        iExport.connect('activate', self.do_export)
+        oMenu.add(iExport)
+        iExport.connect('activate', self._do_export)
 
 
-        self.iViewAllAbstractCards = gtk.CheckMenuItem("Show cards with a count of 0")
+        self.iViewAllAbstractCards = gtk.CheckMenuItem("Show cards with a"
+                " count of 0")
         self.iViewAllAbstractCards.set_inconsistent(False)
-        self.iViewAllAbstractCards.set_active(self.__oC.model.bAddAllAbstractCards)
-        self.iViewAllAbstractCards.connect('toggled', self.toggle_all_abstract_cards)
-        wMenu.add(self.iViewAllAbstractCards)
+        self.iViewAllAbstractCards.set_active(
+                self.__oController.model.bAddAllAbstractCards)
+        self.iViewAllAbstractCards.connect('toggled',
+                self._toggle_all_abstract_cards)
+        oMenu.add(self.iViewAllAbstractCards)
 
         self.iViewExpansions = gtk.CheckMenuItem('Show Card Expansions')
         self.iViewExpansions.set_inconsistent(False)
         self.iViewExpansions.set_active(True)
-        self.iViewExpansions.connect('toggled', self.toggle_expansion)
-        wMenu.add(self.iViewExpansions)
+        self.iViewExpansions.connect('toggled', self._toggle_expansion)
+        oMenu.add(self.iViewExpansions)
 
         self.iEditable = gtk.CheckMenuItem('Collection is Editable')
         self.iEditable.set_inconsistent(False)
         self.iEditable.set_active(False)
-        self.iEditable.connect('toggled', self.toggle_editable)
-        self.__oC.view.set_edit_menu_item(self.iEditable)
-        wMenu.add(self.iEditable)
+        self.iEditable.connect('toggled', self._toggle_editable)
+        self.__oController.view.set_edit_menu_item(self.iEditable)
+        oMenu.add(self.iEditable)
 
         iExpand = gtk.MenuItem("Expand All (Ctrl+)")
-        wMenu.add(iExpand)
-        iExpand.connect("activate", self.expand_all)
+        oMenu.add(iExpand)
+        iExpand.connect("activate", self._expand_all)
 
         iCollapse = gtk.MenuItem("Collapse All (Ctrl-)")
-        wMenu.add(iCollapse)
-        iCollapse.connect("activate", self.collapse_all)
+        oMenu.add(iCollapse)
+        iCollapse.connect("activate", self._collapse_all)
 
         iClose = gtk.MenuItem("Remove This Pane")
-        wMenu.add(iClose)
+        oMenu.add(iClose)
         iClose.connect("activate", self.__oFrame.close_menu_item)
 
         iEditAllocation = gtk.MenuItem('Edit allocation of cards to PCS')
-        wMenu.add(iEditAllocation)
-        iEditAllocation.connect('activate', self.do_edit_card_set_allocation)
+        oMenu.add(iEditAllocation)
+        iEditAllocation.connect('activate', self._do_edit_card_set_allocation)
 
-        self.add(iMenu)
+        self.add(oMenuItem)
 
     def __create_filter_menu(self):
+        """Create the filter menu."""
         # setup sub menu
-        iMenu = gtk.MenuItem("Filter")
-        wMenu = gtk.Menu()
-        iMenu.set_submenu(wMenu)
-        self.__dMenus["Filter"] = wMenu
+        oMenuItem = gtk.MenuItem("Filter")
+        oMenu = gtk.Menu()
+        oMenuItem.set_submenu(oMenu)
+        self.__dMenus["Filter"] = oMenu
         # items
         iFilter = gtk.MenuItem("Specify Filter")
-        wMenu.add(iFilter)
-        iFilter.connect('activate', self.setFilter)
+        oMenu.add(iFilter)
+        iFilter.connect('activate', self._set_active_filter)
 
         self.iApply = gtk.CheckMenuItem("Apply Filter")
         self.iApply.set_inconsistent(False)
         self.iApply.set_active(False)
-        wMenu.add(self.iApply)
-        self.iApply.connect('toggled', self.toggleApply)
-        self.add(iMenu)
+        oMenu.add(self.iApply)
+        self.iApply.connect('toggled', self._toggle_apply)
+        self.add(oMenuItem)
 
     def __create_plugin_menu(self):
+        """Create the plugin menu."""
         # setup sub menu
-        iMenu = gtk.MenuItem("Plugins")
-        wMenu = gtk.Menu()
-        self.__dMenus["Plugins"] = wMenu
-        iMenu.set_submenu(wMenu)
+        oMenuItem = gtk.MenuItem("Plugins")
+        oMenu = gtk.Menu()
+        self.__dMenus["Plugins"] = oMenu
+        oMenuItem.set_submenu(oMenu)
         # plugins
         for oPlugin in self.__oFrame._aPlugins:
-            oPlugin.add_to_menu(self.__dMenus, wMenu)
-        self.add(iMenu)
-        if len(wMenu.get_children()) == 0:
-            iMenu.set_sensitive(False)
+            oPlugin.add_to_menu(self.__dMenus, oMenu)
+        self.add(oMenuItem)
+        if len(oMenu.get_children()) == 0:
+            oMenuItem.set_sensitive(False)
+    # pylint: enable-msg=W0201
 
-    def do_export(self, oWidget):
+    # pylint: disable-msg=W0613
+    # oWidget required by function signature
+    def _do_export(self, oWidget):
+        """Handling exporting the card list to file."""
         oFileChooser = ExportDialog("Save Collection As", self.__oWindow)
         oFileChooser.run()
         sFileName = oFileChooser.get_name()
         if sFileName is not None:
-            oW = PhysicalCardXmlFile(sFileName)
-            oW.write()
+            oWriter = PhysicalCardXmlFile(sFileName)
+            oWriter.write()
 
-    def setApplyFilter(self, bState):
-        self.iApply.set_active(bState)
-
-    def do_edit_card_set_allocation(self, oWidget):
+    def _do_edit_card_set_allocation(self, oWidget):
         """Popup the edit allocation dialog"""
-        dSelectedCards = self.__oC.view.process_selection()
+        dSelectedCards = self.__oController.view.process_selection()
         if len(dSelectedCards) == 0:
             return
         oEditAllocation = EditPhysicalCardMappingDialog(self.__oWindow,
                 dSelectedCards)
         oEditAllocation.run()
 
-    def toggleApply(self, oWidget):
-        self.__oC.view.runFilter(oWidget.active)
+    def _toggle_apply(self, oWidget):
+        """Toggle the applied state of the filter."""
+        self.__oController.view.runFilter(oWidget.active)
 
-    def toggle_expansion(self, oWidget):
-        self.__oC.model.bExpansions = oWidget.active
-        self.__oC.view.reload_keep_expanded()
+    def _toggle_expansion(self, oWidget):
+        """Toggle whether the expansion information is shown."""
+        self.__oController.model.bExpansions = oWidget.active
+        self.__oController.view.reload_keep_expanded()
 
-    def toggle_editable(self, oWidget):
-        if self.__oC.model.bEditable != oWidget.active:
-            self.__oC.view.toggle_editable(oWidget.active)
+    def _toggle_editable(self, oWidget):
+        """Toggle the editable state of the model."""
+        if self.__oController.model.bEditable != oWidget.active:
+            self.__oController.view.toggle_editable(oWidget.active)
 
-    def toggle_all_abstract_cards(self, oWidget):
-        self.__oC.model.bAddAllAbstractCards = oWidget.active
-        self.__oC.config_file.set_show_zero_count_cards(oWidget.active)
-        self.__oC.view.reload_keep_expanded()
+    def _toggle_all_abstract_cards(self, oWidget):
+        """Toggle the display of cards with a count of 0 in the card list."""
+        self.__oController.model.bAddAllAbstractCards = oWidget.active
+        self.__oController.config_file.set_show_zero_count_cards(
+                oWidget.active)
+        self.__oController.view.reload_keep_expanded()
 
-    def setFilter(self, oWidget):
-        self.__oC.view.getFilter(self)
+    def _set_active_filter(self, oWidget):
+        """Set the active filter for the TreeView."""
+        self.__oController.view.getFilter(self)
 
-    def expand_all(self, oWidget):
-        self.__oC.view.expand_all()
+    def _expand_all(self, oWidget):
+        """Expand all rows in the TreeView."""
+        self.__oController.view.expand_all()
 
-    def collapse_all(self, oWidget):
-        self.__oC.view.collapse_all()
+    def _collapse_all(self, oWidget):
+        """Collapse all rows in the TreeView."""
+        self.__oController.view.collapse_all()
+
+    # pylint: enable-msg=W0613
+
+    def setApplyFilter(self, bState):
+        """Set the applied filter state to bState."""
+        self.iApply.set_active(bState)
+

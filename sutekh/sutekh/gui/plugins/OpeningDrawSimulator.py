@@ -98,7 +98,7 @@ def setup_view(dLibProbs, dGroupedProbs, sHeading):
     fill_store(oStore, dLibProbs, dGroupedProbs)
 
     return create_view(oStore, sHeading)
-    
+
 def create_view(oStore, sHeading):
     """Setup the TreeView for the results"""
     oView = gtk.TreeView(oStore)
@@ -145,7 +145,6 @@ class OpeningHandSimulator(CardListPlugin):
         self.dCardProperties = {}
         self.aLibrary = []
         self.aCrypt = []
-        self.iTotHands = 0
         self.iCurHand = 0
         self.aDrawnHands = []
         self.bShowDetails = False
@@ -216,7 +215,6 @@ class OpeningHandSimulator(CardListPlugin):
         self.dCardTypes = {}
         self.dCardProperties = {}
         self.aLibrary = []
-        self.iTotHands = 0
         self.iCurHand = 0
         self.aDrawnHands = []
 
@@ -288,9 +286,9 @@ class OpeningHandSimulator(CardListPlugin):
         oDialog.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
         self.bShowDetails = False
         if len(self.aDrawnHands) > 0:
-            self.iCurHand = self.iTotHands
+            self.iCurHand = len(self.aDrawnHands)
             oHandBox = self._redraw_hand()
-            if self.iTotHands > 1:
+            if len(self.aDrawnHands) > 1:
                 oBackButton.set_sensitive(True)
         else:
             oHandBox = self._draw_new_hand() # construct the hand
@@ -321,7 +319,7 @@ class OpeningHandSimulator(CardListPlugin):
             oNewHand = self._redraw_hand()
         elif iResponse == self.FORWARD:
             oBackButton.set_sensitive(True)
-            if self.iCurHand == self.iTotHands:
+            if self.iCurHand == len(self.aDrawnHands):
                 # Create a new hand
                 oNewHand = self._draw_new_hand()
             else:
@@ -348,7 +346,6 @@ class OpeningHandSimulator(CardListPlugin):
 
     def _draw_new_hand(self):
         "Create a new sample hand"
-        self.iTotHands += 1
         self.iCurHand += 1
         aThisLib = copy(self.aLibrary)
         aThisCrypt = copy(self.aCrypt)

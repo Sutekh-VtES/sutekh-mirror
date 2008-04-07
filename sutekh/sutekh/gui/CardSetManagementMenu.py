@@ -9,6 +9,8 @@
 import gtk
 
 class CardSetManagementMenu(gtk.MenuBar, object):
+    # pylint: disable-msg=R0904
+    # gtk.Widget, so menu public methods
     def __init__(self, oFrame, oWindow, sName):
         super(CardSetManagementMenu, self).__init__()
         self.__oWindow = oWindow

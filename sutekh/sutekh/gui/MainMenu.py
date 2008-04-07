@@ -18,6 +18,8 @@ from sutekh.SutekhUtility import delete_physical_card_set, \
         delete_abstract_card_set
 
 class MainMenu(gtk.MenuBar, object):
+    # pylint: disable-msg=R0904
+    # gtk.Widget, so menu public methods
     def __init__(self, oWindow, oConfig):
         super(MainMenu, self).__init__()
         self.__oWin = oWindow
@@ -315,7 +317,7 @@ class MainMenu(gtk.MenuBar, object):
         sFileName = oFileChooser.get_name()
         if sFileName is not None:
             oParser = IdentifyXMLFile()
-            (sType, sName, bExists) = oParser.idFile(sFileName)
+            (sType, sName, bExists) = oParser.id_file(sFileName)
             if sType == 'PhysicalCard':
                 if not bExists:
                     oFile = PhysicalCardXmlFile(sFileName, lookup=self.__oWin.cardLookup)
@@ -332,7 +334,7 @@ class MainMenu(gtk.MenuBar, object):
         sFileName = oFileChooser.get_name()
         if sFileName is not None:
             oParser = IdentifyXMLFile()
-            (sType, sName, bExists) = oParser.idFile(sFileName)
+            (sType, sName, bExists) = oParser.id_file(sFileName)
             if sType == 'PhysicalCardSet' or sType == 'AbstractCardSet':
                 if bExists:
                     iResponse = do_complaint_warning("This would delete the existing CardSet " + sName)

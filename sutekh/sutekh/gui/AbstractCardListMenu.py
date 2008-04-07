@@ -5,84 +5,109 @@
 # Copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
+"""WW card list menu."""
+
 import gtk
 
 class AbstractCardListMenu(gtk.MenuBar, object):
+    """Menu for the White Wolf card list (abstract card list).
+
+       Provide actions specific to the WW card list, filtering support
+       and plugins.
+       """
+    # pylint: disable-msg=R0904
+    # gtk.Widget, so menu public methods
     def __init__(self, oFrame, oController, oWindow):
-        super(AbstractCardListMenu,self).__init__()
-        self.__oC = oController
+        super(AbstractCardListMenu, self).__init__()
+        self.__oController = oController
         self.__oWindow = oWindow
         self.__oFrame = oFrame
         self.__dMenus = {}
 
-        self.__create_ACL_menu()
+        self.__create_abstract_cl_menu()
         self.__create_filter_menu()
         self.__create_plugin_menu()
 
-    def __create_ACL_menu(self):
+    # pylint: disable-msg=W0201
+    # these functions are called from __init__, so OK
+    def __create_abstract_cl_menu(self):
+        """Actions menu for the Abstract Card list."""
         # setup sub menu
-        iMenu = gtk.MenuItem("Actions")
-        wMenu = gtk.Menu()
-        self.__dMenus["Actions"] = wMenu
-        iMenu.set_submenu(wMenu)
+        oMenuItem = gtk.MenuItem("Actions")
+        oMenu = gtk.Menu()
+        self.__dMenus["Actions"] = oMenu
+        oMenuItem.set_submenu(oMenu)
         # items
 
         iExpand = gtk.MenuItem("Expand All (Ctrl+)")
-        wMenu.add(iExpand)
-        iExpand.connect("activate", self.expand_all)
+        oMenu.add(iExpand)
+        iExpand.connect("activate", self._expand_all)
 
         iCollapse = gtk.MenuItem("Collapse All (Ctrl-)")
-        wMenu.add(iCollapse)
-        iCollapse.connect("activate", self.collapse_all)
+        oMenu.add(iCollapse)
+        iCollapse.connect("activate", self._collapse_all)
 
         iClose = gtk.MenuItem("Remove This Pane")
-        wMenu.add(iClose)
+        oMenu.add(iClose)
         iClose.connect("activate", self.__oFrame.close_menu_item)
 
-        self.add(iMenu)
+        self.add(oMenuItem)
 
     def __create_filter_menu(self):
+        """Filter menu for WW card list."""
         # setup sub menu
-        iMenu = gtk.MenuItem("Filter")
-        wMenu = gtk.Menu()
-        iMenu.set_submenu(wMenu)
-        self.__dMenus["Filter"] = wMenu
+        oMenuItem = gtk.MenuItem("Filter")
+        oMenu = gtk.Menu()
+        oMenuItem.set_submenu(oMenu)
+        self.__dMenus["Filter"] = oMenu
         # items
         iFilter = gtk.MenuItem("Specify Filter")
-        wMenu.add(iFilter)
-        iFilter.connect('activate', self.setFilter)
+        oMenu.add(iFilter)
+        iFilter.connect('activate', self._set_active_filter)
 
         self.iApply = gtk.CheckMenuItem("Apply Filter")
         self.iApply.set_inconsistent(False)
         self.iApply.set_active(False)
-        wMenu.add(self.iApply)
-        self.iApply.connect('toggled', self.toggleApply)
-        self.add(iMenu)
+        oMenu.add(self.iApply)
+        self.iApply.connect('toggled', self._toggle_apply)
+        self.add(oMenuItem)
 
     def __create_plugin_menu(self):
+        """Plugin Menu for WW Card List."""
         # setup sub menu
-        iMenu = gtk.MenuItem("Plugins")
-        wMenu = gtk.Menu()
-        self.__dMenus["Plugins"] = wMenu
-        iMenu.set_submenu(wMenu)
+        oMenuItem = gtk.MenuItem("Plugins")
+        oMenu = gtk.Menu()
+        self.__dMenus["Plugins"] = oMenu
+        oMenuItem.set_submenu(oMenu)
         # plugins
         for oPlugin in self.__oFrame._aPlugins:
-            oPlugin.add_to_menu(self.__dMenus, wMenu)
-        self.add(iMenu)
-        if len(wMenu.get_children()) == 0:
-            iMenu.set_sensitive(False)
+            oPlugin.add_to_menu(self.__dMenus, oMenu)
+        self.add(oMenuItem)
+        if len(oMenu.get_children()) == 0:
+            oMenuItem.set_sensitive(False)
 
-    def setApplyFilter(self,state):
-        self.iApply.set_active(state)
+    # pylint: enable-msg=W0201
 
-    def toggleApply(self, oWidget):
-        self.__oC.view.runFilter(oWidget.active)
+    # pylint: disable-msg=W0613
+    # oWidget required by function signature
+    def _toggle_apply(self, oWidget):
+        """toggle the applied state of the filter."""
+        self.__oController.view.runFilter(oWidget.active)
 
-    def setFilter(self, oWidget):
-        self.__oC.view.getFilter(self)
+    def _set_active_filter(self, oWidget):
+        """Set the active filter for the card list."""
+        self.__oController.view.getFilter(self)
 
-    def expand_all(self, oWidget):
-        self.__oC.view.expand_all()
+    def _expand_all(self, oWidget):
+        """Expand all rows in the TreeView."""
+        self.__oController.view.expand_all()
 
-    def collapse_all(self, oWidget):
-        self.__oC.view.collapse_all()
+    def _collapse_all(self, oWidget):
+        """Collapse all rows in the TreeView."""
+        self.__oController.view.collapse_all()
+    # pylint: enable-msg=W0613
+
+    def setApplyFilter(self, bState):
+        """Set the applied state of the filter to bState."""
+        self.iApply.set_active(bState)
+

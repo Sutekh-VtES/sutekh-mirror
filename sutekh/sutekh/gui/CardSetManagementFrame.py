@@ -5,9 +5,12 @@
 # Copyright 2007 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
+"""Pane for a list of card sets"""
+
 import gtk
 from sqlobject import SQLObjectNotFound
-from sutekh.SutekhUtility import delete_physical_card_set, delete_abstract_card_set
+from sutekh.SutekhUtility import delete_physical_card_set, \
+        delete_abstract_card_set
 from sutekh.core.SutekhObjects import AbstractCardSet, PhysicalCardSet
 from sutekh.core.Filters import NullFilter
 from sutekh.gui.SutekhDialog import do_complaint_error, do_complaint_warning
@@ -18,6 +21,11 @@ from sutekh.gui.CreateCardSetDialog import CreateCardSetDialog
 from sutekh.gui.CardSetManagementMenu import CardSetManagementMenu
 
 class CardSetManagementFrame(BasicFrame):
+    """Pane for the List of card sets of the given type.
+
+       Provides the actions associated with this Pane - creating new
+       card sets, filtering, etc.
+       """
     # pylint: disable-msg=R0904
     # gtk.Widget, so lots of public methods
 
@@ -33,6 +41,8 @@ class CardSetManagementFrame(BasicFrame):
         self._oFilter = NullFilter()
         self._oFilterDialog = None
         self._sFilterType = None
+        self._oMenu = None
+        self._oScrolledList = None
 
     # pylint: disable-msg=W0212
     # We allow access via these properties
@@ -42,14 +52,15 @@ class CardSetManagementFrame(BasicFrame):
 
     def add_parts(self):
         """Add a list object to the frame"""
-        wMbox = gtk.VBox(False, 2)
+        oMbox = gtk.VBox(False, 2)
 
         self.set_title(self._sName)
-        wMbox.pack_start(self._oTitle, False, False)
+        oMbox.pack_start(self._oTitle, False, False)
 
-        self._oMenu = CardSetManagementMenu(self, self._oMainWindow, self._sName)
+        self._oMenu = CardSetManagementMenu(self, self._oMainWindow,
+                self._sName)
 
-        wMbox.pack_start(self._oMenu, False, False)
+        oMbox.pack_start(self._oMenu, False, False)
         self._oScrolledList = ScrolledList(self._sName)
 
         if self._cSetType is PhysicalCardSet:
@@ -58,13 +69,13 @@ class CardSetManagementFrame(BasicFrame):
         self._oScrolledList.set_select_single()
         self._oView.connect('row_activated', self.row_clicked)
         self.reload()
-        wMbox.pack_start(self._oScrolledList, expand=True)
+        oMbox.pack_start(self._oScrolledList, expand=True)
 
         aDragTargets = [ ('STRING', 0, 0),
                          ('text/plain', 0, 0) ]
 
-        self._oView.drag_source_set(gtk.gdk.BUTTON1_MASK | gtk.gdk.BUTTON3_MASK,
-                aDragTargets,
+        self._oView.drag_source_set(
+                gtk.gdk.BUTTON1_MASK | gtk.gdk.BUTTON3_MASK, aDragTargets,
                 gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
 
         self._oView.connect('drag-data-get', self.drag_card_set)
@@ -75,10 +86,13 @@ class CardSetManagementFrame(BasicFrame):
 
         self._oView.connect('drag-data-received', self.drag_drop_handler)
 
-        self.add(wMbox)
+        self.add(oMbox)
         self.show_all()
 
+    # pylint: disable-msg=W0613, R0913
+    # arguments required by function signature
     def drag_card_set(self, oBtn, oDragContext, oSelectionData, oInfo, oTime):
+        """Allow card sets to be dragged to a frame."""
         aSelection = self._oScrolledList.get_selection()
         if len(aSelection) != 1:
             return
@@ -93,28 +107,36 @@ class CardSetManagementFrame(BasicFrame):
         sFrameName = sPrefix + sSetName
         if sFrameName in self._oMainWindow.dOpenFrames.values():
             return
-        sData = "\n".join(['Sutekh Pane:', 'Card Set Pane:', sPrefix, sSetName])
+        sData = "\n".join(['Sutekh Pane:', 'Card Set Pane:', sPrefix,
+            sSetName])
         oSelectionData.set(oSelectionData.target, 8, sData)
 
     def create_new_card_set(self, oWidget):
+        """Create a new card set"""
         if self._cSetType is PhysicalCardSet:
             oDialog = CreateCardSetDialog(self._oMainWindow, 'Physical')
-            open_card_set = self._oMainWindow.add_new_physical_card_set
+            fOpenCardSet = self._oMainWindow.add_new_physical_card_set
         else:
             oDialog = CreateCardSetDialog(self._oMainWindow, 'Abstract')
-            open_card_set = self._oMainWindow.add_new_abstract_card_set
+            fOpenCardSet = self._oMainWindow.add_new_abstract_card_set
         oDialog.run()
         (sName, sAuthor, sDescription) = oDialog.get_data()
         oDialog.destroy()
+        # pylint: disable-msg=E1102, W0612
+        # E1102 - _cSetType is callable, as it's an SQLObject class
+        # W0612 - oCS isn't important, as the creation of the new card
+        # set is what matters
         if sName is not None:
             iCnt = self._cSetType.selectBy(name=sName).count()
             if iCnt > 0:
                 do_complaint_error("Chosen Card Set Name is already in use.")
             else:
-                oCS = self._cSetType(name=sName, author=sAuthor, comment=sDescription)
-                open_card_set(sName)
+                oCS = self._cSetType(name=sName, author=sAuthor,
+                        comment=sDescription)
+                fOpenCardSet(sName)
 
     def delete_card_set(self, oWidget):
+        """Delete the selected card set."""
         aSelection = self._oScrolledList.get_selection()
         if len(aSelection) != 1:
             return
@@ -125,7 +147,8 @@ class CardSetManagementFrame(BasicFrame):
         except SQLObjectNotFound:
             return
         if len(oCS.cards) > 0:
-            iResponse = do_complaint_warning("Card Set %s Not Empty. Really Delete?" % sSetName)
+            iResponse = do_complaint_warning("Card Set %s Not Empty. Really"
+                    " Delete?" % sSetName)
             if iResponse == gtk.RESPONSE_CANCEL:
                 # Don't delete
                 return
@@ -139,33 +162,11 @@ class CardSetManagementFrame(BasicFrame):
         self._oMainWindow.remove_frame_by_name(sFrameName)
         self.reload()
 
-    def reload(self):
-        aVals = [self.__sOpen, self.__sAvail]
-        iAvailIndex = 1
-        if self._oMenu.get_apply_filter():
-            oSelectFilter = self._oFilter
-        else:
-            oSelectFilter = NullFilter()
-        dInUse = {}
-        for oCS in oSelectFilter.select(self._oSetClass).orderBy('name'):
-            if self._cSetType is PhysicalCardSet:
-                sFrameName = 'PCS:' + oCS.name
-                if oCS.inuse:
-                    dInUse[oCS.name] = 'Yes'
-            else:
-                sFrameName = 'ACS:' + oCS.name
-            if sFrameName not in self._oMainWindow.dOpenFrames.values():
-                aVals.append(oCS.name)
-            else:
-                aVals.insert(iAvailIndex, oCS.name)
-                iAvailIndex += 1
-        self._oScrolledList.fill_list(aVals)
-        self._oScrolledList.fill_second_column(dInUse)
-
     def set_filter(self, oWidget):
+        """Set the filter applied to the list."""
         if self._oFilterDialog is None:
-            self._oFilterDialog = FilterDialog(self._oMainWindow, self._oConfig, self._sFilterType)
-
+            self._oFilterDialog = FilterDialog(self._oMainWindow,
+                    self._oConfig, self._sFilterType)
         self._oFilterDialog.run()
 
         if self._oFilterDialog.Cancelled():
@@ -190,11 +191,15 @@ class CardSetManagementFrame(BasicFrame):
                 self._oMenu.set_apply_filter(False)
 
     def row_clicked(self, oTreeView, oPath, oColumn):
-        oM = oTreeView.get_model()
+        """Handle row clicked events.
+
+           allow double clicks to open a card set.
+           """
+        oModel = oTreeView.get_model()
         # We are pointing to a ListStore, so the iters should always be valid
         # Need to dereference to the actual path though, as iters not unique
-        oIter = oM.get_iter(oPath)
-        sName = oM.get_value(oIter, 0)
+        oIter = oModel.get_iter(oPath)
+        sName = oModel.get_value(oIter, 0)
         if sName == self.__sAvail or sName == self.__sOpen:
             return
         # check if card set is open before opening again
@@ -205,13 +210,46 @@ class CardSetManagementFrame(BasicFrame):
         oPane = self._oMainWindow.find_pane_by_name(sFrameName)
         if oPane is not None:
             return # Already open, so do nothing
-        oF = self._oMainWindow.add_pane_end()
+        oFrame = self._oMainWindow.add_pane_end()
         if self._cSetType is PhysicalCardSet:
-            self._oMainWindow.replace_with_physical_card_set(sName, oF)
+            self._oMainWindow.replace_with_physical_card_set(sName, oFrame)
         elif self._cSetType is AbstractCardSet:
-            self._oMainWindow.replace_with_abstract_card_set(sName, oF)
+            self._oMainWindow.replace_with_abstract_card_set(sName, oFrame)
+
+    # pylint: enable-msg=W0613, R0913
+
+    def reload(self):
+        """Reload the contents of the list."""
+        aVals = [self.__sOpen, self.__sAvail]
+        iAvailIndex = 1
+        if self._oMenu.get_apply_filter():
+            oSelectFilter = self._oFilter
+        else:
+            oSelectFilter = NullFilter()
+        dInUse = {}
+        for oCS in oSelectFilter.select(self._oSetClass).orderBy('name'):
+            if self._cSetType is PhysicalCardSet:
+                sFrameName = 'PCS:' + oCS.name
+                if oCS.inuse:
+                    dInUse[oCS.name] = 'Yes'
+            else:
+                sFrameName = 'ACS:' + oCS.name
+            if sFrameName not in self._oMainWindow.dOpenFrames.values():
+                aVals.append(oCS.name)
+            else:
+                aVals.insert(iAvailIndex, oCS.name)
+                iAvailIndex += 1
+        self._oScrolledList.fill_list(aVals)
+        self._oScrolledList.fill_second_column(dInUse)
+
 
 class PhysicalCardSetListFrame(CardSetManagementFrame):
+    """Frame for the Physical Card Set list.
+
+       Adds in-use flag handling.
+       """
+    # pylint: disable-msg=R0904
+    # gtk.Widget, so lots of public methods
     def __init__(self, oMainWindow, oConfig):
         super(PhysicalCardSetListFrame, self).__init__(oMainWindow, oConfig)
         self._cSetType = PhysicalCardSet
@@ -221,6 +259,8 @@ class PhysicalCardSetListFrame(CardSetManagementFrame):
         self.set_name("physical card sets list")
         self.add_parts()
 
+    # pylint: disable-msg=W0613
+    # oMenuItem required by function signature
     def toggle_in_use_flag(self, oMenuItem):
         """Toggle the in-use status of the card set"""
         aSelection = self._oScrolledList.get_selection()
@@ -229,6 +269,8 @@ class PhysicalCardSetListFrame(CardSetManagementFrame):
         else:
             sSetName = aSelection[0]
         try:
+            # pylint: disable-msg=E1101
+            # SQLObject confuses pylint
             oCS = self._cSetType.byName(sSetName)
         except SQLObjectNotFound:
             return
@@ -239,6 +281,12 @@ class PhysicalCardSetListFrame(CardSetManagementFrame):
         self._oScrolledList.set_selected(oCS.name)
 
 class AbstractCardSetListFrame(CardSetManagementFrame):
+    """Abstract Card Set List Frame.
+
+       Sets values as needed for Abstract Card Sets.
+       """
+    # pylint: disable-msg=R0904
+    # gtk.Widget, so lots of public methods
     def __init__(self, oMainWindow, oConfig):
         super(AbstractCardSetListFrame, self).__init__(oMainWindow, oConfig)
         self._cSetType = AbstractCardSet

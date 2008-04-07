@@ -2,7 +2,7 @@
 # -*- coding: utf8 -*-
 # vim:fileencoding=utf8 ai ts=4 sts=4 et sw=4
 # Copyright 2005, 2006, 2007 Simon Cross <hodgestar@gmail.com>
-# Copyright 2007, 2008 Neil Muller <drnlmuller+sutekh@gmail.com> 
+# Copyright 2007, 2008 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
 """
@@ -19,18 +19,25 @@ from sutekh.core.CardSetHolder import CardSetHolder
 from sutekh.core.CardLookup import DEFAULT_LOOKUP
 from sqlobject import sqlhub
 try:
+    # pylint: disable-msg=E0611, F0401
+    # xml.etree is a python2.5 thing
     from xml.etree.ElementTree import parse, fromstring, ElementTree
 except ImportError:
     from elementtree.ElementTree import parse, fromstring, ElementTree
 
 class PhysicalCardParser(object):
+    """Implement the PhysicalCard Parser.
+
+       We read the xml file into a ElementTree, then walk the tree to
+       extract the cards.
+       """
     aSupportedVersions = ['1.0', '0.0']
 
     def __init__(self):
         self.oCS = CardSetHolder()
         self.oTree = None
 
-    def _convertTree(self):
+    def _convert_tree(self):
         """parse the elementtree into a card set holder"""
         oRoot = self.oTree.getroot()
         if oRoot.tag != 'cards':
@@ -49,9 +56,12 @@ class PhysicalCardParser(object):
                     sExpansionName = None
                 self.oCS.add(iCount, sName, sExpansionName)
 
-    def _commitTree(self, oCardLookup):
-        """Commit contents of the card set holder to
-           the database"""
+    def _commit_tree(self, oCardLookup):
+        """Commit the tree to the database.
+
+           We use the card set holder, so it calls the appropriate card lookup
+           function for unknown cards
+           """
         oOldConn = sqlhub.processConnection
         sqlhub.processConnection = oOldConn.transaction()
         self.oCS.createPhysicalCardList(oCardLookup)
@@ -59,11 +69,13 @@ class PhysicalCardParser(object):
         sqlhub.processConnection = oOldConn
 
     def parse(self, fIn, oCardLookup=DEFAULT_LOOKUP):
+        """Read the file object fIn into the database."""
         self.oTree = parse(fIn)
-        self._convertTree()
-        self._commitTree(oCardLookup)
+        self._convert_tree()
+        self._commit_tree(oCardLookup)
 
     def parse_string(self, sIn, oCardLookup=DEFAULT_LOOKUP):
+        """Read the string sIn into the database."""
         self.oTree = ElementTree(fromstring(sIn))
-        self._convertTree()
-        self._commitTree(oCardLookup)
+        self._convert_tree()
+        self._commit_tree(oCardLookup)

@@ -93,7 +93,7 @@ class FullBackup(CardListPlugin):
             bContinue = True
 
             if os.path.exists(sFile):
-                bContinue = do_complaint_warning("Overwrite existing file %s?" 
+                bContinue = do_complaint_warning("Overwrite existing file %s?"
                         % sFile) != gtk.RESPONSE_CANCEL
 
             if bContinue:
@@ -148,7 +148,7 @@ class FullBackup(CardListPlugin):
 
             if not os.path.exists(sFile):
                 bContinue = do_complaint_warning(
-                        "Backup file %s does not seem to exist." 
+                        "Backup file %s does not seem to exist."
                         % sFile) != gtk.RESPONSE_CANCEL
 
             if bContinue:

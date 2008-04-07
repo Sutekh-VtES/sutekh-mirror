@@ -10,22 +10,33 @@ Attempts to identify a XML file as either PhysicalCard, PhysicalCardSet or
 AbstractCardSet
 """
 
-from sutekh.core.SutekhObjects import AbstractCardSet, PhysicalCardSet, PhysicalCard
+from sutekh.core.SutekhObjects import AbstractCardSet, PhysicalCardSet, \
+        PhysicalCard
 from sqlobject import SQLObjectNotFound
 try:
+    # pylint: disable-msg=E0611, F0401
+    # xml.etree is a python2.5 thing
     from xml.etree.ElementTree import parse, fromstring, ElementTree
 except ImportError:
     from elementtree.ElementTree import parse, fromstring, ElementTree
 
 class IdentifyXMLFile(object):
+    """Tries to identify the XML file type.
+
+       Parse the file into an ElementTree, and then tests the Root element
+       to see which xml file it matches.
+       """
     def __init__(self):
         self.oTree = None
 
     def identify_tree(self):
+        """Process the ElementTree to identify the XML file type."""
         oRoot = self.oTree.getroot()
         sType = 'Unknown'
         sName = None
         bExists = False
+        # pylint: disable-msg=E1101
+        # SQLObject classes confuse pylint
         if oRoot.tag == 'abstractcardset':
             sType = 'AbstractCardSet'
             sName = oRoot.attrib['name']
@@ -54,14 +65,17 @@ class IdentifyXMLFile(object):
         return (sType, sName, bExists)
 
     def parse(self, fIn):
+        """Parse the file fIn into the ElementTree."""
         self.oTree = parse(fIn)
         return self.identify_tree()
 
     def parse_string(self, sIn):
+        """Parse the string sIn into the ElementTree"""
         self.oTree = ElementTree(fromstring(sIn))
         return self.identify_tree()
 
-    def idFile(self, sFileName):
+    def id_file(self, sFileName):
+        """Load the file sFileName, and try to identify it."""
         fIn = file(sFileName, 'rU')
         tResult = self.parse(fIn)
         fIn.close()

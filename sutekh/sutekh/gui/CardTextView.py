@@ -9,6 +9,8 @@ import gtk
 import pango
 
 class CardTextBuffer(gtk.TextBuffer, object):
+    # pylint: disable-msg=R0904
+    # gtk.Widget, so menu public methods
     def __init__(self):
         super(CardTextBuffer, self).__init__(None)
 
@@ -56,6 +58,8 @@ class CardTextBuffer(gtk.TextBuffer, object):
         self._oIter = self.get_iter_at_offset(0)
 
 class CardTextView(gtk.TextView, object):
+    # pylint: disable-msg=R0904
+    # gtk.Widget, so menu public methods
     def __init__(self, oController):
         super(CardTextView, self).__init__()
         # Can be styled as frame_name.view

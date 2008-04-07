@@ -8,13 +8,15 @@
 """
 Read physical cards from an XML file which
 looks like:
-<physicalcardset sutekh_xml_version='1.1' name='SetName' author='Author' comment='Comment'>
+<physicalcardset sutekh_xml_version='1.1' name='SetName' author='Author'
+   comment='Comment'>
   <annotations>
   Annotations
   </annotations>
   <card id='3' name='Some Card' count='5' expansion='Some Expansion' />
   <card id='3' name='Some Card' count='2' expansion='Some Other Expansion' />
-  <card id='5' name='Some Other Card' count='2' expansion='Some Other Expansion' />
+  <card id='5' name='Some Other Card' count='2'
+      expansion='Some Other Expansion' />
 </physicalcardset>
 into a PhysicalCardSet
 """
@@ -23,11 +25,18 @@ from sutekh.core.CardSetHolder import CardSetHolder
 from sutekh.core.CardLookup import DEFAULT_LOOKUP
 from sqlobject import sqlhub
 try:
+    # pylint: disable-msg=E0611, F0401
+    # xml.etree is a python2.5 thing
     from xml.etree.ElementTree import parse, fromstring, ElementTree
 except ImportError:
     from elementtree.ElementTree import parse, fromstring, ElementTree
 
 class PhysicalCardSetParser(object):
+    """Impement the parser.
+
+       read the tree into an ElementTree, and walk the tree to find the
+       cards.
+       """
     def __init__(self):
         self.aSupportedVersions = ['1.1', '1.0']
         self.oCS = CardSetHolder()
@@ -44,11 +53,14 @@ class PhysicalCardSetParser(object):
         self.oCS.author = oRoot.attrib['author']
         self.oCS.comment = oRoot.attrib['comment']
         self.oCS.inuse = False
+        # pylint: disable-msg=W0704
+        # exception does enough for us
         try:
             if oRoot.attrib['inuse'] == 'Yes':
                 self.oCS.inuse = True
         except KeyError:
             pass
+        # pylint: enable-msg=W0704
         for oElem in oRoot:
             if oElem.tag == 'annotations':
                 self.oCS.annotations = oElem.text
@@ -64,6 +76,11 @@ class PhysicalCardSetParser(object):
                 self.oCS.add(iCount, sName, sExpansionName)
 
     def _commit_tree(self, oCardLookup):
+        """Commit the tree to the database.
+
+           We use the card set holder, so it calls the appropriate card lookup
+           function for unknown cards
+           """
         oOldConn = sqlhub.processConnection
         sqlhub.processConnection = oOldConn.transaction()
         self.oCS.createPCS(oCardLookup)
@@ -71,11 +88,13 @@ class PhysicalCardSetParser(object):
         sqlhub.processConnection = oOldConn
 
     def parse(self, fIn, oCardLookup=DEFAULT_LOOKUP):
+        """Read the file fIn into the database."""
         self.oTree = parse(fIn)
         self._convert_tree()
         self._commit_tree(oCardLookup)
 
     def parse_string(self, sIn, oCardLookup=DEFAULT_LOOKUP):
+        """Read the string sIn into the database."""
         self.oTree = ElementTree(fromstring(sIn))
         self._convert_tree()
         self._commit_tree(oCardLookup)

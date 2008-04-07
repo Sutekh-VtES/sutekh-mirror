@@ -11,6 +11,8 @@ import gtk, gobject
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 
 class ScrolledList(gtk.Frame):
+    # pylint: disable-msg=R0904
+    # gtk.Widget, so menu public methods
     """Frame containing an auto scrolled list"""
     def __init__(self, sTitle):
         super(ScrolledList, self).__init__(None)
@@ -18,6 +20,7 @@ class ScrolledList(gtk.Frame):
         self._oTreeView = gtk.TreeView(self._oListStore)
         oCell1 = gtk.CellRendererText()
         oColumn1 = gtk.TreeViewColumn(sTitle, oCell1, markup=0)
+        self.dSecondColVals = {}
         self._oTreeView.append_column(oColumn1)
         self._oTreeView.get_selection().set_mode(gtk.SELECTION_MULTIPLE)
         oMyScroll = AutoScrolledWindow(self._oTreeView)
@@ -25,16 +28,20 @@ class ScrolledList(gtk.Frame):
         self.set_shadow_type(gtk.SHADOW_NONE)
         self.show_all()
 
+    # pylint: disable-msg=W0212
+    # allow access via these properties
     view = property(fget=lambda self: self._oTreeView,
             doc="Associated View Object")
-    itemlist = property(fget=lambda self: self._oListStore, doc="List of values")
+    itemlist = property(fget=lambda self: self._oListStore,
+            doc="List of values")
+    # disable-msg=W0212
 
     def add_second_column(self, sTitle):
+        """Add an extra column to the list."""
         oCell2 = gtk.CellRendererText()
         oColumn2 = gtk.TreeViewColumn(sTitle, oCell2)
         self._oTreeView.append_column(oColumn2)
         oColumn2.set_cell_data_func(oCell2, self._render_second_column)
-        self.dSecondColVals = {}
 
     def set_select_single(self):
         """set selection to single mode"""
@@ -47,7 +54,8 @@ class ScrolledList(gtk.Frame):
     def get_selection(self):
         """Return a list of the selected elements of the list"""
         aSelectedList = []
-        oModel, oSelection = self._oTreeView.get_selection().get_selected_rows()
+        oModel, oSelection = \
+                self._oTreeView.get_selection().get_selected_rows()
         for oPath in oSelection:
             oIter = oModel.get_iter(oPath)
             sName = oModel.get_value(oIter, 0)
@@ -55,6 +63,7 @@ class ScrolledList(gtk.Frame):
         return aSelectedList
 
     def set_selection(self, aRowsToSelect):
+        """Set the selected rows to aRowsToSelect."""
         aRowsToSelect = set(aRowsToSelect)
         oIter = self._oListStore.get_iter_first()
         oTreeSelection = self._oTreeView.get_selection()
@@ -84,10 +93,14 @@ class ScrolledList(gtk.Frame):
             self._oListStore.set(oIter, 0, sEntry)
 
     def fill_second_column(self, dVals):
+        """Fill the values in the second column."""
         self.dSecondColVals = dVals
         self._oTreeView.queue_draw()
 
+    # pylint: disable-msg=W0613
+    # oColumn required by function signature
     def _render_second_column(self, oColumn, oCell, oModel, oIter):
+        """Method to render the values in the second column."""
         sKey = oModel.get_value(oIter, 0)
         if sKey in self.dSecondColVals:
             oCell.set_property("markup", self.dSecondColVals[sKey])

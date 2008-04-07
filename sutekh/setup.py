@@ -7,6 +7,8 @@
 # Be sure that the import will grab the correct version
 # of SutekhInfo when building packages.
 
+"""Setuptools setup.py file for Sutekh."""
+
 from setuptools import setup, find_packages
 from sutekh.SutekhInfo import SutekhInfo
 
