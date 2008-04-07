@@ -84,10 +84,10 @@ class DatabaseVersion(object):
         bRes = True
         for oTable, iVersion in zip(aTable, aTableVersion):
             bRes = bRes and \
-                    self.getVersion(oTable, connection=oConn) == iVersion
+                    self.getVersion(oTable, oConn) == iVersion
         return bRes
 
-    def getBadTables(self, aTable, aTableVersion, oConnection=None):
+    def getBadTables(self, aTable, aTableVersion, oConn=None):
         """Get tables that don't match the list of version numbers
 
            aTable is the list of tables to check
@@ -97,10 +97,11 @@ class DatabaseVersion(object):
            aLowerTables is those with a lower version number, and
            aHigherTables is those with a higher number.
            """
+        oConn = _get_connection(oConn)
         aLowerTables = []
         aHigherTables = []
         for oTable, iVersion in zip(aTable, aTableVersion):
-            iCurVersion = self.getVersion(oTable, connection=oConnection)
+            iCurVersion = self.getVersion(oTable, oConn)
             if iCurVersion < iVersion:
                 aLowerTables.append(oTable.sqlmeta.table)
             elif iCurVersion > iVersion:
