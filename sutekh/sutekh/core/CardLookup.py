@@ -10,13 +10,17 @@
 from sqlobject import SQLObjectNotFound
 from sutekh.core.SutekhObjects import AbstractCard, PhysicalCard, IExpansion
 
+# pylint: disable-msg=R0922
+# We inherit from these classes elsewhere
+
 class LookupFailed(Exception):
     """Raised when an AbstractCard lookup fails completed.
        """
     pass
 
 class AbstractCardLookup(object):
-    """Base class for objects which translate card names into abstract card objects.
+    """Base class for objects which translate card names into abstract card
+       objects.
        """
 
     def lookup(self, aNames, sInfo):
@@ -41,7 +45,7 @@ class PhysicalCardLookup(object):
            dCardExpansions[Name][Expansion] is the number of cards requested,
            dNameCards is a dictionary of card name to abstract card mappings
            and dNameExps is a dictionary of expansion name to expansion object
-           mappings. 
+           mappings.
 
            Note that len(list returned) =< sum(all requests in dCardExpansions)
 
@@ -79,8 +83,11 @@ class SimpleLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
         aCards = []
         for sName in aNames:
             if sName:
+                # pylint: disable-msg=E1101
+                # SQLObject confuses pylint
                 try:
-                    oAbs = AbstractCard.byCanonicalName(sName.encode('utf8').lower())
+                    oAbs = AbstractCard.byCanonicalName(
+                            sName.encode('utf8').lower())
                     aCards.append(oAbs)
                 except SQLObjectNotFound:
                     aCards.append(None)
@@ -93,6 +100,8 @@ class SimpleLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
         for sName in dCardExpansions:
             oAbs = dNameCards[sName]
             if oAbs is not None:
+                # pylint: disable-msg=W0704
+                # Do nothng exception correct here
                 try:
                     aPhysCards = PhysicalCard.selectBy(abstractCardID=oAbs.id)
                     for sExpansionName in dCardExpansions[sName]:
@@ -116,7 +125,8 @@ class SimpleLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
                                 if iCnt == 0:
                                     break # We done with this expansion
                 except SQLObjectNotFound:
-                    # This card is missing from the PhysicalCard list, so skipped
+                    # This card is missing from the PhysicalCard list, so
+                    # skipped
                     pass
         return aCards
 
@@ -134,4 +144,6 @@ class SimpleLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
         return aExps
 
 
+# pylint: disable-msg=C0103
+# DEFAULT_LOOKUP name is OK here
 DEFAULT_LOOKUP = SimpleLookup()

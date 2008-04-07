@@ -5,21 +5,26 @@
 # Copyright 2006, 2007 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
+"""The database definitions and pyprotocols adaptors for Sutekh"""
+
 from sutekh.core.CachedRelatedJoin import CachedRelatedJoin, \
-                                          SOCachedRelatedJoin
-from sutekh.core.Abbreviations import CardTypes, Clans, Creeds, \
-                                      Disciplines, Expansions, \
-                                      Rarities, Sects, Titles, \
-                                      Virtues
+        SOCachedRelatedJoin
+from sutekh.core.Abbreviations import CardTypes, Clans, Creeds, Disciplines, \
+        Expansions, Rarities, Sects, Titles, Virtues
 # pylint: disable-msg=E0611
 # pylint doesn't parse sqlobject's column declaration magic correctly
 from sqlobject import sqlmeta, SQLObject, IntCol, UnicodeCol, RelatedJoin, \
-                      EnumCol, MultipleJoin, BoolCol, \
-                      DatabaseIndex, ForeignKey, SQLObjectNotFound
+       EnumCol, MultipleJoin, BoolCol, DatabaseIndex, ForeignKey, \
+       SQLObjectNotFound
 # pylint: enable-msg=E0611
 from protocols import advise, Interface
 
 # Interfaces
+
+# pylint: disable-msg=R0923, C0111, C0321
+# R0923 - PyProtocols magic will take care of the implementation
+# C0111 - No point in docstrings for these classes, really
+# C0321 - Compactness of single line definitions is good here
 
 class IAbstractCard(Interface): pass
 class IPhysicalCard(Interface): pass
@@ -38,7 +43,11 @@ class ICreed(Interface): pass
 class IVirtue(Interface): pass
 class IRuling(Interface): pass
 
+# pylint: enable-msg=R0923, C0111, C0321
 # Table Objects
+
+# pylint: disable-msg=W0232
+# Most of the classes defined here don't have __init__ methods by design
 
 class VersionTable(SQLObject):
     TableName = UnicodeCol(alternateID=True, length=50)
@@ -95,7 +104,7 @@ class PhysicalCard(SQLObject):
     abstractCard = ForeignKey('AbstractCard')
     abstractCardIndex = DatabaseIndex(abstractCard)
     # Explicitly allow None as expansion
-    expansion = ForeignKey('Expansion', notNull=False) 
+    expansion = ForeignKey('Expansion', notNull=False)
     sets = RelatedJoin('PhysicalCardSet', intermediateTable='physical_map',
             createRelatedTable=False)
 
@@ -128,8 +137,8 @@ class RarityPair(SQLObject):
     tableversion = 1
     expansion = ForeignKey('Expansion')
     rarity = ForeignKey('Rarity')
-    cards = RelatedJoin('AbstractCard', intermediateTable='abs_rarity_pair_map',
-            createRelatedTable=False)
+    cards = RelatedJoin('AbstractCard',
+            intermediateTable='abs_rarity_pair_map', createRelatedTable=False)
     expansionRarityIndex = DatabaseIndex(expansion, rarity, unique=True)
 
 class Expansion(SQLObject):
@@ -381,7 +390,8 @@ ObjectList = [ AbstractCard, Expansion,
                MapAbstractCardToCreed,
                ]
 
-PhysicalList = [PhysicalCard, PhysicalCardSet, MapPhysicalCardToPhysicalCardSet]
+PhysicalList = [PhysicalCard, PhysicalCardSet,
+        MapPhysicalCardToPhysicalCardSet]
 AbstractCardSetList = [AbstractCardSet, MapAbstractCardToAbstractCardSet]
 
 # Object Maker API
@@ -412,7 +422,8 @@ class SutekhObjectMaker(object):
         return self._make_object(Clan, IClan, Clans, sClan, bShortname=True)
 
     def makeCreed(self, sCreed):
-        return self._make_object(Creed, ICreed, Creeds, sCreed, bShortname=True)
+        return self._make_object(Creed, ICreed, Creeds, sCreed,
+                bShortname=True)
 
     def makeDiscipline(self, sDis):
         return self._make_object(Discipline, IDiscipline, Disciplines, sDis,
@@ -483,6 +494,8 @@ class StrAdaptMeta(type):
         return oObj
 
 class CardTypeAdapter(object):
+    # pylint: disable-msg=E1101
+    # metaclass confuses pylint
     __metaclass__ = StrAdaptMeta
     advise(instancesProvide=[ICardType], asAdapterForTypes=[basestring])
 
@@ -490,6 +503,8 @@ class CardTypeAdapter(object):
         return cls.fetch(CardTypes.canonical(sName), CardType)
 
 class ClanAdapter(object):
+    # pylint: disable-msg=E1101
+    # metaclass confuses pylint
     __metaclass__ = StrAdaptMeta
     advise(instancesProvide=[IClan], asAdapterForTypes=[basestring])
 
@@ -497,6 +512,8 @@ class ClanAdapter(object):
         return cls.fetch(Clans.canonical(sName), Clan)
 
 class CreedAdapter(object):
+    # pylint: disable-msg=E1101
+    # metaclass confuses pylint
     __metaclass__ = StrAdaptMeta
     advise(instancesProvide=[ICreed], asAdapterForTypes=[basestring])
 
@@ -504,6 +521,8 @@ class CreedAdapter(object):
         return cls.fetch(Creeds.canonical(sName), Creed)
 
 class DisciplineAdapter(object):
+    # pylint: disable-msg=E1101
+    # metaclass confuses pylint
     __metaclass__ = StrAdaptMeta
     advise(instancesProvide=[IDiscipline], asAdapterForTypes=[basestring])
 
@@ -511,6 +530,8 @@ class DisciplineAdapter(object):
         return cls.fetch(Disciplines.canonical(sName), Discipline)
 
 class ExpansionAdapter(object):
+    # pylint: disable-msg=E1101
+    # metaclass confuses pylint
     __metaclass__ = StrAdaptMeta
     advise(instancesProvide=[IExpansion], asAdapterForTypes=[basestring])
 
@@ -518,6 +539,8 @@ class ExpansionAdapter(object):
         return cls.fetch(Expansions.canonical(sName), Expansion)
 
 class RarityAdapter(object):
+    # pylint: disable-msg=E1101
+    # metaclass confuses pylint
     __metaclass__ = StrAdaptMeta
     advise(instancesProvide=[IRarity], asAdapterForTypes=[basestring])
 
@@ -525,6 +548,8 @@ class RarityAdapter(object):
         return cls.fetch(Rarities.canonical(sName), Rarity)
 
 class SectAdaptor(object):
+    # pylint: disable-msg=E1101
+    # metaclass confuses pylint
     __metaclass__ = StrAdaptMeta
     advise(instancesProvide=[ISect], asAdapterForTypes=[basestring])
 
@@ -532,6 +557,8 @@ class SectAdaptor(object):
         return cls.fetch(Sects.canonical(sName), Sect)
 
 class TitleAdapter(object):
+    # pylint: disable-msg=E1101
+    # metaclass confuses pylint
     __metaclass__ = StrAdaptMeta
     advise(instancesProvide=[ITitle], asAdapterForTypes=[basestring])
 
@@ -539,6 +566,8 @@ class TitleAdapter(object):
         return cls.fetch(Titles.canonical(sName), Title)
 
 class VirtueAdapter(object):
+    # pylint: disable-msg=E1101
+    # metaclass confuses pylint
     __metaclass__ = StrAdaptMeta
     advise(instancesProvide=[IVirtue], asAdapterForTypes=[basestring])
 
@@ -557,12 +586,15 @@ class RarityPairAdapter(object):
         cls.__dCache = {}
 
     def __new__(cls, tData):
+        # pylint: disable-msg=E1101
+        # adaptors confuses pylint
         oExp = IExpansion(tData[0])
         oRarity = IRarity(tData[1])
 
         oPair = cls.__dCache.get((oExp.id, oRarity.id), None)
         if oPair is None:
-            oPair = RarityPair.selectBy(expansion=oExp, rarity=oRarity).getOne()
+            oPair = RarityPair.selectBy(expansion=oExp,
+                    rarity=oRarity).getOne()
             cls.__dCache[(oExp.id, oRarity.id)] = oPair
 
         return oPair
@@ -577,12 +609,15 @@ class DisciplinePairAdapter(object):
         cls.__dCache = {}
 
     def __new__(cls, tData):
+        # pylint: disable-msg=E1101
+        # adaptors confuses pylint
         oDis = IDiscipline(tData[0])
         sLevel = str(tData[1])
 
         oPair = cls.__dCache.get((oDis.id, sLevel), None)
         if oPair is None:
-            oPair = DisciplinePair.selectBy(discipline=oDis, level=sLevel).getOne()
+            oPair = DisciplinePair.selectBy(discipline=oDis,
+                    level=sLevel).getOne()
             cls.__dCache[(oDis.id, sLevel)] = oPair
 
         return oPair
@@ -591,12 +626,16 @@ class AbstractCardAdapter(object):
     advise(instancesProvide=[IAbstractCard], asAdapterForTypes=[basestring])
 
     def __new__(cls, sName):
+        # pylint: disable-msg=E1101
+        # SQLObject confuses pylint
         return AbstractCard.byCanonicalName(sName.encode('utf8').lower())
 
 class RulingAdapter(object):
     advise(instancesProvide=[IRuling], asAdapterForTypes=[tuple])
 
     def __new__(cls, tData):
+        # pylint: disable-msg=E1101
+        # SQLObject confuses pylint
         sText, sCode = tData
         return Ruling.byText(sText.encode('utf8'))
 
@@ -604,12 +643,16 @@ class AbstractCardSetAdapter(object):
     advise(instancesProvide=[IAbstractCardSet], asAdapterForTypes=[basestring])
 
     def __new__(cls, sName):
+        # pylint: disable-msg=E1101
+        # SQLObject confuses pylint
         return AbstractCardSet.byName(sName.encode('utf8'))
 
 class PhysicalCardSetAdapter(object):
     advise(instancesProvide=[IPhysicalCardSet], asAdapterForTypes=[basestring])
 
     def __new__(cls, sName):
+        # pylint: disable-msg=E1101
+        # SQLObject confuses pylint
         return PhysicalCardSet.byName(sName.encode('utf8'))
 
 class PhysicalCardToAbstractCardAdapter(object):
