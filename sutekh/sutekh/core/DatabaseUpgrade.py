@@ -692,7 +692,21 @@ def copy_database(oOrigConn, oDestConnn, oLogHandler=None):
                 oLogger.info('%s copied' % sName)
     return bRes, aMessages
 
-def copy_to_new_AbstractCardDB(oOrigConn, oNewConn, oCardLookup,
+def make_card_set_holder(oCardSet):
+    """Given a CardSet, create a Cached Card Set Holder for it."""
+    oCS = CachedCardSetHolder()
+    oCS.name = oCardSet.name
+    oCS.author = oCardSet.author
+    oCS.comment = oCardSet.comment
+    oCS.annotations = oCardSet.annotations
+    for oCard in oCardSet.cards:
+        if type(oCard) is PhysicalCard:
+            oCS.add(1, oCard.abstractCard.canonicalName, oCard.expansion.name)
+        else:
+            oCS.add(1, oCard.canonicalName)
+    return oCS
+
+def copy_to_new_abstract_card_db(oOrigConn, oNewConn, oCardLookup,
         oLogHandler=None):
     """Copy the physical card and the card sets to a new Abstract Card List.
 
@@ -700,13 +714,11 @@ def copy_to_new_AbstractCardDB(oOrigConn, oNewConn, oCardLookup,
       a new cardlist, copy the PhysicalCards and the CardSets,
       going via CardSetHolders, so we can adapt to changed names, etc.
       """
-    bRes = True
-    aMessages = []
+    # pylint: disable-msg=R0914
     aPhysCardSets = []
     aAbsCardSets = []
     oOldConn = sqlhub.processConnection
     # Copy the physical card list
-    oPhysListCS = CachedCardSetHolder()
     oLogger = Logger('copy to new abstract card DB')
     if oLogHandler:
         oLogger.addHandler(oLogHandler)
@@ -714,29 +726,18 @@ def copy_to_new_AbstractCardDB(oOrigConn, oNewConn, oCardLookup,
             iTotal = 2 + PhysicalCardSet.select(connection=oOrigConn).count() \
                     + AbstractCardSet.select(connection=oOrigConn).count()
             oLogHandler.set_total(iTotal)
+    oPhysListCS = CachedCardSetHolder()
     for oCard in PhysicalCard.select(connection=oOrigConn):
         oPhysListCS.add(1, oCard.abstractCard.canonicalName,
                 oCard.expansion.name)
     # Copy Physical card sets
     for oSet in PhysicalCardSet.select(connection=oOrigConn):
-        oCS = CachedCardSetHolder()
-        oCS.name = oSet.name
-        oCS.author = oSet.author
-        oCS.comment = oSet.comment
-        oCS.annotations = oSet.annotations
+        oCS = make_card_set_holder(oSet)
         oCS.inuse = oSet.inuse
-        for oCard in oSet.cards:
-            oCS.add(1, oCard.abstractCard.canonicalName, oCard.expansion.name)
         aPhysCardSets.append(oCS)
     # Copy AbstractCardSets
     for oSet in AbstractCardSet.select(connection=oOrigConn):
-        oCS = CachedCardSetHolder()
-        oCS.name = oSet.name
-        oCS.author = oSet.author
-        oCS.comment = oSet.comment
-        oCS.annotations = oSet.annotations
-        for oCard in oSet.cards:
-            oCS.add(1, oCard.canonicalName)
+        oCS = make_card_set_holder(oSet)
         aAbsCardSets.append(oCS)
     # Save the current mapping
     oMapping = PhysicalCardMappingHolder()
@@ -759,7 +760,7 @@ def copy_to_new_AbstractCardDB(oOrigConn, oNewConn, oCardLookup,
     oMapping.commit_to_db(oTarget, dLookupCache)
     oTarget.commit()
     sqlhub.processConnection = oOldConn
-    return (bRes, aMessages)
+    return (True, [])
 
 def create_memory_copy(oTempConn, oLogHandler=None):
     """Create a temporary copy of the database in memory.
