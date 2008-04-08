@@ -67,7 +67,8 @@ class CardTextBuffer(gtk.TextBuffer, object):
             self.tag_text("\n\t* ")
             self.tag_text(sValue, sTag)
 
-    def resetIter(self):
+    def reset_iter(self):
+        """Reset the iterator to point at the start of the buffer."""
         self._oIter = self.get_iter_at_offset(0)
 
 class CardTextView(gtk.TextView, object):
@@ -90,12 +91,14 @@ class CardTextView(gtk.TextView, object):
         self.set_wrap_mode(gtk.WRAP_WORD)
 
     def set_card_text(self, oCard):
+        """Add the text for oCard to the TextView."""
         oStart, oEnd = self.__oBuf.get_bounds()
         self.__oBuf.delete(oStart, oEnd)
-        self.printCardToBuffer(oCard, self.__oBuf)
+        self.print_card_to_buffer(oCard, self.__oBuf)
 
-    def printCardToBuffer(self, oCard, oBuf):
-        oBuf.resetIter()
+    def print_card_to_buffer(self, oCard, oBuf):
+        """Format the text for the card and add it to the buffer."""
+        oBuf.reset_iter()
 
         oBuf.tag_text(oCard.name, "card_name")
 

@@ -69,9 +69,11 @@ class BasicFrame(gtk.Frame, object):
     # pylint: enable-msg=W0212
 
     def set_title(self, sTitle):
+        """Set the title of the pane to sTitle"""
         self._oTitleLabel.set_text(sTitle)
 
     def set_focus_handler(self, oFunc):
+        """Set the button press handler for the frame"""
         self.connect('button-press-event', self.call_focus, oFunc)
         # Need both, otherwise clicking on a title and the clicking on
         # the previous tree does the wrong thing
@@ -106,10 +108,12 @@ class BasicFrame(gtk.Frame, object):
         pass
 
     def close_frame(self):
+        """Close the frame"""
         self._oMainWindow.remove_frame(self)
         self.destroy()
 
     def add_parts(self):
+        """Add the basic widgets (title, & placeholder) to the frame."""
         oMbox = gtk.VBox(False, 2)
 
         oMbox.pack_start(self._oTitle, False, False)
@@ -120,6 +124,7 @@ class BasicFrame(gtk.Frame, object):
         self.show_all()
 
     def set_focussed_title(self):
+        """Set the title to the correct style when focussed."""
         oCurStyle = self._oTitleLabel.rc_get_style()
         self._oTitleLabel.set_name('selected_title')
         # We can't have this name be a superset of the title name,
@@ -159,23 +164,26 @@ class BasicFrame(gtk.Frame, object):
         self._oTitle.set_name('selected_title')
 
     def set_unfocussed_title(self):
+        """Set the title back to the default, unfocussed style."""
         self._oTitleLabel.set_name('frame_title')
         self._oTitle.set_name('frame_title')
 
     # pylint: disable-msg=W0613, R0913
     # function signature requires these arguments
     def close_menu_item(self, oMenuWidget):
+        """Handle close requests from the menu."""
         self.close_frame()
 
     def call_focus(self, oWidget, oEvent, oFocusFunc):
-        """
-        Call MultiPaneWindow focus handler for button events
-        """
+        """Call MultiPaneWindow focus handler for button events"""
         oFocusFunc(self, oEvent, self)
         return False
 
     def drag_drop_handler(self, oWindow, oDragContext, iXPos, iYPos,
             oSelectionData, oInfo, oTime):
+        """Handle panes being dragged onto this one.
+
+           Allows panes to be sapped by dragging 'n dropping."""
         if not oSelectionData and oSelectionData.format != 8:
             oDragContext.finish(False, False, oTime)
         else:
@@ -189,13 +197,12 @@ class BasicFrame(gtk.Frame, object):
                     oDragContext.finish(False, False, oTime)
 
     def create_drag_data(self, oBtn, oContext, oSelectionData, oInfo, oTime):
-        """
-        Fill in the needed data for drag-n-drop code
-        """
+        """Fill in the needed data for drag-n-drop code"""
         sData = 'Sutekh Pane:\n' + self.title
         oSelectionData.set(oSelectionData.target, 8, sData)
 
     def drag_motion(self, oWidget, oDrag_context, iXPos, iYPos, oTimestamp):
+        """Show proper icon during drag-n-drop actions."""
         if 'STRING' in oDrag_context.targets:
             oDrag_context.drag_status(gtk.gdk.ACTION_COPY)
             return True

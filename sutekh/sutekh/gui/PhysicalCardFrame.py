@@ -6,12 +6,18 @@
 # Copyright 2006, 2007 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
+"""Frame which holds the PhysicalCardView"""
+
 from sutekh.core.SutekhObjects import PhysicalCard
 from sutekh.gui.CardListFrame import CardListFrame
 from sutekh.gui.PhysicalCardController import PhysicalCardController
 from sutekh.gui.PhysicalCardMenu import PhysicalCardMenu
 
 class PhysicalCardFrame(CardListFrame):
+    """Frame which holds the Physical Card Collection View.
+
+       Set the title, and menus as needed for the card collection.
+       """
     # pylint: disable-msg=R0904
     # gtk.Widget, so many public methods
     def __init__(self, oMainWindow, oConfig):

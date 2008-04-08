@@ -30,15 +30,19 @@ class PhysicalCardView(EditableCardListView):
 
     # pylint: disable-msg=R0913
     # Number of arguments needed by function signature
-    def card_drop(self, oWidget, oContext, iX, iY, oData, oInfo, oTime):
+    def card_drop(self, oWidget, oContext, iXPos, iYPos, oData, oInfo, oTime):
+        """Handle cards being dropped on the View via drag-n-drop.
+
+           Determine the source, and add the cards if the model is editable.
+           """
         if not oData or oData.format != 8:
             oContext.finish(False, False, oTime)
         else:
             sSource, aCardInfo = self.split_selection_data(oData.data)
             if sSource == "Sutekh Pane:":
                 # Pane being dragged, so pass up to the pane widget
-                self._oController.frame.drag_drop_handler(oWidget, oContext, iX, iY,
-                        oData, oInfo, oTime)
+                self._oController.frame.drag_drop_handler(oWidget, oContext,
+                        iXPos, iYPos, oData, oInfo, oTime)
             # Don't accept cards when not editable
             elif self._oModel.bEditable and \
                     self.add_paste_data(sSource, aCardInfo):
