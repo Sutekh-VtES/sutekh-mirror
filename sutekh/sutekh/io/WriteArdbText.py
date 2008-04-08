@@ -109,6 +109,8 @@ class WriteArdbText(object):
             iId, sName = tKey
             iCount = dVamps[tKey]
 
+            # pylint: disable-msg=E1101
+            # IAbstractCard confuses pylint
             oCard = IAbstractCard(sName)
             if len(oCard.creed) > 0:
                 sClan = "Imbued"
@@ -117,7 +119,8 @@ class WriteArdbText(object):
             sDisciplines = self._gen_disciplines(oCard)
 
             s += "  %dx %s %d %s %s :%d\n" % \
-                 (iCount, sName, oCard.capacity, sDisciplines, sClan, oCard.group)
+                 (iCount, sName, oCard.capacity, sDisciplines, sClan,
+                         oCard.group)
 
         return s
 
@@ -169,7 +172,7 @@ class WriteArdbText(object):
     def write(self, fOut, sSetName, sAuthor, sDescription, dCards):
         """
         Takes filename, deck details and a dictionary of cards, of the form
-        dCard[(id,name)]=count
+        dCard[(id, name)]=count
         """
         fOut.write(self._gen_header(sSetName, sAuthor, sDescription))
         fOut.write("\n")

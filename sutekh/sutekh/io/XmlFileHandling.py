@@ -7,6 +7,9 @@
 # Routines for writing and reading from XML files - used by Gui and Cli
 # Split off from SutekhUtility as being somewhat clearer, April 2007 - NM
 
+
+"""Routines for manipulating XML Files"""
+
 from sutekh.core.SutekhObjects import AbstractCardSet, PhysicalCardSet
 from sutekh.core.CardLookup import DEFAULT_LOOKUP
 from sutekh.SutekhUtility import gen_temp_file, gen_temp_dir, safe_filename
@@ -19,104 +22,118 @@ from sutekh.io.AbstractCardSetWriter import AbstractCardSetWriter
 import os
 
 class PhysicalCardXmlFile(object):
-    def __init__(self, filename=None, dir=None, lookup=DEFAULT_LOOKUP):
-        self.oCardLookup = lookup
-        if filename is not None:
-            self.sXmlFile = filename
+    """Class for handling PhysicalCard XML Files"""
+    def __init__(self, sFileName=None, sDir=None, oLookup=DEFAULT_LOOKUP):
+        self.oCardLookup = oLookup
+        if sFileName is not None:
+            self.sXmlFile = sFileName
         else:
-            if dir is None:
-                dir = gen_temp_dir()
-            self.sXmlFile = gen_temp_file('physical_cards_', dir)
+            if sDir is None:
+                sDir = gen_temp_dir()
+            self.sXmlFile = gen_temp_file('physical_cards_', sDir)
 
     def read(self):
+        """Read the card collection from the file"""
         if self.sXmlFile is None:
             raise RuntimeError("No Filename specified")
-        oP = PhysicalCardParser()
-        oP.parse(file(self.sXmlFile,'rU'), self.oCardLookup)
+        oParser = PhysicalCardParser()
+        oParser.parse(file(self.sXmlFile,'rU'), self.oCardLookup)
 
     def write(self):
+        """Write the card collection to the file"""
         if self.sXmlFile is None:
             raise RuntimeError("No Filename specified")
-        oW = PhysicalCardWriter()
+        oWriter = PhysicalCardWriter()
         fOut = file(self.sXmlFile,'w')
-        oW.write(fOut)
+        oWriter.write(fOut)
         fOut.close()
 
     def delete(self):
+        """Delete the file"""
         if self.sXmlFile is None:
             raise RuntimeError("No Filename specified")
         os.remove(self.sXmlFile)
 
 class AbstractCardSetXmlFile(object):
-    def __init__(self, filename=None, oCardLookup=None, lookup=DEFAULT_LOOKUP):
-        self.oCardLookup = lookup
-        self.sXmlFile = filename
+    """Class for handling Abstract Card Set XML files"""
+    def __init__(self, sFileName=None, oLookup=DEFAULT_LOOKUP):
+        self.oCardLookup = oLookup
+        self.sXmlFile = sFileName
 
     def read(self):
+        """Read the card set from the file."""
         if self.sXmlFile is None:
             raise RuntimeError("No Filename specified")
-        oP = AbstractCardSetParser()
-        oP.parse(file(self.sXmlFile,'rU'), self.oCardLookup)
+        oParser = AbstractCardSetParser()
+        oParser.parse(file(self.sXmlFile,'rU'), self.oCardLookup)
 
     def write(self, sAbstractCardSetName):
-        oW = AbstractCardSetWriter()
+        """Write the given card set to the file"""
+        oWriter = AbstractCardSetWriter()
         if self.sXmlFile is None:
-            filename = safe_filename(sAbstractCardSetName)
-            fOut = file(filename,'w')
+            sFileName = safe_filename(sAbstractCardSetName)
+            fOut = file(sFileName,'w')
         else:
             fOut = file(self.sXmlFile,'w')
-        oW.write(fOut, sAbstractCardSetName)
+        oWriter.write(fOut, sAbstractCardSetName)
         fOut.close()
 
     def delete(self):
+        """Delete the file"""
         if self.sXmlFile is None:
             raise RuntimeError("No Filename specified")
         os.remove(self.sXmlFile)
 
 class PhysicalCardSetXmlFile(object):
-    def __init__(self, filename=None, lookup=DEFAULT_LOOKUP):
-        self.oCardLookup = lookup
-        self.sXmlFile = filename
+    """Class for handling Physical Card Set XML files"""
+    def __init__(self, sFileName=None, oLookup=DEFAULT_LOOKUP):
+        self.oCardLookup = oLookup
+        self.sXmlFile = sFileName
 
     def read(self):
+        """Read the card set from the file."""
         if self.sXmlFile is None:
             raise RuntimeError("No Filename specified")
-        oP = PhysicalCardSetParser()
-        oP.parse(file(self.sXmlFile,'rU'), self.oCardLookup)
+        oParser = PhysicalCardSetParser()
+        oParser.parse(file(self.sXmlFile,'rU'), self.oCardLookup)
 
     def write(self, sPhysicalCardSetName):
-        oW = PhysicalCardSetWriter()
+        """Write the given card set to the file"""
+        oWriter = PhysicalCardSetWriter()
         if self.sXmlFile is None:
-            filename = safe_filename(sPhysicalCardSetName)
-            fOut = file(filename,'w')
+            sFileName = safe_filename(sPhysicalCardSetName)
+            fOut = file(sFileName,'w')
         else:
             fOut = file(self.sXmlFile,'w')
-        oW.write(fOut, sPhysicalCardSetName)
+        oWriter.write(fOut, sPhysicalCardSetName)
         fOut.close()
 
     def delete(self):
+        """Delete the file"""
         if self.sXmlFile is None:
             raise RuntimeError("No Filename specified")
         os.remove(self.sXmlFile)
 
-def writeAllAbstractCardSets(dir=''):
+def write_all_acs(sDir=''):
+    """Write all the Abstract Card Sets into files in the given directory"""
     oAbstractCardSets = AbstractCardSet.select()
     aList = []
-    for acs in oAbstractCardSets:
-        sFName = safe_filename(acs.name)
-        filename = gen_temp_file('acs_'+sFName+'_', dir)
-        oW = AbstractCardSetXmlFile(filename)
-        aList.append(oW)
-        oW.write(acs.name)
+    for oACS in oAbstractCardSets:
+        sFName = safe_filename(oACS.name)
+        sFileName = gen_temp_file('acs_'+sFName+'_', sDir)
+        oWriter = AbstractCardSetXmlFile(sFileName)
+        aList.append(oWriter)
+        oWriter.write(oACS.name)
     return aList
 
-def writeAllPhysicalCardSets(dir=''):
+def write_all_pcs(sDir=''):
+    """Write all the Physical Card Sets into files in the given directory"""
     oPhysicalCardSets = PhysicalCardSet.select()
     aList = []
-    for pcs in oPhysicalCardSets:
-        sFName = safe_filename(pcs.name)
-        filename = gen_temp_file('pcs_'+sFName+'_', dir)
-        oW = PhysicalCardSetXmlFile(filename)
-        aList.append(oW)
-        oW.write(pcs.name)
+    for oPCS in oPhysicalCardSets:
+        sFName = safe_filename(oPCS.name)
+        sFileName = gen_temp_file('pcs_'+sFName+'_', sDir)
+        oWriter = PhysicalCardSetXmlFile(sFileName)
+        aList.append(oWriter)
+        oWriter.write(oPCS.name)
     return aList

@@ -408,6 +408,8 @@ class WhiteWolfParser(HTMLParser.HTMLParser,object):
     def handle_data(self,sData):
         self._state.data(sData)
 
+    # pylint: disable-msg=C0321, C0111
+    # these don't need statements or docstrings
     def handle_charref(self,sName): pass
     def handle_entityref(self,sName): pass
 

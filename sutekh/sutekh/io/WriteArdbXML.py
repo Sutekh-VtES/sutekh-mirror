@@ -223,6 +223,8 @@ class WriteArdbXML(object):
 
         return oRoot
 
+    # pylint: disable-msg=R0913
+    # we need all these arguments
     def write(self, fOut, sSetName, sAuthor, sDescription, dCards):
         """
         Takes filename, deck details and a dictionary of cards, of the form
@@ -231,6 +233,8 @@ class WriteArdbXML(object):
         oRoot = self.gen_tree(sSetName, sAuthor, sDescription, dCards)
         pretty_xml(oRoot)
         ElementTree(oRoot).write(fOut)
+
+    # pylint: enable-msg=R0913
 
     def gen_xml_string(self, sSetName, sAuthor, sDescription, dCards):
         """Generate string XML representation"""

@@ -125,7 +125,7 @@ class ELDBHTMLParser(HTMLParser.HTMLParser, object):
            (or similar).
            """
         self._oHolder = oHolder
-        self._oState = None
+        self._oState = Collecting(self._oHolder)
         super(ELDBHTMLParser, self).__init__()
 
     def reset(self):

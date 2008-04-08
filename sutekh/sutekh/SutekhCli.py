@@ -17,8 +17,8 @@ from sutekh.SutekhUtility import refresh_tables, read_white_wolf_list, \
         read_rulings, gen_temp_dir, prefs_dir, ensure_dir_exists, sqlite_uri
 from sutekh.core.DatabaseUpgrade import attempt_database_upgrade
 from sutekh.io.XmlFileHandling import PhysicalCardXmlFile, \
-        PhysicalCardSetXmlFile, AbstractCardSetXmlFile, \
-        writeAllAbstractCardSets, writeAllPhysicalCardSets
+        PhysicalCardSetXmlFile, AbstractCardSetXmlFile, write_all_acs, \
+        write_all_pcs
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
 from sutekh.io.WwFile import WwFile
 
@@ -140,8 +140,8 @@ def main(aArgs):
             return 1
         else:
             sTempdir = gen_temp_dir()
-            aPhysicalCardSetList = writeAllPhysicalCardSets(sTempdir)
-            aAbstractCardSetList = writeAllAbstractCardSets(sTempdir)
+            aPhysicalCardSetList = write_all_pcs(sTempdir)
+            aAbstractCardSetList = write_all_acs(sTempdir)
             oPCFile = PhysicalCardXmlFile(dir=sTempdir)
             oPCFile.write()
             # We dump the databases here
@@ -185,10 +185,10 @@ def main(aArgs):
         return 1
 
     if oOpts.save_all_acss:
-        writeAllAbstractCardSets()
+        write_all_acs()
 
     if oOpts.save_all_pcss:
-        writeAllPhysicalCardSets()
+        write_all_pcs()
 
     if oOpts.dump_zip_name is not None:
         oZipFile = ZipFileWrapper(oOpts.dump_zip_name)
