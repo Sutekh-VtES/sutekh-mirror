@@ -32,7 +32,8 @@ class PluginManager(object):
 
             # load module
             try:
-                mPlugin = __import__("sutekh.gui.plugins." + sPluginName, None, None, [plugins])
+                mPlugin = __import__("sutekh.gui.plugins." + sPluginName,
+                        None, None, [plugins])
             except ImportError, e:
                 if bVerbose:
                     logging.warn("Failed to load plugin %s (%s)." % (sPluginName, str(e)))
@@ -41,9 +42,10 @@ class PluginManager(object):
             # find plugin class
             try:
                 cPlugin = mPlugin.plugin
-            except AttributeError, e:
+            except AttributeError, oExp:
                 if bVerbose:
-                    logging.warn("Plugin module %s appears not to contain a plugin (%s)." % (sPluginName, str(e)))
+                    logging.warn("Plugin module %s appears not to contain a"
+                            " plugin (%s)." % (sPluginName, oExp))
                 continue
 
             # add to appropriate plugin lists
@@ -75,8 +77,8 @@ class CardListPlugin(object):
 
     def get_menu_item(self):
         """
-        Return a list of gtk.MenuItems for the plugin or None if 
-        no menu item is needed.
+        Return a list of ('Menu', gtk.MenuItems) pairs for the plugin or
+        None if no menu item is needed.
         """
         return None
 
@@ -84,12 +86,14 @@ class CardListPlugin(object):
         "Grunt work of adding menu item to the frame"
         aMenuItems = self.get_menu_item()
         if aMenuItems is not None:
-            sMenu = self.get_desired_menu()
-            # Add to the requested menu if supplied
-            if not hasattr(aMenuItems, '__getitem__'):
-                # Not an iterable object, so turn it into a list
-                aMenuItems=[aMenuItems]
-            for oMenuItem in aMenuItems:
+            if type(aMenuItems) is not list:
+                if type(aMenuItems) is not tuple:
+                    # Just straight menu item
+                    aMenuItems = [('Plugins', aMenuItems)]
+                else:
+                    # Convert tuple to list
+                    aMenuItems = [aMenuItems]
+            for sMenu, oMenuItem in aMenuItems:
                 if sMenu in dAllMenus:
                     dAllMenus[sMenu].add(oMenuItem)
                 else:
@@ -100,13 +104,6 @@ class CardListPlugin(object):
         """
         Return an arbitary gtk.Widget which is added to a VBox between the menu
         and the scrolled display area. Return None is no toolbar Widget is needed
-        """
-        return None
-
-    def get_desired_menu(self):
-        """
-        Return the name of the menu this plugin should be added to, or None
-        if no menu item is needed.
         """
         return None
 

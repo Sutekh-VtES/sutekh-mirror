@@ -22,18 +22,12 @@ class ACSFromFilter(CardListPlugin):
                         PhysicalCard, AbstractCard]
 
     def get_menu_item(self):
-        """
-        Overrides method from base class.
-        """
+        """Register on the 'Filter' Menu"""
         if not self.check_versions() or not self.check_model_type():
             return None
-        iDF = gtk.MenuItem("Abstract Card Set From Filter")
-        iDF.connect("activate", self.activate)
-        return iDF
-
-    def get_desired_menu(self):
-        "Override method from base class. register on the 'Filter' menu"
-        return "Filter"
+        oGenACS = gtk.MenuItem("Abstract Card Set From Filter")
+        oGenACS.connect("activate", self.activate)
+        return ('Filter', oGenACS)
 
     # pylint: disable-msg=W0613
     # oWidget required by gtk function signature

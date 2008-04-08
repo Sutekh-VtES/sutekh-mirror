@@ -21,20 +21,17 @@ class CardSetExportArdbText(CardListPlugin):
     aModelsSupported = [AbstractCardSet, PhysicalCardSet]
 
     def get_menu_item(self):
-        """
-        Overrides method from base class.
-        """
+        """Register with the 'Plugins' Menu"""
         if not self.check_versions() or not self.check_model_type():
             return None
-        iDF = gtk.MenuItem("Export Card Set to ARDB Text")
-        iDF.connect("activate", self.make_dialog)
-        return iDF
+        oExport = gtk.MenuItem("Export Card Set to ARDB Text")
+        oExport.connect("activate", self.make_dialog)
+        return ('Plugins', oExport)
 
-    def get_desired_menu(self):
-        return "Plugins"
-
-    # pylint: disable-msg=W0613
-    # oWidget required by the function signature
+    # pylint: disable-msg=W0613, W0201
+    # W0613 - oWidget has to be here, although it's unused
+    # W0201 - we define things here, rather than __init__, since this
+    # is the plugin's entry point
     def make_dialog(self, oWidget):
         """Create the dialog"""
         self.oDlg = SutekhDialog("Choose FileName for Exported CardSet",
@@ -50,6 +47,8 @@ class CardSetExportArdbText(CardListPlugin):
         self.oDlg.show_all()
         self.oDlg.run()
         self.oDlg.destroy()
+
+    # pylint: enable-msg=W0201
 
     # pylint: disable-msg=W0613
     # oWidget required by the function signature

@@ -20,18 +20,12 @@ class DeckFromFilter(CardListPlugin):
     aModelsSupported = [PhysicalCardSet, PhysicalCard]
 
     def get_menu_item(self):
-        """
-        Overrides method from base class.
-        """
+        """Register on the 'Filter' Menu"""
         if not self.check_versions() or not self.check_model_type():
             return None
-        iDF = gtk.MenuItem("Physical Card Set From Filter")
-        iDF.connect("activate", self.activate)
-        return iDF
-
-    def get_desired_menu(self):
-        "Over method from base class. Register on 'Filter' Menu"
-        return "Filter"
+        oGenPCS = gtk.MenuItem("Physical Card Set From Filter")
+        oGenPCS.connect("activate", self.activate)
+        return ('Filter', oGenPCS)
 
     # pylint: disable-msg=W0613
     # oWidget required by gtk function signature

@@ -25,29 +25,23 @@ class FullBackup(CardListPlugin):
     # Dialog and Menu Item Creation
 
     def get_menu_item(self):
-        """
-        Overrides method from base class.
-        """
+        """Register on the Plugins menu"""
         if not self.check_versions() or not self.check_model_type():
             return None
 
-        iMenu = gtk.MenuItem("Backup")
+        oMenuItem = gtk.MenuItem("Backup")
         oMenu = gtk.Menu()
-        iMenu.set_submenu(oMenu)
+        oMenuItem.set_submenu(oMenu)
 
-        iBackup = gtk.MenuItem("Save a Full Backup")
-        iBackup.connect("activate", self.activate_backup)
-        iRestore = gtk.MenuItem("Restore a Full Backup")
-        iRestore.connect("activate", self.activate_restore)
+        oBackup = gtk.MenuItem("Save a Full Backup")
+        oBackup.connect("activate", self.activate_backup)
+        oRestore = gtk.MenuItem("Restore a Full Backup")
+        oRestore.connect("activate", self.activate_restore)
 
-        oMenu.add(iBackup)
-        oMenu.add(iRestore)
+        oMenu.add(oBackup)
+        oMenu.add(oRestore)
 
-        return iMenu
-
-    def get_desired_menu(self):
-        "Over base class. Register on the plugins menu"
-        return "Plugins"
+        return ('Plugins', oMenuItem)
 
     # Menu responses
 

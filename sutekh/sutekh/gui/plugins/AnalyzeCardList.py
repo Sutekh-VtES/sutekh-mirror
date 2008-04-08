@@ -63,18 +63,12 @@ class AnalyzeCardList(CardListPlugin):
             }
 
     def get_menu_item(self):
-        """
-        Overrides method from base class.
-        """
+        """Register on the 'Plugins' Menu"""
         if not self.check_versions() or not self.check_model_type():
             return None
-        iAnalyze = gtk.MenuItem("Analyze Deck")
-        iAnalyze.connect("activate", self.activate)
-        return iAnalyze
-
-    def get_desired_menu(self):
-        "Menu to associate with"
-        return "Plugins"
+        oAnalyze = gtk.MenuItem("Analyze Deck")
+        oAnalyze.connect("activate", self.activate)
+        return ('Plugins', oAnalyze)
 
     # pylint: disable-msg=W0613, W0201
     # W0613 - oWidget required by gtk function signature

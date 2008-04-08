@@ -31,17 +31,15 @@ class ACSImporter(CardListPlugin):
         }
 
     def get_menu_item(self):
+        """Register with the 'Plugins' Menu"""
         """
         Overrides method from base class.
         """
         if not self.check_versions() or not self.check_model_type():
             return None
-        iDF = gtk.MenuItem("Import Abstract Card Set")
-        iDF.connect("activate", self.activate)
-        return iDF
-
-    def get_desired_menu(self):
-        return "Plugins"
+        oImport = gtk.MenuItem("Import Abstract Card Set")
+        oImport.connect("activate", self.activate)
+        return ('Plugins', oImport)
 
     def activate(self, oWidget):
         oDlg = self.make_dialog()

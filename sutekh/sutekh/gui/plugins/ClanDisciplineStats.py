@@ -35,16 +35,12 @@ class ClanDisciplineStats(CardListPlugin):
         self._oStatsVbox = None
 
     def get_menu_item(self):
-        """create the required gtk.MenuItem for the plugin"""
+        """Register on the 'Plugins' menu"""
         if not self.check_versions() or not self.check_model_type():
             return None
-        iClanStats = gtk.MenuItem("Clan Discipline Stats")
-        iClanStats.connect("activate", self.activate)
-        return iClanStats
-
-    def get_desired_menu(self):
-        """Register on the 'Plugins' menu"""
-        return "Plugins"
+        oClanStats = gtk.MenuItem("Clan Discipline Stats")
+        oClanStats.connect("activate", self.activate)
+        return ('Plugins', oClanStats)
 
     # pylint: disable-msg=W0613
     # oWidget required by function signature

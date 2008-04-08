@@ -85,7 +85,7 @@ class CountCardSetCards(CardListPlugin, CardListModelListener):
                 self.__iLibrary += 1
         self.update_numbers()
 
-    def alterCardCount(self, oCard, iChg):
+    def alter_card_count(self, oCard, iChg):
         "respond to alter_card_count events"
         self.__iTot += iChg
         if _id_card(oCard) == 'Crypt':
@@ -94,7 +94,7 @@ class CountCardSetCards(CardListPlugin, CardListModelListener):
             self.__iLibrary += iChg
         self.update_numbers()
 
-    def addNewCard(self, oCard):
+    def add_new_card(self, oCard):
         "response to add_new_card events"
         self.__iTot += 1
         if _id_card(oCard) == 'Crypt':

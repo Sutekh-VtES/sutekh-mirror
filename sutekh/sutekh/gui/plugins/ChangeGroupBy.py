@@ -37,15 +37,12 @@ class GroupCardList(CardListPlugin):
         self._dGrpings['No Grouping'] = NullGrouping
 
     def get_menu_item(self):
-        """Overrides method from base class."""
+        """Register on the 'Plugins' menu"""
         if not self.check_versions() or not self.check_model_type():
             return None
-        iGrouping = gtk.MenuItem("Change Grouping")
-        iGrouping.connect("activate", self.activate)
-        return iGrouping
-
-    def get_desired_menu(self):
-        return "Plugins"
+        oGrouping = gtk.MenuItem("Change Grouping")
+        oGrouping.connect("activate", self.activate)
+        return ('Plugins', oGrouping)
 
     def activate(self, oWidget):
         oDlg = self.make_dialog()

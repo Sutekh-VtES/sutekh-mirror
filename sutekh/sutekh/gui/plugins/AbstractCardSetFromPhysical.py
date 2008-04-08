@@ -18,18 +18,13 @@ class AbstractCardSetFromPhysical(CardListPlugin):
     aModelsSupported = [PhysicalCardSet]
 
     def get_menu_item(self):
-        """
-        Overrides method from base class.
-        """
+        """Register with the 'Plugins' Menu"""
         if not self.check_versions() or not self.check_model_type():
             return None
-        iDF = gtk.MenuItem("Generate a Abstract Card Set")
-        iDF.connect("activate", self.activate)
+        oGenACS = gtk.MenuItem("Generate a Abstract Card Set")
+        oGenACS.connect("activate", self.activate)
 
-        return iDF
-
-    def get_desired_menu(self):
-        return "Plugins"
+        return ('Plugins', oGenACS)
 
     # pylint: disable-msg=W0613
     # oWidget required by function signature

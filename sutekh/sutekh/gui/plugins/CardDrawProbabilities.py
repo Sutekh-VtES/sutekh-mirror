@@ -128,16 +128,12 @@ class CardDrawSimPlugin(CardListPlugin):
             AbstractCardSet]
 
     def get_menu_item(self):
-        """Overrides method from base class."""
+        """Register on the 'Plugins' menu"""
         if not self.check_versions() or not self.check_model_type():
             return None
-        iCardDraw = gtk.MenuItem("Card Draw probabilities")
-        iCardDraw.connect("activate", self.activate)
-        return iCardDraw
-
-    def get_desired_menu(self):
-        """Menu to associate with"""
-        return "Plugins"
+        oCardDraw = gtk.MenuItem("Card Draw probabilities")
+        oCardDraw.connect("activate", self.activate)
+        return ('Plugins', oCardDraw)
 
     # pylint: disable-msg=W0613, W0201
     # W0613 - oWidget has to be here, although it's unused

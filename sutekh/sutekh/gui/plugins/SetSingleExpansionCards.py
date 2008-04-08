@@ -24,13 +24,9 @@ class SetSingleExpansionCards(CardListPlugin):
         """Return a gtk.MenuItem to activate this plugin."""
         if not self.check_versions() or not self.check_model_type():
             return None
-        iDF = gtk.MenuItem("Force Expansion for Single Expansion Cards")
-        iDF.connect("activate", self.activate)
-        return iDF
-
-    def get_desired_menu(self):
-        """Register in 'Plugins' menu"""
-        return "Plugins"
+        oMenuItem = gtk.MenuItem("Force Expansion for Single Expansion Cards")
+        oMenuItem.connect("activate", self.activate)
+        return ('Plugins', oMenuItem)
 
     # pylint: disable-msg=W0613
     # oWidget needed by gtk function signature

@@ -38,17 +38,12 @@ class ClusterCardList(CardListPlugin):
             self._makeCardSetFromCluster = self.makeACSFromCluster
 
     def get_menu_item(self):
-        """
-        Overrides method from base class.
-        """
+        """Register on the 'Plugins' menu."""
         if not self.check_versions() or not self.check_model_type():
             return None
-        iCluster = gtk.MenuItem("Cluster Cards")
-        iCluster.connect("activate", self.activate)
-        return iCluster
-
-    def get_desired_menu(self):
-        return "Plugins"
+        oCluster = gtk.MenuItem("Cluster Cards")
+        oCluster.connect("activate", self.activate)
+        return ('Plugins', oCluster)
 
     def activate(self,oWidget):
         dlg = self.makeDialog()

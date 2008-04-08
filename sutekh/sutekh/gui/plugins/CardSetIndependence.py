@@ -27,17 +27,15 @@ class CardSetIndependence(CardListPlugin):
             PhysicalCardSet]
 
     def get_menu_item(self):
+        """Register with the 'Plugins' Menu"""
         """
         Overrides method from base class.
         """
         if not self.check_versions() or not self.check_model_type():
             return None
-        iDF = gtk.MenuItem("Test Card Set Independence")
-        iDF.connect("activate", self.activate)
-        return iDF
-
-    def get_desired_menu(self):
-        return "Plugins"
+        oTest = gtk.MenuItem("Test Card Set Independence")
+        oTest.connect("activate", self.activate)
+        return ('Plugins', oTest)
 
     def activate(self, oWidget):
         oDlg = self.make_dialog()

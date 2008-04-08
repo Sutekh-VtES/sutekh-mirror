@@ -22,21 +22,16 @@ class CardSetPrint(CardListPlugin):
     aModelsSupported = [AbstractCardSet, PhysicalCardSet]
 
     def get_menu_item(self):
-        """
-        Overrides method from base class.
-        """
+        """Register on the 'Actions' Menu"""
         if not self.check_versions() or not self.check_model_type():
             return None
 
         # Keep print settings
         self._oSettings = None
 
-        iDF = gtk.MenuItem("Print Card Set")
-        iDF.connect("activate", self.activate)
-        return iDF
-
-    def get_desired_menu(self):
-        return "Actions"
+        oPrint = gtk.MenuItem("Print Card Set")
+        oPrint.connect("activate", self.activate)
+        return ('Actions', oPrint)
 
     def activate(self,oWidget):
         oPrintOp = gtk.PrintOperation()

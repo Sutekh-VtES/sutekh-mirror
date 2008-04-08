@@ -463,7 +463,7 @@ class CardImagePlugin(CardListPlugin):
             self.init_image_frame(self)
         if self._cModelType in self.aListenViews:
             self.view.add_listener(self.image_frame)
-        self._oMenuItem = None
+        self._oReplaceItem = None
         self._oConfigMenuItem = None
 
     image_frame = property(fget=lambda self: self.get_image_frame(),
@@ -490,8 +490,11 @@ class CardImagePlugin(CardListPlugin):
            """
         if not self.check_versions() or not self.check_model_type():
             return None
-        self._oMenuItem = gtk.MenuItem("Replace with Card Image Frame")
-        self._oMenuItem.connect("activate", self.activate)
+        self._oReplaceItem = gtk.MenuItem("Replace with Card Image Frame")
+        self._oReplaceItem.connect("activate", self.replace_pane)
+
+        self._oAddItem = gtk.MenuItem("Add Card Image Frame")
+        self._oAddItem.connect("activate", self.add_pane)
         self.parent.add_to_menu_list('Card Image Frame',
                 self.add_image_frame_active)
         self._oConfigMenuItem = gtk.MenuItem("Configure Card Images Plugin")
@@ -499,7 +502,9 @@ class CardImagePlugin(CardListPlugin):
         if not self.image_frame.check_images():
             # Don't allow the menu option if we can't find the images
             self.add_image_frame_active(False)
-        return self._oConfigMenuItem, self._oMenuItem
+        return [('Plugins', self._oConfigMenuItem),
+                ('Add Pane', self._oAddItem),
+                ('Replace Pane', self._oReplaceItem)]
 
     # pylint: disable-msg=W0613
     # oMenuWidget needed by gtk function signature
@@ -637,13 +642,11 @@ class CardImagePlugin(CardListPlugin):
         """
         if bValue and not self.image_frame.check_images():
             # Can only be set true if check_images returns true
-            self._oMenuItem.set_sensitive(False)
+            self._oReplaceItem.set_sensitive(False)
+            self._oAddItem.set_sensitive(False)
         else:
-            self._oMenuItem.set_sensitive(bValue)
-
-    def get_desired_menu(self):
-        'Attach to the default Plugin menu'
-        return "Plugins"
+            self._oReplaceItem.set_sensitive(bValue)
+            self._oAddItem.set_sensitive(bValue)
 
     def get_frame_from_config(self, sType):
         """
@@ -656,15 +659,21 @@ class CardImagePlugin(CardListPlugin):
 
     # pylint: disable-msg=W0613
     # oWidget needed by gtk function signature
-    def activate(self, oWidget):
-        """
-        Handle adding the frame to the main window if required
-        """
+    def replace_pane(self, oWidget):
+        """Handle replacing a frame to the main window if required"""
         if self._sMenuFlag not in self.parent.dOpenFrames.values():
             oNewPane = self.parent.focussed_pane
             if oNewPane:
                 self.parent.replace_frame(oNewPane, self.image_frame,
                         self._sMenuFlag)
+
+    def add_pane(self, oWidget):
+        """Handle adding the frame to the main window if required"""
+        if self._sMenuFlag not in self.parent.dOpenFrames.values():
+            oNewPane = self.parent.add_pane_end()
+            self.parent.replace_frame(oNewPane, self.image_frame,
+                    self._sMenuFlag)
+
 
 # pylint: disable-msg=C0103
 # shut up complaint about the name

@@ -29,16 +29,12 @@ class CardSetCompare(CardListPlugin):
             PhysicalCardSet]
 
     def get_menu_item(self):
-        """Provide the gtk.MenuItem for this plugin."""
+        """Register on the 'Plugins' menu."""
         if not self.check_versions() or not self.check_model_type():
             return None
-        iDF = gtk.MenuItem("Compare with another Card Set")
-        iDF.connect("activate", self.activate)
-        return iDF
-
-    def get_desired_menu(self):
-        """Register on the 'Plugins' menu."""
-        return "Plugins"
+        oCompare = gtk.MenuItem("Compare with another Card Set")
+        oCompare.connect("activate", self.activate)
+        return ('Plugins', oCompare)
 
     # pylint: disable-msg=W0613
     # oWidget required by gtk function signature

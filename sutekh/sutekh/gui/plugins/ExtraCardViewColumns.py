@@ -157,18 +157,12 @@ class ExtraCardViewColumns(CardListPlugin):
     # Dialog and Menu Item Creation
 
     def get_menu_item(self):
-        """
-        Overrides method from base class.
-        """
+        """Register on 'Plugins' menu"""
         if not self.check_versions() or not self.check_model_type():
             return None
-        iSelector = gtk.MenuItem("Select Extra Columns")
-        iSelector.connect("activate", self.activate)
-        return iSelector
-
-    def get_desired_menu(self):
-        "Over base class. Register on plugins menu"
-        return "Plugins"
+        oSelector = gtk.MenuItem("Select Extra Columns")
+        oSelector.connect("activate", self.activate)
+        return ('Plugins', oSelector)
 
     # pylint: disable-msg=W0613
     # oWidget required by function signature

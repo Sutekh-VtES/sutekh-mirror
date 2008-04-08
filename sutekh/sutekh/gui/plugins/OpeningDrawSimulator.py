@@ -150,18 +150,12 @@ class OpeningHandSimulator(CardListPlugin):
         self.bShowDetails = False
 
     def get_menu_item(self):
-        """
-        Overrides method from base class.
-        """
+        """Register on the 'Plugins' menu"""
         if not self.check_versions() or not self.check_model_type():
             return None
-        iCardDraw = gtk.MenuItem("Simulate opening hand")
-        iCardDraw.connect("activate", self.activate)
-        return iCardDraw
-
-    def get_desired_menu(self):
-        "Menu to associate with"
-        return "Plugins"
+        oCardDraw = gtk.MenuItem("Simulate opening hand")
+        oCardDraw.connect("activate", self.activate)
+        return ('Plugins', oCardDraw)
 
     # pylint: disable-msg=W0613
     # oWidget required by function signature

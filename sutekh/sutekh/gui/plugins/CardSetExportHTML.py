@@ -31,18 +31,13 @@ class CardSetExportHTML(CardListPlugin):
 
     # HTML style definition
     def get_menu_item(self):
-        """
-        Overrides method from base class.
-        """
+        """Register on the Plugins Menu"""
         if not self.check_versions() or not self.check_model_type():
             return None
 
-        iDF = gtk.MenuItem("Export Card Set to HTML")
-        iDF.connect("activate", self.activate)
-        return iDF
-
-    def get_desired_menu(self):
-        return "Plugins"
+        oExport = gtk.MenuItem("Export Card Set to HTML")
+        oExport.connect("activate", self.activate)
+        return ('Plugins', oExport)
 
     def activate(self, oWidget):
         oDlg = self.make_dialog()
