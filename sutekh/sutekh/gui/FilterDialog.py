@@ -74,7 +74,7 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
         oHScrolledWindow = AutoScrolledWindow(self.__oExpandedArea, True)
         oHScrolledWindow.set_size_request(680, 450)
         self.vbox.pack_start(oHScrolledWindow)
-        self.vbox.pack_start(self.__oRadioArea)
+        self.vbox.pack_start(AutoScrolledWindow(self.__oRadioArea, True))
         self.vbox.set_homogeneous(False)
 
         self.__dFilterList = {} # id -> filter string
