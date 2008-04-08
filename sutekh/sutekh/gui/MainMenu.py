@@ -298,12 +298,20 @@ class MainMenu(gtk.MenuBar, object):
         self.__dMenus["Help"] = oMenu
         iMenu.set_submenu(oMenu)
 
-        self.iHelpTutorial = gtk.MenuItem("Sutekh Tutorial")
-        self.iHelpTutorial.connect('activate', self.__oWin.show_tutorial)
-        oMenu.add(self.iHelpTutorial)
-        self.iHelpManual = gtk.MenuItem("Sutekh Manual")
-        self.iHelpManual.connect('activate', self.__oWin.show_manual)
-        oMenu.add(self.iHelpManual)
+        self.oHelpLast = gtk.MenuItem("Last shown help page")
+
+        self.oHelpTutorial = gtk.MenuItem("Sutekh Tutorial")
+        self.oHelpTutorial.connect('activate', self.__oWin.show_tutorial,
+                self.oHelpLast)
+        oMenu.add(self.oHelpTutorial)
+        self.oHelpManual = gtk.MenuItem("Sutekh Manual")
+        self.oHelpManual.connect('activate', self.__oWin.show_manual,
+                self.oHelpLast)
+        oMenu.add(self.oHelpManual)
+
+        self.oHelpLast.connect('activate', self.__oWin.show_last_help)
+        oMenu.add(self.oHelpLast)
+        self.oHelpLast.set_sensitive(False)
 
         self.iAbout = gtk.MenuItem("About Sutekh")
         self.iAbout.connect('activate', self.__oWin.show_about_dialog)

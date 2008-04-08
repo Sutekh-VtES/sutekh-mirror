@@ -20,9 +20,10 @@ import re
 import warnings
 import operator
 import xml.sax, xml.sax.handler
+from cStringIO import StringIO
 # pylint: disable-msg=E0611
 # pylint doesn't see resource_stream here, for some reason
-from pkg_resources import resource_stream
+from pkg_resources import resource_stream, resource_exists
 # pylint: enable-msg=E0611
 from sutekh.gui.SutekhDialog import SutekhDialog
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
@@ -414,8 +415,9 @@ class HtmlHandler(xml.sax.handler.ContentHandler):
             self._sText = ' '*len(self._aListCounters)*4 + sListHead + ' '
         elif sName == 'img':
             try:
-                # FIXME: Fix this to avoid the ../docs/ hack
-                oFile = resource_stream(__name__, '../docs/' + oAttrs['src'])
+                # Is this the right way? Not sure of my understanding of the
+                # pkg_resources docs.
+                oFile = resource_stream('sutekh', '/docs/' + oAttrs['src'])
                 oLoader = gtk.gdk.PixbufLoader()
                 oLoader.write(oFile.read())
                 oLoader.close()
@@ -568,6 +570,14 @@ class HTMLViewDialog(SutekhDialog):
        Used to show HTML Manuals in Sutekh.
        """
 
+    _sError = """<html>
+    <body>
+    <h1>Resource not found</h1>
+    <p>Unable to load the resource %(missing)s</p>
+    </body>
+    </html>
+    """
+
     def __init__(self, oParent, fInput):
         super(HTMLViewDialog, self).__init__('Help', oParent,
                 oButtons=(gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
@@ -593,6 +603,7 @@ class HTMLViewDialog(SutekhDialog):
         self.vbox.pack_start(self._oView, True,
                 True)
         self._oHTMLTextView.connect('url-clicked', self._url_clicked)
+        self.connect('response', lambda x, but: self.hide())
         self.show_all()
 
     def _update_view(self):
@@ -613,15 +624,24 @@ class HTMLViewDialog(SutekhDialog):
             self._oForwardButton.set_sensitive(False)
         self.show_all()
 
-    # pylint: disable-msg=W0613
-    # oWidget, oType required by function signature
-    def _url_clicked(self, oWidget, sUrl, oType):
-        """Update the HTML widget with the new url"""
-        fInput = resource_stream(__name__, '../docs/' + sUrl)
+    def show_page(self, fInput):
+        """Display the html file in fInput in the current window."""
         self._aPastUrls.append(self._fCurrent)
         self._aFutureUrls = [] # Forward history is lost
         self._fCurrent = fInput
         self._update_view()
+
+    # pylint: disable-msg=W0613
+    # oWidget, oType required by function signature
+    def _url_clicked(self, oWidget, sUrl, oType):
+        """Update the HTML widget with the new url"""
+        sResource = '/docs/%s' % sUrl
+        if resource_exists('sutekh', sResource):
+            fInput = resource_stream('sutekh', sResource)
+        else:
+            sError = self._sError % { 'missing' : sUrl }
+            fInput = StringIO(sError)
+        self.show_page(fInput)
 
     def _go_back(self, oWidget):
         """Go backwards through the list of visited urls"""

@@ -73,6 +73,7 @@ class MultiPaneWindow(gtk.Window):
         self._oCardTextPane = CardTextFrame(self)
         self._oPCSListPane = None
         self._oACSListPane = None
+        self._oHelpDlg = None
 
         self.show_all()
 
@@ -405,22 +406,30 @@ class MultiPaneWindow(gtk.Window):
         oDlg.run()
         oDlg.destroy()
 
-    def show_tutorial(self, oMenuWidget):
+    def show_tutorial(self, oMenuWidget, oHelpLast):
         """Show the HTML Tutorial"""
-        fTutorial = resource_stream(__name__, '../docs/Tutorial.html')
+        fTutorial = resource_stream('sutekh', '/docs/Tutorial.html')
+        oHelpLast.set_sensitive(True)
         self._do_html_dialog(fTutorial)
 
-    def show_manual(self, oMenuWidget):
+    def show_manual(self, oMenuWidget, oHelpLast):
         """Show the HTML Manual"""
-        fManual = resource_stream(__name__, '../docs/Manual.html')
+        fManual = resource_stream('sutekh', '/docs/Manual.html')
+        oHelpLast.set_sensitive(True)
         self._do_html_dialog(fManual)
+
+    def show_last_help(self, oMenuWidget):
+        """Reshow the help dialog with the last shown page"""
+        if self._oHelpDlg is not None:
+            self._oHelpDlg.show()
 
     def _do_html_dialog(self, fInput):
         """Popup and run HTML Dialog widget"""
-        oDlg = HTMLViewDialog(self, fInput)
-        oDlg.run()
-        oDlg.destroy()
-
+        if self._oHelpDlg is None:
+            self._oHelpDlg = HTMLViewDialog(self, fInput)
+        else:
+            self._oHelpDlg.show_page(fInput)
+        self._oHelpDlg.show()
 
     # frame management functions
 
