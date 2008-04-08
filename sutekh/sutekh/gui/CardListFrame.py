@@ -24,29 +24,31 @@ class CardListFrame(BasicFrame):
         self._aPlugins = []
         self._oConfig = oConfig
 
-        self._oC = None
+        self._oController = None
         self._cModelType = None
 
     # pylint: disable-msg=W0212
     # We allow access via these properties
-    view = property(fget=lambda self: self._oC.view,
+    view = property(fget=lambda self: self._oController.view,
             doc="Associated View Object")
     menu = property(fget=lambda self: self._oMenu, doc="Frame Menu")
     type = property(fget=lambda self: self._cModelType.sqlmeta.table,
             doc="Frame Type")
+    plugins = property(fget=lambda self: self._aPlugins,
+            doc="Plugins enabled for this frame.")
     # pylint: enable-msg=W0212
 
     def init_plugins(self):
         """Loop through the plugins, and enable those appropriate for us."""
         for cPlugin in \
                 self._oMainWindow.plugin_manager.get_card_list_plugins():
-            self._aPlugins.append(cPlugin(self._oC.view,
-                self._oC.view.getModel(), self._cModelType))
+            self._aPlugins.append(cPlugin(self._oController.view,
+                self._oController.view.getModel(), self._cModelType))
 
     def reload(self):
         """Reload frame contents"""
         # Needs to be exposed to the main window for major database changes
-        self._oC.view.reload_keep_expanded()
+        self._oController.view.reload_keep_expanded()
 
     def get_toolbar_plugins(self):
         """Register plugins on the frame toolbar."""
@@ -73,7 +75,8 @@ class CardListFrame(BasicFrame):
         if oToolbar is not None:
             oMbox.pack_start(oToolbar, False, False)
 
-        oMbox.pack_start(AutoScrolledWindow(self._oC.view), expand=True)
+        oMbox.pack_start(AutoScrolledWindow(self._oController.view),
+                expand=True)
 
         self.add(oMbox)
         self.show_all()

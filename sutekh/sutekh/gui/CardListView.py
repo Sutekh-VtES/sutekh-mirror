@@ -5,6 +5,8 @@
 # Copyright 2006, 2007 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
+"""gtk.TreeView classes for displaying the card list."""
+
 import gtk, pango
 from sutekh.gui.FilterDialog import FilterDialog
 from sutekh.gui.CellRendererSutekhButton import CellRendererSutekhButton
@@ -21,7 +23,7 @@ class CardListView(gtk.TreeView, object):
     """Base class for all the card list views in Sutekh."""
     def __init__(self, oController, oMainWindow, oConfig, oModel):
         self._oModel = oModel
-        self._oC = oController
+        self._oController = oController
         self._oMainWin = oMainWindow
         self._oConfig = oConfig
         self.dListeners = {} # dictionary of CardListViewListeners
@@ -92,16 +94,13 @@ class CardListView(gtk.TreeView, object):
         """Remove a listener from the list."""
         del self.dListeners[oListener]
 
-    def column_clicked(self, oColumn):
-        self.emit('button-press-event',
-                gtk.gdk.Event(gtk.gdk.BUTTON_PRESS_MASK))
-        return False
-
     def load(self):
         """Called when the model needs to be reloaded."""
         self._oModel.load()
 
     # Help functions used by reload_keep_expanded
+    # pylint: disable-msg=W0613
+    # Various arguments required by function signatures
     def __get_row_status(self, oModel, oPath, oIter, dExpandedDict):
         """Create a dictionary of rows and their expanded status."""
         if self.row_expanded(oPath):
@@ -109,15 +108,18 @@ class CardListView(gtk.TreeView, object):
                     self._oModel.getCardNameFromPath(oPath))
         return False # Need to process the whole list
 
+    # pylint: disable-msg=W0613
+
     def __set_row_status(self, dExpandedDict):
         """Attempt to expand the rows listed in dExpandedDict."""
         for oPath in dExpandedDict:
+            # pylint: disable-msg=W0704
+            # Paths may disappear, so this error can be ignored
             try:
                 sCardName = self._oModel.getCardNameFromPath(oPath)
                 if sCardName == dExpandedDict[oPath]:
                     self.expand_to_path(oPath)
             except ValueError:
-                # Paths may disappear, so this error can be ignored
                 pass
         return False
 
@@ -143,10 +145,12 @@ class CardListView(gtk.TreeView, object):
 
     # Activating Rows
 
-    def card_activated(self, wTree, oPath, oColumn):
+    # pylint: disable-msg=W0613
+    # Various arguments required by function signatures
+    def card_activated(self, oTree, oPath, oColumn):
         """Update card text and notify listeners when a card is selected."""
         sCardName = self._oModel.getCardNameFromPath(oPath)
-        self._oC.set_card_text(sCardName)
+        self._oController.set_card_text(sCardName)
         for oListener in self.dListeners:
             oListener.set_card_text(sCardName, '')
 
@@ -184,14 +188,17 @@ class CardListView(gtk.TreeView, object):
         # Let other key handles take charge
         return False
 
+
     # Selecting
 
-    def force_cursor_move(self, treeview, step, count):
+    def force_cursor_move(self, oTreeView, iStep, iCount):
         """Special handling for move events for buggy gtk events.
 
            We need to allow the selection of top level items when
            moving the cursor over them
            """
+        # pylint: disable-msg=W0612
+        # We're only interested in oCurPath
         (oCurPath, oColumn) = self.get_cursor()
         if self._oModel.iter_parent(self._oModel.get_iter(oCurPath)) is None:
             # Root node, so need to force the move
@@ -204,6 +211,8 @@ class CardListView(gtk.TreeView, object):
         # anything else funky
         return False
 
+    # pylint: enable-msg=W0613
+
     def can_select(self, oPath):
         """disable selecting top level rows"""
         if self.bSelectTop > 0:
@@ -211,7 +220,8 @@ class CardListView(gtk.TreeView, object):
             self.bSelectTop -= 1
             return True
         # In general, we don't allow the top level nodes to be selected
-        return self._oModel.iter_parent(self._oModel.get_iter(oPath)) is not None
+        return self._oModel.iter_parent(self._oModel.get_iter(oPath)) is \
+                not None
 
     def card_selected(self, oSelection):
         """Change the selection behaviour.
@@ -231,6 +241,8 @@ class CardListView(gtk.TreeView, object):
             self._aOldSelection = []
             return False
 
+        # pylint: disable-msg=W0612
+        # We're only interested in aList
         oModel, aList = oSelection.get_selected_rows()
         # Implement the non default selection behaviour.
         tCursorPos = self.get_cursor()
@@ -240,8 +252,8 @@ class CardListView(gtk.TreeView, object):
             # displayed card to this one
             try:
                 self.bReentrant = True
-                for oP in self._aOldSelection:
-                    oSelection.select_path(oP)
+                for oPath in self._aOldSelection:
+                    oSelection.select_path(oPath)
             finally:
                 self.bReentrant = False
             oPath = aList[0]
@@ -259,7 +271,7 @@ class CardListView(gtk.TreeView, object):
             self._aOldSelection = aList
 
         sCardName = self._oModel.getCardNameFromPath(oPath)
-        self._oC.set_card_text(sCardName)
+        self._oController.set_card_text(sCardName)
         sExpansion = self._oModel.getExpansionNameFromPath(oPath)
         if not sExpansion:
             sExpansion = ''
@@ -284,7 +296,8 @@ class CardListView(gtk.TreeView, object):
                 # Need to check if any of the children match
                 for iChildCount in range(oModel.iter_n_children(oIter)):
                     oChildIter = oModel.iter_nth_child(oIter, iChildCount)
-                    sChildName = self._oModel.getNameFromIter(oChildIter).lower()
+                    sChildName = self._oModel.getNameFromIter(
+                            oChildIter).lower()
                     if sChildName.startswith(sKey.lower()):
                         # Expand the row
                         self.expand_to_path(oPath)
@@ -301,9 +314,10 @@ class CardListView(gtk.TreeView, object):
     # Filtering
 
     def getFilter(self, oMenu):
+        """Get the Filter from the FilterDialog."""
         if self._oFilterDialog is None:
             self._oFilterDialog = FilterDialog(self._oMainWin,
-                    self._oConfig, self._oC.filtertype)
+                    self._oConfig, self._oController.filtertype)
 
         self._oFilterDialog.run()
 
@@ -315,7 +329,7 @@ class CardListView(gtk.TreeView, object):
             self._oModel.selectfilter = oFilter
             if not self._oModel.applyfilter:
                 # If a filter is set, automatically apply
-                oMenu.setApplyFilter(True)
+                oMenu.set_apply_filter(True)
             else:
                 # Filter Changed, so reload
                 self.load()
@@ -323,11 +337,12 @@ class CardListView(gtk.TreeView, object):
             # Filter is set to blank, so we treat this as disabling
             # Filter
             if self._oModel.applyfilter:
-                oMenu.setApplyFilter(False)
+                oMenu.set_apply_filter(False)
             else:
                 self.load()
 
-    def runFilter(self, bState):
+    def run_filter(self, bState):
+        """Enable or diable the current filter based on bState"""
         if self._oModel.applyfilter != bState:
             self._oModel.applyfilter = bState
             self.load()
@@ -344,7 +359,8 @@ class CardListView(gtk.TreeView, object):
             sCardName, sExpansion, iCount, iDepth = \
                     oModel.get_all_from_path(oPath)
             if iDepth == 0:
-                # Skip top level items, since they're meaningless for the selection
+                # Skip top level items, since they're meaningless for the
+                # selection
                 continue
             # if a card is selected, then it's children (which are
             # the expansions) which are selected are ignored, since
@@ -384,21 +400,23 @@ class CardListView(gtk.TreeView, object):
             dSelectedData = self.process_selection()
             for sCardName in dSelectedData:
                 for sExpansion, iCount in dSelectedData[sCardName].iteritems():
+                    # pylint: disable-msg=W0612
+                    # iAttempt is loop counter
                     for iAttempt in range(iCount):
                         if sExpansion != 'None':
-                            self._oC.decCard(sCardName, sExpansion)
+                            self._oController.decCard(sCardName, sExpansion)
                         else:
-                            self._oC.decCard(sCardName, None)
+                            self._oController.decCard(sCardName, None)
 
     # Drag and Drop
     # Sub-classes should override as needed.
 
-    def drag_card(self, btn, context, selection_data, info, time):
-        """Create string represntation of the sec ltion for drag-n-drop code"""
+    def drag_card(self, oBtn, oContext, oSelection_data, oInfo, oTime):
+        """Create string representation of the selection for drag-n-drop"""
         sSelectData = self.get_selection_as_string()
         if sSelectData == '':
             return
-        selection_data.set(selection_data.target, 8, sSelectData)
+        oSelection_data.set(oSelection_data.target, 8, sSelectData)
 
     def split_selection_data(self, sSelectionData):
         """Helper function to subdivide selection string into bits again"""
@@ -423,12 +441,15 @@ class CardListView(gtk.TreeView, object):
                 [true_expansion(x) for x in aLines[3::3]])
         return sSource, aCardInfo
 
-    def drag_delete(self, btn, context, data):
+    def drag_delete(self, oBtn, oContext, oData):
+        """Default drag-delete handler"""
         pass
 
-    def card_drop(self, w, context, x, y, data, info, time):
+    def card_drop(self, oWdgt, oContext, iXPos, iYPos, oData, oInfo, oTime):
+        """Default drag-n-drop handler."""
         # Pass off to the Frame Handler
-        self._oC.frame.drag_drop_handler(w, context, x, y, data, info, time)
+        self._oController.frame.drag_drop_handler(oWdgt, oContext, iXPos,
+                iYPos, oData, oInfo, oTime)
 
     def add_paste_data(self, sSource, aCards):
         """Helper function for copy+paste and drag+drop.
@@ -439,6 +460,10 @@ class CardListView(gtk.TreeView, object):
         return False # do nothing
 
 class EditableCardListView(CardListView):
+    """CardList View which can be edited.
+
+       Add support for displaying number changing buttons,
+       setting the editable style, and so forth."""
     # pylint: disable-msg=R0904
     # gtk.Widget, so menu public methods
     def __init__(self, oController, oWindow, oConfig, oModel):
@@ -457,13 +482,10 @@ class EditableCardListView(CardListView):
         oColumn1.set_sort_column_id(1)
         self.append_column(oColumn1)
 
-        oColumn1.connect('clicked', self.column_clicked)
-
         oColumn2 = gtk.TreeViewColumn("Cards", oCell2, text=0)
         oColumn2.set_expand(True)
         oColumn2.set_sort_column_id(0)
         self.append_column(oColumn2)
-        oColumn2.connect('clicked', self.column_clicked)
 
         # Arrow cells
         oCell3 = CellRendererSutekhButton()
@@ -497,8 +519,9 @@ class EditableCardListView(CardListView):
             self.check_editable()
 
     def mapped(self, oWidget, oEvent):
-        # Called when the view has been mapped, so see if we need to 
-        # be editable
+        """Called when the view has been mapped, so we can twiddle the
+           display"""
+        # see if we need to be editable
         self.check_editable()
 
     def check_editable(self):
@@ -508,8 +531,9 @@ class EditableCardListView(CardListView):
 
     # Used by card dragging handlers
     def addCard(self, sCardName, sExpansion):
+        """Called to add a card with expansion"""
         if self._oModel.bEditable:
-            bSucc = self._oC.addCard(sCardName, sExpansion)
+            self._oController.addCard(sCardName, sExpansion)
 
     # When editing cards, we pass info to the controller to
     # update stuff in the database
@@ -517,22 +541,29 @@ class EditableCardListView(CardListView):
     # since it defines the logic for handling expansions, etc.
 
     def incCard(self, oCell, oPath):
+        """Called to increment the count for a card."""
         if self._oModel.bEditable:
+            # pylint: disable-msg=W0612
+            # only interested in bInc
             bInc, bDec = self._oModel.get_inc_dec_flags_from_path(oPath)
             if bInc:
                 sCardName = self._oModel.getCardNameFromPath(oPath)
                 sExpansion = self._oModel.getExpansionNameFromPath(oPath)
-                self._oC.incCard(sCardName, sExpansion)
+                self._oController.incCard(sCardName, sExpansion)
 
     def decCard(self, oCell, oPath):
+        """Called to decrement the count for a card"""
         if self._oModel.bEditable:
+            # pylint: disable-msg=W0612
+            # only interested in bDec
             bInc, bDec = self._oModel.get_inc_dec_flags_from_path(oPath)
             if bDec:
                 sCardName = self._oModel.getCardNameFromPath(oPath)
                 sExpansion = self._oModel.getExpansionNameFromPath(oPath)
-                self._oC.decCard(sCardName, sExpansion)
+                self._oController.decCard(sCardName, sExpansion)
 
     def set_color_edit_cue(self):
+        """Set a visual cue that the card set is editable."""
         oCurStyle = self.rc_get_style()
         self.set_name('editable_view')
         oParent = self.get_parent()
@@ -559,6 +590,7 @@ class EditableCardListView(CardListView):
             self.set_name('editable_view')
 
     def set_color_normal(self):
+        """Unset the editable visual cue"""
         self.set_name('normal_view')
 
     def _set_editable(self, bValue):
@@ -577,5 +609,7 @@ class EditableCardListView(CardListView):
         self.reload_keep_expanded()
 
     def set_edit_menu_item(self, oMenuWidget):
+        """Keep track of the menu item, so we can update it's toggled
+           status."""
         self._oMenuEditWidget = oMenuWidget
 

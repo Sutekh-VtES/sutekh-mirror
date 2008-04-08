@@ -46,6 +46,8 @@ class PropDialog(SutekhDialog):
         self.sAuthor = None
         self.sComment = None
 
+    # pylint: disable-msg=W0613
+    # oWidget required by function signature
     def button_response(self, oWidget, iResponse):
         """Handle the dialog response signal."""
         if iResponse == gtk.RESPONSE_OK:

@@ -12,6 +12,9 @@ from sutekh.gui.SutekhDialog import SutekhDialog
 from sutekh.io.WwFile import WW_CARDLIST_URL, WW_RULINGS_URL
 
 class WWFilesDialog(SutekhDialog):
+    # pylint: disable-msg=R0904, R0902
+    # R0904 - gtk.Widget, so menu public methods
+    # R0902 - we keep a lot of internal state, so many instance variables
     """Actual dailog widget"""
 
     def __init__(self, oParent):
@@ -57,7 +60,7 @@ class WWFilesDialog(SutekhDialog):
                 self.use_ww_cardlist_toggled)
         self.oUseWwRulingsButton.connect("toggled",
                 self.use_ww_rulings_toggled)
-        self.connect("response", self.handleResponse)
+        self.connect("response", self.handle_response)
 
         self.show_all()
         self.sCLName = None
@@ -66,7 +69,10 @@ class WWFilesDialog(SutekhDialog):
         self.bCLIsUrl = None
         self.bRulingsIsUrl = None
 
-    def handleResponse(self, oWidget, iResponse):
+    # pylint: disable-msg=W0613
+    # oWidget required by the function signature
+    def handle_response(self, oWidget, iResponse):
+        """Extract the information from the dialog if the user presses OK"""
         if iResponse == gtk.RESPONSE_OK:
             if self.oUseWwCardListButton.get_active():
                 self.bCLIsUrl = True
@@ -85,9 +91,15 @@ class WWFilesDialog(SutekhDialog):
             if self.oBackupFileButton.get_active():
                 self.sBackupFileName = self.oBackupFileDialog.get_filename()
 
-    def getNames(self):
-        return (self.sCLName, self.bCLIsUrl, self.sRulingsName, self.bRulingsIsUrl, self.sBackupFileName)
+    # pylint: enable-msg=W0613
 
+    def get_names(self):
+        """Pass the information back to the caller"""
+        return (self.sCLName, self.bCLIsUrl, self.sRulingsName,
+                self.bRulingsIsUrl, self.sBackupFileName)
+
+    # pylint: disable-msg=W0613
+    # oWidget required by the function signature
     def backup_file_toggled(self, oWidget):
         """Update status if user toggles the 'make backup' checkbox"""
         if self.oBackupFileButton.get_active():

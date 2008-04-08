@@ -24,12 +24,14 @@ class AbstractCardListFrame(CardListFrame):
         self.set_title(self._sName)
         self.set_name("abstract card list")
 
-        self._oC = AbstractCardListController(self, oConfig, oMainWindow)
+        self._oController = AbstractCardListController(self, oConfig,
+                oMainWindow)
 
         self._cModelType = AbstractCard
 
         self.init_plugins()
 
-        self._oMenu = AbstractCardListMenu(self, self._oC, oMainWindow)
+        self._oMenu = AbstractCardListMenu(self, self._oController,
+                oMainWindow)
 
         self.add_parts()

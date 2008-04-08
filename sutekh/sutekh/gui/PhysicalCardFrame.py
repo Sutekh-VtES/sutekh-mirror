@@ -20,13 +20,13 @@ class PhysicalCardFrame(CardListFrame):
         self.set_title(self._sName)
         self.set_name("physical card list")
 
-        self._oC = PhysicalCardController(self, oConfig, oMainWindow)
+        self._oController = PhysicalCardController(self, oConfig, oMainWindow)
 
         self._cModelType = PhysicalCard
 
         self.init_plugins()
 
-        self._oMenu = PhysicalCardMenu(self, self._oC, oMainWindow)
+        self._oMenu = PhysicalCardMenu(self, self._oController, oMainWindow)
         self.add_parts()
-        self._oC.view.check_editable()
+        self._oController.view.check_editable()
 

@@ -54,8 +54,8 @@ class CardSetView(EditableCardListView):
         else:
             sSource, aCardInfo = self.split_selection_data(oData.data)
             if sSource == "Sutekh Pane:":
-                self._oC.frame.drag_drop_handler(oWidget, oContext, iXPos,
-                        iYPos, oData, oInfo, oTime)
+                self._oController.frame.drag_drop_handler(oWidget, oContext,
+                        iXPos, iYPos, oData, oInfo, oTime)
             elif not self._oModel.bEditable:
                 # Don't accept cards when editable
                 oContext.finish(False, False, oTime)
@@ -93,7 +93,7 @@ class CardSetView(EditableCardListView):
         else:
             return False
 
-    def deleteCardSet(self):
+    def delete_card_set(self):
         """Delete this card set from the database."""
         # Check if CardSet is empty
         oCS = self.cSetType.byName(self.sSetName)

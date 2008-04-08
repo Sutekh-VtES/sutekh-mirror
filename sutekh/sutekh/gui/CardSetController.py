@@ -99,12 +99,12 @@ class PhysicalCardSetController(CardSetController):
             self.__aAbsCardIds.remove(oAC.id)
             # Update model
             if oPhysCard.expansion is not None:
-                self.model.decCardExpansionByName(oAC.name,
+                self.model.dec_card_expansion_by_name(oAC.name,
                         oPhysCard.expansion.name)
             else:
-                self.model.decCardExpansionByName(oAC.name,
+                self.model.dec_card_expansion_by_name(oAC.name,
                         oPhysCard.expansion)
-            self.model.decCardByName(oAC.name)
+            self.model.dec_card_by_name(oAC.name)
 
     def physical_card_changed(self, oPhysCard, dChanges):
         """Listen on physical cards changed.
@@ -117,16 +117,16 @@ class PhysicalCardSetController(CardSetController):
             iNewID = dChanges['expansionID']
             oAC = oPhysCard.abstractCard
             if oPhysCard.expansion is not None:
-                self.model.decCardExpansionByName(oAC.name,
+                self.model.dec_card_expansion_by_name(oAC.name,
                         oPhysCard.expansion.name)
             else:
-                self.model.decCardExpansionByName(oAC.name, None)
+                self.model.dec_card_expansion_by_name(oAC.name, None)
             if iNewID is not None:
                 oNewExpansion = list(Expansion.selectBy(id=iNewID))[0]
                 sExpName = oNewExpansion.name
             else:
                 sExpName = None
-            self.model.incCardExpansionByName(oAC.name, sExpName)
+            self.model.inc_card_expansion_by_name(oAC.name, sExpName)
 
     def decCard(self, sName, sExpansion):
         """Returns True if a card was successfully removed, False otherwise."""
@@ -156,15 +156,15 @@ class PhysicalCardSetController(CardSetController):
                 # Found one, so remove it
                 self.__oPhysCardSet.removePhysicalCard(oCard.id)
                 # Update Model
-                self.model.decCardByName(oAbsCard.name)
+                self.model.dec_card_by_name(oAbsCard.name)
                 # Update internal card list
                 self.__aPhysCardIds.remove(oCard.id)
                 self.__aAbsCardIds.remove(oAbsCard.id)
                 if oCard.expansion is not None:
-                    self.model.decCardExpansionByName(oAbsCard.name,
+                    self.model.dec_card_expansion_by_name(oAbsCard.name,
                             oCard.expansion.name)
                 else:
-                    self.model.decCardExpansionByName(oAbsCard.name, None)
+                    self.model.dec_card_expansion_by_name(oAbsCard.name, None)
                 return True
         return False
 
@@ -211,12 +211,12 @@ class PhysicalCardSetController(CardSetController):
             self.__aPhysCardIds.append(oCard.id)
             self.__aAbsCardIds.append(oAbsCard.id)
             # Update Model
-            self.model.incCardByName(oAbsCard.name)
+            self.model.inc_card_by_name(oAbsCard.name)
             if oCard.expansion is not None:
-                self.model.incCardExpansionByName(oAbsCard.name,
+                self.model.inc_card_expansion_by_name(oAbsCard.name,
                         oCard.expansion.name)
             else:
-                self.model.incCardExpansionByName(oAbsCard.name, None)
+                self.model.inc_card_expansion_by_name(oAbsCard.name, None)
             return True
         # Got here, so we failed to add
         return False
@@ -247,7 +247,7 @@ class AbstractCardSetController(CardSetController):
             abstractCardSetID=self.__oAbsCardSet.id))
         if len(aSubSet) > 0:
             oDBClass.delete(aSubSet[-1].id)
-            self.model.alterCardCount(oAbsCard.name, -1)
+            self.model.alter_card_count(oAbsCard.name, -1)
             return True
         return False
 
@@ -265,5 +265,5 @@ class AbstractCardSetController(CardSetController):
         # This is much simpler than for PhysicalCardSets, as we don't have
         # to worry about whether the card exists in PhysicalCards or not
         self.__oAbsCardSet.addAbstractCard(oAbsCard.id)
-        self.model.incCardByName(oAbsCard.name)
+        self.model.inc_card_by_name(oAbsCard.name)
         return True

@@ -70,8 +70,8 @@ class PhysicalCardController(object):
                     if oPhysCard.expansion is None:
                         # OK, can delete this one and be done with it
                         PhysicalCard.delete(oPhysCard.id)
-                        self.model.decCardExpansionByName(oAbsCard.name, None)
-                        self.model.decCardByName(oAbsCard.name)
+                        self.model.dec_card_expansion_by_name(oAbsCard.name, None)
+                        self.model.dec_card_by_name(oAbsCard.name)
                         send_reload_signal(oAbsCard)
                         return True
                     else:
@@ -83,8 +83,8 @@ class PhysicalCardController(object):
                 oPhysCard = aCandsExpansion[-1]
                 sExpName = oPhysCard.expansion.name
                 PhysicalCard.delete(oPhysCard.id)
-                self.model.decCardExpansionByName(oAbsCard.name, sExpName)
-                self.model.decCardByName(oAbsCard.name)
+                self.model.dec_card_expansion_by_name(oAbsCard.name, sExpName)
+                self.model.dec_card_by_name(oAbsCard.name)
                 send_reload_signal(oAbsCard)
                 return True
             # All physical cards are assigned to PhysicalCardSets, so find the
@@ -112,11 +112,11 @@ class PhysicalCardController(object):
                 oExpansion = oPhysCard.expansion
                 PhysicalCard.delete(oPhysCard.id)
                 if oExpansion is not None:
-                    self.model.decCardExpansionByName(oAbsCard.name,
+                    self.model.dec_card_expansion_by_name(oAbsCard.name,
                             oExpansion.name)
                 else:
-                    self.model.decCardExpansionByName(oAbsCard.name, None)
-                self.model.decCardByName(oAbsCard.name)
+                    self.model.dec_card_expansion_by_name(oAbsCard.name, None)
+                self.model.dec_card_by_name(oAbsCard.name)
                 # SQLObject Events should take care of updating any open
                 # card sets
                 send_reload_signal(oAbsCard)
@@ -132,8 +132,8 @@ class PhysicalCardController(object):
             oThisCard.expansion = None
             oThisCard.sync()
             # Update model
-            self.model.decCardExpansionByName(oAbsCard.name, sExpansion)
-            self.model.incCardExpansionByName(oAbsCard.name, None)
+            self.model.dec_card_expansion_by_name(oAbsCard.name, sExpansion)
+            self.model.inc_card_expansion_by_name(oAbsCard.name, None)
             send_reload_signal(oAbsCard)
             return True
 
@@ -161,8 +161,8 @@ class PhysicalCardController(object):
             # pylint: disable-msg=W0612
             # Creating a new PhysicalCard in the database is all that is needed
             oNewPC = PhysicalCard(abstractCard=oAbsCard, expansion=oExpansion)
-            self.model.incCardByName(oAbsCard.name)
-            self.model.incCardExpansionByName(oAbsCard.name, sExpansion)
+            self.model.inc_card_by_name(oAbsCard.name)
+            self.model.inc_card_expansion_by_name(oAbsCard.name, sExpansion)
             send_reload_signal(oAbsCard)
         else:
             # We are fiddling between the expansions
@@ -176,8 +176,8 @@ class PhysicalCardController(object):
             oThisCard.expansion = IExpansion(sExpansion)
             oThisCard.sync()
             # Update model
-            self.model.decCardExpansionByName(oAbsCard.name, None)
-            self.model.incCardExpansionByName(oAbsCard.name, sExpansion)
+            self.model.dec_card_expansion_by_name(oAbsCard.name, None)
+            self.model.inc_card_expansion_by_name(oAbsCard.name, sExpansion)
             send_reload_signal(oAbsCard)
         return True
 

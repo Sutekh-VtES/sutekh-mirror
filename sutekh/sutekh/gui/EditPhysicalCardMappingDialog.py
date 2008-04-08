@@ -14,6 +14,7 @@ from sutekh.gui.DBSignals import send_reload_signal
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 from sutekh.core.SutekhObjects import PhysicalCard, IAbstractCard, \
         IExpansion, MapPhysicalCardToPhysicalCardSet
+from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 
 def _gen_key(oPhysCard):
     """Generate a sort key
@@ -54,6 +55,37 @@ class EditPhysicalCardMappingDialog(SutekhDialog):
         self.dCardSets = {}
         # pylint: disable-msg=E1101
         # vbox & IExpansion confuses pylint
+        self._get_card_sets(dSelectedCards)
+        if len(self.dCardSets.keys()) == 0:
+            # Not assigned to any card sets, so we become a complaint
+            oIcon = gtk.Image()
+            oIcon.set_from_stock(gtk.STOCK_DIALOG_ERROR, gtk.ICON_SIZE_DIALOG)
+            oHBox = gtk.HBox()
+            oError = gtk.Label("Cards selected Not assigned to any card sets")
+            oHBox.pack_start(oIcon)
+            oHBox.pack_start(oError)
+            self.vbox.pack_start(oHBox)
+            self.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
+            self.connect("response", lambda dlg, resp: dlg.destroy())
+        else:
+            self.add_buttons(gtk.STOCK_OK, gtk.RESPONSE_OK,
+                        gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
+            self.connect("response", self.button_response)
+            # self.dCardSets has all the CardSets of interest, and the counts
+            # for each card
+            # self.dPhysCards has a mapping of card set membership
+            # We create a table of items and such to handle everything
+            self.oTable = self._create_table()
+            self.vbox.pack_start(AutoScrolledWindow(self.oTable, True))
+            self.set_default_size(600, 600)
+            self.aNumbersNotMatched = []
+        self.show_all()
+
+    def _get_card_sets(self, dSelectedCards):
+        """Extract the list of relevant card sets from the list of
+           selected cards."""
+        # pylint: disable-msg=E1101
+        # IExpansion & IAbstractCard confuses pylint
         for sAbsCardName, dExpansions in dSelectedCards.iteritems():
             oAbstractCard = IAbstractCard(sAbsCardName)
             self.dPhysCards.setdefault(oAbstractCard, {})
@@ -78,91 +110,81 @@ class EditPhysicalCardMappingDialog(SutekhDialog):
                         self.dCardSets.setdefault(oCS, {})
                         self.dCardSets[oCS].setdefault(oAbstractCard, 0)
                         self.dCardSets[oCS][oAbstractCard] += 1
-        if len(self.dCardSets.keys()) == 0:
-            # Not assigned to any card sets, so we become a complaint
-            oIcon = gtk.Image()
-            oIcon.set_from_stock(gtk.STOCK_DIALOG_ERROR, gtk.ICON_SIZE_DIALOG)
-            oHBox = gtk.HBox()
-            oError = gtk.Label("Cards selected Not assigned to any card sets")
-            oHBox.pack_start(oIcon)
-            oHBox.pack_start(oError)
-            self.vbox.pack_start(oHBox)
-            self.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
-            self.connect("response", lambda dlg, resp: dlg.destroy())
-        else:
-            self.add_buttons(gtk.STOCK_OK, gtk.RESPONSE_OK,
-                        gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
-            self.connect("response", self.button_response)
-            # self.dCardSets has all the CardSets of interest, and the counts
-            # for each card
-            # self.dPhysCards has a mapping of card set membership
-            # We create a table of items and such to handle everything
-            iTableWidth = len(self.dCardSets.keys())
-            self.oTable = gtk.Table()
-            oLabel = gtk.Label('Cards')
-            self.oTable.attach(oLabel, 0, 1, 0, 1)
-            k = 1
+
+    def _create_table(self):
+        """Create and pouplate the gtk.Table for this dialog"""
+        oTable = gtk.Table()
+        iTableWidth = len(self.dCardSets.keys())
+        oTable.attach(gtk.Label('Cards'), 0, 1, 0, 1)
+        iRow = 1
+        # Setup the row labels for the table
+        for oAbstractCard, dPhysMap in self.dPhysCards.iteritems():
+            oTable.resize(iRow, iTableWidth)
+            for oPhysCard in sorted(dPhysMap, key=_gen_key):
+                if oPhysCard.expansion is not None:
+                    sLabel = oAbstractCard.name + ':' + \
+                            oPhysCard.expansion.name
+                else:
+                    sLabel = oAbstractCard.name + ': Unspecified expansion'
+                oTable.attach(gtk.Label(sLabel), 0, 1, iRow, iRow + 1)
+                iRow += 1
+                oTable.resize(iRow, iTableWidth)
+            oTable.attach(gtk.Label("Totals for %s : " % oAbstractCard.name) ,
+                    0, 1, iRow, iRow + 1)
+            iRow += 1
+        iCol = 1
+        for oCardSet in sorted(self.dCardSets):
+            # Set the column header
+            oTable.attach(gtk.Label(oCardSet.name), iCol, iCol + 1, 0, 1,
+                    xpadding=2)
+            iRow = 1
+            # Fill the table with checkboxes, and connect the toggled
+            # method
             for oAbstractCard, dPhysMap in self.dPhysCards.iteritems():
-                self.oTable.resize(k, iTableWidth)
-                for oPhysCard in sorted(dPhysMap, key=_gen_key):
-                    if oPhysCard.expansion is not None:
-                        sLabel = oAbstractCard.name + ':' + \
-                                oPhysCard.expansion.name
-                    else:
-                        sLabel = oAbstractCard.name + ': Unspecified expansion'
-                    oLabel = gtk.Label(sLabel)
-                    self.oTable.attach(oLabel, 0, 1, k, k+1)
-                    k += 1
-                    self.oTable.resize(k, iTableWidth)
-                oLabel = gtk.Label("Totals for %s : " % oAbstractCard.name)
-                self.oTable.attach(oLabel, 0, 1, k, k+1)
-                k += 1
-            j = 1
-            for oCardSet in sorted(self.dCardSets):
-                oLabel = gtk.Label(oCardSet.name)
-                self.oTable.attach(oLabel, j, j+1, 0, 1, xpadding=2)
-                k = 1
-                for oAbstractCard, dPhysMap in self.dPhysCards.iteritems():
-                    if self.dCardSets[oCardSet].has_key(oAbstractCard):
-                        oTotalLabel = gtk.Label(str(self.dCardSets[oCardSet]
-                            [oAbstractCard]))
-                        for oPhysCard in sorted(dPhysMap, key=_gen_key):
-                            aCardSets = dPhysMap[oPhysCard]
-                            oCheckBox = gtk.CheckButton()
-                            oCheckBox.set_active(oCardSet in aCardSets)
-                            oAlignBox = gtk.Alignment(xalign=0.5)
-                            oAlignBox.add(oCheckBox)
-                            self.oTable.attach(oAlignBox, j, j+1, k, k+1)
-                            k += 1
-                            oCheckBox.connect('toggled', self.do_toggle,
-                                    oTotalLabel, oCardSet, oAbstractCard,
-                                    aCardSets)
-                    else:
-                        oTotalLabel = gtk.Label('0')
-                        k += len(dPhysMap)
-                    self.oTable.attach(oTotalLabel, j, j+1, k, k+1)
-                    k += 1
-                j += 1
-            self.vbox.pack_start(self.oTable)
-            self.aNumbersNotMatched = []
-        self.show_all()
+                if self.dCardSets[oCardSet].has_key(oAbstractCard):
+                    oTotalLabel = gtk.Label(str(self.dCardSets[oCardSet][
+                        oAbstractCard]))
+                    dColumnDetails = { 'cardset' : oCardSet,
+                            'label' : oTotalLabel,
+                            'card' : oAbstractCard }
+                    # These details are shared by multiple checkboxes
+                    for oPhysCard in sorted(dPhysMap, key=_gen_key):
+                        aCardSets = dPhysMap[oPhysCard]
+                        oCheckBox = gtk.CheckButton()
+                        oCheckBox.set_active(oCardSet in aCardSets)
+                        oAlignBox = gtk.Alignment(xalign=0.5)
+                        oAlignBox.add(oCheckBox)
+                        oTable.attach(oAlignBox, iCol, iCol + 1, iRow,
+                                iRow + 1)
+                        iRow += 1
+                        oCheckBox.connect('toggled', self.do_toggle,
+                                dColumnDetails, aCardSets)
+                else:
+                    # None of these cards are members of the card set,
+                    # so leave this section of the column blank
+                    oTotalLabel = gtk.Label('0')
+                    iRow += len(dPhysMap)
+                oTable.attach(oTotalLabel, iCol, iCol + 1, iRow, iRow + 1)
+                iRow += 1
+            iCol += 1
+        return oTable
 
-
-    def do_toggle(self, oWidget, oTotLabel, oCardSet, oAbsCard,
-            aCardSetMapping):
+    def do_toggle(self, oWidget, dColumnDetails, aCardSetMapping):
         """
         Handle toggle button actions
         Update the associated lists, and the displayed totals
         """
+        oTotLabel = dColumnDetails['label']
         sLabel = oTotLabel.get_label()
         iTot = int(sLabel.split(':')[0])
         if oWidget.get_active():
             iTot += 1
-            aCardSetMapping.append(oCardSet)
+            aCardSetMapping.append(dColumnDetails['cardset'])
         else:
             iTot -= 1
-            aCardSetMapping.remove(oCardSet)
-        iCorrectTotal = self.dCardSets[oCardSet][oAbsCard]
+            aCardSetMapping.remove(dColumnDetails['cardset'])
+        iCorrectTotal = self.dCardSets[dColumnDetails['cardset']][
+                dColumnDetails['card']]
         if iTot != iCorrectTotal:
             if iTot < iCorrectTotal:
                 sSign = '-'

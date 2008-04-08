@@ -6,6 +6,8 @@
 # Copyright 2006 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
 
+"""Sutekh Frame for holding Card Sets"""
+
 from sqlobject import SQLObjectNotFound
 from sutekh.core.SutekhObjects import PhysicalCardSet, AbstractCardSet, \
         IPhysicalCardSet, IAbstractCardSet
@@ -15,12 +17,19 @@ from sutekh.gui.CardSetController import PhysicalCardSetController, \
         AbstractCardSetController
 
 class CardSetFrame(CardListFrame, object):
+    """Base class for Card Set frames.
+
+       Handles most of the functionality - subclasses set the style name
+       and the various other properties correctly for the type.
+       """
     # pylint: disable-msg=R0904
     # gtk.Widget, so many public methods
     def __init__(self, oMainWindow, sName, cType, oConfig):
         super(CardSetFrame, self).__init__(oMainWindow, oConfig)
         self._cModelType = cType
         try:
+            # pylint: disable-msg=W0612
+            # oCS just used for existance test, so ignored
             if self._cModelType is PhysicalCardSet:
                 oCS = IPhysicalCardSet(sName)
             else:
@@ -28,23 +37,23 @@ class CardSetFrame(CardListFrame, object):
         except SQLObjectNotFound:
             raise RuntimeError("Card Set %s does not exist" % sName)
         if self._cModelType is PhysicalCardSet:
-            self._oC = PhysicalCardSetController(sName, oConfig,
+            self._oController = PhysicalCardSetController(sName, oConfig,
                     oMainWindow, self)
         elif self._cModelType is AbstractCardSet:
-            self._oC = AbstractCardSetController(sName, oConfig,
+            self._oController = AbstractCardSetController(sName, oConfig,
                     oMainWindow, self)
         else:
             raise RuntimeError("Unknown Card Set type %s" % str(cType))
 
         self.init_plugins()
 
-        self._oMenu = CardSetMenu(self, self._oC, self._oMainWindow, self._oC.view,
-                sName, self._cModelType)
+        self._oMenu = CardSetMenu(self, self._oController, self._oMainWindow,
+                self._oController.view, sName, self._cModelType)
         self.add_parts()
 
         self.update_name(sName)
 
-        self._oC.view.check_editable()
+        self._oController.view.check_editable()
 
 
     # pylint: disable-msg=W0212
@@ -63,6 +72,9 @@ class CardSetFrame(CardListFrame, object):
             self._oMainWindow.reload_acs_list()
 
     def update_name(self, sNewName):
+        """Update the frame name to the current card set name."""
+        # pylint: disable-msg=W0201
+        # this is called from __init__, so OK
         self.sSetName = sNewName
         self._sName = sNewName
         if self._cModelType is PhysicalCardSet:
@@ -70,22 +82,27 @@ class CardSetFrame(CardListFrame, object):
         else:
             self.set_title('ACS:' + self.sSetName)
 
-    def deleteCardSet(self):
-        if self._oC.view.deleteCardSet():
+    def delete_card_set(self):
+        """Delete this card set from the database"""
+        if self._oController.view.delete_card_set():
             # Card Set was deleted, so close up
             self.close_frame()
 
 class AbstractCardSetFrame(CardSetFrame):
-    # pylint: disable-msg=R0904
-    # gtk.Widget, so many public methods
+    """Card Set Frame for holding Abstract Card Sets."""
+    # pylint: disable-msg=R0904, R0901
+    # R0904 - gtk.Widget, so many public methods
+    # R0901 - gtk.Widget's have a deep inheritence tree, so we ignore this
     def __init__(self, oMainWindow, sName, oConfig):
         super(AbstractCardSetFrame, self).__init__(oMainWindow, sName,
                 AbstractCardSet, oConfig)
         self.set_name("abstract card set card list")
 
 class PhysicalCardSetFrame(CardSetFrame):
-    # pylint: disable-msg=R0904
-    # gtk.Widget, so many public methods
+    """Card Set Frame for holding Physical Card Sets."""
+    # pylint: disable-msg=R0904, R0901
+    # R0904 - gtk.Widget, so many public methods
+    # R0901 - gtk.Widget's have a deep inheritence tree, so we ignore this
     def __init__(self, oMainWindow, sName, oConfig):
         super(PhysicalCardSetFrame, self).__init__(oMainWindow, sName,
                 PhysicalCardSet, oConfig)

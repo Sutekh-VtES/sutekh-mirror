@@ -24,7 +24,7 @@ class PhysicalCardView(EditableCardListView):
         super(PhysicalCardView, self).__init__(oController, oWindow, oConfig,
                 oModel)
 
-        self._oC = oController
+        self._oController = oController
         self.sDragPrefix = 'Phys:'
         self.load()
 
@@ -37,7 +37,7 @@ class PhysicalCardView(EditableCardListView):
             sSource, aCardInfo = self.split_selection_data(oData.data)
             if sSource == "Sutekh Pane:":
                 # Pane being dragged, so pass up to the pane widget
-                self._oC.frame.drag_drop_handler(oWidget, oContext, iX, iY,
+                self._oController.frame.drag_drop_handler(oWidget, oContext, iX, iY,
                         oData, oInfo, oTime)
             # Don't accept cards when not editable
             elif self._oModel.bEditable and \

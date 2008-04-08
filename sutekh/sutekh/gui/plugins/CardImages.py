@@ -464,6 +464,7 @@ class CardImagePlugin(CardListPlugin):
         if self._cModelType in self.aListenViews:
             self.view.add_listener(self.image_frame)
         self._oReplaceItem = None
+        self._oAddItem = None
         self._oConfigMenuItem = None
 
     image_frame = property(fget=lambda self: self.get_image_frame(),
