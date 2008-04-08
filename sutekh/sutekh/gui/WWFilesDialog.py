@@ -13,7 +13,7 @@ from sutekh.io.WwFile import WW_CARDLIST_URL, WW_RULINGS_URL
 
 class WWFilesDialog(SutekhDialog):
     # pylint: disable-msg=R0904, R0902
-    # R0904 - gtk.Widget, so menu public methods
+    # R0904 - gtk.Widget, so many public methods
     # R0902 - we keep a lot of internal state, so many instance variables
     """Actual dailog widget"""
 

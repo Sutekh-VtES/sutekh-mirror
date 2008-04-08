@@ -26,7 +26,7 @@ class MainMenu(gtk.MenuBar, object):
        global file actions, the help system, and any global plugins.
        """
     # pylint: disable-msg=R0904
-    # gtk.Widget, so menu public methods
+    # gtk.Widget, so many public methods
     def __init__(self, oWindow, oConfig):
         super(MainMenu, self).__init__()
         self.__oWin = oWindow

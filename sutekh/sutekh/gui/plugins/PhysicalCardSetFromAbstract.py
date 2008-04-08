@@ -100,9 +100,9 @@ class PhysicalCardSetFromAbstract(CardListPlugin):
         self.open_pcs(sName)
 
         if aMissingCards:
-            do_complaint_error("The following cards were not added to the" 
-                    " physical card set because they are not present in your" 
-                    " card collection: %s\n\n" % 
+            do_complaint_error("The following cards were not added to the"
+                    " physical card set because they are not present in your"
+                    " card collection: %s\n\n" %
                     "\n".join([oC.name for oC in aMissingCards]))
 
 # pylint: disable-msg=C0103

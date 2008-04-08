@@ -17,7 +17,7 @@ class CardSetManagementMenu(gtk.MenuBar, object):
        opening card sets, deleting card sets) and filtering the list.
        """
     # pylint: disable-msg=R0904
-    # gtk.Widget, so menu public methods
+    # gtk.Widget, so many public methods
     def __init__(self, oFrame, oWindow, sName):
         super(CardSetManagementMenu, self).__init__()
         self.__oWindow = oWindow

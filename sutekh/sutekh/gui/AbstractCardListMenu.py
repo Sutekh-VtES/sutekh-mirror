@@ -16,7 +16,7 @@ class AbstractCardListMenu(gtk.MenuBar, object):
        and plugins.
        """
     # pylint: disable-msg=R0904
-    # gtk.Widget, so menu public methods
+    # gtk.Widget, so many public methods
     def __init__(self, oFrame, oController, oWindow):
         super(AbstractCardListMenu, self).__init__()
         self.__oController = oController

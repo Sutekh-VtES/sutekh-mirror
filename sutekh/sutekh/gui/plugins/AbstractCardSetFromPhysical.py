@@ -5,6 +5,9 @@
 # Copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
+"""Create an Abstract Card Set with the same cards as the existing
+   Physical card Set"""
+
 import gtk
 from sutekh.core.SutekhObjects import AbstractCardSet, PhysicalCardSet
 from sutekh.gui.CreateCardSetDialog import CreateCardSetDialog
@@ -29,9 +32,7 @@ class AbstractCardSetFromPhysical(CardListPlugin):
     # pylint: disable-msg=W0613
     # oWidget required by function signature
     def activate(self, oWidget):
-        self.createAbsCardSet()
-
-    def createAbsCardSet(self):
+        """Handle the response from the menu and create the card set"""
         # pylint: disable-msg=E1101
         # SQLObject methods confuse pylint
         oPC = PhysicalCardSet.byName(self.view.sSetName)

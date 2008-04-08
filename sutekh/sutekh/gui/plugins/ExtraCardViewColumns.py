@@ -52,7 +52,7 @@ class ExtraCardViewColumns(CardListPlugin):
             # Only try and lookup things that look like they should be cards
             try:
                 sCardName = self.model.getNameFromIter(oIter).lower()
-                # Cache lookups, so we don't hit the database so hard when 
+                # Cache lookups, so we don't hit the database so hard when
                 # sorting
                 if not self._dCardCache.has_key(sCardName):
                     # pylint: disable-msg=E1101
@@ -98,7 +98,7 @@ class ExtraCardViewColumns(CardListPlugin):
     def _get_data_disciplines(self, oCard):
         "get disipline info for card"
         if not oCard is None:
-            aDis = [(oP.level != 'superior') and oP.discipline.name 
+            aDis = [(oP.level != 'superior') and oP.discipline.name
                     or oP.discipline.name.upper() for oP in oCard.discipline]
             aDis.sort()
             return ",".join(aDis)
@@ -112,7 +112,7 @@ class ExtraCardViewColumns(CardListPlugin):
     def _get_data_expansions(self, oCard):
         "get expansion info"
         if not oCard is None:
-            aExp = [oP.expansion.shortname + "(" + oP.rarity.name + ")" for 
+            aExp = [oP.expansion.shortname + "(" + oP.rarity.name + ")" for
                     oP in oCard.rarity]
             aExp.sort()
             return ",".join(aExp)
@@ -222,7 +222,7 @@ class ExtraCardViewColumns(CardListPlugin):
         # pylint: enable-msg=W0612
         if iSortCol is not None and iSortCol > 1:
             # We're changing the columns, so restore sorting to default
-            self.model.set_sort_column_id(0, 0) 
+            self.model.set_sort_column_id(0, 0)
 
         for oCol in self._get_col_objects():
             self.view.remove_column(oCol)
@@ -241,7 +241,7 @@ class ExtraCardViewColumns(CardListPlugin):
     # oModel required by gtk's function signature
     def sort_column(self, oModel, oIter1, oIter2, oGetData):
         """
-        Stringwise comparision of oIter1 and oIter2. 
+        Stringwise comparision of oIter1 and oIter2.
         Return -1 if oIter1 < oIter, 0 in ==, 1 if >
         """
         oCard1 = self._get_card(oIter1)
@@ -277,7 +277,7 @@ class ExtraCardViewColumns(CardListPlugin):
 
     def _get_col_objects(self):
         "Get the actual TreeColumn in the view"
-        return [oCol for oCol in self.view.get_columns() if 
+        return [oCol for oCol in self.view.get_columns() if
                 oCol.get_property("title") in self._dCols]
 
 # pylint: disable-msg=C0103

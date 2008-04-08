@@ -12,14 +12,31 @@ Useful for database upgrades and restoring from backups.
 from sutekh.core.SutekhObjects import AbstractCard, PhysicalCardSet, \
         PhysicalCard, MapPhysicalCardToPhysicalCardSet, IExpansion
 try:
+    # pylint: disable-msg=E0611, F0401
+    # xml.etree is a python2.5 thing
     from xml.etree.ElementTree import Element, SubElement, tostring, fromstring
 except ImportError:
     from elementtree.ElementTree import Element, SubElement, tostring, \
             fromstring
 
+# useful utiltiy functions
+
+def _remap_names(sString):
+    """Remap a card or expansion name to an acceptable tag"""
+    # Tags can't have spaces or punctation
+    # pylint: disable-msg=W0402
+    # We need data from the string module
+    import string
+    sResult = sString.replace(' ', '').encode('ascii', 'xmlcharrefreplace')
+    for sChar in string.punctuation:
+        sResult = sResult.replace(sChar, '')
+    if sResult[0] in string.digits:
+        sResult = 'a' + sResult # 44 Magnum triggers this
+    return sResult
+
 class PhysicalCardMappingHolder(object):
     """
-    Object to store the Mapping between the Physical Cards and the 
+    Object to store the Mapping between the Physical Cards and the
     Physical Card Sets. Uses elementtree for easy export to XML for
     backups.
     """
@@ -30,18 +47,6 @@ class PhysicalCardMappingHolder(object):
         "Constructor"
         self.oMapping = None
 
-    def __remap_names(self, sString):
-        """
-        Remap a card or expansion name to an acceptable tag
-        """
-        # Tags can't have spaces or punctation
-        import string
-        sResult = sString.replace(' ', '').encode('ascii','xmlcharrefreplace')
-        for sChar in string.punctuation:
-            sResult = sResult.replace(sChar, '')
-        if sResult[0] in string.digits:
-            sResult = 'a' + sResult # 44 Magnum triggers this
-        return sResult
 
     def fill_from_db(self, oConnection):
         """
@@ -52,7 +57,7 @@ class PhysicalCardMappingHolder(object):
         # more structure, and is also useful for the backup system
         self.oMapping = Element('cardmapping')
         for oCard in PhysicalCard.select(connection=oConnection):
-            sTagName = self.__remap_names(oCard.abstractCard.canonicalName)
+            sTagName = _remap_names(oCard.abstractCard.canonicalName)
             oCardNode = self.oMapping.find(sTagName)
             if oCardNode is None:
                 oCardNode = SubElement(self.oMapping, sTagName)
@@ -61,10 +66,10 @@ class PhysicalCardMappingHolder(object):
                 sExpansionName = self.sUnknown
             else:
                 sExpansionName = oCard.expansion.name
-            oExpansionNode = oCardNode.find(self.__remap_names(sExpansionName))
+            oExpansionNode = oCardNode.find(_remap_names(sExpansionName))
             if oExpansionNode is None:
                 oExpansionNode = SubElement(oCardNode,
-                        self.__remap_names(sExpansionName))
+                        _remap_names(sExpansionName))
                 oExpansionNode.attrib['name'] = sExpansionName
             # Tag can't be all numbers, or fromstring will break
             oIdNode = SubElement(oExpansionNode, 'a' + str(oCard.id))
@@ -72,7 +77,7 @@ class PhysicalCardMappingHolder(object):
             for oMPCS in MapPhysicalCardToPhysicalCardSet.selectBy(
                     physicalCardID=oCard.id, connection=oConnection):
                 oPCS = oMPCS.physicalCardSet
-                oPCSNode = SubElement(oIdNode, self.__remap_names(oPCS.name))
+                oPCSNode = SubElement(oIdNode, _remap_names(oPCS.name))
                 oPCSNode.attrib['name'] = oPCS.name
 
     def fill_from_string(self, sXMLString):
@@ -112,6 +117,8 @@ class PhysicalCardMappingHolder(object):
                 oAC = list(AbstractCard.selectBy(canonicalName=sCardName,
                         connection=oConnection))
                 sExpansionName = oExpansionNode.attrib['name']
+                # pylint: disable-msg=E1101
+                # IExpansion confuses pylint
                 if sExpansionName == self.sUnknown:
                     oExpID = None
                 else:
@@ -134,7 +141,7 @@ class PhysicalCardMappingHolder(object):
                                     connection=oConnection))[0]
                             oPCS.addPhysicalCard(oPC.id)
                     for oPCS in aPCS:
-                        if oIdNode.find(self.__remap_names(oPCS.name)) is None:
+                        if oIdNode.find(_remap_names(oPCS.name)) is None:
                             # Extra one, so delete card from this PCS
                             oPCS.removePhysicalCard(oPC.id)
         return True

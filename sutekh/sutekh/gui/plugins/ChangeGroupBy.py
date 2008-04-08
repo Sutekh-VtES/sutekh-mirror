@@ -4,6 +4,8 @@
 # Copyright 2006 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
 
+"""Allow the use to change how the cards are grouped in the CardListView"""
+
 import gtk
 from sutekh.core.SutekhObjects import AbstractCard, PhysicalCard, \
         AbstractCardSet, PhysicalCardSet
@@ -35,6 +37,7 @@ class GroupCardList(CardListPlugin):
         self._dGrpings['Expansion'] = ExpansionGrouping
         self._dGrpings['Rarity'] = RarityGrouping
         self._dGrpings['No Grouping'] = NullGrouping
+        self._oFirstBut = None # placeholder for the radio group
 
     def get_menu_item(self):
         """Register on the 'Plugins' menu"""
@@ -44,9 +47,14 @@ class GroupCardList(CardListPlugin):
         oGrouping.connect("activate", self.activate)
         return ('Plugins', oGrouping)
 
+    # pylint: disable-msg=W0613
+    # oWidget required by function signature
     def activate(self, oWidget):
+        """Response to the menu - create the dialog and run it"""
         oDlg = self.make_dialog()
         oDlg.run()
+
+    # pylint: enable-msg=W0613
 
     def make_dialog(self):
         """Create the required dialog."""
@@ -59,7 +67,7 @@ class GroupCardList(CardListPlugin):
 
         oDlg.connect("response", self.handle_response)
 
-        cCurrentGrping = self.getGrouping()
+        cCurrentGrping = self.get_grouping()
         oIter = self._dGrpings.iteritems()
         # pylint: disable-msg=E1101
         # vbox confuses pylint
@@ -80,6 +88,9 @@ class GroupCardList(CardListPlugin):
     # Actions
 
     def handle_response(self, oDlg, oResponse):
+        """Handle the response from the dialog.
+
+           Change the grouping in the CardListView if appropriate"""
         if oResponse == gtk.RESPONSE_CANCEL:
             oDlg.destroy()
         elif oResponse == gtk.RESPONSE_OK:
@@ -87,14 +98,16 @@ class GroupCardList(CardListPlugin):
                 if oBut.get_active():
                     sLabel = oBut.get_label()
                     cGrping = self._dGrpings[sLabel]
-                    self.setGrouping(cGrping)
+                    self.set_grouping(cGrping)
             oDlg.destroy()
 
-    def setGrouping(self, cGrping):
+    def set_grouping(self, cGrping):
+        """Set the grouping to that specified by cGrping."""
         self.model.groupby = cGrping
         self.model.load()
 
-    def getGrouping(self):
+    def get_grouping(self):
+        """Get the current grouping class."""
         return self.model.groupby
 
 # pylint: disable-msg=C0103

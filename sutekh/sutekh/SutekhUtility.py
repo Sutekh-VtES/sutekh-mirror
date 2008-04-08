@@ -15,7 +15,7 @@ from sutekh.io.RulingParser import RulingParser
 from sqlobject import sqlhub, SQLObjectNotFound
 import tempfile, os, sys
 
-def refresh_tables(aTables, oConn, **kw):
+def refresh_tables(aTables, oConn, **kwargs):
     """Drop and recreate the given list of tables"""
     aTables.reverse()
     for cCls in aTables:
@@ -125,6 +125,8 @@ def sqlite_uri(sPath):
 
 def delete_physical_card_set(sSetName):
     """Unconditionally delete a PCS and its contents"""
+    # pylint: disable-msg=E1101
+    # SQLObject confuse pylint
     try:
         oCS = PhysicalCardSet.byName(sSetName)
         for oCard in oCS.cards:
@@ -136,6 +138,8 @@ def delete_physical_card_set(sSetName):
 
 def delete_abstract_card_set(sSetName):
     """Unconditionally delete a ACS and its contents"""
+    # pylint: disable-msg=E1101
+    # SQLObject confuse pylint
     try:
         oCS = AbstractCardSet.byName(sSetName)
         for oCard in oCS.cards:

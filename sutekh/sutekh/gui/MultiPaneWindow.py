@@ -291,6 +291,8 @@ class MultiPaneWindow(gtk.Window):
 
     def set_card_text(self, sCardName):
         """Update the card text frame to the currently selected card."""
+        # pylint: disable-msg=E1101
+        # SQLObject confuse pylint
         try:
             oCard = AbstractCard.byCanonicalName(sCardName.lower())
             self._oCardTextPane.view.set_card_text(oCard)

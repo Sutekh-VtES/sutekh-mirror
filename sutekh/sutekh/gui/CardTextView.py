@@ -5,12 +5,18 @@
 # Copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
+"""Widget for displaying the card text for the given card."""
+
 import gtk
 import pango
 
 class CardTextBuffer(gtk.TextBuffer, object):
+    """Buffer object which holds the actual card text.
+
+       This is also responsible for nicely formatting the output.
+       """
     # pylint: disable-msg=R0904
-    # gtk.Widget, so menu public methods
+    # gtk.Widget, so many public methods
     def __init__(self):
         super(CardTextBuffer, self).__init__(None)
 
@@ -37,33 +43,45 @@ class CardTextBuffer(gtk.TextBuffer, object):
         self.create_tag("ruling")
         self.create_tag("card_text", style=pango.STYLE_ITALIC)
 
-    def tagText(self, *args, **kwargs):
-        self.insert_with_tags_by_name(self._oIter, *args, **kwargs)
+    # pylint: disable-msg=W0142
+    # ** magic K here
+    def tag_text(self, *aArgs, **kwargs):
+        """Inset the text (possibly with tags) at the current position"""
+        self.insert_with_tags_by_name(self._oIter, *aArgs, **kwargs)
 
-    def labelledValue(self, sLabel, sValue, sTag):
-        self.tagText("\n")
-        self.tagText(sLabel, "label")
-        self.tagText(": ")
-        self.tagText(sValue, sTag)
+    # pylint: enable-msg=W0142
 
-    def labelledList(self, sLabel, aValues, sTag):
-        self.tagText("\n")
-        self.tagText(sLabel, "label")
-        self.tagText(":")
+    def labelled_value(self, sLabel, sValue, sTag):
+        """Add a single value to the buffer."""
+        self.tag_text("\n")
+        self.tag_text(sLabel, "label")
+        self.tag_text(": ")
+        self.tag_text(sValue, sTag)
+
+    def labelled_list(self, sLabel, aValues, sTag):
+        """Add a list of values to the Buffer"""
+        self.tag_text("\n")
+        self.tag_text(sLabel, "label")
+        self.tag_text(":")
         for sValue in aValues:
-            self.tagText("\n\t* ")
-            self.tagText(sValue, sTag)
+            self.tag_text("\n\t* ")
+            self.tag_text(sValue, sTag)
 
     def resetIter(self):
         self._oIter = self.get_iter_at_offset(0)
 
 class CardTextView(gtk.TextView, object):
+    """TextView widget which holds the TextBuffer.
+
+       This handles extracting the text from the database for the card,
+       and feeding it to the buffer in suitable chunks.
+       """
     # pylint: disable-msg=R0904
-    # gtk.Widget, so menu public methods
+    # gtk.Widget, so many public methods
     def __init__(self, oController):
         super(CardTextView, self).__init__()
         # Can be styled as frame_name.view
-        self.__oC = oController
+        self.__oController = oController
         self.__oBuf = CardTextBuffer()
 
         self.set_buffer(self.__oBuf)
@@ -79,69 +97,73 @@ class CardTextView(gtk.TextView, object):
     def printCardToBuffer(self, oCard, oBuf):
         oBuf.resetIter()
 
-        oBuf.tagText(oCard.name, "card_name")
+        oBuf.tag_text(oCard.name, "card_name")
 
         if not oCard.cost is None:
             if oCard.cost == -1:
                 sCost = "X " + str(oCard.costtype)
             else:
                 sCost = str(oCard.cost) + " " + str(oCard.costtype)
-            oBuf.labelledValue("Cost", sCost, "cost")
+            oBuf.labelled_value("Cost", sCost, "cost")
 
         if not oCard.capacity is None:
-            oBuf.labelledValue("Capacity", str(oCard.capacity), "capacity")
+            oBuf.labelled_value("Capacity", str(oCard.capacity), "capacity")
 
         if not oCard.life is None:
-            oBuf.labelledValue("Life", str(oCard.life), "life")
+            oBuf.labelled_value("Life", str(oCard.life), "life")
 
         if not oCard.group is None:
-            oBuf.labelledValue("Group", str(oCard.group), "group")
+            oBuf.labelled_value("Group", str(oCard.group), "group")
 
         if not oCard.level is None:
-            oBuf.labelledValue("Level", str(oCard.level), "level")
+            oBuf.labelled_value("Level", str(oCard.level), "level")
 
         if len(oCard.cardtype) == 0:
             aTypes = ["Unknown"]
         else:
             aTypes = [oT.name for oT in oCard.cardtype]
-        oBuf.labelledList("Card Type", aTypes, "card_type")
+        oBuf.labelled_list("Card Type", aTypes, "card_type")
 
         if oCard.burnoption:
-            oBuf.labelledValue("Burn Option:", "Yes", "burn_option")
+            oBuf.labelled_value("Burn Option:", "Yes", "burn_option")
 
         if not len(oCard.clan) == 0:
             aClans = [oC.name for oC in oCard.clan]
-            oBuf.labelledList("Clan", aClans, "clan")
+            oBuf.labelled_list("Clan", aClans, "clan")
 
         if not len(oCard.creed) == 0:
             aCreeds = [oC.name for oC in oCard.creed]
-            oBuf.labelledList("Creed", aCreeds, "creed")
+            oBuf.labelled_list("Creed", aCreeds, "creed")
 
         if not len(oCard.sect) == 0:
             aSects = [oC.name for oC in oCard.sect]
-            oBuf.labelledList("Sect", aSects, "sect")
+            oBuf.labelled_list("Sect", aSects, "sect")
 
         if not len(oCard.title) == 0:
             aTitles = [oC.name for oC in oCard.title]
-            oBuf.labelledList("Title", aTitles, "title")
+            oBuf.labelled_list("Title", aTitles, "title")
 
         if not len(oCard.discipline) == 0:
             aDis = []
-            aDis.extend([oP.discipline.name.upper() for oP in oCard.discipline if oP.level == 'superior'])
-            aDis.extend([oP.discipline.name for oP in oCard.discipline if oP.level != 'superior'])
-            oBuf.labelledList("Disciplines", aDis, "discipline")
+            aDis.extend([oP.discipline.name.upper() for oP in oCard.discipline
+                if oP.level == 'superior'])
+            aDis.extend([oP.discipline.name for oP in oCard.discipline if
+                oP.level != 'superior'])
+            oBuf.labelled_list("Disciplines", aDis, "discipline")
 
         if not len(oCard.virtue) == 0:
             aVirtues = [oC.name for oC in oCard.virtue]
-            oBuf.labelledList("Virtue", aVirtues, "virtue")
+            oBuf.labelled_list("Virtue", aVirtues, "virtue")
 
         if not len(oCard.rarity) == 0:
-            aExp = [oP.expansion.name + " (" + oP.rarity.name + ")" for oP in oCard.rarity]
-            oBuf.labelledList("Expansions", aExp, "expansion")
+            aExp = [oP.expansion.name + " (" + oP.rarity.name + ")" for oP
+                    in oCard.rarity]
+            oBuf.labelled_list("Expansions", aExp, "expansion")
 
         if not len(oCard.rulings) == 0:
-            aRulings = [oR.text.replace("\n", " ") + " " + oR.code for oR in oCard.rulings]
-            oBuf.labelledList("Rulings", aRulings, "ruling")
+            aRulings = [oR.text.replace("\n", " ") + " " + oR.code for oR
+                    in oCard.rulings]
+            oBuf.labelled_list("Rulings", aRulings, "ruling")
 
-        oBuf.tagText("\n\n")
-        oBuf.tagText(oCard.text.replace("\n", " "), "card_text")
+        oBuf.tag_text("\n\n")
+        oBuf.tag_text(oCard.text.replace("\n", " "), "card_text")

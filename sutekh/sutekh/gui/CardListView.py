@@ -19,7 +19,7 @@ class CardListViewListener(object):
 
 class CardListView(gtk.TreeView, object):
     # pylint: disable-msg=R0904
-    # gtk.Widget, so menu public methods
+    # gtk.Widget, so many public methods
     """Base class for all the card list views in Sutekh."""
     def __init__(self, oController, oMainWindow, oConfig, oModel):
         self._oModel = oModel
@@ -465,7 +465,7 @@ class EditableCardListView(CardListView):
        Add support for displaying number changing buttons,
        setting the editable style, and so forth."""
     # pylint: disable-msg=R0904
-    # gtk.Widget, so menu public methods
+    # gtk.Widget, so many public methods
     def __init__(self, oController, oWindow, oConfig, oModel):
         super(EditableCardListView, self).__init__(oController, oWindow,
                 oConfig, oModel)

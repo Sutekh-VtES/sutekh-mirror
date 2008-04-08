@@ -12,7 +12,7 @@ from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 
 class ScrolledList(gtk.Frame):
     # pylint: disable-msg=R0904
-    # gtk.Widget, so menu public methods
+    # gtk.Widget, so many public methods
     """Frame containing an auto scrolled list"""
     def __init__(self, sTitle):
         super(ScrolledList, self).__init__(None)

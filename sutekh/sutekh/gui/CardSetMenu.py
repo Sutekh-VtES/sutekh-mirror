@@ -26,7 +26,7 @@ def _type_to_string(cSetType):
 
 class CardSetMenu(gtk.MenuBar, object):
     # pylint: disable-msg=R0904
-    # gtk.Widget, so menu public methods
+    # gtk.Widget, so many public methods
     """Card Set Menu.
 
        Provide the usual menu options, and implement several of the

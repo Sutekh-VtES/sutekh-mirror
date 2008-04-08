@@ -21,7 +21,7 @@ class PhysicalCardMenu(gtk.MenuBar, object):
        file, etc), filtering and plugins.
        """
     # pylint: disable-msg=R0904
-    # gtk.Widget, so menu public methods
+    # gtk.Widget, so many public methods
     def __init__(self, oFrame, oController, oWindow):
         super(PhysicalCardMenu, self).__init__()
         self.__oController = oController

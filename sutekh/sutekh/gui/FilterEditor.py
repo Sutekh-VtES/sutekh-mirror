@@ -109,6 +109,8 @@ class FilterEditor(gtk.Frame):
 
         oEntry = gtk.Entry()
         oEntry.set_text(self.get_current_text())
+        # pylint: disable-msg=E1101
+        # vbox confuse pylint
         oDlg.vbox.pack_start(oEntry)
         oDlg.show_all()
 
@@ -131,6 +133,8 @@ class FilterEditor(gtk.Frame):
                 (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
 
         oDlg.set_default_size(600,-1)
+        # pylint: disable-msg=E1101
+        # vbox confuse pylint
 
         oHelpView = FilterHelpTextView(self.__oBoxModel.get_filter_types())
         oDlg.vbox.pack_start(oHelpView)
