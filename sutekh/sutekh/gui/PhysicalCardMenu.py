@@ -43,48 +43,48 @@ class PhysicalCardMenu(gtk.MenuBar, object):
         self.__dMenus["Actions"] = oMenu
         oMenuItem.set_submenu(oMenu)
         # items
-        iExport = gtk.MenuItem("Export Collection to File")
-        oMenu.add(iExport)
-        iExport.connect('activate', self._do_export)
+        oExport = gtk.MenuItem("Export Collection to File")
+        oMenu.add(oExport)
+        oExport.connect('activate', self._do_export)
 
 
-        self.iViewAllAbstractCards = gtk.CheckMenuItem("Show cards with a"
+        oViewAllAbstractCards = gtk.CheckMenuItem("Show cards with a"
                 " count of 0")
-        self.iViewAllAbstractCards.set_inconsistent(False)
-        self.iViewAllAbstractCards.set_active(
+        oViewAllAbstractCards.set_inconsistent(False)
+        oViewAllAbstractCards.set_active(
                 self.__oController.model.bAddAllAbstractCards)
-        self.iViewAllAbstractCards.connect('toggled',
+        oViewAllAbstractCards.connect('toggled',
                 self._toggle_all_abstract_cards)
-        oMenu.add(self.iViewAllAbstractCards)
+        oMenu.add(oViewAllAbstractCards)
 
-        self.iViewExpansions = gtk.CheckMenuItem('Show Card Expansions')
-        self.iViewExpansions.set_inconsistent(False)
-        self.iViewExpansions.set_active(True)
-        self.iViewExpansions.connect('toggled', self._toggle_expansion)
-        oMenu.add(self.iViewExpansions)
+        oViewExpansions = gtk.CheckMenuItem('Show Card Expansions')
+        oViewExpansions.set_inconsistent(False)
+        oViewExpansions.set_active(True)
+        oViewExpansions.connect('toggled', self._toggle_expansion)
+        oMenu.add(oViewExpansions)
 
-        self.iEditable = gtk.CheckMenuItem('Collection is Editable')
-        self.iEditable.set_inconsistent(False)
-        self.iEditable.set_active(False)
-        self.iEditable.connect('toggled', self._toggle_editable)
-        self.__oController.view.set_edit_menu_item(self.iEditable)
-        oMenu.add(self.iEditable)
+        oEditable = gtk.CheckMenuItem('Collection is Editable')
+        oEditable.set_inconsistent(False)
+        oEditable.set_active(False)
+        oEditable.connect('toggled', self._toggle_editable)
+        self.__oController.view.set_edit_menu_item(oEditable)
+        oMenu.add(oEditable)
 
-        iExpand = gtk.MenuItem("Expand All (Ctrl+)")
-        oMenu.add(iExpand)
-        iExpand.connect("activate", self._expand_all)
+        oExpand = gtk.MenuItem("Expand All (Ctrl+)")
+        oMenu.add(oExpand)
+        oExpand.connect("activate", self._expand_all)
 
-        iCollapse = gtk.MenuItem("Collapse All (Ctrl-)")
-        oMenu.add(iCollapse)
-        iCollapse.connect("activate", self._collapse_all)
+        oCollapse = gtk.MenuItem("Collapse All (Ctrl-)")
+        oMenu.add(oCollapse)
+        oCollapse.connect("activate", self._collapse_all)
 
-        iClose = gtk.MenuItem("Remove This Pane")
-        oMenu.add(iClose)
-        iClose.connect("activate", self.__oFrame.close_menu_item)
+        oClose = gtk.MenuItem("Remove This Pane")
+        oMenu.add(oClose)
+        oClose.connect("activate", self.__oFrame.close_menu_item)
 
-        iEditAllocation = gtk.MenuItem('Edit allocation of cards to PCS')
-        oMenu.add(iEditAllocation)
-        iEditAllocation.connect('activate', self._do_edit_card_set_allocation)
+        oEditAllocation = gtk.MenuItem('Edit allocation of cards to PCS')
+        oMenu.add(oEditAllocation)
+        oEditAllocation.connect('activate', self._do_edit_card_set_allocation)
 
         self.add(oMenuItem)
 
@@ -96,15 +96,15 @@ class PhysicalCardMenu(gtk.MenuBar, object):
         oMenuItem.set_submenu(oMenu)
         self.__dMenus["Filter"] = oMenu
         # items
-        iFilter = gtk.MenuItem("Specify Filter")
-        oMenu.add(iFilter)
-        iFilter.connect('activate', self._set_active_filter)
+        oFilter = gtk.MenuItem("Specify Filter")
+        oMenu.add(oFilter)
+        oFilter.connect('activate', self._set_active_filter)
 
-        self.iApply = gtk.CheckMenuItem("Apply Filter")
-        self.iApply.set_inconsistent(False)
-        self.iApply.set_active(False)
-        oMenu.add(self.iApply)
-        self.iApply.connect('toggled', self._toggle_apply)
+        self.oApply = gtk.CheckMenuItem("Apply Filter")
+        self.oApply.set_inconsistent(False)
+        self.oApply.set_active(False)
+        oMenu.add(self.oApply)
+        self.oApply.connect('toggled', self._toggle_apply)
         self.add(oMenuItem)
 
     def __create_plugin_menu(self):
@@ -115,7 +115,7 @@ class PhysicalCardMenu(gtk.MenuBar, object):
         self.__dMenus["Plugins"] = oMenu
         oMenuItem.set_submenu(oMenu)
         # plugins
-        for oPlugin in self.__oFrame._aPlugins:
+        for oPlugin in self.__oFrame.plugins:
             oPlugin.add_to_menu(self.__dMenus, oMenu)
         self.add(oMenuItem)
         if len(oMenu.get_children()) == 0:
@@ -144,7 +144,7 @@ class PhysicalCardMenu(gtk.MenuBar, object):
 
     def _toggle_apply(self, oWidget):
         """Toggle the applied state of the filter."""
-        self.__oController.view.runFilter(oWidget.active)
+        self.__oController.view.run_filter(oWidget.active)
 
     def _toggle_expansion(self, oWidget):
         """Toggle whether the expansion information is shown."""
@@ -177,7 +177,7 @@ class PhysicalCardMenu(gtk.MenuBar, object):
 
     # pylint: enable-msg=W0613
 
-    def setApplyFilter(self, bState):
+    def set_apply_filter(self, bState):
         """Set the applied filter state to bState."""
-        self.iApply.set_active(bState)
+        self.oApply.set_active(bState)
 

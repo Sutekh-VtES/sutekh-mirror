@@ -6,9 +6,16 @@
 # Copyright 2006 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
 
+"""Menu for the card set list"""
+
 import gtk
 
 class CardSetManagementMenu(gtk.MenuBar, object):
+    """Card Set List Management menu.
+
+       Allows managing the list of card sets (adding new card sets,
+       opening card sets, deleting card sets) and filtering the list.
+       """
     # pylint: disable-msg=R0904
     # gtk.Widget, so menu public methods
     def __init__(self, oFrame, oWindow, sName):
@@ -18,51 +25,64 @@ class CardSetManagementMenu(gtk.MenuBar, object):
         self.__sName = sName
         self.__sSetTypeName = sName.replace(' List', '')
         self.__dMenus = {}
-        self.add_actions_menu()
-        self.add_filter_menu()
+        self.__add_actions_menu()
+        self.__add_filter_menu()
 
-    def add_actions_menu(self):
-        iMenu = gtk.MenuItem("Actions")
-        wMenu = gtk.Menu()
-        iMenu.set_submenu(wMenu)
-        self.__dMenus["Actions"] = wMenu
-        iCreate = gtk.MenuItem('Create New ' + self.__sSetTypeName)
-        wMenu.add(iCreate)
-        iCreate.connect('activate', self.__oFrame.create_new_card_set)
+    # pylint: disable-msg=W0201
+    # called from __init__, so OK
+    def __add_actions_menu(self):
+        """Add the Actions Menu"""
+        oMenuItem = gtk.MenuItem("Actions")
+        oMenu = gtk.Menu()
+        oMenuItem.set_submenu(oMenu)
+        self.__dMenus["Actions"] = oMenu
+        oCreate = gtk.MenuItem('Create New ' + self.__sSetTypeName)
+        oMenu.add(oCreate)
+        oCreate.connect('activate', self.__oFrame.create_new_card_set)
         if self.__sSetTypeName == "Physical Card Set":
-            iInUse = gtk.MenuItem('Mark/UnMark ' + self.__sSetTypeName + ' as in use')
-            wMenu.add(iInUse)
-            iInUse.connect('activate', self.__oFrame.toggle_in_use_flag)
-        iDelete = gtk.MenuItem('Delete selected ' + self.__sSetTypeName)
-        wMenu.add(iDelete)
-        iDelete.connect('activate', self.__oFrame.delete_card_set)
-        iSep = gtk.SeparatorMenuItem()
-        wMenu.add(iSep)
-        iClose = gtk.MenuItem('Remove This Pane')
-        wMenu.add(iClose)
-        iClose.connect('activate', self.__oFrame.close_menu_item)
-        self.add(iMenu)
+            oInUse = gtk.MenuItem('Mark/UnMark %s as in use' %
+                    self.__sSetTypeName)
+            oMenu.add(oInUse)
+            oInUse.connect('activate', self.__oFrame.toggle_in_use_flag)
+        oDelete = gtk.MenuItem('Delete selected ' + self.__sSetTypeName)
+        oMenu.add(oDelete)
+        oDelete.connect('activate', self.__oFrame.delete_card_set)
+        oSep = gtk.SeparatorMenuItem()
+        oMenu.add(oSep)
+        oClose = gtk.MenuItem('Remove This Pane')
+        oMenu.add(oClose)
+        oClose.connect('activate', self.__oFrame.close_menu_item)
+        self.add(oMenuItem)
 
-    def add_filter_menu(self):
-        iMenu = gtk.MenuItem('Filter')
-        wMenu = gtk.Menu()
-        self.__dMenus["Filter"] = wMenu
-        iMenu.set_submenu(wMenu)
-        iFilter = gtk.MenuItem('Specify Filter')
-        wMenu.add(iFilter)
-        iFilter.connect('activate', self.__oFrame.set_filter)
-        self.iApply = gtk.CheckMenuItem('Apply Filter')
-        self.iApply.set_inconsistent(False)
-        self.iApply.set_active(False)
-        wMenu.add(self.iApply)
-        self.iApply.connect('toggled', self.toggle_apply)
-        self.add(iMenu)
+    def __add_filter_menu(self):
+        """Add Menu for filtering the Card Set List"""
+        oMenuItem = gtk.MenuItem('Filter')
+        oMenu = gtk.Menu()
+        self.__dMenus["Filter"] = oMenu
+        oMenuItem.set_submenu(oMenu)
+        oFilter = gtk.MenuItem('Specify Filter')
+        oMenu.add(oFilter)
+        oFilter.connect('activate', self.__oFrame.set_filter)
+        self.oApply = gtk.CheckMenuItem('Apply Filter')
+        self.oApply.set_inconsistent(False)
+        self.oApply.set_active(False)
+        oMenu.add(self.oApply)
+        self.oApply.connect('toggled', self.toggle_apply)
+        self.add(oMenuItem)
 
-    def toggle_apply(self, oWidget):
-        self.__oFrame.reload()
+    # pylint: enable-msg=W0201
 
     def set_apply_filter(self, bState):
-        self.iApply.set_active(bState)
+        """Set the filter applied status to bState"""
+        self.oApply.set_active(bState)
 
     def get_apply_filter(self):
-        return self.iApply.active
+        """Get the filter applied state"""
+        return self.oApply.active
+
+    # pylint: disable-msg=W0613
+    # oWidget required by function signature
+    def toggle_apply(self, oWidget):
+        """Handle menu toggle events"""
+        self.__oFrame.reload()
+

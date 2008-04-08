@@ -39,17 +39,17 @@ class AbstractCardListMenu(gtk.MenuBar, object):
         oMenuItem.set_submenu(oMenu)
         # items
 
-        iExpand = gtk.MenuItem("Expand All (Ctrl+)")
-        oMenu.add(iExpand)
-        iExpand.connect("activate", self._expand_all)
+        oExpand = gtk.MenuItem("Expand All (Ctrl+)")
+        oMenu.add(oExpand)
+        oExpand.connect("activate", self._expand_all)
 
-        iCollapse = gtk.MenuItem("Collapse All (Ctrl-)")
-        oMenu.add(iCollapse)
-        iCollapse.connect("activate", self._collapse_all)
+        oCollapse = gtk.MenuItem("Collapse All (Ctrl-)")
+        oMenu.add(oCollapse)
+        oCollapse.connect("activate", self._collapse_all)
 
-        iClose = gtk.MenuItem("Remove This Pane")
-        oMenu.add(iClose)
-        iClose.connect("activate", self.__oFrame.close_menu_item)
+        oClose = gtk.MenuItem("Remove This Pane")
+        oMenu.add(oClose)
+        oClose.connect("activate", self.__oFrame.close_menu_item)
 
         self.add(oMenuItem)
 
@@ -61,15 +61,15 @@ class AbstractCardListMenu(gtk.MenuBar, object):
         oMenuItem.set_submenu(oMenu)
         self.__dMenus["Filter"] = oMenu
         # items
-        iFilter = gtk.MenuItem("Specify Filter")
-        oMenu.add(iFilter)
-        iFilter.connect('activate', self._set_active_filter)
+        oFilter = gtk.MenuItem("Specify Filter")
+        oMenu.add(oFilter)
+        oFilter.connect('activate', self._set_active_filter)
 
-        self.iApply = gtk.CheckMenuItem("Apply Filter")
-        self.iApply.set_inconsistent(False)
-        self.iApply.set_active(False)
-        oMenu.add(self.iApply)
-        self.iApply.connect('toggled', self._toggle_apply)
+        self.oApply = gtk.CheckMenuItem("Apply Filter")
+        self.oApply.set_inconsistent(False)
+        self.oApply.set_active(False)
+        oMenu.add(self.oApply)
+        self.oApply.connect('toggled', self._toggle_apply)
         self.add(oMenuItem)
 
     def __create_plugin_menu(self):
@@ -80,7 +80,7 @@ class AbstractCardListMenu(gtk.MenuBar, object):
         self.__dMenus["Plugins"] = oMenu
         oMenuItem.set_submenu(oMenu)
         # plugins
-        for oPlugin in self.__oFrame._aPlugins:
+        for oPlugin in self.__oFrame.plugins:
             oPlugin.add_to_menu(self.__dMenus, oMenu)
         self.add(oMenuItem)
         if len(oMenu.get_children()) == 0:
@@ -92,7 +92,7 @@ class AbstractCardListMenu(gtk.MenuBar, object):
     # oWidget required by function signature
     def _toggle_apply(self, oWidget):
         """toggle the applied state of the filter."""
-        self.__oController.view.runFilter(oWidget.active)
+        self.__oController.view.run_filter(oWidget.active)
 
     def _set_active_filter(self, oWidget):
         """Set the active filter for the card list."""
@@ -107,7 +107,7 @@ class AbstractCardListMenu(gtk.MenuBar, object):
         self.__oController.view.collapse_all()
     # pylint: enable-msg=W0613
 
-    def setApplyFilter(self, bState):
+    def set_apply_filter(self, bState):
         """Set the applied state of the filter to bState."""
-        self.iApply.set_active(bState)
+        self.oApply.set_active(bState)
 

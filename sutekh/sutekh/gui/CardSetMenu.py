@@ -17,6 +17,13 @@ from sutekh.io.XmlFileHandling import AbstractCardSetXmlFile, \
         PhysicalCardSetXmlFile
 from sutekh.gui.EditAnnotationsDialog import EditAnnotationsDialog
 
+def _type_to_string(cSetType):
+    """Convert the class SetType to a string for the menus"""
+    if cSetType is AbstractCardSet:
+        return 'Abstract'
+    else:
+        return 'Physical'
+
 class CardSetMenu(gtk.MenuBar, object):
     # pylint: disable-msg=R0904
     # gtk.Widget, so menu public methods
@@ -26,6 +33,9 @@ class CardSetMenu(gtk.MenuBar, object):
        card set specific actions - editing card set properties, editng
        annotations, exporting to file, and so on.
        """
+    # pylint: disable-msg=R0913, R0902
+    # R0913 - we need all these arguments
+    # R0902 - we are keeping a lot of state, so many instance variables
     def __init__(self, oFrame, oController, oWindow, oView, sName, cType):
         super(CardSetMenu, self).__init__()
         self.__oController = oController
@@ -34,10 +44,6 @@ class CardSetMenu(gtk.MenuBar, object):
         self.__oFrame = oFrame
         self.sSetName = sName
         self.__cSetType = cType
-        if cType is AbstractCardSet:
-            self.__sMenuType = 'Abstract'
-        else:
-            self.__sMenuType = 'Physical'
         self.__dMenus = {}
         self.__create_card_set_menu()
         self.__create_filter_menu()
@@ -50,66 +56,64 @@ class CardSetMenu(gtk.MenuBar, object):
         oMenuItem = gtk.MenuItem("Actions")
         oMenu = gtk.Menu()
         self.__dMenus["Actions"] = oMenu
-        self.__iProperties = gtk.MenuItem("Edit Card Set (%s) properties" %
+        self.__oProperties = gtk.MenuItem("Edit Card Set (%s) properties" %
                 self.sSetName)
-        oMenu.add(self.__iProperties)
-        self.__iProperties.connect('activate', self._edit_properites)
-        self.__iEditAnn = gtk.MenuItem("Edit Annotations for Card Set (%s)" %
+        oMenu.add(self.__oProperties)
+        self.__oProperties.connect('activate', self._edit_properites)
+        oEditAnn = gtk.MenuItem("Edit Annotations for Card Set (%s)" %
                 self.sSetName)
-        oMenu.add(self.__iEditAnn)
-        self.__iEditAnn.connect('activate', self._edit_annotations)
-        self.__iExport = gtk.MenuItem("Export Card Set (%s) to File" %
+        oMenu.add(oEditAnn)
+        oEditAnn.connect('activate', self._edit_annotations)
+        self.__oExport = gtk.MenuItem("Export Card Set (%s) to File" %
                 self.sSetName)
-        oMenu.add(self.__iExport)
-        self.__iExport.connect('activate', self._do_export)
+        oMenu.add(self.__oExport)
+        self.__oExport.connect('activate', self._do_export)
 
-        iExpand = gtk.MenuItem("Expand All (Ctrl+)")
-        oMenu.add(iExpand)
-        iExpand.connect("activate", self._expand_all)
+        oExpand = gtk.MenuItem("Expand All (Ctrl+)")
+        oMenu.add(oExpand)
+        oExpand.connect("activate", self._expand_all)
 
-        iCollapse = gtk.MenuItem("Collapse All (Ctrl-)")
-        oMenu.add(iCollapse)
-        iCollapse.connect("activate", self._collapse_all)
+        oCollapse = gtk.MenuItem("Collapse All (Ctrl-)")
+        oMenu.add(oCollapse)
+        oCollapse.connect("activate", self._collapse_all)
 
-        self.__iClose = gtk.MenuItem("Remove This Pane")
-        oMenu.add(self.__iClose)
-        self.__iClose.connect("activate", self.__oFrame.close_menu_item)
-        self.__iDelete = gtk.MenuItem("Delete Card Set ("+self.sSetName+")")
+        oClose = gtk.MenuItem("Remove This Pane")
+        oMenu.add(oClose)
+        oClose.connect("activate", self.__oFrame.close_menu_item)
+        oDelete = gtk.MenuItem("Delete Card Set")
         # Possible enhancement, make card set names italic.
         # Looks like it requires playing with menuitem attributes
         # (or maybe gtk.Action)
         if self.__cSetType is PhysicalCardSet:
             oSep = gtk.SeparatorMenuItem()
             oMenu.add(oSep)
-            self.iViewExpansions = gtk.CheckMenuItem('Show Card Expansions'
+            oViewExpansions = gtk.CheckMenuItem('Show Card Expansions'
                     ' in the Pane')
-            self.iViewExpansions.set_inconsistent(False)
-            self.iViewExpansions.set_active(True)
-            self.iViewExpansions.connect('toggled', self._toggle_expansion)
-            oMenu.add(self.iViewExpansions)
+            oViewExpansions.set_inconsistent(False)
+            oViewExpansions.set_active(True)
+            oViewExpansions.connect('toggled', self._toggle_expansion)
+            oMenu.add(oViewExpansions)
 
-        self.iEditable = gtk.CheckMenuItem('Card Set is Editable')
-        self.iEditable.set_inconsistent(False)
-        self.iEditable.set_active(False)
-        self.iEditable.connect('toggled', self._toggle_editable)
-        self.__oController.view.set_edit_menu_item(self.iEditable)
-        oMenu.add(self.iEditable)
+        oEditable = gtk.CheckMenuItem('Card Set is Editable')
+        oEditable.set_inconsistent(False)
+        oEditable.set_active(False)
+        oEditable.connect('toggled', self._toggle_editable)
+        self.__oController.view.set_edit_menu_item(oEditable)
+        oMenu.add(oEditable)
 
         oSep = gtk.SeparatorMenuItem()
         oMenu.add(oSep)
-        self.__iDelete.connect("activate", self._card_set_delete)
-        oMenu.add(self.__iDelete)
+        oDelete.connect("activate", self._card_set_delete)
+        oMenu.add(oDelete)
 
         oMenuItem.set_submenu(oMenu)
         self.add(oMenuItem)
 
     def __update_card_set_menu(self):
         """Update the menu to reflect changes in the card set name."""
-        self.__iProperties.get_child().set_label("Edit Card Set (%s)"
+        self.__oProperties.get_child().set_label("Edit Card Set (%s)"
                 " properties" % self.sSetName)
-        self.__iExport.get_child().set_label("Export Card Set (%s) to File" %
-                self.sSetName)
-        self.__iDelete.get_child().set_label("Delete Card Set (%s)" %
+        self.__oExport.get_child().set_label("Export Card Set (%s) to File" %
                 self.sSetName)
 
     def __create_filter_menu(self):
@@ -120,14 +124,14 @@ class CardSetMenu(gtk.MenuBar, object):
         self.__dMenus["Filter"] = oMenu
 
         # items
-        iFilter = gtk.MenuItem("Specify Filter")
-        oMenu.add(iFilter)
-        iFilter.connect('activate', self._set_active_filter)
-        self.iApply = gtk.CheckMenuItem("Apply Filter")
-        self.iApply.set_inconsistent(False)
-        self.iApply.set_active(False)
-        oMenu.add(self.iApply)
-        self.iApply.connect('toggled', self._toggle_apply_filter)
+        oFilter = gtk.MenuItem("Specify Filter")
+        oMenu.add(oFilter)
+        oFilter.connect('activate', self._set_active_filter)
+        self.oApply = gtk.CheckMenuItem("Apply Filter")
+        self.oApply.set_inconsistent(False)
+        self.oApply.set_active(False)
+        oMenu.add(self.oApply)
+        self.oApply.connect('toggled', self._toggle_apply_filter)
         # Add the Menu
         oMenuItem.set_submenu(oMenu)
         self.add(oMenuItem)
@@ -139,7 +143,7 @@ class CardSetMenu(gtk.MenuBar, object):
         oMenu = gtk.Menu()
         self.__dMenus["Plugins"] = oMenu
         # plugins
-        for oPlugin in self.__oFrame._aPlugins:
+        for oPlugin in self.__oFrame.plugins:
             oPlugin.add_to_menu(self.__dMenus, oMenu)
         oMenuItem.set_submenu(oMenu)
         self.add(oMenuItem)
@@ -161,7 +165,7 @@ class CardSetMenu(gtk.MenuBar, object):
             oNameList = self.__cSetType.selectBy(name=sName)
             if oNameList.count()>0:
                 do_complaint_error("Chosen %s Card Set Name is already in use"
-                        % self.__sMenuType)
+                        % _type_to_string(self._cSetType))
                 return
             else:
                 oCS.name = sName
@@ -188,8 +192,8 @@ class CardSetMenu(gtk.MenuBar, object):
 
     def _do_export(self, oWidget):
         """Export the card set to the chosen filename."""
-        oFileChooser = ExportDialog("Save %s Card Set As " % self.__sMenuType,
-                self.__oWindow)
+        oFileChooser = ExportDialog("Save %s Card Set As " %
+                _type_to_string(self._cSetType), self.__oWindow)
         oFileChooser.run()
         sFileName = oFileChooser.get_name()
         if sFileName is not None:
@@ -202,11 +206,11 @@ class CardSetMenu(gtk.MenuBar, object):
 
     def _card_set_delete(self, oWidget):
         """Delete the card set."""
-        self.__oFrame.deleteCardSet()
+        self.__oFrame.delete_card_set()
 
     def _toggle_apply_filter(self, oWidget):
         """Toggle the filter applied state."""
-        self.__oController.view.runFilter(oWidget.active)
+        self.__oController.view.run_filter(oWidget.active)
 
     def _toggle_expansion(self, oWidget):
         """Toggle whether Expansion information is shown."""
@@ -231,8 +235,8 @@ class CardSetMenu(gtk.MenuBar, object):
         self.__oController.view.collapse_all()
     # pylint: enable-msg=W0613
 
-    def setApplyFilter(self, bState):
+    def set_apply_filter(self, bState):
         """Set the applied filter state to bState."""
-        self.iApply.set_active(bState)
+        self.oApply.set_active(bState)
 
 

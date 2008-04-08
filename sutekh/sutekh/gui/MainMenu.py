@@ -5,12 +5,14 @@
 # Copyright 2006, 2007 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
+"""Menu for the Main Application Window"""
+
 import gtk
 from sqlobject import sqlhub
 from sutekh.core.CardLookup import LookupFailed
 from sutekh.gui.SutekhDialog import do_complaint_error, do_complaint_warning
 from sutekh.gui.ImportDialog import ImportDialog
-from sutekh.gui.GuiDBManagement import refresh_WW_card_list
+from sutekh.gui.GuiDBManagement import refresh_ww_card_list
 from sutekh.io.XmlFileHandling import PhysicalCardXmlFile, \
         PhysicalCardSetXmlFile, AbstractCardSetXmlFile
 from sutekh.io.IdentifyXMLFile import IdentifyXMLFile
@@ -18,6 +20,11 @@ from sutekh.SutekhUtility import delete_physical_card_set, \
         delete_abstract_card_set
 
 class MainMenu(gtk.MenuBar, object):
+    """The Main application Menu.
+
+       This provides access to the major pane management actions, the
+       global file actions, the help system, and any global plugins.
+       """
     # pylint: disable-msg=R0904
     # gtk.Widget, so menu public methods
     def __init__(self, oWindow, oConfig):
@@ -28,7 +35,7 @@ class MainMenu(gtk.MenuBar, object):
         self.__create_file_menu()
         self.__create_pane_menu()
         self.__create_plugin_menu()
-        self.__create_about_menu()
+        self.__create_help_menu()
         oWindow.add_to_menu_list("My Collection",
                 self.physical_card_list_set_sensitive)
         oWindow.add_to_menu_list("White Wolf Card List",
@@ -40,104 +47,109 @@ class MainMenu(gtk.MenuBar, object):
         oWindow.add_to_menu_list("Card Text",
                 self.add_card_text_set_sensitive)
 
+    # pylint: disable-msg=W0201
+    # these are called from __init__
     def __create_file_menu(self):
+        """Create the File Menu"""
         # setup sub menu
-        iMenu = gtk.MenuItem("_File")
+        oMenuItem = gtk.MenuItem("_File")
         oMenu = gtk.Menu()
         self.__dMenus["File"] = oMenu
-        iMenu.set_submenu(oMenu)
+        oMenuItem.set_submenu(oMenu)
 
         # items
-        iImportPhysical = gtk.MenuItem("Import Collection from File")
-        iImportPhysical.connect('activate', self.do_import_physical_card_list)
-        oMenu.add(iImportPhysical)
+        oImportPhysical = gtk.MenuItem("Import Collection from File")
+        oImportPhysical.connect('activate', self.do_import_physical_card_list)
+        oMenu.add(oImportPhysical)
 
-        iImportCardSet = gtk.MenuItem("Import Card Set from File")
-        iImportCardSet.connect('activate', self.do_import_card_set)
-        oMenu.add(iImportCardSet)
+        oImportCardSet = gtk.MenuItem("Import Card Set from File")
+        oImportCardSet.connect('activate', self.do_import_card_set)
+        oMenu.add(oImportCardSet)
 
-        iSeperator = gtk.SeparatorMenuItem()
-        oMenu.add(iSeperator)
+        oSeperator = gtk.SeparatorMenuItem()
+        oMenu.add(oSeperator)
 
         if sqlhub.processConnection.uri() != "sqlite:///:memory:":
             # Need to have memory connection available for this
-            iImportNewCardList = gtk.MenuItem(
+            oImportNewCardList = gtk.MenuItem(
                     "Import new White Wolf Card List and rulings")
-            iImportNewCardList.connect('activate',
+            oImportNewCardList.connect('activate',
                     self.do_import_new_card_list)
-            oMenu.add(iImportNewCardList)
-            iSeperator2 = gtk.SeparatorMenuItem()
-            oMenu.add(iSeperator2)
+            oMenu.add(oImportNewCardList)
+            oSeperator2 = gtk.SeparatorMenuItem()
+            oMenu.add(oSeperator2)
 
-        wPrefsMenu = gtk.Menu()
-        iPrefsItem = gtk.MenuItem('Preferences')
-        iPrefsItem.set_submenu(wPrefsMenu)
-        oMenu.add(iPrefsItem)
+        oPrefsMenu = gtk.Menu()
+        oPrefsItem = gtk.MenuItem('Preferences')
+        oPrefsItem.set_submenu(oPrefsMenu)
+        oMenu.add(oPrefsItem)
 
-        iSavePanes = gtk.MenuItem('Save Current Pane Set')
-        iSavePanes.connect('activate', self.do_save_pane_set)
-        wPrefsMenu.add(iSavePanes)
+        oSavePanes = gtk.MenuItem('Save Current Pane Set')
+        oSavePanes.connect('activate', self.do_save_pane_set)
+        oPrefsMenu.add(oSavePanes)
 
-        iSaveOnExit = gtk.CheckMenuItem('Save Pane Set on Exit')
-        iSaveOnExit.set_inconsistent(False)
+        oSaveOnExit = gtk.CheckMenuItem('Save Pane Set on Exit')
+        oSaveOnExit.set_inconsistent(False)
         if self.__oConfig.getSaveOnExit():
-            iSaveOnExit.set_active(True)
+            oSaveOnExit.set_active(True)
         else:
-            iSaveOnExit.set_active(False)
-        iSaveOnExit.connect('activate', self.do_toggle_save_on_exit)
-        wPrefsMenu.add(iSaveOnExit)
+            oSaveOnExit.set_active(False)
+        oSaveOnExit.connect('activate', self.do_toggle_save_on_exit)
+        oPrefsMenu.add(oSaveOnExit)
 
-        iSavePos = gtk.CheckMenuItem('Save Exact Pane Positions')
-        iSavePos.set_inconsistent(False)
+        oSavePos = gtk.CheckMenuItem('Save Exact Pane Positions')
+        oSavePos.set_inconsistent(False)
         if self.__oConfig.get_save_precise_pos():
-            iSavePos.set_active(True)
+            oSavePos.set_active(True)
         else:
-            iSavePos.set_active(False)
-        iSavePos.connect('activate', self.do_toggle_save_precise_pos)
-        wPrefsMenu.add(iSavePos)
+            oSavePos.set_active(False)
+        oSavePos.connect('activate', self.do_toggle_save_precise_pos)
+        oPrefsMenu.add(oSavePos)
 
-        iSaveWinSize = gtk.CheckMenuItem('Save Window Size')
-        iSaveWinSize.set_inconsistent(False)
+        oSaveWinSize = gtk.CheckMenuItem('Save Window Size')
+        oSaveWinSize.set_inconsistent(False)
         if self.__oConfig.get_save_window_size():
-            iSaveWinSize.set_active(True)
+            oSaveWinSize.set_active(True)
         else:
-            iSaveWinSize.set_active(False)
-        iSaveOnExit.connect('activate', self.do_toggle_save_window_size)
-        wPrefsMenu.add(iSaveWinSize)
+            oSaveWinSize.set_active(False)
+        oSaveOnExit.connect('activate', self.do_toggle_save_window_size)
+        oPrefsMenu.add(oSaveWinSize)
 
 
-        iRestoreConfig = gtk.MenuItem('Restore saved configuration')
-        oMenu.add(iRestoreConfig)
-        iRestoreConfig.connect('activate', self.do_restore)
+        oRestoreConfig = gtk.MenuItem('Restore saved configuration')
+        oMenu.add(oRestoreConfig)
+        oRestoreConfig.connect('activate', self.do_restore)
 
-        iSeperator3 = gtk.SeparatorMenuItem()
-        oMenu.add(iSeperator3)
+        oSeperator3 = gtk.SeparatorMenuItem()
+        oMenu.add(oSeperator3)
 
-        iQuit = gtk.MenuItem("_Quit")
-        iQuit.connect('activate',
+        oQuit = gtk.MenuItem("_Quit")
+        oQuit.connect('activate',
                 lambda iItem: self.__oWin.action_quit(self.__oWin))
 
-        oMenu.add(iQuit)
+        oMenu.add(oQuit)
 
-        self.add(iMenu)
+        self.add(oMenuItem)
 
     def __create_pane_menu(self):
-        iMenu = gtk.MenuItem("Pane _Actions")
+        """Create the 'Pane Actions' menu"""
+        oMenuItem = gtk.MenuItem("Pane _Actions")
         oMenu = gtk.Menu()
         self.__dMenus["Pane"] = oMenu
-        iMenu.set_submenu(oMenu)
+        oMenuItem.set_submenu(oMenu)
 
         oEqualizePanes = gtk.MenuItem("Equalize pane sizes")
         oMenu.add(oEqualizePanes)
         oEqualizePanes.connect("activate", self.equalize_panes)
 
-
-        self.__oAddHorzPane = gtk.MenuItem("Split current pane _horizontally (|)")
+        self.__oAddHorzPane = gtk.MenuItem("Split current pane _horizontally"
+                " (|)")
         oMenu.add(self.__oAddHorzPane)
         self.__oAddHorzPane.connect("activate", self.add_pane_horizontal)
         self.__oAddHorzPane.set_sensitive(False)
 
-        self.__oAddVertPane = gtk.MenuItem("Split current pane _vertically (-)")
+        self.__oAddVertPane = gtk.MenuItem("Split current pane _vertically"
+                " (-)")
         oMenu.add(self.__oAddVertPane)
         self.__oAddVertPane.connect("activate", self.add_pane_vertical)
         self.__oAddVertPane.set_sensitive(False)
@@ -145,158 +157,131 @@ class MainMenu(gtk.MenuBar, object):
         self._add_add_submenu(oMenu)
         self._add_replace_submenu(oMenu)
 
-        iSeperator = gtk.SeparatorMenuItem()
-        oMenu.add(iSeperator)
+        oSeperator = gtk.SeparatorMenuItem()
+        oMenu.add(oSeperator)
 
         self.__oDelPane = gtk.MenuItem("_Remove current pane")
         oMenu.add(self.__oDelPane)
         self.__oDelPane.connect("activate", self.__oWin.menu_remove_frame)
         self.__oDelPane.set_sensitive(False)
 
-        self.add(iMenu)
-
+        self.add(oMenuItem)
 
     def _add_add_submenu(self, oMenuWidget):
         """Create a submenu for the add pane options"""
-        wAddMenu = gtk.Menu()
-        oAddMenu = gtk.MenuItem('Add New Pane')
-        oAddMenu.set_submenu(wAddMenu)
-        oMenuWidget.add(oAddMenu)
+        oAddMenu = gtk.Menu()
+        oAddMenuItem = gtk.MenuItem('Add New Pane')
+        self.__dMenus["Add Pane"] = oAddMenu
+        oAddMenuItem.set_submenu(oAddMenu)
+        oMenuWidget.add(oAddMenuItem)
 
 
         oAddNewPane = gtk.MenuItem(
                 "Add New Blank Pane")
-        wAddMenu.add(oAddNewPane)
+        oAddMenu.add(oAddNewPane)
         oAddNewPane.connect("activate",
                 self.__oWin.add_pane_end)
 
         self.__oAddACLPane = gtk.MenuItem(
                 "Add White Wolf Card List")
-        wAddMenu.add(self.__oAddACLPane)
+        oAddMenu.add(self.__oAddACLPane)
         self.__oAddACLPane.connect("activate",
                 self.__oWin.add_new_abstract_card_list)
         self.__oAddACLPane.set_sensitive(True)
 
         self.__oAddPCLPane = gtk.MenuItem(
                 "Add My Collection List")
-        wAddMenu.add(self.__oAddPCLPane)
+        oAddMenu.add(self.__oAddPCLPane)
         self.__oAddPCLPane.connect("activate",
                 self.__oWin.add_new_physical_card_list)
         self.__oAddPCLPane.set_sensitive(True)
 
         self.__oAddCardText = gtk.MenuItem(
                 "Add Card Text Pane")
-        wAddMenu.add(self.__oAddCardText)
+        oAddMenu.add(self.__oAddCardText)
         self.__oAddCardText.connect("activate",
                 self.__oWin.add_new_card_text)
         self.__oAddCardText.set_sensitive(True)
 
         self.__oAddACSListPane = gtk.MenuItem(
                 "Add Abstract Card Set List")
-        wAddMenu.add(self.__oAddACSListPane)
+        oAddMenu.add(self.__oAddACSListPane)
         self.__oAddACSListPane.connect("activate",
                 self.__oWin.add_new_acs_list)
         self.__oAddACSListPane.set_sensitive(True)
 
         self.__oAddPCSListPane = gtk.MenuItem(
                 "Add Physical Card Set List")
-        wAddMenu.add(self.__oAddPCSListPane)
+        oAddMenu.add(self.__oAddPCSListPane)
         self.__oAddPCSListPane.connect("activate",
                 self.__oWin.add_new_pcs_list)
         self.__oAddPCSListPane.set_sensitive(True)
 
     def _add_replace_submenu(self, oMenuWidget):
         """Create a submenu for the replace pane options"""
-        wReplaceMenu = gtk.Menu()
-        oReplaceMenu = gtk.MenuItem('Replace Pane')
-        oReplaceMenu.set_submenu(wReplaceMenu)
-        oMenuWidget.add(oReplaceMenu)
+        oReplaceMenu = gtk.Menu()
+        oReplaceMenuItem = gtk.MenuItem('Replace Pane')
+        self.__dMenus["Replace Pane"] = oReplaceMenu
+        oReplaceMenuItem.set_submenu(oReplaceMenu)
+        oMenuWidget.add(oReplaceMenuItem)
 
         self.__oReplaceWithACLPane = gtk.MenuItem(
                 "Replace current pane with White Wolf Card List")
-        wReplaceMenu.add(self.__oReplaceWithACLPane)
+        oReplaceMenu.add(self.__oReplaceWithACLPane)
         self.__oReplaceWithACLPane.connect("activate",
                 self.__oWin.replace_with_abstract_card_list)
         self.__oReplaceWithACLPane.set_sensitive(True)
 
         self.__oReplaceWithPCLPane = gtk.MenuItem(
                 "Replace current pane with My Collection List")
-        wReplaceMenu.add(self.__oReplaceWithPCLPane)
+        oReplaceMenu.add(self.__oReplaceWithPCLPane)
         self.__oReplaceWithPCLPane.connect("activate",
                 self.__oWin.replace_with_physical_card_list)
         self.__oReplaceWithPCLPane.set_sensitive(True)
 
         self.__oReplaceWithCardText = gtk.MenuItem(
                 "Replace current pane with Card Text Pane")
-        wReplaceMenu.add(self.__oReplaceWithCardText)
+        oReplaceMenu.add(self.__oReplaceWithCardText)
         self.__oReplaceWithCardText.connect("activate",
                 self.__oWin.replace_with_card_text)
         self.__oReplaceWithCardText.set_sensitive(True)
 
         self.__oReplaceWithACSListPane = gtk.MenuItem(
                 "Replace current pane with Abstract Card Set List")
-        wReplaceMenu.add(self.__oReplaceWithACSListPane)
+        oReplaceMenu.add(self.__oReplaceWithACSListPane)
         self.__oReplaceWithACSListPane.connect("activate",
                 self.__oWin.replace_with_acs_list)
         self.__oReplaceWithACSListPane.set_sensitive(True)
 
         self.__oReplaceWithPCSListPane = gtk.MenuItem(
                 "Replace current pane with Physical Card Set List")
-        wReplaceMenu.add(self.__oReplaceWithPCSListPane)
+        oReplaceMenu.add(self.__oReplaceWithPCSListPane)
         self.__oReplaceWithPCSListPane.connect("activate",
                 self.__oWin.replace_with_pcs_list)
         self.__oReplaceWithPCSListPane.set_sensitive(True)
 
-
     def __create_plugin_menu(self):
+        """Create the 'Plugins' menu"""
         # setup sub menu
-        iMenu = gtk.MenuItem("Plugins")
+        oMenuItem = gtk.MenuItem("Plugins")
         oMenu = gtk.Menu()
         self.__dMenus["Plugins"] = oMenu
         # plugins
         for oPlugin in self.__oWin._aPlugins:
             oPlugin.add_to_menu(self.__dMenus, oMenu)
-        iMenu.set_submenu(oMenu)
-        self.add(iMenu)
+        oMenuItem.set_submenu(oMenu)
+        self.add(oMenuItem)
         if len(oMenu.get_children()) == 0:
-            iMenu.set_sensitive(False)
+            oMenuItem.set_sensitive(False)
 
-    def del_pane_set_sensitive(self, bValue):
-        self.__oDelPane.set_sensitive(bValue)
-
-    def add_card_text_set_sensitive(self, bValue):
-        self.__oReplaceWithCardText.set_sensitive(bValue)
-        self.__oAddCardText.set_sensitive(bValue)
-
-    def pcs_list_pane_set_sensitive(self, bValue):
-        self.__oReplaceWithPCSListPane.set_sensitive(bValue)
-        self.__oAddPCSListPane.set_sensitive(bValue)
-
-    def acs_list_pane_set_sensitive(self, bValue):
-        self.__oReplaceWithACSListPane.set_sensitive(bValue)
-        self.__oAddACSListPane.set_sensitive(bValue)
-
-    def abstract_card_list_set_sensitive(self, bValue):
-        self.__oReplaceWithACLPane.set_sensitive(bValue)
-        self.__oAddACLPane.set_sensitive(bValue)
-
-    def physical_card_list_set_sensitive(self, bValue):
-        self.__oReplaceWithPCLPane.set_sensitive(bValue)
-        self.__oAddPCLPane.set_sensitive(bValue)
-
-    def set_split_vertical_active(self, bValue):
-        self.__oAddVertPane.set_sensitive(bValue)
-
-    def set_split_horizontal_active(self, bValue):
-        self.__oAddHorzPane.set_sensitive(bValue)
-
-    def __create_about_menu(self):
+    def __create_help_menu(self):
+        """Create the menu for help items"""
         # setup sub menu
-        iMenu = gtk.MenuItem("_Help")
-        iMenu.set_right_justified(True)
+        oMenuItem = gtk.MenuItem("_Help")
+        oMenuItem.set_right_justified(True)
         oMenu = gtk.Menu()
         self.__dMenus["Help"] = oMenu
-        iMenu.set_submenu(oMenu)
+        oMenuItem.set_submenu(oMenu)
 
         self.oHelpLast = gtk.MenuItem("Last shown help page")
 
@@ -313,31 +298,79 @@ class MainMenu(gtk.MenuBar, object):
         oMenu.add(self.oHelpLast)
         self.oHelpLast.set_sensitive(False)
 
-        self.iAbout = gtk.MenuItem("About Sutekh")
-        self.iAbout.connect('activate', self.__oWin.show_about_dialog)
-        oMenu.add(self.iAbout)
+        self.oAbout = gtk.MenuItem("About Sutekh")
+        self.oAbout.connect('activate', self.__oWin.show_about_dialog)
+        oMenu.add(self.oAbout)
 
-        self.add(iMenu)
+        self.add(oMenuItem)
 
+   # pylint: enable-msg=W0201
+
+    def del_pane_set_sensitive(self, bValue):
+        """Set the 'pane can be removed' option to bValue"""
+        self.__oDelPane.set_sensitive(bValue)
+
+    def add_card_text_set_sensitive(self, bValue):
+        """Set the options for adding the Card Text Frame to bValue"""
+        self.__oReplaceWithCardText.set_sensitive(bValue)
+        self.__oAddCardText.set_sensitive(bValue)
+
+    def pcs_list_pane_set_sensitive(self, bValue):
+        """Set the options for adding the list of PhysicalCardSets to bValue"""
+        self.__oReplaceWithPCSListPane.set_sensitive(bValue)
+        self.__oAddPCSListPane.set_sensitive(bValue)
+
+    def acs_list_pane_set_sensitive(self, bValue):
+        """Set the options for adding the list of AbstractCardSets to bValue"""
+        self.__oReplaceWithACSListPane.set_sensitive(bValue)
+        self.__oAddACSListPane.set_sensitive(bValue)
+
+    def abstract_card_list_set_sensitive(self, bValue):
+        """Set the options for adding the WW cardlist to bValue"""
+        self.__oReplaceWithACLPane.set_sensitive(bValue)
+        self.__oAddACLPane.set_sensitive(bValue)
+
+    def physical_card_list_set_sensitive(self, bValue):
+        """Set the options for adding the card collection to bValue"""
+        self.__oReplaceWithPCLPane.set_sensitive(bValue)
+        self.__oAddPCLPane.set_sensitive(bValue)
+
+    def set_split_vertical_active(self, bValue):
+        """Set the split veritcal pane option to bValue"""
+        self.__oAddVertPane.set_sensitive(bValue)
+
+    def set_split_horizontal_active(self, bValue):
+        """Set the split horizontal pane option to bValue"""
+        self.__oAddHorzPane.set_sensitive(bValue)
+
+    # pylint: disable-msg=W0613
+    # oWidget + oMenuWidget required by function signature
     def do_import_physical_card_list(self, oWidget):
+        """Import a Physical Card Collection from a XML file"""
         oFileChooser = ImportDialog("Select Card List to Import", self.__oWin)
         oFileChooser.run()
         sFileName = oFileChooser.get_name()
         if sFileName is not None:
             oParser = IdentifyXMLFile()
+            # pylint: disable-msg=W0612
+            # sName not relevent to PhysicalCard XML files, so unused
             (sType, sName, bExists) = oParser.id_file(sFileName)
             if sType == 'PhysicalCard':
                 if not bExists:
-                    oFile = PhysicalCardXmlFile(sFileName, lookup=self.__oWin.cardLookup)
+                    oFile = PhysicalCardXmlFile(sFileName,
+                            oLookup=self.__oWin.cardLookup)
                     oFile.read()
                     self.__oWin.reload_all()
                 else:
-                    do_complaint_error ( "Can only do this when the current Card List is empty")
+                    do_complaint_error ( "Can only do this when the current"
+                            " Card Collection is empty")
             else:
                 do_complaint_error("File is not a PhysicalCard XML File.")
 
     def do_import_card_set(self, oWidget):
-        oFileChooser = ImportDialog("Select Card Set(s) to Import", self.__oWin)
+        """Import a card set from a XML File."""
+        oFileChooser = ImportDialog("Select Card Set(s) to Import",
+                self.__oWin)
         oFileChooser.run()
         sFileName = oFileChooser.get_name()
         if sFileName is not None:
@@ -345,7 +378,8 @@ class MainMenu(gtk.MenuBar, object):
             (sType, sName, bExists) = oParser.id_file(sFileName)
             if sType == 'PhysicalCardSet' or sType == 'AbstractCardSet':
                 if bExists:
-                    iResponse = do_complaint_warning("This would delete the existing CardSet " + sName)
+                    iResponse = do_complaint_warning("This would delete the"
+                            " existing CardSet " + sName)
                     if iResponse == gtk.RESPONSE_CANCEL:
                         return
                     else:
@@ -357,29 +391,37 @@ class MainMenu(gtk.MenuBar, object):
                 oFrame = self.__oWin.add_pane_end()
                 try:
                     if sType == "AbstractCardSet":
-                        oFile = AbstractCardSetXmlFile(sFileName, lookup=self.__oWin.cardLookup)
+                        oFile = AbstractCardSetXmlFile(sFileName,
+                                oLookup=self.__oWin.cardLookup)
                         oFile.read()
-                        self.__oWin.replace_with_abstract_card_set(sName, oFrame)
+                        self.__oWin.replace_with_abstract_card_set(sName,
+                                oFrame)
                     else:
-                        oFile = PhysicalCardSetXmlFile(sFileName, lookup=self.__oWin.cardLookup)
+                        oFile = PhysicalCardSetXmlFile(sFileName,
+                                oLookup=self.__oWin.cardLookup)
                         oFile.read()
-                        self.__oWin.replace_with_physical_card_set(sName, oFrame)
+                        self.__oWin.replace_with_physical_card_set(sName,
+                                oFrame)
                 except LookupFailed:
                     # Remove window, since we didn't succeed
                     # Should this dialog be here?
-                    do_complaint_error("Import failed. Unable to find matches for all the cards in the cardset.")
+                    do_complaint_error("Import failed. Unable to find "
+                            "matches for all the cards in the cardset.")
                     self.__oWin.remove_frame(oFrame)
             else:
                 do_complaint_error("File is not a CardSet XML File.")
 
     def do_import_new_card_list(self, oWidget):
-        if refresh_WW_card_list(self.__oWin):
+        """Refresh the WW card list and rulings files."""
+        if refresh_ww_card_list(self.__oWin):
             self.__oWin.reload_all()
 
     def do_save_pane_set(self, oWidget):
+        """Save the current pane layout"""
         self.__oWin.save_frames()
 
     def do_toggle_save_on_exit(self, oWidget):
+        """Toggle the 'Save Pane layout on exit' option"""
         bChoice = not self.__oConfig.getSaveOnExit()
         self.__oConfig.setSaveOnExit(bChoice)
         # gtk can handle the rest for us
@@ -389,20 +431,23 @@ class MainMenu(gtk.MenuBar, object):
         bChoice = not self.__oConfig.get_save_precise_pos()
         self.__oConfig.set_save_precise_pos(bChoice)
 
-
     def do_toggle_save_window_size(self, oWidget):
         """Toggle save window size option"""
         bChoice = not self.__oConfig.get_save_window_size()
         self.__oConfig.set_save_window_size(bChoice)
 
     def equalize_panes(self, oMenuWidget):
+        """Ensure all panes have the same width allocated."""
         self.__oWin.set_all_panes_equal()
 
     def add_pane_horizontal(self, oMenuWidget):
+        """Split the current pane horizonitally and add a new pane."""
         self.__oWin.add_pane(False)
 
     def add_pane_vertical(self, oMenuWidget):
+        """Split the current pane vertically and add a new pane."""
         self.__oWin.add_pane(True)
 
     def do_restore(self, oMenuWidget):
+        """Restore the pane layout from the config file."""
         self.__oWin.restore_from_config()
