@@ -7,6 +7,9 @@
 # Class and functions to manage zip file handling for Sutekh
 # Split off from SutekhUtility.py and refactored, April 2007  - NM
 
+"""Provide a ZipFile class which wraps the functionlity from zipfile
+   Sutekh needs."""
+
 import zipfile
 from logging import Logger
 from sqlobject import sqlhub
@@ -24,6 +27,10 @@ from sutekh.io.AbstractCardSetWriter import AbstractCardSetWriter
 from sutekh.io.IdentifyXMLFile import IdentifyXMLFile
 
 class ZipFileWrapper(object):
+    """The zip file wrapper.
+
+       This provides useful functions for dumping + extracting the
+       database to / form a zipfile"""
     def __init__(self, sZipFileName):
         self.sZipFileName = sZipFileName
         self.oZip = None
@@ -108,6 +115,7 @@ class ZipFileWrapper(object):
         return aList
 
     def write_mapping_to_zip(self, oLogger):
+        """Write the Physical card to PCS mapping information to the file."""
         bClose = False
         if self.oZip is None:
             self.__open_zip_for_write()
@@ -122,7 +130,8 @@ class ZipFileWrapper(object):
             self.__close_zip()
 
 
-    def doRestoreFromZip(self, oCardLookup=DEFAULT_LOOKUP, oLogHandler=None):
+    def do_restore_from_zip(self, oCardLookup=DEFAULT_LOOKUP,
+            oLogHandler=None):
         """Recover data from the zip file"""
         bPhysicalCardsRead = False
         self.__open_zip_for_read()
@@ -136,6 +145,8 @@ class ZipFileWrapper(object):
         for oItem in self.oZip.infolist():
             oData = self.oZip.read(oItem.filename)
             oParser = IdentifyXMLFile()
+            # pylint: disable-msg=W0612
+            # sName, bExists not relevant here, we only want to check sType
             (sType, sName, bExists) = oParser.parse_string(oData)
             if sType == 'PhysicalCard':
                 # We delete the Physical Card List
@@ -152,7 +163,8 @@ class ZipFileWrapper(object):
                 break
         if not bPhysicalCardsRead:
             self.__close_zip()
-            raise IOError("No PhysicalCard list found in the zip file, cannot import")
+            raise IOError("No PhysicalCard list found in the zip file,"
+                    " cannot import")
         else:
             for oItem in self.oZip.infolist():
                 oData = self.oZip.read(oItem.filename)
@@ -177,14 +189,15 @@ class ZipFileWrapper(object):
                 oLogger.info('%s %s read', sType, oItem.filename)
         self.__close_zip()
 
-    def doDumpAllToZip(self, oLogHandler=None):
+    def do_dump_all_to_zip(self, oLogHandler=None):
         """Dump all the database contents to the zip file"""
         self.__open_zip_for_write()
         oLogger = Logger('Restore zip file')
         if oLogHandler is not None:
             oLogger.addHandler(oLogHandler)
             if hasattr(oLogHandler,'set_total'):
-                iTotal = 2 + AbstractCardSet.select().count() + PhysicalCardSet.select().count()
+                iTotal = 2 + AbstractCardSet.select().count() + \
+                        PhysicalCardSet.select().count()
                 oLogHandler.set_total(iTotal)
         self.write_physical_card_list_to_zip(oLogger)
         aACSList = self.write_all_acs_to_zip(oLogger)

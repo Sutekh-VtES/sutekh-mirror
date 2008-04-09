@@ -12,47 +12,20 @@ from which the final Filter Object is constructed
 
 import ply.lex as lex
 import ply.yacc as yacc
-from sutekh.core.Filters import MultiCardTypeFilter, MultiClanFilter, \
-        MultiDisciplineFilter, MultiGroupFilter, MultiCapacityFilter, \
-        MultiCostFilter, MultiLifeFilter, MultiCreedFilter, MultiVirtueFilter, \
-        CardTextFilter, CardNameFilter, MultiSectFilter, MultiTitleFilter, \
-        MultiExpansionRarityFilter, MultiDisciplineLevelFilter, \
-        MultiPhysicalExpansionFilter, AbstractCardSetNameFilter, \
-        PhysicalCardSetNameFilter, AbstractCardSetAuthorFilter, \
-        PhysicalCardSetAuthorFilter, AbstractCardSetDescriptionFilter, \
-        PhysicalCardSetDescriptionFilter, AbstractCardSetAnnotationsFilter, \
-        PhysicalCardSetAnnotationsFilter, MultiCostTypeFilter, \
-        MultiPhysicalCardSetFilter, FilterAndBox, FilterOrBox, FilterNot, \
-        MultiPhysicalCardCountFilter, PhysicalCardSetInUseFilter, \
-        PCSPhysicalCardSetInUseFilter, CardFunctionFilter
+from sutekh.core.Filters import aParserFilters, FilterNot, FilterAndBox, \
+        FilterOrBox
 
-# Not completely happy with this big list approach. Can this be inferred
-# from the filter objects?
-
-aFilters = [MultiCardTypeFilter, MultiCostTypeFilter, MultiClanFilter,
-        MultiDisciplineFilter, MultiGroupFilter, MultiCapacityFilter,
-        MultiCostFilter, MultiLifeFilter, MultiCreedFilter, MultiVirtueFilter,
-        CardTextFilter, CardNameFilter, MultiSectFilter, MultiTitleFilter,
-        MultiExpansionRarityFilter, MultiDisciplineLevelFilter,
-        MultiPhysicalExpansionFilter, AbstractCardSetNameFilter,
-        PhysicalCardSetNameFilter, AbstractCardSetAuthorFilter,
-        PhysicalCardSetAuthorFilter, AbstractCardSetDescriptionFilter,
-        PhysicalCardSetDescriptionFilter, AbstractCardSetAnnotationsFilter,
-        PhysicalCardSetAnnotationsFilter, MultiPhysicalCardSetFilter,
-        MultiPhysicalCardCountFilter, PhysicalCardSetInUseFilter,
-        PCSPhysicalCardSetInUseFilter, CardFunctionFilter]
-
-aEntryFilters = [x.keyword for x in aFilters if hasattr(x,'istextentry')
+aEntryFilters = [x.keyword for x in aParserFilters if hasattr(x,'istextentry')
         and x.istextentry]
-aWithFilters = [x.keyword for x in aFilters if hasattr(x,'iswithfilter')
+aWithFilters = [x.keyword for x in aParserFilters if hasattr(x,'iswithfilter')
         and x.iswithfilter]
-aListFilters = [x.keyword for x in aFilters if hasattr(x,'islistfilter')
+aListFilters = [x.keyword for x in aParserFilters if hasattr(x,'islistfilter')
         and x.islistfilter]
 
 def get_filter_type(sKeyword):
     """Get the actual filter object from the type string"""
     # pylint: disable-msg=W0621
-    return [x for x in aFilters if x.keyword == sKeyword][0]
+    return [x for x in aParserFilters if x.keyword == sKeyword][0]
 
 # We define an object for the lex parser
 
@@ -61,7 +34,7 @@ def get_filter_type(sKeyword):
 class ParseFilterDefinitions(object):
     """Provides the lexxer used by PLY"""
     # pylint: disable-msg=C0103,R0201
-    aKeywords = [x.keyword for x in aFilters]
+    aKeywords = [x.keyword for x in aParserFilters]
 
     tokens = (
             'NOT',
@@ -327,7 +300,8 @@ class AstBaseNode(object):
         sOutput = self.__class__.__name__ + sAttrs
         for oChild in self.aChildren:
             sOutput += "\n" + \
-                    "\n".join(["\t" + sVal for sVal in str(oChild).split("\n")])
+                    "\n".join(["\t" + sVal for sVal in
+                        str(oChild).split("\n")])
         return sOutput
 
     def get_values(self):

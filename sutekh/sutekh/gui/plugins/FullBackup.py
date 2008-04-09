@@ -98,7 +98,7 @@ class FullBackup(CardListPlugin):
                     oLogHandler.set_dialog(oProgressDialog)
                     oProgressDialog.show()
                     oFile = ZipFileWrapper(sFile)
-                    oFile.doDumpAllToZip(oLogHandler)
+                    oFile.do_dump_all_to_zip(oLogHandler)
                     oProgressDialog.destroy()
                 # pylint: disable-msg=W0703
                 # we really do want all the exceptions
@@ -153,7 +153,7 @@ class FullBackup(CardListPlugin):
                     oLogHandler.set_dialog(oProgressDialog)
                     oProgressDialog.show()
                     oFile = ZipFileWrapper(sFile)
-                    oFile.doRestoreFromZip(self.cardlookup, oLogHandler)
+                    oFile.do_restore_from_zip(self.cardlookup, oLogHandler)
                     # restore successful, refresh display
                     self.reload_all()
                     oProgressDialog.destroy()

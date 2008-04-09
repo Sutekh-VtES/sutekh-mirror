@@ -52,7 +52,8 @@ class Filter(object):
 
     def select(self, cCardClass):
         """cCardClass.select(...) applying the filter to the selection."""
-        return cCardClass.select(self._get_expression(), join=self._get_joins())
+        return cCardClass.select(self._get_expression(),
+                join=self._get_joins())
 
     def _get_expression(self):
         "Actual filter expression"
@@ -382,9 +383,9 @@ class MultiExpansionRarityFilter(MultiFilter):
                 if x.name[:5] != 'Promo']
         aResults = []
         for sExpan in aExpansions:
-            oE = IExpansion(sExpan)
+            oExpansion = IExpansion(sExpan)
             aRarities = [x.rarity.name for x in
-                    RarityPair.selectBy(expansion = oE)]
+                    RarityPair.selectBy(expansion = oExpansion)]
             for sRarity in aRarities:
                 aResults.append(sExpan + ' with ' + sRarity)
         return aResults
@@ -438,9 +439,9 @@ class MultiDisciplineLevelFilter(MultiFilter):
         oTemp = MultiDisciplineFilter([])
         aDisciplines = oTemp.get_values()
         aResults = []
-        for disc in aDisciplines:
-            aResults.append(disc + ' with inferior')
-            aResults.append(disc + ' with superior')
+        for sDisc in aDisciplines:
+            aResults.append(sDisc + ' with inferior')
+            aResults.append(sDisc + ' with superior')
         return aResults
 
 class CardTypeFilter(SingleFilter):
@@ -750,7 +751,8 @@ class MultiCostTypeFilter(DirectFilter):
 class LifeFilter(DirectFilter):
     "Filter on life"
     types = ['AbstractCard', 'PhysicalCard']
-    # Will only return imbued, unless we ever parse life from retainers & allies
+    # Will only return imbued, unless we ever parse life from
+    # retainers & allies
     def __init__(self, iLife):
         self.__iLife = iLife
 
@@ -932,9 +934,9 @@ class PhysicalCardFilter(Filter):
         # only filters allowed to pass the AbstractCard table as a
         # joining table.
         # The join is needed so filtering on abstract card properties can work
-        oT = Table('physical_card')
+        oTable = Table('physical_card')
         return [LEFTJOINOn(None, AbstractCard,
-            AbstractCard.q.id == oT.abstract_card_id)]
+            AbstractCard.q.id == oTable.abstract_card_id)]
 
     def _get_expression(self):
         return TRUE # SQLite doesn't like True. Postgres doesn't like 1.
@@ -964,9 +966,9 @@ class AbstractCardFilter(Filter):
     def _get_joins(self):
         # pylint: disable-msg=E1101
         # SQLObject methods not detected by plylint
-        oT = Table('abstract_card')
+        oTable = Table('abstract_card')
         return [LEFTJOINOn(None, PhysicalCard,
-            PhysicalCard.q.abstractCardID == oT.id)]
+            PhysicalCard.q.abstractCardID == oTable.id)]
 
     def _get_expression(self):
         return TRUE # See PhysicalCardFilter
@@ -988,8 +990,8 @@ class MultiPhysicalCardCountFilter(DirectFilter):
         self._oFilters = []
         if '0' in aCounts:
             aCounts.remove('0')
-            # Doesn't seem to be a way to do a DISTINCT using sqlbuilder.Select,
-            # so we fudge it with GROUP BY
+            # Doesn't seem to be a way to do a DISTINCT using
+            # sqlbuilder.Select, so we fudge it with GROUP BY
             oZeroQuery = NOT(IN(AbstractCard.q.id, Select(
                 PhysicalCard.q.abstractCardID,
                 groupBy=PhysicalCard.q.abstractCardID)))
@@ -1040,8 +1042,8 @@ class PhysicalExpansionFilter(DirectFilter):
     # pylint: disable-msg=C0111
     # don't need docstrings for _get_expression, get_values & _get_joins
     def _get_expression(self):
-        oT = Table('physical_card')
-        return oT.expansion_id == self._iId
+        oTable = Table('physical_card')
+        return oTable.expansion_id == self._iId
 
 class MultiPhysicalExpansionFilter(DirectFilter):
     "Filter PhysicalCard based on a list of PhysicalCard expansions"
@@ -1074,15 +1076,16 @@ class MultiPhysicalExpansionFilter(DirectFilter):
         return aExpansions
 
     def _get_expression(self):
-        oT = Table('physical_card')
+        oTable = Table('physical_card')
         # None in the IN statement doesn't do the right thing for me
         if self.__bOrUnspec and len(self._aIds) > 0:
-            return OR(IN(oT.expansion_id, self._aIds), oT.expansion_id == None)
+            return OR(IN(oTable.expansion_id, self._aIds),
+                    oTable.expansion_id == None)
         elif self.__bOrUnspec:
             # Psycopg2 doesn't like IN(a, []) constructions
-            return oT.expansion_id == None
+            return oTable.expansion_id == None
         else:
-            return IN(oT.expansion_id, self._aIds)
+            return IN(oTable.expansion_id, self._aIds)
 
 class PhysicalCardSetFilter(Filter):
     "Filter on Physical Card Set membership"
@@ -1092,7 +1095,7 @@ class PhysicalCardSetFilter(Filter):
         # pylint: disable-msg=E1101
         # SQLObject methods not detected by plylint
         self.__iDeckId = IPhysicalCardSet(sName).id
-        self.__oT = make_table_alias('physical_map')
+        self.__oTable = make_table_alias('physical_map')
         self.__oPT = Table('physical_card')
 
     # pylint: disable-msg=C0111
@@ -1107,11 +1110,11 @@ class PhysicalCardSetFilter(Filter):
         # SQLObject methods not detected by plylint
         return [LEFTJOINOn(None, AbstractCard,
             AbstractCard.q.id == self.__oPT.abstract_card_id),
-            LEFTJOINOn(None, self.__oT,
-                self.__oPT.id == self.__oT.q.physical_card_id)]
+            LEFTJOINOn(None, self.__oTable,
+                self.__oPT.id == self.__oTable.q.physical_card_id)]
 
     def _get_expression(self):
-        return self.__oT.q.physical_card_set_id == self.__iDeckId
+        return self.__oTable.q.physical_card_set_id == self.__iDeckId
 
 class MultiPhysicalCardSetFilter(Filter):
     "Filter on a list of Physical Card Sets"
@@ -1132,7 +1135,7 @@ class MultiPhysicalCardSetFilter(Filter):
         self.__aDeckIds = []
         for sName in aNames:
             self.__aDeckIds.append(IPhysicalCardSet(sName).id)
-        self.__oT = make_table_alias('physical_map')
+        self.__oTable = make_table_alias('physical_map')
         self.__oPT = Table('physical_card')
 
     # pylint: disable-msg=C0111
@@ -1145,11 +1148,11 @@ class MultiPhysicalCardSetFilter(Filter):
         return aNames
 
     def _get_joins(self):
-        return [LEFTJOINOn(None, self.__oT,
-            self.__oPT.id == self.__oT.q.physical_card_id)]
+        return [LEFTJOINOn(None, self.__oTable,
+            self.__oPT.id == self.__oTable.q.physical_card_id)]
 
     def _get_expression(self):
-        return IN(self.__oT.q.physical_card_set_id, self.__aDeckIds)
+        return IN(self.__oTable.q.physical_card_set_id, self.__aDeckIds)
 
 class PhysicalCardSetInUseFilter(Filter):
     "Filter on a membership of Physical Card Sets marked in use"
@@ -1165,7 +1168,7 @@ class PhysicalCardSetInUseFilter(Filter):
         for oCS in PhysicalCardSet.select():
             if oCS.inuse:
                 self.__aDeckIds.append(oCS.id)
-        self.__oT = make_table_alias('physical_map')
+        self.__oTable = make_table_alias('physical_map')
         self.__oPT = Table('physical_card')
 
     # pylint: disable-msg=C0111
@@ -1175,11 +1178,11 @@ class PhysicalCardSetInUseFilter(Filter):
         return None
 
     def _get_joins(self):
-        return [LEFTJOINOn(None, self.__oT,
-            self.__oPT.id == self.__oT.q.physical_card_id)]
+        return [LEFTJOINOn(None, self.__oTable,
+            self.__oPT.id == self.__oTable.q.physical_card_id)]
 
     def _get_expression(self):
-        return IN(self.__oT.q.physical_card_set_id, self.__aDeckIds)
+        return IN(self.__oTable.q.physical_card_set_id, self.__aDeckIds)
 
 class AbstractCardSetFilter(SingleFilter):
     """
@@ -1241,7 +1244,7 @@ class CardSetNameFilter(DirectFilter):
     def __init__(self, sPattern):
         self.__sPattern = sPattern.lower()
         # Subclasses will replace this with the correct table
-        self._oT = None
+        self.oTable = None
 
     # pylint: disable-msg=C0111
     # don't need docstrings for _get_expression, get_values & _get_joins
@@ -1250,7 +1253,8 @@ class CardSetNameFilter(DirectFilter):
         return ''
 
     def _get_expression(self):
-        return LIKE(func.LOWER(self._oT.name), '%' + self.__sPattern + '%')
+        return LIKE(func.LOWER(self.oTable.name), '%' + self.__sPattern
+                + '%')
 
 class CardSetDescriptionFilter(DirectFilter):
     "Base class for CardSet filters on Card Set Description"
@@ -1263,7 +1267,7 @@ class CardSetDescriptionFilter(DirectFilter):
     def __init__(self, sPattern):
         self.__sPattern = sPattern.lower()
         # Subclasses will replace this with the correct table
-        self._oT = None
+        self.oTable = None
 
     # pylint: disable-msg=C0111
     # don't need docstrings for _get_expression, get_values & _get_joins
@@ -1272,7 +1276,8 @@ class CardSetDescriptionFilter(DirectFilter):
         return ''
 
     def _get_expression(self):
-        return LIKE(func.LOWER(self._oT.comment), '%' + self.__sPattern + '%')
+        return LIKE(func.LOWER(self.oTable.comment), '%' + self.__sPattern
+                + '%')
 
 class CardSetAuthorFilter(DirectFilter):
     "Base class for CardSet filters on Card Set Author"
@@ -1285,7 +1290,7 @@ class CardSetAuthorFilter(DirectFilter):
     def __init__(self, sPattern):
         self.__sPattern = sPattern.lower()
         # Subclasses will replace this with the correct table
-        self._oT = None
+        self.oTable = None
 
     # pylint: disable-msg=C0111
     # don't need docstrings for _get_expression, get_values & _get_joins
@@ -1294,7 +1299,8 @@ class CardSetAuthorFilter(DirectFilter):
         return ''
 
     def _get_expression(self):
-        return LIKE(func.LOWER(self._oT.author), '%' + self.__sPattern + '%')
+        return LIKE(func.LOWER(self.oTable.author), '%' + self.__sPattern
+                + '%')
 
 class CardSetAnnotationsFilter(DirectFilter):
     "Base class for CardSet filters on Card Set Annotations"
@@ -1307,7 +1313,7 @@ class CardSetAnnotationsFilter(DirectFilter):
     def __init__(self, sPattern):
         self.__sPattern = sPattern.lower()
         # Subclasses will replace this with the correct table
-        self._oT = None
+        self.oTable = None
 
     # pylint: disable-msg=C0111
     # don't need docstrings for _get_expression, get_values & _get_joins
@@ -1316,7 +1322,7 @@ class CardSetAnnotationsFilter(DirectFilter):
         return ''
 
     def _get_expression(self):
-        return LIKE(func.LOWER(self._oT.annotations),
+        return LIKE(func.LOWER(self.oTable.annotations),
                 '%' + self.__sPattern + '%')
 
 # Abstract Card Set subclasses
@@ -1329,7 +1335,7 @@ class AbstractCardSetNameFilter(CardSetNameFilter):
 
     def __init__(self, sPattern):
         super(AbstractCardSetNameFilter, self).__init__(sPattern)
-        self._oT = Table('abstract_card_set')
+        self.oTable = Table('abstract_card_set')
 
 class AbstractCardSetDescriptionFilter(CardSetDescriptionFilter):
     "Filter Abstract Card Set on Description"
@@ -1339,7 +1345,7 @@ class AbstractCardSetDescriptionFilter(CardSetDescriptionFilter):
 
     def __init__(self, sPattern):
         super(AbstractCardSetDescriptionFilter, self).__init__(sPattern)
-        self._oT = Table('abstract_card_set')
+        self.oTable = Table('abstract_card_set')
 
 class AbstractCardSetAuthorFilter(CardSetAuthorFilter):
     "Filter Abstract Card Set on Author"
@@ -1349,7 +1355,7 @@ class AbstractCardSetAuthorFilter(CardSetAuthorFilter):
 
     def __init__(self, sPattern):
         super(AbstractCardSetAuthorFilter, self).__init__(sPattern)
-        self._oT = Table('abstract_card_set')
+        self.oTable = Table('abstract_card_set')
 
 class AbstractCardSetAnnotationsFilter(CardSetAnnotationsFilter):
     "Filter Abstract Card Set on Annotations"
@@ -1359,7 +1365,7 @@ class AbstractCardSetAnnotationsFilter(CardSetAnnotationsFilter):
 
     def __init__(self, sPattern):
         super(AbstractCardSetAnnotationsFilter, self).__init__(sPattern)
-        self._oT = Table('abstract_card_set')
+        self.oTable = Table('abstract_card_set')
 
 # Physical Card Set subclasses
 
@@ -1371,7 +1377,7 @@ class PhysicalCardSetNameFilter(CardSetNameFilter):
 
     def __init__(self, sPattern):
         super(PhysicalCardSetNameFilter, self).__init__(sPattern)
-        self._oT = Table('physical_card_set')
+        self.oTable = Table('physical_card_set')
 
 class PhysicalCardSetDescriptionFilter(CardSetDescriptionFilter):
     "Filter Physical Card Set on Description"
@@ -1381,7 +1387,7 @@ class PhysicalCardSetDescriptionFilter(CardSetDescriptionFilter):
 
     def __init__(self, sPattern):
         super(PhysicalCardSetDescriptionFilter, self).__init__(sPattern)
-        self._oT = Table('physical_card_set')
+        self.oTable = Table('physical_card_set')
 
 class PhysicalCardSetAuthorFilter(CardSetAuthorFilter):
     "Filter Physical Card Set on Author"
@@ -1391,7 +1397,7 @@ class PhysicalCardSetAuthorFilter(CardSetAuthorFilter):
 
     def __init__(self, sPattern):
         super(PhysicalCardSetAuthorFilter, self).__init__(sPattern)
-        self._oT = Table('physical_card_set')
+        self.oTable = Table('physical_card_set')
 
 class PhysicalCardSetAnnotationsFilter(CardSetAnnotationsFilter):
     "Filter Physical Card Set on Annotations"
@@ -1401,7 +1407,7 @@ class PhysicalCardSetAnnotationsFilter(CardSetAnnotationsFilter):
 
     def __init__(self, sPattern):
         super(PhysicalCardSetAnnotationsFilter, self).__init__(sPattern)
-        self._oT = Table('physical_card_set')
+        self.oTable = Table('physical_card_set')
 
 class PCSPhysicalCardSetInUseFilter(DirectFilter):
     "Filter Physical Card Set on inuse status"
@@ -1421,4 +1427,20 @@ class PCSPhysicalCardSetInUseFilter(DirectFilter):
         # pylint: disable-msg=E1101
         # SQLObject methods not detected by plylint
         return PhysicalCardSet.q.inuse == True
+
+# The List of filters exposed to the Filter Parser - new filters should just
+# be tacked on here
+
+aParserFilters = [MultiCardTypeFilter, MultiCostTypeFilter, MultiClanFilter,
+        MultiDisciplineFilter, MultiGroupFilter, MultiCapacityFilter,
+        MultiCostFilter, MultiLifeFilter, MultiCreedFilter, MultiVirtueFilter,
+        CardTextFilter, CardNameFilter, MultiSectFilter, MultiTitleFilter,
+        MultiExpansionRarityFilter, MultiDisciplineLevelFilter,
+        MultiPhysicalExpansionFilter, AbstractCardSetNameFilter,
+        PhysicalCardSetNameFilter, AbstractCardSetAuthorFilter,
+        PhysicalCardSetAuthorFilter, AbstractCardSetDescriptionFilter,
+        PhysicalCardSetDescriptionFilter, AbstractCardSetAnnotationsFilter,
+        PhysicalCardSetAnnotationsFilter, MultiPhysicalCardSetFilter,
+        MultiPhysicalCardCountFilter, PhysicalCardSetInUseFilter,
+        PCSPhysicalCardSetInUseFilter, CardFunctionFilter]
 

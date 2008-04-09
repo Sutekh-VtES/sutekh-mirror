@@ -192,11 +192,11 @@ def main(aArgs):
 
     if oOpts.dump_zip_name is not None:
         oZipFile = ZipFileWrapper(oOpts.dump_zip_name)
-        oZipFile.doDumpAllToZip(oLogHandler)
+        oZipFile.do_dump_all_to_zip(oLogHandler)
 
     if oOpts.restore_zip_name is not None:
         oZipFile = ZipFileWrapper(oOpts.restore_zip_name)
-        oZipFile.doRestoreFromZip(oLogHandler)
+        oZipFile.do_restore_from_zip(oLogHandler)
 
     if not oOpts.save_pcs is None:
         oFile = PhysicalCardSetXmlFile(oOpts.pcs_filename)

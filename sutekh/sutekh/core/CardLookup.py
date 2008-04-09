@@ -79,7 +79,11 @@ class SimpleLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
        The default when we don't have a more cunning plan.
        """
 
+    # pylint: disable-msg=W0613
+    # sInfo is required by the function signature, but not used, since we
+    # don't actually interact with the user
     def lookup(self, aNames, sInfo):
+        """A lookup method that excludes unknown cards."""
         aCards = []
         for sName in aNames:
             if sName:
@@ -96,6 +100,7 @@ class SimpleLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
         return aCards
 
     def physical_lookup(self, dCardExpansions, dNameCards, dNameExps, sInfo):
+        """Lookup cards in the physical card set, excluding unknown cards."""
         aCards = []
         for sName in dCardExpansions:
             oAbs = dNameCards[sName]
@@ -131,6 +136,7 @@ class SimpleLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
         return aCards
 
     def expansion_lookup(self, aExpansionNames, sInfo):
+        """Lookup for expansion names, excluding unknown expansions."""
         aExps = []
         for sExp in aExpansionNames:
             if sExp:

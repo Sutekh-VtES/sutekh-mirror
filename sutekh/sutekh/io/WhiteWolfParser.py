@@ -6,6 +6,8 @@
 # Copyright 2007 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
+"""HTML Parser for extracting cards from the WW online cardlist."""
+
 import HTMLParser, re
 from logging import Logger
 from sutekh.core.SutekhObjects import SutekhObjectMaker
@@ -19,7 +21,7 @@ class CardDict(dict):
 
     def __init__(self, oLogger):
         self.oLogger = oLogger
-        super(CardDict,self).__init__()
+        super(CardDict, self).__init__()
         self._oMaker = SutekhObjectMaker()
 
     def _parseText(self):
@@ -51,14 +53,15 @@ class CardDict(dict):
                 elif aLines[0].find('Camarilla Prince of') != -1:
                     sTitle = 'Prince'
                 elif aLines[0].find('Justicar') != -1:
-                    # Since Justicar titles are of the form Camarilla <Clan> Justicar
+                    # Since Justicar titles are of the form
+                    # 'Camarilla <Clan> Justicar'
                     oJusticar = re.compile('Camarilla [A-Z][a-z]* Justicar')
                     if oJusticar.search(aLines[0]) is not None:
                         sTitle = 'Justicar'
                 elif aLines[0].find('Camarilla Inner Circle') != -1:
                     sTitle = 'Inner Circle'
             elif aLines[0].find('Sabbat') != -1:
-                sSect='Sabbat'
+                sSect = 'Sabbat'
                 if aLines[0].find('Sabbat Archbishop of') != -1:
                     sTitle = 'Archbishop'
                 elif aLines[0].find('Sabbat bishop') != -1:
@@ -73,6 +76,8 @@ class CardDict(dict):
                 sSect = 'Independent'
                 # Independent titles are on the next line. Of the form
                 # Name has X vote(s)
+                # pylint: disable-msg=W0704
+                # error isn't fatal, so ignoring it is fine
                 try:
                     # Special cases 'The Baron' and 'Ur-Shulgi' mean we don't
                     # anchor the regexp
@@ -80,11 +85,11 @@ class CardDict(dict):
                     oMatch = oIndTitle.search(aLines[1])
                     if oMatch is not None:
                         if oMatch.groups()[0] == '1':
-                           sTitle = 'Independent with 1 vote'
+                            sTitle = 'Independent with 1 vote'
                         elif oMatch.groups()[0] == '2':
-                           sTitle = 'Independent with 2 votes'
+                            sTitle = 'Independent with 2 votes'
                         elif oMatch.groups()[0] == '3':
-                           sTitle = 'Independent with 3 votes'
+                            sTitle = 'Independent with 3 votes'
                 except IndexError:
                     pass
             elif aLines[0].find('Laibon') != -1:
@@ -104,38 +109,38 @@ class CardDict(dict):
         if sTitle is not None:
             self['title'] = sTitle
 
-    def _makeCard(self,sName):
-        sName = self.oDispCard.sub('',sName)
+    def _makeCard(self, sName):
+        sName = self.oDispCard.sub('', sName)
         return self._oMaker.makeAbstractCard(sName)
 
-    def _addExpansions(self,oCard,sExp):
+    def _addExpansions(self, oCard, sExp):
         aPairs = [x.split(':') for x in sExp.strip('[]').split(',')]
         aExp = []
         for aPair in aPairs:
             if len(aPair) == 1:
-                aExp.append((aPair[0].strip(),'NA'))
+                aExp.append((aPair[0].strip(), 'NA'))
             else:
-                aExp.append((aPair[0].strip(),aPair[1].strip()))
+                aExp.append((aPair[0].strip(), aPair[1].strip()))
 
         for sExp, sRarSet in aExp:
             for sRar in sRarSet.split('/'):
-                oP = self._oMaker.makeRarityPair(sExp,sRar)
+                oP = self._oMaker.makeRarityPair(sExp, sRar)
                 oCard.addRarityPair(oP)
 
-    def _addDisciplines(self,oCard,sDis):
-        sDis = self.oDisGaps.sub(' ',sDis).strip()
+    def _addDisciplines(self, oCard, sDis):
+        sDis = self.oDisGaps.sub(' ', sDis).strip()
 
         if sDis == '-none-' or sDis == '': return
 
         for s in sDis.split():
             if s==s.lower():
-                oP = self._oMaker.makeDisciplinePair(s,'inferior')
+                oP = self._oMaker.makeDisciplinePair(s, 'inferior')
             else:
-                oP = self._oMaker.makeDisciplinePair(s,'superior')
+                oP = self._oMaker.makeDisciplinePair(s, 'superior')
             oCard.addDisciplinePair(oP)
 
-    def _addVirtues(self,oCard,sVir):
-        sVir = self.oDisGaps.sub(' ',sVir).strip()
+    def _addVirtues(self, oCard, sVir):
+        sVir = self.oDisGaps.sub(' ', sVir).strip()
 
         if sVir == '-none-' or sVir == '': return
 
@@ -143,57 +148,60 @@ class CardDict(dict):
             oP = self._oMaker.makeVirtue(s)
             oCard.addVirtue(oP)
 
-    def _addCreeds(self,oCard,sCreed):
-        sCreed = self.oWhiteSp.sub(' ',sCreed).strip()
+    def _addCreeds(self, oCard, sCreed):
+        sCreed = self.oWhiteSp.sub(' ', sCreed).strip()
 
         if sCreed == '-none-' or sCreed == '': return
 
         for s in sCreed.split('/'):
             oCard.addCreed(self._oMaker.makeCreed(s.strip()))
 
-    def _addClans(self,oCard,sClan):
-        sClan = self.oWhiteSp.sub(' ',sClan).strip()
+    def _addClans(self, oCard, sClan):
+        sClan = self.oWhiteSp.sub(' ', sClan).strip()
 
         if sClan == '-none-' or sClan == '': return
 
         for s in sClan.split('/'):
             oCard.addClan(self._oMaker.makeClan(s.strip()))
 
-    def _addCost(self,oCard,sCost):
-        sCost = self.oWhiteSp.sub(' ',sCost).strip()
+    def _addCost(self, oCard, sCost):
+        sCost = self.oWhiteSp.sub(' ', sCost).strip()
         sAmnt, sType = sCost.split()
 
         if sAmnt.lower() == 'x':
             iCost = -1
         else:
-            iCost = int(sAmnt,10)
+            iCost = int(sAmnt, 10)
 
         oCard.cost = iCost
         oCard.costtype = str(sType.lower()) # make str non-unicode
 
-    def _addLife(self,oCard,sLife):
-        sLife = self.oWhiteSp.sub(' ',sLife).strip()
+    def _addLife(self, oCard, sLife):
+        sLife = self.oWhiteSp.sub(' ', sLife).strip()
         aLife = sLife.split()
-
+        # pylint: disable-msg=W0704
+        # ignoring the error is the right thing here
         try:
-            oCard.life = int(aLife[0],10)
+            oCard.life = int(aLife[0], 10)
         except ValueError:
             pass
 
-    def _getLevel(self,sLevel):
-        return self.oWhiteSp.sub(' ',sLevel).strip().lower()
+    def _getLevel(self, sLevel):
+        return self.oWhiteSp.sub(' ', sLevel).strip().lower()
 
-    def _addLevel(self,oCard,sLevel):
+    def _addLevel(self, oCard, sLevel):
         oCard.level = str(self._getLevel(sLevel)) # make str non-unicode
 
-    def _addLevelToName(self,sName,sLevel):
+    def _addLevelToName(self, sName, sLevel):
         return sName.strip() + " (" + self._getLevel(sLevel).capitalize() + ")"
 
-    def _addCapacity(self,oCard,sCap):
-        sCap = self.oWhiteSp.sub(' ',sCap).strip()
+    def _addCapacity(self, oCard, sCap):
+        sCap = self.oWhiteSp.sub(' ', sCap).strip()
         aCap = sCap.split()
+        # pylint: disable-msg=W0704
+        # ignoring the error is the right thing here
         try:
-            oCard.capacity = int(aCap[0],10)
+            oCard.capacity = int(aCap[0], 10)
         except ValueError:
             pass
 
@@ -215,44 +223,44 @@ class CardDict(dict):
             self._parseText()
 
         if self.has_key('level'):
-            self['name'] = self._addLevelToName(self['name'],self['level'])
+            self['name'] = self._addLevelToName(self['name'], self['level'])
 
-        #sLogName = self['name'].encode('ascii','xmlcharrefreplace')
+        #sLogName = self['name'].encode('ascii', 'xmlcharrefreplace')
         self.oLogger.info('Card: %s', self['name'])
 
         oCard = self._makeCard(self['name'])
         if self.has_key('group'):
-            oCard.group = int(self.oWhiteSp.sub('',self['group']),10)
+            oCard.group = int(self.oWhiteSp.sub('', self['group']), 10)
 
         if self.has_key('capacity'):
-            self._addCapacity(oCard,self['capacity'])
+            self._addCapacity(oCard, self['capacity'])
 
         if self.has_key('cost'):
-            self._addCost(oCard,self['cost'])
+            self._addCost(oCard, self['cost'])
 
         if self.has_key('life'):
-            self._addLife(oCard,self['life'])
+            self._addLife(oCard, self['life'])
 
         if self.has_key('level'):
-            self._addLevel(oCard,self['level'])
+            self._addLevel(oCard, self['level'])
 
         if self.has_key('expansion'):
-            self._addExpansions(oCard,self['expansion'])
+            self._addExpansions(oCard, self['expansion'])
 
         if self.has_key('discipline'):
-            self._addDisciplines(oCard,self['discipline'])
+            self._addDisciplines(oCard, self['discipline'])
 
         if self.has_key('virtue'):
-            self._addVirtues(oCard,self['virtue'])
+            self._addVirtues(oCard, self['virtue'])
 
         if self.has_key('clan'):
-            self._addClans(oCard,self['clan'])
+            self._addClans(oCard, self['clan'])
 
         if self.has_key('creed'):
-            self._addCreeds(oCard,self['creed'])
+            self._addCreeds(oCard, self['creed'])
 
         if self.has_key('cardtype'):
-            self._addCardType(oCard,self['cardtype'])
+            self._addCardType(oCard, self['cardtype'])
 
         if self.has_key('burn option'):
             oCard.burnoption = True
@@ -273,40 +281,44 @@ class StateError(Exception):
     pass
 
 class State(object):
+    """Base class for the State transitions."""
     def __init__(self, oLogger):
-        super(State,self).__init__()
+        super(State, self).__init__()
         self._sData = ""
         self.oLogger = oLogger
 
-    def transition(self,sTag,dAttr):
+    def transition(self, sTag, dAttr):
         raise NotImplementedError
 
-    def data(self,sData):
+    def data(self, sData):
         self._sData += sData
 
 class StateWithCard(State):
+    """BAse class for state transitions when already in a card."""
+    # pylint: disable-msg=W0223
+    # descendants will override transition, so still abstract here.
     def __init__(self, dInfo, oLogger):
-        super(StateWithCard,self).__init__(oLogger)
+        super(StateWithCard, self).__init__(oLogger)
         self._dInfo = dInfo
 
 # State Classes
 
 class NoCard(State):
-    def transition(self,sTag,dAttr):
+    def transition(self, sTag, dAttr):
         if sTag == 'p':
             return PotentialCard(self.oLogger)
         else:
             return self
 
 class PotentialCard(State):
-    def transition(self,sTag,dAttr):
+    def transition(self, sTag, dAttr):
         if sTag == 'a' and dAttr.has_key('name'):
             return InCard(CardDict(self.oLogger), self.oLogger)
         else:
             return NoCard(self.oLogger)
 
 class InCard(StateWithCard):
-    def transition(self,sTag,dAttr):
+    def transition(self, sTag, dAttr):
         if sTag == 'p':
             raise StateError()
         elif sTag == '/p':
@@ -324,7 +336,7 @@ class InCard(StateWithCard):
             return self
 
 class InCardName(StateWithCard):
-    def transition(self,sTag,dAttr):
+    def transition(self, sTag, dAttr):
         if sTag == '/span':
             self._dInfo['name'] = self._sData.strip()
             return InCard(self._dInfo, self.oLogger)
@@ -334,7 +346,7 @@ class InCardName(StateWithCard):
             return self
 
 class InExpansion(StateWithCard):
-    def transition(self,sTag,dAttr):
+    def transition(self, sTag, dAttr):
         if sTag == '/span':
             self._dInfo['expansion'] = self._sData.strip()
             return InCard(self._dInfo, self.oLogger)
@@ -344,7 +356,7 @@ class InExpansion(StateWithCard):
             return self
 
 class InCardText(StateWithCard):
-    def transition(self,sTag,dAttr):
+    def transition(self, sTag, dAttr):
         if sTag == '/td' or sTag == 'tr' or sTag == '/tr' or sTag == '/table':
             self._dInfo['text'] = self._sData.strip()
             return InCard(self._dInfo, self.oLogger)
@@ -354,22 +366,22 @@ class InCardText(StateWithCard):
             return self
 
 class InKeyValue(StateWithCard):
-    def transition(self,sTag,dAttr):
+    def transition(self, sTag, dAttr):
         if sTag == '/span':
             sKey = self._sData.strip().strip(':').lower()
-            return WaitingForValue(sKey,self._dInfo, self.oLogger)
+            return WaitingForValue(sKey, self._dInfo, self.oLogger)
         elif sTag == 'span':
             raise StateError()
         else:
             return self
 
 class WaitingForValue(StateWithCard):
-    def __init__(self,sKey,dInfo, oLogHandler):
-        super(WaitingForValue,self).__init__(dInfo, oLogHandler)
+    def __init__(self, sKey, dInfo, oLogHandler):
+        super(WaitingForValue, self).__init__(dInfo, oLogHandler)
         self._sKey = sKey
         self._bGotTd = False
 
-    def transition(self,sTag,dAttr):
+    def transition(self, sTag, dAttr):
         if sTag == 'td':
             self._sData = ""
             self._bGotTd = True
@@ -387,30 +399,31 @@ class WaitingForValue(StateWithCard):
 
 # Parser
 
-class WhiteWolfParser(HTMLParser.HTMLParser,object):
+class WhiteWolfParser(HTMLParser.HTMLParser, object):
     def __init__(self, oLogHandler):
         # super().__init__ calls reset, so we need this first
         self.oLogger = Logger('White wolf card parser')
         if oLogHandler is not None:
             self.oLogger.addHandler(oLogHandler)
         super(WhiteWolfParser, self).__init__()
+        self._oState = NoCard(self.oLogger)
 
     def reset(self):
-        super(WhiteWolfParser,self).reset()
-        self._state = NoCard(self.oLogger)
+        super(WhiteWolfParser, self).reset()
+        self._oState = NoCard(self.oLogger)
 
-    def handle_starttag(self,sTag,aAttr):
-        self._state = self._state.transition(sTag.lower(),dict(aAttr))
+    def handle_starttag(self, sTag, aAttr):
+        self._oState = self._oState.transition(sTag.lower(), dict(aAttr))
 
-    def handle_endtag(self,sTag):
-        self._state = self._state.transition('/'+sTag.lower(),{})
+    def handle_endtag(self, sTag):
+        self._oState = self._oState.transition('/'+sTag.lower(), {})
 
-    def handle_data(self,sData):
-        self._state.data(sData)
+    def handle_data(self, sData):
+        self._oState.data(sData)
 
     # pylint: disable-msg=C0321, C0111
     # these don't need statements or docstrings
-    def handle_charref(self,sName): pass
-    def handle_entityref(self,sName): pass
+    def handle_charref(self, sName): pass
+    def handle_entityref(self, sName): pass
 
 

@@ -258,7 +258,8 @@ class FilterBoxModel(list):
         return sText
 
     def get_filter_types(self):
-        return [oFilterType for oFilterType in FilterParser.aFilters if self.sFilterType in oFilterType.types]
+        return [oFilterType for oFilterType in FilterParser.aParserFilters
+                if self.sFilterType in oFilterType.types]
 
     def add_child_box(self, sChildBoxType):
         assert sChildBoxType in [self.AND, self.OR]
