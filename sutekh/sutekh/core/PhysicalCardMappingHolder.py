@@ -19,7 +19,11 @@ except ImportError:
     from elementtree.ElementTree import Element, SubElement, tostring, \
             fromstring
 
+# Unknown expansion identifier
+_sUnknown = 'Unspecified Expansion'
+
 # useful utiltiy functions
+
 
 def _remap_names(sString):
     """Remap a card or expansion name to an acceptable tag"""
@@ -34,14 +38,49 @@ def _remap_names(sString):
         sResult = 'a' + sResult # 44 Magnum triggers this
     return sResult
 
+def _get_phys_cards(oCardNode, oExpansionNode, oConnection, dCardLookupCache):
+    """Extract the card info from the relevant tree elements"""
+    if oCardNode.attrib['cardname'] in dCardLookupCache:
+        sCardName = dCardLookupCache[oCardNode.attrib['cardname']]
+    else:
+        sCardName = oCardNode.attrib['cardname']
+    oAC = list(AbstractCard.selectBy(canonicalName=sCardName,
+        connection=oConnection))
+    sExpansionName = oExpansionNode.attrib['name']
+    # pylint: disable-msg=E1101
+    # IExpansion confuses pylint
+    if sExpansionName == _sUnknown:
+        oExpID = None
+    else:
+        oExpID = IExpansion(sExpansionName).id
+    aPhysicalCards = list(PhysicalCard.selectBy(abstractCardID=oAC[0].id,
+        expansionID=oExpID, connection=oConnection))
+    return aPhysicalCards
+
+def _fix_mapping(oExpansionNode, aPhysicalCards, oConnection):
+    """Ensure that the mapping of the PhysicalCards is correct"""
+    for oIdNode, oPC in zip(oExpansionNode, aPhysicalCards):
+        aMap = MapPhysicalCardToPhysicalCardSet.selectBy(
+                physicalCardID=oPC.id, connection=oConnection)
+        aPCS = [x.physicalCardSet for x in aMap]
+        aNames = [x.name for x in aPCS]
+        for oPCSNode in oIdNode:
+            if oPCSNode.attrib['name'] not in aNames:
+                # Missing PCS, so add card to this PCS
+                oPCS = list(PhysicalCardSet.selectBy(
+                    name=oPCSNode.attrib['name'], connection=oConnection))[0]
+                oPCS.addPhysicalCard(oPC.id)
+        for oPCS in aPCS:
+            if oIdNode.find(_remap_names(oPCS.name)) is None:
+                # Extra one, so delete card from this PCS
+                oPCS.removePhysicalCard(oPC.id)
+
 class PhysicalCardMappingHolder(object):
     """
     Object to store the Mapping between the Physical Cards and the
     Physical Card Sets. Uses elementtree for easy export to XML for
     backups.
     """
-
-    sUnknown = 'Unspecified Expansion'
 
     def __init__(self):
         "Constructor"
@@ -63,7 +102,7 @@ class PhysicalCardMappingHolder(object):
                 oCardNode = SubElement(self.oMapping, sTagName)
                 oCardNode.attrib['cardname'] = oCard.abstractCard.canonicalName
             if oCard.expansion is None:
-                sExpansionName = self.sUnknown
+                sExpansionName = _sUnknown
             else:
                 sExpansionName = oCard.expansion.name
             oExpansionNode = oCardNode.find(_remap_names(sExpansionName))
@@ -95,12 +134,15 @@ class PhysicalCardMappingHolder(object):
         else:
             return ''
 
+    # pylint: disable-msg=W0102
+    # {} default is ok here
     def commit_to_db(self, oConnection, dCardLookupCache={}):
         """
         Commit the mapping to the database.
         Use dLookupCache to handle any changed card names (on DB upgrade).
         Return True if successful, false on error conditions
         """
+
         if self.oMapping is None:
             return False
         for oCardNode in self.oMapping:
@@ -110,38 +152,9 @@ class PhysicalCardMappingHolder(object):
                 if len(oExpansionNode) == 1:
                     continue
                 # Get current database information
-                if oCardNode.attrib['cardname'] in dCardLookupCache:
-                    sCardName = dCardLookupCache[oCardNode.attrib['cardname']]
-                else:
-                    sCardName = oCardNode.attrib['cardname']
-                oAC = list(AbstractCard.selectBy(canonicalName=sCardName,
-                        connection=oConnection))
-                sExpansionName = oExpansionNode.attrib['name']
-                # pylint: disable-msg=E1101
-                # IExpansion confuses pylint
-                if sExpansionName == self.sUnknown:
-                    oExpID = None
-                else:
-                    oExpID = IExpansion(sExpansionName).id
-                aPhysicalCards = list(PhysicalCard.selectBy(
-                    abstractCardID=oAC[0].id,
-                    expansionID=oExpID, connection=oConnection))
+                aPhysicalCards = _get_phys_cards(oCardNode, oExpansionNode,
+                        oConnection, dCardLookupCache)
                 if len(aPhysicalCards) != len(oExpansionNode):
                     return False # Error Condition
-                for oIdNode, oPC in zip(oExpansionNode, aPhysicalCards):
-                    aMap = MapPhysicalCardToPhysicalCardSet.selectBy(
-                            physicalCardID=oPC.id, connection=oConnection)
-                    aPCS = [x.physicalCardSet for x in aMap]
-                    aNames = [x.name for x in aPCS]
-                    for oPCSNode in oIdNode:
-                        if oPCSNode.attrib['name'] not in aNames:
-                            # Missing PCS, so add card to this PCS
-                            oPCS = list(PhysicalCardSet.selectBy(
-                                    name=oPCSNode.attrib['name'],
-                                    connection=oConnection))[0]
-                            oPCS.addPhysicalCard(oPC.id)
-                    for oPCS in aPCS:
-                        if oIdNode.find(_remap_names(oPCS.name)) is None:
-                            # Extra one, so delete card from this PCS
-                            oPCS.removePhysicalCard(oPC.id)
+                _fix_mapping(oExpansionNode, aPhysicalCards, oConnection)
         return True

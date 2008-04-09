@@ -21,19 +21,19 @@ class IterGrouping(object):
 
     def __iter__(self):
         dKeyItem = {}
-        for x in self.__oIter:
-            a = set(self.__fKeys(x))
-            if len(a) == 0:
-                dKeyItem.setdefault(None, []).append(x)
+        for oItem in self.__oIter:
+            aSet = set(self.__fKeys(oItem))
+            if len(aSet) == 0:
+                dKeyItem.setdefault(None, []).append(oItem)
             else:
-                for y in a:
-                    dKeyItem.setdefault(y, []).append(x)
+                for oKey in aSet:
+                    dKeyItem.setdefault(oKey, []).append(oItem)
 
-        a = dKeyItem.keys()
-        a.sort()
+        aList = dKeyItem.keys()
+        aList.sort()
 
-        for key in a:
-            yield key, dKeyItem[key]
+        for oKey in aList:
+            yield oKey, dKeyItem[oKey]
 
 # Individual Groupings
 #
@@ -82,5 +82,7 @@ class CryptLibraryGrouping(IterGrouping):
                     "Imbued"] and "Crypt" or "Library"])
 
 class NullGrouping(IterGrouping):
+    # pylint: disable-msg=W0613
+    # fGetCard is required by function signature
     def __init__(self, oIter, fGetCard=fDefGetCard):
         super(NullGrouping, self).__init__(oIter, lambda x: ["All"])
