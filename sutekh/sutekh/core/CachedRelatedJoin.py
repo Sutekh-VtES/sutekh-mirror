@@ -17,7 +17,7 @@ class SOCachedRelatedJoin(joins.SORelatedJoin):
 
        for oJoin in AbstractCard.sqlmeta.joins:
          if type(oJoin) is SOCachedRelatedJoin:
-            oJoin.flushCache()
+            oJoin.flush_cache()
        """
 
     # pylint: disable-msg=W0142
@@ -26,10 +26,12 @@ class SOCachedRelatedJoin(joins.SORelatedJoin):
         super(SOCachedRelatedJoin, self).__init__(*aArgs, **kwargs)
         self._dJoinCache = {}
 
-    def flushCache(self):
+    def flush_cache(self):
+        """Flush the contents of the cache."""
         self._dJoinCache = {}
 
-    def initCache(self):
+    def init_cache(self):
+        """Initialise the cache with the data from the database."""
         aJoins = [oJ for oJ in self.otherClass.sqlmeta.joins if oJ.otherClass
                 is self.soClass]
         assert len(aJoins) == 1
@@ -45,11 +47,15 @@ class SOCachedRelatedJoin(joins.SORelatedJoin):
             self._dJoinCache[oInst] = self._applyOrderBy(
                     self._dJoinCache[oInst], self.otherClass)
 
+    # pylint: disable-msg=C0103
+    # Name must match SQLObject conventions
     def performJoin(self, oInst):
+        """Return the join the result, from the cache if possible."""
         if not oInst in self._dJoinCache:
             self._dJoinCache[oInst] = joins.SORelatedJoin.performJoin(self,
                     oInst)
         return self._dJoinCache[oInst]
 
 class CachedRelatedJoin(joins.RelatedJoin):
+    """Provide CacheRelatedJoin object to Sutekh"""
     baseClass = SOCachedRelatedJoin

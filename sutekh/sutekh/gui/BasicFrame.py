@@ -101,6 +101,7 @@ class BasicFrame(gtk.Frame, object):
         return False
 
     def cleanup(self):
+        """Hook for cleanup actions when the frame is removed."""
         pass
 
     def reload(self):
@@ -201,6 +202,8 @@ class BasicFrame(gtk.Frame, object):
         sData = 'Sutekh Pane:\n' + self.title
         oSelectionData.set(oSelectionData.target, 8, sData)
 
+    # pylint: disable-msg=R0201
+    # needs to be a mthod, as children can override this if needed
     def drag_motion(self, oWidget, oDrag_context, iXPos, iYPos, oTimestamp):
         """Show proper icon during drag-n-drop actions."""
         if 'STRING' in oDrag_context.targets:

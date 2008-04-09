@@ -7,7 +7,9 @@
 # Misc Useful functions needed in several places. Mainly to do with database
 # management. Seperated out from SutekhCli and other places, NM, 2006
 
-from sutekh.core.SutekhObjects import VersionTable, FlushCache, \
+"""Misc functions needed in various places in Sutekh."""
+
+from sutekh.core.SutekhObjects import VersionTable, flush_cache, \
         PhysicalCardSet, AbstractCardSet
 from sutekh.core.DatabaseVersion import DatabaseVersion
 from sutekh.io.WhiteWolfParser import WhiteWolfParser
@@ -15,28 +17,29 @@ from sutekh.io.RulingParser import RulingParser
 from sqlobject import sqlhub, SQLObjectNotFound
 import tempfile, os, sys
 
-def refresh_tables(aTables, oConn, **kwargs):
+def refresh_tables(aTables, oConn):
     """Drop and recreate the given list of tables"""
     aTables.reverse()
     for cCls in aTables:
         cCls.dropTable(ifExists=True, connection=oConn)
     aTables.reverse()
     oVerHandler = DatabaseVersion(oConn)
-    if not oVerHandler.setVersion(VersionTable, VersionTable.tableversion, oConn):
+    if not oVerHandler.set_version(VersionTable, VersionTable.tableversion,
+            oConn):
         return False
     for cCls in aTables:
         cCls.createTable(connection=oConn)
-        if not oVerHandler.setVersion(cCls, cCls.tableversion, oConn):
+        if not oVerHandler.set_version(cCls, cCls.tableversion, oConn):
             return False
-    FlushCache()
+    flush_cache()
     return True
 
 def read_white_wolf_list(oWwList, oLogHandler=None):
     """Parse in a new White Wolf cardlist
-    
+
        oWwList is an object with a .open() method (e.g. a sutekh.io.WwFile.WwFile)
        """
-    FlushCache()
+    flush_cache()
     oOldConn = sqlhub.processConnection
     sqlhub.processConnection = oOldConn.transaction()
     oParser = WhiteWolfParser(oLogHandler)
@@ -49,10 +52,10 @@ def read_white_wolf_list(oWwList, oLogHandler=None):
 
 def read_rulings(oRulings, oLogHandler=None):
     """Parse a new White Wolf rulings file
-    
+
        oRulings is an object with a .open() method (e.g. a sutekh.io.WwFile.WwFile)
        """
-    FlushCache()
+    flush_cache()
     oOldConn = sqlhub.processConnection
     sqlhub.processConnection = oOldConn.transaction()
     oParser = RulingParser(oLogHandler)
@@ -89,13 +92,14 @@ def safe_filename(sFilename):
        """
     sSafeName = sFilename
     sSafeName = sSafeName.replace(" ", "_") # I dislike spaces in filenames
-    sSafeName = sSafeName.replace("/", "_") # Prevented unexpected filesystem issues
+    # Prevented unexpected filesystem issues
+    sSafeName = sSafeName.replace("/", "_")
     sSafeName = sSafeName.replace("\\", "_") # ditto for windows
     return sSafeName
 
 def prefs_dir(sApp):
-    """Return a suitable directory for storing preferences and other application data.
-       """
+    """Return a suitable directory for storing preferences and other
+       application data."""
     if sys.platform.startswith("win") and "APPDATA" in os.environ:
         return os.path.join(os.environ["APPDATA"], sApp)
     else:
@@ -159,10 +163,13 @@ def pretty_xml(oElement, iIndentLevel=0):
     if len(oElement):
         if not oElement.text or not oElement.text.strip():
             oElement.text = sIndent + "  "
-            for oElement in oElement:
-                pretty_xml(oElement, iIndentLevel + 1)
-            if not oElement.tail or not oElement.tail.strip():
-                oElement.tail = sIndent
+            for oSubElement in oElement:
+                pretty_xml(oSubElement, iIndentLevel + 1)
+            # Reset indentation level for last child element
+            # pylint: disable-msg=W0631
+            # We know SubElement will exist because of the len check above
+            if not oSubElement.tail or not oSubElement.tail.strip():
+                oSubElement.tail = sIndent
     else:
         if iIndentLevel and (not oElement.tail or not oElement.tail.strip()):
             oElement.tail = sIndent

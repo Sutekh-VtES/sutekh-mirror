@@ -61,7 +61,7 @@ class PhysicalCardView(EditableCardListView):
             # iCount is unused
             for iCount, sCardName, sExpansion in aCards:
                 # We are adding new cards, so only 1 of each
-                self.addCard(sCardName, sExpansion)
+                self.add_card(sCardName, sExpansion)
             return True
         else:
             return False

@@ -48,7 +48,7 @@ class CountCardSetCards(CardListPlugin, CardListModelListener):
         # We only add listeners to windows we're going to display the toolbar
         # on
         if self.check_versions() and self.check_model_type():
-            self.model.addListener(self)
+            self.model.add_listener(self)
     # pylint: enable-msg=W0142
 
     def get_toolbar_widget(self):

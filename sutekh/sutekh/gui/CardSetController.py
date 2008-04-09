@@ -41,15 +41,15 @@ class CardSetController(object):
         """Set card text to reflect selected card."""
         self._oMainWindow.set_card_text(sCardName)
 
-    def incCard(self, sName, sExpansion):
+    def inc_card(self, sName, sExpansion):
         """Returns True if a card was successfully added, False otherwise."""
-        return self.addCard(sName, sExpansion)
+        return self.add_card(sName, sExpansion)
 
-    def decCard(self, sName, sExpansion):
+    def dec_card(self, sName, sExpansion):
         """Remove a card, implemented in derived classes"""
         pass
 
-    def addCard(self, sName, sExpansion):
+    def add_card(self, sName, sExpansion):
         """Add a card, implemented in derived classes"""
         pass
 
@@ -128,7 +128,7 @@ class PhysicalCardSetController(CardSetController):
                 sExpName = None
             self.model.inc_card_expansion_by_name(oAC.name, sExpName)
 
-    def decCard(self, sName, sExpansion):
+    def dec_card(self, sName, sExpansion):
         """Returns True if a card was successfully removed, False otherwise."""
         # pylint: disable-msg=E1101
         # SQLObject methods confuse pylint
@@ -168,7 +168,7 @@ class PhysicalCardSetController(CardSetController):
                 return True
         return False
 
-    def addCard(self, sName, sExpansion):
+    def add_card(self, sName, sExpansion):
         """Returns True if a card was successfully added, False otherwise."""
         # pylint: disable-msg=E1101
         # SQLObject methods confuse pylint
@@ -233,7 +233,7 @@ class AbstractCardSetController(CardSetController):
 
     # pylint: disable-msg=W0613
     # sExpansion needed by function signature
-    def decCard(self, sName, sExpansion):
+    def dec_card(self, sName, sExpansion):
         """Returns True if a card was successfully removed, False otherwise."""
         # pylint: disable-msg=E1101
         # SQLObject methods confuse pylint
@@ -253,7 +253,7 @@ class AbstractCardSetController(CardSetController):
 
     # pylint: disable-msg=W0613
     # sExpansion needed by function signature
-    def addCard(self, sName, sExpansion):
+    def add_card(self, sName, sExpansion):
         """Returns True if a card was successfully added, False otherwise."""
         # pylint: disable-msg=E1101
         # SQLObject methods confuse pylint

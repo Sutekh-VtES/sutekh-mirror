@@ -13,11 +13,13 @@
 # Base Classes
 
 class AbbrevMeta(type):
+    """Meta class for the abbrevation classes"""
     def __init__(self, sName, aBases, dDict):
         if self.dKeys:
             self.makeLookup()
 
     def makeLookup(self):
+        """Create a lookup table for the class."""
         self._dLook = {}
         for sKey, aAlts in self.dKeys.iteritems():
             self._dLook[sKey] = sKey
@@ -27,6 +29,7 @@ class AbbrevMeta(type):
 # pylint: disable-msg=E1101
 # meta-class magic with _dLook confuses pylint
 class AbbreviationLookup(object):
+    """Base class for specific abbreavtion tables."""
     __metaclass__ = AbbrevMeta
 
     # Subclass should define a dictionary of keys:
@@ -58,6 +61,7 @@ class AbbreviationLookup(object):
 # this is OK, since we control the use cases
 
 class CardTypes(AbbreviationLookup):
+    """The standard VtES card types."""
     dKeys = {
         'Action' : [], 'Action Modifier' : [], 'Ally' : [],
         'Combat' : [], 'Conviction' : [], 'Equipment' : [],
@@ -67,6 +71,7 @@ class CardTypes(AbbreviationLookup):
     }
 
 class Clans(AbbreviationLookup):
+    """Standard names and common abbreavitaions for the VtES clans."""
     dKeys = {
         # Camarilla
         'Brujah' : ['Brujah'], 'Malkavian' : ['Malk'],
@@ -99,9 +104,11 @@ class Clans(AbbreviationLookup):
 
     @classmethod
     def shortname(cls, sCanonical):
+        """Return the abbreviation for the canonical clan name."""
         return cls.dKeys[sCanonical][0]
 
 class Creeds(AbbreviationLookup):
+    """The Imbued creeds."""
     dKeys = {
         # Imbued
         'Avenger' : [], 'Defender' : [], 'Innocent' : [],
@@ -111,9 +118,11 @@ class Creeds(AbbreviationLookup):
 
     @classmethod
     def shortname(cls, sCanonical):
+        """Return the defined shortname."""
         return sCanonical
 
 class Disciplines(AbbreviationLookup):
+    """Standard abbrevations and names for the VtES disciplines."""
     dKeys = {
         'abo' : ['ABO','Abombwe'],
         'ani' : ['ANI','Animalism'],
@@ -148,9 +157,11 @@ class Disciplines(AbbreviationLookup):
 
     @classmethod
     def fullname(cls, sCanonical):
+        """Return the full name for the given abbrevation."""
         return cls.dKeys[sCanonical][1]
 
 class Expansions(AbbreviationLookup):
+    """Common names and abbrevations for the different expansions."""
     dKeys = {
         'Anarchs' : [],
         'Ancient Hearts' : ['AH'],
@@ -175,12 +186,17 @@ class Expansions(AbbreviationLookup):
 
     @classmethod
     def canonical(cls, sName):
+        """Return the canonical name of the expansion.
+
+           Treats promo's somewhat specially, since each promo release
+           is essentially it's own unique expansion."""
         if sName.startswith('Promo-'):
             return sName
         return cls._dLook[sName]
 
     @classmethod
     def shortname(cls, sCanonical):
+        """Return the short name for the given expansion."""
         if sCanonical.startswith('Promo-'):
             return 'Promo'
         if cls.dKeys[sCanonical]:
@@ -188,6 +204,7 @@ class Expansions(AbbreviationLookup):
         return sCanonical
 
 class Rarities(AbbreviationLookup):
+    """Common strings and abbrevations for the different card rarities."""
     dKeys = {
         'Common' : ['C','C1','C2','C3'],
         'Uncommon' : ['U','U1','U2','U3','U5'],
@@ -200,15 +217,18 @@ class Rarities(AbbreviationLookup):
 
     @classmethod
     def canonical(cls, sName):
+        """Return the canonical name of the rarity."""
         if sName.startswith('P'):
             return 'Precon'
         return cls._dLook[sName]
 
     @classmethod
     def shortname(cls, sCanonical):
+        """Return the corresponding short name for the rarity."""
         return cls.dKeys[sCanonical][0]
 
 class Sects(AbbreviationLookup):
+    """Common strings for the different sects."""
     dKeys = {
         'Camarilla' : [], 'Sabbat' : [], 'Independent' : [],
         'Laibon' : [],
@@ -217,6 +237,7 @@ class Sects(AbbreviationLookup):
     }
 
 class Titles(AbbreviationLookup):
+    """Common strings used to refer to the different titles."""
     dKeys = {
         # Camarilla Titles
         'Primogen' : [], 'Prince' :  [], 'Justicar' : [],
@@ -233,6 +254,7 @@ class Titles(AbbreviationLookup):
     }
 
 class Virtues(AbbreviationLookup):
+    """Common abbrevations for Imbued Virtues"""
     dKeys = {
         # Virtues (last key is full name)
         'def' : ['Defense'],
@@ -246,4 +268,5 @@ class Virtues(AbbreviationLookup):
 
     @classmethod
     def fullname(cls, sCanonical):
+        """Return the canonical long name of the Virtue"""
         return cls.dKeys[sCanonical][0]

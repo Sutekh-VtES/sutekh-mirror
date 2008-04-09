@@ -25,7 +25,7 @@ class DatabaseVersion(object):
         oConn = _get_connection(oConn)
         VersionTable.createTable(ifNotExists=True, connection=oConn)
 
-    def setVersion(self, oTable, iTableVersion, oConn=None):
+    def set_version(self, oTable, iTableVersion, oConn=None):
         """Set the version for oTable to iTableVersion"""
         oConn = _get_connection(oConn)
         try:
@@ -49,7 +49,7 @@ class DatabaseVersion(object):
             return False
         return True
 
-    def getVersion(self, oTable, oConn=None):
+    def get_table_version(self, oTable, oConn=None):
         """Get the version number for oTable.
 
            returns -1 if no version info exists.
@@ -74,7 +74,7 @@ class DatabaseVersion(object):
             iTableVersion = -999
         return iTableVersion
 
-    def checkVersions(self, aTable, aTableVersion, oConn=None):
+    def check_table_versions(self, aTable, aTableVersion, oConn=None):
         """Check version numbers.
 
            aTable is the list of tables to check
@@ -84,10 +84,10 @@ class DatabaseVersion(object):
         bRes = True
         for oTable, iVersion in zip(aTable, aTableVersion):
             bRes = bRes and \
-                    self.getVersion(oTable, oConn) == iVersion
+                    self.get_table_version(oTable, oConn) == iVersion
         return bRes
 
-    def getBadTables(self, aTable, aTableVersion, oConn=None):
+    def get_bad_tables(self, aTable, aTableVersion, oConn=None):
         """Get tables that don't match the list of version numbers
 
            aTable is the list of tables to check
@@ -101,7 +101,7 @@ class DatabaseVersion(object):
         aLowerTables = []
         aHigherTables = []
         for oTable, iVersion in zip(aTable, aTableVersion):
-            iCurVersion = self.getVersion(oTable, oConn)
+            iCurVersion = self.get_table_version(oTable, oConn)
             if iCurVersion < iVersion:
                 aLowerTables.append(oTable.sqlmeta.table)
             elif iCurVersion > iVersion:

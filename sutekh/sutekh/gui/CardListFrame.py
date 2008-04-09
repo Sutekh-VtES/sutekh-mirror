@@ -43,7 +43,7 @@ class CardListFrame(BasicFrame):
         for cPlugin in \
                 self._oMainWindow.plugin_manager.get_card_list_plugins():
             self._aPlugins.append(cPlugin(self._oController.view,
-                self._oController.view.getModel(), self._cModelType))
+                self._oController.view.get_model(), self._cModelType))
 
     def reload(self):
         """Reload frame contents"""

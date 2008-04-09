@@ -5,18 +5,25 @@
 # Copyright 2008 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
 
+"""Widget for ediging filters."""
+
 from sutekh.gui.MultiSelectComboBox import MultiSelectComboBox
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
-from sutekh.core.FilterParser import FilterNode, BinOpNode, NotOpNode, FilterPartNode
+from sutekh.core.FilterParser import FilterNode, BinOpNode, NotOpNode, \
+        FilterPartNode
 from sutekh.core import FilterParser
 import gtk
 import pango
 import gobject
 
 class FilterEditor(gtk.Frame):
-    """
-    GTK component for editing Sutekh filter ASTs.
-    """
+    # pylint: disable-msg=R0904
+    # gtk.Widget, so many public methods
+    """GTK component for editing Sutekh filter ASTs.
+
+       Provides a graphical representation of the filter as nested boxes,
+       which the user can extend or remove from.
+       """
     def __init__(self, oAST, sFilterType, oMainWindow, oParser, oFilterDialog):
         super(FilterEditor, self).__init__(" Filter Editor ")
         self.__sFilterType = sFilterType
@@ -28,23 +35,24 @@ class FilterEditor(gtk.Frame):
         self.__oBoxEditor = None
 
         oTextEditorButton = gtk.Button("Edit Query Text")
-        oTextEditorButton.connect("clicked",self.__show_text_editor)
+        oTextEditorButton.connect("clicked", self.__show_text_editor)
         oHelpButton = gtk.Button("Help")
-        oHelpButton.connect("clicked",self.__show_help_dialog)
+        oHelpButton.connect("clicked", self.__show_help_dialog)
 
         oHBox = gtk.HBox(spacing=5)
-        oHBox.pack_end(oHelpButton,expand=False)
-        oHBox.pack_end(oTextEditorButton,expand=False)
+        oHBox.pack_end(oHelpButton, expand=False)
+        oHBox.pack_end(oTextEditorButton, expand=False)
 
         self.__oVBox = gtk.VBox(spacing=5)
-        self.__oVBox.pack_end(oHBox,expand=False)
-        self.__oVBox.pack_end(gtk.HSeparator(),expand=False)
+        self.__oVBox.pack_end(oHBox, expand=False)
+        self.__oVBox.pack_end(gtk.HSeparator(), expand=False)
 
         self.add(self.__oVBox)
 
         self.replace_ast(oAST)
 
     def get_filter(self):
+        """Get the actual filter for the current AST."""
         oAST = self.get_current_ast()
         if oAST is None:
             return None
@@ -52,6 +60,7 @@ class FilterEditor(gtk.Frame):
             return oAST.get_filter()
 
     def get_current_ast(self):
+        """Get the current AST represented by the editor."""
         oNewAST = self.__oBoxModel.get_ast()
         if oNewAST is None:
             return oNewAST
@@ -71,10 +80,10 @@ class FilterEditor(gtk.Frame):
 
         return oNewAST
 
-    def replace_ast(self,oAST):
+    def replace_ast(self, oAST):
         """Replace the current AST with a new one and update the GUI,
            preserving variable values if possible.
-           
+
            Also used to setup the filter initially.
            """
         if self.__oBoxEditor is None:
@@ -84,28 +93,34 @@ class FilterEditor(gtk.Frame):
             self.__oVBox.remove(self.__oBoxEditor)
 
         self.__oBoxModel = FilterBoxModel(oAST, self.__sFilterType)
-        self.__oBoxEditor = FilterBoxModelEditor(self.__oBoxModel, self.__oFilterDialog)
+        self.__oBoxEditor = FilterBoxModelEditor(self.__oBoxModel,
+                self.__oFilterDialog)
         self.__oVBox.pack_start(self.__oBoxEditor)
         self.show_all()
 
         self.set_current_values(dVars)
 
     def get_current_values(self):
+        """Get the current values in the editor."""
         return self.__oBoxEditor.get_current_values()
 
     def set_current_values(self, dVars):
+        """Set the values in the editor to those in dVars."""
         self.__oBoxEditor.set_current_values(dVars)
 
     def get_current_text(self):
+        """Get the current text in the editor."""
         return self.__oBoxModel.get_text()
 
-    def __show_text_editor(self,oTextEditorButton):
+    def __show_text_editor(self, oTextEditorButton):
+        """Show a gtk.Entry widget so filters can be directly typed by the
+           user."""
         oDlg = SutekhDialog("Query Editor", self.__oMainWindow,
                 gtk.DIALOG_DESTROY_WITH_PARENT,
                 (gtk.STOCK_OK, gtk.RESPONSE_OK,
                  gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
 
-        oDlg.set_default_size(600,-1)
+        oDlg.set_default_size(600, -1)
 
         oEntry = gtk.Entry()
         oEntry.set_text(self.get_current_text())
@@ -121,18 +136,20 @@ class FilterEditor(gtk.Frame):
                 try:
                     oAST = self.__oParser.apply(sNewFilter)
                 except ValueError, oExcep:
-                    do_complaint_error("Invalid Filter: %s\n Error: %s" % (sNewFilter, str(oExcep)))
+                    do_complaint_error("Invalid Filter: %s\n Error: %s"
+                            % (sNewFilter, str(oExcep)))
                 else:
                     self.replace_ast(oAST)
         finally:
             oDlg.destroy()
 
-    def __show_help_dialog(self,oHelpButton):
+    def __show_help_dialog(self, oHelpButton):
+        """Show a dialog window with the helptext from the filters."""
         oDlg = SutekhDialog("Help on Filters", self.__oMainWindow,
                 gtk.DIALOG_DESTROY_WITH_PARENT,
                 (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
 
-        oDlg.set_default_size(600,-1)
+        oDlg.set_default_size(600, -1)
         # pylint: disable-msg=E1101
         # vbox confuse pylint
 
@@ -157,6 +174,8 @@ class FilterBoxModel(list):
 
     AND, OR = 'and', 'or'
 
+    # pylint: disable-msg=W0231
+    # no point to calling list's __init__
     def __init__(self, oAST, sFilterType, oVarNameMaker=None):
         """
         Initialise a filter box from an AST filter representation.
@@ -177,19 +196,22 @@ class FilterBoxModel(list):
         if type(oAST) is BinOpNode:
             self.sBoxType = oAST.oOp
             self._init_binop(oAST)
-        elif type(oAST) is NotOpNode and type(oAST.oSubExpression) is BinOpNode:
+        elif type(oAST) is NotOpNode and \
+                type(oAST.oSubExpression) is BinOpNode:
             self.bNegate = True
             self.sBoxType = oAST.oSubExpression.oOp
             self._init_binop(oAST.oSubExpression)
         elif type(oAST) is FilterPartNode or \
-             type(oAST) is NotOpNode and type(oAST.oSubExpression) is FilterPartNode:
+                type(oAST) is NotOpNode and \
+                type(oAST.oSubExpression) is FilterPartNode:
             self.sBoxType = self.AND
             self.append(FilterBoxItem(oAST))
         elif oAST is None:
             # support for completely empty boxes
             self.sBoxType = self.AND
         else:
-            raise ValueError("FilterBoxModel cannot represent AST %s of type %s" % (oAST, type(oAST)))
+            raise ValueError("FilterBoxModel cannot represent AST %s of"
+                    " type %s" % (oAST, type(oAST)))
 
         assert self.sBoxType in [self.AND, self.OR]
 
@@ -201,17 +223,21 @@ class FilterBoxModel(list):
             if type(oChild) is BinOpNode and oChild.oOp == oBinOp.oOp:
                 self._init_binop(oChild)
             elif type(oChild) is BinOpNode:
-                self.append(FilterBoxModel(oChild, self.sFilterType, self.oVarNameMaker))
+                self.append(FilterBoxModel(oChild, self.sFilterType,
+                    self.oVarNameMaker))
             elif type(oChild) in [NotOpNode, FilterPartNode]:
                 self.append(FilterBoxItem(oChild))
             else:
-                raise ValueError("FilterBoxModel encountered unsupported AST node type %s (%s) while examing BinOpNode tree." % (type(oChild), oChild))
+                raise ValueError("FilterBoxModel encountered unsupported AST"
+                        " node type %s (%s) while examing BinOpNode tree." %
+                        (type(oChild), oChild))
 
     def set_boxtype(self, sBoxType, bNegate=False):
         self.sBoxType = sBoxType
         self.bNegate = bNegate
 
     def get_variable_names(self):
+        """Get the variable names of the children in this box."""
         oNames = set()
         for oChild in self:
             oNames.update(oChild.get_variable_names())
@@ -258,10 +284,12 @@ class FilterBoxModel(list):
         return sText
 
     def get_filter_types(self):
+        """Get the types support by this filter."""
         return [oFilterType for oFilterType in FilterParser.aParserFilters
                 if self.sFilterType in oFilterType.types]
 
     def add_child_box(self, sChildBoxType):
+        """Add a child box to this box."""
         assert sChildBoxType in [self.AND, self.OR]
         oChildBox = FilterBoxModel(None, self.sFilterType, self.oVarNameMaker)
         oChildBox.sBoxType = sChildBoxType
@@ -269,6 +297,7 @@ class FilterBoxModel(list):
         return oChildBox
 
     def add_child_item(self, sChildTypeKeyword):
+        """Add a filter part to this box."""
         sVarName = self.oVarNameMaker.generate_name()
         oAST = FilterPartNode(sChildTypeKeyword, None, sVarName)
         oChildItem = FilterBoxItem(oAST)
@@ -279,6 +308,8 @@ class FilterBoxModel(list):
         self.remove(oChild)
 
 class FilterBoxModelEditor(gtk.VBox):
+    # pylint: disable-msg=R0904
+    # gtk.Widget, so many public methods
     BOXTYPE = { # description -> (AND or OR, bNegate)
         'All of ...': (FilterBoxModel.AND, False),
         'Any of ...': (FilterBoxModel.OR, False),
@@ -301,12 +332,12 @@ class FilterBoxModelEditor(gtk.VBox):
         self.__oBoxTypeSelector = gtk.combo_box_new_text()
         self.pack_start(self.__oBoxTypeSelector, expand=False)
 
-        for i, sDesc in enumerate(self.BOXTYPE_ORDER):
+        for iLoop, sDesc in enumerate(self.BOXTYPE_ORDER):
             self.__oBoxTypeSelector.append_text(sDesc)
             sBoxType, bNegate = self.BOXTYPE[sDesc]
             if self.__oBoxModel.sBoxType == sBoxType \
                and self.__oBoxModel.bNegate == bNegate:
-                self.__oBoxTypeSelector.set_active(i)
+                self.__oBoxTypeSelector.set_active(iLoop)
 
         self.__oBoxTypeSelector.connect('changed', self.__change_boxtype)
 
@@ -336,13 +367,13 @@ class FilterBoxModelEditor(gtk.VBox):
         oAddButton = gtk.Button("+")
         oHBox.pack_start(oAddButton, expand=False)
 
-        oTypeStore = gtk.ListStore(gobject.TYPE_STRING,gobject.TYPE_STRING,)
+        oTypeStore = gtk.ListStore(gobject.TYPE_STRING, gobject.TYPE_STRING,)
         oTypeSelector = gtk.ComboBox(oTypeStore)
         oHBox.pack_start(oTypeSelector, expand=False)
 
         oCell = gtk.CellRendererText()
-        oTypeSelector.pack_start(oCell,True)
-        oTypeSelector.add_attribute(oCell,'text',0)
+        oTypeSelector.pack_start(oCell, True)
+        oTypeSelector.add_attribute(oCell, 'text', 0)
 
         oAddButton.connect('clicked', self.__add_filter_part, oTypeSelector)
 
@@ -363,8 +394,8 @@ class FilterBoxModelEditor(gtk.VBox):
             return "One of ..."
 
     def get_current_values(self):
-        """Return a dictionary of name -> value mappings for the variables present
-           in the filter editing gui.
+        """Return a dictionary of name -> value mappings for the variables
+           present in the filter editing gui.
            """
         dVars = {}
         for oChild in self.__aChildren:
@@ -372,11 +403,11 @@ class FilterBoxModelEditor(gtk.VBox):
         return dVars
 
     def set_current_values(self, dVars):
-        """
-        Set the current list values using variable names in the given dictionary.
+        """Set the current list values using variable names in the given
+           dictionary.
 
-        dVars is a mapping sVariableName -> [ list of string values ]
-        """
+           dVars is a mapping sVariableName -> [ list of string values ]
+           """
         for oChild in self.__aChildren:
             oChild.set_current_values(dVars)
 
@@ -391,6 +422,7 @@ class FilterBoxModelEditor(gtk.VBox):
         self.__oBoxTypeSelector.show_all()
 
     def __change_boxtype(self, oBoxTypeSelector):
+        """Change the type of this box to that chosen by the user."""
         sType = oBoxTypeSelector.get_active_text()
         if sType == "Remove Sub-Filter":
             self.__fRemoveBox(self, self.__oBoxModel)
@@ -406,12 +438,13 @@ class FilterBoxModelEditor(gtk.VBox):
             # ignore add button clicks when a type isn't selected
             return
 
-        sDescription = oModel.get_value(oIter,0)
-        sKeyword = oModel.get_value(oIter,1)
+        sDescription = oModel.get_value(oIter, 0)
+        sKeyword = oModel.get_value(oIter, 1)
 
         if sDescription == "Sub-Filter":
             oChildBoxModel = self.__oBoxModel.add_child_box(FilterBoxModel.AND)
-            oChildEditor = FilterBoxModelEditor(oChildBoxModel, self.__oParentWin)
+            oChildEditor = FilterBoxModelEditor(oChildBoxModel,
+                    self.__oParentWin)
             oChildEditor.register_remove_box(self.__remove_model)
         else:
             oChildItem = self.__oBoxModel.add_child_item(sKeyword)
@@ -475,7 +508,8 @@ class FilterBoxItem(object):
         """
         Return an AST respresentation of the filter.
         """
-        oAST = FilterPartNode(self.sFilterType, self.aFilterValues, self.sVariableName)
+        oAST = FilterPartNode(self.sFilterType, self.aFilterValues,
+                self.sVariableName)
         if self.bNegated:
             oAST = NotOpNode(oAST)
         return oAST
@@ -491,6 +525,8 @@ class FilterBoxItem(object):
         return sText
 
 class FilterBoxItemEditor(gtk.HBox):
+    # pylint: disable-msg=R0904
+    # gtk.Widget, so many public methods
     def __init__(self, oBoxItem, oParent):
         super(FilterBoxItemEditor, self).__init__(spacing=5)
         self.__oBoxItem = oBoxItem
@@ -515,14 +551,16 @@ class FilterBoxItemEditor(gtk.HBox):
             oWidget = gtk.Entry(100)
             oWidget.set_width_chars(30)
         else:
-            raise RuntimeError("Unknown FilterBoxItem ValueType %s" % (self.__oBoxItem.iValueType,))
+            raise RuntimeError("Unknown FilterBoxItem ValueType %s" %
+                    (self.__oBoxItem.iValueType,))
 
         self.__oEntryWidget = oWidget
         self.pack_start(oWidget)
 
     def connect_remove_button(self, fHandler):
         if self.__oRemoveButton is not None:
-            self.__oRemoveButton.connect('clicked', fHandler, self, self.__oBoxItem)
+            self.__oRemoveButton.connect('clicked', fHandler, self,
+                    self.__oBoxItem)
 
     def get_current_values(self):
         dVars = {}
@@ -531,7 +569,8 @@ class FilterBoxItemEditor(gtk.HBox):
             aSelection = self.__oEntryWidget.get_selection()
             if self.__oBoxItem.sFilterType in FilterParser.aWithFilters:
                 aSplit = [sItem.split(" with ") for sItem in aSelection]
-                aVals = ['"%s with %s"' % (sPart1, sPart2) for sPart1, sPart2 in aSplit]
+                aVals = ['"%s with %s"' % (sPart1, sPart2) for sPart1,
+                        sPart2 in aSplit]
             else:
                 aVals = ['"%s"' % (sItem,) for sItem in aSelection]
             dVars[sName] = aVals
@@ -555,6 +594,7 @@ class FilterBoxItemEditor(gtk.HBox):
         self.__oBoxItem.bNegated = self.__oNegateButton.get_active()
 
 class VariableNameGenerator(set):
+    """Generate a unique name for a variable in a filter."""
     KEYFORM = "$var%s"
 
     def __init__(self):
@@ -562,6 +602,7 @@ class VariableNameGenerator(set):
         self.__iNum = 0
 
     def generate_name(self):
+        """Generate the next variable in the list."""
         sName = self.KEYFORM % self.__iNum
         while sName in self:
             self.__iNum += 1
@@ -570,6 +611,9 @@ class VariableNameGenerator(set):
         return sName
 
 class FilterHelpBuffer(gtk.TextBuffer, object):
+    # pylint: disable-msg=R0904
+    # gtk.Widget, so many public methods
+    """TextBuffer object used to display the help about the filters."""
     def __init__(self):
         super(FilterHelpBuffer, self).__init__(None)
 
@@ -579,23 +623,33 @@ class FilterHelpBuffer(gtk.TextBuffer, object):
         self.create_tag("description", weight=pango.WEIGHT_BOLD)
         self.create_tag("keyword", style=pango.STYLE_ITALIC)
         self.create_tag("helptext", left_margin=10)
+        self._oIter = self.get_iter_at_offset(0)
 
-    def tag_text(self, *args, **kwargs):
-        self.insert_with_tags_by_name(self._oIter, *args, **kwargs)
+    # pylint: disable-msg=W0142
+    # ** magic OK here
+    def tag_text(self, *aArgs, **kwargs):
+        self.insert_with_tags_by_name(self._oIter, *aArgs, **kwargs)
 
-    def add_help_text(self, description, keyword, helptext):
-        self.tag_text(description,"description")
+    # pylint: enable-msg=W0142
+
+    def add_help_text(self, sDescription, sKeyword, sHelpText):
+        """Add the given help text to the text buffer."""
+        self.tag_text(sDescription, "description")
         self.tag_text(" (")
-        self.tag_text(keyword,"keyword")
+        self.tag_text(sKeyword, "keyword")
         self.tag_text(") :\n")
-        self.tag_text(helptext,"helptext")
+        self.tag_text(sHelpText, "helptext")
         self.tag_text("\n")
 
     def reset_iter(self):
+        """reset the iterator to the start of the buffer."""
         self._oIter = self.get_iter_at_offset(0)
 
 class FilterHelpTextView(gtk.TextView, object):
-    def __init__(self,aFilterTypes):
+    """TextView widget for displaying the help text."""
+    # pylint: disable-msg=R0904
+    # gtk.Widget, so many public methods
+    def __init__(self, aFilterTypes):
         super(FilterHelpTextView, self).__init__()
         oBuf = FilterHelpBuffer()
 
@@ -604,7 +658,7 @@ class FilterHelpTextView(gtk.TextView, object):
         self.set_cursor_visible(False)
         self.set_wrap_mode(gtk.WRAP_WORD)
         self.set_border_width(5)
-        self.modify_bg(gtk.STATE_NORMAL,gtk.gdk.color_parse("white"))
+        self.modify_bg(gtk.STATE_NORMAL, gtk.gdk.color_parse("white"))
 
         oBuf.reset_iter()
 
@@ -618,8 +672,9 @@ class FilterHelpTextView(gtk.TextView, object):
             "\n\n"
         )
 
-        for oF in aFilterTypes:
-            oBuf.add_help_text(oF.description,oF.keyword,oF.helptext)
+        for oFilt in aFilterTypes:
+            oBuf.add_help_text(oFilt.description, oFilt.keyword,
+                    oFilt.helptext)
 
         oBuf.tag_text(
             "\n"

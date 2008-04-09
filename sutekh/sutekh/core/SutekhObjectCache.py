@@ -4,13 +4,14 @@
 # Copyright 2007 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
 
-from sutekh.core.SutekhObjects import AbstractCard, RarityPair, Rarity, Clan,\
-                                 Discipline, DisciplinePair, CardType,\
-                                 Expansion, Ruling, InitCache
+"""Cache various objects used by sutekh to speed up database queries."""
+
+from sutekh.core.SutekhObjects import AbstractCard, RarityPair, Rarity, Clan, \
+        Discipline, DisciplinePair, CardType, Expansion, Ruling, init_cache
 
 class SutekhObjectCache(object):
-    """Holds references to commonly used database objects so that they don't get
-       removed from the cache during big reads.
+    """Holds references to commonly used database objects so that they don't
+       get removed from the cache during big reads.
 
        Including AbstractCard in the cache gives about a 40% speed up on
        filtering at the cost of using about 3MB extra memory.
@@ -28,4 +29,4 @@ class SutekhObjectCache(object):
         for cType in aTypesToCache:
             self._dCache[cType] = list(cType.select())
 
-        InitCache()
+        init_cache()

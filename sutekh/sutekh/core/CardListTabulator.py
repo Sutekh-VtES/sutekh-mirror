@@ -4,6 +4,8 @@
 # Copyright 2006 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
 
+"""Create a table (as a list of list) from a list of cards"""
+
 from sutekh.core.SutekhObjects import Discipline, Clan, \
                                  Rarity, Expansion, CardType, IAbstractCard
 
@@ -11,10 +13,11 @@ class CardListTabulator(object):
     """
     Creates a table of cards from a card list.
     Each row of the table corresponds to a card in the list.
-    Each column of the table represents a numerical property of the card (pool cost, blood cost, discipline levels etc).
+    Each column of the table represents a numerical property of the card (pool
+    cost, blood cost, discipline levels etc).
     """
 
-    def __init__(self,aColNames,dPropFuncs):
+    def __init__(self, aColNames, dPropFuncs):
         """
         aColNames: Keys from dPropFuncs in the order in which you want the table columns to appear.
         dPropFuncs: Dictionary of functions for finding properties. Keys are strings suitable for use as column headings,
@@ -37,60 +40,75 @@ class CardListTabulator(object):
          * Boolean attributes (disciplines, rarities, expansions, clans and cardtypes) are represented by values of 0 or 1.
          * Group and capacity are set to 0 if the card doesn't have a group or capacity.
         """
-        d = {}
+        dProps = {}
 
         # properties from direct attributes of Abstract Cards
-        d['group'] = lambda card: (card.group is not None and card.group) or 0
-        d['capacity'] = lambda card: (card.capacity is not None and card.capacity) or 0
-        d['pool cost'] = lambda card: (card.costtype == 'pool' and card.cost) or 0
-        d['blood cost'] = lambda card: (card.costtype == 'blood' and card.cost) or 0
-        d['conviction cost'] = lambda card: (card.costtype == 'conviction' and card.cost) or 0
-        d['advanced'] = lambda card: (card.level == 'advanced' and 1) or 0
-        d['physical card count'] = lambda card: len(card.physicalCards)
+        dProps['group'] = lambda card: (card.group is not None and
+                card.group) or 0
+        dProps['capacity'] = lambda card: (card.capacity is not None and
+                card.capacity) or 0
+        dProps['pool cost'] = lambda card: (card.costtype == 'pool' and
+                card.cost) or 0
+        dProps['blood cost'] = lambda card: (card.costtype == 'blood' and
+                card.cost) or 0
+        dProps['conviction cost'] = lambda card: (card.costtype == 'conviction'
+                and card.cost) or 0
+        dProps['advanced'] = lambda card: (card.level == 'advanced' and
+                1) or 0
+        dProps['physical card count'] = lambda card: len(card.physicalCards)
 
         # The little helper functions below are necessary for scoping reasons.
 
         # discipline properties
-        def makeDisFunc(oTmpDis):
-            return lambda card: ((oTmpDis in [oPair.discipline for oPair in card.discipline]) and 1) or 0
+        def make_dis_func(oTmpDis):
+            """Create a function that tests for the given discipline."""
+            return lambda card: ((oTmpDis in [oPair.discipline for oPair in
+                card.discipline]) and 1) or 0
 
         for oDis in Discipline.select():
-            d['discipline: ' + oDis.fullname] = makeDisFunc(oDis)
+            dProps['discipline: ' + oDis.fullname] = make_dis_func(oDis)
 
         # rarity properties
-        def makeRarFunc(oTmpRar):
-            return lambda card: ((oTmpRar in [oPair.rarity for oPair in card.rarity]) and 1) or 0
+        def make_rar_func(oTmpRar):
+            """Create a function that tests for the given rarity."""
+            return lambda card: ((oTmpRar in [oPair.rarity for oPair in
+                card.rarity]) and 1) or 0
 
         for oRar in Rarity.select():
-            d['rarity: ' + oRar.name] = makeRarFunc(oRar)
+            dProps['rarity: ' + oRar.name] = make_rar_func(oRar)
 
         # expansion properties
-        def makeExpFunc(oTmpExp):
-            return lambda card: ((oTmpExp in [oPair.expansion for oPair in card.rarity]) and 1) or 0
+        def make_exp_func(oTmpExp):
+            """Create a function that tests for the given expansion."""
+            return lambda card: ((oTmpExp in [oPair.expansion for oPair in
+                card.rarity]) and 1) or 0
 
         for oExp in Expansion.select():
-            d['expansion: ' + oExp.name] = makeExpFunc(oExp)
+            dProps['expansion: ' + oExp.name] = make_exp_func(oExp)
 
         # clan properties
-        def makeClanFunc(oTmpClan):
+        def make_clan_func(oTmpClan):
+            """Create a function that tests for the given clan"""
             return lambda card: ((oTmpClan in card.clan) and 1) or 0
 
         for oClan in Clan.select():
-            d['clan: ' + oClan.name] = makeClanFunc(oClan)
+            dProps['clan: ' + oClan.name] = make_clan_func(oClan)
 
         # cardtype properties
-        def makeCardTypeFunc(oTmpType):
+        def make_card_type_func(oTmpType):
+            """Create a function that tests for the given card type."""
             return lambda card: ((oTmpType in card.cardtype) and 1) or 0
 
         for oType in CardType.select():
-            d['card type: ' + oType.name] = makeCardTypeFunc(oType)
+            dProps['card type: ' + oType.name] = make_card_type_func(oType)
 
-        return d
+        return dProps
 
-    def tabulate(self,aCards):
+    def tabulate(self, aCards):
         """
         Create a table from the list of (or iterator over) cards.
-        Returns the table which is a nested list where each element is a row and each row consists of column values.
+        Returns the table which is a nested list where each element is a row
+        and each row consists of column values.
         The rows are in the same order as the cards in aCards.
         The columns are in the same order as in the aColNames list passed to __init__.
         """
@@ -98,12 +116,12 @@ class CardListTabulator(object):
 
         aTable = []
 
-        for oC in aCards:
-            oC = IAbstractCard(oC)
+        for oCard in aCards:
+            oCard = IAbstractCard(oCard)
             aRow = []
 
             for fProp in aColFuncs:
-                aRow.append(fProp(oC))
+                aRow.append(fProp(oCard))
 
             aTable.append(aRow)
 

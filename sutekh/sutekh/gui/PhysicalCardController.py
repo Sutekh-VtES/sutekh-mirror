@@ -40,7 +40,7 @@ class PhysicalCardController(object):
             doc="Associated Type")
     # pylint: enable-msg=W0212
 
-    def decCard(self, sName, sExpansion):
+    def dec_card(self, sName, sExpansion):
         """Returns True if a card was successfully removed, False otherwise."""
         # pylint: disable-msg=E1101
         # SQLObject confuses pylint
@@ -70,7 +70,8 @@ class PhysicalCardController(object):
                     if oPhysCard.expansion is None:
                         # OK, can delete this one and be done with it
                         PhysicalCard.delete(oPhysCard.id)
-                        self.model.dec_card_expansion_by_name(oAbsCard.name, None)
+                        self.model.dec_card_expansion_by_name(oAbsCard.name,
+                                None)
                         self.model.dec_card_by_name(oAbsCard.name)
                         send_reload_signal(oAbsCard)
                         return True
@@ -137,11 +138,11 @@ class PhysicalCardController(object):
             send_reload_signal(oAbsCard)
             return True
 
-    def incCard(self, sName, sExpansion):
+    def inc_card(self, sName, sExpansion):
         """Returns True if a card was successfully added, False otherwise."""
-        return self.addCard(sName, sExpansion)
+        return self.add_card(sName, sExpansion)
 
-    def addCard(self, sName, sExpansion):
+    def add_card(self, sName, sExpansion):
         """Returns True if a card was successfully added, False otherwise."""
         # pylint: disable-msg=E1101
         # SQLObject confuses pylint

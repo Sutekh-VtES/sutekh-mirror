@@ -27,6 +27,14 @@ DEFAULT_FILTERS = (
         )
 
 class FilterDialog(SutekhDialog, ConfigFileListener):
+    """Dialog which allows the user to select and edit filters.
+
+       This dialog exists per card list view, and keeps state during
+       a session by never being destoryed - just hiding itself when
+       needed.
+       This also listens to Config File events, so the list of available
+       filters remains syncronised across the different views.
+       """
     # pylint: disable-msg=R0904
     # gtk.Widget, so many public methods
 
@@ -96,7 +104,7 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
         self.__expand_filter(self.__oRadioGroup, self.__aDefaultFilterIds[0])
 
         # Load other filters from config file
-        aAllFilters = oConfig.getFiltersKeys()
+        aAllFilters = oConfig.get_filter_keys()
         sMessages = ''
         for sId, sFilter in aAllFilters:
             try:
@@ -104,14 +112,14 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
                 self.__add_filter_to_dialog(oAST, sFilter, sId)
             except ValueError:
                 sMessages += sFilter + "\n"
-                self.__oConfig.removeFilter(sFilter, sId)
+                self.__oConfig.remove_filter(sFilter, sId)
         if sMessages != '':
             do_complaint_error("The Following Invalid filters have been"
                     " removed from the config file:\n " + sMessages)
         self.show_all()
 
         # Add Listener, so we catch changes in future
-        oConfig.addListener(self)
+        oConfig.add_listener(self)
 
     def __add_filter_to_dialog(self, oAST, sFilter, sId=''):
         """
@@ -165,6 +173,12 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
                 self.__oDeleteButton.set_sensitive(False)
 
     def __button_response(self, oWidget, iResponse):
+        """Handle the button choices from the user.
+
+           If the operation doesn't close the dialog, such as the
+           filter manipulation options, we rerun the main dialog loop,
+           waiting for another user button press.
+           """
         sId = self.__sExpanded
         sOld = self.__dFilterList[sId]
 
@@ -179,27 +193,27 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
                 return self.run()
         elif iResponse == self.__iAddButtonResponse:
             # Add a blank filter
-            self.__oConfig.addFilter('')
+            self.__oConfig.add_filter('')
             return self.run()
         elif iResponse == self.__iCopyButtonResponse:
             sCurr = self.__dFilterEditors[sId].get_current_text()
-            self.__oConfig.addFilter(sCurr)
+            self.__oConfig.add_filter(sCurr)
             return self.run()
         elif iResponse == self.__iRevertButtonResponse:
             if sId in self.__aDefaultFilterIds:
                 # TODO: Do other filter dialogs need to be notified somehow?
-                self.replaceFilter(sOld, sOld, sId)
+                self.replace_filter(sOld, sOld, sId)
             else:
-                self.__oConfig.replaceFilter(sOld, sOld, sId)
+                self.__oConfig.replace_filter(sOld, sOld, sId)
             self.__expand_filter(None, sId)
             return self.run()
         elif iResponse == self.__iSaveButtonResponse:
             sCurr = self.__dFilterEditors[sId].get_current_text()
-            self.__oConfig.replaceFilter(sOld, sCurr, sId)
+            self.__oConfig.replace_filter(sOld, sCurr, sId)
             self.__expand_filter(None, sId)
             return self.run()
         elif iResponse == self.__iDeleteButtonResponse:
-            self.__oConfig.removeFilter(self.__dFilterList[sId], sId)
+            self.__oConfig.remove_filter(self.__dFilterList[sId], sId)
             return self.run()
         else:
             self.__bWasCancelled = True
@@ -245,17 +259,20 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
 
     # Dialog result retrievel methods
 
-    def getFilter(self):
+    def get_filter(self):
+        """Get the current filter for this dialog."""
         return self.__oFilter
 
-    def Cancelled(self):
+    def was_cancelled(self):
+        """Return true if the user cancelled the filter dialog."""
         return self.__bWasCancelled
 
     # Cancel button query for multiselect combo
 
     # Config File Listener methods
 
-    def replaceFilter(self, sOldFilter, sNewFilter, sId):
+    def replace_filter(self, sOldFilter, sNewFilter, sId):
+        """Replace sOldFilter with the new filter sNewFilter."""
         try:
             # Should be safe, but just in case
             oAST = self.__oParser.apply(sNewFilter)
@@ -266,7 +283,8 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
         self.__replace_filter_in_dialog(oAST, sOldFilter, sNewFilter, sId)
         self.__oRadioArea.show_all()
 
-    def addFilter(self, sFilter, sId):
+    def add_filter(self, sFilter, sId):
+        """Add a filter to the dialog."""
         try:
             # Should be safe, but just in case
             oAST = self.__oParser.apply(sFilter)
@@ -277,7 +295,8 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
         self.__add_filter_to_dialog(oAST, sFilter, sId)
         self.__oRadioArea.show_all()
 
-    def removeFilter(self, sFilter, sId):
+    def remove_filter(self, sFilter, sId):
+        """Remove a filter from the dialog."""
         del self.__dFilterList[sId]
         if sId in self.__dFilterEditors:
             del self.__dFilterEditors[sId]

@@ -267,7 +267,7 @@ class MainMenu(gtk.MenuBar, object):
         oMenu = gtk.Menu()
         self.__dMenus["Plugins"] = oMenu
         # plugins
-        for oPlugin in self.__oWin._aPlugins:
+        for oPlugin in self.__oWin.plugins:
             oPlugin.add_to_menu(self.__dMenus, oMenu)
         oMenuItem.set_submenu(oMenu)
         self.add(oMenuItem)

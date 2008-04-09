@@ -140,8 +140,8 @@ class CardListView(gtk.TreeView, object):
 
     # Introspection
 
-    def getWindow(self): return self._oMainWin
-    def getModel(self): return self._oModel
+    def get_window(self): return self._oMainWin
+    def get_model(self): return self._oModel
 
     # Activating Rows
 
@@ -313,7 +313,7 @@ class CardListView(gtk.TreeView, object):
 
     # Filtering
 
-    def getFilter(self, oMenu):
+    def get_filter(self, oMenu):
         """Get the Filter from the FilterDialog."""
         if self._oFilterDialog is None:
             self._oFilterDialog = FilterDialog(self._oMainWin,
@@ -321,10 +321,10 @@ class CardListView(gtk.TreeView, object):
 
         self._oFilterDialog.run()
 
-        if self._oFilterDialog.Cancelled():
+        if self._oFilterDialog.was_cancelled():
             return # Change nothing
 
-        oFilter = self._oFilterDialog.getFilter()
+        oFilter = self._oFilterDialog.get_filter()
         if oFilter != None:
             self._oModel.selectfilter = oFilter
             if not self._oModel.applyfilter:
@@ -404,9 +404,9 @@ class CardListView(gtk.TreeView, object):
                     # iAttempt is loop counter
                     for iAttempt in range(iCount):
                         if sExpansion != 'None':
-                            self._oController.decCard(sCardName, sExpansion)
+                            self._oController.dec_card(sCardName, sExpansion)
                         else:
-                            self._oController.decCard(sCardName, None)
+                            self._oController.dec_card(sCardName, None)
 
     # Drag and Drop
     # Sub-classes should override as needed.
@@ -503,8 +503,8 @@ class EditableCardListView(CardListView):
         oColumn4.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
         self.append_column(oColumn4)
 
-        oCell3.connect('clicked', self.incCard)
-        oCell4.connect('clicked', self.decCard)
+        oCell3.connect('clicked', self.inc_card)
+        oCell4.connect('clicked', self.dec_card)
 
         self.connect('map-event', self.mapped)
 
@@ -530,17 +530,17 @@ class EditableCardListView(CardListView):
             self._set_editable(True)
 
     # Used by card dragging handlers
-    def addCard(self, sCardName, sExpansion):
+    def add_card(self, sCardName, sExpansion):
         """Called to add a card with expansion"""
         if self._oModel.bEditable:
-            self._oController.addCard(sCardName, sExpansion)
+            self._oController.add_card(sCardName, sExpansion)
 
     # When editing cards, we pass info to the controller to
     # update stuff in the database
     # The Controller is responsible for updating the model,
     # since it defines the logic for handling expansions, etc.
 
-    def incCard(self, oCell, oPath):
+    def inc_card(self, oCell, oPath):
         """Called to increment the count for a card."""
         if self._oModel.bEditable:
             # pylint: disable-msg=W0612
@@ -549,9 +549,9 @@ class EditableCardListView(CardListView):
             if bInc:
                 sCardName = self._oModel.getCardNameFromPath(oPath)
                 sExpansion = self._oModel.getExpansionNameFromPath(oPath)
-                self._oController.incCard(sCardName, sExpansion)
+                self._oController.inc_card(sCardName, sExpansion)
 
-    def decCard(self, oCell, oPath):
+    def dec_card(self, oCell, oPath):
         """Called to decrement the count for a card"""
         if self._oModel.bEditable:
             # pylint: disable-msg=W0612
@@ -560,7 +560,7 @@ class EditableCardListView(CardListView):
             if bDec:
                 sCardName = self._oModel.getCardNameFromPath(oPath)
                 sExpansion = self._oModel.getExpansionNameFromPath(oPath)
-                self._oController.decCard(sCardName, sExpansion)
+                self._oController.dec_card(sCardName, sExpansion)
 
     def set_color_edit_cue(self):
         """Set a visual cue that the card set is editable."""

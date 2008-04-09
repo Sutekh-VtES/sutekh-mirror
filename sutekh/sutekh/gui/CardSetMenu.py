@@ -165,7 +165,7 @@ class CardSetMenu(gtk.MenuBar, object):
             oNameList = self.__cSetType.selectBy(name=sName)
             if oNameList.count()>0:
                 do_complaint_error("Chosen %s Card Set Name is already in use"
-                        % _type_to_string(self._cSetType))
+                        % _type_to_string(self.__cSetType))
                 return
             else:
                 oCS.name = sName
@@ -193,7 +193,7 @@ class CardSetMenu(gtk.MenuBar, object):
     def _do_export(self, oWidget):
         """Export the card set to the chosen filename."""
         oFileChooser = ExportDialog("Save %s Card Set As " %
-                _type_to_string(self._cSetType), self.__oWindow)
+                _type_to_string(self.__cSetType), self.__oWindow)
         oFileChooser.run()
         sFileName = oFileChooser.get_name()
         if sFileName is not None:
@@ -224,7 +224,7 @@ class CardSetMenu(gtk.MenuBar, object):
 
     def _set_active_filter(self, oWidget):
         """Set the current filter for the card set."""
-        self.__oController.view.getFilter(self)
+        self.__oController.view.get_filter(self)
 
     def _expand_all(self, oWidget):
         """Expand all the rows in the card set."""

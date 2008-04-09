@@ -64,7 +64,7 @@ class CardListModelListener(object):
         pass
 
 class CardListModel(gtk.TreeStore):
-    # pylint: disable-msg=R0914
+    # pylint: disable-msg=R0904
     # inherit a lot of public methods for gtk
     """
     Provides a card list specific API for accessing a gtk.TreeStore.
@@ -90,7 +90,7 @@ class CardListModel(gtk.TreeStore):
         # additional filters for selecting from the list
         self._oSelectFilter = None
 
-        self.listeners = {} # dictionary of CardListModelListeners
+        self.dListeners = {} # dictionary of CardListModelListeners
 
         self.bExpansions = False
         self.bEditable = False
@@ -110,11 +110,11 @@ class CardListModel(gtk.TreeStore):
             fset=lambda self, x: setattr(self, '_oSelectFilter', x))
     # pylint: enable-msg=W0212
 
-    def addListener(self, oListener):
-        self.listeners[oListener] = None
+    def add_listener(self, oListener):
+        self.dListeners[oListener] = None
 
-    def removeListener(self, oListener):
-        del self.listeners[oListener]
+    def remove_listener(self, oListener):
+        del self.dListeners[oListener]
 
     def check_inc_dec_card(self, oCard, iCnt):
         """Helper function to check whether card can be incremented"""
@@ -192,7 +192,7 @@ class CardListModel(gtk.TreeStore):
                         fGetExpanInfo(oItem))
                 # fill in the numbers for all possible expansions for
                 # the card
-                for sExpansion in sorted(dExpansionInfo.keys()):
+                for sExpansion in sorted(dExpansionInfo):
                     oExpansionIter = self.append(oChildIter)
                     iExpCnt, bDecCard, bIncCard = dExpansionInfo[sExpansion]
                     self.set(oExpansionIter,
@@ -215,7 +215,7 @@ class CardListModel(gtk.TreeStore):
             )
 
         # Notify Listeners
-        for oListener in self.listeners:
+        for oListener in self.dListeners:
             oListener.load(aAbsCards)
 
         self.clear_info_cache()
@@ -361,14 +361,14 @@ class CardListModel(gtk.TreeStore):
         sCardName = self.get_value(oIter, 0).decode("utf-8")
         return sCardName
 
-    def incCard(self, oPath):
+    def inc_card(self, oPath):
         """
         Add a copy of the card at oPath from the model
         """
         sCardName = self.getCardNameFromPath(oPath)
         self.alter_card_count(sCardName, +1)
 
-    def decCard(self, oPath):
+    def dec_card(self, oPath):
         """
         Remove a copy of the card at oPath from the model
         """
@@ -418,8 +418,10 @@ class CardListModel(gtk.TreeStore):
         oCard = IAbstractCard(sCardName)
         aParenIters = self._dName2Iter[sCardName]
         self._dNameExpansion2Iter[sCardName][sExpansion] = []
+        # pylint: disable-msg=W0612
+        # x is loop variable here
         aSiblings = [None for x in aParenIters]
-        for sThisExp in sorted(self._dNameExpansion2Iter[sCardName].keys()):
+        for sThisExp in sorted(self._dNameExpansion2Iter[sCardName]):
             if sThisExp == sExpansion:
                 iCnt = 1
                 if self.bEditable:
@@ -440,7 +442,7 @@ class CardListModel(gtk.TreeStore):
                 aSiblings = self._dNameExpansion2Iter[sCardName][sThisExp]
 
         # Notify Listeners
-        for oListener in self.listeners:
+        for oListener in self.dListeners:
             oListener.add_new_card_expansion(oCard, sExpansion)
 
     def alterCardExpansionCount(self, sCardName, sExpansion, iChg):
@@ -473,7 +475,7 @@ class CardListModel(gtk.TreeStore):
             del self._dNameExpansion2Iter[sCardName][sExpansion]
 
         # Notify Listeners
-        for oListener in self.listeners:
+        for oListener in self.dListeners:
             oListener.alter_card_expansion_count(oCard, sExpansion, iChg)
 
     def alter_card_count(self, sCardName, iChg):
@@ -532,7 +534,7 @@ class CardListModel(gtk.TreeStore):
             del self._dName2Iter[sCardName]
 
         # Notify Listeners
-        for oListener in self.listeners:
+        for oListener in self.dListeners:
             oListener.alter_card_count(oCard, iChg)
 
     def add_new_card(self, sCardName):
@@ -548,6 +550,8 @@ class CardListModel(gtk.TreeStore):
 
         oCardIter = oFullFilter.select(self.cardclass).distinct()
 
+        # pylint: disable-msg=W0612
+        # Not interested in aAbsCards here, but we need the rest
         fGetCard, fGetCount, fGetExpanInfo, oGroupedIter, aAbsCards = \
                 self.groupedCardIterator(oCardIter)
         # Iterate over groups
@@ -609,11 +613,11 @@ class CardListModel(gtk.TreeStore):
 
         # Notify Listeners
         oCard = IAbstractCard(sCardName)
-        for oListener in self.listeners:
+        for oListener in self.dListeners:
             oListener.add_new_card(oCard)
 
 class PhysicalCardListModel(CardListModel):
-    # pylint: disable-msg=R0914
+    # pylint: disable-msg=R0904
     # inherit a lot of public methods for gtk
     """Card List Model specific to Physical Card Collections.
 
@@ -703,7 +707,7 @@ class PhysicalCardListModel(CardListModel):
         return aList
 
 class PhysicalCardSetCardListModel(CardListModel):
-    # pylint: disable-msg=R0914
+    # pylint: disable-msg=R0904
     # inherit a lot of public methods for gtk
     """CardList Model specific to lists of physical cards.
 

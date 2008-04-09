@@ -85,12 +85,13 @@ class MultiPaneWindow(gtk.Window):
 
     # Needed for plugins
     plugin_manager = property(fget=lambda self: self._oPluginManager)
-
+    plugins = property(fget=lambda self: self._aPlugins,
+            doc="Plugins enabled for the main window.")
     config_file = property(fget=lambda self: self._oConfig)
 
     focussed_pane = property(fget=lambda self: self._oFocussed)
 
-    def getWindow(self):
+    def get_window(self):
         """Return reference to the window - used by plugins."""
         return self
 

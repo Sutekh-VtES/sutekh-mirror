@@ -4,6 +4,8 @@
 # Copyright 2006 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
 
+"""Classes for mangaging and creating plugins for Sutekh."""
+
 import plugins
 import os
 import glob
@@ -28,15 +30,19 @@ class PluginManager(object):
         for sPluginPath in glob.glob(os.path.join(sPluginDir, "*.py")):
             sPluginName = os.path.basename(sPluginPath)[:-len(".py")]
 
-            if sPluginName == "__init__": continue
+            if sPluginName == "__init__":
+                continue
 
             # load module
+            # pylint: disable-msg=C0103
+            # mPlugin is legal name here
             try:
-                mPlugin = __import__("sutekh.gui.plugins." + sPluginName,
+                mPlugin = __import__("sutekh.gui.plugins.%s" % sPluginName,
                         None, None, [plugins])
-            except ImportError, e:
+            except ImportError, oExp:
                 if bVerbose:
-                    logging.warn("Failed to load plugin %s (%s)." % (sPluginName, str(e)))
+                    logging.warn("Failed to load plugin %s (%s)." % (
+                        sPluginName, oExp))
                 continue
 
             # find plugin class
@@ -53,6 +59,7 @@ class PluginManager(object):
                 self._aCardListPlugins.append(cPlugin)
 
     def get_card_list_plugins(self):
+        """Get all the plugins loaded"""
         return list(self._aCardListPlugins)
 
 class CardListPlugin(object):
@@ -70,17 +77,17 @@ class CardListPlugin(object):
         self._oModel = oCardListModel
         self._cModelType = cModelType
 
-    parent = property(fget=lambda self: self._oView.getWindow(), doc="Parent window to use when creating dialogs.")
-    view = property(fget=lambda self: self._oView, doc="Associated CardListView object.")
-    model = property(fget=lambda self: self._oModel, doc="Associated CardModel object.")
-    cardlookup = property(fget=lambda self: self.parent.cardLookup, doc="GUI CardLookup.")
-
-    def get_menu_item(self):
-        """
-        Return a list of ('Menu', gtk.MenuItems) pairs for the plugin or
-        None if no menu item is needed.
-        """
-        return None
+    # pylint: disable-msg=W0212
+    # we allow access to the members via these properties
+    parent = property(fget=lambda self: self._oView.get_window(),
+            doc="Parent window to use when creating dialogs.")
+    view = property(fget=lambda self: self._oView,
+            doc="Associated CardListView object.")
+    model = property(fget=lambda self: self._oModel,
+            doc="Associated CardModel object.")
+    cardlookup = property(fget=lambda self: self.parent.cardLookup,
+            doc="GUI CardLookup.")
+    # pylint: enable-msg=W0212
 
     def add_to_menu(self, dAllMenus, oCatchAllMenu):
         "Grunt work of adding menu item to the frame"
@@ -100,6 +107,15 @@ class CardListPlugin(object):
                     # Plugins acts as a catchall Menu
                     oCatchAllMenu.add(oMenuItem)
 
+    # pylint: disable-msg=R0201
+    # We expect children to override these when needed
+    def get_menu_item(self):
+        """
+        Return a list of ('Menu', gtk.MenuItems) pairs for the plugin or
+        None if no menu item is needed.
+        """
+        return None
+
     def get_toolbar_widget(self):
         """
         Return an arbitary gtk.Widget which is added to a VBox between the menu
@@ -107,6 +123,8 @@ class CardListPlugin(object):
         """
         return None
 
+    # pylint: disable-msg=W0613
+    # sType can be used by children of this class
     def get_frame_from_config(self, sType):
         """
         Hook for plugins which supply a frame in the Main window.
@@ -114,17 +132,22 @@ class CardListPlugin(object):
         """
         return None
 
+    # pylint: enable-msg=R0201
+
     # Utility Functions / Plugin API
 
     def check_model_type(self):
+        """Check whether the plugin should register on this frame."""
         if self._cModelType in self.aModelsSupported:
             return True
         return False
 
     def check_versions(self):
+        """Check whether the plugin supports the current version of
+           the Sutekh database tables."""
         oDBVer = DatabaseVersion()
         for sTableName, aVersions in self.dTableVersions.iteritems():
-            iCurVer = oDBVer.getVersion(sTableName)
+            iCurVer = oDBVer.get_table_version(sTableName)
             if iCurVer not in aVersions:
                 return False
         # If nothing is specified, currently we assume everything is A-OK

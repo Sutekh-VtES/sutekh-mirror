@@ -83,12 +83,12 @@ class CardSetView(EditableCardListView):
                 # pylint: disable-msg=W0612
                 # iLoop is just loop counter
                 for iLoop in range(iCount):
-                    self.addCard(sCardName, sExpansion)
+                    self.add_card(sCardName, sExpansion)
             return True
         elif aSources[0] == "Abst" and self.cSetType is AbstractCardSet:
             # from Abstract list, so iCount doesn't matter
             for iCount, sCardName, sExpansion in aCards:
-                self.addCard(sCardName, sExpansion)
+                self.add_card(sCardName, sExpansion)
             return True
         else:
             return False

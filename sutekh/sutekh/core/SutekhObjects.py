@@ -670,7 +670,7 @@ class MapAbstractCardToAbstractCardSetToAbstractCardAdapter(object):
 
 # Flushing
 
-def FlushCache():
+def flush_cache():
     # Flush all the object caches - needed before importing new card lists
     # and such
     for cAdaptor in [ ExpansionAdapter, RarityAdapter, DisciplineAdapter,
@@ -681,9 +681,9 @@ def FlushCache():
 
     for oJoin in AbstractCard.sqlmeta.joins:
         if type(oJoin) is SOCachedRelatedJoin:
-            oJoin.flushCache()
+            oJoin.flush_cache()
 
-def InitCache():
+def init_cache():
     for oJoin in AbstractCard.sqlmeta.joins:
         if type(oJoin) is SOCachedRelatedJoin:
-            oJoin.initCache()
+            oJoin.init_cache()

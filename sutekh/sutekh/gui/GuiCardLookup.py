@@ -622,19 +622,19 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
         return False
 
     def _run_filter_dialog(self, oButton, oView, oToggleButton):
-        oView.getFilter(None)
+        oView.get_filter(None)
         if oToggleButton.get_active() != oView._oModel.applyfilter:
             oToggleButton.set_active(oView._oModel.applyfilter)
 
     def _run_filter(self, oView, oFilter, oToggleButton):
-        oView.getModel().selectfilter = oFilter
+        oView.get_model().selectfilter = oFilter
         if not oToggleButton.get_active():
             oToggleButton.set_active(True)
         else:
             oView.load()
 
     def _toggle_apply_filter(self, oButton, oView):
-        oView.getModel().applyfilter = oButton.get_active()
+        oView.get_model().applyfilter = oButton.get_active()
         oView.load()
 
     def _toggle_show_cardcount(self, oButton, oView, aPhysCards, dCandCards):

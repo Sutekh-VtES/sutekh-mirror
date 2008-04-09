@@ -11,15 +11,15 @@ from ConfigParser import RawConfigParser, NoOptionError
 class ConfigFileListener(object):
     """Listener object for config changes - inspired by CardListModeListener"""
 
-    def addFilter(self, sFilter, sKey):
+    def add_filter(self, sFilter, sKey):
         """New Filter added"""
         pass
 
-    def removeFilter(self, sFilter, sKey):
+    def remove_filter(self, sFilter, sKey):
         """Filter removed"""
         pass
 
-    def replaceFilter(self, sOldFilter, sNewFilter, sKey):
+    def replace_filter(self, sOldFilter, sNewFilter, sKey):
         """A Filter has been replaced"""
         pass
 
@@ -81,19 +81,19 @@ class ConfigFile(object):
         else:
             self.__oConfig.set(sSection, sKey, 'no')
 
-    def addListener(self, oListener):
+    def add_listener(self, oListener):
         self.__dListeners[oListener] = None
 
-    def removeListener(self, oListener):
+    def remove_listener(self, oListener):
         del self.__dListeners[oListener]
 
     def write(self):
         self.__oConfig.write(open(self.__sFileName, 'w'))
 
-    def getFilters(self):
+    def get_filters(self):
         return [x[1] for x in self.__oConfig.items(self.__sFiltersSection)]
 
-    def getFiltersKeys(self):
+    def get_filter_keys(self):
         return self.__oConfig.items(self.__sFiltersSection)
 
     def preSaveClear(self):
@@ -195,7 +195,7 @@ class ConfigFile(object):
         sPos = '%d, %d' % (tSize[0], tSize[1])
         self.__oConfig.set(self.__sPrefsSection, 'window size', sPos)
 
-    def addFilter(self, sFilter):
+    def add_filter(self, sFilter):
         """Add a filter to the file, handling automatic numbering"""
         aOptions = self.__oConfig.options(self.__sFiltersSection)
         self.__iNum += 1
@@ -205,26 +205,26 @@ class ConfigFile(object):
             sKey = 'user filter ' + str(self.__iNum)
         self.__oConfig.set(self.__sFiltersSection, sKey, sFilter)
         for oListener in self.__dListeners:
-            oListener.addFilter(sFilter, sKey)
+            oListener.add_filter(sFilter, sKey)
 
-    def removeFilter(self, sFilter, sKey):
+    def remove_filter(self, sFilter, sKey):
         """Remove a filter from the file"""
         # Make sure Filer and key match
         if sKey in self.__oConfig.options(self.__sFiltersSection) and \
                 sFilter == self.__oConfig.get(self.__sFiltersSection, sKey):
             self.__oConfig.remove_option(self.__sFiltersSection, sKey)
             for oListener in self.__dListeners:
-                oListener.removeFilter(sFilter, sKey)
+                oListener.remove_filter(sFilter, sKey)
             return
 
-    def replaceFilter(self, sOldFilter, sNewFilter, sKey):
+    def replace_filter(self, sOldFilter, sNewFilter, sKey):
         """Replace a filter in the file with new filter"""
         if sKey in self.__oConfig.options(self.__sFiltersSection) and \
                 sOldFilter == self.__oConfig.get(self.__sFiltersSection, sKey):
             self.__oConfig.remove_option(self.__sFiltersSection, sKey)
             self.__oConfig.set(self.__sFiltersSection, sKey, sNewFilter)
             for oListener in self.__dListeners:
-                oListener.replaceFilter(sOldFilter, sNewFilter, sKey)
+                oListener.replace_filter(sOldFilter, sNewFilter, sKey)
             return
 
     def get_plugin_key(self, sKey):

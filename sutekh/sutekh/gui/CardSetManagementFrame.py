@@ -169,10 +169,10 @@ class CardSetManagementFrame(BasicFrame):
                     self._oConfig, self._sFilterType)
         self._oFilterDialog.run()
 
-        if self._oFilterDialog.Cancelled():
+        if self._oFilterDialog.was_cancelled():
             return # Change nothing
 
-        oFilter = self._oFilterDialog.getFilter()
+        oFilter = self._oFilterDialog.get_filter()
         if oFilter != None:
             self._oFilter = oFilter
             if self._oMenu.get_apply_filter():

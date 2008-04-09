@@ -96,7 +96,7 @@ class AbstractCardListMenu(gtk.MenuBar, object):
 
     def _set_active_filter(self, oWidget):
         """Set the active filter for the card list."""
-        self.__oController.view.getFilter(self)
+        self.__oController.view.get_filter(self)
 
     def _expand_all(self, oWidget):
         """Expand all rows in the TreeView."""
