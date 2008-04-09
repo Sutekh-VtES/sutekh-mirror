@@ -2,7 +2,7 @@
 # -*- coding: utf8 -*-
 # vim:fileencoding=utf8 ai ts=4 sts=4 et sw=4
 # Copyright 2008 Simon Cross <hodgestar@gmail.com>
-# Copyright 2008 Neil Muller <drnlmuller+sutekh@gmail.com> 
+# Copyright 2008 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
 """
@@ -52,7 +52,8 @@ class CSVParser(object):
         sqlhub.processConnection.commit()
         sqlhub.processConnection = oOldConn
 
-    def _process_row(self,aRow):
+    def _process_row(self, aRow):
+        """Extract the relevant data from a single row in the CSV file."""
         sName = aRow[self.iCardNameColumn].strip()
         if not sName:
             return # skip rows with no name
@@ -67,6 +68,7 @@ class CSVParser(object):
         self.oCS.add(iCount, sName, sExpansionName)
 
     def parse(self, fIn, sCardSetName, oCardLookup=DEFAULT_LOOKUP):
+        """Process the CSV file line into the CardSetHolder"""
         oCsvFile = csv.reader(fIn)
         self.oCS.name = sCardSetName
 
@@ -77,5 +79,6 @@ class CSVParser(object):
         for aRow in oIter:
             try:
                 self._process_row(aRow)
-            except ValueError, e:
-                raise ValueError("Line %d in CSV file could not be parsed (%s)" % (oCsvFile.line_num, e))
+            except ValueError, oExp:
+                raise ValueError("Line %d in CSV file could not be parsed"
+                        " (%s)" % (oCsvFile.line_num, oExp))

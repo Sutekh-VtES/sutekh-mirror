@@ -101,7 +101,7 @@ class WriteArdbText(object):
            """
         (dVamps, iCryptSize, iMin, iMax, fAvg) = self._extract_crypt(dCards)
 
-        s = "Crypt [%d vampires] Capacity min: %d max: %d average: %f\n" \
+        sCrypt = "Crypt [%d vampires] Capacity min: %d max: %d average: %f\n" \
             "------------------------------------------------------------\n" \
             % (iCryptSize, iMin, iMax, fAvg)
 
@@ -118,11 +118,11 @@ class WriteArdbText(object):
                 sClan = [x.name for x in oCard.clan][0]
             sDisciplines = self._gen_disciplines(oCard)
 
-            s += "  %dx %s %d %s %s :%d\n" % \
+            sCrypt += "  %dx %s %d %s %s :%d\n" % \
                  (iCount, sName, oCard.capacity, sDisciplines, sClan,
                          oCard.group)
 
-        return s
+        return sCrypt
 
     def _gen_disciplines(self, oCard):
         """Extract the discipline string from the card."""
@@ -146,7 +146,7 @@ class WriteArdbText(object):
            """
         (dLib, iLibSize) = self._extract_library(dCards)
 
-        s = "Library [%d cards]\n" \
+        sLib = "Library [%d cards]\n" \
             "------------------------------------------------------------\n" \
             % (iLibSize,)
 
@@ -160,14 +160,14 @@ class WriteArdbText(object):
             dCards = dTypes[sTypeString]
             iTotal = sum(dCards.values())
 
-            s += "%s [%d]\n" % (sTypeString, iTotal)
+            sLib += "%s [%d]\n" % (sTypeString, iTotal)
 
             for (iId, sName), iCount in dCards.iteritems():
-                s += "  %dx %s\n" % (iCount, sName)
+                sLib += "  %dx %s\n" % (iCount, sName)
 
-            s += "\n"
+            sLib += "\n"
 
-        return s
+        return sLib
 
     def write(self, fOut, sSetName, sAuthor, sDescription, dCards):
         """

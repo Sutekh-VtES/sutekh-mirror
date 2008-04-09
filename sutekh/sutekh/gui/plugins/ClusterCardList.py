@@ -4,6 +4,8 @@
 # Copyright 2006 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
 
+"""Plugin to find clusters in the card lists."""
+
 import gtk
 from sutekh.core.SutekhObjects import AbstractCard, PhysicalCard, \
                                       AbstractCardSet, PhysicalCardSet, \
@@ -15,27 +17,35 @@ from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 
 # find a cluster module
 # Bio.Cluster needs a fromlist to do the right thing
-for module, aFromlist in [('Pycluster',None),('Bio.Cluster',['Cluster'])]:
+for module, aFromlist in [('Pycluster', None), ('Bio.Cluster', ['Cluster'])]:
+    # pylint: disable-msg=W0704
+    # we loop over options, so ignoring error is correct
     try:
-        Cluster = __import__(module,None,None,aFromlist)
+        Cluster = __import__(module, None, None, aFromlist)
         break
     except ImportError:
         pass
 else:
-    raise ImportError("Could not find PyCluster or Bio.Cluster. Not loading clustering plugin.")
+    raise ImportError("Could not find PyCluster or Bio.Cluster. Not loading"
+            " clustering plugin.")
 
 class ClusterCardList(CardListPlugin):
     dTableVersions = {}
-    aModelsSupported = [AbstractCard, PhysicalCard, PhysicalCardSet, AbstractCardSet]
+    aModelsSupported = [AbstractCard, PhysicalCard, PhysicalCardSet,
+            AbstractCardSet]
 
-    def __init__(self,*args,**kws):
-        super(ClusterCardList,self).__init__(*args,**kws)
+    # pylint: disable-msg=W0142
+    # ** magic OK
+    def __init__(self, *aArgs, **kwargs):
+        super(ClusterCardList, self).__init__(*aArgs, **kwargs)
         if not self.model:
-            self._makeCardSetFromCluster = None
+            self._fMakeCardSetFromClusterCluster = None
         elif self.model.cardclass is PhysicalCard:
-            self._makeCardSetFromCluster = self.makeDeckFromCluster
+            self._fMakeCardSetFromClusterCluster = self.make_pcs_from_cluster
         else:
-            self._makeCardSetFromCluster = self.makeACSFromCluster
+            self._fMakeCardSetFromClusterCluster = self.make_acs_from_cluster
+
+    # pylint: enable-msg=W0142
 
     def get_menu_item(self):
         """Register on the 'Plugins' menu."""
@@ -45,21 +55,23 @@ class ClusterCardList(CardListPlugin):
         oCluster.connect("activate", self.activate)
         return ('Plugins', oCluster)
 
-    def activate(self,oWidget):
-        dlg = self.makeDialog()
-        dlg.run()
+    def activate(self, oWidget):
+        """In response to the menu, create the correct dialog."""
+        oDlg = self.make_dialog()
+        oDlg.run()
 
-    def makeDialog(self):
-        name = "Cluster Cards in List"
+    def make_dialog(self):
+        """Create the dialog for the clustering options."""
+        sDlgName = "Cluster Cards in List"
 
         self.makePropGroups()
 
-        oDlg = SutekhDialog(name,self.parent,
+        oDlg = SutekhDialog(sDlgName, self.parent,
                 gtk.DIALOG_DESTROY_WITH_PARENT)
         oDlg.add_button(gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE)
         oDlg.add_button(gtk.STOCK_EXECUTE, gtk.RESPONSE_APPLY)
 
-        oDlg.connect("response", self.handleResponse)
+        oDlg.connect("response", self.handle_response)
 
         oNotebook = gtk.Notebook()
 
@@ -67,10 +79,12 @@ class ClusterCardList(CardListPlugin):
         oAlgorithmSection = self.makeAlgorithmSection()
         oResultsSection = self.makeResultsSection()
 
-        oNotebook.append_page(oTableSection,gtk.Label('Select Columns'));
-        oNotebook.append_page(oAlgorithmSection,gtk.Label('Select Algorithm'));
-        oNotebook.append_page(oResultsSection,gtk.Label('Results'));
+        oNotebook.append_page(oTableSection, gtk.Label('Select Columns'))
+        oNotebook.append_page(oAlgorithmSection, gtk.Label('Select Algorithm'))
+        oNotebook.append_page(oResultsSection, gtk.Label('Results'))
 
+        # pylint: disable-msg=E1101
+        # vbox confuses pylint
         oDlg.vbox.pack_start(oNotebook)
         oDlg.show_all()
 
@@ -83,10 +97,12 @@ class ClusterCardList(CardListPlugin):
         for sName, fProp in dPropFuncs.iteritems():
             aParts = sName.split(":")
             if len(aParts) == 1:
-                self._dGroups.setdefault("Miscellaneous",{})[sName.capitalize()] = fProp
+                self._dGroups.setdefault("Miscellaneous",
+                        {})[sName.capitalize()] = fProp
             else:
-                sGroup, sRest = aParts[0].strip().capitalize(), ":".join(aParts[1:]).strip().capitalize()
-                self._dGroups.setdefault(sGroup,{})[sRest] = fProp
+                sGroup, sRest = aParts[0].strip().capitalize(), \
+                        ":".join(aParts[1:]).strip().capitalize()
+                self._dGroups.setdefault(sGroup, {})[sRest] = fProp
 
     def makeTableSection(self):
         oNotebook = gtk.Notebook()
@@ -99,7 +115,7 @@ class ClusterCardList(CardListPlugin):
             self._dPropButtons[sGroup] = {}
             dPropFuncs = self._dGroups[sGroup]
 
-            oHbx = gtk.HBox(False,0)
+            oHbx = gtk.HBox(False, 0)
 
             iCols = 3
             iPropsPerCol = len(dPropFuncs) / iCols
@@ -111,40 +127,40 @@ class ClusterCardList(CardListPlugin):
 
             for iProp, sName in enumerate(aPropNames):
                 if iProp % iPropsPerCol == 0:
-                    oVbx = gtk.VBox(False,0)
+                    oVbx = gtk.VBox(False, 0)
                     oHbx.pack_start(oVbx)
 
                 oBut = gtk.CheckButton(sName)
-                oVbx.pack_start(oBut,False) # pack at top, don't fill space
+                oVbx.pack_start(oBut, False) # pack at top, don't fill space
 
                 self._dPropButtons[sGroup][sName] = oBut
 
-            oNotebook.append_page(oHbx,gtk.Label(sGroup))
+            oNotebook.append_page(oHbx, gtk.Label(sGroup))
 
         return oNotebook
 
     def makeAlgorithmSection(self):
-        oVbx = gtk.VBox(False,0)
+        oVbx = gtk.VBox(False, 0)
 
         # Hard coded to SOM for now
         oHeading = gtk.Label()
         oHeading.set_markup("<b>Parameters for SOM Clustering</b>")
-        oVbx.pack_start(oHeading,False) # top align
+        oVbx.pack_start(oHeading, False) # top align
 
         # Tau
         oTauLabel = gtk.Label("Initial Value of Tau (Neighbourhood function):")
         oTauEntry = gtk.Entry(0)
-        oTauHbox = gtk.HBox(False,0)
-        oTauHbox.pack_start(oTauLabel,False) # left align
-        oTauHbox.pack_end(oTauEntry,False) # right align
+        oTauHbox = gtk.HBox(False, 0)
+        oTauHbox.pack_start(oTauLabel, False) # left align
+        oTauHbox.pack_end(oTauEntry, False) # right align
         oVbx.pack_start(oTauHbox)
 
         # Number of iterations
         oNumIterLabel = gtk.Label("Number of Iterations:")
         oNumIterEntry = gtk.Entry(0)
-        oNumIterHbox = gtk.HBox(False,0)
-        oNumIterHbox.pack_start(oNumIterLabel,False) # left align
-        oNumIterHbox.pack_end(oNumIterEntry,False) # right align
+        oNumIterHbox = gtk.HBox(False, 0)
+        oNumIterHbox.pack_start(oNumIterLabel, False) # left align
+        oNumIterHbox.pack_end(oNumIterEntry, False) # right align
         oVbx.pack_start(oNumIterHbox)
 
         # Distance Measure
@@ -153,30 +169,32 @@ class ClusterCardList(CardListPlugin):
         oVbx.pack_start(oDistLabel)
 
         dDist = { 'e' : 'Euclidean Distance', 'b' : 'City Block Distance',
-                  'c' : 'Correlation', 'a' : 'Absolute Value of the Correlation',
-                  'u' : 'Uncentered Correlation', 'x' : 'Absolute Value of the Uncentered Correlation',
+                  'c' : 'Correlation',
+                  'a' : 'Absolute Value of the Correlation',
+                  'u' : 'Uncentered Correlation',
+                  'x' : 'Absolute Value of the Uncentered Correlation',
                   's' : "Spearman's Rank Correlation", 'k' : "Kendall's Tau" }
 
         oIter = dDist.iteritems()
         for sChr, sName in oIter:
-            oFirstBut = gtk.RadioButton(None,sName,False)
+            oFirstBut = gtk.RadioButton(None, sName, False)
             oVbx.pack_start(oFirstBut)
             break
 
         for sChr, sName in oIter:
-            oBut = gtk.RadioButton(oFirstBut,sName)
+            oBut = gtk.RadioButton(oFirstBut, sName)
             oVbx.pack_start(oBut)
 
         return oVbx
 
     def makeResultsSection(self):
-        oVbx = gtk.VBox(False,0)
-        self._oResultsVbox = gtk.VBox(False,0)
+        oVbx = gtk.VBox(False, 0)
+        self._oResultsVbox = gtk.VBox(False, 0)
 
         # Results Heading
         oHeading = gtk.Label()
         oHeading.set_markup("<b>Results</b>")
-        oVbx.pack_start(oHeading,False) # top align
+        oVbx.pack_start(oHeading, False) # top align
 
         # No Results Yet
         oLabel = gtk.Label("No results yet.")
@@ -185,8 +203,12 @@ class ClusterCardList(CardListPlugin):
 
         return oVbx
 
-    def populateResults(self,aCards,aColNames,aClusterIds,aCellData):
-        self._aCards, self._aColNames, self._aClusterIds, self._aCellData = aCards,aColNames,aClusterIds,aCellData
+    # pylint: disable-msg=W0201
+    # We create a lot of attributes here, which is OK, because of plugin
+    # structure
+    def populateResults(self, aCards, aColNames, aClusterIds, aCellData):
+        self._aCards, self._aColNames, self._aClusterIds, self._aCellData = \
+                aCards, aColNames, aClusterIds, aCellData
 
         # clean results box
         for oChild in self._oResultsVbox.get_children():
@@ -194,8 +216,8 @@ class ClusterCardList(CardListPlugin):
 
         # Count cards in each cluster
         dClusterCounts = {}
-        for i,j in self._aClusterIds:
-            dClusterCounts[(i,j)] = dClusterCounts.get((i,j),0) + 1
+        for i, j in self._aClusterIds:
+            dClusterCounts[(i, j)] = dClusterCounts.get((i, j), 0) + 1
 
         # Setup Table
         iNX = len(aCellData)
@@ -203,17 +225,18 @@ class ClusterCardList(CardListPlugin):
         iHeaderRows = 1
         iExtraCols = 4
 
-        oTable = gtk.Table(rows=iNX * iNY,columns=len(aColNames) + 2)
+        oTable = gtk.Table(rows=iNX * iNY, columns=len(aColNames) + 2)
 
         # Headings
         oLabel = gtk.Label()
         oLabel.set_markup('<b># Cards</b>')
-        oTable.attach(oLabel,3,4,0,1,xpadding=3)
+        oTable.attach(oLabel, 3, 4, 0, 1, xpadding=3)
 
         for k, sColName in enumerate(aColNames):
             oLabel = gtk.Label()
             oLabel.set_markup('<b>%s</b>' % sColName)
-            oTable.attach(oLabel,k + iExtraCols,k + iExtraCols + 1,0,1,xpadding=3)
+            oTable.attach(oLabel, k + iExtraCols, k + iExtraCols + 1, 0, 1,
+                    xpadding=3)
 
         # Data
         self._dCardSetMakingButtons = {}
@@ -221,34 +244,41 @@ class ClusterCardList(CardListPlugin):
             for j in range(iNY):
                 iRow = i * iNY + j + iHeaderRows
                 oBut = gtk.CheckButton('')
-                self._dCardSetMakingButtons[(i,j)] = oBut
-                oTable.attach(oBut,0,1,iRow,iRow + 1)
-                oTable.attach(gtk.Label(str(i)),1,2,iRow,iRow + 1)
-                oTable.attach(gtk.Label(str(j)),2,3,iRow,iRow + 1)
-                oTable.attach(gtk.Label(str(dClusterCounts.get((i,j),0))),3,4,iRow,iRow + 1)
+                self._dCardSetMakingButtons[(i, j)] = oBut
+                oTable.attach(oBut, 0, 1, iRow, iRow + 1)
+                oTable.attach(gtk.Label(str(i)), 1, 2, iRow, iRow + 1)
+                oTable.attach(gtk.Label(str(j)), 2, 3, iRow, iRow + 1)
+                oTable.attach(gtk.Label(str(dClusterCounts.get((i, j), 0))), 3,
+                        4, iRow, iRow + 1)
                 for k, x in enumerate(aCellData[i][j]):
-                    oTable.attach(gtk.Label(str(x)),k + iExtraCols,k + iExtraCols + 1,iRow,iRow + 1)
+                    oTable.attach(gtk.Label(str(x)), k + iExtraCols,
+                            k + iExtraCols + 1, iRow, iRow + 1)
 
-        self._oResultsVbox.pack_start(AutoScrolledWindow(oTable,True)) # top align, using viewport to scroll
+        # top align, using viewport to scroll
+        self._oResultsVbox.pack_start(AutoScrolledWindow(oTable, True))
 
-        oMakeCardSetsButton = gtk.Button("Make Card Sets from Selected Clusters")
-        oMakeCardSetsButton.connect("clicked",self.handleMakeCardSets)
-        self._oResultsVbox.pack_end(oMakeCardSetsButton,False) # bottom align
+        oMakeCardSetsButton = gtk.Button("Make Card Sets from Selected"
+                " Clusters")
+        oMakeCardSetsButton.connect("clicked", self.handleMakeCardSets)
+        self._oResultsVbox.pack_end(oMakeCardSetsButton, False) # bottom align
 
         self._oResultsVbox.show_all()
 
+    # pylint: enable-msg=W0201
+
     # Actions
 
-    def handleResponse(self,oDlg,oResponse):
+    def handle_response(self, oDlg, oResponse):
+        """Handle the user's response to the options dialog."""
         if oResponse == gtk.RESPONSE_CLOSE:
             oDlg.destroy()
         elif oResponse == gtk.RESPONSE_APPLY:
             self.doClustering()
 
-    def handleMakeCardSets(self,oSomeObj):
+    def handleMakeCardSets(self, oSomeObj):
         for tId, oBut in self._dCardSetMakingButtons.iteritems():
             if oBut.get_active():
-                self._makeCardSetFromCluster(tId)
+                self._fMakeCardSetFromClusterCluster(tId)
 
     def doClustering(self):
         # gather cards
@@ -259,79 +289,98 @@ class ClusterCardList(CardListPlugin):
         for sGroup, dButtons in self._dPropButtons.iteritems():
             for sName, oBut in dButtons.iteritems():
                 if oBut.get_active():
-                    dPropFuncs[sGroup + ": " + sName] = self._dGroups[sGroup][sName]
+                    dPropFuncs[sGroup + ": " + sName] = \
+                            self._dGroups[sGroup][sName]
 
         # sort column names
         aColNames = dPropFuncs.keys()
         aColNames.sort()
 
         # make tabulator and get table
-        oTab = CardListTabulator(aColNames,dPropFuncs)
+        oTab = CardListTabulator(aColNames, dPropFuncs)
         aTable = oTab.tabulate(aCards)
 
         # make data file
+        # pylint: disable-msg=E1101
+        # IAbstractCard confuses pylint
         oDatFile = Cluster.DataFile()
         oDatFile.geneid = [oC.id for oC in aCards]
-        oDatFile.genename = [IAbstractCard(oC).name.encode('ascii','replace') for oC in aCards]
-        oDatFile.expid = [s.encode('ascii','replace') for s in aColNames]
+        oDatFile.genename = [IAbstractCard(oC).name.encode('ascii', 'replace')
+                for oC in aCards]
+        oDatFile.expid = [s.encode('ascii', 'replace') for s in aColNames]
         oDatFile.data = aTable
         oDatFile.mask = None # no data missing
         oDatFile.uniqid = "UNIQID"
 
         # run SOM clustering on table
-        (aClusterIds, aCellData) = oDatFile.somcluster(transpose=0, nxgrid=3, nygrid=3, inittau=0.02, niter=10, dist='e')
-        # (aPropClusterIds, aPropCelldata) = oDatFile.somcluster(transpose=1, nxgrid=2, nygrid=1, inittau=0.02, niter=10, dist='e')
-
+        (aClusterIds, aCellData) = oDatFile.somcluster(transpose=0, nxgrid=3,
+                nygrid=3, inittau=0.02, niter=10, dist='e')
+        # (aPropClusterIds, aPropCelldata) = oDatFile.somcluster(transpose=1,
+        #         nxgrid=2, nygrid=1, inittau=0.02, niter=10, dist='e')
+        #
         # run K-Means clustering on table
-        # (aKmeansClusters, fError, iFound) = oDatFile.kcluster(nclusters=20,npass=10,transpose=0)
-        # (aKmeansPropClusters, fError, iFound) = oDatFile.kcluster(nclusters=20,npass=10,transpose=1)
-
+        # (aKmeansClusters, fError, iFound) = oDatFile.kcluster(nclusters=20,
+        #         npass=10, transpose=0)
+        # (aKmeansPropClusters, fError, iFound) = oDatFile.kcluster(
+        #         nclusters=20, npass=10, transpose=1)
+        #
         # write to file (for now)
-        # tmp = file("cluster.data","w")
+        # tmp = file("cluster.data", "w")
         # for i, cardname in enumerate(oDatFile.genename):
-        #     tmp.write("%s | %s %s\n" % (cardname, aClusterIds[i][0], aClusterIds[i][1]))
+        #     tmp.write("%s | %s %s\n" % (cardname, aClusterIds[i][0],
+        #             aClusterIds[i][1]))
         # tmp.close()
 
-        # tmp = file("table.data","w")
-        # for sCardName, aRow in zip(oDatFile.genename,aTable):
+        # tmp = file("table.data", "w")
+        # for sCardName, aRow in zip(oDatFile.genename, aTable):
         #    tmp.write(sCardName + " | ")
         #    tmp.write(",".join([str(x) for x in aRow]))
         #    tmp.write("\n")
         # tmp.close()
 
-        self.populateResults(aCards,aColNames,aClusterIds,aCellData)
+        self.populateResults(aCards, aColNames, aClusterIds, aCellData)
 
-    def makeDeckFromCluster(self,aClusterId):
-        sDeckName = '_cluster_deck_%d_%d' % (aClusterId[0],aClusterId[1])
+    def make_pcs_from_cluster(self, aClusterId):
+        """Create a Physical Card Set from the chosen cluster"""
+        sDeckName = '_cluster_deck_%d_%d' % (aClusterId[0], aClusterId[1])
 
         # Check Deck Doesn't Exist
         if PhysicalCardSet.selectBy(name=sDeckName).count() != 0:
-            do_complaint_error("Physical Card Set %s already exists." % sDeckName)
+            do_complaint_error("Physical Card Set %s already exists." %
+                    sDeckName)
             return
 
         # Create Deck
         oDeck = PhysicalCardSet(name=sDeckName)
 
-        for oCard, aCardCluster in zip(self._aCards,self._aClusterIds):
-            if aClusterId[0] == aCardCluster[0] and aClusterId[1] == aCardCluster[1]:
+        # pylint: disable-msg=E1101
+        # SQLObject confuses pylint
+        for oCard, aCardCluster in zip(self._aCards, self._aClusterIds):
+            if aClusterId[0] == aCardCluster[0] and \
+                    aClusterId[1] == aCardCluster[1]:
                 oDeck.addPhysicalCard(oCard)
 
         self.open_pcs(sDeckName)
 
-    def makeACSFromCluster(self,aClusterId):
-        sACSName = '_cluster_acs_%d_%d' % (aClusterId[0],aClusterId[1])
+    def make_acs_from_cluster(self, aClusterId):
+        """Create a Abstract Card Set from the chosen cluster"""
+        sACSName = '_cluster_acs_%d_%d' % (aClusterId[0], aClusterId[1])
 
         # Check ACS Doesn't Exist
         if AbstractCardSet.selectBy(name=sACSName).count() != 0:
-            do_complaint_error("Abstract Card Set %s already exists." % sACSName)
+            do_complaint_error("Abstract Card Set %s already exists." %
+                    sACSName)
             return
 
         # Create ACS
         oACS = AbstractCardSet(name=sACSName)
 
-        for oCard, aCardCluster in zip(self._aCards,self._aClusterIds):
+        # pylint: disable-msg=E1101
+        # SQLObject confuses pylint
+        for oCard, aCardCluster in zip(self._aCards, self._aClusterIds):
             oCard = IAbstractCard(oCard)
-            if aClusterId[0] == aCardCluster[0] and aClusterId[1] == aCardCluster[1]:
+            if aClusterId[0] == aCardCluster[0] and \
+                    aClusterId[1] == aCardCluster[1]:
                 oACS.addAbstractCard(oCard)
 
         self.open_acs(sACSName)
