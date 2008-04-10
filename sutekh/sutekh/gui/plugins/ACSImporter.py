@@ -36,21 +36,22 @@ class ACSImporter(CardListPlugin):
             'ELDB HTML File': ELDBHTMLParser,
             'ARDB Text File': ARDBTextParser,
         }
+        self.oUri = None
+        self.oDlg = None
+        self._oFirstBut = None
+        self.oFileChooser = None
 
     def get_menu_item(self):
         """Register with the 'Plugins' Menu"""
         if not self.check_versions() or not self.check_model_type():
             return None
         oImport = gtk.MenuItem("Import Abstract Card Set")
-        oImport.connect("activate", self.activate)
+        oImport.connect("activate", self.make_dialog)
         return ('Plugins', oImport)
 
-    def activate(self, oWidget):
-        """In response to the menu, create and run the dialog."""
-        oDlg = self.make_dialog()
-        oDlg.run()
-
-    def make_dialog(self):
+    # pylint: disable-msg=W0613
+    # oWidget required by signature
+    def make_dialog(self, oWidget):
         """Create the dialog asking the user for the source to import."""
         self.oDlg = SutekhDialog("Choose Card Set File or URL", None,
                 gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
@@ -70,13 +71,13 @@ class ACSImporter(CardListPlugin):
         self.oFileChooser = gtk.FileChooserWidget(gtk.FILE_CHOOSER_ACTION_OPEN)
         self.oDlg.vbox.pack_start(self.oFileChooser)
 
-        oIter = self._dParsers.iteritems()
-        for sName, cParser in oIter:
+        oIter = self._dParsers.iterkeys()
+        for sName in oIter:
             self._oFirstBut = gtk.RadioButton(None, sName, False)
             self._oFirstBut.set_active(True)
             self.oDlg.vbox.pack_start(self._oFirstBut)
             break
-        for sName, cParser in oIter:
+        for sName in oIter:
             oBut = gtk.RadioButton(self._oFirstBut, sName)
             self.oDlg.vbox.pack_start(oBut)
 
@@ -84,7 +85,7 @@ class ACSImporter(CardListPlugin):
         self.oDlg.set_size_request(400, 400)
         self.oDlg.show_all()
 
-        return self.oDlg
+        self.oDlg.run()
 
     def handle_response(self, oWidget, oResponse):
         """Handle the user's clicking on OK or CANCEL in the dialog."""
@@ -103,6 +104,8 @@ class ACSImporter(CardListPlugin):
                 self.make_acs_from_file(sFile, cParser)
 
         self.oDlg.destroy()
+
+    # pylint: enable-msg=W0613
 
     def make_acs_from_uri(self, sUri, cParser):
         """From an URI, create an Abstract Card Set"""

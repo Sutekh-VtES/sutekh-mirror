@@ -79,7 +79,7 @@ class CardListPlugin(object):
 
     # pylint: disable-msg=W0212
     # we allow access to the members via these properties
-    parent = property(fget=lambda self: self._oView.get_window(),
+    parent = property(fget=lambda self: self._oView.window,
             doc="Parent window to use when creating dialogs.")
     view = property(fget=lambda self: self._oView,
             doc="Associated CardListView object.")

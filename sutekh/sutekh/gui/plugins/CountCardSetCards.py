@@ -62,7 +62,7 @@ class CountCardSetCards(CardListPlugin, CardListModelListener):
                 ' Cards : 0')
 
         aAbsCards = [IAbstractCard(x) for x in
-                self.model.getCardIterator(self.model.getCurrentFilter())]
+                self.model.getCardIterator(self.model.get_current_filter())]
         self.load(aAbsCards)
 
         return self.__oTextLabel

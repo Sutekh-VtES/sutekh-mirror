@@ -80,20 +80,24 @@ class MultiPaneWindow(gtk.Window):
         self._oCardLookup = GuiLookup(self._oConfig)
         self.restore_from_config()
 
+    # pylint: disable-msg=W0212
+    # We allow access via these properties
     # Needed for Backup plugin
     cardLookup = property(fget=lambda self: self._oCardLookup)
 
     # Needed for plugins
-    plugin_manager = property(fget=lambda self: self._oPluginManager)
+    plugin_manager = property(fget=lambda self: self._oPluginManager,
+            doc="The plugin manager for the application")
     plugins = property(fget=lambda self: self._aPlugins,
             doc="Plugins enabled for the main window.")
-    config_file = property(fget=lambda self: self._oConfig)
+    config_file = property(fget=lambda self: self._oConfig,
+            doc="The confi file")
+    focussed_pane = property(fget=lambda self: self._oFocussed,
+            doc="The currently focussed pane.")
+    window = property(fget=lambda self: self,
+            doc="Return reference to the window")
 
-    focussed_pane = property(fget=lambda self: self._oFocussed)
-
-    def get_window(self):
-        """Return reference to the window - used by plugins."""
-        return self
+    # pylint: enable-msg=W0212
 
     def add_to_menu_list(self, sMenuFlag, oMenuActiveFunc):
         """Add a key to the list of menu items to manage."""

@@ -18,9 +18,9 @@ class CardListViewListener(object):
         pass
 
 class CardListView(gtk.TreeView, object):
-    # pylint: disable-msg=R0904
-    # gtk.Widget, so many public methods
     """Base class for all the card list views in Sutekh."""
+    # pylint: disable-msg=R0904, R0902
+    # gtk.Widget, so many public methods. We need to keep state, so many attrs
     def __init__(self, oController, oMainWindow, oConfig, oModel):
         self._oModel = oModel
         self._oController = oController
@@ -140,8 +140,11 @@ class CardListView(gtk.TreeView, object):
 
     # Introspection
 
-    def get_window(self): return self._oMainWin
-    def get_model(self): return self._oModel
+    # pylint: disable-msg=W0212
+    # We allow access via these properties (for plugins)
+    window = property(fget=lambda self: self._oMainWin,
+            doc="The parent window sed for dialogs, etc.")
+    # pylint: enable-msg=W0212
 
     # Activating Rows
 
@@ -272,7 +275,7 @@ class CardListView(gtk.TreeView, object):
 
         sCardName = self._oModel.getCardNameFromPath(oPath)
         self._oController.set_card_text(sCardName)
-        sExpansion = self._oModel.getExpansionNameFromPath(oPath)
+        sExpansion = self._oModel.get_exp_name_from_path(oPath)
         if not sExpansion:
             sExpansion = ''
         for oListener in self.dListeners:
@@ -280,6 +283,8 @@ class CardListView(gtk.TreeView, object):
 
     # Card name searching
 
+    # pylint: disable-msg=R0913, W0613
+    # arguments as required by the function signature
     def compare(self, oModel, iColumn, sKey, oIter, oData):
         """Compare the entered text to the card names."""
         if oModel.iter_depth(oIter) == 2:
@@ -310,6 +315,8 @@ class CardListView(gtk.TreeView, object):
             return False
 
         return True
+
+    # pylint: enable-msg=R0913, W0613
 
     # Filtering
 
@@ -441,6 +448,8 @@ class CardListView(gtk.TreeView, object):
                 [true_expansion(x) for x in aLines[3::3]])
         return sSource, aCardInfo
 
+    # pylint: disable-msg=R0913, W0613
+    # arguments as required by the function signature
     def drag_delete(self, oBtn, oContext, oData):
         """Default drag-delete handler"""
         pass
@@ -451,6 +460,8 @@ class CardListView(gtk.TreeView, object):
         self._oController.frame.drag_drop_handler(oWdgt, oContext, iXPos,
                 iYPos, oData, oInfo, oTime)
 
+    # pylint: disable-msg=R0201
+    # Override by children
     def add_paste_data(self, sSource, aCards):
         """Helper function for copy+paste and drag+drop.
 
@@ -518,12 +529,6 @@ class EditableCardListView(CardListView):
         if self.get_parent(): # This isn't true when creating the card list
             self.check_editable()
 
-    def mapped(self, oWidget, oEvent):
-        """Called when the view has been mapped, so we can twiddle the
-           display"""
-        # see if we need to be editable
-        self.check_editable()
-
     def check_editable(self):
         """Set the card list to be editable if it's empty"""
         if self._oModel.getCardIterator(None).count() == 0:
@@ -540,6 +545,8 @@ class EditableCardListView(CardListView):
     # The Controller is responsible for updating the model,
     # since it defines the logic for handling expansions, etc.
 
+    # pylint: disable-msg=W0613
+    # arguments as required by the function signature
     def inc_card(self, oCell, oPath):
         """Called to increment the count for a card."""
         if self._oModel.bEditable:
@@ -548,7 +555,7 @@ class EditableCardListView(CardListView):
             bInc, bDec = self._oModel.get_inc_dec_flags_from_path(oPath)
             if bInc:
                 sCardName = self._oModel.getCardNameFromPath(oPath)
-                sExpansion = self._oModel.getExpansionNameFromPath(oPath)
+                sExpansion = self._oModel.get_exp_name_from_path(oPath)
                 self._oController.inc_card(sCardName, sExpansion)
 
     def dec_card(self, oCell, oPath):
@@ -559,8 +566,18 @@ class EditableCardListView(CardListView):
             bInc, bDec = self._oModel.get_inc_dec_flags_from_path(oPath)
             if bDec:
                 sCardName = self._oModel.getCardNameFromPath(oPath)
-                sExpansion = self._oModel.getExpansionNameFromPath(oPath)
+                sExpansion = self._oModel.get_exp_name_from_path(oPath)
                 self._oController.dec_card(sCardName, sExpansion)
+
+    # functions related to tweaking widget display
+
+    def mapped(self, oWidget, oEvent):
+        """Called when the view has been mapped, so we can twiddle the
+           display"""
+        # see if we need to be editable
+        self.check_editable()
+
+    # pylint: enable-msg=W0613
 
     def set_color_edit_cue(self):
         """Set a visual cue that the card set is editable."""

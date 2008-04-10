@@ -5,6 +5,8 @@
 # Copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
+"""The gtk.TreeModel for the card lists."""
+
 import gtk, gobject
 from sutekh.core.Filters import FilterAndBox, SpecificCardFilter, NullFilter, \
         PhysicalCardFilter, PhysicalCardSetFilter
@@ -64,8 +66,8 @@ class CardListModelListener(object):
         pass
 
 class CardListModel(gtk.TreeStore):
-    # pylint: disable-msg=R0904
-    # inherit a lot of public methods for gtk
+    # pylint: disable-msg=R0904, R0902
+    # inherit a lot of public methods for gtk, need local attributes for state
     """
     Provides a card list specific API for accessing a gtk.TreeStore.
     """
@@ -111,11 +113,18 @@ class CardListModel(gtk.TreeStore):
     # pylint: enable-msg=W0212
 
     def add_listener(self, oListener):
+        """Add a listener to the list of interested listeners."""
         self.dListeners[oListener] = None
 
     def remove_listener(self, oListener):
+        """Remove a listener from the list."""
         del self.dListeners[oListener]
 
+    # various utilty functions for checking the model state
+
+    # pylint: disable-msg=R0201, W0613
+    # Lots of unused arguments + simple methods, but children will override
+    # these
     def check_inc_dec_card(self, oCard, iCnt):
         """Helper function to check whether card can be incremented"""
         if self.bEditable:
@@ -159,9 +168,9 @@ class CardListModel(gtk.TreeStore):
         self._dNameExpansion2Iter = {}
         self._dGroupName2Iter = {}
 
-        oCardIter = self.getCardIterator(self.getCurrentFilter())
+        oCardIter = self.getCardIterator(self.get_current_filter())
         fGetCard, fGetCount, fGetExpanInfo, oGroupedIter, aAbsCards = \
-                self.groupedCardIterator(oCardIter)
+                self.grouped_card_iter(oCardIter)
 
         self.init_info_cache()
 
@@ -226,11 +235,11 @@ class CardListModel(gtk.TreeStore):
         combined with self.basefilter. None may be used to retrieve
         the entire card list (with only the base filter restriciting which cards appear).
         """
-        oFilter = self.combineFilterWithBase(oFilter)
+        oFilter = self.combine_filter_with_base(oFilter)
 
         return oFilter.select(self.cardclass).distinct()
 
-    def groupedCardIterator(self, oCardIter):
+    def grouped_card_iter(self, oCardIter):
         """
         Handles the differences in the way AbstractCards and PhysicalCards
         are grouped and returns a triple of fGetCard (the function used to
@@ -257,7 +266,7 @@ class CardListModel(gtk.TreeStore):
 
             if self.bAddAllAbstractCards:
                 # Also include all the abstract cards
-                oAbsFilter = self.getCurrentFilter()
+                oAbsFilter = self.get_current_filter()
                 if oAbsFilter is None:
                     oAbsFilter = NullFilter()
                 if 'AbstractCard' in oAbsFilter.types:
@@ -285,13 +294,17 @@ class CardListModel(gtk.TreeStore):
         return (fGetCard, fGetCount, fGetExpanInfo,
                 self.groupby(aCards, fGetCard), aAbsCards)
 
-    def getCurrentFilter(self):
+    def get_current_filter(self):
+        """Get the current applied filter."""
         if self.applyfilter:
             return self.selectfilter
         else:
             return None
 
-    def combineFilterWithBase(self, oOtherFilter):
+    def combine_filter_with_base(self, oOtherFilter):
+        """Return the combination of oOtherFilter with the base filter.
+
+           This handles the cases where either filter is None properly."""
         if self.basefilter is None and oOtherFilter is None:
             return NullFilter()
         elif self.basefilter is None:
@@ -339,7 +352,7 @@ class CardListModel(gtk.TreeStore):
         bDec = self.get_value(oIter, 3)
         return (bInc, bDec)
 
-    def getExpansionNameFromPath(self, oPath):
+    def get_exp_name_from_path(self, oPath):
         """
         Get the expansion information from the model, returing None
         if this is not at a level where the expansion is known.
@@ -402,6 +415,8 @@ class CardListModel(gtk.TreeStore):
             self.alterCardExpansionCount(sCardName, sExpansion, -1)
 
     def inc_card_by_name(self, sCardName):
+        """Increase the count for the card named sCardName, add a new
+           card entry is nessecary."""
         if self._dName2Iter.has_key(sCardName):
             # card already in the list
             self.alter_card_count(sCardName, +1)
@@ -410,6 +425,7 @@ class CardListModel(gtk.TreeStore):
             self.add_new_card(sCardName)
 
     def dec_card_by_name(self, sCardName):
+        """Decrease the count for the card sCardName"""
         if self._dName2Iter.has_key(sCardName):
             self.alter_card_count(sCardName, -1)
 
@@ -446,6 +462,8 @@ class CardListModel(gtk.TreeStore):
             oListener.add_new_card_expansion(oCard, sExpansion)
 
     def alterCardExpansionCount(self, sCardName, sExpansion, iChg):
+        """Adjust the count for the given card + expansion combination by
+           iChg."""
         # Need to readjust inc, dec flags for all these cards
         oCard = IAbstractCard(sCardName)
         bDelDictEntry = False
@@ -545,7 +563,7 @@ class CardListModel(gtk.TreeStore):
         visible. If it should be visible, add it to the appropriate
         groups.
         """
-        oFilter = self.combineFilterWithBase(self.getCurrentFilter())
+        oFilter = self.combine_filter_with_base(self.get_current_filter())
         oFullFilter = FilterAndBox([SpecificCardFilter(sCardName), oFilter])
 
         oCardIter = oFullFilter.select(self.cardclass).distinct()
@@ -553,7 +571,7 @@ class CardListModel(gtk.TreeStore):
         # pylint: disable-msg=W0612
         # Not interested in aAbsCards here, but we need the rest
         fGetCard, fGetCount, fGetExpanInfo, oGroupedIter, aAbsCards = \
-                self.groupedCardIterator(oCardIter)
+                self.grouped_card_iter(oCardIter)
         # Iterate over groups
         for sGroup, oGroupIter in oGroupedIter:
             # Check for null group
@@ -633,8 +651,9 @@ class PhysicalCardListModel(CardListModel):
 
 
     # pylint: disable-msg=W0201
-    # We rely on _dNoneCountCache doesn't always exists
+    # We rely on _dNoneCountCache not always existing
     def init_info_cache(self):
+        """Populate the card count lookup cache used in loading the list."""
         self._dNoneCountCache = {}
         if self.bEditable:
             for oPhysCard in PhysicalCard.selectBy(expansionID=None):
@@ -642,6 +661,7 @@ class PhysicalCardListModel(CardListModel):
                 self._dNoneCountCache[oPhysCard.abstractCard] += 1
 
     def clear_info_cache(self):
+        """Clear the cache again."""
         del self._dNoneCountCache
 
     def check_inc_dec_expansion(self, oCard, sExpansion, iCnt):
@@ -687,6 +707,8 @@ class PhysicalCardListModel(CardListModel):
             dExpansions[sKey] = [iCnt, bDecCard, bIncCard]
         return dExpansions
 
+    # pylint: disable-msg=W0613
+    # oCard, sExpansion required by function signature (for PCS's)
     def check_expansion_iter_stays(self, oCard, sExpansion, iCnt):
         """Check if the expansion entry should remain in the table"""
         if iCnt > 0 or self.bEditable:

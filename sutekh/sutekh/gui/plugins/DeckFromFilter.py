@@ -79,7 +79,8 @@ class DeckFromFilter(CardListPlugin):
         oPCS = PhysicalCardSet(name=sPCSName)
 
         # E1101 is still disabled for this
-        for oCard in self.model.getCardIterator(self.model.getCurrentFilter()):
+        for oCard in self.model.getCardIterator(
+                self.model.get_current_filter()):
             oPCS.addPhysicalCard(oCard)
 
         self.open_pcs(sPCSName)
