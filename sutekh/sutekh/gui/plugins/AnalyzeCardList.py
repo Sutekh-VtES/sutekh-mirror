@@ -466,7 +466,6 @@ class AnalyzeCardList(CardListPlugin):
         self.oDlg.run()
     # pylint: enable-msg=W0613
 
-
     def process_vampire(self, aCards):
         """Process the list of vampires"""
         dDeckVamps = {}
@@ -498,22 +497,18 @@ class AnalyzeCardList(CardListPlugin):
             dVampCapacity[oAbsCard.capacity] += 1
 
             for oClan in oAbsCard.clan:
-                if oClan.name not in dDeckClans:
-                    dDeckClans[oClan.name] = 1
-                else:
-                    dDeckClans[oClan.name] += 1
+                dDeckClans.setdefault(oClan.name, 0)
+                dDeckClans[oClan.name] += 1
             for oDisc in oAbsCard.discipline:
                 self.dDeckDisc.setdefault(oDisc.discipline.fullname, [0, 0])
                 self.dDeckDisc[oDisc.discipline.fullname][0] += 1
                 if oDisc.level == 'superior':
                     self.dDeckDisc[oDisc.discipline.fullname][1] += 1
             for oTitle in oAbsCard.title:
-                iTitles += 1
-                if oTitle.name in dDeckTitles:
-                    dDeckTitles[oTitle.name] += 1
-                else:
-                    dDeckTitles[oTitle.name] = 1
+                dDeckTitles.setdefault(oTitle.name, 0)
+                dDeckTitles[oTitle.name] = 1
                 iVotes += self.dTitleVoteMap[oTitle.name]
+                iTitles += 1
         # Build up Text
         sVampText = "<b>Vampires :</b>\n"
         sVampText += '<span foreground = "blue">Basic Crypt stats</span>\n'
@@ -630,10 +625,20 @@ class AnalyzeCardList(CardListPlugin):
 
     def process_event(self, aCards):
         "Fill the events tab"
+        aAbsCards = _get_abstract_cards(aCards)
         sEventText = "<b>Event Cards :</b>\n"
-        sEventText += "Number of Event cards = %d %s\n" % (self.iNumberEvents,
-                _percentage(self.iNumberEvents, self.iNumberLibrary,
-                    "Library"))
+        sEventText += "Number of Event cards = %d %s\n\n" % (
+                self.iNumberEvents, _percentage(self.iNumberEvents,
+                    self.iNumberLibrary, "Library"))
+        dEventTypes = {}
+        for oCard in aAbsCards:
+            sType = oCard.text.split('.', 1)[0] # first word is type
+            dEventTypes.setdefault(sType, 0)
+            dEventTypes[sType] += 1
+        for sType, iCount in dEventTypes.iteritems():
+            sEventText += '%d of type %s : %s (%s) \n' % (iCount, sType,
+                    _percentage(iCount, self.iNumberEvents, 'Events'),
+                    _percentage(iCount, self.iNumberLibrary, 'Library'))
         return sEventText
 
     def process_action(self, aCards):
@@ -864,15 +869,17 @@ class AnalyzeCardList(CardListPlugin):
         oResLabel = gtk.Label()
         oButton = gtk.Button('Recalculate Happy Family Analysis')
         oButton.connect('clicked', self._redo_happy_family, oHFVBox, oComboBox,
-                oDiscWidget, oResLabel, aSortedDiscs, iNonMasters)
+                oDiscWidget, oResLabel, aSortedDiscs)
         oHFVBox.pack_start(oButton, False, False)
         oResLabel.set_markup(self._happy_lib_analysis(aSortedDiscs[:2],
             iNonMasters))
         oHFVBox.pack_start(oResLabel)
         oHFVBox.show_all()
 
+    # pylint: disable-msg=W0613
+    # oButton Required by function signature
     def _redo_happy_family(self, oButton, oHFVBox, oComboBox, oDiscWidget,
-            oResLabel, aSortedDiscs, iNonMasters):
+            oResLabel, aSortedDiscs):
         """Redo the HF analysis based on button press"""
         if oComboBox.get_active_text() == 'Use list of disciplines':
             aTheseDiscs = oDiscWidget.get_selection()
@@ -881,6 +888,7 @@ class AnalyzeCardList(CardListPlugin):
         else:
             iNumDiscs = int(oComboBox.get_active_text())
             aTheseDiscs = aSortedDiscs[:iNumDiscs]
+        iNonMasters = self.iNumberLibrary - self.iNumberMasters
         oResLabel.hide()
         oResLabel.set_markup(self._happy_lib_analysis(aTheseDiscs,
             iNonMasters))
