@@ -1094,7 +1094,7 @@ class PhysicalCardSetFilter(Filter):
         # Select cards belonging to a PhysicalCardSet
         # pylint: disable-msg=E1101
         # SQLObject methods not detected by plylint
-        self.__iDeckId = IPhysicalCardSet(sName).id
+        self.__iCardSetId = IPhysicalCardSet(sName).id
         self.__oTable = make_table_alias('physical_map')
         self.__oPT = Table('physical_card')
 
@@ -1114,14 +1114,14 @@ class PhysicalCardSetFilter(Filter):
                 self.__oPT.id == self.__oTable.q.physical_card_id)]
 
     def _get_expression(self):
-        return self.__oTable.q.physical_card_set_id == self.__iDeckId
+        return self.__oTable.q.physical_card_set_id == self.__iCardSetId
 
 class MultiPhysicalCardSetFilter(Filter):
     "Filter on a list of Physical Card Sets"
     keyword = "PhysicalSet"
     description = "Physical Sets"
-    helptext = "a list of deck names (selects physical cards in the " \
-            "specified decks)"
+    helptext = "a list of card sets names (selects physical cards in the " \
+            "specified sets)"
     islistfilter = True
     types = ['PhysicalCard']
 
@@ -1132,9 +1132,9 @@ class MultiPhysicalCardSetFilter(Filter):
         # Select cards belonging to the PhysicalCardSet
         # pylint: disable-msg=E1101
         # SQLObject methods not detected by plylint
-        self.__aDeckIds = []
+        self.__aCardSetIds = []
         for sName in aNames:
-            self.__aDeckIds.append(IPhysicalCardSet(sName).id)
+            self.__aCardSetIds.append(IPhysicalCardSet(sName).id)
         self.__oTable = make_table_alias('physical_map')
         self.__oPT = Table('physical_card')
 
@@ -1152,7 +1152,7 @@ class MultiPhysicalCardSetFilter(Filter):
             self.__oPT.id == self.__oTable.q.physical_card_id)]
 
     def _get_expression(self):
-        return IN(self.__oTable.q.physical_card_set_id, self.__aDeckIds)
+        return IN(self.__oTable.q.physical_card_set_id, self.__aCardSetIds)
 
 class PhysicalCardSetInUseFilter(Filter):
     "Filter on a membership of Physical Card Sets marked in use"
@@ -1164,10 +1164,10 @@ class PhysicalCardSetInUseFilter(Filter):
 
     def __init__(self):
         # Select cards belonging to the PhysicalCardSet in use
-        self.__aDeckIds = []
+        self.__aCardSetIds = []
         for oCS in PhysicalCardSet.select():
             if oCS.inuse:
-                self.__aDeckIds.append(oCS.id)
+                self.__aCardSetIds.append(oCS.id)
         self.__oTable = make_table_alias('physical_map')
         self.__oPT = Table('physical_card')
 
@@ -1182,7 +1182,7 @@ class PhysicalCardSetInUseFilter(Filter):
             self.__oPT.id == self.__oTable.q.physical_card_id)]
 
     def _get_expression(self):
-        return IN(self.__oTable.q.physical_card_set_id, self.__aDeckIds)
+        return IN(self.__oTable.q.physical_card_set_id, self.__aCardSetIds)
 
 class AbstractCardSetFilter(SingleFilter):
     """
