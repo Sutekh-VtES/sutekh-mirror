@@ -534,7 +534,6 @@ class CardListModel(gtk.TreeStore):
                         for oExpIter in self._dNameExpansion2Iter[
                                 sCardName][sExpansion]:
                             self.remove(oExpIter)
-                        del self._dNameExpansion2Iter[sCardName][sExpansion]
                     del self._dNameExpansion2Iter[sCardName]
                 self.remove(oIter)
 
