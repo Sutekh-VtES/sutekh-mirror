@@ -156,8 +156,7 @@ class CardSetMenu(gtk.MenuBar, object):
     def _edit_properites(self, oWidget):
         """Popup the Edit Properties dialog to change card set properties."""
         oCS = self.__cSetType.byName(self.sSetName)
-        oProp = PropDialog("Edit Card Set (" + self.sSetName + ") Propeties",
-                         self.__oWindow, oCS.name, oCS.author, oCS.comment)
+        oProp = PropDialog(self.__oWindow, oCS)
         oProp.run()
         (sName, sAuthor, sComment) = oProp.get_data()
         if sName is not None and sName != self.sSetName and len(sName)>0:
