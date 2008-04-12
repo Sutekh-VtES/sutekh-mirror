@@ -34,9 +34,7 @@ class CardSetManagementFrame(BasicFrame):
 
     def __init__(self, oMainWindow):
         super(CardSetManagementFrame, self).__init__(oMainWindow)
-        self._oConfig = oMainWindow.config_file
         self._cSetType = None
-        self._oView = None
         self._sName = 'Unknown card set list type'
         self._oFilter = NullFilter()
         self._oFilterDialog = None
@@ -65,26 +63,26 @@ class CardSetManagementFrame(BasicFrame):
 
         if self._cSetType is PhysicalCardSet:
             self._oScrolledList.add_second_column("In Use")
-        self._oView = self._oScrolledList.view
+        oView = self._oScrolledList.view
         self._oScrolledList.set_select_single()
-        self._oView.connect('row_activated', self.row_clicked)
+        oView.connect('row_activated', self.row_clicked)
         self.reload()
         oMbox.pack_start(self._oScrolledList, expand=True)
 
         aDragTargets = [ ('STRING', 0, 0),
                          ('text/plain', 0, 0) ]
 
-        self._oView.drag_source_set(
+        oView.drag_source_set(
                 gtk.gdk.BUTTON1_MASK | gtk.gdk.BUTTON3_MASK, aDragTargets,
                 gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
 
-        self._oView.connect('drag-data-get', self.drag_card_set)
+        oView.connect('drag-data-get', self.drag_card_set)
 
-        self._oView.drag_dest_set(gtk.DEST_DEFAULT_ALL,
+        oView.drag_dest_set(gtk.DEST_DEFAULT_ALL,
                 aDragTargets,
                 gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
 
-        self._oView.connect('drag-data-received', self.drag_drop_handler)
+        oView.connect('drag-data-received', self.drag_drop_handler)
 
         self.add(oMbox)
         self.show_all()
@@ -166,7 +164,7 @@ class CardSetManagementFrame(BasicFrame):
         """Set the filter applied to the list."""
         if self._oFilterDialog is None:
             self._oFilterDialog = FilterDialog(self._oMainWindow,
-                    self._oConfig, self._sFilterType)
+                    self._oMainWindow.config_file, self._sFilterType)
         self._oFilterDialog.run()
 
         if self._oFilterDialog.was_cancelled():
@@ -295,5 +293,4 @@ class AbstractCardSetListFrame(CardSetManagementFrame):
         self._oSetClass = AbstractCardSet
         self.set_name("abstract card sets list")
         self.add_parts()
-
 
