@@ -104,6 +104,11 @@ class HtmlHandler(xml.sax.handler.ContentHandler):
         class _FakeAttrs(object):
             """Fake class with default attributes"""
             __slots__ = ("font", "font_scale")
+            # pylint: disable-msg=C0103
+            # names need to match gtk's convention
+            def __init__(self):
+                self.font_scale = None
+                self.font = None
 
         def _get_current_attributes(self):
             """Get current attributes."""
@@ -118,12 +123,6 @@ class HtmlHandler(xml.sax.handler.ContentHandler):
             if aAttrs.font is None:
                 aAttrs.font = self._oTextView.style.font_desc
             return aAttrs
-
-    def __parse_length_frac_size_allocate(self, oTextView, oAllocation,
-            fFrac, fCallback, aArgs):
-        # pylint: disable-msg=W0142
-        # *magic required here
-        fCallback(oAllocation.width * fFrac, *aArgs)
 
     def _parse_length(self, sValue, bFontRelative, fCallback, *aArgs):
         """Parse/calc length, converting to pixels.
@@ -145,10 +144,10 @@ class HtmlHandler(xml.sax.handler.ContentHandler):
                 ## This is difficult/impossible to implement, so we use
                 ## textview width instead; a reasonable approximation..
                 oAlloc = self._oTextView.get_allocation()
-                self.__parse_length_frac_size_allocate(self._oTextView, oAlloc,
+                self.__parse_length_frac_cb(self._oTextView, oAlloc,
                         fFrac, fCallback, aArgs)
                 self._oTextView.connect("size-allocate",
-                        self.__parse_length_frac_size_allocate, fFrac,
+                        self.__parse_length_frac_cb, fFrac,
                         fCallback, aArgs)
 
         elif sValue.endswith('pt'): # points
@@ -260,6 +259,8 @@ class HtmlHandler(xml.sax.handler.ContentHandler):
             oTag.set_property("justification", iAlign)
 
     def _parse_style_text_decoration(self, oTag, sValue):
+        """Set the pango properties for the tag to match the desired html text
+           decoration."""
         if sValue == "none":
             oTag.set_property("underline", pango.UNDERLINE_NONE)
             oTag.set_property("strikethrough", False)
@@ -295,13 +296,14 @@ class HtmlHandler(xml.sax.handler.ContentHandler):
         return [oTag for oTag in self._aStyles if oTag is not None]
 
     def _begin_span(self, sStyle, oTag=None):
+        """Start a <span> section"""
         if sStyle is None:
             self._aStyles.append(oTag)
             return None
         if oTag is None:
             oTag = self._oTextBuf.create_tag()
         for sAttr, sVal in [item.split(':', 1) for item in sStyle.split(';')]:
-            aAttr = sAttr.strip().lower()
+            sAttr = sAttr.strip().lower()
             sVal = sVal.strip()
             try:
                 fMethod = self.__style_methods[sAttr]
@@ -313,6 +315,7 @@ class HtmlHandler(xml.sax.handler.ContentHandler):
         self._aStyles.append(oTag)
 
     def _end_span(self):
+        """End a <span> section"""
         self._aStyles.pop(-1)
 
     def _insert_text(self, sText):
@@ -332,11 +335,23 @@ class HtmlHandler(xml.sax.handler.ContentHandler):
         self._insert_text(self._sText.replace('\n', ''))
         self._sText = ''
 
+    # pylint: disable-msg=R0913, W0613
+    # Arguments needed by function signature
     def _anchor_event(self, oTag, oTextview, oEvent, oIter, oHref, oType_):
+        """Something happened to a link, so see if we need to react."""
         if oEvent.type == gtk.gdk.BUTTON_PRESS and oEvent.button == 1:
             self._oTextView.emit("url-clicked", oHref, oType_)
             return True
         return False
+
+    # Arguments needed so this can be called via 'size-allocate' event
+    def __parse_length_frac_cb(self, oTextView, oAllocation,
+            fFrac, fCallback, aArgs):
+        # pylint: disable-msg=W0142
+        # *magic required here
+        fCallback(oAllocation.width * fFrac, *aArgs)
+
+    # pylint: enable-msg=R0913, W0613
 
     def characters(self, sContent):
         """Process the character comments of an element."""
@@ -414,6 +429,8 @@ class HtmlHandler(xml.sax.handler.ContentHandler):
                 sListHead = "%i." % self._aListCounters[0]
             self._sText = ' '*len(self._aListCounters)*4 + sListHead + ' '
         elif sName == 'img':
+            # pylint: disable-msg=W0703
+            # we want to catch all errors here
             try:
                 # Is this the right way? Not sure of my understanding of the
                 # pkg_resources docs.
@@ -422,7 +439,7 @@ class HtmlHandler(xml.sax.handler.ContentHandler):
                 oLoader.write(oFile.read())
                 oLoader.close()
                 oPixbuf = oLoader.get_pixbuf()
-            except Exception, oExp:
+            except Exception:
                 oPixbuf = None
                 try:
                     sAlt = oAttrs['alt']
@@ -520,6 +537,8 @@ class HTMLTextView(gtk.TextView):
         self.set_pixels_above_lines(3)
         self.set_pixels_below_lines(3)
 
+    # pylint: disable-msg=W0613
+    # oEvent needed by function signature
     def __leave_event(self, oWidget, oEvent):
         """Cursor has left the widget."""
         if self._bChangedCursor:
@@ -528,7 +547,10 @@ class HTMLTextView(gtk.TextView):
             self._bChangedCursor = False
 
     def __motion_notify_event(self, oWidget, oEvent):
-        iXPos, iYPos, _ = oWidget.window.get_pointer()
+        """Change the cursor if the pointer is over a link"""
+        # pylint: disable-msg=W0612
+        # We delibrately ignore oIgnore
+        iXPos, iYPos, oIgnore = oWidget.window.get_pointer()
         iXPos, iYPos = oWidget.window_to_buffer_coords(gtk.TEXT_WINDOW_TEXT,
                 iXPos, iYPos)
         aTags = oWidget.get_iter_at_location(iXPos, iYPos).get_tags()
@@ -547,6 +569,8 @@ class HTMLTextView(gtk.TextView):
             oWindow.set_cursor(gtk.gdk.Cursor(gtk.gdk.XTERM))
             self._bChangedCursor = False
         return False
+
+    # pylint: enable-msg=W0613
 
     def display_html(self, fHTMLInput):
         """Displa the HTML from the file-like object fHTMLInput"""
