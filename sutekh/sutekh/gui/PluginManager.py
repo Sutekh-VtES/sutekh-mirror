@@ -6,10 +6,10 @@
 
 """Classes for mangaging and creating plugins for Sutekh."""
 
-import plugins
 import os
 import glob
 import logging
+import sutekh.gui.plugins as plugins
 from sutekh.core.DatabaseVersion import DatabaseVersion
 
 class PluginManager(object):
