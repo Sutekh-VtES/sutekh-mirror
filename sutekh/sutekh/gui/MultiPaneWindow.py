@@ -159,7 +159,7 @@ class MultiPaneWindow(gtk.Window):
         sMenuFlag = "PCS:" + sName
         if sMenuFlag not in self.dOpenFrames.values() and oFrame:
             try:
-                oPane = PhysicalCardSetFrame(self, sName, self._oConfig)
+                oPane = PhysicalCardSetFrame(self, sName)
                 self.replace_frame(oFrame, oPane, sMenuFlag)
             except RuntimeError:
                 # add warning dialog?
@@ -179,7 +179,7 @@ class MultiPaneWindow(gtk.Window):
         sMenuFlag = "ACS:" + sName
         if sMenuFlag not in self.dOpenFrames.values() and oFrame:
             try:
-                oPane = AbstractCardSetFrame(self, sName, self._oConfig)
+                oPane = AbstractCardSetFrame(self, sName)
                 self.replace_frame(oFrame, oPane, sMenuFlag)
             except RuntimeError:
                 # add warning dialog?
@@ -198,7 +198,7 @@ class MultiPaneWindow(gtk.Window):
         """Replace the focussed pane with the physical card set list."""
         sMenuFlag = "Physical Card Set List"
         if sMenuFlag not in self.dOpenFrames.values() and self._oFocussed:
-            oPane = PhysicalCardSetListFrame(self, self._oConfig)
+            oPane = PhysicalCardSetListFrame(self)
             self.replace_frame(self._oFocussed, oPane, sMenuFlag)
             self._oPCSListPane = oPane
 
@@ -213,7 +213,7 @@ class MultiPaneWindow(gtk.Window):
         """Replace the focussed pane with the abstract card set list."""
         sMenuFlag = "Abstract Card Set List"
         if sMenuFlag not in self.dOpenFrames.values() and self._oFocussed:
-            oPane = AbstractCardSetListFrame(self, self._oConfig)
+            oPane = AbstractCardSetListFrame(self)
             self.replace_frame(self._oFocussed, oPane, sMenuFlag)
             self._oACSListPane = oPane
 
@@ -228,7 +228,7 @@ class MultiPaneWindow(gtk.Window):
         """Replace the currently focussed pane with the abstract card list."""
         sMenuFlag = "White Wolf Card List"
         if sMenuFlag not in self.dOpenFrames.values() and self._oFocussed:
-            oPane = AbstractCardListFrame(self, self._oConfig)
+            oPane = AbstractCardListFrame(self)
             self.replace_frame(self._oFocussed, oPane, sMenuFlag)
 
     def add_new_abstract_card_list(self, oMenuWidget):
@@ -242,7 +242,7 @@ class MultiPaneWindow(gtk.Window):
         """Replace the currently focussed pane with the physical card list."""
         sMenuFlag = "My Collection"
         if sMenuFlag not in self.dOpenFrames.values() and self._oFocussed:
-            oPane = PhysicalCardFrame(self, self._oConfig)
+            oPane = PhysicalCardFrame(self)
             self.replace_frame(self._oFocussed, oPane, sMenuFlag)
 
     def add_new_physical_card_list(self, oMenuWidget):

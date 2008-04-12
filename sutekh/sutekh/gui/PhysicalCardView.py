@@ -19,9 +19,10 @@ class PhysicalCardView(EditableCardListView):
        needed for the card collection - the drag prefix, the
        card_drop handling and handling of pasted data.
        """
-    def __init__(self, oController, oWindow, oConfig):
-        oModel = PhysicalCardListModel(oConfig.get_show_zero_count_cards())
-        super(PhysicalCardView, self).__init__(oController, oWindow, oConfig,
+    def __init__(self, oController, oWindow):
+        oModel = PhysicalCardListModel(
+                oWindow.config_file.get_show_zero_count_cards())
+        super(PhysicalCardView, self).__init__(oController, oWindow,
                 oModel)
 
         self._oController = oController

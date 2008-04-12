@@ -20,13 +20,13 @@ class PhysicalCardFrame(CardListFrame):
        """
     # pylint: disable-msg=R0904
     # gtk.Widget, so many public methods
-    def __init__(self, oMainWindow, oConfig):
-        super(PhysicalCardFrame, self).__init__(oMainWindow, oConfig)
+    def __init__(self, oMainWindow):
+        super(PhysicalCardFrame, self).__init__(oMainWindow)
         self._sName = "My Collection"
         self.set_title(self._sName)
         self.set_name("physical card list")
 
-        self._oController = PhysicalCardController(self, oConfig, oMainWindow)
+        self._oController = PhysicalCardController(self, oMainWindow)
 
         self._cModelType = PhysicalCard
 

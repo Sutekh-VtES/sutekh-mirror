@@ -159,7 +159,7 @@ class PhysicalCardMenu(gtk.MenuBar, object):
     def _toggle_all_abstract_cards(self, oWidget):
         """Toggle the display of cards with a count of 0 in the card list."""
         self.__oController.model.bAddAllAbstractCards = oWidget.active
-        self.__oController.config_file.set_show_zero_count_cards(
+        self.__oWindow.config_file.set_show_zero_count_cards(
                 oWidget.active)
         self.__oController.view.reload_keep_expanded()
 

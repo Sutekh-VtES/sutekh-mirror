@@ -17,14 +17,12 @@ class AbstractCardListController(object):
        Setup options specfic to the Abstract card list,
        and provide needed properties.
        """
-    def __init__(self, oFrame, oConfig, oMainWindow):
-        self.__oConfig = oConfig
+    def __init__(self, oFrame, oMainWindow):
         self.__oFrame = oFrame
         self.__oMainWindow = oMainWindow
         self._sFilterType = 'AbstractCard'
         # Create view
-        self.__oAbstractCards = AbstractCardView(self, self.__oMainWindow,
-                self.__oConfig)
+        self.__oAbstractCards = AbstractCardView(self, self.__oMainWindow)
 
     # pylint: disable-msg=W0212
     # we provide read-only access via these properties

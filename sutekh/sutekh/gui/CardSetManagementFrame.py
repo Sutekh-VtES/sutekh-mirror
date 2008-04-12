@@ -32,9 +32,9 @@ class CardSetManagementFrame(BasicFrame):
     __sOpen = "<b>Opened</b>"
     __sAvail = "<b>Available</b>"
 
-    def __init__(self, oMainWindow, oConfig):
+    def __init__(self, oMainWindow):
         super(CardSetManagementFrame, self).__init__(oMainWindow)
-        self._oConfig = oConfig
+        self._oConfig = oMainWindow.config_file
         self._cSetType = None
         self._oView = None
         self._sName = 'Unknown card set list type'
@@ -250,8 +250,8 @@ class PhysicalCardSetListFrame(CardSetManagementFrame):
        """
     # pylint: disable-msg=R0904
     # gtk.Widget, so lots of public methods
-    def __init__(self, oMainWindow, oConfig):
-        super(PhysicalCardSetListFrame, self).__init__(oMainWindow, oConfig)
+    def __init__(self, oMainWindow):
+        super(PhysicalCardSetListFrame, self).__init__(oMainWindow)
         self._cSetType = PhysicalCardSet
         self._sFilterType = 'PhysicalCardSet'
         self._sName = 'Physical Card Set List'
@@ -287,8 +287,8 @@ class AbstractCardSetListFrame(CardSetManagementFrame):
        """
     # pylint: disable-msg=R0904
     # gtk.Widget, so lots of public methods
-    def __init__(self, oMainWindow, oConfig):
-        super(AbstractCardSetListFrame, self).__init__(oMainWindow, oConfig)
+    def __init__(self, oMainWindow):
+        super(AbstractCardSetListFrame, self).__init__(oMainWindow)
         self._cSetType = AbstractCardSet
         self._sFilterType = 'AbstractCardSet'
         self._sName = 'Abstract Card Set List'

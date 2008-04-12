@@ -24,8 +24,8 @@ class CardSetFrame(CardListFrame, object):
        """
     # pylint: disable-msg=R0904
     # gtk.Widget, so many public methods
-    def __init__(self, oMainWindow, sName, cType, oConfig):
-        super(CardSetFrame, self).__init__(oMainWindow, oConfig)
+    def __init__(self, oMainWindow, sName, cType):
+        super(CardSetFrame, self).__init__(oMainWindow)
         self._cModelType = cType
         try:
             # pylint: disable-msg=W0612
@@ -37,10 +37,10 @@ class CardSetFrame(CardListFrame, object):
         except SQLObjectNotFound:
             raise RuntimeError("Card Set %s does not exist" % sName)
         if self._cModelType is PhysicalCardSet:
-            self._oController = PhysicalCardSetController(sName, oConfig,
+            self._oController = PhysicalCardSetController(sName,
                     oMainWindow, self)
         elif self._cModelType is AbstractCardSet:
-            self._oController = AbstractCardSetController(sName, oConfig,
+            self._oController = AbstractCardSetController(sName,
                     oMainWindow, self)
         else:
             raise RuntimeError("Unknown Card Set type %s" % str(cType))
@@ -93,9 +93,9 @@ class AbstractCardSetFrame(CardSetFrame):
     # pylint: disable-msg=R0904, R0901
     # R0904 - gtk.Widget, so many public methods
     # R0901 - gtk.Widget's have a deep inheritence tree, so we ignore this
-    def __init__(self, oMainWindow, sName, oConfig):
+    def __init__(self, oMainWindow, sName):
         super(AbstractCardSetFrame, self).__init__(oMainWindow, sName,
-                AbstractCardSet, oConfig)
+                AbstractCardSet)
         self.set_name("abstract card set card list")
 
 class PhysicalCardSetFrame(CardSetFrame):
@@ -103,7 +103,7 @@ class PhysicalCardSetFrame(CardSetFrame):
     # pylint: disable-msg=R0904, R0901
     # R0904 - gtk.Widget, so many public methods
     # R0901 - gtk.Widget's have a deep inheritence tree, so we ignore this
-    def __init__(self, oMainWindow, sName, oConfig):
+    def __init__(self, oMainWindow, sName):
         super(PhysicalCardSetFrame, self).__init__(oMainWindow, sName,
-                PhysicalCardSet, oConfig)
+                PhysicalCardSet)
         self.set_name("physical card set card list")

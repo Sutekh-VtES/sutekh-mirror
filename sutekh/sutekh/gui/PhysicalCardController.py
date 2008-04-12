@@ -21,11 +21,10 @@ class PhysicalCardController(object):
        Provide settings needed for the Physical Card List,
        and suitable card manipulation methods.
        """
-    def __init__(self, oFrame, oConfig, oMainWindow):
+    def __init__(self, oFrame, oMainWindow):
         self.__oMainWin = oMainWindow
-        self.__oConfig = oConfig
         self.__oFrame = oFrame
-        self.__oView = PhysicalCardView(self, oMainWindow, oConfig)
+        self.__oView = PhysicalCardView(self, oMainWindow)
         self._sFilterType = 'PhysicalCard'
 
     # pylint: disable-msg=W0212
@@ -34,8 +33,6 @@ class PhysicalCardController(object):
     model = property(fget=lambda self: self.__oView._oModel,
             doc="View's Model")
     frame = property(fget=lambda self: self.__oFrame, doc="Associated Frame")
-    config_file = property(fget=lambda self: self.__oConfig,
-            doc="Config file object")
     filtertype = property(fget=lambda self: self._sFilterType,
             doc="Associated Type")
     # pylint: enable-msg=W0212

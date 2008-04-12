@@ -21,11 +21,11 @@ class CardSetController(object):
        This is the base class for the Physical and Abstract Card Set
        Controllers.
        """
-    def __init__(self, sName, cType, oConfig, oMainWindow, oFrame):
+    def __init__(self, sName, cType, oMainWindow, oFrame):
         self._oMainWindow = oMainWindow
         self._oMenu = None
         self._oFrame = oFrame
-        self._oView = CardSetView(oMainWindow, self, sName, cType, oConfig)
+        self._oView = CardSetView(oMainWindow, self, sName, cType)
         self._sFilterType = None
 
     # pylint: disable-msg=W0212
@@ -55,11 +55,11 @@ class CardSetController(object):
 
 class PhysicalCardSetController(CardSetController):
     """Controller class for PhysicalCardSets."""
-    def __init__(self, sName, oConfig, oMainWindow, oFrame):
+    def __init__(self, sName, oMainWindow, oFrame):
         # pylint: disable-msg=E1101
         # SQLObject methods confuse pylint
         super(PhysicalCardSetController, self).__init__(
-                sName, PhysicalCardSet, oConfig, oMainWindow, oFrame)
+                sName, PhysicalCardSet, oMainWindow, oFrame)
         self.__oPhysCardSet = PhysicalCardSet.byName(sName)
         # We need to cache this for physical_card_deleted checks
         self.__aPhysCardIds = []
@@ -223,11 +223,11 @@ class PhysicalCardSetController(CardSetController):
 
 class AbstractCardSetController(CardSetController):
     """Controller class for AbstractCardSets."""
-    def __init__(self, sName, oConfig, oMainWindow, oFrame):
+    def __init__(self, sName, oMainWindow, oFrame):
         # pylint: disable-msg=E1101
         # SQLObject methods confuse pylint
         super(AbstractCardSetController, self).__init__(
-                sName, AbstractCardSet, oConfig, oMainWindow, oFrame)
+                sName, AbstractCardSet, oMainWindow, oFrame)
         self.__oAbsCardSet = AbstractCardSet.byName(sName)
         self._sFilterType = 'AbstractCard'
 

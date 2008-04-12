@@ -26,13 +26,13 @@ class CardSetView(EditableCardListView):
        and the database object used for filters."""
     # pylint: disable-msg=R0904
     # gtk.Widget, so many public methods
-    def __init__(self, oMainWindow, oController, sName, cSetType, oConfig):
+    def __init__(self, oMainWindow, oController, sName, cSetType):
         if cSetType is PhysicalCardSet:
             # cardclass is the actual physicalcard
             oModel = PhysicalCardSetCardListModel(sName)
         elif cSetType is AbstractCardSet:
             oModel = CardListModel()
-        super(CardSetView, self).__init__(oController, oMainWindow, oConfig,
+        super(CardSetView, self).__init__(oController, oMainWindow,
                 oModel)
         self.sSetName = sName
         self.cSetType = cSetType
