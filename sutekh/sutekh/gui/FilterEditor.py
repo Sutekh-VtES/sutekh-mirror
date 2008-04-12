@@ -24,10 +24,9 @@ class FilterEditor(gtk.Frame):
        Provides a graphical representation of the filter as nested boxes,
        which the user can extend or remove from.
        """
-    def __init__(self, oAST, sFilterType, oMainWindow, oParser, oFilterDialog):
+    def __init__(self, oAST, sFilterType, oParser, oFilterDialog):
         super(FilterEditor, self).__init__(" Filter Editor ")
         self.__sFilterType = sFilterType
-        self.__oParent = oMainWindow # Sutekh Main Window
         self.__oParser = oParser
         self.__oFilterDialog = oFilterDialog # Dialog we're a child of
 
@@ -112,10 +111,12 @@ class FilterEditor(gtk.Frame):
         """Get the current text in the editor."""
         return self.__oBoxModel.get_text()
 
+    # pylint: disable-msg=W0613
+    # oTextEditorButton required by function signature
     def __show_text_editor(self, oTextEditorButton):
         """Show a gtk.Entry widget so filters can be directly typed by the
            user."""
-        oDlg = SutekhDialog("Query Editor", self.__oMainWindow,
+        oDlg = SutekhDialog("Query Editor", self.__oFilterDialog,
                 gtk.DIALOG_DESTROY_WITH_PARENT,
                 (gtk.STOCK_OK, gtk.RESPONSE_OK,
                  gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
@@ -143,9 +144,10 @@ class FilterEditor(gtk.Frame):
         finally:
             oDlg.destroy()
 
+    # oHelpButton required by function signature
     def __show_help_dialog(self, oHelpButton):
         """Show a dialog window with the helptext from the filters."""
-        oDlg = SutekhDialog("Help on Filters", self.__oMainWindow,
+        oDlg = SutekhDialog("Help on Filters", self.__oFilterDialog,
                 gtk.DIALOG_DESTROY_WITH_PARENT,
                 (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
 
@@ -158,7 +160,7 @@ class FilterEditor(gtk.Frame):
         oDlg.show_all()
 
         try:
-            iResponse = oDlg.run()
+            oDlg.run()
         finally:
             oDlg.destroy()
 
@@ -297,7 +299,7 @@ class FilterBoxModel(list):
         return oChildBox
 
     def add_child_item(self, sChildTypeKeyword):
-        """Add a filter part to this box."""
+        """Add a filter item to this box."""
         sVarName = self.oVarNameMaker.generate_name()
         oAST = FilterPartNode(sChildTypeKeyword, None, sVarName)
         oChildItem = FilterBoxItem(oAST)
@@ -305,6 +307,7 @@ class FilterBoxModel(list):
         return oChildItem
 
     def remove_child(self, oChild):
+        """Remove a filter item or box from this box."""
         self.remove(oChild)
 
 class FilterBoxModelEditor(gtk.VBox):
@@ -388,6 +391,7 @@ class FilterBoxModelEditor(gtk.VBox):
 
 
     def get_title(self):
+        """Get the corret title for this box"""
         if self.__oBoxModel.sBoxType == FilterBoxModel.AND:
             return "All of ..."
         else:
@@ -430,7 +434,10 @@ class FilterBoxModelEditor(gtk.VBox):
             sBoxType, bNegate = self.BOXTYPE[sType]
             self.__oBoxModel.set_boxtype(sBoxType, bNegate)
 
+    # pylint: disable-msg=W0613
+    # oAddButton needed by function signature
     def __add_filter_part(self, oAddButton, oTypeSelector):
+        """Add a filter part or filter box to this box."""
         oIter = oTypeSelector.get_active_iter()
         oModel = oTypeSelector.get_model()
 
@@ -455,12 +462,15 @@ class FilterBoxModelEditor(gtk.VBox):
         self.__oChildArea.pack_start(oChildEditor, expand=False)
         self.show_all()
 
+    # oRemoveButton needed by function signature
     def __remove_filter_part(self, oRemoveButton, oEditor, oModelOrItem):
+        """Remove the filter part from this box at the user's request"""
         self.__oBoxModel.remove_child(oModelOrItem)
         self.__aChildren.remove(oEditor)
         self.__oChildArea.remove(oEditor)
 
     def __remove_model(self, oEditor, oModel):
+        """Remove the filter model from this box"""
         self.__remove_filter_part(None, oEditor, oModel)
 
 class FilterBoxItem(object):
@@ -558,6 +568,7 @@ class FilterBoxItemEditor(gtk.HBox):
         self.pack_start(oWidget)
 
     def connect_remove_button(self, fHandler):
+        """Add a handler for the 'remove filter' button"""
         if self.__oRemoveButton is not None:
             self.__oRemoveButton.connect('clicked', fHandler, self,
                     self.__oBoxItem)
@@ -581,6 +592,8 @@ class FilterBoxItemEditor(gtk.HBox):
         return dVars
 
     def set_current_values(self, dVars):
+        """Set the current values for the entry widget for this filter
+           item."""
         sName = self.__oBoxItem.sVariableName
         if not sName in dVars:
             return
@@ -590,7 +603,11 @@ class FilterBoxItemEditor(gtk.HBox):
         else:
             self.__oEntryWidget.set_text(dVars[sName][0].strip('"'))
 
+    # pylint: disable-msg=W0613
+    # oWidget is needed by function signature
     def __toggle_negated(self, oWidget):
+        """Response to the use setting/unsetting the not status of this
+           filter item"""
         self.__oBoxItem.bNegated = self.__oNegateButton.get_active()
 
 class VariableNameGenerator(set):

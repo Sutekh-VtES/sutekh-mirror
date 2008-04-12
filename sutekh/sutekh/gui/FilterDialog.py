@@ -16,14 +16,14 @@ from sutekh.gui.ConfigFile import ConfigFileListener
 from sutekh.gui.FilterEditor import FilterEditor
 
 DEFAULT_FILTERS = (
-        "Clan in $foo",
-        "Discipline in $foo",
-        "CardType in $foo",
-        "CardText in $foo",
-        "CardName in $foo",
-        "AbstractCardSetName in $foo",
-        "PhysicalCardSetName in $foo",
-        "PhysicalExpansion in $foo"
+        "Clan in $var0",
+        "Discipline in $var0",
+        "CardType in $var0",
+        "CardText in $var0",
+        "CardName in $var0",
+        "AbstractCardSetName in $var0",
+        "PhysicalCardSetName in $var0",
+        "PhysicalExpansion in $var0"
         )
 
 class FilterDialog(SutekhDialog, ConfigFileListener):
@@ -140,7 +140,7 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
                 self.__sFilterType not in oAST.get_type():
             return sId
         self.__dFilterEditors[sId] = FilterEditor(oAST,
-                self.__sFilterType, self.__oParent, self.__oParser, self)
+                self.__sFilterType, self.__oParser, self)
 
         oRadioButton = gtk.RadioButton(self.__oRadioGroup)
         if self.__oRadioGroup is None:
@@ -249,7 +249,7 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
             # We treat oAST.get_type() is None as a catch-all type
             dOldVars = self.__dFilterEditors[sId].get_current_values()
             self.__dFilterEditors[sId] = FilterEditor(oAST,
-                    self.__sFilterType, self.__oParent, self.__oParser, self)
+                    self.__sFilterType, self.__oParser, self)
             self.__dFilterEditors[sId].set_current_values(dOldVars)
 
             self.__dButtons[sId].set_label(sNewFilter)
