@@ -144,5 +144,7 @@ class ELDBHTMLParser(HTMLParser.HTMLParser, object):
     def handle_data(self, sData):
         self._oState.data(sData)
 
+    # pylint: disable-msg=C0321
+    # these don't need statements
     def handle_charref(self, sName): pass
     def handle_entityref(self, sName): pass

@@ -27,7 +27,7 @@ class CardListTabulator(object):
         self._dPropFuncs = dPropFuncs
 
     @staticmethod
-    def getDefaultPropFuncs():
+    def get_default_prop_funcs():
         """
         Return a dictionary of card property creation functions.
         The keys are strings suitable for use as column names, the values are functions for calculating a column entry

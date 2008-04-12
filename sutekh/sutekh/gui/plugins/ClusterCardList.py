@@ -91,7 +91,7 @@ class ClusterCardList(CardListPlugin):
         return oDlg
 
     def makePropGroups(self):
-        dPropFuncs = CardListTabulator.getDefaultPropFuncs()
+        dPropFuncs = CardListTabulator.get_default_prop_funcs()
         self._dGroups = {}
 
         for sName, fProp in dPropFuncs.iteritems():

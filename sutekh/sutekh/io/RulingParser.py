@@ -5,6 +5,8 @@
 # Copyright 2005, 2006 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
 
+"""HTML Parser for extracting card rulings from the WW online rulings list."""
+
 import HTMLParser, re
 from logging import Logger
 from sutekh.core.SutekhObjects import IAbstractCard, SutekhObjectMaker
@@ -41,6 +43,7 @@ class RuleDict(dict):
         self._oMaker = SutekhObjectMaker()
 
     def _find_card(self, sTitle):
+        """Find the abstract card this rules applies to."""
         sTitle = self._oMasterOut.sub('', sTitle)
         sTitle = self._oCommaThe.sub('', sTitle)
 
@@ -65,16 +68,18 @@ class RuleDict(dict):
 
         return None
 
-    def clearRule(self):
+    def clear_rule(self):
+        """Remove current contents of the rule."""
         dKeep = {}
-        for s in self._aSectionKeys:
-            if self.has_key(s):
-                dKeep[s] = self[s]
+        for sKey in self._aSectionKeys:
+            if self.has_key(sKey):
+                dKeep[sKey] = self[sKey]
         self.clear()
-        for (k, v) in dKeep.items():
-            self[k] = v
+        for (sKey, sValue) in dKeep.items():
+            self[sKey] = sValue
 
     def save(self):
+        """Add the rulings to the database."""
         if not (self.has_key('title') and self.has_key('code') \
                 and self.has_key('text')):
             return
@@ -182,7 +187,7 @@ class SectionRule(StateWithRule):
             if not self._dInfo.has_key('code'):
                 self._dInfo['code'] = self._sData.strip()
             self._dInfo.save()
-            self._dInfo.clearRule()
+            self._dInfo.clear_rule()
             return SectionWithTitle(self._dInfo, self.oLogger)
         elif sTag == 'li':
             # handles unclosed <li> inside section block
@@ -190,7 +195,7 @@ class SectionRule(StateWithRule):
             if not self._dInfo.has_key('code'):
                 self._dInfo['code'] = self._sData.strip()
             self._dInfo.save()
-            self._dInfo.clearRule()
+            self._dInfo.clear_rule()
             return SectionRule(self._dInfo, self.oLogger)
         elif sTag == '/p':
             # handles unclosed <li> at end of section block
@@ -198,7 +203,7 @@ class SectionRule(StateWithRule):
             if not self._dInfo.has_key('code'):
                 self._dInfo['code'] = self._sData.strip()
             self._dInfo.save()
-            self._dInfo.clearRule()
+            self._dInfo.clear_rule()
             return NoSection(self.oLogger)
         return self
 
@@ -237,6 +242,8 @@ class RulingParser(HTMLParser.HTMLParser, object):
         super(RulingParser, self).__init__()
         self._oState = NoSection(self.oLogger)
 
+    # pylint: disable-msg=C0111
+    # names are as listed in HTMLParser docs, so no need for docstrings
     def reset(self):
         super(RulingParser, self).reset()
         self._oState = NoSection(self.oLogger)
@@ -250,7 +257,7 @@ class RulingParser(HTMLParser.HTMLParser, object):
     def handle_data(self, sData):
         self._oState.data(sData)
 
-    # pylint: disable-msg=C0321, C0111
-    # these don't need statements or docstrings
+    # pylint: disable-msg=C0321
+    # these don't need statements
     def handle_charref(self, sName): pass
     def handle_entityref(self, sName): pass

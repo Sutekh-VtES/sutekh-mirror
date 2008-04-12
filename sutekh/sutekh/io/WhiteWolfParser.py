@@ -24,15 +24,15 @@ class CardDict(dict):
         super(CardDict, self).__init__()
         self._oMaker = SutekhObjectMaker()
 
-    def _parseText(self):
+    def _parse_text(self):
         """Parse the CardText for Sect and Titles"""
         sType = None
         if self.has_key('cardtype'):
             sTypes = self['cardtype']
             # Determine if vampire is one of the card types
-            for s in sTypes.split('/'):
-                if s == 'Vampire':
-                    sType = s
+            for sVal in sTypes.split('/'):
+                if sVal == 'Vampire':
+                    sType = sVal
         sTitle = None
         sSect = None
         # Check for REFLEX card type
@@ -109,11 +109,14 @@ class CardDict(dict):
         if sTitle is not None:
             self['title'] = sTitle
 
-    def _makeCard(self, sName):
+    def _make_card(self, sName):
+        """Create the abstract card in the database."""
         sName = self.oDispCard.sub('', sName)
         return self._oMaker.makeAbstractCard(sName)
 
-    def _addExpansions(self, oCard, sExp):
+    def _add_expansions(self, oCard, sExp):
+        """Add expansion information to the card, creating expansion pairs
+           as needed."""
         aPairs = [x.split(':') for x in sExp.strip('[]').split(',')]
         aExp = []
         for aPair in aPairs:
@@ -124,47 +127,57 @@ class CardDict(dict):
 
         for sExp, sRarSet in aExp:
             for sRar in sRarSet.split('/'):
-                oP = self._oMaker.makeRarityPair(sExp, sRar)
-                oCard.addRarityPair(oP)
+                oPair = self._oMaker.makeRarityPair(sExp, sRar)
+                oCard.addRarityPair(oPair)
 
-    def _addDisciplines(self, oCard, sDis):
+    def _add_disciplines(self, oCard, sDis):
+        """Add the list of disciplines to the card, creating discipline
+           pairs as needed."""
         sDis = self.oDisGaps.sub(' ', sDis).strip()
 
-        if sDis == '-none-' or sDis == '': return
+        if sDis == '-none-' or sDis == '':
+            return
 
-        for s in sDis.split():
-            if s==s.lower():
-                oP = self._oMaker.makeDisciplinePair(s, 'inferior')
+        for sVal in sDis.split():
+            if  sVal == sVal.lower():
+                oPair = self._oMaker.makeDisciplinePair(sVal, 'inferior')
             else:
-                oP = self._oMaker.makeDisciplinePair(s, 'superior')
-            oCard.addDisciplinePair(oP)
+                oPair = self._oMaker.makeDisciplinePair(sVal, 'superior')
+            oCard.addDisciplinePair(oPair)
 
-    def _addVirtues(self, oCard, sVir):
+    def _add_virtues(self, oCard, sVir):
+        """Add the list of virtues to the card."""
         sVir = self.oDisGaps.sub(' ', sVir).strip()
 
-        if sVir == '-none-' or sVir == '': return
+        if sVir == '-none-' or sVir == '':
+            return
 
-        for s in sVir.split():
-            oP = self._oMaker.makeVirtue(s)
-            oCard.addVirtue(oP)
+        for sVal in sVir.split():
+            oVirt = self._oMaker.makeVirtue(sVal)
+            oCard.addVirtue(oVirt)
 
-    def _addCreeds(self, oCard, sCreed):
+    def _add_creeds(self, oCard, sCreed):
+        """Add creeds to the card."""
         sCreed = self.oWhiteSp.sub(' ', sCreed).strip()
 
-        if sCreed == '-none-' or sCreed == '': return
+        if sCreed == '-none-' or sCreed == '':
+            return
 
-        for s in sCreed.split('/'):
-            oCard.addCreed(self._oMaker.makeCreed(s.strip()))
+        for sVal in sCreed.split('/'):
+            oCard.addCreed(self._oMaker.makeCreed(sVal.strip()))
 
-    def _addClans(self, oCard, sClan):
+    def _add_clans(self, oCard, sClan):
+        """Add clans to the card."""
         sClan = self.oWhiteSp.sub(' ', sClan).strip()
 
-        if sClan == '-none-' or sClan == '': return
+        if sClan == '-none-' or sClan == '':
+            return
 
-        for s in sClan.split('/'):
-            oCard.addClan(self._oMaker.makeClan(s.strip()))
+        for sVal in sClan.split('/'):
+            oCard.addClan(self._oMaker.makeClan(sVal.strip()))
 
-    def _addCost(self, oCard, sCost):
+    def _add_cost(self, oCard, sCost):
+        """Add the cost to the card, replace 'X' with -1."""
         sCost = self.oWhiteSp.sub(' ', sCost).strip()
         sAmnt, sType = sCost.split()
 
@@ -176,7 +189,8 @@ class CardDict(dict):
         oCard.cost = iCost
         oCard.costtype = str(sType.lower()) # make str non-unicode
 
-    def _addLife(self, oCard, sLife):
+    def _add_life(self, oCard, sLife):
+        """Add the life to the card."""
         sLife = self.oWhiteSp.sub(' ', sLife).strip()
         aLife = sLife.split()
         # pylint: disable-msg=W0704
@@ -186,16 +200,20 @@ class CardDict(dict):
         except ValueError:
             pass
 
-    def _getLevel(self, sLevel):
+    def _get_level(self, sLevel):
+        """Normalised the level string."""
         return self.oWhiteSp.sub(' ', sLevel).strip().lower()
 
-    def _addLevel(self, oCard, sLevel):
-        oCard.level = str(self._getLevel(sLevel)) # make str non-unicode
+    def _add_level(self, oCard, sLevel):
+        """Add the correct string for the level to the card."""
+        oCard.level = str(self._get_level(sLevel)) # make str non-unicode
 
-    def _addLevelToName(self, sName, sLevel):
-        return sName.strip() + " (" + self._getLevel(sLevel).capitalize() + ")"
+    def _add_level_to_name(self, sName, sLevel):
+        """Add level info to the vampire name."""
+        return sName.strip() + " (%s)" % self._get_level(sLevel).capitalize()
 
-    def _addCapacity(self, oCard, sCap):
+    def _add_capacity(self, oCard, sCap):
+        """Add the capacity to the card."""
         sCap = self.oWhiteSp.sub(' ', sCap).strip()
         aCap = sCap.split()
         # pylint: disable-msg=W0704
@@ -205,71 +223,79 @@ class CardDict(dict):
         except ValueError:
             pass
 
-    def _addCardType(self, oCard, sTypes):
-        for s in sTypes.split('/'):
-            oCard.addCardType(self._oMaker.makeCardType(s.strip()))
+    def _add_card_type(self, oCard, sTypes):
+        """Add the card type info to the card."""
+        for sVal in sTypes.split('/'):
+            oCard.addCardType(self._oMaker.makeCardType(sVal.strip()))
 
-    def _addTitle(self, oCard, sTitle):
+    def _add_title(self, oCard, sTitle):
+        """Add the title to the card."""
         oCard.addTitle(self._oMaker.makeTitle(sTitle))
 
-    def _addSect(self, oCard, sSect):
+    def _add_sect(self, oCard, sSect):
+        """Add the sect to the card."""
         oCard.addSect(self._oMaker.makeSect(sSect))
 
     def save(self):
+        """Commit the card to the database.
+
+           This fills in the needed fields and creates entries in the join
+           tables as needed.
+           """
         if not self.has_key('name'):
             return
 
         if self.has_key('text'):
-            self._parseText()
+            self._parse_text()
 
         if self.has_key('level'):
-            self['name'] = self._addLevelToName(self['name'], self['level'])
+            self['name'] = self._add_level_to_name(self['name'], self['level'])
 
         #sLogName = self['name'].encode('ascii', 'xmlcharrefreplace')
         self.oLogger.info('Card: %s', self['name'])
 
-        oCard = self._makeCard(self['name'])
+        oCard = self._make_card(self['name'])
         if self.has_key('group'):
             oCard.group = int(self.oWhiteSp.sub('', self['group']), 10)
 
         if self.has_key('capacity'):
-            self._addCapacity(oCard, self['capacity'])
+            self._add_capacity(oCard, self['capacity'])
 
         if self.has_key('cost'):
-            self._addCost(oCard, self['cost'])
+            self._add_cost(oCard, self['cost'])
 
         if self.has_key('life'):
-            self._addLife(oCard, self['life'])
+            self._add_life(oCard, self['life'])
 
         if self.has_key('level'):
-            self._addLevel(oCard, self['level'])
+            self._add_level(oCard, self['level'])
 
         if self.has_key('expansion'):
-            self._addExpansions(oCard, self['expansion'])
+            self._add_expansions(oCard, self['expansion'])
 
         if self.has_key('discipline'):
-            self._addDisciplines(oCard, self['discipline'])
+            self._add_disciplines(oCard, self['discipline'])
 
         if self.has_key('virtue'):
-            self._addVirtues(oCard, self['virtue'])
+            self._add_virtues(oCard, self['virtue'])
 
         if self.has_key('clan'):
-            self._addClans(oCard, self['clan'])
+            self._add_clans(oCard, self['clan'])
 
         if self.has_key('creed'):
-            self._addCreeds(oCard, self['creed'])
+            self._add_creeds(oCard, self['creed'])
 
         if self.has_key('cardtype'):
-            self._addCardType(oCard, self['cardtype'])
+            self._add_card_type(oCard, self['cardtype'])
 
         if self.has_key('burn option'):
             oCard.burnoption = True
 
         if self.has_key('title'):
-            self._addTitle(oCard, self['title'])
+            self._add_title(oCard, self['title'])
 
         if self.has_key('sect'):
-            self._addSect(oCard, self['sect'])
+            self._add_sect(oCard, self['sect'])
 
         if self.has_key('text'):
             oCard.text = self['text']
@@ -408,6 +434,8 @@ class WhiteWolfParser(HTMLParser.HTMLParser, object):
         super(WhiteWolfParser, self).__init__()
         self._oState = NoCard(self.oLogger)
 
+    # pylint: disable-msg=C0111
+    # names are as listed in HTMLParser docs, so no need for docstrings
     def reset(self):
         super(WhiteWolfParser, self).reset()
         self._oState = NoCard(self.oLogger)
@@ -421,8 +449,8 @@ class WhiteWolfParser(HTMLParser.HTMLParser, object):
     def handle_data(self, sData):
         self._oState.data(sData)
 
-    # pylint: disable-msg=C0321, C0111
-    # these don't need statements or docstrings
+    # pylint: disable-msg=C0321
+    # these don't need statements
     def handle_charref(self, sName): pass
     def handle_entityref(self, sName): pass
 
