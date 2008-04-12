@@ -39,6 +39,10 @@ def _get_abstract_cards(aCards):
     """Get the asbtract cards given the list of names"""
     return [IAbstractCard(x) for x in aCards]
 
+def _lookup_discipline(sKey, dDisciplines):
+    """Return the object with the fullname sKey"""
+    return [x for x in dDisciplines if sKey == x.fullname][0]
+
 def _disc_sort_key(oTuple):
     """Ensure we sort the disciplines or virtues on the right key"""
     return (oTuple[1][1], oTuple[0].fullname)
@@ -173,12 +177,6 @@ def _format_multi(sCardType, dMulti, iNum):
                 'multitype' : sType, 'per' : sPer, }
     return sText
 
-def _combo_changed(oComboBox, oDiscWidget):
-    """Toggle the sensitivity of the Discipline select widget as needed"""
-    if oComboBox.get_active_text() == 'Use list of disciplines':
-        oDiscWidget.set_sensitive(True)
-    else:
-        oDiscWidget.set_sensitive(False)
 
 def _wrap(sText):
     """Return a gtk.Label which wraps the given text"""
@@ -188,6 +186,52 @@ def _wrap(sText):
     oLabel.set_alignment(0, 0) # Align top-left
     oLabel.set_markup(sText)
     return oLabel
+
+class DisciplineNumberSelect(gtk.HBox):
+    """Holds a combo box and a discpline list for choosing a list
+       of disciplines to use."""
+    # pylint: disable-msg=R0904
+    # gtk.Widget so many public methods
+
+    _sUseList = 'Use list of disciplines'
+
+    def __init__(self, aSortedDisciplines, oDlg):
+        super(DisciplineNumberSelect, self).__init__(False, 2)
+        self._aSortedDisciplines = aSortedDisciplines
+        # Never show more than 5 disciplines here - people can use the
+        # discpline list in the combo box if they want more
+        self._oComboBox = gtk.combo_box_new_text()
+        for iNum in range(1, min(5, len(aSortedDisciplines)) + 1):
+            self._oComboBox.append_text(str(iNum))
+        self._oComboBox.append_text(self._sUseList)
+        self._oComboBox.set_active(1)
+        self.pack_start(gtk.Label('Number of Disciplines'))
+        self.pack_start(self._oComboBox)
+        self.pack_start(gtk.Label(' : '))
+        self._oDiscWidget = MultiSelectComboBox(oDlg)
+        self._oDiscWidget.fill_list(self._aSortedDisciplines)
+        self._oDiscWidget.set_sensitive(False)
+        self._oDiscWidget.set_list_size(200, 400)
+        self.pack_start(self._oDiscWidget)
+        self._oComboBox.connect('changed', self._combo_changed)
+
+    # pylint: disable-msg=W0613
+    # oWidget required by function signature
+    def _combo_changed(self, oWidget):
+        """Toggle the sensitivity of the Discipline select widget as needed"""
+        if self._oComboBox.get_active_text() == self._sUseList:
+            self._oDiscWidget.set_sensitive(True)
+        else:
+            self._oDiscWidget.set_sensitive(False)
+
+    def get_disciplines(self):
+        """Get the list of disciplines to use."""
+        if self._oComboBox.get_active_text() == 'Use list of disciplines':
+            aTheseDiscs = self._oDiscWidget.get_selection()
+        else:
+            iNumDiscs = int(self._oComboBox.get_active_text())
+            aTheseDiscs = self._aSortedDisciplines[:iNumDiscs]
+        return aTheseDiscs
 
 
 class AnalyzeCardList(CardListPlugin):
@@ -240,21 +284,21 @@ class AnalyzeCardList(CardListPlugin):
                 (gtk.STOCK_OK, gtk.RESPONSE_OK))
         oDlg.connect("response", lambda oDlg, resp: oDlg.destroy())
         dConstruct = {
-                'Vampire' : self.process_vampire,
-                'Imbued' : self.process_imbued,
-                'Combat' : self.process_combat,
-                'Reaction' : self.process_reaction,
-                'Action' : self.process_action,
-                'Action Modifier' : self.process_action_modifier,
-                'Retainer' : self.process_retainer,
-                'Equipment' : self.process_equipment,
-                'Ally' : self.process_allies,
-                'Political Action' : self.process_political_action,
-                'Power' : self.process_power,
-                'Conviction' : self.process_conviction,
-                'Event' : self.process_event,
-                'Master' : self.process_master,
-                'Multirole' : self.process_multi,
+                'Vampire' : self._process_vampire,
+                'Imbued' : self._process_imbued,
+                'Combat' : self._process_combat,
+                'Reaction' : self._process_reaction,
+                'Action' : self._process_action,
+                'Action Modifier' : self._process_action_modifier,
+                'Retainer' : self._process_retainer,
+                'Equipment' : self._process_equipment,
+                'Ally' : self._process_allies,
+                'Political Action' : self._process_political_action,
+                'Power' : self._process_power,
+                'Conviction' : self._process_conviction,
+                'Event' : self._process_event,
+                'Master' : self._process_master,
+                'Multirole' : self._process_multi,
                 }
 
         self.dTypeNumbers = {}
@@ -283,7 +327,7 @@ class AnalyzeCardList(CardListPlugin):
         self.get_crypt_stats(dCardLists['Vampire'], dCardLists['Imbued'])
         self.get_library_stats(aAllCards, dCardLists)
         # Do happy family analysis
-        self.happy_families_init(aAllCards, oHappyBox, oDlg)
+        self.happy_families_init(oHappyBox, oDlg)
 
         # Fill the dialog with the results
         oNotebook = gtk.Notebook()
@@ -305,15 +349,16 @@ class AnalyzeCardList(CardListPlugin):
                         gtk.Label(sCardType))
 
         # Setup the main notebook
-        oMainBox.pack_start(_wrap(self.prepare_main()))
+        oMainBox.pack_start(_wrap(self._prepare_main()))
         if self.iNumberLibrary > 0:
-            oMainBox.pack_start(self.process_library())
+            oMainBox.pack_start(self._process_library())
         # pylint: disable-msg=E1101
         # vbox methods not seen
         oDlg.vbox.pack_start(oNotebook)
         oDlg.show_all()
         oNotebook.set_current_page(0)
         oDlg.run()
+
     # pylint: enable-msg=W0613
 
     def get_crypt_stats(self, aVampireCards, aImbuedCards):
@@ -350,7 +395,7 @@ class AnalyzeCardList(CardListPlugin):
         self.dCryptStats['max draw'] = sum(aAllCosts[-1:-5:-1])
         # Extract discipline stats (will be used in display + HF)
         dDiscs = {}
-        self.dCryptStats['disc/virtue'] = dDiscs
+        self.dCryptStats['crypt discipline'] = dDiscs
         for oCard in aVampireCards:
             for oDisc in oCard.discipline:
                 dDiscs.setdefault(oDisc.discipline, ['discipline', 0, 0])
@@ -396,7 +441,7 @@ class AnalyzeCardList(CardListPlugin):
                 self.dLibraryStats['discipline'].setdefault(sDisc, 0)
                 self.dLibraryStats['discipline'][sDisc] += 1
 
-    def prepare_main(self):
+    def _prepare_main(self):
         """Setup the main notebook display"""
         oCS = self._cModelType.byName(self.view.sSetName)
 
@@ -443,7 +488,7 @@ class AnalyzeCardList(CardListPlugin):
 
         return sMainText
 
-    def process_library(self):
+    def _process_library(self):
         """Create a notebook for the basic library card overview"""
         oLibNotebook = gtk.Notebook()
         # Stats by card type
@@ -489,7 +534,7 @@ class AnalyzeCardList(CardListPlugin):
                 gtk.Label('Clan Requirements'))
         return oLibNotebook
 
-    def process_vampire(self, aCards):
+    def _process_vampire(self, aCards):
         """Process the list of vampires"""
         dDeckDetails = {
                 'vampires' : {},
@@ -542,7 +587,7 @@ class AnalyzeCardList(CardListPlugin):
                         dDeckDetails['votes'] / float(iNum))
         sVampText += '\n<span foreground = "blue">Disciplines</span>\n'
         for oDisc, aInfo in sorted(
-                self.dCryptStats['disc/virtue'].iteritems(),
+                self.dCryptStats['crypt discipline'].iteritems(),
                 key=_disc_sort_key, reverse=True):
             if aInfo[0] == 'discipline':
                 sVampText += "%(infcount)d Vampires with %(disc)s %(iper)s," \
@@ -557,7 +602,7 @@ class AnalyzeCardList(CardListPlugin):
                                 }
         return sVampText
 
-    def process_imbued(self, aCards):
+    def _process_imbued(self, aCards):
         "Fill the Imbued tab"
         dDeckImbued = {}
         dDeckCreed = {}
@@ -589,7 +634,7 @@ class AnalyzeCardList(CardListPlugin):
             sImbuedText += "%d Imbued of creed %s %s\n" % (iCount,
                     oCreed.name, _percentage(iCount, self.iCryptSize, "Crypt"))
         for oVirtue, aInfo in sorted(
-                self.dCryptStats['disc/virtue'].iteritems(),
+                self.dCryptStats['crypt discipline'].iteritems(),
                 key=_disc_sort_key, reverse=True):
             if aInfo[0] == 'virtue':
                 sImbuedText += "%d Imbued with %s %s\n" % (aInfo[1],
@@ -597,7 +642,7 @@ class AnalyzeCardList(CardListPlugin):
                             self.iCryptSize, "Crypt"))
         return sImbuedText
 
-    def process_master(self, aCards):
+    def _process_master(self, aCards):
         "Display the stats for Master Cards"
         # pylint: disable-msg=W0612
         # aBlood, aConviction unused, since Master cost isn't paid by minions
@@ -655,22 +700,22 @@ class AnalyzeCardList(CardListPlugin):
             sText += '\n' + _format_multi(sType, dMulti, iNum)
         return sText
 
-    def process_combat(self, aCards):
+    def _process_combat(self, aCards):
         "Fill the combat tab"
         sText = self._default_text(aCards, 'Combat')
         return sText
 
-    def process_action_modifier(self, aCards):
+    def _process_action_modifier(self, aCards):
         "Fill the Action Modifier tab"
         sText = self._default_text(aCards, 'Action Modifier')
         return sText
 
-    def process_reaction(self, aCards):
+    def _process_reaction(self, aCards):
         "Fill the reaction tab"
         sText = self._default_text(aCards, 'Reaction')
         return sText
 
-    def process_event(self, aCards):
+    def _process_event(self, aCards):
         "Fill the events tab"
         iNumEvents = len(aCards)
         sEventText = "\t\t<b>Event Cards :</b>\n\n"
@@ -688,42 +733,42 @@ class AnalyzeCardList(CardListPlugin):
                     _percentage(iCount, self.iNumberLibrary, 'Library'))
         return sEventText
 
-    def process_action(self, aCards):
+    def _process_action(self, aCards):
         "Fill the actions tab"
         sText = self._default_text(aCards, 'Action')
         return sText
 
-    def process_political_action(self, aCards):
+    def _process_political_action(self, aCards):
         "Fill the Political Actions tab"
         sText = self._default_text(aCards, 'Political Action')
         return sText
 
-    def process_allies(self, aCards):
+    def _process_allies(self, aCards):
         "Fill the allies tab"
         sText = self._default_text(aCards, 'Ally')
         return sText
 
-    def process_retainer(self, aCards):
+    def _process_retainer(self, aCards):
         "Fill the retainer tab"
         sText = self._default_text(aCards, 'Retainer')
         return sText
 
-    def process_equipment(self, aCards):
+    def _process_equipment(self, aCards):
         "Fill the equipment tab"
         sText = self._default_text(aCards, 'Equipment')
         return sText
 
-    def process_conviction(self, aCards):
+    def _process_conviction(self, aCards):
         "Fill the conviction tab"
         sText = self._default_text(aCards, 'Conviction')
         return sText
 
-    def process_power(self, aCards):
+    def _process_power(self, aCards):
         "Fill the power tab"
         sText = self._default_text(aCards, 'Power')
         return sText
 
-    def process_multi(self, aCards):
+    def _process_multi(self, aCards):
         "Fill the multirole card tab"
         dMulti = {}
         sPerCards = _percentage(self.dTypeNumbers['Multirole'],
@@ -750,38 +795,10 @@ class AnalyzeCardList(CardListPlugin):
 
         return sText
 
-    def happy_families_init(self, aCards, oHFVBox, oDlg):
+    def happy_families_init(self, oHFVBox, oDlg):
         """Setup data and tab for HF analysis"""
-        return
         oMainLabel = gtk.Label()
         oHFVBox.pack_start(oMainLabel)
-        self.dLibDisc.setdefault('No Discipline', 0)
-        self.dLibClan.setdefault('No Clan', 0)
-        for oAbsCard in aCards:
-            if len(aTypes)>1:
-                # Since we examining all the cards, do this here
-                aMultiCards.append(oAbsCard)
-            if aTypes[0] != 'Vampire' and aTypes[0] != 'Imbued' \
-                    and aTypes[0] != 'Master':
-                # Non-Master Library card, so extract disciplines
-                if len(oAbsCard.discipline) > 0:
-                    for oDisc in oAbsCard.discipline:
-                        self.dLibDisc.setdefault(oDisc.discipline.fullname, 0)
-                        self.dLibDisc[oDisc.discipline.fullname] += 1
-                elif len(oAbsCard.virtue) > 0:
-                    for oVirtue in oAbsCard.virtue:
-                        self.dLibDisc.setdefault(oVirtue.fullname, 0)
-                        self.dLibDisc[oVirtue.fullname] += 1
-                else:
-                    self.dLibDisc['No Discipline'] += 1
-            if aTypes[0] != 'Vampire' and aTypes[0] != 'Imbued':
-                # Extract clan information
-                if len(oAbsCard.clan) > 0:
-                    for oClan in oAbsCard.clan:
-                        self.dLibClan.setdefault(oClan.name, 0)
-                        self.dLibClan[oClan.name] += 1
-                else:
-                    self.dLibClan['No Clan'] += 1
         # Build up Text
         sHappyFamilyText = "\t\t<b>Happy Families Analysis :</b>\n"
         if self.dTypeNumbers['Imbued'] > 0:
@@ -794,21 +811,15 @@ class AnalyzeCardList(CardListPlugin):
             oMainLabel.set_markup(sHappyFamilyText)
             oHFVBox.show_all()
             return
-        if len(self.dDeckDisc) < 1:
+        if len(self.dCryptStats['crypt discipline']) < 1:
             # Crypt only has Smudge, for example
             sHappyFamilyText += '\n<span foreground = "red">Need disciplines' \
-                    'to do analysis</span>\n'
+                    ' in the crypt to do analysis</span>\n'
             oMainLabel.set_markup(sHappyFamilyText)
             oHFVBox.show_all()
             return
-        aTopVampireDisc = sorted(self.dCryptDisc, reverse=True)
-        aSortedDiscs = []
-        for iNum in aTopVampireDisc:
-            for sDisc in self.dCryptDisc[iNum]:
-                aSortedDiscs.append(sDisc)
-        for sDisc in self.dDeckDisc:
-            # Need to ensure all these are defined
-            self.dLibDisc.setdefault(sDisc, 0)
+        # OK, for analysis, so set eveything up
+        # Masters analysis
         iHFMasters = int(round(0.2 * self.iNumberLibrary))
         iNonMasters = self.iNumberLibrary - self.dTypeNumbers['Master']
         sHappyFamilyText += "\n\t<b>Master Cards</b>\n"
@@ -820,29 +831,17 @@ class AnalyzeCardList(CardListPlugin):
         sHappyFamilyText += "<span foreground = \"blue\">Difference = " + \
                 str(abs(iHFMasters - self.dTypeNumbers['Master'])) + \
                 "</span>\n"
+        # Discipline analysis
+        aSortedDiscs = [x[0].fullname for x in sorted(
+            self.dCryptStats['crypt discipline'].items(), key=_disc_sort_key,
+            reverse=True)]
         oMainLabel.set_markup(sHappyFamilyText)
-        oHBox = gtk.HBox(False, 2)
-        # self.dCryptDisc and dLibDisc have the info about the disciplines
-        oComboBox = gtk.combo_box_new_text()
-        iMax = min(6, len(self.dDeckDisc)) + 1
-        for iNum in range(1, iMax):
-            oComboBox.append_text(str(iNum))
-        oComboBox.append_text('Use list of disciplines')
-        oComboBox.set_active(1)
-        oHBox.pack_start(gtk.Label('Number of Disciplines'))
-        oHBox.pack_start(oComboBox)
-        oHBox.pack_start(gtk.Label(' : '))
-        oDiscWidget = MultiSelectComboBox(oDlg)
-        oDiscWidget.fill_list(aSortedDiscs)
-        oDiscWidget.set_sensitive(False)
-        oDiscWidget.set_list_size(200, 400)
-        oHBox.pack_start(oDiscWidget)
-        oHFVBox.pack_start(oHBox, False, False)
-        oComboBox.connect('changed', _combo_changed, oDiscWidget)
+        oDiscSelect = DisciplineNumberSelect(aSortedDiscs, oDlg)
+        oHFVBox.pack_start(oDiscSelect, False, False)
         oResLabel = gtk.Label()
         oButton = gtk.Button('Recalculate Happy Family Analysis')
-        oButton.connect('clicked', self._redo_happy_family, oHFVBox, oComboBox,
-                oDiscWidget, oResLabel, aSortedDiscs)
+        oButton.connect('clicked', self._redo_happy_family, oDiscSelect,
+                oResLabel)
         oHFVBox.pack_start(oButton, False, False)
         oResLabel.set_markup(self._happy_lib_analysis(aSortedDiscs[:2],
             iNonMasters))
@@ -851,22 +850,17 @@ class AnalyzeCardList(CardListPlugin):
 
     # pylint: disable-msg=W0613
     # oButton Required by function signature
-    def _redo_happy_family(self, oButton, oHFVBox, oComboBox, oDiscWidget,
-            oResLabel, aSortedDiscs):
+    def _redo_happy_family(self, oButton, oDiscSelect, oResLabel):
         """Redo the HF analysis based on button press"""
-        if oComboBox.get_active_text() == 'Use list of disciplines':
-            aTheseDiscs = oDiscWidget.get_selection()
-            if not aTheseDiscs:
-                return # Just ignore the zero selection case
-        else:
-            iNumDiscs = int(oComboBox.get_active_text())
-            aTheseDiscs = aSortedDiscs[:iNumDiscs]
+        aTheseDiscs = oDiscSelect.get_disciplines()
+        if not aTheseDiscs:
+            return # Just ignore the zero selection case
         iNonMasters = self.iNumberLibrary - self.dTypeNumbers['Master']
         oResLabel.hide()
         oResLabel.set_markup(self._happy_lib_analysis(aTheseDiscs,
             iNonMasters))
         oResLabel.show()
-        oHFVBox.show_all()
+        oResLabel.get_parent().show_all()
 
     def _happy_lib_analysis(self, aDiscsToUse, iNonMasters):
         "Heavy lifting of the HF analysis"
@@ -877,34 +871,43 @@ class AnalyzeCardList(CardListPlugin):
                 " Discipline Case</b>\n"
         sHappyFamilyText += "Disciplines : <i>%s</i>\n" % ",".join(aDiscsToUse)
         fDemon = float(self.iCryptSize)
+        dCryptDiscs = {}
         for sDisc in aDiscsToUse:
-            fDemon += self.dDeckDisc[sDisc][0]
+            if self.dLibraryStats['discipline'].has_key(sDisc):
+                fDemon += self.dLibraryStats['discipline'][sDisc]
+            oDisc = _lookup_discipline(sDisc,
+                    self.dCryptStats['crypt discipline'])
+            dCryptDiscs[sDisc] = self.dCryptStats['crypt discipline'][oDisc][1]
         iHFNoDiscipline = int((iNonMasters * self.iCryptSize / fDemon ))
         iDiff = iNonMasters - iHFNoDiscipline
         dDiscNumbers = {}
         for sDisc in aDiscsToUse:
-            iHFNumber = int(iNonMasters * self.dDeckDisc[sDisc][0] / fDemon )
+            iHFNumber = int(iNonMasters * dCryptDiscs[sDisc] / fDemon )
             dDiscNumbers[sDisc] = iHFNumber
             iDiff -= iHFNumber
         if iDiff > 0:
             iHFNoDiscipline += iDiff # Shove rounding errors here
-        sHappyFamilyText += "Number of Cards requiring No discipline : " + \
-                str(self.dLibDisc['No Discipline']) + '\n'
-        sHappyFamilyText += "Happy Families recommends " + \
-                str(iHFNoDiscipline) + ' : '
-        sHappyFamilyText += "<span foreground = \"blue\">Difference = " + \
-                str(abs(iHFNoDiscipline - self.dLibDisc['No Discipline'])) + \
-                "</span>\n"
+        sHappyFamilyText += "Number of Cards requiring No discipline : %s\n" \
+                % self.dLibraryStats['discipline']['No Discipline']
+        sHappyFamilyText += "Happy Families recommends %s : " % iHFNoDiscipline
+        sHappyFamilyText += '<span foreground = "blue">Difference = ' \
+                '%s</span>\n\n' % abs(iHFNoDiscipline -
+                        self.dLibraryStats['discipline']['No Discipline'])
         for sDisc in aDiscsToUse:
-            iCryptNum = self.dDeckDisc[sDisc][0]
             iHFNum = dDiscNumbers[sDisc]
-            sHappyFamilyText += "Number of Cards requiring " + sDisc + " : " \
-                    + str(self.dLibDisc[sDisc]) + \
-                    " (" + str(iCryptNum) + " crypt members)\n"
-            sHappyFamilyText += "Happy Families recommends " + \
-                    str(iHFNum) + '  : '
-            sHappyFamilyText += "<span foreground = \"blue\">Difference = " + \
-                    str(abs(iHFNum - self.dLibDisc[sDisc])) + "</span>\n"
+            if self.dLibraryStats['discipline'].has_key(sDisc):
+                iLibNum = self.dLibraryStats['discipline'][sDisc]
+            else:
+                iLibNum = 0
+            sHappyFamilyText += "Number of Cards requiring %(disc)s :" \
+                    " %(lib)d (%(crypt)d crypt members)\n" % {
+                            'disc' : sDisc,
+                            'lib' : iLibNum,
+                            'crypt' : dCryptDiscs[sDisc],
+                            }
+            sHappyFamilyText += "Happy Families recommends %d : " % iHFNum
+            sHappyFamilyText += '<span foreground = "blue">Difference = ' \
+                    '%d </span>\n' % abs(iHFNum - iLibNum)
         return sHappyFamilyText
 
 # pylint: disable-msg=C0103
