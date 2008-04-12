@@ -106,7 +106,7 @@ def save_backup(sBackupFile, oProgressDialog):
     oLogHandler.set_dialog(oProgressDialog)
     oProgressDialog.show()
     oFile = ZipFileWrapper(sBackupFile)
-    oFile.doDumpAllToZip(oLogHandler)
+    oFile.do_dump_all_to_zip(oLogHandler)
     oProgressDialog.set_complete()
 
 def _get_names(oWin):
