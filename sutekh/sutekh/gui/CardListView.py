@@ -417,6 +417,8 @@ class CardListView(gtk.TreeView, object):
 
     # Drag and Drop
     # Sub-classes should override as needed.
+    # pylint: disable-msg=R0201
+    # These need to be available to children as methods
 
     def drag_card(self, oBtn, oContext, oSelection_data, oInfo, oTime):
         """Create string representation of the selection for drag-n-drop"""
@@ -443,7 +445,6 @@ class CardListView(gtk.TreeView, object):
                 return None
             else:
                 return sExpand
-
         aCardInfo = zip([int(x) for x in aLines[1::3]], aLines[2::3],
                 [true_expansion(x) for x in aLines[3::3]])
         return sSource, aCardInfo
@@ -460,8 +461,6 @@ class CardListView(gtk.TreeView, object):
         self._oController.frame.drag_drop_handler(oWdgt, oContext, iXPos,
                 iYPos, oData, oInfo, oTime)
 
-    # pylint: disable-msg=R0201
-    # Override by children
     def add_paste_data(self, sSource, aCards):
         """Helper function for copy+paste and drag+drop.
 
