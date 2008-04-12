@@ -115,7 +115,7 @@ class MultiPaneWindow(gtk.Window):
         iWidth, iHeight = self._oConfig.get_window_size()
         if iWidth > 0 and iHeight > 0:
             self.resize(iWidth, iHeight)
-        for iNumber, sType, sName, bVert, iPos in self._oConfig.getAllPanes():
+        for iNumber, sType, sName, bVert, iPos in self._oConfig.get_all_panes():
             oNewFrame = self.add_pane(bVert, iPos)
             self._oFocussed = oNewFrame
             if sType == PhysicalCardSet.sqlmeta.table:
@@ -346,7 +346,7 @@ class MultiPaneWindow(gtk.Window):
 
     def action_quit(self, oWidget):
         """Exit the app, saving infoin config file if needed."""
-        if self._oConfig.getSaveOnExit():
+        if self._oConfig.get_save_on_exit():
             self.save_frames()
         if self._oConfig.get_save_window_size():
             self.save_window_size()
@@ -358,7 +358,7 @@ class MultiPaneWindow(gtk.Window):
 
     def save_frames(self):
         """save the current frame layout"""
-        self._oConfig.preSaveClear()
+        self._oConfig.pre_save_clear()
 
         def save_children(oPane, oConfig, bVert, iNum, iPos):
             """Walk the tree of HPanes + VPanes, and save their info."""

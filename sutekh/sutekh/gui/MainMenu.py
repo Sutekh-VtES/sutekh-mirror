@@ -66,8 +66,7 @@ class MainMenu(gtk.MenuBar, object):
         oImportCardSet.connect('activate', self.do_import_card_set)
         oMenu.add(oImportCardSet)
 
-        oSeperator = gtk.SeparatorMenuItem()
-        oMenu.add(oSeperator)
+        oMenu.add(gtk.SeparatorMenuItem())
 
         if sqlhub.processConnection.uri() != "sqlite:///:memory:":
             # Need to have memory connection available for this
@@ -76,8 +75,7 @@ class MainMenu(gtk.MenuBar, object):
             oImportNewCardList.connect('activate',
                     self.do_import_new_card_list)
             oMenu.add(oImportNewCardList)
-            oSeperator2 = gtk.SeparatorMenuItem()
-            oMenu.add(oSeperator2)
+            oMenu.add(gtk.SeparatorMenuItem())
 
         oPrefsMenu = gtk.Menu()
         oPrefsItem = gtk.MenuItem('Preferences')
@@ -90,7 +88,7 @@ class MainMenu(gtk.MenuBar, object):
 
         oSaveOnExit = gtk.CheckMenuItem('Save Pane Set on Exit')
         oSaveOnExit.set_inconsistent(False)
-        if self.__oConfig.getSaveOnExit():
+        if self.__oConfig.get_save_on_exit():
             oSaveOnExit.set_active(True)
         else:
             oSaveOnExit.set_active(False)
@@ -115,13 +113,11 @@ class MainMenu(gtk.MenuBar, object):
         oSaveOnExit.connect('activate', self.do_toggle_save_window_size)
         oPrefsMenu.add(oSaveWinSize)
 
-
         oRestoreConfig = gtk.MenuItem('Restore saved configuration')
         oMenu.add(oRestoreConfig)
         oRestoreConfig.connect('activate', self.do_restore)
 
-        oSeperator3 = gtk.SeparatorMenuItem()
-        oMenu.add(oSeperator3)
+        oMenu.add(gtk.SeparatorMenuItem())
 
         oQuit = gtk.MenuItem("_Quit")
         oQuit.connect('activate',
@@ -157,8 +153,7 @@ class MainMenu(gtk.MenuBar, object):
         self._add_add_submenu(oMenu)
         self._add_replace_submenu(oMenu)
 
-        oSeperator = gtk.SeparatorMenuItem()
-        oMenu.add(oSeperator)
+        oMenu.add(gtk.SeparatorMenuItem())
 
         self.__oDelPane = gtk.MenuItem("_Remove current pane")
         oMenu.add(self.__oDelPane)
@@ -225,40 +220,40 @@ class MainMenu(gtk.MenuBar, object):
         oReplaceMenuItem.set_submenu(oReplaceMenu)
         oMenuWidget.add(oReplaceMenuItem)
 
-        self.__oReplaceWithACLPane = gtk.MenuItem(
+        self.__oReplaceACLPane = gtk.MenuItem(
                 "Replace current pane with White Wolf Card List")
-        oReplaceMenu.add(self.__oReplaceWithACLPane)
-        self.__oReplaceWithACLPane.connect("activate",
+        oReplaceMenu.add(self.__oReplaceACLPane)
+        self.__oReplaceACLPane.connect("activate",
                 self.__oWin.replace_with_abstract_card_list)
-        self.__oReplaceWithACLPane.set_sensitive(True)
+        self.__oReplaceACLPane.set_sensitive(True)
 
-        self.__oReplaceWithPCLPane = gtk.MenuItem(
+        self.__oReplacePCLPane = gtk.MenuItem(
                 "Replace current pane with My Collection List")
-        oReplaceMenu.add(self.__oReplaceWithPCLPane)
-        self.__oReplaceWithPCLPane.connect("activate",
+        oReplaceMenu.add(self.__oReplacePCLPane)
+        self.__oReplacePCLPane.connect("activate",
                 self.__oWin.replace_with_physical_card_list)
-        self.__oReplaceWithPCLPane.set_sensitive(True)
+        self.__oReplacePCLPane.set_sensitive(True)
 
-        self.__oReplaceWithCardText = gtk.MenuItem(
+        self.__oReplaceCardText = gtk.MenuItem(
                 "Replace current pane with Card Text Pane")
-        oReplaceMenu.add(self.__oReplaceWithCardText)
-        self.__oReplaceWithCardText.connect("activate",
+        oReplaceMenu.add(self.__oReplaceCardText)
+        self.__oReplaceCardText.connect("activate",
                 self.__oWin.replace_with_card_text)
-        self.__oReplaceWithCardText.set_sensitive(True)
+        self.__oReplaceCardText.set_sensitive(True)
 
-        self.__oReplaceWithACSListPane = gtk.MenuItem(
+        self.__oReplaceACSListPane = gtk.MenuItem(
                 "Replace current pane with Abstract Card Set List")
-        oReplaceMenu.add(self.__oReplaceWithACSListPane)
-        self.__oReplaceWithACSListPane.connect("activate",
+        oReplaceMenu.add(self.__oReplaceACSListPane)
+        self.__oReplaceACSListPane.connect("activate",
                 self.__oWin.replace_with_acs_list)
-        self.__oReplaceWithACSListPane.set_sensitive(True)
+        self.__oReplaceACSListPane.set_sensitive(True)
 
-        self.__oReplaceWithPCSListPane = gtk.MenuItem(
+        self.__oReplacePCSListPane = gtk.MenuItem(
                 "Replace current pane with Physical Card Set List")
-        oReplaceMenu.add(self.__oReplaceWithPCSListPane)
-        self.__oReplaceWithPCSListPane.connect("activate",
+        oReplaceMenu.add(self.__oReplacePCSListPane)
+        self.__oReplacePCSListPane.connect("activate",
                 self.__oWin.replace_with_pcs_list)
-        self.__oReplaceWithPCSListPane.set_sensitive(True)
+        self.__oReplacePCSListPane.set_sensitive(True)
 
     def __create_plugin_menu(self):
         """Create the 'Plugins' menu"""
@@ -312,27 +307,27 @@ class MainMenu(gtk.MenuBar, object):
 
     def add_card_text_set_sensitive(self, bValue):
         """Set the options for adding the Card Text Frame to bValue"""
-        self.__oReplaceWithCardText.set_sensitive(bValue)
+        self.__oReplaceCardText.set_sensitive(bValue)
         self.__oAddCardText.set_sensitive(bValue)
 
     def pcs_list_pane_set_sensitive(self, bValue):
         """Set the options for adding the list of PhysicalCardSets to bValue"""
-        self.__oReplaceWithPCSListPane.set_sensitive(bValue)
+        self.__oReplacePCSListPane.set_sensitive(bValue)
         self.__oAddPCSListPane.set_sensitive(bValue)
 
     def acs_list_pane_set_sensitive(self, bValue):
         """Set the options for adding the list of AbstractCardSets to bValue"""
-        self.__oReplaceWithACSListPane.set_sensitive(bValue)
+        self.__oReplaceACSListPane.set_sensitive(bValue)
         self.__oAddACSListPane.set_sensitive(bValue)
 
     def abstract_card_list_set_sensitive(self, bValue):
         """Set the options for adding the WW cardlist to bValue"""
-        self.__oReplaceWithACLPane.set_sensitive(bValue)
+        self.__oReplaceACLPane.set_sensitive(bValue)
         self.__oAddACLPane.set_sensitive(bValue)
 
     def physical_card_list_set_sensitive(self, bValue):
         """Set the options for adding the card collection to bValue"""
-        self.__oReplaceWithPCLPane.set_sensitive(bValue)
+        self.__oReplacePCLPane.set_sensitive(bValue)
         self.__oAddPCLPane.set_sensitive(bValue)
 
     def set_split_vertical_active(self, bValue):
@@ -422,8 +417,8 @@ class MainMenu(gtk.MenuBar, object):
 
     def do_toggle_save_on_exit(self, oWidget):
         """Toggle the 'Save Pane layout on exit' option"""
-        bChoice = not self.__oConfig.getSaveOnExit()
-        self.__oConfig.setSaveOnExit(bChoice)
+        bChoice = not self.__oConfig.get_save_on_exit()
+        self.__oConfig.set_save_on_exit(bChoice)
         # gtk can handle the rest for us
 
     def do_toggle_save_precise_pos(self, oWidget):

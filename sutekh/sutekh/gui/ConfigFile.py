@@ -6,6 +6,8 @@
 # Copyright 2007 Neil Muller <drnlmuller+sutekh@gmail.com>
 # License: GPL - See COPYRIGHT file for details
 
+"""Config file handling for sutekh"""
+
 from ConfigParser import RawConfigParser, NoOptionError
 
 class ConfigFileListener(object):
@@ -24,6 +26,15 @@ class ConfigFileListener(object):
         pass
 
 class ConfigFile(object):
+    """Handle the setup and management of the config file.
+
+       Ensure that the needed sections exist, and that sensible
+       defaults values are assigned.
+
+       Filters are saved to the config file, and interested objects
+       can register as listeners on the config file to respond to
+       changes to the filters.
+       """
 
     __sFiltersSection = 'Filters'
     __sPanesSection = 'Open Panes'
@@ -40,15 +51,18 @@ class ConfigFile(object):
         if not self.__oConfig.has_section(self.__sPrefsSection):
             self.__oConfig.add_section(self.__sPrefsSection)
             # default to saving on exit
-            self.setSaveOnExit(True)
+            self.set_save_on_exit(True)
 
-        if 'save pane sizes' not in self.__oConfig.options(self.__sPrefsSection):
+        if 'save pane sizes' not in self.__oConfig.options(
+                self.__sPrefsSection):
             self.set_save_precise_pos(True)
 
-        if 'show zero count cards' not in self.__oConfig.options(self.__sPrefsSection):
+        if 'show zero count cards' not in self.__oConfig.options(
+                self.__sPrefsSection):
             self.set_show_zero_count_cards(False)
 
-        if 'save window size' not in self.__oConfig.options(self.__sPrefsSection):
+        if 'save window size' not in self.__oConfig.options(
+                self.__sPrefsSection):
             self.set_save_window_size(True)
 
         if not self.__oConfig.has_section(self.__sPanesSection):
@@ -67,6 +81,7 @@ class ConfigFile(object):
             self.__oConfig.add_section(self.__sPluginsSection)
 
     def __str__(self):
+        """Debugging aid - print the filename"""
         return "FileName : " + self.__sFileName
 
     def _get_bool_key(self, sSection, sKey):
@@ -82,27 +97,34 @@ class ConfigFile(object):
             self.__oConfig.set(sSection, sKey, 'no')
 
     def add_listener(self, oListener):
+        """Add a listener to respon to config file changes."""
         self.__dListeners[oListener] = None
 
     def remove_listener(self, oListener):
+        """Remove a listener from the list."""
         del self.__dListeners[oListener]
 
     def write(self):
+        """Write the config file to disk."""
         self.__oConfig.write(open(self.__sFileName, 'w'))
 
     def get_filters(self):
+        """Get all the filters in the config file."""
         return [x[1] for x in self.__oConfig.items(self.__sFiltersSection)]
 
     def get_filter_keys(self):
+        """Get the keys used to reference the filters."""
         return self.__oConfig.items(self.__sFiltersSection)
 
-    def preSaveClear(self):
+    def pre_save_clear(self):
         """Clear out old saved pos, before saving new stuff"""
         aKeys = self.__oConfig.options(self.__sPanesSection)
         for sKey in aKeys:
             self.__oConfig.remove_option(self.__sPanesSection, sKey)
 
-    def getAllPanes(self):
+    def get_all_panes(self):
+        """Get the all the panes saved in the config file, and their
+           positions."""
         aRes = []
         for sKey, sValue in self.__oConfig.items(self.__sPanesSection):
             iPaneNumber = int(sKey.split(' ')[1])
@@ -115,7 +137,8 @@ class ConfigFile(object):
             if len(aData) > 1:
                 if aData[1] == 'V':
                     bVertical = True
-                    if len(aData) > 2: sPos = aData[2]
+                    if len(aData) > 2:
+                        sPos = aData[2]
                 else:
                     sPos = aData[1]
             try:
@@ -126,11 +149,11 @@ class ConfigFile(object):
         aRes.sort() # Numbers denote ordering
         return aRes
 
-    def getSaveOnExit(self):
+    def get_save_on_exit(self):
         """Query the 'save on exit' option."""
         return self._get_bool_key(self.__sPrefsSection, 'save on exit')
 
-    def setSaveOnExit(self, bSaveOnExit):
+    def set_save_on_exit(self, bSaveOnExit):
         """Set the 'save on exit' option."""
         self._set_bool_key(self.__sPrefsSection, 'save on exit', bSaveOnExit)
 
@@ -160,8 +183,10 @@ class ConfigFile(object):
         self._set_bool_key(self.__sPrefsSection, 'show zero count cards',
                 bShowZero)
 
+    # pylint: disable-msg=R0913
+    # We need all the info in the arguments here
     def add_frame(self, iFrameNumber, sType, sName, bVertical, iPos):
-        """Add a frame to the config file"""
+        """Add a frame with the given position info to the config file"""
         sKey = 'pane ' + str(iFrameNumber)
         sData = sType
         if bVertical:
@@ -171,11 +196,13 @@ class ConfigFile(object):
         sValue = sData + ':' + sName
         self.__oConfig.set(self.__sPanesSection, sKey, sValue)
 
-    def set_databaseURI(self, sDatabaseURI):
+    # pylint: enable-msg=R0913
+
+    def set_database_uri(self, sDatabaseURI):
         """Set the configured database URI"""
         self.__oConfig.set(self.__sPrefsSection, "database url", sDatabaseURI)
 
-    def get_databaseURI(self):
+    def get_database_uri(self):
         """Get database URI from the config file"""
         try:
             sResult = self.__oConfig.get(self.__sPrefsSection, "database url")
@@ -184,14 +211,16 @@ class ConfigFile(object):
         return sResult
 
     def get_window_size(self):
+        """Get the saved window size from the config file."""
         try:
             sResult = self.__oConfig.get(self.__sPrefsSection, 'window size')
-            iX, iY = [int(x) for x in sResult.split(',')]
+            iWidth, iHeight = [int(x) for x in sResult.split(',')]
         except NoOptionError:
-            iX, iY = -1, -1
-        return iX, iY
+            iWidth, iHeight = -1, -1
+        return iWidth, iHeight
 
     def save_window_size(self, tSize):
+        """Save the current window size."""
         sPos = '%d, %d' % (tSize[0], tSize[1])
         self.__oConfig.set(self.__sPrefsSection, 'window size', sPos)
 
@@ -228,10 +257,10 @@ class ConfigFile(object):
             return
 
     def get_plugin_key(self, sKey):
-        """
-        Get an option from the plugins section.
-        Return None if no option is set
-        """
+        """Get an option from the plugins section.
+
+           Return None if no option is set
+           """
         try:
             sResult = self.__oConfig.get(self.__sPluginsSection, sKey)
         except NoOptionError:

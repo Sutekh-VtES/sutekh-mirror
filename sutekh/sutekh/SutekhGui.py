@@ -61,13 +61,13 @@ def main(aArgs):
     oConfig = ConfigFile(oOpts.sRCFile)
 
     if oOpts.db is None:
-        oOpts.db = oConfig.get_databaseURI()
+        oOpts.db = oConfig.get_database_uri()
 
     if oOpts.db is None:
         # No commandline + no rc entry
         ensure_dir_exists(sPrefsDir)
         oOpts.db = sqlite_uri(os.path.join(sPrefsDir, "sutekh.db"))
-        oConfig.set_databaseURI(oOpts.db)
+        oConfig.set_database_uri(oOpts.db)
 
     oConn = connectionForURI(oOpts.db)
     sqlhub.processConnection = oConn
