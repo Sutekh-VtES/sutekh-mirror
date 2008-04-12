@@ -112,7 +112,7 @@ class CardDict(dict):
     def _make_card(self, sName):
         """Create the abstract card in the database."""
         sName = self.oDispCard.sub('', sName)
-        return self._oMaker.makeAbstractCard(sName)
+        return self._oMaker.make_abstract_card(sName)
 
     def _add_expansions(self, oCard, sExp):
         """Add expansion information to the card, creating expansion pairs
@@ -127,7 +127,7 @@ class CardDict(dict):
 
         for sExp, sRarSet in aExp:
             for sRar in sRarSet.split('/'):
-                oPair = self._oMaker.makeRarityPair(sExp, sRar)
+                oPair = self._oMaker.make_rarity_pair(sExp, sRar)
                 oCard.addRarityPair(oPair)
 
     def _add_disciplines(self, oCard, sDis):
@@ -140,9 +140,9 @@ class CardDict(dict):
 
         for sVal in sDis.split():
             if  sVal == sVal.lower():
-                oPair = self._oMaker.makeDisciplinePair(sVal, 'inferior')
+                oPair = self._oMaker.make_discipline_pair(sVal, 'inferior')
             else:
-                oPair = self._oMaker.makeDisciplinePair(sVal, 'superior')
+                oPair = self._oMaker.make_discipline_pair(sVal, 'superior')
             oCard.addDisciplinePair(oPair)
 
     def _add_virtues(self, oCard, sVir):
@@ -153,7 +153,7 @@ class CardDict(dict):
             return
 
         for sVal in sVir.split():
-            oVirt = self._oMaker.makeVirtue(sVal)
+            oVirt = self._oMaker.make_virtue(sVal)
             oCard.addVirtue(oVirt)
 
     def _add_creeds(self, oCard, sCreed):
@@ -164,7 +164,7 @@ class CardDict(dict):
             return
 
         for sVal in sCreed.split('/'):
-            oCard.addCreed(self._oMaker.makeCreed(sVal.strip()))
+            oCard.addCreed(self._oMaker.make_creed(sVal.strip()))
 
     def _add_clans(self, oCard, sClan):
         """Add clans to the card."""
@@ -174,7 +174,7 @@ class CardDict(dict):
             return
 
         for sVal in sClan.split('/'):
-            oCard.addClan(self._oMaker.makeClan(sVal.strip()))
+            oCard.addClan(self._oMaker.make_clan(sVal.strip()))
 
     def _add_cost(self, oCard, sCost):
         """Add the cost to the card, replace 'X' with -1."""
@@ -226,15 +226,15 @@ class CardDict(dict):
     def _add_card_type(self, oCard, sTypes):
         """Add the card type info to the card."""
         for sVal in sTypes.split('/'):
-            oCard.addCardType(self._oMaker.makeCardType(sVal.strip()))
+            oCard.addCardType(self._oMaker.make_card_type(sVal.strip()))
 
     def _add_title(self, oCard, sTitle):
         """Add the title to the card."""
-        oCard.addTitle(self._oMaker.makeTitle(sTitle))
+        oCard.addTitle(self._oMaker.make_title(sTitle))
 
     def _add_sect(self, oCard, sSect):
         """Add the sect to the card."""
-        oCard.addSect(self._oMaker.makeSect(sSect))
+        oCard.addSect(self._oMaker.make_sect(sSect))
 
     def save(self):
         """Commit the card to the database.

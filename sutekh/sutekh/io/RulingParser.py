@@ -92,7 +92,7 @@ class RuleDict(dict):
 
         self.oLogger.info('Card: %s', self['card'].name)
 
-        oRuling = self._oMaker.makeRuling(self['text'], self['code'])
+        oRuling = self._oMaker.make_ruling(self['text'], self['code'])
 
         if self.has_key('url'):
             oRuling.url = self['url']

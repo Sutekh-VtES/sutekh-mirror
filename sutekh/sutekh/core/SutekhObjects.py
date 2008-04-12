@@ -415,39 +415,39 @@ class SutekhObjectMaker(object):
                 dKw['fullname'] = cAbbreviation.fullname(sObj)
             return cObjClass(**dKw)
 
-    def makeCardType(self, sType):
+    def make_card_type(self, sType):
         return self._make_object(CardType, ICardType, CardTypes, sType)
 
-    def makeClan(self, sClan):
+    def make_clan(self, sClan):
         return self._make_object(Clan, IClan, Clans, sClan, bShortname=True)
 
-    def makeCreed(self, sCreed):
+    def make_creed(self, sCreed):
         return self._make_object(Creed, ICreed, Creeds, sCreed,
                 bShortname=True)
 
-    def makeDiscipline(self, sDis):
+    def make_discipline(self, sDis):
         return self._make_object(Discipline, IDiscipline, Disciplines, sDis,
                 bFullname=True)
 
-    def makeExpansion(self, sExpansion):
+    def make_expansion(self, sExpansion):
         return self._make_object(Expansion, IExpansion, Expansions, sExpansion,
                 bShortname=True)
 
-    def makeRarity(self, sRarity):
+    def make_rarity(self, sRarity):
         return self._make_object(Rarity, IRarity, Rarities, sRarity,
                 bShortname=True)
 
-    def makeSect(self, sSect):
+    def make_sect(self, sSect):
         return self._make_object(Sect, ISect, Sects, sSect)
 
-    def makeTitle(self, sTitle):
+    def make_title(self, sTitle):
         return self._make_object(Title, ITitle, Titles, sTitle)
 
-    def makeVirtue(self, sVirtue):
+    def make_virtue(self, sVirtue):
         return self._make_object(Virtue, IVirtue, Virtues, sVirtue,
                 bFullname=True)
 
-    def makeAbstractCard(self, sCard):
+    def make_abstract_card(self, sCard):
         try:
             return IAbstractCard(sCard)
         except SQLObjectNotFound:
@@ -455,22 +455,22 @@ class SutekhObjectMaker(object):
             sCanonical = sName.lower()
             return AbstractCard(canonicalName=sCanonical, name=sName, text="")
 
-    def makeRarityPair(self, sExp, sRarity):
+    def make_rarity_pair(self, sExp, sRarity):
         try:
             return IRarityPair((sExp, sRarity))
         except SQLObjectNotFound:
-            oExp = self.makeExpansion(sExp)
-            oRarity = self.makeRarity(sRarity)
+            oExp = self.make_expansion(sExp)
+            oRarity = self.make_rarity(sRarity)
             return RarityPair(expansion=oExp, rarity=oRarity)
 
-    def makeDisciplinePair(self, sDiscipline, sLevel):
+    def make_discipline_pair(self, sDiscipline, sLevel):
         try:
             return IDisciplinePair((sDiscipline, sLevel))
         except SQLObjectNotFound:
-            oDis = self.makeDiscipline(sDiscipline)
+            oDis = self.make_discipline(sDiscipline)
             return DisciplinePair(discipline=oDis, level=sLevel)
 
-    def makeRuling(self, sText, sCode):
+    def make_ruling(self, sText, sCode):
         try:
             return IRuling((sText, sCode))
         except SQLObjectNotFound:

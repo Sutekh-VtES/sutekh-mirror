@@ -16,9 +16,9 @@ class AbbrevMeta(type):
     """Meta class for the abbrevation classes"""
     def __init__(self, sName, aBases, dDict):
         if self.dKeys:
-            self.makeLookup()
+            self.make_lookup()
 
-    def makeLookup(self):
+    def make_lookup(self):
         """Create a lookup table for the class."""
         self._dLook = {}
         for sKey, aAlts in self.dKeys.iteritems():
