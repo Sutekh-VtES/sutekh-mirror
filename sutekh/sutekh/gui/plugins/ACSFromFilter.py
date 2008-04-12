@@ -77,7 +77,7 @@ class ACSFromFilter(CardListPlugin):
         # Create ACS
         oACS = AbstractCardSet(name=sACSName)
 
-        for oCard in self.model.getCardIterator(
+        for oCard in self.model.get_card_iterator(
                 self.model.get_current_filter()):
             oACS.addAbstractCard(IAbstractCard(oCard))
 

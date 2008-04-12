@@ -52,7 +52,7 @@ class AbstractCardSetFromPhysical(CardListPlugin):
             oNewAC.comment = sDesc
             oNewAC.syncUpdate()
             # Copy the cards across
-            for oCard in self.model.getCardIterator(None):
+            for oCard in self.model.get_card_iterator(None):
                 oNewAC.addAbstractCard(oCard.abstractCardID)
 
             self.open_acs(sName)

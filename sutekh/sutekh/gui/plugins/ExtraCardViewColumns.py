@@ -51,7 +51,7 @@ class ExtraCardViewColumns(CardListPlugin):
         if self.model.iter_depth(oIter) == 1:
             # Only try and lookup things that look like they should be cards
             try:
-                sCardName = self.model.getNameFromIter(oIter).lower()
+                sCardName = self.model.get_name_from_iter(oIter).lower()
                 # Cache lookups, so we don't hit the database so hard when
                 # sorting
                 if not self._dCardCache.has_key(sCardName):
@@ -248,8 +248,8 @@ class ExtraCardViewColumns(CardListPlugin):
         oCard2 = self._get_card(oIter2)
         if oCard1 is None or oCard2 is None:
             # Not comparing cards, sort on name only
-            sName1 = self.model.getNameFromIter(oIter1).lower()
-            sName2 = self.model.getNameFromIter(oIter2).lower()
+            sName1 = self.model.get_name_from_iter(oIter1).lower()
+            sName2 = self.model.get_name_from_iter(oIter2).lower()
             if sName1 < sName2:
                 iRes = -1
             elif sName1 > sName2:

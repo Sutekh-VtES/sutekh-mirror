@@ -21,11 +21,11 @@ class CardListView(gtk.TreeView, object):
     """Base class for all the card list views in Sutekh."""
     # pylint: disable-msg=R0904, R0902
     # gtk.Widget, so many public methods. We need to keep state, so many attrs
-    def __init__(self, oController, oMainWindow, oConfig, oModel):
+    def __init__(self, oController, oMainWindow, oModel):
         self._oModel = oModel
         self._oController = oController
         self._oMainWin = oMainWindow
-        self._oConfig = oConfig
+        self._oConfig = oMainWindow.config_file
         self.dListeners = {} # dictionary of CardListViewListeners
 
         super(CardListView, self).__init__(self._oModel)
@@ -105,7 +105,7 @@ class CardListView(gtk.TreeView, object):
         """Create a dictionary of rows and their expanded status."""
         if self.row_expanded(oPath):
             dExpandedDict.setdefault(oPath,
-                    self._oModel.getCardNameFromPath(oPath))
+                    self._oModel.get_card_name_from_path(oPath))
         return False # Need to process the whole list
 
     # pylint: disable-msg=W0613
@@ -116,7 +116,7 @@ class CardListView(gtk.TreeView, object):
             # pylint: disable-msg=W0704
             # Paths may disappear, so this error can be ignored
             try:
-                sCardName = self._oModel.getCardNameFromPath(oPath)
+                sCardName = self._oModel.get_card_name_from_path(oPath)
                 if sCardName == dExpandedDict[oPath]:
                     self.expand_to_path(oPath)
             except ValueError:
@@ -152,7 +152,7 @@ class CardListView(gtk.TreeView, object):
     # Various arguments required by function signatures
     def card_activated(self, oTree, oPath, oColumn):
         """Update card text and notify listeners when a card is selected."""
-        sCardName = self._oModel.getCardNameFromPath(oPath)
+        sCardName = self._oModel.get_card_name_from_path(oPath)
         self._oController.set_card_text(sCardName)
         for oListener in self.dListeners:
             oListener.set_card_text(sCardName, '')
@@ -273,7 +273,7 @@ class CardListView(gtk.TreeView, object):
                 oPath = [x for x in aList if x not in self._aOldSelection][-1]
             self._aOldSelection = aList
 
-        sCardName = self._oModel.getCardNameFromPath(oPath)
+        sCardName = self._oModel.get_card_name_from_path(oPath)
         self._oController.set_card_text(sCardName)
         sExpansion = self._oModel.get_exp_name_from_path(oPath)
         if not sExpansion:
@@ -301,7 +301,7 @@ class CardListView(gtk.TreeView, object):
                 # Need to check if any of the children match
                 for iChildCount in range(oModel.iter_n_children(oIter)):
                     oChildIter = oModel.iter_nth_child(oIter, iChildCount)
-                    sChildName = self._oModel.getNameFromIter(
+                    sChildName = self._oModel.get_name_from_iter(
                             oChildIter).lower()
                     if sChildName.startswith(sKey.lower()):
                         # Expand the row
@@ -310,7 +310,7 @@ class CardListView(gtk.TreeView, object):
                         return True
                 return True # No matches, so bail
 
-        sCardName = self._oModel.getNameFromIter(oIter).lower()
+        sCardName = self._oModel.get_name_from_iter(oIter).lower()
         if sCardName.startswith(sKey.lower()):
             return False
 
@@ -477,9 +477,9 @@ class EditableCardListView(CardListView):
        setting the editable style, and so forth."""
     # pylint: disable-msg=R0904
     # gtk.Widget, so many public methods
-    def __init__(self, oController, oWindow, oConfig, oModel):
+    def __init__(self, oController, oWindow, oModel):
         super(EditableCardListView, self).__init__(oController, oWindow,
-                oConfig, oModel)
+                oModel)
 
         # Setup columns for default view
         oCell1 = gtk.CellRendererText()
@@ -531,7 +531,7 @@ class EditableCardListView(CardListView):
 
     def check_editable(self):
         """Set the card list to be editable if it's empty"""
-        if self._oModel.getCardIterator(None).count() == 0:
+        if self._oModel.get_card_iterator(None).count() == 0:
             self._set_editable(True)
 
     # Used by card dragging handlers
@@ -554,7 +554,7 @@ class EditableCardListView(CardListView):
             # only interested in bInc
             bInc, bDec = self._oModel.get_inc_dec_flags_from_path(oPath)
             if bInc:
-                sCardName = self._oModel.getCardNameFromPath(oPath)
+                sCardName = self._oModel.get_card_name_from_path(oPath)
                 sExpansion = self._oModel.get_exp_name_from_path(oPath)
                 self._oController.inc_card(sCardName, sExpansion)
 
@@ -565,7 +565,7 @@ class EditableCardListView(CardListView):
             # only interested in bDec
             bInc, bDec = self._oModel.get_inc_dec_flags_from_path(oPath)
             if bDec:
-                sCardName = self._oModel.getCardNameFromPath(oPath)
+                sCardName = self._oModel.get_card_name_from_path(oPath)
                 sExpansion = self._oModel.get_exp_name_from_path(oPath)
                 self._oController.dec_card(sCardName, sExpansion)
 

@@ -44,7 +44,7 @@ class ACLlookupView(AbstractCardView):
         sNewName = 'No Card'
         oModel, aSelection = self.get_selection().get_selected_rows()
         for oPath in aSelection:
-            sNewName = self._oModel.getCardNameFromPath(oPath)
+            sNewName = self._oModel.get_card_name_from_path(oPath)
         return sNewName, ''
 
 class PCLwithNumbersView(PhysicalCardView):
@@ -109,12 +109,12 @@ class PCLwithNumbersView(PhysicalCardView):
 
     def _get_cardcount_data(self, oIter):
         if self._oModel.iter_depth(oIter) == 0:
-            sSectionName = self._oModel.getNameFromIter(oIter)
+            sSectionName = self._oModel.get_name_from_iter(oIter)
             if sSectionName in self.dAssignedCards:
                 return self.dAssignedCards[sSectionName]
         elif self._oModel.iter_depth(oIter) == 1:
             # Get Card Name from this
-            sCardName = self._oModel.getNameFromIter(oIter)
+            sCardName = self._oModel.get_name_from_iter(oIter)
             if sCardName in self.dAssignedCards:
                 # Get total for this card
                 iTot = 0

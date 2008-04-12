@@ -308,7 +308,7 @@ class AnalyzeCardList(CardListPlugin):
             if sCardType != 'Multirole':
                 oFilter = CardTypeFilter(sCardType)
                 dCardLists[sCardType] = _get_abstract_cards(
-                        self.model.getCardIterator(oFilter))
+                        self.model.get_card_iterator(oFilter))
                 self.dTypeNumbers[sCardType] = len(dCardLists[sCardType])
             else:
                  # Multirole values start empty, and are filled in later
@@ -317,7 +317,7 @@ class AnalyzeCardList(CardListPlugin):
 
         oHappyBox = gtk.VBox(False, 2)
 
-        aAllCards = _get_abstract_cards(self.model.getCardIterator(None))
+        aAllCards = _get_abstract_cards(self.model.get_card_iterator(None))
         self.iTotNumber = len(aAllCards)
         self.dCryptStats = {}
         self.dLibraryStats = {}

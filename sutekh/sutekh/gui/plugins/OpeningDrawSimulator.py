@@ -30,7 +30,7 @@ def convert_to_abs(aCards):
 
 def get_cards_filter(oModel, oFilter):
     """Get abstract card list for the given filter"""
-    return convert_to_abs(list(oModel.getCardIterator(oFilter)))
+    return convert_to_abs(list(oModel.get_card_iterator(oFilter)))
 
 def get_probs(dLibProbs, dToCheck, dGroupedProbs):
     """Calculate the probablilties for the card groups"""

@@ -36,7 +36,7 @@ class SetSingleExpansionCards(CardListPlugin):
 
     def do_set_expansions(self):
         """Iterate through card list and set expansions"""
-        for oCard in self.model.getCardIterator(None):
+        for oCard in self.model.get_card_iterator(None):
             if oCard.expansion is None:
                 oAC = oCard.abstractCard
                 aExpansion = set([oRP.expansion for oRP in oAC.rarity])

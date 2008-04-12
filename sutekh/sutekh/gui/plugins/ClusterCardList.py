@@ -282,7 +282,7 @@ class ClusterCardList(CardListPlugin):
 
     def doClustering(self):
         # gather cards
-        aCards = list(self.model.getCardIterator(None))
+        aCards = list(self.model.get_card_iterator(None))
 
         # gather property functions
         dPropFuncs = {}

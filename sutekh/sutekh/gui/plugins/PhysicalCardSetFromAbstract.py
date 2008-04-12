@@ -74,7 +74,7 @@ class PhysicalCardSetFromAbstract(CardListPlugin):
 
         # Add cards to physical card collection if requested
         if oImport.get_active():
-            for oCard in self.model.getCardIterator(None):
+            for oCard in self.model.get_card_iterator(None):
                 # pylint: disable-msg=E1101
                 # pylint misses IAbstractCard methods
                 oAC = IAbstractCard(oCard)
@@ -83,7 +83,7 @@ class PhysicalCardSetFromAbstract(CardListPlugin):
 
         # Populate the new physical card set
         aMissingCards = []
-        for oCard in self.model.getCardIterator(None):
+        for oCard in self.model.get_card_iterator(None):
             oACard = IAbstractCard(oCard)
             # pylint: disable-msg=E1101
             # pylint misses AbstractCard methods (id)

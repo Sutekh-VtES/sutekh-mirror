@@ -271,7 +271,7 @@ class CardDrawSimPlugin(CardListPlugin):
 
     def _setup_cardlists(self, aSelectedCards, bCrypt):
         """Extract the needed card info from the model"""
-        aAllCards = list(self.model.getCardIterator(None))
+        aAllCards = list(self.model.get_card_iterator(None))
         aAllAbsCards = [IAbstractCard(oCard) for oCard in aAllCards]
         iCryptSize = 0
         iLibrarySize = 0
@@ -307,7 +307,7 @@ class CardDrawSimPlugin(CardListPlugin):
         for oPath in aSelection:
             # pylint: disable-msg=E1101
             # pylint doesn't pick up adaptor's methods correctly
-            oCard = IAbstractCard(self.model.getCardNameFromPath(oPath))
+            oCard = IAbstractCard(self.model.get_card_name_from_path(oPath))
             aTypes = [oType.name for oType in oCard.cardtype]
             if aTypes[0] == 'Vampire' or aTypes[0] == 'Imbued':
                 bCrypt = True

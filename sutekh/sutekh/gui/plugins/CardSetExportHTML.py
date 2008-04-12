@@ -297,7 +297,7 @@ class CardSetExportHTML(CardListPlugin):
         # pylint: disable-msg=E1101
         # PyProtocol methods confuse pylint
         dDict = {}
-        for oCard in self.model.getCardIterator(None):
+        for oCard in self.model.get_card_iterator(None):
             oACard = IAbstractCard(oCard)
             dDict.setdefault((oACard.id, oACard.name), 0)
             dDict[(oACard.id, oACard.name)] += 1
