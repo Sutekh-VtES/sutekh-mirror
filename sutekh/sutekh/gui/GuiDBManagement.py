@@ -168,8 +168,8 @@ def refresh_ww_card_list(oWin):
         do_complaint_error(sMesg)
     else:
         sMesg = "Import Completed\n"
-        sMesg += "Eveything seems to have gone OK"
-        do_complaint_error(sMesg)
+        sMesg += "Everything seems to have gone OK"
+        do_complaint(sMesg, gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, True)
     oProgressDialog.destroy()
     return True
 
