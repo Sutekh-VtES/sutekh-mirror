@@ -99,7 +99,7 @@ class MultiPaneWindow(gtk.Window):
             doc="The confi file")
     focussed_pane = property(fget=lambda self: self._oFocussed,
             doc="The currently focussed pane.")
-    window = property(fget=lambda self: self,
+    mainwindow = property(fget=lambda self: self,
             doc="Return reference to the window")
 
     # pylint: enable-msg=W0212
