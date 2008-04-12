@@ -5,6 +5,8 @@
 # Copyright 2007, 2008 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - See COPYING for details
 
+"""Main window for Sutekh."""
+
 import pygtk
 pygtk.require('2.0')
 import gtk
@@ -32,6 +34,9 @@ from sutekh.gui.HTMLTextView import HTMLViewDialog
 
 class MultiPaneWindow(gtk.Window):
     """Window that has a configurable number of panes."""
+    # pylint: disable-msg=R0904, R0902
+    # R0904 - gtk.Widget, so many public methods
+    # R0902 - we need to keep a lot of state, so many instance attributes
     def __init__(self, oConfig, bVerbose=False):
         super(MultiPaneWindow, self).__init__(gtk.WINDOW_TOPLEVEL)
         self.set_name("Sutekh")
@@ -110,11 +115,16 @@ class MultiPaneWindow(gtk.Window):
         """Restore all the frame form the config file."""
         if self._iNumberOpenFrames > 0:
             # Clear out all existing frames
+            # pylint: disable-msg=W9967
+            # Need to use keys(), since we remove items from the dictionary
+            # in remove_frame
             for oFrame in self.dOpenFrames.keys():
                 self.remove_frame(oFrame, True)
         iWidth, iHeight = self._oConfig.get_window_size()
         if iWidth > 0 and iHeight > 0:
             self.resize(iWidth, iHeight)
+        # pylint: disable-msg=W0612
+        # iNumber is not used here, but returned from the config file
         for iNumber, sType, sName, bVert, iPos in self._oConfig.get_all_panes():
             oNewFrame = self.add_pane(bVert, iPos)
             self._oFocussed = oNewFrame
@@ -147,6 +157,8 @@ class MultiPaneWindow(gtk.Window):
 
     def find_pane_by_name(self, sName):
         """Return the gtk widget corresponding to the given pane name"""
+        # pylint: disable-msg=W0704
+        # not doing anything for ValueError is the right thing here
         try:
             iIndex = self.dOpenFrames.values().index(sName)
             oPane = self.dOpenFrames.keys()[iIndex]
@@ -158,6 +170,8 @@ class MultiPaneWindow(gtk.Window):
         """Replace the pane oFrame with the physical card set sName"""
         sMenuFlag = "PCS:" + sName
         if sMenuFlag not in self.dOpenFrames.values() and oFrame:
+            # pylint: disable-msg=W0704
+            # not doing anything for errors right now
             try:
                 oPane = PhysicalCardSetFrame(self, sName)
                 self.replace_frame(oFrame, oPane, sMenuFlag)
@@ -178,6 +192,8 @@ class MultiPaneWindow(gtk.Window):
         """Replace the pane oFrame it with the abstract card set sName."""
         sMenuFlag = "ACS:" + sName
         if sMenuFlag not in self.dOpenFrames.values() and oFrame:
+            # pylint: disable-msg=W0704
+            # not doing anything for errors right now
             try:
                 oPane = AbstractCardSetFrame(self, sName)
                 self.replace_frame(oFrame, oPane, sMenuFlag)
@@ -194,6 +210,9 @@ class MultiPaneWindow(gtk.Window):
         oFrame = self.add_pane_end()
         self.replace_with_abstract_card_set(sName, oFrame)
 
+
+    # pylint: disable-msg=W0613
+    # oWidget needed so this can be called from the menu
     def replace_with_pcs_list(self, oWidget):
         """Replace the focussed pane with the physical card set list."""
         sMenuFlag = "Physical Card Set List"
@@ -265,6 +284,7 @@ class MultiPaneWindow(gtk.Window):
         self.replace_with_card_text(oMenuWidget)
         self._oFocussed = oCurFocus
 
+    # pylint: enable-msg=W0613
     # state manipulation
 
     def reload_pcs_list(self):
@@ -296,8 +316,9 @@ class MultiPaneWindow(gtk.Window):
 
     def set_card_text(self, sCardName):
         """Update the card text frame to the currently selected card."""
-        # pylint: disable-msg=E1101
-        # SQLObject confuse pylint
+        # pylint: disable-msg=E1101, W0704
+        # E1101 - SQLObject confuse pylint
+        # W0704 - not doing anything is the right thing here
         try:
             oCard = AbstractCard.byCanonicalName(sCardName.lower())
             self._oCardTextPane.view.set_card_text(oCard)
@@ -340,9 +361,13 @@ class MultiPaneWindow(gtk.Window):
 
     # startup, exit and other misc functions
 
+    # pylint: disable-msg=R0201
+    # making this a function would not be convient
     def run(self):
         """gtk entry point"""
         gtk.main()
+
+    # pylint: enable-msg=R0201
 
     def action_quit(self, oWidget):
         """Exit the app, saving infoin config file if needed."""
@@ -670,7 +695,6 @@ class MultiPaneWindow(gtk.Window):
             self.oVBox.show()
             self._iNumberOpenFrames -= 1
             # Remove from dictionary of open panes
-            sMenuFlag = self.dOpenFrames[oFrame]
             del self.dOpenFrames[oFrame]
             # Any cleanup events we need?
             oFrame.cleanup()

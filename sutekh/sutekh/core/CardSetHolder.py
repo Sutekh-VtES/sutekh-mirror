@@ -12,6 +12,8 @@ from sutekh.core.SutekhObjects import AbstractCardSet, PhysicalCardSet, \
         PhysicalCard
 
 class CardSetHolder(object):
+    # pylint: disable-msg=R0902
+    # Need to keep state of card set, so many attributes
     """Holder for Card Sets.
 
        This holds a list of cards and opyionally expansions.
@@ -90,12 +92,14 @@ class CardSetHolder(object):
                                annotations=self.annotations)
         oACS.syncUpdate()
 
+        # pylint: disable-msg=W0612
+        # sName + iLoop is loop variable
         for oAbs, (sName, iCnt) in zip(aAbsCards, aCardCnts):
             # pylint: disable-msg=E1101
             # SQLObject confuses pylint
             if not oAbs:
                 continue
-            for i in range(iCnt):
+            for iLoop in range(iCnt):
                 oACS.addAbstractCard(oAbs)
         oACS.syncUpdate()
 
@@ -112,13 +116,15 @@ class CardSetHolder(object):
         aExps = oCardLookup.expansion_lookup(aExpNames, "Physical Card List")
         dExpansionLookup = dict(zip(aExpNames, aExps))
 
+        # pylint: disable-msg=W0612
+        # iCnt, Loop is loop variable
         for oAbs, (sName, iCnt) in zip(aAbsCards, aCardCnts):
             if not oAbs:
                 continue
             for sExpansionName, iExtCnt in \
                     self._dCardExpansions[sName].iteritems():
                 oExpansion = dExpansionLookup[sExpansionName]
-                for i in range(iExtCnt):
+                for iLoop in range(iExtCnt):
                     PhysicalCard(abstractCard=oAbs, expansion=oExpansion)
 
     def createPCS(self, oCardLookup=DEFAULT_LOOKUP):
@@ -188,7 +194,9 @@ class CachedCardSetHolder(CardSetHolder):
                 # Should we cache None responses, so to avoid prompting on
                 # those again?
                 dLookupCache[sName] = oAbs.canonicalName
-            for i in range(iCnt):
+            # pylint: disable-msg=W0612
+            # iLoop is loop variable
+            for iLoop in range(iCnt):
                 oACS.addAbstractCard(oAbs)
         oACS.syncUpdate()
         return dLookupCache
@@ -207,6 +215,8 @@ class CachedCardSetHolder(CardSetHolder):
         aExps = oCardLookup.expansion_lookup(aExpNames, "Physical Card List")
         dExpansionLookup = dict(zip(aExpNames, aExps))
 
+        # pylint: disable-msg=W0612
+        # iCnt and iLoop are loop variables
         for oAbs, (sName, iCnt) in zip(aAbsCards, aCardCnts):
             if not oAbs:
                 dLookupCache[sName] = None
@@ -217,7 +227,7 @@ class CachedCardSetHolder(CardSetHolder):
             for sExpansion, iExtCnt in \
                     self._dCardExpansions[sName].iteritems():
                 oExpansion = dExpansionLookup[sExpansion]
-                for i in range(iExtCnt):
+                for iLoop in range(iExtCnt):
                     PhysicalCard(abstractCard=oAbs, expansion=oExpansion)
         return dLookupCache
 
