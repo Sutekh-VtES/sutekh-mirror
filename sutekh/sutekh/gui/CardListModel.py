@@ -159,6 +159,8 @@ class CardListModel(gtk.TreeStore):
         pass
 
     def load(self):
+        # pylint: disable-msg=R0914
+        # we use many local variables for clarity
         """
         Clear and reload the underlying store. For use after initialisation or when
         the filter or grouping changes.
@@ -525,21 +527,10 @@ class CardListModel(gtk.TreeStore):
                 self.set(oIter, 2, bIncCard)
                 self.set(oIter, 3, bDecCard)
                 if self._dNameExpansion2Iter.has_key(sCardName):
-                    for sExpansion in self._dNameExpansion2Iter[sCardName]:
-                        for oExpIter in self._dNameExpansion2Iter[
-                                sCardName][sExpansion]:
-                            # No cards, so impossible to manipulate expansions
-                            self.set(oExpIter, 1, 0,
-                                    2, False,
-                                    3, False)
+                    self._clear_expansion_iters(sCardName)
             else:
-                # Going away, so clean up expansions if needed
                 if self._dNameExpansion2Iter.has_key(sCardName):
-                    for sExpansion in self._dNameExpansion2Iter[sCardName]:
-                        for oExpIter in self._dNameExpansion2Iter[
-                                sCardName][sExpansion]:
-                            self.remove(oExpIter)
-                    del self._dNameExpansion2Iter[sCardName]
+                    self._remove_expansion_iters(sCardName)
                 self.remove(oIter)
 
             if iGrpCnt > 0 or self.bAddAllAbstractCards:
@@ -556,7 +547,26 @@ class CardListModel(gtk.TreeStore):
         for oListener in self.dListeners:
             oListener.alter_card_count(oCard, iChg)
 
+    def _clear_expansion_iters(self, sCardName):
+        """Zero all the expasion items for sCardName, and set the increment/
+           decrement options to zero."""
+        for sExpansion in self._dNameExpansion2Iter[sCardName]:
+            for oExpIter in self._dNameExpansion2Iter[sCardName][sExpansion]:
+                # No cards, so impossible to manipulate expansions
+                self.set(oExpIter, 1, 0,
+                        2, False,
+                        3, False)
+
+    def _remove_expansion_iters(self, sCardName):
+        """Remove the expansion iters for sCardName"""
+        for sExpansion in self._dNameExpansion2Iter[sCardName]:
+            for oExpIter in self._dNameExpansion2Iter[sCardName][sExpansion]:
+                self.remove(oExpIter)
+        del self._dNameExpansion2Iter[sCardName]
+
     def add_new_card(self, sCardName):
+        # pylint: disable-msg=R0914
+        # we use many local variables for clarity
         """
         If the card sCardName is not in the current list
         (i.e. is not in the card set or is filtered out)

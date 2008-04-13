@@ -14,6 +14,70 @@ from sutekh.core.SutekhObjects import SutekhObjectMaker
 
 # Card Saver
 
+def _find_sect_and_title(aLines):
+    """Search the first 2 lines of the card text for sect & title
+       information.
+
+       This is potentially brittle, since it had to rely on WW's
+       standard text layout.
+       """
+    # pylint: disable-msg=R0912
+    # Need to consider all the cases here
+    # Card text for vampires is either Sect attributes. or Sect.
+    sSect = None
+    sTitle = None
+    if aLines[0].find('Camarilla') != -1:
+        sSect = 'Camarilla'
+        if aLines[0].find('Camarilla primogen') != -1:
+            sTitle = 'Primogen'
+        elif aLines[0].find('Camarilla Prince of') != -1:
+            sTitle = 'Prince'
+        elif aLines[0].find('Justicar') != -1:
+            # Since Justicar titles are of the form
+            # 'Camarilla <Clan> Justicar'
+            oJusticar = re.compile('Camarilla [A-Z][a-z]* Justicar')
+            if oJusticar.search(aLines[0]) is not None:
+                sTitle = 'Justicar'
+        elif aLines[0].find('Camarilla Inner Circle') != -1:
+            sTitle = 'Inner Circle'
+    elif aLines[0].find('Sabbat') != -1:
+        sSect = 'Sabbat'
+        if aLines[0].find('Sabbat Archbishop of') != -1:
+            sTitle = 'Archbishop'
+        elif aLines[0].find('Sabbat bishop') != -1:
+            sTitle = 'Bishop'
+        elif aLines[0].find('sabbat priscus') != -1:
+            sTitle = 'Priscus'
+        elif aLines[0].find('Sabbat cardinal') != -1:
+            sTitle = 'Cardinal'
+        elif aLines[0].find('Sabbat regent') != -1:
+            sTitle = 'Regent'
+    elif aLines[0].find('Independent') != -1:
+        sSect = 'Independent'
+        # Independent titles are on the next line. Of the form
+        # 'Name has X vote(s)'
+        # pylint: disable-msg=W0704
+        # error isn't fatal, so ignoring it is fine
+        try:
+            # Special cases 'The Baron' and 'Ur-Shulgi' mean we don't
+            # anchor the regexp
+            oIndTitle = re.compile('[A-Z][a-z]* has ([0-9]) vote')
+            oMatch = oIndTitle.search(aLines[1])
+            if oMatch is not None:
+                if oMatch.groups()[0] == '1':
+                    sTitle = 'Independent with 1 vote'
+                elif oMatch.groups()[0] == '2':
+                    sTitle = 'Independent with 2 votes'
+                elif oMatch.groups()[0] == '3':
+                    sTitle = 'Independent with 3 votes'
+        except IndexError:
+            pass
+    elif aLines[0].find('Laibon') != -1:
+        sSect = 'Laibon'
+        if aLines[0].find('Laibon magaji') != -1:
+            sTitle = 'Magaji'
+    return sSect, sTitle
+
 class CardDict(dict):
     """Dictionary object which holds the extracted card info."""
     oDisGaps = re.compile(r'[\\\/{}\&\s]+')
@@ -34,8 +98,6 @@ class CardDict(dict):
             for sVal in sTypes.split('/'):
                 if sVal == 'Vampire':
                     sType = sVal
-        sTitle = None
-        sSect = None
         # Check for REFLEX card type
         if self['text'].find(' [REFLEX] ') != -1:
             if self.has_key('cardtype'):
@@ -44,59 +106,9 @@ class CardDict(dict):
             else:
                 self['cardtype'] = 'Reflex'
         if sType == 'Vampire':
-            # Card text for vampires is either Sect attributes. or
             # Sect attributes: more text. Title is in the attributes
             aLines = self['text'].split(':')
-            if aLines[0].find('Camarilla') != -1:
-                sSect = 'Camarilla'
-                if aLines[0].find('Camarilla primogen') != -1:
-                    sTitle = 'Primogen'
-                elif aLines[0].find('Camarilla Prince of') != -1:
-                    sTitle = 'Prince'
-                elif aLines[0].find('Justicar') != -1:
-                    # Since Justicar titles are of the form
-                    # 'Camarilla <Clan> Justicar'
-                    oJusticar = re.compile('Camarilla [A-Z][a-z]* Justicar')
-                    if oJusticar.search(aLines[0]) is not None:
-                        sTitle = 'Justicar'
-                elif aLines[0].find('Camarilla Inner Circle') != -1:
-                    sTitle = 'Inner Circle'
-            elif aLines[0].find('Sabbat') != -1:
-                sSect = 'Sabbat'
-                if aLines[0].find('Sabbat Archbishop of') != -1:
-                    sTitle = 'Archbishop'
-                elif aLines[0].find('Sabbat bishop') != -1:
-                    sTitle = 'Bishop'
-                elif aLines[0].find('sabbat priscus') != -1:
-                    sTitle = 'Priscus'
-                elif aLines[0].find('Sabbat cardinal') != -1:
-                    sTitle = 'Cardinal'
-                elif aLines[0].find('Sabbat regent') != -1:
-                    sTitle = 'Regent'
-            elif aLines[0].find('Independent') != -1:
-                sSect = 'Independent'
-                # Independent titles are on the next line. Of the form
-                # Name has X vote(s)
-                # pylint: disable-msg=W0704
-                # error isn't fatal, so ignoring it is fine
-                try:
-                    # Special cases 'The Baron' and 'Ur-Shulgi' mean we don't
-                    # anchor the regexp
-                    oIndTitle = re.compile('[A-Z][a-z]* has ([0-9]) vote')
-                    oMatch = oIndTitle.search(aLines[1])
-                    if oMatch is not None:
-                        if oMatch.groups()[0] == '1':
-                            sTitle = 'Independent with 1 vote'
-                        elif oMatch.groups()[0] == '2':
-                            sTitle = 'Independent with 2 votes'
-                        elif oMatch.groups()[0] == '3':
-                            sTitle = 'Independent with 3 votes'
-                except IndexError:
-                    pass
-            elif aLines[0].find('Laibon') != -1:
-                sSect = 'Laibon'
-                if aLines[0].find('Laibon magaji') != -1:
-                    sTitle = 'Magaji'
+            sSect, sTitle = _find_sect_and_title(aLines)
             # check if the vampire has flight (text ends has Flight [FLIGHT].)
             oFlightRexegp = re.compile('Flight \[FLIGHT\]\.')
             oMatch = oFlightRexegp.search(aLines[-1])
@@ -105,10 +117,10 @@ class CardDict(dict):
                     self['discipline'] += ' fli'
                 else:
                     self['discipline'] = 'fli'
-        if sSect is not None:
-            self['sect'] = sSect
-        if sTitle is not None:
-            self['title'] = sTitle
+            if sSect is not None:
+                self['sect'] = sSect
+            if sTitle is not None:
+                self['title'] = sTitle
 
     def _make_card(self, sName):
         """Create the abstract card in the database."""
@@ -238,6 +250,8 @@ class CardDict(dict):
         oCard.addSect(self._oMaker.make_sect(sSect))
 
     def save(self):
+        # pylint: disable-msg=R0912
+        # Need to consider all cases, so many branches
         """Commit the card to the database.
 
            This fills in the needed fields and creates entries in the join
