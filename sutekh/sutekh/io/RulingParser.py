@@ -15,6 +15,7 @@ from sqlobject import SQLObjectNotFound
 # Ruling Saver
 
 class RuleDict(dict):
+    """Dictionary object which holds the extracted rulings information."""
     _aSectionKeys = ['title', 'card']
     _oMasterOut = re.compile(r'\s*-\s*Master\s*\:?\s*Out\-of\-Turn$')
     _oCommaThe = re.compile(r'\s*\,\s*The$')
@@ -113,9 +114,11 @@ class State(object):
         self.oLogger = oLogger
 
     def transition(self, sTag, dAttr):
+        """Transition from one state to another"""
         raise NotImplementedError
 
     def data(self, sData):
+        """Add data to the state"""
         self._sData += sData
 
 class StateWithRule(State):
@@ -129,18 +132,22 @@ class StateWithRule(State):
 # State Classes
 
 class NoSection(State):
+    """Not in any ruling section."""
     # pylint: disable-msg=W0613
     # dAttr needed by function signature
     def transition(self, sTag, dAttr):
+        """Transition ot InSection if needed."""
         if sTag == 'p':
             return InSection(RuleDict(self.oLogger), self.oLogger)
         else:
             return self
 
 class InSection(StateWithRule):
+    """In a ruling section."""
     # pylint: disable-msg=W0613
     # dAttr needed by function signature
     def transition(self, sTag, dAttr):
+        """Transition to SectionTitle or NoSection as needed."""
         if sTag == 'b':
             return SectionTitle(self._dInfo, self.oLogger)
         elif sTag == 'p':
@@ -150,9 +157,11 @@ class InSection(StateWithRule):
             return NoSection(self.oLogger)
 
 class SectionTitle(StateWithRule):
+    """In the tilte of the section."""
     # pylint: disable-msg=W0613
     # dAttr needed by function signature
     def transition(self, sTag, dAttr):
+        """Transition to SectionWithTitle if needed."""
         if sTag == 'b':
             raise StateError()
         elif sTag == '/b':
@@ -162,9 +171,11 @@ class SectionTitle(StateWithRule):
             return self
 
 class SectionWithTitle(StateWithRule):
+    """In a section with a known title."""
     # pylint: disable-msg=W0613
     # dAttr needed by function signature
     def transition(self, sTag, dAttr):
+        """Transition to SectionRule, InSection or NoSection if needed."""
         if sTag == 'li':
             return SectionRule(self._dInfo, self.oLogger)
         elif sTag == 'p':
@@ -176,7 +187,9 @@ class SectionWithTitle(StateWithRule):
             return self
 
 class SectionRule(StateWithRule):
+    """In a ruling in the section."""
     def transition(self, sTag, dAttr):
+        """Transition to the appropriate InRule State."""
         if sTag == 'span' and dAttr.get('class') in ['ruling', 'errata',
                 'clarification']:
             return InRuleText(self._dInfo, self.oLogger)
@@ -208,9 +221,11 @@ class SectionRule(StateWithRule):
         return self
 
 class InRuleText(StateWithRule):
+    """In the text of a ruling."""
     # pylint: disable-msg=W0613
     # dAttr needed by function signature
     def transition(self, sTag, dAttr):
+        """Transition to SectionRule if needed."""
         if sTag == 'span':
             raise StateError()
         elif sTag == '/span':
@@ -220,9 +235,11 @@ class InRuleText(StateWithRule):
             return self
 
 class InRuleUrl(StateWithRule):
+    """In the url associated with this ruling."""
     # pylint: disable-msg=W0613
     # dAttr needed by function signature
     def transition(self, sTag, dAttr):
+        """Transition to SectionRule if needed."""
         if sTag == 'a':
             raise StateError()
         elif sTag == '/a':
@@ -234,6 +251,7 @@ class InRuleUrl(StateWithRule):
 # Parser
 
 class RulingParser(HTMLParser.HTMLParser, object):
+    """Actual Parser for the WW rulings HTML files."""
     def __init__(self, oLogHandler):
         # super().__init__ calls reset, so we need this first
         self.oLogger = Logger('WW Rulings parser')

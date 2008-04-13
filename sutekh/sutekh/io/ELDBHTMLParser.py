@@ -61,6 +61,9 @@ class Collecting(State):
 
 class DeckInfoItem(State):
     """States for the table rows describing the deck."""
+
+    # pylint: disable-msg=W0613
+    # dAttr required by function signature
     def transition(self, sTag, dAttr):
         """Transition back to Collecting if needed"""
         if sTag == '/tr':
@@ -90,6 +93,8 @@ class CardItem(State):
         super(CardItem, self).__init__(oHolder)
         self._iCnt = None
 
+    # pylint: disable-msg=W0613
+    # dAttr required by function signature
     def transition(self, sTag, dAttr):
         """Extract card data and add it back to the CardSetHolder if possible,
            and transtion back to Collecting if needed."""

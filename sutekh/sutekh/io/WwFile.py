@@ -12,14 +12,19 @@ conventions.
 import codecs
 import urllib2
 
+# pylint: disable-msg=C0103
+# These names are acceptable in this case
 WW_CARDLIST_URL = "http://www.white-wolf.com/vtes/index.php?line=cardlist"
 WW_RULINGS_URL = "http://www.white-wolf.com/vtes/index.php?line=rulings"
+# pylint: enable-msg=C0103
 
 class WwFile(object):
     """WwFile is a convenience class which has an .open(..) method which
        returns a file-like object with the encoding set correctly.
        """
 
+    # pylint: disable-msg=C0103
+    # we accept sfFile here
     def __init__(self, sfFile, bUrl=False, bFileObj=False):
         self.sfFile = sfFile
         self.bUrl = bUrl
@@ -27,6 +32,8 @@ class WwFile(object):
 
         if bUrl and bFileObj:
             raise ValueError("WwFile cannot be both a URL and a fileobject")
+
+    # pylint: enable-msg=C0103
 
     def open(self):
         """Return a file object for the file."""

@@ -15,6 +15,7 @@ from sutekh.core.SutekhObjects import SutekhObjectMaker
 # Card Saver
 
 class CardDict(dict):
+    """Dictionary object which holds the extracted card info."""
     oDisGaps = re.compile(r'[\\\/{}\&\s]+')
     oWhiteSp = re.compile(r'[{}\s]+')
     oDispCard = re.compile(r'\[[^\]]+\]$')
@@ -304,6 +305,7 @@ class CardDict(dict):
 # State Base Classes
 
 class StateError(Exception):
+    """Error case in the state true"""
     pass
 
 class State(object):
@@ -314,13 +316,15 @@ class State(object):
         self.oLogger = oLogger
 
     def transition(self, sTag, dAttr):
+        """Transition from one state to another"""
         raise NotImplementedError
 
     def data(self, sData):
+        """Add data to the state"""
         self._sData += sData
 
 class StateWithCard(State):
-    """BAse class for state transitions when already in a card."""
+    """Base class for state transitions when already in a card."""
     # pylint: disable-msg=W0223
     # descendants will override transition, so still abstract here.
     def __init__(self, dInfo, oLogger):
@@ -330,21 +334,31 @@ class StateWithCard(State):
 # State Classes
 
 class NoCard(State):
+    """State when we are not in a card."""
+    # pylint: disable-msg=W0613
+    # dAttr required by function signature
     def transition(self, sTag, dAttr):
+        """Transition to PotentialCard if needed."""
         if sTag == 'p':
             return PotentialCard(self.oLogger)
         else:
             return self
 
 class PotentialCard(State):
+    """State for a section that may be a card"""
     def transition(self, sTag, dAttr):
+        """Transition to InCard or NoCard if needed."""
         if sTag == 'a' and dAttr.has_key('name'):
             return InCard(CardDict(self.oLogger), self.oLogger)
         else:
             return NoCard(self.oLogger)
 
 class InCard(StateWithCard):
+    """State for in a card description in the WW card list."""
+    # pylint: disable-msg=W0613
+    # dAttr required by function signature
     def transition(self, sTag, dAttr):
+        """Transistion to the appropriate section state if needed."""
         if sTag == 'p':
             raise StateError()
         elif sTag == '/p':
@@ -362,7 +376,11 @@ class InCard(StateWithCard):
             return self
 
 class InCardName(StateWithCard):
+    """In the card name section."""
+    # pylint: disable-msg=W0613
+    # dAttr required by function signature
     def transition(self, sTag, dAttr):
+        """Transistion back to InCard if needed."""
         if sTag == '/span':
             self._dInfo['name'] = self._sData.strip()
             return InCard(self._dInfo, self.oLogger)
@@ -372,7 +390,11 @@ class InCardName(StateWithCard):
             return self
 
 class InExpansion(StateWithCard):
+    """In the expansions section."""
+    # pylint: disable-msg=W0613
+    # dAttr required by function signature
     def transition(self, sTag, dAttr):
+        """Transistion back to InCard if needed."""
         if sTag == '/span':
             self._dInfo['expansion'] = self._sData.strip()
             return InCard(self._dInfo, self.oLogger)
@@ -382,7 +404,11 @@ class InExpansion(StateWithCard):
             return self
 
 class InCardText(StateWithCard):
+    """In the card text section."""
+    # pylint: disable-msg=W0613
+    # dAttr required by function signature
     def transition(self, sTag, dAttr):
+        """Transistion back to InCard if needed."""
         if sTag == '/td' or sTag == 'tr' or sTag == '/tr' or sTag == '/table':
             self._dInfo['text'] = self._sData.strip()
             return InCard(self._dInfo, self.oLogger)
@@ -392,7 +418,11 @@ class InCardText(StateWithCard):
             return self
 
 class InKeyValue(StateWithCard):
+    """Extract a dictionary key from the table holding the card info."""
+    # pylint: disable-msg=W0613
+    # dAttr required by function signature
     def transition(self, sTag, dAttr):
+        """Transition to WaitingForValue if needed."""
         if sTag == '/span':
             sKey = self._sData.strip().strip(':').lower()
             return WaitingForValue(sKey, self._dInfo, self.oLogger)
@@ -402,12 +432,16 @@ class InKeyValue(StateWithCard):
             return self
 
 class WaitingForValue(StateWithCard):
+    """Extract a value from the table holding the card info."""
     def __init__(self, sKey, dInfo, oLogHandler):
         super(WaitingForValue, self).__init__(dInfo, oLogHandler)
         self._sKey = sKey
         self._bGotTd = False
 
+    # pylint: disable-msg=W0613
+    # dAttr required by function signature
     def transition(self, sTag, dAttr):
+        """Transition back to InCard if needed."""
         if sTag == 'td':
             self._sData = ""
             self._bGotTd = True
@@ -426,6 +460,7 @@ class WaitingForValue(StateWithCard):
 # Parser
 
 class WhiteWolfParser(HTMLParser.HTMLParser, object):
+    """Actual Parser for the WW cardlist HTML file(s)."""
     def __init__(self, oLogHandler):
         # super().__init__ calls reset, so we need this first
         self.oLogger = Logger('White wolf card parser')
