@@ -124,6 +124,8 @@ class MultiPaneWindow(gtk.Window):
 
     def restore_from_config(self):
         """Restore all the frame form the config file."""
+        # pylint: disable-msg=R0912
+        # Need to consider all these cases, so many branches
         if self._iNumberOpenFrames > 0:
             # Clear out all existing frames
             # pylint: disable-msg=W9967
@@ -136,7 +138,8 @@ class MultiPaneWindow(gtk.Window):
             self.resize(iWidth, iHeight)
         # pylint: disable-msg=W0612
         # iNumber is not used here, but returned from the config file
-        for iNumber, sType, sName, bVert, iPos in self._oConfig.get_all_panes():
+        for iNumber, sType, sName, bVert, iPos in \
+                self._oConfig.get_all_panes():
             oNewFrame = self.add_pane(bVert, iPos)
             self._oFocussed = oNewFrame
             if sType == PhysicalCardSet.sqlmeta.table:
@@ -443,11 +446,15 @@ class MultiPaneWindow(gtk.Window):
         for oPane in aTopLevelPane:
             save_children(oPane, self._oConfig, False, 1, -1)
 
+    # pylint: disable-msg=R0201
+    # making this a function would not be convient
     def show_about_dialog(self, oWidget):
         """Display the about dialog"""
         oDlg = SutekhAboutDialog()
         oDlg.run()
         oDlg.destroy()
+
+    # pylint: enable-msg=R0201
 
     def show_tutorial(self, oMenuWidget, oHelpLast):
         """Show the HTML Tutorial"""
@@ -561,6 +568,9 @@ class MultiPaneWindow(gtk.Window):
            if iConfigPos == -1, the currently focussed frame is
            halved in size.
            """
+        # this is a complex function (argulably too complex). Simplifying
+        # it is non trivial, but I'm leaving the R0915 + R0912 wanring for
+        # now
         oWidget = BasicFrame(self)
         oWidget.add_parts()
         oWidget.set_focus_handler(self.win_focus)

@@ -173,6 +173,7 @@ class HtmlHandler(xml.sax.handler.ContentHandler):
         oTag.set_property("size-points", fLength/fResolution)
 
     def _parse_style_font_size(self, oTag, sValue):
+        """Parse the font size attribute"""
         try:
             iScale = {
                 "xx-small": pango.SCALE_XX_SMALL,
@@ -198,6 +199,7 @@ class HtmlHandler(xml.sax.handler.ContentHandler):
         self._parse_length(sValue, True, self.__parse_font_size_cb, oTag)
 
     def _parse_style_font_style(self, oTag, sValue):
+        """Parse the font style attribute"""
         try:
             iStyle = {
                 "normal": pango.STYLE_NORMAL,
@@ -211,18 +213,23 @@ class HtmlHandler(xml.sax.handler.ContentHandler):
 
     @staticmethod
     def __frac_length_tag_cb(fLength, oTag, sPropName):
+        """Callback used by _parse_length for handling the margin style
+           settings."""
         oTag.set_property(sPropName, fLength)
 
     def _parse_style_margin_left(self, oTag, sValue):
+        """Handle the margin left style attribute."""
         self._parse_length(sValue, False, self.__frac_length_tag_cb, oTag,
                 "left-margin")
 
     def _parse_style_margin_right(self, oTag, sValue):
+        """Hanlde the margin right style attribute."""
         self._parse_length(sValue, False, self.__frac_length_tag_cb, oTag,
                 "right-margin")
 
     def _parse_style_font_weight(self, oTag, sValue):
-        ## TODO: missing 'bolder' and 'lighter'
+        """Adjust the font to match the font weight specification."""
+        ## missing 'bolder' and 'lighter', but that's not important for us
         try:
             iWeight = {
                 '100': pango.WEIGHT_ULTRALIGHT,
@@ -243,9 +250,11 @@ class HtmlHandler(xml.sax.handler.ContentHandler):
             oTag.set_property("weight", iWeight)
 
     def _parse_style_font_family(self, oTag, sValue):
+        """Change the font family."""
         oTag.set_property("family", sValue)
 
     def _parse_style_text_align(self, oTag, sValue):
+        """Set the text alignment style."""
         try:
             iAlign = {
                 'left': gtk.JUSTIFY_LEFT,
@@ -293,6 +302,7 @@ class HtmlHandler(xml.sax.handler.ContentHandler):
             __style_methods[sStyle] = fMethod
 
     def _get_style_tags(self):
+        """Get the current set of style tags"""
         return [oTag for oTag in self._aStyles if oTag is not None]
 
     def _begin_span(self, sStyle, oTag=None):
@@ -347,6 +357,8 @@ class HtmlHandler(xml.sax.handler.ContentHandler):
     # Arguments needed so this can be called via 'size-allocate' event
     def __parse_length_frac_cb(self, oTextView, oAllocation,
             fFrac, fCallback, aArgs):
+        """call the required callback function when the size allocation
+           changes."""
         # pylint: disable-msg=W0142
         # *magic required here
         fCallback(oAllocation.width * fFrac, *aArgs)
