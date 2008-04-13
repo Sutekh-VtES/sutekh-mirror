@@ -68,7 +68,7 @@ class AbstractCardSetParser(object):
            """
         oOldConn = sqlhub.processConnection
         sqlhub.processConnection = oOldConn.transaction()
-        self.oCS.createACS(oCardLookup)
+        self.oCS.create_acs(oCardLookup)
         sqlhub.processConnection.commit()
         sqlhub.processConnection = oOldConn
 

@@ -43,11 +43,11 @@ class CSVParser(object):
         sqlhub.processConnection = oOldConn.transaction()
 
         if self.iFileType == self.PCL:
-            self.oCS.createPhysicalCardList(oCardLookup)
+            self.oCS.create_physical_cl(oCardLookup)
         elif self.iFileType == self.PCS:
-            self.oCS.createPCS(oCardLookup)
+            self.oCS.create_pcs(oCardLookup)
         else:
-            self.oCS.createACS(oCardLookup)
+            self.oCS.create_acs(oCardLookup)
 
         sqlhub.processConnection.commit()
         sqlhub.processConnection = oOldConn

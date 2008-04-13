@@ -77,7 +77,7 @@ class CardSetHolder(object):
 
     # Save Virtual Card Set to Database in Various Ways
 
-    def createACS(self, oCardLookup=DEFAULT_LOOKUP):
+    def create_acs(self, oCardLookup=DEFAULT_LOOKUP):
         """Create an Abstract Card Set.
            """
         if self.name is None:
@@ -103,7 +103,7 @@ class CardSetHolder(object):
                 oACS.addAbstractCard(oAbs)
         oACS.syncUpdate()
 
-    def createPhysicalCardList(self, oCardLookup=DEFAULT_LOOKUP):
+    def create_physical_cl(self, oCardLookup=DEFAULT_LOOKUP):
         """Create the Physical Card List from this Card Set.
 
            Intended for updating WW card lists when WW rename cards, etc.
@@ -127,7 +127,7 @@ class CardSetHolder(object):
                 for iLoop in range(iExtCnt):
                     PhysicalCard(abstractCard=oAbs, expansion=oExpansion)
 
-    def createPCS(self, oCardLookup=DEFAULT_LOOKUP):
+    def create_pcs(self, oCardLookup=DEFAULT_LOOKUP):
         """Create a Physical Card Set.
            """
         if self.name is None:
@@ -167,7 +167,7 @@ class CachedCardSetHolder(CardSetHolder):
     # (this applies to all methods in this class)
     # W0102 - {} is the right thing here
     # W0221 - We need the extra argument
-    def createACS(self, oCardLookup=DEFAULT_LOOKUP, dLookupCache={}):
+    def create_acs(self, oCardLookup=DEFAULT_LOOKUP, dLookupCache={}):
         """Create an Abstract Card Set.
            """
         if self.name is None:
@@ -201,12 +201,13 @@ class CachedCardSetHolder(CardSetHolder):
         oACS.syncUpdate()
         return dLookupCache
 
-    def createPhysicalCardList(self, oCardLookup=DEFAULT_LOOKUP,
-            dLookupCache={}):
+    def create_physical_cl(self, oCardLookup=DEFAULT_LOOKUP, dLookupCache={}):
         """Create the Physical Card List from this Card Set.
 
            Intended for updating WW card lists when WW rename cards, etc.
            """
+        # pylint: disable-msg=R0914
+        # we use this many local variables for clarity
         aCardCnts = self._dCards.items()
         aAbsCards = oCardLookup.lookup([dLookupCache.get(tCardCnt[0],
             tCardCnt[0]) for tCardCnt in aCardCnts], "Physical Card List")
@@ -231,7 +232,7 @@ class CachedCardSetHolder(CardSetHolder):
                     PhysicalCard(abstractCard=oAbs, expansion=oExpansion)
         return dLookupCache
 
-    def createPCS(self, oCardLookup=DEFAULT_LOOKUP, dLookupCache={}):
+    def create_pcs(self, oCardLookup=DEFAULT_LOOKUP, dLookupCache={}):
         """Create a Physical Card Set.
            """
         if self.name is None:

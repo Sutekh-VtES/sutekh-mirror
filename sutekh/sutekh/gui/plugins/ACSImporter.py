@@ -141,7 +141,7 @@ class ACSImporter(CardListPlugin):
 
         # Create ACS
         try:
-            oHolder.createACS(oCardLookup=self.cardlookup)
+            oHolder.create_acs(oCardLookup=self.cardlookup)
         except RuntimeError, oExp:
             sMsg = "Creating the card set failed with the following error:\n"
             sMsg += str(oExp) + "\n"

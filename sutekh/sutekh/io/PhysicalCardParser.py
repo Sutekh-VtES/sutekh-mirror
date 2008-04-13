@@ -64,7 +64,7 @@ class PhysicalCardParser(object):
            """
         oOldConn = sqlhub.processConnection
         sqlhub.processConnection = oOldConn.transaction()
-        self.oCS.createPhysicalCardList(oCardLookup)
+        self.oCS.create_physical_cl(oCardLookup)
         sqlhub.processConnection.commit()
         sqlhub.processConnection = oOldConn
 

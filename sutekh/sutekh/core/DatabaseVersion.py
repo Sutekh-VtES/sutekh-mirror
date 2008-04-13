@@ -20,6 +20,8 @@ def _get_connection(oConn):
 
 class DatabaseVersion(object):
     """Class to handle all the database manipulation aspects."""
+    # pylint: disable-msg=R0201
+    # All these are methods for convience
 
     def __init__(self, oConn=None):
         oConn = _get_connection(oConn)

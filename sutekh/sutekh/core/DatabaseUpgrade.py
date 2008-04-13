@@ -755,13 +755,13 @@ def copy_to_new_abstract_card_db(oOrigConn, oNewConn, oCardLookup,
     oTarget = oNewConn.transaction()
     sqlhub.processConnection = oTarget
     # Create the cardsets from the holders
-    dLookupCache = oPhysListCS.createPhysicalCardList(oCardLookup)
+    dLookupCache = oPhysListCS.create_physical_cl(oCardLookup)
     oLogger.info('Physical Card list copied')
     for oSet in aAbsCardSets:
-        oSet.createACS(oCardLookup, dLookupCache)
+        oSet.create_acs(oCardLookup, dLookupCache)
         oLogger.info('Abstract Card Set: %s', oSet.name)
     for oSet in aPhysCardSets:
-        oSet.createPCS(oCardLookup, dLookupCache)
+        oSet.create_pcs(oCardLookup, dLookupCache)
         oLogger.info('Physical Card Set: %s', oSet.name)
     oTarget.commit()
     # Restore mapping
