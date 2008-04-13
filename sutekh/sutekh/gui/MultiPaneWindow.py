@@ -110,7 +110,7 @@ class MultiPaneWindow(gtk.Window):
         if not self.__dMenus.has_key(sMenuFlag):
             self.__dMenus[sMenuFlag] = oMenuActiveFunc
 
-    # working directory methods 
+    # working directory methods
 
     def get_working_dir(self):
         """Get the current working dir for file chooser widgets"""

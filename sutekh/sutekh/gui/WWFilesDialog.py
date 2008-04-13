@@ -42,7 +42,7 @@ class WWFilesDialog(SutekhDialog):
                 "Backup database contents to File?")
         self.oBackupFileButton.set_active(False)
         self.oBackupFileLabel = gtk.Label("(None)")
-        self.oBackupFileDialog = SutekhFileDialog(oParent, 
+        self.oBackupFileDialog = SutekhFileDialog(oParent,
                 "Database Backup file", gtk.FILE_CHOOSER_ACTION_SAVE,
                 (gtk.STOCK_OK, gtk.RESPONSE_OK,
                     gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
