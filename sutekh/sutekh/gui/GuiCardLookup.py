@@ -37,7 +37,7 @@ class ACLlookupView(AbstractCardView):
     """
     def __init__(self, oDialogWindow, oConfig):
         oController = dummyController('AbstractCard')
-        super(ACLlookupView, self).__init__(oController, oDialogWindow, oConfig)
+        super(ACLlookupView, self).__init__(oController, oDialogWindow)
         self.get_selection().set_mode(gtk.SELECTION_SINGLE)
 
     def get_selected_card(self):
@@ -53,7 +53,7 @@ class PCLwithNumbersView(PhysicalCardView):
     """
     def __init__(self, oDialogWindow, oConfig):
         oController = dummyController('PhysicalCard')
-        super(PCLwithNumbersView, self).__init__(oController, oDialogWindow, oConfig)
+        super(PCLwithNumbersView, self).__init__(oController, oDialogWindow)
         self.get_selection().set_mode(gtk.SELECTION_SINGLE)
         self.dAssignedCards = {}
         oCell1 = gtk.CellRendererText()
@@ -274,6 +274,8 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
                 (gtk.STOCK_OK, gtk.RESPONSE_OK,
                  gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
 
+        oUnknownDialog.config_file = self._oConfig
+
         oPhysCardView = PCLwithNumbersView(oUnknownDialog, self._oConfig)
         oViewWin = AutoScrolledWindow(oPhysCardView)
         oViewWin.set_size_request(200, 600)
@@ -397,6 +399,8 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
                 (gtk.STOCK_OK, gtk.RESPONSE_OK,
                  gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
 
+        oUnknownDialog.config_file = self._oConfig
+        
         oAbsCardView = ACLlookupView(oUnknownDialog, self._oConfig)
         oMesgLabel1 = gtk.Label()
         oMesgLabel2 = gtk.Label()
