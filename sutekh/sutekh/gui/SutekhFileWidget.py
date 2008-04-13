@@ -60,6 +60,8 @@ class SutekhFileButton(gtk.FileChooserButton):
             self.set_current_folder(sWorkingDir)
         self.oDialog.connect('map-event', self.mapped, oParent)
 
+    # pylint: disable-msg=W0613
+    # oWidget + oEvent needed by the function signature
     def mapped(self, oWidget, oEvent, oParent):
         """Update the dialogs working dir when the dialog is shown.
 

@@ -25,8 +25,9 @@ class MainMenu(gtk.MenuBar, object):
        This provides access to the major pane management actions, the
        global file actions, the help system, and any global plugins.
        """
-    # pylint: disable-msg=R0904
-    # gtk.Widget, so many public methods
+    # pylint: disable-msg=R0904, R0902
+    # R0904 - gtk.Widget, so many public methods
+    # R0902 - We keep a lot of state here (menu's available, etc.)
     def __init__(self, oWindow, oConfig):
         super(MainMenu, self).__init__()
         self.__oWin = oWindow
@@ -37,9 +38,9 @@ class MainMenu(gtk.MenuBar, object):
         self.__create_plugin_menu()
         self.__create_help_menu()
         oWindow.add_to_menu_list("My Collection",
-                self.physical_card_list_set_sensitive)
+                self.physical_cl_set_sensitive)
         oWindow.add_to_menu_list("White Wolf Card List",
-                self.abstract_card_list_set_sensitive)
+                self.abstract_cl_set_sensitive)
         oWindow.add_to_menu_list("Physical Card Set List",
                 self.pcs_list_pane_set_sensitive)
         oWindow.add_to_menu_list("Abstract Card Set List",
@@ -82,6 +83,25 @@ class MainMenu(gtk.MenuBar, object):
         oPrefsItem.set_submenu(oPrefsMenu)
         oMenu.add(oPrefsItem)
 
+        self.__add_prefs_menu(oPrefsMenu)
+
+        oRestoreConfig = gtk.MenuItem('Restore saved configuration')
+        oMenu.add(oRestoreConfig)
+        oRestoreConfig.connect('activate', self.do_restore)
+
+        oMenu.add(gtk.SeparatorMenuItem())
+
+        oQuit = gtk.MenuItem("_Quit")
+        oQuit.connect('activate',
+                lambda iItem: self.__oWin.action_quit(self.__oWin))
+
+        oMenu.add(oQuit)
+
+        self.add(oMenuItem)
+
+    def __add_prefs_menu(self, oPrefsMenu):
+        """Add the File Preferences menu"""
+        self.__dMenus["File Preferences"] = oPrefsMenu
         oSavePanes = gtk.MenuItem('Save Current Pane Set')
         oSavePanes.connect('activate', self.do_save_pane_set)
         oPrefsMenu.add(oSavePanes)
@@ -112,20 +132,6 @@ class MainMenu(gtk.MenuBar, object):
             oSaveWinSize.set_active(False)
         oSaveOnExit.connect('activate', self.do_toggle_save_window_size)
         oPrefsMenu.add(oSaveWinSize)
-
-        oRestoreConfig = gtk.MenuItem('Restore saved configuration')
-        oMenu.add(oRestoreConfig)
-        oRestoreConfig.connect('activate', self.do_restore)
-
-        oMenu.add(gtk.SeparatorMenuItem())
-
-        oQuit = gtk.MenuItem("_Quit")
-        oQuit.connect('activate',
-                lambda iItem: self.__oWin.action_quit(self.__oWin))
-
-        oMenu.add(oQuit)
-
-        self.add(oMenuItem)
 
     def __create_pane_menu(self):
         """Create the 'Pane Actions' menu"""
@@ -320,12 +326,12 @@ class MainMenu(gtk.MenuBar, object):
         self.__oReplaceACSListPane.set_sensitive(bValue)
         self.__oAddACSListPane.set_sensitive(bValue)
 
-    def abstract_card_list_set_sensitive(self, bValue):
+    def abstract_cl_set_sensitive(self, bValue):
         """Set the options for adding the WW cardlist to bValue"""
         self.__oReplaceACLPane.set_sensitive(bValue)
         self.__oAddACLPane.set_sensitive(bValue)
 
-    def physical_card_list_set_sensitive(self, bValue):
+    def physical_cl_set_sensitive(self, bValue):
         """Set the options for adding the card collection to bValue"""
         self.__oReplacePCLPane.set_sensitive(bValue)
         self.__oAddPCLPane.set_sensitive(bValue)
