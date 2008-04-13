@@ -12,7 +12,7 @@ the Anarch Revolt Deck Builder
 """
 
 from sutekh.core.SutekhObjects import IAbstractCard
-from sutekh.io.ArdbInfo import ArdbInfo
+from sutekh.core.ArdbInfo import ArdbInfo
 from sutekh.SutekhInfo import SutekhInfo
 from sutekh.SutekhUtility import pretty_xml
 import time
@@ -25,161 +25,6 @@ except ImportError:
     from elementtree.ElementTree import Element, SubElement, ElementTree, \
             tostring
 
-# helper functions
-# card information functions
-def get_disciplines(oCard):
-    """Extract the discipline string from the card."""
-    if len(oCard.discipline) > 0:
-        aDisc = []
-        for oDisc in oCard.discipline:
-            if oDisc.level == 'superior':
-                aDisc.append(oDisc.discipline.name.upper())
-            else:
-                aDisc.append(oDisc.discipline.name)
-        aDisc.sort() # May not be needed
-        return " ".join(aDisc)
-    elif len(oCard.virtue) > 0:
-        return " ".join([x.name for x in oCard.virtue])
-    return ""
-
-def extract_crypt(dCards):
-    """Extract the crypt cards from the list."""
-    iCryptSize = 0
-    iMax = 0
-    iMin = 75
-    fAvg = 0.0
-    dVamps = {}
-    for tKey, iCount in dCards.iteritems():
-        sName = tKey[1]
-        # pylint: disable-msg=E1101
-        # IAbstractCard confuses pylint
-        oCard = IAbstractCard(sName)
-        aTypes = [x.name for x in oCard.cardtype]
-        if aTypes[0] == 'Vampire':
-            dVamps[tKey] = iCount
-            iCryptSize += iCount
-            fAvg += oCard.capacity*iCount
-            if oCard.capacity > iMax:
-                iMax = oCard.capacity
-            if oCard.capacity < iMin:
-                iMin = oCard.capacity
-        if aTypes[0] == 'Imbued':
-            dVamps[tKey] = iCount
-            iCryptSize += iCount
-            fAvg += oCard.life*iCount
-            if oCard.life > iMax:
-                iMax = oCard.life
-            if oCard.life < iMin:
-                iMin = oCard.life
-    if iCryptSize > 0:
-        fAvg = round(fAvg/iCryptSize, 2)
-    if iMin == 75:
-        iMin = 0
-    return (dVamps, iCryptSize, iMin, iMax, fAvg)
-
-def extract_library(dCards):
-    """Extract the library cards from the list."""
-    iSize = 0
-    dLib = {}
-    for tKey, iCount in dCards.iteritems():
-        iId, sName = tKey
-        # pylint: disable-msg=E1101
-        # IAbstractCard confuses pylint
-        oCard = IAbstractCard(sName)
-        aTypes = sorted([x.name for x in oCard.cardtype])
-        if aTypes[0] != 'Vampire' and aTypes[0] != 'Imbued':
-            # Looks like it should be the right thing, but may not
-            sTypeString = "/".join(aTypes)
-            # We want to be able to sort over types easily, so
-            # we add them to the keys
-            dLib[(iId, sName, sTypeString)] = iCount
-            iSize += iCount
-    return (dLib, iSize)
-
-# Element creation functions
-
-def format_vamps(oCryptElem, dVamps):
-    """Convert the Vampire dictionary into elementtree representation."""
-    # pylint: disable-msg=R0914
-    # Need this many local variables to create proper XML tree
-    for tKey, iNum in dVamps.iteritems():
-        iId, sName = tKey
-        # pylint: disable-msg=E1101
-        # IAbstractCard confuses pylint
-        oCard = IAbstractCard(sName)
-        oCardElem = SubElement(oCryptElem, 'vampire',
-                databaseID=str(iId), count=str(iNum))
-        # This won't match the ARDB ID's, unless by chance.
-        # It looks like that should not be an issue as ARDB will
-        # use the name if the IDs don't match
-        # It's unclear to me what values ARDB uses here, but
-        # these are fine for the xml2html conversion, and look meaningful
-        oAdvElem = SubElement(oCardElem, 'adv')
-        oNameElem = SubElement(oCardElem, 'name')
-        if oCard.level is not None:
-            oAdvElem.text = '(Advanced)'
-            # This is a bit hackish
-            oNameElem.text = sName.replace(' (Advanced)', '')
-        else:
-            oNameElem.text = sName
-        oDiscElem = SubElement(oCardElem, 'disciplines')
-        sDisciplines = get_disciplines(oCard)
-        oDiscElem.text = sDisciplines
-        aClan = [x.name for x in oCard.clan]
-        oClanElem = SubElement(oCardElem, 'clan')
-        oCapElem = SubElement(oCardElem, 'capacity')
-        if len(oCard.creed) > 0:
-            # ARDB seems to treat all Imbued as being of the same clan
-            # Should we do an Imbued:Creed thing?
-            oClanElem.text = 'Imbued'
-            oCapElem.text = str(oCard.life)
-        else:
-            oClanElem.text = aClan[0]
-            oCapElem.text = str(oCard.capacity)
-        oGrpElem = SubElement(oCardElem, 'group')
-        oGrpElem.text = str(oCard.group)
-        # ARDB doesn't handle sect specifically
-        # No idea how ARDB represents independant titles -
-        # this seems set when the ARDB database is created, and is
-        # not in the ARDB codebase
-        if len(oCard.title) > 0:
-            oTitleElem = SubElement(oCardElem, 'title')
-            aTitles = [oC.name for oC in oCard.title]
-            oTitleElem.text = aTitles[0]
-        oTextElem = SubElement(oCardElem, 'text')
-        oTextElem.text = oCard.text
-
-def format_library(oLibElem, dLib):
-    """Format the dictionary of library cards for the element tree."""
-    # pylint: disable-msg=R0914
-    # Need this many local variables to create proper XML tree
-    for tKey, iNum in dLib.iteritems():
-        iId, sName, sTypeString = tKey
-        # pylint: disable-msg=E1101
-        # IAbstractCard confuses pylint
-        oCard = IAbstractCard(sName)
-        oCardElem = SubElement(oLibElem, 'card', databaseID=str(iId),
-                count=str(iNum))
-        oNameElem = SubElement(oCardElem, 'name')
-        oNameElem.text = sName
-        if oCard.costtype is not None:
-            oCostElem = SubElement(oCardElem, 'cost')
-            oCostElem.text = "%d %s " % (oCard.cost, oCard.costtype )
-        if len(oCard.clan) > 0:
-            # ARDB also strores things like "requires a prince"
-            # we don't so too bad
-            oReqElem = SubElement(oCardElem, 'requirement')
-            aClan = [x.name for x in oCard.clan]
-            oReqElem.text = "/".join(aClan)
-        oTypeElem = SubElement(oCardElem, 'type')
-        oTypeElem.text = sTypeString
-        # Not sure if this does quite the right thing here
-        sDisciplines = get_disciplines(oCard)
-        if sDisciplines != '':
-            oDiscElem = SubElement(oCardElem, 'disciplines')
-            oDiscElem.text = sDisciplines
-        oTextElem = SubElement(oCardElem, 'text')
-        oTextElem.text = oCard.text
 
 class WriteArdbXML(ArdbInfo):
     """Reformat cardset to elementTree and export it to a ARDB
@@ -212,17 +57,100 @@ class WriteArdbXML(ArdbInfo):
         oDateElem = SubElement(oRoot, 'date')
         oDateElem.text = sDateWritten
 
-        (dVamps, iCryptSize, iMin, iMax, fAvg) = extract_crypt(dCards)
-        (dLib, iLibSize) = extract_library(dCards)
+        (dVamps, iCryptSize, iMin, iMax, fAvg) = self._extract_crypt(dCards)
+        (dLib, iLibSize) = self._extract_library(dCards)
 
         oCryptElem = SubElement(oRoot, 'crypt', size=str(iCryptSize),
                 min=str(iMin), max=str(iMax), avg=str(fAvg))
-        format_vamps(oCryptElem, dVamps)
+        self.format_vamps(oCryptElem, dVamps)
 
         oLibElem = SubElement(oRoot, 'library', size=str(iLibSize))
-        format_library(oLibElem, dLib)
+        self.format_library(oLibElem, dLib)
 
         return oRoot
+
+    def format_vamps(self, oCryptElem, dVamps):
+        """Convert the Vampire dictionary into elementtree representation."""
+        # pylint: disable-msg=R0914
+        # Need this many local variables to create proper XML tree
+        for tKey, iNum in dVamps.iteritems():
+            iId, sName = tKey
+            # pylint: disable-msg=E1101
+            # IAbstractCard confuses pylint
+            oCard = IAbstractCard(sName)
+            oCardElem = SubElement(oCryptElem, 'vampire',
+                    databaseID=str(iId), count=str(iNum))
+            # This won't match the ARDB ID's, unless by chance.
+            # It looks like that should not be an issue as ARDB will
+            # use the name if the IDs don't match
+            # It's unclear to me what values ARDB uses here, but
+            # these are fine for the xml2html conversion, and look meaningful
+            oAdvElem = SubElement(oCardElem, 'adv')
+            oNameElem = SubElement(oCardElem, 'name')
+            if oCard.level is not None:
+                oAdvElem.text = '(Advanced)'
+                # This is a bit hackish
+                oNameElem.text = sName.replace(' (Advanced)', '')
+            else:
+                oNameElem.text = sName
+            oDiscElem = SubElement(oCardElem, 'disciplines')
+            sDisciplines = self._gen_disciplines(oCard)
+            oDiscElem.text = sDisciplines
+            aClan = [x.name for x in oCard.clan]
+            oClanElem = SubElement(oCardElem, 'clan')
+            oCapElem = SubElement(oCardElem, 'capacity')
+            if len(oCard.creed) > 0:
+                # ARDB seems to treat all Imbued as being of the same clan
+                # Should we do an Imbued:Creed thing?
+                oClanElem.text = 'Imbued'
+                oCapElem.text = str(oCard.life)
+            else:
+                oClanElem.text = aClan[0]
+                oCapElem.text = str(oCard.capacity)
+            oGrpElem = SubElement(oCardElem, 'group')
+            oGrpElem.text = str(oCard.group)
+            # ARDB doesn't handle sect specifically
+            # No idea how ARDB represents independant titles -
+            # this seems set when the ARDB database is created, and is
+            # not in the ARDB codebase
+            if len(oCard.title) > 0:
+                oTitleElem = SubElement(oCardElem, 'title')
+                aTitles = [oC.name for oC in oCard.title]
+                oTitleElem.text = aTitles[0]
+            oTextElem = SubElement(oCardElem, 'text')
+            oTextElem.text = oCard.text
+
+    def format_library(self, oLibElem, dLib):
+        """Format the dictionary of library cards for the element tree."""
+        # pylint: disable-msg=R0914
+        # Need this many local variables to create proper XML tree
+        for tKey, iNum in dLib.iteritems():
+            iId, sName, sTypeString = tKey
+            # pylint: disable-msg=E1101
+            # IAbstractCard confuses pylint
+            oCard = IAbstractCard(sName)
+            oCardElem = SubElement(oLibElem, 'card', databaseID=str(iId),
+                    count=str(iNum))
+            oNameElem = SubElement(oCardElem, 'name')
+            oNameElem.text = sName
+            if oCard.costtype is not None:
+                oCostElem = SubElement(oCardElem, 'cost')
+                oCostElem.text = "%d %s " % (oCard.cost, oCard.costtype )
+            if len(oCard.clan) > 0:
+                # ARDB also strores things like "requires a prince"
+                # we don't so too bad
+                oReqElem = SubElement(oCardElem, 'requirement')
+                aClan = [x.name for x in oCard.clan]
+                oReqElem.text = "/".join(aClan)
+            oTypeElem = SubElement(oCardElem, 'type')
+            oTypeElem.text = sTypeString
+            # Not sure if this does quite the right thing here
+            sDisciplines = self._gen_disciplines(oCard)
+            if sDisciplines != '':
+                oDiscElem = SubElement(oCardElem, 'disciplines')
+                oDiscElem.text = sDisciplines
+            oTextElem = SubElement(oCardElem, 'text')
+            oTextElem.text = oCard.text
 
     # pylint: disable-msg=R0913
     # we need all these arguments

@@ -29,71 +29,20 @@
    """
 
 from sutekh.core.SutekhObjects import IAbstractCard
-from sutekh.io.ArdbInfo import ArdbInfo
+from sutekh.core.ArdbInfo import ArdbInfo
 
 class WriteArdbText(ArdbInfo):
     """Create a string in ARDB's text format representing a dictionary
        of cards."""
 
-    def _extract_crypt(self, dCards):
-        """Extract the crypt cards from the list."""
-        iCryptSize = 0
-        iMax = 0
-        iMin = 75
-        fAvg = 0.0
-        dVamps = {}
-        for tKey, iCount in dCards.iteritems():
-            sName = tKey[1]
-            # pylint: disable-msg=E1101
-            # IAbstractCard confuses pylint
-            oCard = IAbstractCard(sName)
-            aTypes = [x.name for x in oCard.cardtype]
-            if aTypes[0] == 'Vampire':
-                dVamps[tKey] = iCount
-                iCryptSize += iCount
-                fAvg += oCard.capacity*iCount
-                if oCard.capacity > iMax:
-                    iMax = oCard.capacity
-                if oCard.capacity < iMin:
-                    iMin = oCard.capacity
-            if aTypes[0] == 'Imbued':
-                dVamps[tKey] = iCount
-                iCryptSize += iCount
-                fAvg += oCard.life*iCount
-                if oCard.life > iMax:
-                    iMax = oCard.life
-                if oCard.life < iMin:
-                    iMin = oCard.life
-        if iCryptSize > 0:
-            fAvg = round(fAvg/iCryptSize, 2)
-        if iMin == 75:
-            iMin = 0
-        return (dVamps, iCryptSize, iMin, iMax, fAvg)
-
-    def _extract_library(self, dCards):
-        """Extract the library cards from the list."""
-        iSize = 0
-        dLib = {}
-        for tKey, iCount in dCards.iteritems():
-            iId, sName = tKey
-            # pylint: disable-msg=E1101
-            # IAbstractCard confuses pylint
-            oCard = IAbstractCard(sName)
-            aTypes = sorted([x.name for x in oCard.cardtype])
-            if aTypes[0] != 'Vampire' and aTypes[0] != 'Imbued':
-                # Looks like it should be the right thing, but may not
-                sTypeString = "/".join(aTypes)
-                # We want to be able to sort over types easily, so
-                # we add them to the keys
-                dLib[(iId, sName, sTypeString)] = iCount
-                iSize += iCount
-        return (dLib, iSize)
-
+    # pylint: disable-msg=R0201
+    # method for consistency with the other methods
     def _gen_header(self, sSetName, sAuthor, sDescription):
         """Generate an ARDB text file header."""
         return "Deck Name : %s\n" \
                "Author : %s\n" \
                "Description :\n%s\n" % (sSetName, sAuthor, sDescription)
+    # pylint: enable-msg=R0201
 
     def _gen_crypt(self, dCards):
         """Generaten an ARDB text file crypt description.
@@ -107,7 +56,7 @@ class WriteArdbText(ArdbInfo):
             % (iCryptSize, iMin, iMax, fAvg)
 
         for tKey in sorted(dVamps, key=lambda x: x[1]):
-            iId, sName = tKey
+            sName = tKey[1]
             iCount = dVamps[tKey]
 
             # pylint: disable-msg=E1101
@@ -124,21 +73,6 @@ class WriteArdbText(ArdbInfo):
                          oCard.group)
 
         return sCrypt
-
-    def _gen_disciplines(self, oCard):
-        """Extract the discipline string from the card."""
-        if len(oCard.discipline) > 0:
-            aDisc = []
-            for oDisc in oCard.discipline:
-                if oDisc.level == 'superior':
-                    aDisc.append(oDisc.discipline.name.upper())
-                else:
-                    aDisc.append(oDisc.discipline.name)
-            aDisc.sort() # May not be needed
-            return " ".join(aDisc)
-        elif len(oCard.virtue) > 0:
-            return " ".join([x.name for x in oCard.virtue])
-        return ""
 
     def _gen_library(self, dCards):
         """Generaten an ARDB text file library description.
@@ -170,6 +104,8 @@ class WriteArdbText(ArdbInfo):
 
         return sLib
 
+    # pylint: disable-msg=R0913
+    # we need all these arguments
     def write(self, fOut, sSetName, sAuthor, sDescription, dCards):
         """
         Takes filename, deck details and a dictionary of cards, of the form
@@ -180,3 +116,5 @@ class WriteArdbText(ArdbInfo):
         fOut.write(self._gen_crypt(dCards))
         fOut.write("\n")
         fOut.write(self._gen_library(dCards))
+
+    # pylint: enable-msg=R0913
