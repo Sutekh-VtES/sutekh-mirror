@@ -12,6 +12,7 @@ the Anarch Revolt Deck Builder
 """
 
 from sutekh.core.SutekhObjects import IAbstractCard
+from sutekh.io.ArdbInfo import ArdbInfo
 from sutekh.SutekhInfo import SutekhInfo
 from sutekh.SutekhUtility import pretty_xml
 import time
@@ -66,9 +67,9 @@ def extract_crypt(dCards):
             dVamps[tKey] = iCount
             iCryptSize += iCount
             fAvg += oCard.life*iCount
-            if oCard.capacity > iMax:
+            if oCard.life > iMax:
                 iMax = oCard.life
-            if oCard.capacity < iMin:
+            if oCard.life < iMin:
                 iMin = oCard.life
     if iCryptSize > 0:
         fAvg = round(fAvg/iCryptSize, 2)
@@ -85,7 +86,7 @@ def extract_library(dCards):
         # pylint: disable-msg=E1101
         # IAbstractCard confuses pylint
         oCard = IAbstractCard(sName)
-        aTypes = [x.name for x in oCard.cardtype]
+        aTypes = sorted([x.name for x in oCard.cardtype])
         if aTypes[0] != 'Vampire' and aTypes[0] != 'Imbued':
             # Looks like it should be the right thing, but may not
             sTypeString = "/".join(aTypes)
@@ -180,7 +181,7 @@ def format_library(oLibElem, dLib):
         oTextElem = SubElement(oCardElem, 'text')
         oTextElem.text = oCard.text
 
-class WriteArdbXML(object):
+class WriteArdbXML(ArdbInfo):
     """Reformat cardset to elementTree and export it to a ARDB
        compatible XML file."""
 

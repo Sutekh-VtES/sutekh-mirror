@@ -29,8 +29,9 @@
    """
 
 from sutekh.core.SutekhObjects import IAbstractCard
+from sutekh.io.ArdbInfo import ArdbInfo
 
-class WriteArdbText(object):
+class WriteArdbText(ArdbInfo):
     """Create a string in ARDB's text format representing a dictionary
        of cards."""
 
@@ -59,9 +60,9 @@ class WriteArdbText(object):
                 dVamps[tKey] = iCount
                 iCryptSize += iCount
                 fAvg += oCard.life*iCount
-                if oCard.capacity > iMax:
+                if oCard.life > iMax:
                     iMax = oCard.life
-                if oCard.capacity < iMin:
+                if oCard.life < iMin:
                     iMin = oCard.life
         if iCryptSize > 0:
             fAvg = round(fAvg/iCryptSize, 2)
