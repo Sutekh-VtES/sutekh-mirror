@@ -79,6 +79,7 @@ class MultiPaneWindow(gtk.Window):
         self._oPCSListPane = None
         self._oACSListPane = None
         self._oHelpDlg = None
+        self._sWorkingDir = ''
 
         self.show_all()
 
@@ -108,6 +109,16 @@ class MultiPaneWindow(gtk.Window):
         """Add a key to the list of menu items to manage."""
         if not self.__dMenus.has_key(sMenuFlag):
             self.__dMenus[sMenuFlag] = oMenuActiveFunc
+
+    # working directory methods 
+
+    def get_working_dir(self):
+        """Get the current working dir for file chooser widgets"""
+        return self._sWorkingDir
+
+    def set_working_dir(self, sNewDir):
+        """Set the working dir to sNewDir."""
+        self._sWorkingDir = sNewDir
 
     # Config file handling
 

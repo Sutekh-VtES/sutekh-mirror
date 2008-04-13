@@ -6,15 +6,15 @@
 """Dialog for handling File Export Events"""
 
 import gtk
+from sutekh.gui.SutekhFileWidget import SutekhFileDialog
 
-class ExportDialog(gtk.FileChooserDialog):
+class ExportDialog(SutekhFileDialog):
     # pylint: disable-msg=R0904
     # gtk.Widget, so many public methods
     """Prompt the user for a filename to export to"""
     def __init__(self, sTitle, oParent):
-        super(ExportDialog, self).__init__(sTitle, oParent,
-                action=gtk.FILE_CHOOSER_ACTION_SAVE,
-                buttons=(gtk.STOCK_OK, gtk.RESPONSE_OK,
+        super(ExportDialog, self).__init__(oParent, sTitle,
+                gtk.FILE_CHOOSER_ACTION_SAVE, (gtk.STOCK_OK, gtk.RESPONSE_OK,
                         gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
         self.connect("response", self.button_response)
         self.set_local_only(True)

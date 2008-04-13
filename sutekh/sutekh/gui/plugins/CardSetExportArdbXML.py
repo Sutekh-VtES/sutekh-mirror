@@ -11,6 +11,7 @@ from sutekh.core.SutekhObjects import PhysicalCardSet, AbstractCardSet, \
         IAbstractCard
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog
+from sutekh.gui.SutekhFileWidget import SutekhFileWidget
 from sutekh.io.WriteArdbXML import WriteArdbXML
 
 class CardSetExportArdbXML(CardListPlugin):
@@ -38,7 +39,8 @@ class CardSetExportArdbXML(CardListPlugin):
                 self.parent, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                 (gtk.STOCK_OK, gtk.RESPONSE_OK,
                     gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
-        self.oFileChooser = gtk.FileChooserWidget(gtk.FILE_CHOOSER_ACTION_SAVE)
+        self.oFileChooser = SutekhFileWidget(self.parent,
+                gtk.FILE_CHOOSER_ACTION_SAVE)
         self.oFileChooser.set_do_overwrite_confirmation(True)
         # pylint: disable-msg=E1101
         # vbox confuses pylint

@@ -7,6 +7,7 @@
 
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhDialog import do_complaint_error, do_complaint_warning
+from sutekh.gui.SutekhFileWidget import SutekhFileDialog
 from sutekh.gui.ProgressDialog import ProgressDialog, SutekhCountLogHandler
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
 import gtk
@@ -65,7 +66,7 @@ class FullBackup(CardListPlugin):
         "Create file dialog for backup"
         sName = "Choose a file to save the full backup to ..."
 
-        oDlg = gtk.FileChooserDialog(sName, self.parent,
+        oDlg = SutekhFileDialog(self.parent, sName,
                 action=gtk.FILE_CHOOSER_ACTION_SAVE,
                 buttons = (gtk.STOCK_OK, gtk.RESPONSE_OK,
                     gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
@@ -115,7 +116,7 @@ class FullBackup(CardListPlugin):
         "Create file chooser dialog for restore"
         sName = "Restore a Full Backup ...."
 
-        oDlg = gtk.FileChooserDialog(sName, self.parent,
+        oDlg = SutekhFileDialog(self.parent, sName,
                 action=gtk.FILE_CHOOSER_ACTION_OPEN,
                 buttons = (gtk.STOCK_OK, gtk.RESPONSE_OK,
                     gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))

@@ -14,6 +14,7 @@ from sutekh.core.SutekhObjects import PhysicalCardSet, AbstractCardSet, \
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error, \
         do_complaint_warning
+from sutekh.gui.SutekhFileWidget import SutekhFileWidget
 from sutekh.io.WriteArdbXML import extract_crypt, extract_library, \
         get_disciplines
 from sutekh.SutekhInfo import SutekhInfo
@@ -233,7 +234,8 @@ class CardSetExportHTML(CardListPlugin):
                 gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                 (gtk.STOCK_OK, gtk.RESPONSE_OK,
                     gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
-        self.oFileChooser = gtk.FileChooserWidget(gtk.FILE_CHOOSER_ACTION_SAVE)
+        self.oFileChooser = SutekhFileWidget(self.parent,
+                gtk.FILE_CHOOSER_ACTION_SAVE)
         # pylint: disable-msg=E1101
         # vbox confuses pylint
         oDlg.vbox.pack_start(self.oFileChooser)

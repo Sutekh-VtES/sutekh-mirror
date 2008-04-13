@@ -9,6 +9,7 @@
 
 import gtk
 from sutekh.gui.SutekhDialog import SutekhDialog
+from sutekh.gui.SutekhFileWidget import SutekhFileDialog, SutekhFileButton
 from sutekh.io.WwFile import WW_CARDLIST_URL, WW_RULINGS_URL
 
 class WWFilesDialog(SutekhDialog):
@@ -23,24 +24,27 @@ class WWFilesDialog(SutekhDialog):
             (gtk.STOCK_OK, gtk.RESPONSE_OK, gtk.STOCK_CANCEL,
             gtk.RESPONSE_CANCEL))
         oCardListLabel = gtk.Label("White Wolf Card List File:")
-        self.oCardListFileButton = gtk.FileChooserButton(
+        self._oParent = oParent
+        self.oCardListFileButton = SutekhFileButton(oParent,
                 "White Wolf Card List")
         self.oUseWwCardListButton = gtk.CheckButton(label=
                 "Grab cardlist from White Wolf website?")
 
         oRulingsLabel = gtk.Label("White Wolf Rulings File (optional):")
-        self.oRulingsFileButton = gtk.FileChooserButton("White Wolf rulings"
-                " file")
+        self.oRulingsFileButton = SutekhFileButton(oParent,
+                "White Wolf rulings file")
         self.oUseWwRulingsButton = gtk.CheckButton(label=
                 "Grab rulings from White Wolf website?")
+        self.oRulingsFileButton.set_current_folder(
+                self._oParent.get_working_dir())
 
         self.oBackupFileButton = gtk.CheckButton(label=
                 "Backup database contents to File?")
         self.oBackupFileButton.set_active(False)
         self.oBackupFileLabel = gtk.Label("(None)")
-        self.oBackupFileDialog = gtk.FileChooserDialog("Database Backup file",
-                action=gtk.FILE_CHOOSER_ACTION_SAVE,
-                buttons=(gtk.STOCK_OK, gtk.RESPONSE_OK,
+        self.oBackupFileDialog = SutekhFileDialog(oParent, 
+                "Database Backup file", gtk.FILE_CHOOSER_ACTION_SAVE,
+                (gtk.STOCK_OK, gtk.RESPONSE_OK,
                     gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
         self.oBackupFileDialog.set_do_overwrite_confirmation(True)
 
@@ -89,6 +93,7 @@ class WWFilesDialog(SutekhDialog):
                 self.sRulingsName = self.oRulingsFileButton.get_filename()
 
             if self.oBackupFileButton.get_active():
+                # SutekhFileDialog will mean we prefer backup dir if it's set
                 self.sBackupFileName = self.oBackupFileDialog.get_filename()
 
     # pylint: enable-msg=W0613

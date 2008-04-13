@@ -6,16 +6,15 @@
 """Dialog for handling File Import Events"""
 
 import gtk
+from sutekh.gui.SutekhFileWidget import SutekhFileDialog
 
-
-class ImportDialog(gtk.FileChooserDialog):
+class ImportDialog(SutekhFileDialog):
     # pylint: disable-msg=R0904
     # gtk.Widget, so many public methods
     """Prompt the user for a file name to import"""
     def __init__(self, sTitle, oParent):
-        super(ImportDialog, self).__init__(sTitle, oParent,
-                action=gtk.FILE_CHOOSER_ACTION_OPEN,
-                buttons=(gtk.STOCK_OK, gtk.RESPONSE_OK,
+        super(ImportDialog, self).__init__(oParent, sTitle,
+                gtk.FILE_CHOOSER_ACTION_OPEN, (gtk.STOCK_OK, gtk.RESPONSE_OK,
                         gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
         self.connect("response", self.button_response)
         self.set_local_only(True)

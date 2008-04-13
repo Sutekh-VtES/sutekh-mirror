@@ -16,6 +16,7 @@ from sutekh.core.CardSetHolder import CardSetHolder
 from sutekh.core.CardLookup import LookupFailed
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
+from sutekh.gui.SutekhFileWidget import SutekhFileWidget
 
 class ACSImporter(CardListPlugin):
     """Convert a HTML or text deck into an ACS.
@@ -68,7 +69,8 @@ class ACSImporter(CardListPlugin):
 
         self.oDlg.vbox.pack_start(gtk.Label("OR"), expand=False)
 
-        self.oFileChooser = gtk.FileChooserWidget(gtk.FILE_CHOOSER_ACTION_OPEN)
+        self.oFileChooser = SutekhFileWidget(self.parent,
+                gtk.FILE_CHOOSER_ACTION_OPEN)
         self.oDlg.vbox.pack_start(self.oFileChooser)
 
         oIter = self._dParsers.iterkeys()
