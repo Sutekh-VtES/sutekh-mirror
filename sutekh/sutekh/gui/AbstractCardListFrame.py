@@ -14,24 +14,22 @@ from sutekh.gui.AbstractCardListController import AbstractCardListController
 from sutekh.gui.AbstractCardListMenu import AbstractCardListMenu
 
 class AbstractCardListFrame(CardListFrame):
-    """Frame for the WW Card List."""
     # pylint: disable-msg=R0904
     # gtk.Widget, so many public methods
+    """Frame for the WW Card List."""
+
+    _cModelType = AbstractCard
+    _sName = "White Wolf Card List"
     def __init__(self, oMainWindow):
         super(AbstractCardListFrame, self).__init__(oMainWindow)
 
-        self._sName = "White Wolf Card List"
         self.set_title(self._sName)
         self.set_name("abstract card list")
 
         self._oController = AbstractCardListController(self,
                 oMainWindow)
 
-        self._cModelType = AbstractCard
-
         self.init_plugins()
-
         self._oMenu = AbstractCardListMenu(self, self._oController,
                 oMainWindow)
-
         self.add_parts()

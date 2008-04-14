@@ -21,24 +21,26 @@ from sutekh.gui.CreateCardSetDialog import CreateCardSetDialog
 from sutekh.gui.CardSetManagementMenu import CardSetManagementMenu
 
 class CardSetManagementFrame(BasicFrame):
+    # pylint: disable-msg=R0904
+    # gtk.Widget, so lots of public methods
     """Pane for the List of card sets of the given type.
 
        Provides the actions associated with this Pane - creating new
        card sets, filtering, etc.
        """
-    # pylint: disable-msg=R0904
-    # gtk.Widget, so lots of public methods
 
     __sOpen = "<b>Opened</b>"
     __sAvail = "<b>Available</b>"
 
+    _cSetType = None
+    _sName = 'Unknown card set list type'
+    _sFilterType = None
+    _oSetClass = None
+
     def __init__(self, oMainWindow):
         super(CardSetManagementFrame, self).__init__(oMainWindow)
-        self._cSetType = None
-        self._sName = 'Unknown card set list type'
         self._oFilter = NullFilter()
         self._oFilterDialog = None
-        self._sFilterType = None
         self._oMenu = None
         self._oScrolledList = None
 
@@ -242,18 +244,19 @@ class CardSetManagementFrame(BasicFrame):
 
 
 class PhysicalCardSetListFrame(CardSetManagementFrame):
+    # pylint: disable-msg=R0904
+    # gtk.Widget, so lots of public methods
     """Frame for the Physical Card Set list.
 
        Adds in-use flag handling.
        """
-    # pylint: disable-msg=R0904
-    # gtk.Widget, so lots of public methods
+    _cSetType = PhysicalCardSet
+    _sFilterType = 'PhysicalCardSet'
+    _sName = 'Physical Card Set List'
+    _oSetClass = PhysicalCardSet
+
     def __init__(self, oMainWindow):
         super(PhysicalCardSetListFrame, self).__init__(oMainWindow)
-        self._cSetType = PhysicalCardSet
-        self._sFilterType = 'PhysicalCardSet'
-        self._sName = 'Physical Card Set List'
-        self._oSetClass = PhysicalCardSet
         self.set_name("physical card sets list")
         self.add_parts()
 
@@ -279,18 +282,19 @@ class PhysicalCardSetListFrame(CardSetManagementFrame):
         self._oScrolledList.set_selected(oCS.name)
 
 class AbstractCardSetListFrame(CardSetManagementFrame):
+    # pylint: disable-msg=R0904
+    # gtk.Widget, so lots of public methods
     """Abstract Card Set List Frame.
 
        Sets values as needed for Abstract Card Sets.
        """
-    # pylint: disable-msg=R0904
-    # gtk.Widget, so lots of public methods
+    _cSetType = AbstractCardSet
+    _sFilterType = 'AbstractCardSet'
+    _sName = 'Abstract Card Set List'
+    _oSetClass = AbstractCardSet
+
     def __init__(self, oMainWindow):
         super(AbstractCardSetListFrame, self).__init__(oMainWindow)
-        self._cSetType = AbstractCardSet
-        self._sFilterType = 'AbstractCardSet'
-        self._sName = 'Abstract Card Set List'
-        self._oSetClass = AbstractCardSet
         self.set_name("abstract card sets list")
         self.add_parts()
 

@@ -19,13 +19,14 @@ class CardListFrame(BasicFrame):
        Provide common methods and basic parameters common to all the
        different CardList Frames.
        """
+    _cModelType = None
+
     def __init__(self, oMainWindow):
         super(CardListFrame, self).__init__(oMainWindow)
         self._aPlugins = []
         self._oConfig = oMainWindow.config_file
 
         self._oController = None
-        self._cModelType = None
 
     # pylint: disable-msg=W0212
     # We allow access via these properties

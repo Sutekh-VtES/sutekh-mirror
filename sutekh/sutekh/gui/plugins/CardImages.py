@@ -125,8 +125,8 @@ class CardImagePopupMenu(gtk.Menu):
         self.oFrame.set_zoom_mode(iScale)
 
 class CardImageFrame(BasicFrame, CardListViewListener):
-    # pylint: disable-msg=R0901, R0904, R0902
-    # R0901, R0904 - can't not trigger these warning with pygtk
+    # pylint: disable-msg=R0904, R0902
+    # R0904 - can't not trigger these warning with pygtk
     # R0902 - we need to keep quite a lot of internal state
     """
     Frame which displays the image.

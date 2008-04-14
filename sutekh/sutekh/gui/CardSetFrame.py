@@ -17,16 +17,17 @@ from sutekh.gui.CardSetController import PhysicalCardSetController, \
         AbstractCardSetController
 
 class CardSetFrame(CardListFrame, object):
+    # pylint: disable-msg=R0904
+    # gtk.Widget, so many public methods
     """Base class for Card Set frames.
 
        Handles most of the functionality - subclasses set the style name
        and the various other properties correctly for the type.
        """
-    # pylint: disable-msg=R0904
-    # gtk.Widget, so many public methods
-    def __init__(self, oMainWindow, sName, cType):
+    _cModelType = None
+
+    def __init__(self, oMainWindow, sName):
         super(CardSetFrame, self).__init__(oMainWindow)
-        self._cModelType = cType
         try:
             # pylint: disable-msg=W0612
             # oCS just used for existance test, so ignored
@@ -43,7 +44,7 @@ class CardSetFrame(CardListFrame, object):
             self._oController = AbstractCardSetController(sName,
                     oMainWindow, self)
         else:
-            raise RuntimeError("Unknown Card Set type %s" % str(cType))
+            raise RuntimeError("Unknown Card Set type %s" % self._cModelType)
 
         self.init_plugins()
 
@@ -89,21 +90,19 @@ class CardSetFrame(CardListFrame, object):
             self.close_frame()
 
 class AbstractCardSetFrame(CardSetFrame):
-    """Card Set Frame for holding Abstract Card Sets."""
-    # pylint: disable-msg=R0904, R0901
+    # pylint: disable-msg=R0904
     # R0904 - gtk.Widget, so many public methods
-    # R0901 - gtk.Widget's have a deep inheritence tree, so we ignore this
+    """Card Set Frame for holding Abstract Card Sets."""
+    _cModelType = AbstractCardSet
     def __init__(self, oMainWindow, sName):
-        super(AbstractCardSetFrame, self).__init__(oMainWindow, sName,
-                AbstractCardSet)
+        super(AbstractCardSetFrame, self).__init__(oMainWindow, sName)
         self.set_name("abstract card set card list")
 
 class PhysicalCardSetFrame(CardSetFrame):
-    """Card Set Frame for holding Physical Card Sets."""
-    # pylint: disable-msg=R0904, R0901
+    # pylint: disable-msg=R0904
     # R0904 - gtk.Widget, so many public methods
-    # R0901 - gtk.Widget's have a deep inheritence tree, so we ignore this
+    """Card Set Frame for holding Physical Card Sets."""
+    _cModelType = PhysicalCardSet
     def __init__(self, oMainWindow, sName):
-        super(PhysicalCardSetFrame, self).__init__(oMainWindow, sName,
-                PhysicalCardSet)
+        super(PhysicalCardSetFrame, self).__init__(oMainWindow, sName)
         self.set_name("physical card set card list")

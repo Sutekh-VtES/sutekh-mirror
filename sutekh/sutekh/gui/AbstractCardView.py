@@ -12,12 +12,14 @@ from sutekh.gui.CardListView import CardListView
 from sutekh.gui.CardListModel import CardListModel
 
 class AbstractCardView(CardListView):
+    # pylint: disable-msg=R0904
+    # gtk.Widget, so many public methods
     """CardListView for the WW Card List
 
        Since this card list isn't editable, this is very simple
        """
-    # pylint: disable-msg=R0904
-    # gtk.Widget, so many public methods
+    sDragPrefix = 'Abst:'
+
     def __init__(self, oController, oMainWindow):
         oModel = CardListModel()
         super(AbstractCardView, self).__init__(oController, oMainWindow,
@@ -28,7 +30,5 @@ class AbstractCardView(CardListView):
         oColumn = gtk.TreeViewColumn("Collection", oCell, text=0)
         self.append_column(oColumn)
         oColumn.set_sort_column_id(0)
-
-        self.sDragPrefix = 'Abst:'
 
         self.load()

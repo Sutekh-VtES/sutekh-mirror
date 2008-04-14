@@ -19,13 +19,13 @@ from sutekh.SutekhUtility import delete_physical_card_set, \
         delete_abstract_card_set
 
 class CardSetView(EditableCardListView):
+    # pylint: disable-msg=R0904
+    # gtk.Widget, so many public methods
     """Subclass of EditableCardListView specific to the Card Sets
 
        This is common to both Physical and Abstract Card Sets. The
        differences are embedded in the associated controller object
        and the database object used for filters."""
-    # pylint: disable-msg=R0904
-    # gtk.Widget, so many public methods
     def __init__(self, oMainWindow, oController, sName, cSetType):
         if cSetType is PhysicalCardSet:
             # cardclass is the actual physicalcard
