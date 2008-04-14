@@ -372,7 +372,7 @@ class MapAbstractCardToVirtue(SQLObject):
 
 # List of Tables to be created, dropped, etc.
 
-ObjectList = [ AbstractCard, Expansion,
+aObjectList = [ AbstractCard, Expansion,
                PhysicalCard, AbstractCardSet, PhysicalCardSet,
                Rarity, RarityPair, Discipline, DisciplinePair,
                Clan, CardType, Sect, Title, Ruling, Virtue, Creed,
@@ -390,9 +390,9 @@ ObjectList = [ AbstractCard, Expansion,
                MapAbstractCardToCreed,
                ]
 
-PhysicalList = [PhysicalCard, PhysicalCardSet,
+aPhysicalList = [PhysicalCard, PhysicalCardSet,
         MapPhysicalCardToPhysicalCardSet]
-AbstractCardSetList = [AbstractCardSet, MapAbstractCardToAbstractCardSet]
+aAbstractCardSetList = [AbstractCardSet, MapAbstractCardToAbstractCardSet]
 
 # Object Maker API
 
@@ -402,6 +402,8 @@ class SutekhObjectMaker(object):
        All the methods will return either a copy of an existing object
        or a new object.
        """
+    # pylint: disable-msg=R0201
+    # we want SutekhObjectMaker self-contained, so these are all methods.
     def _make_object(self, cObjClass, cInterface, cAbbreviation, sObj,
             bShortname=False, bFullname=False):
         try:
@@ -413,6 +415,8 @@ class SutekhObjectMaker(object):
                 dKw['shortname'] = cAbbreviation.shortname(sObj)
             if bFullname:
                 dKw['fullname'] = cAbbreviation.fullname(sObj)
+            # pylint: disable-msg=W0142
+            # ** magic OK here
             return cObjClass(**dKw)
 
     def make_card_type(self, sType):
@@ -634,8 +638,9 @@ class RulingAdapter(object):
     advise(instancesProvide=[IRuling], asAdapterForTypes=[tuple])
 
     def __new__(cls, tData):
-        # pylint: disable-msg=E1101
+        # pylint: disable-msg=E1101, W0612
         # SQLObject confuses pylint
+        # sCode is unused
         sText, sCode = tData
         return Ruling.byText(sText.encode('utf8'))
 

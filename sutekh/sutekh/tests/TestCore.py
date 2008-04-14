@@ -9,7 +9,7 @@
 from sutekh.tests.TestData import TEST_CARD_LIST, TEST_RULINGS
 from sutekh.SutekhUtility import read_white_wolf_list, read_rulings, \
         refresh_tables
-from sutekh.core.SutekhObjects import ObjectList
+from sutekh.core.SutekhObjects import aObjectList
 from sutekh.io.WwFile import WwFile
 from sqlobject import sqlhub, connectionForURI
 import unittest
@@ -70,7 +70,7 @@ class SutekhTest(unittest.TestCase):
         oConn = connectionForURI("sqlite:///:memory:")
         sqlhub.processConnection = oConn
 
-        assert refresh_tables(ObjectList, oConn)
+        assert refresh_tables(aObjectList, oConn)
 
         oLogHandler = FileHandler('/dev/null')
         read_white_wolf_list(WwFile(sCardList), oLogHandler)

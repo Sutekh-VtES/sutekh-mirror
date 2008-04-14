@@ -14,10 +14,15 @@
 
 class AbbrevMeta(type):
     """Meta class for the abbrevation classes"""
+    # pylint: disable-msg=W0231, W0613
+    # W0231 - no point in calling type's init
+    # dDict, aBases, sName required by metaclass call signature
     def __init__(self, sName, aBases, dDict):
         if self.dKeys:
             self.make_lookup()
 
+    # pylint: disable-msg=W0201
+    # W0201 - make_lookup called from init
     def make_lookup(self):
         """Create a lookup table for the class."""
         self._dLook = {}

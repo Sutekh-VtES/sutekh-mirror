@@ -17,7 +17,7 @@ from sqlobject import sqlhub, SQLObject, IntCol, UnicodeCol, RelatedJoin, \
 from logging import Logger
 from sutekh.core.SutekhObjects import PhysicalCard, AbstractCard, \
         AbstractCardSet, PhysicalCardSet, Expansion, Clan, Virtue, \
-        Discipline, Rarity, RarityPair, CardType, Ruling, ObjectList, \
+        Discipline, Rarity, RarityPair, CardType, Ruling, aObjectList, \
         DisciplinePair, Creed, Sect, Title
 from sutekh.core.CardSetHolder import CachedCardSetHolder
 from sutekh.core.PhysicalCardMappingHolder import PhysicalCardMappingHolder
@@ -778,7 +778,7 @@ def create_memory_copy(oTempConn, oLogHandler=None):
       database in it. readOldDB is responsbile for upgrading stuff
       as needed
       """
-    if refresh_tables(ObjectList, oTempConn):
+    if refresh_tables(aObjectList, oTempConn):
         return read_old_database(sqlhub.processConnection, oTempConn,
                 oLogHandler)
     else:
@@ -786,7 +786,7 @@ def create_memory_copy(oTempConn, oLogHandler=None):
 
 def create_final_copy(oTempConn, oLogHandler=None):
     """Copy from the memory database to the real thing"""
-    if refresh_tables(ObjectList, sqlhub.processConnection):
+    if refresh_tables(aObjectList, sqlhub.processConnection):
         return copy_database(oTempConn, sqlhub.processConnection, oLogHandler)
     else:
         return (False, ["Unable to create tables"])

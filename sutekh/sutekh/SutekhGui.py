@@ -5,7 +5,7 @@
 # GPL - see COPYING for details
 "SutekhGui.py: start the GUI"
 
-from sutekh.core.SutekhObjects import VersionTable, ObjectList
+from sutekh.core.SutekhObjects import VersionTable, aObjectList
 from sutekh.SutekhUtility import prefs_dir, ensure_dir_exists, sqlite_uri
 from sutekh.gui.MultiPaneWindow import MultiPaneWindow
 from sutekh.core.DatabaseVersion import DatabaseVersion
@@ -81,7 +81,7 @@ def main(aArgs):
         if not initialize_db():
             return 1
 
-    aTables = [VersionTable]+ObjectList
+    aTables = [VersionTable] + aObjectList
     aVersions = []
 
     for oTable in aTables:

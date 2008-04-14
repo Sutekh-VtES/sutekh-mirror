@@ -19,7 +19,7 @@ from sutekh.gui.SutekhDialog import do_complaint_buttons, do_complaint_error, \
         do_complaint, do_complaint_warning
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
 from sutekh.io.WwFile import WwFile
-from sutekh.core.SutekhObjects import ObjectList
+from sutekh.core.SutekhObjects import aObjectList
 from sutekh.SutekhUtility import refresh_tables, read_rulings, \
         read_white_wolf_list
 
@@ -40,7 +40,7 @@ def read_ww_rulings(oRulings, oProgressDialog, oLogHandler):
 
 def read_ww_lists_into_db(oCLFile, oRulingsFile, oProgressDialog, oConn):
     """Read WW card list and possibly rulings into the given database"""
-    refresh_tables(ObjectList, oConn)
+    refresh_tables(aObjectList, oConn)
     oProgressDialog.reset()
     # WhiteWolf Parser uses sqlhub connection
     sqlhub.processConnection = oConn
