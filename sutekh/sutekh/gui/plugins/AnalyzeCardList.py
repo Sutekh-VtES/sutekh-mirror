@@ -247,7 +247,7 @@ class AnalyzeCardList(CardListPlugin):
 
     aCryptTypes = ['Vampire', 'Imbued']
     # Map of titles to votes
-    # Should this be defined in SutekhObjects??
+    # TODO: Defined this in SutekhObjects
     dTitleVoteMap = {
             'Primogen' : 1,
             'Prince' : 2,
@@ -596,7 +596,7 @@ class AnalyzeCardList(CardListPlugin):
                                 'infcount' : aInfo[1],
                                 'iper' : _percentage(aInfo[1],
                                     self.iCryptSize, "Crypt"),
-                                'supcount' : aInfo[1],
+                                'supcount' : aInfo[2],
                                 'sper' : _percentage(aInfo[2],
                                     self.iCryptSize, "Crypt"),
                                 }
