@@ -155,6 +155,7 @@ class PhysicalCardController(object):
             sExpansion = oExpansion.name
         else:
             oExpansion = None
+            sExpansion = None
         # pylint: disable-msg=W0612
         # Creating a new PhysicalCard in the database is all that is needed
         oNewPC = PhysicalCard(abstractCard=oAbsCard, expansion=oExpansion)
