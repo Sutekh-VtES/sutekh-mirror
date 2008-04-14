@@ -402,8 +402,9 @@ class SutekhObjectMaker(object):
        All the methods will return either a copy of an existing object
        or a new object.
        """
-    # pylint: disable-msg=R0201
+    # pylint: disable-msg=R0201, R0913
     # we want SutekhObjectMaker self-contained, so these are all methods.
+    # This needs all these arguments
     def _make_object(self, cObjClass, cInterface, cAbbreviation, sObj,
             bShortname=False, bFullname=False):
         try:
