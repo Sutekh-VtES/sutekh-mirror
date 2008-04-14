@@ -483,17 +483,25 @@ class SutekhObjectMaker(object):
 # Abbreviation lookup based adapters
 
 class StrAdaptMeta(type):
-    def __init__(self, sName, aBases, dDict):
-        self.make_object_cache()
+    """Metaclass for the string adaptors."""
+    # pylint: disable-msg=W0231, W0613, C0203
+    # W0231 - no point in calling type's init
+    # dDict, aBases, sName required by metaclass call signature
+    # C0203 - pylint's buggy here, see
+    # http://lists.logilab.org/pipermail/python-projects/2007-July/001249.html
+    def __init__(cls, sName, aBases, dDict):
+        cls.make_object_cache()
 
-    def make_object_cache(self):
-        self.__dCache = {}
+    # pylint: disable-msg=W0201
+    # W0201 - make_object_cache called from init
+    def make_object_cache(cls):
+        cls.__dCache = {}
 
-    def fetch(self, sName, oCls):
-        oObj = self.__dCache.get(sName, None)
+    def fetch(cls, sName, oCls):
+        oObj = cls.__dCache.get(sName, None)
         if oObj is None:
             oObj = oCls.byName(sName.encode('utf8'))
-            self.__dCache[sName] = oObj
+            cls.__dCache[sName] = oObj
 
         return oObj
 
