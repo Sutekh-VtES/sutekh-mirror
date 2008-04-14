@@ -1,16 +1,21 @@
 [BASIC]
+# Namimg convention is xCamelCase, where x is a type indicator
 variable-rgx = [_]{0,2}[a,b,c,d,f,i,o,s,t][A-Z][A-z0-9]{1,20}$
 argument-rgx = [_]{0,2}[a,b,c,d,f,i,o,s,t][A-Z][A-z0-9]{1,20}$|self|cls
 attr-rgx = [_]{0,2}[a,b,c,d,f,i,o,s,t][A-Z][A-z0-9]{1,20}$
 const-rgx = [_]{0,2}[a,b,c,d,f,i,o,s,t][A-Z][A-z0-9]{1,20}$
+# test_ names are used for the test suite
 module-rgx = (([a-z_][a-z0-9_]*)|([A-Z][a-zA-Z0-9]+)|(test_[A-Z][a-zA-Z0-9]+))$
+# sqlmeta is a SQLObject convention, which we need to support
+class-rgx = [A-Z_][a-zA-Z0-9]+$|sqlmeta
+# kwargs is an acceptable name
 good-names=kwargs, cls, __all__
 
 [DESIGN]
 max-public-methods=30
 min-public-methods=0
 # Need to allow quite deep inheritence trees for gtk
-max-parents=10
+max-parents=12
 
 [MASTER]
 #load-plugins=dict_keys_check
