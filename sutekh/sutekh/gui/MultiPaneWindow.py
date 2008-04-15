@@ -326,6 +326,7 @@ class MultiPaneWindow(gtk.Window):
         self._oFocussed = oFrame
         self._oFocussed.set_focussed_title()
         self._oFocussed.view.grab_focus()
+        self._oFocussed = oFrame
         self.reset_menu()
 
     def set_card_text(self, sCardName):
@@ -364,6 +365,16 @@ class MultiPaneWindow(gtk.Window):
             self.__oMenu.set_split_horizontal_active(False)
             # Can't delete either
             self.__oMenu.del_pane_set_sensitive(False)
+        # Enable / disable the menu's
+        for oFrame in self.dOpenFrames:
+            if not hasattr(oFrame,'menu'):
+                continue
+            elif self._oFocussed == oFrame:
+                if hasattr(oFrame.menu, 'activate_accels'):
+                    oFrame.menu.activate_accels()
+            else:
+                if hasattr(oFrame.menu, 'remove_accels'):
+                    oFrame.menu.remove_accels()
 
     def set_selection_text(self, sText):
         """Set the current selection text for copy+paste."""

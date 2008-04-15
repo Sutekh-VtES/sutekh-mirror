@@ -10,11 +10,12 @@
 
 import gtk
 from sutekh.gui.ExportDialog import ExportDialog
+from sutekh.gui.PaneMenu import PaneMenu
 from sutekh.gui.EditPhysicalCardMappingDialog import \
         EditPhysicalCardMappingDialog
 from sutekh.io.XmlFileHandling import PhysicalCardXmlFile
 
-class PhysicalCardMenu(gtk.MenuBar, object):
+class PhysicalCardMenu(PaneMenu, object):
     """Menu for the Physical card collection.
 
        Enables actions specific to the physical card collection (export to
@@ -23,30 +24,23 @@ class PhysicalCardMenu(gtk.MenuBar, object):
     # pylint: disable-msg=R0904
     # gtk.Widget, so many public methods
     def __init__(self, oFrame, oController, oWindow):
-        super(PhysicalCardMenu, self).__init__()
+        super(PhysicalCardMenu, self).__init__(oFrame, oWindow)
         self.__oController = oController
-        self.__oWindow = oWindow
-        self.__oFrame = oFrame
-
-        self.__dMenus = {}
         self.__create_physical_cl_menu()
-        self.__create_filter_menu()
-        self.__create_plugin_menu()
+        self.__create_edit_menu()
+        self.create_filter_menu()
+        self.create_plugins_menu()
 
     # pylint: disable-msg=W0201
     # called from __init__, so OK
     def __create_physical_cl_menu(self):
         """Create the Actions menu for the card list."""
         # setup sub menu
-        oMenuItem = gtk.MenuItem("Actions")
-        oMenu = gtk.Menu()
-        self.__dMenus["Actions"] = oMenu
-        oMenuItem.set_submenu(oMenu)
+        oMenu = self.create_submenu("Actions")
         # items
         oExport = gtk.MenuItem("Export Collection to File")
         oMenu.add(oExport)
         oExport.connect('activate', self._do_export)
-
 
         oViewAllAbstractCards = gtk.CheckMenuItem("Show cards with a"
                 " count of 0")
@@ -63,70 +57,67 @@ class PhysicalCardMenu(gtk.MenuBar, object):
         oViewExpansions.connect('toggled', self._toggle_expansion)
         oMenu.add(oViewExpansions)
 
-        oEditable = gtk.CheckMenuItem('Collection is Editable')
-        oEditable.set_inconsistent(False)
-        oEditable.set_active(False)
-        oEditable.connect('toggled', self._toggle_editable)
-        self.__oController.view.set_edit_menu_item(oEditable)
-        oMenu.add(oEditable)
 
-        oExpand = gtk.MenuItem("Expand All (Ctrl+)")
+        oExpand = gtk.MenuItem("Expand All")
         oMenu.add(oExpand)
         oExpand.connect("activate", self._expand_all)
+        oExpand.add_accelerator('activate', self._oAccelGroup,
+                gtk.gdk.keyval_from_name('plus'), gtk.gdk.CONTROL_MASK,
+                gtk.ACCEL_VISIBLE)
 
-        oCollapse = gtk.MenuItem("Collapse All (Ctrl-)")
+        oCollapse = gtk.MenuItem("Collapse All")
         oMenu.add(oCollapse)
         oCollapse.connect("activate", self._collapse_all)
+        oCollapse.add_accelerator('activate', self._oAccelGroup,
+                gtk.gdk.keyval_from_name('minus'), gtk.gdk.CONTROL_MASK,
+                gtk.ACCEL_VISIBLE)
 
         oClose = gtk.MenuItem("Remove This Pane")
         oMenu.add(oClose)
-        oClose.connect("activate", self.__oFrame.close_menu_item)
+        oClose.connect("activate", self._oFrame.close_menu_item)
 
         oEditAllocation = gtk.MenuItem('Edit allocation of cards to PCS')
         oMenu.add(oEditAllocation)
         oEditAllocation.connect('activate', self._do_edit_card_set_allocation)
 
-        self.add(oMenuItem)
+    def __create_edit_menu(self):
+        """Create the Edit Menu."""
+        oMenu = self.create_submenu("Edit")
 
-    def __create_filter_menu(self):
-        """Create the filter menu."""
-        # setup sub menu
-        oMenuItem = gtk.MenuItem("Filter")
-        oMenu = gtk.Menu()
-        oMenuItem.set_submenu(oMenu)
-        self.__dMenus["Filter"] = oMenu
-        # items
-        oFilter = gtk.MenuItem("Specify Filter")
-        oMenu.add(oFilter)
-        oFilter.connect('activate', self._set_active_filter)
+        oEditable = gtk.CheckMenuItem('Collection is Editable')
+        oEditable.set_inconsistent(False)
+        oEditable.set_active(False)
+        oEditable.connect('toggled', self._toggle_editable)
+        self.__oController.view.set_edit_menu_item(oEditable)
+        oEditable.add_accelerator('activate', self._oAccelGroup,
+                ord('E'), gtk.gdk.CONTROL_MASK, gtk.ACCEL_VISIBLE)
+        oMenu.add(oEditable)
 
-        self.oApply = gtk.CheckMenuItem("Apply Filter")
-        self.oApply.set_inconsistent(False)
-        self.oApply.set_active(False)
-        oMenu.add(self.oApply)
-        self.oApply.connect('toggled', self._toggle_apply)
-        self.add(oMenuItem)
+        oCopy = gtk.MenuItem('Copy selection')
+        oCopy.connect('activate', self._copy_selection)
+        oMenu.add(oCopy)
+        oCopy.add_accelerator('activate', self._oAccelGroup,
+                ord('C'), gtk.gdk.CONTROL_MASK, gtk.ACCEL_VISIBLE)
 
-    def __create_plugin_menu(self):
-        """Create the plugin menu."""
-        # setup sub menu
-        oMenuItem = gtk.MenuItem("Plugins")
-        oMenu = gtk.Menu()
-        self.__dMenus["Plugins"] = oMenu
-        oMenuItem.set_submenu(oMenu)
-        # plugins
-        for oPlugin in self.__oFrame.plugins:
-            oPlugin.add_to_menu(self.__dMenus, oMenu)
-        self.add(oMenuItem)
-        if len(oMenu.get_children()) == 0:
-            oMenuItem.set_sensitive(False)
+        oPaste = gtk.MenuItem('Paste')
+        oPaste.connect('activate', self._paste_selection)
+        oMenu.add(oPaste)
+        oPaste.add_accelerator('activate', self._oAccelGroup,
+                ord('V'), gtk.gdk.CONTROL_MASK, gtk.ACCEL_VISIBLE)
+
+        oDelete = gtk.MenuItem('Delete selection')
+        oDelete.connect('activate', self._del_selection)
+        oMenu.add(oDelete)
+        oDelete.add_accelerator('activate', self._oAccelGroup,
+                gtk.gdk.keyval_from_name('Delete') , 0, gtk.ACCEL_VISIBLE)
+
     # pylint: enable-msg=W0201
 
     # pylint: disable-msg=W0613
     # oWidget required by function signature
     def _do_export(self, oWidget):
         """Handling exporting the card list to file."""
-        oFileChooser = ExportDialog("Save Collection As", self.__oWindow)
+        oFileChooser = ExportDialog("Save Collection As", self._oMainWinow)
         oFileChooser.run()
         sFileName = oFileChooser.get_name()
         if sFileName is not None:
@@ -138,11 +129,11 @@ class PhysicalCardMenu(gtk.MenuBar, object):
         dSelectedCards = self.__oController.view.process_selection()
         if len(dSelectedCards) == 0:
             return
-        oEditAllocation = EditPhysicalCardMappingDialog(self.__oWindow,
+        oEditAllocation = EditPhysicalCardMappingDialog(self._oMainWinow,
                 dSelectedCards)
         oEditAllocation.run()
 
-    def _toggle_apply(self, oWidget):
+    def toggle_apply_filter(self, oWidget):
         """Toggle the applied state of the filter."""
         self.__oController.view.run_filter(oWidget.active)
 
@@ -159,11 +150,11 @@ class PhysicalCardMenu(gtk.MenuBar, object):
     def _toggle_all_abstract_cards(self, oWidget):
         """Toggle the display of cards with a count of 0 in the card list."""
         self.__oController.model.bAddAllAbstractCards = oWidget.active
-        self.__oWindow.config_file.set_show_zero_count_cards(
+        self._oMainWinow.config_file.set_show_zero_count_cards(
                 oWidget.active)
         self.__oController.view.reload_keep_expanded()
 
-    def _set_active_filter(self, oWidget):
+    def set_active_filter(self, oWidget):
         """Set the active filter for the TreeView."""
         self.__oController.view.get_filter(self)
 
@@ -175,9 +166,17 @@ class PhysicalCardMenu(gtk.MenuBar, object):
         """Collapse all rows in the TreeView."""
         self.__oController.view.collapse_all()
 
+    def _del_selection(self, oWidget):
+        """Delete the current selection"""
+        self.__oController.view.del_selection()
+
+    def _copy_selection(self, oWidget):
+        """Copy the current selection to the application clipboard."""
+        self.__oController.view.copy_selection()
+        print 'copy selection'
+
+    def _paste_selection(self, oWidget):
+        """Try to paste the current clipbaord contents"""
+        self.__oController.view.do_paste()
+
     # pylint: enable-msg=W0613
-
-    def set_apply_filter(self, bState):
-        """Set the applied filter state to bState."""
-        self.oApply.set_active(bState)
-

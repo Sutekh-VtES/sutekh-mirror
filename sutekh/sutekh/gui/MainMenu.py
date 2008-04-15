@@ -32,6 +32,8 @@ class MainMenu(gtk.MenuBar, object):
         super(MainMenu, self).__init__()
         self.__oWin = oWindow
         self.__dMenus = {}
+        self._oAccelGroup = gtk.AccelGroup()
+        self.__oWin.add_accel_group(self._oAccelGroup)
         self.__oConfig = oConfig
         self.__create_file_menu()
         self.__create_pane_menu()
@@ -294,6 +296,8 @@ class MainMenu(gtk.MenuBar, object):
         self.oHelpManual.connect('activate', self.__oWin.show_manual,
                 self.oHelpLast)
         oMenu.add(self.oHelpManual)
+        self.oHelpManual.add_accelerator('activate', self._oAccelGroup,
+                gtk.gdk.keyval_from_name('F1'), 0, gtk.ACCEL_VISIBLE)
 
         self.oHelpLast.connect('activate', self.__oWin.show_last_help)
         oMenu.add(self.oHelpLast)
@@ -302,6 +306,8 @@ class MainMenu(gtk.MenuBar, object):
         self.oAbout = gtk.MenuItem("About Sutekh")
         self.oAbout.connect('activate', self.__oWin.show_about_dialog)
         oMenu.add(self.oAbout)
+        self.oAbout.add_accelerator('activate', self._oAccelGroup,
+                ord('A'), gtk.gdk.CONTROL_MASK, gtk.ACCEL_VISIBLE)
 
         self.add(oMenuItem)
 

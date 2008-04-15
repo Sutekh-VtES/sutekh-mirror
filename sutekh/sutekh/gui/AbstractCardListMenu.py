@@ -8,8 +8,9 @@
 """WW card list menu."""
 
 import gtk
+from sutekh.gui.PaneMenu import PaneMenu
 
-class AbstractCardListMenu(gtk.MenuBar, object):
+class AbstractCardListMenu(PaneMenu, object):
     """Menu for the White Wolf card list (abstract card list).
 
        Provide actions specific to the WW card list, filtering support
@@ -18,83 +19,59 @@ class AbstractCardListMenu(gtk.MenuBar, object):
     # pylint: disable-msg=R0904
     # gtk.Widget, so many public methods
     def __init__(self, oFrame, oController, oWindow):
-        super(AbstractCardListMenu, self).__init__()
-        self.__oController = oController
-        self.__oWindow = oWindow
-        self.__oFrame = oFrame
-        self.__dMenus = {}
+        super(AbstractCardListMenu, self).__init__(oFrame, oWindow)
 
+        self.__oController = oController
         self.__create_abstract_cl_menu()
-        self.__create_filter_menu()
-        self.__create_plugin_menu()
+        self.__create_edit_menu()
+        self.create_filter_menu()
+        self.create_plugins_menu()
 
     # pylint: disable-msg=W0201
     # these functions are called from __init__, so OK
     def __create_abstract_cl_menu(self):
         """Actions menu for the Abstract Card list."""
         # setup sub menu
-        oMenuItem = gtk.MenuItem("Actions")
-        oMenu = gtk.Menu()
-        self.__dMenus["Actions"] = oMenu
-        oMenuItem.set_submenu(oMenu)
+        oMenu = self.create_submenu("Actions")
         # items
-
-        oExpand = gtk.MenuItem("Expand All (Ctrl+)")
+        oExpand = gtk.MenuItem("Expand All")
         oMenu.add(oExpand)
         oExpand.connect("activate", self._expand_all)
+        oExpand.add_accelerator('activate', self._oAccelGroup,
+                gtk.gdk.keyval_from_name('plus'), gtk.gdk.CONTROL_MASK,
+                gtk.ACCEL_VISIBLE)
 
-        oCollapse = gtk.MenuItem("Collapse All (Ctrl-)")
+        oCollapse = gtk.MenuItem("Collapse All")
         oMenu.add(oCollapse)
         oCollapse.connect("activate", self._collapse_all)
+        oCollapse.add_accelerator('activate', self._oAccelGroup,
+                gtk.gdk.keyval_from_name('minus'), gtk.gdk.CONTROL_MASK,
+                gtk.ACCEL_VISIBLE)
 
         oClose = gtk.MenuItem("Remove This Pane")
         oMenu.add(oClose)
-        oClose.connect("activate", self.__oFrame.close_menu_item)
+        oClose.connect("activate", self._oFrame.close_menu_item)
 
-        self.add(oMenuItem)
+    def __create_edit_menu(self):
+        """Create the 'Edit' menu, and populate it."""
+        oMenu = self.create_submenu("Edit")
 
-    def __create_filter_menu(self):
-        """Filter menu for WW card list."""
-        # setup sub menu
-        oMenuItem = gtk.MenuItem("Filter")
-        oMenu = gtk.Menu()
-        oMenuItem.set_submenu(oMenu)
-        self.__dMenus["Filter"] = oMenu
-        # items
-        oFilter = gtk.MenuItem("Specify Filter")
-        oMenu.add(oFilter)
-        oFilter.connect('activate', self._set_active_filter)
+        oCopy = gtk.MenuItem('Copy selection')
+        oCopy.connect('activate', self._copy_selection)
+        oMenu.add(oCopy)
+        oCopy.add_accelerator('activate', self._oAccelGroup,
+                ord('C'), gtk.gdk.CONTROL_MASK, gtk.ACCEL_VISIBLE)
 
-        self.oApply = gtk.CheckMenuItem("Apply Filter")
-        self.oApply.set_inconsistent(False)
-        self.oApply.set_active(False)
-        oMenu.add(self.oApply)
-        self.oApply.connect('toggled', self._toggle_apply)
-        self.add(oMenuItem)
-
-    def __create_plugin_menu(self):
-        """Plugin Menu for WW Card List."""
-        # setup sub menu
-        oMenuItem = gtk.MenuItem("Plugins")
-        oMenu = gtk.Menu()
-        self.__dMenus["Plugins"] = oMenu
-        oMenuItem.set_submenu(oMenu)
-        # plugins
-        for oPlugin in self.__oFrame.plugins:
-            oPlugin.add_to_menu(self.__dMenus, oMenu)
-        self.add(oMenuItem)
-        if len(oMenu.get_children()) == 0:
-            oMenuItem.set_sensitive(False)
 
     # pylint: enable-msg=W0201
 
     # pylint: disable-msg=W0613
     # oWidget required by function signature
-    def _toggle_apply(self, oWidget):
+    def toggle_apply_filter(self, oWidget):
         """toggle the applied state of the filter."""
         self.__oController.view.run_filter(oWidget.active)
 
-    def _set_active_filter(self, oWidget):
+    def set_active_filter(self, oWidget):
         """Set the active filter for the card list."""
         self.__oController.view.get_filter(self)
 
@@ -105,9 +82,10 @@ class AbstractCardListMenu(gtk.MenuBar, object):
     def _collapse_all(self, oWidget):
         """Collapse all rows in the TreeView."""
         self.__oController.view.collapse_all()
-    # pylint: enable-msg=W0613
 
-    def set_apply_filter(self, bState):
-        """Set the applied state of the filter to bState."""
-        self.oApply.set_active(bState)
+    def _copy_selection(self, oWidget):
+        """Copy the current selection to the application clipboard."""
+        self.__oController.view.copy_selection()
+
+    # pylint: enable-msg=W0613
 

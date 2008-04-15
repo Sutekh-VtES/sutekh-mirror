@@ -51,7 +51,6 @@ class CardListView(gtk.TreeView, object):
         # Activating rows
         self.connect('row-activated', self.card_activated)
         # Key combination for expanding and collapsing all rows
-        self.connect('key-release-event', self.key_released)
 
         # Text searching of card names
         self.set_search_equal_func(self.compare, None)
@@ -156,41 +155,6 @@ class CardListView(gtk.TreeView, object):
         self._oController.set_card_text(sCardName)
         for oListener in self.dListeners:
             oListener.set_card_text(sCardName, '')
-
-    # Key combinations
-
-    def key_released(self, oWidget, oEvent):
-        """Hook into the key processsing loop to do interesting things."""
-        oCtrlAlt = (gtk.gdk.CONTROL_MASK | gtk.gdk.MOD1_MASK)
-        # We ignore shift, since we need it for Ctrl+ and such
-        if oEvent.get_state() & oCtrlAlt == \
-                gtk.gdk.CONTROL_MASK:
-            # control key was pressed
-            if oEvent.keyval == gtk.gdk.keyval_from_name('plus'):
-                self.expand_all()
-                return True
-            elif oEvent.keyval == gtk.gdk.keyval_from_name('minus'):
-                self.collapse_all()
-                return True
-            elif gtk.gdk.keyval_to_lower(oEvent.keyval) == \
-                    gtk.gdk.keyval_from_name('c'):
-                sSelection = self.get_selection_as_string()
-                self._oMainWin.set_selection_text(sSelection)
-            elif gtk.gdk.keyval_to_lower(oEvent.keyval) == \
-                    gtk.gdk.keyval_from_name('v'):
-                if self._oModel.bEditable:
-                    sSelection = self._oMainWin.get_selection_text()
-                    sSource, aCards = self.split_selection_data(sSelection)
-                    if sSource != self.sDragPrefix:
-                        # Prevent pasting into oneself
-                        self.add_paste_data(sSource, aCards)
-        elif oEvent.get_state() & oCtrlAlt == 0:
-            # No modifiers of interest pressed
-            if oEvent.keyval == gtk.gdk.keyval_from_name('Delete'):
-                self.del_selection()
-        # Let other key handles take charge
-        return False
-
 
     # Selecting
 
@@ -468,6 +432,20 @@ class CardListView(gtk.TreeView, object):
            list model, and so on.
            """
         return False # do nothing
+
+    def copy_selection(self):
+        """Copy the current selection to the application clipboard"""
+        sSelection = self.get_selection_as_string()
+        self._oMainWin.set_selection_text(sSelection)
+
+    def do_paste(self):
+        """Try and paste the current selection from the appliction clipboard"""
+        if self._oModel.bEditable:
+            sSelection = self._oMainWin.get_selection_text()
+            sSource, aCards = self.split_selection_data(sSelection)
+            if sSource != self.sDragPrefix:
+                # Prevent pasting into oneself
+                self.add_paste_data(sSource, aCards)
 
 class EditableCardListView(CardListView):
     """CardList View which can be edited.

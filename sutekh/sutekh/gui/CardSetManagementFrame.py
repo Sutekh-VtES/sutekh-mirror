@@ -162,7 +162,7 @@ class CardSetManagementFrame(BasicFrame):
         self._oMainWindow.remove_frame_by_name(sFrameName)
         self.reload()
 
-    def set_filter(self, oWidget):
+    def set_filter(self):
         """Set the filter applied to the list."""
         if self._oFilterDialog is None:
             self._oFilterDialog = FilterDialog(self._oMainWindow,

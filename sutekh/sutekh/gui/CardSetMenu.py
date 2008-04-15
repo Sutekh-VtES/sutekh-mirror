@@ -16,6 +16,7 @@ from sutekh.gui.PropDialog import PropDialog
 from sutekh.io.XmlFileHandling import AbstractCardSetXmlFile, \
         PhysicalCardSetXmlFile
 from sutekh.gui.EditAnnotationsDialog import EditAnnotationsDialog
+from sutekh.gui.PaneMenu import PaneMenu
 
 def _type_to_string(cSetType):
     """Convert the class SetType to a string for the menus"""
@@ -24,7 +25,7 @@ def _type_to_string(cSetType):
     else:
         return 'Physical'
 
-class CardSetMenu(gtk.MenuBar, object):
+class CardSetMenu(PaneMenu, object):
     # pylint: disable-msg=R0904
     # gtk.Widget, so many public methods
     """Card Set Menu.
@@ -37,25 +38,21 @@ class CardSetMenu(gtk.MenuBar, object):
     # R0913 - we need all these arguments
     # R0902 - we are keeping a lot of state, so many instance variables
     def __init__(self, oFrame, oController, oWindow, oView, sName, cType):
-        super(CardSetMenu, self).__init__()
+        super(CardSetMenu, self).__init__(oFrame, oWindow)
         self.__oController = oController
-        self.__oWindow = oWindow
         self.__oView = oView
-        self.__oFrame = oFrame
         self.sSetName = sName
         self.__cSetType = cType
-        self.__dMenus = {}
         self.__create_card_set_menu()
-        self.__create_filter_menu()
-        self.__create_plugin_menu()
+        self.__create_edit_menu()
+        self.create_filter_menu()
+        self.create_plugins_menu()
 
     # pylint: disable-msg=W0201
     # these methods are called from __init__, so it's OK
     def __create_card_set_menu(self):
         """Create the Actions menu for Card Sets."""
-        oMenuItem = gtk.MenuItem("Actions")
-        oMenu = gtk.Menu()
-        self.__dMenus["Actions"] = oMenu
+        oMenu = self.create_submenu('Actions')
         self.__oProperties = gtk.MenuItem("Edit Card Set (%s) properties" %
                 self.sSetName)
         oMenu.add(self.__oProperties)
@@ -72,14 +69,20 @@ class CardSetMenu(gtk.MenuBar, object):
         oExpand = gtk.MenuItem("Expand All (Ctrl+)")
         oMenu.add(oExpand)
         oExpand.connect("activate", self._expand_all)
+        oExpand.add_accelerator('activate', self._oAccelGroup,
+                gtk.gdk.keyval_from_name('plus'), gtk.gdk.CONTROL_MASK,
+                gtk.ACCEL_VISIBLE)
 
         oCollapse = gtk.MenuItem("Collapse All (Ctrl-)")
         oMenu.add(oCollapse)
         oCollapse.connect("activate", self._collapse_all)
+        oCollapse.add_accelerator('activate', self._oAccelGroup,
+                gtk.gdk.keyval_from_name('minus'), gtk.gdk.CONTROL_MASK,
+                gtk.ACCEL_VISIBLE)
 
         oClose = gtk.MenuItem("Remove This Pane")
         oMenu.add(oClose)
-        oClose.connect("activate", self.__oFrame.close_menu_item)
+        oClose.connect("activate", self._oFrame.close_menu_item)
         oDelete = gtk.MenuItem("Delete Card Set")
         # Possible enhancement, make card set names italic.
         # Looks like it requires playing with menuitem attributes
@@ -94,20 +97,10 @@ class CardSetMenu(gtk.MenuBar, object):
             oViewExpansions.connect('toggled', self._toggle_expansion)
             oMenu.add(oViewExpansions)
 
-        oEditable = gtk.CheckMenuItem('Card Set is Editable')
-        oEditable.set_inconsistent(False)
-        oEditable.set_active(False)
-        oEditable.connect('toggled', self._toggle_editable)
-        self.__oController.view.set_edit_menu_item(oEditable)
-        oMenu.add(oEditable)
-
         oSep = gtk.SeparatorMenuItem()
         oMenu.add(oSep)
         oDelete.connect("activate", self._card_set_delete)
         oMenu.add(oDelete)
-
-        oMenuItem.set_submenu(oMenu)
-        self.add(oMenuItem)
 
     def __update_card_set_menu(self):
         """Update the menu to reflect changes in the card set name."""
@@ -116,39 +109,38 @@ class CardSetMenu(gtk.MenuBar, object):
         self.__oExport.get_child().set_label("Export Card Set (%s) to File" %
                 self.sSetName)
 
-    def __create_filter_menu(self):
-        """Create the Filter Menu."""
-        # setup sub menun
-        oMenuItem = gtk.MenuItem("Filter")
-        oMenu = gtk.Menu()
-        self.__dMenus["Filter"] = oMenu
+    def __create_edit_menu(self):
+        """Create the 'Edit' menu, and populate it."""
+        oMenu = self.create_submenu("Edit")
 
-        # items
-        oFilter = gtk.MenuItem("Specify Filter")
-        oMenu.add(oFilter)
-        oFilter.connect('activate', self._set_active_filter)
-        self.oApply = gtk.CheckMenuItem("Apply Filter")
-        self.oApply.set_inconsistent(False)
-        self.oApply.set_active(False)
-        oMenu.add(self.oApply)
-        self.oApply.connect('toggled', self._toggle_apply_filter)
-        # Add the Menu
-        oMenuItem.set_submenu(oMenu)
-        self.add(oMenuItem)
+        oEditable = gtk.CheckMenuItem('Card Set is Editable')
+        oEditable.set_inconsistent(False)
+        oEditable.set_active(False)
+        oEditable.connect('toggled', self._toggle_editable)
+        self.__oController.view.set_edit_menu_item(oEditable)
+        oEditable.add_accelerator('activate', self._oAccelGroup,
+                ord('E'), gtk.gdk.CONTROL_MASK, gtk.ACCEL_VISIBLE)
+        oMenu.add(oEditable)
 
-    def __create_plugin_menu(self):
-        """Create the plugins menu."""
-        # setup sub menu
-        oMenuItem = gtk.MenuItem("Plugins")
-        oMenu = gtk.Menu()
-        self.__dMenus["Plugins"] = oMenu
-        # plugins
-        for oPlugin in self.__oFrame.plugins:
-            oPlugin.add_to_menu(self.__dMenus, oMenu)
-        oMenuItem.set_submenu(oMenu)
-        self.add(oMenuItem)
-        if len(oMenu.get_children()) == 0:
-            oMenuItem.set_sensitive(False)
+        oCopy = gtk.MenuItem('Copy selection')
+        oCopy.connect('activate', self._copy_selection)
+        oMenu.add(oCopy)
+        oCopy.add_accelerator('activate', self._oAccelGroup,
+                ord('C'), gtk.gdk.CONTROL_MASK, gtk.ACCEL_VISIBLE)
+
+        oPaste = gtk.MenuItem('Paste')
+        oPaste.connect('activate', self._paste_selection)
+        oMenu.add(oPaste)
+        oPaste.add_accelerator('activate', self._oAccelGroup,
+                ord('V'), gtk.gdk.CONTROL_MASK, gtk.ACCEL_VISIBLE)
+
+        oDelete = gtk.MenuItem('Delete selection')
+        oDelete.connect('activate', self._del_selection)
+        oMenu.add(oDelete)
+        oDelete.add_accelerator('activate', self._oAccelGroup,
+                gtk.gdk.keyval_from_name('Delete') , 0, gtk.ACCEL_VISIBLE)
+
+
     # pylint: enable-msg=W0201
 
     # pylint: disable-msg=W0613
@@ -156,7 +148,7 @@ class CardSetMenu(gtk.MenuBar, object):
     def _edit_properites(self, oWidget):
         """Popup the Edit Properties dialog to change card set properties."""
         oCS = self.__cSetType.byName(self.sSetName)
-        oProp = PropDialog(self.__oWindow, oCS)
+        oProp = PropDialog(self._oMainWindow, oCS)
         oProp.run()
         (sName, sAuthor, sComment) = oProp.get_data()
         if sName is not None and sName != self.sSetName and len(sName)>0:
@@ -170,7 +162,7 @@ class CardSetMenu(gtk.MenuBar, object):
                 oCS.name = sName
                 self.__oView.sSetName = sName
                 self.sSetName = sName
-                self.__oFrame.update_name(self.sSetName)
+                self._oFrame.update_name(self.sSetName)
                 self.__update_card_set_menu()
                 oCS.syncUpdate()
         if sAuthor is not None:
@@ -184,7 +176,7 @@ class CardSetMenu(gtk.MenuBar, object):
         """Popup the Edit Annotations dialog."""
         oCS = self.__cSetType.byName(self.sSetName)
         oEditAnn = EditAnnotationsDialog("Edit Annotations of Card Set (%s)" %
-                self.sSetName, self.__oWindow, oCS.name, oCS.annotations)
+                self.sSetName, self._oMainWindow, oCS.name, oCS.annotations)
         oEditAnn.run()
         oCS.annotations = oEditAnn.get_data()
         oCS.syncUpdate()
@@ -192,7 +184,7 @@ class CardSetMenu(gtk.MenuBar, object):
     def _do_export(self, oWidget):
         """Export the card set to the chosen filename."""
         oFileChooser = ExportDialog("Save %s Card Set As " %
-                _type_to_string(self.__cSetType), self.__oWindow)
+                _type_to_string(self.__cSetType), self._oMainWindow)
         oFileChooser.run()
         sFileName = oFileChooser.get_name()
         if sFileName is not None:
@@ -205,9 +197,9 @@ class CardSetMenu(gtk.MenuBar, object):
 
     def _card_set_delete(self, oWidget):
         """Delete the card set."""
-        self.__oFrame.delete_card_set()
+        self._oFrame.delete_card_set()
 
-    def _toggle_apply_filter(self, oWidget):
+    def toggle_apply_filter(self, oWidget):
         """Toggle the filter applied state."""
         self.__oController.view.run_filter(oWidget.active)
 
@@ -221,7 +213,7 @@ class CardSetMenu(gtk.MenuBar, object):
         if self.__oController.model.bEditable != oWidget.active:
             self.__oController.view.toggle_editable(oWidget.active)
 
-    def _set_active_filter(self, oWidget):
+    def set_active_filter(self, oWidget):
         """Set the current filter for the card set."""
         self.__oController.view.get_filter(self)
 
@@ -232,10 +224,17 @@ class CardSetMenu(gtk.MenuBar, object):
     def _collapse_all(self, oWidget):
         """Collapse all the rows in the card set."""
         self.__oController.view.collapse_all()
+
+    def _del_selection(self, oWidget):
+        """Delete the current selection"""
+        self.__oController.view.del_selection()
+
+    def _copy_selection(self, oWidget):
+        """Copy the current selection to the application clipboard."""
+        self.__oController.view.copy_selection()
+
+    def _paste_selection(self, oWidget):
+        """Try to paste the current clipbaord contents"""
+        self.__oController.view.do_paste()
+
     # pylint: enable-msg=W0613
-
-    def set_apply_filter(self, bState):
-        """Set the applied filter state to bState."""
-        self.oApply.set_active(bState)
-
-
