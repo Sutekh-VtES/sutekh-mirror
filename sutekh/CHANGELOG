@@ -1,3 +1,48 @@
+16 April 2008
+ * Refactor menu code so all panes  share a common base code
+ * Replace the view keypress handler with proper accelerator group handling
+
+13 April 2008
+ * Maintain a common directory across all the file chooser widgets
+ * More pylint driven cleanups
+ * Refactor WriteArdb* classes to have a common ancestor
+
+12 April 2008
+ * Further conversion work on the function syntax
+ * Other cleanups
+
+11 April 2008
+ * Fix AnalyzeCardList's happy family analysis
+
+10 April 2008
+ * Refactor AnalyzeCardList Plugin
+ * pylint driven cleanups
+
+09 April 2008
+ * Refactor CardSetExportToHTML plugin
+ * Escape markup in the CardSetPrint plugin
+ * pylint cleanups
+
+08 April 2008
+ * Changed the way plugin menu items work.  Plugins can now register multiple
+   items on several different menus. Fix CardImagesplugin to do so
+
+06 April 2008
+ * Add HTMLTextView to display help texts
+
+03 April 2008
+ * Rework the card draw probablities plugin' layout
+ 
+02 April 2008
+ * Change card images plugin to scale image to pane size by default
+ * Rename CardDrawSimulator to CardDrawPropbablities
+
+29 March 2008
+ * Various Changes based on user feedback. Added several TODO items.
+
+28 March 2008:
+ * Add crypt to opening hand simulator
+
 24 March 2008:
  * Change CardDrawSimulator to show multivariate hypergeometric probablities
    when multiple cards are selected

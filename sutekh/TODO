@@ -45,8 +45,6 @@ For 0.6:
  * Add decent keyboard shortcuts
  * CSV import plugin
  * Add icon to Windows installer and start menu shortcut. 
- * Add HTML Help + Tutorial + help text viewer of some sort
- * Global directory across file dialogs
  * Use card set name for default file name when saving
  * Improve editable card list visual hint on windows
  * Import the cardlist_[_A-Z] files from WW site, for robustness against
