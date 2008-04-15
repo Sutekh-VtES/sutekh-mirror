@@ -590,6 +590,8 @@ class HTMLTextView(gtk.TextView):
         oEndOfBuf = oBuffer.get_end_iter()
         oParser = xml.sax.make_parser()
         oParser.setContentHandler(HtmlHandler(self, oEndOfBuf))
+        # Don't try and follow external references
+        oParser.setFeature(xml.sax.handler.feature_external_ges, False)
         oParser.parse(fHTMLInput)
 
         if not oEndOfBuf.starts_line():
