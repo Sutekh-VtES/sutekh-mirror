@@ -61,18 +61,13 @@ class CardSetExportArdbText(CardListPlugin):
         if oResponse ==  gtk.RESPONSE_OK:
             sFileName = self.oFileChooser.get_filename()
             if sFileName is not None:
-                if self.view.cSetType == PhysicalCardSet:
-                    oCardSet = PhysicalCardSet.byName(self.view.sSetName)
-                elif self.view.cSetType == AbstractCardSet:
-                    oCardSet = AbstractCardSet.byName(self.view.sSetName)
-                else:
+                oCardSet = self.get_card_set()
+                if not oCardSet:
                     return
-                sAuthor = oCardSet.author
-                sComment = oCardSet.comment
                 oWriter = WriteArdbText()
                 fOut = file(sFileName,"w")
-                oWriter.write(fOut, self.view.sSetName, sAuthor, sComment,
-                        self.get_cards())
+                oWriter.write(fOut, self.view.sSetName, oCardSet.author,
+                        oCardSet.comment, self.get_cards())
                 fOut.close()
     # pylint: enable-msg=W0613
 

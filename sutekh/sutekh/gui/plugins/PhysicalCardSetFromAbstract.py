@@ -46,7 +46,7 @@ class PhysicalCardSetFromAbstract(CardListPlugin):
         "Create the actual physical card"
         # pylint: disable-msg=E1101
         # pylint misses AbstractCardSet methods
-        oAC = AbstractCardSet.byName(self.view.sSetName)
+        oAC = self.get_card_set()
 
         oDlg = CreateCardSetDialog(self.parent, "PhysicalCardSet", oAC.author,
                 oAC.comment)

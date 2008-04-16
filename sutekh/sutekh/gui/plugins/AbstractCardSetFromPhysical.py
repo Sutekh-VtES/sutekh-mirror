@@ -35,7 +35,7 @@ class AbstractCardSetFromPhysical(CardListPlugin):
         """Handle the response from the menu and create the card set"""
         # pylint: disable-msg=E1101
         # SQLObject methods confuse pylint
-        oPC = PhysicalCardSet.byName(self.view.sSetName)
+        oPC = self.get_card_set()
         oDlg = CreateCardSetDialog(self.parent, "AbstractCardSet", oPC.author,
                 oPC.comment)
         oDlg.run()

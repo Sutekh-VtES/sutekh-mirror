@@ -187,10 +187,8 @@ class CardSetPrint(CardListPlugin):
                 return markup_escape_text(sInput)
             else:
                 return sInput # pass None straigh through
-        cSetType = self.view.cSetType
-        sSetName = self.view.sSetName
 
-        oCS = cSetType.byName(sSetName)
+        oCS = self.get_card_set()
         aCrypt, aLibrary = self.get_cards(oCS)
 
 

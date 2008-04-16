@@ -443,7 +443,7 @@ class AnalyzeCardList(CardListPlugin):
 
     def _prepare_main(self):
         """Setup the main notebook display"""
-        oCS = self._cModelType.byName(self.view.sSetName)
+        oCS = self.get_card_set()
 
         sMainText = "Analysis Results for :\n\t\t<b>%(name)s</b>\n" \
                 "\t\tby <i>%(author)s</i>\n\t\tDescription: <i>%(desc)s</i>" \

@@ -182,3 +182,11 @@ class CardListPlugin(object):
         Reload all views.
         """
         self.parent.reload_all()
+
+    def get_card_set(self):
+        """Get the Card Set for this view"""
+        oCardSet = None
+        if hasattr(self.view, 'cSetType'):
+            oCardSet = self.view.cSetType.byName(self.view.sSetName)
+        return oCardSet
+

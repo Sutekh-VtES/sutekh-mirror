@@ -281,14 +281,10 @@ class CardSetExportHTML(CardListPlugin, ArdbInfo):
                     sMsg = "Failed to open output file.\n\n" + str(oExp)
                     do_complaint_error(sMsg)
                     return
-                if self.view.cSetType == PhysicalCardSet:
-                    oCardSet = PhysicalCardSet.byName(self.view.sSetName)
-                elif self.view.cSetType == AbstractCardSet:
-                    oCardSet = AbstractCardSet.byName(self.view.sSetName)
-                else:
+                oCardSet = self.get_card_set()
+                if not oCardSet:
                     fOut.close()
-                    sMsg = "unsupported Card Set type"
-                    do_complaint_error(sMsg)
+                    do_complaint_error("Unsupported Card Set Type")
                     return
                 bDoText = False
                 if self.oTextButton.get_active():
