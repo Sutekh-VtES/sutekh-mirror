@@ -205,7 +205,7 @@ class CardImageFrame(BasicFrame, CardListViewListener):
             bHasInfo = False
         if bHasInfo:
             aExp = [oP.expansion.name for oP in oAbsCard.rarity]
-            self.__aExpansions = list(set(aExp)) # remove duplicates
+            self.__aExpansions = sorted(list(set(aExp))) # remove duplicates
             self.__iExpansionPos = 0
             self.__sCurExpansion = self.__aExpansions[0]
         else:

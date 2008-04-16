@@ -163,8 +163,8 @@ class CardTextView(gtk.TextView, object):
                     [oC.name for oC in oCard.virtue], "virtue")
 
         if not len(oCard.rarity) == 0:
-            aExp = [oP.expansion.name + " (" + oP.rarity.name + ")" for oP
-                    in oCard.rarity]
+            aExp = sorted([oP.expansion.name + " (" + oP.rarity.name + ")"
+                for oP in oCard.rarity])
             self.__oBuf.labelled_list("Expansions", aExp, "expansion")
 
         if not len(oCard.rulings) == 0:
