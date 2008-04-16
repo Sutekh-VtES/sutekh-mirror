@@ -65,26 +65,26 @@ class CardSetManagementFrame(BasicFrame):
 
         if self._cSetType is PhysicalCardSet:
             self._oScrolledList.add_second_column("In Use")
-        oView = self._oScrolledList.view
+        self._oView = self._oScrolledList.view
         self._oScrolledList.set_select_single()
-        oView.connect('row_activated', self.row_clicked)
+        self._oView.connect('row_activated', self.row_clicked)
         self.reload()
         oMbox.pack_start(self._oScrolledList, expand=True)
 
         aDragTargets = [ ('STRING', 0, 0),
                          ('text/plain', 0, 0) ]
 
-        oView.drag_source_set(
+        self._oView.drag_source_set(
                 gtk.gdk.BUTTON1_MASK | gtk.gdk.BUTTON3_MASK, aDragTargets,
                 gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
 
-        oView.connect('drag-data-get', self.drag_card_set)
+        self._oView.connect('drag-data-get', self.drag_card_set)
 
-        oView.drag_dest_set(gtk.DEST_DEFAULT_ALL,
+        self._oView.drag_dest_set(gtk.DEST_DEFAULT_ALL,
                 aDragTargets,
                 gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
 
-        oView.connect('drag-data-received', self.drag_drop_handler)
+        self._oView.connect('drag-data-received', self.drag_drop_handler)
 
         self.add(oMbox)
         self.show_all()
