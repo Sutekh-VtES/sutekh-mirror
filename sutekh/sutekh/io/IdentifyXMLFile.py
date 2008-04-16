@@ -19,6 +19,7 @@ try:
     from xml.etree.ElementTree import parse, fromstring, ElementTree
 except ImportError:
     from elementtree.ElementTree import parse, fromstring, ElementTree
+from xml.parsers.expat import ExpatError
 
 class IdentifyXMLFile(object):
     """Tries to identify the XML file type.
@@ -66,12 +67,18 @@ class IdentifyXMLFile(object):
 
     def parse(self, fIn):
         """Parse the file fIn into the ElementTree."""
-        self.oTree = parse(fIn)
+        try:
+            self.oTree = parse(fIn)
+        except ExpatError:
+            return ('Unknown', None, False) # Not an XML File
         return self.identify_tree()
 
     def parse_string(self, sIn):
         """Parse the string sIn into the ElementTree"""
-        self.oTree = ElementTree(fromstring(sIn))
+        try:
+            self.oTree = ElementTree(fromstring(sIn))
+        except ExpatError:
+            return ('Unknown', None, False) # Not an XML File
         return self.identify_tree()
 
     def id_file(self, sFileName):
