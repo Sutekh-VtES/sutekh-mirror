@@ -148,6 +148,7 @@ class FullBackup(CardListPlugin):
 
             if bContinue:
                 try:
+                    aEditable = self.parent.get_editable_panes()
                     oLogHandler = SutekhCountLogHandler()
                     oProgressDialog = ProgressDialog()
                     oProgressDialog.set_description("Restoring backup")
@@ -158,6 +159,7 @@ class FullBackup(CardListPlugin):
                     # restore successful, refresh display
                     self.reload_all()
                     oProgressDialog.destroy()
+                    self.parent.restore_editable_panes(aEditable)
                 # pylint: disable-msg=W0703
                 # we really do want all the exceptions
                 except Exception, oException:

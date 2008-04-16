@@ -128,6 +128,7 @@ def _get_names(oWin):
 
 def refresh_ww_card_list(oWin):
     """Handle grunt work of refreshing the card lists"""
+    aEditable = oWin.get_editable_panes()
     oCLFile, oRulingsFile, sBackupFile = _get_names(oWin)
     if not oCLFile:
         return False # Nothing happened
@@ -171,6 +172,7 @@ def refresh_ww_card_list(oWin):
         sMesg += "Everything seems to have gone OK"
         do_complaint(sMesg, gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, True)
     oProgressDialog.destroy()
+    oWin.restore_editable_panes(aEditable)
     return True
 
 def do_db_upgrade(aLowerTables, aHigherTables):

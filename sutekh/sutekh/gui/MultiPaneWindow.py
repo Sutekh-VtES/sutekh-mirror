@@ -316,6 +316,31 @@ class MultiPaneWindow(gtk.Window):
         for oPane in self.dOpenFrames:
             oPane.reload()
 
+    def get_editable_panes(self):
+        """Get a list of panes, which are currently editable.
+
+           Used by the WW import code, and backup restores to correct
+           for the zero card list state setting the cardlist's to editable.
+           """
+        aEditable = []
+        for oPane in self.dOpenFrames:
+            if hasattr(oPane.view, 'toggle_editable'):
+                if oPane.view.get_model().bEditable:
+                    aEditable.append(oPane)
+        return aEditable
+
+    def restore_editable_panes(self, aEditable):
+        """Restore the editable state so only the panes in aEditable are
+           editable."""
+        for oPane in self.dOpenFrames:
+            if hasattr(oPane.view, 'toggle_editable'):
+                if oPane in aEditable:
+                    oPane.view.toggle_editable(True)
+                else:
+                    oPane.view.toggle_editable(False)
+                    # Empty panes still need to be editable, though
+                    oPane.view.check_editable()
+
     def win_focus(self, oWidget, oEvent, oFrame):
         """Responsd to focus change events.
 
@@ -326,7 +351,6 @@ class MultiPaneWindow(gtk.Window):
         self._oFocussed = oFrame
         self._oFocussed.set_focussed_title()
         self._oFocussed.view.grab_focus()
-        self._oFocussed = oFrame
         self.reset_menu()
 
     def set_card_text(self, sCardName):

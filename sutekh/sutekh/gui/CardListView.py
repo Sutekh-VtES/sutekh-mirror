@@ -50,7 +50,7 @@ class CardListView(gtk.TreeView, object):
 
         # Activating rows
         self.connect('row-activated', self.card_activated)
-        # Key combination for expanding and collapsing all rows
+        # Key combination for searching
 
         # Text searching of card names
         self.set_search_equal_func(self.compare, None)

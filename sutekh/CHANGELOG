@@ -2,6 +2,8 @@
  * Move some common code to PaneMenu
  * Unfiy ExportDialog + ImportDialog into SutekhFileWidget
  * Add support for enabling & disabling menu mnemonics per pane
+ * Preserve editable status when resoring and importing new WW cardlists
+ * Redo GUI CardLookup plagin to use a treeview.
 
 16 April 2008
  * Refactor menu code so all panes  share a common base code

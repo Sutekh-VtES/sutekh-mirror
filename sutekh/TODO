@@ -49,4 +49,3 @@ For 0.6:
  * Improve editable card list visual hint on windows
  * Import the cardlist_[_A-Z] files from WW site, for robustness against
    timeouts
- * Correctly preserve editable status across reimporting card lists + backups

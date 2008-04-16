@@ -760,10 +760,13 @@ def copy_to_new_abstract_card_db(oOrigConn, oNewConn, oCardLookup,
     for oSet in aAbsCardSets:
         oSet.create_acs(oCardLookup, dLookupCache)
         oLogger.info('Abstract Card Set: %s', oSet.name)
+        oTarget.commit()
+        oTarget.cache.clear()
     for oSet in aPhysCardSets:
         oSet.create_pcs(oCardLookup, dLookupCache)
         oLogger.info('Physical Card Set: %s', oSet.name)
-    oTarget.commit()
+        oTarget.commit()
+        oTarget.cache.clear()
     # Restore mapping
     oTarget = oNewConn.transaction()
     oMapping.commit_to_db(oTarget, dLookupCache)
