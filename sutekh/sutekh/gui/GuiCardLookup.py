@@ -124,6 +124,8 @@ class PCLwithNumbersView(PhysicalCardView):
         """Enable the card count column."""
         self.insert_column(self.oCardCountCol, 1)
 
+    # pylint: disable-msg=W0613
+    # oColumn, oModel required by function signature
     def _render_cardcount_column(self, oColumn, oCell, oModel, oIter):
         """Render card count into card count cell."""
         iCnt = self._get_cardcount_data(oIter)
@@ -131,6 +133,8 @@ class PCLwithNumbersView(PhysicalCardView):
             oCell.set_property("text", str(iCnt))
         else:
             oCell.set_property("text", "")
+
+    # pylint: enable-msg=W0613
 
     def _get_cardcount_data(self, oIter):
         """Return the number of cards that fall within a model iterator."""
@@ -168,7 +172,7 @@ class ReplacementTreeView(gtk.TreeView):
     def __init__(self, oCardListView, oFilterToggleButton):
         """Construct a gtk.TreeView object showing the current
            card replacements.
-           
+
            For abstract cards, the card names are stored as is.
            For physical cards, the card names have " exp: <expansion>"
            appended.
@@ -247,6 +251,8 @@ class ReplacementTreeView(gtk.TreeView):
         oCell5.connect('clicked', self._set_ignore)
         oCell6.connect('clicked', self._set_filter)
 
+    # pylint: disable-msg=W0613
+    # oCell required by function signature
     def _set_to_selection(self, oCell, oPath):
         """Set the replacement card to the selected entry"""
 
@@ -326,6 +332,8 @@ class ReplacementTreeView(gtk.TreeView):
         else:
             self.oCardListView.load()
 
+    # pylint: enable-msg=W0613
+
     @staticmethod
     def _check_physical_cards(sName, iCnt, aPhysCards, aAssignedCards,
                               aSelectedCards):
@@ -361,13 +369,13 @@ class ReplacementTreeView(gtk.TreeView):
         # pylint: disable-msg=E1101
         # SQLObject methods confuse pylint
         oAbs = AbstractCard.byCanonicalName(sName.encode('utf8').lower())
-        # pylint: enable-msg=E1101
         try:
             iExpID = IExpansion(sExpansion).id
         except SQLObjectNotFound:
             iExpID = None
         except KeyError:
             iExpID = None
+        # pylint: enable-msg=E1101
 
         aCandPhysCards = PhysicalCard.selectBy(abstractCardID=oAbs.id,
                                                expansionID=iExpID)
@@ -383,6 +391,8 @@ class ReplacementTreeView(gtk.TreeView):
 
         return False
 
+    # pylint: disable-msg=W0613
+    # oButton required by function signature
     def run_filter_dialog(self, oButton):
         """Display the filter dialog and apply results."""
         self.oCardListView.get_filter(None)
@@ -394,6 +404,8 @@ class ReplacementTreeView(gtk.TreeView):
         self.oCardListView.get_model().applyfilter = \
             self.oFilterToggleButton.get_active()
         self.oCardListView.load()
+
+    # pylint: enable-msg=W0613
 
     def toggle_show_cardcount(self, oShowCountsButton):
         """Toggle whether the column with the card counts is visible."""
@@ -508,14 +520,17 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
                                         abstractCardID=oAbs.id,
                                         expansionID=oExpansion.id)
                     else:
-                        aPhysCards = PhysicalCard.selectBy(abstractCardID=oAbs.id,
-                                expansionID=None)
+                        aPhysCards = PhysicalCard.selectBy(
+                                abstractCardID=oAbs.id, expansionID=None)
                     dCardSetCounts = {}
                     for oCard in aPhysCards:
-                        iCSCount = MapPhysicalCardToPhysicalCardSet.selectBy(physicalCardID=oCard.id).count()
+                        iCSCount = MapPhysicalCardToPhysicalCardSet.selectBy(
+                                physicalCardID=oCard.id).count()
                         dCardSetCounts[oCard] = iCSCount
-                    # Order by count, so we try cards in the fewest card sets first
-                    aPossCards = sorted(dCardSetCounts.items(), key=lambda t: t[1])
+                    # Order by count, so we try cards in the fewest card sets
+                    # first
+                    aPossCards = sorted(dCardSetCounts.items(),
+                            key=lambda t: t[1])
                     for oPhys, iCSCount in aPossCards:
                         if oPhys not in aCards \
                                 and iCnt > 0:
@@ -524,14 +539,16 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
                             if iCnt == 0:
                                 break
                     if iCnt > 0:
-                        dUnknownCards.setdefault((oAbs.name, sExpansionName), 0)
+                        dUnknownCards.setdefault((oAbs.name, sExpansionName),
+                                0)
                         dUnknownCards[(oAbs.name, sExpansionName)] = iCnt
             except SQLObjectNotFound:
                 for sExpansionName in dCardExpansions[sName]:
                     iCnt = dCardExpansions[sName][sExpansionName]
                     oExpansion = dNameExps[sExpansionName]
                     if iCnt > 0:
-                        dUnknownCards.setdefault((oAbs.name, sExpansionName), 0)
+                        dUnknownCards.setdefault((oAbs.name, sExpansionName),
+                                0)
                         dUnknownCards[(oAbs.name, sExpansionName)] = iCnt
 
         if dUnknownCards:
@@ -599,6 +616,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
                  gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
 
         # TODO: document this gets used or clean it up somehow
+        # Needed by the cardlist model's call the the filter dialog
         oUnknownDialog.config_file = self._oConfig
 
         sMsg1 = "While importing %s\n" \
@@ -698,7 +716,8 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
                 if sNewName != "No Card":
                     # Find First physical card that matches this name
                     # that's not in aPhysCards
-                    oAbs = AbstractCard.byCanonicalName(sNewName.encode('utf8').lower())
+                    oAbs = AbstractCard.byCanonicalName(
+                            sNewName.encode('utf8').lower())
                     if sNewExpName != '':
                         aCandPhysCards = PhysicalCard.selectBy(
                             abstractCardID=oAbs.id, expansionID=iExpID)
@@ -727,6 +746,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
                  gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
 
         # TODO: document this gets used or clean it up somehow
+        # Needed by the cardlist model's call the the filter dialog
         oUnknownDialog.config_file = self._oConfig
 
         sMsg1 = "While importing %s\n" \

@@ -35,7 +35,7 @@ class CellRendererSutekhButton(gtk.GenericCellRenderer):
                 'whether to show the icon', 0, gobject.PARAM_READWRITE)
             }
 
-    def __init__(self,bShowIcon=False):
+    def __init__(self, bShowIcon=False):
         super(CellRendererSutekhButton, self).__init__()
         self.__gobject_init__()
         self.oPixbuf = None
