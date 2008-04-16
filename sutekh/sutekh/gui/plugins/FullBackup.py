@@ -67,8 +67,8 @@ class FullBackup(CardListPlugin):
         sName = "Choose a file to save the full backup to ..."
 
         oDlg = SutekhFileDialog(self.parent, sName,
-                action=gtk.FILE_CHOOSER_ACTION_SAVE,
-                buttons = (gtk.STOCK_OK, gtk.RESPONSE_OK,
+                oAction=gtk.FILE_CHOOSER_ACTION_SAVE,
+                oButtons=(gtk.STOCK_OK, gtk.RESPONSE_OK,
                     gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
         oDlg.set_name("Sutekh.dialog")
 
@@ -117,8 +117,8 @@ class FullBackup(CardListPlugin):
         sName = "Restore a Full Backup ...."
 
         oDlg = SutekhFileDialog(self.parent, sName,
-                action=gtk.FILE_CHOOSER_ACTION_OPEN,
-                buttons = (gtk.STOCK_OK, gtk.RESPONSE_OK,
+                oAction=gtk.FILE_CHOOSER_ACTION_OPEN,
+                oButtons=(gtk.STOCK_OK, gtk.RESPONSE_OK,
                     gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
         oDlg.set_name("Sutekh.dialog")
 
