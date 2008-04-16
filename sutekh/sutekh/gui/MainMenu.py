@@ -137,7 +137,7 @@ class MainMenu(gtk.MenuBar, object):
 
     def __create_pane_menu(self):
         """Create the 'Pane Actions' menu"""
-        oMenuItem = gtk.MenuItem("Pane _Actions")
+        oMenuItem = gtk.MenuItem("Pane A_ctions")
         oMenu = gtk.Menu()
         self.__dMenus["Pane"] = oMenu
         oMenuItem.set_submenu(oMenu)

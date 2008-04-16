@@ -1,3 +1,8 @@
+17 April 2008
+ * Move some common code to PaneMenu
+ * Unfiy ExportDialog + ImportDialog into SutekhFileWidget
+ * Add support for enabling & disabling menu mnemonics per pane
+
 16 April 2008
  * Refactor menu code so all panes  share a common base code
  * Replace the view keypress handler with proper accelerator group handling

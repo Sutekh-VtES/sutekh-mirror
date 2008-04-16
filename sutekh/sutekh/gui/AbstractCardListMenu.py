@@ -31,7 +31,7 @@ class AbstractCardListMenu(PaneMenu, object):
     def __create_abstract_cl_menu(self):
         """Actions menu for the Abstract Card list."""
         # setup sub menu
-        oMenu = self.create_submenu("Actions")
+        oMenu = self.create_submenu("_Actions")
         # items
         self.create_menu_item("Expand All", oMenu, self._expand_all,
                 '<Ctrl>plus')
@@ -42,7 +42,7 @@ class AbstractCardListMenu(PaneMenu, object):
 
     def __create_edit_menu(self):
         """Create the 'Edit' menu, and populate it."""
-        oMenu = self.create_submenu("Edit")
+        oMenu = self.create_submenu("_Edit")
         self.create_menu_item('Copy selection', oMenu, self._copy_selection,
                 '<Ctrl>c')
 

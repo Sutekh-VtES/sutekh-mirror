@@ -52,7 +52,7 @@ class CardSetMenu(PaneMenu, object):
     # these methods are called from __init__, so it's OK
     def __create_card_set_menu(self):
         """Create the Actions menu for Card Sets."""
-        oMenu = self.create_submenu('Actions')
+        oMenu = self.create_submenu('_Actions')
         self.__oProperties = self.create_menu_item(
                 "Edit Card Set (%s) properties" % self.sSetName, oMenu,
                 self._edit_properties)
@@ -88,7 +88,7 @@ class CardSetMenu(PaneMenu, object):
 
     def __create_edit_menu(self):
         """Create the 'Edit' menu, and populate it."""
-        oMenu = self.create_submenu("Edit")
+        oMenu = self.create_submenu("_Edit")
         oEditable = self.create_check_menu_item('Card Set is Editable', oMenu,
                 self._toggle_editable, False, '<Ctrl>e')
         self.__oController.view.set_edit_menu_item(oEditable)

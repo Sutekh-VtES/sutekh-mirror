@@ -23,17 +23,20 @@ class PaneMenu(gtk.MenuBar, object):
         self._oFrame = oFrame
         self._dMenus = {}
         self._bAccelActive = False
+        self._dMenuLabels = {}
         self._oMainWindow = oWindow
         self._oAccelGroup = gtk.AccelGroup()
         self.oApply = None
 
-    # TODO: disable / enable mnemonics as well
     def activate_accels(self):
         """Add the accelerator group for this menu from the main window"""
         if self._bAccelActive:
             return
         self._oMainWindow.add_accel_group(self._oAccelGroup)
         self._bAccelActive = True
+        for oMenuLabel, sMarkup in self._dMenuLabels.iteritems():
+            oMenuLabel.set_use_underline(True)
+            oMenuLabel.set_label(sMarkup)
 
     def remove_accels(self):
         """Remove the accelerator group for this menu from the main window"""
@@ -41,6 +44,9 @@ class PaneMenu(gtk.MenuBar, object):
             return
         self._oMainWindow.remove_accel_group(self._oAccelGroup)
         self._bAccelActive = False
+        for oMenuLabel in self._dMenuLabels:
+            # get_text() doesn't contain the mnemonics, so this removes them
+            oMenuLabel.set_text(oMenuLabel.get_text())
 
     def _add_accel(self, oMenuItem, sAccelKey):
         """Parse a accelerator description & add it to the menu item"""
@@ -85,8 +91,13 @@ class PaneMenu(gtk.MenuBar, object):
     def _create_menu_item_with_submenu(self, sName):
         """Create a MenuItme and a submenu, returning the menu_item"""
         oMenuItem = gtk.MenuItem(sName)
+        oMenuLabel = oMenuItem.get_child()
+        self._dMenuLabels[oMenuLabel] = oMenuLabel.get_label()
+        # Disable any that mnemonic exist
+        sStrippedName = oMenuItem.get_child().get_text()
+        oMenuLabel.set_text(sStrippedName)
         oMenu = gtk.Menu()
-        self._dMenus[sName] = oMenu
+        self._dMenus[sStrippedName] = oMenu
         oMenuItem.set_submenu(oMenu)
         self.add(oMenuItem)
         return oMenuItem
@@ -94,13 +105,12 @@ class PaneMenu(gtk.MenuBar, object):
     def create_submenu(self, sName):
         """Create a submenu, and add it to the menu dictionary,
            returning the submenu"""
-        # TODO: handle mnemonics in the menu name
         oMenuItem = self._create_menu_item_with_submenu(sName)
         return oMenuItem.get_submenu()
 
     def create_plugins_menu(self):
         """Create the plugins menu, adding the plugins from the frame."""
-        oMenuItem = self._create_menu_item_with_submenu("Plugins")
+        oMenuItem = self._create_menu_item_with_submenu("_Plugins")
         oMenu = oMenuItem.get_submenu()
         for oPlugin in self._oFrame.plugins:
             oPlugin.add_to_menu(self._dMenus, oMenu)
@@ -109,11 +119,11 @@ class PaneMenu(gtk.MenuBar, object):
 
     def create_filter_menu(self):
         """Create the Filter Menu."""
-        oMenu = self.create_submenu("Filter")
-        oFilter = gtk.MenuItem("Specify Filter")
+        oMenu = self.create_submenu("F_ilter")
+        oFilter = gtk.MenuItem("_Specify Filter")
         oMenu.add(oFilter)
         oFilter.connect('activate', self.set_active_filter)
-        self.oApply = gtk.CheckMenuItem("Apply Filter")
+        self.oApply = gtk.CheckMenuItem("_Apply Filter")
         self.oApply.set_inconsistent(False)
         self.oApply.set_active(False)
         oMenu.add(self.oApply)

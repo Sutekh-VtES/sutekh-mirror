@@ -30,7 +30,7 @@ class CardSetManagementMenu(PaneMenu, object):
     # called from __init__, so OK
     def __create_actions_menu(self):
         """Add the Actions Menu"""
-        oMenu  = self.create_submenu("Actions")
+        oMenu  = self.create_submenu("_Actions")
         self.create_menu_item('Create New %s' % self.__sSetTypeName, oMenu,
                 self._oFrame.create_new_card_set)
         if self.__sSetTypeName == "Physical Card Set":

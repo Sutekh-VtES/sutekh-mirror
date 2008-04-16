@@ -35,7 +35,7 @@ class PhysicalCardMenu(PaneMenu, object):
     def __create_physical_cl_menu(self):
         """Create the Actions menu for the card list."""
         # setup sub menu
-        oMenu = self.create_submenu("Actions")
+        oMenu = self.create_submenu("_Actions")
         # items
         self.create_menu_item("Export Collection to File", oMenu,
                 self._do_export)
@@ -57,7 +57,7 @@ class PhysicalCardMenu(PaneMenu, object):
 
     def __create_edit_menu(self):
         """Create the Edit Menu."""
-        oMenu = self.create_submenu("Edit")
+        oMenu = self.create_submenu("_Edit")
 
         oEditable = self.create_check_menu_item('Collection is Editable',
                 oMenu, self._toggle_editable, False, '<Ctrl>E')
