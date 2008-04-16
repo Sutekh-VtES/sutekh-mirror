@@ -76,7 +76,7 @@ class PhysicalCardMenu(PaneMenu, object):
     # oWidget required by function signature
     def _do_export(self, oWidget):
         """Handling exporting the card list to file."""
-        oFileChooser = ExportDialog("Save Collection As", self._oMainWinow)
+        oFileChooser = ExportDialog("Save Collection As", self._oMainWindow)
         oFileChooser.run()
         sFileName = oFileChooser.get_name()
         if sFileName is not None:
@@ -88,7 +88,7 @@ class PhysicalCardMenu(PaneMenu, object):
         dSelectedCards = self.__oController.view.process_selection()
         if len(dSelectedCards) == 0:
             return
-        oEditAllocation = EditPhysicalCardMappingDialog(self._oMainWinow,
+        oEditAllocation = EditPhysicalCardMappingDialog(self._oMainWindow,
                 dSelectedCards)
         oEditAllocation.run()
 
@@ -109,7 +109,7 @@ class PhysicalCardMenu(PaneMenu, object):
     def _toggle_all_abstract_cards(self, oWidget):
         """Toggle the display of cards with a count of 0 in the card list."""
         self.__oController.model.bAddAllAbstractCards = oWidget.active
-        self._oMainWinow.config_file.set_show_zero_count_cards(
+        self._oMainWindow.config_file.set_show_zero_count_cards(
                 oWidget.active)
         self.__oController.view.reload_keep_expanded()
 
