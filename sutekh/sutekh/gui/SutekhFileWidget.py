@@ -73,6 +73,8 @@ class SutekhFileButton(gtk.FileChooserButton):
             self.oDialog.set_current_folder(sWorkingDir)
 
 class SimpleFileDialog(SutekhFileDialog):
+    # pylint: disable-msg=R0904
+    # gtk.Widget, so many public methods
     """A simple file dialog, which just returns the file name"""
     def __init__(self, oParent, sTitle, oAction):
         super(SimpleFileDialog, self).__init__(oParent, sTitle,
