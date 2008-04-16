@@ -35,12 +35,12 @@ class CellRendererSutekhButton(gtk.GenericCellRenderer):
                 'whether to show the icon', 0, gobject.PARAM_READWRITE)
             }
 
-    def __init__(self):
+    def __init__(self,bShowIcon=False):
         super(CellRendererSutekhButton, self).__init__()
         self.__gobject_init__()
         self.oPixbuf = None
         self.set_property("mode", gtk.CELL_RENDERER_MODE_ACTIVATABLE)
-        self.bShowIcon = False
+        self.bShowIcon = bShowIcon
         self.bClicked = False
         self.oClickedBackgroundArea = None
 
