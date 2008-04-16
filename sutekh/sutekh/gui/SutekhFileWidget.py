@@ -71,3 +71,43 @@ class SutekhFileButton(gtk.FileChooserButton):
         sWorkingDir = oParent.get_working_dir()
         if sWorkingDir:
             self.oDialog.set_current_folder(sWorkingDir)
+
+class SimpleFileDialog(SutekhFileDialog):
+    """A simple file dialog, which just returns the file name"""
+    def __init__(self, oParent, sTitle, oAction):
+        super(SimpleFileDialog, self).__init__(oParent, sTitle,
+                oAction, (gtk.STOCK_OK, gtk.RESPONSE_OK,
+                        gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
+        self.connect("response", self.button_response)
+        self.set_local_only(True)
+        self.set_select_multiple(False)
+        self.sName = None
+
+    # pylint: disable-msg=W0613
+    # oWidget required by function signature
+    def button_response(self, oWidget, iResponse):
+        """Handle button press events"""
+        if iResponse == gtk.RESPONSE_OK:
+            self.sName = self.get_filename()
+        self.destroy()
+
+    def get_name(self):
+        """Return the name to the caller."""
+        return self.sName
+
+class ImportDialog(SimpleFileDialog):
+    # pylint: disable-msg=R0904
+    # gtk.Widget, so many public methods
+    """Prompt the user for a file name to import"""
+    def __init__(self, sTitle, oParent):
+        super(ImportDialog, self).__init__(oParent, sTitle,
+                gtk.FILE_CHOOSER_ACTION_OPEN)
+
+class ExportDialog(SimpleFileDialog):
+    # pylint: disable-msg=R0904
+    # gtk.Widget, so many public methods
+    """Prompt the user for a filename to export to"""
+    def __init__(self, sTitle, oParent):
+        super(ExportDialog, self).__init__(oParent, sTitle,
+                gtk.FILE_CHOOSER_ACTION_SAVE)
+        self.set_do_overwrite_confirmation(True)

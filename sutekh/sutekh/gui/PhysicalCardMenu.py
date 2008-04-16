@@ -8,7 +8,7 @@
 
 """Menu for the Physical card collection."""
 
-from sutekh.gui.ExportDialog import ExportDialog
+from sutekh.gui.SutekhFileWidget import ExportDialog
 from sutekh.gui.PaneMenu import PaneMenu
 from sutekh.gui.EditPhysicalCardMappingDialog import \
         EditPhysicalCardMappingDialog

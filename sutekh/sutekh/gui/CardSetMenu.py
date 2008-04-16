@@ -11,7 +11,7 @@
 import gtk
 from sutekh.core.SutekhObjects import PhysicalCardSet, AbstractCardSet
 from sutekh.gui.SutekhDialog import do_complaint_error
-from sutekh.gui.ExportDialog import ExportDialog
+from sutekh.gui.SutekhFileWidget import ExportDialog
 from sutekh.gui.PropDialog import PropDialog
 from sutekh.io.XmlFileHandling import AbstractCardSetXmlFile, \
         PhysicalCardSetXmlFile

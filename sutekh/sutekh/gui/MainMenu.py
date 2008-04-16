@@ -11,7 +11,7 @@ import gtk
 from sqlobject import sqlhub
 from sutekh.core.CardLookup import LookupFailed
 from sutekh.gui.SutekhDialog import do_complaint_error, do_complaint_warning
-from sutekh.gui.ImportDialog import ImportDialog
+from sutekh.gui.SutekhFileWidget import ImportDialog
 from sutekh.gui.GuiDBManagement import refresh_ww_card_list
 from sutekh.io.XmlFileHandling import PhysicalCardXmlFile, \
         PhysicalCardSetXmlFile, AbstractCardSetXmlFile

@@ -42,6 +42,7 @@ class WWFilesDialog(SutekhDialog):
                 "Backup database contents to File?")
         self.oBackupFileButton.set_active(False)
         self.oBackupFileLabel = gtk.Label("(None)")
+        # We can't use SimpleFileDialog, as we need to hide + reshow
         self.oBackupFileDialog = SutekhFileDialog(oParent,
                 "Database Backup file", gtk.FILE_CHOOSER_ACTION_SAVE,
                 (gtk.STOCK_OK, gtk.RESPONSE_OK,
@@ -93,7 +94,6 @@ class WWFilesDialog(SutekhDialog):
                 self.sRulingsName = self.oRulingsFileButton.get_filename()
 
             if self.oBackupFileButton.get_active():
-                # SutekhFileDialog will mean we prefer backup dir if it's set
                 self.sBackupFileName = self.oBackupFileDialog.get_filename()
 
     # pylint: enable-msg=W0613
