@@ -7,7 +7,6 @@
 
 """WW card list menu."""
 
-import gtk
 from sutekh.gui.PaneMenu import PaneMenu
 
 class AbstractCardListMenu(PaneMenu, object):
@@ -34,34 +33,18 @@ class AbstractCardListMenu(PaneMenu, object):
         # setup sub menu
         oMenu = self.create_submenu("Actions")
         # items
-        oExpand = gtk.MenuItem("Expand All")
-        oMenu.add(oExpand)
-        oExpand.connect("activate", self._expand_all)
-        oExpand.add_accelerator('activate', self._oAccelGroup,
-                gtk.gdk.keyval_from_name('plus'), gtk.gdk.CONTROL_MASK,
-                gtk.ACCEL_VISIBLE)
-
-        oCollapse = gtk.MenuItem("Collapse All")
-        oMenu.add(oCollapse)
-        oCollapse.connect("activate", self._collapse_all)
-        oCollapse.add_accelerator('activate', self._oAccelGroup,
-                gtk.gdk.keyval_from_name('minus'), gtk.gdk.CONTROL_MASK,
-                gtk.ACCEL_VISIBLE)
-
-        oClose = gtk.MenuItem("Remove This Pane")
-        oMenu.add(oClose)
-        oClose.connect("activate", self._oFrame.close_menu_item)
+        self.create_menu_item("Expand All", oMenu, self._expand_all,
+                '<Ctrl>plus')
+        self.create_menu_item("Collapse All", oMenu, self._collapse_all,
+                '<Ctrl>minus')
+        self.create_menu_item("Remove This Pane", oMenu,
+                self._oFrame.close_menu_item)
 
     def __create_edit_menu(self):
         """Create the 'Edit' menu, and populate it."""
         oMenu = self.create_submenu("Edit")
-
-        oCopy = gtk.MenuItem('Copy selection')
-        oCopy.connect('activate', self._copy_selection)
-        oMenu.add(oCopy)
-        oCopy.add_accelerator('activate', self._oAccelGroup,
-                ord('C'), gtk.gdk.CONTROL_MASK, gtk.ACCEL_VISIBLE)
-
+        self.create_menu_item('Copy selection', oMenu, self._copy_selection,
+                '<Ctrl>c')
 
     # pylint: enable-msg=W0201
 

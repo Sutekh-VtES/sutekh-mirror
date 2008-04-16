@@ -53,54 +53,31 @@ class CardSetMenu(PaneMenu, object):
     def __create_card_set_menu(self):
         """Create the Actions menu for Card Sets."""
         oMenu = self.create_submenu('Actions')
-        self.__oProperties = gtk.MenuItem("Edit Card Set (%s) properties" %
-                self.sSetName)
-        oMenu.add(self.__oProperties)
-        self.__oProperties.connect('activate', self._edit_properites)
-        oEditAnn = gtk.MenuItem("Edit Annotations for Card Set (%s)" %
-                self.sSetName)
-        oMenu.add(oEditAnn)
-        oEditAnn.connect('activate', self._edit_annotations)
-        self.__oExport = gtk.MenuItem("Export Card Set (%s) to File" %
-                self.sSetName)
-        oMenu.add(self.__oExport)
-        self.__oExport.connect('activate', self._do_export)
+        self.__oProperties = self.create_menu_item(
+                "Edit Card Set (%s) properties" % self.sSetName, oMenu,
+                self._edit_properties)
+        self.create_menu_item(
+                "Edit Annotations for Card Set (%s)" % self.sSetName, oMenu,
+                self._edit_annotations)
+        self.__oExport = self.create_menu_item(
+                "Export Card Set (%s) to File" % self.sSetName, oMenu,
+                self._do_export)
 
-        oExpand = gtk.MenuItem("Expand All (Ctrl+)")
-        oMenu.add(oExpand)
-        oExpand.connect("activate", self._expand_all)
-        oExpand.add_accelerator('activate', self._oAccelGroup,
-                gtk.gdk.keyval_from_name('plus'), gtk.gdk.CONTROL_MASK,
-                gtk.ACCEL_VISIBLE)
-
-        oCollapse = gtk.MenuItem("Collapse All (Ctrl-)")
-        oMenu.add(oCollapse)
-        oCollapse.connect("activate", self._collapse_all)
-        oCollapse.add_accelerator('activate', self._oAccelGroup,
-                gtk.gdk.keyval_from_name('minus'), gtk.gdk.CONTROL_MASK,
-                gtk.ACCEL_VISIBLE)
-
-        oClose = gtk.MenuItem("Remove This Pane")
-        oMenu.add(oClose)
-        oClose.connect("activate", self._oFrame.close_menu_item)
-        oDelete = gtk.MenuItem("Delete Card Set")
+        self.create_menu_item("Expand All", oMenu, self._expand_all,
+                '<Ctrl>plus')
+        self.create_menu_item("Collapse All", oMenu, self._collapse_all,
+                '<Ctrl>minus')
+        self.create_menu_item("Remove This Pane", oMenu,
+                self._oFrame.close_menu_item)
         # Possible enhancement, make card set names italic.
-        # Looks like it requires playing with menuitem attributes
+        # Looks like it requires playing with menu_item attributes
         # (or maybe gtk.Action)
         if self.__cSetType is PhysicalCardSet:
-            oSep = gtk.SeparatorMenuItem()
-            oMenu.add(oSep)
-            oViewExpansions = gtk.CheckMenuItem('Show Card Expansions'
-                    ' in the Pane')
-            oViewExpansions.set_inconsistent(False)
-            oViewExpansions.set_active(True)
-            oViewExpansions.connect('toggled', self._toggle_expansion)
-            oMenu.add(oViewExpansions)
-
-        oSep = gtk.SeparatorMenuItem()
-        oMenu.add(oSep)
-        oDelete.connect("activate", self._card_set_delete)
-        oMenu.add(oDelete)
+            oMenu.add(gtk.SeparatorMenuItem())
+            self.create_check_menu_item('Show Card Expansions in the Pane',
+                    oMenu, self._toggle_expansion, True)
+        oMenu.add(gtk.SeparatorMenuItem())
+        self.create_menu_item("Delete Card Set", oMenu, self._card_set_delete)
 
     def __update_card_set_menu(self):
         """Update the menu to reflect changes in the card set name."""
@@ -112,40 +89,20 @@ class CardSetMenu(PaneMenu, object):
     def __create_edit_menu(self):
         """Create the 'Edit' menu, and populate it."""
         oMenu = self.create_submenu("Edit")
-
-        oEditable = gtk.CheckMenuItem('Card Set is Editable')
-        oEditable.set_inconsistent(False)
-        oEditable.set_active(False)
-        oEditable.connect('toggled', self._toggle_editable)
+        oEditable = self.create_check_menu_item('Card Set is Editable', oMenu,
+                self._toggle_editable, False, '<Ctrl>e')
         self.__oController.view.set_edit_menu_item(oEditable)
-        oEditable.add_accelerator('activate', self._oAccelGroup,
-                ord('E'), gtk.gdk.CONTROL_MASK, gtk.ACCEL_VISIBLE)
-        oMenu.add(oEditable)
-
-        oCopy = gtk.MenuItem('Copy selection')
-        oCopy.connect('activate', self._copy_selection)
-        oMenu.add(oCopy)
-        oCopy.add_accelerator('activate', self._oAccelGroup,
-                ord('C'), gtk.gdk.CONTROL_MASK, gtk.ACCEL_VISIBLE)
-
-        oPaste = gtk.MenuItem('Paste')
-        oPaste.connect('activate', self._paste_selection)
-        oMenu.add(oPaste)
-        oPaste.add_accelerator('activate', self._oAccelGroup,
-                ord('V'), gtk.gdk.CONTROL_MASK, gtk.ACCEL_VISIBLE)
-
-        oDelete = gtk.MenuItem('Delete selection')
-        oDelete.connect('activate', self._del_selection)
-        oMenu.add(oDelete)
-        oDelete.add_accelerator('activate', self._oAccelGroup,
-                gtk.gdk.keyval_from_name('Delete') , 0, gtk.ACCEL_VISIBLE)
-
+        self.create_menu_item('Copy selection', oMenu, self._copy_selection,
+                '<Ctrl>c')
+        self.create_menu_item('Paste', oMenu, self._paste_selection, '<Ctrl>v')
+        self.create_menu_item('Delete selection', oMenu, self._del_selection,
+                'Delete')
 
     # pylint: enable-msg=W0201
 
     # pylint: disable-msg=W0613
     # oWidget required by function signature for the following methods
-    def _edit_properites(self, oWidget):
+    def _edit_properties(self, oWidget):
         """Popup the Edit Properties dialog to change card set properties."""
         oCS = self.__cSetType.byName(self.sSetName)
         oProp = PropDialog(self._oMainWindow, oCS)

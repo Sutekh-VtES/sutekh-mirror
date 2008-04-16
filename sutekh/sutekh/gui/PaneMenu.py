@@ -42,8 +42,48 @@ class PaneMenu(gtk.MenuBar, object):
         self._oMainWindow.remove_accel_group(self._oAccelGroup)
         self._bAccelActive = False
 
-    def _create_menuitem_with_submenu(self, sName):
-        """Create a MenuItme and a submenu, returning the menuitem"""
+    def _add_accel(self, oMenuItem, sAccelKey):
+        """Parse a accelerator description & add it to the menu item"""
+        (iKeyVal, iMod) = gtk.accelerator_parse(sAccelKey)
+        if iKeyVal != 0:
+            oMenuItem.add_accelerator('activate', self._oAccelGroup,
+                iKeyVal, iMod, gtk.ACCEL_VISIBLE)
+
+    def create_menu_item(self, sName, oMenu, fAction, sAccelKey=None):
+        """Utiltiy function for creatng menu items.
+
+           Create a menu item, connect it to fAction (if not None), and
+           add an accelerator if specified."""
+        oMenuItem = gtk.MenuItem(sName)
+        oMenu.add(oMenuItem)
+        if fAction:
+            oMenuItem.connect('activate', fAction)
+        if sAccelKey:
+            self._add_accel(oMenuItem, sAccelKey)
+        return oMenuItem
+
+    # pylint: disable-msg=R0913
+    # We need all the arguments here
+    def create_check_menu_item(self, sName, oMenu, fAction, bState=False,
+            sAccelKey=None):
+        """Utiltiy function for creatng check menu items.
+
+           Create a menu item, connect it to fAction (if not None), and
+           add an accelerator if specified."""
+        oMenuItem = gtk.CheckMenuItem(sName)
+        oMenu.add(oMenuItem)
+        oMenuItem.set_inconsistent(False)
+        oMenuItem.set_active(bState)
+        if fAction:
+            oMenuItem.connect('toggled', fAction)
+        if sAccelKey:
+            self._add_accel(oMenuItem, sAccelKey)
+        return oMenuItem
+
+    # pylint: enable-msg=R0913
+
+    def _create_menu_item_with_submenu(self, sName):
+        """Create a MenuItme and a submenu, returning the menu_item"""
         oMenuItem = gtk.MenuItem(sName)
         oMenu = gtk.Menu()
         self._dMenus[sName] = oMenu
@@ -55,12 +95,12 @@ class PaneMenu(gtk.MenuBar, object):
         """Create a submenu, and add it to the menu dictionary,
            returning the submenu"""
         # TODO: handle mnemonics in the menu name
-        oMenuItem = self._create_menuitem_with_submenu(sName)
+        oMenuItem = self._create_menu_item_with_submenu(sName)
         return oMenuItem.get_submenu()
 
     def create_plugins_menu(self):
         """Create the plugins menu, adding the plugins from the frame."""
-        oMenuItem = self._create_menuitem_with_submenu("Plugins")
+        oMenuItem = self._create_menu_item_with_submenu("Plugins")
         oMenu = oMenuItem.get_submenu()
         for oPlugin in self._oFrame.plugins:
             oPlugin.add_to_menu(self._dMenus, oMenu)

@@ -8,7 +8,6 @@
 
 """Menu for the Physical card collection."""
 
-import gtk
 from sutekh.gui.ExportDialog import ExportDialog
 from sutekh.gui.PaneMenu import PaneMenu
 from sutekh.gui.EditPhysicalCardMappingDialog import \
@@ -38,78 +37,38 @@ class PhysicalCardMenu(PaneMenu, object):
         # setup sub menu
         oMenu = self.create_submenu("Actions")
         # items
-        oExport = gtk.MenuItem("Export Collection to File")
-        oMenu.add(oExport)
-        oExport.connect('activate', self._do_export)
-
-        oViewAllAbstractCards = gtk.CheckMenuItem("Show cards with a"
-                " count of 0")
-        oViewAllAbstractCards.set_inconsistent(False)
-        oViewAllAbstractCards.set_active(
+        self.create_menu_item("Export Collection to File", oMenu,
+                self._do_export)
+        self.create_check_menu_item("Show cards with a count of 0", oMenu,
+                self._toggle_all_abstract_cards,
                 self.__oController.model.bAddAllAbstractCards)
-        oViewAllAbstractCards.connect('toggled',
-                self._toggle_all_abstract_cards)
-        oMenu.add(oViewAllAbstractCards)
 
-        oViewExpansions = gtk.CheckMenuItem('Show Card Expansions')
-        oViewExpansions.set_inconsistent(False)
-        oViewExpansions.set_active(True)
-        oViewExpansions.connect('toggled', self._toggle_expansion)
-        oMenu.add(oViewExpansions)
+        self.create_check_menu_item('Show Card Expansions', oMenu,
+                self._toggle_expansion, True)
 
-
-        oExpand = gtk.MenuItem("Expand All")
-        oMenu.add(oExpand)
-        oExpand.connect("activate", self._expand_all)
-        oExpand.add_accelerator('activate', self._oAccelGroup,
-                gtk.gdk.keyval_from_name('plus'), gtk.gdk.CONTROL_MASK,
-                gtk.ACCEL_VISIBLE)
-
-        oCollapse = gtk.MenuItem("Collapse All")
-        oMenu.add(oCollapse)
-        oCollapse.connect("activate", self._collapse_all)
-        oCollapse.add_accelerator('activate', self._oAccelGroup,
-                gtk.gdk.keyval_from_name('minus'), gtk.gdk.CONTROL_MASK,
-                gtk.ACCEL_VISIBLE)
-
-        oClose = gtk.MenuItem("Remove This Pane")
-        oMenu.add(oClose)
-        oClose.connect("activate", self._oFrame.close_menu_item)
-
-        oEditAllocation = gtk.MenuItem('Edit allocation of cards to PCS')
-        oMenu.add(oEditAllocation)
-        oEditAllocation.connect('activate', self._do_edit_card_set_allocation)
+        self.create_menu_item("Expand All", oMenu, self._expand_all,
+                '<Ctrl>plus')
+        self.create_menu_item("Collapse All", oMenu, self._collapse_all,
+                '<Ctrl>minus')
+        self.create_menu_item("Remove This Pane", oMenu,
+                self._oFrame.close_menu_item)
+        self.create_menu_item('Edit allocation of cards to PCS', oMenu,
+                self._do_edit_card_set_allocation)
 
     def __create_edit_menu(self):
         """Create the Edit Menu."""
         oMenu = self.create_submenu("Edit")
 
-        oEditable = gtk.CheckMenuItem('Collection is Editable')
-        oEditable.set_inconsistent(False)
-        oEditable.set_active(False)
-        oEditable.connect('toggled', self._toggle_editable)
+        oEditable = self.create_check_menu_item('Collection is Editable',
+                oMenu, self._toggle_editable, False, '<Ctrl>E')
         self.__oController.view.set_edit_menu_item(oEditable)
-        oEditable.add_accelerator('activate', self._oAccelGroup,
-                ord('E'), gtk.gdk.CONTROL_MASK, gtk.ACCEL_VISIBLE)
-        oMenu.add(oEditable)
 
-        oCopy = gtk.MenuItem('Copy selection')
-        oCopy.connect('activate', self._copy_selection)
-        oMenu.add(oCopy)
-        oCopy.add_accelerator('activate', self._oAccelGroup,
-                ord('C'), gtk.gdk.CONTROL_MASK, gtk.ACCEL_VISIBLE)
-
-        oPaste = gtk.MenuItem('Paste')
-        oPaste.connect('activate', self._paste_selection)
-        oMenu.add(oPaste)
-        oPaste.add_accelerator('activate', self._oAccelGroup,
-                ord('V'), gtk.gdk.CONTROL_MASK, gtk.ACCEL_VISIBLE)
-
-        oDelete = gtk.MenuItem('Delete selection')
-        oDelete.connect('activate', self._del_selection)
-        oMenu.add(oDelete)
-        oDelete.add_accelerator('activate', self._oAccelGroup,
-                gtk.gdk.keyval_from_name('Delete') , 0, gtk.ACCEL_VISIBLE)
+        self.create_menu_item('Copy selection', oMenu, self._copy_selection,
+                '<Ctrl>c')
+        self.create_menu_item('Paste', oMenu, self._paste_selection,
+                '<Ctrl>v')
+        self.create_menu_item('Delete selection', oMenu, self._del_selection,
+                'Delete')
 
     # pylint: enable-msg=W0201
 

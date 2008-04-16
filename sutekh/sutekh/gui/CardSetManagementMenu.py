@@ -31,28 +31,19 @@ class CardSetManagementMenu(PaneMenu, object):
     def __create_actions_menu(self):
         """Add the Actions Menu"""
         oMenu  = self.create_submenu("Actions")
-        oCreate = gtk.MenuItem('Create New ' + self.__sSetTypeName)
-        oMenu.add(oCreate)
-        oCreate.connect('activate', self._oFrame.create_new_card_set)
+        self.create_menu_item('Create New %s' % self.__sSetTypeName, oMenu,
+                self._oFrame.create_new_card_set)
         if self.__sSetTypeName == "Physical Card Set":
-            oInUse = gtk.MenuItem('Mark/UnMark %s as in use' %
-                    self.__sSetTypeName)
-            oMenu.add(oInUse)
-            oInUse.connect('activate', self._oFrame.toggle_in_use_flag)
-        oDelete = gtk.MenuItem('Delete selected ' + self.__sSetTypeName)
-        oMenu.add(oDelete)
-        oDelete.connect('activate', self._oFrame.delete_card_set)
-        oSep = gtk.SeparatorMenuItem()
-        oMenu.add(oSep)
-        oClose = gtk.MenuItem('Remove This Pane')
-        oMenu.add(oClose)
-        oClose.connect('activate', self._oFrame.close_menu_item)
+            self.create_menu_item(
+                    'Mark/UnMark %s as in use' % self.__sSetTypeName, oMenu,
+                    self._oFrame.toggle_in_use_flag)
+        self.create_menu_item('Delete selected %s' % self.__sSetTypeName,
+                oMenu, self._oFrame.delete_card_set, 'Delete')
+        oMenu.add(gtk.SeparatorMenuItem())
+        self.create_menu_item("Remove This Pane", oMenu,
+                self._oFrame.close_menu_item)
 
     # pylint: enable-msg=W0201
-
-    def set_apply_filter(self, bState):
-        """Set the filter applied status to bState"""
-        self.oApply.set_active(bState)
 
     # pylint: disable-msg=W0613
     # oWidget required by function signature
