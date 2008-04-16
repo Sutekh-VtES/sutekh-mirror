@@ -12,12 +12,12 @@ import os
 from sutekh.core.SutekhObjects import PhysicalCardSet, AbstractCardSet, \
         IAbstractCard
 from sutekh.gui.PluginManager import CardListPlugin
-from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error, \
+from sutekh.gui.SutekhDialog import do_complaint_error, \
         do_complaint_warning
-from sutekh.gui.SutekhFileWidget import SutekhFileWidget
+from sutekh.gui.SutekhFileWidget import ExportDialog
 from sutekh.core.ArdbInfo import ArdbInfo
 from sutekh.SutekhInfo import SutekhInfo
-from sutekh.SutekhUtility import pretty_xml
+from sutekh.SutekhUtility import pretty_xml, safe_filename
 # pylint: disable-msg=F0401, E0611
 # the allowe failures here makes pylint unhappy
 try:
@@ -232,7 +232,7 @@ class CardSetExportHTML(CardListPlugin, ArdbInfo):
         """In response to the menu, create the dialog and run it."""
         oDlg = self.make_dialog()
         oDlg.run()
-        oDlg.destroy()
+        self.handle_response(oDlg.get_name())
 
     # pylint: enable-msg=W0613
 
@@ -241,65 +241,48 @@ class CardSetExportHTML(CardListPlugin, ArdbInfo):
     # structure
     def make_dialog(self):
         """Create the dialog prompted for the filename."""
-        oDlg = SutekhDialog("Filename to save as", self.parent,
-                gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
-                (gtk.STOCK_OK, gtk.RESPONSE_OK,
-                    gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
-        self.oFileChooser = SutekhFileWidget(self.parent,
-                gtk.FILE_CHOOSER_ACTION_SAVE)
+        oDlg = ExportDialog("Filename to save as", self.parent,
+                '%s.html' % safe_filename(self.view.sSetName))
         # pylint: disable-msg=E1101
         # vbox confuses pylint
-        oDlg.vbox.pack_start(self.oFileChooser)
         self.oTextButton = gtk.CheckButton("Include Card _Texts?")
         self.oTextButton.set_active(False)
-        oDlg.vbox.pack_start(self.oTextButton)
-        oDlg.connect("response", self.handle_response)
+        oDlg.vbox.pack_start(self.oTextButton, False, False)
         oDlg.show_all()
         return oDlg
 
     # pylint: enable-msg=W0201
 
-    # pylint: disable-msg=W0613
-    # oWidget is required
-    def handle_response(self, oWidget, oResponse):
+    def handle_response(self, sFileName):
         """Handle the response to the dialog"""
         # pylint: disable-msg=E1101
         # SQLObject methods confuse pylint
-        if oResponse ==  gtk.RESPONSE_OK:
-            sFileName = self.oFileChooser.get_filename()
-            if sFileName is not None:
-                if os.path.exists(sFileName):
-                    bContinue = do_complaint_warning("Overwrite existing file"
-                            " %s?" % sFileName) != gtk.RESPONSE_CANCEL
-                    if not bContinue:
-                        return
-                # pylint: disable-msg=W0703
-                # we do want to catch all exceptions here
-                try:
-                    fOut = file(sFileName, "w")
-                except Exception, oExp:
-                    sMsg = "Failed to open output file.\n\n" + str(oExp)
-                    do_complaint_error(sMsg)
-                    return
-                oCardSet = self.get_card_set()
-                if not oCardSet:
-                    fOut.close()
-                    do_complaint_error("Unsupported Card Set Type")
-                    return
-                bDoText = False
-                if self.oTextButton.get_active():
-                    bDoText = True
-                oETree = self.gen_tree(oCardSet, bDoText)
-                # We're producing XHTML output, so we need a doctype header
-                fOut.write('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0'
-                        ' Strict//EN"\n "http://www.w3.org/TR/xhtml1/DTD/'
-                        'xhtml1-strict.dtd">\n')
-                # We have the elementree with the needed information,
-                # need to produce decent HTML output
-                oETree.write(fOut)
+        if sFileName is not None:
+            # pylint: disable-msg=W0703
+            # we do want to catch all exceptions here
+            try:
+                fOut = file(sFileName, "w")
+            except Exception, oExp:
+                sMsg = "Failed to open output file.\n\n" + str(oExp)
+                do_complaint_error(sMsg)
+                return
+            oCardSet = self.get_card_set()
+            if not oCardSet:
                 fOut.close()
-
-    # pylint: enable-msg=W0613
+                do_complaint_error("Unsupported Card Set Type")
+                return
+            bDoText = False
+            if self.oTextButton.get_active():
+                bDoText = True
+            oETree = self.gen_tree(oCardSet, bDoText)
+            # We're producing XHTML output, so we need a doctype header
+            fOut.write('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0'
+                    ' Strict//EN"\n "http://www.w3.org/TR/xhtml1/DTD/'
+                    'xhtml1-strict.dtd">\n')
+            # We have the elementree with the needed information,
+            # need to produce decent HTML output
+            oETree.write(fOut)
+            fOut.close()
 
     def get_cards(self):
         """Get the cards for this card set."""

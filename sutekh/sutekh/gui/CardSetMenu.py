@@ -9,6 +9,7 @@
 """Menu for the card set pane"""
 
 import gtk
+from sutekh.SutekhUtility import safe_filename
 from sutekh.core.SutekhObjects import PhysicalCardSet, AbstractCardSet
 from sutekh.gui.SutekhDialog import do_complaint_error
 from sutekh.gui.SutekhFileWidget import ExportDialog
@@ -141,7 +142,8 @@ class CardSetMenu(PaneMenu, object):
     def _do_export(self, oWidget):
         """Export the card set to the chosen filename."""
         oFileChooser = ExportDialog("Save %s Card Set As " %
-                _type_to_string(self.__cSetType), self._oMainWindow)
+                _type_to_string(self.__cSetType), self._oMainWindow,
+                '%s.xml' % safe_filename(self.sSetName))
         oFileChooser.run()
         sFileName = oFileChooser.get_name()
         if sFileName is not None:

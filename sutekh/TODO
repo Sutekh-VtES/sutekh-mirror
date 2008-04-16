@@ -19,6 +19,8 @@ Gui (Functionality):
  * Plugins for calling out to other VtES utilities as appropriate (http://ashheap.storageannex.com/utilities.htm)
  * Allow easy setting of the expansion for all selected cards and when importing
    cards from file 
+ * Convert the repeated functions in the plugins into functions in the plugin 
+   API
 
 Gui (Presentation):
  * Cleanup various dialogs, including
@@ -45,7 +47,6 @@ For 0.6:
  * Add decent keyboard shortcuts
  * CSV import plugin
  * Add icon to Windows installer and start menu shortcut. 
- * Use card set name for default file name when saving
  * Improve editable card list visual hint on windows
  * Import the cardlist_[_A-Z] files from WW site, for robustness against
    timeouts

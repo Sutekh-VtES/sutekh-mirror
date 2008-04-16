@@ -10,9 +10,9 @@ import gtk
 from sutekh.core.SutekhObjects import PhysicalCardSet, AbstractCardSet, \
         IAbstractCard
 from sutekh.gui.PluginManager import CardListPlugin
-from sutekh.gui.SutekhDialog import SutekhDialog
-from sutekh.gui.SutekhFileWidget import SutekhFileWidget
+from sutekh.gui.SutekhFileWidget import ExportDialog
 from sutekh.io.WriteArdbText import WriteArdbText
+from sutekh.SutekhUtility import safe_filename
 
 class CardSetExportArdbText(CardListPlugin):
     """Provides a dialog for selecting a filename, then calls on
@@ -29,47 +29,30 @@ class CardSetExportArdbText(CardListPlugin):
         oExport.connect("activate", self.make_dialog)
         return ('Plugins', oExport)
 
-    # pylint: disable-msg=W0613, W0201
-    # W0613 - oWidget has to be here, although it's unused
-    # W0201 - we define things here, rather than __init__, since this
-    # is the plugin's entry point
+    # pylint: disable-msg=W0613
+    # oWidget has to be here, although it's unused
     def make_dialog(self, oWidget):
         """Create the dialog"""
-        self.oDlg = SutekhDialog("Choose FileName for Exported CardSet",
-                self.parent, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
-                (gtk.STOCK_OK, gtk.RESPONSE_OK,
-                    gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
-        self.oFileChooser = SutekhFileWidget(self.parent,
-                gtk.FILE_CHOOSER_ACTION_SAVE)
-        self.oFileChooser.set_do_overwrite_confirmation(True)
-        # pylint: disable-msg=E1101
-        # vbox confuses pylint
-        self.oDlg.vbox.pack_start(self.oFileChooser)
-        self.oDlg.connect("response", self.handle_response)
-        self.oDlg.show_all()
-        self.oDlg.run()
-        self.oDlg.destroy()
+        oDlg = ExportDialog("Choose FileName for Exported CardSet",
+                self.parent, '%s.txt' % safe_filename(self.view.sSetName))
+        oDlg.run()
+        self.handle_response(oDlg.get_name())
 
-    # pylint: enable-msg=W0201
+    # pylint: enable-msg=W0613
 
-    # pylint: disable-msg=W0613
-    # oWidget required by the function signature
-    def handle_response(self, oWidget, oResponse):
+    def handle_response(self, sFileName):
         """Handle the users response. Write the text output to file."""
         # pylint: disable-msg=E1101
         # SQLObject methods confuse pylint
-        if oResponse ==  gtk.RESPONSE_OK:
-            sFileName = self.oFileChooser.get_filename()
-            if sFileName is not None:
-                oCardSet = self.get_card_set()
-                if not oCardSet:
-                    return
-                oWriter = WriteArdbText()
-                fOut = file(sFileName,"w")
-                oWriter.write(fOut, self.view.sSetName, oCardSet.author,
-                        oCardSet.comment, self.get_cards())
-                fOut.close()
-    # pylint: enable-msg=W0613
+        if sFileName is not None:
+            oCardSet = self.get_card_set()
+            if not oCardSet:
+                return
+            oWriter = WriteArdbText()
+            fOut = file(sFileName,"w")
+            oWriter.write(fOut, self.view.sSetName, oCardSet.author,
+                    oCardSet.comment, self.get_cards())
+            fOut.close()
 
     def get_cards(self):
         """Get the cards from the card set."""

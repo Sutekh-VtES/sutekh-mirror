@@ -109,7 +109,9 @@ class ExportDialog(SimpleFileDialog):
     # pylint: disable-msg=R0904
     # gtk.Widget, so many public methods
     """Prompt the user for a filename to export to"""
-    def __init__(self, sTitle, oParent):
+    def __init__(self, sTitle, oParent, sDefaultFileName=None):
         super(ExportDialog, self).__init__(oParent, sTitle,
                 gtk.FILE_CHOOSER_ACTION_SAVE)
         self.set_do_overwrite_confirmation(True)
+        if sDefaultFileName:
+            self.set_current_name(sDefaultFileName)

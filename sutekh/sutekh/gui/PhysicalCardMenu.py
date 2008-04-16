@@ -76,7 +76,8 @@ class PhysicalCardMenu(PaneMenu, object):
     # oWidget required by function signature
     def _do_export(self, oWidget):
         """Handling exporting the card list to file."""
-        oFileChooser = ExportDialog("Save Collection As", self._oMainWindow)
+        oFileChooser = ExportDialog("Save Collection As", self._oMainWindow,
+                'MyCollection.xml')
         oFileChooser.run()
         sFileName = oFileChooser.get_name()
         if sFileName is not None:
