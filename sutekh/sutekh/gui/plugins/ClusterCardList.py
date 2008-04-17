@@ -30,6 +30,12 @@ else:
             " clustering plugin.")
 
 class ClusterCardList(CardListPlugin):
+    """Plugin that attempts to find clusters in the card list.
+
+       Allows the user to choose various clustering parameters, such as
+       attributes to to use and methods, and then to create card sets
+       from the clustering results."""
+
     dTableVersions = {}
     aModelsSupported = [AbstractCard, PhysicalCard, PhysicalCardSet,
             AbstractCardSet]
@@ -38,12 +44,14 @@ class ClusterCardList(CardListPlugin):
     # ** magic OK
     def __init__(self, *aArgs, **kwargs):
         super(ClusterCardList, self).__init__(*aArgs, **kwargs)
+        # pylint: disable-msg=C0103
+        # fMakeCardFromCluster triggers on length, but we like the name
         if not self.model:
-            self._fMakeCardSetFromClusterCluster = None
+            self._fMakeCardSetFromCluster = None
         elif self.model.cardclass is PhysicalCard:
-            self._fMakeCardSetFromClusterCluster = self.make_pcs_from_cluster
+            self._fMakeCardSetFromCluster = self.make_pcs_from_cluster
         else:
-            self._fMakeCardSetFromClusterCluster = self.make_acs_from_cluster
+            self._fMakeCardSetFromCluster = self.make_acs_from_cluster
 
     # pylint: enable-msg=W0142
 
@@ -55,16 +63,20 @@ class ClusterCardList(CardListPlugin):
         oCluster.connect("activate", self.activate)
         return ('Plugins', oCluster)
 
+    # pylint: disable-msg=W0613
+    # oWidget required by function signature
     def activate(self, oWidget):
         """In response to the menu, create the correct dialog."""
         oDlg = self.make_dialog()
         oDlg.run()
 
+    # pylint: enable-msg=W0613
+
     def make_dialog(self):
         """Create the dialog for the clustering options."""
         sDlgName = "Cluster Cards in List"
 
-        self.makePropGroups()
+        self.make_prop_groups()
 
         oDlg = SutekhDialog(sDlgName, self.parent,
                 gtk.DIALOG_DESTROY_WITH_PARENT)
@@ -75,9 +87,9 @@ class ClusterCardList(CardListPlugin):
 
         oNotebook = gtk.Notebook()
 
-        oTableSection = self.makeTableSection()
-        oAlgorithmSection = self.makeAlgorithmSection()
-        oResultsSection = self.makeResultsSection()
+        oTableSection = self.make_table_section()
+        oAlgorithmSection = self.make_algorithm_section()
+        oResultsSection = self.make_results_section()
 
         oNotebook.append_page(oTableSection, gtk.Label('Select Columns'))
         oNotebook.append_page(oAlgorithmSection, gtk.Label('Select Algorithm'))
@@ -90,7 +102,8 @@ class ClusterCardList(CardListPlugin):
 
         return oDlg
 
-    def makePropGroups(self):
+    def make_prop_groups(self):
+        """Extract the list of possible properties to cluster on."""
         dPropFuncs = CardListTabulator.get_default_prop_funcs()
         self._dGroups = {}
 
@@ -104,7 +117,9 @@ class ClusterCardList(CardListPlugin):
                         ":".join(aParts[1:]).strip().capitalize()
                 self._dGroups.setdefault(sGroup, {})[sRest] = fProp
 
-    def makeTableSection(self):
+    def make_table_section(self):
+        """Create a notebook, and populate the first tabe with a list of
+           properties to cluster on."""
         oNotebook = gtk.Notebook()
         aGroups = self._dGroups.keys()
         aGroups.sort()
@@ -139,7 +154,9 @@ class ClusterCardList(CardListPlugin):
 
         return oNotebook
 
-    def makeAlgorithmSection(self):
+    def make_algorithm_section(self):
+        """Populate a tab on the notebook with the different algorithm
+           choices"""
         oVbx = gtk.VBox(False, 0)
 
         # Hard coded to SOM for now
@@ -175,19 +192,21 @@ class ClusterCardList(CardListPlugin):
                   'x' : 'Absolute Value of the Uncentered Correlation',
                   's' : "Spearman's Rank Correlation", 'k' : "Kendall's Tau" }
 
-        oIter = dDist.iteritems()
-        for sChr, sName in oIter:
+        oIter = dDist.itervalues()
+        for sName in oIter:
             oFirstBut = gtk.RadioButton(None, sName, False)
             oVbx.pack_start(oFirstBut)
             break
 
-        for sChr, sName in oIter:
+        for sName in oIter:
             oBut = gtk.RadioButton(oFirstBut, sName)
             oVbx.pack_start(oBut)
 
         return oVbx
 
-    def makeResultsSection(self):
+    def make_results_section(self):
+        """Create a widget in the notebook which can be used to display
+           the clustering results."""
         oVbx = gtk.VBox(False, 0)
         self._oResultsVbox = gtk.VBox(False, 0)
 
@@ -206,7 +225,9 @@ class ClusterCardList(CardListPlugin):
     # pylint: disable-msg=W0201
     # We create a lot of attributes here, which is OK, because of plugin
     # structure
-    def populateResults(self, aCards, aColNames, aClusterIds, aCellData):
+    def populate_results(self, aCards, aColNames, aClusterIds, aCellData):
+        """Populate the results tab of the notebook with the results of
+           clustering run."""
         self._aCards, self._aColNames, self._aClusterIds, self._aCellData = \
                 aCards, aColNames, aClusterIds, aCellData
 
@@ -216,8 +237,9 @@ class ClusterCardList(CardListPlugin):
 
         # Count cards in each cluster
         dClusterCounts = {}
-        for i, j in self._aClusterIds:
-            dClusterCounts[(i, j)] = dClusterCounts.get((i, j), 0) + 1
+        for iId1, iId2 in self._aClusterIds:
+            dClusterCounts[(iId1, iId2)] = dClusterCounts.get((iId1, iId2),
+                    0) + 1
 
         # Setup Table
         iNX = len(aCellData)
@@ -232,34 +254,34 @@ class ClusterCardList(CardListPlugin):
         oLabel.set_markup('<b># Cards</b>')
         oTable.attach(oLabel, 3, 4, 0, 1, xpadding=3)
 
-        for k, sColName in enumerate(aColNames):
+        for iColNum, sColName in enumerate(aColNames):
             oLabel = gtk.Label()
             oLabel.set_markup('<b>%s</b>' % sColName)
-            oTable.attach(oLabel, k + iExtraCols, k + iExtraCols + 1, 0, 1,
-                    xpadding=3)
+            oTable.attach(oLabel, iColNum + iExtraCols,
+                    iColNum + iExtraCols + 1, 0, 1, xpadding=3)
 
         # Data
         self._dCardSetMakingButtons = {}
-        for i in range(iNX):
-            for j in range(iNY):
-                iRow = i * iNY + j + iHeaderRows
+        for iId1 in range(iNX):
+            for iId2 in range(iNY):
+                iRow = iId1 * iNY + iId2 + iHeaderRows
                 oBut = gtk.CheckButton('')
-                self._dCardSetMakingButtons[(i, j)] = oBut
+                self._dCardSetMakingButtons[(iId1, iId2)] = oBut
                 oTable.attach(oBut, 0, 1, iRow, iRow + 1)
-                oTable.attach(gtk.Label(str(i)), 1, 2, iRow, iRow + 1)
-                oTable.attach(gtk.Label(str(j)), 2, 3, iRow, iRow + 1)
-                oTable.attach(gtk.Label(str(dClusterCounts.get((i, j), 0))), 3,
-                        4, iRow, iRow + 1)
-                for k, x in enumerate(aCellData[i][j]):
-                    oTable.attach(gtk.Label(str(x)), k + iExtraCols,
-                            k + iExtraCols + 1, iRow, iRow + 1)
+                oTable.attach(gtk.Label(str(iId1)), 1, 2, iRow, iRow + 1)
+                oTable.attach(gtk.Label(str(iId2)), 2, 3, iRow, iRow + 1)
+                oTable.attach(gtk.Label(str(dClusterCounts.get((iId1, iId2),
+                    0))), 3, 4, iRow, iRow + 1)
+                for iColNum, x in enumerate(aCellData[iId1][iId2]):
+                    oTable.attach(gtk.Label(str(x)), iColNum + iExtraCols,
+                            iColNum + iExtraCols + 1, iRow, iRow + 1)
 
         # top align, using viewport to scroll
         self._oResultsVbox.pack_start(AutoScrolledWindow(oTable, True))
 
         oMakeCardSetsButton = gtk.Button("Make Card Sets from Selected"
                 " Clusters")
-        oMakeCardSetsButton.connect("clicked", self.handleMakeCardSets)
+        oMakeCardSetsButton.connect("clicked", self.handle_make_card_sets)
         self._oResultsVbox.pack_end(oMakeCardSetsButton, False) # bottom align
 
         self._oResultsVbox.show_all()
@@ -273,14 +295,16 @@ class ClusterCardList(CardListPlugin):
         if oResponse == gtk.RESPONSE_CLOSE:
             oDlg.destroy()
         elif oResponse == gtk.RESPONSE_APPLY:
-            self.doClustering()
+            self.do_clustering()
 
-    def handleMakeCardSets(self, oSomeObj):
+    def handle_make_card_sets(self, oSomeObj):
+        """Create card a suitable card set from the chosen clusters"""
         for tId, oBut in self._dCardSetMakingButtons.iteritems():
             if oBut.get_active():
-                self._fMakeCardSetFromClusterCluster(tId)
+                self._fMakeCardSetFromCluster(tId)
 
-    def doClustering(self):
+    def do_clustering(self):
+        """Call the chosen clustering algorithm"""
         # gather cards
         aCards = list(self.model.get_card_iterator(None))
 
@@ -338,7 +362,7 @@ class ClusterCardList(CardListPlugin):
         #    tmp.write("\n")
         # tmp.close()
 
-        self.populateResults(aCards, aColNames, aClusterIds, aCellData)
+        self.populate_results(aCards, aColNames, aClusterIds, aCellData)
 
     def make_pcs_from_cluster(self, aClusterId):
         """Create a Physical Card Set from the chosen cluster"""
