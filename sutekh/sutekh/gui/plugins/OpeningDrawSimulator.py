@@ -160,7 +160,7 @@ class OpeningHandSimulator(CardListPlugin):
     # pylint: disable-msg=W0613
     # oWidget required by function signature
     def activate(self, oWidget):
-        "Create the actual dialog, and populate it"
+        """Create the actual dialog, and populate it"""
         sDiagName = "Opening Hand"
         oCryptFilter = MultiCardTypeFilter(['Imbued', 'Vampire'])
 
@@ -233,7 +233,7 @@ class OpeningHandSimulator(CardListPlugin):
     # pylint: enable-msg=W0613
 
     def _fill_stats(self, oDialog):
-        "Fill in the stats from the draws"
+        """Fill in the stats from the draws"""
         dTypeProbs = {}
         dPropProbs = {}
         dLibProbs = self._get_lib_props()
@@ -266,7 +266,7 @@ class OpeningHandSimulator(CardListPlugin):
     # pylint: disable-msg=W0613
     # oButton required by function signature
     def _fill_dialog(self, oButton):
-        "Fill the dialog with the draw results"
+        """Fill the dialog with the draw results"""
         oDialog = SutekhDialog ('Sample Hands', self.parent,
                 gtk.DIALOG_MODAL|gtk.DIALOG_DESTROY_WITH_PARENT)
         # We need to have access to the back button
@@ -339,7 +339,7 @@ class OpeningHandSimulator(CardListPlugin):
         oDialog.show_all()
 
     def _draw_new_hand(self):
-        "Create a new sample hand"
+        """Create a new sample hand"""
         self.iCurHand += 1
         aThisLib = copy(self.aLibrary)
         aThisCrypt = copy(self.aCrypt)

@@ -83,7 +83,7 @@ class PhysicalCardMappingHolder(object):
     """
 
     def __init__(self):
-        "Constructor"
+        """Constructor"""
         self.oMapping = None
 
 

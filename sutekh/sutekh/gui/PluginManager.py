@@ -90,7 +90,7 @@ class CardListPlugin(object):
     # pylint: enable-msg=W0212
 
     def add_to_menu(self, dAllMenus, oCatchAllMenu):
-        "Grunt work of adding menu item to the frame"
+        """Grunt work of adding menu item to the frame"""
         aMenuItems = self.get_menu_item()
         if aMenuItems is not None:
             if type(aMenuItems) is not list:

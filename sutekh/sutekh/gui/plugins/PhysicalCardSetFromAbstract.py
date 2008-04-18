@@ -5,7 +5,7 @@
 # Copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-"Convert an Abstract Card Set to a Physical Card Set"
+"""Convert an Abstract Card Set to a Physical Card Set"""
 
 import gtk
 from sutekh.core.SutekhObjects import PhysicalCardSet, AbstractCardSet, \
@@ -38,12 +38,12 @@ class PhysicalCardSetFromAbstract(CardListPlugin):
     # pylint: disable-msg=W0613
     # oWidget required by gtk function signature
     def activate(self, oWidget):
-        "Handle menu activation"
+        """Handle menu activation"""
         self.create_physical_card_set()
     # pylint: enable-msg=W0613
 
     def create_physical_card_set(self):
-        "Create the actual physical card"
+        """Create the actual physical card"""
         # pylint: disable-msg=E1101
         # pylint misses AbstractCardSet methods
         oAC = self.get_card_set()

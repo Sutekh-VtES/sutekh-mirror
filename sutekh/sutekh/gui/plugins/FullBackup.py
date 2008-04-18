@@ -3,7 +3,7 @@
 # vim:fileencoding=utf8 ai ts=4 sts=4 et sw=4
 # Copyright 2007 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
-"Plugin to wrap zipfile backup and restre methods"
+"""Plugin to wrap zipfile backup and restore methods"""
 
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhDialog import do_complaint_error, do_complaint_warning
@@ -49,13 +49,13 @@ class FullBackup(CardListPlugin):
     # pylint: disable-msg=W0613
     # oWidget needed by gtk function signature
     def activate_backup(self, oWidget):
-        "Handle backup request"
+        """Handle backup request"""
         oDlg = self.make_backup_dialog()
         oDlg.run()
 
     # oWidget needed by gtk function signature
     def activate_restore(self, oWidget):
-        "Handle restore request"
+        """Handle restore request"""
         oDlg = self.make_restore_dialog()
         oDlg.run()
     # pylint: enable-msg=W0613
@@ -63,7 +63,7 @@ class FullBackup(CardListPlugin):
     # Backup
 
     def make_backup_dialog(self):
-        "Create file dialog for backup"
+        """Create file dialog for backup"""
         sName = "Choose a file to save the full backup to ..."
 
         oDlg = SutekhFileDialog(self.parent, sName,
@@ -82,7 +82,7 @@ class FullBackup(CardListPlugin):
     # pylint: disable-msg=R0201
     # This could be a function, but that won't add any clarity to this code
     def handle_backup_response(self, oDlg, oResponse):
-        "Handle response from backup dialog"
+        """Handle response from backup dialog"""
         if oResponse == gtk.RESPONSE_OK:
             sFile = oDlg.get_filename()
             bContinue = True
@@ -113,7 +113,7 @@ class FullBackup(CardListPlugin):
     # Restore
 
     def make_restore_dialog(self):
-        "Create file chooser dialog for restore"
+        """Create file chooser dialog for restore"""
         sName = "Restore a Full Backup ...."
 
         oDlg = SutekhFileDialog(self.parent, sName,
@@ -136,7 +136,7 @@ class FullBackup(CardListPlugin):
         return oDlg
 
     def handle_restore_response(self, oDlg, oResponse):
-        "Handle response from the restore dialog"
+        """Handle response from the restore dialog"""
         if oResponse == gtk.RESPONSE_OK:
             sFile = oDlg.get_filename()
             bContinue = True

@@ -278,7 +278,7 @@ class AnalyzeCardList(CardListPlugin):
     # plugin entry point, and, b) they need to reflect the current CardSet,
     # so they can't be filled properly in __init__
     def activate(self, oWidget):
-        "Create the actual dialog, and populate it"
+        """Create the actual dialog, and populate it"""
         oDlg = SutekhDialog( "Analysis of Card List", self.parent,
                 gtk.DIALOG_DESTROY_WITH_PARENT,
                 (gtk.STOCK_OK, gtk.RESPONSE_OK))
@@ -603,7 +603,7 @@ class AnalyzeCardList(CardListPlugin):
         return sVampText
 
     def _process_imbued(self, aCards):
-        "Fill the Imbued tab"
+        """Fill the Imbued tab"""
         dDeckImbued = {}
         dDeckCreed = {}
         iNum = self.dTypeNumbers['Imbued']
@@ -643,7 +643,7 @@ class AnalyzeCardList(CardListPlugin):
         return sImbuedText
 
     def _process_master(self, aCards):
-        "Display the stats for Master Cards"
+        """Display the stats for Master Cards"""
         # pylint: disable-msg=W0612
         # aBlood, aConviction unused, since Master cost isn't paid by minions
         iNum = self.dTypeNumbers['Master']
@@ -664,7 +664,7 @@ class AnalyzeCardList(CardListPlugin):
         return sText
 
     def _default_text(self, aCards, sType):
-        "Standard boilerplate for most card types"
+        """Standard boilerplate for most card types"""
         iNum = self.dTypeNumbers[sType]
         aBlood, aPool, aConviction = _get_card_costs(aCards)
         iClanRequirement = 0
@@ -701,22 +701,22 @@ class AnalyzeCardList(CardListPlugin):
         return sText
 
     def _process_combat(self, aCards):
-        "Fill the combat tab"
+        """Fill the combat tab"""
         sText = self._default_text(aCards, 'Combat')
         return sText
 
     def _process_action_modifier(self, aCards):
-        "Fill the Action Modifier tab"
+        """Fill the Action Modifier tab"""
         sText = self._default_text(aCards, 'Action Modifier')
         return sText
 
     def _process_reaction(self, aCards):
-        "Fill the reaction tab"
+        """Fill the reaction tab"""
         sText = self._default_text(aCards, 'Reaction')
         return sText
 
     def _process_event(self, aCards):
-        "Fill the events tab"
+        """Fill the events tab"""
         iNumEvents = len(aCards)
         sEventText = "\t\t<b>Event Cards :</b>\n\n"
         sEventText += "Number of Event cards = %d %s\n\n" % (iNumEvents,
@@ -734,42 +734,42 @@ class AnalyzeCardList(CardListPlugin):
         return sEventText
 
     def _process_action(self, aCards):
-        "Fill the actions tab"
+        """Fill the actions tab"""
         sText = self._default_text(aCards, 'Action')
         return sText
 
     def _process_political_action(self, aCards):
-        "Fill the Political Actions tab"
+        """Fill the Political Actions tab"""
         sText = self._default_text(aCards, 'Political Action')
         return sText
 
     def _process_allies(self, aCards):
-        "Fill the allies tab"
+        """Fill the allies tab"""
         sText = self._default_text(aCards, 'Ally')
         return sText
 
     def _process_retainer(self, aCards):
-        "Fill the retainer tab"
+        """Fill the retainer tab"""
         sText = self._default_text(aCards, 'Retainer')
         return sText
 
     def _process_equipment(self, aCards):
-        "Fill the equipment tab"
+        """Fill the equipment tab"""
         sText = self._default_text(aCards, 'Equipment')
         return sText
 
     def _process_conviction(self, aCards):
-        "Fill the conviction tab"
+        """Fill the conviction tab"""
         sText = self._default_text(aCards, 'Conviction')
         return sText
 
     def _process_power(self, aCards):
-        "Fill the power tab"
+        """Fill the power tab"""
         sText = self._default_text(aCards, 'Power')
         return sText
 
     def _process_multi(self, aCards):
-        "Fill the multirole card tab"
+        """Fill the multirole card tab"""
         dMulti = {}
         sPerCards = _percentage(self.dTypeNumbers['Multirole'],
                 self.iNumberLibrary, 'Library')
@@ -863,7 +863,7 @@ class AnalyzeCardList(CardListPlugin):
         oResLabel.get_parent().show_all()
 
     def _happy_lib_analysis(self, aDiscsToUse, iNonMasters):
-        "Heavy lifting of the HF analysis"
+        """Heavy lifting of the HF analysis"""
 
         iNumberToShow = len(aDiscsToUse)
 

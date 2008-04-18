@@ -237,7 +237,7 @@ class CardImageFrame(BasicFrame, CardListViewListener):
         return os.path.join(self.__sPrefsPath, sCurExpansionPath, sFilename)
 
     def __load_image(self, sFullFilename):
-        "Load an image into the pane, show broken image if needed"
+        """Load an image into the pane, show broken image if needed"""
         self._oImage.set_alignment(0.5, 0.5) # Centre image
         try:
             if self.__bShowExpansions:
@@ -416,7 +416,7 @@ class ImageConfigDialog(SutekhDialog):
         self.show_all()
 
     def _radio_toggled(self, oRadioButton, oChoiceBox, oFileWidget):
-        "Display the correct file widget when radio buttons change"
+        """Display the correct file widget when radio buttons change"""
         if oRadioButton.get_active():
             for oChild in oChoiceBox.get_children():
                 oChoiceBox.remove(oChild)

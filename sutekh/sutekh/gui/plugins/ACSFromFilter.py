@@ -4,7 +4,7 @@
 # Copyright 2006 Simon Cross <hodgestar@gmail.com>,
 # Copyright 2007 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
-"Convert a filter on an Abstract Card Set"
+"""Convert a filter on an Abstract Card Set"""
 
 import gtk
 from sutekh.core.SutekhObjects import AbstractCardSet, PhysicalCardSet, \
@@ -32,7 +32,7 @@ class ACSFromFilter(CardListPlugin):
     # pylint: disable-msg=W0613
     # oWidget required by gtk function signature
     def activate(self, oWidget):
-        "Create the dialog in response to the menu"
+        """Create the dialog in response to the menu"""
         oDlg = SutekhDialog("Choose Abstract Card Set Name", self.parent,
                 gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                 (gtk.STOCK_OK, gtk.RESPONSE_OK,
@@ -63,9 +63,7 @@ class ACSFromFilter(CardListPlugin):
         oDlg.destroy()
 
     def make_acs_from_filter(self, sACSName):
-        """
-        Create the actual ACS
-        """
+        """Create the actual ACS."""
         # Check ACS Doesn't Exist
         # pylint: disable-msg=E1101
         # pylint misses AbstractCardSet methods

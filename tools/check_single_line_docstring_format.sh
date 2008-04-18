@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Neil Muller <drnlmuller+sutekh@gmail.com>, 2008
 # Very simple check for single line docstrings without """
 # We rely on pygettext to pull out the doc-strings, and grep
@@ -14,7 +14,7 @@ pygettext -D -o - $pyfile \
     | grep ^msgid \
     | grep -v \"\"  \
     | cut -d " " -f 2-  > $DOC_LIST
-echo "Possible single line docstrings not using \"\"\":"
+echo "$pyfile: Possible single line docstrings not using \"\"\":"
 grep -n -F -f $DOC_LIST $pyfile | grep -v \"\"\"
 rm $DOC_LIST
 

@@ -4,7 +4,7 @@
 # Copyright 2006 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
 
-"Converts a filter into a card set"
+"""Converts a filter into a card set"""
 
 import gtk
 from sutekh.core.SutekhObjects import PhysicalCardSet, PhysicalCard

@@ -5,7 +5,7 @@
 # Copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-"Display a running total of the cards in a card set"
+"""Display a running total of the cards in a card set"""
 
 import gtk
 from sutekh.core.SutekhObjects import IAbstractCard, AbstractCardSet, \
@@ -14,7 +14,7 @@ from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.CardListModel import CardListModelListener
 
 def _id_card(oCard):
-    "Idenitfy the card type"
+    """Idenitfy the card type"""
     sType = list(oCard.cardtype)[0].name
     if sType == 'Vampire' or sType == 'Imbued':
         return 'Crypt'
@@ -68,13 +68,13 @@ class CountCardSetCards(CardListPlugin, CardListModelListener):
         return self.__oTextLabel
 
     def update_numbers(self):
-        "Update the label"
+        """Update the label"""
         self.__oTextLabel.set_markup('Total Cards : <b>%d</b> Crypt Cards : '
                 '<b>%d</b> Library Cards : <b>%d</b>' % (self.__iTot,
                     self.__iCrypt, self.__iLibrary))
 
     def load(self, aAbsCards):
-        "Listen on load events & update counts"
+        """Listen on load events & update counts"""
         self.__iCrypt = 0
         self.__iLibrary = 0
         self.__iTot = len(aAbsCards)
@@ -86,7 +86,7 @@ class CountCardSetCards(CardListPlugin, CardListModelListener):
         self.update_numbers()
 
     def alter_card_count(self, oCard, iChg):
-        "respond to alter_card_count events"
+        """respond to alter_card_count events"""
         self.__iTot += iChg
         if _id_card(oCard) == 'Crypt':
             self.__iCrypt += iChg
@@ -95,7 +95,7 @@ class CountCardSetCards(CardListPlugin, CardListModelListener):
         self.update_numbers()
 
     def add_new_card(self, oCard):
-        "response to add_new_card events"
+        """response to add_new_card events"""
         self.__iTot += 1
         if _id_card(oCard) == 'Crypt':
             self.__iCrypt += 1

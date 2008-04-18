@@ -3,7 +3,7 @@
 # vim:fileencoding=utf8 ai ts=4 sts=4 et sw=4
 # Copyright 2005, 2006 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
-"SutekhGui.py: start the GUI"
+"""SutekhGui.py: start the GUI"""
 
 from sutekh.core.SutekhObjects import VersionTable, aObjectList
 from sutekh.SutekhUtility import prefs_dir, ensure_dir_exists, sqlite_uri
