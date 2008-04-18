@@ -81,6 +81,15 @@ class PhysicalCardTests(SutekhTest):
         oParser = PhysicalCardParser()
         oParser.parse_string(sExpected)
         self.assertEqual(oWriter.gen_xml_string(), sExpected)
+        sTempFileName =  self._create_tmp_file()
+        fOut = open(sTempFileName, 'w')
+        oWriter.write(fOut)
+        fOut.close()
+        PhysicalCard.delete(oPC.id)
+        fIn = open(sTempFileName, 'r')
+        oParser.parse(fIn)
+        fIn.close()
+        assert(oWriter.gen_xml_string(), sExpected)
 
 if __name__ == "__main__":
     unittest.main()
