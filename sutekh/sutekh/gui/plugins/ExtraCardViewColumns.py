@@ -3,7 +3,7 @@
 # vim:fileencoding=utf8 ai ts=4 sts=4 et sw=4
 # Copyright 2007 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
-"Disply extra columns in the tree view"
+"""Disply extra columns in the tree view"""
 
 import gtk, pango
 from sutekh.gui.PluginManager import CardListPlugin
@@ -47,7 +47,7 @@ class ExtraCardViewColumns(CardListPlugin):
     # Rendering Functions
 
     def _get_card(self, oIter):
-        "For the given iterator, get the associated abstract card"
+        """For the given iterator, get the associated abstract card"""
         if self.model.iter_depth(oIter) == 1:
             # Only try and lookup things that look like they should be cards
             try:
@@ -70,7 +70,7 @@ class ExtraCardViewColumns(CardListPlugin):
     # Making these functions for clarity
     # several unused paramaters due to function signatures
     def _get_data_cardtype(self, oCard):
-        "Return the card type"
+        """Return the card type"""
         if not oCard is None:
             aTypes = [x.name for x in oCard.cardtype]
             aTypes.sort()
@@ -78,12 +78,12 @@ class ExtraCardViewColumns(CardListPlugin):
         return ""
 
     def _render_card_type(self, oColumn, oCell, oModel, oIter):
-        "display the card type(s)"
+        """display the card type(s)"""
         oCard = self._get_card(oIter)
         oCell.set_property("text", self._get_data_cardtype(oCard))
 
     def _get_data_clan(self, oCard):
-        "get the clan for the card"
+        """get the clan for the card"""
         if not oCard is None:
             aClans = [x.name for x in oCard.clan]
             aClans.sort()
@@ -91,12 +91,12 @@ class ExtraCardViewColumns(CardListPlugin):
         return ""
 
     def _render_clan(self, oColumn, oCell, oModel, oIter):
-        "display the clan"
+        """display the clan"""
         oCard = self._get_card(oIter)
         oCell.set_property("text", self._get_data_clan(oCard))
 
     def _get_data_disciplines(self, oCard):
-        "get disipline info for card"
+        """get disipline info for card"""
         if not oCard is None:
             aDis = [(oP.level != 'superior') and oP.discipline.name
                     or oP.discipline.name.upper() for oP in oCard.discipline]
@@ -105,12 +105,12 @@ class ExtraCardViewColumns(CardListPlugin):
         return ""
 
     def _render_disciplines(self, oColumn, oCell, oModel, oIter):
-        "display the card disciplines"
+        """display the card disciplines"""
         oCard = self._get_card(oIter)
         oCell.set_property("text", self._get_data_disciplines(oCard))
 
     def _get_data_expansions(self, oCard):
-        "get expansion info"
+        """get expansion info"""
         if not oCard is None:
             aExp = [oP.expansion.shortname + "(" + oP.rarity.name + ")" for
                     oP in oCard.rarity]
@@ -119,18 +119,18 @@ class ExtraCardViewColumns(CardListPlugin):
         return ""
 
     def _render_expansions(self, oColumn, oCell, oModel, oIter):
-        "Display expanson info"
+        """Display expanson info"""
         oCard = self._get_card(oIter)
         oCell.set_property("text", self._get_data_expansions(oCard))
 
     def _get_data_group(self, oCard):
-        "get the group info for the card"
+        """get the group info for the card"""
         if not oCard is None and not oCard.group is None:
             return oCard.group
         return -1
 
     def _render_group(self, oColumn, oCell, oModel, oIter):
-        "Display the group info"
+        """Display the group info"""
         oCard = self._get_card(oIter)
         iGrp = self._get_data_group(oCard)
         if iGrp != -1:
@@ -139,13 +139,13 @@ class ExtraCardViewColumns(CardListPlugin):
             oCell.set_property("text", "")
 
     def _get_data_capacity(self, oCard):
-        "Get the cards capacity"
+        """Get the cards capacity"""
         if not oCard is None and not oCard.capacity is None:
             return oCard.capacity
         return -1
 
     def _render_capacity(self, oColumn, oCell, oModel, oIter):
-        "Display capacity in the column"
+        """Display capacity in the column"""
         oCard = self._get_card(oIter)
         iCap = self._get_data_capacity(oCard)
         if iCap != -1:
@@ -167,13 +167,13 @@ class ExtraCardViewColumns(CardListPlugin):
     # pylint: disable-msg=W0613
     # oWidget required by function signature
     def activate(self, oWidget):
-        "Handle menu activation"
+        """Handle menu activation"""
         oDlg = self.make_dialog()
         oDlg.run()
     # pylint: enable-msg=W0613
 
     def make_dialog(self):
-        "Create the column selection dialog"
+        """Create the column selection dialog"""
         sName = "Select Extra Columns ..."
 
         oDlg = SutekhDialog(sName, self.parent,
@@ -202,7 +202,7 @@ class ExtraCardViewColumns(CardListPlugin):
     # Actions
 
     def handle_response(self, oDlg, oResponse):
-        "Handle user response from the dialog"
+        """Handle user response from the dialog"""
         if oResponse == gtk.RESPONSE_CANCEL:
             oDlg.destroy()
         elif oResponse == gtk.RESPONSE_OK:
@@ -215,7 +215,7 @@ class ExtraCardViewColumns(CardListPlugin):
             oDlg.destroy()
 
     def set_cols_in_use(self, aCols):
-        "Add columns to the view"
+        """Add columns to the view"""
         # pylint: disable-msg=W0612
         # iDir is returned, although we don't need it
         iSortCol, iDir = self.model.get_sort_column_id()
@@ -272,11 +272,11 @@ class ExtraCardViewColumns(CardListPlugin):
     # pylint: enable-msg=W0613
 
     def get_cols_in_use(self):
-        "Get which extra columns have been added to view"
+        """Get which extra columns have been added to view"""
         return [oCol.get_property("title") for oCol in self._get_col_objects()]
 
     def _get_col_objects(self):
-        "Get the actual TreeColumn in the view"
+        """Get the actual TreeColumn in the view"""
         return [oCol for oCol in self.view.get_columns() if
                 oCol.get_property("title") in self._dCols]
 
