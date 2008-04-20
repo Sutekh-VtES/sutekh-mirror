@@ -169,7 +169,7 @@ class ReplacementTreeView(gtk.TreeView):
     # pylint: disable-msg=R0904
     # gtk.Widget, so many public methods.
 
-    def __init__(self, oCardListView, oFilterToggleButton):
+    def __init__(self, oCardListView, oFilterToggleButton, aPhysCards=None):
         """Construct a gtk.TreeView object showing the current
            card replacements.
 
@@ -189,6 +189,7 @@ class ReplacementTreeView(gtk.TreeView):
 
         if self.bPhysical:
             self.dCandidateCards = {}
+            self.aPhysCard = aPhysCards
 
             oCell1 = gtk.CellRendererText()
             oCell1.set_property('style', pango.STYLE_ITALIC)
@@ -274,7 +275,7 @@ class ReplacementTreeView(gtk.TreeView):
             aTheseCards = self.dCandidateCards[sFullName]
 
             aAssignedCards = []
-            for aButtonCards in self.dCandCards.itervalues():
+            for aButtonCards in self.dCandidateCards.itervalues():
                 aAssignedCards.extend(aButtonCards)
 
             if not self._check_physical_cards(sNewName, iCnt, self.aPhysCards,
@@ -655,7 +656,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
         oShowCountsButton.set_active(True)
 
         oReplacementView = ReplacementTreeView(oPhysCardView,
-                                               oFilterApplyButton)
+                                               oFilterApplyButton, aPhysCards)
         oModel = oReplacementView.get_model()
 
         oReplacementWin = AutoScrolledWindow(oReplacementView)
