@@ -82,3 +82,5 @@ class CSVParser(object):
             except ValueError, oExp:
                 raise ValueError("Line %d in CSV file could not be parsed"
                         " (%s)" % (oCsvFile.line_num, oExp))
+
+        self._commit_holder(oCardLookup)
