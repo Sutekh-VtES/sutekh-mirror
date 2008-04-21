@@ -240,10 +240,11 @@ class CSVImporter(CardListPlugin):
             try:
                 oParser.parse(fIn, sCardSetName, oCardLookup=self.cardlookup)
             except LookupFailed, e:
+                fIn.close()
                 self.oDlg.destroy()
                 return
-            finally:
-                fIn.close()
+
+            fIn.close()
 
             if cCardSet is AbstractCardSet:
                 self.open_acs(sCardSetName)
