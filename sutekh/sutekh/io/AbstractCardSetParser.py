@@ -42,6 +42,7 @@ class AbstractCardSetParser(object):
 
     def _convert_tree(self):
         """Convert the ElementTree into a CardSetHolder"""
+        self.oCS = CardSetHolder()
         oRoot = self.oTree.getroot()
         if oRoot.tag != 'abstractcardset':
             raise RuntimeError("Not a Abstract Card Set list")

@@ -44,6 +44,7 @@ class PhysicalCardSetParser(object):
 
     def _convert_tree(self):
         """Convert the ElementTree into a CardSetHolder"""
+        self.oCS = CardSetHolder()
         oRoot = self.oTree.getroot()
         if oRoot.tag != 'physicalcardset':
             raise RuntimeError("Not a Physical Card Set list")
