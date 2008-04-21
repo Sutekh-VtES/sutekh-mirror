@@ -18,10 +18,12 @@ from sutekh.core.SutekhObjects import AbstractCard, IAbstractCard, ICreed, \
         IVirtue, IClan, IDiscipline, IExpansion, ITitle, ISect, ICardType, \
         IPhysicalCardSet, IAbstractCardSet, IRarityPair, IRarity, Clan, \
         Discipline, CardType, Title, Creed, Virtue, Sect, Expansion, \
-        RarityPair, PhysicalCardSet, PhysicalCard, AbstractCardSet
-from sqlobject import AND, OR, NOT, LIKE, func, IN as SQLOBJ_IN
-from sqlobject.sqlbuilder import Table, Alias, LEFTJOINOn, Select
-from sqlobject.sqlbuilder import SQLTrueClause as TRUE
+        RarityPair, PhysicalCardSet, PhysicalCard, AbstractCardSet, \
+        IDisciplinePair
+from sqlobject import SQLObjectNotFound, AND, OR, NOT, LIKE, func, \
+        IN as SQLOBJ_IN
+from sqlobject.sqlbuilder import Table, Alias, LEFTJOINOn, Select, \
+        SQLTrueClause as TRUE
 
 # Compability Patches
 
@@ -440,8 +442,13 @@ class MultiDisciplineLevelFilter(MultiFilter):
         aDisciplines = oTemp.get_values()
         aResults = []
         for sDisc in aDisciplines:
-            aResults.append(sDisc + ' with inferior')
-            aResults.append(sDisc + ' with superior')
+            for sLevel in ['inferior', 'superior']:
+                try:
+                    # Check if the discipline pair exists
+                    IDisciplinePair((sDisc, sLevel))
+                except SQLObjectNotFound:
+                    continue # No, so skip this case
+                aResults.append('%s with %s' % (sDisc, sLevel))
         return aResults
 
 class CardTypeFilter(SingleFilter):

@@ -114,9 +114,9 @@ class CardDict(dict):
             oMatch = oFlightRexegp.search(aLines[-1])
             if oMatch:
                 if self.has_key('discipline'):
-                    self['discipline'] += ' fli'
+                    self['discipline'] += ' FLI'
                 else:
-                    self['discipline'] = 'fli'
+                    self['discipline'] = 'FLI'
             if sSect is not None:
                 self['sect'] = sSect
             if sTitle is not None:
