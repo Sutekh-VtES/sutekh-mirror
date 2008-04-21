@@ -11,6 +11,7 @@ from sutekh.tests import test_WhiteWolfParser
 from sutekh.core.SutekhObjects import IAbstractCard, PhysicalCard, IExpansion
 from sutekh.io.PhysicalCardParser import PhysicalCardParser
 from sutekh.io.PhysicalCardWriter import PhysicalCardWriter
+from sutekh.io.IdentifyXMLFile import IdentifyXMLFile
 import unittest
 
 class PhysicalCardTests(SutekhTest):
@@ -19,8 +20,10 @@ class PhysicalCardTests(SutekhTest):
 
     def test_physical(self):
         """Test physical card handling"""
-        # pylint: disable-msg=E1101
-        # SQLObject + PyProtocols magic confuses pylint
+        # pylint: disable-msg=E1101, R0915, R0914
+        # E1101: SQLObject + PyProtocols magic confuses pylint
+        # R0915, R0914: Want a long, sequentila test case to minimise
+        # repeated setups, so it has lots of lines + variables
         aAbstractCards = ['.44 magnum', 'ak-47', 'abbot', 'abebe', 'abombwe']
         aCardExpansions = [('.44 magnum', 'Jyhad'),
                 ('ak-47', 'LotN'),
@@ -85,6 +88,9 @@ class PhysicalCardTests(SutekhTest):
         fOut = open(sTempFileName, 'w')
         oWriter.write(fOut)
         fOut.close()
+        oIdFile = IdentifyXMLFile()
+        tResult = oIdFile.id_file(sTempFileName)
+        self.assertEqual(tResult[0], 'PhysicalCard')
         PhysicalCard.delete(oPC.id)
         fIn = open(sTempFileName, 'r')
         oParser.parse(fIn)
