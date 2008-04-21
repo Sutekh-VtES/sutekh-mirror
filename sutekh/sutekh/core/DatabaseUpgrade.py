@@ -710,7 +710,11 @@ def make_card_set_holder(oCardSet):
     oCS.annotations = oCardSet.annotations
     for oCard in oCardSet.cards:
         if type(oCard) is PhysicalCard:
-            oCS.add(1, oCard.abstractCard.canonicalName, oCard.expansion.name)
+            if oCard.expansion is None:
+                oCS.add(1, oCard.abstractCard.canonicalName)
+            else:
+                oCS.add(1, oCard.abstractCard.canonicalName,
+                        oCard.expansion.name)
         else:
             oCS.add(1, oCard.canonicalName)
     return oCS
@@ -737,7 +741,10 @@ def copy_to_new_abstract_card_db(oOrigConn, oNewConn, oCardLookup,
             oLogHandler.set_total(iTotal)
     oPhysListCS = CachedCardSetHolder()
     for oCard in PhysicalCard.select(connection=oOrigConn):
-        oPhysListCS.add(1, oCard.abstractCard.canonicalName,
+        if oCard.expansion is None:
+            oPhysListCS.add(1, oCard.abstractCard.canonicalName)
+        else:
+            oPhysListCS.add(1, oCard.abstractCard.canonicalName,
                 oCard.expansion.name)
     # Copy Physical card sets
     for oSet in PhysicalCardSet.select(connection=oOrigConn):
