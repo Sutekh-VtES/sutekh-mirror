@@ -45,8 +45,5 @@ For 0.6:
  * Improve Current Filter dialogs:
     - Provide better help 
  * Add decent keyboard shortcuts
- * CSV import plugin
  * Add icon to Windows installer and start menu shortcut. 
  * Improve editable card list visual hint on windows
- * Import the cardlist_[_A-Z] files from WW site, for robustness against
-   timeouts

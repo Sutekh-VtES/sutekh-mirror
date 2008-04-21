@@ -313,7 +313,7 @@ class CardDict(dict):
             self._add_sect(oCard, self['sect'])
 
         if self.has_key('text'):
-            oCard.text = self['text']
+            oCard.text = self['text'].replace('\r', '')
         oCard.syncUpdate()
 
 # State Base Classes

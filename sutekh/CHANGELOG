@@ -1,9 +1,23 @@
+21 April 2008
+ * Tweaked editable style hint
+ * Changed WW cardlist fetching to use the smaller split lists 
+   (the cardlist_[A-Z,_] files)
+ * Always import flight as FLI
+ * Don't show non-existant combinations in the discipline with level filter
+ * Show a suitable mesage rather than nothing when the card list view is
+   empty - distinguish between empty and no cards found from a filter.
+ * Reformat the card text view
+
+20 April 2008
+ * CSV Import plugin added
+
 17 April 2008
  * Move some common code to PaneMenu
  * Unfiy ExportDialog + ImportDialog into SutekhFileWidget
  * Add support for enabling & disabling menu mnemonics per pane
  * Preserve editable status when resoring and importing new WW cardlists
  * Redo GUI CardLookup plagin to use a treeview.
+ * Suggest a default filename when exporting a card set
 
 16 April 2008
  * Refactor menu code so all panes  share a common base code

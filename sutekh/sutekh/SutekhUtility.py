@@ -34,19 +34,21 @@ def refresh_tables(aTables, oConn):
     flush_cache()
     return True
 
-def read_white_wolf_list(oWwList, oLogHandler=None):
+def read_white_wolf_list(aWwFiles, oLogHandler=None):
     """Parse in a new White Wolf cardlist
 
-       oWwList is an object with a .open() method (e.g. a sutekh.io.WwFile.WwFile)
+       aWwList is a list of objects with a .open() method (e.g.
+       sutekh.io.WwFile.WwFile's)
        """
     flush_cache()
     oOldConn = sqlhub.processConnection
     sqlhub.processConnection = oOldConn.transaction()
     oParser = WhiteWolfParser(oLogHandler)
-    fIn = oWwList.open()
-    for sLine in fIn:
-        oParser.feed(sLine)
-    fIn.close()
+    for oFile in aWwFiles:
+        fIn = oFile.open()
+        for sLine in fIn:
+            oParser.feed(sLine)
+        fIn.close()
     sqlhub.processConnection.commit()
     sqlhub.processConnection = oOldConn
 

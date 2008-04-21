@@ -163,7 +163,7 @@ def main(aArgs):
             return 1
 
     if not oOpts.ww_file is None:
-        read_white_wolf_list(WwFile(oOpts.ww_file), oLogHandler)
+        read_white_wolf_list([WwFile(oOpts.ww_file)], oLogHandler)
 
     if not oOpts.ruling_file is None:
         read_rulings(WwFile(oOpts.ruling_file), oLogHandler)
