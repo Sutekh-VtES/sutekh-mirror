@@ -459,18 +459,19 @@ class EditableCardListView(CardListView):
                 oModel)
 
         # Setup columns for default view
-        oCell1 = gtk.CellRendererText()
-        oCell1.set_property('style', pango.STYLE_ITALIC)
-        oCell2 = gtk.CellRendererText()
-        oCell2.set_property('style', pango.STYLE_ITALIC)
+        self.oNumCell = gtk.CellRendererText()
+        self.oNumCell.set_property('style', pango.STYLE_ITALIC)
+        self.oNumCell.set_property('foreground-set', True)
+        self.oNameCell = gtk.CellRendererText()
+        self.oNameCell.set_property('style', pango.STYLE_ITALIC)
 
-        oColumn1 = gtk.TreeViewColumn("#", oCell1, text=1)
+        oColumn1 = gtk.TreeViewColumn("#", self.oNumCell, text=1)
         oColumn1.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
         oColumn1.set_fixed_width(40)
         oColumn1.set_sort_column_id(1)
         self.append_column(oColumn1)
 
-        oColumn2 = gtk.TreeViewColumn("Cards", oCell2, text=0)
+        oColumn2 = gtk.TreeViewColumn("Cards", self.oNameCell, text=0)
         oColumn2.set_expand(True)
         oColumn2.set_sort_column_id(0)
         self.append_column(oColumn2)
@@ -499,6 +500,7 @@ class EditableCardListView(CardListView):
         self._oMenuEditWidget = None
 
         self.set_expander_column(oColumn2)
+        self.oCellColor = None
 
     def load(self):
         """Called when the model needs to be reloaded."""
@@ -559,6 +561,10 @@ class EditableCardListView(CardListView):
     def set_color_edit_cue(self):
         """Set a visual cue that the card set is editable."""
         oCurStyle = self.rc_get_style()
+        # For card sets that start empty, oNumCell will be the wrong colour,
+        # but, because of how CellRenderers interact with styles, oNameCell
+        # will be the right one here
+        self.oCellColor = self.oNameCell.get_property('foreground-gdk')
         self.set_name('editable_view')
         oParent = self.get_parent()
         oDefaultSutekhStyle = gtk.rc_get_style_by_paths(self.get_settings(),
@@ -582,10 +588,14 @@ class EditableCardListView(CardListView):
             gtk.rc_parse_string(sStyleInfo)
             # Need to force re-assesment of styles
             self.set_name('editable_view')
+        oCurStyle = self.rc_get_style()
+        self.oNumCell.set_property('foreground-gdk',
+                oCurStyle.fg[gtk.STATE_NORMAL])
 
     def set_color_normal(self):
         """Unset the editable visual cue"""
         self.set_name('normal_view')
+        self.oNumCell.set_property('foreground-gdk', self.oCellColor)
 
     def _set_editable(self, bValue):
         """Update the view and menu when the editable status changes"""
