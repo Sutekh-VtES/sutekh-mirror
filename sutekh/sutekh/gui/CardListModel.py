@@ -97,6 +97,7 @@ class CardListModel(gtk.TreeStore):
         self.bExpansions = False
         self.bEditable = False
         self.bAddAllAbstractCards = False
+        self.oEmptyIter = None
 
     # pylint: disable-msg=W0212
     # W0212 - we explicitly allow access via these properties
@@ -174,7 +175,10 @@ class CardListModel(gtk.TreeStore):
         fGetCard, fGetCount, fGetExpanInfo, oGroupedIter, aAbsCards = \
                 self.grouped_card_iter(oCardIter)
 
+
         self.init_info_cache()
+
+        self.oEmptyIter = None
 
         # Iterate over groups
         for sGroup, oGroupIter in oGroupedIter:
@@ -216,6 +220,12 @@ class CardListModel(gtk.TreeStore):
                 2, False,
                 3, False
             )
+
+        if not self._dName2Iter:
+            # Showing nothing
+            self.oEmptyIter = self.append(None)
+            sText = self._get_empty_text()
+            self.set(self.oEmptyIter, 0, sText, 1, 0, 2, False, 3, False)
 
         # Notify Listeners
         for oListener in self.dListeners:
@@ -543,9 +553,26 @@ class CardListModel(gtk.TreeStore):
         if iCnt <= 0 and not self.bAddAllAbstractCards:
             del self._dName2Iter[sCardName]
 
+        if self.oEmptyIter and iChg > 0:
+            # Can no longer be empty
+            self.remove(self.oEmptyIter)
+            self.oEmptyIter = None
+        elif iChg < 0 and not self._dName2Iter:
+            self.oEmptyIter = self.append(None)
+            sText = self._get_empty_text()
+            self.set(self.oEmptyIter, 0, sText, 1, 0, 2, False, 3, False)
+
         # Notify Listeners
         for oListener in self.dListeners:
             oListener.alter_card_count(oCard, iChg)
+
+    def _get_empty_text(self):
+        """Get the correct text for an empty model."""
+        if self.get_card_iterator(None).count() == 0:
+            sText = 'Empty'
+        else:
+            sText = 'No Cards found'
+        return sText
 
     def _clear_expansion_iters(self, sCardName):
         """Zero all the expasion items for sCardName, and set the increment/
@@ -631,6 +658,11 @@ class CardListModel(gtk.TreeStore):
             self.set(oSectionIter,
                 1, iGrpCnt
             )
+
+        if self.oEmptyIter and oCardIter.count() > 0:
+            # remove previous note
+            self.remove(self.oEmptyIter)
+            self.oEmptyIter = None
 
         # Notify Listeners
         oCard = IAbstractCard(sCardName)
