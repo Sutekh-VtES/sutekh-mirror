@@ -123,18 +123,19 @@ class CSVImporter(CardListPlugin):
         sFile = oFileChooser.get_filename()
         try:
             fIn = file(sFile,"rb")
-        except StandardError, e:
+        except Exception, e:
             self._clear_column_selectors()
             return
 
         try:
             sLine1 = fIn.next()
             sLine2 = fIn.next()
-        except StandardError, e:
+        except Exception, e:
+            fIn.close()
             self._clear_column_selectors()
             return
-        finally:
-            fIn.close()
+
+        fIn.close()
 
         try:
             oCsv = csv.reader([sLine1,sLine2])
@@ -142,7 +143,7 @@ class CSVImporter(CardListPlugin):
             sSample = sLine1 + "\n" + sLine2
             oSniff = csv.Sniffer()
             bHasHeader = oSniff.has_header(sSample)
-        except (StandardError, csv.Error), e:
+        except (Exception, csv.Error), e:
             self._clear_column_selectors()
             return
 
