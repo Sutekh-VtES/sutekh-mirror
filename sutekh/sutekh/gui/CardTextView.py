@@ -32,15 +32,15 @@ class CardTextBuffer(gtk.TextBuffer, object):
         self.create_tag("group", style=pango.STYLE_ITALIC)
         self.create_tag("level", style=pango.STYLE_ITALIC)
         self.create_tag("burn_option", style=pango.STYLE_ITALIC)
-        self.create_tag("card_type", style=pango.STYLE_ITALIC)
+        self.create_tag("card_type", style=pango.STYLE_ITALIC, left_margin=15)
         self.create_tag("clan", style=pango.STYLE_ITALIC)
         self.create_tag("sect", style=pango.STYLE_ITALIC)
         self.create_tag("title", style=pango.STYLE_ITALIC)
         self.create_tag("creed", style=pango.STYLE_ITALIC)
-        self.create_tag("discipline", style=pango.STYLE_ITALIC)
-        self.create_tag("virtue", style=pango.STYLE_ITALIC)
-        self.create_tag("expansion", style=pango.STYLE_ITALIC)
-        self.create_tag("ruling")
+        self.create_tag("discipline", style=pango.STYLE_ITALIC, left_margin=15)
+        self.create_tag("virtue", style=pango.STYLE_ITALIC, left_margin=15)
+        self.create_tag("expansion", style=pango.STYLE_ITALIC, left_margin=15)
+        self.create_tag("ruling", left_margin=15)
         self.create_tag("card_text", style=pango.STYLE_ITALIC)
         self._oIter = None
 
@@ -65,8 +65,22 @@ class CardTextBuffer(gtk.TextBuffer, object):
         self.tag_text(sLabel, "label")
         self.tag_text(":")
         for sValue in aValues:
-            self.tag_text("\n\t* ")
-            self.tag_text(sValue, sTag)
+            self.tag_text("\n* %s" % sValue, sTag)
+
+    def labelled_compact_list(self, sLabel, aValues, sTag):
+        """More compact list for clans, etc."""
+        self.labelled_value(sLabel, " / ".join(aValues), sTag)
+
+    def labelled_exp_list(self, sLabel, dValues, sTag):
+        """Special case for expansion labels"""
+        aValues = []
+        for sExp in sorted(dValues):
+            aRarities = list(set(dValues[sExp]))
+            # Use set to avoid Precon, Precon and other duplicates
+            sValue = '%s (%s)' % (sExp, ", ".join(sorted(aRarities)))
+            # sort for consistent ordering
+            aValues.append(sValue)
+        self.labelled_list(sLabel, aValues, sTag)
 
     def reset_iter(self):
         """Reset the iterator to point at the start of the buffer."""
@@ -135,20 +149,20 @@ class CardTextView(gtk.TextView, object):
             self.__oBuf.labelled_value("Burn Option:", "Yes", "burn_option")
 
         if not len(oCard.clan) == 0:
-            self.__oBuf.labelled_list("Clan", [oC.name for oC in oCard.clan],
-                    "clan")
+            self.__oBuf.labelled_compact_list("Clan",
+                    [oC.name for oC in oCard.clan], "clan")
 
         if not len(oCard.creed) == 0:
-            self.__oBuf.labelled_list("Creed", [oC.name for oC in oCard.creed],
-                    "creed")
+            self.__oBuf.labelled_compact_list("Creed",
+                    [oC.name for oC in oCard.creed], "creed")
 
         if not len(oCard.sect) == 0:
-            self.__oBuf.labelled_list("Sect", [oC.name for oC in oCard.sect],
-                    "sect")
+            self.__oBuf.labelled_compact_list("Sect",
+                    [oC.name for oC in oCard.sect], "sect")
 
         if not len(oCard.title) == 0:
-            self.__oBuf.labelled_list("Title", [oC.name for oC in oCard.title],
-                    "title")
+            self.__oBuf.labelled_compact_list("Title",
+                    [oC.name for oC in oCard.title], "title")
 
         if not len(oCard.discipline) == 0:
             aDis = []
@@ -163,9 +177,11 @@ class CardTextView(gtk.TextView, object):
                     [oC.name for oC in oCard.virtue], "virtue")
 
         if not len(oCard.rarity) == 0:
-            aExp = sorted([oP.expansion.name + " (" + oP.rarity.name + ")"
-                for oP in oCard.rarity])
-            self.__oBuf.labelled_list("Expansions", aExp, "expansion")
+            dExp = {}
+            for oPair in oCard.rarity:
+                dExp.setdefault(oPair.expansion.name, [])
+                dExp[oPair.expansion.name].append(oPair.rarity.name)
+            self.__oBuf.labelled_exp_list("Expansions", dExp, "expansion")
 
         if not len(oCard.rulings) == 0:
             aRulings = [oR.text.replace("\n", " ") + " " + oR.code for oR
@@ -173,4 +189,5 @@ class CardTextView(gtk.TextView, object):
             self.__oBuf.labelled_list("Rulings", aRulings, "ruling")
 
         self.__oBuf.tag_text("\n\n")
-        self.__oBuf.tag_text(oCard.text.replace("\n", " "), "card_text")
+        self.__oBuf.tag_text(oCard.text.replace("\n", " "),
+                "card_text")
