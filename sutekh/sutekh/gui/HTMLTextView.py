@@ -44,8 +44,9 @@ def _parse_css_color(sColor):
         return gtk.gdk.color_parse(sColor)
 
 class HtmlHandler(xml.sax.handler.ContentHandler):
-    # pylint: disable-msg=R0201
-    # can't break these into functions
+    # pylint: disable-msg=R0201, R0902
+    # R0201: can't break these into functions
+    # R0902: We need to keep a lot of state to handle HTML properly
     """Parse the HTML imput and update the gtk.TextView"""
     def __init__(self, oTextView, oStartIter):
         xml.sax.handler.ContentHandler.__init__(self)
@@ -57,6 +58,7 @@ class HtmlHandler(xml.sax.handler.ContentHandler):
         self._aListCounters = [] # stack (top at head) of list
                                 # counters, or None for unordered list
         self._bInTitle = False
+        self._dTargets = {}
 
     def _parse_style_color(self, oTag, sValue):
         """Convert style value to TextView foreground color"""
@@ -375,6 +377,10 @@ class HtmlHandler(xml.sax.handler.ContentHandler):
         #    self._sText += ' '
         self._sText += oWhiteSpaceRegex.sub(' ', sContent)
 
+    def get_targets(self):
+        """Get the list of target anchors."""
+        return self._dTargets
+
     # pylint: disable-msg=C0103
     # startElement, endElement names are require
     def startElement(self, sName, oAttrs):
@@ -396,8 +402,14 @@ class HtmlHandler(xml.sax.handler.ContentHandler):
                 oType_ = oAttrs['type']
             except KeyError:
                 oType_ = None
-            oTag.connect('event', self._anchor_event, oAttrs['href'], oType_)
-            oTag.is_anchor = True
+            if oAttrs.has_key('href'):
+                oTag.connect('event', self._anchor_event, oAttrs['href'],
+                        oType_)
+                oTag.is_anchor = True
+            if oAttrs.has_key('name'):
+                # Add it to the list of valid targets
+                oMark = self._oTextBuf.create_mark(None, self._oIter, True)
+                self._dTargets[oAttrs['name']] = oMark
         elif sName in ['h1', 'h2', 'h3', 'h4', 'h5', 'h6']:
             oTag = self._oTextBuf.create_tag()
             oTag.set_property('underline', pango.UNDERLINE_SINGLE)
@@ -412,6 +424,9 @@ class HtmlHandler(xml.sax.handler.ContentHandler):
         elif sName == 'title':
             self._bInTitle = True
             return
+        elif sName == 'em':
+            oTag = self._oTextBuf.create_tag()
+            oTag.set_property('style', pango.STYLE_ITALIC)
 
         self._begin_span(oStyle, oTag)
 
@@ -482,6 +497,8 @@ class HtmlHandler(xml.sax.handler.ContentHandler):
             pass
         elif sName in ['h1', 'h2', 'h3', 'h4', 'h5', 'h6']:
             pass
+        elif sName == 'em':
+            pass
         else:
             warnings.warn("Unhandled element '%s'" % sName)
 
@@ -524,6 +541,8 @@ class HtmlHandler(xml.sax.handler.ContentHandler):
         elif sName in ['h1', 'h2', 'h3', 'h4', 'h5', 'h6']:
             if not self._oIter.starts_line():
                 self._insert_text("\n")
+        elif sName == 'em':
+            pass
         else:
             warnings.warn("Unhandled element '%s'" % sName)
         self._end_span()
@@ -548,6 +567,7 @@ class HTMLTextView(gtk.TextView):
         self.connect("enter-notify-event", self.__motion_notify_event)
         self.set_pixels_above_lines(3)
         self.set_pixels_below_lines(3)
+        self._dTargets = {}
 
     # pylint: disable-msg=W0613
     # oEvent needed by function signature
@@ -584,12 +604,20 @@ class HTMLTextView(gtk.TextView):
 
     # pylint: enable-msg=W0613
 
+    def set_text_pos(self, sTextAnchor):
+        """Set the position to the anchor sTextAnchor"""
+        if self._dTargets.has_key(sTextAnchor):
+            oMark = self._dTargets[sTextAnchor]
+            self.scroll_to_mark(oMark, 0, True)
+        # We just silently ignore invalid anchors
+
     def display_html(self, fHTMLInput):
         """Displa the HTML from the file-like object fHTMLInput"""
         oBuffer = self.get_buffer()
         oEndOfBuf = oBuffer.get_end_iter()
         oParser = xml.sax.make_parser()
-        oParser.setContentHandler(HtmlHandler(self, oEndOfBuf))
+        oHandler = HtmlHandler(self, oEndOfBuf)
+        oParser.setContentHandler(oHandler)
         # Don't try and follow external references
         oParser.setFeature(xml.sax.handler.feature_external_ges, False)
         oParser.parse(fHTMLInput)
@@ -597,12 +625,16 @@ class HTMLTextView(gtk.TextView):
         if not oEndOfBuf.starts_line():
             oBuffer.insert(oEndOfBuf, "\n")
 
+        # Need the anchor -> tag mappings
+        self._dTargets = oHandler.get_targets()
+
 if gobject.pygtk_version < (2, 8):
     gobject.type_register(HTMLTextView)
 
 class HTMLViewDialog(SutekhDialog):
-    # pylint: disable-msg=R0904
-    # gtk.Widget, so many public methods
+    # pylint: disable-msg=R0904, R0902
+    # R0904: gtk.Widget, so many public methods
+    # R0902: We need to keep a lot of state to handle navigation
     """Dialog Window that wraps the HTMLTextView
 
        Used to show HTML Manuals in Sutekh.
@@ -631,6 +663,7 @@ class HTMLViewDialog(SutekhDialog):
         self._oBackButton.set_sensitive(False)
         self._oForwardButton.set_sensitive(False)
         self._fCurrent = fInput
+        self._sTextAnchor = None
         self._aPastUrls = []
         self._aFutureUrls = []
         self.vbox.pack_start(oDirButtons, False, False)
@@ -651,6 +684,8 @@ class HTMLViewDialog(SutekhDialog):
         self._oHTMLTextView = HTMLTextView()
         self._oHTMLTextView.display_html(self._fCurrent)
         self._oHTMLTextView.connect('url-clicked', self._url_clicked)
+        if self._sTextAnchor:
+            self._oHTMLTextView.set_text_pos(self._sTextAnchor)
         self._oView.add(self._oHTMLTextView)
         if len(self._aPastUrls) > 0:
             self._oBackButton.set_sensitive(True)
@@ -662,37 +697,48 @@ class HTMLViewDialog(SutekhDialog):
             self._oForwardButton.set_sensitive(False)
         self.show_all()
 
-    def show_page(self, fInput):
+    def show_page(self, fInput, sPos=None):
         """Display the html file in fInput in the current window."""
-        self._aPastUrls.append(self._fCurrent)
+        self._aPastUrls.append((self._fCurrent, self._sTextAnchor))
         self._aFutureUrls = [] # Forward history is lost
-        self._fCurrent = fInput
+        if fInput:
+            self._fCurrent = fInput
+        self._sTextAnchor = sPos
         self._update_view()
 
     # pylint: disable-msg=W0613
     # oWidget, oType required by function signature
     def _url_clicked(self, oWidget, sUrl, oType):
         """Update the HTML widget with the new url"""
-        sResource = '/docs/%s' % sUrl
-        if resource_exists('sutekh', sResource):
-            fInput = resource_stream('sutekh', sResource)
+        aParts = sUrl.split('#')
+        sFile = aParts[0]
+        if len(aParts) > 1:
+            sPos = aParts[1] # Get anchor
         else:
-            sError = self._sError % { 'missing' : sUrl }
-            fInput = StringIO(sError)
-        self.show_page(fInput)
+            sPos = None
+        if sFile:
+            sResource = '/docs/%s' % sFile
+            if resource_exists('sutekh', sResource):
+                fInput = resource_stream('sutekh', sResource)
+            else:
+                sError = self._sError % { 'missing' : sUrl }
+                fInput = StringIO(sError)
+            self.show_page(fInput, sPos)
+        else:
+            self.show_page(None, sPos)
 
     def _go_back(self, oWidget):
         """Go backwards through the list of visited urls"""
         if len(self._aPastUrls) == 0:
             return
-        self._aFutureUrls.append(self._fCurrent)
-        self._fCurrent = self._aPastUrls.pop()
+        self._aFutureUrls.append((self._fCurrent, self._sTextAnchor))
+        self._fCurrent, self._sTextAnchor = self._aPastUrls.pop()
         self._update_view()
 
     def _go_forward(self, oWidget):
         """Go forward through the list of visited urls"""
         if len(self._aFutureUrls) == 0:
             return
-        self._aPastUrls.append(self._fCurrent)
-        self._fCurrent = self._aFutureUrls.pop()
+        self._aPastUrls.append((self._fCurrent, self._sTextAnchor))
+        self._fCurrent, self._sTextAnchor = self._aFutureUrls.pop()
         self._update_view()
