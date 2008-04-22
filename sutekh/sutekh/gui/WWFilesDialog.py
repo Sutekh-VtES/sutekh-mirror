@@ -35,8 +35,6 @@ class WWFilesDialog(SutekhDialog):
                 "White Wolf rulings file")
         self.oUseWwRulingsButton = gtk.CheckButton(label=
                 "Grab rulings from White Wolf website?")
-        self.oRulingsFileButton.set_current_folder(
-                self._oParent.get_working_dir())
 
         self.oBackupFileButton = gtk.CheckButton(label=
                 "Backup database contents to File?")
