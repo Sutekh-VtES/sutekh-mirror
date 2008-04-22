@@ -8,6 +8,7 @@
 """gtk.TreeView classes for displaying the card list."""
 
 import gtk, pango
+import unicodedata
 from sutekh.gui.FilterDialog import FilterDialog
 from sutekh.gui.CellRendererSutekhButton import CellRendererSutekhButton
 
@@ -247,6 +248,11 @@ class CardListView(gtk.TreeView, object):
 
     # Card name searching
 
+    @staticmethod
+    def to_ascii(s):
+        """Convert a card name or key to a canonical ASCII form."""
+        return unicodedata.normalize('NFKD',s).encode('ascii','ignore')
+
     # pylint: disable-msg=R0913, W0613
     # arguments as required by the function signature
     def compare(self, oModel, iColumn, sKey, oIter, oData):
@@ -257,6 +263,7 @@ class CardListView(gtk.TreeView, object):
 
         oPath = oModel.get_path(oIter)
         sKey = sKey.lower()
+        iLenKey = len(sKey)
 
         if oModel.iter_depth(oIter) == 0:
             if self.row_expanded(oPath):
@@ -266,17 +273,18 @@ class CardListView(gtk.TreeView, object):
                 # Need to check if any of the children match
                 for iChildCount in range(oModel.iter_n_children(oIter)):
                     oChildIter = oModel.iter_nth_child(oIter, iChildCount)
-                    sChildName = self._oModel.get_name_from_iter(
-                            oChildIter).lower()
-                    if sChildName.startswith(sKey):
+                    sChildName = self._oModel.get_name_from_iter(oChildIter)
+                    sChildName = sChildName[:iLenKey].lower()
+                    if self.to_ascii(sChildName).startswith(sKey) or\
+                        sChildName.startswith(sKey):
                         # Expand the row
                         self.expand_to_path(oPath)
                         # Bail out, as compare will find the match for us
                         return True
                 return True # No matches, so bail
 
-        sCardName = self._oModel.get_name_from_iter(oIter).lower()
-        if sCardName.startswith(sKey):
+        sCardName = self._oModel.get_name_from_iter(oIter)[:iLenKey].lower()
+        if self.to_ascii(sCardName).startswith(sKey) or sCardName.startswith(sKey):
             return False
 
         return True
