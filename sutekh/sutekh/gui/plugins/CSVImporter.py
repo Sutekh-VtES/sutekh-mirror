@@ -30,7 +30,7 @@ class CSVImporter(CardListPlugin):
         PhysicalCardSet: [4],
         PhysicalCard: [2],
     }
-    aModelsSupported = [AbstractCardSet, PhysicalCardSet, PhysicalCard]
+    aModelsSupported = ["MainWindow"]
 
     # pylint: disable-msg=W0142
     # **magic OK here

@@ -25,7 +25,7 @@ class ACSImporter(CardListPlugin):
        uri's, so decks published online can be easily imported.
        """
     dTableVersions = { AbstractCardSet: [2, 3]}
-    aModelsSupported = [AbstractCard]
+    aModelsSupported = ["MainWindow"]
 
     # pylint: disable-msg=W0142
     # ** magic OK
@@ -46,7 +46,7 @@ class ACSImporter(CardListPlugin):
         """Register with the 'Plugins' Menu"""
         if not self.check_versions() or not self.check_model_type():
             return None
-        oImport = gtk.MenuItem("Import Abstract Card Set")
+        oImport = gtk.MenuItem("Import ARDB or ELDB Abstract Card Set")
         oImport.connect("activate", self.make_dialog)
         return ('Plugins', oImport)
 
