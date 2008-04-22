@@ -26,6 +26,8 @@ class CSVParser(object):
     # (possibly to CardSetHolder)
     PCL, PCS, ACS = range(3)
 
+    # pylint: disable-msg=R0913
+    # we may need all these arguments for some files
     def __init__(self, iCardNameColumn, iCountColumn, iExpansionColumn=None,
                  bHasHeader=True, iFileType=PCL):
         self.oCS = CardSetHolder()
@@ -35,6 +37,8 @@ class CSVParser(object):
         self.bHasHeader = bHasHeader
         self.iFileType = iFileType
         assert (self.iFileType in [self.PCL, self.PCS, self.ACS])
+
+    # pylint: enable-msg=R0913
 
     def _commit_holder(self, oCardLookup):
         """Commit contents of the card set holder to
