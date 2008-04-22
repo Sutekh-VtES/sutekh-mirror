@@ -69,7 +69,7 @@ def copy_to_new_db(oOldConn, oTempConn, oWin, oProgressDialog, oLogHandler):
             return False
     return True
 
-def initialize_db():
+def initialize_db(oParent):
     """Initailize the database if it doesn't exist"""
     iRes = do_complaint_buttons("The database doesn't seem to be properly"
             " initialised",
@@ -80,7 +80,7 @@ def initialize_db():
     if iRes != 1:
         return False
     else:
-        aCLFile, oRulingsFile, sIgnore = _get_names(None)
+        aCLFile, oRulingsFile, sIgnore = _get_names(oParent)
         if aCLFile is not None:
             oProgressDialog = ProgressDialog()
             read_ww_lists_into_db(aCLFile, oRulingsFile, oProgressDialog,

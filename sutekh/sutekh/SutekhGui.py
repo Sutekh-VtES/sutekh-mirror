@@ -75,10 +75,13 @@ def main(aArgs):
     if oOpts.sql_debug:
         oConn.debug = True
 
+    # construct Window
+    oMultiPaneWindow = MultiPaneWindow()
+
     # Test on some tables where we specify the table name
     if not oConn.tableExists('abstract_map') or \
             not oConn.tableExists('physical_map'):
-        if not initialize_db():
+        if not initialize_db(oMultiPaneWindow):
             return 1
 
     aTables = [VersionTable] + aObjectList
@@ -94,7 +97,9 @@ def main(aArgs):
         aLowerTables, aHigherTables =  oVer.get_bad_tables(aTables, aVersions)
         if not do_db_upgrade(aLowerTables, aHigherTables):
             return 1
-    MultiPaneWindow(oConfig, oOpts.verbose).run()
+
+    oMultiPaneWindow.setup(oConfig, oOpts.verbose)
+    oMultiPaneWindow.run()
 
     # Save Config Changes
     oConfig.write()

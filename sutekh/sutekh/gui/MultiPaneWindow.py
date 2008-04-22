@@ -37,53 +37,73 @@ class MultiPaneWindow(gtk.Window):
     # pylint: disable-msg=R0904, R0902
     # R0904 - gtk.Widget, so many public methods
     # R0902 - we need to keep a lot of state, so many instance attributes
-    def __init__(self, oConfig, bVerbose=False):
+    def __init__(self):
         super(MultiPaneWindow, self).__init__(gtk.WINDOW_TOPLEVEL)
         self.set_name("Sutekh")
-        self._oFocussed = None
-        self._oConfig = oConfig
-        # Set Default Window Icon for all Windows
-        gtk.window_set_default_icon(SutekhIcon.SUTEKH_ICON)
-        # Create object cache
-        self.__oSutekhObjectCache = SutekhObjectCache()
         self.set_title("Sutekh")
-        self.connect("destroy", self.action_quit)
         self.set_border_width(2)
+
+        # make sure we can quit
+        self.connect("destroy", self.action_quit)
         # We can shrink the window quite small
         self.set_size_request(100, 100)
         # But we start at a reasonable size
         self.set_default_size(800, 600)
-        self.oVBox = gtk.VBox(False, 1)
+
+        # Set Default Window Icon for all Windows
+        gtk.window_set_default_icon(SutekhIcon.SUTEKH_ICON)
+
+        # common current directory for file dialogs
+        self._sWorkingDir = ''
+
+        # Need this so allocations happen properly in add_pane
+        self._iNumberOpenFrames = 0
+        self._iCount = 0
+
+        # Need to keep track of open card sets globally
+        self.dOpenFrames = {}
+
         self._sCardSelection = '' # copy + paste selection
         self._aHPanes = []
         self._aPlugins = []
         self.__dMenus = {}
+
+        self._oFocussed = None
+
+        # CardText frame is special, and there is only ever one of it
+        # but we will set it up later
+        self._bCardTextShown = False
+        self._oCardTextPane = None
+        self._oPCSListPane = None
+        self._oACSListPane = None
+        self._oHelpDlg = None
+
+    def setup(self, oConfig, bVerbose=False):
+        self._oConfig = oConfig
+        self._oCardLookup = GuiLookup(self._oConfig)
+
+        # Create object cache
+        self.__oSutekhObjectCache = SutekhObjectCache()
+
+        # Create card text pane
+        self._oCardTextPane = CardTextFrame(self)
+
+        # Load plugins
         self._oPluginManager = PluginManager()
         self._oPluginManager.load_plugins(bVerbose)
         for cPlugin in self._oPluginManager.get_card_list_plugins():
             # Find plugins that will work on the Main Window
             self._aPlugins.append(cPlugin(self, None,
                 "MainWindow"))
+
         self.__oMenu = MainMenu(self, oConfig)
-        self.oVBox.show()
+
+        self.oVBox = gtk.VBox(False, 1)
         self.oVBox.pack_start(self.__oMenu, False, False)
+        self.oVBox.show()
         self.add(self.oVBox)
-        # Need this so allocations happen properly in add_pane
-        self._iNumberOpenFrames = 0
-        self._iCount = 0
-        # Need to keep track of open card sets globally
-        self.dOpenFrames = {}
-        # CardText frame is special, and there is only ever one of it
-        self._bCardTextShown = False
-        self._oCardTextPane = CardTextFrame(self)
-        self._oPCSListPane = None
-        self._oACSListPane = None
-        self._oHelpDlg = None
-        self._sWorkingDir = ''
 
         self.show_all()
-
-        self._oCardLookup = GuiLookup(self._oConfig)
         self.restore_from_config()
 
     # pylint: disable-msg=W0212
