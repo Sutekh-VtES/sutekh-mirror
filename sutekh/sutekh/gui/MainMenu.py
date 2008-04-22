@@ -311,7 +311,7 @@ class MainMenu(gtk.MenuBar, object):
 
         self.add(oMenuItem)
 
-   # pylint: enable-msg=W0201
+    # pylint: enable-msg=W0201
 
     def del_pane_set_sensitive(self, bValue):
         """Set the 'pane can be removed' option to bValue"""
