@@ -29,7 +29,7 @@
   ; These files should be on the same directory as
   ; this script
 
-  !define GTK_INSTALLER "gtk-dev-2.10.11-win32-1.exe"
+  !define GTK_INSTALLER "gtk-dev-2.12.9-win32-2.exe"
   !define PYTHON_INSTALLER "python-2.5.msi"
   !define PYGTK_INSTALLER "pygtk-2.10.4-1.win32-py2.5.exe"
   !define PYCAIRO_INSTALLER "pycairo-1.2.6-1.win32-py2.5.exe"
