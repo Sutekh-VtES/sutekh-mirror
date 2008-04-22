@@ -256,6 +256,7 @@ class CardListView(gtk.TreeView, object):
             return True
 
         oPath = oModel.get_path(oIter)
+        sKey = sKey.lower()
 
         if oModel.iter_depth(oIter) == 0:
             if self.row_expanded(oPath):
@@ -267,7 +268,7 @@ class CardListView(gtk.TreeView, object):
                     oChildIter = oModel.iter_nth_child(oIter, iChildCount)
                     sChildName = self._oModel.get_name_from_iter(
                             oChildIter).lower()
-                    if sChildName.startswith(sKey.lower()):
+                    if sChildName.startswith(sKey):
                         # Expand the row
                         self.expand_to_path(oPath)
                         # Bail out, as compare will find the match for us
@@ -275,7 +276,7 @@ class CardListView(gtk.TreeView, object):
                 return True # No matches, so bail
 
         sCardName = self._oModel.get_name_from_iter(oIter).lower()
-        if sCardName.startswith(sKey.lower()):
+        if sCardName.startswith(sKey):
             return False
 
         return True
