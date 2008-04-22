@@ -45,6 +45,5 @@ For 0.6:
  * Improve Current Filter dialogs:
     - Provide better help 
  * Add decent keyboard shortcuts
- * Add icon to Windows installer and start menu shortcut. 
- * Improve editable card list visual hint on windows
+ * Improve editable card list visual hint on windows (red text also doesn't work, wtf).
  * Create built-in tutorial and help.
