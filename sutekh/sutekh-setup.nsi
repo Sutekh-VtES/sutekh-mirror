@@ -40,6 +40,7 @@
   !define FORMENCODE_EGG "FormEncode-1.0-py2.5.egg"
   !define SQLOBJECT_EGG "SQLObject-0.9.5-py2.5.egg"
   !define SUTEKH_EGG "Sutekh-0.6.0-py2.5.egg"
+  !define SUTEKH_ICON "sutekh.ico"
 
   !define COMBINED_LICENSE GPLv2.txt
 
@@ -59,6 +60,7 @@
 
 ; Other Stuff
 
+  Icon "${SUTEKH_ICON}"
   SetCompress off ; all the big stuff is already compressed 
 
 ; Installer Sections
@@ -165,6 +167,7 @@ Section "Sutekh"
   SetOutPath "$INSTDIR"
 
   File ${SUTEKH_EGG}
+  File ${SUTEKH_ICON}
 
   ExecWait '$INSTDIR\Python\Scripts\easy_install.exe --no-deps "$INSTDIR\${SUTEKH_EGG}"'
 
@@ -175,10 +178,13 @@ Section "Sutekh"
   #   parameters icon.file icon_index_number start_options 
   #   keyboard_shortcut description
   CreateShortCut "$SMPROGRAMS\Sutekh\SutekhGui ${SUTEKH_VERSION}.lnk" "$INSTDIR\Python\Scripts\SutekhGui.py" \
-     "" "$INSTDIR\Python\Scripts\SutekhGui.py" 2 SW_SHOWNORMAL \
+     "" "$INSTDIR\${SUTEKH_ICON}" "" SW_SHOWNORMAL \
      "" "Sutekh VtES Collection Manager"
 
 SectionEnd
+
+UninstallText "This will uninstall Sutekh ${SUTEKH_VERSION}."
+UninstallIcon "${SUTEKH_ICON}"
 
 Section "Uninstall"
   ; TODO: - Unistall Python
@@ -192,6 +198,9 @@ Section "Uninstall"
   ExecWait '"$INSTDIR\Python\Removepygtk.exe"'
   ExecWait '"$INSTDIR\Python\Removepycairo.exe"'
   ExecWait '"$INSTDIR\Python\Removepygobject.exe"'
+
+  ; Other things
+  Delete "$INSTDIR\${SUTEKH_ICON}"
 
   ; Final Clean up (no point doing them while the uninstall is incomplete)
   ; Delete "$INSTDIR\Uninstall.exe"
