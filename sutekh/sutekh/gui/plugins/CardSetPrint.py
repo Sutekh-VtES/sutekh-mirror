@@ -127,6 +127,8 @@ class CardSetPrint(CardListPlugin):
     def draw_page(self, oPrintOp, oContext, iPageNum):
         """Page drawing callback.
            """
+        # pylint: disable-msg=R0914
+        # We use lots of variables for clarity
         iStartPageLine, iEndPageLine = 0, 0
         aPageBreaks = self._aPageBreaks
         oLayout = self._oPangoLayout
@@ -161,12 +163,12 @@ class CardSetPrint(CardListPlugin):
                     fStartPos = fBaseLine
 
                 # line x co-ordinate / SCALE
-                fX = float(oLogicalRect[0]) / pango.SCALE
+                fXPos = float(oLogicalRect[0]) / pango.SCALE
                 # baseline - start pos - line y-co-ordinate / SCALE
-                fY = fBaseLine - fStartPos - float(oLogicalRect[1]) / \
+                fYPos = fBaseLine - fStartPos - float(oLogicalRect[1]) / \
                         pango.SCALE
 
-                oContext.move_to(fX, fY)
+                oContext.move_to(fXPos, fYPos)
                 oContext.layout_line_path(oLine)
                 oContext.stroke_preserve()
                 oContext.fill()

@@ -4,6 +4,8 @@
 # Copyright 2008 Simon Cross <hodgestar@gmail.com>,
 # GPL - see COPYING for details
 
+"""plugin for managing CSV file imports"""
+
 import gtk
 import csv
 import gobject
@@ -16,6 +18,13 @@ from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 from sutekh.gui.SutekhFileWidget import SutekhFileButton
 
 class CSVImporter(CardListPlugin):
+    """CSV Import plugin.
+
+       Allow the user to select the file, provide information about the
+       columns to use and so forth.
+       The list of the columns available is updated to reflect the
+       currently selected file.
+       """
     dTableVersions = {
         AbstractCardSet: [3],
         PhysicalCardSet: [4],
@@ -132,6 +141,7 @@ class CSVImporter(CardListPlugin):
         return self.oDlg
 
     def _selected_file_changed(self, oFileChooser):
+        """Update the column selection options for a new file."""
         sFile = oFileChooser.get_filename()
 
         # pylint: disable-msg=W0703
@@ -170,20 +180,26 @@ class CSVImporter(CardListPlugin):
         self.oDlg.set_response_sensitive(gtk.RESPONSE_OK, True)
         self._set_column_selectors(aColumns)
 
+    # pylint: disable-msg=R0201
+    # A method for consistency
     def _create_column_selector(self):
+        """Create a combo box from which a column can be selected."""
         oListStore = gtk.ListStore(gobject.TYPE_INT, gobject.TYPE_STRING)
         oComboBox = gtk.ComboBox(oListStore)
         oCell = gtk.CellRendererText()
         oComboBox.pack_start(oCell, True)
         oComboBox.add_attribute(oCell, 'text', 1)
         return oComboBox
+    # pylint: enable-msg=R0201
 
     def _clear_column_selectors(self):
+        """Clear the column selection lists."""
         # can't click ok until a valid CSV file is chosen
         self.oDlg.set_response_sensitive(gtk.RESPONSE_OK, False)
         self._set_column_selectors([(-1, '-')])
 
     def _set_column_selectors(self, aColumns):
+        """Set the contents of the column selection widgets."""
         for oCombo in (self.oCardNameCombo, self.oCountCombo,
                        self.oExpansionCombo):
             oListStore = oCombo.get_model()
@@ -196,6 +212,10 @@ class CSVImporter(CardListPlugin):
     # pylint: disable-msg=W0613
     # oWidget required by function signature
     def handle_response(self, oWidget, oResponse):
+        """Handle the user clicking OK on the dialog.
+
+           Do the actual import.
+           """
         if oResponse == gtk.RESPONSE_OK:
             for oBut in self._oFirstBut.get_group():
                 sTypeName = oBut.get_label()
