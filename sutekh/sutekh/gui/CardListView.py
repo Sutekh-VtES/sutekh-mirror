@@ -249,9 +249,9 @@ class CardListView(gtk.TreeView, object):
     # Card name searching
 
     @staticmethod
-    def to_ascii(s):
+    def to_ascii(sName):
         """Convert a card name or key to a canonical ASCII form."""
-        return unicodedata.normalize('NFKD',s).encode('ascii','ignore')
+        return unicodedata.normalize('NFKD', sName).encode('ascii','ignore')
 
     # pylint: disable-msg=R0913, W0613
     # arguments as required by the function signature
@@ -284,7 +284,8 @@ class CardListView(gtk.TreeView, object):
                 return True # No matches, so bail
 
         sCardName = self._oModel.get_name_from_iter(oIter)[:iLenKey].lower()
-        if self.to_ascii(sCardName).startswith(sKey) or sCardName.startswith(sKey):
+        if self.to_ascii(sCardName).startswith(sKey) or \
+                sCardName.startswith(sKey):
             return False
 
         return True
@@ -569,14 +570,17 @@ class EditableCardListView(CardListView):
 
     def set_color_edit_cue(self):
         """Set a visual cue that the card set is editable."""
+        def _compare_colors(oColor1, oColor2):
+            """Compare the RGB values for 2 gtk.gdk.Colors. Return True if
+               they're the same, false otherwise."""
+            return oColor1.to_string() == oColor2.to_string()
         oCurStyle = self.rc_get_style()
         # For card sets that start empty, oNumCell will be the wrong colour,
         # but, because of how CellRenderers interact with styles, oNameCell
         # will be the right one here
         self.oCellColor = self.oNameCell.get_property('foreground-gdk')
-        oCurColor = oCurStyle.fg[gtk.STATE_NORMAL]
+        oCurBackColor = oCurStyle.base[gtk.STATE_NORMAL]
         self.set_name('editable_view')
-        oParent = self.get_parent()
         oDefaultSutekhStyle = gtk.rc_get_style_by_paths(self.get_settings(),
                 '', self.class_path(), self)
         # We want the class style for this widget, ignoring set_name effects
@@ -584,10 +588,9 @@ class EditableCardListView(CardListView):
         if oSpecificStyle == oDefaultSutekhStyle or \
                 oDefaultSutekhStyle is None:
             # No specific style set
-            oMap = self.get_colormap()
             sColour = 'red'
-            if oMap.alloc_color(sColour).pixel == \
-                    oCurStyle.fg[gtk.STATE_NORMAL].pixel:
+            if _compare_colors(gtk.gdk.color_parse(sColour),
+                    oCurStyle.fg[gtk.STATE_NORMAL]):
                 sColour = 'green'
             sStyleInfo = """
             style "internal_sutekh_editstyle" {
@@ -601,16 +604,18 @@ class EditableCardListView(CardListView):
         oCurStyle = self.rc_get_style()
         # Force a hint on the number column as well
         oEditColor = oCurStyle.fg[gtk.STATE_NORMAL]
-        if oEditColor.pixel != oCurColor.pixel and oEditColor.pixel \
-                != self.oCellColor.pixel:
-            # Theme change is visible
-            self.oNumCell.set_property('foreground-gdk', oEditColor)
-        else:
+        oEditBackColor = oCurStyle.base[gtk.STATE_NORMAL]
+        if _compare_colors(oEditColor, self.oCellColor) and \
+                _compare_colors(oEditBackColor, oCurBackColor):
             # Theme change isn't visually distinct here, so we go
             # with red - this is safe, since CellRenderers aren't
-            # themed, so the default color will not be red 
+            # themed, so the default color will not be red
             # (famous last words)
+            # If the default background color is red, too bad
             self.oNumCell.set_property('foreground', 'red')
+        else:
+            # Theme change is visible
+            self.oNumCell.set_property('foreground-gdk', oEditColor)
 
 
     def set_color_normal(self):
