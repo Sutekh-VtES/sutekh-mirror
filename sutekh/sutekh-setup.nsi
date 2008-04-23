@@ -31,7 +31,7 @@
 
   !define GTK_INSTALLER "gtk-dev-2.12.9-win32-2.exe"
   !define PYTHON_INSTALLER "python-2.5.msi"
-  !define PYGTK_INSTALLER "pygtk-2.10.4-1.win32-py2.5.exe"
+  !define PYGTK_INSTALLER "pygtk-2.12.1-2.win32-py2.5.exe"
   !define PYCAIRO_INSTALLER "pycairo-1.2.6-1.win32-py2.5.exe"
   !define PYGOBJECT_INSTALLER "pygobject-2.12.3-1.win32-py2.5.exe"
   !define SETUPTOOLS_INSTALLER "setuptools-0.6c7.win32-py2.5.exe"
