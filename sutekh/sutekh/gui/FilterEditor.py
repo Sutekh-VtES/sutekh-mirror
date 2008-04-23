@@ -33,12 +33,18 @@ class FilterEditor(gtk.Frame):
         self.__oBoxModel = None
         self.__oBoxEditor = None
 
+        oNameLabel = gtk.Label("Filter name:")
+        self.__oNameEntry = gtk.Entry()
+        self.__oNameEntry.set_width_chars(30)
+
         oTextEditorButton = gtk.Button("Edit Query Text")
         oTextEditorButton.connect("clicked", self.__show_text_editor)
         oHelpButton = gtk.Button("Help")
         oHelpButton.connect("clicked", self.__show_help_dialog)
 
         oHBox = gtk.HBox(spacing=5)
+        oHBox.pack_start(oNameLabel, expand=False)
+        oHBox.pack_start(self.__oNameEntry, expand=False)
         oHBox.pack_end(oHelpButton, expand=False)
         oHBox.pack_end(oTextEditorButton, expand=False)
 
@@ -110,6 +116,18 @@ class FilterEditor(gtk.Frame):
     def get_current_text(self):
         """Get the current text in the editor."""
         return self.__oBoxModel.get_text()
+
+    def set_name(self, sName):
+        """Set the filter name."""
+        self.__oNameEntry.set_text(sName)
+
+    def get_name(self):
+        """Get the filter name."""
+        return self.__oNameEntry.get_text().strip()
+
+    def connect_name_changed(self,fCallback):
+        """Connect a callback to the name entry change signal."""
+        self.__oNameEntry.connect('changed',fCallback)
 
     # pylint: disable-msg=W0613
     # oTextEditorButton required by function signature
@@ -391,7 +409,7 @@ class FilterBoxModelEditor(gtk.VBox):
 
 
     def get_title(self):
-        """Get the corret title for this box"""
+        """Get the correct title for this box"""
         if self.__oBoxModel.sBoxType == FilterBoxModel.AND:
             return "All of ..."
         else:

@@ -13,15 +13,15 @@ from ConfigParser import RawConfigParser, NoOptionError
 class ConfigFileListener(object):
     """Listener object for config changes - inspired by CardListModeListener"""
 
-    def add_filter(self, sFilter, sKey):
+    def add_filter(self, sKey, sFilter):
         """New Filter added"""
         pass
 
-    def remove_filter(self, sFilter, sKey):
+    def remove_filter(self, sKey, sFilter):
         """Filter removed"""
         pass
 
-    def replace_filter(self, sOldFilter, sNewFilter, sKey):
+    def replace_filter(self, sKey, sOldFilter, sNewFilter):
         """A Filter has been replaced"""
         pass
 
@@ -88,7 +88,6 @@ class ConfigFile(object):
         """Test if a boolean key is set or not"""
         return self.__oConfig.get(sSection, sKey) == 'yes'
 
-
     def _set_bool_key(self, sSection, sKey, bValue):
         """Set a boolean key"""
         if bValue:
@@ -107,14 +106,6 @@ class ConfigFile(object):
     def write(self):
         """Write the config file to disk."""
         self.__oConfig.write(open(self.__sFileName, 'w'))
-
-    def get_filters(self):
-        """Get all the filters in the config file."""
-        return [x[1] for x in self.__oConfig.items(self.__sFiltersSection)]
-
-    def get_filter_keys(self):
-        """Get the keys used to reference the filters."""
-        return self.__oConfig.items(self.__sFiltersSection)
 
     def pre_save_clear(self):
         """Clear out old saved pos, before saving new stuff"""
@@ -224,37 +215,49 @@ class ConfigFile(object):
         sPos = '%d, %d' % (tSize[0], tSize[1])
         self.__oConfig.set(self.__sPrefsSection, 'window size', sPos)
 
-    def add_filter(self, sFilter):
-        """Add a filter to the file, handling automatic numbering"""
-        aOptions = self.__oConfig.options(self.__sFiltersSection)
-        self.__iNum += 1
-        sKey = 'user filter ' + str(self.__iNum)
-        while sKey in aOptions:
-            self.__iNum += 1
-            sKey = 'user filter ' + str(self.__iNum)
-        self.__oConfig.set(self.__sFiltersSection, sKey, sFilter)
-        for oListener in self.__dListeners:
-            oListener.add_filter(sFilter, sKey)
+    # filters section
 
-    def remove_filter(self, sFilter, sKey):
+    def get_filters(self):
+        """Get all the filters in the config file."""
+        return [x[1] for x in self.__oConfig.items(self.__sFiltersSection)]
+
+    def get_filter_keys(self):
+        """Get the keys used to reference the filters."""
+        return self.__oConfig.items(self.__sFiltersSection)
+
+    def get_filter(self, sKey):
+        """Return the filter associated with the given key or None."""
+        if sKey.lower() in self.__oConfig.options(self.__sFiltersSection):
+            return self.__oConfig.get(self.__sFiltersSection, sKey)
+        else:
+            return None
+
+    def add_filter(self, sKey, sFilter):
+        """Add a filter to the config file."""
+        if sKey.lower() not in self.__oConfig.options(self.__sFiltersSection):
+            self.__oConfig.set(self.__sFiltersSection, sKey, sFilter)
+            for oListener in self.__dListeners:
+                oListener.add_filter(sKey, sFilter)
+
+    def remove_filter(self, sKey, sFilter):
         """Remove a filter from the file"""
         # Make sure Filer and key match
-        if sKey in self.__oConfig.options(self.__sFiltersSection) and \
+        if sKey.lower() in self.__oConfig.options(self.__sFiltersSection) and \
                 sFilter == self.__oConfig.get(self.__sFiltersSection, sKey):
             self.__oConfig.remove_option(self.__sFiltersSection, sKey)
             for oListener in self.__dListeners:
-                oListener.remove_filter(sFilter, sKey)
-            return
+                oListener.remove_filter(sKey, sFilter)
 
-    def replace_filter(self, sOldFilter, sNewFilter, sKey):
+    def replace_filter(self, sKey, sOldFilter, sNewFilter):
         """Replace a filter in the file with new filter"""
-        if sKey in self.__oConfig.options(self.__sFiltersSection) and \
+        if sKey.lower() in self.__oConfig.options(self.__sFiltersSection) and \
                 sOldFilter == self.__oConfig.get(self.__sFiltersSection, sKey):
             self.__oConfig.remove_option(self.__sFiltersSection, sKey)
             self.__oConfig.set(self.__sFiltersSection, sKey, sNewFilter)
             for oListener in self.__dListeners:
-                oListener.replace_filter(sOldFilter, sNewFilter, sKey)
-            return
+                oListener.replace_filter(sKey, sOldFilter, sNewFilter)
+
+    # plugins section
 
     def get_plugin_key(self, sKey):
         """Get an option from the plugins section.
