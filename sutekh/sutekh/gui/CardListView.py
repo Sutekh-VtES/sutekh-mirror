@@ -574,11 +574,12 @@ class EditableCardListView(CardListView):
         # but, because of how CellRenderers interact with styles, oNameCell
         # will be the right one here
         self.oCellColor = self.oNameCell.get_property('foreground-gdk')
+        oCurColor = oCurStyle.fg[gtk.STATE_NORMAL]
         self.set_name('editable_view')
         oParent = self.get_parent()
         oDefaultSutekhStyle = gtk.rc_get_style_by_paths(self.get_settings(),
-                oParent.path()+'.', oParent.class_path(),
-                oParent)
+                '', self.class_path(), self)
+        # We want the class style for this widget, ignoring set_name effects
         oSpecificStyle = self.rc_get_style()
         if oSpecificStyle == oDefaultSutekhStyle or \
                 oDefaultSutekhStyle is None:
@@ -598,8 +599,19 @@ class EditableCardListView(CardListView):
             # Need to force re-assesment of styles
             self.set_name('editable_view')
         oCurStyle = self.rc_get_style()
-        self.oNumCell.set_property('foreground-gdk',
-                oCurStyle.fg[gtk.STATE_NORMAL])
+        # Force a hint on the number column as well
+        oEditColor = oCurStyle.fg[gtk.STATE_NORMAL]
+        if oEditColor.pixel != oCurColor.pixel and oEditColor.pixel \
+                != self.oCellColor.pixel:
+            # Theme change is visible
+            self.oNumCell.set_property('foreground-gdk', oEditColor)
+        else:
+            # Theme change isn't visually distinct here, so we go
+            # with red - this is safe, since CellRenderers aren't
+            # themed, so the default color will not be red 
+            # (famous last words)
+            self.oNumCell.set_property('foreground', 'red')
+
 
     def set_color_normal(self):
         """Unset the editable visual cue"""
