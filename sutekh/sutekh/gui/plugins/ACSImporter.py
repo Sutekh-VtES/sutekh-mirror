@@ -11,7 +11,7 @@ import gtk
 import urllib2
 from sutekh.io.ELDBHTMLParser import ELDBHTMLParser
 from sutekh.io.ARDBTextParser import ARDBTextParser
-from sutekh.core.SutekhObjects import AbstractCard, AbstractCardSet
+from sutekh.core.SutekhObjects import AbstractCardSet
 from sutekh.core.CardSetHolder import CardSetHolder
 from sutekh.core.CardLookup import LookupFailed
 from sutekh.gui.PluginManager import CardListPlugin
