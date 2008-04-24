@@ -71,20 +71,14 @@ class CardSetManagementFrame(BasicFrame):
         self.reload()
         oMbox.pack_start(self._oScrolledList, expand=True)
 
-        aDragTargets = [ ('STRING', 0, 0),
-                         ('text/plain', 0, 0) ]
-
+        # allow dragging card sets from the list
         self._oView.drag_source_set(
-                gtk.gdk.BUTTON1_MASK | gtk.gdk.BUTTON3_MASK, aDragTargets,
+                gtk.gdk.BUTTON1_MASK | gtk.gdk.BUTTON3_MASK, self.aDragTargets,
                 gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
 
         self._oView.connect('drag-data-get', self.drag_card_set)
-
-        self._oView.drag_dest_set(gtk.DEST_DEFAULT_ALL,
-                aDragTargets,
-                gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
-
-        self._oView.connect('drag-data-received', self.drag_drop_handler)
+        # setup default targets
+        self.set_drag_handler()
 
         self.add(oMbox)
         self.show_all()

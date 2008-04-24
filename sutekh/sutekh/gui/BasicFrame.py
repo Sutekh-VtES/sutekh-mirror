@@ -18,6 +18,10 @@ class BasicFrame(gtk.Frame, object):
        sawpping the frames. Also provides gtkrc handling for
        setting the active hint.
        """
+
+    aDragTargets = [ ('STRING', 0, 0),
+            ('text/plain', 0, 0) ]
+
     def __init__(self, oMainWindow):
         super(BasicFrame, self).__init__()
         self._oMainWindow = oMainWindow
@@ -35,26 +39,17 @@ class BasicFrame(gtk.Frame, object):
         self._oView.set_editable(False)
         self._oView.set_cursor_visible(False)
 
-        aDragTargets = [ ('STRING', 0, 0),
-                         ('text/plain', 0, 0) ]
-
         self._oTitle.drag_source_set(
-                gtk.gdk.BUTTON1_MASK | gtk.gdk.BUTTON3_MASK, aDragTargets,
+                gtk.gdk.BUTTON1_MASK | gtk.gdk.BUTTON3_MASK, self.aDragTargets,
                 gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
 
         self._oTitle.drag_dest_set(gtk.DEST_DEFAULT_ALL,
-                aDragTargets,
+                self.aDragTargets,
                 gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
 
         self._oTitle.connect('drag-data-received', self.drag_drop_handler)
         self._oTitle.connect('drag-data-get', self.create_drag_data)
-
-        self._oView.drag_dest_set(gtk.DEST_DEFAULT_ALL,
-                aDragTargets,
-                gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
-
-        self._oView.connect('drag-data-received', self.drag_drop_handler)
-        self._oView.connect('drag-motion', self.drag_motion)
+        self.set_drag_handler()
 
     # pylint: disable-msg=W0212
     # explicitly allow access to these values via thesep properties
@@ -71,6 +66,14 @@ class BasicFrame(gtk.Frame, object):
     def set_title(self, sTitle):
         """Set the title of the pane to sTitle"""
         self._oTitleLabel.set_text(sTitle)
+
+    def set_drag_handler(self):
+        """Setup the appropriate drag-n-drop handler for the view"""
+        self._oView.drag_dest_set(gtk.DEST_DEFAULT_ALL,
+                self.aDragTargets,
+                gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
+        self._oView.connect('drag-data-received', self.drag_drop_handler)
+        self._oView.connect('drag-motion', self.drag_motion)
 
     def set_focus_handler(self, oFunc):
         """Set the button press handler for the frame"""

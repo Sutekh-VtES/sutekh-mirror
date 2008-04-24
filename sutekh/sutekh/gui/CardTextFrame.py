@@ -21,9 +21,9 @@ class CardTextFrame(BasicFrame):
        """
     # pylint: disable-msg=R0904
     # gtk.Widget, so lots of public methods
-    def __init__(self, oMainWindow):
+    def __init__(self, oMainWindow, oIconManager):
         super(CardTextFrame, self).__init__(oMainWindow)
-        self._oView = CardTextView(oMainWindow)
+        self._oView = CardTextView(oMainWindow, oIconManager)
         self.add_parts()
         self.set_name('card text')
 
@@ -38,16 +38,7 @@ class CardTextFrame(BasicFrame):
 
         oBox.pack_start(AutoScrolledWindow(self._oView), True, True)
 
-
-        aDragTargets = [ ('STRING', 0, 0),
-                         ('text/plain', 0, 0) ]
-
-        self._oView.drag_dest_set(gtk.DEST_DEFAULT_ALL,
-                aDragTargets,
-                gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
-
-        self._oView.connect('drag-data-received', self.drag_drop_handler)
-        self._oView.connect('drag-motion', self.drag_motion)
+        self.set_drag_handler()
 
         self.add(oBox)
         self.show_all()

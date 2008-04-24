@@ -394,12 +394,15 @@ class CardListView(gtk.TreeView, object):
     # pylint: disable-msg=R0201
     # These need to be available to children as methods
 
-    def drag_card(self, oBtn, oContext, oSelection_data, oInfo, oTime):
+    def drag_card(self, oBtn, oContext, oSelectionData, oInfo, oTime):
         """Create string representation of the selection for drag-n-drop"""
         sSelectData = self.get_selection_as_string()
         if sSelectData == '':
+            # Pass over to the frame handler
+            self._oController.frame.create_drag_data(oBtn, oContext,
+                    oSelectionData, oInfo, oTime)
             return
-        oSelection_data.set(oSelection_data.target, 8, sSelectData)
+        oSelectionData.set(oSelectionData.target, 8, sSelectData)
 
     def split_selection_data(self, sSelectionData):
         """Helper function to subdivide selection string into bits again"""
