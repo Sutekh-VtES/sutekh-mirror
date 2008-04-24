@@ -269,7 +269,8 @@ def copy_old_discipline(oOrigConn, oTrans):
 def copy_clan(oOrigConn, oTrans):
     """Copy Clan, assuming database versions match"""
     for oObj in Clan.select(connection=oOrigConn):
-        oCopy = Clan(id=oObj.id, name=oObj.name, connection=oTrans)
+        oCopy = Clan(id=oObj.id, name=oObj.name, shortname=oObj.shortname,
+                connection=oTrans)
 
 def copy_old_clan(oOrigConn, oTrans):
     """Copy clan, upgrading as needed."""
