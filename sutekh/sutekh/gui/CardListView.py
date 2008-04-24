@@ -514,13 +514,17 @@ class EditableCardListView(CardListView):
 
     def load(self):
         """Called when the model needs to be reloaded."""
+        if self._oModel.get_card_iterator(None).count() == 0:
+            self._oModel.bEditable = True
+            # We do this before loading, so edit icons are correct
         self._oModel.load()
-        if self.get_parent(): # This isn't true when creating the card list
-            self.check_editable()
+        self.check_editable()
 
     def check_editable(self):
         """Set the card list to be editable if it's empty"""
-        if self._oModel.get_card_iterator(None).count() == 0:
+        if self.get_parent() and \
+                self._oModel.get_card_iterator(None).count() == 0:
+            # This isn't true when creating the view
             self._set_editable(True)
 
     # Used by card dragging handlers
