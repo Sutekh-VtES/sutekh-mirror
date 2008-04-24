@@ -71,7 +71,7 @@ class FilterEditor(gtk.Frame):
             return oNewAST
 
         dValues = self.get_current_values()
-        for sName, aVals in dValues.items():
+        for aVals in dValues.values():
             if not aVals:
                 do_complaint_error("Some filter values have not been " \
                                    "filled in so the selected filter " \
@@ -125,9 +125,9 @@ class FilterEditor(gtk.Frame):
         """Get the filter name."""
         return self.__oNameEntry.get_text().strip()
 
-    def connect_name_changed(self,fCallback):
+    def connect_name_changed(self, fCallback):
         """Connect a callback to the name entry change signal."""
-        self.__oNameEntry.connect('changed',fCallback)
+        self.__oNameEntry.connect('changed', fCallback)
 
     # pylint: disable-msg=W0613
     # oTextEditorButton required by function signature
@@ -239,6 +239,7 @@ class FilterBoxModel(list):
             self.oVarNameMaker.update(self.get_variable_names())
 
     def _init_binop(self, oBinOp):
+        """Create the correct box entries for a BinOpNode in the AST."""
         for oChild in [oBinOp.oLeft, oBinOp.oRight]:
             if type(oChild) is BinOpNode and oChild.oOp == oBinOp.oOp:
                 self._init_binop(oChild)
@@ -253,6 +254,7 @@ class FilterBoxModel(list):
                         (type(oChild), oChild))
 
     def set_boxtype(self, sBoxType, bNegate=False):
+        """Set the type for this filter box"""
         self.sBoxType = sBoxType
         self.bNegate = bNegate
 
@@ -329,6 +331,7 @@ class FilterBoxModel(list):
         self.remove(oChild)
 
 class FilterBoxModelEditor(gtk.VBox):
+    """Widget for editing a FilterBoxModel."""
     # pylint: disable-msg=R0904
     # gtk.Widget, so many public methods
     BOXTYPE = { # description -> (AND or OR, bNegate)
@@ -492,7 +495,11 @@ class FilterBoxModelEditor(gtk.VBox):
         self.__remove_filter_part(None, oEditor, oModel)
 
 class FilterBoxItem(object):
+    """A item in the filter editor.
 
+       This represents either a single FilterPart or a single
+       NOT(FilterPart) expression in the AST.
+       """
     NONE, ENTRY, LIST = range(3)
 
     def __init__(self, oAST):
@@ -530,6 +537,7 @@ class FilterBoxItem(object):
         assert self.iValueType is not None
 
     def get_variable_names(self):
+        """Get the variable name for this filter"""
         return set([self.sVariableName])
 
     def get_ast(self):
@@ -553,6 +561,8 @@ class FilterBoxItem(object):
         return sText
 
 class FilterBoxItemEditor(gtk.HBox):
+    """Widget for editing the entries for the filter associated with a
+       FilterBoxItem."""
     # pylint: disable-msg=R0904
     # gtk.Widget, so many public methods
     def __init__(self, oBoxItem, oParent):
@@ -592,6 +602,7 @@ class FilterBoxItemEditor(gtk.HBox):
                     self.__oBoxItem)
 
     def get_current_values(self):
+        """Get the current values set for this filter."""
         dVars = {}
         sName = self.__oBoxItem.sVariableName
         if self.__oBoxItem.aValues:
@@ -663,6 +674,7 @@ class FilterHelpBuffer(gtk.TextBuffer, object):
     # pylint: disable-msg=W0142
     # ** magic OK here
     def tag_text(self, *aArgs, **kwargs):
+        """Insert text into the buffer with tags."""
         self.insert_with_tags_by_name(self._oIter, *aArgs, **kwargs)
 
     # pylint: enable-msg=W0142

@@ -61,6 +61,9 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
                                             self.__oParser, self)
         self.__oFilterEditor.connect_name_changed(self.__name_changed)
 
+        self.__sOriginalName = None
+        self.__sOriginalAST = None
+
         # Add Listener, so we catch filter changes in future
         # (this is only to set save / delete / revert button sensitivity)
         oConfig.add_listener(self)
@@ -98,10 +101,12 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
         else:
             sName, oAST = "", None
 
-        self.__load_filter(sName,oAST)
+        self.__load_filter(sName, oAST)
 
         self.show_all()
 
+    # pylint: disable-msg=W0613
+    # oWidget required by function signature
     def __button_response(self, oWidget, iResponse):
         """Handle the button choices from the user.
 
@@ -141,10 +146,14 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
             self.__bWasCancelled = True
         self.hide()
 
+    # pylint: enable-msg=W0613
+
     def __run_load_dialog(self):
         """Display a dialog for loading a filter."""
         oLoadDialog = SutekhDialog("Load Filter", self.__oParent,
                             gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT)
+
+        oLoadDialog.set_keep_above(True)
 
         oLoadDialog.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
         oLoadDialog.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
@@ -154,12 +163,13 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
                                      gobject.TYPE_STRING)
 
         def iter_to_text(oLayout, oCell, oModel, oIter):
+            """Convert the model entry at oIter into the correct text"""
             bDefault = oModel.get_value(oIter, 0)
             sName = oModel.get_value(oIter, 1)
             if bDefault:
-                oCell.set_property('text',sName + " (built-in)")
+                oCell.set_property('text', sName + " (built-in)")
             else:
-                oCell.set_property('text',sName)
+                oCell.set_property('text', sName)
 
         for bDefault in (True, False):
             for sName, sFilter in self.__fetch_filters(bDefault):
@@ -172,6 +182,8 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
         oFilterSelector.pack_start(oCell, True)
         oFilterSelector.set_cell_data_func(oCell, iter_to_text)
 
+        # pylint: disable-msg=E1101
+        # vbox confuses pylint
         oLoadDialog.vbox.pack_start(oFilterSelector)
         oLoadDialog.show_all()
 
@@ -183,7 +195,7 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
                 sName = oFilterStore.get_value(oIter, 1)
                 sFilter = oFilterStore.get_value(oIter, 2)
                 oAST = self.__oParser.apply(sFilter)
-                self.__load_filter(sName,oAST)
+                self.__load_filter(sName, oAST)
         finally:
             oLoadDialog.destroy()
 
@@ -210,7 +222,7 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
                     aFilters.append((sName, sFilter))
             except:
                 # remove broken filter
-                aErrMsgs.append("%s (filter: '%s')" % (sName,sFilter))
+                aErrMsgs.append("%s (filter: '%s')" % (sName, sFilter))
                 if not bDefault:
                     self.__oConfig.remove_filter(sFilter, sName)
                 else:
@@ -223,7 +235,7 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
 
         return aFilters
 
-    def __load_filter(self,sName,oAST):
+    def __load_filter(self, sName, oAST):
         """Set the current filter to sName, oAST."""
         self.__sOriginalName = sName
         self.__sOriginalAST = oAST
@@ -276,7 +288,7 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
         if sConfigFilter is not None:
             self.__oConfig.remove_filter(sName, sConfigFilter)
 
-        self.__load_filter("",None)
+        self.__load_filter("", None)
 
     def __update_sensitivity(self):
         """Update which responses are available."""
@@ -298,7 +310,7 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
         else:
             self.set_response_sensitive(self.RESPONSE_DELETE, False)
 
-    def __name_changed(self,oNameEntry):
+    def __name_changed(self, oNameEntry):
         """Callback for connecting to filter editor name change events."""
         self.__update_sensitivity()
 
@@ -320,7 +332,8 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
         return self.__bWasCancelled
 
     # Config File Listener methods
-
+    # pylint: disable-msg=W0613
+    # Various arguments required by the function signature
     def replace_filter(self, sId, sOldFilter, sNewFilter):
         """Handle a filter in the config file being replaced."""
         self.__update_sensitivity()
