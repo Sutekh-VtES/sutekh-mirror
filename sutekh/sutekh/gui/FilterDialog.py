@@ -27,8 +27,9 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
        This also listens to Config File events, so the list of available
        filters remains syncronised across the different views.
        """
-    # pylint: disable-msg=R0904
-    # gtk.Widget, so many public methods
+    # pylint: disable-msg=R0904, R0902
+    # R0904 - gtk.Widget, so many public methods
+    # R0902 - we keep a lot of internal state, so many instance variables
 
     RESPONSE_CLEAR = 1
     RESPONSE_REVERT = 2
@@ -215,12 +216,14 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
         aErrMsgs = []
 
         for sName, sFilter in oFilterIter:
+            # pylint: disable-msg=W0703
+            # we do want to catch all exceptions here
             try:
                 oAST = self.__oParser.apply(sFilter)
                 if oAST.get_filter_expression() is None or \
                     self.__sFilterType in oAST.get_type():
                     aFilters.append((sName, sFilter))
-            except:
+            except Exception:
                 # remove broken filter
                 aErrMsgs.append("%s (filter: '%s')" % (sName, sFilter))
                 if not bDefault:
