@@ -391,25 +391,28 @@ class FilterBoxModelEditor(gtk.VBox):
         oAddButton = gtk.Button("+")
         oHBox.pack_start(oAddButton, expand=False)
 
-        oTypeStore = gtk.ListStore(gobject.TYPE_STRING, gobject.TYPE_STRING,)
-        oTypeSelector = gtk.ComboBox(oTypeStore)
+        oTypeSelector = self._make_type_list()
         oHBox.pack_start(oTypeSelector, expand=False)
 
+        oAddButton.connect('clicked', self.__add_filter_part, oTypeSelector)
+
+    def _make_type_list(self):
+        """Create a combo box to select the filter type."""
+        oTypeStore = gtk.ListStore(gobject.TYPE_STRING, gobject.TYPE_STRING,)
+        oTypeSelector = gtk.ComboBox(oTypeStore)
         oCell = gtk.CellRendererText()
         oTypeSelector.pack_start(oCell, True)
         oTypeSelector.add_attribute(oCell, 'text', 0)
-
-        oAddButton.connect('clicked', self.__add_filter_part, oTypeSelector)
 
         for oFilterType in self.__oBoxModel.get_filter_types():
             oIter = oTypeStore.append(None)
             oTypeStore.set(oIter, 0, oFilterType.description,
                                   1, oFilterType.keyword)
-
         oIter = oTypeStore.append(None)
         oTypeStore.set(oIter, 0, "Sub-Filter",
                               1, None)
 
+        return oTypeSelector
 
     def get_title(self):
         """Get the correct title for this box"""
