@@ -17,7 +17,7 @@ from sutekh.gui.PropDialog import PropDialog
 from sutekh.io.XmlFileHandling import AbstractCardSetXmlFile, \
         PhysicalCardSetXmlFile
 from sutekh.gui.EditAnnotationsDialog import EditAnnotationsDialog
-from sutekh.gui.PaneMenu import PaneMenu
+from sutekh.gui.PaneMenu import EditableCardListMenu
 
 def _type_to_string(cSetType):
     """Convert the class SetType to a string for the menus"""
@@ -26,7 +26,7 @@ def _type_to_string(cSetType):
     else:
         return 'Physical'
 
-class CardSetMenu(PaneMenu, object):
+class CardSetMenu(EditableCardListMenu):
     # pylint: disable-msg=R0904
     # gtk.Widget, so many public methods
     """Card Set Menu.
@@ -39,21 +39,20 @@ class CardSetMenu(PaneMenu, object):
     # R0913 - we need all these arguments
     # R0902 - we are keeping a lot of state, so many instance variables
     def __init__(self, oFrame, oController, oWindow, oView, sName, cType):
-        super(CardSetMenu, self).__init__(oFrame, oWindow)
-        self.__oController = oController
+        super(CardSetMenu, self).__init__(oFrame, oWindow, oController)
         self.__oView = oView
         self.sSetName = sName
         self.__cSetType = cType
         self.__create_card_set_menu()
-        self.__create_edit_menu()
+        self.create_edit_menu()
         self.create_filter_menu()
-        self.create_plugins_menu()
+        self.create_plugins_menu('_Plugins', self._oFrame)
 
     # pylint: disable-msg=W0201
     # these methods are called from __init__, so it's OK
     def __create_card_set_menu(self):
         """Create the Actions menu for Card Sets."""
-        oMenu = self.create_submenu('_Actions')
+        oMenu = self.create_submenu(self, '_Actions')
         self.__oProperties = self.create_menu_item(
                 "Edit Card Set (%s) properties" % self.sSetName, oMenu,
                 self._edit_properties)
@@ -64,12 +63,8 @@ class CardSetMenu(PaneMenu, object):
                 "Export Card Set (%s) to File" % self.sSetName, oMenu,
                 self._do_export)
 
-        self.create_menu_item("Expand All", oMenu, self._expand_all,
-                '<Ctrl>plus')
-        self.create_menu_item("Collapse All", oMenu, self._collapse_all,
-                '<Ctrl>minus')
-        self.create_menu_item("Remove This Pane", oMenu,
-                self._oFrame.close_menu_item)
+        self.add_common_actions(oMenu)
+
         # Possible enhancement, make card set names italic.
         # Looks like it requires playing with menu_item attributes
         # (or maybe gtk.Action)
@@ -86,18 +81,6 @@ class CardSetMenu(PaneMenu, object):
                 " properties" % self.sSetName)
         self.__oExport.get_child().set_label("Export Card Set (%s) to File" %
                 self.sSetName)
-
-    def __create_edit_menu(self):
-        """Create the 'Edit' menu, and populate it."""
-        oMenu = self.create_submenu("_Edit")
-        oEditable = self.create_check_menu_item('Card Set is Editable', oMenu,
-                self._toggle_editable, False, '<Ctrl>e')
-        self.__oController.view.set_edit_menu_item(oEditable)
-        self.create_menu_item('Copy selection', oMenu, self._copy_selection,
-                '<Ctrl>c')
-        self.create_menu_item('Paste', oMenu, self._paste_selection, '<Ctrl>v')
-        self.create_menu_item('Delete selection', oMenu, self._del_selection,
-                'Delete')
 
     # pylint: enable-msg=W0201
 
@@ -158,42 +141,9 @@ class CardSetMenu(PaneMenu, object):
         """Delete the card set."""
         self._oFrame.delete_card_set()
 
-    def toggle_apply_filter(self, oWidget):
-        """Toggle the filter applied state."""
-        self.__oController.view.run_filter(oWidget.active)
-
     def _toggle_expansion(self, oWidget):
         """Toggle whether Expansion information is shown."""
-        self.__oController.model.bExpansions = oWidget.active
-        self.__oController.view.reload_keep_expanded()
-
-    def _toggle_editable(self, oWidget):
-        """Toggle the editable state of the card set."""
-        if self.__oController.model.bEditable != oWidget.active:
-            self.__oController.view.toggle_editable(oWidget.active)
-
-    def set_active_filter(self, oWidget):
-        """Set the current filter for the card set."""
-        self.__oController.view.get_filter(self)
-
-    def _expand_all(self, oWidget):
-        """Expand all the rows in the card set."""
-        self.__oController.view.expand_all()
-
-    def _collapse_all(self, oWidget):
-        """Collapse all the rows in the card set."""
-        self.__oController.view.collapse_all()
-
-    def _del_selection(self, oWidget):
-        """Delete the current selection"""
-        self.__oController.view.del_selection()
-
-    def _copy_selection(self, oWidget):
-        """Copy the current selection to the application clipboard."""
-        self.__oController.view.copy_selection()
-
-    def _paste_selection(self, oWidget):
-        """Try to paste the current clipbaord contents"""
-        self.__oController.view.do_paste()
+        self._oController.model.bExpansions = oWidget.active
+        self._oController.view.reload_keep_expanded()
 
     # pylint: enable-msg=W0613
