@@ -87,8 +87,13 @@ class PhysicalCardSetFromAbstract(CardListPlugin):
             oACard = IAbstractCard(oCard)
             # pylint: disable-msg=E1101
             # pylint misses AbstractCard methods (id)
-            oPhysCards = PhysicalCard.selectBy(abstractCardID=oACard.id)
-            for oPC in oPhysCards:
+            oPhysCards = PhysicalCard.selectBy(
+                    abstractCardID=oACard.id).orderBy('id')
+            # TODO: duplicate logic in PhysicalCardController, so we
+            # have completely consistent behaviour
+            # We reverse the list, so newest cards are considered first
+            # shoudl do the right thing when we've added cards to the list.
+            for oPC in oPhysCards.reversed():
                 if oPC not in oNewPCS.cards:
                     # pylint: disable-msg=E1101
                     # pylint misses PhysicalCardSet methods
