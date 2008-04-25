@@ -199,58 +199,44 @@ class ReplacementTreeView(gtk.TreeView):
             oColumn1.set_fixed_width(40)
             self.append_column(oColumn1)
 
-        oCell2 = gtk.CellRendererText()
-        oCell2.set_property('style', pango.STYLE_ITALIC)
 
-        oCell3 = gtk.CellRendererText()
-        oCell3.set_property('style', pango.STYLE_ITALIC)
+        self._create_text_column('Missing Card', 1)
+        self._create_text_column('Replace Card', 2)
 
-        oCell4 = CellRendererSutekhButton(bShowIcon=True)
-        oCell4.load_icon(gtk.STOCK_OK, self) # use selected card
+        self._create_button_column(gtk.STOCK_OK, 'Set',
+                'Use the selected card',
+                self._set_to_selection) # use selected card
+        self._create_button_column(gtk.STOCK_REMOVE, 'Ignore',
+                'Ignore the current card',
+                self._set_ignore) # ignore current card
+        self._create_button_column(gtk.STOCK_FIND, 'Filter',
+                'Filter on best guess',
+                self._set_filter) # filter out best guesses
 
-        oCell5 = CellRendererSutekhButton(bShowIcon=True)
-        oCell5.load_icon(gtk.STOCK_REMOVE, self) # ignore current card
+    # utility methods to simplify column creation
+    def _create_button_column(self, oIcon, sLabel, sToolTip, fClicked):
+        """Create a column with a button, usin oIcon and the function
+           fClicked."""
+        oCell = CellRendererSutekhButton(bShowIcon=True)
+        oCell.load_icon(oIcon, self) # filter out best guesses
+        oLabel = gtk.Label(sLabel)
+        oLabel.set_tooltip_text(sToolTip)
+        oColumn = gtk.TreeViewColumn("", oCell)
+        oColumn.set_widget(oLabel)
+        oColumn.set_fixed_width(22)
+        oColumn.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
+        self.append_column(oColumn)
+        oCell.connect('clicked', fClicked)
 
-        oCell6 = CellRendererSutekhButton(bShowIcon=True)
-        oCell6.load_icon(gtk.STOCK_FIND, self) # filter out best guesses
+    def _create_text_item(self, sLabel, iColumn):
+        """Crete a text column, using iColumn from the model"""
+        oCell = gtk.CellRendererText()
+        oCell.set_property('style', pango.STYLE_ITALIC)
+        oColumn = gtk.TreeViewColumn(sLabel, oCell, text=iColumn)
+        oColumn.set_expand(True)
+        oColumn.set_sort_column_id(iColumn)
+        self.append_column(oColumn)
 
-        oColumn2 = gtk.TreeViewColumn("Missing Card", oCell2, text=1)
-        oColumn2.set_expand(True)
-        oColumn2.set_sort_column_id(1)
-        self.append_column(oColumn2)
-
-        oColumn3 = gtk.TreeViewColumn("Replace With", oCell3, text=2)
-        oColumn3.set_expand(True)
-        oColumn3.set_sort_column_id(2)
-        self.append_column(oColumn3)
-
-        oLabel4 = gtk.Label("Set")
-        oLabel4.set_tooltip_text("Use the selected card")
-        oColumn4 = gtk.TreeViewColumn("", oCell4)
-        oColumn4.set_widget(oLabel4)
-        oColumn4.set_fixed_width(22)
-        oColumn4.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
-        self.append_column(oColumn4)
-
-        oLabel5 = gtk.Label("Ignore")
-        oLabel5.set_tooltip_text("Ignore the current card")
-        oColumn5 = gtk.TreeViewColumn("", oCell5)
-        oColumn5.set_widget(oLabel5)
-        oColumn5.set_fixed_width(22)
-        oColumn5.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
-        self.append_column(oColumn5)
-
-        oLabel6 = gtk.Label("Filter")
-        oLabel6.set_tooltip_text("Filter on best guess")
-        oColumn6 = gtk.TreeViewColumn("", oCell6)
-        oColumn6.set_widget(oLabel6)
-        oColumn6.set_fixed_width(22)
-        oColumn6.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
-        self.append_column(oColumn6)
-
-        oCell4.connect('clicked', self._set_to_selection)
-        oCell5.connect('clicked', self._set_ignore)
-        oCell6.connect('clicked', self._set_filter)
 
     # pylint: disable-msg=W0613
     # oCell required by function signature
