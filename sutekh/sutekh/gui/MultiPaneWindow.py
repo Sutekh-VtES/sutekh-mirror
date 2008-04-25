@@ -31,6 +31,7 @@ from sutekh.gui.CardSetManagementFrame import PhysicalCardSetListFrame, \
 from sutekh.gui.PluginManager import PluginManager
 from sutekh.gui import SutekhIcon
 from sutekh.gui.HTMLTextView import HTMLViewDialog
+from sutekh.gui.IconManager import IconManager
 
 class MultiPaneWindow(gtk.Window):
     """Window that has a configurable number of panes."""
@@ -77,6 +78,8 @@ class MultiPaneWindow(gtk.Window):
         self._oPCSListPane = None
         self._oACSListPane = None
         self._oHelpDlg = None
+        # Global icon manager
+        self._oIconManager = None
 
     # pylint: disable-msg=W0201
     # We define attributes here, since this is called after database checks
@@ -89,8 +92,10 @@ class MultiPaneWindow(gtk.Window):
         # Create object cache
         self.__oSutekhObjectCache = SutekhObjectCache()
 
+        # Create global icon manager
+        self._oIconManager = IconManager(oConfig)
         # Create card text pane
-        self._oCardTextPane = CardTextFrame(self)
+        self._oCardTextPane = CardTextFrame(self, self._oIconManager)
 
         # Load plugins
         self._oPluginManager = PluginManager()
@@ -127,6 +132,8 @@ class MultiPaneWindow(gtk.Window):
     focussed_pane = property(fget=lambda self: self._oFocussed,
             doc="The currently focussed pane.")
     mainwindow = property(fget=lambda self: self,
+            doc="Return reference to the window")
+    icon_manager = property(fget=lambda self: self._oIconManager,
             doc="Return reference to the window")
 
     # pylint: enable-msg=W0212

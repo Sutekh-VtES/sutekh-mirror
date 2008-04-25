@@ -23,6 +23,9 @@ class CardTextBuffer(gtk.TextBuffer, object):
         # See http://www.pygtk.org/pygtk2reference/class-gtktexttag.html
         # for some possible properties
 
+        oIconTabs = pango.TabArray(1, True)
+        oIconTabs.set_tab(0, pango.TAB_LEFT, 15) # Icons are scaled to 15'ish
+
         self.create_tag("label", underline=pango.UNDERLINE_SINGLE)
 
         self.create_tag("card_name", weight=pango.WEIGHT_BOLD)
@@ -32,15 +35,22 @@ class CardTextBuffer(gtk.TextBuffer, object):
         self.create_tag("group", style=pango.STYLE_ITALIC)
         self.create_tag("level", style=pango.STYLE_ITALIC)
         self.create_tag("burn_option", style=pango.STYLE_ITALIC)
-        self.create_tag("card_type", style=pango.STYLE_ITALIC, left_margin=15)
-        self.create_tag("clan", style=pango.STYLE_ITALIC)
+        self.create_tag("card_type", style=pango.STYLE_ITALIC, left_margin=15,
+                tabs=oIconTabs)
+        self.create_tag("clan", style=pango.STYLE_ITALIC, left_margin=15,
+                tabs=oIconTabs)
         self.create_tag("sect", style=pango.STYLE_ITALIC)
         self.create_tag("title", style=pango.STYLE_ITALIC)
-        self.create_tag("creed", style=pango.STYLE_ITALIC)
-        self.create_tag("discipline", style=pango.STYLE_ITALIC, left_margin=15)
-        self.create_tag("virtue", style=pango.STYLE_ITALIC, left_margin=15)
-        self.create_tag("expansion", style=pango.STYLE_ITALIC, left_margin=15)
-        self.create_tag("ruling", left_margin=15)
+        self.create_tag("creed", style=pango.STYLE_ITALIC, left_margin=15,
+                tabs=oIconTabs)
+        self.create_tag("discipline", style=pango.STYLE_ITALIC, left_margin=15,
+                tabs=oIconTabs)
+        self.create_tag("virtue", style=pango.STYLE_ITALIC, left_margin=15,
+                tabs=oIconTabs)
+        self.create_tag("expansion", style=pango.STYLE_ITALIC, left_margin=15,
+                tabs=oIconTabs)
+        self.create_tag("ruling", left_margin=15,
+                tabs=oIconTabs)
         self.create_tag("card_text", style=pango.STYLE_ITALIC)
         self._oIter = None
 
@@ -52,20 +62,48 @@ class CardTextBuffer(gtk.TextBuffer, object):
 
     # pylint: enable-msg=W0142
 
-    def labelled_value(self, sLabel, sValue, sTag):
+    def labelled_value(self, sLabel, sValue, sTag, oIcon=None):
         """Add a single value to the buffer."""
         self.tag_text("\n")
         self.tag_text(sLabel, "label")
         self.tag_text(": ")
+        if oIcon:
+            self.insert_pixbuf(self._oIter, oIcon)
+            self.insert(self._oIter, ' ')
         self.tag_text(sValue, sTag)
 
-    def labelled_list(self, sLabel, aValues, sTag):
+    def labelled_list(self, sLabel, aValues, sTag, dIcons=None):
         """Add a list of values to the Buffer"""
+        def _insert_line(sText, sTag, oPixbuf):
+            """Insert a line, prefixed by oPixbuf."""
+            if oPixbuf:
+                self.tag_text('\n', sTag)
+                # This is a bit complicated - we need to insert the pixbuf
+                # into a region already tagged with the correct tag for
+                # the margins + tabs to work. We use a text mark to note
+                # where to insert the pixbuf, insert the text, then
+                # we backtrack to insert the pixbuf.
+                oMark1 = self.create_mark(None, self._oIter, True)
+                self.tag_text('\t%s' % sText, sTag)
+                oMarkEnd = self.create_mark(None, self._oIter, True)
+                self.insert_pixbuf(self.get_iter_at_mark(oMark1), oPixbuf)
+                # We've invalidated self._oIter, so restore it
+                self._oIter = self.get_iter_at_mark(oMarkEnd)
+            else:
+                self.tag_text('\n*\t%s' % sText, sTag)
         self.tag_text("\n")
         self.tag_text(sLabel, "label")
         self.tag_text(":")
         for sValue in aValues:
-            self.tag_text("\n* %s" % sValue, sTag)
+            if dIcons:
+                if dIcons.has_key(sValue) and dIcons[sValue]:
+                    _insert_line(sValue, sTag, dIcons[sValue])
+                elif dIcons.has_key(sValue.lower()) and dIcons[sValue.lower()]:
+                    _insert_line(sValue, sTag, dIcons[sValue.lower()])
+                else:
+                    _insert_line(sValue, sTag, None)
+            else:
+                _insert_line(sValue, sTag, None)
 
     def labelled_compact_list(self, sLabel, aValues, sTag):
         """More compact list for clans, etc."""
@@ -86,6 +124,7 @@ class CardTextBuffer(gtk.TextBuffer, object):
         """Reset the iterator to point at the start of the buffer."""
         self._oIter = self.get_iter_at_offset(0)
 
+
 class CardTextView(gtk.TextView, object):
     """TextView widget which holds the TextBuffer.
 
@@ -94,7 +133,7 @@ class CardTextView(gtk.TextView, object):
        """
     # pylint: disable-msg=R0904
     # gtk.Widget, so many public methods
-    def __init__(self, oController):
+    def __init__(self, oController, oIconManager):
         super(CardTextView, self).__init__()
         # Can be styled as frame_name.view
         self.__oController = oController
@@ -104,6 +143,7 @@ class CardTextView(gtk.TextView, object):
         self.set_editable(False)
         self.set_cursor_visible(False)
         self.set_wrap_mode(gtk.WRAP_WORD)
+        self._oIconManager = oIconManager
 
     def set_card_text(self, oCard):
         """Add the text for oCard to the TextView."""
@@ -111,8 +151,9 @@ class CardTextView(gtk.TextView, object):
         self.__oBuf.delete(oStart, oEnd)
         self.print_card_to_buffer(oCard)
 
-    # pylint: disable-msg=R0912
+    # pylint: disable-msg=R0912, R0915
     # We need to consider all cases for oCard, so need the branches
+    # and statements
     def print_card_to_buffer(self, oCard):
         """Format the text for the card and add it to the buffer."""
         self.__oBuf.reset_iter()
@@ -137,24 +178,31 @@ class CardTextView(gtk.TextView, object):
             self.__oBuf.labelled_value("Group", str(oCard.group), "group")
 
         if not oCard.level is None:
-            self.__oBuf.labelled_value("Level", str(oCard.level), "level")
+            oIcon = self._oIconManager.get_icon_by_name('advanced')
+            self.__oBuf.labelled_value("Level", str(oCard.level), "level",
+                    oIcon)
 
         if len(oCard.cardtype) == 0:
             aTypes = ["Unknown"]
         else:
             aTypes = [oT.name for oT in oCard.cardtype]
-        self.__oBuf.labelled_list("Card Type", aTypes, "card_type")
+        dIcons = self._oIconManager.get_icon_list(oCard.cardtype)
+        self.__oBuf.labelled_list("Card Type", aTypes, "card_type", dIcons)
 
         if oCard.burnoption:
-            self.__oBuf.labelled_value("Burn Option:", "Yes", "burn_option")
+            oIcon = self._oIconManager.get_icon_by_name('burn option')
+            self.__oBuf.labelled_value("Burn Option:", "Yes", "burn_option",
+                    oIcon)
 
         if not len(oCard.clan) == 0:
-            self.__oBuf.labelled_compact_list("Clan",
-                    [oC.name for oC in oCard.clan], "clan")
+            dIcons = self._oIconManager.get_icon_list(oCard.clan)
+            self.__oBuf.labelled_list("Clan",
+                    [oC.name for oC in oCard.clan], "clan", dIcons)
 
         if not len(oCard.creed) == 0:
-            self.__oBuf.labelled_compact_list("Creed",
-                    [oC.name for oC in oCard.creed], "creed")
+            dIcons = self._oIconManager.get_icon_list(oCard.creed)
+            self.__oBuf.labelled_list("Creed",
+                    [oC.name for oC in oCard.creed], "creed", dIcons)
 
         if not len(oCard.sect) == 0:
             self.__oBuf.labelled_compact_list("Sect",
@@ -166,15 +214,18 @@ class CardTextView(gtk.TextView, object):
 
         if not len(oCard.discipline) == 0:
             aDis = []
-            aDis.extend([oP.discipline.name.upper() for oP in oCard.discipline
-                if oP.level == 'superior'])
-            aDis.extend([oP.discipline.name for oP in oCard.discipline if
-                oP.level != 'superior'])
-            self.__oBuf.labelled_list("Disciplines", aDis, "discipline")
+            aDis.extend(sorted([oP.discipline.name.upper() for oP in
+                oCard.discipline if oP.level == 'superior']))
+            aDis.extend(sorted([oP.discipline.name for oP in oCard.discipline
+                if oP.level != 'superior']))
+            dIcons = self._oIconManager.get_icon_list(oCard.discipline)
+            self.__oBuf.labelled_list("Disciplines", aDis, "discipline",
+                    dIcons)
 
         if not len(oCard.virtue) == 0:
+            dIcons = self._oIconManager.get_icon_list(oCard.virtue)
             self.__oBuf.labelled_list("Virtue",
-                    [oC.name for oC in oCard.virtue], "virtue")
+                    [oC.name for oC in oCard.virtue], "virtue", dIcons)
 
         if not len(oCard.rarity) == 0:
             dExp = {}

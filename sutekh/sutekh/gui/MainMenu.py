@@ -67,7 +67,9 @@ class MainMenu(SutekhMenu):
             # Need to have memory connection available for this
             self.create_menu_item("Import new White Wolf Card List and"
                     " rulings", oMenu, self.do_import_new_card_list)
-            oMenu.add(gtk.SeparatorMenuItem())
+        self.create_menu_item('Download VTES icons', oMenu,
+                self.download_icons)
+        oMenu.add(gtk.SeparatorMenuItem())
 
         oPrefsMenu = self.create_submenu(oMenu, 'Preferences')
 
@@ -366,3 +368,7 @@ class MainMenu(SutekhMenu):
     def do_restore(self, oMenuWidget):
         """Restore the pane layout from the config file."""
         self._oMainWindow.restore_from_config()
+
+    def download_icons(self, oMenuWidget):
+        """Call on the icon manager to download the icons."""
+        self._oMainWindow.icon_manager.download_icons()
