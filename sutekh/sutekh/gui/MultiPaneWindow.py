@@ -78,7 +78,11 @@ class MultiPaneWindow(gtk.Window):
         self._oACSListPane = None
         self._oHelpDlg = None
 
+    # pylint: disable-msg=W0201
+    # We define attributes here, since this is called after database checks
     def setup(self, oConfig, bVerbose=False):
+        """After database checks are passed, setup what we need to display
+           data from the database."""
         self._oConfig = oConfig
         self._oCardLookup = GuiLookup(self._oConfig)
 
@@ -105,6 +109,8 @@ class MultiPaneWindow(gtk.Window):
 
         self.show_all()
         self.restore_from_config()
+
+    # pylint: enable-msg=W0201
 
     # pylint: disable-msg=W0212
     # We allow access via these properties
@@ -319,8 +325,8 @@ class MultiPaneWindow(gtk.Window):
         self._oFocussed = oCurFocus
 
     # pylint: enable-msg=W0613
-    # state manipulation
 
+    # state manipulation
     def reload_pcs_list(self):
         """Reload the list of physical card sets."""
         if self._oPCSListPane is not None:
@@ -361,6 +367,8 @@ class MultiPaneWindow(gtk.Window):
                     # Empty panes still need to be editable, though
                     oPane.view.check_editable()
 
+    # pylint: disable-msg=W0613
+    # oWidget, oEvent needed by function signature
     def win_focus(self, oWidget, oEvent, oFrame):
         """Responsd to focus change events.
 
@@ -372,6 +380,8 @@ class MultiPaneWindow(gtk.Window):
         self._oFocussed.set_focussed_title()
         self._oFocussed.view.grab_focus()
         self.reset_menu()
+
+    # pylint: enable-msg=W0613
 
     def set_card_text(self, sCardName):
         """Update the card text frame to the currently selected card."""
@@ -438,6 +448,8 @@ class MultiPaneWindow(gtk.Window):
 
     # pylint: enable-msg=R0201
 
+    # pylint: disable-msg=W0613
+    # oWidget, oEvent needed by function signature
     def action_quit(self, oWidget):
         """Exit the app, saving infoin config file if needed."""
         if self._oConfig.get_save_on_exit():
@@ -445,6 +457,8 @@ class MultiPaneWindow(gtk.Window):
         if self._oConfig.get_save_window_size():
             self.save_window_size()
         gtk.main_quit()
+
+    # pylint: enable-msg=W0613
 
     def save_window_size(self):
         """Write the current window size to the config file"""
@@ -501,6 +515,10 @@ class MultiPaneWindow(gtk.Window):
         for oPane in aTopLevelPane:
             save_children(oPane, self._oConfig, False, 1, -1)
 
+
+    # pylint: disable-msg=W0613
+    # oWidget needed by function signature
+
     # pylint: disable-msg=R0201
     # making this a function would not be convient
     def show_about_dialog(self, oWidget):
@@ -527,6 +545,8 @@ class MultiPaneWindow(gtk.Window):
         """Reshow the help dialog with the last shown page"""
         if self._oHelpDlg is not None:
             self._oHelpDlg.show()
+
+    # pylint: enable-msg=W0613
 
     def _do_html_dialog(self, fInput):
         """Popup and run HTML Dialog widget"""
