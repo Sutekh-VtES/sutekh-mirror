@@ -97,7 +97,10 @@ class PhysicalCardController(object):
            """
         # pylint: disable-msg=E1101
         # SQLObject confuses pylint
-        aCandCards = PhysicalCard.selectBy(abstractCardID=oAbsCard.id)
+        aCandCards = PhysicalCard.selectBy(
+                abstractCardID=oAbsCard.id).orderBy('id')
+        # N.B. We need the orderBy clause for sqlobject's reversed to do the
+        # right thing in all cases
         # check we found something?
         if aCandCards.count() == 0:
             raise RuntimeError("Model inconsistent with the database")
