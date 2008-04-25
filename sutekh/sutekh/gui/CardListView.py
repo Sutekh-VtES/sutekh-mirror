@@ -22,11 +22,13 @@ class CardListView(gtk.TreeView, object):
     """Base class for all the card list views in Sutekh."""
     # pylint: disable-msg=R0904, R0902
     # gtk.Widget, so many public methods. We need to keep state, so many attrs
-    def __init__(self, oController, oMainWindow, oModel):
+    def __init__(self, oController, oMainWindow, oModel, oConfig):
+        # Although MainWindow usually contains a config_file property,
+        # when we come in from the GuiCardLookup, we just have oConfig
         self._oModel = oModel
         self._oController = oController
         self._oMainWin = oMainWindow
-        self._oConfig = oMainWindow.config_file
+        self._oConfig = oConfig
         self.dListeners = {} # dictionary of CardListViewListeners
 
         super(CardListView, self).__init__(self._oModel)
@@ -467,9 +469,9 @@ class EditableCardListView(CardListView):
        setting the editable style, and so forth."""
     # pylint: disable-msg=R0904
     # gtk.Widget, so many public methods
-    def __init__(self, oController, oWindow, oModel):
+    def __init__(self, oController, oWindow, oModel, oConfig):
         super(EditableCardListView, self).__init__(oController, oWindow,
-                oModel)
+                oModel, oConfig)
 
         # Setup columns for default view
         self.oNumCell = gtk.CellRendererText()

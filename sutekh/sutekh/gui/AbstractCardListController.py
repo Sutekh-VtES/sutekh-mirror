@@ -22,7 +22,8 @@ class AbstractCardListController(object):
         self.__oMainWindow = oMainWindow
         self._sFilterType = 'AbstractCard'
         # Create view
-        self.__oAbstractCards = AbstractCardView(self, self.__oMainWindow)
+        self.__oAbstractCards = AbstractCardView(self, self.__oMainWindow,
+                self.__oMainWindow.config_file)
 
     # pylint: disable-msg=W0212
     # we provide read-only access via these properties

@@ -32,8 +32,9 @@ class CardSetView(EditableCardListView):
             oModel = PhysicalCardSetCardListModel(sName)
         elif cSetType is AbstractCardSet:
             oModel = CardListModel()
+        # The only path here is via the main window, so config_file exists
         super(CardSetView, self).__init__(oController, oMainWindow,
-                oModel)
+                oModel, oMainWindow.config_file)
         self.sSetName = sName
         self.cSetType = cSetType
         if cSetType is AbstractCardSet:

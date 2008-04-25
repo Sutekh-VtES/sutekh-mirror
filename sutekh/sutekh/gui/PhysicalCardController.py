@@ -35,7 +35,8 @@ class PhysicalCardController(object):
     def __init__(self, oFrame, oMainWindow):
         self.__oMainWin = oMainWindow
         self.__oFrame = oFrame
-        self.__oView = PhysicalCardView(self, oMainWindow)
+        self.__oView = PhysicalCardView(self, oMainWindow,
+                oMainWindow.config_file)
         self._sFilterType = 'PhysicalCard'
 
     # pylint: disable-msg=W0212

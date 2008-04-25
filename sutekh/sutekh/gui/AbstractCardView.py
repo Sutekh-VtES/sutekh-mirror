@@ -20,10 +20,10 @@ class AbstractCardView(CardListView):
        """
     sDragPrefix = 'Abst:'
 
-    def __init__(self, oController, oMainWindow):
+    def __init__(self, oController, oMainWindow, oConfig):
         oModel = CardListModel()
         super(AbstractCardView, self).__init__(oController, oMainWindow,
-                oModel)
+                oModel, oConfig)
 
         oCell = gtk.CellRendererText()
         oCell.set_property('style', pango.STYLE_ITALIC)

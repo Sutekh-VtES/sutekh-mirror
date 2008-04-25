@@ -21,11 +21,11 @@ class PhysicalCardView(EditableCardListView):
        """
     sDragPrefix = 'Phys:'
 
-    def __init__(self, oController, oWindow):
+    def __init__(self, oController, oWindow, oConfig):
         oModel = PhysicalCardListModel(
                 oWindow.config_file.get_show_zero_count_cards())
         super(PhysicalCardView, self).__init__(oController, oWindow,
-                oModel)
+                oModel, oConfig)
 
         self._oController = oController
 

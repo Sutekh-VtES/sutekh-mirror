@@ -40,9 +40,10 @@ class ACLlookupView(AbstractCardView):
     # pylint: disable-msg=R0904
     # gtk.Widget, so many public methods.
 
-    def __init__(self, oDialogWindow):
+    def __init__(self, oDialogWindow, oConfig):
         oController = DummyController('AbstractCard')
-        super(ACLlookupView, self).__init__(oController, oDialogWindow)
+        super(ACLlookupView, self).__init__(oController, oDialogWindow,
+                oConfig)
         self.get_selection().set_mode(gtk.SELECTION_SINGLE)
 
     @staticmethod
@@ -63,9 +64,10 @@ class PCLwithNumbersView(PhysicalCardView):
     # pylint: disable-msg=R0904
     # gtk.Widget, so many public methods.
 
-    def __init__(self, oDialogWindow):
+    def __init__(self, oDialogWindow, oConfig):
         oController = DummyController('PhysicalCard')
-        super(PCLwithNumbersView, self).__init__(oController, oDialogWindow)
+        super(PCLwithNumbersView, self).__init__(oController, oDialogWindow,
+                oConfig)
         self.get_selection().set_mode(gtk.SELECTION_SINGLE)
         self.dAssignedCards = {}
         oCell1 = gtk.CellRendererText()
@@ -602,10 +604,6 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
                 (gtk.STOCK_OK, gtk.RESPONSE_OK,
                  gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
 
-        # TODO: document this gets used or clean it up somehow
-        # Needed by the cardlist model's call the the filter dialog
-        oUnknownDialog.config_file = self._oConfig
-
         sMsg1 = "While importing %s\n" \
           "The following cards could not be found in the Physical Card List:" \
           "\nChoose how to handle these cards?\n" % sInfo
@@ -627,7 +625,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
         oMesgLabel2.set_text(sMsg2)
         oUnknownDialog.vbox.pack_start(oMesgLabel2)
 
-        oPhysCardView = PCLwithNumbersView(oUnknownDialog)
+        oPhysCardView = PCLwithNumbersView(oUnknownDialog, self._oConfig)
         oViewWin = AutoScrolledWindow(oPhysCardView)
         oViewWin.set_size_request(200, 600)
         oHBox.pack_start(oViewWin, True, True)
@@ -732,10 +730,6 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
                 (gtk.STOCK_OK, gtk.RESPONSE_OK,
                  gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
 
-        # TODO: document this gets used or clean it up somehow
-        # Needed by the cardlist model's call the the filter dialog
-        oUnknownDialog.config_file = self._oConfig
-
         sMsg1 = "While importing %s\n" \
                 "The following card names could not be found:\n" \
                 "Choose how to handle these cards?\n" % (sInfo)
@@ -757,7 +751,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
         oMesgLabel2.set_text(sMsg2)
         oUnknownDialog.vbox.pack_start(oMesgLabel2)
 
-        oAbsCardView = ACLlookupView(oUnknownDialog)
+        oAbsCardView = ACLlookupView(oUnknownDialog, self._oConfig)
         oViewWin = AutoScrolledWindow(oAbsCardView)
         oViewWin.set_size_request(200, 600)
         oHBox.pack_start(oViewWin, True, True)
