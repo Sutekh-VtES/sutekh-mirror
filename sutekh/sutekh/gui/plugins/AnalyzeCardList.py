@@ -418,7 +418,7 @@ class AnalyzeCardList(CardListPlugin):
         self.dLibraryStats['clan'] = {'No Clan' : 0}
         self.dLibraryStats['discipline'] = {'No Discipline' : 0}
         for oCard in aLibraryCards:
-            if len(oCard.cardtype) > 0:
+            if len(oCard.cardtype) > 1:
                 self.dTypeNumbers['Multirole'] += 1
                 dCardLists['Multirole'].append(oCard)
             if len(oCard.clan) > 0:
