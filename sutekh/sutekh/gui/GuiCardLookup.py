@@ -220,7 +220,7 @@ class ReplacementTreeView(gtk.TreeView):
         """Create a column with a button, usin oIcon and the function
            fClicked."""
         oCell = CellRendererSutekhButton(bShowIcon=True)
-        oCell.load_icon(oIcon, self) # filter out best guesses
+        oCell.load_icon(oIcon, self)
         oLabel = gtk.Label(sLabel)
         oLabel.set_tooltip_text(sToolTip)
         oColumn = gtk.TreeViewColumn("", oCell)
@@ -231,7 +231,7 @@ class ReplacementTreeView(gtk.TreeView):
         oCell.connect('clicked', fClicked)
 
     def _create_text_item(self, sLabel, iColumn):
-        """Crete a text column, using iColumn from the model"""
+        """Create a text column, using iColumn from the model"""
         oCell = gtk.CellRendererText()
         oCell.set_property('style', pango.STYLE_ITALIC)
         oColumn = gtk.TreeViewColumn(sLabel, oCell, text=iColumn)
