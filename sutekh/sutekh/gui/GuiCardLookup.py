@@ -222,7 +222,9 @@ class ReplacementTreeView(gtk.TreeView):
         oCell = CellRendererSutekhButton(bShowIcon=True)
         oCell.load_icon(oIcon, self)
         oLabel = gtk.Label(sLabel)
-        oLabel.set_tooltip_text(sToolTip)
+        if hasattr(oLabel,'set_tooltip_text'):
+            # GTK < 2.12 doesn't have the new tooltip API
+            oLabel.set_tooltip_text(sToolTip)
         oColumn = gtk.TreeViewColumn("", oCell)
         oColumn.set_widget(oLabel)
         oColumn.set_fixed_width(22)
