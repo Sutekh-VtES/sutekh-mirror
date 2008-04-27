@@ -10,7 +10,6 @@ Code Cleanup
  * Refactor gui classes somewhat - there's a fair bit code duplication ATM
    between the different View-Window-Controller sets for instance, and this
    looks like something worth addressing
- * Change function names to foo_bar convention.
  * More tests
 
 Gui (Functionality):
@@ -29,7 +28,8 @@ Gui (Presentation):
      (cf. CreateCardSetDialog hack in plugins)
  * Clean up the currently overly tangled controller/view/model interactions
  * Parse in a GTK rc file? (http://www.moeraki.com/pygtktutorial/pygtk2tutorial/ch-GtkRcFiles.html)
- * Parse icons out of http://www.white-wolf.com/vtes/index.php?line=icons and use them in the GUI.
+ * Icon support improvements
+   - Allow icons in the tree view
  * Allow colouring options for the cards
 
 Website:
@@ -42,6 +42,15 @@ Other Tasks:
 For 0.6:
  * Factor out things like the lists of expansions and disciplines in SutekhObjects
    to a seperate file
+ * Redo database design:
+   - Allow Physical Card Sets to be subsets of other physical card sets
+   - Convert current card collection list into a physical card set
+   - drop abstract card sets - these become PCS's that are not subsets of the
+     card collection PCS
  * Add decent keyboard shortcuts
  * Create built-in tutorial and help.
  * Look into Windows TreeView text search bug.
+ * Plugins
+   - Rework card set independance plugin
+   - CSV export plugin for card sets
+ * Address issues with exporting Sutekh card sets to ARDB and FELDB

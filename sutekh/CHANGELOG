@@ -1,3 +1,39 @@
+27 April 2008
+ * Fix counting bug in Analyze Card Set
+ * Add filter for zip files to the backup restore dialog
+
+25 April 2008
+ * Add support for showing icons in the Card Text Window
+ * Various code cleanups
+ * Fix bug in PhysicalCardSet from AbstractCardSet when adding cards to the
+   PhysicalCard List
+
+24 April 2008
+ * Fix WW import losing the clan shortname
+ * Refactor menu classes - simplifies accelerator addition and eliminates
+   repeated code
+ * Add keep_above hint to the load dialog
+ * Fix bug in display icons for empty physical card lists
+ * Cleanup drag-n-drop code a bit
+ * Rework FilterDialog. There is now only 1 FilterEditor in the dialog, and
+   and filters are now explicitly load/saved & deleted from the config file.
+
+23 April 2008
+ * Address some issues with the editable hint. Check the style more carefully,
+   so right thing happens with complex styles like the windows default. Enforce
+   Change on the CellRenderText for the numbers. 
+ * Improvements to the windows installer - use latest pygtk + gtk versions.
+ * Add Sutekh icon to the windows installer and the created shortcut
+ * MultiPaneWindow.__init__ split into __init__ and setup, so main window can
+   be passed into the WwDialog for creating the initial database.
+
+22 April 2008
+ * Move importers to the main window
+ * Normalise unicode card names when searching - avoids having to type
+   unicode characters when searching. When using a non-ascii search string,
+   we don't normalise.
+ * Extend HTMLTextView to support <a href="#key> syntax and <em>
+
 21 April 2008
  * Tweaked editable style hint
  * Changed WW cardlist fetching to use the smaller split lists 
