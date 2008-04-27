@@ -121,6 +121,16 @@ class FullBackup(CardListPlugin):
                 oButtons=(gtk.STOCK_OK, gtk.RESPONSE_OK,
                     gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
         oDlg.set_name("Sutekh.dialog")
+        oZipFilter = gtk.FileFilter()
+        oZipFilter.set_name('Zip files')
+        oZipFilter.add_pattern('*.zip')
+        oZipFilter.add_pattern('*.ZIP')
+        oDlg.add_filter(oZipFilter)
+        oAllFilter = gtk.FileFilter()
+        oAllFilter.set_name('All files')
+        oAllFilter.add_pattern('*')
+        oDlg.add_filter(oAllFilter)
+        oDlg.set_filter(oZipFilter)
 
         oWarning = gtk.Label("This will delete all existing Physical Cards"
                 " and Card Sets")
