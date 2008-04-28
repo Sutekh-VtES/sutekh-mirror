@@ -23,13 +23,20 @@ class DatabaseVersion(object):
     # pylint: disable-msg=R0201
     # All these are methods for convience
 
+    _dCache = {}
+
     def __init__(self, oConn=None):
         oConn = _get_connection(oConn)
         VersionTable.createTable(ifNotExists=True, connection=oConn)
 
+    @classmethod
+    def get_cache(cls):
+        return cls._dCache
+
     def set_version(self, oTable, iTableVersion, oConn=None):
         """Set the version for oTable to iTableVersion"""
         oConn = _get_connection(oConn)
+        dCache = self.get_cache()
         try:
             sTableName = oTable.sqlmeta.table
         except AttributeError:
@@ -38,12 +45,14 @@ class DatabaseVersion(object):
         if aVer.count() == 0:
             VersionTable(TableName=sTableName,
                          Version=iTableVersion, connection=oConn)
+            dCache[sTableName] = iTableVersion
         elif aVer.count() == 1:
             for oVersion in aVer:
                 if oVersion.Version != iTableVersion:
                     VersionTable.delete(oVersion.id, connection=oConn)
                     VersionTable(TableName=sTableName,
                                  Version=iTableVersion, connection=oConn)
+                dCache[sTableName] = iTableVersion
         elif aVer.count() > 1:
             print "Multiple version entries for %s in the database" \
                     % sTableName
@@ -57,17 +66,21 @@ class DatabaseVersion(object):
            returns -1 if no version info exists.
            """
         oConn = _get_connection(oConn)
+        dCache = self.get_cache()
         iTableVersion = -1
         try:
             sName = oTable.sqlmeta.table
         except AttributeError:
             return iTableVersion
+        if dCache.has_key(sName):
+            return dCache[sName]
         aVer = VersionTable.selectBy(TableName=sName, connection=oConn)
         if aVer.count() < 1:
             iTableVersion = -1
         elif aVer.count() == 1:
             for oVersion in aVer:
                 iTableVersion = oVersion.Version
+                dCache[sName] = iTableVersion
         else:
             print "Multiple version entries for %s in the database" \
                     % oTable.sqlmeta.table
