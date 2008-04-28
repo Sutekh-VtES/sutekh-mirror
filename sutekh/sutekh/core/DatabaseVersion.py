@@ -22,15 +22,37 @@ class DatabaseVersion(object):
     """Class to handle all the database manipulation aspects."""
 
     _dCache = {}
+    _dConns = {}
 
     def __init__(self, oConn=None):
         oConn = _get_connection(oConn)
-        VersionTable.createTable(ifNotExists=True, connection=oConn)
+        # We need to make sure the version table exists, even if
+        # the rest of the database doesn't, otherwise early checks are
+        # problematic
+        self.ensure_table_exists(oConn)
 
     @classmethod
     def get_cache(cls):
         """Get a reference to the class-global results cache"""
         return cls._dCache
+
+    @classmethod
+    def ensure_table_exists(cls, oConn):
+        """Enusre the table exists, but that describe is only called
+           once per connection."""
+        if not cls._dConns.has_key(oConn):
+            VersionTable.createTable(ifNotExists=True, connection=oConn)
+            cls._dConns[oConn] = True
+
+    @classmethod
+    def expire_table_conn(cls, oConn):
+        """Expirt the created table for this connection.
+           Needed in the database upgrade code.
+           """
+        if not cls._dConns.has_key(oConn):
+            return # Nothing to do
+        del cls._dConns[oConn]
+
 
     def set_version(self, oTable, iTableVersion, oConn=None):
         """Set the version for oTable to iTableVersion"""
@@ -40,19 +62,21 @@ class DatabaseVersion(object):
             sTableName = oTable.sqlmeta.table
         except AttributeError:
             return False
-        aVer = VersionTable.selectBy(TableName=sTableName, connection=oConn)
-        if aVer.count() == 0:
+        aVer = list(VersionTable.selectBy(TableName=sTableName,
+            connection=oConn))
+        iTableCount = len(aVer)
+        if iTableCount == 0:
             VersionTable(TableName=sTableName,
                          Version=iTableVersion, connection=oConn)
             dCache[sTableName] = iTableVersion
-        elif aVer.count() == 1:
+        elif iTableCount == 1:
             for oVersion in aVer:
                 if oVersion.Version != iTableVersion:
                     VersionTable.delete(oVersion.id, connection=oConn)
                     VersionTable(TableName=sTableName,
                                  Version=iTableVersion, connection=oConn)
                 dCache[sTableName] = iTableVersion
-        elif aVer.count() > 1:
+        else:
             print "Multiple version entries for %s in the database" \
                     % sTableName
             print "Giving up. I suggest dumping and reloading everything"
@@ -73,10 +97,11 @@ class DatabaseVersion(object):
             return iTableVersion
         if dCache.has_key(sName):
             return dCache[sName]
-        aVer = VersionTable.selectBy(TableName=sName, connection=oConn)
-        if aVer.count() < 1:
+        aVer = list(VersionTable.selectBy(TableName=sName, connection=oConn))
+        iTableCount = len(aVer)
+        if iTableCount < 1:
             iTableVersion = -1
-        elif aVer.count() == 1:
+        elif iTableCount == 1:
             for oVersion in aVer:
                 iTableVersion = oVersion.Version
                 dCache[sName] = iTableVersion

@@ -24,6 +24,9 @@ def refresh_tables(aTables, oConn):
         cCls.dropTable(ifExists=True, connection=oConn)
     aTables.reverse()
     oVerHandler = DatabaseVersion(oConn)
+    # Make sure we recreate the database version table
+    oVerHandler.expire_table_conn(oConn)
+    oVerHandler.ensure_table_exists(oConn)
     if not oVerHandler.set_version(VersionTable, VersionTable.tableversion,
             oConn):
         return False
