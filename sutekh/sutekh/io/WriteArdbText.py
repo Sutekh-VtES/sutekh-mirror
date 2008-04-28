@@ -64,12 +64,14 @@ class WriteArdbText(ArdbInfo):
             oCard = IAbstractCard(sName)
             if len(oCard.creed) > 0:
                 sClan = "Imbued"
+                iCapacity = oCard.life
             else:
                 sClan = [x.name for x in oCard.clan][0]
+                iCapacity = oCard.capacity
             sDisciplines = self._gen_disciplines(oCard)
 
             sCrypt += "  %dx %s %d %s %s :%d\n" % \
-                 (iCount, sName, oCard.capacity, sDisciplines, sClan,
+                 (iCount, sName, iCapacity, sDisciplines, sClan,
                          oCard.group)
 
         return sCrypt
