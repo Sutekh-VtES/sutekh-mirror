@@ -21,11 +21,12 @@ from sutekh.io.XmlFileHandling import PhysicalCardXmlFile, \
         write_all_pcs
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
 from sutekh.io.WwFile import WwFile
+from sutekh.SutekhInfo import SutekhInfo
 
 def parse_options(aArgs):
     """Handle the command line options"""
     oOptParser = optparse.OptionParser(usage="usage: %prog [options]",
-            version="%prog 0.1")
+            version="%%prog %s" % SutekhInfo.VERSION_STR)
     oOptParser.add_option("-d", "--db",
                   type="string", dest="db", default=None,
                   help="Database URI. [sqlite://$PREFSDIR$/sutekh.db]")

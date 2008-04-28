@@ -12,6 +12,7 @@ from sutekh.core.DatabaseVersion import DatabaseVersion
 from sqlobject import sqlhub, connectionForURI
 from sutekh.gui.ConfigFile import ConfigFile
 from sutekh.gui.GuiDBManagement import do_db_upgrade, initialize_db
+from sutekh.SutekhInfo import SutekhInfo
 import sys, optparse, os
 
 # Script Launching
@@ -19,7 +20,7 @@ import sys, optparse, os
 def parse_options(aArgs):
     """SutekhGui's option parsing"""
     oOptParser = optparse.OptionParser(usage="usage: %prog [options]",
-            version="%prog 0.1")
+            version="%%prog %s" % SutekhInfo.VERSION_STR)
     oOptParser.add_option("-d", "--db",
                   type="string", dest="db", default=None,
                   help="Database URI. [sqlite://$PREFSDIR$/sutekh.db]")
