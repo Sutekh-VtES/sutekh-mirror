@@ -265,6 +265,7 @@ class MainMenu(SutekhMenu):
         """Import a Physical Card Collection from a XML file"""
         oFileChooser = ImportDialog("Select Card List to Import",
                 self._oMainWindow)
+        oFileChooser.add_filter_with_pattern('XML Files', ['*.xml'])
         oFileChooser.run()
         sFileName = oFileChooser.get_name()
         if sFileName is not None:
@@ -288,6 +289,7 @@ class MainMenu(SutekhMenu):
         """Import a card set from a XML File."""
         oFileChooser = ImportDialog("Select Card Set(s) to Import",
                 self._oMainWindow)
+        oFileChooser.add_filter_with_pattern('XML Files', ['*.xml'])
         oFileChooser.run()
         sFileName = oFileChooser.get_name()
         if sFileName is not None:

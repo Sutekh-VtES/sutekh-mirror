@@ -35,6 +35,7 @@ class CardSetExportArdbXML(CardListPlugin):
         """Create the dialog"""
         oDlg = ExportDialog("Choose FileName for Exported CardSet",
                 self.parent, '%s_ARDB.xml' % safe_filename(self.view.sSetName))
+        oDlg.add_filter_with_pattern('XML Files', ['*.xml'])
         oDlg.run()
         self.handle_response(oDlg.get_name())
 

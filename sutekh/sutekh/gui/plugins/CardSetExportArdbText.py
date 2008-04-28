@@ -35,6 +35,7 @@ class CardSetExportArdbText(CardListPlugin):
         """Create the dialog"""
         oDlg = ExportDialog("Choose FileName for Exported CardSet",
                 self.parent, '%s.txt' % safe_filename(self.view.sSetName))
+        oDlg.add_filter_with_pattern('Text Files', ['*.txt'])
         oDlg.run()
         self.handle_response(oDlg.get_name())
 

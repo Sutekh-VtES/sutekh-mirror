@@ -127,6 +127,7 @@ class CardSetMenu(EditableCardListMenu):
         oFileChooser = ExportDialog("Save %s Card Set As " %
                 _type_to_string(self.__cSetType), self._oMainWindow,
                 '%s.xml' % safe_filename(self.sSetName))
+        oFileChooser.add_filter_with_pattern('XML Files', ['*.xml'])
         oFileChooser.run()
         sFileName = oFileChooser.get_name()
         if sFileName is not None:

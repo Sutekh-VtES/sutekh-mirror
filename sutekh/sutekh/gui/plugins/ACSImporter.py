@@ -71,6 +71,10 @@ class ACSImporter(CardListPlugin):
 
         self.oFileChooser = SutekhFileWidget(self.parent,
                 gtk.FILE_CHOOSER_ACTION_OPEN)
+        self.oFileChooser.add_filter_with_pattern('HTML files', ['*.html',
+            '*.htm'])
+        self.oFileChooser.add_filter_with_pattern('TXT files', ['*.txt'])
+        self.oFileChoose.default_filter()
         self.oDlg.vbox.pack_start(self.oFileChooser)
 
         oIter = self._dParsers.iterkeys()

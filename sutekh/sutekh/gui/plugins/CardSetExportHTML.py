@@ -241,6 +241,7 @@ class CardSetExportHTML(CardListPlugin, ArdbInfo):
         """Create the dialog prompted for the filename."""
         oDlg = ExportDialog("Filename to save as", self.parent,
                 '%s.html' % safe_filename(self.view.sSetName))
+        oDlg.add_filter_with_pattern('HTML Files', ['*.html'])
         # pylint: disable-msg=E1101
         # vbox confuses pylint
         self.oTextButton = gtk.CheckButton("Include Card _Texts?")

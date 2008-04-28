@@ -15,6 +15,17 @@ def _changed_dir(oFileChooser, oParentWin):
     """Update parent's working dir when the folder changes."""
     oParentWin.set_working_dir(oFileChooser.get_current_folder())
 
+def add_filter(oFileChooser, sFilterName, aFilterPatterns):
+    """Add  filter to the widget, using the list of patterns in
+       aFilterPatterns"""
+    oFilter = gtk.FileFilter()
+    oFilter.set_name(sFilterName)
+    for sPattern in aFilterPatterns:
+        oFilter.add_pattern(sPattern)
+    oFileChooser.add_filter(oFilter)
+    oFileChooser.set_filter(oFilter)
+    return oFilter
+
 class SutekhFileDialog(gtk.FileChooserDialog):
     # pylint: disable-msg=R0904
     # gtk widget, so has many public methods
@@ -30,7 +41,16 @@ class SutekhFileDialog(gtk.FileChooserDialog):
         if sWorkingDir:
             self.set_current_folder(sWorkingDir)
         self.connect('current-folder-changed', _changed_dir, oParent)
+        self._oAllFilter = add_filter(self, 'All Files', ['*'])
 
+    def add_filter_with_pattern(self, sName, aFilterPatterns):
+        """Add a filter named sName to this widget, using the patterns
+           in aFilterPatterns."""
+        return add_filter(self, sName, aFilterPatterns)
+
+    def default_filter(self):
+        """Set the filter to be the default all files filter"""
+        self.set_filter(self._oAllFilter)
 
 class SutekhFileWidget(gtk.FileChooserWidget):
     # pylint: disable-msg=R0904
@@ -43,6 +63,16 @@ class SutekhFileWidget(gtk.FileChooserWidget):
         if sWorkingDir:
             self.set_current_folder(sWorkingDir)
         self.connect('current-folder-changed', _changed_dir, oParent)
+        self._oAllFilter = add_filter(self, 'All Files', ['*'])
+
+    def add_filter_with_pattern(self, sName, aFilterPatterns):
+        """Add a filter named sName to this widget, using the patterns
+           in aFilterPatterns."""
+        add_filter(self, sName, aFilterPatterns)
+
+    def default_filter(self):
+        """Set the filter to be the default all files filter"""
+        self.set_filter(self._oAllFilter)
 
 class SutekhFileButton(gtk.FileChooserButton):
     # pylint: disable-msg=R0904
@@ -59,6 +89,15 @@ class SutekhFileButton(gtk.FileChooserButton):
         if sWorkingDir:
             self.set_current_folder(sWorkingDir)
         self.oDialog.connect('map-event', self.mapped, oParent)
+
+    def add_filter_with_pattern(self, sName, aFilterPatterns):
+        """Add a filter named sName to this widget, using the patterns
+           in aFilterPatterns."""
+        add_filter(self.oDialog, sName, aFilterPatterns)
+
+    def default_filter(self):
+        """Set the filter to be the default all files filter"""
+        self.oDialog.default_filter()
 
     # pylint: disable-msg=W0613
     # oWidget + oEvent needed by the function signature

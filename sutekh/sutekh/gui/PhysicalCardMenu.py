@@ -58,6 +58,7 @@ class PhysicalCardMenu(EditableCardListMenu):
         """Handling exporting the card list to file."""
         oFileChooser = ExportDialog("Save Collection As", self._oMainWindow,
                 'MyCollection.xml')
+        oFileChooser.add_filter_with_pattern('XML Files', ['*.xml'])
         oFileChooser.run()
         sFileName = oFileChooser.get_name()
         if sFileName is not None:
