@@ -20,8 +20,6 @@ def _get_connection(oConn):
 
 class DatabaseVersion(object):
     """Class to handle all the database manipulation aspects."""
-    # pylint: disable-msg=R0201
-    # All these are methods for convience
 
     _dCache = {}
 
@@ -31,6 +29,7 @@ class DatabaseVersion(object):
 
     @classmethod
     def get_cache(cls):
+        """Get a reference to the class-global results cache"""
         return cls._dCache
 
     def set_version(self, oTable, iTableVersion, oConn=None):
