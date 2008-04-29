@@ -34,12 +34,13 @@ class PhysicalCardParser(object):
     aSupportedVersions = ['1.0', '0.0']
 
     def __init__(self):
-        self.oCS = CardSetHolder()
+        self.oCS = None
         self.oTree = None
 
     def _convert_tree(self):
         """parse the elementtree into a card set holder"""
         self.oCS = CardSetHolder()
+        self.oCS.name = "My Collection"
         oRoot = self.oTree.getroot()
         if oRoot.tag != 'cards':
             raise RuntimeError("Not a Physical card list")
@@ -65,9 +66,10 @@ class PhysicalCardParser(object):
            """
         oOldConn = sqlhub.processConnection
         sqlhub.processConnection = oOldConn.transaction()
-        self.oCS.create_physical_cl(oCardLookup)
+        self.oCS.create_pcs(oCardLookup)
         sqlhub.processConnection.commit()
         sqlhub.processConnection = oOldConn
+        self.oCS = None
 
     def parse(self, fIn, oCardLookup=DEFAULT_LOOKUP):
         """Read the file object fIn into the database."""
