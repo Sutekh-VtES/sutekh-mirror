@@ -10,7 +10,7 @@
 # Do importing
 
 from sutekh.core.SutekhObjects import AbstractCard, PhysicalCard, \
-                    AbstractCardSet, PhysicalCardSet, RarityPair, \
+                    PhysicalCardSet, RarityPair, \
                     Expansion, Rarity, DisciplinePair, Discipline, \
                     Clan, CardType, Ruling
 
@@ -20,10 +20,7 @@ from sutekh.core.Filters import FilterAndBox, FilterOrBox, ClanFilter, \
                     MultiClanFilter, PhysicalCardSetFilter, \
                     PhysicalCardFilter, GroupFilter, MultiGroupFilter, \
                     ExpansionFilter, MultiExpansionFilter, \
-                    AbstractCardSetFilter, AbstractCardSetNameFilter, \
-                    AbstractCardSetDescriptionFilter, \
-                    PhysicalExpansionFilter, AbstractCardSetAuthorFilter, \
-                    AbstractCardSetAnnotationsFilter, \
+                    PhysicalExpansionFilter, \
                     MultiPhysicalExpansionFilter, PhysicalCardSetNameFilter, \
                     PhysicalCardSetDescriptionFilter, \
                     PhysicalCardSetAuthorFilter, \
@@ -46,7 +43,7 @@ def start(aArgs=['sutekh']):
 # What we expose to import *
 
 aAll = [ # Sutekh Objects
-         AbstractCard, PhysicalCard, AbstractCardSet, PhysicalCardSet,
+         AbstractCard, PhysicalCard, PhysicalCardSet,
          RarityPair, Expansion, Rarity, DisciplinePair, Discipline,
          Clan, CardType, Ruling,
          # Filters
@@ -54,9 +51,7 @@ aAll = [ # Sutekh Objects
          CardTypeFilter, CardTextFilter, MultiCardTypeFilter,
          MultiDisciplineFilter, MultiClanFilter, PhysicalCardSetFilter,
          PhysicalCardFilter, GroupFilter, MultiGroupFilter,
-         ExpansionFilter, MultiExpansionFilter, AbstractCardSetFilter,
-         AbstractCardSetNameFilter, AbstractCardSetAuthorFilter,
-         AbstractCardSetDescriptionFilter, AbstractCardSetAnnotationsFilter,
+         ExpansionFilter, MultiExpansionFilter,
          PhysicalCardSetNameFilter, PhysicalCardSetAuthorFilter,
          PhysicalCardSetDescriptionFilter, PhysicalCardSetAnnotationsFilter,
          PhysicalExpansionFilter, MultiPhysicalExpansionFilter,
