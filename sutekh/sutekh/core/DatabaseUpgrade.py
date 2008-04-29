@@ -121,7 +121,7 @@ class AbstractCardSet_ACv2(SQLObject):
     """AbstractCardSet table that joins with AbstractCard_v2"""
     class sqlmeta:
         """meta class used to set the correct table."""
-        table = AbstractCardSet.sqlmeta.table
+        table = 'abstract_card_set'
 
     name = UnicodeCol(alternateID=True, length=50)
     author = UnicodeCol(length=50, default='')
@@ -136,8 +136,6 @@ class AbstractCardSet_v3(SQLObject):
     class sqlmeta:
         """meta class used to set the correct table."""
         table = 'abstract_card_set'
-    advise(instancesProvide=[IAbstractCardSet])
-
     name = UnicodeCol(alternateID=True, length=50)
     author = UnicodeCol(length=50, default='')
     comment = UnicodeCol(default='')
@@ -679,21 +677,14 @@ def copy_old_abstract_card_set(oOrigConn, oTrans, oLogger):
     # SQLObject confuses pylint
     # FIXME: create suitable PCS's instead.
     oVer = DatabaseVersion()
-    if oVer.check_table_versions([AbstractCardSet],
-            [AbstractCardSet.tableversion]) \
-            and oVer.check_table_versions([AbstractCard],
-                    [AbstractCard.tableversion]):
+    if oVer.check_table_versions([AbstractCardSet_v3], [3]):
+        # Do magic here
         copy_abstract_card_set(oOrigConn, oTrans, oLogger)
-    elif oVer.check_table_versions([AbstractCard], [2]):
+    elif oVer.check_table_versions([AbstractCardSet_v3], [2]):
         # Upgrade from previous AbstractCard class
         for oSet in AbstractCardSet_ACv2.select(connection=oOrigConn):
-            oCopy = AbstractCardSet(id=oSet.id, name=oSet.name,
-                    author=oSet.author, comment=oSet.comment,
-                    annotations=oSet.annotations, connection=oTrans)
-            for oCard in oSet.cards:
-                oCopy.addAbstractCard(oCard.id)
-            oCopy.syncUpdate()
-            oLogger.info('Copied ACS %s', oCopy.name)
+            # Do magic here
+            pass
     else:
         return (False, ["Unknown AbstractCardSet version"])
     return (True, [])
