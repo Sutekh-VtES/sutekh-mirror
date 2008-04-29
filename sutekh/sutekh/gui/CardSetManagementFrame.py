@@ -139,15 +139,12 @@ class CardSetManagementFrame(BasicFrame):
         oModel = oTreeView.get_model()
         # We are pointing to a ListStore, so the iters should always be valid
         # Need to dereference to the actual path though, as iters not unique
-        oIter = oModel.get_iter(oPath)
-        sName = oModel.get_value(oIter, 0)
+        sName = oModel.get_name_from_path(oPath)
         # check if card set is open before opening again
-        sFrameName = sName
-        oPane = self._oMainWindow.find_pane_by_name(sFrameName)
+        oPane = self._oMainWindow.find_pane_by_name(sName)
         if oPane is not None:
             return # Already open, so do nothing
-        oFrame = self._oMainWindow.add_pane_end()
-        self._oMainWindow.replace_with_physical_card_set(sName, oFrame)
+        self._oMainWindow.add_new_physical_card_set(sName)
 
     # pylint: enable-msg=W0613, R0913
 

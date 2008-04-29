@@ -207,7 +207,7 @@ class MultiPaneWindow(gtk.Window):
 
     def replace_with_physical_card_set(self, sName, oFrame):
         """Replace the pane oFrame with the physical card set sName"""
-        sMenuFlag = "PCS:" + sName
+        sMenuFlag = sName
         if sMenuFlag not in self.dOpenFrames.values() and oFrame:
             # pylint: disable-msg=W0704
             # not doing anything for errors right now
@@ -224,8 +224,10 @@ class MultiPaneWindow(gtk.Window):
 
     def add_new_physical_card_set(self, sName):
         """Create a new pane and replace with the PCS sName"""
+        oCurFocus = self._oFocussed
         oFrame = self.add_pane_end()
         self.replace_with_physical_card_set(sName, oFrame)
+        self.win_focus(None, None, oCurFocus)
 
     # pylint: disable-msg=W0613
     # oWidget needed so this can be called from the menu
@@ -242,7 +244,7 @@ class MultiPaneWindow(gtk.Window):
         oCurFocus = self._oFocussed
         self._oFocussed = self.add_pane_end()
         self.replace_with_pcs_list(oMenuWidget)
-        self._oFocussed = oCurFocus
+        self.win_focus(None, None, oCurFocus)
 
     def replace_with_physical_card_list(self, oWidget):
         """Replace the currently focussed pane with the physical card list."""
@@ -256,7 +258,7 @@ class MultiPaneWindow(gtk.Window):
         oCurFocus = self._oFocussed
         self._oFocussed = self.add_pane_end()
         self.replace_with_physical_card_list(oMenuWidget)
-        self._oFocussed = oCurFocus
+        self.win_focus(None, None, oCurFocus)
 
     def replace_with_card_text(self, oWidget):
         """Replace the current pane with the card set pane."""
@@ -269,7 +271,7 @@ class MultiPaneWindow(gtk.Window):
         oCurFocus = self._oFocussed
         self._oFocussed = self.add_pane_end()
         self.replace_with_card_text(oMenuWidget)
-        self._oFocussed = oCurFocus
+        self.win_focus(None, None, oCurFocus)
 
     # pylint: enable-msg=W0613
 
@@ -324,8 +326,10 @@ class MultiPaneWindow(gtk.Window):
         if self._oFocussed is not None:
             self._oFocussed.set_unfocussed_title()
         self._oFocussed = oFrame
-        self._oFocussed.set_focussed_title()
-        self._oFocussed.view.grab_focus()
+        if oFrame: 
+            # oFrame can be None when win_focus is called directly
+            self._oFocussed.set_focussed_title()
+            self._oFocussed.view.grab_focus()
         self.reset_menu()
 
     # pylint: enable-msg=W0613
