@@ -132,7 +132,7 @@ class DatabaseVersion(object):
            Checks whether the given table has a version in the list of
            version numbers in the list aTableVersions.
            """
-        iVersion = get_table_version(oTable, oConn)
+        iVersion = self.get_table_version(oTable, oConn)
         return iVersion in aTableVersions
 
     def get_bad_tables(self, aTable, aTableVersion, oConn=None):
