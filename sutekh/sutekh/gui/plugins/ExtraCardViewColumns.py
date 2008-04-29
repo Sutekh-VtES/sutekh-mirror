@@ -9,7 +9,7 @@ import gtk, pango
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog
 from sutekh.core.SutekhObjects import AbstractCard, PhysicalCard, \
-           AbstractCardSet, PhysicalCardSet
+           PhysicalCardSet
 from sqlobject import SQLObjectNotFound
 
 class ExtraCardViewColumns(CardListPlugin):
@@ -18,8 +18,7 @@ class ExtraCardViewColumns(CardListPlugin):
     Allow the card list to be sorted on these columns
     """
     dTableVersions = {}
-    aModelsSupported = [AbstractCard, PhysicalCard, AbstractCardSet,
-            PhysicalCardSet]
+    aModelsSupported = [PhysicalCardSet]
 
     # pylint: disable-msg=W0142
     # **magic OK here

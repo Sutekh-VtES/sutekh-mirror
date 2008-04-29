@@ -8,7 +8,7 @@
 
 import gtk
 import pango
-from sutekh.core.SutekhObjects import PhysicalCardSet, AbstractCardSet, \
+from sutekh.core.SutekhObjects import PhysicalCardSet, \
         IAbstractCard, ICardType
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhDialog import do_complaint_error
@@ -28,9 +28,8 @@ class CardSetPrint(CardListPlugin):
        in the card set. This has less formatting than exporting via
        HTML, for instance, but does print directly.
        """
-    dTableVersions = { AbstractCardSet: [2, 3],
-                       PhysicalCardSet: [2, 3, 4]}
-    aModelsSupported = [AbstractCardSet, PhysicalCardSet]
+    dTableVersions = { PhysicalCardSet: [2, 3, 4, 5]}
+    aModelsSupported = [PhysicalCardSet]
 
     # pylint: disable-msg=W0201
     # We don't care that we define _oSettings here, due to how plugin is called

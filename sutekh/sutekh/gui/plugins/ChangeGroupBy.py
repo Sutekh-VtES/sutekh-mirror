@@ -8,7 +8,7 @@
 
 import gtk
 from sutekh.core.SutekhObjects import AbstractCard, PhysicalCard, \
-        AbstractCardSet, PhysicalCardSet
+        PhysicalCardSet
 from sutekh.core.Groupings import CardTypeGrouping, ClanGrouping, \
         DisciplineGrouping, ExpansionGrouping, RarityGrouping, \
         CryptLibraryGrouping, NullGrouping
@@ -22,8 +22,7 @@ class GroupCardList(CardListPlugin):
        groupings of the cards, and changes the setting in the CardListView.
        """
     dTableVersions = {}
-    aModelsSupported = [AbstractCard, PhysicalCard, AbstractCardSet,
-            PhysicalCardSet]
+    aModelsSupported = [PhysicalCard, PhysicalCardSet]
 
     # pylint: disable-msg=W0142
     # ** magic OK here

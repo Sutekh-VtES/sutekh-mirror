@@ -11,7 +11,7 @@ import gtk
 import urllib2
 from sutekh.io.ELDBHTMLParser import ELDBHTMLParser
 from sutekh.io.ARDBTextParser import ARDBTextParser
-from sutekh.core.SutekhObjects import AbstractCardSet
+from sutekh.core.SutekhObjects import PhysicalCardSet
 from sutekh.core.CardSetHolder import CardSetHolder
 from sutekh.core.CardLookup import LookupFailed
 from sutekh.gui.PluginManager import CardListPlugin
@@ -24,7 +24,7 @@ class ACSImporter(CardListPlugin):
        Handles the most common formats, and allows the user to choose
        uri's, so decks published online can be easily imported.
        """
-    dTableVersions = { AbstractCardSet: [2, 3]}
+    dTableVersions = { PhysicalCardSet: [5]}
     aModelsSupported = ["MainWindow"]
 
     # pylint: disable-msg=W0142
@@ -138,8 +138,8 @@ class ACSImporter(CardListPlugin):
             oParser.feed(sLine)
 
         # Check ACS Doesn't Exist
-        if AbstractCardSet.selectBy(name=oHolder.name).count() != 0:
-            sMsg = "Abstract Card Set %s already exists." % oHolder.name
+        if PhysicalCardSet.selectBy(name=oHolder.name).count() != 0:
+            sMsg = "Card Set %s already exists." % oHolder.name
             do_complaint_error(sMsg)
             return
 

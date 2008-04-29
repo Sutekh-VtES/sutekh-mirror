@@ -11,7 +11,7 @@ Simulate the opening hand draw
 import gtk, gobject
 from copy import copy
 from random import choice
-from sutekh.core.SutekhObjects import PhysicalCardSet, AbstractCardSet, \
+from sutekh.core.SutekhObjects import PhysicalCardSet, \
         IAbstractCard
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
@@ -130,10 +130,8 @@ class OpeningHandSimulator(CardListPlugin):
     """
     Simulate opening hands
     """
-    dTableVersions = {PhysicalCardSet : [3, 4],
-            AbstractCardSet : [3]}
-    aModelsSupported = [PhysicalCardSet,
-            AbstractCardSet]
+    dTableVersions = {PhysicalCardSet : [3, 4, 5]}
+    aModelsSupported = [PhysicalCardSet]
     # responses for the hand dialog
     BACK, FORWARD, BREAKDOWN = range(1, 4)
 

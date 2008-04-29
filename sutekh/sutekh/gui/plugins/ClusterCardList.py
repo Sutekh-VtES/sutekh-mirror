@@ -8,7 +8,7 @@
 
 import gtk
 from sutekh.core.SutekhObjects import AbstractCard, PhysicalCard, \
-                                      AbstractCardSet, PhysicalCardSet, \
+                                      PhysicalCardSet, \
                                       IAbstractCard
 from sutekh.core.CardListTabulator import CardListTabulator
 from sutekh.gui.PluginManager import CardListPlugin
@@ -37,8 +37,7 @@ class ClusterCardList(CardListPlugin):
        from the clustering results."""
 
     dTableVersions = {}
-    aModelsSupported = [AbstractCard, PhysicalCard, PhysicalCardSet,
-            AbstractCardSet]
+    aModelsSupported = [AbstractCard, PhysicalCard, PhysicalCardSet]
 
     # pylint: disable-msg=W0142
     # ** magic OK
@@ -48,10 +47,7 @@ class ClusterCardList(CardListPlugin):
         # fMakeCardFromCluster triggers on length, but we like the name
         if not self.model:
             self._fMakeCardSetFromCluster = None
-        elif self.model.cardclass is PhysicalCard:
-            self._fMakeCardSetFromCluster = self.make_pcs_from_cluster
-        else:
-            self._fMakeCardSetFromCluster = self.make_acs_from_cluster
+        self._fMakeCardSetFromCluster = self.make_pcs_from_cluster
 
     # pylint: enable-msg=W0142
 
@@ -385,29 +381,6 @@ class ClusterCardList(CardListPlugin):
                 oDeck.addPhysicalCard(oCard)
 
         self.open_pcs(sDeckName)
-
-    def make_acs_from_cluster(self, aClusterId):
-        """Create a Abstract Card Set from the chosen cluster"""
-        sACSName = '_cluster_acs_%d_%d' % (aClusterId[0], aClusterId[1])
-
-        # Check ACS Doesn't Exist
-        if AbstractCardSet.selectBy(name=sACSName).count() != 0:
-            do_complaint_error("Abstract Card Set %s already exists." %
-                    sACSName)
-            return
-
-        # Create ACS
-        oACS = AbstractCardSet(name=sACSName)
-
-        # pylint: disable-msg=E1101
-        # SQLObject confuses pylint
-        for oCard, aCardCluster in zip(self._aCards, self._aClusterIds):
-            oCard = IAbstractCard(oCard)
-            if aClusterId[0] == aCardCluster[0] and \
-                    aClusterId[1] == aCardCluster[1]:
-                oACS.addAbstractCard(oCard)
-
-        self.open_acs(sACSName)
 
 # pylint: disable-msg=C0103
 # accept plugin name

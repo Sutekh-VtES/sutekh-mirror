@@ -10,7 +10,7 @@ import gtk
 import csv
 import gobject
 from sutekh.io.CSVParser import CSVParser
-from sutekh.core.SutekhObjects import PhysicalCard, AbstractCardSet, \
+from sutekh.core.SutekhObjects import PhysicalCard, \
         PhysicalCardSet
 from sutekh.core.CardLookup import LookupFailed
 from sutekh.gui.PluginManager import CardListPlugin
@@ -26,9 +26,7 @@ class CSVImporter(CardListPlugin):
        currently selected file.
        """
     dTableVersions = {
-        AbstractCardSet: [3],
-        PhysicalCardSet: [4],
-        PhysicalCard: [2],
+        PhysicalCardSet: [4, 5],
     }
     aModelsSupported = ["MainWindow"]
 
@@ -39,7 +37,6 @@ class CSVImporter(CardListPlugin):
         self._dCSVImportDestinations = {
             'Physical Cards': (CSVParser.PCL, None),
             'Physical Card Set': (CSVParser.PCS, PhysicalCardSet),
-            'Abstract Card Set': (CSVParser.ACS, AbstractCardSet),
         }
 
     def get_menu_item(self):
@@ -288,9 +285,7 @@ class CSVImporter(CardListPlugin):
 
             fIn.close()
 
-            if cCardSet is AbstractCardSet:
-                self.open_acs(sCardSetName)
-            elif cCardSet is PhysicalCardSet:
+            if cCardSet is PhysicalCardSet:
                 self.open_pcs(sCardSetName)
             else:
                 self.view.reload_keep_expanded()

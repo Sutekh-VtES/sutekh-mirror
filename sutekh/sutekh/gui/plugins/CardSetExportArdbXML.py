@@ -7,7 +7,7 @@
 """Plugin for exporting to ARDB's XML format"""
 
 import gtk
-from sutekh.core.SutekhObjects import PhysicalCardSet, AbstractCardSet, \
+from sutekh.core.SutekhObjects import PhysicalCardSet, \
         IAbstractCard
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhFileWidget import ExportDialog
@@ -17,9 +17,8 @@ from sutekh.SutekhUtility import safe_filename
 class CardSetExportArdbXML(CardListPlugin):
     """Provides a dialog for selecting a filename, then calls on
        WriteArdbXML to produce the required output."""
-    dTableVersions = { AbstractCardSet: [2, 3],
-                       PhysicalCardSet: [2, 3, 4]}
-    aModelsSupported = [AbstractCardSet, PhysicalCardSet]
+    dTableVersions = { PhysicalCardSet: [2, 3, 4, 5]}
+    aModelsSupported = [PhysicalCardSet]
 
     def get_menu_item(self):
         """Register on the 'Plugins' Menu"""

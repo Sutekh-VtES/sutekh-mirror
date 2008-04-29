@@ -7,9 +7,9 @@
 """Compare the contents of two card sets"""
 
 import gtk
-from sutekh.core.SutekhObjects import PhysicalCard, AbstractCardSet, \
+from sutekh.core.SutekhObjects import PhysicalCard, \
         PhysicalCardSet, AbstractCard, IAbstractCard
-from sutekh.core.Filters import PhysicalCardSetFilter, AbstractCardSetFilter
+from sutekh.core.Filters import PhysicalCardSetFilter
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog
 from sutekh.gui.ScrolledList import ScrolledList
@@ -23,10 +23,8 @@ class CardSetCompare(CardListPlugin):
     This plugin pnly considers the abstract cards - The physical expansion
     of cards is not considered.
     """
-    dTableVersions = {AbstractCardSet : [3],
-                      PhysicalCardSet : [4]}
-    aModelsSupported = [AbstractCardSet,
-            PhysicalCardSet]
+    dTableVersions = {PhysicalCardSet : [5]}
+    aModelsSupported = [PhysicalCardSet]
 
     def get_menu_item(self):
         """Register on the 'Plugins' menu."""
@@ -44,14 +42,8 @@ class CardSetCompare(CardListPlugin):
                 gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                 (gtk.STOCK_OK, gtk.RESPONSE_OK,
                     gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
-        if self._cModelType is AbstractCardSet:
-            oSelect = AbstractCardSet.select().orderBy('name')
-            oCSList = ScrolledList('Abstract Card Sets')
-        elif self._cModelType is PhysicalCardSet:
-            oSelect = PhysicalCardSet.select().orderBy('name')
-            oCSList = ScrolledList('Physical Card Sets')
-        else:
-            return
+        oSelect = PhysicalCardSet.select().orderBy('name')
+        oCSList = ScrolledList('Physical Card Sets')
         oCSList.set_select_single()
         # pylint: disable-msg=E1101
         # pylint misses vbox methods
@@ -131,12 +123,8 @@ class CardSetCompare(CardListPlugin):
         # Only compare abstract cards
         dFullCardList = {}
         for sCardSetName in aCardSetNames:
-            if self._cModelType is AbstractCardSet:
-                oFilter = AbstractCardSetFilter(sCardSetName)
-                oCardSet = oFilter.select(AbstractCard)
-            elif self._cModelType is PhysicalCardSet:
-                oFilter = PhysicalCardSetFilter(sCardSetName)
-                oCardSet = oFilter.select(PhysicalCard)
+            oFilter = PhysicalCardSetFilter(sCardSetName)
+            oCardSet = oFilter.select(PhysicalCard)
             for oCard in oCardSet:
                 # pylint: disable-msg=E1101
                 # pylint doesn't see IAbstractCard methods

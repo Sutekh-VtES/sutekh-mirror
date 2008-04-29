@@ -10,7 +10,7 @@ Calculate probailibities for drawing the current selection
 
 import gtk
 from copy import copy
-from sutekh.core.SutekhObjects import PhysicalCardSet, AbstractCardSet, \
+from sutekh.core.SutekhObjects import PhysicalCardSet, \
         IAbstractCard
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
@@ -122,10 +122,8 @@ class CardDrawSimPlugin(CardListPlugin):
     """
     # pylint: disable-msg=R0902
     # we use a lot of attributes to parse the data around
-    dTableVersions = {PhysicalCardSet : [3, 4],
-            AbstractCardSet : [3]}
-    aModelsSupported = [PhysicalCardSet,
-            AbstractCardSet]
+    dTableVersions = {PhysicalCardSet : [3, 4, 5]}
+    aModelsSupported = [PhysicalCardSet]
 
     def get_menu_item(self):
         """Register on the 'Plugins' menu"""

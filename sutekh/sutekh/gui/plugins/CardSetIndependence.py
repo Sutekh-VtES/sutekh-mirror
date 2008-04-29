@@ -8,9 +8,9 @@
 """Test whether card sets can be constructed independently"""
 
 import gtk
-from sutekh.core.SutekhObjects import AbstractCardSet, PhysicalCardSet, \
+from sutekh.core.SutekhObjects import PhysicalCardSet, \
                                  AbstractCard, PhysicalCard, IAbstractCard
-from sutekh.core.Filters import AbstractCardSetFilter, PhysicalCardSetFilter
+from sutekh.core.Filters import PhysicalCardSetFilter
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.ScrolledList import ScrolledList
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint
@@ -26,15 +26,6 @@ def _get_cards(oCardSet, dFullCardList):
         dFullCardList.setdefault(oCard, [oAC.name, 0])
         dFullCardList[oCard][1] += 1
 
-def _get_abstract_card_set_list(aCardSetNames):
-    """Get the cards in the list of AbstractCardSets aCardSetNames"""
-    dFullCardList = {}
-    for sName in aCardSetNames:
-        oFilter = AbstractCardSetFilter(sName)
-        oCS = oFilter.select(AbstractCard)
-        _get_cards(oCS, dFullCardList)
-    return dFullCardList
-
 def _get_physical_card_set_list(aCardSetNames):
     """Get the cards in the list of PhysicalCardSets aCardSetNames"""
     # pylint: disable-msg=E1101
@@ -45,24 +36,6 @@ def _get_physical_card_set_list(aCardSetNames):
         oCS = oFilter.select(PhysicalCard)
         _get_cards(oCS, dFullCardList)
     return dFullCardList
-
-def _test_abstract_card_sets(aCardSetNames):
-    """Test if all the Abstract Cards selected can be realised
-        independently"""
-    dMissing = {}
-    dFullCardList = _get_abstract_card_set_list(aCardSetNames)
-    for iCardId, (sCardName, iCount) in dFullCardList.iteritems():
-        oPC = list(PhysicalCard.selectBy(abstractCardID=iCardId))
-        if iCount > len(oPC):
-            dMissing[sCardName] = iCount - len(oPC)
-    if len(dMissing) > 0:
-        sMessage = "<span foreground = \"red\">Missing Cards </span>\n"
-        for sCardName, iCount in dMissing.iteritems():
-            sMessage += "<span foreground = \"blue\">" + sCardName + \
-                    "</span> : " + str(iCount) + "\n"
-    else:
-        sMessage = "All Cards in the PhysicalCard List"
-    do_complaint(sMessage, gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, True)
 
 def _test_physical_card_sets(aCardSetNames):
     """Test if the Physical Card Sets are actaully independent by
@@ -93,10 +66,8 @@ class CardSetIndependence(CardListPlugin):
        For physical card sets, this doesn't consider the current card
        assignment, just whether enough cards are present.
        """
-    dTableVersions = {AbstractCardSet : [1, 2, 3, 4],
-                      PhysicalCardSet : [1, 2, 3, 4]}
-    aModelsSupported = [AbstractCardSet,
-            PhysicalCardSet]
+    dTableVersions = {PhysicalCardSet : [1, 2, 3, 4, 5]}
+    aModelsSupported = [PhysicalCardSet]
 
     def get_menu_item(self):
         """Register with the 'Plugins' Menu"""
@@ -121,14 +92,8 @@ class CardSetIndependence(CardListPlugin):
                           gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                           (gtk.STOCK_OK, gtk.RESPONSE_OK,
                            gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
-        if self._cModelType is AbstractCardSet:
-            oSelect = AbstractCardSet.select().orderBy('name')
-            oCSList = ScrolledList('Abstract Card Sets')
-        elif self._cModelType is PhysicalCardSet:
-            oSelect = PhysicalCardSet.select().orderBy('name')
-            oCSList = ScrolledList('Physical Card Sets')
-        else:
-            return
+        oSelect = PhysicalCardSet.select().orderBy('name')
+        oCSList = ScrolledList('Physical Card Sets')
         # pylint: disable-msg=E1101
         # vbox confuses pylint
         oDlg.vbox.pack_start(oCSList)
@@ -145,10 +110,7 @@ class CardSetIndependence(CardListPlugin):
         if oResponse ==  gtk.RESPONSE_OK:
             aCardSetNames = [self.view.sSetName]
             aCardSetNames.extend(oCSList.get_selection())
-            if self._cModelType is AbstractCardSet:
-                _test_abstract_card_sets(aCardSetNames)
-            else:
-                _test_physical_card_sets(aCardSetNames)
+            _test_physical_card_sets(aCardSetNames)
         oDlg.destroy()
 
 

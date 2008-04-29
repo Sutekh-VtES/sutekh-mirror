@@ -14,8 +14,8 @@ import zipfile
 import urllib2
 import tempfile
 from sqlobject import SQLObjectNotFound
-from sutekh.core.SutekhObjects import AbstractCard, AbstractCardSet, \
-        PhysicalCard, PhysicalCardSet, IAbstractCard, IExpansion
+from sutekh.core.SutekhObjects import PhysicalCard, PhysicalCardSet, \
+        IAbstractCard, IExpansion
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.ProgressDialog import ProgressDialog
 from sutekh.gui.CardListView import CardListViewListener
@@ -445,10 +445,10 @@ class CardImagePlugin(CardListPlugin):
     """
     Plugin providing access to CardImageFrame
     """
-    dTableVersions = {AbstractCard : [1, 2, 3]}
+    dTableVersions = {PhysicalCardSet : [5]}
     aModelsSupported = ["MainWindow"]
-    aListenViews = [AbstractCardSet, PhysicalCardSet,
-            PhysicalCard, AbstractCard]
+    aListenViews = [PhysicalCardSet,
+            PhysicalCard]
 
     oImageFrame = None
 

@@ -8,7 +8,7 @@
 
 import gtk
 import time
-from sutekh.core.SutekhObjects import PhysicalCardSet, AbstractCardSet, \
+from sutekh.core.SutekhObjects import PhysicalCardSet, \
         IAbstractCard
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhDialog import do_complaint_error
@@ -210,9 +210,8 @@ class CardSetExportHTML(CardListPlugin, ArdbInfo):
        and then dump that to file.
        This tries to match the HTML file produced by ARDB.
        """
-    dTableVersions = { AbstractCardSet: [2, 3],
-                       PhysicalCardSet: [2, 3, 4]}
-    aModelsSupported = [AbstractCardSet, PhysicalCardSet]
+    dTableVersions = { PhysicalCardSet: [2, 3, 4, 5]}
+    aModelsSupported = [PhysicalCardSet]
 
     # HTML style definition
     def get_menu_item(self):

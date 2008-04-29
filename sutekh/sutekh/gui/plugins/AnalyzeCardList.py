@@ -10,7 +10,7 @@ Display interesting statistics and properties of the card set
 """
 
 import gtk
-from sutekh.core.SutekhObjects import PhysicalCardSet, AbstractCardSet, \
+from sutekh.core.SutekhObjects import PhysicalCardSet, \
         IAbstractCard
 from sutekh.core.Filters import CardTypeFilter
 from sutekh.gui.PluginManager import CardListPlugin
@@ -240,10 +240,8 @@ class AnalyzeCardList(CardListPlugin):
     Displays various interesting stats, and does
     a Happy Family analysis of the deck
     """
-    dTableVersions = {PhysicalCardSet : [3, 4],
-            AbstractCardSet : [3]}
-    aModelsSupported = [PhysicalCardSet,
-            AbstractCardSet]
+    dTableVersions = {PhysicalCardSet : [3, 4, 5]}
+    aModelsSupported = [PhysicalCardSet]
 
     aCryptTypes = ['Vampire', 'Imbued']
     # Map of titles to votes

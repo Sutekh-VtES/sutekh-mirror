@@ -8,8 +8,7 @@
 """Display a running total of the cards in a card set"""
 
 import gtk
-from sutekh.core.SutekhObjects import IAbstractCard, AbstractCardSet, \
-                                      PhysicalCard, PhysicalCardSet
+from sutekh.core.SutekhObjects import PhysicalCardSet
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.CardListModel import CardListModelListener
 
@@ -29,11 +28,8 @@ class CountCardSetCards(CardListPlugin, CardListModelListener):
     toolbar containing a label with a running count of the
     cards in the card set, the library cards and the crypt cards
     """
-    dTableVersions = {PhysicalCardSet : [1, 2, 3, 4],
-                      AbstractCardSet : [1, 2, 3]}
-    aModelsSupported = [AbstractCardSet, PhysicalCardSet,
-            PhysicalCard]
-
+    dTableVersions = {PhysicalCardSet : [5]}
+    aModelsSupported = [PhysicalCardSet]
 
     # pylint: disable-msg=W0142
     # **magic OK here
