@@ -16,10 +16,9 @@
 
 from sutekh.core.SutekhObjects import AbstractCard, IAbstractCard, ICreed, \
         IVirtue, IClan, IDiscipline, IExpansion, ITitle, ISect, ICardType, \
-        IPhysicalCardSet, IAbstractCardSet, IRarityPair, IRarity, Clan, \
+        IPhysicalCardSet, IRarityPair, IRarity, Clan, \
         Discipline, CardType, Title, Creed, Virtue, Sect, Expansion, \
-        RarityPair, PhysicalCardSet, PhysicalCard, AbstractCardSet, \
-        IDisciplinePair
+        RarityPair, PhysicalCardSet, PhysicalCard, IDisciplinePair
 from sqlobject import SQLObjectNotFound, AND, OR, NOT, LIKE, func, \
         IN as SQLOBJ_IN
 from sqlobject.sqlbuilder import Table, Alias, LEFTJOINOn, Select, \
@@ -157,17 +156,15 @@ class FilterNot(Filter):
         elif 'PhysicalCardSet' in self.__oSubFilter.types:
             return NOT(IN(PhysicalCardSet.q.id, Select(PhysicalCardSet.q.id,
                 oExpression, join=aJoins)))
-        elif 'AbstractCardSet' in self.__oSubFilter.types:
-            return NOT(IN(AbstractCardSet.q.id, Select(AbstractCardSet.q.id,
-                oExpression, join=aJoins)))
+        else:
+            raise RuntimeError("FilterNot unable to handle sub-filter type.")
 
 # Null Filter
 
 class NullFilter(Filter):
     """Return everything."""
 
-    types = ['AbstractCard', 'PhysicalCard', 'AbstractCardSet',
-            'PhysicalCardSet']
+    types = ['AbstractCard', 'PhysicalCard', 'PhysicalCardSet']
 
     # pylint: disable-msg=C0111
     # don't need docstrings for _get_expression, get_values & _get_joins
@@ -937,9 +934,8 @@ class PhysicalCardFilter(Filter):
     def _get_joins(self):
         # pylint: disable-msg=E1101
         # SQLObject methods not detected by plylint
-        # This, AbstractCardSetFilter and PhysicalCardSetFilter are the
-        # only filters allowed to pass the AbstractCard table as a
-        # joining table.
+        # This and PhysicalCardSetFilter are the only filters allowed to
+        # pass the AbstractCard table as a joining table.
         # The join is needed so filtering on abstract card properties can work
         oTable = Table('physical_card')
         return [LEFTJOINOn(None, AbstractCard,
@@ -1111,8 +1107,8 @@ class PhysicalCardSetFilter(Filter):
         # The join on the AbstractCard table is needed to enable filtering
         # physical card sets on abstract card propeties, since the base class
         # for physical card sets is the mapping table.
-        # Only this, PhysicalCardFilter and AbstractCardSetFilter can join to
-        # the AbstractCard table like this
+        # Only this and PhysicalCardFilter can join to the AbstractCard table
+        # like this.
         # pylint: disable-msg=E1101
         # SQLObject methods not detected by plylint
         return [LEFTJOINOn(None, AbstractCard,
@@ -1190,30 +1186,6 @@ class PhysicalCardSetInUseFilter(Filter):
 
     def _get_expression(self):
         return IN(self.__oTable.q.physical_card_set_id, self.__aCardSetIds)
-
-class AbstractCardSetFilter(SingleFilter):
-    """
-    Select all cards in an Abstract Card Set
-    """
-    types = ['AbstractCard', 'PhysicalCard']
-    def __init__(self, sName):
-        # Select cards belonging to a AbstractCardSet
-        # pylint: disable-msg=E1101
-        # SQLObject methods not detected by plylint
-        self._oId = IAbstractCardSet(sName).id
-        self._oMapTable = Table('abstract_map')
-        self._oIdField = self._oMapTable.abstract_card_set_id
-
-    def _get_joins(self):
-        """Return a join suitable for combining with the AbstractCardSet
-           table"""
-        # This, PhysicalCardSetFilter and PhysicalCardFilter are the only
-        # filters allowed to pass the AbstractCard table as a joining table.
-        # The join is needed so filtering on abstract card properties can work
-        # pylint: disable-msg=E1101
-        # SQLObject methods not detected by plylint
-        return [LEFTJOINOn(None, AbstractCard,
-            AbstractCard.q.id == self._oMapTable.abstract_card_id)]
 
 class SpecificCardFilter(DirectFilter):
     """
@@ -1333,48 +1305,6 @@ class CardSetAnnotationsFilter(DirectFilter):
         return LIKE(func.LOWER(self.oTable.annotations),
                 '%' + self.__sPattern + '%')
 
-# Abstract Card Set subclasses
-
-class AbstractCardSetNameFilter(CardSetNameFilter):
-    """Filter Abstract Card Set on Name"""
-    keyword = "AbstractCardSetName"
-    description = "Abstract Card Set Name"
-    types = ['AbstractCardSet']
-
-    def __init__(self, sPattern):
-        super(AbstractCardSetNameFilter, self).__init__(sPattern)
-        self.oTable = Table('abstract_card_set')
-
-class AbstractCardSetDescriptionFilter(CardSetDescriptionFilter):
-    """Filter Abstract Card Set on Description"""
-    keyword = "AbstractCardSetDescription"
-    description = "Abstract Card Set Description"
-    types = ['AbstractCardSet']
-
-    def __init__(self, sPattern):
-        super(AbstractCardSetDescriptionFilter, self).__init__(sPattern)
-        self.oTable = Table('abstract_card_set')
-
-class AbstractCardSetAuthorFilter(CardSetAuthorFilter):
-    """Filter Abstract Card Set on Author"""
-    keyword = "AbstractCardSetAuthor"
-    description = "Abstract Card Set Author"
-    types = ['AbstractCardSet']
-
-    def __init__(self, sPattern):
-        super(AbstractCardSetAuthorFilter, self).__init__(sPattern)
-        self.oTable = Table('abstract_card_set')
-
-class AbstractCardSetAnnotationsFilter(CardSetAnnotationsFilter):
-    """Filter Abstract Card Set on Annotations"""
-    keyword = "AbstractCardSetAnnotations"
-    description = "Abstract Card Set Annotations"
-    types = ['AbstractCardSet']
-
-    def __init__(self, sPattern):
-        super(AbstractCardSetAnnotationsFilter, self).__init__(sPattern)
-        self.oTable = Table('abstract_card_set')
-
 # Physical Card Set subclasses
 
 class PhysicalCardSetNameFilter(CardSetNameFilter):
@@ -1444,10 +1374,8 @@ aParserFilters = [MultiCardTypeFilter, MultiCostTypeFilter, MultiClanFilter,
         MultiCostFilter, MultiLifeFilter, MultiCreedFilter, MultiVirtueFilter,
         CardTextFilter, CardNameFilter, MultiSectFilter, MultiTitleFilter,
         MultiExpansionRarityFilter, MultiDisciplineLevelFilter,
-        MultiPhysicalExpansionFilter, AbstractCardSetNameFilter,
-        PhysicalCardSetNameFilter, AbstractCardSetAuthorFilter,
-        PhysicalCardSetAuthorFilter, AbstractCardSetDescriptionFilter,
-        PhysicalCardSetDescriptionFilter, AbstractCardSetAnnotationsFilter,
+        MultiPhysicalExpansionFilter, PhysicalCardSetNameFilter,
+        PhysicalCardSetAuthorFilter, PhysicalCardSetDescriptionFilter,
         PhysicalCardSetAnnotationsFilter, MultiPhysicalCardSetFilter,
         MultiPhysicalCardCountFilter, PhysicalCardSetInUseFilter,
         PCSPhysicalCardSetInUseFilter, CardFunctionFilter]

@@ -8,18 +8,16 @@
    to a database."""
 
 from sutekh.core.CardLookup import DEFAULT_LOOKUP
-from sutekh.core.SutekhObjects import AbstractCardSet, PhysicalCardSet, \
-        PhysicalCard
+from sutekh.core.SutekhObjects import PhysicalCardSet, PhysicalCard
 
 class CardSetHolder(object):
     # pylint: disable-msg=R0902
     # Need to keep state of card set, so many attributes
     """Holder for Card Sets.
 
-       This holds a list of cards and opyionally expansions.
-       This can be converted into either a PhysicalCard List, a PhysicalCardSet
-       or an AbstractCardSet as required.
-       We call on the provided CardLookup function to resolve unknown cards.
+       This holds a list of cards and optionally expansions and may be used
+       to create a PhysicalCardSet. We call on the provided CardLookup function
+       to resolve unknown cards.
        """
     def __init__(self):
         self._sName, self._sAuthor, self._sComment, \
@@ -34,8 +32,10 @@ class CardSetHolder(object):
 
     # Manipulate Virtual Card Set
 
-    def add(self, iCnt, sName, sExpansionName=None):
+    def add(self, iCnt, sName, sExpansionName):
         """Append cards to the virtual set.
+        
+           sExpansionName may be None.
            """
         self._dCards.setdefault(sName, 0)
         self._dCards[sName] += iCnt
@@ -45,8 +45,10 @@ class CardSetHolder(object):
         self._dCardExpansions[sName].setdefault(sExpansionName, 0)
         self._dCardExpansions[sName][sExpansionName] += iCnt
 
-    def remove(self, iCnt, sName, sExpansionName=None):
+    def remove(self, iCnt, sName, sExpansionName):
         """Remove cards from the virtual set.
+        
+           sExpansionName may be None.
            """
         if not sName in self._dCards or self._dCards[sName] < iCnt:
             raise RuntimeError("Not enough of card '%s' to remove '%d'."
@@ -75,57 +77,7 @@ class CardSetHolder(object):
             fset = lambda self, x: setattr(self, '_bInUse', x))
     # pylint: enable-msg=W0212
 
-    # Save Virtual Card Set to Database in Various Ways
-
-    def create_acs(self, oCardLookup=DEFAULT_LOOKUP):
-        """Create an Abstract Card Set.
-           """
-        if self.name is None:
-            raise RuntimeError("No name for the card set")
-
-        aCardCnts = self._dCards.items()
-        aAbsCards = oCardLookup.lookup([tCardCnt[0] for tCardCnt in aCardCnts],
-                "Abstract Card Set %s" % self.name)
-
-        oACS = AbstractCardSet(name=self.name.encode('utf8'),
-                               author=self.author, comment=self.comment,
-                               annotations=self.annotations)
-        oACS.syncUpdate()
-
-        # pylint: disable-msg=W0612
-        # sName + iLoop is loop variable
-        for oAbs, (sName, iCnt) in zip(aAbsCards, aCardCnts):
-            # pylint: disable-msg=E1101
-            # SQLObject confuses pylint
-            if not oAbs:
-                continue
-            for iLoop in range(iCnt):
-                oACS.addAbstractCard(oAbs)
-        oACS.syncUpdate()
-
-    def create_physical_cl(self, oCardLookup=DEFAULT_LOOKUP):
-        """Create the Physical Card List from this Card Set.
-
-           Intended for updating WW card lists when WW rename cards, etc.
-           """
-        aCardCnts = self._dCards.items()
-        aAbsCards = oCardLookup.lookup([tCardCnt[0] for tCardCnt in aCardCnts],
-                "Physical Card List")
-
-        aExpNames = self._dExpansions.keys()
-        aExps = oCardLookup.expansion_lookup(aExpNames, "Physical Card List")
-        dExpansionLookup = dict(zip(aExpNames, aExps))
-
-        # pylint: disable-msg=W0612
-        # iCnt, Loop is loop variable
-        for oAbs, (sName, iCnt) in zip(aAbsCards, aCardCnts):
-            if not oAbs:
-                continue
-            for sExpansionName, iExtCnt in \
-                    self._dCardExpansions[sName].iteritems():
-                oExpansion = dExpansionLookup[sExpansionName]
-                for iLoop in range(iExtCnt):
-                    PhysicalCard(abstractCard=oAbs, expansion=oExpansion)
+    # Save Virtual Card Set to Database
 
     def create_pcs(self, oCardLookup=DEFAULT_LOOKUP):
         """Create a Physical Card Set.
@@ -163,74 +115,6 @@ class CachedCardSetHolder(CardSetHolder):
     """CardSetHolder class which supports creating and using a
        cached dictionary of Lookup results.
        """
-    # pylint: disable-msg=W0102, W0221
-    # (this applies to all methods in this class)
-    # W0102 - {} is the right thing here
-    # W0221 - We need the extra argument
-    def create_acs(self, oCardLookup=DEFAULT_LOOKUP, dLookupCache={}):
-        """Create an Abstract Card Set.
-           """
-        if self.name is None:
-            raise RuntimeError("No name for the card set")
-
-        aCardCnts = self._dCards.items()
-        aAbsCards = oCardLookup.lookup([dLookupCache.get(tCardCnt[0],
-            tCardCnt[0]) for tCardCnt in aCardCnts],
-            "Abstract Card Set %s" % self.name)
-
-        oACS = AbstractCardSet(name=self.name.encode('utf8'),
-                               author=self.author, comment=self.comment,
-                               annotations=self.annotations)
-        oACS.syncUpdate()
-
-        for oAbs, (sName, iCnt) in zip(aAbsCards, aCardCnts):
-            # pylint: disable-msg=E1101
-            # SQLObject confuses pylint
-            if not oAbs:
-                dLookupCache[sName] = None
-                continue
-            if oAbs.canonicalName != sName and sName not in dLookupCache:
-                # Update the cache
-                # Should we cache None responses, so to avoid prompting on
-                # those again?
-                dLookupCache[sName] = oAbs.canonicalName
-            # pylint: disable-msg=W0612
-            # iLoop is loop variable
-            for iLoop in range(iCnt):
-                oACS.addAbstractCard(oAbs)
-        oACS.syncUpdate()
-        return dLookupCache
-
-    def create_physical_cl(self, oCardLookup=DEFAULT_LOOKUP, dLookupCache={}):
-        """Create the Physical Card List from this Card Set.
-
-           Intended for updating WW card lists when WW rename cards, etc.
-           """
-        # pylint: disable-msg=R0914
-        # we use this many local variables for clarity
-        aCardCnts = self._dCards.items()
-        aAbsCards = oCardLookup.lookup([dLookupCache.get(tCardCnt[0],
-            tCardCnt[0]) for tCardCnt in aCardCnts], "Physical Card List")
-
-        aExpNames = self._dExpansions.keys()
-        aExps = oCardLookup.expansion_lookup(aExpNames, "Physical Card List")
-        dExpansionLookup = dict(zip(aExpNames, aExps))
-
-        # pylint: disable-msg=W0612
-        # iCnt and iLoop are loop variables
-        for oAbs, (sName, iCnt) in zip(aAbsCards, aCardCnts):
-            if not oAbs:
-                dLookupCache[sName] = None
-                continue
-            if oAbs.canonicalName != sName and sName not in dLookupCache:
-                dLookupCache[sName] = oAbs.canonicalName
-                # Update the cache
-            for sExpansion, iExtCnt in \
-                    self._dCardExpansions[sName].iteritems():
-                oExpansion = dExpansionLookup[sExpansion]
-                for iLoop in range(iExtCnt):
-                    PhysicalCard(abstractCard=oAbs, expansion=oExpansion)
-        return dLookupCache
 
     def create_pcs(self, oCardLookup=DEFAULT_LOOKUP, dLookupCache={}):
         """Create a Physical Card Set.

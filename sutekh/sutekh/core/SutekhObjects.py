@@ -28,7 +28,6 @@ from protocols import advise, Interface
 
 class IAbstractCard(Interface): pass
 class IPhysicalCard(Interface): pass
-class IAbstractCardSet(Interface): pass
 class IPhysicalCardSet(Interface): pass
 class IRarityPair(Interface): pass
 class IExpansion(Interface): pass
@@ -57,7 +56,7 @@ class VersionTable(SQLObject):
 class AbstractCard(SQLObject):
     advise(instancesProvide=[IAbstractCard])
 
-    tableversion = 3
+    tableversion = 4
     sqlmeta.lazyUpdate = True
 
     canonicalName = UnicodeCol(alternateID=True, length=50)
@@ -93,8 +92,6 @@ class AbstractCard(SQLObject):
     rulings = CachedRelatedJoin('Ruling', intermediateTable='abs_ruling_map',
             createRelatedTable=False)
 
-    sets = RelatedJoin('AbstractCardSet', intermediateTable='abstract_map',
-            createRelatedTable=False)
     physicalCards = MultipleJoin('PhysicalCard')
 
 class PhysicalCard(SQLObject):
@@ -108,26 +105,16 @@ class PhysicalCard(SQLObject):
     sets = RelatedJoin('PhysicalCardSet', intermediateTable='physical_map',
             createRelatedTable=False)
 
-class AbstractCardSet(SQLObject):
-    advise(instancesProvide=[IAbstractCardSet])
-
-    tableversion = 3
-    name = UnicodeCol(alternateID=True, length=50)
-    author = UnicodeCol(length=50, default='')
-    comment = UnicodeCol(default='')
-    annotations = UnicodeCol(default='')
-    cards = RelatedJoin('AbstractCard', intermediateTable='abstract_map',
-            createRelatedTable=False)
-
 class PhysicalCardSet(SQLObject):
     advise(instancesProvide=[IPhysicalCardSet])
 
-    tableversion = 4
+    tableversion = 5
     name = UnicodeCol(alternateID=True, length=50)
     author = UnicodeCol(length=50, default='')
     comment = UnicodeCol(default='')
     annotations = UnicodeCol(default='')
     inuse = BoolCol(default=False)
+    parent = ForeignKey('PhysicalCardSet')
     cards = RelatedJoin('PhysicalCard', intermediateTable='physical_map',
             createRelatedTable=False)
 
@@ -251,17 +238,6 @@ class MapPhysicalCardToPhysicalCardSet(SQLObject):
     physicalCardSetIndex = DatabaseIndex(physicalCardSet, unique=False)
     jointIndex = DatabaseIndex(physicalCard, physicalCardSet, unique=False)
 
-class MapAbstractCardToAbstractCardSet(SQLObject):
-    class sqlmeta:
-        table = 'abstract_map'
-
-    tableversion = 1
-    abstractCard = ForeignKey('AbstractCard', notNull=True)
-    abstractCardSet = ForeignKey('AbstractCardSet', notNull=True)
-
-    abstractCardIndex = DatabaseIndex(abstractCard, unique=False)
-    abstractCardSetIndex = DatabaseIndex(abstractCardSet, unique=False)
-
 class MapAbstractCardToRarityPair(SQLObject):
     class sqlmeta:
         table = 'abs_rarity_pair_map'
@@ -373,12 +349,11 @@ class MapAbstractCardToVirtue(SQLObject):
 # List of Tables to be created, dropped, etc.
 
 aObjectList = [ AbstractCard, Expansion,
-               PhysicalCard, AbstractCardSet, PhysicalCardSet,
+               PhysicalCard, PhysicalCardSet,
                Rarity, RarityPair, Discipline, DisciplinePair,
                Clan, CardType, Sect, Title, Ruling, Virtue, Creed,
                # Mapping tables from here on out
                MapPhysicalCardToPhysicalCardSet,
-               MapAbstractCardToAbstractCardSet,
                MapAbstractCardToRarityPair,
                MapAbstractCardToRuling,
                MapAbstractCardToClan,
@@ -392,7 +367,6 @@ aObjectList = [ AbstractCard, Expansion,
 
 aPhysicalList = [PhysicalCard, PhysicalCardSet,
         MapPhysicalCardToPhysicalCardSet]
-aAbstractCardSetList = [AbstractCardSet, MapAbstractCardToAbstractCardSet]
 
 # Object Maker API
 
@@ -653,14 +627,6 @@ class RulingAdapter(object):
         sText, sCode = tData
         return Ruling.byText(sText.encode('utf8'))
 
-class AbstractCardSetAdapter(object):
-    advise(instancesProvide=[IAbstractCardSet], asAdapterForTypes=[basestring])
-
-    def __new__(cls, sName):
-        # pylint: disable-msg=E1101
-        # SQLObject confuses pylint
-        return AbstractCardSet.byName(sName.encode('utf8'))
-
 class PhysicalCardSetAdapter(object):
     advise(instancesProvide=[IPhysicalCardSet], asAdapterForTypes=[basestring])
 
@@ -674,13 +640,6 @@ class PhysicalCardToAbstractCardAdapter(object):
 
     def __new__(cls, oPhysCard):
         return oPhysCard.abstractCard
-
-class MapAbstractCardToAbstractCardSetToAbstractCardAdapter(object):
-    advise(instancesProvide=[IAbstractCard],
-            asAdapterForTypes=[MapAbstractCardToAbstractCardSet])
-
-    def __new__(cls, oAbstractMapEntry):
-        return oAbstractMapEntry.abstractCard
 
 # Flushing
 
