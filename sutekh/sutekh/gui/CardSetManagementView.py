@@ -42,6 +42,7 @@ class CardSetManagementModel(gtk.TreeStore):
 
     def load(self):
         """Load the card sets into the card view"""
+        self.clear()
         oCardSetIter = self.get_card_set_iterator(self.get_current_filter())
         self._dName2Iter = {}
 
@@ -49,13 +50,13 @@ class CardSetManagementModel(gtk.TreeStore):
         for oCardSet in oCardSetIter:
             if oCardSet.parent:
                 # Do funky stuff to make sure parent is shown in the view
-                oParent = oCardSet.parent
-                aToAdd = [oCardSet]
-                while oParent.name not in self._dName2Iter and oParent.parent:
+                oParent = oCardSet
+                aToAdd = []
+                while oParent and oParent.name not in self._dName2Iter:
                     # FIXME: Add loop detection + raise error on loops
-                    aToAdd.append(oParent)
+                    aToAdd.insert(0, oParent) # Insert at the head
                     oParent = oParent.parent
-                if oParent.name in self._dName2Iter:
+                if oParent and oParent.name in self._dName2Iter:
                     oIter = self._dName2Iter[oParent.name]
                 else:
                     oIter = None
@@ -251,7 +252,7 @@ class CardSetManagementView(gtk.TreeView, object):
         """Get the Filter from the FilterDialog."""
         if self._oFilterDialog is None:
             self._oFilterDialog = FilterDialog(self._oMainWin,
-                    self._oConfig, self._oController.filtertype)
+                    self._oMainWin.config_file, 'PhysicalCardSet')
 
         self._oFilterDialog.run()
 

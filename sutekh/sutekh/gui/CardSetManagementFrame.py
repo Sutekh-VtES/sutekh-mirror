@@ -56,7 +56,7 @@ class CardSetManagementFrame(BasicFrame):
         oMbox.pack_start(self._oTitle, False, False)
 
         self._oMenu = CardSetManagementMenu(self, self._oMainWindow,
-                self._sName)
+                self._oView)
 
         oMbox.pack_start(self._oMenu, False, False)
 
@@ -133,34 +133,6 @@ class CardSetManagementFrame(BasicFrame):
         sFrameName = sSetName
         delete_physical_card_set(sSetName)
         self._oMainWindow.remove_frame_by_name(sFrameName)
-
-    def set_filter(self):
-        """Set the filter applied to the list."""
-        if self._oFilterDialog is None:
-            self._oFilterDialog = FilterDialog(self._oMainWindow,
-                    self._oMainWindow.config_file, self._sFilterType)
-        self._oFilterDialog.run()
-
-        if self._oFilterDialog.was_cancelled():
-            return # Change nothing
-
-        oFilter = self._oFilterDialog.get_filter()
-        if oFilter != None:
-            self._oFilter = oFilter
-            if self._oMenu.get_apply_filter():
-                self.reload()
-            else:
-                # Let toggle reload for us
-                self._oMenu.set_apply_filter(True)
-        else:
-            self._oFilter = NullFilter()
-            # Filter is set to blank, so we treat this as disabling
-            # Filter
-            if not self._oMenu.get_apply_filter():
-                self.reload()
-            else:
-                # Let toggle reload for us
-                self._oMenu.set_apply_filter(False)
 
     def row_clicked(self, oTreeView, oPath, oColumn):
         """Handle row clicked events.
