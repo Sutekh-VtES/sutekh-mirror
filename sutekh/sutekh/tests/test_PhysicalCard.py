@@ -8,9 +8,9 @@
 
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.tests import test_WhiteWolfParser
-from sutekh.core.SutekhObjects import IAbstractCard, PhysicalCard, IExpansion
+from sutekh.core.SutekhObjects import IAbstractCard, IPhysicalCard, \
+                                      IPhysicalCardSet, PhysicalCardSet
 from sutekh.io.PhysicalCardParser import PhysicalCardParser
-from sutekh.io.PhysicalCardWriter import PhysicalCardWriter
 from sutekh.io.IdentifyXMLFile import IdentifyXMLFile
 import unittest
 
@@ -24,78 +24,46 @@ class PhysicalCardTests(SutekhTest):
         # E1101: SQLObject + PyProtocols magic confuses pylint
         # R0915, R0914: Want a long, sequentila test case to minimise
         # repeated setups, so it has lots of lines + variables
+
         aAbstractCards = ['.44 magnum', 'ak-47', 'abbot', 'abebe', 'abombwe']
         aCardExpansions = [('.44 magnum', 'Jyhad'),
                 ('ak-47', 'LotN'),
                 ('abbot', 'Third Edition'),
                 ('abombwe', 'Legacy of Blood')]
-        # Test addition
-        for sName in aAbstractCards:
-            oAC = IAbstractCard(sName)
-            oPC = PhysicalCard(abstractCard=oAC, expansion=None)
-            self.assertEqual(PhysicalCard.selectBy(
-                abstractCardID=oAC.id).count(), 1)
-        self.assertEqual(PhysicalCard.select().count(), len(aAbstractCards))
 
-        for sName, sExpansion in aCardExpansions:
-            oAC = IAbstractCard(sName)
-            oExpansion = IExpansion(sExpansion)
-            oPC = PhysicalCard(abstractCard=oAC, expansion=oExpansion)
-            self.assertEqual(PhysicalCard.selectBy(
-                abstractCardID=oAC.id).count(), 2)
-            self.assertEqual(PhysicalCard.selectBy(abstractCardID=oAC.id,
-                expansionID=oExpansion.id).count(), 1)
-
-        self.assertEqual(PhysicalCard.select().count(), len(aAbstractCards) + \
-                len(aCardExpansions))
-
-        # test removal
-
-        for sName, sExpansion in aCardExpansions:
-            oAC = IAbstractCard(sName)
-            oExpansion = IExpansion(sExpansion)
-            oPC = list(PhysicalCard.selectBy(abstractCard=oAC,
-                expansion=oExpansion))[0]
-            PhysicalCard.delete(oPC.id)
-            self.assertEqual(PhysicalCard.selectBy(
-                abstractCardID=oAC.id).count(), 1)
-            self.assertEqual(PhysicalCard.selectBy(abstractCardID=oAC.id,
-                expansionID=oExpansion.id).count(), 0)
-        self.assertEqual(PhysicalCard.select().count(), len(aAbstractCards))
-
-        for sName in aAbstractCards:
-            oAC = IAbstractCard(sName)
-            oPC = list(PhysicalCard.selectBy(abstractCard=oAC))[0]
-            PhysicalCard.delete(oPC.id)
-            self.assertEqual(PhysicalCard.selectBy(
-                abstractCardID=oAC.id).count(), 0)
-
-        self.assertEqual(PhysicalCard.select().count(), 0)
         # test IO
-        oAC = IAbstractCard(aAbstractCards[0])
-        oPC = PhysicalCard(abstractCard=oAC, expansion=None)
-        oWriter = PhysicalCardWriter()
-        sExpected = '<cards sutekh_xml_version="%s"><card count="1" ' \
-                 'expansion="None Specified" id="%d" name="%s" /></cards>' \
-                 % (oWriter.sMyVersion, oPC.id, oAC.name)
-        self.assertEqual(oWriter.gen_xml_string(), sExpected)
 
-        PhysicalCard.delete(oPC.id)
+        oAC = IAbstractCard(aAbstractCards[0])
+        oPC = IPhysicalCard((oAC, None))
+        sLastWriterVersion = "1.0"
+
+        sExample = '<cards sutekh_xml_version="%s"><card count="1" ' \
+                   'expansion="None Specified" id="%d" name="%s" /></cards>' \
+                   % (sLastWriterVersion, oPC.id, oAC.name)
+
         oParser = PhysicalCardParser()
-        oParser.parse_string(sExpected)
-        self.assertEqual(oWriter.gen_xml_string(), sExpected)
+        oParser.parse_string(sExample)
+
+        oMyCollection = IPhysicalCardSet("My Collection")
+        assert(len(oMyCollection.cards) == 1)
+        PhysicalCardSet.delete(oMyCollection.id)
+
         sTempFileName =  self._create_tmp_file()
         fOut = open(sTempFileName, 'w')
-        oWriter.write(fOut)
+        fOut.write(sExample)
         fOut.close()
+
         oIdFile = IdentifyXMLFile()
         tResult = oIdFile.id_file(sTempFileName)
         self.assertEqual(tResult[0], 'PhysicalCard')
-        PhysicalCard.delete(oPC.id)
+
         fIn = open(sTempFileName, 'r')
         oParser.parse(fIn)
         fIn.close()
-        assert(oWriter.gen_xml_string(), sExpected)
+
+        oMyCollection = IPhysicalCardSet("My Collection")
+        assert(len(oMyCollection.cards) == 1)
+        PhysicalCardSet.delete(oMyCollection.id)
 
 if __name__ == "__main__":
     unittest.main()
