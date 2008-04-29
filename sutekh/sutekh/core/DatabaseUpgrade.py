@@ -16,9 +16,9 @@ from sqlobject import sqlhub, SQLObject, IntCol, UnicodeCol, RelatedJoin, \
 # pylint: enable-msg=E0611
 from logging import Logger
 from sutekh.core.SutekhObjects import PhysicalCard, AbstractCard, \
-        AbstractCardSet, PhysicalCardSet, Expansion, Clan, Virtue, \
-        Discipline, Rarity, RarityPair, CardType, Ruling, aObjectList, \
-        DisciplinePair, Creed, Sect, Title
+        PhysicalCardSet, Expansion, Clan, Virtue, Discipline, Rarity, \
+        RarityPair, CardType, Ruling, aObjectList, DisciplinePair, Creed, \
+        Sect, Title
 from sutekh.core.CardSetHolder import CachedCardSetHolder
 from sutekh.core.PhysicalCardMappingHolder import PhysicalCardMappingHolder
 from sutekh.SutekhUtility import refresh_tables
@@ -94,7 +94,7 @@ class AbstractCard_v2(SQLObject):
             createRelatedTable=False)
     rulings = RelatedJoin('Ruling', intermediateTable='abs_ruling_map',
             createRelatedTable=False)
-    sets = RelatedJoin('AbstractCardSet', intermediateTable='abstract_map',
+    sets = RelatedJoin('AbstractCardSet_v3', intermediateTable='abstract_map',
             createRelatedTable=False)
     physicalCards = MultipleJoin('PhysicalCard')
 
@@ -130,6 +130,77 @@ class AbstractCardSet_ACv2(SQLObject):
     # Provides a join to AbstractCard_v2, needed to read old DB
     cards = RelatedJoin('AbstractCard_v2',
             intermediateTable='abstract_map', createRelatedTable=False)
+
+class AbstractCardSet_v3(SQLObject):
+    """Old abstract card set table."""
+    class sqlmeta:
+        """meta class used to set the correct table."""
+        table = 'abstract_card_set'
+    advise(instancesProvide=[IAbstractCardSet])
+
+    name = UnicodeCol(alternateID=True, length=50)
+    author = UnicodeCol(length=50, default='')
+    comment = UnicodeCol(default='')
+    annotations = UnicodeCol(default='')
+    cards = RelatedJoin('AbstractCard_v3', intermediateTable='abstract_map',
+            createRelatedTable=False)
+
+class AbstractCard_v3(SQLObject):
+    """Old abstract card with join to abstract card set."""
+    class sqlmeta:
+        """meta class used to set the correct table."""
+        table = AbstractCard.sqlmeta.table
+    canonicalName = UnicodeCol(alternateID=True, length=50)
+    name = UnicodeCol(length=50)
+    text = UnicodeCol()
+    group = IntCol(default=None, dbName='grp')
+    capacity = IntCol(default=None)
+    cost = IntCol(default=None)
+    life = IntCol(default=None)
+    costtype = EnumCol(enumValues=['pool', 'blood', 'conviction', None],
+            default=None)
+    level = EnumCol(enumValues=['advanced', None], default=None)
+    burnoption = BoolCol(default=False)
+
+    discipline = CachedRelatedJoin('DisciplinePair',
+            intermediateTable='abs_discipline_pair_map',
+            createRelatedTable=False)
+    rarity = CachedRelatedJoin('RarityPair',
+            intermediateTable='abs_rarity_pair_map',
+            createRelatedTable=False)
+    clan = CachedRelatedJoin('Clan',
+            intermediateTable='abs_clan_map', createRelatedTable=False)
+    cardtype = CachedRelatedJoin('CardType', intermediateTable='abs_type_map',
+            createRelatedTable=False)
+    sect = CachedRelatedJoin('Sect', intermediateTable='abs_sect_map',
+            createRelatedTable=False)
+    title = CachedRelatedJoin('Title', intermediateTable='abs_title_map',
+            createRelatedTable=False)
+    creed = CachedRelatedJoin('Creed', intermediateTable='abs_creed_map',
+            createRelatedTable=False)
+    virtue = CachedRelatedJoin('Virtue', intermediateTable='abs_virtue_map',
+            createRelatedTable=False)
+    rulings = CachedRelatedJoin('Ruling', intermediateTable='abs_ruling_map',
+            createRelatedTable=False)
+
+    sets = RelatedJoin('AbstractCardSet_v3', intermediateTable='abstract_map',
+            createRelatedTable=False)
+    physicalCards = MultipleJoin('PhysicalCard')
+
+
+class PhysicalCardSet_v4(SQLObject):
+    """Old PCS table without parent links."""
+    class sqlmeta:
+        """meta class used to set the correct table."""
+        table = PhysicalCardSet.sqlmeta.table
+    name = UnicodeCol(alternateID=True, length=50)
+    author = UnicodeCol(length=50, default='')
+    comment = UnicodeCol(default='')
+    annotations = UnicodeCol(default='')
+    inuse = BoolCol(default=False)
+    cards = RelatedJoin('PhysicalCard', intermediateTable='physical_map',
+            createRelatedTable=False)
+
 
 # pylint: enable-msg=C0103, W0232
 
@@ -171,17 +242,19 @@ def check_can_read_old_database():
         raise UnknownVersion("RarityPair")
     if not oVer.check_table_versions([AbstractCard],
             [AbstractCard.tableversion]) \
-            and not oVer.check_table_versions([AbstractCard], [2]):
+            and not oVer.check_table_versions([AbstractCard], [2, 3]):
         raise UnknownVersion("AbstractCard")
     if not oVer.check_table_versions([PhysicalCard],
             [PhysicalCard.tableversion]):
         raise UnknownVersion("PhysicalCard")
     if not oVer.check_table_versions([PhysicalCardSet],
             [PhysicalCardSet.tableversion]) and not oVer.check_table_versions(
-                    [PhysicalCardSet], [3]):
+                    [PhysicalCardSet], [3, 4]):
         raise UnknownVersion("PhysicalCardSet")
-    if not oVer.check_table_versions([AbstractCardSet],
-            [AbstractCardSet.tableversion]):
+    # NB: This test should go away for Sutekh 0.8, as we will no longer
+    # support upgrading from DB version which have abstract card sets
+    if not oVer.check_table_versions([AbstractCardSet_v3],
+            [-1, 3]):
         raise UnknownVersion("AbstractCardSet")
     return True
 
@@ -200,9 +273,11 @@ def old_database_count():
         iCount += PhysicalCardSet.select().count()
     elif oVer.check_table_versions([PhysicalCardSet], [3]):
         iCount += PhysicalCardSet_v3.select().count()
-    if oVer.check_table_versions([AbstractCardSet],
-            [AbstractCardSet.tableversion]):
-        iCount += AbstractCardSet.select().count()
+    elif oVer.check_table_versions([PhysicalCardSet], [4]):
+        iCount += PhysicalCardSet_v4.select().count()
+    if oVer.check_table_versions([AbstractCardSet_v3],
+            [3]):
+        iCount += AbstractCardSet_v3.select().count()
     return iCount
 
 # pylint: disable-msg=W0612
@@ -454,6 +529,38 @@ def copy_old_abstract_card(oOrigConn, oTrans, oLogger):
     aMessages = []
     if oVer.check_table_versions([AbstractCard], [AbstractCard.tableversion]):
         copy_abstract_card(oOrigConn, oTrans, oLogger)
+    elif oVer.check_table_versions([AbstractCard], [3]):
+        for oCard in AbstractCard_v3.select(connection=oOrigConn):
+            oCardCopy = AbstractCard(id=oCard.id,
+                    canonicalName=oCard.canonicalName, name=oCard.name,
+                    text=oCard.text, connection=oTrans)
+            oCardCopy.group = oCard.group
+            oCardCopy.capacity = oCard.capacity
+            oCardCopy.cost = oCard.cost
+            oCardCopy.costtype = oCard.costtype
+            oCardCopy.level = oCard.level
+            oCardCopy.life = oCard.life
+            oCardCopy.burnoption = oCard.burnoption
+            for oData in oCard.rarity:
+                oCardCopy.addRarityPair(oData)
+            for oData in oCard.discipline:
+                oCardCopy.addDisciplinePair(oData)
+            for oData in oCard.rulings:
+                oCardCopy.addRuling(oData)
+            for oData in oCard.clan:
+                oCardCopy.addClan(oData)
+            for oData in oCard.cardtype:
+                oCardCopy.addCardType(oData)
+            for oData in oCard.sect:
+                oCardCopy.addSect(oData)
+            for oData in oCard.title:
+                oCardCopy.addTitle(oData)
+            for oData in oCard.creed:
+                oCardCopy.addCreed(oData)
+            for oData in oCard.virtue:
+                oCardCopy.addVirtue(oData)
+            oCardCopy.syncUpdate()
+            oLogger.info('copied AC %s', oCardCopy.name)
     elif oVer.check_table_versions([AbstractCard], [2]):
         aMessages.append('Missing data for the Burn Option on cards.'
                 ' You will need to reimport the White wolf card list'
@@ -508,6 +615,8 @@ def copy_physical_card(oOrigConn, oTrans, oLogger):
 def copy_old_physical_card(oOrigConn, oTrans, oLogger):
     """Copy PhysicalCards, upgrading if needed."""
     oVer = DatabaseVersion()
+    # FIXME: Fix this to create a PCS 'My Collection' and the changed
+    # physical card list structure
     if oVer.check_table_versions([PhysicalCard], [PhysicalCard.tableversion]):
         copy_physical_card(oOrigConn, oTrans, oLogger)
     else:
@@ -522,7 +631,7 @@ def copy_physical_card_set(oOrigConn, oTrans, oLogger):
         oCopy = PhysicalCardSet(id=oSet.id, name=oSet.name,
                 author=oSet.author, comment=oSet.comment,
                 annotations=oSet.annotations, inuse=oSet.inuse,
-                connection=oTrans)
+                parent=oSet.parent, connection=oTrans)
         for oCard in oSet.cards:
             oCopy.addPhysicalCard(oCard.id)
         oCopy.syncUpdate()
@@ -538,6 +647,7 @@ def copy_old_physical_card_set(oOrigConn, oTrans, oLogger):
             and oVer.check_table_versions([PhysicalCard],
                     [PhysicalCard.tableversion]):
         copy_physical_card_set(oOrigConn, oTrans, oLogger)
+    # FIXME: magic needed to set the right parent here.
     elif oVer.check_table_versions([PhysicalCardSet], [3]):
         for oSet in PhysicalCardSet_v3.select(connection=oOrigConn):
             oCopy = PhysicalCardSet(id=oSet.id, name=oSet.name,
@@ -548,27 +658,26 @@ def copy_old_physical_card_set(oOrigConn, oTrans, oLogger):
                 oCopy.addPhysicalCard(oCard.id)
             oCopy.syncUpdate()
             oLogger.info('Copied PCS %s', oCopy.name)
+    elif oVer.check_table_versions([PhysicalCardSet], [4]):
+        for oSet in PhysicalCardSet_v3.select(connection=oOrigConn):
+            oCopy = PhysicalCardSet(id=oSet.id, name=oSet.name,
+                    author=oSet.author, comment=oSet.comment,
+                    annotations=None, inuse=False,
+                    connection=oTrans)
+            for oCard in oSet.cards:
+                oCopy.addPhysicalCard(oCard.id)
+            oCopy.syncUpdate()
+            oLogger.info('Copied PCS %s', oCopy.name)
+
     else:
         return (False, ["Unknown PhysicalCardSet version"])
     return (True, [])
-
-def copy_abstract_card_set(oOrigConn, oTrans, oLogger):
-    """Copy AbstractCardSet, assuming versions match"""
-    # pylint: disable-msg=E1101
-    # SQLObject confuses pylint
-    for oSet in AbstractCardSet.select(connection=oOrigConn):
-        oCopy = AbstractCardSet(id=oSet.id, name=oSet.name,
-                author=oSet.author, comment=oSet.comment,
-                annotations=oSet.annotations, connection=oTrans)
-        for oCard in oSet.cards:
-            oCopy.addAbstractCard(oCard.id)
-        oCopy.syncUpdate()
-        oLogger.info('Copied ACS %s', oCopy.name)
 
 def copy_old_abstract_card_set(oOrigConn, oTrans, oLogger):
     """Copy old Abstract Card Sets, upgrading as needed."""
     # pylint: disable-msg=E1101
     # SQLObject confuses pylint
+    # FIXME: create suitable PCS's instead.
     oVer = DatabaseVersion()
     if oVer.check_table_versions([AbstractCardSet],
             [AbstractCardSet.tableversion]) \
@@ -659,8 +768,7 @@ def copy_database(oOrigConn, oDestConnn, oLogHandler=None):
         if hasattr(oLogHandler, 'set_total'):
             iTotal = 12 + AbstractCard.select(connection=oOrigConn).count() + \
                     PhysicalCard.select(connection=oOrigConn).count() + \
-                    PhysicalCardSet.select(connection=oOrigConn).count() + \
-                    AbstractCardSet.select(connection=oOrigConn).count()
+                    PhysicalCardSet.select(connection=oOrigConn).count()
             oLogHandler.set_total(iTotal)
     bRes = True
     aMessages = []
@@ -681,7 +789,6 @@ def copy_database(oOrigConn, oDestConnn, oLogHandler=None):
             (copy_abstract_card, 'AbstractCard table', True),
             (copy_physical_card, 'PhysicalCard table', True),
             (copy_physical_card_set, 'PhysicalCardSet table', True),
-            (copy_abstract_card_set, 'AbstractCardSet table', True),
             ]
 
     for fCopy, sName, bPassLogger in aToCopy:
@@ -709,15 +816,13 @@ def make_card_set_holder(oCardSet):
     oCS.author = oCardSet.author
     oCS.comment = oCardSet.comment
     oCS.annotations = oCardSet.annotations
+    oCS.inuse = oCardSet.inuse
+    oCS.parent = oCardSet.parent.name
     for oCard in oCardSet.cards:
-        if type(oCard) is PhysicalCard:
-            if oCard.expansion is None:
-                oCS.add(1, oCard.abstractCard.canonicalName)
-            else:
-                oCS.add(1, oCard.abstractCard.canonicalName,
-                        oCard.expansion.name)
+        if oCard.expansion is None:
+            oCS.add(1, oCard.abstractCard.canonicalName, None)
         else:
-            oCS.add(1, oCard.canonicalName)
+            oCS.add(1, oCard.abstractCard.canonicalName, oCard.expansion.name)
     return oCS
 
 def copy_to_new_abstract_card_db(oOrigConn, oNewConn, oCardLookup,
@@ -737,25 +842,12 @@ def copy_to_new_abstract_card_db(oOrigConn, oNewConn, oCardLookup,
     if oLogHandler:
         oLogger.addHandler(oLogHandler)
         if hasattr(oLogHandler, 'set_total'):
-            iTotal = 2 + PhysicalCardSet.select(connection=oOrigConn).count() \
-                    + AbstractCardSet.select(connection=oOrigConn).count()
+            iTotal = 1 + PhysicalCardSet.select(connection=oOrigConn).count()
             oLogHandler.set_total(iTotal)
-    oPhysListCS = CachedCardSetHolder()
-    for oCard in PhysicalCard.select(connection=oOrigConn):
-        if oCard.expansion is None:
-            oPhysListCS.add(1, oCard.abstractCard.canonicalName)
-        else:
-            oPhysListCS.add(1, oCard.abstractCard.canonicalName,
-                oCard.expansion.name)
     # Copy Physical card sets
     for oSet in PhysicalCardSet.select(connection=oOrigConn):
         oCS = make_card_set_holder(oSet)
-        oCS.inuse = oSet.inuse
         aPhysCardSets.append(oCS)
-    # Copy AbstractCardSets
-    for oSet in AbstractCardSet.select(connection=oOrigConn):
-        oCS = make_card_set_holder(oSet)
-        aAbsCardSets.append(oCS)
     # Save the current mapping
     oMapping = PhysicalCardMappingHolder()
     oMapping.fill_from_db(oOrigConn)
@@ -763,13 +855,6 @@ def copy_to_new_abstract_card_db(oOrigConn, oNewConn, oCardLookup,
     oTarget = oNewConn.transaction()
     sqlhub.processConnection = oTarget
     # Create the cardsets from the holders
-    dLookupCache = oPhysListCS.create_physical_cl(oCardLookup)
-    oLogger.info('Physical Card list copied')
-    for oSet in aAbsCardSets:
-        oSet.create_acs(oCardLookup, dLookupCache)
-        oLogger.info('Abstract Card Set: %s', oSet.name)
-        oTarget.commit()
-        oTarget.cache.clear()
     for oSet in aPhysCardSets:
         oSet.create_pcs(oCardLookup, dLookupCache)
         oLogger.info('Physical Card Set: %s', oSet.name)
