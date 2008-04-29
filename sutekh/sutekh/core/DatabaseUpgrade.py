@@ -667,13 +667,24 @@ def copy_old_physical_card_set(oOrigConn, oTrans, oLogger):
     """Copy PCS, upgrading as needed."""
     # pylint: disable-msg=E1101
     # SQLObject confuses pylint
+    def _copy_cards(oOldSet, oNewSet):
+        """Copy the cards from the old physical card set to the new set,
+           replacing references to the correct new Physical Cards."""
+        for oCard in oOldSet.cards:
+            # We find the physical card with the same abstract card id
+            # and No expansion info
+            aCandCards = PhysicalCard.selectBy(
+                    abstractCardID=oCard.abstractCardID,
+                    expansionID=oCard.expansionID, connection=oTrans)
+            assert aCandCards.count() == 1
+            oNewSet.addPhysicalCard(aCandCards[0].id)
+
     oVer = DatabaseVersion()
     if oVer.check_tables_and_versions([PhysicalCardSet],
             [PhysicalCardSet.tableversion], oOrigConn) \
             and oVer.check_tables_and_versions([PhysicalCard],
                     [PhysicalCard.tableversion], oOrigConn):
         copy_physical_card_set(oOrigConn, oTrans, oLogger)
-    # FIXME: magic needed to set the right parent here.
     elif oVer.check_tables_and_versions([PhysicalCardSet], [3], oOrigConn):
         oParent = PhysicalCardSet.selectBy(name='My Collection',
                 connection=oTrans)[0]
@@ -682,8 +693,7 @@ def copy_old_physical_card_set(oOrigConn, oTrans, oLogger):
                     author=oSet.author, comment=oSet.comment,
                     annotations=None, inuse=False, parent=None,
                     connection=oTrans)
-            for oCard in oSet.cards:
-                oCopy.addPhysicalCard(oCard.id)
+            _copy_cards(oSet, oCopy)
             oCopy.syncUpdate()
             oLogger.info('Copied PCS %s', oCopy.name)
     elif oVer.check_tables_and_versions([PhysicalCardSet], [4], oOrigConn):
@@ -694,8 +704,7 @@ def copy_old_physical_card_set(oOrigConn, oTrans, oLogger):
                     author=oSet.author, comment=oSet.comment,
                     annotations=oSet.annotations, inuse=oSet.inuse,
                     parent=oParent, connection=oTrans)
-            #for oCard in oSet.cards:
-            #    oCopy.addPhysicalCard(oCard.id)
+            _copy_cards(oSet, oCopy)
             oCopy.syncUpdate()
             oLogger.info('Copied PCS %s', oCopy.name)
 
