@@ -113,7 +113,7 @@ class DatabaseVersion(object):
             iTableVersion = -999
         return iTableVersion
 
-    def check_table_versions(self, aTable, aTableVersion, oConn=None):
+    def check_tables_and_versions(self, aTable, aTableVersion, oConn=None):
         """Check version numbers.
 
            aTable is the list of tables to check
@@ -125,6 +125,15 @@ class DatabaseVersion(object):
             bRes = bRes and \
                     self.get_table_version(oTable, oConn) == iVersion
         return bRes
+
+    def check_table_in_version(self, oTable, aTableVersions, oConn=None):
+        """Check version for a single table.
+        
+           Checks whether the given table has a version in the list of
+           version numbers in the list aTableVersions.
+           """
+        iVersion = get_table_version(oTable, oConn)
+        return iVersion in aTableVersions
 
     def get_bad_tables(self, aTable, aTableVersion, oConn=None):
         """Get tables that don't match the list of version numbers

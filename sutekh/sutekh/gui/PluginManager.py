@@ -146,9 +146,8 @@ class CardListPlugin(object):
         """Check whether the plugin supports the current version of
            the Sutekh database tables."""
         oDBVer = DatabaseVersion()
-        for sTableName, aVersions in self.dTableVersions.iteritems():
-            iCurVer = oDBVer.get_table_version(sTableName)
-            if iCurVer not in aVersions:
+        for oTable, aVersions in self.dTableVersions.iteritems():
+            if not oDBVer.check_table_in_versions(oTable, aVersions)
                 return False
         # If nothing is specified, currently we assume everything is A-OK
         return True

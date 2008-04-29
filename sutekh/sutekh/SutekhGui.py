@@ -93,7 +93,7 @@ def main(aArgs):
 
     oVer = DatabaseVersion()
 
-    if not oVer.check_table_versions(aTables, aVersions) and \
+    if not oVer.check_tables_and_versions(aTables, aVersions) and \
             not oOpts.ignore_db_version:
         aLowerTables, aHigherTables =  oVer.get_bad_tables(aTables, aVersions)
         if not do_db_upgrade(aLowerTables, aHigherTables):
