@@ -249,6 +249,12 @@ class CardDict(dict):
         """Add the sect to the card."""
         oCard.addSect(self._oMaker.make_sect(sSect))
 
+    def _add_physical_cards(self, oCard):
+        """Create a physical card for each expansion."""
+        self._oMaker.make_physical_card(oCard,None)
+        for oExp in oCard.expansions:
+            self._oMaker.make_physical_card(oCard,oExp)
+
     def save(self):
         # pylint: disable-msg=R0912
         # Need to consider all cases, so many branches
@@ -314,6 +320,9 @@ class CardDict(dict):
 
         if self.has_key('text'):
             oCard.text = self['text'].replace('\r', '')
+
+        self._add_physical_cards(oCard)
+
         oCard.syncUpdate()
 
 # State Base Classes
