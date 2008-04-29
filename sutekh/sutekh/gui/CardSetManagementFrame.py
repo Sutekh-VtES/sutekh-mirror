@@ -9,8 +9,7 @@
 
 import gtk
 from sqlobject import SQLObjectNotFound
-from sutekh.SutekhUtility import delete_physical_card_set, \
-        delete_abstract_card_set
+from sutekh.SutekhUtility import delete_physical_card_set
 from sutekh.core.SutekhObjects import PhysicalCardSet
 from sutekh.core.Filters import NullFilter
 from sutekh.gui.SutekhDialog import do_complaint_error, do_complaint_warning
@@ -183,7 +182,7 @@ class CardSetManagementFrame(BasicFrame):
         if sName == self.__sAvail or sName == self.__sOpen:
             return
         # check if card set is open before opening again
-         sFrameName = sName
+        sFrameName = sName
         oPane = self._oMainWindow.find_pane_by_name(sFrameName)
         if oPane is not None:
             return # Already open, so do nothing

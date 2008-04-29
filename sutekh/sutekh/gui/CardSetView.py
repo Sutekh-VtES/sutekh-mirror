@@ -13,8 +13,7 @@ from sutekh.gui.CardListView import EditableCardListView
 from sutekh.gui.CardListModel import PhysicalCardSetCardListModel, \
         CardListModel
 from sutekh.core.SutekhObjects import PhysicalCardSet
-from sutekh.SutekhUtility import delete_physical_card_set, \
-        delete_abstract_card_set
+from sutekh.SutekhUtility import delete_physical_card_set
 
 class CardSetView(EditableCardListView):
     # pylint: disable-msg=R0904
@@ -87,9 +86,6 @@ class CardSetView(EditableCardListView):
             if iResponse == gtk.RESPONSE_CANCEL:
                 return False # not deleting
         # Got this far, so delete the card set
-        if self.cSetType is PhysicalCardSet:
-            delete_physical_card_set(self.sSetName)
-        else:
-            delete_abstract_card_set(self.sSetName)
+        delete_physical_card_set(self.sSetName)
         # Tell Window to clean up
         return True

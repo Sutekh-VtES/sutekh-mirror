@@ -16,8 +16,7 @@ from sutekh.gui.GuiDBManagement import refresh_ww_card_list
 from sutekh.io.XmlFileHandling import PhysicalCardXmlFile, \
         PhysicalCardSetXmlFile, AbstractCardSetXmlFile
 from sutekh.io.IdentifyXMLFile import IdentifyXMLFile
-from sutekh.SutekhUtility import delete_physical_card_set, \
-        delete_abstract_card_set
+from sutekh.SutekhUtility import delete_physical_card_set
 from sutekh.gui.SutekhMenu import SutekhMenu
 
 class MainMenu(SutekhMenu):
