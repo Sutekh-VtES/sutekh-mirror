@@ -10,7 +10,7 @@
 """Misc functions needed in various places in Sutekh."""
 
 from sutekh.core.SutekhObjects import VersionTable, flush_cache, \
-        PhysicalCardSet, AbstractCardSet
+        PhysicalCardSet
 from sutekh.core.DatabaseVersion import DatabaseVersion
 from sutekh.io.WhiteWolfParser import WhiteWolfParser
 from sutekh.io.RulingParser import RulingParser
@@ -141,19 +141,6 @@ def delete_physical_card_set(sSetName):
         for oCard in oCS.cards:
             oCS.removePhysicalCard(oCard)
         PhysicalCardSet.delete(oCS.id)
-        return True
-    except SQLObjectNotFound:
-        return False
-
-def delete_abstract_card_set(sSetName):
-    """Unconditionally delete a ACS and its contents"""
-    # pylint: disable-msg=E1101
-    # SQLObject confuse pylint
-    try:
-        oCS = AbstractCardSet.byName(sSetName)
-        for oCard in oCS.cards:
-            oCS.removeAbstractCard(oCard)
-        AbstractCardSet.delete(oCS.id)
         return True
     except SQLObjectNotFound:
         return False
