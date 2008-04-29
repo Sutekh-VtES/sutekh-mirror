@@ -43,7 +43,6 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
         "Card Type": "CardType in $var0",
         "Card Text": "CardText in $var0",
         "Card Name": "CardName in $var0",
-        "Abstract Card Set": "AbstractCardSetName in $var0",
         "Physical Card Set": "PhysicalCardSetName in $var0",
         "Physical Expansion": "PhysicalExpansion in $var0",
     }
