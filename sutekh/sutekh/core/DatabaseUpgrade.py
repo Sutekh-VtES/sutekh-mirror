@@ -12,7 +12,8 @@ to talk to old database versions, and so forth
 # pylint: disable-msg=E0611
 # sqlobject confuses pylint herer
 from sqlobject import sqlhub, SQLObject, IntCol, UnicodeCol, RelatedJoin, \
-        EnumCol, MultipleJoin, connectionForURI, ForeignKey, SQLObjectNotFound
+        EnumCol, MultipleJoin, connectionForURI, ForeignKey, BoolCol, \
+        SQLObjectNotFound
 # pylint: enable-msg=E0611
 from logging import Logger
 from sutekh.core.SutekhObjects import PhysicalCard, AbstractCard, \
@@ -160,25 +161,25 @@ class AbstractCard_v3(SQLObject):
     level = EnumCol(enumValues=['advanced', None], default=None)
     burnoption = BoolCol(default=False)
 
-    discipline = CachedRelatedJoin('DisciplinePair',
+    discipline = RelatedJoin('DisciplinePair',
             intermediateTable='abs_discipline_pair_map',
             createRelatedTable=False)
-    rarity = CachedRelatedJoin('RarityPair',
+    rarity = RelatedJoin('RarityPair',
             intermediateTable='abs_rarity_pair_map',
             createRelatedTable=False)
-    clan = CachedRelatedJoin('Clan',
+    clan = RelatedJoin('Clan',
             intermediateTable='abs_clan_map', createRelatedTable=False)
-    cardtype = CachedRelatedJoin('CardType', intermediateTable='abs_type_map',
+    cardtype = RelatedJoin('CardType', intermediateTable='abs_type_map',
             createRelatedTable=False)
-    sect = CachedRelatedJoin('Sect', intermediateTable='abs_sect_map',
+    sect = RelatedJoin('Sect', intermediateTable='abs_sect_map',
             createRelatedTable=False)
-    title = CachedRelatedJoin('Title', intermediateTable='abs_title_map',
+    title = RelatedJoin('Title', intermediateTable='abs_title_map',
             createRelatedTable=False)
-    creed = CachedRelatedJoin('Creed', intermediateTable='abs_creed_map',
+    creed = RelatedJoin('Creed', intermediateTable='abs_creed_map',
             createRelatedTable=False)
-    virtue = CachedRelatedJoin('Virtue', intermediateTable='abs_virtue_map',
+    virtue = RelatedJoin('Virtue', intermediateTable='abs_virtue_map',
             createRelatedTable=False)
-    rulings = CachedRelatedJoin('Ruling', intermediateTable='abs_ruling_map',
+    rulings = RelatedJoin('Ruling', intermediateTable='abs_ruling_map',
             createRelatedTable=False)
 
     sets = RelatedJoin('AbstractCardSet_v3', intermediateTable='abstract_map',

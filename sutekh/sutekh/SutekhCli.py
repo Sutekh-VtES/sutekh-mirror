@@ -17,7 +17,7 @@ from sutekh.SutekhUtility import refresh_tables, read_white_wolf_list, \
         read_rulings, gen_temp_dir, prefs_dir, ensure_dir_exists, sqlite_uri
 from sutekh.core.DatabaseUpgrade import attempt_database_upgrade
 from sutekh.io.XmlFileHandling import PhysicalCardXmlFile, \
-        PhysicalCardSetXmlFile, AbstractCardSetXmlFile, write_all_acs, \
+        PhysicalCardSetXmlFile, AbstractCardSetXmlFile, \
         write_all_pcs
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
 from sutekh.io.WwFile import WwFile
@@ -142,7 +142,6 @@ def main(aArgs):
         else:
             sTempdir = gen_temp_dir()
             aPhysicalCardSetList = write_all_pcs(sTempdir)
-            aAbstractCardSetList = write_all_acs(sTempdir)
             oPCFile = PhysicalCardXmlFile(dir=sTempdir)
             oPCFile.write()
             # We dump the databases here
@@ -184,9 +183,6 @@ def main(aArgs):
     if oOpts.save_all_pcss and not oOpts.save_pcs is None:
         print "Can't use --save-pcs and --save-all-pcs Simulatenously"
         return 1
-
-    if oOpts.save_all_acss:
-        write_all_acs()
 
     if oOpts.save_all_pcss:
         write_all_pcs()
