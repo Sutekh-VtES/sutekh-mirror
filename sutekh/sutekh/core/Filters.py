@@ -1098,8 +1098,7 @@ class PhysicalCardSetFilter(Filter):
         # pylint: disable-msg=E1101
         # SQLObject methods not detected by plylint
         self.__iCardSetId = IPhysicalCardSet(sName).id
-        self.__oTable = make_table_alias('physical_map')
-        self.__oPT = Table('physical_card')
+        self.__oTable = Table('physical_map')
 
     # pylint: disable-msg=C0111
     # don't need docstrings for _get_expression, get_values & _get_joins
@@ -1111,13 +1110,15 @@ class PhysicalCardSetFilter(Filter):
         # like this.
         # pylint: disable-msg=E1101
         # SQLObject methods not detected by plylint
-        return [LEFTJOINOn(None, AbstractCard,
-            AbstractCard.q.id == self.__oPT.abstract_card_id),
-            LEFTJOINOn(None, self.__oTable,
-                self.__oPT.id == self.__oTable.q.physical_card_id)]
+        return [
+                LEFTJOINOn(None, PhysicalCard,
+                    PhysicalCard.q.id == self.__oTable.physical_card_set_id),
+                LEFTJOINOn(None, AbstractCard,
+                    AbstractCard.q.id == PhysicalCard.q.abstractCardID),
+                ]
 
     def _get_expression(self):
-        return self.__oTable.q.physical_card_set_id == self.__iCardSetId
+        return self.__oTable.physical_card_set_id == self.__iCardSetId
 
 class MultiPhysicalCardSetFilter(Filter):
     """Filter on a list of Physical Card Sets"""

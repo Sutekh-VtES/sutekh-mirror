@@ -12,7 +12,8 @@ from sutekh.core.Filters import FilterAndBox, SpecificCardFilter, NullFilter, \
         PhysicalCardFilter, PhysicalCardSetFilter
 from sutekh.core.Groupings import CardTypeGrouping
 from sutekh.core.SutekhObjects import AbstractCard, IAbstractCard, \
-        PhysicalCard, IExpansion
+        PhysicalCard, IExpansion, MapPhysicalCardToPhysicalCardSet, \
+        IPhysicalCard
 
 def norm_path(oPath):
     """Transform string paths to tuple paths"""
@@ -175,7 +176,6 @@ class CardListModel(gtk.TreeStore):
         fGetCard, fGetCount, fGetExpanInfo, oGroupedIter, aAbsCards = \
                 self.grouped_card_iter(oCardIter)
 
-
         self.init_info_cache()
 
         self.oEmptyIter = None
@@ -292,16 +292,16 @@ class CardListModel(gtk.TreeStore):
                 # If the filter is PhysicalCard specific we ignore it, as
                 # AbstractCards don't have that information, so we cannot
                 # decide when to display 0 counts properly
-
             for oCard in oCardIter:
-                oAbsCard = oCard.abstractCard
+                oPhysCard = IPhysicalCard(oCard)
+                oAbsCard = IAbstractCard(oPhysCard)
                 aAbsCards.append(oAbsCard)
                 dAbsCards.setdefault(oAbsCard, [0, {}])
                 dAbsCards[oAbsCard][0] += 1
                 if self.bExpansions:
                     dExpanInfo = dAbsCards[oAbsCard][1]
-                    dExpanInfo.setdefault(oCard.expansion, 0)
-                    dExpanInfo[oCard.expansion] += 1
+                    dExpanInfo.setdefault(oPhysCard.expansion, 0)
+                    dExpanInfo[oPhysCard.expansion] += 1
 
             aCards = list(dAbsCards.iteritems())
             aCards.sort(lambda x, y: cmp(x[0].name, y[0].name))
@@ -773,7 +773,7 @@ class PhysicalCardSetCardListModel(CardListModel):
        """
     def __init__(self, sSetName):
         super(PhysicalCardSetCardListModel, self).__init__()
-        self._cCardClass = PhysicalCard
+        self._cCardClass = MapPhysicalCardToPhysicalCardSet
         self._oBaseFilter = PhysicalCardSetFilter(sSetName)
         self.bExpansions = True
 
@@ -804,6 +804,7 @@ class PhysicalCardSetCardListModel(CardListModel):
     def get_expansion_info(self, oCard, dExpanInfo):
         """Get information about expansions"""
         dExpansions = {}
+        return dExpansions
         if not self.bExpansions:
             return dExpansions
         if self.bEditable:

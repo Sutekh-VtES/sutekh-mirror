@@ -12,7 +12,9 @@ from sutekh.gui.SutekhDialog import do_complaint_warning
 from sutekh.gui.CardListView import EditableCardListView
 from sutekh.gui.CardListModel import PhysicalCardSetCardListModel, \
         CardListModel
-from sutekh.core.SutekhObjects import PhysicalCardSet
+from sutekh.core.SutekhObjects import PhysicalCardSet, \
+        MapPhysicalCardToPhysicalCardSet
+from sutekh.core.Filters import PhysicalCardSetFilter
 from sutekh.SutekhUtility import delete_physical_card_set
 
 class CardSetView(EditableCardListView):
@@ -29,6 +31,8 @@ class CardSetView(EditableCardListView):
         super(CardSetView, self).__init__(oController, oMainWindow,
                 oModel, oMainWindow.config_file)
         self.sSetName = sName
+        #self._oModel.cardclass = MapPhysicalCardToPhysicalCardSet
+        #self._oModel.basefilter = PhysicalCardSetFilter(self.sSetName)
         self.sDragPrefix = PhysicalCardSet.sqlmeta.table + ":" + self.sSetName
 
     # pylint: disable-msg=R0913, W0613
