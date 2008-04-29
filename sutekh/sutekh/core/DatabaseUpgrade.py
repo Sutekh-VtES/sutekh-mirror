@@ -616,14 +616,35 @@ def copy_physical_card(oOrigConn, oTrans, oLogger):
 def copy_old_physical_card(oOrigConn, oTrans, oLogger):
     """Copy PhysicalCards, upgrading if needed."""
     oVer = DatabaseVersion()
-    # FIXME: Fix this to create a PCS 'My Collection' and the changed
-    # physical card list structure
-    if oVer.check_tables_and_versions([PhysicalCardSet], [3, 4], oOrigConn) and \
+    if oVer.check_table_in_versions(PhysicalCardSet, [3, 4], oOrigConn) and \
             oVer.check_tables_and_versions([PhysicalCard],
                     [PhysicalCard.tableversion], oOrigConn):
-        pass
-    elif oVer.check_tables_and_versions([PhysicalCard],
-            [PhysicalCard.tableversion], oOrigConn):
+        # We setup the list of cards and expansions as in the WW parser
+        for oCard in AbstractCard.select(connection=oOrigConn):
+            PhysicalCard(abstractCardID=oCard.id,
+                    expansionID=None, connection=oTrans)
+            for oExp in set([oRarity.expansion for oRarity in oCard.rarity]):
+                PhysicalCard(abstractCardID=oCard.id,
+                        expansionID=oExp.id, connection=oTrans)
+            oTrans.commit()
+        # We create a PhysicalCardSet named 'My Collection' and add the
+        # changed cards here
+        oPCLSet = PhysicalCardSet(name='My Collection', parent=None,
+                connection=oTrans)
+        # For all the Physical cards currently in the collection,
+        # add them to the card set
+        for oCard in PhysicalCard.select(connection=oOrigConn):
+            # We search the NEW physical card list for a card with
+            # matching abstractCardID and expansion
+            aCandCards = PhysicalCard.selectBy(
+                    abstractCardID=oCard.abstractCardID,
+                    expansion=oCard.expansion, connection=oTrans)
+            assert aCandCards.count() == 1
+            oNewCard = aCandCards[0]
+            oPCLSet.addPhysicalCard(oNewCard.id)
+    elif oVer.check_tables_and_versions([PhysicalCardSet, PhysicalCard],
+            [PhysicalCardSet.tableversion, PhysicalCard.tableversion],
+            oOrigConn):
         copy_physical_card(oOrigConn, oTrans, oLogger)
     else:
         return (False, ["Unknown PhysicalCard version"])
@@ -656,22 +677,22 @@ def copy_old_physical_card_set(oOrigConn, oTrans, oLogger):
     # FIXME: magic needed to set the right parent here.
     elif oVer.check_tables_and_versions([PhysicalCardSet], [3], oOrigConn):
         for oSet in PhysicalCardSet_v3.select(connection=oOrigConn):
-            oCopy = PhysicalCardSet(id=oSet.id, name=oSet.name,
+            oCopy = PhysicalCardSet(name=oSet.name,
                     author=oSet.author, comment=oSet.comment,
-                    annotations=None, inuse=False,
+                    annotations=None, inuse=False, parent=None,
                     connection=oTrans)
             for oCard in oSet.cards:
                 oCopy.addPhysicalCard(oCard.id)
             oCopy.syncUpdate()
             oLogger.info('Copied PCS %s', oCopy.name)
     elif oVer.check_tables_and_versions([PhysicalCardSet], [4], oOrigConn):
-        for oSet in PhysicalCardSet_v3.select(connection=oOrigConn):
-            oCopy = PhysicalCardSet(id=oSet.id, name=oSet.name,
+        for oSet in PhysicalCardSet_v4.select(connection=oOrigConn):
+            oCopy = PhysicalCardSet(name=oSet.name,
                     author=oSet.author, comment=oSet.comment,
-                    annotations=None, inuse=False,
-                    connection=oTrans)
-            for oCard in oSet.cards:
-                oCopy.addPhysicalCard(oCard.id)
+                    annotations=oSet.annotations, inuse=oSet.inuse,
+                    parent=None, connection=oTrans)
+            #for oCard in oSet.cards:
+            #    oCopy.addPhysicalCard(oCard.id)
             oCopy.syncUpdate()
             oLogger.info('Copied PCS %s', oCopy.name)
 
@@ -687,7 +708,7 @@ def copy_old_abstract_card_set(oOrigConn, oTrans, oLogger):
     oVer = DatabaseVersion()
     if oVer.check_tables_and_versions([AbstractCardSet_v3], [3], oOrigConn):
         # Do magic here
-        copy_abstract_card_set(oOrigConn, oTrans, oLogger)
+        pass
     elif oVer.check_tables_and_versions([AbstractCardSet_v3], [2], oOrigConn):
         # Upgrade from previous AbstractCard class
         for oSet in AbstractCardSet_ACv2.select(connection=oOrigConn):
