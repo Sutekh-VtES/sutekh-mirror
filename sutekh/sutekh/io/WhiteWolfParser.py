@@ -252,7 +252,7 @@ class CardDict(dict):
     def _add_physical_cards(self, oCard):
         """Create a physical card for each expansion."""
         self._oMaker.make_physical_card(oCard,None)
-        for oExp in set([oRarity.expansion for oRarity in oCard.rarities]):
+        for oExp in set([oRarity.expansion for oRarity in oCard.rarity]):
             self._oMaker.make_physical_card(oCard,oExp)
 
     def save(self):
