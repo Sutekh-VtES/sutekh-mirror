@@ -53,10 +53,6 @@ def parse_options(aArgs):
     oOptParser.add_option("--sql-debug",
                   action="store_true", dest="sql_debug", default=False,
                   help="Print out SQL statements.")
-    oOptParser.add_option("-s", "--save-physical-cards-to",
-                  type="string", dest="save_physical_cards_to", default=None,
-                  help="Write an XML description of the list of physical " \
-                          "cards to the given file.")
     oOptParser.add_option("-l", "--read-physical-cards-from",
                   type="string", dest="read_physical_cards_from", default=None,
                   help="Read physical card list from the given XML file.")
@@ -75,34 +71,21 @@ def parse_options(aArgs):
     oOptParser.add_option("--read-pcs",
                   type="string", dest="read_pcs", default=None,
                   help="Load a Physical Card Set from the given XML file.")
-    oOptParser.add_option("--save-acs",
-                  type="string", dest="save_acs", default=None,
-                  help="Save the given Abstract Card Set to an XML file " \
-                          "(by default named <acsname>.xml).")
-    oOptParser.add_option("--acs-filename",
-                  type="string", dest="acs_filename", default=None,
-                  help="Give an alternative filename to save the Abstract " \
-                          "Card Set as")
-    oOptParser.add_option("--save-all-acs",
-                  action="store_true", dest="save_all_acss", default=False,
-                  help="Save all Abstract Card Sets in the database to files" \
-                          " - Cannot be used with --save-acs.")
     oOptParser.add_option("--read-acs",
                   type="string", dest="read_acs", default=None,
                   help="Load an Abstract Card Set from the given XML file.")
     oOptParser.add_option("--reload", action="store_true", dest="reload",
                   default=False,
-                  help="Dump the physical card list and all card sets and " \
-                          "reload them - intended to be used with -c and " \
-                          "refreshing the abstract card list")
+                  help="Dump all card sets and reload them - intended to be" \
+                          " used with -c and refreshing the abstract card" \
+                          " list")
     oOptParser.add_option("--upgrade-db",
                   action="store_true", dest="upgrade_db", default=False,
                   help="Attempt to upgrade a database to the latest version." \
                           " Cannot be used with --refresh-tables")
     oOptParser.add_option("--dump-zip",
                   type="string", dest="dump_zip_name", default=None,
-                  help="Dump the PhysicalCard list and all the CardSets " \
-                          "to the given zipfile")
+                  help="Dump the all the card sets to the given zip file")
     oOptParser.add_option("--restore-zip",
             type="string", dest="restore_zip_name", default=None,
             help="Restore everything from the given zipfile")
@@ -169,16 +152,8 @@ def main(aArgs):
         read_rulings(WwFile(oOpts.ruling_file), oLogHandler)
 
     if not oOpts.read_physical_cards_from is None:
-        oFile = PhysicalCardXmlFile(oOpts.rad_physical_cards_from)
+        oFile = PhysicalCardXmlFile(oOpts.read_physical_cards_from)
         oFile.read()
-
-    if not oOpts.save_physical_cards_to is None:
-        oPCF = PhysicalCardXmlFile(filename=oOpts.save_physical_cards_to)
-        oPCF.write()
-
-    if oOpts.save_all_acss and not oOpts.save_acs is None:
-        print "Can't use --save-acs and --save-all-acs Simulatenously"
-        return 1
 
     if oOpts.save_all_pcss and not oOpts.save_pcs is None:
         print "Can't use --save-pcs and --save-all-pcs Simulatenously"
@@ -199,10 +174,6 @@ def main(aArgs):
         oFile = PhysicalCardSetXmlFile(oOpts.pcs_filename)
         oFile.write(oOpts.save_pcs)
 
-    if not oOpts.save_acs is None:
-        oFile = AbstractCardSetXmlFile(oOpts.acs_filename)
-        oFile.write(oOpts.save_acs)
-
     if not oOpts.read_pcs is None:
         oFile = PhysicalCardSetXmlFile(oOpts.read_pcs)
         oFile.read()
@@ -217,9 +188,6 @@ def main(aArgs):
         for oPCSet in aPhysicalCardSetList:
             oPCSet.read()
             oPCSet.delete()
-        for oACSet in aAbstractCardSetList:
-            oACSet.read()
-            oACSet.delete()
         os.rmdir(sTempdir)
 
     if oOpts.upgrade_db and oOpts.refresh_tables:
