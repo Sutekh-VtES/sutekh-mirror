@@ -80,7 +80,7 @@ def main(aArgs):
     oMultiPaneWindow = MultiPaneWindow()
 
     # Test on some tables where we specify the table name
-    if not oConn.tableExists('abstract_map') or \
+    if not oConn.tableExists('abstract_card') or \
             not oConn.tableExists('physical_map'):
         if not initialize_db(oMultiPaneWindow):
             return 1
