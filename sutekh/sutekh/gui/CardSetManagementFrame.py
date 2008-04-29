@@ -11,7 +11,7 @@ import gtk
 from sqlobject import SQLObjectNotFound
 from sutekh.SutekhUtility import delete_physical_card_set, \
         delete_abstract_card_set
-from sutekh.core.SutekhObjects import AbstractCardSet, PhysicalCardSet
+from sutekh.core.SutekhObjects import PhysicalCardSet
 from sutekh.core.Filters import NullFilter
 from sutekh.gui.SutekhDialog import do_complaint_error, do_complaint_warning
 from sutekh.gui.ScrolledList import ScrolledList
@@ -32,7 +32,6 @@ class CardSetManagementFrame(BasicFrame):
     __sOpen = "<b>Opened</b>"
     __sAvail = "<b>Available</b>"
 
-    _cSetType = None
     _sName = 'Unknown card set list type'
     _sFilterType = None
     _oSetClass = None
@@ -63,8 +62,7 @@ class CardSetManagementFrame(BasicFrame):
         oMbox.pack_start(self._oMenu, False, False)
         self._oScrolledList = ScrolledList(self._sName)
 
-        if self._cSetType is PhysicalCardSet:
-            self._oScrolledList.add_second_column("In Use")
+        self._oScrolledList.add_second_column("In Use")
         self._oView = self._oScrolledList.view
         self._oScrolledList.set_select_single()
         self._oView.connect('row_activated', self.row_clicked)
@@ -94,11 +92,8 @@ class CardSetManagementFrame(BasicFrame):
         if aSelection[0] in [self.__sOpen, self.__sAvail]:
             return
         sSetName = aSelection[0]
-        if self._cSetType is PhysicalCardSet:
-            sPrefix = 'PCS:'
-        else:
-            sPrefix = 'ACS:'
-        sFrameName = sPrefix + sSetName
+        sPrefix = 'PCS:'
+        sFrameName = sSetName
         if sFrameName in self._oMainWindow.dOpenFrames.values():
             return
         sData = "\n".join(['Sutekh Pane:', 'Card Set Pane:', sPrefix,
@@ -107,25 +102,20 @@ class CardSetManagementFrame(BasicFrame):
 
     def create_new_card_set(self, oWidget):
         """Create a new card set"""
-        if self._cSetType is PhysicalCardSet:
-            oDialog = CreateCardSetDialog(self._oMainWindow, 'Physical')
-            fOpenCardSet = self._oMainWindow.add_new_physical_card_set
-        else:
-            oDialog = CreateCardSetDialog(self._oMainWindow, 'Abstract')
-            fOpenCardSet = self._oMainWindow.add_new_abstract_card_set
+        oDialog = CreateCardSetDialog(self._oMainWindow, 'Physical')
+        fOpenCardSet = self._oMainWindow.add_new_physical_card_set
         oDialog.run()
         (sName, sAuthor, sDescription) = oDialog.get_data()
         oDialog.destroy()
         # pylint: disable-msg=E1102, W0612
-        # E1102 - _cSetType is callable, as it's an SQLObject class
         # W0612 - oCS isn't important, as the creation of the new card
         # set is what matters
         if sName is not None:
-            iCnt = self._cSetType.selectBy(name=sName).count()
+            iCnt = PhysicalCardSet.selectBy(name=sName).count()
             if iCnt > 0:
                 do_complaint_error("Chosen Card Set Name is already in use.")
             else:
-                oCS = self._cSetType(name=sName, author=sAuthor,
+                oCS = PhysicalCardSet(name=sName, author=sAuthor,
                         comment=sDescription)
                 fOpenCardSet(sName)
 
@@ -137,7 +127,7 @@ class CardSetManagementFrame(BasicFrame):
         else:
             sSetName = aSelection[0]
         try:
-            oCS = self._cSetType.byName(sSetName)
+            oCS = PhysicalCardSet.byName(sSetName)
         except SQLObjectNotFound:
             return
         if len(oCS.cards) > 0:
@@ -147,12 +137,8 @@ class CardSetManagementFrame(BasicFrame):
                 # Don't delete
                 return
         # Got here, so delete the card set
-        if self._cSetType is PhysicalCardSet:
-            sFrameName = 'PCS:' + sSetName
-            delete_physical_card_set(sSetName)
-        else:
-            sFrameName = 'ACS:' + sSetName
-            delete_abstract_card_set(sSetName)
+        sFrameName = sSetName
+        delete_physical_card_set(sSetName)
         self._oMainWindow.remove_frame_by_name(sFrameName)
         self.reload()
 
@@ -197,18 +183,12 @@ class CardSetManagementFrame(BasicFrame):
         if sName == self.__sAvail or sName == self.__sOpen:
             return
         # check if card set is open before opening again
-        if self._cSetType is PhysicalCardSet:
-            sFrameName = 'PCS:' + sName
-        else:
-            sFrameName = 'ACS:' + sName
+         sFrameName = sName
         oPane = self._oMainWindow.find_pane_by_name(sFrameName)
         if oPane is not None:
             return # Already open, so do nothing
         oFrame = self._oMainWindow.add_pane_end()
-        if self._cSetType is PhysicalCardSet:
-            self._oMainWindow.replace_with_physical_card_set(sName, oFrame)
-        elif self._cSetType is AbstractCardSet:
-            self._oMainWindow.replace_with_abstract_card_set(sName, oFrame)
+        self._oMainWindow.replace_with_physical_card_set(sName, oFrame)
 
     # pylint: enable-msg=W0613, R0913
 
@@ -222,12 +202,9 @@ class CardSetManagementFrame(BasicFrame):
             oSelectFilter = NullFilter()
         dInUse = {}
         for oCS in oSelectFilter.select(self._oSetClass).orderBy('name'):
-            if self._cSetType is PhysicalCardSet:
-                sFrameName = 'PCS:' + oCS.name
-                if oCS.inuse:
-                    dInUse[oCS.name] = 'Yes'
-            else:
-                sFrameName = 'ACS:' + oCS.name
+            sFrameName = oCS.name
+            if oCS.inuse:
+                dInUse[oCS.name] = 'Yes'
             if sFrameName not in self._oMainWindow.dOpenFrames.values():
                 aVals.append(oCS.name)
             else:
@@ -244,7 +221,6 @@ class PhysicalCardSetListFrame(CardSetManagementFrame):
 
        Adds in-use flag handling.
        """
-    _cSetType = PhysicalCardSet
     _sFilterType = 'PhysicalCardSet'
     _sName = 'Physical Card Set List'
     _oSetClass = PhysicalCardSet
@@ -266,7 +242,7 @@ class PhysicalCardSetListFrame(CardSetManagementFrame):
         try:
             # pylint: disable-msg=E1101
             # SQLObject confuses pylint
-            oCS = self._cSetType.byName(sSetName)
+            oCS = PhysicalCardSet.byName(sSetName)
         except SQLObjectNotFound:
             return
         oCS.inuse = not oCS.inuse
@@ -274,21 +250,3 @@ class PhysicalCardSetListFrame(CardSetManagementFrame):
         self.reload()
         # Restore selection
         self._oScrolledList.set_selected(oCS.name)
-
-class AbstractCardSetListFrame(CardSetManagementFrame):
-    # pylint: disable-msg=R0904
-    # gtk.Widget, so lots of public methods
-    """Abstract Card Set List Frame.
-
-       Sets values as needed for Abstract Card Sets.
-       """
-    _cSetType = AbstractCardSet
-    _sFilterType = 'AbstractCardSet'
-    _sName = 'Abstract Card Set List'
-    _oSetClass = AbstractCardSet
-
-    def __init__(self, oMainWindow):
-        super(AbstractCardSetListFrame, self).__init__(oMainWindow)
-        self.set_name("abstract card sets list")
-        self.add_parts()
-

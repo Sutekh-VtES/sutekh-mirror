@@ -10,7 +10,7 @@
 
 import gtk
 from sutekh.SutekhUtility import safe_filename
-from sutekh.core.SutekhObjects import PhysicalCardSet, AbstractCardSet
+from sutekh.core.SutekhObjects import PhysicalCardSet
 from sutekh.gui.SutekhDialog import do_complaint_error
 from sutekh.gui.SutekhFileWidget import ExportDialog
 from sutekh.gui.PropDialog import PropDialog
@@ -18,13 +18,6 @@ from sutekh.io.XmlFileHandling import AbstractCardSetXmlFile, \
         PhysicalCardSetXmlFile
 from sutekh.gui.EditAnnotationsDialog import EditAnnotationsDialog
 from sutekh.gui.PaneMenu import EditableCardListMenu
-
-def _type_to_string(cSetType):
-    """Convert the class SetType to a string for the menus"""
-    if cSetType is AbstractCardSet:
-        return 'Abstract'
-    else:
-        return 'Physical'
 
 class CardSetMenu(EditableCardListMenu):
     # pylint: disable-msg=R0904
@@ -35,14 +28,12 @@ class CardSetMenu(EditableCardListMenu):
        card set specific actions - editing card set properties, editng
        annotations, exporting to file, and so on.
        """
-    # pylint: disable-msg=R0913, R0902
-    # R0913 - we need all these arguments
+    # pylint: disable-msg=R0902
     # R0902 - we are keeping a lot of state, so many instance variables
-    def __init__(self, oFrame, oController, oWindow, oView, sName, cType):
+    def __init__(self, oFrame, oController, oWindow, oView, sName):
         super(CardSetMenu, self).__init__(oFrame, oWindow, oController)
         self.__oView = oView
         self.sSetName = sName
-        self.__cSetType = cType
         self.__create_card_set_menu()
         self.create_edit_menu()
         self.create_filter_menu()
@@ -68,10 +59,9 @@ class CardSetMenu(EditableCardListMenu):
         # Possible enhancement, make card set names italic.
         # Looks like it requires playing with menu_item attributes
         # (or maybe gtk.Action)
-        if self.__cSetType is PhysicalCardSet:
-            oMenu.add(gtk.SeparatorMenuItem())
-            self.create_check_menu_item('Show Card Expansions in the Pane',
-                    oMenu, self._toggle_expansion, True)
+        oMenu.add(gtk.SeparatorMenuItem())
+        self.create_check_menu_item('Show Card Expansions in the Pane',
+                oMenu, self._toggle_expansion, True)
         oMenu.add(gtk.SeparatorMenuItem())
         self.create_menu_item("Delete Card Set", oMenu, self._card_set_delete)
 
@@ -88,16 +78,15 @@ class CardSetMenu(EditableCardListMenu):
     # oWidget required by function signature for the following methods
     def _edit_properties(self, oWidget):
         """Popup the Edit Properties dialog to change card set properties."""
-        oCS = self.__cSetType.byName(self.sSetName)
+        oCS = PhysicalCardSet.byName(self.sSetName)
         oProp = PropDialog(self._oMainWindow, oCS)
         oProp.run()
         (sName, sAuthor, sComment) = oProp.get_data()
         if sName is not None and sName != self.sSetName and len(sName)>0:
             # Check new name is not in use
-            oNameList = self.__cSetType.selectBy(name=sName)
+            oNameList = PhysicalCardSet.selectBy(name=sName)
             if oNameList.count()>0:
-                do_complaint_error("Chosen %s Card Set Name is already in use"
-                        % _type_to_string(self.__cSetType))
+                do_complaint_error("Chosen Card Set Name is already in use")
                 return
             else:
                 oCS.name = sName
@@ -115,7 +104,7 @@ class CardSetMenu(EditableCardListMenu):
 
     def _edit_annotations(self, oWidget):
         """Popup the Edit Annotations dialog."""
-        oCS = self.__cSetType.byName(self.sSetName)
+        oCS = PhysicalCardSet.byName(self.sSetName)
         oEditAnn = EditAnnotationsDialog("Edit Annotations of Card Set (%s)" %
                 self.sSetName, self._oMainWindow, oCS.name, oCS.annotations)
         oEditAnn.run()
@@ -124,18 +113,14 @@ class CardSetMenu(EditableCardListMenu):
 
     def _do_export(self, oWidget):
         """Export the card set to the chosen filename."""
-        oFileChooser = ExportDialog("Save %s Card Set As " %
-                _type_to_string(self.__cSetType), self._oMainWindow,
+        oFileChooser = ExportDialog("Save Card Set As ", self._oMainWindow,
                 '%s.xml' % safe_filename(self.sSetName))
         oFileChooser.add_filter_with_pattern('XML Files', ['*.xml'])
         oFileChooser.run()
         sFileName = oFileChooser.get_name()
         if sFileName is not None:
             # User has OK'd us overwriting anything
-            if self.__cSetType is PhysicalCardSet:
-                oWriter = PhysicalCardSetXmlFile(sFileName)
-            else:
-                oWriter = AbstractCardSetXmlFile(sFileName)
+            oWriter = PhysicalCardSetXmlFile(sFileName)
             oWriter.write(self.sSetName)
 
     def _card_set_delete(self, oWidget):

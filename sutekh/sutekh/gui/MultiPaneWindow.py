@@ -17,17 +17,15 @@ from pkg_resources import resource_stream
 from sqlobject import SQLObjectNotFound
 from sutekh.core.SutekhObjectCache import SutekhObjectCache
 from sutekh.core.SutekhObjects import AbstractCard, PhysicalCardSet, \
-        AbstractCardSet, PhysicalCard
+        PhysicalCard
 from sutekh.gui.BasicFrame import BasicFrame
-from sutekh.gui.AbstractCardListFrame import AbstractCardListFrame
 from sutekh.gui.PhysicalCardFrame import PhysicalCardFrame
 from sutekh.gui.CardTextFrame import CardTextFrame
-from sutekh.gui.CardSetFrame import AbstractCardSetFrame, PhysicalCardSetFrame
+from sutekh.gui.CardSetFrame import PhysicalCardSetFrame
 from sutekh.gui.AboutDialog import SutekhAboutDialog
 from sutekh.gui.MainMenu import MainMenu
 from sutekh.gui.GuiCardLookup import GuiLookup
-from sutekh.gui.CardSetManagementFrame import PhysicalCardSetListFrame, \
-        AbstractCardSetListFrame
+from sutekh.gui.CardSetManagementFrame import PhysicalCardSetListFrame
 from sutekh.gui.PluginManager import PluginManager
 from sutekh.gui import SutekhIcon
 from sutekh.gui.HTMLTextView import HTMLViewDialog
@@ -177,16 +175,10 @@ class MultiPaneWindow(gtk.Window):
             self._oFocussed = oNewFrame
             if sType == PhysicalCardSet.sqlmeta.table:
                 self.replace_with_physical_card_set(sName, oNewFrame)
-            elif sType == AbstractCardSet.sqlmeta.table:
-                self.replace_with_abstract_card_set(sName, oNewFrame)
-            elif sType == AbstractCard.sqlmeta.table:
-                self.replace_with_abstract_card_list(None)
             elif sType == 'Card Text':
                 self.replace_with_card_text(None)
             elif sType == PhysicalCard.sqlmeta.table:
                 self.replace_with_physical_card_list(None)
-            elif sType == 'Abstract Card Set List':
-                self.replace_with_acs_list(None)
             elif sType == 'Physical Card Set List':
                 self.replace_with_pcs_list(None)
             else:
@@ -235,29 +227,6 @@ class MultiPaneWindow(gtk.Window):
         oFrame = self.add_pane_end()
         self.replace_with_physical_card_set(sName, oFrame)
 
-    def replace_with_abstract_card_set(self, sName, oFrame):
-        """Replace the pane oFrame it with the abstract card set sName."""
-        sMenuFlag = "ACS:" + sName
-        if sMenuFlag not in self.dOpenFrames.values() and oFrame:
-            # pylint: disable-msg=W0704
-            # not doing anything for errors right now
-            try:
-                oPane = AbstractCardSetFrame(self, sName)
-                self.replace_frame(oFrame, oPane, sMenuFlag)
-            except RuntimeError:
-                # add warning dialog?
-                pass
-        else:
-            oPane = self.find_pane_by_name(sMenuFlag)
-            if oPane:
-                oPane.reload()
-
-    def add_new_abstract_card_set(self, sName):
-        """Add a new pane and replace it with the ACS sName."""
-        oFrame = self.add_pane_end()
-        self.replace_with_abstract_card_set(sName, oFrame)
-
-
     # pylint: disable-msg=W0613
     # oWidget needed so this can be called from the menu
     def replace_with_pcs_list(self, oWidget):
@@ -273,35 +242,6 @@ class MultiPaneWindow(gtk.Window):
         oCurFocus = self._oFocussed
         self._oFocussed = self.add_pane_end()
         self.replace_with_pcs_list(oMenuWidget)
-        self._oFocussed = oCurFocus
-
-    def replace_with_acs_list(self, oWidget):
-        """Replace the focussed pane with the abstract card set list."""
-        sMenuFlag = "Abstract Card Set List"
-        if sMenuFlag not in self.dOpenFrames.values() and self._oFocussed:
-            oPane = AbstractCardSetListFrame(self)
-            self.replace_frame(self._oFocussed, oPane, sMenuFlag)
-            self._oACSListPane = oPane
-
-    def add_new_acs_list(self, oMenuWidget):
-        """Add a new pane and replace it with the abstract card set list."""
-        oCurFocus = self._oFocussed
-        self._oFocussed = self.add_pane_end()
-        self.replace_with_acs_list(oMenuWidget)
-        self._oFocussed = oCurFocus
-
-    def replace_with_abstract_card_list(self, oWidget):
-        """Replace the currently focussed pane with the abstract card list."""
-        sMenuFlag = "White Wolf Card List"
-        if sMenuFlag not in self.dOpenFrames.values() and self._oFocussed:
-            oPane = AbstractCardListFrame(self)
-            self.replace_frame(self._oFocussed, oPane, sMenuFlag)
-
-    def add_new_abstract_card_list(self, oMenuWidget):
-        """Create a new pane and replace it with the abstract card list."""
-        oCurFocus = self._oFocussed
-        self._oFocussed = self.add_pane_end()
-        self.replace_with_abstract_card_list(oMenuWidget)
         self._oFocussed = oCurFocus
 
     def replace_with_physical_card_list(self, oWidget):

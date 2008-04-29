@@ -42,8 +42,6 @@ class MainMenu(SutekhMenu):
                 self.abstract_cl_set_sensitive)
         oWindow.add_to_menu_list("Physical Card Set List",
                 self.pcs_list_pane_set_sensitive)
-        oWindow.add_to_menu_list("Abstract Card Set List",
-                self.acs_list_pane_set_sensitive)
         oWindow.add_to_menu_list("Card Text",
                 self.add_card_text_set_sensitive)
         # enable mnemonics + accelerators for the main menu
@@ -148,21 +146,13 @@ class MainMenu(SutekhMenu):
         self.create_menu_item("Add New Blank Pane", oAddMenu,
                 self._oMainWindow.add_pane_end)
 
-        self.__oAddACLPane = self.create_menu_item("Add White Wolf Card List",
-                oAddMenu, self._oMainWindow.add_new_abstract_card_list)
-        self.__oAddACLPane.set_sensitive(True)
-
-        self.__oAddPCLPane = self.create_menu_item("Add My Collection List",
+        self.__oAddPCLPane = self.create_menu_item("Add White Wolf Card List",
                 oAddMenu, self._oMainWindow.add_new_physical_card_list)
         self.__oAddPCLPane.set_sensitive(True)
 
         self.__oAddCardText = self.create_menu_item("Add Card Text Pane",
                 oAddMenu, self._oMainWindow.add_new_card_text)
         self.__oAddCardText.set_sensitive(True)
-
-        self.__oAddACSListPane = self.create_menu_item("Add Abstract Card Set"
-                " List", oAddMenu, self._oMainWindow.add_new_acs_list)
-        self.__oAddACSListPane.set_sensitive(True)
 
         self.__oAddPCSListPane = self.create_menu_item("Add Physical Card Set"
                 " List", oAddMenu, self._oMainWindow.add_new_pcs_list)
@@ -172,13 +162,8 @@ class MainMenu(SutekhMenu):
         """Create a submenu for the replace pane options"""
         oReplaceMenu = self.create_submenu(oMenuWidget, 'Replace Pane')
 
-        self.__oReplaceACLPane = self.create_menu_item("Replace current pane"
-                " with White Wolf Card List", oReplaceMenu,
-                self._oMainWindow.replace_with_abstract_card_list)
-        self.__oReplaceACLPane.set_sensitive(True)
-
         self.__oReplacePCLPane = self.create_menu_item("Replace current pane"
-                " with My Collection List", oReplaceMenu,
+                " with White Wolf Card List", oReplaceMenu,
                 self._oMainWindow.replace_with_physical_card_list)
         self.__oReplacePCLPane.set_sensitive(True)
 
@@ -186,11 +171,6 @@ class MainMenu(SutekhMenu):
                 " with Card Text Pane", oReplaceMenu,
                 self._oMainWindow.replace_with_card_text)
         self.__oReplaceCardText.set_sensitive(True)
-
-        self.__oReplaceACSListPane = self.create_menu_item("Replace current"
-                " pane with Abstract Card Set List", oReplaceMenu,
-                self._oMainWindow.replace_with_acs_list)
-        self.__oReplaceACSListPane.set_sensitive(True)
 
         self.__oReplacePCSListPane = self.create_menu_item("Replace current"
                 " pane with Physical Card Set List", oReplaceMenu,
@@ -227,16 +207,6 @@ class MainMenu(SutekhMenu):
         """Set the options for adding the list of PhysicalCardSets to bValue"""
         self.__oReplacePCSListPane.set_sensitive(bValue)
         self.__oAddPCSListPane.set_sensitive(bValue)
-
-    def acs_list_pane_set_sensitive(self, bValue):
-        """Set the options for adding the list of AbstractCardSets to bValue"""
-        self.__oReplaceACSListPane.set_sensitive(bValue)
-        self.__oAddACSListPane.set_sensitive(bValue)
-
-    def abstract_cl_set_sensitive(self, bValue):
-        """Set the options for adding the WW cardlist to bValue"""
-        self.__oReplaceACLPane.set_sensitive(bValue)
-        self.__oAddACLPane.set_sensitive(bValue)
 
     def physical_cl_set_sensitive(self, bValue):
         """Set the options for adding the card collection to bValue"""
@@ -303,24 +273,19 @@ class MainMenu(SutekhMenu):
                         return
                     else:
                         # Delete the card set
-                        if sType == 'PhysicalCardSet':
-                            delete_physical_card_set(sName)
-                        else:
-                            delete_abstract_card_set(sName)
+                        delete_physical_card_set(sName)
                 oFrame = self._oMainWindow.add_pane_end()
                 try:
                     if sType == "AbstractCardSet":
                         oFile = AbstractCardSetXmlFile(sFileName,
                                 oLookup=self._oMainWindow.cardLookup)
                         oFile.read()
-                        self._oMainWindow.replace_with_abstract_card_set(sName,
-                                oFrame)
                     else:
                         oFile = PhysicalCardSetXmlFile(sFileName,
                                 oLookup=self._oMainWindow.cardLookup)
                         oFile.read()
-                        self._oMainWindow.replace_with_physical_card_set(sName,
-                                oFrame)
+                    self._oMainWindow.replace_with_physical_card_set(sName,
+                            oFrame)
                 except LookupFailed:
                     # Remove window, since we didn't succeed
                     # Should this dialog be here?

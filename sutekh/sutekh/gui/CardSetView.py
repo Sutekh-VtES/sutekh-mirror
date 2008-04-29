@@ -12,9 +12,7 @@ from sutekh.gui.SutekhDialog import do_complaint_warning
 from sutekh.gui.CardListView import EditableCardListView
 from sutekh.gui.CardListModel import PhysicalCardSetCardListModel, \
         CardListModel
-from sutekh.core.Filters import AbstractCardSetFilter
-from sutekh.core.SutekhObjects import PhysicalCardSet, \
-        AbstractCardSet, MapAbstractCardToAbstractCardSet
+from sutekh.core.SutekhObjects import PhysicalCardSet
 from sutekh.SutekhUtility import delete_physical_card_set, \
         delete_abstract_card_set
 
@@ -26,23 +24,14 @@ class CardSetView(EditableCardListView):
        This is common to both Physical and Abstract Card Sets. The
        differences are embedded in the associated controller object
        and the database object used for filters."""
-    def __init__(self, oMainWindow, oController, sName, cSetType):
-        if cSetType is PhysicalCardSet:
-            # cardclass is the actual physicalcard
-            oModel = PhysicalCardSetCardListModel(sName)
-        elif cSetType is AbstractCardSet:
-            oModel = CardListModel()
+    def __init__(self, oMainWindow, oController, sName):
+        oModel = PhysicalCardSetCardListModel(sName)
         # The only path here is via the main window, so config_file exists
         super(CardSetView, self).__init__(oController, oMainWindow,
                 oModel, oMainWindow.config_file)
         self.sSetName = sName
         self.cSetType = cSetType
-        if cSetType is AbstractCardSet:
-            # Need MapAbstractCardToAbstractCardSet here, so filters do
-            # the right hing
-            self._oModel.cardclass = MapAbstractCardToAbstractCardSet
-            self._oModel.basefilter = AbstractCardSetFilter(self.sSetName)
-        self.sDragPrefix = self.cSetType.sqlmeta.table + ":" + self.sSetName
+        self.sDragPrefix = PhysicalCardSet.sqlmeta.table + ":" + self.sSetName
 
     # pylint: disable-msg=R0913, W0613
     # elements required by function signature
@@ -77,18 +66,13 @@ class CardSetView(EditableCardListView):
            from the AbstractCard List
            """
         aSources = sSource.split(':')
-        if aSources[0] in ["Phys", self.cSetType.sqlmeta.table]:
+        if aSources[0] in ["Phys", PhysicalCardSet.sqlmeta.table]:
             # Add the cards, Count Matters
             for iCount, sCardName, sExpansion in aCards:
                 # pylint: disable-msg=W0612
                 # iLoop is just loop counter
                 for iLoop in range(iCount):
                     self.add_card(sCardName, sExpansion)
-            return True
-        elif aSources[0] == "Abst" and self.cSetType is AbstractCardSet:
-            # from Abstract list, so iCount doesn't matter
-            for iCount, sCardName, sExpansion in aCards:
-                self.add_card(sCardName, sExpansion)
             return True
         else:
             return False

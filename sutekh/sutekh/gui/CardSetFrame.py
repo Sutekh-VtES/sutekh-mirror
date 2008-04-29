@@ -9,12 +9,11 @@
 """Sutekh Frame for holding Card Sets"""
 
 from sqlobject import SQLObjectNotFound
-from sutekh.core.SutekhObjects import PhysicalCardSet, AbstractCardSet, \
-        IPhysicalCardSet, IAbstractCardSet
+from sutekh.core.SutekhObjects import PhysicalCardSet, \
+        IPhysicalCardSet
 from sutekh.gui.CardListFrame import CardListFrame
 from sutekh.gui.CardSetMenu import CardSetMenu
-from sutekh.gui.CardSetController import PhysicalCardSetController, \
-        AbstractCardSetController
+from sutekh.gui.CardSetController import PhysicalCardSetController
 
 class CardSetFrame(CardListFrame, object):
     # pylint: disable-msg=R0904
@@ -24,32 +23,21 @@ class CardSetFrame(CardListFrame, object):
        Handles most of the functionality - subclasses set the style name
        and the various other properties correctly for the type.
        """
-    _cModelType = None
-
     def __init__(self, oMainWindow, sName):
         super(CardSetFrame, self).__init__(oMainWindow)
         try:
             # pylint: disable-msg=W0612
             # oCS just used for existance test, so ignored
-            if self._cModelType is PhysicalCardSet:
-                oCS = IPhysicalCardSet(sName)
-            else:
-                oCS = IAbstractCardSet(sName)
+            oCS = IPhysicalCardSet(sName)
         except SQLObjectNotFound:
             raise RuntimeError("Card Set %s does not exist" % sName)
-        if self._cModelType is PhysicalCardSet:
-            self._oController = PhysicalCardSetController(sName,
-                    oMainWindow, self)
-        elif self._cModelType is AbstractCardSet:
-            self._oController = AbstractCardSetController(sName,
-                    oMainWindow, self)
-        else:
-            raise RuntimeError("Unknown Card Set type %s" % self._cModelType)
+        self._oController = PhysicalCardSetController(sName,
+                oMainWindow, self)
 
         self.init_plugins()
 
         self._oMenu = CardSetMenu(self, self._oController, self._oMainWindow,
-                self._oController.view, sName, self._cModelType)
+                self._oController.view, sName)
         self.add_parts()
 
         self.update_name(sName)
@@ -67,10 +55,7 @@ class CardSetFrame(CardListFrame, object):
         Cleanup function called before pane is removed by the
         Main Window
         """
-        if self._cModelType is PhysicalCardSet:
-            self._oMainWindow.reload_pcs_list()
-        else:
-            self._oMainWindow.reload_acs_list()
+        self._oMainWindow.reload_pcs_list()
 
     def update_name(self, sNewName):
         """Update the frame name to the current card set name."""
@@ -78,10 +63,7 @@ class CardSetFrame(CardListFrame, object):
         # this is called from __init__, so OK
         self.sSetName = sNewName
         self._sName = sNewName
-        if self._cModelType is PhysicalCardSet:
-            self.set_title('PCS:' + self.sSetName)
-        else:
-            self.set_title('ACS:' + self.sSetName)
+        self.set_title(self.sSetName)
 
     def delete_card_set(self):
         """Delete this card set from the database"""
@@ -89,20 +71,10 @@ class CardSetFrame(CardListFrame, object):
             # Card Set was deleted, so close up
             self.close_frame()
 
-class AbstractCardSetFrame(CardSetFrame):
-    # pylint: disable-msg=R0904
-    # R0904 - gtk.Widget, so many public methods
-    """Card Set Frame for holding Abstract Card Sets."""
-    _cModelType = AbstractCardSet
-    def __init__(self, oMainWindow, sName):
-        super(AbstractCardSetFrame, self).__init__(oMainWindow, sName)
-        self.set_name("abstract card set card list")
-
 class PhysicalCardSetFrame(CardSetFrame):
     # pylint: disable-msg=R0904
     # R0904 - gtk.Widget, so many public methods
     """Card Set Frame for holding Physical Card Sets."""
-    _cModelType = PhysicalCardSet
     def __init__(self, oMainWindow, sName):
         super(PhysicalCardSetFrame, self).__init__(oMainWindow, sName)
         self.set_name("physical card set card list")
