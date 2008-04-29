@@ -35,7 +35,7 @@ class MainMenu(SutekhMenu):
         self.__create_pane_menu()
         self.create_plugins_menu('Plugins', oWindow)
         self.__create_help_menu()
-        oWindow.add_to_menu_list("My Collection",
+        oWindow.add_to_menu_list("White Wolf Card List",
                 self.physical_cl_set_sensitive)
         oWindow.add_to_menu_list("Physical Card Set List",
                 self.pcs_list_pane_set_sensitive)

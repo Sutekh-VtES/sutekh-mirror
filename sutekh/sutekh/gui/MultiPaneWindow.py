@@ -246,7 +246,7 @@ class MultiPaneWindow(gtk.Window):
 
     def replace_with_physical_card_list(self, oWidget):
         """Replace the currently focussed pane with the physical card list."""
-        sMenuFlag = "My Collection"
+        sMenuFlag = "White Wolf Card List"
         if sMenuFlag not in self.dOpenFrames.values() and self._oFocussed:
             oPane = PhysicalCardFrame(self)
             self.replace_frame(self._oFocussed, oPane, sMenuFlag)
