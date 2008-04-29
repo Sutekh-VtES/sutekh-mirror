@@ -37,6 +37,12 @@ class DatabaseVersion(object):
         return cls._dCache
 
     @classmethod
+    def expire_cache(cls):
+        """Expire the results cache - needed for database upgrade code
+           paths."""
+        cls._dCache = {}
+
+    @classmethod
     def ensure_table_exists(cls, oConn):
         """Enusre the table exists, but that describe is only called
            once per connection."""
@@ -46,13 +52,12 @@ class DatabaseVersion(object):
 
     @classmethod
     def expire_table_conn(cls, oConn):
-        """Expirt the created table for this connection.
+        """Expire the created table for this connection.
            Needed in the database upgrade code.
            """
         if not cls._dConns.has_key(oConn):
             return # Nothing to do
         del cls._dConns[oConn]
-
 
     def set_version(self, oTable, iTableVersion, oConn=None):
         """Set the version for oTable to iTableVersion"""
