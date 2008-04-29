@@ -8,7 +8,7 @@
    to a database."""
 
 from sutekh.core.CardLookup import DEFAULT_LOOKUP
-from sutekh.core.SutekhObjects import PhysicalCardSet, PhysicalCard
+from sutekh.core.SutekhObjects import PhysicalCardSet
 
 class CardSetHolder(object):
     # pylint: disable-msg=R0902
