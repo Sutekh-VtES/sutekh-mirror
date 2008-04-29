@@ -148,6 +148,10 @@ class CardSetManagementFrame(BasicFrame):
 
     # pylint: enable-msg=W0613, R0913
 
+    def reload(self):
+        """Reload the frame contents"""
+        self._oView.reload_keep_expanded(True)
+
     # pylint: disable-msg=W0613
     # oMenuItem required by function signature
     def toggle_in_use_flag(self, oMenuItem):

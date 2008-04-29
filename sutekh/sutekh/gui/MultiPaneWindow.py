@@ -74,7 +74,6 @@ class MultiPaneWindow(gtk.Window):
         self._bCardTextShown = False
         self._oCardTextPane = None
         self._oPCSListPane = None
-        self._oACSListPane = None
         self._oHelpDlg = None
         # Global icon manager
         self._oIconManager = None
@@ -280,11 +279,6 @@ class MultiPaneWindow(gtk.Window):
         """Reload the list of physical card sets."""
         if self._oPCSListPane is not None:
             self._oPCSListPane.reload()
-
-    def reload_acs_list(self):
-        """Reload the list of abstract card sets."""
-        if self._oACSListPane is not None:
-            self._oACSListPane.reload()
 
     def reload_all(self):
         """Reload all open frames. Useful for major DB changes"""
@@ -524,7 +518,6 @@ class MultiPaneWindow(gtk.Window):
         # Open card lists may have changed because of the frame we've
         # kicked out
         self.reload_pcs_list()
-        self.reload_acs_list()
 
     def swap_frames(self, oFrame1, oFrame2):
         """swap two frames - used by drag-n-drop code"""

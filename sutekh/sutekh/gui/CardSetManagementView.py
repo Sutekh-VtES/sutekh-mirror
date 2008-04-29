@@ -14,9 +14,11 @@ from sutekh.core.Filters import NullFilter
 
 class CardSetManagementModel(gtk.TreeStore):
     """TreeModel for the card sets"""
-    def __init__(self):
+    def __init__(self, oMainWindow):
         super(CardSetManagementModel, self).__init__(gobject.TYPE_STRING)
         self._dName2Iter = {}
+
+        self._oMainWin = oMainWindow
 
         self._bApplyFilter = False # whether to apply the select filter
         # additional filters for selecting from the list
@@ -67,11 +69,13 @@ class CardSetManagementModel(gtk.TreeStore):
                 aToAdd = [oCardSet]
             for oSet in aToAdd:
                 oIter = self.append(oIter)
-                if not oSet.inuse:
-                    self.set(oIter, 0, oSet.name)
-                else:
+                sName = oSet.name
+                if self._oMainWin.find_pane_by_name(sName):
+                    sName = '<i>%s</i>' % sName
+                if oSet.inuse:
                     # In use sets are in bold
-                    self.set(oIter, 0, '<b>%s</b>' % oSet.name)
+                    sName = '<b>%s</b>' % sName
+                self.set(oIter, 0, sName)
                 self._dName2Iter[oSet.name] = oIter
 
         if not self._dName2Iter:
@@ -91,8 +95,11 @@ class CardSetManagementModel(gtk.TreeStore):
         """Extract the value at oIter from the model, correcting for encoding
            issues."""
         sCardSetName = self.get_value(oIter, 0).decode("utf-8")
-        if sCardSetName.startswith('<b>'):
-            sCardSetName = sCardSetName[3:-4] # Strip markup
+        # Strip markup
+        if sCardSetName.startswith('<b><i>'):
+            sCardSetName = sCardSetName[6:-8]
+        elif sCardSetName.startswith('<b>') or sCardSetName.startswith('<i>'):
+            sCardSetName = sCardSetName[3:-4] 
         return sCardSetName
 
     def get_name_from_path(self, oPath):
@@ -120,7 +127,7 @@ class CardSetManagementModel(gtk.TreeStore):
 class CardSetManagementView(gtk.TreeView, object):
     """Tree View for the card sets."""
     def __init__(self, oMainWindow):
-        self._oModel = CardSetManagementModel()
+        self._oModel = CardSetManagementModel(oMainWindow)
         super(CardSetManagementView, self).__init__(self._oModel)
 
         self._oMainWin = oMainWindow
