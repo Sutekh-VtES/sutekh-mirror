@@ -18,29 +18,29 @@ from sutekh.gui.BasicFrame import BasicFrame
 from sutekh.gui.FilterDialog import FilterDialog
 from sutekh.gui.CreateCardSetDialog import CreateCardSetDialog
 from sutekh.gui.CardSetManagementMenu import CardSetManagementMenu
+from sutekh.gui.CardSetManagementView import CardSetManagementView
+from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 
 class CardSetManagementFrame(BasicFrame):
     # pylint: disable-msg=R0904
     # gtk.Widget, so lots of public methods
-    """Pane for the List of card sets of the given type.
+    """Pane for the List of card sets.
 
        Provides the actions associated with this Pane - creating new
        card sets, filtering, etc.
        """
-
-    __sOpen = "<b>Opened</b>"
-    __sAvail = "<b>Available</b>"
-
-    _sName = 'Unknown card set list type'
-    _sFilterType = None
-    _oSetClass = None
+    _sFilterType = 'PhysicalCardSet'
+    _sName = 'Physical Card Set List'
+    _oSetClass = PhysicalCardSet
 
     def __init__(self, oMainWindow):
         super(CardSetManagementFrame, self).__init__(oMainWindow)
         self._oFilter = NullFilter()
         self._oFilterDialog = None
         self._oMenu = None
-        self._oScrolledList = None
+        self._oView = CardSetManagementView(oMainWindow)
+        self.set_name("physical card sets list")
+        self.add_parts()
 
     # pylint: disable-msg=W0212
     # We allow access via these properties
@@ -59,14 +59,10 @@ class CardSetManagementFrame(BasicFrame):
                 self._sName)
 
         oMbox.pack_start(self._oMenu, False, False)
-        self._oScrolledList = ScrolledList(self._sName)
 
-        self._oScrolledList.add_second_column("In Use")
-        self._oView = self._oScrolledList.view
-        self._oScrolledList.set_select_single()
         self._oView.connect('row_activated', self.row_clicked)
-        self.reload()
-        oMbox.pack_start(self._oScrolledList, expand=True)
+
+        oMbox.pack_start(AutoScrolledWindow(self._oView), expand=True)
 
         # allow dragging card sets from the list
         self._oView.drag_source_set(
@@ -88,8 +84,6 @@ class CardSetManagementFrame(BasicFrame):
         if len(aSelection) != 1:
             return
         # Don't respond to the dragging of an already open card set, and so on
-        if aSelection[0] in [self.__sOpen, self.__sAvail]:
-            return
         sSetName = aSelection[0]
         sPrefix = 'PCS:'
         sFrameName = sSetName
@@ -139,7 +133,6 @@ class CardSetManagementFrame(BasicFrame):
         sFrameName = sSetName
         delete_physical_card_set(sSetName)
         self._oMainWindow.remove_frame_by_name(sFrameName)
-        self.reload()
 
     def set_filter(self):
         """Set the filter applied to the list."""
@@ -179,8 +172,6 @@ class CardSetManagementFrame(BasicFrame):
         # Need to dereference to the actual path though, as iters not unique
         oIter = oModel.get_iter(oPath)
         sName = oModel.get_value(oIter, 0)
-        if sName == self.__sAvail or sName == self.__sOpen:
-            return
         # check if card set is open before opening again
         sFrameName = sName
         oPane = self._oMainWindow.find_pane_by_name(sFrameName)
@@ -191,49 +182,11 @@ class CardSetManagementFrame(BasicFrame):
 
     # pylint: enable-msg=W0613, R0913
 
-    def reload(self):
-        """Reload the contents of the list."""
-        aVals = [self.__sOpen, self.__sAvail]
-        iAvailIndex = 1
-        if self._oMenu.get_apply_filter():
-            oSelectFilter = self._oFilter
-        else:
-            oSelectFilter = NullFilter()
-        dInUse = {}
-        for oCS in oSelectFilter.select(self._oSetClass).orderBy('name'):
-            sFrameName = oCS.name
-            if oCS.inuse:
-                dInUse[oCS.name] = 'Yes'
-            if sFrameName not in self._oMainWindow.dOpenFrames.values():
-                aVals.append(oCS.name)
-            else:
-                aVals.insert(iAvailIndex, oCS.name)
-                iAvailIndex += 1
-        self._oScrolledList.fill_list(aVals)
-        self._oScrolledList.fill_second_column(dInUse)
-
-
-class PhysicalCardSetListFrame(CardSetManagementFrame):
-    # pylint: disable-msg=R0904
-    # gtk.Widget, so lots of public methods
-    """Frame for the Physical Card Set list.
-
-       Adds in-use flag handling.
-       """
-    _sFilterType = 'PhysicalCardSet'
-    _sName = 'Physical Card Set List'
-    _oSetClass = PhysicalCardSet
-
-    def __init__(self, oMainWindow):
-        super(PhysicalCardSetListFrame, self).__init__(oMainWindow)
-        self.set_name("physical card sets list")
-        self.add_parts()
-
     # pylint: disable-msg=W0613
     # oMenuItem required by function signature
     def toggle_in_use_flag(self, oMenuItem):
         """Toggle the in-use status of the card set"""
-        aSelection = self._oScrolledList.get_selection()
+        aSelection = self._oView.get_selection()
         if len(aSelection) != 1:
             return
         else:
@@ -248,4 +201,4 @@ class PhysicalCardSetListFrame(CardSetManagementFrame):
         oCS.syncUpdate()
         self.reload()
         # Restore selection
-        self._oScrolledList.set_selected(oCS.name)
+        self._oView.set_selected(oCS.name)

@@ -12,8 +12,7 @@ from sutekh.gui.SutekhDialog import do_complaint_warning
 from sutekh.gui.CardListView import EditableCardListView
 from sutekh.gui.CardListModel import PhysicalCardSetCardListModel, \
         CardListModel
-from sutekh.core.SutekhObjects import PhysicalCardSet, \
-        MapPhysicalCardToPhysicalCardSet
+from sutekh.core.SutekhObjects import PhysicalCardSet
 from sutekh.core.Filters import PhysicalCardSetFilter
 from sutekh.SutekhUtility import delete_physical_card_set
 

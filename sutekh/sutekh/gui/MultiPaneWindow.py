@@ -25,7 +25,7 @@ from sutekh.gui.CardSetFrame import PhysicalCardSetFrame
 from sutekh.gui.AboutDialog import SutekhAboutDialog
 from sutekh.gui.MainMenu import MainMenu
 from sutekh.gui.GuiCardLookup import GuiLookup
-from sutekh.gui.CardSetManagementFrame import PhysicalCardSetListFrame
+from sutekh.gui.CardSetManagementFrame import CardSetManagementFrame
 from sutekh.gui.PluginManager import PluginManager
 from sutekh.gui import SutekhIcon
 from sutekh.gui.HTMLTextView import HTMLViewDialog
@@ -233,7 +233,7 @@ class MultiPaneWindow(gtk.Window):
         """Replace the focussed pane with the physical card set list."""
         sMenuFlag = "Physical Card Set List"
         if sMenuFlag not in self.dOpenFrames.values() and self._oFocussed:
-            oPane = PhysicalCardSetListFrame(self)
+            oPane = CardSetManagementFrame(self)
             self.replace_frame(self._oFocussed, oPane, sMenuFlag)
             self._oPCSListPane = oPane
 
