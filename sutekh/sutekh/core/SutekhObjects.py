@@ -436,7 +436,7 @@ class SutekhObjectMaker(object):
 
     def make_physical_card(self, oCard, oExp):
         try:
-            return IPhysicalCard((oCard,oExp))
+            return IPhysicalCard((oCard, oExp))
         except SQLObjectNotFound:
             return PhysicalCard(abstractCard=oCard, expansion=oExp)
 

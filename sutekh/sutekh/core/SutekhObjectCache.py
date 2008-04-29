@@ -8,7 +8,7 @@
 
 from sutekh.core.SutekhObjects import AbstractCard, RarityPair, Rarity, Clan, \
         Discipline, DisciplinePair, CardType, Expansion, Ruling, Sect, Title, \
-        Creed, Virtue, init_cache
+        Creed, Virtue, PhysicalCard, init_cache
 
 class SutekhObjectCache(object):
     """Holds references to commonly used database objects so that they don't
@@ -25,7 +25,7 @@ class SutekhObjectCache(object):
     def __init__(self):
         aTypesToCache = [ Rarity, Expansion, RarityPair, Discipline,
                 DisciplinePair, Clan, CardType, AbstractCard, Ruling,
-                Creed, Virtue, Sect, Title]
+                Creed, Virtue, Sect, Title, PhysicalCard]
 
         self._dCache = {}
         for cType in aTypesToCache:
