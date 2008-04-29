@@ -434,6 +434,12 @@ class SutekhObjectMaker(object):
             sCanonical = sName.lower()
             return AbstractCard(canonicalName=sCanonical, name=sName, text="")
 
+    def make_physical_card(self, oCard, oExp):
+        try:
+            return IPhysicalCard((oCard,oExp))
+        except SQLObjectNotFound:
+            return PhysicalCard(abstractCard=oCard, expansion=oExp)
+
     def make_rarity_pair(self, sExp, sRarity):
         try:
             return IRarityPair((sExp, sRarity))
@@ -640,6 +646,17 @@ class PhysicalCardToAbstractCardAdapter(object):
 
     def __new__(cls, oPhysCard):
         return oPhysCard.abstractCard
+
+class PhysicalCardAdapter(object):
+    advise(instancesProvide=[IPhysicalCard], asAdapterForTypes=[tuple])
+
+    def __new__(cls, tData):
+        # pylint: disable-msg=E1101
+        # SQLObject confuses pylint
+        oAbsCard, oExp = tData
+        oPhysicalCard = PhysicalCard.selectBy(abstractCard=oAbsCard,
+                                              expansion=oExp).getOne()
+        return oPhysicalCard
 
 # Flushing
 
