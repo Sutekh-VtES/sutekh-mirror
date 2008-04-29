@@ -640,8 +640,7 @@ def copy_old_physical_card(oOrigConn, oTrans, oLogger):
                     abstractCardID=oCard.abstractCardID,
                     expansion=oCard.expansion, connection=oTrans)
             assert aCandCards.count() == 1
-            oNewCard = aCandCards[0]
-            oPCLSet.addPhysicalCard(oNewCard.id)
+            oPCLSet.addPhysicalCard(aCandCards[0].id)
     elif oVer.check_tables_and_versions([PhysicalCardSet, PhysicalCard],
             [PhysicalCardSet.tableversion, PhysicalCard.tableversion],
             oOrigConn):
@@ -676,6 +675,8 @@ def copy_old_physical_card_set(oOrigConn, oTrans, oLogger):
         copy_physical_card_set(oOrigConn, oTrans, oLogger)
     # FIXME: magic needed to set the right parent here.
     elif oVer.check_tables_and_versions([PhysicalCardSet], [3], oOrigConn):
+        oParent = PhysicalCardSet.selectBy(name='My Collection',
+                connection=oTrans)[0]
         for oSet in PhysicalCardSet_v3.select(connection=oOrigConn):
             oCopy = PhysicalCardSet(name=oSet.name,
                     author=oSet.author, comment=oSet.comment,
@@ -686,11 +687,13 @@ def copy_old_physical_card_set(oOrigConn, oTrans, oLogger):
             oCopy.syncUpdate()
             oLogger.info('Copied PCS %s', oCopy.name)
     elif oVer.check_tables_and_versions([PhysicalCardSet], [4], oOrigConn):
+        oParent = PhysicalCardSet.selectBy(name='My Collection',
+                connection=oTrans)[0]
         for oSet in PhysicalCardSet_v4.select(connection=oOrigConn):
             oCopy = PhysicalCardSet(name=oSet.name,
                     author=oSet.author, comment=oSet.comment,
                     annotations=oSet.annotations, inuse=oSet.inuse,
-                    parent=None, connection=oTrans)
+                    parent=oParent, connection=oTrans)
             #for oCard in oSet.cards:
             #    oCopy.addPhysicalCard(oCard.id)
             oCopy.syncUpdate()
@@ -704,16 +707,51 @@ def copy_old_abstract_card_set(oOrigConn, oTrans, oLogger):
     """Copy old Abstract Card Sets, upgrading as needed."""
     # pylint: disable-msg=E1101
     # SQLObject confuses pylint
-    # FIXME: create suitable PCS's instead.
+    def _gen_new_name(sSetName, aPhysSetNames):
+        """Crate a new PCS name for the existing ACS"""
+        sNewName = '(ACS) ' + sSetName
+        iSuffix = 0
+        while sNewName in aPhysSetNames:
+            sNewName = '(ACS) %s %d' % (sSetName, iSuffix)
+            iSuffix += 1
+        aPhysSetNames.append(sNewName)
+        return sNewName
+
+    def _copy_cards(oOldSet, oNewSet):
+        """Copy the cards from the old abstract card set oOldSet to the
+           PhysicalCardSet oNewSet, doing the right thing."""
+        for oCard in oOldSet.cards:
+            # We find the physical card with the same abstract card id
+            # and No expansion info
+            aCandCards = PhysicalCard.selectBy(abstractCardID=oCard.id,
+                    expansion=None, connection=oTrans)
+            assert aCandCards.count() == 1
+            oNewSet.addPhysicalCard(aCandCards[0].id)
+
     oVer = DatabaseVersion()
     if oVer.check_tables_and_versions([AbstractCardSet_v3], [3], oOrigConn):
-        # Do magic here
-        pass
+        aPhysSetNames = [x.name for x in
+                PhysicalCardSet.select(connection=oTrans)]
+        for oSet in AbstractCardSet_v3.select(connection=oOrigConn):
+            # Create a similiar Physical Card Set
+            sNewName = _gen_new_name(oSet.name, aPhysSetNames)
+            oNewPCS = PhysicalCardSet(name=sNewName, author=oSet.author,
+                    annotations=oSet.annotations, comment=oSet.comment,
+                    parent=None, inuse=False, connection=oTrans)
+            _copy_cards(oSet, oNewPCS)
+            oNewPCS.syncUpdate()
     elif oVer.check_tables_and_versions([AbstractCardSet_v3], [2], oOrigConn):
+        aPhysSetNames = [x.name for x in
+                PhysicalCardSet.select(connection=oTrans)]
         # Upgrade from previous AbstractCard class
         for oSet in AbstractCardSet_ACv2.select(connection=oOrigConn):
-            # Do magic here
-            pass
+            # Create a similiar Physical Card Set
+            sNewName = _gen_new_name(oSet.name, aPhysSetNames)
+            oNewPCS = PhysicalCardSet(name=sNewName, author=oSet.author,
+                    annotations=oSet.annotations, comment=oSet.comment,
+                    parent=None, inuse=False, connection=oTrans)
+            _copy_cards(oSet, oNewPCS)
+            oNewPCS.syncUpdate()
     else:
         return (False, ["Unknown AbstractCardSet version"])
     return (True, [])
