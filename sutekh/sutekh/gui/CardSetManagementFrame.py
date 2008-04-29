@@ -80,11 +80,10 @@ class CardSetManagementFrame(BasicFrame):
     # arguments required by function signature
     def drag_card_set(self, oBtn, oDragContext, oSelectionData, oInfo, oTime):
         """Allow card sets to be dragged to a frame."""
-        aSelection = self._oScrolledList.get_selection()
-        if len(aSelection) != 1:
+        sSetName = self._oView.get_selected_card_set()
+        if not sSetName:
             return
         # Don't respond to the dragging of an already open card set, and so on
-        sSetName = aSelection[0]
         sPrefix = 'PCS:'
         sFrameName = sSetName
         if sFrameName in self._oMainWindow.dOpenFrames.values():
@@ -114,11 +113,9 @@ class CardSetManagementFrame(BasicFrame):
 
     def delete_card_set(self, oWidget):
         """Delete the selected card set."""
-        aSelection = self._oScrolledList.get_selection()
-        if len(aSelection) != 1:
+        sSetName = self._oView.get_selected_card_set()
+        if not sSetName:
             return
-        else:
-            sSetName = aSelection[0]
         try:
             oCS = PhysicalCardSet.byName(sSetName)
         except SQLObjectNotFound:
@@ -158,11 +155,9 @@ class CardSetManagementFrame(BasicFrame):
     # oMenuItem required by function signature
     def toggle_in_use_flag(self, oMenuItem):
         """Toggle the in-use status of the card set"""
-        aSelection = self._oView.get_selection()
-        if len(aSelection) != 1:
-            return
-        else:
-            sSetName = aSelection[0]
+        sSetName = self._oView.get_selected_card_set()
+        if not sSetName:
+            return 
         try:
             # pylint: disable-msg=E1101
             # SQLObject confuses pylint
@@ -171,6 +166,4 @@ class CardSetManagementFrame(BasicFrame):
             return
         oCS.inuse = not oCS.inuse
         oCS.syncUpdate()
-        self.reload()
-        # Restore selection
-        self._oView.set_selected(oCS.name)
+        self._oView.reload_keep_expanded(True)

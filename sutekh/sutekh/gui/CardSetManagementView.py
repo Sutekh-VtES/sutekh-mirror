@@ -88,14 +88,17 @@ class CardSetManagementModel(gtk.TreeStore):
             return None
 
     def get_name_from_iter(self, oIter):
-        """
-        Extract the value at oIter from the model, correcting for encoding
-        issues
-        """
+        """Extract the value at oIter from the model, correcting for encoding
+           issues."""
         sCardSetName = self.get_value(oIter, 0).decode("utf-8")
         if sCardSetName.startswith('<b>'):
             sCardSetName = sCardSetName[3:-4] # Strip markup
         return sCardSetName
+
+    def get_name_from_path(self, oPath):
+        """Get the card set name at oPath."""
+        oIter = self.get_iter(oPath)
+        return self.get_name_from_iter(oIter)
 
     def sort_column(self, oModel, oIter1, oIter2):
         """Custom sort function - ensure that markup doesn't affect sort
@@ -167,7 +170,7 @@ class CardSetManagementView(gtk.TreeView, object):
         """Create a dictionary of rows and their expanded status."""
         if self.row_expanded(oPath):
             dExpandedDict.setdefault(oPath,
-                    self._oModel.get_card_name_from_path(oPath))
+                    self._oModel.get_name_from_path(oPath))
         return False # Need to process the whole list
 
     # pylint: disable-msg=W0613
@@ -178,14 +181,14 @@ class CardSetManagementView(gtk.TreeView, object):
             # pylint: disable-msg=W0704
             # Paths may disappear, so this error can be ignored
             try:
-                sCardName = self._oModel.get_name_from_path(oPath)
-                if sCardName == dExpandedDict[oPath]:
+                sCardSetName = self._oModel.get_name_from_path(oPath)
+                if sCardSetName == dExpandedDict[oPath]:
                     self.expand_to_path(oPath)
             except ValueError:
                 pass
         return False
 
-    def reload_keep_expanded(self):
+    def reload_keep_expanded(self, bRestoreSelection):
         """Reload with current expanded state.
 
            Attempt to reload the card list, keeping the existing structure
@@ -193,12 +196,20 @@ class CardSetManagementView(gtk.TreeView, object):
            """
         # Internal helper functions
         # See what's expanded
+        oModel, aSelectedRows = self._oSelection.get_selected_rows()
+        if len(aSelectedRows) > 0:
+            oSelPath = aSelectedRows[0]
+        else:
+            oSelPath = None
         dExpandedDict = {}
         self._oModel.foreach(self.__get_row_status, dExpandedDict)
         # Reload, but use cached info
         self._oModel.load()
         # Re-expand stuff
         self.__set_row_status(dExpandedDict)
+        if oSelPath and bRestoreSelection:
+            # Restore selection
+            self._oSelection.select_path(oSelPath)
 
     # Introspection
 
@@ -309,3 +320,14 @@ class CardSetManagementView(gtk.TreeView, object):
     def drag_delete(self, oBtn, oContext, oData):
         """Default drag-delete handler"""
         pass
+
+    def get_selected_card_set(self):
+        """Return the currently selected card set name, or None if nothing
+           is selected."""
+        oModel, aSelectedRows = self._oSelection.get_selected_rows()
+        if len(aSelectedRows) < 1:
+            return None
+        # We only allow single selection mode, so len(aSelectedRows) == 1
+        oPath = aSelectedRows[0]
+        return oModel.get_name_from_path(oPath)
+
