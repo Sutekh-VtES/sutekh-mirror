@@ -30,5 +30,3 @@ class AbstractCardView(CardListView):
         oColumn = gtk.TreeViewColumn("Collection", oCell, text=0)
         self.append_column(oColumn)
         oColumn.set_sort_column_id(0)
-
-        self.load()

@@ -80,4 +80,5 @@ class CardListFrame(BasicFrame):
                 expand=True)
 
         self.add(oMbox)
+        self._oController.view.load()
         self.show_all()

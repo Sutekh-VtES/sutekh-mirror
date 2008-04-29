@@ -43,7 +43,6 @@ class CardSetView(EditableCardListView):
             self._oModel.cardclass = MapAbstractCardToAbstractCardSet
             self._oModel.basefilter = AbstractCardSetFilter(self.sSetName)
         self.sDragPrefix = self.cSetType.sqlmeta.table + ":" + self.sSetName
-        self.load()
 
     # pylint: disable-msg=R0913, W0613
     # elements required by function signature

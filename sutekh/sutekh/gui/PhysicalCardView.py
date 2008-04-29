@@ -29,7 +29,6 @@ class PhysicalCardView(EditableCardListView):
 
         self._oController = oController
 
-        self.load()
 
     # pylint: disable-msg=R0913
     # Number of arguments needed by function signature

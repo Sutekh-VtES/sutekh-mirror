@@ -61,10 +61,6 @@ class CountCardSetCards(CardListPlugin, CardListModelListener):
         self.__oTextLabel = gtk.Label('Total Cards : 0 Crypt Cards : 0 Library'
                 ' Cards : 0')
 
-        aAbsCards = [IAbstractCard(x) for x in
-                self.model.get_card_iterator(self.model.get_current_filter())]
-        self.load(aAbsCards)
-
         return self.__oTextLabel
 
     def update_numbers(self):
