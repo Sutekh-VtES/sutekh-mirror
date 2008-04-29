@@ -8,7 +8,7 @@
    """
 
 from sqlobject import SQLObjectNotFound
-from sutekh.core.SutekhObjects import AbstractCard, PhysicalCard, IExpansion
+from sutekh.core.SutekhObjects import AbstractCard, IPhysicalCard, IExpansion
 
 # pylint: disable-msg=R0922
 # We inherit from these classes elsewhere
@@ -105,34 +105,17 @@ class SimpleLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
         for sName in dCardExpansions:
             oAbs = dNameCards[sName]
             if oAbs is not None:
-                # pylint: disable-msg=W0704
-                # Do nothng exception correct here
-                try:
-                    aPhysCards = PhysicalCard.selectBy(abstractCardID=oAbs.id)
-                    for sExpansionName in dCardExpansions[sName]:
+                for sExpansionName in dCardExpansions[sName]:
+                    # pylint: disable-msg=W0704
+                    # Do nothing exception correct here
+                    try:
                         iCnt = dCardExpansions[sName][sExpansionName]
                         oExpansion = dNameExps[sExpansionName]
-                        # We treat None as specifying the same as specifying
-                        # an expansion - the card (A, None) doesn't match a
-                        # card in the physical card list (A, '3rd Ed')
-                        # This works under the assumption that we're
-                        # importing card sets back into the same physical
-                        # card list. There are numerous ways this can break,
-                        # but I claim this approach best matches principles
-                        # of least surprise. The gui lookup can do fancier
-                        # resolutions, and that's what the user should see
-                        # most often
-                        for oPhys in aPhysCards:
-                            if oPhys not in aCards \
-                                    and oPhys.expansion == oExpansion:
-                                aCards.append(oPhys)
-                                iCnt -= 1
-                                if iCnt == 0:
-                                    break # We done with this expansion
-                except SQLObjectNotFound:
-                    # This card is missing from the PhysicalCard list, so
-                    # skipped
-                    pass
+                        aCards.extend([IPhysicalCard((oAbs,oExpansion))]*iCnt)
+                    except SQLObjectNotFound:
+                        # This card is missing from the PhysicalCard list, so
+                        # skipped
+                        pass
         return aCards
 
     def expansion_lookup(self, aExpansionNames, sInfo):
