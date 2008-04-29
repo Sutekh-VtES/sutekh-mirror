@@ -14,8 +14,7 @@ from sutekh.core.SutekhObjects import PhysicalCardSet
 from sutekh.gui.SutekhDialog import do_complaint_error
 from sutekh.gui.SutekhFileWidget import ExportDialog
 from sutekh.gui.PropDialog import PropDialog
-from sutekh.io.XmlFileHandling import AbstractCardSetXmlFile, \
-        PhysicalCardSetXmlFile
+from sutekh.io.XmlFileHandling import PhysicalCardSetXmlFile
 from sutekh.gui.EditAnnotationsDialog import EditAnnotationsDialog
 from sutekh.gui.PaneMenu import EditableCardListMenu
 
@@ -30,9 +29,9 @@ class CardSetMenu(EditableCardListMenu):
        """
     # pylint: disable-msg=R0902
     # R0902 - we are keeping a lot of state, so many instance variables
-    def __init__(self, oFrame, oController, oWindow, oView, sName):
+    def __init__(self, oFrame, oController, oWindow, sName):
         super(CardSetMenu, self).__init__(oFrame, oWindow, oController)
-        self.__oView = oView
+        self.__oController = oController
         self.sSetName = sName
         self.__create_card_set_menu()
         self.create_edit_menu()
@@ -78,6 +77,8 @@ class CardSetMenu(EditableCardListMenu):
     # oWidget required by function signature for the following methods
     def _edit_properties(self, oWidget):
         """Popup the Edit Properties dialog to change card set properties."""
+        # pylint: disable-msg=E1101
+        # sqlobject confuses pylint
         oCS = PhysicalCardSet.byName(self.sSetName)
         oProp = PropDialog(self._oMainWindow, oCS)
         oProp.run()
@@ -90,7 +91,7 @@ class CardSetMenu(EditableCardListMenu):
                 return
             else:
                 oCS.name = sName
-                self.__oView.sSetName = sName
+                self.__oController.view.sSetName = sName
                 self.sSetName = sName
                 self._oFrame.update_name(self.sSetName)
                 self.__update_card_set_menu()
@@ -104,6 +105,8 @@ class CardSetMenu(EditableCardListMenu):
 
     def _edit_annotations(self, oWidget):
         """Popup the Edit Annotations dialog."""
+        # pylint: disable-msg=E1101
+        # sqlobject confuses pylint
         oCS = PhysicalCardSet.byName(self.sSetName)
         oEditAnn = EditAnnotationsDialog("Edit Annotations of Card Set (%s)" %
                 self.sSetName, self._oMainWindow, oCS.name, oCS.annotations)

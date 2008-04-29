@@ -6,13 +6,15 @@
 
 """gtk.TreeView class the card sets."""
 
-import gtk, pango, gobject
+import gtk, gobject
 import unicodedata
 from sutekh.gui.FilterDialog import FilterDialog
 from sutekh.core.SutekhObjects import PhysicalCardSet
 from sutekh.core.Filters import NullFilter
 
 class CardSetManagementModel(gtk.TreeStore):
+    # pylint: disable-msg=R0904
+    # gtk.Widget, so lots of public methods
     """TreeModel for the card sets"""
     def __init__(self, oMainWindow):
         super(CardSetManagementModel, self).__init__(gobject.TYPE_STRING)
@@ -99,7 +101,7 @@ class CardSetManagementModel(gtk.TreeStore):
         if sCardSetName.startswith('<b><i>'):
             sCardSetName = sCardSetName[6:-8]
         elif sCardSetName.startswith('<b>') or sCardSetName.startswith('<i>'):
-            sCardSetName = sCardSetName[3:-4] 
+            sCardSetName = sCardSetName[3:-4]
         return sCardSetName
 
     def get_name_from_path(self, oPath):
@@ -126,6 +128,8 @@ class CardSetManagementModel(gtk.TreeStore):
 
 class CardSetManagementView(gtk.TreeView, object):
     """Tree View for the card sets."""
+    # pylint: disable-msg=R0904
+    # gtk.Widget, so lots of public methods
     def __init__(self, oMainWindow):
         self._oModel = CardSetManagementModel(oMainWindow)
         super(CardSetManagementView, self).__init__(self._oModel)

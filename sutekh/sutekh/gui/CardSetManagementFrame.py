@@ -158,7 +158,7 @@ class CardSetManagementFrame(BasicFrame):
         """Toggle the in-use status of the card set"""
         sSetName = self._oView.get_selected_card_set()
         if not sSetName:
-            return 
+            return
         try:
             # pylint: disable-msg=E1101
             # SQLObject confuses pylint

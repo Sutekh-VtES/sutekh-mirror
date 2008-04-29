@@ -320,7 +320,7 @@ class MultiPaneWindow(gtk.Window):
         if self._oFocussed is not None:
             self._oFocussed.set_unfocussed_title()
         self._oFocussed = oFrame
-        if oFrame: 
+        if oFrame:
             # oFrame can be None when win_focus is called directly
             self._oFocussed.set_focussed_title()
             self._oFocussed.view.grab_focus()
