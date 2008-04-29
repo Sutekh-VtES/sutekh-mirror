@@ -114,7 +114,7 @@ class PhysicalCardSet(SQLObject):
     comment = UnicodeCol(default='')
     annotations = UnicodeCol(default='')
     inuse = BoolCol(default=False)
-    parent = ForeignKey('PhysicalCardSet')
+    parent = ForeignKey('PhysicalCardSet', default=None)
     cards = RelatedJoin('PhysicalCard', intermediateTable='physical_map',
             createRelatedTable=False)
 
