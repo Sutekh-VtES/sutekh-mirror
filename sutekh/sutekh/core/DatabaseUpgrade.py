@@ -630,9 +630,45 @@ def copy_physical_card(oOrigConn, oTrans, oLogger):
                 expansionID=oCard.expansionID, connection=oTrans)
         oLogger.info('copied PC %s', oCardCopy.id)
 
+def get_new_physical_card(oCard, oTrans, aMessages):
+    """Get the equivalent physical card in the new physical card table.
+    
+       If oCard is an AbstractCard, use None as the expansion.
+       """
+
+    if hasattr(oCard,'abstractCardID'):
+        # must be a physical card
+        oExp = oCard.expansion
+        oId = oCard.abstractCardID
+    else:
+        oExp = None
+        oId = oCard.id
+
+    try:
+        oNewCard = PhysicalCard.selectBy(
+                    abstractCardID=oId,
+                    expansion=oExp, connection=oTrans).getOne()
+    except SQLObjectNotFound:
+        if oExp is None:
+            raise
+
+        # probably an invalid (AbstractCard, Expansion) pair in the old
+        # database. Try with no expansion.
+
+        aMessages.append("'%s' isn't listed as appearing in" \
+                         " expansion '%s'. Attempting to insert " \
+                         " without an expansion." \
+                         % (oCard.abstractCard.name, oCard.expansion.name))
+
+        oNewCard = PhysicalCard.selectBy(
+                    abstractCardID=oId,
+                    expansion=None, connection=oTrans).getOne()
+    return oNewCard
+
 def copy_old_physical_card(oOrigConn, oTrans, oLogger):
     """Copy PhysicalCards, upgrading if needed."""
     oVer = DatabaseVersion()
+    aMessages = []
     if oVer.check_table_in_versions(PhysicalCardSet, [3, 4], oOrigConn) and \
             oVer.check_tables_and_versions([PhysicalCard],
                     [PhysicalCard.tableversion], oOrigConn):
@@ -653,19 +689,15 @@ def copy_old_physical_card(oOrigConn, oTrans, oLogger):
         # pylint: disable-msg=E1101
         # SQLObject confuses pylint
         for oCard in PhysicalCard.select(connection=oOrigConn):
-            # We search the NEW physical card list for a card with
-            # matching abstractCardID and expansion
-            aCandCards = PhysicalCard.selectBy(
-                    abstractCardID=oCard.abstractCardID,
-                    expansion=oCard.expansion, connection=oTrans)
-            oPCLSet.addPhysicalCard(aCandCards[0].id)
+            oNewCard = get_new_physical_card(oCard, oTrans, aMessages)
+            oPCLSet.addPhysicalCard(oNewCard.id)
     elif oVer.check_tables_and_versions([PhysicalCardSet, PhysicalCard],
             [PhysicalCardSet.tableversion, PhysicalCard.tableversion],
             oOrigConn):
         copy_physical_card(oOrigConn, oTrans, oLogger)
     else:
         return (False, ["Unknown PhysicalCard version"])
-    return (True, [])
+    return (True, aMessages)
 
 def copy_physical_card_set(oOrigConn, oTrans, oLogger):
     """Copy PCS, assuming versions match"""
@@ -685,16 +717,14 @@ def copy_old_physical_card_set(oOrigConn, oTrans, oLogger):
     """Copy PCS, upgrading as needed."""
     # pylint: disable-msg=E1101
     # SQLObject confuses pylint
+    aMessages = []
+
     def _copy_cards(oOldSet, oNewSet):
         """Copy the cards from the old physical card set to the new set,
            replacing references to the correct new Physical Cards."""
         for oCard in oOldSet.cards:
-            # We find the physical card with the same abstract card id
-            # and No expansion info
-            aCandCards = PhysicalCard.selectBy(
-                    abstractCardID=oCard.abstractCardID,
-                    expansionID=oCard.expansionID, connection=oTrans)
-            oNewSet.addPhysicalCard(aCandCards[0].id)
+            oNewCard = get_new_physical_card(oCard, oTrans, aMessages)
+            oNewSet.addPhysicalCard(oNewCard.id)
 
     oVer = DatabaseVersion()
     if oVer.check_tables_and_versions([PhysicalCardSet],
@@ -726,12 +756,14 @@ def copy_old_physical_card_set(oOrigConn, oTrans, oLogger):
             oLogger.info('Copied PCS %s', oCopy.name)
     else:
         return (False, ["Unknown PhysicalCardSet version"])
-    return (True, [])
+    return (True, aMessages)
 
 def copy_old_abstract_card_set(oOrigConn, oTrans, oLogger):
     """Copy old Abstract Card Sets, upgrading as needed."""
     # pylint: disable-msg=E1101
     # SQLObject confuses pylint
+    aMessages = []
+
     def _gen_new_name(sSetName, aPhysSetNames):
         """Crate a new PCS name for the existing ACS"""
         sNewName = '(ACS) ' + sSetName
@@ -748,9 +780,8 @@ def copy_old_abstract_card_set(oOrigConn, oTrans, oLogger):
         for oCard in oOldSet.cards:
             # We find the physical card with the same abstract card id
             # and No expansion info
-            aCandCards = PhysicalCard.selectBy(abstractCardID=oCard.id,
-                    expansion=None, connection=oTrans)
-            oNewSet.addPhysicalCard(aCandCards[0].id)
+            oNewCard = get_new_physical_card(oCard, oTrans, aMessages)
+            oNewSet.addPhysicalCard(oNewCard.id)
 
     oVer = DatabaseVersion()
     if oVer.check_tables_and_versions([AbstractCardSet_v3], [3], oOrigConn):
@@ -780,7 +811,7 @@ def copy_old_abstract_card_set(oOrigConn, oTrans, oLogger):
             oLogger.info('Copied Abstract CS %s', oNewPCS.name)
     else:
         return (False, ["Unknown AbstractCardSet version"])
-    return (True, [])
+    return (True, aMessages)
 
 def read_old_database(oOrigConn, oDestConnn, oLogHandler=None):
     """Read the old database into new database, filling in
