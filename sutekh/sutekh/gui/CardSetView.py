@@ -10,10 +10,8 @@
 import gtk
 from sutekh.gui.SutekhDialog import do_complaint_warning
 from sutekh.gui.CardListView import EditableCardListView
-from sutekh.gui.CardListModel import PhysicalCardSetCardListModel, \
-        CardListModel
+from sutekh.gui.CardListModel import PhysicalCardSetCardListModel
 from sutekh.core.SutekhObjects import PhysicalCardSet
-from sutekh.core.Filters import PhysicalCardSetFilter
 from sutekh.SutekhUtility import delete_physical_card_set
 
 class CardSetView(EditableCardListView):
@@ -81,6 +79,8 @@ class CardSetView(EditableCardListView):
     def delete_card_set(self):
         """Delete this card set from the database."""
         # Check if CardSet is empty
+        # pylint: disable-msg=E1101
+        # sqlobject confuses pylint
         oCS = PhysicalCardSet.byName(self.sSetName)
         if len(oCS.cards)>0:
             iResponse = do_complaint_warning("Card Set Not Empty. "

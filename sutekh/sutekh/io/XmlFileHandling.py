@@ -37,9 +37,12 @@ class PhysicalCardXmlFile(object):
         oParser = PhysicalCardParser()
         oParser.parse(file(self.sXmlFile,'rU'), self.oCardLookup)
 
+    # pylint: disable-msg=R0201
+    # method for backwards compatibility
     def write(self):
         """Write the card collection to the file (DEPRECATED)."""
-        raise RuntimeError("Writing out of physical card lists to XML files is no longer supported.")
+        raise RuntimeError("Writing out of physical card lists to XML files"
+                " is no longer supported.")
 
     def delete(self):
         """Delete the file"""
@@ -60,9 +63,12 @@ class AbstractCardSetXmlFile(object):
         oParser = AbstractCardSetParser()
         oParser.parse(file(self.sXmlFile,'rU'), self.oCardLookup)
 
+    # pylint: disable-msg=R0201
+    # method for backwards compatibility
     def write(self, sAbstractCardSetName):
         """Write the given card set to the file (DEPRECATED)."""
-        raise RuntimeError("Writing out of abstract card sets to XML files is no longer supported.")
+        raise RuntimeError("Writing out of abstract card sets to XML files"
+                " is no longer supported.")
 
     def delete(self):
         """Delete the file"""

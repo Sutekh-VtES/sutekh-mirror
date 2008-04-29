@@ -632,7 +632,7 @@ def copy_physical_card(oOrigConn, oTrans, oLogger):
 
 def get_new_physical_card(oCard, oTrans, aMessages):
     """Get the equivalent physical card in the new physical card table.
-    
+
        If oCard is an AbstractCard, use None as the expansion.
        """
 

@@ -13,9 +13,7 @@ from sutekh.SutekhUtility import delete_physical_card_set
 from sutekh.core.SutekhObjects import PhysicalCardSet
 from sutekh.core.Filters import NullFilter
 from sutekh.gui.SutekhDialog import do_complaint_error, do_complaint_warning
-from sutekh.gui.ScrolledList import ScrolledList
 from sutekh.gui.BasicFrame import BasicFrame
-from sutekh.gui.FilterDialog import FilterDialog
 from sutekh.gui.CreateCardSetDialog import CreateCardSetDialog
 from sutekh.gui.CardSetManagementMenu import CardSetManagementMenu
 from sutekh.gui.CardSetManagementView import CardSetManagementView
@@ -116,6 +114,8 @@ class CardSetManagementFrame(BasicFrame):
         sSetName = self._oView.get_selected_card_set()
         if not sSetName:
             return
+        # pylint: disable-msg=E1101
+        # sqlobject confuses pylint
         try:
             oCS = PhysicalCardSet.byName(sSetName)
         except SQLObjectNotFound:

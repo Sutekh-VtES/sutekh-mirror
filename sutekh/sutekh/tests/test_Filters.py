@@ -37,7 +37,7 @@ class FilterTests(SutekhTest):
             aExps = set([oRarity.expansion for oRarity in oAbs.rarity])
 
             if None in aAllowedExpansions:
-                aPhysicalCards.append(IPhysicalCard((oAbs,None)))
+                aPhysicalCards.append(IPhysicalCard((oAbs, None)))
 
             aPhysicalCards.extend([IPhysicalCard((oAbs, oExp)) \
                                    for oExp in aExps \
@@ -164,11 +164,6 @@ class FilterTests(SutekhTest):
                     " failed. %s != %s." % (oFilter, aCards, aExpectedCards))
 
         # test filtering on expansion
-        aCardExpansions = [('.44 Magnum', 'Jyhad'),
-                ('AK-47', 'LotN'),
-                ('Abbot', 'Third Edition'),
-                ('Abombwe', 'Legacy of Blood')]
-
         aExpansionTests = [
                 (Filters.PhysicalExpansionFilter('Jyhad'),
                     ['.44 Magnum', "Aaron's Feeding Razor"],
@@ -212,7 +207,8 @@ class FilterTests(SutekhTest):
 
         # test physical card selects
         for oFilter, aExpectedNames in aNumberTests:
-            oFilter, aExpectedCards = self._physical_test((oFilter,aExpectedNames))
+            oFilter, aExpectedCards = self._physical_test((oFilter,
+                aExpectedNames))
             aCards = sorted(oFilter.select(PhysicalCard).distinct())
             self.assertEqual(aCards, aExpectedCards, "Filter Object %s"
                     " failed. %s != %s." % (oFilter, aCards, aExpectedCards))

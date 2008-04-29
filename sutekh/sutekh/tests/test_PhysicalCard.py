@@ -26,11 +26,6 @@ class PhysicalCardTests(SutekhTest):
         # repeated setups, so it has lots of lines + variables
 
         aAbstractCards = ['.44 magnum', 'ak-47', 'abbot', 'abebe', 'abombwe']
-        aCardExpansions = [('.44 magnum', 'Jyhad'),
-                ('ak-47', 'LotN'),
-                ('abbot', 'Third Edition'),
-                ('abombwe', 'Legacy of Blood')]
-
         # test IO
 
         oAC = IAbstractCard(aAbstractCards[0])

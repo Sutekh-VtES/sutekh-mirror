@@ -207,8 +207,8 @@ class PhysicalCardSetTests(SutekhTest):
 
         oAbsCard0 = IAbstractCard(self.aAbstractCards[0])
         oAbsCard2 = IAbstractCard(self.aAbstractCards[2])
-        oPhysCard0 = IPhysicalCard((oAbsCard0,None))
-        oPhysCard2 = IPhysicalCard((oAbsCard2,None))
+        oPhysCard0 = IPhysicalCard((oAbsCard0, None))
+        oPhysCard2 = IPhysicalCard((oAbsCard2, None))
 
         self.assertEqual(len(oCardSet1.cards), 5)
         self.assertEqual(len(oCardSet2.cards), 9)
