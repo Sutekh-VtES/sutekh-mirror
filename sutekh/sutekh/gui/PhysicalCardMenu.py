@@ -10,8 +10,6 @@
 
 from sutekh.gui.SutekhFileWidget import ExportDialog
 from sutekh.gui.PaneMenu import EditableCardListMenu
-from sutekh.gui.EditPhysicalCardMappingDialog import \
-        EditPhysicalCardMappingDialog
 from sutekh.io.XmlFileHandling import PhysicalCardXmlFile
 
 class PhysicalCardMenu(EditableCardListMenu):
@@ -47,9 +45,6 @@ class PhysicalCardMenu(EditableCardListMenu):
 
         self.add_common_actions(oMenu)
 
-        self.create_menu_item('Edit allocation of cards to PCS', oMenu,
-                self._do_edit_card_set_allocation)
-
     # pylint: enable-msg=W0201
 
     # pylint: disable-msg=W0613
@@ -64,15 +59,6 @@ class PhysicalCardMenu(EditableCardListMenu):
         if sFileName is not None:
             oWriter = PhysicalCardXmlFile(sFileName)
             oWriter.write()
-
-    def _do_edit_card_set_allocation(self, oWidget):
-        """Popup the edit allocation dialog"""
-        dSelectedCards = self._oController.view.process_selection()
-        if len(dSelectedCards) == 0:
-            return
-        oEditAllocation = EditPhysicalCardMappingDialog(self._oMainWindow,
-                dSelectedCards)
-        oEditAllocation.run()
 
     def _toggle_expansion(self, oWidget):
         """Toggle whether the expansion information is shown."""
