@@ -196,7 +196,7 @@ def do_db_upgrade(aLowerTables, aHigherTables):
     oProgressDialog = ProgressDialog()
     oLogHandler.set_dialog(oProgressDialog)
     try:
-        oProgressDialog.set_description("Creating temprary copy")
+        oProgressDialog.set_description("Creating temporary copy")
         (bOK, aMessages) = create_memory_copy(oTempConn, oLogHandler)
         oProgressDialog.destroy()
         if bOK:

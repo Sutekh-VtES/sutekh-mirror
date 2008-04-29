@@ -36,6 +36,8 @@ class CardSetFrame(CardListFrame, object):
 
         self.init_plugins()
 
+        self._cModelType = PhysicalCardSet
+
         self._oMenu = CardSetMenu(self, self._oController, self._oMainWindow,
                 self._oController.view, sName)
         self.add_parts()

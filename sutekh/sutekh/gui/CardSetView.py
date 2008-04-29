@@ -29,7 +29,6 @@ class CardSetView(EditableCardListView):
         super(CardSetView, self).__init__(oController, oMainWindow,
                 oModel, oMainWindow.config_file)
         self.sSetName = sName
-        self.cSetType = cSetType
         self.sDragPrefix = PhysicalCardSet.sqlmeta.table + ":" + self.sSetName
 
     # pylint: disable-msg=R0913, W0613
@@ -79,7 +78,7 @@ class CardSetView(EditableCardListView):
     def delete_card_set(self):
         """Delete this card set from the database."""
         # Check if CardSet is empty
-        oCS = self.cSetType.byName(self.sSetName)
+        oCS = PhysicalCardSet.byName(self.sSetName)
         if len(oCS.cards)>0:
             iResponse = do_complaint_warning("Card Set Not Empty. "
                     "Really Delete?")
