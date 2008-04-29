@@ -7,11 +7,10 @@
 
 """
 Attempts to identify a XML file as either PhysicalCard, PhysicalCardSet or
-AbstractCardSet
+AbstractCardSet (the last is to support legacy backups).
 """
 
-from sutekh.core.SutekhObjects import AbstractCardSet, PhysicalCardSet, \
-        PhysicalCard
+from sutekh.core.SutekhObjects import PhysicalCardSet, PhysicalCard
 from sqlobject import SQLObjectNotFound
 try:
     # pylint: disable-msg=E0611, F0401
@@ -39,10 +38,11 @@ class IdentifyXMLFile(object):
         # pylint: disable-msg=E1101
         # SQLObject classes confuse pylint
         if oRoot.tag == 'abstractcardset':
+            # only present in legacy backups
             sType = 'AbstractCardSet'
             sName = oRoot.attrib['name']
             try:
-                AbstractCardSet.byName(sName.encode('utf8'))
+                PhysicalCardSet.byName(sName.encode('utf8'))
                 bExists = True
             except SQLObjectNotFound:
                 bExists = False

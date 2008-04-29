@@ -59,7 +59,7 @@ class AbstractCardSetParser(object):
                 iCount = int(oElem.attrib['count'], 10)
                 sName = oElem.attrib['name']
                 # Add card to virtual cardset
-                self.oCS.add(iCount, sName)
+                self.oCS.add(iCount, sName, None)
 
     def _commit_tree(self, oCardLookup):
         """Commit the tree to the database.
@@ -69,7 +69,7 @@ class AbstractCardSetParser(object):
            """
         oOldConn = sqlhub.processConnection
         sqlhub.processConnection = oOldConn.transaction()
-        self.oCS.create_acs(oCardLookup)
+        self.oCS.create_pcs(oCardLookup)
         sqlhub.processConnection.commit()
         sqlhub.processConnection = oOldConn
 

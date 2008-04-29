@@ -13,17 +13,13 @@
 import zipfile
 from logging import Logger
 from sqlobject import sqlhub
-from sutekh.core.SutekhObjects import AbstractCardSet, PhysicalCardSet, \
-        aPhysicalList, aAbstractCardSetList
+from sutekh.core.SutekhObjects import PhysicalCardSet, aPhysicalList
 from sutekh.core.CardLookup import DEFAULT_LOOKUP
-from sutekh.core.PhysicalCardMappingHolder import PhysicalCardMappingHolder
 from sutekh.SutekhUtility import refresh_tables
 from sutekh.io.PhysicalCardParser import PhysicalCardParser
 from sutekh.io.PhysicalCardSetParser import PhysicalCardSetParser
 from sutekh.io.AbstractCardSetParser import AbstractCardSetParser
-from sutekh.io.PhysicalCardWriter import PhysicalCardWriter
 from sutekh.io.PhysicalCardSetWriter import PhysicalCardSetWriter
-from sutekh.io.AbstractCardSetWriter import AbstractCardSetWriter
 from sutekh.io.IdentifyXMLFile import IdentifyXMLFile
 
 class ZipFileWrapper(object):
@@ -48,49 +44,6 @@ class ZipFileWrapper(object):
         self.oZip.close()
         self.oZip = None
 
-    def write_physical_card_list_to_zip(self, oLogger):
-        """Add the contents of the physical card list to the zip file"""
-        bClose = False
-        if self.oZip is None:
-            self.__open_zip_for_write()
-            bClose = True
-        oWriter = PhysicalCardWriter()
-        # Zipfile doesn't handle unicode unencoded - blargh
-        # Documentation suggests WinZip may not like this
-        # elementtree's tostring seems to do the right thing, so we
-        # trust it
-        oString = oWriter.gen_xml_string()
-        self.oZip.writestr('PhysicalCardList.xml', oString)
-        oLogger.info('Physical Card Set written')
-        # If oZip isn't writeable, zipfile throws a RunTime Error
-        # We just let the exception handling pass this up to the caller,
-        # since we can't really do anything about this here
-        if bClose:
-            self.__close_zip()
-
-    def write_all_acs_to_zip(self, oLogger):
-        """Add all the abstract card sets to the zip file"""
-        bClose = False
-        if self.oZip is None:
-            self.__open_zip_for_write()
-            bClose = True
-        oAbstractCardSets = AbstractCardSet.select()
-        aList = []
-        for oACSet in oAbstractCardSets:
-            sZName = oACSet.name
-            oWriter = AbstractCardSetWriter()
-            oString = oWriter.gen_xml_string(sZName)
-            sZName = sZName.replace(" ", "_")
-            sZName = sZName.replace("/", "_")
-            sZipName = 'acs_%s.xml' % sZName
-            sZipName = sZipName.encode('ascii', 'xmlcharrefreplace')
-            aList.append(sZipName)
-            self.oZip.writestr(sZipName, oString)
-            oLogger.info('ACS: %s written', oACSet.name)
-        if bClose:
-            self.__close_zip()
-        return aList
-
     def write_all_pcs_to_zip(self, oLogger):
         """Add all the physical card sets to the zip file"""
         bClose = False
@@ -113,22 +66,6 @@ class ZipFileWrapper(object):
         if bClose:
             self.__close_zip()
         return aList
-
-    def write_mapping_to_zip(self, oLogger):
-        """Write the Physical card to PCS mapping information to the file."""
-        bClose = False
-        if self.oZip is None:
-            self.__open_zip_for_write()
-            bClose = True
-        sMappingName = '_Physical_Card_Mapping_Table.xml'
-        oMappingObject = PhysicalCardMappingHolder()
-        oMappingObject.fill_from_db(sqlhub.processConnection)
-        oString = oMappingObject.get_string()
-        self.oZip.writestr(sMappingName, oString)
-        oLogger.info('Mapping Table written')
-        if bClose:
-            self.__close_zip()
-
 
     def do_restore_from_zip(self, oCardLookup=DEFAULT_LOOKUP,
             oLogHandler=None):
@@ -155,7 +92,6 @@ class ZipFileWrapper(object):
                 # if we fail, the database will be in an inconsitent state,
                 # but that's going to be true anyway
                 refresh_tables(aPhysicalList, sqlhub.processConnection)
-                refresh_tables(aAbstractCardSetList, sqlhub.processConnection)
                 oParser = PhysicalCardParser()
                 oParser.parse_string(oData, oCardLookup)
                 bPhysicalCardsRead = True
@@ -178,15 +114,6 @@ class ZipFileWrapper(object):
                     continue
                 oParser.parse_string(oData, oCardLookup)
                 oLogger.info('%s %s read', sType, oItem.filename)
-        # Try to restore the physical card mapping table
-        for oItem in self.oZip.infolist():
-            oData = self.oZip.read(oItem.filename)
-            (sType, sName, bExists) = oParser.parse_string(oData)
-            if sType == 'PhysicalCardSetMappingTable':
-                oMappingObject = PhysicalCardMappingHolder()
-                oMappingObject.fill_from_string(oData)
-                oMappingObject.commit_to_db(sqlhub.processConnection)
-                oLogger.info('%s %s read', sType, oItem.filename)
         self.__close_zip()
 
     def do_dump_all_to_zip(self, oLogHandler=None):
@@ -196,12 +123,8 @@ class ZipFileWrapper(object):
         if oLogHandler is not None:
             oLogger.addHandler(oLogHandler)
             if hasattr(oLogHandler,'set_total'):
-                iTotal = 2 + AbstractCardSet.select().count() + \
-                        PhysicalCardSet.select().count()
+                iTotal = 2 + PhysicalCardSet.select().count()
                 oLogHandler.set_total(iTotal)
-        self.write_physical_card_list_to_zip(oLogger)
-        aACSList = self.write_all_acs_to_zip(oLogger)
         aPCSList = self.write_all_pcs_to_zip(oLogger)
-        self.write_mapping_to_zip(oLogger)
         self.__close_zip()
-        return aACSList + aPCSList
+        return aPCSList

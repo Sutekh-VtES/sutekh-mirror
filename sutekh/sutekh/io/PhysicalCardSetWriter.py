@@ -41,7 +41,7 @@ class PhysicalCardSetWriter(object):
     sMyVersion = "1.1"
 
     def make_tree(self, sPhysicalCardSetName):
-        """Convert the card set sAbstractCardSetName to an ElementTree."""
+        """Convert the card set sPhysicalCardSetName to an ElementTree."""
         dPhys = {}
         try:
             # pylint: disable-msg=E1101
