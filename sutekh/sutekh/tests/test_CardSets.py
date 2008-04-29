@@ -7,17 +7,14 @@
 """Test Card Set handling"""
 
 from sutekh.tests.TestCore import SutekhTest
-from sutekh.core.SutekhObjects import IAbstractCard, PhysicalCard, \
-        IExpansion, PhysicalCardSet, AbstractCardSet, IPhysicalCardSet, \
-        IAbstractCardSet, MapPhysicalCardToPhysicalCardSet, \
-        MapAbstractCardToAbstractCardSet
+from sutekh.core.SutekhObjects import IAbstractCard, IPhysicalCard, \
+        IExpansion, PhysicalCardSet, IPhysicalCardSet, \
+        MapPhysicalCardToPhysicalCardSet
 from sutekh.io.PhysicalCardSetParser import PhysicalCardSetParser
 from sutekh.io.PhysicalCardSetWriter import PhysicalCardSetWriter
 from sutekh.io.AbstractCardSetParser import AbstractCardSetParser
-from sutekh.io.AbstractCardSetWriter import AbstractCardSetWriter
 from sutekh.io.IdentifyXMLFile import IdentifyXMLFile
-from sutekh.SutekhUtility import delete_physical_card_set, \
-        delete_abstract_card_set
+from sutekh.SutekhUtility import delete_physical_card_set
 from sqlobject import SQLObjectNotFound
 import unittest
 
@@ -30,17 +27,17 @@ class PhysicalCardSetTests(SutekhTest):
             ('abombwe', 'Legacy of Blood')]
     aCardSetNames = ['Test Set 1', 'Test Set 2']
 
-    def _fill_phys_cards(self):
+    def _get_phys_cards(self):
         """Fill contents of the physical card table"""
         aAddedPhysCards = []
         for sName in self.aAbstractCards:
             oAC = IAbstractCard(sName)
-            oPC = PhysicalCard(abstractCard=oAC, expansion=None)
+            oPC = IPhysicalCard((oAC, None))
             aAddedPhysCards.append(oPC)
         for sName, sExpansion in self.aCardExpansions:
             oAC = IAbstractCard(sName)
             oExpansion = IExpansion(sExpansion)
-            oPC = PhysicalCard(abstractCard=oAC, expansion=oExpansion)
+            oPC = IPhysicalCard((oAC, oExpansion))
             aAddedPhysCards.append(oPC)
         return aAddedPhysCards
 
@@ -50,7 +47,7 @@ class PhysicalCardSetTests(SutekhTest):
         # E1101: SQLObject + PyProtocols magic confuses pylint
         # R0915, R0914: Want a long, sequentila test case to minimise
         # repeated setups, so it has lots of lines + variables
-        aAddedPhysCards = self._fill_phys_cards()
+        aAddedPhysCards = self._get_phys_cards()
         # We have a physical card list, so create some physical card sets
         oPhysCardSet1 = PhysicalCardSet(name=self.aCardSetNames[0])
         oPhysCardSet1.comment = 'A test comment'
@@ -79,9 +76,9 @@ class PhysicalCardSetTests(SutekhTest):
 
         self.assertEqual(len(oPhysCardSet1.cards), 5)
         self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
-            physicalCardID = aAddedPhysCards[0]).count(), 1)
+            physicalCardID = aAddedPhysCards[0].id).count(), 1)
         self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
-            physicalCardID = aAddedPhysCards[7]).count(), 0)
+            physicalCardID = aAddedPhysCards[7].id).count(), 0)
 
         for iLoop in range(3, 8):
             oPhysCardSet2.addPhysicalCard(aAddedPhysCards[iLoop].id)
@@ -89,9 +86,9 @@ class PhysicalCardSetTests(SutekhTest):
 
         self.assertEqual(len(oPhysCardSet2.cards), 5)
         self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
-            physicalCardID = aAddedPhysCards[0]).count(), 1)
+            physicalCardID = aAddedPhysCards[0].id).count(), 1)
         self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
-            physicalCardID = aAddedPhysCards[4]).count(), 2)
+            physicalCardID = aAddedPhysCards[4].id).count(), 2)
 
         # Check output
 
@@ -140,9 +137,9 @@ class PhysicalCardSetTests(SutekhTest):
             self.aCardSetNames[1])
 
         self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
-            physicalCardID = aAddedPhysCards[0]).count(), 0)
+            physicalCardID = aAddedPhysCards[0].id).count(), 0)
         self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
-            physicalCardID = aAddedPhysCards[4]).count(), 0)
+            physicalCardID = aAddedPhysCards[4].id).count(), 0)
 
         # Check input
 
@@ -150,18 +147,20 @@ class PhysicalCardSetTests(SutekhTest):
         fIn = open(sTempFileName, 'r')
         oParser.parse(fIn)
         fIn.close()
+
         oParser.parse_string(sPCS2)
 
         oPhysCardSet1 = IPhysicalCardSet(self.aCardSetNames[0])
+        oPhysCardSet2 = IPhysicalCardSet(self.aCardSetNames[1])
 
         self.assertEqual(len(oPhysCardSet1.cards), 5)
         self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
-            physicalCardID = aAddedPhysCards[0]).count(), 1)
+            physicalCardID = aAddedPhysCards[0].id).count(), 1)
         self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
-            physicalCardID = aAddedPhysCards[7]).count(), 1)
+            physicalCardID = aAddedPhysCards[7].id).count(), 1)
         self.assertEqual(len(oPhysCardSet2.cards), 5)
         self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
-            physicalCardID = aAddedPhysCards[4]).count(), 2)
+            physicalCardID = aAddedPhysCards[4].id).count(), 2)
 
 
     def test_abstract_card_set(self):
@@ -170,105 +169,54 @@ class PhysicalCardSetTests(SutekhTest):
         # E1101: SQLObject + PyProtocols magic confuses pylint
         # R0915, R0914: Want a long, sequentila test case to minimise
         # repeated setups, so it has lots of lines + variables
-        oAbsCardSet1 = AbstractCardSet(name=self.aCardSetNames[0])
-        oAbsCardSet1.comment = 'A test comment'
-        oAbsCardSet1.author = 'A test author'
 
-        self.assertEqual(oAbsCardSet1.name, self.aCardSetNames[0])
-        self.assertEqual(oAbsCardSet1.comment, 'A test comment')
-        oAbsCardSet2 = AbstractCardSet(name=self.aCardSetNames[1],
-                comment='Test 2', author=oAbsCardSet1.author)
-        self.assertEqual(oAbsCardSet2.name, self.aCardSetNames[1])
-        self.assertEqual(oAbsCardSet2.author, oAbsCardSet1.author)
-        self.assertEqual(oAbsCardSet2.comment, 'Test 2')
+        # Support for everything except reading has been removed.
+        # It is expected that reading in an ACS will create an
+        # equivalent PCS.
 
-        oAbsCardSet3 = IAbstractCardSet(self.aCardSetNames[0])
-
-        self.assertEqual(oAbsCardSet1, oAbsCardSet3)
-
-        oAbsCardSet4 = AbstractCardSet.byName(self.aCardSetNames[1])
-        self.assertEqual(oAbsCardSet2, oAbsCardSet4)
-
-        # Test addition
-
-        for sName in self.aAbstractCards:
-            oAC = IAbstractCard(sName)
-            oAbsCardSet1.addAbstractCard(oAC)
-            oAbsCardSet2.addAbstractCard(oAC)
-            if sName != self.aAbstractCards[2]:
-                oAbsCardSet2.addAbstractCard(oAC)
-
-        self.assertEqual(len(oAbsCardSet1.cards), 5)
-        self.assertEqual(len(oAbsCardSet2.cards), 9)
-        self.assertEqual(MapAbstractCardToAbstractCardSet.selectBy(
-            abstractCardID=IAbstractCard(self.aAbstractCards[0]).id).count(),
-            3)
-        self.assertEqual(MapAbstractCardToAbstractCardSet.selectBy(
-            abstractCardID=IAbstractCard(self.aAbstractCards[2]).id).count(),
-            2)
-
-        # check output
-        oWriter = AbstractCardSetWriter()
-        sExpected = '<abstractcardset author="A test author" ' \
+        sExample1 = '<abstractcardset author="A test author" ' \
                 'comment="A test comment" name="Test Set 1" ' \
                 'sutekh_xml_version="1.1"><annotations /><card count="1" ' \
                 'id="11" name="Abebe" /><card count="1" id="8" name="Abbot" ' \
                 '/><card count="1" id="1" name=".44 Magnum" /><card ' \
                 'count="1" id="2" name="AK-47" /><card count="1" id="14" ' \
                 'name="Abombwe" /></abstractcardset>'
-        self.assertEqual(oWriter.gen_xml_string(self.aCardSetNames[0]),
-                sExpected)
-        sTempFileName =  self._create_tmp_file()
-        fOut = open(sTempFileName, 'w')
-        oWriter.write(fOut, self.aCardSetNames[1])
-        fOut.close()
-        oIdFile = IdentifyXMLFile()
-        tResult = oIdFile.id_file(sTempFileName)
-        self.assertEqual(tResult[0], 'AbstractCardSet')
-        tResult = oIdFile.parse_string(sExpected)
-        self.assertEqual(tResult[0], 'AbstractCardSet')
 
-        # check Deletion
+        sExample2 = '<abstractcardset author="A test author" ' \
+                'comment="A test comment" name="Test Set 2" ' \
+                'sutekh_xml_version="1.1"><annotations /><card count="2" ' \
+                'id="11" name="Abebe" /><card count="1" id="8" name="Abbot" ' \
+                '/><card count="2" id="2" name=".44 Magnum" /><card ' \
+                'count="2" id="2" name="AK-47" /><card count="2" id="14" ' \
+                'name="Abombwe" /></abstractcardset>'
 
-        for oCard in oAbsCardSet1.cards:
-            oAbsCardSet1.removeAbstractCard(oCard.id)
-
-        self.assertEqual(len(oAbsCardSet1.cards), 0)
-        AbstractCardSet.delete(oAbsCardSet1.id)
-
-        self.assertRaises(SQLObjectNotFound, AbstractCardSet.byName,
-            self.aCardSetNames[0])
-
-        delete_abstract_card_set(self.aCardSetNames[1])
-
-        self.assertRaises(SQLObjectNotFound, AbstractCardSet.byName,
-            self.aCardSetNames[1])
-
-        self.assertEqual(MapAbstractCardToAbstractCardSet.selectBy(
-            abstractCardID=IAbstractCard(self.aAbstractCards[0]).id).count(),
-            0)
-        self.assertEqual(MapAbstractCardToAbstractCardSet.selectBy(
-            abstractCardID=IAbstractCard(self.aAbstractCards[2]).id).count(),
-            0)
-
-        # check input
         oParser = AbstractCardSetParser()
 
-        oParser.parse_string(sExpected)
+        sTempFileName =  self._create_tmp_file()
+        fOut = open(sTempFileName, 'w')
+        fOut.write(sExample1)
+        fOut.close()
+
+        oParser.parse_string(sExample2)
         fIn = open(sTempFileName, 'r')
         oParser.parse(fIn)
         fIn.close()
 
-        oAbsCardSet1 = IAbstractCardSet(self.aCardSetNames[0])
-        oAbsCardSet2 = IAbstractCardSet(self.aCardSetNames[1])
+        oCardSet1 = IPhysicalCardSet(self.aCardSetNames[0])
+        oCardSet2 = IPhysicalCardSet(self.aCardSetNames[1])
 
-        self.assertEqual(len(oAbsCardSet1.cards), 5)
-        self.assertEqual(len(oAbsCardSet2.cards), 9)
-        self.assertEqual(MapAbstractCardToAbstractCardSet.selectBy(
-            abstractCardID=IAbstractCard(self.aAbstractCards[0]).id).count(),
+        oAbsCard0 = IAbstractCard(self.aAbstractCards[0])
+        oAbsCard2 = IAbstractCard(self.aAbstractCards[2])
+        oPhysCard0 = IPhysicalCard((oAbsCard0,None))
+        oPhysCard2 = IPhysicalCard((oAbsCard2,None))
+
+        self.assertEqual(len(oCardSet1.cards), 5)
+        self.assertEqual(len(oCardSet2.cards), 9)
+        self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
+            physicalCardID=oPhysCard0.id).count(),
             3)
-        self.assertEqual(MapAbstractCardToAbstractCardSet.selectBy(
-            abstractCardID=IAbstractCard(self.aAbstractCards[2]).id).count(),
+        self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
+            physicalCardID=oPhysCard2.id).count(),
             2)
 
 if __name__ == "__main__":
