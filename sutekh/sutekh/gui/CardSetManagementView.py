@@ -22,6 +22,7 @@ class CardSetManagementModel(gtk.TreeStore):
         # additional filters for selecting from the list
         self._oSelectFilter = None
         self.oEmptyIter = None
+        self.set_sort_func(0, self.sort_column)
 
     # pylint: disable-msg=W0212
     # W0212 - we explicitly allow access via these properties
@@ -92,7 +93,17 @@ class CardSetManagementModel(gtk.TreeStore):
         issues
         """
         sCardSetName = self.get_value(oIter, 0).decode("utf-8")
+        if sCardSetName.startswith('<b>'):
+            sCardSetName = sCardSetName[3:-4] # Strip markup
         return sCardSetName
+
+    def sort_column(self, oModel, oIter1, oIter2):
+        """Custom sort function - ensure that markup doesn't affect sort
+           order"""
+        oCardSet1 = self.get_name_from_iter(oIter1)
+        oCardSet2 = self.get_name_from_iter(oIter2)
+        # get_name_from_iter strips markup for us
+        return cmp(oCardSet1, oCardSet2)
 
     def _get_empty_text(self):
         """Get the correct text for an empty model."""
@@ -114,9 +125,6 @@ class CardSetManagementView(gtk.TreeView, object):
         # Selecting rows
         self._oSelection = self.get_selection()
         self._oSelection.set_mode(gtk.SELECTION_SINGLE)
-        self._aOldSelection = []
-
-        # Key combination for searching
 
         # Text searching of card names
         self.set_search_equal_func(self.compare, None)
@@ -170,7 +178,7 @@ class CardSetManagementView(gtk.TreeView, object):
             # pylint: disable-msg=W0704
             # Paths may disappear, so this error can be ignored
             try:
-                sCardName = self._oModel.get_card_name_from_path(oPath)
+                sCardName = self._oModel.get_name_from_path(oPath)
                 if sCardName == dExpandedDict[oPath]:
                     self.expand_to_path(oPath)
             except ValueError:
@@ -211,37 +219,36 @@ class CardSetManagementView(gtk.TreeView, object):
     # arguments as required by the function signature
     def compare(self, oModel, iColumn, sKey, oIter, oData):
         """Compare the entered text to the card names."""
-        if oModel.iter_depth(oIter) == 2:
-            # Don't succeed for expansion items
-            return True
+
+        def check_children(oModel, oIter, sKey, iLenKey):
+            """Check if the children of this iterator match."""
+            for iChildCount in range(oModel.iter_n_children(oIter)):
+                oChildIter = oModel.iter_nth_child(oIter, iChildCount)
+                sChildName = oModel.get_name_from_iter(oChildIter)
+                sChildName = sChildName[:iLenKey].lower()
+                if self.to_ascii(sChildName).startswith(sKey) or\
+                    sChildName.startswith(sKey):
+                    oPath = oModel.get_path(oChildIter)
+                    # Expand the row
+                    self.expand_to_path(oPath)
+                if oModel.iter_n_children(oChildIter) > 0:
+                    # recurse into the children
+                    check_children(oModel, oChildIter, sKey, iLenKey)
 
         oPath = oModel.get_path(oIter)
         sKey = sKey.lower()
         iLenKey = len(sKey)
 
-        if oModel.iter_depth(oIter) == 0:
-            if self.row_expanded(oPath):
-                # Don't succeed for expanded top level items
-                return True
-            else:
-                # Need to check if any of the children match
-                for iChildCount in range(oModel.iter_n_children(oIter)):
-                    oChildIter = oModel.iter_nth_child(oIter, iChildCount)
-                    sChildName = self._oModel.get_name_from_iter(oChildIter)
-                    sChildName = sChildName[:iLenKey].lower()
-                    if self.to_ascii(sChildName).startswith(sKey) or\
-                        sChildName.startswith(sKey):
-                        # Expand the row
-                        self.expand_to_path(oPath)
-                        # Bail out, as compare will find the match for us
-                        return True
-                return True # No matches, so bail
-
+        # Test this row straight up
         sCardSetName = self._oModel.get_name_from_iter(oIter)[:iLenKey].lower()
         if self.to_ascii(sCardSetName).startswith(sKey) or \
                 sCardSetName.startswith(sKey):
             return False
 
+        if oModel.iter_n_children(oIter) > 0:
+            # row has children, so need to check if any of the children match
+            check_children(oModel, oIter, sKey, iLenKey)
+        # Fell through
         return True
 
     # pylint: enable-msg=R0913, W0613
