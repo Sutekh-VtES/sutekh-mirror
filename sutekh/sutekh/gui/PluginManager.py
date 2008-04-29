@@ -147,7 +147,7 @@ class CardListPlugin(object):
            the Sutekh database tables."""
         oDBVer = DatabaseVersion()
         for oTable, aVersions in self.dTableVersions.iteritems():
-            if not oDBVer.check_table_in_versions(oTable, aVersions)
+            if not oDBVer.check_table_in_versions(oTable, aVersions):
                 return False
         # If nothing is specified, currently we assume everything is A-OK
         return True
