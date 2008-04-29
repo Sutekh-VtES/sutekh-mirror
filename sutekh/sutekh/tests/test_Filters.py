@@ -9,13 +9,44 @@
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.tests import test_WhiteWolfParser
 from sutekh.core.SutekhObjects import AbstractCard, IAbstractCard, \
-        PhysicalCard, IExpansion
+        PhysicalCard, IPhysicalCard, Expansion, IExpansion
 from sutekh.core import Filters
 import unittest
 
 class FilterTests(SutekhTest):
     """Test class for testing Sutekh Filters"""
     aExpectedCards = test_WhiteWolfParser.WhiteWolfParserTests.aExpectedCards
+
+    @staticmethod
+    def _physical_test(tTest):
+        if len(tTest) == 2:
+            oFilter, aExpectedNames = tTest
+            aAllowedExpansions = set(Expansion.select())
+            aAllowedExpansions.add(None)
+        else:
+            assert len(tTest) == 3
+            oFilter, aExpectedNames = tTest[:2]
+            aAllowedExpansions = set([IExpansion(sExp) for sExp in tTest[2]
+                                        if sExp is not None])
+            if None in tTest[2]:
+                aAllowedExpansions.add(None)
+
+        aPhysicalCards = []
+        for sName in aExpectedNames:
+            oAbs = IAbstractCard(sName)
+            aExps = set([oRarity.expansion for oRarity in oAbs.rarity])
+
+            if None in aAllowedExpansions:
+                aPhysicalCards.append(IPhysicalCard((oAbs,None)))
+
+            aPhysicalCards.extend([IPhysicalCard((oAbs, oExp)) \
+                                   for oExp in aExps \
+                                   if oExp in aAllowedExpansions])
+
+        oFullFilter = Filters.FilterAndBox([Filters.PhysicalCardFilter(),
+                                            oFilter])
+
+        return oFullFilter, sorted(aPhysicalCards)
 
     # pylint: disable-msg=R0914
     # We don't really care about the number of local variables here
@@ -100,6 +131,7 @@ class FilterTests(SutekhTest):
                     u"Ablative Skin", u"Abombwe"]),
         ]
 
+        aPhysicalTests = [self._physical_test(tTest) for tTest in aTests]
         # TODO: Put in some data for titles, creeds, virtues and life
 
         # Abstract Card Filtering Tests
@@ -126,18 +158,10 @@ class FilterTests(SutekhTest):
                 [u"Redemption"])
 
         # Test the physical card filtering
-        for sCardName in self.aExpectedCards:
-            # Add one of all abstract cards to physical card list
-            oAC = IAbstractCard(sCardName)
-            PhysicalCard(abstractCard = oAC, expansion=None)
-
-        for oFilter, aExpectedNames in aTests:
-            oFullFilter = Filters.FilterAndBox([Filters.PhysicalCardFilter(),
-                oFilter])
-            aCards = oFullFilter.select(PhysicalCard).distinct()
-            aNames = sorted([oC.abstractCard.name for oC in aCards])
-            self.assertEqual(aNames, aExpectedNames, "Filter Object %s"
-                    " failed. %s != %s." % (oFilter, aNames, aExpectedNames))
+        for oFilter, aExpectedCards in aPhysicalTests:
+            aCards = sorted(oFilter.select(PhysicalCard).distinct())
+            self.assertEqual(aCards, aExpectedCards, "Filter Object %s"
+                    " failed. %s != %s." % (oFilter, aCards, aExpectedCards))
 
         # test filtering on expansion
         aCardExpansions = [('.44 Magnum', 'Jyhad'),
@@ -146,55 +170,52 @@ class FilterTests(SutekhTest):
                 ('Abombwe', 'Legacy of Blood')]
 
         aExpansionTests = [
-                (Filters.PhysicalExpansionFilter('Jyhad'), ['.44 Magnum']),
-                (Filters.PhysicalExpansionFilter('LoB'), ['Abombwe']),
-                (Filters.PhysicalExpansionFilter(None), self.aExpectedCards),
+                (Filters.PhysicalExpansionFilter('Jyhad'),
+                    ['.44 Magnum', "Aaron's Feeding Razor"],
+                    ['Jyhad']),
+                (Filters.PhysicalExpansionFilter('LoB'),
+                    ['Abombwe','.44 Magnum', 'Abebe'],
+                    ['LoB']),
+                (Filters.PhysicalExpansionFilter(None),
+                    self.aExpectedCards,
+                    [None]),
                 (Filters.MultiPhysicalExpansionFilter(['LoB', 'LotN']),
-                    ['AK-47', 'Abombwe']),
+                    ['Abombwe','.44 Magnum', 'Abebe', 'AK-47', 'Abdelsobek'],
+                    ['LoB', 'LotN']),
                 (Filters.MultiPhysicalExpansionFilter(
                     ['  Unspecified Expansion', 'VTES']),
-                    self.aExpectedCards),
-                ]
-        for sCardName, sExpansion in aCardExpansions:
-            oAbs = IAbstractCard(sCardName)
-            oExpansion = IExpansion(sExpansion)
-            PhysicalCard(abstractCard=oAbs, expansion=oExpansion)
+                    self.aExpectedCards,
+                    [None,'VTES']),
+        ]
 
-        for oFilter, aExpectedNames in aExpansionTests:
-            oFullFilter = Filters.FilterAndBox([Filters.PhysicalCardFilter(),
-                oFilter])
-            aCards = oFullFilter.select(PhysicalCard).distinct()
-            aNames = sorted([oC.abstractCard.name for oC in aCards])
-            self.assertEqual(aNames, aExpectedNames, "Filter Object %s"
-                    " failed. %s != %s." % (oFilter, aNames, aExpectedNames))
+        for tTest in aExpansionTests:
+            oFilter, aExpectedCards = self._physical_test(tTest)
+            aCards = sorted(oFilter.select(PhysicalCard).distinct())
+            self.assertEqual(aCards, aExpectedCards, "Filter Object %s"
+                    " failed. %s != %s." % (oFilter, aCards, aExpectedCards))
 
-        aCardsWithExpansions = [x[0] for x in aCardExpansions]
-        aSingle = [x for x in self.aExpectedCards if x not in
-                aCardsWithExpansions]
-        aDoubles = []
-        for sName in aCardsWithExpansions:
-            aDoubles.append(sName)
-            aDoubles.append(sName)
         aNumberTests = [
-                (Filters.MultiPhysicalCardCountFilter(['1']),
-                    aSingle, aSingle),
-                (Filters.MultiPhysicalCardCountFilter(['2']),
-                    aDoubles, aCardsWithExpansions),
-                    ]
+                (Filters.MultiPhysicalCardCountFilter(['3']),
+                    ["Aaron Duggan, Cameron's Toady", 'Abandoning the Flesh',
+                     'Abd al-Rashid', u'L\xe1z\xe1r Dobrescu']),
+                (Filters.MultiPhysicalCardCountFilter(['4']),
+                    ["Aaron's Feeding Razor", 'Ablative Skin']),
+        ]
 
-        for oFilter, aExpectedNames, aAbstractExpectedNames in aNumberTests:
-            oFullFilter = Filters.FilterAndBox([Filters.PhysicalCardFilter(),
-                oFilter])
-            aCards = oFullFilter.select(PhysicalCard).distinct()
-            aNames = sorted([oC.abstractCard.name for oC in aCards])
-            self.assertEqual(aNames, aExpectedNames, "Filter Object %s"
-                    " failed. %s != %s." % (oFilter, aNames, aExpectedNames))
-            # Also test Abstract card selects
+        # test abstract card selects
+        for oFilter, aExpectedNames in aNumberTests:
             aCards = oFilter.select(AbstractCard).distinct()
             aNames = sorted([oC.name for oC in aCards])
-            self.assertEqual(aNames, aAbstractExpectedNames, "Filter Object"
+            self.assertEqual(aNames, aExpectedNames, "Filter Object"
                     " %s failed. %s != %s." % (oFilter, aNames,
-                        aAbstractExpectedNames))
+                        aExpectedNames))
+
+        # test physical card selects
+        for oFilter, aExpectedNames in aNumberTests:
+            oFilter, aExpectedCards = self._physical_test((oFilter,aExpectedNames))
+            aCards = sorted(oFilter.select(PhysicalCard).distinct())
+            self.assertEqual(aCards, aExpectedCards, "Filter Object %s"
+                    " failed. %s != %s." % (oFilter, aCards, aExpectedCards))
 
         # TODO: Add tests for:
         #   PhysicalCardSetFilter
