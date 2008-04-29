@@ -126,7 +126,7 @@ class DatabaseVersion(object):
                     self.get_table_version(oTable, oConn) == iVersion
         return bRes
 
-    def check_table_in_version(self, oTable, aTableVersions, oConn=None):
+    def check_table_in_versions(self, oTable, aTableVersions, oConn=None):
         """Check version for a single table.
         
            Checks whether the given table has a version in the list of
