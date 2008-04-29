@@ -23,6 +23,14 @@ class CardSetManagementModel(gtk.TreeStore):
         self._oSelectFilter = None
         self.oEmptyIter = None
 
+    # pylint: disable-msg=W0212
+    # W0212 - we explicitly allow access via these properties
+    applyfilter = property(fget=lambda self: self._bApplyFilter,
+            fset=lambda self, x: setattr(self, '_bApplyFilter', x))
+    selectfilter = property(fget=lambda self: self._oSelectFilter,
+            fset=lambda self, x: setattr(self, '_oSelectFilter', x))
+    # pylint: enable-msg=W0212
+
     def get_card_set_iterator(self, oFilter):
         """Return an interator over the card set model.
 
@@ -34,31 +42,65 @@ class CardSetManagementModel(gtk.TreeStore):
 
     def load(self):
         """Load the card sets into the card view"""
-        oCardSetIterator = self.get_card_set_iterator(None)
+        oCardSetIter = self.get_card_set_iterator(self.get_current_filter())
         self._dName2Iter = {}
 
         # Loop through the card sets, getting the parent->child relationships
-        for oCardSet in oCardSetIterator:
+        for oCardSet in oCardSetIter:
             if oCardSet.parent:
-                # Do funky stuff
+                # Do funky stuff to make sure parent is shown in the view
                 oParent = oCardSet.parent
                 aToAdd = [oCardSet]
                 while oParent.name not in self._dName2Iter and oParent.parent:
+                    # FIXME: Add loop detection + raise error on loops
                     aToAdd.append(oParent)
                     oParent = oParent.parent
                 if oParent.name in self._dName2Iter:
                     oIter = self._dName2Iter[oParent.name]
                 else:
                     oIter = None
-                for oSet in aToAdd:
-                    oIter = self.append(oIter)
-                    self.set(oIter, 0, oSet.name)
-                    self._dName2Iter[oSet.name] = oIter
             else:
                 # Just add
-                oIter = self.append(None)
-                self.set(oIter, 0, oCardSet.name)
-                self._dName2Iter[oCardSet.name] = oIter
+                oIter = None
+                aToAdd = [oCardSet]
+            for oSet in aToAdd:
+                oIter = self.append(oIter)
+                if not oSet.inuse:
+                    self.set(oIter, 0, oSet.name)
+                else:
+                    # In use sets are in bold
+                    self.set(oIter, 0, '<b>%s</b>' % oSet.name)
+                self._dName2Iter[oSet.name] = oIter
+
+        if not self._dName2Iter:
+            # Showing nothing
+            self.oEmptyIter = self.append(None)
+            sText = self._get_empty_text()
+            self.set(self.oEmptyIter, 0, sText)
+
+    def get_current_filter(self):
+        """Get the current applied filter."""
+        if self.applyfilter:
+            return self.selectfilter
+        else:
+            return None
+
+    def get_name_from_iter(self, oIter):
+        """
+        Extract the value at oIter from the model, correcting for encoding
+        issues
+        """
+        sCardSetName = self.get_value(oIter, 0).decode("utf-8")
+        return sCardSetName
+
+    def _get_empty_text(self):
+        """Get the correct text for an empty model."""
+        if self.get_card_set_iterator(None).count() == 0:
+            sText = 'Empty'
+        else:
+            sText = 'No Card Sets found'
+        return sText
+
 
 class CardSetManagementView(gtk.TreeView, object):
     """Tree View for the card sets."""
