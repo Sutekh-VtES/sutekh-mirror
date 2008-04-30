@@ -38,7 +38,7 @@ class PhysicalCardSetWriter(object):
        We generate an ElementTree representation of the Card Set, which
        can then easily be converted to an appropriate XML representation.
        """
-    sMyVersion = "1.1"
+    sMyVersion = "1.2"
 
     def make_tree(self, sPhysicalCardSetName):
         """Convert the card set sPhysicalCardSetName to an ElementTree."""
@@ -57,6 +57,8 @@ class PhysicalCardSetWriter(object):
                 comment=oPCS.comment)
         oAnnotationNode = SubElement(oRoot, 'annotations')
         oAnnotationNode.text = oPCS.annotations
+        if oPCS.parent:
+            oRoot.attrib['parent'] = oPCS.parent.name
 
         if bInUse:
             oRoot.attrib['inuse'] = 'Yes'

@@ -21,8 +21,9 @@ class CardSetHolder(object):
        """
     def __init__(self):
         self._sName, self._sAuthor, self._sComment, \
-                self._sAnnotations = None, None, None, None
+                self._sAnnotations = None, '', '', '' 
         self._bInUse = False
+        self._sParent = None
         self._dCards = {} # card name -> count
         self._dExpansions = {} # expansion name -> count
         # (card name, expansion name) -> count, used  for physical card sets
@@ -75,9 +76,23 @@ class CardSetHolder(object):
             fset = lambda self, x: setattr(self, '_sAnnotations', x))
     inuse = property(fget = lambda self: self._bInUse,
             fset = lambda self, x: setattr(self, '_bInUse', x))
+    parent = property(fget = lambda self: self._sParent,
+            fset = lambda self, x: setattr(self, '_sParent', x))
     # pylint: enable-msg=W0212
 
     # Save Virtual Card Set to Database
+
+    def get_parent_pcs(self):
+        """Get the parent PCS, or none if no parent exists."""
+        if self.parent:
+            try:
+                oParent = PhysicalCardSet.selectBy(name=self.parent).getOne()
+            except SQLObjectNotFound:
+                # FIXME: Report error back to the user
+                oParent = None
+        else:
+            oParent = None
+        return oParent
 
     def create_pcs(self, oCardLookup=DEFAULT_LOOKUP):
         """Create a Physical Card Set.
@@ -97,10 +112,12 @@ class CardSetHolder(object):
         aPhysCards = oCardLookup.physical_lookup(self._dCardExpansions,
                 dNameCards, dExpansionLookup, "Physical Card Set " + self.name)
 
+        oParent = self.get_parent_pcs()
+
         oPCS = PhysicalCardSet(name=self.name.encode('utf8'),
                                author=self.author, comment=self.comment,
                                annotations=self.annotations,
-                               inuse=self.inuse)
+                               inuse=self.inuse, parent=oParent)
         oPCS.syncUpdate()
 
         for oPhysCard in aPhysCards:
@@ -139,10 +156,11 @@ class CachedCardSetHolder(CardSetHolder):
         # dLookupCache has any answers required from the PhysicalCardList,
         # so there's now point in updating the cache here.
 
+        oParent = self.get_parent_pcs()
         oPCS = PhysicalCardSet(name=self.name.encode('utf8'),
                                author=self.author, comment=self.comment,
                                annotations=self.annotations,
-                               inuse=self.inuse)
+                               inuse=self.inuse, parent=oParent)
         oPCS.syncUpdate()
 
         for oPhysCard in aPhysCards:

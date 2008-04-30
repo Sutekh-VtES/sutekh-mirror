@@ -8,8 +8,8 @@
 """
 Read physical cards from an XML file which
 looks like:
-<physicalcardset sutekh_xml_version='1.1' name='SetName' author='Author'
-   comment='Comment'>
+<physicalcardset sutekh_xml_version='1.2' name='SetName' author='Author'
+   comment='Comment' parent='Parent PCS name'>
   <annotations>
   Annotations
   </annotations>
@@ -38,7 +38,7 @@ class PhysicalCardSetParser(object):
        cards.
        """
     def __init__(self):
-        self.aSupportedVersions = ['1.1', '1.0']
+        self.aSupportedVersions = ['1.2', '1.1', '1.0']
         self.oCS = CardSetHolder()
         self.oTree = None
 
@@ -61,6 +61,9 @@ class PhysicalCardSetParser(object):
                 self.oCS.inuse = True
         except KeyError:
             pass
+        if oRoot.attrib.has_key('parent'):
+            self.oCS.parent = oRoot.attrib['parent']
+
         # pylint: enable-msg=W0704
         for oElem in oRoot:
             if oElem.tag == 'annotations':
