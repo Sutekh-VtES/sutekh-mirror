@@ -71,6 +71,8 @@ class FullBackup(CardListPlugin):
                 oButtons=(gtk.STOCK_OK, gtk.RESPONSE_OK,
                     gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
         oDlg.set_name("Sutekh.dialog")
+        oDlg.add_filter_with_pattern('Zip Files', ['*.zip', '*.ZIP'])
+        oDlg.set_do_overwrite_confirmation(True)
 
         oDlg.connect("response", self.handle_backup_response)
         oDlg.set_local_only(True)
@@ -85,29 +87,23 @@ class FullBackup(CardListPlugin):
         """Handle response from backup dialog"""
         if oResponse == gtk.RESPONSE_OK:
             sFile = oDlg.get_filename()
-            bContinue = True
+            oDlg.destroy()
+            # pylint: disable-msg=W0703
+            # we really do want all the exceptions
+            try:
+                oLogHandler = SutekhCountLogHandler()
+                oProgressDialog = ProgressDialog()
+                oProgressDialog.set_description("Saving backup")
+                oLogHandler.set_dialog(oProgressDialog)
+                oProgressDialog.show()
+                oFile = ZipFileWrapper(sFile)
+                oFile.do_dump_all_to_zip(oLogHandler)
+                oProgressDialog.destroy()
+            except Exception, oException:
+                oProgressDialog.destroy()
+                sMsg = "Failed to write backup.\n\n%s" % oException
+                do_complaint_error(sMsg)
 
-            if os.path.exists(sFile):
-                bContinue = do_complaint_warning("Overwrite existing file %s?"
-                        % sFile) != gtk.RESPONSE_CANCEL
-
-            if bContinue:
-                try:
-                    oLogHandler = SutekhCountLogHandler()
-                    oProgressDialog = ProgressDialog()
-                    oProgressDialog.set_description("Saving backup")
-                    oLogHandler.set_dialog(oProgressDialog)
-                    oProgressDialog.show()
-                    oFile = ZipFileWrapper(sFile)
-                    oFile.do_dump_all_to_zip(oLogHandler)
-                    oProgressDialog.destroy()
-                # pylint: disable-msg=W0703
-                # we really do want all the exceptions
-                except Exception, oException:
-                    sMsg = "Failed to write backup.\n\n" + str(oException)
-                    do_complaint_error(sMsg)
-
-        oDlg.destroy()
     # pylint: enable-msg=R0201
 
     # Restore
@@ -140,6 +136,7 @@ class FullBackup(CardListPlugin):
         """Handle response from the restore dialog"""
         if oResponse == gtk.RESPONSE_OK:
             sFile = oDlg.get_filename()
+            oDlg.destroy()
             bContinue = True
 
             if not os.path.exists(sFile):
@@ -164,10 +161,10 @@ class FullBackup(CardListPlugin):
                 # pylint: disable-msg=W0703
                 # we really do want all the exceptions
                 except Exception, oException:
-                    sMsg = "Failed to restore backup.\n\n" + str(oException)
+                    oProgressDialog.destroy()
+                    sMsg = "Failed to restore backup.\n\n%s" % oException
                     do_complaint_error(sMsg)
 
-        oDlg.destroy()
 
 # pylint: disable-msg=C0103
 # accept plugin name
