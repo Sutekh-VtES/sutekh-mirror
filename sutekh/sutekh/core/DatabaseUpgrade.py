@@ -932,7 +932,8 @@ def make_card_set_holder(oCardSet):
     oCS.comment = oCardSet.comment
     oCS.annotations = oCardSet.annotations
     oCS.inuse = oCardSet.inuse
-    oCS.parent = oCardSet.parent.name
+    if oCardSet.parent:
+        oCS.parent = oCardSet.parent.name
     for oCard in oCardSet.cards:
         if oCard.expansion is None:
             oCS.add(1, oCard.abstractCard.canonicalName, None)
