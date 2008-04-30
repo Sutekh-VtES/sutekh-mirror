@@ -380,7 +380,7 @@ class ClusterCardList(CardListPlugin):
                     aClusterId[1] == aCardCluster[1]:
                 oDeck.addPhysicalCard(oCard)
 
-        self.open_pcs(sDeckName)
+        self.open_cs(sDeckName)
 
 # pylint: disable-msg=C0103
 # accept plugin name

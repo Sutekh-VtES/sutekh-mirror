@@ -83,7 +83,7 @@ class DeckFromFilter(CardListPlugin):
                 self.model.get_current_filter()):
             oPCS.addPhysicalCard(oCard)
 
-        self.open_pcs(sPCSName)
+        self.open_cs(sPCSName)
 
 # pylint: disable-msg=C0103
 # accept plugin name

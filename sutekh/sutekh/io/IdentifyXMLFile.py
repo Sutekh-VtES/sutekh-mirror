@@ -10,7 +10,7 @@ Attempts to identify a XML file as either PhysicalCard, PhysicalCardSet or
 AbstractCardSet (the last is to support legacy backups).
 """
 
-from sutekh.core.SutekhObjects import PhysicalCardSet, PhysicalCard
+from sutekh.core.SutekhObjects import PhysicalCardSet
 from sqlobject import SQLObjectNotFound
 try:
     # pylint: disable-msg=E0611, F0401
@@ -33,14 +33,17 @@ class IdentifyXMLFile(object):
         self._sType = ''
         self._sName = ''
 
+    # pylint: disable-msg=W0212
+    # We allow access via these properties
     name = property(fget=lambda self: self._sName, doc='The name from the'
             ' XML file')
     parent_exists = property(fget=lambda self: self._bParentExists,
             doc='True if the parent card set already exists in the database')
-    exists = property(fget=lambda self: self._bExists, doc='True if the card'
-            ' set already exists in the database')
+    exists = property(fget=lambda self: self._bSetExists, doc='True if the'
+            ' card set already exists in the database')
     type = property(fget=lambda self: self._sType, doc='The type of the XML '
             'data')
+    # pylint: enable-msg=W0212
 
     def identify_tree(self):
         """Process the ElementTree to identify the XML file type."""
@@ -48,8 +51,8 @@ class IdentifyXMLFile(object):
         # Reset state
         self._sType = 'Unknown'
         self._sName = None
-        self._sParentExists = False
-        self._bExists = False
+        self._bParentExists = False
+        self._bSetExists = False
         # pylint: disable-msg=E1101
         # SQLObject classes confuse pylint
         if oRoot.tag == 'abstractcardset':
@@ -59,18 +62,18 @@ class IdentifyXMLFile(object):
             self._sName = '(ACS) ' + oRoot.attrib['name']
             try:
                 PhysicalCardSet.byName(self._sName.encode('utf8'))
-                self._bExists = True
+                self._bSetExists = True
             except SQLObjectNotFound:
-                self._bExists = False
+                self._bSetExists = False
             self._bParentExists = True # Always a top level card set
         elif oRoot.tag == 'physicalcardset':
             self._sType = 'PhysicalCardSet'
             self._sName = oRoot.attrib['name']
             try:
                 PhysicalCardSet.byName(self._sName.encode('utf8'))
-                self._bExists = True
+                self._bSetExists = True
             except SQLObjectNotFound:
-                self._bExists = False
+                self._bSetExists = False
             if oRoot.attrib.has_key('parent'):
                 try:
                     sName = oRoot.attrib['parent']
@@ -87,15 +90,15 @@ class IdentifyXMLFile(object):
             self._sName = 'My Collection'
             try:
                 PhysicalCardSet.byName(self._sName.encode('utf8'))
-                self._bExists = True
+                self._bSetExists = True
             except SQLObjectNotFound:
-                self._bExists = False
+                self._bSetExists = False
             self._bParentExists = True # Always a top level card set
         elif oRoot.tag == 'cardmapping':
             # This is ignored now
             self._sType = 'PhysicalCardSetMappingTable'
             self._sName = self._sType
-            self._bExists = False
+            self._bSetExists = False
             self._bParentExists = False
 
     def parse(self, fIn):

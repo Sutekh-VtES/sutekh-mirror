@@ -19,6 +19,10 @@ class FilterTests(SutekhTest):
 
     @staticmethod
     def _physical_test(tTest):
+        """Convert the tuple describing the test as a filter and a list of
+           card names and optional expansions into the correct
+           filter on the physical card list and a list of expected
+           PhysicalCard objects."""
         if len(tTest) == 2:
             oFilter, aExpectedNames = tTest
             aAllowedExpansions = set(Expansion.select())
@@ -33,6 +37,8 @@ class FilterTests(SutekhTest):
 
         aPhysicalCards = []
         for sName in aExpectedNames:
+            # pylint: disable-msg=E1101
+            # sqlobject confuses pylint
             oAbs = IAbstractCard(sName)
             aExps = set([oRarity.expansion for oRarity in oAbs.rarity])
 

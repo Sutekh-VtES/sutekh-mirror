@@ -10,8 +10,7 @@ import gtk
 import csv
 import gobject
 from sutekh.io.CSVParser import CSVParser
-from sutekh.core.SutekhObjects import PhysicalCard, \
-        PhysicalCardSet
+from sutekh.core.SutekhObjects import PhysicalCardSet
 from sutekh.core.CardLookup import LookupFailed
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
@@ -286,7 +285,7 @@ class CSVImporter(CardListPlugin):
             fIn.close()
 
             if cCardSet is PhysicalCardSet:
-                self.open_pcs(sCardSetName)
+                self.open_cs(sCardSetName)
             else:
                 self.view.reload_keep_expanded()
 

@@ -11,6 +11,7 @@ import glob
 import logging
 import sutekh.gui.plugins as plugins
 from sutekh.core.DatabaseVersion import DatabaseVersion
+from sutekh.core.SutekhObjects import PhysicalCardSet
 
 class PluginManager(object):
     """
@@ -152,23 +153,11 @@ class CardListPlugin(object):
         # If nothing is specified, currently we assume everything is A-OK
         return True
 
-    def open_acs(self, sACS):
-        """
-        Open an abstract card set in the GUI.
-        """
-        self.parent.add_new_abstract_card_set(sACS)
-
-    def open_pcs(self, sPCS):
+    def open_cs(self, sPCS):
         """
         Open a physical card set in the GUI.
         """
         self.parent.add_new_physical_card_set(sPCS)
-
-    def reload_acs_list(self):
-        """
-        Refresh the abstract card set list if it is visible.
-        """
-        self.parent.reload_acs_list()
 
     def reload_pcs_list(self):
         """
@@ -185,7 +174,9 @@ class CardListPlugin(object):
     def get_card_set(self):
         """Get the Card Set for this view"""
         oCardSet = None
-        if hasattr(self.view, 'cSetType'):
-            oCardSet = self.view.cSetType.byName(self.view.sSetName)
+        if self._cModelType is PhysicalCardSet:
+            # pylint: disable-msg=E1101
+            # sqlobject confuses pylint
+            oCardSet = PhysicalCardSet.byName(self.view.sSetName)
         return oCardSet
 

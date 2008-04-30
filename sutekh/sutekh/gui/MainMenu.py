@@ -240,12 +240,12 @@ class MainMenu(SutekhMenu):
                     oIdParser.type == 'PhysicalCard':
                 if oIdParser:
                     iResponse = do_complaint_warning("This would delete the"
-                            " existing CardSet " + sName)
+                            " existing CardSet " + oIdParser.name)
                     if iResponse == gtk.RESPONSE_CANCEL:
                         return
                     else:
                         # Delete the card set
-                        delete_physical_card_set(sName)
+                        delete_physical_card_set(oIdParser.name)
                 oFrame = self._oMainWindow.add_pane_end()
                 try:
                     if oIdParser.type == "AbstractCardSet":
@@ -262,8 +262,8 @@ class MainMenu(SutekhMenu):
                         oFile = PhysicalCardXmlFile(sFileName,
                                 oLookup=self._oMainWindow.cardLookup)
                         oFile.read()
-                    self._oMainWindow.replace_with_physical_card_set(sName,
-                            oFrame)
+                    self._oMainWindow.replace_with_physical_card_set(
+                            oIdParser.name, oFrame)
                 except LookupFailed:
                     # Remove window, since we didn't succeed
                     # Should this dialog be here?

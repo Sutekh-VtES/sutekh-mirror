@@ -133,7 +133,7 @@ class DatabaseVersion(object):
 
     def check_table_in_versions(self, oTable, aTableVersions, oConn=None):
         """Check version for a single table.
-        
+
            Checks whether the given table has a version in the list of
            version numbers in the list aTableVersions.
            """

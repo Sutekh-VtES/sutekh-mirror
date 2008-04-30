@@ -105,31 +105,31 @@ class ACSImporter(CardListPlugin):
                     cParser = self._dParsers[sName]
 
             if sUri:
-                self.make_acs_from_uri(sUri, cParser)
+                self.make_cs_from_uri(sUri, cParser)
             elif sFile:
-                self.make_acs_from_file(sFile, cParser)
+                self.make_cs_from_file(sFile, cParser)
 
         self.oDlg.destroy()
 
     # pylint: enable-msg=W0613
 
-    def make_acs_from_uri(self, sUri, cParser):
+    def make_cs_from_uri(self, sUri, cParser):
         """From an URI, create an Abstract Card Set"""
         fIn = urllib2.urlopen(sUri)
         try:
-            self.make_acs(fIn, cParser)
+            self.make_cs(fIn, cParser)
         finally:
             fIn.close()
 
-    def make_acs_from_file(self, sFile, cParser):
+    def make_cs_from_file(self, sFile, cParser):
         """From an fiel, create an Abstract Card Set"""
         fIn = file(sFile, "rb")
         try:
-            self.make_acs(fIn, cParser)
+            self.make_cs(fIn, cParser)
         finally:
             fIn.close()
 
-    def make_acs(self, fIn, cParser):
+    def make_cs(self, fIn, cParser):
         """Create a Abstract card set from the given file object."""
         oHolder = CardSetHolder()
 
@@ -145,7 +145,7 @@ class ACSImporter(CardListPlugin):
 
         # Create ACS
         try:
-            oHolder.create_acs(oCardLookup=self.cardlookup)
+            oHolder.create_pcs(oCardLookup=self.cardlookup)
         except RuntimeError, oExp:
             sMsg = "Creating the card set failed with the following error:\n"
             sMsg += str(oExp) + "\n"
@@ -157,7 +157,7 @@ class ACSImporter(CardListPlugin):
         except LookupFailed, oExp:
             return
 
-        self.open_acs(oHolder.name)
+        self.open_cs(oHolder.name)
 
 # pylint: disable-msg=C0103
 # accept plugin name
