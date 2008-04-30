@@ -111,7 +111,7 @@ class SimpleLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
                     try:
                         iCnt = dCardExpansions[sName][sExpansionName]
                         oExpansion = dNameExps[sExpansionName]
-                        aCards.extend([IPhysicalCard((oAbs,oExpansion))]*iCnt)
+                        aCards.extend([IPhysicalCard((oAbs, oExpansion))]*iCnt)
                     except SQLObjectNotFound:
                         # This card is missing from the PhysicalCard list, so
                         # skipped

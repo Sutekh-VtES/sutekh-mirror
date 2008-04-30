@@ -14,7 +14,7 @@ import pango
 import gobject
 from sqlobject import SQLObjectNotFound
 from sutekh.core.SutekhObjects import AbstractCard, PhysicalCard, IExpansion, \
-        MapPhysicalCardToPhysicalCardSet, Expansion
+        Expansion, IPhysicalCard
 from sutekh.core.CardLookup import AbstractCardLookup, PhysicalCardLookup, \
         ExpansionLookup, LookupFailed
 from sutekh.core.Filters import CardNameFilter
@@ -232,7 +232,7 @@ class ReplacementTreeView(gtk.TreeView):
         self.append_column(oColumn)
         oCell.connect('clicked', fClicked)
 
-    def _create_text_item(self, sLabel, iColumn):
+    def _create_text_column(self, sLabel, iColumn):
         """Create a text column, using iColumn from the model"""
         oCell = gtk.CellRendererText()
         oCell.set_property('style', pango.STYLE_ITALIC)
@@ -240,7 +240,6 @@ class ReplacementTreeView(gtk.TreeView):
         oColumn.set_expand(True)
         oColumn.set_sort_column_id(iColumn)
         self.append_column(oColumn)
-
 
     # pylint: disable-msg=W0613
     # oCell required by function signature
@@ -506,40 +505,11 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
                 for sExpansionName in dCardExpansions[sName]:
                     iCnt = dCardExpansions[sName][sExpansionName]
                     oExpansion = dNameExps[sExpansionName]
-                    if oExpansion is not None:
-                        aPhysCards = PhysicalCard.selectBy(
-                                        abstractCardID=oAbs.id,
-                                        expansionID=oExpansion.id)
-                    else:
-                        aPhysCards = PhysicalCard.selectBy(
-                                abstractCardID=oAbs.id, expansionID=None)
-                    dCardSetCounts = {}
-                    for oCard in aPhysCards:
-                        iCSCount = MapPhysicalCardToPhysicalCardSet.selectBy(
-                                physicalCardID=oCard.id).count()
-                        dCardSetCounts[oCard] = iCSCount
-                    # Order by count, so we try cards in the fewest card sets
-                    # first
-                    aPossCards = sorted(dCardSetCounts.items(),
-                            key=lambda t: t[1])
-                    for oPhys, iCSCount in aPossCards:
-                        if oPhys not in aCards \
-                                and iCnt > 0:
-                            aCards.append(oPhys)
-                            iCnt -= 1
-                            if iCnt == 0:
-                                break
-                    if iCnt > 0:
-                        dUnknownCards.setdefault((oAbs.name, sExpansionName),
-                                0)
-                        dUnknownCards[(oAbs.name, sExpansionName)] = iCnt
+                    aCards.extend([IPhysicalCard((oAbs, oExpansion))]*iCnt)
             except SQLObjectNotFound:
                 for sExpansionName in dCardExpansions[sName]:
                     iCnt = dCardExpansions[sName][sExpansionName]
-                    oExpansion = dNameExps[sExpansionName]
                     if iCnt > 0:
-                        dUnknownCards.setdefault((oAbs.name, sExpansionName),
-                                0)
                         dUnknownCards[(oAbs.name, sExpansionName)] = iCnt
 
         if dUnknownCards:
