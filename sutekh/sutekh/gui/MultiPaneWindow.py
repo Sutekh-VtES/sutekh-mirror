@@ -178,7 +178,7 @@ class MultiPaneWindow(gtk.Window):
                 self.replace_with_card_text(None)
             elif sType == PhysicalCard.sqlmeta.table:
                 self.replace_with_physical_card_list(None)
-            elif sType == 'Physical Card Set List':
+            elif sType == 'Card Set List':
                 self.replace_with_pcs_list(None)
             else:
                 # See if one of the plugins claims this type
@@ -232,7 +232,7 @@ class MultiPaneWindow(gtk.Window):
     # oWidget needed so this can be called from the menu
     def replace_with_pcs_list(self, oWidget):
         """Replace the focussed pane with the physical card set list."""
-        sMenuFlag = "Physical Card Set List"
+        sMenuFlag = "Card Set List"
         if sMenuFlag not in self.dOpenFrames.values() and self._oFocussed:
             oPane = CardSetManagementFrame(self)
             self.replace_frame(self._oFocussed, oPane, sMenuFlag)

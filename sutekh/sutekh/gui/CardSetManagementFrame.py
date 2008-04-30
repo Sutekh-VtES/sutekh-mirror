@@ -28,7 +28,7 @@ class CardSetManagementFrame(BasicFrame):
        card sets, filtering, etc.
        """
     _sFilterType = 'PhysicalCardSet'
-    _sName = 'Physical Card Set List'
+    _sName = 'Card Set List'
     _oSetClass = PhysicalCardSet
 
     def __init__(self, oMainWindow):
@@ -37,7 +37,7 @@ class CardSetManagementFrame(BasicFrame):
         self._oFilterDialog = None
         self._oMenu = None
         self._oView = CardSetManagementView(oMainWindow)
-        self.set_name("physical card sets list")
+        self.set_name("card sets list")
         self.add_parts()
 
     # pylint: disable-msg=W0212

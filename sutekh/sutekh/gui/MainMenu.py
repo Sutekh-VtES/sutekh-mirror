@@ -37,7 +37,7 @@ class MainMenu(SutekhMenu):
         self.__create_help_menu()
         oWindow.add_to_menu_list("White Wolf Card List",
                 self.physical_cl_set_sensitive)
-        oWindow.add_to_menu_list("Physical Card Set List",
+        oWindow.add_to_menu_list("Card Set List",
                 self.pcs_list_pane_set_sensitive)
         oWindow.add_to_menu_list("Card Text",
                 self.add_card_text_set_sensitive)
@@ -148,7 +148,7 @@ class MainMenu(SutekhMenu):
                 oAddMenu, self._oMainWindow.add_new_card_text)
         self.__oAddCardText.set_sensitive(True)
 
-        self.__oAddPCSListPane = self.create_menu_item("Add Physical Card Set"
+        self.__oAddPCSListPane = self.create_menu_item("Add Card Set"
                 " List", oAddMenu, self._oMainWindow.add_new_pcs_list)
         self.__oAddPCSListPane.set_sensitive(True)
 
@@ -167,7 +167,7 @@ class MainMenu(SutekhMenu):
         self.__oReplaceCardText.set_sensitive(True)
 
         self.__oReplacePCSListPane = self.create_menu_item("Replace current"
-                " pane with Physical Card Set List", oReplaceMenu,
+                " pane with Card Set List", oReplaceMenu,
                 self._oMainWindow.replace_with_pcs_list)
         self.__oReplacePCSListPane.set_sensitive(True)
 
