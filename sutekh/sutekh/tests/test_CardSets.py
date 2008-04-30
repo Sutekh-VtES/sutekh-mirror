@@ -97,7 +97,7 @@ class PhysicalCardSetTests(SutekhTest):
             oWriter.gen_xml_string(oPhysCardSet3.name))
         sExpected = '<physicalcardset author="A test author" ' \
                 'comment="A test comment" name="Test Set 1" '\
-                'sutekh_xml_version="1.1"><annotations /><card count="1" ' \
+                'sutekh_xml_version="1.2"><annotations /><card count="1" ' \
                 'expansion="None Specified" id="11" name="Abebe" /><card ' \
                 'count="1" expansion="None Specified" id="1" ' \
                 'name=".44 Magnum" /><card count="1" expansion="None ' \
@@ -113,10 +113,10 @@ class PhysicalCardSetTests(SutekhTest):
         oWriter.write(fOut, self.aCardSetNames[0])
         fOut.close()
         oIdFile = IdentifyXMLFile()
-        tResult = oIdFile.id_file(sTempFileName)
-        self.assertEqual(tResult[0], 'PhysicalCardSet')
-        tResult = oIdFile.parse_string(sExpected)
-        self.assertEqual(tResult[0], 'PhysicalCardSet')
+        oIdFile.id_file(sTempFileName)
+        self.assertEqual(oIdFile.type, 'PhysicalCardSet')
+        oIdFile.parse_string(sExpected)
+        self.assertEqual(oIdFile.type, 'PhysicalCardSet')
 
         sPCS2 = oWriter.gen_xml_string(self.aCardSetNames[1])
 

@@ -12,8 +12,8 @@
 
 import zipfile
 from logging import Logger
-from sqlobject import sqlhub
-from sutekh.core.SutekhObjects import PhysicalCardSet, aPhysicalList
+from sqlobject import sqlhub, SQLObjectNotFound
+from sutekh.core.SutekhObjects import PhysicalCardSet, aPhysicalSetList
 from sutekh.core.CardLookup import DEFAULT_LOOKUP
 from sutekh.SutekhUtility import refresh_tables
 from sutekh.io.PhysicalCardParser import PhysicalCardParser
@@ -70,7 +70,8 @@ class ZipFileWrapper(object):
     def do_restore_from_zip(self, oCardLookup=DEFAULT_LOOKUP,
             oLogHandler=None):
         """Recover data from the zip file"""
-        bPhysicalCardsRead = False
+        bTablesRefreshed = False
+        bOldStyle = False
         self.__open_zip_for_read()
         oLogger = Logger('Restore zip file')
         if oLogHandler is not None:
@@ -79,42 +80,77 @@ class ZipFileWrapper(object):
                 oLogHandler.set_total(len(self.oZip.infolist()))
         # We do this so we can accomodate user created zipfiles,
         # that don't nessecarily have the ordering we want
+        oIdParser = IdentifyXMLFile()
+        # check that the zip file contains at least 1 PCS or the old
+        # PhysicalCard list
         for oItem in self.oZip.infolist():
             oData = self.oZip.read(oItem.filename)
-            oParser = IdentifyXMLFile()
-            # pylint: disable-msg=W0612
-            # sName, bExists not relevant here, we only want to check sType
-            (sType, sName, bExists) = oParser.parse_string(oData)
-            if sType == 'PhysicalCard':
-                # We delete the Physical Card List
+            oIdParser.parse_string(oData)
+            if (oIdParser.type == 'PhysicalCard' or \
+                    oIdParser.type == 'PhysicalCardSet') and not \
+                    bTablesRefreshed:
+                # We delete the Physical Card Sets
                 # Since this is restoring the contents of a zip file,
                 # hopefully this is safe to do
                 # if we fail, the database will be in an inconsitent state,
                 # but that's going to be true anyway
-                refresh_tables(aPhysicalList, sqlhub.processConnection)
-                oParser = PhysicalCardParser()
-                oParser.parse_string(oData, oCardLookup)
-                bPhysicalCardsRead = True
-                oLogger.info('Physical Card List read')
-                break
-        if not bPhysicalCardsRead:
-            self.__close_zip()
-            raise IOError("No PhysicalCard list found in the zip file,"
-                    " cannot import")
-        else:
-            for oItem in self.oZip.infolist():
-                oData = self.oZip.read(oItem.filename)
-                oParser = IdentifyXMLFile()
-                (sType, sName, bExists) = oParser.parse_string(oData)
-                if sType == 'PhysicalCardSet':
-                    oParser = PhysicalCardSetParser()
-                elif sType == 'AbstractCardSet':
-                    oParser = AbstractCardSetParser()
-                else:
-                    continue
-                oParser.parse_string(oData, oCardLookup)
-                oLogger.info('%s %s read', sType, oItem.filename)
+                refresh_tables(aPhysicalSetList, sqlhub.processConnection)
+                bTablesRefreshed = True
+            if oIdParser.type == 'PhysicalCard':
+                bOldStyle = True
+        if not bTablesRefreshed:
+            raise IOError("No valid card sets found in the zip file.")
+        # We try and restore the old PCS's ensuring parents exist
+        aToRead = self.oZip.infolist()
+        while len(aToRead) > 0:
+            aToRead = self.read_items(aToRead, oCardLookup, oLogger, bOldStyle)
         self.__close_zip()
+
+    def read_items(self, aList, oCardLookup, oLogger, bOldStyle):
+        """Read a list of CardSet items from the card list, reaturning
+           a list of those that couldn't be read because their parents
+           weren't read first"""
+        aToRead = []
+        oIdParser = IdentifyXMLFile()
+        for oItem in aList:
+            bReparent = False
+            oData = self.oZip.read(oItem.filename)
+            oIdParser.parse_string(oData)
+            if oIdParser.type == 'PhysicalCardSet':
+                # We check whether the parent has been read already
+                if bOldStyle:
+                    # We need to reparent this card set
+                    try:
+                        oParent = PhysicalCardSet.selectBy(
+                                name='My Collection').getOne()
+                        bReparent = True
+                        oParser = PhysicalCardSetParser()
+                    except SQLObjectNotFound:
+                        # Card Collection not there yet, so delay
+                        aToRead.append(oItem)
+                        continue
+                elif oIdParser.parent_exists:
+                    oParser = PhysicalCardSetParser()
+                else:
+                    aToRead.append(oItem)
+                    continue
+            elif oIdParser.type == 'AbstractCardSet':
+                oParser = AbstractCardSetParser()
+            elif oIdParser.type == 'PhysicalCard':
+                oParser = PhysicalCardParser()
+            else:
+                continue
+            oParser.parse_string(oData, oCardLookup)
+            oLogger.info('%s %s read', oIdParser.type, oItem.filename)
+            if bReparent:
+                oPCS = PhysicalCardSet.selectBy(name=oIdParser.name).getOne()
+                oPCS.parent = oParent
+                oPCS.syncUpdate()
+        if len(aToRead) == len(aList):
+            # We were unable to read any items this loop, so we fail
+            raise IOError('Card sets with unstatisfiable parents %s' %
+                    ','.join([x.filename for x in aToRead]))
+        return aToRead
 
     def do_dump_all_to_zip(self, oLogHandler=None):
         """Dump all the database contents to the zip file"""

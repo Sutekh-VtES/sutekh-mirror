@@ -49,8 +49,8 @@ class PhysicalCardTests(SutekhTest):
         fOut.close()
 
         oIdFile = IdentifyXMLFile()
-        tResult = oIdFile.id_file(sTempFileName)
-        self.assertEqual(tResult[0], 'PhysicalCard')
+        oIdFile.id_file(sTempFileName)
+        self.assertEqual(oIdFile.type, 'PhysicalCard')
 
         fIn = open(sTempFileName, 'r')
         oParser.parse(fIn)

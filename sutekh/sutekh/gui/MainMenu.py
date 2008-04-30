@@ -50,9 +50,6 @@ class MainMenu(SutekhMenu):
         """Create the File Menu"""
         oMenu = self.create_submenu(self, "_File")
         # items
-        self.create_menu_item("Import Collection from File", oMenu,
-                self.do_import_physical_card_list)
-
         self.create_menu_item("Import Card Set from File", oMenu,
             self.do_import_card_set)
 
@@ -228,30 +225,6 @@ class MainMenu(SutekhMenu):
 
     # pylint: disable-msg=W0613
     # oWidget + oMenuWidget required by function signature
-    def do_import_physical_card_list(self, oWidget):
-        """Import a Physical Card Collection from a XML file"""
-        oFileChooser = ImportDialog("Select Card List to Import",
-                self._oMainWindow)
-        oFileChooser.add_filter_with_pattern('XML Files', ['*.xml'])
-        oFileChooser.run()
-        sFileName = oFileChooser.get_name()
-        if sFileName is not None:
-            oParser = IdentifyXMLFile()
-            # pylint: disable-msg=W0612
-            # sName not relevent to PhysicalCard XML files, so unused
-            (sType, sName, bExists) = oParser.id_file(sFileName)
-            if sType == 'PhysicalCard':
-                if not bExists:
-                    oFile = PhysicalCardXmlFile(sFileName,
-                            oLookup=self._oMainWindow.cardLookup)
-                    oFile.read()
-                    self._oMainWindow.reload_all()
-                else:
-                    do_complaint_error ( "Can only do this when the current"
-                            " Card Collection is empty")
-            else:
-                do_complaint_error("File is not a PhysicalCard XML File.")
-
     def do_import_card_set(self, oWidget):
         """Import a card set from a XML File."""
         oFileChooser = ImportDialog("Select Card Set(s) to Import",
@@ -260,10 +233,12 @@ class MainMenu(SutekhMenu):
         oFileChooser.run()
         sFileName = oFileChooser.get_name()
         if sFileName is not None:
-            oParser = IdentifyXMLFile()
-            (sType, sName, bExists) = oParser.id_file(sFileName)
-            if sType == 'PhysicalCardSet' or sType == 'AbstractCardSet':
-                if bExists:
+            oIdParser = IdentifyXMLFile()
+            oIdParser.id_file(sFileName)
+            if oIdParser.type == 'PhysicalCardSet' or \
+                    oIdParser.type == 'AbstractCardSet' or \
+                    oIdParser.type == 'PhysicalCard':
+                if oIdParser:
                     iResponse = do_complaint_warning("This would delete the"
                             " existing CardSet " + sName)
                     if iResponse == gtk.RESPONSE_CANCEL:
@@ -273,12 +248,18 @@ class MainMenu(SutekhMenu):
                         delete_physical_card_set(sName)
                 oFrame = self._oMainWindow.add_pane_end()
                 try:
-                    if sType == "AbstractCardSet":
+                    if oIdParser.type == "AbstractCardSet":
                         oFile = AbstractCardSetXmlFile(sFileName,
                                 oLookup=self._oMainWindow.cardLookup)
                         oFile.read()
-                    else:
+                    elif oIdParser.type == 'PhysicalCardSet':
                         oFile = PhysicalCardSetXmlFile(sFileName,
+                                oLookup=self._oMainWindow.cardLookup)
+                        oFile.read()
+                        # FIXME: Handle missing parent issues
+                    else:
+                        # Old style PhysicalCard list
+                        oFile = PhysicalCardXmlFile(sFileName,
                                 oLookup=self._oMainWindow.cardLookup)
                         oFile.read()
                     self._oMainWindow.replace_with_physical_card_set(sName,

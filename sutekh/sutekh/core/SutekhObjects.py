@@ -364,9 +364,11 @@ aObjectList = [ AbstractCard, Expansion,
                MapAbstractCardToVirtue,
                MapAbstractCardToCreed,
                ]
-
-aPhysicalList = [PhysicalCard, PhysicalCardSet,
+# For reloading the Physical Card Sets
+aPhysicalSetList = [PhysicalCardSet,
         MapPhysicalCardToPhysicalCardSet]
+# For database upgrades, etc.
+aPhysicalList = [PhysicalCard] + aPhysicalSetList
 
 # Object Maker API
 
