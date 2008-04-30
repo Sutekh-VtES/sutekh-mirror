@@ -7,10 +7,11 @@
 
 """Provide a TreeView for the physical card collection"""
 
-from sutekh.gui.CardListView import EditableCardListView
+import gtk, pango
+from sutekh.gui.CardListView import CardListView
 from sutekh.gui.CardListModel import PhysicalCardListModel
 
-class PhysicalCardView(EditableCardListView):
+class PhysicalCardView(CardListView):
     # pylint: disable-msg=R0904
     # gtk class, so many public methods
     """The card list view for the physical card collection.
@@ -27,43 +28,13 @@ class PhysicalCardView(EditableCardListView):
         super(PhysicalCardView, self).__init__(oController, oWindow,
                 oModel, oConfig)
 
-        self._oController = oController
+        # Setup columns for default view
+        self.oNameCell = gtk.CellRendererText()
+        self.oNameCell.set_property('style', pango.STYLE_ITALIC)
 
+        oColumn = gtk.TreeViewColumn("Cards", self.oNameCell, text=0)
+        oColumn.set_expand(True)
+        oColumn.set_sort_column_id(0)
+        self.append_column(oColumn)
 
-    # pylint: disable-msg=R0913
-    # Number of arguments needed by function signature
-    def card_drop(self, oWidget, oContext, iXPos, iYPos, oData, oInfo, oTime):
-        """Handle cards being dropped on the View via drag-n-drop.
-
-           Determine the source, and add the cards if the model is editable.
-           """
-        if not oData or oData.format != 8:
-            oContext.finish(False, False, oTime)
-        else:
-            sSource, aCardInfo = self.split_selection_data(oData.data)
-            if sSource == "Sutekh Pane:":
-                # Pane being dragged, so pass up to the pane widget
-                self._oController.frame.drag_drop_handler(oWidget, oContext,
-                        iXPos, iYPos, oData, oInfo, oTime)
-            # Don't accept cards when not editable
-            elif self._oModel.bEditable and \
-                    self.add_paste_data(sSource, aCardInfo):
-                oContext.finish(True, False, oTime) # paste successful
-            else:
-                oContext.finish(False, False, oTime) # not successful
-
-    def add_paste_data(self, sSource, aCards):
-        """Helper function for drag+drop + copy+paste.
-
-           We can only drag from the AbstractCard List
-           We can't drag from the card sets
-           """
-        if sSource in ['Abst:']:
-            # pylint: disable-msg=W0612
-            # iCount is unused
-            for iCount, sCardName, sExpansion in aCards:
-                # We are adding new cards, so only 1 of each
-                self.add_card(sCardName, sExpansion)
-            return True
-        else:
-            return False
+        self.set_expander_column(oColumn)

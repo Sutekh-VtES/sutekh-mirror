@@ -9,10 +9,10 @@
 """Menu for the Physical card collection."""
 
 from sutekh.gui.SutekhFileWidget import ExportDialog
-from sutekh.gui.PaneMenu import EditableCardListMenu
+from sutekh.gui.PaneMenu import CardListMenu
 from sutekh.io.XmlFileHandling import PhysicalCardXmlFile
 
-class PhysicalCardMenu(EditableCardListMenu):
+class PhysicalCardMenu(CardListMenu):
     """Menu for the Physical card collection.
 
        Enables actions specific to the physical card collection (export to
@@ -23,7 +23,6 @@ class PhysicalCardMenu(EditableCardListMenu):
     def __init__(self, oFrame, oController, oWindow):
         super(PhysicalCardMenu, self).__init__(oFrame, oWindow, oController)
         self.__create_physical_cl_menu()
-        self.create_edit_menu()
         self.create_filter_menu()
         self.create_plugins_menu('_Plugins', self._oFrame)
 

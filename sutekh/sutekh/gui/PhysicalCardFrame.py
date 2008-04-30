@@ -34,5 +34,3 @@ class PhysicalCardFrame(CardListFrame):
 
         self._oMenu = PhysicalCardMenu(self, self._oController, oMainWindow)
         self.add_parts()
-        self._oController.view.check_editable()
-
