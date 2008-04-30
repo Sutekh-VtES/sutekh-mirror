@@ -9,6 +9,7 @@
 
 from sutekh.core.CardLookup import DEFAULT_LOOKUP
 from sutekh.core.SutekhObjects import PhysicalCardSet
+from sqlobject import SQLObjectNotFound
 
 class CardSetHolder(object):
     # pylint: disable-msg=R0902
@@ -21,7 +22,7 @@ class CardSetHolder(object):
        """
     def __init__(self):
         self._sName, self._sAuthor, self._sComment, \
-                self._sAnnotations = None, '', '', '' 
+                self._sAnnotations = None, '', '', ''
         self._bInUse = False
         self._sParent = None
         self._dCards = {} # card name -> count
@@ -35,7 +36,7 @@ class CardSetHolder(object):
 
     def add(self, iCnt, sName, sExpansionName):
         """Append cards to the virtual set.
-        
+
            sExpansionName may be None.
            """
         self._dCards.setdefault(sName, 0)
@@ -48,7 +49,7 @@ class CardSetHolder(object):
 
     def remove(self, iCnt, sName, sExpansionName):
         """Remove cards from the virtual set.
-        
+
            sExpansionName may be None.
            """
         if not sName in self._dCards or self._dCards[sName] < iCnt:
@@ -132,7 +133,9 @@ class CachedCardSetHolder(CardSetHolder):
     """CardSetHolder class which supports creating and using a
        cached dictionary of Lookup results.
        """
-
+    # pylint: disable-msg=W0102, W0221
+    # W0102 - {} is the right thing here
+    # W0221 - We need the extra argument
     def create_pcs(self, oCardLookup=DEFAULT_LOOKUP, dLookupCache={}):
         """Create a Physical Card Set.
            """
