@@ -656,6 +656,14 @@ class PhysicalCardMappingToPhysicalCardAdapter(object):
     def __new__(cls, oMapPhysCard):
         return oMapPhysCard.physicalCard
 
+class PhysicalCardMappingToAbstractCardAdapter(object):
+    advise(instancesProvide=[IAbstractCard], asAdapterForTypes=
+            [MapPhysicalCardToPhysicalCardSet])
+
+    def __new__(cls, oMapPhysCard):
+        return IAbstractCard(oMapPhysCard.physicalCard)
+
+
 class PhysicalCardAdapter(object):
     advise(instancesProvide=[IPhysicalCard], asAdapterForTypes=[tuple])
 
