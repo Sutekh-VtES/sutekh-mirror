@@ -18,7 +18,7 @@ from sutekh.gui.CardSetController import PhysicalCardSetController
 class CardSetFrame(CardListFrame, object):
     # pylint: disable-msg=R0904
     # gtk.Widget, so many public methods
-    """Base class for Card Set frames.
+    """class for Card Set frames.
 
        Handles most of the functionality - subclasses set the style name
        and the various other properties correctly for the type.
@@ -40,6 +40,7 @@ class CardSetFrame(CardListFrame, object):
 
         self._oMenu = CardSetMenu(self, self._oController, self._oMainWindow,
                 sName)
+        self.set_name("physical card set card list")
         self.add_parts()
 
         self.update_name(sName)
@@ -71,11 +72,5 @@ class CardSetFrame(CardListFrame, object):
         if self._oController.view.delete_card_set():
             # Card Set was deleted, so close up
             self.close_frame()
-
-class PhysicalCardSetFrame(CardSetFrame):
-    # pylint: disable-msg=R0904
-    # R0904 - gtk.Widget, so many public methods
-    """Card Set Frame for holding Physical Card Sets."""
-    def __init__(self, oMainWindow, sName):
-        super(PhysicalCardSetFrame, self).__init__(oMainWindow, sName)
-        self.set_name("physical card set card list")
+            # We don't need to worry about reloadng the PCS list here.
+            # cleanup will do that for us

@@ -130,6 +130,7 @@ class CardSetManagementFrame(BasicFrame):
         sFrameName = sSetName
         delete_physical_card_set(sSetName)
         self._oMainWindow.remove_frame_by_name(sFrameName)
+        self.reload()
 
     def row_clicked(self, oTreeView, oPath, oColumn):
         """Handle row clicked events.

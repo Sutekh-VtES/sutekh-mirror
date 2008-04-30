@@ -8,7 +8,7 @@
 
 import gtk
 from sutekh.core.SutekhObjects import PhysicalCard, \
-        PhysicalCardSet, AbstractCard, IAbstractCard
+        PhysicalCardSet, IAbstractCard
 from sutekh.core.Filters import PhysicalCardSetFilter
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog

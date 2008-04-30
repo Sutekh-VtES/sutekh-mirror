@@ -1112,7 +1112,7 @@ class PhysicalCardSetFilter(Filter):
         # SQLObject methods not detected by plylint
         return [
                 LEFTJOINOn(None, PhysicalCard,
-                    PhysicalCard.q.id == self.__oTable.physical_card_set_id),
+                    PhysicalCard.q.id == self.__oTable.physical_card_id),
                 LEFTJOINOn(None, AbstractCard,
                     AbstractCard.q.id == PhysicalCard.q.abstractCardID),
                 ]

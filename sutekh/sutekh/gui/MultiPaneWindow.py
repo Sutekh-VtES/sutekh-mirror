@@ -21,7 +21,7 @@ from sutekh.core.SutekhObjects import AbstractCard, PhysicalCardSet, \
 from sutekh.gui.BasicFrame import BasicFrame
 from sutekh.gui.PhysicalCardFrame import PhysicalCardFrame
 from sutekh.gui.CardTextFrame import CardTextFrame
-from sutekh.gui.CardSetFrame import PhysicalCardSetFrame
+from sutekh.gui.CardSetFrame import CardSetFrame
 from sutekh.gui.AboutDialog import SutekhAboutDialog
 from sutekh.gui.MainMenu import MainMenu
 from sutekh.gui.GuiCardLookup import GuiLookup
@@ -211,7 +211,7 @@ class MultiPaneWindow(gtk.Window):
             # pylint: disable-msg=W0704
             # not doing anything for errors right now
             try:
-                oPane = PhysicalCardSetFrame(self, sName)
+                oPane = CardSetFrame(self, sName)
                 self.replace_frame(oFrame, oPane, sMenuFlag)
             except RuntimeError:
                 # add warning dialog?

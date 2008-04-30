@@ -18,7 +18,7 @@ class ExtraCardViewColumns(CardListPlugin):
     Allow the card list to be sorted on these columns
     """
     dTableVersions = {}
-    aModelsSupported = [PhysicalCardSet]
+    aModelsSupported = [PhysicalCardSet, PhysicalCard]
 
     # pylint: disable-msg=W0142
     # **magic OK here
