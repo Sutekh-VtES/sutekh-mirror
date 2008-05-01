@@ -1,3 +1,43 @@
+01 May 2008
+ * Combine CreateCardSetDailog + PropDialog
+ * Add parent property to CreateCardSetDialog
+ * Move drag-n-drop code to CardSetManagementView, for consistency
+ * Change SutekhFileWidget to use 'show', rather than mapped
+
+30 April 2008
+ * Fix PhysicalCardSet filter to join on the card id, not the card set id.
+ * PhysicalCard list is no longer editable, and doesn't show numbers any more
+ * Re-enable the ExtraColumns plugin on the PCL
+ * Fix zip file handling so backups of the new database structure can be
+   restored
+ * Rework IdentifyXMLFile, so old + new backups can work properly
+ * Add parent support to PhysicalCardSetWriter + Parser
+ * Rename 'Physical Card Set List' to 'Card Set List'
+ * Make DatabaseUpgrade work on version 0.4 databases again
+
+29 April 2008
+ * Database redesign day
+   Move from PhysicalCard List as he card collection to card collection is
+   a physical card set with subsets model.
+   - Removed AbstractCardSet's entirely
+   - Added parent field on Physical Card Sets
+   - Create 1 PhysicalCard for each valid AbstractCard + Expansion combination
+     (Includes Expansion=None for all cards)
+ * Database upgrade extended
+ * Various obselete files remove (AbstractCardSetWriter, PhysicalCardWriter)
+ * Reworked file IO to handle new database schema
+ * Tests reworked to new database schema
+ * Change the card set list to a treeview, which can show parent->child
+   relationships
+ * clean out ACS and PCL code from the zip file handler
+ * Clean ou ACS references in the plugins
+ * Change PhysicalCardSet Models to use the mapping table, so distinct() on
+   the select works properly, since the PhysicalCard id's are no longer unique.
+   Same reasoning as previous such hack on AbstractCardSets.
+ * Created sutekh-last-of-the-abstract-card-sets-april-2008 tag for tree state
+   before database rework
+
+
 27 April 2008
  * Fix counting bug in Analyze Card Set
  * Add filter for zip files to the backup restore dialog
