@@ -36,6 +36,8 @@ class CardSetManagementModel(gtk.TreeStore):
             fset=lambda self, x: setattr(self, '_oSelectFilter', x))
     # pylint: enable-msg=W0212
 
+    # pylint: disable-msg=R0201
+    # this should be a method for consistency
     def get_card_set_iterator(self, oFilter):
         """Return an interator over the card set model.
 
@@ -44,6 +46,7 @@ class CardSetManagementModel(gtk.TreeStore):
         if not oFilter:
             oFilter = NullFilter()
         return oFilter.select(PhysicalCardSet).distinct()
+    # pylint: enable-msg=R0201
 
     def load(self):
         """Load the card sets into the card view"""
@@ -109,6 +112,8 @@ class CardSetManagementModel(gtk.TreeStore):
         oIter = self.get_iter(oPath)
         return self.get_name_from_iter(oIter)
 
+    # pylint: disable-msg=W0613
+    # oModel required by function signature
     def sort_column(self, oModel, oIter1, oIter2):
         """Custom sort function - ensure that markup doesn't affect sort
            order"""
@@ -154,8 +159,8 @@ class CardSetManagementView(gtk.TreeView, object):
         self.drag_dest_set(gtk.DEST_DEFAULT_ALL,
                 aTargets, gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
 
-        self.connect('drag_data_get', self.drag_set)
-        self.connect('drag_data_delete', self.drag_delete)
+        self.connect('drag_data_get', self.drag_card_set)
+        self.connect('row_activated', self.row_clicked)
         self.bReentrant = False
         self.bSelectTop = 0
 
@@ -207,6 +212,8 @@ class CardSetManagementView(gtk.TreeView, object):
            """
         # Internal helper functions
         # See what's expanded
+        # pylint: disable-msg=W0612
+        # we're not interested in oModel here
         oModel, aSelectedRows = self._oSelection.get_selected_rows()
         if len(aSelectedRows) > 0:
             oSelPath = aSelectedRows[0]
@@ -237,6 +244,46 @@ class CardSetManagementView(gtk.TreeView, object):
         """Convert a card name or key to a canonical ASCII form."""
         return unicodedata.normalize('NFKD', sName).encode('ascii','ignore')
 
+    # Filtering
+
+    def get_filter(self, oMenu):
+        """Get the Filter from the FilterDialog."""
+        if self._oFilterDialog is None:
+            self._oFilterDialog = FilterDialog(self._oMainWin,
+                    self._oMainWin.config_file, 'PhysicalCardSet')
+
+        self._oFilterDialog.run()
+
+        if self._oFilterDialog.was_cancelled():
+            return # Change nothing
+
+        oFilter = self._oFilterDialog.get_filter()
+        if oFilter != None:
+            # pylint: disable-msg=C0103
+            # selectfilter OK here
+            self._oModel.selectfilter = oFilter
+            if not self._oModel.applyfilter:
+                # If a filter is set, automatically apply
+                oMenu.set_apply_filter(True)
+            else:
+                # Filter Changed, so reload
+                self._oModel.load()
+        else:
+            # Filter is set to blank, so we treat this as disabling
+            # Filter
+            if self._oModel.applyfilter:
+                oMenu.set_apply_filter(False)
+            else:
+                self._oModel.load()
+
+    def run_filter(self, bState):
+        """Enable or diable the current filter based on bState"""
+        # pylint: disable-msg=C0103
+        # applyfilter OK here
+        if self._oModel.applyfilter != bState:
+            self._oModel.applyfilter = bState
+            self._oModel.load()
+
     # pylint: disable-msg=R0913, W0613
     # arguments as required by the function signature
     def compare(self, oModel, iColumn, sKey, oIter, oData):
@@ -257,7 +304,6 @@ class CardSetManagementView(gtk.TreeView, object):
                     # recurse into the children
                     check_children(oModel, oChildIter, sKey, iLenKey)
 
-        oPath = oModel.get_path(oIter)
         sKey = sKey.lower()
         iLenKey = len(sKey)
 
@@ -273,64 +319,37 @@ class CardSetManagementView(gtk.TreeView, object):
         # Fell through
         return True
 
+
+    def drag_card_set(self, oBtn, oDragContext, oSelectionData, oInfo, oTime):
+        """Allow card sets to be dragged to a frame."""
+        sSetName = self.get_selected_card_set()
+        if not sSetName:
+            return
+        # Don't respond to the dragging of an already open card set, and so on
+        sPrefix = 'PCS:'
+        sFrameName = sSetName
+        if sFrameName in self._oMainWin.dOpenFrames.values():
+            return
+        sData = "\n".join(['Sutekh Pane:', 'Card Set Pane:', sPrefix,
+            sSetName])
+        oSelectionData.set(oSelectionData.target, 8, sData)
+
+    def row_clicked(self, oTreeView, oPath, oColumn):
+        """Handle row clicked events.
+
+           allow double clicks to open a card set.
+           """
+        oModel = self.get_model()
+        # We are pointing to a ListStore, so the iters should always be valid
+        # Need to dereference to the actual path though, as iters not unique
+        sName = oModel.get_name_from_path(oPath)
+        # check if card set is open before opening again
+        oPane = self._oMainWin.find_pane_by_name(sName)
+        if oPane is not None:
+            return # Already open, so do nothing
+        self._oMainWin.add_new_physical_card_set(sName)
+
     # pylint: enable-msg=R0913, W0613
-
-    # Filtering
-
-    def get_filter(self, oMenu):
-        """Get the Filter from the FilterDialog."""
-        if self._oFilterDialog is None:
-            self._oFilterDialog = FilterDialog(self._oMainWin,
-                    self._oMainWin.config_file, 'PhysicalCardSet')
-
-        self._oFilterDialog.run()
-
-        if self._oFilterDialog.was_cancelled():
-            return # Change nothing
-
-        oFilter = self._oFilterDialog.get_filter()
-        if oFilter != None:
-            self._oModel.selectfilter = oFilter
-            if not self._oModel.applyfilter:
-                # If a filter is set, automatically apply
-                oMenu.set_apply_filter(True)
-            else:
-                # Filter Changed, so reload
-                self._oModel.load()
-        else:
-            # Filter is set to blank, so we treat this as disabling
-            # Filter
-            if self._oModel.applyfilter:
-                oMenu.set_apply_filter(False)
-            else:
-                self._oModel.load()
-
-    def run_filter(self, bState):
-        """Enable or diable the current filter based on bState"""
-        if self._oModel.applyfilter != bState:
-            self._oModel.applyfilter = bState
-            self._oModel.load()
-
-    def process_selection(self):
-        """Create a dictionary from the selection."""
-        pass
-
-    def get_selection_as_string(self):
-        """Get a string representing the current selection."""
-        pass
-
-    # Drag and Drop
-    # Sub-classes should override as needed.
-    # pylint: disable-msg=R0201
-    # These need to be available to children as methods
-
-    def drag_set(self, oBtn, oContext, oSelectionData, oInfo, oTime):
-        """Create string representation of the selection for drag-n-drop"""
-        pass
-
-    def drag_delete(self, oBtn, oContext, oData):
-        """Default drag-delete handler"""
-        pass
 
     def get_selected_card_set(self):
         """Return the currently selected card set name, or None if nothing

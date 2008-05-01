@@ -12,7 +12,7 @@ from sqlobject import SQLObjectNotFound
 from sutekh.SutekhUtility import delete_physical_card_set
 from sutekh.core.SutekhObjects import PhysicalCardSet
 from sutekh.core.Filters import NullFilter
-from sutekh.gui.SutekhDialog import do_complaint_error, do_complaint_warning
+from sutekh.gui.SutekhDialog import do_complaint_warning
 from sutekh.gui.BasicFrame import BasicFrame
 from sutekh.gui.CreateCardSetDialog import CreateCardSetDialog
 from sutekh.gui.CardSetManagementMenu import CardSetManagementMenu
@@ -58,38 +58,20 @@ class CardSetManagementFrame(BasicFrame):
 
         oMbox.pack_start(self._oMenu, False, False)
 
-        self._oView.connect('row_activated', self.row_clicked)
-
         oMbox.pack_start(AutoScrolledWindow(self._oView), expand=True)
 
-        # allow dragging card sets from the list
-        self._oView.drag_source_set(
-                gtk.gdk.BUTTON1_MASK | gtk.gdk.BUTTON3_MASK, self.aDragTargets,
-                gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
-
-        self._oView.connect('drag-data-get', self.drag_card_set)
         # setup default targets
         self.set_drag_handler()
 
         self.add(oMbox)
         self.show_all()
 
-    # pylint: disable-msg=W0613, R0913
-    # arguments required by function signature
-    def drag_card_set(self, oBtn, oDragContext, oSelectionData, oInfo, oTime):
-        """Allow card sets to be dragged to a frame."""
-        sSetName = self._oView.get_selected_card_set()
-        if not sSetName:
-            return
-        # Don't respond to the dragging of an already open card set, and so on
-        sPrefix = 'PCS:'
-        sFrameName = sSetName
-        if sFrameName in self._oMainWindow.dOpenFrames.values():
-            return
-        sData = "\n".join(['Sutekh Pane:', 'Card Set Pane:', sPrefix,
-            sSetName])
-        oSelectionData.set(oSelectionData.target, 8, sData)
+    def reload(self):
+        """Reload the frame contents"""
+        self._oView.reload_keep_expanded(True)
 
+    # pylint: disable-msg=W0613
+    # oWidget, oMenuItem required by function signature
     def create_new_card_set(self, oWidget):
         """Create a new card set"""
         oDialog = CreateCardSetDialog(self._oMainWindow)
@@ -129,29 +111,6 @@ class CardSetManagementFrame(BasicFrame):
         self._oMainWindow.remove_frame_by_name(sFrameName)
         self.reload()
 
-    def row_clicked(self, oTreeView, oPath, oColumn):
-        """Handle row clicked events.
-
-           allow double clicks to open a card set.
-           """
-        oModel = oTreeView.get_model()
-        # We are pointing to a ListStore, so the iters should always be valid
-        # Need to dereference to the actual path though, as iters not unique
-        sName = oModel.get_name_from_path(oPath)
-        # check if card set is open before opening again
-        oPane = self._oMainWindow.find_pane_by_name(sName)
-        if oPane is not None:
-            return # Already open, so do nothing
-        self._oMainWindow.add_new_physical_card_set(sName)
-
-    # pylint: enable-msg=W0613, R0913
-
-    def reload(self):
-        """Reload the frame contents"""
-        self._oView.reload_keep_expanded(True)
-
-    # pylint: disable-msg=W0613
-    # oMenuItem required by function signature
     def toggle_in_use_flag(self, oMenuItem):
         """Toggle the in-use status of the card set"""
         sSetName = self._oView.get_selected_card_set()
