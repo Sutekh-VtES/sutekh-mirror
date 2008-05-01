@@ -13,7 +13,7 @@ from sutekh.SutekhUtility import safe_filename
 from sutekh.core.SutekhObjects import PhysicalCardSet
 from sutekh.gui.SutekhDialog import do_complaint_error
 from sutekh.gui.SutekhFileWidget import ExportDialog
-from sutekh.gui.PropDialog import PropDialog
+from sutekh.gui.CreateCardSetDialog import CreateCardSetDialog
 from sutekh.io.XmlFileHandling import PhysicalCardSetXmlFile
 from sutekh.gui.EditAnnotationsDialog import EditAnnotationsDialog
 from sutekh.gui.PaneMenu import EditableCardListMenu
@@ -80,28 +80,29 @@ class CardSetMenu(EditableCardListMenu):
         # pylint: disable-msg=E1101
         # sqlobject confuses pylint
         oCS = PhysicalCardSet.byName(self.sSetName)
-        oProp = PropDialog(self._oMainWindow, oCS)
+        oProp = CreateCardSetDialog(self._oMainWindow, oCS.name, oCS.author,
+                oCS.comment, oCS.parent)
         oProp.run()
-        (sName, sAuthor, sComment) = oProp.get_data()
-        if sName is not None and sName != self.sSetName and len(sName)>0:
-            # Check new name is not in use
-            oNameList = PhysicalCardSet.selectBy(name=sName)
-            if oNameList.count()>0:
-                do_complaint_error("Chosen Card Set Name is already in use")
-                return
-            else:
-                oCS.name = sName
-                self.__oController.view.sSetName = sName
-                self.sSetName = sName
-                self._oFrame.update_name(self.sSetName)
-                self.__update_card_set_menu()
-                oCS.syncUpdate()
-        if sAuthor is not None:
-            oCS.author = sAuthor
+        sName = oProp.get_name()
+        if sName:
+            # Passed, so update the card set
+            oCS.name = sName
+            self.__oController.view.sSetName = sName
+            self.sSetName = sName
+            self._oFrame.update_name(self.sSetName)
+            sAuthor = oProp.get_author()
+            sComment = oProp.get_comment()
+            oParent = oProp.get_parent()
+            if sAuthor is not None:
+                oCS.author = sAuthor
+            if sComment is not None:
+                oCS.comment = sComment
+            if oParent != oCS.parent:
+                oCS.parent = oParent
+            self.__update_card_set_menu()
             oCS.syncUpdate()
-        if sComment is not None:
-            oCS.comment = sComment
-            oCS.syncUpdate()
+            # We may well have changed stuff on the card list pane, so reload
+            self._oMainWindow.reload_pcs_list()
 
     def _edit_annotations(self, oWidget):
         """Popup the Edit Annotations dialog."""

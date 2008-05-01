@@ -8,7 +8,9 @@
 """Get details for a new card set"""
 
 import gtk
+from sqlobject import SQLObjectNotFound
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
+from sutekh.core.SutekhObjects import PhysicalCardSet, IPhysicalCardSet
 
 class CreateCardSetDialog(SutekhDialog):
     # pylint: disable-msg=R0904
@@ -17,8 +19,9 @@ class CreateCardSetDialog(SutekhDialog):
 
        Optionally, get Author + Description.
        """
-    def __init__(self, oParent, sType, sAuthor=None, sDesc=None):
-        super(CreateCardSetDialog, self).__init__(sType + " Card Set Details",
+    def __init__(self, oParent, sName=None, sAuthor=None, sComment=None,
+            oCardSetParent=None):
+        super(CreateCardSetDialog, self).__init__("Card Set Details",
             oParent, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
             (gtk.STOCK_OK, gtk.RESPONSE_OK,
                 gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
@@ -27,36 +30,60 @@ class CreateCardSetDialog(SutekhDialog):
         self.oName = gtk.Entry(50)
         oAuthorLabel = gtk.Label("Author : ")
         self.oAuthor = gtk.Entry(50)
-        oDescriptionLabel = gtk.Label("Description : ")
-        self.oDesc = gtk.Entry(50)
-
+        oCommentriptionLabel = gtk.Label("Description : ")
+        self.oComment = gtk.Entry(50)
+        oParentLabel = gtk.Label("This card set is a subset of : ")
+        self.oParentList = gtk.combo_box_new_text()
         # pylint: disable-msg=E1101
-        # vbox confuses pylint
+        # vbox, sqlobject confuse pylint
+        self.oParentList.append_text('No Parent')
+        if not oCardSetParent:
+            # Select this when no parent is specified
+            self.oParentList.set_active(0)
+        for iNum, oCardSet in enumerate(
+                PhysicalCardSet.select().orderBy('name')):
+            self.oParentList.append_text(oCardSet.name)
+            if oCardSetParent and oCardSetParent.name == oCardSet.name:
+                self.oParentList.set_active(iNum + 1)
         self.vbox.pack_start(oNameLabel)
         self.vbox.pack_start(self.oName)
         self.vbox.pack_start(oAuthorLabel)
         self.vbox.pack_start(self.oAuthor)
-        self.vbox.pack_start(oDescriptionLabel)
-        self.vbox.pack_start(self.oDesc)
+        self.vbox.pack_start(oCommentriptionLabel)
+        self.vbox.pack_start(self.oComment)
+        self.vbox.pack_start(oParentLabel)
+        self.vbox.pack_start(self.oParentList)
 
         self.connect("response", self.button_response)
+
+        self.sOrigName = sName
+        if sName is not None:
+            self.oName.set_text(sName)
 
         if sAuthor is not None:
             self.oAuthor.set_text(sAuthor)
 
-        if sDesc is not None:
-            self.oDesc.set_text(sDesc)
+        if sComment is not None:
+            self.oComment.set_text(sComment)
 
         self.sName = None
         self.sAuthor = None
-        self.sDesc = None
-        self.sType = sType
+        self.sComment = None
+        self.oParent = oCardSetParent
 
         self.show_all()
 
-    def get_data(self):
-        """Return data about the new card set to the caller."""
-        return (self.sName, self.sAuthor, self.sDesc)
+    def get_name(self):
+        return self.sName
+
+    def get_author(self):
+        return self.sAuthor
+
+    def get_comment(self):
+        return self.sComment
+
+    def get_parent(self):
+        return self.oParent
 
     # pylint: disable-msg=W0613
     # oWidget required by function signature
@@ -65,15 +92,33 @@ class CreateCardSetDialog(SutekhDialog):
         if iResponse == gtk.RESPONSE_OK:
             self.sName = self.oName.get_text()
             if len(self.sName) > 0:
-                self.sAuthor = self.oAuthor.get_text()
-                self.sDesc = self.oDesc.get_text()
-                # We don't allow < or > in the name, since
-                # pygtk uses that for markup
+                # We don't allow < or > in the name, since pango uses that for
+                # markup
                 self.sName = self.sName.replace("<", "(")
                 self.sName = self.sName.replace(">", ")")
+                if self.sName != self.sOrigName:
+                    # check if card set exists
+                    try:
+                        IPhysicalCardSet(self.sName)
+                        do_complaint_error('Chosen Card Set Name is'
+                                ' already in use')
+                        self.sName = None
+                        self.destroy()
+                        return
+                    except SQLObjectNotFound:
+                        pass
+                self.sAuthor = self.oAuthor.get_text()
+                self.sComment = self.oComment.get_text()
+                if self.oParentList.get_active() > 0:
+                    # Get the parent object for this card set
+                    sParent = self.oParentList.get_active_text()
+                    self.oParent = IPhysicalCardSet(sParent)
+                else:
+                    # 'No parent' option selected, so use none
+                    self.oParent = None
             else:
                 # We don't allow empty names
                 self.sName = None
                 do_complaint_error("You did not specify a name for the"
-                        " %s Card Set." % self.sType)
+                        " Card Set.")
         self.destroy()

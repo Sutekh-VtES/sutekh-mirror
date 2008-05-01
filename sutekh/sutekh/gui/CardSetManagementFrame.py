@@ -92,22 +92,19 @@ class CardSetManagementFrame(BasicFrame):
 
     def create_new_card_set(self, oWidget):
         """Create a new card set"""
-        oDialog = CreateCardSetDialog(self._oMainWindow, 'Physical')
-        fOpenCardSet = self._oMainWindow.add_new_physical_card_set
+        oDialog = CreateCardSetDialog(self._oMainWindow)
         oDialog.run()
-        (sName, sAuthor, sDescription) = oDialog.get_data()
-        oDialog.destroy()
+        sName = oDialog.get_name()
         # pylint: disable-msg=E1102, W0612
         # W0612 - oCS isn't important, as the creation of the new card
         # set is what matters
-        if sName is not None:
-            iCnt = PhysicalCardSet.selectBy(name=sName).count()
-            if iCnt > 0:
-                do_complaint_error("Chosen Card Set Name is already in use.")
-            else:
-                oCS = PhysicalCardSet(name=sName, author=sAuthor,
-                        comment=sDescription)
-                fOpenCardSet(sName)
+        if sName:
+            sAuthor = oDialog.get_author()
+            sComment = oDialog.get_comment()
+            oParent = oDialog.get_parent()
+            oCS = PhysicalCardSet(name=sName, author=sAuthor,
+                    comment=sComment, parent=oParent)
+            self._oMainWindow.add_new_physical_card_set(sName)
 
     def delete_card_set(self, oWidget):
         """Delete the selected card set."""
