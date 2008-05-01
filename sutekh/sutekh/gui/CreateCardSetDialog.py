@@ -67,22 +67,24 @@ class CreateCardSetDialog(SutekhDialog):
             self.oComment.set_text(sComment)
 
         self.sName = None
-        self.sAuthor = None
-        self.sComment = None
         self.oParent = oCardSetParent
 
         self.show_all()
 
     def get_name(self):
+        """Get the name entred by the user"""
         return self.sName
 
     def get_author(self):
-        return self.sAuthor
+        """Get the author value"""
+        return self.oAuthor.get_text()
 
     def get_comment(self):
-        return self.sComment
+        """Get the comment value"""
+        return self.oComment.get_text()
 
     def get_parent(self):
+        """Get the chosen parent card set, or None if 'No Parent' is chosen"""
         return self.oParent
 
     # pylint: disable-msg=W0613
@@ -107,8 +109,6 @@ class CreateCardSetDialog(SutekhDialog):
                         return
                     except SQLObjectNotFound:
                         pass
-                self.sAuthor = self.oAuthor.get_text()
-                self.sComment = self.oComment.get_text()
                 if self.oParentList.get_active() > 0:
                     # Get the parent object for this card set
                     sParent = self.oParentList.get_active_text()
