@@ -9,6 +9,7 @@
 
 """FileChooserWidget and FileChooserDialog wrapper for Sutekh"""
 
+
 import gtk
 
 def _changed_dir(oFileChooser, oParentWin):
@@ -26,6 +27,16 @@ def add_filter(oFileChooser, sFilterName, aFilterPatterns):
     oFileChooser.set_filter(oFilter)
     return oFilter
 
+def _mapped(oFileWidget, oParent):
+    """Update the dialogs working dir when the widget is shown.
+
+       We need this since the working dir will often change between
+       button/dialog creation, and the dialog being popped up.
+       """
+    sWorkingDir = oParent.get_working_dir()
+    if sWorkingDir:
+        oFileWidget.set_current_folder(sWorkingDir)
+
 class SutekhFileDialog(gtk.FileChooserDialog):
     # pylint: disable-msg=R0904
     # gtk widget, so has many public methods
@@ -41,6 +52,7 @@ class SutekhFileDialog(gtk.FileChooserDialog):
         if sWorkingDir:
             self.set_current_folder(sWorkingDir)
         self.connect('current-folder-changed', _changed_dir, oParent)
+        self.connect('show', _mapped, oParent)
         self._oAllFilter = add_filter(self, 'All Files', ['*'])
 
     def add_filter_with_pattern(self, sName, aFilterPatterns):
@@ -63,6 +75,7 @@ class SutekhFileWidget(gtk.FileChooserWidget):
         if sWorkingDir:
             self.set_current_folder(sWorkingDir)
         self.connect('current-folder-changed', _changed_dir, oParent)
+        self.connect('show', _mapped, oParent)
         self._oAllFilter = add_filter(self, 'All Files', ['*'])
 
     def add_filter_with_pattern(self, sName, aFilterPatterns):
@@ -88,7 +101,6 @@ class SutekhFileButton(gtk.FileChooserButton):
         sWorkingDir = oParent.get_working_dir()
         if sWorkingDir:
             self.set_current_folder(sWorkingDir)
-        self.oDialog.connect('map-event', self.mapped, oParent)
 
     def add_filter_with_pattern(self, sName, aFilterPatterns):
         """Add a filter named sName to this widget, using the patterns
@@ -98,18 +110,6 @@ class SutekhFileButton(gtk.FileChooserButton):
     def default_filter(self):
         """Set the filter to be the default all files filter"""
         self.oDialog.default_filter()
-
-    # pylint: disable-msg=W0613
-    # oWidget + oEvent needed by the function signature
-    def mapped(self, oWidget, oEvent, oParent):
-        """Update the dialogs working dir when the dialog is shown.
-
-           We need this since the working dir will often change between
-           button creation, and the dialog being popped up.
-           """
-        sWorkingDir = oParent.get_working_dir()
-        if sWorkingDir:
-            self.oDialog.set_current_folder(sWorkingDir)
 
 class SimpleFileDialog(SutekhFileDialog):
     # pylint: disable-msg=R0904
