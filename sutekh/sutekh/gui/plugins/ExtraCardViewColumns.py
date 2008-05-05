@@ -231,9 +231,9 @@ class ExtraCardViewColumns(CardListPlugin):
             oCell.set_property('style', pango.STYLE_ITALIC)
             oColumn = gtk.TreeViewColumn(sCol, oCell)
             oColumn.set_cell_data_func(oCell, self._dCols[sCol])
-            self.view.insert_column(oColumn, iNum + 2)
-            oColumn.set_sort_column_id(iNum + 2)
-            self.model.set_sort_func(iNum + 2, self.sort_column,
+            self.view.insert_column(oColumn, iNum + 3)
+            oColumn.set_sort_column_id(iNum + 3)
+            self.model.set_sort_func(iNum + 3, self.sort_column,
                     self._dSortDataFuncs[sCol])
 
     # pylint: disable-msg=W0613

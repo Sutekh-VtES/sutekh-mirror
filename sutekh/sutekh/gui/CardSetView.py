@@ -10,7 +10,7 @@
 import gtk
 from sutekh.gui.SutekhDialog import do_complaint_warning
 from sutekh.gui.CardListView import EditableCardListView
-from sutekh.gui.CardListModel import PhysicalCardSetCardListModel
+from sutekh.gui.CardSetListModel import CardSetCardListModel
 from sutekh.core.SutekhObjects import PhysicalCardSet
 from sutekh.SutekhUtility import delete_physical_card_set
 
@@ -23,7 +23,7 @@ class CardSetView(EditableCardListView):
        differences are embedded in the associated controller object
        and the database object used for filters."""
     def __init__(self, oMainWindow, oController, sName):
-        oModel = PhysicalCardSetCardListModel(sName)
+        oModel = CardSetCardListModel(sName)
         # The only path here is via the main window, so config_file exists
         super(CardSetView, self).__init__(oController, oMainWindow,
                 oModel, oMainWindow.config_file)

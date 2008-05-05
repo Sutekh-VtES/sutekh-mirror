@@ -79,8 +79,7 @@ class CardSetMenu(EditableCardListMenu):
         # pylint: disable-msg=E1101
         # sqlobject confuses pylint
         oCS = PhysicalCardSet.byName(self.sSetName)
-        oProp = CreateCardSetDialog(self._oMainWindow, oCS.name, oCS.author,
-                oCS.comment, oCS.parent)
+        oProp = CreateCardSetDialog(self._oMainWindow, oCardSet=oCS)
         oProp.run()
         sName = oProp.get_name()
         if sName:
@@ -98,6 +97,10 @@ class CardSetMenu(EditableCardListMenu):
                 oCS.comment = sComment
             if oParent != oCS.parent:
                 oCS.parent = oParent
+            if oCS.parent:
+                self._oController.view.set_parent_count_col_vis(True)
+            else:
+                self._oController.view.set_parent_count_col_vis(False)
             self.__update_card_set_menu()
             oCS.syncUpdate()
             # We may well have changed stuff on the card list pane, so reload

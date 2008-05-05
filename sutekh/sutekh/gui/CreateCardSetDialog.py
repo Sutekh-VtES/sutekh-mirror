@@ -19,7 +19,7 @@ class CreateCardSetDialog(SutekhDialog):
 
        Optionally, get Author + Description.
        """
-    def __init__(self, oParent, sName=None, sAuthor=None, sComment=None,
+    def __init__(self, oParent, sName=None, oCardSet=None,
             oCardSetParent=None):
         super(CreateCardSetDialog, self).__init__("Card Set Details",
             oParent, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
@@ -34,16 +34,18 @@ class CreateCardSetDialog(SutekhDialog):
         self.oComment = gtk.Entry(50)
         oParentLabel = gtk.Label("This card set is a subset of : ")
         self.oParentList = gtk.combo_box_new_text()
+        if not oCardSetParent and oCardSet:
+            oCardSetParent = oCardSet.parent
         # pylint: disable-msg=E1101
         # vbox, sqlobject confuse pylint
         self.oParentList.append_text('No Parent')
         if not oCardSetParent:
             # Select this when no parent is specified
             self.oParentList.set_active(0)
-        for iNum, oCardSet in enumerate(
+        for iNum, oLoopCardSet in enumerate(
                 PhysicalCardSet.select().orderBy('name')):
-            self.oParentList.append_text(oCardSet.name)
-            if oCardSetParent and oCardSetParent.name == oCardSet.name:
+            self.oParentList.append_text(oLoopCardSet.name)
+            if oCardSetParent and oCardSetParent.name == oLoopCardSet.name:
                 self.oParentList.set_active(iNum + 1)
         self.vbox.pack_start(oNameLabel)
         self.vbox.pack_start(self.oName)
@@ -60,11 +62,12 @@ class CreateCardSetDialog(SutekhDialog):
         if sName is not None:
             self.oName.set_text(sName)
 
-        if sAuthor is not None:
-            self.oAuthor.set_text(sAuthor)
-
-        if sComment is not None:
-            self.oComment.set_text(sComment)
+        if oCardSet is not None:
+            if not sName:
+                self.oName.set_text(oCardSet.name)
+                self.sOrigName = oCardSet.name
+            self.oAuthor.set_text(oCardSet.author)
+            self.oComment.set_text(oCardSet.comment)
 
         self.sName = None
         self.oParent = oCardSetParent
@@ -100,6 +103,8 @@ class CreateCardSetDialog(SutekhDialog):
                 self.sName = self.sName.replace(">", ")")
                 if self.sName != self.sOrigName:
                     # check if card set exists
+                    # pylint: disable-msg=W0704
+                    # doing nothing is correct here
                     try:
                         IPhysicalCardSet(self.sName)
                         do_complaint_error('Chosen Card Set Name is'

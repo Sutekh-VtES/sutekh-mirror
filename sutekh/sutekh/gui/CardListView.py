@@ -486,6 +486,17 @@ class EditableCardListView(CardListView):
         oColumn1.set_sort_column_id(1)
         self.append_column(oColumn1)
 
+        self.oParentCell = gtk.CellRendererText()
+        self.oParentCell.set_property('style', pango.STYLE_ITALIC)
+        self.oParentCell.set_property('foreground-set', True)
+        self.oParentCol = gtk.TreeViewColumn("Parent #", self.oParentCell,
+                text=2)
+        self.oParentCol.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
+        self.oParentCol.set_fixed_width(40)
+        self.oParentCol.set_sort_column_id(2)
+        self.append_column(self.oParentCol)
+        self.oParentCol.set_visible(False)
+
         oColumn2 = gtk.TreeViewColumn("Cards", self.oNameCell, text=0)
         oColumn2.set_expand(True)
         oColumn2.set_sort_column_id(0)
@@ -651,4 +662,9 @@ class EditableCardListView(CardListView):
         """Keep track of the menu item, so we can update it's toggled
            status."""
         self._oMenuEditWidget = oMenuWidget
+
+    def set_parent_count_col_vis(self, bVisible):
+        """Make the parent count column visible or invisible"""
+        self.oParentCol.set_visible(bVisible)
+
 

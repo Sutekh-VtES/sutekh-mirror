@@ -9,11 +9,10 @@
 
 import gtk, gobject
 from sutekh.core.Filters import FilterAndBox, SpecificCardFilter, NullFilter, \
-        PhysicalCardFilter, PhysicalCardSetFilter
+        PhysicalCardFilter
 from sutekh.core.Groupings import CardTypeGrouping
 from sutekh.core.SutekhObjects import AbstractCard, IAbstractCard, \
-        PhysicalCard, IExpansion, MapPhysicalCardToPhysicalCardSet, \
-        IPhysicalCard
+        PhysicalCard, IPhysicalCard
 
 def norm_path(oPath):
     """Transform string paths to tuple paths"""
@@ -81,7 +80,8 @@ class CardListModel(gtk.TreeStore):
     def __init__(self):
         # STRING is the card name, INT is the card count
         super(CardListModel, self).__init__(gobject.TYPE_STRING,
-                gobject.TYPE_INT, gobject.TYPE_BOOLEAN, gobject.TYPE_BOOLEAN)
+                gobject.TYPE_INT, gobject.TYPE_INT, gobject.TYPE_BOOLEAN,
+                gobject.TYPE_BOOLEAN)
         self._dName2Iter = {}
         self._dNameExpansion2Iter = {}
         self._dGroupName2Iter = {}
@@ -200,8 +200,9 @@ class CardListModel(gtk.TreeStore):
                 self.set(oChildIter,
                     0, oCard.name,
                     1, iCnt,
-                    2, bIncCard,
-                    3, bDecCard
+                    2, 0,
+                    3, bIncCard,
+                    4, bDecCard
                 )
                 dExpansionInfo = self.get_expansion_info(oCard,
                         fGetExpanInfo(oItem))
@@ -217,15 +218,16 @@ class CardListModel(gtk.TreeStore):
             self.set(oSectionIter,
                 0, sGroup,
                 1, iGrpCnt,
-                2, False,
-                3, False
+                2, 0,
+                3, False,
+                4, False
             )
 
         if not self._dName2Iter:
             # Showing nothing
             self.oEmptyIter = self.append(None)
             sText = self._get_empty_text()
-            self.set(self.oEmptyIter, 0, sText, 1, 0, 2, False, 3, False)
+            self.set(self.oEmptyIter, 0, sText, 1, 0, 2, 0, 3, False, 4, False)
 
         # Notify Listeners
         for oListener in self.dListeners:
@@ -240,8 +242,9 @@ class CardListModel(gtk.TreeStore):
         self.set(oExpansionIter,
                 0, sExpansion,
                 1, iExpCnt,
-                2, bIncCard,
-                3, bDecCard)
+                2, 0,
+                3, bIncCard,
+                4, bDecCard)
         self._dNameExpansion2Iter.setdefault(sCardName,
                 {}).setdefault(sExpansion, []).append(oExpansionIter)
 
@@ -293,6 +296,8 @@ class CardListModel(gtk.TreeStore):
                 # AbstractCards don't have that information, so we cannot
                 # decide when to display 0 counts properly
             for oCard in oCardIter:
+                # pylint: disable-msg=E1101
+                # sqlobject confuses pylint
                 oPhysCard = IPhysicalCard(oCard)
                 oAbsCard = IAbstractCard(oPhysCard)
                 aAbsCards.append(oAbsCard)
@@ -467,8 +472,9 @@ class CardListModel(gtk.TreeStore):
                     self.set(oIter,
                             0, sThisExp,
                             1, iCnt,
-                            2, bIncCard,
-                            3, bDecCard)
+                            2, 0,
+                            3, bIncCard,
+                            4, bDecCard)
                     self._dNameExpansion2Iter[sCardName][
                             sExpansion].append(oIter)
             else:
@@ -501,8 +507,9 @@ class CardListModel(gtk.TreeStore):
                 if self.check_expansion_iter_stays(oCard, sThisExp, iCnt):
                     self.set(oIter,
                             1, iCnt,
-                            2, bIncCard,
-                            3, bDecCard)
+                            2, 0,
+                            3, bIncCard,
+                            4, bDecCard)
                 else:
                     self.remove(oIter)
                     bDelDictEntry = True
@@ -526,16 +533,16 @@ class CardListModel(gtk.TreeStore):
             iGrpCnt = self.get_value(oGrpIter, 1) + iChg
 
             if iCnt > 0:
-                self.set(oIter, 1, iCnt)
+                self.set(oIter, 1, iCnt, 2, 0)
                 bIncCard, bDecCard = self.check_inc_dec_card(oCard, iCnt)
-                self.set(oIter, 2, bIncCard)
-                self.set(oIter, 3, bDecCard)
+                self.set(oIter, 3, bIncCard)
+                self.set(oIter, 4, bDecCard)
             elif self.bAddAllAbstractCards:
                 # Need to clean up all the children
-                self.set(oIter, 1, iCnt)
+                self.set(oIter, 1, iCnt, 2, 0)
                 bIncCard, bDecCard = self.check_inc_dec_card(oCard, iCnt)
-                self.set(oIter, 2, bIncCard)
-                self.set(oIter, 3, bDecCard)
+                self.set(oIter, 3, bIncCard)
+                self.set(oIter, 4, bDecCard)
                 if self._dNameExpansion2Iter.has_key(sCardName):
                     self._clear_expansion_iters(sCardName)
             else:
@@ -544,7 +551,7 @@ class CardListModel(gtk.TreeStore):
                 self.remove(oIter)
 
             if iGrpCnt > 0 or self.bAddAllAbstractCards:
-                self.set(oGrpIter, 1, iGrpCnt)
+                self.set(oGrpIter, 1, iGrpCnt, 2, 0)
             else:
                 sGroupName = self.get_value(oGrpIter, 0)
                 del self._dGroupName2Iter[sGroupName]
@@ -560,7 +567,7 @@ class CardListModel(gtk.TreeStore):
         elif iChg < 0 and not self._dName2Iter:
             self.oEmptyIter = self.append(None)
             sText = self._get_empty_text()
-            self.set(self.oEmptyIter, 0, sText, 1, 0, 2, False, 3, False)
+            self.set(self.oEmptyIter, 0, sText, 1, 0, 2, 0, 3, False, 4, False)
 
         # Notify Listeners
         for oListener in self.dListeners:
@@ -580,7 +587,7 @@ class CardListModel(gtk.TreeStore):
         for sExpansion in self._dNameExpansion2Iter[sCardName]:
             for oExpIter in self._dNameExpansion2Iter[sCardName][sExpansion]:
                 # No cards, so impossible to manipulate expansions
-                self.set(oExpIter, 1, 0,
+                self.set(oExpIter, 1, 0, 2, 0,
                         2, False,
                         3, False)
 
@@ -626,7 +633,8 @@ class CardListModel(gtk.TreeStore):
                 iGrpCnt = 0
                 self.set(oSectionIter,
                     0, sGroup,
-                    1, iGrpCnt
+                    1, iGrpCnt,
+                    2, 0, 
                 )
 
             # Add Cards
@@ -638,8 +646,9 @@ class CardListModel(gtk.TreeStore):
                 self.set(oChildIter,
                     0, oCard.name,
                     1, iCnt,
-                    2, bIncCard,
-                    3, bDecCard
+                    2, 0,
+                    3, bIncCard,
+                    4, bDecCard
                 )
                 self._dName2Iter.setdefault(oCard.name, []).append(oChildIter)
 
@@ -656,7 +665,8 @@ class CardListModel(gtk.TreeStore):
 
             # Update Group Section
             self.set(oSectionIter,
-                1, iGrpCnt
+                1, iGrpCnt,
+                2, 0,
             )
 
         if self.oEmptyIter and oCardIter.count() > 0:
@@ -763,114 +773,4 @@ class PhysicalCardListModel(CardListModel):
             aList = dExpanInfo.keys()
         return aList
 
-class PhysicalCardSetCardListModel(CardListModel):
-    # pylint: disable-msg=R0904
-    # inherit a lot of public methods for gtk
-    """CardList Model specific to lists of physical cards.
-
-       Handles the constraint that the available number of cards
-       is determined by the Physical Card Collection.
-       """
-    def __init__(self, sSetName):
-        super(PhysicalCardSetCardListModel, self).__init__()
-        self._cCardClass = MapPhysicalCardToPhysicalCardSet
-        self._oBaseFilter = PhysicalCardSetFilter(sSetName)
-        self.bExpansions = True
-
-    def check_inc_dec_card(self, oCard, iCnt):
-        """Helper function to check whether card can be incremented"""
-        if not self.bEditable:
-            return False, False
-        else:
-            return (iCnt <
-                    PhysicalCard.selectBy(abstractCardID=oCard.id).count(),
-                    iCnt > 0)
-
-    def check_inc_dec_expansion(self, oCard, sExpansion, iCnt):
-        """Helper function to check status of expansions"""
-        # pylint: disable-msg=E1101
-        # SQLObject confuses pylint
-        if sExpansion != self.sUnknownExpansion:
-            iThisExpID = IExpansion(sExpansion).id
-            iCardCnt = PhysicalCard.selectBy(abstractCardID=oCard.id,
-                    expansionID=iThisExpID).count()
-        else:
-            iCardCnt = PhysicalCard.selectBy(abstractCardID=oCard.id,
-                    expansionID=None).count()
-        bDecCard = iCnt > 0
-        bIncCard = iCnt < iCardCnt
-        return bIncCard, bDecCard
-
-    def get_expansion_info(self, oCard, dExpanInfo):
-        """Get information about expansions"""
-        dExpansions = {}
-        return dExpansions
-        if not self.bExpansions:
-            return dExpansions
-        if self.bEditable:
-            # Need to find all possible expansions in the PhysicalCard List
-            dCount = {}
-            for oPC in PhysicalCard.selectBy(abstractCardID=oCard.id):
-                if oPC.expansion is not None:
-                    sName = oPC.expansion.name
-                else:
-                    sName = self.sUnknownExpansion
-                # There is a Physical Card here, so by default bIncCard must
-                # be true. Loop below will correct this when needed
-                dExpansions.setdefault(sName, [0, False, True])
-                dCount.setdefault(sName, 0)
-                dCount[sName] += 1
-        for oExpansion, iCnt in dExpanInfo.iteritems():
-            bDecCard = False
-            bIncCard = False
-            if oExpansion is not None:
-                sKey = oExpansion.name
-            else:
-                sKey = self.sUnknownExpansion
-            if self.bEditable:
-                iCardCnt = dCount.get(sKey, 0) # Return 0 for unknown keys
-                bDecCard = iCnt > 0
-                # Are cards of this expansion still available in the PC list?
-                bIncCard = iCnt < iCardCnt
-            dExpansions[sKey] = [iCnt, bDecCard, bIncCard]
-        return dExpansions
-
-    def check_expansion_iter_stays(self, oCard, sExpansion, iCnt):
-        """Check if the expansion entry should remain in the table"""
-        # pylint: disable-msg=E1101
-        # SQLObject confuses pylint
-        if iCnt > 0:
-            return True
-        if self.bEditable:
-            # Only stays visible if cards in the PhysicalCardList with
-            # this expansion
-            if sExpansion != self.sUnknownExpansion:
-                iThisExpID = IExpansion(sExpansion).id
-                iCardCnt = PhysicalCard.selectBy(abstractCardID=oCard.id,
-                        expansionID=iThisExpID).count()
-            else:
-                iCardCnt = PhysicalCard.selectBy(abstractCardID=oCard.id,
-                        expansionID=None).count()
-            return iCardCnt > 0
-        else:
-            # Not editable, and iCnt == 0, so remove
-            return False
-
-    def get_add_card_expansion_info(self, oCard, dExpanInfo):
-        """Get the expansions to list for a newly added card"""
-        if not self.bExpansions:
-            return []
-        if self.bEditable:
-            aAddedExpansions = []
-            for oPC in PhysicalCard.selectBy(abstractCardID=oCard.id):
-                if oPC.expansion is not None:
-                    sExpName = oPC.expansion.name
-                else:
-                    sExpName = self.sUnknownExpansion
-                if sExpName not in aAddedExpansions:
-                    # Only each expansion once
-                    aAddedExpansions.append(sExpName)
-        else:
-            aAddedExpansions = dExpanInfo.keys()
-        return aAddedExpansions
 
