@@ -7,13 +7,7 @@
 
 """Controller for the Physical Card Collection"""
 
-import gtk
-from sqlobject import SQLObjectNotFound
-from sutekh.gui.DBSignals import send_reload_signal
-from sutekh.gui.SutekhDialog import do_complaint
 from sutekh.gui.PhysicalCardView import PhysicalCardView
-from sutekh.core.SutekhObjects import PhysicalCard, AbstractCard, \
-        IExpansion, MapPhysicalCardToPhysicalCardSet
 
 class PhysicalCardController(object):
     """Controller for the Physical Card Collection.
