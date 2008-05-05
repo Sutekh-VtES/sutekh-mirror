@@ -49,11 +49,13 @@ class WriteArdbText(ArdbInfo):
 
            dCards is mapping of (card id, card name) -> card count.
            """
-        (dVamps, iCryptSize, iMin, iMax, fAvg) = self._extract_crypt(dCards)
+        (dVamps, dCryptStats) = self._extract_crypt(dCards)
 
-        sCrypt = "Crypt [%d vampires] Capacity min: %d max: %d average: %f\n" \
-            "------------------------------------------------------------\n" \
-            % (iCryptSize, iMin, iMax, fAvg)
+        sCrypt = "Crypt [%(size)d vampires] Capacity min: %(min)d " \
+                "max: %(max)d average: %(avg)f\n" \
+                "-------------------------------------------------" \
+                "-----------\n" \
+                % dCryptStats
 
         for tKey in sorted(dVamps, key=lambda x: x[1]):
             sName = tKey[1]

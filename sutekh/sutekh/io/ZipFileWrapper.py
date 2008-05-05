@@ -143,6 +143,8 @@ class ZipFileWrapper(object):
             oParser.parse_string(oData, oCardLookup)
             oLogger.info('%s %s read', oIdParser.type, oItem.filename)
             if bReparent:
+                # pylint: disable-msg=E1103
+                # SQLObject confuses pylint
                 oPCS = PhysicalCardSet.selectBy(name=oIdParser.name).getOne()
                 oPCS.parent = oParent
                 oPCS.syncUpdate()

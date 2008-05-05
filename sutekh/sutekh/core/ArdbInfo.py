@@ -20,10 +20,12 @@ class ArdbInfo(object):
     # these need to be available to the descendants
     def _extract_crypt(self, dCards):
         """Extract the crypt cards from the list."""
-        iCryptSize = 0
-        iMax = 0
-        iMin = 75
-        fAvg = 0.0
+        dCryptStats = {
+                'size' : 0,
+                'min' : 75,
+                'max' : 0,
+                'avg' : 0.0
+                }
         dVamps = {}
         for tKey, iCount in dCards.iteritems():
             sName = tKey[1]
@@ -33,25 +35,26 @@ class ArdbInfo(object):
             aTypes = [x.name for x in oCard.cardtype]
             if aTypes[0] == 'Vampire':
                 dVamps[tKey] = iCount
-                iCryptSize += iCount
-                fAvg += oCard.capacity*iCount
-                if oCard.capacity > iMax:
-                    iMax = oCard.capacity
-                if oCard.capacity < iMin:
-                    iMin = oCard.capacity
+                dCryptStats['size'] += iCount
+                dCryptStats['avg'] += oCard.capacity*iCount
+                if oCard.capacity > dCryptStats['max']:
+                    dCryptStats['max'] = oCard.capacity
+                if oCard.capacity < dCryptStats['min']:
+                    dCryptStats['min'] = oCard.capacity
             if aTypes[0] == 'Imbued':
                 dVamps[tKey] = iCount
-                iCryptSize += iCount
-                fAvg += oCard.life*iCount
-                if oCard.life > iMax:
-                    iMax = oCard.life
-                if oCard.life < iMin:
-                    iMin = oCard.life
-        if iCryptSize > 0:
-            fAvg = round(fAvg/iCryptSize, 2)
-        if iMin == 75:
-            iMin = 0
-        return (dVamps, iCryptSize, iMin, iMax, fAvg)
+                dCryptStats['size'] += iCount
+                dCryptStats['avg'] += oCard.life*iCount
+                if oCard.life > dCryptStats['max']:
+                    dCryptStats['max'] = oCard.life
+                if oCard.life < dCryptStats['min']:
+                    dCryptStats['min'] = oCard.life
+        if dCryptStats['size'] > 0:
+            dCryptStats['avg'] = round(dCryptStats['avg'] /
+                    dCryptStats['size'], 2)
+        if dCryptStats['min'] == 75:
+            dCryptStats['min'] = 0
+        return dVamps, dCryptStats
 
     def _extract_library(self, dCards):
         """Extract the library cards from the list."""

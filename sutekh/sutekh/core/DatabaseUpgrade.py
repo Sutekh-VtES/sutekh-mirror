@@ -10,7 +10,7 @@ to talk to old database versions, and so forth
 """
 
 # pylint: disable-msg=E0611
-# sqlobject confuses pylint herer
+# sqlobject confuses pylint here
 from sqlobject import sqlhub, SQLObject, IntCol, UnicodeCol, RelatedJoin, \
         EnumCol, MultipleJoin, connectionForURI, ForeignKey, BoolCol, \
         SQLObjectNotFound
@@ -46,7 +46,6 @@ class UnknownVersion(Exception):
 # pylint: disable-msg=C0103, W0232
 # C0103 - names set largely by SQLObject conventions, so ours don't apply
 # W0232 - SQLObject classes don't have user defined __init__
-
 class PhysicalCardSet_v3(SQLObject):
     """PhysicalCardSet V3 - doesn't have the inuse flag."""
     class sqlmeta:
@@ -319,11 +318,10 @@ def copy_expansion(oOrigConn, oTrans):
         oCopy = Expansion(id=oObj.id, name=oObj.name,
                 shortname=oObj.shortname, connection=oTrans)
 
-def copy_old_expansion(oOrigConn, oTrans):
+def copy_old_expansion(oOrigConn, oTrans, oVer):
     """
     Copy Expansion, updating as needed
     """
-    oVer = DatabaseVersion()
     if oVer.check_tables_and_versions([Expansion], [Expansion.tableversion],
             oOrigConn):
         copy_expansion(oOrigConn, oTrans)
@@ -339,9 +337,8 @@ def copy_discipline(oOrigConn, oTrans):
         oCopy = Discipline(id=oObj.id, name=oObj.name,
             fullname=oObj.fullname, connection=oTrans)
 
-def copy_old_discipline(oOrigConn, oTrans):
+def copy_old_discipline(oOrigConn, oTrans, oVer):
     """Copy disciplines, upgrading as needed."""
-    oVer = DatabaseVersion()
     if oVer.check_tables_and_versions([Discipline], [Discipline.tableversion],
             oOrigConn):
         copy_discipline(oOrigConn, oTrans)
@@ -355,9 +352,8 @@ def copy_clan(oOrigConn, oTrans):
         oCopy = Clan(id=oObj.id, name=oObj.name, shortname=oObj.shortname,
                 connection=oTrans)
 
-def copy_old_clan(oOrigConn, oTrans):
+def copy_old_clan(oOrigConn, oTrans, oVer):
     """Copy clan, upgrading as needed."""
-    oVer = DatabaseVersion()
     if oVer.check_tables_and_versions([Clan], [Clan.tableversion], oOrigConn):
         copy_clan(oOrigConn, oTrans)
     else:
@@ -370,9 +366,8 @@ def copy_creed(oOrigConn, oTrans):
         oCopy = Creed(id=oObj.id, name=oObj.name, shortname=oObj.shortname,
                 connection=oTrans)
 
-def copy_old_creed(oOrigConn, oTrans):
+def copy_old_creed(oOrigConn, oTrans, oVer):
     """Copy Creed, updating if needed"""
-    oVer = DatabaseVersion()
     if oVer.check_tables_and_versions([Creed], [Creed.tableversion],
             oOrigConn):
         copy_creed(oOrigConn, oTrans)
@@ -386,9 +381,8 @@ def copy_virtue(oOrigConn, oTrans):
         oCopy = Virtue(id=oObj.id, name=oObj.name, fullname=oObj.fullname,
                 connection=oTrans)
 
-def copy_old_virtue(oOrigConn, oTrans):
+def copy_old_virtue(oOrigConn, oTrans, oVer):
     """Copy Virtue, updating if needed"""
-    oVer = DatabaseVersion()
     if oVer.check_tables_and_versions([Virtue], [Virtue.tableversion],
             oOrigConn):
         copy_virtue(oOrigConn, oTrans)
@@ -401,9 +395,8 @@ def copy_card_type(oOrigConn, oTrans):
     for oObj in CardType.select(connection=oOrigConn):
         oCopy = CardType(id=oObj.id, name=oObj.name, connection=oTrans)
 
-def copy_old_card_type(oOrigConn, oTrans):
+def copy_old_card_type(oOrigConn, oTrans, oVer):
     """Copy CardType, upgrading as needed"""
-    oVer = DatabaseVersion()
     if oVer.check_tables_and_versions([CardType], [CardType.tableversion],
             oOrigConn):
         copy_card_type(oOrigConn, oTrans)
@@ -417,9 +410,8 @@ def copy_ruling(oOrigConn, oTrans):
         oCopy = Ruling(id=oObj.id, text=oObj.text, code=oObj.code,
                 url=oObj.url, connection=oTrans)
 
-def copy_old_ruling(oOrigConn, oTrans):
+def copy_old_ruling(oOrigConn, oTrans, oVer):
     """Copy Ruling, upgrading as needed"""
-    oVer = DatabaseVersion()
     if oVer.check_tables_and_versions([CardType], [CardType.tableversion],
             oOrigConn):
         copy_ruling(oOrigConn, oTrans)
@@ -433,9 +425,8 @@ def copy_discipline_pair(oOrigConn, oTrans):
         oCopy = DisciplinePair(id=oObj.id, level=oObj.level,
                discipline=oObj.discipline, connection=oTrans)
 
-def copy_old_discipline_pair(oOrigConn, oTrans):
+def copy_old_discipline_pair(oOrigConn, oTrans, oVer):
     """Copy DisciplinePair, upgrading if needed"""
-    oVer = DatabaseVersion()
     if oVer.check_tables_and_versions([DisciplinePair],
             [DisciplinePair.tableversion], oOrigConn):
         copy_discipline_pair(oOrigConn, oTrans)
@@ -449,9 +440,8 @@ def copy_rarity_pair(oOrigConn, oTrans):
         oCopy = RarityPair(id=oObj.id, expansion=oObj.expansion,
                 rarity=oObj.rarity, connection=oTrans)
 
-def copy_old_rarity_pair(oOrigConn, oTrans):
+def copy_old_rarity_pair(oOrigConn, oTrans, oVer):
     """Copy RarityPair, upgrading as needed"""
-    oVer = DatabaseVersion()
     if oVer.check_tables_and_versions([RarityPair], [RarityPair.tableversion],
             oOrigConn) and oVer.check_tables_and_versions([Rarity],
                     [Rarity.tableversion], oOrigConn):
@@ -471,9 +461,8 @@ def copy_sect(oOrigConn, oTrans):
     for oObj in Sect.select(connection=oOrigConn):
         oCopy = Sect(id=oObj.id, name=oObj.name, connection=oTrans)
 
-def copy_old_sect(oOrigConn, oTrans):
+def copy_old_sect(oOrigConn, oTrans, oVer):
     """Copy Sect, updating if needed"""
-    oVer = DatabaseVersion()
     if oVer.check_tables_and_versions([Sect], [Sect.tableversion], oOrigConn):
         copy_sect(oOrigConn, oTrans)
     else:
@@ -485,9 +474,8 @@ def copy_title(oOrigConn, oTrans):
     for oObj in Title.select(connection=oOrigConn):
         oCopy = Title(id=oObj.id, name=oObj.name, connection=oTrans)
 
-def copy_old_title(oOrigConn, oTrans):
+def copy_old_title(oOrigConn, oTrans, oVer):
     """Copy Title, updating if needed"""
-    oVer = DatabaseVersion()
     if oVer.check_tables_and_versions([Title], [Title.tableversion],
             oOrigConn):
         copy_title(oOrigConn, oTrans)
@@ -534,12 +522,11 @@ def copy_abstract_card(oOrigConn, oTrans, oLogger):
         oCardCopy.syncUpdate()
         oLogger.info('copied AC %s', oCardCopy.name)
 
-def copy_old_abstract_card(oOrigConn, oTrans, oLogger):
+def copy_old_abstract_card(oOrigConn, oTrans, oLogger, oVer):
     """Copy AbstractCard, upgrading as needed"""
     # pylint: disable-msg=E1101, R0912
     # E1101 - SQLObject confuses pylint
     # R0912 - need the branches for this
-    oVer = DatabaseVersion()
     aMessages = []
     if oVer.check_tables_and_versions([AbstractCard],
             [AbstractCard.tableversion], oOrigConn):
@@ -637,9 +624,8 @@ def get_new_physical_card(oCard, oTrans, aMessages):
                     expansion=None, connection=oTrans).getOne()
     return oNewCard
 
-def copy_old_physical_card(oOrigConn, oTrans, oLogger):
+def copy_old_physical_card(oOrigConn, oTrans, oLogger, oVer):
     """Copy PhysicalCards, upgrading if needed."""
-    oVer = DatabaseVersion()
     aMessages = []
     if oVer.check_table_in_versions(PhysicalCardSet, [3, 4], oOrigConn) and \
             oVer.check_tables_and_versions([PhysicalCard],
@@ -659,7 +645,7 @@ def copy_old_physical_card(oOrigConn, oTrans, oLogger):
                 connection=oTrans)
         # For all the Physical cards currently in the collection,
         # add them to the card set
-        # pylint: disable-msg=E1101
+        # pylint: disable-msg=E1101, E1103
         # SQLObject confuses pylint
         for oCard in PhysicalCard.select(connection=oOrigConn):
             oNewCard = get_new_physical_card(oCard, oTrans, aMessages)
@@ -687,12 +673,10 @@ def copy_physical_card_set(oOrigConn, oTrans, oLogger):
         oCopy.syncUpdate()
         oLogger.info('Copied PCS %s', oCopy.name)
 
-def copy_old_physical_card_set(oOrigConn, oTrans, oLogger):
+def copy_old_physical_card_set(oOrigConn, oTrans, oLogger, oVer):
     """Copy PCS, upgrading as needed."""
-    # pylint: disable-msg=E1101
+    # pylint: disable-msg=E1101, E1103
     # SQLObject confuses pylint
-    aMessages = []
-
     def _copy_cards(oOldSet, oNewSet):
         """Copy the cards from the old physical card set to the new set,
            replacing references to the correct new Physical Cards."""
@@ -700,7 +684,7 @@ def copy_old_physical_card_set(oOrigConn, oTrans, oLogger):
             oNewCard = get_new_physical_card(oCard, oTrans, aMessages)
             oNewSet.addPhysicalCard(oNewCard.id)
 
-    oVer = DatabaseVersion()
+    aMessages = []
     if oVer.check_tables_and_versions([PhysicalCardSet],
             [PhysicalCardSet.tableversion], oOrigConn) \
             and oVer.check_tables_and_versions([PhysicalCard],
@@ -729,12 +713,10 @@ def copy_old_physical_card_set(oOrigConn, oTrans, oLogger):
             oLogger.info('Copied PCS %s', oCopy.name)
     return (True, aMessages)
 
-def copy_old_abstract_card_set(oOrigConn, oTrans, oLogger):
+def copy_old_abstract_card_set(oOrigConn, oTrans, oLogger, oVer):
     """Copy old Abstract Card Sets, upgrading as needed."""
     # pylint: disable-msg=E1101
     # SQLObject confuses pylint
-    aMessages = []
-
     def _gen_new_name(sSetName, aPhysSetNames):
         """Crate a new PCS name for the existing ACS"""
         sNewName = '(ACS) ' + sSetName
@@ -751,10 +733,12 @@ def copy_old_abstract_card_set(oOrigConn, oTrans, oLogger):
         for oCard in oOldSet.cards:
             # We find the physical card with the same abstract card id
             # and No expansion info
+            # pylint: disable-msg=E1103
+            # SQLObject confuses pylint
             oNewCard = get_new_physical_card(oCard, oTrans, aMessages)
             oNewSet.addPhysicalCard(oNewCard.id)
 
-    oVer = DatabaseVersion()
+    aMessages = []
     if oVer.check_tables_and_versions([AbstractCardSet_v3], [3], oOrigConn):
         aPhysSetNames = [x.name for x in
                 PhysicalCardSet.select(connection=oTrans)]
@@ -784,8 +768,8 @@ def read_old_database(oOrigConn, oDestConnn, oLogHandler=None):
     try:
         if not check_can_read_old_database(oOrigConn):
             return False
-    except UnknownVersion, oErr:
-        raise oErr
+    except UnknownVersion, oExp:
+        raise oExp
     oLogger = Logger('read Old DB')
     if oLogHandler:
         oLogger.addHandler(oLogHandler)
@@ -814,12 +798,13 @@ def read_old_database(oOrigConn, oDestConnn, oLogHandler=None):
             (copy_old_physical_card_set, 'PhysicalCardSet table', True),
             (copy_old_abstract_card_set, 'AbstractCardSet table', True),
             ]
+    oVer = DatabaseVersion()
     for fCopy, sName, bPassLogger in aToCopy:
         try:
             if bPassLogger:
-                (bOK, aNewMessages) = fCopy(oOrigConn, oTrans, oLogger)
+                (bOK, aNewMessages) = fCopy(oOrigConn, oTrans, oLogger, oVer)
             else:
-                (bOK, aNewMessages) = fCopy(oOrigConn, oTrans)
+                (bOK, aNewMessages) = fCopy(oOrigConn, oTrans, oVer)
         except SQLObjectNotFound, oExp:
             bOK = False
             aNewMessages = ['Unable to copy %s: Error %s' % (sName, oExp)]
@@ -827,7 +812,7 @@ def read_old_database(oOrigConn, oDestConnn, oLogHandler=None):
             if not bPassLogger:
                 oLogger.info('%s copied' % sName)
         bRes = bRes and bOK
-        aMessages += aNewMessages
+        aMessages.extend(aNewMessages)
         oTrans.commit()
         oTrans.cache.clear()
     return (bRes, aMessages)

@@ -16,14 +16,15 @@ from sutekh.core.ArdbInfo import ArdbInfo
 from sutekh.SutekhInfo import SutekhInfo
 from sutekh.SutekhUtility import pretty_xml
 import time
+# pylint: disable-msg=E0611, F0401
+# xml.etree is a python2.5 thing
 try:
-    # pylint: disable-msg=E0611, F0401
-    # xml.etree is a python2.5 thing
     from xml.etree.ElementTree import Element, SubElement, ElementTree, \
             tostring
 except ImportError:
     from elementtree.ElementTree import Element, SubElement, ElementTree, \
             tostring
+# pylint: enable-msg=E0611, F0401
 
 
 class WriteArdbXML(ArdbInfo):
@@ -57,11 +58,12 @@ class WriteArdbXML(ArdbInfo):
         oDateElem = SubElement(oRoot, 'date')
         oDateElem.text = sDateWritten
 
-        (dVamps, iCryptSize, iMin, iMax, fAvg) = self._extract_crypt(dCards)
+        dVamps, dCryptStats = self._extract_crypt(dCards)
         (dLib, iLibSize) = self._extract_library(dCards)
 
-        oCryptElem = SubElement(oRoot, 'crypt', size=str(iCryptSize),
-                min=str(iMin), max=str(iMax), avg=str(fAvg))
+        oCryptElem = SubElement(oRoot, 'crypt', size=str(dCryptStats['size']),
+                min=str(dCryptStats['min']), max=str(dCryptStats['max']),
+                avg=str(dCryptStats['avg']))
         self.format_vamps(oCryptElem, dVamps)
 
         oLibElem = SubElement(oRoot, 'library', size=str(iLibSize))
