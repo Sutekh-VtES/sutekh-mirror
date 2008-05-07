@@ -466,7 +466,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
                     except KeyError:
                         iExpID = None
                 else:
-                    sNewExpName = ''
+                    iExpID = None
 
                 iCnt = dUnknownCards[(sName, sExpName)]
 
@@ -474,18 +474,10 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
                     # Find First physical card that matches this name
                     # that's not in aPhysCards
                     oAbs = AbstractCard.byCanonicalName(
-                            sNewName.encode('utf8').lower())
-                    if sNewExpName != '':
-                        aCandPhysCards = PhysicalCard.selectBy(
-                            abstractCardID=oAbs.id, expansionID=iExpID)
-                    else:
-                        aCandPhysCards = PhysicalCard.selectBy(
-                            abstractCardID=oAbs.id)
-                    for oCard in aCandPhysCards:
-                        if oCard not in aPhysCards:
-                            if iCnt > 0:
-                                iCnt -= 1
-                                aPhysCards.append(oCard)
+                                sNewName.encode('utf8').lower())
+                    oPhys = PhysicalCard.selectBy(abstractCardID=oAbs.id,
+                                expansionID=iExpID).getOne()
+                    aPhysCards.extend([oPhys]*iCnt)
 
                 oIter = oModel.iter_next(oIter)
             return True
