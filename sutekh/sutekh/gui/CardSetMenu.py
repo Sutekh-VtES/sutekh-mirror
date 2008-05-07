@@ -52,14 +52,19 @@ class CardSetMenu(EditableCardListMenu):
                 "Export Card Set (%s) to File" % self.sSetName, oMenu,
                 self._do_export)
 
-        self.add_common_actions(oMenu)
-
         # Possible enhancement, make card set names italic.
         # Looks like it requires playing with menu_item attributes
         # (or maybe gtk.Action)
         oMenu.add(gtk.SeparatorMenuItem())
-        self.create_check_menu_item('Show Card Expansions in the Pane',
+        self.create_check_menu_item('Show Card Expansions',
                 oMenu, self._toggle_expansion, True)
+        self.create_check_menu_item('Show Cards with Count of 0', oMenu,
+                self._toggle_all_abstract_cards,
+                self._oController.model.bAddAllAbstractCards)
+
+        oMenu.add(gtk.SeparatorMenuItem())
+        self.add_common_actions(oMenu)
+
         oMenu.add(gtk.SeparatorMenuItem())
         self.create_menu_item("Delete Card Set", oMenu, self._card_set_delete)
 
@@ -136,6 +141,13 @@ class CardSetMenu(EditableCardListMenu):
     def _toggle_expansion(self, oWidget):
         """Toggle whether Expansion information is shown."""
         self._oController.model.bExpansions = oWidget.active
+        self._oController.view.reload_keep_expanded()
+
+    def _toggle_all_abstract_cards(self, oWidget):
+        """Toggle the display of cards with a count of 0 in the card list."""
+        self._oController.model.bAddAllAbstractCards = oWidget.active
+        self._oMainWindow.config_file.set_show_zero_count_cards(
+                oWidget.active)
         self._oController.view.reload_keep_expanded()
 
     # pylint: enable-msg=W0613
