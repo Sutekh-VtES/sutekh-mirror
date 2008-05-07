@@ -238,7 +238,7 @@ class MainMenu(SutekhMenu):
             if oIdParser.type == 'PhysicalCardSet' or \
                     oIdParser.type == 'AbstractCardSet' or \
                     oIdParser.type == 'PhysicalCard':
-                if oIdParser:
+                if oIdParser.exists:
                     iResponse = do_complaint_warning("This would delete the"
                             " existing CardSet " + oIdParser.name)
                     if iResponse == gtk.RESPONSE_CANCEL:
