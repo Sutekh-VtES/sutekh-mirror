@@ -21,7 +21,6 @@ from sutekh.core.Filters import CardNameFilter
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 from sutekh.gui.CellRendererSutekhButton import CellRendererSutekhButton
 from sutekh.gui.PhysicalCardView import PhysicalCardView
-from sutekh.gui.AbstractCardView import AbstractCardView
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 
 class DummyController(object):
@@ -35,50 +34,39 @@ class DummyController(object):
         """Ignore card text updates."""
         pass
 
-class ACLlookupView(AbstractCardView):
+class ACLLookupView(PhysicalCardView):
     """Specialised version for the Card Lookup."""
     # pylint: disable-msg=R0904
     # gtk.Widget, so many public methods.
 
     def __init__(self, oDialogWindow, oConfig):
-        oController = DummyController('AbstractCard')
-        super(ACLlookupView, self).__init__(oController, oDialogWindow,
+        oController = DummyController('PhysicalCard')
+        super(ACLLookupView, self).__init__(oController, oDialogWindow,
                 oConfig)
         self.get_selection().set_mode(gtk.SELECTION_SINGLE)
-
-    @staticmethod
-    def is_physical():
-        """Whether this is a physical card view (False)."""
-        return False
+        self._oModel.bExpansions = False
 
     def get_selected_card(self):
         """Return the selected card with a dummy expansion of ''."""
         sNewName = 'No Card'
         oModel, aSelection = self.get_selection().get_selected_rows()
         for oPath in aSelection:
-            sNewName = oModel.get_card_name_from_path(oPath)
+            # pylint: disable-msg=W0612
+            # only interested in sNewName and sExpansion
+            sNewName, sExpansion, iCount, iDepth = \
+                oModel.get_all_from_path(oPath)
         return sNewName, ''
 
-class PCLwithNumbersView(PhysicalCardView):
+class PCLLookupView(PhysicalCardView):
     """Also show current allocation of cards in the physical card view."""
     # pylint: disable-msg=R0904
     # gtk.Widget, so many public methods.
 
     def __init__(self, oDialogWindow, oConfig):
         oController = DummyController('PhysicalCard')
-        super(PCLwithNumbersView, self).__init__(oController, oDialogWindow,
+        super(PCLLookupView, self).__init__(oController, oDialogWindow,
                 oConfig)
         self.get_selection().set_mode(gtk.SELECTION_SINGLE)
-        self.dAssignedCards = {}
-        oCell1 = gtk.CellRendererText()
-        self.oCardCountCol = gtk.TreeViewColumn("Set #", oCell1)
-        self.oCardCountCol.set_cell_data_func(oCell1,
-            self._render_cardcount_column)
-
-    @staticmethod
-    def is_physical():
-        """Whether this is a physical card view (True)."""
-        return True
 
     def get_selected_card(self):
         """Return the selected card and expansion."""
@@ -93,78 +81,6 @@ class PCLwithNumbersView(PhysicalCardView):
         if sExpansion is None:
             sExpansion = ''
         return sNewName, sExpansion
-
-    def set_card_set_holder_numbers(self, aPhysCards, dCandCards):
-        """
-        Mark numbers already found for the card set in the model
-        aPhysCards is those cards assigned without any issue by physical_lookup
-        dCandCards is those cards currently selected by the user to be added
-        """
-        self.dAssignedCards = {}
-        aCandCards = []
-        for aTheseCards in dCandCards.itervalues():
-            aCandCards.extend(aTheseCards)
-        for oCard in aPhysCards + aCandCards:
-            sName = oCard.abstractCard.name
-            self.dAssignedCards.setdefault(sName, {})
-            if oCard.expansion is None:
-                sExpansion = '  Unspecified Expansion'
-            else:
-                sExpansion = oCard.expansion.name
-            self.dAssignedCards[sName].setdefault(sExpansion, 0)
-            self.dAssignedCards[sName][sExpansion] += 1
-            for oType in oCard.abstractCard.cardtype:
-                # Also do the right thing for esction headers
-                self.dAssignedCards.setdefault(oType.name, 0)
-                self.dAssignedCards[oType.name] += 1
-
-    def remove_card_set_column(self):
-        """Disable the card count column."""
-        self.remove_column(self.oCardCountCol)
-
-    def add_card_set_count_column(self):
-        """Enable the card count column."""
-        self.insert_column(self.oCardCountCol, 1)
-
-    # pylint: disable-msg=W0613
-    # oColumn, oModel required by function signature
-    def _render_cardcount_column(self, oColumn, oCell, oModel, oIter):
-        """Render card count into card count cell."""
-        iCnt = self._get_cardcount_data(oIter)
-        if iCnt is not None:
-            oCell.set_property("text", str(iCnt))
-        else:
-            oCell.set_property("text", "")
-
-    # pylint: enable-msg=W0613
-
-    def _get_cardcount_data(self, oIter):
-        """Return the number of cards that fall within a model iterator."""
-        iDepth = self._oModel.iter_depth(oIter)
-        if iDepth == 0:
-            sSectionName = self._oModel.get_name_from_iter(oIter)
-            if sSectionName in self.dAssignedCards:
-                return self.dAssignedCards[sSectionName]
-        elif iDepth == 1:
-            # Get Card Name from this
-            sCardName = self._oModel.get_name_from_iter(oIter)
-            if sCardName in self.dAssignedCards:
-                # Get total for this card
-                iTot = 0
-                for sExpansion, iCnt in \
-                    self.dAssignedCards[sCardName].iteritems():
-                    iTot += iCnt
-                return iTot
-        elif iDepth == 2:
-            oPath = self._oModel.get_path(oIter)
-            sCardName, sExpansion, iCnt, iDepth = \
-                self._oModel.get_all_from_path(oPath)
-            if sCardName in self.dAssignedCards:
-                if sExpansion in self.dAssignedCards[sCardName]:
-                    return self.dAssignedCards[sCardName][sExpansion]
-                else:
-                    return 0
-        return None
 
 class ReplacementTreeView(gtk.TreeView):
     """A TreeView which tracks the current set of replacement cards."""
@@ -186,21 +102,7 @@ class ReplacementTreeView(gtk.TreeView):
         super(ReplacementTreeView, self).__init__(oModel)
         self.oCardListView = oCardListView
         self.oModel = oModel
-        self.bPhysical = self.oCardListView.is_physical()
         self.oFilterToggleButton = oFilterToggleButton
-
-        if self.bPhysical:
-            self.dCandidateCards = {}
-            self.aPhysCard = aPhysCards
-
-            oCell1 = gtk.CellRendererText()
-            oCell1.set_property('style', pango.STYLE_ITALIC)
-
-            oColumn1 = gtk.TreeViewColumn("#", oCell1, text=0)
-            oColumn1.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
-            oColumn1.set_fixed_width(40)
-            self.append_column(oColumn1)
-
 
         self._create_text_column('Missing Card', 1)
         self._create_text_column('Replace Card', 2)
@@ -242,7 +144,8 @@ class ReplacementTreeView(gtk.TreeView):
         self.append_column(oColumn)
 
     # pylint: disable-msg=W0613
-    # oCell required by function signature
+    # argument lists determined by callback signature
+
     def _set_to_selection(self, oCell, oPath):
         """Set the replacement card to the selected entry"""
 
@@ -259,32 +162,6 @@ class ReplacementTreeView(gtk.TreeView):
             do_complaint_error("Please select a card")
             return
 
-        if self.bPhysical:
-            self.dCandidateCards[sFullName] = []
-            aTheseCards = self.dCandidateCards[sFullName]
-
-            aAssignedCards = []
-            for aButtonCards in self.dCandidateCards.itervalues():
-                aAssignedCards.extend(aButtonCards)
-
-            if not self._check_physical_cards(sNewName, iCnt, self.aPhysCards,
-                                          aAssignedCards, aTheseCards):
-                do_complaint_error("Not enough copies of %s" % sNewName)
-                return
-
-            if not self._check_cards_with_expansion(sNewName,
-                           sExpansion, iCnt, self.aPhysCards,
-                           aAssignedCards, aTheseCards):
-                do_complaint_error(
-                    "Not enough copies of %s from expansion %s\n." \
-                    "Ignoring the expansion specification" % \
-                    (sNewName, sExpansion))
-                sExpansion = ''
-
-            self.oCardListView.set_card_set_holder_numbers(self.aPhysCards,
-                self.dCandidateCards)
-            self.oCardListView.queue_draw()
-
         if sExpansion != '':
             sReplaceWith = sNewName + "  exp: " + sExpansion
         else:
@@ -296,14 +173,6 @@ class ReplacementTreeView(gtk.TreeView):
         """Mark the card as not having a replacement."""
         oIter = self.oModel.get_iter(oPath)
         sFullName = self.oModel.get_value(oIter, 1)
-
-        if self.bPhysical:
-            if sFullName in self.dCandidateCards:
-                del self.dCandidateCards[sFullName]
-                self.oCardListView.set_card_set_holder_numbers(self.aPhysCards,
-                    self.dCandidateCards)
-                self.oCardListView.queue_draw()
-
         self.oModel.set_value(oIter, 2, "No Card")
 
     def _set_filter(self, oCell, oPath):
@@ -322,67 +191,6 @@ class ReplacementTreeView(gtk.TreeView):
         else:
             self.oCardListView.load()
 
-    # pylint: enable-msg=W0613
-
-    @staticmethod
-    def _check_physical_cards(sName, iCnt, aPhysCards, aAssignedCards,
-                              aSelectedCards):
-        """Check that there are enough physical cards to fulfill the
-           request.
-        """
-        try:
-            # pylint: disable-msg=E1101
-            # SQLObject methods confuse pylint
-            oAbs = AbstractCard.byCanonicalName(sName.encode('utf8').lower())
-            # pylint: enable-msg=E1101
-        except SQLObjectNotFound:
-            # Can't find the card, so can't fulfil the request
-            return False
-
-        aCandPhysCards = PhysicalCard.selectBy(abstractCardID=oAbs.id)
-        for oCard in aCandPhysCards:
-            if oCard not in aPhysCards and oCard not in aAssignedCards:
-                # Card is a feasible replacement
-                iCnt -= 1
-                aSelectedCards.append(oCard)
-                if iCnt == 0:
-                    return True # Can fulfill the request
-
-        return False
-
-    @staticmethod
-    def _check_cards_with_expansion(sName, sExpansion, iCnt, aPhysCards,
-                                    aAssignedCards, aSelectedCards):
-        """Check that there are enough physical cards of the specified
-           expansion to fulfill the request.
-        """
-        # pylint: disable-msg=E1101
-        # SQLObject methods confuse pylint
-        oAbs = AbstractCard.byCanonicalName(sName.encode('utf8').lower())
-        try:
-            iExpID = IExpansion(sExpansion).id
-        except SQLObjectNotFound:
-            iExpID = None
-        except KeyError:
-            iExpID = None
-        # pylint: enable-msg=E1101
-
-        aCandPhysCards = PhysicalCard.selectBy(abstractCardID=oAbs.id,
-                                               expansionID=iExpID)
-        for oCard in aCandPhysCards:
-            if oCard not in aPhysCards and oCard not in aAssignedCards:
-                # Card is a feasible replacement
-                iCnt -= 1
-                # Cycle set of currently selected cards
-                aSelectedCards.insert(0, oCard)
-                aSelectedCards.pop()
-                if iCnt == 0:
-                    return True # Can fulfill the request
-
-        return False
-
-    # pylint: disable-msg=W0613
-    # oButton required by function signature
     def run_filter_dialog(self, oButton):
         """Display the filter dialog and apply results."""
         self.oCardListView.get_filter(None)
@@ -396,16 +204,6 @@ class ReplacementTreeView(gtk.TreeView):
         self.oCardListView.load()
 
     # pylint: enable-msg=W0613
-
-    def toggle_show_cardcount(self, oShowCountsButton):
-        """Toggle whether the column with the card counts is visible."""
-        if oShowCountsButton.get_active():
-            self.oCardListView.set_card_set_holder_numbers(self.aPhysCards,
-                self.dCandidateCards)
-            self.oCardListView.add_card_set_count_column()
-            self.oCardListView.queue_draw()
-        else:
-            self.oCardListView.remove_card_set_column()
 
     @staticmethod
     def best_guess_filter(sName):
@@ -597,7 +395,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
         oMesgLabel2.set_text(sMsg2)
         oUnknownDialog.vbox.pack_start(oMesgLabel2)
 
-        oPhysCardView = PCLwithNumbersView(oUnknownDialog, self._oConfig)
+        oPhysCardView = PCLLookupView(oUnknownDialog, self._oConfig)
         oViewWin = AutoScrolledWindow(oPhysCardView)
         oViewWin.set_size_request(200, 600)
         oHBox.pack_start(oViewWin, True, True)
@@ -607,9 +405,6 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
 
         oFilterDialogButton = gtk.Button("Specify Filter")
         oFilterApplyButton = gtk.CheckButton("Apply Filter to view")
-        oShowCountsButton = gtk.CheckButton("Show cards assigned to this" \
-                                            " card set")
-        oShowCountsButton.set_active(True)
 
         oReplacementView = ReplacementTreeView(oPhysCardView,
                                                oFilterApplyButton, aPhysCards)
@@ -625,14 +420,11 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
 
         oFilterButtons.pack_start(oFilterDialogButton)
         oFilterButtons.pack_start(oFilterApplyButton)
-        oFilterButtons.pack_start(oShowCountsButton)
 
         oFilterDialogButton.connect("clicked",
             oReplacementView.run_filter_dialog)
         oFilterApplyButton.connect("toggled",
             oReplacementView.toggle_apply_filter)
-        oShowCountsButton.connect("toggled",
-            oReplacementView.toggle_show_cardcount)
 
         # Populate the model with the card names and best guesses
         for (sName, sExpName), iCnt in dUnknownCards.items():
@@ -643,6 +435,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
             oModel.set(oIter, 0, iCnt, 1, sFullName, 2, sBestGuess)
 
         oUnknownDialog.vbox.show_all()
+        oPhysCardView.load()
 
         iResponse = oUnknownDialog.run()
         oUnknownDialog.destroy()
@@ -686,6 +479,8 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
                             if iCnt > 0:
                                 iCnt -= 1
                                 aPhysCards.append(oCard)
+
+                oIter = oModel.iter_next(oIter)
             return True
         else:
             return False
@@ -723,7 +518,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
         oMesgLabel2.set_text(sMsg2)
         oUnknownDialog.vbox.pack_start(oMesgLabel2)
 
-        oAbsCardView = ACLlookupView(oUnknownDialog, self._oConfig)
+        oAbsCardView = ACLLookupView(oUnknownDialog, self._oConfig)
         oViewWin = AutoScrolledWindow(oAbsCardView)
         oViewWin.set_size_request(200, 600)
         oHBox.pack_start(oViewWin, True, True)
@@ -757,7 +552,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
         # Populate the model with the card names and best guesses
         for sName in dUnknownCards:
             oBestGuessFilter = oReplacementView.best_guess_filter(sName)
-            aCards = list(oBestGuessFilter.select(AbstractCard).distinct())
+            aCards = list(oBestGuessFilter.select(PhysicalCard).distinct())
             if len(aCards) == 1:
                 sBestGuess = aCards[0].name
             else:
@@ -768,6 +563,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
             oModel.set(oIter, 0, 1, 1, sName, 2, sBestGuess)
 
         oUnknownDialog.vbox.show_all()
+        oAbsCardView.load()
 
         iResponse = oUnknownDialog.run()
         oUnknownDialog.destroy()
@@ -779,6 +575,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
                 sName, sNewName = oModel.get(oIter, 1, 2)
                 if sNewName != "No Card":
                     dUnknownCards[sName] = sNewName
+                oIter = oModel.iter_next(oIter)
             return True
         else:
             return False
