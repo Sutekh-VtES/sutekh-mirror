@@ -1,3 +1,8 @@
+07 May 2008
+ * Remove AbstractCardView.
+ * Numerous fixes and tweaks to GuiCardLookup.
+ * Move 'show zero count card' menu option from PCL to Card Set views.
+
 01 May 2008
  * Combine CreateCardSetDailog + PropDialog
  * Add parent property to CreateCardSetDialog
