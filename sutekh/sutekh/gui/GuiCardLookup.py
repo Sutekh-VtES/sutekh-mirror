@@ -9,6 +9,7 @@ Lookup AbstractCards for a list of card names, presenting the user with a GUI
 to pick unknown cards from.
 """
 
+import re
 import gtk
 import pango
 import gobject
@@ -92,7 +93,7 @@ class ReplacementTreeView(gtk.TreeView):
            card replacements.
 
            For abstract cards, the card names are stored as is.
-           For physical cards, the card names have " exp: <expansion>"
+           For physical cards, the card names have " [<expansion>]"
            appended.
            """
         # ListStore: count, missing card, replacement
@@ -163,7 +164,7 @@ class ReplacementTreeView(gtk.TreeView):
             return
 
         if sExpansion != '':
-            sReplaceWith = sNewName + "  exp: " + sExpansion
+            sReplaceWith = sNewName + " [%s]" % (sExpansion,)
         else:
             sReplaceWith = sNewName
 
@@ -179,9 +180,7 @@ class ReplacementTreeView(gtk.TreeView):
         """Set the card list filter to the best guess filter for this card."""
         oIter = self.oModel.get_iter(oPath)
         sFullName = self.oModel.get_value(oIter, 1)
-
-        aParts = sFullName.split(' exp: ')
-        sName = aParts[0]
+        sName, sExp = self.parse_card_name(sFullName)
 
         oFilter = self.best_guess_filter(sName)
         self.oCardListView.get_model().selectfilter = oFilter
@@ -204,6 +203,14 @@ class ReplacementTreeView(gtk.TreeView):
         self.oCardListView.load()
 
     # pylint: enable-msg=W0613
+
+    NAME_RE = re.compile(r"^(?P<name>.*?)( \[(?P<exp>[^]]+)\])?$")
+
+    @classmethod
+    def parse_card_name(cls,sName):
+        oM = cls.NAME_RE.match(sName)
+        assert oM is not None
+        return oM.group('name'), oM.group('exp')
 
     @staticmethod
     def best_guess_filter(sName):
@@ -429,7 +436,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
         # Populate the model with the card names and best guesses
         for (sName, sExpName), iCnt in dUnknownCards.items():
             sBestGuess = "No Card"
-            sFullName = "%s exp: %s" % (sName, sExpName)
+            sFullName = "%s [%s]" % (sName, sExpName)
 
             oIter = oModel.append(None)
             oModel.set(oIter, 0, iCnt, 1, sFullName, 2, sBestGuess)
@@ -446,12 +453,12 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
             oIter = oModel.get_iter_root()
             while not oIter is None:
                 sFullName, sNewFullName = oModel.get(oIter, 1, 2)
-                sName, sExpName = sFullName.split(' exp: ')
+                sName, sExpName = oReplacementView.parse_card_name(sFullName)
 
-                aParts = sNewFullName.split(' exp: ')
-                sNewName = aParts[0]
-                if len(aParts) == 1:
-                    sNewExpName = aParts[1]
+                sNewName, sNewExpName = \
+                    oReplacementView.parse_card_name(sNewFullName)
+
+                if sNewExpName is not None:
                     try:
                         iExpID = IExpansion(sNewExpName).id
                     except SQLObjectNotFound:
