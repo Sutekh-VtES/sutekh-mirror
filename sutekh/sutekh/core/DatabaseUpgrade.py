@@ -293,11 +293,10 @@ def copy_rarity(oOrigConn, oTrans):
         oCopy = Rarity(id=oObj.id, name=oObj.name,
                 shortname=oObj.shortname, connection=oTrans)
 
-def copy_old_rarity(oOrigConn, oTrans):
+def copy_old_rarity(oOrigConn, oTrans, oVer):
     """
     Copy rarity table, upgrading versions as needed
     """
-    oVer = DatabaseVersion()
     if oVer.check_tables_and_versions([Rarity], [Rarity.tableversion],
             oOrigConn):
         copy_rarity(oOrigConn, oTrans)
