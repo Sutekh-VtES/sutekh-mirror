@@ -41,7 +41,7 @@ class CardSetView(EditableCardListView):
             oContext.finish(False, False, oTime)
         else:
             sSource, aCardInfo = self.split_selection_data(oData.data)
-            if sSource == "Sutekh Pane:":
+            if sSource == "Sutekh Pane:" or sSource == "Card Set:":
                 self._oController.frame.drag_drop_handler(oWidget, oContext,
                         iXPos, iYPos, oData, oInfo, oTime)
             elif not self._oModel.bEditable:

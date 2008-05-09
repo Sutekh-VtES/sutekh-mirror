@@ -84,23 +84,22 @@ class BasicFrame(gtk.Frame, object):
         self.view.connect('focus-in-event', oFunc, self)
 
     def do_swap(self, aData):
-        """Swap or replace this pane with the relevant pane"""
-        if aData[1] != 'Card Set Pane:':
-            # We swap ourself with the other pane
-            oOtherFrame = self._oMainWindow.find_pane_by_name(aData[1])
-            if oOtherFrame is not None:
-                self._oMainWindow.swap_frames(self, oOtherFrame)
-                return True
-        else:
-            # We replace otherselves with the card set
-            if aData[2] == 'PCS:':
-                self._oMainWindow.replace_with_physical_card_set(aData[3],
-                        self)
-                return True
-            elif aData[2] == 'ACS:':
-                self._oMainWindow.replace_with_abstract_card_set(aData[3],
-                        self)
-                return True
+        """Swap this pane with the relevant pane"""
+        # We swap ourself with the other pane
+        oOtherFrame = self._oMainWindow.find_pane_by_name(aData[1])
+        if oOtherFrame:
+            self._oMainWindow.swap_frames(self, oOtherFrame)
+            return True
+        return False
+
+    def do_dragged_card_set(self, aData):
+        """Replace this pane with the relevant card set"""
+        # We replace otherselves with the card set
+        oFrame = self._oMainWindow.find_pane_by_name(aData[1])
+        if not oFrame:
+            # Card set is not already open
+            self._oMainWindow.replace_with_physical_card_set(aData[1], self)
+            return True
         return False
 
     def cleanup(self):
@@ -192,13 +191,18 @@ class BasicFrame(gtk.Frame, object):
             oDragContext.finish(False, False, oTime)
         else:
             aData =  oSelectionData.data.splitlines()
-            if aData[0] != 'Sutekh Pane:':
-                oDragContext.finish(False, False, oTime)
-            else:
+            if aData[0] == 'Sutekh Pane:':
                 if self.do_swap(aData):
                     oDragContext.finish(True, False, oTime)
                 else:
                     oDragContext.finish(False, False, oTime)
+            elif aData[0] == 'Card Set:':
+                if self.do_dragged_card_set(aData):
+                    oDragContext.finish(True, False, oTime)
+                else:
+                    oDragContext.finish(False, False, oTime)
+            else:
+                oDragContext.finish(False, False, oTime)
 
     def create_drag_data(self, oBtn, oContext, oSelectionData, oInfo, oTime):
         """Fill in the needed data for drag-n-drop code"""

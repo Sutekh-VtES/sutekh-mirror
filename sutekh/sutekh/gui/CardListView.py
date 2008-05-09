@@ -412,7 +412,7 @@ class CardListView(gtk.TreeView, object):
             return 'None', ['']
         aLines = sSelectionData.splitlines()
         sSource = aLines[0]
-        if sSource == "Sutekh Pane:":
+        if sSource == "Sutekh Pane:" or sSource == 'Card Set:':
             return sSource, aLines
         # Construct list of (iCount, sCardName, sExpansion) tuples
         def true_expansion(sExpand):

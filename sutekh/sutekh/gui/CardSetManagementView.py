@@ -205,13 +205,7 @@ class CardSetManagementView(gtk.TreeView, object):
         sSetName = self.get_selected_card_set()
         if not sSetName:
             return
-        # Don't respond to the dragging of an already open card set, and so on
-        sPrefix = 'PCS:'
-        sFrameName = sSetName
-        if sFrameName in self._oMainWin.dOpenFrames.values():
-            return
-        sData = "\n".join(['Sutekh Pane:', 'Card Set Pane:', sPrefix,
-            sSetName])
+        sData = "\n".join(['Card Set:', sSetName])
         oSelectionData.set(oSelectionData.target, 8, sData)
 
     def row_clicked(self, oTreeView, oPath, oColumn):
