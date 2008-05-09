@@ -54,6 +54,9 @@ class CardSetManagementModel(gtk.TreeStore):
 
         # Loop through the card sets, getting the parent->child relationships
         for oCardSet in oCardSetIter:
+            if oCardSet.name in self._dName2Iter:
+                # We've already loaded this card set, so skip
+                continue
             if oCardSet.parent:
                 # Do funky stuff to make sure parent is shown in the view
                 oParent = oCardSet
