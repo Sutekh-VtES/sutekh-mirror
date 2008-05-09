@@ -632,8 +632,10 @@ class FilterBoxItemEditor(gtk.HBox):
         if self.__oBoxItem.aValues:
             aVals = [sVal.strip('"') for sVal in dVars[sName]]
             self.__oEntryWidget.set_selection(aVals)
-        else:
+        elif len(dVars[sName]) > 0:
             self.__oEntryWidget.set_text(dVars[sName][0].strip('"'))
+        else:
+            self.__oEntryWidget.set_text("")
 
     # pylint: disable-msg=W0613
     # oWidget is needed by function signature
