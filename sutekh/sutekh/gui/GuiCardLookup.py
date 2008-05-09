@@ -156,7 +156,6 @@ class ReplacementTreeView(gtk.TreeView):
         # best we can
 
         oIter = self.oModel.get_iter(oPath)
-        iCnt, sFullName = self.oModel.get(oIter, 0, 1)
 
         sNewName, sExpansion = self.oCardListView.get_selected_card()
         if sNewName == 'No Card':
@@ -173,7 +172,6 @@ class ReplacementTreeView(gtk.TreeView):
     def _set_ignore(self, oCell, oPath):
         """Mark the card as not having a replacement."""
         oIter = self.oModel.get_iter(oPath)
-        sFullName = self.oModel.get_value(oIter, 1)
         self.oModel.set_value(oIter, 2, "No Card")
 
     def _set_filter(self, oCell, oPath):
@@ -207,10 +205,11 @@ class ReplacementTreeView(gtk.TreeView):
     NAME_RE = re.compile(r"^(?P<name>.*?)( \[(?P<exp>[^]]+)\])?$")
 
     @classmethod
-    def parse_card_name(cls,sName):
-        oM = cls.NAME_RE.match(sName)
-        assert oM is not None
-        return oM.group('name'), oM.group('exp')
+    def parse_card_name(cls, sName):
+        """Parser the card name and expansion out of the string."""
+        oMatch = cls.NAME_RE.match(sName)
+        assert oMatch is not None
+        return oMatch.group('name'), oMatch.group('exp')
 
     @staticmethod
     def best_guess_filter(sName):
