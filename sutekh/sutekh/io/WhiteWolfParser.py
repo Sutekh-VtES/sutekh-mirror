@@ -46,7 +46,7 @@ def _find_sect_and_title(aLines):
             sTitle = 'Archbishop'
         elif aLines[0].find('Sabbat bishop') != -1:
             sTitle = 'Bishop'
-        elif aLines[0].find('sabbat priscus') != -1:
+        elif aLines[0].find('Sabbat priscus') != -1:
             sTitle = 'Priscus'
         elif aLines[0].find('Sabbat cardinal') != -1:
             sTitle = 'Cardinal'
