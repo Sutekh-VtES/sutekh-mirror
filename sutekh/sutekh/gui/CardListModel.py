@@ -97,7 +97,6 @@ class CardListModel(gtk.TreeStore):
         self.dListeners = {} # dictionary of CardListModelListeners
 
         self.bExpansions = True
-        self.bEditable = False
         self.oEmptyIter = None
 
     # pylint: disable-msg=W0212
@@ -126,29 +125,16 @@ class CardListModel(gtk.TreeStore):
 
     def get_expansion_info(self, oCard, dExpanInfo):
         """Get information about expansions"""
-        dExpansions = {}
+        aExpansions = []
         if not self.bExpansions:
-            return dExpansions
-        for oExpansion, iCnt in dExpanInfo.iteritems():
-            bDecCard = False
-            bIncCard = False
+            return aExpansions
+        for oExpansion in dExpanInfo:
             if oExpansion is not None:
-                sKey = oExpansion.name
+                sName = oExpansion.name
             else:
-                sKey = self.sUnknownExpansion
-            # For PhysicalCardList, we never touch Unknown directly
-            # It's manipulated by changing other expansions
-            if self.bEditable and oExpansion is not None:
-                # Can only increase a expansion if there are unknown
-                # cards to move across
-                bIncCard = iNoneCnt > 0
-                bDecCard = iCnt > 0
-            dExpansions[sKey] = [iCnt, bDecCard, bIncCard]
-        return dExpansions
-
-    def check_inc_dec_card(self, oCard, iCnt):
-        """Helper function to check whether card can be incremented"""
-        return False, False
+                sName = self.sUnknownExpansion
+            aExpansions.append(sName)
+        return aExpansions
 
     def load(self):
         # pylint: disable-msg=R0914
@@ -179,60 +165,36 @@ class CardListModel(gtk.TreeStore):
             self._dGroupName2Iter[sGroup] = oSectionIter
 
             # Fill in Cards
-            iGrpCnt = 0
             for oItem in oGroupIter:
-                oCard, iCnt = fGetCard(oItem), fGetCount(oItem)
-                iGrpCnt += iCnt
+                oCard = fGetCard(oItem)
                 oChildIter = self.append(oSectionIter)
-                bIncCard, bDecCard = self.check_inc_dec_card(oCard, iCnt)
                 self.set(oChildIter,
                     0, oCard.name,
-                    1, iCnt,
-                    2, 0,
-                    3, bIncCard,
-                    4, bDecCard
                 )
-                dExpansionInfo = self.get_expansion_info(oCard,
+                aExpansionInfo = self.get_expansion_info(oCard,
                         fGetExpanInfo(oItem))
-                # fill in the numbers for all possible expansions for
-                # the card
-                for sExpansion in sorted(dExpansionInfo):
-                    self._add_expansion(oChildIter, oCard.name, sExpansion,
-                            dExpansionInfo[sExpansion])
+                for sExpansion in sorted(aExpansionInfo):
+                    oExpansionIter = self.append(oChildIter)
+                    self.set(oExpansionIter,
+                            0, sExpansion)
+                    self._dNameExpansion2Iter.setdefault(oCard.name,
+                            {}).setdefault(sExpansion, []).append(oExpansionIter)
                 self._dName2Iter.setdefault(oCard.name, []).append(oChildIter)
-
 
             # Update Group Section
             self.set(oSectionIter,
                 0, sGroup,
-                1, iGrpCnt,
-                2, 0,
-                3, False,
-                4, False
             )
 
         if not self._dName2Iter:
             # Showing nothing
             self.oEmptyIter = self.append(None)
             sText = self._get_empty_text()
-            self.set(self.oEmptyIter, 0, sText, 1, 0, 2, 0, 3, False, 4, False)
+            self.set(self.oEmptyIter, 0, sText)
 
         # Notify Listeners
         for oListener in self.dListeners:
             oListener.load(aAbsCards)
-
-    def _add_expansion(self, oChildIter, sCardName, sExpansion, tExpInfo):
-        """Add an expansion to the card list model."""
-        oExpansionIter = self.append(oChildIter)
-        iExpCnt, bDecCard, bIncCard = tExpInfo
-        self.set(oExpansionIter,
-                0, sExpansion,
-                1, iExpCnt,
-                2, 0,
-                3, bIncCard,
-                4, bDecCard)
-        self._dNameExpansion2Iter.setdefault(sCardName,
-                {}).setdefault(sExpansion, []).append(oExpansionIter)
 
     def get_card_iterator(self, oFilter):
         """
@@ -360,7 +322,6 @@ class CardListModel(gtk.TreeStore):
         # I hope all systems encode with utf-8. :(
         sCardName = self.get_value(oIter, 0).decode("utf-8")
         return sCardName
-
 
     def _get_empty_text(self):
         """Get the correct text for an empty model."""

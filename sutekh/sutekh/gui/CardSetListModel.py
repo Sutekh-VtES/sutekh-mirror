@@ -28,6 +28,79 @@ class CardSetCardListModel(CardListModel):
         self._oBaseFilter = PhysicalCardSetFilter(sSetName)
         self.bExpansions = True
         self.bAddAllAbstractCards = False
+        self.bEditable = False
+
+    def load(self):
+        # pylint: disable-msg=R0914
+        # we use many local variables for clarity
+        """
+        Clear and reload the underlying store. For use after initialisation or when
+        the filter or grouping changes.
+        """
+        self.clear()
+        self._dName2Iter = {}
+        self._dNameExpansion2Iter = {}
+        self._dGroupName2Iter = {}
+
+        oCardIter = self.get_card_iterator(self.get_current_filter())
+        fGetCard, fGetCount, fGetExpanInfo, oGroupedIter, aAbsCards = \
+                self.grouped_card_iter(oCardIter)
+
+        self.oEmptyIter = None
+
+        # Iterate over groups
+        for sGroup, oGroupIter in oGroupedIter:
+            # Check for null group
+            if sGroup is None:
+                sGroup = '<< None >>'
+
+            # Create Group Section
+            oSectionIter = self.append(None)
+            self._dGroupName2Iter[sGroup] = oSectionIter
+
+            # Fill in Cards
+            iGrpCnt = 0
+            for oItem in oGroupIter:
+                oCard, iCnt = fGetCard(oItem), fGetCount(oItem)
+                iGrpCnt += iCnt
+                oChildIter = self.append(oSectionIter)
+                bIncCard, bDecCard = self.check_inc_dec_card(oCard, iCnt)
+                self.set(oChildIter,
+                    0, oCard.name,
+                    1, iCnt,
+                    2, 0,
+                    3, bIncCard,
+                    4, bDecCard
+                )
+                dExpansionInfo = self.get_expansion_info(oCard,
+                        fGetExpanInfo(oItem))
+                # fill in the numbers for all possible expansions for
+                # the card
+                for sExpansion in sorted(dExpansionInfo):
+                    self._add_expansion(oChildIter, oCard.name, sExpansion,
+                            dExpansionInfo[sExpansion])
+                self._dName2Iter.setdefault(oCard.name, []).append(oChildIter)
+
+
+            # Update Group Section
+            self.set(oSectionIter,
+                0, sGroup,
+                1, iGrpCnt,
+                2, 0,
+                3, False,
+                4, False
+            )
+
+        if not self._dName2Iter:
+            # Showing nothing
+            self.oEmptyIter = self.append(None)
+            sText = self._get_empty_text()
+            self.set(self.oEmptyIter, 0, sText, 1, 0, 2, 0, 3, False, 4, False)
+
+        # Notify Listeners
+        for oListener in self.dListeners:
+            oListener.load(aAbsCards)
+
 
     def check_inc_dec_card(self, oCard, iCnt):
         """Helper function to check whether card can be incremented"""
@@ -37,6 +110,20 @@ class CardSetCardListModel(CardListModel):
             return (iCnt <
                     PhysicalCard.selectBy(abstractCardID=oCard.id).count(),
                     iCnt > 0)
+
+    def _add_expansion(self, oChildIter, sCardName, sExpansion, tExpInfo):
+        """Add an expansion to the card list model."""
+        oExpansionIter = self.append(oChildIter)
+        iExpCnt, bDecCard, bIncCard = tExpInfo
+        self.set(oExpansionIter,
+                0, sExpansion,
+                1, iExpCnt,
+                2, 0,
+                3, bIncCard,
+                4, bDecCard)
+        self._dNameExpansion2Iter.setdefault(sCardName,
+                {}).setdefault(sExpansion, []).append(oExpansionIter)
+
 
     def check_inc_dec_expansion(self, oCard, sExpansion, iCnt):
         """Helper function to check status of expansions"""
