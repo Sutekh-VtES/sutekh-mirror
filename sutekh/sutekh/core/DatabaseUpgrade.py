@@ -726,9 +726,11 @@ def copy_old_abstract_card_set(oOrigConn, oTrans, oLogger, oVer):
     def _gen_new_name(sSetName, aPhysSetNames):
         """Crate a new PCS name for the existing ACS"""
         sNewName = '(ACS) ' + sSetName
+        sNewName = sNewName[:50]
         iSuffix = 0
         while sNewName in aPhysSetNames:
-            sNewName = '(ACS) %s %d' % (sSetName, iSuffix)
+            sNewName = '(ACS) %s %d' % (sSetName[:40], iSuffix)
+            sNewName = sNewName[:50]
             iSuffix += 1
         aPhysSetNames.append(sNewName)
         return sNewName

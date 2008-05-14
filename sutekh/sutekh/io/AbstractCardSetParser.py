@@ -49,7 +49,9 @@ class AbstractCardSetParser(object):
         if oRoot.attrib['sutekh_xml_version'] not in self.aSupportedVersions:
             raise RuntimeError("Unrecognised XML File version")
         # same reasoning as for database upgrades
-        self.oCS.name = '(ACS) ' + oRoot.attrib['name']
+        # Ensure name fits into column
+        self.oCS.name = '(ACS) %s' % oRoot.attrib['name']
+        self.oCS.name = self.oCS.name[:50]
         self.oCS.author = oRoot.attrib['author']
         self.oCS.comment = oRoot.attrib['comment']
         self.oCS.inuse = False
