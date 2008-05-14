@@ -191,6 +191,13 @@ class PhysicalCardSet_v4(SQLObject):
     cards = RelatedJoin('PhysicalCard', intermediateTable='physical_map',
             createRelatedTable=False)
 
+class MapAbstractCardToAbstractCardSet_v3(SQLObject):
+    """Old abstract card map to need so we can drop tables properly"""
+    class sqlmeta:
+        table = 'abstract_map'
+    abstractCard = ForeignKey('AbstractCard_v3', notNull=True)
+    abstractCardSet = ForeignKey('AbstractCardSet_v3', notNull=True)
+
 # pylint: enable-msg=C0103, W0232
 
 def check_can_read_old_database(oConn):
@@ -818,6 +825,16 @@ def read_old_database(oOrigConn, oDestConnn, oLogHandler=None):
 
 # pylint: enable-msg=W0612, C0103
 
+def drop_old_tables(oConn):
+    """Drop tables whihc are no longer used from the database.
+       Needed for postgres and other such things."""
+    oVer = DatabaseVersion()
+    if oVer.check_tables_and_versions([AbstractCardSet_v3], [3], oConn):
+        # Need to drop the old ACS tables
+        MapAbstractCardToAbstractCardSet_v3.dropTable(ifExists=True,
+                connection=oConn)
+        AbstractCardSet_v3.dropTable(ifExists=True, connection=oConn)
+
 def copy_database(oOrigConn, oDestConnn, oLogHandler=None):
     """Copy the database, with no attempts to upgrade.
 
@@ -949,6 +966,7 @@ def create_memory_copy(oTempConn, oLogHandler=None):
 
 def create_final_copy(oTempConn, oLogHandler=None):
     """Copy from the memory database to the real thing"""
+    drop_old_tables(sqlhub.processConnection)
     if refresh_tables(aObjectList, sqlhub.processConnection):
         return copy_database(oTempConn, sqlhub.processConnection, oLogHandler)
     else:
