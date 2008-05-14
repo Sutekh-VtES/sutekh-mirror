@@ -6,7 +6,7 @@
 
 """gtk.TreeModel class the card sets."""
 
-import gtk, gobject
+import gtk
 from sutekh.core.SutekhObjects import PhysicalCardSet
 from sutekh.core.Filters import NullFilter
 
@@ -15,7 +15,11 @@ class CardSetManagementModel(gtk.TreeStore):
     # gtk.Widget, so lots of public methods
     """TreeModel for the card sets"""
     def __init__(self, oMainWindow):
-        super(CardSetManagementModel, self).__init__(gobject.TYPE_STRING)
+        # We use 2 columns, one for markup, + one for the name, so we
+        # avoid excaping stuff all over the place. 
+        # This does impose consistency requirements on the Model, but
+        # that's all handleded in load
+        super(CardSetManagementModel, self).__init__(str, str)
         self._dName2Iter = {}
 
         self._oMainWin = oMainWindow
@@ -75,13 +79,13 @@ class CardSetManagementModel(gtk.TreeStore):
                 aToAdd = [oCardSet]
             for oSet in aToAdd:
                 oIter = self.append(oIter)
-                sName = oSet.name
-                if self._oMainWin.find_pane_by_name(sName):
-                    sName = '<i>%s</i>' % sName
+                sMarkup = oSet.name
+                if self._oMainWin.find_pane_by_name(oSet.name):
+                    sMarkup = '<span foreground="blue">%s</span>' % sMarkup
                 if oSet.inuse:
                     # In use sets are in bold
-                    sName = '<b>%s</b>' % sName
-                self.set(oIter, 0, sName)
+                    sMarkup = '<b>%s</b>' % sMarkup
+                self.set(oIter, 0, sMarkup, 1, oSet.name)
                 self._dName2Iter[oSet.name] = oIter
 
         if not self._dName2Iter:
@@ -100,12 +104,7 @@ class CardSetManagementModel(gtk.TreeStore):
     def get_name_from_iter(self, oIter):
         """Extract the value at oIter from the model, correcting for encoding
            issues."""
-        sCardSetName = self.get_value(oIter, 0).decode("utf-8")
-        # Strip markup
-        if sCardSetName.startswith('<b><i>'):
-            sCardSetName = sCardSetName[6:-8]
-        elif sCardSetName.startswith('<b>') or sCardSetName.startswith('<i>'):
-            sCardSetName = sCardSetName[3:-4]
+        sCardSetName = self.get_value(oIter, 1).decode("utf-8")
         return sCardSetName
 
     def get_name_from_path(self, oPath):
