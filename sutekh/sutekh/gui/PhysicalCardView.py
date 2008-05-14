@@ -9,7 +9,7 @@
 
 import gtk, pango
 from sutekh.gui.CardListView import CardListView
-from sutekh.gui.CardListModel import PhysicalCardListModel
+from sutekh.gui.CardListModel import CardListModel
 
 class PhysicalCardView(CardListView):
     # pylint: disable-msg=R0904
@@ -23,8 +23,7 @@ class PhysicalCardView(CardListView):
     sDragPrefix = 'Phys:'
 
     def __init__(self, oController, oWindow, oConfig):
-        oModel = PhysicalCardListModel(
-                oConfig.get_show_zero_count_cards())
+        oModel = CardListModel()
         super(PhysicalCardView, self).__init__(oController, oWindow,
                 oModel, oConfig)
 
