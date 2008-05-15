@@ -143,7 +143,6 @@ class CardSetCardListModel(CardListModel):
     def get_expansion_info(self, oCard, dExpanInfo):
         """Get information about expansions"""
         dExpansions = {}
-        return dExpansions
         if not self.bExpansions:
             return dExpansions
         if self.bEditable:
@@ -477,7 +476,7 @@ class CardSetCardListModel(CardListModel):
                 self.set(oSectionIter,
                     0, sGroup,
                     1, iGrpCnt,
-                    2, 0, 
+                    2, 0,
                 )
 
             # Add Cards

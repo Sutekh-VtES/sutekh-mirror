@@ -8,11 +8,10 @@
 """The gtk.TreeModel for the card lists."""
 
 import gtk, gobject
-from sutekh.core.Filters import FilterAndBox, SpecificCardFilter, NullFilter, \
-        PhysicalCardFilter
+from sutekh.core.Filters import FilterAndBox, NullFilter, PhysicalCardFilter
 from sutekh.core.Groupings import CardTypeGrouping
-from sutekh.core.SutekhObjects import AbstractCard, IAbstractCard, \
-        PhysicalCard, IPhysicalCard
+from sutekh.core.SutekhObjects import IAbstractCard, PhysicalCard, \
+        IPhysicalCard
 
 def norm_path(oPath):
     """Transform string paths to tuple paths"""
@@ -88,7 +87,7 @@ class CardListModel(gtk.TreeStore):
 
         self._cGroupBy = CardTypeGrouping # grouping class to use
         # base filter defines the card list
-        self._oBaseFilter = PhysicalCardFilter() 
+        self._oBaseFilter = PhysicalCardFilter()
         self._cCardClass = PhysicalCard # card class to use
         self._bApplyFilter = False # whether to apply the select filter
         # additional filters for selecting from the list
@@ -178,7 +177,8 @@ class CardListModel(gtk.TreeStore):
                     self.set(oExpansionIter,
                             0, sExpansion)
                     self._dNameExpansion2Iter.setdefault(oCard.name,
-                            {}).setdefault(sExpansion, []).append(oExpansionIter)
+                            {}).setdefault(sExpansion, []).append(
+                                    oExpansionIter)
                 self._dName2Iter.setdefault(oCard.name, []).append(oChildIter)
 
             # Update Group Section
