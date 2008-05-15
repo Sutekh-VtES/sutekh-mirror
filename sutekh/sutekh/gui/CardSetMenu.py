@@ -15,9 +15,9 @@ from sutekh.gui.SutekhFileWidget import ExportDialog
 from sutekh.gui.CreateCardSetDialog import CreateCardSetDialog
 from sutekh.io.XmlFileHandling import PhysicalCardSetXmlFile
 from sutekh.gui.EditAnnotationsDialog import EditAnnotationsDialog
-from sutekh.gui.PaneMenu import EditableCardListMenu
+from sutekh.gui.PaneMenu import CardListMenu
 
-class CardSetMenu(EditableCardListMenu):
+class CardSetMenu(CardListMenu):
     # pylint: disable-msg=R0904
     # gtk.Widget, so many public methods
     """Card Set Menu.
@@ -33,7 +33,7 @@ class CardSetMenu(EditableCardListMenu):
         self.__oController = oController
         self.sSetName = sName
         self.__create_card_set_menu()
-        self.create_edit_menu()
+        self._create_edit_menu()
         self.create_filter_menu()
         self.create_plugins_menu('_Plugins', self._oFrame)
 
@@ -74,6 +74,18 @@ class CardSetMenu(EditableCardListMenu):
                 " properties" % self.sSetName)
         self.__oExport.get_child().set_label("Export Card Set (%s) to File" %
                 self.sSetName)
+
+    def _create_edit_menu(self):
+        """Create the 'Edit' menu, and populate it."""
+        oMenu = self.create_submenu(self, "_Edit")
+        oEditable = self.create_check_menu_item('Card Set is Editable', oMenu,
+                self.toggle_editable, False, '<Ctrl>e')
+        self._oController.view.set_edit_menu_item(oEditable)
+        self.create_menu_item('Copy selection', oMenu, self.copy_selection,
+                '<Ctrl>c')
+        self.create_menu_item('Paste', oMenu, self._paste_selection, '<Ctrl>v')
+        self.create_menu_item('Delete selection', oMenu, self._del_selection,
+                'Delete')
 
     # pylint: enable-msg=W0201
 
@@ -150,4 +162,31 @@ class CardSetMenu(EditableCardListMenu):
                 oWidget.active)
         self._oController.view.reload_keep_expanded()
 
+    def toggle_editable(self, oWidget):
+        """Toggle the editable state of the card set."""
+        if self._oController.model.bEditable != oWidget.active:
+            self._oController.view.toggle_editable(oWidget.active)
+
+    def _del_selection(self, oWidget):
+        """Delete the current selection"""
+        self._oController.view.del_selection()
+
+    def _paste_selection(self, oWidget):
+        """Try to paste the current clipbaord contents"""
+        self._oController.view.do_paste()
+
     # pylint: enable-msg=W0613
+
+class EditableCardListMenu(CardListMenu):
+    # pylint: disable-msg=R0904
+    # R0904 - gtk.Widget, so many public methods
+    """Base class for Editable Card List Menus
+
+       Adds some common methods for dealing with the card lists -
+       paste selction + delete, etc.
+       """
+    def __init__(self, oFrame, oWindow, oController):
+        super(EditableCardListMenu, self).__init__(oFrame, oWindow,
+                oController)
+
+
