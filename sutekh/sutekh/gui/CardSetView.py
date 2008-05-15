@@ -91,3 +91,27 @@ class CardSetView(EditableCardListView):
         delete_physical_card_set(self.sSetName)
         # Tell Window to clean up
         return True
+
+    def del_selection(self):
+        """try to delete all the cards in the current selection"""
+        if self._oModel.bEditable:
+            dSelectedData = self.process_selection()
+            for sCardName in dSelectedData:
+                for sExpansion, iCount in dSelectedData[sCardName].iteritems():
+                    # pylint: disable-msg=W0612
+                    # iAttempt is loop counter
+                    for iAttempt in range(iCount):
+                        if sExpansion != 'None':
+                            self._oController.dec_card(sCardName, sExpansion)
+                        else:
+                            self._oController.dec_card(sCardName, None)
+
+    def do_paste(self):
+        """Try and paste the current selection from the appliction clipboard"""
+        if self._oModel.bEditable:
+            sSelection = self._oMainWin.get_selection_text()
+            sSource, aCards = self.split_selection_data(sSelection)
+            if sSource != self.sDragPrefix:
+                # Prevent pasting into oneself
+                self.add_paste_data(sSource, aCards)
+

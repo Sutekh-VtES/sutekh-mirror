@@ -377,20 +377,6 @@ class CardListView(gtk.TreeView, object):
                         }
         return sSelectData
 
-    def del_selection(self):
-        """try to delete all the cards in the current selection"""
-        if self._oModel.bEditable:
-            dSelectedData = self.process_selection()
-            for sCardName in dSelectedData:
-                for sExpansion, iCount in dSelectedData[sCardName].iteritems():
-                    # pylint: disable-msg=W0612
-                    # iAttempt is loop counter
-                    for iAttempt in range(iCount):
-                        if sExpansion != 'None':
-                            self._oController.dec_card(sCardName, sExpansion)
-                        else:
-                            self._oController.dec_card(sCardName, None)
-
     # Drag and Drop
     # Sub-classes should override as needed.
     # pylint: disable-msg=R0201
@@ -440,27 +426,11 @@ class CardListView(gtk.TreeView, object):
         self._oController.frame.drag_drop_handler(oWdgt, oContext, iXPos,
                 iYPos, oData, oInfo, oTime)
 
-    def add_paste_data(self, sSource, aCards):
-        """Helper function for copy+paste and drag+drop.
-
-           Handle the heavy lifting of adding cards to the actual card
-           list model, and so on.
-           """
-        return False # do nothing
-
     def copy_selection(self):
         """Copy the current selection to the application clipboard"""
         sSelection = self.get_selection_as_string()
         self._oMainWin.set_selection_text(sSelection)
 
-    def do_paste(self):
-        """Try and paste the current selection from the appliction clipboard"""
-        if self._oModel.bEditable:
-            sSelection = self._oMainWin.get_selection_text()
-            sSource, aCards = self.split_selection_data(sSelection)
-            if sSource != self.sDragPrefix:
-                # Prevent pasting into oneself
-                self.add_paste_data(sSource, aCards)
 
 class EditableCardListView(CardListView):
     """CardList View which can be edited.
