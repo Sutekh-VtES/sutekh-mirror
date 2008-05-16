@@ -4,7 +4,7 @@
 # Copyright 2008 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-"""gtk.TreeModel class the card sets."""
+"""gtk.TreeModel class the card set list."""
 
 import gtk
 from sutekh.core.SutekhObjects import PhysicalCardSet
@@ -13,7 +13,7 @@ from sutekh.core.Filters import NullFilter
 class CardSetManagementModel(gtk.TreeStore):
     # pylint: disable-msg=R0904
     # gtk.Widget, so lots of public methods
-    """TreeModel for the card sets"""
+    """TreeModel for the card set list"""
     def __init__(self, oMainWindow):
         # We use 2 columns, one for markup, + one for the name, so we
         # avoid excaping stuff all over the place.

@@ -4,7 +4,7 @@
 # Copyright 2008 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-"""gtk.TreeView class the card sets."""
+"""gtk.TreeView class the card set list."""
 
 import gtk
 import unicodedata
@@ -12,7 +12,7 @@ from sutekh.gui.FilterDialog import FilterDialog
 from sutekh.gui.CardSetManagementModel import CardSetManagementModel
 
 class CardSetManagementView(gtk.TreeView, object):
-    """Tree View for the card sets."""
+    """Tree View for the card set list."""
     # pylint: disable-msg=R0904
     # gtk.Widget, so lots of public methods
     def __init__(self, oMainWindow):
@@ -214,8 +214,6 @@ class CardSetManagementView(gtk.TreeView, object):
            allow double clicks to open a card set.
            """
         oModel = self.get_model()
-        # We are pointing to a ListStore, so the iters should always be valid
-        # Need to dereference to the actual path though, as iters not unique
         sName = oModel.get_name_from_path(oPath)
         # check if card set is open before opening again
         oPane = self._oMainWin.find_pane_by_name(sName)
