@@ -16,7 +16,7 @@ class CardSetManagementModel(gtk.TreeStore):
     """TreeModel for the card sets"""
     def __init__(self, oMainWindow):
         # We use 2 columns, one for markup, + one for the name, so we
-        # avoid excaping stuff all over the place. 
+        # avoid excaping stuff all over the place.
         # This does impose consistency requirements on the Model, but
         # that's all handleded in load
         super(CardSetManagementModel, self).__init__(str, str)

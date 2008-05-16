@@ -13,7 +13,7 @@ from sutekh.core.SutekhObjects import PhysicalCardSet, \
         IPhysicalCardSet
 from sutekh.gui.CardListFrame import CardListFrame
 from sutekh.gui.CardSetMenu import CardSetMenu
-from sutekh.gui.CardSetController import PhysicalCardSetController
+from sutekh.gui.CardSetController import CardSetController
 
 class CardSetFrame(CardListFrame, object):
     # pylint: disable-msg=R0904
@@ -31,7 +31,7 @@ class CardSetFrame(CardListFrame, object):
             oCS = IPhysicalCardSet(sName)
         except SQLObjectNotFound:
             raise RuntimeError("Card Set %s does not exist" % sName)
-        self._oController = PhysicalCardSetController(sName,
+        self._oController = CardSetController(sName,
                 oMainWindow, self)
 
         self._cModelType = PhysicalCardSet

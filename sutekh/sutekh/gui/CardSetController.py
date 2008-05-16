@@ -16,17 +16,26 @@ from sutekh.core.SutekhObjects import PhysicalCardSet, \
         IExpansion, Expansion
 
 class CardSetController(object):
-    """Card Set Controller object.
-
-       This is the base class for the Physical and Abstract Card Set
-       Controllers.
-       """
+    """Controller class for the Card Sets."""
     def __init__(self, sName, oMainWindow, oFrame):
+        # pylint: disable-msg=E1101
+        # SQLObject methods confuse pylint
         self._oMainWindow = oMainWindow
         self._oMenu = None
         self._oFrame = oFrame
+        self._sFilterType = 'PhysicalCard'
         self._oView = CardSetView(oMainWindow, self, sName)
-        self._sFilterType = None
+        self.__oPhysCardSet = PhysicalCardSet.byName(sName)
+        # We need to cache this for physical_card_deleted checks
+        self.__aPhysCardIds = []
+        self.__aAbsCardIds = []
+        for oPC in self.__oPhysCardSet.cards:
+            oAC = oPC.abstractCard
+            self.__aAbsCardIds.append(oAC.id)
+            self.__aPhysCardIds.append(oPC.id)
+        listen_row_destroy(self.physical_card_deleted, PhysicalCard)
+        listen_row_update(self.physical_card_changed, PhysicalCard)
+        listen_reload(self.reload_card_set, PhysicalCard)
 
     # pylint: disable-msg=W0212
     # explicitly allow access to these values via thesep properties
@@ -36,42 +45,6 @@ class CardSetController(object):
     filtertype = property(fget=lambda self: self._sFilterType,
             doc="Associated Type")
     # pylint: enable-msg=W0212
-
-    def set_card_text(self, sCardName):
-        """Set card text to reflect selected card."""
-        self._oMainWindow.set_card_text(sCardName)
-
-    def inc_card(self, sName, sExpansion):
-        """Returns True if a card was successfully added, False otherwise."""
-        return self.add_card(sName, sExpansion)
-
-    def dec_card(self, sName, sExpansion):
-        """Remove a card, implemented in derived classes"""
-        pass
-
-    def add_card(self, sName, sExpansion):
-        """Add a card, implemented in derived classes"""
-        pass
-
-class PhysicalCardSetController(CardSetController):
-    """Controller class for PhysicalCardSets."""
-    def __init__(self, sName, oMainWindow, oFrame):
-        # pylint: disable-msg=E1101
-        # SQLObject methods confuse pylint
-        super(PhysicalCardSetController, self).__init__(
-                sName, oMainWindow, oFrame)
-        self.__oPhysCardSet = PhysicalCardSet.byName(sName)
-        # We need to cache this for physical_card_deleted checks
-        self.__aPhysCardIds = []
-        self.__aAbsCardIds = []
-        for oPC in self.__oPhysCardSet.cards:
-            oAC = oPC.abstractCard
-            self.__aAbsCardIds.append(oAC.id)
-            self.__aPhysCardIds.append(oPC.id)
-        self._sFilterType = 'PhysicalCard'
-        listen_row_destroy(self.physical_card_deleted, PhysicalCard)
-        listen_row_update(self.physical_card_changed, PhysicalCard)
-        listen_reload(self.reload_card_set, PhysicalCard)
 
     def reload_card_set(self, oAbsCard):
         """When changes happen that may effect this, reload.
@@ -127,6 +100,14 @@ class PhysicalCardSetController(CardSetController):
             else:
                 sExpName = None
             self.model.inc_card_expansion_by_name(oAC.name, sExpName)
+
+    def set_card_text(self, sCardName):
+        """Set card text to reflect selected card."""
+        self._oMainWindow.set_card_text(sCardName)
+
+    def inc_card(self, sName, sExpansion):
+        """Returns True if a card was successfully added, False otherwise."""
+        return self.add_card(sName, sExpansion)
 
     def dec_card(self, sName, sExpansion):
         """Returns True if a card was successfully removed, False otherwise."""
