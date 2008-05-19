@@ -1207,6 +1207,23 @@ class SpecificCardFilter(DirectFilter):
         # SQLObject methods not detected by plylint
         return AbstractCard.q.id == self.__iCardId
 
+class SpecificCardIdFilter(DirectFilter):
+    """
+    This filter matches a single card by id.
+    """
+    types = ['AbstractCard', 'PhysicalCard']
+
+    def __init__(self, iCardId):
+        # pylint: disable-msg=E1101
+        # SQLObject methods not detected by plylint
+        self.__iCardId = iCardId
+
+    # pylint: disable-msg=C0111
+    # don't need docstrings for _get_expression, get_values & _get_joins
+    def _get_expression(self):
+        # pylint: disable-msg=E1101
+        # SQLObject methods not detected by plylint
+        return AbstractCard.q.id == self.__iCardId
 
 # Card Set Filters
 # These filters are designed to select card sets from the database
