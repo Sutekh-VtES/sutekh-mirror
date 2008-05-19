@@ -303,8 +303,8 @@ class CardListModel(gtk.TreeStore):
     def get_inc_dec_flags_from_path(self, oPath):
         """Get the settings of the inc + dec flags for the current path"""
         oIter = self.get_iter(oPath)
-        bInc = self.get_value(oIter, 2)
-        bDec = self.get_value(oIter, 3)
+        bInc = self.get_value(oIter, 3)
+        bDec = self.get_value(oIter, 4)
         return (bInc, bDec)
 
     def get_exp_name_from_path(self, oPath):

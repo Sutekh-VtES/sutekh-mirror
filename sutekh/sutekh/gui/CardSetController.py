@@ -119,23 +119,26 @@ class CardSetController(object):
             return False
 
         # find if there's a physical card of that name in the Set
-        if sExpansion is not None:
-            # Specific Expansion specified by the user, so
-            # just need to consider those cards
+        if not sExpansion:
+            # Not expansion specified, so consider all physical cards
+            aPhysCards = list(PhysicalCard.selectBy(
+                abstractCardID=oAbsCard.id))
+        else:
             if sExpansion == self.model.sUnknownExpansion:
-                aPhysCards = PhysicalCard.selectBy(abstractCardID=oAbsCard.id,
-                        expansionID = None)
+                iExpID = None
             else:
                 iExpID = IExpansion(sExpansion).id
-                aPhysCards = PhysicalCard.selectBy(abstractCardID=oAbsCard.id,
-                        expansionID = iExpID)
-        else:
-            # Need to consider all PhysicalCards
-            aPhysCards = PhysicalCard.selectBy(abstractCardID=oAbsCard.id)
+            aPhysCards = list(PhysicalCard.selectBy(abstractCardID=oAbsCard.id,
+                expansionID = iExpID))
         for oCard in aPhysCards:
-            if oCard.id in self.__aPhysCardIds:
-                # Found one, so remove it
-                self.__oPhysCardSet.removePhysicalCard(oCard.id)
+            # Need to remove a single physical card from the mapping table
+            # Can't use PhysicalCardSet.remove, as that remove all cards
+            aCandCards = list(MapPhysicalCardToPhysicalCardSet.selectBy(
+                    physicalCardID=oCard.id,
+                    physicalCardSetID=self.__oPhysCardSet.id))
+            if len(aCandCards) > 0:
+                # Found candidates, so remove last one
+                MapPhysicalCardToPhysicalCardSet.delete(aCandCards[-1].id)
                 # Update Model
                 self.model.dec_card_by_name(oAbsCard.name)
                 # Update internal card list
@@ -158,35 +161,17 @@ class CardSetController(object):
         except SQLObjectNotFound:
             return False
 
-        if sExpansion is not None:
-            # Specific Expansion specified by the user, so
-            # just need to consider those cards
-            if sExpansion == self.model.sUnknownExpansion:
-                aPhysCards = PhysicalCard.selectBy(abstractCardID=oAbsCard.id,
-                        expansionID = None)
-            else:
-                iExpID = IExpansion(sExpansion).id
-                aPhysCards = PhysicalCard.selectBy(abstractCardID=oAbsCard.id,
-                        expansionID = iExpID)
+        if not sExpansion or sExpansion == self.model.sUnknownExpansion:
+            iExpID = None
         else:
-            # Need to consider all PhysicalCards
-            aPhysCards = PhysicalCard.selectBy(abstractCardID=oAbsCard.id)
+            iExpID = IExpansion(sExpansion).id
+        aPhysCards = list(PhysicalCard.selectBy(abstractCardID=oAbsCard.id,
+            expansionID = iExpID))
 
-        if aPhysCards.count() > 0:
-            aCandCards = []
-            for oCard in aPhysCards:
-                # We want to add a card that's not in this expansion,
-                if oCard.id not in self.__aPhysCardIds:
-                    # We want the card in the fewest other card sets
-                    # Should be effecient due to the Cached joins
-                    aCandCards.append((oCard,
-                        MapPhysicalCardToPhysicalCardSet.selectBy(
-                            physicalCardID = oCard.id).count()))
-            if len(aCandCards) < 1:
-                # No card to be added
-                return False
-            aCandCards.sort(key=lambda x: x[1]) # sort by count
-            oCard = aCandCards[0][0]
+        print aPhysCards
+
+        if len(aPhysCards) > 0:
+            oCard = aPhysCards[0]
             self.__oPhysCardSet.addPhysicalCard(oCard.id)
             self.__oPhysCardSet.sync()
             self.__aPhysCardIds.append(oCard.id)

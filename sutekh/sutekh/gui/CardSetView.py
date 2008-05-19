@@ -32,6 +32,45 @@ class CardSetView(EditableCardListView):
         #self._oModel.basefilter = PhysicalCardSetFilter(self.sSetName)
         self.sDragPrefix = PhysicalCardSet.sqlmeta.table + ":" + self.sSetName
 
+    def process_selection(self):
+        """Create a dictionary from the selection.
+
+           Entries are of the form sCardName : {sExpansion1 : iCount1, ... }
+           for use in drag-'n drop and elsewhere.
+           """
+        oModel, oPathList = self._oSelection.get_selected_rows()
+        dSelectedData = {}
+        for oPath in oPathList:
+            sCardName, sExpansion, iCount, iDepth = \
+                    oModel.get_all_from_path(oPath)
+            if iDepth == 0:
+                # Skip top level items, since they're meaningless for the
+                # selection
+                continue
+            # if a card is selected, then it's children (which are
+            # the expansions) which are selected are ignored, since
+            # We always treat this as all cards selected
+            dSelectedData.setdefault(sCardName, {})
+            if iDepth == 1:
+                # Remove anything already assigned to this,
+                # since parent overrides all
+                dSelectedData[sCardName].clear()
+                # We need to loop over all the children, and add
+                # their expansion counts, so we do the expected thing
+                oIter = oModel.get_iter(oPath)
+                for iChildCount in range(oModel.iter_n_children(oIter)):
+                    oChildIter = oModel.iter_nth_child(oIter, iChildCount)
+                    oPath = oModel.get_path(oChildIter)
+                    sCardName, sExpansion, iCount, iDepth = \
+                            oModel.get_all_from_path(oPath)
+                    dSelectedData[sCardName][sExpansion] = iCount
+            else:
+                if sExpansion in dSelectedData[sCardName]:
+                    continue
+                dSelectedData[sCardName][sExpansion] = iCount
+        return dSelectedData
+
+
     # pylint: disable-msg=R0913, W0613
     # elements required by function signature
     def card_drop(self, oWidget, oContext, iXPos, iYPos, oData, oInfo, oTime):
@@ -70,8 +109,12 @@ class CardSetView(EditableCardListView):
             for iCount, sCardName, sExpansion in aCards:
                 # pylint: disable-msg=W0612
                 # iLoop is just loop counter
-                for iLoop in range(iCount):
+                if aSources[0] == "Phys":
+                    # Only ever add 1 when dragging from physiscal card list
                     self.add_card(sCardName, sExpansion)
+                else:
+                    for iLoop in range(iCount):
+                        self.add_card(sCardName, sExpansion)
             return True
         else:
             return False

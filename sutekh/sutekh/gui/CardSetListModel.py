@@ -64,7 +64,7 @@ class CardSetCardListModel(CardListModel):
                 oCard, iCnt = fGetCard(oItem), fGetCount(oItem)
                 iGrpCnt += iCnt
                 oChildIter = self.append(oSectionIter)
-                bIncCard, bDecCard = self.check_inc_dec_card(oCard, iCnt)
+                bIncCard, bDecCard = self.check_inc_dec_card(iCnt)
                 self.set(oChildIter,
                     0, oCard.name,
                     1, iCnt,
@@ -102,19 +102,17 @@ class CardSetCardListModel(CardListModel):
             oListener.load(aAbsCards)
 
 
-    def check_inc_dec_card(self, oCard, iCnt):
+    def check_inc_dec_card(self, iCnt):
         """Helper function to check whether card can be incremented"""
         if not self.bEditable:
             return False, False
         else:
-            return (iCnt <
-                    PhysicalCard.selectBy(abstractCardID=oCard.id).count(),
-                    iCnt > 0)
+            return True, (iCnt > 0)
 
     def _add_expansion(self, oChildIter, sCardName, sExpansion, tExpInfo):
         """Add an expansion to the card list model."""
         oExpansionIter = self.append(oChildIter)
-        iExpCnt, bDecCard, bIncCard = tExpInfo
+        iExpCnt, bIncCard, bDecCard = tExpInfo
         self.set(oExpansionIter,
                 0, sExpansion,
                 1, iExpCnt,
@@ -125,20 +123,11 @@ class CardSetCardListModel(CardListModel):
                 {}).setdefault(sExpansion, []).append(oExpansionIter)
 
 
-    def check_inc_dec_expansion(self, oCard, sExpansion, iCnt):
+    def check_inc_dec_expansion(self, iCnt):
         """Helper function to check status of expansions"""
-        # pylint: disable-msg=E1101
-        # SQLObject confuses pylint
-        if sExpansion != self.sUnknownExpansion:
-            iThisExpID = IExpansion(sExpansion).id
-            iCardCnt = PhysicalCard.selectBy(abstractCardID=oCard.id,
-                    expansionID=iThisExpID).count()
-        else:
-            iCardCnt = PhysicalCard.selectBy(abstractCardID=oCard.id,
-                    expansionID=None).count()
-        bDecCard = iCnt > 0
-        bIncCard = iCnt < iCardCnt
-        return bIncCard, bDecCard
+        if not self.bEditable:
+            return False, False
+        return True, (iCnt > 0)
 
     def get_expansion_info(self, oCard, dExpanInfo):
         """Get information about expansions"""
@@ -153,24 +142,20 @@ class CardSetCardListModel(CardListModel):
                     sName = oPC.expansion.name
                 else:
                     sName = self.sUnknownExpansion
-                # There is a Physical Card here, so by default bIncCard must
-                # be true. Loop below will correct this when needed
-                dExpansions.setdefault(sName, [0, False, True])
+                dExpansions.setdefault(sName, [0, True, False])
                 dCount.setdefault(sName, 0)
                 dCount[sName] += 1
         for oExpansion, iCnt in dExpanInfo.iteritems():
-            bDecCard = False
             bIncCard = False
+            bDecCard = False
             if oExpansion is not None:
                 sKey = oExpansion.name
             else:
                 sKey = self.sUnknownExpansion
             if self.bEditable:
-                iCardCnt = dCount.get(sKey, 0) # Return 0 for unknown keys
+                bIncCard = True
                 bDecCard = iCnt > 0
-                # Are cards of this expansion still available in the PC list?
-                bIncCard = iCnt < iCardCnt
-            dExpansions[sKey] = [iCnt, bDecCard, bIncCard]
+            dExpansions[sKey] = [iCnt, bIncCard, bDecCard]
         return dExpansions
 
     def check_expansion_iter_stays(self, oCard, sExpansion, iCnt):
@@ -330,8 +315,7 @@ class CardSetCardListModel(CardListModel):
             if sThisExp == sExpansion:
                 iCnt = 1
                 if self.bEditable:
-                    bIncCard, bDecCard = self.check_inc_dec_expansion(
-                            oCard, sThisExp, iCnt)
+                    bIncCard, bDecCard = self.check_inc_dec_expansion(iCnt)
                 else:
                     bIncCard, bDecCard = False, False
                 for oParent, oSibling in zip(aParenIters, aSiblings):
@@ -367,8 +351,7 @@ class CardSetCardListModel(CardListModel):
                 if sThisExp == sExpansion:
                     iCnt += iChg
                 if self.bEditable:
-                    bIncCard, bDecCard = self.check_inc_dec_expansion(
-                            oCard, sThisExp, iCnt)
+                    bIncCard, bDecCard = self.check_inc_dec_expansion(iCnt)
                 else:
                     bIncCard, bDecCard = False, False
                 if self.check_expansion_iter_stays(oCard, sThisExp, iCnt):
@@ -401,13 +384,13 @@ class CardSetCardListModel(CardListModel):
 
             if iCnt > 0:
                 self.set(oIter, 1, iCnt, 2, 0)
-                bIncCard, bDecCard = self.check_inc_dec_card(oCard, iCnt)
+                bIncCard, bDecCard = self.check_inc_dec_card(iCnt)
                 self.set(oIter, 3, bIncCard)
                 self.set(oIter, 4, bDecCard)
             elif self.bAddAllAbstractCards:
                 # Need to clean up all the children
                 self.set(oIter, 1, iCnt, 2, 0)
-                bIncCard, bDecCard = self.check_inc_dec_card(oCard, iCnt)
+                bIncCard, bDecCard = self.check_inc_dec_card(iCnt)
                 self.set(oIter, 3, bIncCard)
                 self.set(oIter, 4, bDecCard)
                 if self._dNameExpansion2Iter.has_key(sCardName):
@@ -484,7 +467,7 @@ class CardSetCardListModel(CardListModel):
                 oCard, iCnt = fGetCard(oItem), fGetCount(oItem)
                 iGrpCnt += iCnt
                 oChildIter = self.append(oSectionIter)
-                bIncCard, bDecCard = self.check_inc_dec_card(oCard, iCnt)
+                bIncCard, bDecCard = self.check_inc_dec_card(iCnt)
                 self.set(oChildIter,
                     0, oCard.name,
                     1, iCnt,
