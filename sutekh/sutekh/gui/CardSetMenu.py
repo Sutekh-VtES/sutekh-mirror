@@ -16,6 +16,7 @@ from sutekh.gui.CreateCardSetDialog import CreateCardSetDialog
 from sutekh.io.XmlFileHandling import PhysicalCardSetXmlFile
 from sutekh.gui.EditAnnotationsDialog import EditAnnotationsDialog
 from sutekh.gui.PaneMenu import CardListMenu
+from sutekh.gui.CardSetManagementController import reparent_card_set
 
 class CardSetMenu(CardListMenu):
     # pylint: disable-msg=R0904
@@ -113,7 +114,7 @@ class CardSetMenu(CardListMenu):
             if sComment is not None:
                 oCS.comment = sComment
             if oParent != oCS.parent:
-                oCS.parent = oParent
+                reparent_card_set(oCS, oParent)
             if oCS.parent:
                 self._oController.view.set_parent_count_col_vis(True)
             else:

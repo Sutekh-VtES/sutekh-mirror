@@ -165,3 +165,21 @@ def pretty_xml(oElement, iIndentLevel=0):
     else:
         if iIndentLevel and (not oElement.tail or not oElement.tail.strip()):
             oElement.tail = sIndent
+
+def detect_loop(oCardSet):
+    """Checks whether the given card set is part of a loop"""
+    oParent = oCardSet.parent
+    while oParent:
+        if oParent == oCardSet:
+            return True # we have a loop
+        oParent = oParent.parent
+    return False # we've hit none, so no loop
+
+def find_children(oCardSet):
+    """Find all the children of the given card set"""
+    aChildren = []
+    for oCS in PhysicalCardSet.select():
+        if oCS.parent == oCardSet:
+            aChildren.append(oCS)
+    return aChildren
+

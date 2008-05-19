@@ -1,0 +1,226 @@
+# CardSetManagementController.py
+# -*- coding: utf8 -*-
+# vim:fileencoding=utf8 ai ts=4 sts=4 et sw=4
+# Copyright 2008 Neil Muller <drnlmuller+sutekh@gmail.com>
+# GPL - see COPYING for details
+
+"""Controller class the card set list."""
+
+import gtk
+from sqlobject import SQLObjectNotFound
+from sutekh.core.SutekhObjects import PhysicalCardSet
+from sutekh.gui.FilterDialog import FilterDialog
+from sutekh.gui.CardSetManagementView import CardSetManagementView
+from sutekh.gui.CreateCardSetDialog import CreateCardSetDialog
+from sutekh.gui.SutekhDialog import do_complaint_warning
+from sutekh.SutekhUtility import delete_physical_card_set, find_children, \
+        detect_loop
+
+def _get_loop_names(oCardSet):
+    """Return a list names of the card sets in the loop."""
+    aLoop = [oCardSet.name]
+    oParent = oCardSet.parent
+    while oParent != oCardSet and oParent:
+        aLoop.append(oParent.name)
+        oParent = oParent.parent
+    if not oParent:
+        # Safet check case
+        return []
+    aLoop.reverse()
+    return aLoop
+
+def reparent_card_set(oCardSet, oNewParent):
+    """Helper function to ensure that reparenting a card set doesn't
+       cause loops"""
+    if oNewParent:
+        # Can only be a problem if the new parent is a card set
+        oOldParent = oCardSet.parent
+        oCardSet.parent = oNewParent
+        oCardSet.syncUpdate()
+        if detect_loop(oCardSet):
+            oCardSet.parent = oOldParent
+            oCardSet.syncUpdate()
+            do_complaint_warning('Changing parent of %s introduces a loop.'
+                    ' Leaving the parent unchanged.' % oCardSet.name)
+            return
+    else:
+        oCardSet.parent = oNewParent
+        oCardSet.syncUpdate()
+
+class CardSetManagementController(object):
+    """Controller object for the card set list."""
+    # pylint: disable-msg=R0904
+    # gtk.Widget, so lots of public methods
+    def __init__(self, oMainWindow, oFrame):
+        self._oMainWindow = oMainWindow
+        self._oFrame = oFrame
+        self._oFilterDialog = None
+        # Check the current set for loops
+        for oCS in PhysicalCardSet.select():
+            if detect_loop(oCS):
+                sLoop = "%s->%s" % ("->".join(_get_loop_names(oCS)),
+                        oCS.name)
+                do_complaint_warning(
+                        'Loop %s in the card sets relationships.\n'
+                        'Breaking at %s' % (sLoop, oCS.name))
+                # We break the loop here, and let the user fix things,
+                # rather than try and be too clever
+                oCS.parent = None
+                oCS.syncUpdate()
+        self._oView = CardSetManagementView(oMainWindow, self)
+        self._oModel = self._oView.get_model()
+
+    # pylint: disable-msg=W0212
+    # explicitly allow access to these values via thesep properties
+    view = property(fget=lambda self: self._oView, doc="Associated View")
+    model = property(fget=lambda self: self._oModel, doc="View's Model")
+    frame = property(fget=lambda self: self._oFrame, doc="Associated Frame")
+    filtertype = property(fget=lambda self: self._sFilterType,
+            doc="Associated Type")
+    # pylint: enable-msg=W0212
+
+    # pylint: disable-msg=W0613
+    # oWidget, oMenuItem required by function signature
+    def get_filter(self, oMenuItem):
+        """Get the Filter from the FilterDialog."""
+        if self._oFilterDialog is None:
+            self._oFilterDialog = FilterDialog(self._oMainWindow,
+                    self._oMainWindow.config_file, 'PhysicalCardSet')
+
+        self._oFilterDialog.run()
+
+        if self._oFilterDialog.was_cancelled():
+            return # Change nothing
+
+        oFilter = self._oFilterDialog.get_filter()
+        if oFilter != None:
+            # pylint: disable-msg=C0103
+            # selectfilter OK here
+            self._oModel.selectfilter = oFilter
+            if not self._oModel.applyfilter:
+                # If a filter is set, automatically apply
+                oMenuItem.set_apply_filter(True)
+            else:
+                # Filter Changed, so reload
+                self._oModel.load()
+        else:
+            # Filter is set to blank, so we treat this as disabling
+            # Filter
+            if self._oModel.applyfilter:
+                oMenuItem.set_apply_filter(False)
+            else:
+                self._oModel.load()
+
+    def run_filter(self, bState):
+        """Enable or diable the current filter based on bState"""
+        # pylint: disable-msg=C0103
+        # applyfilter OK here
+        if self._oModel.applyfilter != bState:
+            self._oModel.applyfilter = bState
+            self._oModel.load()
+
+    def create_new_card_set(self, oWidget):
+        """Create a new card set"""
+        oDialog = CreateCardSetDialog(self._oMainWindow)
+        oDialog.run()
+        sName = oDialog.get_name()
+        # pylint: disable-msg=E1102, W0612
+        # W0612 - oCS isn't important, as the creation of the new card
+        # set is what matters
+        if sName:
+            sAuthor = oDialog.get_author()
+            sComment = oDialog.get_comment()
+            oParent = oDialog.get_parent()
+            oCS = PhysicalCardSet(name=sName, author=sAuthor,
+                    comment=sComment, parent=oParent)
+            self._oMainWindow.add_new_physical_card_set(sName)
+
+    def delete_card_set(self, oWidget):
+        """Delete the selected card set."""
+        sSetName = self._oView.get_selected_card_set()
+        if not sSetName:
+            return
+        # pylint: disable-msg=E1101
+        # sqlobject confuses pylint
+        try:
+            oCS = PhysicalCardSet.byName(sSetName)
+        except SQLObjectNotFound:
+            return
+        # Check for card sets this is a parent of
+        aChildren = find_children(oCS)
+        iResponse = gtk.RESPONSE_OK
+        if len(oCS.cards) > 0 and len(aChildren) > 0:
+            iResponse = do_complaint_warning("Card Set %s Not Empty and"
+                    " Has Children. Really Delete?" % sSetName)
+        elif len(oCS.cards) > 0:
+            iResponse = do_complaint_warning("Card Set %s Not Empty."
+                    " Really Delete?" % sSetName)
+        elif len(aChildren) > 0:
+            iResponse = do_complaint_warning("Card Set %s"
+                    " Has Children. Really Delete?" % sSetName)
+        if iResponse == gtk.RESPONSE_CANCEL:
+            # Don't delete
+            return
+        for oChildCS in aChildren:
+            oChildCS.parent = oCS.parent
+            oChildCS.syncUpdate()
+        # Got here, so delete the card set
+        sFrameName = sSetName
+        delete_physical_card_set(sSetName)
+        self._oMainWindow.remove_frame_by_name(sFrameName)
+        self.reload_keep_expanded(False)
+
+    def toggle_in_use_flag(self, oMenuItem):
+        """Toggle the in-use status of the card set"""
+        sSetName = self._oView.get_selected_card_set()
+        if not sSetName:
+            return
+        try:
+            # pylint: disable-msg=E1101
+            # SQLObject confuses pylint
+            oCS = PhysicalCardSet.byName(sSetName)
+        except SQLObjectNotFound:
+            return
+        oCS.inuse = not oCS.inuse
+        oCS.syncUpdate()
+        self.reload_keep_expanded(True)
+
+    def row_clicked(self, oTreeView, oPath, oColumn):
+        """Handle row clicked events.
+
+           allow double clicks to open a card set.
+           """
+        sName = self._oModel.get_name_from_path(oPath)
+        # check if card set is open before opening again
+        oPane = self._oMainWindow.find_pane_by_name(sName)
+        if oPane is not None:
+            return # Already open, so do nothing
+        self._oMainWindow.add_new_physical_card_set(sName)
+
+    def reload_keep_expanded(self, bRestoreSelection):
+        """Reload with current expanded state.
+
+           Attempt to reload the card list, keeping the existing structure
+           of expanded rows.
+           """
+        # Internal helper functions
+        # See what's expanded
+        # pylint: disable-msg=W0612
+        # we're not interested in oModel here
+        oSelection = self._oView.get_selection()
+        oModel, aSelectedRows = oSelection.get_selected_rows()
+        if len(aSelectedRows) > 0:
+            oSelPath = aSelectedRows[0]
+        else:
+            oSelPath = None
+        dExpandedDict = {}
+        self._oModel.foreach(self._oView.get_row_status, dExpandedDict)
+        # Reload, but use cached info
+        self._oModel.load()
+        # Re-expand stuff
+        self._oView.set_row_status(dExpandedDict)
+        if oSelPath and bRestoreSelection:
+            # Restore selection
+            oSelection.select_path(oSelPath)
+
+

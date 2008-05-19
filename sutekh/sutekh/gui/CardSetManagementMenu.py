@@ -19,11 +19,11 @@ class CardSetManagementMenu(PaneMenu, object):
        """
     # pylint: disable-msg=R0904
     # gtk.Widget, so many public methods
-    def __init__(self, oFrame, oWindow, oView):
+    def __init__(self, oFrame, oWindow, oController):
         super(CardSetManagementMenu, self).__init__(oFrame, oWindow)
         self.__sName = 'Card Set List'
         self.__sSetTypeName = 'Card Set'
-        self.__oView = oView
+        self._oController = oController
         self.__create_actions_menu()
         self.create_filter_menu()
 
@@ -33,11 +33,11 @@ class CardSetManagementMenu(PaneMenu, object):
         """Add the Actions Menu"""
         oMenu  = self.create_submenu(self, "_Actions")
         self.create_menu_item('Create New Card Set', oMenu,
-                self._oFrame.create_new_card_set)
+                self._oController.create_new_card_set)
         self.create_menu_item('Mark/UnMark Card Set as in use', oMenu,
-                    self._oFrame.toggle_in_use_flag)
+                    self._oController.toggle_in_use_flag)
         self.create_menu_item('Delete selected Card Set', oMenu,
-                self._oFrame.delete_card_set, 'Delete')
+                self._oController.delete_card_set, 'Delete')
         oMenu.add(gtk.SeparatorMenuItem())
         self.create_menu_item("Remove This Pane", oMenu,
                 self._oFrame.close_menu_item)
@@ -48,9 +48,9 @@ class CardSetManagementMenu(PaneMenu, object):
     # oWidget required by function signature
     def toggle_apply_filter(self, oWidget):
         """Handle menu toggle events"""
-        self.__oView.run_filter(oWidget.active)
+        self._oController.run_filter(oWidget.active)
 
     def set_active_filter(self, oWidget):
         """Handle the menu activate signal"""
-        self.__oView.get_filter(self)
+        self._oController.get_filter(self)
 

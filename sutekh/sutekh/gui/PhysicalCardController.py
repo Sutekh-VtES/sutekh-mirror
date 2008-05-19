@@ -20,12 +20,13 @@ class PhysicalCardController(object):
         self.__oFrame = oFrame
         self.__oView = PhysicalCardView(self, oMainWindow,
                 oMainWindow.config_file)
+        self.__oModel = self.__oView.get_model()
         self._sFilterType = 'PhysicalCard'
 
     # pylint: disable-msg=W0212
     # We provide read access to these items via these properties
     view = property(fget=lambda self: self.__oView, doc="Associated View")
-    model = property(fget=lambda self: self.__oView._oModel,
+    model = property(fget=lambda self: self.__oModel,
             doc="View's Model")
     frame = property(fget=lambda self: self.__oFrame, doc="Associated Frame")
     filtertype = property(fget=lambda self: self._sFilterType,
@@ -35,3 +36,10 @@ class PhysicalCardController(object):
     def set_card_text(self, sCardName):
         """Set the card text to reflect the selected card."""
         self.__oMainWin.set_card_text(sCardName)
+
+    # pylint: disable-msg=W0613
+    # oWidget required by function signature
+    def toggle_expansion(self, oWidget):
+        """Toggle whether the expansion information is shown."""
+        self.__oModel.bExpansions = oWidget.active
+        self.__oView.reload_keep_expanded()

@@ -8,15 +8,10 @@
 """Pane for a list of card sets"""
 
 import gtk
-from sqlobject import SQLObjectNotFound
-from sutekh.SutekhUtility import delete_physical_card_set
 from sutekh.core.SutekhObjects import PhysicalCardSet
-from sutekh.core.Filters import NullFilter
-from sutekh.gui.SutekhDialog import do_complaint_warning
 from sutekh.gui.BasicFrame import BasicFrame
-from sutekh.gui.CreateCardSetDialog import CreateCardSetDialog
+from sutekh.gui.CardSetManagementController import CardSetManagementController
 from sutekh.gui.CardSetManagementMenu import CardSetManagementMenu
-from sutekh.gui.CardSetManagementView import CardSetManagementView
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 
 class CardSetManagementFrame(BasicFrame):
@@ -33,10 +28,8 @@ class CardSetManagementFrame(BasicFrame):
 
     def __init__(self, oMainWindow):
         super(CardSetManagementFrame, self).__init__(oMainWindow)
-        self._oFilter = NullFilter()
-        self._oFilterDialog = None
         self._oMenu = None
-        self._oView = CardSetManagementView(oMainWindow)
+        self._oController = CardSetManagementController(oMainWindow, self)
         self.set_name("card sets list")
         self.add_parts()
 
@@ -54,11 +47,12 @@ class CardSetManagementFrame(BasicFrame):
         oMbox.pack_start(self._oTitle, False, False)
 
         self._oMenu = CardSetManagementMenu(self, self._oMainWindow,
-                self._oView)
+                self._oController)
 
         oMbox.pack_start(self._oMenu, False, False)
 
-        oMbox.pack_start(AutoScrolledWindow(self._oView), expand=True)
+        oMbox.pack_start(AutoScrolledWindow(self._oController.view),
+                expand=True)
 
         # setup default targets
         self.set_drag_handler()
@@ -68,60 +62,4 @@ class CardSetManagementFrame(BasicFrame):
 
     def reload(self):
         """Reload the frame contents"""
-        self._oView.reload_keep_expanded(True)
-
-    # pylint: disable-msg=W0613
-    # oWidget, oMenuItem required by function signature
-    def create_new_card_set(self, oWidget):
-        """Create a new card set"""
-        oDialog = CreateCardSetDialog(self._oMainWindow)
-        oDialog.run()
-        sName = oDialog.get_name()
-        # pylint: disable-msg=E1102, W0612
-        # W0612 - oCS isn't important, as the creation of the new card
-        # set is what matters
-        if sName:
-            sAuthor = oDialog.get_author()
-            sComment = oDialog.get_comment()
-            oParent = oDialog.get_parent()
-            oCS = PhysicalCardSet(name=sName, author=sAuthor,
-                    comment=sComment, parent=oParent)
-            self._oMainWindow.add_new_physical_card_set(sName)
-
-    def delete_card_set(self, oWidget):
-        """Delete the selected card set."""
-        sSetName = self._oView.get_selected_card_set()
-        if not sSetName:
-            return
-        # pylint: disable-msg=E1101
-        # sqlobject confuses pylint
-        try:
-            oCS = PhysicalCardSet.byName(sSetName)
-        except SQLObjectNotFound:
-            return
-        if len(oCS.cards) > 0:
-            iResponse = do_complaint_warning("Card Set %s Not Empty. Really"
-                    " Delete?" % sSetName)
-            if iResponse == gtk.RESPONSE_CANCEL:
-                # Don't delete
-                return
-        # Got here, so delete the card set
-        sFrameName = sSetName
-        delete_physical_card_set(sSetName)
-        self._oMainWindow.remove_frame_by_name(sFrameName)
-        self.reload()
-
-    def toggle_in_use_flag(self, oMenuItem):
-        """Toggle the in-use status of the card set"""
-        sSetName = self._oView.get_selected_card_set()
-        if not sSetName:
-            return
-        try:
-            # pylint: disable-msg=E1101
-            # SQLObject confuses pylint
-            oCS = PhysicalCardSet.byName(sSetName)
-        except SQLObjectNotFound:
-            return
-        oCS.inuse = not oCS.inuse
-        oCS.syncUpdate()
-        self._oView.reload_keep_expanded(True)
+        self._oController.reload_keep_expanded(True)

@@ -66,7 +66,6 @@ class CardSetManagementModel(gtk.TreeStore):
                 oParent = oCardSet
                 aToAdd = []
                 while oParent and oParent.name not in self._dName2Iter:
-                    # FIXME: Add loop detection + raise error on loops
                     aToAdd.insert(0, oParent) # Insert at the head
                     oParent = oParent.parent
                 if oParent and oParent.name in self._dName2Iter:

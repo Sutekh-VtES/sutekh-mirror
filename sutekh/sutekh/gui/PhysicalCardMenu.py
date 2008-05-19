@@ -9,9 +9,7 @@
 """Menu for the Physical card collection."""
 
 import gtk
-from sutekh.gui.SutekhFileWidget import ExportDialog
 from sutekh.gui.PaneMenu import CardListMenu
-from sutekh.io.XmlFileHandling import PhysicalCardXmlFile
 
 class PhysicalCardMenu(CardListMenu):
     """Menu for the Physical card collection.
@@ -35,32 +33,8 @@ class PhysicalCardMenu(CardListMenu):
         oMenu = self.create_submenu(self, "_Actions")
 
         # items
-        self.create_menu_item("Export Collection to File", oMenu,
-                self._do_export)
         self.create_check_menu_item('Show Card Expansions', oMenu,
-                self._toggle_expansion, True)
+                self._oController.toggle_expansion, True)
 
         oMenu.add(gtk.SeparatorMenuItem())
         self.add_common_actions(oMenu)
-
-    # pylint: enable-msg=W0201
-
-    # pylint: disable-msg=W0613
-    # oWidget required by function signature
-    def _do_export(self, oWidget):
-        """Handling exporting the card list to file."""
-        oFileChooser = ExportDialog("Save Collection As", self._oMainWindow,
-                'MyCollection.xml')
-        oFileChooser.add_filter_with_pattern('XML Files', ['*.xml'])
-        oFileChooser.run()
-        sFileName = oFileChooser.get_name()
-        if sFileName is not None:
-            oWriter = PhysicalCardXmlFile(sFileName)
-            oWriter.write()
-
-    def _toggle_expansion(self, oWidget):
-        """Toggle whether the expansion information is shown."""
-        self._oController.model.bExpansions = oWidget.active
-        self._oController.view.reload_keep_expanded()
-
-    # pylint: enable-msg=W0613

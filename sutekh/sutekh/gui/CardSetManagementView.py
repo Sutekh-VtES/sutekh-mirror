@@ -8,18 +8,18 @@
 
 import gtk
 import unicodedata
-from sutekh.gui.FilterDialog import FilterDialog
 from sutekh.gui.CardSetManagementModel import CardSetManagementModel
 
 class CardSetManagementView(gtk.TreeView, object):
     """Tree View for the card set list."""
     # pylint: disable-msg=R0904
     # gtk.Widget, so lots of public methods
-    def __init__(self, oMainWindow):
+    def __init__(self, oMainWindow, oController):
         self._oModel = CardSetManagementModel(oMainWindow)
         super(CardSetManagementView, self).__init__(self._oModel)
 
         self._oMainWin = oMainWindow
+        self._oController = oController
 
         # Selecting rows
         self._oSelection = self.get_selection()
@@ -40,14 +40,9 @@ class CardSetManagementView(gtk.TreeView, object):
                 aTargets, gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
 
         self.connect('drag_data_get', self.drag_card_set)
-        self.connect('row_activated', self.row_clicked)
-        self.bReentrant = False
-        self.bSelectTop = 0
+        self.connect('row_activated', self._oController.row_clicked)
 
-        # Filtering Dialog
-        self._oFilterDialog = None
         self.set_name('card set view')
-
         # Grid Lines
         if hasattr(self, 'set_grid_lines'):
             self.set_grid_lines(gtk.TREE_VIEW_GRID_LINES_BOTH)
@@ -62,7 +57,7 @@ class CardSetManagementView(gtk.TreeView, object):
     # Help functions used by reload_keep_expanded
     # pylint: disable-msg=W0613
     # Various arguments required by function signatures
-    def __get_row_status(self, oModel, oPath, oIter, dExpandedDict):
+    def get_row_status(self, oModel, oPath, oIter, dExpandedDict):
         """Create a dictionary of rows and their expanded status."""
         if self.row_expanded(oPath):
             dExpandedDict.setdefault(oPath,
@@ -71,7 +66,7 @@ class CardSetManagementView(gtk.TreeView, object):
 
     # pylint: disable-msg=W0613
 
-    def __set_row_status(self, dExpandedDict):
+    def set_row_status(self, dExpandedDict):
         """Attempt to expand the rows listed in dExpandedDict."""
         for oPath in dExpandedDict:
             # pylint: disable-msg=W0704
@@ -83,31 +78,6 @@ class CardSetManagementView(gtk.TreeView, object):
             except ValueError:
                 pass
         return False
-
-    def reload_keep_expanded(self, bRestoreSelection):
-        """Reload with current expanded state.
-
-           Attempt to reload the card list, keeping the existing structure
-           of expanded rows.
-           """
-        # Internal helper functions
-        # See what's expanded
-        # pylint: disable-msg=W0612
-        # we're not interested in oModel here
-        oModel, aSelectedRows = self._oSelection.get_selected_rows()
-        if len(aSelectedRows) > 0:
-            oSelPath = aSelectedRows[0]
-        else:
-            oSelPath = None
-        dExpandedDict = {}
-        self._oModel.foreach(self.__get_row_status, dExpandedDict)
-        # Reload, but use cached info
-        self._oModel.load()
-        # Re-expand stuff
-        self.__set_row_status(dExpandedDict)
-        if oSelPath and bRestoreSelection:
-            # Restore selection
-            self._oSelection.select_path(oSelPath)
 
     # Introspection
 
@@ -123,46 +93,6 @@ class CardSetManagementView(gtk.TreeView, object):
     def to_ascii(sName):
         """Convert a card name or key to a canonical ASCII form."""
         return unicodedata.normalize('NFKD', sName).encode('ascii','ignore')
-
-    # Filtering
-
-    def get_filter(self, oMenu):
-        """Get the Filter from the FilterDialog."""
-        if self._oFilterDialog is None:
-            self._oFilterDialog = FilterDialog(self._oMainWin,
-                    self._oMainWin.config_file, 'PhysicalCardSet')
-
-        self._oFilterDialog.run()
-
-        if self._oFilterDialog.was_cancelled():
-            return # Change nothing
-
-        oFilter = self._oFilterDialog.get_filter()
-        if oFilter != None:
-            # pylint: disable-msg=C0103
-            # selectfilter OK here
-            self._oModel.selectfilter = oFilter
-            if not self._oModel.applyfilter:
-                # If a filter is set, automatically apply
-                oMenu.set_apply_filter(True)
-            else:
-                # Filter Changed, so reload
-                self._oModel.load()
-        else:
-            # Filter is set to blank, so we treat this as disabling
-            # Filter
-            if self._oModel.applyfilter:
-                oMenu.set_apply_filter(False)
-            else:
-                self._oModel.load()
-
-    def run_filter(self, bState):
-        """Enable or diable the current filter based on bState"""
-        # pylint: disable-msg=C0103
-        # applyfilter OK here
-        if self._oModel.applyfilter != bState:
-            self._oModel.applyfilter = bState
-            self._oModel.load()
 
     # pylint: disable-msg=R0913, W0613
     # arguments as required by the function signature
@@ -199,7 +129,6 @@ class CardSetManagementView(gtk.TreeView, object):
         # Fell through
         return True
 
-
     def drag_card_set(self, oBtn, oDragContext, oSelectionData, oInfo, oTime):
         """Allow card sets to be dragged to a frame."""
         sSetName = self.get_selected_card_set()
@@ -207,19 +136,6 @@ class CardSetManagementView(gtk.TreeView, object):
             return
         sData = "\n".join(['Card Set:', sSetName])
         oSelectionData.set(oSelectionData.target, 8, sData)
-
-    def row_clicked(self, oTreeView, oPath, oColumn):
-        """Handle row clicked events.
-
-           allow double clicks to open a card set.
-           """
-        oModel = self.get_model()
-        sName = oModel.get_name_from_path(oPath)
-        # check if card set is open before opening again
-        oPane = self._oMainWin.find_pane_by_name(sName)
-        if oPane is not None:
-            return # Already open, so do nothing
-        self._oMainWin.add_new_physical_card_set(sName)
 
     # pylint: enable-msg=R0913, W0613
 
