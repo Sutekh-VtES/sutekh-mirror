@@ -122,6 +122,8 @@ class CardListModel(gtk.TreeStore):
 
     # various utilty functions for checking the model state
 
+    # pylint: disable-msg=W0613
+    # oCard needed so children can override this sensibly
     def get_expansion_info(self, oCard, dExpanInfo):
         """Get information about expansions"""
         aExpansions = []
@@ -134,6 +136,8 @@ class CardListModel(gtk.TreeStore):
                 sName = self.sUnknownExpansion
             aExpansions.append(sName)
         return aExpansions
+
+    # pylint: enable-msg=W0613
 
     def load(self):
         # pylint: disable-msg=R0914
@@ -148,6 +152,8 @@ class CardListModel(gtk.TreeStore):
         self._dGroupName2Iter = {}
 
         oCardIter = self.get_card_iterator(self.get_current_filter())
+        # pylint: disable-msg=W0612
+        # fGetCount is not used here
         fGetCard, fGetCount, fGetExpanInfo, oGroupedIter, aAbsCards = \
                 self.grouped_card_iter(oCardIter)
 

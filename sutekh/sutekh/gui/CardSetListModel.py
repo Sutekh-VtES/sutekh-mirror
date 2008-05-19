@@ -1,4 +1,4 @@
-# CardListModel.py
+# CardSetListModel.py
 # -*- coding: utf8 -*-
 # vim:fileencoding=utf8 ai ts=4 sts=4 et sw=4
 # Copyright 2006 Simon Cross <hodgestar@gmail.com>
@@ -15,8 +15,8 @@ from sutekh.gui.CardListModel import CardListModel
 
 
 class CardSetCardListModel(CardListModel):
-    # pylint: disable-msg=R0904
-    # inherit a lot of public methods for gtk
+    # pylint: disable-msg=R0904, R0902
+    # inherit a lot of public methods for gtk, need local attributes for state
     """CardList Model specific to lists of physical cards.
 
        Handles the constraint that the available number of cards

@@ -29,8 +29,7 @@ from sutekh.core.Abbreviations import Rarities
 # (arguablely overly) complex trickery to read old databases, and we create a
 # copy in sqlite memory database first, before commiting to the actual DB
 
-# Utility Exceptions
-
+# Utility Exception
 class UnknownVersion(Exception):
     """Exception for versions we cannot handle"""
     def __init__(self, sTableName):
@@ -42,7 +41,6 @@ class UnknownVersion(Exception):
 
 # We Need to clone the SQLObject classes in SutekhObjects so we can read
 # old versions
-
 # pylint: disable-msg=C0103, W0232
 # C0103 - names set largely by SQLObject conventions, so ours don't apply
 # W0232 - SQLObject classes don't have user defined __init__
@@ -76,8 +74,8 @@ class AbstractCard_v2(SQLObject):
     discipline = RelatedJoin('DisciplinePair',
             intermediateTable='abs_discipline_pair_map',
             createRelatedTable=False)
-    rarity = RelatedJoin('RarityPair',
-            intermediateTable='abs_rarity_pair_map', createRelatedTable=False)
+    rarity = RelatedJoin('RarityPair', intermediateTable='abs_rarity_pair_map',
+            createRelatedTable=False)
     clan = RelatedJoin('Clan', intermediateTable='abs_clan_map',
             createRelatedTable=False)
     cardtype = RelatedJoin('CardType', intermediateTable='abs_type_map',
@@ -158,8 +156,7 @@ class AbstractCard_v3(SQLObject):
             intermediateTable='abs_discipline_pair_map',
             createRelatedTable=False)
     rarity = RelatedJoin('RarityPair',
-            intermediateTable='abs_rarity_pair_map',
-            createRelatedTable=False)
+            intermediateTable='abs_rarity_pair_map', createRelatedTable=False)
     clan = RelatedJoin('Clan',
             intermediateTable='abs_clan_map', createRelatedTable=False)
     cardtype = RelatedJoin('CardType', intermediateTable='abs_type_map',
@@ -194,6 +191,7 @@ class PhysicalCardSet_v4(SQLObject):
 class MapAbstractCardToAbstractCardSet_v3(SQLObject):
     """Old abstract card map to need so we can drop tables properly"""
     class sqlmeta:
+        """meta class used to set the correct table."""
         table = 'abstract_map'
     abstractCard = ForeignKey('AbstractCard_v3', notNull=True)
     abstractCardSet = ForeignKey('AbstractCardSet_v3', notNull=True)
@@ -286,8 +284,7 @@ def old_database_count(oConn):
         iCount += PhysicalCardSet_v3.select(connection=oConn).count()
     elif oVer.check_tables_and_versions([PhysicalCardSet], [4], oConn):
         iCount += PhysicalCardSet_v4.select(connection=oConn).count()
-    if oVer.check_tables_and_versions([AbstractCardSet_v3],
-            [3], oConn):
+    if oVer.check_tables_and_versions([AbstractCardSet_v3], [3], oConn):
         iCount += AbstractCardSet_v3.select(connection=oConn).count()
     return iCount
 
@@ -600,7 +597,6 @@ def get_new_physical_card(oCard, oTrans, aMessages):
 
        If oCard is an AbstractCard, use None as the expansion.
        """
-
     if hasattr(oCard,'abstractCardID'):
         # must be a physical card
         oExp = oCard.expansion
@@ -608,7 +604,6 @@ def get_new_physical_card(oCard, oTrans, aMessages):
     else:
         oExp = None
         oId = oCard.id
-
     try:
         oNewCard = PhysicalCard.selectBy(
                     abstractCardID=oId,
@@ -619,12 +614,10 @@ def get_new_physical_card(oCard, oTrans, aMessages):
 
         # probably an invalid (AbstractCard, Expansion) pair in the old
         # database. Try with no expansion.
-
         aMessages.append("'%s' isn't listed as appearing in" \
                          " expansion '%s'. Attempting to insert " \
                          " without an expansion." \
                          % (oCard.abstractCard.name, oCard.expansion.name))
-
         oNewCard = PhysicalCard.selectBy(
                     abstractCardID=oId,
                     expansion=None, connection=oTrans).getOne()
@@ -875,7 +868,6 @@ def copy_database(oOrigConn, oDestConnn, oLogHandler=None):
             (copy_physical_card, 'PhysicalCard table', True),
             (copy_physical_card_set, 'PhysicalCardSet table', True),
             ]
-
     for fCopy, sName, bPassLogger in aToCopy:
         try:
             if bRes:
@@ -963,16 +955,14 @@ def create_memory_copy(oTempConn, oLogHandler=None):
         oVer = DatabaseVersion()
         oVer.expire_cache()
         return bRes, aMessages
-    else:
-        return (False, ["Unable to create tables"])
+    return (False, ["Unable to create tables"])
 
 def create_final_copy(oTempConn, oLogHandler=None):
     """Copy from the memory database to the real thing"""
     drop_old_tables(sqlhub.processConnection)
     if refresh_tables(aObjectList, sqlhub.processConnection):
         return copy_database(oTempConn, sqlhub.processConnection, oLogHandler)
-    else:
-        return (False, ["Unable to create tables"])
+    return (False, ["Unable to create tables"])
 
 def attempt_database_upgrade(oLogHandler=None):
     """Attempt to upgrade the database, going via a temporary memory copy."""
@@ -996,9 +986,8 @@ def attempt_database_upgrade(oLogHandler=None):
             if len(aMessages) > 0:
                 oLogger.error("Errors reported: %s", aMessages)
             oLogger.critical("!!YOUR DATABASE MAY BE CORRUPTED!!")
-            return False
     else:
         oLogger.error("Unable to create memory copy. Database not upgraded.")
         if len(aMessages) > 0:
             oLogger.error("Errors reported %s", aMessages)
-        return False
+    return False

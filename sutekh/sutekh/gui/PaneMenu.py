@@ -11,8 +11,9 @@ import gtk
 from sutekh.gui.SutekhMenu import SutekhMenu
 
 class PaneMenu(SutekhMenu):
-    # pylint: disable-msg=R0904
+    # pylint: disable-msg=R0904, R0922
     # R0904 - gtk.Widget, so many public methods
+    # R0922 - we use this in other files
     """Base class for individual Frame menus
 
        This provides handling for enabling and disabling the menus
