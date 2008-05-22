@@ -29,15 +29,6 @@ class CSVImporter(CardListPlugin):
     }
     aModelsSupported = ["MainWindow"]
 
-    # pylint: disable-msg=W0142
-    # **magic OK here
-    def __init__(self, *aArgs, **kwargs):
-        super(CSVImporter, self).__init__(*aArgs, **kwargs)
-        self._dCSVImportDestinations = {
-            'Physical Cards': (CSVParser.PCL, None),
-            'Physical Card Set': (CSVParser.PCS, PhysicalCardSet),
-        }
-
     def get_menu_item(self):
         """Overrides method from base class. Register on the 'Plugins' menu"""
         if not self.check_versions() or not self.check_model_type():
@@ -113,16 +104,6 @@ class CSVImporter(CardListPlugin):
         oLabel.set_markup("<b>Import as ...</b>")
         oLabel.set_alignment(0.0, 0.5)
         self.oDlg.vbox.pack_start(oLabel)
-
-        oIter = self._dCSVImportDestinations.iterkeys()
-        for sName in oIter:
-            self._oFirstBut = gtk.RadioButton(None, sName, False)
-            self._oFirstBut.set_active(True)
-            self.oDlg.vbox.pack_start(self._oFirstBut)
-            break
-        for sName in oIter:
-            oBut = gtk.RadioButton(self._oFirstBut, sName)
-            self.oDlg.vbox.pack_start(oBut)
 
         oCardSetNameBox = gtk.HBox()
         oCardSetNameBox.pack_start(gtk.Label("Card Set Name:"))
@@ -213,12 +194,6 @@ class CSVImporter(CardListPlugin):
            Do the actual import.
            """
         if oResponse == gtk.RESPONSE_OK:
-            for oBut in self._oFirstBut.get_group():
-                sTypeName = oBut.get_label()
-                if oBut.get_active():
-                    iFileType, cCardSet = \
-                            self._dCSVImportDestinations[sTypeName]
-                    break
 
             aCols = []
             for oCombo in (self.oCardNameCombo, self.oCountCombo,
@@ -243,26 +218,21 @@ class CSVImporter(CardListPlugin):
                 self.oDlg.run()
                 return
 
-            # Check ACS/PCS Doesn't Exist
-            if cCardSet:
-                sCardSetName = self.oSetNameEntry.get_text()
-                if not sCardSetName:
-                    sMsg = "Please specify a name for the %s." % (sTypeName,)
-                    do_complaint_error(sMsg)
-                    self.oDlg.run()
-                    return
-                if cCardSet.selectBy(name=sCardSetName).count() != 0:
-                    sMsg = "%s '%s' already exists." % (sTypeName,
-                            sCardSetName)
-                    do_complaint_error(sMsg)
-                    self.oDlg.destroy()
-                    return
-            else:
-                sCardSetName = None
+            # Check PCS Doesn't Exist
+            sCardSetName = self.oSetNameEntry.get_text()
+            if not sCardSetName:
+                sMsg = "Please specify a name for the Card Set."
+                do_complaint_error(sMsg)
+                self.oDlg.destroy()
+                return
+            if PhysicalCardSet.selectBy(name=sCardSetName).count() != 0:
+                sMsg = "Card Set '%s' already exists." % sCardSetName
+                do_complaint_error(sMsg)
+                self.oDlg.destroy()
+                return
 
             oParser = CSVParser(iCardNameColumn, iCountColumn,
-                                iExpansionColumn, bHasHeader=True,
-                                iFileType=iFileType)
+                                iExpansionColumn, bHasHeader=True)
 
             sFile = self.oFileChooser.get_filename()
 
@@ -284,10 +254,7 @@ class CSVImporter(CardListPlugin):
 
             fIn.close()
 
-            if cCardSet is PhysicalCardSet:
-                self.open_cs(sCardSetName)
-            else:
-                self.view.reload_keep_expanded()
+            self.open_cs(sCardSetName)
 
         self.oDlg.destroy()
 

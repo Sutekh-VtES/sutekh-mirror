@@ -22,21 +22,15 @@ class CSVParser(object):
        the card comes from.
        """
 
-    # TODO: move this enum somewhere else
-    # (possibly to CardSetHolder)
-    PCL, PCS, ACS = range(3)
-
     # pylint: disable-msg=R0913
     # we may need all these arguments for some files
     def __init__(self, iCardNameColumn, iCountColumn, iExpansionColumn=None,
-                 bHasHeader=True, iFileType=PCL):
+            bHasHeader=True):
         self.oCS = CardSetHolder()
         self.iCardNameColumn = iCardNameColumn
         self.iCountColumn = iCountColumn
         self.iExpansionColumn = iExpansionColumn
         self.bHasHeader = bHasHeader
-        self.iFileType = iFileType
-        assert (self.iFileType in [self.PCL, self.PCS, self.ACS])
 
     # pylint: enable-msg=R0913
 
@@ -46,12 +40,7 @@ class CSVParser(object):
         oOldConn = sqlhub.processConnection
         sqlhub.processConnection = oOldConn.transaction()
 
-        if self.iFileType == self.PCL:
-            self.oCS.create_physical_cl(oCardLookup)
-        elif self.iFileType == self.PCS:
-            self.oCS.create_pcs(oCardLookup)
-        else:
-            self.oCS.create_acs(oCardLookup)
+        self.oCS.create_pcs(oCardLookup)
 
         sqlhub.processConnection.commit()
         sqlhub.processConnection = oOldConn
