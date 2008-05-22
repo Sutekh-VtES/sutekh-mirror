@@ -8,7 +8,7 @@
 
 import gtk
 from sqlobject import SQLObjectNotFound
-from sutekh.core.SutekhObjects import PhysicalCardSet
+from sutekh.core.SutekhObjects import PhysicalCardSet, IPhysicalCardSet
 from sutekh.gui.FilterDialog import FilterDialog
 from sutekh.gui.CardSetManagementView import CardSetManagementView
 from sutekh.gui.CreateCardSetDialog import CreateCardSetDialog
@@ -29,6 +29,17 @@ def _get_loop_names(oCardSet):
     aLoop.reverse()
     return aLoop
 
+def split_selection_data(sSelectionData):
+    """Helper function to subdivide selection string into bits again"""
+    if sSelectionData == '':
+        return 'None', ['']
+    aLines = sSelectionData.splitlines()
+    sSource = aLines[0]
+    if sSource == "Sutekh Pane:" or sSource == 'Card Set:':
+        return sSource, aLines
+    # Irrelevant to us
+    return 'None', ['']
+
 def reparent_card_set(oCardSet, oNewParent):
     """Helper function to ensure that reparenting a card set doesn't
        cause loops"""
@@ -40,12 +51,16 @@ def reparent_card_set(oCardSet, oNewParent):
         if detect_loop(oCardSet):
             oCardSet.parent = oOldParent
             oCardSet.syncUpdate()
-            do_complaint_warning('Changing parent of %s introduces a loop.'
-                    ' Leaving the parent unchanged.' % oCardSet.name)
-            return
+            do_complaint_warning('Changing parent of %s to %s introduces a'
+                    ' loop. Leaving the parent unchanged.' % (oCardSet.name,
+                        oNewParent.name))
+        else:
+            return True
     else:
         oCardSet.parent = oNewParent
         oCardSet.syncUpdate()
+        return True
+    return False
 
 class CardSetManagementController(object):
     """Controller object for the card set list."""
@@ -223,4 +238,37 @@ class CardSetManagementController(object):
             # Restore selection
             oSelection.select_path(oSelPath)
 
+    # pylint: disable-msg=R0913
+    # arguments as required by function signature
+    def card_set_drop(self, oWdgt, oContext, iXPos, iYPos, oData, oInfo,
+            oTime):
+        """Default drag-n-drop handler."""
+        # Pass off to the Frame Handler
+        sSource, aData = split_selection_data(oData.data)
+        if sSource == "Sutekh Pane:":
+            self._oFrame.drag_drop_handler(oWdgt, oContext, iXPos, iYPos,
+                    oData, oInfo, oTime)
+        else:
+            # Find the card set at iXPos, iYPos
+            # Need to do this to skip avoid headers and such confusing us
+            oPath = self._oView.get_path_at_pointer()
+            if oPath:
+                sTargetName = self._oModel.get_name_from_path(oPath)
+                sThisName = aData[1]
+                # pylint: disable-msg=W0704
+                # doing nothing on SQLObjectNotFound seems the best choice
+                try:
+                    oDraggedCS = IPhysicalCardSet(sThisName)
+                    oParentCS = IPhysicalCardSet(sTargetName)
+                    if reparent_card_set(oDraggedCS, oParentCS):
+                        self.reload_keep_expanded(False)
+                        oPath = self._oModel.get_path_from_name(sThisName)
+                        # Make newly dragged set visible
+                        if oPath:
+                            self._oView.expand_to_path(oPath)
+                        oContext.finish(True, False, oTime)
+                except SQLObjectNotFound:
+                    pass
+        oContext.finish(False, False, oTime)
 
+    # pylint: enable-msg=R0913

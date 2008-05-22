@@ -41,6 +41,7 @@ class CardSetManagementView(gtk.TreeView, object):
 
         self.connect('drag_data_get', self.drag_card_set)
         self.connect('row_activated', self._oController.row_clicked)
+        self.connect('drag_data_received', self._oController.card_set_drop)
 
         self.set_name('card set view')
         # Grid Lines
@@ -149,3 +150,12 @@ class CardSetManagementView(gtk.TreeView, object):
         oPath = aSelectedRows[0]
         return oModel.get_name_from_path(oPath)
 
+    def get_path_at_pointer(self):
+        """Get the path at the current pointer position"""
+        # pylint: disable-msg=W0612
+        # we ignore oIgnore
+        iXPos, iYPos, oIgnore = self.get_bin_window().get_pointer()
+        tRes = self.get_path_at_pos(iXPos, iYPos)
+        if tRes:
+            return tRes[0]
+        return None

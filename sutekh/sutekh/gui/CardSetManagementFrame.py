@@ -55,7 +55,6 @@ class CardSetManagementFrame(BasicFrame):
                 expand=True)
 
         # setup default targets
-        self.set_drag_handler()
 
         self.add(oMbox)
         self.show_all()

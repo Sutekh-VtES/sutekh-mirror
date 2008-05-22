@@ -106,6 +106,28 @@ class CardSetManagementModel(gtk.TreeStore):
         sCardSetName = self.get_value(oIter, 1).decode("utf-8")
         return sCardSetName
 
+    def get_path_from_name(self, sName):
+        """Get the tree path corresponding to the name"""
+        def check_iter(oIter, sName):
+            """Recursively descend the children of the given gtk.TreeIter,
+               looking for a path matching sName."""
+            oPath = None
+            if sName == self.get_name_from_iter(oIter):
+                return self.get_path(oIter)
+            for iChildCount in range(self.iter_n_children(oIter)):
+                oChildIter = self.iter_nth_child(oIter, iChildCount)
+                oPath = check_iter(oChildIter, sName)
+                if oPath:
+                    return oPath
+            return oPath
+        oIter = self.get_iter_root()
+        while oIter:
+            oPath = check_iter(oIter, sName)
+            if oPath:
+                return oPath
+            oIter = self.iter_next(oIter)
+        return None
+
     def get_name_from_path(self, oPath):
         """Get the card set name at oPath."""
         oIter = self.get_iter(oPath)
@@ -128,5 +150,3 @@ class CardSetManagementModel(gtk.TreeStore):
         else:
             sText = 'No Card Sets found'
         return sText
-
-
