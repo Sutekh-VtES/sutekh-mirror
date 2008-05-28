@@ -60,7 +60,8 @@ class CSVParser(object):
 
         self.oCS.add(iCount, sName, sExpansionName)
 
-    def parse(self, fIn, sCardSetName, oCardLookup=DEFAULT_LOOKUP):
+    def parse(self, fIn, sCardSetName, oCardLookup=DEFAULT_LOOKUP,
+            bIgnoreWarnings=True):
         """Process the CSV file line into the CardSetHolder"""
         oCsvFile = csv.reader(fIn)
         self.oCS.name = sCardSetName
@@ -77,3 +78,7 @@ class CSVParser(object):
                         " (%s)" % (oCsvFile.line_num, oExp))
 
         self._commit_holder(oCardLookup)
+        if not bIgnoreWarnings:
+            return self.oCS.get_warnings()
+        else:
+            return []

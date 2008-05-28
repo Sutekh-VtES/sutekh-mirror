@@ -24,12 +24,13 @@ into a PhysicalCardSet
 from sutekh.core.CardSetHolder import CardSetHolder
 from sutekh.core.CardLookup import DEFAULT_LOOKUP
 from sqlobject import sqlhub
+# pylint: disable-msg=E0611, F0401
+# xml.etree is a python2.5 thing
 try:
-    # pylint: disable-msg=E0611, F0401
-    # xml.etree is a python2.5 thing
     from xml.etree.ElementTree import parse, fromstring, ElementTree
 except ImportError:
     from elementtree.ElementTree import parse, fromstring, ElementTree
+# pylint: enable-msg=E0611, F0401
 
 class PhysicalCardSetParser(object):
     """Impement the parser.
@@ -91,14 +92,23 @@ class PhysicalCardSetParser(object):
         sqlhub.processConnection.commit()
         sqlhub.processConnection = oOldConn
 
-    def parse(self, fIn, oCardLookup=DEFAULT_LOOKUP):
+    def parse(self, fIn, oCardLookup=DEFAULT_LOOKUP, bIgnoreWarnings=True):
         """Read the file fIn into the database."""
         self.oTree = parse(fIn)
         self._convert_tree()
         self._commit_tree(oCardLookup)
+        if not bIgnoreWarnings:
+            return self.oCS.get_warnings()
+        else:
+            return []
 
-    def parse_string(self, sIn, oCardLookup=DEFAULT_LOOKUP):
+    def parse_string(self, sIn, oCardLookup=DEFAULT_LOOKUP,
+            bIgnoreWarnings=True):
         """Read the string sIn into the database."""
         self.oTree = ElementTree(fromstring(sIn))
         self._convert_tree()
         self._commit_tree(oCardLookup)
+        if not bIgnoreWarnings:
+            return self.oCS.get_warnings()
+        else:
+            return []

@@ -240,7 +240,7 @@ class MainMenu(SutekhMenu):
                     oIdParser.type == 'PhysicalCard':
                 if oIdParser.exists:
                     iResponse = do_complaint_warning("This would delete the"
-                            " existing CardSet " + oIdParser.name)
+                            " existing CardSet %s" % oIdParser.name)
                     if iResponse == gtk.RESPONSE_CANCEL:
                         return
                     else:
@@ -251,17 +251,20 @@ class MainMenu(SutekhMenu):
                     if oIdParser.type == "AbstractCardSet":
                         oFile = AbstractCardSetXmlFile(sFileName,
                                 oLookup=self._oMainWindow.cardLookup)
-                        oFile.read()
+                        aMessages = oFile.read(bIgnoreWarnings=False)
                     elif oIdParser.type == 'PhysicalCardSet':
                         oFile = PhysicalCardSetXmlFile(sFileName,
                                 oLookup=self._oMainWindow.cardLookup)
-                        oFile.read()
-                        # FIXME: Handle missing parent issues
+                        aMessages = oFile.read(bIgnoreWarnings=False)
                     else:
                         # Old style PhysicalCard list
                         oFile = PhysicalCardXmlFile(sFileName,
                                 oLookup=self._oMainWindow.cardLookup)
-                        oFile.read()
+                        aMessages = oFile.read(bIgnoreWarnings=False)
+                    if aMessages:
+                        sMsg = "The following warnings were reported:\n%s" % \
+                                "\n".join(aMessages)
+                        do_complaint_warning(sMsg)
                     self._oMainWindow.replace_with_physical_card_set(
                             oIdParser.name, oFrame)
                 except LookupFailed:

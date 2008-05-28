@@ -30,6 +30,7 @@ class ZipFileWrapper(object):
     def __init__(self, sZipFileName):
         self.sZipFileName = sZipFileName
         self.oZip = None
+        self._aWarnings = []
 
     def __open_zip_for_write(self):
         """Open zip file to be written"""
@@ -70,6 +71,7 @@ class ZipFileWrapper(object):
     def do_restore_from_zip(self, oCardLookup=DEFAULT_LOOKUP,
             oLogHandler=None):
         """Recover data from the zip file"""
+        self._aWarnings = []
         bTablesRefreshed = False
         bOldStyle = False
         self.__open_zip_for_read()
@@ -140,7 +142,8 @@ class ZipFileWrapper(object):
                 oParser = PhysicalCardParser()
             else:
                 continue
-            oParser.parse_string(oData, oCardLookup)
+            self._aWarnings.extend(oParser.parse_string(oData, oCardLookup,
+                True))
             oLogger.info('%s %s read', oIdParser.type, oItem.filename)
             if bReparent:
                 # pylint: disable-msg=E1103
@@ -166,3 +169,7 @@ class ZipFileWrapper(object):
         aPCSList = self.write_all_pcs_to_zip(oLogger)
         self.__close_zip()
         return aPCSList
+
+    def get_warnings(self):
+        """Get any warnings from the process"""
+        return self._aWarnings

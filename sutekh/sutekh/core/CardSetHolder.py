@@ -27,6 +27,7 @@ class CardSetHolder(object):
         self._sParent = None
         self._dCards = {} # card name -> count
         self._dExpansions = {} # expansion name -> count
+        self._aWarnings = [] # Any warnings to be passed back to the user
         # (card name, expansion name) -> count, used  for physical card sets
         # and the physical card list
         # The expansion name may be None to indicate an unspecified expansion
@@ -89,11 +90,20 @@ class CardSetHolder(object):
             try:
                 oParent = PhysicalCardSet.selectBy(name=self.parent).getOne()
             except SQLObjectNotFound:
-                # FIXME: Report error back to the user
+                self._aWarnings.append("Parent Card Set %s not found" %
+                        self.parent)
                 oParent = None
         else:
             oParent = None
         return oParent
+
+    def get_warnings(self):
+        """Get any warning messages from the holder"""
+        return self._aWarnings
+
+    def clear_warnings(self):
+        """Reset the warning messages list"""
+        self._aWarnings = []
 
     def create_pcs(self, oCardLookup=DEFAULT_LOOKUP):
         """Create a Physical Card Set.

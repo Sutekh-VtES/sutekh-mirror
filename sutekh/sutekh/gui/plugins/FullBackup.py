@@ -155,6 +155,11 @@ class FullBackup(CardListPlugin):
                     oFile = ZipFileWrapper(sFile)
                     oFile.do_restore_from_zip(self.cardlookup, oLogHandler)
                     # restore successful, refresh display
+                    aMessages = oFile.get_warnings()
+                    if aMessages:
+                        sMsg = "The follwoing warnings were reported:\n%s" % \
+                                "\n".join(aMessages)
+                        do_complaint_warning(sMsg)
                     self.reload_all()
                     oProgressDialog.destroy()
                     self.parent.restore_editable_panes(aEditable)

@@ -30,12 +30,13 @@ class PhysicalCardXmlFile(object):
                 sDir = gen_temp_dir()
             self.sXmlFile = gen_temp_file('physical_cards_', sDir)
 
-    def read(self):
+    def read(self, bIgnoreWarnings=True):
         """Read the card collection from the file"""
         if self.sXmlFile is None:
             raise RuntimeError("No Filename specified")
         oParser = PhysicalCardParser()
-        oParser.parse(file(self.sXmlFile,'rU'), self.oCardLookup)
+        return oParser.parse(file(self.sXmlFile,'rU'), self.oCardLookup,
+                bIgnoreWarnings)
 
     # pylint: disable-msg=R0201
     # method for backwards compatibility
@@ -56,12 +57,13 @@ class AbstractCardSetXmlFile(object):
         self.oCardLookup = oLookup
         self.sXmlFile = sFileName
 
-    def read(self):
+    def read(self, bIgnoreWarnings=True):
         """Read the card set from the file."""
         if self.sXmlFile is None:
             raise RuntimeError("No Filename specified")
         oParser = AbstractCardSetParser()
-        oParser.parse(file(self.sXmlFile,'rU'), self.oCardLookup)
+        return oParser.parse(file(self.sXmlFile,'rU'), self.oCardLookup,
+                bIgnoreWarnings)
 
     # pylint: disable-msg=R0201
     # method for backwards compatibility
@@ -82,12 +84,13 @@ class PhysicalCardSetXmlFile(object):
         self.oCardLookup = oLookup
         self.sXmlFile = sFileName
 
-    def read(self):
+    def read(self, bIgnoreWarnings=True):
         """Read the card set from the file."""
         if self.sXmlFile is None:
             raise RuntimeError("No Filename specified")
         oParser = PhysicalCardSetParser()
-        oParser.parse(file(self.sXmlFile,'rU'), self.oCardLookup)
+        return oParser.parse(file(self.sXmlFile,'rU'), self.oCardLookup,
+                bIgnoreWarnings)
 
     def write(self, sPhysicalCardSetName):
         """Write the given card set to the file"""
