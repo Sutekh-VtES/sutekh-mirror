@@ -11,9 +11,48 @@ from sutekh.core.SutekhObjects import PhysicalCard, \
         PhysicalCardSet, IAbstractCard
 from sutekh.core.Filters import PhysicalCardSetFilter
 from sutekh.gui.PluginManager import CardListPlugin
-from sutekh.gui.SutekhDialog import SutekhDialog
+from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 from sutekh.gui.ScrolledList import ScrolledList
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
+
+def _get_card_set_list(aCardSetNames, bUseExpansions):
+    """Get the differences and common cards for the card sets."""
+    # Only compare abstract cards
+    dFullCardList = {}
+    for sCardSetName in aCardSetNames:
+        oFilter = PhysicalCardSetFilter(sCardSetName)
+        oCardSet = oFilter.select(PhysicalCard)
+        for oCard in oCardSet:
+            # pylint: disable-msg=E1101
+            # pylint doesn't see IAbstractCard methods
+            oAbsCard = IAbstractCard(oCard)
+            if bUseExpansions:
+                if oCard.expansion:
+                    tKey = (oAbsCard.name, oCard.expansion.name)
+                else:
+                    tKey = (oAbsCard.name, 'Unspecified Expansion')
+            else:
+                tKey = (oAbsCard.name, None)
+            dFullCardList.setdefault(tKey, {aCardSetNames[0] : 0,
+                aCardSetNames[1] : 0})
+            dFullCardList[tKey][sCardSetName] += 1
+    dDifferences = { aCardSetNames[0] : [], aCardSetNames[1] : [] }
+    aCommon = []
+    for tCardInfo in dFullCardList:
+        iDiff = dFullCardList[tCardInfo][aCardSetNames[0]] - \
+                dFullCardList[tCardInfo][aCardSetNames[1]]
+        iCommon = min(dFullCardList[tCardInfo][aCardSetNames[0]],
+                dFullCardList[tCardInfo][aCardSetNames[1]])
+        if iDiff > 0:
+            dDifferences[aCardSetNames[0]].append((tCardInfo[0], tCardInfo[1],
+                iDiff))
+        elif iDiff < 0:
+            dDifferences[aCardSetNames[1]].append((tCardInfo[0], tCardInfo[1],
+                abs(iDiff)))
+        if iCommon > 0:
+            aCommon.append((tCardInfo[0], tCardInfo[1], iCommon))
+    return (dDifferences, aCommon)
+
 
 class CardSetCompare(CardListPlugin):
     """Compare Two Card Sets
@@ -48,22 +87,27 @@ class CardSetCompare(CardListPlugin):
         # pylint: disable-msg=E1101
         # pylint misses vbox methods
         oDlg.vbox.pack_start(oCSList)
+        oUseExpansions = gtk.CheckButton("Consider Expansions as well")
+        oDlg.vbox.pack_start(oUseExpansions)
         oCSList.set_size_request(150, 300)
         aVals = [oCS.name for oCS in oSelect if oCS.name != self.view.sSetName]
         oCSList.fill_list(aVals)
-        oDlg.connect("response", self.handle_response, oCSList)
+        oDlg.connect("response", self.handle_response, oCSList, oUseExpansions)
         oDlg.show_all()
         oDlg.run()
         oDlg.destroy()
 
-    def handle_response(self, oWidget, iResponse, oCSList):
+    def handle_response(self, oWidget, iResponse, oCSList, oUseExpansions):
         """Handle response from the dialog."""
         if iResponse ==  gtk.RESPONSE_OK:
             aCardSetNames = [self.view.sSetName]
             aCardSetNames.extend(oCSList.get_selection())
-            self.comp_card_sets(aCardSetNames)
+            if len(aCardSetNames) != 2:
+                do_complaint_error("Need to choose a card set to compare to")
+            else:
+                self.comp_card_sets(aCardSetNames, oUseExpansions.get_active())
 
-    def comp_card_sets(self, aCardSetNames):
+    def comp_card_sets(self, aCardSetNames, bUseExpansions):
         """Display the results of comparing the card sets."""
         def format_list(aList, sColor):
             """Format the list of cards for display."""
@@ -77,19 +121,24 @@ class CardSetCompare(CardListPlugin):
                 aList.sort(key=lambda x: x[1], reverse=True)
                 # sort alphabetically, then reverse sort by card count
                 # stable sorting means this gives the desired ordering
-                for sCardName, iCount in aList:
+                for sCardName, sExpansion, iCount in aList:
                     sContents += '%(num)d X <span foreground = "%(color)s">' \
-                            '%(name)s</span>\n' % {
+                            '%(name)s' % {
                                     'num' : iCount,
                                     'color' : sColor,
                                     'name' : sCardName,
                                     }
+                    if sExpansion:
+                        sContents += " (%s)</span>\n" % sExpansion
+                    else:
+                        sContents += "</span>\n"
                 oLabel.set_markup(sContents)
             else:
                 oLabel.set_text('No Cards')
             return oAlign
 
-        (dDifferences, aCommon) = self.__get_card_set_list(aCardSetNames)
+        (dDifferences, aCommon) = _get_card_set_list(aCardSetNames,
+                bUseExpansions)
         oResultDlg = SutekhDialog("Card Comparison", self.parent,
                 gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                 (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
@@ -118,34 +167,6 @@ class CardSetCompare(CardListPlugin):
         oResultDlg.run()
         oResultDlg.destroy()
 
-    def __get_card_set_list(self, aCardSetNames):
-        """Get the differences and common cards for the card sets."""
-        # Only compare abstract cards
-        dFullCardList = {}
-        for sCardSetName in aCardSetNames:
-            oFilter = PhysicalCardSetFilter(sCardSetName)
-            oCardSet = oFilter.select(PhysicalCard)
-            for oCard in oCardSet:
-                # pylint: disable-msg=E1101
-                # pylint doesn't see IAbstractCard methods
-                oAbsCard = IAbstractCard(oCard)
-                dFullCardList.setdefault(oAbsCard.name, {aCardSetNames[0] : 0,
-                    aCardSetNames[1] : 0})
-                dFullCardList[oAbsCard.name][sCardSetName] += 1
-        dDifferences = { aCardSetNames[0] : [], aCardSetNames[1] : [] }
-        aCommon = []
-        for sCardName in dFullCardList:
-            iDiff = dFullCardList[sCardName][aCardSetNames[0]] - \
-                    dFullCardList[sCardName][aCardSetNames[1]]
-            iCommon = min(dFullCardList[sCardName][aCardSetNames[0]],
-                    dFullCardList[sCardName][aCardSetNames[1]])
-            if iDiff > 0:
-                dDifferences[aCardSetNames[0]].append((sCardName, iDiff))
-            elif iDiff < 0:
-                dDifferences[aCardSetNames[1]].append((sCardName, abs(iDiff)))
-            if iCommon > 0:
-                aCommon.append((sCardName, iCommon))
-        return (dDifferences, aCommon)
 
 # pylint: disable-msg=C0103
 # accept plugin name
