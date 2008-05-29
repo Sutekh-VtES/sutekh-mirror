@@ -112,8 +112,9 @@ class IconManager(object):
 
     sBaseUrl = "http://www.white-wolf.com/vtes/images/"
     def __init__(self, oConfig):
-        # TODO: Get icon path from the config file if set
-        self._sPrefsDir = os.path.join(prefs_dir('Sutekh'), 'icons')
+        self._sPrefsDir = oConfig.get_icon_path()
+        if not self._sPrefsDir:
+            self._sPrefsDir = os.path.join(prefs_dir('Sutekh'), 'icons')
         self._dIconCache = {}
 
     def _get_icon(self, sFileName, iSize=12):
@@ -216,7 +217,6 @@ class IconManager(object):
 
     def download_icons(self):
         """Download the icons from the WW site"""
-        # TODO: change the names to something more sensible
         def download(sFileName, oLogger):
             """Download the icon and save it in the icons directory"""
             if not sFileName:
@@ -233,6 +233,9 @@ class IconManager(object):
             except HTTPError, oErr:
                 print 'Unable to download %s: Error %s' % (sUrl, oErr)
             oLogger.info('Processed %s' % sFileName)
+        # We use the names as from the WW site - this is not
+        # ideal, but simpler than maintaining multiple names for each
+        # icon.
         self._dIconCache = {} # Cache is invalidated by this
         ensure_dir_exists(self._sPrefsDir)
         oLogHandler = SutekhCountLogHandler()

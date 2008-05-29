@@ -200,6 +200,18 @@ class ConfigFile(object):
             sResult = None
         return sResult
 
+    def get_icon_path(self):
+        """Get the icon path from the config file"""
+        try:
+            sResult = self.__oConfig.get(self.__sPrefsSection, "icon path")
+        except NoOptionError:
+            sResult = None
+        return sResult
+
+    def set_icon_path(self, sPath):
+        """Set the configured icon path"""
+        self.__oConfig.set(self.__sPrefsSection, "icon path", sPath)
+
     def get_window_size(self):
         """Get the saved window size from the config file."""
         try:
