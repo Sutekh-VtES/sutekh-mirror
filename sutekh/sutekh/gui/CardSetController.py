@@ -17,13 +17,14 @@ from sutekh.core.SutekhObjects import PhysicalCardSet, \
 
 class CardSetController(object):
     """Controller class for the Card Sets."""
+    _sFilterType = 'PhysicalCard'
+
     def __init__(self, sName, oMainWindow, oFrame):
         # pylint: disable-msg=E1101
         # SQLObject methods confuse pylint
         self._oMainWindow = oMainWindow
         self._oMenu = None
         self._oFrame = oFrame
-        self._sFilterType = 'PhysicalCard'
         self._oView = CardSetView(oMainWindow, self, sName)
         self.__oPhysCardSet = PhysicalCardSet.byName(sName)
         # We need to cache this for physical_card_deleted checks
@@ -167,8 +168,6 @@ class CardSetController(object):
             iExpID = IExpansion(sExpansion).id
         aPhysCards = list(PhysicalCard.selectBy(abstractCardID=oAbsCard.id,
             expansionID = iExpID))
-
-        print aPhysCards
 
         if len(aPhysCards) > 0:
             oCard = aPhysCards[0]

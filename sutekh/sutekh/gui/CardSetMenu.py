@@ -177,17 +177,3 @@ class CardSetMenu(CardListMenu):
         self._oController.view.do_paste()
 
     # pylint: enable-msg=W0613
-
-class EditableCardListMenu(CardListMenu):
-    # pylint: disable-msg=R0904
-    # R0904 - gtk.Widget, so many public methods
-    """Base class for Editable Card List Menus
-
-       Adds some common methods for dealing with the card lists -
-       paste selction + delete, etc.
-       """
-    def __init__(self, oFrame, oWindow, oController):
-        super(EditableCardListMenu, self).__init__(oFrame, oWindow,
-                oController)
-
-
