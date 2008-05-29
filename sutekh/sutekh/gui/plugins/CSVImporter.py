@@ -195,21 +195,7 @@ class CSVImporter(CardListPlugin):
            """
         if oResponse == gtk.RESPONSE_OK:
 
-            aCols = []
-            for oCombo in (self.oCardNameCombo, self.oCountCombo,
-                           self.oExpansionCombo):
-                oIter = oCombo.get_active_iter()
-                oModel = oCombo.get_model()
-                if oIter is None:
-                    aCols.append(None)
-                else:
-                    iVal = oModel.get_value(oIter, 0)
-                    if iVal < 0:
-                        aCols.append(None)
-                    else:
-                        aCols.append(iVal)
-
-            iCardNameColumn, iCountColumn, iExpansionColumn = aCols
+            iCardNameColumn, iCountColumn, iExpansionColumn = self._get_cols()
 
             if iCardNameColumn is None or iCountColumn is None:
                 sMsg = "Importing a CSV file requires valid columns for both" \
@@ -257,6 +243,24 @@ class CSVImporter(CardListPlugin):
             self.open_cs(sCardSetName)
 
         self.oDlg.destroy()
+
+    def _get_cols(self):
+        """Get the columns of interest from the user's choices"""
+        aCols = []
+        for oCombo in (self.oCardNameCombo, self.oCountCombo,
+                       self.oExpansionCombo):
+            oIter = oCombo.get_active_iter()
+            oModel = oCombo.get_model()
+            if oIter is None:
+                aCols.append(None)
+            else:
+                iVal = oModel.get_value(oIter, 0)
+                if iVal < 0:
+                    aCols.append(None)
+                else:
+                    aCols.append(iVal)
+        return aCols
+
 
 # pylint: disable-msg=C0103
 # accept plugin name
