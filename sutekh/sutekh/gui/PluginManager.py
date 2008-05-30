@@ -94,12 +94,12 @@ class CardListPlugin(object):
         """Grunt work of adding menu item to the frame"""
         aMenuItems = self.get_menu_item()
         if aMenuItems is not None:
-            if type(aMenuItems) is not list:
-                if type(aMenuItems) is not tuple:
+            if not isinstance(aMenuItems, list):
+                if not isinstance(aMenuItems, tuple):
                     # Just straight menu item
                     aMenuItems = [('Plugins', aMenuItems)]
                 else:
-                    # Convert tuple to list
+                    # Wrap tuple in a list
                     aMenuItems = [aMenuItems]
             for sMenu, oMenuItem in aMenuItems:
                 if sMenu in dAllMenus:

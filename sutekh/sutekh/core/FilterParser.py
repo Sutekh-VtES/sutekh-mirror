@@ -264,15 +264,15 @@ class ValueObject(object):
 
     def is_entry(self):
         """Does this represent a text entry?"""
-        return type(self.oValue) is str and self.oValue == ''
+        return isinstance(self.oValue, str) and self.oValue == ''
 
     def is_list(self):
         """Does this represent a list?"""
-        return type(self.oValue) is list
+        return isinstance(self.oValue, list)
 
     def is_value(self):
         """Does this represent a assigned string value?"""
-        return type(self.oValue) is str and self.oValue != ''
+        return isinstance(self.oValue, str) and self.oValue != ''
 
     # pylint: disable-msg=C0103
     def is_None(self):

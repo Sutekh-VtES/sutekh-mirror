@@ -350,7 +350,7 @@ class MultiPaneWindow(gtk.Window):
             # Can always split horizontally
             self.__oMenu.set_split_horizontal_active(True)
             # But we can't split vertically more than once
-            if type(self._oFocussed.get_parent()) is gtk.VPaned:
+            if isinstance(self._oFocussed.get_parent(), gtk.VPaned):
                 self.__oMenu.set_split_vertical_active(False)
             else:
                 self.__oMenu.set_split_vertical_active(True)
@@ -420,13 +420,13 @@ class MultiPaneWindow(gtk.Window):
             # don't split panes in the same order, hence the fancy
             # score-keeping work to convert the obtained positions to those
             # needed for restoring
-            if type(oPane) is gtk.HPaned:
+            if isinstance(oPane, gtk.HPaned):
                 oChild1 = oPane.get_child1()
                 oChild2 = oPane.get_child2()
                 iNum, iChildPos = save_children(oChild1, oConfig, False,
                         iNum, iPos)
                 iMyPos = oPane.get_position()
-                if type(oChild1) is gtk.HPaned:
+                if isinstance(oChild1, gtk.HPaned):
                     iMyPos = iMyPos - iChildPos
                     iChildPos = oPane.get_position()
                 else:
@@ -436,9 +436,9 @@ class MultiPaneWindow(gtk.Window):
                     iMyPos = 1
                 iNum, iChild2Pos = save_children(oChild2, oConfig, False,
                         iNum, iMyPos)
-                if type(oChild2) is gtk.HPaned:
+                if isinstance(oChild2, gtk.HPaned):
                     iChildPos += iChild2Pos
-            elif type(oPane) is gtk.VPaned:
+            elif isinstance(oPane, gtk.VPaned):
                 oChild1 = oPane.get_child1()
                 oChild2 = oPane.get_child2()
                 iMyPos = oPane.get_position()
@@ -553,7 +553,7 @@ class MultiPaneWindow(gtk.Window):
            """
         if self._oFocussed:
             oParent = self._oFocussed.get_parent()
-            if type(oParent) is gtk.VPaned:
+            if isinstance(oParent, gtk.VPaned):
                 # Get the HPane this belongs to
                 oParent = oParent.get_parent()
             return oParent
@@ -574,7 +574,7 @@ class MultiPaneWindow(gtk.Window):
             # non-paned item
             oPane = [x for x in self.oVBox.get_children() if
                     x != self.__oMenu][0]
-            while type(oPane) is gtk.HPaned or type(oPane) is gtk.VPaned:
+            while isinstance(oPane, (gtk.HPaned, gtk.VPaned)):
                 oPane = oPane.get_child2()
         self._oFocussed = oPane
         return self.add_pane()
@@ -617,7 +617,7 @@ class MultiPaneWindow(gtk.Window):
                 # Must be a hpane, by construction
                 if self._oFocussed:
                     oPart1 = self._oFocussed
-                    if type(oPart1.get_parent()) is gtk.VPaned:
+                    if isinstance(oPart1.get_parent(), gtk.VPaned):
                         # Veritical pane, so we need to use the pane, not
                         # the Frame
                         oPart1 = oPart1.get_parent()
@@ -701,7 +701,7 @@ class MultiPaneWindow(gtk.Window):
                 oWidget = [x for x in self.oVBox.get_children() if
                         x != self.__oMenu][0]
                 self.oVBox.remove(oWidget)
-            elif type(oFrame.get_parent()) is gtk.VPaned:
+            elif isinstance(oFrame.get_parent(), gtk.VPaned):
                 # Removing a vertical frame, keep the correct child
                 oParent = oFrame.get_parent()
                 oKept = [x for x in oParent.get_children() if x != oFrame][0]
@@ -757,16 +757,16 @@ class MultiPaneWindow(gtk.Window):
             """Walk the tree in display order, setting positions accordingly"""
             oChild1 = oPane.get_child1()
             oChild2 = oPane.get_child2()
-            if type(oChild1) is gtk.HPaned:
+            if isinstance(oChild1, gtk.HPaned):
                 iMyPos = iPos + set_pos_children(oChild1, iPos, iVertPos)
             else:
-                if type(oChild1) is gtk.VPaned:
+                if isinstance(oChild1, gtk.VPaned):
                     oChild1.set_position(iVertPos)
                 iMyPos = iPos
             oPane.set_position(iMyPos)
-            if type(oChild2) is gtk.HPaned:
+            if isinstance(oChild2, gtk.HPaned):
                 iMyPos += set_pos_children(oChild2, iPos, iVertPos)
-            elif type(oChild2) is gtk.VPaned:
+            elif isinstance(oChild2, gtk.VPaned):
                 oChild2.set_position(iVertPos)
             return iMyPos
 
@@ -774,8 +774,8 @@ class MultiPaneWindow(gtk.Window):
                 x != self.__oMenu]
         for oPane in aTopLevelPane:
             # Should only be 1 here
-            if type(oPane) is gtk.HPaned:
+            if isinstance(oPane, gtk.HPaned):
                 set_pos_children(oPane, iNewPos, iVertPos)
-            elif type(oPane) is gtk.VPaned:
+            elif isinstance(oPane, gtk.VPaned):
                 # Do something sensible for single VPane case
                 oPane.set_position(iVertPos)

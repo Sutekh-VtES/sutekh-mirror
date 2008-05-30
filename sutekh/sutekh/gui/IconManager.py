@@ -202,16 +202,15 @@ class IconManager(object):
         if not aValues:
             return None
         aIcons = None
-        oType = type(aValues[0])
-        if oType is CardType:
+        if isinstance(aValues[0], CardType):
             aIcons = self._get_card_type_icons(aValues)
-        elif oType is DisciplinePair:
+        elif isinstance(aValues[0], DisciplinePair):
             aIcons = self._get_discipline_icons(aValues)
-        elif oType is Virtue:
+        elif isinstance(aValues[0], Virtue):
             aIcons = self._get_virtue_icons(aValues)
-        elif oType is Clan:
+        elif isinstance(aValues[0], Clan):
             aIcons = self._get_clan_icons(aValues)
-        elif oType is Creed:
+        elif isinstance(aValues[0], Creed):
             aIcons = self._get_creed_icons(aValues)
         return aIcons
 

@@ -18,7 +18,7 @@ def norm_path(oPath):
     # Some widgets give us a path string, others a tuple,
     # to deal with tuples when moving between expansions and
     # card names
-    if type(oPath) is str:
+    if isinstance(oPath, str):
         oNormPath = tuple([int(x) for x in oPath.split(':')])
     else:
         oNormPath = oPath

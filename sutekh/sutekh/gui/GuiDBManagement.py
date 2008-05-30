@@ -110,7 +110,7 @@ def _get_names(oWin):
             sBackupFile) = oWWFilesDialog.get_names()
     oWWFilesDialog.destroy()
     if sCLFileName is not None:
-        if type(sCLFileName) is list:
+        if isinstance(sCLFileName, list):
             aCLFile = [WwFile(x, bUrl=bCLIsUrl) for x in sCLFileName]
         else:
             aCLFile = [WwFile(sCLFileName, bUrl=bCLIsUrl)]
