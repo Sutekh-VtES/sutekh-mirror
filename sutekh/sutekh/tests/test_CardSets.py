@@ -202,8 +202,8 @@ class PhysicalCardSetTests(SutekhTest):
         oParser.parse(fIn)
         fIn.close()
 
-        oCardSet1 = IPhysicalCardSet(self.aCardSetNames[0])
-        oCardSet2 = IPhysicalCardSet(self.aCardSetNames[1])
+        oCardSet1 = IPhysicalCardSet("(ACS) " + self.aCardSetNames[0])
+        oCardSet2 = IPhysicalCardSet("(ACS) " + self.aCardSetNames[1])
 
         oAbsCard0 = IAbstractCard(self.aAbstractCards[0])
         oAbsCard2 = IAbstractCard(self.aAbstractCards[2])
