@@ -56,6 +56,21 @@ class SutekhTest(unittest.TestCase):
         self._sTempDir = None
         self._aTempFiles = None
 
+    def _setUpDb(self):
+        """Initialises a database with the cardlist and
+           rulings.
+           """
+        oConn = sqlhub.processConnection
+
+        sCardList = self._create_tmp_file(TEST_CARD_LIST)
+        sRulings = self._create_tmp_file(TEST_RULINGS)
+
+        assert refresh_tables(aObjectList, oConn)
+
+        oLogHandler = FileHandler('/dev/null')
+        read_white_wolf_list([WwFile(sCardList)], oLogHandler)
+        read_rulings(WwFile(sRulings), oLogHandler)
+
     def setUp(self):
         """Common setup routine for tests.
 
@@ -63,18 +78,9 @@ class SutekhTest(unittest.TestCase):
            rulings.
            """
         self._setUpTemps()
-
-        sCardList = self._create_tmp_file(TEST_CARD_LIST)
-        sRulings = self._create_tmp_file(TEST_RULINGS)
-
         oConn = connectionForURI("sqlite:///:memory:")
         sqlhub.processConnection = oConn
-
-        assert refresh_tables(aObjectList, oConn)
-
-        oLogHandler = FileHandler('/dev/null')
-        read_white_wolf_list([WwFile(sCardList)], oLogHandler)
-        read_rulings(WwFile(sRulings), oLogHandler)
+        self._setUpDb()
 
     def tearDown(self):
         """Common teardown routine for tests.
