@@ -18,9 +18,9 @@ from logging import FileHandler
 class DatabaseUpgradeTests(SutekhTest):
     """Class for the database upgrade tests."""
 
-    def test_copy_to_new_abstract_card_db(self):
-        """Test copying an existing database to a freshly created one."""
-
+    def test_copy_to_new_ac_db(self):
+        """Test copying an existing database to a freshly created one using
+           copy_to_new_abstract_card_db."""
         # Create some database content
 
         oMyCollection = PhysicalCardSet(name="My Collection")
@@ -28,8 +28,10 @@ class DatabaseUpgradeTests(SutekhTest):
         oMyCollection.author = "test author"
 
         oPCS1 = PhysicalCardSet(name="PCS1", parent=oMyCollection)
+        # pylint: disable-msg=E1101
+        # SQLObject confuses pylint
 
-        oPC = IPhysicalCard((IAbstractCard(".44 magnum"),IExpansion("Jyhad")))
+        oPC = IPhysicalCard((IAbstractCard(".44 magnum"), IExpansion("Jyhad")))
         oMyCollection.addPhysicalCard(oPC)
 
         assert list(PhysicalCardSet.select())
@@ -49,15 +51,19 @@ class DatabaseUpgradeTests(SutekhTest):
         oCardLookup = SimpleLookup()
         oLogHandler = FileHandler('/dev/null')
 
-        copy_to_new_abstract_card_db(oOrigConn, oNewConn, oCardLookup, oLogHandler)
+        copy_to_new_abstract_card_db(oOrigConn, oNewConn, oCardLookup,
+                oLogHandler)
 
         assert list(AbstractCard.select())
         assert list(PhysicalCardSet.select())
 
         sqlhub.processConnection = oOrigConn
+        # pylint: disable-msg=W0612
+        # we aren't interested in aMsgs here
         bResult, aMsgs = create_final_copy(oNewConn, oLogHandler)
 
         # Check
+        self.assertEqual(bResult, True)
 
         assert list(AbstractCard.select())
         assert list(PhysicalCardSet.select())
