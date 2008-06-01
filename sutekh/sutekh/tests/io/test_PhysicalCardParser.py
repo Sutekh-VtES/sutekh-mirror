@@ -7,7 +7,7 @@
 """Test PhysicalCard handling"""
 
 from sutekh.tests.TestCore import SutekhTest
-from sutekh.tests import test_WhiteWolfParser
+from sutekh.tests.io import test_WhiteWolfParser
 from sutekh.core.SutekhObjects import IAbstractCard, IPhysicalCard, \
                                       IPhysicalCardSet, PhysicalCardSet
 from sutekh.io.PhysicalCardParser import PhysicalCardParser

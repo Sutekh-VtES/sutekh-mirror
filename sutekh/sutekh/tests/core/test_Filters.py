@@ -7,7 +7,7 @@
 """Sutekh Filters tests"""
 
 from sutekh.tests.TestCore import SutekhTest
-from sutekh.tests import test_WhiteWolfParser
+from sutekh.tests.io import test_WhiteWolfParser
 from sutekh.core.SutekhObjects import AbstractCard, IAbstractCard, \
         PhysicalCard, IPhysicalCard, Expansion, IExpansion
 from sutekh.core import Filters

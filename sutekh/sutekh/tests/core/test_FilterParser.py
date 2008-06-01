@@ -8,7 +8,7 @@
 """Tests the Filter Parser code"""
 
 from sutekh.tests.TestCore import SutekhTest
-from sutekh.tests import test_WhiteWolfParser
+from sutekh.tests.io import test_WhiteWolfParser
 from sutekh.core.SutekhObjects import AbstractCard
 from sutekh.core import FilterParser
 import unittest
