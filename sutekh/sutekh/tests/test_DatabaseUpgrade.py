@@ -10,16 +10,10 @@ from sutekh.tests.TestCore import SutekhTest
 from sutekh.core.DatabaseUpgrade import copy_to_new_abstract_card_db, \
                                         create_final_copy
 from sutekh.core.CardLookup import SimpleLookup
-from sutekh.core.SutekhObjects import AbstractCard, PhysicalCardSet
+from sutekh.core.SutekhObjects import AbstractCard, PhysicalCardSet, \
+    IAbstractCard, IPhysicalCard, IExpansion, IPhysicalCardSet
 from sqlobject import sqlhub, connectionForURI
 from logging import FileHandler
-
-from sutekh.core.SutekhObjects import IAbstractCard, IPhysicalCard, \
-        IExpansion, PhysicalCardSet, IPhysicalCardSet, \
-        MapPhysicalCardToPhysicalCardSet
-
-from sqlobject import SQLObjectNotFound
-import unittest
 
 class DatabaseUpgradeTests(SutekhTest):
     """Class for the database upgrade tests."""
@@ -34,6 +28,9 @@ class DatabaseUpgradeTests(SutekhTest):
         oMyCollection.author = "test author"
 
         oPCS1 = PhysicalCardSet(name="PCS1", parent=oMyCollection)
+
+        oPC = IPhysicalCard((IAbstractCard(".44 magnum"),IExpansion("Jyhad")))
+        oMyCollection.addPhysicalCard(oPC)
 
         assert list(PhysicalCardSet.select())
 
@@ -71,6 +68,7 @@ class DatabaseUpgradeTests(SutekhTest):
         oMyCollection = IPhysicalCardSet("My Collection")
         assert oMyCollection.comment == "test comment"
         assert oMyCollection.author == "test author"
+        assert list(oMyCollection.cards)
 
         oPCS1 = IPhysicalCardSet("PCS1")
         assert oPCS1.parent == oMyCollection
