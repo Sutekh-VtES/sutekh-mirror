@@ -148,6 +148,9 @@ class CachedCardSetHolder(CardSetHolder):
     # W0221 - We need the extra argument
     def create_pcs(self, oCardLookup=DEFAULT_LOOKUP, dLookupCache={}):
         """Create a Physical Card Set.
+        
+           dLookupCache is updated as soon as possible, i.e. immediately after
+           calling oCardLookup.lookup(...).
            """
         if self.name is None:
             raise RuntimeError("No name for the card set")
@@ -157,6 +160,15 @@ class CachedCardSetHolder(CardSetHolder):
             tCardCnt[0]) for tCardCnt in aCardCnts],
             "Physical Card Set %s" % self.name)
         dNameCards = dict(zip(self._dCards.keys(), aAbsCards))
+
+        # Update dLookupCache
+        # pylint: disable-msg=W0612
+        # iCnt and iLoop are loop variables
+        for oAbs, (sName, iCnt) in zip(aAbsCards, aCardCnts):
+            if not oAbs:
+                dLookupCache[sName] = None
+            else:
+                dLookupCache[sName] = oAbs.canonicalName
 
         aExpNames = self._dExpansions.keys()
         aExps = oCardLookup.expansion_lookup(aExpNames, "Physical Card List")
