@@ -699,7 +699,7 @@ def copy_old_physical_card_set(oOrigConn, oTrans, oLogger, oVer):
         else:
             return (False, ["Unknown PhysicalCardSet version"])
         oParent = PhysicalCardSet.selectBy(name='My Collection',
-                connection=oTrans)[0]
+                connection=oTrans).getOne()
         for oSet in oPCSTable.select(connection=oOrigConn):
             oCopy = PhysicalCardSet(name=oSet.name,
                     author=oSet.author, comment=oSet.comment,
@@ -908,23 +908,22 @@ def make_card_set_holder(oCardSet, oOrigConn):
 
 def copy_to_new_abstract_card_db(oOrigConn, oNewConn, oCardLookup,
         oLogHandler=None):
-    """Copy the physical card and the card sets to a new Abstract Card List.
+    """Copy the card sets to a new Physical Card and Abstract Card List.
 
       Given an existing database, and a new database created from
-      a new cardlist, copy the PhysicalCards and the CardSets,
-      going via CardSetHolders, so we can adapt to changed names, etc.
+      a new cardlist, copy the CardSets, going via CardSetHolders, so we
+      can adapt to changed names, etc.
       """
     # pylint: disable-msg=R0914
     aPhysCardSets = []
     oOldConn = sqlhub.processConnection
-    # Copy the physical card list
+    # Copy Physical card sets
     oLogger = Logger('copy to new abstract card DB')
     if oLogHandler:
         oLogger.addHandler(oLogHandler)
         if hasattr(oLogHandler, 'set_total'):
             iTotal = 1 + PhysicalCardSet.select(connection=oOrigConn).count()
             oLogHandler.set_total(iTotal)
-    # Copy Physical card sets
     for oSet in PhysicalCardSet.select(connection=oOrigConn):
         oCS = make_card_set_holder(oSet, oOrigConn)
         aPhysCardSets.append(oCS)
