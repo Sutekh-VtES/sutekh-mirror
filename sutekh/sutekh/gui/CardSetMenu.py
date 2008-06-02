@@ -17,6 +17,8 @@ from sutekh.io.XmlFileHandling import PhysicalCardSetXmlFile
 from sutekh.gui.EditAnnotationsDialog import EditAnnotationsDialog
 from sutekh.gui.PaneMenu import CardListMenu
 from sutekh.gui.CardSetManagementController import reparent_card_set
+from sutekh.gui.CardSetListModel import NO_SECOND_LEVEL, SHOW_EXPANSIONS, \
+        SHOW_CARD_SETS, EXPANSIONS_AND_CARD_SETS, CARD_SETS_AND_EXPANSIONS
 
 class CardSetMenu(CardListMenu):
     # pylint: disable-msg=R0904
@@ -57,11 +59,24 @@ class CardSetMenu(CardListMenu):
         # Looks like it requires playing with menu_item attributes
         # (or maybe gtk.Action)
         oMenu.add(gtk.SeparatorMenuItem())
-        self.create_check_menu_item('Show Card Expansions',
-                oMenu, self._toggle_expansion, True)
         self.create_check_menu_item('Show Cards with Count of 0', oMenu,
                 self._toggle_all_abstract_cards,
                 self._oController.model.bAddAllAbstractCards)
+        oModeMenu = self.create_menu_item_with_submenu(oMenu, "Display Mode").get_submenu()
+        oNoChildren = gtk.RadioMenuItem(None, "Show No Children")
+        oModeMenu.add(oNoChildren)
+        oNoChildren.connect("toggled", self._change_mode, NO_SECOND_LEVEL)
+        oExpansion = gtk.RadioMenuItem(oNoChildren, "Show Expansions")
+        oExpansion.set_active(True)
+        oModeMenu.add(oExpansion)
+        oExpansion.connect("toggled", self._change_mode, SHOW_EXPANSIONS)
+        for sString, iValue in [("Show Child Card Sets", SHOW_CARD_SETS),
+                ("Show Expansions + Child Card Sets", EXPANSIONS_AND_CARD_SETS),
+                ("Show Child Card Sets and Expansions", CARD_SETS_AND_EXPANSIONS)
+                ]:
+            oItem = gtk.RadioMenuItem(oNoChildren, sString)
+            oModeMenu.add(oItem)
+            oItem.connect("toggled", self._change_mode, iValue)
 
         oMenu.add(gtk.SeparatorMenuItem())
         self.add_common_actions(oMenu)
@@ -151,9 +166,9 @@ class CardSetMenu(CardListMenu):
         """Delete the card set."""
         self._oFrame.delete_card_set()
 
-    def _toggle_expansion(self, oWidget):
-        """Toggle whether Expansion information is shown."""
-        self._oController.model.bExpansions = oWidget.active
+    def _change_mode(self, oWidget, iLevel):
+        """Set which extra information is shown."""
+        self._oController.model.iExtraLevelsMode = iLevel
         self._oController.view.reload_keep_expanded()
 
     def _toggle_all_abstract_cards(self, oWidget):
