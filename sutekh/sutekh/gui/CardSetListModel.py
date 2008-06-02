@@ -7,17 +7,22 @@
 
 """The gtk.TreeModel for the card lists."""
 
-from sutekh.core.Filters import FilterAndBox, SpecificCardFilter, NullFilter, \
-        PhysicalCardSetFilter, SpecificCardIdFilter
-from sutekh.core.SutekhObjects import PhysicalCard, IExpansion, AbstractCard, \
+from sutekh.core.Filters import FilterAndBox, NullFilter, SpecificCardFilter, \
+        FilterOrBox, PhysicalCardSetFilter, SpecificCardIdFilter
+from sutekh.core.SutekhObjects import PhysicalCard, IExpansion, \
         MapPhysicalCardToPhysicalCardSet, IAbstractCard, IPhysicalCard, \
         IPhysicalCardSet, PhysicalCardSet
 from sutekh.gui.CardListModel import CardListModel
 
 
+# pylint: disable-msg=C0103
+# We break out usual convention here
 # consts for the different modes we need
 NO_SECOND_LEVEL, SHOW_EXPANSIONS, SHOW_CARD_SETS, EXPANSIONS_AND_CARD_SETS, \
         CARD_SETS_AND_EXPANSIONS = range(5)
+# Different card count modes
+THIS_SET_ONLY, ALL_CARDS, PARENT_CARDS, CHILD_CARDS = range(4)
+# pylint: enable-msg=C0103
 
 def get_card(oItem):
     """Extract a card name from the grouped iterator"""
@@ -50,8 +55,10 @@ class CardSetCardListModel(CardListModel):
         self._oCardSet = IPhysicalCardSet(sSetName)
         self.iExtraLevelsMode = SHOW_EXPANSIONS
         self.bChildren = False
-        self.bAddAllAbstractCards = False
+        self.iShowCardMode = THIS_SET_ONLY
         self.bEditable = False
+        self._dNameSecondLevel2Iter = {}
+        self._dNameSecondThirdLevel2Iter = {}
 
     def load(self):
         # pylint: disable-msg=R0914
@@ -99,17 +106,19 @@ class CardSetCardListModel(CardListModel):
                     dExpansionInfo = self.get_expansion_info(oCard,
                             get_card_expansion_info(oItem))
                     for sExpansion in sorted(dExpansionInfo):
-                        oSubIter = self._add_extra_level(oChildIter, oCard.name, sExpansion,
+                        oSubIter = self._add_extra_level(oChildIter,
+                                oCard.name, sExpansion,
                                 dExpansionInfo[sExpansion])
-                        self._dNameSecondLevel2Iter.setdefault(oCard.name, {}).setdefault(sExpansion,
-                                []).append(oSubIter)
+                        self._dNameSecondLevel2Iter.setdefault(oCard.name,
+                                {}).setdefault(sExpansion, []).append(oSubIter)
                 elif self.iExtraLevelsMode == SHOW_CARD_SETS:
                     dChildInfo = self.get_child_info(oCard,
                             get_card_child_set_info(oItem))
                     for sChildSet in sorted(dChildInfo):
-                        oSubIter = self._add_extra_level(oChildIter, oCard.name, sChildSet,
-                                dChildInfo[sChildSet])
-                        self._dNameSecondLevel2Iter.setdefault(oCard.name, {}).setdefault(sChildSet,
+                        oSubIter = self._add_extra_level(oChildIter,
+                                oCard.name, sChildSet, dChildInfo[sChildSet])
+                        self._dNameSecondLevel2Iter.setdefault(oCard.name,
+                                {}).setdefault(sChildSet,
                                 []).append(oSubIter)
                 elif self.iExtraLevelsMode == EXPANSIONS_AND_CARD_SETS:
                     dExpansionInfo = self.get_expansion_info(oCard,
@@ -118,14 +127,17 @@ class CardSetCardListModel(CardListModel):
                             get_card_child_set_info(oItem),
                             get_card_expansion_info(oItem))
                     for sExpansion in sorted(dExpansionInfo):
-                        oSubIter = self._add_extra_level(oChildIter, oCard.name, sExpansion,
+                        oSubIter = self._add_extra_level(oChildIter,
+                                oCard.name, sExpansion,
                                 dExpansionInfo[sExpansion])
-                        self._dNameSecondLevel2Iter.setdefault(oCard.name, {}).setdefault(sExpansion,
-                                []).append(oSubIter)
+                        self._dNameSecondLevel2Iter.setdefault(oCard.name,
+                                {}).setdefault(sExpansion, []).append(oSubIter)
                         for sChildSet in sorted(dChildInfo[sExpansion]):
-                            oThisIter = self._add_extra_level(oSubIter, oCard.name, sChildSet,
+                            oThisIter = self._add_extra_level(oSubIter,
+                                    oCard.name, sChildSet,
                                     dChildInfo[sExpansion][sChildSet])
-                            self._dNameSecondThirdLevel2Iter.setdefault((oCard.name, sExpansion), {}).setdefault(
+                            self._dNameSecondThirdLevel2Iter.setdefault((
+                                oCard.name, sExpansion), {}).setdefault(
                                     sChildSet, []).append(oThisIter)
                 elif self.iExtraLevelsMode == CARD_SETS_AND_EXPANSIONS:
                     dChildInfo = self.get_child_info(oCard,
@@ -134,14 +146,16 @@ class CardSetCardListModel(CardListModel):
                             get_card_expansion_info(oItem),
                             get_card_child_set_info(oItem))
                     for sChildSet in sorted(dChildInfo):
-                        oSubIter = self._add_extra_level(oChildIter, oCard.name, sChildSet,
-                                dChildInfo[sChildSet])
-                        self._dNameSecondLevel2Iter.setdefault(oCard.name, {}).setdefault(sChildSet,
-                                []).append(oSubIter)
+                        oSubIter = self._add_extra_level(oChildIter,
+                                oCard.name, sChildSet, dChildInfo[sChildSet])
+                        self._dNameSecondLevel2Iter.setdefault(oCard.name,
+                                {}).setdefault(sChildSet, []).append(oSubIter)
                         for sExpansion in dExpansionInfo[sChildSet]:
-                            oThisIter = self._add_extra_level(oSubIter, oCard.name, sExpansion,
+                            oThisIter = self._add_extra_level(oSubIter,
+                                    oCard.name, sExpansion,
                                     dExpansionInfo[sChildSet][sExpansion])
-                            self._dNameSecondThirdLevel2Iter.setdefault((oCard.name, sChildSet), {}).setdefault(
+                            self._dNameSecondThirdLevel2Iter.setdefault((
+                                oCard.name, sChildSet), {}).setdefault(
                                     sExpansion, []).append(oThisIter)
                 self._dName2Iter.setdefault(oCard.name, []).append(oChildIter)
 
@@ -207,7 +221,8 @@ class CardSetCardListModel(CardListModel):
                     bDecCard = iCnt > 0
                 dExpansions[sKey] = [iCnt, bIncCard, bDecCard]
         else:
-            # FIXME: work out how to present editing options when showing expansions + card sets
+            # FIXME: work out how to present editing options when showing
+            # expansions + card sets
             for sChildSet in dChildInfo:
                 dExpansions[sChildSet] = {}
                 for oExpansion, iCnt in dExpanInfo[sChildSet].iteritems():
@@ -224,11 +239,13 @@ class CardSetCardListModel(CardListModel):
         """Get information about child card sets"""
         dChildren = {}
         if not dExpansionInfo:
-            # FIXME: work out how to present editing options when showing card sets + expansions
+            # FIXME: work out how to present editing options when showing
+            # card sets + expansions
             for sCardSet, iCnt in dChildInfo.iteritems():
                 dChildren[sCardSet] = [iCnt, False, False]
         else:
-            # FIXME: work out how to present editing options when showing card sets
+            # FIXME: work out how to present editing options when showing
+            # card sets
             for oExpansion in dExpansionInfo:
                 if oExpansion is not None:
                     sKey = oExpansion.name
@@ -287,11 +304,14 @@ class CardSetCardListModel(CardListModel):
         if self.iter_depth(oIter) not in [2, 3]:
             return None
         sName = None
-        if self.iExtraLevelsMode in [SHOW_EXPANSIONS, EXPANSIONS_AND_CARD_SETS] and self.iter_depth(oIter) == 2:
+        if self.iExtraLevelsMode in [SHOW_EXPANSIONS,
+                EXPANSIONS_AND_CARD_SETS] and self.iter_depth(oIter) == 2:
             sName = self.get_name_from_iter(oIter)
-        elif self.iExtraLevelsMode == CARD_SETS_AND_EXPANSIONS and self.iter_depth(oIter) == 3:
+        elif self.iExtraLevelsMode == CARD_SETS_AND_EXPANSIONS and \
+                self.iter_depth(oIter) == 3:
             sName = self.get_name_from_iter(oIter)
-        elif self.iExtraLevelsMode == EXPANSIONS_AND_CARD_SETS and self.iter_depth(oIter) == 3:
+        elif self.iExtraLevelsMode == EXPANSIONS_AND_CARD_SETS and \
+                self.iter_depth(oIter) == 3:
             # Need to get information from the parent level
             sName = self.get_name_from_iter(self.iter_parent(oIter))
         return sName
@@ -307,9 +327,12 @@ class CardSetCardListModel(CardListModel):
         """
         # Define iterable and grouping function based on cardclass
         aAbsCards = []
+        dChildFilters = {}
 
+        # pylint: disable-msg=E1101
+        # SQLObject + PyProtocols confuse pylint
         if self.iExtraLevelsMode in [SHOW_CARD_SETS, EXPANSIONS_AND_CARD_SETS,
-                CARD_SETS_AND_EXPANSIONS]:
+                CARD_SETS_AND_EXPANSIONS] or self.iShowCardMode == CHILD_CARDS:
             # Pre-select cards for child card sets
             aChildren = [x.name for x in
                     PhysicalCardSet.selectBy(parentID=self._oCardSet.id,
@@ -320,25 +343,49 @@ class CardSetCardListModel(CardListModel):
 
         # Count by Abstract Card
         dAbsCards = {}
-        if self.bAddAllAbstractCards:
-            # Also include all the abstract cards
-            oAbsFilter = self.get_current_filter()
-            if oAbsFilter is None:
-                oAbsFilter = NullFilter()
-            if 'AbstractCard' in oAbsFilter.types:
-                oAbsCardIter = oAbsFilter.select(AbstractCard)
-                for oAbsCard in oAbsCardIter:
-                    dAbsCards.setdefault(oAbsCard, {'count' : 0, 'expansions' : {}, 'card sets' : {}})
-            # If the filter is PhysicalCard specific we ignore it, as
-            # AbstractCards don't have that information, so we cannot
-            # decide when to display 0 counts properly
+        if self.iShowCardMode != THIS_SET_ONLY:
+            # TODO: Revisit the logic once Card Count filters are fixed
+            oFilter = self.get_current_filter()
+            if oFilter is None:
+                oFilter = NullFilter()
+            if self.iShowCardMode == ALL_CARDS:
+                oExtraCardIter = oFilter.select(PhysicalCard).distinct()
+            elif self.iShowCardMode == PARENT_CARDS and self._oCardSet.parent:
+                oParentFilter = PhysicalCardSetFilter(
+                        self._oCardSet.parent.name)
+                oFullFilter = FilterAndBox([oFilter, oParentFilter])
+                # It's tempting to use get_card_iterator here, but that
+                # obviously doesn't work because of _oBaseFilter
+                oExtraCardIter = oFullFilter.select(self.cardclass).distinct()
+            elif self.iShowCardMode == CHILD_CARDS and dChildFilters:
+                # We don't use MultiPhysicalCardSet, because of the join issues
+                oChildFilter = FilterOrBox([x for x in
+                    dChildFilters.itervalues()])
+                oFullFilter = FilterAndBox([oFilter, oChildFilter])
+                oExtraCardIter = oFullFilter.select(self.cardclass).distinct()
+            else:
+                oExtraCardIter = oCardIter
+            for oCard in oExtraCardIter:
+                oAbsCard = IAbstractCard(oCard)
+                oPhysCard = IPhysicalCard(oCard)
+                dAbsCards.setdefault(oAbsCard, {'count' : 0, 'expansions' : {},
+                    'card sets' : {}})
+                dAbsCards[oAbsCard]['expansions'].setdefault(
+                        oPhysCard.expansion, 0)
+                dExpanInfo = dAbsCards[oAbsCard]['expansions']
+                dChildInfo = dAbsCards[oAbsCard]['card sets']
+                if not dChildInfo:
+                    self.get_child_set_info(oAbsCard, dChildInfo, dExpanInfo,
+                            dChildFilters)
+
         for oCard in oCardIter:
             # pylint: disable-msg=E1101
             # sqlobject confuses pylint
             oPhysCard = IPhysicalCard(oCard)
             oAbsCard = IAbstractCard(oPhysCard)
             aAbsCards.append(oAbsCard)
-            dAbsCards.setdefault(oAbsCard, {'count' : 0, 'expansions' : {}, 'card sets' : {}})
+            dAbsCards.setdefault(oAbsCard, {'count' : 0, 'expansions' : {},
+                'card sets' : {}})
             dAbsCards[oAbsCard]['count'] += 1
             dChildInfo = dAbsCards[oAbsCard]['card sets']
             dExpanInfo = dAbsCards[oAbsCard]['expansions']
@@ -350,28 +397,8 @@ class CardSetCardListModel(CardListModel):
                     SHOW_CARD_SETS, EXPANSIONS_AND_CARD_SETS,
                     CARD_SETS_AND_EXPANSIONS]:
                 # Don't re-filter for repeated abstract cards
-                for sCardSetName, oFilter in dChildFilters.iteritems():
-                    oFullFilter = FilterAndBox([SpecificCardIdFilter(oAbsCard.id),
-                        oFilter])
-                    aChildCards = oFullFilter.select(self.cardclass).distinct()
-                    if self.iExtraLevelsMode == SHOW_CARD_SETS or \
-                            self.iExtraLevelsMode == CARD_SETS_AND_EXPANSIONS:
-                        iChildCnt = aChildCards.count()
-                        if iChildCnt > 0:
-                            # Don't show 0 counts, for consistency
-                            dChildInfo.setdefault(sCardSetName, iChildCnt)
-                            if self.iExtraLevelsMode == CARD_SETS_AND_EXPANSIONS:
-                                dExpanInfo.setdefault(sCardSetName, {})
-                                for oCSCard in aChildCards:
-                                    oThisPhysCard = IPhysicalCard(oCSCard)
-                                    dExpanInfo[sCardSetName].setdefault(oThisPhysCard.expansion, 0)
-                                    dExpanInfo[sCardSetName][oThisPhysCard.expansion] += 1
-                    elif self.iExtraLevelsMode == EXPANSIONS_AND_CARD_SETS:
-                        for oCSCard in aChildCards:
-                            oThisPhysCard = IPhysicalCard(oCSCard)
-                            dChildInfo.setdefault(oThisPhysCard.expansion, {})
-                            dChildInfo[oThisPhysCard.expansion].setdefault(sCardSetName, 0)
-                            dChildInfo[oThisPhysCard.expansion][sCardSetName] += 1
+                self.get_child_set_info(oAbsCard, dChildInfo, dExpanInfo,
+                        dChildFilters)
             if self.iExtraLevelsMode == EXPANSIONS_AND_CARD_SETS:
                 dChildInfo.setdefault(oPhysCard.expansion, {})
 
@@ -380,6 +407,37 @@ class CardSetCardListModel(CardListModel):
 
         # Iterate over groups
         return (self.groupby(aCards, get_card), aAbsCards)
+
+    def get_child_set_info(self, oAbsCard, dChildInfo, dExpanInfo,
+            dChildFilters):
+        """Fill in info about the child card sets for the grouped iterator"""
+        # pylint: disable-msg=E1101
+        # Pyprotocols confuses pylint
+        oThisCardFilter = SpecificCardIdFilter(oAbsCard.id)
+        for sCardSetName, oFilter in dChildFilters.iteritems():
+            oFullFilter = FilterAndBox([oThisCardFilter, oFilter])
+            aChildCards = oFullFilter.select(self.cardclass).distinct()
+            if self.iExtraLevelsMode == SHOW_CARD_SETS or \
+                    self.iExtraLevelsMode == CARD_SETS_AND_EXPANSIONS:
+                iChildCnt = aChildCards.count()
+                if iChildCnt > 0 or self.iShowCardMode == ALL_CARDS:
+                    # FIXME: Does this check do what the user would expect?
+                    dChildInfo.setdefault(sCardSetName, iChildCnt)
+                    if self.iExtraLevelsMode == CARD_SETS_AND_EXPANSIONS:
+                        dExpanInfo.setdefault(sCardSetName, {})
+                        for oCSCard in aChildCards:
+                            oThisPhysCard = IPhysicalCard(oCSCard)
+                            dExpanInfo[sCardSetName].setdefault(
+                                    oThisPhysCard.expansion, 0)
+                            dExpanInfo[sCardSetName][oThisPhysCard.expansion] \
+                                    += 1
+            elif self.iExtraLevelsMode == EXPANSIONS_AND_CARD_SETS:
+                for oCSCard in aChildCards:
+                    oThisPhysCard = IPhysicalCard(oCSCard)
+                    dChildInfo.setdefault(oThisPhysCard.expansion, {})
+                    dChildInfo[oThisPhysCard.expansion].setdefault(
+                            sCardSetName, 0)
+                    dChildInfo[oThisPhysCard.expansion][sCardSetName] += 1
 
     def inc_card(self, oPath):
         """
@@ -403,7 +461,8 @@ class CardSetCardListModel(CardListModel):
         """
         if sExpansion is None:
             sExpansion = self.sUnknownExpansion
-        if self.iExtraLevelsMode in [SHOW_EXPANSIONS, EXPANSIONS_AND_CARD_SETS] and \
+        if self.iExtraLevelsMode in [SHOW_EXPANSIONS,
+                EXPANSIONS_AND_CARD_SETS] and \
                 self._dNameSecondLevel2Iter.has_key(sCardName):
             if self._dNameSecondLevel2Iter[sCardName].has_key(sExpansion):
                 self.alter_card_expansion_count(sCardName, sExpansion, +1)
@@ -418,7 +477,8 @@ class CardSetCardListModel(CardListModel):
         """
         if sExpansion is None:
             sExpansion = self.sUnknownExpansion
-        if self.iExtraLevelsMode in [SHOW_EXPANSIONS, EXPANSIONS_AND_CARD_SETS] and \
+        if self.iExtraLevelsMode in [SHOW_EXPANSIONS,
+                EXPANSIONS_AND_CARD_SETS] and \
                 self._dNameSecondLevel2Iter.has_key(sCardName) and \
                 self._dNameSecondLevel2Iter[sCardName].has_key(sExpansion):
             self.alter_card_expansion_count(sCardName, sExpansion, -1)
@@ -523,27 +583,19 @@ class CardSetCardListModel(CardListModel):
                 bIncCard, bDecCard = self.check_inc_dec_card(iCnt)
                 self.set(oIter, 3, bIncCard)
                 self.set(oIter, 4, bDecCard)
-            elif self.bAddAllAbstractCards:
-                # Need to clean up all the children
-                self.set(oIter, 1, iCnt, 2, 0)
-                bIncCard, bDecCard = self.check_inc_dec_card(iCnt)
-                self.set(oIter, 3, bIncCard)
-                self.set(oIter, 4, bDecCard)
-                if self._dNameSecondLevel2Iter.has_key(sCardName):
-                    self._clear_expansion_iters(sCardName)
             else:
                 if self._dNameSecondLevel2Iter.has_key(sCardName):
                     self._remove_expansion_iters(sCardName)
                 self.remove(oIter)
 
-            if iGrpCnt > 0 or self.bAddAllAbstractCards:
+            if iGrpCnt > 0:
                 self.set(oGrpIter, 1, iGrpCnt, 2, 0)
             else:
                 sGroupName = self.get_value(oGrpIter, 0)
                 del self._dGroupName2Iter[sGroupName]
                 self.remove(oGrpIter)
 
-        if iCnt <= 0 and not self.bAddAllAbstractCards:
+        if iCnt <= 0:
             del self._dName2Iter[sCardName]
 
         if self.oEmptyIter and iChg > 0:

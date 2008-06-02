@@ -18,7 +18,8 @@ from sutekh.gui.EditAnnotationsDialog import EditAnnotationsDialog
 from sutekh.gui.PaneMenu import CardListMenu
 from sutekh.gui.CardSetManagementController import reparent_card_set
 from sutekh.gui.CardSetListModel import NO_SECOND_LEVEL, SHOW_EXPANSIONS, \
-        SHOW_CARD_SETS, EXPANSIONS_AND_CARD_SETS, CARD_SETS_AND_EXPANSIONS
+        SHOW_CARD_SETS, EXPANSIONS_AND_CARD_SETS, CARD_SETS_AND_EXPANSIONS, \
+        THIS_SET_ONLY, ALL_CARDS, PARENT_CARDS, CHILD_CARDS
 
 class CardSetMenu(CardListMenu):
     # pylint: disable-msg=R0904
@@ -59,22 +60,35 @@ class CardSetMenu(CardListMenu):
         # Looks like it requires playing with menu_item attributes
         # (or maybe gtk.Action)
         oMenu.add(gtk.SeparatorMenuItem())
-        self.create_check_menu_item('Show Cards with Count of 0', oMenu,
-                self._toggle_all_abstract_cards,
-                self._oController.model.bAddAllAbstractCards)
-        oModeMenu = self.create_menu_item_with_submenu(oMenu, "Display Mode").get_submenu()
+        oCountMenu = self.create_menu_item_with_submenu(oMenu,
+                "Cards To Show").get_submenu()
+        oThisCardSet = gtk.RadioMenuItem(None, "This Card Set Only")
+        oThisCardSet.set_active(True)
+        oCountMenu.add(oThisCardSet)
+        oThisCardSet.connect("toggled", self._change_count_mode, THIS_SET_ONLY)
+        for sString, iValue in [("Show All Cards", ALL_CARDS),
+                ("Show all cards in parent card set", PARENT_CARDS),
+                ("Show all cards in child card sets", CHILD_CARDS),
+                ]:
+            oItem = gtk.RadioMenuItem(oThisCardSet, sString)
+            oCountMenu.add(oItem)
+            oItem.connect("toggled", self._change_count_mode, iValue)
+        oModeMenu = self.create_menu_item_with_submenu(oMenu,
+                "Display Mode").get_submenu()
         oNoChildren = gtk.RadioMenuItem(None, "Show No Children")
         oModeMenu.add(oNoChildren)
         oNoChildren.connect("toggled", self._change_mode, NO_SECOND_LEVEL)
-        oExpansion = gtk.RadioMenuItem(oNoChildren, "Show Expansions")
-        oExpansion.set_active(True)
-        oModeMenu.add(oExpansion)
-        oExpansion.connect("toggled", self._change_mode, SHOW_EXPANSIONS)
-        for sString, iValue in [("Show Child Card Sets", SHOW_CARD_SETS),
-                ("Show Expansions + Child Card Sets", EXPANSIONS_AND_CARD_SETS),
-                ("Show Child Card Sets and Expansions", CARD_SETS_AND_EXPANSIONS)
+        for sString, iValue in [("Show Expansions", SHOW_EXPANSIONS),
+                ("Show Child Card Sets", SHOW_CARD_SETS),
+                ("Show Expansions + Child Card Sets",
+                    EXPANSIONS_AND_CARD_SETS),
+                ("Show Child Card Sets and Expansions",
+                    CARD_SETS_AND_EXPANSIONS),
                 ]:
+            # Should we have some way of restoring setting from last session?
             oItem = gtk.RadioMenuItem(oNoChildren, sString)
+            if iValue == SHOW_EXPANSIONS:
+                oItem.set_active(True)
             oModeMenu.add(oItem)
             oItem.connect("toggled", self._change_mode, iValue)
 
@@ -169,6 +183,11 @@ class CardSetMenu(CardListMenu):
     def _change_mode(self, oWidget, iLevel):
         """Set which extra information is shown."""
         self._oController.model.iExtraLevelsMode = iLevel
+        self._oController.view.reload_keep_expanded()
+
+    def _change_count_mode(self, oWidget, iLevel):
+        """Set which extra information is shown."""
+        self._oController.model.iShowCardMode = iLevel
         self._oController.view.reload_keep_expanded()
 
     def _toggle_all_abstract_cards(self, oWidget):
