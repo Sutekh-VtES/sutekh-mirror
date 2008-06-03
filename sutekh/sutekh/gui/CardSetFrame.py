@@ -46,10 +46,6 @@ class CardSetFrame(CardListFrame, object):
         self.update_name(sName)
 
         self._oController.view.check_editable()
-        # pylint: disable-msg=E1101
-        # sqlobject confuses pylint
-        if oCS.parent:
-            self._oController.view.set_parent_count_col_vis(True)
 
     # pylint: disable-msg=W0212
     # We allow access via these properties

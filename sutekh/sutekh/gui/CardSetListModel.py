@@ -14,7 +14,6 @@ from sutekh.core.SutekhObjects import PhysicalCard, IExpansion, \
         IPhysicalCardSet, PhysicalCardSet
 from sutekh.gui.CardListModel import CardListModel
 
-
 # pylint: disable-msg=C0103
 # We break out usual convention here
 # consts for the different modes we need
@@ -39,6 +38,10 @@ def get_card_expansion_info(oItem):
 def get_card_child_set_info(oItem):
     """Extract the child card set information."""
     return oItem[1]['card sets']
+
+def get_par_count(oItem):
+    """Get the parent count from the card info."""
+    return 0
 
 class CardSetCardListModel(CardListModel):
     # pylint: disable-msg=R0904, R0902
@@ -90,15 +93,18 @@ class CardSetCardListModel(CardListModel):
 
             # Fill in Cards
             iGrpCnt = 0
+            iParGrpCnt = 0
             for oItem in oGroupIter:
                 oCard, iCnt = get_card(oItem), get_card_count(oItem)
+                iParCnt = get_par_count(oItem)
                 iGrpCnt += iCnt
+                iParGrpCnt += iParCnt
                 oChildIter = self.append(oSectionIter)
                 bIncCard, bDecCard = self.check_inc_dec_card(iCnt)
                 self.set(oChildIter,
                     0, oCard.name,
                     1, iCnt,
-                    2, 0,
+                    2, iParCnt,
                     3, bIncCard,
                     4, bDecCard
                 )
@@ -163,7 +169,7 @@ class CardSetCardListModel(CardListModel):
             self.set(oSectionIter,
                 0, sGroup,
                 1, iGrpCnt,
-                2, 0,
+                2, iParGrpCnt,
                 3, False,
                 4, False
             )
@@ -189,11 +195,11 @@ class CardSetCardListModel(CardListModel):
     def _add_extra_level(self, oChildIter, sCardName, sName, tInfo):
         """Add an extra level iterator to the card list model."""
         oIter = self.append(oChildIter)
-        iCnt, bIncCard, bDecCard = tInfo
+        iCnt, iParCnt, bIncCard, bDecCard = tInfo
         self.set(oIter,
                 0, sName,
                 1, iCnt,
-                2, 0,
+                2, iParCnt,
                 3, bIncCard,
                 4, bDecCard)
         # FIXME: Sort out the caching aspects for editing
@@ -219,7 +225,7 @@ class CardSetCardListModel(CardListModel):
                 if self.bEditable:
                     bIncCard = True
                     bDecCard = iCnt > 0
-                dExpansions[sKey] = [iCnt, bIncCard, bDecCard]
+                dExpansions[sKey] = [iCnt, 0, bIncCard, bDecCard]
         else:
             # FIXME: work out how to present editing options when showing
             # expansions + card sets
@@ -232,7 +238,7 @@ class CardSetCardListModel(CardListModel):
                         sKey = oExpansion.name
                     else:
                         sKey = self.sUnknownExpansion
-                    dExpansions[sChildSet][sKey] = [iCnt, bIncCard, bDecCard]
+                    dExpansions[sChildSet][sKey] = [iCnt, 0, bIncCard, bDecCard]
         return dExpansions
 
     def get_child_info(self, oCard, dChildInfo, dExpansionInfo=None):
@@ -242,7 +248,7 @@ class CardSetCardListModel(CardListModel):
             # FIXME: work out how to present editing options when showing
             # card sets + expansions
             for sCardSet, iCnt in dChildInfo.iteritems():
-                dChildren[sCardSet] = [iCnt, False, False]
+                dChildren[sCardSet] = [iCnt, 0, False, False]
         else:
             # FIXME: work out how to present editing options when showing
             # card sets
@@ -253,7 +259,7 @@ class CardSetCardListModel(CardListModel):
                     sKey = self.sUnknownExpansion
                 dChildren[sKey] = {}
                 for sCardSet, iCnt in dChildInfo[oExpansion].iteritems():
-                    dChildren[sKey][sCardSet] = [iCnt, False, False]
+                    dChildren[sKey][sCardSet] = [iCnt, 0, False, False]
         return dChildren
 
     def check_expansion_iter_stays(self, oCard, sExpansion, iCnt):

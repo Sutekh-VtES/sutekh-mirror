@@ -92,6 +92,14 @@ class CardSetMenu(CardListMenu):
             oModeMenu.add(oItem)
             oItem.connect("toggled", self._change_mode, iValue)
 
+        self._oParentCol = self.create_check_menu_item('Show Parent Card Count',
+                oMenu, self.toggle_parent_col, False)
+        oCS = PhysicalCardSet.byName(self.sSetName)
+        if not oCS.parent:
+            # No parent, so disable option
+            self._oParentCol.set_sensitive(False)
+        else:
+            self._oParentCol.set_active(True)
         oMenu.add(gtk.SeparatorMenuItem())
         self.add_common_actions(oMenu)
 
@@ -126,6 +134,7 @@ class CardSetMenu(CardListMenu):
         # pylint: disable-msg=E1101
         # sqlobject confuses pylint
         oCS = PhysicalCardSet.byName(self.sSetName)
+        oOldParent = oCS.parent
         oProp = CreateCardSetDialog(self._oMainWindow, oCardSet=oCS)
         oProp.run()
         sName = oProp.get_name()
@@ -145,9 +154,12 @@ class CardSetMenu(CardListMenu):
             if oParent != oCS.parent:
                 reparent_card_set(oCS, oParent)
             if oCS.parent:
-                self._oController.view.set_parent_count_col_vis(True)
+                self._oParentCol.set_sensitive(True)
+                if not oOldParent:
+                    # Parent has changed from none, so ensure set to default
+                    self._oParentCol.set_active(True)
             else:
-                self._oController.view.set_parent_count_col_vis(False)
+                self._oParentCol.set_sensitive(False)
             self.__update_card_set_menu()
             oCS.syncUpdate()
             # We may well have changed stuff on the card list pane, so reload
@@ -209,5 +221,9 @@ class CardSetMenu(CardListMenu):
     def _paste_selection(self, oWidget):
         """Try to paste the current clipbaord contents"""
         self._oController.view.do_paste()
+
+    def toggle_parent_col(self, oWidget):
+        """Toggle the visibility of the parent col"""
+        self._oController.view.set_parent_count_col_vis(oWidget.active)
 
     # pylint: enable-msg=W0613
