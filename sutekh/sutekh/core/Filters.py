@@ -934,7 +934,7 @@ class PhysicalCardFilter(Filter):
     def _get_joins(self):
         # pylint: disable-msg=E1101
         # SQLObject methods not detected by plylint
-        # This and PhysicalCardSetFilter are the only filters allowed to
+        # This is one of the filters allowed to
         # pass the AbstractCard table as a joining table.
         # The join is needed so filtering on abstract card properties can work
         oTable = Table('physical_card')
@@ -1106,8 +1106,7 @@ class PhysicalCardSetFilter(Filter):
         # The join on the AbstractCard table is needed to enable filtering
         # physical card sets on abstract card propeties, since the base class
         # for physical card sets is the mapping table.
-        # Only this and PhysicalCardFilter can join to the AbstractCard table
-        # like this.
+        # This is one of the only filters allowed to join like this
         # pylint: disable-msg=E1101
         # SQLObject methods not detected by plylint
         return [
@@ -1157,6 +1156,34 @@ class MultiPhysicalCardSetFilter(Filter):
 
     def _get_expression(self):
         return IN(self.__oTable.q.physical_card_set_id, self.__aCardSetIds)
+
+class MultiPhysicalCardSetMapFilter(Filter):
+    """Filter on a list of Physical Card Sets"""
+    # This does the same join magic as for PhysicalCardSetFilter, so
+    # it can be used for checking other card sets
+
+    def __init__(self, aNames):
+        # Select cards belonging to the PhysicalCardSet
+        # pylint: disable-msg=E1101
+        # SQLObject methods not detected by plylint
+        self.__aCardSetIds = []
+        for sName in aNames:
+            self.__aCardSetIds.append(IPhysicalCardSet(sName).id)
+        self.__oTable = Table('physical_map')
+
+    # pylint: disable-msg=C0111
+    # don't need docstrings for _get_expression, get_values & _get_joins
+    # There is no fancy join, since this called sraight on the mapping table
+    def _get_joins(self):
+        return [
+                LEFTJOINOn(None, PhysicalCard,
+                    PhysicalCard.q.id == self.__oTable.physical_card_id),
+                LEFTJOINOn(None, AbstractCard,
+                    AbstractCard.q.id == PhysicalCard.q.abstractCardID),
+                ]
+
+    def _get_expression(self):
+        return IN(self.__oTable.physical_card_set_id, self.__aCardSetIds)
 
 class PhysicalCardSetInUseFilter(Filter):
     """Filter on a membership of Physical Card Sets marked in use"""
