@@ -260,6 +260,26 @@ class Titles(AbbreviationLookup):
         'Magaji' : [],
     }
 
+    dVoteValues = {
+            # Camarilla Titles
+            'Primogen' : 1, 'Prince' : 2, 'Justicar' : 3,
+            'Inner Circle' : 4,
+            # Sabbat Titles
+            'Bishop' : 1, 'Archbishop' : 2, 'Priscus' : 3,
+            'Cardinal' : 3, 'Regent' : 4,
+            # Independent Titles
+            'Independent with 1 vote' : 1,
+            'Independent with 2 votes' : 2,
+            'Independent with 3 votes' : 3,
+            # Laibon Titles
+            'Magaji' : 2,
+            }
+
+    @classmethod
+    def vote_value(cls, sTitle):
+        """Get the vote value for the title"""
+        return cls.dVoteValues[sTitle]
+
 class Virtues(AbbreviationLookup):
     """Common abbrevations for Imbued Virtues"""
     dKeys = {

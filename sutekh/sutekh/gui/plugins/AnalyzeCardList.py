@@ -13,6 +13,7 @@ import gtk
 from sutekh.core.SutekhObjects import PhysicalCardSet, \
         IAbstractCard
 from sutekh.core.Filters import CardTypeFilter
+from sutekh.core.Abbreviations import Titles
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog
 from sutekh.gui.MultiSelectComboBox import MultiSelectComboBox
@@ -245,22 +246,6 @@ class AnalyzeCardList(CardListPlugin):
 
     aCryptTypes = ['Vampire', 'Imbued']
     # Map of titles to votes
-    # TODO: Defined this in SutekhObjects
-    dTitleVoteMap = {
-            'Primogen' : 1,
-            'Prince' : 2,
-            'Justicar' : 3,
-            'Inner Circle' : 4,
-            'Priscus' : 3,
-            'Bishop' : 1,
-            'Archbishop' : 2,
-            'Cardinal' : 3,
-            'Regent' : 4,
-            'Independent with 1 vote' : 1,
-            'Independent with 2 votes' : 2,
-            'Independent with 3 votes' : 3,
-            'Magaji' : 2,
-            }
 
     def get_menu_item(self):
         """Register on the 'Plugins' Menu"""
@@ -550,7 +535,7 @@ class AnalyzeCardList(CardListPlugin):
             for oTitle in oAbsCard.title:
                 dDeckDetails['titles'].setdefault(oTitle, 0)
                 dDeckDetails['titles'][oTitle] += 1
-                dDeckDetails['votes'] += self.dTitleVoteMap[oTitle.name]
+                dDeckDetails['votes'] += Titles.vote_value(oTitle.name)
         # Build up Text
         sVampText = "\t\t<b>Vampires :</b>\n\n"
         sVampText += '<span foreground = "blue">Basic Crypt stats</span>\n'
@@ -574,12 +559,14 @@ class AnalyzeCardList(CardListPlugin):
             sVampText += "%d Vampires of clan %s %s\n" % (iCount,
                     oClan.name, _percentage(iCount, self.iCryptSize, "Crypt"))
         sVampText += '\n<span foreground = "blue">Titles</span>\n'
+        iTotalTitles = 0
         for oTitle, iCount in dDeckDetails['titles'].iteritems():
             sVampText += "%d vampires with the title %s (%d votes)\n" % (
-                    iCount, oTitle.name, self.dTitleVoteMap[oTitle.name])
-        sVampText += "%d titles in the crypt %s\n" % (
-                len(dDeckDetails['titles']), _percentage(len(
-                    dDeckDetails['titles']), self.iCryptSize, "Crypt"))
+                    iCount, oTitle.name, Titles.vote_value(oTitle.name))
+            iTotalTitles += iCount
+        sVampText += "%d vampires with titles (%s)\n" % (
+                iTotalTitles, _percentage(iTotalTitles, self.iCryptSize,
+                    "Crypt"))
         sVampText += "%d votes from titles in the crypt. Average votes per" \
                 " vampire is %2.3f\n" % (dDeckDetails['votes'],
                         dDeckDetails['votes'] / float(iNum))
