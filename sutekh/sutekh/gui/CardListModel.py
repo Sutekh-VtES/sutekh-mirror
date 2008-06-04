@@ -7,11 +7,16 @@
 
 """The gtk.TreeModel for the card lists."""
 
-import gtk, gobject
+import gtk, pango
 from sutekh.core.Filters import FilterAndBox, NullFilter, PhysicalCardFilter
 from sutekh.core.Groupings import CardTypeGrouping
 from sutekh.core.SutekhObjects import IAbstractCard, PhysicalCard, \
         IPhysicalCard
+
+def remove_markup(sMarkup):
+    """Return the string with markup stripped"""
+    # Wrapper around parse_markup, dropping the info we wish to ignore
+    return pango.parse_markup(sMarkup)[1]
 
 def norm_path(oPath):
     """Transform string paths to tuple paths"""
@@ -23,6 +28,7 @@ def norm_path(oPath):
     else:
         oNormPath = oPath
     return oNormPath
+
 
 class CardListModelListener(object):
     """
@@ -78,9 +84,7 @@ class CardListModel(gtk.TreeStore):
 
     def __init__(self):
         # STRING is the card name, INT is the card count
-        super(CardListModel, self).__init__(gobject.TYPE_STRING,
-                gobject.TYPE_INT, gobject.TYPE_INT, gobject.TYPE_BOOLEAN,
-                gobject.TYPE_BOOLEAN)
+        super(CardListModel, self).__init__(str, str, str, bool, bool)
         self._dName2Iter = {}
         self._dNameExpansion2Iter = {}
         self._dGroupName2Iter = {}
@@ -138,6 +142,11 @@ class CardListModel(gtk.TreeStore):
         return aExpansions
 
     # pylint: enable-msg=W0613
+
+    def get_int_value(self, oIter, iPos):
+        """Extract an integer value from the model, removing markup"""
+        sValue = remove_markup(self.get_value(oIter, iPos))
+        return int(sValue)
 
     def load(self):
         # pylint: disable-msg=R0914
@@ -297,7 +306,7 @@ class CardListModel(gtk.TreeStore):
         else:
             sName = self.get_name_from_iter(oIter)
             sExpansion = None
-        iCount = self.get_value(oIter, 1)
+        iCount = self.get_int_value(oIter, 1)
         return sName, sExpansion, iCount, iDepth
 
     def get_inc_dec_flags_from_path(self, oPath):
@@ -343,7 +352,7 @@ class CardListModel(gtk.TreeStore):
         for sExpansion in self._dNameExpansion2Iter[sCardName]:
             for oExpIter in self._dNameExpansion2Iter[sCardName][sExpansion]:
                 # No cards, so impossible to manipulate expansions
-                self.set(oExpIter, 1, 0, 2, 0,
+                self.set(oExpIter, 1, '0', 2, '0',
                         2, False,
                         3, False)
 

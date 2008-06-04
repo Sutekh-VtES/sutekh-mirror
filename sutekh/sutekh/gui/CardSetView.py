@@ -39,22 +39,18 @@ class CardSetView(CardListView):
 
         # Setup columns for default view
         self.oNumCell = gtk.CellRendererText()
-        self.oNumCell.set_property('style', pango.STYLE_ITALIC)
-        self.oNumCell.set_property('foreground-set', True)
         self.oNameCell = gtk.CellRendererText()
         self.oNameCell.set_property('style', pango.STYLE_ITALIC)
 
-        oColumn1 = gtk.TreeViewColumn("#", self.oNumCell, text=1)
+        oColumn1 = gtk.TreeViewColumn("#", self.oNumCell, markup=1)
         oColumn1.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
         oColumn1.set_fixed_width(40)
         oColumn1.set_sort_column_id(1)
         self.append_column(oColumn1)
 
         oParentCell = gtk.CellRendererText()
-        oParentCell.set_property('style', pango.STYLE_ITALIC)
-        oParentCell.set_property('foreground-set', True)
         self.oParentCol = gtk.TreeViewColumn("Parent #", oParentCell,
-                text=2)
+                markup=2)
         self.oParentCol.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
         self.oParentCol.set_fixed_width(40)
         self.oParentCol.set_sort_column_id(2)
@@ -129,7 +125,6 @@ class CardSetView(CardListView):
                     continue
                 dSelectedData[sCardName][sExpansion] = iCount
         return dSelectedData
-
 
     # pylint: disable-msg=R0913, W0613
     # elements required by function signature
@@ -281,6 +276,9 @@ class CardSetView(CardListView):
 
     def set_color_edit_cue(self):
         """Set a visual cue that the card set is editable."""
+        # FIXME: Should not do this check every time -
+        # Do this once after being mapped and then watch for
+        # _GTK_READ_RCFILES somehow
         def _compare_colors(oColor1, oColor2):
             """Compare the RGB values for 2 gtk.gdk.Colors. Return True if
                they're the same, false otherwise."""
@@ -316,22 +314,20 @@ class CardSetView(CardListView):
         # Force a hint on the number column as well
         oEditColor = oCurStyle.fg[gtk.STATE_NORMAL]
         oEditBackColor = oCurStyle.base[gtk.STATE_NORMAL]
-        if _compare_colors(oEditColor, self.oCellColor) and \
-                _compare_colors(oEditBackColor, oCurBackColor):
-            # Theme change isn't visually distinct here, so we go
-            # with red - this is safe, since CellRenderers aren't
-            # themed, so the default color will not be red
-            # (famous last words)
-            # If the default background color is red, too bad
-            self.oNumCell.set_property('foreground', 'red')
-        else:
-            # Theme change is visible
-            self.oNumCell.set_property('foreground-gdk', oEditColor)
+        if not _compare_colors(oEditColor, self.oCellColor) or \
+                not _compare_colors(oEditBackColor, oCurBackColor):
+            # Visiually distinct, so honour user's choice
+            self._oModel.sEditColour = oEditColor.to_string()
+        # If the theme change isn't visually distinct here, we go
+        # with red, which is the default - this is safe, 
+        # since CellRenderers aren't
+        # themed, so the default color will not be red
+        # (famous last words)
+        # If the default background color is red, too bad
 
     def set_color_normal(self):
         """Unset the editable visual cue"""
         self.set_name('normal_view')
-        self.oNumCell.set_property('foreground-gdk', self.oCellColor)
 
     def _set_editable(self, bValue):
         """Update the view and menu when the editable status changes"""

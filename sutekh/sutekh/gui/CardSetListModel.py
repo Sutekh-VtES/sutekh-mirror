@@ -65,6 +65,14 @@ class CardSetCardListModel(CardListModel):
         self._dNameSecondLevel2Iter = {}
         self._dName2nd3rdLevel2Iter = {}
         self.iParentCountMode = PARENT_COUNT
+        self.sEditColour = 'red'
+
+    def format_count(self, iCnt):
+        if self.bEditable:
+            return '<i><span foreground="%s">%d</span></i>' % \
+                    (self.sEditColour, iCnt)
+        else:
+            return '<i>%d</i>' % iCnt
 
     def load(self):
         # pylint: disable-msg=R0914
@@ -106,11 +114,15 @@ class CardSetCardListModel(CardListModel):
                 bIncCard, bDecCard = self.check_inc_dec_card(iCnt)
                 self.set(oChildIter,
                     0, oCard.name,
-                    1, iCnt,
-                    2, iParCnt,
+                    1, self.format_count(iCnt),
+                    2, str(iParCnt),
                     3, bIncCard,
                     4, bDecCard
                 )
+                if (self.iParentCountMode == PARENT_COUNT and iParCnt < iCnt) \
+                        or (iParCnt < 0):
+                    self.set(oChildIter, 2,
+                            '<span foreground = "red">%d</span>' % iParCnt)
                 if self.iExtraLevelsMode == SHOW_EXPANSIONS:
                     dExpansionInfo = self.get_expansion_info(
                             get_card_expansion_info(oItem))
@@ -171,8 +183,8 @@ class CardSetCardListModel(CardListModel):
             # Update Group Section
             self.set(oSectionIter,
                 0, sGroup,
-                1, iGrpCnt,
-                2, iParGrpCnt,
+                1, self.format_count(iGrpCnt),
+                2, str(iParGrpCnt),
                 3, False,
                 4, False
             )
@@ -181,7 +193,8 @@ class CardSetCardListModel(CardListModel):
             # Showing nothing
             self.oEmptyIter = self.append(None)
             sText = self._get_empty_text()
-            self.set(self.oEmptyIter, 0, sText, 1, 0, 2, 0, 3, False, 4, False)
+            self.set(self.oEmptyIter, 0, sText, 1, self.format_count(0), 2,
+                    '0', 3, False, 4, False)
 
         # Notify Listeners
         for oListener in self.dListeners:
@@ -201,8 +214,8 @@ class CardSetCardListModel(CardListModel):
         iCnt, iParCnt, bIncCard, bDecCard = tInfo
         self.set(oIter,
                 0, sName,
-                1, iCnt,
-                2, iParCnt,
+                1, self.format_count(iCnt),
+                2, str(iParCnt),
                 3, bIncCard,
                 4, bDecCard)
         # FIXME: Sort out the caching aspects for editing
@@ -593,8 +606,8 @@ class CardSetCardListModel(CardListModel):
                     oIter = self.insert_after(oParent, oSibling)
                     self.set(oIter,
                             0, sThisExp,
-                            1, iCnt,
-                            2, 0,
+                            1, self.format_count(iCnt),
+                            2, '0',
                             3, bIncCard,
                             4, bDecCard)
                     self._dNameSecondLevel2Iter[sCardName][
@@ -618,7 +631,7 @@ class CardSetCardListModel(CardListModel):
         for sThisExp, aList in \
                 self._dNameSecondLevel2Iter[sCardName].iteritems():
             for oIter in aList:
-                iCnt = self.get_value(oIter, 1)
+                iCnt = self.get_int_value(oIter, 1)
                 if sThisExp == sExpansion:
                     iCnt += iChg
                 if self.bEditable:
@@ -627,8 +640,8 @@ class CardSetCardListModel(CardListModel):
                     bIncCard, bDecCard = False, False
                 if self.check_expansion_iter_stays(oCard, sThisExp, iCnt):
                     self.set(oIter,
-                            1, iCnt,
-                            2, 0,
+                            1, self.format_count(iCnt),
+                            2, '0',
                             3, bIncCard,
                             4, bDecCard)
                 else:
@@ -650,11 +663,11 @@ class CardSetCardListModel(CardListModel):
         oCard = IAbstractCard(sCardName)
         for oIter in self._dName2Iter[sCardName]:
             oGrpIter = self.iter_parent(oIter)
-            iCnt = self.get_value(oIter, 1) + iChg
-            iGrpCnt = self.get_value(oGrpIter, 1) + iChg
+            iCnt = self.get_int_value(oIter, 1) + iChg
+            iGrpCnt = self.get_int_value(oGrpIter, 1) + iChg
 
             if iCnt > 0:
-                self.set(oIter, 1, iCnt, 2, 0)
+                self.set(oIter, 1, self.format_count(iCnt))
                 bIncCard, bDecCard = self.check_inc_dec_card(iCnt)
                 self.set(oIter, 3, bIncCard)
                 self.set(oIter, 4, bDecCard)
@@ -664,7 +677,7 @@ class CardSetCardListModel(CardListModel):
                 self.remove(oIter)
 
             if iGrpCnt > 0:
-                self.set(oGrpIter, 1, iGrpCnt, 2, 0)
+                self.set(oGrpIter, 1, self.format_count(iGrpCnt))
             else:
                 sGroupName = self.get_value(oGrpIter, 0)
                 del self._dGroupName2Iter[sGroupName]
@@ -680,7 +693,8 @@ class CardSetCardListModel(CardListModel):
         elif iChg < 0 and not self._dName2Iter:
             self.oEmptyIter = self.append(None)
             sText = self._get_empty_text()
-            self.set(self.oEmptyIter, 0, sText, 1, 0, 2, 0, 3, False, 4, False)
+            self.set(self.oEmptyIter, 0, sText, 1, self.format_count(0), 2,
+                    '0', 3, False, 4, False)
 
         # Notify Listeners
         for oListener in self.dListeners:
@@ -713,15 +727,15 @@ class CardSetCardListModel(CardListModel):
             # Find Group Section
             if self._dGroupName2Iter.has_key(sGroup):
                 oSectionIter = self._dGroupName2Iter[sGroup]
-                iGrpCnt = self.get_value(oSectionIter, 1)
+                iGrpCnt = self.get_int_value(oSectionIter, 1)
             else:
                 oSectionIter = self.append(None)
                 self._dGroupName2Iter[sGroup] = oSectionIter
                 iGrpCnt = 0
                 self.set(oSectionIter,
                     0, sGroup,
-                    1, iGrpCnt,
-                    2, 0,
+                    1, self.format_count(iGrpCnt),
+                    2, '0',
                 )
 
             # Add Cards
@@ -732,8 +746,8 @@ class CardSetCardListModel(CardListModel):
                 bIncCard, bDecCard = self.check_inc_dec_card(iCnt)
                 self.set(oChildIter,
                     0, oCard.name,
-                    1, iCnt,
-                    2, 0,
+                    1, self.format_count(iCnt),
+                    2, '0',
                     3, bIncCard,
                     4, bDecCard
                 )
@@ -752,8 +766,7 @@ class CardSetCardListModel(CardListModel):
 
             # Update Group Section
             self.set(oSectionIter,
-                1, iGrpCnt,
-                2, 0,
+                1, self.format_count(iGrpCnt),
             )
 
         if self.oEmptyIter and oCardIter.count() > 0:

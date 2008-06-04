@@ -1,6 +1,8 @@
 
 04 June 2008
  * Extend the parent card count to cover more options
+ * Change cardlistmodel to use str's for card count - allows setting markup
+   in the model
 
 03 June 2008
  * Add support for multiple 'zero count' options
