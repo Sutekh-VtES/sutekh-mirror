@@ -25,7 +25,8 @@ Gui (Presentation):
  * Cleanup various dialogs, including
    * Unify some of the other dialogs and make various bits more reusable 
      (cf. CreateCardSetDialog hack in plugins)
- * Clean up the currently overly tangled controller/view/model interactions
+ * Clean up the card set controller/model/view interactions
+   - Move state changing code from CardSetMenu to CardSetController
  * Parse in a GTK rc file? (http://www.moeraki.com/pygtktutorial/pygtk2tutorial/ch-GtkRcFiles.html)
  * Icon support improvements
    - Allow icons in the tree view
@@ -42,12 +43,11 @@ For 0.6:
  * Factor out things like the lists of expansions and disciplines in SutekhObjects
    to a seperate file
  * Finish database reddesign fallout:
-   - Allow easier reparenting of card sets (dragging in the card set view?)
-   - Add a option to show cards in child card sets in the view
+   - Address speed issues whne showing parent/child card set counts
    - Sort out editing issues
-   - display expansions in the card set view again
-   - add column for showing numbers from the parent card set
-     + Funky stuff for card sets in use vs not in use?
+     - Enable editing of child card sets via "show child set" view
+     - Sort out the database signals so we can react to changes properly
+   - Add colour hints to card counts and parent card count columns
    - Improve visual feedback for open card sets + card sets in use?
  * Add decent keyboard shortcuts
  * Create built-in tutorial and help.
@@ -55,4 +55,5 @@ For 0.6:
  * Plugins
    - Rework card set independance plugin
    - CSV export plugin for card sets
+ * Support Twilight Revolution (when they update the HTML files)
  * Address issues with exporting Sutekh card sets to ARDB and FELDB

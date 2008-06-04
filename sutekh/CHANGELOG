@@ -1,3 +1,60 @@
+
+04 June 2008
+ * Extend the parent card count to cover more options
+
+03 June 2008
+ * Add support for multiple 'zero count' options
+ * Add parent card counts to the appropriate column
+
+02 June 2008
+ * Re-organise tests to match sutekh's main layout
+ * Add the various 'show cards in child card sets' options to the card set 
+   list view
+ 
+01 June 2008
+ * Fix some issues with database upgrade database copying
+ * Add a test case for the database copy
+ * Fix cache handling bug in the card set holder
+
+29 May 2008
+ * Fold EditableCardListView into CardSetListView
+
+28 May 2008
+ * Add support for passing warnings from CardSetHolder back to the user
+
+22 May 2008
+ * Remove obselete support for abstract card sets and the physical card list
+   from the CSV importer
+ * Allow drag-n-drop reparenting of card sets
+
+19 May 2008
+ * Re-enable editing
+ * Add a filter for filtering on Abstract Card ID
+ * Refactor card set manager gui code to a more MVC-style framework
+ * Add loop detection + loop breaking to the card set management pane
+
+16 May 2008
+ * Remove obselete PhysicalCardSetController. Fold everything into
+   CardSetController
+
+15 May 2008
+ * Re-enable expansions on the card set view
+ * Move edit handling from EditableListMenu to CardSetMenu
+ * Move del + paste code out of CardListModel to CardSetListModel
+
+14 May 2008
+ * Move code handling editing from CardListModel to CardSetListModel
+ * Ensure we truncate when creating '(ACS) + old name' card sets on upgrade.
+ * Drop no longer relevant tables, so they don't cause later problems
+ * Mark open card sets with blue text
+
+13 May 2008
+ * Fix bug with detecting the priscus title
+
+09 May 2008
+ * Simplify pane drag-n-drop code
+ * Fix bug with changing to text entry filters
+
 07 May 2008
  * Remove AbstractCardView.
  * Numerous fixes and tweaks to GuiCardLookup.
