@@ -65,7 +65,7 @@ class CountCardSetCards(CardListPlugin, CardListModelListener):
         # been properly realised, so we need this guard case
         if self.__oTextLabel:
             self.__oTextLabel.set_markup('Total Cards : <b>%d</b>'
-                    ' Crypt Cards : <b>%d</b> Library Cards : <b>%d</b>' % 
+                    ' Crypt Cards : <b>%d</b> Library Cards : <b>%d</b>' %
                     (self.__iTot, self.__iCrypt, self.__iLibrary))
 
     def load(self, aAbsCards):

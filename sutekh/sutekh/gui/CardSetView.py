@@ -319,7 +319,7 @@ class CardSetView(CardListView):
             # Visiually distinct, so honour user's choice
             self._oModel.sEditColour = oEditColor.to_string()
         # If the theme change isn't visually distinct here, we go
-        # with red, which is the default - this is safe, 
+        # with red, which is the default - this is safe,
         # since CellRenderers aren't
         # themed, so the default color will not be red
         # (famous last words)

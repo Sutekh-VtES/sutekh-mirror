@@ -148,7 +148,7 @@ class CachedCardSetHolder(CardSetHolder):
     # W0221 - We need the extra argument
     def create_pcs(self, oCardLookup=DEFAULT_LOOKUP, dLookupCache={}):
         """Create a Physical Card Set.
-        
+
            dLookupCache is updated as soon as possible, i.e. immediately after
            calling oCardLookup.lookup(...).
            """
