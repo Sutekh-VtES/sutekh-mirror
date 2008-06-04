@@ -68,11 +68,20 @@ class CardSetCardListModel(CardListModel):
         self.sEditColour = 'red'
 
     def format_count(self, iCnt):
+        """Format the card count accorindly"""
         if self.bEditable:
             return '<i><span foreground="%s">%d</span></i>' % \
                     (self.sEditColour, iCnt)
         else:
             return '<i>%d</i>' % iCnt
+
+    def format_parent_count(self, iCnt, iParCnt):
+        """Format the parent card count"""
+        if (self.iParentCountMode == PARENT_COUNT and iParCnt < iCnt) or \
+                iParCnt < 0:
+            return '<i><span foreground="red">%d</span></i>' % iParCnt
+        else:
+            return '<i>%d</i>' % iParCnt
 
     def load(self):
         # pylint: disable-msg=R0914
@@ -115,21 +124,16 @@ class CardSetCardListModel(CardListModel):
                 self.set(oChildIter,
                     0, oCard.name,
                     1, self.format_count(iCnt),
-                    2, str(iParCnt),
+                    2, self.format_parent_count(iCnt, iParCnt),
                     3, bIncCard,
                     4, bDecCard
                 )
-                if (self.iParentCountMode == PARENT_COUNT and iParCnt < iCnt) \
-                        or (iParCnt < 0):
-                    self.set(oChildIter, 2,
-                            '<span foreground = "red">%d</span>' % iParCnt)
                 if self.iExtraLevelsMode == SHOW_EXPANSIONS:
                     dExpansionInfo = self.get_expansion_info(
                             get_card_expansion_info(oItem))
                     for sExpansion in sorted(dExpansionInfo):
                         oSubIter = self._add_extra_level(oChildIter,
-                                oCard.name, sExpansion,
-                                dExpansionInfo[sExpansion])
+                                sExpansion, dExpansionInfo[sExpansion])
                         self._dNameSecondLevel2Iter.setdefault(oCard.name,
                                 {}).setdefault(sExpansion, []).append(oSubIter)
                 elif self.iExtraLevelsMode == SHOW_CARD_SETS:
@@ -137,7 +141,7 @@ class CardSetCardListModel(CardListModel):
                             get_card_child_set_info(oItem), iParCnt)
                     for sChildSet in sorted(dChildInfo):
                         oSubIter = self._add_extra_level(oChildIter,
-                                oCard.name, sChildSet, dChildInfo[sChildSet])
+                                sChildSet, dChildInfo[sChildSet])
                         self._dNameSecondLevel2Iter.setdefault(oCard.name,
                                 {}).setdefault(sChildSet,
                                 []).append(oSubIter)
@@ -149,13 +153,12 @@ class CardSetCardListModel(CardListModel):
                             get_card_expansion_info(oItem))
                     for sExpansion in sorted(dExpansionInfo):
                         oSubIter = self._add_extra_level(oChildIter,
-                                oCard.name, sExpansion,
-                                dExpansionInfo[sExpansion])
+                                sExpansion, dExpansionInfo[sExpansion])
                         self._dNameSecondLevel2Iter.setdefault(oCard.name,
                                 {}).setdefault(sExpansion, []).append(oSubIter)
                         for sChildSet in sorted(dChildInfo[sExpansion]):
                             oThisIter = self._add_extra_level(oSubIter,
-                                    oCard.name, sChildSet,
+                                    sChildSet,
                                     dChildInfo[sExpansion][sChildSet])
                             self._dName2nd3rdLevel2Iter.setdefault((
                                 oCard.name, sExpansion), {}).setdefault(
@@ -168,12 +171,12 @@ class CardSetCardListModel(CardListModel):
                             get_card_child_set_info(oItem))
                     for sChildSet in sorted(dChildInfo):
                         oSubIter = self._add_extra_level(oChildIter,
-                                oCard.name, sChildSet, dChildInfo[sChildSet])
+                                sChildSet, dChildInfo[sChildSet])
                         self._dNameSecondLevel2Iter.setdefault(oCard.name,
                                 {}).setdefault(sChildSet, []).append(oSubIter)
                         for sExpansion in dExpansionInfo[sChildSet]:
                             oThisIter = self._add_extra_level(oSubIter,
-                                    oCard.name, sExpansion,
+                                    sExpansion,
                                     dExpansionInfo[sChildSet][sExpansion])
                             self._dName2nd3rdLevel2Iter.setdefault((
                                 oCard.name, sChildSet), {}).setdefault(
@@ -184,7 +187,7 @@ class CardSetCardListModel(CardListModel):
             self.set(oSectionIter,
                 0, sGroup,
                 1, self.format_count(iGrpCnt),
-                2, str(iParGrpCnt),
+                2, self.format_parent_count(iGrpCnt, iParGrpCnt),
                 3, False,
                 4, False
             )
@@ -208,14 +211,14 @@ class CardSetCardListModel(CardListModel):
         else:
             return True, (iCnt > 0)
 
-    def _add_extra_level(self, oChildIter, sCardName, sName, tInfo):
+    def _add_extra_level(self, oChildIter, sName, tInfo):
         """Add an extra level iterator to the card list model."""
         oIter = self.append(oChildIter)
         iCnt, iParCnt, bIncCard, bDecCard = tInfo
         self.set(oIter,
                 0, sName,
                 1, self.format_count(iCnt),
-                2, str(iParCnt),
+                2, self.format_parent_count(iCnt, iParCnt),
                 3, bIncCard,
                 4, bDecCard)
         # FIXME: Sort out the caching aspects for editing
@@ -344,7 +347,6 @@ class CardSetCardListModel(CardListModel):
             sName = self.get_name_from_iter(self.iter_parent(oIter))
         return sName
 
-
     def grouped_card_iter(self, oCardIter):
         """
         Handles the differences in the way AbstractCards and PhysicalCards
@@ -365,10 +367,8 @@ class CardSetCardListModel(CardListModel):
             aChildren = [x.name for x in
                     PhysicalCardSet.selectBy(parentID=self._oCardSet.id,
                         inuse=True)]
-            dChildFilters = {}
             for sName in aChildren:
                 dChildFilters[sName] = PhysicalCardSetFilter(sName)
-
 
         oCurFilter = self.get_current_filter()
         if oCurFilter is None:
@@ -607,7 +607,7 @@ class CardSetCardListModel(CardListModel):
                     self.set(oIter,
                             0, sThisExp,
                             1, self.format_count(iCnt),
-                            2, '0',
+                            2, self.format_parent_count(iCnt, 0),
                             3, bIncCard,
                             4, bDecCard)
                     self._dNameSecondLevel2Iter[sCardName][
@@ -641,7 +641,7 @@ class CardSetCardListModel(CardListModel):
                 if self.check_expansion_iter_stays(oCard, sThisExp, iCnt):
                     self.set(oIter,
                             1, self.format_count(iCnt),
-                            2, '0',
+                            2, self.format_parent_count(iCnt, 0),
                             3, bIncCard,
                             4, bDecCard)
                 else:
@@ -735,7 +735,7 @@ class CardSetCardListModel(CardListModel):
                 self.set(oSectionIter,
                     0, sGroup,
                     1, self.format_count(iGrpCnt),
-                    2, '0',
+                    2, self.format_parent_count(iGrpCnt, 0),
                 )
 
             # Add Cards
@@ -747,7 +747,7 @@ class CardSetCardListModel(CardListModel):
                 self.set(oChildIter,
                     0, oCard.name,
                     1, self.format_count(iCnt),
-                    2, '0',
+                    2, self.format_parent_count(iCnt, 0),
                     3, bIncCard,
                     4, bDecCard
                 )
