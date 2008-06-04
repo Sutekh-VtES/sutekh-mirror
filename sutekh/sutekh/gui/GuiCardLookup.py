@@ -88,7 +88,7 @@ class ReplacementTreeView(gtk.TreeView):
     # pylint: disable-msg=R0904
     # gtk.Widget, so many public methods.
 
-    def __init__(self, oCardListView, oFilterToggleButton, aPhysCards=None):
+    def __init__(self, oCardListView, oFilterToggleButton):
         """Construct a gtk.TreeView object showing the current
            card replacements.
 
@@ -178,6 +178,8 @@ class ReplacementTreeView(gtk.TreeView):
         """Set the card list filter to the best guess filter for this card."""
         oIter = self.oModel.get_iter(oPath)
         sFullName = self.oModel.get_value(oIter, 1)
+        # pylint: disable-msg=W0612
+        # we ignore sExp here
         sName, sExp = self.parse_card_name(sFullName)
 
         oFilter = self.best_guess_filter(sName)
@@ -413,7 +415,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
         oFilterApplyButton = gtk.CheckButton("Apply Filter to view")
 
         oReplacementView = ReplacementTreeView(oPhysCardView,
-                                               oFilterApplyButton, aPhysCards)
+                                               oFilterApplyButton)
         oModel = oReplacementView.get_model()
 
         oReplacementWin = AutoScrolledWindow(oReplacementView)
