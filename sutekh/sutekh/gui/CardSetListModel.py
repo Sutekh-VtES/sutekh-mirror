@@ -21,6 +21,8 @@ NO_SECOND_LEVEL, SHOW_EXPANSIONS, SHOW_CARD_SETS, EXPANSIONS_AND_CARD_SETS, \
         CARD_SETS_AND_EXPANSIONS = range(5)
 # Different card count modes
 THIS_SET_ONLY, ALL_CARDS, PARENT_CARDS, CHILD_CARDS = range(4)
+# Different Parent card count modes
+IGNORE_PARENT, PARENT_COUNT, MINUS_THIS_SET, MINUS_SETS_IN_USE = range(4)
 # pylint: enable-msg=C0103
 
 def get_card(oItem):
@@ -62,6 +64,7 @@ class CardSetCardListModel(CardListModel):
         self.bEditable = False
         self._dNameSecondLevel2Iter = {}
         self._dName2nd3rdLevel2Iter = {}
+        self.iParentCountMode = PARENT_COUNT
 
     def load(self):
         # pylint: disable-msg=R0914
@@ -461,9 +464,45 @@ class CardSetCardListModel(CardListModel):
 
     def _add_parent_info(self, dAbsCards, oParentIter):
         """Add the parent count info into the mix"""
-        for oItem in dAbsCards:
-            dAbsCards[oItem]['parent'].setdefault('count', 0)
-            dAbsCards[oItem]['parent'].setdefault('expansions', {})
+        # pylint: disable-msg=E1101
+        # Pyprotocols confuses pylint
+        oInUseFilter = None
+        if self.iParentCountMode == MINUS_SETS_IN_USE:
+            aChildren = [x.name for x in
+                    PhysicalCardSet.selectBy(parentID=self._oCardSet.parent.id,
+                        inuse=True)]
+            aChildFilters = []
+            for sName in aChildren:
+                aChildFilters.append(PhysicalCardSetFilter(sName))
+            if aChildFilters:
+                oInUseFilter = FilterOrBox(aChildFilters)
+        for oAbsCard in dAbsCards:
+            dParentInfo = dAbsCards[oAbsCard]['parent']
+            if self.iParentCountMode == MINUS_THIS_SET:
+                dParentInfo.setdefault('count', -dAbsCards[oAbsCard]['count'])
+                dParentInfo.setdefault('expansions', {})
+                for oExpansion, iCnt in \
+                        dAbsCards[oAbsCard]['expansions'].iteritems():
+                    dParentInfo['expansions'][oExpansion] = -iCnt
+            elif oInUseFilter and not dParentInfo.has_key('count'):
+                dParentInfo.setdefault('expansions', {})
+                dParentInfo.setdefault('count', 0)
+                # Don't do this filter more than once per abstract card
+                oThisCardFilter = SpecificCardIdFilter(oAbsCard.id)
+                oFullFilter = FilterAndBox([oThisCardFilter, oInUseFilter])
+                aChildCards = oFullFilter.select(self.cardclass).distinct()
+                for oCSCard in aChildCards:
+                    dParentInfo['count'] -= 1
+                    oCSPhysCard = IPhysicalCard(oCSCard)
+                    dParentInfo['expansions'].setdefault(oCSPhysCard.expansion,
+                            0)
+                    dParentInfo['expansions'][oCSPhysCard.expansion] -= 1
+            else:
+                dParentInfo.setdefault('count', 0)
+                dParentInfo.setdefault('expansions', {})
+        if self.iParentCountMode == IGNORE_PARENT or not self._oCardSet.parent:
+            # No point in doing further work
+            return
         for oCard in oParentIter:
             # pylint: disable-msg=E1101
             # Pyprotocols confuses pylint

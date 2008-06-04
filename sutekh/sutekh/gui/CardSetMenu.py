@@ -19,7 +19,8 @@ from sutekh.gui.PaneMenu import CardListMenu
 from sutekh.gui.CardSetManagementController import reparent_card_set
 from sutekh.gui.CardSetListModel import NO_SECOND_LEVEL, SHOW_EXPANSIONS, \
         SHOW_CARD_SETS, EXPANSIONS_AND_CARD_SETS, CARD_SETS_AND_EXPANSIONS, \
-        THIS_SET_ONLY, ALL_CARDS, PARENT_CARDS, CHILD_CARDS
+        THIS_SET_ONLY, ALL_CARDS, PARENT_CARDS, CHILD_CARDS, \
+        IGNORE_PARENT, PARENT_COUNT, MINUS_THIS_SET, MINUS_SETS_IN_USE
 
 class CardSetMenu(CardListMenu):
     # pylint: disable-msg=R0904
@@ -92,14 +93,37 @@ class CardSetMenu(CardListMenu):
             oModeMenu.add(oItem)
             oItem.connect("toggled", self._change_mode, iValue)
 
-        self._oParentCol = self.create_check_menu_item('Show Parent Card Count',
-                oMenu, self.toggle_parent_col, False)
+        self._oParentCol = self.create_menu_item_with_submenu(oMenu,
+                "Parent Card Count")
+        oParentCountMenu = self._oParentCol.get_submenu()
+        oNoParentCount = gtk.RadioMenuItem(None,
+                "Don't show parent card counts")
+        oParentCountMenu.add(oNoParentCount)
+        oNoParentCount.connect("toggled", self._change_parent_count_mode,
+                IGNORE_PARENT)
+        for sString, iValue in [("Show Parent Count", PARENT_COUNT),
+                ("Show difference between Parent Count and this card set",
+                    MINUS_THIS_SET),
+                ("Show difference between Parent Count and card sets in use",
+                    MINUS_SETS_IN_USE),
+                ]:
+            # Should we have some way of restoring setting from last session?
+            oItem = gtk.RadioMenuItem(oNoParentCount, sString)
+            if iValue == PARENT_COUNT:
+                oItem.set_active(True)
+                self._oDefaultParentCount = oItem
+            oParentCountMenu.add(oItem)
+            oItem.connect("toggled", self._change_parent_count_mode, iValue)
+        # pylint: disable-msg=E1101
+        # SQLObject confuses pylint
         oCS = PhysicalCardSet.byName(self.sSetName)
         if not oCS.parent:
             # No parent, so disable option
             self._oParentCol.set_sensitive(False)
+            oNoParentCount.set_active(True)
+            self._oController.view.set_parent_count_col_vis(False)
         else:
-            self._oParentCol.set_active(True)
+            self._oController.view.set_parent_count_col_vis(True)
         oMenu.add(gtk.SeparatorMenuItem())
         self.add_common_actions(oMenu)
 
@@ -157,7 +181,8 @@ class CardSetMenu(CardListMenu):
                 self._oParentCol.set_sensitive(True)
                 if not oOldParent:
                     # Parent has changed from none, so ensure set to default
-                    self._oParentCol.set_active(True)
+                    self._change_parent_count_mode(None, PARENT_COUNT)
+                    self._oDefaultParentCount.set_active(True)
             else:
                 self._oParentCol.set_sensitive(False)
             self.__update_card_set_menu()
@@ -202,6 +227,15 @@ class CardSetMenu(CardListMenu):
         self._oController.model.iShowCardMode = iLevel
         self._oController.view.reload_keep_expanded()
 
+    def _change_parent_count_mode(self, oWidget, iLevel):
+        """Toggle the visibility of the parent col"""
+        if iLevel == IGNORE_PARENT:
+            self._oController.view.set_parent_count_col_vis(False)
+        else:
+            self._oController.view.set_parent_count_col_vis(True)
+        self._oController.model.iParentCountMode = iLevel
+        self._oController.view.reload_keep_expanded()
+
     def _toggle_all_abstract_cards(self, oWidget):
         """Toggle the display of cards with a count of 0 in the card list."""
         self._oController.model.bAddAllAbstractCards = oWidget.active
@@ -221,9 +255,5 @@ class CardSetMenu(CardListMenu):
     def _paste_selection(self, oWidget):
         """Try to paste the current clipbaord contents"""
         self._oController.view.do_paste()
-
-    def toggle_parent_col(self, oWidget):
-        """Toggle the visibility of the parent col"""
-        self._oController.view.set_parent_count_col_vis(oWidget.active)
 
     # pylint: enable-msg=W0613
