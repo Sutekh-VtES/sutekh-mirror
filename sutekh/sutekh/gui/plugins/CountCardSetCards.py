@@ -61,9 +61,12 @@ class CountCardSetCards(CardListPlugin, CardListModelListener):
 
     def update_numbers(self):
         """Update the label"""
-        self.__oTextLabel.set_markup('Total Cards : <b>%d</b> Crypt Cards : '
-                '<b>%d</b> Library Cards : <b>%d</b>' % (self.__iTot,
-                    self.__iCrypt, self.__iLibrary))
+        # Timing issues mean that this can be called before text label has
+        # been properly realised, so we need this guard case
+        if self.__oTextLabel:
+            self.__oTextLabel.set_markup('Total Cards : <b>%d</b>'
+                    ' Crypt Cards : <b>%d</b> Library Cards : <b>%d</b>' % 
+                    (self.__iTot, self.__iCrypt, self.__iLibrary))
 
     def load(self, aAbsCards):
         """Listen on load events & update counts"""
