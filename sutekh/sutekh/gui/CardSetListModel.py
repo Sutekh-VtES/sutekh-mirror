@@ -8,7 +8,8 @@
 """The gtk.TreeModel for the card lists."""
 
 from sutekh.core.Filters import FilterAndBox, NullFilter, SpecificCardFilter, \
-        FilterOrBox, PhysicalCardSetFilter, SpecificCardIdFilter
+        PhysicalCardSetFilter, SpecificCardIdFilter, \
+        MultiPhysicalCardSetMapFilter
 from sutekh.core.SutekhObjects import PhysicalCard, IExpansion, \
         MapPhysicalCardToPhysicalCardSet, IAbstractCard, IPhysicalCard, \
         IPhysicalCardSet, PhysicalCardSet
@@ -392,9 +393,7 @@ class CardSetCardListModel(CardListModel):
                 # obviously doesn't work because of _oBaseFilter
                 oExtraCardIter = oParentIter
             elif self.iShowCardMode == CHILD_CARDS and dChildFilters:
-                # We don't use MultiPhysicalCardSet, because of the join issues
-                oChildFilter = FilterOrBox([x for x in
-                    dChildFilters.itervalues()])
+                oChildFilter = MultiPhysicalCardSetMapFilter(dChildFilters)
                 oFullFilter = FilterAndBox([oCurFilter, oChildFilter])
                 oExtraCardIter = oFullFilter.select(self.cardclass).distinct()
             else:
@@ -408,7 +407,9 @@ class CardSetCardListModel(CardListModel):
                         oPhysCard.expansion, 0)
                 dExpanInfo = dAbsCards[oAbsCard]['expansions']
                 dChildInfo = dAbsCards[oAbsCard]['card sets']
-                if not dChildInfo:
+                if not dChildInfo and self.iExtraLevelsMode in [
+                        SHOW_CARD_SETS, EXPANSIONS_AND_CARD_SETS,
+                        CARD_SETS_AND_EXPANSIONS]:
                     self.get_child_set_info(oAbsCard, dChildInfo, dExpanInfo,
                             dChildFilters)
 
@@ -484,11 +485,8 @@ class CardSetCardListModel(CardListModel):
             aChildren = [x.name for x in
                     PhysicalCardSet.selectBy(parentID=self._oCardSet.parent.id,
                         inuse=True)]
-            aChildFilters = []
-            for sName in aChildren:
-                aChildFilters.append(PhysicalCardSetFilter(sName))
-            if aChildFilters:
-                oInUseFilter = FilterOrBox(aChildFilters)
+            if aChildren:
+                oInUseFilter = MultiPhysicalCardSetMapFilter(aChildren)
         for oAbsCard in dAbsCards:
             dParentInfo = dAbsCards[oAbsCard]['parent']
             if self.iParentCountMode == MINUS_THIS_SET:
