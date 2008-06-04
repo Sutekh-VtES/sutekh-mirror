@@ -99,8 +99,16 @@ class CardSetMenu(CardListMenu):
         oNoParentCount = gtk.RadioMenuItem(None,
                 "Don't show parent card counts")
         oParentCountMenu.add(oNoParentCount)
-        oNoParentCount.connect("toggled", self._change_parent_count_mode,
-                IGNORE_PARENT)
+        # pylint: disable-msg=E1101
+        # SQLObject confuses pylint
+        oCS = PhysicalCardSet.byName(self.sSetName)
+        if not oCS.parent:
+            # No parent, so disable option
+            self._oParentCol.set_sensitive(False)
+            oNoParentCount.set_active(True)
+            self._oController.view.set_parent_count_col_vis(False)
+        else:
+            self._oController.view.set_parent_count_col_vis(True)
         for sString, iValue in [("Show Parent Count", PARENT_COUNT),
                 ("Show difference between Parent Count and this card set",
                     MINUS_THIS_SET),
@@ -114,16 +122,10 @@ class CardSetMenu(CardListMenu):
                 self._oDefaultParentCount = oItem
             oParentCountMenu.add(oItem)
             oItem.connect("toggled", self._change_parent_count_mode, iValue)
-        # pylint: disable-msg=E1101
-        # SQLObject confuses pylint
-        oCS = PhysicalCardSet.byName(self.sSetName)
-        if not oCS.parent:
-            # No parent, so disable option
-            self._oParentCol.set_sensitive(False)
-            oNoParentCount.set_active(True)
-            self._oController.view.set_parent_count_col_vis(False)
-        else:
-            self._oController.view.set_parent_count_col_vis(True)
+        # We need to do this after the set_active calls, to avoid calling load
+        # multiple times
+        oNoParentCount.connect("toggled", self._change_parent_count_mode,
+                IGNORE_PARENT)
         oMenu.add(gtk.SeparatorMenuItem())
         self.add_common_actions(oMenu)
 
@@ -219,16 +221,23 @@ class CardSetMenu(CardListMenu):
 
     def _change_mode(self, oWidget, iLevel):
         """Set which extra information is shown."""
-        self._oController.model.iExtraLevelsMode = iLevel
-        self._oController.view.reload_keep_expanded()
+        # NB. gtk calls this twice, once for the current value,
+        # and once for the new value. We don't want to call 
+        # load multiple times, so this logic
+        if self._oController.model.iExtraLevelsMode != iLevel:
+            self._oController.model.iExtraLevelsMode = iLevel
+            self._oController.view.reload_keep_expanded()
 
     def _change_count_mode(self, oWidget, iLevel):
         """Set which extra information is shown."""
-        self._oController.model.iShowCardMode = iLevel
-        self._oController.view.reload_keep_expanded()
+        if self._oController.model.iShowCardMode != iLevel:
+            self._oController.model.iShowCardMode = iLevel
+            self._oController.view.reload_keep_expanded()
 
     def _change_parent_count_mode(self, oWidget, iLevel):
         """Toggle the visibility of the parent col"""
+        if self._oController.model.iParentCountMode == iLevel:
+            return
         if iLevel == IGNORE_PARENT:
             self._oController.view.set_parent_count_col_vis(False)
         else:
