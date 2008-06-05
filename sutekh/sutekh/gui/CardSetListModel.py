@@ -776,3 +776,8 @@ class CardSetCardListModel(CardListModel):
         oCard = IAbstractCard(sCardName)
         for oListener in self.dListeners:
             oListener.add_new_card(oCard)
+
+    def update_to_new_db(self, sSetName):
+        """Update internal card set to the new DB."""
+        self._oCardSet = IPhysicalCardSet(sSetName)
+        self._oBaseFilter = PhysicalCardSetFilter(sSetName)

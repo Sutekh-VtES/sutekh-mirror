@@ -23,6 +23,8 @@ class CardSetFrame(CardListFrame, object):
        Handles most of the functionality - subclasses set the style name
        and the various other properties correctly for the type.
        """
+    _cModelType = PhysicalCardSet
+
     def __init__(self, oMainWindow, sName):
         super(CardSetFrame, self).__init__(oMainWindow)
         try:
@@ -34,7 +36,6 @@ class CardSetFrame(CardListFrame, object):
         self._oController = CardSetController(sName,
                 oMainWindow, self)
 
-        self._cModelType = PhysicalCardSet
 
         self.init_plugins()
 
@@ -74,3 +75,14 @@ class CardSetFrame(CardListFrame, object):
             self.close_frame()
             # We don't need to worry about reloadng the PCS list here.
             # cleanup will do that for us
+
+    def update_to_new_db(self):
+        """Re-associate internal data against the database.
+
+           Needed for re-reading WW cardlists and such.
+           Instruct controller + model to update themselves,
+           then reload.
+           """
+        self._oController.update_to_new_db()
+        self.reload()
+

@@ -110,6 +110,14 @@ class BasicFrame(gtk.Frame, object):
         """Reload frame contents"""
         pass
 
+    def update_to_new_db(self):
+        """Re-associate internal data against the database.
+
+           Needed for re-reading WW cardlists and such.
+           By default, just reload.
+           """
+        self.reload()
+
     def close_frame(self):
         """Close the frame"""
         self._oMainWindow.remove_frame(self)

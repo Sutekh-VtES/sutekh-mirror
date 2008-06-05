@@ -143,7 +143,6 @@ def refresh_ww_card_list(oWin):
     read_ww_lists_into_db(aCLFile, oRulingsFile, oProgressDialog,
             oTempConn)
     # Refresh abstract card view for card lookups
-    oWin.reload_all()
     oLogHandler = SutekhCountLogHandler()
     oLogHandler.set_dialog(oProgressDialog)
     if not copy_to_new_db(oOldConn, oTempConn, oWin, oProgressDialog,
@@ -168,6 +167,7 @@ def refresh_ww_card_list(oWin):
         sMesg += "Everything seems to have gone OK"
         do_complaint(sMesg, gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, True)
     oProgressDialog.destroy()
+    oWin.update_to_new_db()
     oWin.restore_editable_panes(aEditable)
     return True
 

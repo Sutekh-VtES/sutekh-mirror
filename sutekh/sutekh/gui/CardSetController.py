@@ -13,7 +13,7 @@ from sutekh.gui.CardSetView import CardSetView
 from sutekh.gui.CreateCardSetDialog import CreateCardSetDialog
 from sutekh.gui.DBSignals import listen_reload, listen_row_destroy, \
                                  listen_row_update
-from sutekh.core.SutekhObjects import PhysicalCardSet, \
+from sutekh.core.SutekhObjects import IPhysicalCardSet, \
         AbstractCard, PhysicalCard, MapPhysicalCardToPhysicalCardSet, \
         IExpansion, Expansion
 from sutekh.gui.EditAnnotationsDialog import EditAnnotationsDialog
@@ -29,7 +29,7 @@ class CardSetController(object):
         self._oMenu = None
         self._oFrame = oFrame
         self._oView = CardSetView(oMainWindow, self, sName)
-        self.__oPhysCardSet = PhysicalCardSet.byName(sName)
+        self.__oPhysCardSet = IPhysicalCardSet(sName)
         # We need to cache this for physical_card_deleted checks
         self.__aPhysCardIds = []
         self.__aAbsCardIds = []
@@ -196,11 +196,15 @@ class CardSetController(object):
         oEditAnn = EditAnnotationsDialog(self._oMainWindow,
                 self.__oPhysCardSet)
         oEditAnn.run()
+        # pylint: disable-msg=E1101
+        # pyprotocols confuses pylint
         self.__oPhysCardSet.annotations = oEditAnn.get_data()
         self.__oPhysCardSet.syncUpdate()
 
     def edit_properties(self, oMenu):
         """Run the dialog to update the card set properties"""
+        # pylint: disable-msg=E1101
+        # pyprotocols confuses pylint
         oOldParent = self.__oPhysCardSet.parent
         oProp = CreateCardSetDialog(self._oMainWindow,
                 oCardSet=self.__oPhysCardSet)
@@ -222,3 +226,8 @@ class CardSetController(object):
             self.__oPhysCardSet.syncUpdate()
             # We may well have changed stuff on the card list pane, so reload
             oMenu.update_card_set_menu(self.__oPhysCardSet, oOldParent)
+
+    def update_to_new_db(self):
+        """Update the internal card set to the new DB."""
+        self.__oPhysCardSet = IPhysicalCardSet(self.view.sSetName)
+        self.model.update_to_new_db(self.view.sSetName)

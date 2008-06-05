@@ -662,15 +662,30 @@ def copy_physical_card_set(oOrigConn, oTrans, oLogger):
     """Copy PCS, assuming versions match"""
     # pylint: disable-msg=E1101
     # SQLObject confuses pylint
-    for oSet in PhysicalCardSet.select(connection=oOrigConn):
-        oCopy = PhysicalCardSet(id=oSet.id, name=oSet.name,
-                author=oSet.author, comment=oSet.comment,
-                annotations=oSet.annotations, inuse=oSet.inuse,
-                parent=oSet.parent, connection=oTrans)
-        for oCard in oSet.cards:
-            oCopy.addPhysicalCard(oCard.id)
-        oCopy.syncUpdate()
-        oLogger.info('Copied PCS %s', oCopy.name)
+    aSets = list(PhysicalCardSet.select(connection=oOrigConn))
+    bDone = False
+    aDone = []
+    while not bDone:
+        # We retain ids here, but, to avoid database issues, we still
+        # need to make sure we copy parents before we copy children
+        aToDo = []
+        for oSet in aSets:
+            if oSet.parent is None or oSet.parent in aDone:
+                oCopy = PhysicalCardSet(id=oSet.id, name=oSet.name,
+                        author=oSet.author, comment=oSet.comment,
+                        annotations=oSet.annotations, inuse=oSet.inuse,
+                        parent=oSet.parent, connection=oTrans)
+                for oCard in oSet.cards:
+                    oCopy.addPhysicalCard(oCard.id)
+                oCopy.syncUpdate()
+                oLogger.info('Copied PCS %s', oCopy.name)
+                aDone.append(oSet)
+            else:
+                aToDo.append(oSet)
+        if not aToDo:
+            bDone = True
+        else:
+            aSets = aToDo
 
 def copy_old_physical_card_set(oOrigConn, oTrans, oLogger, oVer):
     """Copy PCS, upgrading as needed."""
@@ -924,9 +939,23 @@ def copy_to_new_abstract_card_db(oOrigConn, oNewConn, oCardLookup,
         if hasattr(oLogHandler, 'set_total'):
             iTotal = 1 + PhysicalCardSet.select(connection=oOrigConn).count()
             oLogHandler.set_total(iTotal)
-    for oSet in PhysicalCardSet.select(connection=oOrigConn):
-        oCS = make_card_set_holder(oSet, oOrigConn)
-        aPhysCardSets.append(oCS)
+    aSets = list(PhysicalCardSet.select(connection=oOrigConn))
+    bDone = False
+    aDone = []
+    # Ensre we only process a set after it's parent
+    while not bDone:
+        aToDo = []
+        for oSet in aSets:
+            if oSet.parent is None or oSet.parent in aDone:
+                oCS = make_card_set_holder(oSet, oOrigConn)
+                aPhysCardSets.append(oCS)
+                aDone.append(oSet)
+            else:
+                aToDo.append(oSet)
+        if not aToDo:
+            bDone = True
+        else:
+            aSets = aToDo
     # Save the current mapping
     oLogger.info('Memory copies made')
     oTarget = oNewConn.transaction()

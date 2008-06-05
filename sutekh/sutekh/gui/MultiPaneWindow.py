@@ -285,6 +285,16 @@ class MultiPaneWindow(gtk.Window):
         for oPane in self.dOpenFrames:
             oPane.reload()
 
+    def update_to_new_db(self):
+        """Resync open Panes against the database.
+
+           Needed because ids aren't kept across re-reading the WW
+           cardlist, since card sets with children are always created
+           before there children are added.
+           """
+        for oPane in self.dOpenFrames:
+            oPane.update_to_new_db()
+
     def get_editable_panes(self):
         """Get a list of panes, which are currently editable.
 
