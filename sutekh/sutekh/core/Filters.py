@@ -1171,9 +1171,9 @@ class MultiPhysicalCardSetMapFilter(Filter):
             self.__aCardSetIds.append(IPhysicalCardSet(sName).id)
         self.__oTable = Table('physical_map')
 
-    # pylint: disable-msg=C0111
-    # don't need docstrings for _get_expression, get_values & _get_joins
-    # There is no fancy join, since this called sraight on the mapping table
+    # pylint: disable-msg=C0111, E1101
+    # E1101 - avoid SQLObject method not detected problems
+    # C0111 - don't need docstrings for get_values & _get_joins
     def _get_joins(self):
         return [
                 LEFTJOINOn(None, PhysicalCard,

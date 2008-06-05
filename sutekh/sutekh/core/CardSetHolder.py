@@ -123,8 +123,11 @@ class CardSetHolder(object):
         aPhysCards = oCardLookup.physical_lookup(self._dCardExpansions,
                 dNameCards, dExpansionLookup, "Physical Card Set " + self.name)
 
-        oParent = self.get_parent_pcs()
+        self._commit_pcs(aPhysCards)
 
+    def _commit_pcs(self, aPhysCards):
+        """Commit the card set to the database."""
+        oParent = self.get_parent_pcs()
         oPCS = PhysicalCardSet(name=self.name.encode('utf8'),
                                author=self.author, comment=self.comment,
                                annotations=self.annotations,
@@ -177,22 +180,5 @@ class CachedCardSetHolder(CardSetHolder):
         aPhysCards = oCardLookup.physical_lookup(self._dCardExpansions,
                 dNameCards, dExpansionLookup, "Physical Card Set " + self.name)
 
-        # Since we are dealing with the PhysicalCardSets, we assume that
-        # dLookupCache has any answers required from the PhysicalCardList,
-        # so there's now point in updating the cache here.
-
-        oParent = self.get_parent_pcs()
-        oPCS = PhysicalCardSet(name=self.name.encode('utf8'),
-                               author=self.author, comment=self.comment,
-                               annotations=self.annotations,
-                               inuse=self.inuse, parent=oParent)
-        oPCS.syncUpdate()
-
-        for oPhysCard in aPhysCards:
-            # pylint: disable-msg=E1101
-            # SQLObject confuses pylint
-            if not oPhysCard:
-                continue
-            oPCS.addPhysicalCard(oPhysCard.id)
-        oPCS.syncUpdate()
+        self._commit_pcs(aPhysCards)
 
