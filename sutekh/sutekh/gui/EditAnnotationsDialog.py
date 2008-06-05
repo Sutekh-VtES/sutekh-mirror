@@ -13,18 +13,19 @@ class EditAnnotationsDialog(SutekhDialog):
     """Actaul dialog"""
     # pylint: disable-msg=R0904
     # gtk class, so many pulic methods
-    def __init__(self, sTitle, oParent, sCurName, sCurAnnotations):
+    def __init__(self, oParent, oCardSet):
+        sTitle = "Edit Annotations of Card Set: %s" % oCardSet.name
         super(EditAnnotationsDialog, self).__init__(sTitle, oParent,
                 gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                 (gtk.STOCK_OK, gtk.RESPONSE_OK,
                         gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
         self.connect("response", self.button_response)
-        oNameLabel = gtk.Label("Card Set : " + sCurName)
+        oNameLabel = gtk.Label("Card Set : " + oCardSet.name)
         oAnnotateLabel = gtk.Label("Annotations : ")
         oTextView = gtk.TextView()
         self.oBuffer = oTextView.get_buffer()
-        if sCurAnnotations is not None:
-            self.oBuffer.set_text(sCurAnnotations)
+        if oCardSet.annotations:
+            self.oBuffer.set_text(oCardSet.annotations)
         # pylint: disable-msg=E1101
         # vbox confuses pylint
         self.vbox.pack_start(oNameLabel, expand=False)
@@ -33,7 +34,7 @@ class EditAnnotationsDialog(SutekhDialog):
         self.set_default_size(500, 500)
         self.vbox.pack_start(oScrolledWin, expand=True)
         self.show_all()
-        self.sAnnotations = sCurAnnotations
+        self.sAnnotations = oCardSet.annotations
 
     # pylint: disable-msg=W0613
     # oWidget required by function signature

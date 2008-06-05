@@ -8,12 +8,15 @@
 """Controller for the card sets"""
 
 from sqlobject import SQLObjectNotFound
+from sutekh.gui.CardSetManagementController import reparent_card_set
 from sutekh.gui.CardSetView import CardSetView
+from sutekh.gui.CreateCardSetDialog import CreateCardSetDialog
 from sutekh.gui.DBSignals import listen_reload, listen_row_destroy, \
                                  listen_row_update
 from sutekh.core.SutekhObjects import PhysicalCardSet, \
         AbstractCard, PhysicalCard, MapPhysicalCardToPhysicalCardSet, \
         IExpansion, Expansion
+from sutekh.gui.EditAnnotationsDialog import EditAnnotationsDialog
 
 class CardSetController(object):
     """Controller class for the Card Sets."""
@@ -37,6 +40,8 @@ class CardSetController(object):
         listen_row_destroy(self.physical_card_deleted, PhysicalCard)
         listen_row_update(self.physical_card_changed, PhysicalCard)
         listen_reload(self.reload_card_set, PhysicalCard)
+        # FIXME: Need signals to catch parent/child relationship changes,
+        # so we do the right thing
 
     # pylint: disable-msg=W0212
     # explicitly allow access to these values via thesep properties
@@ -185,3 +190,35 @@ class CardSetController(object):
             return True
         # Got here, so we failed to add
         return False
+
+    def edit_annotations(self):
+        """Show the annotations dialog and update the card set."""
+        oEditAnn = EditAnnotationsDialog(self._oMainWindow,
+                self.__oPhysCardSet)
+        oEditAnn.run()
+        self.__oPhysCardSet.annotations = oEditAnn.get_data()
+        self.__oPhysCardSet.syncUpdate()
+
+    def edit_properties(self, oMenu):
+        """Run the dialog to update the card set properties"""
+        oOldParent = self.__oPhysCardSet.parent
+        oProp = CreateCardSetDialog(self._oMainWindow,
+                oCardSet=self.__oPhysCardSet)
+        oProp.run()
+        sName = oProp.get_name()
+        if sName:
+            # Passed, so update the card set
+            self.__oPhysCardSet.name = sName
+            self.view.sSetName = sName
+            sAuthor = oProp.get_author()
+            sComment = oProp.get_comment()
+            oParent = oProp.get_parent()
+            if sAuthor is not None:
+                self.__oPhysCardSet.author = sAuthor
+            if sComment is not None:
+                self.__oPhysCardSet.comment = sComment
+            if oParent != self.__oPhysCardSet.parent:
+                reparent_card_set(self.__oPhysCardSet, oParent)
+            self.__oPhysCardSet.syncUpdate()
+            # We may well have changed stuff on the card list pane, so reload
+            oMenu.update_card_set_menu(self.__oPhysCardSet, oOldParent)

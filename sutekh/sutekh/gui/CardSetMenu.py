@@ -12,11 +12,8 @@ import gtk
 from sutekh.SutekhUtility import safe_filename
 from sutekh.core.SutekhObjects import PhysicalCardSet
 from sutekh.gui.SutekhFileWidget import ExportDialog
-from sutekh.gui.CreateCardSetDialog import CreateCardSetDialog
 from sutekh.io.XmlFileHandling import PhysicalCardSetXmlFile
-from sutekh.gui.EditAnnotationsDialog import EditAnnotationsDialog
 from sutekh.gui.PaneMenu import CardListMenu
-from sutekh.gui.CardSetManagementController import reparent_card_set
 from sutekh.gui.CardSetListModel import NO_SECOND_LEVEL, SHOW_EXPANSIONS, \
         SHOW_CARD_SETS, EXPANSIONS_AND_CARD_SETS, CARD_SETS_AND_EXPANSIONS, \
         THIS_SET_ONLY, ALL_CARDS, PARENT_CARDS, CHILD_CARDS, \
@@ -99,16 +96,6 @@ class CardSetMenu(CardListMenu):
         oNoParentCount = gtk.RadioMenuItem(None,
                 "Don't show parent card counts")
         oParentCountMenu.add(oNoParentCount)
-        # pylint: disable-msg=E1101
-        # SQLObject confuses pylint
-        oCS = PhysicalCardSet.byName(self.sSetName)
-        if not oCS.parent:
-            # No parent, so disable option
-            self._oParentCol.set_sensitive(False)
-            oNoParentCount.set_active(True)
-            self._oController.view.set_parent_count_col_vis(False)
-        else:
-            self._oController.view.set_parent_count_col_vis(True)
         for sString, iValue in [("Show Parent Count", PARENT_COUNT),
                 ("Show difference between Parent Count and this card set",
                     MINUS_THIS_SET),
@@ -121,23 +108,28 @@ class CardSetMenu(CardListMenu):
                 oItem.set_active(True)
                 self._oDefaultParentCount = oItem
             oParentCountMenu.add(oItem)
-            oItem.connect("toggled", self._change_parent_count_mode, iValue)
+            oItem.connect("toggled", self._change_parent_count_mode, iValue,
+                    False)
+        # pylint: disable-msg=E1101
+        # SQLObject confuses pylint
+        oCS = PhysicalCardSet.byName(self.sSetName)
+        if not oCS.parent:
+            # No parent, so disable option
+            self._oParentCol.set_sensitive(False)
+            oNoParentCount.set_active(True)
+            self._change_parent_count_mode(oNoParentCount, IGNORE_PARENT, True)
+        else:
+            self._change_parent_count_mode(self._oDefaultParentCount,
+                    PARENT_COUNT, True)
         # We need to do this after the set_active calls, to avoid calling load
         # multiple times
         oNoParentCount.connect("toggled", self._change_parent_count_mode,
-                IGNORE_PARENT)
+                IGNORE_PARENT, False)
         oMenu.add(gtk.SeparatorMenuItem())
         self.add_common_actions(oMenu)
 
         oMenu.add(gtk.SeparatorMenuItem())
         self.create_menu_item("Delete Card Set", oMenu, self._card_set_delete)
-
-    def __update_card_set_menu(self):
-        """Update the menu to reflect changes in the card set name."""
-        self.__oProperties.get_child().set_label("Edit Card Set (%s)"
-                " properties" % self.sSetName)
-        self.__oExport.get_child().set_label("Export Card Set (%s) to File" %
-                self.sSetName)
 
     def _create_edit_menu(self):
         """Create the 'Edit' menu, and populate it."""
@@ -159,49 +151,35 @@ class CardSetMenu(CardListMenu):
         """Popup the Edit Properties dialog to change card set properties."""
         # pylint: disable-msg=E1101
         # sqlobject confuses pylint
-        oCS = PhysicalCardSet.byName(self.sSetName)
-        oOldParent = oCS.parent
-        oProp = CreateCardSetDialog(self._oMainWindow, oCardSet=oCS)
-        oProp.run()
-        sName = oProp.get_name()
-        if sName:
-            # Passed, so update the card set
-            oCS.name = sName
-            self.__oController.view.sSetName = sName
-            self.sSetName = sName
-            self._oFrame.update_name(self.sSetName)
-            sAuthor = oProp.get_author()
-            sComment = oProp.get_comment()
-            oParent = oProp.get_parent()
-            if sAuthor is not None:
-                oCS.author = sAuthor
-            if sComment is not None:
-                oCS.comment = sComment
-            if oParent != oCS.parent:
-                reparent_card_set(oCS, oParent)
-            if oCS.parent:
-                self._oParentCol.set_sensitive(True)
-                if not oOldParent:
-                    # Parent has changed from none, so ensure set to default
-                    self._change_parent_count_mode(None, PARENT_COUNT)
-                    self._oDefaultParentCount.set_active(True)
-            else:
-                self._oParentCol.set_sensitive(False)
-            self.__update_card_set_menu()
-            oCS.syncUpdate()
-            # We may well have changed stuff on the card list pane, so reload
-            self._oMainWindow.reload_pcs_list()
+        self._oController.edit_properties(self)
+
+    def update_card_set_menu(self, oCardSet, oOldParent):
+        """Update the menu to reflect changes in the card set name."""
+        self.sSetName = oCardSet.name
+        self._oFrame.update_name(self.sSetName)
+        self.__oProperties.get_child().set_label("Edit Card Set (%s)"
+                " properties" % self.sSetName)
+        self.__oExport.get_child().set_label("Export Card Set (%s) to File" %
+                self.sSetName)
+        if oCardSet.parent:
+            self._oParentCol.set_sensitive(True)
+            if not oOldParent:
+                # Parent has changed from none, so ensure set to default
+                self._change_parent_count_mode(None, PARENT_COUNT, True)
+                # Check below will force reload anyway
+                self._oDefaultParentCount.set_active(True)
+            if oCardSet.parent != oOldParent and \
+                    self._oController.model.iParentCountMode != IGNORE_PARENT:
+                # We are forced to do a reload here
+                self._oController.view.reload_keep_expanded()
+        else:
+            self._oParentCol.set_sensitive(False)
+            self._change_parent_count_mode(None, IGNORE_PARENT, True)
+        self._oMainWindow.reload_pcs_list()
 
     def _edit_annotations(self, oWidget):
         """Popup the Edit Annotations dialog."""
-        # pylint: disable-msg=E1101
-        # sqlobject confuses pylint
-        oCS = PhysicalCardSet.byName(self.sSetName)
-        oEditAnn = EditAnnotationsDialog("Edit Annotations of Card Set (%s)" %
-                self.sSetName, self._oMainWindow, oCS.name, oCS.annotations)
-        oEditAnn.run()
-        oCS.annotations = oEditAnn.get_data()
-        oCS.syncUpdate()
+        self._oController.edit_annotations()
 
     def _do_export(self, oWidget):
         """Export the card set to the chosen filename."""
@@ -222,7 +200,7 @@ class CardSetMenu(CardListMenu):
     def _change_mode(self, oWidget, iLevel):
         """Set which extra information is shown."""
         # NB. gtk calls this twice, once for the current value,
-        # and once for the new value. We don't want to call 
+        # and once for the new value. We don't want to call
         # load multiple times, so this logic
         if self._oController.model.iExtraLevelsMode != iLevel:
             self._oController.model.iExtraLevelsMode = iLevel
@@ -234,16 +212,17 @@ class CardSetMenu(CardListMenu):
             self._oController.model.iShowCardMode = iLevel
             self._oController.view.reload_keep_expanded()
 
-    def _change_parent_count_mode(self, oWidget, iLevel):
+    def _change_parent_count_mode(self, oWidget, iLevel, bNoReload=False):
         """Toggle the visibility of the parent col"""
-        if self._oController.model.iParentCountMode == iLevel:
-            return
         if iLevel == IGNORE_PARENT:
             self._oController.view.set_parent_count_col_vis(False)
         else:
             self._oController.view.set_parent_count_col_vis(True)
+        if self._oController.model.iParentCountMode == iLevel:
+            return
         self._oController.model.iParentCountMode = iLevel
-        self._oController.view.reload_keep_expanded()
+        if not bNoReload:
+            self._oController.view.reload_keep_expanded()
 
     def _toggle_all_abstract_cards(self, oWidget):
         """Toggle the display of cards with a count of 0 in the card list."""
