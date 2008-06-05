@@ -188,6 +188,7 @@ class Expansions(AbbreviationLookup):
         'Sword of Caine' : ['SoC'],
         'Tenth Anniversary' : ['Tenth'],
         'Third Edition' : ['Third'],
+        'Twilight Rebellion' : ['TR'],
         'VTES' : [],
     }
 

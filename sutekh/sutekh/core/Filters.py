@@ -625,13 +625,15 @@ class MultiGroupFilter(DirectFilter):
     types = ['AbstractCard', 'PhysicalCard']
 
     def __init__(self, aGroups):
-        self.__aGroups = [int(sV) for sV in aGroups]
+        self.__aGroups = [int(sV) for sV in aGroups if sV != 'Any']
+        if 'Any' in aGroups:
+            self.__aGroups.append(-1)
 
     # pylint: disable-msg=C0111
     # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
-        return [str(x) for x in range(1, 6)]
+        return [str(x) for x in range(1, 6)] + ['Any']
 
     def _get_expression(self):
         # pylint: disable-msg=E1101

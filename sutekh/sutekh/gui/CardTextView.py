@@ -175,7 +175,11 @@ class CardTextView(gtk.TextView, object):
             self.__oBuf.labelled_value("Life", str(oCard.life), "life")
 
         if not oCard.group is None:
-            self.__oBuf.labelled_value("Group", str(oCard.group), "group")
+            if oCard.group == -1:
+                sGroup = 'Any'
+            else:
+                sGroup = str(oCard.group)
+            self.__oBuf.labelled_value("Group", sGroup, "group")
 
         if not oCard.level is None:
             oIcon = self._oIconManager.get_icon_by_name('advanced')

@@ -202,6 +202,17 @@ class CardDict(dict):
         oCard.cost = iCost
         oCard.costtype = str(sType.lower()) # make str non-unicode
 
+    def _add_group(self, oCard, sGroup):
+        """Add the group to the card. Replace '*' with -1."""
+        sGroup = self.oWhiteSp.sub(' ', sGroup).strip()
+
+        if sGroup == '*':
+            iGroup = -1
+        else:
+            iGroup = int(sGroup, 10)
+
+        oCard.group = iGroup
+
     def _add_life(self, oCard, sLife):
         """Add the life to the card."""
         sLife = self.oWhiteSp.sub(' ', sLife).strip()
@@ -277,7 +288,7 @@ class CardDict(dict):
 
         oCard = self._make_card(self['name'])
         if self.has_key('group'):
-            oCard.group = int(self.oWhiteSp.sub('', self['group']), 10)
+            self._add_group(oCard, self['group'])
 
         if self.has_key('capacity'):
             self._add_capacity(oCard, self['capacity'])
