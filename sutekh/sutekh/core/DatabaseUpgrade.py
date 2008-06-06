@@ -668,6 +668,9 @@ def copy_physical_card_set(oOrigConn, oTrans, oLogger):
     while not bDone:
         # We retain ids here, but, to avoid database issues, we still
         # need to make sure we copy parents before we copy children
+        # FIXME: This breaks postgresql's sequence numbers.
+        # Either we need to detect this + reset, or not bother
+        # with keeping numbers intact
         aToDo = []
         for oSet in aSets:
             if oSet.parent is None or oSet.parent in aDone:
