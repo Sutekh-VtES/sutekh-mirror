@@ -935,6 +935,7 @@ def copy_to_new_abstract_card_db(oOrigConn, oNewConn, oCardLookup,
     # pylint: disable-msg=R0914
     aPhysCardSets = []
     oOldConn = sqlhub.processConnection
+    sqlhub.processConnection = oOrigConn
     # Copy Physical card sets
     oLogger = Logger('copy to new abstract card DB')
     if oLogHandler:
