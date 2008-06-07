@@ -90,7 +90,6 @@ class SetCardExpansions(CardListPlugin):
                         (oPhysCard.expansion and oPhysCard.expansion.name in
                                 dSelected[oAbsCard.name]):
                     oNewCard = IPhysicalCard((oAbsCard, oExpansion))
-                    print oNewCard.abstractCard
                     # Card in the selection, so replace with changed card
                     MapPhysicalCardToPhysicalCardSet.delete(oCard.id)
                     oCS.addPhysicalCard(oNewCard.id)
