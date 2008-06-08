@@ -664,25 +664,27 @@ def copy_physical_card_set(oOrigConn, oTrans, oLogger):
     # SQLObject confuses pylint
     aSets = list(PhysicalCardSet.select(connection=oOrigConn))
     bDone = False
-    aDone = []
+    dDone = {}
     while not bDone:
-        # We retain ids here, but, to avoid database issues, we still
-        # need to make sure we copy parents before we copy children
-        # FIXME: This breaks postgresql's sequence numbers.
-        # Either we need to detect this + reset, or not bother
-        # with keeping numbers intact
+        # We make sure we copy parent's before children
+        # We need to be careful, since we don't retain card set IDs,
+        # due to issues with sequence numbers
         aToDo = []
         for oSet in aSets:
-            if oSet.parent is None or oSet.parent in aDone:
-                oCopy = PhysicalCardSet(id=oSet.id, name=oSet.name,
+            if oSet.parent is None or oSet.parent in dDone:
+                if oSet.parent:
+                    oParent = dDone[oSet.parent]
+                else:
+                    oParent = None
+                oCopy = PhysicalCardSet(name=oSet.name,
                         author=oSet.author, comment=oSet.comment,
                         annotations=oSet.annotations, inuse=oSet.inuse,
-                        parent=oSet.parent, connection=oTrans)
+                        parent=oParent, connection=oTrans)
                 for oCard in oSet.cards:
                     oCopy.addPhysicalCard(oCard.id)
                 oCopy.syncUpdate()
                 oLogger.info('Copied PCS %s', oCopy.name)
-                aDone.append(oSet)
+                dDone[oSet] = oCopy
             else:
                 aToDo.append(oSet)
         if not aToDo:
