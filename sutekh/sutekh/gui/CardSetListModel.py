@@ -579,6 +579,18 @@ class CardSetCardListModel(CardListModel):
             # new card
             self.add_new_card(sCardName)
 
+    def _remove_sub_iters(self, sCardName):
+        """Remove the expansion iters for sCardName"""
+        for sValue in self._dNameSecondLevel2Iter[sCardName]:
+            if self._dName2nd3rdLevel2Iter.has_key((sCardName, sValue)):
+                for oIter in self._dName2nd3rdLevel2Iter[(sCardName, sValue)]:
+                    self.remove(oIter)
+                del self._dName2nd3rdLevel2Iter[(sCardName, sValue)]
+            for oIter in self._dNameSecondLevel2Iter[sCardName][sValue]:
+                self.remove(oIter)
+        del self._dNameSecondLevel2Iter[sCardName]
+
+
     def dec_card_by_name(self, sCardName):
         """Decrease the count for the card sCardName"""
         if self._dName2Iter.has_key(sCardName):
@@ -671,7 +683,7 @@ class CardSetCardListModel(CardListModel):
                 self.set(oIter, 4, bDecCard)
             else:
                 if self._dNameSecondLevel2Iter.has_key(sCardName):
-                    self._remove_expansion_iters(sCardName)
+                    self._remove_sub_iters(sCardName)
                 self.remove(oIter)
 
             if iGrpCnt > 0:
@@ -754,13 +766,17 @@ class CardSetCardListModel(CardListModel):
                 aExpansions = self.get_add_card_expansion_info(oCard,
                         get_card_expansion_info(oItem))
 
-                for sExpName in aExpansions:
+                if self.iExtraLevelsMode == SHOW_EXPANSIONS:
                     self._dNameSecondLevel2Iter.setdefault(oCard.name, {})
-                    # For models with expansions, this will be paired with a
-                    # call to inc Expansion count. We rely on this to sort
-                    # out details - here we just create the needed space.
-                    self._add_expansion(oChildIter, oCard.name, sExpName,
-                            (0, False, False))
+                    for sExpName in aExpansions:
+                        # this should be paired with a call to increase the 
+                        # expansion count. We rely on this to sort
+                        # out details - here we just create the needed space.
+                        oNewIter = self._add_extra_level(oChildIter, sExpName,
+                                (0, 0, False, False))
+                        self._dNameSecondLevel2Iter[oCard.name].setdefault(
+                                sExpName, []).append(oNewIter)
+                        # FIXME: Handle other display modes
 
             # Update Group Section
             self.set(oSectionIter,
