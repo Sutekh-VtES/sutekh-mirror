@@ -110,7 +110,8 @@ class CardItem(State):
             assert(self._iCnt is not None)
             sName = self._sData.strip()
             sName = sName.replace("`", "'")
-            self._oHolder.add(self._iCnt, sName)
+            # No expansion info for these
+            self._oHolder.add(self._iCnt, sName, None)
             self._iCnt = None
             self._sData = ""
             return Collecting(self._oHolder)

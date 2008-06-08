@@ -74,18 +74,18 @@ class ACSImporter(CardListPlugin):
         self.oFileChooser.add_filter_with_pattern('HTML files', ['*.html',
             '*.htm'])
         self.oFileChooser.add_filter_with_pattern('TXT files', ['*.txt'])
-        self.oFileChoose.default_filter()
+        self.oFileChooser.default_filter()
         self.oDlg.vbox.pack_start(self.oFileChooser)
 
         oIter = self._dParsers.iterkeys()
         for sName in oIter:
             self._oFirstBut = gtk.RadioButton(None, sName, False)
             self._oFirstBut.set_active(True)
-            self.oDlg.vbox.pack_start(self._oFirstBut)
+            self.oDlg.vbox.pack_start(self._oFirstBut, expand=False)
             break
         for sName in oIter:
             oBut = gtk.RadioButton(self._oFirstBut, sName)
-            self.oDlg.vbox.pack_start(oBut)
+            self.oDlg.vbox.pack_start(oBut, expand=False)
 
         self.oDlg.connect("response", self.handle_response)
         self.oDlg.set_size_request(400, 400)
