@@ -103,6 +103,8 @@ class FullBackup(CardListPlugin):
                 oProgressDialog.destroy()
                 sMsg = "Failed to write backup.\n\n%s" % oException
                 do_complaint_error(sMsg)
+        else:
+            oDlg.destroy()
 
     # pylint: enable-msg=R0201
 
@@ -169,6 +171,8 @@ class FullBackup(CardListPlugin):
                     oProgressDialog.destroy()
                     sMsg = "Failed to restore backup.\n\n%s" % oException
                     do_complaint_error(sMsg)
+        else:
+            oDlg.destroy()
 
 
 # pylint: disable-msg=C0103
