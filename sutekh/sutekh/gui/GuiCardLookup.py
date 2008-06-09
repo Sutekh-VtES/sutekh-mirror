@@ -104,6 +104,7 @@ class ReplacementTreeView(gtk.TreeView):
         self.oCardListView = oCardListView
         self.oModel = oModel
         self.oFilterToggleButton = oFilterToggleButton
+        self.set_enable_search(False) # Not much point searching this tree
 
         self._create_text_column('Missing Card', 1)
         self._create_text_column('Replace Card', 2)
@@ -269,7 +270,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
 
         if dUnknownCards:
             if not self._handle_unknown_abstract_cards(dUnknownCards, sInfo):
-                raise LookupFailed("Lookup of missing cards aborted by the" \
+                raise LookupFailed("Lookup of missing cards aborted by the"
                                    " user.")
 
         for sName, sNewName in dUnknownCards.items():
@@ -279,12 +280,12 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
                 # pylint: disable-msg=E1101
                 # SQLObject methods confuse pylint
                 oAbs = AbstractCard.byCanonicalName(
-                                        sNewName.encode('utf8').lower())
+                        sNewName.encode('utf8').lower())
                 # pylint: enable-msg=E1101
                 dUnknownCards[sName] = oAbs
             except SQLObjectNotFound:
-                raise RuntimeError("Unexpectedly encountered missing" \
-                                   " abstract card '%s'." % sNewName)
+                raise RuntimeError("Unexpectedly encountered missing"
+                        " abstract card '%s'." % sNewName)
 
         def new_card(sName):
             """emulate python 2.5's a = x if C else y"""
@@ -307,15 +308,13 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
             oAbs = dNameCards[sName]
             if oAbs is None:
                 continue
-            try:
-                for sExpansionName in dCardExpansions[sName]:
-                    iCnt = dCardExpansions[sName][sExpansionName]
-                    oExpansion = dNameExps[sExpansionName]
-                    aCards.extend([IPhysicalCard((oAbs, oExpansion))]*iCnt)
-            except SQLObjectNotFound:
-                for sExpansionName in dCardExpansions[sName]:
-                    iCnt = dCardExpansions[sName][sExpansionName]
-                    if iCnt > 0:
+            for sExpansionName in dCardExpansions[sName]:
+                iCnt = dCardExpansions[sName][sExpansionName]
+                oExpansion = dNameExps[sExpansionName]
+                if iCnt > 0:
+                    try:
+                        aCards.extend([IPhysicalCard((oAbs, oExpansion))]*iCnt)
+                    except SQLObjectNotFound:
                         dUnknownCards[(oAbs.name, sExpansionName)] = iCnt
 
         if dUnknownCards:
@@ -376,63 +375,16 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
            Physical Card List
         """
 
-        oUnknownDialog = SutekhDialog( \
-                "Unknown Physical cards found importing %s" % sInfo, None,
-                gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
-                (gtk.STOCK_OK, gtk.RESPONSE_OK,
-                 gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
-
-        sMsg1 = "While importing %s\n" \
-          "The following cards could not be found in the Physical Card List:" \
-          "\nChoose how to handle these cards?\n" % sInfo
-
-        sMsg2 = "OK creates the card set, " \
-          "Cancel aborts the creation of the card set"
+        oUnknownDialog, oHBox = self._create_dialog(sInfo,
+                "The following card and expansion combinations could not "
+                "be found:")
 
         # pylint: disable-msg=E1101
         # vbox confuses pylint
 
-        oMesgLabel1 = gtk.Label()
-        oMesgLabel1.set_text(sMsg1)
-        oUnknownDialog.vbox.pack_start(oMesgLabel1, False, False)
-
-        oHBox = gtk.HBox()
-        oUnknownDialog.vbox.pack_start(oHBox, True, True)
-
-        oMesgLabel2 = gtk.Label()
-        oMesgLabel2.set_text(sMsg2)
-        oUnknownDialog.vbox.pack_start(oMesgLabel2)
-
         oPhysCardView = PCLLookupView(oUnknownDialog, self._oConfig)
-        oViewWin = AutoScrolledWindow(oPhysCardView)
-        oViewWin.set_size_request(200, 600)
-        oHBox.pack_start(oViewWin, True, True)
-
-        oVBox = gtk.VBox()
-        oHBox.pack_start(oVBox)
-
-        oFilterDialogButton = gtk.Button("Specify Filter")
-        oFilterApplyButton = gtk.CheckButton("Apply Filter to view")
-
-        oReplacementView = ReplacementTreeView(oPhysCardView,
-                                               oFilterApplyButton)
+        oReplacementView = self._fill_dialog(oHBox, oPhysCardView)
         oModel = oReplacementView.get_model()
-
-        oReplacementWin = AutoScrolledWindow(oReplacementView)
-        oReplacementWin.set_size_request(400, 600)
-        oVBox.pack_start(oReplacementWin, True, True)
-
-        oFilterButtons = gtk.HBox()
-        oVBox.pack_start(gtk.HSeparator())
-        oVBox.pack_start(oFilterButtons)
-
-        oFilterButtons.pack_start(oFilterDialogButton)
-        oFilterButtons.pack_start(oFilterApplyButton)
-
-        oFilterDialogButton.connect("clicked",
-            oReplacementView.run_filter_dialog)
-        oFilterApplyButton.connect("toggled",
-            oReplacementView.toggle_apply_filter)
 
         # Populate the model with the card names and best guesses
         for (sName, sExpName), iCnt in dUnknownCards.items():
@@ -459,25 +411,12 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
                 sNewName, sNewExpName = \
                     oReplacementView.parse_card_name(sNewFullName)
 
-                if sNewExpName is not None:
-                    try:
-                        iExpID = IExpansion(sNewExpName).id
-                    except SQLObjectNotFound:
-                        iExpID = None
-                    except KeyError:
-                        iExpID = None
-                else:
-                    iExpID = None
-
-                iCnt = dUnknownCards[(sName, sExpName)]
-
                 if sNewName != "No Card":
+                    iCnt = dUnknownCards[(sName, sExpName)]
+
                     # Find First physical card that matches this name
                     # that's not in aPhysCards
-                    oAbs = AbstractCard.byCanonicalName(
-                                sNewName.encode('utf8').lower())
-                    oPhys = PhysicalCard.selectBy(abstractCardID=oAbs.id,
-                                expansionID=iExpID).getOne()
+                    oPhys = self._lookup_new_phys_card(sNewName, sNewExpName)
                     aPhysCards.extend([oPhys]*iCnt)
 
                 oIter = oModel.iter_next(oIter)
@@ -485,41 +424,41 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
         else:
             return False
 
-    def _handle_unknown_abstract_cards(self, dUnknownCards, sInfo):
-        """Handle the list of unknown abstract cards.
+    # pylint: disable-msg=R0201
+    # These are methods for convenience
+    def _create_dialog(self, sInfo, sMsg):
+        """Create the dialog to present to the user.
 
-           We allow the user to select the correct replacements from the
-           Abstract Card List.
-           """
+           This is common to the abstract + physical card cases"""
         oUnknownDialog = SutekhDialog( \
                 "Unknown cards found importing %s" % sInfo, None,
                 gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                 (gtk.STOCK_OK, gtk.RESPONSE_OK,
                  gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
 
-        sMsg1 = "While importing %s\n" \
-                "The following card names could not be found:\n" \
-                "Choose how to handle these cards?\n" % (sInfo)
-
-        sMsg2 = "OK creates the card set, " \
-                "Cancel aborts the creation of the card set"
-
         # pylint: disable-msg=E1101
         # vbox confuses pylint
+        sLabelText = "While importing %s\n%s\n" \
+          "Choose how to handle these cards?\n" % (sInfo, sMsg)
 
-        oMesgLabel1 = gtk.Label()
-        oMesgLabel1.set_text(sMsg1)
+        oMesgLabel1 = gtk.Label(sLabelText)
         oUnknownDialog.vbox.pack_start(oMesgLabel1, False, False)
 
         oHBox = gtk.HBox()
         oUnknownDialog.vbox.pack_start(oHBox, True, True)
 
-        oMesgLabel2 = gtk.Label()
-        oMesgLabel2.set_text(sMsg2)
+        oMesgLabel2 = gtk.Label("OK creates the card set, Cancel "
+                "aborts the creation of the card set")
         oUnknownDialog.vbox.pack_start(oMesgLabel2)
 
-        oAbsCardView = ACLLookupView(oUnknownDialog, self._oConfig)
-        oViewWin = AutoScrolledWindow(oAbsCardView)
+        return oUnknownDialog, oHBox
+
+    def _fill_dialog(self, oHBox, oView):
+        """Handle the view setup and default buttons for the lookup
+           dialog."""
+        # pylint: disable-msg=E1101
+        # vbox confuses pylint
+        oViewWin = AutoScrolledWindow(oView)
         oViewWin.set_size_request(200, 600)
         oHBox.pack_start(oViewWin, True, True)
 
@@ -529,9 +468,8 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
         oFilterDialogButton = gtk.Button("Specify Filter")
         oFilterApplyButton = gtk.CheckButton("Apply Filter to view")
 
-        oReplacementView = ReplacementTreeView(oAbsCardView,
+        oReplacementView = ReplacementTreeView(oView,
             oFilterApplyButton)
-        oModel = oReplacementView.get_model()
 
         oReplacementWin = AutoScrolledWindow(oReplacementView)
         oReplacementWin.set_size_request(400, 600)
@@ -548,6 +486,45 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
             oReplacementView.run_filter_dialog)
         oFilterApplyButton.connect("toggled",
             oReplacementView.toggle_apply_filter)
+
+        return oReplacementView
+
+    def _lookup_new_phys_card(self, sNewName, sNewExpName):
+        """Lookup the physical card, given the correct name + expansion
+           name."""
+        # pylint: disable-msg=E1101
+        # SQLObject + pyprotocols confuse pylint
+        if sNewExpName is not None:
+            try:
+                iExpID = IExpansion(sNewExpName).id
+            except SQLObjectNotFound:
+                iExpID = None
+            except KeyError:
+                iExpID = None
+        else:
+            iExpID = None
+
+        oAbs = AbstractCard.byCanonicalName(sNewName.encode('utf8').lower())
+        oPhys = PhysicalCard.selectBy(abstractCardID=oAbs.id,
+                    expansionID=iExpID).getOne()
+        return oPhys
+
+    # pylint: enable-msg=R0201
+
+    def _handle_unknown_abstract_cards(self, dUnknownCards, sInfo):
+        """Handle the list of unknown abstract cards.
+
+           We allow the user to select the correct replacements from the
+           Abstract Card List.
+           """
+        oUnknownDialog, oHBox = self._create_dialog(sInfo,
+                "The following card names could not be found")
+        # pylint: disable-msg=E1101
+        # vbox confuses pylint
+
+        oAbsCardView = ACLLookupView(oUnknownDialog, self._oConfig)
+        oReplacementView = self._fill_dialog(oHBox, oAbsCardView)
+        oModel = oReplacementView.get_model()
 
         # Populate the model with the card names and best guesses
         for sName in dUnknownCards:
@@ -595,19 +572,15 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
 
         aKnownExpansions = list(Expansion.select())
 
-        oMesgLabel1 = gtk.Label()
-        oMesgLabel2 = gtk.Label()
-
-        sMsg1 = "While importing %s\n" \
-                "The following expansions could not be found:\n" \
-                "Choose how to handle these expansions?\n" % (sInfo)
-        sMsg2 = "OK continues the card set creation process, " \
-                "Cancel aborts the creation of the card set"
+        oMesgLabel1 = gtk.Label("While importing %s\n"
+                "The following expansions could not be found:\n"
+                "Choose how to handle these expansions?\n" % (sInfo))
+        oMesgLabel2 = gtk.Label("OK continues the card set creation process, "
+                "Cancel aborts the creation of the card set")
 
         # pylint: disable-msg=E1101
         # vbox confuses pylint
 
-        oMesgLabel1.set_text(sMsg1)
         oUnknownDialog.vbox.pack_start(oMesgLabel1, False, False)
 
         oButtonBox = gtk.VBox()
@@ -630,8 +603,6 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
             oButtonBox.pack_start(oBox)
 
         oUnknownDialog.vbox.pack_start(oButtonBox, True, True)
-
-        oMesgLabel2.set_text(sMsg2)
 
         oUnknownDialog.vbox.pack_start(oMesgLabel2)
         oUnknownDialog.vbox.show_all()

@@ -769,7 +769,7 @@ class CardSetCardListModel(CardListModel):
                 if self.iExtraLevelsMode == SHOW_EXPANSIONS:
                     self._dNameSecondLevel2Iter.setdefault(oCard.name, {})
                     for sExpName in aExpansions:
-                        # this should be paired with a call to increase the 
+                        # this should be paired with a call to increase the
                         # expansion count. We rely on this to sort
                         # out details - here we just create the needed space.
                         oNewIter = self._add_extra_level(oChildIter, sExpName,
