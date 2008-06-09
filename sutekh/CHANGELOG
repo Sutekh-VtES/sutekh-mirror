@@ -1,3 +1,25 @@
+09 June 2008
+ * Add Banned tab to Analyze Deck Plugin
+ * Fix bug with GuiCardLookup treating valid card + expansions combinations
+   as ivalid if any combination listed for the card is invalid
+
+08 June 2008
+ * Fix bugs breaking importing from ELDB html files
+ * Partially fix drag-n-drop between card sets - will break when in modes
+   other than "show expansions"
+ * Fix bug when removing cards from a card set via the gui
+ * Fix cancel buttons in backup dialog
+ * Don't try and preserve card set ids across WW imports + database upgrades,
+   as this breaks postgresql's sequence numbering
+
+07 June 2008
+ * Add plugin to allow setting all selected cards to a single expansion
+ * Ensure we re-create parents before children when updating WW card lists
+   or upgrading the database.
+
+05 June 2008
+ * Add support for Twilight Rebellion. Handle 'Any' group via same mechanism
+   as 'cost=X' cases.
 
 04 June 2008
  * Extend the parent card count to cover more options

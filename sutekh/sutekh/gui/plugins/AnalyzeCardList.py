@@ -12,7 +12,7 @@ Display interesting statistics and properties of the card set
 import gtk
 from sutekh.core.SutekhObjects import PhysicalCardSet, \
         IAbstractCard
-from sutekh.core.Filters import CardTypeFilter
+from sutekh.core.Filters import CardTypeFilter, CardTextFilter
 from sutekh.core.Abbreviations import Titles
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog
@@ -245,7 +245,7 @@ class AnalyzeCardList(CardListPlugin):
     aModelsSupported = [PhysicalCardSet]
 
     aCryptTypes = ['Vampire', 'Imbued']
-    # Map of titles to votes
+    _oBannedFilter = CardTextFilter('Added to the V:EKN banned list')
 
     def get_menu_item(self):
         """Register on the 'Plugins' Menu"""
@@ -282,21 +282,27 @@ class AnalyzeCardList(CardListPlugin):
                 'Event' : self._process_event,
                 'Master' : self._process_master,
                 'Multirole' : self._process_multi,
+                'Banned Cards' : self._process_banned,
                 }
 
         self.dTypeNumbers = {}
         dCardLists = {}
 
         for sCardType in dConstruct:
-            if sCardType != 'Multirole':
+            if sCardType not in ['Multirole', 'Banned Cards']:
                 oFilter = CardTypeFilter(sCardType)
                 dCardLists[sCardType] = _get_abstract_cards(
                         self.model.get_card_iterator(oFilter))
                 self.dTypeNumbers[sCardType] = len(dCardLists[sCardType])
-            else:
+            elif sCardType == 'Multirole':
                  # Multirole values start empty, and are filled in later
                 dCardLists[sCardType] = []
                 self.dTypeNumbers[sCardType] = 0
+            elif sCardType == 'Banned Cards':
+                oFilter = self._oBannedFilter
+                dCardLists[sCardType] = _get_abstract_cards(
+                        self.model.get_card_iterator(oFilter))
+                self.dTypeNumbers[sCardType] = len(dCardLists[sCardType])
 
         oHappyBox = gtk.VBox(False, 2)
 
@@ -367,8 +373,9 @@ class AnalyzeCardList(CardListPlugin):
             self.dCryptStats[sMax] = max(iVMax, iIMax)
             self.dCryptStats[sMin] = min(iVMin, iIMin)
 
-        get_info([x.group for x in aVampireCards],
-                [x.group for x in aImbuedCards], 'group')
+        # Skip the any group case, as it has no effect here
+        get_info([x.group for x in aVampireCards if x.group != -1],
+                [x.group for x in aImbuedCards if x.group != -1], 'group')
         get_info([x.capacity for x in aVampireCards],
                 [x.life for x in aImbuedCards], 'cost')
         aAllCosts = sorted([x.capacity for x in aVampireCards] + \
@@ -444,7 +451,7 @@ class AnalyzeCardList(CardListPlugin):
         if self.dTypeNumbers['Vampire'] > 0 and \
                 self.dTypeNumbers['Imbued'] > 0:
             sMainText += "Total Crypt size = %d\n" % self.iCryptSize
-        sMainText += "Minimum Group in Crpyt = %d\n" % \
+        sMainText += "Minimum Group in Crypt = %d\n" % \
                 self.dCryptStats['min group']
         sMainText += "Maximum Group in Crypt = %d\n" % \
                 self.dCryptStats['max group']
@@ -456,6 +463,10 @@ class AnalyzeCardList(CardListPlugin):
         if self.dCryptStats['max group'] - self.dCryptStats['min group'] > 1:
             sMainText += '<span foreground = "red">Group Range Exceeded' \
                     '</span>\n'
+
+        if self.dTypeNumbers['Banned Cards'] > 0:
+            sMainText += '<span foreground = "red">Card Set uses cards on ' \
+                    'V:EKN banned list</span>\n'
 
         sMainText += '\nMaximum cost in crypt = %d\n' % \
                 self.dCryptStats['max cost']
@@ -776,6 +787,29 @@ class AnalyzeCardList(CardListPlugin):
                     'multitype' : sMultiType,
                     'num' : iNum,
                     'per' : sPer,
+                    }
+
+        return sText
+
+    def _process_banned(self, aCards):
+        """Fill the banned card tab"""
+        iTotal = self.iCryptSize + self.iNumberLibrary
+        dBanned = {}
+        sPerCards = _percentage(self.dTypeNumbers['Banned Cards'],
+                iTotal, 'Deck')
+        sText = "\t\t<b>Banned Cards :</b>\n\n" \
+                "Number of Banned Cards cards = %(num)d %(per)s\n" % {
+                        'num' : self.dTypeNumbers['Banned Cards'],
+                        'per' : sPerCards
+                        }
+        for oAbsCard in aCards:
+            dBanned.setdefault(oAbsCard.name, 0)
+            dBanned[oAbsCard.name] += 1
+        for sName, iNum in sorted(dBanned.items(), key=lambda x: x[1],
+                reverse=True):
+            sText += '%(num)d X %(name)s\n' % {
+                    'num' : iNum,
+                    'name' : sName,
                     }
 
         return sText
