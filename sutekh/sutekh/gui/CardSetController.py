@@ -37,9 +37,15 @@ class CardSetController(object):
             oAC = oPC.abstractCard
             self.__aAbsCardIds.append(oAC.id)
             self.__aPhysCardIds.append(oPC.id)
+        # Listen on card signals
         listen_row_destroy(self.card_deleted, MapPhysicalCardToPhysicalCardSet)
         listen_reload(self.cards_changed, PhysicalCardSet)
+        # listen on card set signals
         listen_row_update(self.card_set_changed, PhysicalCardSet)
+        listen_row_destroy(self.card_set_deleted, PhysicalCardSet)
+        # We don't listen for card set creation, since newly created card
+        # sets aren't inuse. If that changes, we'll need to add an additional
+        # signal listen here
         # FIXME: Need signals to catch parent/child relationship changes,
         # so we do the right thing
 
@@ -67,6 +73,14 @@ class CardSetController(object):
 
     # pylint: disable-msg=W0613
     # fPostFuncs is passed by SQLObject 0.10, but not by 0.9
+    def card_set_deleted(self, oCardSet, fPostFuncs=None):
+        """Listen for card set removal events.
+
+           Needed if child card sets are deleted, for instance.
+           """
+        print 'Card Set removed'
+        print oCardSet
+
     def card_deleted(self, oPhysCard, fPostFuncs=None):
         """Listen on card removals from the mapping table.
 
