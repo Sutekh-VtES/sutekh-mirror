@@ -63,9 +63,54 @@ class CardSetController(object):
 
            Cases are:
              * when the parent changes
-             * when a child card set is added or removed
+             * when a child card set is added or removed while marked in use
              * when a child card set is marked/unmarked as in use.
+             * when a 'sibling' card set is marked/unmarked as in use
+             * when a 'sibling' card set is added or removed while marked in
+               use
+           Whether this requires a reload depends on the current model mode.
+           When the parent changes to or from none, we also update the menus
+           and the parent card shown view.
            """
+        if oCardSet.id == self.__oPhysCardSet.id and \
+                dChanges.has_key('parentID'):
+            # This card set's parent is changing
+            if not dChanges['parentID']:
+                # Changing to no parent, so ensure parent count column is
+                # not visible
+                pass
+            elif not oCardSet.parent:
+                # Changing from no parent, so add parent count column
+                pass
+            else:
+                # parent is just changing
+                pass
+        elif oCardSet.parent and oCardSet.parent.id == self.__oPhysCardSet.id:
+            # This is a child card set
+            if dChanges.has_key('inuse'):
+                # inuse flag being toggled
+                pass
+            elif dChanges.has_key('parentID') and oCardSet.inuse:
+                # Inuse card set is being reparented
+                pass
+        elif dChanges.has_key('parentID') and \
+                dChanges['parentID'] == self.__oPhysCardSet.id and \
+                oCardSet.inuse:
+            # acquiring a new inuse child card set
+            pass
+        elif self.__oPhysCardSet.parent:
+            # Sibling's are possible, so check for them
+            if dChanges.has_key('ParentID') and oCardSet.inuse:
+                # Possibling acquiring or losing inuse sibling
+                if (dChanges['ParentID'] == self.__oPhysCardSet.parent.id) or \
+                        (oCardSet.parent and oCardSet.parent.id == 
+                                self.__oPhysCardSet.parent.id):
+                    # Reload if needed
+                    pass
+            elif dChanges.has_key('inuse') and oCardSet.parent and \
+                    oCardSet.parent.id == self.__oPhysCardSet.parent.id:
+                # changing inuse status of sibling
+                pass
         print 'PhysicalCardSet row_update'
         print oCardSet
         print dChanges
@@ -78,6 +123,13 @@ class CardSetController(object):
 
            Needed if child card sets are deleted, for instance.
            """
+        if oCardSet.parent and oCardSet.parent.id == \
+                self.__oPhysCardSet.parent.id and oCardSet.inuse:
+            # inuse child card set going, so check if we need to reload
+            pass
+        # Other card set deletions (parent card set, etc). don't need to
+        # be watched here, since the fiddling on parents should generate
+        # changed signals for us.
         print 'Card Set removed'
         print oCardSet
 

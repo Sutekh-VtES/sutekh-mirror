@@ -138,6 +138,8 @@ def delete_physical_card_set(sSetName):
     # SQLObject confuse pylint
     try:
         oCS = PhysicalCardSet.byName(sSetName)
+        # FIXME: need to reparent any children card sets when we
+        # delete this one
         for oCard in oCS.cards:
             oCS.removePhysicalCard(oCard)
         PhysicalCardSet.delete(oCS.id)

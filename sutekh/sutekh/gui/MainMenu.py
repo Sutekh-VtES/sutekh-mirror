@@ -245,6 +245,12 @@ class MainMenu(SutekhMenu):
                         return
                     else:
                         # Delete the card set
+                        # FIXME: we need to make sure we do the right
+                        # thing for any children of the card set.
+                        # delete_physical_card_set will reparent them,
+                        # but we need to be able to re-reparent them to
+                        # the new card set, so re-importing a card set
+                        # with children added does the expected thing
                         delete_physical_card_set(oIdParser.name)
                 oFrame = self._oMainWindow.add_pane_end()
                 try:
