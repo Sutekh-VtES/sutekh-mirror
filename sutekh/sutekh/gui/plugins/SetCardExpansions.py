@@ -11,6 +11,7 @@ from sutekh.core.SutekhObjects import PhysicalCardSet, IExpansion, \
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 from sutekh.gui.ScrolledList import ScrolledList
+from sutekh.gui.DBSignals import send_reload_signal
 
 class SetCardExpansions(CardListPlugin):
     """Set al the selected cards in the card list to a single expansion
@@ -94,6 +95,7 @@ class SetCardExpansions(CardListPlugin):
                     MapPhysicalCardToPhysicalCardSet.delete(oCard.id)
                     oCS.addPhysicalCard(oNewCard.id)
                     oCS.syncUpdate()
+        send_reload_signal(oCS) # parent/child card sets may need to reload
         self.view.reload_keep_expanded()
 
     def _get_selected_cards(self):

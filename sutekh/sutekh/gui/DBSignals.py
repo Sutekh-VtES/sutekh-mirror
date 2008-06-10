@@ -10,7 +10,7 @@
 collection in sync."""
 
 from sqlobject.events import Signal, listen, RowUpdateSignal, RowDestroySignal
-from sutekh.core.SutekhObjects import PhysicalCard
+from sutekh.core.SutekhObjects import PhysicalCardSet
 
 class ReloadSignal(Signal):
     """
@@ -22,9 +22,10 @@ class ReloadSignal(Signal):
 
 # Senders
 
-def send_reload_signal(oAbstractCard, cClass=PhysicalCard):
+def send_reload_signal(oCardSet, oPhysCard=None,
+        cClass=PhysicalCardSet):
     """Sent when card counts change, so card sets may need to reload."""
-    cClass.sqlmeta.send(ReloadSignal, oAbstractCard)
+    cClass.sqlmeta.send(ReloadSignal, oCardSet, oPhysCard)
 
 # Listeners
 
