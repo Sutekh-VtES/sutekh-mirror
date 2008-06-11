@@ -39,6 +39,8 @@ class BasicFrame(gtk.Frame, object):
         self._oView.set_editable(False)
         self._oView.set_cursor_visible(False)
 
+        self._bNeedReload = False
+
         self._oTitle.drag_source_set(
                 gtk.gdk.BUTTON1_MASK | gtk.gdk.BUTTON3_MASK, self.aDragTargets,
                 gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
@@ -109,6 +111,15 @@ class BasicFrame(gtk.Frame, object):
     def reload(self):
         """Reload frame contents"""
         pass
+
+    def do_queued_reload(self):
+        """Do a defferred reload if one was set earlier"""
+        self._bNeedReload = False
+
+    def queue_reload(self):
+        """Queue a reload for later - needed so reloads can happen after
+           database update signals."""
+        self._bNeedReload = True
 
     def update_to_new_db(self):
         """Re-associate internal data against the database.

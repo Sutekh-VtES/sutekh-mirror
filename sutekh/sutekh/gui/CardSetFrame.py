@@ -85,3 +85,9 @@ class CardSetFrame(CardListFrame, object):
         self._oController.update_to_new_db()
         self.reload()
 
+    def do_queued_reload(self):
+        """Do a defferred reload if one was set earlier"""
+        if self._bNeedReload:
+            self.reload()
+        self._bNeedReload = False
+

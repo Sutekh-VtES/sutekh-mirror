@@ -237,6 +237,8 @@ class CardSetManagementController(object):
         if oSelPath and bRestoreSelection:
             # Restore selection
             oSelection.select_path(oSelPath)
+        # Handle any defferred database single issues
+        self._oMainWindow.do_all_queued_reloads()
 
     # pylint: disable-msg=R0913
     # arguments as required by function signature
