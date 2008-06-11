@@ -134,9 +134,11 @@ class CardSetController(object):
                 oCardSet.parent.id == self.__oPhysCardSet.parent.id:
             # inuse sibling card set going away whel this affects display,
             # so reload
+            pass
         # Other card set deletions don't need to be watched here, since the
         # fiddling on parents should generate changed signals for us.
-        print 'Card Set removed' print oCardSet
+        print 'Card Set removed'
+        print oCardSet
 
     def card_deleted(self, oPhysCard, fPostFuncs=None):
         """Listen on card removals from the mapping table.
@@ -317,5 +319,9 @@ class CardSetController(object):
 
     def update_to_new_db(self):
         """Update the internal card set to the new DB."""
-        self.__oPhysCardSet = IPhysicalCardSet(self.view.sSetName)
-        self.model.update_to_new_db(self.view.sSetName)
+        try:
+            self.__oPhysCardSet = IPhysicalCardSet(self.view.sSetName)
+            self.model.update_to_new_db(self.view.sSetName)
+        except SQLObjectNotFound:
+            # No longer in the database, so remove from the window
+            self._oFrame.close_frame()

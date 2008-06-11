@@ -292,7 +292,9 @@ class MultiPaneWindow(gtk.Window):
            cardlist, since card sets with children are always created
            before there children are added.
            """
-        for oPane in self.dOpenFrames:
+        aToLoopOver = self.dOpenFrames.keys()
+        # We may close frames here, so loop over a copy of the list
+        for oPane in aToLoopOver:
             oPane.update_to_new_db()
 
     def get_editable_panes(self):

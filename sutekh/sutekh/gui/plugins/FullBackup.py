@@ -162,7 +162,8 @@ class FullBackup(CardListPlugin):
                         sMsg = "The follwoing warnings were reported:\n%s" % \
                                 "\n".join(aMessages)
                         do_complaint_warning(sMsg)
-                    self.reload_all()
+                    # Id's will not be preserved
+                    self.parent.update_to_new_db()
                     oProgressDialog.destroy()
                     self.parent.restore_editable_panes(aEditable)
                 # pylint: disable-msg=W0703
