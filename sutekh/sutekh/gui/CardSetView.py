@@ -98,30 +98,22 @@ class CardSetView(CardListView):
         dSelectedData = {}
         for oPath in oPathList:
             sCardName, sExpansion, iCount, iDepth = \
-                    oModel.get_all_from_path(oPath)
-            if iDepth == 0:
-                # Skip top level items, since they're meaningless for the
-                # selection
+                    oModel.get_drag_info_from_path(oPath)
+            if not sCardName:
+                # Not a card in this card set, so we skip
                 continue
-            # if a card is selected, then it's children (which are
-            # the expansions) which are selected are ignored, since
-            # We always treat this as all cards selected
             dSelectedData.setdefault(sCardName, {})
             if iDepth == 1:
-                # Remove anything already assigned to this,
-                # since parent overrides all
+                # this is treated as selecting all the children in this
+                # card set
+                # Remove anything already assigned to this
                 dSelectedData[sCardName].clear()
-                # We need to loop over all the children, and add
-                # their expansion counts, so we do the expected thing
-                oIter = oModel.get_iter(oPath)
-                for iChildCount in range(oModel.iter_n_children(oIter)):
-                    oChildIter = oModel.iter_nth_child(oIter, iChildCount)
-                    oPath = oModel.get_path(oChildIter)
-                    sCardName, sExpansion, iCount, iDepth = \
-                            oModel.get_all_from_path(oPath)
-                    dSelectedData[sCardName][sExpansion] = iCount
+                for sExpName, iCnt in \
+                        oModel.get_drag_child_info(oPath).iteritems():
+                    dSelectedData[sCardName][sExpName] = iCnt
             else:
                 if sExpansion in dSelectedData[sCardName]:
+                    # We already have this info
                     continue
                 dSelectedData[sCardName][sExpansion] = iCount
         return dSelectedData
@@ -139,7 +131,7 @@ class CardSetView(CardListView):
                 self._oController.frame.drag_drop_handler(oWidget, oContext,
                         iXPos, iYPos, oData, oInfo, oTime)
             elif not self._oModel.bEditable:
-                # Don't accept cards when editable
+                # Don't accept cards when not editable
                 oContext.finish(False, False, oTime)
             elif sSource == self.sDragPrefix:
                 # Can't drag to oneself
@@ -283,6 +275,7 @@ class CardSetView(CardListView):
             """Compare the RGB values for 2 gtk.gdk.Colors. Return True if
                they're the same, false otherwise."""
             return oColor1.to_string() == oColor2.to_string()
+
         oCurStyle = self.rc_get_style()
         # For card sets that start empty, oNumCell will be the wrong colour,
         # but, because of how CellRenderers interact with styles, oNameCell

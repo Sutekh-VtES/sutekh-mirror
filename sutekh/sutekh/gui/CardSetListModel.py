@@ -815,3 +815,59 @@ class CardSetCardListModel(CardListModel):
         """Utiltiy function. Returns true if changes to the sibling card sets
            influence the display."""
         return self.iParentCountMode == MINUS_SETS_IN_USE
+
+    def get_drag_info_from_path(self, oPath):
+        """Get card name and expansion information from the path for the
+           drag and drop code.
+
+           This returns cardname of None if the path is not a card in this
+           card set, such as a top-level item or card in a child card set.
+           """
+        oIter = self.get_iter(oPath)
+        iDepth = self.iter_depth(oIter)
+        if iDepth == 2 and self.iExtraLevelsMode == SHOW_EXPANSIONS:
+            sName = self.get_name_from_iter(self.get_iter(
+                norm_path(oPath)[0:2]))
+            sExpansion = self.get_value(oIter, 0)
+        elif iDepth == 1:
+            sName = self.get_name_from_iter(oIter)
+            sExpansion = None
+        else:
+            sName = None
+            sExpansion = None
+        iCount = self.get_int_value(oIter, 1)
+        return sName, sExpansion, iCount, iDepth
+
+    def get_drag_child_info(self, oPath):
+        """Get the expansion information for the card at oPath.
+
+           Always returns the expansions, regaredless of iExtraLevelsMode.
+           """
+        oIter = self.get_iter(oPath)
+        iDepth = self.iter_depth(oIter)
+        if iDepth != 1:
+            return {} # Not at the right level
+        dResult = {}
+        if self.iExtraLevelsMode == SHOW_EXPANSIONS:
+            # Can read off the data from the model, so do so
+            oChildIter = self.iter_children(oIter)
+            while oChildIter:
+                oChildPath = self.get_path(oChildIter)
+                sCardName, sExpansion, iCount, iDepth = \
+                        self.get_drag_info_from_path(oChildPath)
+                dResult[sExpansion] = iCount
+                oChildIter = self.iter_next(oChildIter)
+        else:
+            # Need to get expansion info from the database
+            sCardName = self.get_name_from_iter(self.get_iter(oPath))
+            oFilter = SpecificCardFilter(sCardName)
+            oCardIter = self.get_card_iterator(oFilter)
+            for oCard in oCardIter:
+                oPhysCard = IPhysicalCard(oCard)
+                if oPhysCard.expansion:
+                    sExpName = oPhysCard.expansion.name
+                else:
+                    sExpName = self.sUnknownExpansion
+                dResult.setdefault(sExpName, 0)
+                dResult[sExpName] += 1
+        return dResult
