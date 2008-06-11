@@ -153,7 +153,7 @@ class CardSetMenu(CardListMenu):
         # sqlobject confuses pylint
         self._oController.edit_properties(self)
 
-    def update_card_set_menu(self, oCardSet, oOldParent):
+    def update_card_set_menu(self, oCardSet):
         """Update the menu to reflect changes in the card set name."""
         self.sSetName = oCardSet.name
         self._oFrame.update_name(self.sSetName)
@@ -161,21 +161,24 @@ class CardSetMenu(CardListMenu):
                 " properties" % self.sSetName)
         self.__oExport.get_child().set_label("Export Card Set (%s) to File" %
                 self.sSetName)
-        if oCardSet.parent:
+
+    def check_parent_count_column(self, oOldParent, oNewParent):
+        """Check that the parent column values are set correctly
+           when the parent changes.
+           """
+        # pylint: disable-msg=E1101
+        # SQLObject confuses pylint
+        # We rely on signal handler to cause reload
+        if oNewParent:
             self._oParentCol.set_sensitive(True)
             if not oOldParent:
-                # Parent has changed from none, so ensure set to default
+                # Parent has changed from none, so set to default
                 self._change_parent_count_mode(None, PARENT_COUNT, True)
                 # Check below will force reload anyway
                 self._oDefaultParentCount.set_active(True)
-            if oCardSet.parent != oOldParent and \
-                    self._oController.model.iParentCountMode != IGNORE_PARENT:
-                # We are forced to do a reload here
-                self._oController.view.reload_keep_expanded()
         else:
             self._oParentCol.set_sensitive(False)
             self._change_parent_count_mode(None, IGNORE_PARENT, True)
-        self._oMainWindow.reload_pcs_list()
 
     def _edit_annotations(self, oWidget):
         """Popup the Edit Annotations dialog."""
@@ -223,13 +226,6 @@ class CardSetMenu(CardListMenu):
         self._oController.model.iParentCountMode = iLevel
         if not bNoReload:
             self._oController.view.reload_keep_expanded()
-
-    def _toggle_all_abstract_cards(self, oWidget):
-        """Toggle the display of cards with a count of 0 in the card list."""
-        self._oController.model.bAddAllAbstractCards = oWidget.active
-        self._oMainWindow.config_file.set_show_zero_count_cards(
-                oWidget.active)
-        self._oController.view.reload_keep_expanded()
 
     def toggle_editable(self, oWidget):
         """Toggle the editable state of the card set."""

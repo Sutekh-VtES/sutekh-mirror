@@ -797,3 +797,21 @@ class CardSetCardListModel(CardListModel):
         """Update internal card set to the new DB."""
         self._oCardSet = IPhysicalCardSet(sSetName)
         self._oBaseFilter = PhysicalCardSetFilter(sSetName)
+
+    def changes_with_parent(self):
+        """Utility function. Returns true if the parent card set influences
+           the currently visible set of cards."""
+        return self.iParentCountMode != IGNORE_PARENT or \
+                self.iShowCardMode == PARENT_CARDS
+
+    def changes_with_children(self):
+        """Utiltiy function. Returns true if changes to the child card sets
+           influence the display."""
+        return self.iShowCardMode == CHILD_CARDS or \
+                self.iExtraLevelsMode in [SHOW_CARD_SETS,
+                        EXPANSIONS_AND_CARD_SETS, CARD_SETS_AND_EXPANSIONS]
+
+    def changes_with_siblings(self):
+        """Utiltiy function. Returns true if changes to the sibling card sets
+           influence the display."""
+        return self.iParentCountMode == MINUS_SETS_IN_USE

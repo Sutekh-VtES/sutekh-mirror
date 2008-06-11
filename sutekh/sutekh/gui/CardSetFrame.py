@@ -36,7 +36,6 @@ class CardSetFrame(CardListFrame, object):
         self._oController = CardSetController(sName,
                 oMainWindow, self)
 
-
         self.init_plugins()
 
         self._oMenu = CardSetMenu(self, self._oController, self._oMainWindow,

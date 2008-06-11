@@ -72,21 +72,21 @@ class CardSetController(object):
            When the parent changes to or from none, we also update the menus
            and the parent card shown view.
            """
+        # FIXME: This signal is recieved before the row is actually updated,
+        # but the reload needs to happen afterwards.
         if oCardSet.id == self.__oPhysCardSet.id and \
                 dChanges.has_key('parentID'):
             # This card set's parent is changing
-            if not dChanges['parentID']:
-                # Changing to no parent, so ensure parent count column is
-                # not visible
+            # Update menu to reflect this
+            self._oFrame.menu.check_parent_count_column(oCardSet.parent,
+                    dChanges['parentID'])
+            if self.model.changes_with_parent() or not dChanges['parentID']:
+                # Parent count is shown, or not shown becuase parent is
+                # changing to None, so this affects the shown cards.
                 pass
-            elif not oCardSet.parent:
-                # Changing from no parent, so add parent count column
-                pass
-            else:
-                # parent is just changing
-                pass
-        elif oCardSet.parent and oCardSet.parent.id == self.__oPhysCardSet.id:
-            # This is a child card set
+        elif oCardSet.parent and oCardSet.parent.id == self.__oPhysCardSet.id \
+                and self.model.changes_with_children():
+            # This is a child card set, and this can require a reload
             if dChanges.has_key('inuse'):
                 # inuse flag being toggled
                 pass
@@ -95,10 +95,10 @@ class CardSetController(object):
                 pass
         elif dChanges.has_key('parentID') and \
                 dChanges['parentID'] == self.__oPhysCardSet.id and \
-                oCardSet.inuse:
+                oCardSet.inuse and self.model.changes_with_children():
             # acquiring a new inuse child card set
             pass
-        elif self.__oPhysCardSet.parent:
+        elif self.__oPhysCardSet.parent and self.model.changes_with_siblings():
             # Sibling's are possible, so check for them
             if dChanges.has_key('ParentID') and oCardSet.inuse:
                 # Possibling acquiring or losing inuse sibling
@@ -124,14 +124,19 @@ class CardSetController(object):
            Needed if child card sets are deleted, for instance.
            """
         if oCardSet.parent and oCardSet.parent.id == \
-                self.__oPhysCardSet.parent.id and oCardSet.inuse:
-            # inuse child card set going, so check if we need to reload
+                self.__oPhysCardSet.id and oCardSet.inuse and \
+                self.model.changes_with_children():
+            # inuse child card set going, so we need to reload
+            # fPostFuncs would be ideal for the reload, but requires 0.10
             pass
-        # Other card set deletions (parent card set, etc). don't need to
-        # be watched here, since the fiddling on parents should generate
-        # changed signals for us.
-        print 'Card Set removed'
-        print oCardSet
+        if self.__oPhysCardSet.parent and self.model.changes_with_siblings() \
+                and oCardSet.parent and oCardSet.inuse and \
+                oCardSet.parent.id == self.__oPhysCardSet.parent.id:
+            # inuse sibling card set going away whel this affects display,
+            # so reload
+        # Other card set deletions don't need to be watched here, since the
+        # fiddling on parents should generate changed signals for us.
+        print 'Card Set removed' print oCardSet
 
     def card_deleted(self, oPhysCard, fPostFuncs=None):
         """Listen on card removals from the mapping table.
@@ -303,8 +308,12 @@ class CardSetController(object):
             if oParent != self.__oPhysCardSet.parent:
                 reparent_card_set(self.__oPhysCardSet, oParent)
             self.__oPhysCardSet.syncUpdate()
-            # We may well have changed stuff on the card list pane, so reload
-            oMenu.update_card_set_menu(self.__oPhysCardSet, oOldParent)
+            # Update frame menu
+            self._oFrame.menu.update_card_set_menu(self.__oPhysCardSet)
+            # Reload pcs_list, since we may have changed stuff
+            self._oMainWindow.reload_pcs_list()
+            # We rely on the database signal to cause a card set reload
+            # on parent changes
 
     def update_to_new_db(self):
         """Update the internal card set to the new DB."""
