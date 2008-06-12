@@ -62,6 +62,21 @@ def reparent_card_set(oCardSet, oNewParent):
         return True
     return False
 
+def check_ok_to_delete(oCardSet):
+    """Check if the user is OK with deleting the card set."""
+    aChildren = find_children(oCardSet)
+    iResponse = gtk.RESPONSE_OK
+    if len(oCardSet.cards) > 0 and len(aChildren) > 0:
+        iResponse = do_complaint_warning("Card Set %s Not Empty and"
+                " Has Children. Really Delete?" % oCardSet.name)
+    elif len(oCardSet.cards) > 0:
+        iResponse = do_complaint_warning("Card Set %s Not Empty."
+                " Really Delete?" % oCardSet.name)
+    elif len(aChildren) > 0:
+        iResponse = do_complaint_warning("Card Set %s"
+                " Has Children. Really Delete?" % oCardSet.name)
+    return iResponse == gtk.RESPONSE_OK
+
 class CardSetManagementController(object):
     """Controller object for the card set list."""
     # pylint: disable-msg=R0904
@@ -162,28 +177,11 @@ class CardSetManagementController(object):
         except SQLObjectNotFound:
             return
         # Check for card sets this is a parent of
-        aChildren = find_children(oCS)
-        iResponse = gtk.RESPONSE_OK
-        if len(oCS.cards) > 0 and len(aChildren) > 0:
-            iResponse = do_complaint_warning("Card Set %s Not Empty and"
-                    " Has Children. Really Delete?" % sSetName)
-        elif len(oCS.cards) > 0:
-            iResponse = do_complaint_warning("Card Set %s Not Empty."
-                    " Really Delete?" % sSetName)
-        elif len(aChildren) > 0:
-            iResponse = do_complaint_warning("Card Set %s"
-                    " Has Children. Really Delete?" % sSetName)
-        if iResponse == gtk.RESPONSE_CANCEL:
-            # Don't delete
-            return
-        for oChildCS in aChildren:
-            oChildCS.parent = oCS.parent
-            oChildCS.syncUpdate()
-        # Got here, so delete the card set
-        sFrameName = sSetName
-        delete_physical_card_set(sSetName)
-        self._oMainWindow.remove_frame_by_name(sFrameName)
-        self.reload_keep_expanded(False)
+        if check_ok_to_delete(oCS):
+            sFrameName = sSetName
+            delete_physical_card_set(sSetName)
+            self._oMainWindow.remove_frame_by_name(sFrameName)
+            self.reload_keep_expanded(False)
 
     def toggle_in_use_flag(self, oMenuItem):
         """Toggle the in-use status of the card set"""

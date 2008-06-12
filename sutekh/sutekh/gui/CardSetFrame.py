@@ -67,14 +67,6 @@ class CardSetFrame(CardListFrame, object):
         self._sName = sNewName
         self.set_title(self.sSetName)
 
-    def delete_card_set(self):
-        """Delete this card set from the database"""
-        if self._oController.view.delete_card_set():
-            # Card Set was deleted, so close up
-            self.close_frame()
-            # We don't need to worry about reloadng the PCS list here.
-            # cleanup will do that for us
-
     def update_to_new_db(self):
         """Re-associate internal data against the database.
 

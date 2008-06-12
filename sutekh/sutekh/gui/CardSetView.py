@@ -10,11 +10,9 @@
 import gtk
 import pango
 from sutekh.gui.CellRendererSutekhButton import CellRendererSutekhButton
-from sutekh.gui.SutekhDialog import do_complaint_warning
 from sutekh.gui.CardListView import CardListView
 from sutekh.gui.CardSetListModel import CardSetCardListModel
 from sutekh.core.SutekhObjects import PhysicalCardSet
-from sutekh.SutekhUtility import delete_physical_card_set
 
 class CardSetView(CardListView):
     # pylint: disable-msg=R0904
@@ -33,8 +31,6 @@ class CardSetView(CardListView):
         super(CardSetView, self).__init__(oController, oMainWindow,
                 oModel, oMainWindow.config_file)
         self.sSetName = sName
-        #self._oModel.cardclass = MapPhysicalCardToPhysicalCardSet
-        #self._oModel.basefilter = PhysicalCardSetFilter(self.sSetName)
         self.sDragPrefix = PhysicalCardSet.sqlmeta.table + ":" + self.sSetName
 
         # Setup columns for default view
@@ -167,21 +163,6 @@ class CardSetView(CardListView):
         else:
             return False
 
-    def delete_card_set(self):
-        """Delete this card set from the database."""
-        # Check if CardSet is empty
-        # pylint: disable-msg=E1101
-        # sqlobject confuses pylint
-        oCS = PhysicalCardSet.byName(self.sSetName)
-        if len(oCS.cards)>0:
-            iResponse = do_complaint_warning("Card Set Not Empty. "
-                    "Really Delete?")
-            if iResponse == gtk.RESPONSE_CANCEL:
-                return False # not deleting
-        # Got this far, so delete the card set
-        delete_physical_card_set(self.sSetName)
-        # Tell Window to clean up
-        return True
 
     def del_selection(self):
         """try to delete all the cards in the current selection"""
@@ -263,6 +244,9 @@ class CardSetView(CardListView):
            display"""
         # see if we need to be editable
         self.check_editable()
+        if self._oModel.bEditable:
+            # Ensure hint colour is set correctly
+            self.reload_keep_expanded()
 
     # pylint: enable-msg=W0613
 

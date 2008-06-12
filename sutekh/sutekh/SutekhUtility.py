@@ -131,15 +131,16 @@ def sqlite_uri(sPath):
 
     return "sqlite://" + sDbFile
 
-
 def delete_physical_card_set(sSetName):
     """Unconditionally delete a PCS and its contents"""
     # pylint: disable-msg=E1101
     # SQLObject confuse pylint
     try:
         oCS = PhysicalCardSet.byName(sSetName)
-        # FIXME: need to reparent any children card sets when we
-        # delete this one
+        aChildren = find_children(oCS)
+        for oChildCS in aChildren:
+            oChildCS.parent = oCS.parent
+            oChildCS.syncUpdate()
         for oCard in oCS.cards:
             oCS.removePhysicalCard(oCard)
         PhysicalCardSet.delete(oCS.id)
@@ -179,9 +180,6 @@ def detect_loop(oCardSet):
 
 def find_children(oCardSet):
     """Find all the children of the given card set"""
-    aChildren = []
-    for oCS in PhysicalCardSet.select():
-        if oCS.parent == oCardSet:
-            aChildren.append(oCS)
-    return aChildren
-
+    # pylint: disable-msg=E1101
+    # SQLObject confuses pylint
+    return list(PhysicalCardSet.selectBy(parentID=oCardSet.id))

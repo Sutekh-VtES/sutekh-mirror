@@ -8,7 +8,8 @@
 """Controller for the card sets"""
 
 from sqlobject import SQLObjectNotFound
-from sutekh.gui.CardSetManagementController import reparent_card_set
+from sutekh.gui.CardSetManagementController import reparent_card_set, \
+        check_ok_to_delete
 from sutekh.gui.CardSetView import CardSetView
 from sutekh.gui.CreateCardSetDialog import CreateCardSetDialog
 from sutekh.gui.DBSignals import listen_reload, listen_row_destroy, \
@@ -17,6 +18,8 @@ from sutekh.core.SutekhObjects import IPhysicalCardSet, PhysicalCardSet, \
         AbstractCard, PhysicalCard, MapPhysicalCardToPhysicalCardSet, \
         IExpansion, Expansion
 from sutekh.gui.EditAnnotationsDialog import EditAnnotationsDialog
+from sutekh.SutekhUtility import delete_physical_card_set, find_children
+from sutekh.gui.SutekhDialog import do_complaint_warning
 
 class CardSetController(object):
     """Controller class for the Card Sets."""
@@ -314,4 +317,15 @@ class CardSetController(object):
             self.model.update_to_new_db(self.view.sSetName)
         except SQLObjectNotFound:
             # No longer in the database, so remove from the window
+            self._oFrame.close_frame()
+
+    def delete_card_set(self):
+        """Delete this card set from the database."""
+        # Check if CardSet is empty
+        # pylint: disable-msg=E1101
+        # sqlobject confuses pylint
+        if check_ok_to_delete(self.__oPhysCardSet):
+            delete_physical_card_set(self.view.sSetName)
+            # Tell window to clean up
+            # Card Set was deleted, so close up
             self._oFrame.close_frame()

@@ -198,7 +198,7 @@ class CardSetMenu(CardListMenu):
 
     def _card_set_delete(self, oWidget):
         """Delete the card set."""
-        self._oFrame.delete_card_set()
+        self._oController.delete_card_set()
 
     def _change_mode(self, oWidget, iLevel):
         """Set which extra information is shown."""
