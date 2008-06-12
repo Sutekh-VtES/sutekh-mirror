@@ -268,9 +268,12 @@ class CardSetView(CardListView):
 
     def set_color_edit_cue(self):
         """Set a visual cue that the card set is editable."""
-        # FIXME: Should not do this check every time -
-        # Do this once after being mapped and then watch for
-        # _GTK_READ_RCFILES somehow
+        if not self._oModel.sEditColour:
+            self._determine_edit_colour()
+        self.set_name('editable_view')
+
+    def _determine_edit_colour(self):
+        """Determine which colour to use for the editable hint"""
         def _compare_colors(oColor1, oColor2):
             """Compare the RGB values for 2 gtk.gdk.Colors. Return True if
                they're the same, false otherwise."""
@@ -294,6 +297,8 @@ class CardSetView(CardListView):
             if _compare_colors(gtk.gdk.color_parse(sColour),
                     oCurStyle.fg[gtk.STATE_NORMAL]):
                 sColour = 'green'
+            # FIXME: rc_parse_string doesn't play nicely with
+            # theme changes, which cause a rcfile reparse.
             sStyleInfo = """
             style "internal_sutekh_editstyle" {
                 fg[NORMAL] = "%(colour)s"

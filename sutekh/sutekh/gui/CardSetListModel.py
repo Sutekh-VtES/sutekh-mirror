@@ -66,11 +66,11 @@ class CardSetCardListModel(CardListModel):
         self._dNameSecondLevel2Iter = {}
         self._dName2nd3rdLevel2Iter = {}
         self.iParentCountMode = PARENT_COUNT
-        self.sEditColour = 'red'
+        self.sEditColour = None
 
     def format_count(self, iCnt):
         """Format the card count accorindly"""
-        if self.bEditable:
+        if self.bEditable and self.sEditColour:
             return '<i><span foreground="%s">%d</span></i>' % \
                     (self.sEditColour, iCnt)
         else:
