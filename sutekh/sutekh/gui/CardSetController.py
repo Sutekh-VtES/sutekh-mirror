@@ -70,6 +70,8 @@ class CardSetController(object):
            When the parent changes to or from none, we also update the menus
            and the parent card shown view.
            """
+        # pylint: disable-msg=E1101
+        # Pyprotocols confuses pylint
         if oCardSet.id == self.__oPhysCardSet.id and \
                 dChanges.has_key('parentID'):
             # This card set's parent is changing
@@ -115,12 +117,13 @@ class CardSetController(object):
 
            Needed if child card sets are deleted, for instance.
            """
+        # pylint: disable-msg=E1101
+        # Pyprotocols confuses pylint
         if oCardSet.parent and oCardSet.parent.id == \
                 self.__oPhysCardSet.id and oCardSet.inuse and \
                 self.model.changes_with_children():
             # inuse child card set going, so we need to reload
             self._oFrame.queue_reload()
-            pass
         if self.__oPhysCardSet.parent and self.model.changes_with_siblings() \
                 and oCardSet.parent and oCardSet.inuse and \
                 oCardSet.parent.id == self.__oPhysCardSet.parent.id:
@@ -281,7 +284,6 @@ class CardSetController(object):
         """Run the dialog to update the card set properties"""
         # pylint: disable-msg=E1101
         # pyprotocols confuses pylint
-        oOldParent = self.__oPhysCardSet.parent
         oProp = CreateCardSetDialog(self._oMainWindow,
                 oCardSet=self.__oPhysCardSet)
         oProp.run()

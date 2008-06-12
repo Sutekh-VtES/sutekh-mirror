@@ -13,7 +13,7 @@ from sutekh.core.Filters import FilterAndBox, NullFilter, SpecificCardFilter, \
 from sutekh.core.SutekhObjects import PhysicalCard, IExpansion, \
         MapPhysicalCardToPhysicalCardSet, IAbstractCard, IPhysicalCard, \
         IPhysicalCardSet, PhysicalCardSet
-from sutekh.gui.CardListModel import CardListModel
+from sutekh.gui.CardListModel import CardListModel, norm_path
 
 # pylint: disable-msg=C0103
 # We break out usual convention here
@@ -862,6 +862,8 @@ class CardSetCardListModel(CardListModel):
             sCardName = self.get_name_from_iter(self.get_iter(oPath))
             oFilter = SpecificCardFilter(sCardName)
             oCardIter = self.get_card_iterator(oFilter)
+            # pylint: disable-msg=E1101
+            # Pyprotocols confuses pylint
             for oCard in oCardIter:
                 oPhysCard = IPhysicalCard(oCard)
                 if oPhysCard.expansion:
