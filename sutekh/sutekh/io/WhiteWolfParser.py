@@ -283,7 +283,6 @@ class CardDict(dict):
         if self.has_key('level'):
             self['name'] = self._add_level_to_name(self['name'], self['level'])
 
-        #sLogName = self['name'].encode('ascii', 'xmlcharrefreplace')
         self.oLogger.info('Card: %s', self['name'])
 
         oCard = self._make_card(self['name'])
