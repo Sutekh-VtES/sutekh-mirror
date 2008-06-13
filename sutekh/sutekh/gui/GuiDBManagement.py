@@ -38,12 +38,11 @@ def read_ww_rulings(oRulings, oProgressDialog, oLogHandler):
     read_rulings(oRulings, oLogHandler)
     oProgressDialog.set_complete()
 
-def read_ww_lists_into_db(aCLFile, oRulingsFile, oProgressDialog, oConn):
+def read_ww_lists_into_db(aCLFile, oRulingsFile, oProgressDialog):
     """Read WW card list and possibly rulings into the given database"""
-    refresh_tables(aObjectList, oConn)
+    refresh_tables(aObjectList, sqlhub.processConnection)
     oProgressDialog.reset()
     # WhiteWolf Parser uses sqlhub connection
-    sqlhub.processConnection = oConn
     oLogHandler = SutekhHTMLLogHandler()
     oLogHandler.set_dialog(oProgressDialog)
     read_cardlist(aCLFile, oProgressDialog, oLogHandler)
@@ -140,11 +139,12 @@ def refresh_ww_card_list(oWin):
             return False
     oOldConn = sqlhub.processConnection
     oTempConn = connectionForURI("sqlite:///:memory:")
-    read_ww_lists_into_db(aCLFile, oRulingsFile, oProgressDialog,
-            oTempConn)
+    sqlhub.processConnection = oTempConn
+    read_ww_lists_into_db(aCLFile, oRulingsFile, oProgressDialog)
     # Refresh abstract card view for card lookups
     oLogHandler = SutekhCountLogHandler()
     oLogHandler.set_dialog(oProgressDialog)
+    sqlhub.processConnection = oOldConn
     if not copy_to_new_db(oOldConn, oTempConn, oWin, oProgressDialog,
             oLogHandler):
         oProgressDialog.destroy()
