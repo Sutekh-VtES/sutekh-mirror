@@ -348,6 +348,18 @@ class CardSetCardListModel(CardListModel):
             sName = self.get_name_from_iter(self.iter_parent(oIter))
         return sName
 
+    def _init_abs(self, dAbsCards, oAbsCard):
+        """Initialize the entry for oAbsCard in dAbsCards"""
+        if oAbsCard not in dAbsCards:
+            dExpanInfo = {}
+            if self.bEditable:
+                # include all expansions when list is editable
+                for oRarityPair in oAbsCard.rarity:
+                    dExpanInfo[oRarityPair.expansion] = 0
+                dExpanInfo[None] = 0
+            dAbsCards[oAbsCard] = {'count' : 0, 'expansions' : dExpanInfo,
+                                   'card sets' : {}, 'parent' : {}}
+
     def grouped_card_iter(self, oCardIter):
         """
         Handles the differences in the way AbstractCards and PhysicalCards
@@ -401,8 +413,7 @@ class CardSetCardListModel(CardListModel):
             for oCard in oExtraCardIter:
                 oAbsCard = IAbstractCard(oCard)
                 oPhysCard = IPhysicalCard(oCard)
-                dAbsCards.setdefault(oAbsCard, {'count' : 0, 'expansions' : {},
-                    'card sets' : {}, 'parent' : {}})
+                self._init_abs(dAbsCards, oAbsCard)
                 dAbsCards[oAbsCard]['expansions'].setdefault(
                         oPhysCard.expansion, 0)
                 dExpanInfo = dAbsCards[oAbsCard]['expansions']
@@ -419,8 +430,7 @@ class CardSetCardListModel(CardListModel):
             oPhysCard = IPhysicalCard(oCard)
             oAbsCard = IAbstractCard(oPhysCard)
             aAbsCards.append(oAbsCard)
-            dAbsCards.setdefault(oAbsCard, {'count' : 0, 'expansions' : {},
-                'card sets' : {}, 'parent' : {}})
+            self._init_abs(dAbsCards, oAbsCard)
             dAbsCards[oAbsCard]['count'] += 1
             dChildInfo = dAbsCards[oAbsCard]['card sets']
             dExpanInfo = dAbsCards[oAbsCard]['expansions']
