@@ -1,7 +1,28 @@
+13 June 2008
+ * Add support for Blood Shadowed Court. Since this is not in the published
+   data, clone the information from Cam Ed.
+ * Ensure that importing a card set from file doesn't break parent-child
+   relationships unless loops are introduced
+
+12 June 2008
+ * Unify card set deletion code. Ensure that children of a deleted card set
+   are reparented before the card set is removed.
+ * Don't repeatedly determine the editable colour hint
+ * Rework drag-n-drop code to work better with the new card display modes
+
+11 June 2008
+ * Fix some issues with restoring from backup changing the card set ids
+ * Remove card sets that were not in a restored backup
+ * Add queued_reload methods so that changing the card set relationships can
+   trigger reloads across all affected views
+
+10 June 2008
+ * Start reworking the signal handling
+
 09 June 2008
  * Add Banned tab to Analyze Deck Plugin
  * Fix bug with GuiCardLookup treating valid card + expansions combinations
-   as ivalid if any combination listed for the card is invalid
+   as invalid if any combination listed for the card is invalid
 
 08 June 2008
  * Fix bugs breaking importing from ELDB html files

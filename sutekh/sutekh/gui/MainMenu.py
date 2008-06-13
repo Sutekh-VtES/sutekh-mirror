@@ -10,13 +10,15 @@
 import gtk
 from sqlobject import sqlhub
 from sutekh.core.CardLookup import LookupFailed
+from sutekh.core.SutekhObjects import IPhysicalCardSet
 from sutekh.gui.SutekhDialog import do_complaint_error, do_complaint_warning
 from sutekh.gui.SutekhFileWidget import ImportDialog
 from sutekh.gui.GuiDBManagement import refresh_ww_card_list
+from sutekh.gui.CardSetManagementController import reparent_card_set
 from sutekh.io.XmlFileHandling import PhysicalCardXmlFile, \
         PhysicalCardSetXmlFile, AbstractCardSetXmlFile
 from sutekh.io.IdentifyXMLFile import IdentifyXMLFile
-from sutekh.SutekhUtility import delete_physical_card_set
+from sutekh.SutekhUtility import delete_physical_card_set, find_children
 from sutekh.gui.SutekhMenu import SutekhMenu
 
 class MainMenu(SutekhMenu):
@@ -235,6 +237,7 @@ class MainMenu(SutekhMenu):
         if sFileName is not None:
             oIdParser = IdentifyXMLFile()
             oIdParser.id_file(sFileName)
+            aChildren = []
             if oIdParser.type == 'PhysicalCardSet' or \
                     oIdParser.type == 'AbstractCardSet' or \
                     oIdParser.type == 'PhysicalCard':
@@ -245,7 +248,9 @@ class MainMenu(SutekhMenu):
                         return
                     else:
                         # Delete the card set
-                        # FIXME: we need to make sure we do the right
+                        oCS = IPhysicalCardSet(oIdParser.name)
+                        aChildren = find_children(oCS)
+                        # we need to make sure we do the right
                         # thing for any children of the card set.
                         # delete_physical_card_set will reparent them,
                         # but we need to be able to re-reparent them to
@@ -271,6 +276,12 @@ class MainMenu(SutekhMenu):
                         sMsg = "The following warnings were reported:\n%s" % \
                                 "\n".join(aMessages)
                         do_complaint_warning(sMsg)
+                    # Reparent any children
+                    oCS = IPhysicalCardSet(oIdParser.name)
+                    # We worry about loops, since the recreated card set
+                    # may not have the same parent as before
+                    for oChildCS in aChildren:
+                        reparent_card_set(oChildCS, oCS)
                     self._oMainWindow.replace_with_physical_card_set(
                             oIdParser.name, oFrame)
                 except LookupFailed:

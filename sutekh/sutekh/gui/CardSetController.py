@@ -18,8 +18,7 @@ from sutekh.core.SutekhObjects import IPhysicalCardSet, PhysicalCardSet, \
         AbstractCard, PhysicalCard, MapPhysicalCardToPhysicalCardSet, \
         IExpansion, Expansion
 from sutekh.gui.EditAnnotationsDialog import EditAnnotationsDialog
-from sutekh.SutekhUtility import delete_physical_card_set, find_children
-from sutekh.gui.SutekhDialog import do_complaint_warning
+from sutekh.SutekhUtility import delete_physical_card_set
 
 class CardSetController(object):
     """Controller class for the Card Sets."""
@@ -104,7 +103,7 @@ class CardSetController(object):
             if dChanges.has_key('ParentID') and oCardSet.inuse:
                 # Possibling acquiring or losing inuse sibling
                 if (dChanges['ParentID'] == self.__oPhysCardSet.parent.id) or \
-                        (oCardSet.parent and oCardSet.parent.id == 
+                        (oCardSet.parent and oCardSet.parent.id ==
                                 self.__oPhysCardSet.parent.id):
                     # Reload if needed
                     self._oFrame.queue_reload()
