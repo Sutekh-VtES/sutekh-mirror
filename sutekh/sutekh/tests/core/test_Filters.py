@@ -18,8 +18,7 @@ class FilterTests(SutekhTest):
     """Test class for testing Sutekh Filters"""
     aExpectedCards = test_WhiteWolfParser.WhiteWolfParserTests.aExpectedCards
 
-    @staticmethod
-    def _physical_test(tTest):
+    def _physical_test(self, tTest):
         """Convert the tuple describing the test as a filter and a list of
            card names and optional expansions into the correct
            filter on the physical card list and a list of expected
@@ -52,10 +51,10 @@ class FilterTests(SutekhTest):
                 try:
                     aPhysicalCards.append(IPhysicalCard((oAbs, oExp)))
                 except SQLObjectNotFound:
-                    raise RuntimeError(
-                            "Missing physical card %s from expansion %s" \
-                            % (oAbs.name, oExp.name) \
-                          )
+                    self.fail(
+                        "Missing physical card %s from expansion %s"
+                        % (oAbs.name, oExp.name)
+                    )
 
         oFullFilter = Filters.FilterAndBox([Filters.PhysicalCardFilter(),
                                             oFilter])
