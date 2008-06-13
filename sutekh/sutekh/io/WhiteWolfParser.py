@@ -85,8 +85,8 @@ class CardDict(dict):
     oDispCard = re.compile(r'\[[^\]]+\]$')
 
     def __init__(self, oLogger):
-        self.oLogger = oLogger
         super(CardDict, self).__init__()
+        self.oLogger = oLogger
         self._oMaker = SutekhObjectMaker()
 
     def _parse_text(self):
