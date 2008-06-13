@@ -304,6 +304,10 @@ class MultiPaneWindow(gtk.Window):
         for oPane in aToLoopOver:
             oPane.update_to_new_db()
 
+    def clear_cache(self):
+        """Remove the cached set of objects, for card list reloads, etc."""
+        del self.__oSutekhObjectCache
+
     def get_editable_panes(self):
         """Get a list of panes, which are currently editable.
 

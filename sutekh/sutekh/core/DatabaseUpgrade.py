@@ -858,6 +858,7 @@ def copy_database(oOrigConn, oDestConnn, oLogHandler=None):
        """
     # Not checking versions probably should be fixed
     # Copy tables needed before we can copy AbstractCard
+    flush_cache()
     oVer = DatabaseVersion()
     oVer.expire_cache()
     oLogger = Logger('copy DB')
@@ -904,7 +905,8 @@ def copy_database(oOrigConn, oDestConnn, oLogHandler=None):
             oTrans.cache.clear()
             if not bPassLogger:
                 oLogger.info('%s copied' % sName)
-    flush_cache() # Clear out cache related joins and such
+    flush_cache() 
+    # Clear out cache related joins and such
     return bRes, aMessages
 
 def make_card_set_holder(oCardSet, oOrigConn):

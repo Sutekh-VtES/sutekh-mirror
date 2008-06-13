@@ -678,8 +678,8 @@ class PhysicalCardAdapter(object):
 # Flushing
 
 def flush_cache():
-    # Flush all the object caches - needed before importing new card lists
-    # and such
+    """Flush all the object caches - needed before importing new card lists
+       and such"""
     for cAdaptor in [ ExpansionAdapter, RarityAdapter, DisciplineAdapter,
                       ClanAdapter, CardTypeAdapter, SectAdaptor, TitleAdapter,
                       VirtueAdapter, CreedAdapter, DisciplinePairAdapter,
@@ -690,7 +690,15 @@ def flush_cache():
         if type(oJoin) is SOCachedRelatedJoin:
             oJoin.flush_cache()
 
+def flush_specific_join(oClass):
+    """Flush the cached joins involving the given class"""
+    for oJoin in AbstractCard.sqlmeta.joins:
+        if isinstance(oJoin, SOCachedRelatedJoin) and \
+                oJoin.otherClass is oClass:
+            oJoin.flush_cache()
+
 def init_cache():
+    """Initiliase the cached join tables."""
     for oJoin in AbstractCard.sqlmeta.joins:
         if type(oJoin) is SOCachedRelatedJoin:
             oJoin.init_cache()

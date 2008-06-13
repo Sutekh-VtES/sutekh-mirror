@@ -152,6 +152,7 @@ def refresh_ww_card_list(oWin):
         return True # Force refresh
     # OK, update complete, copy back from oTempConn
     sqlhub.processConnection = oOldConn
+    oWin.clear_cache() # Don't hold old copies
     oProgressDialog.reset()
     oProgressDialog.set_description("Finalizing import")
     oProgressDialog.show()
@@ -168,8 +169,6 @@ def refresh_ww_card_list(oWin):
         sMesg += "Everything seems to have gone OK"
         do_complaint(sMesg, gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, True)
     oProgressDialog.destroy()
-    # Reinit the cache
-    init_cache()
     oWin.update_to_new_db()
     oWin.restore_editable_panes(aEditable)
     return True
