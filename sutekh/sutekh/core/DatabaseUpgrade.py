@@ -19,7 +19,7 @@ from logging import Logger
 from sutekh.core.SutekhObjects import PhysicalCard, AbstractCard, \
         PhysicalCardSet, Expansion, Clan, Virtue, Discipline, Rarity, \
         RarityPair, CardType, Ruling, aObjectList, DisciplinePair, Creed, \
-        Sect, Title
+        Sect, Title, flush_cache
 from sutekh.core.CardSetHolder import CachedCardSetHolder
 from sutekh.SutekhUtility import refresh_tables
 from sutekh.core.DatabaseVersion import DatabaseVersion
@@ -904,6 +904,7 @@ def copy_database(oOrigConn, oDestConnn, oLogHandler=None):
             oTrans.cache.clear()
             if not bPassLogger:
                 oLogger.info('%s copied' % sName)
+    flush_cache() # Clear out cache related joins and such
     return bRes, aMessages
 
 def make_card_set_holder(oCardSet, oOrigConn):

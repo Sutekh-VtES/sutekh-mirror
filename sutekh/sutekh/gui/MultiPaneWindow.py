@@ -297,6 +297,8 @@ class MultiPaneWindow(gtk.Window):
            cardlist, since card sets with children are always created
            before there children are added.
            """
+        # Reset the lookup cache holder
+        self.__oSutekhObjectCache = SutekhObjectCache()
         aToLoopOver = self.dOpenFrames.keys()
         # We may close frames here, so loop over a copy of the list
         for oPane in aToLoopOver:

@@ -19,7 +19,8 @@ from sutekh.gui.SutekhDialog import do_complaint_buttons, do_complaint_error, \
         do_complaint, do_complaint_warning
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
 from sutekh.io.WwFile import WwFile
-from sutekh.core.SutekhObjects import aObjectList, PhysicalCardSet
+from sutekh.core.SutekhObjects import aObjectList, PhysicalCardSet, \
+        init_cache
 from sutekh.SutekhUtility import refresh_tables, read_rulings, \
         read_white_wolf_list
 
@@ -167,6 +168,8 @@ def refresh_ww_card_list(oWin):
         sMesg += "Everything seems to have gone OK"
         do_complaint(sMesg, gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, True)
     oProgressDialog.destroy()
+    # Reinit the cache
+    init_cache()
     oWin.update_to_new_db()
     oWin.restore_editable_panes(aEditable)
     return True
