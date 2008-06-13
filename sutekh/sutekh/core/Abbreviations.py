@@ -174,6 +174,7 @@ class Expansions(AbbreviationLookup):
         'Ancient Hearts' : ['AH'],
         'Blackhand' : ['BH'],
         'Bloodlines' : ['BL'],
+        'Blood Shadowed Court' : ['BSC'],
         'Camarilla Edition' : ['CE'],
         'Dark Sovereigns' : ['DS'],
         'Final Nights' : ['FN'],
