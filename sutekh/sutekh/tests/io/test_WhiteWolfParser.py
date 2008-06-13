@@ -7,7 +7,9 @@
 """Test the white wolf card reader"""
 
 from sutekh.tests.TestCore import SutekhTest
-from sutekh.core.SutekhObjects import AbstractCard, IAbstractCard
+from sutekh.core.SutekhObjects import AbstractCard, IAbstractCard, \
+                                      IPhysicalCard
+from sqlobject import SQLObjectNotFound
 import unittest
 
 class WhiteWolfParserTests(SutekhTest):
@@ -65,6 +67,18 @@ class WhiteWolfParserTests(SutekhTest):
         self.assertEqual(oDob.life, None)
         self.assertEqual(oDob.costtype, None)
         self.assertEqual(oDob.level, None)
+
+        # Check Abstract and Physical expansions match
+        for oAbs in AbstractCard.select():
+            aExps = [oP.expansion for oP in oAbs.rarity]
+            for oExp in aExps:
+                try:
+                    oP = IPhysicalCard((oAbs,oExp))
+                except SQLObjectNotFound:
+                    self.fail(
+                        "Missing physical card %s from expansion %s"
+                        % (oAbs.name, oExp.name)
+                    )
 
         # Things still to check:
         #discipline
