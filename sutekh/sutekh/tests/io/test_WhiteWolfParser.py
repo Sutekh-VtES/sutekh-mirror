@@ -23,6 +23,7 @@ class WhiteWolfParserTests(SutekhTest):
         u"Abbot", u"Abd al-Rashid", u"Abdelsobek",
         u"Abebe", u"Abjure", u"Ablative Skin",
         u"Abombwe", u"L\xe1z\xe1r Dobrescu",
+        u"Yvette, The Hopeless"
     ]
 
     def test_basic(self):

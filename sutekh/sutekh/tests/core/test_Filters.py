@@ -11,6 +11,7 @@ from sutekh.tests.io import test_WhiteWolfParser
 from sutekh.core.SutekhObjects import AbstractCard, IAbstractCard, \
         PhysicalCard, IPhysicalCard, Expansion, IExpansion
 from sutekh.core import Filters
+from sqlobject import SQLObjectNotFound
 import unittest
 
 class FilterTests(SutekhTest):
@@ -45,9 +46,16 @@ class FilterTests(SutekhTest):
             if None in aAllowedExpansions:
                 aPhysicalCards.append(IPhysicalCard((oAbs, None)))
 
-            aPhysicalCards.extend([IPhysicalCard((oAbs, oExp)) \
-                                   for oExp in aExps \
-                                   if oExp in aAllowedExpansions])
+            for oExp in aExps:
+                if not oExp in aAllowedExpansions:
+                    continue
+                try:
+                    aPhysicalCards.append(IPhysicalCard((oAbs, oExp)))
+                except SQLObjectNotFound:
+                    raise RuntimeError(
+                            "Missing physical card %s from expansion %s" \
+                            % (oAbs.name, oExp.name) \
+                          )
 
         oFullFilter = Filters.FilterAndBox([Filters.PhysicalCardFilter(),
                                             oFilter])

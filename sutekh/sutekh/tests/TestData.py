@@ -182,6 +182,19 @@ TEST_CARD_LIST = """
 </table>
 </p>
 
+<p>
+<a name="Yvette_The_Hopeless"><span class="cardname">Yvette, The Hopeless</span></a>
+<span class="exp">[CE:V/PTo]</span><br />
+<table border=0 cellpadding=0 cellspacing=0><tr><td width=1><span class="key">Cardtype:</span> </td><td>Vampire<br /></td></tr>
+<tr><td width=1><span class="key">Clan:</span> </td><td>Toreador<br /></td></tr>
+<tr><td width=1><span class="key">Group:</span> </td><td>3<br /></td></tr>
+<tr><td width=1><span class="key">Capacity:</span> </td><td>3<br /></td></tr>
+<tr><td width=1><span class="key">Discipline:</span> </td><td>aus cel<br /></td></tr>
+<tr><td colspan=2><b>Camarilla.</b><br />
+<tr><td width=1><span class="key">Artist:</span> </td><td>Leif Jones<br /></td></tr>
+</table>
+</p>
+
 </td></tr>
 </table></body></html>
 """
