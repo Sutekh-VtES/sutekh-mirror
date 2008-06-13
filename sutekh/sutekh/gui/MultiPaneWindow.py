@@ -389,7 +389,7 @@ class MultiPaneWindow(gtk.Window):
             self.__oMenu.del_pane_set_sensitive(False)
         # Enable / disable the menu's
         for oFrame in self.dOpenFrames:
-            if not hasattr(oFrame,'menu'):
+            if not hasattr(oFrame, 'menu'):
                 continue
             elif self._oFocussed == oFrame:
                 if hasattr(oFrame.menu, 'activate_accels'):

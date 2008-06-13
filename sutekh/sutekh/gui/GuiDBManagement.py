@@ -19,8 +19,7 @@ from sutekh.gui.SutekhDialog import do_complaint_buttons, do_complaint_error, \
         do_complaint, do_complaint_warning
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
 from sutekh.io.WwFile import WwFile
-from sutekh.core.SutekhObjects import aObjectList, PhysicalCardSet, \
-        init_cache
+from sutekh.core.SutekhObjects import aObjectList, PhysicalCardSet
 from sutekh.SutekhUtility import refresh_tables, read_rulings, \
         read_white_wolf_list
 
@@ -83,8 +82,7 @@ def initialize_db(oParent):
         aCLFile, oRulingsFile, sIgnore = _get_names(oParent)
         if aCLFile is not None:
             oProgressDialog = ProgressDialog()
-            read_ww_lists_into_db(aCLFile, oRulingsFile, oProgressDialog,
-                    sqlhub.processConnection)
+            read_ww_lists_into_db(aCLFile, oRulingsFile, oProgressDialog)
             oProgressDialog.destroy()
         else:
             return False
