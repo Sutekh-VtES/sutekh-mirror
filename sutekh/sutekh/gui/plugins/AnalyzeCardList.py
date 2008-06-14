@@ -44,9 +44,17 @@ def _lookup_discipline(sKey, dDisciplines):
     """Return the object with the fullname sKey"""
     return [x for x in dDisciplines if sKey == x.fullname][0]
 
-def _disc_sort_key(oTuple):
-    """Ensure we sort the disciplines or virtues on the right key"""
-    return (oTuple[1][1], oTuple[0].fullname)
+def _disc_sort_cmp(oTuple1, oTuple2):
+    """Sort disciplines by reverse number, then reverse superior number,
+       then alphabetically by name"""
+    # Check numbers force, reversing cmp's results
+    iCmp = cmp(oTuple1[1][1], oTuple2[1][1])
+    if iCmp != 0:
+        return -iCmp
+    iCmp = cmp(oTuple1[1][2], oTuple2[1][2])
+    if iCmp != 0:
+        return -iCmp
+    return cmp(oTuple1[0].fullname, oTuple2[0].fullname)
 
 def _format_card_line(sString, sTrailer, iNum, iNumberLibrary):
     """Format card lines for notebook"""
@@ -584,7 +592,7 @@ class AnalyzeCardList(CardListPlugin):
         sVampText += '\n<span foreground = "blue">Disciplines</span>\n'
         for oDisc, aInfo in sorted(
                 self.dCryptStats['crypt discipline'].iteritems(),
-                key=_disc_sort_key, reverse=True):
+                cmp=_disc_sort_cmp):
             if aInfo[0] == 'discipline':
                 sVampText += "%(infcount)d Vampires with %(disc)s %(iper)s," \
                         " %(supcount)d at Superior %(sper)s\n" % {
@@ -631,7 +639,7 @@ class AnalyzeCardList(CardListPlugin):
                     oCreed.name, _percentage(iCount, self.iCryptSize, "Crypt"))
         for oVirtue, aInfo in sorted(
                 self.dCryptStats['crypt discipline'].iteritems(),
-                key=_disc_sort_key, reverse=True):
+                cmp=_disc_sort_cmp):
             if aInfo[0] == 'virtue':
                 sImbuedText += "%d Imbued with %s %s\n" % (aInfo[1],
                         oVirtue.fullname, _percentage(aInfo[1],
@@ -852,8 +860,7 @@ class AnalyzeCardList(CardListPlugin):
                 "</span>\n"
         # Discipline analysis
         aSortedDiscs = [x[0].fullname for x in sorted(
-            self.dCryptStats['crypt discipline'].items(), key=_disc_sort_key,
-            reverse=True)]
+            self.dCryptStats['crypt discipline'].items(), cmp=_disc_sort_cmp)]
         oMainLabel.set_markup(sHappyFamilyText)
         oDiscSelect = DisciplineNumberSelect(aSortedDiscs, oDlg)
         oHFVBox.pack_start(oDiscSelect, False, False)
