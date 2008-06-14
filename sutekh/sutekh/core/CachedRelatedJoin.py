@@ -61,7 +61,7 @@ class SOCachedRelatedJoin(joins.SORelatedJoin):
         """Invalidate a cache item and its equivalent in the other join."""
         if oInst in self._dJoinCache:
             del self._dJoinCache[oInst]
-        if self._bOtherJoinCached:
+        if bDoOther and self._bOtherJoinCached:
             self._find_other_join()
             self._oOtherJoin.invalidate_cache_item(oOther, oInst,
                                                    bDoOther=False)
