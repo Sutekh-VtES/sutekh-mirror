@@ -828,6 +828,9 @@ class AnalyzeCardList(CardListPlugin):
         oHFVBox.pack_start(oMainLabel)
         # Build up Text
         sHappyFamilyText = "\t\t<b>Happy Families Analysis :</b>\n"
+        sHappyFamilyText += "\t<small><i>Happy Families Analysis from the " \
+                "Gangrel antitribu newsletter, Jan 2000, by Legbiter" \
+                "</i></small>\n"
         if self.dTypeNumbers['Imbued'] > 0:
             sHappyFamilyText += '\n<span foreground = "red">This is not' \
                     ' optimised for Imbued, and treats them as small ' \
@@ -899,11 +902,10 @@ class AnalyzeCardList(CardListPlugin):
         fDemon = float(self.iCryptSize)
         dCryptDiscs = {}
         for sDisc in aDiscsToUse:
-            if self.dLibraryStats['discipline'].has_key(sDisc):
-                fDemon += self.dLibraryStats['discipline'][sDisc]
             oDisc = _lookup_discipline(sDisc,
                     self.dCryptStats['crypt discipline'])
             dCryptDiscs[sDisc] = self.dCryptStats['crypt discipline'][oDisc][1]
+            fDemon += dCryptDiscs[sDisc]
         iHFNoDiscipline = int((iNonMasters * self.iCryptSize / fDemon ))
         iDiff = iNonMasters - iHFNoDiscipline
         dDiscNumbers = {}
@@ -915,7 +917,8 @@ class AnalyzeCardList(CardListPlugin):
             iHFNoDiscipline += iDiff # Shove rounding errors here
         sHappyFamilyText += "Number of Cards requiring No discipline : %s\n" \
                 % self.dLibraryStats['discipline']['No Discipline']
-        sHappyFamilyText += "Happy Families recommends %s : " % iHFNoDiscipline
+        sHappyFamilyText += "Happy Families recommends %d (%.1f %%): " % (
+                iHFNoDiscipline, (80 * self.iCryptSize / fDemon) )
         sHappyFamilyText += '<span foreground = "blue">Difference = ' \
                 '%s</span>\n\n' % abs(iHFNoDiscipline -
                         self.dLibraryStats['discipline']['No Discipline'])
@@ -931,7 +934,8 @@ class AnalyzeCardList(CardListPlugin):
                             'lib' : iLibNum,
                             'crypt' : dCryptDiscs[sDisc],
                             }
-            sHappyFamilyText += "Happy Families recommends %d : " % iHFNum
+            sHappyFamilyText += "Happy Families recommends %d (%.1f %%): " % (
+                    iHFNum, 80 * dCryptDiscs[sDisc] / fDemon)
             sHappyFamilyText += '<span foreground = "blue">Difference = ' \
                     '%d </span>\n' % abs(iHFNum - iLibNum)
         return sHappyFamilyText
