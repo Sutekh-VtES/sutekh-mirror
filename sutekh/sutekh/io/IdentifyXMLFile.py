@@ -12,12 +12,13 @@ AbstractCardSet (the last is to support legacy backups).
 
 from sutekh.core.SutekhObjects import PhysicalCardSet
 from sqlobject import SQLObjectNotFound
+# pylint: disable-msg=E0611, F0401
+# pylint doesn't like the handling of the differences between 2.4 and 2.5
 try:
-    # pylint: disable-msg=E0611, F0401
-    # xml.etree is a python2.5 thing
     from xml.etree.ElementTree import parse, fromstring, ElementTree
 except ImportError:
     from elementtree.ElementTree import parse, fromstring, ElementTree
+# pylint: enable-msg=E0611, F0401
 from xml.parsers.expat import ExpatError
 
 class IdentifyXMLFile(object):
@@ -29,12 +30,16 @@ class IdentifyXMLFile(object):
     def __init__(self):
         self._clear_id_results()
 
+    # pylint: disable-msg=W0201
+    # we call this form __init__, so it's fine
     def _clear_id_results(self):
         """Reset identifier state."""
         self._bSetExists = False
         self._bParentExists = False
         self._sType = 'Unknown'
         self._sName = None
+
+    # pylint: enable-msg=W0201
 
     # pylint: disable-msg=W0212
     # We allow access via these properties
