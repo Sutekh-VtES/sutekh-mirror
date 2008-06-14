@@ -27,11 +27,14 @@ class IdentifyXMLFile(object):
        to see which xml file it matches.
        """
     def __init__(self):
-        self.oTree = None
+        self._clear_id_results()
+
+    def _clear_id_results(self):
+        """Reset identifier state."""
         self._bSetExists = False
         self._bParentExists = False
-        self._sType = ''
-        self._sName = ''
+        self._sType = 'Unknown'
+        self._sName = None
 
     # pylint: disable-msg=W0212
     # We allow access via these properties
@@ -45,14 +48,10 @@ class IdentifyXMLFile(object):
             'data')
     # pylint: enable-msg=W0212
 
-    def identify_tree(self):
+    def identify_tree(self, oTree):
         """Process the ElementTree to identify the XML file type."""
-        oRoot = self.oTree.getroot()
-        # Reset state
-        self._sType = 'Unknown'
-        self._sName = None
-        self._bParentExists = False
-        self._bSetExists = False
+        self._clear_id_results()
+        oRoot = oTree.getroot()
         # pylint: disable-msg=E1101
         # SQLObject classes confuse pylint
         if oRoot.tag == 'abstractcardset':
@@ -104,22 +103,25 @@ class IdentifyXMLFile(object):
     def parse(self, fIn):
         """Parse the file fIn into the ElementTree."""
         try:
-            self.oTree = parse(fIn)
+            oTree = parse(fIn)
         except ExpatError:
-            return ('Unknown', None, False) # Not an XML File
-        self.identify_tree()
+            self._clear_id_results() # Not an XML file
+            return
+        self.identify_tree(oTree)
 
     def parse_string(self, sIn):
         """Parse the string sIn into the ElementTree"""
         try:
-            self.oTree = ElementTree(fromstring(sIn))
+            oTree = ElementTree(fromstring(sIn))
         except ExpatError:
-            return ('Unknown', None, False) # Not an XML File
-        self.identify_tree()
+            self._clear_id_results() # Not an XML File
+            return
+        self.identify_tree(oTree)
 
     def id_file(self, sFileName):
         """Load the file sFileName, and try to identify it."""
         fIn = file(sFileName, 'rU')
-        tResult = self.parse(fIn)
-        fIn.close()
-        return tResult
+        try:
+            self.parse(fIn)
+        finally:
+            fIn.close()
