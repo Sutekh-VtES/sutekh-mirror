@@ -1,4 +1,4 @@
-# test_PhysicalCard.py
+# test_PhysicalCardParser.py
 # -*- coding: utf8 -*-
 # vim:fileencoding=utf8 ai ts=4 sts=4 et sw=4
 # Copyright 2008 Neil Muller <drnlmuller+sutekh@gmail.com>
@@ -9,7 +9,7 @@
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.tests.io import test_WhiteWolfParser
 from sutekh.core.SutekhObjects import IAbstractCard, IPhysicalCard, \
-                                      IPhysicalCardSet, PhysicalCardSet
+        IPhysicalCardSet, PhysicalCardSet
 from sutekh.io.PhysicalCardParser import PhysicalCardParser
 from sutekh.io.IdentifyXMLFile import IdentifyXMLFile
 import unittest

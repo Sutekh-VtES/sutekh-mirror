@@ -4,5 +4,5 @@
 # Copyright 2008 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
 
-"""This is the sutekh.io tests package"""
+"""This is the sutekh.gui tests package"""
 
