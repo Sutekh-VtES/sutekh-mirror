@@ -114,10 +114,20 @@ class FilterTests(SutekhTest):
                 u"Aeron", u"Alfred Benezri", u"Ambrogino Giovanni",
                 u"Angelica, The Canonicus", u"Bronwen",
                 u"L\xe1z\xe1r Dobrescu", u"Sha-Ennu"]),
-            # (Filters.TitleFilter('Bishop'), []),
-            # (Filters.MultiTitleFilter(['Bishop', 'Prince']), []),
-            # (Filters.CreedFilter('Judge'), []),
-            # (Filters.MultiCreedFilter(['Judge', 'Innocent']), []),
+            (Filters.TitleFilter('Bishop'), [u"Alfred Benezri"]),
+            (Filters.TitleFilter('Independent with 1 vote'),
+                [u"Ambrogino Giovanni"]),
+            (Filters.MultiTitleFilter(['Bishop', 'Prince']),
+                    [u"Alfred Benezri", u"Anson"]),
+            (Filters.MultiTitleFilter(['Magaji', 'Regent']),
+                    [u"Cesewayo", u"Kabede Maru", u"Sha-Ennu"]),
+            (Filters.MultiTitleFilter(['Primogen', 'Priscus', 'Cardinal']),
+                    [u"Akram", u"Angelica, The Canonicus", u"Bronwen"]),
+            (Filters.CreedFilter('Martyr'),
+                    [u'Anna "Dictatrix11" Suljic']),
+            (Filters.MultiCreedFilter(['Martyr', 'Innocent']),
+                    [u'Anna "Dictatrix11" Suljic',
+                        u'Inez "Nurse216" Villagrande']),
             (Filters.VirtueFilter('Redemption'), [u"Abjure",
                 u'Anna "Dictatrix11" Suljic']),
             #(Filters.MultiVirtueFilter(['Redemption', 'Judgement']),
@@ -136,6 +146,10 @@ class FilterTests(SutekhTest):
                 [u"Aaron Duggan, Cameron's Toady", u"Abombwe"]),
             (Filters.CostFilter(5), [u"AK-47"]),
             (Filters.MultiCostFilter([2, 5]), [u".44 Magnum", u"AK-47"]),
+            (Filters.LifeFilter(6), [u'Anna "Dictatrix11" Suljic',
+                u'Earl "Shaka74" Deams']),
+            (Filters.MultiLifeFilter([3, 6]), [u'Anna "Dictatrix11" Suljic',
+                u'Earl "Shaka74" Deams', u'Inez "Nurse216" Villagrande']),
             (Filters.CostTypeFilter('Pool'), [u".44 Magnum", u"AK-47",
                 u"Aaron's Feeding Razor"]),
             (Filters.CostTypeFilter('Blood'), []),
@@ -167,7 +181,6 @@ class FilterTests(SutekhTest):
         ]
 
         aPhysicalTests = [self._physical_test(tTest) for tTest in aTests]
-        # TODO: Put in some data for titles, creeds, virtues and life
 
         # Abstract Card Filtering Tests
         for oFilter, aExpectedNames in aTests:
@@ -191,8 +204,13 @@ class FilterTests(SutekhTest):
         self.assertEqual(Filters.MultiCardTypeFilter.get_values(), [u"Action",
             u"Combat", u"Equipment", u"Imbued", u"Master", u"Power",
             u"Reaction", u"Vampire"])
-        #self.assertEqual(Filters.MultiTitleFilter.get_values(), [])
-        #self.assertEqual(Filters.MultiCreedFilter.get_values(), [])
+        self.assertEqual(Filters.MultiTitleFilter.get_values(),
+                [u"Archbishop", u"Bishop", u"Cardinal",
+                    u"Independent with 1 vote", u"Inner Circle",
+                    u"Justicar", u"Magaji", u"Primogen",
+                    u"Prince", u"Priscus", u"Regent"])
+        self.assertEqual(Filters.MultiCreedFilter.get_values(),
+                [u"Innocent", u"Martyr", u"Visionary"])
         self.assertEqual(Filters.MultiVirtueFilter.get_values(),
                 [u"Innocence", u"Judgment", u"Martyrdom", u"Redemption",
                     u"Vision"])
