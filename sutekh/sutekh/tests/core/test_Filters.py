@@ -9,7 +9,8 @@
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.tests.io import test_WhiteWolfParser
 from sutekh.core.SutekhObjects import AbstractCard, IAbstractCard, \
-        PhysicalCard, IPhysicalCard, Expansion, IExpansion, PhysicalCardSet
+        PhysicalCard, IPhysicalCard, Expansion, IExpansion, PhysicalCardSet, \
+        MapPhysicalCardToPhysicalCardSet
 from sutekh.core import Filters
 from sqlobject import SQLObjectNotFound
 import unittest
@@ -60,6 +61,8 @@ class FilterTests(SutekhTest):
                                             oFilter])
 
         return oFullFilter, sorted(aPhysicalCards)
+
+
 
     # pylint: disable-msg=R0914
     # We don't really care about the number of local variables here
@@ -325,7 +328,35 @@ class FilterTests(SutekhTest):
             self.assertEqual(aCardSets, aExpectedSets, "Filter Object %s"
                     " failed. %s != %s." % (oFilter, aCardSets, aExpectedSets))
 
-        # TODO: Add tests for filters joined to physical card sets
+        aPCSandCardFilterTests = [
+                (Filters.PhysicalCardSetFilter('Test 1'),
+                    Filters.CardTypeFilter('Vampire'),
+                    [u"Alexandra", u"Sha-Ennu"]),
+                (Filters.PhysicalCardSetFilter('Test 1'),
+                    Filters.CardTypeFilter('Master'),
+                    [u"Abombwe"]),
+                (Filters.PhysicalCardSetFilter('Test 2'),
+                    Filters.CardTypeFilter('Equipment'),
+                    [u".44 Magnum", u"AK-47"]),
+                ]
+
+        for oPCSFilter, oFilter, aExpectedCards in aPCSandCardFilterTests:
+            # pylint: disable-msg=E1101
+            # pyprotocols confuses pylint
+            oFullFilter = Filters.FilterAndBox([oPCSFilter, oFilter])
+            aCSCards = [IAbstractCard(x).name for x in oFullFilter.select(
+                        MapPhysicalCardToPhysicalCardSet).distinct()]
+            self.assertEqual(aCSCards, aExpectedCards, "Filter Object %s"
+                    " failed. %s != %s." % (oFullFilter, aCSCards,
+                        aExpectedCards))
+
+        aPCSCardsInUse = list(Filters.PhysicalCardSetInUseFilter().select(
+                PhysicalCard).distinct())
+        aExpectedCards = list(aPCSs[2].cards)
+        self.assertEqual(aPCSCardsInUse, aExpectedCards, 'PhysicalCardSet In '
+                'Use Filter failed %s != %s' % (aPCSCardsInUse,
+                    aExpectedCards))
+
 
 if __name__ == "__main__":
     unittest.main()
