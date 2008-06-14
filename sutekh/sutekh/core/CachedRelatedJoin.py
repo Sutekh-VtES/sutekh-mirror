@@ -25,6 +25,19 @@ class SOCachedRelatedJoin(joins.SORelatedJoin):
     def __init__(self, *aArgs, **kwargs):
         super(SOCachedRelatedJoin, self).__init__(*aArgs, **kwargs)
         self._dJoinCache = {}
+        self._oOtherJoin = None
+        self._bOtherJoinCached = None
+
+    def _find_other_join(self):
+        """Locate the equivalent join on the other class."""
+        if self._oOtherJoin is None:
+            aJoins = [oJ for oJ in self.otherClass.sqlmeta.joins
+                        if oJ.otherClass is self.soClass]
+            assert len(aJoins) == 1
+            self._oOtherJoin = aJoins[0]
+
+            self._bOtherJoinCached = isinstance(self._oOtherJoin,
+                                                SOCachedRelatedJoin)
 
     def flush_cache(self):
         """Flush the contents of the cache."""
@@ -32,13 +45,10 @@ class SOCachedRelatedJoin(joins.SORelatedJoin):
 
     def init_cache(self):
         """Initialise the cache with the data from the database."""
-        aJoins = [oJ for oJ in self.otherClass.sqlmeta.joins if oJ.otherClass
-                is self.soClass]
-        assert len(aJoins) == 1
-        oOtherJoin = aJoins[0]
+        self._find_other_join()
 
         for oOther in self.otherClass.select():
-            for oInst in oOtherJoin.performJoin(oOther):
+            for oInst in self._oOtherJoin.performJoin(oOther):
                 self._dJoinCache.setdefault(oInst, [])
                 self._dJoinCache[oInst].append(oOther)
 
@@ -46,6 +56,15 @@ class SOCachedRelatedJoin(joins.SORelatedJoin):
         for oInst in self._dJoinCache:
             self._dJoinCache[oInst] = self._applyOrderBy(
                     self._dJoinCache[oInst], self.otherClass)
+
+    def invalidate_cache_item(self, oInst, oOther, bDoOther=True):
+        """Invalidate a cache item and its equivalent in the other join."""
+        if oInst in self._dJoinCache:
+            del self._dJoinCache[oInst]
+        if self._bOtherJoinCached:
+            self._find_other_join()
+            self._oOtherJoin.invalidate_cache_item(oOther, oInst,
+                                                   bDoOther=False)
 
     # pylint: disable-msg=C0103
     # Name must match SQLObject conventions
@@ -55,6 +74,16 @@ class SOCachedRelatedJoin(joins.SORelatedJoin):
             self._dJoinCache[oInst] = joins.SORelatedJoin.performJoin(self,
                     oInst)
         return self._dJoinCache[oInst]
+
+    def add(self, oInst, oOther):
+        """Add an item to the join."""
+        self.invalidate_cache_item(oInst, oOther)
+        super(SOCachedRelatedJoin, self).add(oInst, oOther)
+
+    def remove(self, oInst, oOther):
+        """Remove an item from the join."""
+        self.invalidate_cache_item(oInst, oOther)
+        super(SOCachedRelatedJoin, self).remove(oInst, oOther)
 
 class CachedRelatedJoin(joins.RelatedJoin):
     """Provide CacheRelatedJoin object to Sutekh"""
