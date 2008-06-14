@@ -24,7 +24,12 @@ class WhiteWolfParserTests(SutekhTest):
         u"Aaron's Feeding Razor", u"Abandoning the Flesh",
         u"Abbot", u"Abd al-Rashid", u"Abdelsobek",
         u"Abebe", u"Abjure", u"Ablative Skin",
-        u"Abombwe", u"L\xe1z\xe1r Dobrescu",
+        u"Abombwe", u"Aeron", u"Akram", u"Alexandra",
+        u"Alfred Benezri", u"Ambrogino Giovanni", u"Anastasz di Zagreb",
+        u"Angelica, The Canonicus", u'Anna "Dictatrix11" Suljic',
+        u"Anson", u"Bronwen", u"Cesewayo", u'Earl "Shaka74" Deams',
+        u"Gracis Nostinus", u'Inez "Nurse216" Villagrande',
+        u"Kabede Maru", u"L\xe1z\xe1r Dobrescu", u"Sha-Ennu",
         u"Yvette, The Hopeless"
     ]
 
@@ -70,10 +75,10 @@ class WhiteWolfParserTests(SutekhTest):
 
         # Check Abstract and Physical expansions match
         for oAbs in AbstractCard.select():
-            aExps = [oP.expansion for oP in oAbs.rarity]
+            aExps = [oPair.expansion for oPair in oAbs.rarity]
             for oExp in aExps:
                 try:
-                    oP = IPhysicalCard((oAbs,oExp))
+                    oPair = IPhysicalCard((oAbs, oExp))
                 except SQLObjectNotFound:
                     self.fail(
                         "Missing physical card %s from expansion %s"

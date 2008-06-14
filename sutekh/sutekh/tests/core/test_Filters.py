@@ -73,44 +73,64 @@ class FilterTests(SutekhTest):
             (Filters.MultiClanFilter(['Ravnos', 'Samedi']), [u"Abebe",
                 u"L\xe1z\xe1r Dobrescu"]),
             (Filters.DisciplineFilter('obf'), [u"Aaron Bathurst",
-                u"Abd al-Rashid", u"Abdelsobek", u"Abebe"]),
+                u"Abd al-Rashid", u"Abdelsobek", u"Abebe", u"Aeron",
+                u"Angelica, The Canonicus", u"Kabede Maru", u"Sha-Ennu"]),
             (Filters.MultiDisciplineFilter(['nec', 'qui']), [u"Abd al-Rashid",
-                u"Abdelsobek", u"Abebe"]),
-            (Filters.ExpansionFilter('NoR'), [u"Abjure"]),
+                u"Abdelsobek", u"Abebe", u"Akram", u"Ambrogino Giovanni",
+                u"Kabede Maru"]),
+            (Filters.ExpansionFilter('NoR'), [u"Abjure",
+                u'Anna "Dictatrix11" Suljic', u'Earl "Shaka74" Deams',
+                u'Inez "Nurse216" Villagrande']),
             (Filters.MultiExpansionFilter(['NoR', 'LoB']), [u".44 Magnum",
-                u"Abebe", u"Abjure", u"Abombwe"]),
+                u"Abebe", u"Abjure", u"Abombwe",
+                u'Anna "Dictatrix11" Suljic', u"Cesewayo",
+                u'Earl "Shaka74" Deams', u'Inez "Nurse216" Villagrande']),
             (Filters.ExpansionRarityFilter(('Sabbat', 'Rare')),
                 [u"Ablative Skin"]),
             (Filters.MultiExpansionRarityFilter([('Third', 'Uncommon'),
                 ('Jyhad', 'Rare')]), [u"Aaron's Feeding Razor", u"Abbot"]),
             (Filters.DisciplineLevelFilter(('cel', 'superior')),
-                [u"Abd al-Rashid"]),
+                [u"Abd al-Rashid", u"Akram", u"Alexandra", u"Anson",
+                    u"Bronwen", u"Cesewayo", u"Kabede Maru"]),
             (Filters.MultiDisciplineLevelFilter([('obt', 'inferior'),
                 ('pot', 'inferior'), ('obf', 'superior')]),
-                [u"Aaron Bathurst", u"Aaron Duggan, Cameron's Toady"]),
+                [u"Aaron Bathurst", u"Aaron Duggan, Cameron's Toady",
+                    u"Aeron", u"Akram", u"Bronwen", u"Kabede Maru"]),
             (Filters.MultiDisciplineLevelFilter(['obt with inferior',
                 'pot with inferior', 'obf with superior']),
-                [u"Aaron Bathurst", u"Aaron Duggan, Cameron's Toady"]),
+                [u"Aaron Bathurst", u"Aaron Duggan, Cameron's Toady",
+                    u"Aeron", u"Akram", u"Bronwen", u"Kabede Maru"]),
             (Filters.CardTypeFilter('Equipment'), [u".44 Magnum", u"AK-47",
                 u"Aaron's Feeding Razor"]),
             (Filters.MultiCardTypeFilter(['Power', 'Action']), [u"Abbot",
                 u"Abjure", u"Ablative Skin"]),
             (Filters.SectFilter('Sabbat'), [u"Aaron Bathurst",
-                u"Aaron Duggan, Cameron's Toady"]),
+                u"Aaron Duggan, Cameron's Toady", u"Aeron", u"Alfred Benezri",
+                u"Angelica, The Canonicus", u"Bronwen", u"Sha-Ennu"]),
             (Filters.MultiSectFilter(['Sabbat', 'Independent']),
-                [u"Aabbt Kindred", u"Aaron Bathurst",
-                    u"Aaron Duggan, Cameron's Toady", u"Abd al-Rashid",
-                    u"Abdelsobek", u"Abebe", u"L\xe1z\xe1r Dobrescu"]),
+                [u"Aabbt Kindred",
+                u"Aaron Bathurst", u"Aaron Duggan, Cameron's Toady",
+                u"Abd al-Rashid", u"Abdelsobek", u"Abebe",
+                u"Aeron", u"Alfred Benezri", u"Ambrogino Giovanni",
+                u"Angelica, The Canonicus", u"Bronwen",
+                u"L\xe1z\xe1r Dobrescu", u"Sha-Ennu"]),
             # (Filters.TitleFilter('Bishop'), []),
             # (Filters.MultiTitleFilter(['Bishop', 'Prince']), []),
             # (Filters.CreedFilter('Judge'), []),
             # (Filters.MultiCreedFilter(['Judge', 'Innocent']), []),
-            (Filters.VirtueFilter('Redemption'), [u"Abjure"]),
+            (Filters.VirtueFilter('Redemption'), [u"Abjure",
+                u'Anna "Dictatrix11" Suljic']),
             #(Filters.MultiVirtueFilter(['Redemption', 'Judgement']),
             #    [u"Abjure"]),
-            (Filters.GroupFilter(4), [u"Aaron Bathurst", u"Abebe"]),
+            (Filters.GroupFilter(4), [u"Aaron Bathurst", u"Abebe",
+                u'Anna "Dictatrix11" Suljic', u"Cesewayo",
+                u'Earl "Shaka74" Deams', u'Inez "Nurse216" Villagrande',
+                u"Sha-Ennu"]),
             (Filters.MultiGroupFilter([4, 5]), [u"Aaron Bathurst",
-                u"Abdelsobek", u"Abebe"]),
+                u"Abdelsobek", u"Abebe", u'Anna "Dictatrix11" Suljic',
+                u"Cesewayo", u'Earl "Shaka74" Deams',
+                u'Inez "Nurse216" Villagrande', u"Kabede Maru",
+                u"Sha-Ennu"]),
             (Filters.CapacityFilter(2), [u"Aaron Duggan, Cameron's Toady"]),
             (Filters.MultiCapacityFilter([2, 1]),
                 [u"Aaron Duggan, Cameron's Toady", u"Abombwe"]),
@@ -125,7 +145,8 @@ class FilterTests(SutekhTest):
             (Filters.MultiLifeFilter([4, 5]), []),
 
             # Other Filters
-            (Filters.CardTextFilter('strike'), [u".44 Magnum", u"AK-47"]),
+            (Filters.CardTextFilter('strike'), [u".44 Magnum", u"AK-47",
+                u"Aeron", u"Anastasz di Zagreb", u"Bronwen"]),
             (Filters.CardNameFilter(u'L\xe1z\xe1r'),
                 [u"L\xe1z\xe1r Dobrescu"]),
             (Filters.NullFilter(), self.aExpectedCards),
@@ -141,7 +162,8 @@ class FilterTests(SutekhTest):
                     u"Aaron's Feeding Razor", u"Abjure"]),
             (Filters.FilterNot(Filters.MultiCardTypeFilter(['Equipment',
                 'Vampire'])), [u"Abandoning the Flesh", u"Abbot", u"Abjure",
-                    u"Ablative Skin", u"Abombwe"]),
+                    u"Ablative Skin", u"Abombwe", u'Anna "Dictatrix11" Suljic',
+                    u'Earl "Shaka74" Deams', u'Inez "Nurse216" Villagrande']),
         ]
 
         aPhysicalTests = [self._physical_test(tTest) for tTest in aTests]
@@ -156,19 +178,24 @@ class FilterTests(SutekhTest):
 
         # Filter values Tests
         self.assertEqual(Filters.MultiClanFilter.get_values(), [u"Assamite",
-            u"Follower of Set", u"Lasombra", u"Nosferatu antitribu", u"Ravnos",
-            u"Samedi", u"Toreador"])
+            u"Brujah", u"Brujah antitribu", u"Follower of Set", u"Giovanni",
+            u"Lasombra", u"Nosferatu antitribu", u"Osebo", u"Pander",
+            u"Ravnos", u"Samedi", u"Toreador", u"Tremere", u"Tzimisce",
+            u"Ventrue"])
         self.assertEqual(Filters.MultiDisciplineFilter.get_values(),
-                [u"Auspex", u"Celerity", u"Dementation", u"Fortitude",
-                 u"Necromancy", u"Obfuscate", u"Obtenebration", u"Potence",
-                 u"Presence", u"Quietus", u"Serpentis", u"Thanatosis"])
+                [u"Abombwe", u"Animalism", u"Auspex", u"Celerity",
+                    u"Chimerstry", u"Dementation", u"Dominate", u"Fortitude",
+                    u"Necromancy", u"Obfuscate", u"Obtenebration", u"Potence",
+                    u"Presence", u"Protean", u"Quietus", u"Serpentis",
+                    u"Thaumaturgy", u"Thanatosis", u"Vicissitude"])
         self.assertEqual(Filters.MultiCardTypeFilter.get_values(), [u"Action",
-            u"Combat", u"Equipment", u"Master", u"Power", u"Reaction",
-            u"Vampire"])
-        self.assertEqual(Filters.MultiTitleFilter.get_values(), [])
-        self.assertEqual(Filters.MultiCreedFilter.get_values(), [])
+            u"Combat", u"Equipment", u"Imbued", u"Master", u"Power",
+            u"Reaction", u"Vampire"])
+        #self.assertEqual(Filters.MultiTitleFilter.get_values(), [])
+        #self.assertEqual(Filters.MultiCreedFilter.get_values(), [])
         self.assertEqual(Filters.MultiVirtueFilter.get_values(),
-                [u"Redemption"])
+                [u"Innocence", u"Judgment", u"Martyrdom", u"Redemption",
+                    u"Vision"])
 
         # Test the physical card filtering
         for oFilter, aExpectedCards in aPhysicalTests:
@@ -179,17 +206,17 @@ class FilterTests(SutekhTest):
         # test filtering on expansion
         aExpansionTests = [
                 (Filters.PhysicalExpansionFilter('Jyhad'),
-                    ['.44 Magnum', "Aaron's Feeding Razor"],
+                    ['.44 Magnum', "Aaron's Feeding Razor", u"Anson"],
                     ['Jyhad']),
                 (Filters.PhysicalExpansionFilter('LoB'),
-                    ['Abombwe','.44 Magnum', 'Abebe'],
+                    ['Abombwe','.44 Magnum', 'Abebe', u"Cesewayo"],
                     ['LoB']),
                 (Filters.PhysicalExpansionFilter(None),
                     self.aExpectedCards,
                     [None]),
                 (Filters.MultiPhysicalExpansionFilter(['LoB', 'LotN']),
-                    ['Abombwe','.44 Magnum', 'Abebe', 'AK-47', 'Abdelsobek'],
-                    ['LoB', 'LotN']),
+                    ['Abombwe','.44 Magnum', 'Abebe', 'AK-47', 'Abdelsobek',
+                        u"Cesewayo", u"Kabede Maru"], ['LoB', 'LotN']),
                 (Filters.MultiPhysicalExpansionFilter(
                     ['  Unspecified Expansion', 'VTES']),
                     self.aExpectedCards,
@@ -204,11 +231,14 @@ class FilterTests(SutekhTest):
 
         aNumberTests = [
                 (Filters.MultiPhysicalCardCountFilter(['3']),
-                    ["Aaron Duggan, Cameron's Toady", 'Abandoning the Flesh',
-                     'Abd al-Rashid', u'L\xe1z\xe1r Dobrescu',
+                    [u"Aaron Duggan, Cameron's Toady", u"Abandoning the Flesh",
+                     u"Abd al-Rashid", u"Akram", u"Alexandra",
+                     u"Alfred Benezri", u"Angelica, The Canonicus", u"Bronwen",
+                     u"Gracis Nostinus", u'L\xe1z\xe1r Dobrescu',
                      u'Yvette, The Hopeless']),
                 (Filters.MultiPhysicalCardCountFilter(['4']),
-                    ["Aaron's Feeding Razor", 'Ablative Skin']),
+                    ["Aaron's Feeding Razor", 'Ablative Skin',
+                        u"Anastasz di Zagreb", u"Anson"]),
         ]
 
         # test abstract card selects
@@ -229,7 +259,6 @@ class FilterTests(SutekhTest):
 
         # TODO: Add tests for:
         #   PhysicalCardSetFilter
-        #   AbstractCardSetFilter
 
 if __name__ == "__main__":
     unittest.main()

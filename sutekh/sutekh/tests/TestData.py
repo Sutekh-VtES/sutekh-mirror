@@ -170,6 +170,215 @@ TEST_CARD_LIST = """
 </p>
 
 <p>
+<a name="Aeron"><span class="cardname">Aeron</span></a>
+<span class="exp">[Gehenna:U]</span><br />
+<table border=0 cellpadding=0 cellspacing=0><tr><td width=1><span class="key">Cardtype:</span> </td><td>Vampire<br /></td></tr>
+<tr><td width=1><span class="key">Clan:</span> </td><td>Nosferatu antitribu<br /></td></tr>
+<tr><td width=1><span class="key">Group:</span> </td><td>3<br /></td></tr>
+<tr><td width=1><span class="key">Capacity:</span> </td><td>9<br /></td></tr>
+<tr><td width=1><span class="key">Discipline:</span> </td><td>aus pro ANI OBF POT<br /></td></tr>
+<tr><td colspan=2><b>Sabbat Archbishop of London:</b> <n>Minions opposing Aeron in combat take an additional point of damage during strike resolution if the range is close. Once each combat, Aeron may burn a blood for a press.<br />
+<tr><td width=1><span class="key">Artist:</span> </td><td>Ken Meyer, Jr.<br /></td></tr>
+</table>
+</p>
+
+<p>
+<a name="Akram"><span class="cardname">Akram</span></a>
+<span class="exp">[AH:V3, CE:PB]</span><br />
+<table border=0 cellpadding=0 cellspacing=0><tr><td width=1><span class="key">Cardtype:</span> </td><td>Vampire<br /></td></tr>
+<tr><td width=1><span class="key">Clan:</span> </td><td>Brujah<br /></td></tr>
+<tr><td width=1><span class="key">Group:</span> </td><td>2<br /></td></tr>
+<tr><td width=1><span class="key">Capacity:</span> </td><td>8<br /></td></tr>
+<tr><td width=1><span class="key">Discipline:</span> </td><td>pot pre CEL QUI<br /></td></tr>
+<tr><td colspan=2><b>Camarilla primogen:</b> <n>Once each turn after completing combat, if Akram and the opposing minion are still ready, Akram may burn 1 blood to begin another combat with the opposing minion.<br />
+<tr><td width=1><span class="key">Artist:</span> </td><td>Terese Nielsen<br /></td></tr>
+</table>
+</p>
+
+<p>
+<a name="Alexandra"><span class="cardname">Alexandra</span></a>
+<span class="exp">[DS:V, CE:PTo]</span><br />
+<table border=0 cellpadding=0 cellspacing=0><tr><td width=1><span class="key">Cardtype:</span> </td><td>Vampire<br /></td></tr>
+<tr><td width=1><span class="key">Clan:</span> </td><td>Toreador<br /></td></tr>
+<tr><td width=1><span class="key">Group:</span> </td><td>2<br /></td></tr>
+<tr><td width=1><span class="key">Capacity:</span> </td><td>11<br /></td></tr>
+<tr><td width=1><span class="key">Discipline:</span> </td><td>dom ANI AUS CEL PRE<br /></td></tr>
+<tr><td colspan=2><b>Camarilla Inner Circle:</b> <n>Once during your turn, you may tap or untap another ready Toreador. +2 bleed.<br />
+<tr><td width=1><span class="key">Artist:</span> </td><td>Lawrence Snelly<br /></td></tr>
+</table>
+</p>
+
+<p>
+<a name="Alfred_Benezri"><span class="cardname">Alfred Benezri</span></a>
+<span class="exp">[CE:V]</span><br />
+<table border=0 cellpadding=0 cellspacing=0><tr><td width=1><span class="key">Cardtype:</span> </td><td>Vampire<br /></td></tr>
+<tr><td width=1><span class="key">Clan:</span> </td><td>Pander<br /></td></tr>
+<tr><td width=1><span class="key">Group:</span> </td><td>3<br /></td></tr>
+<tr><td width=1><span class="key">Capacity:</span> </td><td>6<br /></td></tr>
+<tr><td width=1><span class="key">Discipline:</span> </td><td>aus dom PRE THA<br /></td></tr>
+<tr><td colspan=2><b>Sabbat bishop:</b> <n>Alfred gets -1 strength in combat with an ally.<br />
+<tr><td width=1><span class="key">Artist:</span> </td><td>Quinton Hoover<br /></td></tr>
+</table>
+</p>
+
+<p>
+<a name="Ambrogino_Giovanni"><span class="cardname">Ambrogino Giovanni</span></a>
+<span class="exp">[FN:U2]</span><br />
+<table border=0 cellpadding=0 cellspacing=0><tr><td width=1><span class="key">Cardtype:</span> </td><td>Vampire<br /></td></tr>
+<tr><td width=1><span class="key">Clan:</span> </td><td>Giovanni<br /></td></tr>
+<tr><td width=1><span class="key">Group:</span> </td><td>2<br /></td></tr>
+<tr><td width=1><span class="key">Capacity:</span> </td><td>9<br /></td></tr>
+<tr><td width=1><span class="key">Discipline:</span> </td><td>aus DOM NEC POT THA<br /></td></tr>
+<tr><td colspan=2><b>Independent:</b> <n>Ambrogino has 1 vote. +1 bleed.<br />
+<tr><td width=1><span class="key">Artist:</span> </td><td>Christopher Shy<br /></td></tr>
+</table>
+</p>
+<p>
+
+<p>
+<a name="Amisa"><span class="cardname">Amisa</span></a>
+<span class="exp">[AH:V3, FN:PS]</span><br />
+<table border=0 cellpadding=0 cellspacing=0><tr><td width=1><span class="key">Cardtype:</span> </td><td>Vampire<br /></td></tr>
+<tr><td width=1><span class="key">Clan:</span> </td><td>Follower of Set<br /></td></tr>
+<tr><td width=1><span class="key">Group:</span> </td><td>2<br /></td></tr>
+<tr><td width=1><span class="key">Capacity:</span> </td><td>8<br /></td></tr>
+<tr><td width=1><span class="key">Discipline:</span> </td><td>pre pro OBF SER<br /></td></tr>
+<tr><td colspan=2><b>Independent:</b> <n>Amisa has 2 votes. Amisa can tap a vampire with a capacity above 7 as a (D) action.<br />
+<tr><td width=1><span class="key">Artist:</span> </td><td>Pete Venters<br /></td></tr>
+</table>
+</p>
+
+<p>
+<a name="Angelica_The_Canonicus"><span class="cardname">Angelica, The Canonicus</span></a>
+<span class="exp">[Sabbat:V, SW:PL]</span><br />
+<table border=0 cellpadding=0 cellspacing=0><tr><td width=1><span class="key">Cardtype:</span> </td><td>Vampire<br /></td></tr>
+<tr><td width=1><span class="key">Clan:</span> </td><td>Lasombra<br /></td></tr>
+<tr><td width=1><span class="key">Group:</span> </td><td>2<br /></td></tr>
+<tr><td width=1><span class="key">Capacity:</span> </td><td>10<br /></td></tr>
+<tr><td width=1><span class="key">Discipline:</span> </td><td>cel obf DOM OBT POT<br /></td></tr>
+<tr><td colspan=2><b>Sabbat cardinal:</b> <n>Once each <span class="errata">{action that}</span> Angelica attempts to block, you may burn X master cards from your hand to give her +X intercept.<br />
+<tr><td width=1><span class="key">Artist:</span> </td><td>John Bolton<br /></td></tr>
+</table>
+</p>
+
+<p>
+<a name="Anna_Dictatrix11_Suljic"><span class="cardname">Anna "Dictatrix11" Suljic</span></a>
+<span class="exp">[NoR:U]</span><br />
+<table border=0 cellpadding=0 cellspacing=0><tr><td width=1><span class="key">Cardtype:</span> </td><td>Imbued<br /></td></tr>
+<tr><td width=1><span class="key">Creed:</span> </td><td>Martyr<br /></td></tr>
+<tr><td width=1><span class="key">Group:</span> </td><td>4<br /></td></tr>
+<tr><td width=1><span class="key">Life:</span> </td><td>6<br /></td></tr>
+<tr><td width=1><span class="key">Virtue:</span> </td><td>mar red vis<br /></td></tr>
+<tr><td colspan=2><n>Anna may move 2 blood from the blood bank to any vampire as a +1 stealth action. During your untap phase, you may look at the top three cards of your library.<br />
+<tr><td width=1><span class="key">Artist:</span> </td><td>Thomas Manning<br /></td></tr>
+</table>
+</p>
+
+<p>
+<a name="Anson"><span class="cardname">Anson</span></a>
+<span class="exp">[Jyhad:V, VTES:V, Tenth:A]</span><br />
+<table border=0 cellpadding=0 cellspacing=0><tr><td width=1><span class="key">Cardtype:</span> </td><td>Vampire<br /></td></tr>
+<tr><td width=1><span class="key">Clan:</span> </td><td>Toreador<br /></td></tr>
+<tr><td width=1><span class="key">Group:</span> </td><td>1<br /></td></tr>
+<tr><td width=1><span class="key">Capacity:</span> </td><td>8<br /></td></tr>
+<tr><td width=1><span class="key">Discipline:</span> </td><td>aus dom CEL PRE<br /></td></tr>
+<tr><td colspan=2><b>Camarilla Prince of Seattle:</b> <n>If Anson is ready during your master phase, you get two master phase actions (instead of one).<br />
+<tr><td width=1><span class="key">Artist:</span> </td><td>Mark Tedin<br /></td></tr>
+</table>
+</p>
+
+<p>
+<a name="Anastasz_di_Zagreb"><span class="cardname">Anastasz di Zagreb</span></a>
+<span class="exp">[CE:V, KMW:PAl]</span><br />
+<table border=0 cellpadding=0 cellspacing=0><tr><td width=1><span class="key">Cardtype:</span> </td><td>Vampire<br /></td></tr>
+<tr><td width=1><span class="key">Clan:</span> </td><td>Tremere<br /></td></tr>
+<tr><td width=1><span class="key">Group:</span> </td><td>3<br /></td></tr>
+<tr><td width=1><span class="key">Capacity:</span> </td><td>8<br /></td></tr>
+<tr><td width=1><span class="key">Discipline:</span> </td><td>ani cel dom AUS THA<br /></td></tr>
+<tr><td colspan=2><b>Camarilla Tremere Justicar:</b> <n>If there are any other justicars ready, Anastasz gets 1 fewer vote from his justicar title. Anastasz may steal 1 blood as a ranged strike.<br />
+<tr><td width=1><span class="key">Artist:</span> </td><td>Christopher Shy<br /></td></tr>
+</table>
+</p>
+
+<p>
+<a name="Bronwen"><span class="cardname">Bronwen</span></a>
+<span class="exp">[Sabbat:V, SW:PB]</span><br />
+<table border=0 cellpadding=0 cellspacing=0><tr><td width=1><span class="key">Cardtype:</span> </td><td>Vampire<br /></td></tr>
+<tr><td width=1><span class="key">Clan:</span> </td><td>Brujah antitribu<br /></td></tr>
+<tr><td width=1><span class="key">Group:</span> </td><td>2<br /></td></tr>
+<tr><td width=1><span class="key">Capacity:</span> </td><td>10<br /></td></tr>
+<tr><td width=1><span class="key">Discipline:</span> </td><td>dom obt CEL POT PRE<br /></td></tr>
+<tr><td colspan=2><b>Sabbat priscus:</b> <n>Once each combat, Bronwen may dodge as a strike.<br />
+<tr><td width=1><span class="key">Artist:</span> </td><td>Ken Meyer, Jr.<br /></td></tr>
+</table>
+</p>
+
+<p>
+<a name="Cesewayo"><span class="cardname">Cesewayo</span></a>
+<span class="exp">[LoB:PO2]</span><br />
+<table border=0 cellpadding=0 cellspacing=0><tr><td width=1><span class="key">Cardtype:</span> </td><td>Vampire<br /></td></tr>
+<tr><td width=1><span class="key">Clan:</span> </td><td>Osebo<br /></td></tr>
+<tr><td width=1><span class="key">Group:</span> </td><td>4<br /></td></tr>
+<tr><td width=1><span class="key">Capacity:</span> </td><td>10<br /></td></tr>
+<tr><td width=1><span class="key">Discipline:</span> </td><td>ani AUS CEL DOM POT THA<br /></td></tr>
+<tr><td colspan=2><b>Laibon magaji:</b> <n>Once each action, Cesewayo may burn 1 blood to get +1 intercept.<br />
+<tr><td width=1><span class="key">Artist:</span> </td><td>Abrar Ajmal<br /></td></tr>
+</table>
+</p>
+
+<p>
+<a name="Earl_Shaka74_Deams"><span class="cardname">Earl "Shaka74" Deams</span></a>
+<span class="exp">[NoR:U]</span><br />
+<table border=0 cellpadding=0 cellspacing=0><tr><td width=1><span class="key">Cardtype:</span> </td><td>Imbued<br /></td></tr>
+<tr><td width=1><span class="key">Creed:</span> </td><td>Visionary<br /></td></tr>
+<tr><td width=1><span class="key">Group:</span> </td><td>4<br /></td></tr>
+<tr><td width=1><span class="key">Life:</span> </td><td>6<br /></td></tr>
+<tr><td width=1><span class="key">Virtue:</span> </td><td>jud mar vis<br /></td></tr>
+<tr><td colspan=2><n>Earl gets +1 stealth on actions other than actions to enter combat. During your untap phase, if you control more than two ready imbued, Earl burns 1 conviction [1 CONVICTION].<br />
+<tr><td width=1><span class="key">Artist:</span> </td><td>David Day<br /></td></tr>
+</table>
+</p>
+
+<p>
+<a name="Gracis_Nostinus"><span class="cardname">Gracis Nostinus</span></a>
+<span class="exp">[CE:V]</span><br />
+<table border=0 cellpadding=0 cellspacing=0><tr><td width=1><span class="key">Cardtype:</span> </td><td>Vampire<br /></td></tr>
+<tr><td width=1><span class="key">Clan:</span> </td><td>Ventrue<br /></td></tr>
+<tr><td width=1><span class="key">Group:</span> </td><td>3<br /></td></tr>
+<tr><td width=1><span class="key">Capacity:</span> </td><td>7<br /></td></tr>
+<tr><td width=1><span class="key">Discipline:</span> </td><td>aus for DOM PRE<br /></td></tr>
+<tr><td colspan=2><b>Camarilla Primogen:</b> <n>If a younger vampire attempts to block Gracis and fails, that vampire is tapped at the end of the action.<br />
+<tr><td width=1><span class="key">Artist:</span> </td><td>Max Shade Fellwalker<br /></td></tr>
+</table>
+</p>
+
+<p>
+<a name="Inez_Nurse216_Villagrande"><span class="cardname">Inez "Nurse216" Villagrande</span></a>
+<span class="exp">[NoR:U]</span><br />
+<table border=0 cellpadding=0 cellspacing=0><tr><td width=1><span class="key">Cardtype:</span> </td><td>Imbued<br /></td></tr>
+<tr><td width=1><span class="key">Creed:</span> </td><td>Innocent<br /></td></tr>
+<tr><td width=1><span class="key">Group:</span> </td><td>4<br /></td></tr>
+<tr><td width=1><span class="key">Life:</span> </td><td>3<br /></td></tr>
+<tr><td width=1><span class="key">Virtue:</span> </td><td>inn<br /></td></tr>
+<tr><td colspan=2><n>When Inez enters play, you may search your library (shuffle afterward) or hand for a power that requires innocence and put it on her.<br />
+<tr><td width=1><span class="key">Artist:</span> </td><td>Jim Pavelec<br /></td></tr>
+</table>
+</p>
+
+<p>
+<a name="Kabede_Maru"><span class="cardname">Kabede Maru</span></a>
+<span class="exp">[LotN:U]</span><br />
+<table border=0 cellpadding=0 cellspacing=0><tr><td width=1><span class="key">Cardtype:</span> </td><td>Vampire<br /></td></tr>
+<tr><td width=1><span class="key">Clan:</span> </td><td>Assamite<br /></td></tr>
+<tr><td width=1><span class="key">Group:</span> </td><td>5<br /></td></tr>
+<tr><td width=1><span class="key">Capacity:</span> </td><td>9<br /></td></tr>
+<tr><td width=1><span class="key">Discipline:</span> </td><td>abo pot AUS CEL OBF QUI<br /></td></tr>
+<tr><td colspan=2><b>Laibon magaji:</b> <n>Kabede gets +1 intercept against political actions. (The blood curse does not affect Kabede.)<br />
+<tr><td width=1><span class="key">Artist:</span> </td><td>Ken Meyer, Jr.<br /></td></tr>
+</table>
+</p>
+
+<p>
 <a name="card_15"><span class="cardname">Lázár Dobrescu</span></a>
 <span class="exp">[AH:V3, FN:PR]</span><br />
 <table><tr><td width=1><span class="key">Cardtype:</span> </td><td>Vampire<br /></td></tr>
@@ -179,6 +388,19 @@ TEST_CARD_LIST = """
 <tr><td><span class="key">Discipline:</span> </td><td>for<br /></td></tr>
 <tr><td colspan=2><b>Independent:</b> <n>Lázár may move one blood from <span class="clarification">&lt;an uncontrolled minion&gt;</span> in your prey's uncontrolled region to a vampire in your uncontrolled region as a (D) action.<br />
 <tr><td><span class="key">Artist:</span> </td><td>Rebecca Guay<br /></td></tr>
+</table>
+</p>
+
+<p>
+<a name="Sha_Ennu"><span class="cardname">Sha-Ennu</span></a>
+<span class="exp">[Third:V]</span><br />
+<table border=0 cellpadding=0 cellspacing=0><tr><td width=1><span class="key">Cardtype:</span> </td><td>Vampire<br /></td></tr>
+<tr><td width=1><span class="key">Clan:</span> </td><td>Tzimisce<br /></td></tr>
+<tr><td width=1><span class="key">Group:</span> </td><td>4<br /></td></tr>
+<tr><td width=1><span class="key">Capacity:</span> </td><td>11<br /></td></tr>
+<tr><td width=1><span class="key">Discipline:</span> </td><td>obf tha ANI AUS CHI VIC<br /></td></tr>
+<tr><td colspan=2><b>Sabbat regent:</b> <n>Vampires with capacity less than 4 cannot block Sha-Ennu. +2 bleed.<br />
+<tr><td width=1><span class="key">Artist:</span> </td><td>Richard Thomas<br /></td></tr>
 </table>
 </p>
 
