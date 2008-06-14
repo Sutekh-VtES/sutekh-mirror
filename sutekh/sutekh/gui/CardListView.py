@@ -97,7 +97,9 @@ class CardListView(gtk.TreeView, object):
 
     def load(self):
         """Called when the model needs to be reloaded."""
+        self._oMainWin.set_busy_cursor()
         self._oModel.load()
+        self._oMainWin.restore_cursor()
 
     # Help functions used by reload_keep_expanded
     # pylint: disable-msg=W0613

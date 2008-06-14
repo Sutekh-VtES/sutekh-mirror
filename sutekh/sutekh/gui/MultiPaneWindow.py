@@ -77,6 +77,7 @@ class MultiPaneWindow(gtk.Window):
         self._oHelpDlg = None
         # Global icon manager
         self._oIconManager = None
+        self._oBusyCursor = gtk.gdk.Cursor(gtk.gdk.WATCH)
 
     # pylint: disable-msg=W0201
     # We define attributes here, since this is called after database checks
@@ -802,3 +803,22 @@ class MultiPaneWindow(gtk.Window):
             elif isinstance(oPane, gtk.VPaned):
                 # Do something sensible for single VPane case
                 oPane.set_position(iVertPos)
+
+    def set_busy_cursor(self):
+        """Set the window cursor to indicate busy status"""
+        # This needs to be on the top level widget, so has to be here
+        # pylint: disable-msg=E1101
+        # gtk properties confuse pylint here
+        self.window.set_cursor(self._oBusyCursor)
+        # Since we're about to do a buncg of CPU grinding, tell gtk
+        # to redraw now
+        gtk.gdk.flush()
+
+    def restore_cursor(self):
+        """Restore the ordinary cursor"""
+        # pylint: disable-msg=E1101
+        # gtk properties confuse pylint here
+        self.window.set_cursor(None)
+
+
+
