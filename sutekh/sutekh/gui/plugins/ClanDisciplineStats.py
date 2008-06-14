@@ -12,7 +12,7 @@
 import gtk
 import pango
 import gobject
-from sutekh.core.SutekhObjects import AbstractCard, Clan, ICardType
+from sutekh.core.SutekhObjects import PhysicalCard, Clan, ICardType
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
@@ -26,7 +26,7 @@ class ClanDisciplineStats(CardListPlugin):
        """
 
     dTableVersions = {}
-    aModelsSupported = [AbstractCard]
+    aModelsSupported = [PhysicalCard]
 
     # pylint: disable-msg=W0142
     # **magic OK here
