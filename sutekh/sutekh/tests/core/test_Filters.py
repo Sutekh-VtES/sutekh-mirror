@@ -9,7 +9,7 @@
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.tests.io import test_WhiteWolfParser
 from sutekh.core.SutekhObjects import AbstractCard, IAbstractCard, \
-        PhysicalCard, IPhysicalCard, Expansion, IExpansion
+        PhysicalCard, IPhysicalCard, Expansion, IExpansion, PhysicalCardSet
 from sutekh.core import Filters
 from sqlobject import SQLObjectNotFound
 import unittest
@@ -87,6 +87,9 @@ class FilterTests(SutekhTest):
                 u'Earl "Shaka74" Deams', u'Inez "Nurse216" Villagrande']),
             (Filters.ExpansionRarityFilter(('Sabbat', 'Rare')),
                 [u"Ablative Skin"]),
+            (Filters.ExpansionRarityFilter(('Blood Shadowed Court',
+                'Vampire')), [u"Alfred Benezri", u"Anastasz di Zagreb",
+                    u"Gracis Nostinus", u"Yvette, The Hopeless"]),
             (Filters.MultiExpansionRarityFilter([('Third', 'Uncommon'),
                 ('Jyhad', 'Rare')]), [u"Aaron's Feeding Razor", u"Abbot"]),
             (Filters.DisciplineLevelFilter(('cel', 'superior')),
@@ -275,8 +278,54 @@ class FilterTests(SutekhTest):
             self.assertEqual(aCards, aExpectedCards, "Filter Object %s"
                     " failed. %s != %s." % (oFilter, aCards, aExpectedCards))
 
-        # TODO: Add tests for:
-        #   PhysicalCardSetFilter
+    def test_physical_card_set_filters(self):
+        """Tests for the physical card set filters."""
+        # Although splitting this off does add an additional init
+        # pass, the logical grouping is fairly different
+        aCardSets = [('Test 1', 'Author A', 'A set', False),
+                ('Test 2', 'Author B', 'Another set', False),
+                ('Test 3', 'Author A', 'Something different', True)]
+        aPCSCards = [
+                [('Abombwe', None), ('Alexandra', 'CE'),
+                ('Sha-Ennu', None)],
+                [('Sha-Ennu', 'Third Edition'), ('Anson', 'Jyhad'),
+                    ('.44 magnum', 'Jyhad'), ('ak-47', 'LotN')],
+                [('Yvette, The Hopeless', 'BSC')]]
+        aPCSs = []
+        for iCnt, tData in enumerate(aCardSets):
+            # pylint: disable-msg=E1101
+            # sqlobject confuses pylint
+            sName, sAuthor, sComment, bInUse = tData
+            oPCS = PhysicalCardSet(name=sName, comment=sComment,
+                    author=sAuthor, inuse=bInUse)
+            for sName, sExp in aPCSCards[iCnt]:
+                if sExp:
+                    oExp = IExpansion(sExp)
+                else:
+                    oExp = None
+                oAbs = IAbstractCard(sName)
+                oPhys = IPhysicalCard((oAbs, oExp))
+                oPCS.addPhysicalCard(oPhys.id)
+            aPCSs.append(oPCS)
+        # Tests on the physical card set properties
+        aPhysicalCardSetTests = [
+                (Filters.PhysicalCardSetNameFilter('Test 1'), [aPCSs[0]]),
+                (Filters.PhysicalCardSetNameFilter('Test'), sorted(aPCSs)),
+                (Filters.PCSPhysicalCardSetInUseFilter(), [aPCSs[2]]),
+                (Filters.PhysicalCardSetAuthorFilter('Author A'),
+                    sorted([aPCSs[0], aPCSs[2]])),
+                (Filters.PhysicalCardSetDescriptionFilter('set'),
+                    sorted([aPCSs[0], aPCSs[1]])),
+                (Filters.PhysicalCardSetDescriptionFilter('different'),
+                    [aPCSs[2]]),
+                ]
+
+        for oFilter, aExpectedSets in aPhysicalCardSetTests:
+            aCardSets = sorted(oFilter.select(PhysicalCardSet).distinct())
+            self.assertEqual(aCardSets, aExpectedSets, "Filter Object %s"
+                    " failed. %s != %s." % (oFilter, aCardSets, aExpectedSets))
+
+        # TODO: Add tests for filters joined to physical card sets
 
 if __name__ == "__main__":
     unittest.main()
