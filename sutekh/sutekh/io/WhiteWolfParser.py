@@ -10,8 +10,7 @@
 
 import HTMLParser, re
 from logging import Logger
-from sutekh.core.SutekhObjects import SutekhObjectMaker, flush_specific_join, \
-        RarityPair
+from sutekh.core.SutekhObjects import SutekhObjectMaker
 
 # Card Saver
 
@@ -129,9 +128,6 @@ class CardDict(dict):
         if oCamVampPair in oCard.rarity:
             oPair = self._oMaker.make_rarity_pair('BSC', 'Vampire')
             oCard.addRarityPair(oPair)
-            # We need to flush the cached lookup of oCard.rarity, otherwise
-            # we miss the newly added rarity until the next cache flush
-            flush_specific_join(RarityPair)
 
     def _make_card(self, sName):
         """Create the abstract card in the database."""
