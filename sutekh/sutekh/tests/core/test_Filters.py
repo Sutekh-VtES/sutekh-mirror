@@ -157,11 +157,11 @@ class FilterTests(SutekhTest):
         # Filter values Tests
         self.assertEqual(Filters.MultiClanFilter.get_values(), [u"Assamite",
             u"Follower of Set", u"Lasombra", u"Nosferatu antitribu", u"Ravnos",
-            u"Samedi"])
+            u"Samedi", u"Toreador"])
         self.assertEqual(Filters.MultiDisciplineFilter.get_values(),
-                [u"Celerity", u"Dementation", u"Fortitude", u"Necromancy",
-                    u"Obfuscate", u"Obtenebration", u"Potence", u"Presence",
-                    u"Quietus", u"Serpentis", u"Thanatosis"])
+                [u"Auspex", u"Celerity", u"Dementation", u"Fortitude",
+                 u"Necromancy", u"Obfuscate", u"Obtenebration", u"Potence",
+                 u"Presence", u"Quietus", u"Serpentis", u"Thanatosis"])
         self.assertEqual(Filters.MultiCardTypeFilter.get_values(), [u"Action",
             u"Combat", u"Equipment", u"Master", u"Power", u"Reaction",
             u"Vampire"])
@@ -205,7 +205,8 @@ class FilterTests(SutekhTest):
         aNumberTests = [
                 (Filters.MultiPhysicalCardCountFilter(['3']),
                     ["Aaron Duggan, Cameron's Toady", 'Abandoning the Flesh',
-                     'Abd al-Rashid', u'L\xe1z\xe1r Dobrescu']),
+                     'Abd al-Rashid', u'L\xe1z\xe1r Dobrescu',
+                     u'Yvette, The Hopeless']),
                 (Filters.MultiPhysicalCardCountFilter(['4']),
                     ["Aaron's Feeding Razor", 'Ablative Skin']),
         ]
