@@ -7,7 +7,7 @@
 """Plugin to find clusters in the card lists."""
 
 import gtk
-from sutekh.core.SutekhObjects import AbstractCard, PhysicalCard, \
+from sutekh.core.SutekhObjects import PhysicalCard, \
                                       PhysicalCardSet, \
                                       IAbstractCard
 from sutekh.core.CardListTabulator import CardListTabulator
@@ -37,7 +37,7 @@ class ClusterCardList(CardListPlugin):
        from the clustering results."""
 
     dTableVersions = {}
-    aModelsSupported = [AbstractCard, PhysicalCard, PhysicalCardSet]
+    aModelsSupported = [PhysicalCard, PhysicalCardSet]
 
     # pylint: disable-msg=W0142
     # ** magic OK
