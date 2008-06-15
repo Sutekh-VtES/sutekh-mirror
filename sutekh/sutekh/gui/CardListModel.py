@@ -313,6 +313,23 @@ class CardListModel(gtk.TreeStore):
         iCount = self.get_int_value(oIter, 1)
         return sName, sExpansion, iCount, iDepth
 
+    def get_child_entries_from_path(self, oPath):
+        """Return a list of (sExpansion, iCount) pairs for the children of
+           this path"""
+        oIter = self.get_iter(oPath)
+        aChildren = []
+        iDepth = self.iter_depth(oIter)
+        if iDepth != 1:
+            # No children to look at
+            return aChildren
+        oChildIter = self.iter_children(oIter)
+        while oChildIter:
+            sExpansion = self.get_value(oChildIter, 0)
+            iCount = self.get_int_value(oChildIter, 1)
+            aChildren.append((sExpansion, iCount))
+            oChildIter = self.iter_next(oChildIter)
+        return aChildren
+
     def get_inc_dec_flags_from_path(self, oPath):
         """Get the settings of the inc + dec flags for the current path"""
         oIter = self.get_iter(oPath)

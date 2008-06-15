@@ -261,11 +261,18 @@ class CardListView(gtk.TreeView, object):
             if iDepth == 1:
                 # Remove anything already assigned to this,
                 # since parent overrides all
-                # FIXME: If there's only one child,
-                # use that, rather than none, so filtering on
-                # physical expansion works as expected.
                 dSelectedData[sCardName].clear()
-                dSelectedData[sCardName]['None'] = iCount
+                aChildren = oModel.get_child_entries_from_path(oPath)
+                if len(aChildren) != 1:
+                    # If there's more than 1 child, just go with unknown,
+                    # as only sensible default
+                    dSelectedData[sCardName]['None'] = iCount
+                else:
+                    # Otherwise, use the child, so filtering on
+                    # physical expansion works as expected.
+                    sExpansion, iCount = aChildren[0]
+                    dSelectedData[sCardName][sExpansion] = iCount
+
             else:
                 if 'None' in dSelectedData[sCardName]:
                     continue
@@ -369,8 +376,8 @@ class CardListView(gtk.TreeView, object):
                 return True
             else:
                 # Need to check if any of the children match
-                for iChildCount in range(oModel.iter_n_children(oIter)):
-                    oChildIter = oModel.iter_nth_child(oIter, iChildCount)
+                oChildIter = self._oModel.iter_children(oIter)
+                while oChildIter:
                     sChildName = self._oModel.get_name_from_iter(oChildIter)
                     sChildName = sChildName[:iLenKey].lower()
                     if self.to_ascii(sChildName).startswith(sKey) or\
@@ -379,6 +386,7 @@ class CardListView(gtk.TreeView, object):
                         self.expand_to_path(oPath)
                         # Bail out, as compare will find the match for us
                         return True
+                    oChildIter = self._oModel.iter_next(oChildIter)
                 return True # No matches, so bail
 
         sCardName = self._oModel.get_name_from_iter(oIter)[:iLenKey].lower()
