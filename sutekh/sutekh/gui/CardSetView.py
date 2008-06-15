@@ -133,50 +133,25 @@ class CardSetView(CardListView):
                 # Can't drag to oneself
                 oContext.finish(False, False, oTime)
             # pass off to helper function
-            if self.add_paste_data(sSource, aCardInfo):
+            if self._oController.add_paste_data(sSource, aCardInfo):
                 oContext.finish(True, False, oTime) # paste successful
             else:
                 oContext.finish(False, False, oTime) # not successful
 
     # pylint: enable-msg=R0913, W0613
 
-    def add_paste_data(self, sSource, aCards):
-        """Helper function for drag+drop and copy+paste.
-
-           Rules are - we can always drag from the PhysicalCard List and
-           from cardsets of the same type, but only ACS's can recieve cards
-           from the AbstractCard List
-           """
-        aSources = sSource.split(':')
-        if aSources[0] in ["Phys", PhysicalCardSet.sqlmeta.table]:
-            # Add the cards, Count Matters
-            for iCount, sCardName, sExpansion in aCards:
-                # pylint: disable-msg=W0612
-                # iLoop is just loop counter
-                if aSources[0] == "Phys":
-                    # Only ever add 1 when dragging from physiscal card list
-                    self.add_card(sCardName, sExpansion)
-                else:
-                    for iLoop in range(iCount):
-                        self.add_card(sCardName, sExpansion)
-            return True
-        else:
-            return False
-
+    # Anything that touches the database is based off to the controller
+    # We handle the editable checks here though, since the controller methods
+    # will be called by other routes than the gui (such as database signals)
+    # where the model must change, even if the given card set isn't editable
+    # The Controller is responsible for updating the model,
+    # since it defines the logic for handling expansions, etc.
 
     def del_selection(self):
         """try to delete all the cards in the current selection"""
         if self._oModel.bEditable:
             dSelectedData = self.process_selection()
-            for sCardName in dSelectedData:
-                for sExpansion, iCount in dSelectedData[sCardName].iteritems():
-                    # pylint: disable-msg=W0612
-                    # iAttempt is loop counter
-                    for iAttempt in range(iCount):
-                        if sExpansion != 'None':
-                            self._oController.dec_card(sCardName, sExpansion)
-                        else:
-                            self._oController.dec_card(sCardName, None)
+            self._oController.del_selected_cards(dSelectedData)
 
     def do_paste(self):
         """Try and paste the current selection from the appliction clipboard"""
@@ -185,7 +160,7 @@ class CardSetView(CardListView):
             sSource, aCards = self.split_selection_data(sSelection)
             if sSource != self.sDragPrefix:
                 # Prevent pasting into oneself
-                self.add_paste_data(sSource, aCards)
+                self._oController.add_paste_data(sSource, aCards)
 
     def load(self):
         """Called when the model needs to be reloaded."""
@@ -203,17 +178,6 @@ class CardSetView(CardListView):
                 self._oModel.get_card_iterator(None).count() == 0:
             # This isn't true when creating the view
             self._set_editable(True)
-
-    # Used by card dragging handlers
-    def add_card(self, sCardName, sExpansion):
-        """Called to add a card with expansion"""
-        if self._oModel.bEditable:
-            self._oController.add_card(sCardName, sExpansion)
-
-    # When editing cards, we pass info to the controller to
-    # update stuff in the database
-    # The Controller is responsible for updating the model,
-    # since it defines the logic for handling expansions, etc.
 
     # pylint: disable-msg=W0613
     # arguments as required by the function signature
@@ -302,12 +266,14 @@ class CardSetView(CardListView):
                 not _compare_colors(oEditBackColor, oCurBackColor):
             # Visiually distinct, so honour user's choice
             self._oModel.sEditColour = oEditColor.to_string()
-        # If the theme change isn't visually distinct here, we go
-        # with red, which is the default - this is safe,
-        # since CellRenderers aren't
-        # themed, so the default color will not be red
-        # (famous last words)
-        # If the default background color is red, too bad
+        else:
+            # If the theme change isn't visually distinct here, we go
+            # with red  as the default - this is safe,
+            # since CellRenderers aren't
+            # themed, so the default color will not be red
+            # (famous last words)
+            # If the default background color is red, too bad
+            self._oModel.sEditColour = 'red'
 
     def set_color_normal(self):
         """Unset the editable visual cue"""

@@ -328,3 +328,38 @@ class CardSetController(object):
             # Tell window to clean up
             # Card Set was deleted, so close up
             self._oFrame.close_frame()
+
+    def add_paste_data(self, sSource, aCards):
+        """Helper function for drag+drop and copy+paste.
+
+           Rules are - we can always drag from the PhysicalCard List and
+           from cardsets of the same type, but only ACS's can recieve cards
+           from the AbstractCard List
+           """
+        aSources = sSource.split(':')
+        if aSources[0] in ["Phys", PhysicalCardSet.sqlmeta.table]:
+            # Add the cards, Count Matters
+            for iCount, sCardName, sExpansion in aCards:
+                # pylint: disable-msg=W0612
+                # iLoop is just loop counter
+                if aSources[0] == "Phys":
+                    # Only ever add 1 when dragging from physiscal card list
+                    self.add_card(sCardName, sExpansion)
+                else:
+                    for iLoop in range(iCount):
+                        self.add_card(sCardName, sExpansion)
+            return True
+        else:
+            return False
+
+    def del_selected_cards(self, dSelectedData):
+        """Helper function to delete the selected data."""
+        for sCardName in dSelectedData:
+            for sExpansion, iCount in dSelectedData[sCardName].iteritems():
+                # pylint: disable-msg=W0612
+                # iAttempt is loop counter
+                for iAttempt in range(iCount):
+                    if sExpansion != 'None':
+                        self.dec_card(sCardName, sExpansion)
+                    else:
+                        self.dec_card(sCardName, None)

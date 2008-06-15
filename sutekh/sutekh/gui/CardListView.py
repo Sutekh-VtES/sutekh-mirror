@@ -101,18 +101,6 @@ class CardListView(gtk.TreeView, object):
         self._oModel.load()
         self._oMainWin.restore_cursor()
 
-    # Help functions used by reload_keep_expanded
-    # pylint: disable-msg=W0613
-    # Various arguments required by function signatures
-    def __get_row_status(self, oModel, oPath, oIter, dExpandedDict):
-        """Create a dictionary of rows and their expanded status."""
-        if self.row_expanded(oPath):
-            dExpandedDict.setdefault(oPath,
-                    self._oModel.get_card_name_from_path(oPath))
-        return False # Need to process the whole list
-
-    # pylint: disable-msg=W0613
-
     def __set_row_status(self, dExpandedDict):
         """Attempt to expand the rows listed in dExpandedDict."""
         for oPath in dExpandedDict:
@@ -149,40 +137,6 @@ class CardListView(gtk.TreeView, object):
             doc="The parent window sed for dialogs, etc.")
     # pylint: enable-msg=W0212
 
-    # Activating Rows
-
-    # pylint: disable-msg=W0613
-    # Various arguments required by function signatures
-    def card_activated(self, oTree, oPath, oColumn):
-        """Update card text and notify listeners when a card is selected."""
-        sCardName = self._oModel.get_card_name_from_path(oPath)
-        self._oController.set_card_text(sCardName)
-        for oListener in self.dListeners:
-            oListener.set_card_text(sCardName, '')
-
-    # Selecting
-
-    def force_cursor_move(self, oTreeView, iStep, iCount):
-        """Special handling for move events for buggy gtk events.
-
-           We need to allow the selection of top level items when
-           moving the cursor over them
-           """
-        # pylint: disable-msg=W0612
-        # We're only interested in oCurPath
-        (oCurPath, oColumn) = self.get_cursor()
-        if self._oModel.iter_parent(self._oModel.get_iter(oCurPath)) is None:
-            # Root node, so need to force the move
-            self.bSelectTop = 2
-            # Need to succeed twice - once to select, once to unselect
-            # I don't quite understand why this works this way, but it
-            # does
-            self._oSelection.select_path(oCurPath)
-        # Let gtk handle the rest of the move, since we're not doing
-        # anything else funky
-        return False
-
-    # pylint: enable-msg=W0613
 
     def can_select(self, oPath):
         """disable selecting top level rows"""
@@ -249,52 +203,6 @@ class CardListView(gtk.TreeView, object):
         for oListener in self.dListeners:
             oListener.set_card_text(sCardName, sExpansion)
 
-    # Card name searching
-
-    @staticmethod
-    def to_ascii(sName):
-        """Convert a card name or key to a canonical ASCII form."""
-        return unicodedata.normalize('NFKD', sName).encode('ascii','ignore')
-
-    # pylint: disable-msg=R0913, W0613
-    # arguments as required by the function signature
-    def compare(self, oModel, iColumn, sKey, oIter, oData):
-        """Compare the entered text to the card names."""
-        if oModel.iter_depth(oIter) == 2:
-            # Don't succeed for expansion items
-            return True
-
-        oPath = oModel.get_path(oIter)
-        sKey = sKey.lower()
-        iLenKey = len(sKey)
-
-        if oModel.iter_depth(oIter) == 0:
-            if self.row_expanded(oPath):
-                # Don't succeed for expanded top level items
-                return True
-            else:
-                # Need to check if any of the children match
-                for iChildCount in range(oModel.iter_n_children(oIter)):
-                    oChildIter = oModel.iter_nth_child(oIter, iChildCount)
-                    sChildName = self._oModel.get_name_from_iter(oChildIter)
-                    sChildName = sChildName[:iLenKey].lower()
-                    if self.to_ascii(sChildName).startswith(sKey) or\
-                        sChildName.startswith(sKey):
-                        # Expand the row
-                        self.expand_to_path(oPath)
-                        # Bail out, as compare will find the match for us
-                        return True
-                return True # No matches, so bail
-
-        sCardName = self._oModel.get_name_from_iter(oIter)[:iLenKey].lower()
-        if self.to_ascii(sCardName).startswith(sKey) or \
-                sCardName.startswith(sKey):
-            return False
-
-        return True
-
-    # pylint: enable-msg=R0913, W0613
-
     # Filtering
 
     def get_filter(self, oMenu):
@@ -353,6 +261,9 @@ class CardListView(gtk.TreeView, object):
             if iDepth == 1:
                 # Remove anything already assigned to this,
                 # since parent overrides all
+                # FIXME: If there's only one child,
+                # use that, rather than none, so filtering on
+                # physical expansion works as expected.
                 dSelectedData[sCardName].clear()
                 dSelectedData[sCardName]['None'] = iCount
             else:
@@ -383,16 +294,6 @@ class CardListView(gtk.TreeView, object):
     # pylint: disable-msg=R0201
     # These need to be available to children as methods
 
-    def drag_card(self, oBtn, oContext, oSelectionData, oInfo, oTime):
-        """Create string representation of the selection for drag-n-drop"""
-        sSelectData = self.get_selection_as_string()
-        if sSelectData == '':
-            # Pass over to the frame handler
-            self._oController.frame.create_drag_data(oBtn, oContext,
-                    oSelectionData, oInfo, oTime)
-            return
-        oSelectionData.set(oSelectionData.target, 8, sSelectData)
-
     def split_selection_data(self, sSelectionData):
         """Helper function to subdivide selection string into bits again"""
         if sSelectionData == '':
@@ -415,8 +316,21 @@ class CardListView(gtk.TreeView, object):
                 [true_expansion(x) for x in aLines[3::3]])
         return sSource, aCardInfo
 
+
+
     # pylint: disable-msg=R0913, W0613
     # arguments as required by the function signature
+
+    def drag_card(self, oBtn, oContext, oSelectionData, oInfo, oTime):
+        """Create string representation of the selection for drag-n-drop"""
+        sSelectData = self.get_selection_as_string()
+        if sSelectData == '':
+            # Pass over to the frame handler
+            self._oController.frame.create_drag_data(oBtn, oContext,
+                    oSelectionData, oInfo, oTime)
+            return
+        oSelectionData.set(oSelectionData.target, 8, sSelectData)
+
     def drag_delete(self, oBtn, oContext, oData):
         """Default drag-delete handler"""
         pass
@@ -432,6 +346,85 @@ class CardListView(gtk.TreeView, object):
         sSelection = self.get_selection_as_string()
         self._oMainWin.set_selection_text(sSelection)
 
+    # Card name searching
 
+    @staticmethod
+    def to_ascii(sName):
+        """Convert a card name or key to a canonical ASCII form."""
+        return unicodedata.normalize('NFKD', sName).encode('ascii','ignore')
 
+    def compare(self, oModel, iColumn, sKey, oIter, oData):
+        """Compare the entered text to the card names."""
+        if oModel.iter_depth(oIter) == 2:
+            # Don't succeed for expansion items
+            return True
 
+        oPath = oModel.get_path(oIter)
+        sKey = sKey.lower()
+        iLenKey = len(sKey)
+
+        if oModel.iter_depth(oIter) == 0:
+            if self.row_expanded(oPath):
+                # Don't succeed for expanded top level items
+                return True
+            else:
+                # Need to check if any of the children match
+                for iChildCount in range(oModel.iter_n_children(oIter)):
+                    oChildIter = oModel.iter_nth_child(oIter, iChildCount)
+                    sChildName = self._oModel.get_name_from_iter(oChildIter)
+                    sChildName = sChildName[:iLenKey].lower()
+                    if self.to_ascii(sChildName).startswith(sKey) or\
+                        sChildName.startswith(sKey):
+                        # Expand the row
+                        self.expand_to_path(oPath)
+                        # Bail out, as compare will find the match for us
+                        return True
+                return True # No matches, so bail
+
+        sCardName = self._oModel.get_name_from_iter(oIter)[:iLenKey].lower()
+        if self.to_ascii(sCardName).startswith(sKey) or \
+                sCardName.startswith(sKey):
+            return False
+
+        return True
+
+    # Helper function used by reload_keep_expanded
+    # Various arguments required by function signatures
+    def __get_row_status(self, oModel, oPath, oIter, dExpandedDict):
+        """Create a dictionary of rows and their expanded status."""
+        if self.row_expanded(oPath):
+            dExpandedDict.setdefault(oPath,
+                    self._oModel.get_card_name_from_path(oPath))
+        return False # Need to process the whole list
+
+    # Activating Rows
+    def card_activated(self, oTree, oPath, oColumn):
+        """Update card text and notify listeners when a card is selected."""
+        sCardName = self._oModel.get_card_name_from_path(oPath)
+        self._oController.set_card_text(sCardName)
+        for oListener in self.dListeners:
+            oListener.set_card_text(sCardName, '')
+
+    # Selecting
+
+    def force_cursor_move(self, oTreeView, iStep, iCount):
+        """Special handling for move events for buggy gtk events.
+
+           We need to allow the selection of top level items when
+           moving the cursor over them
+           """
+        # pylint: disable-msg=W0612
+        # We're only interested in oCurPath
+        (oCurPath, oColumn) = self.get_cursor()
+        if self._oModel.iter_parent(self._oModel.get_iter(oCurPath)) is None:
+            # Root node, so need to force the move
+            self.bSelectTop = 2
+            # Need to succeed twice - once to select, once to unselect
+            # I don't quite understand why this works this way, but it
+            # does
+            self._oSelection.select_path(oCurPath)
+        # Let gtk handle the rest of the move, since we're not doing
+        # anything else funky
+        return False
+
+    # pylint: enable-msg=R0913, W0613
