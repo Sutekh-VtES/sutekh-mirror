@@ -1,8 +1,21 @@
+15 June 2008
+ * pylint cleanups
+
+14 June 2008
+ * Plugin cleanups Re-enable Clan Discipline Stats plugin.
+ * Add more tests to test_Filters
+ * Extend test data to include titles + imbued
+ * Fix bug in analyze deck's HF analysis. Add percentages to HF, for deck
+   construction
+ * Fix dicsipline sorting in Analyze plugin
+
 13 June 2008
  * Add support for Blood Shadowed Court. Since this is not in the published
    data, clone the information from Cam Ed.
  * Ensure that importing a card set from file doesn't break parent-child
    relationships unless loops are introduced
+ * Add cache invalidation support to CachedRelatedJoin, so BSC fiddling works
+   as expected
 
 12 June 2008
  * Unify card set deletion code. Ensure that children of a deleted card set
