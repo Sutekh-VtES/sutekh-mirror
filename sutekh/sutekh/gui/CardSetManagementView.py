@@ -102,8 +102,8 @@ class CardSetManagementView(gtk.TreeView, object):
 
         def check_children(oModel, oIter, sKey, iLenKey):
             """Check if the children of this iterator match."""
-            for iChildCount in range(oModel.iter_n_children(oIter)):
-                oChildIter = oModel.iter_nth_child(oIter, iChildCount)
+            oChildIter = oModel.iter_children(oIter)
+            while oChildIter:
                 sChildName = oModel.get_name_from_iter(oChildIter)
                 sChildName = sChildName[:iLenKey].lower()
                 if self.to_ascii(sChildName).startswith(sKey) or\
@@ -114,6 +114,7 @@ class CardSetManagementView(gtk.TreeView, object):
                 if oModel.iter_n_children(oChildIter) > 0:
                     # recurse into the children
                     check_children(oModel, oChildIter, sKey, iLenKey)
+                oChildIter = oModel.iter_next(oChildIter)
 
         sKey = sKey.lower()
         iLenKey = len(sKey)

@@ -114,12 +114,14 @@ class CardSetManagementModel(gtk.TreeStore):
             oPath = None
             if sName == self.get_name_from_iter(oIter):
                 return self.get_path(oIter)
-            for iChildCount in range(self.iter_n_children(oIter)):
-                oChildIter = self.iter_nth_child(oIter, iChildCount)
+            oChildIter = self.iter_children(oIter)
+            while oChildIter:
                 oPath = check_iter(oChildIter, sName)
                 if oPath:
                     return oPath
+                oChildIter = self.iter_next(oChildIter)
             return oPath
+
         oIter = self.get_iter_root()
         while oIter:
             oPath = check_iter(oIter, sName)
