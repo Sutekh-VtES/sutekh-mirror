@@ -334,24 +334,6 @@ class MultiPaneWindow(gtk.Window):
                     # Empty panes still need to be editable, though
                     oPane.view.check_editable()
 
-    # pylint: disable-msg=W0613
-    # oWidget, oEvent needed by function signature
-    def win_focus(self, oWidget, oEvent, oFrame):
-        """Responsd to focus change events.
-
-           Keep track of focussed pane, update menus and handle highlighting.
-           """
-        if self._oFocussed is not None:
-            self._oFocussed.set_unfocussed_title()
-        self._oFocussed = oFrame
-        if oFrame:
-            # oFrame can be None when win_focus is called directly
-            self._oFocussed.set_focussed_title()
-            self._oFocussed.view.grab_focus()
-        self.reset_menu()
-
-    # pylint: enable-msg=W0613
-
     def set_card_text(self, sCardName):
         """Update the card text frame to the currently selected card."""
         # pylint: disable-msg=E1101, W0704
@@ -415,10 +397,32 @@ class MultiPaneWindow(gtk.Window):
         """gtk entry point"""
         gtk.main()
 
+    # making this a function would not be convient
+    def show_about_dialog(self, oWidget):
+        """Display the about dialog"""
+        oDlg = SutekhAboutDialog()
+        oDlg.run()
+        oDlg.destroy()
+
     # pylint: enable-msg=R0201
 
     # pylint: disable-msg=W0613
     # oWidget, oEvent needed by function signature
+    def win_focus(self, oWidget, oEvent, oFrame):
+        """Responsd to focus change events.
+
+           Keep track of focussed pane, update menus and handle highlighting.
+           """
+        if self._oFocussed is not None:
+            self._oFocussed.set_unfocussed_title()
+        self._oFocussed = oFrame
+        if oFrame:
+            # oFrame can be None when win_focus is called directly
+            self._oFocussed.set_focussed_title()
+            self._oFocussed.view.grab_focus()
+        self.reset_menu()
+
+    # oWidget needed by function signature
     def action_quit(self, oWidget):
         """Exit the app, saving infoin config file if needed."""
         if self._oConfig.get_save_on_exit():
@@ -427,7 +431,34 @@ class MultiPaneWindow(gtk.Window):
             self.save_window_size()
         gtk.main_quit()
 
+    def show_tutorial(self, oMenuWidget, oHelpLast):
+        """Show the HTML Tutorial"""
+        fTutorial = resource_stream('sutekh', '/docs/Tutorial.html')
+        oHelpLast.set_sensitive(True)
+        self._do_html_dialog(fTutorial)
+
+    def show_manual(self, oMenuWidget, oHelpLast):
+        """Show the HTML Manual"""
+        fManual = resource_stream('sutekh', '/docs/Manual.html')
+        oHelpLast.set_sensitive(True)
+        self._do_html_dialog(fManual)
+
+    def show_last_help(self, oMenuWidget):
+        """Reshow the help dialog with the last shown page"""
+        if self._oHelpDlg is not None:
+            self._oHelpDlg.show()
+
     # pylint: enable-msg=W0613
+
+    def _do_html_dialog(self, fInput):
+        """Popup and run HTML Dialog widget"""
+        if self._oHelpDlg is None:
+            self._oHelpDlg = HTMLViewDialog(self, fInput)
+        else:
+            self._oHelpDlg.show_page(fInput)
+        self._oHelpDlg.show()
+
+    # window setup saving functions
 
     def save_window_size(self):
         """Write the current window size to the config file"""
@@ -483,47 +514,6 @@ class MultiPaneWindow(gtk.Window):
                 x != self.__oMenu]
         for oPane in aTopLevelPane:
             save_children(oPane, self._oConfig, False, 1, -1)
-
-
-    # pylint: disable-msg=W0613
-    # oWidget needed by function signature
-
-    # pylint: disable-msg=R0201
-    # making this a function would not be convient
-    def show_about_dialog(self, oWidget):
-        """Display the about dialog"""
-        oDlg = SutekhAboutDialog()
-        oDlg.run()
-        oDlg.destroy()
-
-    # pylint: enable-msg=R0201
-
-    def show_tutorial(self, oMenuWidget, oHelpLast):
-        """Show the HTML Tutorial"""
-        fTutorial = resource_stream('sutekh', '/docs/Tutorial.html')
-        oHelpLast.set_sensitive(True)
-        self._do_html_dialog(fTutorial)
-
-    def show_manual(self, oMenuWidget, oHelpLast):
-        """Show the HTML Manual"""
-        fManual = resource_stream('sutekh', '/docs/Manual.html')
-        oHelpLast.set_sensitive(True)
-        self._do_html_dialog(fManual)
-
-    def show_last_help(self, oMenuWidget):
-        """Reshow the help dialog with the last shown page"""
-        if self._oHelpDlg is not None:
-            self._oHelpDlg.show()
-
-    # pylint: enable-msg=W0613
-
-    def _do_html_dialog(self, fInput):
-        """Popup and run HTML Dialog widget"""
-        if self._oHelpDlg is None:
-            self._oHelpDlg = HTMLViewDialog(self, fInput)
-        else:
-            self._oHelpDlg.show_page(fInput)
-        self._oHelpDlg.show()
 
     # frame management functions
 
