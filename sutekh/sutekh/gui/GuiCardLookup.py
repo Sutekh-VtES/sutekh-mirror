@@ -374,6 +374,8 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
            We allow the user to select the correct replacements from the
            Physical Card List
         """
+        # pylint: disable-msg=R0914
+        # we use lots of variables for clarity
 
         oUnknownDialog, oHBox = self._create_dialog(sInfo,
                 "The following card and expansion combinations could not "
