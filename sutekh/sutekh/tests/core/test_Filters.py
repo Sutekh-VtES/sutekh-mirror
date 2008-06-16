@@ -295,9 +295,9 @@ class FilterTests(SutekhTest):
                     ('.44 magnum', 'Jyhad'), ('ak-47', 'LotN')],
                 [('Yvette, The Hopeless', 'BSC')]]
         aPCSs = []
+        # pylint: disable-msg=E1101
+        # sqlobject confuses pylint
         for iCnt, tData in enumerate(aCardSets):
-            # pylint: disable-msg=E1101
-            # sqlobject confuses pylint
             sName, sAuthor, sComment, bInUse = tData
             oPCS = PhysicalCardSet(name=sName, comment=sComment,
                     author=sAuthor, inuse=bInUse)
@@ -342,7 +342,7 @@ class FilterTests(SutekhTest):
                     [u"Abombwe"]),
                 (Filters.PhysicalCardSetFilter('Test 2'),
                     Filters.CardTypeFilter('Equipment'),
-                    [u".44 Magnum", u"AK-47"]), 
+                    [u".44 Magnum", u"AK-47"]),
                 (Filters.PhysicalCardSetFilter('Test 2'),
                     Filters.SpecificCardFilter('AK-47'),
                     [u"AK-47"]),
@@ -358,8 +358,6 @@ class FilterTests(SutekhTest):
                 ]
 
         for oPCSFilter, oFilter, aExpectedCards in aPCSandCardFilterTests:
-            # pylint: disable-msg=E1101
-            # pyprotocols confuses pylint
             oFullFilter = Filters.FilterAndBox([oPCSFilter, oFilter])
             aCSCards = [IAbstractCard(x).name for x in oFullFilter.select(
                         MapPhysicalCardToPhysicalCardSet).distinct()]
