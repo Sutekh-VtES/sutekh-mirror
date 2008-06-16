@@ -328,6 +328,11 @@ class FilterTests(SutekhTest):
             self.assertEqual(aCardSets, aExpectedSets, "Filter Object %s"
                     " failed. %s != %s." % (oFilter, aCardSets, aExpectedSets))
 
+        # Test data for the Specific card filters
+        oAbsAK = IAbstractCard('ak-47')
+        oExp = IExpansion('LotN')
+        oPhysAK = IPhysicalCard((oAbsAK, oExp))
+
         aPCSandCardFilterTests = [
                 (Filters.PhysicalCardSetFilter('Test 1'),
                     Filters.CardTypeFilter('Vampire'),
@@ -337,7 +342,19 @@ class FilterTests(SutekhTest):
                     [u"Abombwe"]),
                 (Filters.PhysicalCardSetFilter('Test 2'),
                     Filters.CardTypeFilter('Equipment'),
-                    [u".44 Magnum", u"AK-47"]),
+                    [u".44 Magnum", u"AK-47"]), 
+                (Filters.PhysicalCardSetFilter('Test 2'),
+                    Filters.SpecificCardFilter('AK-47'),
+                    [u"AK-47"]),
+                (Filters.PhysicalCardSetFilter('Test 2'),
+                    Filters.SpecificCardIdFilter(oAbsAK.id),
+                    [u"AK-47"]),
+                (Filters.PhysicalCardSetFilter('Test 2'),
+                    Filters.SpecificPhysCardIdFilter(oPhysAK.id),
+                    [u"AK-47"]),
+                (Filters.PhysicalCardSetFilter('Test 3'),
+                    Filters.SpecificPhysCardIdFilter(oPhysAK.id),
+                    []),
                 ]
 
         for oPCSFilter, oFilter, aExpectedCards in aPCSandCardFilterTests:
