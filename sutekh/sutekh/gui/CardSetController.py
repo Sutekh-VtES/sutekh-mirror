@@ -16,7 +16,7 @@ from sutekh.gui.DBSignals import listen_reload, listen_row_destroy, \
         listen_row_update, send_reload_signal
 from sutekh.core.SutekhObjects import IPhysicalCardSet, PhysicalCardSet, \
         AbstractCard, PhysicalCard, MapPhysicalCardToPhysicalCardSet, \
-        IExpansion, Expansion
+        IExpansion, Expansion, IPhysicalCard
 from sutekh.gui.EditAnnotationsDialog import EditAnnotationsDialog
 from sutekh.SutekhUtility import delete_physical_card_set
 
@@ -33,12 +33,6 @@ class CardSetController(object):
         self._oView = CardSetView(oMainWindow, self, sName)
         self.__oPhysCardSet = IPhysicalCardSet(sName)
         # We need to cache this for physical_card_deleted checks
-        self.__aPhysCardIds = []
-        self.__aAbsCardIds = []
-        for oPC in self.__oPhysCardSet.cards:
-            oAC = oPC.abstractCard
-            self.__aAbsCardIds.append(oAC.id)
-            self.__aPhysCardIds.append(oPC.id)
         # Listen on card signals
         listen_row_destroy(self.card_deleted, MapPhysicalCardToPhysicalCardSet)
         listen_reload(self.cards_changed, PhysicalCardSet)
@@ -135,15 +129,27 @@ class CardSetController(object):
         # Other card set deletions don't need to be watched here, since the
         # fiddling on parents should generate changed signals for us.
 
-    def card_deleted(self, oPhysCard, fPostFuncs=None):
+    def card_deleted(self, oMapEntry, fPostFuncs=None):
         """Listen on card removals from the mapping table.
 
            Needed so we can updated the model if a card in this set
            is deleted.
            """
-        print 'Mapping Table row delete'
-        print oPhysCard
-        return
+        if oMapEntry.physicalCardSetID == self.__oPhysCardSet.id:
+            # Removing a card from this card set
+            oCard = IPhysicalCard(oMapEntry)
+            oAbsCard = oCard.abstractCard
+            self.model.dec_card_by_name(oAbsCard.name)
+            if oCard.expansion is not None:
+                self.model.dec_card_expansion_by_name(oAbsCard.name,
+                        oCard.expansion.name)
+            else:
+                self.model.dec_card_expansion_by_name(oAbsCard.name, None)
+        else:
+            # FIXME: Need to check for sibling, parent and child changes
+            print 'Mapping Table row delete'
+            print oMapEntry
+            return
         # We get here after we have removed the card from the card set,
         # but before it is finally deleted from the table, so it's no
         # longer in self.__oPhysCards.
@@ -168,9 +174,19 @@ class CardSetController(object):
            when using oSet.addPhysicalCard
            Does rely on all creators calling send_reload_signal.
            """
-        print 'Mapping Table card set reload signal'
-        print oCardSet, oPhysCard
-        return
+        if oCardSet.id == self.__oPhysCardSet.id:
+            # Adding a card to this card set
+            oAbsCard = oPhysCard.abstractCard
+            self.model.inc_card_by_name(oAbsCard.name)
+            if oPhysCard.expansion is not None:
+                self.model.inc_card_expansion_by_name(oAbsCard.name,
+                        oPhysCard.expansion.name)
+            else:
+                self.model.inc_card_expansion_by_name(oAbsCard.name, None)
+            # FIXME: Need to check for child, sibling + parent cases
+        else:
+            print 'Mapping Table card set reload signal'
+            print oCardSet, oPhysCard
         #if oPhysCard.id in self.__aPhysCardIds and 'expansionID' in dChanges:
         #    # Changing a card assigned to the card list
         #    iNewID = dChanges['expansionID']
@@ -225,16 +241,7 @@ class CardSetController(object):
             if len(aCandCards) > 0:
                 # Found candidates, so remove last one
                 MapPhysicalCardToPhysicalCardSet.delete(aCandCards[-1].id)
-                # Update Model
-                self.model.dec_card_by_name(oAbsCard.name)
-                # Update internal card list
-                self.__aPhysCardIds.remove(oCard.id)
-                self.__aAbsCardIds.remove(oAbsCard.id)
-                if oCard.expansion is not None:
-                    self.model.dec_card_expansion_by_name(oAbsCard.name,
-                            oCard.expansion.name)
-                else:
-                    self.model.dec_card_expansion_by_name(oAbsCard.name, None)
+                # Database signal will update the model
                 return True
         return False
 
@@ -259,15 +266,7 @@ class CardSetController(object):
             self.__oPhysCardSet.addPhysicalCard(oCard.id)
             send_reload_signal(self.__oPhysCardSet, oCard)
             self.__oPhysCardSet.sync()
-            self.__aPhysCardIds.append(oCard.id)
-            self.__aAbsCardIds.append(oAbsCard.id)
-            # Update Model
-            self.model.inc_card_by_name(oAbsCard.name)
-            if oCard.expansion is not None:
-                self.model.inc_card_expansion_by_name(oAbsCard.name,
-                        oCard.expansion.name)
-            else:
-                self.model.inc_card_expansion_by_name(oAbsCard.name, None)
+            # We rely on the signal handler to update the model
             return True
         # Got here, so we failed to add
         return False
