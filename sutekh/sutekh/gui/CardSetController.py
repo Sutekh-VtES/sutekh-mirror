@@ -16,7 +16,7 @@ from sutekh.gui.DBSignals import listen_reload, listen_row_destroy, \
         listen_row_update, send_reload_signal
 from sutekh.core.SutekhObjects import IPhysicalCardSet, PhysicalCardSet, \
         AbstractCard, PhysicalCard, MapPhysicalCardToPhysicalCardSet, \
-        IExpansion, Expansion, IPhysicalCard
+        IExpansion, IPhysicalCard
 from sutekh.gui.EditAnnotationsDialog import EditAnnotationsDialog
 from sutekh.SutekhUtility import delete_physical_card_set
 
@@ -135,6 +135,8 @@ class CardSetController(object):
            Needed so we can updated the model if a card in this set
            is deleted.
            """
+        # pylint: disable-msg=E1101
+        # Pyprotocols confuses pylint
         if oMapEntry.physicalCardSetID == self.__oPhysCardSet.id:
             # Removing a card from this card set
             oCard = IPhysicalCard(oMapEntry)
@@ -146,25 +148,23 @@ class CardSetController(object):
             else:
                 self.model.dec_card_expansion_by_name(oAbsCard.name, None)
         else:
-            # FIXME: Need to check for sibling, parent and child changes
-            print 'Mapping Table row delete'
-            print oMapEntry
-            return
-        # We get here after we have removed the card from the card set,
-        # but before it is finally deleted from the table, so it's no
-        # longer in self.__oPhysCards.
-        #if oPhysCard.id in self.__aPhysCardIds:
-        #    self.__aPhysCardIds.remove(oPhysCard.id)
-        #    oAC = oPhysCard.abstractCard
-        #    self.__aAbsCardIds.remove(oAC.id)
-        #    # Update model
-        #    if oPhysCard.expansion is not None:
-        #        self.model.dec_card_expansion_by_name(oAC.name,
-        #                oPhysCard.expansion.name)
-        #    else:
-        #        self.model.dec_card_expansion_by_name(oAC.name,
-        #                oPhysCard.expansion)
-        #    self.model.dec_card_by_name(oAC.name)
+            oCardSet = IPhysicalCardSet(oMapEntry)
+            if oCardSet.parent and oCardSet.parent.id == \
+                    self.__oPhysCardSet.id and oCardSet.inuse and \
+                    self.model.changes_with_children():
+                # FIXME: change child card counts
+                print 'Child card set deleted'
+            elif self.__oPhysCardSet.parent and oCardSet.id == \
+                    self.__oPhysCardSet.parent.id and \
+                    self.model.changes_with_parent():
+                # FIXME: change parent counts
+                print 'Parent card deleted'
+            elif oCardSet.parent and self.__oPhysCardSet.parent and \
+                    self.model.changes_with_siblings() and oCardSet.inuse and \
+                    oCardSet.parent.id == self.__oPhysCardSet.parent.id:
+                # FIXME: change parent count
+                print 'Sibling card deleted'
+            # Doesn't affect us, so ignore
 
     def cards_changed(self, oCardSet, oPhysCard):
         """Listen for card changed signals.
@@ -174,6 +174,8 @@ class CardSetController(object):
            when using oSet.addPhysicalCard
            Does rely on all creators calling send_reload_signal.
            """
+        # pylint: disable-msg=E1101
+        # SQLObject confuses pylint
         if oCardSet.id == self.__oPhysCardSet.id:
             # Adding a card to this card set
             oAbsCard = oPhysCard.abstractCard
@@ -183,25 +185,22 @@ class CardSetController(object):
                         oPhysCard.expansion.name)
             else:
                 self.model.inc_card_expansion_by_name(oAbsCard.name, None)
-            # FIXME: Need to check for child, sibling + parent cases
         else:
-            print 'Mapping Table card set reload signal'
-            print oCardSet, oPhysCard
-        #if oPhysCard.id in self.__aPhysCardIds and 'expansionID' in dChanges:
-        #    # Changing a card assigned to the card list
-        #    iNewID = dChanges['expansionID']
-        #    oAC = oPhysCard.abstractCard
-        #    if oPhysCard.expansion is not None:
-        #        self.model.dec_card_expansion_by_name(oAC.name,
-        #                oPhysCard.expansion.name)
-        #    else:
-        #        self.model.dec_card_expansion_by_name(oAC.name, None)
-        #    if iNewID is not None:
-        #        oNewExpansion = list(Expansion.selectBy(id=iNewID))[0]
-        #        sExpName = oNewExpansion.name
-        #    else:
-        #        sExpName = None
-        #    self.model.inc_card_expansion_by_name(oAC.name, sExpName)
+            if oCardSet.parent and oCardSet.parent.id == \
+                    self.__oPhysCardSet.id and oCardSet.inuse and \
+                    self.model.changes_with_children():
+                # FIXME: change child card counts
+                print 'Child card set added'
+            elif self.__oPhysCardSet.parent and oCardSet.id == \
+                    self.__oPhysCardSet.parent.id and \
+                    self.model.changes_with_parent():
+                # FIXME: change parent counts
+                print 'Parent card added'
+            elif oCardSet.parent and self.__oPhysCardSet.parent and \
+                    self.model.changes_with_siblings() and oCardSet.inuse and \
+                    oCardSet.parent.id == self.__oPhysCardSet.parent.id:
+                # FIXME: change parent count
+                print 'Sibling card added'
 
     def set_card_text(self, sCardName):
         """Set card text to reflect selected card."""
