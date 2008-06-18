@@ -206,12 +206,17 @@ class CardSetController(object):
         """Set card text to reflect selected card."""
         self._oMainWindow.set_card_text(sCardName)
 
-    def inc_card(self, sName, sExpansion):
+    def inc_card(self, sName, sExpansion, sCardSetName):
         """Returns True if a card was successfully added, False otherwise."""
-        return self.add_card(sName, sExpansion)
+        return self.add_card(sName, sExpansion, sCardSetName)
 
-    def dec_card(self, sName, sExpansion):
+    def dec_card(self, sName, sExpansion, sCardSetName):
         """Returns True if a card was successfully removed, False otherwise."""
+        if sCardSetName:
+            # FIXME: Hook this up properly
+            print 'Need to remove %s [%s] from %s' % (sName, sExpansion,
+                    sCardSetName)
+            return False
         # pylint: disable-msg=E1101
         # SQLObject methods confuse pylint
         try:
@@ -244,8 +249,13 @@ class CardSetController(object):
                 return True
         return False
 
-    def add_card(self, sName, sExpansion):
+    def add_card(self, sName, sExpansion, sCardSetName):
         """Returns True if a card was successfully added, False otherwise."""
+        if sCardSetName:
+            # FIXME: Hook this up properly
+            print 'Need to add %s [%s] to %s' % (sName, sExpansion,
+                    sCardSetName)
+            return False
         # pylint: disable-msg=E1101
         # SQLObject methods confuse pylint
         try:
@@ -340,12 +350,13 @@ class CardSetController(object):
             for iCount, sCardName, sExpansion in aCards:
                 # pylint: disable-msg=W0612
                 # iLoop is just loop counter
+                # Use None to indicate this card set
                 if aSources[0] == "Phys":
                     # Only ever add 1 when dragging from physiscal card list
-                    self.add_card(sCardName, sExpansion)
+                    self.add_card(sCardName, sExpansion, None)
                 else:
                     for iLoop in range(iCount):
-                        self.add_card(sCardName, sExpansion)
+                        self.add_card(sCardName, sExpansion, None)
             return True
         else:
             return False
@@ -357,7 +368,8 @@ class CardSetController(object):
                 # pylint: disable-msg=W0612
                 # iAttempt is loop counter
                 for iAttempt in range(iCount):
+                    # None as card set indicates this card set
                     if sExpansion != 'None':
-                        self.dec_card(sCardName, sExpansion)
+                        self.dec_card(sCardName, sExpansion, None)
                     else:
-                        self.dec_card(sCardName, None)
+                        self.dec_card(sCardName, None, None)

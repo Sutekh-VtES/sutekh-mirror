@@ -188,9 +188,9 @@ class CardSetView(CardListView):
             # only interested in bInc
             bInc, bDec = self._oModel.get_inc_dec_flags_from_path(oPath)
             if bInc:
-                sCardName = self._oModel.get_card_name_from_path(oPath)
-                sExpansion = self._oModel.get_exp_name_from_path(oPath)
-                self._oController.inc_card(sCardName, sExpansion)
+                sCardName, sExpansion, sCardSetName = \
+                        self._oModel.get_all_names_from_path(oPath)
+                self._oController.inc_card(sCardName, sExpansion, sCardSetName)
 
     def dec_card(self, oCell, oPath):
         """Called to decrement the count for a card"""
@@ -199,9 +199,9 @@ class CardSetView(CardListView):
             # only interested in bDec
             bInc, bDec = self._oModel.get_inc_dec_flags_from_path(oPath)
             if bDec:
-                sCardName = self._oModel.get_card_name_from_path(oPath)
-                sExpansion = self._oModel.get_exp_name_from_path(oPath)
-                self._oController.dec_card(sCardName, sExpansion)
+                sCardName, sExpansion, sCardSetName = \
+                        self._oModel.get_all_names_from_path(oPath)
+                self._oController.dec_card(sCardName, sExpansion, sCardSetName)
 
     # functions related to tweaking widget display
 

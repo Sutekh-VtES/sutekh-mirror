@@ -249,8 +249,6 @@ class CardSetCardListModel(CardListModel):
                 iParCnt = dParents.get(oExpansion, 0)
                 dExpansions[sKey] = [iCnt, iParCnt, bIncCard, bDecCard]
         else:
-            # FIXME: work out how to present editing options when showing
-            # expansions + card sets
             for sChildSet in dChildInfo:
                 dExpansions[sChildSet] = {}
                 for oExpansion, iCnt in dExpanInfo[sChildSet].iteritems():
@@ -260,6 +258,9 @@ class CardSetCardListModel(CardListModel):
                         sKey = oExpansion.name
                     else:
                         sKey = self.sUnknownExpansion
+                    if self.bEditable:
+                        bIncCard = True
+                        bDecCard = iCnt > 0
                     iParCnt = dParents.get(oExpansion, 0)
                     dExpansions[sChildSet][sKey] = [iCnt, iParCnt, bIncCard,
                             bDecCard]
@@ -269,13 +270,14 @@ class CardSetCardListModel(CardListModel):
         """Get information about child card sets"""
         dChildren = {}
         if not tExpansionInfo:
-            # FIXME: work out how to present editing options when showing
-            # card sets + expansions
             for sCardSet, iCnt in dChildInfo.iteritems():
-                dChildren[sCardSet] = [iCnt, iParCnt, False, False]
+                bIncCard = False
+                bDecCard = False
+                if self.bEditable:
+                    bIncCard = True
+                    bDecCard = iCnt > 0
+                dChildren[sCardSet] = [iCnt, iParCnt, bIncCard, bDecCard]
         else:
-            # FIXME: work out how to present editing options when showing
-            # card sets
             dExpansions, dParents = tExpansionInfo
             for oExpansion in dExpansions:
                 if oExpansion is not None:
@@ -284,8 +286,17 @@ class CardSetCardListModel(CardListModel):
                     sKey = self.sUnknownExpansion
                 dChildren[sKey] = {}
                 iParCnt = dParents.get(oExpansion, 0)
+                if not dChildInfo.has_key(oExpansion):
+                    # No children for this expansion
+                    continue
                 for sCardSet, iCnt in dChildInfo[oExpansion].iteritems():
-                    dChildren[sKey][sCardSet] = [iCnt, iParCnt, False, False]
+                    bIncCard = False
+                    bDecCard = False
+                    if self.bEditable:
+                        bIncCard = True
+                        bDecCard = iCnt > 0
+                    dChildren[sKey][sCardSet] = [iCnt, iParCnt, bIncCard,
+                            bDecCard]
         return dChildren
 
     def check_expansion_iter_stays(self, oCard, sExpansion, iCnt):
@@ -347,6 +358,46 @@ class CardSetCardListModel(CardListModel):
             # Need to get information from the parent level
             sName = self.get_name_from_iter(self.iter_parent(oIter))
         return sName
+
+    def get_all_names_from_path(self, oPath):
+        """Get all the relevant names from the path (cardname, expansion
+           and card set), returning None for any that can't be determined.
+
+           This is mainly used by the button signals for editing.
+           """
+        oIter = self.get_iter(oPath)
+        iDepth = self.iter_depth(oIter)
+        if iDepth == 0:
+            # Top Level item, so no info at all
+            return None, None, None
+        sCardName = self.get_name_from_iter(self.get_iter(norm_path(
+            oPath)[0:2]))
+        sExpName = None
+        sCardSetName = None
+        # Get the expansion name
+        if self.iExtraLevelsMode in [SHOW_EXPANSIONS,
+                EXPANSIONS_AND_CARD_SETS]:
+            if iDepth == 2:
+                sExpName = self.get_name_from_iter(oIter)
+            elif iDepth == 3:
+                sExpName = self.get_name_from_iter(self.get_iter(norm_path(
+                    oPath)[0:3]))
+        elif self.iExtraLevelsMode == CARD_SETS_AND_EXPANSIONS and \
+                iDepth == 3:
+            sExpName = self.get_name_from_iter(oIter)
+        # Get the card set name
+        if self.iExtraLevelsMode in [SHOW_CARD_SETS,
+                CARD_SETS_AND_EXPANSIONS]:
+            if iDepth == 2:
+                sCardSetName = self.get_name_from_iter(oIter)
+            elif iDepth == 3:
+                sCardSetName = self.get_name_from_iter(self.get_iter(norm_path(
+                    oPath)[0:3]))
+        elif self.iExtraLevelsMode == EXPANSIONS_AND_CARD_SETS and \
+                iDepth == 3:
+            sCardSetName = self.get_name_from_iter(oIter)
+        return sCardName, sExpName, sCardSetName
+
 
     def _init_abs(self, dAbsCards, oAbsCard):
         """Initialize the entry for oAbsCard in dAbsCards"""
