@@ -811,7 +811,7 @@ class CardSetCardListModel(CardListModel):
 
             # Add Cards
             for oCard, oRow in oGroupIter:
-                oCard, iCnt = oRow.get_card(), oRow.get_card_count()
+                iCnt = oRow.get_card_count()
                 iGrpCnt += iCnt
                 oChildIter = self.append(oSectionIter)
                 bIncCard, bDecCard = self.check_inc_dec_card(iCnt)
