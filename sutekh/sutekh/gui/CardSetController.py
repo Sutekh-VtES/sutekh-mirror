@@ -123,7 +123,7 @@ class CardSetController(object):
         if self.__oPhysCardSet.parent and self.model.changes_with_siblings() \
                 and oCardSet.parent and oCardSet.inuse and \
                 oCardSet.parent.id == self.__oPhysCardSet.parent.id:
-            # inuse sibling card set going away whel this affects display,
+            # inuse sibling card set going away while this affects display,
             # so reload
             self._oFrame.queue_reload()
         # Other card set deletions don't need to be watched here, since the
@@ -137,10 +137,10 @@ class CardSetController(object):
            """
         # pylint: disable-msg=E1101
         # Pyprotocols confuses pylint
+        oCard = IPhysicalCard(oMapEntry)
+        oAbsCard = oCard.abstractCard
         if oMapEntry.physicalCardSetID == self.__oPhysCardSet.id:
             # Removing a card from this card set
-            oCard = IPhysicalCard(oMapEntry)
-            oAbsCard = oCard.abstractCard
             self.model.dec_card_by_name(oAbsCard.name)
             if oCard.expansion is not None:
                 self.model.dec_card_expansion_by_name(oAbsCard.name,
@@ -157,13 +157,11 @@ class CardSetController(object):
             elif self.__oPhysCardSet.parent and oCardSet.id == \
                     self.__oPhysCardSet.parent.id and \
                     self.model.changes_with_parent():
-                # FIXME: change parent counts
-                print 'Parent card deleted'
+                self.model.dec_parent_count(oCard)
             elif oCardSet.parent and self.__oPhysCardSet.parent and \
                     self.model.changes_with_siblings() and oCardSet.inuse and \
                     oCardSet.parent.id == self.__oPhysCardSet.parent.id:
-                # FIXME: change parent count
-                print 'Sibling card deleted'
+                self.model.dec_sibiling_count(oCard)
             # Doesn't affect us, so ignore
 
     def cards_changed(self, oCardSet, oPhysCard):
@@ -194,13 +192,11 @@ class CardSetController(object):
             elif self.__oPhysCardSet.parent and oCardSet.id == \
                     self.__oPhysCardSet.parent.id and \
                     self.model.changes_with_parent():
-                # FIXME: change parent counts
-                print 'Parent card added'
+                self.model.inc_parent_count(oPhysCard)
             elif oCardSet.parent and self.__oPhysCardSet.parent and \
                     self.model.changes_with_siblings() and oCardSet.inuse and \
                     oCardSet.parent.id == self.__oPhysCardSet.parent.id:
-                # FIXME: change parent count
-                print 'Sibling card added'
+                self.model.inc_sibling_count(oPhysCard)
 
     def set_card_text(self, sCardName):
         """Set card text to reflect selected card."""

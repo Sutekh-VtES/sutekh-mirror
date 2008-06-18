@@ -651,7 +651,6 @@ class CardSetCardListModel(CardListModel):
                 self.remove(oIter)
         del self._dNameSecondLevel2Iter[sCardName]
 
-
     def dec_card_by_name(self, sCardName):
         """Decrease the count for the card sCardName"""
         if self._dName2Iter.has_key(sCardName):
@@ -870,9 +869,103 @@ class CardSetCardListModel(CardListModel):
                         EXPANSIONS_AND_CARD_SETS, CARD_SETS_AND_EXPANSIONS]
 
     def changes_with_siblings(self):
-        """Utiltiy function. Returns true if changes to the sibling card sets
+        """Utility function. Returns true if changes to the sibling card sets
            influence the display."""
         return self.iParentCountMode == MINUS_SETS_IN_USE
+
+    def inc_sibling_count(self, oPhysCard):
+        """Update to an increase in the number of sibling cards."""
+        sCardName = oPhysCard.abstractCard.name
+        if oPhysCard.expansion:
+            sExpName = oPhysCard.expansion.name
+        else:
+            sExpName = self.sUnknownExpansion
+        if not self._dName2Iter.has_key(sCardName):
+            # The card isn't visible, so do nothing
+            return
+        # This is nly called when iParentCountMode == MINUS_SETS_IN_USE,
+        # So this decrease the available pool of parent cards
+        # There's no possiblity of this deleting a card from the model
+        self.alter_parent_card_count(sCardName, sExpName, -1, False)
+
+    def dec_sibling_count(self, oPhysCard):
+        """Update to an increase in the number of sibling cards."""
+        sCardName = oPhysCard.abstractCard.name
+        if oPhysCard.expansion:
+            sExpName = oPhysCard.expansion.name
+        else:
+            sExpName = self.sUnknownExpansion
+        if not self._dName2Iter.has_key(sCardName):
+            # The card isn't visible, so do nothing
+            return
+        # This is only called when iParentCountMode == MINUS_SETS_IN_USE,
+        # So this increase the available pool of parent cards
+        # There's no possiblity of this adding a card to the model (checked
+        # above)
+        self.alter_parent_card_count(sCardName, sExpName, +1, False)
+
+    def inc_parent_count(self, oPhysCard):
+        """Decrease the parent count for the given physical card"""
+        sCardName = oPhysCard.abstractCard.name
+        if oPhysCard.expansion:
+            sExpName = oPhysCard.expansion.name
+        else:
+            sExpName = self.sUnknownExpansion
+        if not self._dName2Iter.has_key(sCardName):
+            # Card isn't shown, so need to add it
+            self.add_new_card_entry(sCardName, sExpName, 0, 1)
+        else:
+            self.alter_parent_count(sCardName, sExpName, +1)
+
+    def add_new_card_entry(self, sCardName, sExpName, iCnt, iParCnt):
+        """Add a new card to the model"""
+        pass
+
+    def dec_parent_count(self, oPhysCard):
+        """Decrease the parent count for the given physical card"""
+        sCardName = oPhysCard.abstractCard.name
+        if not self._dName2Iter.has_key(sCardName):
+            # Card isn't shown, so nothing to do
+            return
+        if oPhysCard.expansion:
+            sExpName = oPhysCard.expansion.name
+        else:
+            sExpName = self.sUnknownExpansion
+        self.alter_parent_count(sCardName, sExpName, -1)
+
+    def alter_parent_count(self, sCardName, sExpName, iChg, bCheckIter=True):
+        """Alter the parent count by iChg
+
+           if bCheckIter is False, we don't check whether anything should
+           be removed from the model. This is used for sibling card set
+           changes.
+           """
+        bRemove = False
+        for oIter in self._dName2Iter[sCardName]:
+            oGrpIter = self.iter_parent(oIter)
+            iParGrpCnt = self.get_int_value(oGrpIter, 2) + iChg
+            iParCnt = self.get_int_value(oIter, 2) + iChg
+            iGrpCnt = self.get_int_value(oGrpIter, 1)
+            iCnt = self.get_int_value(oIter, 1)
+            self.set(oIter, 2, self.format_parent_count(iCnt, iParCnt))
+            self.set(oGrpIter, 2, self.format_parent_count(iGrpCnt,
+                iParGrpCnt))
+            if self.check_iter_stays(oIter) or not bCheckIter:
+                # FIXME: Update the children
+                bRemoveChild = False
+            else:
+                bRemove = True # Delete from cache after the loop
+                self._remove_sub_iters(sCardName)
+                self.remove(oIter)
+                if not self.check_iter_stays(oGrpIter):
+                    self.remove(oGrpIter)
+        if bRemove:
+            del self._dName2Iter[sCardName]
+
+    def check_iter_stays(self, oIter):
+        """Check if we need to remove a given row or not"""
+        # FIXME: implement
+        return True
 
     def get_drag_info_from_path(self, oPath):
         """Get card name and expansion information from the path for the
