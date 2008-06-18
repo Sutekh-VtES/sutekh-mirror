@@ -134,14 +134,18 @@ class CardListModel(gtk.TreeStore):
         if not self.bExpansions:
             return aExpansions
         for oExpansion in dExpanInfo:
-            if oExpansion is not None:
-                sName = oExpansion.name
-            else:
-                sName = self.sUnknownExpansion
-            aExpansions.append(sName)
+            aExpansions.append(self.get_expansion_name(oExpansion))
         return aExpansions
 
     # pylint: enable-msg=W0613
+
+    def get_expansion_name(self, oExpansion):
+        """Utility function to return iether the name, or the appropriate
+           placeholder for oExpansion is None.
+           """
+        if oExpansion:
+            return oExpansion.name
+        return self.sUnknownExpansion
 
     def get_int_value(self, oIter, iPos):
         """Extract an integer value from the model, removing markup"""
