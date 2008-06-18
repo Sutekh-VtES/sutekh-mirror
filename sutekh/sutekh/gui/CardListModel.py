@@ -287,10 +287,9 @@ class CardListModel(gtk.TreeStore):
         the expansion level transparently.
         """
         oIter = self.get_iter(oPath)
-        if self.iter_depth(oIter) == 2:
-            # Expansion section - we want the card before this
-            # according to the docs this is assured to be the
-            # correct path to it
+        if self.iter_depth(oIter) > 1:
+            # Child of the card name
+            # According to the docs, this will be the correct path
             oIter = self.get_iter(norm_path(oPath)[0:2])
         return self.get_name_from_iter(oIter)
 

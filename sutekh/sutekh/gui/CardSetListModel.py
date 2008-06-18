@@ -133,19 +133,14 @@ class CardSetCardListModel(CardListModel):
                     dExpansionInfo = self.get_expansion_info(
                             get_card_expansion_info(oItem))
                     for sExpansion in sorted(dExpansionInfo):
-                        oSubIter = self._add_extra_level(oChildIter,
-                                sExpansion, dExpansionInfo[sExpansion])
-                        self._dNameSecondLevel2Iter.setdefault(oCard.name,
-                                {}).setdefault(sExpansion, []).append(oSubIter)
+                        self._add_extra_level(oChildIter, sExpansion,
+                                dExpansionInfo[sExpansion])
                 elif self.iExtraLevelsMode == SHOW_CARD_SETS:
                     dChildInfo = self.get_child_info(
                             get_card_child_set_info(oItem), iParCnt)
                     for sChildSet in sorted(dChildInfo):
-                        oSubIter = self._add_extra_level(oChildIter,
-                                sChildSet, dChildInfo[sChildSet])
-                        self._dNameSecondLevel2Iter.setdefault(oCard.name,
-                                {}).setdefault(sChildSet,
-                                []).append(oSubIter)
+                        self._add_extra_level(oChildIter, sChildSet,
+                                dChildInfo[sChildSet])
                 elif self.iExtraLevelsMode == EXPANSIONS_AND_CARD_SETS:
                     dExpansionInfo = self.get_expansion_info(
                             get_card_expansion_info(oItem))
@@ -155,15 +150,9 @@ class CardSetCardListModel(CardListModel):
                     for sExpansion in sorted(dExpansionInfo):
                         oSubIter = self._add_extra_level(oChildIter,
                                 sExpansion, dExpansionInfo[sExpansion])
-                        self._dNameSecondLevel2Iter.setdefault(oCard.name,
-                                {}).setdefault(sExpansion, []).append(oSubIter)
                         for sChildSet in sorted(dChildInfo[sExpansion]):
-                            oThisIter = self._add_extra_level(oSubIter,
-                                    sChildSet,
+                            self._add_extra_level(oSubIter, sChildSet,
                                     dChildInfo[sExpansion][sChildSet])
-                            self._dName2nd3rdLevel2Iter.setdefault((
-                                oCard.name, sExpansion), {}).setdefault(
-                                    sChildSet, []).append(oThisIter)
                 elif self.iExtraLevelsMode == CARD_SETS_AND_EXPANSIONS:
                     dChildInfo = self.get_child_info(
                             get_card_child_set_info(oItem), iParCnt)
@@ -173,15 +162,10 @@ class CardSetCardListModel(CardListModel):
                     for sChildSet in sorted(dChildInfo):
                         oSubIter = self._add_extra_level(oChildIter,
                                 sChildSet, dChildInfo[sChildSet])
-                        self._dNameSecondLevel2Iter.setdefault(oCard.name,
-                                {}).setdefault(sChildSet, []).append(oSubIter)
                         for sExpansion in dExpansionInfo[sChildSet]:
-                            oThisIter = self._add_extra_level(oSubIter,
+                            self._add_extra_level(oSubIter,
                                     sExpansion,
                                     dExpansionInfo[sChildSet][sExpansion])
-                            self._dName2nd3rdLevel2Iter.setdefault((
-                                oCard.name, sChildSet), {}).setdefault(
-                                    sExpansion, []).append(oThisIter)
                 self._dName2Iter.setdefault(oCard.name, []).append(oChildIter)
 
             # Update Group Section
@@ -212,9 +196,9 @@ class CardSetCardListModel(CardListModel):
         else:
             return True, (iCnt > 0)
 
-    def _add_extra_level(self, oChildIter, sName, tInfo):
+    def _add_extra_level(self, oParIter, sName, tInfo):
         """Add an extra level iterator to the card list model."""
-        oIter = self.append(oChildIter)
+        oIter = self.append(oParIter)
         iCnt, iParCnt, bIncCard, bDecCard = tInfo
         self.set(oIter,
                 0, sName,
@@ -222,7 +206,21 @@ class CardSetCardListModel(CardListModel):
                 2, self.format_parent_count(iCnt, iParCnt),
                 3, bIncCard,
                 4, bDecCard)
-        # FIXME: Sort out the caching aspects for editing
+        # Add to the cache
+        oPath = self.get_path(oIter)
+        # get_card_name work's regardless of level
+        sCardName = self.get_card_name_from_path(oPath)
+        iDepth = self.iter_depth(oIter)
+        if iDepth == 2:
+            self._dNameSecondLevel2Iter.setdefault(sCardName, {})
+            self._dNameSecondLevel2Iter[sCardName].setdefault(sName,
+                    []).append(oIter)
+        elif iDepth == 3:
+            sSecondLevelName = self.get_name_from_iter(oParIter)
+            tKey = (sCardName, sSecondLevelName)
+            self._dName2nd3rdLevel2Iter.setdefault(tKey, {})
+            self._dName2nd3rdLevel2Iter[tKey].setdefault(sName,
+                    []).append(oIter)
         return oIter
 
     def check_inc_dec_expansion(self, iCnt):
@@ -586,20 +584,6 @@ class CardSetCardListModel(CardListModel):
                 dParentInfo['expansions'].setdefault(oPhysCard.expansion, 0)
                 dParentInfo['expansions'][oPhysCard.expansion] += 1
 
-    def inc_card(self, oPath):
-        """
-        Add a copy of the card at oPath from the model
-        """
-        sCardName = self.get_card_name_from_path(oPath)
-        self.alter_card_count(sCardName, +1)
-
-    def dec_card(self, oPath):
-        """
-        Remove a copy of the card at oPath from the model
-        """
-        sCardName = self.get_card_name_from_path(oPath)
-        self.alter_card_count(sCardName, -1)
-
     def inc_card_expansion_by_name(self, sCardName, sExpansion):
         """
         Increases the expansion count for this card without changing the
@@ -828,15 +812,12 @@ class CardSetCardListModel(CardListModel):
                         get_card_expansion_info(oItem))
 
                 if self.iExtraLevelsMode == SHOW_EXPANSIONS:
-                    self._dNameSecondLevel2Iter.setdefault(oCard.name, {})
                     for sExpName in aExpansions:
                         # this should be paired with a call to increase the
                         # expansion count. We rely on this to sort
                         # out details - here we just create the needed space.
                         oNewIter = self._add_extra_level(oChildIter, sExpName,
                                 (0, 0, False, False))
-                        self._dNameSecondLevel2Iter[oCard.name].setdefault(
-                                sExpName, []).append(oNewIter)
                         # FIXME: Handle other display modes
 
             # Update Group Section
