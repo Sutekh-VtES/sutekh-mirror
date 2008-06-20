@@ -1,4 +1,4 @@
-# test_CardSetListModel.py
+# test_CardListModel.py
 # -*- coding: utf8 -*-
 # vim:fileencoding=utf8 ai ts=4 sts=4 et sw=4
 # Copyright 2008 Neil Muller <drnlmuller+sutekh@gmail.com>
@@ -7,12 +7,10 @@
 """Tests the Card List Model"""
 
 from sutekh.tests.TestCore import SutekhTest
-from sutekh.gui.CardListModel import CardListModelListener
-from sutekh.gui.CardSetListModel import CardSetCardListModel
-from sutekh.core.SutekhObjects import PhysicalCardSet
+from sutekh.gui.CardListModel import CardListModel, CardListModelListener
 import unittest
 
-class CardSetListener(CardListModelListener):
+class TestListener(CardListModelListener):
     """Listener used in the test cases."""
     # pylint: disable-msg=W0231
     # CardListModelListener has no __init__
@@ -25,21 +23,18 @@ class CardSetListener(CardListModelListener):
         self.bLoadCalled = True
         self.aCards = aAbsCards
 
-class CardSetListModelTests(SutekhTest):
+class CardListModelTests(SutekhTest):
     """Class for the test cases"""
 
     def test_basic(self):
         """Set of simple tests of the Card List Model"""
-        sName = 'Test 1'
-        oPCS = PhysicalCardSet(name=sName)
-        oModel = CardSetCardListModel(sName)
-        oListener = CardSetListener()
+        oModel = CardListModel()
+        oListener = TestListener()
         oModel.load()
         self.assertFalse(oListener.bLoadCalled)
         oModel.add_listener(oListener)
         oModel.load()
         self.assertTrue(oListener.bLoadCalled)
-        self.assertEquals(len(oListener.aCards), 0)
         # FIXME: Test the rest of the functionality
 
 if __name__ == "__main__":
