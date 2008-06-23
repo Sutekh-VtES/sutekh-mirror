@@ -697,13 +697,6 @@ def flush_cache():
         if type(oJoin) is SOCachedRelatedJoin:
             oJoin.flush_cache()
 
-def flush_specific_join(oClass):
-    """Flush the cached joins involving the given class"""
-    for oJoin in AbstractCard.sqlmeta.joins:
-        if isinstance(oJoin, SOCachedRelatedJoin) and \
-                oJoin.otherClass is oClass:
-            oJoin.flush_cache()
-
 def init_cache():
     """Initiliase the cached join tables."""
     for oJoin in AbstractCard.sqlmeta.joins:

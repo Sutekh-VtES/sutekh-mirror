@@ -62,7 +62,23 @@ class FilterTests(SutekhTest):
 
         return oFullFilter, sorted(aPhysicalCards)
 
-
+    def _convert_to_phys_cards(self, aList):
+        """Converts a list of Name, Expansion Name tuples into physical
+           cards"""
+        aPhysCards = []
+        for sName, sExp in aList:
+            try:
+                if sExp:
+                    oExp = IExpansion(sExp)
+                else:
+                    oExp = None
+                oAbs = IAbstractCard(sName)
+                oCard = IPhysicalCard((oAbs, oExp))
+                aPhysCards.append(oCard)
+            except SQLObjectNotFound:
+                self.fail("Invalid physical card (%s from expansion %s)"
+                        % (sName, sExp))
+        return aPhysCards
 
     # pylint: disable-msg=R0914
     # We don't really care about the number of local variables here
@@ -333,7 +349,7 @@ class FilterTests(SutekhTest):
         oExp = IExpansion('LotN')
         oPhysAK = IPhysicalCard((oAbsAK, oExp))
 
-        aPCSandCardFilterTests = [
+        aPCSAbsCardTests = [
                 (Filters.PhysicalCardSetFilter('Test 1'),
                     Filters.CardTypeFilter('Vampire'),
                     [u"Alexandra", u"Sha-Ennu"]),
@@ -357,13 +373,37 @@ class FilterTests(SutekhTest):
                     []),
                 ]
 
-        for oPCSFilter, oFilter, aExpectedCards in aPCSandCardFilterTests:
+        for oPCSFilter, oFilter, aExpectedCards in aPCSAbsCardTests:
             oFullFilter = Filters.FilterAndBox([oPCSFilter, oFilter])
+            self.assertTrue('PhysicalCard' in oFullFilter.types)
             aCSCards = [IAbstractCard(x).name for x in oFullFilter.select(
                         MapPhysicalCardToPhysicalCardSet).distinct()]
             self.assertEqual(aCSCards, aExpectedCards, "Filter Object %s"
                     " failed. %s != %s." % (oFullFilter, aCSCards,
                         aExpectedCards))
+
+        aPCSPhysCardTests = [
+                (Filters.PhysicalCardSetFilter('Test 1'),
+                    Filters.CardTypeFilter('Vampire'),
+                    [('Alexandra', 'CE'), ('Sha-Ennu', None)]),
+                (Filters.PhysicalCardSetFilter('Test 2'),
+                    Filters.SpecificCardFilter('AK-47'),
+                    [('AK-47', 'LotN')]),
+                (Filters.PhysicalCardSetFilter('Test 3'),
+                    Filters.SpecificPhysCardIdFilter(oPhysAK.id),
+                    []),
+                ]
+
+        for oPCSFilter, oFilter, aExpectedCards in aPCSPhysCardTests:
+            oFullFilter = Filters.FilterAndBox([oPCSFilter, oFilter])
+            self.assertTrue('PhysicalCard' in oFullFilter.types)
+            aCSCards = [IPhysicalCard(x) for x in oFullFilter.select(
+                        MapPhysicalCardToPhysicalCardSet).distinct()]
+            aExpectedPhysCards = self._convert_to_phys_cards(aExpectedCards)
+            self.assertEqual(aCSCards, aExpectedPhysCards, "Filter Object %s"
+                    " failed. %s != %s." % (oFullFilter, aCSCards,
+                        aExpectedPhysCards))
+
 
         aPCSCardsInUse = list(Filters.PhysicalCardSetInUseFilter().select(
                 PhysicalCard).distinct())
