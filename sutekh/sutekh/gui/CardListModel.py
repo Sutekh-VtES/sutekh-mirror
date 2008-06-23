@@ -49,23 +49,9 @@ class CardListModelListener(object):
         """
         pass
 
-    def add_new_card(self, oCard):
+    def add_new_card(self, oCard, bVisible):
         """
         A single copy of the given card has been added.
-        oCard: AbstractCard for the card altered (the actual card may be a Physical Card).
-        """
-        pass
-
-    def add_new_card_expansion(self, oCard, sExpansion):
-        """
-        A new expansion of the given card has been added.
-        oCard: AbstractCard for the card altered (the actual card may be a Physical Card).
-        """
-        pass
-
-    def alter_card_expansion_count(self, oCard, sExpansion, iChg):
-        """
-        The count of the given Expansion has been altered by iChg.
         oCard: AbstractCard for the card altered (the actual card may be a Physical Card).
         """
         pass
