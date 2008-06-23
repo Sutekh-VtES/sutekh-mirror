@@ -11,6 +11,8 @@ Code Cleanup
    looks like something worth addressing
    - Common base class for the TreeViews?
  * More tests
+ * Rename references to PhysicalCardSet to CardSet, and rensure all references
+   to AbstractCardSet are gone, except for AbstractCardSetParser
 
 Gui (Functionality):
  * Finish ClusterCardList plugin.
@@ -57,3 +59,4 @@ For 0.6:
    - CSV export plugin for card sets
  * Address issues with exporting Sutekh card sets to ARDB and FELDB
  * import card sets from ARDB and FELDB
+ * Expose Physical Card Set Card Count filter to the user

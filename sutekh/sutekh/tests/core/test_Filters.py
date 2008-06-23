@@ -78,7 +78,7 @@ class FilterTests(SutekhTest):
             except SQLObjectNotFound:
                 self.fail("Invalid physical card (%s from expansion %s)"
                         % (sName, sExp))
-        return aPhysCards
+        return sorted(aPhysCards)
 
     # pylint: disable-msg=R0914
     # We don't really care about the number of local variables here
@@ -269,34 +269,6 @@ class FilterTests(SutekhTest):
             self.assertEqual(aCards, aExpectedCards, "Filter Object %s"
                     " failed. %s != %s." % (oFilter, aCards, aExpectedCards))
 
-        aNumberTests = [
-                (Filters.MultiPhysicalCardCountFilter(['3']),
-                    [u"Aaron Duggan, Cameron's Toady", u"Abandoning the Flesh",
-                     u"Abd al-Rashid", u"Akram", u"Alexandra",
-                     u"Alfred Benezri", u"Angelica, The Canonicus", u"Bronwen",
-                     u"Gracis Nostinus", u'L\xe1z\xe1r Dobrescu',
-                     u'Yvette, The Hopeless']),
-                (Filters.MultiPhysicalCardCountFilter(['4']),
-                    ["Aaron's Feeding Razor", 'Ablative Skin',
-                        u"Anastasz di Zagreb", u"Anson"]),
-        ]
-
-        # test abstract card selects
-        for oFilter, aExpectedNames in aNumberTests:
-            aCards = oFilter.select(AbstractCard).distinct()
-            aNames = sorted([oC.name for oC in aCards])
-            self.assertEqual(aNames, aExpectedNames, "Filter Object"
-                    " %s failed. %s != %s." % (oFilter, aNames,
-                        aExpectedNames))
-
-        # test physical card selects
-        for oFilter, aExpectedNames in aNumberTests:
-            oFilter, aExpectedCards = self._physical_test((oFilter,
-                aExpectedNames))
-            aCards = sorted(oFilter.select(PhysicalCard).distinct())
-            self.assertEqual(aCards, aExpectedCards, "Filter Object %s"
-                    " failed. %s != %s." % (oFilter, aCards, aExpectedCards))
-
     def test_physical_card_set_filters(self):
         """Tests for the physical card set filters."""
         # Although splitting this off does add an additional init
@@ -306,9 +278,11 @@ class FilterTests(SutekhTest):
                 ('Test 3', 'Author A', 'Something different', True)]
         aPCSCards = [
                 [('Abombwe', None), ('Alexandra', 'CE'),
-                ('Sha-Ennu', None)],
+                ('Sha-Ennu', None), ('Sha-Ennu', None), ('Sha-Ennu', None),
+                ('Sha-Ennu', 'Third Edition')],
                 [('Sha-Ennu', 'Third Edition'), ('Anson', 'Jyhad'),
-                    ('.44 magnum', 'Jyhad'), ('ak-47', 'LotN')],
+                    ('.44 magnum', 'Jyhad'), ('ak-47', 'LotN'),
+                    ('Alexandra', 'CE'), ('Alexandra', 'CE')],
                 [('Yvette, The Hopeless', 'BSC')]]
         aPCSs = []
         # pylint: disable-msg=E1101
@@ -352,7 +326,8 @@ class FilterTests(SutekhTest):
         aPCSAbsCardTests = [
                 (Filters.PhysicalCardSetFilter('Test 1'),
                     Filters.CardTypeFilter('Vampire'),
-                    [u"Alexandra", u"Sha-Ennu"]),
+                    [u"Alexandra", u"Sha-Ennu", u"Sha-Ennu", u"Sha-Ennu",
+                        u"Sha-Ennu"]),
                 (Filters.PhysicalCardSetFilter('Test 1'),
                     Filters.CardTypeFilter('Master'),
                     [u"Abombwe"]),
@@ -385,7 +360,9 @@ class FilterTests(SutekhTest):
         aPCSPhysCardTests = [
                 (Filters.PhysicalCardSetFilter('Test 1'),
                     Filters.CardTypeFilter('Vampire'),
-                    [('Alexandra', 'CE'), ('Sha-Ennu', None)]),
+                    [('Alexandra', 'CE'), ('Sha-Ennu', None),
+                        ('Sha-Ennu', None), ('Sha-Ennu', None),
+                        ('Sha-Ennu', 'Third Edition')]),
                 (Filters.PhysicalCardSetFilter('Test 2'),
                     Filters.SpecificCardFilter('AK-47'),
                     [('AK-47', 'LotN')]),
@@ -397,8 +374,8 @@ class FilterTests(SutekhTest):
         for oPCSFilter, oFilter, aExpectedCards in aPCSPhysCardTests:
             oFullFilter = Filters.FilterAndBox([oPCSFilter, oFilter])
             self.assertTrue('PhysicalCard' in oFullFilter.types)
-            aCSCards = [IPhysicalCard(x) for x in oFullFilter.select(
-                        MapPhysicalCardToPhysicalCardSet).distinct()]
+            aCSCards = sorted([IPhysicalCard(x) for x in oFullFilter.select(
+                        MapPhysicalCardToPhysicalCardSet).distinct()])
             aExpectedPhysCards = self._convert_to_phys_cards(aExpectedCards)
             self.assertEqual(aCSCards, aExpectedPhysCards, "Filter Object %s"
                     " failed. %s != %s." % (oFullFilter, aCSCards,
@@ -412,6 +389,32 @@ class FilterTests(SutekhTest):
                 'Use Filter failed %s != %s' % (aPCSCardsInUse,
                     aExpectedCards))
 
+        # Number tests
+        aPCSNumberTests = [
+                (Filters.PhysicalCardSetFilter('Test 1'),
+                    Filters.CardSetMultiCardCountFilter('4', aPCSs[0]),
+                    [u"Sha-Ennu", u"Sha-Ennu", u"Sha-Ennu", u"Sha-Ennu"]),
+                (Filters.PhysicalCardSetFilter('Test 1'),
+                    Filters.CardSetMultiCardCountFilter('7', aPCSs[0]),
+                    []),
+                (Filters.PhysicalCardSetFilter('Test 1'),
+                    Filters.CardSetMultiCardCountFilter('1', aPCSs[0]),
+                    [u"Abombwe", u"Alexandra"]),
+                # Cards in 'Test 2' with zero count in 'Test 1'
+                (Filters.PhysicalCardSetFilter('Test 2'),
+                    Filters.CardSetMultiCardCountFilter('0', aPCSs[0]),
+                    [u"Anson", u".44 Magnum", u"AK-47"]),
+                    ]
+
+        for oPCSFilter, oFilter, aExpectedCards in aPCSNumberTests:
+            # pylint: disable-msg=E1101
+            # pyprotocols confuses pylint
+            oFullFilter = Filters.FilterAndBox([oPCSFilter, oFilter])
+            aCSCards = [IAbstractCard(x).name for x in oFullFilter.select(
+                        MapPhysicalCardToPhysicalCardSet).distinct()]
+            self.assertEqual(aCSCards, aExpectedCards, "Filter Object %s"
+                    " failed. %s != %s." % (oFullFilter, aCSCards,
+                        aExpectedCards))
 
 if __name__ == "__main__":
     unittest.main()

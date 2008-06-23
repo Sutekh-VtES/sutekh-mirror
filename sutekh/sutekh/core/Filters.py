@@ -18,7 +18,8 @@ from sutekh.core.SutekhObjects import AbstractCard, IAbstractCard, ICreed, \
         IVirtue, IClan, IDiscipline, IExpansion, ITitle, ISect, ICardType, \
         IPhysicalCardSet, IRarityPair, IRarity, Clan, \
         Discipline, CardType, Title, Creed, Virtue, Sect, Expansion, \
-        RarityPair, PhysicalCardSet, PhysicalCard, IDisciplinePair
+        RarityPair, PhysicalCardSet, PhysicalCard, IDisciplinePair, \
+        MapPhysicalCardToPhysicalCardSet
 from sqlobject import SQLObjectNotFound, AND, OR, NOT, LIKE, func, \
         IN as SQLOBJ_IN
 from sqlobject.sqlbuilder import Table, Alias, LEFTJOINOn, Select, \
@@ -978,41 +979,59 @@ class AbstractCardFilter(Filter):
     def _get_expression(self):
         return TRUE # See PhysicalCardFilter
 
-class MultiPhysicalCardCountFilter(DirectFilter):
+class CardSetMultiCardCountFilter(DirectFilter):
     """Filter on number of cards in the Physical Card Set"""
-    keyword = "PhysicalCardCount"
-    description = "Physical Card Count"
+    keyword = "CardCount"
+    description = "Card Count"
     helptext = "a list of card numbers (filters on number of cards in the " \
-            "Physical Card list)"
+            "Card Set)"
     islistfilter = True
-    types = ['AbstractCard', 'PhysicalCard']
+    types = ['PhysicalCard']
 
-    def __init__(self, aCounts):
-        # Selects cards with a count in the range specified by aCounts
+    def __init__(self, aCounts, oCS):
+        # Selects cards with a count in the range specified by aCounts from
+        # the Physical Card Set oCS
+        # We rely on the joins to limit this to the appropriate card sets
         # pylint: disable-msg=E1101
         # SQLObject methods not detected by plylint
         aCounts = set(aCounts)
         self._oFilters = []
         if '0' in aCounts:
             aCounts.remove('0')
-            # Doesn't seem to be a way to do a DISTINCT using
-            # sqlbuilder.Select, so we fudge it with GROUP BY
-            oZeroQuery = NOT(IN(AbstractCard.q.id, Select(
+            oZeroQuery = NOT(IN(PhysicalCard.q.abstractCardID, Select(
                 PhysicalCard.q.abstractCardID,
-                groupBy=PhysicalCard.q.abstractCardID)))
+                where=MapPhysicalCardToPhysicalCardSet.q.physicalCardSetID
+                    == oCS.id,
+                join=LEFTJOINOn(PhysicalCard, MapPhysicalCardToPhysicalCardSet,
+                    PhysicalCard.q.id ==
+                    MapPhysicalCardToPhysicalCardSet.q.physicalCardID),
+                groupBy=PhysicalCard.q.abstractCardID,
+                having=func.COUNT(PhysicalCard.q.abstractCardID) > 0)))
             self._oFilters.append(oZeroQuery)
         if '>30' in aCounts:
             aCounts.remove('>30')
-            oGreater30Query = IN(AbstractCard.q.id, Select(
+            oGreater30Query = IN(PhysicalCard.q.abstractCardID, Select(
                 PhysicalCard.q.abstractCardID,
-                groupBy=PhysicalCard.q.abstractCardID,
+                where=MapPhysicalCardToPhysicalCardSet.q.physicalCardSetID
+                    == oCS.id,
+                join=LEFTJOINOn(PhysicalCard, MapPhysicalCardToPhysicalCardSet,
+                    PhysicalCard.q.id ==
+                    MapPhysicalCardToPhysicalCardSet.q.physicalCardID),
+                groupBy=(PhysicalCard.q.abstractCardID,
+                    MapPhysicalCardToPhysicalCardSet.q.physicalCardSetID),
                 having=func.COUNT(PhysicalCard.q.abstractCardID) > 30))
             self._oFilters.append(oGreater30Query)
         if len(aCounts) > 0:
             # SQLite doesn't like strings here, so convert to int
-            oCountFilter = IN(AbstractCard.q.id, Select(
+            oCountFilter = IN(PhysicalCard.q.abstractCardID, Select(
                 PhysicalCard.q.abstractCardID,
-                groupBy=PhysicalCard.q.abstractCardID,
+                where=MapPhysicalCardToPhysicalCardSet.q.physicalCardSetID
+                    == oCS.id,
+                join=LEFTJOINOn(PhysicalCard, MapPhysicalCardToPhysicalCardSet,
+                    PhysicalCard.q.id ==
+                    MapPhysicalCardToPhysicalCardSet.q.physicalCardID),
+                groupBy=(PhysicalCard.q.abstractCardID,
+                    MapPhysicalCardToPhysicalCardSet.q.physicalCardSetID),
                 having=IN(func.COUNT(PhysicalCard.q.abstractCardID),
                     [int(x) for x in aCounts])))
             self._oFilters.append(oCountFilter)
@@ -1443,6 +1462,6 @@ aParserFilters = [MultiCardTypeFilter, MultiCostTypeFilter, MultiClanFilter,
         MultiPhysicalExpansionFilter, PhysicalCardSetNameFilter,
         PhysicalCardSetAuthorFilter, PhysicalCardSetDescriptionFilter,
         PhysicalCardSetAnnotationsFilter, MultiPhysicalCardSetFilter,
-        MultiPhysicalCardCountFilter, PhysicalCardSetInUseFilter,
+        PhysicalCardSetInUseFilter,
         PCSPhysicalCardSetInUseFilter, CardFunctionFilter]
 

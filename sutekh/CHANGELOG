@@ -1,5 +1,30 @@
+23 June 2008
+ * Replce exisitng physical card count filter with a card set card count
+   filter, as, with the changed database, the physical card count filter is
+   no longer useful.
+
+20 June 2008
+ * Add stubs for testing CardListModel and CardSetListModel
+
+18 June 2008
+ * Add a CardSetModelRow object for holding data about the contents of a model
+   row. Replaces the current dict of dict's.
+ * Show all child card sets when a card set is editable
+ * Also show everything in the 'expansion + card sets' and 'card sets + expansions'
+   modes
+ * Refactor cache management in the CardSetListModel
+
+17 June 2008
+ * Move card list model updates to the database signal handlers, to ensure
+   correct behaviour.
+
+16 June 2008
+ * Add SpecificPhysCardIdFilter + tests on the Specific card filters
+
 15 June 2008
  * pylint cleanups
+ * Make dragging from the Physical Card list when only 1 expansion is shown
+   (via an Expansion filter) work as expected.
 
 14 June 2008
  * Plugin cleanups Re-enable Clan Discipline Stats plugin.
