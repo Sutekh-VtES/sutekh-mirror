@@ -352,6 +352,12 @@ class MultiPaneWindow(gtk.Window):
                 fSetSensitiveFunc(False)
             else:
                 fSetSensitiveFunc(True)
+        # Disable the menu accelerators for unfocussed panes
+        for oFrame in self.dOpenFrames:
+            if self._oFocussed != oFrame and hasattr(oFrame, 'menu') and \
+                    hasattr(oFrame.menu, 'remove_accels'):
+                oFrame.menu.remove_accels()
+        # Handle focussed pane stuff
         if self._oFocussed:
             # Can always split horizontally
             self.__oMenu.set_split_horizontal_active(True)
@@ -360,26 +366,21 @@ class MultiPaneWindow(gtk.Window):
                 self.__oMenu.set_split_vertical_active(False)
             else:
                 self.__oMenu.set_split_vertical_active(True)
+            # can't delete the last pane
             if self._iNumberOpenFrames > 1:
                 self.__oMenu.del_pane_set_sensitive(True)
             else:
                 self.__oMenu.del_pane_set_sensitive(False)
+            # Ensure accelerators are active
+            if hasattr(self._oFocussed, 'menu') and \
+                    hasattr(self._oFocussed.menu, 'activate_accels'):
+                self._oFocussed.menu.activate_accels()
         else:
             # Can't split when no pane chosen
             self.__oMenu.set_split_vertical_active(False)
             self.__oMenu.set_split_horizontal_active(False)
             # Can't delete either
             self.__oMenu.del_pane_set_sensitive(False)
-        # Enable / disable the menu's
-        for oFrame in self.dOpenFrames:
-            if not hasattr(oFrame, 'menu'):
-                continue
-            elif self._oFocussed == oFrame:
-                if hasattr(oFrame.menu, 'activate_accels'):
-                    oFrame.menu.activate_accels()
-            else:
-                if hasattr(oFrame.menu, 'remove_accels'):
-                    oFrame.menu.remove_accels()
 
     def set_selection_text(self, sText):
         """Set the current selection text for copy+paste."""
