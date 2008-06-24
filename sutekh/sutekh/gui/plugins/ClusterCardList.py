@@ -48,6 +48,9 @@ class ClusterCardList(CardListPlugin):
         if not self.model:
             self._fMakeCardSetFromCluster = None
         self._fMakeCardSetFromCluster = self.make_pcs_from_cluster
+        self._dPropButtons = {}
+        self._dGroups = {}
+        self._oResultsVbox = None
 
     # pylint: enable-msg=W0142
 
@@ -293,11 +296,15 @@ class ClusterCardList(CardListPlugin):
         elif oResponse == gtk.RESPONSE_APPLY:
             self.do_clustering()
 
+    # pylint: disable-msg=W0613
+    # oSomeObj required by function signature
     def handle_make_card_sets(self, oSomeObj):
         """Create card a suitable card set from the chosen clusters"""
         for tId, oBut in self._dCardSetMakingButtons.iteritems():
             if oBut.get_active():
                 self._fMakeCardSetFromCluster(tId)
+
+    # pylint: enable-msg=W0613
 
     def do_clustering(self):
         """Call the chosen clustering algorithm"""

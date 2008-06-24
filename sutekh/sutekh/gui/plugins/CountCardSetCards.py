@@ -92,7 +92,7 @@ class CountCardSetCards(CardListPlugin, CardListModelListener):
     def add_new_card(self, oCard, bVisible):
         """response to add_new_card events"""
         if not bVisible:
-            return 
+            return
         self.__iTot += 1
         if _id_card(oCard) == 'Crypt':
             self.__iCrypt += 1

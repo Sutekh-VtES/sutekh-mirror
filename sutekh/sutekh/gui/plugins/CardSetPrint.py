@@ -72,8 +72,6 @@ class CardSetPrint(CardListPlugin):
         elif oRes == gtk.PRINT_OPERATION_RESULT_APPLY:
             self._oSettings = oPrintOp.get_print_settings()
 
-    # pylint: enable-msg=W0613
-
     def begin_print(self, oPrintOp, oContext):
         """Set up printing context.
 
@@ -115,7 +113,6 @@ class CardSetPrint(CardListPlugin):
         self._aPageBreaks = aPageBreaks
         self._oPangoLayout = oLayout
 
-    # pylint: disable-msg=W0613
     # oPrintOp, oContext part of function signature
     def end_print(self, oPrintOp, oContext):
         """Clean up resources allocated in begin_print.
@@ -123,6 +120,7 @@ class CardSetPrint(CardListPlugin):
         self._aPageBreaks = None
         self._oPangoLayout = None
 
+    # oPrintOp part of function signature
     def draw_page(self, oPrintOp, oContext, iPageNum):
         """Page drawing callback.
            """
