@@ -13,6 +13,9 @@ Code Cleanup
  * More tests
  * Rename references to PhysicalCardSet to CardSet, and rensure all references
    to AbstractCardSet are gone, except for AbstractCardSetParser
+ * Add ways of specifying more limited test data sets
+ * Add better persistence of data across tests, to avoid rerunning the 
+   parser for each test and improve test runtime
 
 Gui (Functionality):
  * Finish ClusterCardList plugin.
@@ -42,14 +45,13 @@ Other Tasks:
  * Find some users and developers interested in Sutekh on Windows.
 
 For 0.6:
- * Factor out things like the lists of expansions and disciplines in SutekhObjects
-   to a seperate file
+ * Factor out things like the lists of expansions and disciplines in
+   SutekhObjects to a seperate file
  * Finish database reddesign fallout:
    - Address speed issues whne showing parent/child card set counts
    - Sort out editing issues
-     - Enable editing of child card sets via "show child set" view
-     - Sort out the database signals so we can react to changes properly
-   - Add colour hints to card counts and parent card count columns
+     - Properly update model when card sets are changed
+   - Improve colour hints for card counts and parent card count columns
    - Improve visual feedback for open card sets + card sets in use?
  * Add decent keyboard shortcuts
  * Create built-in tutorial and help.
@@ -58,5 +60,5 @@ For 0.6:
    - Rework card set independance plugin
    - CSV export plugin for card sets
  * Address issues with exporting Sutekh card sets to ARDB and FELDB
- * import card sets from ARDB and FELDB
+ * Import card sets from ARDB and FELDB
  * Expose Physical Card Set Card Count filter to the user

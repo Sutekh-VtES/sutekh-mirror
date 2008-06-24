@@ -16,6 +16,8 @@ from sutekh.SutekhUtility import delete_physical_card_set
 from sqlobject import SQLObjectNotFound
 import unittest
 
+# TODO: Seperate this into seperate tests under io
+
 class PhysicalCardSetTests(SutekhTest):
     """class for the Card Set tests"""
     aAbstractCards = ['.44 magnum', 'ak-47', 'abbot', 'abebe', 'abombwe']

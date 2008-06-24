@@ -85,7 +85,7 @@ class WhiteWolfParserTests(SutekhTest):
                         % (oAbs.name, oExp.name)
                     )
 
-        # Things still to check:
+        # TODO: Things still to check:
         #discipline
         #rarity
         #clan
