@@ -51,11 +51,39 @@ class CardSetListModelTests(SutekhTest):
         iTotal = oModel.iter_n_children(oIter)
         return iTotal
 
+    def _get_all_child_counts(self, oModel, oIter):
+        """Recursively descend the children of oIter, getting all the
+           relevant info."""
+        aList = []
+        oChildIter = oModel.iter_children(oIter)
+        while oChildIter:
+            aList.append((oModel.get_card_count_from_iter(oChildIter),
+                oModel.get_parent_count_from_iter(oChildIter),
+                oModel.get_name_from_iter(oChildIter)))
+            if oModel.iter_n_children(oChildIter) > 0:
+                aList.extend(self._get_all_child_counts(oModel, oChildIter))
+            oChildIter = oModel.iter_next(oChildIter)
+        aList.sort()
+        return aList
+
+    def _get_all_counts(self, oModel):
+        """Return a list of iCnt, iParCnt, sCardName tuples from the Model"""
+        return self._get_all_child_counts(oModel, None)
+
+    def _gen_card(self, sName, sExp):
+        """Create a card given the name and Expansion"""
+        if sExp:
+            oExp = IExpansion(sExp)
+        else:
+            oExp = None
+        oAbs = IAbstractCard(sName)
+        return IPhysicalCard((oAbs, oExp))
+
     # pylint: enable-msg=R0201
 
 
     def test_basic(self):
-        """Set of simple tests of the Card List Model"""
+        """Set of simple tests of the Card Set List Model"""
         sName = 'Test 1'
         oPCS = PhysicalCardSet(name=sName)
         oModel = CardSetCardListModel(sName)
@@ -70,9 +98,7 @@ class CardSetListModelTests(SutekhTest):
         self.assertEquals(oModel.iter_n_children(None), 1)
         aCards = [('Alexandra', 'CE'), ('Sha-Ennu', 'Third Edition')]
         for sName, sExp in aCards:
-            oAbs = IAbstractCard(sName)
-            oExp = IExpansion(sExp)
-            oPhysCard = IPhysicalCard((oAbs, oExp))
+            oPhysCard = self._gen_card(sName, sExp)
             # pylint: disable-msg=E1101
             # PyProtocols confuses pylint
             oPCS.addPhysicalCard(oPhysCard.id)
@@ -83,6 +109,50 @@ class CardSetListModelTests(SutekhTest):
         oModel.groupby = NullGrouping
         self.assertEqual(self._count_all_cards(oModel), 2)
         self.assertEqual(self._count_second_level(oModel), 2)
+        # Add Cards
+        # We don't repeat anything so we can use removePhysicalCard
+        # successfully below
+        aCards = [('AK-47', None), ('Bronwen', 'SW'), ('Cesewayo', None),
+                ('Anna "Dictatrix11" Suljic', 'NoR'), ('Ablative Skin',
+                    'Sabbat')]
+        for sName, sExp in aCards:
+            oPhysCard = self._gen_card(sName, sExp)
+            oPCS.addPhysicalCard(oPhysCard.id)
+            oPCS.syncUpdate()
+            oModel.inc_card(oPhysCard)
+        iAddTotals = (self._count_all_cards(oModel),
+                self._count_second_level(oModel))
+        oModel.load()
+        iTotals = (self._count_all_cards(oModel),
+                self._count_second_level(oModel))
+        self.assertEqual(iAddTotals, iTotals)
+        # Card removal
+        for sName, sExp in aCards:
+            oPhysCard = self._gen_card(sName, sExp)
+            oPCS.removePhysicalCard(oPhysCard.id)
+            oPCS.syncUpdate()
+            oModel.dec_card(oPhysCard)
+        iAddTotals = (self._count_all_cards(oModel),
+                self._count_second_level(oModel))
+        oModel.load()
+        iTotals = (self._count_all_cards(oModel),
+                self._count_second_level(oModel))
+        self.assertEqual(iAddTotals, iTotals)
+        # Also test that we've behaved sanely
+        self.assertEqual(self._count_all_cards(oModel), 2)
+        self.assertEqual(self._count_second_level(oModel), 2)
+        # Test adding a repeated card
+        aCards = [('Alexandra', 'CE'), ('Alexandra', None),
+                ('Ablative Skin', None)] * 5
+        for sName, sExp in aCards:
+            oPhysCard = self._gen_card(sName, sExp)
+            oPCS.addPhysicalCard(oPhysCard.id)
+            oPCS.syncUpdate()
+            oModel.inc_card(oPhysCard)
+        aList1 = self._get_all_counts(oModel)
+        oModel.load()
+        aList2 = self._get_all_counts(oModel)
+        self.assertEqual(aList1, aList2)
         # FIXME: Test the rest of the functionality
 
 if __name__ == "__main__":

@@ -348,6 +348,14 @@ class CardListModel(gtk.TreeStore):
         sCardName = self.get_value(oIter, 0).decode("utf-8")
         return sCardName
 
+    def get_card_count_from_iter(self, oIter):
+        """Return the card count for a given iterator"""
+        return self.get_int_value(oIter, 1)
+
+    def get_parent_count_from_iter(self, oIter):
+        """Return the parent count for a given iterator"""
+        return self.get_int_value(oIter, 2)
+
     def _get_empty_text(self):
         """Get the correct text for an empty model."""
         if self.get_card_iterator(None).count() == 0:

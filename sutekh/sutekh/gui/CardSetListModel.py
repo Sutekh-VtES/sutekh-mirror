@@ -275,6 +275,11 @@ class CardSetCardListModel(CardListModel):
             return False, False
         return True, (iCnt > 0)
 
+    def check_card_stays(self, sCardName):
+        """Check if the given card entry should be removed."""
+        # FIXME: implement
+        return True
+
     def check_expansion_iter_stays(self, oCard, sExpansion, iCnt):
         """Check if the expansion entry should remain in the table"""
         # pylint: disable-msg=E1101
@@ -603,10 +608,6 @@ class CardSetCardListModel(CardListModel):
         sCardName = oPhysCard.abstractCard.name
         if self._dName2Iter.has_key(sCardName):
             self.alter_card_count(sCardName, -1)
-            if not self.check_card_stats(sCardName):
-                self.remove_card(sCardName)
-            else:
-                self.alter_card_count(oPhysCard, +1)
 
     def alter_card_expansion_count(self, sCardName, sExpansion, iChg):
         """Adjust the count for the given card + expansion combination by
