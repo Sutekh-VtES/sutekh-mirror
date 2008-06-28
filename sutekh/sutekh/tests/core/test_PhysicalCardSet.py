@@ -14,28 +14,30 @@ from sutekh.SutekhUtility import delete_physical_card_set
 from sqlobject import SQLObjectNotFound
 import unittest
 
+aAbstractCards = ['.44 magnum', 'ak-47', 'abbot', 'abebe', 'abombwe']
+aCardExpansions = [('.44 magnum', 'Jyhad'),
+        ('ak-47', 'LotN'),
+        ('abbot', 'Third Edition'),
+        ('abombwe', 'Legacy of Blood')]
+aCardSetNames = ['Test Set 1', 'Test Set 2']
+
+def get_phys_cards():
+    """Fill contents of the physical card table"""
+    aAddedPhysCards = []
+    for sName in aAbstractCards:
+        oAC = IAbstractCard(sName)
+        oPC = IPhysicalCard((oAC, None))
+        aAddedPhysCards.append(oPC)
+    for sName, sExpansion in aCardExpansions:
+        oAC = IAbstractCard(sName)
+        oExpansion = IExpansion(sExpansion)
+        oPC = IPhysicalCard((oAC, oExpansion))
+        aAddedPhysCards.append(oPC)
+    return aAddedPhysCards
+
 class PhysicalCardSetTests(SutekhTest):
     """class for the Physical Card Set tests"""
-    aAbstractCards = ['.44 magnum', 'ak-47', 'abbot', 'abebe', 'abombwe']
-    aCardExpansions = [('.44 magnum', 'Jyhad'),
-            ('ak-47', 'LotN'),
-            ('abbot', 'Third Edition'),
-            ('abombwe', 'Legacy of Blood')]
-    aCardSetNames = ['Test Set 1', 'Test Set 2']
 
-    def _get_phys_cards(self):
-        """Fill contents of the physical card table"""
-        aAddedPhysCards = []
-        for sName in self.aAbstractCards:
-            oAC = IAbstractCard(sName)
-            oPC = IPhysicalCard((oAC, None))
-            aAddedPhysCards.append(oPC)
-        for sName, sExpansion in self.aCardExpansions:
-            oAC = IAbstractCard(sName)
-            oExpansion = IExpansion(sExpansion)
-            oPC = IPhysicalCard((oAC, oExpansion))
-            aAddedPhysCards.append(oPC)
-        return aAddedPhysCards
 
     def test_physical_card_set(self):
         """Test physical card set object"""
@@ -43,25 +45,25 @@ class PhysicalCardSetTests(SutekhTest):
         # E1101: SQLObject + PyProtocols magic confuses pylint
         # R0915, R0914: Want a long, sequentila test case to minimise
         # repeated setups, so it has lots of lines + variables
-        aAddedPhysCards = self._get_phys_cards()
+        aAddedPhysCards = get_phys_cards()
         # We have a physical card list, so create some physical card sets
-        oPhysCardSet1 = PhysicalCardSet(name=self.aCardSetNames[0])
+        oPhysCardSet1 = PhysicalCardSet(name=aCardSetNames[0])
         oPhysCardSet1.comment = 'A test comment'
         oPhysCardSet1.author = 'A test author'
 
-        self.assertEqual(oPhysCardSet1.name, self.aCardSetNames[0])
+        self.assertEqual(oPhysCardSet1.name, aCardSetNames[0])
         self.assertEqual(oPhysCardSet1.comment, 'A test comment')
-        oPhysCardSet2 = PhysicalCardSet(name=self.aCardSetNames[1],
+        oPhysCardSet2 = PhysicalCardSet(name=aCardSetNames[1],
                 comment='Test 2', author=oPhysCardSet1.author)
-        self.assertEqual(oPhysCardSet2.name, self.aCardSetNames[1])
+        self.assertEqual(oPhysCardSet2.name, aCardSetNames[1])
         self.assertEqual(oPhysCardSet2.author, oPhysCardSet1.author)
         self.assertEqual(oPhysCardSet2.comment, 'Test 2')
 
-        oPhysCardSet3 = IPhysicalCardSet(self.aCardSetNames[0])
+        oPhysCardSet3 = IPhysicalCardSet(aCardSetNames[0])
 
         self.assertEqual(oPhysCardSet1, oPhysCardSet3)
 
-        oPhysCardSet4 = PhysicalCardSet.byName(self.aCardSetNames[1])
+        oPhysCardSet4 = PhysicalCardSet.byName(aCardSetNames[1])
         self.assertEqual(oPhysCardSet2, oPhysCardSet4)
 
         # Add cards to the physical card sets
@@ -95,12 +97,12 @@ class PhysicalCardSetTests(SutekhTest):
         PhysicalCardSet.delete(oPhysCardSet1.id)
 
         self.assertRaises(SQLObjectNotFound, PhysicalCardSet.byName,
-            self.aCardSetNames[0])
+            aCardSetNames[0])
 
-        delete_physical_card_set(self.aCardSetNames[1])
+        delete_physical_card_set(aCardSetNames[1])
 
         self.assertRaises(SQLObjectNotFound, PhysicalCardSet.byName,
-            self.aCardSetNames[1])
+            aCardSetNames[1])
 
         self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
             physicalCardID = aAddedPhysCards[0].id).count(), 0)

@@ -7,6 +7,8 @@
 """Test Card Set reading from file"""
 
 from sutekh.tests.TestCore import SutekhTest
+from sutekh.tests.core.test_PhysicalCardSet import aCardSetNames, \
+        get_phys_cards
 from sutekh.core.SutekhObjects import IAbstractCard, IPhysicalCard, \
         IExpansion, IPhysicalCardSet, MapPhysicalCardToPhysicalCardSet
 from sutekh.io.PhysicalCardSetParser import PhysicalCardSetParser
@@ -14,26 +16,6 @@ import unittest
 
 class PhysicalCardSetParserTests(SutekhTest):
     """class for the Card Set Parser tests"""
-    aAbstractCards = ['.44 magnum', 'ak-47', 'abbot', 'abebe', 'abombwe']
-    aCardExpansions = [('.44 magnum', 'Jyhad'),
-            ('ak-47', 'LotN'),
-            ('abbot', 'Third Edition'),
-            ('abombwe', 'Legacy of Blood')]
-    aCardSetNames = ['Test Set 1', 'Test Set 2']
-
-    def _get_phys_cards(self):
-        """Fill contents of the physical card table"""
-        aAddedPhysCards = []
-        for sName in self.aAbstractCards:
-            oAC = IAbstractCard(sName)
-            oPC = IPhysicalCard((oAC, None))
-            aAddedPhysCards.append(oPC)
-        for sName, sExpansion in self.aCardExpansions:
-            oAC = IAbstractCard(sName)
-            oExpansion = IExpansion(sExpansion)
-            oPC = IPhysicalCard((oAC, oExpansion))
-            aAddedPhysCards.append(oPC)
-        return aAddedPhysCards
 
     def test_physical_card_set_parser(self):
         """Test physical card set reading"""
@@ -41,7 +23,7 @@ class PhysicalCardSetParserTests(SutekhTest):
         # E1101: SQLObject + PyProtocols magic confuses pylint
         # R0915, R0914: Want a long, sequentila test case to minimise
         # repeated setups, so it has lots of lines + variables
-        aAddedPhysCards = self._get_phys_cards()
+        aAddedPhysCards = get_phys_cards()
         # We have a physical card list, so create some physical card sets
 
         sExpected1 = '<physicalcardset author="A test author" ' \
@@ -83,8 +65,8 @@ class PhysicalCardSetParserTests(SutekhTest):
         oParser.parse(fIn)
         fIn.close()
 
-        oPhysCardSet1 = IPhysicalCardSet(self.aCardSetNames[0])
-        oPhysCardSet2 = IPhysicalCardSet(self.aCardSetNames[1])
+        oPhysCardSet1 = IPhysicalCardSet(aCardSetNames[0])
+        oPhysCardSet2 = IPhysicalCardSet(aCardSetNames[1])
 
         self.assertEqual(len(oPhysCardSet1.cards), 5)
         self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(

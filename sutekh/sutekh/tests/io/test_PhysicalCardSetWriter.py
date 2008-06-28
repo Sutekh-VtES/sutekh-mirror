@@ -7,6 +7,8 @@
 """Test Writing Card Set handling"""
 
 from sutekh.tests.TestCore import SutekhTest
+from sutekh.tests.core.test_PhysicalCardSet import aCardSetNames, \
+        get_phys_cards
 from sutekh.core.SutekhObjects import IAbstractCard, IPhysicalCard, \
         IExpansion, PhysicalCardSet
 from sutekh.io.PhysicalCardSetWriter import PhysicalCardSetWriter
@@ -14,26 +16,6 @@ import unittest
 
 class PhysicalCardSetWriterTests(SutekhTest):
     """class for the Physical Card Set writer tests"""
-    aAbstractCards = ['.44 magnum', 'ak-47', 'abbot', 'abebe', 'abombwe']
-    aCardExpansions = [('.44 magnum', 'Jyhad'),
-            ('ak-47', 'LotN'),
-            ('abbot', 'Third Edition'),
-            ('abombwe', 'Legacy of Blood')]
-    aCardSetNames = ['Test Set 1', 'Test Set 2']
-
-    def _get_phys_cards(self):
-        """Fill contents of the physical card table"""
-        aAddedPhysCards = []
-        for sName in self.aAbstractCards:
-            oAC = IAbstractCard(sName)
-            oPC = IPhysicalCard((oAC, None))
-            aAddedPhysCards.append(oPC)
-        for sName, sExpansion in self.aCardExpansions:
-            oAC = IAbstractCard(sName)
-            oExpansion = IExpansion(sExpansion)
-            oPC = IPhysicalCard((oAC, oExpansion))
-            aAddedPhysCards.append(oPC)
-        return aAddedPhysCards
 
     def test_physical_card_set_writer(self):
         """Test physical card set writing"""
@@ -41,9 +23,9 @@ class PhysicalCardSetWriterTests(SutekhTest):
         # E1101: SQLObject + PyProtocols magic confuses pylint
         # R0915, R0914: Want a long, sequentila test case to minimise
         # repeated setups, so it has lots of lines + variables
-        aAddedPhysCards = self._get_phys_cards()
+        aAddedPhysCards = get_phys_cards()
         # We have a physical card list, so create some physical card sets
-        oPhysCardSet1 = PhysicalCardSet(name=self.aCardSetNames[0])
+        oPhysCardSet1 = PhysicalCardSet(name=aCardSetNames[0])
         oPhysCardSet1.comment = 'A test comment'
         oPhysCardSet1.author = 'A test author'
 
@@ -71,7 +53,7 @@ class PhysicalCardSetWriterTests(SutekhTest):
 
         sTempFileName =  self._create_tmp_file()
         fOut = open(sTempFileName, 'w')
-        oWriter.write(fOut, self.aCardSetNames[0])
+        oWriter.write(fOut, aCardSetNames[0])
         fOut.close()
 
         fIn = open(sTempFileName, 'r')
