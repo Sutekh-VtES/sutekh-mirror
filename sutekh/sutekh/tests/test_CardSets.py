@@ -1,25 +1,21 @@
-# test_CardSets.py
+# test_PhysicalCardSet.py
 # -*- coding: utf8 -*-
 # vim:fileencoding=utf8 ai ts=4 sts=4 et sw=4
 # Copyright 2008 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-"""Test Card Set handling"""
+"""Test the PhysicalCardSet object handling"""
 
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.core.SutekhObjects import IAbstractCard, IPhysicalCard, \
         IExpansion, PhysicalCardSet, IPhysicalCardSet, \
         MapPhysicalCardToPhysicalCardSet
-from sutekh.io.PhysicalCardSetParser import PhysicalCardSetParser
-from sutekh.io.PhysicalCardSetWriter import PhysicalCardSetWriter
 from sutekh.SutekhUtility import delete_physical_card_set
 from sqlobject import SQLObjectNotFound
 import unittest
 
-# TODO: Seperate this into seperate tests under io
-
 class PhysicalCardSetTests(SutekhTest):
-    """class for the Card Set tests"""
+    """class for the Physical Card Set tests"""
     aAbstractCards = ['.44 magnum', 'ak-47', 'abbot', 'abebe', 'abombwe']
     aCardExpansions = [('.44 magnum', 'Jyhad'),
             ('ak-47', 'LotN'),
@@ -42,7 +38,7 @@ class PhysicalCardSetTests(SutekhTest):
         return aAddedPhysCards
 
     def test_physical_card_set(self):
-        """Test physical card set handling"""
+        """Test physical card set object"""
         # pylint: disable-msg=E1101, R0915, R0914
         # E1101: SQLObject + PyProtocols magic confuses pylint
         # R0915, R0914: Want a long, sequentila test case to minimise
@@ -90,31 +86,6 @@ class PhysicalCardSetTests(SutekhTest):
         self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
             physicalCardID = aAddedPhysCards[4].id).count(), 2)
 
-        # Check output
-
-        oWriter = PhysicalCardSetWriter()
-        self.assertEqual(oWriter.gen_xml_string(oPhysCardSet1.name),
-            oWriter.gen_xml_string(oPhysCardSet3.name))
-        sExpected = '<physicalcardset author="A test author" ' \
-                'comment="A test comment" name="Test Set 1" '\
-                'sutekh_xml_version="1.2"><annotations /><card count="1" ' \
-                'expansion="None Specified" id="11" name="Abebe" /><card ' \
-                'count="1" expansion="None Specified" id="1" ' \
-                'name=".44 Magnum" /><card count="1" expansion="None ' \
-                'Specified" id="8" name="Abbot" /><card count="1" ' \
-                'expansion="None Specified" id="2" name="AK-47" /><card ' \
-                'count="1" expansion="None Specified" id="14" ' \
-                'name="Abombwe" /></physicalcardset>'
-        self.assertEqual(oWriter.gen_xml_string(oPhysCardSet1.name),
-                sExpected)
-
-        sTempFileName =  self._create_tmp_file()
-        fOut = open(sTempFileName, 'w')
-        oWriter.write(fOut, self.aCardSetNames[0])
-        fOut.close()
-
-        sPCS2 = oWriter.gen_xml_string(self.aCardSetNames[1])
-
         # Check Deletion
 
         for oCard in oPhysCardSet1.cards:
@@ -135,28 +106,6 @@ class PhysicalCardSetTests(SutekhTest):
             physicalCardID = aAddedPhysCards[0].id).count(), 0)
         self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
             physicalCardID = aAddedPhysCards[4].id).count(), 0)
-
-        # Check input
-
-        oParser = PhysicalCardSetParser()
-        fIn = open(sTempFileName, 'r')
-        oParser.parse(fIn)
-        fIn.close()
-
-        oParser.parse_string(sPCS2)
-
-        oPhysCardSet1 = IPhysicalCardSet(self.aCardSetNames[0])
-        oPhysCardSet2 = IPhysicalCardSet(self.aCardSetNames[1])
-
-        self.assertEqual(len(oPhysCardSet1.cards), 5)
-        self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
-            physicalCardID = aAddedPhysCards[0].id).count(), 1)
-        self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
-            physicalCardID = aAddedPhysCards[7].id).count(), 1)
-        self.assertEqual(len(oPhysCardSet2.cards), 5)
-        self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
-            physicalCardID = aAddedPhysCards[4].id).count(), 2)
-
 
 if __name__ == "__main__":
     unittest.main()
