@@ -363,22 +363,3 @@ class CardListModel(gtk.TreeStore):
         else:
             sText = 'No Cards found'
         return sText
-
-    def _clear_expansion_iters(self, sCardName):
-        """Zero all the expasion items for sCardName, and set the increment/
-           decrement options to zero."""
-        for sExpansion in self._dNameExpansion2Iter[sCardName]:
-            for oExpIter in self._dNameExpansion2Iter[sCardName][sExpansion]:
-                # No cards, so impossible to manipulate expansions
-                self.set(oExpIter, 1, '0', 2, '0',
-                        2, False,
-                        3, False)
-
-    def _remove_expansion_iters(self, sCardName):
-        """Remove the expansion iters for sCardName"""
-        for sExpansion in self._dNameExpansion2Iter[sCardName]:
-            for oExpIter in self._dNameExpansion2Iter[sCardName][sExpansion]:
-                self.remove(oExpIter)
-        del self._dNameExpansion2Iter[sCardName]
-
-

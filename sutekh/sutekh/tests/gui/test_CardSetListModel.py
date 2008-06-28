@@ -86,6 +86,10 @@ class CardSetListModelTests(SutekhTest):
 
     def test_basic(self):
         """Set of simple tests of the Card Set List Model"""
+        # pylint: disable-msg=R0915, R0914
+        # R0915, R0914: Want a long, sequential test case to minimise
+        # repeated setups, so it has lots of lines + variables
+
         sName = 'Test 1'
         oPCS = PhysicalCardSet(name=sName)
         oModel = CardSetCardListModel(sName)
@@ -124,6 +128,8 @@ class CardSetListModelTests(SutekhTest):
         for iLevelMode in [NO_SECOND_LEVEL, SHOW_EXPANSIONS, SHOW_CARD_SETS, \
                         EXPANSIONS_AND_CARD_SETS, CARD_SETS_AND_EXPANSIONS]:
             oModel.iExtraLevelsMode = iLevelMode
+            # pylint: disable-msg=E1101
+            # SQLObjext confuses pylint
             oModel.load()
             for oCard in aPhysCards:
                 oPCS.addPhysicalCard(oCard.id)
@@ -169,6 +175,8 @@ class CardSetListModelTests(SutekhTest):
         for iLevelMode in [NO_SECOND_LEVEL, SHOW_EXPANSIONS, SHOW_CARD_SETS, \
                         EXPANSIONS_AND_CARD_SETS, CARD_SETS_AND_EXPANSIONS]:
             # Test adding a repeated card
+            # pylint: disable-msg=E1101
+            # SQLObjext confuses pylint
             oModel.iExtraLevelsMode = iLevelMode
             oModel.load()
             for oCard in aPhysCards:
@@ -191,6 +199,11 @@ class CardSetListModelTests(SutekhTest):
             if iLevelMode == SHOW_EXPANSIONS:
                 self.assertEqual(self._count_second_level(oModel), 1)
         # FIXME: Test the rest of the functionality
+        # Test addition + deletion with parent card set, sibling card set
+        # and child card sets
+        # Test adding cards + removing card from parent card sets, child
+        # card sets and siblings
+        # Test filtering with the different modes
 
 if __name__ == "__main__":
     unittest.main()
