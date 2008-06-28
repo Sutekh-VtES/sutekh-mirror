@@ -8,7 +8,9 @@
 
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.gui.CardListModel import CardListModelListener
-from sutekh.gui.CardSetListModel import CardSetCardListModel
+from sutekh.gui.CardSetListModel import CardSetCardListModel, \
+        NO_SECOND_LEVEL, SHOW_EXPANSIONS, SHOW_CARD_SETS, \
+        EXPANSIONS_AND_CARD_SETS, CARD_SETS_AND_EXPANSIONS
 from sutekh.core.Groupings import NullGrouping
 from sutekh.core.SutekhObjects import PhysicalCardSet, IPhysicalCard, \
         IExpansion, IAbstractCard
@@ -115,44 +117,79 @@ class CardSetListModelTests(SutekhTest):
         aCards = [('AK-47', None), ('Bronwen', 'SW'), ('Cesewayo', None),
                 ('Anna "Dictatrix11" Suljic', 'NoR'), ('Ablative Skin',
                     'Sabbat')]
+        aPhysCards = []
         for sName, sExp in aCards:
             oPhysCard = self._gen_card(sName, sExp)
-            oPCS.addPhysicalCard(oPhysCard.id)
-            oPCS.syncUpdate()
-            oModel.inc_card(oPhysCard)
-        iAddTotals = (self._count_all_cards(oModel),
-                self._count_second_level(oModel))
-        oModel.load()
-        iTotals = (self._count_all_cards(oModel),
-                self._count_second_level(oModel))
-        self.assertEqual(iAddTotals, iTotals)
-        # Card removal
-        for sName, sExp in aCards:
-            oPhysCard = self._gen_card(sName, sExp)
-            oPCS.removePhysicalCard(oPhysCard.id)
-            oPCS.syncUpdate()
-            oModel.dec_card(oPhysCard)
-        iAddTotals = (self._count_all_cards(oModel),
-                self._count_second_level(oModel))
-        oModel.load()
-        iTotals = (self._count_all_cards(oModel),
-                self._count_second_level(oModel))
-        self.assertEqual(iAddTotals, iTotals)
-        # Also test that we've behaved sanely
-        self.assertEqual(self._count_all_cards(oModel), 2)
-        self.assertEqual(self._count_second_level(oModel), 2)
-        # Test adding a repeated card
+            aPhysCards.append(oPhysCard)
+        for iLevelMode in [NO_SECOND_LEVEL, SHOW_EXPANSIONS, SHOW_CARD_SETS, \
+                        EXPANSIONS_AND_CARD_SETS, CARD_SETS_AND_EXPANSIONS]:
+            oModel.iExtraLevelsMode = iLevelMode
+            oModel.load()
+            for oCard in aPhysCards:
+                oPCS.addPhysicalCard(oCard.id)
+                oPCS.syncUpdate()
+                oModel.inc_card(oCard)
+            tAddTotals = (self._count_all_cards(oModel),
+                    self._count_second_level(oModel))
+            aList1 = self._get_all_counts(oModel)
+            oModel.load()
+            tTotals = (self._count_all_cards(oModel),
+                    self._count_second_level(oModel))
+            aList2 = self._get_all_counts(oModel)
+            self.assertEqual(tAddTotals, tTotals, "inc_card and load differ,"
+                    " %s vs %s when using mode %d" % (tAddTotals, tTotals,
+                        iLevelMode))
+            self.assertEqual(aList1, aList2, "inc_card and load differ, "
+                    " %s vs %s, for mode %d" % (aList1, aList2, iLevelMode))
+            # Card removal
+            for oCard in aPhysCards:
+                oPCS.removePhysicalCard(oCard.id)
+                oPCS.syncUpdate()
+                oModel.dec_card(oCard)
+            tAddTotals = (self._count_all_cards(oModel),
+                    self._count_second_level(oModel))
+            aList1 = self._get_all_counts(oModel)
+            oModel.load()
+            tTotals = (self._count_all_cards(oModel),
+                    self._count_second_level(oModel))
+            aList2 = self._get_all_counts(oModel)
+            self.assertEqual(tAddTotals, tTotals, "dec_card and load differ,"
+                    " %s vs %s when using mode %d" % (tAddTotals, tTotals,
+                        iLevelMode))
+            self.assertEqual(aList1, aList2, "inc_card and load differ, "
+                    " %s vs %s, for mode %d" % (aList1, aList2, iLevelMode))
+            # Also test that we've behaved sanely
+            self.assertEqual(self._count_all_cards(oModel), 2)
         aCards = [('Alexandra', 'CE'), ('Alexandra', None),
                 ('Ablative Skin', None)] * 5
+        aPhysCards = []
         for sName, sExp in aCards:
             oPhysCard = self._gen_card(sName, sExp)
-            oPCS.addPhysicalCard(oPhysCard.id)
+            aPhysCards.append(oPhysCard)
+        for iLevelMode in [NO_SECOND_LEVEL, SHOW_EXPANSIONS, SHOW_CARD_SETS, \
+                        EXPANSIONS_AND_CARD_SETS, CARD_SETS_AND_EXPANSIONS]:
+            # Test adding a repeated card
+            oModel.iExtraLevelsMode = iLevelMode
+            oModel.load()
+            for oCard in aPhysCards:
+                oPCS.addPhysicalCard(oCard.id)
+                oPCS.syncUpdate()
+                oModel.inc_card(oCard)
+            aList1 = self._get_all_counts(oModel)
+            oModel.load()
+            aList2 = self._get_all_counts(oModel)
+            self.assertEqual(aList1, aList2, "inc_card and load differ, "
+                    " %s vs %s, for mode %d" % (aList1, aList2, iLevelMode))
+            # remove the cards
+            for oCard in set(aPhysCards):
+                oPCS.removePhysicalCard(oCard.id)
             oPCS.syncUpdate()
-            oModel.inc_card(oPhysCard)
-        aList1 = self._get_all_counts(oModel)
-        oModel.load()
-        aList2 = self._get_all_counts(oModel)
-        self.assertEqual(aList1, aList2)
+            oModel.load()
+            # sanity checks
+            # We drop to one, since we've removed all Alexandra's
+            self.assertEqual(self._count_all_cards(oModel), 1)
+            if iLevelMode == SHOW_EXPANSIONS:
+                self.assertEqual(self._count_second_level(oModel), 1)
         # FIXME: Test the rest of the functionality
 
 if __name__ == "__main__":
