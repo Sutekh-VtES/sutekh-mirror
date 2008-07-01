@@ -314,6 +314,19 @@ TEST_CARD_LIST = """
 </p>
 
 <p>
+<a name="Cedric"><span class="cardname">Cedric</span></a>
+<span class="exp">[LoB:U]</span><br />
+<table border=0 cellpadding=0 cellspacing=0><tr><td width=1><span class="key">Cardtype:</span> </td><td>Vampire<br /></td></tr>
+<tr><td width=1><span class="key">Clan:</span> </td><td>Gargoyle<br /></td></tr>
+<tr><td width=1><span class="key">Group:</span> </td><td>4<br /></td></tr>
+<tr><td width=1><span class="key">Capacity:</span> </td><td>6<br /></td></tr>
+<tr><td width=1><span class="key">Discipline:</span> </td><td>obf pot vis FOR<br /></td></tr>
+<tr><td colspan=2><b>Camarilla. Tremere slave:</b> <n>If Cedric successfully blocks a (D) action, he may burn 1 blood when the action ends (after combat, if any) to untap. Flight [FLIGHT].<br />
+<tr><td width=1><span class="key">Artist:</span> </td><td>David Day<br /></td></tr>
+</table>
+</p>
+
+<p>
 <a name="Cesewayo"><span class="cardname">Cesewayo</span></a>
 <span class="exp">[LoB:PO2]</span><br />
 <table border=0 cellpadding=0 cellspacing=0><tr><td width=1><span class="key">Cardtype:</span> </td><td>Vampire<br /></td></tr>
@@ -388,6 +401,18 @@ TEST_CARD_LIST = """
 <tr><td><span class="key">Discipline:</span> </td><td>for<br /></td></tr>
 <tr><td colspan=2><b>Independent:</b> <n>Lázár may move one blood from <span class="clarification">&lt;an uncontrolled minion&gt;</span> in your prey's uncontrolled region to a vampire in your uncontrolled region as a (D) action.<br />
 <tr><td><span class="key">Artist:</span> </td><td>Rebecca Guay<br /></td></tr>
+</table>
+</p>
+
+<p>
+<a name="Predators_Communion"><span class="cardname">Predator's Communion</span></a>
+<span class="exp">[LoB:C]</span><br />
+<table border=0 cellpadding=0 cellspacing=0><tr><td width=1><span class="key">Cardtype:</span> </td><td>Reaction<br /></td></tr>
+<tr><td width=1><span class="key">Discipline:</span> </td><td>Abombwe<br /></td></tr>
+<tr><td colspan=2><n>[abo] [REFLEX] Cancel a frenzy card played on this vampire as it is played.<br />
+<n>[abo] +1 intercept. Only usable when a vampire is acting.<br />
+<b>[ABO] Only usable by a tapped vampire when a vampire is acting. This reacting vampire untaps.</b><br />
+<tr><td width=1><span class="key">Artist:</span> </td><td>David Day<br /></td></tr>
 </table>
 </p>
 

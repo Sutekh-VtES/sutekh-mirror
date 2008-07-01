@@ -27,10 +27,10 @@ class WhiteWolfParserTests(SutekhTest):
         u"Abombwe", u"Aeron", u"Akram", u"Alexandra",
         u"Alfred Benezri", u"Ambrogino Giovanni", u"Anastasz di Zagreb",
         u"Angelica, The Canonicus", u'Anna "Dictatrix11" Suljic',
-        u"Anson", u"Bronwen", u"Cesewayo", u'Earl "Shaka74" Deams',
+        u"Anson", u"Bronwen", u"Cedric", u"Cesewayo", u'Earl "Shaka74" Deams',
         u"Gracis Nostinus", u'Inez "Nurse216" Villagrande',
-        u"Kabede Maru", u"L\xe1z\xe1r Dobrescu", u"Sha-Ennu",
-        u"Yvette, The Hopeless"
+        u"Kabede Maru", u"L\xe1z\xe1r Dobrescu", u"Predator's Communion",
+        u"Sha-Ennu", u"Yvette, The Hopeless"
     ]
 
     def test_basic(self):
