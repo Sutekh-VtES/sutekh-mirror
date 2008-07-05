@@ -646,7 +646,7 @@ class CardSetCardListModel(CardListModel):
             iGrpCnt = self.get_int_value(oGrpIter, 1) + iChg
             self.set(oIter, 1, self.format_count(iCnt))
 
-            if self.check_iter_stays(oIter):
+            if self.check_card_iter_stays(oIter):
                 iParCnt = self.get_int_value(oIter, 2)
                 if self.iParentCountMode == MINUS_THIS_SET:
                     iParCnt = iParCnt - iChg
@@ -862,14 +862,16 @@ class CardSetCardListModel(CardListModel):
             self.set(oIter, 2, self.format_parent_count(iCnt, iParCnt))
             self.set(oGrpIter, 2, self.format_parent_count(iGrpCnt,
                 iParGrpCnt))
-            if self.check_iter_stays(oIter) or not bCheckIter:
+            if self.check_card_iter_stays(oIter) or not bCheckIter:
                 # FIXME: Update the children
                 bRemoveChild = False
             else:
                 bRemove = True # Delete from cache after the loop
                 self._remove_sub_iters(sCardName)
                 self.remove(oIter)
-                if not self.check_iter_stays(oGrpIter):
+                if not self.check_group_iter_stays(oGrpIter):
+                    sGroupName = self.get_value(oGrpIter, 0)
+                    del self._dGroupName2Iter[sGroupName]
                     self.remove(oGrpIter)
         if bRemove:
             del self._dName2Iter[sCardName]
