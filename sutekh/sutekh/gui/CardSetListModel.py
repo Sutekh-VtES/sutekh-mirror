@@ -97,7 +97,6 @@ class CardSetModelRow(object):
                             bDecCard]
         return dChildren
 
-
 def get_card(oItem):
     """Extract a absract card from the dictionary for groupby"""
     return oItem[0]
@@ -177,7 +176,7 @@ class CardSetCardListModel(CardListModel):
                 iGrpCnt += iCnt
                 iParGrpCnt += iParCnt
                 oChildIter = self.append(oSectionIter)
-                bIncCard, bDecCard = self.check_inc_dec_card(iCnt)
+                bIncCard, bDecCard = self.check_inc_dec(iCnt)
                 self.set(oChildIter,
                     0, oCard.name,
                     1, self.format_count(iCnt),
@@ -236,8 +235,8 @@ class CardSetCardListModel(CardListModel):
                     self._add_extra_level(oSubIter, sExpansion,
                             dExpansionInfo[sChildSet][sExpansion])
 
-    def check_inc_dec_card(self, iCnt):
-        """Helper function to check whether card can be incremented"""
+    def check_inc_dec(self, iCnt):
+        """Helper function to get correct flags"""
         if not self.bEditable:
             return False, False
         return True, (iCnt > 0)
@@ -268,17 +267,6 @@ class CardSetCardListModel(CardListModel):
             self._dName2nd3rdLevel2Iter[tKey].setdefault(sName,
                     []).append(oIter)
         return oIter
-
-    def check_inc_dec_expansion(self, iCnt):
-        """Helper function to check status of expansions"""
-        if not self.bEditable:
-            return False, False
-        return True, (iCnt > 0)
-
-    def check_card_stays(self, sCardName):
-        """Check if the given card entry should be removed."""
-        # FIXME: implement
-        return True
 
     def check_expansion_iter_stays(self, oCard, sExpansion, iCnt):
         """Check if the expansion entry should remain in the table"""
@@ -624,7 +612,7 @@ class CardSetCardListModel(CardListModel):
                 iCnt = self.get_int_value(oIter, 1)
                 if sThisExp == sExpansion:
                     iCnt += iChg
-                bIncCard, bDecCard = self.check_inc_dec_expansion(iCnt)
+                bIncCard, bDecCard = self.check_inc_dec(iCnt)
                 if self.check_expansion_iter_stays(oCard, sThisExp, iCnt):
                     self.set(oIter,
                             1, self.format_count(iCnt),
@@ -659,18 +647,27 @@ class CardSetCardListModel(CardListModel):
             self.set(oIter, 1, self.format_count(iCnt))
 
             if self.check_iter_stays(oIter):
-                # FIXME: fix parent card formatting, update children, etc.
-                bIncCard, bDecCard = self.check_inc_dec_card(iCnt)
+                iParCnt = self.get_int_value(oIter, 2)
+                if self.iParentCountMode == MINUS_THIS_SET:
+                    iParCnt = iParCnt - iChg
+                elif self.iParentCountMode == MINUS_SETS_IN_USE \
+                        and self._oCardSet.inuse:
+                    iParCnt = iParCnt - iChg
+                self.set(oIter, 2, self.format_parent_count(iCnt, iParCnt))
+                bIncCard, bDecCard = self.check_inc_dec(iCnt)
                 self.set(oIter, 3, bIncCard)
                 self.set(oIter, 4, bDecCard)
+                # FIXME: update children
             else:
                 bRemove = True
                 if self._dNameSecondLevel2Iter.has_key(sCardName):
                     self._remove_sub_iters(sCardName)
                 self.remove(oIter)
 
-            if iGrpCnt > 0:
+            if self.check_group_iter_stays(oGrpIter):
+                iParCnt = self.get_int_value(oGrpIter, 2)
                 self.set(oGrpIter, 1, self.format_count(iGrpCnt))
+                self.set(oIter, 2, self.format_parent_count(iGrpCnt, iParCnt))
             else:
                 sGroupName = self.get_value(oGrpIter, 0)
                 del self._dGroupName2Iter[sGroupName]
@@ -684,7 +681,7 @@ class CardSetCardListModel(CardListModel):
             self.remove(self.oEmptyIter)
             self.oEmptyIter = None
         elif iChg < 0 and not self._dName2Iter:
-            # FIXME: fix parent count
+            # Showing nothing
             self.oEmptyIter = self.append(None)
             sText = self._get_empty_text()
             self.set(self.oEmptyIter, 0, sText, 1, self.format_count(0), 2,
@@ -706,15 +703,17 @@ class CardSetCardListModel(CardListModel):
         """
         oFilter = self.combine_filter_with_base(self.get_current_filter())
         oAbsCard = IAbstractCard(oPhysCard)
+        # pylint: disable-msg=E1101
+        # PyProtocols confuses pylint
         if self.bEditable:
-            oFullFilter = FilterAndBox([SpecificCardIdFilter(oAbsCard),
+            oFullFilter = FilterAndBox([SpecificCardIdFilter(oAbsCard.id),
                 oFilter])
             # Checking on the physical card picks up filters on the physical
             # expansion - since we show all expansions when editing, checking
             # on the physical card when the list is editable doesn't behave as
             # one would expect, so we only check the abstract card.
         else:
-            oFullFilter = FilterAndBox([SpecificPhysCardIdFilter(oPhysCard),
+            oFullFilter = FilterAndBox([SpecificPhysCardIdFilter(oPhysCard.id),
                 oFilter])
         oCardIter = oFullFilter.select(self.cardclass).distinct()
 
@@ -748,14 +747,12 @@ class CardSetCardListModel(CardListModel):
                 # Due to the various view modes, we aren't assured of
                 # getting back only the new card from get_grouped_iterator,
                 # so this check is needed
-                # pylint: disable-msg=E1101
-                # PyProtocols confuses pylint
                 if oAbsCard.id != oCard.id:
                     continue
                 iCnt = oRow.get_card_count()
                 iGrpCnt += iCnt
                 oChildIter = self.append(oSectionIter)
-                bIncCard, bDecCard = self.check_inc_dec_card(iCnt)
+                bIncCard, bDecCard = self.check_inc_dec(iCnt)
                 self.set(oChildIter,
                     0, oCard.name,
                     1, self.format_count(iCnt),
@@ -879,45 +876,67 @@ class CardSetCardListModel(CardListModel):
 
     def inc_child_count(self, oPhysCard, sCardSetName):
         """Add the card oPhysCard in the card set sCardSetName to the model."""
+        # FIXME: implement
         pass
 
     def dec_child_count(self, oPhysCard, sCardSetName):
         """Remove the card oPhysCard in the card set sCardSetName
            from the model."""
+        # FIXME: implement
         pass
 
-    def check_iter_stays(self, oIter):
-        """Check if we need to remove a given row or not"""
+    def check_child_iter_stays(self, oIter):
+        """Check if an expansion or child card set iter stays"""
+        # Conditions vary with cards shown AND the editable flag
         # FIXME: implement
-        # Conditions for removal vary with the cards shown and the editable
-        # mode
+        return True
+
+    def check_card_iter_stays(self, oIter):
+        """Check if we need to remove a given card or not"""
+        # Conditions for removal vary with the cards shown
         if self.iShowCardMode == ALL_CARDS:
-            return True # We don't remove entries
+            return True # We don't remove entries here
         iCnt = self.get_int_value(oIter, 1)
-        iDepth = self.iter_depth(oIter)
-        if iDepth > 1:
-            oCardPath = norm_path(self.get_path(oIter))[0:2]
-            iCardCnt = self.get_int_value(self.get_iter(oCardPath), 1)
-        else:
-            iCardCnt = iCnt
-        if iCnt > 0 and iCardCnt > 0:
-            # We never remove a entry for which the count + card count are
-            # non-zero
+        iParCnt = self.get_int_value(oIter, 2)
+        if iCnt > 0:
             return True
-        bResult = False
-        if self.iShowCardMode == THIS_SET_ONLY:
-            if self.bEditable and iCardCnt > 0:
-                # We never remove children from a editable list if the
-                # actual card count is non-zero
-                bResult = True
-            # else remove
-        elif self.iShowCardMode == PARENT_CARDS:
-            # Remove card if count zero and card is not in parent set
-            pass
+        if self.iShowCardMode == PARENT_CARDS and iParCnt > 0:
+            return True
         elif self.iShowCardMode == CHILD_CARDS:
-            # remove card if count zero and card is not in child card sets
-            pass
-        return bResult
+            # FIXME: implement
+            if self.iExtraLevelsMode in [SHOW_CARD_SETS,
+                    CARD_SETS_AND_EXPANSIONS]:
+                # Check if any top level child iters have non-zero counts
+                pass
+            elif self.iExtraLevelsMode == EXPANSIONS_AND_CARD_SETS:
+                # Check third level children
+                pass
+            else:
+                # Need to actually check the database
+                pass
+        return False
+
+    def check_group_iter_stays(self, oIter):
+        """Check if we need to remove the top-level item"""
+        # Conditions for removal vary with the cards shown
+        if self.iShowCardMode == ALL_CARDS:
+            return True # We don't remove group entries
+        iCnt = self.get_int_value(oIter, 1)
+        iParCnt = self.get_int_value(oIter, 2)
+        if iCnt > 0:
+            # Count is non-zero, so we stay
+            return True
+        if self.iShowCardMode == PARENT_CARDS and iParCnt > 0:
+            return True
+        elif self.iShowCardMode == CHILD_CARDS:
+            # Pass the check to the children - we stay if at least one child
+            # stays
+            oChildIter = self.iter_children(oIter)
+            while oChildIter:
+                if self.check_card_iter_stays(oChildIter):
+                    return True
+                oChildIter = self.iter_next(oChildIter)
+        return False
 
     def get_drag_info_from_path(self, oPath):
         """Get card name and expansion information from the path for the
