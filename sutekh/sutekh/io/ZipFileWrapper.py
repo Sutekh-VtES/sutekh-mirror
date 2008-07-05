@@ -164,7 +164,7 @@ class ZipFileWrapper(object):
         if oLogHandler is not None:
             oLogger.addHandler(oLogHandler)
             if hasattr(oLogHandler,'set_total'):
-                iTotal = 2 + PhysicalCardSet.select().count()
+                iTotal = PhysicalCardSet.select().count()
                 oLogHandler.set_total(iTotal)
         aPCSList = self.write_all_pcs_to_zip(oLogger)
         self.__close_zip()

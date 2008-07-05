@@ -22,7 +22,7 @@ aCardExpansions = [('.44 magnum', 'Jyhad'),
 aCardSetNames = ['Test Set 1', 'Test Set 2']
 
 def get_phys_cards():
-    """Fill contents of the physical card table"""
+    """Get Physical Cards for the given lists"""
     aAddedPhysCards = []
     for sName in aAbstractCards:
         oAC = IAbstractCard(sName)
@@ -37,7 +37,6 @@ def get_phys_cards():
 
 class PhysicalCardSetTests(SutekhTest):
     """class for the Physical Card Set tests"""
-
 
     def test_physical_card_set(self):
         """Test physical card set object"""

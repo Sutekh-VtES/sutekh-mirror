@@ -1,3 +1,19 @@
+05 July 2008
+ * Expand ZipFile tests
+ * More work on editing the CardSet's
+
+01 July 2008
+ * Add test data for Reflex and Flight
+ * Add some tests for zip file handling
+
+28 June 2008
+ * Fill in CardListModel tests
+ * Move PhysicalCardSet IO tests to io/ directory
+ * Move other PhysicalCardSet tests to core/
+
+24 June 2008
+ * Expand on the stubs for testing the CardListModel and CardSetListModel
+
 23 June 2008
  * Replce exisitng physical card count filter with a card set card count
    filter, as, with the changed database, the physical card count filter is
