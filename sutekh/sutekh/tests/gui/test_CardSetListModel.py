@@ -115,6 +115,25 @@ class CardSetListModelTests(SutekhTest):
         oModel.groupby = NullGrouping
         self.assertEqual(self._count_all_cards(oModel), 2)
         self.assertEqual(self._count_second_level(oModel), 2)
+        # Check the drag-n-drop helper
+        self.assertEqual(oModel.get_drag_child_info('0'), {})
+        self.assertEqual(oModel.get_drag_child_info('0:0:0'), {})
+        self.assertEqual(oModel.get_drag_child_info('0:0'),
+                {'Camarilla Edition' : 1})
+        self.assertEqual(oModel.get_drag_info_from_path('0:0:0'),
+                (u"Alexandra", "Camarilla Edition", 1, 2))
+        self.assertEqual(oModel.get_drag_info_from_path('0:0'),
+                (u"Alexandra", None, 1, 1))
+        self.assertEqual(oModel.get_drag_info_from_path('0'),
+                (None, None, 2, 0))
+        oModel.iExtraLevelsMode = NO_SECOND_LEVEL
+        oModel.load()
+        # This should also work for no expansions shown
+        self.assertEqual(self._count_all_cards(oModel), 2)
+        self.assertEqual(self._count_second_level(oModel), 0)
+        self.assertEqual(oModel.get_drag_child_info('0'), {})
+        self.assertEqual(oModel.get_drag_child_info('0:0'),
+                {'Camarilla Edition' : 1})
         # Add Cards
         # We don't repeat anything so we can use removePhysicalCard
         # successfully below
