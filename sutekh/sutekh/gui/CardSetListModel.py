@@ -660,11 +660,11 @@ class CardSetCardListModel(CardListModel):
                         elif self.iParentCountMode == MINUS_SETS_IN_USE \
                              and self._oCardSet.inuse:
                             iParCnt = iParCnt - iChg
-                        self.set(oIter, 2, self.format_parent_count(iParCnt,
+                        self.set(oChildIter, 2, self.format_parent_count(iParCnt,
                             iCnt))
                         bIncCard, bDecCard = self.check_inc_dec(iCnt)
-                        self.set(oIter, 3, bIncCard)
-                        self.set(oIter, 4, bDecCard)
+                        self.set(oChildIter, 3, bIncCard)
+                        self.set(oChildIter, 4, bDecCard)
                     else:
                         bRemove = True
                         if self._dName2nd3rdLevel2Iter.haskey((sCardName,

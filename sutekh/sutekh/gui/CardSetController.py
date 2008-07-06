@@ -213,7 +213,7 @@ class CardSetController(object):
                     oExp = None
                 else:
                     oExp = IExpansion(sExpansion)
-                aPhysCards = [PhysicalCard((oAbsCard, oExp))]
+                aPhysCards = [IPhysicalCard((oAbsCard, oExp))]
         except SQLObjectNotFound:
             # Bail on error
             return False
