@@ -179,9 +179,9 @@ class FilterTests(SutekhTest):
                 u'Earl "Shaka74" Deams', u'Inez "Nurse216" Villagrande']),
             (Filters.CostTypeFilter('Pool'), [u".44 Magnum", u"AK-47",
                 u"Aaron's Feeding Razor"]),
-            (Filters.CostTypeFilter('Blood'), []),
+            (Filters.CostTypeFilter('Blood'), [u"Aire of Elation"]),
             (Filters.MultiCostTypeFilter(['Pool', 'Blood']), [u".44 Magnum",
-                u"AK-47", u"Aaron's Feeding Razor"]),
+                u"AK-47", u"Aaron's Feeding Razor", u"Aire of Elation"]),
             (Filters.LifeFilter(4), []),
             (Filters.MultiLifeFilter([4, 5]), []),
 
@@ -203,9 +203,9 @@ class FilterTests(SutekhTest):
                     u"Aaron's Feeding Razor", u"Abjure"]),
             (Filters.FilterNot(Filters.MultiCardTypeFilter(['Equipment',
                 'Vampire'])), [u"Abandoning the Flesh", u"Abbot", u"Abjure",
-                    u"Ablative Skin", u"Abombwe", u'Anna "Dictatrix11" Suljic',
-                    u'Earl "Shaka74" Deams', u'Inez "Nurse216" Villagrande',
-                    u"Predator's Communion"]),
+                    u"Ablative Skin", u"Abombwe", u"Aire of Elation",
+                    u'Anna "Dictatrix11" Suljic', u'Earl "Shaka74" Deams',
+                    u'Inez "Nurse216" Villagrande', u"Predator's Communion"]),
         ]
 
         aPhysicalTests = [self._physical_test(tTest) for tTest in aTests]
@@ -231,8 +231,8 @@ class FilterTests(SutekhTest):
                     u"Protean", u"Quietus", u"Serpentis", u"Thaumaturgy",
                     u"Thanatosis", u"Vicissitude", u"Visceratika"])
         self.assertEqual(Filters.MultiCardTypeFilter.get_values(), [u"Action",
-            u"Combat", u"Equipment", u"Imbued", u"Master", u"Power",
-            u"Reaction", u"Reflex", u"Vampire"])
+            u"Action Modifier", u"Combat", u"Equipment", u"Imbued", u"Master",
+            u"Power", u"Reaction", u"Reflex", u"Vampire"])
         self.assertEqual(Filters.MultiTitleFilter.get_values(),
                 [u"Archbishop", u"Bishop", u"Cardinal",
                     u"Independent with 1 vote", u"Inner Circle",

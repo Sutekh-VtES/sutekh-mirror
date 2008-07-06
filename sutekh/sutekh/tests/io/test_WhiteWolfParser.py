@@ -8,7 +8,8 @@
 
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.core.SutekhObjects import AbstractCard, IAbstractCard, \
-                                      IPhysicalCard
+        IPhysicalCard, IClan, IDisciplinePair, ICardType, ISect, ITitle, \
+        ICreed, IVirtue
 from sqlobject import SQLObjectNotFound
 import unittest
 
@@ -24,7 +25,7 @@ class WhiteWolfParserTests(SutekhTest):
         u"Aaron's Feeding Razor", u"Abandoning the Flesh",
         u"Abbot", u"Abd al-Rashid", u"Abdelsobek",
         u"Abebe", u"Abjure", u"Ablative Skin",
-        u"Abombwe", u"Aeron", u"Akram", u"Alexandra",
+        u"Abombwe", u"Aeron", u"Aire of Elation", u"Akram", u"Alexandra",
         u"Alfred Benezri", u"Ambrogino Giovanni", u"Anastasz di Zagreb",
         u"Angelica, The Canonicus", u'Anna "Dictatrix11" Suljic',
         u"Anson", u"Bronwen", u"Cedric", u"Cesewayo", u'Earl "Shaka74" Deams',
@@ -35,8 +36,9 @@ class WhiteWolfParserTests(SutekhTest):
 
     def test_basic(self):
         """Basic WW list parser tests"""
-        # pylint: disable-msg=E1101
-        # IAbstractCard + SQLObject magic confuses pylint
+        # pylint: disable-msg=E1101, R0915, R0914
+        # E1101: SQLObject + PyProtocols magic confuses pylint
+        # R0915, R0914: Want a long, sequential test case to minimise
         aCards = sorted(list(AbstractCard.select()), cmp=lambda oC1, oC2:
                 cmp(oC1.name, oC2.name))
 
@@ -45,7 +47,7 @@ class WhiteWolfParserTests(SutekhTest):
 
         # Check Magnum
         # pylint: disable-msg=C0103
-        # 044 is OK here
+        # o44 is OK here
         o44 = IAbstractCard(".44 Magnum")
         self.assertEqual(o44.canonicalName, u".44 magnum")
         self.assertEqual(o44.name, u".44 Magnum")
@@ -58,6 +60,16 @@ class WhiteWolfParserTests(SutekhTest):
         self.assertEqual(o44.costtype, 'pool')
         self.assertEqual(o44.level, None)
         # pylint: enable-msg=C0103
+
+        # Find some discipline pairs
+        oFortInf = IDisciplinePair((u"Fortitude", u"inferior"))
+        oQuiSup = IDisciplinePair((u"Quietus", u"superior"))
+        oCelInf = IDisciplinePair((u"Celerity", u"inferior"))
+        oAusInf = IDisciplinePair((u"Auspex", u"inferior"))
+        oAusSup = IDisciplinePair((u"Auspex", u"superior"))
+        oPreSup = IDisciplinePair((u"Presence", u"superior"))
+        oAboInf = IDisciplinePair((u"Abombwe", u"inferior"))
+        oAboSup = IDisciplinePair((u"Abombwe", u"superior"))
 
         # Check Dobrescu
         oDob = IAbstractCard(u"L\xe1z\xe1r Dobrescu")
@@ -73,6 +85,13 @@ class WhiteWolfParserTests(SutekhTest):
         self.assertEqual(oDob.costtype, None)
         self.assertEqual(oDob.level, None)
 
+        self.failUnless(IClan('Ravnos') in oDob.clan)
+        self.assertEqual(len(oDob.discipline), 1)
+        self.failUnless(oFortInf in oDob.discipline)
+        self.assertEqual(len(oDob.cardtype), 1)
+        self.failUnless(ICardType('Vampire') in oDob.cardtype)
+        self.failUnless(ISect('Independent') in oDob.sect)
+
         # Check Abstract and Physical expansions match
         for oAbs in AbstractCard.select():
             aExps = [oPair.expansion for oPair in oAbs.rarity]
@@ -85,17 +104,176 @@ class WhiteWolfParserTests(SutekhTest):
                         % (oAbs.name, oExp.name)
                     )
 
-        # TODO: Things still to check:
-        #discipline
-        #rarity
-        #clan
-        #cardtype
-        #sect
-        #title
-        #creed
-        #virtue
-        #rulings
+        # Check Yvette
+        oYvette = IAbstractCard(u"Yvette, The Hopeless")
+        self.assertEqual(oYvette.canonicalName, u"yvette, the hopeless")
+        self.assertEqual(oYvette.name, u"Yvette, The Hopeless")
+        self.failUnless(oYvette.text.startswith("Camarilla."))
+        self.assertEqual(oYvette.group, 3)
+        self.assertEqual(oYvette.capacity, 3)
+        self.assertEqual(oYvette.cost, None)
+        self.assertEqual(oYvette.life, None)
+        self.assertEqual(oYvette.costtype, None)
+        self.assertEqual(oYvette.level, None)
 
+        self.failUnless(IClan('Toreador') in oYvette.clan)
+        self.assertEqual(len(oYvette.clan), 1)
+        self.assertEqual(len(oYvette.discipline), 2)
+        self.failUnless(oFortInf not in oYvette.discipline)
+        self.failUnless(oCelInf in oYvette.discipline)
+        self.failUnless(oAusInf in oYvette.discipline)
+        self.assertEqual(len(oYvette.cardtype), 1)
+        self.failUnless(ICardType('Vampire') in oYvette.cardtype)
+        self.failUnless(ISect('Camarilla') in oYvette.sect)
+
+        # Check Sha-Ennu
+
+        oShaEnnu = IAbstractCard(u"Sha-Ennu")
+        self.assertEqual(oShaEnnu.canonicalName, u"sha-ennu")
+        self.assertEqual(oShaEnnu.name, u"Sha-Ennu")
+        self.failUnless(oShaEnnu.text.startswith("Sabbat regent:"))
+        self.failUnless(oShaEnnu.text.endswith("+2 bleed."))
+        self.assertEqual(oShaEnnu.group, 4)
+        self.assertEqual(oShaEnnu.capacity, 11)
+        self.assertEqual(oShaEnnu.cost, None)
+        self.assertEqual(oShaEnnu.life, None)
+        self.assertEqual(oShaEnnu.costtype, None)
+        self.assertEqual(oShaEnnu.level, None)
+
+        self.failUnless(IClan('Tzimisce') in oShaEnnu.clan)
+        self.assertEqual(len(oShaEnnu.clan), 1)
+        self.assertEqual(len(oShaEnnu.discipline), 6)
+        self.failUnless(oAusSup in oShaEnnu.discipline)
+        self.failUnless(oAusInf not in oShaEnnu.discipline)
+        self.assertEqual(len(oShaEnnu.cardtype), 1)
+        self.failUnless(ICardType('Vampire') in oShaEnnu.cardtype)
+        self.failUnless(ISect('Sabbat') in oShaEnnu.sect)
+        self.failUnless(ITitle('Regent') in oShaEnnu.title)
+
+        # Check Kabede
+
+        oKabede = IAbstractCard(u"Kabede Maru")
+        self.assertEqual(oKabede.canonicalName, u"kabede maru")
+        self.assertEqual(oKabede.name, u"Kabede Maru")
+        self.failUnless(oKabede.text.startswith("Laibon magaji:"))
+        self.failUnless(oKabede.text.endswith("affect Kabede.)"))
+        self.assertEqual(oKabede.group, 5)
+        self.assertEqual(oKabede.capacity, 9)
+        self.assertEqual(oKabede.cost, None)
+        self.assertEqual(oKabede.life, None)
+        self.assertEqual(oKabede.costtype, None)
+        self.assertEqual(oKabede.level, None)
+
+        self.failUnless(IClan('Assamite') in oKabede.clan)
+        self.assertEqual(len(oKabede.clan), 1)
+        self.assertEqual(len(oKabede.discipline), 6)
+        self.failUnless(oAusSup in oKabede.discipline)
+        self.failUnless(oQuiSup in oKabede.discipline)
+        self.failUnless(oAboInf in oKabede.discipline)
+        self.failUnless(oAboSup not in oKabede.discipline)
+        self.assertEqual(len(oKabede.cardtype), 1)
+        self.failUnless(ICardType('Vampire') in oKabede.cardtype)
+        self.failUnless(ISect('Laibon') in oKabede.sect)
+        self.failUnless(ITitle('Magaji') in oKabede.title)
+
+        # Check Predator's Communion
+        oPredComm = IAbstractCard(u"Predator's Communion")
+        self.assertEqual(oPredComm.canonicalName, u"predator's communion")
+        self.assertEqual(oPredComm.name, u"Predator's Communion")
+        self.failUnless(oPredComm.text.startswith("[abo] [REFLEX]"))
+        self.failUnless(oPredComm.text.endswith("untaps."))
+        self.assertEqual(oPredComm.group, None)
+        self.assertEqual(oPredComm.capacity, None)
+        self.assertEqual(oPredComm.cost, None)
+        self.assertEqual(oPredComm.life, None)
+        self.assertEqual(oPredComm.costtype, None)
+        self.assertEqual(oPredComm.level, None)
+
+        self.assertEqual(len(oPredComm.discipline), 1)
+        self.failUnless(oAboSup in oPredComm.discipline)
+        self.assertEqual(len(oPredComm.cardtype), 2)
+        self.failUnless(ICardType('Reaction') in oPredComm.cardtype)
+        self.failUnless(ICardType('Reflex') in oPredComm.cardtype)
+
+        # Check Earl
+        oEarl = IAbstractCard(u'Earl "Shaka74" Deams')
+        self.assertEqual(oEarl.canonicalName, u'earl "shaka74" deams')
+        self.assertEqual(oEarl.name, u'Earl "Shaka74" Deams')
+        self.failUnless(oEarl.text.startswith("Earl gets +1 stealth"))
+        self.failUnless(oEarl.text.endswith("[1 CONVICTION]."))
+        self.assertEqual(oEarl.group, 4)
+        self.assertEqual(oEarl.capacity, None)
+        self.assertEqual(oEarl.cost, None)
+        self.assertEqual(oEarl.life, 6)
+        self.assertEqual(oEarl.costtype, None)
+        self.assertEqual(oEarl.level, None)
+
+        self.failUnless(ICreed('Visionary') in oEarl.creed)
+        self.assertEqual(len(oEarl.creed), 1)
+        self.assertEqual(len(oEarl.virtue), 3)
+        self.failUnless(IVirtue('Martyrdom') in oEarl.virtue)
+        self.failUnless(IVirtue('Judgment') in oEarl.virtue)
+        self.failUnless(IVirtue('Vision') in oEarl.virtue)
+        self.assertEqual(len(oEarl.cardtype), 1)
+        self.failUnless(ICardType('Imbued') in oEarl.cardtype)
+
+        # Check Aire
+        oAire = IAbstractCard("Aire of Elation")
+        self.assertEqual(oAire.canonicalName, u"aire of elation")
+        self.assertEqual(oAire.name, u"Aire of Elation")
+        self.failUnless(oAire.text.startswith("You cannot play another"))
+        self.failUnless(oAire.text.endswith("is Toreador."))
+        self.assertEqual(oAire.group, None)
+        self.assertEqual(oAire.capacity, None)
+        self.assertEqual(oAire.cost, 1)
+        self.assertEqual(oAire.life, None)
+        self.assertEqual(oAire.costtype, 'blood')
+        self.assertEqual(oAire.level, None)
+
+        self.assertEqual(len(oAire.discipline), 1)
+        self.failUnless(oPreSup in oAire.discipline)
+        self.assertEqual(len(oAire.cardtype), 1)
+        self.failUnless(ICardType("Action Modifier") in oAire.cardtype)
+
+        # Abjure
+        oAbjure = IAbstractCard("Abjure")
+        self.assertEqual(oAbjure.canonicalName, u"abjure")
+        self.assertEqual(oAbjure.name, u"Abjure")
+        self.failUnless(oAbjure.text.startswith("[COMBAT] Tap this"))
+        self.failUnless(oAbjure.text.endswith("or ash heap."))
+        self.assertEqual(oAbjure.group, None)
+        self.assertEqual(oAbjure.capacity, None)
+        self.assertEqual(oAbjure.cost, None)
+        self.assertEqual(oAbjure.life, None)
+        self.assertEqual(oAbjure.costtype, None)
+        self.assertEqual(oAbjure.level, None)
+
+        self.assertEqual(len(oAbjure.virtue), 1)
+        self.failUnless(IVirtue('Redemption') in oAbjure.virtue)
+        self.assertEqual(len(oAbjure.cardtype), 1)
+        self.failUnless(ICardType('Power') in oAbjure.cardtype)
+
+        # Abombwe Master Card
+        oAbo = IAbstractCard('Abombwe')
+
+        self.assertEqual(oAbo.canonicalName, 'abombwe')
+        self.assertEqual(oAbo.name, 'Abombwe')
+        self.failUnless(oAbo.text.startswith("Master: Discipline. Trifle"))
+        self.failUnless(oAbo.text.endswith("superior Abombwe."))
+        self.assertEqual(oAbo.group, None)
+        self.assertEqual(oAbo.capacity, 1)
+        self.assertEqual(oAbo.cost, None)
+        self.assertEqual(oAbo.life, None)
+        self.assertEqual(oAbo.costtype, None)
+        self.assertEqual(oAbo.level, None)
+
+        self.assertEqual(len(oAbo.discipline), 0)
+        self.assertEqual(len(oAbo.cardtype), 1)
+        self.failUnless(ICardType('Master') in oAbo.cardtype)
+
+        # TODO: Things still to check:
+        #rarity
+        #rulings
 
 if __name__ == "__main__":
     unittest.main()

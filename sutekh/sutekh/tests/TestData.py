@@ -183,6 +183,19 @@ TEST_CARD_LIST = """
 </p>
 
 <p>
+<a name="Aire_of_Elation"><span class="cardname">Aire of Elation</span></a>
+<span class="exp">[DS:C3, FN:PS3, CE:C/PTo3, Anarchs:PAB, KMW:PAn2]</span><br />
+<table border=0 cellpadding=0 cellspacing=0><tr><td width=1><span class="key">Cardtype:</span> </td><td>Action Modifier<br /></td></tr>
+<tr><td width=1><span class="key">Cost:</span> </td><td>1 blood<br /></td></tr>
+<tr><td width=1><span class="key">Discipline:</span> </td><td>Presence<br /></td></tr>
+<tr><td colspan=2><b>You cannot play another action modifier to further increase the bleed for this action.</b><br />
+<n>[pre] +1 bleed; +2 bleed if the acting vampire is Toreador.<br />
+<b>[PRE] +2 bleed; +3 bleed if the acting vampire is Toreador.</b><br />
+<tr><td width=1><span class="key">Artist:</span> </td><td>Greg Simanson<br /></td></tr>
+</table>
+</p>
+
+<p>
 <a name="Akram"><span class="cardname">Akram</span></a>
 <span class="exp">[AH:V3, CE:PB]</span><br />
 <table border=0 cellpadding=0 cellspacing=0><tr><td width=1><span class="key">Cardtype:</span> </td><td>Vampire<br /></td></tr>
