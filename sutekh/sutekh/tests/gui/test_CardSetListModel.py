@@ -85,8 +85,9 @@ class CardSetListModelTests(SutekhTest):
 
     def _format_error(self, sErrType, oTest1, oTest2, oModel):
         """Format an informative error message"""
-        sModel = "Model State : (ExtraLevelsMode : %d, ParentCountMode %d, " \
-                "ShowCardMode : %d, Editable: %s)" % (oModel.iExtraLevelsMode,
+        sModel = "Model (for card set %s) State : (ExtraLevelsMode : %d," \
+                " ParentCountMode %d, ShowCardMode : %d, Editable: %s)" % (
+                        oModel._oCardSet.name, oModel.iExtraLevelsMode,
                         oModel.iParentCountMode, oModel.iShowCardMode,
                         oModel.bEditable)
         return "%s : %s vs %s - %s" % (sErrType, oTest1, oTest2, sModel)
@@ -271,6 +272,50 @@ class CardSetListModelTests(SutekhTest):
                 {'Camarilla Edition' : 1})
         # Add Cards
         self._loop_modes(oPCS, oModel)
+        # Add some more cards
+        aCards = [('Alexandra', 'CE'), ('Sha-Ennu', 'Third Edition'),
+                ('Alexandra', None), ('Bronwen', 'Sabbat'),
+                ('.44 Magnum', 'Jyhad'), ('.44 Magnum', 'Jyhad'),
+                ('Yvette, The Hopeless', 'CE'),
+                ('Yvette, The Hopeless', 'BSC')]
+        for sName, sExp in aCards:
+            oCard = self._gen_card(sName, sExp)
+            # pylint: disable-msg=E1101
+            # PyProtocols confuses pylint
+            oPCS.addPhysicalCard(oCard.id)
+        # Create a child card set with some entries and check everything works
+        sName2 = 'Test Child 1'
+        oChildPCS = PhysicalCardSet(name=sName2, parent=oPCS)
+        oChildModel = CardSetCardListModel(sName2)
+        for sName, sExp in aCards[2:6]:
+            oCard = self._gen_card(sName, sExp)
+            # pylint: disable-msg=E1101
+            # PyProtocols confuses pylint
+            oChildPCS.addPhysicalCard(oCard.id)
+        oChildModel.groupby = NullGrouping
+        oChildModel.load()
+        oChildPCS.inuse = False
+        # Check adding cards when we have a parent card set
+        self._loop_modes(oChildPCS, oChildModel)
+        # Check adding cards when we have a child, ut no parent
+        self._loop_modes(oPCS, oModel)
+        # And when we're in use
+        oChildPCS.inuse = True
+        self._loop_modes(oChildPCS, oChildModel)
+        self._loop_modes(oPCS, oModel)
+        # Add a grand child
+        sName3 = 'Test Grand Child'
+        oChild2PCS = PhysicalCardSet(name=sName3, parent=oChildPCS)
+        for sName, sExp in aCards[3:7]:
+            oCard = self._gen_card(sName, sExp)
+            # pylint: disable-msg=E1101
+            # PyProtocols confuses pylint
+            oChild2PCS.addPhysicalCard(oCard.id)
+        oChild2PCS.inuse = False
+        # Check adding cards when we have a parent card set and a child
+        self._loop_modes(oChildPCS, oChildModel)
+        oChild2PCS.inuse = True
+        self._loop_modes(oChildPCS, oChildModel)
         # FIXME: Test the rest of the functionality
         # Test addition + deletion with parent card set, sibling card set
         # and child card sets
