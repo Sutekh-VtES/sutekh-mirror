@@ -670,7 +670,7 @@ class CardSetCardListModel(CardListModel):
                         self.set(oChildIter, 4, bDecCard)
                     else:
                         bRemove = True
-                        if self._dName2nd3rdLevel2Iter.haskey((sCardName,
+                        if self._dName2nd3rdLevel2Iter.has_key((sCardName,
                             sExpName)):
                             for oSubIter in self._dName2nd3rdLevel2Iter[
                                     (sCardName, sExpName)]:
@@ -911,8 +911,33 @@ class CardSetCardListModel(CardListModel):
     def check_child_iter_stays(self, oIter):
         """Check if an expansion or child card set iter stays"""
         # Conditions vary with cards shown AND the editable flag
-        # FIXME: implement
-        return True
+        # This routine works on the assumption that we only need to
+        # get the result right when the parent row isn't being removed.
+        # If the parent row is to be removed, reutrning the wrong result
+        # here doesn't matter - this simplifies the logic
+        iCnt = self.get_int_value(oIter, 1)
+        iParCnt = self.get_int_value(oIter, 2)
+        if iCnt > 0 or self.bEditable or self.iShowCardMode == ALL_CARDS:
+            # When editing, we don't delete 0 entries unless the card vanishes
+            return True
+        if self.iExtraLevelsMode == EXPANSIONS_AND_CARD_SETS and \
+                self.iShowCardMode == CHILD_CARDS and \
+                self.iter_n_children(oIter) > 0:
+            # iCnt is 0, and we're not editable, so we only show this
+            # row if there are non-zero entries below us
+            oChildIter = self.iter_children(oIter)
+            while oChildIter:
+                if self.get_int_value(oChildIter, 1) > 0:
+                    return True
+                oChildIter = self.iter_next(oChildIter)
+        elif self.iShowCardMode == PARENT_CARDS and \
+                self.iParentCountMode in [PARENT_COUNT, MINUS_THIS_SET] and \
+                iParCnt > 0:
+            # cards in the parent set, obviously
+            return True
+        # FIXME: Add the reamining conditions
+        # No reason to return True
+        return False
 
     def check_card_iter_stays(self, oIter):
         """Check if we need to remove a given card or not"""
