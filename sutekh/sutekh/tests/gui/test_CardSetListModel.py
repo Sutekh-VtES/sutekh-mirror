@@ -299,7 +299,7 @@ class CardSetListModelTests(SutekhTest):
         oChildPCS.inuse = False
         # Check adding cards when we have a parent card set
         self._loop_modes(oChildPCS, oChildModel)
-        # Check adding cards when we have a child, ut no parent
+        # Check adding cards when we have a child, but no parent
         self._loop_modes(oPCS, oModel)
         # And when we're in use
         oChildPCS.inuse = True

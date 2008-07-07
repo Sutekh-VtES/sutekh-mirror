@@ -656,7 +656,7 @@ class CardSetCardListModel(CardListModel):
                         sExpName]:
                     iCnt = self.get_int_value(oChildIter, 1) + iChg
                     self.set(oChildIter, 1, self.format_count(iCnt))
-                    if self.check_child_iter_stays(oChildIter):
+                    if self.check_child_iter_stays(oChildIter, oPhysCard):
                         iParCnt = self.get_int_value(oChildIter, 2)
                         if self.iParentCountMode == MINUS_THIS_SET \
                                 and self._oCardSet.parent:
@@ -912,7 +912,7 @@ class CardSetCardListModel(CardListModel):
         # FIXME: implement
         pass
 
-    def check_child_iter_stays(self, oIter):
+    def check_child_iter_stays(self, oIter, oPhysCard):
         """Check if an expansion or child card set iter stays"""
         # Conditions vary with cards shown AND the editable flag
         # This routine works on the assumption that we only need to
@@ -939,7 +939,12 @@ class CardSetCardListModel(CardListModel):
                 iParCnt > 0:
             # cards in the parent set, obviously
             return True
-        # FIXME: Add the reamining conditions
+        elif self.iShowCardMode == PARENT_CARDS and self._oCardSet.parent:
+            # Check if the card actually is in the parent card set
+            oFullFilter = FilterAndBox([SpecificPhysCardIdFilter(oPhysCard.id),
+                PhysicalCardSetFilter(self._oCardSet.parent.name)])
+            return oFullFilter.select(self.cardclass).distinct().count() > 0
+        # FIXME: Add the remaining conditions
         # No reason to return True
         return False
 
