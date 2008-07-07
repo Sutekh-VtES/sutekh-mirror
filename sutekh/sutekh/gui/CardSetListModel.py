@@ -681,7 +681,9 @@ class CardSetCardListModel(CardListModel):
                                 sExpName)]
                         self.remove(oChildIter)
                 if bRemove:
-                    del self._dNameSecondLevel2Iter[sCardName]
+                    del self._dNameSecondLevel2Iter[sCardName][sExpName]
+                    if not self._dNameSecondLevel2Iter[sCardName]:
+                        del self._dNameSecondLevel2Iter[sCardName]
             elif iChg > 0:
                 # FIXME: Need to add the new expansion
                 for oIter in self._dName2Iter[sCardName]:

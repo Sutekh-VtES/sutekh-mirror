@@ -126,8 +126,11 @@ class CardSetListModelTests(SutekhTest):
             "Card Lists for inc_card and load differ", aList1, aList2,
             oModel))
         # Card removal
+        # We use the map table, so we can also test dec_card properly
         for oCard in aPhysCards:
-            oPCS.removePhysicalCard(oCard.id)
+            oMapEntry = list(MapPhysicalCardToPhysicalCardSet.selectBy(
+                    physicalCardID=oCard.id, physicalCardSetID=oPCS.id))[-1]
+            MapPhysicalCardToPhysicalCardSet.delete(oMapEntry.id)
             oPCS.syncUpdate()
             oModel.dec_card(oCard)
         tAlterTotals = (self._count_all_cards(oModel),
@@ -176,7 +179,6 @@ class CardSetListModelTests(SutekhTest):
         self.assertEqual(aList1, aList2, self._format_error(
             "Card lists for repeated inc_card and load differ, ", aList1,
             aList2, oModel))
-        # We use the map table, so we can also test dec_card properly
         for oCard in aPhysCards:
             oMapEntry = list(MapPhysicalCardToPhysicalCardSet.selectBy(
                     physicalCardID=oCard.id, physicalCardSetID=oPCS.id))[-1]
