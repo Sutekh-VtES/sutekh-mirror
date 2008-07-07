@@ -616,11 +616,12 @@ class CardSetCardListModel(CardListModel):
             self.set(oIter, 1, self.format_count(iCnt))
             if self.check_card_iter_stays(oIter):
                 iParCnt = self.get_int_value(oIter, 2)
-                if self.iParentCountMode == MINUS_THIS_SET:
+                if self.iParentCountMode == MINUS_THIS_SET \
+                        and self._oCardSet.parent:
                     iParCnt -= iChg
                     iParGrpCnt -= iChg
                 elif self.iParentCountMode == MINUS_SETS_IN_USE \
-                        and self._oCardSet.inuse:
+                        and self._oCardSet.parent and self._oCardSet.inuse:
                     iParCnt -= iChg
                     iParGrpCnt -= iChg
                 self.set(oIter, 2, self.format_parent_count(iParCnt, iCnt))
@@ -655,9 +656,11 @@ class CardSetCardListModel(CardListModel):
                     self.set(oChildIter, 1, self.format_count(iCnt))
                     if self.check_child_iter_stays(oChildIter):
                         iParCnt = self.get_int_value(oChildIter, 2)
-                        if self.iParentCountMode == MINUS_THIS_SET:
+                        if self.iParentCountMode == MINUS_THIS_SET \
+                                and self._oCardSet.parent:
                             iParCnt = iParCnt - iChg
                         elif self.iParentCountMode == MINUS_SETS_IN_USE \
+                             and self._oCardSet.parent \
                              and self._oCardSet.inuse:
                             iParCnt = iParCnt - iChg
                         self.set(oChildIter, 2, self.format_parent_count(

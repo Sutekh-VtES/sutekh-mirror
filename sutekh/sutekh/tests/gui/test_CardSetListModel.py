@@ -15,7 +15,7 @@ from sutekh.gui.CardSetListModel import CardSetCardListModel, \
         IGNORE_PARENT, PARENT_COUNT, MINUS_THIS_SET, MINUS_SETS_IN_USE
 from sutekh.core.Groupings import NullGrouping
 from sutekh.core.SutekhObjects import PhysicalCardSet, IPhysicalCard, \
-        IExpansion, IAbstractCard
+        IExpansion, IAbstractCard, MapPhysicalCardToPhysicalCardSet
 import unittest
 
 class CardSetListener(CardListModelListener):
@@ -86,24 +86,23 @@ class CardSetListModelTests(SutekhTest):
     def _format_error(self, sErrType, oTest1, oTest2, oModel):
         """Format an informative error message"""
         sModel = "Model State : (ExtraLevelsMode : %d, ParentCountMode %d, " \
-                "ShowCardMode : %d, Edtable: %s)" % (oModel.iExtraLevelsMode,
+                "ShowCardMode : %d, Editable: %s)" % (oModel.iExtraLevelsMode,
                         oModel.iParentCountMode, oModel.iShowCardMode,
                         oModel.bEditable)
         return "%s : %s vs %s - %s" % (sErrType, oTest1, oTest2, sModel)
 
     # pylint: enable-msg=R0201
 
-    def _add_remove_cards(self, oPCS, oModel):
-        """Helper function to add and remove cards from the card set,
+    def _add_remove_distinct_cards(self, oPCS, oModel):
+        """Helper function to add and remove distinct cards from the card set,
            validating that the model works correctly"""
-        # First Set
         aCards = [('AK-47', None), ('Bronwen', 'SW'), ('Cesewayo', None),
                 ('Anna "Dictatrix11" Suljic', 'NoR'), ('Ablative Skin',
                     'Sabbat')]
         aPhysCards = []
         for sName, sExp in aCards:
-            oPhysCard = self._gen_card(sName, sExp)
-            aPhysCards.append(oPhysCard)
+            oCard = self._gen_card(sName, sExp)
+            aPhysCards.append(oCard)
         # pylint: disable-msg=E1101
         # SQLObjext confuses pylint
         oModel.load()
@@ -112,15 +111,15 @@ class CardSetListModelTests(SutekhTest):
             oPCS.addPhysicalCard(oCard.id)
             oPCS.syncUpdate()
             oModel.inc_card(oCard)
-        tAddTotals = (self._count_all_cards(oModel),
+        tAlterTotals = (self._count_all_cards(oModel),
                 self._count_second_level(oModel))
         aList1 = self._get_all_counts(oModel)
         oModel.load()
         tTotals = (self._count_all_cards(oModel),
                 self._count_second_level(oModel))
         aList2 = self._get_all_counts(oModel)
-        self.assertEqual(tAddTotals, tTotals, self._format_error(
-            "Totals for inc_card and load differ", tAddTotals, tTotals,
+        self.assertEqual(tAlterTotals, tTotals, self._format_error(
+            "Totals for inc_card and load differ", tAlterTotals, tTotals,
             oModel))
         self.assertEqual(aList1, aList2, self._format_error(
             "Card Lists for inc_card and load differ", aList1, aList2,
@@ -130,15 +129,15 @@ class CardSetListModelTests(SutekhTest):
             oPCS.removePhysicalCard(oCard.id)
             oPCS.syncUpdate()
             oModel.dec_card(oCard)
-        tAddTotals = (self._count_all_cards(oModel),
+        tAlterTotals = (self._count_all_cards(oModel),
                 self._count_second_level(oModel))
         aList1 = self._get_all_counts(oModel)
         oModel.load()
         tTotals = (self._count_all_cards(oModel),
                 self._count_second_level(oModel))
         aList2 = self._get_all_counts(oModel)
-        self.assertEqual(tAddTotals, tTotals, self._format_error(
-            "Totals for dec_card and load differ", tAddTotals, tTotals,
+        self.assertEqual(tAlterTotals, tTotals, self._format_error(
+            "Totals for dec_card and load differ", tAlterTotals, tTotals,
             oModel))
         self.assertEqual(aList1, aList2, self._format_error(
             "Card lists for dec_card and load differ", aList1, aList2, oModel))
@@ -147,33 +146,56 @@ class CardSetListModelTests(SutekhTest):
         self.assertEqual(iEnd, iStart, self._format_error(
             "Card set differs from start after removals", iEnd, iStart,
             oModel))
-        # Test set with repeats
+
+    def _add_remove_repeated_cards(self, oPCS, oModel):
+        """Helper function to add and remove repeated cards from the card set,
+           validating that the model works correctly"""
         aCards = [('Alexandra', 'CE'), ('Alexandra', None),
                 ('Ablative Skin', None)] * 5
         aPhysCards = []
         for sName, sExp in aCards:
-            oPhysCard = self._gen_card(sName, sExp)
-            aPhysCards.append(oPhysCard)
+            oCard = self._gen_card(sName, sExp)
+            aPhysCards.append(oCard)
         oModel.load()
+        iStart = self._count_all_cards(oModel)
         for oCard in aPhysCards:
             oPCS.addPhysicalCard(oCard.id)
             oPCS.syncUpdate()
             oModel.inc_card(oCard)
+        tAlterTotals = (self._count_all_cards(oModel),
+                self._count_second_level(oModel))
         aList1 = self._get_all_counts(oModel)
         oModel.load()
         aList2 = self._get_all_counts(oModel)
+        tTotals = (self._count_all_cards(oModel),
+                self._count_second_level(oModel))
+        self.assertEqual(tAlterTotals, tTotals, self._format_error(
+            "Totals for repeated inc_card and load differ", tAlterTotals,
+            tTotals, oModel))
         self.assertEqual(aList1, aList2, self._format_error(
-            "Card lists for inc_card and load differ, ", aList1, aList2,
-            oModel))
-        # FIXME: Use Map table so we can also test dec_card properly here
-        # remove the cards
-        for oCard in set(aPhysCards):
-            oPCS.removePhysicalCard(oCard.id)
-        oPCS.syncUpdate()
+            "Card lists for repeated inc_card and load differ, ", aList1,
+            aList2, oModel))
+        # We use the map table, so we can also test dec_card properly
+        for oCard in aPhysCards:
+            oMapEntry = list(MapPhysicalCardToPhysicalCardSet.selectBy(
+                    physicalCardID=oCard.id, physicalCardSetID=oPCS.id))[-1]
+            MapPhysicalCardToPhysicalCardSet.delete(oMapEntry.id)
+            oPCS.syncUpdate()
+            oModel.dec_card(oCard)
+        tAlterTotals = (self._count_all_cards(oModel),
+                self._count_second_level(oModel))
+        aList1 = self._get_all_counts(oModel)
         oModel.load()
+        aList2 = self._get_all_counts(oModel)
+        tTotals = (self._count_all_cards(oModel),
+                self._count_second_level(oModel))
+        self.assertEqual(tAlterTotals, tTotals, self._format_error(
+            "Totals for repeated dec_card and load differ", tAlterTotals,
+            tTotals, oModel))
+        self.assertEqual(aList1, aList2, self._format_error(
+            "Card lists for repeated dec_card and load differ, ", aList1,
+            aList2, oModel))
         # sanity checks
-        # We drop to one, since we've removed all Alexandra's
-        #self.assertEqual(self._count_all_cards(oModel), 1)
         iEnd = self._count_all_cards(oModel)
         self.assertEqual(iEnd, iStart, self._format_error(
             "Card set differs from start after removals", iEnd, iStart,
@@ -194,7 +216,8 @@ class CardSetListModelTests(SutekhTest):
                     for iShowMode in [THIS_SET_ONLY, ALL_CARDS, PARENT_CARDS,
                             CHILD_CARDS]:
                         oModel.iShowCardMode = iShowMode
-                        self._add_remove_cards(oPCS, oModel)
+                        self._add_remove_distinct_cards(oPCS, oModel)
+                        self._add_remove_repeated_cards(oPCS, oModel)
 
     def test_basic(self):
         """Set of simple tests of the Card Set List Model"""
@@ -216,10 +239,10 @@ class CardSetListModelTests(SutekhTest):
         self.assertEquals(oModel.iter_n_children(None), 1)
         aCards = [('Alexandra', 'CE'), ('Sha-Ennu', 'Third Edition')]
         for sName, sExp in aCards:
-            oPhysCard = self._gen_card(sName, sExp)
+            oCard = self._gen_card(sName, sExp)
             # pylint: disable-msg=E1101
             # PyProtocols confuses pylint
-            oPCS.addPhysicalCard(oPhysCard.id)
+            oPCS.addPhysicalCard(oCard.id)
         oModel.load()
         self.assertEqual(len(oListener.aCards), 2)
         # Only Vampires added
