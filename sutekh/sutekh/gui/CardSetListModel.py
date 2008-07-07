@@ -614,16 +614,17 @@ class CardSetCardListModel(CardListModel):
             iGrpCnt = self.get_int_value(oGrpIter, 1) + iChg
             iParGrpCnt = self.get_int_value(oGrpIter, 2)
             self.set(oIter, 1, self.format_count(iCnt))
+            iParCnt = self.get_int_value(oIter, 2)
+            if self.iParentCountMode == MINUS_THIS_SET \
+                    and self._oCardSet.parent:
+                iParCnt -= iChg
+                iParGrpCnt -= iChg
+            elif self.iParentCountMode == MINUS_SETS_IN_USE \
+                    and self._oCardSet.parent and self._oCardSet.inuse:
+                iParCnt -= iChg
+                iParGrpCnt -= iChg
+
             if self.check_card_iter_stays(oIter):
-                iParCnt = self.get_int_value(oIter, 2)
-                if self.iParentCountMode == MINUS_THIS_SET \
-                        and self._oCardSet.parent:
-                    iParCnt -= iChg
-                    iParGrpCnt -= iChg
-                elif self.iParentCountMode == MINUS_SETS_IN_USE \
-                        and self._oCardSet.parent and self._oCardSet.inuse:
-                    iParCnt -= iChg
-                    iParGrpCnt -= iChg
                 self.set(oIter, 2, self.format_parent_count(iParCnt, iCnt))
                 bIncCard, bDecCard = self.check_inc_dec(iCnt)
                 self.set(oIter, 3, bIncCard)
@@ -649,7 +650,8 @@ class CardSetCardListModel(CardListModel):
                 EXPANSIONS_AND_CARD_SETS]:
             # We need to update the expansion count for this card
             sExpName = self.get_expansion_name(oPhysCard.expansion)
-            if self._dNameSecondLevel2Iter[sCardName].has_key(sExpName):
+            if self._dNameSecondLevel2Iter.has_key(sCardName) and \
+                    self._dNameSecondLevel2Iter[sCardName].has_key(sExpName):
                 for oChildIter in self._dNameSecondLevel2Iter[sCardName][
                         sExpName]:
                     iCnt = self.get_int_value(oChildIter, 1) + iChg
