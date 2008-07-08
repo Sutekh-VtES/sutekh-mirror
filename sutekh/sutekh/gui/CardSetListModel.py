@@ -989,13 +989,34 @@ class CardSetCardListModel(CardListModel):
             if self.iExtraLevelsMode in [SHOW_CARD_SETS,
                     CARD_SETS_AND_EXPANSIONS]:
                 # Check if any top level child iters have non-zero counts
-                pass
+                oChildIter = self.iter_children(oIter)
+                while oChildIter:
+                    if self.get_int_value(oChildIter, 1) > 0:
+                        return True
+                    oChildIter = self.iter_next(oChildIter)
             elif self.iExtraLevelsMode == EXPANSIONS_AND_CARD_SETS:
                 # Check third level children
-                pass
+                oChildIter = self.iter_children(oIter)
+                while oChildIter:
+                    oGrandChild = self.iter_children(oChildIter)
+                    while oGrandChild:
+                        if self.get_int_value(oGrandChild, 1) > 0:
+                            return True
+                        oGrandChild = self.iter_next(oGrandChild)
+                    oChildIter = self.iter_next(oChildIter)
             else:
                 # Need to actually check the database
-                pass
+                # pylint: disable-msg=E1101
+                # Pyprotocols confuses pylint
+                aChildren = [x.name for x in PhysicalCardSet.selectBy(
+                    parentID=self._oCardSet.id, inuse=True)]
+                if aChildren:
+                    oAbsCard = IAbstractCard(self.get_name_from_iter(oIter))
+                    oChildFilter = FilterAndBox([
+                        SpecificCardIdFilter(oAbsCard.id),
+                        MultiPhysicalCardSetMapFilter(aChildren)])
+                    return oChildFilter.select(
+                            self.cardclass).distinct().count() > 0
         return False
 
     def check_group_iter_stays(self, oIter):
