@@ -85,11 +85,13 @@ class CardSetListModelTests(SutekhTest):
 
     def _format_error(self, sErrType, oTest1, oTest2, oModel):
         """Format an informative error message"""
-        sModel = "Model (for card set %s) State : (ExtraLevelsMode : %d," \
-                " ParentCountMode %d, ShowCardMode : %d, Editable: %s)" % (
-                        oModel._oCardSet.name, oModel.iExtraLevelsMode,
-                        oModel.iParentCountMode, oModel.iShowCardMode,
-                        oModel.bEditable)
+        # pylint: disable-msg=W0212
+        # Need info from _oCardSet here
+        sModel = "Model (for card set %s, inuse=%s) State : (ExtraLevelsMode" \
+                " : %d, ParentCountMode %d, ShowCardMode : %d, Editable: %s)" \
+                % (oModel._oCardSet.name, oModel._oCardSet.inuse,
+                        oModel.iExtraLevelsMode, oModel.iParentCountMode,
+                        oModel.iShowCardMode, oModel.bEditable)
         return "%s : %s vs %s - %s" % (sErrType, oTest1, oTest2, sModel)
 
     # pylint: enable-msg=R0201
@@ -287,6 +289,9 @@ class CardSetListModelTests(SutekhTest):
             oPCS.addPhysicalCard(oCard.id)
         # Create a child card set with some entries and check everything works
         sName2 = 'Test Child 1'
+        sName3 = 'Test Grand Child'
+        sName4 = 'Test Sibling'
+        sName5 = 'Test Grand Child 2'
         oChildPCS = PhysicalCardSet(name=sName2, parent=oPCS)
         oChildModel = CardSetCardListModel(sName2)
         for sName, sExp in aCards[2:6]:
@@ -306,17 +311,45 @@ class CardSetListModelTests(SutekhTest):
         self._loop_modes(oChildPCS, oChildModel)
         self._loop_modes(oPCS, oModel)
         # Add a grand child
-        sName3 = 'Test Grand Child'
-        oChild2PCS = PhysicalCardSet(name=sName3, parent=oChildPCS)
+        oGrandChildPCS = PhysicalCardSet(name=sName3, parent=oChildPCS)
         for sName, sExp in aCards[3:7]:
             oCard = self._gen_card(sName, sExp)
             # pylint: disable-msg=E1101
             # PyProtocols confuses pylint
-            oChild2PCS.addPhysicalCard(oCard.id)
-        oChild2PCS.inuse = False
+            oGrandChildPCS.addPhysicalCard(oCard.id)
+        oGrandChildPCS.inuse = False
         # Check adding cards when we have a parent card set and a child
         self._loop_modes(oChildPCS, oChildModel)
-        oChild2PCS.inuse = True
+        oGrandChildPCS.inuse = True
+        self._loop_modes(oChildPCS, oChildModel)
+        # Add some cards to oGrandChildPCS that aren't in parent and oChildPCS,
+        # add a sibling card set to oChildPCS and add another child and retest
+        oSibPCS = PhysicalCardSet(name=sName4, parent=oPCS)
+        for sName, sExp in aCards[1:6]:
+            oCard = self._gen_card(sName, sExp)
+            # pylint: disable-msg=E1101
+            # PyProtocols confuses pylint
+            oSibPCS.addPhysicalCard(oCard.id)
+        oSibPCS.inus = True
+        oGrandChild2PCS = PhysicalCardSet(name=sName5, parent=oChildPCS)
+        oGrandChild2PCS.inuse = True
+        aCards = [('AK-47', 'LotN'), ('Cesewayo', 'LoB'),
+                ('Aire of Elation', 'CE'), ('Yvette, The Hopeless', None),
+                ('Yvette, The Hopeless', 'BSC')]
+        for sName, sExp in aCards:
+            oCard = self._gen_card(sName, sExp)
+            # pylint: disable-msg=E1101
+            # PyProtocols confuses pylint
+            oGrandChild2PCS.addPhysicalCard(oCard.id)
+            if sName == 'Aire of Elation':
+                oGrandChildPCS.addPhysicalCard(oCard.id)
+                oGrandChildPCS.addPhysicalCard(oCard.id)
+                oGrandChildPCS.addPhysicalCard(oCard.id)
+                oGrandChildPCS.syncUpdate()
+            oGrandChild2PCS.syncUpdate()
+        oGrandChildPCS.inuse = False
+        self._loop_modes(oChildPCS, oChildModel)
+        oGrandChildPCS.inuse = True
         self._loop_modes(oChildPCS, oChildModel)
         # FIXME: Test the rest of the functionality
         # Test addition + deletion with parent card set, sibling card set

@@ -942,6 +942,8 @@ class CardSetCardListModel(CardListModel):
         # get the result right when the parent row isn't being removed.
         # If the parent row is to be removed, reutrning the wrong result
         # here doesn't matter - this simplifies the logic
+        # pylint: disable-msg=E1101
+        # PyProtocols confuses pylint
         iCnt = self.get_int_value(oIter, 1)
         iParCnt = self.get_int_value(oIter, 2)
         if iCnt > 0 or self.bEditable or self.iShowCardMode == ALL_CARDS:
