@@ -154,7 +154,7 @@ class CardSetController(object):
             elif oCardSet.parent and self.__oPhysCardSet.parent and \
                     self.model.changes_with_siblings() and oCardSet.inuse and \
                     oCardSet.parent.id == self.__oPhysCardSet.parent.id:
-                self.model.dec_sibiling_count(oPhysCard)
+                self.model.dec_sibling_count(oPhysCard)
             # Doesn't affect us, so ignore
 
     def cards_changed(self, oCardSet, oPhysCard):

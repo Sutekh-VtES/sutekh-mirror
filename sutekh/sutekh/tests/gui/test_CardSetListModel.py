@@ -94,6 +94,42 @@ class CardSetListModelTests(SutekhTest):
                         oModel.iShowCardMode, oModel.bEditable)
         return "%s : %s vs %s - %s" % (sErrType, oTest1, oTest2, sModel)
 
+    def _gen_card_signal(self, oPCS, oModel, oPhysCard, iDir):
+        """Generate the approriate message to the Model.
+
+           Very similiar to the logic in CardSetController."""
+        # pylint: disable-msg=W0212
+        # Need info from _oCardSet here
+        oModelPCS = oModel._oCardSet
+        if oPCS.id == oModelPCS.id:
+            if iDir > 0:
+                oModel.inc_card(oPhysCard)
+            else:
+                oModel.dec_card(oPhysCard)
+        elif oPCS.parent and oPCS.parent.id == oModelPCS.id and \
+                oModel.changes_with_children():
+            # Child card set changing
+            if iDir > 0:
+                oModel.inc_child_count(oPhysCard)
+            else:
+                oModel.dec_child_count(oPhysCard)
+        elif oModelPCS.parent and oModelPCS.parent.id == oPCS.id and \
+                oModel.changes_with_parent():
+            # Parent card set changing
+            if iDir > 0:
+                oModel.inc_parent_count(oPhysCard)
+            else:
+                oModel.dec_parent_count(oPhysCard)
+        elif oModelPCS.parent and oPCS.parent and oPCS.inuse and \
+                oPCS.parent.id == oModelPCS.parent.id and \
+                oModel.changes_with_siblings():
+            # Sibling card set to the model
+            if iDir > 0:
+                oModel.inc_sibling_count(oPhysCard)
+            else:
+                oModel.dec_sibling_count(oPhysCard)
+
+
     # pylint: enable-msg=R0201
 
     def _add_remove_distinct_cards(self, oPCS, oModel):
@@ -113,7 +149,7 @@ class CardSetListModelTests(SutekhTest):
         for oCard in aPhysCards:
             oPCS.addPhysicalCard(oCard.id)
             oPCS.syncUpdate()
-            oModel.inc_card(oCard)
+            self._gen_card_signal(oPCS, oModel, oCard, 1)
         tAlterTotals = (self._count_all_cards(oModel),
                 self._count_second_level(oModel))
         aList1 = self._get_all_counts(oModel)
@@ -134,7 +170,7 @@ class CardSetListModelTests(SutekhTest):
                     physicalCardID=oCard.id, physicalCardSetID=oPCS.id))[-1]
             MapPhysicalCardToPhysicalCardSet.delete(oMapEntry.id)
             oPCS.syncUpdate()
-            oModel.dec_card(oCard)
+            self._gen_card_signal(oPCS, oModel, oCard, -1)
         tAlterTotals = (self._count_all_cards(oModel),
                 self._count_second_level(oModel))
         aList1 = self._get_all_counts(oModel)
@@ -167,7 +203,7 @@ class CardSetListModelTests(SutekhTest):
         for oCard in aPhysCards:
             oPCS.addPhysicalCard(oCard.id)
             oPCS.syncUpdate()
-            oModel.inc_card(oCard)
+            self._gen_card_signal(oPCS, oModel, oCard, 1)
         tAlterTotals = (self._count_all_cards(oModel),
                 self._count_second_level(oModel))
         aList1 = self._get_all_counts(oModel)
@@ -186,7 +222,7 @@ class CardSetListModelTests(SutekhTest):
                     physicalCardID=oCard.id, physicalCardSetID=oPCS.id))[-1]
             MapPhysicalCardToPhysicalCardSet.delete(oMapEntry.id)
             oPCS.syncUpdate()
-            oModel.dec_card(oCard)
+            self._gen_card_signal(oPCS, oModel, oCard, -1)
         tAlterTotals = (self._count_all_cards(oModel),
                 self._count_second_level(oModel))
         aList1 = self._get_all_counts(oModel)
