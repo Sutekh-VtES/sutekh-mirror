@@ -405,6 +405,13 @@ class CardSetListModelTests(SutekhTest):
         oGrandChild2PCS.addPhysicalCard(self._gen_card(
             'Ablative Skin', None))
         self._loop_modes(oChildPCS, oChildModel)
+        oGCModel = CardSetCardListModel(sName3)
+        # Test adding cards to a sibling card set
+        self._loop_modes(oGrandChild2PCS, oGCModel)
+        self._loop_modes(oSibPCS, oChildModel)
+        # Test adding cards to the parent card set
+        self._loop_modes(oPCS, oChildModel)
+        self._loop_modes(oChildPCS, oGCModel)
         # FIXME: Test the rest of the functionality
         # Test adding cards + removing card from parent card sets, child
         # card sets and siblings
