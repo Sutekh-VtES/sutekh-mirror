@@ -397,9 +397,15 @@ class CardSetListModelTests(SutekhTest):
         self._loop_modes(oChildPCS, oChildModel)
         oGrandChildPCS.inuse = True
         self._loop_modes(oChildPCS, oChildModel)
+        oGrandChild2PCS.addPhysicalCard(self._gen_card('Ablative Skin',
+            'Sabbat'))
+        self._loop_modes(oChildPCS, oChildModel)
+        oChildPCS.addPhysicalCard(self._gen_card('Ablative Skin',
+            'Sabbat'))
+        oGrandChild2PCS.addPhysicalCard(self._gen_card(
+            'Ablative Skin', None))
+        self._loop_modes(oChildPCS, oChildModel)
         # FIXME: Test the rest of the functionality
-        # Test addition + deletion with parent card set, sibling card set
-        # and child card sets
         # Test adding cards + removing card from parent card sets, child
         # card sets and siblings
         # Test filtering with the different modes

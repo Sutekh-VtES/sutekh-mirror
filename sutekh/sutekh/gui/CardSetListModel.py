@@ -761,9 +761,30 @@ class CardSetCardListModel(CardListModel):
                     bIncCard, bDecCard = self.check_inc_dec(1)
                     self._add_extra_level(oIter, sExpName, (1, iParCnt,
                         bIncCard, bDecCard))
-                    if self.iExtraLevelsMode == EXPANSIONS_AND_CARD_SETS:
-                        # FIXME: get child set info
-                        pass
+                    if self.iExtraLevelsMode == EXPANSIONS_AND_CARD_SETS \
+                            and self.iShowCardMode not in [ALL_CARDS,
+                                    CHILD_CARDS]:
+                        # We need to fill in the info about the child CS's
+                        aChildren = [x.name for x in
+                                PhysicalCardSet.selectBy(
+                                    parentID=self._oCardSet.id, inuse=True)]
+                        for sCardSet in aChildren:
+                            oFilter = FilterAndBox([
+                                    SpecificPhysCardIdFilter( oPhysCard.id),
+                                    PhysicalCardSetFilter(sCardSet)])
+                            iCnt = oFilter.select(
+                                    self.cardclass).distinct().count()
+                            if iCnt > 0:
+                                # We can ignore the iCnt == 0 cases (bEditable
+                                # True, etc.), since we know those entries
+                                # would already be showing if required.
+                                for oSubIter in self._dNameSecondLevel2Iter[
+                                        sCardName][sExpName]:
+                                    bIncCard, bDecCard = \
+                                            self.check_inc_dec(iCnt)
+                                    self._add_extra_level(oSubIter,
+                                            sCardSet, (iCnt, iParCnt, bIncCard,
+                                                bDecCard))
         elif self.iExtraLevelsMode in [SHOW_CARD_SETS,
                 CARD_SETS_AND_EXPANSIONS] and \
                         self._dNameSecondLevel2Iter.has_key(sCardName):
@@ -1097,6 +1118,20 @@ class CardSetCardListModel(CardListModel):
             oFullFilter = FilterAndBox([SpecificPhysCardIdFilter(oPhysCard.id),
                 PhysicalCardSetFilter(self._oCardSet.parent.name)])
             return oFullFilter.select(self.cardclass).distinct().count() > 0
+        elif self.iShowCardMode == CHILD_CARDS and \
+                self.iExtraLevelsMode == SHOW_EXPANSIONS:
+            # Need to check the database, since we can't query the model
+            aChildren = [x.name for x in
+                    PhysicalCardSet.selectBy(parentID=self._oCardSet.id,
+                        inuse=True)]
+            if aChildren:
+                oChildFilter = FilterAndBox([
+                    SpecificPhysCardIdFilter(oPhysCard.id),
+                    MultiPhysicalCardSetMapFilter(aChildren)])
+                if oChildFilter.select(self.cardclass).distinct().count() > 0:
+                    return True
+ 
+
         # FIXME: Add the remaining conditions
         # No reason to return True
         return False
@@ -1113,7 +1148,6 @@ class CardSetCardListModel(CardListModel):
         if self.iShowCardMode == PARENT_CARDS and iParCnt > 0:
             return True
         elif self.iShowCardMode == CHILD_CARDS:
-            # FIXME: implement
             if self.iExtraLevelsMode in [SHOW_CARD_SETS,
                     CARD_SETS_AND_EXPANSIONS]:
                 # Check if any top level child iters have non-zero counts
