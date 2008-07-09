@@ -34,6 +34,13 @@ class CardSetListener(CardListModelListener):
 class CardSetListModelTests(SutekhTest):
     """Class for the test cases"""
 
+    aParentCountToStr = ['IGNORE_PARENT', 'PARENT_COUNT', 'MINUS_THIS_SET',
+            'MINUS_SETS_IN_USE']
+    aExtraLevelToStr = ['NO_SECOND_LEVEL', 'SHOW_EXPANSIONS', 'SHOW_CARD_SETS',
+            'EXPANSIONS_AND_CARD_SETS', 'CARD_SETS_AND_EXPANSIONS']
+    aCardCountToStr = ['THIS_SET_ONLY', 'ALL_CARDS', 'PARENT_CARDS',
+            'CHILD_CARDS']
+
     # pylint: disable-msg=R0201
     # I prefer to have these as methods
     def _count_second_level(self, oModel):
@@ -87,12 +94,15 @@ class CardSetListModelTests(SutekhTest):
         """Format an informative error message"""
         # pylint: disable-msg=W0212
         # Need info from _oCardSet here
-        sModel = "Model (for card set %s, inuse=%s) State : (ExtraLevelsMode" \
-                " : %d, ParentCountMode %d, ShowCardMode : %d, Editable: %s)" \
-                % (oModel._oCardSet.name, oModel._oCardSet.inuse,
-                        oModel.iExtraLevelsMode, oModel.iParentCountMode,
-                        oModel.iShowCardMode, oModel.bEditable)
-        return "%s : %s vs %s - %s" % (sErrType, oTest1, oTest2, sModel)
+        sModel = "Model: [card set %s, inuse=%s]\nState : (ExtraLevelsMode" \
+                " : %s, ParentCountMode : %s, ShowCardMode : %s," \
+                " Editable: %s)" % (oModel._oCardSet.name,
+                        oModel._oCardSet.inuse,
+                        self.aExtraLevelToStr[oModel.iExtraLevelsMode],
+                        self.aParentCountToStr[oModel.iParentCountMode],
+                        self.aCardCountToStr[oModel.iShowCardMode],
+                        oModel.bEditable)
+        return "%s : %s vs %s\n%s" % (sErrType, oTest1, oTest2, sModel)
 
     def _gen_card_signal(self, oPCS, oModel, oPhysCard, iDir):
         """Generate the approriate message to the Model.
