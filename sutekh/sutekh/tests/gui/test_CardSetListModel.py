@@ -397,6 +397,8 @@ class CardSetListModelTests(SutekhTest):
         self._loop_modes(oChildPCS, oChildModel)
         oGrandChildPCS.inuse = True
         self._loop_modes(oChildPCS, oChildModel)
+        # pylint: disable-msg=E1101
+        # PyProtocols confuses pylint
         oGrandChild2PCS.addPhysicalCard(self._gen_card('Ablative Skin',
             'Sabbat'))
         self._loop_modes(oChildPCS, oChildModel)
