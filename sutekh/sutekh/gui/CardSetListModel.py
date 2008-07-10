@@ -576,6 +576,30 @@ class CardSetCardListModel(CardListModel):
                 self.remove(oIter)
         del self._dNameSecondLevel2Iter[sCardName]
 
+    def _get_parent_count(self, oPhysCard, iThisSetCnt=None):
+        """Get the correct parent count for the given count"""
+        iParCnt = 0
+        if self._oCardSet.parent and self.iParentCountMode != IGNORE_PARENT:
+            oParentFilter = FilterAndBox([
+                SpecificPhysCardIdFilter(oPhysCard.id),
+                PhysicalCardSetFilter(self._oCardSet.parent.name)])
+            iParCnt = oParentFilter.select(self.cardclass).distinct().count()
+            if self.iParentCountMode == MINUS_THIS_SET:
+                if iThisSetCnt is None:
+                    iThisSetCnt = self.get_card_iterator(
+                            SpecificPhysCardIdFilter(oPhysCard.id)).count()
+                iParCnt -= iThisSetCnt
+            elif self.iParentCountMode == MINUS_SETS_IN_USE:
+                aChildren = [x.name for x in PhysicalCardSet.selectBy(
+                    parentID=self._oCardSet.parent.id, inuse=True)]
+                if aChildren:
+                    oInUseFilter = FilterAndBox([
+                        SpecificPhysCardIdFilter(oPhysCard.id),
+                        MultiPhysicalCardSetMapFilter(aChildren)])
+                    iParCnt -= oInUseFilter.select(
+                            self.cardclass).distinct().count()
+        return iParCnt
+
     def inc_card(self, oPhysCard):
         """Increase the count for the card oPhysCard, adding a new
            card entry if nessecary."""
@@ -706,28 +730,7 @@ class CardSetCardListModel(CardListModel):
                 for oIter in self._dName2Iter[sCardName]:
                     # FIXME: REALLY Refactor This so it's not
                     # totally unreadable
-                    if self._oCardSet.parent and \
-                            self.iParentCountMode != IGNORE_PARENT:
-                        oParentFilter = FilterAndBox([
-                            SpecificPhysCardIdFilter(oPhysCard.id),
-                            PhysicalCardSetFilter(self._oCardSet.parent.name)])
-                        iParCnt = oParentFilter.select(
-                                self.cardclass).distinct().count()
-                        if self.iParentCountMode == MINUS_THIS_SET:
-                            iParCnt -= 1
-                        elif self.iParentCountMode == MINUS_SETS_IN_USE:
-                            aChildren = [x.name for x in
-                                    PhysicalCardSet.selectBy(
-                                        parentID=self._oCardSet.parent.id,
-                                        inuse=True)]
-                            if aChildren:
-                                oInUseFilter = FilterAndBox([
-                                    SpecificPhysCardIdFilter(oPhysCard.id),
-                                    MultiPhysicalCardSetMapFilter(aChildren)])
-                                iParCnt -= oInUseFilter.select(
-                                        self.cardclass).distinct().count()
-                    else:
-                        iParCnt = 0
+                    iParCnt = self._get_parent_count(oPhysCard, 1)
                     bIncCard, bDecCard = self.check_inc_dec(1)
                     self._add_extra_level(oIter, sExpName, (1, iParCnt,
                         bIncCard, bDecCard))
@@ -810,28 +813,7 @@ class CardSetCardListModel(CardListModel):
                         if iCnt > 0:
                             # We need to add the expansion here
                             if iParCnt is None:
-                                iParCnt = oParFilter.select(
-                                        self.cardclass).distinct().count()
-                                if self.iParentCountMode == MINUS_THIS_SET:
-                                    iParCnt -= self.get_card_iterator(
-                                            SpecificPhysCardIdFilter(
-                                                oPhysCard.id)).count()
-                                elif self.iParentCountMode == \
-                                        MINUS_SETS_IN_USE:
-                                    aChildren = [x.name for x in
-                                            PhysicalCardSet.selectBy(
-                                                parentID=
-                                                self._oCardSet.parent.id,
-                                                inuse=True)]
-                                    if aChildren:
-                                        oInUseFilter = FilterAndBox([
-                                            SpecificPhysCardIdFilter(
-                                                oPhysCard.id),
-                                            MultiPhysicalCardSetMapFilter(
-                                                aChildren)])
-                                        iParCnt -= oInUseFilter.select(
-                                                self.cardclass
-                                                ).distinct().count()
+                                iParCnt = self._get_parent_count(oPhysCard)
                             bIncCard, bDecCard = self.check_inc_dec(iCnt)
                             for oChildIter in self._dNameSecondLevel2Iter[
                                     sCardName][sCardSetName]:
@@ -1223,14 +1205,87 @@ class CardSetCardListModel(CardListModel):
 
     def inc_child_count(self, oPhysCard, sCardSetName):
         """Add the card oPhysCard in the card set sCardSetName to the model."""
-        # FIXME: implement
-        pass
+        sCardName = oPhysCard.abstractCard.name
+        if not self._dName2Iter.has_key(sCardName):
+            # Card isn't shown, so need to add it
+            self.add_new_card(oPhysCard)
+        else:
+            self.alter_child_count(oPhysCard, sCardSetName, +1)
 
     def dec_child_count(self, oPhysCard, sCardSetName):
         """Remove the card oPhysCard in the card set sCardSetName
            from the model."""
-        # FIXME: implement
-        pass
+        sCardName = oPhysCard.abstractCard.name
+        if not self._dName2Iter.has_key(sCardName):
+            # Card not shown, so nothing to do
+            return
+        self.alter_child_count(oPhysCard, sCardSetName, -1)
+
+    def alter_child_count(self, oPhysCard, sCardSetName, iChg):
+        """Adjust the count for the card in the given card set by iChg"""
+        # FIXME: Implement
+        # pylint: disable-msg = E1101
+        # PyProtocols confuses pylint
+        oChildPCS = IPhysicalCardSet(sCardSetName)
+        if not oChildPCS.inuse:
+            # Shouldn't happen
+            return
+        bRemove = False
+        sCardName = oPhysCard.abstractCard.name
+        for oIter in self._dName2Iter[sCardName]:
+            oGrpIter = self.iter_parent(oIter)
+            iGrpCnt = self.get_int_value(oGrpIter, 1)
+            iCnt = self.get_int_value(oIter, 1)
+            if self.check_card_iter_stays(oIter):
+                if self.iExtraLevelsMode == NO_SECOND_LEVEL:
+                    # Nothing to do here
+                    continue
+                sExpName = self.get_expansion_name(oPhysCard.expansion)
+                if self.iExtraLevelsMode == SHOW_EXPANSIONS and \
+                        self.iShowCardMode == CHILD_CARDS:
+                    # Check if we need to add or remove an expansion entry
+                    if iChg > 0:
+                        if not self._dNameSecondLevel2Iter.has_key(sCardName) \
+                                or not self._dNameSecondLevel2Iter[sCardName
+                                        ].has_key(sExpName):
+                            # Add an entry to the model
+                            iCnt = 0
+                            iParCnt = self._get_parent_count(oPhysCard, iCnt)
+                            bIncCard, bDecCard = self.check_inc_dec(iCnt)
+                            self._add_extra_level(oIter, sExpName,
+                                    (iCnt, iParCnt, bIncCard, bDecCard))
+                    else:
+                        if self._dNameSecondLevel2Iter.has_key(sCardName) and \
+                                self._dNameSecondLevel2Iter[sCardName
+                                        ].has_key(sExpName):
+                           bRemoveChild = False
+                           for oChildIter in self._dNameSecondLevel2Iter[
+                                   sCardName][sExpName]:
+                               if not self.check_child_iter_stays(oChildIter,
+                                       oPhysCard):
+                                   bRemoveChild = True
+                                   self.remove(oChildIter)
+                           if bRemoveChild:
+                               del self._dNameSecondLevel2Iter[sCardName][
+                                       sExpName]
+                elif self.iExtraLevelsMode == EXPANSIONS_AND_CARD_SETS:
+                    # We need to check if we add or remove a 3rd level entry
+                    # FIXME: Implement
+                    pass
+                else:
+                    # Check 2nd level entries
+                    # FIXME: Implement
+                    pass
+            else:
+                bRemove = True # Delete from cache after the loop
+                self._remove_sub_iters(sCardName)
+                self.remove(oIter)
+                if not self.check_group_iter_stays(oGrpIter):
+                    sGroupName = self.get_value(oGrpIter, 0)
+                    del self._dGroupName2Iter[sGroupName]
+                    self.remove(oGrpIter)
+        if bRemove:
+            del self._dName2Iter[sCardName]
 
     def check_child_iter_stays(self, oIter, oPhysCard):
         """Check if an expansion or child card set iter stays"""
