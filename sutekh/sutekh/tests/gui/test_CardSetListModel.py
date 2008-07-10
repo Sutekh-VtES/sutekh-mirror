@@ -120,9 +120,9 @@ class CardSetListModelTests(SutekhTest):
                 oModel.changes_with_children():
             # Child card set changing
             if iDir > 0:
-                oModel.inc_child_count(oPhysCard)
+                oModel.inc_child_count(oPhysCard, oPCS.name)
             else:
-                oModel.dec_child_count(oPhysCard)
+                oModel.dec_child_count(oPhysCard, oPCS.name)
         elif oModelPCS.parent and oModelPCS.parent.id == oPCS.id and \
                 oModel.changes_with_parent():
             # Parent card set changing
@@ -414,6 +414,10 @@ class CardSetListModelTests(SutekhTest):
         # Test adding cards to the parent card set
         self._loop_modes(oPCS, oChildModel)
         self._loop_modes(oChildPCS, oGCModel)
+        # Test adding cards to the child card set
+        self._loop_modes(oChildPCS, oModel)
+        self._loop_modes(oSibPCS, oModel)
+        self._loop_modes(oGrandChildPCS, oChildModel)
         # FIXME: Test the rest of the functionality
         # Test adding cards + removing card from parent card sets, child
         # card sets and siblings
