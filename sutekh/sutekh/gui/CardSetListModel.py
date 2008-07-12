@@ -641,6 +641,9 @@ class CardSetCardListModel(CardListModel):
         oCard = IAbstractCard(oPhysCard)
         sCardName = oCard.name
         bRemove = False
+        # FIXME: This doesn't do the right thing when the new physical card
+        # can add a group (cf. RarityGrouping + ExpansionGrouping)
+        # same applies to other alter_count functions
         for oIter in self._dName2Iter[sCardName]:
             oGrpIter = self.iter_parent(oIter)
             iCnt = self.get_int_value(oIter, 1) + iChg
@@ -1060,8 +1063,11 @@ class CardSetCardListModel(CardListModel):
                                 iParCnt = iChg
 
                             bIncCard, bDecCard = self.check_inc_dec(iCnt)
-                            self._add_extra_level(oIter, sExpName,
-                                    (iCnt, iParCnt, bIncCard, bDecCard))
+                            # we only do this once (because of check above),
+                            # so need to add for all entries
+                            for oMainIter in self._dName2Iter[sCardName]:
+                                self._add_extra_level(oMainIter, sExpName,
+                                        (iCnt, iParCnt, bIncCard, bDecCard))
                             if self.iExtraLevelsMode == \
                                     EXPANSIONS_AND_CARD_SETS:
                                 # We need to fill in info about the child CS's
@@ -1232,8 +1238,9 @@ class CardSetCardListModel(CardListModel):
                             iCnt = 0
                             iParCnt = self._get_parent_count(oPhysCard, iCnt)
                             bIncCard, bDecCard = self.check_inc_dec(iCnt)
-                            self._add_extra_level(oIter, sExpName,
-                                    (iCnt, iParCnt, bIncCard, bDecCard))
+                            for oMainIter in self._dName2Iter[sCardName]:
+                                self._add_extra_level(oMainIter, sExpName,
+                                        (iCnt, iParCnt, bIncCard, bDecCard))
                         if self.iExtraLevelsMode == EXPANSIONS_AND_CARD_SETS \
                                 and self._dNameSecondLevel2Iter[
                                         sCardName].has_key(sExpName):
@@ -1318,8 +1325,9 @@ class CardSetCardListModel(CardListModel):
                         iParCnt = self.get_int_value(oIter, 2)
                         iCnt = 1
                         bIncCard, bDecCard = self.check_inc_dec(iCnt)
-                        self._add_extra_level(oIter, sCardSetName,
-                                (iCnt, iParCnt, bIncCard, bDecCard))
+                        for oMainIter in self._dName2Iter[sCardName]:
+                            self._add_extra_level(oMainIter, sCardSetName,
+                                    (iCnt, iParCnt, bIncCard, bDecCard))
                 elif self.iExtraLevelsMode == CARD_SETS_AND_EXPANSIONS:
                     # Check 2nd + 3rd level entries
                     # FIXME: Implement
