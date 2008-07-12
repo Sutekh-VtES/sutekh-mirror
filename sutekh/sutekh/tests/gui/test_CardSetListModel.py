@@ -14,7 +14,8 @@ from sutekh.gui.CardSetListModel import CardSetCardListModel, \
         THIS_SET_ONLY, ALL_CARDS, PARENT_CARDS, CHILD_CARDS, \
         IGNORE_PARENT, PARENT_COUNT, MINUS_THIS_SET, MINUS_SETS_IN_USE
 from sutekh.core.Groupings import NullGrouping, ClanGrouping, \
-        DisciplineGrouping, CryptLibraryGrouping, CardTypeGrouping
+        DisciplineGrouping, CryptLibraryGrouping, CardTypeGrouping, \
+        ExpansionGrouping, RarityGrouping
 from sutekh.core.SutekhObjects import PhysicalCardSet, IPhysicalCard, \
         IExpansion, IAbstractCard, MapPhysicalCardToPhysicalCardSet
 import unittest
@@ -344,7 +345,8 @@ class CardSetListModelTests(SutekhTest):
         self._loop_modes(oPCS, oModel)
         # Check over all the groupings
         for cGrouping in [CryptLibraryGrouping, DisciplineGrouping, 
-                ClanGrouping, CardTypeGrouping]:
+                ClanGrouping, CardTypeGrouping, ExpansionGrouping,
+                RarityGrouping]:
             oModel.groupby = cGrouping
             self._loop_modes(oPCS, oModel)
         oModel.groupby = NullGrouping
@@ -446,7 +448,8 @@ class CardSetListModelTests(SutekhTest):
         self._loop_modes(oGrandChildPCS, oChildModel)
         # Go through the grouping tests as well
         for cGrouping in [CryptLibraryGrouping, DisciplineGrouping, 
-                ClanGrouping, CardTypeGrouping]:
+                ClanGrouping, CardTypeGrouping, ExpansionGrouping,
+                RarityGrouping]:
             oChildModel.groupby = cGrouping
             self._loop_modes(oSibPCS, oChildModel)
             self._loop_modes(oPCS, oChildModel)
