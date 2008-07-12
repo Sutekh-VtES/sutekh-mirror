@@ -667,11 +667,9 @@ class CardSetCardListModel(CardListModel):
                 self._remove_sub_iters(sCardName)
                 self.remove(oIter)
 
-            if self.check_group_iter_stays(oGrpIter):
-                self.set(oGrpIter, 1, self.format_count(iGrpCnt))
-                self.set(oGrpIter, 2, self.format_parent_count(iParGrpCnt,
-                    iGrpCnt))
-            else:
+            self.set(oGrpIter, 1, self.format_count(iGrpCnt))
+            self.set(oGrpIter, 2, self.format_parent_count(iParGrpCnt, iGrpCnt))
+            if not self.check_group_iter_stays(oGrpIter):
                 sGroupName = self.get_value(oGrpIter, 0)
                 del self._dGroupName2Iter[sGroupName]
                 self.remove(oGrpIter)
@@ -1173,14 +1171,13 @@ class CardSetCardListModel(CardListModel):
                 iParGrpCnt = self.get_int_value(oGrpIter, 2) - iParCnt
                 iGrpCnt = self.get_int_value(oGrpIter, 1)
                 self.remove(oIter)
+                # Fix the group counts
+                self.set(oGrpIter, 2, self.format_parent_count(iParGrpCnt,
+                        iGrpCnt))
                 if not self.check_group_iter_stays(oGrpIter):
                     sGroupName = self.get_value(oGrpIter, 0)
                     del self._dGroupName2Iter[sGroupName]
                     self.remove(oGrpIter)
-                else:
-                    # Fix the group counts
-                    self.set(oGrpIter, 2, self.format_parent_count(iParGrpCnt,
-                        iGrpCnt))
         if bRemove:
             del self._dName2Iter[sCardName]
 

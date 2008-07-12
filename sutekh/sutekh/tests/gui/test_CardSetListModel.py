@@ -13,7 +13,9 @@ from sutekh.gui.CardSetListModel import CardSetCardListModel, \
         EXPANSIONS_AND_CARD_SETS, CARD_SETS_AND_EXPANSIONS, \
         THIS_SET_ONLY, ALL_CARDS, PARENT_CARDS, CHILD_CARDS, \
         IGNORE_PARENT, PARENT_COUNT, MINUS_THIS_SET, MINUS_SETS_IN_USE
-from sutekh.core.Groupings import NullGrouping
+from sutekh.core.Groupings import NullGrouping, ClanGrouping, \
+        DisciplineGrouping, ExpansionGrouping, RarityGrouping, \
+        CryptLibraryGrouping, CardTypeGrouping
 from sutekh.core.SutekhObjects import PhysicalCardSet, IPhysicalCard, \
         IExpansion, IAbstractCard, MapPhysicalCardToPhysicalCardSet
 import unittest
@@ -47,19 +49,21 @@ class CardSetListModelTests(SutekhTest):
         """Count all the second level entries in the model."""
         iTotal = 0
         oIter = oModel.get_iter_first()
-        # We assume grouping is NullGrouping here
-        oChildIter = oModel.iter_children(oIter)
-        while oChildIter:
-            iTotal += oModel.iter_n_children(oChildIter)
-            oChildIter = oModel.iter_next(oChildIter)
+        while oIter:
+            oChildIter = oModel.iter_children(oIter)
+            while oChildIter:
+                iTotal += oModel.iter_n_children(oChildIter)
+                oChildIter = oModel.iter_next(oChildIter)
+            oIter = oModel.iter_next(oIter)
         return iTotal
 
     def _count_all_cards(self, oModel):
         """Count all the entries in the model."""
         iTotal = 0
-        # We assume grouping is NullGrouping here
         oIter = oModel.get_iter_first()
-        iTotal = oModel.iter_n_children(oIter)
+        while oIter:
+            iTotal += oModel.iter_n_children(oIter)
+            oIter = oModel.iter_next(oIter)
         return iTotal
 
     def _get_all_child_counts(self, oModel, oIter):
@@ -94,10 +98,11 @@ class CardSetListModelTests(SutekhTest):
         """Format an informative error message"""
         # pylint: disable-msg=W0212
         # Need info from _oCardSet here
-        sModel = "Model: [card set %s, inuse=%s]\nState : (ExtraLevelsMode" \
-                " : %s, ParentCountMode : %s, ShowCardMode : %s," \
-                " Editable: %s)" % (oModel._oCardSet.name,
-                        oModel._oCardSet.inuse,
+        sModel = "Model: [card set %s, inuse=%s, groupby=%s]\n" % (
+                    oModel._oCardSet.name, oModel._oCardSet.inuse,
+                    oModel.groupby)
+        sModel += " State : (ExtraLevelsMode %s, ParentCountMode : %s, " \
+                "ShowCardMode : %s, Editable: %s)" % (
                         self.aExtraLevelToStr[oModel.iExtraLevelsMode],
                         self.aParentCountToStr[oModel.iParentCountMode],
                         self.aCardCountToStr[oModel.iShowCardMode],
@@ -160,11 +165,15 @@ class CardSetListModelTests(SutekhTest):
             oPCS.addPhysicalCard(oCard.id)
             oPCS.syncUpdate()
             self._gen_card_signal(oPCS, oModel, oCard, 1)
-        tAlterTotals = (self._count_all_cards(oModel),
+        tAlterTotals = (
+                oModel.iter_n_children(None),
+                self._count_all_cards(oModel),
                 self._count_second_level(oModel))
         aList1 = self._get_all_counts(oModel)
         oModel.load()
-        tTotals = (self._count_all_cards(oModel),
+        tTotals = (
+                oModel.iter_n_children(None),
+                self._count_all_cards(oModel),
                 self._count_second_level(oModel))
         aList2 = self._get_all_counts(oModel)
         self.assertEqual(tAlterTotals, tTotals, self._format_error(
@@ -181,11 +190,15 @@ class CardSetListModelTests(SutekhTest):
             MapPhysicalCardToPhysicalCardSet.delete(oMapEntry.id)
             oPCS.syncUpdate()
             self._gen_card_signal(oPCS, oModel, oCard, -1)
-        tAlterTotals = (self._count_all_cards(oModel),
+        tAlterTotals = (
+                oModel.iter_n_children(None),
+                self._count_all_cards(oModel),
                 self._count_second_level(oModel))
         aList1 = self._get_all_counts(oModel)
         oModel.load()
-        tTotals = (self._count_all_cards(oModel),
+        tTotals = (
+                oModel.iter_n_children(None),
+                self._count_all_cards(oModel),
                 self._count_second_level(oModel))
         aList2 = self._get_all_counts(oModel)
         self.assertEqual(tAlterTotals, tTotals, self._format_error(
@@ -214,12 +227,16 @@ class CardSetListModelTests(SutekhTest):
             oPCS.addPhysicalCard(oCard.id)
             oPCS.syncUpdate()
             self._gen_card_signal(oPCS, oModel, oCard, 1)
-        tAlterTotals = (self._count_all_cards(oModel),
+        tAlterTotals = (
+                oModel.iter_n_children(None),
+                self._count_all_cards(oModel),
                 self._count_second_level(oModel))
         aList1 = self._get_all_counts(oModel)
         oModel.load()
         aList2 = self._get_all_counts(oModel)
-        tTotals = (self._count_all_cards(oModel),
+        tTotals = (
+                oModel.iter_n_children(None),
+                self._count_all_cards(oModel),
                 self._count_second_level(oModel))
         self.assertEqual(tAlterTotals, tTotals, self._format_error(
             "Totals for repeated inc_card and load differ", tAlterTotals,
@@ -233,12 +250,16 @@ class CardSetListModelTests(SutekhTest):
             MapPhysicalCardToPhysicalCardSet.delete(oMapEntry.id)
             oPCS.syncUpdate()
             self._gen_card_signal(oPCS, oModel, oCard, -1)
-        tAlterTotals = (self._count_all_cards(oModel),
+        tAlterTotals = (
+                oModel.iter_n_children(None),
+                self._count_all_cards(oModel),
                 self._count_second_level(oModel))
         aList1 = self._get_all_counts(oModel)
         oModel.load()
         aList2 = self._get_all_counts(oModel)
-        tTotals = (self._count_all_cards(oModel),
+        tTotals = (
+                oModel.iter_n_children(None),
+                self._count_all_cards(oModel),
                 self._count_second_level(oModel))
         self.assertEqual(tAlterTotals, tTotals, self._format_error(
             "Totals for repeated dec_card and load differ", tAlterTotals,
@@ -322,6 +343,13 @@ class CardSetListModelTests(SutekhTest):
                 {'Camarilla Edition' : 1})
         # Add Cards
         self._loop_modes(oPCS, oModel)
+        # Check over all the groupings
+        for cGrouping in [CryptLibraryGrouping, RarityGrouping,
+                ExpansionGrouping, DisciplineGrouping, ClanGrouping,
+                CardTypeGrouping]:
+            oModel.groupby = cGrouping
+            self._loop_modes(oPCS, oModel)
+        oModel.groupby = NullGrouping
         # Add some more cards
         aCards = [('Alexandra', 'CE'), ('Sha-Ennu', 'Third Edition'),
                 ('Alexandra', None), ('Bronwen', 'Sabbat'),
@@ -418,6 +446,14 @@ class CardSetListModelTests(SutekhTest):
         self._loop_modes(oChildPCS, oModel)
         self._loop_modes(oSibPCS, oModel)
         self._loop_modes(oGrandChildPCS, oChildModel)
+        # Go through the grouping tests as well
+        for cGrouping in [CryptLibraryGrouping, RarityGrouping,
+                ExpansionGrouping, DisciplineGrouping, ClanGrouping,
+                CardTypeGrouping]:
+            oChildModel.groupby = cGrouping
+            self._loop_modes(oSibPCS, oChildModel)
+            self._loop_modes(oPCS, oChildModel)
+            self._loop_modes(oGrandChildPCS, oChildModel)
         # FIXME: Test filtering with the different modes
 
 if __name__ == "__main__":
