@@ -1229,13 +1229,12 @@ class CardSetCardListModel(CardListModel):
                                 self.iExtraLevelsMode == \
                                 EXPANSIONS_AND_CARD_SETS:
                     # Check if we need to add or remove an expansion entry
-                    if iChg > 0:
+                    if iChg > 0 and bUpdateChildren:
                         if (not self._dNameSecondLevel2Iter.has_key(sCardName)
                                 or not self._dNameSecondLevel2Iter[sCardName
                                         ].has_key(sExpName)) and  \
                                                 self.iShowCardMode == \
-                                                CHILD_CARDS and \
-                                                bUpdateChildren:
+                                                CHILD_CARDS:
                             # Add an entry to the model
                             iCnt = 0
                             bUpdateChildren = False
@@ -1247,6 +1246,7 @@ class CardSetCardListModel(CardListModel):
                         if self.iExtraLevelsMode == EXPANSIONS_AND_CARD_SETS \
                                 and self._dNameSecondLevel2Iter[
                                         sCardName].has_key(sExpName):
+                            bUpdateChildren = False
                             if self._dName2nd3rdLevel2Iter.has_key((sCardName,
                                 sExpName)) and self._dName2nd3rdLevel2Iter[(
                                     sCardName, sExpName)].has_key(
@@ -1262,6 +1262,7 @@ class CardSetCardListModel(CardListModel):
                                 # We need to add 2nd3rd level entries
                                 iCnt = 1 # Since we're adding this entry,
                                 # it must be 1, else it would already exist
+                                bUpdateChildren = False
                                 for oChildIter in self._dNameSecondLevel2Iter[
                                         sCardName][sExpName]:
                                     iParCnt = self.get_int_value(oChildIter, 2)
@@ -1270,11 +1271,10 @@ class CardSetCardListModel(CardListModel):
                                     self._add_extra_level(oChildIter,
                                             sCardSetName, (iCnt, iParCnt,
                                                 bIncCard, bDecCard))
-                    else:
+                    elif bUpdateChildren:
                         if self._dNameSecondLevel2Iter.has_key(sCardName) and \
                                 self._dNameSecondLevel2Iter[sCardName
-                                        ].has_key(sExpName) and \
-                                                bUpdateChildren:
+                                        ].has_key(sExpName):
                             bRemoveChild = False
                             bUpdateChildren = False
                             if self._dName2nd3rdLevel2Iter.has_key((sCardName,
@@ -1311,12 +1311,12 @@ class CardSetCardListModel(CardListModel):
                                     sCardSetName) and bUpdateChildren:
                         # Alter the count
                         bRemoveChild = False
+                        bUpdateChildren = False
                         for oChildIter in self._dNameSecondLevel2Iter[
                                 sCardName][sCardSetName]:
                             iCnt = self.get_int_value(oChildIter, 1) + iChg
                             # We can't change parent counts, so no need to
                             # consider them
-                            bUpdateChildren = False
                             self.set(oChildIter, 1, self.format_count(iCnt))
                             if not self.check_child_iter_stays(oChildIter,
                                        oPhysCard):
@@ -1325,7 +1325,7 @@ class CardSetCardListModel(CardListModel):
                             bKeepIter = self.check_card_iter_stays(oIter)
                         if bRemoveChild:
                             self._remove_second_level(sCardName, sCardSetName)
-                    elif iChg > 0:
+                    elif iChg > 0 and bUpdateChildren:
                         # Need to add an entry
                         iParCnt = self.get_int_value(oIter, 2)
                         iCnt = 1
@@ -1334,7 +1334,8 @@ class CardSetCardListModel(CardListModel):
                             self._add_extra_level(oMainIter, sCardSetName,
                                     (iCnt, iParCnt, bIncCard, bDecCard))
                         bUpdateChildren = False
-                elif self.iExtraLevelsMode == CARD_SETS_AND_EXPANSIONS:
+                elif self.iExtraLevelsMode == CARD_SETS_AND_EXPANSIONS and \
+                        bUpdateChildren:
                     if self._dNameSecondLevel2Iter.has_key(sCardName) and \
                             self._dNameSecondLevel2Iter[sCardName].has_key(
                                     sCardSetName) and bUpdateChildren:
@@ -1350,49 +1351,39 @@ class CardSetCardListModel(CardListModel):
                             if not self.check_child_iter_stays(oChildIter,
                                        oPhysCard):
                                 bRemoveChild = True
-                            else:
-                                if self._dName2nd3rdLevel2Iter.has_key(
-                                        (sCardName, sCardSetName)) and \
-                                                self._dName2nd3rdLevel2Iter[
-                                                        (sCardName,
-                                                            sCardSetName)
-                                                        ].has_key(sExpName):
-                                    # Update entry
-                                    bRemoveGC = False
-                                    for oSubIter in \
-                                            self._dName2nd3rdLevel2Iter[
-                                                    (sCardName, sCardSetName)
-                                                    ][sExpName]:
-                                        iCnt = self.get_int_value(oSubIter,
-                                                1) + iChg
-                                        iParCnt = self.get_int_value(oSubIter,
-                                                2)
-                                        self.set(oSubIter, 1,
-                                                self.format_count(iCnt))
-                                        if not self.check_child_iter_stays(
-                                                oSubIter, oPhysCard):
-                                            self.remove(oSubIter)
-                                            bRemoveGC = True
-                                    if bRemoveGC:
-                                        del self._dName2nd3rdLevel2Iter[
-                                                (sCardName, sCardSetName)][
-                                                        sExpName]
-                                else:
-                                    # Need to add an entry
-                                    iThisCSCnt = self.get_card_iterator(
-                                                SpecificPhysCardIdFilter(
-                                                    oPhysCard.id)).count()
-                                    iCnt = 1
-                                    iParCnt = self._get_parent_count(oPhysCard,
-                                            iThisCSCnt)
-                                    bIncCard, bDecCard = self.check_inc_dec(
-                                            iCnt)
-                                    for oChildIter in \
-                                            self._dNameSecondLevel2Iter[
-                                                    sCardName][sCardSetName]:
-                                        self._add_extra_level(oChildIter,
-                                                sExpName, (iCnt, iParCnt,
-                                                    bIncCard, bDecCard))
+
+                        if self._dName2nd3rdLevel2Iter.has_key((sCardName,
+                            sCardSetName)) and self._dName2nd3rdLevel2Iter[
+                                    (sCardName, sCardSetName)].has_key(
+                                            sExpName):
+                            # Update entry
+                            bRemoveGC = False
+                            bUpdateGC = False
+                            for oSubIter in self._dName2nd3rdLevel2Iter[
+                                    (sCardName, sCardSetName)][sExpName]:
+                                iCnt = self.get_int_value(oSubIter, 1) + iChg
+                                iParCnt = self.get_int_value(oSubIter, 2)
+                                self.set(oSubIter, 1, self.format_count(iCnt))
+                                if not self.check_child_iter_stays(oSubIter, oPhysCard):
+                                    self.remove(oSubIter)
+                                    bRemoveGC = True
+                            if bRemoveGC:
+                                del self._dName2nd3rdLevel2Iter[(sCardName,
+                                    sCardSetName)][sExpName]
+                        else:
+                            # Need to add an entry
+                            iThisCSCnt = self.get_card_iterator(
+                                    SpecificPhysCardIdFilter(
+                                        oPhysCard.id)).count()
+                            iCnt = 1
+                            iParCnt = self._get_parent_count(oPhysCard,
+                                    iThisCSCnt)
+                            bIncCard, bDecCard = self.check_inc_dec(iCnt)
+                            bUpdateGC = False
+                            for oChildIter in self._dNameSecondLevel2Iter[
+                                    sCardName][sCardSetName]:
+                                self._add_extra_level(oChildIter, sExpName,
+                                        (iCnt, iParCnt, bIncCard, bDecCard))
                         if self.iShowCardMode == CHILD_CARDS:
                             bKeepIter = self.check_card_iter_stays(oIter)
                         if bRemoveChild:
