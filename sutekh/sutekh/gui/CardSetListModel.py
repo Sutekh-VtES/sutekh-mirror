@@ -1022,7 +1022,7 @@ class CardSetCardListModel(CardListModel):
                 if self.iExtraLevelsMode in [SHOW_EXPANSIONS,
                         EXPANSIONS_AND_CARD_SETS] and \
                                 self.iShowCardMode == PARENT_CARDS \
-                                and bCheckIter:
+                                and bCheckIter and bUpdateChildren:
                     # We need to check if we add or remove a 2nd level entry
                     if iChg > 0:
                         # Check if the expansion is in the list
@@ -1151,25 +1151,24 @@ class CardSetCardListModel(CardListModel):
                                 self.set(oChildIter, 2,
                                         self.format_parent_count(iParCnt,
                                             iCnt))
-                                if self._dName2nd3rdLevel2Iter.has_key(
-                                        (sCardName, sValue)):
-                                    for sName in self._dName2nd3rdLevel2Iter[
-                                            (sCardName, sValue)]:
-                                        if self.iExtraLevelsMode \
-                                                == CARD_SETS_AND_EXPANSIONS \
-                                                and sName != sExpName:
-                                            continue
-                                        for oSubIter in \
-                                                self._dName2nd3rdLevel2Iter[
-                                                        (sCardName, sValue)][
-                                                                sName]:
-                                            iParCnt = self.get_int_value(
-                                                    oSubIter, 2) + iChg
-                                            iCnt = self.get_int_value(oSubIter,
-                                                    1)
-                                            self.set(oSubIter, 2,
-                                                    self.format_parent_count(
-                                                        iParCnt, iCnt))
+                            if self._dName2nd3rdLevel2Iter.has_key((sCardName,
+                                sValue)):
+                                for sName in self._dName2nd3rdLevel2Iter[
+                                        (sCardName, sValue)]:
+                                    if self.iExtraLevelsMode \
+                                            == CARD_SETS_AND_EXPANSIONS \
+                                            and sName != sExpName:
+                                        continue
+                                    for oSubIter in \
+                                            self._dName2nd3rdLevel2Iter[
+                                                    (sCardName, sValue)][
+                                                            sName]:
+                                        iParCnt = self.get_int_value(oSubIter,
+                                                2) + iChg
+                                        iCnt = self.get_int_value(oSubIter, 1)
+                                        self.set(oSubIter, 2,
+                                                self.format_parent_count(
+                                                    iParCnt, iCnt))
             else:
                 bRemove = True # Delete from cache after the loop
                 self._remove_sub_iters(sCardName)
