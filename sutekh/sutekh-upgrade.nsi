@@ -1,4 +1,4 @@
-; Copyright 2007 Simon Cross <hodgestar@gmail.com>
+; Copyright 2007, 2008 Simon Cross <hodgestar@gmail.com>
 ; GPL - see COPYING for details
 ; Compile with makensis sutekh-setup.nsi
 ; You'll need to have all the files listed under dependencies present
@@ -29,10 +29,14 @@
   ; These files should be on the same directory as
   ; this script
 
-  !define SUTEKH_EGG "Sutekh-0.6.0-py2.5.egg"
-  !define SUTEKH_ICON "sutekh.ico"
+  !define SUTEKH_FOLDER "sutekh"
+  !define DIST_FOLDER "dist"
+  !define DEPENDENCIES_FOLDER "."
 
-  !define COMBINED_LICENSE GPLv2.txt
+  !define SUTEKH_EGG "${DIST_FOLDER}/Sutekh-${SUTEKH_VERSION}-py2.5.egg"
+  !define SUTEKH_ICON "${DEPENDENCIES_FOLDER}/sutekh.ico"
+
+  !define COMBINED_LICENSE "${DEPENDENCIES_FOLDER}/GPLv2.txt"
 
 ; Pages
 
