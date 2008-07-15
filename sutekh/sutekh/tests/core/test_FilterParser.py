@@ -9,8 +9,10 @@
 
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.tests.io import test_WhiteWolfParser
-from sutekh.core.SutekhObjects import AbstractCard
-from sutekh.core import FilterParser
+from sutekh.core.SutekhObjects import AbstractCard, PhysicalCardSet, \
+        PhysicalCard, MapPhysicalCardToPhysicalCardSet, IAbstractCard, \
+        IPhysicalCard, IExpansion
+from sutekh.core import FilterParser, Filters
 import unittest
 
 class FilterParserTests(SutekhTest):
@@ -131,6 +133,135 @@ class FilterParserTests(SutekhTest):
             self.assertEqual(aNames, aExpectedNames,
                     "Filter Object %s failed."
                     " %s != %s." % (oFilter, aNames, aExpectedNames))
+
+    def test_card_set_filters(self):
+        """Tests for the physical card set filters."""
+        # Although splitting this off does add an additional init
+        # pass, the logical grouping is fairly different
+        aCardSets = [('Test 1', 'Author A', 'A set', False),
+                ('Test 2', 'Author B', 'Another set', False),
+                ('Test 3', 'Author A', 'Something different', True)]
+        aPCSCards = [
+                # Set 1
+                [('Abombwe', None), ('Alexandra', 'CE'),
+                ('Sha-Ennu', None), ('Sha-Ennu', None), ('Sha-Ennu', None),
+                ('Sha-Ennu', 'Third Edition')],
+                # Set 2
+                [('Sha-Ennu', 'Third Edition'), ('Anson', 'Jyhad'),
+                    ('.44 magnum', 'Jyhad'), ('ak-47', 'LotN'),
+                    ('Alexandra', 'CE'), ('Alexandra', 'CE')],
+                # Set 3
+                [('Yvette, The Hopeless', 'BSC')]]
+        aPCSs = []
+        # pylint: disable-msg=E1101
+        # sqlobject confuses pylint
+        for iCnt, tData in enumerate(aCardSets):
+            sName, sAuthor, sComment, bInUse = tData
+            oPCS = PhysicalCardSet(name=sName, comment=sComment,
+                    author=sAuthor, inuse=bInUse)
+            for sName, sExp in aPCSCards[iCnt]:
+                if sExp:
+                    oExp = IExpansion(sExp)
+                else:
+                    oExp = None
+                oAbs = IAbstractCard(sName)
+                oPhys = IPhysicalCard((oAbs, oExp))
+                oPCS.addPhysicalCard(oPhys.id)
+            aPCSs.append(oPCS)
+        # Tests on the physical card set properties
+        aPhysicalCardSetTests = [
+                ('CardSetName = "Test 1"', [aPCSs[0]]),
+                ('CardSetName = Test', sorted(aPCSs)),
+                ('CSSetsInUse', [aPCSs[2]]),
+                ('CardSetAuthor = "Author A"',
+                    sorted([aPCSs[0], aPCSs[2]])),
+                ('CardSetDescription = set',
+                    sorted([aPCSs[0], aPCSs[1]])),
+                ('CardSetDescription in different',
+                    [aPCSs[2]]),
+                ]
+
+        for sFilter, aExpectedSets in aPhysicalCardSetTests:
+            oAST = self.oFilterParser.apply(sFilter)
+            oFilter = oAST.get_filter()
+            aCardSets = sorted(oFilter.select(PhysicalCardSet).distinct())
+            self.assertEqual(aCardSets, aExpectedSets, "Filter Object %s"
+                    " failed. %s != %s." % (oFilter, aCardSets, aExpectedSets))
+
+        # Test data for the Specific card filters
+
+        aPCSAbsCardTests = [
+                (Filters.PhysicalCardSetFilter('Test 1'),
+                    'CardType in Vampire',
+                    [u"Alexandra", u"Sha-Ennu", u"Sha-Ennu", u"Sha-Ennu",
+                        u"Sha-Ennu"]),
+                (Filters.PhysicalCardSetFilter('Test 1'),
+                    'CardType in Master',
+                    [u"Abombwe"]),
+                (Filters.PhysicalCardSetFilter('Test 2'),
+                    'CardType in Equipment',
+                    [u".44 Magnum", u"AK-47"]),
+                ]
+
+        for oPCSFilter, sFilter, aExpectedCards in aPCSAbsCardTests:
+            oAST = self.oFilterParser.apply(sFilter)
+            oFilter = oAST.get_filter()
+            oFullFilter = Filters.FilterAndBox([oPCSFilter, oFilter])
+            aCSCards = [IAbstractCard(x).name for x in oFullFilter.select(
+                        MapPhysicalCardToPhysicalCardSet).distinct()]
+            self.assertEqual(aCSCards, aExpectedCards, "Filter Object %s"
+                    " failed. %s != %s." % (oFullFilter, aCSCards,
+                        aExpectedCards))
+
+        oInUseFilter = self.oFilterParser.apply('SetsInUse').get_filter()
+        aPCSCardsInUse = list(oInUseFilter.select(PhysicalCard).distinct())
+        aExpectedCards = list(aPCSs[2].cards)
+        self.assertEqual(aPCSCardsInUse, aExpectedCards, 'PhysicalCardSet In '
+                'Use Filter failed %s != %s' % (aPCSCardsInUse,
+                    aExpectedCards))
+
+        oInUseFilter = self.oFilterParser.apply('CSSetsInUse').get_filter()
+        aCSInUse = list(oInUseFilter.select(PhysicalCardSet).distinct())
+        aExpectedSets = [aPCSs[2]]
+        self.assertEqual(aCSInUse, aExpectedSets, 'CSPhysicalCardSet In'
+                'Use Filter failed %s != %s' % (aCSInUse, aExpectedSets))
+
+        # Number tests
+        aPCSNumberTests = [
+                (Filters.PhysicalCardSetFilter('Test 1'),
+                    'CardCount = 4 from "%s"' % aPCSs[0].name,
+                    [u"Sha-Ennu", u"Sha-Ennu", u"Sha-Ennu", u"Sha-Ennu"]),
+                (Filters.PhysicalCardSetFilter('Test 1'),
+                    'CardCount = 7 from "%s"' % aPCSs[0].name,
+                    []),
+                (Filters.PhysicalCardSetFilter('Test 1'),
+                    'CardCount in "1" from "%s"' % aPCSs[0].name,
+                    [u"Abombwe", u"Alexandra"]),
+                (Filters.PhysicalCardSetFilter('Test 1'),
+                    'CardCount in 1, 4 from "%s"' % aPCSs[0].name,
+                    [u"Abombwe", u"Alexandra", u"Sha-Ennu", u"Sha-Ennu",
+                        u"Sha-Ennu", u"Sha-Ennu"]),
+                # Cards in 'Test 2' with zero count in 'Test 1'
+                (Filters.PhysicalCardSetFilter('Test 2'),
+                    'CardCount = 0 from "%s"' % aPCSs[0].name,
+                    [u"Anson", u".44 Magnum", u"AK-47"]),
+                (Filters.PhysicalCardSetFilter('Test 2'),
+                    'CardCount = 0 from "%s" and CardType = Vampire' %
+                    aPCSs[0].name,
+                    [u"Anson"]),
+                    ]
+
+        for oPCSFilter, sFilter, aExpectedCards in aPCSNumberTests:
+            # pylint: disable-msg=E1101
+            # pyprotocols confuses pylinta
+            oAST = self.oFilterParser.apply(sFilter)
+            oFilter = oAST.get_filter()
+            oFullFilter = Filters.FilterAndBox([oPCSFilter, oFilter])
+            aCSCards = [IAbstractCard(x).name for x in oFullFilter.select(
+                        MapPhysicalCardToPhysicalCardSet).distinct()]
+            self.assertEqual(aCSCards, aExpectedCards, "Filter Object %s"
+                    " failed. %s != %s." % (oFullFilter, aCSCards,
+                        aExpectedCards))
 
 if __name__ == "__main__":
     unittest.main()

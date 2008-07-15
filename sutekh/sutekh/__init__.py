@@ -21,10 +21,9 @@ from sutekh.core.Filters import FilterAndBox, FilterOrBox, ClanFilter, \
                     PhysicalCardFilter, GroupFilter, MultiGroupFilter, \
                     ExpansionFilter, MultiExpansionFilter, \
                     PhysicalExpansionFilter, \
-                    MultiPhysicalExpansionFilter, PhysicalCardSetNameFilter, \
-                    PhysicalCardSetDescriptionFilter, \
-                    PhysicalCardSetAuthorFilter, \
-                    PhysicalCardSetAnnotationsFilter
+                    MultiPhysicalExpansionFilter, CardSetNameFilter, \
+                    CardSetDescriptionFilter, CardSetAuthorFilter, \
+                    CardSetAnnotationsFilter
 
 from sutekh.core.Groupings import CardTypeGrouping, ClanGrouping, \
                     DisciplineGrouping, ExpansionGrouping, \
@@ -52,9 +51,9 @@ aAll = [ # Sutekh Objects
          MultiDisciplineFilter, MultiClanFilter, PhysicalCardSetFilter,
          PhysicalCardFilter, GroupFilter, MultiGroupFilter,
          ExpansionFilter, MultiExpansionFilter,
-         PhysicalCardSetNameFilter, PhysicalCardSetAuthorFilter,
-         PhysicalCardSetDescriptionFilter, PhysicalCardSetAnnotationsFilter,
-         PhysicalExpansionFilter, MultiPhysicalExpansionFilter,
+         CardSetNameFilter, CardSetAuthorFilter, CardSetDescriptionFilter,
+         CardSetAnnotationsFilter, PhysicalExpansionFilter,
+         MultiPhysicalExpansionFilter,
          # Groupings
          CardTypeGrouping, ClanGrouping, DisciplineGrouping,
          ExpansionGrouping, RarityGrouping,

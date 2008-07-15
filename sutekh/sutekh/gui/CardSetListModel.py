@@ -17,12 +17,12 @@ from sutekh.gui.CardListModel import CardListModel, norm_path
 
 # pylint: disable-msg=C0103
 # We break out usual convention here
-# consts for the different modes we need
+# consts for the different modes we need (iExtraLevelsMode)
 NO_SECOND_LEVEL, SHOW_EXPANSIONS, SHOW_CARD_SETS, EXPANSIONS_AND_CARD_SETS, \
         CARD_SETS_AND_EXPANSIONS = range(5)
-# Different card count modes
+# Different card display modes (iShowCardMode)
 THIS_SET_ONLY, ALL_CARDS, PARENT_CARDS, CHILD_CARDS = range(4)
-# Different Parent card count modes
+# Different Parent card count modes (iParentCountMode)
 IGNORE_PARENT, PARENT_COUNT, MINUS_THIS_SET, MINUS_SETS_IN_USE = range(4)
 # pylint: enable-msg=C0103
 

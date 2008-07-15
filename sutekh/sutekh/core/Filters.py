@@ -988,12 +988,21 @@ class CardSetMultiCardCountFilter(DirectFilter):
     islistfilter = True
     types = ['PhysicalCard']
 
-    def __init__(self, aCounts, oCS):
+    def __init__(self, aData):
+        # aData is a lsit or tuple of the form (aCounts, sCardSetName)
         # Selects cards with a count in the range specified by aCounts from
-        # the Physical Card Set oCS
+        # the Physical Card Set sCardSetName
         # We rely on the joins to limit this to the appropriate card sets
         # pylint: disable-msg=E1101
         # SQLObject methods not detected by plylint
+        try:
+            aCounts, sCardSetName = aData
+            try:
+                oCS = IPhysicalCardSet(sCardSetName)
+            except SQLObjectNotFound:
+                aCounts = []
+        except ValueError:
+            aCounts = []
         aCounts = set(aCounts)
         self._oFilters = []
         if '0' in aCounts:
@@ -1042,7 +1051,9 @@ class CardSetMultiCardCountFilter(DirectFilter):
     def get_values(cls):
         # Should this have a more staggered range split? 0..20, 20-30,
         # 30-40, >40 type thing?
-        return [str(x) for x in range(0, 30)] + ['>30']
+        aCardSets = [x.name for x in PhysicalCardSet.select()]
+        aValues = [str(x) for x in range(0, 30)] + ['>30']
+        return (aValues, aCardSets)
 
     # pylint: disable-msg=W0142
     # *magic is needed by SQLObject
@@ -1299,17 +1310,17 @@ class SpecificPhysCardIdFilter(DirectFilter):
 # base filters, to be subclassed to PhysicalCardSet or AbstractClassSet
 # as needed
 class CardSetNameFilter(DirectFilter):
-    """Base class for CardSet filters on Card Set Name"""
+    """Filters on Card Set Name"""
     keyword = "CardSetName"
     description = "Card Set Name"
     helptext = "the text to be matched against card set names.\n" \
             "% can be used as a wildcard"
     istextentry = True
+    types = ['PhysicalCardSet']
 
     def __init__(self, sPattern):
         self.__sPattern = sPattern.lower()
-        # Subclasses will replace this with the correct table
-        self.oTable = None
+        self.oTable = Table('physical_card_set')
 
     # pylint: disable-msg=C0111
     # don't need docstrings for _get_expression, get_values & _get_joins
@@ -1328,11 +1339,12 @@ class CardSetDescriptionFilter(DirectFilter):
     helptext = "the text to be matched against card set description.\n" \
             "% can be used as a wildcard"
     istextentry = True
+    types = ['PhysicalCardSet']
 
     def __init__(self, sPattern):
         self.__sPattern = sPattern.lower()
         # Subclasses will replace this with the correct table
-        self.oTable = None
+        self.oTable = Table('physical_card_set')
 
     # pylint: disable-msg=C0111
     # don't need docstrings for _get_expression, get_values & _get_joins
@@ -1351,11 +1363,12 @@ class CardSetAuthorFilter(DirectFilter):
     helptext = "the text to be matched against card set Author.\n" \
             "% can be used as a wildcard"
     istextentry = True
+    types = ['PhysicalCardSet']
 
     def __init__(self, sPattern):
         self.__sPattern = sPattern.lower()
         # Subclasses will replace this with the correct table
-        self.oTable = None
+        self.oTable = Table('physical_card_set')
 
     # pylint: disable-msg=C0111
     # don't need docstrings for _get_expression, get_values & _get_joins
@@ -1374,11 +1387,12 @@ class CardSetAnnotationsFilter(DirectFilter):
     helptext = "the text to be matched against card set annotations.\n" \
             "% can be used as a wildcard"
     istextentry = True
+    types = ['PhysicalCardSet']
 
     def __init__(self, sPattern):
         self.__sPattern = sPattern.lower()
         # Subclasses will replace this with the correct table
-        self.oTable = None
+        self.oTable = Table('physical_card_set')
 
     # pylint: disable-msg=C0111
     # don't need docstrings for _get_expression, get_values & _get_joins
@@ -1392,50 +1406,10 @@ class CardSetAnnotationsFilter(DirectFilter):
 
 # Physical Card Set subclasses
 
-class PhysicalCardSetNameFilter(CardSetNameFilter):
-    """Filter Physical Card Set on Name"""
-    keyword = "PhysicalCardSetName"
-    description = "Physical Card Set Name"
-    types = ['PhysicalCardSet']
-
-    def __init__(self, sPattern):
-        super(PhysicalCardSetNameFilter, self).__init__(sPattern)
-        self.oTable = Table('physical_card_set')
-
-class PhysicalCardSetDescriptionFilter(CardSetDescriptionFilter):
-    """Filter Physical Card Set on Description"""
-    keyword = "PhysicalCardSetDescription"
-    description = "Physical Card Set Description"
-    types = ['PhysicalCardSet']
-
-    def __init__(self, sPattern):
-        super(PhysicalCardSetDescriptionFilter, self).__init__(sPattern)
-        self.oTable = Table('physical_card_set')
-
-class PhysicalCardSetAuthorFilter(CardSetAuthorFilter):
-    """Filter Physical Card Set on Author"""
-    keyword = "PhysicalCardSetAuthor"
-    description = "Physical Card Set Author"
-    types = ['PhysicalCardSet']
-
-    def __init__(self, sPattern):
-        super(PhysicalCardSetAuthorFilter, self).__init__(sPattern)
-        self.oTable = Table('physical_card_set')
-
-class PhysicalCardSetAnnotationsFilter(CardSetAnnotationsFilter):
-    """Filter Physical Card Set on Annotations"""
-    keyword = "PhysicalCardSetAnnotations"
-    description = "Physical Card Set Annotations"
-    types = ['PhysicalCardSet']
-
-    def __init__(self, sPattern):
-        super(PhysicalCardSetAnnotationsFilter, self).__init__(sPattern)
-        self.oTable = Table('physical_card_set')
-
-class PCSPhysicalCardSetInUseFilter(DirectFilter):
+class CSPhysicalCardSetInUseFilter(DirectFilter):
     """Filter Physical Card Set on inuse status"""
-    keyword = "PCSSetsInUse"
-    description = "Physical Card Set Marked as in Use"
+    keyword = "CSSetsInUse"
+    description = "Card Set Marked as in Use"
     helptext = "Selects those Physical Card Sets in the Physical Card Set" \
             "List that are marked as in use. This filter takes no parameters."
     types = ['PhysicalCardSet']
@@ -1459,9 +1433,9 @@ aParserFilters = [MultiCardTypeFilter, MultiCostTypeFilter, MultiClanFilter,
         MultiCostFilter, MultiLifeFilter, MultiCreedFilter, MultiVirtueFilter,
         CardTextFilter, CardNameFilter, MultiSectFilter, MultiTitleFilter,
         MultiExpansionRarityFilter, MultiDisciplineLevelFilter,
-        MultiPhysicalExpansionFilter, PhysicalCardSetNameFilter,
-        PhysicalCardSetAuthorFilter, PhysicalCardSetDescriptionFilter,
-        PhysicalCardSetAnnotationsFilter, MultiPhysicalCardSetFilter,
-        PhysicalCardSetInUseFilter,
-        PCSPhysicalCardSetInUseFilter, CardFunctionFilter]
+        MultiPhysicalExpansionFilter, CardSetNameFilter, CardSetAuthorFilter,
+        CardSetDescriptionFilter, CardSetAnnotationsFilter,
+        MultiPhysicalCardSetFilter, PhysicalCardSetInUseFilter,
+        CardSetMultiCardCountFilter, CSPhysicalCardSetInUseFilter,
+        CardFunctionFilter]
 

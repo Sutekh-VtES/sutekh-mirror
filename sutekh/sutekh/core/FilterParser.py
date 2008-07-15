@@ -49,6 +49,7 @@ class ParseFilterDefinitions(object):
             'RPAREN',
             'VARIABLE',
             'WITH',
+            'FROM',
             )
 
     t_AND = r'\&\&'
@@ -83,6 +84,8 @@ class ParseFilterDefinitions(object):
             t.type = 'VARIABLE'
         elif t.value.lower() == 'with':
             t.type = 'WITH'
+        elif t.value.lower() == 'from':
+            t.type = 'FROM'
         else:
             t.type = 'STRING'
         return t
@@ -117,11 +120,12 @@ class FilterYaccParser(object):
     # COMMA's have higher precedence than AND + OR
     # This shut's up most shift/reduce warnings
     precedence = (
-            ('left','AND','OR'),
-            ('left','NOT'),
-            ('left','IN'),
-            ('left','COMMA'),
-            ('left','WITH')
+            ('left', 'AND', 'OR'),
+            ('left', 'NOT'),
+            ('left', 'IN'),
+            ('left', 'FROM'),
+            ('left', 'COMMA'),
+            ('left', 'WITH'),
     )
 
     def reset(self):
@@ -203,6 +207,10 @@ class FilterYaccParser(object):
     def p_expression_with(self, p):
         """expression : expression WITH expression"""
         p[0] = WithNode(p[1], p[2], p[3])
+
+    def p_expression_from(self, p):
+        """expression : expression FROM expression"""
+        p[0] = FromNode(p[1], p[2], p[3])
 
     def p_empty(self, p):
         """empty :"""
@@ -459,11 +467,20 @@ class FilterPartNode(OperatorNode):
         aCurVals = self.aFilterValues.get_values()
         oTemp = get_filter_type(self.sFilterType)([]) # Create Instance
         aValidVals = oTemp.get_values()
-        for oVal in aCurVals:
-            if oVal.value == ',':
-                continue
-            if oVal.value not in aValidVals:
-                aRes.append(oVal.value)
+        if isinstance(aValidVals[0], list) and len(aCurVals) == \
+                len(aValidVals):
+            for aSubCurVals, aSubValidVals in zip(aCurVals,aValidVals):
+                for oVal in aSubCurVals:
+                    if oVal.value == ',':
+                        continue
+                    if oVal.value not in aSubValidVals:
+                        aRes.append(oVal.value)
+        else:
+            for oVal in aCurVals:
+                if oVal.value == ',':
+                    continue
+                if oVal.value not in aValidVals:
+                    aRes.append(oVal.value)
         if len(aRes)>0:
             return aRes
         else:
@@ -640,6 +657,28 @@ class WithNode(OperatorNode):
     def get_filter(self):
         """Get filter expression"""
         return [(self.oLeft.get_filter()[0], self.oRight.get_filter()[0])]
+
+    def get_type(self):
+        """Get filter type - these are values, so always None"""
+        # Syntax ensures with only in value lists, which have no type
+        return None
+
+class FromNode(OperatorNode):
+    """AST node for values of the form 'X, Y from Z'"""
+    def __init__(self, oLeft, oOp, oRight):
+        super(FromNode, self).__init__([oLeft, oRight])
+        self.oOp = oOp
+        self.oLeft = oLeft
+        self.oRight = oRight
+
+    def get_values(self):
+        """Get values"""
+        return [[self.oLeft.get_values()],
+            self.oRight.get_filter()[0]]
+
+    def get_filter(self):
+        """Get filter expression"""
+        return [self.oLeft.get_filter(), self.oRight.get_filter()[0]]
 
     def get_type(self):
         """Get filter type - these are values, so always None"""

@@ -277,7 +277,7 @@ class FilterTests(SutekhTest):
             self.assertEqual(aCards, aExpectedCards, "Filter Object %s"
                     " failed. %s != %s." % (oFilter, aCards, aExpectedCards))
 
-    def test_physical_card_set_filters(self):
+    def test_card_set_filters(self):
         """Tests for the physical card set filters."""
         # Although splitting this off does add an additional init
         # pass, the logical grouping is fairly different
@@ -285,12 +285,15 @@ class FilterTests(SutekhTest):
                 ('Test 2', 'Author B', 'Another set', False),
                 ('Test 3', 'Author A', 'Something different', True)]
         aPCSCards = [
+                # Set 1
                 [('Abombwe', None), ('Alexandra', 'CE'),
                 ('Sha-Ennu', None), ('Sha-Ennu', None), ('Sha-Ennu', None),
                 ('Sha-Ennu', 'Third Edition')],
+                # Set 2
                 [('Sha-Ennu', 'Third Edition'), ('Anson', 'Jyhad'),
                     ('.44 magnum', 'Jyhad'), ('ak-47', 'LotN'),
                     ('Alexandra', 'CE'), ('Alexandra', 'CE')],
+                # Set 3
                 [('Yvette, The Hopeless', 'BSC')]]
         aPCSs = []
         # pylint: disable-msg=E1101
@@ -310,14 +313,14 @@ class FilterTests(SutekhTest):
             aPCSs.append(oPCS)
         # Tests on the physical card set properties
         aPhysicalCardSetTests = [
-                (Filters.PhysicalCardSetNameFilter('Test 1'), [aPCSs[0]]),
-                (Filters.PhysicalCardSetNameFilter('Test'), sorted(aPCSs)),
-                (Filters.PCSPhysicalCardSetInUseFilter(), [aPCSs[2]]),
-                (Filters.PhysicalCardSetAuthorFilter('Author A'),
+                (Filters.CardSetNameFilter('Test 1'), [aPCSs[0]]),
+                (Filters.CardSetNameFilter('Test'), sorted(aPCSs)),
+                (Filters.CSPhysicalCardSetInUseFilter(), [aPCSs[2]]),
+                (Filters.CardSetAuthorFilter('Author A'),
                     sorted([aPCSs[0], aPCSs[2]])),
-                (Filters.PhysicalCardSetDescriptionFilter('set'),
+                (Filters.CardSetDescriptionFilter('set'),
                     sorted([aPCSs[0], aPCSs[1]])),
-                (Filters.PhysicalCardSetDescriptionFilter('different'),
+                (Filters.CardSetDescriptionFilter('different'),
                     [aPCSs[2]]),
                 ]
 
@@ -400,17 +403,22 @@ class FilterTests(SutekhTest):
         # Number tests
         aPCSNumberTests = [
                 (Filters.PhysicalCardSetFilter('Test 1'),
-                    Filters.CardSetMultiCardCountFilter('4', aPCSs[0]),
+                    Filters.CardSetMultiCardCountFilter(('4', aPCSs[0].name)),
                     [u"Sha-Ennu", u"Sha-Ennu", u"Sha-Ennu", u"Sha-Ennu"]),
                 (Filters.PhysicalCardSetFilter('Test 1'),
-                    Filters.CardSetMultiCardCountFilter('7', aPCSs[0]),
+                    Filters.CardSetMultiCardCountFilter(('7', aPCSs[0].name)),
                     []),
                 (Filters.PhysicalCardSetFilter('Test 1'),
-                    Filters.CardSetMultiCardCountFilter('1', aPCSs[0]),
+                    Filters.CardSetMultiCardCountFilter(('1', aPCSs[0].name)),
                     [u"Abombwe", u"Alexandra"]),
+                (Filters.PhysicalCardSetFilter('Test 1'),
+                    Filters.CardSetMultiCardCountFilter((['1', '4'],
+                        aPCSs[0].name)),
+                    [u"Abombwe", u"Alexandra", u"Sha-Ennu", u"Sha-Ennu",
+                        u"Sha-Ennu", u"Sha-Ennu"]),
                 # Cards in 'Test 2' with zero count in 'Test 1'
                 (Filters.PhysicalCardSetFilter('Test 2'),
-                    Filters.CardSetMultiCardCountFilter('0', aPCSs[0]),
+                    Filters.CardSetMultiCardCountFilter(('0', aPCSs[0].name)),
                     [u"Anson", u".44 Magnum", u"AK-47"]),
                     ]
 
