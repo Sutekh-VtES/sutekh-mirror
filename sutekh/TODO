@@ -51,8 +51,6 @@ For 0.6:
    SutekhObjects to a seperate file
  * Finish database reddesign fallout:
    - Address speed issues when showing parent/child card set counts
-   - Sort out editing issues
-     - Properly update model when card sets are changed
    - Improve colour hints for card counts and parent card count columns
    - Improve visual feedback for open card sets + card sets in use?
  * Add decent keyboard shortcuts
@@ -63,4 +61,3 @@ For 0.6:
    - CSV export plugin for card sets
  * Address issues with exporting Sutekh card sets to ARDB and FELDB
  * Import card sets from ARDB and FELDB
- * Expose Physical Card Set Card Count filter to the user
