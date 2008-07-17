@@ -985,11 +985,12 @@ class CardSetMultiCardCountFilter(DirectFilter):
     description = "Card Count"
     helptext = "a list of card numbers (filters on number of cards in the " \
             "Card Set)"
+    isfromfilter = True
     islistfilter = True
     types = ['PhysicalCard']
 
     def __init__(self, aData):
-        # aData is a lsit or tuple of the form (aCounts, sCardSetName)
+        # aData is a list or tuple of the form (aCounts, sCardSetName)
         # Selects cards with a count in the range specified by aCounts from
         # the Physical Card Set sCardSetName
         # We rely on the joins to limit this to the appropriate card sets

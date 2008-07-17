@@ -19,6 +19,8 @@ aEntryFilters = [x.keyword for x in aParserFilters if hasattr(x,'istextentry')
         and x.istextentry]
 aWithFilters = [x.keyword for x in aParserFilters if hasattr(x,'iswithfilter')
         and x.iswithfilter]
+aFromFilters = [x.keyword for x in aParserFilters if hasattr(x,'isfromfilter')
+        and x.isfromfilter]
 aListFilters = [x.keyword for x in aParserFilters if hasattr(x,'islistfilter')
         and x.islistfilter]
 
@@ -278,6 +280,10 @@ class ValueObject(object):
         """Does this represent a list?"""
         return isinstance(self.oValue, list)
 
+    def is_tuple(self):
+        """Does this represent a tuple? (for from filters)"""
+        return isinstance(self.oValue, tuple)
+
     def is_value(self):
         """Does this represent a assigned string value?"""
         return isinstance(self.oValue, str) and self.oValue != ''
@@ -422,9 +428,9 @@ class IdNode(TermNode):
 class FilterPartNode(OperatorNode):
     """A Filter = $X expression in the AST"""
 
-    def __init__(self, sFilterType, aFilterValues, sVariableName):
-        super(FilterPartNode, self).__init__([sFilterType, aFilterValues])
-        self.sFilterType = sFilterType
+    def __init__(self, sFilterName, aFilterValues, sVariableName):
+        super(FilterPartNode, self).__init__([sFilterName, aFilterValues])
+        self.sFilterName = sFilterName
         self.aFilterValues = aFilterValues
         self.sVariableName = sVariableName
 
@@ -437,21 +443,21 @@ class FilterPartNode(OperatorNode):
         List of ValueObjects describing the filter and its
         associated values.
         """
-        if self.sFilterType in aEntryFilters:
+        if self.sFilterName in aEntryFilters:
             aResults = \
-                    [ValueObject(get_filter_type(self.sFilterType).description
+                    [ValueObject(get_filter_type(self.sFilterName).description
                         + ' includes', self)]
-        elif self.sFilterType in aListFilters:
+        elif self.sFilterName in aListFilters:
             aResults = \
-                    [ValueObject(get_filter_type(self.sFilterType).description
+                    [ValueObject(get_filter_type(self.sFilterName).description
                         + ' in', self)]
         else:
             # We don't take any input for this filter, so there are no
             # values to return
-            return [ValueObject(get_filter_type(self.sFilterType).description,
+            return [ValueObject(get_filter_type(self.sFilterName).description,
                 self), ValueObject(None, self)]
         if self.aFilterValues is None:
-            aVals = get_filter_type(self.sFilterType).get_values()
+            aVals = get_filter_type(self.sFilterName).get_values()
             # Want a list within ValueObject for the GUI stuff to work
             # '' case for Entry boxes works as well
             aResults.append(ValueObject(aVals, self))
@@ -462,10 +468,10 @@ class FilterPartNode(OperatorNode):
     def get_invalid_values(self):
         """List of illegal values associated with this filter"""
         aRes = []
-        if self.aFilterValues is None or self.sFilterType not in aListFilters:
+        if self.aFilterValues is None or self.sFilterName not in aListFilters:
             return None
         aCurVals = self.aFilterValues.get_values()
-        oTemp = get_filter_type(self.sFilterType)([]) # Create Instance
+        oTemp = get_filter_type(self.sFilterName)([]) # Create Instance
         aValidVals = oTemp.get_values()
         if isinstance(aValidVals[0], list) and len(aCurVals) == \
                 len(aValidVals):
@@ -490,8 +496,13 @@ class FilterPartNode(OperatorNode):
         """Set values for this filter"""
         if self.aFilterValues is not None:
             raise RuntimeError("Filter values already set")
-        sCommaList = ",".join(aVals)
-        sInternalFilter = self.sFilterType + '=' + sCommaList
+        if self.sFilterName in aFromFilters:
+            sCommaList = ",".join(aVals[0])
+            sInternalFilter = self.sFilterName + '=' + sCommaList + 'from' + \
+                    aVals[1]
+        else:
+            sCommaList = ",".join(aVals)
+            sInternalFilter = self.sFilterName + '=' + sCommaList
         oParser = FilterParser()
         oInternalAST = oParser.apply(sInternalFilter)
         # The filter we create is trivially of the FilterType = X, Y type
@@ -502,14 +513,14 @@ class FilterPartNode(OperatorNode):
 
     def get_filter(self):
         """Get Filter object for this Filter"""
-        if self.sFilterType in aEntryFilters or \
-                self.sFilterType in aListFilters:
+        if self.sFilterName in aEntryFilters or \
+                self.sFilterName in aListFilters:
             if self.aFilterValues is None:
                 return None
-        cFilterType = get_filter_type(self.sFilterType)
+        cFilterType = get_filter_type(self.sFilterName)
         if self.aFilterValues:
             aValues = self.aFilterValues.get_filter()
-            if self.sFilterType in aEntryFilters:
+            if self.sFilterName in aEntryFilters:
                 # Filter takes a single string as input
                 # by construction, this is aValues[0]
                 oFilter = cFilterType(aValues[0])
@@ -522,7 +533,7 @@ class FilterPartNode(OperatorNode):
 
     def get_type(self):
         """Get allowed types for this filter"""
-        return get_filter_type(self.sFilterType).types
+        return get_filter_type(self.sFilterName).types
 
 class NotOpNode(OperatorNode):
     """AST node for NOT(X)"""

@@ -80,7 +80,7 @@ class FilterEditor(gtk.Frame):
 
         aNewValues = oNewAST.get_values()
         for oValue in aNewValues:
-            if oValue.is_entry() or oValue.is_list():
+            if oValue.is_entry() or oValue.is_list() or oValue.is_tuple():
                 oValue.oNode.set_values(dValues[oValue.oNode.get_name()])
 
         return oNewAST
@@ -503,7 +503,7 @@ class FilterBoxItem(object):
        This represents either a single FilterPart or a single
        NOT(FilterPart) expression in the AST.
        """
-    NONE, ENTRY, LIST = range(3)
+    NONE, ENTRY, LIST, LIST_FROM = range(4)
 
     def __init__(self, oAST):
         if type(oAST) is NotOpNode:
@@ -514,7 +514,7 @@ class FilterBoxItem(object):
 
         assert type(oAST) is FilterPartNode
 
-        self.sFilterType = oAST.sFilterType
+        self.sFilterName = oAST.sFilterName
         self.sVariableName = oAST.sVariableName
         self.aFilterValues = oAST.aFilterValues
         self.iValueType = None
@@ -529,6 +529,10 @@ class FilterBoxItem(object):
                 assert self.iValueType is None
                 self.aValues = oValue.oValue
                 self.iValueType = self.LIST
+            elif oValue.is_tuple:
+                assert self.iValueType is None
+                self.aValues = oValue.oValue
+                self.iValueType = self.LIST_FROM
             elif oValue.is_entry():
                 assert self.iValueType is None
                 self.iValueType = self.ENTRY
@@ -547,7 +551,7 @@ class FilterBoxItem(object):
         """
         Return an AST respresentation of the filter.
         """
-        oAST = FilterPartNode(self.sFilterType, self.aFilterValues,
+        oAST = FilterPartNode(self.sFilterName, self.aFilterValues,
                 self.sVariableName)
         if self.bNegated:
             oAST = NotOpNode(oAST)
@@ -558,9 +562,9 @@ class FilterBoxItem(object):
         Return a text representation of the filter.
         """
         if self.iValueType == self.NONE:
-            sText = self.sFilterType
+            sText = self.sFilterName
         else:
-            sText = "%s in %s" % (self.sFilterType, self.sVariableName)
+            sText = "%s in %s" % (self.sFilterName, self.sVariableName)
         return sText
 
 class FilterBoxItemEditor(gtk.HBox):
@@ -586,6 +590,21 @@ class FilterBoxItemEditor(gtk.HBox):
             oWidget = MultiSelectComboBox(oParent)
             oWidget.fill_list(self.__oBoxItem.aValues)
             oWidget.set_list_size(200, 400)
+        elif self.__oBoxItem.iValueType == FilterBoxItem.LIST_FROM:
+            # Create an additional widget for the from side
+            oWidget = MultiSelectComboBox(oParent)
+            oWidget.fill_list(self.__oBoxItem.aValues[0])
+            oWidget.set_list_size(200, 400)
+            oFromStore = gtk.ListStore(str)
+            self.__oFromWidget = gtk.ComboBox(oFromStore)
+            oCell = gtk.CellRendererText()
+            self.__oFromWidget.pack_start(oCell, True)
+            self.__oFromWidget.add_attribute(oCell, 'text', 0)
+            for sCardSet in self.__oBoxItem.aValues[1]:
+                oIter = oFromStore.append(None)
+                oFromStore.set(oIter, 0, sCardSet)
+            self.pack_end(self.__oFromWidget, False, False)
+            self.pack_end(gtk.Label(' from '), False, False)
         elif self.__oBoxItem.iValueType == FilterBoxItem.NONE:
             oWidget = gtk.Label('  < No user data required > ')
         elif self.__oBoxItem.iValueType == FilterBoxItem.ENTRY:
@@ -610,10 +629,19 @@ class FilterBoxItemEditor(gtk.HBox):
         sName = self.__oBoxItem.sVariableName
         if self.__oBoxItem.aValues:
             aSelection = self.__oEntryWidget.get_selection()
-            if self.__oBoxItem.sFilterType in FilterParser.aWithFilters:
+            if self.__oBoxItem.sFilterName in FilterParser.aWithFilters:
                 aSplit = [sItem.split(" with ") for sItem in aSelection]
                 aVals = ['"%s with %s"' % (sPart1, sPart2) for sPart1,
                         sPart2 in aSplit]
+            elif self.__oBoxItem.sFilterName in FilterParser.aFromFilters:
+                # Need to sort out how to handle this case
+                oIter = self.__oFromWidget.get_active_iter()
+                oModel = self.__oFromWidget.get_model()
+                if not oIter:
+                    sFrom = None
+                else:
+                    sFrom = '"%s"' % oModel.get_value(oIter, 0)
+                aVals = [['"%s"' % (sItem,) for sItem in aSelection], sFrom]
             else:
                 aVals = ['"%s"' % (sItem,) for sItem in aSelection]
             dVars[sName] = aVals
