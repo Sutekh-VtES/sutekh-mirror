@@ -658,8 +658,25 @@ class FilterBoxItemEditor(gtk.HBox):
         if not sName in dVars:
             return
         if self.__oBoxItem.aValues:
-            aVals = [sVal.strip('"') for sVal in dVars[sName]]
-            self.__oEntryWidget.set_selection(aVals)
+            if self.__oBoxItem.iValueType == FilterBoxItem.LIST:
+                aVals = [sVal.strip('"') for sVal in dVars[sName]]
+                self.__oEntryWidget.set_selection(aVals)
+            elif self.__oBoxItem.iValueType == FilterBoxItem.LIST_FROM:
+                if len(dVars[sName]) != 2:
+                    return
+                aVals = [sVal.strip('"') for sVal in dVars[sName][0]]
+                self.__oEntryWidget.set_selection(aVals)
+                sFrom = dVars[sName][1]
+                if sFrom:
+                    sFrom = sFrom.strip('"')
+                    oModel = self.__oFromWidget.get_model()
+                    oIter = oModel.get_iter_first()
+                    while oIter:
+                        sEntry = oModel.get(oIter, 0)[0]
+                        if sEntry == sFrom:
+                            self.__oFromWidget.set_active_iter(oIter)
+                            break
+                        oIter = oModel.iter_next(oIter)
         elif len(dVars[sName]) > 0:
             self.__oEntryWidget.set_text(dVars[sName][0].strip('"'))
         else:
