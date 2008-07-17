@@ -20,6 +20,8 @@ class FilterParserTests(SutekhTest):
     aExpectedCards = test_WhiteWolfParser.WhiteWolfParserTests.aExpectedCards
     oFilterParser = FilterParser.FilterParser()
 
+    # pylint: disable-msg=R0914
+    # We don't really care about the number of local variables here
     def test_basic(self):
         """Set of simple tests of the filter parser."""
         # setup filters
