@@ -529,7 +529,7 @@ class FilterBoxItem(object):
                 assert self.iValueType is None
                 self.aValues = oValue.oValue
                 self.iValueType = self.LIST
-            elif oValue.is_tuple:
+            elif oValue.is_tuple():
                 assert self.iValueType is None
                 self.aValues = oValue.oValue
                 self.iValueType = self.LIST_FROM
