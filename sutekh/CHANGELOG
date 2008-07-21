@@ -1,3 +1,7 @@
+21 Jul 2008
+ * Rework card set independence plugin to check independance in the parent
+   card set
+
 17 July 2008
  * Expose the card set count filter in the GUI
 

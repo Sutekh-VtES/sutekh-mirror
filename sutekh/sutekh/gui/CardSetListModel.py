@@ -1357,13 +1357,13 @@ class CardSetCardListModel(CardListModel):
                                             sExpName):
                             # Update entry
                             bRemoveGC = False
-                            bUpdateGC = False
                             for oSubIter in self._dName2nd3rdLevel2Iter[
                                     (sCardName, sCardSetName)][sExpName]:
                                 iCnt = self.get_int_value(oSubIter, 1) + iChg
                                 iParCnt = self.get_int_value(oSubIter, 2)
                                 self.set(oSubIter, 1, self.format_count(iCnt))
-                                if not self.check_child_iter_stays(oSubIter, oPhysCard):
+                                if not self.check_child_iter_stays(oSubIter,
+                                        oPhysCard):
                                     self.remove(oSubIter)
                                     bRemoveGC = True
                             if bRemoveGC:
@@ -1378,7 +1378,6 @@ class CardSetCardListModel(CardListModel):
                             iParCnt = self._get_parent_count(oPhysCard,
                                     iThisCSCnt)
                             bIncCard, bDecCard = self.check_inc_dec(iCnt)
-                            bUpdateGC = False
                             for oChildIter in self._dNameSecondLevel2Iter[
                                     sCardName][sCardSetName]:
                                 self._add_extra_level(oChildIter, sExpName,
@@ -1422,8 +1421,9 @@ class CardSetCardListModel(CardListModel):
         # get the result right when the parent row isn't being removed.
         # If the parent row is to be removed, reutrning the wrong result
         # here doesn't matter - this simplifies the logic
-        # pylint: disable-msg=E1101
-        # PyProtocols confuses pylint
+        # pylint: disable-msg=E1101, R0911
+        # E1101: PyProtocols confuses pylint
+        # R0911: We use return to short circuit the loops
         iCnt = self.get_int_value(oIter, 1)
         iParCnt = self.get_int_value(oIter, 2)
         if iCnt > 0 or self.bEditable:
@@ -1473,7 +1473,6 @@ class CardSetCardListModel(CardListModel):
                     MultiPhysicalCardSetMapFilter(aChildren)])
                 if oChildFilter.select(self.cardclass).distinct().count() > 0:
                     return True
-        # FIXME: Add the remaining conditions
         # No reason to return True
         return False
 

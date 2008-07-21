@@ -344,7 +344,7 @@ class CardSetListModelTests(SutekhTest):
         # Add Cards
         self._loop_modes(oPCS, oModel)
         # Check over all the groupings
-        for cGrouping in [CryptLibraryGrouping, DisciplineGrouping, 
+        for cGrouping in [CryptLibraryGrouping, DisciplineGrouping,
                 ClanGrouping, CardTypeGrouping, ExpansionGrouping,
                 RarityGrouping]:
             oModel.groupby = cGrouping
@@ -447,7 +447,7 @@ class CardSetListModelTests(SutekhTest):
         self._loop_modes(oSibPCS, oModel)
         self._loop_modes(oGrandChildPCS, oChildModel)
         # Go through the grouping tests as well
-        for cGrouping in [CryptLibraryGrouping, DisciplineGrouping, 
+        for cGrouping in [CryptLibraryGrouping, DisciplineGrouping,
                 ClanGrouping, CardTypeGrouping, ExpansionGrouping,
                 RarityGrouping]:
             oChildModel.groupby = cGrouping

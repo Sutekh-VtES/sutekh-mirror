@@ -51,6 +51,10 @@ class ScrolledList(gtk.Frame):
         """set selection to multiple mode"""
         self._oTreeView.get_selection().set_mode(gtk.SELECTION_MULTIPLE)
 
+    def set_select_none(self):
+        """set selection mode to none"""
+        self._oTreeView.get_selection().set_mode(gtk.SELECTION_NONE)
+
     def get_selection(self):
         """Return a list of the selected elements of the list"""
         aSelectedList = []

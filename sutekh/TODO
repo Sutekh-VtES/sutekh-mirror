@@ -57,7 +57,6 @@ For 0.6:
  * Create built-in tutorial and help.
  * Look into Windows TreeView text search bug.
  * Plugins
-   - Rework card set independance plugin
    - CSV export plugin for card sets
  * Address issues with exporting Sutekh card sets to ARDB and FELDB
  * Import card sets from ARDB and FELDB

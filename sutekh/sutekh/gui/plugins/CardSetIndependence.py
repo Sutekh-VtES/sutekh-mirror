@@ -8,63 +8,77 @@
 """Test whether card sets can be constructed independently"""
 
 import gtk
-from sutekh.core.SutekhObjects import PhysicalCardSet, \
-        PhysicalCard, IAbstractCard
-from sutekh.core.Filters import PhysicalCardSetFilter
+from sutekh.core.SutekhObjects import PhysicalCardSet, IPhysicalCardSet
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.ScrolledList import ScrolledList
-from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint
+from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint, \
+        do_complaint_error
 
 # helper functions
 
-def _get_cards(oCardSet, dFullCardList):
+class CardInfo(object):
+    """Helper class to hold card set info"""
+    def __init__(self):
+        self.iCount = 0
+        self.aCardSets = []
+
+    def format_cs(self):
+        """Pretty print card set list"""
+        return ", ".join(self.aCardSets)
+
+def _get_cards(oCardSet, dCards):
     """Extract the abstract cards from the card set oCardSet"""
     # pylint: disable-msg=E1101
     # SQLObject + pyprotocol methods confuse pylint
-    for oCard in oCardSet:
-        oAC = IAbstractCard(oCard)
-        dFullCardList.setdefault(oCard, [oAC.name, 0])
-        dFullCardList[oCard][1] += 1
+    for oCard in oCardSet.cards:
+        dCards.setdefault(oCard, CardInfo())
+        dCards[oCard].iCount += 1
+        if oCardSet.name not in dCards[oCard].aCardSets:
+            dCards[oCard].aCardSets.append(oCardSet.name)
 
-def _get_physical_card_set_list(aCardSetNames):
-    """Get the cards in the list of PhysicalCardSets aCardSetNames"""
-    # pylint: disable-msg=E1101
-    # SQLObject + pyprotocol methods confuse pylint
-    dFullCardList = {}
-    for sName in aCardSetNames:
-        oFilter = PhysicalCardSetFilter(sName)
-        oCS = oFilter.select(PhysicalCard)
-        _get_cards(oCS, dFullCardList)
-    return dFullCardList
-
-def _test_physical_card_sets(aCardSetNames):
+def _test_card_sets(aCardSetNames, oParentCS):
     """Test if the Physical Card Sets are actaully independent by
        looking for cards common to the sets"""
-    dFullCardList = _get_physical_card_set_list(aCardSetNames)
-    dDuplicates = {}
-    for oCard, (sName, iCount) in dFullCardList.iteritems():
-        if iCount > 1:
-            if oCard.expansion is not None:
-                dDuplicates[(sName, oCard.expansion.name)] = iCount
+    dCards = {}
+    for sCardSetName in aCardSetNames:
+        oCS = IPhysicalCardSet(sCardSetName)
+        _get_cards(oCS, dCards)
+    dParent = {}
+    _get_cards(oParentCS, dParent)
+    dMissing = {}
+    for oCard, oInfo in dCards.iteritems():
+        if oCard not in dParent:
+            dMissing[oCard] = oInfo
+        elif dParent[oCard].iCount < oInfo.iCount:
+            # the dict ensures we don't need a copy
+            dMissing[oCard] = oInfo
+            dMissing[oCard].iCount -= dParent[oCard].iCount
+    if dMissing:
+        sMessage = '<span foreground = "red">Cards missing from %s</span>\n' \
+                % oParentCS.name
+        for oCard, oInfo in dMissing.iteritems():
+            sCardName = oCard.abstractCard.name
+            if oCard.expansion:
+                sExpansion = oCard.expansion.name
             else:
-                dDuplicates[(sName, '(unspecified expansion)')] = iCount
-    if len(dDuplicates) > 0:
-        sMessage = "<span foreground = \"red\">Duplicate Cards</span>\n"
-        for (sCardName, sExpansion), iCount in dDuplicates.iteritems():
-            sMessage += "<span foreground = \"blue\">" + sCardName \
-                    + " (from expansion: " + sExpansion \
-                    + ")</span> : used " + str(iCount) + " times\n"
+                sExpansion = "(unspecified expansion)"
+            sMessage += '<span foreground = "blue">%s (from: %s) : Missing' \
+                    ' %d copies</span> (used in %s)\n' % (sCardName,
+                            sExpansion, oInfo.iCount, oInfo.format_cs())
     else:
-        sMessage = "No cards duplicated"
+        sMessage = "No cards missing from %s" % oParentCS.name
     do_complaint(sMessage, gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, True)
 
 class CardSetIndependence(CardListPlugin):
     """Provides a plugin for testing whether card sets are independant.
 
        Independence in this cases means that there are enought cards in
-       the card collection to construct all the card sets simulatenously.
-       For physical card sets, this doesn't consider the current card
-       assignment, just whether enough cards are present.
+       the parent card set to construct all the selected child card sets
+       simulatenously.
+
+       We don't test the case when parent is None, since there's nothing
+       particularly sensible to say there. We also don't do anything
+       when there is only 1 child, for similiar justification.
        """
     dTableVersions = {PhysicalCardSet : [1, 2, 3, 4, 5]}
     aModelsSupported = [PhysicalCardSet]
@@ -82,35 +96,71 @@ class CardSetIndependence(CardListPlugin):
     def activate(self, oWidget):
         """Create the dialog in response to the menu item."""
         oDlg = self.make_dialog()
-        oDlg.run()
+        if oDlg:
+            oDlg.run()
 
     # pylint: enable-msg=W0613
 
     def make_dialog(self):
         """Create the list of card sets to select"""
+        # pylint: disable-msg=W0201, E1101
+        # E1101: PyProtocols confuses pylint
+        # W0201: No need to define oThisCardSet, oCSList & oInUseButton in
+        # __init__
+        self.oThisCardSet = IPhysicalCardSet(self.view.sSetName)
+        if not self.oThisCardSet.parent:
+            do_complaint_error("Card Set has no parent, so nothing to test.")
+            return None
+        oSelect = PhysicalCardSet.selectBy(
+                parentID=self.oThisCardSet.parent.id).orderBy('name')
+        bInUseSets = PhysicalCardSet.selectBy(
+                parentID=self.oThisCardSet.parent.id, inuse=True).count() > 0
+        aNames = [oCS.name for oCS in oSelect if oCS.name !=
+                self.view.sSetName]
+        if not aNames:
+            do_complaint_error("No sibling card sets, so nothing to test.")
+            return None
         oDlg = SutekhDialog("Choose Card Sets to Test", self.parent,
                           gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                           (gtk.STOCK_OK, gtk.RESPONSE_OK,
                            gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
-        oSelect = PhysicalCardSet.select().orderBy('name')
-        oCSList = ScrolledList('Physical Card Sets')
+        self.oCSList = ScrolledList('Physical Card Sets')
         # pylint: disable-msg=E1101
         # vbox confuses pylint
-        oDlg.vbox.pack_start(oCSList)
-        oCSList.set_size_request(150, 300)
-        aNames = [oCS.name for oCS in oSelect if oCS.name !=
-                self.view.sSetName]
-        oCSList.fill_list(aNames)
-        oDlg.connect("response", self.handle_response, oCSList)
+        oDlg.vbox.pack_start(self.oCSList)
+        self.oCSList.set_size_request(150, 300)
+        self.oCSList.fill_list(aNames)
+        self.oInUseButton = gtk.CheckButton(label="Test against all cards sets"
+                " marked as in use")
+        if bInUseSets:
+            oDlg.vbox.pack_start(self.oInUseButton, False, False)
+            self.oInUseButton.connect("toggled", self.show_hide_list)
+        oDlg.connect("response", self.handle_response)
         oDlg.show_all()
         return oDlg
 
-    def handle_response(self, oDlg, oResponse, oCSList):
+    def show_hide_list(self, oWidget):
+        """Hide the card set list when the user toggles the check box"""
+        if oWidget.get_active():
+            self.oCSList.set_select_none()
+        else:
+            self.oCSList.set_select_multiple()
+
+    def handle_response(self, oDlg, oResponse):
         """Handle the response from the dialog."""
+        # pylint: disable-msg=E1101
+        # Pyprotocols confuses pylint
         if oResponse ==  gtk.RESPONSE_OK:
-            aCardSetNames = [self.view.sSetName]
-            aCardSetNames.extend(oCSList.get_selection())
-            _test_physical_card_sets(aCardSetNames)
+            if self.oInUseButton.get_active():
+                oInUseSets = PhysicalCardSet.selectBy(
+                        parentID=self.oThisCardSet.parent.id, inuse=True)
+                aCardSetNames = [oCS.name for oCS in oInUseSets]
+                if self.view.sSetName not in aCardSetNames:
+                    aCardSetNames.append(self.view.sSetName)
+            else:
+                aCardSetNames = [self.view.sSetName]
+                aCardSetNames.extend(self.oCSList.get_selection())
+            _test_card_sets(aCardSetNames, self.oThisCardSet.parent)
         oDlg.destroy()
 
 
