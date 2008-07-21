@@ -95,7 +95,8 @@ class SetCardExpansions(CardListPlugin):
                     MapPhysicalCardToPhysicalCardSet.delete(oCard.id)
                     oCS.addPhysicalCard(oNewCard.id)
                     oCS.syncUpdate()
-        send_reload_signal(oCS) # parent/child card sets may need to reload
+                    # Handle updates
+                    send_reload_signal(oCS, oNewCard)
         self.view.reload_keep_expanded()
 
     def _get_selected_cards(self):
