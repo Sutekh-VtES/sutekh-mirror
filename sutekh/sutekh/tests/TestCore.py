@@ -78,6 +78,7 @@ class SutekhTest(unittest.TestCase):
            rulings.
            """
         self._setUpTemps()
+        # edit this to use other databases
         oConn = connectionForURI("sqlite:///:memory:")
         sqlhub.processConnection = oConn
         self._setUpDb()
@@ -87,5 +88,10 @@ class SutekhTest(unittest.TestCase):
 
            Base sqlite cleanup.
            """
+        # Clean up database
+        aObjectList.reverse()
+        for cCls in aObjectList:
+            cCls.dropTable(ifExists=True)
+        aObjectList.reverse()
         sqlhub.processConnection = None
         self._tearDownTemps()
