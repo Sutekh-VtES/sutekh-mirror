@@ -229,3 +229,25 @@ The TreeView widgets used by the card lists (AbstractCard, PhysicalCard and card
 sets) are named "normal_view", but, in editable mode, they are named
 "editable_view".
 
+
+Testing Sutekh
+==============
+
+Sutekh has a test suite - see the tests directory.
+
+We recommend using nose [1] to run the tests, but they can be run without
+using nose. 
+
+By default, the tests will use an sqlite memory database, as being the
+simplest, but, as it's often desireable to test against other databases,
+the SUTEKH_TEST_DB enivronment variable can be used to provide an URI
+to use instead. For example, to test against a postgres db:
+
+$ export SUTEKH_TEST_DB="postres://username@host/test_database"
+$ nosetests <test to run>
+
+Note that the test suite creates and drops the tables several times, so it can
+be quite slow. Also, DO NOT run the tests against your personal card database,
+as you will lose data. Use a dedicated test database for this.
+
+[1] http://somethingaboutorange.com/mrl/projects/nose/

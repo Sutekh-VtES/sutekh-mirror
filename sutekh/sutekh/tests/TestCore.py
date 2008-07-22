@@ -74,12 +74,13 @@ class SutekhTest(unittest.TestCase):
     def setUp(self):
         """Common setup routine for tests.
 
-           Initialises a sqlite memory database with the cardlist and
-           rulings.
+           Initialises a database with the cardlist and rulings.
            """
         self._setUpTemps()
-        # edit this to use other databases
-        oConn = connectionForURI("sqlite:///:memory:")
+        # Get the database to use from the environment, defaulting to an
+        # sqlite memory DB
+        sDBUrl = os.getenv('SUTEKH_TEST_DB', "sqlite:///:memory:")
+        oConn = connectionForURI(sDBUrl)
         sqlhub.processConnection = oConn
         self._setUpDb()
 

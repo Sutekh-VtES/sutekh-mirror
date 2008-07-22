@@ -1,4 +1,9 @@
-21 Jul 2008
+22 July 2008
+ * Add support for specifying which database to test against using the
+   SUTEKH_TEST_DB environment variable
+ * Fix some join ordering issues with postgres and mysql
+
+21 July 2008
  * Rework card set independence plugin to check independance in the parent
    card set
 
