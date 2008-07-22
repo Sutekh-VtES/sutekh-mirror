@@ -9,7 +9,8 @@
 
 from sutekh.core.Filters import FilterAndBox, NullFilter, SpecificCardFilter, \
         PhysicalCardSetFilter, SpecificCardIdFilter, \
-        MultiPhysicalCardSetMapFilter, SpecificPhysCardIdFilter
+        MultiPhysicalCardSetMapFilter, SpecificPhysCardIdFilter, \
+        PhysicalCardFilter
 from sutekh.core.SutekhObjects import PhysicalCard, IExpansion, \
         MapPhysicalCardToPhysicalCardSet, IAbstractCard, IPhysicalCard, \
         IPhysicalCardSet, PhysicalCardSet
@@ -381,8 +382,9 @@ class CardSetCardListModel(CardListModel):
             oCurFilter = NullFilter()
 
         if self._oCardSet.parent:
-            oParentFilter = FilterAndBox([oCurFilter,
-                PhysicalCardSetFilter(self._oCardSet.parent.name)])
+            oParentFilter = FilterAndBox([
+                PhysicalCardSetFilter(self._oCardSet.parent.name),
+                oCurFilter])
             oParentIter = oParentFilter.select(self.cardclass).distinct()
         else:
             oParentFilter = None
@@ -392,14 +394,16 @@ class CardSetCardListModel(CardListModel):
         if self.iShowCardMode != THIS_SET_ONLY:
             # TODO: Revisit the logic once Card Count filters are fixed
             if self.iShowCardMode == ALL_CARDS:
-                oExtraCardIter = oCurFilter.select(PhysicalCard).distinct()
+                oFullPCFilter = FilterAndBox([PhysicalCardFilter(),
+                    oCurFilter])
+                oExtraCardIter = oFullPCFilter.select(PhysicalCard).distinct()
             elif self.iShowCardMode == PARENT_CARDS and self._oCardSet.parent:
                 # It's tempting to use get_card_iterator here, but that
                 # obviously doesn't work because of _oBaseFilter
                 oExtraCardIter = oParentIter
             elif self.iShowCardMode == CHILD_CARDS and dChildFilters:
                 oChildFilter = MultiPhysicalCardSetMapFilter(dChildFilters)
-                oFullFilter = FilterAndBox([oCurFilter, oChildFilter])
+                oFullFilter = FilterAndBox([oChildFilter, oCurFilter])
                 oExtraCardIter = oFullFilter.select(self.cardclass).distinct()
             else:
                 oExtraCardIter = oCardIter
