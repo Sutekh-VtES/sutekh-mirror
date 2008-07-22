@@ -9,7 +9,7 @@
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.core.SutekhObjects import AbstractCard, IAbstractCard, \
         IPhysicalCard, IClan, IDisciplinePair, ICardType, ISect, ITitle, \
-        ICreed, IVirtue
+        ICreed, IVirtue, IExpansion, IRarity, IRarityPair
 from sqlobject import SQLObjectNotFound
 import unittest
 
@@ -59,10 +59,22 @@ class WhiteWolfParserTests(SutekhTest):
         self.assertEqual(o44.life, None)
         self.assertEqual(o44.costtype, 'pool')
         self.assertEqual(o44.level, None)
+
         # pylint: enable-msg=C0103
+        oCommon = IRarity('Common')
+        oJyhad = IExpansion('Jyhad')
+        oVTES = IExpansion('VTES')
+
+        self.assertTrue(oCommon in [oP.rarity for oP in o44.rarity])
+        self.assertTrue(oJyhad in [oP.expansion for oP in o44.rarity])
+        self.assertTrue(oVTES in [oP.expansion for oP in o44.rarity])
+
+        self.assertTrue(IRarityPair(('VTES', 'Common')) in o44.rarity)
+
 
         # Find some discipline pairs
         oFortInf = IDisciplinePair((u"Fortitude", u"inferior"))
+        oFortSup = IDisciplinePair((u"Fortitude", u"superior"))
         oQuiSup = IDisciplinePair((u"Quietus", u"superior"))
         oCelInf = IDisciplinePair((u"Celerity", u"inferior"))
         oAusInf = IDisciplinePair((u"Auspex", u"inferior"))
@@ -91,6 +103,12 @@ class WhiteWolfParserTests(SutekhTest):
         self.assertEqual(len(oDob.cardtype), 1)
         self.failUnless(ICardType('Vampire') in oDob.cardtype)
         self.failUnless(ISect('Independent') in oDob.sect)
+
+        self.assertEqual(len(oDob.rulings), 1)
+        oRuling = oDob.rulings[0]
+        self.assertTrue(oRuling.text.startswith("Cannot use his special"))
+        self.assertTrue(oRuling.text.endswith("uncontrolled region."))
+        self.assertEqual(oRuling.code, "[LSJ19990215]")
 
         # Check Abstract and Physical expansions match
         for oAbs in AbstractCard.select():
@@ -149,6 +167,9 @@ class WhiteWolfParserTests(SutekhTest):
         self.failUnless(ICardType('Vampire') in oShaEnnu.cardtype)
         self.failUnless(ISect('Sabbat') in oShaEnnu.sect)
         self.failUnless(ITitle('Regent') in oShaEnnu.title)
+        self.assertTrue(IRarityPair(('Third', 'Vampire')) in oShaEnnu.rarity)
+        self.assertFalse(IRarityPair(('VTES', 'Common')) in oShaEnnu.rarity)
+        self.assertFalse(IRarityPair(('VTES', 'Vampire')) in oShaEnnu.rarity)
 
         # Check Kabede
 
@@ -175,6 +196,7 @@ class WhiteWolfParserTests(SutekhTest):
         self.failUnless(ICardType('Vampire') in oKabede.cardtype)
         self.failUnless(ISect('Laibon') in oKabede.sect)
         self.failUnless(ITitle('Magaji') in oKabede.title)
+        self.assertTrue(IRarityPair(('LotN', 'Uncommon')) in oKabede.rarity)
 
         # Check Predator's Communion
         oPredComm = IAbstractCard(u"Predator's Communion")
@@ -194,6 +216,7 @@ class WhiteWolfParserTests(SutekhTest):
         self.assertEqual(len(oPredComm.cardtype), 2)
         self.failUnless(ICardType('Reaction') in oPredComm.cardtype)
         self.failUnless(ICardType('Reflex') in oPredComm.cardtype)
+        self.assertTrue(IRarityPair(('LoB', 'Common')) in oPredComm.rarity)
 
         # Check Earl
         oEarl = IAbstractCard(u'Earl "Shaka74" Deams')
@@ -216,6 +239,7 @@ class WhiteWolfParserTests(SutekhTest):
         self.failUnless(IVirtue('Vision') in oEarl.virtue)
         self.assertEqual(len(oEarl.cardtype), 1)
         self.failUnless(ICardType('Imbued') in oEarl.cardtype)
+        self.assertTrue(IRarityPair(('NoR', 'Uncommon')) in oEarl.rarity)
 
         # Check Aire
         oAire = IAbstractCard("Aire of Elation")
@@ -234,6 +258,13 @@ class WhiteWolfParserTests(SutekhTest):
         self.failUnless(oPreSup in oAire.discipline)
         self.assertEqual(len(oAire.cardtype), 1)
         self.failUnless(ICardType("Action Modifier") in oAire.cardtype)
+
+        self.assertTrue(IRarityPair(('DS', 'Common')) in oAire.rarity)
+        self.assertTrue(IRarityPair(('FN', 'Precon')) in oAire.rarity)
+        self.assertTrue(IRarityPair(('CE', 'Common')) in oAire.rarity)
+        self.assertTrue(IRarityPair(('CE', 'Precon')) in oAire.rarity)
+        self.assertTrue(IRarityPair(('Anarchs', 'Precon')) in oAire.rarity)
+        self.assertTrue(IRarityPair(('KMW', 'Precon')) in oAire.rarity)
 
         # Abjure
         oAbjure = IAbstractCard("Abjure")
@@ -270,10 +301,30 @@ class WhiteWolfParserTests(SutekhTest):
         self.assertEqual(len(oAbo.discipline), 0)
         self.assertEqual(len(oAbo.cardtype), 1)
         self.failUnless(ICardType('Master') in oAbo.cardtype)
+        self.assertEqual(len(oAbo.rulings), 0)
 
-        # TODO: Things still to check:
-        #rarity
-        #rulings
+        # Ablative Skin Card
+        oAblat = IAbstractCard('Ablative Skin')
+
+        self.assertEqual(oAblat.canonicalName, 'ablative skin')
+        self.assertEqual(oAblat.name, 'Ablative Skin')
+        self.failUnless(oAblat.text.startswith("+1 stealth action"))
+        self.failUnless(oAblat.text.endswith("damage in combat in this way."))
+        self.assertEqual(oAblat.group, None)
+        self.assertEqual(oAblat.cost, None)
+        self.assertEqual(oAblat.life, None)
+        self.assertEqual(oAblat.costtype, None)
+        self.assertEqual(oAblat.level, None)
+
+        self.assertEqual(len(oAblat.discipline), 1)
+        self.failUnless(oFortSup in oAblat.discipline)
+        self.assertEqual(len(oAblat.cardtype), 1)
+        self.failUnless(ICardType('Action') in oAblat.cardtype)
+        self.assertEqual(len(oAblat.rulings), 1)
+        oRuling = oAblat.rulings[0]
+        self.assertTrue(oRuling.text.startswith("Cannot be used to prevent"))
+        self.assertTrue(oRuling.text.endswith("Blood Fury)."))
+        self.assertEqual(oRuling.code, "[LSJ19990216]")
 
 if __name__ == "__main__":
     unittest.main()

@@ -35,7 +35,7 @@ def get_filter_type(sKeyword):
 # which are based on ply examples
 class ParseFilterDefinitions(object):
     """Provides the lexxer used by PLY"""
-    # pylint: disable-msg=C0103,R0201
+    # pylint: disable-msg=C0103, R0201
     aKeywords = [x.keyword for x in aParserFilters]
 
     tokens = (
@@ -93,7 +93,7 @@ class ParseFilterDefinitions(object):
         return t
 
     # Ply docs say don't do this in __init__, so we don't
-    # pylint: disable-msg=W0201,W0142
+    # pylint: disable-msg=W0201, W0142
     def build(self, **kwargs):
         """
         Create the lexer object.
@@ -115,7 +115,7 @@ class ParseFilterDefinitions(object):
 
 class FilterYaccParser(object):
     """Provide the parser used by PLY"""
-    # pylint: disable-msg=C0103,R0201
+    # pylint: disable-msg=C0103, R0201
     tokens = ParseFilterDefinitions.tokens
     aUsedVariables = []
 
@@ -475,7 +475,7 @@ class FilterPartNode(OperatorNode):
         aValidVals = oTemp.get_values()
         if isinstance(aValidVals[0], list) and len(aCurVals) == \
                 len(aValidVals):
-            for aSubCurVals, aSubValidVals in zip(aCurVals,aValidVals):
+            for aSubCurVals, aSubValidVals in zip(aCurVals, aValidVals):
                 for oVal in aSubCurVals:
                     if oVal.value == ',':
                         continue
