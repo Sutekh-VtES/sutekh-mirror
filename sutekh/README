@@ -133,8 +133,15 @@ Filtering:
 
 Sutekh has been developed mainly with sqlite, but, since it uses SQLObject for
 to manage the databases, it is possible to try other database backends by 
-specifying a suitable URI. So to use a postgresql database, specify:
-postres://username@host/database
+specifying a suitable URI. For both SutekhCli and SutekhGui, the -d
+parameter specifies the database to use.
+
+This can also be set for the gui using the "database url" parameter in the
+config file.
+
+So to use a postgresql database with SutekhGui, specify:
+
+SutekhGui.py -d postres://username@host/database
 
 Postgres works fine out of the box. With SQLObject 0.7.1 and earlier, mysql 
 doesn't work.
@@ -147,6 +154,11 @@ encoding, specified as:
 mysql://username@host/database?sqlobject_encoding=utf8&charset=utf8
 
 In our experience, utf8 is the most robust and portable choice.
+
+When using sqlobject 0.10, the sqlobjct_encoding parameter is no longer needed,
+and the URI can be simplified to:
+
+mysql://username@host/database?charset=utf8
 
 MySQL 4 or earlier will definately NOT work. This is unlikely to ever change.
 
