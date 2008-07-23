@@ -35,8 +35,9 @@ class PhysicalCardSetWriterTests(SutekhTest):
         # Check output
 
         oWriter = PhysicalCardSetWriter()
-        self.assertEqual(oWriter.gen_xml_string(oPhysCardSet1.name),
-            oWriter.gen_xml_string(oPhysCardSet1.name))
+        sWriterXML = oWriter.gen_xml_string(oPhysCardSet1.name)
+        self.assertEqual(sWriterXML,
+            oWriter.gen_xml_string(aCardSetNames[0]))
         sExpected = '<physicalcardset author="A test author" ' \
                 'comment="A test comment" name="Test Set 1" '\
                 'sutekh_xml_version="1.2"><annotations /><card count="1" ' \
@@ -47,8 +48,10 @@ class PhysicalCardSetWriterTests(SutekhTest):
                 'expansion="None Specified" id="2" name="AK-47" /><card ' \
                 'count="1" expansion="None Specified" id="14" ' \
                 'name="Abombwe" /></physicalcardset>'
-        self.assertEqual(oWriter.gen_xml_string(oPhysCardSet1.name),
-                sExpected)
+        # The writer uses database order - this is not
+        # the same across databases, hence the nature of the checks below
+        self.assertEqual(len(sWriterXML), len(sExpected))
+        self.assertEqual(sorted(sWriterXML), sorted(sExpected))
 
         sTempFileName =  self._create_tmp_file()
         fOut = open(sTempFileName, 'w')
@@ -59,7 +62,10 @@ class PhysicalCardSetWriterTests(SutekhTest):
         sData = fIn.read()
         # Writing to file adds newlines + formatting, which we remove before
         # comparing
-        self.assertEqual(sData.replace('\n', '').replace('  ', ''), sExpected)
+        sData = sData.replace('\n', '').replace('  ', '')
+        self.assertEqual(sData, sWriterXML)
+        self.assertEqual(len(sData), len(sExpected))
+        self.assertEqual(sorted(sData), sorted(sExpected))
 
 if __name__ == "__main__":
     unittest.main()

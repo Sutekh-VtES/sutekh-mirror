@@ -147,16 +147,9 @@ class CardSetListModelTests(SutekhTest):
 
     # pylint: enable-msg=R0201
 
-    def _add_remove_distinct_cards(self, oPCS, oModel):
+    def _add_remove_cards(self, oPCS, oModel, aPhysCards):
         """Helper function to add and remove distinct cards from the card set,
            validating that the model works correctly"""
-        aCards = [('AK-47', None), ('Bronwen', 'SW'), ('Cesewayo', None),
-                ('Anna "Dictatrix11" Suljic', 'NoR'), ('Ablative Skin',
-                    'Sabbat')]
-        aPhysCards = []
-        for sName, sExp in aCards:
-            oCard = self._gen_card(sName, sExp)
-            aPhysCards.append(oCard)
         # pylint: disable-msg=E1101
         # SQLObjext confuses pylint
         oModel.load()
@@ -212,70 +205,17 @@ class CardSetListModelTests(SutekhTest):
             "Card set differs from start after removals", iEnd, iStart,
             oModel))
 
-    def _add_remove_repeated_cards(self, oPCS, oModel):
-        """Helper function to add and remove repeated cards from the card set,
-           validating that the model works correctly"""
-        aCards = [('Alexandra', 'CE'), ('Alexandra', None),
+    def _loop_modes(self, oPCS, oModel):
+        """Loop over all the possible modes of the model, calling
+           _add_remove_cards to test the model."""
+        aCards = [('AK-47', None), ('Bronwen', 'SW'), ('Cesewayo', None),
+                ('Anna "Dictatrix11" Suljic', 'NoR'), ('Ablative Skin',
+                    'Sabbat')] + [('Alexandra', 'CE'), ('Alexandra', None),
                 ('Ablative Skin', None)] * 5
         aPhysCards = []
         for sName, sExp in aCards:
             oCard = self._gen_card(sName, sExp)
             aPhysCards.append(oCard)
-        oModel.load()
-        iStart = self._count_all_cards(oModel)
-        for oCard in aPhysCards:
-            oPCS.addPhysicalCard(oCard.id)
-            oPCS.syncUpdate()
-            self._gen_card_signal(oPCS, oModel, oCard, 1)
-        tAlterTotals = (
-                oModel.iter_n_children(None),
-                self._count_all_cards(oModel),
-                self._count_second_level(oModel))
-        aList1 = self._get_all_counts(oModel)
-        oModel.load()
-        aList2 = self._get_all_counts(oModel)
-        tTotals = (
-                oModel.iter_n_children(None),
-                self._count_all_cards(oModel),
-                self._count_second_level(oModel))
-        self.assertEqual(tAlterTotals, tTotals, self._format_error(
-            "Totals for repeated inc_card and load differ", tAlterTotals,
-            tTotals, oModel))
-        self.assertEqual(aList1, aList2, self._format_error(
-            "Card lists for repeated inc_card and load differ, ", aList1,
-            aList2, oModel))
-        for oCard in aPhysCards:
-            oMapEntry = list(MapPhysicalCardToPhysicalCardSet.selectBy(
-                    physicalCardID=oCard.id, physicalCardSetID=oPCS.id))[-1]
-            MapPhysicalCardToPhysicalCardSet.delete(oMapEntry.id)
-            oPCS.syncUpdate()
-            self._gen_card_signal(oPCS, oModel, oCard, -1)
-        tAlterTotals = (
-                oModel.iter_n_children(None),
-                self._count_all_cards(oModel),
-                self._count_second_level(oModel))
-        aList1 = self._get_all_counts(oModel)
-        oModel.load()
-        aList2 = self._get_all_counts(oModel)
-        tTotals = (
-                oModel.iter_n_children(None),
-                self._count_all_cards(oModel),
-                self._count_second_level(oModel))
-        self.assertEqual(tAlterTotals, tTotals, self._format_error(
-            "Totals for repeated dec_card and load differ", tAlterTotals,
-            tTotals, oModel))
-        self.assertEqual(aList1, aList2, self._format_error(
-            "Card lists for repeated dec_card and load differ, ", aList1,
-            aList2, oModel))
-        # sanity checks
-        iEnd = self._count_all_cards(oModel)
-        self.assertEqual(iEnd, iStart, self._format_error(
-            "Card set differs from start after removals", iEnd, iStart,
-            oModel))
-
-    def _loop_modes(self, oPCS, oModel):
-        """Loop over all the possible modes of the model, calling
-           _add_remove_cards to test the model."""
         for bEditFlag in [False, True]:
             oModel.bEditable = bEditFlag
             for iLevelMode in [NO_SECOND_LEVEL, SHOW_EXPANSIONS,
@@ -288,8 +228,7 @@ class CardSetListModelTests(SutekhTest):
                     for iShowMode in [THIS_SET_ONLY, ALL_CARDS, PARENT_CARDS,
                             CHILD_CARDS]:
                         oModel.iShowCardMode = iShowMode
-                        self._add_remove_distinct_cards(oPCS, oModel)
-                        self._add_remove_repeated_cards(oPCS, oModel)
+                        self._add_remove_cards(oPCS, oModel, aPhysCards)
 
     def test_basic(self):
         """Set of simple tests of the Card Set List Model"""
