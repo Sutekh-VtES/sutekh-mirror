@@ -13,9 +13,7 @@ from sutekh.gui.CardSetListModel import CardSetCardListModel, \
         EXPANSIONS_AND_CARD_SETS, CARD_SETS_AND_EXPANSIONS, \
         THIS_SET_ONLY, ALL_CARDS, PARENT_CARDS, CHILD_CARDS, \
         IGNORE_PARENT, PARENT_COUNT, MINUS_THIS_SET, MINUS_SETS_IN_USE
-from sutekh.core.Groupings import NullGrouping, ClanGrouping, \
-        DisciplineGrouping, CryptLibraryGrouping, CardTypeGrouping, \
-        ExpansionGrouping, RarityGrouping
+from sutekh.core import Filters, Groupings
 from sutekh.core.SutekhObjects import PhysicalCardSet, IPhysicalCard, \
         IExpansion, IAbstractCard, MapPhysicalCardToPhysicalCardSet
 import unittest
@@ -42,6 +40,11 @@ class CardSetListModelTests(SutekhTest):
             'EXPANSIONS_AND_CARD_SETS', 'CARD_SETS_AND_EXPANSIONS']
     aCardCountToStr = ['THIS_SET_ONLY', 'ALL_CARDS', 'PARENT_CARDS',
             'CHILD_CARDS']
+
+    aAllGroupings = [Groupings.CryptLibraryGrouping,
+            Groupings.DisciplineGrouping, Groupings.ClanGrouping,
+            Groupings.CardTypeGrouping, Groupings.ExpansionGrouping,
+            Groupings.RarityGrouping]
 
     # pylint: disable-msg=R0201
     # I prefer to have these as methods
@@ -144,7 +147,6 @@ class CardSetListModelTests(SutekhTest):
             else:
                 oModel.dec_sibling_count(oPhysCard)
 
-
     # pylint: enable-msg=R0201
 
     def _add_remove_cards(self, oPCS, oModel, aPhysCards):
@@ -230,6 +232,33 @@ class CardSetListModelTests(SutekhTest):
                         oModel.iShowCardMode = iShowMode
                         self._add_remove_cards(oPCS, oModel, aPhysCards)
 
+    def _loop_zero_filter_modes(self, oModel):
+        """Loop over all the possible modes of the model, calling
+           a zero result filters to test the model."""
+        for bEditFlag in [False, True]:
+            oModel.bEditable = bEditFlag
+            for iLevelMode in [NO_SECOND_LEVEL, SHOW_EXPANSIONS,
+                    SHOW_CARD_SETS, EXPANSIONS_AND_CARD_SETS,
+                    CARD_SETS_AND_EXPANSIONS]:
+                oModel.iExtraLevelsMode = iLevelMode
+                for iParentMode in [IGNORE_PARENT, PARENT_COUNT,
+                        MINUS_THIS_SET, MINUS_SETS_IN_USE]:
+                    oModel.iParentCountMode = iParentMode
+                    for iShowMode in [THIS_SET_ONLY, ALL_CARDS, PARENT_CARDS,
+                            CHILD_CARDS]:
+                        oModel.iShowCardMode = iShowMode
+                        oModel.selectfilter = Filters.CardNameFilter('ZZZZZZZ')
+                        oModel.applyfilter = True
+                        oModel.load()
+                        tFilterTotals = (
+                                oModel.iter_n_children(None),
+                                self._count_all_cards(oModel),
+                                self._count_second_level(oModel))
+                        self.assertEqual(tFilterTotals, (1, 0, 0),
+                                self._format_error("Totals for filter differ"
+                                    " from expected zero result",
+                                    tFilterTotals, (1, 0, 0), oModel))
+
     def test_basic(self):
         """Set of simple tests of the Card Set List Model"""
         # pylint: disable-msg=R0915, R0914
@@ -258,7 +287,7 @@ class CardSetListModelTests(SutekhTest):
         self.assertEqual(len(oListener.aCards), 2)
         # Only Vampires added
         self.assertEqual(oModel.iter_n_children(None), 1)
-        oModel.groupby = NullGrouping
+        oModel.groupby = Groupings.NullGrouping
         self.assertEqual(self._count_all_cards(oModel), 2)
         self.assertEqual(self._count_second_level(oModel), 2)
         # Check the drag-n-drop helper
@@ -283,12 +312,10 @@ class CardSetListModelTests(SutekhTest):
         # Add Cards
         self._loop_modes(oPCS, oModel)
         # Check over all the groupings
-        for cGrouping in [CryptLibraryGrouping, DisciplineGrouping,
-                ClanGrouping, CardTypeGrouping, ExpansionGrouping,
-                RarityGrouping]:
+        for cGrouping in self.aAllGroupings:
             oModel.groupby = cGrouping
             self._loop_modes(oPCS, oModel)
-        oModel.groupby = NullGrouping
+        oModel.groupby = Groupings.NullGrouping
         # Add some more cards
         aCards = [('Alexandra', 'CE'), ('Sha-Ennu', 'Third Edition'),
                 ('Alexandra', None), ('Bronwen', 'Sabbat'),
@@ -312,7 +339,7 @@ class CardSetListModelTests(SutekhTest):
             # pylint: disable-msg=E1101
             # PyProtocols confuses pylint
             oChildPCS.addPhysicalCard(oCard.id)
-        oChildModel.groupby = NullGrouping
+        oChildModel.groupby = Groupings.NullGrouping
         oChildModel.load()
         oChildPCS.inuse = False
         # Check adding cards when we have a parent card set
@@ -386,14 +413,24 @@ class CardSetListModelTests(SutekhTest):
         self._loop_modes(oSibPCS, oModel)
         self._loop_modes(oGrandChildPCS, oChildModel)
         # Go through the grouping tests as well
-        for cGrouping in [CryptLibraryGrouping, DisciplineGrouping,
-                ClanGrouping, CardTypeGrouping, ExpansionGrouping,
-                RarityGrouping]:
+        for cGrouping in self.aAllGroupings:
             oChildModel.groupby = cGrouping
             self._loop_modes(oSibPCS, oChildModel)
             self._loop_modes(oPCS, oChildModel)
             self._loop_modes(oGrandChildPCS, oChildModel)
-        # FIXME: Test filtering with the different modes
+        # Test filtering
+        # Test filter which selects nothing works
+        self._loop_zero_filter_modes(oChildModel)
+        # Test card type
+        # Check basic filtering
+        oChildModel.iShowCardMode = THIS_SET_ONLY
+        oChildModel.iParentCountMode = IGNORE_PARENT
+        oChildModel.iExtraLevelsMode = NO_SECOND_LEVEL
+        oChildModel.bEditable = False
+        # FIXME: test more filtering results
+        oChildModel.selectfilter = Filters.CardTypeFilter('Vampire')
+        oChildModel.applyfilter = True
+        oChildModel.load()
 
 if __name__ == "__main__":
     unittest.main()
