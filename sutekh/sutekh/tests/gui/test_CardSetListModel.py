@@ -155,27 +155,31 @@ class CardSetListModelTests(SutekhTest):
         # pylint: disable-msg=E1101
         # SQLObjext confuses pylint
         oModel.load()
-        iStart = self._count_all_cards(oModel)
+        tStartTotals = (
+                oModel.iter_n_children(None),
+                self._count_all_cards(oModel),
+                self._count_second_level(oModel))
+        aStartList = self._get_all_counts(oModel)
         for oCard in aPhysCards:
             oPCS.addPhysicalCard(oCard.id)
             oPCS.syncUpdate()
             self._gen_card_signal(oPCS, oModel, oCard, 1)
-        tAlterTotals = (
+        tAddTotals = (
                 oModel.iter_n_children(None),
                 self._count_all_cards(oModel),
                 self._count_second_level(oModel))
-        aList1 = self._get_all_counts(oModel)
+        aAddList = self._get_all_counts(oModel)
         oModel.load()
-        tTotals = (
+        tLoadTotals = (
                 oModel.iter_n_children(None),
                 self._count_all_cards(oModel),
                 self._count_second_level(oModel))
-        aList2 = self._get_all_counts(oModel)
-        self.assertEqual(tAlterTotals, tTotals, self._format_error(
-            "Totals for inc_card and load differ", tAlterTotals, tTotals,
+        aLoadList = self._get_all_counts(oModel)
+        self.assertEqual(tAddTotals, tLoadTotals, self._format_error(
+            "Totals for inc_card and load differ", tAddTotals, tLoadTotals,
             oModel))
-        self.assertEqual(aList1, aList2, self._format_error(
-            "Card Lists for inc_card and load differ", aList1, aList2,
+        self.assertEqual(aAddList, aLoadList, self._format_error(
+            "Card Lists for inc_card and load differ", aAddList, aLoadList,
             oModel))
         # Card removal
         # We use the map table, so we can also test dec_card properly
@@ -185,26 +189,17 @@ class CardSetListModelTests(SutekhTest):
             MapPhysicalCardToPhysicalCardSet.delete(oMapEntry.id)
             oPCS.syncUpdate()
             self._gen_card_signal(oPCS, oModel, oCard, -1)
-        tAlterTotals = (
+        tDecTotals = (
                 oModel.iter_n_children(None),
                 self._count_all_cards(oModel),
                 self._count_second_level(oModel))
-        aList1 = self._get_all_counts(oModel)
-        oModel.load()
-        tTotals = (
-                oModel.iter_n_children(None),
-                self._count_all_cards(oModel),
-                self._count_second_level(oModel))
-        aList2 = self._get_all_counts(oModel)
-        self.assertEqual(tAlterTotals, tTotals, self._format_error(
-            "Totals for dec_card and load differ", tAlterTotals, tTotals,
+        aDecList = self._get_all_counts(oModel)
+        # test that we've behaved sanely
+        self.assertEqual(tDecTotals, tStartTotals, self._format_error(
+            "Totals for dec_card and load differ", tDecTotals, tStartTotals,
             oModel))
-        self.assertEqual(aList1, aList2, self._format_error(
-            "Card lists for dec_card and load differ", aList1, aList2, oModel))
-        # Also test that we've behaved sanely
-        iEnd = self._count_all_cards(oModel)
-        self.assertEqual(iEnd, iStart, self._format_error(
-            "Card set differs from start after removals", iEnd, iStart,
+        self.assertEqual(aDecList, aStartList, self._format_error(
+            "Card lists for dec_card and load differ", aDecList, aStartList,
             oModel))
 
     def _loop_modes(self, oPCS, oModel):
