@@ -41,11 +41,6 @@ class CardSetListModelTests(SutekhTest):
     aCardCountToStr = ['THIS_SET_ONLY', 'ALL_CARDS', 'PARENT_CARDS',
             'CHILD_CARDS']
 
-    aAllGroupings = [Groupings.CryptLibraryGrouping,
-            Groupings.DisciplineGrouping, Groupings.ClanGrouping,
-            Groupings.CardTypeGrouping, Groupings.ExpansionGrouping,
-            Groupings.RarityGrouping]
-
     # pylint: disable-msg=R0201
     # I prefer to have these as methods
     def _count_second_level(self, oModel):
@@ -307,7 +302,10 @@ class CardSetListModelTests(SutekhTest):
         # Add Cards
         self._loop_modes(oPCS, oModel)
         # Check over all the groupings
-        for cGrouping in self.aAllGroupings:
+        for cGrouping in [Groupings.CryptLibraryGrouping,
+                Groupings.DisciplineGrouping, Groupings.ClanGrouping,
+                Groupings.CardTypeGrouping, Groupings.ExpansionGrouping,
+                Groupings.RarityGrouping]:
             oModel.groupby = cGrouping
             self._loop_modes(oPCS, oModel)
         oModel.groupby = Groupings.NullGrouping
@@ -407,8 +405,11 @@ class CardSetListModelTests(SutekhTest):
         self._loop_modes(oChildPCS, oModel)
         self._loop_modes(oSibPCS, oModel)
         self._loop_modes(oGrandChildPCS, oChildModel)
-        # Go through the grouping tests as well
-        for cGrouping in self.aAllGroupings:
+        # Go through some of grouping tests as well
+        # We want to ensure that this works with non-NullGroupings,
+        # but we don't need to cover all the groupings again
+        for cGrouping in [Groupings.DisciplineGrouping,
+                Groupings.CardTypeGrouping]:
             oChildModel.groupby = cGrouping
             self._loop_modes(oSibPCS, oChildModel)
             self._loop_modes(oPCS, oChildModel)

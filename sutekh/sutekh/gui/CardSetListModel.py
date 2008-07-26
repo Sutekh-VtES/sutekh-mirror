@@ -154,7 +154,8 @@ class CardSetCardListModel(CardListModel):
         self._dName2nd3rdLevel2Iter = {}
         self._dGroupName2Iter = {}
 
-        # Clear cache
+        # Clear cache (we can't do this in grouped_card_iter, since that
+        # is also called by add_new_card)
         self._dCache = {}
 
         oCardIter = self.get_card_iterator(self.get_current_filter())
@@ -1515,50 +1516,51 @@ class CardSetCardListModel(CardListModel):
         # Conditions for removal vary with the cards shown
         # pylint: disable-msg=E1101
         # Pyprotocols confuses pylint
-        if self.iShowCardMode == ALL_CARDS:
-            return True # We don't remove entries here
+        def check_children(oIter):
+            """Loop over a level of the model, checking for non-zero counts"""
+            while oIter:
+                if self.get_int_value(oIter, 1) > 0:
+                    return True
+                oIter = self.iter_next(oIter)
+            return False
+
         iCnt = self.get_int_value(oIter, 1)
-        iParCnt = self.get_int_value(oIter, 2)
-        if iCnt > 0:
+        if self.iShowCardMode == ALL_CARDS or iCnt > 0:
+            # We clearly don't remove entries here
             return True
+        iParCnt = self.get_int_value(oIter, 2)
+        bResult = False
         if self.iShowCardMode == PARENT_CARDS and iParCnt > 0 and \
                 self.iParentCountMode in [PARENT_COUNT, MINUS_THIS_SET]:
-            return True
+            bResult = True
         elif self.iShowCardMode == PARENT_CARDS and self._oCardSet.parent:
             # Check database
             oAbsCard = IAbstractCard(self.get_name_from_iter(oIter))
             oFilter = FilterAndBox([SpecificCardIdFilter(oAbsCard.id),
                         PhysicalCardSetFilter(self._oCardSet.parent.name)])
-            return oFilter.select(self.cardclass).distinct().count() > 0
+            bResult = oFilter.select(self.cardclass).distinct().count() > 0
         elif self.iShowCardMode == CHILD_CARDS:
             if self.iExtraLevelsMode in [SHOW_CARD_SETS,
                     CARD_SETS_AND_EXPANSIONS]:
                 # Check if any top level child iters have non-zero counts
                 oChildIter = self.iter_children(oIter)
-                while oChildIter:
-                    if self.get_int_value(oChildIter, 1) > 0:
-                        return True
-                    oChildIter = self.iter_next(oChildIter)
+                bResult = check_children(oChildIter)
             elif self.iExtraLevelsMode == EXPANSIONS_AND_CARD_SETS:
                 # Check third level children
                 oChildIter = self.iter_children(oIter)
                 while oChildIter:
                     oGrandChild = self.iter_children(oChildIter)
-                    while oGrandChild:
-                        if self.get_int_value(oGrandChild, 1) > 0:
-                            return True
-                        oGrandChild = self.iter_next(oGrandChild)
+                    if check_children(oGrandChild):
+                        return True
                     oChildIter = self.iter_next(oChildIter)
-            else:
-                # Need to actually check the database
-                if self._dCache['child filters']:
-                    oAbsCard = IAbstractCard(self.get_name_from_iter(oIter))
-                    oChildFilter = FilterAndBox([
-                        SpecificCardIdFilter(oAbsCard.id),
-                        self._dCache['all children filter']])
-                    return oChildFilter.select(
+            elif self._dCache['child filters']:
+                # Actually check the database
+                oAbsCard = IAbstractCard(self.get_name_from_iter(oIter))
+                oChildFilter = FilterAndBox([SpecificCardIdFilter(oAbsCard.id),
+                    self._dCache['all children filter']])
+                bResult = oChildFilter.select(
                             self.cardclass).distinct().count() > 0
-        return False
+        return bResult
 
     def check_group_iter_stays(self, oIter):
         """Check if we need to remove the top-level item"""
