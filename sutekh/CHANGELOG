@@ -1,3 +1,11 @@
+27 July 2008
+ * Improve speed of the 'show card sets' mode in the GUI
+
+26 July 2008
+ * Address some speed issues with the CardSetListModel
+ * Rework code of CardSetListModel a bit
+ * Remove several redundant checks from the CardSetListModel test case
+
 22 July 2008
  * Add support for specifying which database to test against using the
    SUTEKH_TEST_DB environment variable
