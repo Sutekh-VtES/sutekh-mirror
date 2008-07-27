@@ -57,11 +57,11 @@ def _get_card_set_list(aCardSetNames, bUseExpansions):
 class CardSetCompare(CardListPlugin):
     """Compare Two Card Sets
 
-    Display a gtk.Notebook containing tabs for common cards, and cards
-    only in each of the card sets.
-    This plugin pnly considers the abstract cards - The physical expansion
-    of cards is not considered.
-    """
+       Display a gtk.Notebook containing tabs for common cards, and cards
+       only in each of the card sets.
+       This plugin pnly considers the abstract cards - The physical expansion
+       of cards is not considered.
+       """
     dTableVersions = {PhysicalCardSet : [5]}
     aModelsSupported = [PhysicalCardSet]
 

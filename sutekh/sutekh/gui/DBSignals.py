@@ -13,12 +13,12 @@ from sqlobject.events import Signal, listen, RowUpdateSignal, RowDestroySignal
 from sutekh.core.SutekhObjects import PhysicalCardSet
 
 class ReloadSignal(Signal):
-    """
-    Syncronisation signal for card sets. Needs to be sent after
-    changes are commited to the database, so card sets can reload
-    properly.
-    Used so card sets always reflect correct available count when editable.
-    """
+    """Syncronisation signal for card sets.
+
+       Needs to be sent after changes are commited to the database, so card
+       sets can reload properly.
+       Used so card sets always reflect correct available counts.
+       """
 
 # Senders
 

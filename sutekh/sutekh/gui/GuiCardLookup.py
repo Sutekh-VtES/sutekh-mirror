@@ -4,10 +4,8 @@
 # Copyright 2007 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
 
-"""
-Lookup AbstractCards for a list of card names, presenting the user with a GUI
-to pick unknown cards from.
-"""
+"""Lookup AbstractCards for a list of card names, presenting the user with a
+   GUI to pick unknown cards from.  """
 
 import re
 import gtk
@@ -239,7 +237,7 @@ class ReplacementTreeView(gtk.TreeView):
 
 class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
     """Lookup AbstractCards. Use the user as the AI if a simple lookup fails.
-    """
+       """
 
     def __init__(self, oConfig):
         super(GuiLookup, self).__init__()
@@ -249,7 +247,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
         """Lookup missing abstract cards.
 
            Provides an implementation for AbstractCardLookup.
-        """
+           """
         dCards = {}
         dUnknownCards = {}
 
@@ -300,7 +298,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
         """Lookup missing physical cards.
 
            Provides an implementation for PhysicalCardLookup.
-        """
+           """
         aCards = []
         dUnknownCards = {}
 
@@ -330,7 +328,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
         """Lookup missing expansions.
 
            Provides an implementation for ExpansionLookup.
-        """
+           """
         dExps = {}
         dUnknownExps = {}
 
@@ -373,7 +371,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
 
            We allow the user to select the correct replacements from the
            Physical Card List
-        """
+           """
         # pylint: disable-msg=R0914
         # we use lots of variables for clarity
 

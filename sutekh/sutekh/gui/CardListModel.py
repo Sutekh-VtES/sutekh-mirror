@@ -31,37 +31,33 @@ def norm_path(oPath):
 
 
 class CardListModelListener(object):
-    """
-    Listens to updates, i.e. .load(...), .alter_card_count(...), .add_new_card(..) calls,
-    to CardListModels.
-    """
+    """Listens to updates, i.e. .load(...), .alter_card_count(...),
+       .add_new_card(..) calls, to CardListModels."""
     def load(self, aAbsCards):
-        """
-        The CardListModel has reloaded itself.
-        aAbsCards is the list of AbstractCards loaded
-        """
+        """The CardListModel has reloaded itself. aAbsCards is the list of
+           AbstractCards loaded."""
         pass
 
     def alter_card_count(self, oCard, iChg):
-        """
-        The count of the given card has been altered by iChg.
-        oCard: AbstractCard for the card altered (the actual card may be a Physical Card).
-        """
+        """The count of the given card has been altered by iChg.
+
+           oCard: AbstractCard for the card altered (the actual card may be
+           a Physical Card).
+           """
         pass
 
     def add_new_card(self, oCard, bVisible):
-        """
-        A single copy of the given card has been added.
-        oCard: AbstractCard for the card altered (the actual card may be a Physical Card).
-        """
+        """A single copy of the given card has been added.
+
+           oCard: AbstractCard for the card altered (the actual card may be
+           a Physical Card).
+           """
         pass
 
 class CardListModel(gtk.TreeStore):
     # pylint: disable-msg=R0904, R0902
     # inherit a lot of public methods for gtk, need local attributes for state
-    """
-    Provides a card list specific API for accessing a gtk.TreeStore.
-    """
+    """Provides a card list specific API for accessing a gtk.TreeStore."""
     # Use spaces to ensure it sorts first
     # Could possibly be more visually distinct, but users can filter
     # on unknown expansions if needed.
@@ -127,8 +123,7 @@ class CardListModel(gtk.TreeStore):
 
     def get_expansion_name(self, oExpansion):
         """Utility function to return iether the name, or the appropriate
-           placeholder for oExpansion is None.
-           """
+           placeholder for oExpansion is None."""
         if oExpansion:
             return oExpansion.name
         return self.sUnknownExpansion
@@ -145,10 +140,8 @@ class CardListModel(gtk.TreeStore):
     def load(self):
         # pylint: disable-msg=R0914
         # we use many local variables for clarity
-        """
-        Clear and reload the underlying store. For use after initialisation or when
-        the filter or grouping changes.
-        """
+        """Clear and reload the underlying store. For use after initialisation
+           or when the filter or grouping changes."""
         self.clear()
         self._dName2Iter = {}
         self._dNameExpansion2Iter = {}
@@ -206,11 +199,12 @@ class CardListModel(gtk.TreeStore):
             oListener.load(aAbsCards)
 
     def get_card_iterator(self, oFilter):
-        """
-        Return an interator over the card model. The filter is
-        combined with self.basefilter. None may be used to retrieve
-        the entire card list (with only the base filter restriciting which cards appear).
-        """
+        """Return an interator over the card model.
+
+           The filter is combined with self.basefilter. None may be used to
+           retrieve the entire card list (with only the base filter
+           restriciting which cards appear).
+           """
         oFilter = self.combine_filter_with_base(oFilter)
 
         return oFilter.select(self.cardclass).distinct()
@@ -272,10 +266,8 @@ class CardListModel(gtk.TreeStore):
             return FilterAndBox([self.basefilter, oOtherFilter])
 
     def get_card_name_from_path(self, oPath):
-        """
-        Get the card name associated with the current path. Handle
-        the expansion level transparently.
-        """
+        """Get the card name associated with the current path. Handle the
+           expansion level transparently."""
         oIter = self.get_iter(oPath)
         if self.iter_depth(oIter) > 1:
             # Child of the card name
@@ -284,12 +276,12 @@ class CardListModel(gtk.TreeStore):
         return self.get_name_from_iter(oIter)
 
     def get_all_from_path(self, oPath):
-        """
-        Get all relevent information about the current path.
-        Returns the tuple (CardName, Expansion info, Card Count,
-        depth in the  model), where depth in the model is 1 for the top
-        level of cards, and 2 for the expansion level.
-        """
+        """Get all relevent information about the current path.
+
+           Returns the tuple (CardName, Expansion info, Card Count,
+           depth in the  model), where depth in the model is 1 for the top
+           level of cards, and 2 for the expansion level.
+           """
         oIter = self.get_iter(oPath)
         iDepth = self.iter_depth(oIter)
         if iDepth == 2:
@@ -327,20 +319,16 @@ class CardListModel(gtk.TreeStore):
         return (bInc, bDec)
 
     def get_exp_name_from_path(self, oPath):
-        """
-        Get the expansion information from the model, returing None
-        if this is not at a level where the expansion is known.
-        """
+        """Get the expansion information from the model, returing None if this
+           is not at a level where the expansion is known."""
         oIter = self.get_iter(oPath)
         if self.iter_depth(oIter) != 2:
             return None
         return self.get_name_from_iter(oIter)
 
     def get_name_from_iter(self, oIter):
-        """
-        Extract the value at oIter from the model, correcting for encoding
-        issues
-        """
+        """Extract the value at oIter from the model, correcting for encoding
+           issues."""
         # For some reason the string comes back from the
         # tree store having been encoded *again* despite
         # displaying correctly, so we decode it here.

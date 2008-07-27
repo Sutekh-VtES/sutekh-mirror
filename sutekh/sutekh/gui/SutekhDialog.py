@@ -20,12 +20,11 @@ class SutekhDialog(gtk.Dialog):
         self.set_name("Sutekh.dialog")
 
 def do_complaint(sMessage, oDialogType, oButtonType, bMarkup=False):
-    """
-    Wrapper function for gtk.MessageDialog.
-    Create the dialog, run it, and return the result
-    if bMarkup is true, the string is interpreted as markup,
-    other, just as plain text
-    """
+    """Wrapper function for gtk.MessageDialog.
+
+       Create the dialog, run it, and return the result. If bMarkup is true,
+       the string is interpreted as markup, other, just as plain text
+       """
     if bMarkup:
         oComplaint = gtk.MessageDialog(None, 0, oDialogType,
                 oButtonType, None)
@@ -40,13 +39,12 @@ def do_complaint(sMessage, oDialogType, oButtonType, bMarkup=False):
 
 
 def do_complaint_buttons(sMessage, oType, aButtonInfo, bMarkup=False):
-    """
-    Wrapper function for gtk.MessageDialog, using add_button to create
-    custom button layouts.
-    Create the dialog, run it, and return the result
-    if bMarkup is true, the string is interpreted as markup,
-    other, just as plain text
-    """
+    """Wrapper function for gtk.MessageDialog, using add_button to create
+       custom button layouts.
+
+       Create the dialog, run it, and return the result. If bMarkup is true,
+       the string is interpreted as markup, other, just as plain text.
+       """
     if bMarkup:
         oComplaint = gtk.MessageDialog(None, 0, oType,
                 gtk.BUTTONS_NONE, None)

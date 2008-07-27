@@ -12,9 +12,7 @@ from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 
 class DeckFromFilter(CardListPlugin):
-    """
-    Converts a filter into a Physical Card Set
-    """
+    """Converts a filter into a Physical Card Set."""
 
     dTableVersions = { PhysicalCardSet : [2, 3, 4]}
     aModelsSupported = [PhysicalCardSet, PhysicalCard]
@@ -52,10 +50,10 @@ class DeckFromFilter(CardListPlugin):
         oDlg.run()
 
     def handle_response(self, oWidget, oResponse, oDlg, oEntry):
-        """
-        Handle the user response from make_dialog
-        call make_pcs_from_filter to create the PCS if needed
-        """
+        """Handle the user response from make_dialog
+
+           call make_pcs_from_filter to create the PCS if needed
+           """
         if oResponse ==  gtk.RESPONSE_OK:
             sPCSName = oEntry.get_text().strip()
             self.make_pcs_from_filter(sPCSName)
@@ -64,9 +62,7 @@ class DeckFromFilter(CardListPlugin):
     # pylint: enable-msg=W0613
 
     def make_pcs_from_filter(self, sPCSName):
-        """
-        Create the actual PCS
-        """
+        """Create the actual PCS."""
         # Check PCS Doesn't Exist
         # pylint: disable-msg=E1101
         # pylint misses PhysicalCardSet methods

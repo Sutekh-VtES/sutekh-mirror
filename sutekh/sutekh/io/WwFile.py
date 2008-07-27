@@ -4,10 +4,8 @@
 # Copyright 2008 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
 
-"""
-Tools for dealing with unopened files that follow the White Wolf encoding
-conventions.
-"""
+"""Tools for dealing with unopened files that follow the White Wolf encoding
+   conventions."""
 
 import codecs
 import urllib2

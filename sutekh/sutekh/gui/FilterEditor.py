@@ -184,22 +184,19 @@ class FilterEditor(gtk.Frame):
 
 
 class FilterBoxModel(list):
-    """
-    Converts a filter AST into a simple nest box model.
+    """Converts a filter AST into a simple nest box model.
 
-    Each box either ANDs or ORs all of its contained filters.
-    Each contained filter may optionally be negated.
-    Values are retained for each contained filter.
-    """
+       Each box either ANDs or ORs all of its contained filters.
+       Each contained filter may optionally be negated.
+       Values are retained for each contained filter.
+       """
 
     AND, OR = 'and', 'or'
 
     # pylint: disable-msg=W0231
     # no point to calling list's __init__
     def __init__(self, oAST, sFilterType, oVarNameMaker=None):
-        """
-        Initialise a filter box from an AST filter representation.
-        """
+        """Initialise a filter box from an AST filter representation."""
         if oVarNameMaker is None:
             oVarNameMaker = VariableNameGenerator()
             bVarMakerNeedsInit = True
@@ -266,9 +263,7 @@ class FilterBoxModel(list):
         return oNames
 
     def get_ast(self):
-        """
-        Return an AST representation of the filter.
-        """
+        """Return an AST representation of the filter."""
         aChildASTs = [oChild.get_ast() for oChild in self]
         aChildASTs = [oChild for oChild in aChildASTs if oChild is not None]
 
@@ -287,9 +282,7 @@ class FilterBoxModel(list):
         return oAST
 
     def get_text(self):
-        """
-        Return a text representation of the filter.
-        """
+        """Return a text representation of the filter."""
         aChildTexts = [oChild.get_text() for oChild in self]
         aChildTexts = [sChild for sChild in aChildTexts if sChild]
 
@@ -440,11 +433,10 @@ class FilterBoxModelEditor(gtk.VBox):
             oChild.set_current_values(dVars)
 
     def register_remove_box(self, fRemoveBox):
-        """
-        Register a function for removing this box from it's parent editor.
+        """Register a function for removing this box from it's parent editor.
 
-        fRemoveBox(oBoxEditor, oBoxModel)
-        """
+           The function signature is fRemoveBox(oBoxEditor, oBoxModel)
+           """
         self.__fRemoveBox = fRemoveBox
         self.__oBoxTypeSelector.append_text("Remove Sub-Filter")
         self.__oBoxTypeSelector.show_all()
@@ -548,9 +540,7 @@ class FilterBoxItem(object):
         return set([self.sVariableName])
 
     def get_ast(self):
-        """
-        Return an AST respresentation of the filter.
-        """
+        """Return an AST respresentation of the filter."""
         oAST = FilterPartNode(self.sFilterName, self.aFilterValues,
                 self.sVariableName)
         if self.bNegated:
@@ -558,9 +548,7 @@ class FilterBoxItem(object):
         return oAST
 
     def get_text(self):
-        """
-        Return a text representation of the filter.
-        """
+        """Return a text representation of the filter."""
         if self.iValueType == self.NONE:
             sText = self.sFilterName
         else:

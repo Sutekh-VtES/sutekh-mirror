@@ -14,11 +14,11 @@ import gtk
 import os
 
 class FullBackup(CardListPlugin):
-    """"
-    Provide access to ZipFileWrapper's backup and restore methods.
-    Handle GUI aspects associated with restoring (ensuring everything
-    reloads, etc.)
-    """
+    """Provide access to ZipFileWrapper's backup and restore methods.
+
+       Handle GUI aspects associated with restoring (ensuring everything
+       reloads, etc.)
+       """
 
     dTableVersions = {}
     aModelsSupported = ["MainWindow"]

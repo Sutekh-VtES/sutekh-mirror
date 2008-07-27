@@ -111,10 +111,8 @@ class WriteArdbText(ArdbInfo):
     # pylint: disable-msg=R0913
     # we need all these arguments
     def write(self, fOut, sSetName, sAuthor, sDescription, dCards):
-        """
-        Takes filename, deck details and a dictionary of cards, of the form
-        dCard[(id, name)]=count
-        """
+        """Takes filename, deck details and a dictionary of cards, of the
+           form dCard[(id, name)] = count and writes the file."""
         fOut.write(self._gen_header(sSetName, sAuthor, sDescription))
         fOut.write("\n")
         fOut.write(self._gen_crypt(dCards))

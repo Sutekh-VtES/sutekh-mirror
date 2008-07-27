@@ -13,10 +13,10 @@ from sutekh.core.SutekhObjects import AbstractCard, PhysicalCard, \
 from sqlobject import SQLObjectNotFound
 
 class ExtraCardViewColumns(CardListPlugin):
-    """
-    Add extra columns to the card list view.
-    Allow the card list to be sorted on these columns
-    """
+    """Add extra columns to the card list view.
+
+       Allow the card list to be sorted on these columns
+       """
     dTableVersions = {}
     aModelsSupported = [PhysicalCardSet, PhysicalCard]
 
@@ -239,10 +239,10 @@ class ExtraCardViewColumns(CardListPlugin):
     # pylint: disable-msg=W0613
     # oModel required by gtk's function signature
     def sort_column(self, oModel, oIter1, oIter2, oGetData):
-        """
-        Stringwise comparision of oIter1 and oIter2.
-        Return -1 if oIter1 < oIter, 0 in ==, 1 if >
-        """
+        """Stringwise comparision of oIter1 and oIter2.
+
+           Return -1 if oIter1 < oIter, 0 in ==, 1 if >
+           """
         oCard1 = self._get_card(oIter1)
         oCard2 = self._get_card(oIter2)
         if oCard1 is None or oCard2 is None:

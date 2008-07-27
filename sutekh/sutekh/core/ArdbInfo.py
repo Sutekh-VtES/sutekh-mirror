@@ -4,8 +4,8 @@
 # Copyright 2008 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
 
-"""
-   Base class for the ARDB writers.
+"""Base class for the ARDB writers.
+
    Provide methods for extracting the relevant cards from the card set
    and such.
    """

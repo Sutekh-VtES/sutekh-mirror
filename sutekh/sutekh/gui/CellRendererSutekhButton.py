@@ -21,13 +21,11 @@ import gtk, gobject
 # pylint: disable-msg=R0904
 # gtk widget, so we must have a lot of public methods
 class CellRendererSutekhButton(gtk.GenericCellRenderer):
-    """
-    Render a icon in a cell in a TreeView.
+    """Render a icon in a cell in a TreeView.
 
-    Used to render the arrows for incrementing and decrementing cards
-    in the CardListView's
-    """
-
+       Used to render the arrows for incrementing and decrementing cards
+       in the CardListView's
+       """
     # Register a showicon property - used to control wether the arrow
     # is visible or not
     __gproperties__ = {

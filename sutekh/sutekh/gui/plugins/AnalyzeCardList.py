@@ -5,9 +5,7 @@
 # Copyright 2006, 2007 Neil Muller <drnlmuller+sutekh@gmail.com>,
 # Copyright 2006 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
-"""
-Display interesting statistics and properties of the card set
-"""
+"""Display interesting statistics and properties of the card set."""
 
 import gtk
 from sutekh.core.SutekhObjects import PhysicalCardSet, \
@@ -244,11 +242,11 @@ class DisciplineNumberSelect(gtk.HBox):
 
 
 class AnalyzeCardList(CardListPlugin):
-    """
-    Plugin to analyze card sets.
-    Displays various interesting stats, and does
-    a Happy Family analysis of the deck
-    """
+    """Plugin to analyze card sets.
+
+      Displays various interesting stats, and does a Happy Family
+      analysis of the deck
+       """
     dTableVersions = {PhysicalCardSet : [3, 4, 5]}
     aModelsSupported = [PhysicalCardSet]
 

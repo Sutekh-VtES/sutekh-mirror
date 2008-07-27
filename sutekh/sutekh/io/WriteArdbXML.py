@@ -6,10 +6,8 @@
 # ARDB (c) Francios Gombalt, Christoph Boget, Ville Virta and Vincent Ripoll
 # GPL - see COPYING for details
 
-"""
-Give a list of Abstract Cards in a set, write a XML file compatable with
-the Anarch Revolt Deck Builder
-"""
+"""Given a list of Abstract Cards in a set, write a XML file compatable with
+   the Anarch Revolt Deck Builder."""
 
 from sutekh.core.SutekhObjects import IAbstractCard
 from sutekh.core.ArdbInfo import ArdbInfo
@@ -157,10 +155,8 @@ class WriteArdbXML(ArdbInfo):
     # pylint: disable-msg=R0913
     # we need all these arguments
     def write(self, fOut, sSetName, sAuthor, sDescription, dCards):
-        """
-        Takes filename, deck details and a dictionary of cards, of the form
-        dCard[(id,name)]=count
-        """
+        """Takes filename, deck details and a dictionary of cards, of the
+           form dCard[(id,name)] = count and writes the file."""
         oRoot = self.gen_tree(sSetName, sAuthor, sDescription, dCards)
         pretty_xml(oRoot)
         ElementTree(oRoot).write(fOut)

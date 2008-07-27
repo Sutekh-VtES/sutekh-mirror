@@ -8,10 +8,9 @@
 # Original version downloaded from http://www.gnome.org/~gjc/htmltextview.py
 # April 2008
 
-'''
-A gtk.TextView-based renderer for XHTML-IM, as described in:
-  http://www.jabber.org/jeps/jep-0071.html
-'''
+"""A gtk.TextView-based renderer for XHTML-IM, as described in:
+   http://www.jabber.org/jeps/jep-0071.html .
+   """
 
 import gobject
 import pango

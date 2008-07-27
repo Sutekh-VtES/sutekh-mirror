@@ -4,11 +4,11 @@
 # Copyright 2007 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-"""
-Provides filter parsing functionality.
-Use PLY to convert a string into a Abstract Syntax Tree,
-from which the final Filter Object is constructed
-"""
+"""Provides filter parsing functionality.
+
+   Use PLY to convert a string into a Abstract Syntax Tree, from which the
+   final Filter Object is constructed
+   """
 
 import ply.lex as lex
 import ply.yacc as yacc
@@ -95,10 +95,10 @@ class ParseFilterDefinitions(object):
     # Ply docs say don't do this in __init__, so we don't
     # pylint: disable-msg=W0201, W0142
     def build(self, **kwargs):
-        """
-        Create the lexer object.
-        Done outside of __init__, as PLY docs state this is required
-        """
+        """Create the lexer object.
+
+           Done outside of __init__, as PLY docs state this is required
+           """
         self.oLexer = lex.lex(object = self, **kwargs)
 
     def apply(self, sData):
@@ -228,10 +228,7 @@ class FilterYaccParser(object):
 # Wrapper objects around the parser
 
 class FilterParser(object):
-    """
-    Entry point for filter parsing. Wraps Lexer and
-    Parser Objects
-    """
+    """Entry point for filter parsing. Wraps Lexer and Parser Objects"""
     # pylint: disable-msg=R0903
     # This really does only need the 1 public method
     _oGlobalLexer = None
@@ -304,10 +301,10 @@ class AstBaseNode(object):
         self.aChildren = aChildren
 
     def __str__(self):
-        """
-        String representation of the AST
-        Useful for debugging
-        """
+        """String representation of the AST
+
+           Useful for debugging
+           """
         sAttrs = '(' + ",".join([ str(oValue) for sKey, oValue \
                 in self.__dict__.items() if not sKey.startswith("_") and \
                 sKey != "aChildren" and oValue not in self.aChildren]) + ")"
@@ -383,9 +380,10 @@ class TermNode(AstBaseNode):
 
     def get_type(self):
         """Return type.
-        Always returns None as values nodes have no value - only
-        filters have meaningful type information
-        """
+
+           Always returns None as values nodes have no value - only
+           filters have meaningful type information
+           """
         return None
 
 class StringNode(TermNode):
@@ -439,10 +437,8 @@ class FilterPartNode(OperatorNode):
         return self.sVariableName
 
     def get_values(self):
-        """
-        List of ValueObjects describing the filter and its
-        associated values.
-        """
+        """List of ValueObjects describing the filter and its associated
+           values."""
         if self.sFilterName in aEntryFilters:
             aResults = \
                     [ValueObject(get_filter_type(self.sFilterName).description

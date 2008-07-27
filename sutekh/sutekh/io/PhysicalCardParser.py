@@ -5,15 +5,17 @@
 # Copyright 2007, 2008 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-"""
-Read physical cards from an XML file which
-looks like:
-<cards sutekh_xml_version="1.0">
-  <card id='3' name='Some Card' count='5' expansion="Some Expansion" />
-  <card id='3' name='Some Card' count='2' Expansion="Some Other Expansion" />
-  <card id='5' name='Some Other Card' count='2' expansion="Some Expansion" />
-</cards>
-"""
+"""Read physical cards from an XML file which looks like:
+
+   <cards sutekh_xml_version="1.0">
+     <card id='3' name='Some Card' count='5' expansion="Some Expansion" />
+     <card id='3' name='Some Card' count='2'
+        Expansion="Some Other Expansion" />
+     <card id='5' name='Some Other Card' count='2'
+       expansion="Some Expansion" />
+   </cards>
+   into the default PhysicalCardSet 'My Collection'.
+   """
 
 from sutekh.core.CardSetHolder import CardSetHolder
 from sutekh.core.CardLookup import DEFAULT_LOOKUP

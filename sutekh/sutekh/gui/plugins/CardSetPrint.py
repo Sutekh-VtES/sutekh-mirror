@@ -188,7 +188,7 @@ class CardSetPrint(CardListPlugin):
                 return sInput # pass None straigh through
 
         oCS = self.get_card_set()
-        aCrypt, aLibrary = self.get_cards(oCS)
+        aCrypt, aLibrary = self.get_cards()
 
 
         aMarkup = []
@@ -209,7 +209,7 @@ class CardSetPrint(CardListPlugin):
 
         return "\n".join(aMarkup)
 
-    def get_cards(self, oCardSet):
+    def get_cards(self):
         """Extract the cards from the card set, seperating them into
            crypt and library cards."""
         dCrypt = {}
@@ -218,7 +218,7 @@ class CardSetPrint(CardListPlugin):
         # PyProtocols + SQLObject confuses pylitn here
         aCryptTypes = set([ICardType("Vampire"), ICardType("Imbued")])
 
-        for oCard in oCardSet.cards:
+        for oCard in self.get_all_cards():
             oACard = IAbstractCard(oCard)
             if set(oACard.cardtype).intersection(aCryptTypes):
                 dCrypt.setdefault(oACard.id, [oACard, 0])

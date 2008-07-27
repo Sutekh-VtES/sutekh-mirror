@@ -4,9 +4,7 @@
 # Dialog to display deck analysis software
 # Copyright 2008 Neil Muller <drnlmuller+sutekh@gmail.com>,
 # GPL - see COPYING for details
-"""
-Simulate the opening hand draw
-"""
+"""Simulate the opening hand draw."""
 
 import gtk, gobject
 from copy import copy
@@ -127,9 +125,7 @@ def create_view(oStore, sHeading):
     return oView
 
 class OpeningHandSimulator(CardListPlugin):
-    """
-    Simulate opening hands
-    """
+    """Simulate opening hands."""
     dTableVersions = {PhysicalCardSet : [3, 4, 5]}
     aModelsSupported = [PhysicalCardSet]
     # responses for the hand dialog

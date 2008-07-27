@@ -74,20 +74,20 @@ class FilterBox(Filter, list):
     # pylint: disable-msg=W0212
     # we delibrately access protected members
     def _get_joins(self):
-        """
-        The joins required for the composite filter
-        This is the union of the joins of the subfilters
-        """
+        """The joins required for the composite filter
+
+           This is the union of the joins of the subfilters
+           """
         aJoins = []
         for oSubFilter in self:
             aJoins.extend(oSubFilter._get_joins())
         return aJoins
 
     def _get_types(self):
-        """
-        Get types for a composite filter.
-        This is the intersection of the types of the subfilters
-        """
+        """Get types for a composite filter.
+
+           This is the intersection of the types of the subfilters
+           """
         aTypes = []
         if len(self) > 0:
             for sType in self[0].types:
@@ -139,11 +139,11 @@ class FilterNot(Filter):
             doc="types supported by this filter")
 
     def _get_expression(self):
-        """
-        The expression for the NOT filter.
-        We generate a suitable subselect from self._oSubFilter, and
-        negate the results of that.
-        """
+        """The expression for the NOT filter.
+
+           We generate a suitable subselect from self._oSubFilter, and
+           negate the results of that.
+           """
         # pylint: disable-msg=E1101
         # E1101 - avoid SQLObject method not detected problems
         oExpression = self.__oSubFilter._get_expression()
@@ -178,12 +178,11 @@ class NullFilter(Filter):
 # Base Classes for Common Filter Idioms
 
 class SingleFilter(Filter):
-    """
-    Base class for filters on single items which connect to AbstractCard
-    via a mapping table.
+    """Base class for filters on single items which connect to AbstractCard
+       via a mapping table.
 
-    Sub-class should set self._oMapTable, self._oMapField and self._oId.
-    """
+       Sub-class should set self._oMapTable, self._oMapField and self._oId.
+       """
     # pylint: disable-msg=E1101, C0111
     # E1101 - We expect subclasses to provide _oMapTable and friends
     # C0111 - don't need docstrings for _get_expression & _get_joins
@@ -195,12 +194,11 @@ class SingleFilter(Filter):
         return self._oIdField == self._oId
 
 class MultiFilter(Filter):
-    """
-    Base class for filters on multiple items which connect to AbstractCard via
-    a mapping table.
+    """Base class for filters on multiple items which connect to AbstractCard
+       via a mapping table.
 
-    Sub-class should set self._oMapTable, self._oMapField and self._aIds.
-    """
+       Sub-class should set self._oMapTable, self._oMapField and self._aIds.
+       """
 
     # pylint: disable-msg=E1101, C0111
     # E1101 - We expect subclasses to provide _oMapTable and friends
@@ -233,17 +231,16 @@ def split_list(aList):
     return aResults
 
 def make_table_alias(sTable):
-    """
-    In order to allow multiple filters to be AND together, filters need
-    to create aliases of mapping tables so that, for example:
+    """In order to allow multiple filters to be AND together, filters need
+       to create aliases of mapping tables so that, for example:
 
-        FilterAndBox([DisciplineFilter('dom'), DisciplineFilter('obf')])
+           FilterAndBox([DisciplineFilter('dom'), DisciplineFilter('obf')])
 
-    produces a list of cards which have both dominate and obfuscate
-    rather than an empty list.  The two discipline filters above need to
-    join the abstract card table with two different copies of the
-    mapping table to discipline pairs.
-    """
+       produces a list of cards which have both dominate and obfuscate
+       rather than an empty list.  The two discipline filters above need to
+       join the abstract card table with two different copies of the
+       mapping table to discipline pairs.
+       """
     return Alias(sTable)
 
 # Individual Filters
@@ -841,9 +838,7 @@ class CardNameFilter(DirectFilter):
                 '%' + self.__sPattern.lower() + '%')
 
 class CardFunctionFilter(DirectFilter):
-    """
-    Filter for various interesting card properties - untap, intercept, etc.
-    """
+    """Filter for various interesting card properties - untap, stealth, etc."""
     keyword = "CardFunction"
     description = "Card Function"
     helptext = "the chosen function from the list of supported types"
@@ -924,10 +919,8 @@ class CardFunctionFilter(DirectFilter):
         return self._oFilter._get_expression()
 
 class PhysicalCardFilter(Filter):
-    """
-    Filter for converting a filter on abstract cards to a filter
-    on physical cards
-    """
+    """Filter for converting a filter on abstract cards to a filter on
+       physical cards."""
     def __init__(self):
         # Specifies Physical Cards, intended to be anded with other filters
         pass
@@ -948,10 +941,8 @@ class PhysicalCardFilter(Filter):
         return TRUE # SQLite doesn't like True. Postgres doesn't like 1.
 
 class AbstractCardFilter(Filter):
-    """
-    Filter for converting a filter on physical cards to a filter on
-    abstract cards.
-    """
+    """Filter for converting a filter on physical cards to a filter on
+       abstract cards."""
     # Not used in the gui, as it's quite fragile due to database differences.
     # Kept for documentation purposes and for use when directly using the
     # Filters.
@@ -1249,10 +1240,10 @@ class PhysicalCardSetInUseFilter(Filter):
         return IN(self.__oTable.q.physical_card_set_id, self.__aCardSetIds)
 
 class SpecificCardFilter(DirectFilter):
-    """
-    This filter matches a single card.
-    It is used in the GUI to test if a card is in the filter results set.
-    """
+    """This filter matches a single card.
+
+       It is used in the GUI to test if a card is in the filter results set.
+       """
     types = ['AbstractCard', 'PhysicalCard']
 
     def __init__(self, oCard):
@@ -1268,9 +1259,7 @@ class SpecificCardFilter(DirectFilter):
         return AbstractCard.q.id == self.__iCardId
 
 class SpecificCardIdFilter(DirectFilter):
-    """
-    This filter matches a single card by id.
-    """
+    """This filter matches a single card by id."""
     types = ['AbstractCard', 'PhysicalCard']
 
     def __init__(self, iCardId):
@@ -1286,10 +1275,10 @@ class SpecificCardIdFilter(DirectFilter):
         return AbstractCard.q.id == self.__iCardId
 
 class SpecificPhysCardIdFilter(DirectFilter):
-    """
-    This filter matches a single physical card.
-    It is used in the GUI to test if a card is in the filter results set.
-    """
+    """This filter matches a single physical card by id.
+
+       It is used in the GUI to test if a card is in the filter results set.
+       """
     types = ['PhysicalCard']
 
     def __init__(self, iCardId):

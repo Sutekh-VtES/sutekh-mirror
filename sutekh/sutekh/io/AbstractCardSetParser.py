@@ -5,19 +5,18 @@
 # Copyright 2006, 2008 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-"""
-Read cards from an XML file which
-looks like:
-<abstractcardset sutekh_xml_version='1.0' name='AbstractCardSetName'
-   author='Author' comment='Comment'>
-  <annotations>
-  Annotations
-  </annotations>
-  <card id='3' name='Some Card' count='5' />
-  <card id='5' name='Some Other Card' count='2' />
-</abstractcardset>
-into a AbstractCardSet
-"""
+"""Read cards from an XML file which looks like:
+
+   <abstractcardset sutekh_xml_version='1.0' name='AbstractCardSetName'
+      author='Author' comment='Comment'>
+     <annotations>
+     Annotations
+     </annotations>
+     <card id='3' name='Some Card' count='5' />
+     <card id='5' name='Some Other Card' count='2' />
+   </abstractcardset>
+   into a PhysicalCardSet.
+   """
 
 from sutekh.core.CardSetHolder import CardSetHolder
 from sutekh.core.CardLookup import DEFAULT_LOOKUP

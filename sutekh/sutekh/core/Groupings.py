@@ -11,11 +11,12 @@
 class IterGrouping(object):
     """Bass class for the groupings"""
     def __init__(self, oIter, fKeys):
-        """
-        oIter: Iterable to group.
-        fKeys: Function which maps an item from the iterable
-               to a list of keys. Keys must be hashable.
-        """
+        """Create the grouping
+
+           oIter: Iterable to group.
+           fKeys: Function which maps an item from the iterable
+                  to a list of keys. Keys must be hashable.
+           """
         self.__oIter = oIter
         self.__fKeys = fKeys
 

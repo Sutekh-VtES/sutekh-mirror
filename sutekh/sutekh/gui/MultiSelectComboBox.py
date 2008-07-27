@@ -19,9 +19,7 @@ def mouse_in_button(oButton):
 class MultiSelectComboBox(gtk.HBox):
     # pylint: disable-msg=R0904
     # gtk.Widget, so many public methods
-    """
-    Implementation of a multiselect combo box widget.
-    """
+    """Implementation of a multiselect combo box widget."""
 
     def __init__(self, oParentWin):
         super(MultiSelectComboBox, self).__init__()
@@ -59,10 +57,8 @@ class MultiSelectComboBox(gtk.HBox):
     # pylint: disable-msg=W0613
     # oWidget required by function signature
     def __grab_event(self, oWidget, oEvent):
-        """
-        Hook into the event-after chain, so we can check if any
-        uncaught events refer to the original button.
-        """
+        """Hook into the event-after chain, so we can check if any uncaught
+           events refer to the original button."""
         # This is a bit convuluted, but seems the best
         # we can do.
         # If the popup dialog isn't modal, it can't reliably receive focus, and

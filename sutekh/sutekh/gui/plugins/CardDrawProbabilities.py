@@ -4,9 +4,7 @@
 # Dialog to display deck analysis software
 # Copyright 2008 Neil Muller <drnlmuller+sutekh@gmail.com>,
 # GPL - see COPYING for details
-"""
-Calculate probailibities for drawing the current selection
-"""
+"""Calculate probailibities for drawing the current selection."""
 
 import gtk
 from copy import copy
@@ -18,10 +16,8 @@ from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 
 
 def _choose(iChoices, iTotal):
-    """
-    Returns number of unordered combinations of iChoices objects from iTotal
-      (iTotal)(iTotal-1)...(iTotal-iChoices+1)/iChoices!
-    """
+    """Returns number of unordered combinations of iChoices objects from
+       iTotal (iTotal)(iTotal-1)...(iTotal-iChoices+1)/iChoices!"""
     if iChoices > 0:
         iDenom = iChoices
     else:
@@ -53,12 +49,12 @@ def _gen_choice_list(dSelectedCounts):
     return aList
 
 def _multi_hyper_prob(aFound, iDraws, aObjects, iTotal):
-    """
-    Multivariate hypergeometric probability:
-    Given a list of draw numbers: aFound = [iFound1, iFound2 ... iFoundN]
-    form aObjects = [iObjects1, iObjects2 ... iObjectsN]
-    return the probably of seeing exactly aFound from iDraws
-    """
+    """Multivariate hypergeometric probability:
+
+       Given a list of draw numbers: aFound = [iFound1, iFound2 ... iFoundN]
+       form aObjects = [iObjects1, iObjects2 ... iObjectsN]
+       return the probably of seeing exactly aFound from iDraws
+       """
     # Complain about impossible cases
     if len(aFound) != len(aObjects):
         raise RuntimeError('Invalid input: aFound : %s, aObjects: %s' % (
@@ -95,10 +91,8 @@ def _multi_hyper_prob(aFound, iDraws, aObjects, iTotal):
     return fNumerator / fDemon
 
 def _hyper_prob_at_least(aFound, iDraws, aObjects, iTotal, iCurCol=0):
-    """
-    Returns the probablity of drawing at least aFound from aObjects objects
-    of interest from iTotal objects in iDraw draws
-    """
+    """Returns the probablity of drawing at least aFound from aObjects objects
+       of interest from iTotal objects in iDraw draws."""
     # This is the sum of hyper_prob(iCur, Draws, iObjects, iTotal) where
     # iCur in [iFound, min(iDraws, iObjects)]
     if len(aFound) != len(aObjects):
@@ -117,9 +111,8 @@ def _hyper_prob_at_least(aFound, iDraws, aObjects, iTotal, iCurCol=0):
     return fProb
 
 class CardDrawSimPlugin(CardListPlugin):
-    """
-    Displays the probabilities for drawing cards from the current selection
-    """
+    """Displays the probabilities for drawing cards from the current
+       selection."""
     # pylint: disable-msg=R0902
     # we use a lot of attributes to parse the data around
     dTableVersions = {PhysicalCardSet : [3, 4, 5]}
@@ -269,8 +262,8 @@ class CardDrawSimPlugin(CardListPlugin):
 
     def _setup_cardlists(self, aSelectedCards, bCrypt):
         """Extract the needed card info from the model"""
-        aAllCards = list(self.model.get_card_iterator(None))
-        aAllAbsCards = [IAbstractCard(oCard) for oCard in aAllCards]
+        aAllAbsCards = [IAbstractCard(oCard) for oCard in
+                self.get_all_cards()]
         iCryptSize = 0
         iLibrarySize = 0
         self.dSelectedCounts = {}

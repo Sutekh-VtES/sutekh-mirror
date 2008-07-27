@@ -23,11 +23,10 @@ def _id_card(oCard):
 
 
 class CountCardSetCards(CardListPlugin, CardListModelListener):
-    """
-    Listen to changes on the card list views, and display a
-    toolbar containing a label with a running count of the
-    cards in the card set, the library cards and the crypt cards
-    """
+    """Listen to changes on the card list views, and display a toolbar
+       containing a label with a running count of the cards in the card
+       set, the library cards and the crypt cards
+       """
     dTableVersions = {PhysicalCardSet : [5]}
     aModelsSupported = [PhysicalCardSet]
 
@@ -48,9 +47,7 @@ class CountCardSetCards(CardListPlugin, CardListModelListener):
     # pylint: enable-msg=W0142
 
     def get_toolbar_widget(self):
-        """
-        Overrides method from base class.
-        """
+        """Overrides method from base class."""
         if not self.check_versions() or not self.check_model_type():
             return None
 

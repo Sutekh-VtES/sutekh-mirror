@@ -3,11 +3,11 @@
 # vim:fileencoding=utf8 ai ts=4 sts=4 et sw=4
 # Copyright 2006, 2007, 2008 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
-"""
-Handles the heavy lifting of upgrading the database
-Holds methods to copy database contents around, utility classes
-to talk to old database versions, and so forth
-"""
+"""Handles the heavy lifting of upgrading the database.
+
+   Holds methods to copy database contents around, utility classes
+   to talk to old database versions, and so forth.
+   """
 
 # pylint: disable-msg=E0611
 # sqlobject confuses pylint here
@@ -298,9 +298,7 @@ def copy_rarity(oOrigConn, oTrans):
                 shortname=oObj.shortname, connection=oTrans)
 
 def copy_old_rarity(oOrigConn, oTrans, oVer):
-    """
-    Copy rarity table, upgrading versions as needed
-    """
+    """Copy rarity table, upgrading versions as needed"""
     if oVer.check_tables_and_versions([Rarity], [Rarity.tableversion],
             oOrigConn):
         copy_rarity(oOrigConn, oTrans)
@@ -314,17 +312,13 @@ def copy_old_rarity(oOrigConn, oTrans, oVer):
     return (True, [])
 
 def copy_expansion(oOrigConn, oTrans):
-    """
-    Copy expansion, assuming versions match
-    """
+    """Copy expansion, assuming versions match"""
     for oObj in Expansion.select(connection=oOrigConn):
         oCopy = Expansion(id=oObj.id, name=oObj.name,
                 shortname=oObj.shortname, connection=oTrans)
 
 def copy_old_expansion(oOrigConn, oTrans, oVer):
-    """
-    Copy Expansion, updating as needed
-    """
+    """Copy Expansion, updating as needed"""
     if oVer.check_tables_and_versions([Expansion], [Expansion.tableversion],
             oOrigConn):
         copy_expansion(oOrigConn, oTrans)
@@ -333,9 +327,7 @@ def copy_old_expansion(oOrigConn, oTrans, oVer):
     return (True, [])
 
 def copy_discipline(oOrigConn, oTrans):
-    """
-    Copy Discipline, assuming versions match
-    """
+    """Copy Discipline, assuming versions match"""
     for oObj in Discipline.select(connection=oOrigConn):
         oCopy = Discipline(id=oObj.id, name=oObj.name,
             fullname=oObj.fullname, connection=oTrans)

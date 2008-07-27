@@ -69,11 +69,11 @@ class SutekhHTMLLogHandler(SutekhLogHandler):
         self.oDialog.update_bar(fBarPos)
 
 class SutekhCountLogHandler(SutekhLogHandler):
-    """
-    LogHandler class for dealing with database upgrade messages
-    Each message (Card List, card set, etc). is taken as a step
-    in the process.
-    """
+    """LogHandler class for dealing with database upgrade messages.
+
+       Each message (Card List, card set, etc). is taken as a step in the
+       process.
+       """
     def __init__(self):
         super(SutekhCountLogHandler, self).__init__()
         self.iCount = None
@@ -97,9 +97,7 @@ class SutekhCountLogHandler(SutekhLogHandler):
 class ProgressDialog(gtk.Window):
     # pylint: disable-msg=R0904
     # gtk.Widget, so many public methods
-    """
-    Show a window with a single progress bar.
-    """
+    """Show a window with a single progress bar."""
     # This is not a proper dialog, since we don't want the blocking
     # behaviour of Dialog.run()
     def __init__(self):
@@ -131,21 +129,15 @@ class ProgressDialog(gtk.Window):
         self.show_all()
 
     def reset(self):
-        """
-        Reset the progress bar to zero
-        """
+        """Reset the progress bar to zero"""
         self.update_bar(0.0)
 
     def set_complete(self):
-        """
-        Set the progress bar as being complete
-        """
+        """Set the progress bar as being complete."""
         self.update_bar(1.0)
 
     def update_bar(self, fStep):
-        """
-        update the progress bar to the given fStep value
-        """
+        """Update the progress bar to the given fStep value."""
         # Progress bar doesn't like values < 0.0 or > 1.0
         if fStep > 1.0:
             self.oProgressBar.set_fraction(1.0)

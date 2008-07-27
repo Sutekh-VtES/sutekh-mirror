@@ -56,9 +56,7 @@ def _check_file(sFileName):
     return bRes
 
 def _unaccent(sCardName):
-    """
-    Remove unicode accents
-    """
+    """Remove unicode accents."""
     # Inspired by a post by renaud turned up by google
     # Unicode Normed decomposed form
     sNormed = unicodedata.normalize('NFD',
@@ -128,11 +126,11 @@ class CardImageFrame(BasicFrame, CardListViewListener):
     # pylint: disable-msg=R0904, R0902
     # R0904 - can't not trigger these warning with pygtk
     # R0902 - we need to keep quite a lot of internal state
-    """
-    Frame which displays the image.
-    We wrap a gtk.Image in an EventBox (for focus & DnD events)
-    and a Viewport (for scrolling)
-    """
+    """Frame which displays the image.
+
+       We wrap a gtk.Image in an EventBox (for focus & DnD events)
+       and a Viewport (for scrolling)
+       """
 
     def __init__(self, oMainWindow, oConfigFile):
         super(CardImageFrame, self).__init__(oMainWindow)
@@ -176,9 +174,7 @@ class CardImageFrame(BasicFrame, CardListViewListener):
     type = property(fget=lambda self: "Card Image Frame", doc="Frame Type")
 
     def __have_expansions(self, sTestPath=''):
-        """
-        Test if directory contains expansion/image structure used by ARDB
-        """
+        """Test if directory contains expansion/image structure used by ARDB"""
         if sTestPath == '':
             sTestFile = os.path.join(self.__sPrefsPath, 'bh', 'acrobatics.jpg')
         else:
@@ -222,9 +218,7 @@ class CardImageFrame(BasicFrame, CardListViewListener):
         self.__load_image(sFullFilename)
 
     def __convert_cardname(self):
-        """
-        Convert sCardName to the form used by the card image list
-        """
+        """Convert sCardName to the form used by the card image list"""
         sCurExpansionPath = self.__convert_expansion(self.__sCurExpansion)
         sFilename = _unaccent(self.__sCardName.lower())
         if sFilename.find('the ') == 0:
@@ -363,9 +357,7 @@ class CardImageFrame(BasicFrame, CardListViewListener):
 # pylint: disable-msg=R0904
 # R0904 - gtk Widget, so has many public methods
 class ImageConfigDialog(SutekhDialog):
-    """
-    Dialog for configuring the Image plugin
-    """
+    """Dialog for configuring the Image plugin."""
     def __init__(self, oParent):
         super(ImageConfigDialog, self).__init__('Configure Card Images Plugin',
                 oParent, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
@@ -442,9 +434,7 @@ class ImageConfigDialog(SutekhDialog):
             return 'New directory'
 
 class CardImagePlugin(CardListPlugin):
-    """
-    Plugin providing access to CardImageFrame
-    """
+    """Plugin providing access to CardImageFrame."""
     dTableVersions = {PhysicalCardSet : [5]}
     aModelsSupported = ["MainWindow"]
     aListenViews = [PhysicalCardSet,
@@ -510,9 +500,7 @@ class CardImagePlugin(CardListPlugin):
     # pylint: disable-msg=W0613
     # oMenuWidget needed by gtk function signature
     def config_activate(self, oMenuWidget):
-        """
-        Configure the plugin dialog
-        """
+        """Configure the plugin dialog."""
         oDialog = ImageConfigDialog(self.parent)
         iResponse = oDialog.run()
         bActivateMenu = False
@@ -638,9 +626,7 @@ class CardImagePlugin(CardListPlugin):
         return False # No path, can't be OK
 
     def add_image_frame_active(self, bValue):
-        """
-        Toggle the sensitivity of the menu item
-        """
+        """Toggle the sensitivity of the menu item."""
         if bValue and not self.image_frame.check_images():
             # Can only be set true if check_images returns true
             self._oReplaceItem.set_sensitive(False)
@@ -650,9 +636,7 @@ class CardImagePlugin(CardListPlugin):
             self._oAddItem.set_sensitive(bValue)
 
     def get_frame_from_config(self, sType):
-        """
-        Add the frame if it's been saved in the config file
-        """
+        """Add the frame if it's been saved in the config file."""
         if sType == self._sMenuFlag:
             return (self.image_frame, self._sMenuFlag)
         else:

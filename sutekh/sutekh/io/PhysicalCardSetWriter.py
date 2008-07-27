@@ -5,20 +5,21 @@
 # Copyright 2006, 2008 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-"""
-Write physical cards from a PhysicalCardSet out to an XML file which
-looks like:
-<physicalcardset sutekh_xml_version='1.1' name='SetName' author='Author'
-      comment='Comment'>
-  <annotations> Various annotations
-  More annotations
-  </annotations>
-  <card id='3' name='Some Card' count='5' expansion='Some Expansion' />
-  <card id='3' name='Some Card' count='2' expansion='Some Other Expansion' />
-  <card id='5' name='Some Other Card' count='2'
-     expansion='Some Other Expansion' />
-</physicalcardset>
-"""
+"""Write physical cards from a PhysicalCardSet
+
+   Save to an XML file which looks like:
+   <physicalcardset sutekh_xml_version='1.1' name='SetName' author='Author'
+         comment='Comment'>
+     <annotations> Various annotations
+     More annotations
+     </annotations>
+     <card id='3' name='Some Card' count='5' expansion='Some Expansion' />
+     <card id='3' name='Some Card' count='2'
+        expansion='Some Other Expansion' />
+     <card id='5' name='Some Other Card' count='2'
+        expansion='Some Other Expansion' />
+   </physicalcardset>
+   """
 
 from sutekh.core.SutekhObjects import PhysicalCardSet
 from sqlobject import SQLObjectNotFound

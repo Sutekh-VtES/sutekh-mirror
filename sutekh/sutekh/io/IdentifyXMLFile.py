@@ -5,10 +5,8 @@
 # Copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-"""
-Attempts to identify a XML file as either PhysicalCard, PhysicalCardSet or
-AbstractCardSet (the last is to support legacy backups).
-"""
+"""Attempts to identify a XML file as either PhysicalCardSet, PhysicalCard
+   or AbstractCardSet (the last two to support legacy backups)."""
 
 from sutekh.core.SutekhObjects import PhysicalCardSet
 from sqlobject import SQLObjectNotFound

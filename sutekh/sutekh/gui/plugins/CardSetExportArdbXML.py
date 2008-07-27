@@ -59,7 +59,7 @@ class CardSetExportArdbXML(CardListPlugin):
         # pylint: disable-msg=E1101
         # SQLObject methods confuse pylint
         dDict = {}
-        for oCard in self.model.get_card_iterator(None):
+        for oCard in self.model.get_all_cards():
             oACard = IAbstractCard(oCard)
             dDict.setdefault((oACard.id, oACard.name), 0)
             dDict[(oACard.id, oACard.name)] += 1

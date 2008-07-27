@@ -53,10 +53,7 @@ class CardSetFrame(CardListFrame, object):
     # pylint: enable-msg=W0212
 
     def cleanup(self):
-        """
-        Cleanup function called before pane is removed by the
-        Main Window
-        """
+        """Cleanup function called before pane is removed by the Main Window"""
         self._oMainWindow.reload_pcs_list()
 
     def update_name(self, sNewName):
