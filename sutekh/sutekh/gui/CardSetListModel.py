@@ -5,7 +5,7 @@
 # Copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-"""The gtk.TreeModel for the card lists."""
+"""The gtk.TreeModel for the card set lists."""
 
 from sutekh.core.Filters import FilterAndBox, NullFilter, SpecificCardFilter, \
         PhysicalCardSetFilter, SpecificCardIdFilter, \
@@ -29,8 +29,6 @@ IGNORE_PARENT, PARENT_COUNT, MINUS_THIS_SET, MINUS_SETS_IN_USE = range(4)
 
 class CardSetModelRow(object):
     """Object which holds the data needed for a card set row."""
-    # This is intended to replace the overly complicated dictionary,
-    # FIXME: Needs more work
 
     def __init__(self, bEditable, iExtraLevelsMode):
         self.dExpansions = {}
@@ -98,17 +96,14 @@ class CardSetModelRow(object):
                             bDecCard]
         return dChildren
 
-def get_card(oItem):
-    """Extract a absract card from the dictionary for groupby"""
-    return oItem[0]
-
 class CardSetCardListModel(CardListModel):
     # pylint: disable-msg=R0904, R0902
     # inherit a lot of public methods for gtk, need local attributes for state
     """CardList Model specific to lists of physical cards.
 
-       Handles the constraint that the available number of cards
-       is determined by the Physical Card Collection.
+       Handles the display of the cards, their expansions and child card set
+       entries. Updates the model to correspond to database changes in
+       response to calls from CardSetController.
        """
     def __init__(self, sSetName):
         super(CardSetCardListModel, self).__init__()
@@ -144,10 +139,10 @@ class CardSetCardListModel(CardListModel):
     def load(self):
         # pylint: disable-msg=R0914
         # we use many local variables for clarity
-        """
-        Clear and reload the underlying store. For use after initialisation or when
-        the filter or grouping changes.
-        """
+        """Clear and reload the underlying store. For use after initialisation,
+           when the filter or grouping changes or when card set relationships
+           change.
+           """
         self.clear()
         self._dName2Iter = {}
         self._dNameSecondLevel2Iter = {}
@@ -275,10 +270,9 @@ class CardSetCardListModel(CardListModel):
         return oIter
 
     def get_exp_name_from_path(self, oPath):
-        """
-        Get the expansion information from the model, returing None
-        if this is not at a level where the expansion is known.
-        """
+        """Get the expansion information from the model, returning None
+           if this is not at a level where the expansion is known.
+           """
         oIter = self.get_iter(oPath)
         if self.iter_depth(oIter) not in [2, 3]:
             return None
@@ -378,7 +372,8 @@ class CardSetCardListModel(CardListModel):
             for sName, oFilter in self._dCache['child filters'].iteritems():
                 oFullFilter = FilterAndBox([oFilter, oCurFilter])
                 dChildCardCache[sName] = {}
-                for oCard in [IPhysicalCard(x) for x in oFullFilter.select(self.cardclass).distinct()]:
+                for oCard in [IPhysicalCard(x) for x in
+                        oFullFilter.select(self.cardclass).distinct()]:
                     dChildCardCache[sName].setdefault(oCard.abstractCard,
                             []).append(oCard)
         return dChildCardCache
@@ -402,13 +397,12 @@ class CardSetCardListModel(CardListModel):
         return aParentCards
 
     def grouped_card_iter(self, oCardIter):
-        """
-        Handles the differences in the way AbstractCards and PhysicalCards
-        are grouped and returns a triple of get_card (the function used to
-        retrieve a card from an item), get_card_count (the function used to
-        retrieve a card count from an item) and oGroupedIter (an iterator
-        over the card groups)
-        """
+        """Get the data that needs to fill the model, handling the different
+           CardShow modes, the different counts, the filter, etc.
+
+           Returns a iterator over the groupings, and a list of all the
+           abstract cards in the card set considered.
+           """
         # pylint: disable-msg=E1101, R0914
         # E1101: SQLObject + PyProtocols confuse pylint
         # R0914: We use lots of local variables for clarity
@@ -485,7 +479,7 @@ class CardSetCardListModel(CardListModel):
         aCards.sort(lambda x, y: cmp(x[0].name, y[0].name))
 
         # Iterate over groups
-        return (self.groupby(aCards, get_card), aAbsCards)
+        return (self.groupby(aCards, lambda x: x[0]), aAbsCards)
 
     def get_child_set_info(self, oAbsCard, dChildInfo, dExpanInfo,
             dChildCardCache):
@@ -614,7 +608,7 @@ class CardSetCardListModel(CardListModel):
                     dParentExp[sExpansion] += 1
 
     def _remove_sub_iters(self, sCardName):
-        """Remove the expansion iters for sCardName"""
+        """Remove the children rows for the card entry sCardName"""
         if not self._dNameSecondLevel2Iter.has_key(sCardName):
             # Nothing to clean up (not showing second level, etc.)
             return
@@ -641,7 +635,7 @@ class CardSetCardListModel(CardListModel):
             del self._dNameSecondLevel2Iter[sCardName]
 
     def _get_parent_count(self, oPhysCard, iThisSetCnt=None):
-        """Get the correct parent count for the given count"""
+        """Get the correct parent count for the given card"""
         # pylint: disable-msg=E1101
         # PyProtocols confuses pylint
         iParCnt = 0
@@ -682,11 +676,8 @@ class CardSetCardListModel(CardListModel):
             self.alter_card_count(oPhysCard, -1)
 
     def alter_card_count(self, oPhysCard, iChg):
-        """
-        Alter the card count of a card which is in the
-        current list (i.e. in the card set and not filtered
-        out) by iChg.
-        """
+        """Alter the card count of a card which is in the current list
+           (i.e. in the card set and not filtered out) by iChg."""
         # pylint: disable-msg=E1101
         # PyProtocols confuses pylint here
         oCard = IAbstractCard(oPhysCard)
@@ -881,13 +872,10 @@ class CardSetCardListModel(CardListModel):
     def add_new_card(self, oPhysCard):
         # pylint: disable-msg=R0914
         # we use many local variables for clarity
-        """
-        If the card oPhysCard is not in the current list
-        (i.e. is not in the card set or is filtered out)
-        see if it should be filtered out or if it should be
-        visible. If it should be visible, add it to the appropriate
-        groups.
-        """
+        """If the card oPhysCard is not in the current list (i.e. is not in
+           the card set or is filtered out) see if it should be visible. If it
+           should be visible, add it to the appropriate groups.
+           """
         oFilter = self.combine_filter_with_base(self.get_current_filter())
         oAbsCard = IAbstractCard(oPhysCard)
         # pylint: disable-msg=E1101
