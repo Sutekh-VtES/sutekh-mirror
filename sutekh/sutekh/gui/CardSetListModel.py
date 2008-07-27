@@ -377,8 +377,10 @@ class CardSetCardListModel(CardListModel):
             # Cache card set lookups, to reduce database traffic
             for sName, oFilter in self._dCache['child filters'].iteritems():
                 oFullFilter = FilterAndBox([oFilter, oCurFilter])
-                dChildCardCache[sName] = [IPhysicalCard(x) for x in
-                        oFullFilter.select(self.cardclass).distinct()]
+                dChildCardCache[sName] = {}
+                for oCard in [IPhysicalCard(x) for x in oFullFilter.select(self.cardclass).distinct()]:
+                    dChildCardCache[sName].setdefault(oCard.abstractCard,
+                            []).append(oCard)
         return dChildCardCache
 
     def _get_parent_list(self, oCurFilter):
@@ -423,7 +425,6 @@ class CardSetCardListModel(CardListModel):
         aParentCards = self._get_parent_list(oCurFilter)
 
         # Other card show modes
-        # TODO: Revisit the logic once Card Count filters are fixed
         if self.iShowCardMode == ALL_CARDS:
             oFullFilter = FilterAndBox([PhysicalCardFilter(), oCurFilter])
             aExtraCards = [x for x in
@@ -477,6 +478,7 @@ class CardSetCardListModel(CardListModel):
             if self.iExtraLevelsMode == EXPANSIONS_AND_CARD_SETS:
                 dChildInfo.setdefault(sExpName, {})
 
+
         self._add_parent_info(dAbsCards, aParentCards)
 
         aCards = list(dAbsCards.iteritems())
@@ -491,8 +493,10 @@ class CardSetCardListModel(CardListModel):
         # pylint: disable-msg=E1101
         # Pyprotocols confuses pylint
         for sCardSetName in dChildCardCache:
-            aChildCards = [x for x in dChildCardCache[sCardSetName] if
-                    x.abstractCard.id == oAbsCard.id]
+            if oAbsCard in dChildCardCache[sCardSetName]:
+                aChildCards = dChildCardCache[sCardSetName][oAbsCard]
+            else:
+                aChildCards = []
             if self.iExtraLevelsMode == SHOW_CARD_SETS or \
                     self.iExtraLevelsMode == CARD_SETS_AND_EXPANSIONS:
                 iChildCnt = len(aChildCards)
