@@ -41,6 +41,10 @@ class CardSetListModelTests(SutekhTest):
     aCardCountToStr = ['THIS_SET_ONLY', 'ALL_CARDS', 'PARENT_CARDS',
             'CHILD_CARDS']
 
+    aNames = ['Test 1', 'Test Child 1', 'Test Grand Child', 'Test Sibling',
+            'Test Grand Child 2']
+
+
     # pylint: disable-msg=R0201
     # I prefer to have these as methods
     def _count_second_level(self, oModel):
@@ -254,10 +258,8 @@ class CardSetListModelTests(SutekhTest):
         # pylint: disable-msg=R0915, R0914
         # R0915, R0914: Want a long, sequential test case to minimise
         # repeated setups, so it has lots of lines + variables
-
-        sName = 'Test 1'
-        oPCS = PhysicalCardSet(name=sName)
-        oModel = CardSetCardListModel(sName)
+        oPCS = PhysicalCardSet(name=self.aNames[0])
+        oModel = CardSetCardListModel(self.aNames[0])
         oListener = CardSetListener()
         oModel.load()
         self.assertFalse(oListener.bLoadCalled)
@@ -321,12 +323,8 @@ class CardSetListModelTests(SutekhTest):
             # PyProtocols confuses pylint
             oPCS.addPhysicalCard(oCard.id)
         # Create a child card set with some entries and check everything works
-        sName2 = 'Test Child 1'
-        sName3 = 'Test Grand Child'
-        sName4 = 'Test Sibling'
-        sName5 = 'Test Grand Child 2'
-        oChildPCS = PhysicalCardSet(name=sName2, parent=oPCS)
-        oChildModel = CardSetCardListModel(sName2)
+        oChildPCS = PhysicalCardSet(name=self.aNames[1], parent=oPCS)
+        oChildModel = CardSetCardListModel(self.aNames[1])
         for sName, sExp in aCards[2:6]:
             oCard = self._gen_card(sName, sExp)
             # pylint: disable-msg=E1101
@@ -344,7 +342,7 @@ class CardSetListModelTests(SutekhTest):
         self._loop_modes(oChildPCS, oChildModel)
         self._loop_modes(oPCS, oModel)
         # Add a grand child
-        oGrandChildPCS = PhysicalCardSet(name=sName3, parent=oChildPCS)
+        oGrandChildPCS = PhysicalCardSet(name=self.aNames[2], parent=oChildPCS)
         for sName, sExp in aCards[3:7]:
             oCard = self._gen_card(sName, sExp)
             # pylint: disable-msg=E1101
@@ -357,14 +355,15 @@ class CardSetListModelTests(SutekhTest):
         self._loop_modes(oChildPCS, oChildModel)
         # Add some cards to oGrandChildPCS that aren't in parent and oChildPCS,
         # add a sibling card set to oChildPCS and add another child and retest
-        oSibPCS = PhysicalCardSet(name=sName4, parent=oPCS)
+        oSibPCS = PhysicalCardSet(name=self.aNames[3], parent=oPCS)
         for sName, sExp in aCards[1:6]:
             oCard = self._gen_card(sName, sExp)
             # pylint: disable-msg=E1101
             # PyProtocols confuses pylint
             oSibPCS.addPhysicalCard(oCard.id)
         oSibPCS.inus = True
-        oGrandChild2PCS = PhysicalCardSet(name=sName5, parent=oChildPCS)
+        oGrandChild2PCS = PhysicalCardSet(name=self.aNames[4],
+                parent=oChildPCS)
         oGrandChild2PCS.inuse = True
         aCards = [('AK-47', 'LotN'), ('Cesewayo', 'LoB'),
                 ('Aire of Elation', 'CE'), ('Yvette, The Hopeless', None),
@@ -394,7 +393,7 @@ class CardSetListModelTests(SutekhTest):
         oGrandChild2PCS.addPhysicalCard(self._gen_card(
             'Ablative Skin', None))
         self._loop_modes(oChildPCS, oChildModel)
-        oGCModel = CardSetCardListModel(sName3)
+        oGCModel = CardSetCardListModel(self.aNames[2])
         # Test adding cards to a sibling card set
         self._loop_modes(oGrandChild2PCS, oGCModel)
         self._loop_modes(oSibPCS, oChildModel)
@@ -414,19 +413,63 @@ class CardSetListModelTests(SutekhTest):
             self._loop_modes(oSibPCS, oChildModel)
             self._loop_modes(oPCS, oChildModel)
             self._loop_modes(oGrandChildPCS, oChildModel)
-        # Test filtering
+
+    def test_filters(self):
+        """Test filtering for the card set"""
         # Test filter which selects nothing works
-        self._loop_zero_filter_modes(oChildModel)
-        # Test card type
+        oPCS = PhysicalCardSet(name=self.aNames[0])
+        oModel = CardSetCardListModel(self.aNames[0])
+        aCards = [('Alexandra', 'CE'), ('Sha-Ennu', 'Third Edition'),
+                ('Alexandra', None), ('Bronwen', 'Sabbat'),
+                ('.44 Magnum', 'Jyhad'), ('.44 Magnum', 'Jyhad'),
+                ('Yvette, The Hopeless', 'CE'),
+                ('Yvette, The Hopeless', 'BSC')]
+        for sName, sExp in aCards:
+            oCard = self._gen_card(sName, sExp)
+            # pylint: disable-msg=E1101
+            # PyProtocols confuses pylint
+            oPCS.addPhysicalCard(oCard.id)
+        self._loop_zero_filter_modes(oModel)
         # Check basic filtering
-        oChildModel.iShowCardMode = THIS_SET_ONLY
-        oChildModel.iParentCountMode = IGNORE_PARENT
-        oChildModel.iExtraLevelsMode = NO_SECOND_LEVEL
-        oChildModel.bEditable = False
+        oModel.iShowCardMode = THIS_SET_ONLY
+        oModel.iParentCountMode = IGNORE_PARENT
+        oModel.iExtraLevelsMode = NO_SECOND_LEVEL
+        oModel.bEditable = False
+        # Test card type
         # FIXME: test more filtering results
-        oChildModel.selectfilter = Filters.CardTypeFilter('Vampire')
-        oChildModel.applyfilter = True
-        oChildModel.load()
+        oModel.selectfilter = Filters.CardTypeFilter('Vampire')
+        oModel.applyfilter = True
+        oModel.load()
+
+    def test_empty(self):
+        """Test corner cases around empty card sets"""
+        oPCS = PhysicalCardSet(name=self.aNames[0])
+        oChildPCS = PhysicalCardSet(name=self.aNames[1], parent=oPCS)
+        oGrandChildPCS = PhysicalCardSet(name=self.aNames[2], parent=oChildPCS)
+        oChildModel = CardSetCardListModel(self.aNames[1])
+        for cGrouping in [Groupings.DisciplineGrouping,
+                Groupings.CardTypeGrouping, Groupings.NullGrouping]:
+            oChildModel.groupby = cGrouping
+            self._loop_modes(oChildPCS, oChildModel)
+            self._loop_modes(oPCS, oChildModel)
+            self._loop_modes(oGrandChildPCS, oChildModel)
+        # Add some cards to parent + child card sets
+        aCards = [('Alexandra', 'CE'), ('Sha-Ennu', 'Third Edition'),
+                ('Alexandra', None), ('Bronwen', 'Sabbat'),
+                ('.44 Magnum', 'Jyhad'), ('.44 Magnum', 'Jyhad'),
+                ('Yvette, The Hopeless', 'CE'),
+                ('Yvette, The Hopeless', 'BSC')]
+        for sName, sExp in aCards:
+            oCard = self._gen_card(sName, sExp)
+            # pylint: disable-msg=E1101
+            # PyProtocols confuses pylint
+            oPCS.addPhysicalCard(oCard.id)
+            if sName != 'Yvette, The Hopeless':
+                oGrandChildPCS.addPhysicalCard(oCard.id)
+        for cGrouping in [Groupings.DisciplineGrouping,
+                Groupings.CardTypeGrouping, Groupings.NullGrouping]:
+            oChildModel.groupby = cGrouping
+            self._loop_modes(oChildPCS, oChildModel)
 
 if __name__ == "__main__":
     unittest.main()
