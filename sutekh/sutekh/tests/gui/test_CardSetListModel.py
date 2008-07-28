@@ -447,12 +447,10 @@ class CardSetListModelTests(SutekhTest):
         oChildPCS = PhysicalCardSet(name=self.aNames[1], parent=oPCS)
         oGrandChildPCS = PhysicalCardSet(name=self.aNames[2], parent=oChildPCS)
         oChildModel = CardSetCardListModel(self.aNames[1])
-        for cGrouping in [Groupings.DisciplineGrouping,
-                Groupings.CardTypeGrouping, Groupings.NullGrouping]:
-            oChildModel.groupby = cGrouping
-            self._loop_modes(oChildPCS, oChildModel)
-            self._loop_modes(oPCS, oChildModel)
-            self._loop_modes(oGrandChildPCS, oChildModel)
+        oChildModel.groupby = Groupings.NullGrouping
+        self._loop_modes(oChildPCS, oChildModel)
+        self._loop_modes(oPCS, oChildModel)
+        self._loop_modes(oGrandChildPCS, oChildModel)
         # Add some cards to parent + child card sets
         aCards = [('Alexandra', 'CE'), ('Sha-Ennu', 'Third Edition'),
                 ('Alexandra', None), ('Bronwen', 'Sabbat'),
@@ -466,10 +464,7 @@ class CardSetListModelTests(SutekhTest):
             oPCS.addPhysicalCard(oCard.id)
             if sName != 'Yvette, The Hopeless':
                 oGrandChildPCS.addPhysicalCard(oCard.id)
-        for cGrouping in [Groupings.DisciplineGrouping,
-                Groupings.CardTypeGrouping, Groupings.NullGrouping]:
-            oChildModel.groupby = cGrouping
-            self._loop_modes(oChildPCS, oChildModel)
+        self._loop_modes(oChildPCS, oChildModel)
 
 if __name__ == "__main__":
     unittest.main()
