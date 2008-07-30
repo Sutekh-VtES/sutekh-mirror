@@ -907,7 +907,6 @@ class CardSetCardListModel(CardListModel):
             return
         self.alter_child_count(oPhysCard, sCardSetName, -1)
 
-    # FIXME: There be dragons in this here code
 
     def _card_count_changes_parent(self):
         """Check if a change in the card count changes the parent"""
@@ -917,40 +916,220 @@ class CardSetCardListModel(CardListModel):
                 (self.iParentCountMode == MINUS_SETS_IN_USE and
                     self._oCardSet.inuse)) and self._oCardSet.parent
 
-    def _update_expansions_children(self, sCardName, oPhysCard, iChg, iParChg):
-        """Update the expansion entries and the children for a changed entry"""
+    def _update_parent_count(self, oIter, iChg, iParChg):
+        """Update the card and parent counts"""
+        iParCnt = self.get_int_value(oIter, 2)
+        if self.iParentCountMode != IGNORE_PARENT:
+            iParCnt += iParChg
+        if self._card_count_changes_parent():
+            iParCnt -= iChg
+        return iParCnt
+
+    def _check_child_counts(self, oIter):
+        """Loop over a level of the model, checking for non-zero counts"""
+        while oIter:
+            if self.get_int_value(oIter, 1) > 0:
+                # Short circuit the loop
+                return True
+            oIter = self.iter_next(oIter)
+        return False
+
+    def check_child_iter_stays(self, oIter, oPhysCard):
+        """Check if an expansion or child card set iter stays"""
+        # Conditions vary with cards shown and the editable flag.
+        # This routine works on the assumption that we only need to
+        # get the result right when the parent row isn't being removed.
+        # If the parent row is to be removed, reutrning the wrong result
+        # here doesn't matter - this simplifies the logic a bit
+        # pylint: disable-msg=E1101
+        # E1101: PyProtocols confuses pylint
+        iCnt = self.get_int_value(oIter, 1)
+        iParCnt = self.get_int_value(oIter, 2)
+        if iCnt > 0 or self.bEditable:
+            # When editing, we don't delete 0 entries unless the card vanishes
+            return True
+        iDepth = self.iter_depth(oIter)
+        if iDepth == 3 and self.iExtraLevelsMode in [EXPANSIONS_AND_CARD_SETS,
+                CARD_SETS_AND_EXPANSIONS]:
+            # Since we're not editable here, we always remove these
+            return False
+        bResult = False
+        if self.iShowCardMode == ALL_CARDS:
+            # Other than the above, we never remove entries for ALL_CARDS
+            bResult = True
+        elif self.iExtraLevelsMode == EXPANSIONS_AND_CARD_SETS and \
+                self.iShowCardMode == CHILD_CARDS and \
+                self.iter_n_children(oIter) > 0:
+            # iCnt is 0, and we're not editable, so we only show this
+            # row if there are non-zero entries below us
+            oChildIter = self.iter_children(oIter)
+            if self._check_child_counts(oChildIter):
+                bResult = True
+        elif self.iShowCardMode == PARENT_CARDS and \
+                self.iParentCountMode in [PARENT_COUNT, MINUS_THIS_SET] and \
+                self.iExtraLevelsMode in [SHOW_EXPANSIONS,
+                        EXPANSIONS_AND_CARD_SETS] and iDepth == 2 and \
+                iParCnt > 0:
+            # cards in the parent set, obviously
+            bResult = True
+        elif self.iShowCardMode == PARENT_CARDS and self._oCardSet.parent \
+                and self.iExtraLevelsMode in [SHOW_EXPANSIONS,
+                        EXPANSIONS_AND_CARD_SETS] and iDepth == 2:
+            # Check if the card actually is in the parent card set
+            oFullFilter = FilterAndBox([SpecificPhysCardIdFilter(oPhysCard.id),
+                PhysicalCardSetFilter(self._oCardSet.parent.name)])
+            bResult = oFullFilter.select(self.cardclass).distinct().count() > 0
+        elif self.iShowCardMode == CHILD_CARDS and \
+                self.iExtraLevelsMode == SHOW_EXPANSIONS:
+            # Need to check the database, since we can't query the model
+            if self._dCache['child filters']:
+                oChildFilter = FilterAndBox([
+                    SpecificPhysCardIdFilter(oPhysCard.id),
+                    self._dCache['all children filter']])
+                if oChildFilter.select(self.cardclass).distinct().count() > 0:
+                    bResult = True
+        # No reason to return True
+        return bResult
+
+    def check_card_iter_stays(self, oIter):
+        """Check if we need to remove a given card or not"""
+        # Conditions for removal vary with the cards shown
+        # pylint: disable-msg=E1101
+        # Pyprotocols confuses pylint
+        iCnt = self.get_int_value(oIter, 1)
+        if self.iShowCardMode == ALL_CARDS or iCnt > 0:
+            # We clearly don't remove entries here
+            return True
+        iParCnt = self.get_int_value(oIter, 2)
+        bResult = False
+        if self.iShowCardMode == PARENT_CARDS and iParCnt > 0 and \
+                self.iParentCountMode in [PARENT_COUNT, MINUS_THIS_SET]:
+            bResult = True
+        elif self.iShowCardMode == PARENT_CARDS and self._oCardSet.parent:
+            # Check database
+            oAbsCard = IAbstractCard(self.get_name_from_iter(oIter))
+            oFilter = FilterAndBox([SpecificCardIdFilter(oAbsCard.id),
+                        PhysicalCardSetFilter(self._oCardSet.parent.name)])
+            bResult = oFilter.select(self.cardclass).distinct().count() > 0
+        elif self.iShowCardMode == CHILD_CARDS:
+            if self.iExtraLevelsMode in [SHOW_CARD_SETS,
+                    CARD_SETS_AND_EXPANSIONS]:
+                # Check if any top level child iters have non-zero counts
+                oChildIter = self.iter_children(oIter)
+                bResult = self._check_child_counts(oChildIter)
+            elif self.iExtraLevelsMode == EXPANSIONS_AND_CARD_SETS:
+                # Check third level children
+                oChildIter = self.iter_children(oIter)
+                while oChildIter:
+                    oGrandChild = self.iter_children(oChildIter)
+                    if self._check_child_counts(oGrandChild):
+                        return True
+                    oChildIter = self.iter_next(oChildIter)
+            elif self._dCache['child filters']:
+                # Actually check the database
+                oAbsCard = IAbstractCard(self.get_name_from_iter(oIter))
+                oChildFilter = FilterAndBox([SpecificCardIdFilter(oAbsCard.id),
+                    self._dCache['all children filter']])
+                bResult = oChildFilter.select(
+                            self.cardclass).distinct().count() > 0
+        return bResult
+
+    def check_group_iter_stays(self, oIter):
+        """Check if we need to remove the top-level item"""
+        # Conditions for removal vary with the cards shown
+        if self.iShowCardMode == ALL_CARDS:
+            return True # We don't remove group entries
+        iCnt = self.get_int_value(oIter, 1)
+        iParCnt = self.get_int_value(oIter, 2)
+        if iCnt > 0:
+            # Count is non-zero, so we stay
+            return True
+        if self.iShowCardMode == PARENT_CARDS and iParCnt > 0:
+            # Obviously parent cards present
+            return True
+        elif self.iShowCardMode == PARENT_CARDS and \
+                self.iParentCountMode not in [PARENT_COUNT, MINUS_THIS_SET]:
+            # Pass this check to the children
+            oChildIter = self.iter_children(oIter)
+            while oChildIter:
+                if self.check_card_iter_stays(oChildIter):
+                    return True
+                oChildIter = self.iter_next(oChildIter)
+        elif self.iShowCardMode == CHILD_CARDS:
+            # Pass the check to the children - we stay if at least one child
+            # stays
+            oChildIter = self.iter_children(oIter)
+            while oChildIter:
+                if self.check_card_iter_stays(oChildIter):
+                    return True
+                oChildIter = self.iter_next(oChildIter)
+        return False
+
+    # FIXME: There be dragons in this here code
+
+    def _update_3rd_level_card_sets(self, oPhysCard, iChg, iParChg,
+            bCheckAddRemove):
+        """Update the third level for EXPANSIONS_AND_CARD_SETS"""
+        sCardName = oPhysCard.abstractCard.name
+        sExpName = self.get_expansion_name(oPhysCard.expansion)
+        bRemoveChild = False
+        if self._dName2nd3rdLevel2Iter.has_key((sCardName, sExpName)):
+            # Update the 3rd level
+            for aIterList in self._dName2nd3rdLevel2Iter[
+                    (sCardName, sExpName)].itervalues():
+                for oSubIter in aIterList:
+                    iCnt = self.get_int_value(oSubIter, 1)
+                    iParCnt = self._update_parent_count(oSubIter, iChg,
+                            iParChg)
+                    self._update_entry(oSubIter, iCnt, iParCnt)
+                    if bRemoveChild or (bCheckAddRemove and not
+                            self.check_child_iter_stays(oSubIter, oPhysCard)):
+                        bRemoveChild = True
+                        self.remove(oSubIter)
+            if bRemoveChild:
+                del self._dName2nd3rdLevel2Iter[(sCardName, sExpName)]
+
+    def _add_3rd_level_card_sets(self, oPhysCard, iParCnt):
+        """Add 3rd level entries for the EXPANSIONS_AND_CARD_SETS mode"""
+        sCardName = oPhysCard.abstractCard.name
+        sExpName = self.get_expansion_name(oPhysCard.expansion)
+        for sCardSet, oSetFilter in self._dCache['child filters'].iteritems():
+            oFilter = FilterAndBox([SpecificPhysCardIdFilter(oPhysCard.id),
+                                oSetFilter])
+            iCnt = oFilter.select(self.cardclass).distinct().count()
+            if iCnt > 0:
+                # We can ignore the iCnt == 0 cases (bEditable
+                # True, etc.), since we know those entries
+                # would already be showing if required.
+                for oIter in self._dNameSecondLevel2Iter[sCardName][sExpName]:
+                    bIncCard, bDecCard = self.check_inc_dec(iCnt)
+                    self._add_extra_level(oIter, sCardSet, (iCnt, iParCnt,
+                        bIncCard, bDecCard))
+
+    def _update_2nd_level_expansions(self, oPhysCard, iChg, iParChg,
+            bCheckAddRemove=True):
+        """Update the expansion entries and the children for a changed entry
+           for the SHOW_EXPANSIONS and EXPANSIONS_AND_CARD_SETS modes"""
         # We need to update the expansion count for this card
         # pylint: disable-msg=E1101
         # pyprotocols confuses pylint
-        def _update_parent_count(oIter, iChg, iParChg):
-            """Update the card and parent counts"""
-            iParCnt = self.get_int_value(oIter, 2)
-            if self.iParentCountMode != IGNORE_PARENT:
-                iParCnt += iParChg
-            if self._card_count_changes_parent():
-                iParCnt -= iChg
-            return iParCnt
-
+        sCardName = oPhysCard.abstractCard.name
         sExpName = self.get_expansion_name(oPhysCard.expansion)
         bRemove = False
         if self._dNameSecondLevel2Iter.has_key(sCardName) and \
                 self._dNameSecondLevel2Iter[sCardName].has_key(sExpName):
             for oChildIter in self._dNameSecondLevel2Iter[sCardName][sExpName]:
                 iCnt = self.get_int_value(oChildIter, 1) + iChg
-                iParCnt = _update_parent_count(oChildIter, iChg, iParChg)
+                iParCnt = self._update_parent_count(oChildIter, iChg, iParChg)
                 self._update_entry(oChildIter, iCnt, iParCnt)
-                if not self.check_child_iter_stays(oChildIter, oPhysCard):
+                if not self.check_child_iter_stays(oChildIter, oPhysCard) and \
+                        bCheckAddRemove:
                     bRemove = True
-                elif self._dName2nd3rdLevel2Iter.has_key((sCardName,
-                    sExpName)):
-                    for aIterList in self._dName2nd3rdLevel2Iter[
-                            (sCardName, sExpName)].itervalues():
-                        for oSubIter in aIterList:
-                            iCnt = self.get_int_value(oSubIter, 1)
-                            iParCnt = _update_parent_count(oSubIter, iChg,
-                                    iParChg)
-                            self._update_entry(oSubIter, iCnt, iParCnt)
-        elif iChg > 0 or iParChg > 0:
+            if not bRemove:
+                self._update_3rd_level_card_sets(oPhysCard, iChg, iParChg,
+                        bCheckAddRemove)
+        elif iChg > 0 or (iParChg > 0 and self.iShowCardMode == PARENT_CARDS
+                and bCheckAddRemove):
             for oIter in self._dName2Iter[sCardName]:
                 iParCnt = self._get_parent_count(oPhysCard, iChg)
                 bIncCard, bDecCard = self.check_inc_dec(iChg)
@@ -959,24 +1138,7 @@ class CardSetCardListModel(CardListModel):
                 if self.iExtraLevelsMode == EXPANSIONS_AND_CARD_SETS \
                         and self.iShowCardMode not in [ALL_CARDS,
                                 CHILD_CARDS]:
-                    # We need to fill in the info about the child CS's
-                    for sCardSet, oChildFilter in \
-                            self._dCache['child filters'].iteritems():
-                        oFilter = FilterAndBox([
-                                SpecificPhysCardIdFilter(oPhysCard.id),
-                                oChildFilter])
-                        iCnt = oFilter.select(
-                                self.cardclass).distinct().count()
-                        if iCnt > 0:
-                            # We can ignore the iCnt == 0 cases (bEditable
-                            # True, etc.), since we know those entries
-                            # would already be showing if required.
-                            for oSubIter in self._dNameSecondLevel2Iter[
-                                    sCardName][sExpName]:
-                                bIncCard, bDecCard = self.check_inc_dec(iCnt)
-                                self._add_extra_level(oSubIter,
-                                        sCardSet, (iCnt, iParCnt, bIncCard,
-                                            bDecCard))
+                    self._add_3rd_level_card_sets(oPhysCard, iParCnt)
         if bRemove:
             self._remove_second_level(sCardName, sExpName)
 
@@ -1023,7 +1185,7 @@ class CardSetCardListModel(CardListModel):
             del self._dName2Iter[sCardName]
         elif self.iExtraLevelsMode in [SHOW_EXPANSIONS,
                 EXPANSIONS_AND_CARD_SETS]:
-            self._update_expansions_children(sCardName, oPhysCard, iChg, 0)
+            self._update_2nd_level_expansions(oPhysCard, iChg, 0)
         elif self.iExtraLevelsMode in [SHOW_CARD_SETS,
                 CARD_SETS_AND_EXPANSIONS] and \
                         self._dNameSecondLevel2Iter.has_key(sCardName):
@@ -1083,16 +1245,15 @@ class CardSetCardListModel(CardListModel):
         for oListener in self.dListeners:
             oListener.alter_card_count(oCard, iChg)
 
-    def alter_parent_count(self, oPhysCard, iChg, bCheckIter=True):
+    def alter_parent_count(self, oPhysCard, iChg, bCheckAddRemove=True):
         """Alter the parent count by iChg
 
-           if bCheckIter is False, we don't check whether anything should
+           if bCheckAddRemove is False, we don't check whether anything should
            be removed from the model. This is used for sibling card set
            changes.
            """
         bRemove = False
         sCardName = oPhysCard.abstractCard.name
-        bUpdateChildren = True
         for oIter in self._dName2Iter[sCardName]:
             oGrpIter = self.iter_parent(oIter)
             iParGrpCnt = self.get_int_value(oGrpIter, 2) + iChg
@@ -1106,7 +1267,7 @@ class CardSetCardListModel(CardListModel):
             self._update_entry(oIter, iCnt, iParCnt)
             self.set(oGrpIter, 2, self.format_parent_count(iParGrpCnt,
                 iGrpCnt))
-            if not self.check_card_iter_stays(oIter) and bCheckIter:
+            if not self.check_card_iter_stays(oIter) and bCheckAddRemove:
                 bRemove = True
                 self._remove_sub_iters(sCardName)
                 iParCnt = self.get_int_value(oIter, 2)
@@ -1124,121 +1285,16 @@ class CardSetCardListModel(CardListModel):
         if bRemove:
             del self._dName2Iter[sCardName]
         elif self.iExtraLevelsMode != NO_SECOND_LEVEL:
-            sExpName = self.get_expansion_name(oPhysCard.expansion)
             if self.iExtraLevelsMode in [SHOW_EXPANSIONS,
-                    EXPANSIONS_AND_CARD_SETS] and \
-                            self.iShowCardMode == PARENT_CARDS \
-                            and bCheckIter and bUpdateChildren:
-                # We need to check if we add or remove a 2nd level entry
-                if iChg > 0:
-                    # Check if the expansion is in the list
-                    if not self._dNameSecondLevel2Iter.has_key(sCardName) \
-                            or not self._dNameSecondLevel2Iter[
-                                    sCardName].has_key(sExpName):
-                        # Need to add expansion entries
-                        # Skip the update loop below, since we handle
-                        # everything here
-                        bUpdateChildren = False
-                        # We know that the parent count is iChg,
-                        # The true card count is 0, so the tricky issue
-                        # is siblings - we query the database about them
-                        iCnt = 0
-                        # pylint: disable-msg=E1101
-                        # pyprotocols confues pylint
-                        if self.iParentCountMode == MINUS_SETS_IN_USE and \
-                                self._oCardSet.parent:
-                            # Need to get counts from the database
-                            iParCnt = iChg
-                            if self._dCache['sibling filter']:
-                                oInUseFilter = FilterAndBox([
-                                    SpecificPhysCardIdFilter(
-                                        oPhysCard.id),
-                                    self._dCache['sibling filter']])
-                                iParCnt -= oInUseFilter.select(
-                                        self.cardclass).distinct().count()
-                        elif self.iParentCountMode == IGNORE_PARENT:
-                            iParCnt = 0
-                        else:
-                            iParCnt = iChg
-
-                        bIncCard, bDecCard = self.check_inc_dec(iCnt)
-                        # we only do this once (because of check above),
-                        # so need to add for all entries
-                        for oMainIter in self._dName2Iter[sCardName]:
-                            self._add_extra_level(oMainIter, sExpName,
-                                    (iCnt, iParCnt, bIncCard, bDecCard))
-                        if self.iExtraLevelsMode == \
-                                EXPANSIONS_AND_CARD_SETS:
-                            # We need to fill in info about the child CS's
-                            # pylint: disable-msg=E1101
-                            # pyprotocols confues pylint
-                            for sCardSet, oChildFilter in \
-                                    self._dCache[
-                                            'child filters'].iteritems():
-                                oFilter = FilterAndBox([
-                                    SpecificPhysCardIdFilter(oPhysCard.id),
-                                    oChildFilter])
-                                iCnt = oFilter.select(
-                                        self.cardclass).distinct().count()
-                                if iCnt > 0:
-                                    # See argument in alter_card_count
-                                    for oSubIter in \
-                                            self._dNameSecondLevel2Iter[
-                                                    sCardName][sExpName]:
-                                        bIncCard, bDecCard = \
-                                                self.check_inc_dec(iCnt)
-                                        self._add_extra_level(oSubIter,
-                                                sCardSet, (iCnt, iParCnt,
-                                                    bIncCard, bDecCard))
-                else:
-                    # Check if we remove any entries
-                    bRemoveChild = False
-                    if self._dNameSecondLevel2Iter.has_key(sCardName) and \
-                            self._dNameSecondLevel2Iter[
-                                    sCardName].has_key(sExpName) and \
-                                            bUpdateChildren:
-                        for oChildIter in self._dNameSecondLevel2Iter[
-                                sCardName][sExpName]:
-                            # We handle everything here
-                            bUpdateChildren = False
-                            iParCnt = self.get_int_value(oChildIter, 2)
-                            if self.iParentCountMode != IGNORE_PARENT:
-                                iParCnt += iChg
-                            iCnt = self.get_int_value(oChildIter, 1)
-                            self._update_entry(oChildIter, iCnt, iParCnt)
-                            if not self.check_child_iter_stays(oChildIter,
-                                    oPhysCard):
-                                bRemoveChild = True
-                        if self._dName2nd3rdLevel2Iter.has_key(
-                                    (sCardName, sExpName)) and \
-                                            not bRemoveChild:
-                            # Update grandchildren
-                            for sName in self._dName2nd3rdLevel2Iter[
-                                    (sCardName, sExpName)]:
-                                for oSubIter in \
-                                        self._dName2nd3rdLevel2Iter[
-                                                (sCardName, sExpName)][
-                                                        sName]:
-                                    iParCnt = self.get_int_value(
-                                            oSubIter, 2)
-                                    if self.iParentCountMode != \
-                                            IGNORE_PARENT:
-                                        iParCnt += iChg
-                                    iCnt = self.get_int_value(oSubIter, 1)
-                                    self._update_entry(oSubIter, iCnt,
-                                            iParCnt)
-                    if bRemoveChild:
-                        self._remove_second_level(sCardName, sExpName)
-            if bUpdateChildren and self.iParentCountMode != IGNORE_PARENT:
+                    EXPANSIONS_AND_CARD_SETS]:
+                self._update_2nd_level_expansions(oPhysCard, 0, iChg,
+                        bCheckAddRemove)
+            elif self.iParentCountMode != IGNORE_PARENT:
+                sExpName = self.get_expansion_name(oPhysCard.expansion)
                 # Loop over all the children, and modify the count
                 # if needed
-                bUpdateChildren = False
                 if self._dNameSecondLevel2Iter.has_key(sCardName):
                     for sValue in self._dNameSecondLevel2Iter[sCardName]:
-                        if self.iExtraLevelsMode in [SHOW_EXPANSIONS,
-                                EXPANSIONS_AND_CARD_SETS] and \
-                                        sValue != sExpName:
-                            continue
                         for oChildIter in self._dNameSecondLevel2Iter[
                                 sCardName][sValue]:
                             iParCnt = self.get_int_value(oChildIter, 2) \
@@ -1476,143 +1532,3 @@ class CardSetCardListModel(CardListModel):
             del self._dName2Iter[sCardName]
 
         self._check_if_empty()
-
-    def check_child_iter_stays(self, oIter, oPhysCard):
-        """Check if an expansion or child card set iter stays"""
-        # Conditions vary with cards shown AND the editable flag
-        # This routine works on the assumption that we only need to
-        # get the result right when the parent row isn't being removed.
-        # If the parent row is to be removed, reutrning the wrong result
-        # here doesn't matter - this simplifies the logic
-        # pylint: disable-msg=E1101, R0911
-        # E1101: PyProtocols confuses pylint
-        # R0911: We use return to short circuit the loops
-        iCnt = self.get_int_value(oIter, 1)
-        iParCnt = self.get_int_value(oIter, 2)
-        if iCnt > 0 or self.bEditable:
-            # When editing, we don't delete 0 entries unless the card vanishes
-            return True
-        iDepth = self.iter_depth(oIter)
-        if iDepth == 3 and self.iExtraLevelsMode in [EXPANSIONS_AND_CARD_SETS,
-                CARD_SETS_AND_EXPANSIONS]:
-            # Since we're not editable here, we always remove these
-            return False
-        if self.iShowCardMode == ALL_CARDS:
-            # Other than the above, we never remove entries for ALL_CARDS
-            return True
-        if self.iExtraLevelsMode == EXPANSIONS_AND_CARD_SETS and \
-                self.iShowCardMode == CHILD_CARDS and \
-                self.iter_n_children(oIter) > 0:
-            # iCnt is 0, and we're not editable, so we only show this
-            # row if there are non-zero entries below us
-            oChildIter = self.iter_children(oIter)
-            while oChildIter:
-                if self.get_int_value(oChildIter, 1) > 0:
-                    return True
-                oChildIter = self.iter_next(oChildIter)
-        elif self.iShowCardMode == PARENT_CARDS and \
-                self.iParentCountMode in [PARENT_COUNT, MINUS_THIS_SET] and \
-                self.iExtraLevelsMode in [SHOW_EXPANSIONS,
-                        EXPANSIONS_AND_CARD_SETS] and iDepth == 2 and \
-                iParCnt > 0:
-            # cards in the parent set, obviously
-            return True
-        elif self.iShowCardMode == PARENT_CARDS and self._oCardSet.parent \
-                and self.iExtraLevelsMode in [SHOW_EXPANSIONS,
-                        EXPANSIONS_AND_CARD_SETS] and iDepth == 2:
-            # Check if the card actually is in the parent card set
-            oFullFilter = FilterAndBox([SpecificPhysCardIdFilter(oPhysCard.id),
-                PhysicalCardSetFilter(self._oCardSet.parent.name)])
-            return oFullFilter.select(self.cardclass).distinct().count() > 0
-        elif self.iShowCardMode == CHILD_CARDS and \
-                self.iExtraLevelsMode == SHOW_EXPANSIONS:
-            # Need to check the database, since we can't query the model
-            if self._dCache['child filters']:
-                oChildFilter = FilterAndBox([
-                    SpecificPhysCardIdFilter(oPhysCard.id),
-                    self._dCache['all children filter']])
-                if oChildFilter.select(self.cardclass).distinct().count() > 0:
-                    return True
-        # No reason to return True
-        return False
-
-    def check_card_iter_stays(self, oIter):
-        """Check if we need to remove a given card or not"""
-        # Conditions for removal vary with the cards shown
-        # pylint: disable-msg=E1101
-        # Pyprotocols confuses pylint
-        def check_children(oIter):
-            """Loop over a level of the model, checking for non-zero counts"""
-            while oIter:
-                if self.get_int_value(oIter, 1) > 0:
-                    return True
-                oIter = self.iter_next(oIter)
-            return False
-
-        iCnt = self.get_int_value(oIter, 1)
-        if self.iShowCardMode == ALL_CARDS or iCnt > 0:
-            # We clearly don't remove entries here
-            return True
-        iParCnt = self.get_int_value(oIter, 2)
-        bResult = False
-        if self.iShowCardMode == PARENT_CARDS and iParCnt > 0 and \
-                self.iParentCountMode in [PARENT_COUNT, MINUS_THIS_SET]:
-            bResult = True
-        elif self.iShowCardMode == PARENT_CARDS and self._oCardSet.parent:
-            # Check database
-            oAbsCard = IAbstractCard(self.get_name_from_iter(oIter))
-            oFilter = FilterAndBox([SpecificCardIdFilter(oAbsCard.id),
-                        PhysicalCardSetFilter(self._oCardSet.parent.name)])
-            bResult = oFilter.select(self.cardclass).distinct().count() > 0
-        elif self.iShowCardMode == CHILD_CARDS:
-            if self.iExtraLevelsMode in [SHOW_CARD_SETS,
-                    CARD_SETS_AND_EXPANSIONS]:
-                # Check if any top level child iters have non-zero counts
-                oChildIter = self.iter_children(oIter)
-                bResult = check_children(oChildIter)
-            elif self.iExtraLevelsMode == EXPANSIONS_AND_CARD_SETS:
-                # Check third level children
-                oChildIter = self.iter_children(oIter)
-                while oChildIter:
-                    oGrandChild = self.iter_children(oChildIter)
-                    if check_children(oGrandChild):
-                        return True
-                    oChildIter = self.iter_next(oChildIter)
-            elif self._dCache['child filters']:
-                # Actually check the database
-                oAbsCard = IAbstractCard(self.get_name_from_iter(oIter))
-                oChildFilter = FilterAndBox([SpecificCardIdFilter(oAbsCard.id),
-                    self._dCache['all children filter']])
-                bResult = oChildFilter.select(
-                            self.cardclass).distinct().count() > 0
-        return bResult
-
-    def check_group_iter_stays(self, oIter):
-        """Check if we need to remove the top-level item"""
-        # Conditions for removal vary with the cards shown
-        if self.iShowCardMode == ALL_CARDS:
-            return True # We don't remove group entries
-        iCnt = self.get_int_value(oIter, 1)
-        iParCnt = self.get_int_value(oIter, 2)
-        if iCnt > 0:
-            # Count is non-zero, so we stay
-            return True
-        if self.iShowCardMode == PARENT_CARDS and iParCnt > 0:
-            return True
-        elif self.iShowCardMode == PARENT_CARDS and \
-                self.iParentCountMode not in [PARENT_COUNT, MINUS_THIS_SET]:
-            # Pass this check to the children
-            oChildIter = self.iter_children(oIter)
-            while oChildIter:
-                if self.check_card_iter_stays(oChildIter):
-                    return True
-                oChildIter = self.iter_next(oChildIter)
-        elif self.iShowCardMode == CHILD_CARDS:
-            # Pass the check to the children - we stay if at least one child
-            # stays
-            oChildIter = self.iter_children(oIter)
-            while oChildIter:
-                if self.check_card_iter_stays(oChildIter):
-                    return True
-                oChildIter = self.iter_next(oChildIter)
-        return False
