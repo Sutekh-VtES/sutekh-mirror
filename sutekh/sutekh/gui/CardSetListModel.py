@@ -907,7 +907,6 @@ class CardSetCardListModel(CardListModel):
             return
         self.alter_child_count(oPhysCard, sCardSetName, -1)
 
-
     def _card_count_changes_parent(self):
         """Check if a change in the card count changes the parent"""
         # pylint: disable-msg=E1101
@@ -1082,8 +1081,10 @@ class CardSetCardListModel(CardListModel):
                     iParCnt = self._update_parent_count(oSubIter, iChg,
                             iParChg)
                     self._update_entry(oSubIter, iCnt, iParCnt)
-                    if bRemoveChild or (bCheckAddRemove and not
-                            self.check_child_iter_stays(oSubIter, oPhysCard)):
+                    if bRemoveChild or (bCheckAddRemove and
+                            (iChg < 0 or iParChg < 0) and
+                            not self.check_child_iter_stays(oSubIter,
+                                oPhysCard)):
                         bRemoveChild = True
                         self.remove(oSubIter)
             if bRemoveChild:
@@ -1122,8 +1123,10 @@ class CardSetCardListModel(CardListModel):
                 iCnt = self.get_int_value(oChildIter, 1) + iChg
                 iParCnt = self._update_parent_count(oChildIter, iChg, iParChg)
                 self._update_entry(oChildIter, iCnt, iParCnt)
-                if not self.check_child_iter_stays(oChildIter, oPhysCard) and \
-                        bCheckAddRemove:
+                if bRemove or (bCheckAddRemove and
+                        (iChg < 0 or iParChg < 0) and
+                        not self.check_child_iter_stays(oChildIter,
+                            oPhysCard)):
                     bRemove = True
             if not bRemove:
                 self._update_3rd_level_card_sets(oPhysCard, iChg, iParChg,
@@ -1329,12 +1332,15 @@ class CardSetCardListModel(CardListModel):
         if not oChildPCS.inuse:
             # Shouldn't happen
             return
-        bRemove = False
+        # Child card set number changes can't change the values displayed
+        # for card level items, but they can cause card level items to vanish
+        # So we don't need to loop over the card level, merely the sub-levels,
+        # but we do need to check if the card is removed at the end
         sCardName = oPhysCard.abstractCard.name
         sExpName = self.get_expansion_name(oPhysCard.expansion)
-        if (self.iExtraLevelsMode == SHOW_EXPANSIONS and \
-                self.iShowCardMode == CHILD_CARDS) or \
-                self.iExtraLevelsMode == EXPANSIONS_AND_CARD_SETS:
+        if (self.iExtraLevelsMode == SHOW_EXPANSIONS and
+                self.iShowCardMode == CHILD_CARDS) \
+                        or self.iExtraLevelsMode == EXPANSIONS_AND_CARD_SETS:
             # Check if we need to add or remove an expansion entry
             if iChg > 0:
                 if (not self._dNameSecondLevel2Iter.has_key(sCardName) or not
@@ -1489,11 +1495,14 @@ class CardSetCardListModel(CardListModel):
                         iParCnt, bIncCard, bDecCard))
 
         # Check if we need to cleanup any card entries
-        if len(self._dName2Iter[sCardName]) > 0:
+        bRemove = False
+        if len(self._dName2Iter[sCardName]) > 0 and iChg < 0:
+            # Test if we need to remove entries
             oIter = self._dName2Iter[sCardName][0]
             bRemove = not self.check_card_iter_stays(oIter)
 
         if bRemove:
+            # Remove the card entry
             for oIter in self._dName2Iter[sCardName]:
                 oGrpIter = self.iter_parent(oIter)
                 self._remove_sub_iters(sCardName)
