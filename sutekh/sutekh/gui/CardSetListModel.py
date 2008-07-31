@@ -1160,12 +1160,7 @@ class CardSetCardListModel(CardListModel):
             iParGrpCnt = self.get_int_value(oGrpIter, 2)
             self.set(oIter, 1, self.format_count(iCnt))
             iParCnt = self.get_int_value(oIter, 2)
-            if self.iParentCountMode == MINUS_THIS_SET \
-                    and self._oCardSet.parent:
-                iParCnt -= iChg
-                iParGrpCnt -= iChg
-            elif self.iParentCountMode == MINUS_SETS_IN_USE \
-                    and self._oCardSet.parent and self._oCardSet.inuse:
+            if self._card_count_changes_parent():
                 iParCnt -= iChg
                 iParGrpCnt -= iChg
 
@@ -1193,10 +1188,7 @@ class CardSetCardListModel(CardListModel):
                 CARD_SETS_AND_EXPANSIONS] and \
                         self._dNameSecondLevel2Iter.has_key(sCardName):
             # FIXME: This badly needs refactoring as well
-            if self._oCardSet.parent and (
-                    self.iParentCountMode == MINUS_THIS_SET or (
-                    self.iParentCountMode ==
-                        MINUS_SETS_IN_USE and self._oCardSet.inuse)):
+            if self._card_count_changes_parent():
                 # Need to update the parent counts for the child entry
                 for sValue in self._dNameSecondLevel2Iter[sCardName]:
                     for oChildIter in \
@@ -1300,8 +1292,7 @@ class CardSetCardListModel(CardListModel):
                     for sValue in self._dNameSecondLevel2Iter[sCardName]:
                         for oChildIter in self._dNameSecondLevel2Iter[
                                 sCardName][sValue]:
-                            iParCnt = self.get_int_value(oChildIter, 2) \
-                                    + iChg
+                            iParCnt = self.get_int_value(oChildIter, 2) + iChg
                             iCnt = self.get_int_value(oChildIter, 1)
                             self._update_entry(oChildIter, iCnt, iParCnt)
                         if self._dName2nd3rdLevel2Iter.has_key((sCardName,
@@ -1312,15 +1303,12 @@ class CardSetCardListModel(CardListModel):
                                         == CARD_SETS_AND_EXPANSIONS \
                                         and sName != sExpName:
                                     continue
-                                for oSubIter in \
-                                        self._dName2nd3rdLevel2Iter[
-                                                (sCardName, sValue)][
-                                                        sName]:
-                                    iParCnt = self.get_int_value(oSubIter,
-                                            2) + iChg
+                                for oSubIter in self._dName2nd3rdLevel2Iter[
+                                                (sCardName, sValue)][sName]:
+                                    iParCnt = self.get_int_value(oSubIter, 2) \
+                                            + iChg
                                     iCnt = self.get_int_value(oSubIter, 1)
-                                    self._update_entry(oSubIter, iCnt,
-                                            iParCnt)
+                                    self._update_entry(oSubIter, iCnt, iParCnt)
 
         self._check_if_empty()
 
