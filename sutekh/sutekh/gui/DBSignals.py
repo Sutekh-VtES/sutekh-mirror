@@ -12,7 +12,15 @@ collection in sync."""
 from sqlobject.events import Signal, listen, RowUpdateSignal, RowDestroySignal
 from sutekh.core.SutekhObjects import PhysicalCardSet
 
-class ReloadSignal(Signal):
+class AddedSignal(Signal):
+    """Syncronisation signal for card sets.
+
+       Needs to be sent after changes are commited to the database, so card
+       sets can reload properly.
+       Used so card sets always reflect correct available counts.
+       """
+
+class RemovedSignal(Signal):
     """Syncronisation signal for card sets.
 
        Needs to be sent after changes are commited to the database, so card
@@ -22,16 +30,25 @@ class ReloadSignal(Signal):
 
 # Senders
 
-def send_reload_signal(oCardSet, oPhysCard=None,
+def send_added_signal(oCardSet, oPhysCard=None,
         cClass=PhysicalCardSet):
     """Sent when card counts change, so card sets may need to reload."""
-    cClass.sqlmeta.send(ReloadSignal, oCardSet, oPhysCard)
+    cClass.sqlmeta.send(AddedSignal, oCardSet, oPhysCard)
+
+def send_removed_signal(oCardSet, oPhysCard=None,
+        cClass=PhysicalCardSet):
+    """Sent when card counts change, so card sets may need to reload."""
+    cClass.sqlmeta.send(RemovedSignal, oCardSet, oPhysCard)
 
 # Listeners
 
-def listen_reload(fListener, cClass):
+def listen_added(fListener, cClass):
     """Listens for the reload_signal."""
-    listen(fListener, cClass, ReloadSignal)
+    listen(fListener, cClass, AddedSignal)
+
+def listen_removed(fListener, cClass):
+    """listen for the row destoryed signal sent when a card is deleted."""
+    listen(fListener, cClass, RemovedSignal)
 
 def listen_row_destroy(fListener, cClass):
     """listen for the row destoryed signal sent when a card is deleted."""
