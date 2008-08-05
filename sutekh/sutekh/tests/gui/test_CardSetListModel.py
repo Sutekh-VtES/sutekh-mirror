@@ -16,6 +16,8 @@ from sutekh.gui.CardSetListModel import CardSetCardListModel, \
 from sutekh.core import Filters, Groupings
 from sutekh.core.SutekhObjects import PhysicalCardSet, IPhysicalCard, \
         IExpansion, IAbstractCard, MapPhysicalCardToPhysicalCardSet
+# Needed to reduce speed impact of Grouping tests
+from sutekh.core.SutekhObjectCache import SutekhObjectCache
 import unittest
 
 class CardSetListener(CardListModelListener):
@@ -258,6 +260,7 @@ class CardSetListModelTests(SutekhTest):
         # pylint: disable-msg=R0915, R0914
         # R0915, R0914: Want a long, sequential test case to minimise
         # repeated setups, so it has lots of lines + variables
+        oCache = SutekhObjectCache()
         oPCS = PhysicalCardSet(name=self.aNames[0])
         oModel = CardSetCardListModel(self.aNames[0])
         oListener = CardSetListener()
@@ -417,6 +420,7 @@ class CardSetListModelTests(SutekhTest):
     def test_filters(self):
         """Test filtering for the card set"""
         # Test filter which selects nothing works
+        oCache = SutekhObjectCache()
         oPCS = PhysicalCardSet(name=self.aNames[0])
         oModel = CardSetCardListModel(self.aNames[0])
         aCards = [('Alexandra', 'CE'), ('Sha-Ennu', 'Third Edition'),
@@ -443,6 +447,7 @@ class CardSetListModelTests(SutekhTest):
 
     def test_empty(self):
         """Test corner cases around empty card sets"""
+        oCache = SutekhObjectCache()
         oPCS = PhysicalCardSet(name=self.aNames[0])
         oChildPCS = PhysicalCardSet(name=self.aNames[1], parent=oPCS)
         oGrandChildPCS = PhysicalCardSet(name=self.aNames[2], parent=oChildPCS)
