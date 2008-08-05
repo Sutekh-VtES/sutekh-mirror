@@ -740,7 +740,7 @@ class CardSetCardListModel(CardListModel):
                 oFilter])
         oCardIter = oFullFilter.select(self.cardclass).distinct()
 
-        bVisible = oCardIter.count() > 0
+        bNonZero = False
 
         # pylint: disable-msg=W0612
         # Not interested in aAbsCards here, but we need the GroupedIter
@@ -775,6 +775,8 @@ class CardSetCardListModel(CardListModel):
                 if oAbsCard.id != oCard.id:
                     continue
                 iCnt = oRow.get_card_count()
+                if iCnt > 0:
+                    bNonZero = True
                 iParCnt = oRow.get_parent_count()
                 iGrpCnt += iCnt
                 iParGrpCnt += iParCnt
@@ -803,8 +805,9 @@ class CardSetCardListModel(CardListModel):
             self.oEmptyIter = None
 
         # Notify Listeners
-        for oListener in self.dListeners:
-            oListener.add_new_card(oAbsCard, bVisible)
+        if bNonZero:
+            for oListener in self.dListeners:
+                oListener.add_new_card(oAbsCard)
 
     def update_to_new_db(self, sSetName):
         """Update internal card set to the new DB."""

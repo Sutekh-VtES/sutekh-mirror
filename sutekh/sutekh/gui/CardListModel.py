@@ -46,8 +46,8 @@ class CardListModelListener(object):
            """
         pass
 
-    def add_new_card(self, oCard, bVisible):
-        """A single copy of the given card has been added.
+    def add_new_card(self, oCard):
+        """A single copy of the given card has been added to this set.
 
            oCard: AbstractCard for the card altered (the actual card may be
            a Physical Card).
