@@ -8,6 +8,7 @@
 
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.gui.CardListModel import CardListModelListener
+from sutekh.gui.DBSignals import send_changed_signal
 from sutekh.gui.CardSetListModel import CardSetCardListModel, \
         NO_SECOND_LEVEL, SHOW_EXPANSIONS, SHOW_CARD_SETS, \
         EXPANSIONS_AND_CARD_SETS, CARD_SETS_AND_EXPANSIONS, \
@@ -113,41 +114,6 @@ class CardSetListModelTests(SutekhTest):
                         oModel.bEditable)
         return "%s : %s vs %s\n%s" % (sErrType, oTest1, oTest2, sModel)
 
-    def _gen_card_signal(self, oPCS, oModel, oPhysCard, iDir):
-        """Generate the approriate message to the Model.
-
-           Very similiar to the logic in CardSetController."""
-        # pylint: disable-msg=W0212
-        # Need info from _oCardSet here
-        oModelPCS = oModel._oCardSet
-        if oPCS.id == oModelPCS.id:
-            if iDir > 0:
-                oModel.inc_card(oPhysCard)
-            else:
-                oModel.dec_card(oPhysCard)
-        elif oPCS.parent and oPCS.parent.id == oModelPCS.id and \
-                oModel.changes_with_children() and oPCS.inuse:
-            # Child card set changing
-            if iDir > 0:
-                oModel.inc_child_count(oPhysCard, oPCS.name)
-            else:
-                oModel.dec_child_count(oPhysCard, oPCS.name)
-        elif oModelPCS.parent and oModelPCS.parent.id == oPCS.id and \
-                oModel.changes_with_parent():
-            # Parent card set changing
-            if iDir > 0:
-                oModel.inc_parent_count(oPhysCard)
-            else:
-                oModel.dec_parent_count(oPhysCard)
-        elif oModelPCS.parent and oPCS.parent and oPCS.inuse and \
-                oPCS.parent.id == oModelPCS.parent.id and \
-                oModel.changes_with_siblings():
-            # Sibling card set to the model
-            if iDir > 0:
-                oModel.inc_sibling_count(oPhysCard)
-            else:
-                oModel.dec_sibling_count(oPhysCard)
-
     # pylint: enable-msg=R0201
 
     def _add_remove_cards(self, oPCS, oModel, aPhysCards):
@@ -164,7 +130,7 @@ class CardSetListModelTests(SutekhTest):
         for oCard in aPhysCards:
             oPCS.addPhysicalCard(oCard.id)
             oPCS.syncUpdate()
-            self._gen_card_signal(oPCS, oModel, oCard, 1)
+            send_changed_signal(oPCS, oCard, 1)
         tAddTotals = (
                 oModel.iter_n_children(None),
                 self._count_all_cards(oModel),
@@ -189,7 +155,7 @@ class CardSetListModelTests(SutekhTest):
                     physicalCardID=oCard.id, physicalCardSetID=oPCS.id))[-1]
             MapPhysicalCardToPhysicalCardSet.delete(oMapEntry.id)
             oPCS.syncUpdate()
-            self._gen_card_signal(oPCS, oModel, oCard, -1)
+            send_changed_signal(oPCS, oCard, -1)
         tDecTotals = (
                 oModel.iter_n_children(None),
                 self._count_all_cards(oModel),
@@ -260,7 +226,10 @@ class CardSetListModelTests(SutekhTest):
         # pylint: disable-msg=R0915, R0914
         # R0915, R0914: Want a long, sequential test case to minimise
         # repeated setups, so it has lots of lines + variables
+        # pylint: disable-msg=W0612
+        # oCache exists only for the internal cache, so it's unused
         oCache = SutekhObjectCache()
+        # pylint: enable-msg=W0612
         oPCS = PhysicalCardSet(name=self.aNames[0])
         oModel = CardSetCardListModel(self.aNames[0])
         oListener = CardSetListener()
@@ -420,7 +389,10 @@ class CardSetListModelTests(SutekhTest):
     def test_filters(self):
         """Test filtering for the card set"""
         # Test filter which selects nothing works
+        # pylint: disable-msg=W0612
+        # oCache exists only for the internal cache, so it's unused
         oCache = SutekhObjectCache()
+        # pylint: enable-msg=W0612
         oPCS = PhysicalCardSet(name=self.aNames[0])
         oModel = CardSetCardListModel(self.aNames[0])
         aCards = [('Alexandra', 'CE'), ('Sha-Ennu', 'Third Edition'),
@@ -447,7 +419,10 @@ class CardSetListModelTests(SutekhTest):
 
     def test_empty(self):
         """Test corner cases around empty card sets"""
+        # pylint: disable-msg=W0612
+        # oCache exists only for the internal cache, so it's unused
         oCache = SutekhObjectCache()
+        # pylint: enable-msg=W0612
         oPCS = PhysicalCardSet(name=self.aNames[0])
         oChildPCS = PhysicalCardSet(name=self.aNames[1], parent=oPCS)
         oGrandChildPCS = PhysicalCardSet(name=self.aNames[2], parent=oChildPCS)

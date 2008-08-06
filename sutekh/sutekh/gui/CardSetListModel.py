@@ -15,6 +15,7 @@ from sutekh.core.SutekhObjects import PhysicalCard, IExpansion, \
         MapPhysicalCardToPhysicalCardSet, IAbstractCard, IPhysicalCard, \
         IPhysicalCardSet, PhysicalCardSet
 from sutekh.gui.CardListModel import CardListModel, norm_path
+from sutekh.gui.DBSignals import listen_changed
 
 # pylint: disable-msg=C0103
 # We break our usual convention here
@@ -119,6 +120,7 @@ class CardSetCardListModel(CardListModel):
         self._dName2nd3rdLevel2Iter = {}
         self.iParentCountMode = PARENT_COUNT
         self.sEditColour = None
+        listen_changed(self.card_changed, PhysicalCardSet)
 
     def format_count(self, iCnt):
         """Format the card count accorindly"""
@@ -836,72 +838,51 @@ class CardSetCardListModel(CardListModel):
         return self.iParentCountMode == MINUS_SETS_IN_USE and \
                 self._oCardSet.parent is not None
 
-    def inc_card(self, oPhysCard):
-        """Increase the count for the card oPhysCard, adding a new
-           card entry if nessecary."""
-        sCardName = oPhysCard.abstractCard.name
-        if sCardName in self._dName2Iter:
-            self.alter_card_count(oPhysCard, +1)
-        else:
-            self.add_new_card(oPhysCard) # new card
+    def card_changed(self, oCardSet, oPhysCard, iChg):
+        """Listen on card changes.
 
-    def dec_card(self, oPhysCard):
-        """Decrease the count for the card oPhysCard, removing it from the
-           view if needed."""
+           We listen to the special signal, so we can hook in after the
+           database has been updated. This simplifies the update logic
+           as we can query the database and obtain accurate results.
+           Does rely on everyone calling send_changed_signal.
+           """
+        # pylint: disable-msg=E1101
+        # Pyprotocols confuses pylint
         sCardName = oPhysCard.abstractCard.name
-        if sCardName in self._dName2Iter:
-            self.alter_card_count(oPhysCard, -1)
-
-    def inc_sibling_count(self, oPhysCard):
-        """Update to an increase in the number of sibling cards."""
-        sCardName = oPhysCard.abstractCard.name
-        if sCardName in self._dName2Iter:
-            self.alter_parent_count(oPhysCard, -1, False)
-            # This is only called when iParentCountMode == MINUS_SETS_IN_USE,
-            # So this decreases the available pool of parent cards
-            # There's no possiblity of this deleting a card from the model
-
-    def dec_sibling_count(self, oPhysCard):
-        """Update to an increase in the number of sibling cards."""
-        sCardName = oPhysCard.abstractCard.name
-        if sCardName in self._dName2Iter:
-            self.alter_parent_count(oPhysCard, +1, False)
-            # This is only called when iParentCountMode == MINUS_SETS_IN_USE,
-            # So this increase the available pool of parent cards
-            # There's no possiblity of this adding a card to the model
-
-    def inc_parent_count(self, oPhysCard):
-        """Decrease the parent count for the given physical card"""
-        sCardName = oPhysCard.abstractCard.name
-        if sCardName in self._dName2Iter:
-            self.alter_parent_count(oPhysCard, +1)
-        else:
-            # Card isn't shown, so need to add it
-            self.add_new_card(oPhysCard)
-
-    def dec_parent_count(self, oPhysCard):
-        """Decrease the parent count for the given physical card"""
-        sCardName = oPhysCard.abstractCard.name
-        if sCardName in self._dName2Iter:
-            # if card is shown update it, else do nothing
-            self.alter_parent_count(oPhysCard, -1)
-
-    def inc_child_count(self, oPhysCard, sCardSetName):
-        """Add the card oPhysCard in the card set sCardSetName to the model."""
-        sCardName = oPhysCard.abstractCard.name
-        if sCardName in self._dName2Iter:
-            self.alter_child_count(oPhysCard, sCardSetName, +1)
-        else:
-            # Card isn't shown, so need to add it
-            self.add_new_card(oPhysCard)
-
-    def dec_child_count(self, oPhysCard, sCardSetName):
-        """Remove the card oPhysCard in the card set sCardSetName
-           from the model."""
-        sCardName = oPhysCard.abstractCard.name
-        if sCardName in self._dName2Iter:
-            self.alter_child_count(oPhysCard, sCardSetName, -1)
-            # card shown, so update it
+        if oCardSet.id == self._oCardSet.id:
+            # Changing a card from this card set
+            if sCardName in self._dName2Iter:
+                self.alter_card_count(oPhysCard, iChg)
+            elif iChg > 0:
+                self.add_new_card(oPhysCard) # new card
+        elif oCardSet.parent and oCardSet.parent.id == self._oCardSet.id and \
+                oCardSet.inuse and self.changes_with_children():
+            # Changing a child card set
+            sCardSetName = oCardSet.name
+            if sCardName in self._dName2Iter:
+                self.alter_child_count(oPhysCard, sCardSetName, iChg)
+            else:
+                # Card isn't shown, so need to add it
+                self.add_new_card(oPhysCard)
+        elif self._oCardSet.parent and oCardSet.id == \
+                self._oCardSet.parent.id and self.changes_with_parent():
+            # Changing parent card set
+            if sCardName in self._dName2Iter:
+                self.alter_parent_count(oPhysCard, iChg)
+            elif iChg > 0:
+                # Card isn't shown, so need to add it
+                self.add_new_card(oPhysCard)
+        elif oCardSet.parent and self._oCardSet.parent and \
+                self.changes_with_siblings() and oCardSet.inuse and \
+                oCardSet.parent.id == self._oCardSet.parent.id:
+            # Changing sibling card set
+            if sCardName in self._dName2Iter:
+                # This is only called when using MINUS_SETS_IN_USE,
+                # So this changes the available pool of parent cards (by -iChg)
+                # There's no possiblity of this adding or deleting a card from
+                # the model
+                self.alter_parent_count(oPhysCard, -iChg, False)
+        # Doesn't affect us, so ignore
 
     def _card_count_changes_parent(self):
         """Check if a change in the card count changes the parent"""

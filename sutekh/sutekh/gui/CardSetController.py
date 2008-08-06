@@ -12,9 +12,8 @@ from sutekh.gui.CardSetManagementController import reparent_card_set, \
         check_ok_to_delete
 from sutekh.gui.CardSetView import CardSetView
 from sutekh.gui.CreateCardSetDialog import CreateCardSetDialog
-from sutekh.gui.DBSignals import listen_added, listen_row_destroy, \
-        listen_row_update, listen_removed, send_added_signal, \
-        send_removed_signal
+from sutekh.gui.DBSignals import listen_row_destroy, listen_row_update, \
+        send_changed_signal
 from sutekh.core.SutekhObjects import IPhysicalCardSet, PhysicalCardSet, \
         AbstractCard, PhysicalCard, MapPhysicalCardToPhysicalCardSet, \
         IExpansion, IPhysicalCard
@@ -33,11 +32,9 @@ class CardSetController(object):
         self._oFrame = oFrame
         self._oView = CardSetView(oMainWindow, self, sName)
         self.__oPhysCardSet = IPhysicalCardSet(sName)
-        # We need to cache this for physical_card_deleted checks
-        # Listen on card signals
-        listen_removed(self.card_deleted, PhysicalCardSet)
-        listen_added(self.cards_changed, PhysicalCardSet)
         # listen on card set signals
+        # We listen here, rather than in the model (as for card set changes),
+        # to use queue_reload to dealy processing until after the database
         listen_row_update(self.card_set_changed, PhysicalCardSet)
         listen_row_destroy(self.card_set_deleted, PhysicalCardSet)
         # We don't listen for card set creation, since newly created card
@@ -130,62 +127,6 @@ class CardSetController(object):
         # Other card set deletions don't need to be watched here, since the
         # fiddling on parents should generate changed signals for us.
 
-    def card_deleted(self, oCardSet, oPhysCard):
-        """Listen on card removals.
-
-
-           We listen to special signal, so we can hook in after the
-           database has been updated. This simplifies the update logic
-           as we can query the database and obtain accurate results.
-           Does rely on all creators calling send_removed_signal.
-           """
-        # pylint: disable-msg=E1101
-        # Pyprotocols confuses pylint
-        if oCardSet.id == self.__oPhysCardSet.id:
-            # Removing a card from this card set
-            self.model.dec_card(oPhysCard)
-        else:
-            if oCardSet.parent and oCardSet.parent.id == \
-                    self.__oPhysCardSet.id and oCardSet.inuse and \
-                    self.model.changes_with_children():
-                self.model.dec_child_count(oPhysCard, oCardSet.name)
-            elif self.__oPhysCardSet.parent and oCardSet.id == \
-                    self.__oPhysCardSet.parent.id and \
-                    self.model.changes_with_parent():
-                self.model.dec_parent_count(oPhysCard)
-            elif oCardSet.parent and self.__oPhysCardSet.parent and \
-                    self.model.changes_with_siblings() and oCardSet.inuse and \
-                    oCardSet.parent.id == self.__oPhysCardSet.parent.id:
-                self.model.dec_sibling_count(oPhysCard)
-            # Doesn't affect us, so ignore
-
-    def cards_changed(self, oCardSet, oPhysCard):
-        """Listen for card changed signals.
-
-           Need to listen to special signal, since SQLObject only sends
-           signals when an instance is created, which is not the case
-           when using oSet.addPhysicalCard
-           Does rely on all creators calling send_added_signal.
-           """
-        # pylint: disable-msg=E1101
-        # SQLObject confuses pylint
-        if oCardSet.id == self.__oPhysCardSet.id:
-            # Adding a card to this card set
-            self.model.inc_card(oPhysCard)
-        else:
-            if oCardSet.parent and oCardSet.parent.id == \
-                    self.__oPhysCardSet.id and oCardSet.inuse and \
-                    self.model.changes_with_children():
-                self.model.inc_child_count(oPhysCard, oCardSet.name)
-            elif self.__oPhysCardSet.parent and oCardSet.id == \
-                    self.__oPhysCardSet.parent.id and \
-                    self.model.changes_with_parent():
-                self.model.inc_parent_count(oPhysCard)
-            elif oCardSet.parent and self.__oPhysCardSet.parent and \
-                    self.model.changes_with_siblings() and oCardSet.inuse and \
-                    oCardSet.parent.id == self.__oPhysCardSet.parent.id:
-                self.model.inc_sibling_count(oPhysCard)
-
     def set_card_text(self, sCardName):
         """Set card text to reflect selected card."""
         self._oMainWindow.set_card_text(sCardName)
@@ -231,7 +172,7 @@ class CardSetController(object):
                 MapPhysicalCardToPhysicalCardSet.delete(aCandCards[-1].id)
                 oThePCS.syncUpdate()
                 # signal to update the model
-                send_removed_signal(oThePCS, oCard)
+                send_changed_signal(oThePCS, oCard, -1)
                 return True
         # Got here, so we failed to remove a card
         return False
@@ -258,7 +199,8 @@ class CardSetController(object):
 
         oThePCS.addPhysicalCard(oCard.id)
         oThePCS.syncUpdate()
-        send_added_signal(oThePCS, oCard)
+        # Signal to update the model
+        send_changed_signal(oThePCS, oCard, 1)
         return True
 
     def edit_annotations(self):
