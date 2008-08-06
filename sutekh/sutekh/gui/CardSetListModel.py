@@ -414,8 +414,7 @@ class CardSetCardListModel(CardListModel):
         # SQLObject + PyProtocols confuse pylint
         if self.iExtraLevelsMode in [SHOW_CARD_SETS, EXPANSIONS_AND_CARD_SETS,
                 CARD_SETS_AND_EXPANSIONS] or self.iShowCardMode == CHILD_CARDS:
-            if not self._dCache.has_key('child filters') or \
-                    not self._dCache['child filters']:
+            if not 'child filters' in self._dCache:
                 self._dCache['child filters'] = {}
                 aChildren = [x.name for x in
                         PhysicalCardSet.selectBy(parentID=self._oCardSet.id,
@@ -589,8 +588,7 @@ class CardSetCardListModel(CardListModel):
         # pylint: disable-msg=E1101
         # pyprotocols confusion
         dSiblingCards = {}
-        if not self._dCache.has_key('sibling filter') or \
-                not self._dCache['sibling filter']:
+        if not 'sibling filter' in self._dCache:
             aChildren = [x.name for x in PhysicalCardSet.selectBy(
                 parentID=self._oCardSet.parent.id, inuse=True)]
             if aChildren:
@@ -931,6 +929,16 @@ class CardSetCardListModel(CardListModel):
             oIter = self.iter_next(oIter)
         return False
 
+    def _check_child_card_entries(self, oIter):
+        """Loop over the card level entries, calling check_card_iter_stays.
+           Return true if at least one card entry stays."""
+        oChildIter = self.iter_children(oIter)
+        while oChildIter:
+            if self.check_card_iter_stays(oChildIter):
+                return True
+            oChildIter = self.iter_next(oChildIter)
+        return False
+
     def check_child_iter_stays(self, oIter, oPhysCard):
         """Check if an expansion or child card set iter stays"""
         # Conditions vary with cards shown and the editable flag.
@@ -1046,20 +1054,9 @@ class CardSetCardListModel(CardListModel):
             return True
         elif self.iShowCardMode == PARENT_CARDS and \
                 self.iParentCountMode not in [PARENT_COUNT, MINUS_THIS_SET]:
-            # Pass this check to the children
-            oChildIter = self.iter_children(oIter)
-            while oChildIter:
-                if self.check_card_iter_stays(oChildIter):
-                    return True
-                oChildIter = self.iter_next(oChildIter)
+            return self._check_child_card_entries(oIter)
         elif self.iShowCardMode == CHILD_CARDS:
-            # Pass the check to the children - we stay if at least one child
-            # stays
-            oChildIter = self.iter_children(oIter)
-            while oChildIter:
-                if self.check_card_iter_stays(oChildIter):
-                    return True
-                oChildIter = self.iter_next(oChildIter)
+            return self._check_child_card_entries(oIter)
         return False
 
     # FIXME: There be dragons in this here code
