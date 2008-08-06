@@ -855,26 +855,25 @@ class CardSetCardListModel(CardListModel):
                 self.alter_card_count(oPhysCard, iChg)
             elif iChg > 0:
                 self.add_new_card(oPhysCard) # new card
-        elif oCardSet.parent and oCardSet.parent.id == self._oCardSet.id and \
-                oCardSet.inuse and self.changes_with_children():
+        elif self.changes_with_children() and oCardSet.parent and \
+                oCardSet.inuse and oCardSet.parent.id == self._oCardSet.id:
             # Changing a child card set
-            sCardSetName = oCardSet.name
             if sCardName in self._dName2Iter:
-                self.alter_child_count(oPhysCard, sCardSetName, iChg)
+                self.alter_child_count(oPhysCard, oCardSet.name, iChg)
             else:
                 # Card isn't shown, so need to add it
                 self.add_new_card(oPhysCard)
-        elif self._oCardSet.parent and oCardSet.id == \
-                self._oCardSet.parent.id and self.changes_with_parent():
+        elif self.changes_with_parent() and oCardSet.id == \
+                self._oCardSet.parent.id:
             # Changing parent card set
             if sCardName in self._dName2Iter:
                 self.alter_parent_count(oPhysCard, iChg)
             elif iChg > 0:
                 # Card isn't shown, so need to add it
                 self.add_new_card(oPhysCard)
-        elif oCardSet.parent and self._oCardSet.parent and \
-                self.changes_with_siblings() and oCardSet.inuse and \
-                oCardSet.parent.id == self._oCardSet.parent.id:
+        elif self.changes_with_siblings() and oCardSet.parent and \
+                oCardSet.inuse and oCardSet.parent.id == \
+                self._oCardSet.parent.id:
             # Changing sibling card set
             if sCardName in self._dName2Iter:
                 # This is only called when using MINUS_SETS_IN_USE,

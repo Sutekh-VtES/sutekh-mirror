@@ -193,6 +193,18 @@ class CardSetListModelTests(SutekhTest):
                             CHILD_CARDS]:
                         oModel.iShowCardMode = iShowMode
                         self._add_remove_cards(oPCS, oModel, aPhysCards)
+        self._reset_modes(oModel)
+
+    def _reset_modes(self, oModel):
+        """Set the model to the minimal state."""
+        # The database signal handling means that all CardSetListModels
+        # associated with a card set will update when send_changed_signal is
+        # called, so we reset the model state so these calls will be cheap if
+        # this models is affected when we're not explicitly testing it.
+        oModel.iParentCountMode = IGNORE_PARENT
+        oModel.iLevelMode = NO_SECOND_LEVEL
+        oModel.bEditable = False
+        oModel.iShowMode = THIS_SET_ONLY
 
     def _loop_zero_filter_modes(self, oModel):
         """Loop over all the possible modes of the model, calling
@@ -274,6 +286,7 @@ class CardSetListModelTests(SutekhTest):
         self.assertEqual(oModel.get_drag_child_info('0:0'),
                 {'Camarilla Edition' : 1})
         # Add Cards
+        self._reset_modes(oModel)
         self._loop_modes(oPCS, oModel)
         # Check over all the groupings
         for cGrouping in [Groupings.CryptLibraryGrouping,
@@ -297,6 +310,7 @@ class CardSetListModelTests(SutekhTest):
         # Create a child card set with some entries and check everything works
         oChildPCS = PhysicalCardSet(name=self.aNames[1], parent=oPCS)
         oChildModel = CardSetCardListModel(self.aNames[1])
+        self._reset_modes(oChildModel)
         for sName, sExp in aCards[2:6]:
             oCard = self._gen_card(sName, sExp)
             # pylint: disable-msg=E1101
@@ -366,6 +380,8 @@ class CardSetListModelTests(SutekhTest):
             'Ablative Skin', None))
         self._loop_modes(oChildPCS, oChildModel)
         oGCModel = CardSetCardListModel(self.aNames[2])
+        oGCModel.groupby = Groupings.NullGrouping
+        self._reset_modes(oGCModel)
         # Test adding cards to a sibling card set
         self._loop_modes(oGrandChild2PCS, oGCModel)
         self._loop_modes(oSibPCS, oChildModel)
