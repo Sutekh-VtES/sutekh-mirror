@@ -347,7 +347,7 @@ class CardSetListModelTests(SutekhTest):
             # pylint: disable-msg=E1101
             # PyProtocols confuses pylint
             oSibPCS.addPhysicalCard(oCard.id)
-        oSibPCS.inus = True
+        oSibPCS.inuse = True
         oGrandChild2PCS = PhysicalCardSet(name=self.aNames[4],
                 parent=oChildPCS)
         oGrandChild2PCS.inuse = True
