@@ -132,7 +132,7 @@ class CardListModel(gtk.TreeStore):
         """Extract an integer value from the model, removing markup"""
         sMarkup = self.get_value(oIter, iPos)
         if sMarkup:
-            sValue = remove_markup(self.get_value(oIter, iPos))
+            sValue = remove_markup(sMarkup)
         else:
             return 0
         return int(sValue)
