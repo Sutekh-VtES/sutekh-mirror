@@ -2,9 +2,9 @@ h1. Sutekh Tutorial
 
 h2. Contents
 
-# "Introduction and Important Concepts":#intro
+# "The Intial Layout":#intro
 
-# "Getting Started":#start
+# "Working with cards":#cards
 
 # "Manipulating Panes":#panes
 
@@ -12,27 +12,85 @@ h2. Contents
 
 # "Filtering":filtering
 
-# "Useful tips":#tips
+# "Useful Tips":#tips
 
-h3(#intro). Introduction and Basic Concepts
+h3(#intro). The Intial Layout
+
+When you run Sutekh for the first time, it will display the following 4 panes.
+* White Wolf Card List
+* Card Text
+* Card Set List
+* My Collection
+
+On subsuquent runs, the list of panes to show will be read from file. You
+can determine which panes are shown either by explicitly saving the layout
+using *Save current pane set* from the *File->Preferences*, or by letting the 
+*Save Pane Set on Exit* option save the configuration.
 
 h4. The White wolf card list
 
 Sutekh maintains a list of all the cards published by White Wolf as the
-*White Wolf Card List*. This list all the cards, and, for each card, the
+_White Wolf Card List_. This lists all the cards, and, for each card, the
 expansions it has appeared in. 
+
+h4. Card Text
+
+The pane displays the information about the currently selected card.
 
 h4. Card Sets
 
 Sutekh deals with collections of cards as card sets. Card Sets can either be
-stand-alone, or subsets of other card sets. The card set *My Collection*
-is created by default to hold your card colletion. Typically, most card sets
-will be subsets of *My Collection*.
+stand-alone, or subsets of other card sets. This pane lists all the card sets
+which have been created. Initially, only a card set called _My Collection_
+is created, to hold the details of your card collection.
 
-h3(#start). Getting Started
+h4. My Collection
+
+This card set will hold the details of your card collection.
+
+h3(#cards). Working with Cards
+
+h4. Adding cards to a card set
+
+Card Sets are, by default, not editable, unless they are empty. This can be
+changed by toggling the *Card Set is Editable* menu entry iin the *Edit* Menu
+of the pane. Empty card sets are always editable. Before adding cards to a card
+set, ensure it is editable.
+
+Cards can be added by dragging them from the _White Wolf Card List_ to the pane
+for the card set. Selecting multiple cards will add a single copy of each
+selected cards. You can also use the copy + paste options from the edit menu.
+
+When a card set is editable, *+* and *-* buttons will be shown next to the card
+names. These can be used to increase or decrease the number for a given card.
+
+You can also copy or drag-n-drop cards from other card sets. Unlike copying
+from the _White Wolf Card List_, copying from another card sets will copy all
+the selected cards.
+
+h4. Removing cards
+
+Cards can be removed from a card set either by using the *-* button shown in
+the card set pane next to the card name, or by selecting cards and using the
+*Delete selection* option from the *Edit* menu.
 
 h3(#panes). Manipulating Panes
 
-The Sutekh GUI is consists of several panes.
+The Sutekh user interface consists of panes. The number of panes and the layout
+is entirely up to you. 
 
+h3(#sets). Managing Card Sets
 
+h4. Creating a new card set
+
+h4. Changing the parent of a card set
+
+h4. Deleting a card set
+
+h4. *In Use* Card sets
+
+h3(#filtering). Filtering
+
+h3(#tips). Useful Tips
+
+"The Sutekh Manual":Manual.html
