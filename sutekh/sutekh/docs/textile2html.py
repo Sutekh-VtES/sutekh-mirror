@@ -33,7 +33,7 @@ def textile2html(sText, dContext):
     sHtml = HTML_HEADER % dContext \
         + textile.textile(sText) \
         + HTML_FOOTER % dContext
-    sHtml = sHtml.replace('<br />','') # remove pesky linebreaks
+    sHtml = sHtml.replace('<br />',' ') # remove pesky linebreaks
     return sHtml
 
 def convert(sTextileDir, sHtmlDir):

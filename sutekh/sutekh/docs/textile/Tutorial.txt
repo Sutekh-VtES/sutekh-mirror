@@ -3,20 +3,16 @@ h1. Sutekh Tutorial
 h2. Contents
 
 # "The Intial Layout":#intro
-
 # "Working with cards":#cards
-
 # "Manipulating Panes":#panes
-
 # "Managing Card Sets":#sets
-
 # "Filtering":filtering
-
 # "Useful Tips":#tips
 
 h3(#intro). The Intial Layout
 
 When you run Sutekh for the first time, it will display the following 4 panes.
+
 * White Wolf Card List
 * Card Text
 * Card Set List
@@ -64,8 +60,8 @@ selected cards. You can also use the copy + paste options from the edit menu.
 When a card set is editable, *+* and *-* buttons will be shown next to the card
 names. These can be used to increase or decrease the number for a given card.
 
-You can also copy or drag-n-drop cards from other card sets. Unlike copying
-from the _White Wolf Card List_, copying from another card sets will copy all
+You can also copy or drag-n-drop cards from other card sets. Unlike copying 
+from the _White Wolf Card List_, copying from another card sets will copy all 
 the selected cards.
 
 h4. Removing cards
