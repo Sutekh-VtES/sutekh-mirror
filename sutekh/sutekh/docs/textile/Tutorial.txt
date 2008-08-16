@@ -1,0 +1,38 @@
+h1. Sutekh Tutorial
+
+h2. Contents
+
+# "Introduction and Important Concepts":#intro
+
+# "Getting Started":#start
+
+# "Manipulating Panes":#panes
+
+# "Managing Card Sets":#sets
+
+# "Filtering":filtering
+
+# "Useful tips":#tips
+
+h3(#intro). Introduction and Basic Concepts
+
+h4. The White wolf card list
+
+Sutekh maintains a list of all the cards published by White Wolf as the
+*White Wolf Card List*. This list all the cards, and, for each card, the
+expansions it has appeared in. 
+
+h4. Card Sets
+
+Sutekh deals with collections of cards as card sets. Card Sets can either be
+stand-alone, or subsets of other card sets. The card set *My Collection*
+is created by default to hold your card colletion. Typically, most card sets
+will be subsets of *My Collection*.
+
+h3(#start). Getting Started
+
+h3(#panes). Manipulating Panes
+
+The Sutekh GUI is consists of several panes.
+
+
