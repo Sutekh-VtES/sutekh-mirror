@@ -423,6 +423,9 @@ class HtmlHandler(xml.sax.handler.ContentHandler):
         elif sName == 'em':
             oTag = self._oTextBuf.create_tag()
             oTag.set_property('style', pango.STYLE_ITALIC)
+        elif sName == 'strong':
+            oTag = self._oTextBuf.create_tag()
+            oTag.set_property('weight', pango.WEIGHT_BOLD)
 
         self._begin_span(oStyle, oTag)
 
@@ -498,6 +501,8 @@ class HtmlHandler(xml.sax.handler.ContentHandler):
             pass
         elif sName == 'em':
             pass
+        elif sName == 'strong':
+            pass
         else:
             warnings.warn("Unhandled element '%s'" % sName)
 
@@ -541,6 +546,8 @@ class HtmlHandler(xml.sax.handler.ContentHandler):
             if not self._oIter.starts_line():
                 self._insert_text("\n")
         elif sName == 'em':
+            pass
+        elif sName == 'strong':
             pass
         else:
             warnings.warn("Unhandled element '%s'" % sName)
