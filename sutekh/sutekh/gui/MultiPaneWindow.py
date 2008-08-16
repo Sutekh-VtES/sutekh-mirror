@@ -12,7 +12,7 @@ pygtk.require('2.0')
 import gtk
 # pylint: disable-msg=E0611
 # pylint doesn't see resource_stream here, for some reason
-from pkg_resources import resource_stream
+from pkg_resources import resource_stream, resource_exists
 # pylint: enable-msg=E0611
 from sqlobject import SQLObjectNotFound
 from sutekh.core.SutekhObjectCache import SutekhObjectCache
@@ -434,13 +434,13 @@ class MultiPaneWindow(gtk.Window):
 
     def show_tutorial(self, oMenuWidget, oHelpLast):
         """Show the HTML Tutorial"""
-        fTutorial = resource_stream('sutekh', '/docs/Tutorial.html')
+        fTutorial = self._link_resource('Tutorial.html')
         oHelpLast.set_sensitive(True)
         self._do_html_dialog(fTutorial)
 
     def show_manual(self, oMenuWidget, oHelpLast):
         """Show the HTML Manual"""
-        fManual = resource_stream('sutekh', '/docs/Manual.html')
+        fManual = self._link_resource('Manual.html')
         oHelpLast.set_sensitive(True)
         self._do_html_dialog(fManual)
 
@@ -451,10 +451,18 @@ class MultiPaneWindow(gtk.Window):
 
     # pylint: enable-msg=W0613
 
+    def _link_resource(self, sLocalUrl):
+        """Return a file-like object which sLocalUrl can be read from."""
+        sResource = '/docs/html/%s' % sLocalUrl
+        if resource_exists('sutekh', sResource):
+            return resource_stream('sutekh', sResource)
+        else:
+            raise ValueError("Unknown resource %s" % sLocalUrl)
+
     def _do_html_dialog(self, fInput):
         """Popup and run HTML Dialog widget"""
         if self._oHelpDlg is None:
-            self._oHelpDlg = HTMLViewDialog(self, fInput)
+            self._oHelpDlg = HTMLViewDialog(self, fInput, self._link_resource)
         else:
             self._oHelpDlg.show_page(fInput)
         self._oHelpDlg.show()

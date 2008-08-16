@@ -20,10 +20,6 @@ import warnings
 import operator
 import xml.sax, xml.sax.handler
 from cStringIO import StringIO
-# pylint: disable-msg=E0611
-# pylint doesn't see resource_stream here, for some reason
-from pkg_resources import resource_stream, resource_exists
-# pylint: enable-msg=E0611
 from sutekh.gui.SutekhDialog import SutekhDialog
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 
@@ -47,7 +43,7 @@ class HtmlHandler(xml.sax.handler.ContentHandler):
     # R0201: can't break these into functions
     # R0902: We need to keep a lot of state to handle HTML properly
     """Parse the HTML imput and update the gtk.TextView"""
-    def __init__(self, oTextView, oStartIter):
+    def __init__(self, oTextView, oStartIter, fLinkLoader):
         xml.sax.handler.ContentHandler.__init__(self)
         self._oTextBuf = oTextView.get_buffer()
         self._oTextView = oTextView
@@ -58,6 +54,7 @@ class HtmlHandler(xml.sax.handler.ContentHandler):
                                 # counters, or None for unordered list
         self._bInTitle = False
         self._dTargets = {}
+        self._fLinkLoader = fLinkLoader
 
     def _parse_style_color(self, oTag, sValue):
         """Convert style value to TextView foreground color"""
@@ -463,9 +460,7 @@ class HtmlHandler(xml.sax.handler.ContentHandler):
             # pylint: disable-msg=W0703
             # we want to catch all errors here
             try:
-                # Is this the right way? Not sure of my understanding of the
-                # pkg_resources docs.
-                oFile = resource_stream('sutekh', '/docs/' + oAttrs['src'])
+                oFile = self._fLinkLoader(oAttrs['src'])
                 oLoader = gtk.gdk.PixbufLoader()
                 oLoader.write(oFile.read())
                 oLoader.close()
@@ -561,7 +556,12 @@ class HTMLTextView(gtk.TextView):
         # href, type
     }
 
-    def __init__(self):
+    def __init__(self, fLinkLoader):
+        """TextView subclass to display HTML.
+
+           fLinkLoader: function to load links with
+                        (takes local URL, returns file-like object)
+           """
         gtk.TextView.__init__(self)
         self.set_wrap_mode(gtk.WRAP_CHAR)
         self.set_editable(False)
@@ -572,6 +572,7 @@ class HTMLTextView(gtk.TextView):
         self.set_pixels_above_lines(3)
         self.set_pixels_below_lines(3)
         self._dTargets = {}
+        self._fLinkLoader = fLinkLoader
 
     # pylint: disable-msg=W0613
     # oEvent needed by function signature
@@ -620,7 +621,7 @@ class HTMLTextView(gtk.TextView):
         oBuffer = self.get_buffer()
         oEndOfBuf = oBuffer.get_end_iter()
         oParser = xml.sax.make_parser()
-        oHandler = HtmlHandler(self, oEndOfBuf)
+        oHandler = HtmlHandler(self, oEndOfBuf, self._fLinkLoader)
         oParser.setContentHandler(oHandler)
         # Don't try and follow external references
         oParser.setFeature(xml.sax.handler.feature_external_ges, False)
@@ -652,7 +653,12 @@ class HTMLViewDialog(SutekhDialog):
     </html>
     """
 
-    def __init__(self, oParent, fInput):
+    def __init__(self, oParent, fInput, fLinkLoader):
+        """Dialog Window that wraps the HTMLTextView
+
+           fInput: file-like object to read the HTML from.
+           fLinkLoader: function to load links with (passed to HTMLTextView)
+           """
         super(HTMLViewDialog, self).__init__('Help', oParent,
                 oButtons=(gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
         # pylint: disable-msg=E1101
@@ -667,11 +673,12 @@ class HTMLViewDialog(SutekhDialog):
         self._oBackButton.set_sensitive(False)
         self._oForwardButton.set_sensitive(False)
         self._fCurrent = fInput
+        self._fLinkLoader = fLinkLoader
         self._sTextAnchor = None
         self._aPastUrls = []
         self._aFutureUrls = []
         self.vbox.pack_start(oDirButtons, False, False)
-        self._oHTMLTextView = HTMLTextView()
+        self._oHTMLTextView = HTMLTextView(self._fLinkLoader)
         self._oView = AutoScrolledWindow(self._oHTMLTextView)
         self.set_default_size(400, 600)
         self._oHTMLTextView.display_html(fInput)
@@ -685,7 +692,7 @@ class HTMLViewDialog(SutekhDialog):
         """Redraw the pane with the contents of self._fCurrent"""
         self._fCurrent.seek(0)
         self._oView.remove(self._oHTMLTextView)
-        self._oHTMLTextView = HTMLTextView()
+        self._oHTMLTextView = HTMLTextView(self._fLinkLoader)
         self._oHTMLTextView.display_html(self._fCurrent)
         self._oHTMLTextView.connect('url-clicked', self._url_clicked)
         if self._sTextAnchor:
@@ -721,12 +728,12 @@ class HTMLViewDialog(SutekhDialog):
         else:
             sPos = None
         if sFile:
-            sResource = '/docs/%s' % sFile
-            if resource_exists('sutekh', sResource):
-                fInput = resource_stream('sutekh', sResource)
-            else:
+            try:
+                fInput = self._fLinkLoader(sFile)
+            except Exception, e:
                 sError = self._sError % { 'missing' : sUrl }
                 fInput = StringIO(sError)
+                sPos = None
             self.show_page(fInput, sPos)
         else:
             self.show_page(None, sPos)
