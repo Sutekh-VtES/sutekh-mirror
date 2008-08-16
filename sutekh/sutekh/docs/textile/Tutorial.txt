@@ -9,7 +9,7 @@ h2. Contents
 # "Filtering":filtering
 # "Useful Tips":#tips
 
-h3(#intro). The Intial Layout
+h2(#intro). The Intial Layout
 
 When you run Sutekh for the first time, it will display the following 4 panes.
 
@@ -23,30 +23,30 @@ can determine which panes are shown either by explicitly saving the layout
 using *Save current pane set* from the *File->Preferences*, or by letting the 
 *Save Pane Set on Exit* option save the configuration.
 
-h4. The White wolf card list
+h3. The White wolf card list
 
 Sutekh maintains a list of all the cards published by White Wolf as the
 _White Wolf Card List_. This lists all the cards, and, for each card, the
 expansions it has appeared in. 
 
-h4. Card Text
+h3. Card Text
 
 The pane displays the information about the currently selected card.
 
-h4. Card Sets
+h3. Card Sets
 
 Sutekh deals with collections of cards as card sets. Card Sets can either be
 stand-alone, or subsets of other card sets. This pane lists all the card sets
 which have been created. Initially, only a card set called _My Collection_
 is created, to hold the details of your card collection.
 
-h4. My Collection
+h3. My Collection
 
 This card set will hold the details of your card collection.
 
-h3(#cards). Working with Cards
+h2(#cards). Working with Cards
 
-h4. Adding cards to a card set
+h3. Adding cards to a card set
 
 Card Sets are, by default, not editable, unless they are empty. This can be
 changed by toggling the *Card Set is Editable* menu entry iin the *Edit* Menu
@@ -64,29 +64,53 @@ You can also copy or drag-n-drop cards from other card sets. Unlike copying
 from the _White Wolf Card List_, copying from another card sets will copy all 
 the selected cards.
 
-h4. Removing cards
+h3. Removing cards
 
 Cards can be removed from a card set either by using the *-* button shown in
 the card set pane next to the card name, or by selecting cards and using the
 *Delete selection* option from the *Edit* menu.
 
-h3(#panes). Manipulating Panes
+h2(#panes). Manipulating Panes
 
 The Sutekh user interface consists of panes. The number of panes and the layout
 is entirely up to you. 
 
-h3(#sets). Managing Card Sets
+h2(#sets). Managing Card Sets
 
-h4. Creating a new card set
+h3. Creating a new card set
 
-h4. Changing the parent of a card set
+A new card set can be created from the _Card Set List_, using *Create New
+Card Set* option from the *Actions* menu. The name is required, and must be
+unique. A Card set can either have _No Parent_, in which case it is a stand
+alone card set, or you can choose any existing card set as the parent, in
+which case it is a subset of that card set. 
 
-h4. Deleting a card set
+h3. Renaming a card set.
 
-h4. *In Use* Card sets
+A card set can be renamed using the *Edit Card Set Properties* option
+from the card set list's *Actions* Menu. An open card set can also be renamed
+via the *Edit Card Set Properties* from the *Actions* Menu of the card set.
 
-h3(#filtering). Filtering
+h3. Changing the parent of a card set.
 
-h3(#tips). Useful Tips
+The parent of a card set can by changed via the *Edit Card Set Properties*
+option from the *Actions* Menu, or by dragging the selected card set onto it's
+new parent in the card set list pane.
+
+h3. Deleting a card set
+
+Card sets can by deleted via the *Delete card set* from the *Actions* menu of
+the card set list pane. Open card sets can also be deleted via the *Delete card
+set* option from the *Actions* menu of the card set pane.
+
+h3. *In Use* Card sets
+
+Card sets can be marked or unmarked as _in use_. The set of in use card sets
+are considered to be those currently active. The display modes dealing with
+child card sets only consider child cards sets that are marked as _in use_.
+
+h2(#filtering). Filtering
+
+h2(#tips). Useful Tips
 
 "The Sutekh Manual":Manual.html
