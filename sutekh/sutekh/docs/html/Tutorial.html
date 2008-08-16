@@ -1,63 +1,118 @@
-<html>
-   <head>
-      <title>Sutekh Tutorial</title>
-   </head>
-   <body>
-      <h1>Sutekh Tutorial (for Sutekh 0.6)</h1>
-      <h2>Contents</h2>
-      <ul>
-         <li><a href="#intro">Introduction and Important Concepts</a></li>
-         <li><a href="#start">Getting Started</a></li>
-         <li><a href="#panes">Manpulating Panes</a></li>
-         <li><a href="#collection">Managing your card collection</a></li>
-         <li><a href="#cardsets">Managing Card Sets</a></li>
-         <li><a href="#filtering">Filtering</a></li>
-         <li><a href="#tips">Useful tips</a></li>
-      </ul>
-      <p>The Sutekh <a href="Manual.html">Manual</a></p>
-      <h2><a name="intro">Introduction and Important Concepts</a></h2>
-      <h3>Introduction</h3>
-      <p>Sutekh is a card management program for Vampire: The Eternal
-      Struggle, a Collectable Card Game published by White Wolf.</p>
-      <h3>Important Concepts</h3>
-      <h4>The Card Collection</h4>
-      <p>Sutekh distinguishes between two types of cards: Abstract Cards, and
-      Physical Cards.</p>
-      <p><em>Abstract Cards</em> represent a particular card in the published
-      card list, for instance "Aire of Elation" or the Salubri vampire
-      "Saulot". <em>Physical Cards</em> are copies of the cards in your
-      collection, which might be a copy of "Aire of Elation" from the
-      Camarilla Edition expansion. Abstract Cards are intended to
-      describe the non-physical aspects of the card, such as discipline
-      requirements and card text, while physical cards capture details such
-      as expansion, and the number in your collection.</p>
-      <p>Much of Sutekh is involved with working with your collection of
-      cards, which will all be physical cards. The list of all possible cards
-      is also available as the White wolf card list.</p>
-      <h4>Card Sets</h4>
-      <p>In addition to the lists of cards, Sutekh allows you to create
-      sets of either Abstract or Physical Cards. A set of Physical Cards
-      must be a subset of your card collection. These sets can be used to
-      represent any subdivision of interest. Creating decks is the most 
-      common use of card sets, but they can also be used to represent
-      sets of cards you are interested in trading, different ways of 
-      subdividing your collection (in storage, available for use, etc.)</p>
-      <p>Abstract Card Sets are useful when the physical properties
-      aren't important - speculative deck ideas, cards that one wishes to
-      acquire, and so forth. Physical Card Sets are subsets of the collection
-      and thus can be used to represent constructed decks, a cards available
-      for trade, and so forth.</p>
-      <h2><a name="start">Getting Started</a></h2>
-      <h3>Creating the database</h3>
-      <h3>Adding cards to your collection</h3>
-      <h3>Creating Card Sets</h3>
-      <h3>Introduction to Filtering</h3>
-      <p>This introduces the basics of filtering. There is a more detailed
-      discussion <a href="#filtering">later</a></p>
-      <h2><a name="panes">Manipulating Panes</a></h2>
-      <h2><a name="collection">Managining your Card Collection</a></h2>
-      <h2><a name="cardsets">Managing your card sets</a></h2>
-      <h2><a name="filtering">Filtering</a></h2>
-      <h2><a name="tips">Useful tips</a></h2>
-   </body>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Sutekh Tutorial</title>
+</head>
+<body>
+<h1>Sutekh Tutorial</h1>
+
+<h2>Contents</h2>
+
+<ol>
+<li><a href="#intro">The Intial Layout</a></li>
+</ol>
+
+<ol>
+<li><a href="#cards">Working with cards</a></li>
+</ol>
+
+<ol>
+<li><a href="#panes">Manipulating Panes</a></li>
+</ol>
+
+<ol>
+<li><a href="#sets">Managing Card Sets</a></li>
+</ol>
+
+<ol>
+<li><a href="filtering">Filtering</a></li>
+</ol>
+
+<ol>
+<li><a href="#tips">Useful Tips</a></li>
+</ol>
+
+<h3 id="intro">The Intial Layout</h3>
+
+<p>When you run Sutekh for the first time, it will display the following 4 panes.
+* White Wolf Card List
+* Card Text
+* Card Set List
+* My Collection</p>
+
+<p>On subsuquent runs, the list of panes to show will be read from file. You
+can determine which panes are shown either by explicitly saving the layout
+using <strong>Save current pane set</strong> from the <strong>File->Preferences</strong>, or by letting the 
+<strong>Save Pane Set on Exit</strong> option save the configuration.</p>
+
+<h4>The White wolf card list</h4>
+
+<p>Sutekh maintains a list of all the cards published by White Wolf as the
+<em>White Wolf Card List</em>. This lists all the cards, and, for each card, the
+expansions it has appeared in.</p>
+
+<h4>Card Text</h4>
+
+<p>The pane displays the information about the currently selected card.</p>
+
+<h4>Card Sets</h4>
+
+<p>Sutekh deals with collections of cards as card sets. Card Sets can either be
+stand-alone, or subsets of other card sets. This pane lists all the card sets
+which have been created. Initially, only a card set called <em>My Collection</em>
+is created, to hold the details of your card collection.</p>
+
+<h4>My Collection</h4>
+
+<p>This card set will hold the details of your card collection.</p>
+
+<h3 id="cards">Working with Cards</h3>
+
+<h4>Adding cards to a card set</h4>
+
+<p>Card Sets are, by default, not editable, unless they are empty. This can be
+changed by toggling the <strong>Card Set is Editable</strong> menu entry iin the <strong>Edit</strong> Menu
+of the pane. Empty card sets are always editable. Before adding cards to a card
+set, ensure it is editable.</p>
+
+<p>Cards can be added by dragging them from the <em>White Wolf Card List</em> to the pane
+for the card set. Selecting multiple cards will add a single copy of each
+selected cards. You can also use the copy + paste options from the edit menu.</p>
+
+<p>When a card set is editable, <strong>+</strong> and <strong>-</strong> buttons will be shown next to the card
+names. These can be used to increase or decrease the number for a given card.</p>
+
+<p>You can also copy or drag-n-drop cards from other card sets. Unlike copying
+from the <em>White Wolf Card List</em>, copying from another card sets will copy all
+the selected cards.</p>
+
+<h4>Removing cards</h4>
+
+<p>Cards can be removed from a card set either by using the <strong>-</strong> button shown in
+the card set pane next to the card name, or by selecting cards and using the
+<strong>Delete selection</strong> option from the <strong>Edit</strong> menu.</p>
+
+<h3 id="panes">Manipulating Panes</h3>
+
+<p>The Sutekh user interface consists of panes. The number of panes and the layout
+is entirely up to you.</p>
+
+<h3 id="sets">Managing Card Sets</h3>
+
+<h4>Creating a new card set</h4>
+
+<h4>Changing the parent of a card set</h4>
+
+<h4>Deleting a card set</h4>
+
+<h4><strong>In Use</strong> Card sets</h4>
+
+<h3 id="filtering">Filtering</h3>
+
+<h3 id="tips">Useful Tips</h3>
+
+<p><a href="Manual.html">The Sutekh Manual</a></p>
+</body>
 </html>
