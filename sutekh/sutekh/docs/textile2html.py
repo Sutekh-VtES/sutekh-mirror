@@ -12,9 +12,27 @@ import glob
 import os
 import textile
 
-def textile2html(sText):
+HTML_HEADER = """
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>%(title)s</title>
+</head>
+<body>
+"""
+
+HTML_FOOTER = """
+</body>
+</html>
+"""
+
+
+def textile2html(sText, dContext):
     """Convert a Textile markup string to an HTML file."""
-    return textile.textile(sText)
+    return HTML_HEADER % dContext \
+        + textile.textile(sText) \
+        + HTML_FOOTER % dContext
 
 def convert(sTextileDir, sHtmlDir):
     """Convert all .txt files in sTextileDir to .html files in sHtmlDir."""
@@ -23,10 +41,14 @@ def convert(sTextileDir, sHtmlDir):
         sFilename, sExt = os.path.splitext(sBasename)
         sHtmlPath = os.path.join(sHtmlDir, sFilename + ".html")
 
+        dContext = {
+            'title': "Sutekh " + sFilename
+        }
+
         fTextile = file(sTextilePath, "rb")
         fHtml = file(sHtmlPath, "wb")
 
-        fHtml.write(textile2html(fTextile.read()))
+        fHtml.write(textile2html(fTextile.read(), dContext))
 
         fTextile.close()
         fHtml.close()
