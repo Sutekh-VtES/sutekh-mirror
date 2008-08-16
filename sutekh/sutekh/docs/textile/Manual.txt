@@ -1,6 +1,6 @@
 h1. Manual for Sutekh 0.6
 
-!sutekh-icon.png!
+!sutekh-icon.png (Sutekh Icon)!
 
 h2. Contents
 
