@@ -448,17 +448,17 @@ class HtmlHandler(xml.sax.handler.ContentHandler):
         elif sName == 'ul':
             if not self._oIter.starts_line():
                 self._insert_text("\n")
-            self._aListCounters.insert(0, None)
+            self._aListCounters.append(None)
         elif sName == 'ol':
             if not self._oIter.starts_line():
                 self._insert_text("\n")
-            self._aListCounters.insert(0, 0)
+            self._aListCounters.append(0)
         elif sName == 'li':
-            if self._aListCounters[0] is None:
+            if self._aListCounters[-1] is None:
                 sListHead = unichr(0x2022)
             else:
-                self._aListCounters[0] += 1
-                sListHead = "%i." % self._aListCounters[0]
+                self._aListCounters[-1] += 1
+                sListHead = "%i." % self._aListCounters[-1]
             self._sText = ' '*len(self._aListCounters)*4 + sListHead + ' '
         elif sName == 'img':
             # pylint: disable-msg=W0703
