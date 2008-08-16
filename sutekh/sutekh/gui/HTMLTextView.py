@@ -532,7 +532,8 @@ class HtmlHandler(xml.sax.handler.ContentHandler):
         elif sName == 'ol':
             self._aListCounters.pop()
         elif sName == 'li':
-            self._insert_text("\n")
+            if not self._oIter.starts_line():
+                self._insert_text("\n")
         elif sName == 'img':
             pass
         elif sName == 'body':
