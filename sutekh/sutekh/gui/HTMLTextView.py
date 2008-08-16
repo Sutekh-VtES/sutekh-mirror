@@ -305,11 +305,12 @@ class HtmlHandler(xml.sax.handler.ContentHandler):
 
     def _begin_span(self, sStyle, oTag=None):
         """Start a <span> section"""
+        if oTag is None:
+            oTag = self._oTextBuf.create_tag()
+        oTag.set_property("wrap-mode", gtk.WRAP_WORD)
         if sStyle is None:
             self._aStyles.append(oTag)
             return None
-        if oTag is None:
-            oTag = self._oTextBuf.create_tag()
         for sAttr, sVal in [item.split(':', 1) for item in sStyle.split(';')]:
             sAttr = sAttr.strip().lower()
             sVal = sVal.strip()
