@@ -1,0 +1,15 @@
+h1. Manual for Sutekh 0.6
+
+!sutekh-icon.png!
+
+h2. Contents
+
+* Important Concepts
+** The Main Menu
+*** The File Menu
+*** The Pane Actions Menu
+** The Pane Menus
+*** The Actions Menu
+*** The Filter Menu
+
+"The Sutekh Tutorial":Tutorial.html
