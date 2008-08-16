@@ -429,6 +429,11 @@ class HtmlHandler(xml.sax.handler.ContentHandler):
 
         self._begin_span(oStyle, oTag)
 
+        if oAttrs.has_key('id'):
+            # Add it to the list of valid targets
+            oMark = self._oTextBuf.create_mark(None, self._oIter, True)
+            self._dTargets[oAttrs['id']] = oMark
+
         if sName == 'br':
             pass # handled in endElement
         elif sName == 'p':
