@@ -30,9 +30,11 @@ HTML_FOOTER = """
 
 def textile2html(sText, dContext):
     """Convert a Textile markup string to an HTML file."""
-    return HTML_HEADER % dContext \
+    sHtml = HTML_HEADER % dContext \
         + textile.textile(sText) \
         + HTML_FOOTER % dContext
+    sHtml = sHtml.replace('<br />','') # remove pesky linebreaks
+    return sHtml
 
 def convert(sTextileDir, sHtmlDir):
     """Convert all .txt files in sTextileDir to .html files in sHtmlDir."""
