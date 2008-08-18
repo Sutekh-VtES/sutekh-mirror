@@ -10,11 +10,13 @@
 import gtk
 from sqlobject import SQLObjectNotFound
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
+from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 from sutekh.core.SutekhObjects import PhysicalCardSet, IPhysicalCardSet
 
 class CreateCardSetDialog(SutekhDialog):
-    # pylint: disable-msg=R0904
-    # gtk.Widget, so many public methods
+    # pylint: disable-msg=R0904, R0902
+    # R0904 - gtk.Widget, so many public methods
+    # R0902 - We manage a bunch of state, so need several attributes
     """Prompt the user for the name of a new card set.
 
        Optionally, get Author + Description.
@@ -47,14 +49,22 @@ class CreateCardSetDialog(SutekhDialog):
             self.oParentList.append_text(oLoopCardSet.name)
             if oCardSetParent and oCardSetParent.name == oLoopCardSet.name:
                 self.oParentList.set_active(iNum + 1)
-        self.vbox.pack_start(oNameLabel)
-        self.vbox.pack_start(self.oName)
-        self.vbox.pack_start(oAuthorLabel)
-        self.vbox.pack_start(self.oAuthor)
-        self.vbox.pack_start(oCommentriptionLabel)
-        self.vbox.pack_start(self.oComment)
-        self.vbox.pack_start(oParentLabel)
-        self.vbox.pack_start(self.oParentList)
+        oAnnotateLabel = gtk.Label("Annotations : ")
+        oTextView = gtk.TextView()
+        self.oBuffer = oTextView.get_buffer()
+
+        self.vbox.pack_start(oNameLabel, expand=False)
+        self.vbox.pack_start(self.oName, expand=False)
+        self.vbox.pack_start(oAuthorLabel, expand=False)
+        self.vbox.pack_start(self.oAuthor, expand=False)
+        self.vbox.pack_start(oCommentriptionLabel, expand=False)
+        self.vbox.pack_start(self.oComment, expand=False)
+        self.vbox.pack_start(oParentLabel, expand=False)
+        self.vbox.pack_start(self.oParentList, expand=False)
+        self.vbox.pack_start(oAnnotateLabel, expand=False)
+        oScrolledWin = AutoScrolledWindow(oTextView)
+        self.set_default_size(500, 500)
+        self.vbox.pack_start(oScrolledWin, expand=True)
 
         self.connect("response", self.button_response)
 
@@ -68,6 +78,8 @@ class CreateCardSetDialog(SutekhDialog):
                 self.sOrigName = oCardSet.name
             self.oAuthor.set_text(oCardSet.author)
             self.oComment.set_text(oCardSet.comment)
+            if oCardSet.annotations:
+                self.oBuffer.set_text(oCardSet.annotations)
 
         self.sName = None
         self.oParent = oCardSetParent
@@ -85,6 +97,12 @@ class CreateCardSetDialog(SutekhDialog):
     def get_comment(self):
         """Get the comment value"""
         return self.oComment.get_text()
+
+    def get_annotations(self):
+        """Get the comment value"""
+        sAnnotations = self.oBuffer.get_text(
+                self.oBuffer.get_start_iter(), self.oBuffer.get_end_iter())
+        return sAnnotations
 
     def get_parent(self):
         """Get the chosen parent card set, or None if 'No Parent' is chosen"""

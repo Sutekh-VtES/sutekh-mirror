@@ -17,7 +17,6 @@ from sutekh.gui.DBSignals import listen_row_destroy, listen_row_update, \
 from sutekh.core.SutekhObjects import IPhysicalCardSet, PhysicalCardSet, \
         AbstractCard, PhysicalCard, MapPhysicalCardToPhysicalCardSet, \
         IExpansion, IPhysicalCard
-from sutekh.gui.EditAnnotationsDialog import EditAnnotationsDialog
 from sutekh.SutekhUtility import delete_physical_card_set
 
 class CardSetController(object):
@@ -203,15 +202,6 @@ class CardSetController(object):
         send_changed_signal(oThePCS, oCard, 1)
         return True
 
-    def edit_annotations(self):
-        """Show the annotations dialog and update the card set."""
-        oEditAnn = EditAnnotationsDialog(self._oMainWindow,
-                self.__oPhysCardSet)
-        oEditAnn.run()
-        # pylint: disable-msg=E1101
-        # pyprotocols confuses pylint
-        self.__oPhysCardSet.annotations = oEditAnn.get_data()
-        self.__oPhysCardSet.syncUpdate()
 
     def edit_properties(self, oMenu):
         """Run the dialog to update the card set properties"""
@@ -225,13 +215,10 @@ class CardSetController(object):
             # Passed, so update the card set
             self.__oPhysCardSet.name = sName
             self.view.sSetName = sName
-            sAuthor = oProp.get_author()
-            sComment = oProp.get_comment()
+            self.__oPhysCardSet.author = oProp.get_author()
+            self.__oPhysCardSet.comment = oProp.get_comment()
+            self.__oPhysCardSet.annotations = oProp.get_annotations()
             oParent = oProp.get_parent()
-            if sAuthor is not None:
-                self.__oPhysCardSet.author = sAuthor
-            if sComment is not None:
-                self.__oPhysCardSet.comment = sComment
             if oParent != self.__oPhysCardSet.parent:
                 reparent_card_set(self.__oPhysCardSet, oParent)
             self.__oPhysCardSet.syncUpdate()

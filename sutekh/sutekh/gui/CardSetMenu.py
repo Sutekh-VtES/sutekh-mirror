@@ -47,9 +47,6 @@ class CardSetMenu(CardListMenu):
         self.__oProperties = self.create_menu_item(
                 "Edit Card Set (%s) properties" % self.sSetName, oMenu,
                 self._edit_properties)
-        self.create_menu_item(
-                "Edit Annotations for Card Set (%s)" % self.sSetName, oMenu,
-                self._edit_annotations)
         self.__oExport = self.create_menu_item(
                 "Export Card Set (%s) to File" % self.sSetName, oMenu,
                 self._do_export)
@@ -179,10 +176,6 @@ class CardSetMenu(CardListMenu):
         else:
             self._oParentCol.set_sensitive(False)
             self._change_parent_count_mode(None, IGNORE_PARENT, True)
-
-    def _edit_annotations(self, oWidget):
-        """Popup the Edit Annotations dialog."""
-        self._oController.edit_annotations()
 
     def _do_export(self, oWidget):
         """Export the card set to the chosen filename."""
