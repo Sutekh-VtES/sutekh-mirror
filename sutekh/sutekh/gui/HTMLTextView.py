@@ -737,9 +737,12 @@ class HTMLViewDialog(SutekhDialog):
         else:
             sPos = None
         if sFile:
+            # pylint: disable-msg=W0703, W0612
+            # we really do want all the exceptions
+            # oExp is unused
             try:
                 fInput = self._fLinkLoader(sFile)
-            except Exception, e:
+            except Exception, oExp:
                 sError = self._sError % { 'missing' : sUrl }
                 fInput = StringIO(sError)
                 sPos = None
