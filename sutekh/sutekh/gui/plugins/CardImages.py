@@ -256,10 +256,11 @@ class CardImageFrame(BasicFrame, CardListViewListener):
                 self._oImage.set_alignment(0, 0.5)
                 iDestWidth, iDestHeight = _scale_dims(iWidth, iHeight,
                         iPaneWidth, iPaneHeight)
-                self._oImage.set_from_pixbuf(oPixbuf.scale_simple(iDestWidth,
-                    iDestHeight, gtk.gdk.INTERP_HYPER))
-                self._tPaneSize = (self._oView.get_hadjustment().page_size,
-                        self._oView.get_vadjustment().page_size)
+                if iDestWidth > 0 and iDestHeight > 0:
+                    self._oImage.set_from_pixbuf(oPixbuf.scale_simple(
+                        iDestWidth, iDestHeight, gtk.gdk.INTERP_HYPER))
+                    self._tPaneSize = (self._oView.get_hadjustment().page_size,
+                            self._oView.get_vadjustment().page_size)
             elif self.__iZoomMode == _iVIEW_FIXED:
                 iDestWidth, iDestHeight = _scale_dims(iWidth, iHeight,
                         _tRATIO[0], _tRATIO[1])
