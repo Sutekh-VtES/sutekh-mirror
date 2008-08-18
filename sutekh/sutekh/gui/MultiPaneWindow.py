@@ -406,6 +406,9 @@ class MultiPaneWindow(gtk.Window):
         gtk.main()
 
     # making this a function would not be convient
+    # pylint: disable-msg=W0613
+    # oWidget needed by function signature
+
     def show_about_dialog(self, oWidget):
         """Display the about dialog"""
         oDlg = SutekhAboutDialog()
@@ -414,7 +417,6 @@ class MultiPaneWindow(gtk.Window):
 
     # pylint: enable-msg=R0201
 
-    # pylint: disable-msg=W0613
     # oWidget, oEvent needed by function signature
     def win_focus(self, oWidget, oEvent, oFrame):
         """Responsd to focus change events.
