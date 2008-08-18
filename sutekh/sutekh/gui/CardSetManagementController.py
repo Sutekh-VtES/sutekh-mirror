@@ -77,6 +77,25 @@ def check_ok_to_delete(oCardSet):
                 " Has Children. Really Delete?" % oCardSet.name)
     return iResponse == gtk.RESPONSE_OK
 
+def update_card_set(oCardSet, oEditDialog, oMainWindow, oMenu):
+    """Update the details of the card set when the user edits them."""
+    sOldName = oCardSet.name
+    sName = oEditDialog.get_name()
+    if sName != sOldName:
+        oCardSet.name = sName
+        oMainWindow.rename_pane(sOldName, sName)
+    oCardSet.author = oEditDialog.get_author()
+    oCardSet.comment = oEditDialog.get_comment()
+    oCardSet.annotations = oEditDialog.get_annotations()
+    oParent = oEditDialog.get_parent()
+    if oParent != oCardSet.parent:
+        reparent_card_set(oCardSet, oParent)
+    oCardSet.syncUpdate()
+    # Update frame menu
+    if oMenu:
+        oMenu.update_card_set_menu(oCardSet)
+    oMainWindow.reload_pcs_list()
+
 class CardSetManagementController(object):
     """Controller object for the card set list."""
     # pylint: disable-msg=R0904
@@ -164,6 +183,24 @@ class CardSetManagementController(object):
             oCS = PhysicalCardSet(name=sName, author=sAuthor,
                     comment=sComment, parent=oParent)
             self._oMainWindow.add_new_physical_card_set(sName)
+
+    def edit_card_set_properties(self, oWidget):
+        """Create a new card set"""
+        sSetName = self._oView.get_selected_card_set()
+        if not sSetName:
+            return
+        oFrame = self._oMainWindow.find_pane_by_name(sSetName)
+        if oFrame:
+            oMenu = oFrame.menu
+        else:
+            oMenu = None
+        oCardSet = IPhysicalCardSet(sSetName)
+        oDialog = CreateCardSetDialog(self._oMainWindow, oCardSet=oCardSet)
+        oDialog.run()
+        sName = oDialog.get_name()
+        if sName:
+            update_card_set(oCardSet, oDialog, self._oMainWindow,
+                    oMenu)
 
     def delete_card_set(self, oWidget):
         """Delete the selected card set."""

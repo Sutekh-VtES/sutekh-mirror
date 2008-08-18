@@ -205,6 +205,13 @@ class MultiPaneWindow(gtk.Window):
         except ValueError:
             return None
 
+    def rename_pane(self, sOldName, sNewName):
+        """Rename a frame"""
+        oFrame = self.find_pane_by_name(sOldName)
+        if not oFrame:
+            return
+        self.dOpenFrames[oFrame] = sNewName
+
     def replace_with_physical_card_set(self, sName, oFrame):
         """Replace the pane oFrame with the physical card set sName"""
         sMenuFlag = sName

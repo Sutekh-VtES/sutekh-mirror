@@ -34,6 +34,8 @@ class CardSetManagementMenu(PaneMenu, object):
         oMenu  = self.create_submenu(self, "_Actions")
         self.create_menu_item('Create New Card Set', oMenu,
                 self._oController.create_new_card_set)
+        self.create_menu_item('Edit Card Set Properties', oMenu,
+                self._oController.edit_card_set_properties)
         self.create_menu_item('Mark/UnMark Card Set as in use', oMenu,
                     self._oController.toggle_in_use_flag)
         self.create_menu_item('Delete selected Card Set', oMenu,

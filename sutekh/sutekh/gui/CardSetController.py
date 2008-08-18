@@ -8,8 +8,8 @@
 """Controller for the card sets"""
 
 from sqlobject import SQLObjectNotFound
-from sutekh.gui.CardSetManagementController import reparent_card_set, \
-        check_ok_to_delete
+from sutekh.gui.CardSetManagementController import check_ok_to_delete, \
+        update_card_set
 from sutekh.gui.CardSetView import CardSetView
 from sutekh.gui.CreateCardSetDialog import CreateCardSetDialog
 from sutekh.gui.DBSignals import listen_row_destroy, listen_row_update, \
@@ -202,7 +202,6 @@ class CardSetController(object):
         send_changed_signal(oThePCS, oCard, 1)
         return True
 
-
     def edit_properties(self, oMenu):
         """Run the dialog to update the card set properties"""
         # pylint: disable-msg=E1101
@@ -212,20 +211,10 @@ class CardSetController(object):
         oProp.run()
         sName = oProp.get_name()
         if sName:
-            # Passed, so update the card set
-            self.__oPhysCardSet.name = sName
-            self.view.sSetName = sName
-            self.__oPhysCardSet.author = oProp.get_author()
-            self.__oPhysCardSet.comment = oProp.get_comment()
-            self.__oPhysCardSet.annotations = oProp.get_annotations()
-            oParent = oProp.get_parent()
-            if oParent != self.__oPhysCardSet.parent:
-                reparent_card_set(self.__oPhysCardSet, oParent)
-            self.__oPhysCardSet.syncUpdate()
-            # Update frame menu
-            self._oFrame.menu.update_card_set_menu(self.__oPhysCardSet)
-            # Reload pcs_list, since we may have changed stuff
-            self._oMainWindow.reload_pcs_list()
+            if sName != self.view.sSetName:
+                self.view.sSetName = sName
+            update_card_set(self.__oPhysCardSet, oProp, self._oMainWindow,
+                    self._oFrame.menu)
 
     def update_to_new_db(self):
         """Update the internal card set to the new DB."""
