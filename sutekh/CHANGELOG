@@ -1,3 +1,31 @@
+16 Aug 2008
+ * Various improvements to the HTML view widget
+   - Fix numbering fo nested lists
+   - Support the <strong> attribute
+   - Use gtk's word wrap mode for paragraphs
+   - Replace the use of resource_stream in HTMLTextView with a generic loader
+     function
+ * Convert existing HTML documentation to textile format
+ * Add textile2html.py script for creating the HTML documentation
+
+08 August 2008
+ * Fix set expansion plugin to work with changed database signals
+
+06 August 2008
+ * Consolidate the handling of AddedSignal + RemovedSignal. Simplifies code
+   somewhat
+ * Rework test case for CardSetListModel to use the database signals
+
+05 August 2008
+ * Change database signals so we always call alter_carD_count after the
+   database has been updated.
+
+01 August 2008
+ * Minor cleanups
+
+31 July 2008
+ * Work on restructuring CardSetListModel
+
 27 July 2008
  * Improve speed of the 'show card sets' mode in the GUI
 

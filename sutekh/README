@@ -241,6 +241,17 @@ The TreeView widgets used by the card lists (AbstractCard, PhysicalCard and card
 sets) are named "normal_view", but, in editable mode, they are named
 "editable_view".
 
+User Documentation
+==================
+
+The user documentation is available under the sutekh/docs directory. The
+Documentation is maintained as text files written using textile [1] Markup in
+the sutekh/docs/textile directory, and using on pytextile [2] and the included
+textile2html.py script to convert it to HTML for display in the gui. 
+
+[1] http://textile.thresholdstate.com/
+
+[2] http://pypi.python.org/pypi/textile
 
 Testing Sutekh
 ==============
