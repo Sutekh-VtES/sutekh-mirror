@@ -23,18 +23,7 @@
    """
 
 import unicodedata
-
-def _type_of_card(oCard):
-    """Return either Crypt or Library as required."""
-    sType = list(oCard.cardtype)[0].name
-    if sType == "Vampire" or sType == "Imbued":
-        return "Crypt"
-    else:
-        return "Library"
-
-def _norm_name(sName):
-    """Remove accents from the name"""
-    return unicodedata.normalize('NFKD', sName).encode('ascii','ignore')
+from sutekh.io.WriteELDBInventory import norm_name
 
 class WriteELDBDeckFile(object):
     """Create a string in ELDB deck format representing a card set."""
@@ -54,7 +43,7 @@ class WriteELDBDeckFile(object):
         for oCard in oCardSet.cards:
             oAbsCard = oCard.abstractCard
             sType = list(oAbsCard.cardtype)[0].name
-            sName = _norm_name(oAbsCard.name)
+            sName = norm_name(oAbsCard)
             if sType == "Vampire" or sType == "Imbued":
                 aCrypt.append(sName)
             else:

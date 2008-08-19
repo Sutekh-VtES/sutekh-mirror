@@ -26,7 +26,7 @@ def _type_of_card(oCard):
     else:
         return "Library"
 
-def _norm_name(oCard):
+def norm_name(oCard):
     """Remove accents from the name"""
     sName = oCard.name
     if oCard.level is not None:
@@ -52,7 +52,7 @@ class WriteELDBInventory(object):
             oAbsCard = oCard.abstractCard
             dCards[oAbsCard] += 1
         for oCard, iNum in dCards.iteritems():
-            sResult += '"%s",%d,0,"","%s"\n' % (_norm_name(oCard), iNum,
+            sResult += '"%s",%d,0,"","%s"\n' % (norm_name(oCard), iNum,
                     _type_of_card(oCard))
         return sResult
 
