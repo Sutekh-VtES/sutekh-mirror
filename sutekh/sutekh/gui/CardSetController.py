@@ -12,12 +12,12 @@ from sutekh.gui.CardSetManagementController import check_ok_to_delete, \
         update_card_set
 from sutekh.gui.CardSetView import CardSetView
 from sutekh.gui.CreateCardSetDialog import CreateCardSetDialog
-from sutekh.gui.DBSignals import listen_row_destroy, listen_row_update, \
+from sutekh.core.DBSignals import listen_row_destroy, listen_row_update, \
         send_changed_signal
 from sutekh.core.SutekhObjects import IPhysicalCardSet, PhysicalCardSet, \
         AbstractCard, PhysicalCard, MapPhysicalCardToPhysicalCardSet, \
         IExpansion, IPhysicalCard
-from sutekh.SutekhUtility import delete_physical_card_set
+from sutekh.core.CardSetUtilities import delete_physical_card_set
 
 class CardSetController(object):
     """Controller class for the Card Sets."""

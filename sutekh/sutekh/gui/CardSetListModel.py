@@ -15,7 +15,7 @@ from sutekh.core.SutekhObjects import PhysicalCard, IExpansion, \
         MapPhysicalCardToPhysicalCardSet, IAbstractCard, IPhysicalCard, \
         IPhysicalCardSet, PhysicalCardSet
 from sutekh.gui.CardListModel import CardListModel, norm_path
-from sutekh.gui.DBSignals import listen_changed
+from sutekh.core.DBSignals import listen_changed
 
 # pylint: disable-msg=C0103
 # We break our usual convention here
@@ -825,7 +825,7 @@ class CardSetCardListModel(CardListModel):
                 self._oCardSet.parent is not None
 
     def changes_with_children(self):
-        """Utiltiy function. Returns true if changes to the child card sets
+        """Utility function. Returns true if changes to the child card sets
            influence the display."""
         return self.iShowCardMode == CHILD_CARDS or self.iExtraLevelsMode \
                 in [SHOW_CARD_SETS, EXPANSIONS_AND_CARD_SETS,
@@ -1283,15 +1283,12 @@ class CardSetCardListModel(CardListModel):
 
     def alter_child_count(self, oPhysCard, sCardSetName, iChg):
         """Adjust the count for the card in the given card set by iChg"""
-        # pylint: disable-msg = E1101
-        # PyProtocols confuses pylint
-        if not IPhysicalCardSet(sCardSetName).inuse:
-            # Shouldn't happen
-            return
         # Child card set number changes can't change the values displayed
         # for card level items, but they can cause card level items to vanish
         # So we don't need to loop over the card level, merely the sub-levels,
         # but we do need to check if the card is removed at the end
+        # pylint: disable-msg = E1101
+        # PyProtocols confuses pylint
         sCardName = oPhysCard.abstractCard.name
         sExpName = self.get_expansion_name(oPhysCard.expansion)
         tKey = (sCardName, sExpName)

@@ -13,21 +13,8 @@ from sutekh.gui.FilterDialog import FilterDialog
 from sutekh.gui.CardSetManagementView import CardSetManagementView
 from sutekh.gui.CreateCardSetDialog import CreateCardSetDialog
 from sutekh.gui.SutekhDialog import do_complaint_warning
-from sutekh.SutekhUtility import delete_physical_card_set, find_children, \
-        detect_loop
-
-def _get_loop_names(oCardSet):
-    """Return a list names of the card sets in the loop."""
-    aLoop = [oCardSet.name]
-    oParent = oCardSet.parent
-    while oParent != oCardSet and oParent:
-        aLoop.append(oParent.name)
-        oParent = oParent.parent
-    if not oParent:
-        # Safet check case
-        return []
-    aLoop.reverse()
-    return aLoop
+from sutekh.core.CardSetUtilities import delete_physical_card_set, \
+        find_children, detect_loop, get_loop_names
 
 def split_selection_data(sSelectionData):
     """Helper function to subdivide selection string into bits again"""
@@ -107,7 +94,7 @@ class CardSetManagementController(object):
         # Check the current set for loops
         for oCS in PhysicalCardSet.select():
             if detect_loop(oCS):
-                sLoop = "%s->%s" % ("->".join(_get_loop_names(oCS)),
+                sLoop = "%s->%s" % ("->".join(get_loop_names(oCS)),
                         oCS.name)
                 do_complaint_warning(
                         'Loop %s in the card sets relationships.\n'

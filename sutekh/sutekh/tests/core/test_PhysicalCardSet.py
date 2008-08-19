@@ -10,7 +10,7 @@ from sutekh.tests.TestCore import SutekhTest
 from sutekh.core.SutekhObjects import IAbstractCard, IPhysicalCard, \
         IExpansion, PhysicalCardSet, IPhysicalCardSet, \
         MapPhysicalCardToPhysicalCardSet
-from sutekh.SutekhUtility import delete_physical_card_set
+from sutekh.core.CardSetUtilities import delete_physical_card_set
 from sqlobject import SQLObjectNotFound
 import unittest
 

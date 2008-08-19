@@ -9,12 +9,11 @@
 
 """Misc functions needed in various places in Sutekh."""
 
-from sutekh.core.SutekhObjects import VersionTable, flush_cache, \
-        PhysicalCardSet
+from sutekh.core.SutekhObjects import VersionTable, flush_cache
 from sutekh.core.DatabaseVersion import DatabaseVersion
 from sutekh.io.WhiteWolfParser import WhiteWolfParser
 from sutekh.io.RulingParser import RulingParser
-from sqlobject import sqlhub, SQLObjectNotFound
+from sqlobject import sqlhub
 import tempfile, os, sys
 
 def refresh_tables(aTables, oConn):
@@ -131,23 +130,6 @@ def sqlite_uri(sPath):
 
     return "sqlite://" + sDbFile
 
-def delete_physical_card_set(sSetName):
-    """Unconditionally delete a PCS and its contents"""
-    # pylint: disable-msg=E1101
-    # SQLObject confuse pylint
-    try:
-        oCS = PhysicalCardSet.byName(sSetName)
-        aChildren = find_children(oCS)
-        for oChildCS in aChildren:
-            oChildCS.parent = oCS.parent
-            oChildCS.syncUpdate()
-        for oCard in oCS.cards:
-            oCS.removePhysicalCard(oCard)
-        PhysicalCardSet.delete(oCS.id)
-        return True
-    except SQLObjectNotFound:
-        return False
-
 def pretty_xml(oElement, iIndentLevel=0):
     """
     Helper function to add whitespace text attributes to a ElementTree.
@@ -169,17 +151,4 @@ def pretty_xml(oElement, iIndentLevel=0):
         if iIndentLevel and (not oElement.tail or not oElement.tail.strip()):
             oElement.tail = sIndent
 
-def detect_loop(oCardSet):
-    """Checks whether the given card set is part of a loop"""
-    oParent = oCardSet.parent
-    while oParent:
-        if oParent == oCardSet:
-            return True # we have a loop
-        oParent = oParent.parent
-    return False # we've hit none, so no loop
 
-def find_children(oCardSet):
-    """Find all the children of the given card set"""
-    # pylint: disable-msg=E1101
-    # SQLObject confuses pylint
-    return list(PhysicalCardSet.selectBy(parentID=oCardSet.id))

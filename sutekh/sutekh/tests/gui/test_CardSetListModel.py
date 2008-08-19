@@ -8,7 +8,6 @@
 
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.gui.CardListModel import CardListModelListener
-from sutekh.gui.DBSignals import send_changed_signal
 from sutekh.gui.CardSetListModel import CardSetCardListModel, \
         NO_SECOND_LEVEL, SHOW_EXPANSIONS, SHOW_CARD_SETS, \
         EXPANSIONS_AND_CARD_SETS, CARD_SETS_AND_EXPANSIONS, \
@@ -19,6 +18,7 @@ from sutekh.core.SutekhObjects import PhysicalCardSet, IPhysicalCard, \
         IExpansion, IAbstractCard, MapPhysicalCardToPhysicalCardSet
 # Needed to reduce speed impact of Grouping tests
 from sutekh.core.SutekhObjectCache import SutekhObjectCache
+from sutekh.core.DBSignals import send_changed_signal
 import unittest
 
 class CardSetListener(CardListModelListener):

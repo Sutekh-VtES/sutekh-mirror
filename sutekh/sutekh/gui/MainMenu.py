@@ -18,7 +18,8 @@ from sutekh.gui.CardSetManagementController import reparent_card_set
 from sutekh.io.XmlFileHandling import PhysicalCardXmlFile, \
         PhysicalCardSetXmlFile, AbstractCardSetXmlFile
 from sutekh.io.IdentifyXMLFile import IdentifyXMLFile
-from sutekh.SutekhUtility import delete_physical_card_set, find_children
+from sutekh.core.CardSetUtilities import delete_physical_card_set, \
+        find_children
 from sutekh.gui.SutekhMenu import SutekhMenu
 
 class MainMenu(SutekhMenu):

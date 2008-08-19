@@ -8,10 +8,10 @@
 import gtk
 from sutekh.core.SutekhObjects import PhysicalCardSet, IExpansion, \
         IPhysicalCard, IAbstractCard, MapPhysicalCardToPhysicalCardSet
+from sutekh.core.DBSignals import send_changed_signal
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 from sutekh.gui.ScrolledList import ScrolledList
-from sutekh.gui.DBSignals import send_changed_signal
 
 class SetCardExpansions(CardListPlugin):
     """Set al the selected cards in the card list to a single expansion

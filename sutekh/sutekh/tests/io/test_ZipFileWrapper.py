@@ -13,7 +13,7 @@ from sutekh.core.SutekhObjects import IAbstractCard, IPhysicalCard, \
         IPhysicalCardSet, PhysicalCardSet
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
 from sutekh.gui.ProgressDialog import SutekhCountLogHandler
-from sutekh.SutekhUtility import delete_physical_card_set
+from sutekh.core.CardSetUtilities import delete_physical_card_set
 import unittest
 import zipfile
 
