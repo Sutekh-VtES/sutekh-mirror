@@ -2,6 +2,7 @@
  * Reorganise code a bit
    - Move DBSignals to core
    - Split some code off SutekhUtility into core.CardSetUtilities
+ * Fill in filtering tests for CardSetListModel
 
 18 Aug 2008
  * Fold card set annotations into the edit card set properties option

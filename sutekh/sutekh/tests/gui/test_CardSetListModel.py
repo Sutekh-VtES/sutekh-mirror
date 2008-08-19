@@ -404,7 +404,9 @@ class CardSetListModelTests(SutekhTest):
 
     def test_filters(self):
         """Test filtering for the card set"""
-        # Test filter which selects nothing works
+        # pylint: disable-msg=R0915
+        # R0915: Want a long, sequential test case to reduce
+        # repeated setups, so it has lots of lines
         # pylint: disable-msg=W0612
         # oCache exists only for the internal cache, so it's unused
         oCache = SutekhObjectCache()
@@ -421,17 +423,78 @@ class CardSetListModelTests(SutekhTest):
             # pylint: disable-msg=E1101
             # PyProtocols confuses pylint
             oPCS.addPhysicalCard(oCard.id)
+        # Test filter which selects nothing works
         self._loop_zero_filter_modes(oModel)
         # Check basic filtering
         oModel.iShowCardMode = THIS_SET_ONLY
         oModel.iParentCountMode = IGNORE_PARENT
         oModel.iExtraLevelsMode = NO_SECOND_LEVEL
         oModel.bEditable = False
+        oModel.groupby = Groupings.NullGrouping
         # Test card type
-        # FIXME: test more filtering results
         oModel.selectfilter = Filters.CardTypeFilter('Vampire')
         oModel.applyfilter = True
         oModel.load()
+        tTotals = (oModel.iter_n_children(None),
+                self._count_all_cards(oModel),
+                self._count_second_level(oModel))
+        self.assertEqual(tTotals, (1, 4, 0), 'Wrong results from filter')
+        oModel.groupby = Groupings.DisciplineGrouping
+        oModel.applyfilter = True
+        oModel.load()
+        tTotals = (oModel.iter_n_children(None),
+                self._count_all_cards(oModel),
+                self._count_second_level(oModel))
+        self.assertEqual(tTotals, (11, 18, 0), 'Wrong results from filter')
+        oModel.iExtraLevelsMode = SHOW_EXPANSIONS
+        oModel.load()
+        tTotals = (oModel.iter_n_children(None),
+                self._count_all_cards(oModel),
+                self._count_second_level(oModel))
+        self.assertEqual(tTotals, (11, 18, 25), 'Wrong results from filter')
+        oModel.bEditable = True
+        oModel.load()
+        tTotals = (oModel.iter_n_children(None),
+                self._count_all_cards(oModel),
+                self._count_second_level(oModel))
+        self.assertEqual(tTotals, (11, 18, 48), 'Wrong results from filter')
+        # Add a child card set, and test filtering results
+        oModel.groupby = Groupings.NullGrouping
+        oChildPCS = PhysicalCardSet(name=self.aNames[1], parent=oPCS,
+                inuse=True)
+        aCards = [('Sha-Ennu', None),
+                ('Kabede Maru', None),
+                ('Gracis Nostinus', 'CE'),
+                ('Yvette, The Hopeless', 'BSC')]
+        for sName, sExp in aCards:
+            oCard = self._gen_card(sName, sExp)
+            # pylint: disable-msg=E1101
+            # PyProtocols confuses pylint
+            oChildPCS.addPhysicalCard(oCard.id)
+        oModel.bEditable = False
+        oModel.load()
+        tTotals = (oModel.iter_n_children(None),
+                self._count_all_cards(oModel),
+                self._count_second_level(oModel))
+        self.assertEqual(tTotals, (1, 4, 6), 'Wrong results from filter')
+        oModel.iExtraLevelsMode = SHOW_CARD_SETS
+        oModel.load()
+        tTotals = (oModel.iter_n_children(None),
+                self._count_all_cards(oModel),
+                self._count_second_level(oModel))
+        self.assertEqual(tTotals, (1, 4, 2), 'Wrong results from filter')
+        oModel.iShowCardMode = CHILD_CARDS
+        oModel.load()
+        tTotals = (oModel.iter_n_children(None),
+                self._count_all_cards(oModel),
+                self._count_second_level(oModel))
+        self.assertEqual(tTotals, (1, 6, 4), 'Wrong results from filter')
+        oModel.iShowCardMode = ALL_CARDS
+        oModel.load()
+        tTotals = (oModel.iter_n_children(None),
+                self._count_all_cards(oModel),
+                self._count_second_level(oModel))
+        self.assertEqual(tTotals, (1, 22, 22), 'Wrong results from filter')
 
     def test_empty(self):
         """Test corner cases around empty card sets"""
