@@ -1,3 +1,7 @@
+21 Aug 2008
+ * Add <set> attribute to ARDB XML file. Allows decks to be properly imported
+   into recent ARDB versions
+
 19 Aug 2008
  * Reorganise code a bit
    - Move DBSignals to core

@@ -10,7 +10,7 @@
    and such.
    """
 
-from sutekh.core.SutekhObjects import IAbstractCard
+from sutekh.core.SutekhObjects import IAbstractCard, IPhysicalCard
 
 class ArdbInfo(object):
     """Create a string in ARDB's text format representing a dictionary
@@ -61,7 +61,7 @@ class ArdbInfo(object):
         iSize = 0
         dLib = {}
         for tKey, iCount in dCards.iteritems():
-            iId, sName = tKey
+            iId, sName, sSet = tKey
             # pylint: disable-msg=E1101
             # IAbstractCard confuses pylint
             oCard = IAbstractCard(sName)
@@ -71,7 +71,7 @@ class ArdbInfo(object):
                 sTypeString = "/".join(aTypes)
                 # We want to be able to sort over types easily, so
                 # we add them to the keys
-                dLib[(iId, sName, sTypeString)] = iCount
+                dLib[(iId, sName, sTypeString, sSet)] = iCount
                 iSize += iCount
         return (dLib, iSize)
 
@@ -89,3 +89,34 @@ class ArdbInfo(object):
         elif len(oCard.virtue) > 0:
             return " ".join(sorted([x.name for x in oCard.virtue]))
         return ""
+
+    def _get_cards(self, oCardIter):
+        """Create the dictionary of cards given the list of cards"""
+        # pylint: disable-msg=E1101
+        # SQLObject methods confuse pylint
+        dDict = {}
+        for oCard in oCardIter:
+            oPhysCard = IPhysicalCard(oCard)
+            oAbsCard = IAbstractCard(oCard)
+            if oPhysCard.expansion:
+                sSet = self._get_ardb_exp_name(oPhysCard.expansion)
+            else:
+                # ARDB doesn't have a concept of 'No expansion', so we 
+                # need to fake it. We use the first legitimate expansion
+                oRarityPair = list(oAbsCard.rarity)[0]
+                sSet = self._get_ardb_exp_name(oRarityPair.expansion)
+            dDict.setdefault((oAbsCard.id, oAbsCard.name, sSet), 0)
+            dDict[(oAbsCard.id, oAbsCard.name, sSet)] += 1
+        return dDict
+
+    def _get_ardb_exp_name(self, oExpansion):
+        """Extract the correct ARDB name for the expansion"""
+        sSet = oExpansion.shortname
+        if sSet == 'Promo':
+            sSet = oPhysCard.expansion.name
+            sSet.replace('-', '')
+        elif sSet == 'BSC':
+            # ARDB doesn't support BSC.
+            sSet = 'CE'
+        return sSet
+

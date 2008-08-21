@@ -74,7 +74,7 @@ class WriteArdbXML(ArdbInfo):
         # pylint: disable-msg=R0914
         # Need this many local variables to create proper XML tree
         for tKey, iNum in dVamps.iteritems():
-            iId, sName = tKey
+            iId, sName, sSet = tKey
             # pylint: disable-msg=E1101
             # IAbstractCard confuses pylint
             oCard = IAbstractCard(sName)
@@ -93,6 +93,8 @@ class WriteArdbXML(ArdbInfo):
                 oNameElem.text = sName.replace(' (Advanced)', '')
             else:
                 oNameElem.text = sName
+            oSetElem = SubElement(oCardElem, 'set')
+            oSetElem.text = sSet
             oDiscElem = SubElement(oCardElem, 'disciplines')
             sDisciplines = self._gen_disciplines(oCard)
             oDiscElem.text = sDisciplines
@@ -125,7 +127,7 @@ class WriteArdbXML(ArdbInfo):
         # pylint: disable-msg=R0914
         # Need this many local variables to create proper XML tree
         for tKey, iNum in dLib.iteritems():
-            iId, sName, sTypeString = tKey
+            iId, sName, sTypeString, sSet = tKey
             # pylint: disable-msg=E1101
             # IAbstractCard confuses pylint
             oCard = IAbstractCard(sName)
@@ -133,6 +135,8 @@ class WriteArdbXML(ArdbInfo):
                     count=str(iNum))
             oNameElem = SubElement(oCardElem, 'name')
             oNameElem.text = sName
+            oSetElem = SubElement(oCardElem, 'set')
+            oSetElem.text = sSet
             if oCard.costtype is not None:
                 oCostElem = SubElement(oCardElem, 'cost')
                 oCostElem.text = "%d %s " % (oCard.cost, oCard.costtype )
@@ -154,17 +158,19 @@ class WriteArdbXML(ArdbInfo):
 
     # pylint: disable-msg=R0913
     # we need all these arguments
-    def write(self, fOut, sSetName, sAuthor, sDescription, dCards):
+    def write(self, fOut, sSetName, sAuthor, sDescription, oCardIter):
         """Takes filename, deck details and a dictionary of cards, of the
            form dCard[(id,name)] = count and writes the file."""
+        dCards = self._get_cards(oCardIter)
         oRoot = self.gen_tree(sSetName, sAuthor, sDescription, dCards)
         pretty_xml(oRoot)
         ElementTree(oRoot).write(fOut)
 
     # pylint: enable-msg=R0913
 
-    def gen_xml_string(self, sSetName, sAuthor, sDescription, dCards):
+    def gen_xml_string(self, sSetName, sAuthor, sDescription, oCardIter):
         """Generate string XML representation"""
+        dCards = self._get_cards(oCardIter)
         oRoot = self.gen_tree(sSetName, sAuthor, sDescription, dCards)
         return tostring(oRoot)
 

@@ -90,10 +90,12 @@ class WriteArdbText(ArdbInfo):
             % (iLibSize,)
 
         dTypes = {}
-        for iId, sName, sTypeString in dLib:
+        for iId, sName, sTypeString, sSet in dLib:
             if sTypeString not in dTypes:
                 dTypes[sTypeString] = {}
-            dTypes[sTypeString][(iId, sName)] = dLib[(iId, sName, sTypeString)]
+            dTypes[sTypeString].setdefault((iId, sName), 0)
+            dTypes[sTypeString][(iId, sName)] += dLib[(iId, sName,
+                sTypeString, sSet)]
 
         for sTypeString in sorted(dTypes):
             dCards = dTypes[sTypeString]
@@ -110,9 +112,10 @@ class WriteArdbText(ArdbInfo):
 
     # pylint: disable-msg=R0913
     # we need all these arguments
-    def write(self, fOut, sSetName, sAuthor, sDescription, dCards):
+    def write(self, fOut, sSetName, sAuthor, sDescription, oCardIter):
         """Takes filename, deck details and a dictionary of cards, of the
-           form dCard[(id, name)] = count and writes the file."""
+           form dCard[(id, name, set)] = count and writes the file."""
+        dCards = self._get_cards(oCardIter)
         fOut.write(self._gen_header(sSetName, sAuthor, sDescription))
         fOut.write("\n")
         fOut.write(self._gen_crypt(dCards))

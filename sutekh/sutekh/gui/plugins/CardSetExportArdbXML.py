@@ -51,19 +51,8 @@ class CardSetExportArdbXML(CardListPlugin):
             oWriter = WriteArdbXML()
             fOut = file(sFileName,"w")
             oWriter.write(fOut, self.view.sSetName, oCardSet.author,
-                    oCardSet.comment, self.get_cards())
+                    oCardSet.comment, self.get_all_cards())
             fOut.close()
-
-    def get_cards(self):
-        """Get the cards from the card set."""
-        # pylint: disable-msg=E1101
-        # SQLObject methods confuse pylint
-        dDict = {}
-        for oCard in self.model.get_all_cards():
-            oACard = IAbstractCard(oCard)
-            dDict.setdefault((oACard.id, oACard.name), 0)
-            dDict[(oACard.id, oACard.name)] += 1
-        return dDict
 
 # pylint: disable-msg=C0103
 # accept plugin name
