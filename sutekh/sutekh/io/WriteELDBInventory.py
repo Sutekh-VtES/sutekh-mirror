@@ -27,10 +27,14 @@ def _type_of_card(oCard):
         return "Library"
 
 def norm_name(oCard):
-    """Remove accents from the name"""
+    """Transform a card name to the ELDB equivilant"""
     sName = oCard.name
     if oCard.level is not None:
-        sName.replace('(Advanced)', '(ADV)')
+        sName.replace("(Advanced)", "(ADV)")
+    if sName.startswith("The ") and sName != "The Kikiyaon":
+        # Annoying ELDB special case
+        sName = sName[4:] + ", The"
+    sName.replace("'", "`")
     return unicodedata.normalize('NFKD', sName).encode('ascii','ignore')
 
 class WriteELDBInventory(object):
