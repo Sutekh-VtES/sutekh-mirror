@@ -7,8 +7,7 @@
 """Plugin for exporting to ARDB's XML format"""
 
 import gtk
-from sutekh.core.SutekhObjects import PhysicalCardSet, \
-        IAbstractCard
+from sutekh.core.SutekhObjects import PhysicalCardSet
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhFileWidget import ExportDialog
 from sutekh.io.WriteArdbXML import WriteArdbXML

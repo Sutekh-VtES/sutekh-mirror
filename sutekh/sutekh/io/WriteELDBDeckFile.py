@@ -22,7 +22,6 @@
    "Social Charm"
    """
 
-import unicodedata
 from sutekh.io.WriteELDBInventory import norm_name
 
 class WriteELDBDeckFile(object):

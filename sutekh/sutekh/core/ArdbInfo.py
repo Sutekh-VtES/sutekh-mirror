@@ -101,7 +101,7 @@ class ArdbInfo(object):
             if oPhysCard.expansion:
                 sSet = self._get_ardb_exp_name(oPhysCard.expansion)
             else:
-                # ARDB doesn't have a concept of 'No expansion', so we 
+                # ARDB doesn't have a concept of 'No expansion', so we
                 # need to fake it. We use the first legitimate expansion
                 oRarityPair = list(oAbsCard.rarity)[0]
                 sSet = self._get_ardb_exp_name(oRarityPair.expansion)
@@ -113,7 +113,7 @@ class ArdbInfo(object):
         """Extract the correct ARDB name for the expansion"""
         sSet = oExpansion.shortname
         if sSet == 'Promo':
-            sSet = oPhysCard.expansion.name
+            sSet = oExpansion.name
             sSet.replace('-', '')
         elif sSet == 'BSC':
             # ARDB doesn't support BSC.
