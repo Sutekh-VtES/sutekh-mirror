@@ -55,7 +55,7 @@ set, ensure it is editable.
 
 Cards can be added by dragging them from the _White Wolf Card List_ to the pane
 for the card set. Selecting multiple cards will add a single copy of each
-selected cards. You can also use the copy + paste options from the edit menu.
+selected cards. You can also use the copy & paste options from the edit menu.
 
 When a card set is editable, *+* and *-* buttons will be shown next to the card
 names. These can be used to increase or decrease the number for a given card.
@@ -74,6 +74,22 @@ h2(#panes). Manipulating Panes
 
 The Sutekh user interface consists of panes. The number of panes and the layout
 is entirely up to you. 
+
+Panes can be added using the *Add Pane* Menu, while the contents of the
+currently selected pane can be replaced using the *Replace Pane* Menu. New
+blank panes can also be added by splitting the current pane, either into
+two panes next to each other, or into two panes stacked one above the other.
+Panes can be swapped by dragging a pane to it's new location. 
+
+Card sets will be opened in a new pane added on the right by double clicking
+on the entry in the _Card Set_ list. Card sets can also be opened in a specific
+pane by dragging the card set name from the _Card Set_ list to the desired
+pane.
+
+If the *Save Pane Set on Exit* option in the *File->Preferences* menu is
+set, Sutekh will save the current layout when you exit, and restore it on
+startup. You can also save the current layout using the *Save Current Pane Set*
+option.
 
 h2(#sets). Managing Card Sets
 
@@ -103,14 +119,21 @@ Card sets can by deleted via the *Delete card set* from the *Actions* menu of
 the card set list pane. Open card sets can also be deleted via the *Delete card
 set* option from the *Actions* menu of the card set pane.
 
-h3. *In Use* Card sets
+h3. _"In Use"_ Card sets
 
-Card sets can be marked or unmarked as _in use_. The set of in use card sets
+Card sets can be marked or unmarked as _"in use"_. The set of in use card sets
 are considered to be those currently active. The display modes dealing with
-child card sets only consider child cards sets that are marked as _in use_.
+child card sets only consider child cards sets that are marked as _"in use"_.
+
+h3. The _"Cards to Show"_ options
+
+h3. The _"Display Mode"_ options
+
+h3. The _"Parent Card Count"_ options
 
 h2(#filtering). Filtering
 
 h2(#tips). Useful Tips
+
 
 "The Sutekh Manual":Manual.html
