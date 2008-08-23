@@ -1,4 +1,4 @@
-# WriteArdbXML.py
+# WriteArdbInvXML.py
 # -*- coding: utf8 -*-
 # vim:fileencoding=utf8 ai ts=4 sts=4 et sw=4
 # Copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
@@ -7,7 +7,7 @@
 # GPL - see COPYING for details
 
 """Given a list of Abstract Cards in a set, write a XML file compatable with
-   the Anarch Revolt Deck Builder."""
+   the Anarch Revolt Deck Builder's XML inventory format."""
 
 from sutekh.core.SutekhObjects import IAbstractCard
 from sutekh.core.ArdbInfo import ArdbInfo
@@ -25,9 +25,9 @@ except ImportError:
 # pylint: enable-msg=E0611, F0401
 
 
-class WriteArdbXML(ArdbInfo):
+class WriteArdbXMLInv(ArdbInfo):
     """Reformat cardset to elementTree and export it to a ARDB
-       compatible XML file."""
+       compatible XML Inventory file."""
 
     # Should this be an attribute of VersionTable?
     sDatabaseVersion = 'Sutekh-20080331'
@@ -37,31 +37,23 @@ class WriteArdbXML(ArdbInfo):
     sFormatVersion = '-TODO-1.0'
     # pyline: enable-msg=W0511
 
-    def gen_tree(self, sSetName, sAuthor, sDescription, dCards):
+    def gen_tree(self, dCards):
         """Creates the actual XML document into memory."""
         # pylint: disable-msg=R0914
         # Need this many local variables to create proper XML tree
-        oRoot = Element('deck')
+        oRoot = Element('inventory')
 
         sDateWritten = time.strftime('%Y-%m-%d', time.localtime())
         oRoot.attrib['generator'] = "Sutekh [ %s ]" % SutekhInfo.VERSION_STR
         oRoot.attrib['formatVersion'] = self.sFormatVersion
         oRoot.attrib['databaseVersion'] = self.sDatabaseVersion
-        oNameElem = SubElement(oRoot, 'name')
-        oNameElem.text  = sSetName
-        oAuthElem = SubElement(oRoot, 'author')
-        oAuthElem.text = sAuthor
-        oDescElem = SubElement(oRoot, 'description')
-        oDescElem.text = sDescription
         oDateElem = SubElement(oRoot, 'date')
         oDateElem.text = sDateWritten
 
         dVamps, dCryptStats = self._extract_crypt(dCards)
         (dLib, iLibSize) = self._extract_library(dCards)
 
-        oCryptElem = SubElement(oRoot, 'crypt', size=str(dCryptStats['size']),
-                min=str(dCryptStats['min']), max=str(dCryptStats['max']),
-                avg=str(dCryptStats['avg']))
+        oCryptElem = SubElement(oRoot, 'crypt', size=str(dCryptStats['size']))
         self.format_vamps(oCryptElem, dVamps)
 
         oLibElem = SubElement(oRoot, 'library', size=str(iLibSize))
@@ -69,17 +61,26 @@ class WriteArdbXML(ArdbInfo):
 
         return oRoot
 
+    # pylint: disable-msg=R0201
+    # these are mthods for consistency
     def format_vamps(self, oCryptElem, dVamps):
         """Convert the Vampire dictionary into elementtree representation."""
-        # pylint: disable-msg=R0914
-        # Need this many local variables to create proper XML tree
+        dCombinedVamps = {}
+        # ARDB inventory doesn't seperate cards by set, although it's included
+        # in the XML file, so we need to combine things so there's only 1
+        # entry per card
         for tKey, iNum in dVamps.iteritems():
             iId, sName, sSet = tKey
+            iId = tKey[0]
+            sName = tKey[1]
+            dCombinedVamps.setdefault(iId, [sName, sSet, 0])
+            dCombinedVamps[iId][2] += iNum
+        for iId, (sName, sSet, iNum) in dCombinedVamps.iteritems():
             # pylint: disable-msg=E1101
             # IAbstractCard confuses pylint
             oCard = IAbstractCard(sName)
             oCardElem = SubElement(oCryptElem, 'vampire',
-                    databaseID=str(iId), count=str(iNum))
+                    databaseID=str(iId), have=str(iNum), spare=0, need=0)
             # This won't match the ARDB ID's, unless by chance.
             # It looks like that should not be an issue as ARDB will
             # use the name if the IDs don't match
@@ -95,83 +96,40 @@ class WriteArdbXML(ArdbInfo):
                 oNameElem.text = sName
             oSetElem = SubElement(oCardElem, 'set')
             oSetElem.text = sSet
-            oDiscElem = SubElement(oCardElem, 'disciplines')
-            sDisciplines = self._gen_disciplines(oCard)
-            oDiscElem.text = sDisciplines
-            aClan = [x.name for x in oCard.clan]
-            oClanElem = SubElement(oCardElem, 'clan')
-            oCapElem = SubElement(oCardElem, 'capacity')
-            if len(oCard.creed) > 0:
-                # ARDB seems to treat all Imbued as being of the same clan
-                # Should we do an Imbued:Creed thing?
-                oClanElem.text = 'Imbued'
-                oCapElem.text = str(oCard.life)
-            else:
-                oClanElem.text = aClan[0]
-                oCapElem.text = str(oCard.capacity)
-            oGrpElem = SubElement(oCardElem, 'group')
-            oGrpElem.text = str(oCard.group)
-            # ARDB doesn't handle sect specifically
-            # No idea how ARDB represents independant titles -
-            # this seems set when the ARDB database is created, and is
-            # not in the ARDB codebase
-            if len(oCard.title) > 0:
-                oTitleElem = SubElement(oCardElem, 'title')
-                aTitles = [oC.name for oC in oCard.title]
-                oTitleElem.text = aTitles[0]
-            oTextElem = SubElement(oCardElem, 'text')
-            oTextElem.text = oCard.text
 
     def format_library(self, oLibElem, dLib):
         """Format the dictionary of library cards for the element tree."""
         # pylint: disable-msg=R0914
         # Need this many local variables to create proper XML tree
+        dCombinedLib = {}
         for tKey, iNum in dLib.iteritems():
-            iId, sName, sTypeString, sSet = tKey
-            # pylint: disable-msg=E1101
-            # IAbstractCard confuses pylint
-            oCard = IAbstractCard(sName)
+            iId = tKey[0]
+            sName = tKey[1]
+            sSet = tKey[3]
+            dCombinedLib.setdefault(iId, [sName, sSet, 0])
+            dCombinedLib[iId][2] += iNum
+        for iId, (sName, sSet, iNum) in dCombinedLib.iteritems():
             oCardElem = SubElement(oLibElem, 'card', databaseID=str(iId),
-                    count=str(iNum))
+                    have=str(iNum), spare=0, need=0)
             oNameElem = SubElement(oCardElem, 'name')
             oNameElem.text = sName
             oSetElem = SubElement(oCardElem, 'set')
             oSetElem.text = sSet
-            if oCard.costtype is not None:
-                oCostElem = SubElement(oCardElem, 'cost')
-                oCostElem.text = "%d %s " % (oCard.cost, oCard.costtype )
-            if len(oCard.clan) > 0:
-                # ARDB also strores things like "requires a prince"
-                # we don't so too bad
-                oReqElem = SubElement(oCardElem, 'requirement')
-                aClan = [x.name for x in oCard.clan]
-                oReqElem.text = "/".join(aClan)
-            oTypeElem = SubElement(oCardElem, 'type')
-            oTypeElem.text = sTypeString
-            # Not sure if this does quite the right thing here
-            sDisciplines = self._gen_disciplines(oCard)
-            if sDisciplines != '':
-                oDiscElem = SubElement(oCardElem, 'disciplines')
-                oDiscElem.text = sDisciplines
-            oTextElem = SubElement(oCardElem, 'text')
-            oTextElem.text = oCard.text
 
-    # pylint: disable-msg=R0913
-    # we need all these arguments
-    def write(self, fOut, sSetName, sAuthor, sDescription, oCardIter):
+    # pylint: enable-msg=R0201
+
+    def write(self, fOut, oCardIter):
         """Takes filename, deck details and a dictionary of cards, of the
            form dCard[(id,name)] = count and writes the file."""
         dCards = self._get_cards(oCardIter)
-        oRoot = self.gen_tree(sSetName, sAuthor, sDescription, dCards)
+        oRoot = self.gen_tree(dCards)
         pretty_xml(oRoot)
         ElementTree(oRoot).write(fOut)
 
-    # pylint: enable-msg=R0913
-
-    def gen_xml_string(self, sSetName, sAuthor, sDescription, oCardIter):
+    def gen_xml_string(self, oCardIter):
         """Generate string XML representation"""
         dCards = self._get_cards(oCardIter)
-        oRoot = self.gen_tree(sSetName, sAuthor, sDescription, dCards)
+        oRoot = self.gen_tree(dCards)
         return tostring(oRoot)
 
 

@@ -59,6 +59,8 @@ class MultiTypeGrouping(IterGrouping):
        """
 
     def __init__(self, oIter, fGetCard=fDefGetCard):
+        # pylint: disable-msg=C0103
+        # we accept x here for consistency with other groupings
         def multitype(x):
             """Return a list of one string with slash separated card types."""
             aTypes = [y.name for y in fGetCard(x).cardtype]

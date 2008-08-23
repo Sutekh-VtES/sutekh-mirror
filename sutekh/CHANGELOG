@@ -1,3 +1,8 @@
+23 Aug 2008
+ * Add support for Multi-Type grouping, which groups card belonging to 
+   multiple types seperately
+ * Add first stab add exporting to ARDB's inventory XML format
+
 21 Aug 2008
  * Add <set> attribute to ARDB XML file. Allows decks to be properly imported
    into recent ARDB versions
