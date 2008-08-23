@@ -402,7 +402,7 @@ class AnalyzeCardList(CardListPlugin):
         for oCard in aImbuedCards:
             for oVirt in oCard.virtue:
                 dDiscs.setdefault(oVirt, ['virtue', 0, 0])
-                dDiscs[oVirt.discipline][1] += 1
+                dDiscs[oVirt][1] += 1
 
     def get_library_stats(self, aAllCards, dCardLists):
         """Extract the relevant library stats from the list of cards"""
@@ -430,7 +430,7 @@ class AnalyzeCardList(CardListPlugin):
                 aDisciplines = [oP.discipline.fullname for oP in
                         oCard.discipline]
             elif len(oCard.virtue) > 0:
-                aDisciplines = [oP.virtue.fullname for oP in oCard.virtue]
+                aDisciplines = [oV.fullname for oV in oCard.virtue]
             else:
                 aDisciplines = ['No Discipline']
             for sDisc in aDisciplines:
