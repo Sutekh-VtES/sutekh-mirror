@@ -245,7 +245,10 @@ class CardSetManagementController(object):
         # pylint: disable-msg=W0612
         # we're not interested in oModel here
         oSelection = self._oView.get_selection()
-        oModel, aSelectedRows = oSelection.get_selected_rows()
+        if oSelection is not None:
+            oModel, aSelectedRows = oSelection.get_selected_rows()
+        else:
+            aSelectedRows = []
         if len(aSelectedRows) > 0:
             oSelPath = aSelectedRows[0]
         else:
