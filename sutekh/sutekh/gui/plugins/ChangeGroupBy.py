@@ -10,7 +10,7 @@ import gtk
 from sutekh.core.SutekhObjects import PhysicalCard, PhysicalCardSet
 from sutekh.core.Groupings import CardTypeGrouping, ClanGrouping, \
         DisciplineGrouping, ExpansionGrouping, RarityGrouping, \
-        CryptLibraryGrouping, NullGrouping
+        CryptLibraryGrouping, NullGrouping, MultiTypeGrouping
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog
 
@@ -29,6 +29,7 @@ class GroupCardList(CardListPlugin):
         super(GroupCardList, self).__init__(*aArgs, **kwargs)
         self._dGrpings = {}
         self._dGrpings['Card Type'] = CardTypeGrouping
+        self._dGrpings['Multi Card Type'] = MultiTypeGrouping
         self._dGrpings['Crypt or Library'] = CryptLibraryGrouping
         self._dGrpings['Clan'] = ClanGrouping
         self._dGrpings['Discipline'] = DisciplineGrouping

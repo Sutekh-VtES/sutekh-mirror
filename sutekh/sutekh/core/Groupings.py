@@ -53,6 +53,19 @@ class CardTypeGrouping(IterGrouping):
         super(CardTypeGrouping, self).__init__(oIter,
                 lambda x: [y.name for y in fGetCard(x).cardtype])
 
+class MultiTypeGrouping(IterGrouping):
+    """Group by card type, but make separate groupings for
+       cards which have multiple types, e.g. Action Modifier / Reaction.
+       """
+
+    def __init__(self, oIter, fGetCard=fDefGetCard):
+        def multitype(x):
+            """Return a list of one string with slash separated card types."""
+            aTypes = [y.name for y in fGetCard(x).cardtype]
+            aTypes.sort()
+            return [" / ".join(aTypes)]
+        super(MultiTypeGrouping, self).__init__(oIter, multitype)
+
 class ClanGrouping(IterGrouping):
     def __init__(self, oIter, fGetCard=fDefGetCard):
         super(ClanGrouping, self).__init__(oIter,
