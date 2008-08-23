@@ -8,8 +8,7 @@
 
 import gtk
 import pango
-from sutekh.core.SutekhObjects import PhysicalCardSet, \
-        IAbstractCard, ICardType
+from sutekh.core.SutekhObjects import PhysicalCardSet
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhDialog import do_complaint_error
 
@@ -188,8 +187,6 @@ class CardSetPrint(CardListPlugin):
                 return sInput # pass None straigh through
 
         oCS = self.get_card_set()
-        aCrypt, aLibrary = self.get_cards()
-
 
         aMarkup = []
         aMarkup.append("<u>%s</u>" % escape(oCS.name))
@@ -198,45 +195,25 @@ class CardSetPrint(CardListPlugin):
         aMarkup.append("  Annotations: %s" % escape(oCS.annotations))
         aMarkup.append("")
 
-        aMarkup.append("<u>Crypt:</u>")
-        for oCard, iCnt in aCrypt:
-            aMarkup.append("  %ix %s" % (iCnt, escape(oCard.name)))
-        aMarkup.append("")
+        oCardIter = self.model.get_card_iterator(None)
+        oGroupedIter, aAbsCards = self.model.grouped_card_iter(oCardIter)
 
-        aMarkup.append("<u>Library:</u>")
-        for oCard, iCnt in aLibrary:
-            aMarkup.append("  %ix %s" % (iCnt, escape(oCard.name)))
+        # Iterate over groups
+        for sGroup, oGroupIter in oGroupedIter:
+            # Check for null group
+            if sGroup is None:
+                sGroup = '<< None >>'
+
+            aMarkup.append("<u>%s:</u>" % (escape(sGroup),))
+
+            # Fill in Cards
+            for oCard, oRow in oGroupIter:
+                iCnt = oRow.get_card_count()
+                aMarkup.append("  %ix %s" % (iCnt, escape(oCard.name)))
+
+            aMarkup.append("")
 
         return "\n".join(aMarkup)
-
-    def get_cards(self):
-        """Extract the cards from the card set, seperating them into
-           crypt and library cards."""
-        dCrypt = {}
-        dLibrary = {}
-        # pylint: disable-msg=E1101
-        # PyProtocols + SQLObject confuses pylitn here
-        aCryptTypes = set([ICardType("Vampire"), ICardType("Imbued")])
-
-        for oCard in self.get_all_cards():
-            oACard = IAbstractCard(oCard)
-            if set(oACard.cardtype).intersection(aCryptTypes):
-                dCrypt.setdefault(oACard.id, [oACard, 0])
-                dCrypt[oACard.id][1] += 1
-            else:
-                dLibrary.setdefault(oACard.id, [oACard, 0])
-                dLibrary[oACard.id][1] += 1
-
-        # pylint: disable-msg=W0612
-        # oId is a loop ariable and not of interest to us
-        aCrypt = [(oCard, iCnt) for oId, (oCard, iCnt) in dCrypt.iteritems()]
-        aCrypt.sort(key = lambda x: x[0].name)
-
-        aLibrary = [(oCard, iCnt) for oId, (oCard, iCnt) in
-                dLibrary.iteritems()]
-        aLibrary.sort(key = lambda x: x[0].name)
-
-        return aCrypt, aLibrary
 
 # pylint: disable-msg=C0103
 # accept plugin name
