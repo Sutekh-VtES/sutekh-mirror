@@ -142,10 +142,9 @@ class CardSetCardListModel(CardListModel):
         """Add the empty entry if needed"""
         if not self._dName2Iter:
             # Showing nothing
-            self.oEmptyIter = self.append(None)
             sText = self._get_empty_text()
-            self.set(self.oEmptyIter, 0, sText, 1, self.format_count(0), 2,
-                    '0', 3, False, 4, False)
+            self.oEmptyIter = self.insert_before(None, None, (sText,
+                self.format_count(0), '0', False, False))
 
     def load(self):
         # pylint: disable-msg=R0914
@@ -185,14 +184,11 @@ class CardSetCardListModel(CardListModel):
                 iParCnt = oRow.get_parent_count()
                 iGrpCnt += iCnt
                 iParGrpCnt += iParCnt
-                oChildIter = self.append(oSectionIter)
                 bIncCard, bDecCard = self.check_inc_dec(iCnt)
-                self.set(oChildIter,
-                    0, oCard.name,
-                    1, self.format_count(iCnt),
-                    2, self.format_parent_count(iParCnt, iCnt),
-                    3, bIncCard,
-                    4, bDecCard
+                oChildIter = self.insert_before(oSectionIter, None, 
+                    (oCard.name, self.format_count(iCnt),
+                        self.format_parent_count(iParCnt, iCnt),
+                        bIncCard, bDecCard)
                 )
                 self._dName2Iter.setdefault(oCard.name, []).append(oChildIter)
                 self._add_children(oChildIter, oRow)
@@ -254,14 +250,11 @@ class CardSetCardListModel(CardListModel):
 
     def _add_extra_level(self, oParIter, sName, tInfo):
         """Add an extra level iterator to the card list model."""
-        oIter = self.append(oParIter)
         iCnt, iParCnt, bIncCard, bDecCard = tInfo
-        self.set(oIter,
-                0, sName,
-                1, self.format_count(iCnt),
-                2, self.format_parent_count(iParCnt, iCnt),
-                3, bIncCard,
-                4, bDecCard)
+        # insert_before(x, None) appends the Iter
+        oIter = self.insert_before(oParIter, None, (sName,
+            self.format_count(iCnt), self.format_parent_count(iParCnt, iCnt),
+            bIncCard, bDecCard))
         # get_card_name_from_path works regardless of level
         iDepth = self.iter_depth(oIter)
         if iDepth == 2:
@@ -759,15 +752,12 @@ class CardSetCardListModel(CardListModel):
                 iGrpCnt = self.get_int_value(oSectionIter, 1)
                 iParGrpCnt = self.get_int_value(oSectionIter, 2)
             else:
-                oSectionIter = self.append(None)
-                self._dGroupName2Iter[sGroup] = oSectionIter
                 iGrpCnt = 0
                 iParGrpCnt = 0
-                self.set(oSectionIter,
-                    0, sGroup,
-                    1, self.format_count(iGrpCnt),
-                    2, self.format_parent_count(0, iGrpCnt),
-                )
+                oSectionIter = self.insert_before(None, None, (sGroup,
+                    self.format_count(iGrpCnt),
+                    self.format_parent_count(0, iGrpCnt), False, False))
+                self._dGroupName2Iter[sGroup] = oSectionIter
             # Add Cards
             for oCard, oRow in oGroupIter:
                 # Due to the various view modes, we aren't assured of
@@ -781,14 +771,11 @@ class CardSetCardListModel(CardListModel):
                 iParCnt = oRow.get_parent_count()
                 iGrpCnt += iCnt
                 iParGrpCnt += iParCnt
-                oChildIter = self.append(oSectionIter)
                 bIncCard, bDecCard = self.check_inc_dec(iCnt)
-                self.set(oChildIter,
-                    0, oCard.name,
-                    1, self.format_count(iCnt),
-                    2, self.format_parent_count(iParCnt, iCnt),
-                    3, bIncCard,
-                    4, bDecCard
+                oChildIter = self.insert_before(oSectionIter, None, 
+                    (oCard.name, self.format_count(iCnt),
+                        self.format_parent_count(iParCnt, iCnt),
+                        bIncCard, bDecCard)
                 )
                 self._dName2Iter.setdefault(oCard.name, []).append(oChildIter)
                 # Handle as for loading
