@@ -69,7 +69,10 @@ class NameAndAuthor(State):
         elif sKey == "Author":
             self._oHolder.author = sValue
         elif sKey == "Description":
-            return Description(self._oHolder)
+            oDesc = Description(self._oHolder)
+            if len(sValue) > 0:
+                oDesc.data(sValue)
+            return oDesc
 
         return self
 
@@ -81,13 +84,16 @@ class Description(State):
         if sLine.strip().startswith('Crypt ['):
             self._oHolder.comment = self._sData
             return Cards(self._oHolder)
+        elif sLine.strip().startswith('Crypt: ('):
+            self._oHolder.comment = self._sData
+            return Cards(self._oHolder)
         else:
             self.data(sLine)
             return self
 
 class Cards(State):
     """State for extracting the cards"""
-    _oCardRe = re.compile(r'\s*(?P<cnt>[0-9]+)x\s+(?P<name>[^\t\r\n]+)')
+    _oCardRe = re.compile(r'\s*(?P<cnt>[0-9]+)(x)*\s+(?P<name>[^\t\r\n]+)')
 
     def transition(self, sLine):
         """Extract the cards from the data.
@@ -98,7 +104,8 @@ class Cards(State):
         oMatch = self._oCardRe.match(sLine)
         if oMatch:
             iCnt = int(oMatch.group('cnt'))
-            self._oHolder.add(iCnt, oMatch.group('name'))
+            sName = oMatch.group('name').split('  ')[0]
+            self._oHolder.add(iCnt, sName, None)
         return self
 
 # Parser

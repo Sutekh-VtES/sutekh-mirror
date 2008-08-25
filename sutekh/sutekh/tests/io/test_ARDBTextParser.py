@@ -19,13 +19,13 @@ class DummyHolder(object):
         self.comment = ''
         self.author = ''
 
-    def add(self, iCnt, sName):
+    def add(self, iCnt, sName, sExpName):
         """Add a card to the dummy holder."""
         self.aCards.append((iCnt, sName))
 
 class ARDBTextParserTests(unittest.TestCase):
     """class for the ARDB/FELDB text input parser"""
-    sTestText = """
+    sTestText1 = """
         Deck Name : Test Deck
         Author : Anon Y Mous
         Description :
@@ -53,12 +53,37 @@ class ARDBTextParserTests(unittest.TestCase):
         ...
     """
 
+    sTestText2 = """
+        Deck Name : Test Deck 2
+        Author : Anon Y Mous
+        Description : Simple test deck.
+        Crypt: (3 vampires, Min: 2, Max: 10 Ave: 7.33)
+       ------------------------------------------------------------
+        2 Test Vamp 1			  aus dom for   10 ...
+        1 Test Vamp 2			  DOM for obf   2  ...
+        ...
+
+        Library [19 cards]
+        ------------------------------------------------------------
+        Action [6]
+        2 Test Card 1
+        4 Test Card 2
+
+        Action Modifier [12]
+        12 Test Card 3
+
+        Reaction [1]
+        1 Test Card 4
+        ...
+    """
+
+
     def test_basic(self):
         """Run the input test."""
         oHolder = DummyHolder()
         oParser = ARDBTextParser(oHolder)
 
-        for sLine in self.sTestText.split("\n"):
+        for sLine in self.sTestText1.split("\n"):
             oParser.feed(sLine + "\n")
 
         self.assertEqual(oHolder.name, "Test Deck")
@@ -76,6 +101,27 @@ class ARDBTextParserTests(unittest.TestCase):
         self.failUnless((4, "Test Card 2") in aCards)
         self.failUnless((12, "Test Card 3") in aCards)
         self.failUnless((1, "Test Card 4") in aCards)
+
+        oHolder = DummyHolder()
+        oParser = ARDBTextParser(oHolder)
+        for sLine in self.sTestText2.split("\n"):
+            oParser.feed(sLine + "\n")
+
+        self.assertEqual(oHolder.name, "Test Deck 2")
+        self.assertEqual(oHolder.author, "Anon Y Mous")
+        self.failUnless(oHolder.comment.startswith(
+            "Simple test deck."))
+
+        aCards = oHolder.aCards
+
+        self.assertEqual(len(aCards), 6)
+        self.failUnless((2, "Test Vamp 1") in aCards)
+        self.failUnless((1, "Test Vamp 2") in aCards)
+        self.failUnless((2, "Test Card 1") in aCards)
+        self.failUnless((4, "Test Card 2") in aCards)
+        self.failUnless((12, "Test Card 3") in aCards)
+        self.failUnless((1, "Test Card 4") in aCards)
+
 
 if __name__ == "__main__":
     unittest.main()
