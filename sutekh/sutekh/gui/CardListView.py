@@ -99,7 +99,11 @@ class CardListView(gtk.TreeView, object):
         """Called when the model needs to be reloaded."""
         if hasattr(self._oMainWin, 'set_busy_cursor'):
             self._oMainWin.set_busy_cursor()
+        self.freeze_child_notify()
+        self.set_model(None)
         self._oModel.load()
+        self.set_model(self._oModel)
+        self.thaw_child_notify()
         if hasattr(self._oMainWin, 'restore_cursor'):
             self._oMainWin.restore_cursor()
 

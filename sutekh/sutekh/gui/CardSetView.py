@@ -169,8 +169,12 @@ class CardSetView(CardListView):
         if self._oModel.get_card_iterator(None).count() == 0:
             self._oModel.bEditable = True
             # We do this before loading, so edit icons are correct
+        self.freeze_child_notify()
+        self.set_model(None)
         self._oModel.load()
         self.check_editable()
+        self.set_model(self._oModel)
+        self.thaw_child_notify()
         if hasattr(self._oMainWin, 'restore_cursor'):
             self._oMainWin.restore_cursor()
 
