@@ -97,9 +97,11 @@ class CardListView(gtk.TreeView, object):
 
     def load(self):
         """Called when the model needs to be reloaded."""
-        self._oMainWin.set_busy_cursor()
+        if hasattr(self._oMainWin, 'set_busy_cursor'):
+            self._oMainWin.set_busy_cursor()
         self._oModel.load()
-        self._oMainWin.restore_cursor()
+        if hasattr(self._oMainWin, 'restore_cursor'):
+            self._oMainWin.restore_cursor()
 
     def __set_row_status(self, dExpandedDict):
         """Attempt to expand the rows listed in dExpandedDict."""
@@ -322,8 +324,6 @@ class CardListView(gtk.TreeView, object):
         aCardInfo = zip([int(x) for x in aLines[1::3]], aLines[2::3],
                 [true_expansion(x) for x in aLines[3::3]])
         return sSource, aCardInfo
-
-
 
     # pylint: disable-msg=R0913, W0613
     # arguments as required by the function signature

@@ -164,13 +164,15 @@ class CardSetView(CardListView):
 
     def load(self):
         """Called when the model needs to be reloaded."""
-        self._oMainWin.set_busy_cursor()
+        if hasattr(self._oMainWin, 'set_busy_cursor'):
+            self._oMainWin.set_busy_cursor()
         if self._oModel.get_card_iterator(None).count() == 0:
             self._oModel.bEditable = True
             # We do this before loading, so edit icons are correct
         self._oModel.load()
         self.check_editable()
-        self._oMainWin.restore_cursor()
+        if hasattr(self._oMainWin, 'restore_cursor'):
+            self._oMainWin.restore_cursor()
 
     def check_editable(self):
         """Set the card list to be editable if it's empty"""
