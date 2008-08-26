@@ -1146,8 +1146,8 @@ class PhysicalCardSetFilter(Filter):
 class MultiPhysicalCardSetFilter(Filter):
     """Filter on a list of Physical Card Sets"""
     keyword = "PhysicalSet"
-    description = "Physical Sets"
-    helptext = "a list of card sets names (selects physical cards in the " \
+    description = "Card Sets"
+    helptext = "a list of card sets names (selects cards in the " \
             "specified sets)"
     islistfilter = True
     types = ['PhysicalCard']
@@ -1212,8 +1212,8 @@ class MultiPhysicalCardSetMapFilter(Filter):
 class PhysicalCardSetInUseFilter(Filter):
     """Filter on a membership of Physical Card Sets marked in use"""
     keyword = "SetsInUse"
-    description = "In Physical Card Sets in Use"
-    helptext = "Selects physical cards in the Physical Card Sets marked " \
+    description = "In Card Sets in Use"
+    helptext = "Selects cards in the Card Sets marked " \
             "as in use. This filter takes no parameters."
     types = ['PhysicalCard']
 

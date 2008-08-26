@@ -764,10 +764,10 @@ class FilterHelpTextView(gtk.TextView, object):
         oBuf.tag_text(
             "\n"
             "Note: Using filters which require information about "
-            "physical cards will temporarily turn off displaying "
+            "cards in a card set will temporarily turn off displaying "
             "of cards with zero counts (assuming it is turned on) "
-            "in the physical card list since there are no "
-            "associated physical cards on which to base the query. "
+            "in the card list since there are no "
+            "associated cards on which to base the query. "
             "Filters affected by this are: Physical Expansion, "
-            "Physical Sets and In Physical Card Sets in Use."
+            "Card Sets and In Card Sets in Use."
         )
