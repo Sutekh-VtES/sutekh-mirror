@@ -53,10 +53,10 @@ For 0.6:
    - Improve colour hints for card counts and parent card count columns
    - Improve visual feedback for open card sets + card sets in use?
  * Add decent keyboard shortcuts
- * Create built-in tutorial and help.
+ * Finish built-in tutorial and help.
  * Look into Windows TreeView text search bug.
  * Plugins
    - CSV export plugin for card sets
  * Address issues with exporting Sutekh card sets to FELDB
  * Import card sets from ARDB and FELDB
- * Improve intial ssetup - also download icons, offer to download images, etc.
+ * Improve intial setup - also download icons, offer to download images, etc.
