@@ -40,22 +40,27 @@ class CardSetView(CardListView):
 
         oColumn1 = gtk.TreeViewColumn("#", self.oNumCell, markup=1)
         oColumn1.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
-        oColumn1.set_fixed_width(40)
+        oColumn1.set_fixed_width(60)
         oColumn1.set_sort_column_id(1)
+        oColumn1.set_resizable(True)
         self.append_column(oColumn1)
 
         oParentCell = gtk.CellRendererText()
-        self.oParentCol = gtk.TreeViewColumn("Parent #", oParentCell,
+        self.oParentCol = gtk.TreeViewColumn("Par #", oParentCell,
                 markup=2)
         self.oParentCol.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
-        self.oParentCol.set_fixed_width(40)
+        self.oParentCol.set_fixed_width(60)
         self.oParentCol.set_sort_column_id(2)
         self.append_column(self.oParentCol)
         self.oParentCol.set_visible(False)
+        self.oParentCol.set_resizable(True)
 
         oColumn2 = gtk.TreeViewColumn("Cards", self.oNameCell, text=0)
-        oColumn2.set_expand(True)
+        oColumn2.set_min_width(100)
+        oColumn2.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
         oColumn2.set_sort_column_id(0)
+        oColumn2.set_expand(True)
+        oColumn2.set_resizable(True) 
         self.append_column(oColumn2)
 
         # Arrow cells
@@ -67,11 +72,13 @@ class CardSetView(CardListView):
         oColumn3 = gtk.TreeViewColumn("", oCell3, showicon=3)
         oColumn3.set_fixed_width(22)
         oColumn3.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
+        oColumn3.set_resizable(False)
         self.append_column(oColumn3)
 
         oColumn4 = gtk.TreeViewColumn("", oCell4, showicon=4)
         oColumn4.set_fixed_width(22)
         oColumn4.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
+        oColumn4.set_resizable(False)
         self.append_column(oColumn4)
 
         oCell3.connect('clicked', self.inc_card)
@@ -83,6 +90,8 @@ class CardSetView(CardListView):
 
         self.set_expander_column(oColumn2)
         self.oCellColor = None
+
+        self.set_fixed_height_mode(True)
 
     def process_selection(self):
         """Create a dictionary from the selection.

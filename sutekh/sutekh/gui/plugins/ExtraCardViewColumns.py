@@ -20,6 +20,15 @@ class ExtraCardViewColumns(CardListPlugin):
     dTableVersions = {}
     aModelsSupported = [PhysicalCardSet, PhysicalCard]
 
+    _dWidths = {
+            'Card Type' : 100,
+            'Clan' : 100,
+            'Disciplines' : 150,
+            'Expansions' : 600,
+            'Group' : 40,
+            'Capacity' : 40
+            }
+
     # pylint: disable-msg=W0142
     # **magic OK here
     def __init__(self, *aArgs, **kwargs):
@@ -231,6 +240,9 @@ class ExtraCardViewColumns(CardListPlugin):
             oCell.set_property('style', pango.STYLE_ITALIC)
             oColumn = gtk.TreeViewColumn(sCol, oCell)
             oColumn.set_cell_data_func(oCell, self._dCols[sCol])
+            oColumn.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
+            oColumn.set_fixed_width(self._dWidths.get(sCol, 100))
+            oColumn.set_resizable(True)
             self.view.insert_column(oColumn, iNum + 3)
             oColumn.set_sort_column_id(iNum + 3)
             self.model.set_sort_func(iNum + 3, self.sort_column,
