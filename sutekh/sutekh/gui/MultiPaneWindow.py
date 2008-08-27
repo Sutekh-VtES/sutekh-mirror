@@ -118,7 +118,10 @@ class MultiPaneWindow(gtk.Window):
     # pylint: disable-msg=W0212
     # We allow access via these properties
     # Needed for Backup plugin
-    cardLookup = property(fget=lambda self: self._oCardLookup)
+    cardLookup = property(fget=lambda self: self._oCardLookup,
+        doc="Used if user instance is needed to identify card names.")
+    iconManager = property(fget=lambda self: self._oIconManager,
+        doc="Used to lookup icons for disciplines, clans, etc.")
 
     # Needed for plugins
     plugin_manager = property(fget=lambda self: self._oPluginManager,

@@ -84,6 +84,8 @@ class CardListPlugin(object):
             doc="Associated CardModel object.")
     cardlookup = property(fget=lambda self: self.parent.cardLookup,
             doc="GUI CardLookup.")
+    iconmanager = property(fget=lambda self: self.parent.iconManager,
+            doc="Icon manager.")
     # pylint: enable-msg=W0212
 
     def add_to_menu(self, dAllMenus, oCatchAllMenu):
