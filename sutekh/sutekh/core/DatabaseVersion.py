@@ -30,6 +30,7 @@ class DatabaseVersion(object):
         # the rest of the database doesn't, otherwise early checks are
         # problematic
         self.ensure_table_exists(oConn)
+        self.populate_cache(oConn)
 
     @classmethod
     def get_cache(cls):
@@ -41,6 +42,20 @@ class DatabaseVersion(object):
         """Expire the results cache - needed for database upgrade code
            paths."""
         cls._dCache = {}
+
+    @classmethod
+    def populate_cache(cls, oConn):
+        """Populate the results cache if empty - reduces queries at start
+           up."""
+        dCache = cls.get_cache()
+        if dCache:
+            return
+        for oVer in VersionTable.select(connection=oConn):
+            if oVer.TableName in dCache:
+                raise RuntimeError("Multiple version entries for %s" \
+                    " found in the database." % oVer.TableName)
+            else:
+                dCache[oVer.TableName] = oVer.Version
 
     @classmethod
     def ensure_table_exists(cls, oConn):
