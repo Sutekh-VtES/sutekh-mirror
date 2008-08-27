@@ -8,6 +8,7 @@
 """Implement RelatedJoin with caches"""
 
 from sqlobject import joins
+from sqlobject.sqlbuilder import Table, Select
 
 class SOCachedRelatedJoin(joins.SORelatedJoin):
     """Version of RelatedJoin that caches the lookup of related objects.
@@ -47,11 +48,18 @@ class SOCachedRelatedJoin(joins.SORelatedJoin):
         """Initialise the cache with the data from the database."""
         self._find_other_join()
 
-        for oOther in self.otherClass.select():
-            for oInst in self._oOtherJoin.performJoin(oOther):
-                self._dJoinCache.setdefault(oInst, [])
-                self._dJoinCache[oInst].append(oOther)
-
+        oIntermediateTable = Table(self.intermediateTable)
+        oJoinColumn = getattr(oIntermediateTable, self.joinColumn)
+        oOtherColumn = getattr(oIntermediateTable, self.otherColumn)
+        oConn = self.soClass._connection
+  
+        for (oId, oOtherId) in self.soClass._connection.queryAll(repr(Select(
+            (oJoinColumn, oOtherColumn)))):
+            oInst = self.soClass.get(oId, oConn)
+            oOther = self.otherClass.get(oOtherId, oConn)
+            self._dJoinCache.setdefault(oInst, [])
+            self._dJoinCache[oInst].append(oOther)
+ 
         # Apply ordering (we assume it won't change later)
         for oInst in self._dJoinCache:
             self._dJoinCache[oInst] = self._applyOrderBy(
