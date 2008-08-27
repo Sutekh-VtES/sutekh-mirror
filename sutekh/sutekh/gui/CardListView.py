@@ -140,7 +140,7 @@ class CardListView(gtk.TreeView, object):
     # pylint: disable-msg=W0212
     # We allow access via these properties (for plugins)
     mainwindow = property(fget=lambda self: self._oMainWin,
-            doc="The parent window sed for dialogs, etc.")
+            doc="The parent window used for dialogs, etc.")
     # pylint: enable-msg=W0212
 
 
