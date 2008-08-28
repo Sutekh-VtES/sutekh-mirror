@@ -25,7 +25,7 @@ except ImportError:
 # pylint: enable-msg=E0611, F0401
 
 
-class WriteArdbXMLInv(ArdbInfo):
+class WriteArdbInvXML(ArdbInfo):
     """Reformat cardset to elementTree and export it to a ARDB
        compatible XML Inventory file."""
 
@@ -80,7 +80,7 @@ class WriteArdbXMLInv(ArdbInfo):
             # IAbstractCard confuses pylint
             oCard = IAbstractCard(sName)
             oCardElem = SubElement(oCryptElem, 'vampire',
-                    databaseID=str(iId), have=str(iNum), spare=0, need=0)
+                    databaseID=str(iId), have=str(iNum), spare='0', need='0')
             # This won't match the ARDB ID's, unless by chance.
             # It looks like that should not be an issue as ARDB will
             # use the name if the IDs don't match
@@ -110,7 +110,7 @@ class WriteArdbXMLInv(ArdbInfo):
             dCombinedLib[iId][2] += iNum
         for iId, (sName, sSet, iNum) in dCombinedLib.iteritems():
             oCardElem = SubElement(oLibElem, 'card', databaseID=str(iId),
-                    have=str(iNum), spare=0, need=0)
+                    have=str(iNum), spare='0', need='0')
             oNameElem = SubElement(oCardElem, 'name')
             oNameElem.text = sName
             oSetElem = SubElement(oCardElem, 'set')

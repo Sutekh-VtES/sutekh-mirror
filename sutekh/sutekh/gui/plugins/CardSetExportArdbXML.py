@@ -11,6 +11,7 @@ from sutekh.core.SutekhObjects import PhysicalCardSet
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhFileWidget import ExportDialog
 from sutekh.io.WriteArdbXML import WriteArdbXML
+from sutekh.io.WriteArdbInvXML import WriteArdbInvXML
 from sutekh.SutekhUtility import safe_filename
 
 class CardSetExportArdbXML(CardListPlugin):
@@ -31,26 +32,38 @@ class CardSetExportArdbXML(CardListPlugin):
     # oWidget has to be here, although it's unused
     def make_dialog(self, oWidget):
         """Create the dialog"""
+        # pylint: disable-msg=E1101
+        # vbox confuses pylint
         oDlg = ExportDialog("Choose FileName for Exported CardSet",
                 self.parent, '%s_ARDB.xml' % safe_filename(self.view.sSetName))
         oDlg.add_filter_with_pattern('XML Files', ['*.xml'])
+        oFirstBut = gtk.RadioButton(None, 'ARDB Deck XML File', False)
+        oDlg.vbox.pack_start(oFirstBut, expand=False)
+        oSecondBut = gtk.RadioButton(oFirstBut, 'ARDB Inventory XML File')
+        oDlg.vbox.pack_start(oSecondBut, expand=False)
+        oDlg.show_all()
         oDlg.run()
-        self.handle_response(oDlg.get_name())
+
+        self.handle_response(oDlg.get_name(), oFirstBut)
 
     # pylint: enable-msg=W0613
 
-    def handle_response(self, sFileName):
-        """Handle the users response. Wrtie the XML output to file."""
+    def handle_response(self, sFileName, oFirstBut):
+        """Handle the users response. Write the XML output to file."""
         # pylint: disable-msg=E1101
         # SQLObject methods confuse pylint
         if sFileName is not None:
             oCardSet = self.get_card_set()
             if not oCardSet:
                 return
-            oWriter = WriteArdbXML()
             fOut = file(sFileName,"w")
-            oWriter.write(fOut, self.view.sSetName, oCardSet.author,
-                    oCardSet.comment, self.get_all_cards())
+            if oFirstBut.get_active():
+                oWriter = WriteArdbXML()
+                oWriter.write(fOut, self.view.sSetName, oCardSet.author,
+                        oCardSet.comment, self.get_all_cards())
+            else:
+                oWriter = WriteArdbInvXML()
+                oWriter.write(fOut, self.get_all_cards())
             fOut.close()
 
 # pylint: disable-msg=C0103

@@ -1,3 +1,6 @@
+28 Aug 2008
+ * Hook up ARDB XML Inventory export in the GUI
+
 27 Aug 2008
  * Use set_fixed_height_mode to avoid odd gtk TreeView jumping when updating
    the rows
