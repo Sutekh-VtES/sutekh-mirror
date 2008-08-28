@@ -19,6 +19,8 @@ class DummyHolder(object):
         self.comment = ''
         self.author = ''
 
+    # pylint: disable-msg=W0613
+    # sExpName is unused, but needed to make function signature match
     def add(self, iCnt, sName, sExpName):
         """Add a card to the dummy holder."""
         self.aCards.append((iCnt, sName))

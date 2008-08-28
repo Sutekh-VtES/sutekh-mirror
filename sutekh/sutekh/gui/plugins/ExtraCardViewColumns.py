@@ -161,7 +161,7 @@ class ExtraCardViewColumns(CardListPlugin):
         else:
             oCell.set_property("text", "")
 
-    # pylint: enable-msg=R0201, W0613
+    # pylint: enable-msg=R0201
     # Dialog and Menu Item Creation
 
     def get_menu_item(self):
@@ -172,12 +172,12 @@ class ExtraCardViewColumns(CardListPlugin):
         oSelector.connect("activate", self.activate)
         return ('Plugins', oSelector)
 
-    # pylint: disable-msg=W0613
-    # oWidget required by function signature
+    # W0613 - oWidget required by function signature
     def activate(self, oWidget):
         """Handle menu activation"""
         oDlg = self.make_dialog()
         oDlg.run()
+
     # pylint: enable-msg=W0613
 
     def make_dialog(self):

@@ -283,8 +283,6 @@ class MultiPaneWindow(gtk.Window):
         self.replace_with_card_text(oMenuWidget)
         self.win_focus(None, None, oCurFocus)
 
-    # pylint: enable-msg=W0613
-
     # state manipulation
     def reload_pcs_list(self):
         """Reload the list of physical card sets."""

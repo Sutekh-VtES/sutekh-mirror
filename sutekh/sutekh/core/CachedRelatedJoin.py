@@ -51,15 +51,17 @@ class SOCachedRelatedJoin(joins.SORelatedJoin):
         oIntermediateTable = Table(self.intermediateTable)
         oJoinColumn = getattr(oIntermediateTable, self.joinColumn)
         oOtherColumn = getattr(oIntermediateTable, self.otherColumn)
+        # pylint: disable-msg=W0212
+        # We need to access _connection here
         oConn = self.soClass._connection
-  
-        for (oId, oOtherId) in self.soClass._connection.queryAll(repr(Select(
+
+        for (oId, oOtherId) in oConn.queryAll(repr(Select(
             (oJoinColumn, oOtherColumn)))):
             oInst = self.soClass.get(oId, oConn)
             oOther = self.otherClass.get(oOtherId, oConn)
             self._dJoinCache.setdefault(oInst, [])
             self._dJoinCache[oInst].append(oOther)
- 
+
         # Apply ordering (we assume it won't change later)
         for oInst in self._dJoinCache:
             self._dJoinCache[oInst] = self._applyOrderBy(

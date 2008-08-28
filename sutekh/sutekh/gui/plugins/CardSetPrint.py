@@ -196,7 +196,10 @@ class CardSetPrint(CardListPlugin):
         aMarkup.append("")
 
         oCardIter = self.model.get_card_iterator(None)
+        # pylint: disable-msg=W0612
+        # aAbsCards unused
         oGroupedIter, aAbsCards = self.model.grouped_card_iter(oCardIter)
+        # pylint: enable-msg=W0612
 
         # Iterate over groups
         for sGroup, oGroupIter in oGroupedIter:

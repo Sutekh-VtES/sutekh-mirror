@@ -185,7 +185,7 @@ class CardSetCardListModel(CardListModel):
                 iGrpCnt += iCnt
                 iParGrpCnt += iParCnt
                 bIncCard, bDecCard = self.check_inc_dec(iCnt)
-                oChildIter = self.insert_before(oSectionIter, None, 
+                oChildIter = self.insert_before(oSectionIter, None,
                     (oCard.name, self.format_count(iCnt),
                         self.format_parent_count(iParCnt, iCnt),
                         bIncCard, bDecCard)
@@ -772,7 +772,7 @@ class CardSetCardListModel(CardListModel):
                 iGrpCnt += iCnt
                 iParGrpCnt += iParCnt
                 bIncCard, bDecCard = self.check_inc_dec(iCnt)
-                oChildIter = self.insert_before(oSectionIter, None, 
+                oChildIter = self.insert_before(oSectionIter, None,
                     (oCard.name, self.format_count(iCnt),
                         self.format_parent_count(iParCnt, iCnt),
                         bIncCard, bDecCard)

@@ -60,7 +60,7 @@ class CardSetView(CardListView):
         oColumn2.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
         oColumn2.set_sort_column_id(0)
         oColumn2.set_expand(True)
-        oColumn2.set_resizable(True) 
+        oColumn2.set_resizable(True)
         self.append_column(oColumn2)
 
         # Arrow cells
@@ -147,7 +147,44 @@ class CardSetView(CardListView):
             else:
                 oContext.finish(False, False, oTime) # not successful
 
-    # pylint: enable-msg=R0913, W0613
+    # pylint: enable-msg=R0913
+
+    # pylint: disable-msg=W0613
+    # arguments as required by the function signature
+    def inc_card(self, oCell, oPath):
+        """Called to increment the count for a card."""
+        if self._oModel.bEditable:
+            # pylint: disable-msg=W0612
+            # only interested in bInc
+            bInc, bDec = self._oModel.get_inc_dec_flags_from_path(oPath)
+            if bInc:
+                sCardName, sExpansion, sCardSetName = \
+                        self._oModel.get_all_names_from_path(oPath)
+                self._oController.inc_card(sCardName, sExpansion, sCardSetName)
+
+    def dec_card(self, oCell, oPath):
+        """Called to decrement the count for a card"""
+        if self._oModel.bEditable:
+            # pylint: disable-msg=W0612
+            # only interested in bDec
+            bInc, bDec = self._oModel.get_inc_dec_flags_from_path(oPath)
+            if bDec:
+                sCardName, sExpansion, sCardSetName = \
+                        self._oModel.get_all_names_from_path(oPath)
+                self._oController.dec_card(sCardName, sExpansion, sCardSetName)
+
+    # functions related to tweaking widget display
+
+    def mapped(self, oWidget, oEvent):
+        """Called when the view has been mapped, so we can twiddle the
+           display"""
+        # see if we need to be editable
+        self.check_editable()
+        if self._oModel.bEditable:
+            # Ensure hint colour is set correctly
+            self.reload_keep_expanded()
+
+    # pylint: enable-msg=W0613
 
     # Anything that touches the database is based off to the controller
     # We handle the editable checks here though, since the controller methods
@@ -193,43 +230,6 @@ class CardSetView(CardListView):
                 self._oModel.get_card_iterator(None).count() == 0:
             # This isn't true when creating the view
             self._set_editable(True)
-
-    # pylint: disable-msg=W0613
-    # arguments as required by the function signature
-    def inc_card(self, oCell, oPath):
-        """Called to increment the count for a card."""
-        if self._oModel.bEditable:
-            # pylint: disable-msg=W0612
-            # only interested in bInc
-            bInc, bDec = self._oModel.get_inc_dec_flags_from_path(oPath)
-            if bInc:
-                sCardName, sExpansion, sCardSetName = \
-                        self._oModel.get_all_names_from_path(oPath)
-                self._oController.inc_card(sCardName, sExpansion, sCardSetName)
-
-    def dec_card(self, oCell, oPath):
-        """Called to decrement the count for a card"""
-        if self._oModel.bEditable:
-            # pylint: disable-msg=W0612
-            # only interested in bDec
-            bInc, bDec = self._oModel.get_inc_dec_flags_from_path(oPath)
-            if bDec:
-                sCardName, sExpansion, sCardSetName = \
-                        self._oModel.get_all_names_from_path(oPath)
-                self._oController.dec_card(sCardName, sExpansion, sCardSetName)
-
-    # functions related to tweaking widget display
-
-    def mapped(self, oWidget, oEvent):
-        """Called when the view has been mapped, so we can twiddle the
-           display"""
-        # see if we need to be editable
-        self.check_editable()
-        if self._oModel.bEditable:
-            # Ensure hint colour is set correctly
-            self.reload_keep_expanded()
-
-    # pylint: enable-msg=W0613
 
     def set_color_edit_cue(self):
         """Set a visual cue that the card set is editable."""

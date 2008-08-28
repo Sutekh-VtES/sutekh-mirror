@@ -1,6 +1,10 @@
 27 Aug 2008
  * Use set_fixed_height_mode to avoid odd gtk TreeView jumping when updating
    the rows
+ * Rework CachedRelatedJoin + DatabaseVersion to reduce the number of queries
+   at startup (improves speed for sqlite)
+ * Expose IconManager to plugins
+ * Add 'P' to Abbrevations so the Precon shortname is 'P' and not 'PB"
 
 26 Aug 2008
  * Add some optimisations to the TreeView's, based on the gtk docs
