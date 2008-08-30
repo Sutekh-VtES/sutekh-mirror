@@ -1,3 +1,9 @@
+30 Aug 2008
+ * Use our own search dialog to avoid an interactive search bug on Windows
+ * Upgade windows installer to use python 2.5.2 to avoid a bug in 
+   codecs.EncodedFile
+ * Fixes to setup.py + the windows installers
+
 28 Aug 2008
  * Hook up ARDB XML Inventory export in the GUI
 

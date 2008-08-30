@@ -5,6 +5,8 @@
 # GPL - see COPYING for details
 """SutekhGui.py: start the GUI"""
 
+
+import gtk
 from sutekh.core.SutekhObjects import VersionTable, aObjectList
 from sutekh.SutekhUtility import prefs_dir, ensure_dir_exists, sqlite_uri
 from sutekh.gui.MultiPaneWindow import MultiPaneWindow
@@ -12,8 +14,10 @@ from sutekh.core.DatabaseVersion import DatabaseVersion
 from sqlobject import sqlhub, connectionForURI
 from sutekh.gui.ConfigFile import ConfigFile
 from sutekh.gui.GuiDBManagement import do_db_upgrade, initialize_db
+from sutekh.gui.SutekhDialog import do_complaint_error
 from sutekh.SutekhInfo import SutekhInfo
 import sys, optparse, os
+
 
 # Script Launching
 
@@ -75,6 +79,13 @@ def main(aArgs):
 
     if oOpts.sql_debug:
         oConn.debug = True
+
+    # Check we have the correct gtk version
+    sMessage = gtk.check_version(2, 10, 0)
+    if sMessage is not None:
+        do_complaint_error('Incorrect gtk version. Sutekh requires at least'
+                ' gtk 2.10.0.\nError reported %s' % sMessage)
+        return 1
 
     # construct Window
     oMultiPaneWindow = MultiPaneWindow()
