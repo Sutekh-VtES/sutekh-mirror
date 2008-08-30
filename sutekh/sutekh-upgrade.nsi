@@ -33,14 +33,14 @@
   !define DIST_FOLDER "dist"
   !define DEPENDENCIES_FOLDER "."
 
-  !define SUTEKH_EGG "${DIST_FOLDER}/Sutekh-${SUTEKH_VERSION}-py2.5.egg"
-  !define SUTEKH_ICON "${DEPENDENCIES_FOLDER}/sutekh.ico"
+  !define SUTEKH_EGG "Sutekh-${SUTEKH_VERSION}-py2.5.egg"
+  !define SUTEKH_ICON "sutekh.ico"
 
-  !define COMBINED_LICENSE "${DEPENDENCIES_FOLDER}/GPLv2.txt"
+  !define COMBINED_LICENSE "GPLv2.txt"
 
 ; Pages
 
-  !insertmacro MUI_PAGE_LICENSE ${COMBINED_LICENSE} 
+  !insertmacro MUI_PAGE_LICENSE "${DEPENDENCIES_FOLDER}/${COMBINED_LICENSE}"
   !insertmacro MUI_PAGE_COMPONENTS
   !insertmacro MUI_PAGE_DIRECTORY
   !insertmacro MUI_PAGE_INSTFILES
@@ -54,7 +54,7 @@
 
 ; Other Stuff
 
-  Icon "${SUTEKH_ICON}"
+  Icon "${DEPENDENCIES_FOLDER}/${SUTEKH_ICON}"
 
 ; Installer Sections
 
@@ -63,8 +63,8 @@ Section "Sutekh"
 
   SetOutPath "$INSTDIR"
 
-  File ${SUTEKH_EGG}
-  File ${SUTEKH_ICON}
+  File "${DIST_FOLDER}/${SUTEKH_EGG}"
+  File "${DEPENDENCIES_FOLDER}/${SUTEKH_ICON}"
 
   ExecWait '$INSTDIR\Python\Scripts\easy_install.exe --no-deps "$INSTDIR\${SUTEKH_EGG}"'
 
@@ -81,7 +81,7 @@ Section "Sutekh"
 SectionEnd
 
 UninstallText "This will uninstall Sutekh ${SUTEKH_VERSION}."
-UninstallIcon "${SUTEKH_ICON}"
+UninstallIcon "${DEPENDENCIES_FOLDER}/${SUTEKH_ICON}"
 
 Section "Uninstall"
   ; TODO: - Test this section

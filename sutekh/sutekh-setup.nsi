@@ -32,25 +32,25 @@
   !define DIST_FOLDER "dist"
   !define DEPENDENCIES_FOLDER "."
 
-  !define GTK_INSTALLER "${DEPENDENCIES_FOLDER}/gtk-dev-2.12.9-win32-2.exe"
-  !define PYTHON_INSTALLER "${DEPENDENCIES_FOLDER}/python-2.5.msi"
-  !define PYGTK_INSTALLER "${DEPENDENCIES_FOLDER}/pygtk-2.12.1-2.win32-py2.5.exe"
-  !define PYCAIRO_INSTALLER "${DEPENDENCIES_FOLDER}/pycairo-1.2.6-1.win32-py2.5.exe"
-  !define PYGOBJECT_INSTALLER "${DEPENDENCIES_FOLDER}/pygobject-2.12.3-1.win32-py2.5.exe"
-  !define SETUPTOOLS_INSTALLER "${DEPENDENCIES_FOLDER}/setuptools-0.6c7.win32-py2.5.exe"
-  !define PYPROTOCOLS_EGG "${DEPENDENCIES_FOLDER}/PyProtocols-1.0a0-py2.5-win32.egg"
-  !define PLY_EGG "${DEPENDENCIES_FOLDER}/ply-2.3-py2.5.egg"
-  !define FORMENCODE_EGG "${DEPENDENCIES_FOLDER}/FormEncode-1.0-py2.5.egg"
-  !define SQLOBJECT_EGG "${DEPENDENCIES_FOLDER}/SQLObject-0.9.5-py2.5.egg"
-  !define SUTEKH_ICON "${DEPENDENCIES_FOLDER}/sutekh.ico"
+  !define GTK_INSTALLER "gtk-dev-2.12.9-win32-2.exe"
+  !define PYTHON_INSTALLER "python-2.5.msi"
+  !define PYGTK_INSTALLER "pygtk-2.12.1-2.win32-py2.5.exe"
+  !define PYCAIRO_INSTALLER "pycairo-1.2.6-1.win32-py2.5.exe"
+  !define PYGOBJECT_INSTALLER "pygobject-2.12.3-1.win32-py2.5.exe"
+  !define SETUPTOOLS_INSTALLER "setuptools-0.6c7.win32-py2.5.exe"
+  !define PYPROTOCOLS_EGG "PyProtocols-1.0a0-py2.5-win32.egg"
+  !define PLY_EGG "ply-2.3-py2.5.egg"
+  !define FORMENCODE_EGG "FormEncode-1.0-py2.5.egg"
+  !define SQLOBJECT_EGG "SQLObject-0.9.5-py2.5.egg"
+  !define SUTEKH_ICON "sutekh.ico"
 
-  !define SUTEKH_EGG "${DIST_FOLDER}/Sutekh-${SUTEKH_VERSION}-py2.5.egg"
+  !define SUTEKH_EGG "Sutekh-${SUTEKH_VERSION}-py2.5.egg"
 
-  !define COMBINED_LICENSE "${DEPENDENCIES_FOLDER}/GPLv2.txt"
+  !define COMBINED_LICENSE "GPLv2.txt"
 
 ; Pages
 
-  !insertmacro MUI_PAGE_LICENSE ${COMBINED_LICENSE} 
+  !insertmacro MUI_PAGE_LICENSE "${DEPENDENCIES_FOLDER}/${COMBINED_LICENSE}"
   !insertmacro MUI_PAGE_COMPONENTS
   !insertmacro MUI_PAGE_DIRECTORY
   !insertmacro MUI_PAGE_INSTFILES
@@ -64,7 +64,7 @@
 
 ; Other Stuff
 
-  Icon "${SUTEKH_ICON}"
+  Icon "${DEPENDENCIES_FOLDER}/${SUTEKH_ICON}"
   SetCompress off ; all the big stuff is already compressed 
 
 ; Installer Sections
@@ -74,7 +74,7 @@ Section "GTK"
   ;The Gaim installer has interesting bits (http://gaim.sf.net)
 
   SetOutPath "$INSTDIR"
-  File ${GTK_INSTALLER}
+  File "${DEPENDENCIES_FOLDER}/${GTK_INSTALLER}"
 
   ;Installing
   ExecWait '"$INSTDIR\${GTK_INSTALLER}" /S /D=$INSTDIR\GTK'
@@ -92,7 +92,7 @@ Section "Python"
   ;          Win NT, 2000: http://www.microsoft.com/downloads/details.aspx?FamilyID=4b6140f9-2d36-4977-8fa1-6f8a0f5dca8f&DisplayLang=en
 
   SetOutPath "$INSTDIR"
-  File "${PYTHON_INSTALLER}"
+  File "${DEPENDENCIES_FOLDER}/${PYTHON_INSTALLER}"
 
   ExecWait 'msiexec /package "$INSTDIR\${PYTHON_INSTALLER}" /passive /norestart TARGETDIR="$INSTDIR\Python\"'
 
@@ -104,9 +104,9 @@ Section "PyGTK, PyCairo and PyGObject"
 
   SetOutPath "$INSTDIR"
 
-  File ${PYGTK_INSTALLER}
-  File ${PYCAIRO_INSTALLER}
-  File ${PYGOBJECT_INSTALLER}
+  File "${DEPENDENCIES_FOLDER}/${PYGTK_INSTALLER}"
+  File "${DEPENDENCIES_FOLDER}/${PYCAIRO_INSTALLER}"
+  File "${DEPENDENCIES_FOLDER}/${PYGOBJECT_INSTALLER}"
 
   ExecWait $INSTDIR\${PYGTK_INSTALLER}
   ExecWait $INSTDIR\${PYCAIRO_INSTALLER}
@@ -120,7 +120,7 @@ SectionEnd
 Section "Setuptools"
   SetOutPath "$INSTDIR"
  
-  File ${SETUPTOOLS_INSTALLER}
+  File "${DEPENDENCIES_FOLDER}/${SETUPTOOLS_INSTALLER}"
 
   ExecWait $INSTDIR\${SETUPTOOLS_INSTALLER}
 
@@ -130,7 +130,7 @@ SectionEnd
 Section "PyProtocols"
   SetOutPath "$INSTDIR"
 
-  File ${PYPROTOCOLS_EGG}
+  File "${DEPENDENCIES_FOLDER}/${PYPROTOCOLS_EGG}"
 
   ExecWait '$INSTDIR\Python\Scripts\easy_install.exe --no-deps "$INSTDIR\${PYPROTOCOLS_EGG}"'
 
@@ -140,7 +140,7 @@ SectionEnd
 Section "Ply"
   SetOutPath "$INSTDIR"
 
-  File ${PLY_EGG}
+  File "${DEPENDENCIES_FOLDER}/${PLY_EGG}"
 
   ExecWait '$INSTDIR\Python\Scripts\easy_install.exe --no-deps "$INSTDIR\${PLY_EGG}"'
 
@@ -150,7 +150,7 @@ SectionEnd
 Section "FORMEncode"
   SetOutPath "$INSTDIR"
 
-  File ${FORMENCODE_EGG}
+  File "${DEPENDENCIES_FOLDER}/${FORMENCODE_EGG}"
 
   ExecWait '$INSTDIR\Python\Scripts\easy_install.exe --no-deps "$INSTDIR\${FORMENCODE_EGG}"'
 
@@ -160,7 +160,7 @@ SectionEnd
 Section "SQLObject"
   SetOutPath "$INSTDIR"
 
-  File ${SQLOBJECT_EGG}
+  File "${DEPENDENCIES_FOLDER}/${SQLOBJECT_EGG}"
 
   ExecWait '$INSTDIR\Python\Scripts\easy_install.exe --no-deps "$INSTDIR\${SQLOBJECT_EGG}"'
 
@@ -170,8 +170,8 @@ SectionEnd
 Section "Sutekh"
   SetOutPath "$INSTDIR"
 
-  File ${SUTEKH_EGG}
-  File ${SUTEKH_ICON}
+  File "${DIST_FOLDER}/${SUTEKH_EGG}"
+  File "${DEPENDENCIES_FOLDER}/${SUTEKH_ICON}"
 
   ExecWait '$INSTDIR\Python\Scripts\easy_install.exe --no-deps "$INSTDIR\${SUTEKH_EGG}"'
 
@@ -188,7 +188,7 @@ Section "Sutekh"
 SectionEnd
 
 UninstallText "This will uninstall Sutekh ${SUTEKH_VERSION}."
-UninstallIcon "${SUTEKH_ICON}"
+UninstallIcon "${DEPENDENCIES_FOLDER}/${SUTEKH_ICON}"
 
 Section "Uninstall"
   ; TODO: - Unistall Python
