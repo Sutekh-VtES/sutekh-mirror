@@ -42,6 +42,12 @@ class SearchDialog(gtk.Window):
         self.connect('button-press-event', self.check_hide)
         self.set_focus_on_map(True)
         self.bVisible = False
+        # Hook up to the View
+        oView.set_search_entry(self.oEntry)
+        oView.set_enable_search(False)
+        # Key combination for searching
+        oView.connect_after('key-press-event',
+                self.treeview_key_press_event)
 
     def set_text(self, sString):
         """Set the contents of the entry to sString"""

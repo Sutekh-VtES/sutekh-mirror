@@ -28,17 +28,9 @@ class CardSetManagementView(gtk.TreeView, object):
 
         # Text searching of card names
         self.set_search_equal_func(self.compare, None)
-        self.set_enable_search(False)
         # Search dialog
         # Entry item for text searching
         self._oSearchDialog = SearchDialog(self, self._oMainWin)
-        self.set_search_entry(self._oSearchDialog.oEntry)
- 
-        # Key combination for searching
-        self.connect_after('key-press-event',
-                self._oSearchDialog.treeview_key_press_event)
-
-
 
         # Drag and Drop
         aTargets = [ ('STRING', 0, 0),      # second 0 means TARGET_STRING
