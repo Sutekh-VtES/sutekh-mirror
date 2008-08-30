@@ -226,7 +226,7 @@ class IconManager(object):
             try:
                 oUrl = urlopen(sUrl)
                 # copy url to file
-                fOut = file(sFullFilename, 'w')
+                fOut = file(sFullFilename, 'wb')
                 fOut.write(oUrl.read())
                 fOut.close()
             except HTTPError, oErr:

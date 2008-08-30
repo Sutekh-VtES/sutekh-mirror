@@ -602,7 +602,7 @@ class CardImagePlugin(CardListPlugin):
             sFileName = oItem.filename.replace('/', os.path.sep)
             sDir = sFileName.rsplit(os.path.sep, 1)[0]
             ensure_dir_exists(sDir)
-            oOutputFile = file(sFileName, 'w+')
+            oOutputFile = file(sFileName, 'wb')
             oOutputFile.write(oData)
             oOutputFile.close()
         oProgressDialog.destroy()
