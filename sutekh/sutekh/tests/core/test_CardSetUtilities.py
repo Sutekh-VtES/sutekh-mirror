@@ -77,7 +77,7 @@ class CardSetUtilTests(SutekhTest):
         aList3 = get_loop_names(aChildren[1])
         self.assertEqual(sorted(aList3), sorted(aList1))
         # Check that deleting doesn't fix the loop, due to reparenting
-        delete_physical_card_set(aChildren[0])
+        delete_physical_card_set(aChildren[0].name)
         self.assertTrue(detect_loop(oRoot))
         # Check that explicit loop breaking working
         oRoot.parent = None
