@@ -52,7 +52,7 @@ class PhysicalCardTests(SutekhTest):
         oIdFile.id_file(sTempFileName)
         self.assertEqual(oIdFile.type, 'PhysicalCard')
 
-        fIn = open(sTempFileName, 'r')
+        fIn = open(sTempFileName, 'rU')
         oParser.parse(fIn)
         fIn.close()
 

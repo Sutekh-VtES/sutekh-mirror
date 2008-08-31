@@ -52,7 +52,7 @@ class ELDBDeckWriterTests(SutekhTest):
         oWriter.write(fOut, oPhysCardSet1)
         fOut.close()
 
-        fIn = open(sTempFileName, 'r')
+        fIn = open(sTempFileName, 'rU')
         sData = fIn.read()
         fIn.close()
 

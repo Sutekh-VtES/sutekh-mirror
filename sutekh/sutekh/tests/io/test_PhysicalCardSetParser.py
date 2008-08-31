@@ -61,7 +61,7 @@ class PhysicalCardSetParserTests(SutekhTest):
         fIn = open(sFileName, 'w')
         fIn.write(sExpected2)
         fIn.close()
-        fIn = open(sFileName, 'r')
+        fIn = open(sFileName, 'rU')
         oParser.parse(fIn)
         fIn.close()
 

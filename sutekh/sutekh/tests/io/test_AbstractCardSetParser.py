@@ -50,7 +50,7 @@ class AbstractCardSetParserTest(SutekhTest):
         fOut.close()
 
         oParser.parse_string(sExample2)
-        fIn = open(sTempFileName, 'r')
+        fIn = open(sTempFileName, 'rU')
         oParser.parse(fIn)
         fIn.close()
 

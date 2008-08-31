@@ -58,7 +58,7 @@ class PhysicalCardSetWriterTests(SutekhTest):
         oWriter.write(fOut, aCardSetNames[0])
         fOut.close()
 
-        fIn = open(sTempFileName, 'r')
+        fIn = open(sTempFileName, 'rU')
         sData = fIn.read()
         # Writing to file adds newlines + formatting, which we remove before
         # comparing
