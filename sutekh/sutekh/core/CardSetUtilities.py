@@ -11,14 +11,18 @@ from sutekh.core.SutekhObjects import PhysicalCardSet
 
 def get_loop_names(oCardSet):
     """Return a list names of the card sets in the loop."""
-    aLoop = [oCardSet.name]
+    aLoop = [oCardSet]
     oParent = oCardSet.parent
-    while oParent != oCardSet and oParent:
-        aLoop.append(oParent.name)
+    while oParent not in aLoop and oParent:
+        aLoop.append(oParent)
         oParent = oParent.parent
     if not oParent:
-        # Safet check case
+        # Safety check case
         return []
+    if oParent != oCardSet:
+        # oCardSet is not actually part of the loop
+        return get_loop_names(oParent)
+    aLoop = [x.name for x in aLoop]
     aLoop.reverse()
     return aLoop
 
@@ -41,10 +45,12 @@ def delete_physical_card_set(sSetName):
 
 def detect_loop(oCardSet):
     """Checks whether the given card set is part of a loop"""
+    aSeen = [oCardSet]
     oParent = oCardSet.parent
     while oParent:
-        if oParent == oCardSet:
+        if oParent in aSeen:
             return True # we have a loop
+        aSeen.append(oParent)
         oParent = oParent.parent
     return False # we've hit none, so no loop
 

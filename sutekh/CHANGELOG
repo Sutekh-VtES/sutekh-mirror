@@ -2,6 +2,7 @@
  * Add plugin for exporting decks to FELDB
  * Add encoding header to the exported HTML file
  * Split HTML Plugin into io +gui segments. Add test for the HTML output
+ * Add test cases for the CardSetUtilities functions
 
 30 Aug 2008
  * Use our own search dialog to avoid an interactive search bug on Windows
