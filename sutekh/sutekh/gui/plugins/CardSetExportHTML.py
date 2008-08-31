@@ -259,6 +259,7 @@ class CardSetExportHTML(CardListPlugin, ArdbInfo):
             # pylint: disable-msg=W0703
             # we do want to catch all exceptions here
             try:
+                # 'w' should be fine, since we're using an ascii coding
                 fOut = file(sFileName, "w")
             except Exception, oExp:
                 sMsg = "Failed to open output file.\n\n" + str(oExp)
@@ -317,6 +318,15 @@ class CardSetExportHTML(CardListPlugin, ArdbInfo):
     def _add_header(self, oDocRoot, oCardSet):
         """Add the header and title of the HTML file."""
         oHead = SubElement(oDocRoot, 'head')
+        oEncoding = SubElement(oHead, 'meta')
+        # Notes on generating XHTML using ElementTree indicate that
+        # IE doesn't like the XML <?xml ... encoding=...?> scheme,
+        # so we add a meta header.  We use us-ascii, the ElementTree default,
+        # since, if we specify a different encoding, ElementTree will
+        # helpfully add an XML  encoding header, which we don't want because
+        # of the above
+        oEncoding.attrib['http-equiv'] = "content-type"
+        oEncoding.attrib['content'] = 'text/html; charset="us-ascii"'
         oStyle = SubElement(oHead, 'style', type="text/css")
         # Is there a better idea here?
         oStyle.text = _sHTMLStyle
