@@ -154,9 +154,9 @@ def _sort_vampires(dVamps):
     aSortedVampires = []
     # pylint: disable-msg=E1101
     # IAbstrctCard confuses pylint
-    for iId, sVampName in dVamps:
+    for iId, sVampName, sSet in dVamps:
         oCard = IAbstractCard(sVampName)
-        iCount = dVamps[(iId, sVampName)]
+        iCount = dVamps[(iId, sVampName, sSet)]
         if len(oCard.creed) > 0:
             iCapacity = oCard.life
             sClan = "Imbued"
@@ -178,8 +178,8 @@ def _sort_lib(dLib):
     # Group by type
     for tKey in dLib:
         # pylint: disable-msg=W0612
-        # iId isn't used here
-        iId, sName, sType = tKey
+        # iId, sSet isn't used here
+        iId, sName, sType, sSet = tKey
         iCount = dLib[tKey]
         dTypes.setdefault(sType, [0])
         dTypes[sType][0] += iCount
@@ -282,17 +282,6 @@ class CardSetExportHTML(CardListPlugin, ArdbInfo):
             oETree.write(fOut)
             fOut.close()
 
-    def get_cards(self):
-        """Get the cards for this card set."""
-        # pylint: disable-msg=E1101
-        # PyProtocol methods confuse pylint
-        dDict = {}
-        for oCard in self.model.get_card_iterator(None):
-            oACard = IAbstractCard(oCard)
-            dDict.setdefault((oACard.id, oACard.name), 0)
-            dDict[(oACard.id, oACard.name)] += 1
-        return dDict
-
     def gen_tree(self, oCardSet, bDoText):
         """Convert the Cards to a element tree containing 'nice' HTML"""
         oDocRoot = Element('html', xmlns='http://www.w3.org/1999/xhtml',
@@ -301,7 +290,7 @@ class CardSetExportHTML(CardListPlugin, ArdbInfo):
 
         oBody = self._add_header(oDocRoot, oCardSet)
 
-        dCards = self.get_cards()
+        dCards = self._get_cards(self.get_all_cards())
         aSortedVampires = self._add_crypt(oBody, dCards)
         aSortedLibCards = self._add_library(oBody, dCards)
         if bDoText:
@@ -355,14 +344,12 @@ class CardSetExportHTML(CardListPlugin, ArdbInfo):
         # PyProtocol methods confuse pylint
         def start_section(oBody, dCards):
             """Format the start of the crypt section"""
-            (dVamps, iCryptSize, iMin, iMax, fAvg) = self._extract_crypt(
-                    dCards)
+            dVamps, dCryptStats = self._extract_crypt(dCards)
             oCrypt = SubElement(oBody, "div", id="crypt")
             oCryptTitle = SubElement(oCrypt, "h3", id="crypttitle")
             _add_span(oCryptTitle, 'Crypt')
-            _add_span(oCryptTitle, "[%d vampires] Capacity min : %d max :"
-                    " %d average : %.2f" % (iCryptSize, iMin, iMax, fAvg),
-                    'stats', 'cryptstats')
+            _add_span(oCryptTitle, "[%(size)d vampires] Capacity min : %(min)d"
+                    " max : %(max)d average : %(avg).2f" % dCryptStats)
             aSortedVampires = _sort_vampires(dVamps)
             return oCrypt, aSortedVampires
 
