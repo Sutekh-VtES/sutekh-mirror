@@ -128,8 +128,8 @@ class CellRendererSutekhButton(gtk.GenericCellRenderer):
             oPixRect.x += 2
             oPixRect.y += 2
             # We add a timeout to force a redraw to unbump the button
-            gobject.timeout_add(200, self.restore_offset, oWindow, oWidget,
-                    oBackgroundArea, oCellArea, oExposeArea, iFlags)
+            gobject.timeout_add(200, self.restore_offset, oWindow,
+                    oBackgroundArea)
 
         oDrawRect = oCellArea.intersect(oPixRect)
         oDrawRect = oExposeArea.intersect(oDrawRect)
@@ -140,16 +140,12 @@ class CellRendererSutekhButton(gtk.GenericCellRenderer):
             gtk.gdk.RGB_DITHER_NONE, 0, 0)
         return None
 
-    # pylint: disable-msg=R0913
-    # R0913 - number of parameters needed by function signature
-    def restore_offset(self, oWindow, oWidget, oBackgroundArea,
-            oCellArea, oExposeArea, iFlags):
+    def restore_offset(self, oWindow, oArea):
         """queue a redraw so we restore the button."""
         # Don't unbump if the user has clicked again
         if not self.bClicked:
-            # Call render to redraw the button
-            self.render(oWindow, oWidget, oBackgroundArea, oCellArea,
-                    oExposeArea, iFlags)
+            # queue a redraw
+            oWindow.invalidate_rect(oArea, False)
 
 # HouseKeeping work for CellRendererStukehButton
 # Awkward stylistically, but I'm putting it here as it's
