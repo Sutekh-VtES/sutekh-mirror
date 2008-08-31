@@ -1,3 +1,7 @@
+31 Aug 2008
+ * Add plugin for exporting decks to FELDB
+ * Add encoding header to the exported HTML file
+
 30 Aug 2008
  * Use our own search dialog to avoid an interactive search bug on Windows
  * Upgade windows installer to use python 2.5.2 to avoid a bug in 
