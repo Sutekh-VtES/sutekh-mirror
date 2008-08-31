@@ -34,11 +34,11 @@ class ZipFileWrapper(object):
 
     def __open_zip_for_write(self):
         """Open zip file to be written"""
-        self.oZip = zipfile.ZipFile(self.sZipFileName, 'wb')
+        self.oZip = zipfile.ZipFile(self.sZipFileName, 'w')
 
     def __open_zip_for_read(self):
         """Open zip file to be read"""
-        self.oZip = zipfile.ZipFile(self.sZipFileName, 'rb')
+        self.oZip = zipfile.ZipFile(self.sZipFileName, 'r')
 
     def __close_zip(self):
         """Close the zip file and clean up"""
