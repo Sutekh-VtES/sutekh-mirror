@@ -563,7 +563,7 @@ class CardImagePlugin(CardListPlugin):
             # Just try and download
             fTemp.write(oFile.read())
         try:
-            oZipFile = zipfile.ZipFile(fTemp, 'r')
+            oZipFile = zipfile.ZipFile(fTemp, 'rb')
             bRet = self._unzip_heart(oZipFile)
         except zipfile.BadZipfile:
             bRet = False
@@ -575,7 +575,7 @@ class CardImagePlugin(CardListPlugin):
         """Unzip a file containing the images."""
         if _check_file(sFileName):
             try:
-                oZipFile = zipfile.ZipFile(sFileName, 'r')
+                oZipFile = zipfile.ZipFile(sFileName, 'rb')
             except zipfile.BadZipfile:
                 return False
             return self._unzip_heart(oZipFile)
