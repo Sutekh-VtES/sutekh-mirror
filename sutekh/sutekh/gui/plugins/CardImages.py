@@ -599,8 +599,8 @@ class CardImagePlugin(CardListPlugin):
             # Should I also test for cardimages\ ?
             sFileName = os.path.join(sPrefsPath,
                     oItem.filename.replace('cardimages/',''))
-            sFileName = oItem.filename.replace('/', os.path.sep)
-            sDir = sFileName.rsplit(os.path.sep, 1)[0]
+            sFileName = sFileName.replace('/', os.path.sep)
+            sDir = os.path.dirname(sFileName)
             ensure_dir_exists(sDir)
             oOutputFile = file(sFileName, 'wb')
             oOutputFile.write(oData)
