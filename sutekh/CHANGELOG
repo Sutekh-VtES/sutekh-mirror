@@ -1,3 +1,9 @@
+01 Sep 2008
+ * Add simple test cases for ELDB HTML Parser + ARDB deck XML export
+ * Add expand all + collapse all options to card set list
+ * Fix crash caused by keeping a reference to the HTML Dialog after it had
+   been destroyed.
+
 31 Aug 2008
  * Add plugin for exporting decks to FELDB
  * Add encoding header to the exported HTML file

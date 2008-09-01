@@ -1,7 +1,7 @@
 # test_ELDBHTMLParser.py
 # -*- coding: utf8 -*-
 # vim:fileencoding=utf8 ai ts=4 sts=4 et sw=4
-# Copyright 2007 Simon Cross <hodgestar@gmail.com>
+# Copyright 2008 Neil Muller <drnmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
 """Test case for ELDB HTML parser"""
