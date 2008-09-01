@@ -473,9 +473,13 @@ class MultiPaneWindow(gtk.Window):
         """Popup and run HTML Dialog widget"""
         if self._oHelpDlg is None:
             self._oHelpDlg = HTMLViewDialog(self, fInput, self._link_resource)
+            self._oHelpDlg.connect("destroy", self._html_dialog_destroyed)
         else:
             self._oHelpDlg.show_page(fInput)
         self._oHelpDlg.show()
+
+    def _html_dialog_destroyed(self, oDlg):
+        self._oHelpDlg = None
 
     # window setup saving functions
 
