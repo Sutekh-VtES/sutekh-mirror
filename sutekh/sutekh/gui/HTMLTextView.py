@@ -628,7 +628,10 @@ class HTMLTextView(gtk.TextView):
     def display_html(self, fHTMLInput):
         """Displa the HTML from the file-like object fHTMLInput"""
         oBuffer = self.get_buffer()
+        oStartOfBuf, oEndOfBuf = oBuffer.get_bounds()
+        oBuffer.delete(oStartOfBuf, oEndOfBuf)
         oEndOfBuf = oBuffer.get_end_iter()
+
         oParser = xml.sax.make_parser()
         oHandler = HtmlHandler(self, oEndOfBuf, self._fLinkLoader)
         oParser.setContentHandler(oHandler)
@@ -690,23 +693,18 @@ class HTMLViewDialog(SutekhDialog):
         self._oHTMLTextView = HTMLTextView(self._fLinkLoader)
         self._oView = AutoScrolledWindow(self._oHTMLTextView)
         self.set_default_size(400, 600)
-        self._oHTMLTextView.display_html(fInput)
         self.vbox.pack_start(self._oView, True,
                 True)
         self._oHTMLTextView.connect('url-clicked', self._url_clicked)
         self.connect('response', lambda x, but: self.hide())
-        self.show_all()
+        self._update_view()
 
     def _update_view(self):
         """Redraw the pane with the contents of self._fCurrent"""
         self._fCurrent.seek(0)
-        self._oView.remove(self._oHTMLTextView)
-        self._oHTMLTextView = HTMLTextView(self._fLinkLoader)
         self._oHTMLTextView.display_html(self._fCurrent)
-        self._oHTMLTextView.connect('url-clicked', self._url_clicked)
         if self._sTextAnchor:
             self._oHTMLTextView.set_text_pos(self._sTextAnchor)
-        self._oView.add(self._oHTMLTextView)
         if len(self._aPastUrls) > 0:
             self._oBackButton.set_sensitive(True)
         else:
