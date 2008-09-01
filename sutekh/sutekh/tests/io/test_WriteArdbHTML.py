@@ -6,6 +6,8 @@
 
 """Test Writing a card set to an Ardb HTML file"""
 
+import time
+from sutekh.SutekhInfo import SutekhInfo
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.tests.core.test_PhysicalCardSet import aCardSetNames, \
         get_phys_cards
@@ -121,10 +123,12 @@ sExpected1 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
         </table>
       </div>
     </div><div>
-      <span class="generator">Crafted with : Sutekh [ 0.6.0 ]. [ 2008-08-31 ]</span>
+      <span class="generator">Crafted with : Sutekh [ %s ]. [ %s ]</span>
     </div>
   </body>
-</html>""" % sHTMLStyle
+</html>""" % (sHTMLStyle, SutekhInfo.VERSION_STR,
+        time.strftime('%Y-%m-%d', time.localtime()))
+
 
 
 class ARDBHTMLWriterTests(SutekhTest):
