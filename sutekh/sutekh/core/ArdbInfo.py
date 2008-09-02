@@ -98,20 +98,22 @@ class ArdbInfo(object):
         for oCard in oCardIter:
             oPhysCard = IPhysicalCard(oCard)
             oAbsCard = IAbstractCard(oCard)
-            if oPhysCard.expansion:
-                sSet = self._get_ardb_exp_name(oPhysCard.expansion)
-            else:
-                # ARDB doesn't have a concept of 'No expansion', so we
-                # need to fake it. We use the first legitimate expansion
-                oRarityPair = list(oAbsCard.rarity)[0]
-                sSet = self._get_ardb_exp_name(oRarityPair.expansion)
+            sSet = self._get_ardb_exp_name(oPhysCard)
             dDict.setdefault((oAbsCard.id, oAbsCard.name, sSet), 0)
             dDict[(oAbsCard.id, oAbsCard.name, sSet)] += 1
         return dDict
 
-    def _get_ardb_exp_name(self, oExpansion):
+    def _get_ardb_exp_name(self, oPhysCard):
         """Extract the correct ARDB name for the expansion"""
-        sSet = oExpansion.shortname
+        if oPhysCard.expansion:
+            sSet = oPhysCard.expansion.shortname
+        else:
+            oAbsCard = IAbstractCard(oPhysCard)
+            # ARDB doesn't have a concept of 'No expansion', so we
+            # need to fake it. We use the first legitimate expansion
+            # We sort the list to ensure stable results across databases, etc.
+            aNames = sorted([oP.expansion.shortname for oP in oAbsCard.rarity])
+            sSet = aNames[0]
         if sSet == 'Promo':
             sSet = oExpansion.name
             sSet.replace('-', '')

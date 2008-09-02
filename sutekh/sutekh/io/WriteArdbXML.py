@@ -73,7 +73,8 @@ class WriteArdbXML(ArdbInfo):
         """Convert the Vampire dictionary into elementtree representation."""
         # pylint: disable-msg=R0914
         # Need this many local variables to create proper XML tree
-        for tKey, iNum in dVamps.iteritems():
+        for tKey in sorted(dVamps, key = lambda x: x[1]):
+            iNum = dVamps[tKey]
             iId, sName, sSet = tKey
             # pylint: disable-msg=E1101
             # IAbstractCard confuses pylint
@@ -126,7 +127,8 @@ class WriteArdbXML(ArdbInfo):
         """Format the dictionary of library cards for the element tree."""
         # pylint: disable-msg=R0914
         # Need this many local variables to create proper XML tree
-        for tKey, iNum in dLib.iteritems():
+        for tKey in sorted(dLib, key = lambda x: x[1]):
+            iNum = dLib[tKey]
             iId, sName, sTypeString, sSet = tKey
             # pylint: disable-msg=E1101
             # IAbstractCard confuses pylint

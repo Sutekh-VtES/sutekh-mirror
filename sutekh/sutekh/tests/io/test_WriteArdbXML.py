@@ -35,32 +35,32 @@ sExpected = """<deck databaseVersion="%s" formatVersion="-TODO-1.0" generator="S
       <text>Independent.</text>
     </vampire>
   </crypt><library size="4">
-    <card count="1" databaseID="2">
+    <card count="1" databaseID="1">
+      <name>.44 Magnum</name>
+      <set>CE</set>
+      <cost>2 pool </cost>
+      <type>Equipment</type>
+      <text>Weapon, gun.
+2R damage each strike, with an optional maneuver each combat.</text>
+    </card><card count="1" databaseID="2">
       <name>AK-47</name>
       <set>LotN</set>
       <cost>5 pool </cost>
       <type>Equipment</type>
       <text>Weapon. Gun.
 2R damage each strike, with an optional maneuver {each combat}. When bearer strikes with this gun, he or she gets an optional additional strike this round, only usable to strike with this gun.</text>
-    </card><card count="1" databaseID="14">
-      <name>Abombwe</name>
-      <set>LoB</set>
-      <type>Master</type>
-      <text>Master: Discipline. Trifle.
-Put this card on a Laibon or on a vampire with Protean [pro]. This vampire gains one level of Abombwe [abo]. Capacity increases by 1: the vampire is one generation older. Cannot be placed on a vampire with superior Abombwe.</text>
     </card><card count="1" databaseID="8">
       <name>Abbot</name>
       <set>Third</set>
       <type>Action</type>
       <text>+1 stealth action. Requires a Sabbat vampire.
 Put this card on this acting Sabbat vampire and untap him or her. This Sabbat vampire gets +1 intercept against (D) actions directed at his or her controller. A vampire may have only one Abbot.</text>
-    </card><card count="1" databaseID="1">
-      <name>.44 Magnum</name>
-      <set>Jyhad</set>
-      <cost>2 pool </cost>
-      <type>Equipment</type>
-      <text>Weapon, gun.
-2R damage each strike, with an optional maneuver each combat.</text>
+    </card><card count="1" databaseID="14">
+      <name>Abombwe</name>
+      <set>LoB</set>
+      <type>Master</type>
+      <text>Master: Discipline. Trifle.
+Put this card on a Laibon or on a vampire with Protean [pro]. This vampire gains one level of Abombwe [abo]. Capacity increases by 1: the vampire is one generation older. Cannot be placed on a vampire with superior Abombwe.</text>
     </card>
   </library>
 </deck>""" % (WriteArdbXML.sDatabaseVersion, SutekhInfo.VERSION_STR,
@@ -71,7 +71,7 @@ class ArdbXMLWriterTests(SutekhTest):
     """class for the ARDB deck XML writer tests"""
 
     def test_deck_writer(self):
-        """Test ELDB deck writing"""
+        """Test ARDB XML deck writing"""
         # pylint: disable-msg=E1101, R0915, R0914
         # E1101: SQLObject + PyProtocols magic confuses pylint
         # R0915, R0914: Want a long, sequentila test case to minimise
