@@ -105,15 +105,19 @@ class ArdbInfo(object):
 
     def _get_ardb_exp_name(self, oPhysCard):
         """Extract the correct ARDB name for the expansion"""
+        # pylint: disable-msg=E1101
+        # IAbstractCard confuses pylint
         if oPhysCard.expansion:
-            sSet = oPhysCard.expansion.shortname
+            oExpansion = oPhysCard.expansion
         else:
             oAbsCard = IAbstractCard(oPhysCard)
             # ARDB doesn't have a concept of 'No expansion', so we
             # need to fake it. We use the first legitimate expansion
             # We sort the list to ensure stable results across databases, etc.
-            aNames = sorted([oP.expansion.shortname for oP in oAbsCard.rarity])
-            sSet = aNames[0]
+            aExp = sorted([oP.expansion for oP in oAbsCard.rarity],
+                    key = lambda x: x.shortname)
+            oExpansion = aExp[0]
+        sSet = oExpansion.shortname
         if sSet == 'Promo':
             sSet = oExpansion.name
             sSet.replace('-', '')
