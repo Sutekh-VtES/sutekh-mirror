@@ -697,6 +697,8 @@ class HTMLViewDialog(SutekhDialog):
                 True)
         self._oHTMLTextView.connect('url-clicked', self._url_clicked)
         self.connect('response', lambda x, but: self.hide())
+        # ignore the delete event (response handler will hide)
+        self.connect('delete-event', lambda x, dlg: True)
         self._update_view()
 
     def _update_view(self):
