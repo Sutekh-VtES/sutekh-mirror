@@ -11,6 +11,7 @@
 
 from sutekh.core.SutekhObjects import IAbstractCard
 from sutekh.core.ArdbInfo import ArdbInfo
+from sutekh.io.WriteArdbXML import WriteArdbXML
 from sutekh.SutekhInfo import SutekhInfo
 from sutekh.SutekhUtility import pretty_xml
 import time
@@ -29,14 +30,6 @@ class WriteArdbInvXML(ArdbInfo):
     """Reformat cardset to elementTree and export it to a ARDB
        compatible XML Inventory file."""
 
-    # Should this be an attribute of VersionTable?
-    sDatabaseVersion = 'Sutekh-20080331'
-    # pylint: disable-msg=W0511
-    # this is not a actual TODO item
-    # Claim same version as recent ARDB
-    sFormatVersion = '-TODO-1.0'
-    # pyline: enable-msg=W0511
-
     def gen_tree(self, dCards):
         """Creates the actual XML document into memory."""
         # pylint: disable-msg=R0914
@@ -45,8 +38,8 @@ class WriteArdbInvXML(ArdbInfo):
 
         sDateWritten = time.strftime('%Y-%m-%d', time.localtime())
         oRoot.attrib['generator'] = "Sutekh [ %s ]" % SutekhInfo.VERSION_STR
-        oRoot.attrib['formatVersion'] = self.sFormatVersion
-        oRoot.attrib['databaseVersion'] = self.sDatabaseVersion
+        oRoot.attrib['formatVersion'] = WriteArdbXML.sFormatVersion
+        oRoot.attrib['databaseVersion'] = WriteArdbXML.sDatabaseVersion
         oDateElem = SubElement(oRoot, 'date')
         oDateElem.text = sDateWritten
 
@@ -70,12 +63,14 @@ class WriteArdbInvXML(ArdbInfo):
         # in the XML file, so we need to combine things so there's only 1
         # entry per card
         for tKey, iNum in dVamps.iteritems():
+            iNum = dVamps[tKey]
             iId, sName, sSet = tKey
             iId = tKey[0]
             sName = tKey[1]
             dCombinedVamps.setdefault(iId, [sName, sSet, 0])
             dCombinedVamps[iId][2] += iNum
-        for iId, (sName, sSet, iNum) in dCombinedVamps.iteritems():
+        for iId, (sName, sSet, iNum) in sorted(dCombinedVamps.iteritems(),
+                key=lambda x: x[1][0]):
             # pylint: disable-msg=E1101
             # IAbstractCard confuses pylint
             oCard = IAbstractCard(sName)
@@ -103,12 +98,14 @@ class WriteArdbInvXML(ArdbInfo):
         # Need this many local variables to create proper XML tree
         dCombinedLib = {}
         for tKey, iNum in dLib.iteritems():
+            iNum = dLib[tKey]
             iId = tKey[0]
             sName = tKey[1]
             sSet = tKey[3]
             dCombinedLib.setdefault(iId, [sName, sSet, 0])
             dCombinedLib[iId][2] += iNum
-        for iId, (sName, sSet, iNum) in dCombinedLib.iteritems():
+        for iId, (sName, sSet, iNum) in sorted(dCombinedLib.iteritems(),
+                key=lambda x: x[1][0]):
             oCardElem = SubElement(oLibElem, 'card', databaseID=str(iId),
                     have=str(iNum), spare='0', need='0')
             oNameElem = SubElement(oCardElem, 'name')
