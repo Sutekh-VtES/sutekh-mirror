@@ -1,3 +1,6 @@
+03 Spe 2008
+ * Add Special case to hanlde the Blood Brothers clan icon
+
 01 Sep 2008
  * Add simple test cases for ELDB HTML Parser + ARDB deck XML export
  * Add expand all + collapse all options to card set list

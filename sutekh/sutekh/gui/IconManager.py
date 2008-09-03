@@ -24,6 +24,9 @@ def _get_clan_filename(oClan):
     elif oClan.shortname == 'Tz':
         # Special case
         sFileName = 'IconClanTzi.gif'
+    elif oClan.shortname == 'BB':
+        # Special case
+        sFileName = 'IconClanBBr.gif'
     else:
         sFileName = 'IconClan%s.gif' % oClan.shortname[:3].capitalize()
     return sFileName
