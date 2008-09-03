@@ -58,3 +58,4 @@ For 0.6:
    - CSV export plugin for card sets
  * Import card sets from ARDB and FELDB
  * Improve intial setup - also download icons, offer to download images, etc.
+ * Silence or correct IconClanBb.gif not found error printed by icon downloader.
