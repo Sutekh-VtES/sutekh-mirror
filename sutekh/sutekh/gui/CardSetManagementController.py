@@ -12,9 +12,9 @@ from sutekh.core.SutekhObjects import PhysicalCardSet, IPhysicalCardSet
 from sutekh.gui.FilterDialog import FilterDialog
 from sutekh.gui.CardSetManagementView import CardSetManagementView
 from sutekh.gui.CreateCardSetDialog import CreateCardSetDialog
-from sutekh.gui.SutekhDialog import do_complaint_warning
+from sutekh.gui.SutekhDialog import do_complaint_warning, do_complaint
 from sutekh.core.CardSetUtilities import delete_physical_card_set, \
-        find_children, detect_loop, get_loop_names
+        find_children, detect_loop, get_loop_names, break_loop
 
 def split_selection_data(sSelectionData):
     """Helper function to subdivide selection string into bits again"""
@@ -38,9 +38,10 @@ def reparent_card_set(oCardSet, oNewParent):
         if detect_loop(oCardSet):
             oCardSet.parent = oOldParent
             oCardSet.syncUpdate()
-            do_complaint_warning('Changing parent of %s to %s introduces a'
+            do_complaint('Changing parent of %s to %s introduces a'
                     ' loop. Leaving the parent unchanged.' % (oCardSet.name,
-                        oNewParent.name))
+                        oNewParent.name), gtk.MESSAGE_WARNING,
+                    gtk.BUTTONS_CLOSE)
         else:
             return True
     else:
@@ -94,15 +95,14 @@ class CardSetManagementController(object):
         # Check the current set for loops
         for oCS in PhysicalCardSet.select():
             if detect_loop(oCS):
-                sLoop = "%s->%s" % ("->".join(get_loop_names(oCS)),
-                        oCS.name)
-                do_complaint_warning(
+                sLoop = "->".join(get_loop_names(oCS))
+                sBreakName = break_loop(oCS)
+                do_complaint(
                         'Loop %s in the card sets relationships.\n'
-                        'Breaking at %s' % (sLoop, oCS.name))
-                # We break the loop here, and let the user fix things,
+                        'Breaking at %s' % (sLoop, sBreakName),
+                        gtk.MESSAGE_WARNING, gtk.BUTTONS_CLOSE)
+                # We break the loop, and let the user fix things,
                 # rather than try and be too clever
-                oCS.parent = None
-                oCS.syncUpdate()
         self._oView = CardSetManagementView(oMainWindow, self)
         self._oModel = self._oView.get_model()
 

@@ -9,7 +9,7 @@
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.core.SutekhObjects import PhysicalCardSet
 from sutekh.core.CardSetUtilities import delete_physical_card_set, \
-        get_loop_names, detect_loop, find_children
+        get_loop_names, detect_loop, find_children, break_loop
 import unittest
 
 class CardSetUtilTests(SutekhTest):
@@ -86,6 +86,14 @@ class CardSetUtilTests(SutekhTest):
         self.assertFalse(detect_loop(aChildren[1]))
         aList1 = get_loop_names(oRoot)
         self.assertEqual(len(aList1), 0)
+        # Create another loop
+        oRoot.parent = aChildren[1]
+        oRoot.syncUpdate()
+        self.assertTrue(detect_loop(oRoot))
+        # Use the break loop function
+        break_loop(oRoot)
+        self.assertFalse(detect_loop(oRoot))
+        self.assertFalse(detect_loop(aChildren[1]))
 
 
 if __name__ == "__main__":
