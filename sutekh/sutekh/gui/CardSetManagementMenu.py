@@ -41,12 +41,7 @@ class CardSetManagementMenu(PaneMenu, object):
         self.create_menu_item('Delete selected Card Set', oMenu,
                 self._oController.delete_card_set, 'Delete')
         oMenu.add(gtk.SeparatorMenuItem())
-        self.create_menu_item("Expand All", oMenu, self.expand_all,
-                '<Ctrl>plus')
-        self.create_menu_item("Collapse All", oMenu, self.collapse_all,
-                '<Ctrl>minus')
-        self.create_menu_item("Remove This Pane", oMenu,
-                self._oFrame.close_menu_item)
+        self.add_common_actions(oMenu)
 
     # pylint: enable-msg=W0201
 

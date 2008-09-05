@@ -133,7 +133,7 @@ class MainMenu(SutekhMenu):
         oMenu.add(gtk.SeparatorMenuItem())
 
         self.__oDelPane = self.create_menu_item("_Remove current pane", oMenu,
-                self._oMainWindow.menu_remove_frame)
+                self._oMainWindow.menu_remove_frame, "<Ctrl>w")
         self.__oDelPane.set_sensitive(False)
 
     def _add_add_submenu(self, oMenuWidget):

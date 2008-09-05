@@ -18,13 +18,14 @@ Code Cleanup
  * Add ways of specifying more limited test data sets
  * Add better persistence of data across tests, to avoid rerunning the 
    parser for each test and improve test runtime
+ * Factor out things like the lists of expansions and disciplines in
+   SutekhObjects to a seperate file
 
 Gui (Functionality):
  * Finish ClusterCardList plugin.
  * Compare CardSet Plugin (basic version done. Could be improved)
  * Plugins for calling out to other VtES utilities as appropriate (http://ashheap.storageannex.com/utilities.htm)
- * Allow easy setting of the expansion for all selected cards and when importing
-   cards from file 
+ * Allow easy setting of the expansion when importing cards from file 
  * Convert the repeated functions in the plugins into functions in the plugin 
    API
 
@@ -38,6 +39,7 @@ Gui (Presentation):
  * Icon support improvements
    - Allow icons in the tree view
  * Allow colouring options for the cards
+ * Add more keyboard shortcuts
 
 Website:
  * Create documentation.
@@ -47,12 +49,6 @@ Other Tasks:
  * Find some users and developers interested in Sutekh on Windows.
 
 For 0.6:
- * Factor out things like the lists of expansions and disciplines in
-   SutekhObjects to a seperate file
- * Finish database reddesign fallout:
-   - Improve colour hints for card counts and parent card count columns
-   - Improve visual feedback for open card sets + card sets in use?
- * Add decent keyboard shortcuts
  * Finish built-in tutorial and help.
  * Plugins
    - CSV export plugin for card sets

@@ -7,7 +7,6 @@
 
 """Base class for the pane menus"""
 
-import gtk
 from sutekh.gui.SutekhMenu import SutekhMenu
 
 class PaneMenu(SutekhMenu):
@@ -27,14 +26,11 @@ class PaneMenu(SutekhMenu):
     def create_filter_menu(self):
         """Create the Filter Menu."""
         oMenu = self.create_submenu(self, "F_ilter")
-        oFilter = gtk.MenuItem("_Specify Filter")
-        oMenu.add(oFilter)
-        oFilter.connect('activate', self.set_active_filter)
-        self.oApply = gtk.CheckMenuItem("_Apply Filter")
+        self.create_menu_item("_Specify Filter", oMenu, self.set_active_filter,
+                '<Ctrl>s')
+        self.oApply = self.create_check_menu_item("_Apply Filter", oMenu,
+                self.toggle_apply_filter, False, "<Ctrl>t")
         self.oApply.set_inconsistent(False)
-        self.oApply.set_active(False)
-        oMenu.add(self.oApply)
-        self.oApply.connect('toggled', self.toggle_apply_filter)
 
     def set_active_filter(self, oWidget):
         """Abstract method to handle filter request events."""
@@ -52,6 +48,24 @@ class PaneMenu(SutekhMenu):
         """Get the filter applied state"""
         return self.oApply.active
 
+    def add_common_actions(self, oMenu):
+        """Actions common to all card lists"""
+        self.create_menu_item("Expand All", oMenu, self.expand_all,
+                '<Ctrl>plus')
+        self.create_menu_item("Collapse All", oMenu, self.collapse_all,
+                '<Ctrl>minus')
+        self.create_menu_item("Remove This Pane", oMenu,
+                self._oFrame.close_menu_item)
+
+    def expand_all(self, oWidget):
+        """Expand all the rows in the card set."""
+        raise NotImplementedError
+
+    def collapse_all(self, oWidget):
+        """Collapse all the rows in the card set."""
+        raise NotImplementedError
+
+
 class CardListMenu(PaneMenu):
     # pylint: disable-msg=R0904
     # R0904 - gtk.Widget, so many public methods
@@ -63,15 +77,6 @@ class CardListMenu(PaneMenu):
     def __init__(self, oFrame, oWindow, oController):
         super(CardListMenu, self).__init__(oFrame, oWindow)
         self._oController = oController
-
-    def add_common_actions(self, oMenu):
-        """Actions common to all card lists"""
-        self.create_menu_item("Expand All", oMenu, self.expand_all,
-                '<Ctrl>plus')
-        self.create_menu_item("Collapse All", oMenu, self.collapse_all,
-                '<Ctrl>minus')
-        self.create_menu_item("Remove This Pane", oMenu,
-                self._oFrame.close_menu_item)
 
     # pylint: disable-msg=W0613
     # oWidget required by function signature for the following methods

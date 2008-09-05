@@ -1,5 +1,15 @@
-03 Spe 2008
- * Add Special case to hanlde the Blood Brothers clan icon
+05 Sep 2008
+ * Add shortcuts for Specifying the Filter (Ctrl-S), Toggling the filter
+   (Ctrl-T), and closing a frame (Ctrl-W, as for galeon/epiphancy tabs)
+ * Tweak menu heirachy to unify some code
+ * Cleanup TODO list a bit
+
+04 Sep 2008
+ * Move card set loop breaking into CardSetUtilities and out of gui code
+
+03 Sep 2008
+ * Add special case to handle the Blood Brothers clan icon
+ * Add simple test for ARDB inventory export
 
 01 Sep 2008
  * Add simple test cases for ELDB HTML Parser + ARDB deck XML export
