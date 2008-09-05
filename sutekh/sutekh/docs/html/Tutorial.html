@@ -15,7 +15,7 @@
 <li><a href="#cards">Working with cards</a></li>
 <li><a href="#panes">Manipulating Panes</a></li>
 <li><a href="#sets">Managing Card Sets</a></li>
-<li><a href="filtering">Filtering</a></li>
+<li><a href="#filtering">Filtering</a></li>
 <li><a href="#tips">Useful Tips</a></li>
 </ol>
 
@@ -137,11 +137,68 @@ set* option from the <strong>Actions</strong> menu of the card set pane.</p>
 are considered to be those currently active. The display modes dealing with 
 child card sets only consider child cards sets that are marked as <em>&#8220;in use&#8221;</em>.</p>
 
-<h3>The <em>&#8220;Cards to Show&#8221;</em> options</h3>
+<h3>The Different card display and count modes</h3>
 
-<h3>The <em>&#8220;Display Mode&#8221;</em> options</h3>
+<p>Sutekh has several options which control which cards are displayed for a  
+card set, and what information about the cards is displayed.</p>
 
-<h3>The <em>&#8220;Parent Card Count&#8221;</em> options</h3>
+<p>The cards to display are also affected by the <a href="#filtering">filters</a> that are 
+applied.</p>
+
+<h4>The <em>&#8220;Cards to Show&#8221;</em> options</h4>
+
+<p>This option, controls which cards are displayed.</p>
+
+<p>The default mode shows only those card that belong to the actual card set.</p>
+
+<p>&#8220;Show All Cards&#8221; shows the entire list of cards. This mode is often useful 
+when entering cards into a card set for the first time</p>
+
+<p>&#8220;Show all cards in parent card set&#8221; shows the combination of the card in this 
+card set and all the cards in the parent card set. It is useful for seeing 
+which cards are available for adding to a deck.</p>
+
+<p>&#8220;Show all cards in child card sets&#8221; shows all cards that belong to the 
+<em>&#8220;in use&#8221;</em> children of this card set in addition to the cards in this card 
+set.</p>
+
+<h4>The <em>&#8220;Display Mode&#8221;</em> options</h4>
+
+<p>This controls what information is displayed below the card name.</p>
+
+<p>&#8220;Show Expansions&#8221;, the default, shows which cards have been marked as belonging 
+to which expansions below the card name.</p>
+
+<p>&#8220;Show No Children&#8221; disables anything below the card name.</p>
+
+<p>&#8220;Show Child Card Sets&#8221; shows the allocation of cards to the <em>&#8220;in use&#8221;</em> children 
+of the current card set.</p>
+
+<p>&#8220;Show Expansions + Child Card Sets&#8221; shows the expansions as for 
+&#8220;Show Expansions&#8221;, and shows the card set information for each expansion below 
+as well.</p>
+
+<p>&#8220;Show Child Card Sets and Expansions&#8221; is the reverse of 
+&#8220;Show Expansions + Child Card Sets&#8221;, showing the child card sets and the 
+expansion information below.</p>
+
+<h4>The <em>&#8220;Parent Card Count&#8221;</em> options</h4>
+
+<p>If the card set is the child of another card set, you can also display 
+information about the parent card set.</p>
+
+<p>&#8220;Show Parent Count&#8221;, the default, will just show the count of the same 
+card in the parent card set.</p>
+
+<p>&#8220;Don&#8217;t show parent card counts&#8221; disables the column with the parent count.</p>
+
+<p>&#8220;Show difference between Parent Count and this card set&#8221; shows the difference 
+between the parent count and the count for this card set.</p>
+
+<p>&#8220;Show difference between Parent Count and card sets in use&#8221; shows the 
+difference between the parent card set and total in all the <em>&#8220;in use&#8221;</em> card 
+set. If this card set is <strong>not</strong> <em>&#8220;in use&#8221;</em>, then the number of cards in this 
+set does not influence this number.</p>
 
 <h2 id="filtering">Filtering</h2>
 
