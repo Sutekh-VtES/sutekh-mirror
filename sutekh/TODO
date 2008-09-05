@@ -54,3 +54,4 @@ For 0.6:
    - CSV export plugin for card sets
  * Import card sets from ARDB and FELDB
  * Improve intial setup - also download icons, offer to download images, etc.
+ * Save the state for the open card sets (Cards shown, parent count mode, etc)
