@@ -48,6 +48,11 @@ Website:
 Other Tasks:
  * Find some users and developers interested in Sutekh on Windows.
 
+Upstream:
+ * File GTK bugs for:
+   * TreeView jumping.
+   * TreeView search pop-up not working under Windows. 
+
 For 0.6:
  * Finish built-in tutorial and help.
  * Plugins
