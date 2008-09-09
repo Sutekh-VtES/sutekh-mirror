@@ -120,7 +120,7 @@ class CellRendererSutekhButton(gtk.GenericCellRenderer):
 
         oPixRect.x += oCellArea.x
         oPixRect.y += oCellArea.y
-        # xpad, ypad are floats, ut gtk.gdk.Rectangle needs int's
+        # xpad, ypad are floats, but gtk.gdk.Rectangle needs int's
         oPixRect.width  -= int(2 * self.get_property("xpad"))
         oPixRect.height -= int(2 * self.get_property("ypad"))
 
