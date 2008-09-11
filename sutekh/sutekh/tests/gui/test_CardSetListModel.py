@@ -298,6 +298,9 @@ class CardSetListModelTests(SutekhTest):
 
     def test_relationships(self):
         """Tests Model against more complex Card Set relationships"""
+        # pylint: disable-msg=R0915, R0914
+        # R0915, R0914: Want a long, sequential test case to minimise
+        # repeated setups, so it has lots of lines + variables
         # pylint: disable-msg=W0612
         # oCache exists only for the internal cache, so it's unused
         oCache = SutekhObjectCache()
