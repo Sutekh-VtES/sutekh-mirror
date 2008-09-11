@@ -295,9 +295,18 @@ class CardSetListModelTests(SutekhTest):
                 Groupings.RarityGrouping]:
             oModel.groupby = cGrouping
             self._loop_modes(oPCS, oModel)
-        oModel.groupby = Groupings.NullGrouping
-        # Add some more cards
+
+    def test_relationships(self):
+        """Tests Model against more complex Card Set relationships"""
+        # pylint: disable-msg=W0612
+        # oCache exists only for the internal cache, so it's unused
+        oCache = SutekhObjectCache()
+        # pylint: enable-msg=W0612
+        oPCS = PhysicalCardSet(name=self.aNames[0])
+        oModel = CardSetCardListModel(self.aNames[0])
+        # Add cards
         aCards = [('Alexandra', 'CE'), ('Sha-Ennu', 'Third Edition'),
+                ('Alexandra', 'CE'), ('Sha-Ennu', 'Third Edition'),
                 ('Alexandra', None), ('Bronwen', 'Sabbat'),
                 ('.44 Magnum', 'Jyhad'), ('.44 Magnum', 'Jyhad'),
                 ('Yvette, The Hopeless', 'CE'),
@@ -309,23 +318,23 @@ class CardSetListModelTests(SutekhTest):
             oPCS.addPhysicalCard(oCard.id)
         # Create a child card set with some entries and check everything works
         oChildPCS = PhysicalCardSet(name=self.aNames[1], parent=oPCS)
-        oChildModel = CardSetCardListModel(self.aNames[1])
-        self._reset_modes(oChildModel)
         for sName, sExp in aCards[2:6]:
             oCard = self._gen_card(sName, sExp)
             # pylint: disable-msg=E1101
             # PyProtocols confuses pylint
             oChildPCS.addPhysicalCard(oCard.id)
-        oChildModel.groupby = Groupings.NullGrouping
-        oChildModel.load()
         oChildPCS.inuse = False
         # Check adding cards when we have a parent card set
-        self._loop_modes(oChildPCS, oChildModel)
-        # Check adding cards when we have a child, but no parent
         self._loop_modes(oPCS, oModel)
+        # Change model to other card set
+        oModel.update_to_new_db(self.aNames[1])
+        self._loop_modes(oChildPCS, oModel)
+        # Check adding cards when we have a child, but no parent
         # And when we're in use
         oChildPCS.inuse = True
-        self._loop_modes(oChildPCS, oChildModel)
+        self._loop_modes(oChildPCS, oModel)
+        # change back
+        oModel.update_to_new_db(self.aNames[0])
         self._loop_modes(oPCS, oModel)
         # Add a grand child
         oGrandChildPCS = PhysicalCardSet(name=self.aNames[2], parent=oChildPCS)
@@ -336,9 +345,10 @@ class CardSetListModelTests(SutekhTest):
             oGrandChildPCS.addPhysicalCard(oCard.id)
         oGrandChildPCS.inuse = False
         # Check adding cards when we have a parent card set and a child
-        self._loop_modes(oChildPCS, oChildModel)
+        oModel.update_to_new_db(self.aNames[1])
+        self._loop_modes(oChildPCS, oModel)
         oGrandChildPCS.inuse = True
-        self._loop_modes(oChildPCS, oChildModel)
+        self._loop_modes(oChildPCS, oModel)
         # Add some cards to oGrandChildPCS that aren't in parent and oChildPCS,
         # add a sibling card set to oChildPCS and add another child and retest
         oSibPCS = PhysicalCardSet(name=self.aNames[3], parent=oPCS)
@@ -366,41 +376,47 @@ class CardSetListModelTests(SutekhTest):
                 oGrandChildPCS.syncUpdate()
             oGrandChild2PCS.syncUpdate()
         oGrandChildPCS.inuse = False
-        self._loop_modes(oChildPCS, oChildModel)
+        self._loop_modes(oChildPCS, oModel)
         oGrandChildPCS.inuse = True
-        self._loop_modes(oChildPCS, oChildModel)
+        self._loop_modes(oChildPCS, oModel)
         # pylint: disable-msg=E1101
         # PyProtocols confuses pylint
         oGrandChild2PCS.addPhysicalCard(self._gen_card('Ablative Skin',
             'Sabbat'))
-        self._loop_modes(oChildPCS, oChildModel)
+        self._loop_modes(oChildPCS, oModel)
         oChildPCS.addPhysicalCard(self._gen_card('Ablative Skin',
             'Sabbat'))
         oGrandChild2PCS.addPhysicalCard(self._gen_card(
             'Ablative Skin', None))
-        self._loop_modes(oChildPCS, oChildModel)
-        oGCModel = CardSetCardListModel(self.aNames[2])
-        oGCModel.groupby = Groupings.NullGrouping
-        self._reset_modes(oGCModel)
+        self._loop_modes(oChildPCS, oModel)
+        # Point model at grandchild
+        oModel.update_to_new_db(self.aNames[2])
         # Test adding cards to a sibling card set
-        self._loop_modes(oGrandChild2PCS, oGCModel)
-        self._loop_modes(oSibPCS, oChildModel)
+        self._loop_modes(oGrandChild2PCS, oModel)
+        # point at child
+        oModel.update_to_new_db(self.aNames[1])
+        self._loop_modes(oSibPCS, oModel)
         # Test adding cards to the parent card set
-        self._loop_modes(oPCS, oChildModel)
-        self._loop_modes(oChildPCS, oGCModel)
-        # Test adding cards to the child card set
+        self._loop_modes(oPCS, oModel)
+        # point at grand child
+        oModel.update_to_new_db(self.aNames[2])
+        self._loop_modes(oChildPCS, oModel)
+        # Test adding cards to the child card set - point at parent
+        oModel.update_to_new_db(self.aNames[0])
         self._loop_modes(oChildPCS, oModel)
         self._loop_modes(oSibPCS, oModel)
-        self._loop_modes(oGrandChildPCS, oChildModel)
+        # point at child
+        oModel.update_to_new_db(self.aNames[1])
+        self._loop_modes(oGrandChildPCS, oModel)
         # Go through some of grouping tests as well
         # We want to ensure that this works with non-NullGroupings,
         # but we don't need to cover all the groupings again
         for cGrouping in [Groupings.DisciplineGrouping,
                 Groupings.CardTypeGrouping]:
-            oChildModel.groupby = cGrouping
-            self._loop_modes(oSibPCS, oChildModel)
-            self._loop_modes(oPCS, oChildModel)
-            self._loop_modes(oGrandChildPCS, oChildModel)
+            oModel.groupby = cGrouping
+            self._loop_modes(oSibPCS, oModel)
+            self._loop_modes(oPCS, oModel)
+            self._loop_modes(oGrandChildPCS, oModel)
 
     def test_filters(self):
         """Test filtering for the card set"""
