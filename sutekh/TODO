@@ -6,6 +6,8 @@ Backend:
    the objects abstract cards join to.
  * Use sqlobject 0.10's view support to work around mysql's poor subselect
    performance
+ * Include general rulings not related to specific cards somewhere.
+   Perhaps just put them in the rulings table without any associated cards?
 
 Code Cleanup
  * Refactor gui classes somewhat - there's a fair bit code duplication ATM
