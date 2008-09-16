@@ -1,3 +1,6 @@
+16 Sep 2008
+ * Add importer for ELDB (*.eld) decks
+
 05 Sep 2008
  * Add shortcuts for Specifying the Filter (Ctrl-S), Toggling the filter
    (Ctrl-T), and closing a frame (Ctrl-W, as for galeon/epiphancy tabs)

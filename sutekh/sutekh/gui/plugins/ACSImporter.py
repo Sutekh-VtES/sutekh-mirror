@@ -5,12 +5,13 @@
 # Copyright 2007 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-"""Convert a ELDB or ARDB text or html file into an Abstract Card Set."""
+"""Convert a ELDB or ARDB text or html file into an Card Set."""
 
 import gtk
 import urllib2
 from sutekh.io.ELDBHTMLParser import ELDBHTMLParser
 from sutekh.io.ARDBTextParser import ARDBTextParser
+from sutekh.io.ELDBDeckFileParser import ELDBDeckFileParser
 from sutekh.core.SutekhObjects import PhysicalCardSet
 from sutekh.core.CardSetHolder import CardSetHolder
 from sutekh.core.CardLookup import LookupFailed
@@ -36,6 +37,7 @@ class ACSImporter(CardListPlugin):
         self._dParsers = {
             'ELDB HTML File': ELDBHTMLParser,
             'ARDB Text File': ARDBTextParser,
+            'ELDB Deck (.eld)': ELDBDeckFileParser,
         }
         self.oUri = None
         self.oDlg = None
@@ -46,7 +48,7 @@ class ACSImporter(CardListPlugin):
         """Register with the 'Plugins' Menu"""
         if not self.check_versions() or not self.check_model_type():
             return None
-        oImport = gtk.MenuItem("Import ARDB or ELDB Abstract Card Set")
+        oImport = gtk.MenuItem("Import ARDB or ELDB Card Set")
         oImport.connect("activate", self.make_dialog)
         return ('Plugins', oImport)
 
@@ -74,9 +76,12 @@ class ACSImporter(CardListPlugin):
         self.oFileChooser.add_filter_with_pattern('HTML files', ['*.html',
             '*.htm'])
         self.oFileChooser.add_filter_with_pattern('TXT files', ['*.txt'])
+        self.oFileChooser.add_filter_with_pattern('ELD files', ['*.eld'])
         self.oFileChooser.default_filter()
         self.oDlg.vbox.pack_start(self.oFileChooser)
 
+        # FIXME: Add some sort of 'guess format' option for the default,
+        # rather than the first one in the _dParsers dict.
         oIter = self._dParsers.iterkeys()
         for sName in oIter:
             self._oFirstBut = gtk.RadioButton(None, sName, False)
@@ -136,6 +141,10 @@ class ACSImporter(CardListPlugin):
         oParser = cParser(oHolder)
         for sLine in fIn:
             oParser.feed(sLine)
+
+        # FIXME: name may be blank - ARDB + ELDB Inventories don't have a name
+        # & author for instance, and FELDB doesn't seem to enforce names, so
+        # need to work out what to do when that happends.
 
         # Check ACS Doesn't Exist
         if PhysicalCardSet.selectBy(name=oHolder.name).count() != 0:

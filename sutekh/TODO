@@ -36,7 +36,7 @@ Gui (Presentation):
    * Unify some of the other dialogs and make various bits more reusable 
      (cf. CreateCardSetDialog hack in plugins)
  * Clean up the card set controller/model/view interactions
-   - Move state changing code from CardSetMenu to CardSetController
+   - CardSetManagement stuff is still rather tangled
  * Parse in a GTK rc file? (http://www.moeraki.com/pygtktutorial/pygtk2tutorial/ch-GtkRcFiles.html)
  * Icon support improvements
    - Allow icons in the tree view
@@ -56,6 +56,9 @@ Upstream:
    * TreeView search pop-up not working under Windows. 
 
 For 0.6:
+ * Fix issues with Sutekh's search dialog
+   - Not properly disappearing on windows
+   - Position is not ideal
  * Finish built-in tutorial and help.
  * Plugins
    - CSV export plugin for card sets
