@@ -11,7 +11,6 @@ from sutekh.tests.core.test_PhysicalCardSet import aCardSetNames, \
         get_phys_cards
 from sutekh.core.SutekhObjects import PhysicalCardSet
 from sutekh.io.WriteArdbInvXML import WriteArdbInvXML
-from sutekh.io.WriteArdbXML import WriteArdbXML
 from sutekh.SutekhInfo import SutekhInfo
 import unittest
 import time
@@ -42,7 +41,7 @@ sExpected = """<inventory databaseVersion="%s" formatVersion="-TODO-1.0" generat
       <set>LoB</set>
     </card>
   </library>
-</inventory>""" % (WriteArdbXML.sDatabaseVersion, SutekhInfo.VERSION_STR,
+</inventory>""" % (WriteArdbInvXML.sDatabaseVersion, SutekhInfo.VERSION_STR,
         time.strftime('%Y-%m-%d', time.localtime()))
 # pylint: enable-msg=W0511, C0301
 

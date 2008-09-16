@@ -15,27 +15,8 @@
    "Zip Line",0,0,"","Library"
    """
 
-import unicodedata
 from sutekh.core.SutekhObjects import AbstractCard
-
-def _type_of_card(oCard):
-    """Return either Crypt or Library as required."""
-    sType = list(oCard.cardtype)[0].name
-    if sType == "Vampire" or sType == "Imbued":
-        return "Crypt"
-    else:
-        return "Library"
-
-def norm_name(oCard):
-    """Transform a card name to the ELDB equivilant"""
-    sName = oCard.name
-    if oCard.level is not None:
-        sName.replace("(Advanced)", "(ADV)")
-    if sName.startswith("The ") and sName != "The Kikiyaon":
-        # Annoying ELDB special case
-        sName = sName[4:] + ", The"
-    sName.replace("'", "`")
-    return unicodedata.normalize('NFKD', sName).encode('ascii','ignore')
+from sutekh.core.ELDBUtilities import norm_name, type_of_card
 
 class WriteELDBInventory(object):
     """Create a string in ELDB inventory format representing a card set."""
@@ -57,7 +38,7 @@ class WriteELDBInventory(object):
             dCards[oAbsCard] += 1
         for oCard, iNum in dCards.iteritems():
             sResult += '"%s",%d,0,"","%s"\n' % (norm_name(oCard), iNum,
-                    _type_of_card(oCard))
+                    type_of_card(oCard))
         return sResult
 
     # pylint: enable-msg=R0201

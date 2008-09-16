@@ -11,8 +11,6 @@
 
 from sutekh.core.SutekhObjects import IAbstractCard
 from sutekh.core.ArdbInfo import ArdbInfo
-from sutekh.io.WriteArdbXML import WriteArdbXML
-from sutekh.SutekhInfo import SutekhInfo
 from sutekh.SutekhUtility import pretty_xml
 import time
 # pylint: disable-msg=E0611, F0401
@@ -37,9 +35,9 @@ class WriteArdbInvXML(ArdbInfo):
         oRoot = Element('inventory')
 
         sDateWritten = time.strftime('%Y-%m-%d', time.localtime())
-        oRoot.attrib['generator'] = "Sutekh [ %s ]" % SutekhInfo.VERSION_STR
-        oRoot.attrib['formatVersion'] = WriteArdbXML.sFormatVersion
-        oRoot.attrib['databaseVersion'] = WriteArdbXML.sDatabaseVersion
+        oRoot.attrib['generator'] = "Sutekh [ %s ]" % self.sVersionString
+        oRoot.attrib['formatVersion'] = self.sFormatVersion
+        oRoot.attrib['databaseVersion'] = self.sDatabaseVersion
         oDateElem = SubElement(oRoot, 'date')
         oDateElem.text = sDateWritten
 

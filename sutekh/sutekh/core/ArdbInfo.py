@@ -11,10 +11,22 @@
    """
 
 from sutekh.core.SutekhObjects import IAbstractCard, IPhysicalCard
+from sutekh.SutekhInfo import SutekhInfo
 
 class ArdbInfo(object):
     """Create a string in ARDB's text format representing a dictionary
        of cards."""
+
+    # Should this be an attribute of VersionTable?
+    sDatabaseVersion = 'Sutekh-20080331'
+
+    sVersionString = SutekhInfo.VERSION_STR
+    # pylint: disable-msg=W0511
+    # this is not a actual TODO item
+    # Claim same version as recent ARDB
+    sFormatVersion = '-TODO-1.0'
+    # pyline: enable-msg=W0511
+
 
     # pylint: disable-msg=R0201
     # these need to be available to the descendants

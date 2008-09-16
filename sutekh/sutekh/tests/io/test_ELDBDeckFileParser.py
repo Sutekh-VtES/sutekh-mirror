@@ -6,6 +6,7 @@
 
 """Test reading a card set from an ELDB deck file"""
 
+import unittest
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.io.ELDBDeckFileParser import ELDBDeckFileParser
 
@@ -81,7 +82,7 @@ class TestELDBDeckFileParser(SutekhTest):
         self.assertEqual(len(aCards), 6)
         self.failUnless(("Test Vamp 1", 2) in aCards)
         self.failUnless((u"L\xe1z\xe1r Dobrescu", 1) in aCards)
-        self.failUnless(("Test Card 1",2 ) in aCards)
+        self.failUnless(("Test Card 1", 2 ) in aCards)
         self.failUnless(("Test Card 2", 4) in aCards)
         self.failUnless(("Test Card 3", 12) in aCards)
         self.failUnless(("Test Card 4", 1) in aCards)

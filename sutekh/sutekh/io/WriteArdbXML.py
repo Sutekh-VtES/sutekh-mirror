@@ -11,7 +11,6 @@
 
 from sutekh.core.SutekhObjects import IAbstractCard
 from sutekh.core.ArdbInfo import ArdbInfo
-from sutekh.SutekhInfo import SutekhInfo
 from sutekh.SutekhUtility import pretty_xml
 import time
 # pylint: disable-msg=E0611, F0401
@@ -29,14 +28,6 @@ class WriteArdbXML(ArdbInfo):
     """Reformat cardset to elementTree and export it to a ARDB
        compatible XML file."""
 
-    # Should this be an attribute of VersionTable?
-    sDatabaseVersion = 'Sutekh-20080331'
-    # pylint: disable-msg=W0511
-    # this is not a actual TODO item
-    # Claim same version as recent ARDB
-    sFormatVersion = '-TODO-1.0'
-    # pyline: enable-msg=W0511
-
     def gen_tree(self, sSetName, sAuthor, sDescription, dCards):
         """Creates the actual XML document into memory."""
         # pylint: disable-msg=R0914
@@ -44,7 +35,7 @@ class WriteArdbXML(ArdbInfo):
         oRoot = Element('deck')
 
         sDateWritten = time.strftime('%Y-%m-%d', time.localtime())
-        oRoot.attrib['generator'] = "Sutekh [ %s ]" % SutekhInfo.VERSION_STR
+        oRoot.attrib['generator'] = "Sutekh [ %s ]" % self.sVersionString
         oRoot.attrib['formatVersion'] = self.sFormatVersion
         oRoot.attrib['databaseVersion'] = self.sDatabaseVersion
         oNameElem = SubElement(oRoot, 'name')
