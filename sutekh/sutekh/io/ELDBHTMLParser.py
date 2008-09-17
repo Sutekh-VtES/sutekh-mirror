@@ -145,7 +145,7 @@ class ELDBHTMLParser(HTMLParser.HTMLParser, object):
         self._oState = self._oState.transition(sTag.lower(), dict(aAttr))
 
     def handle_endtag(self, sTag):
-        self._oState = self._oState.transition('/'+sTag.lower(), {})
+        self._oState = self._oState.transition('/' + sTag.lower(), {})
 
     def handle_data(self, sData):
         self._oState.data(sData)

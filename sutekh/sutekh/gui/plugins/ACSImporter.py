@@ -11,6 +11,7 @@ import gtk
 import urllib2
 from sutekh.io.ELDBHTMLParser import ELDBHTMLParser
 from sutekh.io.ARDBTextParser import ARDBTextParser
+from sutekh.io.ARDBXMLDeckParser import ARDBXMLDeckParser
 from sutekh.io.ELDBDeckFileParser import ELDBDeckFileParser
 from sutekh.core.SutekhObjects import PhysicalCardSet
 from sutekh.core.CardSetHolder import CardSetHolder
@@ -38,6 +39,7 @@ class ACSImporter(CardListPlugin):
             'ELDB HTML File': ELDBHTMLParser,
             'ARDB Text File': ARDBTextParser,
             'ELDB Deck (.eld)': ELDBDeckFileParser,
+            'ARDB Deck XML File': ARDBXMLDeckParser,
         }
         self.oUri = None
         self.oDlg = None
@@ -77,6 +79,7 @@ class ACSImporter(CardListPlugin):
             '*.htm'])
         self.oFileChooser.add_filter_with_pattern('TXT files', ['*.txt'])
         self.oFileChooser.add_filter_with_pattern('ELD files', ['*.eld'])
+        self.oFileChooser.add_filter_with_pattern('XML files', ['*.xml'])
         self.oFileChooser.default_filter()
         self.oDlg.vbox.pack_start(self.oFileChooser)
 
