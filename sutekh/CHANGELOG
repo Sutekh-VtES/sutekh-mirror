@@ -1,3 +1,7 @@
+17 Sep 2008
+ * Add importer for ELDB inventory files
+ * Add importer for ARDB xml deck files
+
 16 Sep 2008
  * Add importer for ELDB (*.eld) decks
 

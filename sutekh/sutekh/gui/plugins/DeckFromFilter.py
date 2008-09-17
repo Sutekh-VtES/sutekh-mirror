@@ -30,9 +30,9 @@ class DeckFromFilter(CardListPlugin):
     def activate(self, oWidget):
         """Create the dialog.
 
-           Prompt the user for Physical Card Set Properties, and so forth.
+           Prompt the user for Card Set Properties, and so forth.
            """
-        oDlg = SutekhDialog("Choose Physical Card Set Name", self.parent,
+        oDlg = SutekhDialog("Choose Card Set Name", self.parent,
                           gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                           (gtk.STOCK_OK, gtk.RESPONSE_OK,
                            gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
