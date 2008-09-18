@@ -59,8 +59,6 @@ class CardSetCompare(CardListPlugin):
 
        Display a gtk.Notebook containing tabs for common cards, and cards
        only in each of the card sets.
-       This plugin pnly considers the abstract cards - The physical expansion
-       of cards is not considered.
        """
     dTableVersions = {PhysicalCardSet : [5]}
     aModelsSupported = [PhysicalCardSet]

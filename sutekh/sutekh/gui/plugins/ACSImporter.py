@@ -133,7 +133,7 @@ class ACSImporter(CardListPlugin):
     # pylint: enable-msg=W0613
 
     def make_cs_from_uri(self, sUri, cParser):
-        """From an URI, create an Abstract Card Set"""
+        """From an URI, create an Card Set"""
         fIn = urllib2.urlopen(sUri)
         try:
             self.make_cs(fIn, cParser)
@@ -141,7 +141,7 @@ class ACSImporter(CardListPlugin):
             fIn.close()
 
     def make_cs_from_file(self, sFile, cParser):
-        """From an fiel, create an Abstract Card Set"""
+        """From an fiel, create an Card Set"""
         fIn = file(sFile, "rb")
         try:
             self.make_cs(fIn, cParser)
