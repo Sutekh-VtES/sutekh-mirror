@@ -274,3 +274,16 @@ be quite slow. Also, DO NOT run the tests against your personal card database,
 as you will lose data. Use a dedicated test database for this.
 
 [1] http://somethingaboutorange.com/mrl/projects/nose/
+
+Importing/Exporting to/from other VTES card management programs
+===============================================================
+
+Sutekh can read the inventory and deck files produced by both the "Anrach
+Revolt Deck Builder" (http://code.google.com/ardb) and the "Fragment of the
+Elder Library Deck Builder" (http://member.rpg.hu/bala/feldb.html). Files will
+be imported as card sets into sutekh. Because of differences between the
+programs, some concepts won't be transferred.
+
+Sutekh can also export card sets to these formats, but this will probably
+not work for all versions of ARDB or FELDB. 
+
