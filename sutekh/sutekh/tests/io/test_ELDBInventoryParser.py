@@ -7,27 +7,10 @@
 """Test reading a card set from an ELDB inventory file"""
 
 import unittest
-from sutekh.tests.TestCore import SutekhTest
+from sutekh.tests.TestCore import SutekhTest, DummyHolder
 from sutekh.io.ELDBInventoryParser import ELDBInventoryParser
 
-class DummyHolder(object):
-    """Emulate CardSetHolder for test purposes."""
-    def __init__(self):
-        self.dCards = {}
-        # pylint: disable-msg=C0103
-        # placeholder names for CardSetHolder attributes
-        self.name = ''
-        self.comment = ''
-        self.author = ''
-
-    # pylint: disable-msg=W0613
-    # sExpName is unused, but needed to make function signature match
-    def add(self, iCnt, sName, sExpName):
-        """Add a card to the dummy holder."""
-        self.dCards.setdefault(sName, 0)
-        self.dCards[sName] += iCnt
-
-
+# Needs to be a SutekhTestCase so the name mapping cache test works
 class TestELDBInventoryParser(SutekhTest):
     """class for the ELDB inventory reading test"""
 
@@ -54,7 +37,7 @@ class TestELDBInventoryParser(SutekhTest):
 
         self.assertEqual(oHolder.name, "")
 
-        aCards = oHolder.dCards.items()
+        aCards = oHolder.get_cards()
 
         self.assertEqual(len(aCards), 6)
         self.failUnless(("Test Vamp 1", 2) in aCards)

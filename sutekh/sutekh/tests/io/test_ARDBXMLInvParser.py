@@ -7,26 +7,10 @@
 """Test reading a card set from an ARDB XML inventory file"""
 
 import unittest
-from sutekh.tests.TestCore import SutekhTest
+from sutekh.tests.TestCore import DummyHolder
 from sutekh.io.ARDBXMLInvParser import ARDBXMLInvParser
 
-class DummyHolder(object):
-    """Emulate CardSetHolder for test purposes."""
-    def __init__(self):
-        self.dCards = {}
-        # pylint: disable-msg=C0103
-        # placeholder names for CardSetHolder attributes
-        self.name = ''
-        self.comment = ''
-        self.author = ''
-
-    def add(self, iCnt, sName, sExpName):
-        """Add a card to the dummy holder."""
-        self.dCards.setdefault((sName, sExpName), 0)
-        self.dCards[(sName, sExpName)] += iCnt
-
-
-class ArdbXMLInvParserTests(SutekhTest):
+class ArdbXMLInvParserTests(unittest.TestCase):
     """class for the ARDB XML inventory file parser tests"""
 
     # ARDB produces tag pairs for empty elements, we produce minimal
@@ -83,8 +67,7 @@ class ArdbXMLInvParserTests(SutekhTest):
 
         self.assertEqual(oHolder.name, "")
 
-        aCards = oHolder.dCards.items()
-        print aCards
+        aCards = oHolder.get_cards_exps()
 
         self.assertEqual(len(aCards), 6)
         self.failUnless((("Test Vamp 1", "CE"), 2) in aCards)

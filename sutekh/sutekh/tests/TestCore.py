@@ -96,3 +96,31 @@ class SutekhTest(unittest.TestCase):
         aObjectList.reverse()
         sqlhub.processConnection = None
         self._tearDownTemps()
+
+
+class DummyHolder(object):
+    """Emulate CardSetHolder for test purposes."""
+    def __init__(self):
+        self.dCards = {}
+        # pylint: disable-msg=C0103
+        # placeholder names for CardSetHolder attributes
+        self.name = ''
+        self.comment = ''
+        self.author = ''
+
+    def add(self, iCnt, sName, sExpName):
+        """Add a card to the dummy holder."""
+        self.dCards.setdefault((sName, sExpName), 0)
+        self.dCards[(sName, sExpName)] += iCnt
+
+    def get_cards_exps(self):
+        """Get the cards with expansions"""
+        return self.dCards.items()
+
+    def get_cards(self):
+        """Get the card info without expansions"""
+        dNoExpCards = {}
+        for sCardName, sExpName in self.dCards:
+            dNoExpCards.setdefault(sCardName, 0)
+            dNoExpCards[sCardName] += self.dCards[(sCardName, sExpName)]
+        return dNoExpCards.items()

@@ -7,23 +7,8 @@
 """Test case for ARDB text parser"""
 
 from sutekh.io.ARDBTextParser import ARDBTextParser
+from sutekh.tests.TestCore import DummyHolder
 import unittest
-
-class DummyHolder(object):
-    """Emulate CardSetHolder for test purposes."""
-    def __init__(self):
-        self.aCards = []
-        # pylint: disable-msg=C0103
-        # placeholder names for CardSetHolder attributes
-        self.name = ''
-        self.comment = ''
-        self.author = ''
-
-    # pylint: disable-msg=W0613
-    # sExpName is unused, but needed to make function signature match
-    def add(self, iCnt, sName, sExpName):
-        """Add a card to the dummy holder."""
-        self.aCards.append((iCnt, sName))
 
 class ARDBTextParserTests(unittest.TestCase):
     """class for the ARDB/FELDB text input parser"""
@@ -94,15 +79,15 @@ class ARDBTextParserTests(unittest.TestCase):
             "        Simple test deck."))
         self.failUnless(oHolder.comment.endswith("in/description\n\n"))
 
-        aCards = oHolder.aCards
+        aCards = oHolder.get_cards()
 
         self.assertEqual(len(aCards), 6)
-        self.failUnless((2, "Test Vamp 1") in aCards)
-        self.failUnless((1, "Test Vamp 2") in aCards)
-        self.failUnless((2, "Test Card 1") in aCards)
-        self.failUnless((4, "Test Card 2") in aCards)
-        self.failUnless((12, "Test Card 3") in aCards)
-        self.failUnless((1, "Test Card 4") in aCards)
+        self.failUnless(("Test Vamp 1", 2) in aCards)
+        self.failUnless(("Test Vamp 2", 1) in aCards)
+        self.failUnless(("Test Card 1", 2) in aCards)
+        self.failUnless(("Test Card 2", 4) in aCards)
+        self.failUnless(("Test Card 3", 12) in aCards)
+        self.failUnless(("Test Card 4", 1) in aCards)
 
         oHolder = DummyHolder()
         oParser = ARDBTextParser(oHolder)
@@ -114,15 +99,15 @@ class ARDBTextParserTests(unittest.TestCase):
         self.failUnless(oHolder.comment.startswith(
             "Simple test deck."))
 
-        aCards = oHolder.aCards
+        aCards = oHolder.get_cards()
 
         self.assertEqual(len(aCards), 6)
-        self.failUnless((2, "Test Vamp 1") in aCards)
-        self.failUnless((1, "Test Vamp 2") in aCards)
-        self.failUnless((2, "Test Card 1") in aCards)
-        self.failUnless((4, "Test Card 2") in aCards)
-        self.failUnless((12, "Test Card 3") in aCards)
-        self.failUnless((1, "Test Card 4") in aCards)
+        self.failUnless(("Test Vamp 1", 2) in aCards)
+        self.failUnless(("Test Vamp 2", 1) in aCards)
+        self.failUnless(("Test Card 1", 2) in aCards)
+        self.failUnless(("Test Card 2", 4) in aCards)
+        self.failUnless(("Test Card 3", 12) in aCards)
+        self.failUnless(("Test Card 4", 1) in aCards)
 
 
 if __name__ == "__main__":

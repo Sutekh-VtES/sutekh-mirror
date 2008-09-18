@@ -7,26 +7,10 @@
 """Test reading a card set from an ARDB XML deck file"""
 
 import unittest
-from sutekh.tests.TestCore import SutekhTest
+from sutekh.tests.TestCore import DummyHolder
 from sutekh.io.ARDBXMLDeckParser import ARDBXMLDeckParser
 
-class DummyHolder(object):
-    """Emulate CardSetHolder for test purposes."""
-    def __init__(self):
-        self.dCards = {}
-        # pylint: disable-msg=C0103
-        # placeholder names for CardSetHolder attributes
-        self.name = ''
-        self.comment = ''
-        self.author = ''
-
-    def add(self, iCnt, sName, sExpName):
-        """Add a card to the dummy holder."""
-        self.dCards.setdefault((sName, sExpName), 0)
-        self.dCards[(sName, sExpName)] += iCnt
-
-
-class ArdbXMLDeckParserTests(SutekhTest):
+class ArdbXMLDeckParserTests(unittest.TestCase):
     """class for the ARDB XML deck file parser tests"""
 
     # ARDB produces tag pairs for empty elements, we produce minimal
@@ -109,7 +93,7 @@ class ArdbXMLDeckParserTests(SutekhTest):
         self.failUnless(oHolder.comment.startswith("Simple test deck."))
         self.failUnless(oHolder.comment.endswith("in/description"))
 
-        aCards = oHolder.dCards.items()
+        aCards = oHolder.get_cards_exps()
 
         self.assertEqual(len(aCards), 6)
         self.failUnless((("Test Vamp 1", "CE"), 2) in aCards)
@@ -118,6 +102,7 @@ class ArdbXMLDeckParserTests(SutekhTest):
         self.failUnless((("Test Card 2", "BH"), 2) in aCards)
         self.failUnless((("Test Card 3", "BH"), 12) in aCards)
         self.failUnless((("Test Card 4", None), 1) in aCards)
+
 
 if __name__ == "__main__":
     unittest.main()
