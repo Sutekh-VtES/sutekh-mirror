@@ -125,6 +125,11 @@ class ACSImporter(CardListPlugin):
 
         self.oDlg.destroy()
 
+    def handle_name_response(self, oWidget, oResponse, oDlg, oEntry):
+        """Handle the user's clicking on OK or CANCEL in the dialog."""
+        if oResponse == gtk.RESPONSE_OK:
+            self._sNewName = oEntry.get_text().strip()
+
     # pylint: enable-msg=W0613
 
     def make_cs_from_uri(self, sUri, cParser):
@@ -216,10 +221,6 @@ class ACSImporter(CardListPlugin):
         oDlg.destroy()
         return iResponse == gtk.RESPONSE_OK
 
-    def handle_name_response(self, oWidget, oResponse, oDlg, oEntry):
-        """Handle the user's clicking on OK or CANCEL in the dialog."""
-        if oResponse == gtk.RESPONSE_OK:
-            self._sNewName = oEntry.get_text().strip()
 
 # pylint: disable-msg=C0103
 # accept plugin name
