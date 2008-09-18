@@ -192,5 +192,12 @@ h2(#filtering). Filtering
 
 h2(#tips). Useful Tips
 
+h3. Entering card sets
+
+The different show card modes are often useful for entering a card set quickly.
+Start with with "Show all cards" or "Show cards in parent card set" and then
+increment the cards that belong to the card set. Another useful approach is
+to use the "Card Set from Filter" option to create the card set.
+
 
 "The Sutekh Manual":Manual.html

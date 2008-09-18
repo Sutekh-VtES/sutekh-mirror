@@ -1,6 +1,7 @@
 18 Sep 2008
  * Add importer for ARDB xml inventory files
  * Add CSV Export plugin
+ * Fix DeckFromFilter plugin
 
 17 Sep 2008
  * Add importer for ELDB inventory files
