@@ -10,7 +10,9 @@ import gtk
 from sutekh.core.SutekhObjects import PhysicalCardSet, PhysicalCard, \
         IPhysicalCard
 from sutekh.gui.PluginManager import CardListPlugin
-from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
+from sutekh.gui.SutekhDialog import do_complaint_error
+from sutekh.gui.CreateCardSetDialog import CreateCardSetDialog
+from sutekh.gui.CardSetManagementController import update_card_set
 
 class DeckFromFilter(CardListPlugin):
     """Converts a filter into a Card Set."""
@@ -33,35 +35,24 @@ class DeckFromFilter(CardListPlugin):
 
            Prompt the user for Card Set Properties, and so forth.
            """
-        # FIXME: modify CreateCardSetDialog here
-        oDlg = SutekhDialog("Choose Card Set Name", self.parent,
-                          gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
-                          (gtk.STOCK_OK, gtk.RESPONSE_OK,
-                           gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
-
-        oEntry = gtk.Entry(50)
-        oEntry.connect("activate", self.handle_response,
-                gtk.RESPONSE_OK, oDlg, oEntry)
-        oDlg.connect("response", self.handle_response, oDlg, oEntry)
-
-        # pylint: disable-msg=E1101
-        # pylint misses vbox methods
-        oDlg.vbox.pack_start(oEntry)
-        oDlg.show_all()
-
+        oDlg = CreateCardSetDialog(self.parent)
         oDlg.run()
 
-    def handle_response(self, oWidget, oResponse, oDlg, oEntry):
+        self.handle_response(oDlg)
+
+    # pylint: enable-msg=W0613
+
+    def handle_response(self, oDlg):
         """Handle the user response from make_dialog
 
            call make_pcs_from_filter to create the PCS if needed
            """
-        if oResponse ==  gtk.RESPONSE_OK:
-            sCSName = oEntry.get_text().strip()
-            self.make_cs_from_filter(sCSName)
-
-        oDlg.destroy()
-    # pylint: enable-msg=W0613
+        sCSName = oDlg.get_name()
+        if sCSName:
+            oCardSet = self.make_cs_from_filter(sCSName)
+            if oCardSet:
+                update_card_set(oCardSet, oDlg, self.parent, None)
+                self.open_cs(sCSName)
 
     def make_cs_from_filter(self, sCSName):
         """Create the actual PCS."""
@@ -71,7 +62,7 @@ class DeckFromFilter(CardListPlugin):
         if PhysicalCardSet.selectBy(name=sCSName).count() != 0:
             do_complaint_error("Card Set %s already exists."
                     % sCSName)
-            return
+            return None
 
         # Create PCS
         oCS = PhysicalCardSet(name=sCSName)
@@ -81,7 +72,7 @@ class DeckFromFilter(CardListPlugin):
                 self.model.get_current_filter()):
             oCS.addPhysicalCard(IPhysicalCard(oCard))
 
-        self.open_cs(sCSName)
+        return oCS
 
 # pylint: disable-msg=C0103
 # accept plugin name
