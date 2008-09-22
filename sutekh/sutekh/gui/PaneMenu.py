@@ -54,8 +54,6 @@ class PaneMenu(SutekhMenu):
                 '<Ctrl>plus')
         self.create_menu_item("Collapse All", oMenu, self.collapse_all,
                 '<Ctrl>minus')
-        self.create_menu_item("Remove This Pane", oMenu,
-                self._oFrame.close_menu_item)
 
     def expand_all(self, oWidget):
         """Expand all the rows in the card set."""
