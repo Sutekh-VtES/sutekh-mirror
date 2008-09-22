@@ -30,9 +30,9 @@ class CardSetExportHTML(CardListPlugin):
         if not self.check_versions() or not self.check_model_type():
             return None
 
-        oExport = gtk.MenuItem("Export Card Set to HTML")
+        oExport = gtk.MenuItem("Export to HTML")
         oExport.connect("activate", self.activate)
-        return ('Plugins', oExport)
+        return ('Export Card Set', oExport)
 
     # pylint: disable-msg=W0613
     # oWidget required by function signature

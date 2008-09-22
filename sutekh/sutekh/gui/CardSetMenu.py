@@ -44,16 +44,12 @@ class CardSetMenu(CardListMenu):
     def __create_card_set_menu(self):
         """Create the Actions menu for Card Sets."""
         oMenu = self.create_submenu(self, '_Actions')
-        self.__oProperties = self.create_menu_item(
-                "Edit Card Set (%s) properties" % self.sSetName, oMenu,
+        self.create_menu_item("Edit Card Set _Properties", oMenu,
                 self._edit_properties)
-        self.__oExport = self.create_menu_item(
-                "Export Card Set (%s) to File" % self.sSetName, oMenu,
+        self.create_menu_item("_Save Card Set to File", oMenu,
                 self._do_export)
-
-        # Possible enhancement, make card set names italic.
-        # Looks like it requires playing with menu_item attributes
-        # (or maybe gtk.Action)
+        # Submenu for plugins
+        self.create_submenu(oMenu, "_Export Card Set")
         oMenu.add(gtk.SeparatorMenuItem())
         oCountMenu = self.create_menu_item_with_submenu(oMenu,
                 "Cards To Show").get_submenu()
@@ -154,10 +150,6 @@ class CardSetMenu(CardListMenu):
         """Update the menu to reflect changes in the card set name."""
         self.sSetName = oCardSet.name
         self._oFrame.update_name(self.sSetName)
-        self.__oProperties.get_child().set_label("Edit Card Set (%s)"
-                " properties" % self.sSetName)
-        self.__oExport.get_child().set_label("Export Card Set (%s) to File" %
-                self.sSetName)
 
     def check_parent_count_column(self, oOldParent, oNewParent):
         """Check that the parent column values are set correctly

@@ -21,12 +21,12 @@ class CardSetExportArdbXML(CardListPlugin):
     aModelsSupported = [PhysicalCardSet]
 
     def get_menu_item(self):
-        """Register on the 'Plugins' Menu"""
+        """Register on the 'Export Card Set' Menu"""
         if not self.check_versions() or not self.check_model_type():
             return None
-        oExport = gtk.MenuItem("Export Card Set to ARDB XML")
+        oExport = gtk.MenuItem("Export to ARDB XML")
         oExport.connect("activate", self.make_dialog)
-        return ('Plugins', oExport)
+        return ('Export Card Set', oExport)
 
     # pylint: disable-msg=W0613
     # oWidget has to be here, although it's unused
