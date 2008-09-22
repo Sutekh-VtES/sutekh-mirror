@@ -25,6 +25,8 @@ class CardSetView(CardListView):
        the controller when needed.
        """
 
+    # pylint: disable-msg=R0915
+    # We need a lot of setup here, so this is long
     def __init__(self, oMainWindow, oController, sName):
         oModel = CardSetCardListModel(sName)
         # The only path here is via the main window, so config_file exists
@@ -62,8 +64,9 @@ class CardSetView(CardListView):
         oColumn2.set_expand(True)
         oColumn2.set_resizable(True)
         self.append_column(oColumn2)
+        self.set_expander_column(oColumn2)
 
-        # Arrow cells
+        # Inc/Dec cells
         oCell3 = CellRendererSutekhButton()
         oCell3.load_icon(gtk.STOCK_ADD, self)
         oCell4 = CellRendererSutekhButton()
@@ -85,13 +88,15 @@ class CardSetView(CardListView):
         oCell4.connect('clicked', self.dec_card)
 
         self.connect('map-event', self.mapped)
+        self.connect('key-press-event', self.key_press)
 
         self._oMenuEditWidget = None
 
-        self.set_expander_column(oColumn2)
         self.oCellColor = None
 
         self.set_fixed_height_mode(True)
+
+    # pylint: enable-msg=R0915
 
     def process_selection(self):
         """Create a dictionary from the selection.
@@ -122,6 +127,42 @@ class CardSetView(CardListView):
                     continue
                 dSelectedData[sCardName][sExpansion] = iCount
         return dSelectedData
+
+    def process_edit_selection(self):
+        """Create a dictionary from the selection, suitable for the quick
+           key based edits.
+
+           Entries are of the form
+               sCardName : { (sExpansion1, sCardSet) : iCount1, ... }
+           In addition to adding information about card sets, this
+           differs from process_selection in the way card level items
+           are handled. Here, these are treated as selecting the expansion
+           None, and ignoring other expansions.
+           """
+        oModel, oPathList = self._oSelection.get_selected_rows()
+        dSelectedData = {}
+        for oPath in oPathList:
+            sCardSet = None
+            sCardName, sExpansion, iCount, iDepth = \
+                    oModel.get_drag_info_from_path(oPath)
+            if not sCardName:
+                sCardName, sExpansion, sCardSet = \
+                        oModel.get_all_names_from_path(oPath)
+            dSelectedData.setdefault(sCardName, {})
+            if iDepth == 1:
+                # this is treated as selecting all the entries of this card
+                # in this card set
+                # Remove anything already assigned to this
+                dSelectedData[sCardName].clear()
+                dSelectedData[sCardName][('All', None)] = iCount
+            else:
+                if (sExpansion, sCardSet) in dSelectedData[sCardName] or \
+                        ('All', None) in dSelectedData[sCardName]:
+                    # We already have this info
+                    continue
+                dSelectedData[sCardName][(sExpansion, sCardSet)] = iCount
+        return dSelectedData
+
 
     # pylint: disable-msg=R0913, W0613
     # elements required by function signature
@@ -172,6 +213,26 @@ class CardSetView(CardListView):
                 sCardName, sExpansion, sCardSetName = \
                         self._oModel.get_all_names_from_path(oPath)
                 self._oController.dec_card(sCardName, sExpansion, sCardSetName)
+
+    def key_press(self, oWidget, oEvent):
+        """Change the number if 1-9 is pressed and we're editable"""
+        if oEvent.keyval in range(ord('1'), ord('9') + 1):
+            if self._oModel.bEditable:
+                iCnt = oEvent.keyval - ord('0')
+                dSelectedData = self.process_edit_selection()
+                self._oController.set_selected_card_count(dSelectedData, iCnt)
+            # if we're not editable, we still ignore this, so we avoid funny
+            # search behaviour
+            return True
+        elif oEvent.keyval == ord('+') and self._oModel.bEditable:
+            dSelectedData = self.process_edit_selection()
+            self._oController.alter_selected_card_count(dSelectedData, 1)
+            return True
+        elif oEvent.keyval == ord('-') and self._oModel.bEditable:
+            dSelectedData = self.process_edit_selection()
+            self._oController.alter_selected_card_count(dSelectedData, -1)
+            return True
+        return False # propogate event
 
     # functions related to tweaking widget display
 

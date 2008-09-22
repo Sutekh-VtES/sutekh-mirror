@@ -272,3 +272,45 @@ class CardSetController(object):
                         self.dec_card(sCardName, sExpansion, None)
                     else:
                         self.dec_card(sCardName, None, None)
+
+    def set_selected_card_count(self, dSelectedData, iNewCnt):
+        """Helper function to set the selected cards to the specified number"""
+        for sCardName in dSelectedData:
+            for (sExpansion, sCardSetName), iCardCount in \
+                    dSelectedData[sCardName].iteritems():
+                # pylint: disable-msg=W0612
+                # iAttempt is loop counter
+                if iNewCnt < iCardCount:
+                    # remove cards
+                    for iAttempt in range(iCardCount - iNewCnt):
+                        # None as card set indicates this card set
+                        if sExpansion != 'None' and sExpansion != 'All':
+                            self.dec_card(sCardName, sExpansion, sCardSetName)
+                        else:
+                            self.dec_card(sCardName, None, sCardSetName)
+                elif iNewCnt > iCardCount:
+                    # add cards
+                    for iAttempt in range(iNewCnt - iCardCount):
+                        # None as card set indicates this card set
+                        if sExpansion != 'None' and sExpansion != 'All':
+                            self.inc_card(sCardName, sExpansion, sCardSetName)
+                        else:
+                            self.inc_card(sCardName, None, sCardSetName)
+
+    def alter_selected_card_count(self, dSelectedData, iChg):
+        """Helper function to inc/dec the count for the selected cards"""
+        for sCardName in dSelectedData:
+            for (sExpansion, sCardSetName) in dSelectedData[sCardName]:
+                # None as card set in inc_card/dec_Card indicates this card set
+                if iChg == -1:
+                    # remove cards
+                    if sExpansion != 'None' and sExpansion != 'All':
+                        self.dec_card(sCardName, sExpansion, sCardSetName)
+                    else:
+                        self.dec_card(sCardName, None, sCardSetName)
+                elif iChg == 1:
+                    # add cards
+                    if sExpansion != 'None' and sExpansion != 'All':
+                        self.inc_card(sCardName, sExpansion, sCardSetName)
+                    else:
+                        self.inc_card(sCardName, None, sCardSetName)
