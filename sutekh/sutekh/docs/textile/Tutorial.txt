@@ -60,6 +60,10 @@ selected cards. You can also use the copy & paste options from the edit menu.
 When a card set is editable, *+* and *-* buttons will be shown next to the card
 names. These can be used to increase or decrease the number for a given card.
 
+The number can also be changed using the keyboard: '+' and '-' will
+increment and decrement counts, while the numbers 1 to 9 can be used to set
+the count for the given card to that value.
+
 You can also copy or drag-n-drop cards from other card sets. Unlike copying 
 from the _White Wolf Card List_, copying from another card sets will copy all 
 the selected cards.
@@ -189,6 +193,93 @@ set. If this card set is *not* _"in use"_, then the number of cards in this
 set does not influence this number.
 
 h2(#filtering). Filtering
+
+Sutkh has a very powerful filtering model, which allows quite complex queries
+on the card database. 
+
+h3. The Basic filters
+
+There are a number of basic filters available for querying the card lists,
+such as _Clan_, _Discipline_, _"Card Text"_ and so forth.
+
+Most of these filters only allow a limited range of options which are
+selected from a drop down list. The _Clan_ filter,
+for example, only accepts the clans listed in the database as input. Multiple
+items can be selected in this list, which means the filter matches on any of
+those selections.
+
+Other filters, such as the _"Card Text"_ filter, require you to enter a string.
+The filter will match any card that contains this string. The '%' character
+can be used as a wild card in this string to match any number of letters.
+
+The _"Card Sets In Use"_ filter takes no input.
+
+The _"Card Count"_ filter takes two selections. The first selects the card
+counts to match against, while the second is the card set to test against. 
+The first entry in the second list, 'This Card Set' is an alias for the
+current card set.
+
+h3. Combing basic filters
+
+These basic filters can be combined to create more complex queries. 
+
+Multiple filters can be combined in 4 different ways. 
+
+* All of
+* Any of
+* Not All of
+* None of
+
+Each of these allows multiple filters to be added to them, and thet combine
+all the included filters according to the chosen rule.
+
+_"All of"_ requires the all the included filters to be statisfied simulatenously.
+It useful for finding cards which require a discipline and a given cost, for
+example.
+
+_"Any of"_ requires that at least one of the included filters is statisfied. 
+
+_"Not All of"_ requires that at least one of the included filters is not
+statisfied. The difference between _"Not All of_" and _"Any of"_ is that _"Any
+of"_ will include the results of any cards that match all of the filters, while
+_"Not All of"_ will exclude those, but return cards that statisfy none of the
+filters.
+
+_"None of"_ requires that none of the included filters be statisfied.
+
+In addition to the basic filters, the *Sub-filter* option allows these
+combinations to be nested. Thus an _"All of"_ filter can include _"Any of"_ or
+_"None of"_ filters below it, which allows for extremely complex queries to
+be constructed.
+
+For example, to find all cards that require either 'Follower of Set' or
+'Seperentis', but not both, the following filter could be constructed:
+
+An _"Any of"_ filter, which includes two _"All of"_ sub-filters. Each
+sub-filter includes the _Clan_ and _Discipline_ basic filters, and the one is
+set to match 'Followers of Set' and NOT 'Serpentis' while the other is set to
+match NOT 'Followers of Set' and 'Serpentis'
+
+Once a filter has been constructed, it can be saved with a given name and
+loaded again later. 
+
+h3. Filtering the Card Set List
+
+The card set list can also filtered. The basic filters available here are:
+
+* The card set name
+* The card set author
+* The card set comment
+* The name of the parent card set
+* Text in the annotations of the card set
+* Filter on all card sets marked in use
+
+These filters can be combined as well, allowing queries such as 'All of
+card sets in use where the card set name includes "Nosferatu"'.
+
+When filtering card sets, the card sets that match, *and their parents* are
+shown, since this relationship is always important.
+
 
 h2(#tips). Useful Tips
 
