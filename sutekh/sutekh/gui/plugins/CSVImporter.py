@@ -30,12 +30,12 @@ class CSVImporter(CardListPlugin):
     aModelsSupported = ["MainWindow"]
 
     def get_menu_item(self):
-        """Overrides method from base class. Register on the 'Plugins' menu"""
+        """Overrides method from base class. Register on the 'Import' menu"""
         if not self.check_versions() or not self.check_model_type():
             return None
         oMenuItem = gtk.MenuItem("Import CSV File")
         oMenuItem.connect("activate", self.activate)
-        return ('Plugins', oMenuItem)
+        return ('Import Card Set', oMenuItem)
 
     # pylint: disable-msg=W0613
     # oWidget required by function signature

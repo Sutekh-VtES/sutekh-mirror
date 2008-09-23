@@ -53,7 +53,9 @@ class MainMenu(SutekhMenu):
         """Create the File Menu"""
         oMenu = self.create_submenu(self, "_File")
         # items
-        self.create_menu_item("Import Card Set from File", oMenu,
+        oImport = self.create_submenu(oMenu, "Import Card Set")
+
+        self.create_menu_item("Load Saved Card Set from File", oImport,
             self.do_import_card_set)
 
         oMenu.add(gtk.SeparatorMenuItem())

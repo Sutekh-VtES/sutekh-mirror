@@ -52,12 +52,12 @@ class ACSImporter(CardListPlugin):
         self._sNewName = ''
 
     def get_menu_item(self):
-        """Register with the 'Plugins' Menu"""
+        """Register with the 'Import' Menu"""
         if not self.check_versions() or not self.check_model_type():
             return None
         oImport = gtk.MenuItem("Import ARDB or ELDB Card Set")
         oImport.connect("activate", self.make_dialog)
-        return ('Plugins', oImport)
+        return ('Import Card Set', oImport)
 
     # pylint: disable-msg=W0613
     # oWidget required by signature
