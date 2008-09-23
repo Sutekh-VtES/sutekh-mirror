@@ -216,8 +216,6 @@ The _"Card Sets In Use"_ filter takes no input.
 
 The _"Card Count"_ filter takes two selections. The first selects the card
 counts to match against, while the second is the card set to test against. 
-The first entry in the second list, 'This Card Set' is an alias for the
-current card set.
 
 h3. Combing basic filters
 

@@ -260,7 +260,8 @@ class MultiClanFilter(MultiFilter):
     keyword = "Clan"
     islistfilter = True
     description = "Clan"
-    helptext = "a list of clans"
+    helptext = "a list of clans\nReturns all cards which require or are of" \
+             " the specified clans"
     types = ['AbstractCard', 'PhysicalCard']
 
     def __init__(self, aClans):
@@ -290,7 +291,8 @@ class MultiDisciplineFilter(MultiFilter):
     """Filter on multiple disciplines"""
     keyword = "Discipline"
     description = "Discipline"
-    helptext = "a list of disciplines"
+    helptext = "a list of disciplines.\nReturns a list of all card which " \
+            "have or require the selected disciplines."
     islistfilter = True
     types = ['AbstractCard', 'PhysicalCard']
 
@@ -352,7 +354,8 @@ class MultiExpansionRarityFilter(MultiFilter):
     keyword = "Expansion_with_Rarity"
     description = "Expansion with Rarity"
     helptext = "a list of expansions and rarities (each element specified" \
-            " as an expansion with associated rarity)"
+            " as an expansion with associated rarity).\nReturns all matching" \
+            " cards."
     iswithfilter = True
     islistfilter = True
     types = ['AbstractCard', 'PhysicalCard']
@@ -408,7 +411,7 @@ class MultiDisciplineLevelFilter(MultiFilter):
     description = "Discipline with Level"
     helptext = "a list of disciplines with levels (each element specified" \
             " as a discipline with associated level, i.e. superior or" \
-            " inferior)"
+            " inferior)\nReturns all matching cards."
     iswithfilter = True
     islistfilter = True
     types = ['AbstractCard', 'PhysicalCard']
@@ -460,7 +463,7 @@ class MultiCardTypeFilter(MultiFilter):
     """Filter on multiple card types"""
     keyword = "CardType"
     description = "Card Type"
-    helptext = "a list of card types"
+    helptext = "a list of card types.\nReturns all cards of the given types"
     islistfilter = True
     types = ['AbstractCard', 'PhysicalCard']
 
@@ -491,7 +494,8 @@ class MultiSectFilter(MultiFilter):
     """Filter on Multiple Sects"""
     keyword = "Sect"
     description = "Sect"
-    helptext = "a list of sects"
+    helptext = "a list of sects.\nReturns all cards belonging to the given" \
+            " sects"
     islistfilter = True
     types = ['AbstractCard', 'PhysicalCard']
 
@@ -522,7 +526,7 @@ class MultiTitleFilter(MultiFilter):
     """Filter on Multiple Titles"""
     keyword = "Title"
     description = "Title"
-    helptext = "a list of titles"
+    helptext = "a list of titles.\nReturns all cards with the selected titles."
     islistfilter = True
     types = ['AbstractCard', 'PhysicalCard']
 
@@ -553,7 +557,8 @@ class MultiCreedFilter(MultiFilter):
     """Filter on Multiple Creed"""
     keyword = "Creed"
     description = "Creed"
-    helptext = "a list of creeds"
+    helptext = "a list of creeds.\nReturns all cards requiring or of the" \
+            " selected creeds"
     islistfilter = True
     types = ['AbstractCard', 'PhysicalCard']
 
@@ -584,7 +589,8 @@ class MultiVirtueFilter(MultiFilter):
     """Filter on Multiple Virtues"""
     keyword = "Virtue"
     description = "Virtue"
-    helptext = "a list of virtues"
+    helptext = "a list of virtues.\nReturns all cards requiring or having " \
+            "the selected virtues"
     islistfilter = True
     types = ['AbstractCard', 'PhysicalCard']
 
@@ -618,7 +624,8 @@ class MultiGroupFilter(DirectFilter):
     """Filter on multiple Groups"""
     keyword = "Group"
     description = "Group"
-    helptext = "a list of groups"
+    helptext = "a list of groups.\nReturns all cards belonging to the " \
+            "listed group."
     islistfilter = True
     types = ['AbstractCard', 'PhysicalCard']
 
@@ -655,7 +662,8 @@ class MultiCapacityFilter(DirectFilter):
     """Filter on a list of Capacities"""
     keyword = "Capacity"
     description = "Capacity"
-    helptext = "a list of capacities"
+    helptext = "a list of capacities.\nReturns all cards of the selected" \
+            " capacities"
     islistfilter = True
     types = ['AbstractCard', 'PhysicalCard']
 
@@ -692,7 +700,7 @@ class MultiCostFilter(DirectFilter):
     """Filter on a list of Costs"""
     keyword = "Cost"
     description = "Cost"
-    helptext = "a list of costs"
+    helptext = "a list of costs.\nReturns all cards with the given costs."
     islistfilter = True
     types = ['AbstractCard', 'PhysicalCard']
 
@@ -731,7 +739,8 @@ class MultiCostTypeFilter(DirectFilter):
     keyword = "CostType"
     islistfilter = True
     description = "Cost Type"
-    helptext = "a list of cost types"
+    helptext = "a list of cost types.\nReturns cards requiring the selected" \
+            " cost types."
     types = ['AbstractCard', 'PhysicalCard']
 
     def __init__(self, aCostTypes):
@@ -770,8 +779,10 @@ class LifeFilter(DirectFilter):
 class MultiLifeFilter(DirectFilter):
     """Filter on a list of list values"""
     keyword = "Life"
-    description = "Life"
-    helptext = "a list of life values"
+    description = "Life (Crypt)"
+    helptext = "a list of life values.\nReturns crypt cards with the " \
+            "selected  life. This should not be confused with the life for " \
+            "allies and retainers, as these are not crypt cards."
     islistfilter = True
     types = ['AbstractCard', 'PhysicalCard']
 
@@ -794,7 +805,7 @@ class CardTextFilter(DirectFilter):
     keyword = "CardText"
     description = "Card Text"
     helptext = "the desired card text to search for (% can be used as a " \
-            "wildcard)"
+            "wildcard).\nReturns all cards whose text contains this string."
     istextentry = True
     types = ['AbstractCard', 'PhysicalCard']
 
@@ -817,8 +828,9 @@ class CardNameFilter(DirectFilter):
     """Filter on the name of the card"""
     keyword = "CardName"
     description = "Card Name"
-    helptext = "the text to be matched against card names (% can be used" \
-            " as a wildcard)"
+    helptext = "the text to be matched against card names (% can be used " \
+            "as a wildcard).\nReturns all cards whose name contains this " \
+            "string"
     istextentry = True
     types = ['AbstractCard', 'PhysicalCard']
 
@@ -841,7 +853,9 @@ class CardFunctionFilter(DirectFilter):
     """Filter for various interesting card properties - untap, stealth, etc."""
     keyword = "CardFunction"
     description = "Card Function"
-    helptext = "the chosen function from the list of supported types"
+    helptext = "the chosen function from the list of supported types.\n" \
+            "Functions include roles such as untap or bleed modifier.\n" \
+            "Returns all cards matching the given functions."
     islistfilter = True
     types = ['AbstractCard', 'PhysicalCard']
 
@@ -974,8 +988,9 @@ class CardSetMultiCardCountFilter(DirectFilter):
     """Filter on number of cards in the Physical Card Set"""
     keyword = "CardCount"
     description = "Card Count"
-    helptext = "a list of card numbers (filters on number of cards in the " \
-            "Card Set)"
+    helptext = "a list of card numbers from a chosen card set (filters on " \
+            "number of cards in the Card Set).\nReturns a list of cards " \
+            "that have the chosen counts in the given card set."
     isfromfilter = True
     islistfilter = True
     types = ['PhysicalCard']
@@ -1043,7 +1058,7 @@ class CardSetMultiCardCountFilter(DirectFilter):
     def get_values(cls):
         # Should this have a more staggered range split? 0..20, 20-30,
         # 30-40, >40 type thing?
-        aCardSets = [x.name for x in PhysicalCardSet.select()]
+        aCardSets = [x.name for x in PhysicalCardSet.select().orderBy('name')]
         aValues = [str(x) for x in range(0, 30)] + ['>30']
         return (aValues, aCardSets)
 
@@ -1076,8 +1091,8 @@ class MultiPhysicalExpansionFilter(DirectFilter):
     """Filter PhysicalCard based on a list of PhysicalCard expansions"""
     keyword = "PhysicalExpansion"
     description = "Physical Expansion"
-    helptext = "a list of expansions (selects of physical cards with "\
-            "their expansion set to the chosen expansions)"
+    helptext = "a list of expansions.\nSelects cards with their expansion " \
+            "set to the chosen expansions."
     types = ['PhysicalCard']
     islistfilter = True
     __sUnspec = '  Unspecified Expansion'
@@ -1147,8 +1162,8 @@ class MultiPhysicalCardSetFilter(Filter):
     """Filter on a list of Physical Card Sets"""
     keyword = "PhysicalSet"
     description = "Card Sets"
-    helptext = "a list of card sets names (selects cards in the " \
-            "specified sets)"
+    helptext = "a list of card sets names\nSelects cards in the " \
+            "specified sets."
     islistfilter = True
     types = ['PhysicalCard']
 
@@ -1304,7 +1319,8 @@ class CardSetNameFilter(DirectFilter):
     keyword = "CardSetName"
     description = "Card Set Name"
     helptext = "the text to be matched against card set names.\n" \
-            "% can be used as a wildcard"
+            "% can be used as a wildcard.\nReturns all card sets containing " \
+            "the given string."
     istextentry = True
     types = ['PhysicalCardSet']
 
@@ -1327,7 +1343,8 @@ class CardSetDescriptionFilter(DirectFilter):
     keyword = "CardSetDescription"
     description = "Card Set Description"
     helptext = "the text to be matched against card set description.\n" \
-            "% can be used as a wildcard"
+            "% can be used as a wildcard.\nReturns all card sets containing " \
+            "the given string."
     istextentry = True
     types = ['PhysicalCardSet']
 
@@ -1351,7 +1368,8 @@ class CardSetAuthorFilter(DirectFilter):
     keyword = "CardSetAuthor"
     description = "Card Set Author"
     helptext = "the text to be matched against card set Author.\n" \
-            "% can be used as a wildcard"
+            "% can be used as a wildcard.\nReturns all card sets containing " \
+            "the given string."
     istextentry = True
     types = ['PhysicalCardSet']
 
@@ -1375,7 +1393,8 @@ class CardSetAnnotationsFilter(DirectFilter):
     keyword = "CardSetAnnotations"
     description = "Card Set Annotations"
     helptext = "the text to be matched against card set annotations.\n" \
-            "% can be used as a wildcard"
+            "% can be used as a wildcard.\nReturns all card sets where the " \
+            "annotations contrain the given string."
     istextentry = True
     types = ['PhysicalCardSet']
 
@@ -1394,7 +1413,32 @@ class CardSetAnnotationsFilter(DirectFilter):
         return LIKE(func.LOWER(self.oTable.annotations),
                 '%' + self.__sPattern + '%')
 
-# Physical Card Set subclasses
+class ParentCardSetFilter(MultiFilter):
+    """Filters on Parent's Card Set"""
+    keyword = "ParentCardSet"
+    description = "Parent Card Set"
+    helptext = "a list names of the parent card sets.\n" \
+            "Returns all card sets with one of the selected cards sets " \
+            "as a parent."
+    islistfilter = True
+    types = ['PhysicalCardSet']
+
+    def __init__(self, aCardSets):
+        # pylint: disable-msg=E1101
+        # SQLObject methods not detected by plylint
+        self._aIds = [IPhysicalCardSet(x).id for x in aCardSets]
+        self._oIdField = PhysicalCardSet.q.parent
+
+    # pylint: disable-msg=C0111
+    # don't need docstrings for _get_expression, get_values & _get_joins
+    @classmethod
+    def get_values(cls):
+        return [x.name for x in PhysicalCardSet.select().orderBy('name')]
+
+    # Override _get_joins, since we don't join
+    def _get_joins(self):
+        return []
+
 
 class CSPhysicalCardSetInUseFilter(DirectFilter):
     """Filter Physical Card Set on inuse status"""
@@ -1427,5 +1471,5 @@ aParserFilters = [MultiCardTypeFilter, MultiCostTypeFilter, MultiClanFilter,
         CardSetDescriptionFilter, CardSetAnnotationsFilter,
         MultiPhysicalCardSetFilter, PhysicalCardSetInUseFilter,
         CardSetMultiCardCountFilter, CSPhysicalCardSetInUseFilter,
-        CardFunctionFilter]
+        CardFunctionFilter, ParentCardSetFilter]
 

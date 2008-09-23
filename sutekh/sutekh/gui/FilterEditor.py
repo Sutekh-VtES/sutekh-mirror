@@ -9,6 +9,7 @@
 
 from sutekh.gui.MultiSelectComboBox import MultiSelectComboBox
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
+from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 from sutekh.core.FilterParser import FilterNode, BinOpNode, NotOpNode, \
         FilterPartNode
 from sutekh.core import FilterParser
@@ -169,11 +170,12 @@ class FilterEditor(gtk.Frame):
                 gtk.DIALOG_DESTROY_WITH_PARENT,
                 (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
 
-        oDlg.set_default_size(600, -1)
+        oDlg.set_default_size(600, 500)
         # pylint: disable-msg=E1101
         # vbox confuse pylint
 
-        oHelpView = FilterHelpTextView(self.__oBoxModel.get_filter_types())
+        oHelpView = AutoScrolledWindow(FilterHelpTextView(
+            self.__oBoxModel.get_filter_types()))
         oDlg.vbox.pack_start(oHelpView)
         oDlg.show_all()
 
@@ -750,8 +752,8 @@ class FilterHelpTextView(gtk.TextView, object):
         oBuf.tag_text(
             "The available filtering options are listed below. "
             "The first line of each item shows the description "
-            "you'll see in the filter editor in bold with the"
-            "keyword to use in query strings in italics afterwards."
+            "you'll see in the filter editor in bold with the "
+            "keyword to use in query strings in italics afterwards. "
             "The rest of the description describes the arguments "
             "the filter takes and the results it produces."
             "\n\n"
@@ -765,7 +767,7 @@ class FilterHelpTextView(gtk.TextView, object):
             "\n"
             "Note: Using filters which require information about "
             "cards in a card set will temporarily turn off displaying "
-            "of cards with zero counts (assuming it is turned on) "
+            "cards with zero counts (for modes where this is possible) "
             "in the card list since there are no "
             "associated cards on which to base the query. "
             "Filters affected by this are: Physical Expansion, "

@@ -1,3 +1,12 @@
+23 Sep 2008
+ * Add Parent card set filter for card set list
+ * Tweak filter help and tutorial text
+
+22 Sep 2008
+ * Add key-board editing shortcuts - '-' & '+' to inc/dec numbers and 1-9
+   for quickly setting the number
+ * Rework card set menus a bit - move export plugins to own submenu
+
 18 Sep 2008
  * Add importer for ARDB xml inventory files
  * Add CSV Export plugin
