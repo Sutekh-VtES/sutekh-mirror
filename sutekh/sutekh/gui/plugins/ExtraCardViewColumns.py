@@ -98,7 +98,7 @@ class ExtraCardViewColumns(CardListPlugin):
                 dIcons = self.iconmanager.get_icon_list(oCard.cardtype)
                 if dIcons:
                     aIcons = [dIcons[x] for x in aTypes]
-            return aTypes, aIcons
+            return " /|".join(aTypes).split("|"), aIcons
         return [], []
 
     def _render_card_type(self, oColumn, oCell, oModel, oIter):
