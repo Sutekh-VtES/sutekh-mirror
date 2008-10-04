@@ -113,6 +113,14 @@ class CardListPlugin(object):
            None if no menu item is needed."""
         return None
 
+    def setup(self):
+        """Handle any setup needed for the plugin after the main window has
+           been initialised.
+
+           Currently used to prompt for downloads, etc.
+           """
+        return None
+
     def get_toolbar_widget(self):
         """Return an arbitary gtk.Widget which is added to a VBox between the
            menu and the scrolled display area.

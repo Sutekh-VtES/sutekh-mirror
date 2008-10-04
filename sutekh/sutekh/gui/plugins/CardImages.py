@@ -359,14 +359,19 @@ class CardImageFrame(BasicFrame, CardListViewListener):
 # R0904 - gtk Widget, so has many public methods
 class ImageConfigDialog(SutekhDialog):
     """Dialog for configuring the Image plugin."""
-    def __init__(self, oParent):
+    def __init__(self, oParent, bFirstTime=False):
         super(ImageConfigDialog, self).__init__('Configure Card Images Plugin',
                 oParent, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                 (gtk.STOCK_OK, gtk.RESPONSE_OK, gtk.STOCK_CANCEL,
                     gtk.RESPONSE_CANCEL))
         oDescLabel = gtk.Label()
-        oDescLabel.set_markup('<b>Choose how to configure the cardimages'
-                ' plugin</b>')
+        if not bFirstTime:
+            oDescLabel.set_markup('<b>Choose how to configure the cardimages '
+                    'plugin</b>')
+        else:
+            oDescLabel.set_markup('<b>Choose how to configure the cardimages '
+                    'plugin</b>\nChoose cancel to skip configuring the '
+                    'images plugin\nYou will not be prompted again')
         self.oChoiceDownload = gtk.RadioButton(
                 label='Download and install cardimages from feldb.extra.hu')
         self.oChoiceLocalCopy = gtk.RadioButton(self.oChoiceDownload,
@@ -498,11 +503,28 @@ class CardImagePlugin(CardListPlugin):
                 ('Add Pane', self._oAddItem),
                 ('Replace Pane', self._oReplaceItem)]
 
+    def setup(self):
+        """Prompt the user to download/setup images the first time"""
+        sPrefsPath = self.parent.config_file.get_plugin_key('card image path')
+        if not os.path.exists(sPrefsPath):
+            # Looks like the first time
+            oDialog = ImageConfigDialog(self.parent, True)
+            self.handle_response(oDialog)
+            # Path may have been changed, so we need to requery config file
+            sPrefsPath = self.parent.config_file.get_plugin_key(
+                    'card image path')
+            # Don't get called next time
+            ensure_dir_exists(sPrefsPath)
+
     # pylint: disable-msg=W0613
     # oMenuWidget needed by gtk function signature
     def config_activate(self, oMenuWidget):
         """Configure the plugin dialog."""
-        oDialog = ImageConfigDialog(self.parent)
+        oDialog = ImageConfigDialog(self.parent, False)
+        self.handle_response(oDialog)
+
+    def handle_response(self, oDialog):
+        """Handle the response from the config dialog"""
         iResponse = oDialog.run()
         bActivateMenu = False
         if iResponse == gtk.RESPONSE_OK:

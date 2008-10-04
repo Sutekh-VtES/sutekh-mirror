@@ -15,6 +15,7 @@ from sutekh.SutekhUtility import prefs_dir, ensure_dir_exists
 from sutekh.core.SutekhObjects import Clan, Creed, CardType, DisciplinePair, \
         Virtue
 from sutekh.gui.ProgressDialog import ProgressDialog, SutekhCountLogHandler
+from sutekh.gui.SutekhDialog import do_complaint
 
 # Utilty functions - convert object to a filename
 def _get_clan_filename(oClan):
@@ -216,6 +217,29 @@ class IconManager(object):
         elif isinstance(aValues[0], Creed):
             aIcons = self._get_creed_icons(aValues)
         return aIcons
+
+    def setup(self):
+        """Prompt the user to download the icons if the icon directory
+           doesn't exist"""
+        if os.path.lexists(self._sPrefsDir):
+            # We accept broken links as stopping the prompt
+            return
+        # Create directory, so we don't prompt next time unless the user
+        # intervenes
+        ensure_dir_exists(self._sPrefsDir)
+        # Ask the user if he wants to download
+        iResponse = do_complaint("Sutekh can download icons for the cards "
+                "from the WW site\nThese icons will be stored in %s\n\n"
+                "Download icons?" % self._sPrefsDir, gtk.MESSAGE_INFO,
+                gtk.BUTTONS_YES_NO, False)
+        if iResponse == gtk.RESPONSE_YES:
+            self.download_icons()
+        else:
+            # Let the user know about the other options
+            do_complaint("Icon download skipped.\nYou can choose to download "
+                    "the icons from the File menu.\nYou will not be prompted "
+                    "again unless you delete %s" % self._sPrefsDir,
+                    gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, False)
 
     def download_icons(self):
         """Download the icons from the WW site"""

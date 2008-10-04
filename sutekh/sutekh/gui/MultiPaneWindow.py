@@ -104,6 +104,11 @@ class MultiPaneWindow(gtk.Window):
                 "MainWindow"))
 
         self.__oMenu = MainMenu(self, oConfig)
+        # Do setup - prompt for downloads, etc. if needed
+        self._oIconManager.setup()
+        # plugins as well
+        for cPlugin in self._aPlugins:
+            cPlugin.setup()
 
         self.oVBox = gtk.VBox(False, 1)
         self.oVBox.pack_start(self.__oMenu, False, False)

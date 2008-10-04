@@ -58,5 +58,4 @@ For 0.6:
    - Not properly disappearing on windows
    - Position is not ideal
  * Finish built-in tutorial and help.
- * Improve intial setup - also download icons, offer to download images, etc.
  * Save the state for the open card sets (Cards shown, parent count mode, etc)
