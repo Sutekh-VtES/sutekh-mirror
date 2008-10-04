@@ -177,12 +177,19 @@ class MultiPaneWindow(gtk.Window):
             self.resize(iWidth, iHeight)
         # pylint: disable-msg=W0612
         # iNumber is not used here, but returned from the config file
+        dPaneInfo = self._oConfig.get_all_pane_info()
+        print dPaneInfo
         for iNumber, sType, sName, bVert, iPos in \
                 self._oConfig.get_all_panes():
             oNewFrame = self.add_pane(bVert, iPos)
             self._oFocussed = oNewFrame
             if sType == PhysicalCardSet.sqlmeta.table:
                 self.replace_with_physical_card_set(sName, oNewFrame)
+                print sName, dPaneInfo
+                if sName in dPaneInfo:
+                    oPane = self.find_pane_by_name(sName)
+                    print sName, dPaneInfo[sName]
+                    oPane.set_model_modes(dPaneInfo[sName])
             elif sType == 'Card Text':
                 self.replace_with_card_text(None)
             elif sType == PhysicalCard.sqlmeta.table:
@@ -421,6 +428,14 @@ class MultiPaneWindow(gtk.Window):
         oDlg.run()
         oDlg.destroy()
 
+    def _link_resource(self, sLocalUrl):
+        """Return a file-like object which sLocalUrl can be read from."""
+        sResource = '/docs/html/%s' % sLocalUrl
+        if resource_exists('sutekh', sResource):
+            return resource_stream('sutekh', sResource)
+        else:
+            raise ValueError("Unknown resource %s" % sLocalUrl)
+
     # pylint: enable-msg=R0201
 
     # oWidget, oEvent needed by function signature
@@ -464,15 +479,31 @@ class MultiPaneWindow(gtk.Window):
         if self._oHelpDlg is not None:
             self._oHelpDlg.show()
 
-    # pylint: enable-msg=W0613
+    # oWidget needed so this can be called from the menu
+    def add_pane_end(self, oWidget=None):
+        """Add a pane to the right edge of the window.
 
-    def _link_resource(self, sLocalUrl):
-        """Return a file-like object which sLocalUrl can be read from."""
-        sResource = '/docs/html/%s' % sLocalUrl
-        if resource_exists('sutekh', sResource):
-            return resource_stream('sutekh', sResource)
+           Used for the add pane menu items and double clicking on card set
+           names
+           """
+        if self._iNumberOpenFrames < 1:
+            oPane = None
         else:
-            raise ValueError("Unknown resource %s" % sLocalUrl)
+            # Descend the right child of the panes, until we get a
+            # non-paned item
+            oPane = [x for x in self.oVBox.get_children() if
+                    x != self.__oMenu][0]
+            while isinstance(oPane, (gtk.HPaned, gtk.VPaned)):
+                oPane = oPane.get_child2()
+        self._oFocussed = oPane
+        return self.add_pane()
+
+    # oMenuWidget needed so this can be called from the menu
+    def menu_remove_frame(self, oMenuWidget):
+        """Handle the remove pane request from the menu"""
+        self.remove_frame(self._oFocussed)
+
+    # pylint: enable-msg=W0613
 
     def _do_html_dialog(self, fInput):
         """Popup and run HTML Dialog widget"""
@@ -530,6 +561,9 @@ class MultiPaneWindow(gtk.Window):
                 iChildPos = iPos
             else:
                 oConfig.add_frame(iNum, oPane.type, oPane.name, bVert, iPos)
+                if oPane.type == PhysicalCardSet.sqlmeta.table:
+                    tInfo = oPane.get_model_modes()
+                    oConfig.add_pane_info(iNum, oPane.name, tInfo)
                 iNum += 1
                 iChildPos = iPos
             return iNum, iChildPos
@@ -598,24 +632,6 @@ class MultiPaneWindow(gtk.Window):
         else:
             # Return the last added pane, for automatic adds
             return self._aHPanes[-1]
-
-    def add_pane_end(self, oWidget=None):
-        """Add a pane to the right edge of the window.
-
-           Used for the add pane menu items and double clicking on card set
-           names
-           """
-        if self._iNumberOpenFrames < 1:
-            oPane = None
-        else:
-            # Descend the right child of the panes, until we get a
-            # non-paned item
-            oPane = [x for x in self.oVBox.get_children() if
-                    x != self.__oMenu][0]
-            while isinstance(oPane, (gtk.HPaned, gtk.VPaned)):
-                oPane = oPane.get_child2()
-        self._oFocussed = oPane
-        return self.add_pane()
 
     def add_pane(self, bVertical=False, iConfigPos=-1):
         """Add a blank frame to the window.
@@ -713,10 +729,6 @@ class MultiPaneWindow(gtk.Window):
         self.oVBox.show_all()
         self.reset_menu()
         return oWidget
-
-    def menu_remove_frame(self, oMenuWidget):
-        """Handle the remove pane request from the menu"""
-        self.remove_frame(self._oFocussed)
 
     def remove_frame_by_name(self, sName):
         """Remove the pane with the given name"""

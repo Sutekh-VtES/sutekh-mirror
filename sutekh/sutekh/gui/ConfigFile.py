@@ -40,6 +40,7 @@ class ConfigFile(object):
     __sPanesSection = 'Open Panes'
     __sPrefsSection = 'GUI Preferences'
     __sPluginsSection = 'Plugin Options'
+    __sPaneInfoSection = 'Pane settings'
 
     def __init__(self, sFileName):
         self.__sFileName = sFileName
@@ -82,6 +83,9 @@ class ConfigFile(object):
         if not self.__oConfig.has_section(self.__sPluginsSection):
             self.__oConfig.add_section(self.__sPluginsSection)
 
+        if not self.__oConfig.has_section(self.__sPaneInfoSection):
+            self.__oConfig.add_section(self.__sPaneInfoSection)
+
     def __str__(self):
         """Debugging aid - print the filename"""
         return "FileName : " + self.__sFileName
@@ -114,14 +118,27 @@ class ConfigFile(object):
         aKeys = self.__oConfig.options(self.__sPanesSection)
         for sKey in aKeys:
             self.__oConfig.remove_option(self.__sPanesSection, sKey)
+        aKeys = self.__oConfig.options(self.__sPaneInfoSection)
+        for sKey in aKeys:
+            self.__oConfig.remove_option(self.__sPaneInfoSection, sKey)
 
     def get_all_panes(self):
         """Get the all the panes saved in the config file, and their
            positions."""
         aRes = []
         for sKey, sValue in self.__oConfig.items(self.__sPanesSection):
-            iPaneNumber = int(sKey.split(' ')[1])
+            if not sKey.startswith('pane'):
+                # invalid key
+                continue
+            try:
+                iPaneNumber = int(sKey.split(' ')[1])
+            except ValueError:
+                # invalid key
+                continue
             # Type is before 1st colon in the name
+            if sValue.find(':') == -1:
+                # invalid format, so skip
+                continue
             sData, sName = sValue.split(':', 1)
             aData = sData.split('.')
             sType = aData[0]
@@ -141,6 +158,23 @@ class ConfigFile(object):
             aRes.append((iPaneNumber, sType, sName, bVertical, iPos))
         aRes.sort() # Numbers denote ordering
         return aRes
+
+    def get_all_pane_info(self):
+        """Get the pane info (card mode, etc) saved in the config file"""
+        dRes = {}
+        for tPaneInfo in self.__oConfig.items(self.__sPaneInfoSection):
+            # Format is 'pane number' =
+            #        Extra Level Mode:Parent Count Mode:Card Mode:Name
+            # We can' use the name as a key, since the key isn't case sensitive
+            try:
+                sExtraLevelMode, sParentCount, sShowCardMode, sName = \
+                        tPaneInfo[1].split(':', 3)
+                dRes[sName] = (int(sExtraLevelMode), int(sParentCount),
+                        int(sShowCardMode))
+            except ValueError:
+                # skip this one then
+                continue
+        return dRes
 
     def get_save_on_exit(self):
         """Query the 'save on exit' option."""
@@ -180,16 +214,24 @@ class ConfigFile(object):
     # We need all the info in the arguments here
     def add_frame(self, iFrameNumber, sType, sName, bVertical, iPos):
         """Add a frame with the given position info to the config file"""
-        sKey = 'pane ' + str(iFrameNumber)
+        sKey = 'pane %d' % iFrameNumber
         sData = sType
         if bVertical:
             sData += '.V'
         if iPos > 0 and self.get_save_precise_pos():
-            sData += '.' + str(iPos)
-        sValue = sData + ':' + sName
+            sData += '.%d' % iPos
+        sValue = '%s:%s' % (sData, sName)
         self.__oConfig.set(self.__sPanesSection, sKey, sValue)
 
     # pylint: enable-msg=R0913
+
+    def add_pane_info(self, iFrameNumber, sName, tInfo):
+        """Save the pane info"""
+        sKey = 'pane %d' % iFrameNumber
+        iExtraLevelMode, iParentCount, iShowCardMode = tInfo
+        sValue = '%d:%d:%d:%s' % (iExtraLevelMode, iParentCount, iShowCardMode,
+                sName)
+        self.__oConfig.set(self.__sPaneInfoSection, sKey, sValue)
 
     def set_database_uri(self, sDatabaseURI):
         """Set the configured database URI"""

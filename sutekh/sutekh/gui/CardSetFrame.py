@@ -74,6 +74,21 @@ class CardSetFrame(CardListFrame, object):
         self._oController.update_to_new_db()
         self.reload()
 
+    def get_model_modes(self):
+        """Get the model modes"""
+        return self._oController.model.iExtraLevelsMode, \
+                self._oController.model.iParentCountMode, \
+                self._oController.model.iShowCardMode
+
+    def set_model_modes(self, tInfo):
+        """Set the model + menu to the saved modes"""
+        iExtraLevelsMode, iParentCountMode, iShowCardMode = tInfo
+        # FIXME: Correct menu settings to match modes
+        self._oController.model.iExtraLevelsMode = iExtraLevelsMode
+        self._oController.model.iParentCountMode = iParentCountMode
+        self._oController.model.iShowCardMode = iShowCardMode
+        self.reload()
+
     def do_queued_reload(self):
         """Do a defferred reload if one was set earlier"""
         if self._bNeedReload:

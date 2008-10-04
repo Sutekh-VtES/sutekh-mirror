@@ -1,4 +1,6 @@
 04 Oct 2008
+ * Save open card set pane state (Cards shown, extra levels, etc.) on exit
+ * Partially restore state on load (menu needs to be fixed)
  * Improve intial setup - offer to download icons & images
  * Add CellRendererIcons to display icons and text in the TreeView.
  * Support CellRendererIcons in ExtraCardColumns plugin
