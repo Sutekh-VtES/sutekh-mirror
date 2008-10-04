@@ -1,3 +1,7 @@
+04 Oct 2008
+ * Add CellRendererIcons to display icons and text in the TreeView.
+ * Support CellRendererIcons in ExtraCardColumns plugin
+
 23 Sep 2008
  * Add Parent card set filter for card set list
  * Tweak filter help and tutorial text

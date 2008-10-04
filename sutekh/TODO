@@ -38,8 +38,6 @@ Gui (Presentation):
  * Clean up the card set controller/model/view interactions
    - CardSetManagement stuff is still rather tangled
  * Parse in a GTK rc file? (http://www.moeraki.com/pygtktutorial/pygtk2tutorial/ch-GtkRcFiles.html)
- * Icon support improvements
-   - Allow icons in the tree view
  * Allow colouring options for the cards
  * Add more keyboard shortcuts
 
