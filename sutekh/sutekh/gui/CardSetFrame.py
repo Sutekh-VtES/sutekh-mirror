@@ -25,7 +25,7 @@ class CardSetFrame(CardListFrame, object):
        """
     _cModelType = PhysicalCardSet
 
-    def __init__(self, oMainWindow, sName):
+    def __init__(self, oMainWindow, sName, tInfo=None):
         super(CardSetFrame, self).__init__(oMainWindow)
         try:
             # pylint: disable-msg=W0612
@@ -35,6 +35,9 @@ class CardSetFrame(CardListFrame, object):
             raise RuntimeError("Card Set %s does not exist" % sName)
         self._oController = CardSetController(sName,
                 oMainWindow, self)
+
+        if tInfo:
+            self.set_model_modes(tInfo)
 
         self.init_plugins()
 
@@ -83,11 +86,9 @@ class CardSetFrame(CardListFrame, object):
     def set_model_modes(self, tInfo):
         """Set the model + menu to the saved modes"""
         iExtraLevelsMode, iParentCountMode, iShowCardMode = tInfo
-        # FIXME: Correct menu settings to match modes
         self._oController.model.iExtraLevelsMode = iExtraLevelsMode
         self._oController.model.iParentCountMode = iParentCountMode
         self._oController.model.iShowCardMode = iShowCardMode
-        self.reload()
 
     def do_queued_reload(self):
         """Do a defferred reload if one was set earlier"""

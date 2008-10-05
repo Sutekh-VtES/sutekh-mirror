@@ -178,18 +178,13 @@ class MultiPaneWindow(gtk.Window):
         # pylint: disable-msg=W0612
         # iNumber is not used here, but returned from the config file
         dPaneInfo = self._oConfig.get_all_pane_info()
-        print dPaneInfo
         for iNumber, sType, sName, bVert, iPos in \
                 self._oConfig.get_all_panes():
             oNewFrame = self.add_pane(bVert, iPos)
             self._oFocussed = oNewFrame
             if sType == PhysicalCardSet.sqlmeta.table:
-                self.replace_with_physical_card_set(sName, oNewFrame)
-                print sName, dPaneInfo
-                if sName in dPaneInfo:
-                    oPane = self.find_pane_by_name(sName)
-                    print sName, dPaneInfo[sName]
-                    oPane.set_model_modes(dPaneInfo[sName])
+                tInfo = dPaneInfo.get(sName)
+                self.replace_with_physical_card_set(sName, oNewFrame, tInfo)
             elif sType == 'Card Text':
                 self.replace_with_card_text(None)
             elif sType == PhysicalCard.sqlmeta.table:
@@ -227,14 +222,14 @@ class MultiPaneWindow(gtk.Window):
             return
         self.dOpenFrames[oFrame] = sNewName
 
-    def replace_with_physical_card_set(self, sName, oFrame):
+    def replace_with_physical_card_set(self, sName, oFrame, tInfo=None):
         """Replace the pane oFrame with the physical card set sName"""
         sMenuFlag = sName
         if sMenuFlag not in self.dOpenFrames.values() and oFrame:
             # pylint: disable-msg=W0704
             # not doing anything for errors right now
             try:
-                oPane = CardSetFrame(self, sName)
+                oPane = CardSetFrame(self, sName, tInfo)
                 self.replace_frame(oFrame, oPane, sMenuFlag)
             except RuntimeError:
                 # add warning dialog?

@@ -1,3 +1,6 @@
+05 Oct 2008
+ * Correct menus to match saved state
+
 04 Oct 2008
  * Save open card set pane state (Cards shown, extra levels, etc.) on exit
  * Partially restore state on load (menu needs to be fixed)

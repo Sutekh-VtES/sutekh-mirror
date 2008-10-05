@@ -53,32 +53,36 @@ class CardSetMenu(CardListMenu):
         oMenu.add(gtk.SeparatorMenuItem())
         oCountMenu = self.create_menu_item_with_submenu(oMenu,
                 "Cards To Show").get_submenu()
-        oThisCardSet = gtk.RadioMenuItem(None, "This Card Set Only")
-        oThisCardSet.set_active(True)
-        oCountMenu.add(oThisCardSet)
-        oThisCardSet.connect("toggled", self._change_count_mode, THIS_SET_ONLY)
-        for sString, iValue in [("Show All Cards", ALL_CARDS),
+        oThisCardSet = None
+        for sString, iValue in [
+                ("This Card Set Only", THIS_SET_ONLY),
+                ("Show All Cards", ALL_CARDS),
                 ("Show all cards in parent card set", PARENT_CARDS),
                 ("Show all cards in child card sets", CHILD_CARDS),
                 ]:
             oItem = gtk.RadioMenuItem(oThisCardSet, sString)
+            if not oThisCardSet:
+                oThisCardSet = oItem
+            if self.__oController.model.iShowCardMode == iValue:
+                oItem.set_active(True)
             oCountMenu.add(oItem)
             oItem.connect("toggled", self._change_count_mode, iValue)
         oModeMenu = self.create_menu_item_with_submenu(oMenu,
                 "Display Mode").get_submenu()
-        oNoChildren = gtk.RadioMenuItem(None, "Show No Children")
-        oModeMenu.add(oNoChildren)
-        oNoChildren.connect("toggled", self._change_mode, NO_SECOND_LEVEL)
-        for sString, iValue in [("Show Expansions", SHOW_EXPANSIONS),
+        oNoChildren = None
+        for sString, iValue in [
+                ("Show No Children", NO_SECOND_LEVEL),
+                ("Show Expansions", SHOW_EXPANSIONS),
                 ("Show Child Card Sets", SHOW_CARD_SETS),
                 ("Show Expansions + Child Card Sets",
                     EXPANSIONS_AND_CARD_SETS),
                 ("Show Child Card Sets and Expansions",
                     CARD_SETS_AND_EXPANSIONS),
                 ]:
-            # Should we have some way of restoring setting from last session?
             oItem = gtk.RadioMenuItem(oNoChildren, sString)
-            if iValue == SHOW_EXPANSIONS:
+            if not oNoChildren:
+                oNoChildren = oItem
+            if self.__oController.model.iExtraLevelsMode == iValue:
                 oItem.set_active(True)
             oModeMenu.add(oItem)
             oItem.connect("toggled", self._change_mode, iValue)
@@ -86,10 +90,13 @@ class CardSetMenu(CardListMenu):
         self._oParentCol = self.create_menu_item_with_submenu(oMenu,
                 "Parent Card Count")
         oParentCountMenu = self._oParentCol.get_submenu()
-        oNoParentCount = gtk.RadioMenuItem(None,
-                "Don't show parent card counts")
-        oParentCountMenu.add(oNoParentCount)
-        for sString, iValue in [("Show Parent Count", PARENT_COUNT),
+        oNoParentCount = None
+        # pylint: disable-msg=E1101
+        # SQLObject confuses pylint
+        oCS = PhysicalCardSet.byName(self.sSetName)
+        for sString, iValue in [
+                ("Don't show parent card counts", IGNORE_PARENT),
+                ("Show Parent Count", PARENT_COUNT),
                 ("Show difference between Parent Count and this card set",
                     MINUS_THIS_SET),
                 ("Show difference between Parent Count and card sets in use",
@@ -97,27 +104,21 @@ class CardSetMenu(CardListMenu):
                 ]:
             # Should we have some way of restoring setting from last session?
             oItem = gtk.RadioMenuItem(oNoParentCount, sString)
+            if not oNoParentCount:
+                oNoParentCount = oItem
             if iValue == PARENT_COUNT:
-                oItem.set_active(True)
                 self._oDefaultParentCount = oItem
+            if self.__oController.model.iParentCountMode == iValue and \
+                    oCS.parent:
+                oItem.set_active(True)
+                self._change_parent_count_mode(oItem, iValue, True)
+            elif not oCS.parent and iValue == IGNORE_PARENT:
+                self._oParentCol.set_sensitive(False)
+                oItem.set_active(True)
+                self._change_parent_count_mode(oItem, iValue, True)
             oParentCountMenu.add(oItem)
             oItem.connect("toggled", self._change_parent_count_mode, iValue,
                     False)
-        # pylint: disable-msg=E1101
-        # SQLObject confuses pylint
-        oCS = PhysicalCardSet.byName(self.sSetName)
-        if not oCS.parent:
-            # No parent, so disable option
-            self._oParentCol.set_sensitive(False)
-            oNoParentCount.set_active(True)
-            self._change_parent_count_mode(oNoParentCount, IGNORE_PARENT, True)
-        else:
-            self._change_parent_count_mode(self._oDefaultParentCount,
-                    PARENT_COUNT, True)
-        # We need to do this after the set_active calls, to avoid calling load
-        # multiple times
-        oNoParentCount.connect("toggled", self._change_parent_count_mode,
-                IGNORE_PARENT, False)
         oMenu.add(gtk.SeparatorMenuItem())
         self.add_common_actions(oMenu)
 
