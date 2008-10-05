@@ -242,9 +242,6 @@ class ExtraCardViewColumns(CardListPlugin):
         if isinstance(oVal1, list):
             oVal1 = " ".join(oVal1)
             oVal2 = " ".join(oVal2)
-        else:
-            oVal1 = str(oVal1)
-            oVal2 = str(oVal2)
         if oVal1 < oVal2:
             iRes = -1
         elif oVal1 > oVal2:
