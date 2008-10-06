@@ -14,6 +14,37 @@ from sutekh.gui.CardListView import CardListView
 from sutekh.gui.CardSetListModel import CardSetCardListModel
 from sutekh.core.SutekhObjects import PhysicalCardSet
 
+_dNumKeys = {
+        gtk.gdk.keyval_from_name('1') : 1,
+        gtk.gdk.keyval_from_name('KP_1') : 1,
+        gtk.gdk.keyval_from_name('2') : 2,
+        gtk.gdk.keyval_from_name('KP_2') : 2,
+        gtk.gdk.keyval_from_name('3') : 3,
+        gtk.gdk.keyval_from_name('KP_3') : 3,
+        gtk.gdk.keyval_from_name('4') : 4,
+        gtk.gdk.keyval_from_name('KP_4') : 4,
+        gtk.gdk.keyval_from_name('5') : 5,
+        gtk.gdk.keyval_from_name('KP_5') : 5,
+        gtk.gdk.keyval_from_name('6') : 6,
+        gtk.gdk.keyval_from_name('KP_6') : 6,
+        gtk.gdk.keyval_from_name('7') : 7,
+        gtk.gdk.keyval_from_name('KP_7') : 7,
+        gtk.gdk.keyval_from_name('8') : 8,
+        gtk.gdk.keyval_from_name('KP_8') : 8,
+        gtk.gdk.keyval_from_name('9') : 9,
+        gtk.gdk.keyval_from_name('KP_9') : 9
+        }
+
+_aPlusKeys = [
+        gtk.gdk.keyval_from_name('plus'),
+        gtk.gdk.keyval_from_name('KP_Add')
+        ]
+_aMinusKeys = [
+        gtk.gdk.keyval_from_name('minus'),
+        gtk.gdk.keyval_from_name('KP_Subtract')
+        ]
+
+
 class CardSetView(CardListView):
     # pylint: disable-msg=R0904
     # gtk.Widget, so many public methods
@@ -25,6 +56,7 @@ class CardSetView(CardListView):
        the controller when needed.
        """
 
+    # Initialise key ranges for key tests
     # pylint: disable-msg=R0915
     # We need a lot of setup here, so this is long
     def __init__(self, oMainWindow, oController, sName):
@@ -215,20 +247,22 @@ class CardSetView(CardListView):
                 self._oController.dec_card(sCardName, sExpansion, sCardSetName)
 
     def key_press(self, oWidget, oEvent):
-        """Change the number if 1-9 is pressed and we're editable"""
-        if oEvent.keyval in range(ord('1'), ord('9') + 1):
+        """Change the number if 1-9 is pressed and we're editable or if + or
+           - is pressed. We use the lists defined above to handle the keypad
+           as well."""
+        if oEvent.keyval in _dNumKeys:
             if self._oModel.bEditable:
-                iCnt = oEvent.keyval - ord('0')
+                iCnt = _dNumKeys[oEvent.keyval]
                 dSelectedData = self.process_edit_selection()
                 self._oController.set_selected_card_count(dSelectedData, iCnt)
             # if we're not editable, we still ignore this, so we avoid funny
             # search behaviour
             return True
-        elif oEvent.keyval == ord('+') and self._oModel.bEditable:
+        elif oEvent.keyval in _aPlusKeys and self._oModel.bEditable:
             dSelectedData = self.process_edit_selection()
             self._oController.alter_selected_card_count(dSelectedData, 1)
             return True
-        elif oEvent.keyval == ord('-') and self._oModel.bEditable:
+        elif oEvent.keyval in _aMinusKeys and self._oModel.bEditable:
             dSelectedData = self.process_edit_selection()
             self._oController.alter_selected_card_count(dSelectedData, -1)
             return True

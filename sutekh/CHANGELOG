@@ -1,3 +1,8 @@
+06 Oct 2008
+ * Replace the use of ord with gtk.gdk.keyval_from_name, which appears to be
+   the correct thing to do.
+ * Hook up numpad keys to the editing keybaord shortcuts
+
 05 Oct 2008
  * Correct menus to match saved state
 

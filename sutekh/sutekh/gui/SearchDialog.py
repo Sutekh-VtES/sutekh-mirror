@@ -99,7 +99,8 @@ class SearchDialog(gtk.Window):
         if oEvent.keyval in range(33, 127):
             if oEvent.state & gtk.gdk.CONTROL_MASK:
                 # Check for control-F case
-                if oEvent.keyval == ord('f') or oEvent.keyval == ord('F'):
+                if oEvent.keyval == gtk.gdk.keyval_from_name('f') or \
+                        oEvent.keyval == gtk.gdk.keyval_from_name('F'):
                     self.show_all()
             else:
                 self.show_all()
