@@ -19,11 +19,11 @@ h2. Contents
 # "Card Set List":#card_set_list
 ## "Actions":#card_set_list_actions
 ## "Filter":#card_set_list_filter
-# "Decks":#decks
-## "Actions":#decks_actions
-## "Edit":#decks_edit
-## "Filter":#decks_filter
-## "Plugins":#decks_plugins
+# "Card Sets":#cardsets
+## "Actions":#cardsets_actions
+## "Edit":#cardsets_edit
+## "Filter":#cardsets_filter
+## "Plugins":#cardsets_plugins
 # "Filters":#filters
 
 h2(#intro). Introduction
@@ -65,15 +65,15 @@ h3(#card_set_list_actions). Actions
 h3(#card_set_list_filter). Filter
 
 
-h2(#decks). Decks
+h2(#cardsets). Card Sets
 
-h3(#decks_actions). Actions
+h3(#cardsets_actions). Actions
 
-h3(#decks_edit). Edit
+h3(#cardsets_edit). Edit
 
-h3(#decks_filter). Filter
+h3(#cardsets_filter). Filter
 
-h3(#decks_plugins). Plugins
+h3(#cardsets_plugins). Plugins
 
 
 h2(#filters). Filters

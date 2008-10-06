@@ -11,7 +11,7 @@
 <h2>Contents</h2>
 
 <ol>
-<li><a href="#intro">The Intial Layout</a></li>
+<li><a href="#intro">The Initial Layout</a></li>
 <li><a href="#cards">Working with cards</a></li>
 <li><a href="#panes">Manipulating Panes</a></li>
 <li><a href="#sets">Managing Card Sets</a></li>
@@ -19,7 +19,7 @@
 <li><a href="#tips">Useful Tips</a></li>
 </ol>
 
-<h2 id="intro">The Intial Layout</h2>
+<h2 id="intro">The Initial Layout</h2>
 
 <p>When you run Sutekh for the first time, it will display the following 4 panes.</p>
 
@@ -30,7 +30,7 @@
 <li>My Collection</li>
 </ul>
 
-<p>On subsuquent runs, the list of panes to show will be read from file. You 
+<p>On subsequent runs, the list of panes to show will be read from file. You 
 can determine which panes are shown either by explicitly saving the layout 
 using <strong>Save current pane set</strong> from the <strong>File->Preferences</strong>, or by letting the  
 <strong>Save Pane Set on Exit</strong> option save the configuration.</p>
@@ -61,7 +61,7 @@ is created, to hold the details of your card collection.</p>
 <h3>Adding cards to a card set</h3>
 
 <p>Card Sets are, by default, not editable, unless they are empty. This can be 
-changed by toggling the <strong>Card Set is Editable</strong> menu entry iin the <strong>Edit</strong> Menu 
+changed by toggling the <strong>Card Set is Editable</strong> menu entry in the <strong>Edit</strong> Menu 
 of the pane. Empty card sets are always editable. Before adding cards to a card 
 set, ensure it is editable.</p>
 
@@ -83,8 +83,9 @@ the selected cards.</p>
 <h3>Removing cards</h3>
 
 <p>Cards can be removed from a card set either by using the <strong>-</strong> button shown in 
-the card set pane next to the card name, or by selecting cards and using the 
-<strong>Delete selection</strong> option from the <strong>Edit</strong> menu.</p>
+the card set pane next to the card name, using the keyboard shortcuts to change 
+the number of cards, or by selecting cards and using the <strong>Delete selection</strong> 
+option from the <strong>Edit</strong> menu.</p>
 
 <h2 id="panes">Manipulating Panes</h2>
 
@@ -106,6 +107,10 @@ pane.</p>
 set, Sutekh will save the current layout when you exit, and restore it on 
 startup. You can also save the current layout using the <strong>Save Current Pane Set</strong> 
 option.</p>
+
+<p>Panes are removed from the list by closing them from the 
+<strong>Pane Actions->Remove current pane</strong> menu option (or the associated keyboard 
+shortcut). Card Set panes will also be closed if you delete the card set.</p>
 
 <h2 id="sets">Managing Card Sets</h2>
 
@@ -206,7 +211,7 @@ set does not influence this number.</p>
 
 <h2 id="filtering">Filtering</h2>
 
-<p>Sutkh has a very powerful filtering model, which allows quite complex queries 
+<p>Sutekh has a very powerful filtering model, which allows quite complex queries 
 on the card database.</p>
 
 <h3>The Basic filters</h3>
@@ -242,22 +247,22 @@ counts to match against, while the second is the card set to test against.</p>
 <li>None of</li>
 </ul>
 
-<p>Each of these allows multiple filters to be added to them, and thet combine 
+<p>Each of these allows multiple filters to be added to them, and then combine 
 all the included filters according to the chosen rule.</p>
 
-<p><em>&#8220;All of&#8221;</em> requires the all the included filters to be statisfied simulatenously. 
+<p><em>&#8220;All of&#8221;</em> requires the all the included filters to be satisfied simultaneously. 
 It useful for finding cards which require a discipline and a given cost, for 
 example.</p>
 
-<p><em>&#8220;Any of&#8221;</em> requires that at least one of the included filters is statisfied.</p>
+<p><em>&#8220;Any of&#8221;</em> requires that at least one of the included filters is satisfied.</p>
 
 <p><em>&#8220;Not All of&#8221;</em> requires that at least one of the included filters is not 
-statisfied. The difference between <em>&#8220;Not All of</em>&#8221; and <em>&#8220;Any of&#8221;</em> is that _&#8220;Any 
+satisfied. The difference between <em>&#8220;Not All of</em>&#8221; and <em>&#8220;Any of&#8221;</em> is that _&#8220;Any 
 of&#8220;_ will include the results of any cards that match all of the filters, while 
-<em>&#8220;Not All of&#8221;</em> will exclude those, but return cards that statisfy none of the 
+<em>&#8220;Not All of&#8221;</em> will exclude those, but return cards that satisfy none of the 
 filters.</p>
 
-<p><em>&#8220;None of&#8221;</em> requires that none of the included filters be statisfied.</p>
+<p><em>&#8220;None of&#8221;</em> requires that none of the included filters be satisfied.</p>
 
 <p>In addition to the basic filters, the <strong>Sub-filter</strong> option allows these 
 combinations to be nested. Thus an <em>&#8220;All of&#8221;</em> filter can include <em>&#8220;Any of&#8221;</em> or 
@@ -265,7 +270,7 @@ combinations to be nested. Thus an <em>&#8220;All of&#8221;</em> filter can incl
 be constructed.</p>
 
 <p>For example, to find all cards that require either &#8216;Follower of Set&#8217; or 
-&#8216;Seperentis&#8217;, but not both, the following filter could be constructed:</p>
+&#8216;Serpentis&#8217;, but not both, the following filter could be constructed:</p>
 
 <p>An <em>&#8220;Any of&#8221;</em> filter, which includes two <em>&#8220;All of&#8221;</em> sub-filters. Each 
 sub-filter includes the <em>Clan</em> and <em>Discipline</em> basic filters, and the one is 
