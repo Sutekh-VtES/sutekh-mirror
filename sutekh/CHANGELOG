@@ -1,3 +1,7 @@
+09 Oct 2008
+ * Set focus to a neighbouring pane when removing a pane
+ * Setup tab to navigate between panes
+
 06 Oct 2008
  * Replace the use of ord with gtk.gdk.keyval_from_name, which appears to be
    the correct thing to do.

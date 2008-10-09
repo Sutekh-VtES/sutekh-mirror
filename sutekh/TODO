@@ -22,6 +22,8 @@ Code Cleanup
    parser for each test and improve test runtime
  * Factor out things like the lists of expansions and disciplines in
    SutekhObjects to a seperate file
+ * MultiPaneWindow mixes code for handling the widget hopping and application
+   code - these should be seperated.
 
 Gui (Functionality):
  * Finish ClusterCardList plugin.

@@ -118,6 +118,9 @@ class MultiPaneWindow(gtk.Window):
         self.show_all()
         self.restore_from_config()
 
+        self.connect('key-press-event',
+                self.key_press)
+
     # pylint: enable-msg=W0201
 
     # pylint: disable-msg=W0212
@@ -448,6 +451,18 @@ class MultiPaneWindow(gtk.Window):
             self._oFocussed.view.grab_focus()
         self.reset_menu()
 
+    def key_press(self, oWidget, oEvent):
+        """Move to the next frame on Tab"""
+        if oEvent.keyval == gtk.gdk.keyval_from_name('Tab') or \
+                oEvent.keyval == gtk.gdk.keyval_from_name('KP_Tab'):
+            self.move_to_frame(+1)
+            return True
+        elif oEvent.keyval == gtk.gdk.keyval_from_name('ISO_Left_Tab'):
+            # Shift & tab should always be this, AFAICT
+            self.move_to_frame(-1)
+            return True
+        return False # propogate event
+
     # oWidget needed by function signature
     def action_quit(self, oWidget):
         """Exit the app, saving infoin config file if needed."""
@@ -570,6 +585,91 @@ class MultiPaneWindow(gtk.Window):
 
     # frame management functions
 
+    def move_to_frame(self, iDir):
+        """Move the focus to the previous frame"""
+        if iDir > 0:
+            oNewFrame = self._find_next_frame(self._oFocussed)
+        else:
+            oNewFrame = self._find_prev_frame(self._oFocussed)
+        if oNewFrame:
+            self.win_focus(None, None, oNewFrame)
+
+    def _find_prev_frame(self, oFrame):
+        """Move the focus to the next frame in the window"""
+        if not oFrame:
+            if self._iNumberOpenFrames < 1:
+                # No frame, so nothing to focus
+                return
+            # get first child, and descent that
+            oChild = [x for x in self.oVBox.get_children() if
+                    x != self.__oMenu][0]
+            oParent = self.oVBox
+        else:
+            oParent = oFrame.get_parent()
+            if isinstance(oParent, gtk.VPaned):
+                if oParent.get_child2() == oFrame:
+                    # Need to go to the top frame
+                    return oParent.get_child1()
+                oChild = oParent
+            else:
+                oChild = oFrame
+            # Need to move to the 'neighbouring' HPane
+            oParent = oChild.get_parent()
+            while isinstance(oParent, gtk.HPaned) and \
+                        oChild == oParent.get_child1():
+                # As long as we're the left-most branch, we ascend
+                oChild = oParent
+                oParent = oChild.get_parent()
+        # prepare to descend to the correct frame
+        if isinstance(oParent, gtk.HPaned) and oChild == oParent.get_child2():
+            # We need to start going down the left-hand tree
+            oChild = oParent.get_child1()
+        while isinstance(oChild, gtk.HPaned):
+            # we descend down the right branch until we reach a frame
+            oChild = oChild.get_child2()
+        if isinstance(oChild, gtk.VPaned):
+            # go to the bottom frame in this case
+            oChild = oChild.get_child2()
+        return oChild
+
+    def _find_next_frame(self, oFrame):
+        """Move the focus to the next frame in the window"""
+        if not oFrame:
+            if self._iNumberOpenFrames < 1:
+                # No frame, so nothing to focus
+                return
+            # get first child, and descent that
+            oChild = [x for x in self.oVBox.get_children() if
+                    x != self.__oMenu][0]
+            oParent = self.oVBox
+        else:
+            oParent = oFrame.get_parent()
+            if isinstance(oParent, gtk.VPaned):
+                if oParent.get_child1() == oFrame:
+                    # Need to go to the bottom frame
+                    return oParent.get_child2()
+                oChild = oParent
+            else:
+                oChild = oFrame
+            # Need to move to the 'neighbouring' HPane
+            oParent = oChild.get_parent()
+            while isinstance(oParent, gtk.HPaned) and \
+                        oChild == oParent.get_child2():
+                # As long as we're the right-most branch, we ascend
+                oChild = oParent
+                oParent = oChild.get_parent()
+        # prepare to descend to the correct frame
+        if isinstance(oParent, gtk.HPaned) and oChild == oParent.get_child1():
+            # We need to start going down the right-hand tree
+            oChild = oParent.get_child2()
+        while isinstance(oChild, gtk.HPaned):
+            # we descend down the left branch until we reach a frame
+            oChild = oChild.get_child1()
+        if isinstance(oChild, gtk.VPaned):
+            # go to the top frame in this case
+            oChild = oChild.get_child1()
+        return oChild
+
     def replace_frame(self, oOldFrame, oNewFrame, sMenuFlag):
         """Replace oOldFrame with oNewFrame + update menus"""
         oNewFrame.show_all()
@@ -637,7 +737,7 @@ class MultiPaneWindow(gtk.Window):
            halved in size.
            """
         # this is a complex function (argulably too complex). Simplifying
-        # it is non trivial, but I'm leaving the R0915 + R0912 wanring for
+        # it is non trivial, but I'm leaving the R0915 + R0912 warning for
         # now
         oWidget = BasicFrame(self)
         oWidget.add_parts()
@@ -723,6 +823,9 @@ class MultiPaneWindow(gtk.Window):
         self._iNumberOpenFrames += 1
         self.oVBox.show_all()
         self.reset_menu()
+        # Reset frame focussed state
+        if self._oFocussed:
+            self.win_focus(None, None, self._oFocussed)
         return oWidget
 
     def remove_frame_by_name(self, sName):
@@ -737,6 +840,7 @@ class MultiPaneWindow(gtk.Window):
            bForceZero is used to force the removal of the last widget in
            the window.
            """
+        oNeighbour = None
         if oFrame is not None:
             if self._iNumberOpenFrames == 1:
                 if not bForceZero:
@@ -751,12 +855,18 @@ class MultiPaneWindow(gtk.Window):
                 oParent = oFrame.get_parent()
                 oKept = [x for x in oParent.get_children() if x != oFrame][0]
                 oHPane = oParent.get_parent()
+                if oKept == oParent.get_child1():
+                    # Removing bottom pane, so move focus to top
+                    oNeighbour = oKept
                 oHPane.remove(oParent)
                 oParent.remove(oFrame)
                 oParent.remove(oKept)
                 oHPane.add(oKept)
+                if not oNeighbour:
+                    # Get prev
+                    oNeighbour = self._find_prev_frame(oKept)
             elif len(self._aHPanes) == 1:
-                # Removing from the only pane, so keep the unfocussed pane
+                # Removing from the only pane, so keep the other pane
                 oThisPane = self._aHPanes[0] # Only pane
                 self._aHPanes.remove(oThisPane)
                 oKept = [x for x in oThisPane.get_children() if x != oFrame][0]
@@ -765,6 +875,7 @@ class MultiPaneWindow(gtk.Window):
                 oThisPane.remove(oKept)
                 self.oVBox.remove(oThisPane)
                 self.oVBox.pack_start(oKept)
+                oNeighbour = oKept
             else:
                 oFocussedPane = [x for x in self._aHPanes if oFrame in
                         x.get_children()][0]
@@ -777,6 +888,7 @@ class MultiPaneWindow(gtk.Window):
                 # Housekeeping
                 oFocussedPane.remove(oFrame)
                 self._aHPanes.remove(oFocussedPane)
+                oNeighbour = self._find_prev_frame(oKept)
             self.oVBox.show()
             self._iNumberOpenFrames -= 1
             # Remove from dictionary of open panes
@@ -784,7 +896,12 @@ class MultiPaneWindow(gtk.Window):
             # Any cleanup events we need?
             oFrame.cleanup()
             if oFrame == self._oFocussed:
-                self._oFocussed = None
+                if oNeighbour != oFrame:
+                    # Removing the focussed frame, so we move
+                    self.win_focus(None, None, oNeighbour)
+                else:
+                    # Can't do better than this, really
+                    self.win_focus(None, None, None)
             self.reset_menu()
 
     def set_all_panes_equal(self):
@@ -840,6 +957,4 @@ class MultiPaneWindow(gtk.Window):
         # pylint: disable-msg=E1101
         # gtk properties confuse pylint here
         self.window.set_cursor(None)
-
-
 
