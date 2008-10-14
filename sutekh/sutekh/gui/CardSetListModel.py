@@ -552,7 +552,8 @@ class CardSetCardListModel(CardListModel):
                 iChildCnt = len(aChildCards)
                 if iChildCnt > 0 or self.iShowCardMode == ALL_CARDS or \
                         self.bEditable:
-                    # FIXME: Does this check do what the user would expect?
+                    # We treat card sets like expansion, showing all of them
+                    # when editable or showing all cards.
                     dChildInfo.setdefault(sCardSetName, iChildCnt)
                     if self.iExtraLevelsMode == CARD_SETS_AND_EXPANSIONS:
                         dExpanInfo.setdefault(sCardSetName, {})
@@ -1239,7 +1240,8 @@ class CardSetCardListModel(CardListModel):
             self._update_entry(oIter, iCnt, iParCnt)
             self.set(oGrpIter, 2, self.format_parent_count(iParGrpCnt,
                 iGrpCnt))
-            if not self.check_card_iter_stays(oIter) and bCheckAddRemove:
+            if bRemove or (not self.check_card_iter_stays(oIter) and
+                    bCheckAddRemove):
                 bRemove = True
                 self._remove_sub_iters(sCardName)
                 iParCnt = self.get_int_value(oIter, 2)
@@ -1281,7 +1283,8 @@ class CardSetCardListModel(CardListModel):
                 # We can't change parent counts, so no need to
                 # consider them
                 self.set(oIter, 1, self.format_count(iCnt))
-                if not self.check_child_iter_stays(oIter, oPhysCard):
+                if bRemove or not \
+                        self.check_child_iter_stays(oIter, oPhysCard):
                     bRemove = True
             if bRemove:
                 self._remove_second_level(sCardName, sCardSetName)

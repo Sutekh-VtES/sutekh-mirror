@@ -1,3 +1,6 @@
+13 Oct 2008
+ * Add simple test case for the CardSetManagementModel
+
 09 Oct 2008
  * Set focus to a neighbouring pane when removing a pane
  * Setup tab to navigate between panes
