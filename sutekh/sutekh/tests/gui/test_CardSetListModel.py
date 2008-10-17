@@ -513,7 +513,7 @@ class CardSetListModelTests(SutekhTest):
         tTotals = (oModel.iter_n_children(None),
                 self._count_all_cards(oModel),
                 self._count_second_level(oModel))
-        self.assertEqual(tTotals, (1, 22, 22), 'Wrong results from filter')
+        self.assertEqual(tTotals, (1, 24, 24), 'Wrong results from filter')
 
     def test_empty(self):
         """Test corner cases around empty card sets"""
