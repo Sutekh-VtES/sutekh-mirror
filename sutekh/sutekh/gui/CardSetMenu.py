@@ -128,12 +128,14 @@ class CardSetMenu(CardListMenu):
     def _create_edit_menu(self):
         """Create the 'Edit' menu, and populate it."""
         oMenu = self.create_submenu(self, "_Edit")
-        oEditable = self.create_check_menu_item('Card Set is Editable', oMenu,
-                self.toggle_editable, False, '<Ctrl>e')
-        self._oController.view.set_edit_menu_item(oEditable)
+        self._oEditable = self.create_check_menu_item('Card Set is Editable',
+                oMenu, self.toggle_editable, False, '<Ctrl>e')
+        self._oController.view.set_menu(self)
         self.create_menu_item('Copy selection', oMenu, self.copy_selection,
                 '<Ctrl>c')
-        self.create_menu_item('Paste', oMenu, self._paste_selection, '<Ctrl>v')
+        self._oPaste = self.create_menu_item('Paste', oMenu,
+                self._paste_selection, '<Ctrl>v')
+        self._oPaste.set_sensitive(False)
         self.create_menu_item('Delete selection', oMenu, self._del_selection,
                 'Delete')
 
@@ -217,6 +219,12 @@ class CardSetMenu(CardListMenu):
         """Toggle the editable state of the card set."""
         if self._oController.model.bEditable != oWidget.active:
             self._oController.view.toggle_editable(oWidget.active)
+            self._oPaste.set_sensitive(oWidget.active)
+
+    def force_editable_mode(self, bValue):
+        """Toggle the editable state of the card set."""
+        self._oEditable.set_active(bValue)
+        self._oPaste.set_sensitive(bValue)
 
     def _del_selection(self, oWidget):
         """Delete the current selection"""

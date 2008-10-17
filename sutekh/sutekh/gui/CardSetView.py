@@ -122,7 +122,7 @@ class CardSetView(CardListView):
         self.connect('map-event', self.mapped)
         self.connect('key-press-event', self.key_press)
 
-        self._oMenuEditWidget = None
+        self._oMenu = None
 
         self.oCellColor = None
 
@@ -392,8 +392,8 @@ class CardSetView(CardListView):
     def _set_editable(self, bValue):
         """Update the view and menu when the editable status changes"""
         self._oModel.bEditable = bValue
-        if self._oMenuEditWidget is not None:
-            self._oMenuEditWidget.set_active(bValue)
+        if self._oMenu is not None:
+            self._oMenu.force_editable_mode(bValue)
         if bValue:
             self.set_color_edit_cue()
         else:
@@ -404,10 +404,10 @@ class CardSetView(CardListView):
         self._set_editable(bValue)
         self.reload_keep_expanded()
 
-    def set_edit_menu_item(self, oMenuWidget):
+    def set_menu(self, oMenu):
         """Keep track of the menu item, so we can update it's toggled
            status."""
-        self._oMenuEditWidget = oMenuWidget
+        self._oMenu = oMenu
 
     def set_parent_count_col_vis(self, bVisible):
         """Make the parent count column visible or invisible"""

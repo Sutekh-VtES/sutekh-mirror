@@ -239,11 +239,11 @@ class CardSetController(object):
     def add_paste_data(self, sSource, aCards):
         """Helper function for drag+drop and copy+paste.
 
-           Rules are - we can always drag from the PhysicalCard List and
-           from cardsets of the same type, but only ACS's can recieve cards
-           from the AbstractCard List
+           Only works when we're editable.
            """
         aSources = sSource.split(':')
+        if not self.model.bEditable:
+            return False
         if aSources[0] in ["Phys", PhysicalCardSet.sqlmeta.table]:
             # Add the cards, Count Matters
             for iCount, sCardName, sExpansion in aCards:
