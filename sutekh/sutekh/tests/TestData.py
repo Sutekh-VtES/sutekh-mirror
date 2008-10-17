@@ -247,8 +247,6 @@ TEST_CARD_LIST = """
 </table>
 </p>
 <p>
-
-<p>
 <a name="Amisa"><span class="cardname">Amisa</span></a>
 <span class="exp">[AH:V3, FN:PS]</span><br />
 <table border=0 cellpadding=0 cellspacing=0><tr><td width=1><span class="key">Cardtype:</span> </td><td>Vampire<br /></td></tr>
@@ -260,7 +258,6 @@ TEST_CARD_LIST = """
 <tr><td width=1><span class="key">Artist:</span> </td><td>Pete Venters<br /></td></tr>
 </table>
 </p>
-
 <p>
 <a name="Angelica_The_Canonicus"><span class="cardname">Angelica, The Canonicus</span></a>
 <span class="exp">[Sabbat:V, SW:PL]</span><br />
@@ -404,6 +401,19 @@ TEST_CARD_LIST = """
 </table>
 </p>
 
+<p>
+<a name="Kemintiri_2"><span class="cardname">Kemintiri</span></a>
+<span class="exp">[KMW:U]</span><br />
+<table border=0 cellpadding=0 cellspacing=0><tr><td width=1><span class="key">Cardtype:</span> </td><td>Vampire<br /></td></tr>
+<tr><td width=1><span class="key">Clan:</span> </td><td>Follower of Set<br /></td></tr>
+<tr><td width=1><span class="key">Level:</span> </td><td>Advanced<br /></td></tr>
+<tr><td width=1><span class="key">Group:</span> </td><td>2<br /></td></tr>
+<tr><td width=1><span class="key">Capacity:</span> </td><td>10<br /></td></tr>
+<tr><td width=1><span class="key">Discipline:</span> </td><td>aus dom OBF PRE SER THA<br /></td></tr>
+<tr><td colspan=2><b>Advanced, Independent. Red List:</b> <n>+1 stealth.<br /> <n>[MERGED] Kemintiri has 3 votes (titled). She can play <span class="clarification">&lt;minion&gt;</span> cards that require Camarilla, Ventrue, and/or a justicar title <span class="clarification">&lt;as if she met that/those requirement(s)&gt;</span>.<br />
+<tr><td width=1><span class="key">Artist:</span> </td><td>Lawrence Snelly<br /></td></tr>
+</table>
+</p>
 <p>
 <a name="card_15"><span class="cardname">Lázár Dobrescu</span></a>
 <span class="exp">[AH:V3, FN:PR]</span><br />

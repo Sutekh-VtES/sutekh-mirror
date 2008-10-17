@@ -63,8 +63,13 @@ def _find_sect_and_title(aLines):
             # anchor the regexp
             oIndTitle = re.compile('[A-Z][a-z]* has ([0-9]) vote')
             oMatch = oIndTitle.search(aLines[1])
-            if oMatch is not None:
-                if oMatch.groups()[0] == '1':
+            if oMatch is not None and not aLines[1].startswith('[MERGED]'):
+                oMergedTitle = re.compile('MERGED.*has ([0-9]) vote')
+                oMergedMatch = oMergedTitle.search(aLines[1])
+                if oMergedMatch is not None and oMergedMatch.groups()[0] == \
+                        oMatch.groups()[0]:
+                    pass
+                elif oMatch.groups()[0] == '1':
                     sTitle = 'Independent with 1 vote'
                 elif oMatch.groups()[0] == '2':
                     sTitle = 'Independent with 2 votes'

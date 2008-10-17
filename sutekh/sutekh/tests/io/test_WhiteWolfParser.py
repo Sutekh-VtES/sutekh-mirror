@@ -26,13 +26,14 @@ class WhiteWolfParserTests(SutekhTest):
         u"Abbot", u"Abd al-Rashid", u"Abdelsobek",
         u"Abebe", u"Abjure", u"Ablative Skin",
         u"Abombwe", u"Aeron", u"Aire of Elation", u"Akram", u"Alexandra",
-        u"Alfred Benezri", u"Ambrogino Giovanni", u"Anastasz di Zagreb",
-        u"Angelica, The Canonicus", u'Anna "Dictatrix11" Suljic',
-        u"Anson", u"Bronwen", u"Cedric", u"Cesewayo", u'Earl "Shaka74" Deams',
-        u"Gracis Nostinus", u'Inez "Nurse216" Villagrande',
-        u"Kabede Maru", u"L\xe1z\xe1r Dobrescu", u"Predator's Communion",
-        u"Sha-Ennu", u"Yvette, The Hopeless"
-    ]
+        u"Alfred Benezri", u"Ambrogino Giovanni", u'Amisa',
+        u"Anastasz di Zagreb", u"Angelica, The Canonicus",
+        u'Anna "Dictatrix11" Suljic', u"Anson", u"Bronwen", u"Cedric",
+        u"Cesewayo", u'Earl "Shaka74" Deams', u"Gracis Nostinus",
+        u'Inez "Nurse216" Villagrande', u"Kabede Maru",
+        u"Kemintiri (Advanced)", u"L\xe1z\xe1r Dobrescu",
+        u"Predator's Communion", u"Sha-Ennu", u"Yvette, The Hopeless",
+        ]
 
     def test_basic(self):
         """Basic WW list parser tests"""
@@ -80,6 +81,7 @@ class WhiteWolfParserTests(SutekhTest):
         oAusInf = IDisciplinePair((u"Auspex", u"inferior"))
         oAusSup = IDisciplinePair((u"Auspex", u"superior"))
         oPreSup = IDisciplinePair((u"Presence", u"superior"))
+        oObfSup = IDisciplinePair((u"Obfuscate", u"superior"))
         oAboInf = IDisciplinePair((u"Abombwe", u"inferior"))
         oAboSup = IDisciplinePair((u"Abombwe", u"superior"))
 
@@ -325,6 +327,38 @@ class WhiteWolfParserTests(SutekhTest):
         self.assertTrue(oRuling.text.startswith("Cannot be used to prevent"))
         self.assertTrue(oRuling.text.endswith("Blood Fury)."))
         self.assertEqual(oRuling.code, "[LSJ19990216]")
+
+        # Check Independent titles
+        oAmbrig = IAbstractCard(u"Ambrogino Giovanni")
+        self.failUnless(ITitle('Independent with 1 vote') in oAmbrig.title)
+        oAmisa = IAbstractCard(u"Amisa")
+        self.failUnless(ITitle('Independent with 2 votes') in oAmisa.title)
+
+        # Check Kemintiri
+        oKemintiri = IAbstractCard(u"Kemintiri (Advanced)")
+        self.assertEqual(oKemintiri.canonicalName, u"kemintiri (advanced)")
+        self.assertEqual(oKemintiri.name, u"Kemintiri (Advanced)")
+        self.failUnless(oKemintiri.text.startswith("Advanced, Independent."))
+        self.assertEqual(oKemintiri.group, 2)
+        self.assertEqual(oKemintiri.capacity, 10)
+        self.assertEqual(oKemintiri.cost, None)
+        self.assertEqual(oKemintiri.life, None)
+        self.assertEqual(oKemintiri.costtype, None)
+        self.assertEqual(oKemintiri.level, 'advanced')
+
+        self.failUnless(IClan('Follower of Set') in oKemintiri.clan)
+        self.assertEqual(len(oKemintiri.clan), 1)
+        self.assertEqual(len(oKemintiri.discipline), 6)
+        self.failUnless(oAusInf in oKemintiri.discipline)
+        self.failUnless(oObfSup in oKemintiri.discipline)
+        self.failUnless(oPreSup in oKemintiri.discipline)
+        self.assertEqual(len(oKemintiri.cardtype), 1)
+        self.failUnless(ICardType('Vampire') in oKemintiri.cardtype)
+        self.failUnless(ISect('Independent') in oKemintiri.sect)
+        # Make sure we're not picking up the Merged title
+        self.assertEqual(len(oKemintiri.title), 0)
+        self.assertTrue(IRarityPair(('KMW', 'Uncommon')) in oKemintiri.rarity)
+
 
 if __name__ == "__main__":
     unittest.main()
