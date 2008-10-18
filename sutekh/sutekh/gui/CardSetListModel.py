@@ -335,17 +335,32 @@ class CardSetCardListModel(CardListModel):
            drag and drop code.
 
            This returns cardname of None if the path is not a card in this
-           card set, such as a top-level item or card in a child card set.
+           card set
            """
         oIter = self.get_iter(oPath)
         iDepth = self.iter_depth(oIter)
-        if iDepth == 2 and self.iExtraLevelsMode == SHOW_EXPANSIONS:
+        if iDepth == 1:
+            sName = self.get_name_from_iter(oIter)
+            sExpansion = None
+        elif iDepth == 2 and (self.iExtraLevelsMode == SHOW_EXPANSIONS
+                or self.iExtraLevelsMode == EXPANSIONS_AND_CARD_SETS):
             sName = self.get_name_from_iter(self.get_iter(
                 norm_path(oPath)[0:2]))
             sExpansion = self.get_value(oIter, 0)
-        elif iDepth == 1:
-            sName = self.get_name_from_iter(oIter)
+        elif iDepth == 2 and (self.iExtraLevelsMode == SHOW_CARD_SETS or
+                self.iExtraLevelsMode == CARD_SETS_AND_EXPANSIONS):
+            sName = self.get_name_from_iter(self.get_iter(
+                norm_path(oPath)[0:2]))
             sExpansion = None
+        elif iDepth == 3 and self.iExtraLevelsMode == EXPANSIONS_AND_CARD_SETS:
+            sName = self.get_name_from_iter(self.get_iter(
+                norm_path(oPath)[0:2]))
+            sExpansion = self.get_name_from_iter(
+                    self.get_iter(norm_path(oPath)[0:3]))
+        elif iDepth == 3 and self.iExtraLevelsMode == CARD_SETS_AND_EXPANSIONS:
+            sName = self.get_name_from_iter(self.get_iter(
+                norm_path(oPath)[0:2]))
+            sExpansion = self.get_value(oIter, 0)
         else:
             sName = None
             sExpansion = None
