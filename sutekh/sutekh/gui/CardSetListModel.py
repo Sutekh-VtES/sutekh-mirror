@@ -255,7 +255,6 @@ class CardSetCardListModel(CardListModel):
         oIter = self.insert_before(oParIter, None, (sName,
             self.format_count(iCnt), self.format_parent_count(iParCnt, iCnt),
             bIncCard, bDecCard))
-        # get_card_name_from_path works regardless of level
         iDepth = self.iter_depth(oIter)
         if iDepth == 2:
             sCardName = self.get_name_from_iter(oParIter)
@@ -374,10 +373,13 @@ class CardSetCardListModel(CardListModel):
            """
         oIter = self.get_iter(oPath)
         iDepth = self.iter_depth(oIter)
-        if iDepth != 1:
+        if iDepth == 0 or iDepth == 3 or (iDepth == 2 and
+                self.iExtraLevelsMode in [SHOW_EXPANSIONS,
+                    EXPANSIONS_AND_CARD_SETS]):
             return {} # Not at the right level
         dResult = {}
-        if self.iExtraLevelsMode == SHOW_EXPANSIONS:
+        if self.iExtraLevelsMode == SHOW_EXPANSIONS or \
+            self.iExtraLevelsMode == EXPANSIONS_AND_CARD_SETS:
             # Can read off the data from the model, so do so
             oChildIter = self.iter_children(oIter)
             while oChildIter:
@@ -386,7 +388,7 @@ class CardSetCardListModel(CardListModel):
                         self.get_drag_info_from_path(oChildPath)
                 dResult[sExpansion] = iCount
                 oChildIter = self.iter_next(oChildIter)
-        else:
+        elif iDepth == 1:
             # Need to get expansion info from the database
             sCardName = self.get_name_from_iter(self.get_iter(oPath))
             oFilter = SpecificCardFilter(sCardName)
@@ -394,6 +396,29 @@ class CardSetCardListModel(CardListModel):
             # pylint: disable-msg=E1101
             # Pyprotocols confuses pylint
             for oCard in oCardIter:
+                oPhysCard = IPhysicalCard(oCard)
+                sExpName = self.get_expansion_name(oPhysCard.expansion)
+                dResult.setdefault(sExpName, 0)
+                dResult[sExpName] += 1
+        elif self.iExtraLevelsMode == CARD_SETS_AND_EXPANSIONS:
+            # can read info from the model
+            oChildIter = self.iter_children(oIter)
+            while oChildIter:
+                oChildPath = self.get_path(oChildIter)
+                sCardName, sExpansion, iCount, iDepth = \
+                        self.get_drag_info_from_path(oChildPath)
+                dResult[sExpansion] = iCount
+                oChildIter = self.iter_next(oChildIter)
+        else:
+            # Need to get the cards in the specified card set
+            sCardName = self.get_name_from_iter(self.get_iter(
+                norm_path(oPath)[0:2]))
+            oFilter = SpecificCardFilter(sCardName)
+            sCardSetName = self.get_name_from_iter(self.get_iter(oPath))
+            oCardIter = self.get_card_iterator(oFilter)
+            oCSFilter = FilterAndBox([self._dCache['child filters'][
+                sCardSetName], oFilter])
+            for oCard in oCSFilter.select(self.cardclass).distinct():
                 oPhysCard = IPhysicalCard(oCard)
                 sExpName = self.get_expansion_name(oPhysCard.expansion)
                 dResult.setdefault(sExpName, 0)

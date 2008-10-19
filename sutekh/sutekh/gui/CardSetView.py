@@ -153,6 +153,21 @@ class CardSetView(CardListView):
                 for sExpName, iCnt in \
                         oModel.get_drag_child_info(oPath).iteritems():
                     dSelectedData[sCardName][sExpName] = iCnt
+            elif not sExpansion:
+                # If the expansion is none, see if there are interesting
+                # children
+                # This may well not to the right thing with complex
+                # selections, but it avoids issues when the same card is
+                # selected multiple times because it's in different groupings
+                dChildInfo = oModel.get_drag_child_info(oPath)
+                if dChildInfo:
+                    for sExpName, iCnt in dChildInfo.iteritems():
+                        dSelectedData[sCardName][sExpName] = iCnt
+                else:
+                    if sExpansion in dSelectedData[sCardName]:
+                        # We already have this info
+                        continue
+                    dSelectedData[sCardName][sExpansion] = iCount
             else:
                 if sExpansion in dSelectedData[sCardName]:
                     # We already have this info
