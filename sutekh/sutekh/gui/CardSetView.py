@@ -205,17 +205,18 @@ class CardSetView(CardListView):
             oContext.finish(False, False, oTime)
         else:
             sSource, aCardInfo = self.split_selection_data(oData.data)
+            bSkip = False
             if sSource == "Sutekh Pane:" or sSource == "Card Set:":
                 self._oController.frame.drag_drop_handler(oWidget, oContext,
                         iXPos, iYPos, oData, oInfo, oTime)
             elif not self._oModel.bEditable:
                 # Don't accept cards when not editable
-                oContext.finish(False, False, oTime)
+                bSkip = True
             elif sSource == self.sDragPrefix:
                 # Can't drag to oneself
-                oContext.finish(False, False, oTime)
-            # pass off to helper function
-            if self._oController.add_paste_data(sSource, aCardInfo):
+                bSkip = True
+            if not bSkip and self._oController.add_paste_data(sSource,
+                    aCardInfo):
                 oContext.finish(True, False, oTime) # paste successful
             else:
                 oContext.finish(False, False, oTime) # not successful
