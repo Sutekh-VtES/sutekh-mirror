@@ -1,0 +1,79 @@
+h1. Manual for Sutekh 0.6
+
+!sutekh-icon.png (Sutekh Icon)!
+
+h2. Contents
+
+# "Introduction":#intro
+# "Important Concepts":#concepts
+# "Main Window":#main
+## "File":#main_file
+## "Pane Actions":#main_pane_actions
+## "Plugins":#main_plugins
+# "White Wolf Card List":#ww
+## "Actions":#ww_actions
+## "Filter":#ww_filter
+## "Plugins":#ww_plugins
+# "Card Text":#card_text
+# "Card Image":#card_image
+# "Card Set List":#card_set_list
+## "Actions":#card_set_list_actions
+## "Filter":#card_set_list_filter
+# "Card Sets":#cardsets
+## "Actions":#cardsets_actions
+## "Edit":#cardsets_edit
+## "Filter":#cardsets_filter
+## "Plugins":#cardsets_plugins
+# "Filters":#filters
+
+h2(#intro). Introduction
+
+If you are new to Sutekh, try reading "The Sutekh Tutorial":Tutorial.html.
+
+
+h2(#concepts). Important Concepts
+
+
+h2(#main). Main Window
+
+h3(#main_file). File
+
+h3(#main_pane_actions). Pane Actions
+
+h3(#main_plugins). Plugins
+
+
+h2(#ww). White Wolf Card List
+
+h3(#ww_actions). Actions
+
+h3(#ww_filter). Filter
+
+h3(#ww_plugins). Plugins
+
+
+h2(#card_text). Card Text
+
+
+h2(#card_image). Card Image
+
+
+h2(#card_set_list). Card Set List
+
+h3(#card_set_list_actions). Actions
+
+h3(#card_set_list_filter). Filter
+
+
+h2(#cardsets). Card Sets
+
+h3(#cardsets_actions). Actions
+
+h3(#cardsets_edit). Edit
+
+h3(#cardsets_filter). Filter
+
+h3(#cardsets_plugins). Plugins
+
+
+h2(#filters). Filters

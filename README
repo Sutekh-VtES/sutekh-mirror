@@ -1,0 +1,289 @@
+=== Requirements ===
+
+The Python modules required are:
+
+* SQLObject [ http://cheeseshop.python.org/pypi/SQLObject, version 0.7.1b1 ]
+* PyProtocols [ http://cheeseshop.python.org/pypi/PyProtocols ]
+* PLY (for parsing the query language) [ http://www.dabeaz.com/ply/ ]
+* sqlite (or the module for whatever database one plans to use)
+* PyGtk (for the GUI) [ http://cheeseshop.python.org/pypi/PyGTK ]  
+* Python-xml for the xml writing support
+
+One will also need to download the official cardlist at:
+
+* http://www.white-wolf.com/vtes/index.php?line=cardlist
+
+to a local file.  Sutekh can also parse the official rulings
+file from:
+
+* http://www.white-wolf.com/vtes/index.php?line=rulings
+
+so that might be useful too.
+
+=== Getting Started ===
+
+To get started, run:
+
+python sutekh/SutekhCli.py --help
+python sutekh/SutekhCli.py -c -r vtes_card_file.html
+python sutekh/SutekhCli.py --ruling-file vtes_ruling_file.html (optional)
+
+The card list can be manipulated and examined via the gui
+
+* python sutekh/SutekhGui.py
+
+The gui also allows the creation of AbstractCardSets and PhysicalCardSets, and
+these can be manipulated in various ways. 
+
+You can save and load list of physical cards using:
+
+python sutekh/SutekhCli.py --refresh-physical-card-tables
+python sutekh/SutekhCli.py --save-physical-cards-to mycards.xml
+python sutekh/SutekhCli.py --read-physical-cards-from mycards.xml
+
+Short options for save and read are -s (save) and -l (load).  In practice -l
+will usually be used in conjunction with a refresh:
+
+python sutekh/SutekhCli.py --refresh-physical-card-tables -l mycards.xml
+
+Lkewise, it's also possible to export and read in AbstractCardSets and 
+PhysicalCardSets.
+
+python sutekh/SutekhCli.py --save-acs "Toreador Deck" --acs-filename=deck.xml 
+saves the AbstractCardSet called "Toreador Deck" to the file "deck.xml",
+while
+python sutekh/SutekhCli.py --read-pcs="vampires.xml" 
+loads the PhysicalCardSet saved as vampires.xml
+
+A --reload option exists for when re-importing the official cardlists and
+rulings.  This dumps and then reloads the card list and all the card sets.
+
+Typically used as:
+python sutekh/SutekhCli.py -c --reload -r vtes_card_file.html \
+      --ruling-file vtes_ruling_file.html  
+
+=== Windows Quickstart ===
+
+Download:
+ * Python
+   - http://www.python.org/ftp/python/2.5.1/python-2.5.1.msi
+ * Setuptools
+   - http://pypi.python.org/packages/2.5/s/setuptools/setuptools-0.6c6.win32-py2.5.exe
+ * PyGTK
+   - http://gladewin32.sourceforge.net/modules/wfdownloads/visit.php?cid=14&lid=110
+   - http://ftp.gnome.org/pub/GNOME/binaries/win32/pygobject/2.12/pygobject-2.12.3-1.win32-py2.5.exe
+   - http://ftp.gnome.org/pub/GNOME/binaries/win32/pycairo/1.2/pycairo-1.2.6-1.win32-py2.5.exe
+   - http://ftp.gnome.org/pub/GNOME/binaries/win32/pygtk/2.10/pygtk-2.10.4-1.win32-py2.5.exe
+ * PyProtocols
+   - http://files.turbogears.org/eggs/PyProtocols-1.0a0-py2.5-win32.egg
+ * Sutekh
+
+And install Python, then Setuptools, then PyGTK.
+
+Run easy_install PyProtocols-1.0a0-py2.5-win32.egg (easy_install is in <python install dir>/Scripts).
+Run easy_install <Sutekh Egg File>.
+
+Run <python install dir>/Scripts/SutekhGui.py.
+
+=== Using Sutekh from the Python Interpreter ===
+
+I think the most useful part of Sutekh at the moment is the ability
+to play around with the database from inside the Python interpreter:
+
+python
+>>> from sutekh import * 
+>>> start() 
+
+An example:
+
+Print all Malkavian cards:
+>>> for oC in Clan.byName('Malkavian').cards:
+...           print oC.name
+
+>>> oTony = AbstractCard.byName('Tony')
+>>> print oTony
+>>> for oP in oTony.discipline:
+...     print oP.level, oP.discipline
+>>> print oTony.cardtype
+>>> print oTony.capacity
+>>> print oTony.clan
+>>> print oTony.group
+>>> print oTony.text
+>>> oMariel = list(AbstractCard.select(AbstractCard.q.name.startswith('Mariel')))[0]
+
+Filtering:
+
+>>> aC = AbstractCard.select(CardTextFilter('Laibon').getExpression())
+>>> for oC in aC:
+...     print oC.name, oC.cardtype
+
+>>> oF1 = DisciplineFilter('Dementation')
+>>> oF2 = CardTextFilter('bleed')
+>>> oF3 = CardTypeFilter('Action')
+>>> oF4 = CardTypeFilter('Action Modifier')
+>>> oF5 = FilterOrBox([oF3,oF4])
+>>> oF = FilterAndBox([oF1,oF2,oF5])
+>>> for oC in AbstractCard.select(oF.getExpression()):
+...     print "---", oC.name, "---"
+...     print oC.text
+
+=== Database Notes ===
+
+==== Using other database backends ====
+
+Sutekh has been developed mainly with sqlite, but, since it uses SQLObject for
+to manage the databases, it is possible to try other database backends by 
+specifying a suitable URI. For both SutekhCli and SutekhGui, the -d
+parameter specifies the database to use.
+
+This can also be set for the gui using the "database url" parameter in the
+config file.
+
+So to use a postgresql database with SutekhGui, specify:
+
+SutekhGui.py -d postres://username@host/database
+
+Postgres works fine out of the box. With SQLObject 0.7.1 and earlier, mysql 
+doesn't work.
+
+Recent svn snapshots of SQLObject work with MySQL 5, and these fixes should
+make it into SQLObject 0.8.0. The url syntax for mysql is somewhat complex, due
+to the encoding issues involved. We have had good results using utf8 as the 
+encoding, specified as:
+
+mysql://username@host/database?sqlobject_encoding=utf8&charset=utf8
+
+In our experience, utf8 is the most robust and portable choice.
+
+When using sqlobject 0.10, the sqlobjct_encoding parameter is no longer needed,
+and the URI can be simplified to:
+
+mysql://username@host/database?charset=utf8
+
+MySQL 4 or earlier will definately NOT work. This is unlikely to ever change.
+
+Other databases are untested.
+
+To dump data between databases, you can use the zip file support. Something
+like (assuming that the new database has already had the cardlist & rulings 
+imported):
+
+SutekhCli.py -d <old_database_uri> --dump-zip=zipfile.zip
+
+SutekhCli.py -d <new_database_uti> --restore-zip=zipfile.zip
+
+=== Clustering Plugin ===
+
+Sutekh has the ability to data mine card sets for related groups of
+cards using the Cluster 3.0 [1] data clustering package. You'll need to download
+a version of Cluster 3.0 (the command-line only version has the least
+dependencies if you're looking to get up and running quickly on a Unix platform).
+Once you've created a bunch of clusters of related cards, the clustering
+plugin gives you the option of creating decks from whichever clusters look
+promising.
+
+You'll also need to obtain Pycluster (from the same page) which contains the
+Python bindings for Cluster 3.0. Alternatively you can the Bio.Cluster version
+of Pycluster.
+
+You may also like to obtain a program for viewing the clustering output
+although Sutekh doesn't currently support writing out the clusters. One
+such viewer is TreeView (unfortunately Java-based) [2].
+
+If you don't have any of these clustering packages, Sutekh will simply not
+load the clustering plugin and run fine without it.
+
+[1] http://bonsai.ims.u-tokyo.ac.jp/~mdehoon/software/cluster/software.htm
+[2] http://jtreeview.sourceforge.net/
+
+If you're wanting to modify the clustering plugin, you can find some usage
+examples at:
+
+[3] http://www.dalkescientific.com/writings/NBN/clustering.html
+[4] http://b-src.cbrc.jp/markup/Pycluster-1.29/python/test/test_Cluster.py
+
+=== Philosophy ===
+
+Conceptually Sutekh is organised around two datatypes, AbstractCard
+and PhysicalCard. AbstractCard models a conceptual card (e.g. ".44 Magnum")
+while PhysicalCard stores information about an actual rectangular piece of
+cardboard (e.g. My third copy of a .44 Magnum from the VTES expansion).
+
+=== Other Notes ===
+
+==== Sutekh and gtk themes ====
+
+It is possible to customise the look and feel of Sutekh quite extensively
+via gtk's theming mechanism. Sutekh uses "Sutekh" as the application name
+for such purposes. All the dialogs use Sutekh.dialog.
+
+Of specific note, the pane title's are named 'frame_title' when not selected 
+and 'selected_title' when the pane is selected. This allows customising
+the look of panes when selected easily. For instance, by putting:
+
+style "title_selected" {
+   fg[NORMAL] = "red"
+}
+
+widget "Sutekh.*.selected_title" style "title_selected"
+
+in your gtkrc file, the selected panes will use red text to mark selected panes.
+
+The other specially named widgets are the card list widgets.
+
+The various frames are named respectively:
+
+"abstract card list", "physical card list", "physical card set card list",
+"abstract card set card list", "card text", "abstract card sets list",
+"physical card sets list"
+
+The TreeView widgets used by the card lists (AbstractCard, PhysicalCard and card
+sets) are named "normal_view", but, in editable mode, they are named
+"editable_view".
+
+User Documentation
+==================
+
+The user documentation is available under the sutekh/docs directory. The
+Documentation is maintained as text files written using textile [1] Markup in
+the sutekh/docs/textile directory, and using on pytextile [2] and the included
+textile2html.py script to convert it to HTML for display in the gui. 
+
+[1] http://textile.thresholdstate.com/
+
+[2] http://pypi.python.org/pypi/textile
+
+Testing Sutekh
+==============
+
+Sutekh has a test suite - see the tests directory.
+
+We recommend using nose [1] to run the tests, but they can be run without
+using nose. 
+
+By default, the tests will use an sqlite memory database, as being the
+simplest, but, as it's often desireable to test against other databases,
+the SUTEKH_TEST_DB enivronment variable can be used to provide an URI
+to use instead. For example, to test against a postgres db:
+
+$ export SUTEKH_TEST_DB="postres://username@host/test_database"
+$ nosetests <test to run>
+
+Note that the test suite creates and drops the tables several times, so it can
+be quite slow. Also, DO NOT run the tests against your personal card database,
+as you will lose data. Use a dedicated test database for this.
+
+[1] http://somethingaboutorange.com/mrl/projects/nose/
+
+Importing/Exporting to/from other VTES card management programs
+===============================================================
+
+Sutekh can read the inventory and deck files produced by both the "Anrach
+Revolt Deck Builder" (http://code.google.com/ardb) and the "Fragment of the
+Elder Library Deck Builder" (http://member.rpg.hu/bala/feldb.html). Files will
+be imported as card sets into sutekh. Because of differences between the
+programs, some concepts won't be transferred.
+
+Sutekh can also export card sets to these formats, but this will probably
+not work for all versions of ARDB or FELDB. 
+

@@ -1,0 +1,39 @@
+# PhysicalCardView.py
+# -*- coding: utf8 -*-
+# vim:fileencoding=utf8 ai ts=4 sts=4 et sw=4
+# Copyright 2005, 2006, 2007 Simon Cross <hodgestar@gmail.com>
+# Copyright 2006, 2007 Neil Muller <drnlmuller+sutekh@gmail.com>
+# GPL - see COPYING for details
+
+"""Provide a TreeView for the physical card collection"""
+
+import gtk, pango
+from sutekh.gui.CardListView import CardListView
+from sutekh.gui.CardListModel import CardListModel
+
+class PhysicalCardView(CardListView):
+    # pylint: disable-msg=R0904
+    # gtk class, so many public methods
+    """The card list view for the physical card collection.
+
+       Special cases Editable card list with those properties
+       needed for the card collection - the drag prefix, the
+       card_drop handling and handling of pasted data.
+       """
+    sDragPrefix = 'Phys:'
+
+    def __init__(self, oController, oWindow, oConfig):
+        oModel = CardListModel()
+        super(PhysicalCardView, self).__init__(oController, oWindow,
+                oModel, oConfig)
+
+        # Setup columns for default view
+        self.oNameCell = gtk.CellRendererText()
+        self.oNameCell.set_property('style', pango.STYLE_ITALIC)
+
+        oColumn = gtk.TreeViewColumn("Cards", self.oNameCell, text=0)
+        oColumn.set_expand(True)
+        oColumn.set_sort_column_id(0)
+        self.append_column(oColumn)
+
+        self.set_expander_column(oColumn)

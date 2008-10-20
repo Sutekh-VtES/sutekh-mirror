@@ -1,0 +1,932 @@
+20 Oct 2008
+ * Branched off 0.6.x release branch, trunk now 0.7.
+
+13 Oct 2008
+ * Add simple test case for the CardSetManagementModel
+
+09 Oct 2008
+ * Set focus to a neighbouring pane when removing a pane
+ * Setup tab to navigate between panes
+
+06 Oct 2008
+ * Replace the use of ord with gtk.gdk.keyval_from_name, which appears to be
+   the correct thing to do.
+ * Hook up numpad keys to the editing keybaord shortcuts
+
+05 Oct 2008
+ * Correct menus to match saved state
+
+04 Oct 2008
+ * Save open card set pane state (Cards shown, extra levels, etc.) on exit
+ * Partially restore state on load (menu needs to be fixed)
+ * Improve intial setup - offer to download icons & images
+ * Add CellRendererIcons to display icons and text in the TreeView.
+ * Support CellRendererIcons in ExtraCardColumns plugin
+
+23 Sep 2008
+ * Add Parent card set filter for card set list
+ * Tweak filter help and tutorial text
+
+22 Sep 2008
+ * Add key-board editing shortcuts - '-' & '+' to inc/dec numbers and 1-9
+   for quickly setting the number
+ * Rework card set menus a bit - move export plugins to own submenu
+
+18 Sep 2008
+ * Add importer for ARDB xml inventory files
+ * Add CSV Export plugin
+ * Fix DeckFromFilter plugin
+
+17 Sep 2008
+ * Add importer for ELDB inventory files
+ * Add importer for ARDB xml deck files
+
+16 Sep 2008
+ * Add importer for ELDB (*.eld) decks
+
+05 Sep 2008
+ * Add shortcuts for Specifying the Filter (Ctrl-S), Toggling the filter
+   (Ctrl-T), and closing a frame (Ctrl-W, as for galeon/epiphancy tabs)
+ * Tweak menu heirachy to unify some code
+ * Cleanup TODO list a bit
+
+04 Sep 2008
+ * Move card set loop breaking into CardSetUtilities and out of gui code
+
+03 Sep 2008
+ * Add special case to handle the Blood Brothers clan icon
+ * Add simple test for ARDB inventory export
+
+01 Sep 2008
+ * Add simple test cases for ELDB HTML Parser + ARDB deck XML export
+ * Add expand all + collapse all options to card set list
+ * Fix crash caused by keeping a reference to the HTML Dialog after it had
+   been destroyed.
+
+31 Aug 2008
+ * Add plugin for exporting decks to FELDB
+ * Add encoding header to the exported HTML file
+ * Split HTML Plugin into io +gui segments. Add test for the HTML output
+ * Add test cases for the CardSetUtilities functions
+
+30 Aug 2008
+ * Use our own search dialog to avoid an interactive search bug on Windows
+ * Upgade windows installer to use python 2.5.2 to avoid a bug in 
+   codecs.EncodedFile
+ * Fixes to setup.py + the windows installers
+
+28 Aug 2008
+ * Hook up ARDB XML Inventory export in the GUI
+
+27 Aug 2008
+ * Use set_fixed_height_mode to avoid odd gtk TreeView jumping when updating
+   the rows
+ * Rework CachedRelatedJoin + DatabaseVersion to reduce the number of queries
+   at startup (improves speed for sqlite)
+ * Expose IconManager to plugins
+ * Add 'P' to Abbrevations so the Precon shortname is 'P' and not 'PB"
+
+26 Aug 2008
+ * Add some optimisations to the TreeView's, based on the gtk docs
+ * Add timeout, so + & - buttons pop back
+ * Remove references to Physical Card Set in filter descriptions + help
+
+25 Aug 2008
+ * Extend ARDBTextParser to support variant format used for the Anarch's 
+   Preconstructed Decks
+
+23 Aug 2008
+ * Add support for Multi-Type grouping, which groups card belonging to 
+   multiple types seperately
+ * Add first stab add exporting to ARDB's inventory XML format
+ * Honour current grouping when printing the card set
+
+21 Aug 2008
+ * Add <set> attribute to ARDB XML file. Allows decks to be properly imported
+   into recent ARDB versions
+
+19 Aug 2008
+ * Reorganise code a bit
+   - Move DBSignals to core
+   - Split some code off SutekhUtility into core.CardSetUtilities
+ * Fill in filtering tests for CardSetListModel
+ * First stab at export to FELDB
+
+18 Aug 2008
+ * Fold card set annotations into the edit card set properties option
+ * Add edit card set properties to the card set list view
+ * Prevent card images plugin resizing images when pane is not shown
+
+16 Aug 2008
+ * Various improvements to the HTML view widget
+   - Fix numbering fo nested lists
+   - Support the <strong> attribute
+   - Use gtk's word wrap mode for paragraphs
+   - Replace the use of resource_stream in HTMLTextView with a generic loader
+     function
+ * Convert existing HTML documentation to textile format
+ * Add textile2html.py script for creating the HTML documentation
+
+08 August 2008
+ * Fix set expansion plugin to work with changed database signals
+
+06 August 2008
+ * Consolidate the handling of AddedSignal + RemovedSignal. Simplifies code
+   somewhat
+ * Rework test case for CardSetListModel to use the database signals
+
+05 August 2008
+ * Change database signals so we always call alter_carD_count after the
+   database has been updated.
+
+01 August 2008
+ * Minor cleanups
+
+31 July 2008
+ * Work on restructuring CardSetListModel
+
+27 July 2008
+ * Improve speed of the 'show card sets' mode in the GUI
+
+26 July 2008
+ * Address some speed issues with the CardSetListModel
+ * Rework code of CardSetListModel a bit
+ * Remove several redundant checks from the CardSetListModel test case
+
+22 July 2008
+ * Add support for specifying which database to test against using the
+   SUTEKH_TEST_DB environment variable
+ * Fix some join ordering issues with postgres and mysql
+
+21 July 2008
+ * Rework card set independence plugin to check independance in the parent
+   card set
+
+17 July 2008
+ * Expose the card set count filter in the GUI
+
+14 July 2008
+ * Add script for making windows builds
+ * Modify NSIS script to make locations more configurable
+
+07 - 13 Jul 2008
+ * Implement the missing editing modes
+ * ensure test_CardSetListModel.py covers all cases of interest
+
+06 July 2008
+ * Extend test data and WW parser tests
+
+05 July 2008
+ * Expand ZipFile tests
+ * More work on editing the CardSet's
+
+01 July 2008
+ * Add test data for Reflex and Flight
+ * Add some tests for zip file handling
+
+28 June 2008
+ * Fill in CardListModel tests
+ * Move PhysicalCardSet IO tests to io/ directory
+ * Move other PhysicalCardSet tests to core/
+
+24 June 2008
+ * Expand on the stubs for testing the CardListModel and CardSetListModel
+
+23 June 2008
+ * Replace exisitng physical card count filter with a card set card count
+   filter, as, with the changed database, the physical card count filter is
+   no longer useful.
+
+20 June 2008
+ * Add stubs for testing CardListModel and CardSetListModel
+
+18 June 2008
+ * Add a CardSetModelRow object for holding data about the contents of a model
+   row. Replaces the current dict of dict's.
+ * Show all child card sets when a card set is editable
+ * Also show everything in the 'expansion + card sets' and 'card sets + expansions'
+   modes
+ * Refactor cache management in the CardSetListModel
+
+17 June 2008
+ * Move card list model updates to the database signal handlers, to ensure
+   correct behaviour.
+
+16 June 2008
+ * Add SpecificPhysCardIdFilter + tests on the Specific card filters
+
+15 June 2008
+ * pylint cleanups
+ * Make dragging from the Physical Card list when only 1 expansion is shown
+   (via an Expansion filter) work as expected.
+
+14 June 2008
+ * Plugin cleanups Re-enable Clan Discipline Stats plugin.
+ * Add more tests to test_Filters
+ * Extend test data to include titles + imbued
+ * Fix bug in analyze deck's HF analysis. Add percentages to HF, for deck
+   construction
+ * Fix dicsipline sorting in Analyze plugin
+
+13 June 2008
+ * Add support for Blood Shadowed Court. Since this is not in the published
+   data, clone the information from Cam Ed.
+ * Ensure that importing a card set from file doesn't break parent-child
+   relationships unless loops are introduced
+ * Add cache invalidation support to CachedRelatedJoin, so BSC fiddling works
+   as expected
+
+12 June 2008
+ * Unify card set deletion code. Ensure that children of a deleted card set
+   are reparented before the card set is removed.
+ * Don't repeatedly determine the editable colour hint
+ * Rework drag-n-drop code to work better with the new card display modes
+
+11 June 2008
+ * Fix some issues with restoring from backup changing the card set ids
+ * Remove card sets that were not in a restored backup
+ * Add queued_reload methods so that changing the card set relationships can
+   trigger reloads across all affected views
+
+10 June 2008
+ * Start reworking the signal handling
+
+09 June 2008
+ * Add Banned tab to Analyze Deck Plugin
+ * Fix bug with GuiCardLookup treating valid card + expansions combinations
+   as invalid if any combination listed for the card is invalid
+
+08 June 2008
+ * Fix bugs breaking importing from ELDB html files
+ * Partially fix drag-n-drop between card sets - will break when in modes
+   other than "show expansions"
+ * Fix bug when removing cards from a card set via the gui
+ * Fix cancel buttons in backup dialog
+ * Don't try and preserve card set ids across WW imports + database upgrades,
+   as this breaks postgresql's sequence numbering
+
+07 June 2008
+ * Add plugin to allow setting all selected cards to a single expansion
+ * Ensure we re-create parents before children when updating WW card lists
+   or upgrading the database.
+
+05 June 2008
+ * Add support for Twilight Rebellion. Handle 'Any' group via same mechanism
+   as 'cost=X' cases.
+
+04 June 2008
+ * Extend the parent card count to cover more options
+ * Change cardlistmodel to use str's for card count - allows setting markup
+   in the model
+
+03 June 2008
+ * Add support for multiple 'zero count' options
+ * Add parent card counts to the appropriate column
+
+02 June 2008
+ * Re-organise tests to match sutekh's main layout
+ * Add the various 'show cards in child card sets' options to the card set 
+   list view
+ 
+01 June 2008
+ * Fix some issues with database upgrade database copying
+ * Add a test case for the database copy
+ * Fix cache handling bug in the card set holder
+
+29 May 2008
+ * Fold EditableCardListView into CardSetListView
+
+28 May 2008
+ * Add support for passing warnings from CardSetHolder back to the user
+
+22 May 2008
+ * Remove obselete support for abstract card sets and the physical card list
+   from the CSV importer
+ * Allow drag-n-drop reparenting of card sets
+
+19 May 2008
+ * Re-enable editing
+ * Add a filter for filtering on Abstract Card ID
+ * Refactor card set manager gui code to a more MVC-style framework
+ * Add loop detection + loop breaking to the card set management pane
+
+16 May 2008
+ * Remove obselete PhysicalCardSetController. Fold everything into
+   CardSetController
+
+15 May 2008
+ * Re-enable expansions on the card set view
+ * Move edit handling from EditableListMenu to CardSetMenu
+ * Move del + paste code out of CardListModel to CardSetListModel
+
+14 May 2008
+ * Move code handling editing from CardListModel to CardSetListModel
+ * Ensure we truncate when creating '(ACS) + old name' card sets on upgrade.
+ * Drop no longer relevant tables, so they don't cause later problems
+ * Mark open card sets with blue text
+
+13 May 2008
+ * Fix bug with detecting the priscus title
+
+09 May 2008
+ * Simplify pane drag-n-drop code
+ * Fix bug with changing to text entry filters
+
+07 May 2008
+ * Remove AbstractCardView.
+ * Numerous fixes and tweaks to GuiCardLookup.
+ * Move 'show zero count card' menu option from PCL to Card Set views.
+
+01 May 2008
+ * Combine CreateCardSetDailog + PropDialog
+ * Add parent property to CreateCardSetDialog
+ * Move drag-n-drop code to CardSetManagementView, for consistency
+ * Change SutekhFileWidget to use 'show', rather than mapped
+
+30 April 2008
+ * Fix PhysicalCardSet filter to join on the card id, not the card set id.
+ * PhysicalCard list is no longer editable, and doesn't show numbers any more
+ * Re-enable the ExtraColumns plugin on the PCL
+ * Fix zip file handling so backups of the new database structure can be
+   restored
+ * Rework IdentifyXMLFile, so old + new backups can work properly
+ * Add parent support to PhysicalCardSetWriter + Parser
+ * Rename 'Physical Card Set List' to 'Card Set List'
+ * Make DatabaseUpgrade work on version 0.4 databases again
+
+29 April 2008
+ * Database redesign day
+   Move from PhysicalCard List as he card collection to card collection is
+   a physical card set with subsets model.
+   - Removed AbstractCardSet's entirely
+   - Added parent field on Physical Card Sets
+   - Create 1 PhysicalCard for each valid AbstractCard + Expansion combination
+     (Includes Expansion=None for all cards)
+ * Database upgrade extended
+ * Various obselete files remove (AbstractCardSetWriter, PhysicalCardWriter)
+ * Reworked file IO to handle new database schema
+ * Tests reworked to new database schema
+ * Change the card set list to a treeview, which can show parent->child
+   relationships
+ * clean out ACS and PCL code from the zip file handler
+ * Clean ou ACS references in the plugins
+ * Change PhysicalCardSet Models to use the mapping table, so distinct() on
+   the select works properly, since the PhysicalCard id's are no longer unique.
+   Same reasoning as previous such hack on AbstractCardSets.
+ * Created sutekh-last-of-the-abstract-card-sets-april-2008 tag for tree state
+   before database rework
+
+
+27 April 2008
+ * Fix counting bug in Analyze Card Set
+ * Add filter for zip files to the backup restore dialog
+
+25 April 2008
+ * Add support for showing icons in the Card Text Window
+ * Various code cleanups
+ * Fix bug in PhysicalCardSet from AbstractCardSet when adding cards to the
+   PhysicalCard List
+
+24 April 2008
+ * Fix WW import losing the clan shortname
+ * Refactor menu classes - simplifies accelerator addition and eliminates
+   repeated code
+ * Add keep_above hint to the load dialog
+ * Fix bug in display icons for empty physical card lists
+ * Cleanup drag-n-drop code a bit
+ * Rework FilterDialog. There is now only 1 FilterEditor in the dialog, and
+   and filters are now explicitly load/saved & deleted from the config file.
+
+23 April 2008
+ * Address some issues with the editable hint. Check the style more carefully,
+   so right thing happens with complex styles like the windows default. Enforce
+   Change on the CellRenderText for the numbers. 
+ * Improvements to the windows installer - use latest pygtk + gtk versions.
+ * Add Sutekh icon to the windows installer and the created shortcut
+ * MultiPaneWindow.__init__ split into __init__ and setup, so main window can
+   be passed into the WwDialog for creating the initial database.
+
+22 April 2008
+ * Move importers to the main window
+ * Normalise unicode card names when searching - avoids having to type
+   unicode characters when searching. When using a non-ascii search string,
+   we don't normalise.
+ * Extend HTMLTextView to support <a href="#key> syntax and <em>
+
+21 April 2008
+ * Tweaked editable style hint
+ * Changed WW cardlist fetching to use the smaller split lists 
+   (the cardlist_[A-Z,_] files)
+ * Always import flight as FLI
+ * Don't show non-existant combinations in the discipline with level filter
+ * Show a suitable mesage rather than nothing when the card list view is
+   empty - distinguish between empty and no cards found from a filter.
+ * Reformat the card text view
+
+20 April 2008
+ * CSV Import plugin added
+
+17 April 2008
+ * Move some common code to PaneMenu
+ * Unfiy ExportDialog + ImportDialog into SutekhFileWidget
+ * Add support for enabling & disabling menu mnemonics per pane
+ * Preserve editable status when resoring and importing new WW cardlists
+ * Redo GUI CardLookup plagin to use a treeview.
+ * Suggest a default filename when exporting a card set
+
+16 April 2008
+ * Refactor menu code so all panes  share a common base code
+ * Replace the view keypress handler with proper accelerator group handling
+
+13 April 2008
+ * Maintain a common directory across all the file chooser widgets
+ * More pylint driven cleanups
+ * Refactor WriteArdb* classes to have a common ancestor
+
+12 April 2008
+ * Further conversion work on the function syntax
+ * Other cleanups
+
+11 April 2008
+ * Fix AnalyzeCardList's happy family analysis
+
+10 April 2008
+ * Refactor AnalyzeCardList Plugin
+ * pylint driven cleanups
+
+09 April 2008
+ * Refactor CardSetExportToHTML plugin
+ * Escape markup in the CardSetPrint plugin
+ * pylint cleanups
+
+08 April 2008
+ * Changed the way plugin menu items work.  Plugins can now register multiple
+   items on several different menus. Fix CardImagesplugin to do so
+
+06 April 2008
+ * Add HTMLTextView to display help texts
+
+03 April 2008
+ * Rework the card draw probablities plugin' layout
+ 
+02 April 2008
+ * Change card images plugin to scale image to pane size by default
+ * Rename CardDrawSimulator to CardDrawPropbablities
+
+29 March 2008
+ * Various Changes based on user feedback. Added several TODO items.
+
+28 March 2008:
+ * Add crypt to opening hand simulator
+
+24 March 2008:
+ * Change CardDrawSimulator to show multivariate hypergeometric probablities
+   when multiple cards are selected
+ * Hook up 'del' to delete all cards in current selection from a card list
+
+23 March 2008:
+ * Add more cases to CardFunctionFilter
+
+22 March 2008:
+ * Initial version of a CSV file reader
+
+21 March 2008:
+ * Opening hand simulation plugin
+ * Add a filter on CardFunction
+ * Clean up several pylint warnings
+
+20 March 2008:
+ * Add support for ARDB's images with expansions
+
+16 March 2008:
+ * Simple card draw probablities plugin
+
+13 Mar 2008:
+ * Various improvements to the AnalyzeCardList plugin
+ * Provide wrapper around SQLObject's IN(..) to handle IN(a, []) case
+   safely in Filters
+ * Add SetsInUse filter for the PhysicalCardSet list
+ * Add comments to clarify PhysicalCardFilter, AbstractCardSetFilter and
+   PhysicalCardSetFilter
+
+12 Mar 2008
+ * Fix MultiPhysicalCardCountFilter to work with sqlite
+ * Improve filter box item type detection
+
+11 Mar 2008
+ * Add test cases for PhysicalCards
+ * Rework DatabaseUpgrade to hopefully be more robust. Improve the error 
+   reporting
+ * Complain about missing values in the filter dialog
+ * Various improvements to FilterDialog
+
+09 Mar 2008
+ * Various improvements to the FilterDialog.
+ * Use button to close MultiSelectComboBox
+
+07 Mar 2008
+ * Rework EditPhysicalCardSetMapping dialog so ordering is more stable
+
+05 Mar 2008:
+ * Ensure the mapping between physical card sets and physical cards is
+   restored correctly across backups and importing new WW cardlists
+ * Initial commit of new filter editor.
+
+28 Feb 2008:
+ * Add encoding lines to all *.py files
+ * Misc cleanups of file header comments
+ * Save "Display zero count" status in PCL in config file
+
+26 Feb 2008:
+ * Add plugin for displaying card images, using the image database
+   from ARDB
+ * Add hooks so plugins can register a frame on the main window
+
+25 Feb 2008
+ * Tweak filter parser so "X NOT IN $foor" is legal syntax
+
+19 Feb 2008
+ * Fix keyboard navigation behaviour in the TreeView. Workaround 
+   http://bugzilla.gnome.org/show_bug.cgi?id=483730 where needed
+
+18 Feb 2008:
+ * Allow gtk to sort on the extra columns added via the plugin
+
+07 Feb 2008:
+ * Add sutkeh.io.WwFile convenience module for reading data from
+   WW website cardlists and rulings (including directly from the
+   website using urllib2.urlopen).
+ * Convert readWhiteWolfList and readRulings to use WwFile
+   and add loading of cardlist and rulings for the WW site to the
+   gui.
+ * Tweak Editing filters so already selected values are retained 
+   when feasible
+
+06 Feb 2008:
+ * Display progress bar for import new cardlists, upgrading DB and
+   saving and restoring backups
+
+05 Feb 2008:
+ * Searching will now expand trees to find matches
+
+27 Jan 2008:
+ * Add additional caching to CardSetController - avoids some additional 
+   database hits, especially when reload events are triggered
+ * remove some no longer needed encode lines from ZipFileHandler.
+ * fix encoding of internal filenames in ZipFileHandler.
+
+25 Jan 2008:
+ * Improve usage of cached card info in CardSetcontroller - speeds up 
+   adding + deleting cards by avoiding some extra database lookups
+ * Replace CardSetExportHTML.py with a version that uses ElementTree
+   to generate the HTML. removes the dependancy on libxslt, at the cost
+   of complexity in the plugin.
+
+22 Jan 2008
+ * Change {Abstract,Physical}CardSet{Write,Parser}, PhysicalCard{Writer,Parser},
+   and WriteArdbXML to use ElementTree.
+
+15 Jan 2008
+ * Change annotations to be a fully-fleged element in the XML files. This 
+   will allow formatting to be preserved.
+
+14 Dec 2007:
+ * Tage Sutekh 0.5.0 release
+ * Add NSIS script for generating a Windows installer.
+
+12 Dec 2007
+ * Add filter for inuse card sets. Finishes up work on the inuse flag.
+ * Add plugin to set the expansion for single expansion cards.
+ * Fix bug in displaying multiple rarities from the same expansion properly.
+
+early Dec 2007
+ * Add support for inuse flag to gui and XML files
+ * Add set_name calls so everything is in the Sutekh namespace for gtkrc files
+ * Add support for dealing with themes in a way that isn't completely broken
+   (although it is rather fragile, and at best semi-sane).
+ * Allow plugins to register themselves on the main window's menu
+ * Various bugfixes 
+
+24 Nov 2007
+ * Refactor card text parsing for WhitewolfParser
+ * Interpret reflex attribute as a cardtype
+
+22 Nov 2007
+ * Bump database version
+    - Add shortname to Rarity
+    - Add burn option column to AbstractCard
+    - Add inuse column to the PhysicalCardSet
+ * Add parsing burn option form cardlist
+ * Rework DatabaseUpgrade 
+    - Combine repetive code
+    - Upgrade to current changes
+    - remove support for version pre 0.4.x
+ * Add plugin for showing discipline spread across clans
+
+21 Nov 2007
+ * Add CachedCardSetHolder, so user isn't repeatedly prompted for 
+   AbstractCard name lookups on WW cardlist changes
+
+16 Nov 2007
+ * Direct printing plugin
+ * Rework GuiCardLookup to incude appropriate views in the dialog
+
+15 Nov 2007
+ * Allow panes to be split vertically or horizontally
+ * Save pane configuration and postions properly
+ * Replace ACSFromELDBHTML Plugin with more generic parser plugin
+ * Add parser for ARDB Text format
+
+14 Nov 2007
+ * Add PhysicalCardCount Filter
+ * Add Menu option to display all AbstractCards in the Physical Card List
+
+13 Nov 2007
+ * Remaining plugins fixed
+ * Change pane semenatics to - split pane to create a new blank pane,
+   and replace panes with other panes
+ * Allow panes to be dragged to reorder them
+ * Make text in FilterDialog help selectable
+
+12 Nov 2007
+ * Improve parsing of titles and sects for WW cardlist
+ * Fix several plugins to work with redone gui work
+
+11 Nov 2007
+ * Merge in sutekh-gui-rework-september-2007 branch
+   - almost all GUI classes reworked.
+   - Replace multiple windows with single window with panes
+   - Allow filtering on card set lists
+   - Allow expansion information in physical cards to be edited
+   - Add dialog so the mapping between physical cards and physical card sets can
+     be carefllu controlled.
+   - Card List and card sets not editable by default. Editing is enabled by
+     a menu option
+   - some dialogs replaced with gtk.MessageDialog calls
+
+10 Nov 2007
+ * Move card attribute abbreviation lists in sutekh.core.Abbreviations.
+ * Modified adaptors to not create database objects if they don't exist.
+ * Add API for constructing SutekhObjects.
+ * Add basic testing framework, including tests for WhiteWolf card list and rulings parsers and filtering.
+
+27 Oct 2007
+ * Add NOT filter.
+
+16 Oct 2007
+ * Fix plugins which relied on ACSes .getCardIterator(...) returning a list
+   of AbstractCards.
+
+13 Oct 2007
+ * Tweak support for joins for AbstractCardSet
+
+11 Oct 2007
+ * Add CachedRelatedJoins for additional speed increase
+ * Tweaks to some of the filters to accomodate different databases
+
+10 Oct 2007
+ * Add explicit joins to filtering - significantly improves speed of 
+   filtering queries
+
+05 Oct 2007
+ * Fix some issues identified in testing the stable-branch before Sutekh 
+   0.4.2's release
+
+03 Oct 2007
+ * Add support for the Lords of the Night expansion
+ * Makr the GuiCardLookup dialog more informative
+
+24 Sep 2007
+ * Finish 1st draft of physical_lookup - doesn't support expansion issues yet
+ * Change Restore from Backup to use CardSetHolder
+
+19 Sep 2007
+ * Importing the Physical Card List and Card Sets now uses CardSetHolder
+ * Importing new WW lists also uses CardSetHolder
+ * Add physical_lookup method to CardLookup, so the user can be queried
+   when cards in a physical card set can't be found in the Physical Card List
+
+25 Aug 2007
+ * Make User-specified Filters in the FilterDialog Editable
+
+24 Aug 2007
+ * Add CardSetHolder for manipulating card sets which aren't in the
+   database yet.
+ * Add CardLookup for translating card names into abstract cards.
+ * Move ELDBHTMLParser and plugin over to CardSetHolder and CardLookup.
+
+18 Aug 2007
+ * Improve formatting of card text listing in HTML exports and
+   make the information included a bit more complete.
+ * Ensure imbued are semi-sensibly handled by the HTML export
+ * Rework Analyze Card Set dialog code's structure. Add many more blanks
+   to be filled in
+ * Add initial stab at Happy Families analysis to Card Set
+ * Prevent creation of parsetab.py and parser.put
+ * Use prefrences directory for sutekhrc
+ * Further pre-release cleanups
+
+16 Aug 2007
+ * Add File->Preferences to Main Menu. Makes saving window positions on exit
+   optional
+ * Various cleanups and bugfixes in preparation for the 1st release
+
+15 Aug 2007
+ * Refactor FilterParser somewhat. Push info to the Filter Objects
+   rather than maintaining it in FilterParser 
+
+14 Aug 2007
+ * Add titles to the ARDB xml export (and thus HTML exports)
+
+08 Aug 2007
+ * Fix stupid Card Set loading bug caused by config file stuff
+ * Add support for saving window positions to the config file
+
+29 July 2007
+ * Merge in Enhanced Filter branch (sutekh-enhanced-filter-july-2007)
+   - Replaces the Filter Dialog with one that selects from multiple different
+     Filters
+   - Provide simple Grammar to specify additional filters
+   - Add config file to save user filters
+   - Add additional filters on Sect, Expasion with Rarity and Discipline with Level
+
+02 Jul 2007
+ * Bugfix consequences of the merge
+
+01 Jul 2007
+ * Merge in Database Upgrade Branch (sutekh-db-upgrade-march-2007)
+   - Add Sect, Vote to AbstractCard
+   - Normalise AbstractCard name to lowercase, to help prevent minor case issues 
+     causing havoc (Keep It Simple and friends)
+   - Add shortname, fullname fields to Disciplines, Expansions, etc
+   - Add expansion to PhysicalCard (No GUI support as yet)
+   - Improve Database upgrade code
+   - Add version info to xml exported files
+   - Add annotations to Card Sets
+
+20 May 2007
+ * Add basic card set management window
+
+15 May 2007
+ * Tweak selection behaviour - should make accidently unselects when dragging
+   and dropping harder
+
+06 May 2007
+ * Add simple About dialog.
+ * Add COPYING to sutekh package data.
+ * Use pkg_resources to read in XSL files and COPYING.
+ * Move SutekhInfo from setup.py into sutekh.SutekhInfo.
+
+05 May 2007
+ * Add Crypt/Library grouping and null grouping.
+ * Clean up card set creation dialog.
+ * Adding card counting to the physical card list.
+ * Remove redundant call to .load(..) for card sets.
+
+02 May 2007
+ * Allow plugins to place widgets in a box underneath the window menu 
+   for toolbar'ish applications
+ * Add card counting plugin to CardSets using this
+
+08 Apr 2007
+ * Continue removing import * statements
+
+31 Mar 2007
+ * Add an option to backup database to the "read new cardlist" dialog
+
+30 Mar 2007
+ * Add a plugin to support zipfile backups and restores of the database
+
+15 Mar 2007
+ * Setuptools setup.py file created.
+ * Made all imports absolute.
+
+11 Mar 2007
+ * Plugin for displaying additional columns in a card view.
+ * Add grid lines to card list view. They could do with some styling.
+
+26 Feb 2007
+ * Basic support for adding card text to HTML file
+
+25 Feb 2007
+ * Make card text search case insensitive on all databases by using func.LOWER everywhere
+ * Allow CardListView to be sorted by number or name
+
+22 Feb 2007
+ * Add some more filters
+ * Allowed plugins to register on the main AbstractCard View
+
+20 Feb 2007
+ * Reorganise plugins to remove duplications between AbstractCardSets and PhysicalCardSets
+ * create plugin to compare two Card Sets.
+ 
+19 Feb 2007
+ * Fix crash due to not deleting invalid dictionary entries for groups in the
+   CardListView
+
+17 Feb 2007
+ * Add support for dumping everything to zipfile & restoring from it
+
+15 Feb 2007
+ * Seperate out cardtext window from Main card list
+
+08 Feb 2007
+ * GUI support for updating the WW card list
+
+28 Jan 2007
+ * Add a filter on the card name - NM
+ 
+21 Jan 2007
+ * Fix a few bugs in the conversion between PhysicalCardSets and 
+   AbstractCardSets to deal with the changed CardSet structure - NM
+ * Fix buglet in the DeleteCard Dialog - NM 
+
+20 Dec 2006
+ * Database can be upgraded to handle changes to the database structure both
+   via SutekhCli and the GUI - NM
+ * Add Comment and Author fields to card sets - NM
+ * Card Sets can be renamed from within the GUI - NM
+ * Misc bug fixes (mainly of things I broke while doing the above) - NM
+
+19 Nov 2006
+ * Export to Anarachs Revolt Deck Builder XML Format. Allows us to leverage
+   their XSLT files - NM
+
+04 Nov 2006
+ * Support for exporting cards to xML from the GUI - NM
+ * Finsh PhysicalCardSet to AbstractCardSet and reverse plugins - NM
+
+22 October 2006
+ * Replace deck handling with PhysicalCardSets and AbstractCardSets - NM
+
+between April and November
+ Many, many changes
+ * Add version information to the database
+ * Grouping support in display
+ * handle both phyicalcardsets and abstractcardsets
+ * added indexes to the database
+ * plugin support
+ * clustering plugin
+ * create card set from filter plugin
+ * Support for imbued from the white wolf cardlist
+ * Support third ed
+ * Tweaked database structure 
+   to support mysql (with correct sqlobject version) and postgresql
+
+23 April 2006:
+* Fill in file headers, listing copyrights, based on svn log history - NM
+* Add COPYRIGHT file, generally try and dot t's and cross i's on the
+  licensing stuff - NM
+
+19 April 2006
+* Add COPYING file - convential GPL 2 license, as discussed on the mailing
+  list - NM
+
+19 April 2006
+* Moving development to SVN.
+
+26 Feb 2006
+* Rework Filter Dialog Considerably - add support for retaining state an
+  filtering on card Type - NM 
+* Change Analyze Deck dialog to have tabbed dialog - NM
+
+06 Feb 2006:
+* Initial support for multiple selections - NM
+
+04 Feb 2006:
+* Add basic support for filtering in the gui - NM
+* Add support for reading and writing XML decks - NM
+
+27 Jan 2006:
+* Tweak Card parser - now works properly for me for wget'd cardlist - NM
+* Support lookahead in CardViews - NM
+
+22 Jan 2006:
+* Fill out deck support - currently the code is limited to 3 deck windows
+  open at a time. - NM
+* Basic anaylsis deck started. - NM
+
+21 Jan 2006:
+* Tweak -db message for sqlite to give form of URI - NM
+* Rework menu structure - split deck options into seperate window, 
+  provisional work for deck handling and multiple windows - NM
+* Change PopupMenu to use gtk.Action items - will allow things to 
+  be greyed out if need be (incCard in deck view for instance) - NM
+* Split MainWindow into two seperate windows. Move CardText view to
+  AbstractCardWindow - NM
+* Add dialogs which will be used in deck handling stuff (not enabled) - NM
+
+05 Jan 2006:
+* Split GUI classes out into their own sub-package.
+
+28 Dec 2005:
+* Added classes for writing out and parsing in list of PhysicalCards
+  as XML.
+
+28 Dec 2005:
+* Applied patch from Neil Muller which implements incrementing,
+  decrementing and deleting entries from the Physical Card view.
+
+24 Nov 2005:
+* Strings now stored as UTF8 which clears up a bunch of
+  character encoding issues.

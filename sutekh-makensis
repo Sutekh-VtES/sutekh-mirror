@@ -1,0 +1,14 @@
+#!/bin/sh
+# Copyright 2008 Simon Cross <hodgestar@gmail.com>
+# GPL - see COPYING for details
+#
+# Usage: sutekh-makensis <sutekh nsi file> <dependencies folder>
+
+NSI_FILE="$1"
+DEPENDENCIES_FOLDER="$2"
+TMP_NSI="$NSI_FILE.tmp"
+
+cp "$NSI_FILE" "$TMP_NSI"
+sed -i -e "s#\\(\\s*!define DEPENDENCIES_FOLDER\\).*#\\1 \"$DEPENDENCIES_FOLDER\"#" "$TMP_NSI"
+makensis "$TMP_NSI"
+rm "$TMP_NSI"
