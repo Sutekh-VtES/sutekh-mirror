@@ -12,7 +12,7 @@ from pkg_resources import resource_string
 
 # pylint: disable-msg=R0903,C0111
 class SutekhInfo(object):
-    VERSION = (0, 6, 0)
+    VERSION = (0, 7, 0)
     VERSION_STR = '.'.join([str(x) for x in VERSION])
 
     NAME = 'Sutekh'
