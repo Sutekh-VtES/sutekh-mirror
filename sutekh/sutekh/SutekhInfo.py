@@ -12,8 +12,13 @@ from pkg_resources import resource_string
 
 # pylint: disable-msg=R0903,C0111
 class SutekhInfo(object):
-    VERSION = (0, 7, 0)
-    VERSION_STR = '.'.join([str(x) for x in VERSION])
+    VERSION = (0, 7, 0, 'alpha', 0)
+    BASE_VERSION_STR = '.'.join([str(x) for x in VERSION[:3]])
+    VERSION_STR = {
+        'final': BASE_VERSION_STR,
+        'alpha': BASE_VERSION_STR + 'a' + str(VERSION[4]),
+        'rc': BASE_VERSION_STR + 'rc' + str(VERSION[4]),
+    }[VERSION[3]]
 
     NAME = 'Sutekh'
     DESCRIPTION = 'VtES Card Collection Manager'

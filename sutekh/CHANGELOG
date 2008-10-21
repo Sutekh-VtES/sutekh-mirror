@@ -1,3 +1,8 @@
+21 Oct 2008
+ * Add release type and number to SutekhInfo.VERSION tuple (to match
+   sys.version_info). Construct more descriptive VERSION_STR from
+   new tuple.
+
 20 Oct 2008
  * Branched off 0.6.x release branch, trunk now 0.7.
 
