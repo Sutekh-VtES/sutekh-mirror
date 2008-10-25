@@ -34,7 +34,7 @@ class PhysicalCardParser(object):
        We read the xml file into a ElementTree, then walk the tree to
        extract the cards.
        """
-    aSupportedVersions = ['1.0', '0.0']
+    aSupportedVersions = ['1.0']
 
     def __init__(self):
         self.oCS = None

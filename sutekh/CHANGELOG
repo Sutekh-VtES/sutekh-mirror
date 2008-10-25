@@ -1,3 +1,8 @@
+25 Oct 2008
+ * Treat unparseable CSV count columns as one but warn the user.
+ * Tweak BestGuessFilter in GUI card lookup to produce hopefully
+   better results and to use AbstractCard to speed up initial search.
+
 21 Oct 2008
  * Add release type and number to SutekhInfo.VERSION tuple (to match
    sys.version_info). Construct more descriptive VERSION_STR from
