@@ -8,6 +8,7 @@
    GUI to pick unknown cards from.  """
 
 import re
+import string
 import gtk
 import pango
 import gobject
@@ -219,11 +220,12 @@ class ReplacementTreeView(gtk.TreeView):
         # Best guess search
         sFilterString = ' ' + sName.lower() + ' '
         # Kill the's in the string
-        sFilterString = sFilterString.replace(' the ', '')
+        sFilterString = sFilterString.replace(' the ', ' ')
         # Kill commas, as possible issues
-        sFilterString = sFilterString.replace(',', '')
-        # Wildcard spaces
-        sFilterString = sFilterString.replace(' ', '%').lower()
+        sFilterString = sFilterString.replace(',', ' ')
+        # Free style punctuation
+        for punc in string.punctuation:
+            sFilterString = sFilterString.replace(punc, '_')
         # Stolen semi-concept from soundex - replace vowels with wildcards
         # Should these be %'s ??
         # (Should at least handle the Rotscheck variation as it stands)
@@ -232,6 +234,11 @@ class ReplacementTreeView(gtk.TreeView):
         sFilterString = sFilterString.replace('i', '_')
         sFilterString = sFilterString.replace('o', '_')
         sFilterString = sFilterString.replace('u', '_')
+        # Normalise spaces and Wildcard spaces
+        sFilterString = ' '.join(sFilterString.split())
+        sFilterString = sFilterString.replace(' ', '%')
+        # Add % on outside
+        sFilterString = '%' + sFilterString + '%'
         return CardNameFilter(sFilterString)
 
 
@@ -529,7 +536,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
         # Populate the model with the card names and best guesses
         for sName in dUnknownCards:
             oBestGuessFilter = oReplacementView.best_guess_filter(sName)
-            aCards = list(oBestGuessFilter.select(PhysicalCard).distinct())
+            aCards = list(oBestGuessFilter.select(AbstractCard))
             if len(aCards) == 1:
                 sBestGuess = aCards[0].name
             else:

@@ -49,7 +49,12 @@ class CSVParser(object):
         if not sName:
             return # skip rows with no name
 
-        iCount = int(aRow[self.iCountColumn])
+        try:
+            iCount = int(aRow[self.iCountColumn])
+        except ValueError:
+            iCount = 1
+            self.oCS.add_warning("Count for '%s' could not be determined and"
+                                    " was set to one." % (name,))
 
         if self.iExpansionColumn is not None:
             sExpansionName = aRow[self.iExpansionColumn].strip()

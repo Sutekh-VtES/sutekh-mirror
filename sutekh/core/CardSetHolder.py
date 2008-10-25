@@ -90,8 +90,7 @@ class CardSetHolder(object):
             try:
                 oParent = PhysicalCardSet.selectBy(name=self.parent).getOne()
             except SQLObjectNotFound:
-                self._aWarnings.append("Parent Card Set %s not found" %
-                        self.parent)
+                self.add_warning("Parent Card Set %s not found" % self.parent)
                 oParent = None
         else:
             oParent = None
@@ -100,6 +99,10 @@ class CardSetHolder(object):
     def get_warnings(self):
         """Get any warning messages from the holder"""
         return self._aWarnings
+
+    def add_warning(self, sMsg):
+        """Add a warning message to the list of warnings."""
+        self._aWarnings.append(sMsg)
 
     def clear_warnings(self):
         """Reset the warning messages list"""

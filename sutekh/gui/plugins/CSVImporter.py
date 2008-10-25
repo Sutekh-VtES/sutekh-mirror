@@ -209,12 +209,12 @@ class CSVImporter(CardListPlugin):
             if not sCardSetName:
                 sMsg = "Please specify a name for the Card Set."
                 do_complaint_error(sMsg)
-                self.oDlg.destroy()
+                self.oDlg.run()
                 return
             if PhysicalCardSet.selectBy(name=sCardSetName).count() != 0:
                 sMsg = "Card Set '%s' already exists." % sCardSetName
                 do_complaint_error(sMsg)
-                self.oDlg.destroy()
+                self.oDlg.run()
                 return
 
             oParser = CSVParser(iCardNameColumn, iCountColumn,
