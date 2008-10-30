@@ -1,3 +1,6 @@
+30 Oct 2008
+ * Rework search dialog placement to better match gtk+'s native placement
+
 25 Oct 2008
  * Treat unparseable CSV count columns as one but warn the user.
  * Tweak BestGuessFilter in GUI card lookup to produce hopefully

@@ -81,11 +81,30 @@ class SearchDialog(gtk.Window):
 
     def show_all(self):
         """Move the window into position when shown"""
-        tWinPos = self._oView.get_bin_window().get_origin()
-        oViewSize = self._oView.allocation
-        self.move(tWinPos[0] + 10,
-                tWinPos[1] + oViewSize.height - 30)
+        oWin = self._oView.get_bin_window()
+        tWinPos = oWin.get_origin()
+        tViewSize = oWin.get_size()
+        # We first move totally off-screen, then show so we
+        # can get our size
+        # This is basically the same approach as the default gtk search
+        # dialog takes, so we more-or-less duplicate it's behaviour
+        oScreen = self._oView.get_screen()
+        self.move(oScreen.get_width() + tViewSize[0],
+                oScreen.get_height() +  tViewSize[1])
         super(SearchDialog, self).show_all()
+        oThisWinAlloc = self.get_allocation()
+        iXPos = tWinPos[0] + tViewSize[0] - oThisWinAlloc.width
+        iYPos = tWinPos[1] + tViewSize[1]
+        # Special case limits as gtk does
+        if iXPos < 0:
+            iXPos = 0
+        elif iXPos + oThisWinAlloc.width > oScreen.get_width():
+            iXPos = oScreen.get_width() - oThisWinAlloc.width
+        if iYPos < 0:
+            iYPos = 0
+        elif iYPos + oThisWinAlloc.height > oScreen.get_height():
+            iYPos = oScreen.get_height() - oThisWinAlloc.height
+        self.move(iXPos, iYPos)
         self._oWin.set_focus(self.oEntry)
         self.oEntry.grab_focus()
         # Force the widget to be focus - probablity unsure
