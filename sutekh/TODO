@@ -56,6 +56,4 @@ Upstream:
    * TreeView search pop-up not working under Windows. 
 
 For 0.6:
- * Fix issues with Sutekh's search dialog
-   - Not properly disappearing on windows
  * Finish built-in tutorial and help.

@@ -1,3 +1,8 @@
+04 Nov 2008
+ * Add workaround for the button-press-event wierdness on windows -
+   clicking outside the search dialog now works more-or-less as expected
+   there.
+
 30 Oct 2008
  * Rework search dialog placement to better match gtk+'s native placement
 

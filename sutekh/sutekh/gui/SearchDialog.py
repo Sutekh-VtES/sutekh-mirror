@@ -10,6 +10,7 @@
    windows with gtk 2.12"""
 
 import gtk
+import sys
 
 class SearchDialog(gtk.Window):
     # pylint: disable-msg=R0904
@@ -39,7 +40,12 @@ class SearchDialog(gtk.Window):
         self.add(oFrame)
         self.connect('key-press-event', self._key_press)
         self.oEntry.connect('activate', lambda x: self.hide())
-        self.connect('button-press-event', self.check_hide)
+        # Work around wierd windows behaviour where the button-press-event
+        # doesn't get delivered to us
+        if sys.platform.startswith("win"):
+            self.connect('button-release-event', self.check_hide)
+        else:
+            self.connect('button-press-event', self.check_hide)
         self.set_focus_on_map(True)
         self.bVisible = False
         # Hook up to the View
