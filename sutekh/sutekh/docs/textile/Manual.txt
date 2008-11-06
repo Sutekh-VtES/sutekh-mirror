@@ -10,6 +10,7 @@ h2. Contents
 ## "File":#main_file
 ## "Pane Actions":#main_pane_actions
 ## "Plugins":#main_plugins
+## "Keyboard Shortcuts":#keyboard
 # "White Wolf Card List":#ww
 ## "Actions":#ww_actions
 ## "Filter":#ww_filter
@@ -24,6 +25,7 @@ h2. Contents
 ## "Edit":#cardsets_edit
 ## "Filter":#cardsets_filter
 ## "Plugins":#cardsets_plugins
+## "Keyboard Shortcuts":#cardsets_keyboard
 # "Filters":#filters
 
 h2(#intro). Introduction
@@ -33,17 +35,64 @@ If you are new to Sutekh, try reading "The Sutekh Tutorial":Tutorial.html.
 
 h2(#concepts). Important Concepts
 
+Sutekh is concerned with two different types of objects: Cards and Card Sets.
+
+Cards are the individual cards as described by the official white wolf
+card list. Each card describes all the relevant properties of the card,
+such as the clan and discipline requirements, the cost, and the latest
+text for the card.
+
+Card Sets are collections of cards and describe the card and the number of copies
+of that card in the collection. An important concept is that card sets can
+be related in a parent-child hierarchy. A typical setup is to have a single card
+set for the main card collection (usually the *My Collection* card set), and
+other card sets, which represent the constructed decks, as children of this
+card set, but many other arrangements are possible.
+
 
 h2(#main). Main Window
+
+The main sutekh window can be split into a number of different panes.
+
+The following panes are supported:
+
+* "The White Wolf card list":#ww
+* "The Card Set List":#card_set_list
+* "Card Text":#card_text
+* "Card Image":#card_image
+* "Card Set":#cardsets panes
+
+Each pane may have an associated menu for actions specific to that pane.
+The main window has a menu for global actions.
 
 h3(#main_file). File
 
 h3(#main_pane_actions). Pane Actions
 
+This menu allows you to manage the pane. 
+
 h3(#main_plugins). Plugins
+
+h3(#keyboard). Keyboard Shortcuts
+
+The following shortcuts are useful for most panes:
+
+One can cycle between different panes using the *&lt;Tab&gt;* key.
+
+The currently active pane can be closed using the *&lt;Ctrl&gt;-W* shortcut.
+
+For panes which support filtering, the filter editing dialog can be activated
+using *&lt;Ctrl&gt;-S* (for specify filter), and the current filter can be
+toggled on and off by using *&lt;Ctrl&gt;-T*.
+
+The *&lt;Ctrl&gt;-+* and *&lt;Ctrl&gt;--* shortcuts allow the entire tree displayed in a
+pane to either be fuly expanded or completely collapsed.
 
 
 h2(#ww). White Wolf Card List
+
+This pane contains a list of all the cards imported from the official
+white wolf card list. 
 
 h3(#ww_actions). Actions
 
@@ -74,6 +123,23 @@ h3(#cardsets_edit). Edit
 h3(#cardsets_filter). Filter
 
 h3(#cardsets_plugins). Plugins
+
+h3(#cardsets_keyboard). Keyboard Shortcuts
+
+For card sets, the following additional keybaord shortcuts exist.
+
+The editable state of the card set can be toggled using *&lt;Ctrl&gt;-E*.
+
+The current selection can be copied to the clipboard using *&lt;Ctrl&gt;-C*
+
+If the card set is editable, the current selection can be deleted using *&lt;Del&gt;*
+or pasted into the card set using *&lt;Ctrl&gt;-V*
+
+For an editable card set, the card number for the entire selection can be set
+in the range 1 to 9 directly by entering the number directly, or all the number
+for all cards in the selection can either be incremented or decremented by
+1 using either *+* or *-* respectively. If the card set is not editable, these
+keys have no effect.
 
 
 h2(#filters). Filters
