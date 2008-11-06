@@ -1,3 +1,9 @@
+06 Nov 2008
+ * Rework display of the card set independenct plugin.
+   - split the different card sets into seperate tabs
+   - display the total of cards used in each card set
+ * Don't enable the "delete selection" when the card set isn't editable
+
 04 Nov 2008
  * Add workaround for the button-press-event wierdness on windows -
    clicking outside the search dialog now works more-or-less as expected

@@ -13,6 +13,7 @@ from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.ScrolledList import ScrolledList
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint, \
         do_complaint_error
+from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 
 # helper functions
 
@@ -20,11 +21,11 @@ class CardInfo(object):
     """Helper class to hold card set info"""
     def __init__(self):
         self.iCount = 0
-        self.aCardSets = []
+        self.dCardSets = {}
 
     def format_cs(self):
         """Pretty print card set list"""
-        return ", ".join(self.aCardSets)
+        return ", ".join(self.dCardSets)
 
 def _get_cards(oCardSet, dCards):
     """Extract the abstract cards from the card set oCardSet"""
@@ -33,8 +34,63 @@ def _get_cards(oCardSet, dCards):
     for oCard in oCardSet.cards:
         dCards.setdefault(oCard, CardInfo())
         dCards[oCard].iCount += 1
-        if oCardSet.name not in dCards[oCard].aCardSets:
-            dCards[oCard].aCardSets.append(oCardSet.name)
+        dCards[oCard].dCardSets.setdefault(oCardSet.name, 0)
+        dCards[oCard].dCardSets[oCardSet.name] += 1
+
+def _make_align_list(aList):
+    """Wrap the list of strings in an aligned widget for display."""
+    oLabel = gtk.Label()
+    oAlign = gtk.Alignment()
+    oAlign.add(oLabel)
+    oAlign.set_padding(0, 0, 5, 0) # offset a little from the left edge
+    sContents = "\n".join(aList)
+    oLabel.set_markup(sContents)
+    return oAlign
+
+def _display_results(dMissing, oParentCS):
+    """Display the list of missing cards"""
+    oResultDlg = SutekhDialog("Missing Cards", None,
+            gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
+            (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
+    oNotebook = gtk.Notebook()
+    oNotebook.set_scrollable(True)
+    oNotebook.popup_enable()
+    dFormatted = {}
+    aParentList = []
+    for oCard, oInfo in dMissing.iteritems():
+        sCardName = oCard.abstractCard.name
+        if oCard.expansion:
+            sExpansion = oCard.expansion.name
+        else:
+            sExpansion = "(unspecified expansion)"
+        aParentList.append('<span foreground = "blue">'
+                '%s (from: %s)</span> : Missing <span foreground="red">%d'
+                '</span> copies (used in %s)'
+                % (sCardName, sExpansion, oInfo.iCount, oInfo.format_cs()))
+        for sCardSet, iCount in oInfo.dCardSets.iteritems():
+            dFormatted.setdefault(sCardSet, [])
+            dFormatted[sCardSet].append('<span foreground="blue">%s (from %s)'
+                    '</span>: Missing <span foreground="red">%d</span> copies'
+                    ' (%d copies used here)' % (sCardName, sExpansion,
+                        oInfo.iCount, iCount))
+    oHeading = gtk.Label()
+    oHeading.set_markup('<span foreground = "red">From %s'
+            '</span>' % oParentCS.name)
+    oNotebook.append_page(AutoScrolledWindow(
+        _make_align_list(aParentList), True), oHeading)
+    for sCardSet, aMsgs in dFormatted.iteritems():
+        oHeading = gtk.Label()
+        oHeading.set_markup('<span foreground = "red">From %s'
+                '</span>' % sCardSet)
+        oNotebook.append_page(AutoScrolledWindow(
+            _make_align_list(aMsgs), True), oHeading)
+    # pylint: disable-msg=E1101
+    # pylint misses vbox methods
+    oResultDlg.vbox.pack_start(oNotebook)
+    oResultDlg.set_size_request(600, 600)
+    oResultDlg.show_all()
+    oResultDlg.run()
+    oResultDlg.destroy()
 
 def _test_card_sets(aCardSetNames, oParentCS):
     """Test if the Physical Card Sets are actaully independent by
@@ -54,20 +110,10 @@ def _test_card_sets(aCardSetNames, oParentCS):
             dMissing[oCard] = oInfo
             dMissing[oCard].iCount -= dParent[oCard].iCount
     if dMissing:
-        sMessage = '<span foreground = "red">Cards missing from %s</span>\n' \
-                % oParentCS.name
-        for oCard, oInfo in dMissing.iteritems():
-            sCardName = oCard.abstractCard.name
-            if oCard.expansion:
-                sExpansion = oCard.expansion.name
-            else:
-                sExpansion = "(unspecified expansion)"
-            sMessage += '<span foreground = "blue">%s (from: %s) : Missing' \
-                    ' %d copies</span> (used in %s)\n' % (sCardName,
-                            sExpansion, oInfo.iCount, oInfo.format_cs())
+        _display_results(dMissing, oParentCS)
     else:
         sMessage = "No cards missing from %s" % oParentCS.name
-    do_complaint(sMessage, gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, True)
+        do_complaint(sMessage, gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, True)
 
 class CardSetIndependence(CardListPlugin):
     """Provides a plugin for testing whether card sets are independant.
