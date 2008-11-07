@@ -6,9 +6,11 @@
 
 NSI_FILE="$1"
 DEPENDENCIES_FOLDER="$2"
+SUTEKH_VERSION=`PYTHONPATH=. python -c "from sutekh import SutekhInfo; print SutekhInfo.SutekhInfo.VERSION_STR"`
 TMP_NSI="$NSI_FILE.tmp"
 
 cp "$NSI_FILE" "$TMP_NSI"
 sed -i -e "s#\\(\\s*!define DEPENDENCIES_FOLDER\\).*#\\1 \"$DEPENDENCIES_FOLDER\"#" "$TMP_NSI"
+sed -i -e "s#\\(\\s*!define SUTEKH_VERSION\\).*#\\1 \"$SUTEKH_VERSION\"#" "$TMP_NSI"
 makensis "$TMP_NSI"
 rm "$TMP_NSI"

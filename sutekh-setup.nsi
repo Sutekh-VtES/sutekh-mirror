@@ -7,7 +7,7 @@
 
 ; Application Details
 
-  !define SUTEKH_VERSION "0.6.0"
+  !define SUTEKH_VERSION "0.0.0" ; set by sutekh-makensis
 
   Name "Sutekh"
   OutFile "sutekh-${SUTEKH_VERSION}-setup.exe"
@@ -30,7 +30,7 @@
   ; this script
 
   !define DIST_FOLDER "dist"
-  !define DEPENDENCIES_FOLDER "."
+  !define DEPENDENCIES_FOLDER "." ; set by sutekh-makensis
 
   !define GTK_INSTALLER "gtk-dev-2.12.9-win32-2.exe"
   !define PYTHON_INSTALLER "python-2.5.2.msi"
