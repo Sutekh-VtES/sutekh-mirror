@@ -135,9 +135,10 @@ class CardSetMenu(CardListMenu):
                 '<Ctrl>c')
         self._oPaste = self.create_menu_item('Paste', oMenu,
                 self._paste_selection, '<Ctrl>v')
+        self._oDel = self.create_menu_item('Delete selection', oMenu,
+                self._del_selection, 'Delete')
         self._oPaste.set_sensitive(False)
-        self.create_menu_item('Delete selection', oMenu, self._del_selection,
-                'Delete')
+        self._oDel.set_sensitive(False)
 
     # pylint: enable-msg=W0201
 
@@ -220,11 +221,13 @@ class CardSetMenu(CardListMenu):
         if self._oController.model.bEditable != oWidget.active:
             self._oController.view.toggle_editable(oWidget.active)
             self._oPaste.set_sensitive(oWidget.active)
+            self._oDel.set_sensitive(oWidget.active)
 
     def force_editable_mode(self, bValue):
         """Toggle the editable state of the card set."""
         self._oEditable.set_active(bValue)
         self._oPaste.set_sensitive(bValue)
+        self._oDel.set_sensitive(bValue)
 
     def _del_selection(self, oWidget):
         """Delete the current selection"""

@@ -1,3 +1,23 @@
+06 Nov 2008
+ * Rework display of the card set independenct plugin.
+   - split the different card sets into seperate tabs
+   - display the total of cards used in each card set
+   (backport of r1599)
+ * Document keyboard navigation & some other bits.
+   (backport of r1598)  
+ * Don't enable the "delete selection" when the card set isn't editable
+   (backport of r1597)
+
+04 Nov 2008
+ * Add workaround for the button-press-event wierdness on windows -
+   clicking outside the search dialog now works more-or-less as expected
+   there.
+   (backport of r1596)
+
+30 Oct 2008
+ * Rework search dialog placement to better match gtk+'s native placement
+   (backport of r1595).
+
 25 Oct 2008
  * Treat unparseable CSV count columns as one but warn the user
    (backport of r1584:1588).

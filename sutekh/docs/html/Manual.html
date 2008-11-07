@@ -20,6 +20,7 @@
 <li><a href="#main_file">File</a></li>
 <li><a href="#main_pane_actions">Pane Actions</a></li>
 <li><a href="#main_plugins">Plugins</a></li>
+<li><a href="#keyboard">Keyboard Shortcuts</a></li>
 </ol>
 </li>
 <li><a href="#ww">White Wolf Card List</a>
@@ -43,6 +44,7 @@
 <li><a href="#cardsets_edit">Edit</a></li>
 <li><a href="#cardsets_filter">Filter</a></li>
 <li><a href="#cardsets_plugins">Plugins</a></li>
+<li><a href="#cardsets_keyboard">Keyboard Shortcuts</a></li>
 </ol>
 </li>
 <li><a href="#filters">Filters</a></li>
@@ -54,15 +56,64 @@
 
 <h2 id="concepts">Important Concepts</h2>
 
+<p>Sutekh is concerned with two different types of objects: Cards and Card Sets.</p>
+
+<p>Cards are the individual cards as described by the official white wolf 
+card list. Each card describes all the relevant properties of the card, 
+such as the clan and discipline requirements, the cost, and the latest 
+text for the card.</p>
+
+<p>Card Sets are collections of cards and describe the card and the number of copies 
+of that card in the collection. An important concept is that card sets can 
+be related in a parent-child hierarchy. A typical setup is to have a single card 
+set for the main card collection (usually the <strong>My Collection</strong> card set), and 
+other card sets, which represent the constructed decks, as children of this 
+card set, but many other arrangements are possible.</p>
+
 <h2 id="main">Main Window</h2>
+
+<p>The main sutekh window can be split into a number of different panes.</p>
+
+<p>The following panes are supported:</p>
+
+<ul>
+<li><a href="#ww">The White Wolf card list</a></li>
+<li><a href="#card_set_list">The Card Set List</a></li>
+<li><a href="#card_text">Card Text</a></li>
+<li><a href="#card_image">Card Image</a></li>
+<li><a href="#cardsets">Card Set</a> panes</li>
+</ul>
+
+<p>Each pane may have an associated menu for actions specific to that pane. 
+The main window has a menu for global actions.</p>
 
 <h3 id="main_file">File</h3>
 
 <h3 id="main_pane_actions">Pane Actions</h3>
 
+<p>This menu allows you to manage the pane.</p>
+
 <h3 id="main_plugins">Plugins</h3>
 
+<h3 id="keyboard">Keyboard Shortcuts</h3>
+
+<p>The following shortcuts are useful for most panes:</p>
+
+<p>One can cycle between different panes using the <strong>&lt;Tab&gt;</strong> key.</p>
+
+<p>The currently active pane can be closed using the <strong>&lt;Ctrl&gt;-W</strong> shortcut.</p>
+
+<p>For panes which support filtering, the filter editing dialog can be activated 
+using <strong>&lt;Ctrl&gt;-S</strong> (for specify filter), and the current filter can be 
+toggled on and off by using <strong>&lt;Ctrl&gt;-T</strong>.</p>
+
+<p>The <strong>&lt;Ctrl&gt;-+</strong> and <strong>&lt;Ctrl&gt;&#8212;</strong> shortcuts allow the entire tree displayed in a 
+pane to either be fuly expanded or completely collapsed.</p>
+
 <h2 id="ww">White Wolf Card List</h2>
+
+<p>This pane contains a list of all the cards imported from the official 
+white wolf card list.</p>
 
 <h3 id="ww_actions">Actions</h3>
 
@@ -89,6 +140,23 @@
 <h3 id="cardsets_filter">Filter</h3>
 
 <h3 id="cardsets_plugins">Plugins</h3>
+
+<h3 id="cardsets_keyboard">Keyboard Shortcuts</h3>
+
+<p>For card sets, the following additional keybaord shortcuts exist.</p>
+
+<p>The editable state of the card set can be toggled using <strong>&lt;Ctrl&gt;-E</strong>.</p>
+
+<p>The current selection can be copied to the clipboard using <strong>&lt;Ctrl&gt;-C</strong></p>
+
+<p>If the card set is editable, the current selection can be deleted using <strong>&lt;Del&gt;</strong> 
+or pasted into the card set using <strong>&lt;Ctrl&gt;-V</strong></p>
+
+<p>For an editable card set, the card number for the entire selection can be set 
+in the range 1 to 9 directly by entering the number directly, or all the number 
+for all cards in the selection can either be incremented or decremented by 
+1 using either <strong>+</strong> or <strong>-</strong> respectively. If the card set is not editable, these 
+keys have no effect.</p>
 
 <h2 id="filters">Filters</h2>
 </body>
