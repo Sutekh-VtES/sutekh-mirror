@@ -7,7 +7,7 @@
 
 ; Application Details
 
-  !define SUTEKH_VERSION "0.6.0"
+  !define SUTEKH_VERSION "0.0.0" ; set by sutekh-makensis
 
   Name "Sutekh"
   OutFile "sutekh-${SUTEKH_VERSION}-upgrade.exe"
@@ -31,7 +31,7 @@
 
   !define SUTEKH_FOLDER "sutekh"
   !define DIST_FOLDER "dist"
-  !define DEPENDENCIES_FOLDER "."
+  !define DEPENDENCIES_FOLDER "." ; set by sutekh-makensis
 
   !define SUTEKH_EGG "Sutekh-${SUTEKH_VERSION}-py2.5.egg"
   !define SUTEKH_ICON "sutekh.ico"

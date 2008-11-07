@@ -1,3 +1,6 @@
+08 Nov 2008
+ * Retrieve version info from SutekhInfo when building Windows installer.
+
 06 Nov 2008
  * Rework display of the card set independenct plugin.
    - split the different card sets into seperate tabs
