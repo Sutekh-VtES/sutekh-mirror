@@ -47,6 +47,9 @@ class ExtraCardViewColumns(CardListPlugin):
         self._dCols['Disciplines and Virtues'] = self._render_disciplines
         self._dCols['Expansions'] = self._render_expansions
         self._dCols['Group'] = self._render_group
+        self._dCols['Title'] = self._render_title
+        self._dCols['Sect'] = self._render_sect
+        self._dCols['Card Text'] = self._render_card_text
         self._dCols['Capacity or Life(Imbued)'] = self._render_capacity
 
         self._dSortDataFuncs = {}
@@ -56,6 +59,9 @@ class ExtraCardViewColumns(CardListPlugin):
                 self._get_data_disciplines
         self._dSortDataFuncs['Expansions'] = self._get_data_expansions
         self._dSortDataFuncs['Group'] = self._get_data_group
+        self._dSortDataFuncs['Title'] = self._get_data_title
+        self._dSortDataFuncs['Sect'] = self._get_data_sect
+        self._dSortDataFuncs['Card Text'] = self._get_data_card_text
         self._dSortDataFuncs['Capacity or Life(Imbued)'] = \
                 self._get_data_capacity
 
@@ -222,6 +228,56 @@ class ExtraCardViewColumns(CardListPlugin):
             oCell.set_data([str(iCap)], aIcons, SHOW_TEXT_ONLY)
         else:
             oCell.set_data([""], aIcons, SHOW_TEXT_ONLY)
+
+    def _get_data_title(self, oCard, bGetIcons=True):
+        """Get the card's title."""
+        if not oCard is None:
+            aTitles = [oT.name for oT in oCard.title]
+            aTitles.sort()
+            aIcons = []
+            if bGetIcons:
+                aIcons = [None]*len(aTitles)
+            return aTitles, aIcons
+        return [], []
+
+    def _render_title(self, oColumn, oCell, oModel, oIter):
+        """Display title in the column"""
+        oCard = self._get_card(oIter)
+        aTitles, aIcons = self._get_data_title(oCard)
+        oCell.set_data(aTitles, aIcons, SHOW_TEXT_ONLY)
+
+    def _get_data_sect(self, oCard, bGetIcons=True):
+        """Get the card's sect."""
+        if not oCard is None:
+            aSects = [oS.name for oS in oCard.sect]
+            aSects.sort()
+            aIcons = []
+            if bGetIcons:
+                aIcons = [None]*len(aSects)
+            return aSects, aIcons
+        return [], []
+
+    def _render_sect(self, oColumn, oCell, oModel, oIter):
+        """Display sect in the column"""
+        oCard = self._get_card(oIter)
+        aSects, aIcons = self._get_data_sect(oCard)
+        oCell.set_data(aSects, aIcons, SHOW_TEXT_ONLY)
+
+    def _get_data_card_text(self, oCard, bGetIcons=True):
+        """Get the card's card text."""
+        if not oCard is None:
+            aTexts = [oCard.text.replace("\n", " ")]
+            aIcons = []
+            if bGetIcons:
+                aIcons = [None]*len(aTexts)
+            return aTexts, aIcons
+        return [], []
+
+    def _render_card_text(self, oColumn, oCell, oModel, oIter):
+        """Display card text in the column"""
+        oCard = self._get_card(oIter)
+        aTexts, aIcons = self._get_data_card_text(oCard)
+        oCell.set_data(aTexts, aIcons, SHOW_TEXT_ONLY)
 
     # pylint: enable-msg=R0201
     # Dialog and Menu Item Creation

@@ -1,3 +1,7 @@
+11 Nov 2008
+ * Add groupings for Sect and Title.
+ * Add extra columns for Sect, Title and card text.
+
 10 Nov 2008
  * Change Groupings to include Imbued:
    - Change ClanGrouping to include Creeds
@@ -6,6 +10,7 @@
    - Change Clan column to Clans & Creeds
    - Change Discipline to Disciplines & Virtues
    - Change Capacity to Capacity & Life (Imbued)
+
 08 Nov 2008
  * Retrieve version info from SutekhInfo when building Windows installer.
 

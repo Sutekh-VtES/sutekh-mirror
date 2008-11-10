@@ -237,7 +237,9 @@ Disciplines.
 treats multi-type cards, such as _"Action Modifier/Combat"_ cards as belonging
 to both the _"Action Modifier"_ and the _"Combat"_ groups.
 * _Expansion_: Group by the expansions the cards have been printed in
-* _Rarity_: Group the cards by the published rarity. 
+* _Rarity_: Group the cards by the published rarity.
+* _Sect_: Group cards by the Sect associated with the card.
+* _Title_: Group cards by the political title on the card.
 * _Multi Card Type_: Like the _Card Type_ grouping, except this treats
 multi-type cards as seperate types. Thus _"Action Modifier/Combat"_ will
 appear as a seperate group, and the cards will not be listed in either the
@@ -251,13 +253,16 @@ to display can be selected using this plugin. The extra columns are:
 
 * _Clans and Creeds:_ Also display the clans or creeds associated with the
 card.
-* _Group:_ Show the group number for the card
-* _Disciplines and Virtues:_ Show the disciplines and Virtues associated with
+* _Group:_ Show the group number for the card.
+* _Disciplines and Virtues:_ Show the Disciplines and Virtues associated with
 the card.
-* _Card Type:_ Also show the card type
-* _Expansions:_ Show the expansions this card has been printed in
+* _Card Type:_ Also show the card type.
+* _Expansions:_ Show the expansions this card has been printed in.
 * _Capacity or Life(Imbued):_ Show the capacity associated with this card, or
 the life for the Imbued crypt cards. Ally & retainer life is not shown.
+* _Sect_: Show the Sect associated with the card.
+* _Title_: Show the political title possessed by the vampire card.
+* _Card Text_: Show the text printed on the card.
 
 The display can be sorted by according to these columns, by clicking on the 
 column header. 

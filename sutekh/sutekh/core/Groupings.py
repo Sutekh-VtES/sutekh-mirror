@@ -114,6 +114,18 @@ class CryptLibraryGrouping(IterGrouping):
                 lambda x: [fGetCard(x).cardtype[0].name in ["Vampire",
                     "Imbued"] and "Crypt" or "Library"])
 
+class SectGrouping(IterGrouping):
+    """Group by Sect"""
+    def __init__(self, oIter, fGetCard=fDefGetCard):
+        super(SectGrouping, self).__init__(oIter,
+                lambda x: [y.name for y in fGetCard(x).sect])
+
+class TitleGrouping(IterGrouping):
+    """Group by Title"""
+    def __init__(self, oIter, fGetCard=fDefGetCard):
+        super(TitleGrouping, self).__init__(oIter,
+            lambda x: [y.name for y in fGetCard(x).title])
+
 class NullGrouping(IterGrouping):
     # pylint: disable-msg=W0613
     # fGetCard is required by function signature
