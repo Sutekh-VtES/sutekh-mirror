@@ -227,8 +227,11 @@ used can be changed via this menu option.
 
 The following groupings are available:
 
-* _Clan_: Group cards by the clan associated with the card
-* _Discipline_: Group cards by the disciplines on the card
+* _Clans and Creeds_: Group cards by the either clan or the creed associated
+with the card. This treats the Imbued Creeds as if they were Vampire Clans.
+* _Disciplines and Virtues_: Group cards by the either the disciplines or the
+virtues on the card. This treats the Imbued Virtues as if they were Vampire
+Disciplines.
 * _Crypt or Library_: Split the card list into crypt and library cards
 * _Card Type_: Group by card type. This is the default grouping. This grouping
 treats multi-type cards, such as _"Action Modifier/Combat"_ cards as belonging
@@ -246,12 +249,15 @@ By default, sutekh only shows the card name for the White Wolf Card List,
 and the number and card name for the card set lists. Additional columns
 to display can be selected using this plugin. The extra columns are:
 
-* _Clan:_ Also display the clan or clans associated with the card
+* _Clans and Creeds:_ Also display the clans or creeds associated with the
+card.
 * _Group:_ Show the group number for the card
-* _Disciplines:_ Show the disciplines associated with the card
+* _Disciplines and Virtues:_ Show the disciplines and Virtues associated with
+the card.
 * _Card Type:_ Also show the card type
 * _Expansions:_ Show the expansions this card has been printed in
-* _Capacity:_ Show the capacity associated with this card
+* _Capacity or Life(Imbued):_ Show the capacity associated with this card, or
+the life for the Imbued crypt cards. Ally & retainer life is not shown.
 
 The display can be sorted by according to these columns, by clicking on the 
 column header. 

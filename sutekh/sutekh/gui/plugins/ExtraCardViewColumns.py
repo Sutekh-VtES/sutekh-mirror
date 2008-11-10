@@ -24,11 +24,11 @@ class ExtraCardViewColumns(CardListPlugin):
 
     _dWidths = {
             'Card Type' : 100,
-            'Clan' : 100,
-            'Disciplines' : 150,
+            'Clans and Creeds' : 100,
+            'Disciplines and Virtues' : 150,
             'Expansions' : 600,
             'Group' : 40,
-            'Capacity' : 40
+            'Capacity or Life(Imbued)' : 40
             }
 
     _dModes = {
@@ -43,19 +43,21 @@ class ExtraCardViewColumns(CardListPlugin):
         super(ExtraCardViewColumns, self).__init__(*aArgs, **kwargs)
         self._dCols = {}
         self._dCols['Card Type'] = self._render_card_type
-        self._dCols['Clan'] = self._render_clan
-        self._dCols['Disciplines'] = self._render_disciplines
+        self._dCols['Clans and Creeds'] = self._render_clan
+        self._dCols['Disciplines and Virtues'] = self._render_disciplines
         self._dCols['Expansions'] = self._render_expansions
         self._dCols['Group'] = self._render_group
-        self._dCols['Capacity'] = self._render_capacity
+        self._dCols['Capacity or Life(Imbued)'] = self._render_capacity
 
         self._dSortDataFuncs = {}
         self._dSortDataFuncs['Card Type'] = self._get_data_cardtype
-        self._dSortDataFuncs['Clan'] = self._get_data_clan
-        self._dSortDataFuncs['Disciplines'] = self._get_data_disciplines
+        self._dSortDataFuncs['Clans and Creeds'] = self._get_data_clan
+        self._dSortDataFuncs['Disciplines and Virtues'] = \
+                self._get_data_disciplines
         self._dSortDataFuncs['Expansions'] = self._get_data_expansions
         self._dSortDataFuncs['Group'] = self._get_data_group
-        self._dSortDataFuncs['Capacity'] = self._get_data_capacity
+        self._dSortDataFuncs['Capacity or Life(Imbued)'] = \
+                self._get_data_capacity
 
         self._dCardCache = {} # Used for sorting
         self._iShowMode = SHOW_ICONS_AND_TEXT
@@ -111,13 +113,22 @@ class ExtraCardViewColumns(CardListPlugin):
         """get the clan for the card"""
         if not oCard is None:
             aClans = [x.name for x in oCard.clan]
-            aClans.sort()
             aIcons = []
-            if bGetIcons:
-                dIcons = self.iconmanager.get_icon_list(oCard.clan)
-                if dIcons:
-                    aIcons = [dIcons[x] for x in aClans]
-            return " /|".join(aClans).split("|"), aIcons
+            if aClans:
+                aClans.sort()
+                if bGetIcons:
+                    dIcons = self.iconmanager.get_icon_list(oCard.clan)
+                    if dIcons:
+                        aIcons = [dIcons[x] for x in aClans]
+                return " /|".join(aClans).split("|"), aIcons
+            else:
+                aCreed = [x.name for x in oCard.creed]
+                aCreed.sort()
+                if bGetIcons:
+                    dIcons = self.iconmanager.get_icon_list(oCard.creed)
+                    if dIcons:
+                        aIcons = [dIcons[x] for x in aCreed]
+                return " /|".join(aCreed).split("|"), aIcons
         return [], []
 
     def _render_clan(self, oColumn, oCell, oModel, oIter):
@@ -143,6 +154,17 @@ class ExtraCardViewColumns(CardListPlugin):
                     aIcons = []
                 aDis = ", ".join([x[0] for x in aInfo]).split(" ")
                 return aDis, aIcons
+            else:
+                aInfo = [oV.name for oV in oCard.virtue]
+                if aInfo:
+                    aInfo.sort()
+                    if bGetIcons:
+                        dIcons = self.iconmanager.get_icon_list(oCard.virtue)
+                        aIcons = [dIcons[x] for x in aInfo]
+                    else:
+                        aIcons = []
+                    aVirt = ", ".join(aInfo).split(" ")
+                    return aVirt, aIcons
         return [], []
 
     def _render_disciplines(self, oColumn, oCell, oModel, oIter):
@@ -188,6 +210,8 @@ class ExtraCardViewColumns(CardListPlugin):
         """Get the cards capacity"""
         if not oCard is None and not oCard.capacity is None:
             return oCard.capacity, [None]
+        if not oCard is None and not oCard.life is None:
+            return oCard.life, [None]
         return -1, [None]
 
     def _render_capacity(self, oColumn, oCell, oModel, oIter):

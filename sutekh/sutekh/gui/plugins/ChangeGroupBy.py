@@ -31,8 +31,8 @@ class GroupCardList(CardListPlugin):
         self._dGrpings['Card Type'] = CardTypeGrouping
         self._dGrpings['Multi Card Type'] = MultiTypeGrouping
         self._dGrpings['Crypt or Library'] = CryptLibraryGrouping
-        self._dGrpings['Clan'] = ClanGrouping
-        self._dGrpings['Discipline'] = DisciplineGrouping
+        self._dGrpings['Clans and Creeds'] = ClanGrouping
+        self._dGrpings['Disciplines and Virtues'] = DisciplineGrouping
         self._dGrpings['Expansion'] = ExpansionGrouping
         self._dGrpings['Rarity'] = RarityGrouping
         self._dGrpings['No Grouping'] = NullGrouping

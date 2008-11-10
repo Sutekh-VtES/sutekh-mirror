@@ -69,15 +69,32 @@ class MultiTypeGrouping(IterGrouping):
         super(MultiTypeGrouping, self).__init__(oIter, multitype)
 
 class ClanGrouping(IterGrouping):
+    """Group the cards by clan and/or creed"""
     def __init__(self, oIter, fGetCard=fDefGetCard):
-        super(ClanGrouping, self).__init__(oIter,
-                lambda x: [y.name for y in fGetCard(x).clan])
+        super(ClanGrouping, self).__init__(oIter, self._get_values)
+        self.fGetCard = fGetCard
+
+    def _get_values(self, oCard):
+        """Get the values to group by for this card"""
+        oThisCard = self.fGetCard(oCard)
+        if oThisCard.creed:
+            return [y.name for y in oThisCard.creed]
+        else:
+            return [y.name for y in oThisCard.clan]
 
 class DisciplineGrouping(IterGrouping):
+    """Group by Discipline or Virtue"""
     def __init__(self, oIter, fGetCard=fDefGetCard):
-        super(DisciplineGrouping, self).__init__(oIter,
-                lambda x: [y.discipline.fullname for y in
-                    fGetCard(x).discipline])
+        super(DisciplineGrouping, self).__init__(oIter, self._get_values)
+        self.fGetCard = fGetCard
+
+    def _get_values(self, oCard):
+        """Get the values to group by for this card"""
+        oThisCard = self.fGetCard(oCard)
+        if oThisCard.virtue:
+            return [y.fullname for y in oThisCard.virtue]
+        else:
+            return [y.discipline.fullname for y in oThisCard.discipline]
 
 class ExpansionGrouping(IterGrouping):
     def __init__(self, oIter, fGetCard=fDefGetCard):
