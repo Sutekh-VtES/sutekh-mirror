@@ -222,9 +222,50 @@ h3(#stats_plugin). Clan Discipline Stats
 
 h3(#grouping_plugin). Change Grouping
 
+By default, Sutekh groups the cards into the separate card types. The grouping
+used can be changed via this menu option.
+
+The following groupings are available:
+
+* _Clan_: Group cards by the clan associated with the card
+* _Discipline_: Group cards by the disciplines on the card
+* _Crypt or Library_: Split the card list into crypt and library cards
+* _Card Type_: Group by card type. This is the default grouping. This grouping
+treats multi-type cards, such as _"Action Modifier/Combat"_ cards as belonging
+to both the _"Action Modifier"_ and the _"Combat"_ groups.
+* _Expansion_: Group by the expansions the cards have been printed in
+* _Rarity_: Group the cards by the published rarity. 
+* _Multi Card Type_: Like the _Card Type_ grouping, except this treats
+multi-type cards as seperate types. Thus _"Action Modifier/Combat"_ will
+appear as a seperate group, and the cards will not be listed in either the
+_"Action Modifier"_ or _"Combat"_ groups.
+
 h3(#columns_plugin). Select Extra Columns
 
+By default, sutekh only shows the card name for the White Wolf Card List,
+and the number and card name for the card set lists. Additional columns
+to display can be selected using this plugin. The extra columns are:
+
+* _Clan:_ Also display the clan or clans associated with the card
+* _Group:_ Show the group number for the card
+* _Disciplines:_ Show the disciplines associated with the card
+* _Card Type:_ Also show the card type
+* _Expansions:_ Show the expansions this card has been printed in
+* _Capacity:_ Show the capacity associated with this card
+
+The display can be sorted by according to these columns, by clicking on the 
+column header. 
+
+If the icons have been downloaded from the white wolf site, then for the
+appropriate columns, the display can be toggled between the
+_Show Icons and Names_, _Show Text only_, _Show Icons only_ using the radio
+buttons. This option will affect all the selected columns that can use icons.
+
 h3(#set_exp_plugin). Set selected cards to a single expansion
+
+This searches for the common expansions between all the selected cards, and
+allows the user to choose one of these. The physical expansion for all
+the selected cards is set to this common choice. 
 
 h3(#compare_plugin). Compare card set with another Card Set
 

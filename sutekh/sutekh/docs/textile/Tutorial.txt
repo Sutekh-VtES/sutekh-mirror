@@ -289,9 +289,15 @@ h2(#tips). Useful Tips
 h3. Entering card sets
 
 The different show card modes are often useful for entering a card set quickly.
-Start with with "Show all cards" or "Show cards in parent card set" and then
-increment the cards that belong to the card set. Another useful approach is
-to use the "Card Set from Filter" option to create the card set.
+Start with with _"Show all cards"_ or _"Show cards in parent card set"_ and
+then increment the cards that belong to the card set. Another useful approach
+is to use the _"Card Set from Filter"_ option to create the card set.
+
+When importing card sets from from other formats, the expansion information may
+be missing, in which case these cards will have no expansion set. In the case
+where this is a starter deck, for example, the _"Set selection to single
+expansion"_ option from the _Plugins_ menu can be used to set all the cards to
+the correct expansion quickly.
 
 
 "The Sutekh Manual":Manual.html
