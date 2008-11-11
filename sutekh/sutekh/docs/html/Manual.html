@@ -266,8 +266,8 @@ to both the <em>&#8220;Action Modifier&#8221;</em> and the <em>&#8220;Combat&#82
 <li><em>Sect</em>: Group cards by the Sect associated with the card.</li>
 <li><em>Title</em>: Group cards by the political title on the card.</li>
 <li><em>Multi Card Type</em>: Like the <em>Card Type</em> grouping, except this treats 
-multi-type cards as seperate types. Thus <em>&#8220;Action Modifier/Combat&#8221;</em> will 
-appear as a seperate group, and the cards will not be listed in either the 
+multi-type cards as separate types. Thus <em>&#8220;Action Modifier/Combat&#8221;</em> will 
+appear as a separate group, and the cards will not be listed in either the 
 <em>&#8220;Action Modifier&#8221;</em> or <em>&#8220;Combat&#8221;</em> groups.</li>
 </ul>
 
@@ -314,6 +314,35 @@ the selected cards is set to this common choice.</p>
 
 <h3 id="opening_hand_plugin">Simulate Opening Hand</h3>
 
+<p>This plugin treats the card set as a completed deck, and displays the 
+expected distribution of cards in the opening hand and crypt. It is intended 
+to give some idea of how the deck will work in practice. In addition, 
+the plugin can generate example opening hands and crypts via the _Draw sample 
+hand_ button.</p>
+
 <h3 id="prob_plugin">Card draw probabilities</h3>
+
+<p>This plugin displays the probability of drawing the selected cards from either 
+the library or the crypt. Unlike the <em>simulate opening hand</em> plugin, this 
+plugin displays results for longer sequences of drawing cards.</p>
+
+<p>The plugin has the following settings which can be used to change the results.</p>
+
+<ul>
+<li><em>columns in table</em>: This sets the number of draws the columns with 
+probabilities shown in the table and can range from 1 to 8. The first column 
+is always the probably for the opening hand or crypt draw. Subsequent columns 
+are the total probability after also drawing the number of extra cards shown in 
+the column header.</li>
+<li><em>step between columns</em>: This sets the number of cards drawn between columns 
+and ranges from 1 to 10 (defaulting to 1). Each subsequent column after the 
+first of the table shows the probabilities after drawing this number of 
+additional cards.</li>
+<li><em>cards of interest</em>: This sets the number of rows in the table, and can 
+range from 1 to the total number of cards selected.</li>
+</ul>
+
+<p>The selected changes are only applied when the <em>recalculate table</em> button is 
+pressed.</p>
 </body>
 </html>

@@ -234,8 +234,8 @@ class CardDrawSimPlugin(CardListPlugin):
 
         oDescLabel = gtk.Label("Columns are number of draws (X)\n"
                 "rows are the number of cards (Y)\n"
-                "For the first row (0 cards), the entry is the possiblity of"
-                "Not drawing any of the selected cards by the X'th draw\n"
+                "For the first row (0 cards), the entry is the possiblity of "
+                "not drawing any of the selected cards by the X'th draw\n"
                 "For the other rows, the entries are the probability of "
                 "seeing at least the listed cards from the selection\n"
                 "by the X\'th draw with the number in brackets being the "
