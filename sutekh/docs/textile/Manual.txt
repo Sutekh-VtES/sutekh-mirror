@@ -27,6 +27,19 @@ h2. Contents
 ## "Plugins":#cardsets_plugins
 ## "Keyboard Shortcuts":#cardsets_keyboard
 # "Filters":#filters
+# "Plugin List":#plugins
+## "Backup":#backup_plugin
+## "Card Images":#images_plugin
+## "Cluster Cards":#cluster_plugin
+## "Clan Discipline Stats":#stats_plugin
+## "Change Grouping":#grouping_plugin
+## "Select Extra Columns":#columns_plugin
+## "Set selected cards to a single expansion":#set_exp_plugin
+## "Compare card set with another Card Set":#compare_plugin
+## "Analyze Deck":#analyze_plugin
+## "Test Card Set Independence":#indep_plugin
+## "Simulate Opening Hand":#opening_hand_plugin
+## "Card draw probabilities":#prob_plugin
 
 h2(#intro). Introduction
 
@@ -35,18 +48,19 @@ If you are new to Sutekh, try reading "The Sutekh Tutorial":Tutorial.html.
 
 h2(#concepts). Important Concepts
 
-Sutekh is concerned with two different types of objects: Cards and Card Sets.
+Sutekh is concerned with two different types of objects: _Cards_ and
+_Card Sets_.
 
-Cards are the individual cards as described by the official white wolf
+_Cards_ are the individual cards as described by the official white wolf
 card list. Each card describes all the relevant properties of the card,
 such as the clan and discipline requirements, the cost, and the latest
 text for the card.
 
-Card Sets are collections of cards and describe the card and the number of copies
-of that card in the collection. An important concept is that card sets can
-be related in a parent-child hierarchy. A typical setup is to have a single card
-set for the main card collection (usually the *My Collection* card set), and
-other card sets, which represent the constructed decks, as children of this
+_Card Sets_ are collections of cards and describe the card and the number of
+copies of that card in the collection. An important concept is that card sets
+can be related in a parent-child hierarchy. A typical setup is to have a single
+card set for the main card collection (usually the *My Collection* card set),
+and other card sets, which represent the constructed decks, as children of this
 card set, but many other arrangements are possible.
 
 
@@ -65,6 +79,9 @@ The following panes are supported:
 Each pane may have an associated menu for actions specific to that pane.
 The main window has a menu for global actions.
 
+Panes can be easily rearranged. Dragging a pane onto another pane will swap 
+the two panes.
+
 h3(#main_file). File
 
 h3(#main_pane_actions). Pane Actions
@@ -72,6 +89,12 @@ h3(#main_pane_actions). Pane Actions
 This menu allows you to manage the pane. 
 
 h3(#main_plugins). Plugins
+
+The following plugins are available from the main menu:
+
+* "Backup":#backup_plugin
+* "Card Images":#images_plugin
+
 
 h3(#keyboard). Keyboard Shortcuts
 
@@ -86,7 +109,7 @@ using *&lt;Ctrl&gt;-S* (for specify filter), and the current filter can be
 toggled on and off by using *&lt;Ctrl&gt;-T*.
 
 The *&lt;Ctrl&gt;-+* and *&lt;Ctrl&gt;--* shortcuts allow the entire tree displayed in a
-pane to either be fuly expanded or completely collapsed.
+pane to either be fully expanded or completely collapsed.
 
 
 h2(#ww). White Wolf Card List
@@ -99,6 +122,13 @@ h3(#ww_actions). Actions
 h3(#ww_filter). Filter
 
 h3(#ww_plugins). Plugins
+
+The following plugins are available from the White Wolf Card List pane menu:
+
+* "Cluster Cards":#cluster_plugin
+* "Clan Discipline Stats":#stats_plugin
+* "Change Grouping":#grouping_plugin
+* "Select Extra Columns":#columns_plugin
 
 
 h2(#card_text). Card Text
@@ -124,9 +154,23 @@ h3(#cardsets_filter). Filter
 
 h3(#cardsets_plugins). Plugins
 
+The following plugins are available from the card set pane plugins menu:
+
+* "Cluster Cards":#cluster_plugin
+* "Clan Discipline Stats":#stats_plugin
+* "Change Grouping":#grouping_plugin
+* "Select Extra Columns":#columns_plugin
+* "Set selected cards to a single expansion":#set_exp_plugin
+* "Compare card set with another Card Set":#compare_plugin
+* "Analyze Deck":#analyze_plugin
+* "Test Card Set Independence":#indep_plugin
+* "Simulate Opening Hand":#opening_hand_plugin
+* "Card draw probabilities":#prob_plugin
+ 
+
 h3(#cardsets_keyboard). Keyboard Shortcuts
 
-For card sets, the following additional keybaord shortcuts exist.
+For card sets, the following additional keyboard shortcuts exist.
 
 The editable state of the card set can be toggled using *&lt;Ctrl&gt;-E*.
 
@@ -143,3 +187,105 @@ keys have no effect.
 
 
 h2(#filters). Filters
+
+
+
+h2(#plugins). Plugin List
+
+h3(#backup_plugin). Backup
+
+This allows you to either save or restore a full backup of the current
+database. The backup will be saved as a zip file and is independent of the
+database back end Sutekh uses. Consequently, the backup can also be used to
+transfer the complete state between different databases.
+
+There are two options offered by the plugin:
+
+* _Save a Full Backup_
+* _Restore a Full Backup_
+
+_Save a Full Backup_ will save the current state (card sets and their contents)
+to the specified zip file. _Restore a Full Backup_ will import all the card sets
+from the backup. Note that restoring a backup will replace anything currently
+in the database with the contents of the backup.
+
+Backups can be saved at any time. Various actions, such as updating the WW
+card list, will also allow a backup to be saved.
+
+h3(#images_plugin). Card Images
+
+This plugin allows configuring the card images pane. 
+
+h3(#cluster_plugin). Cluster Cards
+
+h3(#stats_plugin). Clan Discipline Stats
+
+h3(#grouping_plugin). Change Grouping
+
+By default, Sutekh groups the cards into the separate card types. The grouping
+used can be changed via this menu option.
+
+The following groupings are available:
+
+* _Clans and Creeds_: Group cards by the either clan or the creed associated
+with the card. This treats the Imbued Creeds as if they were Vampire Clans.
+* _Disciplines and Virtues_: Group cards by the either the disciplines or the
+virtues on the card. This treats the Imbued Virtues as if they were Vampire
+Disciplines.
+* _Crypt or Library_: Split the card list into crypt and library cards
+* _Card Type_: Group by card type. This is the default grouping. This grouping
+treats multi-type cards, such as _"Action Modifier/Combat"_ cards as belonging
+to both the _"Action Modifier"_ and the _"Combat"_ groups.
+* _Expansion_: Group by the expansions the cards have been printed in
+* _Rarity_: Group the cards by the published rarity.
+* _Sect_: Group cards by the Sect associated with the card.
+* _Title_: Group cards by the political title on the card.
+* _Multi Card Type_: Like the _Card Type_ grouping, except this treats
+multi-type cards as seperate types. Thus _"Action Modifier/Combat"_ will
+appear as a seperate group, and the cards will not be listed in either the
+_"Action Modifier"_ or _"Combat"_ groups.
+
+h3(#columns_plugin). Select Extra Columns
+
+By default, sutekh only shows the card name for the White Wolf Card List,
+and the number and card name for the card set lists. Additional columns
+to display can be selected using this plugin. The extra columns are:
+
+* _Clans and Creeds:_ Also display the clans or creeds associated with the
+card.
+* _Group:_ Show the group number for the card.
+* _Disciplines and Virtues:_ Show the Disciplines and Virtues associated with
+the card.
+* _Card Type:_ Also show the card type.
+* _Expansions:_ Show the expansions this card has been printed in.
+* _Capacity or Life(Imbued):_ Show the capacity associated with this card, or
+the life for the Imbued crypt cards. Ally & retainer life is not shown.
+* _Sect_: Show the Sect associated with the card.
+* _Title_: Show the political title possessed by the vampire card.
+* _Card Text_: Show the text printed on the card.
+
+The display can be sorted by according to these columns, by clicking on the 
+column header. 
+
+If the icons have been downloaded from the white wolf site, then for the
+appropriate columns, the display can be toggled between the
+_Show Icons and Names_, _Show Text only_, _Show Icons only_ using the radio
+buttons. This option will affect all the selected columns that can use icons.
+
+h3(#set_exp_plugin). Set selected cards to a single expansion
+
+This searches for the common expansions between all the selected cards, and
+allows the user to choose one of these. The physical expansion for all
+the selected cards is set to this common choice. 
+
+h3(#compare_plugin). Compare card set with another Card Set
+
+h3(#analyze_plugin). Analyze Deck
+
+h3(#indep_plugin). Test Card Set Independence
+
+h3(#opening_hand_plugin). Simulate Opening Hand
+
+h3(#prob_plugin). Card draw probabilities
+
+

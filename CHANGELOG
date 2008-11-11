@@ -1,3 +1,22 @@
+11 Nov 2008
+ * Add groupings for Sect and Title.
+   (backport of r1607)
+ * Add extra columns for Sect, Title and card text.
+   (backport of r1607)
+
+10 Nov 2008
+ * Change Groupings to include Imbued:
+   - Change ClanGrouping to include Creeds
+   - Change DisciplineGrouping to include Virtues
+   (backport of r1606)
+ * Change Extra Columns to include Imbued:
+   - Change Clan column to Clans & Creeds
+   - Change Discipline to Disciplines & Virtues
+   - Change Capacity to Capacity & Life (Imbued)
+   (backport of r1606)
+ * Documentation for some plugins including the backup plugin.
+   (backport of r1604 and r1605) 
+
 08 Nov 2008
  * Retrieve version info from SutekhInfo when building Windows installer.
    (backport of r1601)
