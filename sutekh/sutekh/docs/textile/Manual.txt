@@ -86,7 +86,26 @@ h3(#main_file). File
 
 h3(#main_pane_actions). Pane Actions
 
-This menu allows you to manage the pane. 
+This menu allows you to manage the panes in Sutekh.  The _Pane Actions_ menu has
+the following options:
+
+* _Equalize pane sizes_: This rearranges the panes so that each pane has the
+same width, and panes which are split vertically all have the same height.
+* _Split current pane horizontally_: This splits the currently active pane
+into the currently active pane and a new pane to the immediate right of the
+active pane. The two panes of the same height, and half the width of the
+pane being split.
+* _Split current pane vertically_: This splits the currently active pane
+into the currently active pane and a new pane below the active pane. The two
+panes of the same width, and half the height of the pane being split. It is not
+possible to split panes vertically multiple times.
+* _Add New Pane_: This adds a new pane of the chosen type to the far right of
+the main window. 
+* _Replace Pane_: This opens a submenu, where the currently active pane
+can be replaced with any of the available options.
+* _Close Pane_: This closes the currently active pane
+ 
+
 
 h3(#main_plugins). Plugins
 
