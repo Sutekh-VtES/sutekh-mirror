@@ -159,20 +159,20 @@ class MainMenu(SutekhMenu):
 
     def _add_replace_submenu(self, oMenuWidget):
         """Create a submenu for the replace pane options"""
-        oReplaceMenu = self.create_submenu(oMenuWidget, 'Replace Pane')
+        self.__oReplaceMenu = self.create_submenu(oMenuWidget, 'Replace Pane')
 
         self.__oReplacePCLPane = self.create_menu_item("Replace current pane"
-                " with White Wolf Card List", oReplaceMenu,
+                " with White Wolf Card List", self.__oReplaceMenu,
                 self._oMainWindow.replace_with_physical_card_list)
         self.__oReplacePCLPane.set_sensitive(True)
 
         self.__oReplaceCardText = self.create_menu_item("Replace current pane"
-                " with Card Text Pane", oReplaceMenu,
+                " with Card Text Pane", self.__oReplaceMenu,
                 self._oMainWindow.replace_with_card_text)
         self.__oReplaceCardText.set_sensitive(True)
 
         self.__oReplacePCSListPane = self.create_menu_item("Replace current"
-                " pane with Card Set List", oReplaceMenu,
+                " pane with Card Set List", self.__oReplaceMenu,
                 self._oMainWindow.replace_with_pcs_list)
         self.__oReplacePCSListPane.set_sensitive(True)
 
@@ -196,6 +196,7 @@ class MainMenu(SutekhMenu):
     def del_pane_set_sensitive(self, bValue):
         """Set the 'pane can be removed' option to bValue"""
         self.__oDelPane.set_sensitive(bValue)
+        self.__oReplaceMenu.get_attach_widget().set_sensitive(bValue)
 
     def add_card_text_set_sensitive(self, bValue):
         """Set the options for adding the Card Text Frame to bValue"""
