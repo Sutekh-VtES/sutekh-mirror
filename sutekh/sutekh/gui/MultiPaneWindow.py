@@ -379,6 +379,7 @@ class MultiPaneWindow(gtk.Window):
         if self._oFocussed:
             # Can always split horizontally
             self.__oMenu.set_split_horizontal_active(True)
+            self.__oMenu.replace_pane_set_sensitive(True)
             # But we can't split vertically more than once
             if isinstance(self._oFocussed.get_parent(), gtk.VPaned):
                 self.__oMenu.set_split_vertical_active(False)
@@ -399,6 +400,7 @@ class MultiPaneWindow(gtk.Window):
             self.__oMenu.set_split_horizontal_active(False)
             # Can't delete either
             self.__oMenu.del_pane_set_sensitive(False)
+            self.__oMenu.replace_pane_set_sensitive(False)
 
     def set_selection_text(self, sText):
         """Set the current selection text for copy+paste."""

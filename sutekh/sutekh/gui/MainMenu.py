@@ -196,6 +196,9 @@ class MainMenu(SutekhMenu):
     def del_pane_set_sensitive(self, bValue):
         """Set the 'pane can be removed' option to bValue"""
         self.__oDelPane.set_sensitive(bValue)
+
+    def replace_pane_set_sensitive(self, bValue):
+        """Set the 'replace pane' option to bValue"""
         self.__oReplaceMenu.get_attach_widget().set_sensitive(bValue)
 
     def add_card_text_set_sensitive(self, bValue):
