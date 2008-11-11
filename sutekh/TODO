@@ -42,6 +42,9 @@ Gui (Presentation):
  * Parse in a GTK rc file? (http://www.moeraki.com/pygtktutorial/pygtk2tutorial/ch-GtkRcFiles.html)
  * Allow colouring options for the cards
  * Add more keyboard shortcuts
+ * Disable set_fixed_height_mode on TreeView cells so that the card text extra column
+   can be changed to render across multiple lines without breaking layout. This
+   will require some other way of dealing with the TreeView jumping bug.
 
 Website:
  * Create documentation.
