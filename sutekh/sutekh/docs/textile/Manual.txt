@@ -84,6 +84,30 @@ the two panes.
 
 h3(#main_file). File
 
+The file menu has the following options.
+
+* _Import Card Set_: Import a card set from a existing file. The following
+file types are supported:
+** _Load Card Set from File_: Loads a card set saved in Sutekh's XML file
+format.
+** _Import CSV File_: Imports a card set from a comma-separated value file,
+as produced by a spreadsheet. This allows the columns for card set, number
+and expansion to be selected. 
+** _Import ARDB or ELDB Card Set_: Imports a file saved by either ARDB and
+FELDB.
+* _Import new White Wolf Card List and rulings_: Update the database with
+a new cardlist and/or rulings file. The files can either be local, or
+they can be downloaded from the White Wolf website directly.
+* _Download VTES icons_: Attempt to download the icons from the White Wolf
+website.
+* _Preferences_: Manages various preferences.
+** _Save Current Pane Set_: Saves the current configuration of the panes. 
+** _Save Pane Set on Exit_: Saves the pane configuration when Sutekh exits.
+** _Save Exact Pane Positions_: Saves the exact pane positions on exit.
+** _Save Window Size_: Save the window size on exit.
+* _Restore saved configuration_: Restores the panes to the saved configuration.
+* _Quit_: Exit Sutekh
+
 h3(#main_pane_actions). Pane Actions
 
 This menu allows you to manage the panes in Sutekh.  The _Pane Actions_ menu has
@@ -104,7 +128,6 @@ the main window.
 * _Replace Pane_: This opens a submenu, where the currently active pane
 can be replaced with any of the available options.
 * _Close Pane_: This closes the currently active pane
- 
 
 
 h3(#main_plugins). Plugins
