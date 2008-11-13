@@ -319,6 +319,7 @@ to both the _"Action Modifier"_ and the _"Combat"_ groups.
 * _Rarity_: Group the cards by the published rarity.
 * _Sect_: Group cards by the Sect associated with the card.
 * _Title_: Group cards by the political title on the card.
+* _Cost_: Group cards by the cost on the card.
 * _Multi Card Type_: Like the _Card Type_ grouping, except this treats
 multi-type cards as separate types. Thus _"Action Modifier/Combat"_ will
 appear as a separate group, and the cards will not be listed in either the
