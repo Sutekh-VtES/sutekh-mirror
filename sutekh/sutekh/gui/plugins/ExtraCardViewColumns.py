@@ -106,7 +106,7 @@ class ExtraCardViewColumns(CardListPlugin):
             aTypes.sort()
             aIcons = []
             if bGetIcons:
-                dIcons = self.iconmanager.get_icon_list(oCard.cardtype)
+                dIcons = self.icon_manager.get_icon_list(oCard.cardtype)
                 if dIcons:
                     aIcons = [dIcons[x] for x in aTypes]
             return " /|".join(aTypes).split("|"), aIcons
@@ -126,7 +126,7 @@ class ExtraCardViewColumns(CardListPlugin):
             if aClans:
                 aClans.sort()
                 if bGetIcons:
-                    dIcons = self.iconmanager.get_icon_list(oCard.clan)
+                    dIcons = self.icon_manager.get_icon_list(oCard.clan)
                     if dIcons:
                         aIcons = [dIcons[x] for x in aClans]
                 return " /|".join(aClans).split("|"), aIcons
@@ -134,7 +134,7 @@ class ExtraCardViewColumns(CardListPlugin):
                 aCreed = [x.name for x in oCard.creed]
                 aCreed.sort()
                 if bGetIcons:
-                    dIcons = self.iconmanager.get_icon_list(oCard.creed)
+                    dIcons = self.icon_manager.get_icon_list(oCard.creed)
                     if dIcons:
                         aIcons = [dIcons[x] for x in aCreed]
                 return " /|".join(aCreed).split("|"), aIcons
@@ -157,7 +157,7 @@ class ExtraCardViewColumns(CardListPlugin):
             if aInfo:
                 aInfo.sort(key=lambda x: x[0])
                 if bGetIcons:
-                    dIcons = self.iconmanager.get_icon_list(oCard.discipline)
+                    dIcons = self.icon_manager.get_icon_list(oCard.discipline)
                     aIcons = [dIcons[x[1]] for x in aInfo]
                 else:
                     aIcons = []
@@ -168,7 +168,7 @@ class ExtraCardViewColumns(CardListPlugin):
                 if aInfo:
                     aInfo.sort()
                     if bGetIcons:
-                        dIcons = self.iconmanager.get_icon_list(oCard.virtue)
+                        dIcons = self.icon_manager.get_icon_list(oCard.virtue)
                         aIcons = [dIcons[x] for x in aInfo]
                     else:
                         aIcons = []

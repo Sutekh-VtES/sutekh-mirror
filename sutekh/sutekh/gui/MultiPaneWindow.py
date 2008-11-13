@@ -128,9 +128,6 @@ class MultiPaneWindow(gtk.Window):
     # Needed for Backup plugin
     cardLookup = property(fget=lambda self: self._oCardLookup,
         doc="Used if user instance is needed to identify card names.")
-    iconManager = property(fget=lambda self: self._oIconManager,
-        doc="Used to lookup icons for disciplines, clans, etc.")
-
     # Needed for plugins
     plugin_manager = property(fget=lambda self: self._oPluginManager,
             doc="The plugin manager for the application")
@@ -141,9 +138,9 @@ class MultiPaneWindow(gtk.Window):
     focussed_pane = property(fget=lambda self: self._oFocussed,
             doc="The currently focussed pane.")
     mainwindow = property(fget=lambda self: self,
-            doc="Return reference to the window")
+            doc="Return reference to the main window")
     icon_manager = property(fget=lambda self: self._oIconManager,
-            doc="Return reference to the window")
+            doc="Used to lookup icons for disciplines, clans, etc.")
 
     # pylint: enable-msg=W0212
 
