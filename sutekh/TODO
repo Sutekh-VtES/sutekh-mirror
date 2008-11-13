@@ -45,6 +45,7 @@ Gui (Presentation):
  * Disable set_fixed_height_mode on TreeView cells so that the card text extra column
    can be changed to render across multiple lines without breaking layout. This
    will require some other way of dealing with the TreeView jumping bug.
+ * Enable setting default grouping, etc. for newly opened card set panes.
 
 Website:
  * Create documentation.
