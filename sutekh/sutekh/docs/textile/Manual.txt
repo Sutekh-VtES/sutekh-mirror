@@ -138,6 +138,13 @@ white wolf card list.
 
 h3(#ww_actions). Actions
 
+The Actions menu allows the following actions:
+
+* _Show card expansions_: Toggles between showing the card expansions each
+card was printed in below the card name in the list.
+* _Expand All_: Expands all the items in the tree.
+* _Collapse All_: Collapse the tree as far as possible.
+
 h3(#ww_filter). Filter
 
 h3(#ww_plugins). Plugins
@@ -166,6 +173,55 @@ h3(#card_set_list_filter). Filter
 h2(#cardsets). Card Sets
 
 h3(#cardsets_actions). Actions
+
+The Actions menu allows the following actions:
+
+* _Edit Card Set Properties_: This allows the card set name, author & comment
+to be changed, allows the parent of the card set to be changed, and allows
+annotations to be added to the card set.
+* _Save Card Set to File_: This allows the card set to be saved to Sutekh's
+XML format
+* _Export Card Set_: This allows the card set to be exported to other file
+formats. The Currently supported options are:
+** _CSV_: A comma separated format suitable for importing into spreadsheets
+** _FELDB file_: Export to a file that can be imported into the FELDB card
+manager
+** _ARDB XML_: Export to a file that can be imported into the ARDB card manager
+** _HTML_: Export to a nice HTML file, similar to that produced by ARDB
+** _ARDB Text_: Export to a text file, similar to that produced by ARDB
+* _Cards To Show_: This sets which cards are displayed. The options are:
+** _This Set Only_: Show only the cards in this card set.
+** _Show All Cards_: Show all the cards in the WW list. Cards not in this card
+set will have a count of 0
+** _Show all cards in parent card set_: Show all the cards in this card set as
+well as any cards in the parent card set that are not in this card set.
+** _Show all cards in child card sets_: Show all the cards in this card set as
+well as any cards in those child card sets marked as _In Use_ that are not in
+this card set.
+* _Display Mode_: Controls which additional information is displayed below the
+card names in the tree. The options are:
+** _Show No Children_: Nothing is displayed below the card name
+** _Show Expansions_: Show the card counts for each expansion specified
+** _Show Child Card Sets_: Show the counts for those child card sets marked as
+_In Use_
+** _Show Expansions + Child Card Sets_: Show the expansions counts, and below
+them, show the child card sets marked _In Use_
+** _Show Child Card Set and Expansions_: Show the child card sets and, below
+them, show the expansion information.
+* _Parent Count Mode_: For card sets with a parent set, this controls how the
+_Parent count_ column is displayed. The options are:
+** _Don't show parent card counts_: Hide the parent count column
+** _Show parent count_: Just show the parent count. If the count for this
+card set exceeds the parent count, this number is shown in red.
+** _Show difference between parent count and this card set_: Displays the
+difference between the parent card count and this card set. If this number
+is negative, it is shown in red.
+** _Show difference between Parent Count and card sets in use_: Show difference
+between parent count and all total amongst all the card sets marked in use. If
+this number is negative, it is shown in red. 
+* _Expand All_: Expands all the items in the tree.  _Collapse All_: Collapse
+* the tree as far as possible.  _Delete Card Set_: Delete the card set from the
+* database.  _Print Card Set_: Print the card set.
 
 h3(#cardsets_edit). Edit
 
