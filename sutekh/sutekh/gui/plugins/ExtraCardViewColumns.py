@@ -28,7 +28,8 @@ class ExtraCardViewColumns(CardListPlugin):
             'Disciplines and Virtues' : 150,
             'Expansions' : 600,
             'Group' : 40,
-            'Capacity or Life(Imbued)' : 40
+            'Capacity or Life(Imbued)' : 40,
+            'Cost' : 100,
             }
 
     _dModes = {
@@ -51,6 +52,7 @@ class ExtraCardViewColumns(CardListPlugin):
         self._dCols['Sect'] = self._render_sect
         self._dCols['Card Text'] = self._render_card_text
         self._dCols['Capacity or Life(Imbued)'] = self._render_capacity
+        self._dCols['Cost'] = self._render_cost
 
         self._dSortDataFuncs = {}
         self._dSortDataFuncs['Card Type'] = self._get_data_cardtype
@@ -64,6 +66,7 @@ class ExtraCardViewColumns(CardListPlugin):
         self._dSortDataFuncs['Card Text'] = self._get_data_card_text
         self._dSortDataFuncs['Capacity or Life(Imbued)'] = \
                 self._get_data_capacity
+        self._dSortDataFuncs['Cost'] = self._get_data_cost_sortkey
 
         self._dCardCache = {} # Used for sorting
         self._iShowMode = SHOW_ICONS_AND_TEXT
@@ -228,6 +231,43 @@ class ExtraCardViewColumns(CardListPlugin):
             oCell.set_data([str(iCap)], aIcons, SHOW_TEXT_ONLY)
         else:
             oCell.set_data([""], aIcons, SHOW_TEXT_ONLY)
+
+    def _get_data_cost(self, oCard, bGetIcons=True):
+        """Get the cards capacity"""
+        if not oCard is None and not oCard.cost is None:
+            return oCard.cost, oCard.costtype, [None]
+        return 0, "", [None]
+
+    def _get_data_cost_sortkey(self, oCard, bGetIcons=True):
+        """Get the sort key for sorting by cost.
+
+           We want to group the cost types together, since the different
+           types aren't comparable, hence the key is constructed as
+           costtype + cost.
+           We ensure that cost X cards sort after other values.
+           """
+        iCost, sCostType, aIcons = self._get_data_cost(oCard, bGetIcons)
+        if iCost > 0:
+            sKey = "%s %d" % (sCostType, iCost)
+        elif iCost == -1:
+            sKey = "%s X" % sCostType
+        else:
+            sKey = ""
+        return sKey, aIcons
+
+    def _render_cost(self, oColumn, oCell, oModel, oIter):
+        """Display cost in the column"""
+        oCard = self._get_card(oIter)
+        iCost, sCostType, aIcons = self._get_data_cost(oCard)
+        if iCost > 0:
+            oCell.set_data(["%d %s" % (iCost, sCostType)], aIcons,
+                SHOW_TEXT_ONLY)
+        elif iCost == -1:
+            oCell.set_data(["X %s" % sCostType], aIcons,
+                SHOW_TEXT_ONLY)
+        else:
+            oCell.set_data([""], aIcons, SHOW_TEXT_ONLY)
+
 
     def _get_data_title(self, oCard, bGetIcons=True):
         """Get the card's title."""

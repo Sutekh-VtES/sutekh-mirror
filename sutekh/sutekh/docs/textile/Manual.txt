@@ -342,9 +342,13 @@ the life for the Imbued crypt cards. Ally & retainer life is not shown.
 * _Sect_: Show the Sect associated with the card.
 * _Title_: Show the political title possessed by the vampire card.
 * _Card Text_: Show the text printed on the card.
+* _Cost: Show the cost of the card.
 
 The display can be sorted by according to these columns, by clicking on the 
-column header. 
+column header. When cards have equal values, they are sorted by the card name.
+Because the different cost types aren't comparable, the
+cost column groups each distinct cost type together and sorts within the
+cost types.
 
 If the icons have been downloaded from the white wolf site, then for the
 appropriate columns, the display can be toggled between the
