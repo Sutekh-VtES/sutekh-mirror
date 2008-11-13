@@ -85,7 +85,7 @@ class SutekhMenu(gtk.MenuBar):
     # pylint: enable-msg=R0913
 
     def create_menu_item_with_submenu(self, oTopLevelMenu, sName):
-        """Create a MenuItme and a submenu, returning the menu_item"""
+        """Create a MenuItem and a submenu, returning the menu_item"""
         oMenuItem = gtk.MenuItem(sName)
         oMenuLabel = oMenuItem.get_child()
         self._dMenuLabels[oMenuLabel] = oMenuLabel.get_label()
