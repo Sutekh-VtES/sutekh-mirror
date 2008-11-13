@@ -43,3 +43,8 @@ class PhysicalCardController(object):
         """Toggle whether the expansion information is shown."""
         self.__oModel.bExpansions = oWidget.active
         self.__oView.reload_keep_expanded()
+
+    def toggle_icons(self, oWidget):
+        """Toggle the icons display"""
+        self.__oModel.bUseIcons = oWidget.active
+        self.__oView.reload_keep_expanded()

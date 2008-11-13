@@ -40,6 +40,11 @@ class CardListView(gtk.TreeView, object):
 
         self._oSelection.connect('changed', self.card_selected)
 
+        # Only enable icons if it's available (so we don't break GuiCardLookup)
+        if hasattr(oMainWindow, '_oIconManager') and \
+                hasattr(oModel, 'oIconManager'):
+            oModel.oIconManager = oMainWindow._oIconManager
+
         self._oSelection.set_select_function(self.can_select)
         tGtkVersion = gtk.gtk_version
         if tGtkVersion[0] == 2 and \

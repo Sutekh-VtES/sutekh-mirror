@@ -142,6 +142,8 @@ The Actions menu allows the following actions:
 
 * _Show card expansions_: Toggles between showing the card expansions each
 card was printed in below the card name in the list.
+* _Show icons for the grouping_: Toggles whether icons are shown for the top
+level grouping (when available) are not.
 * _Expand All_: Expands all the items in the tree.
 * _Collapse All_: Collapse the tree as far as possible.
 
@@ -219,6 +221,8 @@ is negative, it is shown in red.
 ** _Show difference between Parent Count and card sets in use_: Show difference
 between parent count and all total amongst all the card sets marked in use. If
 this number is negative, it is shown in red. 
+* _Show icons for the grouping_: Toggles whether icons are shown for the top
+level grouping (when available) are not.
 * _Expand All_: Expands all the items in the tree.  _Collapse All_: Collapse
 * the tree as far as possible.  _Delete Card Set_: Delete the card set from the
 * database.  _Print Card Set_: Print the card set.

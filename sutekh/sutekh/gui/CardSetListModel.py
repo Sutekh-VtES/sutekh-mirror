@@ -144,7 +144,7 @@ class CardSetCardListModel(CardListModel):
             # Showing nothing
             sText = self._get_empty_text()
             self.oEmptyIter = self.insert_before(None, None, (sText,
-                self.format_count(0), '0', False, False))
+                self.format_count(0), '0', False, False, [], []))
 
     def load(self):
         # pylint: disable-msg=R0914
@@ -188,18 +188,32 @@ class CardSetCardListModel(CardListModel):
                 oChildIter = self.insert_before(oSectionIter, None,
                     (oCard.name, self.format_count(iCnt),
                         self.format_parent_count(iParCnt, iCnt),
-                        bIncCard, bDecCard)
+                        bIncCard, bDecCard, [], [])
                 )
                 self._dName2Iter.setdefault(oCard.name, []).append(oChildIter)
                 self._add_children(oChildIter, oRow)
             # Update Group Section
-            self.set(oSectionIter,
-                0, sGroup,
-                1, self.format_count(iGrpCnt),
-                2, self.format_parent_count(iParGrpCnt, iGrpCnt),
-                3, False,
-                4, False
-            )
+            aTexts, aIcons = self.lookup_icons(sGroup)
+            if aTexts:
+                self.set(oSectionIter,
+                        0, sGroup,
+                        1, self.format_count(iGrpCnt),
+                        2, self.format_parent_count(iParGrpCnt, iGrpCnt),
+                        3, False,
+                        4, False,
+                        5, aTexts,
+                        6, aIcons,
+                        )
+            else:
+                self.set(oSectionIter,
+                        0, sGroup,
+                        1, self.format_count(iGrpCnt),
+                        2, self.format_parent_count(iParGrpCnt, iGrpCnt),
+                        3, False,
+                        4, False,
+                        5, [],
+                        6, [],
+                        )
 
         self._check_if_empty()
 
@@ -246,7 +260,8 @@ class CardSetCardListModel(CardListModel):
         self.set(oIter, 1, self.format_count(iCnt),
                 2, self.format_parent_count(iParCnt, iCnt),
                 3, bIncCard,
-                4, bDecCard)
+                4, bDecCard
+                )
 
     def _add_extra_level(self, oParIter, sName, tInfo):
         """Add an extra level iterator to the card list model."""
@@ -254,7 +269,7 @@ class CardSetCardListModel(CardListModel):
         # insert_before(x, None) appends the Iter
         oIter = self.insert_before(oParIter, None, (sName,
             self.format_count(iCnt), self.format_parent_count(iParCnt, iCnt),
-            bIncCard, bDecCard))
+            bIncCard, bDecCard, [], []))
         iDepth = self.iter_depth(oIter)
         if iDepth == 2:
             sCardName = self.get_name_from_iter(oParIter)
@@ -419,6 +434,8 @@ class CardSetCardListModel(CardListModel):
             oCSFilter = FilterAndBox([self._dCache['child filters'][
                 sCardSetName], oFilter])
             for oCard in oCSFilter.select(self.cardclass).distinct():
+                # pylint: disable-msg=E1101
+                # Pyprotocols confuses pylint
                 oPhysCard = IPhysicalCard(oCard)
                 sExpName = self.get_expansion_name(oPhysCard.expansion)
                 dResult.setdefault(sExpName, 0)
@@ -795,9 +812,17 @@ class CardSetCardListModel(CardListModel):
             else:
                 iGrpCnt = 0
                 iParGrpCnt = 0
-                oSectionIter = self.insert_before(None, None, (sGroup,
-                    self.format_count(iGrpCnt),
-                    self.format_parent_count(0, iGrpCnt), False, False))
+                aTexts, aIcons = self.lookup_icons(sGroup)
+                if aTexts:
+                    oSectionIter = self.insert_before(None, None, (sGroup,
+                        self.format_count(iGrpCnt),
+                        self.format_parent_count(0, iGrpCnt), False, False,
+                        aTexts, aIcons))
+                else:
+                    oSectionIter = self.insert_before(None, None, (sGroup,
+                        self.format_count(iGrpCnt),
+                        self.format_parent_count(0, iGrpCnt), False, False,
+                        [], []))
                 self._dGroupName2Iter[sGroup] = oSectionIter
             # Add Cards
             for oCard, oRow in oGroupIter:
@@ -816,7 +841,7 @@ class CardSetCardListModel(CardListModel):
                 oChildIter = self.insert_before(oSectionIter, None,
                     (oCard.name, self.format_count(iCnt),
                         self.format_parent_count(iParCnt, iCnt),
-                        bIncCard, bDecCard)
+                        bIncCard, bDecCard, [], [])
                 )
                 self._dName2Iter.setdefault(oCard.name, []).append(oChildIter)
                 # Handle as for loading

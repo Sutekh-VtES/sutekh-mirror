@@ -119,6 +119,10 @@ class CardSetMenu(CardListMenu):
             oParentCountMenu.add(oItem)
             oItem.connect("toggled", self._change_parent_count_mode, iValue,
                     False)
+
+        self.create_check_menu_item('Show icons for the grouping',
+                oMenu, self.__oController.toggle_icons, True)
+
         oMenu.add(gtk.SeparatorMenuItem())
         self.add_common_actions(oMenu)
 
