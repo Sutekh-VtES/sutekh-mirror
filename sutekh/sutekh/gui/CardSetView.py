@@ -357,10 +357,10 @@ class CardSetView(CardListView):
             return oColor1.to_string() == oColor2.to_string()
 
         oCurStyle = self.rc_get_style()
-        # For card sets that start empty, oNumCell will be the wrong colour,
-        # but, because of how CellRenderers interact with styles, oNameCell
-        # will be the right one here
-        self.oCellColor = self.oNameCell.get_property('foreground-gdk')
+        # Styles don't seem to be applied to TreeView text, so we default
+        # to black text for non-editable, and work out editable from the
+        # style
+        self.oCellColor = gtk.gdk.color_parse('black')
         oCurBackColor = oCurStyle.base[gtk.STATE_NORMAL]
         self.set_name('editable_view')
         oDefaultSutekhStyle = gtk.rc_get_style_by_paths(self.get_settings(),
