@@ -11,6 +11,7 @@ h2. Contents
 ## "Pane Actions":#main_pane_actions
 ## "Plugins":#main_plugins
 ## "Keyboard Shortcuts":#keyboard
+## "Card Lookup Window":#lookup
 # "White Wolf Card List":#ww
 ## "Actions":#ww_actions
 ## "Filter":#ww_filter
@@ -96,7 +97,8 @@ format.
 as produced by a spreadsheet. This allows the columns for card set, number
 and expansion to be selected. 
 ** _Import ARDB or ELDB Card Set_: Imports a file saved by either ARDB and
-FELDB.
+FELDB. Note that the correct type of file must be specified as well as the
+file name.
 * _Import new White Wolf Card List and rulings_: Update the database with
 a new cardlist and/or rulings file. The files can either be local, or
 they can be downloaded from the White Wolf website directly.
@@ -109,6 +111,9 @@ website.
 ** _Save Window Size_: Save the window size on exit.
 * _Restore saved configuration_: Restores the panes to the saved configuration.
 * _Quit_: Exit Sutekh
+
+When importing card sets, if Sutekh encounters an unknown card, the
+"Card Lookup Window":#lookup is used to identify them.
 
 h3(#main_pane_actions). Pane Actions
 
@@ -155,6 +160,34 @@ toggled on and off by using *&lt;Ctrl&gt;-T*.
 The *&lt;Ctrl&gt;-+* and *&lt;Ctrl&gt;--* shortcuts allow the entire tree displayed in a
 pane to either be fully expanded or completely collapsed.
 
+h3(#lookup). Card Lookup Window
+
+There are various reason why Sutekh my fail to correctly identify a card when
+importing a card set. Names have varying ("Spirit's Touch",
+"The Spirit's Touch"), special characters can be missing, and so forth. When
+this happens, Sutekh prompts for the correct card.
+
+The card lookup window displays two lists - the list of all white wolf cards
+and the list of unknown cards. Below the unknown card list are options
+to specify a "filter"#filters and the apply or unapply the filter.
+
+The unknown Card list has 2 columns, the name of the unknown card and
+the current selection to replace the card, and 3 buttons. The first button
+uses the currently selected card from the full white wolf card list to
+replace the card, the next marks the card as to be ignored, and the
+last applies a filter based on the unknown card name to present a
+list of reasonable options.
+
+Once the replacement cards have been selected, the OK button will create the
+correct card set.
+
+Choosing cancel in the card lookup dialog will abort the entire import, and
+no card set will be created.
+
+If Sutekh cannot identify an expansion in the file, a dialog
+will prompt for the correct replacement. If an impossible card
+and expansion combination is found in the file, the same card lookup dialog
+will be used, except that the expansion as well as the card can be set.
 
 h2(#ww). White Wolf Card List
 
@@ -224,6 +257,9 @@ expansion image_ options when right clicking on the frame.
 
 
 h2(#card_set_list). Card Set List
+
+This pane lists all the card sets defined. The card sets are arranged in
+a hierarchy
 
 h3(#card_set_list_actions). Actions
 
