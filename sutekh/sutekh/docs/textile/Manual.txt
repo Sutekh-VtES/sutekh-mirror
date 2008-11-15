@@ -43,6 +43,7 @@ h2. Contents
 ## "Test Card Set Independence":#indep_plugin
 ## "Simulate Opening Hand":#opening_hand_plugin
 ## "Card draw probabilities":#prob_plugin
+## "Rulebook":#rulebook_plugin
 
 h2(#intro). Introduction
 
@@ -562,3 +563,11 @@ range from 1 to the total number of cards selected.
 
 The selected changes are only applied when the _recalculate table_ button is
 pressed.
+
+h3(#rulebook_plugin). Rulebook
+
+This plugin allows downloading a copy of the rulebook or installing a previously
+downloaded copy. Once downloaded, the rulebook may be opened in a webbrowser
+using the _Rulebook_ item in the _Plugins_ menu on the _Main Window_. To
+download a copy of the rulebook, or update the existing copy, use the
+_Configure Rulebook Plugin_ item in the same menu.
