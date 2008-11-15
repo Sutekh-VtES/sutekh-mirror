@@ -420,12 +420,22 @@ class HtmlHandler(HTMLParser.HTMLParser):
         elif sName == 'title':
             self._bInTitle = True
             return
-        elif sName == 'em':
+        elif sName == 'em' or sName == 'i':
             oTag = self._oTextBuf.create_tag()
             oTag.set_property('style', pango.STYLE_ITALIC)
-        elif sName == 'strong':
+        elif sName == 'strong' or sName == 'b':
             oTag = self._oTextBuf.create_tag()
             oTag.set_property('weight', pango.WEIGHT_BOLD)
+        elif sName == 'font':
+            oTag = self._oTextBuf.create_tag()
+            dFontSize = {
+                '-2': pango.SCALE_X_SMALL,
+                '-1': pango.SCALE_SMALL,
+                '1': pango.SCALE_LARGE,
+                '2': pango.SCALE_X_LARGE,
+            }
+            if 'size' in oAttrs and oAttrs['size'] in dFontSize:
+                oTag.set_property('scale', dFontSize[oAttrs['size']])
 
         self._begin_span(oStyle, oTag)
 
@@ -499,9 +509,11 @@ class HtmlHandler(HTMLParser.HTMLParser):
             pass
         elif sName in ['h1', 'h2', 'h3', 'h4', 'h5', 'h6']:
             pass
-        elif sName == 'em':
+        elif sName == 'em' or sName == 'i':
             pass
-        elif sName == 'strong':
+        elif sName == 'strong' or sName == 'b':
+            pass
+        elif sName == 'font':
             pass
         else:
             warnings.warn("Unhandled start tag '%s'" % sName)
@@ -547,9 +559,11 @@ class HtmlHandler(HTMLParser.HTMLParser):
         elif sName in ['h1', 'h2', 'h3', 'h4', 'h5', 'h6']:
             if not self._oIter.starts_line():
                 self._insert_text("\n")
-        elif sName == 'em':
+        elif sName == 'em' or sName == 'i':
             pass
-        elif sName == 'strong':
+        elif sName == 'strong' or sName == 'b':
+            pass
+        elif sName == 'font':
             pass
         else:
             warnings.warn("Unhandled end tag '%s'" % sName)
