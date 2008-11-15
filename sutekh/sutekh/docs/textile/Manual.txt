@@ -449,6 +449,20 @@ h3(#cluster_plugin). Cluster Cards
 
 h3(#stats_plugin). Clan Discipline Stats
 
+This plugin shows an analysis of all the difference clans in the white wolf
+card list. For each clan, the number of vampires in each clan, the sum of the
+vampire capacities are the most common disciplines are shown. The 
+score for the discipline, and various stats about how the disciplines are
+distributed are also shown.
+
+The tree view can be expanded to show the details for each legal grouping
+combination.
+
+The score is intended to give some indication of how common superior
+disciplines are. Vampires without the discipline score 0 for that
+discipline, vampires with the inferior discipline score 1 and vampires
+with the superior discipline score 2.
+
 h3(#grouping_plugin). Change Grouping
 
 By default, Sutekh groups the cards into the separate card types. The grouping
