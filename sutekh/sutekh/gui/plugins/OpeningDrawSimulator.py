@@ -261,7 +261,7 @@ class OpeningHandSimulator(CardListPlugin):
     # oButton required by function signature
     def _fill_dialog(self, oButton):
         """Fill the dialog with the draw results"""
-        oDialog = SutekhDialog ('Sample Hands', self.parent,
+        oDialog = SutekhDialog('Sample Hands', self.parent,
                 gtk.DIALOG_MODAL|gtk.DIALOG_DESTROY_WITH_PARENT)
         # We need to have access to the back button
         # pylint: disable-msg=E1101

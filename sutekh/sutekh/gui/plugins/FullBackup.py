@@ -159,7 +159,7 @@ class FullBackup(CardListPlugin):
                     # restore successful, refresh display
                     aMessages = oFile.get_warnings()
                     if aMessages:
-                        sMsg = "The follwoing warnings were reported:\n%s" % \
+                        sMsg = "The following warnings were reported:\n%s" % \
                                 "\n".join(aMessages)
                         do_complaint_warning(sMsg)
                     # Id's will not be preserved
