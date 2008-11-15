@@ -32,6 +32,7 @@ Gui (Functionality):
  * Allow easy setting of the expansion when importing cards from file 
  * Convert the repeated functions in the plugins into functions in the plugin 
    API
+ * Include traceback in a details section in do_complaint_*.
 
 Gui (Presentation):
  * Cleanup various dialogs, including
