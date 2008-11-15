@@ -198,17 +198,23 @@ class Expansions(AbbreviationLookup):
         """Return the canonical name of the expansion.
 
            Treats promo's somewhat specially, since each promo release
-           is essentially it's own unique expansion."""
+           is essentially it's own unique expansion.
+
+           Unknown expansions are also allowed in order to make it
+           possible to update to a card list that includes expansions
+           not in the list known to the Expansion class."""
         if sName.startswith('Promo-'):
             return sName
-        return cls._dLook[sName]
+        if sName in cls._dLook:
+            return cls._dLook[sName]
+        return sName
 
     @classmethod
     def shortname(cls, sCanonical):
         """Return the short name for the given expansion."""
         if sCanonical.startswith('Promo-'):
             return 'Promo'
-        if cls.dKeys[sCanonical]:
+        if sCanonical in cls.dKeys and cls.dKeys[sCanonical]:
             return cls.dKeys[sCanonical][0]
         return sCanonical
 
