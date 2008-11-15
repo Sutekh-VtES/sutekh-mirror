@@ -152,9 +152,19 @@ class ACSImporter(CardListPlugin):
         """Create a Abstract card set from the given file object."""
         oHolder = CardSetHolder()
 
-        oParser = cParser(oHolder)
-        for sLine in fIn:
-            oParser.feed(sLine)
+        # pylint: disable-msg=W0703
+        # we really do want all the exceptions
+        try:
+            oParser = cParser(oHolder)
+            for sLine in fIn:
+                oParser.feed(sLine)
+        except Exception, oExp:
+            sMsg = "Reading the card set failed with the following error:\n" \
+                   "%s\n The file is probably not in the format the Parser" \
+                   " expects\nAborting" % oExp
+            do_complaint_error(sMsg)
+            # Fail out
+            return
 
         # Check CS Doesn't Exist
         bContinue = False
@@ -186,7 +196,7 @@ class ACSImporter(CardListPlugin):
         except RuntimeError, oExp:
             sMsg = "Creating the card set failed with the following error:\n"
             sMsg += str(oExp) + "\n"
-            sMsg += "The file is probably not in the format the ELDB Parser" \
+            sMsg += "The file is probably not in the format the Parser" \
                     " expects\n"
             sMsg += "Aborting"
             do_complaint_error(sMsg)
