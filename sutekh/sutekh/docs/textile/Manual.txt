@@ -258,10 +258,31 @@ expansion image_ options when right clicking on the frame.
 
 h2(#card_set_list). Card Set List
 
-This pane lists all the card sets defined. The card sets are arranged in
-a hierarchy
+This pane lists all the card sets defined. The card sets are arranged so that
+child card sets are listed below their parents. 
+
+Card sets can be opened by either double clicking on them, or dragging the card
+set name to an existing pane.
+
+The parent of the card set can be changed by dragging the card set name onto
+the new parent.
+
+Sets can either be marked as _in use_ or _not in use_. This is intended to
+help track which cards are currently available for use in new card sets. 
 
 h3(#card_set_list_actions). Actions
+
+The following actions are available:
+
+* _Create New Card Set_: Creates a new card set.
+* _Edit Card Set Properties_: This allows the card set name, author & comment
+to be changed, allows the parent of the card set to be changed, and allows
+annotations to be added to the card set.
+* _Mark/Unmark Card Set as In Use_: Toggles the card set between _in use_
+and _not in use_.
+* _Delete Card Set_: Deletes the currently selected card set.
+* _Expand All_: Expands all the items in the tree.
+* _Collapse All_: Collapse the tree as far as possible.
 
 h3(#card_set_list_filter). Filter
 
@@ -323,9 +344,10 @@ between parent count and all total amongst all the card sets marked in use. If
 this number is negative, it is shown in red. 
 * _Show icons for the grouping_: Toggles whether icons are shown for the top
 level grouping (when available) are not.
-* _Expand All_: Expands all the items in the tree.  _Collapse All_: Collapse
-* the tree as far as possible.  _Delete Card Set_: Delete the card set from the
-* database.  _Print Card Set_: Print the card set.
+* _Expand All_: Expands all the items in the tree.  
+* _Collapse All_: Collapse the tree as far as possible.
+* _Delete Card Set_: Delete the card set from the database.
+* _Print Card Set_: Print the card set.
 
 h3(#cardsets_edit). Edit
 
