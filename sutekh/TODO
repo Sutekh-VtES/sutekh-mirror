@@ -32,7 +32,11 @@ Gui (Functionality):
  * Allow easy setting of the expansion when importing cards from file 
  * Convert the repeated functions in the plugins into functions in the plugin 
    API
+ * Allow importing card sets from a zip file
+ * Identify file type when importing card sets
+ * Better error detection and handling when importing files
  * Include traceback in a details section in do_complaint_*.
+ * Add a plugin to view the non-card based rulings
 
 Gui (Presentation):
  * Cleanup various dialogs, including
@@ -47,6 +51,7 @@ Gui (Presentation):
    can be changed to render across multiple lines without breaking layout. This
    will require some other way of dealing with the TreeView jumping bug.
  * Enable setting default grouping, etc. for newly opened card set panes.
+ * Improve Filter Edit Dialog
 
 Website:
  * Create documentation.

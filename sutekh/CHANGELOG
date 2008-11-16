@@ -1,3 +1,14 @@
+15 Nov 2008
+ * Add rulebook plugin - use webbrowser to display a copy of the rulebook
+ * Improvements to the HTMLTextView widget
+ * Tweak Abbrevations handling - should mak it easier to import the WW cardlist
+   after new expansions have been released
+ * Misc documentation bits
+
+14 Nov 2008
+ * Fix editable color setting to work with changes needed for icons display
+ * Misc documentation bits
+
 13 Nov 2008
  * Add a cost grouping
  * Add an extra column for card costs
