@@ -22,6 +22,7 @@
 <li><a href="#main_plugins">Plugins</a></li>
 <li><a href="#keyboard">Keyboard Shortcuts</a></li>
 <li><a href="#lookup">Card Lookup Window</a></li>
+<li><a href="#refresh">Refreshing the White Wolf Card List</a></li>
 </ol>
 </li>
 <li><a href="#ww">White Wolf Card List</a>
@@ -132,9 +133,12 @@ and expansion to be selected. </li>
 file name.</li>
 </ul>
 </li>
-<li><em>Import new White Wolf Card List and rulings</em>: Update the database with 
-a new cardlist and/or rulings file. The files can either be local, or 
-they can be downloaded from the White Wolf website directly.</li>
+<li><em>Import new White Wolf Card List and rulings</em>: Update the 
+database with a new cardlist and/or rulings file. The files can either be 
+local, or they can be downloaded from the White Wolf website directly. There 
+may be issues when updating the card list after a new expansion has been 
+published, discussed in the section 
+&#8220;Refreshing the White Wolf Card List&#8221;#refresh</li>
 <li><em>Download <span class="caps">VTES</span> icons</em>: Attempt to download the icons from the White Wolf 
 website.</li>
 <li><em>Preferences</em>: Manages various preferences.
@@ -154,8 +158,8 @@ website.</li>
 
 <h3 id="main_pane_actions">Pane Actions</h3>
 
-<p>This menu allows you to manage the panes in Sutekh.  The <em>Pane Actions</em> menu has 
-the following options:</p>
+<p>This menu allows one to manage the panes in Sutekh.  The <em>Pane Actions</em> menu 
+has the following options:</p>
 
 <ul>
 <li><em>Equalize pane sizes</em>: This rearranges the panes so that each pane has the 
@@ -227,6 +231,20 @@ no card set will be created.</p>
 will prompt for the correct replacement. If an impossible card 
 and expansion combination is found in the file, the same card lookup dialog 
 will be used, except that the expansion as well as the card can be set.</p>
+
+<p>h3(#refresh): Refreshing the White Wolf Card List</p>
+
+<p>This allows Sutekh to update the card list to account for new cards, such 
+as promos and such.</p>
+
+<p>Since Sutekh parses the card list published on the white wolf site for 
+information about the cards, when new expansions are published, Sutekh may 
+require an update to correctly interpret any changes to the cardlist, such as 
+new clans or card types. If the expansion does not introduce any significant 
+changes, Sutekh is able to correctly import the new card list, but may 
+not interpret the new expansion name correctly. If this happens, Sutekh should 
+work fine, but, when updating to a new version of Sutekh, one may need to 
+specify the correct mapping for the expansion when updating the database.</p>
 
 <h2 id="ww">White Wolf Card List</h2>
 
@@ -473,7 +491,7 @@ keys have no effect.</p>
 
 <h3 id="backup_plugin">Backup</h3>
 
-<p>This allows you to either save or restore a full backup of the current 
+<p>This allows one to either save or restore a full backup of the current 
 database. The backup will be saved as a zip file and is independent of the 
 database back end Sutekh uses. Consequently, the backup can also be used to 
 transfer the complete state between different databases.</p>
