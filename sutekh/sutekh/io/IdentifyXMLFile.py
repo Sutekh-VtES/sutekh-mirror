@@ -36,6 +36,7 @@ class IdentifyXMLFile(object):
         self._bParentExists = False
         self._sType = 'Unknown'
         self._sName = None
+        self._sParent = None
 
     # pylint: enable-msg=W0201
 
@@ -45,6 +46,9 @@ class IdentifyXMLFile(object):
             ' XML file')
     parent_exists = property(fget=lambda self: self._bParentExists,
             doc='True if the parent card set already exists in the database')
+    parent = property(fget=lambda self: self._sParent,
+            doc='Name of the parent card set for this set, None if there'
+            ' is no parent')
     exists = property(fget=lambda self: self._bSetExists, doc='True if the'
             ' card set already exists in the database')
     type = property(fget=lambda self: self._sType, doc='The type of the XML '
@@ -77,9 +81,9 @@ class IdentifyXMLFile(object):
             except SQLObjectNotFound:
                 self._bSetExists = False
             if oRoot.attrib.has_key('parent'):
+                self._sParent = oRoot.attrib['parent']
                 try:
-                    sName = oRoot.attrib['parent']
-                    PhysicalCardSet.byName(sName.encode('utf8'))
+                    PhysicalCardSet.byName(self._sParent.encode('utf8'))
                     self._bParentExists = True
                 except SQLObjectNotFound:
                     self._bParentExists = False

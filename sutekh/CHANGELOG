@@ -1,3 +1,6 @@
+16 Nov 2008
+ * Add a plugin to allow importing Sutekh XML files from a zip file
+
 15 Nov 2008
  * Add rulebook plugin - use webbrowser to display a copy of the rulebook
  * Improvements to the HTMLTextView widget

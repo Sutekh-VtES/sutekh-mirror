@@ -32,7 +32,6 @@ Gui (Functionality):
  * Allow easy setting of the expansion when importing cards from file 
  * Convert the repeated functions in the plugins into functions in the plugin 
    API
- * Allow importing card sets from a zip file
  * Identify file type when importing card sets
  * Better error detection and handling when importing files
  * Include traceback in a details section in do_complaint_*.

@@ -34,6 +34,9 @@ h2. Contents
 # "Plugin List":#plugins
 ## "Backup":#backup_plugin
 ## "Card Images":#images_plugin
+## "Import CSV file":#csv_plugin
+## "Import ARDB or ELDB file":#import_plugin
+## "Import card sets from zip file":#import_zip_plugin
 ## "Cluster Cards":#cluster_plugin
 ## "Clan Discipline Stats":#stats_plugin
 ## "Change Grouping":#grouping_plugin
@@ -95,12 +98,14 @@ The file menu has the following options.
 file types are supported:
 ** _Load Card Set from File_: Loads a card set saved in Sutekh's XML file
 format.
-** _Import CSV File_: Imports a card set from a comma-separated value file,
-as produced by a spreadsheet. This allows the columns for card set, number
-and expansion to be selected. 
-** _Import ARDB or ELDB Card Set_: Imports a file saved by either ARDB and
-FELDB. Note that the correct type of file must be specified as well as the
-file name.
+** _Import CSV File_: "Imports a card set from a comma-separated value
+file":#csv_plugin, as produced by a spreadsheet. This allows the columns
+for card set, number and expansion to be selected. 
+** _Import ARDB or ELDB Card Set_: "Imports a file":#import_plugin
+saved by either ARDB and FELDB. Note that the correct type of file must be
+specified as well as the file name.
+** _Import Card Sets from zip file_: Allows one to select "card sets from a zip
+file":#import_zip_plugin to import.
 * _Import new White Wolf Card List and rulings_: Update the
 database with a new cardlist and/or rulings file. The files can either be
 local, or they can be downloaded from the White Wolf website directly. There
@@ -257,7 +262,7 @@ clans and creeds associated with the card, vampire titles, sects and groups,
 capacity and the expansions in which the card was printed.
 
 
-h2(#card_image). Card Image
+h2(#card_image). Card Images
 
 If the "Card Image Plugin":#images_plugin has been configured, this pane
 will display the appropriate card image for each pane. By default, the
@@ -275,6 +280,43 @@ It's possible to cycle through the available expansions by either left clicking
 on the image, or using the _Show next expansion image_ and _Show previous
 expansion image_ options when right clicking on the frame.
 
+
+h2(#csv_plugin) Import CSV file
+
+This allows importing card sets stored as a comma-separated file, commonly
+produced by spreadsheets. The file must contain a column with card names,
+and a column with the card counts, and can optionally contain a column with
+the expansions. When importing the file, the mapping between columns and the
+contents needs to be specified.
+
+If Sutekh cannot correctly interpret a name or expansion, the "Card Lookup
+Window":lookup will be used to resolve the situation.
+
+h2(#import_plugin) Import ARDB or ELDB file
+
+This allows one to import files produced by ARDB or FELDB. The file format
+is not automatically recognised, so it needs to be manually specified.
+
+For some types of file, such as ARDB inventories, the card set name for the
+imported file will need to be specified manually. 
+
+If the name of the card set clashes with an existing name, one will
+be asked to rename the imported card set or cancel the import
+
+h2(#import_zip_plugin) Import card sets from zip file
+
+This plugin allows one to select some of the Sutekh Card Sets included
+in a zip file (such as those produced by the backup plugin) and import them
+into the card set. Unlike the backup plugin, this does not replace any of
+the existing card sets.
+
+After selecting the zip file, one will be asked to select the card sets to
+import from the list of card sets in the zip file. If any of the card sets
+share the same name as an existing card set, one will be asked to either
+rename the card set, or skip importing that card set.
+
+For card sets with parents, if the appropriate parent card set can't be found,
+the card set will be imported with no parent set.
 
 h2(#card_set_list). Card Set List
 
