@@ -678,9 +678,31 @@ the selected cards is set to this common choice.</p>
 
 <h3 id="compare_plugin">Compare card set with another Card Set</h3>
 
+<p>This plugin compares the current card set to a different card set, and displays 
+which cards are common to the card sets, and, for each card set, lists the 
+unique cards.</p>
+
+<p>By default, the plugin ignores the expansions for cards, and considers all 
+cards of the same name as the same, but this behaviour can be changed using the 
+<em>Consider Expansions as well</em> checkbox when selecting the card set to compare 
+to.</p>
+
 <h3 id="analyze_plugin">Analyze Deck</h3>
 
 <h3 id="indep_plugin">Test Card Set Independence</h3>
+
+<p>This tests the current card set against other card sets with the same parent, 
+and considers there are enough cards in the parent card set to simultaneously 
+construct all the selected sets. Multiple decks can be selected from the list 
+of card sets.</p>
+
+<p>The current card set can be tested against all the sets with the same 
+parent marked as in use using the <em>Test against all card sets marked as in use</em> 
+check box when selecting decks to compare against. This check box overrides 
+any selected entries from the list.</p>
+
+<p>The results list all the cards missing from the parent card set, and, for 
+each set which includes the missing cards, the cards for that set are listed.</p>
 
 <h3 id="opening_hand_plugin">Simulate Opening Hand</h3>
 
