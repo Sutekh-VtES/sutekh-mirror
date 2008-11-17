@@ -4,7 +4,7 @@
 # Copyright 2008 Simon Cross <hodgestar+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-"""Downloads a rulebook HTML page and makes it available via the Help menu."""
+"""Downloads rulebook HTML pages and makes them available via the Help menu."""
 
 import gtk
 import os
@@ -22,7 +22,15 @@ from sutekh.io.WwFile import WwFile
 class RulebookConfigDialog(SutekhDialog):
     """Dialog for configuring the Rulebook plugin."""
 
-    WW_RULEBOOK_URL = "http://www.white-wolf.com/vtes/rulebook/rulebook.html"
+    POSSIBLE_FILES = [
+        "Rulebook", "Imbued Rules", "Rulings"
+    ]
+
+    WW_RULEBOOK_URLS = {
+        "Rulebook": "http://www.white-wolf.com/vtes/rulebook/rulebook.html",
+        "Imbued Rules": "http://www.white-wolf.com/vtes/?line=Checklist_NightsOfReckoning",
+        "Rulings": "http://www.white-wolf.com/vtes/index.php?line=rulings",
+    }
 
     def __init__(self, oParent, bFirstTime=False):
         super(RulebookConfigDialog, self).__init__('Configure Rulebook Plugin',
@@ -44,16 +52,38 @@ class RulebookConfigDialog(SutekhDialog):
 
         self.oSourceUrl = gtk.RadioButton(self.oSourceWw,
                 label='Download from other URL')
-        self.oUrlEntry = gtk.Entry()
+
+        # SourceUrl sub-components
+        oUrlSub = gtk.VBox(False, 2)
+        self.dUrlSubEntries = {}
+        for sName in self.POSSIBLE_FILES:
+            oLabel = gtk.Label(sName)
+            oEntry = gtk.Entry()
+            oHBox = gtk.HBox(False, 2)
+            oHBox.pack_start(oLabel)
+            oHBox.pack_start(oEntry)
+            oUrlSub.pack_start(oHBox)
+            self.dUrlSubEntries[sName] = oEntry
 
         self.oSourceFile = gtk.RadioButton(self.oSourceWw,
                 label='Select local file')
-        self.oFileChooser = gtk.FileChooserWidget(
-                action=gtk.FILE_CHOOSER_ACTION_OPEN)
+
+        # SourceFile sub-components
+        oFileSub = gtk.VBox(False, 2)
+        self.dFileSubChoosers = {}
         oHtmlFilter = gtk.FileFilter()
         oHtmlFilter.add_pattern('*.html')
         oHtmlFilter.add_pattern('*.HTML')
-        self.oFileChooser.add_filter(oHtmlFilter)
+        for sName in self.POSSIBLE_FILES:
+            oLabel = gtk.Label(sName)
+            oFileChooser = gtk.FileChooserWidget(
+                action=gtk.FILE_CHOOSER_ACTION_OPEN)
+            oFileChooser.add_filter(oHtmlFilter)
+            oHBox = gtk.HBox(False, 2)
+            oHBox.pack_start(oLabel)
+            oHBox.pack_start(oFileChooser)
+            oFileSub.pack_start(oHBox)
+            self.dFileSubChoosers[sName] = oFileChooser
 
         # box for holding additional widgets for the various source
         # options
@@ -61,9 +91,9 @@ class RulebookConfigDialog(SutekhDialog):
 
         self.oSourceWw.connect('toggled', self._radio_toggled, oSubBox, None)
         self.oSourceUrl.connect('toggled', self._radio_toggled, oSubBox,
-                self.oUrlEntry)
+            oUrlSub)
         self.oSourceFile.connect('toggled', self._radio_toggled, oSubBox,
-                self.oFileChooser)
+            oFileSub)
 
         self.oSourceWw.set_active(True)
 
@@ -90,34 +120,43 @@ class RulebookConfigDialog(SutekhDialog):
     def get_url(self):
         """Get the url selected for download (or None)."""
         if self.oSourceWw.get_active():
-            return self.WW_RULEBOOK_URL
+            return dict(self.WW_RULEBOOK_URLS)
         elif self.oSourceUrl.get_active():
-            return self.oUrlEntry.get_text()
+            return dict([(sName, self.dUrlSubEntries[sName].get_text())
+                for sName in self.POSSIBLE_FILES])
         else:
             return None
 
     def get_file(self):
         """Get the file name selected (or None)."""
         if self.oSourceFile.get_active():
-            return self.oFileChooser.get_filename()
+            return dict([(sName, self.dFileSubChoosers[sName].get_filename())
+                for sName in self.POSSIBLE_FILES])
         else:
             return None
 
 
 class RulebookPlugin(CardListPlugin):
-    """Plugin allowing downloading of a rulebook and making it available
-       via the Help menu.
+    """Plugin allowing downloading of rulebook HTML pages and making them
+       available via the Plugins menu.
        """
     aModelsSupported = ["MainWindow"]
+
+    POSSIBLE_FILES = RulebookConfigDialog.POSSIBLE_FILES
+
+    LOCAL_NAMES = {
+        "Rulebook": "rulebook.html",
+        "Imbued Rules": "imbued.html",
+        "Rulings": "rulings.html",
+    }
 
     # pylint: disable-msg=W0142
     # ** magic OK here
     def __init__(self, *aArgs, **kwargs):
         super(RulebookPlugin, self).__init__(*aArgs, **kwargs)
         self._oRulebookDlg = None
+        self._dMenuItems = None
         self._sPrefsPath = os.path.join(prefs_dir('Sutekh'), 'rulebook')
-        self._oConfigMenuItem = None
-        self._oHelpMenuItem = None
 
     def get_menu_item(self):
         """Overrides method from base class.
@@ -127,17 +166,34 @@ class RulebookPlugin(CardListPlugin):
         if not self.check_versions() or not self.check_model_type():
             return None
 
-        self._oConfigMenuItem = gtk.MenuItem("Configure Rulebook Plugin")
-        self._oConfigMenuItem.connect("activate", self.config_activate)
+        oSubMenu = gtk.Menu()
+        oMenuItem = gtk.MenuItem("Rulebook")
+        oMenuItem.set_submenu(oSubMenu)
 
-        self._oHelpMenuItem = gtk.MenuItem("Rulebook")
-        self._oHelpMenuItem.connect("activate", self.rulebook_activate)
+        oConfigMenuItem = gtk.MenuItem("Configure Rulebook Plugin")
+        oConfigMenuItem.connect("activate", self.config_activate)
+        oSubMenu.add(oConfigMenuItem)
 
-        if not os.path.isfile(os.path.join(self._sPrefsPath, "rulebook.html")):
-            self._oHelpMenuItem.set_sensitive(False)
+        self._dMenuItems = {}
+        for sName in self.POSSIBLE_FILES:
+            oItem = gtk.MenuItem(sName)
+            oItem.connect("activate", self.rulebook_activate, sName)
+            self._dMenuItems[sName] = oItem
+            oSubMenu.add(oItem)
 
-        return [('Plugins', self._oConfigMenuItem),
-                ('Plugins', self._oHelpMenuItem)]
+        self._update_menu()
+
+        return [('Plugins', oMenuItem)]
+
+    def _update_menu(self):
+        """Check for existence of files and update which menu items are active
+           accordingly.
+           """
+        for sName, sFile in self.LOCAL_NAMES.items():
+            if not os.path.isfile(os.path.join(self._sPrefsPath, sFile)):
+                self._dMenuItems[sName].set_sensitive(False)
+            else:
+                self._dMenuItems[sName].set_sensitive(True)
 
     def setup(self):
         """Prompt the user to download/setup the rulebook the first time"""
@@ -157,9 +213,9 @@ class RulebookPlugin(CardListPlugin):
 
     # pylint: disable-msg=W0613
     # oMenuWidget needed by gtk function signature
-    def rulebook_activate(self, oMenuWidget):
-        """Show the rulebook."""
-        sPath = os.path.join(self._sPrefsPath, "rulebook.html")
+    def rulebook_activate(self, oMenuWidget, sName):
+        """Show HTML file associated with the sName."""
+        sPath = os.path.join(self._sPrefsPath, self.LOCAL_NAMES[sName])
         sPath = os.path.abspath(sPath)
         sDrive, sPath = os.path.splitdrive(sPath)
         if sDrive:
@@ -184,33 +240,37 @@ class RulebookPlugin(CardListPlugin):
         bActivateMenu = False
 
         if iResponse == gtk.RESPONSE_OK:
-            sUrl = oConfigDialog.get_url()
-            sFile = oConfigDialog.get_file()
+            dUrls = oConfigDialog.get_url()
+            dFiles = oConfigDialog.get_file()
 
-            if sUrl is not None:
-                if self._download_rulebook(sUrl):
-                    bActivateMenu = True
-                else:
+            if dUrls is not None:
+                if not self._download_files(dUrls):
                     do_complaint_error('Unable to successfully download '
-                                        'rulebook from %s' % (sUrl,))
-            elif sFile is not None:
-                if self._copy_rulebook(sFile):
-                    bActivateMenu = True
-                else:
+                                        'some or all of the rulebook files')
+            elif dFiles is not None:
+                if not self._copy_files(dFiles):
                     do_complaint_error('Unable to successfully copy '
-                                        'rulebook from %s' % (sFile,))
+                                        'some or all of the rulebook files')
             else:
                 # something weird happened
                 pass
 
-        if bActivateMenu:
-            # Update the menu display if needed
-            self._oHelpMenuItem.set_sensitive(True)
+        self._update_menu()
 
         # get rid of the dialog
         oConfigDialog.destroy()
 
-    def _download_rulebook(self, sUrl):
+    def _download_files(self, dUrls):
+        """Download files from a dictionary of sName -> sURL mappings."""
+        bSuccess = True
+        for sName, sUrl in dUrls.items():
+            if not sUrl:
+                continue
+            bResult = self._download_rulebook(sName, sUrl)
+            bSuccess = bSuccess and bResult
+        return bSuccess
+
+    def _download_rulebook(self, sName, sUrl):
         """Download a rulebook from a URL."""
         try:
             oFile = WwFile(sUrl, bUrl=True).open()
@@ -235,29 +295,39 @@ class RulebookPlugin(CardListPlugin):
                 # Just try and download
                 sData = oFile.read()
 
-            return self._save_rulebook(sData)
+            return self._save_rulebook(sName, sData)
         # pylint: disable-msg=W0703
         # We really do want to catch all exceptions here
         except Exception:
             return False
 
-    def _copy_rulebook(self, sFile):
+    def _copy_files(self, dFiles):
+        """Copy files from a dictionary of sName -> sFile mappings."""
+        bSuccess = True
+        for sName, sFile in dFiles.items():
+            if not sFile:
+                continue
+            bResult = self._copy_rulebook(sName, sFile)
+            bSuccess = bSuccess and bResult
+        return bSuccess
+
+    def _copy_rulebook(self, sName, sFile):
         """Copy the rulebook from a local file."""
         try:
             oFile = WwFile(sFile).open()
             sData = oFile.read()
-            return self._save_rulebook(sData)
+            return self._save_rulebook(sName, sData)
         # pylint: disable-msg=W0703
         # We really do want to catch all exceptions here
         except Exception:
             return False
 
-    def _save_rulebook(self, sData):
+    def _save_rulebook(self, sName, sData):
         """Save the data from a rulebook to the preferences folder."""
-        sData = self._clean_rulebook(sData)
+        sData = self._clean_rulebook(sName, sData)
 
         ensure_dir_exists(self._sPrefsPath)
-        sFile = os.path.join(self._sPrefsPath, "rulebook.html")
+        sFile = os.path.join(self._sPrefsPath, self.LOCAL_NAMES[sName])
 
         oFile = file(sFile, 'wb')
         oFile.write(sData)
@@ -268,7 +338,7 @@ class RulebookPlugin(CardListPlugin):
         return False
 
     @staticmethod
-    def _clean_rulebook(sData):
+    def _clean_rulebook(sName, sData):
         """Clean up rulebook HTML"""
         # img tags are always short tags in the WW rulebook file
         oShortTags = set(['hr', 'br', 'img'])
@@ -310,12 +380,19 @@ class RulebookPlugin(CardListPlugin):
         sData = oStartTagRe.sub(fix_start_tag, sData)
         sData = oEndTagRe.sub(fix_end_tag, sData)
 
+        # in rulings, remove everything between header and first
+        # end of first style tag
+        if sName in ("Rulings", "Imbued Rules"):
+            oHdrToStyle = re.compile(r"</head>.*?</style>",
+                re.MULTILINE | re.DOTALL)
+            sData = oHdrToStyle.sub("</head>", sData, 1)
+
         # remove <img> and <script> tags since they're not
         # vital to the rulebook and avoid attempts by the
         # browser to access the network
-        oImgTag = re.compile(r"<(img|script)[^<>]*>",
+        oTagRemove = re.compile(r"<(img|script)[^<>]*>[^<]*(</(img|script)[^<>]*>)?",
             re.MULTILINE)
-        sData = oImgTag.sub("", sData)
+        sData = oTagRemove.sub("", sData)
 
         # unclosed <a name=...>
         oUnclosedName = re.compile(r"(<a name=[^>]*>[^<>]*"
@@ -325,7 +402,8 @@ class RulebookPlugin(CardListPlugin):
         sData = oUnclosedName.sub(r"\g<1></a><p>", sData)
 
         # base url for href's that begin with . or /
-        sBaseUrl = RulebookConfigDialog.WW_RULEBOOK_URL.rsplit("/", 1)[0]
+        sFullUrl = RulebookConfigDialog.WW_RULEBOOK_URLS[sName]
+        sBaseUrl = sFullUrl.rsplit("/", 1)[0]
         oHref = re.compile(r"(?P<start>href=[\"'])(?P<href>[^\"']*)"
                             r"(?P<end>[\"'])")
 
