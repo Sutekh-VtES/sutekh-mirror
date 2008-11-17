@@ -64,24 +64,22 @@ def _display_results(dMissing, oParentCS):
         else:
             sExpansion = "(unspecified expansion)"
         aParentList.append('<span foreground = "blue">'
-                '%s (from: %s)</span> : Missing <span foreground="red">%d'
+                '%s [%s]</span> : Missing <span foreground="red">%d'
                 '</span> copies (used in %s)'
                 % (sCardName, sExpansion, oInfo.iCount, oInfo.format_cs()))
         for sCardSet, iCount in oInfo.dCardSets.iteritems():
             dFormatted.setdefault(sCardSet, [])
-            dFormatted[sCardSet].append('<span foreground="blue">%s (from %s)'
+            dFormatted[sCardSet].append('<span foreground="blue">%s [%s]'
                     '</span>: Missing <span foreground="red">%d</span> copies'
                     ' (%d copies used here)' % (sCardName, sExpansion,
                         oInfo.iCount, iCount))
     oHeading = gtk.Label()
-    oHeading.set_markup('<span foreground = "red">Missing from %s'
-            '</span>' % oParentCS.name)
+    oHeading.set_markup('Missing from %s' % oParentCS.name)
     oNotebook.append_page(AutoScrolledWindow(
         _make_align_list(aParentList), True), oHeading)
     for sCardSet, aMsgs in dFormatted.iteritems():
         oHeading = gtk.Label()
-        oHeading.set_markup('<span foreground = "red">Missing cards in %s'
-                '</span>' % sCardSet)
+        oHeading.set_markup('Missing in %s' % sCardSet)
         oNotebook.append_page(AutoScrolledWindow(
             _make_align_list(aMsgs), True), oHeading)
     # pylint: disable-msg=E1101
