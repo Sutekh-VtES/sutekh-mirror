@@ -80,7 +80,7 @@ class CardSetCompare(CardListPlugin):
                 (gtk.STOCK_OK, gtk.RESPONSE_OK,
                     gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
         oSelect = PhysicalCardSet.select().orderBy('name')
-        oCSList = ScrolledList('Physical Card Sets')
+        oCSList = ScrolledList('Card Sets')
         oCSList.set_select_single()
         # pylint: disable-msg=E1101
         # pylint misses vbox methods

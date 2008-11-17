@@ -365,12 +365,12 @@ class ClusterCardList(CardListPlugin):
         self.populate_results(aCards, aColNames, aClusterIds, aCellData)
 
     def make_pcs_from_cluster(self, aClusterId):
-        """Create a Physical Card Set from the chosen cluster"""
+        """Create a Card Set from the chosen cluster"""
         sDeckName = '_cluster_deck_%d_%d' % (aClusterId[0], aClusterId[1])
 
         # Check Deck Doesn't Exist
         if PhysicalCardSet.selectBy(name=sDeckName).count() != 0:
-            do_complaint_error("Physical Card Set %s already exists." %
+            do_complaint_error("Card Set %s already exists." %
                     sDeckName)
             return
 

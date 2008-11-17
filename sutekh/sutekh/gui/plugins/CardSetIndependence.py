@@ -74,13 +74,13 @@ def _display_results(dMissing, oParentCS):
                     ' (%d copies used here)' % (sCardName, sExpansion,
                         oInfo.iCount, iCount))
     oHeading = gtk.Label()
-    oHeading.set_markup('<span foreground = "red">From %s'
+    oHeading.set_markup('<span foreground = "red">Missing from %s'
             '</span>' % oParentCS.name)
     oNotebook.append_page(AutoScrolledWindow(
         _make_align_list(aParentList), True), oHeading)
     for sCardSet, aMsgs in dFormatted.iteritems():
         oHeading = gtk.Label()
-        oHeading.set_markup('<span foreground = "red">From %s'
+        oHeading.set_markup('<span foreground = "red">Missing cards in %s'
                 '</span>' % sCardSet)
         oNotebook.append_page(AutoScrolledWindow(
             _make_align_list(aMsgs), True), oHeading)
@@ -93,7 +93,7 @@ def _display_results(dMissing, oParentCS):
     oResultDlg.destroy()
 
 def _test_card_sets(aCardSetNames, oParentCS):
-    """Test if the Physical Card Sets are actaully independent by
+    """Test if the Card Sets are actaully independent by
        looking for cards common to the sets"""
     dCards = {}
     for sCardSetName in aCardSetNames:
@@ -170,7 +170,7 @@ class CardSetIndependence(CardListPlugin):
                           gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                           (gtk.STOCK_OK, gtk.RESPONSE_OK,
                            gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
-        self.oCSList = ScrolledList('Physical Card Sets')
+        self.oCSList = ScrolledList('Card Sets')
         # pylint: disable-msg=E1101
         # vbox confuses pylint
         oDlg.vbox.pack_start(self.oCSList)
