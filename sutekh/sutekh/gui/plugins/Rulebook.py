@@ -28,7 +28,8 @@ class RulebookConfigDialog(SutekhDialog):
 
     WW_RULEBOOK_URLS = {
         "Rulebook": "http://www.white-wolf.com/vtes/rulebook/rulebook.html",
-        "Imbued Rules": "http://www.white-wolf.com/vtes/?line=Checklist_NightsOfReckoning",
+        "Imbued Rules":
+           "http://www.white-wolf.com/vtes/?line=Checklist_NightsOfReckoning",
         "Rulings": "http://www.white-wolf.com/vtes/index.php?line=rulings",
     }
 
@@ -161,7 +162,7 @@ class RulebookPlugin(CardListPlugin):
     def get_menu_item(self):
         """Overrides method from base class.
 
-           Adds the menu item on the MainWindow if the images can be found.
+           Adds the menu item on the MainWindow if the files can be found.
            """
         if not self.check_versions() or not self.check_model_type():
             return None
@@ -237,7 +238,6 @@ class RulebookPlugin(CardListPlugin):
     def handle_config_response(self, oConfigDialog):
         """Handle the response from the config dialog"""
         iResponse = oConfigDialog.run()
-        bActivateMenu = False
 
         if iResponse == gtk.RESPONSE_OK:
             dUrls = oConfigDialog.get_url()
@@ -337,6 +337,8 @@ class RulebookPlugin(CardListPlugin):
             return True
         return False
 
+    # pylint: disable-msg=R0914
+    # We use several local variables for clarity
     @staticmethod
     def _clean_rulebook(sName, sData):
         """Clean up rulebook HTML"""
@@ -390,9 +392,16 @@ class RulebookPlugin(CardListPlugin):
         # remove <img> and <script> tags since they're not
         # vital to the rulebook and avoid attempts by the
         # browser to access the network
-        oTagRemove = re.compile(r"<(img|script)[^<>]*>[^<]*(</(img|script)[^<>]*>)?",
+        oTagRemove = re.compile(r"<(img|script)[^<>]*>[^<]*"
+            r"(</(img|script)[^<>]*>)?",
             re.MULTILINE)
         sData = oTagRemove.sub("", sData)
+        # remove the onclick tags from the imbued rules, since they're
+        # just broken
+        oClickRemove = re.compile(r'\(?<a href="(images|#)[^>]*onclick=.*>'
+            r'.*</a>\)?',
+            re.MULTILINE)
+        sData = oClickRemove.sub("", sData)
 
         # unclosed <a name=...>
         oUnclosedName = re.compile(r"(<a name=[^>]*>[^<>]*"
