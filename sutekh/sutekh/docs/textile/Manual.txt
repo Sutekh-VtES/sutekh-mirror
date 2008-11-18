@@ -621,6 +621,18 @@ to.
 
 h3(#analyze_plugin). Analyze Deck
 
+This plugin examines a plugin and displays various statistics about it that
+are intended to give some indication of how the card set will operate as a
+deck.
+
+Several tabs are displayed, where each tab summarises different aspects
+of the card set. The first tab summarises some basic information about the
+entire set. The second tab implements Legbiter's Happy Family analysis for
+the card set. Subsequent panes consider specific card types.
+
+The happy family implementation allows one to either select the number of
+disciplines to use, or to select the disciplines to consider manually.
+
 h3(#indep_plugin). Test Card Set Independence
 
 This tests the current card set against other card sets with the same parent,
