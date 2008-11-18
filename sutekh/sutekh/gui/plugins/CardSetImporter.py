@@ -161,9 +161,16 @@ class ACSImporter(CardListPlugin):
         except Exception, oExp:
             sMsg = "Reading the card set failed with the following error:\n" \
                    "%s\n The file is probably not in the format the Parser" \
-                   " expects\nAborting" % oExp
+                   " expects.\nAborting" % oExp
             do_complaint_error(sMsg)
             # Fail out
+            return
+
+        if oHolder.num_entries < 1:
+            # No cards seen, so abort
+            do_complaint_error("No cards found in the card set.\n"
+                    "The file may not be in the format the Parser expects.\n"
+                    "Aborting")
             return
 
         # Check CS Doesn't Exist

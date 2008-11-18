@@ -80,6 +80,7 @@ class CardSetHolder(object):
             fset = lambda self, x: setattr(self, '_bInUse', x))
     parent = property(fget = lambda self: self._sParent,
             fset = lambda self, x: setattr(self, '_sParent', x))
+    num_entries = property(fget = lambda self: len(self._dCards))
     # pylint: enable-msg=W0212
 
     # Save Virtual Card Set to Database
