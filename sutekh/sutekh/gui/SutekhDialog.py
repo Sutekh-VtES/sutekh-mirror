@@ -37,7 +37,6 @@ def do_complaint(sMessage, oDialogType, oButtonType, bMarkup=False):
     oComplaint.destroy()
     return iResponse
 
-
 def do_complaint_buttons(sMessage, oType, aButtonInfo, bMarkup=False):
     """Wrapper function for gtk.MessageDialog, using add_button to create
        custom button layouts.
@@ -67,4 +66,3 @@ def do_complaint_warning(sMessage):
     """Warning dialog with OK and CANCEL buttons"""
     return do_complaint(sMessage, gtk.MESSAGE_WARNING, gtk.BUTTONS_OK_CANCEL,
             False)
-
