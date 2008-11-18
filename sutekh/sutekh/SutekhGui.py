@@ -16,7 +16,7 @@ from sutekh.gui.ConfigFile import ConfigFile
 from sutekh.gui.GuiDBManagement import do_db_upgrade, initialize_db
 from sutekh.gui.SutekhDialog import do_complaint_error
 from sutekh.SutekhInfo import SutekhInfo
-import sys, optparse, os
+import sys, optparse, os, traceback
 
 
 # Script Launching
@@ -45,6 +45,25 @@ def parse_options(aArgs):
             help="Display warning messages")
     return oOptParser, oOptParser.parse_args(aArgs)
 
+def exception_handler(oType, oValue, oTraceback):
+    """sys.excepthook exception handler."""
+    if oType == KeyboardInterrupt:
+        # don't complain about KeyboardInterrupts
+        return
+
+    sMessage = "Sutekh reported an unhandled exception:\n" \
+        "%s\n" % (str(oValue),)
+
+    oErrorDlg = gtk.MessageDialog(None, 0, gtk.MESSAGE_ERROR,
+        gtk.BUTTONS_CLOSE, sMessage)
+    oErrorDlg.set_name("Sutekh.dialog")
+
+    aTraceback = traceback.format_exception(oType, oValue, oTraceback)
+    oErrorDlg.format_secondary_text("".join(aTraceback))
+
+    iResponse = oErrorDlg.run()
+    oErrorDlg.destroy()
+
 def main(aArgs):
     """Start the Sutekh Gui.
 
@@ -52,6 +71,9 @@ def main(aArgs):
        pass control off to MultiPaneWindow.
        Save preferences on exit if needed
        """
+    # handle exceptions with a GUI dialog
+    sys.excepthook = exception_handler
+
     oOptParser, (oOpts, aArgs) = parse_options(aArgs)
     sPrefsDir = prefs_dir("Sutekh")
 
