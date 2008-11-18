@@ -13,6 +13,7 @@ import webbrowser
 import urllib
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.ProgressDialog import ProgressDialog
+from sutekh.gui.SutekhFileWidget import SutekhFileButton
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 from sutekh.SutekhUtility import prefs_dir, ensure_dir_exists
 from sutekh.io.WwFile import WwFile
@@ -61,7 +62,7 @@ class RulebookConfigDialog(SutekhDialog):
             oLabel = gtk.Label(sName)
             oEntry = gtk.Entry()
             oHBox = gtk.HBox(False, 2)
-            oHBox.pack_start(oLabel)
+            oHBox.pack_start(oLabel, expand=False, padding=2)
             oHBox.pack_start(oEntry)
             oUrlSub.pack_start(oHBox)
             self.dUrlSubEntries[sName] = oEntry
@@ -71,20 +72,18 @@ class RulebookConfigDialog(SutekhDialog):
 
         # SourceFile sub-components
         oFileSub = gtk.VBox(False, 2)
-        self.dFileSubChoosers = {}
-        oHtmlFilter = gtk.FileFilter()
-        oHtmlFilter.add_pattern('*.html')
-        oHtmlFilter.add_pattern('*.HTML')
+        self.dFileSubButtons = {}
         for sName in self.POSSIBLE_FILES:
             oLabel = gtk.Label(sName)
-            oFileChooser = gtk.FileChooserWidget(
-                action=gtk.FILE_CHOOSER_ACTION_OPEN)
-            oFileChooser.add_filter(oHtmlFilter)
+            oFileButton = SutekhFileButton(oParent,
+                "Select %s HTML file" % (sName,))
+            oFileButton.add_filter_with_pattern('HTML files',
+                ['*.html', '*.htm'])
             oHBox = gtk.HBox(False, 2)
-            oHBox.pack_start(oLabel)
-            oHBox.pack_start(oFileChooser)
+            oHBox.pack_start(oLabel, expand=False, padding=2)
+            oHBox.pack_start(oFileButton)
             oFileSub.pack_start(oHBox)
-            self.dFileSubChoosers[sName] = oFileChooser
+            self.dFileSubButtons[sName] = oFileButton
 
         # box for holding additional widgets for the various source
         # options
@@ -105,7 +104,6 @@ class RulebookConfigDialog(SutekhDialog):
         self.vbox.pack_start(self.oSourceUrl, False, False)
         self.vbox.pack_start(self.oSourceFile, False, False)
         self.vbox.pack_start(oSubBox)
-        self.set_size_request(600, 600)
 
         self.show_all()
 
@@ -131,7 +129,7 @@ class RulebookConfigDialog(SutekhDialog):
     def get_file(self):
         """Get the file name selected (or None)."""
         if self.oSourceFile.get_active():
-            return dict([(sName, self.dFileSubChoosers[sName].get_filename())
+            return dict([(sName, self.dFileSubButtons[sName].get_filename())
                 for sName in self.POSSIBLE_FILES])
         else:
             return None
