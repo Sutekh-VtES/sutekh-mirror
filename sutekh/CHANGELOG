@@ -2,6 +2,7 @@
  * Change GuiCardLookup so the default filter for the "Specify Filter"
    button is on the Card Name.
  * Fix some corner case bugs with GuiCardLookup & Filters
+ * Add Keepers of Tradition to the list of recognised expansions
 
 18 Nov 2008
  * Add additional consistency check to card set import plugin. Hopefully

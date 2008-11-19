@@ -181,6 +181,7 @@ class Expansions(AbbreviationLookup):
         'Gehenna' : [],
         'Jyhad' : [],
         'Kindred Most Wanted' : ['KMW'],
+        'Keepers of Tradition' : ['KoT'],
         'Legacy of Blood' : ['LoB'],
         'Lords of the Night' : ['LotN'],
         'Nights of Reckoning' : ['NoR'],
