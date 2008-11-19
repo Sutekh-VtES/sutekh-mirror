@@ -429,3 +429,9 @@ class CardSetView(CardListView):
     def set_parent_count_col_vis(self, bVisible):
         """Make the parent count column visible or invisible"""
         self.oParentCol.set_visible(bVisible)
+
+    def update_name(self, sNewName):
+        """Handle the renaming of a card set - set the correct new drag prefix,
+           etc."""
+        self.sSetName = sNewName
+        self.sDragPrefix = PhysicalCardSet.sqlmeta.table + ":" + self.sSetName

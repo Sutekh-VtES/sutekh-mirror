@@ -186,6 +186,8 @@ class CardSetManagementController(object):
         oDialog.run()
         sName = oDialog.get_name()
         if sName:
+            if oFrame and sName != oFrame.view.sSetName:
+                oFrame.view.update_name(sName)
             update_card_set(oCardSet, oDialog, self._oMainWindow,
                     oMenu)
 

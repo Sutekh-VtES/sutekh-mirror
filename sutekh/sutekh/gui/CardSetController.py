@@ -217,7 +217,7 @@ class CardSetController(object):
         sName = oProp.get_name()
         if sName:
             if sName != self.view.sSetName:
-                self.view.sSetName = sName
+                self.view.update_name(sName)
             update_card_set(self.__oPhysCardSet, oProp, self._oMainWindow,
                     self._oFrame.menu)
 
