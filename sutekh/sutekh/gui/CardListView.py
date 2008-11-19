@@ -235,7 +235,8 @@ class CardListView(gtk.TreeView, object):
             self._oModel.selectfilter = oFilter
             if not self._oModel.applyfilter:
                 # If a filter is set, automatically apply
-                oMenu.set_apply_filter(True)
+                if oMenu:
+                    oMenu.set_apply_filter(True)
             else:
                 # Filter Changed, so reload
                 self.load()
@@ -243,7 +244,8 @@ class CardListView(gtk.TreeView, object):
             # Filter is set to blank, so we treat this as disabling
             # Filter
             if self._oModel.applyfilter:
-                oMenu.set_apply_filter(False)
+                if oMenu:
+                    oMenu.set_apply_filter(False)
             else:
                 self.load()
 
