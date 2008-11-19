@@ -243,6 +243,8 @@ class CardListView(gtk.TreeView, object):
                 # If a filter is set, automatically apply
                 if oMenu:
                     oMenu.set_apply_filter(True)
+                else:
+                    self._oModel.applyfilter = True
             else:
                 # Filter Changed, so reload
                 self.load()
@@ -252,6 +254,8 @@ class CardListView(gtk.TreeView, object):
             if self._oModel.applyfilter:
                 if oMenu:
                     oMenu.set_apply_filter(False)
+                else:
+                    self._oModel.applyfilter = True
             else:
                 self.load()
 
