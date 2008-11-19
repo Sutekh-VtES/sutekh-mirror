@@ -195,7 +195,7 @@ class ReplacementTreeView(gtk.TreeView):
 
     def run_filter_dialog(self, oButton):
         """Display the filter dialog and apply results."""
-        self.oCardListView.get_filter(None)
+        self.oCardListView.get_filter(None, "CardName in $var0")
         self.oFilterToggleButton.set_active(
             self.oCardListView.get_model().applyfilter)
 

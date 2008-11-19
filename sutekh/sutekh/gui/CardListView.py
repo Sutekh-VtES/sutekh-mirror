@@ -219,11 +219,17 @@ class CardListView(gtk.TreeView, object):
 
     # Filtering
 
-    def get_filter(self, oMenu):
-        """Get the Filter from the FilterDialog."""
+    def get_filter(self, oMenu, sDefaultFilter=None):
+        """Get the Filter from the FilterDialog.
+        
+           oMenu is a menu item to toggle if it exists.
+           sDefaultFilterName is the name of the default filter
+           to set when the dialog is created. This is intended for
+           use by GuiCardLookup."""
         if self._oFilterDialog is None:
             self._oFilterDialog = FilterDialog(self._oMainWin,
-                    self._oConfig, self._oController.filtertype)
+                    self._oConfig, self._oController.filtertype,
+                    sDefaultFilter)
 
         self._oFilterDialog.run()
 
