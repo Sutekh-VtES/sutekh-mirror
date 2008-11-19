@@ -33,7 +33,7 @@ class CreateCardSetDialog(SutekhDialog):
         oAuthorLabel = gtk.Label("Author : ")
         self.oAuthor = gtk.Entry(50)
         oCommentriptionLabel = gtk.Label("Description : ")
-        self.oComment = gtk.Entry(50)
+        self.oComment = gtk.Entry()
         oParentLabel = gtk.Label("This card set is a subset of : ")
         self.oParentList = gtk.combo_box_new_text()
         if not oCardSetParent and oCardSet:
