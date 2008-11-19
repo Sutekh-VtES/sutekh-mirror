@@ -1,3 +1,8 @@
+19 Nov 2008
+ * Change GuiCardLookup so the default filter for the "Specify Filter"
+   button is on the Card Name.
+ * Fix some corner case bugs with GuiCardLookup & Filters
+
 18 Nov 2008
  * Add additional consistency check to card set import plugin. Hopefully
    helps avoid broken imports due to the wrong format being specified.
