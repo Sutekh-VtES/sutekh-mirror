@@ -53,6 +53,7 @@
 <ol>
 <li><a href="#card_filters">Card Filters</a></li>
 <li><a href="#card_set_filters">Card Set Filters</a></li>
+<li><a href="#combining">Combining Basic Filters</a></li>
 </ol>
 </li>
 <li><a href="#plugins">Plugin List</a>
@@ -217,9 +218,9 @@ this happens, Sutekh prompts for the correct card.</p>
 
 <p>The card lookup window displays two lists &#8211; the list of all white wolf cards 
 and the list of unknown cards. Below the unknown card list are options 
-to specify a <a href="#filters">filter</a> and the apply or unapply the filter.</p>
+to specify a <a href="#filters">filter</a> and to apply or unapply the filter.</p>
 
-<p>The unknown Card list has 2 columns, the name of the unknown card and 
+<p>The unknown card list has 2 columns, the name of the unknown card and 
 the current selection to replace the card, and 3 buttons. The first button 
 uses the currently selected card from the full white wolf card list to 
 replace the card, the next marks the card as to be ignored, and the 
@@ -331,8 +332,8 @@ and a column with the card counts, and can optionally contain a column with
 the expansions. When importing the file, the mapping between columns and the 
 contents needs to be specified.</p>
 
-<p>If Sutekh cannot correctly interpret a name or expansion, the <a href="#lookup">Card Lookup 
-Window</a> will be used to resolve the situation.</p>
+<p>If Sutekh cannot correctly interpret a name or expansion, the  
+<a href="#lookup">Card Lookup Window</a> will be used to resolve the situation.</p>
 
 <h2 id="import_plugin">Import <span class="caps">ARDB</span> or <span class="caps">ELDB</span> file</h2>
 
@@ -545,11 +546,109 @@ keys have no effect.</p>
 
 <h2 id="filters">Filters</h2>
 
-<p>Filtering is one of the central activities in Sutekh.</p>
+<p>Filtering is one of the central activities in Sutekh. Complex queries can 
+be constructed by combining the various basic filters.</p>
+
+<p>The Filter dialog will display the last used filter for the given pane. This 
+filter can then be modified or the filter can be cleared using the 
+<em>Clear Filter</em> button.</p>
+
+<p>Complex filters can be saved for later reuse using the <em>Save</em> button, and 
+recalled using the <em>Load</em> button. When modifying a filter, it can be reverted 
+to saved version using the <em>Revert Filter</em> button.</p>
 
 <h3 id="card_filters">Card Filters</h3>
 
+<p>These filters apply to either the white wolf card list or a card set. The 
+following basic filters are supported:</p>
+
+<ul>
+<li><em>Card Type</em>:</li>
+<li><em>Cost Type</em>: Filters on the type of cost (blood, pool, and so forth). This 
+takes a list of types to match, and is matches if the cost type matches any 
+in the list. This does not consider the cost, just the cost type.</li>
+<li><em>Clan</em>:</li>
+<li><em>Discipline</em>:</li>
+<li><em>Group</em>:</li>
+<li><em>Capacity</em>: Filter on the capacity listed on the card.</li>
+<li><em>Cost</em>: Filter on the cost of the card. This filter takes a list of costs 
+to match, and matches in the card cost matches any entry in the list. Note that 
+this does not consider the cost type. To filter only on costs of a specific 
+type, this needs to be combined with the <em>Cost Type</em> filter.</li>
+<li><em>Life (Crypt)</em>:</li>
+<li><em>Creed</em>:</li>
+<li><em>Virtue</em>:</li>
+<li><em>Card Text</em>:</li>
+<li><em>Card Name</em>:</li>
+<li><em>Sect</em>:</li>
+<li><em>Title</em>:</li>
+<li><em>Expansion_with_Rarity</em>:</li>
+<li><em>Discipline with Level</em>:</li>
+<li><em>Physical Expansion</em>:</li>
+<li><em>Card Sets</em>:</li>
+<li><em>In Card Sets In Use</em>:</li>
+<li><em>Card Count</em>:</li>
+<li><em>Card Function</em>:</li>
+<li><em>Sub-Filter</em>: Nest an additional filter box inside the current box. See 
+<a href="#combining">Combining Basic Filters</a></li>
+</ul>
+
+<p>These filters are also available in the <a href="#lookup">Card Lookup Window</a> when 
+importing card sets, to help find unknown cards.</p>
+
+<p>Currently, the only way to filter on properties of a merged vampire, such as 
+different discipline levels, is to filter on the card text.</p>
+
 <h3 id="card_set_filters">Card Set Filters</h3>
+
+<p>These filters apply to the card set list. The following basic filters are 
+supported.</p>
+
+<ul>
+<li><em>Card Set Name</em>: This matches the name of the card set. Like the Card Name 
+or Card Text filters, it is treated as a partial string to search for, and 
+% and _ can be used as wildcard characters.</li>
+<li><em>Card Set Description</em>: This matches the description of the card set. 
+Like the Card Name or Card Text filters, it is treated as a partial string to 
+search for, and % and _ can be used as wildcard characters.</li>
+<li><em>Card Set Author</em>: This matches the description of the card set. 
+Like the Card Name or Card Text filters, it is treated as a partial string to 
+search for, and % and _ can be used as wildcard characters.</li>
+<li><em>Card Set Annotations</em>: This matches the annotations of the card set. 
+Like the Card Name or Card Text filters, it is treated as a partial string to 
+search for, and % and _ can be used as wildcard characters.</li>
+<li><em>Parent Card Set</em>: This takes as input a list of card sets, and 
+matches those card sets whose parent card set is in the list.</li>
+<li><em>Card Set Marked as in Use</em>: This matches all card sets for which are marked 
+as being <strong>In Use</strong>.</li>
+<li><em>Sub-Filter</em>: Nest an additional filter box inside the current box. See 
+<a href="#combining">Combining Basic Filters</a></li>
+</ul>
+
+<p>Since the card sets can be part of a hierarchy of parents and children, if a 
+child card set matches the filter, it will be displayed along with it&#8217;s  
+parents. If a parent card set matches the filter, only those children that 
+also match the filter will be displayed.</p>
+
+<h3 id="combining">Combining Basic Filters</h3>
+
+<p>Sutekh combines filters using filter boxes to group the basic filters 
+together.</p>
+
+<p>There are 4 types of filter box, namely:</p>
+
+<ul>
+<li><em>All of</em>: This filter matches only in every filter in the box matches.</li>
+<li><em>Any of</em>: This filter matches if at least of the filters in the box matches.</li>
+<li><em>Not all of</em>: This filter matches if at least one of the filters in the box 
+doesn&#8217;t match. </li>
+<li><em>Not any of</em>: This filter matches only if every filter in the box doesn&#8217;t 
+match.</li>
+</ul>
+
+<p>Each filter boxes can also contain sub-filters, which are themselves 
+filter boxes. Thus complex queries can be constructed by nesting multiple 
+filter boxes.</p>
 
 <h2 id="plugins">Plugin List</h2>
 

@@ -31,6 +31,7 @@ h2. Contents
 # "Filters":#filters
 ## "Card Filters":#card_filters
 ## "Card Set Filters":#card_set_filters
+## "Combining Basic Filters":#combining
 # "Plugin List":#plugins
 ## "Backup":#backup_plugin
 ## "Card Images":#images_plugin
@@ -179,9 +180,9 @@ this happens, Sutekh prompts for the correct card.
 
 The card lookup window displays two lists - the list of all white wolf cards
 and the list of unknown cards. Below the unknown card list are options
-to specify a "filter":#filters and the apply or unapply the filter.
+to specify a "filter":#filters and to apply or unapply the filter.
 
-The unknown Card list has 2 columns, the name of the unknown card and
+The unknown card list has 2 columns, the name of the unknown card and
 the current selection to replace the card, and 3 buttons. The first button
 uses the currently selected card from the full white wolf card list to
 replace the card, the next marks the card as to be ignored, and the
@@ -289,8 +290,8 @@ and a column with the card counts, and can optionally contain a column with
 the expansions. When importing the file, the mapping between columns and the
 contents needs to be specified.
 
-If Sutekh cannot correctly interpret a name or expansion, the "Card Lookup
-Window":#lookup will be used to resolve the situation.
+If Sutekh cannot correctly interpret a name or expansion, the 
+"Card Lookup Window":#lookup will be used to resolve the situation.
 
 h2(#import_plugin). Import ARDB or ELDB file
 
@@ -480,13 +481,103 @@ keys have no effect.
 
 h2(#filters). Filters
 
-Filtering is one of the central activities in Sutekh.
+Filtering is one of the central activities in Sutekh. Complex queries can
+be constructed by combining the various basic filters. 
+
+The Filter dialog will display the last used filter for the given pane. This
+filter can then be modified or the filter can be cleared using the
+_Clear Filter_ button.
+
+Complex filters can be saved for later reuse using the _Save_ button, and
+recalled using the _Load_ button. When modifying a filter, it can be reverted
+to saved version using the _Revert Filter_ button.
 
 h3(#card_filters). Card Filters
 
+These filters apply to either the white wolf card list or a card set. The
+following basic filters are supported:
+
+* _Card Type_:
+* _Cost Type_: Filters on the type of cost (blood, pool, and so forth). This
+takes a list of types to match, and is matches if the cost type matches any
+in the list. This does not consider the cost, just the cost type.
+* _Clan_:
+* _Discipline_:
+* _Group_:
+* _Capacity_: Filter on the capacity listed on the card.
+* _Cost_: Filter on the cost of the card. This filter takes a list of costs
+to match, and matches in the card cost matches any entry in the list. Note that
+this does not consider the cost type. To filter only on costs of a specific
+type, this needs to be combined with the _Cost Type_ filter.
+* _Life (Crypt)_:
+* _Creed_:
+* _Virtue_:
+* _Card Text_:
+* _Card Name_:
+* _Sect_:
+* _Title_:
+* _Expansion_with_Rarity_:
+* _Discipline with Level_:
+* _Physical Expansion_:
+* _Card Sets_:
+* _In Card Sets In Use_:
+* _Card Count_:
+* _Card Function_:
+* _Sub-Filter_: Nest an additional filter box inside the current box. See
+"Combining Basic Filters":#combining
+
+These filters are also available in the "Card Lookup Window":#lookup when
+importing card sets, to help find unknown cards.
+
+Currently, the only way to filter on properties of a merged vampire, such as
+different discipline levels, is to filter on the card text.
+
 h3(#card_set_filters). Card Set Filters
 
+These filters apply to the card set list. The following basic filters are
+supported.
 
+* _Card Set Name_: This matches the name of the card set. Like the Card Name
+or Card Text filters, it is treated as a partial string to search for, and
+% and _ can be used as wildcard characters.
+* _Card Set Description_: This matches the description of the card set.
+Like the Card Name or Card Text filters, it is treated as a partial string to
+search for, and % and _ can be used as wildcard characters.
+* _Card Set Author_: This matches the description of the card set.
+Like the Card Name or Card Text filters, it is treated as a partial string to
+search for, and % and _ can be used as wildcard characters.
+* _Card Set Annotations_: This matches the annotations of the card set.
+Like the Card Name or Card Text filters, it is treated as a partial string to
+search for, and % and _ can be used as wildcard characters.
+* _Parent Card Set_: This takes as input a list of card sets, and
+matches those card sets whose parent card set is in the list.
+* _Card Set Marked as in Use_: This matches all card sets for which are marked
+as being *In Use*.
+* _Sub-Filter_: Nest an additional filter box inside the current box. See
+"Combining Basic Filters":#combining
+
+Since the card sets can be part of a hierarchy of parents and children, if a
+child card set matches the filter, it will be displayed along with it's 
+parents. If a parent card set matches the filter, only those children that
+also match the filter will be displayed.
+
+h3(#combining). Combining Basic Filters
+
+Sutekh combines filters using filter boxes to group the basic filters
+together.
+
+There are 4 types of filter box, namely:
+
+* _All of_: This filter matches only in every filter in the box matches.
+* _Any of_: This filter matches if at least of the filters in the box matches.
+* _Not all of_: This filter matches if at least one of the filters in the box
+doesn't match. 
+* _Not any of_: This filter matches only if every filter in the box doesn't
+match.
+
+Each filter boxes can also contain sub-filters, which are themselves
+filter boxes. Thus complex queries can be constructed by nesting multiple
+filter boxes.
 
 h2(#plugins). Plugin List
 
