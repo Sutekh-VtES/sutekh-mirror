@@ -32,6 +32,8 @@ h2. Contents
 ## "Card Filters":#card_filters
 ## "Card Set Filters":#card_set_filters
 ## "Combining Basic Filters":#combining
+## "String filters":#string
+## "List filters":#list
 # "Plugin List":#plugins
 ## "Backup":#backup_plugin
 ## "Card Images":#images_plugin
@@ -497,28 +499,44 @@ h3(#card_filters). Card Filters
 These filters apply to either the white wolf card list or a card set. The
 following basic filters are supported:
 
-* _Card Type_:
+* _Card Type_: Filters on the type of card. This takes a "list":#list of
+card types.
 * _Cost Type_: Filters on the type of cost (blood, pool, and so forth). This
-takes a list of types to match, and is matches if the cost type matches any
-in the list. This does not consider the cost, just the cost type.
-* _Clan_:
-* _Discipline_:
-* _Group_:
-* _Capacity_: Filter on the capacity listed on the card.
-* _Cost_: Filter on the cost of the card. This filter takes a list of costs
-to match, and matches in the card cost matches any entry in the list. Note that
+takes a "list":#list of cost types.  This does not consider the cost, just the
+cost type.
+* _Clan_: filter on the clan(s) associated with the card. This takes a
+"list":#list of clans and the filter matches if the clan matches any clan
+in the list.
+* _Discipline_: Filter on the discipline associated with the card. This takes
+a "list":#list of disciplines, and the filter matches if any of the
+disciplines in the list match. This filter ignores the level requirement for
+the discipline.
+* _Group_: Filter on the grouo listed on the card. This takes a
+"list":#list of groups, and matches the group listed on the card to this list.
+* _Capacity_: Filter on the capacity listed on the card. This takes a
+"list":#list of capacities, and matches the capacity listed on the card to
+this list.
+* _Cost_: Filter on the cost of the card. This filter takes a "list":#list of
+costs to match, and matches the numerical card cost to this list. Note that
 this does not consider the cost type. To filter only on costs of a specific
 type, this needs to be combined with the _Cost Type_ filter.
 * _Life (Crypt)_:
 * _Creed_:
 * _Virtue_:
 * _Card Text_:
-* _Card Name_:
+* _Card Name_: Filter on the name of the card. This filter takes a
+"string":#string.
 * _Sect_:
 * _Title_:
 * _Expansion_with_Rarity_:
-* _Discipline with Level_:
-* _Physical Expansion_:
+* _Discipline with Level_: Filter on the discipline associated with the card.
+This takes a "list":#list of disciplines of the different levels, and the
+filter matches if the card mathces the disciplines in the list.  This filter
+treats the different levels of the filter as different. This filter is most
+useful for matching vampires. Note that non-vampire cards are matched only
+by the superior discipline.
+inferior.
+* _Physical Expansion_: 
 * _Card Sets_:
 * _In Card Sets In Use_:
 * _Card Count_:
@@ -538,18 +556,18 @@ These filters apply to the card set list. The following basic filters are
 supported.
 
 * _Card Set Name_: This matches the name of the card set. Like the Card Name
-or Card Text filters, it is treated as a partial string to search for, and
-% and _ can be used as wildcard characters.
+or Card Text filters, it is treated as a partial "string":#string to search for.
+% and _ can be used as "wildcard":#wildcard characters.
 * _Card Set Description_: This matches the description of the card set.
-Like the Card Name or Card Text filters, it is treated as a partial string to
-search for, and % and _ can be used as wildcard characters.
+Like the Card Name or Card Text filters, it is treated as a partial
+"string":#string to search for.
 * _Card Set Author_: This matches the description of the card set.
-Like the Card Name or Card Text filters, it is treated as a partial string to
-search for, and % and _ can be used as wildcard characters.
+Like the Card Name or Card Text filters, it is treated as a partial
+"string":#string to search for.
 * _Card Set Annotations_: This matches the annotations of the card set.
-Like the Card Name or Card Text filters, it is treated as a partial string to
-search for, and % and _ can be used as wildcard characters.
-* _Parent Card Set_: This takes as input a list of card sets, and
+Like the Card Name or Card Text filters, it is treated as a partial
+"string":#string to search for.
+* _Parent Card Set_: This takes as input a "list":#list of card sets, and
 matches those card sets whose parent card set is in the list.
 * _Card Set Marked as in Use_: This matches all card sets for which are marked
 as being *In Use*.
@@ -578,6 +596,39 @@ match.
 Each filter boxes can also contain sub-filters, which are themselves
 filter boxes. Thus complex queries can be constructed by nesting multiple
 filter boxes.
+
+h3(#string). String filters
+
+Several filters use a user specified string to match on. These filter matches
+if this string is contained in the property filtered on, so a Card Name
+filter, if the given string is a substring of the card name.
+
+String filtera are also case insensitive (so *the* will match both *Weigh the
+Heart* and *Yuri, The Talon*, when filtering on the card name, for example).
+Strings filter also always look for a substr
+
+In Addition, filters which take a string as input can use two different
+wildcard characters.
+
+*_* will match any single letter. Thus a filter using *a_c* will match
+both *abc* and *aec*, but not match *abdc* or *abd*. *_* will never match
+the empty string, so *Th_e* will not match *The*, but will match *Thee*
+
+*%* will match any selection of characters. So *a%c* will match any of
+*abc*, *aec*, or *abdegfthc*, but not match *abdefg*. *%* will also match
+the empty string, so *Th%e* will match both *The* and *Three*.
+
+Wildcards can be used multiple times. So *a_b%e* will match any of
+*acbde*, *aebe* or *aebfe*.
+
+h3(#list). List filters
+
+Several filters accept a list of possible options to match against.
+
+The filter is considered to match if any of the entries in this list
+are matched. Thus a _Clan_ filter, specifying both *Tremere* and *Toreador*,
+will be matched by cards requiring/of either of the clans.
+
 
 h2(#plugins). Plugin List
 

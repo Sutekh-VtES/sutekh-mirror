@@ -54,6 +54,8 @@
 <li><a href="#card_filters">Card Filters</a></li>
 <li><a href="#card_set_filters">Card Set Filters</a></li>
 <li><a href="#combining">Combining Basic Filters</a></li>
+<li><a href="#string">String filters</a></li>
+<li><a href="#list">List filters</a></li>
 </ol>
 </li>
 <li><a href="#plugins">Plugin List</a>
@@ -563,28 +565,44 @@ to saved version using the <em>Revert Filter</em> button.</p>
 following basic filters are supported:</p>
 
 <ul>
-<li><em>Card Type</em>:</li>
+<li><em>Card Type</em>: Filters on the type of card. This takes a <a href="#list">list</a> of 
+card types.</li>
 <li><em>Cost Type</em>: Filters on the type of cost (blood, pool, and so forth). This 
-takes a list of types to match, and is matches if the cost type matches any 
-in the list. This does not consider the cost, just the cost type.</li>
-<li><em>Clan</em>:</li>
-<li><em>Discipline</em>:</li>
-<li><em>Group</em>:</li>
-<li><em>Capacity</em>: Filter on the capacity listed on the card.</li>
-<li><em>Cost</em>: Filter on the cost of the card. This filter takes a list of costs 
-to match, and matches in the card cost matches any entry in the list. Note that 
+takes a <a href="#list">list</a> of cost types.  This does not consider the cost, just the 
+cost type.</li>
+<li><em>Clan</em>: filter on the clan(s) associated with the card. This takes a 
+<a href="#list">list</a> of clans and the filter matches if the clan matches any clan 
+in the list.</li>
+<li><em>Discipline</em>: Filter on the discipline associated with the card. This takes 
+a <a href="#list">list</a> of disciplines, and the filter matches if any of the 
+disciplines in the list match. This filter ignores the level requirement for 
+the discipline.</li>
+<li><em>Group</em>: Filter on the grouo listed on the card. This takes a 
+<a href="#list">list</a> of groups, and matches the group listed on the card to this list.</li>
+<li><em>Capacity</em>: Filter on the capacity listed on the card. This takes a 
+<a href="#list">list</a> of capacities, and matches the capacity listed on the card to 
+this list.</li>
+<li><em>Cost</em>: Filter on the cost of the card. This filter takes a <a href="#list">list</a> of 
+costs to match, and matches the numerical card cost to this list. Note that 
 this does not consider the cost type. To filter only on costs of a specific 
 type, this needs to be combined with the <em>Cost Type</em> filter.</li>
 <li><em>Life (Crypt)</em>:</li>
 <li><em>Creed</em>:</li>
 <li><em>Virtue</em>:</li>
 <li><em>Card Text</em>:</li>
-<li><em>Card Name</em>:</li>
+<li><em>Card Name</em>: Filter on the name of the card. This filter takes a 
+<a href="#string">string</a>.</li>
 <li><em>Sect</em>:</li>
 <li><em>Title</em>:</li>
 <li><em>Expansion_with_Rarity</em>:</li>
-<li><em>Discipline with Level</em>:</li>
-<li><em>Physical Expansion</em>:</li>
+<li><em>Discipline with Level</em>: Filter on the discipline associated with the card. 
+This takes a <a href="#list">list</a> of disciplines of the different levels, and the 
+filter matches if the card mathces the disciplines in the list.  This filter 
+treats the different levels of the filter as different. This filter is most 
+useful for matching vampires. Note that non-vampire cards are matched only 
+by the superior discipline. 
+inferior.</li>
+<li><em>Physical Expansion</em>: </li>
 <li><em>Card Sets</em>:</li>
 <li><em>In Card Sets In Use</em>:</li>
 <li><em>Card Count</em>:</li>
@@ -606,18 +624,18 @@ supported.</p>
 
 <ul>
 <li><em>Card Set Name</em>: This matches the name of the card set. Like the Card Name 
-or Card Text filters, it is treated as a partial string to search for, and 
-% and _ can be used as wildcard characters.</li>
+or Card Text filters, it is treated as a partial <a href="#string">string</a> to search for. 
+% and _ can be used as <a href="#wildcard">wildcard</a> characters.</li>
 <li><em>Card Set Description</em>: This matches the description of the card set. 
-Like the Card Name or Card Text filters, it is treated as a partial string to 
-search for, and % and _ can be used as wildcard characters.</li>
+Like the Card Name or Card Text filters, it is treated as a partial 
+<a href="#string">string</a> to search for.</li>
 <li><em>Card Set Author</em>: This matches the description of the card set. 
-Like the Card Name or Card Text filters, it is treated as a partial string to 
-search for, and % and _ can be used as wildcard characters.</li>
+Like the Card Name or Card Text filters, it is treated as a partial 
+<a href="#string">string</a> to search for.</li>
 <li><em>Card Set Annotations</em>: This matches the annotations of the card set. 
-Like the Card Name or Card Text filters, it is treated as a partial string to 
-search for, and % and _ can be used as wildcard characters.</li>
-<li><em>Parent Card Set</em>: This takes as input a list of card sets, and 
+Like the Card Name or Card Text filters, it is treated as a partial 
+<a href="#string">string</a> to search for.</li>
+<li><em>Parent Card Set</em>: This takes as input a <a href="#list">list</a> of card sets, and 
 matches those card sets whose parent card set is in the list.</li>
 <li><em>Card Set Marked as in Use</em>: This matches all card sets for which are marked 
 as being <strong>In Use</strong>.</li>
@@ -649,6 +667,38 @@ match.</li>
 <p>Each filter boxes can also contain sub-filters, which are themselves 
 filter boxes. Thus complex queries can be constructed by nesting multiple 
 filter boxes.</p>
+
+<h3 id="string">String filters</h3>
+
+<p>Several filters use a user specified string to match on. These filter matches 
+if this string is contained in the property filtered on, so a Card Name 
+filter, if the given string is a substring of the card name.</p>
+
+<p>String filtera are also case insensitive (so <strong>the</strong> will match both *Weigh the 
+Heart* and <strong>Yuri, The Talon</strong>, when filtering on the card name, for example). 
+Strings filter also always look for a substr</p>
+
+<p>In Addition, filters which take a string as input can use two different 
+wildcard characters.</p>
+
+<p><strong>_</strong> will match any single letter. Thus a filter using <strong>a_c</strong> will match 
+both <strong>abc</strong> and <strong>aec</strong>, but not match <strong>abdc</strong> or <strong>abd</strong>. <strong>_</strong> will never match 
+the empty string, so <strong>Th_e</strong> will not match <strong>The</strong>, but will match <strong>Thee</strong></p>
+
+<p><strong>%</strong> will match any selection of characters. So <strong>a%c</strong> will match any of 
+<strong>abc</strong>, <strong>aec</strong>, or <strong>abdegfthc</strong>, but not match <strong>abdefg</strong>. <strong>%</strong> will also match 
+the empty string, so <strong>Th%e</strong> will match both <strong>The</strong> and <strong>Three</strong>.</p>
+
+<p>Wildcards can be used multiple times. So <strong>a_b%e</strong> will match any of 
+<strong>acbde</strong>, <strong>aebe</strong> or <strong>aebfe</strong>.</p>
+
+<h3 id="list">List filters</h3>
+
+<p>Several filters accept a list of possible options to match against.</p>
+
+<p>The filter is considered to match if any of the entries in this list 
+are matched. Thus a <em>Clan</em> filter, specifying both <strong>Tremere</strong> and <strong>Toreador</strong>, 
+will be matched by cards requiring/of either of the clans.</p>
 
 <h2 id="plugins">Plugin List</h2>
 
