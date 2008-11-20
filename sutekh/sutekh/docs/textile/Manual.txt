@@ -681,8 +681,9 @@ pressed.
 
 h3(#rulebook_plugin). Rulebook
 
-This plugin allows downloading a copy of the rulebook or installing a previously
-downloaded copy. Once downloaded, the rulebook may be opened in a webbrowser
-using the _Rulebook_ item in the _Plugins_ menu on the _Main Window_. To
-download a copy of the rulebook, or update the existing copy, use the
-_Configure Rulebook Plugin_ item in the same menu.
+This plugin allows downloading copies of the rulebook, imbued rules and card
+rulings from the White Wolf site or installing previously downloaded copies.
+Once downloaded, the rulebook files may be opened in a web browser using the
+_Rulebook_ submenu in the _Plugins_ menu on the _Main Window_. To
+download the files, or update the existing copies, use the
+_Configure Rulebook Plugin_ item in the same submenu.
