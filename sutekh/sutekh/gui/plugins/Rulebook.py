@@ -142,6 +142,7 @@ class RulebookPlugin(CardListPlugin):
     aModelsSupported = ["MainWindow"]
 
     POSSIBLE_FILES = RulebookConfigDialog.POSSIBLE_FILES
+    WW_RULEBOOK_URLS = RulebookConfigDialog.WW_RULEBOOK_URLS
 
     LOCAL_NAMES = {
         "Rulebook": "rulebook.html",
@@ -335,11 +336,9 @@ class RulebookPlugin(CardListPlugin):
             return True
         return False
 
-    # pylint: disable-msg=R0914
-    # We use several local variables for clarity
     @staticmethod
-    def _clean_rulebook(sName, sData):
-        """Clean up rulebook HTML"""
+    def _clean_rulebook_tags(sData):
+        """Clean up the tags in the rulebook HTML"""
         # img tags are always short tags in the WW rulebook file
         oShortTags = set(['hr', 'br', 'img'])
 
@@ -380,6 +379,14 @@ class RulebookPlugin(CardListPlugin):
         sData = oStartTagRe.sub(fix_start_tag, sData)
         sData = oEndTagRe.sub(fix_end_tag, sData)
 
+        return sData
+
+    # pylint: disable-msg=R0914
+    # We use several local variables for clarity
+    def _clean_rulebook(self, sName, sData):
+        """Clean up rulebook HTML"""
+        sData = self._clean_rulebook_tags(sData)
+
         # in rulings, remove everything between header and first
         # end of first style tag
         if sName in ("Rulings", "Imbued Rules"):
@@ -409,7 +416,7 @@ class RulebookPlugin(CardListPlugin):
         sData = oUnclosedName.sub(r"\g<1></a><p>", sData)
 
         # base url for href's that begin with . or /
-        sFullUrl = RulebookConfigDialog.WW_RULEBOOK_URLS[sName]
+        sFullUrl = self.WW_RULEBOOK_URLS[sName]
         sBaseUrl = sFullUrl.rsplit("/", 1)[0]
         oHref = re.compile(r"(?P<start>href=[\"'])(?P<href>[^\"']*)"
                             r"(?P<end>[\"'])")
@@ -422,6 +429,11 @@ class RulebookPlugin(CardListPlugin):
             return oMatch.group("start") + sHref + oMatch.group("end")
 
         sData = oHref.sub(apply_base_url, sData)
+
+        # translate rulebook URLs to local links
+        for sName, sUrl in self.WW_RULEBOOK_URLS.items():
+            sLocal = self.LOCAL_NAMES[sName]
+            sData = sData.replace(sUrl, sLocal)
 
         return sData
 
