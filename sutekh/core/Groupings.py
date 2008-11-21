@@ -126,6 +126,23 @@ class TitleGrouping(IterGrouping):
         super(TitleGrouping, self).__init__(oIter,
             lambda x: [y.name for y in fGetCard(x).title])
 
+class CostGrouping(IterGrouping):
+    """Group by Cost"""
+    def __init__(self, oIter, fGetCard=fDefGetCard):
+        super(CostGrouping, self).__init__(oIter, self._get_values)
+        self.fGetCard = fGetCard
+
+    def _get_values(self, oCard):
+        """Get the values to group by for this card"""
+        oThisCard = self.fGetCard(oCard)
+        if oThisCard.cost:
+            if oThisCard.cost == -1:
+                return ['X %s' % oThisCard.costtype]
+            else:
+                return ['%d %s' % (oThisCard.cost, oThisCard.costtype)]
+        else:
+            return []
+
 class NullGrouping(IterGrouping):
     # pylint: disable-msg=W0613
     # fGetCard is required by function signature

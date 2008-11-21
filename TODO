@@ -6,7 +6,7 @@ Backend:
    the objects abstract cards join to.
  * Use sqlobject 0.10's view support to work around mysql's poor subselect
    performance
- * Include general rulings not related to specific cards somewhere.
+ * Include general rulings not related to specific cards in the database?
    Perhaps just put them in the rulings table without any associated cards?
 
 Code Cleanup
@@ -32,6 +32,9 @@ Gui (Functionality):
  * Allow easy setting of the expansion when importing cards from file 
  * Convert the repeated functions in the plugins into functions in the plugin 
    API
+ * Identify file type when importing card sets
+ * Better error detection and handling when importing files
+ * Include traceback in a details section in do_complaint_*.
 
 Gui (Presentation):
  * Cleanup various dialogs, including
@@ -42,6 +45,11 @@ Gui (Presentation):
  * Parse in a GTK rc file? (http://www.moeraki.com/pygtktutorial/pygtk2tutorial/ch-GtkRcFiles.html)
  * Allow colouring options for the cards
  * Add more keyboard shortcuts
+ * Disable set_fixed_height_mode on TreeView cells so that the card text extra column
+   can be changed to render across multiple lines without breaking layout. This
+   will require some other way of dealing with the TreeView jumping bug.
+ * Enable setting default grouping, etc. for newly opened card set panes.
+ * Improve Filter Edit Dialog
 
 Website:
  * Create documentation.

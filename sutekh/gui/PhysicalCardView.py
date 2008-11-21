@@ -7,9 +7,10 @@
 
 """Provide a TreeView for the physical card collection"""
 
-import gtk, pango
+import gtk
 from sutekh.gui.CardListView import CardListView
 from sutekh.gui.CardListModel import CardListModel
+from sutekh.gui.CellRendererIcons import CellRendererIcons
 
 class PhysicalCardView(CardListView):
     # pylint: disable-msg=R0904
@@ -28,10 +29,10 @@ class PhysicalCardView(CardListView):
                 oModel, oConfig)
 
         # Setup columns for default view
-        self.oNameCell = gtk.CellRendererText()
-        self.oNameCell.set_property('style', pango.STYLE_ITALIC)
+        self.oNameCell = CellRendererIcons(5)
 
-        oColumn = gtk.TreeViewColumn("Cards", self.oNameCell, text=0)
+        oColumn = gtk.TreeViewColumn("Cards", self.oNameCell, text=0,
+                textlist=5, icons=6)
         oColumn.set_expand(True)
         oColumn.set_sort_column_id(0)
         self.append_column(oColumn)

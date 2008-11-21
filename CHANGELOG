@@ -1,8 +1,42 @@
+20 Nov 2008
+ * Backport of features from trunk.
+   (r1608, r1610:1668)
+
+19 Nov 2008
+ * Change GuiCardLookup so the default filter for the "Specify Filter"
+   button is on the Card Name.
+ * Fix some corner case bugs with GuiCardLookup & Filters
+ * Add Keepers of Tradition to the list of recognised expansions
+
+18 Nov 2008
+ * Add additional consistency check to card set import plugin. Hopefully
+   helps avoid broken imports due to the wrong format being specified.
+
+16 Nov 2008
+ * Add a plugin to allow importing Sutekh XML files from a zip file
+
+15 Nov 2008
+ * Add rulebook plugin - use webbrowser to display a copy of the rulebook
+ * Improvements to the HTMLTextView widget
+ * Tweak Abbrevations handling - should mak it easier to import the WW cardlist
+   after new expansions have been released
+ * Misc documentation bits
+
+14 Nov 2008
+ * Fix editable color setting to work with changes needed for icons display
+ * Misc documentation bits
+
+13 Nov 2008
+ * Add a cost grouping
+ * Add an extra column for card costs
+ * Enable icons for the top level groupings
+
 11 Nov 2008
  * Add groupings for Sect and Title.
    (backport of r1607)
  * Add extra columns for Sect, Title and card text.
    (backport of r1607)
+ * Don't make replace pane menu option active unless a pane is selected
 
 10 Nov 2008
  * Change Groupings to include Imbued:

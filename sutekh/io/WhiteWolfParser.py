@@ -38,8 +38,16 @@ def _find_sect_and_title(aLines):
             oJusticar = re.compile('Camarilla [A-Z][a-z]* Justicar')
             if oJusticar.search(aLines[0]) is not None:
                 sTitle = 'Justicar'
-        elif aLines[0].find('Camarilla Inner Circle') != -1:
-            sTitle = 'Inner Circle'
+        # Inner circle my be either Camariila Inner Circle or
+        # Camarilla Clan Inner Circle
+        # Hopefully this will go away sometime
+        elif aLines[0].find('Inner Circle') != -1:
+            if aLines[0].find('Camarilla Inner Circle') != -1:
+                sTitle = 'Inner Circle'
+            else:
+                oInnerCircle = re.compile('Camarilla [A-Z][a-z]* Inner Circle')
+                if oInnerCircle.search(aLines[0]) is not None:
+                    sTitle = 'Inner Circle'
     elif aLines[0].find('Sabbat') != -1:
         sSect = 'Sabbat'
         if aLines[0].find('Sabbat Archbishop of') != -1:

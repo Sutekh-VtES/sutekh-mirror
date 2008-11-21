@@ -7,7 +7,7 @@
 
 """The gtk.TreeModel for the card lists."""
 
-import gtk, pango
+import gtk, pango, gobject
 from sutekh.core.Filters import FilterAndBox, NullFilter, PhysicalCardFilter
 from sutekh.core.Groupings import CardTypeGrouping
 from sutekh.core.SutekhObjects import IAbstractCard, PhysicalCard, \
@@ -66,7 +66,9 @@ class CardListModel(gtk.TreeStore):
 
     def __init__(self):
         # STRING is the card name, INT is the card count
-        super(CardListModel, self).__init__(str, str, str, bool, bool)
+        super(CardListModel, self).__init__(str, str, str, bool, bool,
+                gobject.TYPE_PYOBJECT, gobject.TYPE_PYOBJECT)
+        # name, count, parent count, showInc, showDec, text_list, icons
         self._dName2Iter = {}
         self._dNameExpansion2Iter = {}
         self._dGroupName2Iter = {}
@@ -83,6 +85,8 @@ class CardListModel(gtk.TreeStore):
 
         self.bExpansions = True
         self.oEmptyIter = None
+        self.oIconManager = None
+        self.bUseIcons = True
 
     # pylint: disable-msg=W0212
     # W0212 - we explicitly allow access via these properties
@@ -137,6 +141,16 @@ class CardListModel(gtk.TreeStore):
             return 0
         return int(sValue)
 
+    def lookup_icons(self, sGroup):
+        """Lookup the icons for the group. Method since it's repeated in
+           several places in CardSetListModel"""
+        if self.oIconManager and self.bUseIcons:
+            aTexts, aIcons = self.oIconManager.get_info(sGroup,
+                    self.groupby)
+        else:
+            aTexts = aIcons = []
+        return aTexts, aIcons
+
     def load(self):
         # pylint: disable-msg=R0914
         # we use many local variables for clarity
@@ -171,28 +185,42 @@ class CardListModel(gtk.TreeStore):
                 oChildIter = self.append(oSectionIter)
                 self.set(oChildIter,
                     0, oCard.name,
+                    5, [],
+                    6, [],
                 )
                 aExpansionInfo = self.get_expansion_info(oCard,
                         fGetExpanInfo(oItem))
                 for sExpansion in sorted(aExpansionInfo):
                     oExpansionIter = self.append(oChildIter)
                     self.set(oExpansionIter,
-                            0, sExpansion)
+                            0, sExpansion,
+                            5, [],
+                            6, [])
                     self._dNameExpansion2Iter.setdefault(oCard.name,
                             {}).setdefault(sExpansion, []).append(
                                     oExpansionIter)
                 self._dName2Iter.setdefault(oCard.name, []).append(oChildIter)
 
             # Update Group Section
-            self.set(oSectionIter,
-                0, sGroup,
-            )
+            aTexts, aIcons = self.lookup_icons(sGroup)
+            if aTexts:
+                self.set(oSectionIter,
+                    0, sGroup,
+                    5, aTexts,
+                    6, aIcons,
+                )
+            else:
+                self.set(oSectionIter,
+                    0, sGroup,
+                    5, [],
+                    6, [],
+                )
 
         if not self._dName2Iter:
             # Showing nothing
             self.oEmptyIter = self.append(None)
             sText = self._get_empty_text()
-            self.set(self.oEmptyIter, 0, sText)
+            self.set(self.oEmptyIter, 0, sText, 5, [], 6, [])
 
         # Notify Listeners
         for oListener in self.dListeners:

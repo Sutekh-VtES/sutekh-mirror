@@ -47,7 +47,7 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
         "Physical Expansion": "PhysicalExpansion in $var0",
     }
 
-    def __init__(self, oParent, oConfig, sFilterType):
+    def __init__(self, oParent, oConfig, sFilterType, sDefaultFilter=None):
         super(FilterDialog, self).__init__("Specify Filter",
                 oParent, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT)
 
@@ -92,7 +92,20 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
         aDefaultFilters = self.__fetch_filters(True)
         aConfigFilters = self.__fetch_filters(False)
 
-        if aDefaultFilters:
+        if sDefaultFilter:
+            # Ensure filter isn't broken
+            # pylint: disable-msg=W0703
+            # we do want to catch all exceptions here
+            try:
+                oAST = self.__oParser.apply(sDefaultFilter)
+            except Exception:
+                # Fall back to usual behaviour
+                sDefaultFilter = None
+
+        if sDefaultFilter:
+            sName, sFilter = "", sDefaultFilter
+            oAST = self.__oParser.apply(sFilter)
+        elif aDefaultFilters:
             sName, sFilter = aDefaultFilters[0]
             oAST = self.__oParser.apply(sFilter)
         elif aConfigFilters:

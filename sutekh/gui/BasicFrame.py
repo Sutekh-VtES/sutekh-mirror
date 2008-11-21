@@ -7,7 +7,7 @@
 
 """Base class for Sutekh Frames"""
 
-import gtk
+import gtk, gobject
 
 class BasicFrame(gtk.Frame, object):
     # pylint: disable-msg=R0904
@@ -67,7 +67,7 @@ class BasicFrame(gtk.Frame, object):
 
     def set_title(self, sTitle):
         """Set the title of the pane to sTitle"""
-        self._oTitleLabel.set_text(sTitle)
+        self._oTitleLabel.set_text(gobject.markup_escape_text(sTitle))
 
     def set_drag_handler(self):
         """Setup the appropriate drag-n-drop handler for the view"""

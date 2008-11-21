@@ -8,7 +8,10 @@
    GUI to pick unknown cards from.  """
 
 import re
+# pylint: disable-msg=W0402
+# we need string.punctuation
 import string
+# pylint: enable-msg=W0402
 import gtk
 import pango
 import gobject
@@ -192,7 +195,7 @@ class ReplacementTreeView(gtk.TreeView):
 
     def run_filter_dialog(self, oButton):
         """Display the filter dialog and apply results."""
-        self.oCardListView.get_filter(None)
+        self.oCardListView.get_filter(None, "CardName in $var0")
         self.oFilterToggleButton.set_active(
             self.oCardListView.get_model().applyfilter)
 
@@ -224,8 +227,8 @@ class ReplacementTreeView(gtk.TreeView):
         # Kill commas, as possible issues
         sFilterString = sFilterString.replace(',', ' ')
         # Free style punctuation
-        for punc in string.punctuation:
-            sFilterString = sFilterString.replace(punc, '_')
+        for sPunc in string.punctuation:
+            sFilterString = sFilterString.replace(sPunc, '_')
         # Stolen semi-concept from soundex - replace vowels with wildcards
         # Should these be %'s ??
         # (Should at least handle the Rotscheck variation as it stands)

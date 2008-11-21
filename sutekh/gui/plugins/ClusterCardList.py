@@ -69,8 +69,6 @@ class ClusterCardList(CardListPlugin):
         oDlg = self.make_dialog()
         oDlg.run()
 
-    # pylint: enable-msg=W0613
-
     def make_dialog(self):
         """Create the dialog for the clustering options."""
         sDlgName = "Cluster Cards in List"
@@ -271,8 +269,8 @@ class ClusterCardList(CardListPlugin):
                 oTable.attach(gtk.Label(str(iId2)), 2, 3, iRow, iRow + 1)
                 oTable.attach(gtk.Label(str(dClusterCounts.get((iId1, iId2),
                     0))), 3, 4, iRow, iRow + 1)
-                for iColNum, x in enumerate(aCellData[iId1][iId2]):
-                    oTable.attach(gtk.Label(str(x)), iColNum + iExtraCols,
+                for iColNum, sText in enumerate(aCellData[iId1][iId2]):
+                    oTable.attach(gtk.Label(str(sText)), iColNum + iExtraCols,
                             iColNum + iExtraCols + 1, iRow, iRow + 1)
 
         # top align, using viewport to scroll
@@ -296,7 +294,6 @@ class ClusterCardList(CardListPlugin):
         elif oResponse == gtk.RESPONSE_APPLY:
             self.do_clustering()
 
-    # pylint: disable-msg=W0613
     # oSomeObj required by function signature
     def handle_make_card_sets(self, oSomeObj):
         """Create card a suitable card set from the chosen clusters"""
@@ -368,12 +365,12 @@ class ClusterCardList(CardListPlugin):
         self.populate_results(aCards, aColNames, aClusterIds, aCellData)
 
     def make_pcs_from_cluster(self, aClusterId):
-        """Create a Physical Card Set from the chosen cluster"""
+        """Create a Card Set from the chosen cluster"""
         sDeckName = '_cluster_deck_%d_%d' % (aClusterId[0], aClusterId[1])
 
         # Check Deck Doesn't Exist
         if PhysicalCardSet.selectBy(name=sDeckName).count() != 0:
-            do_complaint_error("Physical Card Set %s already exists." %
+            do_complaint_error("Card Set %s already exists." %
                     sDeckName)
             return
 

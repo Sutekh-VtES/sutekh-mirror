@@ -36,5 +36,9 @@ class PhysicalCardMenu(CardListMenu):
         self.create_check_menu_item('Show Card Expansions', oMenu,
                 self._oController.toggle_expansion, True)
 
+        self.create_check_menu_item('Show icons for the grouping',
+                oMenu, self._oController.toggle_icons, True)
+
         oMenu.add(gtk.SeparatorMenuItem())
         self.add_common_actions(oMenu)
+

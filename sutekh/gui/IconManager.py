@@ -13,9 +13,10 @@ from logging import Logger
 from urllib2 import urlopen, HTTPError
 from sutekh.SutekhUtility import prefs_dir, ensure_dir_exists
 from sutekh.core.SutekhObjects import Clan, Creed, CardType, DisciplinePair, \
-        Virtue
+        Virtue, ICardType, IDisciplinePair, IVirtue, ICreed, IClan
 from sutekh.gui.ProgressDialog import ProgressDialog, SutekhCountLogHandler
 from sutekh.gui.SutekhDialog import do_complaint
+from sutekh.core import Groupings
 
 # Utilty functions - convert object to a filename
 def _get_clan_filename(oClan):
@@ -200,6 +201,55 @@ class IconManager(object):
         elif sName == 'advanced':
             sFileName = 'IconAdv.gif'
         return self._get_icon(sFileName)
+
+    def get_info(self, sText, cGrouping):
+        """Given the text and the grouping for a card list/set view,
+           return the appropriate text array and icons for display."""
+        if not sText:
+            return [], []
+        aText = []
+        aIcons = []
+        if cGrouping is Groupings.CardTypeGrouping:
+            aText = [sText]
+            dIcons = self._get_card_type_icons([ICardType(x) for x in aText])
+            # Only 1 icon
+            aIcons = dIcons.values()
+        elif cGrouping is Groupings.MultiTypeGrouping:
+            aText = sText.split(' / ')
+            dIcons = self._get_card_type_icons([ICardType(x) for x in aText])
+            # Do this since we need to have the same order as aText
+            aIcons = [dIcons[x] for x in aText]
+            aText = " /|".join(aText).split("|")
+        elif cGrouping is Groupings.DisciplineGrouping:
+            aText = [sText]
+            try:
+                oDisVirt = IDisciplinePair((sText, 'superior'))
+                dIcons = self._get_discipline_icons([oDisVirt])
+                # We know there's only 1 icon, so this is OK
+                aIcons = dIcons.values()
+            except KeyError:
+                try:
+                    oDisVirt = IVirtue(sText)
+                    dIcons = self._get_virtue_icons([oDisVirt])
+                    aIcons = dIcons.values()
+                except KeyError:
+                    aIcons = [None]
+        elif cGrouping is Groupings.ClanGrouping:
+            aText = [sText]
+            try:
+                oClanCreed = IClan(sText)
+                dIcons = self._get_clan_icons([oClanCreed])
+                # We know there's only 1 icon, so this is OK
+                aIcons = dIcons.values()
+            except KeyError:
+                try:
+                    oClanCreed = ICreed(sText)
+                    dIcons = self._get_creed_icons([oClanCreed])
+                    aIcons = dIcons.values()
+                except KeyError:
+                    aIcons = [None]
+        return aText, aIcons
+
 
     def get_icon_list(self, aValues):
         """Get a list of appropriate icons for the given values"""

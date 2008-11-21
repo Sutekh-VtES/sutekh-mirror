@@ -8,8 +8,8 @@
 """View object for card sets."""
 
 import gtk
-import pango
 from sutekh.gui.CellRendererSutekhButton import CellRendererSutekhButton
+from sutekh.gui.CellRendererIcons import CellRendererIcons
 from sutekh.gui.CardListView import CardListView
 from sutekh.gui.CardSetListModel import CardSetCardListModel
 from sutekh.core.SutekhObjects import PhysicalCardSet
@@ -64,13 +64,13 @@ class CardSetView(CardListView):
         # The only path here is via the main window, so config_file exists
         super(CardSetView, self).__init__(oController, oMainWindow,
                 oModel, oMainWindow.config_file)
+
         self.sSetName = sName
         self.sDragPrefix = PhysicalCardSet.sqlmeta.table + ":" + self.sSetName
 
         # Setup columns for default view
         self.oNumCell = gtk.CellRendererText()
-        self.oNameCell = gtk.CellRendererText()
-        self.oNameCell.set_property('style', pango.STYLE_ITALIC)
+        self.oNameCell = CellRendererIcons(5)
 
         oColumn1 = gtk.TreeViewColumn("#", self.oNumCell, markup=1)
         oColumn1.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
@@ -89,7 +89,8 @@ class CardSetView(CardListView):
         self.oParentCol.set_visible(False)
         self.oParentCol.set_resizable(True)
 
-        oColumn2 = gtk.TreeViewColumn("Cards", self.oNameCell, text=0)
+        oColumn2 = gtk.TreeViewColumn("Cards", self.oNameCell, text=0,
+                textlist=5, icons=6)
         oColumn2.set_min_width(100)
         oColumn2.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
         oColumn2.set_sort_column_id(0)
@@ -356,10 +357,10 @@ class CardSetView(CardListView):
             return oColor1.to_string() == oColor2.to_string()
 
         oCurStyle = self.rc_get_style()
-        # For card sets that start empty, oNumCell will be the wrong colour,
-        # but, because of how CellRenderers interact with styles, oNameCell
-        # will be the right one here
-        self.oCellColor = self.oNameCell.get_property('foreground-gdk')
+        # Styles don't seem to be applied to TreeView text, so we default
+        # to black text for non-editable, and work out editable from the
+        # style
+        self.oCellColor = gtk.gdk.color_parse('black')
         oCurBackColor = oCurStyle.base[gtk.STATE_NORMAL]
         self.set_name('editable_view')
         oDefaultSutekhStyle = gtk.rc_get_style_by_paths(self.get_settings(),
@@ -428,3 +429,9 @@ class CardSetView(CardListView):
     def set_parent_count_col_vis(self, bVisible):
         """Make the parent count column visible or invisible"""
         self.oParentCol.set_visible(bVisible)
+
+    def update_name(self, sNewName):
+        """Handle the renaming of a card set - set the correct new drag prefix,
+           etc."""
+        self.sSetName = sNewName
+        self.sDragPrefix = PhysicalCardSet.sqlmeta.table + ":" + self.sSetName

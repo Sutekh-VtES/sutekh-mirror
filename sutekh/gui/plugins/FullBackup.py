@@ -121,8 +121,7 @@ class FullBackup(CardListPlugin):
         oDlg.set_name("Sutekh.dialog")
         oDlg.add_filter_with_pattern('Zip Files', ['*.zip', '*.ZIP'])
 
-        oWarning = gtk.Label("This will delete all existing Physical Cards"
-                " and Card Sets")
+        oWarning = gtk.Label("This will delete all existing Card Sets")
         # pylint: disable-msg=E1101
         # plint doesn't pick up vbox methods correctly
         oDlg.vbox.pack_start(oWarning, expand=False)
@@ -159,7 +158,7 @@ class FullBackup(CardListPlugin):
                     # restore successful, refresh display
                     aMessages = oFile.get_warnings()
                     if aMessages:
-                        sMsg = "The follwoing warnings were reported:\n%s" % \
+                        sMsg = "The following warnings were reported:\n%s" % \
                                 "\n".join(aMessages)
                         do_complaint_warning(sMsg)
                     # Id's will not be preserved

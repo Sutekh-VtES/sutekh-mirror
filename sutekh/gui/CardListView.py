@@ -40,6 +40,11 @@ class CardListView(gtk.TreeView, object):
 
         self._oSelection.connect('changed', self.card_selected)
 
+        # Only enable icons if it's available (so we don't break GuiCardLookup)
+        if hasattr(oMainWindow, 'icon_manager') and \
+                hasattr(oModel, 'oIconManager'):
+            oModel.oIconManager = oMainWindow.icon_manager
+
         self._oSelection.set_select_function(self.can_select)
         tGtkVersion = gtk.gtk_version
         if tGtkVersion[0] == 2 and \
@@ -214,11 +219,17 @@ class CardListView(gtk.TreeView, object):
 
     # Filtering
 
-    def get_filter(self, oMenu):
-        """Get the Filter from the FilterDialog."""
+    def get_filter(self, oMenu, sDefaultFilter=None):
+        """Get the Filter from the FilterDialog.
+        
+           oMenu is a menu item to toggle if it exists.
+           sDefaultFilterName is the name of the default filter
+           to set when the dialog is created. This is intended for
+           use by GuiCardLookup."""
         if self._oFilterDialog is None:
             self._oFilterDialog = FilterDialog(self._oMainWin,
-                    self._oConfig, self._oController.filtertype)
+                    self._oConfig, self._oController.filtertype,
+                    sDefaultFilter)
 
         self._oFilterDialog.run()
 
@@ -230,7 +241,10 @@ class CardListView(gtk.TreeView, object):
             self._oModel.selectfilter = oFilter
             if not self._oModel.applyfilter:
                 # If a filter is set, automatically apply
-                oMenu.set_apply_filter(True)
+                if oMenu:
+                    oMenu.set_apply_filter(True)
+                else:
+                    self._oModel.applyfilter = True
             else:
                 # Filter Changed, so reload
                 self.load()
@@ -238,7 +252,10 @@ class CardListView(gtk.TreeView, object):
             # Filter is set to blank, so we treat this as disabling
             # Filter
             if self._oModel.applyfilter:
-                oMenu.set_apply_filter(False)
+                if oMenu:
+                    oMenu.set_apply_filter(False)
+                else:
+                    self._oModel.applyfilter = True
             else:
                 self.load()
 

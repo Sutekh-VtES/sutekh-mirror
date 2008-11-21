@@ -113,3 +113,9 @@ class PhysicalCardSetParser(object):
             return self.oCS.get_warnings()
         else:
             return []
+
+    def string_to_holder(self, sIn):
+        """Parse the string into a Card Set Holder without commiting it"""
+        self.oTree = ElementTree(fromstring(sIn))
+        self._convert_tree()
+        return self.oCS

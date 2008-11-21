@@ -54,7 +54,7 @@ class CSVParser(object):
         except ValueError:
             iCount = 1
             self.oCS.add_warning("Count for '%s' could not be determined and"
-                                    " was set to one." % (name,))
+                                    " was set to one." % (sName,))
 
         if self.iExpansionColumn is not None:
             sExpansionName = aRow[self.iExpansionColumn].strip()

@@ -170,6 +170,35 @@ class ZipFileWrapper(object):
         self.__close_zip()
         return aPCSList
 
+    def get_all_entries(self):
+        """Return the list of card sets in the zip file"""
+        self.__open_zip_for_read()
+        dCardSets = {}
+        oIdParser = IdentifyXMLFile()
+        for oItem in self.oZip.infolist():
+            oData = self.oZip.read(oItem.filename)
+            oIdParser.parse_string(oData)
+            if oIdParser.type == 'PhysicalCardSet':
+                dCardSets[oIdParser.name] = (oItem.filename,
+                        oIdParser.parent_exists, oIdParser.parent)
+        self.__close_zip()
+        return dCardSets
+
+    def read_single_card_set(self, sFilename):
+        """Read a single card set into a card set holder."""
+        self.__open_zip_for_read()
+        oIdParser = IdentifyXMLFile()
+        oData = self.oZip.read(sFilename)
+        oIdParser.parse_string(oData)
+        oParser = None
+        if oIdParser.type == 'PhysicalCardSet':
+            oParser = PhysicalCardSetParser()
+            oParser.string_to_holder(oData)
+        self.__close_zip()
+        if oParser:
+            return oParser.oCS
+        return None
+
     def get_warnings(self):
         """Get any warnings from the process"""
         return self._aWarnings

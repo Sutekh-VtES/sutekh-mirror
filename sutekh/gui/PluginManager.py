@@ -84,7 +84,7 @@ class CardListPlugin(object):
             doc="Associated CardModel object.")
     cardlookup = property(fget=lambda self: self.parent.cardLookup,
             doc="GUI CardLookup.")
-    iconmanager = property(fget=lambda self: self.parent.iconManager,
+    icon_manager = property(fget=lambda self: self.parent.icon_manager,
             doc="Icon manager.")
     # pylint: enable-msg=W0212
 

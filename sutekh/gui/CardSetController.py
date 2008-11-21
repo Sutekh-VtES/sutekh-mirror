@@ -126,6 +126,11 @@ class CardSetController(object):
         # Other card set deletions don't need to be watched here, since the
         # fiddling on parents should generate changed signals for us.
 
+    def toggle_icons(self, oWidget):
+        """Toggle the icons display"""
+        self.model.bUseIcons = oWidget.active
+        self.view.reload_keep_expanded()
+
     def set_card_text(self, sCardName):
         """Set card text to reflect selected card."""
         self._oMainWindow.set_card_text(sCardName)
@@ -212,7 +217,7 @@ class CardSetController(object):
         sName = oProp.get_name()
         if sName:
             if sName != self.view.sSetName:
-                self.view.sSetName = sName
+                self.view.update_name(sName)
             update_card_set(self.__oPhysCardSet, oProp, self._oMainWindow,
                     self._oFrame.menu)
 

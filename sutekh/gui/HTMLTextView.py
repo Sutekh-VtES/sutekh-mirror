@@ -18,7 +18,7 @@ import gtk
 import re
 import warnings
 import operator
-import xml.sax, xml.sax.handler
+import HTMLParser
 from cStringIO import StringIO
 from sutekh.gui.SutekhDialog import SutekhDialog
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
@@ -38,13 +38,13 @@ def _parse_css_color(sColor):
     else:
         return gtk.gdk.color_parse(sColor)
 
-class HtmlHandler(xml.sax.handler.ContentHandler):
+class HtmlHandler(HTMLParser.HTMLParser):
     # pylint: disable-msg=R0201, R0902
     # R0201: can't break these into functions
     # R0902: We need to keep a lot of state to handle HTML properly
     """Parse the HTML imput and update the gtk.TextView"""
     def __init__(self, oTextView, oStartIter, fLinkLoader):
-        xml.sax.handler.ContentHandler.__init__(self)
+        HTMLParser.HTMLParser.__init__(self)
         self._oTextBuf = oTextView.get_buffer()
         self._oTextView = oTextView
         self._oIter = oStartIter
@@ -364,7 +364,7 @@ class HtmlHandler(xml.sax.handler.ContentHandler):
 
     # pylint: enable-msg=R0913, W0613
 
-    def characters(self, sContent):
+    def handle_data(self, sContent):
         """Process the character comments of an element."""
         if oAllWhiteSpaceRegex.match(sContent) is not None:
             return
@@ -378,12 +378,11 @@ class HtmlHandler(xml.sax.handler.ContentHandler):
         """Get the list of target anchors."""
         return self._dTargets
 
-    # pylint: disable-msg=C0103
-    # startElement, endElement names are require
-    def startElement(self, sName, oAttrs):
+    def handle_starttag(self, sName, oAttrs):
         """Parser start element handler"""
         # pylint: disable-msg=R0912, R0915
-        # sax content parser, so it is is a massive if..elif.. statement
+        # start tag handler, so it is is a massive if..elif.. statement
+        oAttrs = dict(oAttrs)
         self._flush_text()
         try:
             oStyle = oAttrs['style']
@@ -421,12 +420,22 @@ class HtmlHandler(xml.sax.handler.ContentHandler):
         elif sName == 'title':
             self._bInTitle = True
             return
-        elif sName == 'em':
+        elif sName == 'em' or sName == 'i':
             oTag = self._oTextBuf.create_tag()
             oTag.set_property('style', pango.STYLE_ITALIC)
-        elif sName == 'strong':
+        elif sName == 'strong' or sName == 'b':
             oTag = self._oTextBuf.create_tag()
             oTag.set_property('weight', pango.WEIGHT_BOLD)
+        elif sName == 'font':
+            oTag = self._oTextBuf.create_tag()
+            dFontSize = {
+                '-2': pango.SCALE_X_SMALL,
+                '-1': pango.SCALE_SMALL,
+                '1': pango.SCALE_LARGE,
+                '2': pango.SCALE_X_LARGE,
+            }
+            if 'size' in oAttrs and oAttrs['size'] in dFontSize:
+                oTag.set_property('scale', dFontSize[oAttrs['size']])
 
         self._begin_span(oStyle, oTag)
 
@@ -500,21 +509,24 @@ class HtmlHandler(xml.sax.handler.ContentHandler):
             pass
         elif sName in ['h1', 'h2', 'h3', 'h4', 'h5', 'h6']:
             pass
-        elif sName == 'em':
+        elif sName == 'em' or sName == 'i':
             pass
-        elif sName == 'strong':
+        elif sName == 'strong' or sName == 'b':
+            pass
+        elif sName == 'font':
             pass
         else:
-            warnings.warn("Unhandled element '%s'" % sName)
+            warnings.warn("Unhandled start tag '%s'" % sName)
 
-    def endElement(self, sName):
+    def handle_endtag(self, sName):
         """Handle the end of a tag"""
         # pylint: disable-msg=R0912, R0915
-        # sax content parser, so it is is a massive if..elif.. statement
+        # eng tag handler, so it is is a massive if..elif.. statement
         if sName == 'title':
             self._bInTitle = False
             return
         self._flush_text()
+
         if sName == 'p':
             if not self._oIter.starts_line():
                 self._insert_text("\n")
@@ -547,12 +559,15 @@ class HtmlHandler(xml.sax.handler.ContentHandler):
         elif sName in ['h1', 'h2', 'h3', 'h4', 'h5', 'h6']:
             if not self._oIter.starts_line():
                 self._insert_text("\n")
-        elif sName == 'em':
+        elif sName == 'em' or sName == 'i':
             pass
-        elif sName == 'strong':
+        elif sName == 'strong' or sName == 'b':
+            pass
+        elif sName == 'font':
             pass
         else:
-            warnings.warn("Unhandled element '%s'" % sName)
+            warnings.warn("Unhandled end tag '%s'" % sName)
+
         self._end_span()
 
 class HTMLTextView(gtk.TextView):
@@ -632,12 +647,8 @@ class HTMLTextView(gtk.TextView):
         oBuffer.delete(oStartOfBuf, oEndOfBuf)
         oEndOfBuf = oBuffer.get_end_iter()
 
-        oParser = xml.sax.make_parser()
         oHandler = HtmlHandler(self, oEndOfBuf, self._fLinkLoader)
-        oParser.setContentHandler(oHandler)
-        # Don't try and follow external references
-        oParser.setFeature(xml.sax.handler.feature_external_ges, False)
-        oParser.parse(fHTMLInput)
+        oHandler.feed(fHTMLInput.read())
 
         if not oEndOfBuf.starts_line():
             oBuffer.insert(oEndOfBuf, "\n")
