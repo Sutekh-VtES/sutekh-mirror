@@ -154,7 +154,7 @@ class ClusterCardList(CardListPlugin):
         # K-Means is the only clustering solution for the moment
         oHeading = gtk.Label()
         oHeading.set_markup("<b>Parameters for K-Means Clustering</b>")
-        oVbx.pack_start(oHeading, expand=False) # top align
+        oVbx.pack_start(oHeading, False, False, 5) # top align
 
         # Number of iterations
         oNumIterLabel = gtk.Label("Number of Iterations:")
@@ -165,13 +165,13 @@ class ClusterCardList(CardListPlugin):
         oHbox = gtk.HBox(False, 0)
         oHbox.pack_start(oNumIterLabel, False) # left align
         oHbox.pack_end(self._oNumIterSpin, False) # right align
-        oVbx.pack_start(oHbox, expand=False)
+        oVbx.pack_start(oHbox, False)
 
         # Autoset Num clusters
         self._oAutoNumClusters = gtk.CheckButton("One cluster per 80 cards")
         oHbox = gtk.HBox(False, 0)
         oHbox.pack_start(self._oAutoNumClusters, False) # right align
-        oVbx.pack_start(oHbox)
+        oVbx.pack_start(oHbox, False)
 
         # Number of clusters
         oNumClustersLabel = gtk.Label("Number of Clusters:")
@@ -182,7 +182,7 @@ class ClusterCardList(CardListPlugin):
         oHbox = gtk.HBox(False, 0)
         oHbox.pack_start(oNumClustersLabel, False) # left align
         oHbox.pack_end(self._oNumClustersSpin, False) # right align
-        oVbx.pack_start(oHbox, expand=False)
+        oVbx.pack_start(oHbox, False)
 
         # Connect Autoset and Number of clusters
         self._oAutoNumClusters.set_active(True)
@@ -197,31 +197,25 @@ class ClusterCardList(CardListPlugin):
 
         self._oAutoNumClusters.connect("toggled", auto_toggled)
 
-        # Distance Measure (currently Euclidean distance is the only supported
-        # metric)
-        #oDistLabel = gtk.Label()
-        #oDistLabel.set_markup("<b>Distance Measure for Clustering</b>")
-        #oVbx.pack_start(oDistLabel)
-        #
-        #dDist = { 'e' : 'Euclidean Distance',
-        #          'b' : 'City Block Distance',
-        #          'c' : 'Correlation',
-        #          'a' : 'Absolute Value of the Correlation',
-        #          'u' : 'Uncentered Correlation',
-        #          'x' : 'Absolute Value of the Uncentered Correlation',
-        #          's' : "Spearman's Rank Correlation",
-        #          'k' : "Kendall's Tau"
-        #}
-        #
-        #oIter = dDist.itervalues()
-        #for sName in oIter:
-        #    oFirstBut = gtk.RadioButton(None, sName, False)
-        #    oVbx.pack_start(oFirstBut)
-        #    break
-        #
-        #for sName in oIter:
-        #    oBut = gtk.RadioButton(oFirstBut, sName)
-        #    oVbx.pack_start(oBut)
+        # Separator
+        oVbx.pack_start(gtk.HSeparator(), False, False, 10)
+
+        # Distance Measure
+        oDistLabel = gtk.Label()
+        oDistLabel.set_markup("<b>Distance Measure for Clustering</b>")
+        oVbx.pack_start(oDistLabel, False, False, 5)
+
+        oIter = Vector.METRICS.iterkeys()
+        for sName in oIter:
+            oFirstBut = gtk.RadioButton(None, sName, False)
+            oVbx.pack_start(oFirstBut, False)
+            break
+
+        for sName in oIter:
+            oBut = gtk.RadioButton(oFirstBut, sName)
+            oVbx.pack_start(oBut, False)
+
+        self._aDistanceMeasureGroup = oFirstBut.get_group()
 
         return oVbx
 
@@ -258,32 +252,30 @@ class ClusterCardList(CardListPlugin):
 
         # Setup Table
         iHeaderRows = 1
-        iExtraCols = 3
+        iExtraCols = 4
 
         oTable = gtk.Table(
                 rows=len(aMeans) + iHeaderRows,
-                columns=len(aColNames) + iExtraCols
+                columns=iExtraCols
         )
         oTable.set_row_spacings(0)
 
         # Headings
         oLabel = gtk.Label()
-        oLabel.set_markup('<b>Save\nDeck</b>')
+        oLabel.set_markup('<b>Save Deck</b>')
         oTable.attach(oLabel, 0, 1, 0, 1, xpadding=3)
 
         oLabel = gtk.Label()
-        oLabel.set_markup('<b>Cluster\nId</b>')
+        oLabel.set_markup('<b>Cluster Id</b>')
         oTable.attach(oLabel, 1, 2, 0, 1, xpadding=3)
 
         oLabel = gtk.Label()
-        oLabel.set_markup('<b>No.\nCards</b>')
+        oLabel.set_markup('<b>No. Cards</b>')
         oTable.attach(oLabel, 2, 3, 0, 1, xpadding=3)
 
-        for iColNum, sColName in enumerate(aColNames):
-            oLabel = gtk.Label()
-            oLabel.set_markup('<b>%s</b>' % sColName)
-            oTable.attach(oLabel, iColNum + iExtraCols,
-                    iColNum + iExtraCols + 1, 0, 1, xpadding=3)
+        oLabel = gtk.Label()
+        oLabel.set_markup('<b>Cluster Center</b>')
+        oTable.attach(oLabel, 3, 4, 0, 1, xpadding=3)
 
         # Data
         self._dCardSetMakingButtons = {}
@@ -291,13 +283,19 @@ class ClusterCardList(CardListPlugin):
             iRow = iId + iHeaderRows
             oBut = gtk.CheckButton()
             self._dCardSetMakingButtons[iId] = oBut
+            sCenterText = "\n".join([
+                "%s: %.2f" % (sColName, fColVal) for sColName, fColVal
+                in zip(aColNames, oMean)
+                if abs(fColVal) > 0.01
+            ])
+            oCenterLabel = gtk.Label(sCenterText)
+            oCenterLabel.set_alignment(0.0, 0.5)
+
             oTable.attach(oBut, 0, 1, iRow, iRow + 1)
             oTable.attach(gtk.Label(str(iId)), 1, 2, iRow, iRow + 1)
             oTable.attach(gtk.Label(str(len(aClusters[iId]))),
                 2, 3, iRow, iRow + 1)
-            for iColNum, sText in enumerate(oMean):
-                oTable.attach(gtk.Label(str(sText)), iColNum + iExtraCols,
-                        iColNum + iExtraCols + 1, iRow, iRow + 1)
+            oTable.attach(oCenterLabel, 3, 4, iRow, iRow + 1)
 
         # top align, using viewport to scroll
         self._oResultsVbox.pack_start(AutoScrolledWindow(oTable, True))
@@ -332,7 +330,7 @@ class ClusterCardList(CardListPlugin):
     # pylint: enable-msg=W0613
 
     @staticmethod
-    def k_means_plus_plus(aCards, iNumClust):
+    def k_means_plus_plus(aCards, iNumClust, fDist):
         """Find a set of initial centers using the k-means++ algorithm.
 
            See http://www.stanford.edu/~darthur/kMeansPlusPlus.pdf.
@@ -342,7 +340,7 @@ class ClusterCardList(CardListPlugin):
         while len(aMeans) < iNumClust:
             aDists = []
             for oVec in aCards:
-                fMinD = min((oVec.dist(oMean) for oMean in aMeans))**2
+                fMinD = min((fDist(oVec, oMean) for oMean in aMeans))**2
                 aDists.append(fMinD)
 
             fSumSq = sum(aDists)
@@ -366,17 +364,17 @@ class ClusterCardList(CardListPlugin):
 
         return aMeans
 
-    def k_means(self, aCards, iNumClust, iIterations):
+    def k_means(self, aCards, iNumClust, iIterations, fDist):
         """Perform k-means clustering on a list of cards using Lloyd's
            algorithm."""
-        if not aCards:
-            # empty card set
+        if (not aCards) or (not aCards[0]):
+            # empty card set or zero-length vectors
             return [], []
 
         aCards = [Vector(x) for x in aCards]
-        aMeans = self.k_means_plus_plus(aCards, iNumClust)
+        aMeans = self.k_means_plus_plus(aCards, iNumClust, fDist)
         iCards = len(aCards)
-        fInvK = 1.0 / iNumClust
+        fInvLen = 1.0 / len(aCards[0])
 
         # just do a fixed number of interations (no complex stopping condition)
         for _iIter in range(iIterations):
@@ -387,15 +385,15 @@ class ClusterCardList(CardListPlugin):
 
             # calculate membership in clusters
             for iCard in xrange(iCards):
-                fDist = aCards[iCard].dist
+                oVec = aCards[iCard]
                 iVmin = min(xrange(iNumClust),
-                    key=lambda iV: fDist(aMeans[iV]))
+                    key=lambda iV: fDist(oVec, aMeans[iV]))
                 aClusters[iVmin].append(iCard)
 
             # recompute the centroids
             for iClust in xrange(iNumClust):
                 if aClusters[iClust]:
-                    aMeans[iClust] = fInvK * sum(
+                    aMeans[iClust] = fInvLen * sum(
                         (aCards[x] for x in aClusters[iClust])
                     )
 
@@ -428,11 +426,18 @@ class ClusterCardList(CardListPlugin):
         else:
             iNumClusts = max(2, int(self._oNumClustersSpin.get_value()))
         iIterations = max(2, int(self._oNumIterSpin.get_value()))
+        for oBut in self._aDistanceMeasureGroup:
+            if oBut.get_active():
+                sName = oBut.get_label()
+                fDist = Vector.METRICS[sName]
+                break
+        else:
+            fDist = Vector.METRICS['Euclidean Distance']
 
         # aMeans -> list of vectors of cluster centroids
         # aClusters -> list of clusters, each cluster is a list of card indexes
 
-        aMeans, aClusters = self.k_means(aTable, iNumClusts, iIterations)
+        aMeans, aClusters = self.k_means(aTable, iNumClusts, iIterations, fDist)
 
         self.populate_results(aCards, aColNames, aMeans, aClusters)
 
@@ -461,17 +466,45 @@ class ClusterCardList(CardListPlugin):
 class Vector(object):
     """Really simple class representing a row of card table data."""
 
+    METRICS = {}
+
     def __init__(self, aData):
         self._aData = aData
 
     # We do want to access _aData on other Vectors.
     # pylint: disable-msg=W0212
 
-    def dist(self, oOther):
-        """Distance between this vector and another."""
-        assert len(self._aData) == len(oOther._aData)
-        fSum = sum(((x-y)**2 for (x, y) in zip(self._aData, oOther._aData)))
+    def euclidian_distance(self, oVec2):
+        """Euclidian distance between two vectors."""
+        assert len(self._aData) == len(oVec2._aData)
+        fSum = sum(((x-y)**2 for (x, y) in zip(self._aData, oVec2._aData)))
         return math.sqrt(fSum)
+
+    METRICS['Euclidean Distance'] = euclidian_distance
+
+    def sutekh_distance(self, oVec2):
+        """Like Euclidean distance, but -1 is distance 0.25 to anything
+           (including 0 and -1) and 0 is distance 4.0 from anything other
+           than 0.
+           """
+        assert len(self._aData) == len(oVec2._aData)
+        fSum = sum((
+            ((x == -1 or y == -1) and 0.25) or
+            (((x == 0) ^ (y == 0) and 4.0)) or
+            (x-y)**2 for (x, y) in zip(self._aData, oVec2._aData)
+        ))
+        return math.sqrt(fSum)
+
+    METRICS['Sutekh Distance'] = sutekh_distance
+
+    # Other possibile metrics:
+    #  'City Block Distance',
+    #  'Correlation',
+    #  'Absolute Value of the Correlation',
+    #  'Uncentered Correlation',
+    #  'Absolute Value of the Uncentered Correlation',
+    #  "Spearman's Rank Correlation"
+    #  "Kendall's Tau"
 
     def __add__(self, oOther):
         """Sum this vector with another."""
