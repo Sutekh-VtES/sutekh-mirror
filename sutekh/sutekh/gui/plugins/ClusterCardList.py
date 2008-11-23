@@ -374,7 +374,6 @@ class ClusterCardList(CardListPlugin):
         aCards = [Vector(x) for x in aCards]
         aMeans = self.k_means_plus_plus(aCards, iNumClust, fDist)
         iCards = len(aCards)
-        fInvLen = 1.0 / len(aCards[0])
 
         # just do a fixed number of interations (no complex stopping condition)
         for _iIter in range(iIterations):
@@ -393,7 +392,7 @@ class ClusterCardList(CardListPlugin):
             # recompute the centroids
             for iClust in xrange(iNumClust):
                 if aClusters[iClust]:
-                    aMeans[iClust] = fInvLen * sum(
+                    aMeans[iClust] = (1.0 / len(aClusters[iClust])) * sum(
                         (aCards[x] for x in aClusters[iClust])
                     )
 
