@@ -744,6 +744,60 @@ installation.</li>
 
 <h3 id="cluster_plugin">Cluster Cards</h3>
 
+<p>The clustering plugin attempts to group cards from a card list into sets 
+(clusters) of cards with similar properties. The intention is to provide way to 
+explore subsets of ones cards and perhaps to look for groups of cards which 
+might provide a starting point for constructing decks. Currently running the 
+clustering tool is quite slow, so be patient when waiting for large card lists 
+to be grouped (it will finish eventually).</p>
+
+<p>Upon opening the clustering plugin, three tabs are presented&#8212; 
+<em>Select Columns</em>, <em>Settings</em> and <em>Results</em>.</p>
+
+<p>The <em>Select Columns</em> tab is where one selects the properties to consider when 
+grouping the cards. Properties are organised into categories for ease of 
+selection. If unsure on which properties to select, start by selecting the 
+disciplines and clans you&#8217;re most interested in.</p>
+
+<p>Under the <em>Settings</em> tab, one can tweak the clustering algorithm parameters. 
+The plugin implements K-means clustering using K-means++ to determine the 
+initial cluster centers followed by Lloyd&#8217;s method of iteratively refining the 
+clusters. Three parameters can be set:</p>
+
+<ul>
+<li><em>Number of iterations</em>: Number of Lloyd refinement steps to perform. More 
+steps makes the clustering take longer but fewer steps may result in a less 
+optimal grouping. Ten steps should be sufficient for most cases.</li>
+</ul>
+
+<ul>
+<li><em>Number of clusters</em>: By default the plugin creates one cluster per 80 cards 
+(this being the size of a deck) but the number of clusters may also be set 
+manually.</li>
+</ul>
+
+<ul>
+<li><em>Distance measure</em>: Two distance metrics are currently supported. The 
+Euclidean distance setting clusters using the usual N-dimensional vector space 
+metric. The Sutekh distance metric modifies the Euclidean one to make property 
+values of -1 (used internally by Sutekh to mark costs of X and the <span class="caps">ANY</span> crypt 
+group) close to all others and values of zero slightly further away than usual. 
+If in doubt, leave the metric set to the Sutekh distance.</li>
+</ul>
+
+<p>Once the property columns have been selected and the parameters set, use the 
+<em>Execute</em> button to begin the clustering. Once clustering is complete, the 
+<em>Results</em> tab will be populated.</p>
+
+<p>The results are presented as a table. Each row corresponds to a cluster of 
+cards. The first column contains checkboxes. Use these to select which clusters 
+to create cards sets from before clicking the 
+<em>Make Cards Sets from Selected Clusters</em> button at the bottom of the results. 
+The second column contains the cluster number, which enables one to determine 
+which cluster created card sets correspond to.  The third columns shows how 
+many cards are present in each cluster and the last cluster lists the property 
+values of the cluster center (property values of zero are omitted).</p>
+
 <h3 id="stats_plugin">Clan Discipline Stats</h3>
 
 <p>This plugin shows an analysis of all the difference clans in the white wolf 
