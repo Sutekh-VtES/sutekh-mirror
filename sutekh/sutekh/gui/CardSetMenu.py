@@ -74,7 +74,7 @@ class CardSetMenu(CardListMenu):
                 ("Show No Children", NO_SECOND_LEVEL),
                 ("Show Expansions", SHOW_EXPANSIONS),
                 ("Show Child Card Sets", SHOW_CARD_SETS),
-                ("Show Expansions + Child Card Sets",
+                ("Show Expansions and Child Card Sets",
                     EXPANSIONS_AND_CARD_SETS),
                 ("Show Child Card Sets and Expansions",
                     CARD_SETS_AND_EXPANSIONS),
