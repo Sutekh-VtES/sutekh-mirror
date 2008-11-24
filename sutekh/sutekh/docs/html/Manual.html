@@ -94,6 +94,11 @@ card list. Each card describes all the relevant properties of the card,
 such as the clan and discipline requirements, the cost, and the latest 
 text for the card.</p>
 
+<p>For each card, the expansion that specific card is from can be set. This 
+allows one to distinguish between multiple copies of the same card from 
+different expansions. If the expansion is not set, this is noted as 
+<strong>Unknown Expansion</strong> in the card set view.</p>
+
 <p><em>Card Sets</em> are collections of cards and describe the card and the number of 
 copies of that card in the collection. An important concept is that card sets 
 can be related in a parent-child hierarchy. A typical setup is to have a single 
@@ -577,7 +582,7 @@ in the list.</li>
 a <a href="#list">list</a> of disciplines, and the filter matches if any of the 
 disciplines in the list match. This filter ignores the level requirement for 
 the discipline.</li>
-<li><em>Group</em>: Filter on the grouo listed on the card. This takes a 
+<li><em>Group</em>: Filter on the group listed on the card. This takes a 
 <a href="#list">list</a> of groups, and matches the group listed on the card to this list.</li>
 <li><em>Capacity</em>: Filter on the capacity listed on the card. This takes a 
 <a href="#list">list</a> of capacities, and matches the capacity listed on the card to 
@@ -586,27 +591,52 @@ this list.</li>
 costs to match, and matches the numerical card cost to this list. Note that 
 this does not consider the cost type. To filter only on costs of a specific 
 type, this needs to be combined with the <em>Cost Type</em> filter.</li>
-<li><em>Life (Crypt)</em>:</li>
-<li><em>Creed</em>:</li>
-<li><em>Virtue</em>:</li>
-<li><em>Card Text</em>:</li>
+<li><em>Life (Crypt)</em>: Filter on the life cost of the crypt card. This takes a 
+<a href="#list">list</a> of values, and matches the life listed on the card to this list. 
+Note that this only matches the life associated with crypt cards (currently the 
+Imbued), and doesn&#8217;t match the life for other allies or retainers.</li>
+<li><em>Creed</em>: Filter on the creed associated with the card. Like the <em>Clan</em> 
+filter, this takes a <a href="#list">list</a> of creed to match.</li>
+<li><em>Virtue</em>: Filter on the virtues associated with card. Like the <em>Discipline</em> 
+filter, this takes a <a href="#list">list</a> of virtues to match.</li>
+<li><em>Card Text</em>: Filter on the text of the card. This filter takes a 
+<a href="#string">string</a> to match against.</li>
 <li><em>Card Name</em>: Filter on the name of the card. This filter takes a 
 <a href="#string">string</a>.</li>
-<li><em>Sect</em>:</li>
-<li><em>Title</em>:</li>
-<li><em>Expansion_with_Rarity</em>:</li>
+<li><em>Sect</em>: Matches against the sect of the vampire. This filter takes a 
+<a href="#list">list</a> of sects to match against.</li>
+<li><em>Title</em>: Filter on the title of the vampire. This filter takes a <a href="#list">list</a> 
+of titles and matches the card title to this list.</li>
+<li><em>Expansion_with_Rarity</em>: Filter on the expansion and rarity of the card. This 
+filter takes a <a href="#list">list</a> of expansion with rarities, and matches a card if 
+it was printed with on of the given expansion and rarity combinations. Note 
+that this filter matches the list of expansions a card has been printed in, and 
+ignores the expansion information set for a card. If one wants to filter on 
+the card&#8217;s expansion information, use the <em>Physical Expansion</em> filter.</li>
 <li><em>Discipline with Level</em>: Filter on the discipline associated with the card. 
 This takes a <a href="#list">list</a> of disciplines of the different levels, and the 
-filter matches if the card mathces the disciplines in the list.  This filter 
+filter matches if the card matches the disciplines in the list.  This filter 
 treats the different levels of the filter as different. This filter is most 
 useful for matching vampires. Note that non-vampire cards are matched only 
 by the superior discipline. 
 inferior.</li>
-<li><em>Physical Expansion</em>: </li>
-<li><em>Card Sets</em>:</li>
-<li><em>In Card Sets In Use</em>:</li>
-<li><em>Card Count</em>:</li>
-<li><em>Card Function</em>:</li>
+<li><em>Physical Expansion</em>: This filter matches on the expansion information 
+set for a card. This filter takes a <a href="#list">list</a> of expansions, and matches 
+the expansion set for the card to this list. This is different from the 
+<em>Expansion_with_Rarity</em> filter since it ignores rarities, and matches the 
+expansion set for the card, not the list of expansions the card was printed 
+in.</li>
+<li><em>Card Sets</em>: The filter matches cards that belong to the given <a href="#list">list</a> 
+of other card sets.</li>
+<li><em>In Card Sets In Use</em>: This matches the cards against the child card sets 
+marked as in use. A card matches if it belongs to a card set in use. This 
+filter has no parameters.</li>
+<li><em>Card Count</em>: This matches the card against a count in either the same 
+card set of a different card set. It takes a <a href="#list">list</a> of card counts, 
+and a single card set to match against, and matches those cards that 
+satisfy these conditions.</li>
+<li><em>Card Function</em>: This filter matches the card against a <a href="#list">list</a> of 
+common card functions. </li>
 <li><em>Sub-Filter</em>: Nest an additional filter box inside the current box. See 
 <a href="#combining">Combining Basic Filters</a></li>
 </ul>
@@ -674,9 +704,8 @@ filter boxes.</p>
 if this string is contained in the property filtered on, so a Card Name 
 filter, if the given string is a substring of the card name.</p>
 
-<p>String filtera are also case insensitive (so <strong>the</strong> will match both *Weigh the 
-Heart* and <strong>Yuri, The Talon</strong>, when filtering on the card name, for example). 
-Strings filter also always look for a substr</p>
+<p>String filters are also case insensitive (so <strong>the</strong> will match both *Weigh the 
+Heart* and <strong>Yuri, The Talon</strong>, when filtering on the card name, for example).</p>
 
 <p>In Addition, filters which take a string as input can use two different 
 wildcard characters.</p>

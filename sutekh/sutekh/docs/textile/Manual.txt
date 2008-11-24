@@ -67,6 +67,11 @@ card list. Each card describes all the relevant properties of the card,
 such as the clan and discipline requirements, the cost, and the latest
 text for the card.
 
+For each card, the expansion that specific card is from can be set. This
+allows one to distinguish between multiple copies of the same card from
+different expansions. If the expansion is not set, this is noted as
+*Unknown Expansion* in the card set view. 
+
 _Card Sets_ are collections of cards and describe the card and the number of
 copies of that card in the collection. An important concept is that card sets
 can be related in a parent-child hierarchy. A typical setup is to have a single
@@ -511,7 +516,7 @@ in the list.
 a "list":#list of disciplines, and the filter matches if any of the
 disciplines in the list match. This filter ignores the level requirement for
 the discipline.
-* _Group_: Filter on the grouo listed on the card. This takes a
+* _Group_: Filter on the group listed on the card. This takes a
 "list":#list of groups, and matches the group listed on the card to this list.
 * _Capacity_: Filter on the capacity listed on the card. This takes a
 "list":#list of capacities, and matches the capacity listed on the card to
@@ -520,27 +525,52 @@ this list.
 costs to match, and matches the numerical card cost to this list. Note that
 this does not consider the cost type. To filter only on costs of a specific
 type, this needs to be combined with the _Cost Type_ filter.
-* _Life (Crypt)_:
-* _Creed_:
-* _Virtue_:
-* _Card Text_:
+* _Life (Crypt)_: Filter on the life cost of the crypt card. This takes a
+"list":#list of values, and matches the life listed on the card to this list.
+Note that this only matches the life associated with crypt cards (currently the
+Imbued), and doesn't match the life for other allies or retainers.
+* _Creed_: Filter on the creed associated with the card. Like the _Clan_
+filter, this takes a "list":#list of creed to match.
+* _Virtue_: Filter on the virtues associated with card. Like the _Discipline_
+filter, this takes a "list":#list of virtues to match.
+* _Card Text_: Filter on the text of the card. This filter takes a
+"string":#string to match against.
 * _Card Name_: Filter on the name of the card. This filter takes a
 "string":#string.
-* _Sect_:
-* _Title_:
-* _Expansion_with_Rarity_:
+* _Sect_: Matches against the sect of the vampire. This filter takes a
+"list":#list of sects to match against.
+* _Title_: Filter on the title of the vampire. This filter takes a "list":#list
+of titles and matches the card title to this list.
+* _Expansion_with_Rarity_: Filter on the expansion and rarity of the card. This
+filter takes a "list":#list of expansion with rarities, and matches a card if
+it was printed with on of the given expansion and rarity combinations. Note
+that this filter matches the list of expansions a card has been printed in, and
+ignores the expansion information set for a card. If one wants to filter on
+the card's expansion information, use the _Physical Expansion_ filter.
 * _Discipline with Level_: Filter on the discipline associated with the card.
 This takes a "list":#list of disciplines of the different levels, and the
-filter matches if the card mathces the disciplines in the list.  This filter
+filter matches if the card matches the disciplines in the list.  This filter
 treats the different levels of the filter as different. This filter is most
 useful for matching vampires. Note that non-vampire cards are matched only
 by the superior discipline.
 inferior.
-* _Physical Expansion_: 
-* _Card Sets_:
-* _In Card Sets In Use_:
-* _Card Count_:
-* _Card Function_:
+* _Physical Expansion_: This filter matches on the expansion information
+set for a card. This filter takes a "list":#list of expansions, and matches
+the expansion set for the card to this list. This is different from the
+_Expansion_with_Rarity_ filter since it ignores rarities, and matches the
+expansion set for the card, not the list of expansions the card was printed
+in.
+* _Card Sets_: The filter matches cards that belong to the given "list":#list
+of other card sets.
+* _In Card Sets In Use_: This matches the cards against the child card sets
+marked as in use. A card matches if it belongs to a card set in use. This
+filter has no parameters.
+* _Card Count_: This matches the card against a count in either the same
+card set of a different card set. It takes a "list":#list of card counts,
+and a single card set to match against, and matches those cards that
+satisfy these conditions.
+* _Card Function_: This filter matches the card against a "list":#list of
+common card functions. 
 * _Sub-Filter_: Nest an additional filter box inside the current box. See
 "Combining Basic Filters":#combining
 
@@ -603,9 +633,8 @@ Several filters use a user specified string to match on. These filter matches
 if this string is contained in the property filtered on, so a Card Name
 filter, if the given string is a substring of the card name.
 
-String filtera are also case insensitive (so *the* will match both *Weigh the
+String filters are also case insensitive (so *the* will match both *Weigh the
 Heart* and *Yuri, The Talon*, when filtering on the card name, for example).
-Strings filter also always look for a substr
 
 In Addition, filters which take a string as input can use two different
 wildcard characters.
