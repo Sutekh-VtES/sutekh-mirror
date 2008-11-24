@@ -118,15 +118,15 @@ via the *Edit Card Set Properties* from the *Actions* Menu of the card set.
 
 h3. Changing the parent of a card set.
 
-The parent of a card set can by changed via the *Edit Card Set Properties*
-option from the *Actions* Menu, or by dragging the selected card set onto it's
+The parent of a card set can be changed via the *Edit Card Set Properties*
+option from the *Actions* Menu, or by dragging the selected card set onto its
 new parent in the card set list pane.
 
 h3. Deleting a card set
 
-Card sets can by deleted via the *Delete card set* from the *Actions* menu of
-the card set list pane. Open card sets can also be deleted via the *Delete card
-set* option from the *Actions* menu of the card set pane.
+Card sets can by deleted via the *Delete card set* option from the *Actions*
+menu of the card set list pane. Open card sets can also be deleted via the
+*Delete card set* option from the *Actions* menu of the card set pane.
 
 h3. _"In Use"_ Card sets
 
@@ -151,7 +151,7 @@ The default mode shows only those card that belong to the actual card set.
 "Show All Cards" shows the entire list of cards. This mode is often useful
 when entering cards into a card set for the first time
 
-"Show all cards in parent card set" shows the combination of the card in this
+"Show all cards in parent card set" shows the combination of the cards in this
 card set and all the cards in the parent card set. It is useful for seeing
 which cards are available for adding to a deck.
 

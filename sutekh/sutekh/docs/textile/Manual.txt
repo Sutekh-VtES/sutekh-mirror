@@ -62,7 +62,7 @@ h2(#concepts). Important Concepts
 Sutekh is concerned with two different types of objects: _Cards_ and
 _Card Sets_.
 
-_Cards_ are the individual cards as described by the official white wolf
+_Cards_ are the individual cards as described by the official White Wolf
 card list. Each card describes all the relevant properties of the card,
 such as the clan and discipline requirements, the cost, and the latest
 text for the card.
@@ -142,11 +142,11 @@ has the following options:
 same width, and panes which are split vertically all have the same height.
 * _Split current pane horizontally_: This splits the currently active pane
 into the currently active pane and a new pane to the immediate right of the
-active pane. The two panes of the same height, and half the width of the
+active pane. The two panes are the same height as, and half the width of the
 pane being split.
 * _Split current pane vertically_: This splits the currently active pane
 into the currently active pane and a new pane below the active pane. The two
-panes of the same width, and half the height of the pane being split. It is not
+panes are the same width as, and half the height of the pane being split. It is not
 possible to split panes vertically multiple times.
 * _Add New Pane_: This adds a new pane of the chosen type to the far right of
 the main window. 
@@ -191,7 +191,7 @@ to specify a "filter":#filters and to apply or unapply the filter.
 
 The unknown card list has 2 columns, the name of the unknown card and
 the current selection to replace the card, and 3 buttons. The first button
-uses the currently selected card from the full white wolf card list to
+uses the currently selected card from the full White Wolf card list to
 replace the card, the next marks the card as to be ignored, and the
 last applies a filter based on the unknown card name to present a
 list of reasonable options.
@@ -261,7 +261,7 @@ The following plugins are available from the White Wolf Card List pane menu:
 
 h2(#card_text). Card Text
 
-The Card Text Pane displays the text on the card, and any ruling that apply
+The Card Text Pane displays the text on the card, and any rulings that apply
 to the card.
 
 This will also list other relevant information about the card, such as the card
@@ -386,8 +386,8 @@ manager
 ** _ARDB Text_: Export to a text file, similar to that produced by ARDB
 * _Cards To Show_: This sets which cards are displayed. The options are:
 ** _This Set Only_: Show only the cards in this card set.
-** _Show All Cards_: Show all the cards in the WW list. Cards not in this card
-set will have a count of 0
+** _Show All Cards_: Show all the cards in the White Wolf list. Cards not in
+this card set will have a count of 0.
 ** _Show all cards in parent card set_: Show all the cards in this card set as
 well as any cards in the parent card set that are not in this card set.
 ** _Show all cards in child card sets_: Show all the cards in this card set as
@@ -395,17 +395,17 @@ well as any cards in those child card sets marked as _In Use_ that are not in
 this card set.
 * _Display Mode_: Controls which additional information is displayed below the
 card names in the tree. The options are:
-** _Show No Children_: Nothing is displayed below the card name
-** _Show Expansions_: Show the card counts for each expansion specified
+** _Show No Children_: Nothing is displayed below the card name.
+** _Show Expansions_: Show the card counts for each expansion specified.
 ** _Show Child Card Sets_: Show the counts for those child card sets marked as
-_In Use_
+_In Use_.
 ** _Show Expansions + Child Card Sets_: Show the expansions counts, and below
-them, show the child card sets marked _In Use_
+them, show the child card sets marked _In Use_.
 ** _Show Child Card Set and Expansions_: Show the child card sets and, below
 them, show the expansion information.
 * _Parent Count Mode_: For card sets with a parent set, this controls how the
 _Parent count_ column is displayed. The options are:
-** _Don't show parent card counts_: Hide the parent count column
+** _Don't show parent card counts_: Hide the parent count column.
 ** _Show parent count_: Just show the parent count. If the count for this
 card set exceeds the parent count, this number is shown in red.
 ** _Show difference between parent count and this card set_: Displays the
@@ -415,7 +415,7 @@ is negative, it is shown in red.
 between parent count and all total amongst all the card sets marked in use. If
 this number is negative, it is shown in red. 
 * _Show icons for the grouping_: Toggles whether icons are shown for the top
-level grouping (when available) are not.
+level grouping (when available).
 * _Expand All_: Expands all the items in the tree.  
 * _Collapse All_: Collapse the tree as far as possible.
 * _Delete Card Set_: Delete the card set from the database.
@@ -448,7 +448,7 @@ The filter menu has three options:
 * _Specify Filter_: Specify the filter to apply to the card list. See the 
 "Card Filters":#card_filters section.
 * _Apply Filter_: Toggle between whether the filter is currently applied to the
-list or not
+list or not.
 * _Create Card Set From Filter_: Create a new card set containing the results
 of the current filter.
 
@@ -497,7 +497,7 @@ _Clear Filter_ button.
 
 Complex filters can be saved for later reuse using the _Save_ button, and
 recalled using the _Load_ button. When modifying a filter, it can be reverted
-to saved version using the _Revert Filter_ button.
+to the saved version using the _Revert Filter_ button.
 
 h3(#card_filters). Card Filters
 
@@ -530,8 +530,8 @@ type, this needs to be combined with the _Cost Type_ filter.
 Note that this only matches the life associated with crypt cards (currently the
 Imbued), and doesn't match the life for other allies or retainers.
 * _Creed_: Filter on the creed associated with the card. Like the _Clan_
-filter, this takes a "list":#list of creed to match.
-* _Virtue_: Filter on the virtues associated with card. Like the _Discipline_
+filter, this takes a "list":#list of creeds to match.
+* _Virtue_: Filter on the virtues associated with the card. Like the _Discipline_
 filter, this takes a "list":#list of virtues to match.
 * _Card Text_: Filter on the text of the card. This filter takes a
 "string":#string to match against.
@@ -543,7 +543,7 @@ filter, this takes a "list":#list of virtues to match.
 of titles and matches the card title to this list.
 * _Expansion_with_Rarity_: Filter on the expansion and rarity of the card. This
 filter takes a "list":#list of expansion with rarities, and matches a card if
-it was printed with on of the given expansion and rarity combinations. Note
+it was printed with the given expansion and rarity combinations. Note
 that this filter matches the list of expansions a card has been printed in, and
 ignores the expansion information set for a card. If one wants to filter on
 the card's expansion information, use the _Physical Expansion_ filter.
@@ -566,7 +566,7 @@ of other card sets.
 marked as in use. A card matches if it belongs to a card set in use. This
 filter has no parameters.
 * _Card Count_: This matches the card against a count in either the same
-card set of a different card set. It takes a "list":#list of card counts,
+card set or a different card set. It takes a "list":#list of card counts,
 and a single card set to match against, and matches those cards that
 satisfy these conditions.
 * _Card Function_: This filter matches the card against a "list":#list of
@@ -599,7 +599,7 @@ Like the Card Name or Card Text filters, it is treated as a partial
 "string":#string to search for.
 * _Parent Card Set_: This takes as input a "list":#list of card sets, and
 matches those card sets whose parent card set is in the list.
-* _Card Set Marked as in Use_: This matches all card sets for which are marked
+* _Card Set Marked as in Use_: This matches all card sets which are marked
 as being *In Use*.
 * _Sub-Filter_: Nest an additional filter box inside the current box. See
 "Combining Basic Filters":#combining
@@ -616,8 +616,8 @@ together.
 
 There are 4 types of filter box, namely:
 
-* _All of_: This filter matches only in every filter in the box matches.
-* _Any of_: This filter matches if at least of the filters in the box matches.
+* _All of_: This filter matches only if every filter in the box matches.
+* _Any of_: This filter matches if at least one of the filters in the box matches.
 * _Not all of_: This filter matches if at least one of the filters in the box
 doesn't match. 
 * _Not any of_: This filter matches only if every filter in the box doesn't
@@ -665,7 +665,7 @@ h3(#backup_plugin). Backup
 
 This allows one to either save or restore a full backup of the current
 database. The backup will be saved as a zip file and is independent of the
-database back end Sutekh uses. Consequently, the backup can also be used to
+database back-end Sutekh uses. Consequently, the backup can also be used to
 transfer the complete state between different databases.
 
 There are two options offered by the plugin:
@@ -678,8 +678,8 @@ to the specified zip file. _Restore a Full Backup_ will import all the card sets
 from the backup. Note that restoring a backup will replace anything currently
 in the database with the contents of the backup.
 
-Backups can be saved at any time. Various actions, such as updating the WW
-card list, will also allow a backup to be saved.
+Backups can be saved at any time. Various actions, such as updating the White
+Wolf card list, will also allow a backup to be saved.
 
 h3(#images_plugin). Card Images
 
@@ -701,9 +701,9 @@ installation.
 h3(#cluster_plugin). Cluster Cards
 
 The clustering plugin attempts to group cards from a card list into sets
-(clusters) of cards with similar properties. The intention is to provide way to
-explore subsets of ones cards and perhaps to look for groups of cards which
-might provide a starting point for constructing decks. Currently running the
+(clusters) of cards with similar properties. The intention is to provide a way
+to explore subsets of one's cards and perhaps to look for groups of cards which
+might provide starting points for deck construction. Currently running the
 clustering tool is quite slow, so be patient when waiting for large card lists
 to be grouped (it will finish eventually).
 
@@ -736,7 +736,7 @@ group) close to all others and values of zero slightly further away than usual.
 If in doubt, leave the metric set to the Sutekh distance.
 
 Once the property columns have been selected and the parameters set, use the
-_Execute_ button to begin the clustering. Once clustering is complete, the
+_Execute_ button to begin the clustering. When clustering is complete, the
 _Results_ tab will be populated.
 
 The results are presented as a table. Each row corresponds to a cluster of
@@ -744,23 +744,23 @@ cards. The first column contains checkboxes. Use these to select which clusters
 to create cards sets from before clicking the
 _Make Cards Sets from Selected Clusters_ button at the bottom of the results.
 The second column contains the cluster number, which enables one to determine
-which cluster created card sets correspond to.  The third columns shows how
-many cards are present in each cluster and the last cluster lists the property
+which cluster the card sets created correspond to.  The third column shows how
+many cards are present in each cluster and the last lists the property
 values of the cluster center (property values of zero are omitted).
 
 
 h3(#stats_plugin). Clan Discipline Stats
 
-This plugin shows an analysis of all the difference clans in the white wolf
+This plugin shows an analysis of all the difference clans in the White Wolf
 card list. For each clan, the number of vampires in each clan, the sum of the
-vampire capacities are the most common disciplines are shown. The 
+vampire capacities and the most common disciplines are shown. The 
 score for the discipline, and various stats about how the disciplines are
 distributed are also shown.
 
 The tree view can be expanded to show the details for each legal grouping
 combination.
 
-The score is intended to give some indication of how common superior
+The score is intended to give some indication of how common
 disciplines are. Vampires without the discipline score 0 for that
 discipline, vampires with the inferior discipline score 1 and vampires
 with the superior discipline score 2.
@@ -793,7 +793,7 @@ _"Action Modifier"_ or _"Combat"_ groups.
 
 h3(#columns_plugin). Select Extra Columns
 
-By default, sutekh only shows the card name for the White Wolf Card List,
+By default, sutekh only shows the card name in the White Wolf Card List,
 and the number and card name for the card set lists. Additional columns
 to display can be selected using this plugin. The extra columns are:
 
@@ -811,7 +811,7 @@ the life for the Imbued crypt cards. Ally & retainer life is not shown.
 * _Card Text_: Show the text printed on the card.
 * _Cost_: Show the cost of the card.
 
-The display can be sorted by according to these columns, by clicking on the 
+The display can be sorted according to a column, by clicking on the 
 column header. When cards have equal values, they are sorted by the card name.
 Because the different cost types aren't comparable, the
 cost column groups each distinct cost type together and sorts within the
@@ -819,7 +819,7 @@ cost types.
 
 If the icons have been downloaded from the white wolf site, then for the
 appropriate columns, the display can be toggled between the
-_Show Icons and Names_, _Show Text only_, _Show Icons only_ using the radio
+_Show Icons and Names_, _Show Text only_ and _Show Icons only_ using the radio
 buttons. This option will affect all the selected columns that can use icons.
 
 h3(#set_exp_plugin). Set selected cards to a single expansion
@@ -834,14 +834,14 @@ This plugin compares the current card set to a different card set, and displays
 which cards are common to the card sets, and, for each card set, lists the
 unique cards.
 
-By default, the plugin ignores the expansions for cards, and considers all
+By default, the plugin ignores the expansions of cards, and considers all
 cards of the same name as the same, but this behaviour can be changed using the
 _Consider Expansions as well_ checkbox when selecting the card set to compare
 to.
 
 h3(#analyze_plugin). Analyze Deck
 
-This plugin examines a plugin and displays various statistics about it that
+This plugin examines a card set and displays various statistics about it that
 are intended to give some indication of how the card set will operate as a
 deck.
 
@@ -856,9 +856,9 @@ disciplines to use, or to select the disciplines to consider manually.
 h3(#indep_plugin). Test Card Set Independence
 
 This tests the current card set against other card sets with the same parent,
-and considers there are enough cards in the parent card set to simultaneously
-construct all the selected sets. Multiple decks can be selected from the list
-of card sets.
+and considers whether there are enough cards in the parent card set to
+simultaneously construct all the selected sets. Multiple decks can be selected
+from the list of card sets.
 
 The current card set can be tested against all the sets with the same
 parent marked as in use using the _Test against all card sets marked as in use_
@@ -884,11 +884,10 @@ plugin displays results for longer sequences of drawing cards.
 
 The plugin has the following settings which can be used to change the results.
 
-* _columns in table_: This sets the number of draws the columns with
-probabilities shown in the table and can range from 1 to 8. The first column
-is always the probably for the opening hand or crypt draw. Subsequent columns
-are the total probability after also drawing the number of extra cards shown in
-the column header.
+* _columns in table_: This sets the number of draws shown in the table and can
+range from 1 to 8. The first column is always the probably for the opening hand
+or crypt draw. Subsequent columns are the total probability after also drawing
+the number of extra cards shown in the column header.
 * _step between columns_: This sets the number of cards drawn between columns
 and ranges from 1 to 10 (defaulting to 1). Each subsequent column after the
 first of the table shows the probabilities after drawing this number of
