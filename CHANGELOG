@@ -2,6 +2,8 @@
  * Remove clustering plugin dependence on external clustering libraries.
  * Clean up clustering plugin GUI layouts and add documentation.
    (r1669:1675)
+ * Backport minor fixes and documentation patches.
+   (1676:1683)
 
 20 Nov 2008
  * Backport of features from trunk.

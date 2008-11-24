@@ -38,6 +38,8 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
     RESPONSE_DELETE = 5
 
     DEFAULT_FILTERS = {
+        "Default Filter Template": "(Clan in $var0) or (Discipline in $var1)"
+            " or (CardType in $var2) or (CardFunction in $var3)",
         "Clan": "Clan in $var0",
         "Discipline": "Discipline in $var0",
         "Card Type": "CardType in $var0",
@@ -46,6 +48,8 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
         "Card Set Name": "CardSetName in $var0",
         "Physical Expansion": "PhysicalExpansion in $var0",
     }
+
+    INITIAL_FILTER = "Default Filter Template"
 
     def __init__(self, oParent, oConfig, sFilterType, sDefaultFilter=None):
         super(FilterDialog, self).__init__("Specify Filter",
@@ -247,6 +251,18 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
             do_complaint_error("The following invalid filters have been" \
                                " removed from the %s:\n" % (sSrc,)\
                                + "\n".join(aErrMsgs))
+
+        def filter_cmp(oFilt1, oFilt2):
+            """Sort filters alphabetically by name, but with default
+               filter first if it is present"""
+            if oFilt1[0] == self.INITIAL_FILTER:
+                return -1
+            elif oFilt2[0] == self.INITIAL_FILTER:
+                return 1
+            else:
+                return cmp(oFilt1[0], oFilt2[0])
+
+        aFilters.sort(cmp=filter_cmp)
 
         return aFilters
 

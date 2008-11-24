@@ -61,7 +61,8 @@ def exception_handler(oType, oValue, oTraceback):
     aTraceback = traceback.format_exception(oType, oValue, oTraceback)
     oErrorDlg.format_secondary_text("".join(aTraceback))
 
-    iResponse = oErrorDlg.run()
+    # we ignore the response here
+    oErrorDlg.run()
     oErrorDlg.destroy()
 
 def main(aArgs):

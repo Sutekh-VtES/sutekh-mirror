@@ -23,6 +23,8 @@ class ClusterCardList(CardListPlugin):
        Allows the user to choose various clustering parameters, such as
        attributes to to use and methods, and then to create card sets
        from the clustering results."""
+    # pylint: disable-msg=R0902
+    # we use a lot of attributes to keep track of data & gui aspects
 
     dTableVersions = {}
     aModelsSupported = [PhysicalCard, PhysicalCardSet]
@@ -40,6 +42,7 @@ class ClusterCardList(CardListPlugin):
         self._dGroups = {}
         self._oResultsVbox = None
         self._oNotebook = None
+        self._aDistanceMeasureGroup = None
 
         # cluster parameter widgets
         self._oAutoNumClusters = None
@@ -237,9 +240,10 @@ class ClusterCardList(CardListPlugin):
 
         return oVbx
 
-    # pylint: disable-msg=W0201
-    # We create a lot of attributes here, which is OK, because of plugin
-    # structure
+    # pylint: disable-msg=W0201, R0914
+    # W0201: We create a lot of attributes here, which is OK, because of
+    # plugin structure
+    # R0914: We use lots of local variables for clarity
     def populate_results(self, aCards, aColNames, aMeans, aClusters):
         """Populate the results tab of the notebook with the results of
            clustering run."""
@@ -307,7 +311,7 @@ class ClusterCardList(CardListPlugin):
 
         self._oResultsVbox.show_all()
 
-    # pylint: enable-msg=W0201
+    # pylint: enable-msg=W0201, R0914
 
     # Actions
 
@@ -436,7 +440,8 @@ class ClusterCardList(CardListPlugin):
         # aMeans -> list of vectors of cluster centroids
         # aClusters -> list of clusters, each cluster is a list of card indexes
 
-        aMeans, aClusters = self.k_means(aTable, iNumClusts, iIterations, fDist)
+        aMeans, aClusters = self.k_means(aTable, iNumClusts, iIterations,
+                fDist)
 
         self.populate_results(aCards, aColNames, aMeans, aClusters)
 
