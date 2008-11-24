@@ -489,7 +489,7 @@ keys have no effect.
 h2(#filters). Filters
 
 Filtering is one of the central activities in Sutekh. Complex queries can
-be constructed by combining the various basic filters. 
+be constructed by "combining":#combining the various basic filters. 
 
 The Filter dialog will display the last used filter for the given pane. This
 filter can then be modified or the filter can be cleared using the
