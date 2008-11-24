@@ -897,7 +897,7 @@ def copy_database(oOrigConn, oDestConnn, oLogHandler=None):
             oTrans.cache.clear()
             if not bPassLogger:
                 oLogger.info('%s copied' % sName)
-    flush_cache() 
+    flush_cache()
     # Clear out cache related joins and such
     return bRes, aMessages
 

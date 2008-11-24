@@ -21,8 +21,9 @@ def _find_sect_and_title(aLines):
        This is potentially brittle, since it had to rely on WW's
        standard text layout.
        """
-    # pylint: disable-msg=R0912
-    # Need to consider all the cases here
+    # pylint: disable-msg=R0912, R0915
+    # R0912: Need to consider all the cases here
+    # R0915: This is thus a long function
     # Card text for vampires is either Sect attributes. or Sect.
     sSect = None
     sTitle = None
