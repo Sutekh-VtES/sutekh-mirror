@@ -671,6 +671,55 @@ installation.
 
 h3(#cluster_plugin). Cluster Cards
 
+The clustering plugin attempts to group cards from a card list into sets
+(clusters) of cards with similar properties. The intention is to provide way to
+explore subsets of ones cards and perhaps to look for groups of cards which
+might provide a starting point for constructing decks. Currently running the
+clustering tool is quite slow, so be patient when waiting for large card lists
+to be grouped (it will finish eventually).
+
+Upon opening the clustering plugin, three tabs are presented --
+_Select Columns_, _Settings_ and _Results_.
+
+The _Select Columns_ tab is where one selects the properties to consider when
+grouping the cards. Properties are organised into categories for ease of
+selection. If unsure on which properties to select, start by selecting the
+disciplines and clans you're most interested in.
+
+Under the _Settings_ tab, one can tweak the clustering algorithm parameters.
+The plugin implements K-means clustering using K-means++ to determine the
+initial cluster centers followed by Lloyd's method of iteratively refining the
+clusters. Three parameters can be set:
+
+* _Number of iterations_: Number of Lloyd refinement steps to perform. More
+steps makes the clustering take longer but fewer steps may result in a less
+optimal grouping. Ten steps should be sufficient for most cases.
+
+* _Number of clusters_: By default the plugin creates one cluster per 80 cards
+(this being the size of a deck) but the number of clusters may also be set
+manually.
+
+* _Distance measure_: Two distance metrics are currently supported. The
+Euclidean distance setting clusters using the usual N-dimensional vector space
+metric. The Sutekh distance metric modifies the Euclidean one to make property
+values of -1 (used internally by Sutekh to mark costs of X and the ANY crypt
+group) close to all others and values of zero slightly further away than usual.
+If in doubt, leave the metric set to the Sutekh distance.
+
+Once the property columns have been selected and the parameters set, use the
+_Execute_ button to begin the clustering. Once clustering is complete, the
+_Results_ tab will be populated.
+
+The results are presented as a table. Each row corresponds to a cluster of
+cards. The first column contains checkboxes. Use these to select which clusters
+to create cards sets from before clicking the
+_Make Cards Sets from Selected Clusters_ button at the bottom of the results.
+The second column contains the cluster number, which enables one to determine
+which cluster created card sets correspond to.  The third columns shows how
+many cards are present in each cluster and the last cluster lists the property
+values of the cluster center (property values of zero are omitted).
+
+
 h3(#stats_plugin). Clan Discipline Stats
 
 This plugin shows an analysis of all the difference clans in the white wolf
