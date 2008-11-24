@@ -1,3 +1,7 @@
+24 Nov 2008
+ * Remove clustering plugin dependence on external clustering libraries.
+ * Clean up clustering plugin GUI layouts and add documentation.
+
 19 Nov 2008
  * Change GuiCardLookup so the default filter for the "Specify Filter"
    button is on the Card Name.
