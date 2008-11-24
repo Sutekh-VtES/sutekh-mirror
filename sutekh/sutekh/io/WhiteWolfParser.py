@@ -156,6 +156,9 @@ class CardDict(dict):
         for aPair in aPairs:
             if len(aPair) == 1:
                 aExp.append((aPair[0].strip(), 'NA'))
+            elif aPair[1].strip().startswith('Promo-'):
+                # Handle the TR:Promo special case
+                aExp.append((aPair[1].strip(), 'NA'))
             else:
                 aExp.append((aPair[0].strip(), aPair[1].strip()))
 
