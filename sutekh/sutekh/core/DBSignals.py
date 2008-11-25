@@ -10,6 +10,7 @@
 collection in sync."""
 
 from sqlobject.events import Signal, listen, RowUpdateSignal, RowDestroySignal
+from sqlobject.include.pydispatch import dispatcher
 from sutekh.core.SutekhObjects import PhysicalCardSet
 
 class ChangedSignal(Signal):
@@ -40,3 +41,14 @@ def listen_row_update(fListener, cClass):
     """listen for the row updated signal sent when a card set is modified."""
     listen(fListener, cClass, RowUpdateSignal)
 
+def disconnect_changed(fListener, cClass):
+    """Disconnects from the changed_signal."""
+    dispatcher.disconnect(fListener, signal=ChangedSignal, sender=cClass)
+
+def disconnect_row_destroy(fListener, cClass):
+    """Disconnect from the row destroyed signal."""
+    dispatcher.disconnect(fListener, signal=RowDestroySignal, sender=cClass)
+
+def disconnect_row_update(fListener, cClass):
+    """Disconnect the row updated signal."""
+    dispatcher.disconnect(fListener, signal=RowUpdateSignal, sender=cClass)

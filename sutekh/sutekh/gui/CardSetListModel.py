@@ -15,7 +15,7 @@ from sutekh.core.SutekhObjects import PhysicalCard, IExpansion, \
         MapPhysicalCardToPhysicalCardSet, IAbstractCard, IPhysicalCard, \
         IPhysicalCardSet, PhysicalCardSet
 from sutekh.gui.CardListModel import CardListModel, norm_path
-from sutekh.core.DBSignals import listen_changed
+from sutekh.core.DBSignals import listen_changed, disconnect_changed
 
 # pylint: disable-msg=C0103
 # We break our usual convention here
@@ -121,6 +121,12 @@ class CardSetCardListModel(CardListModel):
         self.iParentCountMode = PARENT_COUNT
         self.sEditColour = None
         listen_changed(self.card_changed, PhysicalCardSet)
+
+    def cleanup(self):
+        # FIXME: We should make sure that all the references go
+        """Remove the signal handler - avoids issues when card sets are
+           deleted, but the objects are still around."""
+        disconnect_changed(self.card_changed, PhysicalCardSet)
 
     def format_count(self, iCnt):
         """Format the card count accorindly"""

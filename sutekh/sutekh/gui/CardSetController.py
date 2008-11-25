@@ -13,7 +13,7 @@ from sutekh.gui.CardSetManagementController import check_ok_to_delete, \
 from sutekh.gui.CardSetView import CardSetView
 from sutekh.gui.CreateCardSetDialog import CreateCardSetDialog
 from sutekh.core.DBSignals import listen_row_destroy, listen_row_update, \
-        send_changed_signal
+        send_changed_signal, disconnect_row_destroy, disconnect_row_update
 from sutekh.core.SutekhObjects import IPhysicalCardSet, PhysicalCardSet, \
         AbstractCard, PhysicalCard, MapPhysicalCardToPhysicalCardSet, \
         IExpansion, IPhysicalCard
@@ -33,7 +33,7 @@ class CardSetController(object):
         self.__oPhysCardSet = IPhysicalCardSet(sName)
         # listen on card set signals
         # We listen here, rather than in the model (as for card set changes),
-        # to use queue_reload to dealy processing until after the database
+        # to use queue_reload to delay processing until after the database
         listen_row_update(self.card_set_changed, PhysicalCardSet)
         listen_row_destroy(self.card_set_deleted, PhysicalCardSet)
         # We don't listen for card set creation, since newly created card
@@ -48,6 +48,12 @@ class CardSetController(object):
     filtertype = property(fget=lambda self: self._sFilterType,
             doc="Associated Type")
     # pylint: enable-msg=W0212
+
+    def cleanup(self):
+        """Remove the signal handlers."""
+        disconnect_row_update(self.card_set_changed, PhysicalCardSet)
+        disconnect_row_destroy(self.card_set_deleted, PhysicalCardSet)
+        self.model.cleanup()
 
     def card_set_changed(self, oCardSet, dChanges):
         """When changes happen that may effect this card set, reload.

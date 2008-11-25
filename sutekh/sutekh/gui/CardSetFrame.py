@@ -58,6 +58,8 @@ class CardSetFrame(CardListFrame, object):
     def cleanup(self):
         """Cleanup function called before pane is removed by the Main Window"""
         self._oMainWindow.reload_pcs_list()
+        # Clean up the signal handlers, to avoid problems
+        self._oController.cleanup()
 
     def update_name(self, sNewName):
         """Update the frame name to the current card set name."""
