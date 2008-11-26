@@ -19,6 +19,7 @@ import re
 import warnings
 import operator
 import HTMLParser
+from htmlentitydefs import name2codepoint
 from cStringIO import StringIO
 from sutekh.gui.SutekhDialog import SutekhDialog
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
@@ -379,6 +380,26 @@ class HtmlHandler(HTMLParser.HTMLParser):
         return self._dTargets
 
     # pylint: disable-msg=R0912, R0915, R0914
+    # entity handler, so it is is a massive if..elif.. statement
+    def handle_entityref(self, sEntity):
+        """Convert entity to something we can use"""
+        # This looks like all that textile will produce as entities
+        if sEntity == 'lt':
+            self.handle_data('<')
+        elif sEntity ==  'gt':
+            self.handle_data('>')
+        elif sEntity ==  'amp':
+            self.handle_data('&')
+        elif sEntity ==  'quot':
+            self.handle_data('"')
+        #else:
+        #    print 'Unknown entity', sEntity
+
+    # handle charrefs produced by textile as great if statement
+    def handle_charref(self, sCharref):
+        """Convert charref to something we can use"""
+        self.handle_data(unichr(int(sCharref)))
+
     # start tag handler, so it is is a massive if..elif.. statement
     def handle_starttag(self, sName, oAttrs):
         """Parser start element handler"""
