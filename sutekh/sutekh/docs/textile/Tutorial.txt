@@ -108,11 +108,11 @@ h2(#sets). Managing Card Sets
 
 h3. Creating a new card set
 
-You can create a new card set in the _Card Set List_ using the *Create New
-Card Set* option in the *Actions* menu. The name is required, and must be
-unique. You can specify that a card set has _No Parent_, in which case it will
-be a stand-alone card set, or you can select any existing card set to be its
-parent, in which case the new set will be a subset of that card set.
+You can create a new card set in the _Card Set List_ using the 
+*Create New Card Set* option in the *Actions* menu. The name is required, and
+must be unique. You can specify that a card set has _No Parent_, in which case
+it will be a stand-alone card set, or you can select any existing card set to
+be its parent, in which case the new set will be a subset of that card set.
 
 h3. Renaming a card set.
 
