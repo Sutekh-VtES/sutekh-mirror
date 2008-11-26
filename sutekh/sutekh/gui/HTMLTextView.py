@@ -378,10 +378,10 @@ class HtmlHandler(HTMLParser.HTMLParser):
         """Get the list of target anchors."""
         return self._dTargets
 
+    # pylint: disable-msg=R0912, R0915, R0914
+    # start tag handler, so it is is a massive if..elif.. statement
     def handle_starttag(self, sName, oAttrs):
         """Parser start element handler"""
-        # pylint: disable-msg=R0912, R0915
-        # start tag handler, so it is is a massive if..elif.. statement
         oAttrs = dict(oAttrs)
         self._flush_text()
         try:
@@ -518,10 +518,9 @@ class HtmlHandler(HTMLParser.HTMLParser):
         else:
             warnings.warn("Unhandled start tag '%s'" % sName)
 
+    # end tag handler, so it is is a massive if..elif.. statement
     def handle_endtag(self, sName):
         """Handle the end of a tag"""
-        # pylint: disable-msg=R0912, R0915
-        # eng tag handler, so it is is a massive if..elif.. statement
         if sName == 'title':
             self._bInTitle = False
             return
@@ -569,6 +568,7 @@ class HtmlHandler(HTMLParser.HTMLParser):
             warnings.warn("Unhandled end tag '%s'" % sName)
 
         self._end_span()
+
 
 class HTMLTextView(gtk.TextView):
     # pylint: disable-msg=R0904

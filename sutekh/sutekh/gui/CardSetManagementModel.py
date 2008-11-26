@@ -30,13 +30,15 @@ class CardSetManagementModel(gtk.TreeStore):
         self.oEmptyIter = None
         self.set_sort_func(0, self.sort_column)
 
-    # pylint: disable-msg=W0212
+    # pylint: disable-msg=W0212, C0103
     # W0212 - we explicitly allow access via these properties
+    # C0103 - we allow these names
     applyfilter = property(fget=lambda self: self._bApplyFilter,
             fset=lambda self, x: setattr(self, '_bApplyFilter', x))
     selectfilter = property(fget=lambda self: self._oSelectFilter,
             fset=lambda self, x: setattr(self, '_oSelectFilter', x))
-    # pylint: enable-msg=W0212
+
+    # pylint: enable-msg=W0212, C0103
 
     # pylint: disable-msg=R0201
     # this should be a method for consistency

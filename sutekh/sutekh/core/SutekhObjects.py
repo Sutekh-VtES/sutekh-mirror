@@ -45,8 +45,11 @@ class IRuling(Interface): pass
 # pylint: enable-msg=R0923, C0111, C0321
 # Table Objects
 
-# pylint: disable-msg=W0232
-# Most of the classes defined here don't have __init__ methods by design
+# pylint: disable-msg=W0232, R0902, W0201, C0103
+# W0232: Most of the classes defined here don't have __init__ methods by design
+# R0902: We aren't worried about the number of insance variables
+# W0201: We don't care about attributes defined outside init, by design
+# C0103: We use different naming conventions for the table columns
 
 class VersionTable(SQLObject):
     TableName = UnicodeCol(alternateID=True, length=50)
@@ -345,6 +348,8 @@ class MapAbstractCardToVirtue(SQLObject):
 
     abstractCardIndex = DatabaseIndex(abstractCard, unique=False)
     virtueIndex = DatabaseIndex(virtue, unique=False)
+
+# pylint: enable-msg=W0232, R0902, W0201, C0103
 
 # List of Tables to be created, dropped, etc.
 

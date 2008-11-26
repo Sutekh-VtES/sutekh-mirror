@@ -130,8 +130,6 @@ class CardSetManagementController(object):
 
         oFilter = self._oFilterDialog.get_filter()
         if oFilter != None:
-            # pylint: disable-msg=C0103
-            # selectfilter OK here
             self._oModel.selectfilter = oFilter
             if not self._oModel.applyfilter:
                 # If a filter is set, automatically apply
@@ -149,8 +147,6 @@ class CardSetManagementController(object):
 
     def run_filter(self, bState):
         """Enable or diable the current filter based on bState"""
-        # pylint: disable-msg=C0103
-        # applyfilter OK here
         if self._oModel.applyfilter != bState:
             self._oModel.applyfilter = bState
             self._oModel.load()

@@ -66,8 +66,9 @@ class CardSetHolder(object):
         self._dExpansions[sExpansionName] -= iCnt
         self._dCards[sName] -= iCnt
 
-    # pylint: disable-msg=W0212
-    # we delibrately allow access via these properties
+    # pylint: disable-msg=W0212, C0103
+    # W0212: we delibrately allow access via these properties
+    # C0103: we use the column naming conventions
     name = property(fget = lambda self: self._sName,
             fset = lambda self, x: setattr(self, '_sName', x))
     author = property(fget = lambda self: self._sAuthor,
@@ -81,7 +82,8 @@ class CardSetHolder(object):
     parent = property(fget = lambda self: self._sParent,
             fset = lambda self, x: setattr(self, '_sParent', x))
     num_entries = property(fget = lambda self: len(self._dCards))
-    # pylint: enable-msg=W0212
+
+    # pylint: enable-msg=W0212, C0103
 
     # Save Virtual Card Set to Database
 

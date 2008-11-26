@@ -42,7 +42,7 @@ class PhysicalCardSetTests(SutekhTest):
         """Test physical card set object"""
         # pylint: disable-msg=E1101, R0915, R0914
         # E1101: SQLObject + PyProtocols magic confuses pylint
-        # R0915, R0914: Want a long, sequentila test case to minimise
+        # R0915, R0914: Want a long, sequential test case to minimise
         # repeated setups, so it has lots of lines + variables
         aAddedPhysCards = get_phys_cards()
         # We have a physical card list, so create some physical card sets
