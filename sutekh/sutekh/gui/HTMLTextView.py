@@ -19,7 +19,6 @@ import re
 import warnings
 import operator
 import HTMLParser
-from htmlentitydefs import name2codepoint
 from cStringIO import StringIO
 from sutekh.gui.SutekhDialog import SutekhDialog
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
