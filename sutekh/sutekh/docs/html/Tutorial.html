@@ -21,7 +21,8 @@
 
 <h2 id="intro">The Initial Layout</h2>
 
-<p>When you run Sutekh for the first time, it will display the following 4 panes.</p>
+<p>When you run Sutekh for the first time, it will display the following four 
+panes:</p>
 
 <ul>
 <li>White Wolf Card List</li>
@@ -30,174 +31,179 @@
 <li>My Collection</li>
 </ul>
 
-<p>On subsequent runs, the list of panes to show will be read from file. You 
-can determine which panes are shown either by explicitly saving the layout 
-using <strong>Save current pane set</strong> from the <strong>File->Preferences</strong>, or by letting the  
+<p>On subsequent runs, Sutekh will read the list of panes to display from a file. 
+You can determine which panes are shown either by explicitly saving the layout 
+using <strong>Save current pane set</strong> in <strong>File->Preferences</strong>, or by letting the 
 <strong>Save Pane Set on Exit</strong> option save the configuration.</p>
 
-<h3>The White wolf card list</h3>
+<h3>The White Wolf card list</h3>
 
 <p>Sutekh maintains a list of all the cards published by White Wolf as the 
-<em>White Wolf Card List</em>. This lists all the cards, and, for each card, the 
-expansions it has appeared in.</p>
+<em>White Wolf Card List</em>. It lists the cards and the expansions in which each card 
+has appeared.</p>
 
 <h3>Card Text</h3>
 
-<p>The pane displays the information about the currently selected card.</p>
+<p>This pane displays information about the currently selected card.</p>
 
 <h3>Card Sets</h3>
 
-<p>Sutekh deals with collections of cards as card sets. Card Sets can either be 
-stand-alone, or subsets of other card sets. This pane lists all the card sets 
+<p>In Sutekh, collections of cards are card sets. Card Sets can either be 
+stand-alone or subsets of other card sets. This pane lists all the card sets 
 which have been created. Initially, only a card set called <em>My Collection</em> 
-is created, to hold the details of your card collection.</p>
+is created, to store the details of your card collection.</p>
 
 <h3>My Collection</h3>
 
-<p>This card set will hold the details of your card collection.</p>
+<p>This card set will store the details of your card collection.</p>
 
 <h2 id="cards">Working with Cards</h2>
 
 <h3>Adding cards to a card set</h3>
 
-<p>Card Sets are, by default, not editable, unless they are empty. This can be 
-changed by toggling the <strong>Card Set is Editable</strong> menu entry in the <strong>Edit</strong> Menu 
-of the pane. Empty card sets are always editable. Before adding cards to a card 
-set, ensure it is editable.</p>
+<p>Card Sets are by default not editable, unless they are empty. You can change 
+this property by toggling the <strong>Card Set is Editable</strong> menu entry in the <strong>Edit</strong> 
+Menu of the pane. Empty card sets are always editable. Before adding cards to a 
+card set, ensure that it is editable.</p>
 
-<p>Cards can be added by dragging them from the <em>White Wolf Card List</em> to the pane 
-for the card set. Selecting multiple cards will add a single copy of each 
-selected cards. You can also use the copy &amp; paste options from the edit menu.</p>
+<p>You can add cards by dragging them from the <em>White Wolf Card List</em> to the pane 
+of the card set. You can also use the copy and paste options from the edit menu. 
+If you copy multiple cards, you will add a single copy of each distinct selected 
+card to the destination set. If you have selected multiple copies of the same 
+card, only one copy will be added.</p>
 
-<p>When a card set is editable, <strong>+</strong> and <strong>-</strong> buttons will be shown next to the card 
-names. These can be used to increase or decrease the number for a given card.</p>
+<p>If a card set is editable, <strong>+</strong> and <strong>-</strong> buttons are displayed next to the card 
+names. You can use these to increase or decrease the number of copies of a card 
+that are present in the set.</p>
 
-<p>The number can also be changed using the keyboard: &#8217;+&#8217; and &#8217;-&#8217; will 
-increment and decrement counts, while the numbers 1 to 9 can be used to set 
-the count for the given card to that value.</p>
+<p>You can also change this value using the keyboard. You can type &#8217;+&#8217; and &#8217;-&#8217; to 
+increment or decrement the count of a selected card, or type a number from one 
+to nine to set the value directly.</p>
 
-<p>You can also copy or drag-n-drop cards from other card sets. Unlike copying  
-from the <em>White Wolf Card List</em>, copying from another card sets will copy all  
-the selected cards.</p>
+<p>You can also copy and paste or drag and drop cards from other card sets. If you 
+do this, all copies of each selected card which are in the source set will be 
+added to the destination set.</p>
 
 <h3>Removing cards</h3>
 
-<p>Cards can be removed from a card set either by using the <strong>-</strong> button shown in 
-the card set pane next to the card name, using the keyboard shortcuts to change 
+<p>You can remove cards from a card set by using the <strong>-</strong> button shown in the card 
+set pane next to the card name, by using the keyboard shortcuts to change 
 the number of cards, or by selecting cards and using the <strong>Delete selection</strong> 
-option from the <strong>Edit</strong> menu.</p>
+option in the <strong>Edit</strong> menu.</p>
 
 <h2 id="panes">Manipulating Panes</h2>
 
 <p>The Sutekh user interface consists of panes. The number of panes and the layout 
-is entirely up to you.</p>
+is entirely configurable.</p>
 
-<p>Panes can be added using the <strong>Add Pane</strong> Menu, while the contents of the 
-currently selected pane can be replaced using the <strong>Replace Pane</strong> Menu. New 
-blank panes can also be added by splitting the current pane, either into 
-two panes next to each other, or into two panes stacked one above the other. 
-Panes can be swapped by dragging a pane to it&#8217;s new location.</p>
+<p>You can add panes using the <strong>Add Pane</strong> Menu, and replace the contents of the 
+currently selected pane using the <strong>Replace Pane</strong> Menu. You can also add new 
+blank panes by splitting the current pane; either into two panes next to each 
+other, or into two panes stacked one above the other. You can swap two panes by 
+dragging one onto the other.</p>
 
-<p>Card sets will be opened in a new pane added on the right by double clicking 
-on the entry in the <em>Card Set</em> list. Card sets can also be opened in a specific 
-pane by dragging the card set name from the <em>Card Set</em> list to the desired 
-pane.</p>
+<p>When you double-click on an entry in the <em>Card Set</em> list, the card set will be 
+opened in a new pane added on the right. You can also open a card set in a 
+specific pane by dragging the card set name from the <em>Card Set</em> list to the 
+desired pane.</p>
 
 <p>If the <strong>Save Pane Set on Exit</strong> option in the <strong>File->Preferences</strong> menu is 
 set, Sutekh will save the current layout when you exit, and restore it on 
 startup. You can also save the current layout using the <strong>Save Current Pane Set</strong> 
 option.</p>
 
-<p>Panes are removed from the list by closing them from the 
-<strong>Pane Actions->Remove current pane</strong> menu option (or the associated keyboard 
-shortcut). Card Set panes will also be closed if you delete the card set.</p>
+<p>You can remove panes from the list using the <strong>Pane Actions->Remove current pane</strong> 
+menu option (or the associated keyboard shortcut). If you delete a card set, its 
+pane will be closed automatically.</p>
 
 <h2 id="sets">Managing Card Sets</h2>
 
 <h3>Creating a new card set</h3>
 
-<p>A new card set can be created from the <em>Card Set List</em>, using *Create New 
-Card Set* option from the <strong>Actions</strong> menu. The name is required, and must be 
-unique. A Card set can either have <em>No Parent</em>, in which case it is a stand 
-alone card set, or you can choose any existing card set as the parent, in 
-which case it is a subset of that card set.</p>
+<p>You can create a new card set in the <em>Card Set List</em> using the *Create New 
+Card Set* option in the <strong>Actions</strong> menu. The name is required, and must be 
+unique. You can specify that a card set has <em>No Parent</em>, in which case it will 
+be a stand-alone card set, or you can select any existing card set to be its 
+parent, in which case the new set will be a subset of that card set.</p>
 
 <h3>Renaming a card set.</h3>
 
-<p>A card set can be renamed using the <strong>Edit Card Set Properties</strong> option 
-from the card set list&#8217;s <strong>Actions</strong> Menu. An open card set can also be renamed 
-via the <strong>Edit Card Set Properties</strong> from the <strong>Actions</strong> Menu of the card set.</p>
+<p>You can rename a card set using the <strong>Edit Card Set Properties</strong> option in the 
+<strong>Actions</strong> menu of the card set list pane. You can also rename an open card set 
+using the <strong>Edit Card Set Properties</strong> option in the <strong>Actions</strong> Menu of the card 
+set pane.</p>
 
 <h3>Changing the parent of a card set.</h3>
 
-<p>The parent of a card set can be changed via the <strong>Edit Card Set Properties</strong> 
-option from the <strong>Actions</strong> Menu, or by dragging the selected card set onto its 
+<p>You can change the parent of a card set by using the <strong>Edit Card Set Properties</strong> 
+option in the <strong>Actions</strong> Menu, or by dragging the selected card set onto its 
 new parent in the card set list pane.</p>
 
 <h3>Deleting a card set</h3>
 
-<p>Card sets can by deleted via the <strong>Delete card set</strong> option from the <strong>Actions</strong> 
-menu of the card set list pane. Open card sets can also be deleted via the 
-<strong>Delete card set</strong> option from the <strong>Actions</strong> menu of the card set pane.</p>
+<p>You can delete a card set using the <strong>Delete card set</strong> option in the <strong>Actions</strong> 
+menu of the card set list pane. You can also delete an open card set using the 
+<strong>Delete card set</strong> option in the <strong>Actions</strong> menu of the card set pane.</p>
 
 <h3><em>&#8220;In Use&#8221;</em> Card sets</h3>
 
-<p>Card sets can be marked or unmarked as <em>&#8220;in use&#8221;</em>. The set of in use card sets 
-are considered to be those currently active. The display modes dealing with 
-child card sets only consider child cards sets that are marked as <em>&#8220;in use&#8221;</em>.</p>
+<p>Card sets can be marked or unmarked as <em>&#8220;In Use&#8221;</em>. <em>&#8220;In Use&#8221;</em> card sets 
+are considered to be those which are currently active. Display modes which 
+show child card sets only consider child cards sets which are marked as 
+<em>&#8220;In Use&#8221;</em>.</p>
 
 <h3>The Different card display and count modes</h3>
 
-<p>Sutekh has several options which control which cards are displayed for a  
-card set, and what information about the cards is displayed.</p>
+<p>Sutekh has several setings which control which cards are displayed in a card set 
+pane, and what information about the cards is displayed.</p>
 
-<p>The cards to display are also affected by the <a href="#filtering">filters</a> that are 
+<p>The display of cards will also be affected by any <a href="#filtering">filters</a> that are 
 applied.</p>
 
 <h4>The <em>&#8220;Cards to Show&#8221;</em> options</h4>
 
-<p>This option, controls which cards are displayed.</p>
+<p>This setting controls which cards are displayed.</p>
 
-<p>The default mode shows only those card that belong to the actual card set.</p>
+<p>The default mode shows only those cards that belong to the actual card set.</p>
 
 <p>&#8220;Show All Cards&#8221; shows the entire list of cards. This mode is often useful 
-when entering cards into a card set for the first time</p>
+when you are entering cards into a card set for the first time.</p>
 
 <p>&#8220;Show all cards in parent card set&#8221; shows the combination of the cards in this 
 card set and all the cards in the parent card set. It is useful for seeing 
-which cards are available for adding to a deck.</p>
+which cards are available to be added to a deck.</p>
 
 <p>&#8220;Show all cards in child card sets&#8221; shows all cards that belong to the 
-<em>&#8220;in use&#8221;</em> children of this card set in addition to the cards in this card 
+<em>&#8220;In Use&#8221;</em> children of this card set in addition to the cards in this card 
 set.</p>
 
 <h4>The <em>&#8220;Display Mode&#8221;</em> options</h4>
 
-<p>This controls what information is displayed below the card name.</p>
+<p>This setting controls what information is displayed below the card name.</p>
 
-<p>&#8220;Show Expansions&#8221;, the default, shows which cards have been marked as belonging 
-to which expansions below the card name.</p>
+<p>&#8220;Show Expansions&#8221; shows the expansions of the cards, and a card count for each 
+expansion. This is the default.</p>
 
-<p>&#8220;Show No Children&#8221; disables anything below the card name.</p>
+<p>&#8220;Show No Children&#8221; disables the display of additional information below the 
+card name.</p>
 
-<p>&#8220;Show Child Card Sets&#8221; shows the allocation of cards to the <em>&#8220;in use&#8221;</em> children 
+<p>&#8220;Show Child Card Sets&#8221; shows the allocation of cards to the <em>&#8220;In Use&#8221;</em> children 
 of the current card set.</p>
 
-<p>&#8220;Show Expansions + Child Card Sets&#8221; shows the expansions as for 
-&#8220;Show Expansions&#8221;, and shows the card set information for each expansion below 
-as well.</p>
+<p>&#8220;Show Expansions and Child Card Sets&#8221; shows the expansion information as well as 
+the child card set breakdown for each expansion.</p>
 
 <p>&#8220;Show Child Card Sets and Expansions&#8221; is the reverse of 
-&#8220;Show Expansions + Child Card Sets&#8221;, showing the child card sets and the 
-expansion information below.</p>
+&#8220;Show Expansions and Child Card Sets&#8221;. It shows the child card sets and the 
+expansion breakdown for each child card set.</p>
 
 <h4>The <em>&#8220;Parent Card Count&#8221;</em> options</h4>
 
 <p>If the card set is the child of another card set, you can also display 
 information about the parent card set.</p>
 
-<p>&#8220;Show Parent Count&#8221;, the default, will just show the count of the same 
-card in the parent card set.</p>
+<p>&#8220;Show Parent Count&#8221; shows the count of the same card in the parent card set. 
+This is the default.</p>
 
 <p>&#8220;Don&#8217;t show parent card counts&#8221; disables the column with the parent count.</p>
 
@@ -205,62 +211,52 @@ card in the parent card set.</p>
 between the parent count and the count for this card set.</p>
 
 <p>&#8220;Show difference between Parent Count and card sets in use&#8221; shows the 
-difference between the parent card set and total in all the <em>&#8220;in use&#8221;</em> card 
-set. If this card set is <strong>not</strong> <em>&#8220;in use&#8221;</em>, then the number of cards in this 
-set does not influence this number.</p>
+difference between the parent card set count and the total count in all 
+<em>&#8220;In Use&#8221;</em> card sets. If this card set is <strong>not</strong> <em>&#8220;In Use&#8221;</em>, then the number of 
+cards in this set does not influence this number.</p>
 
 <h2 id="filtering">Filtering</h2>
 
-<p>Sutekh has a very powerful filtering model, which allows quite complex queries 
-on the card database.</p>
+<p>Sutekh has a very powerful filtering model, which allows you to perform quite 
+complex queries on the card database.</p>
 
 <h3>The Basic filters</h3>
 
-<p>There are a number of basic filters available for querying the card lists, 
-such as <em>Clan</em>, <em>Discipline</em>, <em>&#8220;Card Text&#8221;</em> and so forth.</p>
+<p>There are several basic filters available, such as <em>Clan</em>, <em>Discipline</em>, 
+<em>&#8220;Card Text&#8221;</em> etc..</p>
 
-<p>Most of these filters only allow a limited range of options which are 
-selected from a drop down list. The <em>Clan</em> filter, 
-for example, only accepts the clans listed in the database as input. Multiple 
-items can be selected in this list, which means the filter matches on any of 
-those selections.</p>
+<p>Most of these filters allow only a limited range of options, which you can 
+select from a drop-down list. The <em>Clan</em> filter, for example, only accepts the 
+clans listed in the database as input. You can select multiple clans, and the 
+filter will match a card if it matches any of the selected clans.</p>
 
 <p>Other filters, such as the <em>&#8220;Card Text&#8221;</em> filter, require you to enter a string. 
-The filter will match any card that contains this string. The &#8217;%&#8217; character 
-can be used as a wild card in this string to match any number of letters.</p>
+The filter will match any card with card text that contains this string. The &#8217;%&#8217; 
+and &#8216;_&#8217; characters can be used as wildcards: &#8217;%&#8217; will match any number of 
+letters, and &#8216;_&#8217; will match exactly one.</p>
 
 <p>The <em>&#8220;Card Sets In Use&#8221;</em> filter takes no input.</p>
 
-<p>The <em>&#8220;Card Count&#8221;</em> filter takes two selections. The first selects the card 
-counts to match against, while the second is the card set to test against.</p>
+<p>The <em>&#8220;Card Count&#8221;</em> filter requires you to input a list of card counts and a card 
+set.</p>
 
 <h3>Combing basic filters</h3>
 
-<p>These basic filters can be combined to create more complex queries.</p>
+<p>You can combine these basic filters to create more complex queries.</p>
 
-<p>Multiple filters can be combined in 4 different ways.</p>
+<p>Multiple filters can be combined according to one of the following rules:</p>
 
-<ul>
-<li>All of</li>
-<li>Any of</li>
-<li>Not All of</li>
-<li>None of</li>
-</ul>
-
-<p>Each of these allows multiple filters to be added to them, and then combine 
-all the included filters according to the chosen rule.</p>
-
-<p><em>&#8220;All of&#8221;</em> requires the all the included filters to be satisfied simultaneously. 
-It useful for finding cards which require a discipline and a given cost, for 
+<p><em>&#8220;All of&#8221;</em> requires all of the included filters to be satisfied simultaneously. 
+It is useful for finding cards which require a discipline and a given cost, for 
 example.</p>
 
 <p><em>&#8220;Any of&#8221;</em> requires that at least one of the included filters is satisfied.</p>
 
 <p><em>&#8220;Not All of&#8221;</em> requires that at least one of the included filters is not 
-satisfied. The difference between <em>&#8220;Not All of</em>&#8221; and <em>&#8220;Any of&#8221;</em> is that _&#8220;Any 
-of&#8220;_ will include the results of any cards that match all of the filters, while 
-<em>&#8220;Not All of&#8221;</em> will exclude those, but return cards that satisfy none of the 
-filters.</p>
+satisfied. The difference between <em>&#8220;Not All of</em>&#8221; and <em>&#8220;Any of&#8221;</em> is that 
+<em>&#8220;Any of&#8221;</em> will include the results of any cards that match all of the filters, 
+while <em>&#8220;Not All of&#8221;</em> will exclude those, but return cards that satisfy none of 
+the filters.</p>
 
 <p><em>&#8220;None of&#8221;</em> requires that none of the included filters be satisfied.</p>
 
@@ -270,49 +266,52 @@ combinations to be nested. Thus an <em>&#8220;All of&#8221;</em> filter can incl
 be constructed.</p>
 
 <p>For example, to find all cards that require either &#8216;Follower of Set&#8217; or 
-&#8216;Serpentis&#8217;, but not both, the following filter could be constructed:</p>
+&#8216;Serpentis&#8217;, but not both, you could construct the following filter:</p>
 
 <p>An <em>&#8220;Any of&#8221;</em> filter, which includes two <em>&#8220;All of&#8221;</em> sub-filters. Each 
-sub-filter includes the <em>Clan</em> and <em>Discipline</em> basic filters, and the one is 
+sub-filter includes the <em>Clan</em> and <em>Discipline</em> basic filters, and one is 
 set to match &#8216;Followers of Set&#8217; and <span class="caps">NOT</span> &#8216;Serpentis&#8217; while the other is set to 
-match <span class="caps">NOT</span> &#8216;Followers of Set&#8217; and &#8216;Serpentis&#8217;</p>
+match <span class="caps">NOT</span> &#8216;Followers of Set&#8217; and &#8216;Serpentis&#8217;.</p>
 
-<p>Once a filter has been constructed, it can be saved with a given name and 
-loaded again later.</p>
+<p>Once you have constructed a filter, you can name and save it, and load it again 
+later.</p>
 
 <h3>Filtering the Card Set List</h3>
 
-<p>The card set list can also filtered. The basic filters available here are:</p>
+<p>You can also filter the card set list. The basic filters available here are:</p>
 
 <ul>
 <li>The card set name</li>
 <li>The card set author</li>
-<li>The card set comment</li>
+<li>The card set description</li>
 <li>The name of the parent card set</li>
 <li>Text in the annotations of the card set</li>
-<li>Filter on all card sets marked in use</li>
+<li>All card sets marked in use</li>
 </ul>
 
-<p>These filters can be combined as well, allowing queries such as &#8216;All of 
-card sets in use where the card set name includes &#8220;Nosferatu&#8221;&#8217;.</p>
+<p>TheYou can also combine these filters, and create queries such as 
+&#8216;All card sets in use where the card set name includes &#8220;Nosferatu&#8221;&#8217;.</p>
 
-<p>When filtering card sets, the card sets that match, <strong>and their parents</strong> are 
-shown, since this relationship is always important.</p>
+<p>When Sutekh displays card sets which match a filter, all the direct ancestors of 
+those sets are also displayed even if they do not match the filter themselves, 
+so that the matching sets can be shown in their correct position in the 
+hierarchy.</p>
 
 <h2 id="tips">Useful Tips</h2>
 
 <h3>Entering card sets</h3>
 
-<p>The different show card modes are often useful for entering a card set quickly. 
+<p>The different display modes are often useful for entering a card set quickly. 
 Start with with <em>&#8220;Show all cards&#8221;</em> or <em>&#8220;Show cards in parent card set&#8221;</em> and 
-then increment the cards that belong to the card set. Another useful approach 
-is to use the <em>&#8220;Card Set from Filter&#8221;</em> option to create the card set.</p>
+then increment the cards which you wish to add to the current card set. 
+You can also use the <em>&#8220;Card Set from Filter&#8221;</em> option to create a card set.</p>
 
-<p>When importing card sets from from other formats, the expansion information may 
-be missing, in which case these cards will have no expansion set. In the case 
-where this is a starter deck, for example, the _&#8220;Set selection to single 
-expansion&#8220;_ option from the <em>Plugins</em> menu can be used to set all the cards to 
-the correct expansion quickly.</p>
+<p>When you import card sets from other formats, the expansion information may be 
+missing, in which case these cards will be imported without an expansion. If you 
+know that all the imported cards are from the same expansion&#8212;for example, if 
+the card set is a starter deck&#8212;you can use the 
+<em>&#8220;Set selection to single expansion&#8221;</em> option from the <em>Plugins</em> menu to set all 
+the cards to the correct expansion quickly.</p>
 
 <p><a href="Manual.html">The Sutekh Manual</a></p>
 </body>
