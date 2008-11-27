@@ -341,6 +341,8 @@ class HtmlHandler(HTMLParser.HTMLParser):
         """Flush any pending text."""
         if not self._sText:
             return
+        if self._oIter.starts_line():
+            self._sText = self._sText.lstrip()
         self._insert_text(self._sText.replace('\n', ''))
         self._sText = ''
 
@@ -366,12 +368,8 @@ class HtmlHandler(HTMLParser.HTMLParser):
 
     def handle_data(self, sContent):
         """Process the character comments of an element."""
-        if oAllWhiteSpaceRegex.match(sContent) is not None:
-            return
         if self._bInTitle:
             return
-        #if self._sText:
-        #    self._sText += ' '
         self._sText += oWhiteSpaceRegex.sub(' ', sContent)
 
     def get_targets(self):
@@ -456,6 +454,13 @@ class HtmlHandler(HTMLParser.HTMLParser):
             }
             if 'size' in oAttrs and oAttrs['size'] in dFontSize:
                 oTag.set_property('scale', dFontSize[oAttrs['size']])
+        elif sName == 'li':
+            # indent 2em per list
+            oTag = self._oTextBuf.create_tag()
+            oTextAttrs = self._get_current_attributes()
+            fFontSize = oTextAttrs.font.get_size() / pango.SCALE
+            iDepth = len(self._aListCounters)
+            oTag.set_property('left-margin', 2.0 * iDepth * fResolution * fFontSize)
 
         self._begin_span(oStyle, oTag)
 
@@ -488,7 +493,7 @@ class HtmlHandler(HTMLParser.HTMLParser):
             else:
                 self._aListCounters[-1] += 1
                 sListHead = "%i." % self._aListCounters[-1]
-            self._sText = ' '*len(self._aListCounters)*4 + sListHead + ' '
+            self._sText = sListHead + ' '
         elif sName == 'img':
             # pylint: disable-msg=W0703
             # we want to catch all errors here
