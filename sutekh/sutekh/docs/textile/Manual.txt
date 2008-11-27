@@ -580,7 +580,7 @@ card has been printed.
 * _Card Sets_: You must specify a "list":#list of card sets. A card matches if
 it belongs to at least one set in the list.
 * _In Card Sets In Use_: A card matches if it belongs to a card set which is
-marked as *In Use*. This filter has no parameters.
+marked as _In Use_. This filter has no parameters.
 * _Card Count_: Filter on card count within the current card set or a different
 card set. You must specify a "list":#list of card counts, and a single card set.
 A card matches if it belongs to the specified set, and has a count within that
@@ -616,7 +616,7 @@ author name. You can use % and _ as "wildcard":#wildcard characters.
 annotations. You can use % and _ as "wildcard":#wildcard characters.
 * _Parent Card Set_: You must specify a "list":#list of card sets. A card set
 matches if any card set in the list is its parent set.
-* _Card Set Marked as in Use_: A card set matches if it is marked as *In Use*.
+* _Card Set Marked as in Use_: A card set matches if it is marked as _In Use_.
 * _Sub-Filter_: Nest an additional filter box inside the current box. See
 "Combining Basic Filters":#combining
 
@@ -797,17 +797,17 @@ listed on the card. The Imbued Virtues are treated as if they were Vampire
 Disciplines.
 * _Crypt or Library_: Split the card list into crypt and library cards.
 * _Card Type_: Group by card type. This is the default grouping. This grouping
-treats multi-type cards, such as _"Action Modifier/Combat"_ cards as members of
-both the _"Action Modifier"_ and the _"Combat"_ groups.
+treats multi-type cards, such as *Action Modifier/Combat* cards as members of
+both the *Action Modifier* and the *Combat* groups.
 * _Expansion_: Group by the expansions in which the cards have been printed.
 * _Rarity_: Group the cards by the published rarity.
 * _Sect_: Group cards by the Sects listed on the card.
 * _Title_: Group cards by the political titles listed on the card.
 * _Cost_: Group cards by the cost of the card.
 * _Multi Card Type_: Behaves like the _Card Type_ grouping, but treats
-multi-type cards as members of separate types. Thus _"Action Modifier/Combat"_
+multi-type cards as members of separate types. Thus *Action Modifier/Combat*
 will appear as a separate group, and cards of that type will not be listed in
-the _"Action Modifier"_ and _"Combat"_ groups.
+the *Action Modifier* and *Combat* groups.
 
 h3(#columns_plugin). Select Extra Columns
 

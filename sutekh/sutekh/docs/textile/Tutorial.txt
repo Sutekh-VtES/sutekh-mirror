@@ -64,7 +64,7 @@ If a card set is editable, *+* and *-* buttons are displayed next to the card
 names. You can use these to increase or decrease the number of copies of a card
 that are present in the set.
 
-You can also change this value using the keyboard. You can type '+' and '-' to
+You can also change this value using the keyboard. You can type *+* and *-* to
 increment or decrement the count of a selected card, or type a number from one
 to nine to set the value directly.
 
@@ -108,7 +108,7 @@ h2(#sets). Managing Card Sets
 
 h3. Creating a new card set
 
-You can create a new card set in the _Card Set List_ using the 
+You can create a new card set in the _Card Set List_ using the
 *Create New Card Set* option in the *Actions* menu. The name is required, and
 must be unique. You can specify that a card set has _No Parent_, in which case
 it will be a stand-alone card set, or you can select any existing card set to
@@ -133,12 +133,12 @@ You can delete a card set using the *Delete card set* option in the *Actions*
 menu of the card set list pane. You can also delete an open card set using the
 *Delete card set* option in the *Actions* menu of the card set pane.
 
-h3. _"In Use"_ Card sets
+h3. _In Use_ Card sets
 
-Card sets can be marked or unmarked as _"In Use"_. _"In Use"_ card sets
+Card sets can be marked or unmarked as _In Use_. _In Use_ card sets
 are considered to be those which are currently active. Display modes which
 show child card sets only consider child cards sets which are marked as
-_"In Use"_.
+_In Use_.
 
 h3. The Different card display and count modes
 
@@ -148,59 +148,59 @@ pane, and what information about the cards is displayed.
 The display of cards will also be affected by any "filters":#filtering that are
 applied.
 
-h4. The _"Cards to Show"_ options
+h4. The _Cards to Show_ options
 
 This setting controls which cards are displayed.
 
 The default mode shows only those cards that belong to the actual card set.
 
-"Show All Cards" shows the entire list of cards. This mode is often useful
+_Show All Cards_ shows the entire list of cards. This mode is often useful
 when you are entering cards into a card set for the first time.
 
-"Show all cards in parent card set" shows the combination of the cards in this
+_Show all cards in parent card set_ shows the combination of the cards in this
 card set and all the cards in the parent card set. It is useful for seeing
 which cards are available to be added to a deck.
 
-"Show all cards in child card sets" shows all cards that belong to the
-_"In Use"_ children of this card set in addition to the cards in this card
+_Show all cards in child card sets_ shows all cards that belong to the
+_In Use_ children of this card set in addition to the cards in this card
 set.
 
-h4. The _"Display Mode"_ options
+h4. The _Display Mode_ options
 
 This setting controls what information is displayed below the card name.
 
-"Show Expansions" shows the expansions of the cards, and a card count for each
+_Show Expansions_ shows the expansions of the cards, and a card count for each
 expansion. This is the default.
 
-"Show No Children" disables the display of additional information below the
+_Show No Children_ disables the display of additional information below the
 card name.
 
-"Show Child Card Sets" shows the allocation of cards to the _"In Use"_ children
+_Show Child Card Sets_ shows the allocation of cards to the _In Use_ children
 of the current card set.
 
-"Show Expansions and Child Card Sets" shows the expansion information as well as
+_Show Expansions and Child Card Sets_ shows the expansion information as well as
 the child card set breakdown for each expansion.
 
-"Show Child Card Sets and Expansions" is the reverse of
-"Show Expansions and Child Card Sets". It shows the child card sets and the
+_Show Child Card Sets and Expansions_ is the reverse of
+_Show Expansions and Child Card Sets_. It shows the child card sets and the
 expansion breakdown for each child card set.
 
-h4. The _"Parent Card Count"_ options
+h4. The _Parent Card Count_ options
 
 If the card set is the child of another card set, you can also display
 information about the parent card set.
 
-"Show Parent Count" shows the count of the same card in the parent card set.
+_Show Parent Count_ shows the count of the same card in the parent card set.
 This is the default.
 
-"Don't show parent card counts" disables the column with the parent count.
+_Don't show parent card counts_ disables the column with the parent count.
 
-"Show difference between Parent Count and this card set" shows the difference
+_Show difference between Parent Count and this card set_ shows the difference
 between the parent count and the count for this card set.
 
-"Show difference between Parent Count and card sets in use" shows the
+_Show difference between Parent Count and card sets in use_ shows the
 difference between the parent card set count and the total count in all
-_"In Use"_ card sets. If this card set is *not* _"In Use"_, then the number of
+_In Use_ card sets. If this card set is not _In Use_, then the number of
 cards in this set does not influence this number.
 
 h2(#filtering). Filtering
@@ -211,21 +211,21 @@ complex queries on the card database.
 h3. The Basic filters
 
 There are several basic filters available, such as _Clan_, _Discipline_,
-_"Card Text"_ etc..
+_Card Text_ etc..
 
 Most of these filters allow only a limited range of options, which you can
 select from a drop-down list. The _Clan_ filter, for example, only accepts the
 clans listed in the database as input. You can select multiple clans, and the
 filter will match a card if it matches any of the selected clans.
 
-Other filters, such as the _"Card Text"_ filter, require you to enter a string.
-The filter will match any card with card text that contains this string. The '%'
-and '_' characters can be used as wildcards: '%' will match any number of
-letters, and '_' will match exactly one.
+Other filters, such as the _Card Text_ filter, require you to enter a string.
+The filter will match any card with card text that contains this string. The *%*
+and *_* characters can be used as wildcards: *%* will match any number of
+letters, and *_* will match exactly one.
 
-The _"Card Sets In Use"_ filter takes no input.
+The _Card Sets In Use_ filter takes no input.
 
-The _"Card Count"_ filter requires you to input a list of card counts and a card
+The _Card Count_ filter requires you to input a list of card counts and a card
 set.
 
 h3. Combing basic filters
@@ -234,32 +234,32 @@ You can combine these basic filters to create more complex queries.
 
 Multiple filters can be combined according to one of the following rules:
 
-_"All of"_ requires all of the included filters to be satisfied simultaneously.
+_All of_ requires all of the included filters to be satisfied simultaneously.
 It is useful for finding cards which require a discipline and a given cost, for
 example.
 
-_"Any of"_ requires that at least one of the included filters is satisfied.
+_Any of_ requires that at least one of the included filters is satisfied.
 
-_"Not All of"_ requires that at least one of the included filters is not
-satisfied. The difference between _"Not All of_" and _"Any of"_ is that
-_"Any of"_ will include the results of any cards that match all of the filters,
-while _"Not All of"_ will exclude those, but return cards that satisfy none of
+_Not All of_ requires that at least one of the included filters is not
+satisfied. The difference between _Not All of_ and _Any of_ is that
+_Any of_ will include the results of any cards that match all of the filters,
+while _Not All of_ will exclude those, but return cards that satisfy none of
 the filters.
 
-_"None of"_ requires that none of the included filters be satisfied.
+_None of_ requires that none of the included filters be satisfied.
 
 In addition to the basic filters, the *Sub-filter* option allows these
-combinations to be nested. Thus an _"All of"_ filter can include _"Any of"_ or
-_"None of"_ filters below it, which allows for extremely complex queries to
+combinations to be nested. Thus an _All of_ filter can include _Any of_ or
+_None of_ filters below it, which allows for extremely complex queries to
 be constructed.
 
-For example, to find all cards that require either 'Follower of Set' or
-'Serpentis', but not both, you could construct the following filter:
+For example, to find all cards that require either *Follower of Set* or
+*Serpentis*, but not both, you could construct the following filter:
 
-An _"Any of"_ filter, which includes two _"All of"_ sub-filters. Each
+An _Any of_ filter, which includes two _All of_ sub-filters. Each
 sub-filter includes the _Clan_ and _Discipline_ basic filters, and one is
-set to match 'Followers of Set' and NOT 'Serpentis' while the other is set to
-match NOT 'Followers of Set' and 'Serpentis'.
+set to match *Followers of Set* and NOT *Serpentis* while the other is set to
+match NOT *Followers of Set* and *Serpentis*.
 
 Once you have constructed a filter, you can name and save it, and load it again
 later.
@@ -276,7 +276,7 @@ You can also filter the card set list. The basic filters available here are:
 * All card sets marked in use
 
 TheYou can also combine these filters, and create queries such as
-'All card sets in use where the card set name includes "Nosferatu"'.
+*All card sets in use where the card set name includes _Nosferatu_*.
 
 When Sutekh displays card sets which match a filter, all the direct ancestors of
 those sets are also displayed even if they do not match the filter themselves,
@@ -288,15 +288,15 @@ h2(#tips). Useful Tips
 h3. Entering card sets
 
 The different display modes are often useful for entering a card set quickly.
-Start with with _"Show all cards"_ or _"Show cards in parent card set"_ and
+Start with with _Show all cards_ or _Show cards in parent card set_ and
 then increment the cards which you wish to add to the current card set.
-You can also use the _"Card Set from Filter"_ option to create a card set.
+You can also use the _Card Set from Filter_ option to create a card set.
 
 When you import card sets from other formats, the expansion information may be
 missing, in which case these cards will be imported without an expansion. If you
 know that all the imported cards are from the same expansion -- for example, if
 the card set is a starter deck -- you can use the
-_"Set selection to single expansion"_ option from the _Plugins_ menu to set all
+_Set selection to single expansion_ option from the _Plugins_ menu to set all
 the cards to the correct expansion quickly.
 
 "The Sutekh Manual":Manual.html
