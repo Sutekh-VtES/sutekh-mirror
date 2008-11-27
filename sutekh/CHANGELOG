@@ -1,3 +1,14 @@
+27 Nov 2008
+ * Fixes to HTMLTextView (improved list intending and fixed whitespace stripping bug).
+ * Clean up of SutekhInfo (updated contributors, added download URL, classifiers and
+   platform information).
+
+26 Nov 2008
+ * Added entity and charref handling to HTMLTextView.
+ * Major documentation grammar and style reworking.
+ * Explicit disconnection of listeners when card sets are deleted.
+ * Minor bugfix to error handling in OpeningDrawSimulator plugin.
+
 25 Nov 2008
  * Add an explicit disconnect from the database signal. This avoids a 
    couple of cases where removing card sets can leave stale listener.
