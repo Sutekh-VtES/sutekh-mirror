@@ -24,7 +24,6 @@ from sutekh.gui.SutekhDialog import SutekhDialog
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 
 oWhiteSpaceRegex = re.compile("\\s+")
-oAllWhiteSpaceRegex = re.compile("^\\s*$")
 
 ## pixels = points * fResolution
 fResolution = 0.3514598*(gtk.gdk.screen_height() /
