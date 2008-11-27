@@ -24,8 +24,13 @@ setup   (   # Metadata
             maintainer_email = SutekhInfo.MAINTAINER_EMAIL,
 
             url = SutekhInfo.SOURCEFORGE_URL,
+            download_url = SutekhInfo.PYPI_URL,
 
             license = SutekhInfo.LICENSE,
+
+            classifiers = SutekhInfo.CLASSIFIERS,
+
+            platforms = SutekhInfo.PLATFORMS,
 
             # Dependencies
             install_requires = SutekhInfo.INSTALL_REQUIRES,
