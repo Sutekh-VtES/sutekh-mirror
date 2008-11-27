@@ -165,9 +165,11 @@ class OpeningHandSimulator(CardListPlugin):
             do_complaint_error('Library needs to be at least as large as the'
                     ' opening hand')
             return
+
         if len(self.aCrypt) < 4:
             do_complaint_error('Crypt needs to be at least as large as the'
                     ' opening draw')
+            return
 
         for sType in MultiCardTypeFilter.get_values():
             aList = get_cards_filter(self.model, CardTypeFilter(sType))

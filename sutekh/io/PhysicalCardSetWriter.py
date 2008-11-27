@@ -24,14 +24,15 @@
 from sutekh.core.SutekhObjects import PhysicalCardSet
 from sqlobject import SQLObjectNotFound
 from sutekh.SutekhUtility import pretty_xml
+# pylint: disable-msg=E0611, F0401
+# xml.etree is a python2.5 thing
 try:
-    # pylint: disable-msg=E0611, F0401
-    # xml.etree is a python2.5 thing
     from xml.etree.ElementTree import Element, SubElement, ElementTree, \
             tostring
 except ImportError:
     from elementtree.ElementTree import Element, SubElement, ElementTree, \
             tostring
+# pylint: enable-msg=E0611, F0401
 
 class PhysicalCardSetWriter(object):
     """Writer for Physical Card Sets.

@@ -23,8 +23,16 @@ class SutekhInfo(object):
     NAME = 'Sutekh'
     DESCRIPTION = 'VtES Card Collection Manager'
 
-    AUTHORS = [ ('Simon Cross', 'hodgestar+sutekh@gmail.com'),
-                ('Neil Muller', 'drnmuller+sutekh@gmail.com') ]
+    PEOPLE = {
+        'Simon': ('Simon Cross', 'hodgestar+sutekh@gmail.com'),
+        'Neil': ('Neil Muller', 'drnmuller+sutekh@gmail.com'),
+        'Adrianna': ('Adrianna Pinska', 'adrianna.pinska+sutekh@gmail.com'),
+    }
+
+    AUTHORS = [
+        PEOPLE['Simon'],
+        PEOPLE['Neil'],
+    ]
 
     AUTHOR_NAME = AUTHORS[0][0]
     AUTHOR_EMAIL = AUTHORS[0][1]
@@ -34,14 +42,40 @@ class SutekhInfo(object):
     MAINTAINER_NAME = MAINTAINERS[0][0]
     MAINTAINER_EMAIL = MAINTAINERS[0][1]
 
-    ARTISTS = [ AUTHORS[0] ] # Simon
+    ARTISTS = [
+        PEOPLE['Simon'],
+    ]
 
-    DOCUMENTERS = [ AUTHORS[1] ] # Neil
+    DOCUMENTERS = [
+        PEOPLE['Neil'],
+        PEOPLE['Adrianna'],
+    ]
 
     SOURCEFORGE_URL = 'http://sourceforge.net/projects/sutekh/'
+    PYPI_URL = 'http://pypi.python.org/pypi/Sutekh/'
 
     LICENSE = 'GPL'
     LICENSE_TEXT = resource_string(__name__, 'COPYING')
+
+    CLASSIFIERS = [
+        'Development Status :: 4 - Beta',
+        'Environment :: Console',
+        'Environment :: Win32 (MS Windows)',
+        'Environment :: X11 Applications :: GTK',
+        'Intended Audience :: Developers',
+        'Intended Audience :: End Users/Desktop',
+        'License :: OSI Approved :: GNU General Public License (GPL)',
+        'Operating System :: Microsoft :: Windows',
+        'Operating System :: POSIX',
+        'Programming Language :: Python :: 2.5',
+        'Topic :: Games/Entertainment',
+        'Topic :: Software Development :: Libraries :: Python Modules',
+    ]
+
+    PLATFORMS = [
+        'Linux',
+        'Windows',
+    ]
 
     INSTALL_REQUIRES = [
         'SQLObject >= 0.9.0, < 0.11', # fetching 0.10dev requires svn

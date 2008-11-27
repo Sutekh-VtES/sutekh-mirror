@@ -24,7 +24,6 @@ from sutekh.gui.SutekhDialog import SutekhDialog
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 
 oWhiteSpaceRegex = re.compile("\\s+")
-oAllWhiteSpaceRegex = re.compile("^\\s*$")
 
 ## pixels = points * fResolution
 fResolution = 0.3514598*(gtk.gdk.screen_height() /
@@ -341,6 +340,8 @@ class HtmlHandler(HTMLParser.HTMLParser):
         """Flush any pending text."""
         if not self._sText:
             return
+        if self._oIter.starts_line():
+            self._sText = self._sText.lstrip()
         self._insert_text(self._sText.replace('\n', ''))
         self._sText = ''
 
@@ -366,22 +367,38 @@ class HtmlHandler(HTMLParser.HTMLParser):
 
     def handle_data(self, sContent):
         """Process the character comments of an element."""
-        if oAllWhiteSpaceRegex.match(sContent) is not None:
-            return
         if self._bInTitle:
             return
-        #if self._sText:
-        #    self._sText += ' '
         self._sText += oWhiteSpaceRegex.sub(' ', sContent)
 
     def get_targets(self):
         """Get the list of target anchors."""
         return self._dTargets
 
+    # pylint: disable-msg=R0912, R0915, R0914
+    # entity handler, so it is is a massive if..elif.. statement
+    def handle_entityref(self, sEntity):
+        """Convert entity to something we can use"""
+        # This looks like all that textile will produce as entities
+        if sEntity == 'lt':
+            self.handle_data('<')
+        elif sEntity ==  'gt':
+            self.handle_data('>')
+        elif sEntity ==  'amp':
+            self.handle_data('&')
+        elif sEntity ==  'quot':
+            self.handle_data('"')
+        #else:
+        #    print 'Unknown entity', sEntity
+
+    # handle charrefs produced by textile as great if statement
+    def handle_charref(self, sCharref):
+        """Convert charref to something we can use"""
+        self.handle_data(unichr(int(sCharref)))
+
+    # start tag handler, so it is is a massive if..elif.. statement
     def handle_starttag(self, sName, oAttrs):
         """Parser start element handler"""
-        # pylint: disable-msg=R0912, R0915
-        # start tag handler, so it is is a massive if..elif.. statement
         oAttrs = dict(oAttrs)
         self._flush_text()
         try:
@@ -436,6 +453,13 @@ class HtmlHandler(HTMLParser.HTMLParser):
             }
             if 'size' in oAttrs and oAttrs['size'] in dFontSize:
                 oTag.set_property('scale', dFontSize[oAttrs['size']])
+        elif sName == 'li':
+            # indent 2em per list
+            oTag = self._oTextBuf.create_tag()
+            oTextAttrs = self._get_current_attributes()
+            fFontSize = oTextAttrs.font.get_size() / pango.SCALE
+            iDepth = len(self._aListCounters)
+            oTag.set_property('left-margin', 2.0 * iDepth * fResolution * fFontSize)
 
         self._begin_span(oStyle, oTag)
 
@@ -468,7 +492,7 @@ class HtmlHandler(HTMLParser.HTMLParser):
             else:
                 self._aListCounters[-1] += 1
                 sListHead = "%i." % self._aListCounters[-1]
-            self._sText = ' '*len(self._aListCounters)*4 + sListHead + ' '
+            self._sText = sListHead + ' '
         elif sName == 'img':
             # pylint: disable-msg=W0703
             # we want to catch all errors here
@@ -518,10 +542,9 @@ class HtmlHandler(HTMLParser.HTMLParser):
         else:
             warnings.warn("Unhandled start tag '%s'" % sName)
 
+    # end tag handler, so it is is a massive if..elif.. statement
     def handle_endtag(self, sName):
         """Handle the end of a tag"""
-        # pylint: disable-msg=R0912, R0915
-        # eng tag handler, so it is is a massive if..elif.. statement
         if sName == 'title':
             self._bInTitle = False
             return
@@ -569,6 +592,7 @@ class HtmlHandler(HTMLParser.HTMLParser):
             warnings.warn("Unhandled end tag '%s'" % sName)
 
         self._end_span()
+
 
 class HTMLTextView(gtk.TextView):
     # pylint: disable-msg=R0904
