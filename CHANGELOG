@@ -1,3 +1,6 @@
+30 Nov 2008
+ * Relase 0.6.0.
+
 29 Nov 2008
  * Fix minor bug that allowed dropping of non-card-sets onto card sets in
    the card set list.
