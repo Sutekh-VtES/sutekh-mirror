@@ -1,3 +1,9 @@
+29 Nov 2008
+ * Fix minor bug that allowed dropping of non-card-sets onto card sets in
+   the card set list.
+ * Fix bug in handling of drive separator on Windows that prevented the
+   rulebook plugin from opening its files.
+
 27 Nov 2008
  * Fixes to HTMLTextView (improved list intending and fixed whitespace stripping bug).
  * Clean up of SutekhInfo (updated contributors, added download URL, classifiers and
