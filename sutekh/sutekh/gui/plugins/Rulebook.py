@@ -218,8 +218,9 @@ class RulebookPlugin(CardListPlugin):
         sPath = os.path.join(self._sPrefsPath, self.LOCAL_NAMES[sName])
         sPath = os.path.abspath(sPath)
         sDrive, sPath = os.path.splitdrive(sPath)
-        if sDrive:
-            sPath = sDrive + "|" + sPath
+        # os.path.splitdrive assumes that drives have the form "X:"
+        # so do the same in our replace.
+        sPath = sDrive.replace(":", "|") + sPath
         sPath = sPath.replace(os.path.sep, "/")
         if not sPath.startswith("/"):
             sPath = "/" + sPath
