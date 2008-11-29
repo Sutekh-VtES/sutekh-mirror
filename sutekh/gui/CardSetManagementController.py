@@ -273,7 +273,7 @@ class CardSetManagementController(object):
         if sSource == "Sutekh Pane:":
             self._oFrame.drag_drop_handler(oWdgt, oContext, iXPos, iYPos,
                     oData, oInfo, oTime)
-        else:
+        elif sSource == "Card Set:":
             # Find the card set at iXPos, iYPos
             # Need to do this to skip avoid headers and such confusing us
             oPath = self._oView.get_path_at_pointer()

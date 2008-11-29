@@ -1,3 +1,11 @@
+29 Nov 2008
+ * Fix minor bug that allowed dropping of non-card-sets onto card sets in
+   the card set list.
+   (r1700, r1701 - changelog update)
+ * Fix bug in handling of drive separator on Windows that prevented the
+   rulebook plugin from opening its files.
+   (r1699)
+
 28 Nov 2008
  * Backport of clean ups and minor fixes from trunk.
    (r1684:1696)
