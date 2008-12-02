@@ -459,7 +459,8 @@ class HtmlHandler(HTMLParser.HTMLParser):
             oTextAttrs = self._get_current_attributes()
             fFontSize = oTextAttrs.font.get_size() / pango.SCALE
             iDepth = len(self._aListCounters)
-            oTag.set_property('left-margin', 2.0 * iDepth * fResolution * fFontSize)
+            oTag.set_property('left-margin', 2.0 * iDepth * fResolution
+                    * fFontSize)
 
         self._begin_span(oStyle, oTag)
 
