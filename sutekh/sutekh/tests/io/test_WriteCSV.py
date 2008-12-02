@@ -53,8 +53,8 @@ sExpected4 = """".44 Magnum", 4
 """
 
 
-class ARDBHTMLWriterTests(SutekhTest):
-    """class for the ARDB HTML deck writer tests"""
+class CSVWriterTests(SutekhTest):
+    """class for the CSV deck writer tests"""
 
     def test_deck_writer(self):
         """Test HTML deck writing"""
