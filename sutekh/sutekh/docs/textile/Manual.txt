@@ -386,9 +386,9 @@ manager
 ** _ARDB XML_: A file that can be imported into the ARDB card manager
 ** _HTML_: A nice HTML file, similar to that produced by ARDB
 ** _ARDB Text_: A text file, similar to that produced by ARDB
-** _JOL_: A text file that can be mported into the Lackey CCG client
-** _Lackey CCG_: A text file that can be pasted into the Jyhad Online deck
+** _JOL_: A text file that can be pasted into the Jyhad Online deck
 builder
+** _Lackey CCG_: A text file that can be mported into the Lackey CCG client
 * _Cards To Show_: Set which cards are displayed. The options are:
 ** _This Set Only_: Show only the cards in this card set.
 ** _Show All Cards_: Show all the cards in the White Wolf list. Cards not in
