@@ -54,7 +54,8 @@ class SecretLibrary(CardListPlugin):
         # crypt (string, 1000 characters)
         # library (string, 10000 characters)
         # sl_deck_submit (non-null value to activate script)
-        # sl_user_agent (string, 20, will tell me what agents work and what agents don't)
+        # sl_user_agent (string, 20, will tell me what agents work and
+        #    what agents don't)
         # sl_agent_version (string, 20, more specifics to previous)
         # the field lengths can be modified if necessary
         # yeah, password is plane text
@@ -78,6 +79,8 @@ class SecretLibrary(CardListPlugin):
         oCryptIter = self.model.get_card_iterator(oCryptFilter)
 
         for oCard in oCryptIter:
+            # pylint: disable-msg=E1101
+            # E1101: PyProtocols confuses pylint
             oAbsCard = IAbstractCard(oCard)
             aCrypt.append(oAbsCard.name)
 
@@ -89,6 +92,8 @@ class SecretLibrary(CardListPlugin):
         oLibraryIter = self.model.get_card_iterator(oLibraryFilter)
 
         for oCard in oLibraryIter:
+            # pylint: disable-msg=E1101
+            # E1101: PyProtocols confuses pylint
             oAbsCard = IAbstractCard(oCard)
             aLibrary.append(oAbsCard.name)
 
