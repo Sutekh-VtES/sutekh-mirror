@@ -306,7 +306,7 @@ resolve the situation using the "Card Lookup Dialog":#lookup.
 
 h2(#import_plugin). Import ARDB or ELDB file
 
-This allows you to import files produced by ARDB or FELDB. Sutekh does not
+This allows you to import files produced by ARDB, JOL or FELDB. Sutekh does not
 recognise the file format automatically, so you must specify it manually.
 
 For some types of file, such as ARDB inventories, you will also need to specify
@@ -386,6 +386,7 @@ manager
 ** _ARDB XML_: A file that can be imported into the ARDB card manager
 ** _HTML_: A nice HTML file, similar to that produced by ARDB
 ** _ARDB Text_: A text file, similar to that produced by ARDB
+** _JOL_: A text file that can be pasted into the Jyhad Online deck builder
 * _Cards To Show_: Set which cards are displayed. The options are:
 ** _This Set Only_: Show only the cards in this card set.
 ** _Show All Cards_: Show all the cards in the White Wolf list. Cards not in
