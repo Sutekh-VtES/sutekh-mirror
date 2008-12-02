@@ -1,6 +1,8 @@
 02 Dec 2008
  * First stab at JOL import/export - needs teting against the actual JOL
    servers
+ * Add export to Lackey CCG's VTES plugin
+ * Fix minor bug in FELDB export ", An", not "An .."
 
 29 Nov 2008
  * Fix minor bug that allowed dropping of non-card-sets onto card sets in
