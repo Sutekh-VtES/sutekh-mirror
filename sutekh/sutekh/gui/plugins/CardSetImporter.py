@@ -15,6 +15,7 @@ from sutekh.io.ARDBXMLDeckParser import ARDBXMLDeckParser
 from sutekh.io.ARDBXMLInvParser import ARDBXMLInvParser
 from sutekh.io.ELDBDeckFileParser import ELDBDeckFileParser
 from sutekh.io.ELDBInventoryParser import ELDBInventoryParser
+from sutekh.io.JOLDeckParser import JOLDeckParser
 from sutekh.core.SutekhObjects import PhysicalCardSet
 from sutekh.core.CardSetHolder import CardSetHolder
 from sutekh.core.CardLookup import LookupFailed
@@ -44,6 +45,7 @@ class ACSImporter(CardListPlugin):
             'ELDB Inventory': ELDBInventoryParser,
             'ARDB Deck XML File': ARDBXMLDeckParser,
             'ARDB Inventory XML File': ARDBXMLInvParser,
+            'JOL Deck File': JOLDeckParser,
         }
         self.oUri = None
         self.oDlg = None
