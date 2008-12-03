@@ -46,8 +46,9 @@ class SecretLibrary(CardListPlugin):
         sUrl = "http://www.tenerdo.org/sl_import_test.php"
 
         # using http-post method
-        # username (string, 24 characters)
-        # password (string, 16 characters)
+        #
+        # username (string, 6 <= characters <= 24)
+        # password (string, 6 <= characters <= 16)
         # author (string, 100 characters)
         # title (string, 100 characters)
         # description (string, 1000 characters)
@@ -59,12 +60,28 @@ class SecretLibrary(CardListPlugin):
         # sl_agent_version (string, 20, more specifics to previous)
         # the field lengths can be modified if necessary
         # yeah, password is plane text
+        #
+        # Errors:
+        #
+        # 1: Invalid POST variables
+        # given if sl_deck_submit, sl_user_agent or sl_agent_version is missing
+        # 2: Invalid username or password
+        # given if username or password fields don't match, in the test version username can be anything between 6 and 24 characters and password can be anything between 6 and 16 characters
+        # 4: Invalid user agent
+        # given if sl_user_agent or sl_agent_version are empty
+        # 8: Empty library
+        # given if library is empty
+        # 16: Empty crypt
+        # same for crypt
+        # 32: Database error
+        # if mysql queries return an error
+        # all errors return "N: Short explenation"
 
         oCardSet = self.get_card_set()
 
         dData = {
-            'username': 'test',
-            'password': 'test',
+            'username': 'testuser',
+            'password': 'testpass',
             'author': oCardSet.author,
             'title': oCardSet.name,
             'description': oCardSet.comment,
