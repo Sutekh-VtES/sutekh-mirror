@@ -29,7 +29,6 @@ class JOLDeckParser(object):
         if not sLine:
             # skip blank lines
             return
-        print sLine, sLine[0], sLine[0] in string.digits
         if sLine[0] in string.digits:
             sNum, sName = sLine.split('x', 1)
             iNum = int(sNum)
