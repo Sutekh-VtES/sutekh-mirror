@@ -64,17 +64,21 @@ class SecretLibrary(CardListPlugin):
         # Errors:
         #
         # 1: Invalid POST variables
-        # given if sl_deck_submit, sl_user_agent or sl_agent_version is missing
+        #    given if sl_deck_submit, sl_user_agent or sl_agent_version is
+        #    missing
         # 2: Invalid username or password
-        # given if username or password fields don't match, in the test version username can be anything between 6 and 24 characters and password can be anything between 6 and 16 characters
+        #    given if username or password fields don't match, in the test
+        #    version username can be anything between 6 and 24 characters and
+        #    password can be anything between 6 and 16 characters
         # 4: Invalid user agent
-        # given if sl_user_agent or sl_agent_version are empty
+        #    given if sl_user_agent or sl_agent_version are empty
         # 8: Empty library
-        # given if library is empty
+        #    given if library is empty
         # 16: Empty crypt
-        # same for crypt
+        #     same for crypt
         # 32: Database error
-        # if mysql queries return an error
+        #     if mysql queries return an error
+        #
         # all errors return "N: Short explenation"
 
         oCardSet = self.get_card_set()
