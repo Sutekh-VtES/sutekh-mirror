@@ -23,32 +23,31 @@
 import unicodedata
 from sutekh.core.ELDBUtilities import type_of_card
 
+def lackey_name(oCard):
+    """Escape the card name to Lackey CCG's requirements"""
+    sName = oCard.name
+    if oCard.level is not None:
+        sName.replace("(Advanced)", "Adv.")
+    if sName.startswith("The "):
+        sName = sName[4:] + ", The"
+    if sName.startswith("An "):
+        sName = sName[3:] + ", An"
+    sName = unicodedata.normalize('NFKD', sName).encode('ascii','ignore')
+    return sName
+
+
 class WriteLackeyCCG(object):
     """Create a string in Lackey CCG format representing a card set."""
 
     # pylint: disable-msg=R0201
-    # method for consistency with the other methods
-
-    def _escape(self, oCard):
-        """Escape the card name to JOL's requirements"""
-        sName = oCard.name
-        if oCard.level is not None:
-            sName.replace("(Advanced)", "Adv.")
-        if sName.startswith("The "):
-            sName = sName[4:] + ", The"
-        if sName.startswith("An "):
-            sName = sName[3:] + ", An"
-        sName = unicodedata.normalize('NFKD', sName).encode('ascii','ignore')
-        return sName
-
-    # pylint: enable-msg=R0201
+    # Method for consistency
     def _gen_inv(self, oCardSet):
         """Process the card set, creating the lines as needed"""
         dCards = {'Crypt' : {}, 'Library' : {}}
         sResult = ""
         for oCard in oCardSet.cards:
             sType = type_of_card(oCard.abstractCard)
-            sName = self._escape(oCard.abstractCard)
+            sName = lackey_name(oCard.abstractCard)
             dCards[sType].setdefault(sName, 0)
             dCards[sType][sName] += 1
         # Sort the output
@@ -63,8 +62,8 @@ class WriteLackeyCCG(object):
     # pylint: enable-msg=R0201
 
     def write(self, fOut, oCardSet):
-        """Takes file object + card set to write, and writes an JOL deck
-           representing the deck"""
+        """Takes file object + card set to write, and writes an Lackey CCG
+           deck representing the card set"""
         fOut.write(self._gen_inv(oCardSet))
 
     # pylint: enable-msg=R0913

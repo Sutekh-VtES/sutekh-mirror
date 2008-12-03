@@ -306,8 +306,9 @@ resolve the situation using the "Card Lookup Dialog":#lookup.
 
 h2(#import_plugin). Import ARDB or ELDB file
 
-This allows you to import files produced by ARDB, JOL or FELDB. Sutekh does not
-recognise the file format automatically, so you must specify it manually.
+This allows you to import files produced by ARDB, JOL, Lackey CCG or FELDB.
+Sutekh does not recognise the file format automatically, so you must specify it
+manually.
 
 For some types of file, such as ARDB inventories, you will also need to specify
 a card set name for the imported file.
