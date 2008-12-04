@@ -1,21 +1,21 @@
-# CardSetExportArdbText.py
+# CardSetExportLackey.py
 # -*- coding: utf8 -*-
 # vim:fileencoding=utf8 ai ts=4 sts=4 et sw=4
-# Copyright 2008 Simon Cross <hodgestar@gmail.com>
+# Copyright 2008 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-"""Plugin for exporting to ARDB's XML format"""
+"""Plugin for exporting to Lackey CCG"""
 
 import gtk
 from sutekh.core.SutekhObjects import PhysicalCardSet
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhFileWidget import ExportDialog
-from sutekh.io.WriteArdbText import WriteArdbText
+from sutekh.io.WriteLackeyCCG import WriteLackeyCCG
 from sutekh.SutekhUtility import safe_filename
 
-class CardSetExportArdbText(CardListPlugin):
+class CardSetExportLackey(CardListPlugin):
     """Provides a dialog for selecting a filename, then calls on
-       WriteArdbText to produce the required output."""
+       WriteJOL to produce the required output."""
     dTableVersions = { PhysicalCardSet: [2, 3, 4, 5]}
     aModelsSupported = [PhysicalCardSet]
 
@@ -23,7 +23,7 @@ class CardSetExportArdbText(CardListPlugin):
         """Register with the 'Export Card Set' Menu"""
         if not self.check_versions() or not self.check_model_type():
             return None
-        oExport = gtk.MenuItem("Export to ARDB Text")
+        oExport = gtk.MenuItem("Export to Lackey CCG format")
         oExport.connect("activate", self.make_dialog)
         return ('Export Card Set', oExport)
 
@@ -32,7 +32,8 @@ class CardSetExportArdbText(CardListPlugin):
     def make_dialog(self, oWidget):
         """Create the dialog"""
         oDlg = ExportDialog("Choose FileName for Exported CardSet",
-                self.parent, '%s.txt' % safe_filename(self.view.sSetName))
+                self.parent, '%s_lackey.txt' % safe_filename(
+                    self.view.sSetName))
         oDlg.add_filter_with_pattern('Text Files', ['*.txt'])
         oDlg.run()
         self.handle_response(oDlg.get_name())
@@ -47,12 +48,11 @@ class CardSetExportArdbText(CardListPlugin):
             oCardSet = self.get_card_set()
             if not oCardSet:
                 return
-            oWriter = WriteArdbText()
+            oWriter = WriteLackeyCCG()
             fOut = file(sFileName,"w")
-            oWriter.write(fOut, self.view.sSetName, oCardSet.author,
-                    oCardSet.comment, self.get_all_cards())
+            oWriter.write(fOut, oCardSet)
             fOut.close()
 
 # pylint: disable-msg=C0103
 # accept plugin name
-plugin = CardSetExportArdbText
+plugin = CardSetExportLackey

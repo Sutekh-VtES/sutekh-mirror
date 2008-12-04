@@ -21,9 +21,9 @@ class CardTextFrame(BasicFrame):
        """
     # pylint: disable-msg=R0904
     # gtk.Widget, so lots of public methods
-    def __init__(self, oMainWindow, oIconManager):
+    def __init__(self, oMainWindow, oIconManager, bVerbose=False):
         super(CardTextFrame, self).__init__(oMainWindow)
-        self._oView = CardTextView(oMainWindow, oIconManager)
+        self._oView = CardTextView(oMainWindow, oIconManager, bVerbose)
         self.add_parts()
         self.set_name('card text')
 

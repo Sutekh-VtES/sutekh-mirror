@@ -25,6 +25,9 @@ def norm_name(oCard):
     if sName.startswith("The ") and sName != "The Kikiyaon":
         # Annoying ELDB special case
         sName = sName[4:] + ", The"
+    if sName.startswith("An "):
+        # FELDB does this as well
+        sName = sName[3:] + ", An"
     sName.replace("'", "`")
     return unicodedata.normalize('NFKD', sName).encode('ascii','ignore')
 

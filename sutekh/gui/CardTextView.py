@@ -133,7 +133,7 @@ class CardTextView(gtk.TextView, object):
        """
     # pylint: disable-msg=R0904
     # gtk.Widget, so many public methods
-    def __init__(self, oController, oIconManager):
+    def __init__(self, oController, oIconManager, bVerbose):
         super(CardTextView, self).__init__()
         # Can be styled as frame_name.view
         self.__oController = oController
@@ -144,6 +144,10 @@ class CardTextView(gtk.TextView, object):
         self.set_cursor_visible(False)
         self.set_wrap_mode(gtk.WRAP_WORD)
         self._oIconManager = oIconManager
+        if bVerbose:
+            oContext = self.get_pango_context()
+            print 'Pango Language : ', oContext.get_language()
+            print 'Pango Font Description : ', oContext.get_font_description()
 
     def set_card_text(self, oCard):
         """Add the text for oCard to the TextView."""

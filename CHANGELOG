@@ -1,3 +1,20 @@
+04 Dec 2008
+ * Handle unknown rarities more gracefully
+ * Display the pango properties used when run with --verbose
+ * Handle the addition of Blood Shadowed Court to the cardlist
+ * Backport Lackey CCG, JOL support, Blood Shadowed Court rarity fixes
+   and a few minor bug fixes from trunk.
+   (r1704:1708, r1709:1717, r1718:1724)
+
+03 Dec 2008
+ * Add a parser for decks writen by Lackey CCG's VTES plugin
+
+02 Dec 2008
+ * First stab at JOL import/export - needs teting against the actual JOL
+   servers
+ * Add export to Lackey CCG's VTES plugin
+ * Fix minor bug in FELDB export ", An", not "An .."
+
 30 Nov 2008
  * Relase 0.6.0.
 

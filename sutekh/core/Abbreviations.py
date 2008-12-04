@@ -227,6 +227,7 @@ class Rarities(AbbreviationLookup):
         'Rare' : ['R','R1','R2','R3'],
         'Vampire' : ['V','V1','V2','V3'],
         'Tenth': ['A','B'],
+        'BSC' : ['X'],
         'Precon' : ['P','PB','PA','PTo3','PTr','PG','PB2','PTo4','PAl2','PO3'],
         'Not Applicable' : ['NA'],
     }
@@ -236,12 +237,16 @@ class Rarities(AbbreviationLookup):
         """Return the canonical name of the rarity."""
         if sName.startswith('P'):
             return 'Precon'
-        return cls._dLook[sName]
+        if sName in cls._dLook:
+            return cls._dLook[sName]
+        return 'Unknown'
 
     @classmethod
     def shortname(cls, sCanonical):
         """Return the corresponding short name for the rarity."""
-        return cls.dKeys[sCanonical][0]
+        if sCanonical in cls.dKeys and cls.dKeys[sCanonical]:
+            return cls.dKeys[sCanonical][0]
+        return sCanonical
 
 class Sects(AbbreviationLookup):
     """Common strings for the different sects."""

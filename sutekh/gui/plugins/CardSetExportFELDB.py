@@ -14,7 +14,7 @@ from sutekh.io.WriteELDBInventory import WriteELDBInventory
 from sutekh.io.WriteELDBDeckFile import WriteELDBDeckFile
 from sutekh.SutekhUtility import safe_filename
 
-class CardSetExportArdbXML(CardListPlugin):
+class CardSetExportFELDB(CardListPlugin):
     """Provides a dialog for selecting a filename, then calls on
        WriteELDB* to produce the required output."""
     dTableVersions = { PhysicalCardSet: [5]}
@@ -67,4 +67,4 @@ class CardSetExportArdbXML(CardListPlugin):
 
 # pylint: disable-msg=C0103
 # accept plugin name
-plugin = CardSetExportArdbXML
+plugin = CardSetExportFELDB

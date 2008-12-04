@@ -93,7 +93,7 @@ class MultiPaneWindow(gtk.Window):
         # Create global icon manager
         self._oIconManager = IconManager(oConfig)
         # Create card text pane
-        self._oCardTextPane = CardTextFrame(self, self._oIconManager)
+        self._oCardTextPane = CardTextFrame(self, self._oIconManager, bVerbose)
 
         # Load plugins
         self._oPluginManager = PluginManager()
