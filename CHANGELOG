@@ -5,6 +5,7 @@
  * Backport Lackey CCG, JOL support, Blood Shadowed Court rarity fixes
    and a few minor bug fixes from trunk.
    (r1704:1708, r1709:1717, r1718:1724)
+ * Release 0.6.1.
 
 03 Dec 2008
  * Add a parser for decks writen by Lackey CCG's VTES plugin
