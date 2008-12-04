@@ -144,19 +144,16 @@ class CardTextView(gtk.TextView, object):
         self.set_cursor_visible(False)
         self.set_wrap_mode(gtk.WRAP_WORD)
         self._oIconManager = oIconManager
-        self._bVerbose = bVerbose
+        if bVerbose:
+            oContext = self.get_pango_context()
+            print 'Pango Language : ', oContext.get_language()
+            print 'Pango Font Description : ', oContext.get_font_description()
 
     def set_card_text(self, oCard):
         """Add the text for oCard to the TextView."""
         oStart, oEnd = self.__oBuf.get_bounds()
         self.__oBuf.delete(oStart, oEnd)
         self.print_card_to_buffer(oCard)
-        if self._bVerbose:
-            oContext = self.get_pango_context()
-            print 'Pango Language : ', oContext.get_language()
-            print 'Pango Font Description : ', oContext.get_font_description()
-            # We only want to print this once per run
-            self._bVerbose = False 
 
     # pylint: disable-msg=R0912, R0915
     # We need to consider all cases for oCard, so need the branches
