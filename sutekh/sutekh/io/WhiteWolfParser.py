@@ -140,8 +140,10 @@ class CardDict(dict):
         """Add Blood Shadowed Court to the expansion list if appropriate."""
         oCamVampPair = self._oMaker.make_rarity_pair('CE', 'Vampire')
         if oCamVampPair in oCard.rarity:
-            oPair = self._oMaker.make_rarity_pair('BSC', 'Vampire')
-            oCard.addRarityPair(oPair)
+            oPair = self._oMaker.make_rarity_pair('BSC', 'BSC')
+            if oPair not in oCard.rarity:
+                # Don't duplicate entries
+                oCard.addRarityPair(oPair)
 
     def _make_card(self, sName):
         """Create the abstract card in the database."""

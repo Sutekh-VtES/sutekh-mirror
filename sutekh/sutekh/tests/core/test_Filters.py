@@ -110,7 +110,7 @@ class FilterTests(SutekhTest):
             (Filters.ExpansionRarityFilter(('Sabbat', 'Rare')),
                 [u"Ablative Skin"]),
             (Filters.ExpansionRarityFilter(('Blood Shadowed Court',
-                'Vampire')), [u"Alfred Benezri", u"Anastasz di Zagreb",
+                'BSC')), [u"Alfred Benezri", u"Anastasz di Zagreb",
                     u"Gracis Nostinus", u"Yvette, The Hopeless"]),
             (Filters.MultiExpansionRarityFilter([('Third', 'Uncommon'),
                 ('Jyhad', 'Rare')]), [u"Aaron's Feeding Razor", u"Abbot"]),
