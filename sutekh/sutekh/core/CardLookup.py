@@ -131,7 +131,7 @@ class SimpleLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
                 try:
                     oExp = IExpansion(sExp)
                     aExps.append(oExp)
-                except KeyError:
+                except SQLObjectNotFound:
                     aExps.append(None)
             else:
                 aExps.append(None)

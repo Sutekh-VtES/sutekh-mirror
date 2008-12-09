@@ -1,3 +1,9 @@
+09 Dec 2008
+ * Move best_guess_filter to sutekh.core, as it's not gui specific
+ * Fix IExpansion no longer throwing KeyError (due to unknown expansion
+   handling changes) in CardLookup
+ * Add test case for CardSetHolder & the default CardLookup
+
 04 Dec 2008
  * Handle unknown rarities more gracefully
  * Display the pango properties used when run with --verbose

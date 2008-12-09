@@ -315,7 +315,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
                 try:
                     oExp = IExpansion(sExp)
                     dExps[sExp] = oExp
-                except KeyError:
+                except SQLObjectNotFound:
                     dUnknownExps[sExp] = None
 
         if dUnknownExps:
@@ -329,7 +329,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
             try:
                 oExp = IExpansion(sNewName)
                 dUnknownExps[sName] = oExp
-            except KeyError:
+            except SQLObjectNotFound:
                 raise RuntimeError("Unexpectedly encountered" \
                                    " missing expansion '%s'." % sNewName)
 
@@ -475,7 +475,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
                 iExpID = IExpansion(sNewExpName).id
             except SQLObjectNotFound:
                 iExpID = None
-            except KeyError:
+            except SQLObjectNotFound:
                 iExpID = None
         else:
             iExpID = None

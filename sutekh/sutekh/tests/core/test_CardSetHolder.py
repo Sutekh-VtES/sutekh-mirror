@@ -32,11 +32,18 @@ class CardSetHolderTests(SutekhTest):
                 'Abbot' : [1, 'Third Edition']
                 }
         oCSH = CardSetHolder()
+        aExpectedExpansions = []
 
         for sCardName, aInfo in dSet1.iteritems():
             iCnt, sExpName = aInfo
             oCSH.add(iCnt, sCardName, sExpName)
+            if sExpName:
+                oThisExp = IExpansion(sExpName)
+            else:
+                oThisExp = None
+            aExpectedExpansions.extend([oThisExp]*iCnt)
 
+        aExpectedExpansions.sort()
         self.assertRaises(RuntimeError, oCSH.create_pcs)
         oCSH.name = 'Test Set 1'
         oCSH.create_pcs()
@@ -53,7 +60,9 @@ class CardSetHolderTests(SutekhTest):
         aCSCards = [IAbstractCard(x).name for x in oVampireFilter.select(
             MapPhysicalCardToPhysicalCardSet).distinct()]
         self.assertEqual(aCSCards, [u'Abebe', u'Abebe', u'Abebe'])
-
+        aExpansions = [oCard.expansion for oCard in oCS.cards]
+        aExpansions.sort()
+        self.assertEqual(aExpansions, aExpectedExpansions)
 
         oCSH.name = 'Test Set 2'
         oCSH.parent = 'Test Set 1'
@@ -63,7 +72,6 @@ class CardSetHolderTests(SutekhTest):
         oCSH.remove(1, 'Abbot', 'Third Edition')
         oCSH.remove(1, 'Abombwe', 'LoB')
         oCSH.create_pcs()
-
 
         oCS2 = IPhysicalCardSet('Test Set 2')
         self.assertEqual(oCS2.parent, oCS)
@@ -122,6 +130,8 @@ class CardSetHolderTests(SutekhTest):
             iCnt, sExpName = aInfo
             oCSH.add(iCnt, sCardName, sExpName)
 
+        aExpectedExpansions = [None]*5
+
         # Also check parent warnings
         oCSH.parent = 'Test Set 5'
         oCSH.name = 'Test Set 4'
@@ -131,6 +141,27 @@ class CardSetHolderTests(SutekhTest):
         self.assertEqual(len(oCSH.get_warnings()), 0)
         oCSH.create_pcs()
         self.assertNotEqual(len(oCSH.get_warnings()), 0)
+
+        oCS = IPhysicalCardSet('Test Set 4')
+        self.assertEqual(len(oCS.cards), 5)
+        oPCSFilter = Filters.PhysicalCardSetFilter('Test Set 4')
+        oGunFilter = Filters.FilterAndBox([
+            oPCSFilter, Filters.SpecificCardFilter('AK-47')])
+        aCSCards = [IAbstractCard(x).name for x in oGunFilter.select(
+            MapPhysicalCardToPhysicalCardSet).distinct()]
+        self.assertEqual(aCSCards, [u'AK-47', u'AK-47'])
+        oVampireFilter = Filters.FilterAndBox([
+            oPCSFilter, Filters.CardTypeFilter('Vampire')])
+        aCSCards = [IAbstractCard(x).name for x in oVampireFilter.select(
+            MapPhysicalCardToPhysicalCardSet).distinct()]
+        self.assertEqual(aCSCards, [u'Abebe', u'Abebe', u'Abebe'])
+
+        aExpansions = [oCard.expansion for oCard in oCS.cards]
+        aExpansions.sort()
+        self.assertEqual(aExpansions, aExpectedExpansions)
+
+
+
 
 
 if __name__ == "__main__":
