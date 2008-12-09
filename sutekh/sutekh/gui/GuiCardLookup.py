@@ -8,10 +8,6 @@
    GUI to pick unknown cards from.  """
 
 import re
-# pylint: disable-msg=W0402
-# we need string.punctuation
-import string
-# pylint: enable-msg=W0402
 import gtk
 import pango
 import gobject
@@ -19,8 +15,7 @@ from sqlobject import SQLObjectNotFound
 from sutekh.core.SutekhObjects import AbstractCard, PhysicalCard, IExpansion, \
         Expansion, IPhysicalCard
 from sutekh.core.CardLookup import AbstractCardLookup, PhysicalCardLookup, \
-        ExpansionLookup, LookupFailed
-from sutekh.core.Filters import CardNameFilter
+        ExpansionLookup, LookupFailed, best_guess_filter
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 from sutekh.gui.CellRendererSutekhButton import CellRendererSutekhButton
 from sutekh.gui.PhysicalCardView import PhysicalCardView
@@ -185,7 +180,7 @@ class ReplacementTreeView(gtk.TreeView):
         # we ignore sExp here
         sName, sExp = self.parse_card_name(sFullName)
 
-        oFilter = self.best_guess_filter(sName)
+        oFilter = best_guess_filter(sName)
         self.oCardListView.get_model().selectfilter = oFilter
 
         if not self.oFilterToggleButton.get_active():
@@ -215,35 +210,6 @@ class ReplacementTreeView(gtk.TreeView):
         oMatch = cls.NAME_RE.match(sName)
         assert oMatch is not None
         return oMatch.group('name'), oMatch.group('exp')
-
-    @staticmethod
-    def best_guess_filter(sName):
-        """Create a filter for selecting close matches to a card name."""
-        # Set the filter on the Card List to one the does a
-        # Best guess search
-        sFilterString = ' ' + sName.lower() + ' '
-        # Kill the's in the string
-        sFilterString = sFilterString.replace(' the ', ' ')
-        # Kill commas, as possible issues
-        sFilterString = sFilterString.replace(',', ' ')
-        # Free style punctuation
-        for sPunc in string.punctuation:
-            sFilterString = sFilterString.replace(sPunc, '_')
-        # Stolen semi-concept from soundex - replace vowels with wildcards
-        # Should these be %'s ??
-        # (Should at least handle the Rotscheck variation as it stands)
-        sFilterString = sFilterString.replace('a', '_')
-        sFilterString = sFilterString.replace('e', '_')
-        sFilterString = sFilterString.replace('i', '_')
-        sFilterString = sFilterString.replace('o', '_')
-        sFilterString = sFilterString.replace('u', '_')
-        # Normalise spaces and Wildcard spaces
-        sFilterString = ' '.join(sFilterString.split())
-        sFilterString = sFilterString.replace(' ', '%')
-        # Add % on outside
-        sFilterString = '%' + sFilterString + '%'
-        return CardNameFilter(sFilterString)
-
 
 class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
     """Lookup AbstractCards. Use the user as the AI if a simple lookup fails.
@@ -538,7 +504,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
 
         # Populate the model with the card names and best guesses
         for sName in dUnknownCards:
-            oBestGuessFilter = oReplacementView.best_guess_filter(sName)
+            oBestGuessFilter = best_guess_filter(sName)
             aCards = list(oBestGuessFilter.select(AbstractCard))
             if len(aCards) == 1:
                 sBestGuess = aCards[0].name
