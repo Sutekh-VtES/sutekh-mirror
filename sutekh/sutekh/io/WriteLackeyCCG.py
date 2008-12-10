@@ -65,5 +65,3 @@ class WriteLackeyCCG(object):
         """Takes file object + card set to write, and writes an Lackey CCG
            deck representing the card set"""
         fOut.write(self._gen_inv(oCardSet))
-
-    # pylint: enable-msg=R0913

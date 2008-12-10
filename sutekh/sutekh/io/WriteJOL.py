@@ -65,5 +65,3 @@ class WriteJOL(object):
         """Takes file object + card set to write, and writes an JOL deck
            representing the deck"""
         fOut.write(self._gen_inv(oCardSet))
-
-    # pylint: enable-msg=R0913
