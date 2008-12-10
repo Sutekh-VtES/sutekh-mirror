@@ -15,11 +15,6 @@ Code Cleanup
    looks like something worth addressing
    - Common base class for the TreeViews?
  * More tests
- * Rename references to PhysicalCardSet to CardSet, and rensure all references
-   to AbstractCardSet are gone, except for AbstractCardSetParser
- * Add ways of specifying more limited test data sets
- * Add better persistence of data across tests, to avoid rerunning the 
-   parser for each test and improve test runtime
  * Factor out things like the lists of expansions and disciplines in
    SutekhObjects to a seperate file
  * MultiPaneWindow mixes code for handling the widget hopping and application
@@ -29,7 +24,6 @@ Gui (Functionality):
  * Finish ClusterCardList plugin.
  * Compare CardSet Plugin (basic version done. Could be improved)
  * Plugins for calling out to other VtES utilities as appropriate (http://ashheap.storageannex.com/utilities.htm)
- * Allow easy setting of the expansion when importing cards from file 
  * Convert the repeated functions in the plugins into functions in the plugin 
    API
  * Identify file type when importing card sets
@@ -49,7 +43,6 @@ Gui (Presentation):
    can be changed to render across multiple lines without breaking layout. This
    will require some other way of dealing with the TreeView jumping bug.
  * Enable setting default grouping, etc. for newly opened card set panes.
- * Improve Filter Edit Dialog
 
 Website:
  * Create documentation.
@@ -63,5 +56,41 @@ Upstream:
    * TreeView jumping.
    * TreeView search pop-up not working under Windows. 
 
-For 0.6:
- * Finish built-in tutorial and help.
+For 0.8.0 cycle
+ (see mailing list for the details, this is just a reminder list)
+ * Require gtk 2.12 - allows more use of the tooltip API
+ * Improve Filter Edit Dialog
+ * Rename user visible references to PhysicalCardSet to CardSet
+ * Add ways of specifying more limited test data sets
+ * Add better persistence of data across tests, to avoid rerunning the 
+   parser for each test and improve test runtime
+ * Remove/Relax limits in the database (Card set names, etc.)
+ * Add more info to the database. At least some of
+   - Requires (anarch, titled, prince, etc.) ?
+   - Ally/Retainer life ?
+   - Multiple discipline requirements ?
+   - Requires versus provided for disciplines & clan cards ?
+   - Other card distinctions (trifle, location, loquipment, etc.) ?
+ * Address code duplication issues - especially io module & Filter tests
+ * Standardise the reader/writer design for the io files. 
+ * Add decent error checking for the io files
+ * Add automatic detection of file type for import plugin (doesn't have to
+   be perfect, but should do OK in most cases)
+ * Abstrat Card Editor
+ * Real plugin support
+ * Redo perferences system. Allow finder grained perferences (save
+   groupings, etc per card set)
+ * Cluster plugin speed-up
+ * Improve the error & warnings dialogs. 
+   - include exception backtrace in error dialogs
+ * Add support for creating .debs and .rpms
+ * More access to debugging info
+   - Make it easier to get relevant info from users
+   - Use logging module to store more info, to be easily extracted
+   - Do more with the --verbose flag?
+ * Add links to the Secret Library in the exported HTML
+   - configurable option between monger & SL
+   
+
+
+
