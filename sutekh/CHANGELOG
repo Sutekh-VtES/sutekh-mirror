@@ -1,3 +1,8 @@
+10 Dec 2008
+ * Extend CachedCardSetHolder to also cache expansion name mappings
+ * Use CachedCardSetHolder for reading from a zip file
+ * Add test case to CachedCardSetHolder
+
 09 Dec 2008
  * Move best_guess_filter to sutekh.core, as it's not gui specific
  * Fix IExpansion no longer throwing KeyError (due to unknown expansion
