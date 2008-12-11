@@ -44,6 +44,7 @@ class MultiPaneWindow(gtk.Window):
 
         # make sure we can quit
         self.connect("destroy", self.action_quit)
+        self.connect("delete-event", self.action_close)
         # We can shrink the window quite small
         self.set_size_request(100, 100)
         # But we start at a reasonable size
@@ -463,12 +464,17 @@ class MultiPaneWindow(gtk.Window):
         return False # propogate event
 
     # oWidget needed by function signature
-    def action_quit(self, oWidget):
-        """Exit the app, saving infoin config file if needed."""
+    def action_close(self, oWidget, oEvent):
+        """Close the app (menu or window manager) and save the settings"""
         if self._oConfig.get_save_on_exit():
             self.save_frames()
         if self._oConfig.get_save_window_size():
             self.save_window_size()
+        # cue app exit
+        self.destroy()
+
+    def action_quit(self, oWidget):
+        """Exit the app"""
         gtk.main_quit()
 
     def show_tutorial(self, oMenuWidget, oHelpLast):

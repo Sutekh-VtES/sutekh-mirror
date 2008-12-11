@@ -78,7 +78,8 @@ class MainMenu(SutekhMenu):
         oMenu.add(gtk.SeparatorMenuItem())
 
         self.create_menu_item("_Quit", oMenu,
-                lambda iItem: self._oMainWindow.action_quit(self._oMainWindow))
+                lambda iItem: self._oMainWindow.action_close(self._oMainWindow,
+                    None))
 
     def __add_prefs_menu(self, oPrefsMenu):
         """Add the File Preferences menu"""

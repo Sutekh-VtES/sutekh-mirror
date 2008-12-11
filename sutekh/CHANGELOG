@@ -1,4 +1,6 @@
 11 Dec 2008
+ * Save window info on 'delete-event', not 'destroy', so we get the right
+   window size
  * Avoid some unnessecary code paths when adding a card - speeds up adding
    a card set when children card sets are open, and the added card doesn't
    affect them
