@@ -501,7 +501,9 @@ class CardSetCardListModel(CardListModel):
         """Get a list object for the cards in the parent card set."""
         # pylint: disable-msg=E1101
         # SQLObject + PyProtocols confuse pylint
-        if self._oCardSet.parent:
+        if self._oCardSet.parent and not (
+                self.iParentCountMode == IGNORE_PARENT and
+                self.iShowCardMode != PARENT_CARDS):
             # It's tempting to use get_card_iterator here, but that
             # obviously doesn't work because of _oBaseFilter
             self._dCache['parent filter'] = PhysicalCardSetFilter(
@@ -511,6 +513,7 @@ class CardSetCardListModel(CardListModel):
             aParentCards = [IPhysicalCard(x) for x in
                     oParentFilter.select(self.cardclass).distinct()]
         else:
+            # No point in doing the work
             oParentFilter = None
             aParentCards = []
         return aParentCards
@@ -529,6 +532,11 @@ class CardSetCardListModel(CardListModel):
         aAbsCards = []
         dAbsCards = {}
         dPhysCards = {}
+
+        if oCardIter.count() == 0 and self.iShowCardMode == THIS_SET_ONLY:
+            # Short circuit the more expensive checks if we've got no cards
+            # and can't influence this card set
+            return (self.groupby([], lambda x: x[0]), [])
 
         oCurFilter = self.get_current_filter()
         if oCurFilter is None:
