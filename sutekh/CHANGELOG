@@ -1,3 +1,8 @@
+11 Dec 2008
+ * Avoid some unnessecary code paths when adding a card - speeds up adding
+   a card set when children card sets are open, and the added card doesn't
+   affect them
+
 10 Dec 2008
  * Extend CachedCardSetHolder to also cache expansion name mappings
  * Use CachedCardSetHolder for reading from a zip file

@@ -90,6 +90,9 @@ For 0.8.0 cycle
    - Do more with the --verbose flag?
  * Add links to the Secret Library in the exported HTML
    - configurable option between monger & SL
+ * Improved card set sorting
+   - Allow specifying order of columns to use, etc.
+ * Multiple copies of a card set open simulatenously
    
 
 
