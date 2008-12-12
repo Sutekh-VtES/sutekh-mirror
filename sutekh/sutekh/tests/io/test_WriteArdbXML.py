@@ -23,7 +23,7 @@ sExpected = """<deck databaseVersion="%s" formatVersion="-TODO-1.0" generator="S
   <author>A test author</author>
   <description>A test comment</description>
   <date>%s</date>
-  <crypt avg="4.0" max="4" min="4" size="1">
+  <crypt avg="5.0" max="6" min="4" size="2">
     <vampire count="1" databaseID="11">
       <adv />
       <name>Abebe</name>
@@ -33,34 +33,59 @@ sExpected = """<deck databaseVersion="%s" formatVersion="-TODO-1.0" generator="S
       <capacity>4</capacity>
       <group>4</group>
       <text>Independent.</text>
+    </vampire><vampire count="1" databaseID="19">
+      <adv>(Advanced)</adv>
+      <name>Alan Sovereign</name>
+      <set>Promo20051001</set>
+      <disciplines>AUS DOM for pre</disciplines>
+      <clan>Ventrue</clan>
+      <capacity>6</capacity>
+      <group>3</group>
+      <text>Advanced, Camarilla: While Alan is ready, you may pay some or all of the pool cost of equipping from any investment cards you control.
+[MERGED] During your master phase, if Alan is ready, you may move a counter from any investment card to your pool.</text>
     </vampire>
-  </crypt><library size="4">
+  </crypt><library size="9">
     <card count="1" databaseID="1">
+      <name>.44 Magnum</name>
+      <set>Jyhad</set>
+      <cost>2 pool </cost>
+      <type>Equipment</type>
+      <text>Weapon, gun.
+2R damage each strike, with an optional maneuver each combat.</text>
+    </card><card count="1" databaseID="1">
       <name>.44 Magnum</name>
       <set>CE</set>
       <cost>2 pool </cost>
       <type>Equipment</type>
       <text>Weapon, gun.
 2R damage each strike, with an optional maneuver each combat.</text>
-    </card><card count="1" databaseID="2">
+    </card><card count="2" databaseID="2">
       <name>AK-47</name>
       <set>LotN</set>
       <cost>5 pool </cost>
       <type>Equipment</type>
       <text>Weapon. Gun.
 2R damage each strike, with an optional maneuver {each combat}. When bearer strikes with this gun, he or she gets an optional additional strike this round, only usable to strike with this gun.</text>
-    </card><card count="1" databaseID="8">
+    </card><card count="2" databaseID="8">
       <name>Abbot</name>
       <set>Third</set>
       <type>Action</type>
       <text>+1 stealth action. Requires a Sabbat vampire.
 Put this card on this acting Sabbat vampire and untap him or her. This Sabbat vampire gets +1 intercept against (D) actions directed at his or her controller. A vampire may have only one Abbot.</text>
-    </card><card count="1" databaseID="14">
+    </card><card count="2" databaseID="14">
       <name>Abombwe</name>
       <set>LoB</set>
       <type>Master</type>
       <text>Master: Discipline. Trifle.
 Put this card on a Laibon or on a vampire with Protean [pro]. This vampire gains one level of Abombwe [abo]. Capacity increases by 1: the vampire is one generation older. Cannot be placed on a vampire with superior Abombwe.</text>
+    </card><card count="1" databaseID="37">
+      <name>Path of Blood, The</name>
+      <set>LotN</set>
+      <cost>1 pool </cost>
+      <requirement>Assamite</requirement>
+      <type>Master</type>
+      <text>Unique master.
+Put this card in play. Cards that require Quietus [qui] cost Assamites 1 less blood. Any minion may burn this card as a (D) action; if that minion is a vampire, he or she then takes 1 unpreventable damage when this card is burned.</text>
     </card>
   </library>
 </deck>""" % (WriteArdbXML.sDatabaseVersion, SutekhInfo.VERSION_STR,
@@ -82,8 +107,8 @@ class ArdbXMLWriterTests(SutekhTest):
         oPhysCardSet1.comment = 'A test comment'
         oPhysCardSet1.author = 'A test author'
 
-        for iLoop in range(5):
-            oPhysCardSet1.addPhysicalCard(aAddedPhysCards[iLoop].id)
+        for oCard in aAddedPhysCards:
+            oPhysCardSet1.addPhysicalCard(oCard.id)
             oPhysCardSet1.syncUpdate()
 
         # Check output

@@ -19,9 +19,11 @@ class TestLackeyDeckFileParser(SutekhTest):
         4\tTest Card 2
         12\tTest Card 3
         1\tTest Card 4
+        1\tPath of Blood, The
         Crypt:
         2\tTest Vamp 1
         1\tLazar Dobrescu
+        1\tAlan Sovereign Adv.
         """
 
     def test_basic(self):
@@ -34,13 +36,15 @@ class TestLackeyDeckFileParser(SutekhTest):
 
         aCards = oHolder.get_cards()
 
-        self.assertEqual(len(aCards), 6)
+        self.assertEqual(len(aCards), 8)
         self.failUnless(("Test Vamp 1", 2) in aCards)
         self.failUnless((u"L\xe1z\xe1r Dobrescu", 1) in aCards)
         self.failUnless(("Test Card 1", 2 ) in aCards)
         self.failUnless(("Test Card 2", 4) in aCards)
         self.failUnless(("Test Card 3", 12) in aCards)
         self.failUnless(("Test Card 4", 1) in aCards)
+        self.failUnless(("Alan Sovereign (Advanced)", 1) in aCards)
+        self.failUnless(("The Path of Blood", 1) in aCards)
 
 if __name__ == "__main__":
     unittest.main()

@@ -17,8 +17,10 @@ sExpected1 = """4\t.44 Magnum
 2\tAK-47
 2\tAbbot
 2\tAbombwe
+1\tPath of Blood, The
 Crypt:
 1\tAbebe
+1\tAlan Sovereign Adv.
 """
 
 class LackeyWriterTests(SutekhTest):

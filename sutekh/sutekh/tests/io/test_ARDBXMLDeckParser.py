@@ -42,6 +42,15 @@ class ArdbXMLDeckParserTests(unittest.TestCase):
                <group></group>
                <disciplines></disciplines>
             </vampire>
+            <vampire databaseID="2" count="1">
+               <name>Test Vamp 2</name>
+               <adv>(Advanced)</adv>
+               <set>Promo20051001</set>
+               <capacity></capacity>
+               <text></text>
+               <group></group>
+               <disciplines></disciplines>
+            </vampire>
         </crypt>
         <library size="17">
            <card databaseID="3" count="4">
@@ -76,6 +85,14 @@ class ArdbXMLDeckParserTests(unittest.TestCase):
               <requirement></requirement>
               <text></text>
            </card>
+           <card databaseID="50" count="1">
+              <name>Test Card 5, The</name>
+              <set></set>
+              <type></type>
+              <cost></cost>
+              <requirement></requirement>
+              <text></text>
+           </card>
         </library>
     </deck>
     """
@@ -95,13 +112,16 @@ class ArdbXMLDeckParserTests(unittest.TestCase):
 
         aCards = oHolder.get_cards_exps()
 
-        self.assertEqual(len(aCards), 6)
+        self.assertEqual(len(aCards), 8)
         self.failUnless((("Test Vamp 1", "CE"), 2) in aCards)
         self.failUnless((("Test Vamp 2", "SW"), 1) in aCards)
+        self.failUnless((("Test Vamp 2 (Advanced)", "Promo-20051001"), 1)
+                in aCards)
         self.failUnless((("Test Card 1", "Sabbat"), 4) in aCards)
         self.failUnless((("Test Card 2", "BH"), 2) in aCards)
         self.failUnless((("Test Card 3", "BH"), 12) in aCards)
         self.failUnless((("Test Card 4", None), 1) in aCards)
+        self.failUnless((("The Test Card 5", None), 1) in aCards)
 
 
 if __name__ == "__main__":

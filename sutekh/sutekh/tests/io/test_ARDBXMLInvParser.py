@@ -31,6 +31,12 @@ class ArdbXMLInvParserTests(unittest.TestCase):
                <set>SW</set>
                <rarity>U</rarity>
             </vampire>
+            <vampire databaseID="12" have="1" spare="0" needs="0">
+               <name>Alan Sovereign</name>
+               <adv>(Advanced)</adv>
+               <set>Promo20051001</set>
+               <rarity>P</rarity>
+            </vampire>
         </crypt>
         <library size="17">
            <card databaseID="3" have="4" spare="0" need="0">
@@ -53,6 +59,12 @@ class ArdbXMLInvParserTests(unittest.TestCase):
               <set></set>
               <rarity>C</rarity>
            </card>
+           <card databaseID="30" have="1" spare="0" need="0">
+              <name>Path of Blood, The</name>
+              <set></set>
+              <rarity>C</rarity>
+           </card>
+
         </library>
     </inventory>
     """
@@ -69,13 +81,16 @@ class ArdbXMLInvParserTests(unittest.TestCase):
 
         aCards = oHolder.get_cards_exps()
 
-        self.assertEqual(len(aCards), 6)
+        self.assertEqual(len(aCards), 8)
         self.failUnless((("Test Vamp 1", "CE"), 2) in aCards)
         self.failUnless((("Test Vamp 2", "SW"), 1) in aCards)
         self.failUnless((("Test Card 1", "Sabbat"), 4) in aCards)
         self.failUnless((("Test Card 2", "BH"), 2) in aCards)
         self.failUnless((("Test Card 3", "BH"), 12) in aCards)
         self.failUnless((("Test Card 4", None), 1) in aCards)
+        self.failUnless((("The Path of Blood", None), 1) in aCards)
+        self.failUnless((("Alan Sovereign (Advanced)", 'Promo-20051001'), 1)
+                in aCards)
 
 if __name__ == "__main__":
     unittest.main()

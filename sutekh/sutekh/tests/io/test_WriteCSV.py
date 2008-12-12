@@ -23,6 +23,8 @@ sExpected1 = """"Card Name", "Expansion", "Number"
 "Abebe", "Unknown Expansion", 1
 "Abombwe", "Legacy of Blood", 1
 "Abombwe", "Unknown Expansion", 1
+"Alan Sovereign (Advanced)", "Promo-20051001", 1
+"The Path of Blood", "Lords of the Night", 1
 """
 
 sExpected2 = """".44 Magnum", "Jyhad", 1
@@ -34,6 +36,8 @@ sExpected2 = """".44 Magnum", "Jyhad", 1
 "Abebe", "Unknown Expansion", 1
 "Abombwe", "Legacy of Blood", 1
 "Abombwe", "Unknown Expansion", 1
+"Alan Sovereign (Advanced)", "Promo-20051001", 1
+"The Path of Blood", "Lords of the Night", 1
 """
 
 
@@ -43,6 +47,8 @@ sExpected3 = """"Card Name", "Number"
 "Abbot", 2
 "Abebe", 1
 "Abombwe", 2
+"Alan Sovereign (Advanced)", 1
+"The Path of Blood", 1
 """
 
 sExpected4 = """".44 Magnum", 4
@@ -50,6 +56,8 @@ sExpected4 = """".44 Magnum", 4
 "Abbot", 2
 "Abebe", 1
 "Abombwe", 2
+"Alan Sovereign (Advanced)", 1
+"The Path of Blood", 1
 """
 
 
@@ -100,8 +108,6 @@ class CSVWriterTests(SutekhTest):
         fIn.close()
 
         self.assertEqual(sData, sExpected2)
-
-
 
         oWriter = WriteCSV(True, False)
         sTempFileName =  self._create_tmp_file()

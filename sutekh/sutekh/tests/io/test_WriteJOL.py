@@ -14,11 +14,13 @@ from sutekh.io.WriteJOL import  WriteJOL
 import unittest
 
 sExpected1 = """Abebe
+Alan Sovereign (advanced)
 
 4x.44 Magnum
 2xAK-47
 2xAbbot
 2xAbombwe
+The Path of Blood
 """
 
 class JOLWriterTests(SutekhTest):
