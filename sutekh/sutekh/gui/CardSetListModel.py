@@ -706,19 +706,21 @@ class CardSetCardListModel(CardListModel):
                 self.iShowCardMode != PARENT_CARDS) or \
                         not self._oCardSet.parent:
             return # No point in doing anything at all
-        dSiblingCards = {}
         if self.iParentCountMode == MINUS_SETS_IN_USE:
             dSiblingCards = self._get_sibling_cards()
-        for oAbsCard, oRow in dAbsCards.iteritems():
-            if self.iParentCountMode == MINUS_THIS_SET:
+            for oAbsCard, oRow in dAbsCards.iteritems():
+                if oAbsCard in dSiblingCards:
+                    for oPhysCard in dSiblingCards[oAbsCard]:
+                        oRow.iParentCount -= 1
+                        sExpansion = self.get_expansion_name(
+                                oPhysCard.expansion)
+                        oRow.dParentExpansions.setdefault(sExpansion, 0)
+                        oRow.dParentExpansions[sExpansion] -= 1
+
+        if self.iParentCountMode == MINUS_THIS_SET:
+            for oAbsCard, oRow in dAbsCards.iteritems():
                 oRow.iParentCount = -oRow.iCount
                 self._update_parent_info(oAbsCard, oRow, dPhysCards)
-            elif oAbsCard in dSiblingCards:
-                for oPhysCard in dSiblingCards[oAbsCard]:
-                    oRow.iParentCount -= 1
-                    sExpansion = self.get_expansion_name(oPhysCard.expansion)
-                    oRow.dParentExpansions.setdefault(sExpansion, 0)
-                    oRow.dParentExpansions[sExpansion] -= 1
 
         for oPhysCard in aParentCards:
             # pylint: disable-msg=E1101
