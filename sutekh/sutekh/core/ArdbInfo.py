@@ -22,6 +22,14 @@ def escape_ardb_name(sName):
         sName = sName[4:] + ', The'
     return sName
 
+def unescape_ardb_name(sCardName):
+    """Convert from ARDB conventions to Sutekh Conventions"""
+    if sCardName.endswith(', The'):
+        sCardName = 'The ' + sCardName[:-5]
+    elif sCardName.endswith(', An'):
+        sCardName = 'An ' + sCardName[:-4]
+    return sCardName
+
 def escape_ardb_expansion_name(oExpansion):
     """Rework the expansion name to match ARDB"""
     sExpName = oExpansion.shortname
@@ -31,6 +39,12 @@ def escape_ardb_expansion_name(oExpansion):
     elif sExpName == 'BSC':
         # ARDB doesn't support BSC.
         sExpName = 'CE'
+    return sExpName
+
+def unescape_ardb_expansion_name(sExpName):
+    """Rework ARBD Promo to Sutekh Promo-"""
+    if sExpName.startswith('Promo') and not sExpName.startswith('Promo-'):
+        sExpName = sExpName.replace('Promo', 'Promo-')
     return sExpName
 
 
