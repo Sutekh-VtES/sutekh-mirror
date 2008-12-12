@@ -20,12 +20,13 @@ class XMLState(object):
     # tag states of interest
     # We try and honour set info, although current ARDB seems a bit odd in
     # how it sets this
-    NOTAG, INCARD, CARDNAME, CARDSET = range(4)
+    NOTAG, INCARD, CARDNAME, CARDSET, ADVANCED = range(5)
 
     def __init__(self, oHolder):
         self._sData = ""
         self._sCardName = None
         self._sCardSet = None
+        self._sAdvanced = ''
         self._iCount = 0
         self._iState = self.NOTAG
         self._oHolder = oHolder
@@ -37,6 +38,7 @@ class XMLState(object):
         self._sCardSet = None
         self._iCount = 0
         self._iState = self.NOTAG
+        self._sAdvanced = ''
 
     def start(self, sTag, dAttributes):
         """Start tag encountered"""
@@ -45,6 +47,8 @@ class XMLState(object):
                 self._iState = self.CARDNAME
             elif sTag == 'set':
                 self._iState = self.CARDSET
+            elif sTag == 'adv':
+                self._iState = self.ADVANCED
         elif self._iState == self.NOTAG:
             if sTag == 'vampire' or sTag == 'card':
                 self._iState = self.INCARD
@@ -57,11 +61,20 @@ class XMLState(object):
                 if not self._sCardSet:
                     # convert empty string to None
                     self._sCardSet = None
+                elif self._sCardSet.startswith('Promo'):
+                    self._sCardSet = self._sCardSet.replace('Promo', 'Promo-')
+                if self._sAdvanced == '(Advanced)':
+                    self._sCardName = self._sCardName + ' (Advanced)'
+                if self._sCardName.endswith(', The'):
+                    self._sCardName = 'The ' + self._sCardName[:-5]
+                elif self._sCardName.endswith(', An'):
+                    self._sCardName = 'An ' + self._sCardName[:-4]
                 self._oHolder.add(self._iCount, self._sCardName,
                         self._sCardSet)
                 self._sCardName = None
                 self._sCardSet = None
                 self._iState = self.NOTAG
+                self._sAdvanced = ''
         elif self._iState == self.CARDNAME and sTag == 'name':
             self._iState = self.INCARD
             self._sCardName = self._sData
@@ -69,6 +82,10 @@ class XMLState(object):
         elif self._iState == self.CARDSET and sTag == 'set':
             self._iState = self.INCARD
             self._sCardSet = self._sData
+            self._sData = ""
+        elif self._iState == self.ADVANCED and sTag == 'adv':
+            self._iState = self.INCARD
+            self._sAdvanced = self._sData
             self._sData = ""
 
     def data(self, sText):

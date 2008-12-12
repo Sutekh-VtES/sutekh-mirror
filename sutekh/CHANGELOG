@@ -1,3 +1,12 @@
+12 Dec 2008
+ * Minor rework of CardSetListModel to improve performance
+ * Fix stupid bugs in ELDB, JOL and Lackey exporters
+ * Fix promo conversion in ARDB export
+ * Fix handling of card names for ARDB
+ * Fix handling of Advanced attribute for ARDB import
+ * Add more cards to test data to better cover io tests
+ * Extend io tests to use extra cards
+
 11 Dec 2008
  * Save window info on 'delete-event', not 'destroy', so we get the right
    window size
