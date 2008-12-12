@@ -26,7 +26,7 @@ class WriteJOL(object):
 
     def _escape(self, sName):
         """Escape the card name to JOL's requirements"""
-        sName.replace('(Advanced)', '(advanced)')
+        sName = sName.replace('(Advanced)', '(advanced)')
         return sName
 
     def _crypt_or_library(self, oCard):

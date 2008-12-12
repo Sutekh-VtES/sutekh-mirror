@@ -13,6 +13,26 @@
 from sutekh.core.SutekhObjects import IAbstractCard, IPhysicalCard
 from sutekh.SutekhInfo import SutekhInfo
 
+
+def escape_ardb_name(sName):
+    """Rework the card name to match ARDB conventions"""
+    if sName.startswith('An '):
+        sName = sName[3:] + ', An'
+    elif sName.startswith('The '):
+        sName = sName[4:] + ', The'
+    return sName
+
+def escape_ardb_expansion_name(sExpName):
+    """Rework the expansion name to match ARDB"""
+    if sExpName == 'Promo':
+        sExpName = oExpansion.name
+        sExpName = sSet.replace('-', '')
+    elif sExpName == 'BSC':
+        # ARDB doesn't support BSC.
+        sExpName = 'CE'
+    return sExpName
+
+
 class ArdbInfo(object):
     """Create a string in ARDB's text format representing a dictionary
        of cards."""
@@ -129,12 +149,6 @@ class ArdbInfo(object):
             aExp = sorted([oP.expansion for oP in oAbsCard.rarity],
                     key = lambda x: x.shortname)
             oExpansion = aExp[0]
-        sSet = oExpansion.shortname
-        if sSet == 'Promo':
-            sSet = oExpansion.name
-            sSet.replace('-', '')
-        elif sSet == 'BSC':
-            # ARDB doesn't support BSC.
-            sSet = 'CE'
+        sSet = escape_ardb_expansion_name(oExpansion.shortname)
         return sSet
 

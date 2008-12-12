@@ -27,7 +27,7 @@ def lackey_name(oCard):
     """Escape the card name to Lackey CCG's requirements"""
     sName = oCard.name
     if oCard.level is not None:
-        sName.replace("(Advanced)", "Adv.")
+        sName = sName.replace("(Advanced)", "Adv.")
     if sName.startswith("The "):
         sName = sName[4:] + ", The"
     if sName.startswith("An "):

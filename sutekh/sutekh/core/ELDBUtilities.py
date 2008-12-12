@@ -21,14 +21,14 @@ def norm_name(oCard):
     """Transform a card name to the ELDB equivilant"""
     sName = oCard.name
     if oCard.level is not None:
-        sName.replace("(Advanced)", "(ADV)")
+        sName = sName.replace("(Advanced)", "(ADV)")
     if sName.startswith("The ") and sName != "The Kikiyaon":
         # Annoying ELDB special case
         sName = sName[4:] + ", The"
     if sName.startswith("An "):
         # FELDB does this as well
         sName = sName[3:] + ", An"
-    sName.replace("'", "`")
+    sName = sName.replace("'", "`")
     return unicodedata.normalize('NFKD', sName).encode('ascii','ignore')
 
 def gen_name_lookups():
