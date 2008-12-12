@@ -110,8 +110,9 @@ class FilterTests(SutekhTest):
             (Filters.ExpansionRarityFilter(('Sabbat', 'Rare')),
                 [u"Ablative Skin"]),
             (Filters.ExpansionRarityFilter(('Blood Shadowed Court',
-                'BSC')), [u"Alfred Benezri", u"Anastasz di Zagreb",
-                    u"Gracis Nostinus", u"Yvette, The Hopeless"]),
+                'BSC')), [u"Alan Sovereign", u"Alfred Benezri",
+                    u"Anastasz di Zagreb", u"Gracis Nostinus",
+                    u"Yvette, The Hopeless"]),
             (Filters.MultiExpansionRarityFilter([('Third', 'Uncommon'),
                 ('Jyhad', 'Rare')]), [u"Aaron's Feeding Razor", u"Abbot"]),
             (Filters.DisciplineLevelFilter(('cel', 'superior')),
@@ -179,10 +180,11 @@ class FilterTests(SutekhTest):
             (Filters.MultiLifeFilter([3, 6]), [u'Anna "Dictatrix11" Suljic',
                 u'Earl "Shaka74" Deams', u'Inez "Nurse216" Villagrande']),
             (Filters.CostTypeFilter('Pool'), [u".44 Magnum", u"AK-47",
-                u"Aaron's Feeding Razor"]),
+                u"Aaron's Feeding Razor", u"The Path of Blood"]),
             (Filters.CostTypeFilter('Blood'), [u"Aire of Elation"]),
             (Filters.MultiCostTypeFilter(['Pool', 'Blood']), [u".44 Magnum",
-                u"AK-47", u"Aaron's Feeding Razor", u"Aire of Elation"]),
+                u"AK-47", u"Aaron's Feeding Razor", u"Aire of Elation",
+                U"The Path of Blood"]),
             (Filters.LifeFilter(4), []),
             (Filters.MultiLifeFilter([4, 5]), []),
 
@@ -206,7 +208,8 @@ class FilterTests(SutekhTest):
                 'Vampire'])), [u"Abandoning the Flesh", u"Abbot", u"Abjure",
                     u"Ablative Skin", u"Abombwe", u"Aire of Elation",
                     u'Anna "Dictatrix11" Suljic', u'Earl "Shaka74" Deams',
-                    u'Inez "Nurse216" Villagrande', u"Predator's Communion"]),
+                    u'Inez "Nurse216" Villagrande', u"Predator's Communion",
+                    u"The Path of Blood"]),
         ]
 
         aPhysicalTests = [self._physical_test(tTest) for tTest in aTests]
@@ -265,7 +268,8 @@ class FilterTests(SutekhTest):
                 (Filters.MultiPhysicalExpansionFilter(['LoB', 'LotN']),
                     ['Abombwe','.44 Magnum', 'Abebe', 'AK-47', 'Abdelsobek',
                         u"Cedric", u"Cesewayo", u"Kabede Maru",
-                        u"Predator's Communion"], ['LoB', 'LotN']),
+                        u"Predator's Communion", u"The Path of Blood"],
+                    ['LoB', 'LotN']),
                 (Filters.MultiPhysicalExpansionFilter(
                     ['  Unspecified Expansion', 'VTES']),
                     self.aExpectedCards,

@@ -121,6 +121,7 @@ class CardSetListModelTests(SutekhTest):
            validating that the model works correctly"""
         # pylint: disable-msg=E1101
         # SQLObjext confuses pylint
+        oModel.sEditColour = "red"
         oModel.load()
         tStartTotals = (
                 oModel.iter_n_children(None),
@@ -457,26 +458,34 @@ class CardSetListModelTests(SutekhTest):
         tTotals = (oModel.iter_n_children(None),
                 self._count_all_cards(oModel),
                 self._count_second_level(oModel))
-        self.assertEqual(tTotals, (1, 4, 0), 'Wrong results from filter')
+        tExpected = (1, 4, 0)
+        self.assertEqual(tTotals, tExpected, 'Wrong results from filter : '
+                '%s vs %s' % (tTotals, tExpected))
         oModel.groupby = Groupings.DisciplineGrouping
         oModel.applyfilter = True
         oModel.load()
         tTotals = (oModel.iter_n_children(None),
                 self._count_all_cards(oModel),
                 self._count_second_level(oModel))
-        self.assertEqual(tTotals, (11, 18, 0), 'Wrong results from filter')
+        tExpected = (11, 18, 0)
+        self.assertEqual(tTotals, tExpected, 'Wrong results from filter : '
+                '%s vs %s' % (tTotals, tExpected))
         oModel.iExtraLevelsMode = SHOW_EXPANSIONS
         oModel.load()
         tTotals = (oModel.iter_n_children(None),
                 self._count_all_cards(oModel),
                 self._count_second_level(oModel))
-        self.assertEqual(tTotals, (11, 18, 25), 'Wrong results from filter')
+        tExpected = (11, 18, 25)
+        self.assertEqual(tTotals, tExpected, 'Wrong results from filter : '
+                '%s vs %s' % (tTotals, tExpected))
         oModel.bEditable = True
         oModel.load()
         tTotals = (oModel.iter_n_children(None),
                 self._count_all_cards(oModel),
                 self._count_second_level(oModel))
-        self.assertEqual(tTotals, (11, 18, 48), 'Wrong results from filter')
+        tExpected = (11, 18, 48)
+        self.assertEqual(tTotals, tExpected, 'Wrong results from filter : '
+                '%s vs %s' % (tTotals, tExpected))
         # Add a child card set, and test filtering results
         oModel.groupby = Groupings.NullGrouping
         oChildPCS = PhysicalCardSet(name=self.aNames[1], parent=oPCS,
@@ -495,25 +504,33 @@ class CardSetListModelTests(SutekhTest):
         tTotals = (oModel.iter_n_children(None),
                 self._count_all_cards(oModel),
                 self._count_second_level(oModel))
-        self.assertEqual(tTotals, (1, 4, 6), 'Wrong results from filter')
+        tExpected = (1, 4, 6)
+        self.assertEqual(tTotals, tExpected, 'Wrong results from filter : '
+                '%s vs %s' % (tTotals, tExpected))
         oModel.iExtraLevelsMode = SHOW_CARD_SETS
         oModel.load()
         tTotals = (oModel.iter_n_children(None),
                 self._count_all_cards(oModel),
                 self._count_second_level(oModel))
-        self.assertEqual(tTotals, (1, 4, 2), 'Wrong results from filter')
+        tExpected = (1, 4, 2)
+        self.assertEqual(tTotals, tExpected, 'Wrong results from filter : '
+                '%s vs %s' % (tTotals, tExpected))
         oModel.iShowCardMode = CHILD_CARDS
         oModel.load()
         tTotals = (oModel.iter_n_children(None),
                 self._count_all_cards(oModel),
                 self._count_second_level(oModel))
-        self.assertEqual(tTotals, (1, 6, 4), 'Wrong results from filter')
+        tExpected = (1, 6, 4)
+        self.assertEqual(tTotals, tExpected, 'Wrong results from filter : '
+                '%s vs %s' % (tTotals, tExpected))
         oModel.iShowCardMode = ALL_CARDS
         oModel.load()
         tTotals = (oModel.iter_n_children(None),
                 self._count_all_cards(oModel),
                 self._count_second_level(oModel))
-        self.assertEqual(tTotals, (1, 24, 24), 'Wrong results from filter')
+        tExpected = (1, 26, 26)
+        self.assertEqual(tTotals, tExpected, 'Wrong results from filter : '
+                '%s vs %s' % (tTotals, tExpected))
 
     def test_empty(self):
         """Test corner cases around empty card sets"""
