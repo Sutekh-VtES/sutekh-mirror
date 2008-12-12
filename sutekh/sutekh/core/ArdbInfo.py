@@ -22,11 +22,12 @@ def escape_ardb_name(sName):
         sName = sName[4:] + ', The'
     return sName
 
-def escape_ardb_expansion_name(sExpName):
+def escape_ardb_expansion_name(oExpansion):
     """Rework the expansion name to match ARDB"""
+    sExpName = oExpansion.shortname
     if sExpName == 'Promo':
         sExpName = oExpansion.name
-        sExpName = sSet.replace('-', '')
+        sExpName = sExpName.replace('-', '')
     elif sExpName == 'BSC':
         # ARDB doesn't support BSC.
         sExpName = 'CE'
@@ -149,6 +150,6 @@ class ArdbInfo(object):
             aExp = sorted([oP.expansion for oP in oAbsCard.rarity],
                     key = lambda x: x.shortname)
             oExpansion = aExp[0]
-        sSet = escape_ardb_expansion_name(oExpansion.shortname)
+        sSet = escape_ardb_expansion_name(oExpansion)
         return sSet
 

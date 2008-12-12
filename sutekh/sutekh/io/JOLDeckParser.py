@@ -35,5 +35,14 @@ class JOLDeckParser(object):
         else:
             iNum = 1
             sName = sLine
+        # Unescape names
+        if sName.endswith('(advanced)'):
+            sName = sName.replace('(advanced)', '(Advanced)')
+        # The following two may not be necessary, but it's not unlikely that
+        # people will produce decks with these
+        if sName.endswith(', The'):
+            sName = 'The ' + sName[:-5]
+        elif sName.endswith(', An'):
+            sName = 'An ' + sName[:-4]
         # JOL has no expansion info
         self._oHolder.add(iNum, sName, None)
