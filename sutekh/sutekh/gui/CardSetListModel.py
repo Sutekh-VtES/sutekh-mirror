@@ -934,7 +934,7 @@ class CardSetCardListModel(CardListModel):
             # Changing a child card set
             if sCardName in self._dName2Iter:
                 self.alter_child_count(oPhysCard, oCardSet.name, iChg)
-            else:
+            elif iChg > 0:
                 # Card isn't shown, so need to add it
                 self.add_new_card(oPhysCard)
         elif self.changes_with_parent() and oCardSet.id == \
@@ -998,12 +998,11 @@ class CardSetCardListModel(CardListModel):
         # Conditions vary with cards shown and the editable flag.
         # This routine works on the assumption that we only need to
         # get the result right when the parent row isn't being removed.
-        # If the parent row is to be removed, reutrning the wrong result
+        # If the parent row is to be removed, returning the wrong result
         # here doesn't matter - this simplifies the logic a bit
         # pylint: disable-msg=E1101
         # E1101: PyProtocols confuses pylint
         iCnt = self.get_int_value(oIter, 1)
-        iParCnt = self.get_int_value(oIter, 2)
         if iCnt > 0 or self.bEditable:
             # When editing, we don't delete 0 entries unless the card vanishes
             return True
@@ -1012,6 +1011,7 @@ class CardSetCardListModel(CardListModel):
                 CARD_SETS_AND_EXPANSIONS]:
             # Since we're not editable here, we always remove these
             return False
+        iParCnt = self.get_int_value(oIter, 2)
         bResult = False
         if self.iShowCardMode == ALL_CARDS:
             # Other than the above, we never remove entries for ALL_CARDS
