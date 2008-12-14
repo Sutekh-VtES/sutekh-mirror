@@ -122,7 +122,22 @@ class CardSetListModelTests(SutekhTest):
         # pylint: disable-msg=E1101
         # SQLObjext confuses pylint
         oModel.sEditColour = "red"
+        import time
+        iStart = time.time()
+        sModel = "Model: [card set %s, inuse=%s, groupby=%s]\n" % (
+                    oModel._oCardSet.name, oModel._oCardSet.inuse,
+                    oModel.groupby)
+        sModel += " State : (ExtraLevelsMode %s, ParentCountMode : %s, " \
+                "ShowCardMode : %s, Editable: %s)" % (
+                        self.aExtraLevelToStr[oModel.iExtraLevelsMode],
+                        self.aParentCountToStr[oModel.iParentCountMode],
+                        self.aCardCountToStr[oModel.iShowCardMode],
+                        oModel.bEditable)
+        print sModel
+        print 'Adding and deleting cards from ', oPCS.name
         oModel.load()
+        print '   Initial Load time', time.time() - iStart
+        iStart = time.time()
         tStartTotals = (
                 oModel.iter_n_children(None),
                 self._count_all_cards(oModel),
@@ -137,7 +152,11 @@ class CardSetListModelTests(SutekhTest):
                 self._count_all_cards(oModel),
                 self._count_second_level(oModel))
         aAddList = self._get_all_counts(oModel)
+        print '   Add time', time.time() - iStart
+        iStart = time.time()
         oModel.load()
+        print '   Load time', time.time() - iStart
+        iStart = time.time()
         tLoadTotals = (
                 oModel.iter_n_children(None),
                 self._count_all_cards(oModel),
@@ -162,6 +181,7 @@ class CardSetListModelTests(SutekhTest):
                 self._count_all_cards(oModel),
                 self._count_second_level(oModel))
         aDecList = self._get_all_counts(oModel)
+        print '   Delete time', time.time() - iStart
         # test that we've behaved sanely
         self.assertEqual(tDecTotals, tStartTotals, self._format_error(
             "Totals for dec_card and load differ", tDecTotals, tStartTotals,
@@ -175,8 +195,8 @@ class CardSetListModelTests(SutekhTest):
            _add_remove_cards to test the model."""
         aCards = [('AK-47', None), ('Bronwen', 'SW'), ('Cesewayo', None),
                 ('Anna "Dictatrix11" Suljic', 'NoR'), ('Ablative Skin',
-                    'Sabbat')] + [('Alexandra', 'CE'), ('Alexandra', None),
-                ('Ablative Skin', None)] * 5
+                    'Sabbat')] * 25 + [('Alexandra', 'CE'), ('Alexandra', None),
+                ('Ablative Skin', None)] * 25
         aPhysCards = []
         for sName, sExp in aCards:
             oCard = self._gen_card(sName, sExp)
@@ -296,6 +316,7 @@ class CardSetListModelTests(SutekhTest):
                 Groupings.RarityGrouping]:
             oModel.groupby = cGrouping
             self._loop_modes(oPCS, oModel)
+        self.assertEqual(True, False)
 
     def test_relationships(self):
         """Tests Model against more complex Card Set relationships"""
@@ -421,6 +442,7 @@ class CardSetListModelTests(SutekhTest):
             self._loop_modes(oSibPCS, oModel)
             self._loop_modes(oPCS, oModel)
             self._loop_modes(oGrandChildPCS, oModel)
+        self.assertEqual(True, False)
 
     def test_filters(self):
         """Test filtering for the card set"""
@@ -429,6 +451,7 @@ class CardSetListModelTests(SutekhTest):
         # repeated setups, so it has lots of lines
         # pylint: disable-msg=W0612
         # oCache exists only for the internal cache, so it's unused
+        self.assertEqual(True, False)
         oCache = SutekhObjectCache()
         # pylint: enable-msg=W0612
         oPCS = PhysicalCardSet(name=self.aNames[0])
@@ -536,6 +559,7 @@ class CardSetListModelTests(SutekhTest):
         """Test corner cases around empty card sets"""
         # pylint: disable-msg=W0612
         # oCache exists only for the internal cache, so it's unused
+        self.assertEqual(True, False)
         oCache = SutekhObjectCache()
         # pylint: enable-msg=W0612
         oPCS = PhysicalCardSet(name=self.aNames[0])

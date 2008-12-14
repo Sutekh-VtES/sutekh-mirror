@@ -1,13 +1,66 @@
+For 0.8.0 cycle
+ 
+ (see mailing list for the details, this is just a reminder list)
+
+ - Definate
+    * Require gtk 2.12 - allows more use of the tooltip API
+    * Improve Filter Edit Dialog
+    * Rename user visible references to PhysicalCardSet to CardSet
+    * Remove/Relax limits in the database (Card set names, etc.)
+    * Add more info to the database. At least some of
+       - Additional keywords
+          - Requires (anarch, titled, prince, etc.)
+          - Other card distinctions (trifle, location, loquipment, etc.)
+       - Ally/Retainer life ?
+       - Multiple discipline requirements ?
+       - Requires versus provided for disciplines & clan cards ?
+    * Standardise the reader/writer design for the io files. 
+    * Add decent error checking for the io files
+    * Redo perferences system. Allow finder grained perferences (save
+      groupings, etc per card set)
+    * Add links to the Secret Library in the exported HTML
+      - configurable option between monger & SL
+    * Add automatic detection of file type for import plugin (doesn't have to
+      be perfect, but should do OK in most cases)
+    * More access to debugging info
+      - Make it easier to get relevant info from users
+      - Use logging module to store more info, to be easily extracted
+      - Do more with the --verbose flag?
+    * Improved card set sorting
+      - Allow specifying order of columns to use, etc.
+
+    Website:
+       * Mirror documentation on website.
+
+ - Nice to have
+    * Add ways of specifying more limited test data sets
+    * Add better persistence of data across tests, to avoid rerunning the 
+      parser for each test and improve test runtime
+    * Address code duplication issues - especially io module & Filter tests
+    * Abstrat Card Editor
+    * Real plugin support
+    * Cluster plugin speed-up
+    * Add support for creating .debs and .rpms
+    * Improve the error & warnings dialogs. 
+      - include exception backtrace in error dialogs
+    * Multiple copies of a card set open simulatenously
+    * Add more keyboard shortcuts
+    * Right-click context menus
+
+
+* Post 0.8
+  * Allow colouring options for the cards
+
+For the future
+--------------
+
 Backend:
  * DatabaseUpgrade could be less brittle
- * Better error and exception handling
  * Rework SutekhUtility to be less of a mess
  * Consider using SQLObject's new .throughTo method for populating / caching
    the objects abstract cards join to.
  * Use sqlobject 0.10's view support to work around mysql's poor subselect
    performance
- * Include general rulings not related to specific cards in the database?
-   Perhaps just put them in the rulings table without any associated cards?
 
 Code Cleanup
  * Refactor gui classes somewhat - there's a fair bit code duplication ATM
@@ -15,20 +68,14 @@ Code Cleanup
    looks like something worth addressing
    - Common base class for the TreeViews?
  * More tests
- * Factor out things like the lists of expansions and disciplines in
-   SutekhObjects to a seperate file
  * MultiPaneWindow mixes code for handling the widget hopping and application
    code - these should be seperated.
 
 Gui (Functionality):
- * Finish ClusterCardList plugin.
  * Compare CardSet Plugin (basic version done. Could be improved)
  * Plugins for calling out to other VtES utilities as appropriate (http://ashheap.storageannex.com/utilities.htm)
  * Convert the repeated functions in the plugins into functions in the plugin 
    API
- * Identify file type when importing card sets
- * Better error detection and handling when importing files
- * Include traceback in a details section in do_complaint_*.
 
 Gui (Presentation):
  * Cleanup various dialogs, including
@@ -37,16 +84,9 @@ Gui (Presentation):
  * Clean up the card set controller/model/view interactions
    - CardSetManagement stuff is still rather tangled
  * Parse in a GTK rc file? (http://www.moeraki.com/pygtktutorial/pygtk2tutorial/ch-GtkRcFiles.html)
- * Allow colouring options for the cards
- * Add more keyboard shortcuts
  * Disable set_fixed_height_mode on TreeView cells so that the card text extra column
    can be changed to render across multiple lines without breaking layout. This
    will require some other way of dealing with the TreeView jumping bug.
- * Enable setting default grouping, etc. for newly opened card set panes.
-
-Website:
- * Create documentation.
- * Consider switching to Trac. 
 
 Other Tasks:
  * Find some users and developers interested in Sutekh on Windows.
@@ -56,44 +96,7 @@ Upstream:
    * TreeView jumping.
    * TreeView search pop-up not working under Windows. 
 
-For 0.8.0 cycle
- (see mailing list for the details, this is just a reminder list)
- * Require gtk 2.12 - allows more use of the tooltip API
- * Improve Filter Edit Dialog
- * Rename user visible references to PhysicalCardSet to CardSet
- * Add ways of specifying more limited test data sets
- * Add better persistence of data across tests, to avoid rerunning the 
-   parser for each test and improve test runtime
- * Remove/Relax limits in the database (Card set names, etc.)
- * Add more info to the database. At least some of
-   - Requires (anarch, titled, prince, etc.) ?
-   - Ally/Retainer life ?
-   - Multiple discipline requirements ?
-   - Requires versus provided for disciplines & clan cards ?
-   - Other card distinctions (trifle, location, loquipment, etc.) ?
- * Address code duplication issues - especially io module & Filter tests
- * Standardise the reader/writer design for the io files. 
- * Add decent error checking for the io files
- * Add automatic detection of file type for import plugin (doesn't have to
-   be perfect, but should do OK in most cases)
- * Abstrat Card Editor
- * Real plugin support
- * Redo perferences system. Allow finder grained perferences (save
-   groupings, etc per card set)
- * Cluster plugin speed-up
- * Improve the error & warnings dialogs. 
-   - include exception backtrace in error dialogs
- * Add support for creating .debs and .rpms
- * More access to debugging info
-   - Make it easier to get relevant info from users
-   - Use logging module to store more info, to be easily extracted
-   - Do more with the --verbose flag?
- * Add links to the Secret Library in the exported HTML
-   - configurable option between monger & SL
- * Improved card set sorting
-   - Allow specifying order of columns to use, etc.
- * Multiple copies of a card set open simulatenously
-   
+
 
 
 
