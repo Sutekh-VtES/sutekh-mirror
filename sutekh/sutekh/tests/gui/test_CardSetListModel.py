@@ -99,11 +99,15 @@ class CardSetListModelTests(SutekhTest):
         oAbs = IAbstractCard(sName)
         return IPhysicalCard((oAbs, oExp))
 
-    def _format_error(self, sErrType, oTest1, oTest2, oModel):
+    def _format_error(self, sErrType, oTest1, oTest2, oModel, oPCS=None):
         """Format an informative error message"""
         # pylint: disable-msg=W0212
         # Need info from _oCardSet here
-        sModel = "Model: [card set %s, inuse=%s, groupby=%s]\n" % (
+        if oPCS:
+            sModel = "Changing card set %s\n" % oPCS.name
+        else:
+            sModel = ''
+        sModel += "Model: [card set %s, inuse=%s, groupby=%s]\n" % (
                     oModel._oCardSet.name, oModel._oCardSet.inuse,
                     oModel.groupby)
         sModel += " State : (ExtraLevelsMode %s, ParentCountMode : %s, " \
@@ -145,10 +149,10 @@ class CardSetListModelTests(SutekhTest):
         aLoadList = self._get_all_counts(oModel)
         self.assertEqual(tAddTotals, tLoadTotals, self._format_error(
             "Totals for inc_card and load differ", tAddTotals, tLoadTotals,
-            oModel))
+            oModel, oPCS))
         self.assertEqual(aAddList, aLoadList, self._format_error(
             "Card Lists for inc_card and load differ", aAddList, aLoadList,
-            oModel))
+            oModel, oPCS))
         # Card removal
         # We use the map table, so we can also test dec_card properly
         for oCard in aPhysCards:
@@ -165,10 +169,10 @@ class CardSetListModelTests(SutekhTest):
         # test that we've behaved sanely
         self.assertEqual(tDecTotals, tStartTotals, self._format_error(
             "Totals for dec_card and load differ", tDecTotals, tStartTotals,
-            oModel))
+            oModel, oPCS))
         self.assertEqual(aDecList, aStartList, self._format_error(
             "Card lists for dec_card and load differ", aDecList, aStartList,
-            oModel))
+            oModel, oPCS))
 
     def _loop_modes(self, oPCS, oModel):
         """Loop over all the possible modes of the model, calling
