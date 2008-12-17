@@ -491,10 +491,33 @@ class CardSetCardListModel(CardListModel):
             for sName, oFilter in self._dCache['child filters'].iteritems():
                 oFullFilter = FilterAndBox([oFilter, oCurFilter])
                 dChildCardCache[sName] = {}
+                self._dCache['child card sets'][sName] = {}
                 for oCard in [IPhysicalCard(x) for x in
                         oFullFilter.select(self.cardclass).distinct()]:
                     dChildCardCache[sName].setdefault(oCard.abstractCard,
                             []).append(oCard)
+                    self._dCache['child cards'].setdefault(oCard, 0)
+                    self._dCache['child abstract cards'].setdefault(
+                            oCard.abstractCard.id, 0)
+                    self._dCache['child cards'][oCard] += 1
+                    self._dCache['child abstract cards'][
+                            oCard.abstractCard.id] += 1
+                    self._dCache['child card sets'][sName].setdefault(
+                            oCard, 0)
+                    self._dCache['child card sets'][sName][oCard] += 1
+        elif self.iShowCardMode == CHILD_CARDS and \
+                self._dCache['child filters']:
+            # Need to setup the cache
+            oFullFilter = FilterAndBox([self._dCache['all children filter'],
+                oCurFilter])
+            for oCard in [IPhysicalCard(x) for x in oFullFilter.select(
+                    self.cardclass).distinct()]:
+                self._dCache['child cards'].setdefault(oCard, 0)
+                self._dCache['child abstract cards'].setdefault(
+                        oCard.abstractCard.id, 0)
+                self._dCache['child cards'][oCard] += 1
+                self._dCache['child abstract cards'][
+                        oCard.abstractCard.id] += 1
         return dChildCardCache
 
     def _get_parent_list(self, oCurFilter):
@@ -534,10 +557,7 @@ class CardSetCardListModel(CardListModel):
             aExtraCards = self._dCache['parent cards']
         elif self.iShowCardMode == CHILD_CARDS and \
                 self._dCache['child filters']:
-            oFullFilter = FilterAndBox([self._dCache['all children filter'],
-                oCurFilter])
-            aExtraCards = [x for x in
-                    oFullFilter.select(PhysicalCard).distinct()]
+            aExtraCards = self._dCache['child cards']
         else:
             # No point in doing the extra work
             aExtraCards = []
@@ -560,6 +580,11 @@ class CardSetCardListModel(CardListModel):
 
         self._dCache['parent cards'] = {}
         self._dCache['parent abstract cards'] = {}
+        self._dCache['child cards'] = {}
+        self._dCache['child abstract cards'] = {}
+        self._dCache['sibling cards'] = {}
+        self._dCache['sibling abstract cards'] = {}
+        self._dCache['child card sets'] = {}
 
         if oCardIter.count() == 0 and self.iShowCardMode == THIS_SET_ONLY:
             # Short circuit the more expensive checks if we've got no cards
@@ -684,6 +709,11 @@ class CardSetCardListModel(CardListModel):
                         self.cardclass).distinct()]
             for oAbsCard, oPhysCard in aInUseCards:
                 dSiblingCards.setdefault(oAbsCard, []).append(oPhysCard)
+                self._dCache['sibling cards'].setdefault(oPhysCard, 0)
+                self._dCache['sibling abstract cards'].setdefault(
+                        oAbsCard.id, 0)
+                self._dCache['sibling cards'][oPhysCard] += 1
+                self._dCache['sibling abstract cards'][oAbsCard.id] += 1
         return dSiblingCards
 
     def _update_parent_info(self, oAbsCard, oSetInfo, dPhysCards):
@@ -785,11 +815,19 @@ class CardSetCardListModel(CardListModel):
             if oPhysCard in self._dCache['parent cards']:
                 iParCnt = self._dCache['parent cards'][oPhysCard]
             else:
+                # Because of how we construct the cache, we may have
+                # missing entries
                 oParentFilter = FilterAndBox([
                     SpecificPhysCardIdFilter(oPhysCard.id),
                     self._dCache['parent filter']])
                 iParCnt = oParentFilter.select(
                         self.cardclass).distinct().count()
+                # Cache this lookup for the future
+                self._dCache['parent cards'][oPhysCard] = iParCnt
+                self._dCache['parent abstract cards'].setdefault(
+                        oPhysCard.abstractCard.id, 0)
+                self._dCache['parent abstract cards'][
+                        oPhysCard.abstractCard.id] += iParCnt
             if self.iParentCountMode == MINUS_THIS_SET:
                 if iThisSetCnt is None:
                     iThisSetCnt = self.get_card_iterator(
@@ -797,11 +835,20 @@ class CardSetCardListModel(CardListModel):
                 iParCnt -= iThisSetCnt
             elif self.iParentCountMode == MINUS_SETS_IN_USE:
                 if self._dCache['sibling filter']:
-                    oInUseFilter = FilterAndBox([
-                        SpecificPhysCardIdFilter(oPhysCard.id),
-                        self._dCache['sibling filter']])
-                    iParCnt -= oInUseFilter.select(
-                            self.cardclass).distinct().count()
+                    if oPhysCard in self._dCache['sibling cards']:
+                        iParCnt -= self._dCache['sibling cards'][oPhysCard]
+                    else:
+                        oInUseFilter = FilterAndBox([
+                            SpecificPhysCardIdFilter(oPhysCard.id),
+                            self._dCache['sibling filter']])
+                        iSibCnt = oInUseFilter.select(
+                                self.cardclass).distinct().count()
+                        iParCnt -= iSibCnt
+                        self._dCache['sibling cards'][oPhysCard] = iSibCnt
+                        self._dCache['sibling abstract cards'].setdefault(
+                                oPhysCard.abstractCard.id, 0)
+                        self._dCache['sibling abstract cards'][
+                                oPhysCard.abstractCard.id] += iSibCnt
         return iParCnt
 
     def _add_new_group(self, sGroup):
@@ -931,23 +978,36 @@ class CardSetCardListModel(CardListModel):
         return self.iParentCountMode == MINUS_SETS_IN_USE and \
                 self._oCardSet.parent is not None
 
-    def _update_parent_cache(self, oPhysCard, iChg):
-        """Update the number in the parent card cache"""
-        if oPhysCard in self._dCache['parent cards']:
-            self._dCache['parent cards'][oPhysCard] += iChg
-            self._dCache['parent abstract cards'][
-                    oPhysCard.abstractCard.id] += iChg
+    def _update_cache(self, oPhysCard, iChg, sType):
+        """Update the number in the card cache"""
+        sPhysCache = "%s cards" % sType
+        if oPhysCard in self._dCache[sPhysCache]:
+            sAbsCache = "%s abstract cards" % sType
+            self._dCache[sPhysCache][oPhysCard] += iChg
+            self._dCache[sAbsCache][oPhysCard.abstractCard.id] += iChg
 
-    def _clean_parent_cache(self, oPhysCard):
-        """Remove zero entries from the parent card cache"""
-        if oPhysCard in self._dCache['parent cards'] and \
-                self._dCache['parent cards'][oPhysCard] == 0:
-            # Clear cache if needed
-            del self._dCache['parent cards'][oPhysCard]
-            if self._dCache['parent abstract cards'][
-                    oPhysCard.abstractCard.id] == 0:
-                del self._dCache['parent abstract cards'][
-                        oPhysCard.abstractCard.id]
+    def _update_child_set_cache(self, oPhysCard, iChg, sName):
+        """Update the number in the card cache"""
+        if sName in self._dCache['child card sets'] and \
+                oPhysCard in self._dCache['child card sets'][sName]:
+            self._dCache['child card sets'][sName][oPhysCard] += iChg
+
+    def _clean_cache(self, oPhysCard, sType):
+        """Remove zero entries from the card cache"""
+        sPhysCache = "%s cards" % sType
+        if oPhysCard in self._dCache[sPhysCache] and \
+                self._dCache[sPhysCache][oPhysCard] == 0:
+            del self._dCache[sPhysCache][oPhysCard]
+            sAbsCache = "%s abstract cards" % sType
+            if self._dCache[sAbsCache][oPhysCard.abstractCard.id] == 0:
+                del self._dCache[sAbsCache][oPhysCard.abstractCard.id]
+
+    def _clean_child_set_cache(self, oPhysCard, sName):
+        """Update the number in the card cache"""
+        if sName in self._dCache['child card sets'] and \
+                oPhysCard in self._dCache['child card sets'][sName] and \
+                self._dCache['child card sets'][sName][oPhysCard] == 0:
+            del self._dCache['child card sets'][sName][oPhysCard]
 
     def card_changed(self, oCardSet, oPhysCard, iChg):
         """Listen on card changes.
@@ -962,21 +1022,29 @@ class CardSetCardListModel(CardListModel):
         sCardName = oPhysCard.abstractCard.name
         if oCardSet.id == self._oCardSet.id:
             # Changing a card from this card set
+            if self._oCardSet.inuse:
+                self._update_cache(oPhysCard, iChg, 'sibling')
             if sCardName in self._dName2Iter:
                 self.alter_card_count(oPhysCard, iChg)
             elif iChg > 0:
                 self.add_new_card(oPhysCard) # new card
+            if self._oCardSet.inuse:
+                self._clean_cache(oPhysCard, 'sibling')
         elif self.changes_with_children() and oCardSet.parent and \
                 oCardSet.inuse and oCardSet.parent.id == self._oCardSet.id:
             # Changing a child card set
+            self._update_cache(oPhysCard, iChg, 'child')
+            self._update_child_set_cache(oPhysCard, iChg, oCardSet.name)
             if sCardName in self._dName2Iter:
                 self.alter_child_count(oPhysCard, oCardSet.name, iChg)
-            elif iChg > 0:
+            elif iChg > 0 and oPhysCard not in self._dCache['child cards']:
                 self.add_new_card(oPhysCard)
+            self._clean_cache(oPhysCard, 'child')
+            self._clean_child_set_cache(oPhysCard, oCardSet.name)
         elif self.changes_with_parent() and oCardSet.id == \
                 self._oCardSet.parent.id:
             # Changing parent card set
-            self._update_parent_cache(oPhysCard, iChg)
+            self._update_cache(oPhysCard, iChg, 'parent')
             if sCardName in self._dName2Iter:
                 # update cache
                 self.alter_parent_count(oPhysCard, iChg)
@@ -984,17 +1052,19 @@ class CardSetCardListModel(CardListModel):
                 # New card that we haven't seen before, so see if we need
                 # to add it
                 self.add_new_card(oPhysCard)
-            self._clean_parent_cache(oPhysCard)
+            self._clean_cache(oPhysCard, 'parent')
         elif self.changes_with_siblings() and oCardSet.parent and \
                 oCardSet.inuse and oCardSet.parent.id == \
                 self._oCardSet.parent.id:
             # Changing sibling card set
+            self._update_cache(oPhysCard, iChg, 'sibling')
             if sCardName in self._dName2Iter:
                 # This is only called when using MINUS_SETS_IN_USE,
                 # So this changes the available pool of parent cards (by -iChg)
                 # There's no possiblity of this adding or deleting a card from
                 # the model
                 self.alter_parent_count(oPhysCard, -iChg, False)
+            self._clean_cache(oPhysCard, 'sibling')
         # Doesn't affect us, so ignore
 
     def _card_count_changes_parent(self):
@@ -1075,18 +1145,14 @@ class CardSetCardListModel(CardListModel):
                 and self.iExtraLevelsMode in [SHOW_EXPANSIONS,
                         EXPANSIONS_AND_CARD_SETS] and iDepth == 2:
             # Check if the card actually is in the parent card set
-            oFullFilter = FilterAndBox([SpecificPhysCardIdFilter(oPhysCard.id),
-                self._dCache['parent filter']])
-            bResult = oFullFilter.select(self.cardclass).distinct().count() > 0
+            if oPhysCard in self._dCache['parent cards']:
+                bResult = self._dCache['parent cards'][oPhysCard] > 0
         elif self.iShowCardMode == CHILD_CARDS and \
                 self.iExtraLevelsMode == SHOW_EXPANSIONS:
-            # Need to check the database, since we can't query the model
-            if self._dCache['child filters']:
-                oChildFilter = FilterAndBox([
-                    SpecificPhysCardIdFilter(oPhysCard.id),
-                    self._dCache['all children filter']])
-                if oChildFilter.select(self.cardclass).distinct().count() > 0:
-                    bResult = True
+            # check the cache
+            if oPhysCard in self._dCache['child cards'] and \
+                    self._dCache['child cards'][oPhysCard] > 0:
+                        bResult = True
         # No reason to return True
         return bResult
 
@@ -1127,10 +1193,9 @@ class CardSetCardListModel(CardListModel):
             elif self._dCache['child filters']:
                 # Actually check the database
                 oAbsCard = IAbstractCard(self.get_name_from_iter(oIter))
-                oChildFilter = FilterAndBox([SpecificCardIdFilter(oAbsCard.id),
-                    self._dCache['all children filter']])
-                bResult = oChildFilter.select(
-                            self.cardclass).distinct().count() > 0
+                if oAbsCard.id in self._dCache['child abstract cards']:
+                    bResult = self._dCache['child abstract cards'][
+                            oAbsCard.id] > 0
         return bResult
 
     def check_group_iter_stays(self, oIter):
@@ -1139,10 +1204,10 @@ class CardSetCardListModel(CardListModel):
         if self.iShowCardMode == ALL_CARDS:
             return True # We don't remove group entries
         iCnt = self.get_int_value(oIter, 1)
-        iParCnt = self.get_int_value(oIter, 2)
         if iCnt > 0:
             # Count is non-zero, so we stay
             return True
+        iParCnt = self.get_int_value(oIter, 2)
         if self.iShowCardMode == PARENT_CARDS and iParCnt > 0:
             # Obviously parent cards present
             return True
@@ -1183,10 +1248,19 @@ class CardSetCardListModel(CardListModel):
         """Add 3rd level entries for the EXPANSIONS_AND_CARD_SETS mode"""
         sCardName = oPhysCard.abstractCard.name
         sExpName = self.get_expansion_name(oPhysCard.expansion)
+        #for sCardSet, oSetFilter in self._dCache['child filters'].iteritems():
+        iCnt = 0
         for sCardSet, oSetFilter in self._dCache['child filters'].iteritems():
-            oFilter = FilterAndBox([SpecificPhysCardIdFilter(oPhysCard.id),
-                                oSetFilter])
-            iCnt = oFilter.select(self.cardclass).distinct().count()
+            if sCardSet in self._dCache['child card sets'] and \
+                    oPhysCard in self._dCache['child card sets']:
+                iCnt = self._dCache['child card sets'][oPhysCard]
+            else:
+                oFilter = FilterAndBox([SpecificPhysCardIdFilter(oPhysCard.id),
+                    oSetFilter])
+                iCnt = oFilter.select(self.cardclass).distinct().count()
+                # Cache this lookup
+                self._dCache['child card sets'].setdefault(sCardSet, {})
+                self._dCache['child card sets'][sCardSet][oPhysCard] = iCnt
             if iCnt > 0:
                 # We can ignore the iCnt == 0 cases (bEditable
                 # True, etc.), since we know those entries
@@ -1272,11 +1346,22 @@ class CardSetCardListModel(CardListModel):
         for sCardSetName in self._dNameSecondLevel2Iter[sCardName]:
             tCSKey = (sCardName, sCardSetName)
             if not tCSKey in self._dName2nd3rdLevel2Iter or not \
-                    sExpName in self._dName2nd3rdLevel2Iter[tCSKey]:
-                oFilter = FilterAndBox([
-                    self._dCache['child filters'][sCardSetName],
-                    SpecificPhysCardIdFilter(oPhysCard.id)])
-                iCnt = oFilter.select(self.cardclass).distinct().count()
+                    sExpName in self._dName2nd3rdLevel2Iter[tCSKey] and \
+                    oPhysCard in self._dCache['child cards']:
+                # check if we need to add a entry
+                if sCardSetName in self._dCache['child card sets'] and \
+                        oPhysCard in self._dCache['child card sets']:
+                    iCnt = self._dCache['child card sets'][oPhysCard]
+                else:
+                    oFilter = FilterAndBox([
+                        self._dCache['child filters'][sCardSetName],
+                        SpecificPhysCardIdFilter(oPhysCard.id)])
+                    iCnt = oFilter.select(self.cardclass).distinct().count()
+                    # Cache this lookup
+                    self._dCache['child card sets'].setdefault(sCardSetName,
+                            {})
+                    self._dCache['child card sets'][sCardSetName][
+                            oPhysCard] = iCnt
                 if iCnt > 0:
                     # We need to add the expansion here
                     if iParCnt is None:
@@ -1295,6 +1380,7 @@ class CardSetCardListModel(CardListModel):
         oCard = IAbstractCard(oPhysCard)
         sCardName = oCard.name
         bRemove = False
+        bChecked = False # flag to avoid repeated work
         for oIter in self._dName2Iter[sCardName]:
             oGrpIter = self.iter_parent(oIter)
             iCnt = self.get_int_value(oIter, 1) + iChg
@@ -1306,12 +1392,16 @@ class CardSetCardListModel(CardListModel):
                 iParCnt -= iChg
                 iParGrpCnt -= iChg
 
-            if self.check_card_iter_stays(oIter):
-                self._update_entry(oIter, iCnt, iParCnt)
-            else:
-                bRemove = True
+            if not bChecked:
+                if not self.check_card_iter_stays(oIter):
+                    bRemove = True
+                bChecked = True
+
+            if bRemove:
                 self._remove_sub_iters(sCardName)
                 self.remove(oIter)
+            else:
+                self._update_entry(oIter, iCnt, iParCnt)
 
             self.set(oGrpIter, 1, self.format_count(iGrpCnt))
             self.set(oGrpIter, 2, self.format_parent_count(iParGrpCnt,
@@ -1352,6 +1442,9 @@ class CardSetCardListModel(CardListModel):
            """
         # update cache
         bRemove = False
+        bChecked = False # flag so we don't revist decisions
+        if not bCheckAddRemove:
+            bChecked = True # skip check
         sCardName = oPhysCard.abstractCard.name
         for oIter in self._dName2Iter[sCardName]:
             oGrpIter = self.iter_parent(oIter)
@@ -1366,9 +1459,11 @@ class CardSetCardListModel(CardListModel):
             self._update_entry(oIter, iCnt, iParCnt)
             self.set(oGrpIter, 2, self.format_parent_count(iParGrpCnt,
                 iGrpCnt))
-            if bRemove or (not self.check_card_iter_stays(oIter) and
-                    bCheckAddRemove):
-                bRemove = True
+            if not bChecked:
+                if not self.check_card_iter_stays(oIter):
+                    bRemove = True
+                bChecked = True
+            if bRemove:
                 self._remove_sub_iters(sCardName)
                 iParCnt = self.get_int_value(oIter, 2)
                 iParGrpCnt = self.get_int_value(oGrpIter, 2) - iParCnt

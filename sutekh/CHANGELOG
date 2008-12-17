@@ -1,3 +1,10 @@
+17 Dec 2008
+ * Cache more results from the database in CardSetListModel - improve the
+   perfromance of the slower paths somewhat.
+
+15 Dec 2008
+ * Cache some database results in CardSetListModel - slightly faster
+
 12 Dec 2008
  * Minor rework of CardSetListModel to improve performance
  * Fix stupid bugs in ELDB, JOL and Lackey exporters
