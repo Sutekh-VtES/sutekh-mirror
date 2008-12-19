@@ -1017,8 +1017,9 @@ class CardSetCardListModel(CardListModel):
            as we can query the database and obtain accurate results.
            Does rely on everyone calling send_changed_signal.
            """
-        # pylint: disable-msg=E1101
-        # Pyprotocols confuses pylint
+        # pylint: disable-msg=E1101, R0912
+        # E1101 - Pyprotocols confuses pylint
+        # R0912 - need to consider several cases, so lots of branches
         sCardName = oPhysCard.abstractCard.name
         if oCardSet.id == self._oCardSet.id:
             # Changing a card from this card set
@@ -1152,7 +1153,7 @@ class CardSetCardListModel(CardListModel):
             # check the cache
             if oPhysCard in self._dCache['child cards'] and \
                     self._dCache['child cards'][oPhysCard] > 0:
-                        bResult = True
+                bResult = True
         # No reason to return True
         return bResult
 
@@ -1249,11 +1250,11 @@ class CardSetCardListModel(CardListModel):
         sCardName = oPhysCard.abstractCard.name
         sExpName = self.get_expansion_name(oPhysCard.expansion)
         #for sCardSet, oSetFilter in self._dCache['child filters'].iteritems():
-        iCnt = 0
         for sCardSet, oSetFilter in self._dCache['child filters'].iteritems():
+            iCnt = 0
             if sCardSet in self._dCache['child card sets'] and \
-                    oPhysCard in self._dCache['child card sets']:
-                iCnt = self._dCache['child card sets'][oPhysCard]
+                    oPhysCard in self._dCache['child card sets'][sCardSet]:
+                iCnt = self._dCache['child card sets'][sCardSet][oPhysCard]
             else:
                 oFilter = FilterAndBox([SpecificPhysCardIdFilter(oPhysCard.id),
                     oSetFilter])
@@ -1350,8 +1351,10 @@ class CardSetCardListModel(CardListModel):
                     oPhysCard in self._dCache['child cards']:
                 # check if we need to add a entry
                 if sCardSetName in self._dCache['child card sets'] and \
-                        oPhysCard in self._dCache['child card sets']:
-                    iCnt = self._dCache['child card sets'][oPhysCard]
+                        oPhysCard in self._dCache['child card sets'][
+                                sCardSetName]:
+                    iCnt = self._dCache['child card sets'][sCardSetName][
+                            oPhysCard]
                 else:
                     oFilter = FilterAndBox([
                         self._dCache['child filters'][sCardSetName],
@@ -1392,10 +1395,9 @@ class CardSetCardListModel(CardListModel):
                 iParCnt -= iChg
                 iParGrpCnt -= iChg
 
-            if not bChecked:
-                if not self.check_card_iter_stays(oIter):
-                    bRemove = True
-                bChecked = True
+            if not bChecked and not self.check_card_iter_stays(oIter):
+                bRemove = True
+            bChecked = True
 
             if bRemove:
                 self._remove_sub_iters(sCardName)
@@ -1459,10 +1461,9 @@ class CardSetCardListModel(CardListModel):
             self._update_entry(oIter, iCnt, iParCnt)
             self.set(oGrpIter, 2, self.format_parent_count(iParGrpCnt,
                 iGrpCnt))
-            if not bChecked:
-                if not self.check_card_iter_stays(oIter):
-                    bRemove = True
-                bChecked = True
+            if not bChecked and not self.check_card_iter_stays(oIter):
+                bRemove = True
+            bChecked = True
             if bRemove:
                 self._remove_sub_iters(sCardName)
                 iParCnt = self.get_int_value(oIter, 2)
