@@ -99,6 +99,19 @@ class CardSetListModelTests(SutekhTest):
         oAbs = IAbstractCard(sName)
         return IPhysicalCard((oAbs, oExp))
 
+    def _reset_modes(self, oModel):
+        """Set the model to the minimal state."""
+        # The database signal handling means that all CardSetListModels
+        # associated with a card set will update when send_changed_signal is
+        # called, so we reset the model state so these calls will be cheap if
+        # this models is affected when we're not explicitly testing it.
+        oModel.iParentCountMode = IGNORE_PARENT
+        oModel.iLevelMode = NO_SECOND_LEVEL
+        oModel.bEditable = False
+        oModel.iShowMode = THIS_SET_ONLY
+
+    # pylint: disable-msg=R0913
+    # Need all these arguments here
     def _format_error(self, sErrType, oTest1, oTest2, oModel, oPCS=None):
         """Format an informative error message"""
         # pylint: disable-msg=W0212
@@ -119,6 +132,7 @@ class CardSetListModelTests(SutekhTest):
         return "%s : %s vs %s\n%s" % (sErrType, oTest1, oTest2, sModel)
 
     # pylint: enable-msg=R0201
+    # pylint: enable-msg=R0913
 
     def _add_remove_cards(self, oPCS, oModel, aPhysCards):
         """Helper function to add and remove distinct cards from the card set,
@@ -199,17 +213,6 @@ class CardSetListModelTests(SutekhTest):
                         oModel.iShowCardMode = iShowMode
                         self._add_remove_cards(oPCS, oModel, aPhysCards)
         self._reset_modes(oModel)
-
-    def _reset_modes(self, oModel):
-        """Set the model to the minimal state."""
-        # The database signal handling means that all CardSetListModels
-        # associated with a card set will update when send_changed_signal is
-        # called, so we reset the model state so these calls will be cheap if
-        # this models is affected when we're not explicitly testing it.
-        oModel.iParentCountMode = IGNORE_PARENT
-        oModel.iLevelMode = NO_SECOND_LEVEL
-        oModel.bEditable = False
-        oModel.iShowMode = THIS_SET_ONLY
 
     def _loop_zero_filter_modes(self, oModel):
         """Loop over all the possible modes of the model, calling
