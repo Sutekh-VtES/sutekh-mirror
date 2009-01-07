@@ -21,6 +21,17 @@ from sutekh.gui.CellRendererSutekhButton import CellRendererSutekhButton
 from sutekh.gui.PhysicalCardView import PhysicalCardView
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 
+
+def add_accel_to_button(oButton, sAccelKey, oAccelGroup, sToolTip=None):
+    """Creates a button using an gtk.AccelLabel to display the accelerator"""
+    (iKeyVal, iMod) = gtk.accelerator_parse(sAccelKey)
+    if iKeyVal != 0:
+        oButton.add_accelerator('clicked', oAccelGroup, iKeyVal, iMod,
+                gtk.ACCEL_VISIBLE)
+    if sToolTip and hasattr(oButton,'set_tooltip_markup'):
+        oButton.set_tooltip_markup(sToolTip)
+
+
 class DummyController(object):
     """Dummy controller class, so we can use the card views directly"""
     def __init__(self, sFilterType):
@@ -199,6 +210,10 @@ class ReplacementTreeView(gtk.TreeView):
         self.oCardListView.get_model().applyfilter = \
             self.oFilterToggleButton.get_active()
         self.oCardListView.load()
+
+    def show_search(self, oButton):
+        """Popup the search dialog"""
+        self.oCardListView.searchdialog.show_all()
 
     # pylint: enable-msg=W0613
 
@@ -429,6 +444,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
 
         return oUnknownDialog, oHBox
 
+
     def _fill_dialog(self, oHBox, oView):
         """Handle the view setup and default buttons for the lookup
            dialog."""
@@ -441,8 +457,22 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
         oVBox = gtk.VBox()
         oHBox.pack_start(oVBox)
 
-        oFilterDialogButton = gtk.Button("Specify Filter")
-        oFilterApplyButton = gtk.CheckButton("Apply Filter to view")
+        # Add same shortcuts as the pane menus
+        oAccelGroup = gtk.AccelGroup()
+        # oHBox is a child of a vbox which is a child of the dialog
+        oHBox.get_parent().get_parent().add_accel_group(oAccelGroup)
+
+        oFilterDialogButton = gtk.Button('Specify Filter')
+        oFilterApplyButton = gtk.CheckButton("Apply Filter")
+        oSearchButton = gtk.Button("Search List")
+        add_accel_to_button(oFilterDialogButton, "<Ctrl>s", oAccelGroup,
+                'Open the Filter Editing Dialog.\nShortcut :<b>Ctrl-S</b>')
+        add_accel_to_button(oFilterApplyButton, "<Ctrl>t", oAccelGroup,
+                'Toggle the applied of the filter.\n'
+                'Shortcut : <b>Ctrl-T</b>')
+        add_accel_to_button(oSearchButton, "<Ctrl>f", oAccelGroup,
+                'Open the search dailog for the cards.\n'
+                'Shortcut : <b>Ctrl-F</b>')
 
         oReplacementView = ReplacementTreeView(oView,
             oFilterApplyButton)
@@ -451,17 +481,21 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
         oReplacementWin.set_size_request(400, 600)
         oVBox.pack_start(oReplacementWin, True, True)
 
-        oFilterButtons = gtk.HBox()
+        oFilterButtons = gtk.HBox(spacing=2)
         oVBox.pack_start(gtk.HSeparator())
         oVBox.pack_start(oFilterButtons)
 
         oFilterButtons.pack_start(oFilterDialogButton)
         oFilterButtons.pack_start(oFilterApplyButton)
+        oFilterButtons.pack_start(oSearchButton)
+
 
         oFilterDialogButton.connect("clicked",
             oReplacementView.run_filter_dialog)
         oFilterApplyButton.connect("toggled",
             oReplacementView.toggle_apply_filter)
+        oSearchButton.connect("clicked",
+            oReplacementView.show_search)
 
         return oReplacementView
 
