@@ -89,6 +89,8 @@ class CardSetManagementView(gtk.TreeView, object):
     # We allow access via these properties (for plugins)
     mainwindow = property(fget=lambda self: self._oMainWin,
             doc="The parent window sed for dialogs, etc.")
+    searchdialog = property(fget=lambda self: self._oSearchDialog,
+            doc="The search dialog.")
     # pylint: enable-msg=W0212
 
     # Card Set Name searching

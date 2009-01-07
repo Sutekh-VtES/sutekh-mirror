@@ -35,7 +35,7 @@ class CardSetMenu(CardListMenu):
         self.__oController = oController
         self.sSetName = sName
         self.__create_card_set_menu()
-        self._create_edit_menu()
+        self.create_edit_menu()
         self.create_filter_menu()
         self.create_plugins_menu('_Plugins', self._oFrame)
 
@@ -129,7 +129,7 @@ class CardSetMenu(CardListMenu):
         oMenu.add(gtk.SeparatorMenuItem())
         self.create_menu_item("Delete Card Set", oMenu, self._card_set_delete)
 
-    def _create_edit_menu(self):
+    def create_edit_menu(self):
         """Create the 'Edit' menu, and populate it."""
         oMenu = self.create_submenu(self, "_Edit")
         self._oEditable = self.create_check_menu_item('Card Set is Editable',
@@ -143,6 +143,7 @@ class CardSetMenu(CardListMenu):
                 self._del_selection, 'Delete')
         self._oPaste.set_sensitive(False)
         self._oDel.set_sensitive(False)
+        self.add_edit_menu_actions(oMenu)
 
     # pylint: enable-msg=W0201
 

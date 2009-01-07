@@ -47,7 +47,6 @@ class SearchDialog(gtk.Window):
         else:
             self.connect('button-press-event', self.check_hide)
         self.set_focus_on_map(True)
-        self.bVisible = False
         # Hook up to the View
         oView.set_search_entry(self.oEntry)
         oView.set_enable_search(False)
@@ -62,7 +61,6 @@ class SearchDialog(gtk.Window):
 
     def hide(self):
         """Hide the window"""
-        self.bVisible = False
         super(SearchDialog, self).hide()
 
     # pylint: disable-msg=W0613
@@ -122,16 +120,10 @@ class SearchDialog(gtk.Window):
         """Handle key press events, so we display a search box with
            entry completion."""
         if oEvent.keyval in range(33, 127):
-            if oEvent.state & gtk.gdk.CONTROL_MASK:
-                # Check for control-F case
-                if oEvent.keyval == gtk.gdk.keyval_from_name('f') or \
-                        oEvent.keyval == gtk.gdk.keyval_from_name('F'):
-                    self.show_all()
-            else:
-                self.show_all()
-                if len(oEvent.string) > 0:
-                    # Add text to search dialog
-                    self.set_text(oEvent.string)
+            self.show_all()
+            if len(oEvent.string) > 0:
+                # Add text to search dialog
+                self.set_text(oEvent.string)
         # connect_after, so everything else has had it's shot
         return True
 

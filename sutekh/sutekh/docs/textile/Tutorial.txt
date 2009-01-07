@@ -299,4 +299,16 @@ the card set is a starter deck -- you can use the
 _Set selection to single expansion_ option from the _Plugins_ menu to set all
 the cards to the correct expansion quickly.
 
+h3. Search for cards and card sets
+
+While it quite easy to use filters to restrict the cards or card sets shown,
+to find a specific card, the search dialog is often faster.
+
+The search dialog can be popped by either using the _Edit->Search_ menu
+option, the *&lt;Ctrl&gt;-F* shortcut, or by typing directly into the list
+view.
+
+The search looks to match names starting with the typed text. When multiple
+cards match, you can easily skip between them by using the up or down keys.
+
 "The Sutekh Manual":Manual.html

@@ -15,12 +15,14 @@ h2. Contents
 ## "Refreshing the White Wolf Card List":#refresh
 # "White Wolf Card List":#ww
 ## "Actions":#ww_actions
+## "Edit":#ww_edit
 ## "Filter":#ww_filter
 ## "Plugins":#ww_plugins
 # "Card Text":#card_text
 # "Card Image":#card_image
 # "Card Set List":#card_set_list
 ## "Actions":#card_set_list_actions
+## "Edit":#card_set_list_edit
 ## "Filter":#card_set_list_filter
 # "Card Sets":#cardsets
 ## "Actions":#cardsets_actions
@@ -240,6 +242,15 @@ level grouping (when available).
 * _Expand All_: Expand all the items in the tree.
 * _Collapse All_: Collapse the tree as far as possible.
 
+h3(#ww_edit). Edit
+
+* _Copy selection_: Copy the currently selected set of cards into the buffer.
+You can paste this into an editable card set to add the selected cards to it.
+* _Search_: Open up a dialog which will search the list for a card with 
+a name starting with the typed text. The search dialog can also be opened by
+either using the *&lt;Ctrl&gt;-F* shortcut, or by simply starting to type
+in the list view.
+
 h3(#ww_filter). Filter
 
 The filter menu has three options:
@@ -361,6 +372,13 @@ _not in use_.
 * _Expand All_: Expand all the items in the tree.
 * _Collapse All_: Collapse the tree as far as possible.
 
+h3(#card_set_list_edit). Edit
+
+* _Search_: Open up a dialog which will search the list for a card set with 
+a name starting with the typed text. The search dialog can also be opened by
+either using the *&lt;Ctrl&gt;-F* shortcut, or by simply starting to type
+in the list view.
+
 h3(#card_set_list_filter). Filter
 
 The filter menu has two options:
@@ -441,6 +459,10 @@ This option is only available when the card set is editable.
 * _Delete selection_: Delete the selected cards from the card set. This
 is only possible when the card set is editable. The deleted selection is not
 placed in the buffer.
+* _Search_: Open up a dialog which will search the list for a card with 
+a name starting with the typed text. The search dialog can also be opened by
+either using the *&lt;Ctrl&gt;-F* shortcut, or by simply starting to type
+in the list view.
 
 If the card set is not editable, you cannot make changes to its contents
 directly. It is still possible for you to change the card set contents by
