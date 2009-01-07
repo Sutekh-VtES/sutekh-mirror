@@ -18,8 +18,6 @@ For 0.8.0 cycle
     * Add decent error checking for the io files
     * Redo perferences system. Allow finder grained perferences (save
       groupings, etc per card set)
-    * Add links to the Secret Library in the exported HTML
-      - configurable option between monger & SL
     * Add automatic detection of file type for import plugin (doesn't have to
       be perfect, but should do OK in most cases)
     * More access to debugging info

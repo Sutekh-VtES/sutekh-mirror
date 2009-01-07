@@ -1,4 +1,6 @@
 07 Jan 2008
+ * Add support for linking to the secret library in  the exported HTML files
+ * Make the HTML link destination configurable 
  * Add Edit->Search menu option to popup the search dialog
  * Add Search button the the card lookup menu
  * Add some more documentation on how the search dialog behaves
