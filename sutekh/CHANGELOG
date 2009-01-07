@@ -1,3 +1,8 @@
+07 Jan 2008
+ * Add Edit->Search menu option to popup the search dialog
+ * Add Search button the the card lookup menu
+ * Add some more documentation on how the search dialog behaves
+
 17 Dec 2008
  * Cache more results from the database in CardSetListModel - improve the
    perfromance of the slower paths somewhat.

@@ -21,7 +21,6 @@
 <li><a href="#main_pane_actions">Pane Actions</a></li>
 <li><a href="#main_plugins">Plugins</a></li>
 <li><a href="#keyboard">Keyboard Shortcuts</a></li>
-<li><a href="#lookup">Card Lookup Dialog</a></li>
 <li><a href="#refresh">Refreshing the White Wolf Card List</a></li>
 </ol>
 </li>
@@ -49,6 +48,12 @@
 <li><a href="#cardsets_filter">Filter</a></li>
 <li><a href="#cardsets_plugins">Plugins</a></li>
 <li><a href="#cardsets_keyboard">Keyboard Shortcuts</a></li>
+</ol>
+</li>
+<li><a href="#dialogs">Other dialogs</a>
+<ol>
+<li><a href="#lookup">Card Lookup Dialog</a></li>
+<li><a href="#search">Search Dialog</a></li>
 </ol>
 </li>
 <li><a href="#filters">Filters</a>
@@ -218,36 +223,6 @@ on and off using <strong>&lt;Ctrl&gt;-T</strong>.</p>
 <p>The <strong>&lt;Ctrl&gt;-+</strong> and <strong>&lt;Ctrl&gt;&#8212;</strong> shortcuts allow you to expand fully or 
 collapse completely the entire tree displayed in a pane.</p>
 
-<h3 id="lookup">Card Lookup Dialog</h3>
-
-<p>For various reasons, Sutekh may fail to identify a card correctly when 
-importing a card set. Names vary (&#8220;Spirit&#8217;s Touch&#8221;, 
-&#8220;The Spirit&#8217;s Touch&#8221;), special characters can be missing, etc.. When 
-this happens, Sutekh will prompt you for the correct card.</p>
-
-<p>The card lookup window displays two lists: the list of all White Wolf cards 
-and the list of unknown cards. Below the unknown card list are options 
-to specify a <a href="#filters">filter</a> and to apply or unapply the filter.</p>
-
-<p>The unknown card list has two columns&#8212;the name of the unknown card and 
-the currently selected replacement from the White Wolf card list&#8212;and three 
-buttons. Use the first button to replace the card with the currently selected 
-card, the second button to mark the card as ignored, and the last to view a list 
-of reasonable options (Sutekh finds these by applying a filter based on the 
-unknown card name).</p>
-
-<p>Once you have selected replacements for all unknown cards (or chosen to ignore 
-them), use the OK button to create the card set.</p>
-
-<p>If you choose to cancel, the entire import will be aborted and no card set will 
-be created.</p>
-
-<p>If Sutekh cannot identify an expansion in the file, it will prompt you for the 
-correct replacement. If Sutekh finds an impossible card and expansion 
-combination, it will prompt you to resolve the situation using the card lookup 
-dialog&#8212;but you will have the opportunity to select both the card and the 
-expansion.</p>
-
 <h3 id="refresh">Refreshing the White Wolf Card List</h3>
 
 <p>This allows Sutekh to update the card list to account for new cards, such 
@@ -285,10 +260,10 @@ level grouping (when available).</li>
 <ul>
 <li><em>Copy selection</em>: Copy the currently selected set of cards into the buffer. 
 You can paste this into an editable card set to add the selected cards to it.</li>
-<li><em>Search</em>: Open up a dialog which will search the list for a card with  
-a name starting with the typed text. The search dialog can also be opened by 
-either using the <strong>&lt;Ctrl&gt;-F</strong> shortcut, or by simply starting to type 
-in the list view.</li>
+<li><em>Search</em>: Open up a <a href="#search">search</a> dialog which will search the list for a 
+card with a name starting with the typed text. The search dialog can also be 
+opened by either using the <strong>&lt;Ctrl&gt;-F</strong> shortcut, or by simply starting 
+to type in the list view.</li>
 </ul>
 
 <h3 id="ww_filter">Filter</h3>
@@ -420,10 +395,10 @@ change the parent of the card set, or add annotations to the card set.</li>
 <h3 id="card_set_list_edit">Edit</h3>
 
 <ul>
-<li><em>Search</em>: Open up a dialog which will search the list for a card set with  
-a name starting with the typed text. The search dialog can also be opened by 
-either using the <strong>&lt;Ctrl&gt;-F</strong> shortcut, or by simply starting to type 
-in the list view.</li>
+<li><em>Search</em>: Open up a <a href="#search">search</a> dialog which will search the list for a 
+card set with a name starting with the typed text. The search dialog can also 
+be opened by either using the <strong>&lt;Ctrl&gt;-F</strong> shortcut, or by simply starting 
+to type in the list view.</li>
 </ul>
 
 <h3 id="card_set_list_filter">Filter</h3>
@@ -522,10 +497,10 @@ This option is only available when the card set is editable.</li>
 <li><em>Delete selection</em>: Delete the selected cards from the card set. This 
 is only possible when the card set is editable. The deleted selection is not 
 placed in the buffer.</li>
-<li><em>Search</em>: Open up a dialog which will search the list for a card with  
-a name starting with the typed text. The search dialog can also be opened by 
-either using the <strong>&lt;Ctrl&gt;-F</strong> shortcut, or by simply starting to type 
-in the list view.</li>
+<li><em>Search</em>: Open up a <a href="#search">search</a> dialog which will search the list for a 
+card with a name starting with the typed text. The search dialog can also be 
+opened by either using the <strong>&lt;Ctrl&gt;-F</strong> shortcut, or by simply starting 
+to type in the list view.</li>
 </ul>
 
 <p>If the card set is not editable, you cannot make changes to its contents 
@@ -578,6 +553,58 @@ of the current filter.</li>
 to a number from one to ten by typing the number directly. You can increment 
 and decrement the count for all the cards in a selection using <strong>+</strong> and <strong>-</strong>. If 
 the card set is not editable, these keys have no effect.</p>
+
+<h2 id="other">Other Dialogs</h2>
+
+<h3 id="lookup">Card Lookup Dialog</h3>
+
+<p>For various reasons, Sutekh may fail to identify a card correctly when 
+importing a card set. Names vary (&#8220;Spirit&#8217;s Touch&#8221;, 
+&#8220;The Spirit&#8217;s Touch&#8221;), special characters can be missing, etc.. When 
+this happens, Sutekh will prompt you for the correct card.</p>
+
+<p>The card lookup window displays two lists: the list of all White Wolf cards 
+and the list of unknown cards. Below the unknown card list are options 
+to specify a <a href="#filters">filter</a>, to apply or unapply the filter or to  
+<a href="#search">search</a> the card list.</p>
+
+<p>The unknown card list has two columns&#8212;the name of the unknown card and 
+the currently selected replacement from the White Wolf card list&#8212;and three 
+buttons. Use the first button to replace the card with the currently selected 
+card, the second button to mark the card as ignored, and the last to view a list 
+of reasonable options (Sutekh finds these by applying a filter based on the 
+unknown card name).</p>
+
+<p>Once you have selected replacements for all unknown cards (or chosen to ignore 
+them), use the OK button to create the card set.</p>
+
+<p>If you choose to cancel, the entire import will be aborted and no card set will 
+be created.</p>
+
+<p>If Sutekh cannot identify an expansion in the file, it will prompt you for the 
+correct replacement. If Sutekh finds an impossible card and expansion 
+combination, it will prompt you to resolve the situation using the card lookup 
+dialog&#8212;but you will have the opportunity to select both the card and the 
+expansion.</p>
+
+<h3 id="search">Search Dialog</h3>
+
+<p>The search dilaog can be used to find specific cards or card sets quickly.</p>
+
+<p>In the main window, it can be popped up by using the menu item, the 
+<strong>&lt;Ctrl&gt;-F</strong> shortcut, or by starting to type in the window directly.</p>
+
+<p>In the card lookup window, it can be popped up by using the search button, 
+the <strong>&lt;Ctrl&gt;-F</strong>  shortcut, or by starting to type.</p>
+
+<p>The dialog can be hidden by either pressing the <strong>Escape</strong> key, the <strong>Enter</strong> key, 
+or by clicking outside the search dialog. Note that, to prevent unexpected 
+side-effects, while the search dialog is shown, clicking will only hide 
+the dialog and not effect any else.</p>
+
+<p>The search looks to match names starting with the typed text. When multiple 
+cards match, you can easily move between them by using the up or down keys 
+while the search dialog is visible.</p>
 
 <h2 id="filters">Filters</h2>
 

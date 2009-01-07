@@ -308,7 +308,14 @@ The search dialog can be popped by either using the _Edit->Search_ menu
 option, the *&lt;Ctrl&gt;-F* shortcut, or by typing directly into the list
 view.
 
+The dialog can be hidden by either pressing the *Escape* key, the *Enter* key,
+or by clicking outside the search dialog. Note that, to prevent unexpected
+side-effects, while the search dialog is shown, clicking will only hide
+the dialog and not effect any else.
+
 The search looks to match names starting with the typed text. When multiple
-cards match, you can easily skip between them by using the up or down keys.
+cards match, you can easily move between them by using the up or down keys
+while the search dialog is visible.
+
 
 "The Sutekh Manual":Manual.html
