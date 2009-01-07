@@ -72,7 +72,7 @@ class MainMenu(SutekhMenu):
 
         self.__add_prefs_menu(oPrefsMenu)
 
-        self.create_menu_item('Save Current Pane Set', oMenu, 
+        self.create_menu_item('Save Current Pane Set', oMenu,
                 self.do_save_pane_set)
 
         self.create_menu_item('Restore saved configuration', oMenu,

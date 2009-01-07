@@ -733,6 +733,49 @@ class MultiPaneWindow(gtk.Window):
             # Return the last added pane, for automatic adds
             return self._aHPanes[-1]
 
+    # Utility functions for add_pane
+    def _get_pane_to_replace(self):
+        """Get the pane to be replaced in add_pane
+
+           Return the pane and the part to replace"""
+        oParent = self.get_current_pane()
+        # Must be a hpane, by construction
+        if self._oFocussed:
+            oPart1 = self._oFocussed
+            if isinstance(oPart1.get_parent(), gtk.VPaned):
+                # Veritical pane, so we need to use the pane, not
+                # the Frame
+                oPart1 = oPart1.get_parent()
+        else:
+            # Replace right child of last added pane when no
+            # obvious option
+            oPart1 = oParent.get_child2()
+        return oPart1, oParent
+
+    def _do_replace_pane(self, oParent, oPart1, oNewPane, iConfigPos):
+        """Handle the nitty gritty of replacing a pane in the window"""
+        if oPart1 == oParent.get_child1():
+            oParent.remove(oPart1)
+            oParent.add1(oNewPane)
+            # Going to the left of the current pane,
+            iPos = oParent.get_position()/2
+        else:
+            oParent.remove(oPart1)
+            oParent.add2(oNewPane)
+            oCur = oParent.get_allocation()
+            if oCur.width == 1 and oParent.get_position() > 1 and \
+                    iConfigPos == -1:
+                # we are in early startup, so we can move the
+                # Parent as well
+                # We want to split ourselves into equally sized
+                # sections
+                oCur = self.oVBox.get_allocation()
+                iPos = oCur.width / (len(self._aHPanes) + 2)
+                self.set_pos_for_all_hpanes(iPos)
+            else:
+                iPos = (oCur.width - oParent.get_position())/2
+        return iPos
+
     def add_pane(self, bVertical=False, iConfigPos=-1):
         """Add a blank frame to the window.
 
@@ -741,9 +784,8 @@ class MultiPaneWindow(gtk.Window):
            if iConfigPos == -1, the currently focussed frame is
            halved in size.
            """
-        # this is a complex function (argulably too complex). Simplifying
-        # it is non trivial, but I'm leaving the R0915 + R0912 warning for
-        # now
+        # this is a complex function (arguably too complex). Simplifying
+        # it is non trivial
         oWidget = BasicFrame(self)
         oWidget.add_parts()
         oWidget.set_focus_handler(self.win_focus)
@@ -767,40 +809,11 @@ class MultiPaneWindow(gtk.Window):
                 # We pop out the current frame, and plonk it in
                 # the new pane - we add the new widget to the other
                 # part
-                oParent = self.get_current_pane()
-                # Must be a hpane, by construction
-                if self._oFocussed:
-                    oPart1 = self._oFocussed
-                    if isinstance(oPart1.get_parent(), gtk.VPaned):
-                        # Veritical pane, so we need to use the pane, not
-                        # the Frame
-                        oPart1 = oPart1.get_parent()
-                else:
-                    # Replace right child of last added pane when no
-                    # obvious option
-                    oPart1 = oParent.get_child2()
-                if oPart1 == oParent.get_child1():
-                    oParent.remove(oPart1)
-                    oParent.add1(oNewPane)
-                    # Going to the left of the current pane,
-                    if not bVertical:
-                        iPos = oParent.get_position()/2
-                else:
-                    oParent.remove(oPart1)
-                    oParent.add2(oNewPane)
-                    oCur = oParent.get_allocation()
-                    if not bVertical:
-                        if oCur.width == 1 and oParent.get_position() > 1 and \
-                                iConfigPos == -1:
-                            # we are in early startup, so we can move the
-                            # Parent as well
-                            # We want to split ourselves into equally sized
-                            # sections
-                            oCur = self.oVBox.get_allocation()
-                            iPos = oCur.width / (len(self._aHPanes) + 2)
-                            self.set_pos_for_all_hpanes(iPos)
-                        else:
-                            iPos = (oCur.width - oParent.get_position())/2
+                oPart1, oParent = self._get_pane_to_replace()
+                iTPos = self._do_replace_pane(oParent, oPart1, oNewPane,
+                        iConfigPos)
+                if not bVertical:
+                    iPos = iTPos
             else:
                 # This is the first HPane, or the 1st VPane we add, so
                 # vbox has 2 children
