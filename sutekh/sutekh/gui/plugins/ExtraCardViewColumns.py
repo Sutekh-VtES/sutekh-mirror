@@ -204,14 +204,18 @@ class ExtraCardViewColumns(CardListPlugin):
         """get the group info for the card"""
         if not oCard is None and not oCard.group is None:
             return oCard.group, [None]
-        return -1, [None]
+        # We use -1 for the any group, so flag with a very different number
+        return -100, [None]
 
     def _render_group(self, oColumn, oCell, oModel, oIter):
         """Display the group info"""
         oCard = self._get_card(oIter)
         iGrp, aIcons = self._get_data_group(oCard)
-        if iGrp != -1:
-            oCell.set_data([str(iGrp)], aIcons, SHOW_TEXT_ONLY)
+        if iGrp != -100:
+            if iGrp == -1:
+                oCell.set_data(['Any'], aIcons, SHOW_TEXT_ONLY)
+            else:
+                oCell.set_data([str(iGrp)], aIcons, SHOW_TEXT_ONLY)
         else:
             oCell.set_data([""], aIcons, SHOW_TEXT_ONLY)
 
