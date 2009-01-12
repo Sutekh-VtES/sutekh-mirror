@@ -149,8 +149,8 @@ class CardSetCardListModel(CardListModel):
         if not self._dName2Iter:
             # Showing nothing
             sText = self._get_empty_text()
-            self.oEmptyIter = self.insert_before(None, None, (sText,
-                self.format_count(0), '0', False, False, [], []))
+            self.oEmptyIter = self.append(None, (sText, self.format_count(0),
+                '0', False, False, [], []))
 
     def load(self):
         # pylint: disable-msg=R0914
@@ -191,11 +191,10 @@ class CardSetCardListModel(CardListModel):
                 iGrpCnt += iCnt
                 iParGrpCnt += iParCnt
                 bIncCard, bDecCard = self.check_inc_dec(iCnt)
-                oChildIter = self.insert_before(oSectionIter, None,
-                    (oCard.name, self.format_count(iCnt),
-                        self.format_parent_count(iParCnt, iCnt),
-                        bIncCard, bDecCard, [], [])
-                )
+                oChildIter = self.append(oSectionIter, (oCard.name,
+                    self.format_count(iCnt),
+                    self.format_parent_count(iParCnt, iCnt), bIncCard,
+                    bDecCard, [], []))
                 self._dName2Iter.setdefault(oCard.name, []).append(oChildIter)
                 self._add_children(oChildIter, oRow)
             # Update Group Section
@@ -231,28 +230,35 @@ class CardSetCardListModel(CardListModel):
         """Add the needed children for a card in the model."""
         dExpansionInfo = oRow.get_expansion_info()
         dChildInfo = oRow.get_child_info()
+        sCardName = self.get_name_from_iter(oChildIter)
         if self.iExtraLevelsMode == SHOW_EXPANSIONS:
             for sExpansion in sorted(dExpansionInfo):
                 self._add_extra_level(oChildIter, sExpansion,
-                        dExpansionInfo[sExpansion])
+                        dExpansionInfo[sExpansion],
+                        (2, sCardName))
         elif self.iExtraLevelsMode == SHOW_CARD_SETS:
             for sChildSet in sorted(dChildInfo):
                 self._add_extra_level(oChildIter, sChildSet,
-                        dChildInfo[sChildSet])
+                        dChildInfo[sChildSet],
+                        (2, sCardName))
         elif self.iExtraLevelsMode == EXPANSIONS_AND_CARD_SETS:
             for sExpansion in sorted(dExpansionInfo):
                 oSubIter = self._add_extra_level(oChildIter,
-                        sExpansion, dExpansionInfo[sExpansion])
+                        sExpansion, dExpansionInfo[sExpansion],
+                        (2, sCardName))
                 for sChildSet in sorted(dChildInfo[sExpansion]):
                     self._add_extra_level(oSubIter, sChildSet,
-                            dChildInfo[sExpansion][sChildSet])
+                            dChildInfo[sExpansion][sChildSet],
+                            (3, (sCardName, sExpansion)))
         elif self.iExtraLevelsMode == CARD_SETS_AND_EXPANSIONS:
             for sChildSet in sorted(dChildInfo):
                 oSubIter = self._add_extra_level(oChildIter,
-                        sChildSet, dChildInfo[sChildSet])
+                        sChildSet, dChildInfo[sChildSet],
+                        (2, sCardName))
                 for sExpansion in dExpansionInfo[sChildSet]:
                     self._add_extra_level(oSubIter, sExpansion,
-                            dExpansionInfo[sChildSet][sExpansion])
+                            dExpansionInfo[sChildSet][sExpansion],
+                            (3, (sCardName, sChildSet)))
 
     def check_inc_dec(self, iCnt):
         """Helper function to get correct flags"""
@@ -269,25 +275,20 @@ class CardSetCardListModel(CardListModel):
                 4, bDecCard
                 )
 
-    def _add_extra_level(self, oParIter, sName, tInfo):
+    def _add_extra_level(self, oParIter, sName, tInfo, tKeyInfo):
         """Add an extra level iterator to the card list model."""
         iCnt, iParCnt, bIncCard, bDecCard = tInfo
-        # insert_before(x, None) appends the Iter
-        oIter = self.insert_before(oParIter, None, (sName,
-            self.format_count(iCnt), self.format_parent_count(iParCnt, iCnt),
-            bIncCard, bDecCard, [], []))
-        iDepth = self.iter_depth(oIter)
+        iDepth, oKey = tKeyInfo
+        oIter = self.append(oParIter, (sName, self.format_count(iCnt),
+            self.format_parent_count(iParCnt, iCnt), bIncCard, bDecCard,
+            [], []))
         if iDepth == 2:
-            sCardName = self.get_name_from_iter(oParIter)
-            self._dNameSecondLevel2Iter.setdefault(sCardName, {})
-            self._dNameSecondLevel2Iter[sCardName].setdefault(sName,
+            self._dNameSecondLevel2Iter.setdefault(oKey, {})
+            self._dNameSecondLevel2Iter[oKey].setdefault(sName,
                     []).append(oIter)
         elif iDepth == 3:
-            sCardName = self.get_name_from_iter(self.iter_parent(oParIter))
-            sSecondLevelName = self.get_name_from_iter(oParIter)
-            tSLKey = (sCardName, sSecondLevelName)
-            self._dName2nd3rdLevel2Iter.setdefault(tSLKey, {})
-            self._dName2nd3rdLevel2Iter[tSLKey].setdefault(sName,
+            self._dName2nd3rdLevel2Iter.setdefault(oKey, {})
+            self._dName2nd3rdLevel2Iter[oKey].setdefault(sName,
                     []).append(oIter)
         return oIter
 
@@ -855,13 +856,10 @@ class CardSetCardListModel(CardListModel):
         """Handle the addition of a new group entry from add_new_card"""
         aTexts, aIcons = self.lookup_icons(sGroup)
         if aTexts:
-            oSectionIter = self.insert_before(None, None, (sGroup,
-                self.format_count(0),
-                self.format_parent_count(0, 0), False, False, aTexts,
-                aIcons))
+            oSectionIter = self.append(None, (sGroup, self.format_count(0),
+                self.format_parent_count(0, 0), False, False, aTexts, aIcons))
         else:
-            oSectionIter = self.insert_before(None, None, (sGroup,
-                self.format_count(0),
+            oSectionIter = self.append(None, (sGroup, self.format_count(0),
                 self.format_parent_count(0, 0), False, False, [], []))
         return oSectionIter
 
@@ -924,11 +922,10 @@ class CardSetCardListModel(CardListModel):
                 iGrpCnt += iCnt
                 iParGrpCnt += iParCnt
                 bIncCard, bDecCard = self.check_inc_dec(iCnt)
-                oChildIter = self.insert_before(oSectionIter, None,
-                    (oCard.name, self.format_count(iCnt),
-                        self.format_parent_count(iParCnt, iCnt),
-                        bIncCard, bDecCard, [], [])
-                )
+                oChildIter = self.append(oSectionIter, (oCard.name,
+                    self.format_count(iCnt),
+                    self.format_parent_count(iParCnt, iCnt),
+                    bIncCard, bDecCard, [], []))
                 self._dName2Iter.setdefault(oCard.name, []).append(oChildIter)
                 # Handle as for loading
                 self._add_children(oChildIter, oRow)
@@ -1269,7 +1266,7 @@ class CardSetCardListModel(CardListModel):
                 bIncCard, bDecCard = self.check_inc_dec(iCnt)
                 for oIter in self._dNameSecondLevel2Iter[sCardName][sExpName]:
                     self._add_extra_level(oIter, sCardSet, (iCnt, iParCnt,
-                        bIncCard, bDecCard))
+                        bIncCard, bDecCard), (3, (sCardName, sExpName)))
 
     def _update_2nd_level_expansions(self, oPhysCard, iChg, iParChg,
             bCheckAddRemove=True):
@@ -1304,7 +1301,7 @@ class CardSetCardListModel(CardListModel):
             iParCnt = self._get_parent_count(oPhysCard, iChg)
             for oIter in self._dName2Iter[sCardName]:
                 self._add_extra_level(oIter, sExpName, (iChg, iParCnt,
-                    bIncCard, bDecCard))
+                    bIncCard, bDecCard), (2, sCardName))
                 if self.iExtraLevelsMode == EXPANSIONS_AND_CARD_SETS \
                         and self.iShowCardMode not in [ALL_CARDS,
                                 CHILD_CARDS]:
@@ -1373,7 +1370,8 @@ class CardSetCardListModel(CardListModel):
                     for oChildIter in self._dNameSecondLevel2Iter[sCardName][
                             sCardSetName]:
                         self._add_extra_level(oChildIter, sExpName, (iCnt,
-                            iParCnt, bIncCard, bDecCard))
+                            iParCnt, bIncCard, bDecCard), (3, (sCardName,
+                                sCardSetName)))
 
     def alter_card_count(self, oPhysCard, iChg):
         """Alter the card count of a card which is in the current list
@@ -1517,7 +1515,8 @@ class CardSetCardListModel(CardListModel):
             for oIter in self._dName2Iter[sCardName]:
                 iParCnt = self.get_int_value(oIter, 2)
                 self._add_extra_level(oIter, sCardSetName,
-                        (iCnt, iParCnt, bIncCard, bDecCard))
+                        (iCnt, iParCnt, bIncCard, bDecCard),
+                        (2, sCardName))
 
     def _add_child_3rd_level_exp_entry(self, oPhysCard, sCardSetName,
             tExpKey):
@@ -1533,7 +1532,7 @@ class CardSetCardListModel(CardListModel):
         bIncCard, bDecCard = self.check_inc_dec(iCnt)
         for oIter in self._dNameSecondLevel2Iter[sCardName][sCardSetName]:
             self._add_extra_level(oIter, sExpName, (iCnt, iParCnt, bIncCard,
-                bDecCard))
+                bDecCard), (3, (sCardName, sCardSetName)))
 
     def alter_child_count(self, oPhysCard, sCardSetName, iChg):
         """Adjust the count for the card in the given card set by iChg"""
@@ -1590,7 +1589,7 @@ class CardSetCardListModel(CardListModel):
                 iParCnt = self.get_int_value(oIter, 2)
                 bIncCard, bDecCard = self.check_inc_dec(iCnt)
                 self._add_extra_level(oIter, sCardSetName, (iCnt, iParCnt,
-                    bIncCard, bDecCard))
+                    bIncCard, bDecCard), (3, (sCardName, sExpName)))
 
     def alter_child_count_expansions(self, oPhysCard, sCardSetName, iChg):
         """Handle the alter child card case when showing expansions as the
@@ -1610,7 +1609,8 @@ class CardSetCardListModel(CardListModel):
                 bIncCard, bDecCard = self.check_inc_dec(iCnt)
                 for oIter in self._dName2Iter[sCardName]:
                     self._add_extra_level(oIter, sExpName,
-                            (iCnt, iParCnt, bIncCard, bDecCard))
+                            (iCnt, iParCnt, bIncCard, bDecCard),
+                            (2, sCardName))
             if self.iExtraLevelsMode == EXPANSIONS_AND_CARD_SETS and \
                     sExpName in self._dNameSecondLevel2Iter[sCardName]:
                 self._inc_exp_child_set_count(tExpKey, sCardSetName)
@@ -1683,6 +1683,7 @@ class CardSetCardListModel(CardListModel):
             for oIter in self._dName2Iter[sCardName]:
                 iParCnt = self.get_int_value(oIter, 2)
                 self._add_extra_level(oIter, sCardSetName,
-                        (iCnt, iParCnt, bIncCard, bDecCard))
+                        (iCnt, iParCnt, bIncCard, bDecCard),
+                        (2, sCardName))
             self._add_child_3rd_level_exp_entry(oPhysCard, sCardSetName,
                     tExpKey)

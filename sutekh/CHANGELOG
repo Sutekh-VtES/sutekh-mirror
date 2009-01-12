@@ -1,6 +1,8 @@
 12 Jan 2008
  * Fix bug which caused editable card sets to be reloaded several times when
    the pane layout changed.
+ * Avoid some unnessecary queries into the CardListModel - speeds up complex
+   loads.
 
 08 Jan 2008
  * Tweak extra columns so 'Any' group shows up properly
