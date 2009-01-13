@@ -88,6 +88,12 @@ class CardListModel(gtk.TreeStore):
         self.oIconManager = None
         self.bUseIcons = True
 
+        # Set sort functions so numerical sorts work as expected
+        # Card numbers
+        self.set_sort_func(1, self.num_col_sort_func, 1)
+        # Parent counts
+        self.set_sort_func(2, self.num_col_sort_func, 2)
+
     # pylint: disable-msg=W0212, C0103
     # W0212 - we explicitly allow access via these properties
     # C0103 - we allow these names
@@ -141,6 +147,14 @@ class CardListModel(gtk.TreeStore):
         else:
             return 0
         return int(sValue)
+
+    def num_col_sort_func(self, oModel, oIter1, oIter2, iPos):
+        """Custom sort function for the numerical columns
+
+           iPos is user info set by set_sort_func"""
+        iNum1 = self.get_int_value(oIter1, iPos)
+        iNum2 = self.get_int_value(oIter2, iPos)
+        return cmp(iNum1, iNum2)
 
     def lookup_icons(self, sGroup):
         """Lookup the icons for the group. Method since it's repeated in
