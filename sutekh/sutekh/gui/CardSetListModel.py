@@ -172,6 +172,15 @@ class CardSetCardListModel(CardListModel):
         oGroupedIter, aAbsCards = self.grouped_card_iter(oCardIter)
         self.oEmptyIter = None
 
+        # Disable sorting while we do the insertions
+        iSortColumn, iSortOrder = self.get_sort_column_id()
+        # iSortColumn can be None or 0
+        # None => defaults, so we do nothing, but 0 is a column to sort on
+        # so we do need to unset in that case
+        if iSortColumn is not None:
+            # gtk+ docs says this disables sorting
+            self.set_sort_column_id(-2, 0)
+
         # Iterate over groups
         for sGroup, oGroupIter in oGroupedIter:
             # Check for null group
@@ -221,6 +230,9 @@ class CardSetCardListModel(CardListModel):
                         )
 
         self._check_if_empty()
+        # Restore sorting
+        if iSortColumn is not None:
+            self.set_sort_column_id(iSortColumn, iSortOrder)
 
         # Notify Listeners
         for oListener in self.dListeners:
