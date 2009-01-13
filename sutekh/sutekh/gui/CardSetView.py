@@ -129,6 +129,11 @@ class CardSetView(CardListView):
         self.oCellColor = None
 
         self.set_fixed_height_mode(True)
+        # Set sort functions so numerical sorts work as expected
+        # Card numbers
+        self._oModel.set_sort_func(1, self._oModel.num_col_sort_func, 1)
+        # Parent counts
+        self._oModel.set_sort_func(2, self._oModel.num_col_sort_func, 2)
 
     # pylint: enable-msg=R0915
 

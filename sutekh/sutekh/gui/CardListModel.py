@@ -88,12 +88,6 @@ class CardListModel(gtk.TreeStore):
         self.oIconManager = None
         self.bUseIcons = True
 
-        # Set sort functions so numerical sorts work as expected
-        # Card numbers
-        self.set_sort_func(1, self.num_col_sort_func, 1)
-        # Parent counts
-        self.set_sort_func(2, self.num_col_sort_func, 2)
-
     # pylint: disable-msg=W0212, C0103
     # W0212 - we explicitly allow access via these properties
     # C0103 - we allow these names
