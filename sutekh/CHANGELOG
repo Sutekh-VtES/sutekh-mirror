@@ -2,6 +2,8 @@
  * Fix numerical sorting on card count + parent count cols to use numerical,
    not string sort order
  * Disable sorting while reloading card sets.
+ * Tweak CellRendererIcons to accept None as meaning no icon - allows
+   speeding up large loads slightly.
 
 12 Jan 2008
  * Fix bug which caused editable card sets to be reloaded several times when

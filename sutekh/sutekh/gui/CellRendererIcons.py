@@ -59,8 +59,13 @@ class CellRendererIcons(gtk.GenericCellRenderer):
 
     def do_set_property(self, oProp, oValue):
         """Allow setting the properties"""
+        # pylint: disable-msg=R0912
+        # Essentially nested case statements, so many branches
         if oProp.name == 'icons':
-            if isinstance(oValue, list):
+            if oValue is None:
+                # Special case
+                self.aData = []
+            elif isinstance(oValue, list):
                 if self.aData and len(oValue) == len(self.aData):
                     self.aData = zip([x[0] for x in self.aData], oValue)
                 else:
@@ -68,7 +73,10 @@ class CellRendererIcons(gtk.GenericCellRenderer):
             else:
                 raise AttributeError, 'Incorrect type for icons'
         elif oProp.name == 'textlist':
-            if isinstance(oValue, list):
+            if oValue is None:
+                # Special case
+                self.aData = []
+            elif isinstance(oValue, list):
                 if self.aData and len(self.aData) == len(oValue):
                     self.aData = zip(oValue, [x[1] for x in self.aData])
                 else:

@@ -44,7 +44,7 @@ For 0.8.0 cycle
     * Multiple copies of a card set open simulatenously
     * Add more keyboard shortcuts
     * Right-click context menus
-
+    * Reduce the gtk speed penalty for large models.
 
 * Post 0.8
   * Allow colouring options for the cards

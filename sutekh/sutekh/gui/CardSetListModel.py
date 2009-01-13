@@ -200,10 +200,11 @@ class CardSetCardListModel(CardListModel):
                 iGrpCnt += iCnt
                 iParGrpCnt += iParCnt
                 bIncCard, bDecCard = self.check_inc_dec(iCnt)
-                oChildIter = self.append(oSectionIter, (oCard.name,
-                    self.format_count(iCnt),
-                    self.format_parent_count(iParCnt, iCnt), bIncCard,
-                    bDecCard, [], []))
+                oChildIter = self.append(oSectionIter)
+                self.set(oChildIter, 0, oCard.name,
+                    1, self.format_count(iCnt),
+                    2, self.format_parent_count(iParCnt, iCnt),
+                    3, bIncCard, 4, bDecCard)
                 self._dName2Iter.setdefault(oCard.name, []).append(oChildIter)
                 self._add_children(oChildIter, oRow)
             # Update Group Section
@@ -225,12 +226,11 @@ class CardSetCardListModel(CardListModel):
                         2, self.format_parent_count(iParGrpCnt, iGrpCnt),
                         3, False,
                         4, False,
-                        5, [],
-                        6, [],
                         )
 
         self._check_if_empty()
         # Restore sorting
+
         if iSortColumn is not None:
             self.set_sort_column_id(iSortColumn, iSortOrder)
 
@@ -291,9 +291,13 @@ class CardSetCardListModel(CardListModel):
         """Add an extra level iterator to the card list model."""
         iCnt, iParCnt, bIncCard, bDecCard = tInfo
         iDepth, oKey = tKeyInfo
-        oIter = self.append(oParIter, (sName, self.format_count(iCnt),
-            self.format_parent_count(iParCnt, iCnt), bIncCard, bDecCard,
-            [], []))
+        oIter = self.append(oParIter)
+        # Rely on the defaults to handle icons + textlist
+        # Since we skip the handling here, this is about 15% faster on
+        # large loads such as All Cards + Expansions + Card Sets
+        self.set(oIter, 0, sName, 1, self.format_count(iCnt),
+            2, self.format_parent_count(iParCnt, iCnt), 3, bIncCard,
+            4, bDecCard)
         if iDepth == 2:
             self._dNameSecondLevel2Iter.setdefault(oKey, {})
             self._dNameSecondLevel2Iter[oKey].setdefault(sName,
@@ -934,10 +938,11 @@ class CardSetCardListModel(CardListModel):
                 iGrpCnt += iCnt
                 iParGrpCnt += iParCnt
                 bIncCard, bDecCard = self.check_inc_dec(iCnt)
-                oChildIter = self.append(oSectionIter, (oCard.name,
-                    self.format_count(iCnt),
-                    self.format_parent_count(iParCnt, iCnt),
-                    bIncCard, bDecCard, [], []))
+                oChildIter = self.append(oSectionIter)
+                self.set(oChildIter, 0, oCard.name,
+                    1, self.format_count(iCnt),
+                    2, self.format_parent_count(iParCnt, iCnt),
+                    3, bIncCard, 4, bDecCard)
                 self._dName2Iter.setdefault(oCard.name, []).append(oChildIter)
                 # Handle as for loading
                 self._add_children(oChildIter, oRow)

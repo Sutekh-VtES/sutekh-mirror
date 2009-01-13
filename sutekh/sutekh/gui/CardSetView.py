@@ -46,8 +46,9 @@ _aMinusKeys = [
 
 
 class CardSetView(CardListView):
-    # pylint: disable-msg=R0904
-    # gtk.Widget, so many public methods
+    # pylint: disable-msg=R0904, R0902
+    # R0904 - gtk.Widget, so many public methods
+    # R0902 - We need to track a fair amount of state, so many attributes
     """Subclass of CardListView specific to the Card Sets
 
        Adds editing support, and other specific to the card sets.
@@ -296,7 +297,7 @@ class CardSetView(CardListView):
             # Ensure hint colour is set correctly
             self.reload_keep_expanded()
         # We only ever need to call this the first time we're mapped.
-        # We don't want to redo this if map is called again due to 
+        # We don't want to redo this if map is called again due to
         # panes moving, etc.
         self.disconnect(self.__iMapID)
 
