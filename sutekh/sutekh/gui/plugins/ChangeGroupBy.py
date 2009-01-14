@@ -107,7 +107,8 @@ class GroupCardList(CardListPlugin):
     def set_grouping(self, cGrping):
         """Set the grouping to that specified by cGrping."""
         self.model.groupby = cGrping
-        self.model.load()
+        # Use view.load so we get busy cursor, etc.
+        self.view.load()
 
     def get_grouping(self):
         """Get the current grouping class."""
