@@ -194,13 +194,15 @@ class CardSetCardListModel(CardListModel):
             # Fill in Cards
             iGrpCnt = 0
             iParGrpCnt = 0
-            for oCard, oRow in oGroupIter:
+            # We reverse, so we can prepend rather than append - 
+            # this is a lot faster for long lists.
+            for oCard, oRow in reversed(oGroupIter):
                 iCnt = oRow.get_card_count()
                 iParCnt = oRow.get_parent_count()
                 iGrpCnt += iCnt
                 iParGrpCnt += iParCnt
                 bIncCard, bDecCard = self.check_inc_dec(iCnt)
-                oChildIter = self.append(oSectionIter)
+                oChildIter = self.prepend(oSectionIter)
                 self.set(oChildIter, 0, oCard.name,
                     1, self.format_count(iCnt),
                     2, self.format_parent_count(iParCnt, iCnt),
