@@ -267,7 +267,7 @@ class CardSetCardListModel(CardListModel):
                 oSubIter = self._add_extra_level(oChildIter,
                         sChildSet, dChildInfo[sChildSet],
                         (2, sCardName))
-                for sExpansion in dExpansionInfo[sChildSet]:
+                for sExpansion in sorted(dExpansionInfo[sChildSet]):
                     self._add_extra_level(oSubIter, sExpansion,
                             dExpansionInfo[sChildSet][sExpansion],
                             (3, (sCardName, sChildSet)))
