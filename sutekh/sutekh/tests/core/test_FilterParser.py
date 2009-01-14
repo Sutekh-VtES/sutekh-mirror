@@ -269,5 +269,28 @@ class FilterParserTests(SutekhTest):
                     " failed. %s != %s." % (oFullFilter, aCSCards,
                         aExpectedCards))
 
+    def test_variables(self):
+        """Test parsing filters with variables"""
+
+        aTests = ['CardType = $a', 'CardType in $a', 'Clan in $a']
+
+        for sFilter in aTests:
+            oAST = self.oFilterParser.apply(sFilter)
+            oFilterPart = oAST.aChildren[0] # Because they're simple children
+            self.assertEqual(oFilterPart.get_name(), '$a')
+            self.assertTrue(oFilterPart.aFilterValues is None)
+
+        # Test error case
+        self.assertRaises(ValueError, self.oFilterParser.apply,
+            'CardType in $a and Clan in $a')
+        self.assertRaises(ValueError, self.oFilterParser.apply,
+            'CardType in')
+        self.assertRaises(ValueError, self.oFilterParser.apply,
+            'Vampire in $a')
+
+        oAST = self.oFilterParser.apply('CardType in "Vampire","Action Mod"')
+        self.assertEqual(oAST.get_invalid_values(), ["Action Mod"])
+        
+
 if __name__ == "__main__":
     unittest.main()

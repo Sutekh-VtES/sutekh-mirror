@@ -5,6 +5,7 @@
  * Use TreeStore.prepend rather than TreeStore.append for the card - speeds
    up loading large models.
  * Add test case for DatabaseVersion code
+ * Extend FilterParser test to cover some parts of the AST
 
 13 Jan 2008
  * Fix numerical sorting on card count + parent count cols to use numerical,
