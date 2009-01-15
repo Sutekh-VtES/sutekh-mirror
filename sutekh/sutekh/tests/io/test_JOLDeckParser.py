@@ -21,7 +21,7 @@ class TestJOLDeckParser(SutekhTest):
         Test Vamp 2
         Test Card 1
         Test Card 1
-        4xTest Card 2
+        4 x   Test Card 2
         Test Card 3
         Test Card 3
         Test Card 3
@@ -35,6 +35,8 @@ class TestJOLDeckParser(SutekhTest):
         Test Card 3
         Test Card 3
         Test Card 4
+        12x Test Card 5
+        2 xTest Card 6
         """
 
     def test_basic(self):
@@ -47,13 +49,15 @@ class TestJOLDeckParser(SutekhTest):
 
         aCards = oHolder.get_cards()
 
-        self.assertEqual(len(aCards), 8)
+        self.assertEqual(len(aCards), 10)
         self.failUnless(("Test Vamp 1", 3) in aCards)
         self.failUnless(("Test Vamp 2", 1) in aCards)
         self.failUnless(("Test Card 1", 2 ) in aCards)
         self.failUnless(("Test Card 2", 4) in aCards)
         self.failUnless(("Test Card 3", 12) in aCards)
         self.failUnless(("Test Card 4", 1) in aCards)
+        self.failUnless(("Test Card 5", 12) in aCards)
+        self.failUnless(("Test Card 6", 2) in aCards)
         self.failUnless(("The Path of Blood", 2) in aCards)
         self.failUnless(("Alan Sovereign (Advanced)", 1) in aCards)
 
