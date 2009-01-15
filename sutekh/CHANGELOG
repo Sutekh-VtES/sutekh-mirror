@@ -4,6 +4,7 @@
  * Pylint cleanups + comment typo fixes
  * Tweak JOL Parser to be less sensitive to use a regexp - less sensitive
    to white space variations and so forth.
+ * Add option to create card sets from the card set compare plugin
 
 14 Jan 2008
  * Sort expansions when adding in Card sets + expansions mode, for consistency

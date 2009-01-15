@@ -7,13 +7,15 @@
 """Compare the contents of two card sets"""
 
 import gtk
-from sutekh.core.SutekhObjects import PhysicalCard, \
-        PhysicalCardSet, IAbstractCard
+from sutekh.core.SutekhObjects import PhysicalCard, IPhysicalCard, \
+        PhysicalCardSet, IAbstractCard, IExpansion
 from sutekh.core.Filters import PhysicalCardSetFilter
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 from sutekh.gui.ScrolledList import ScrolledList
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
+from sutekh.gui.CreateCardSetDialog import CreateCardSetDialog
+from sutekh.gui.CardSetManagementController import update_card_set
 
 def _get_card_set_list(aCardSetNames, bUseExpansions):
     """Get the differences and common cards for the card sets."""
@@ -135,6 +137,17 @@ class CardSetCompare(CardListPlugin):
                 oLabel.set_text('No Cards')
             return oAlign
 
+        def make_page(oList, aCardData):
+            """Setup the list + button for the notebook"""
+            oPage = gtk.VBox(False)
+            oPage.pack_start(AutoScrolledWindow(oList, True), True)
+            if aCardData:
+                oButton = gtk.Button('Create Card Set from this list')
+                oButton.connect('clicked', self.create_card_set,
+                        aCardData)
+                oPage.pack_start(oButton, False)
+            return oPage
+
         (dDifferences, aCommon) = _get_card_set_list(aCardSetNames,
                 bUseExpansions)
         oResultDlg = SutekhDialog("Card Comparison", self.parent,
@@ -146,17 +159,20 @@ class CardSetCompare(CardListPlugin):
         oHeading = gtk.Label()
         oHeading.set_markup('<span foreground = "blue">Common Cards</span>')
         oComm = format_list(aCommon, 'green')
-        oNotebook.append_page(AutoScrolledWindow(oComm, True), oHeading)
-        oDiff1 = format_list(dDifferences[aCardSetNames[0]], 'red')
+        oPage = make_page(oComm, aCommon)
+        oNotebook.append_page(oPage, oHeading)
         oHeading = gtk.Label()
         oHeading.set_markup('<span foreground = "red">Cards only in %s</span>'
                 % aCardSetNames[0])
-        oNotebook.append_page(AutoScrolledWindow(oDiff1, True), oHeading)
-        oDiff2 = format_list(dDifferences[aCardSetNames[1]], 'red')
+        oDiff1 = format_list(dDifferences[aCardSetNames[0]], 'red')
+        oPage = make_page(oDiff1, dDifferences[aCardSetNames[0]])
+        oNotebook.append_page(oPage, oHeading)
         oHeading = gtk.Label()
         oHeading.set_markup('<span foreground = "red">Cards only in %s</span>'
                 % aCardSetNames[1])
-        oNotebook.append_page(AutoScrolledWindow(oDiff2, True), oHeading)
+        oDiff2 = format_list(dDifferences[aCardSetNames[1]], 'red')
+        oPage = make_page(oDiff2, dDifferences[aCardSetNames[1]])
+        oNotebook.append_page(oPage, oHeading)
         # pylint: disable-msg=E1101
         # pylint misses vbox methods
         oResultDlg.vbox.pack_start(oNotebook)
@@ -164,6 +180,33 @@ class CardSetCompare(CardListPlugin):
         oResultDlg.show_all()
         oResultDlg.run()
         oResultDlg.destroy()
+
+    def create_card_set(self, oButton, aCardData):
+        """Create a card set from the card list"""
+        oDlg = CreateCardSetDialog(self.parent)
+        oDlg.run()
+        sCSName = oDlg.get_name()
+        if not sCSName:
+            return
+        if PhysicalCardSet.selectBy(name=sCSName).count() != 0:
+            do_complaint_error("Card Set %s already exists."
+                    % sCSName)
+            return
+        oCardSet = PhysicalCardSet(name=sCSName)
+        for sCardName, sExpansionName, iCnt in aCardData:
+            if sExpansionName:
+                oExpansion = IExpansion(sExpansionName)
+            else:
+                oExpansion = None
+            oCard = IAbstractCard(sCardName)
+            oPhysCard = IPhysicalCard((oCard, oExpansion))
+            # pylint: disable-msg=W0612, E1101
+            # W0612 - iNum is just loop counter
+            # E1101 - sqlobject confuses pylint
+            for iNum in range(iCnt):
+                oCardSet.addPhysicalCard(oPhysCard)
+        update_card_set(oCardSet, oDlg, self.parent, None)
+        self.open_cs(sCSName)
 
 
 # pylint: disable-msg=C0103
