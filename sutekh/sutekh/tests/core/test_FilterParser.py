@@ -290,7 +290,7 @@ class FilterParserTests(SutekhTest):
 
         oAST = self.oFilterParser.apply('CardType in "Vampire","Action Mod"')
         self.assertEqual(oAST.get_invalid_values(), ["Action Mod"])
-        
+
 
 if __name__ == "__main__":
     unittest.main()

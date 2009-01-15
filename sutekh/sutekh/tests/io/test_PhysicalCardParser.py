@@ -12,7 +12,8 @@ from sutekh.core.SutekhObjects import IAbstractCard, IPhysicalCard, \
         IPhysicalCardSet, PhysicalCardSet
 from sutekh.io.PhysicalCardParser import PhysicalCardParser
 from sutekh.io.IdentifyXMLFile import IdentifyXMLFile
-import unittest
+from sutekh.io.XmlFileHandling import PhysicalCardXmlFile
+import unittest, os
 
 class PhysicalCardTests(SutekhTest):
     """class for the PhysicalCard tests"""
@@ -59,6 +60,15 @@ class PhysicalCardTests(SutekhTest):
         oMyCollection = IPhysicalCardSet("My Collection")
         assert(len(oMyCollection.cards) == 1)
         PhysicalCardSet.delete(oMyCollection.id)
+
+        oFile = PhysicalCardXmlFile(sTempFileName)
+        oFile.read()
+        oMyCollection = IPhysicalCardSet("My Collection")
+        assert(len(oMyCollection.cards) == 1)
+        oFile.delete()
+        self.assertFalse(os.path.exists(sTempFileName))
+        self.assertRaises(RuntimeError, oFile.write)
+
 
 if __name__ == "__main__":
     unittest.main()
