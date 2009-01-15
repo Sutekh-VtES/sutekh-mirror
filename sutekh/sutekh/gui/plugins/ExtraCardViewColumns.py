@@ -220,7 +220,7 @@ class ExtraCardViewColumns(CardListPlugin):
             oCell.set_data([""], aIcons, SHOW_TEXT_ONLY)
 
     def _get_data_capacity(self, oCard, bGetIcons=True):
-        """Get the cards capacity"""
+        """Get the card's capacity"""
         if not oCard is None and not oCard.capacity is None:
             return oCard.capacity, [None]
         if not oCard is None and not oCard.life is None:
@@ -237,7 +237,7 @@ class ExtraCardViewColumns(CardListPlugin):
             oCell.set_data([""], aIcons, SHOW_TEXT_ONLY)
 
     def _get_data_cost(self, oCard, bGetIcons=True):
-        """Get the cards capacity"""
+        """Get the card's cost"""
         if not oCard is None and not oCard.cost is None:
             return oCard.cost, oCard.costtype, [None]
         return 0, "", [None]
