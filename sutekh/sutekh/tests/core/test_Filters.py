@@ -13,6 +13,7 @@ from sutekh.core.SutekhObjects import AbstractCard, IAbstractCard, \
         MapPhysicalCardToPhysicalCardSet
 from sutekh.core import Filters
 from sqlobject import SQLObjectNotFound
+from sutekh.core.CardLookup import best_guess_filter
 import unittest
 
 class FilterTests(SutekhTest):
@@ -436,6 +437,25 @@ class FilterTests(SutekhTest):
             self.assertEqual(aCSCards, aExpectedCards, "Filter Object %s"
                     " failed. %s != %s." % (oFullFilter, aCSCards,
                         aExpectedCards))
+
+    def test_best_guess_filter(self):
+        """Test the best guess filter"""
+        # This seems the best fit, to include it with the other filter tests
+        aTests = [('Sha-Ennu', [u'Sha-Ennu']),
+                ('She-Ennu', [u'Sha-Ennu']),
+                ('Saa-Ennu', [u'Sha-Ennu']),
+                ('47', [u'AK-47']),
+                ('4', [u'.44 Magnum', u'AK-47', u'Earl "Shaka74" Deams']),
+                ('Alex', [u'Alexandra']),
+                ('Raven', []),
+                ('Path of Blood, The', [u'The Path of Blood']),
+                ]
+        for sGuess, aExpectedNames in aTests:
+            oFilter = best_guess_filter(sGuess)
+            aNames = [x.name for x in oFilter.select(AbstractCard)]
+            self.assertEqual(aNames, aExpectedNames,
+                    '%s != expected %s for guess %s' % (aNames, aExpectedNames,
+                        sGuess))
 
 if __name__ == "__main__":
     unittest.main()
