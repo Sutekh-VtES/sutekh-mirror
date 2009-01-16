@@ -41,6 +41,39 @@ class SecretLibrary(CardListPlugin):
         # SQLObject methods confuse pylint
         self._submit_card_set()
 
+    # Inventory import (to Secret Library)
+
+        # sl_inventory_import (tells that an inventory will be imported to SL)
+        # sl_user_agent, sl_agent_version, username and password as in other APIs
+        # inventory_crypt and inventory_library contain crypt and library data
+        # one entry per line
+        # 4;3;Alan Sovereign (Adv) would mean that i have 4 advanced alans and i want to keep 3 of them (meaning 1 extra)
+        # 2;3;François Warden Loehr (would mean that i have 2 Francois and want 1 more)
+        # 3;3;Coven, The (initial the after card name)
+
+    # Inventory export (from Secret Library)
+
+        # ***SL***CRYPT***
+        # 2;2;Abebe
+        # 2;2;Alan Sovereign (Adv)
+        # 4;3;François Warden Loehr
+        # ***SL***LIBRARY***
+        # 1;1;Absimiliard's Army
+        # 5;5;Ahriman's Demesne
+        # 1;1;Textbook Damnation, The
+        # 8;8;Watch Commander
+        # ***SL***ENDEXPORT***
+
+    # Deck Export (from Secret Library)
+
+        # ***SL***CRYPT***
+        # 2 Count Germaine (Adv)
+        # 2 Count Germaine
+        # ***SL***LIBRARY***
+        # 10 Cloak the Gathering
+        # 2 Coven, The
+        # ***SL***ENDDECK***
+
     def _submit_card_set(self):
         """Submit card set to Secret Library."""
         sUrl = "http://www.tenerdo.org/sl_import_test.php"
