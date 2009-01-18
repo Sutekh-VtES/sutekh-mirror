@@ -28,3 +28,7 @@ whitespace_eol.py - A plugin for pylint which warns about whitespace at the
           end of the line. This plugin ignores syntax, so spaces in comments
           and strings are also caught.  Add to load_plugins in sutekh_pylint,
           as for dict_keys_check.py. 
+
+pyprotocols_interface.py - A plugin so pylint will recognise the PyProtocols
+          advise statemt as implementing an Interface. This aims to cover
+          the usage in Sutekh, and thus isn't very general.

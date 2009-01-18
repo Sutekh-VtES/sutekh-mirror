@@ -13,7 +13,6 @@
 
 from pylint.interfaces import IASTNGChecker
 from pylint.checkers import BaseChecker
-import re
 
 # pylint: disable-msg=R0904
 # Handling three cases, so we exceed the 20 method pylint limit
@@ -28,8 +27,6 @@ class MyDictKeyChecker(BaseChecker):
                           ' "x in Dict"')),
             }
     options = ()
-
-    oRegexp = re.compile(' [A-Za-z]* in d.*\.keys()')
 
     def __internal_test(self, oNode):
         """Grunt work of the test"""
