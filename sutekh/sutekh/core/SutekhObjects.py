@@ -21,8 +21,7 @@ from protocols import advise, Interface
 
 # Interfaces
 
-# pylint: disable-msg=R0923, C0111, C0321
-# R0923 - PyProtocols magic will take care of the implementation
+# pylint: disable-msg=C0111, C0321
 # C0111 - No point in docstrings for these classes, really
 # C0321 - Compactness of single line definitions is good here
 
@@ -42,7 +41,7 @@ class ICreed(Interface): pass
 class IVirtue(Interface): pass
 class IRuling(Interface): pass
 
-# pylint: enable-msg=R0923, C0111, C0321
+# pylint: enable-msg=C0111, C0321
 # Table Objects
 
 # pylint: disable-msg=W0232, R0902, W0201, C0103
@@ -684,7 +683,7 @@ class PhysicalCardAdapter(object):
         # SQLObject confuses pylint
         oAbsCard, oExp = tData
         oPhysicalCard = PhysicalCard.selectBy(abstractCard=oAbsCard,
-                                              expansion=oExp).getOne()
+                expansion=oExp).getOne()
         return oPhysicalCard
 
 # Flushing

@@ -44,11 +44,14 @@ class SecretLibrary(CardListPlugin):
     # Inventory import (to Secret Library)
 
         # sl_inventory_import (tells that an inventory will be imported to SL)
-        # sl_user_agent, sl_agent_version, username and password as in other APIs
+        # sl_user_agent, sl_agent_version, username and password as in other
+        #      APIs
         # inventory_crypt and inventory_library contain crypt and library data
         # one entry per line
-        # 4;3;Alan Sovereign (Adv) would mean that i have 4 advanced alans and i want to keep 3 of them (meaning 1 extra)
-        # 2;3;François Warden Loehr (would mean that i have 2 Francois and want 1 more)
+        # 4;3;Alan Sovereign (Adv) would mean that i have 4 advanced alans
+        #      and i want to keep 3 of them (meaning 1 extra)
+        # 2;3;François Warden Loehr (would mean that i have 2 Francois and
+        #      want 1 more)
         # 3;3;Coven, The (initial the after card name)
 
     # Inventory export (from Secret Library)
