@@ -30,6 +30,10 @@ class CountCardSetCards(CardListPlugin, CardListModelListener):
     dTableVersions = {PhysicalCardSet : [5]}
     aModelsSupported = [PhysicalCardSet]
 
+    sFormat = 'Tot: <b>%(tot)d</b> L: <b>%(lib)d</b> C: <b>%(crypt)d</b>'
+    sTooltip = 'Total Cards: <b>%(tot)d</b> (Library: <b>%(lib)d</b>' \
+            ' Crypt: <b>%(crypt)d</b>)'
+
     # pylint: disable-msg=W0142
     # **magic OK here
     def __init__(self, *aArgs, **kwargs):
@@ -51,8 +55,12 @@ class CountCardSetCards(CardListPlugin, CardListModelListener):
         if not self.check_versions() or not self.check_model_type():
             return None
 
-        self.__oTextLabel = gtk.Label('Total Cards : 0 Crypt Cards : 0 Library'
-                ' Cards : 0')
+        self.__oTextLabel = gtk.Label(self.sFormat % {'tot' : 0,
+            'crypt' : 0, 'lib' : 0})
+        if hasattr(self.__oTextLabel, 'set_tooltip_markup'):
+            self.__oTextLabel.set_tooltip_markup(self.sTooltip % {
+            'tot' : 0, 'crypt' : 0, 'lib' : 0})
+
 
         return self.__oTextLabel
 
@@ -61,9 +69,12 @@ class CountCardSetCards(CardListPlugin, CardListModelListener):
         # Timing issues mean that this can be called before text label has
         # been properly realised, so we need this guard case
         if self.__oTextLabel:
-            self.__oTextLabel.set_markup('Total Cards : <b>%d</b>'
-                    ' Crypt Cards : <b>%d</b> Library Cards : <b>%d</b>' %
-                    (self.__iTot, self.__iCrypt, self.__iLibrary))
+            self.__oTextLabel.set_markup(self.sFormat % {'tot' : self.__iTot,
+                'crypt' : self.__iCrypt, 'lib' : self.__iLibrary})
+            if hasattr(self.__oTextLabel, 'set_tooltip_markup'):
+                self.__oTextLabel.set_tooltip_markup(self.sTooltip % {
+                'tot' : self.__iTot, 'crypt' : self.__iCrypt,
+                'lib' : self.__iLibrary})
 
     def load(self, aAbsCards):
         """Listen on load events & update counts"""
