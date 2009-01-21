@@ -456,7 +456,6 @@ h3(#cardsets_plugins). Plugins
 The following plugins are available from the card set pane plugins menu:
 
 * "Cluster Cards":#cluster_plugin
-* "Clan Discipline Stats":#stats_plugin
 * "Change Grouping":#grouping_plugin
 * "Select Extra Columns":#columns_plugin
 * "Set selected cards to a single expansion":#set_exp_plugin
