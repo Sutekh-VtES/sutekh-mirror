@@ -12,11 +12,9 @@ import re
 import webbrowser
 import urllib
 from sutekh.gui.PluginManager import CardListPlugin
-from sutekh.gui.ProgressDialog import ProgressDialog
-from sutekh.gui.SutekhFileWidget import SutekhFileButton
+from sutekh.gui.FileOrUrlWidget import FileOrUrlWidget
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 from sutekh.SutekhUtility import prefs_dir, ensure_dir_exists
-from sutekh.io.WwFile import WwFile
 
 # pylint: disable-msg=R0904
 # R0904 - gtk Widget, so has many public methods
@@ -40,6 +38,8 @@ class RulebookConfigDialog(SutekhDialog):
                 (gtk.STOCK_OK, gtk.RESPONSE_OK, gtk.STOCK_CANCEL,
                     gtk.RESPONSE_CANCEL))
 
+        self.vbox.set_spacing(10)
+
         oDescLabel = gtk.Label()
         if not bFirstTime:
             oDescLabel.set_markup('<b>Choose how to configure the rulebook '
@@ -49,90 +49,35 @@ class RulebookConfigDialog(SutekhDialog):
                     'plugin</b>\nChoose cancel to skip configuring the '
                     'plugin\nYou will not be prompted again')
 
-        self.oSourceWw = gtk.RadioButton(
-                label='Download from www.white-wolf.com')
-
-        self.oSourceUrl = gtk.RadioButton(self.oSourceWw,
-                label='Download from other URL')
-
-        # SourceUrl sub-components
-        oUrlSub = gtk.VBox(False, 2)
-        self.dUrlSubEntries = {}
+        self._dFileSelectors = {}
         for sName in self.POSSIBLE_FILES:
-            oLabel = gtk.Label(sName)
-            oEntry = gtk.Entry()
-            oHBox = gtk.HBox(False, 2)
-            oHBox.pack_start(oLabel, expand=False, padding=2)
-            oHBox.pack_start(oEntry)
-            oUrlSub.pack_start(oHBox)
-            self.dUrlSubEntries[sName] = oEntry
-
-        self.oSourceFile = gtk.RadioButton(self.oSourceWw,
-                label='Select local file')
-
-        # SourceFile sub-components
-        oFileSub = gtk.VBox(False, 2)
-        self.dFileSubButtons = {}
-        for sName in self.POSSIBLE_FILES:
-            oLabel = gtk.Label(sName)
-            oFileButton = SutekhFileButton(oParent,
-                "Select %s HTML file" % (sName,))
-            oFileButton.add_filter_with_pattern('HTML files',
-                ['*.html', '*.htm'])
-            oHBox = gtk.HBox(False, 2)
-            oHBox.pack_start(oLabel, expand=False, padding=2)
-            oHBox.pack_start(oFileButton)
-            oFileSub.pack_start(oHBox)
-            self.dFileSubButtons[sName] = oFileButton
-
-        # box for holding additional widgets for the various source
-        # options
-        oSubBox = gtk.VBox(False, 2)
-
-        self.oSourceWw.connect('toggled', self._radio_toggled, oSubBox, None)
-        self.oSourceUrl.connect('toggled', self._radio_toggled, oSubBox,
-            oUrlSub)
-        self.oSourceFile.connect('toggled', self._radio_toggled, oSubBox,
-            oFileSub)
-
-        self.oSourceWw.set_active(True)
+            oFileSelector = FileOrUrlWidget(oParent,
+                dUrls = {
+                    'www.white-wolf.com': self.WW_RULEBOOK_URLS[sName]
+                },
+                sTitle="Select %s HTML file ..." % (sName,),
+            )
+            self._dFileSelectors[sName] = oFileSelector
 
         # pylint: disable-msg=E1101
         # pylint doesn't pick up vbox methods correctly
         self.vbox.pack_start(oDescLabel, False, False)
-        self.vbox.pack_start(self.oSourceWw, False, False)
-        self.vbox.pack_start(self.oSourceUrl, False, False)
-        self.vbox.pack_start(self.oSourceFile, False, False)
-        self.vbox.pack_start(oSubBox)
+        for oFileSelector in self._dFileSelectors.values():
+            self.vbox.pack_start(oFileSelector, False, False)
 
         self.show_all()
 
-    def _radio_toggled(self, oRadioButton, oSubBox, oNewChild):
-        """Display the correct sub-widgets when radio buttons change"""
-        if oRadioButton.get_active():
-            for oChild in oSubBox.get_children():
-                oSubBox.remove(oChild)
-            if oNewChild:
-                oSubBox.pack_start(oNewChild)
-            self.show_all()
+    def get_names(self):
+        """Return the names that can be passed to .get_wwfile_data(...).
 
-    def get_url(self):
-        """Get the url selected for download (or None)."""
-        if self.oSourceWw.get_active():
-            return dict(self.WW_RULEBOOK_URLS)
-        elif self.oSourceUrl.get_active():
-            return dict([(sName, self.dUrlSubEntries[sName].get_text())
-                for sName in self.POSSIBLE_FILES])
-        else:
-            return None
+           Omits names where it looks like the user has not selected anything.
+           """
+        return [sName for sName, oSelector in self._dFileSelectors.items()
+                if oSelector.get_file_or_url()[0]]
 
-    def get_file(self):
-        """Get the file name selected (or None)."""
-        if self.oSourceFile.get_active():
-            return dict([(sName, self.dFileSubButtons[sName].get_filename())
-                for sName in self.POSSIBLE_FILES])
-        else:
-            return None
+    def get_wwfile_data(self, sName):
+        """Return the data for the given name."""
+        return self._dFileSelectors[sName].get_wwfile_data()
 
 
 class RulebookPlugin(CardListPlugin):
@@ -240,87 +185,27 @@ class RulebookPlugin(CardListPlugin):
         iResponse = oConfigDialog.run()
 
         if iResponse == gtk.RESPONSE_OK:
-            dUrls = oConfigDialog.get_url()
-            dFiles = oConfigDialog.get_file()
+            bSuccess = True
+            for sName in oConfigDialog.get_names():
+                try:
+                    bResult = self._save_rulebook(sName,
+                        oConfigDialog.get_wwfile_data(sName),
+                    )
+                # pylint: disable-msg=W0703
+                # We really do want to catch all exceptions here
+                except Exception:
+                    bResult = False
 
-            if dUrls is not None:
-                if not self._download_files(dUrls):
-                    do_complaint_error('Unable to successfully download '
-                                        'some or all of the rulebook files')
-            elif dFiles is not None:
-                if not self._copy_files(dFiles):
-                    do_complaint_error('Unable to successfully copy '
-                                        'some or all of the rulebook files')
-            else:
-                # something weird happened
-                pass
+                bSuccess = bSuccess and bResult
+
+            if not bSuccess:
+                do_complaint_error('Unable to successfully download or copy '
+                                    'some or all of the rulebook files')
 
         self._update_menu()
 
         # get rid of the dialog
         oConfigDialog.destroy()
-
-    def _download_files(self, dUrls):
-        """Download files from a dictionary of sName -> sURL mappings."""
-        bSuccess = True
-        for sName, sUrl in dUrls.items():
-            if not sUrl:
-                continue
-            bResult = self._download_rulebook(sName, sUrl)
-            bSuccess = bSuccess and bResult
-        return bSuccess
-
-    def _download_rulebook(self, sName, sUrl):
-        """Download a rulebook from a URL."""
-        try:
-            oFile = WwFile(sUrl, bUrl=True).open()
-            sLength = oFile.info().getheader('Content-Length')
-            if sLength:
-                sData = ""
-                iLength = int(sLength)
-                oProgress = ProgressDialog()
-                oProgress.set_description('Download progress')
-                iTotal = 0
-                bCont = True
-                while bCont:
-                    sInf = oFile.read(10000)
-                    iTotal += 10000
-                    oProgress.update_bar(float(iTotal) / iLength)
-                    if sInf:
-                        sData += sInf
-                    else:
-                        bCont = False
-                        oProgress.destroy()
-            else:
-                # Just try and download
-                sData = oFile.read()
-
-            return self._save_rulebook(sName, sData)
-        # pylint: disable-msg=W0703
-        # We really do want to catch all exceptions here
-        except Exception:
-            return False
-
-    def _copy_files(self, dFiles):
-        """Copy files from a dictionary of sName -> sFile mappings."""
-        bSuccess = True
-        for sName, sFile in dFiles.items():
-            if not sFile:
-                continue
-            bResult = self._copy_rulebook(sName, sFile)
-            bSuccess = bSuccess and bResult
-        return bSuccess
-
-    def _copy_rulebook(self, sName, sFile):
-        """Copy the rulebook from a local file."""
-        try:
-            oFile = WwFile(sFile).open()
-            sData = oFile.read()
-            return self._save_rulebook(sName, sData)
-        # pylint: disable-msg=W0703
-        # We really do want to catch all exceptions here
-        except Exception:
-            return False
 
     def _save_rulebook(self, sName, sData):
         """Save the data from a rulebook to the preferences folder."""
