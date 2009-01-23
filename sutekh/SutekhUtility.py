@@ -77,11 +77,11 @@ def gen_temp_file(sBaseName, sDir):
     (fTemp, sFilename) = tempfile.mkstemp('.xml', sBaseName, sDir)
     # This may not be nessecary, but the available documentation
     # suggests that, on Windows NT anyway, leaving the file open will
-    # cause problems when writePhysicalCards tries to reopen it
+    # cause problems if we try to reopen it
     os.close(fTemp)
     # There is a race condition here, but since Sutekh should not be running
     # with elevated priveleges, this should never be a security issues
-    # The the race requires something to delete and replace the tempfile,
+    # The race requires something to delete and replace the tempfile,
     # I don't see it being triggered accidently
     return sFilename
 

@@ -8,9 +8,10 @@
 
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.core.SutekhObjects import IAbstractCard, IPhysicalCard, \
-        IPhysicalCardSet, MapPhysicalCardToPhysicalCardSet
+        IPhysicalCardSet, MapPhysicalCardToPhysicalCardSet, PhysicalCardSet
 from sutekh.io.AbstractCardSetParser import AbstractCardSetParser
-import unittest
+from sutekh.io.XmlFileHandling import AbstractCardSetXmlFile
+import unittest, os
 
 class AbstractCardSetParserTest(SutekhTest):
     """class for the Abstract Card Set Parser"""
@@ -70,6 +71,18 @@ class AbstractCardSetParserTest(SutekhTest):
         self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
             physicalCardID=oPhysCard2.id).count(),
             2)
+
+        PhysicalCardSet.delete(oCardSet1.id)
+        oFile = AbstractCardSetXmlFile()
+        self.assertRaises(RuntimeError, oFile.read)
+        oFile = AbstractCardSetXmlFile(sTempFileName)
+        oFile.read()
+        oCardSet1 = IPhysicalCardSet("(ACS) Test Set 1")
+        self.assertEqual(len(oCardSet1.cards), 5)
+        oFile.delete()
+        self.assertFalse(os.path.exists(sTempFileName))
+        self.assertRaises(RuntimeError, oFile.write, '(ACS) Test Set 1')
+
 
 if __name__ == "__main__":
     unittest.main()

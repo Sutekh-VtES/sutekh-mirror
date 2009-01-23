@@ -25,14 +25,16 @@ class WhiteWolfParserTests(SutekhTest):
         u"Aaron's Feeding Razor", u"Abandoning the Flesh",
         u"Abbot", u"Abd al-Rashid", u"Abdelsobek",
         u"Abebe", u"Abjure", u"Ablative Skin",
-        u"Abombwe", u"Aeron", u"Aire of Elation", u"Akram", u"Alexandra",
+        u"Abombwe", u"Aeron", u"Aire of Elation", u"Akram",
+        u"Alan Sovereign", u"Alan Sovereign (Advanced)", u"Alexandra",
         u"Alfred Benezri", u"Ambrogino Giovanni", u'Amisa',
         u"Anastasz di Zagreb", u"Angelica, The Canonicus",
         u'Anna "Dictatrix11" Suljic', u"Anson", u"Bronwen", u"Cedric",
         u"Cesewayo", u'Earl "Shaka74" Deams', u"Gracis Nostinus",
         u'Inez "Nurse216" Villagrande', u"Kabede Maru",
         u"Kemintiri (Advanced)", u"L\xe1z\xe1r Dobrescu",
-        u"Predator's Communion", u"Sha-Ennu", u"Yvette, The Hopeless",
+        u"Predator's Communion", u"Sha-Ennu", u"The Path of Blood",
+        u"Yvette, The Hopeless",
         ]
 
     def test_basic(self):

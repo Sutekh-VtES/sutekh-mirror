@@ -64,5 +64,3 @@ class WriteELDBDeckFile(object):
            representing the deck"""
         fOut.write(self._gen_header(oCardSet))
         fOut.write(self._gen_inv(oCardSet))
-
-    # pylint: enable-msg=R0913

@@ -103,12 +103,16 @@ class ZipFileWrapper(object):
         if not bTablesRefreshed:
             raise IOError("No valid card sets found in the zip file.")
         # We try and restore the old PCS's ensuring parents exist
+        dLookupCache = {}
         aToRead = self.oZip.infolist()
         while len(aToRead) > 0:
-            aToRead = self.read_items(aToRead, oCardLookup, oLogger, bOldStyle)
+            aToRead = self.read_items(aToRead, oCardLookup, oLogger, bOldStyle,
+                    dLookupCache)
         self.__close_zip()
 
-    def read_items(self, aList, oCardLookup, oLogger, bOldStyle):
+    # pylint: disable-msg=R0913
+    # we may need all these arguments
+    def read_items(self, aList, oCardLookup, oLogger, bOldStyle, dLookupCache):
         """Read a list of CardSet items from the card list, reaturning
            a list of those that couldn't be read because their parents
            weren't read first"""
@@ -143,7 +147,7 @@ class ZipFileWrapper(object):
             else:
                 continue
             self._aWarnings.extend(oParser.parse_string(oData, oCardLookup,
-                True))
+                True, dLookupCache))
             oLogger.info('%s %s read', oIdParser.type, oItem.filename)
             if bReparent:
                 # pylint: disable-msg=E1103
@@ -156,6 +160,8 @@ class ZipFileWrapper(object):
             raise IOError('Card sets with unstatisfiable parents %s' %
                     ','.join([x.filename for x in aToRead]))
         return aToRead
+
+    # pylint: enable-msg=R0913
 
     def do_dump_all_to_zip(self, oLogHandler=None):
         """Dump all the database contents to the zip file"""

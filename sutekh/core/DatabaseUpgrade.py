@@ -930,6 +930,7 @@ def copy_to_new_abstract_card_db(oOrigConn, oNewConn, oCardLookup,
       can adapt to changed names, etc.
       """
     # pylint: disable-msg=R0914
+    # we need a lot of variables here
     aPhysCardSets = []
     oOldConn = sqlhub.processConnection
     sqlhub.processConnection = oOrigConn

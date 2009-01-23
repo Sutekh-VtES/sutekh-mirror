@@ -8,10 +8,6 @@
    GUI to pick unknown cards from.  """
 
 import re
-# pylint: disable-msg=W0402
-# we need string.punctuation
-import string
-# pylint: enable-msg=W0402
 import gtk
 import pango
 import gobject
@@ -19,12 +15,22 @@ from sqlobject import SQLObjectNotFound
 from sutekh.core.SutekhObjects import AbstractCard, PhysicalCard, IExpansion, \
         Expansion, IPhysicalCard
 from sutekh.core.CardLookup import AbstractCardLookup, PhysicalCardLookup, \
-        ExpansionLookup, LookupFailed
-from sutekh.core.Filters import CardNameFilter
+        ExpansionLookup, LookupFailed, best_guess_filter
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 from sutekh.gui.CellRendererSutekhButton import CellRendererSutekhButton
 from sutekh.gui.PhysicalCardView import PhysicalCardView
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
+
+
+def add_accel_to_button(oButton, sAccelKey, oAccelGroup, sToolTip=None):
+    """Creates a button using an gtk.AccelLabel to display the accelerator"""
+    (iKeyVal, iMod) = gtk.accelerator_parse(sAccelKey)
+    if iKeyVal != 0:
+        oButton.add_accelerator('clicked', oAccelGroup, iKeyVal, iMod,
+                gtk.ACCEL_VISIBLE)
+    if sToolTip and hasattr(oButton,'set_tooltip_markup'):
+        oButton.set_tooltip_markup(sToolTip)
+
 
 class DummyController(object):
     """Dummy controller class, so we can use the card views directly"""
@@ -185,7 +191,7 @@ class ReplacementTreeView(gtk.TreeView):
         # we ignore sExp here
         sName, sExp = self.parse_card_name(sFullName)
 
-        oFilter = self.best_guess_filter(sName)
+        oFilter = best_guess_filter(sName)
         self.oCardListView.get_model().selectfilter = oFilter
 
         if not self.oFilterToggleButton.get_active():
@@ -205,6 +211,10 @@ class ReplacementTreeView(gtk.TreeView):
             self.oFilterToggleButton.get_active()
         self.oCardListView.load()
 
+    def show_search(self, oButton):
+        """Popup the search dialog"""
+        self.oCardListView.searchdialog.show_all()
+
     # pylint: enable-msg=W0613
 
     NAME_RE = re.compile(r"^(?P<name>.*?)( \[(?P<exp>[^]]+)\])?$")
@@ -215,35 +225,6 @@ class ReplacementTreeView(gtk.TreeView):
         oMatch = cls.NAME_RE.match(sName)
         assert oMatch is not None
         return oMatch.group('name'), oMatch.group('exp')
-
-    @staticmethod
-    def best_guess_filter(sName):
-        """Create a filter for selecting close matches to a card name."""
-        # Set the filter on the Card List to one the does a
-        # Best guess search
-        sFilterString = ' ' + sName.lower() + ' '
-        # Kill the's in the string
-        sFilterString = sFilterString.replace(' the ', ' ')
-        # Kill commas, as possible issues
-        sFilterString = sFilterString.replace(',', ' ')
-        # Free style punctuation
-        for sPunc in string.punctuation:
-            sFilterString = sFilterString.replace(sPunc, '_')
-        # Stolen semi-concept from soundex - replace vowels with wildcards
-        # Should these be %'s ??
-        # (Should at least handle the Rotscheck variation as it stands)
-        sFilterString = sFilterString.replace('a', '_')
-        sFilterString = sFilterString.replace('e', '_')
-        sFilterString = sFilterString.replace('i', '_')
-        sFilterString = sFilterString.replace('o', '_')
-        sFilterString = sFilterString.replace('u', '_')
-        # Normalise spaces and Wildcard spaces
-        sFilterString = ' '.join(sFilterString.split())
-        sFilterString = sFilterString.replace(' ', '%')
-        # Add % on outside
-        sFilterString = '%' + sFilterString + '%'
-        return CardNameFilter(sFilterString)
-
 
 class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
     """Lookup AbstractCards. Use the user as the AI if a simple lookup fails.
@@ -349,7 +330,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
                 try:
                     oExp = IExpansion(sExp)
                     dExps[sExp] = oExp
-                except KeyError:
+                except SQLObjectNotFound:
                     dUnknownExps[sExp] = None
 
         if dUnknownExps:
@@ -363,7 +344,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
             try:
                 oExp = IExpansion(sNewName)
                 dUnknownExps[sName] = oExp
-            except KeyError:
+            except SQLObjectNotFound:
                 raise RuntimeError("Unexpectedly encountered" \
                                    " missing expansion '%s'." % sNewName)
 
@@ -463,6 +444,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
 
         return oUnknownDialog, oHBox
 
+
     def _fill_dialog(self, oHBox, oView):
         """Handle the view setup and default buttons for the lookup
            dialog."""
@@ -475,8 +457,22 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
         oVBox = gtk.VBox()
         oHBox.pack_start(oVBox)
 
-        oFilterDialogButton = gtk.Button("Specify Filter")
-        oFilterApplyButton = gtk.CheckButton("Apply Filter to view")
+        # Add same shortcuts as the pane menus
+        oAccelGroup = gtk.AccelGroup()
+        # oHBox is a child of a vbox which is a child of the dialog
+        oHBox.get_parent().get_parent().add_accel_group(oAccelGroup)
+
+        oFilterDialogButton = gtk.Button('Specify Filter')
+        oFilterApplyButton = gtk.CheckButton("Apply Filter")
+        oSearchButton = gtk.Button("Search List")
+        add_accel_to_button(oFilterDialogButton, "<Ctrl>s", oAccelGroup,
+                'Open the Filter Editing Dialog.\nShortcut :<b>Ctrl-S</b>')
+        add_accel_to_button(oFilterApplyButton, "<Ctrl>t", oAccelGroup,
+                'Toggle the applied of the filter.\n'
+                'Shortcut : <b>Ctrl-T</b>')
+        add_accel_to_button(oSearchButton, "<Ctrl>f", oAccelGroup,
+                'Open the search dailog for the cards.\n'
+                'Shortcut : <b>Ctrl-F</b>')
 
         oReplacementView = ReplacementTreeView(oView,
             oFilterApplyButton)
@@ -485,17 +481,21 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
         oReplacementWin.set_size_request(400, 600)
         oVBox.pack_start(oReplacementWin, True, True)
 
-        oFilterButtons = gtk.HBox()
+        oFilterButtons = gtk.HBox(spacing=2)
         oVBox.pack_start(gtk.HSeparator())
         oVBox.pack_start(oFilterButtons)
 
         oFilterButtons.pack_start(oFilterDialogButton)
         oFilterButtons.pack_start(oFilterApplyButton)
+        oFilterButtons.pack_start(oSearchButton)
+
 
         oFilterDialogButton.connect("clicked",
             oReplacementView.run_filter_dialog)
         oFilterApplyButton.connect("toggled",
             oReplacementView.toggle_apply_filter)
+        oSearchButton.connect("clicked",
+            oReplacementView.show_search)
 
         return oReplacementView
 
@@ -509,7 +509,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
                 iExpID = IExpansion(sNewExpName).id
             except SQLObjectNotFound:
                 iExpID = None
-            except KeyError:
+            except SQLObjectNotFound:
                 iExpID = None
         else:
             iExpID = None
@@ -538,7 +538,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
 
         # Populate the model with the card names and best guesses
         for sName in dUnknownCards:
-            oBestGuessFilter = oReplacementView.best_guess_filter(sName)
+            oBestGuessFilter = best_guess_filter(sName)
             aCards = list(oBestGuessFilter.select(AbstractCard))
             if len(aCards) == 1:
                 sBestGuess = aCards[0].name

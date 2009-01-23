@@ -9,10 +9,12 @@
 
 # pylint: disable-msg=W0402
 # string.digits is OK
-import string
+import re
 
 class JOLDeckParser(object):
     """Parser for the JOL Deck format."""
+
+    oCardLineRegexp = re.compile('((?P<num>[0-9]+)(\s)*x(\s)*)?(?P<name>.*)$')
 
     def __init__(self, oHolder):
         self._oHolder = oHolder
@@ -23,17 +25,29 @@ class JOLDeckParser(object):
 
     def feed(self, sLine):
         """Feed the next line to the parser and extract the cards"""
-        # FIXME: This assumes that WW will not produce a card starting with
-        # a numeral  - this is dangerous
         sLine = sLine.strip()
         if not sLine:
             # skip blank lines
             return
-        if sLine[0] in string.digits:
-            sNum, sName = sLine.split('x', 1)
-            iNum = int(sNum)
+        oMatch = self.oCardLineRegexp.match(sLine)
+        if oMatch is not None:
+            dResults = oMatch.groupdict()
+            if dResults['num']:
+                iNum = int(dResults['num'])
+            else:
+                iNum = 1
+            sName = dResults['name']
         else:
-            iNum = 1
-            sName = sLine
+            # error condition
+            raise RuntimeError('Unrecognised line for JOL format')
+        # Unescape names
+        if sName.endswith('(advanced)'):
+            sName = sName.replace('(advanced)', '(Advanced)')
+        # The following two may not be necessary, but it's not unlikely that
+        # people will produce decks with these
+        if sName.endswith(', The'):
+            sName = 'The ' + sName[:-5]
+        elif sName.endswith(', An'):
+            sName = 'An ' + sName[:-4]
         # JOL has no expansion info
         self._oHolder.add(iNum, sName, None)

@@ -473,16 +473,16 @@ class FilterPartNode(OperatorNode):
                 len(aValidVals):
             for aSubCurVals, aSubValidVals in zip(aCurVals, aValidVals):
                 for oVal in aSubCurVals:
-                    if oVal.value == ',':
+                    if oVal.oValue == ',':
                         continue
-                    if oVal.value not in aSubValidVals:
-                        aRes.append(oVal.value)
+                    if oVal.oValue not in aSubValidVals:
+                        aRes.append(oVal.oValue)
         else:
             for oVal in aCurVals:
-                if oVal.value == ',':
+                if oVal.oValue == ',':
                     continue
-                if oVal.value not in aValidVals:
-                    aRes.append(oVal.value)
+                if oVal.oValue not in aValidVals:
+                    aRes.append(oVal.oValue)
         if len(aRes)>0:
             return aRes
         else:

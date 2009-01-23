@@ -13,12 +13,14 @@ try:
 except ImportError:
     from elementtree.ElementTree import XMLParser
 # pylint: enable-msg=E0611, F0401
+from sutekh.core.ArdbInfo import unescape_ardb_name, \
+        unescape_ardb_expansion_name
 
 class XMLState(object):
     """Simple State tracker used by the XMLParser"""
     # tag states of interest
-    NOTAG, DECKNAME, DECKAUTHOR, DECKCOMMENT, INCARD, CARDNAME, CARDSET = \
-            range(7)
+    NOTAG, DECKNAME, DECKAUTHOR, DECKCOMMENT, INCARD, CARDNAME, CARDSET, \
+            ADVANCED = range(8)
 
     def __init__(self, oHolder):
         self._sData = ""
@@ -27,6 +29,7 @@ class XMLState(object):
         self._iCount = 0
         self._iState = self.NOTAG
         self._oHolder = oHolder
+        self._sAdvanced = ''
 
     def reset(self):
         """Reset internal state"""
@@ -35,6 +38,7 @@ class XMLState(object):
         self._sCardSet = None
         self._iCount = 0
         self._iState = self.NOTAG
+        self._sAdvanced = ''
 
     def start(self, sTag, dAttributes):
         """Start tag encountered"""
@@ -43,6 +47,8 @@ class XMLState(object):
                 self._iState = self.CARDNAME
             elif sTag == 'set':
                 self._iState = self.CARDSET
+            elif sTag == 'adv':
+                self._iState = self.ADVANCED
         elif self._iState == self.NOTAG:
             if sTag == 'name':
                 self._iState = self.DECKNAME
@@ -61,11 +67,18 @@ class XMLState(object):
                 if not self._sCardSet:
                     # convert empty string to None
                     self._sCardSet = None
+                else:
+                    self._sCardSet = unescape_ardb_expansion_name(
+                            self._sCardSet)
+                if self._sAdvanced == '(Advanced)':
+                    self._sCardName = self._sCardName + ' (Advanced)'
+                self._sCardName = unescape_ardb_name(self._sCardName)
                 self._oHolder.add(self._iCount, self._sCardName,
                         self._sCardSet)
                 self._sCardName = None
                 self._sCardSet = None
                 self._iState = self.NOTAG
+                self._sAdvanced = ''
         elif self._iState == self.CARDNAME and sTag == 'name':
             self._iState = self.INCARD
             self._sCardName = self._sData
@@ -85,6 +98,10 @@ class XMLState(object):
         elif self._iState == self.DECKCOMMENT and sTag == 'description':
             self._iState = self.NOTAG
             self._oHolder.comment = self._sData
+            self._sData = ""
+        elif self._iState == self.ADVANCED and sTag == 'adv':
+            self._iState = self.INCARD
+            self._sAdvanced = self._sData
             self._sData = ""
 
     def data(self, sText):

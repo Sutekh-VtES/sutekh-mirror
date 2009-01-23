@@ -18,7 +18,7 @@
    into a PhysicalCardSet.
    """
 
-from sutekh.core.CardSetHolder import CardSetHolder
+from sutekh.core.CardSetHolder import CachedCardSetHolder
 from sutekh.core.CardLookup import DEFAULT_LOOKUP
 from sqlobject import sqlhub
 # pylint: disable-msg=E0611, F0401
@@ -37,12 +37,12 @@ class AbstractCardSetParser(object):
        """
     def __init__(self):
         self.aSupportedVersions = ['1.1', '1.0']
-        self.oCS = CardSetHolder()
+        self.oCS = CachedCardSetHolder()
         self.oTree = None
 
     def _convert_tree(self):
-        """Convert the ElementTree into a CardSetHolder"""
-        self.oCS = CardSetHolder()
+        """Convert the ElementTree into a CachedCardSetHolder"""
+        self.oCS = CachedCardSetHolder()
         oRoot = self.oTree.getroot()
         if oRoot.tag != 'abstractcardset':
             raise RuntimeError("Not a Abstract Card Set list")
@@ -64,7 +64,7 @@ class AbstractCardSetParser(object):
                 # Add card to virtual cardset
                 self.oCS.add(iCount, sName, None)
 
-    def _commit_tree(self, oCardLookup):
+    def _commit_tree(self, oCardLookup, dLookupCache):
         """Commit the tree to the database.
 
            We use the card set holder, so it calls the appropriate card lookup
@@ -72,26 +72,29 @@ class AbstractCardSetParser(object):
            """
         oOldConn = sqlhub.processConnection
         sqlhub.processConnection = oOldConn.transaction()
-        self.oCS.create_pcs(oCardLookup)
+        self.oCS.create_pcs(oCardLookup, dLookupCache)
         sqlhub.processConnection.commit()
         sqlhub.processConnection = oOldConn
 
-    def parse(self, fIn, oCardLookup=DEFAULT_LOOKUP, bIgnoreWarnings=True):
+    # pylint: disable-msg=W0102
+    # W0102 - {} is the right thing here
+    def parse(self, fIn, oCardLookup=DEFAULT_LOOKUP, bIgnoreWarnings=True,
+            dLookupCache={}):
         """Parse the file fIn into the database."""
         self.oTree = parse(fIn)
         self._convert_tree()
-        self._commit_tree(oCardLookup)
+        self._commit_tree(oCardLookup, dLookupCache)
         if not bIgnoreWarnings:
             return self.oCS.get_warnings()
         else:
             return []
 
     def parse_string(self, sIn, oCardLookup=DEFAULT_LOOKUP,
-            bIgnoreWarnings=True):
+            bIgnoreWarnings=True, dLookupCache={}):
         """Parse the string sIn into the database."""
         self.oTree = ElementTree(fromstring(sIn))
         self._convert_tree()
-        self._commit_tree(oCardLookup)
+        self._commit_tree(oCardLookup, dLookupCache)
         if not bIgnoreWarnings:
             return self.oCS.get_warnings()
         else:

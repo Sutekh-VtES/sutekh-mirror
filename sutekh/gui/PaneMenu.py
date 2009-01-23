@@ -32,6 +32,11 @@ class PaneMenu(SutekhMenu):
                 self.toggle_apply_filter, False, "<Ctrl>t")
         self.oApply.set_inconsistent(False)
 
+    def create_edit_menu(self):
+        """Create the 'Edit' menu, and populate it."""
+        oMenu = self.create_submenu(self, "_Edit")
+        self.add_edit_menu_actions(oMenu)
+
     def set_active_filter(self, oWidget):
         """Abstract method to handle filter request events."""
         raise NotImplementedError
@@ -55,6 +60,11 @@ class PaneMenu(SutekhMenu):
         self.create_menu_item("Collapse All", oMenu, self.collapse_all,
                 '<Ctrl>minus')
 
+    def add_edit_menu_actions(self, oMenu):
+        """Add the search item to the Edit Menu."""
+        self.create_menu_item('_Search', oMenu, self.show_search_dialog,
+                '<Ctrl>f')
+
     def expand_all(self, oWidget):
         """Expand all the rows in the card set."""
         raise NotImplementedError
@@ -63,6 +73,9 @@ class PaneMenu(SutekhMenu):
         """Collapse all the rows in the card set."""
         raise NotImplementedError
 
+    def show_search_dialog(self, oWidget):
+        """Show the search dialog"""
+        raise NotImplementedError
 
 class CardListMenu(PaneMenu):
     # pylint: disable-msg=R0904
@@ -97,4 +110,8 @@ class CardListMenu(PaneMenu):
     def copy_selection(self, oWidget):
         """Copy the current selection to the application clipboard."""
         self._oController.view.copy_selection()
+
+    def show_search_dialog(self, oWidget):
+        """Show the search dialog"""
+        self._oController.view.searchdialog.show_all()
 

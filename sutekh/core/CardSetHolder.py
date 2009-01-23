@@ -161,11 +161,16 @@ class CachedCardSetHolder(CardSetHolder):
            dLookupCache is updated as soon as possible, i.e. immediately after
            calling oCardLookup.lookup(...).
            """
+        # Need to cache both abstract card lookups & expansion lookups
+        # pylint: disable-msg=R0914
+        # We use a lot of local variables for clarity
+        dLookupCache.setdefault('cards', {})
+        dLookupCache.setdefault('expansions', {})
         if self.name is None:
             raise RuntimeError("No name for the card set")
 
         aCardCnts = self._dCards.items()
-        aAbsCards = oCardLookup.lookup([dLookupCache.get(tCardCnt[0],
+        aAbsCards = oCardLookup.lookup([dLookupCache['cards'].get(tCardCnt[0],
             tCardCnt[0]) for tCardCnt in aCardCnts],
             "Physical Card Set %s" % self.name)
         dNameCards = dict(zip(self._dCards.keys(), aAbsCards))
@@ -175,15 +180,29 @@ class CachedCardSetHolder(CardSetHolder):
         # iCnt and iLoop are loop variables
         for oAbs, (sName, iCnt) in zip(aAbsCards, aCardCnts):
             if not oAbs:
-                dLookupCache[sName] = None
+                dLookupCache['cards'][sName] = None
             else:
-                dLookupCache[sName] = oAbs.canonicalName
+                dLookupCache['cards'][sName] = oAbs.canonicalName
 
-        aExpNames = self._dExpansions.keys()
+        # Apply Expansion lookups
+        aExpNames = [dLookupCache['expansions'].get(sExp, sExp) for sExp
+                in self._dExpansions]
+        dCardExpansions = {}
+        for sName in self._dCardExpansions:
+            dCardExpansions[sName] = {}
+            for sExp, iCnt in self._dCardExpansions[sName].iteritems():
+                dCardExpansions[sName][dLookupCache['expansions'].get(sExp,
+                    sExp)] = iCnt
         aExps = oCardLookup.expansion_lookup(aExpNames, "Physical Card List")
         dExpansionLookup = dict(zip(aExpNames, aExps))
+        # Update expansion lookup cache
+        for sName, oExp in dExpansionLookup.iteritems():
+            if not oExp:
+                dLookupCache['expansions'][sName] = None
+            else:
+                dLookupCache['expansions'][sName] = oExp.name
 
-        aPhysCards = oCardLookup.physical_lookup(self._dCardExpansions,
+        aPhysCards = oCardLookup.physical_lookup(dCardExpansions,
                 dNameCards, dExpansionLookup, "Physical Card Set " + self.name)
 
         self._commit_pcs(aPhysCards)

@@ -204,19 +204,23 @@ class ExtraCardViewColumns(CardListPlugin):
         """get the group info for the card"""
         if not oCard is None and not oCard.group is None:
             return oCard.group, [None]
-        return -1, [None]
+        # We use -1 for the any group, so flag with a very different number
+        return -100, [None]
 
     def _render_group(self, oColumn, oCell, oModel, oIter):
         """Display the group info"""
         oCard = self._get_card(oIter)
         iGrp, aIcons = self._get_data_group(oCard)
-        if iGrp != -1:
-            oCell.set_data([str(iGrp)], aIcons, SHOW_TEXT_ONLY)
+        if iGrp != -100:
+            if iGrp == -1:
+                oCell.set_data(['Any'], aIcons, SHOW_TEXT_ONLY)
+            else:
+                oCell.set_data([str(iGrp)], aIcons, SHOW_TEXT_ONLY)
         else:
             oCell.set_data([""], aIcons, SHOW_TEXT_ONLY)
 
     def _get_data_capacity(self, oCard, bGetIcons=True):
-        """Get the cards capacity"""
+        """Get the card's capacity"""
         if not oCard is None and not oCard.capacity is None:
             return oCard.capacity, [None]
         if not oCard is None and not oCard.life is None:
@@ -233,7 +237,7 @@ class ExtraCardViewColumns(CardListPlugin):
             oCell.set_data([""], aIcons, SHOW_TEXT_ONLY)
 
     def _get_data_cost(self, oCard, bGetIcons=True):
-        """Get the cards capacity"""
+        """Get the card's cost"""
         if not oCard is None and not oCard.cost is None:
             return oCard.cost, oCard.costtype, [None]
         return 0, "", [None]

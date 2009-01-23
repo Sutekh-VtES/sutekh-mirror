@@ -23,12 +23,37 @@ class CardSetExportHTML(CardListPlugin):
        This tries to match the HTML file produced by ARDB.
        """
     dTableVersions = { PhysicalCardSet: [2, 3, 4, 5]}
-    aModelsSupported = [PhysicalCardSet]
+    aModelsSupported = [PhysicalCardSet, "MainWindow"]
 
     def get_menu_item(self):
         """Register on the Plugins Menu"""
         if not self.check_versions() or not self.check_model_type():
             return None
+
+        if self._cModelType == "MainWindow":
+            oPrefs = gtk.MenuItem("Export to HTML preferences")
+            oSubMenu = gtk.Menu()
+            oPrefs.set_submenu(oSubMenu)
+            oGroup = None
+            sDefault = self.parent.config_file.get_plugin_key(
+                    'HTML export mode')
+            if sDefault is None:
+                sDefault = 'Secret Library'
+                self.parent.config_file.set_plugin_key('HTML export mode',
+                        sDefault)
+            for sString, sVal in [("Add links to The Secret Library",
+                'Secret Library'),
+                    ("Add links to VTES Monger", 'Monger'),
+                    ("Don't add links in the HTML file", 'None')]:
+                oItem = gtk.RadioMenuItem(oGroup, sString)
+                if not oGroup:
+                    oGroup = oItem
+                oSubMenu.add(oItem)
+                oItem.set_active(False)
+                if sVal == sDefault:
+                    oItem.set_active(True)
+                oItem.connect("toggled", self.change_prefs, sVal)
+            return ('File Preferences', oPrefs)
 
         oExport = gtk.MenuItem("Export to HTML")
         oExport.connect("activate", self.activate)
@@ -41,6 +66,13 @@ class CardSetExportHTML(CardListPlugin):
         oDlg = self.make_dialog()
         oDlg.run()
         self.handle_response(oDlg.get_name())
+
+    def change_prefs(self, oWidget, sChoice):
+        """Manage the preferences (library to link to, etc.)"""
+        sCur = self.parent.config_file.get_plugin_key('HTML export mode')
+        if sChoice != sCur:
+            self.parent.config_file.set_plugin_key('HTML export mode',
+                    sChoice)
 
     # pylint: enable-msg=W0613
 
@@ -77,8 +109,10 @@ class CardSetExportHTML(CardListPlugin):
             bDoText = False
             if self.oTextButton.get_active():
                 bDoText = True
+            sLinkMode = self.parent.config_file.get_plugin_key(
+                    'HTML export mode')
             try:
-                oWriter = WriteArdbHTML()
+                oWriter = WriteArdbHTML(sLinkMode)
                 oWriter.write(sFileName, oCardSet, oCardIter, bDoText)
             except Exception, oExp:
                 sMsg = "Failed to open output file.\n\n" + str(oExp)

@@ -97,10 +97,11 @@ class FilterParserTests(SutekhTest):
             ('Life in 3, 6', [u'Anna "Dictatrix11" Suljic',
                 u'Earl "Shaka74" Deams', u'Inez "Nurse216" Villagrande']),
             ('CostType in Pool', [u".44 Magnum", u"AK-47",
-                u"Aaron's Feeding Razor"]),
+                u"Aaron's Feeding Razor", u"The Path of Blood"]),
             ('CostType in Blood', [u"Aire of Elation"]),
             ('CostType in Pool, Blood', [u".44 Magnum", u"AK-47",
-                u"Aaron's Feeding Razor", u"Aire of Elation"]),
+                u"Aaron's Feeding Razor", u"Aire of Elation",
+                u"The Path of Blood"]),
             ('Life in 4', []),
             ('Life in 4,5', []),
 
@@ -120,13 +121,13 @@ class FilterParserTests(SutekhTest):
                         u"Ablative Skin", u"Abombwe", u"Aire of Elation",
                         u'Anna "Dictatrix11" Suljic', u'Earl "Shaka74" Deams',
                         u'Inez "Nurse216" Villagrande',
-                        u"Predator's Communion"]),
+                        u"Predator's Communion", u"The Path of Blood"]),
             ('CardType not in Equipment, Vampire',
                     [u"Abandoning the Flesh", u"Abbot", u"Abjure",
                         u"Ablative Skin", u"Abombwe", u"Aire of Elation",
                         u'Anna "Dictatrix11" Suljic', u'Earl "Shaka74" Deams',
                         u'Inez "Nurse216" Villagrande',
-                        u"Predator's Communion"]),
+                        u"Predator's Communion", u"The Path of Blood"]),
         ]
 
         # Abstract Card Filtering Tests
@@ -267,6 +268,29 @@ class FilterParserTests(SutekhTest):
             self.assertEqual(aCSCards, aExpectedCards, "Filter Object %s"
                     " failed. %s != %s." % (oFullFilter, aCSCards,
                         aExpectedCards))
+
+    def test_variables(self):
+        """Test parsing filters with variables"""
+
+        aTests = ['CardType = $a', 'CardType in $a', 'Clan in $a']
+
+        for sFilter in aTests:
+            oAST = self.oFilterParser.apply(sFilter)
+            oFilterPart = oAST.aChildren[0] # Because they're simple children
+            self.assertEqual(oFilterPart.get_name(), '$a')
+            self.assertTrue(oFilterPart.aFilterValues is None)
+
+        # Test error case
+        self.assertRaises(ValueError, self.oFilterParser.apply,
+            'CardType in $a and Clan in $a')
+        self.assertRaises(ValueError, self.oFilterParser.apply,
+            'CardType in')
+        self.assertRaises(ValueError, self.oFilterParser.apply,
+            'Vampire in $a')
+
+        oAST = self.oFilterParser.apply('CardType in "Vampire","Action Mod"')
+        self.assertEqual(oAST.get_invalid_values(), ["Action Mod"])
+
 
 if __name__ == "__main__":
     unittest.main()

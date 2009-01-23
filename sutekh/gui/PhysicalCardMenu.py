@@ -22,6 +22,7 @@ class PhysicalCardMenu(CardListMenu):
     def __init__(self, oFrame, oController, oWindow):
         super(PhysicalCardMenu, self).__init__(oFrame, oWindow, oController)
         self.__create_physical_cl_menu()
+        self.create_edit_menu()
         self.create_filter_menu()
         self.create_plugins_menu('_Plugins', self._oFrame)
 
@@ -41,4 +42,12 @@ class PhysicalCardMenu(CardListMenu):
 
         oMenu.add(gtk.SeparatorMenuItem())
         self.add_common_actions(oMenu)
+
+    def create_edit_menu(self):
+        """Create the edit menu and populate it"""
+        oMenu = self.create_submenu(self, "_Edit")
+        self.create_menu_item('Copy selection', oMenu, self.copy_selection,
+                '<Ctrl>c')
+        self.add_edit_menu_actions(oMenu)
+
 

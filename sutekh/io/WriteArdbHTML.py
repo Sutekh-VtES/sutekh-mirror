@@ -131,6 +131,10 @@ a:hover {
 def _monger_url(oCard, bVamp):
     """Return a monger url for the given AbstractCard"""
     sName = oCard.name
+    if sName.startswith('The '):
+        sName = sName[4:] + ', The'
+    elif sName.startswith('An '):
+        sName = sName[3:] + ', An'
     if bVamp:
         if oCard.level is not None:
             sName = sName.replace(' (Advanced)', '')
@@ -143,6 +147,28 @@ def _monger_url(oCard, bVamp):
     # May not need this, but play safe
     sMongerURL = sMongerURL.replace(' ', '%20')
     return sMongerURL
+
+def _secret_library_url(oCard, bVamp):
+    """Return a Secret Library url for the given AbstractCard"""
+    sName = oCard.name
+    if sName.startswith('The '):
+        sName = sName[4:] + ',+The'
+    elif sName.startswith('An '):
+        sName = sName[3:] + ',+An'
+    if bVamp:
+        if oCard.level is not None:
+            sName = sName.replace(' (Advanced)', '')
+            sURL = "http://www.secretlibrary.info/?crypt=%s+Adv" \
+                    % sName
+        else:
+            sURL = "http://www.secretlibrary.info/?crypt=%s" \
+                    % sName
+    else:
+        sURL = "http://www.secretlibrary.info/?lib=%s" \
+                    % sName
+    sURL = sURL.replace(' ', '+')
+    return sURL
+
 
 def _sort_vampires(dVamps):
     """Sort the vampires by number, then capacity."""
@@ -205,6 +231,10 @@ class WriteArdbHTML(ArdbInfo):
        and then dump that to file.
        This tries to match the HTML file produced by ARDB.
        """
+
+    def __init__(self, sLinkMode='Monger'):
+        super(WriteArdbHTML, self).__init__()
+        self._sLinkMode = sLinkMode
 
     def write(self, sFileName, oCardSet, oCardIter, bDoText=False):
         """Handle the response to the dialog"""
@@ -287,6 +317,21 @@ class WriteArdbHTML(ArdbInfo):
         _add_span(oPara, oCardSet.comment, 'value', 'descriptionvalue')
         return oBody
 
+    def _gen_link(self, oCard, oSpan, sName, bVamp):
+        """Add a href for the card"""
+        # Just add text to the span by default
+        oRowHREF = oSpan
+        if self._sLinkMode == 'Monger':
+            oRowHREF = SubElement(oSpan, "a",
+                    href=_monger_url(oCard, bVamp))
+        elif self._sLinkMode == 'Secret Library':
+            oRowHREF = SubElement(oSpan, "a",
+                    href=_secret_library_url(oCard, bVamp))
+        if bVamp:
+            oRowHREF.text = sName.replace(' (Advanced)', '')
+        else:
+            oRowHREF.text = sName
+
     def _add_crypt(self, oBody, dCards):
         """Add the crypt to the file"""
         # pylint: disable-msg=E1101
@@ -313,8 +358,7 @@ class WriteArdbHTML(ArdbInfo):
             oSpan = SubElement(oTD, "span")
             oSpan.attrib["class"] = "tablevalue"
             # May be able to get away without this, but being safe
-            oMongerHREF = SubElement(oSpan, "a", href=_monger_url(oCard, True))
-            oMongerHREF.text = tVampInfo[2].replace(' (Advanced)', '')
+            self._gen_link(oCard, oSpan, tVampInfo[2], True)
             oTD = SubElement(oTR, "td")
             # Advanced status
             if oCard.level is not None:
@@ -370,9 +414,7 @@ class WriteArdbHTML(ArdbInfo):
             oTD = SubElement(oTR, "td")
             oSpan = SubElement(oTD, "span")
             oSpan.attrib["class"] = "tablevalue"
-            oMongerHRef = SubElement(oSpan, "a", href=_monger_url(oCard,
-                False))
-            oMongerHRef.text = sName
+            self._gen_link(oCard, oSpan, sName, False)
 
         oLib, aSortedLibCards = start_section(oBody, dCards)
         oLibTable = SubElement(oLib, "div")

@@ -72,20 +72,21 @@ class MainMenu(SutekhMenu):
 
         self.__add_prefs_menu(oPrefsMenu)
 
+        self.create_menu_item('Save Current Pane Set', oMenu,
+                self.do_save_pane_set)
+
         self.create_menu_item('Restore saved configuration', oMenu,
                 self.do_restore)
 
         oMenu.add(gtk.SeparatorMenuItem())
 
         self.create_menu_item("_Quit", oMenu,
-                lambda iItem: self._oMainWindow.action_quit(self._oMainWindow))
+                lambda iItem: self._oMainWindow.action_close(self._oMainWindow,
+                    None))
 
     def __add_prefs_menu(self, oPrefsMenu):
         """Add the File Preferences menu"""
         self._dMenus["File Preferences"] = oPrefsMenu
-        oSavePanes = gtk.MenuItem('Save Current Pane Set')
-        oSavePanes.connect('activate', self.do_save_pane_set)
-        oPrefsMenu.add(oSavePanes)
 
         oSaveOnExit = gtk.CheckMenuItem('Save Pane Set on Exit')
         oSaveOnExit.set_inconsistent(False)

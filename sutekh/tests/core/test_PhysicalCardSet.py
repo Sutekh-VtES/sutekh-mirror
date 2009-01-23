@@ -18,7 +18,9 @@ aAbstractCards = ['.44 magnum', 'ak-47', 'abbot', 'abebe', 'abombwe']
 aCardExpansions = [('.44 magnum', 'Jyhad'),
         ('ak-47', 'LotN'),
         ('abbot', 'Third Edition'),
-        ('abombwe', 'Legacy of Blood')]
+        ('abombwe', 'Legacy of Blood'),
+        ('alan sovereign (advanced)', 'Promo-20051001'),
+        ('the path of blood', 'LotN')]
 aCardSetNames = ['Test Set 1', 'Test Set 2']
 
 def get_phys_cards():

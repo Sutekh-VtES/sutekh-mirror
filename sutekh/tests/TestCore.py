@@ -51,7 +51,9 @@ class SutekhTest(unittest.TestCase):
     def _tearDownTemps(self):
         """Clean up the temporary files."""
         for sFile in self._aTempFiles:
-            os.remove(sFile)
+            if os.path.exists(sFile):
+                # Tests may clean up their own temp files
+                os.remove(sFile)
         os.rmdir(self._sTempDir)
         self._sTempDir = None
         self._aTempFiles = None

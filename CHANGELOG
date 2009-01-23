@@ -1,3 +1,93 @@
+23 Jan 2009
+ * Backport fixes from trunk
+   - Significant fixes to the ARDB & ELDB import and export
+   - Add caching to improve spped of card set models
+   - Improved test coverage
+   - Add menu options & buttons to make searching more discoverable
+   - Sort card count & parent count numerically
+   - Various other bugfixes
+   (r1728:1777, r1782:r1784)
+
+19 Jan 2009
+ * Fix incorrect dates in CHANGELOG (2009 != 2008)
+ * Shorten layout of the Count Card Set Cards plugin
+
+15 Jan 2009
+ * Add some tests for the best_guess_filter
+ * Add tests to cover the XmlFileHandling wrapper used by the GUI
+ * Pylint cleanups + comment typo fixes
+ * Tweak JOL Parser to be less sensitive to use a regexp - less sensitive
+   to white space variations and so forth.
+ * Add option to create card sets from the card set compare plugin
+
+14 Jan 2009
+ * Sort expansions when adding in Card sets + expansions mode, for consistency
+ * Use view.load in grouping plugin so we get busy cusor & gtk view tricks to
+   speed up model loads
+ * Use TreeStore.prepend rather than TreeStore.append for the card - speeds
+   up loading large models.
+ * Add test case for DatabaseVersion code
+ * Extend FilterParser test to cover some parts of the AST
+
+13 Jan 2009
+ * Fix numerical sorting on card count + parent count cols to use numerical,
+   not string sort order
+ * Disable sorting while reloading card sets.
+ * Tweak CellRendererIcons to accept None as meaning no icon - allows
+   speeding up large loads slightly.
+ * Change how numerical sorting is enabled so the tests aren't made horribly
+   slow.
+
+12 Jan 2009
+ * Fix bug which caused editable card sets to be reloaded several times when
+   the pane layout changed.
+ * Avoid some unnessecary queries into the CardListModel - speeds up complex
+   loads.
+
+08 Jan 2009
+ * Tweak extra columns so 'Any' group shows up properly
+
+07 Jan 2009
+ * Add support for linking to the secret library in  the exported HTML files
+ * Make the HTML link destination configurable 
+ * Add Edit->Search menu option to popup the search dialog
+ * Add Search button the the card lookup menu
+ * Add some more documentation on how the search dialog behaves
+
+17 Dec 2008
+ * Cache more results from the database in CardSetListModel - improve the
+   perfromance of the slower paths somewhat.
+
+15 Dec 2008
+ * Cache some database results in CardSetListModel - slightly faster
+
+12 Dec 2008
+ * Minor rework of CardSetListModel to improve performance
+ * Fix stupid bugs in ELDB, JOL and Lackey exporters
+ * Fix promo conversion in ARDB export
+ * Fix handling of card names for ARDB
+ * Fix handling of Advanced attribute for ARDB import
+ * Add more cards to test data to better cover io tests
+ * Extend io tests to use extra cards
+
+11 Dec 2008
+ * Save window info on 'delete-event', not 'destroy', so we get the right
+   window size
+ * Avoid some unnessecary code paths when adding a card - speeds up adding
+   a card set when children card sets are open, and the added card doesn't
+   affect them
+
+10 Dec 2008
+ * Extend CachedCardSetHolder to also cache expansion name mappings
+ * Use CachedCardSetHolder for reading from a zip file
+ * Add test case to CachedCardSetHolder
+
+09 Dec 2008
+ * Move best_guess_filter to sutekh.core, as it's not gui specific
+ * Fix IExpansion no longer throwing KeyError (due to unknown expansion
+   handling changes) in CardLookup
+ * Add test case for CardSetHolder & the default CardLookup
+
 04 Dec 2008
  * Handle unknown rarities more gracefully
  * Display the pango properties used when run with --verbose

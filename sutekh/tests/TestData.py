@@ -209,6 +209,34 @@ TEST_CARD_LIST = """
 </p>
 
 <p>
+<a name="Alan_Sovereign"><span class="cardname">Alan Sovereign</span></a>
+<span class="exp">[CE:V, BSC:X]</span><br />
+<table border=0 cellpadding=0 cellspacing=0><tr><td width=1><span class="key">Cardtype:</span> </td><td>Vampire<br /></td></tr>
+<tr><td width=1><span class="key">Clan:</span> </td><td>Ventrue<br /></td></tr>
+<tr><td width=1><span class="key">Group:</span> </td><td>3<br /></td></tr>
+<tr><td width=1><span class="key">Capacity:</span> </td><td>6<br /></td></tr>
+<tr><td width=1><span class="key">Discipline:</span> </td><td>for pre AUS DOM<br /></td></tr>
+<tr><td colspan=2><b>Camarilla:</b> When you play an investment card, add an additional counter to it from the blood bank.<br />
+<tr><td width=1><span class="key">Artist:</span> </td><td>Steve Prescott<br /></td></tr>
+</table>
+</p>
+
+<p>
+<a name="Alan_Sovereign_2"><span class="cardname">Alan Sovereign</span></a>
+<span class="exp">[Promo-20051001]</span><br />
+<table border=0 cellpadding=0 cellspacing=0><tr><td width=1><span class="key">Cardtype:</span> </td><td>Vampire<br /></td></tr>
+<tr><td width=1><span class="key">Clan:</span> </td><td>Ventrue<br /></td></tr>
+<tr><td width=1><span class="key">Level:</span> </td><td>Advanced<br /></td></tr>
+<tr><td width=1><span class="key">Group:</span> </td><td>3<br /></td></tr>
+<tr><td width=1><span class="key">Capacity:</span> </td><td>6<br /></td></tr>
+<tr><td width=1><span class="key">Discipline:</span> </td><td>for pre AUS DOM<br /></td></tr>
+<tr><td colspan=2><b>Advanced, Camarilla:</b> While Alan is ready, you may pay some or all of the pool cost of equipping from any investment cards you control.<br />
+[MERGED] During your master phase, if Alan is ready, you may move a counter from any investment card to your pool.<br />
+<tr><td width=1><span class="key">Artist:</span> </td><td>Leif Jones<br /></td></tr>
+</table>
+</p>
+
+<p>
 <a name="Alexandra"><span class="cardname">Alexandra</span></a>
 <span class="exp">[DS:V, CE:PTo]</span><br />
 <table border=0 cellpadding=0 cellspacing=0><tr><td width=1><span class="key">Cardtype:</span> </td><td>Vampire<br /></td></tr>
@@ -424,6 +452,18 @@ TEST_CARD_LIST = """
 <tr><td><span class="key">Discipline:</span> </td><td>for<br /></td></tr>
 <tr><td colspan=2><b>Independent:</b> <n>Lázár may move one blood from <span class="clarification">&lt;an uncontrolled minion&gt;</span> in your prey's uncontrolled region to a vampire in your uncontrolled region as a (D) action.<br />
 <tr><td><span class="key">Artist:</span> </td><td>Rebecca Guay<br /></td></tr>
+</table>
+</p>
+
+<p>
+<a name="Path_of_Blood"><span class="cardname">The Path of Blood</span></a>
+<span class="exp">[AH:C2, FN:PA, LotN:PA2]</span><br />
+<table border=0 cellpadding=0 cellspacing=0><tr><td width=1><span class="key">Cardtype:</span> </td><td>Master<br /></td></tr>
+<tr><td width=1><span class="key">Clan:</span> </td><td>Assamite<br /></td></tr>
+<tr><td width=1><span class="key">Cost:</span> </td><td>1 pool<br /></td></tr>
+<tr><td colspan=2><b>Unique master.</b><br />
+Put this card in play. Cards that require Quietus [qui] <span class="clarification">&lt;cost Assamites 1 less blood&gt;</span>. Any minion may burn this card as a (D) action; if that minion is a vampire, he or she then takes 1 unpreventable damage when this card is burned.<br />
+<tr><td width=1><span class="key">Artist:</span> </td><td>Drew Tucker; Jeff Holt<br /></td></tr>
 </table>
 </p>
 

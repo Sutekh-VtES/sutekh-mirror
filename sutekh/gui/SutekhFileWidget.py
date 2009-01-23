@@ -3,12 +3,13 @@
 # vim:fileencoding=utf8 ai ts=4 sts=4 et sw=4
 # Copyright 2008 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
-# Provides base class for the file widgets and dialogs used in Sutekh -
-# ensures set_name is called consistently, and updates the global working
-# directory as appropriate
 
-"""FileChooserWidget and FileChooserDialog wrapper for Sutekh"""
+"""FileChooserWidget and FileChooserDialog wrapper for Sutekh
 
+   Provides base class for the file widgets and dialogs used in Sutekh -
+   ensures set_name is called consistently, and updates the global working
+   directory as appropriate
+   """
 
 import gtk
 

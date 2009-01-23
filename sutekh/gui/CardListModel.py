@@ -142,6 +142,14 @@ class CardListModel(gtk.TreeStore):
             return 0
         return int(sValue)
 
+    def num_col_sort_func(self, oModel, oIter1, oIter2, iPos):
+        """Custom sort function for the numerical columns
+
+           iPos is user info set by set_sort_func"""
+        iNum1 = self.get_int_value(oIter1, iPos)
+        iNum2 = self.get_int_value(oIter2, iPos)
+        return cmp(iNum1, iNum2)
+
     def lookup_icons(self, sGroup):
         """Lookup the icons for the group. Method since it's repeated in
            several places in CardSetListModel"""

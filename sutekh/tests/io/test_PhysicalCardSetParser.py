@@ -10,9 +10,10 @@ from sutekh.tests.TestCore import SutekhTest
 from sutekh.tests.core.test_PhysicalCardSet import aCardSetNames, \
         get_phys_cards
 from sutekh.core.SutekhObjects import IPhysicalCardSet, \
-        MapPhysicalCardToPhysicalCardSet
+        MapPhysicalCardToPhysicalCardSet, PhysicalCardSet
 from sutekh.io.PhysicalCardSetParser import PhysicalCardSetParser
-import unittest
+from sutekh.io.XmlFileHandling import PhysicalCardSetXmlFile
+import unittest, os
 
 class PhysicalCardSetParserTests(SutekhTest):
     """class for the Card Set Parser tests"""
@@ -57,11 +58,11 @@ class PhysicalCardSetParserTests(SutekhTest):
 
         oParser.parse_string(sExpected1)
 
-        sFileName = self._create_tmp_file()
-        fIn = open(sFileName, 'w')
+        sTempFileName = self._create_tmp_file()
+        fIn = open(sTempFileName, 'w')
         fIn.write(sExpected2)
         fIn.close()
-        fIn = open(sFileName, 'rU')
+        fIn = open(sTempFileName, 'rU')
         oParser.parse(fIn)
         fIn.close()
 
@@ -82,6 +83,22 @@ class PhysicalCardSetParserTests(SutekhTest):
             physicalCardID = aAddedPhysCards[1].id).count(), 3)
         self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
             physicalCardID = aAddedPhysCards[6].id).count(), 1)
+
+        PhysicalCardSet.delete(oPhysCardSet2.id)
+        oFile = PhysicalCardSetXmlFile()
+        self.assertRaises(RuntimeError, oFile.read)
+        oFile = PhysicalCardSetXmlFile(sTempFileName)
+        oFile.read()
+        oPhysCardSet2 = IPhysicalCardSet("Test Set 2")
+        self.assertEqual(len(oPhysCardSet2.cards), 6)
+        oFile.delete()
+        self.assertFalse(os.path.exists(sTempFileName))
+        oFile.write('Test Set 2')
+        PhysicalCardSet.delete(oPhysCardSet2.id)
+        self.assertTrue(os.path.exists(sTempFileName))
+        oFile.read()
+        oPhysCardSet2 = IPhysicalCardSet("Test Set 2")
+        self.assertEqual(len(oPhysCardSet2.cards), 6)
 
 
 if __name__ == "__main__":

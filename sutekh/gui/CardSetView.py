@@ -46,8 +46,9 @@ _aMinusKeys = [
 
 
 class CardSetView(CardListView):
-    # pylint: disable-msg=R0904
-    # gtk.Widget, so many public methods
+    # pylint: disable-msg=R0904, R0902
+    # R0904 - gtk.Widget, so many public methods
+    # R0902 - We need to track a fair amount of state, so many attributes
     """Subclass of CardListView specific to the Card Sets
 
        Adds editing support, and other specific to the card sets.
@@ -120,7 +121,7 @@ class CardSetView(CardListView):
         oCell3.connect('clicked', self.inc_card)
         oCell4.connect('clicked', self.dec_card)
 
-        self.connect('map-event', self.mapped)
+        self.__iMapID = self.connect('map-event', self.mapped)
         self.connect('key-press-event', self.key_press)
 
         self._oMenu = None
@@ -128,6 +129,11 @@ class CardSetView(CardListView):
         self.oCellColor = None
 
         self.set_fixed_height_mode(True)
+        # Set sort functions so numerical sorts work as expected
+        # Card numbers
+        self._oModel.set_sort_func(1, self._oModel.num_col_sort_func, 1)
+        # Parent counts
+        self._oModel.set_sort_func(2, self._oModel.num_col_sort_func, 2)
 
     # pylint: enable-msg=R0915
 
@@ -295,6 +301,10 @@ class CardSetView(CardListView):
         if self._oModel.bEditable:
             # Ensure hint colour is set correctly
             self.reload_keep_expanded()
+        # We only ever need to call this the first time we're mapped.
+        # We don't want to redo this if map is called again due to
+        # panes moving, etc.
+        self.disconnect(self.__iMapID)
 
     # pylint: enable-msg=W0613
 

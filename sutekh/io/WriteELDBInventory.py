@@ -49,5 +49,3 @@ class WriteELDBInventory(object):
         fOut.write(self._gen_header())
         fOut.write("\n")
         fOut.write(self._gen_inv(oCardSet))
-
-    # pylint: enable-msg=R0913

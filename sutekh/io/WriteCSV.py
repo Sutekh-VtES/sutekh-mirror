@@ -66,5 +66,3 @@ class WriteCSV(object):
         if sHeader:
             fOut.write(sHeader)
         fOut.write(self._gen_inv(oCardSet))
-
-    # pylint: enable-msg=R0913

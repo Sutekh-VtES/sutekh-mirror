@@ -20,11 +20,12 @@ class TestELDBDeckFileParser(SutekhTest):
         "Simple test deck.
 
         http://www.example.url/in/description"
-        3
+        4
         "Test Vamp 1"
         "Test Vamp 1"
         "Lazar Dobrescu"
-        17
+        "Alan Sovereign (ADV)"
+        18
         "Test Card 1"
         "Test Card 1"
         "Test Card 2"
@@ -44,6 +45,7 @@ class TestELDBDeckFileParser(SutekhTest):
         "Test Card 3"
         "Test Card 3"
         "Test Card 4"
+        "Path of Blood, The"
         """
 
     def test_basic(self):
@@ -62,13 +64,15 @@ class TestELDBDeckFileParser(SutekhTest):
 
         aCards = oHolder.get_cards()
 
-        self.assertEqual(len(aCards), 6)
+        self.assertEqual(len(aCards), 8)
         self.failUnless(("Test Vamp 1", 2) in aCards)
         self.failUnless((u"L\xe1z\xe1r Dobrescu", 1) in aCards)
         self.failUnless(("Test Card 1", 2 ) in aCards)
         self.failUnless(("Test Card 2", 4) in aCards)
         self.failUnless(("Test Card 3", 12) in aCards)
         self.failUnless(("Test Card 4", 1) in aCards)
+        self.failUnless(("Alan Sovereign (Advanced)", 1) in aCards)
+        self.failUnless(("The Path of Blood", 1) in aCards)
 
 if __name__ == "__main__":
     unittest.main()

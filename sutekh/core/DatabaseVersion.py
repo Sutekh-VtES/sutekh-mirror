@@ -137,7 +137,7 @@ class DatabaseVersion(object):
         """Check version numbers.
 
            aTable is the list of tables to check
-           aTableVersion is a list of version numbers to matched.
+           aTableVersion is a list of version numbers to match.
            It's assumed that aTable and aTableVersions are sorted the same.
            """
         bRes = True
@@ -159,7 +159,7 @@ class DatabaseVersion(object):
         """Get tables that don't match the list of version numbers
 
            aTable is the list of tables to check
-           aTableVersion is a list of version numbers to matched.
+           aTableVersion is a list of version numbers to match.
            It's assumed that aTable and aTableVersions are sorted the same.
            Returns two lists, aLowerTables and aHigherTables, where
            aLowerTables is those with a lower version number, and
@@ -171,8 +171,10 @@ class DatabaseVersion(object):
         for oTable, iVersion in zip(aTable, aTableVersion):
             iCurVersion = self.get_table_version(oTable, oConn)
             if iCurVersion < iVersion:
+                # Current database is lower than requested
                 aLowerTables.append(oTable.sqlmeta.table)
             elif iCurVersion > iVersion:
+                # Current database is higher than requested
                 aHigherTables.append(oTable.sqlmeta.table)
         return aLowerTables, aHigherTables
 

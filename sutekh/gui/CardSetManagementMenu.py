@@ -25,6 +25,7 @@ class CardSetManagementMenu(PaneMenu, object):
         self.__sSetTypeName = 'Card Set'
         self._oController = oController
         self.__create_actions_menu()
+        self.create_edit_menu()
         self.create_filter_menu()
 
     # pylint: disable-msg=W0201
@@ -62,3 +63,7 @@ class CardSetManagementMenu(PaneMenu, object):
     def collapse_all(self, oWidget):
         """Collapse all the rows in the card set."""
         self._oController.view.collapse_all()
+
+    def show_search_dialog(self, oWidget):
+        """Show the search dialog"""
+        self._oController.view.searchdialog.show_all()

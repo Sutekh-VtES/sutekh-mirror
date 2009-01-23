@@ -10,7 +10,7 @@
    the Anarch Revolt Deck Builder."""
 
 from sutekh.core.SutekhObjects import IAbstractCard
-from sutekh.core.ArdbInfo import ArdbInfo
+from sutekh.core.ArdbInfo import ArdbInfo, escape_ardb_name
 from sutekh.SutekhUtility import pretty_xml
 import time
 # pylint: disable-msg=E0611, F0401
@@ -85,6 +85,7 @@ class WriteArdbXML(ArdbInfo):
                 oNameElem.text = sName.replace(' (Advanced)', '')
             else:
                 oNameElem.text = sName
+            sName = escape_ardb_name(sName)
             oSetElem = SubElement(oCardElem, 'set')
             oSetElem.text = sSet
             oDiscElem = SubElement(oCardElem, 'disciplines')
@@ -124,6 +125,7 @@ class WriteArdbXML(ArdbInfo):
             # pylint: disable-msg=E1101
             # IAbstractCard confuses pylint
             oCard = IAbstractCard(sName)
+            sName = escape_ardb_name(sName)
             oCardElem = SubElement(oLibElem, 'card', databaseID=str(iId),
                     count=str(iNum))
             oNameElem = SubElement(oCardElem, 'name')

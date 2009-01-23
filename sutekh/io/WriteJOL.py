@@ -26,7 +26,7 @@ class WriteJOL(object):
 
     def _escape(self, sName):
         """Escape the card name to JOL's requirements"""
-        sName.replace('(Advanced)', '(advanced)')
+        sName = sName.replace('(Advanced)', '(advanced)')
         return sName
 
     def _crypt_or_library(self, oCard):
@@ -65,5 +65,3 @@ class WriteJOL(object):
         """Takes file object + card set to write, and writes an JOL deck
            representing the deck"""
         fOut.write(self._gen_inv(oCardSet))
-
-    # pylint: enable-msg=R0913

@@ -99,11 +99,28 @@ class CardSetListModelTests(SutekhTest):
         oAbs = IAbstractCard(sName)
         return IPhysicalCard((oAbs, oExp))
 
-    def _format_error(self, sErrType, oTest1, oTest2, oModel):
+    def _reset_modes(self, oModel):
+        """Set the model to the minimal state."""
+        # The database signal handling means that all CardSetListModels
+        # associated with a card set will update when send_changed_signal is
+        # called, so we reset the model state so these calls will be cheap if
+        # this models is affected when we're not explicitly testing it.
+        oModel.iParentCountMode = IGNORE_PARENT
+        oModel.iLevelMode = NO_SECOND_LEVEL
+        oModel.bEditable = False
+        oModel.iShowMode = THIS_SET_ONLY
+
+    # pylint: disable-msg=R0913
+    # Need all these arguments here
+    def _format_error(self, sErrType, oTest1, oTest2, oModel, oPCS=None):
         """Format an informative error message"""
         # pylint: disable-msg=W0212
         # Need info from _oCardSet here
-        sModel = "Model: [card set %s, inuse=%s, groupby=%s]\n" % (
+        if oPCS:
+            sModel = "Changing card set %s\n" % oPCS.name
+        else:
+            sModel = ''
+        sModel += "Model: [card set %s, inuse=%s, groupby=%s]\n" % (
                     oModel._oCardSet.name, oModel._oCardSet.inuse,
                     oModel.groupby)
         sModel += " State : (ExtraLevelsMode %s, ParentCountMode : %s, " \
@@ -115,12 +132,14 @@ class CardSetListModelTests(SutekhTest):
         return "%s : %s vs %s\n%s" % (sErrType, oTest1, oTest2, sModel)
 
     # pylint: enable-msg=R0201
+    # pylint: enable-msg=R0913
 
     def _add_remove_cards(self, oPCS, oModel, aPhysCards):
         """Helper function to add and remove distinct cards from the card set,
            validating that the model works correctly"""
         # pylint: disable-msg=E1101
         # SQLObjext confuses pylint
+        oModel.sEditColour = "red"
         oModel.load()
         tStartTotals = (
                 oModel.iter_n_children(None),
@@ -144,10 +163,10 @@ class CardSetListModelTests(SutekhTest):
         aLoadList = self._get_all_counts(oModel)
         self.assertEqual(tAddTotals, tLoadTotals, self._format_error(
             "Totals for inc_card and load differ", tAddTotals, tLoadTotals,
-            oModel))
+            oModel, oPCS))
         self.assertEqual(aAddList, aLoadList, self._format_error(
             "Card Lists for inc_card and load differ", aAddList, aLoadList,
-            oModel))
+            oModel, oPCS))
         # Card removal
         # We use the map table, so we can also test dec_card properly
         for oCard in aPhysCards:
@@ -164,10 +183,10 @@ class CardSetListModelTests(SutekhTest):
         # test that we've behaved sanely
         self.assertEqual(tDecTotals, tStartTotals, self._format_error(
             "Totals for dec_card and load differ", tDecTotals, tStartTotals,
-            oModel))
+            oModel, oPCS))
         self.assertEqual(aDecList, aStartList, self._format_error(
             "Card lists for dec_card and load differ", aDecList, aStartList,
-            oModel))
+            oModel, oPCS))
 
     def _loop_modes(self, oPCS, oModel):
         """Loop over all the possible modes of the model, calling
@@ -194,17 +213,6 @@ class CardSetListModelTests(SutekhTest):
                         oModel.iShowCardMode = iShowMode
                         self._add_remove_cards(oPCS, oModel, aPhysCards)
         self._reset_modes(oModel)
-
-    def _reset_modes(self, oModel):
-        """Set the model to the minimal state."""
-        # The database signal handling means that all CardSetListModels
-        # associated with a card set will update when send_changed_signal is
-        # called, so we reset the model state so these calls will be cheap if
-        # this models is affected when we're not explicitly testing it.
-        oModel.iParentCountMode = IGNORE_PARENT
-        oModel.iLevelMode = NO_SECOND_LEVEL
-        oModel.bEditable = False
-        oModel.iShowMode = THIS_SET_ONLY
 
     def _loop_zero_filter_modes(self, oModel):
         """Loop over all the possible modes of the model, calling
@@ -457,26 +465,34 @@ class CardSetListModelTests(SutekhTest):
         tTotals = (oModel.iter_n_children(None),
                 self._count_all_cards(oModel),
                 self._count_second_level(oModel))
-        self.assertEqual(tTotals, (1, 4, 0), 'Wrong results from filter')
+        tExpected = (1, 4, 0)
+        self.assertEqual(tTotals, tExpected, 'Wrong results from filter : '
+                '%s vs %s' % (tTotals, tExpected))
         oModel.groupby = Groupings.DisciplineGrouping
         oModel.applyfilter = True
         oModel.load()
         tTotals = (oModel.iter_n_children(None),
                 self._count_all_cards(oModel),
                 self._count_second_level(oModel))
-        self.assertEqual(tTotals, (11, 18, 0), 'Wrong results from filter')
+        tExpected = (11, 18, 0)
+        self.assertEqual(tTotals, tExpected, 'Wrong results from filter : '
+                '%s vs %s' % (tTotals, tExpected))
         oModel.iExtraLevelsMode = SHOW_EXPANSIONS
         oModel.load()
         tTotals = (oModel.iter_n_children(None),
                 self._count_all_cards(oModel),
                 self._count_second_level(oModel))
-        self.assertEqual(tTotals, (11, 18, 25), 'Wrong results from filter')
+        tExpected = (11, 18, 25)
+        self.assertEqual(tTotals, tExpected, 'Wrong results from filter : '
+                '%s vs %s' % (tTotals, tExpected))
         oModel.bEditable = True
         oModel.load()
         tTotals = (oModel.iter_n_children(None),
                 self._count_all_cards(oModel),
                 self._count_second_level(oModel))
-        self.assertEqual(tTotals, (11, 18, 48), 'Wrong results from filter')
+        tExpected = (11, 18, 48)
+        self.assertEqual(tTotals, tExpected, 'Wrong results from filter : '
+                '%s vs %s' % (tTotals, tExpected))
         # Add a child card set, and test filtering results
         oModel.groupby = Groupings.NullGrouping
         oChildPCS = PhysicalCardSet(name=self.aNames[1], parent=oPCS,
@@ -495,25 +511,33 @@ class CardSetListModelTests(SutekhTest):
         tTotals = (oModel.iter_n_children(None),
                 self._count_all_cards(oModel),
                 self._count_second_level(oModel))
-        self.assertEqual(tTotals, (1, 4, 6), 'Wrong results from filter')
+        tExpected = (1, 4, 6)
+        self.assertEqual(tTotals, tExpected, 'Wrong results from filter : '
+                '%s vs %s' % (tTotals, tExpected))
         oModel.iExtraLevelsMode = SHOW_CARD_SETS
         oModel.load()
         tTotals = (oModel.iter_n_children(None),
                 self._count_all_cards(oModel),
                 self._count_second_level(oModel))
-        self.assertEqual(tTotals, (1, 4, 2), 'Wrong results from filter')
+        tExpected = (1, 4, 2)
+        self.assertEqual(tTotals, tExpected, 'Wrong results from filter : '
+                '%s vs %s' % (tTotals, tExpected))
         oModel.iShowCardMode = CHILD_CARDS
         oModel.load()
         tTotals = (oModel.iter_n_children(None),
                 self._count_all_cards(oModel),
                 self._count_second_level(oModel))
-        self.assertEqual(tTotals, (1, 6, 4), 'Wrong results from filter')
+        tExpected = (1, 6, 4)
+        self.assertEqual(tTotals, tExpected, 'Wrong results from filter : '
+                '%s vs %s' % (tTotals, tExpected))
         oModel.iShowCardMode = ALL_CARDS
         oModel.load()
         tTotals = (oModel.iter_n_children(None),
                 self._count_all_cards(oModel),
                 self._count_second_level(oModel))
-        self.assertEqual(tTotals, (1, 24, 24), 'Wrong results from filter')
+        tExpected = (1, 26, 26)
+        self.assertEqual(tTotals, tExpected, 'Wrong results from filter : '
+                '%s vs %s' % (tTotals, tExpected))
 
     def test_empty(self):
         """Test corner cases around empty card sets"""

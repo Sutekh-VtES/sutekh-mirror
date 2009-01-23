@@ -20,25 +20,32 @@ import time
 # C0301 - Ignore line length limits for this string
 sExpected = """<inventory databaseVersion="%s" formatVersion="-TODO-1.0" generator="Sutekh [ %s ]">
   <date>%s</date>
-  <crypt size="1">
+  <crypt size="2">
     <vampire databaseID="11" have="1" need="0" spare="0">
       <adv />
       <name>Abebe</name>
       <set>LoB</set>
+    </vampire><vampire databaseID="19" have="1" need="0" spare="0">
+      <adv>(Advanced)</adv>
+      <name>Alan Sovereign</name>
+      <set>Promo20051001</set>
     </vampire>
-  </crypt><library size="4">
-    <card databaseID="1" have="1" need="0" spare="0">
+  </crypt><library size="9">
+    <card databaseID="1" have="2" need="0" spare="0">
       <name>.44 Magnum</name>
-      <set>CE</set>
-    </card><card databaseID="2" have="1" need="0" spare="0">
+      <set>Jyhad</set>
+    </card><card databaseID="2" have="2" need="0" spare="0">
       <name>AK-47</name>
       <set>LotN</set>
-    </card><card databaseID="8" have="1" need="0" spare="0">
+    </card><card databaseID="8" have="2" need="0" spare="0">
       <name>Abbot</name>
       <set>Third</set>
-    </card><card databaseID="14" have="1" need="0" spare="0">
+    </card><card databaseID="14" have="2" need="0" spare="0">
       <name>Abombwe</name>
       <set>LoB</set>
+    </card><card databaseID="37" have="1" need="0" spare="0">
+      <name>Path of Blood, The</name>
+      <set>LotN</set>
     </card>
   </library>
 </inventory>""" % (WriteArdbInvXML.sDatabaseVersion, SutekhInfo.VERSION_STR,
@@ -60,8 +67,8 @@ class ArdbInvXMLWriterTests(SutekhTest):
         oPhysCardSet1.comment = 'A test comment'
         oPhysCardSet1.author = 'A test author'
 
-        for iLoop in range(5):
-            oPhysCardSet1.addPhysicalCard(aAddedPhysCards[iLoop].id)
+        for oCard in aAddedPhysCards:
+            oPhysCardSet1.addPhysicalCard(oCard.id)
             oPhysCardSet1.syncUpdate()
 
         # Check output
