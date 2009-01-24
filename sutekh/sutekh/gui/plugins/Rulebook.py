@@ -38,6 +38,8 @@ class RulebookConfigDialog(SutekhDialog):
                 (gtk.STOCK_OK, gtk.RESPONSE_OK, gtk.STOCK_CANCEL,
                     gtk.RESPONSE_CANCEL))
 
+        # pylint: disable-msg=E1101
+        # pylint doesn't pick up vbox methods correctly
         self.vbox.set_spacing(10)
 
         oDescLabel = gtk.Label()
