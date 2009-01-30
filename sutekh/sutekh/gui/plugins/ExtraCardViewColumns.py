@@ -370,11 +370,9 @@ class ExtraCardViewColumns(CardListPlugin):
             iRes = -1
         elif oVal1 > oVal2:
             iRes = 1
-        elif oCard1.name < oCard2.name:
-            # Values agrees, so sort on card name
-            iRes = -1
         else:
-            iRes = 1 # Card names assumed to be unique
+            # Values agrees, so sort on card name
+            iRes = cmp(oCard1.name, oCard2.name)
         return iRes
 
     # pylint: enable-msg=W0613
