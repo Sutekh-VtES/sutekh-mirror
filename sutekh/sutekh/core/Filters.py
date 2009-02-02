@@ -705,12 +705,13 @@ class MultiCostFilter(DirectFilter):
     types = ['AbstractCard', 'PhysicalCard']
 
     def __init__(self, aCost):
-        self.__aCost = [int(sV) for sV in aCost if sV != 'X' and sV != '0']
+        self.__aCost = [int(sV) for sV in aCost if sV != 'X']
         self.__bZeroCost = False
         if 'X' in aCost:
             self.__aCost.append(-1)
-        if '0' in aCost:
+        if 0 in self.__aCost:
             self.__bZeroCost = True
+            self.__aCost.remove(0)
 
     # pylint: disable-msg=C0111
     # don't need docstrings for _get_expression, get_values & _get_joins
