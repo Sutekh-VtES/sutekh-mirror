@@ -705,9 +705,12 @@ class MultiCostFilter(DirectFilter):
     types = ['AbstractCard', 'PhysicalCard']
 
     def __init__(self, aCost):
-        self.__aCost = [int(sV) for sV in aCost if sV != 'X']
+        self.__aCost = [int(sV) for sV in aCost if sV != 'X' and sV != '0']
+        self.__bZeroCost = False
         if 'X' in aCost:
             self.__aCost.append(-1)
+        if '0' in aCost:
+            self.__bZeroCost = True
 
     # pylint: disable-msg=C0111
     # don't need docstrings for _get_expression, get_values & _get_joins
@@ -718,6 +721,12 @@ class MultiCostFilter(DirectFilter):
     def _get_expression(self):
         # pylint: disable-msg=E1101
         # SQLObject methods not detected by plylint
+        if self.__bZeroCost:
+            if len(self.__aCost) > 0:
+                return OR(IN(AbstractCard.q.cost, self.__aCost),
+                        AbstractCard.q.cost == None)
+            else:
+                return AbstractCard.q.cost == None
         return IN(AbstractCard.q.cost, self.__aCost)
 
 class CostTypeFilter(DirectFilter):
