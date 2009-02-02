@@ -1,6 +1,8 @@
 02 Feb 2008
  * Fix MultiCostFilter to do the right thing with costs of 0
  * Fix typo in pylint comments in Filters.py
+ * Hook on button_release in wondows for the multi-select widget, so 
+  it behaves similairly to Unix
 
 19 Jan 2009
  * Fix incorrect dates in CHANGELOG (2009 != 2008)
