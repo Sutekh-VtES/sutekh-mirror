@@ -79,11 +79,6 @@ class MultiSelectComboBox(gtk.HBox):
                     self.__hide_list()
                 # Ignore other buttons
                 # Should right button act the same as escape?
-                elif hasattr(self._oParentWin, 'oCancelButton') and \
-                        mouse_in_button(self._oParentWin.oCancelButton):
-                    self.set_selection(self._aOldSelection)
-                    self.__hide_list()
-                    self._oParentWin.forced_cancel()
         elif oEvent.type == gtk.gdk.ENTER_NOTIFY:
             # Mouse has entered the button, so mark as active
             if mouse_in_button(self._oButton):

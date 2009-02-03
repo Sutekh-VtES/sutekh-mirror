@@ -1,4 +1,9 @@
-02 Feb 2008
+03 Feb 2009
+ * Fix incorrect date in changelog (2009 is still != 2008)
+ * Remove forced_cancel logic from FilterDialog & MultiSelectCombo, since it
+   has been broken for a while, and there's no compelling reason to fix it.
+
+02 Feb 2009
  * Fix MultiCostFilter to do the right thing with costs of 0
  * Fix typo in pylint comments in Filters.py
  * Hook on button_release in wondows for the multi-select widget, so 
