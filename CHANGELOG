@@ -1,3 +1,14 @@
+03 Feb 2009
+ * Merge fixes from trunk (r1790:r1798)
+   - Fix MultiCostFilter to do the right thing with costs of 0
+   - Fix typo in pylint comments in Filters.py
+   - Hook on button_release in wondows for the multi-select widget, so 
+       it behaves similairly to Unix
+   - Remove forced_cancel logic from FilterDialog & MultiSelectCombo, since it
+       has been broken for a while, and there's no compelling reason to fix it.
+   - Add a note on cost filter corner cases to the manual.
+   - Fix some typos in the Manual and tutorial.
+
 23 Jan 2009
  * Backport fixes from trunk
    - Significant fixes to the ARDB & ELDB import and export

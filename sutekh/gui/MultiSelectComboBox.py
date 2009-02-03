@@ -7,6 +7,7 @@
 """Generic multiselect combobox for use in FilterEditor (and elsewhere)"""
 
 import gtk, gobject
+import sys
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 
 def mouse_in_button(oButton):
@@ -68,7 +69,9 @@ class MultiSelectComboBox(gtk.HBox):
         # limited non-modality here by testing for each event of interest
         # ourselves. This will all go away if the popup is redone as a
         # widget, rather than as a tweaked dialog window
-        if oEvent.type == gtk.gdk.BUTTON_PRESS:
+        if oEvent.type == gtk.gdk.BUTTON_PRESS or (
+                sys.platform.startswith("win") and
+                oEvent.type == gtk.gdk.BUTTON_RELEASE):
             # Mouse clicked
             if oEvent.button == 1:
                 if mouse_in_button(self._oButton):
@@ -76,11 +79,6 @@ class MultiSelectComboBox(gtk.HBox):
                     self.__hide_list()
                 # Ignore other buttons
                 # Should right button act the same as escape?
-                elif hasattr(self._oParentWin, 'oCancelButton') and \
-                        mouse_in_button(self._oParentWin.oCancelButton):
-                    self.set_selection(self._aOldSelection)
-                    self.__hide_list()
-                    self._oParentWin.forced_cancel()
         elif oEvent.type == gtk.gdk.ENTER_NOTIFY:
             # Mouse has entered the button, so mark as active
             if mouse_in_button(self._oButton):

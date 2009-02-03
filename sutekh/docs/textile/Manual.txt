@@ -379,7 +379,7 @@ manager
 ** _ARDB Text_: A text file, similar to that produced by ARDB
 ** _JOL_: A text file that can be pasted into the Jyhad Online deck
 builder
-** _Lackey CCG_: A text file that can be mported into the Lackey CCG client
+** _Lackey CCG_: A text file that can be imported into the Lackey CCG client
 * _Cards To Show_: Set which cards are displayed. The options are:
 ** _This Set Only_: Show only the cards in this card set.
 ** _Show All Cards_: Show all the cards in the White Wolf list. Cards not in
@@ -518,7 +518,7 @@ expansion.
 
 h3(#search). Search Dialog
 
-The search dilaog can be used to find specific cards or card sets quickly.
+The search dialog can be used to find specific cards or card sets quickly.
 
 In the main window, it can be popped up by using the menu item, the
 *&lt;Ctrl&gt;-F* shortcut, or by starting to type in the window directly.
@@ -578,7 +578,10 @@ in the list.
 "list":#list of costs. A card matches if its cost matches any cost in the list
 numerically. This filter ignores the cost type, and considers only the numerical
 cost. If you wish to filter on a specific cost and cost type, you must combine
-this filter with the _Cost Type_ filter.
+this filter with the _Cost Type_ filter (see
+"Combining Basic Filters":#combining). Note that cards without a cost are
+considered not to have a cost type either, so filtering for a cost of 0 and
+a cost type will fail to match any cards. 
 * _Life (Crypt)_: Filter on the life value of a crypt card. You must specify a
 "list":#list of life values. A card matches if the life value listed on the card
 matches any life value in the list. This filter only matches crypt cards which

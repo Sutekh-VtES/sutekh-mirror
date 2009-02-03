@@ -345,13 +345,6 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
         """Callback for connecting to filter editor name change events."""
         self.__update_sensitivity()
 
-    # Cancel button emulation for multiselect combo
-
-    def forced_cancel(self):
-        """Emulate Cancelling button press."""
-        self.__bWasCancelled = True
-        self.hide()
-
     # Dialog result retrievel methods
 
     def get_filter(self):

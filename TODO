@@ -14,6 +14,7 @@ For 0.8.0 cycle
        - Ally/Retainer life ?
        - Multiple discipline requirements ?
        - Requires versus provided for disciplines & clan cards ?
+       - Parse artist info from the cardlist
     * Standardise the reader/writer design for the io files. 
     * Add decent error checking for the io files
     * Redo perferences system. Allow finder grained perferences (save
@@ -45,6 +46,7 @@ For 0.8.0 cycle
     * Add more keyboard shortcuts
     * Right-click context menus
     * Reduce the gtk speed penalty for large models.
+    * Make MultiSelectCombo less evil (turn it into a proper widget?)
 
 * Post 0.8
   * Allow colouring options for the cards
