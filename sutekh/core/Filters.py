@@ -291,7 +291,7 @@ class MultiDisciplineFilter(MultiFilter):
     """Filter on multiple disciplines"""
     keyword = "Discipline"
     description = "Discipline"
-    helptext = "a list of disciplines.\nReturns a list of all card which " \
+    helptext = "a list of disciplines.\nReturns a list of all cards which " \
             "have or require the selected disciplines."
     islistfilter = True
     types = ['AbstractCard', 'PhysicalCard']
@@ -1428,7 +1428,7 @@ class ParentCardSetFilter(MultiFilter):
     keyword = "ParentCardSet"
     description = "Parent Card Set"
     helptext = "a list names of the parent card sets.\n" \
-            "Returns all card sets with one of the selected cards sets " \
+            "Returns all card sets with one of the selected card sets " \
             "as a parent."
     islistfilter = True
     types = ['PhysicalCardSet']

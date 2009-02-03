@@ -58,6 +58,9 @@ class MultiPaneWindow(gtk.Window):
 
         # Need this so allocations happen properly in add_pane
         self._iNumberOpenFrames = 0
+
+        # This always increments when panes are added, so the number is unique
+        # for each new frame
         self._iCount = 0
 
         # Need to keep track of open card sets globally
@@ -176,6 +179,8 @@ class MultiPaneWindow(gtk.Window):
         iWidth, iHeight = self._oConfig.get_window_size()
         if iWidth > 0 and iHeight > 0:
             self.resize(iWidth, iHeight)
+        # Reset the pane number count, since we're starting afresh
+        self._iCount = 0
         # pylint: disable-msg=W0612
         # iNumber is not used here, but returned from the config file
         dPaneInfo = self._oConfig.get_all_pane_info()
