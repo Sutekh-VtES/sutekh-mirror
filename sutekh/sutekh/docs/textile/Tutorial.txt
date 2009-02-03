@@ -142,7 +142,7 @@ _In Use_.
 
 h3. The Different card display and count modes
 
-Sutekh has several setings which control which cards are displayed in a card set
+Sutekh has several settings which control which cards are displayed in a card set
 pane, and what information about the cards is displayed.
 
 The display of cards will also be affected by any "filters":#filtering that are
@@ -275,7 +275,7 @@ You can also filter the card set list. The basic filters available here are:
 * Text in the annotations of the card set
 * All card sets marked in use
 
-TheYou can also combine these filters, and create queries such as
+You can also combine these filters, and create queries such as
 *All card sets in use where the card set name includes _Nosferatu_*.
 
 When Sutekh displays card sets which match a filter, all the direct ancestors of

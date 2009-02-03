@@ -433,7 +433,7 @@ manager</li>
 <li><em><span class="caps"><span class="caps">ARDB</span></span> Text</em>: A text file, similar to that produced by <span class="caps"><span class="caps">ARDB</span></span></li>
 <li><em><span class="caps"><span class="caps">JOL</span></span></em>: A text file that can be pasted into the Jyhad Online deck 
 builder</li>
-<li><em>Lackey <span class="caps"><span class="caps">CCG</span></span></em>: A text file that can be mported into the Lackey <span class="caps"><span class="caps">CCG</span></span> client</li>
+<li><em>Lackey <span class="caps"><span class="caps">CCG</span></span></em>: A text file that can be imported into the Lackey <span class="caps"><span class="caps">CCG</span></span> client</li>
 </ul>
 </li>
 <li><em>Cards To Show</em>: Set which cards are displayed. The options are:
@@ -588,7 +588,7 @@ expansion.</p>
 
 <h3 id="search">Search Dialog</h3>
 
-<p>The search dilaog can be used to find specific cards or card sets quickly.</p>
+<p>The search dialog can be used to find specific cards or card sets quickly.</p>
 
 <p>In the main window, it can be popped up by using the menu item, the 
 <strong>&lt;Ctrl&gt;-F</strong> shortcut, or by starting to type in the window directly.</p>
@@ -648,7 +648,10 @@ in the list.</li>
 <a href="#list">list</a> of costs. A card matches if its cost matches any cost in the list 
 numerically. This filter ignores the cost type, and considers only the numerical 
 cost. If you wish to filter on a specific cost and cost type, you must combine 
-this filter with the <em>Cost Type</em> filter.</li>
+this filter with the <em>Cost Type</em> filter (see 
+<a href="#combining">Combining Basic Filters</a>). Note that cards without a cost are 
+considered not to have a cost type either, so filtering for a cost of 0 and 
+a cost type will fail to match any cards. </li>
 <li><em>Life (Crypt)</em>: Filter on the life value of a crypt card. You must specify a 
 <a href="#list">list</a> of life values. A card matches if the life value listed on the card 
 matches any life value in the list. This filter only matches crypt cards which 
