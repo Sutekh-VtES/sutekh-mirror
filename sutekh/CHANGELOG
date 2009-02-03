@@ -4,12 +4,13 @@
    has been broken for a while, and there's no compelling reason to fix it.
  * Add a note on cost filter corner cases to the manual.
  * Fix some typos in the Manual and tutorial.
+ * Fix some minor errors in filter help text
 
 02 Feb 2009
  * Fix MultiCostFilter to do the right thing with costs of 0
  * Fix typo in pylint comments in Filters.py
  * Hook on button_release in wondows for the multi-select widget, so 
-  it behaves similairly to Unix
+   it behaves similairly to Unix
 
 19 Jan 2009
  * Fix incorrect dates in CHANGELOG (2009 != 2008)
