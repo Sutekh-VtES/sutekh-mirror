@@ -1,3 +1,6 @@
+05 Feb 2009
+ * Release 0.6.2.
+
 03 Feb 2009
  * Merge fixes from trunk (r1790:r1798)
    - Fix MultiCostFilter to do the right thing with costs of 0
