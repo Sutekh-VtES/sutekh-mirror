@@ -7,6 +7,7 @@
 """Widget for loading a file either from a URL or a local file."""
 
 import gtk
+import urllib2
 from sutekh.gui.SutekhFileWidget import SutekhFileButton
 from sutekh.io.WwFile import WwFile
 from sutekh.gui.ProgressDialog import ProgressDialog
@@ -116,6 +117,46 @@ class FileOrUrlWidget(gtk.VBox):
         sUrl, bUrl = self.get_file_or_url()
 
         oFile = WwFile(sUrl, bUrl=bUrl).open()
+        if hasattr(oFile, 'info') and callable(oFile.info):
+            sLength = oFile.info().getheader('Content-Length')
+        else:
+            sLength = None
+
+        if sLength:
+            aData = []
+            iLength = int(sLength)
+            oProgress = ProgressDialog()
+            oProgress.set_description('Download progress')
+            iTotal = 0
+            bCont = True
+            while bCont:
+                sInf = oFile.read(10000)
+                iTotal += 10000
+                oProgress.update_bar(float(iTotal) / iLength)
+                if sInf:
+                    aData.append(sInf)
+                else:
+                    bCont = False
+                    oProgress.destroy()
+            sData = ''.join(aData)
+        else:
+            # Just try and download
+            sData = oFile.read()
+
+        return sData
+
+    def get_binary_data(self):
+        """Open the selected file and retrieve the binary data.
+
+           Will attempt to display a progress dialog if the file is a URL.
+           """
+        sUrl, bUrl = self.get_file_or_url()
+
+        if bUrl:
+            oFile = urllib2.urlopen(sUrl)
+        else:
+            oFile = file(sUrl, "rb")
+
         if hasattr(oFile, 'info') and callable(oFile.info):
             sLength = oFile.info().getheader('Content-Length')
         else:
