@@ -74,6 +74,4 @@ class DeckFromFilter(CardListPlugin):
 
         return oCS
 
-# pylint: disable-msg=C0103
-# accept plugin name
 plugin = DeckFromFilter

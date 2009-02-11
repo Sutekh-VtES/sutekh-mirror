@@ -182,9 +182,7 @@ class CardListView(gtk.TreeView):
             self._aOldSelection = []
             return False
 
-        # pylint: disable-msg=W0612
-        # We're only interested in aList
-        oModel, aList = oSelection.get_selected_rows()
+        _oModel, aList = oSelection.get_selected_rows()
         # Implement the non default selection behaviour.
         tCursorPos = self.get_cursor()
         if len(aList) == 1 and len(self._aOldSelection) > 1 and \
@@ -199,7 +197,7 @@ class CardListView(gtk.TreeView):
                 self.bReentrant = False
             oPath = aList[0]
         else:
-            oModel, aList = oSelection.get_selected_rows()
+            _oModel, aList = oSelection.get_selected_rows()
             if not aList:
                 self._aOldSelection = []
                 return False
@@ -351,7 +349,8 @@ class CardListView(gtk.TreeView):
                 [true_expansion(x) for x in aLines[3::3]])
         return sSource, aCardInfo
 
-    # pylint: disable-msg=R0913, W0613
+
+    # pylint: disable-msg=R0913
     # arguments as required by the function signature
 
     def drag_card(self, oBtn, oContext, oSelectionData, oInfo, oTime):
@@ -363,6 +362,7 @@ class CardListView(gtk.TreeView):
                     oSelectionData, oInfo, oTime)
             return
         oSelectionData.set(oSelectionData.target, 8, sSelectData)
+
 
     def drag_delete(self, oBtn, oContext, oData):
         """Default drag-delete handler"""
@@ -379,6 +379,7 @@ class CardListView(gtk.TreeView):
         sSelection = self.get_selection_as_string()
         self._oMainWin.set_selection_text(sSelection)
 
+
     # Card name searching
 
     @staticmethod
@@ -386,7 +387,7 @@ class CardListView(gtk.TreeView):
         """Convert a card name or key to a canonical ASCII form."""
         return unicodedata.normalize('NFKD', sName).encode('ascii','ignore')
 
-    def compare(self, oModel, iColumn, sKey, oIter, oData):
+    def compare(self, oModel, _iColumn, sKey, oIter, _oData):
         """Compare the entered text to the card names."""
         if oModel.iter_depth(oIter) == 2:
             # Don't succeed for expansion items
@@ -422,9 +423,11 @@ class CardListView(gtk.TreeView):
 
         return True
 
+    # pylint: enable-msg=R0913
+
     # Helper function used by reload_keep_expanded
     # Various arguments required by function signatures
-    def __get_row_status(self, oModel, oPath, oIter, dExpandedDict):
+    def __get_row_status(self, _oModel, oPath, _oIter, dExpandedDict):
         """Create a dictionary of rows and their expanded status."""
         if self.row_expanded(oPath):
             dExpandedDict.setdefault(oPath,
@@ -432,7 +435,7 @@ class CardListView(gtk.TreeView):
         return False # Need to process the whole list
 
     # Activating Rows
-    def card_activated(self, oTree, oPath, oColumn):
+    def card_activated(self, _oTree, oPath, _oColumn):
         """Update card text and notify listeners when a card is selected."""
         sCardName = self._oModel.get_card_name_from_path(oPath)
         self._oController.set_card_text(sCardName)
@@ -441,15 +444,13 @@ class CardListView(gtk.TreeView):
 
     # Selecting
 
-    def force_cursor_move(self, oTreeView, iStep, iCount):
+    def force_cursor_move(self, _oTreeView, _iStep, _iCount):
         """Special handling for move events for buggy gtk events.
 
            We need to allow the selection of top level items when
            moving the cursor over them
            """
-        # pylint: disable-msg=W0612
-        # We're only interested in oCurPath
-        (oCurPath, oColumn) = self.get_cursor()
+        oCurPath, _oColumn = self.get_cursor()
         if self._oModel.iter_parent(self._oModel.get_iter(oCurPath)) is None:
             # Root node, so need to force the move
             self.bSelectTop = 2
@@ -461,4 +462,3 @@ class CardListView(gtk.TreeView):
         # anything else funky
         return False
 
-    # pylint: enable-msg=R0913, W0613

@@ -258,14 +258,12 @@ class CardSetController(object):
         if aSources[0] in ["Phys", PhysicalCardSet.sqlmeta.table]:
             # Add the cards, Count Matters
             for iCount, sCardName, sExpansion in aCards:
-                # pylint: disable-msg=W0612
-                # iLoop is just loop counter
                 # Use None to indicate this card set
                 if aSources[0] == "Phys":
                     # Only ever add 1 when dragging from physiscal card list
                     self.add_card(sCardName, sExpansion, None)
                 else:
-                    for iLoop in range(iCount):
+                    for _iLoop in range(iCount):
                         self.add_card(sCardName, sExpansion, None)
             return True
         else:
@@ -275,9 +273,7 @@ class CardSetController(object):
         """Helper function to delete the selected data."""
         for sCardName in dSelectedData:
             for sExpansion, iCount in dSelectedData[sCardName].iteritems():
-                # pylint: disable-msg=W0612
-                # iAttempt is loop counter
-                for iAttempt in range(iCount):
+                for _iAttempt in range(iCount):
                     # None as card set indicates this card set
                     if sExpansion != 'None':
                         self.dec_card(sCardName, sExpansion, None)
@@ -289,11 +285,9 @@ class CardSetController(object):
         for sCardName in dSelectedData:
             for (sExpansion, sCardSetName), iCardCount in \
                     dSelectedData[sCardName].iteritems():
-                # pylint: disable-msg=W0612
-                # iAttempt is loop counter
                 if iNewCnt < iCardCount:
                     # remove cards
-                    for iAttempt in range(iCardCount - iNewCnt):
+                    for _iAttempt in range(iCardCount - iNewCnt):
                         # None as card set indicates this card set
                         if sExpansion != 'None' and sExpansion != 'All':
                             self.dec_card(sCardName, sExpansion, sCardSetName)
@@ -301,7 +295,7 @@ class CardSetController(object):
                             self.dec_card(sCardName, None, sCardSetName)
                 elif iNewCnt > iCardCount:
                     # add cards
-                    for iAttempt in range(iNewCnt - iCardCount):
+                    for _iAttempt in range(iNewCnt - iCardCount):
                         # None as card set indicates this card set
                         if sExpansion != 'None' and sExpansion != 'All':
                             self.inc_card(sCardName, sExpansion, sCardSetName)

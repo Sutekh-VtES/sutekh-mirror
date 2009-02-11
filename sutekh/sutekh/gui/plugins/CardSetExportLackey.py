@@ -27,9 +27,7 @@ class CardSetExportLackey(CardListPlugin):
         oExport.connect("activate", self.make_dialog)
         return ('Export Card Set', oExport)
 
-    # pylint: disable-msg=W0613
-    # oWidget has to be here, although it's unused
-    def make_dialog(self, oWidget):
+    def make_dialog(self, _oWidget):
         """Create the dialog"""
         oDlg = ExportDialog("Choose FileName for Exported CardSet",
                 self.parent, '%s_lackey.txt' % safe_filename(
@@ -37,8 +35,6 @@ class CardSetExportLackey(CardListPlugin):
         oDlg.add_filter_with_pattern('Text Files', ['*.txt'])
         oDlg.run()
         self.handle_response(oDlg.get_name())
-
-    # pylint: enable-msg=W0613
 
     def handle_response(self, sFileName):
         """Handle the users response. Write the text output to file."""
@@ -53,6 +49,4 @@ class CardSetExportLackey(CardListPlugin):
             oWriter.write(fOut, oCardSet)
             fOut.close()
 
-# pylint: disable-msg=C0103
-# accept plugin name
 plugin = CardSetExportLackey

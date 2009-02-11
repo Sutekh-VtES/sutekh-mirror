@@ -200,15 +200,12 @@ class CardSetCompare(CardListPlugin):
                 oExpansion = None
             oCard = IAbstractCard(sCardName)
             oPhysCard = IPhysicalCard((oCard, oExpansion))
-            # pylint: disable-msg=W0612, E1101
-            # W0612 - iNum is just loop counter
+            # pylint: disable-msg=E1101
             # E1101 - sqlobject confuses pylint
-            for iNum in range(iCnt):
+            for _iNum in range(iCnt):
                 oCardSet.addPhysicalCard(oPhysCard)
         update_card_set(oCardSet, oDlg, self.parent, None)
         self.open_cs(sCSName)
 
 
-# pylint: disable-msg=C0103
-# accept plugin name
 plugin = CardSetCompare

@@ -42,9 +42,7 @@ class ClanDisciplineStats(CardListPlugin):
         oClanStats.connect("activate", self.activate)
         return ('Plugins', oClanStats)
 
-    # pylint: disable-msg=W0613
-    # oWidget required by function signature
-    def activate(self, oWidget):
+    def activate(self, _oWidget):
         """Handle response from menu"""
         oDlg = self.make_dialog()
         oDlg.run()
@@ -116,9 +114,7 @@ class GroupStats(object):
         aScores.sort(key=lambda x: x[1])
         aScores.reverse()
         aScores = aScores[:iNum]
-        # pylint: disable-msg=W0612
-        # iScore is unused here
-        return [self.dDisciplines[oId] for oId, iScore in aScores]
+        return [self.dDisciplines[oId] for oId, _iScore in aScores]
 
 class ClanStats(object):
     """Manage combined statistics for a clan"""
@@ -241,6 +237,4 @@ class StatsModel(gtk.TreeStore):
 
         return oClanStats
 
-# pylint: disable-msg=C0103
-# accept plugin name
 plugin = ClanDisciplineStats

@@ -60,9 +60,7 @@ class ACLLookupView(PhysicalCardView):
         sNewName = 'No Card'
         oModel, aSelection = self.get_selection().get_selected_rows()
         for oPath in aSelection:
-            # pylint: disable-msg=W0612
-            # only interested in sNewName and sExpansion
-            sNewName, sExpansion, iCount, iDepth = \
+            sNewName, _sExpansion, _iCount, _iDepth = \
                 oModel.get_all_from_path(oPath)
         return sNewName, ''
 
@@ -83,9 +81,7 @@ class PCLLookupView(PhysicalCardView):
         sExpansion = '  Unpecified Expansion'
         oModel, aSelection = self.get_selection().get_selected_rows()
         for oPath in aSelection:
-            # pylint: disable-msg=W0612
-            # only interested in sNewName and sExpansion
-            sNewName, sExpansion, iCount, iDepth = \
+            sNewName, sExpansion, _iCount, _iDepth = \
                 oModel.get_all_from_path(oPath)
         if sExpansion is None:
             sExpansion = ''
@@ -153,10 +149,7 @@ class ReplacementTreeView(gtk.TreeView):
         oColumn.set_sort_column_id(iColumn)
         self.append_column(oColumn)
 
-    # pylint: disable-msg=W0613
-    # argument lists determined by callback signature
-
-    def _set_to_selection(self, oCell, oPath):
+    def _set_to_selection(self, _oCell, oPath):
         """Set the replacement card to the selected entry"""
 
         # We handle PhysicalCards on a like-for-like matching case.
@@ -178,18 +171,16 @@ class ReplacementTreeView(gtk.TreeView):
 
         self.oModel.set_value(oIter, 2, sReplaceWith)
 
-    def _set_ignore(self, oCell, oPath):
+    def _set_ignore(self, _oCell, oPath):
         """Mark the card as not having a replacement."""
         oIter = self.oModel.get_iter(oPath)
         self.oModel.set_value(oIter, 2, "No Card")
 
-    def _set_filter(self, oCell, oPath):
+    def _set_filter(self, _oCell, oPath):
         """Set the card list filter to the best guess filter for this card."""
         oIter = self.oModel.get_iter(oPath)
         sFullName = self.oModel.get_value(oIter, 1)
-        # pylint: disable-msg=W0612
-        # we ignore sExp here
-        sName, sExp = self.parse_card_name(sFullName)
+        sName, _sExp = self.parse_card_name(sFullName)
 
         oFilter = best_guess_filter(sName)
         self.oCardListView.get_model().selectfilter = oFilter
@@ -199,23 +190,21 @@ class ReplacementTreeView(gtk.TreeView):
         else:
             self.oCardListView.load()
 
-    def run_filter_dialog(self, oButton):
+    def run_filter_dialog(self, _oButton):
         """Display the filter dialog and apply results."""
         self.oCardListView.get_filter(None, "CardName in $var0")
         self.oFilterToggleButton.set_active(
             self.oCardListView.get_model().applyfilter)
 
-    def toggle_apply_filter(self, oButton):
+    def toggle_apply_filter(self, _oButton):
         """Toggle whether the filter is applied."""
         self.oCardListView.get_model().applyfilter = \
             self.oFilterToggleButton.get_active()
         self.oCardListView.load()
 
-    def show_search(self, oButton):
+    def show_search(self, _oButton):
         """Popup the search dialog"""
         self.oCardListView.searchdialog.show_all()
-
-    # pylint: enable-msg=W0613
 
     NAME_RE = re.compile(r"^(?P<name>.*?)( \[(?P<exp>[^]]+)\])?$")
 

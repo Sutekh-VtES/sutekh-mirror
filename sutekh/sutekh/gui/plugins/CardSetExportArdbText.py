@@ -53,6 +53,4 @@ class CardSetExportArdbText(CardListPlugin):
                     oCardSet.comment, self.get_all_cards())
             fOut.close()
 
-# pylint: disable-msg=C0103
-# accept plugin name
 plugin = CardSetExportArdbText

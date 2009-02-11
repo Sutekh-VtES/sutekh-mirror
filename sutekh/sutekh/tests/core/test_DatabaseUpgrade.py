@@ -58,9 +58,7 @@ class DatabaseUpgradeTests(SutekhTest):
         assert list(PhysicalCardSet.select())
 
         sqlhub.processConnection = oOrigConn
-        # pylint: disable-msg=W0612
-        # we aren't interested in aMsgs here
-        bResult, aMsgs = create_final_copy(oNewConn, oLogHandler)
+        bResult, _aMsgs = create_final_copy(oNewConn, oLogHandler)
 
         # Check
         self.failUnless(bResult)

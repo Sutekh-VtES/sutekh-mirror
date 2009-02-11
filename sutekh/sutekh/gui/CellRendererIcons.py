@@ -9,11 +9,8 @@
 
 import gtk, pango, gobject
 
-# pylint: disable-msg=C0103
-# We break our usual convention here
 # consts for the different display modes we need
 SHOW_TEXT_ONLY, SHOW_ICONS_ONLY, SHOW_ICONS_AND_TEXT = range(3)
-# pylint: enable-msg=C0103
 
 def _layout_text(oLayout, sText):
     """Helper function to ensure consistency in calling layout"""

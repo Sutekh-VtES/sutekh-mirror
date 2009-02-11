@@ -46,19 +46,15 @@ class FullBackup(CardListPlugin):
 
     # Menu responses
 
-    # pylint: disable-msg=W0613
-    # oWidget needed by gtk function signature
-    def activate_backup(self, oWidget):
+    def activate_backup(self, _oWidget):
         """Handle backup request"""
         oDlg = self.make_backup_dialog()
         oDlg.run()
 
-    # oWidget needed by gtk function signature
-    def activate_restore(self, oWidget):
+    def activate_restore(self, _oWidget):
         """Handle restore request"""
         oDlg = self.make_restore_dialog()
         oDlg.run()
-    # pylint: enable-msg=W0613
 
     # Backup
 
@@ -175,6 +171,4 @@ class FullBackup(CardListPlugin):
             oDlg.destroy()
 
 
-# pylint: disable-msg=C0103
-# accept plugin name
 plugin = FullBackup

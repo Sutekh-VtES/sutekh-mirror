@@ -45,10 +45,7 @@ class ImportFromZipFile(CardListPlugin):
 
     # Menu responses
 
-    # pylint: disable-msg=W0613
-    # oWidget needed by gtk function signature
-
-    def make_dialog(self, oWidget):
+    def make_dialog(self, _oWidget):
         """Create the dialog used to select the zip file"""
         sName = "Select zip file to import from."
 
@@ -65,8 +62,6 @@ class ImportFromZipFile(CardListPlugin):
         oDlg.show_all()
 
         return oDlg
-
-    # pylint: enable-msg=W0613
 
     def handle_response(self, oDlg, oResponse):
         """Handle response from the import dialog"""
@@ -212,6 +207,4 @@ class ImportFromZipFile(CardListPlugin):
         return sNewName
 
 
-# pylint: disable-msg=C0103
-# accept plugin name
 plugin = ImportFromZipFile

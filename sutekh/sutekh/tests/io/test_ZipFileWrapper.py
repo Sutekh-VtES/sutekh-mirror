@@ -7,7 +7,7 @@
 """Test the Zip File Wrapper"""
 
 from sutekh.tests.TestCore import SutekhTest
-from sutekh.tests.core.test_PhysicalCardSet import aCardSetNames, \
+from sutekh.tests.core.test_PhysicalCardSet import CARD_SET_NAMES, \
         get_phys_cards
 from sutekh.core.SutekhObjects import IAbstractCard, IPhysicalCard, \
         IPhysicalCardSet, PhysicalCardSet
@@ -36,7 +36,7 @@ class ZipFileWrapperTest(SutekhTest):
             oMyCollection.addPhysicalCard(oCard.id)
             oMyCollection.syncUpdate()
 
-        oPhysCardSet1 = PhysicalCardSet(name=aCardSetNames[0],
+        oPhysCardSet1 = PhysicalCardSet(name=CARD_SET_NAMES[0],
                 parent=oMyCollection)
         oPhysCardSet1.comment = 'A test comment'
         oPhysCardSet1.author = 'A test author'
@@ -52,7 +52,7 @@ class ZipFileWrapperTest(SutekhTest):
                 oPhysCardSet1.addPhysicalCard(aPhysCards[iLoop].id)
                 oPhysCardSet1.syncUpdate()
 
-        oPhysCardSet2 = PhysicalCardSet(name=aCardSetNames[1])
+        oPhysCardSet2 = PhysicalCardSet(name=CARD_SET_NAMES[1])
         oPhysCardSet2.comment = 'Test 2 comment'
         oPhysCardSet2.author = 'A different author'
 
@@ -81,8 +81,8 @@ class ZipFileWrapperTest(SutekhTest):
         self.assertEqual(PhysicalCardSet.select().count(), 3)
 
         oMyCollection = IPhysicalCardSet('My Collection')
-        oPhysCardSet1 = IPhysicalCardSet(aCardSetNames[0])
-        oPhysCardSet2 = IPhysicalCardSet(aCardSetNames[1])
+        oPhysCardSet1 = IPhysicalCardSet(CARD_SET_NAMES[0])
+        oPhysCardSet2 = IPhysicalCardSet(CARD_SET_NAMES[1])
         self.assertEqual(oPhysCardSet1.comment, 'A test comment')
         self.assertEqual(oPhysCardSet2.author, 'A different author')
         self.assertNotEqual(oPhysCardSet1.parent, None)

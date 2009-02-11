@@ -176,9 +176,7 @@ class CachedCardSetHolder(CardSetHolder):
         dNameCards = dict(zip(self._dCards.keys(), aAbsCards))
 
         # Update dLookupCache
-        # pylint: disable-msg=W0612
-        # iCnt and iLoop are loop variables
-        for oAbs, (sName, iCnt) in zip(aAbsCards, aCardCnts):
+        for oAbs, (sName, _iCnt) in zip(aAbsCards, aCardCnts):
             if not oAbs:
                 dLookupCache['cards'][sName] = None
             else:

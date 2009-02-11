@@ -37,14 +37,10 @@ class CSVImporter(CardListPlugin):
         oMenuItem.connect("activate", self.activate)
         return ('Import Card Set', oMenuItem)
 
-    # pylint: disable-msg=W0613
-    # oWidget required by function signature
-    def activate(self, oWidget):
+    def activate(self, _oWidget):
         """Handle response form the user"""
         oDlg = self.make_dialog()
         oDlg.run()
-
-    # pylint: enable-msg=W0613
 
     # pylint: disable-msg=W0201
     # defining elements outside of init is OK here, because of plugin structure
@@ -186,9 +182,7 @@ class CSVImporter(CardListPlugin):
                 oListStore.set(oIter, 0, iRow, 1, sHeading)
             oCombo.set_active_iter(oListStore.get_iter_root())
 
-    # pylint: disable-msg=W0613
-    # oWidget required by function signature
-    def handle_response(self, oWidget, oResponse):
+    def handle_response(self, _oWidget, oResponse):
         """Handle the user clicking OK on the dialog.
 
            Do the actual import.
@@ -262,6 +256,4 @@ class CSVImporter(CardListPlugin):
         return aCols
 
 
-# pylint: disable-msg=C0103
-# accept plugin name
 plugin = CSVImporter

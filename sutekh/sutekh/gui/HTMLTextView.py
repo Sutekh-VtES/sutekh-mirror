@@ -23,10 +23,10 @@ from cStringIO import StringIO
 from sutekh.gui.SutekhDialog import SutekhDialog
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 
-oWhiteSpaceRegex = re.compile("\\s+")
+WHITE_SPACE_REGEX = re.compile("\\s+")
 
-## pixels = points * fResolution
-fResolution = 0.3514598*(gtk.gdk.screen_height() /
+## pixels = points * SCREEN_RESOULTION
+SCREEN_RESOULTION = 0.3514598*(gtk.gdk.screen_height() /
                     float(gtk.gdk.screen_height_mm()))
 
 def _parse_css_color(sColor):
@@ -121,10 +121,10 @@ class HtmlHandler(HTMLParser.HTMLParser):
                 aAttrs.font = self._oTextView.style.font_desc
             return aAttrs
 
-    def _parse_length(self, sValue, bFontRelative, fCallback, *aArgs):
+    def _parse_length(self, sValue, bFontRelative, fCallback, *args):
         """Parse/calc length, converting to pixels.
 
-           calls callback(length, *aArgs) when the length is first computed
+           calls callback(length, *args) when the length is first computed
            or changes
            """
         # pylint: disable-msg=W0142
@@ -134,7 +134,7 @@ class HtmlHandler(HTMLParser.HTMLParser):
             if bFontRelative:
                 oAttrs = self._get_current_attributes()
                 fFontSize = oAttrs.font.get_size() / pango.SCALE
-                fCallback(fFrac * fResolution * fFontSize, *aArgs)
+                fCallback(fFrac * SCREEN_RESOULTION * fFontSize, *args)
             else:
                 ## CSS says "Percentage values: refer to width of the closest
                 ##           block-level ancestor"
@@ -142,32 +142,34 @@ class HtmlHandler(HTMLParser.HTMLParser):
                 ## textview width instead; a reasonable approximation..
                 oAlloc = self._oTextView.get_allocation()
                 self.__parse_length_frac_cb(self._oTextView, oAlloc,
-                        fFrac, fCallback, aArgs)
+                        fFrac, fCallback, args)
                 self._oTextView.connect("size-allocate",
                         self.__parse_length_frac_cb, fFrac,
-                        fCallback, aArgs)
+                        fCallback, args)
 
         elif sValue.endswith('pt'): # points
-            fCallback(float(sValue[:-2]) * fResolution, *aArgs)
+            fCallback(float(sValue[:-2]) * SCREEN_RESOULTION, *args)
         elif sValue.endswith('em'): # ems, the height of the element's font
             oAttrs = self._get_current_attributes()
             fFontSize = oAttrs.font.get_size() / pango.SCALE
-            fCallback(float(sValue[:-2]) * fResolution * fFontSize, *aArgs)
+            fCallback(float(sValue[:-2]) * SCREEN_RESOULTION * fFontSize,
+                    *args)
         elif sValue.endswith('ex'): # x-height, ~ the height of the letter 'x'
             ## FIXME: figure out how to calculate this correctly
             ##        for now 'em' size is used as approximation
             oAttrs = self._get_current_attributes()
             fFontSize = oAttrs.font.get_size() / pango.SCALE
-            fCallback(float(sValue[:-2]) * fResolution * fFontSize, *aArgs)
+            fCallback(float(sValue[:-2]) * SCREEN_RESOULTION * fFontSize,
+                    *args)
         elif sValue.endswith('px'): # pixels
-            fCallback(int(sValue[:-2]), *aArgs)
+            fCallback(int(sValue[:-2]), *args)
         else:
             warnings.warn("Unable to parse length value '%s'" % sValue)
 
     @staticmethod
     def __parse_font_size_cb(fLength, oTag):
         """Callback for font size calculations."""
-        oTag.set_property("size-points", fLength/fResolution)
+        oTag.set_property("size-points", fLength/SCREEN_RESOULTION)
 
     def _parse_style_font_size(self, oTag, sValue):
         """Parse the font size attribute"""
@@ -345,31 +347,31 @@ class HtmlHandler(HTMLParser.HTMLParser):
         self._insert_text(self._sText.replace('\n', ''))
         self._sText = ''
 
-    # pylint: disable-msg=R0913, W0613
+    # pylint: disable-msg=R0913
     # Arguments needed by function signature
-    def _anchor_event(self, oTag, oTextview, oEvent, oIter, oHref, oType_):
+    def _anchor_event(self, _oTag, _oView, oEvent, _oIter, oHref, oType):
         """Something happened to a link, so see if we need to react."""
         if oEvent.type == gtk.gdk.BUTTON_PRESS and oEvent.button == 1:
-            self._oTextView.emit("url-clicked", oHref, oType_)
+            self._oTextView.emit("url-clicked", oHref, oType)
             return True
         return False
 
     # Arguments needed so this can be called via 'size-allocate' event
     def __parse_length_frac_cb(self, oTextView, oAllocation,
-            fFrac, fCallback, aArgs):
+            fFrac, fCallback, args):
         """call the required callback function when the size allocation
            changes."""
         # pylint: disable-msg=W0142
         # *magic required here
-        fCallback(oAllocation.width * fFrac, *aArgs)
+        fCallback(oAllocation.width * fFrac, *args)
 
-    # pylint: enable-msg=R0913, W0613
+    # pylint: enable-msg=R0913
 
     def handle_data(self, sContent):
         """Process the character comments of an element."""
         if self._bInTitle:
             return
-        self._sText += oWhiteSpaceRegex.sub(' ', sContent)
+        self._sText += WHITE_SPACE_REGEX.sub(' ', sContent)
 
     def get_targets(self):
         """Get the list of target anchors."""
@@ -459,7 +461,7 @@ class HtmlHandler(HTMLParser.HTMLParser):
             oTextAttrs = self._get_current_attributes()
             fFontSize = oTextAttrs.font.get_size() / pango.SCALE
             iDepth = len(self._aListCounters)
-            oTag.set_property('left-margin', 2.0 * iDepth * fResolution
+            oTag.set_property('left-margin', 2.0 * iDepth * SCREEN_RESOULTION
                     * fFontSize)
 
         self._begin_span(oStyle, oTag)
@@ -623,20 +625,16 @@ class HTMLTextView(gtk.TextView):
         self._dTargets = {}
         self._fLinkLoader = fLinkLoader
 
-    # pylint: disable-msg=W0613
-    # oEvent needed by function signature
-    def __leave_event(self, oWidget, oEvent):
+    def __leave_event(self, oWidget, _oEvent):
         """Cursor has left the widget."""
         if self._bChangedCursor:
             oWindow = oWidget.get_window(gtk.TEXT_WINDOW_TEXT)
             oWindow.set_cursor(gtk.gdk.Cursor(gtk.gdk.XTERM))
             self._bChangedCursor = False
 
-    def __motion_notify_event(self, oWidget, oEvent):
+    def __motion_notify_event(self, oWidget, _oEvent):
         """Change the cursor if the pointer is over a link"""
-        # pylint: disable-msg=W0612
-        # We delibrately ignore oIgnore
-        iXPos, iYPos, oIgnore = oWidget.window.get_pointer()
+        iXPos, iYPos, _oIgnore = oWidget.window.get_pointer()
         iXPos, iYPos = oWidget.window_to_buffer_coords(gtk.TEXT_WINDOW_TEXT,
                 iXPos, iYPos)
         aTags = oWidget.get_iter_at_location(iXPos, iYPos).get_tags()
@@ -655,8 +653,6 @@ class HTMLTextView(gtk.TextView):
             oWindow.set_cursor(gtk.gdk.Cursor(gtk.gdk.XTERM))
             self._bChangedCursor = False
         return False
-
-    # pylint: enable-msg=W0613
 
     def set_text_pos(self, sTextAnchor):
         """Set the position to the anchor sTextAnchor"""
@@ -762,9 +758,7 @@ class HTMLViewDialog(SutekhDialog):
         self._sTextAnchor = sPos
         self._update_view()
 
-    # pylint: disable-msg=W0613
-    # oWidget, oType required by function signature
-    def _url_clicked(self, oWidget, sUrl, oType):
+    def _url_clicked(self, _oWidget, sUrl, _oType):
         """Update the HTML widget with the new url"""
         aParts = sUrl.split('#')
         sFile = aParts[0]
@@ -773,12 +767,11 @@ class HTMLViewDialog(SutekhDialog):
         else:
             sPos = None
         if sFile:
-            # pylint: disable-msg=W0703, W0612
+            # pylint: disable-msg=W0703
             # we really do want all the exceptions
-            # oExp is unused
             try:
                 fInput = self._fLinkLoader(sFile)
-            except Exception, oExp:
+            except Exception, _oExp:
                 sError = self._sError % { 'missing' : sUrl }
                 fInput = StringIO(sError)
                 sPos = None
@@ -786,7 +779,7 @@ class HTMLViewDialog(SutekhDialog):
         else:
             self.show_page(None, sPos)
 
-    def _go_back(self, oWidget):
+    def _go_back(self, _oWidget):
         """Go backwards through the list of visited urls"""
         if len(self._aPastUrls) == 0:
             return
@@ -794,7 +787,7 @@ class HTMLViewDialog(SutekhDialog):
         self._fCurrent, self._sTextAnchor = self._aPastUrls.pop()
         self._update_view()
 
-    def _go_forward(self, oWidget):
+    def _go_forward(self, _oWidget):
         """Go forward through the list of visited urls"""
         if len(self._aFutureUrls) == 0:
             return

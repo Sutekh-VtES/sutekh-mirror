@@ -12,22 +12,22 @@
 
 import ply.lex as lex
 import ply.yacc as yacc
-from sutekh.core.Filters import aParserFilters, FilterNot, FilterAndBox, \
+from sutekh.core.Filters import PARSER_FILTERS, FilterNot, FilterAndBox, \
         FilterOrBox
 
-aEntryFilters = [x.keyword for x in aParserFilters if hasattr(x,'istextentry')
+ENTRY_FILTERS = [x.keyword for x in PARSER_FILTERS if hasattr(x,'istextentry')
         and x.istextentry]
-aWithFilters = [x.keyword for x in aParserFilters if hasattr(x,'iswithfilter')
+WITH_FILTERS = [x.keyword for x in PARSER_FILTERS if hasattr(x,'iswithfilter')
         and x.iswithfilter]
-aFromFilters = [x.keyword for x in aParserFilters if hasattr(x,'isfromfilter')
+FROM_FILTERS = [x.keyword for x in PARSER_FILTERS if hasattr(x,'isfromfilter')
         and x.isfromfilter]
-aListFilters = [x.keyword for x in aParserFilters if hasattr(x,'islistfilter')
+LIST_FILTERS = [x.keyword for x in PARSER_FILTERS if hasattr(x,'islistfilter')
         and x.islistfilter]
 
 def get_filter_type(sKeyword):
     """Get the actual filter object from the type string"""
     # pylint: disable-msg=W0621
-    return [x for x in aParserFilters if x.keyword == sKeyword][0]
+    return [x for x in PARSER_FILTERS if x.keyword == sKeyword][0]
 
 # We define an object for the lex parser
 
@@ -36,7 +36,7 @@ def get_filter_type(sKeyword):
 class ParseFilterDefinitions(object):
     """Provides the lexxer used by PLY"""
     # pylint: disable-msg=C0103, R0201
-    aKeywords = [x.keyword for x in aParserFilters]
+    aKeywords = [x.keyword for x in PARSER_FILTERS]
 
     tokens = (
             'NOT',
@@ -439,11 +439,11 @@ class FilterPartNode(OperatorNode):
     def get_values(self):
         """List of ValueObjects describing the filter and its associated
            values."""
-        if self.sFilterName in aEntryFilters:
+        if self.sFilterName in ENTRY_FILTERS:
             aResults = \
                     [ValueObject(get_filter_type(self.sFilterName).description
                         + ' includes', self)]
-        elif self.sFilterName in aListFilters:
+        elif self.sFilterName in LIST_FILTERS:
             aResults = \
                     [ValueObject(get_filter_type(self.sFilterName).description
                         + ' in', self)]
@@ -464,7 +464,7 @@ class FilterPartNode(OperatorNode):
     def get_invalid_values(self):
         """List of illegal values associated with this filter"""
         aRes = []
-        if self.aFilterValues is None or self.sFilterName not in aListFilters:
+        if self.aFilterValues is None or self.sFilterName not in LIST_FILTERS:
             return None
         aCurVals = self.aFilterValues.get_values()
         oTemp = get_filter_type(self.sFilterName)([]) # Create Instance
@@ -492,7 +492,7 @@ class FilterPartNode(OperatorNode):
         """Set values for this filter"""
         if self.aFilterValues is not None:
             raise RuntimeError("Filter values already set")
-        if self.sFilterName in aFromFilters:
+        if self.sFilterName in FROM_FILTERS:
             sCommaList = ",".join(aVals[0])
             sInternalFilter = self.sFilterName + '=' + sCommaList + 'from' + \
                     aVals[1]
@@ -509,14 +509,14 @@ class FilterPartNode(OperatorNode):
 
     def get_filter(self):
         """Get Filter object for this Filter"""
-        if self.sFilterName in aEntryFilters or \
-                self.sFilterName in aListFilters:
+        if self.sFilterName in ENTRY_FILTERS or \
+                self.sFilterName in LIST_FILTERS:
             if self.aFilterValues is None:
                 return None
         cFilterType = get_filter_type(self.sFilterName)
         if self.aFilterValues:
             aValues = self.aFilterValues.get_filter()
-            if self.sFilterName in aEntryFilters:
+            if self.sFilterName in ENTRY_FILTERS:
                 # Filter takes a single string as input
                 # by construction, this is aValues[0]
                 oFilter = cFilterType(aValues[0])

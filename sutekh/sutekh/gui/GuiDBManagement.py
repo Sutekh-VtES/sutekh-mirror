@@ -72,12 +72,10 @@ def initialize_db(oParent):
             " initialised",
             gtk.MESSAGE_ERROR, (gtk.STOCK_QUIT, gtk.RESPONSE_CLOSE,
                 "Initialise database with cardlist and rulings?", 1))
-    # pylint: disable-msg=W0612
-    # sIgnore is ignored here
     if iRes != 1:
         return False
     else:
-        aCLFile, oRulingsFile, sIgnore = _get_names(oParent)
+        aCLFile, oRulingsFile, _sIgnore = _get_names(oParent)
         if aCLFile is not None:
             oProgressDialog = ProgressDialog()
             read_ww_lists_into_db(aCLFile, oRulingsFile, oProgressDialog)

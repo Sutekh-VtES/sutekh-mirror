@@ -114,6 +114,4 @@ class GroupCardList(CardListPlugin):
         """Get the current grouping class."""
         return self.model.groupby
 
-# pylint: disable-msg=C0103
-# accept plugin name
 plugin = GroupCardList

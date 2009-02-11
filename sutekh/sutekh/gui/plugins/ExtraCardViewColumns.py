@@ -441,10 +441,7 @@ class ExtraCardViewColumns(CardListPlugin):
 
     def set_cols_in_use(self, aCols):
         """Add columns to the view"""
-        # pylint: disable-msg=W0612
-        # iDir is returned, although we don't need it
-        iSortCol, iDir = self.model.get_sort_column_id()
-        # pylint: enable-msg=W0612
+        iSortCol, _iDir = self.model.get_sort_column_id()
         if iSortCol is not None and iSortCol > 1:
             # We're changing the columns, so restore sorting to default
             self.model.set_sort_column_id(0, 0)
@@ -473,6 +470,4 @@ class ExtraCardViewColumns(CardListPlugin):
         return [oCol for oCol in self.view.get_columns() if
                 oCol.get_property("title") in self._dCols]
 
-# pylint: disable-msg=C0103
-# accept plugin name
 plugin = ExtraCardViewColumns

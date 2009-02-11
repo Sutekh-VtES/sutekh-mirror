@@ -26,9 +26,9 @@ from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 from sutekh.SutekhUtility import prefs_dir, ensure_dir_exists
 
 
-_iFORWARD, _iBACKWARD = range(2)
-_iFULL, _iVIEW_FIXED, _iFIT = range(3)
-_tRATIO = (225, 300)
+FORWARD, BACKWARD = range(2)
+FULL, VIEW_FIXED, FIT = range(3)
+RATIO = (225, 300)
 
 def _scale_dims(iImageWidth, iImageHeight, iPaneWidth, iPaneHeight):
     """Rescale the image dimension so they fit in the pane, preserving the
@@ -73,30 +73,30 @@ class CardImagePopupMenu(gtk.Menu):
         super(CardImagePopupMenu, self).__init__()
         self.oFrame = oFrame
         self.oZoom = gtk.RadioAction('Zoom', 'Show images at original size',
-                None, None, _iFULL)
+                None, None, FULL)
         self.oZoom.set_group(None)
         self.oViewFixed = gtk.RadioAction('ViewFixed',
-                'Show images at fixed size', None, None, _iVIEW_FIXED)
+                'Show images at fixed size', None, None, VIEW_FIXED)
         self.oViewFixed.set_group(self.oZoom)
         self.oViewFit = gtk.RadioAction('ViewFit', 'Fit images to the pane',
-                None, None, _iFIT)
+                None, None, FIT)
         self.oViewFit.set_group(self.oZoom)
         self.oNext = gtk.Action('NextExp', 'Show next expansion image', None,
                 None)
         self.oPrev = gtk.Action('PrevExp', 'Show previous expansion image',
                 None, None)
 
-        self.oPrev.connect('activate', self.cycle_expansion, _iBACKWARD)
-        self.oNext.connect('activate', self.cycle_expansion, _iFORWARD)
-        self.oViewFit.connect('activate', self.set_zoom, _iFIT)
-        self.oZoom.connect('activate', self.set_zoom, _iFULL)
-        self.oViewFixed.connect('activate', self.set_zoom, _iVIEW_FIXED)
+        self.oPrev.connect('activate', self.cycle_expansion, BACKWARD)
+        self.oNext.connect('activate', self.cycle_expansion, FORWARD)
+        self.oViewFit.connect('activate', self.set_zoom, FIT)
+        self.oZoom.connect('activate', self.set_zoom, FULL)
+        self.oViewFixed.connect('activate', self.set_zoom, VIEW_FIXED)
 
-        if iZoomMode == _iFULL:
+        if iZoomMode == FULL:
             self.oZoom.set_active(True)
-        elif iZoomMode == _iVIEW_FIXED:
+        elif iZoomMode == VIEW_FIXED:
             self.oViewFixed.set_active(True)
-        elif iZoomMode == _iFIT:
+        elif iZoomMode == FIT:
             self.oViewFit.set_active(True)
 
         self.add(self.oViewFit.create_menu_item())
@@ -110,16 +110,14 @@ class CardImagePopupMenu(gtk.Menu):
         self.oNext.set_sensitive(bValue)
         self.oPrev.set_sensitive(bValue)
 
-    # pylint: disable-msg=W0613
-    # oWidget needed by gtk function signature
-    def cycle_expansion(self, oWidget, iDir):
+    def cycle_expansion(self, _oWidget, iDir):
         """Change the expansion as requested."""
-        assert(iDir in [_iBACKWARD, _iFORWARD])
+        assert(iDir in [BACKWARD, FORWARD])
         self.oFrame.do_cycle_expansion(iDir)
 
-    def set_zoom(self, oWidget, iScale):
+    def set_zoom(self, _oWidget, iScale):
         """Change the drawing mode."""
-        assert(iScale in [_iFULL, _iVIEW_FIXED, _iFIT])
+        assert(iScale in [FULL, VIEW_FIXED, FIT])
         self.oFrame.set_zoom_mode(iScale)
 
 class CardImageFrame(BasicFrame, CardListViewListener):
@@ -168,7 +166,7 @@ class CardImageFrame(BasicFrame, CardListViewListener):
         self.__aExpansions = []
         self.__iExpansionPos = 0
         self.__sCardName = ''
-        self.__iZoomMode = _iFIT
+        self.__iZoomMode = FIT
         self._tPaneSize = (0, 0)
 
     type = property(fget=lambda self: "Card Image Frame", doc="Frame Type")
@@ -247,7 +245,7 @@ class CardImageFrame(BasicFrame, CardListViewListener):
             oPixbuf = gtk.gdk.pixbuf_new_from_file(sFullFilename)
             iWidth = oPixbuf.get_width()
             iHeight = oPixbuf.get_height()
-            if self.__iZoomMode == _iFIT:
+            if self.__iZoomMode == FIT:
                 # Need to fix aspect ratios
                 iPaneHeight = self._oView.get_vadjustment().page_size - \
                         iHeightOffset
@@ -261,9 +259,9 @@ class CardImageFrame(BasicFrame, CardListViewListener):
                         iDestWidth, iDestHeight, gtk.gdk.INTERP_HYPER))
                     self._tPaneSize = (self._oView.get_hadjustment().page_size,
                             self._oView.get_vadjustment().page_size)
-            elif self.__iZoomMode == _iVIEW_FIXED:
+            elif self.__iZoomMode == VIEW_FIXED:
                 iDestWidth, iDestHeight = _scale_dims(iWidth, iHeight,
-                        _tRATIO[0], _tRATIO[1])
+                        RATIO[0], RATIO[1])
                 self._oImage.set_from_pixbuf(oPixbuf.scale_simple(iDestWidth,
                     iDestHeight, gtk.gdk.INTERP_HYPER))
             else:
@@ -313,11 +311,11 @@ class CardImageFrame(BasicFrame, CardListViewListener):
         """Change the expansion image to a different one in the list."""
         if len(self.__aExpansions) < 2 or not self.__bShowExpansions:
             return # nothing to scroll through
-        if iDir == _iFORWARD:
+        if iDir == FORWARD:
             self.__iExpansionPos += 1
             if self.__iExpansionPos >= len(self.__aExpansions):
                 self.__iExpansionPos = 0
-        elif iDir == _iBACKWARD:
+        elif iDir == BACKWARD:
             self.__iExpansionPos -= 1
             if self.__iExpansionPos < 0:
                 self.__iExpansionPos = len(self.__aExpansions) - 1
@@ -329,14 +327,12 @@ class CardImageFrame(BasicFrame, CardListViewListener):
         self.__iZoomMode = iScale
         self.__redraw(False)
 
-    # pylint: disable-msg=W0613
-    # oWidget needed by gtk function signature
-    def __cycle_expansion(self, oWidget, oEvent):
+    def __cycle_expansion(self, _oWidget, oEvent):
         """On a button click, move to the next expansion."""
         if oEvent.type != gtk.gdk.BUTTON_PRESS:
             return True # don't jump twice on double or triple clicks
         if oEvent.button == 1:
-            self.do_cycle_expansion(_iFORWARD)
+            self.do_cycle_expansion(FORWARD)
         elif oEvent.button == 3:
             # Do context menu
             oPopupMenu = CardImagePopupMenu(self, self.__iZoomMode)
@@ -345,10 +341,9 @@ class CardImageFrame(BasicFrame, CardListViewListener):
             oPopupMenu.popup(None, None, None, oEvent.button, oEvent.time)
         return True
 
-    # W0613 oAdjust also required by signature
-    def _pane_adjust(self, oAdjust):
+    def _pane_adjust(self, _oAdjust):
         """Redraw the image if needed when the pane size changes."""
-        if self.__iZoomMode == _iFIT:
+        if self.__iZoomMode == FIT:
             tCurSize = (self._oView.get_hadjustment().page_size,
                 self._oView.get_vadjustment().page_size)
             if tCurSize[0] != self._tPaneSize[0] or \
@@ -452,8 +447,8 @@ class CardImagePlugin(CardListPlugin):
 
     # pylint: disable-msg=W0142
     # ** magic OK here
-    def __init__(self, *aArgs, **kwargs):
-        super(CardImagePlugin, self).__init__(*aArgs, **kwargs)
+    def __init__(self, *args, **kwargs):
+        super(CardImagePlugin, self).__init__(*args, **kwargs)
         # Add listeners to the appropriate views
         if not self.image_frame:
             self.init_image_frame(self)
@@ -516,9 +511,7 @@ class CardImagePlugin(CardListPlugin):
             # Don't get called next time
             ensure_dir_exists(sPrefsPath)
 
-    # pylint: disable-msg=W0613
-    # oMenuWidget needed by gtk function signature
-    def config_activate(self, oMenuWidget):
+    def config_activate(self, _oMenuWidget):
         """Configure the plugin dialog."""
         oDialog = ImageConfigDialog(self.parent, False)
         self.handle_response(oDialog)
@@ -665,9 +658,7 @@ class CardImagePlugin(CardListPlugin):
         else:
             return None
 
-    # pylint: disable-msg=W0613
-    # oWidget needed by gtk function signature
-    def replace_pane(self, oWidget):
+    def replace_pane(self, _oWidget):
         """Handle replacing a frame to the main window if required"""
         if self._sMenuFlag not in self.parent.dOpenFrames.values():
             oNewPane = self.parent.focussed_pane
@@ -675,7 +666,7 @@ class CardImagePlugin(CardListPlugin):
                 self.parent.replace_frame(oNewPane, self.image_frame,
                         self._sMenuFlag)
 
-    def add_pane(self, oWidget):
+    def add_pane(self, _oWidget):
         """Handle adding the frame to the main window if required"""
         if self._sMenuFlag not in self.parent.dOpenFrames.values():
             oNewPane = self.parent.add_pane_end()
@@ -683,6 +674,4 @@ class CardImagePlugin(CardListPlugin):
                     self._sMenuFlag)
 
 
-# pylint: disable-msg=C0103
-# shut up complaint about the name
 plugin = CardImagePlugin

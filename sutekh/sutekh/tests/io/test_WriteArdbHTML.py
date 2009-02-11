@@ -9,13 +9,13 @@
 import time
 from sutekh.SutekhInfo import SutekhInfo
 from sutekh.tests.TestCore import SutekhTest
-from sutekh.tests.core.test_PhysicalCardSet import aCardSetNames, \
+from sutekh.tests.core.test_PhysicalCardSet import CARD_SET_NAMES, \
         get_phys_cards
 from sutekh.core.SutekhObjects import PhysicalCardSet
-from sutekh.io.WriteArdbHTML import  WriteArdbHTML, sHTMLStyle
+from sutekh.io.WriteArdbHTML import  WriteArdbHTML, HTML_STYLE
 import unittest
 
-sExpected1 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+EXPECTED_1 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
   <head>
@@ -126,10 +126,10 @@ sExpected1 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
       <span class="generator">Crafted with : Sutekh [ %s ]. [ %s ]</span>
     </div>
   </body>
-</html>""" % (sHTMLStyle, SutekhInfo.VERSION_STR,
+</html>""" % (HTML_STYLE, SutekhInfo.VERSION_STR,
         time.strftime('%Y-%m-%d', time.localtime()))
 
-sExpected2 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+EXPECTED_2 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
   <head>
@@ -230,10 +230,10 @@ sExpected2 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
       <span class="generator">Crafted with : Sutekh [ %s ]. [ %s ]</span>
     </div>
   </body>
-</html>""" % (sHTMLStyle, SutekhInfo.VERSION_STR,
+</html>""" % (HTML_STYLE, SutekhInfo.VERSION_STR,
         time.strftime('%Y-%m-%d', time.localtime()))
 
-sExpected3 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+EXPECTED_3 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
   <head>
@@ -344,7 +344,7 @@ sExpected3 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
       <span class="generator">Crafted with : Sutekh [ %s ]. [ %s ]</span>
     </div>
   </body>
-</html>""" % (sHTMLStyle, SutekhInfo.VERSION_STR,
+</html>""" % (HTML_STYLE, SutekhInfo.VERSION_STR,
         time.strftime('%Y-%m-%d', time.localtime()))
 
 
@@ -359,7 +359,7 @@ class ARDBHTMLWriterTests(SutekhTest):
         # repeated setups, so it has lots of lines + variables
         aAddedPhysCards = get_phys_cards()
         # We have a physical card list, so create some physical card sets
-        oPhysCardSet1 = PhysicalCardSet(name=aCardSetNames[0])
+        oPhysCardSet1 = PhysicalCardSet(name=CARD_SET_NAMES[0])
         oPhysCardSet1.comment = 'A test comment'
         oPhysCardSet1.author = 'A test author'
 
@@ -377,7 +377,7 @@ class ARDBHTMLWriterTests(SutekhTest):
         sData = fIn.read()
         fIn.close()
 
-        self.assertEqual(sData, sExpected1)
+        self.assertEqual(sData, EXPECTED_1)
 
         # Test other modes
         oWriter = WriteArdbHTML('Monger')
@@ -388,7 +388,7 @@ class ARDBHTMLWriterTests(SutekhTest):
         sData = fIn.read()
         fIn.close()
 
-        self.assertEqual(sData, sExpected1)
+        self.assertEqual(sData, EXPECTED_1)
 
         oWriter = WriteArdbHTML('None')
         sTempFileName =  self._create_tmp_file()
@@ -398,7 +398,7 @@ class ARDBHTMLWriterTests(SutekhTest):
         sData = fIn.read()
         fIn.close()
 
-        self.assertEqual(sData, sExpected2)
+        self.assertEqual(sData, EXPECTED_2)
 
         oWriter = WriteArdbHTML('Secret Library')
         sTempFileName =  self._create_tmp_file()
@@ -408,7 +408,7 @@ class ARDBHTMLWriterTests(SutekhTest):
         sData = fIn.read()
         fIn.close()
 
-        self.assertEqual(sData, sExpected3)
+        self.assertEqual(sData, EXPECTED_3)
 
 
 if __name__ == "__main__":

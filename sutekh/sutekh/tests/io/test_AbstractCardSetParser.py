@@ -11,12 +11,13 @@ from sutekh.core.SutekhObjects import IAbstractCard, IPhysicalCard, \
         IPhysicalCardSet, MapPhysicalCardToPhysicalCardSet, PhysicalCardSet
 from sutekh.io.AbstractCardSetParser import AbstractCardSetParser
 from sutekh.io.XmlFileHandling import AbstractCardSetXmlFile
+from sutekh.tests.core.test_PhysicalCardSet import CARD_SET_NAMES, \
+        ABSTRACT_CARDS
 import unittest, os
+
 
 class AbstractCardSetParserTest(SutekhTest):
     """class for the Abstract Card Set Parser"""
-    aAbstractCards = ['.44 magnum', 'ak-47', 'abbot', 'abebe', 'abombwe']
-    aCardSetNames = ['Test Set 1', 'Test Set 2']
 
     def test_abstract_cs_parser(self):
         """Test abstract card set parser"""
@@ -55,11 +56,11 @@ class AbstractCardSetParserTest(SutekhTest):
         oParser.parse(fIn)
         fIn.close()
 
-        oCardSet1 = IPhysicalCardSet("(ACS) " + self.aCardSetNames[0])
-        oCardSet2 = IPhysicalCardSet("(ACS) " + self.aCardSetNames[1])
+        oCardSet1 = IPhysicalCardSet("(ACS) " + CARD_SET_NAMES[0])
+        oCardSet2 = IPhysicalCardSet("(ACS) " + CARD_SET_NAMES[1])
 
-        oAbsCard0 = IAbstractCard(self.aAbstractCards[0])
-        oAbsCard2 = IAbstractCard(self.aAbstractCards[2])
+        oAbsCard0 = IAbstractCard(ABSTRACT_CARDS[0])
+        oAbsCard2 = IAbstractCard(ABSTRACT_CARDS[2])
         oPhysCard0 = IPhysicalCard((oAbsCard0, None))
         oPhysCard2 = IPhysicalCard((oAbsCard2, None))
 

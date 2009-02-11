@@ -292,9 +292,7 @@ class CardDrawSimPlugin(CardListPlugin):
         aSelectedCards = []
         bCrypt = False
         bLibrary = False
-        # pylint: disable-msg=W0612
-        # oModel will be unused
-        oModel, aSelection = self.view.get_selection().get_selected_rows()
+        _oModel, aSelection = self.view.get_selection().get_selected_rows()
         for oPath in aSelection:
             # pylint: disable-msg=E1101
             # pylint doesn't pick up adaptor's methods correctly
@@ -454,6 +452,4 @@ class CardDrawSimPlugin(CardListPlugin):
             sLabel += u'%d \u00D7 %s\n' % (iCount, oItem[0].name)
         return sLabel
 
-# pylint: disable-msg=C0103
-# plugin name doesn't match, but ignore that
 plugin = CardDrawSimPlugin

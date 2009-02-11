@@ -66,6 +66,4 @@ class CardSetExportArdbXML(CardListPlugin):
                 oWriter.write(fOut, self.get_all_cards())
             fOut.close()
 
-# pylint: disable-msg=C0103
-# accept plugin name
 plugin = CardSetExportArdbXML

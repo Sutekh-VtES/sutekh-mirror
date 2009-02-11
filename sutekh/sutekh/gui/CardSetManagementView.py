@@ -158,9 +158,7 @@ class CardSetManagementView(gtk.TreeView):
 
     def get_path_at_pointer(self):
         """Get the path at the current pointer position"""
-        # pylint: disable-msg=W0612
-        # we ignore oIgnore
-        iXPos, iYPos, oIgnore = self.get_bin_window().get_pointer()
+        iXPos, iYPos, _oIgnore = self.get_bin_window().get_pointer()
         tRes = self.get_path_at_pos(iXPos, iYPos)
         if tRes:
             return tRes[0]

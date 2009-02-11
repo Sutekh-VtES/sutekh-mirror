@@ -9,10 +9,9 @@
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.gui.CardListModel import CardListModelListener
 from sutekh.gui.CardSetListModel import CardSetCardListModel, \
-        NO_SECOND_LEVEL, SHOW_EXPANSIONS, SHOW_CARD_SETS, \
-        EXPANSIONS_AND_CARD_SETS, CARD_SETS_AND_EXPANSIONS, \
-        THIS_SET_ONLY, ALL_CARDS, PARENT_CARDS, CHILD_CARDS, \
-        IGNORE_PARENT, PARENT_COUNT, MINUS_THIS_SET, MINUS_SETS_IN_USE
+        NO_SECOND_LEVEL, SHOW_EXPANSIONS, SHOW_CARD_SETS, EXP_AND_CARD_SETS, \
+        CARD_SETS_AND_EXP, ALL_CARDS, PARENT_CARDS, MINUS_SETS_IN_USE, \
+        CHILD_CARDS, IGNORE_PARENT, PARENT_COUNT, MINUS_THIS_SET, THIS_SET_ONLY
 from sutekh.core import Filters, Groupings
 from sutekh.core.SutekhObjects import PhysicalCardSet, IPhysicalCard, \
         IExpansion, IAbstractCard, MapPhysicalCardToPhysicalCardSet
@@ -40,7 +39,7 @@ class CardSetListModelTests(SutekhTest):
     aParentCountToStr = ['IGNORE_PARENT', 'PARENT_COUNT', 'MINUS_THIS_SET',
             'MINUS_SETS_IN_USE']
     aExtraLevelToStr = ['NO_SECOND_LEVEL', 'SHOW_EXPANSIONS', 'SHOW_CARD_SETS',
-            'EXPANSIONS_AND_CARD_SETS', 'CARD_SETS_AND_EXPANSIONS']
+            'EXP_AND_CARD_SETS', 'CARD_SETS_AND_EXP']
     aCardCountToStr = ['THIS_SET_ONLY', 'ALL_CARDS', 'PARENT_CARDS',
             'CHILD_CARDS']
 
@@ -202,8 +201,7 @@ class CardSetListModelTests(SutekhTest):
         for bEditFlag in [False, True]:
             oModel.bEditable = bEditFlag
             for iLevelMode in [NO_SECOND_LEVEL, SHOW_EXPANSIONS,
-                    SHOW_CARD_SETS, EXPANSIONS_AND_CARD_SETS,
-                    CARD_SETS_AND_EXPANSIONS]:
+                    SHOW_CARD_SETS, EXP_AND_CARD_SETS, CARD_SETS_AND_EXP]:
                 oModel.iExtraLevelsMode = iLevelMode
                 for iParentMode in [IGNORE_PARENT, PARENT_COUNT,
                         MINUS_THIS_SET, MINUS_SETS_IN_USE]:
@@ -220,8 +218,7 @@ class CardSetListModelTests(SutekhTest):
         for bEditFlag in [False, True]:
             oModel.bEditable = bEditFlag
             for iLevelMode in [NO_SECOND_LEVEL, SHOW_EXPANSIONS,
-                    SHOW_CARD_SETS, EXPANSIONS_AND_CARD_SETS,
-                    CARD_SETS_AND_EXPANSIONS]:
+                    SHOW_CARD_SETS, EXP_AND_CARD_SETS, CARD_SETS_AND_EXP]:
                 oModel.iExtraLevelsMode = iLevelMode
                 for iParentMode in [IGNORE_PARENT, PARENT_COUNT,
                         MINUS_THIS_SET, MINUS_SETS_IN_USE]:
@@ -246,10 +243,7 @@ class CardSetListModelTests(SutekhTest):
         # pylint: disable-msg=R0915, R0914
         # R0915, R0914: Want a long, sequential test case to minimise
         # repeated setups, so it has lots of lines + variables
-        # pylint: disable-msg=W0612
-        # oCache exists only for the internal cache, so it's unused
-        oCache = SutekhObjectCache()
-        # pylint: enable-msg=W0612
+        _oCache = SutekhObjectCache()
         oPCS = PhysicalCardSet(name=self.aNames[0])
         oModel = CardSetCardListModel(self.aNames[0])
         oListener = CardSetListener()
@@ -309,10 +303,7 @@ class CardSetListModelTests(SutekhTest):
         # pylint: disable-msg=R0915, R0914
         # R0915, R0914: Want a long, sequential test case to minimise
         # repeated setups, so it has lots of lines + variables
-        # pylint: disable-msg=W0612
-        # oCache exists only for the internal cache, so it's unused
-        oCache = SutekhObjectCache()
-        # pylint: enable-msg=W0612
+        _oCache = SutekhObjectCache()
         oPCS = PhysicalCardSet(name=self.aNames[0])
         oModel = CardSetCardListModel(self.aNames[0])
         # Add cards
@@ -434,10 +425,7 @@ class CardSetListModelTests(SutekhTest):
         # pylint: disable-msg=R0915
         # R0915: Want a long, sequential test case to reduce
         # repeated setups, so it has lots of lines
-        # pylint: disable-msg=W0612
-        # oCache exists only for the internal cache, so it's unused
-        oCache = SutekhObjectCache()
-        # pylint: enable-msg=W0612
+        _oCache = SutekhObjectCache()
         oPCS = PhysicalCardSet(name=self.aNames[0])
         oModel = CardSetCardListModel(self.aNames[0])
         aCards = [('Alexandra', 'CE'), ('Sha-Ennu', 'Third Edition'),
@@ -541,10 +529,7 @@ class CardSetListModelTests(SutekhTest):
 
     def test_empty(self):
         """Test corner cases around empty card sets"""
-        # pylint: disable-msg=W0612
-        # oCache exists only for the internal cache, so it's unused
-        oCache = SutekhObjectCache()
-        # pylint: enable-msg=W0612
+        _oCache = SutekhObjectCache()
         oPCS = PhysicalCardSet(name=self.aNames[0])
         oChildPCS = PhysicalCardSet(name=self.aNames[1], parent=oPCS)
         oGrandChildPCS = PhysicalCardSet(name=self.aNames[2], parent=oChildPCS)

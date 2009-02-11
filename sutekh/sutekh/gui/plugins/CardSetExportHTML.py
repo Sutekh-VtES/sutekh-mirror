@@ -59,22 +59,18 @@ class CardSetExportHTML(CardListPlugin):
         oExport.connect("activate", self.activate)
         return ('Export Card Set', oExport)
 
-    # pylint: disable-msg=W0613
-    # oWidget required by function signature
-    def activate(self, oWidget):
+    def activate(self, _oWidget):
         """In response to the menu, create the dialog and run it."""
         oDlg = self.make_dialog()
         oDlg.run()
         self.handle_response(oDlg.get_name())
 
-    def change_prefs(self, oWidget, sChoice):
+    def change_prefs(self, _oWidget, sChoice):
         """Manage the preferences (library to link to, etc.)"""
         sCur = self.parent.config_file.get_plugin_key('HTML export mode')
         if sChoice != sCur:
             self.parent.config_file.set_plugin_key('HTML export mode',
                     sChoice)
-
-    # pylint: enable-msg=W0613
 
     # pylint: disable-msg=W0201
     # we define attributes outside __init__, but it's OK because of plugin
@@ -119,6 +115,4 @@ class CardSetExportHTML(CardListPlugin):
                 do_complaint_error(sMsg)
                 return
 
-# pylint: disable-msg=C0103
-# accept plugin name
 plugin = CardSetExportHTML

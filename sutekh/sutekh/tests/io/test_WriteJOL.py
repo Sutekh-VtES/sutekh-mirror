@@ -7,13 +7,13 @@
 """Test Writing a card set to an JOL file"""
 
 from sutekh.tests.TestCore import SutekhTest
-from sutekh.tests.core.test_PhysicalCardSet import aCardSetNames, \
+from sutekh.tests.core.test_PhysicalCardSet import CARD_SET_NAMES, \
         get_phys_cards
 from sutekh.core.SutekhObjects import PhysicalCardSet
 from sutekh.io.WriteJOL import  WriteJOL
 import unittest
 
-sExpected1 = """Abebe
+EXPECTED_1 = """Abebe
 Alan Sovereign (advanced)
 
 4x.44 Magnum
@@ -34,7 +34,7 @@ class JOLWriterTests(SutekhTest):
         # repeated setups, so it has lots of lines + variables
         aAddedPhysCards = get_phys_cards()
         # We have a physical card list, so create some physical card sets
-        oPhysCardSet1 = PhysicalCardSet(name=aCardSetNames[0])
+        oPhysCardSet1 = PhysicalCardSet(name=CARD_SET_NAMES[0])
         oPhysCardSet1.comment = 'A test comment'
         oPhysCardSet1.author = 'A test author'
 
@@ -57,7 +57,7 @@ class JOLWriterTests(SutekhTest):
         sData = fIn.read()
         fIn.close()
 
-        self.assertEqual(sData, sExpected1)
+        self.assertEqual(sData, EXPECTED_1)
 
 
 if __name__ == "__main__":

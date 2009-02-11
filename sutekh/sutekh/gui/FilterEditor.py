@@ -302,7 +302,7 @@ class FilterBoxModel(list):
 
     def get_filter_types(self):
         """Get the types support by this filter."""
-        return [oFilterType for oFilterType in FilterParser.aParserFilters
+        return [oFilterType for oFilterType in FilterParser.PARSER_FILTERS
                 if self.sFilterType in oFilterType.types]
 
     def add_child_box(self, sChildBoxType):
@@ -619,11 +619,11 @@ class FilterBoxItemEditor(gtk.HBox):
         sName = self.__oBoxItem.sVariableName
         if self.__oBoxItem.aValues:
             aSelection = self.__oEntryWidget.get_selection()
-            if self.__oBoxItem.sFilterName in FilterParser.aWithFilters:
+            if self.__oBoxItem.sFilterName in FilterParser.WITH_FILTERS:
                 aSplit = [sItem.split(" with ") for sItem in aSelection]
                 aVals = ['"%s with %s"' % (sPart1, sPart2) for sPart1,
                         sPart2 in aSplit]
-            elif self.__oBoxItem.sFilterName in FilterParser.aFromFilters:
+            elif self.__oBoxItem.sFilterName in FilterParser.FROM_FILTERS:
                 # Need to sort out how to handle this case
                 oIter = self.__oFromWidget.get_active_iter()
                 oModel = self.__oFromWidget.get_model()

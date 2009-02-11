@@ -28,9 +28,7 @@ class CardSetFrame(CardListFrame):
     def __init__(self, oMainWindow, sName, tInfo=None):
         super(CardSetFrame, self).__init__(oMainWindow)
         try:
-            # pylint: disable-msg=W0612
-            # oCS just used for existance test, so ignored
-            oCS = IPhysicalCardSet(sName)
+            _oCS = IPhysicalCardSet(sName)
         except SQLObjectNotFound:
             raise RuntimeError("Card Set %s does not exist" % sName)
         self._oController = CardSetController(sName,

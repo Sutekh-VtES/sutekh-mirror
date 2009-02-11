@@ -20,7 +20,7 @@ except ImportError:
 # pylint: enable-msg=F0401, E0611
 
 # Style used by the HTML file
-sHTMLStyle = """
+HTML_STYLE = """
 body {
    background: #000000;
    color: #AAAAAA;
@@ -198,9 +198,7 @@ def _sort_lib(dLib):
     dTypes = {}
     # Group by type
     for tKey in dLib:
-        # pylint: disable-msg=W0612
-        # iId, sSet isn't used here
-        iId, sName, sType, sSet = tKey
+        _iId, sName, sType, _sSet = tKey
         iCount = dLib[tKey]
         dTypes.setdefault(sType, [0])
         dTypes[sType][0] += iCount
@@ -298,7 +296,7 @@ class WriteArdbHTML(ArdbInfo):
         oEncoding.attrib['content'] = 'text/html; charset="us-ascii"'
         oStyle = SubElement(oHead, 'style', type="text/css")
         # Is there a better idea here?
-        oStyle.text = sHTMLStyle
+        oStyle.text = HTML_STYLE
         oTitle = SubElement(oHead, "title")
         oTitle.text = "VTES deck : %s by %s" % (oCardSet.name,
                 oCardSet.author)

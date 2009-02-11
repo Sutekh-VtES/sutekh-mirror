@@ -63,6 +63,4 @@ class CardSetExportCSV(CardListPlugin):
             oWriter.write(fOut, oCardSet)
             fOut.close()
 
-# pylint: disable-msg=C0103
-# accept plugin name
 plugin = CardSetExportCSV

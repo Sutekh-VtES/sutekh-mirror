@@ -31,13 +31,9 @@ class SetCardExpansions(CardListPlugin):
         oMenuItem.connect("activate", self.activate)
         return ('Plugins', oMenuItem)
 
-    # pylint: disable-msg=W0613
-    # oWidget needed by gtk function signature
-    def activate(self, oWidget):
+    def activate(self, _oWidget):
         """Handle menu activiation"""
         self.create_dialog()
-
-    # pylint: enable-msg=W0613
 
     def create_dialog(self):
         """Find the common subset of the selected cards, and prompt the user
@@ -122,6 +118,4 @@ class SetCardExpansions(CardListPlugin):
         aCandExpansions.add(self.model.sUnknownExpansion) # Always possible
         return aCandExpansions
 
-# pylint: disable-msg=C0103
-# accept plugin name
 plugin = SetCardExpansions

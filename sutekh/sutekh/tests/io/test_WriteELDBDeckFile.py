@@ -7,13 +7,13 @@
 """Test Writing a card set to an ELDB deck"""
 
 from sutekh.tests.TestCore import SutekhTest
-from sutekh.tests.core.test_PhysicalCardSet import aCardSetNames, \
+from sutekh.tests.core.test_PhysicalCardSet import CARD_SET_NAMES, \
         get_phys_cards
 from sutekh.core.SutekhObjects import PhysicalCardSet
 from sutekh.io.WriteELDBDeckFile import WriteELDBDeckFile
 import unittest
 
-sExpected = """"Test Set 1"
+EXPECTED = """"Test Set 1"
 "A test author"
 "A test comment"
 1
@@ -36,7 +36,7 @@ class ELDBDeckWriterTests(SutekhTest):
         # repeated setups, so it has lots of lines + variables
         aAddedPhysCards = get_phys_cards()
         # We have a physical card list, so create some physical card sets
-        oPhysCardSet1 = PhysicalCardSet(name=aCardSetNames[0])
+        oPhysCardSet1 = PhysicalCardSet(name=CARD_SET_NAMES[0])
         oPhysCardSet1.comment = 'A test comment'
         oPhysCardSet1.author = 'A test author'
 
@@ -56,7 +56,7 @@ class ELDBDeckWriterTests(SutekhTest):
         sData = fIn.read()
         fIn.close()
 
-        self.assertEqual(sData, sExpected)
+        self.assertEqual(sData, EXPECTED)
 
 if __name__ == "__main__":
     unittest.main()

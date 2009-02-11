@@ -7,13 +7,13 @@
 """Test Writing a card set to an ELDB Inventory"""
 
 from sutekh.tests.TestCore import SutekhTest
-from sutekh.tests.core.test_PhysicalCardSet import aCardSetNames, \
+from sutekh.tests.core.test_PhysicalCardSet import CARD_SET_NAMES, \
         get_phys_cards
 from sutekh.core.SutekhObjects import PhysicalCardSet
 from sutekh.io.WriteELDBInventory import WriteELDBInventory
 import unittest
 
-sExpected = """"ELDB - Inventory"
+EXPECTED = """"ELDB - Inventory"
 "Cedric",0,0,"","Crypt"
 "Inez "Nurse216" Villagrande",0,0,"","Crypt"
 "Alan Sovereign",0,0,"","Crypt"
@@ -67,7 +67,7 @@ class ELDBInventoryWriterTests(SutekhTest):
         # repeated setups, so it has lots of lines + variables
         aAddedPhysCards = get_phys_cards()
         # We have a physical card list, so create some physical card sets
-        oPhysCardSet1 = PhysicalCardSet(name=aCardSetNames[0])
+        oPhysCardSet1 = PhysicalCardSet(name=CARD_SET_NAMES[0])
         oPhysCardSet1.comment = 'A test comment'
         oPhysCardSet1.author = 'A test author'
 
@@ -87,8 +87,8 @@ class ELDBInventoryWriterTests(SutekhTest):
         sData = fIn.read()
         fIn.close()
 
-        self.assertEqual(sorted(sData), sorted(sExpected), "Output differs : "
-                "%s vs %s" % (sData, sExpected))
+        self.assertEqual(sorted(sData), sorted(EXPECTED), "Output differs : "
+                "%s vs %s" % (sData, EXPECTED))
 
 if __name__ == "__main__":
     unittest.main()

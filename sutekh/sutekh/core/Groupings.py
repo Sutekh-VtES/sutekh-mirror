@@ -43,13 +43,13 @@ class IterGrouping(object):
 
 # pylint: disable-msg=E0602
 # pylint is confused by the lambda x: x construction
-fDefGetCard = lambda x: x
+DEF_GET_CARD = lambda x: x
 # pylint: enable-msg=E0602
 
 # pylint: disable-msg=C0111
 # class names are pretty self-evident, so skip docstrings
 class CardTypeGrouping(IterGrouping):
-    def __init__(self, oIter, fGetCard=fDefGetCard):
+    def __init__(self, oIter, fGetCard=DEF_GET_CARD):
         super(CardTypeGrouping, self).__init__(oIter,
                 lambda x: [y.name for y in fGetCard(x).cardtype])
 
@@ -58,7 +58,7 @@ class MultiTypeGrouping(IterGrouping):
        cards which have multiple types, e.g. Action Modifier / Reaction.
        """
 
-    def __init__(self, oIter, fGetCard=fDefGetCard):
+    def __init__(self, oIter, fGetCard=DEF_GET_CARD):
         # pylint: disable-msg=C0103
         # we accept x here for consistency with other groupings
         def multitype(x):
@@ -70,7 +70,7 @@ class MultiTypeGrouping(IterGrouping):
 
 class ClanGrouping(IterGrouping):
     """Group the cards by clan and/or creed"""
-    def __init__(self, oIter, fGetCard=fDefGetCard):
+    def __init__(self, oIter, fGetCard=DEF_GET_CARD):
         super(ClanGrouping, self).__init__(oIter, self._get_values)
         self.fGetCard = fGetCard
 
@@ -84,7 +84,7 @@ class ClanGrouping(IterGrouping):
 
 class DisciplineGrouping(IterGrouping):
     """Group by Discipline or Virtue"""
-    def __init__(self, oIter, fGetCard=fDefGetCard):
+    def __init__(self, oIter, fGetCard=DEF_GET_CARD):
         super(DisciplineGrouping, self).__init__(oIter, self._get_values)
         self.fGetCard = fGetCard
 
@@ -97,17 +97,17 @@ class DisciplineGrouping(IterGrouping):
             return [y.discipline.fullname for y in oThisCard.discipline]
 
 class ExpansionGrouping(IterGrouping):
-    def __init__(self, oIter, fGetCard=fDefGetCard):
+    def __init__(self, oIter, fGetCard=DEF_GET_CARD):
         super(ExpansionGrouping, self).__init__(oIter,
                 lambda x: [y.expansion.name for y in fGetCard(x).rarity])
 
 class RarityGrouping(IterGrouping):
-    def __init__(self, oIter, fGetCard=fDefGetCard):
+    def __init__(self, oIter, fGetCard=DEF_GET_CARD):
         super(RarityGrouping, self).__init__(oIter,
                 lambda x: [y.rarity.name for y in fGetCard(x).rarity])
 
 class CryptLibraryGrouping(IterGrouping):
-    def __init__(self, oIter, fGetCard=fDefGetCard):
+    def __init__(self, oIter, fGetCard=DEF_GET_CARD):
         # Vampires and Imbued have exactly one card type (we hope that WW
         # don't change that)
         super(CryptLibraryGrouping, self).__init__(oIter,
@@ -116,19 +116,19 @@ class CryptLibraryGrouping(IterGrouping):
 
 class SectGrouping(IterGrouping):
     """Group by Sect"""
-    def __init__(self, oIter, fGetCard=fDefGetCard):
+    def __init__(self, oIter, fGetCard=DEF_GET_CARD):
         super(SectGrouping, self).__init__(oIter,
                 lambda x: [y.name for y in fGetCard(x).sect])
 
 class TitleGrouping(IterGrouping):
     """Group by Title"""
-    def __init__(self, oIter, fGetCard=fDefGetCard):
+    def __init__(self, oIter, fGetCard=DEF_GET_CARD):
         super(TitleGrouping, self).__init__(oIter,
             lambda x: [y.name for y in fGetCard(x).title])
 
 class CostGrouping(IterGrouping):
     """Group by Cost"""
-    def __init__(self, oIter, fGetCard=fDefGetCard):
+    def __init__(self, oIter, fGetCard=DEF_GET_CARD):
         super(CostGrouping, self).__init__(oIter, self._get_values)
         self.fGetCard = fGetCard
 
@@ -146,5 +146,5 @@ class CostGrouping(IterGrouping):
 class NullGrouping(IterGrouping):
     # pylint: disable-msg=W0613
     # fGetCard is required by function signature
-    def __init__(self, oIter, fGetCard=fDefGetCard):
+    def __init__(self, oIter, fGetCard=DEF_GET_CARD):
         super(NullGrouping, self).__init__(oIter, lambda x: ["All"])

@@ -151,16 +151,12 @@ class RulebookPlugin(CardListPlugin):
             # Don't get called next time
             ensure_dir_exists(self._sPrefsPath)
 
-    # pylint: disable-msg=W0613
-    # oMenuWidget needed by gtk function signature
-    def config_activate(self, oMenuWidget):
+    def config_activate(self, _oMenuWidget):
         """Launch the configuration dialog."""
         oDialog = RulebookConfigDialog(self.parent, False)
         self.handle_config_response(oDialog)
 
-    # pylint: disable-msg=W0613
-    # oMenuWidget needed by gtk function signature
-    def rulebook_activate(self, oMenuWidget, sName):
+    def rulebook_activate(self, _oMenuWidget, sName):
         """Show HTML file associated with the sName."""
         sPath = os.path.join(self._sPrefsPath, self.LOCAL_NAMES[sName])
         sPath = os.path.abspath(sPath)
@@ -325,6 +321,4 @@ class RulebookPlugin(CardListPlugin):
 
         return sData
 
-# pylint: disable-msg=C0103
-# shut up complaint about the name
 plugin = RulebookPlugin

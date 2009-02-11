@@ -1472,7 +1472,7 @@ class CSPhysicalCardSetInUseFilter(DirectFilter):
 # The List of filters exposed to the Filter Parser - new filters should just
 # be tacked on here
 
-aParserFilters = [MultiCardTypeFilter, MultiCostTypeFilter, MultiClanFilter,
+PARSER_FILTERS = [MultiCardTypeFilter, MultiCostTypeFilter, MultiClanFilter,
         MultiDisciplineFilter, MultiGroupFilter, MultiCapacityFilter,
         MultiCostFilter, MultiLifeFilter, MultiCreedFilter, MultiVirtueFilter,
         CardTextFilter, CardNameFilter, MultiSectFilter, MultiTitleFilter,

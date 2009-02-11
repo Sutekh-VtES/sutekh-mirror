@@ -222,9 +222,7 @@ class DisciplineNumberSelect(gtk.HBox):
         self.pack_start(self._oDiscWidget)
         self._oComboBox.connect('changed', self._combo_changed)
 
-    # pylint: disable-msg=W0613
-    # oWidget required by function signature
-    def _combo_changed(self, oWidget):
+    def _combo_changed(self, _oWidget):
         """Toggle the sensitivity of the Discipline select widget as needed"""
         if self._oComboBox.get_active_text() == self._sUseList:
             self._oDiscWidget.set_sensitive(True)
@@ -261,12 +259,11 @@ class AnalyzeCardList(CardListPlugin):
         oAnalyze.connect("activate", self.activate)
         return ('Plugins', oAnalyze)
 
-    # pylint: disable-msg=W0613, W0201
-    # W0613 - oWidget required by gtk function signature
+    # pylint: disable-msg=W0201
     # W0201 - We define a lot of class variables here, because a) this is the
     # plugin entry point, and, b) they need to reflect the current CardSet,
     # so they can't be filled properly in __init__
-    def activate(self, oWidget):
+    def activate(self, _oWidget):
         """Create the actual dialog, and populate it"""
         oDlg = SutekhDialog( "Analysis of Card List", self.parent,
                 gtk.DIALOG_DESTROY_WITH_PARENT,
@@ -353,8 +350,6 @@ class AnalyzeCardList(CardListPlugin):
         oDlg.show_all()
         oNotebook.set_current_page(0)
         oDlg.run()
-
-    # pylint: enable-msg=W0613
 
     def get_crypt_stats(self, aVampireCards, aImbuedCards):
         """Extract the relevant statistics about the crypt from the lists
@@ -646,10 +641,8 @@ class AnalyzeCardList(CardListPlugin):
 
     def _process_master(self, aCards):
         """Display the stats for Master Cards"""
-        # pylint: disable-msg=W0612
-        # aBlood, aConviction unused, since Master cost isn't paid by minions
         iNum = self.dTypeNumbers['Master']
-        aBlood, aPool, aConviction = _get_card_costs(aCards)
+        _aBlood, aPool, _aConviction = _get_card_costs(aCards)
         iClanRequirement, dClan, dMulti = _get_card_clan_multi(aCards)
         # Build up Text
         sText = "\t\t<b>Master Cards :</b>\n\n"
@@ -875,9 +868,7 @@ class AnalyzeCardList(CardListPlugin):
         oHFVBox.pack_start(oResLabel)
         oHFVBox.show_all()
 
-    # pylint: disable-msg=W0613
-    # oButton Required by function signature
-    def _redo_happy_family(self, oButton, oDiscSelect, oResLabel):
+    def _redo_happy_family(self, _oButton, oDiscSelect, oResLabel):
         """Redo the HF analysis based on button press"""
         aTheseDiscs = oDiscSelect.get_disciplines()
         if not aTheseDiscs:
@@ -938,6 +929,4 @@ class AnalyzeCardList(CardListPlugin):
                     '%d </span>\n' % abs(iHFNum - iLibNum)
         return sHappyFamilyText
 
-# pylint: disable-msg=C0103
-# accept plugin name
 plugin = AnalyzeCardList

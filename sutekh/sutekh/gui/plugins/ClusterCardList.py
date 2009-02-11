@@ -546,6 +546,4 @@ class Vector(object):
         """Iterator."""
         return iter(self._aData)
 
-# pylint: disable-msg=C0103
-# accept plugin name
 plugin = ClusterCardList

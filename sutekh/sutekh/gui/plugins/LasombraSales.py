@@ -160,7 +160,7 @@ class LasombraSales(CardListPlugin):
         try:
             self.__class__._dPriceCache, self.__class__._aWarnings = \
                 cPickle.load(fIn)
-        except Exception, oExp:
+        except Exception, _oExcept:
             if self._aWarnings is None:
                 # first time encountering error
                 sMsg = "Lasombra Sales plugin cache can't be loaded" \
@@ -185,7 +185,7 @@ class LasombraSales(CardListPlugin):
                 raise ValueError("Unable to locate inventory spreadsheet"
                             " inside zip file.")
             sData = fZip.read(sName)
-        except zipfile.BadZipfile, oExcept:
+        except zipfile.BadZipfile, _oExcept:
             # not a zip file, proceed as if it's a spreadsheet
             sData = fInventory.read()
 
@@ -233,7 +233,7 @@ class LasombraSales(CardListPlugin):
             # If we missed the end for some reason
             iEnd = oSheet.nrows
 
-        def get_exp(oAbsCard, oRow):
+        def get_exp(oAbsCard, _oRow):
             """Retrieve the expansion object for the given card."""
             aCards = PhysicalCard.selectBy(abstractCardID=oAbsCard.id)
             for oCard in aCards:
@@ -249,13 +249,13 @@ class LasombraSales(CardListPlugin):
         """Extract prices from the crypt sheet."""
         oUnknownExpansions = set()
 
-        def get_exp(oAbsCard, oRow):
+        def get_exp(_oAbsCard, oRow):
             """Return the expansion for the given row."""
             sShort = str(oRow[5].value).strip()
             sShort = self._dShortExpLookup.get(sShort, sShort)
             try:
                 oExp = IExpansion(sShort)
-            except Exception, oExcept:
+            except Exception, _oExcept:
                 if sShort not in oUnknownExpansions:
                     sMsg = "Could not map expansion code '%s' found in Crypt" \
                            " sheet to unique expansion (setting expansion to" \
@@ -277,7 +277,7 @@ class LasombraSales(CardListPlugin):
             sVal = self._dExpansionLookup[sVal]
             sVal = sVal.strip()
             oExp = IExpansion(sVal)
-        except Exception, oExcept:
+        except Exception, _oExcept:
             sMsg = "Could not determine expansion for sheet '%s'" \
                     " (skipping sheet)" % (oSheet.name,)
             self._aWarnings.append(sMsg)
@@ -311,7 +311,7 @@ class LasombraSales(CardListPlugin):
                 sCardName = str(oRow[NAME].value)
                 iStock = int(oRow[QUANTITY].value)
                 fPrice = float(oRow[PRICE].value)
-            except Exception, oExcept:
+            except Exception, _oExcept:
                 sMsg = "Could not read card information from sheet %s," \
                        " row %d (skipping row)" % (oSheet.name, iNum)
                 self._aWarnings.append(sMsg)
@@ -358,7 +358,8 @@ class LasombraSales(CardListPlugin):
 
            This is the key retrieval version for CardListModels.
            """
-        sName, sExpansion, iCount, iDepth = self.model.get_all_from_iter(oIter)
+        sName, sExpansion, _iCount, _iDepth = \
+                self.model.get_all_from_iter(oIter)
         if sName is not None:
             # sExpansion may be None.
             return sName, sExpansion
@@ -374,7 +375,8 @@ class LasombraSales(CardListPlugin):
 
            This is the key retrieval version for CardSetListModels.
            """
-        sName, sExpansion, sCardSet = self.model.get_all_names_from_iter(oIter)
+        sName, sExpansion, _sCardSet = \
+                self.model.get_all_names_from_iter(oIter)
         if sName is not None:
             # sExpansion may be None.
             return sName, sExpansion
@@ -383,15 +385,14 @@ class LasombraSales(CardListPlugin):
 
     # Rendering Functions
 
-    # pylint: disable-msg=R0201, W0613
+    # pylint: disable-msg=R0201
     # Making these functions for clarity
-    # several unused paramaters due to function signatures
 
     def _get_data_price(self, tKey):
         """get the price for the given key"""
         return self._dPriceCache.get(tKey, (None, None))[0]
 
-    def _render_price(self, oColumn, oCell, oModel, oIter):
+    def _render_price(self, _oColumn, oCell, _oModel, oIter):
         """Display the card price."""
         tKey = self._get_key(oIter)
         fPrice = self._get_data_price(tKey)
@@ -404,7 +405,7 @@ class LasombraSales(CardListPlugin):
         """get the stock for the given key"""
         return self._dPriceCache.get(tKey, (0.0, 0))[1]
 
-    def _render_stock(self, oColumn, oCell, oModel, oIter):
+    def _render_stock(self, _oColumn, oCell, _oModel, oIter):
         """Display the number of cards available."""
         tKey = self._get_key(oIter)
         iStock = self._get_data_stock(tKey)
@@ -443,9 +444,7 @@ class LasombraSales(CardListPlugin):
             self.handle_config_response(oDialog)
             # Don't get called next time
 
-    # pylint: disable-msg=W0613
-    # oMenuWidget needed by gtk function signature
-    def config_activate(self, oMenuWidget):
+    def config_activate(self, _oMenuWidget):
         """Launch the configuration dialog."""
         oDialog = LasombraConfigDialog(self.parent, False)
         self.handle_config_response(oDialog)
@@ -464,7 +463,6 @@ class LasombraSales(CardListPlugin):
         # get rid of the dialog
         oConfigDialog.destroy()
 
-    # W0613 - oWidget required by function signature
     def _toggle_prices(self, oToggle):
         """Handle menu activation"""
         if oToggle.get_active():
@@ -472,8 +470,7 @@ class LasombraSales(CardListPlugin):
         else:
             self.set_cols_in_use([])
 
-    # W0613: oModel required by gtk's function signature
-    def sort_column(self, oModel, oIter1, oIter2, oGetData):
+    def sort_column(self, _oModel, oIter1, oIter2, oGetData):
         """Stringwise comparision of oIter1 and oIter2.
 
            Return -1 if oIter1 < oIter, 0 in ==, 1 if >
@@ -504,16 +501,11 @@ class LasombraSales(CardListPlugin):
             iRes = cmp(tKey1, tKey2)
         return iRes
 
-    # pylint: enable-msg=W0613
-
     # Actions
 
     def set_cols_in_use(self, aCols):
         """Add columns to the view"""
-        # pylint: disable-msg=W0612
-        # iDir is returned, although we don't need it
-        iSortCol, iDir = self.model.get_sort_column_id()
-        # pylint: enable-msg=W0612
+        iSortCol, _iDir = self.model.get_sort_column_id()
         if iSortCol is not None and iSortCol > 1:
             # We're changing the columns, so restore sorting to default
             self.model.set_sort_column_id(0, 0)
@@ -548,6 +540,4 @@ class LasombraSales(CardListPlugin):
         return [oCol for oCol in self.view.get_columns() if
                 oCol.get_property("title") in self._dCols]
 
-# pylint: disable-msg=C0103
-# accept plugin name
 plugin = LasombraSales

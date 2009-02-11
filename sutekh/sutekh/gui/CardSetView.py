@@ -14,7 +14,7 @@ from sutekh.gui.CardListView import CardListView
 from sutekh.gui.CardSetListModel import CardSetCardListModel
 from sutekh.core.SutekhObjects import PhysicalCardSet
 
-_dNumKeys = {
+NUM_KEYS = {
         gtk.gdk.keyval_from_name('1') : 1,
         gtk.gdk.keyval_from_name('KP_1') : 1,
         gtk.gdk.keyval_from_name('2') : 2,
@@ -35,11 +35,11 @@ _dNumKeys = {
         gtk.gdk.keyval_from_name('KP_9') : 9
         }
 
-_aPlusKeys = [
+PLUS_KEYS = [
         gtk.gdk.keyval_from_name('plus'),
         gtk.gdk.keyval_from_name('KP_Add')
         ]
-_aMinusKeys = [
+MINUS_KEYS = [
         gtk.gdk.keyval_from_name('minus'),
         gtk.gdk.keyval_from_name('KP_Subtract')
         ]
@@ -250,9 +250,7 @@ class CardSetView(CardListView):
     def inc_card(self, oCell, oPath):
         """Called to increment the count for a card."""
         if self._oModel.bEditable:
-            # pylint: disable-msg=W0612
-            # only interested in bInc
-            bInc, bDec = self._oModel.get_inc_dec_flags_from_path(oPath)
+            bInc, _bDec = self._oModel.get_inc_dec_flags_from_path(oPath)
             if bInc:
                 sCardName, sExpansion, sCardSetName = \
                         self._oModel.get_all_names_from_path(oPath)
@@ -261,9 +259,7 @@ class CardSetView(CardListView):
     def dec_card(self, oCell, oPath):
         """Called to decrement the count for a card"""
         if self._oModel.bEditable:
-            # pylint: disable-msg=W0612
-            # only interested in bDec
-            bInc, bDec = self._oModel.get_inc_dec_flags_from_path(oPath)
+            _bInc, bDec = self._oModel.get_inc_dec_flags_from_path(oPath)
             if bDec:
                 sCardName, sExpansion, sCardSetName = \
                         self._oModel.get_all_names_from_path(oPath)
@@ -273,19 +269,19 @@ class CardSetView(CardListView):
         """Change the number if 1-9 is pressed and we're editable or if + or
            - is pressed. We use the lists defined above to handle the keypad
            as well."""
-        if oEvent.keyval in _dNumKeys:
+        if oEvent.keyval in NUM_KEYS:
             if self._oModel.bEditable:
-                iCnt = _dNumKeys[oEvent.keyval]
+                iCnt = NUM_KEYS[oEvent.keyval]
                 dSelectedData = self.process_edit_selection()
                 self._oController.set_selected_card_count(dSelectedData, iCnt)
             # if we're not editable, we still ignore this, so we avoid funny
             # search behaviour
             return True
-        elif oEvent.keyval in _aPlusKeys and self._oModel.bEditable:
+        elif oEvent.keyval in PLUS_KEYS and self._oModel.bEditable:
             dSelectedData = self.process_edit_selection()
             self._oController.alter_selected_card_count(dSelectedData, 1)
             return True
-        elif oEvent.keyval in _aMinusKeys and self._oModel.bEditable:
+        elif oEvent.keyval in MINUS_KEYS and self._oModel.bEditable:
             dSelectedData = self.process_edit_selection()
             self._oController.alter_selected_card_count(dSelectedData, -1)
             return True

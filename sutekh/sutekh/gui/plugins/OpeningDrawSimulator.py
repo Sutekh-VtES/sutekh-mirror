@@ -151,9 +151,7 @@ class OpeningHandSimulator(CardListPlugin):
         oCardDraw.connect("activate", self.activate)
         return ('Plugins', oCardDraw)
 
-    # pylint: disable-msg=W0613
-    # oWidget required by function signature
-    def activate(self, oWidget):
+    def activate(self, _oWidget):
         """Create the actual dialog, and populate it"""
         sDiagName = "Opening Hand"
         oCryptFilter = MultiCardTypeFilter(['Imbued', 'Vampire'])
@@ -226,7 +224,6 @@ class OpeningHandSimulator(CardListPlugin):
             oStore.append(None, (sCardName, sVal, 100*fMean / 4))
 
         return create_view(oStore, 'Crypt Card')
-    # pylint: enable-msg=W0613
 
     def _fill_stats(self, oDialog):
         """Fill in the stats from the draws"""
@@ -259,9 +256,7 @@ class OpeningHandSimulator(CardListPlugin):
             dLibProbs[sName] = hypergeometric_mean(iCount, 7, iTot)
         return dLibProbs
 
-    # pylint: disable-msg=W0613
-    # oButton required by function signature
-    def _fill_dialog(self, oButton):
+    def _fill_dialog(self, _oButton):
         """Fill the dialog with the draw results"""
         oDialog = SutekhDialog('Sample Hands', self.parent,
                 gtk.DIALOG_MODAL|gtk.DIALOG_DESTROY_WITH_PARENT)
@@ -342,9 +337,7 @@ class OpeningHandSimulator(CardListPlugin):
         dHand = {}
         dProps = {}
         dTypes = {}
-        # pylint: disable-msg=W0612
-        # iCard is a loop counter, and is ignored
-        for iCard in range(7):
+        for _iCard in range(7):
             oCard = choice(aThisLib)
             aThisLib.remove(oCard) # drawing without replacement
             dHand.setdefault(oCard.name, 0)
@@ -352,7 +345,7 @@ class OpeningHandSimulator(CardListPlugin):
             check_card(oCard.name, self.dCardTypes, dTypes)
             check_card(oCard.name, self.dCardProperties, dProps)
         dCrypt = {}
-        for iCard in range(4):
+        for _iCard in range(4):
             oCard = choice(aThisCrypt)
             aThisCrypt.remove(oCard) # drawing without replacement
             dCrypt.setdefault(oCard.name, 0)
@@ -404,6 +397,4 @@ class OpeningHandSimulator(CardListPlugin):
         oDetailBox.pack_start(oHBox)
         return oDetailBox
 
-# pylint: disable-msg=C0103
-# plugin name doesn't match rule
 plugin = OpeningHandSimulator

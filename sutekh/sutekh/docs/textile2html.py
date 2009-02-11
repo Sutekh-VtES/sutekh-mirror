@@ -44,12 +44,8 @@ def convert(sTextileDir, sHtmlDir):
     """Convert all .txt files in sTextileDir to .html files in sHtmlDir."""
     for sTextilePath in glob.glob(os.path.join(sTextileDir, "*.txt")):
         sBasename = os.path.basename(sTextilePath)
-        # pylint: disable-msg=W0612
-        # sExt is unused
-        sFilename, sExt = os.path.splitext(sBasename)
+        sFilename, _sExt = os.path.splitext(sBasename)
         sHtmlPath = os.path.join(sHtmlDir, sFilename + ".html")
-
-        # pylint: enable-msg=W0612
 
         dContext = {
             'title': "Sutekh " + sFilename

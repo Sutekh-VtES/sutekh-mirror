@@ -95,9 +95,7 @@ class CardSetPrint(CardListPlugin):
 
         for iThisLine in range(iLineCount):
             oLine = oLayout.get_line(iThisLine)
-            # pylint: disable-msg=W0612
-            # not interested in oInkRect
-            oInkRect, oLogicalRect = oLine.get_extents()
+            _oInkRect, oLogicalRect = oLine.get_extents()
 
             # line height / SCALE
             fLineHeight = float(oLogicalRect[3]) / pango.SCALE
@@ -149,9 +147,7 @@ class CardSetPrint(CardListPlugin):
         while True:
             if iLine >= iStartPageLine:
                 oLine = oIter.get_line()
-                # pylint: disable-msg=W0612
-                # not interested in oInkRect
-                oInkRect, oLogicalRect = oLine.get_extents()
+                _oInkRect, oLogicalRect = oLine.get_extents()
 
                 fBaseLine = float(oIter.get_baseline()) / pango.SCALE
 
@@ -196,10 +192,7 @@ class CardSetPrint(CardListPlugin):
         aMarkup.append("")
 
         oCardIter = self.model.get_card_iterator(None)
-        # pylint: disable-msg=W0612
-        # aAbsCards unused
-        oGroupedIter, aAbsCards = self.model.grouped_card_iter(oCardIter)
-        # pylint: enable-msg=W0612
+        oGroupedIter, _aAbsCards = self.model.grouped_card_iter(oCardIter)
 
         # Iterate over groups
         for sGroup, oGroupIter in oGroupedIter:
@@ -218,6 +211,4 @@ class CardSetPrint(CardListPlugin):
 
         return "\n".join(aMarkup)
 
-# pylint: disable-msg=C0103
-# accept plugin name
 plugin = CardSetPrint

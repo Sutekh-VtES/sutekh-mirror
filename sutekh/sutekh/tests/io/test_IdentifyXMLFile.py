@@ -9,7 +9,9 @@
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.io.IdentifyXMLFile import IdentifyXMLFile
 from sutekh.core.SutekhObjects import IAbstractCard, IPhysicalCard
+from sutekh.tests.core.test_PhysicalCardSet import ABSTRACT_CARDS
 import unittest
+
 
 class TestIdentifyXMLFile(SutekhTest):
     """class for the IdentifyXMLFile tests"""
@@ -18,10 +20,9 @@ class TestIdentifyXMLFile(SutekhTest):
         """Test IdentifyXMLFile"""
         # pylint: disable-msg=E1101
         # E1101: SQLObject + PyProtocols magic confuses pylint
-        aAbstractCards = ['.44 magnum', 'ak-47', 'abbot', 'abebe', 'abombwe']
         # test IO
 
-        oAC = IAbstractCard(aAbstractCards[0])
+        oAC = IAbstractCard(ABSTRACT_CARDS[0])
         oPC = IPhysicalCard((oAC, None))
         sLastWriterVersion = "1.0"
 

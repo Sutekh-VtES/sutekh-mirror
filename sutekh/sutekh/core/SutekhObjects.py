@@ -633,10 +633,9 @@ class RulingAdapter(object):
     advise(instancesProvide=[IRuling], asAdapterForTypes=[tuple])
 
     def __new__(cls, tData):
-        # pylint: disable-msg=E1101, W0612
+        # pylint: disable-msg=E1101,
         # SQLObject confuses pylint
-        # sCode is unused
-        sText, sCode = tData
+        sText, _sCode = tData
         return Ruling.byText(sText.encode('utf8'))
 
 class PhysicalCardSetAdapter(object):

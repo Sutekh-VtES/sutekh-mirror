@@ -166,6 +166,4 @@ def best_guess_filter(sName):
     return CardNameFilter(sFilterString)
 
 
-# pylint: disable-msg=C0103
-# DEFAULT_LOOKUP name is OK here
 DEFAULT_LOOKUP = SimpleLookup()

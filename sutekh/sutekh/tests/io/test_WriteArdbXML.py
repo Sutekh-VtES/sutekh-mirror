@@ -7,7 +7,7 @@
 """Test Writing a card set to an ARDB deck XML file"""
 
 from sutekh.tests.TestCore import SutekhTest
-from sutekh.tests.core.test_PhysicalCardSet import aCardSetNames, \
+from sutekh.tests.core.test_PhysicalCardSet import CARD_SET_NAMES, \
         get_phys_cards
 from sutekh.core.SutekhObjects import PhysicalCardSet
 from sutekh.io.WriteArdbXML import WriteArdbXML
@@ -18,7 +18,7 @@ import time
 # pylint: disable-msg=W0511, C0301
 # W0511 - this is not a actual TODO item
 # C0301 - Ignore line length limits for this string
-sExpected = """<deck databaseVersion="%s" formatVersion="-TODO-1.0" generator="Sutekh [ %s ]">
+EXPECTED = """<deck databaseVersion="%s" formatVersion="-TODO-1.0" generator="Sutekh [ %s ]">
   <name>Test Set 1</name>
   <author>A test author</author>
   <description>A test comment</description>
@@ -103,7 +103,7 @@ class ArdbXMLWriterTests(SutekhTest):
         # repeated setups, so it has lots of lines + variables
         aAddedPhysCards = get_phys_cards()
         # We have a physical card list, so create some physical card sets
-        oPhysCardSet1 = PhysicalCardSet(name=aCardSetNames[0])
+        oPhysCardSet1 = PhysicalCardSet(name=CARD_SET_NAMES[0])
         oPhysCardSet1.comment = 'A test comment'
         oPhysCardSet1.author = 'A test author'
 
@@ -124,7 +124,7 @@ class ArdbXMLWriterTests(SutekhTest):
         sData = fIn.read()
         fIn.close()
 
-        self.assertEqual(sData, sExpected)
+        self.assertEqual(sData, EXPECTED)
 
 if __name__ == "__main__":
     unittest.main()

@@ -7,13 +7,13 @@
 """Test Writing a card set to an CSV file"""
 
 from sutekh.tests.TestCore import SutekhTest
-from sutekh.tests.core.test_PhysicalCardSet import aCardSetNames, \
+from sutekh.tests.core.test_PhysicalCardSet import CARD_SET_NAMES, \
         get_phys_cards
 from sutekh.core.SutekhObjects import PhysicalCardSet
 from sutekh.io.WriteCSV import  WriteCSV
 import unittest
 
-sExpected1 = """"Card Name", "Expansion", "Number"
+EXPECTED_1 = """"Card Name", "Expansion", "Number"
 ".44 Magnum", "Jyhad", 1
 ".44 Magnum", "Unknown Expansion", 3
 "AK-47", "Lords of the Night", 1
@@ -27,7 +27,7 @@ sExpected1 = """"Card Name", "Expansion", "Number"
 "The Path of Blood", "Lords of the Night", 1
 """
 
-sExpected2 = """".44 Magnum", "Jyhad", 1
+EXPECTED_2 = """".44 Magnum", "Jyhad", 1
 ".44 Magnum", "Unknown Expansion", 3
 "AK-47", "Lords of the Night", 1
 "AK-47", "Unknown Expansion", 1
@@ -41,7 +41,7 @@ sExpected2 = """".44 Magnum", "Jyhad", 1
 """
 
 
-sExpected3 = """"Card Name", "Number"
+EXPECTED_3 = """"Card Name", "Number"
 ".44 Magnum", 4
 "AK-47", 2
 "Abbot", 2
@@ -51,7 +51,7 @@ sExpected3 = """"Card Name", "Number"
 "The Path of Blood", 1
 """
 
-sExpected4 = """".44 Magnum", 4
+EXPECTED_4 = """".44 Magnum", 4
 "AK-47", 2
 "Abbot", 2
 "Abebe", 1
@@ -72,7 +72,7 @@ class CSVWriterTests(SutekhTest):
         # repeated setups, so it has lots of lines + variables
         aAddedPhysCards = get_phys_cards()
         # We have a physical card list, so create some physical card sets
-        oPhysCardSet1 = PhysicalCardSet(name=aCardSetNames[0])
+        oPhysCardSet1 = PhysicalCardSet(name=CARD_SET_NAMES[0])
         oPhysCardSet1.comment = 'A test comment'
         oPhysCardSet1.author = 'A test author'
 
@@ -95,7 +95,7 @@ class CSVWriterTests(SutekhTest):
         sData = fIn.read()
         fIn.close()
 
-        self.assertEqual(sData, sExpected1)
+        self.assertEqual(sData, EXPECTED_1)
 
         oWriter = WriteCSV(False, True)
         sTempFileName =  self._create_tmp_file()
@@ -107,7 +107,7 @@ class CSVWriterTests(SutekhTest):
         sData = fIn.read()
         fIn.close()
 
-        self.assertEqual(sData, sExpected2)
+        self.assertEqual(sData, EXPECTED_2)
 
         oWriter = WriteCSV(True, False)
         sTempFileName =  self._create_tmp_file()
@@ -119,7 +119,7 @@ class CSVWriterTests(SutekhTest):
         sData = fIn.read()
         fIn.close()
 
-        self.assertEqual(sData, sExpected3)
+        self.assertEqual(sData, EXPECTED_3)
 
         oWriter = WriteCSV(False, False)
         sTempFileName =  self._create_tmp_file()
@@ -131,9 +131,7 @@ class CSVWriterTests(SutekhTest):
         sData = fIn.read()
         fIn.close()
 
-        self.assertEqual(sData, sExpected4)
-
-
+        self.assertEqual(sData, EXPECTED_4)
 
 
 if __name__ == "__main__":

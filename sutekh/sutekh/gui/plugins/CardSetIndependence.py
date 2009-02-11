@@ -135,15 +135,11 @@ class CardSetIndependence(CardListPlugin):
         oTest.connect("activate", self.activate)
         return ('Plugins', oTest)
 
-    # pylint: disable-msg=W0613
-    # oWidget required by function signature
-    def activate(self, oWidget):
+    def activate(self, _oWidget):
         """Create the dialog in response to the menu item."""
         oDlg = self.make_dialog()
         if oDlg:
             oDlg.run()
-
-    # pylint: enable-msg=W0613
 
     def make_dialog(self):
         """Create the list of card sets to select"""
@@ -208,6 +204,4 @@ class CardSetIndependence(CardListPlugin):
         oDlg.destroy()
 
 
-# pylint: disable-msg=C0103
-# accept plugin name
 plugin = CardSetIndependence

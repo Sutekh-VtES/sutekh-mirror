@@ -243,6 +243,4 @@ class ACSImporter(CardListPlugin):
         return iResponse == gtk.RESPONSE_OK
 
 
-# pylint: disable-msg=C0103
-# accept plugin name
 plugin = ACSImporter

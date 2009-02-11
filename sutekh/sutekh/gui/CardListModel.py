@@ -171,9 +171,7 @@ class CardListModel(gtk.TreeStore):
         self._dGroupName2Iter = {}
 
         oCardIter = self.get_card_iterator(self.get_current_filter())
-        # pylint: disable-msg=W0612
-        # fGetCount is not used here
-        fGetCard, fGetCount, fGetExpanInfo, oGroupedIter, aAbsCards = \
+        fGetCard, _fGetCount, fGetExpanInfo, oGroupedIter, aAbsCards = \
                 self.grouped_card_iter(oCardIter)
 
         self.oEmptyIter = None

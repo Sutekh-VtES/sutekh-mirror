@@ -181,10 +181,8 @@ class MultiPaneWindow(gtk.Window):
             self.resize(iWidth, iHeight)
         # Reset the pane number count, since we're starting afresh
         self._iCount = 0
-        # pylint: disable-msg=W0612
-        # iNumber is not used here, but returned from the config file
         dPaneInfo = self._oConfig.get_all_pane_info()
-        for iNumber, sType, sName, bVert, iPos in \
+        for _iNumber, sType, sName, bVert, iPos in \
                 self._oConfig.get_all_panes():
             oNewFrame = self.add_pane(bVert, iPos)
             self._oFocussed = oNewFrame
@@ -572,11 +570,9 @@ class MultiPaneWindow(gtk.Window):
                 oChild1 = oPane.get_child1()
                 oChild2 = oPane.get_child2()
                 iMyPos = oPane.get_position()
-                # pylint: disable-msg=W0612
-                # iTemp is unused
-                iNum, iTemp = save_children(oChild1, oConfig, False, iNum,
+                iNum, _iTemp = save_children(oChild1, oConfig, False, iNum,
                         iPos)
-                iNum, iTemp = save_children(oChild2, oConfig, True, iNum,
+                iNum, _iTemp = save_children(oChild2, oConfig, True, iNum,
                         iMyPos)
                 iChildPos = iPos
             else:

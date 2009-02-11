@@ -7,7 +7,7 @@
 """Test Writing a card set to an ARDB inventory XML file"""
 
 from sutekh.tests.TestCore import SutekhTest
-from sutekh.tests.core.test_PhysicalCardSet import aCardSetNames, \
+from sutekh.tests.core.test_PhysicalCardSet import CARD_SET_NAMES, \
         get_phys_cards
 from sutekh.core.SutekhObjects import PhysicalCardSet
 from sutekh.io.WriteArdbInvXML import WriteArdbInvXML
@@ -18,7 +18,7 @@ import time
 # pylint: disable-msg=W0511, C0301
 # W0511 - this is not a actual TODO item
 # C0301 - Ignore line length limits for this string
-sExpected = """<inventory databaseVersion="%s" formatVersion="-TODO-1.0" generator="Sutekh [ %s ]">
+EXPECTED = """<inventory databaseVersion="%s" formatVersion="-TODO-1.0" generator="Sutekh [ %s ]">
   <date>%s</date>
   <crypt size="2">
     <vampire databaseID="11" have="1" need="0" spare="0">
@@ -63,7 +63,7 @@ class ArdbInvXMLWriterTests(SutekhTest):
         # repeated setups, so it has lots of lines + variables
         aAddedPhysCards = get_phys_cards()
         # We have a physical card list, so create some physical card sets
-        oPhysCardSet1 = PhysicalCardSet(name=aCardSetNames[0])
+        oPhysCardSet1 = PhysicalCardSet(name=CARD_SET_NAMES[0])
         oPhysCardSet1.comment = 'A test comment'
         oPhysCardSet1.author = 'A test author'
 
@@ -83,7 +83,7 @@ class ArdbInvXMLWriterTests(SutekhTest):
         sData = fIn.read()
         fIn.close()
 
-        self.assertEqual(sData, sExpected)
+        self.assertEqual(sData, EXPECTED)
 
 if __name__ == "__main__":
     unittest.main()

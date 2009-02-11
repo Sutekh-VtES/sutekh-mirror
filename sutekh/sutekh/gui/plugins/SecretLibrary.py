@@ -26,14 +26,9 @@ class SecretLibrary(CardListPlugin):
         oExport.connect("activate", self.make_dialog)
         return ('Export Card Set', oExport)
 
-    # pylint: disable-msg=W0613
-    # oWidget has to be here, although it's unused
-
-    def make_dialog(self, oWidget):
+    def make_dialog(self, _oWidget):
         """Create the dialog"""
         self.handle_response()
-
-    # pylint: enable-msg=W0613
 
     def handle_response(self):
         """Handle the users response. Submit to Secret Library."""
@@ -164,6 +159,4 @@ class SecretLibrary(CardListPlugin):
         print "Secret Library Response:", fReq.read()
         fReq.close()
 
-# pylint: disable-msg=C0103
-# accept plugin name
 plugin = SecretLibrary

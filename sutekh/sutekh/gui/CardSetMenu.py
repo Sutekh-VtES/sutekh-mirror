@@ -15,9 +15,9 @@ from sutekh.gui.SutekhFileWidget import ExportDialog
 from sutekh.io.XmlFileHandling import PhysicalCardSetXmlFile
 from sutekh.gui.PaneMenu import CardListMenu
 from sutekh.gui.CardSetListModel import NO_SECOND_LEVEL, SHOW_EXPANSIONS, \
-        SHOW_CARD_SETS, EXPANSIONS_AND_CARD_SETS, CARD_SETS_AND_EXPANSIONS, \
-        THIS_SET_ONLY, ALL_CARDS, PARENT_CARDS, CHILD_CARDS, \
-        IGNORE_PARENT, PARENT_COUNT, MINUS_THIS_SET, MINUS_SETS_IN_USE
+        SHOW_CARD_SETS, EXP_AND_CARD_SETS, CARD_SETS_AND_EXP, THIS_SET_ONLY, \
+        ALL_CARDS, PARENT_CARDS, CHILD_CARDS, IGNORE_PARENT, PARENT_COUNT, \
+        MINUS_THIS_SET, MINUS_SETS_IN_USE
 
 class CardSetMenu(CardListMenu):
     # pylint: disable-msg=R0904
@@ -74,10 +74,8 @@ class CardSetMenu(CardListMenu):
                 ("Show No Children", NO_SECOND_LEVEL),
                 ("Show Expansions", SHOW_EXPANSIONS),
                 ("Show Child Card Sets", SHOW_CARD_SETS),
-                ("Show Expansions and Child Card Sets",
-                    EXPANSIONS_AND_CARD_SETS),
-                ("Show Child Card Sets and Expansions",
-                    CARD_SETS_AND_EXPANSIONS),
+                ("Show Expansions and Child Card Sets", EXP_AND_CARD_SETS),
+                ("Show Child Card Sets and Expansions", CARD_SETS_AND_EXP),
                 ]:
             oItem = gtk.RadioMenuItem(oNoChildren, sString)
             if not oNoChildren:

@@ -13,7 +13,9 @@ from sutekh.core.SutekhObjects import IAbstractCard, IPhysicalCard, \
 from sutekh.io.PhysicalCardParser import PhysicalCardParser
 from sutekh.io.IdentifyXMLFile import IdentifyXMLFile
 from sutekh.io.XmlFileHandling import PhysicalCardXmlFile
+from sutekh.tests.core.test_PhysicalCardSet import ABSTRACT_CARDS
 import unittest, os
+
 
 class PhysicalCardTests(SutekhTest):
     """class for the PhysicalCard tests"""
@@ -26,10 +28,9 @@ class PhysicalCardTests(SutekhTest):
         # R0915, R0914: Want a long, sequential test case to minimise
         # repeated setups, so it has lots of lines + variables
 
-        aAbstractCards = ['.44 magnum', 'ak-47', 'abbot', 'abebe', 'abombwe']
         # test IO
 
-        oAC = IAbstractCard(aAbstractCards[0])
+        oAC = IAbstractCard(ABSTRACT_CARDS[0])
         oPC = IPhysicalCard((oAC, None))
         sLastWriterVersion = "1.0"
 

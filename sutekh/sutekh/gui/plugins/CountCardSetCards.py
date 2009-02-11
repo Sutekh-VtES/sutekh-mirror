@@ -106,6 +106,4 @@ class CountCardSetCards(CardListPlugin, CardListModelListener):
             self.__iLibrary += 1
         self.update_numbers()
 
-# pylint: disable-msg=C0103
-# accept plugin name
 plugin = CountCardSetCards

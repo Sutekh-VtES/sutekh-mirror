@@ -1,3 +1,10 @@
+11 Feb 2009
+ * Add plugin for displaying the pricelist from thelasombra.com
+ * Adjust sample pylint rcfile based on discussion on the mailling list
+ * Massive pyline cleanp commit - remove numerous no longer relevant
+   disable-msg's, change constant naming conventions, etc.
+ * Remove some redundant inheritences from object
+
 03 Feb 2009
  * Fix incorrect date in changelog (2009 is still != 2008)
  * Remove forced_cancel logic from FilterDialog & MultiSelectCombo, since it

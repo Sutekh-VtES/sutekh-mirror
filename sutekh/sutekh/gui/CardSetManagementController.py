@@ -156,14 +156,11 @@ class CardSetManagementController(object):
         oDialog = CreateCardSetDialog(self._oMainWindow)
         oDialog.run()
         sName = oDialog.get_name()
-        # pylint: disable-msg=E1102, W0612
-        # W0612 - oCS isn't important, as the creation of the new card
-        # set is what matters
         if sName:
             sAuthor = oDialog.get_author()
             sComment = oDialog.get_comment()
             oParent = oDialog.get_parent()
-            oCS = PhysicalCardSet(name=sName, author=sAuthor,
+            _oCS = PhysicalCardSet(name=sName, author=sAuthor,
                     comment=sComment, parent=oParent)
             self._oMainWindow.add_new_physical_card_set(sName)
 
@@ -240,11 +237,9 @@ class CardSetManagementController(object):
            """
         # Internal helper functions
         # See what's expanded
-        # pylint: disable-msg=W0612
-        # we're not interested in oModel here
         oSelection = self._oView.get_selection()
         if oSelection is not None:
-            oModel, aSelectedRows = oSelection.get_selected_rows()
+            _oModel, aSelectedRows = oSelection.get_selected_rows()
         else:
             aSelectedRows = []
         if len(aSelectedRows) > 0:

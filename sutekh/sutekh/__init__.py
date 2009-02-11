@@ -34,14 +34,16 @@ from sutekh.core.CardListTabulator import CardListTabulator
 from sutekh.SutekhCli import main
 
 # start() method for use when working in the Python interpreter
-# pylint: disable-msg=C0111, W0102
+# pylint: disable-msg=W0102
 
 def start(aArgs=['sutekh']):
+    """Initialise SQLObject connection and so forth, for working in the
+       python interpreter"""
     main(aArgs)
 
 # What we expose to import *
 
-aAll = [ # Sutekh Objects
+ALL = [ # Sutekh Objects
          AbstractCard, PhysicalCard, PhysicalCardSet,
          RarityPair, Expansion, Rarity, DisciplinePair, Discipline,
          Clan, CardType, Ruling,
@@ -60,6 +62,6 @@ aAll = [ # Sutekh Objects
          # Misc
          start, CardListTabulator ]
 
-__all__ = [ x.__name__ for x in aAll ]
+__all__ = [ x.__name__ for x in ALL ]
 
 

@@ -7,7 +7,7 @@
 """Test Card Set reading from file"""
 
 from sutekh.tests.TestCore import SutekhTest
-from sutekh.tests.core.test_PhysicalCardSet import aCardSetNames, \
+from sutekh.tests.core.test_PhysicalCardSet import CARD_SET_NAMES, \
         get_phys_cards
 from sutekh.core.SutekhObjects import IPhysicalCardSet, \
         MapPhysicalCardToPhysicalCardSet, PhysicalCardSet
@@ -66,8 +66,8 @@ class PhysicalCardSetParserTests(SutekhTest):
         oParser.parse(fIn)
         fIn.close()
 
-        oPhysCardSet1 = IPhysicalCardSet(aCardSetNames[0])
-        oPhysCardSet2 = IPhysicalCardSet(aCardSetNames[1])
+        oPhysCardSet1 = IPhysicalCardSet(CARD_SET_NAMES[0])
+        oPhysCardSet2 = IPhysicalCardSet(CARD_SET_NAMES[1])
 
         self.assertEqual(len(oPhysCardSet1.cards), 5)
         self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(

@@ -14,6 +14,8 @@ from sutekh.gui.ProgressDialog import ProgressDialog
 
 class FileOrUrlWidget(gtk.VBox):
     """Compound widget for loading a file from either a URL or a local file."""
+    # pylint: disable-msg=R0904
+    # gtk.Widget, so many public methods
 
     OTHER_FILE = 'Select file ...'
     OTHER_URL = 'Enter other URL ...'
@@ -26,7 +28,8 @@ class FileOrUrlWidget(gtk.VBox):
            dUrls' keys are URL names, its values are URLs. 'Enter other URL ...' and
            'Select file ...' may not be used as a key in dUrls.
            """
-        super(FileOrUrlWidget, self).__init__(homogeneous=homogeneous, spacing=spacing)
+        super(FileOrUrlWidget, self).__init__(homogeneous=homogeneous,
+                spacing=spacing)
         if dUrls is None:
             dUrls = {}
         self._dUrls = dUrls
@@ -93,7 +96,8 @@ class FileOrUrlWidget(gtk.VBox):
         self._oSubBox.show_all()
 
     def get_file_or_url(self):
-        """Return the selected file name or URL and whether the result represents a URL.
+        """Return the selected file name or URL and whether the result
+           represents a URL.
 
            E.g.  ("http://www.example.com/myfile.html", True)
                  ("/home/user/myfile.html", False)
@@ -157,10 +161,14 @@ class FileOrUrlWidget(gtk.VBox):
         else:
             oFile = file(sUrl, "rb")
 
+        # pylint: disable-msg=E1103
+        # hasattr check means this is safe
         if hasattr(oFile, 'info') and callable(oFile.info):
             sLength = oFile.info().getheader('Content-Length')
         else:
             sLength = None
+
+        # pylint: enable-msg=E1103
 
         if sLength:
             aData = []
