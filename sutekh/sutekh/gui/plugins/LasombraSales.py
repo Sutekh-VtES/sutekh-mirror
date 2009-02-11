@@ -17,7 +17,8 @@ from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 from sutekh.gui.CellRendererIcons import CellRendererIcons, SHOW_TEXT_ONLY
 from sutekh.gui.CardListModel import CardListModel
 from sutekh.gui.FileOrUrlWidget import FileOrUrlWidget
-from sutekh.core.SutekhObjects import PhysicalCard, PhysicalCardSet, IExpansion, IAbstractCard
+from sutekh.core.SutekhObjects import PhysicalCard, PhysicalCardSet, \
+        IExpansion, IAbstractCard
 from sutekh.SutekhUtility import prefs_dir, ensure_dir_exists
 
 # pylint: disable-msg=R0904
@@ -114,7 +115,6 @@ class LasombraSales(CardListPlugin):
         'A': 'AH',
     }
 
-
     # (sCardName, sExpansionName) -> (fPrive, iStock)
     # Initialized when module first loaded
     _dPriceCache = None
@@ -185,7 +185,7 @@ class LasombraSales(CardListPlugin):
                 raise ValueError("Unable to locate inventory spreadsheet"
                             " inside zip file.")
             sData = fZip.read(sName)
-        except zipfile.BadZipfile, oE:
+        except zipfile.BadZipfile, oExcept:
             # not a zip file, proceed as if it's a spreadsheet
             sData = fInventory.read()
 
@@ -214,16 +214,16 @@ class LasombraSales(CardListPlugin):
         """Find the start of the promo cards"""
         iStart = 0
         iEnd = 0
-        for n in range(2, oSheet.nrows):
-            oRow = oSheet.row(n)
+        for iNum in range(2, oSheet.nrows):
+            oRow = oSheet.row(iNum)
             sVal = oRow[1].value
             sVal.strip()
             if sVal.endswith('Promos'):
                 # Success
-                iStart = n + 2
-            elif sVal == 'Description' and iStart > 0 and n > iStart:
+                iStart = iNum + 2
+            elif sVal == 'Description' and iStart > 0 and iNum > iStart:
                 # End found
-                iEnd = n - 2
+                iEnd = iNum - 2
                 break # No need to continue the loop
 
         if iStart <= 0:
@@ -237,7 +237,8 @@ class LasombraSales(CardListPlugin):
             """Retrieve the expansion object for the given card."""
             aCards = PhysicalCard.selectBy(abstractCardID=oAbsCard.id)
             for oCard in aCards:
-                if oCard.expansion and oCard.expansion.name.startswith('Promo'):
+                if oCard.expansion and oCard.expansion.name.startswith(
+                        'Promo'):
                     return oCard.expansion
             # None means no expansion found.
             return None
@@ -254,7 +255,7 @@ class LasombraSales(CardListPlugin):
             sShort = self._dShortExpLookup.get(sShort, sShort)
             try:
                 oExp = IExpansion(sShort)
-            except Exception, e:
+            except Exception, oExcept:
                 if sShort not in oUnknownExpansions:
                     sMsg = "Could not map expansion code '%s' found in Crypt" \
                            " sheet to unique expansion (setting expansion to" \
@@ -276,8 +277,9 @@ class LasombraSales(CardListPlugin):
             sVal = self._dExpansionLookup[sVal]
             sVal = sVal.strip()
             oExp = IExpansion(sVal)
-        except Exception, e:
-            sMsg = "Could not determine expansion for sheet '%s' (skipping sheet)" % (oSheet.name,)
+        except Exception, oExcept:
+            sMsg = "Could not determine expansion for sheet '%s'" \
+                    " (skipping sheet)" % (oSheet.name,)
             self._aWarnings.append(sMsg)
             return
 
@@ -297,20 +299,21 @@ class LasombraSales(CardListPlugin):
 
         QUANTITY, NAME, PRICE = tCols
 
-        for n in range(iStart, iEnd):
-            oRow = oSheet.row(n)
+        for iNum in range(iStart, iEnd):
+            oRow = oSheet.row(iNum)
 
             # skip blank rows and some summary lines
-            if not (oRow[NAME].value and oRow[QUANTITY].value and oRow[PRICE].value):
-                    continue
+            if not (oRow[NAME].value and oRow[QUANTITY].value and
+                    oRow[PRICE].value):
+                continue
 
             try:
                 sCardName = str(oRow[NAME].value)
                 iStock = int(oRow[QUANTITY].value)
                 fPrice = float(oRow[PRICE].value)
-            except Exception, e:
+            except Exception, oExcept:
                 sMsg = "Could not read card information from sheet %s," \
-                       " row %d (skipping row)" % (oSheet.name, n)
+                       " row %d (skipping row)" % (oSheet.name, iNum)
                 self._aWarnings.append(sMsg)
                 continue
 
@@ -341,7 +344,8 @@ class LasombraSales(CardListPlugin):
             tKey = (sCardName, None)
             fOverallPrice = self._dPriceCache.get(tKey, (fPrice, 0))[0]
             iOverallStock = self._dPriceCache.get(tKey, (fPrice, 0))[1]
-            self._dPriceCache[tKey] = (min(fPrice, fOverallPrice), iStock + iOverallStock)
+            self._dPriceCache[tKey] = (min(fPrice, fOverallPrice), iStock
+                    + iOverallStock)
 
     # pylint: enable-msg=W0142
 
@@ -432,11 +436,14 @@ class LasombraSales(CardListPlugin):
     def setup(self):
         """Prompt the user to download/setup the plugin the first time"""
         if not os.path.exists(self._sPrefsPath):
+            # Make sure path exists before we try to write things
+            # This also prevents us asking again next start if the user
+            # cancels
+            ensure_dir_exists(self._sPrefsPath)
             # Looks like the first time
             oDialog = LasombraConfigDialog(self.parent, True)
             self.handle_config_response(oDialog)
             # Don't get called next time
-            ensure_dir_exists(self._sPrefsPath)
 
     # pylint: disable-msg=W0613
     # oMenuWidget needed by gtk function signature
