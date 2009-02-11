@@ -696,7 +696,7 @@ class VariableNameGenerator(set):
         self.add(sName)
         return sName
 
-class FilterHelpBuffer(gtk.TextBuffer, object):
+class FilterHelpBuffer(gtk.TextBuffer):
     # pylint: disable-msg=R0904
     # gtk.Widget, so many public methods
     """TextBuffer object used to display the help about the filters."""
@@ -732,7 +732,7 @@ class FilterHelpBuffer(gtk.TextBuffer, object):
         """reset the iterator to the start of the buffer."""
         self._oIter = self.get_iter_at_offset(0)
 
-class FilterHelpTextView(gtk.TextView, object):
+class FilterHelpTextView(gtk.TextView):
     """TextView widget for displaying the help text."""
     # pylint: disable-msg=R0904
     # gtk.Widget, so many public methods

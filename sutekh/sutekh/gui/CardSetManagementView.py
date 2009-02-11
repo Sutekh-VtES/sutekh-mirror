@@ -11,7 +11,7 @@ import unicodedata
 from sutekh.gui.CardSetManagementModel import CardSetManagementModel
 from sutekh.gui.SearchDialog import SearchDialog
 
-class CardSetManagementView(gtk.TreeView, object):
+class CardSetManagementView(gtk.TreeView):
     """Tree View for the card set list."""
     # pylint: disable-msg=R0904
     # gtk.Widget, so lots of public methods

@@ -10,7 +10,7 @@
 import gtk
 import pango
 
-class CardTextBuffer(gtk.TextBuffer, object):
+class CardTextBuffer(gtk.TextBuffer):
     """Buffer object which holds the actual card text.
 
        This is also responsible for nicely formatting the output.
@@ -125,7 +125,7 @@ class CardTextBuffer(gtk.TextBuffer, object):
         self._oIter = self.get_iter_at_offset(0)
 
 
-class CardTextView(gtk.TextView, object):
+class CardTextView(gtk.TextView):
     """TextView widget which holds the TextBuffer.
 
        This handles extracting the text from the database for the card,

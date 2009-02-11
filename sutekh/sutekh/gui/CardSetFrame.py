@@ -15,7 +15,7 @@ from sutekh.gui.CardListFrame import CardListFrame
 from sutekh.gui.CardSetMenu import CardSetMenu
 from sutekh.gui.CardSetController import CardSetController
 
-class CardSetFrame(CardListFrame, object):
+class CardSetFrame(CardListFrame):
     # pylint: disable-msg=R0904
     # gtk.Widget, so many public methods
     """class for Card Set frames.

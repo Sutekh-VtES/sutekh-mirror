@@ -115,6 +115,7 @@ class XMLState(object):
 
 class ARDBXMLDeckParser(XMLParser, object):
     """Parser for the ARDB XML deck format."""
+    # We explicitly inherit from object, since XMLParser is a classic class
 
     def __init__(self, oHolder):
         self._oHolder = oHolder

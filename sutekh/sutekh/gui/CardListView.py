@@ -18,7 +18,7 @@ class CardListViewListener(object):
         """The CardListViw has called set_card_text on the CardText pane"""
         pass
 
-class CardListView(gtk.TreeView, object):
+class CardListView(gtk.TreeView):
     """Base class for all the card list views in Sutekh."""
     # pylint: disable-msg=R0904, R0902
     # gtk.Widget, so many public methods. We need to keep state, so many attrs

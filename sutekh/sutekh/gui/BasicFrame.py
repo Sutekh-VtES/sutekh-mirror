@@ -9,7 +9,7 @@
 
 import gtk, gobject
 
-class BasicFrame(gtk.Frame, object):
+class BasicFrame(gtk.Frame):
     # pylint: disable-msg=R0904
     # gtk.Widget, so lotes of public methods
     """The basic, blank frame for sutekh.

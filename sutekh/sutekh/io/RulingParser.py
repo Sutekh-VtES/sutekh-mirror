@@ -252,6 +252,7 @@ class InRuleUrl(StateWithRule):
 
 class RulingParser(HTMLParser.HTMLParser, object):
     """Actual Parser for the WW rulings HTML files."""
+    # We explicitly inherit from object, since HTMLParser is a classic class
     def __init__(self, oLogHandler):
         # super().__init__ calls reset, so we need this first
         self.oLogger = Logger('WW Rulings parser')

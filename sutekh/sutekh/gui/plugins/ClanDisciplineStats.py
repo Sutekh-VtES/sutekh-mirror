@@ -142,7 +142,7 @@ class ClanStats(object):
 
 # pylint: disable-msg=R0904
 # gtk classes, so we have lots of public methods
-class StatsView(gtk.TreeView, object):
+class StatsView(gtk.TreeView):
     """TreeView used to display clan discipline stats"""
     def __init__(self):
         self._oModel = StatsModel()

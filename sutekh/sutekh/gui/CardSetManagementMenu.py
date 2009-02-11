@@ -11,7 +11,7 @@
 import gtk
 from sutekh.gui.PaneMenu import PaneMenu
 
-class CardSetManagementMenu(PaneMenu, object):
+class CardSetManagementMenu(PaneMenu):
     """Card Set List Management menu.
 
        Allows managing the list of card sets (adding new card sets,

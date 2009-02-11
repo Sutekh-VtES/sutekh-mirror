@@ -522,6 +522,7 @@ class WaitingForValue(StateWithCard):
 
 class WhiteWolfParser(HTMLParser.HTMLParser, object):
     """Actual Parser for the WW cardlist HTML file(s)."""
+    # We explicitly inherit from object, since HTMLParser is a classic class
     def __init__(self, oLogHandler):
         # super().__init__ calls reset, so we need this first
         self.oLogger = Logger('White wolf card parser')

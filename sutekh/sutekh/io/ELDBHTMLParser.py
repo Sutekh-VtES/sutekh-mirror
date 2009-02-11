@@ -124,6 +124,7 @@ class CardItem(State):
 
 class ELDBHTMLParser(HTMLParser.HTMLParser, object):
     """Actual Parser for the ELDB HTML files."""
+    # We explicitly inherit from object, since HTMLParser is a classic class
     def __init__(self, oHolder):
         """Create an ELDBHTMLParser.
 
