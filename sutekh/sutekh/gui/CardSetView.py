@@ -73,7 +73,8 @@ class CardSetView(CardListView):
         self.oNumCell = gtk.CellRendererText()
         self.oNameCell = CellRendererIcons(5)
 
-        oColumn1 = gtk.TreeViewColumn("#", self.oNumCell, markup=1)
+        oColumn1 = gtk.TreeViewColumn("#", self.oNumCell, text=1,
+                foreground_gdk=7)
         oColumn1.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
         oColumn1.set_fixed_width(60)
         oColumn1.set_sort_column_id(1)
@@ -81,8 +82,8 @@ class CardSetView(CardListView):
         self.append_column(oColumn1)
 
         oParentCell = gtk.CellRendererText()
-        self.oParentCol = gtk.TreeViewColumn("Par #", oParentCell,
-                markup=2)
+        self.oParentCol = gtk.TreeViewColumn("Par #", oParentCell, text=2,
+                foreground_gdk=8)
         self.oParentCol.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
         self.oParentCol.set_fixed_width(60)
         self.oParentCol.set_sort_column_id(2)
@@ -129,11 +130,6 @@ class CardSetView(CardListView):
         self.oCellColor = None
 
         self.set_fixed_height_mode(True)
-        # Set sort functions so numerical sorts work as expected
-        # Card numbers
-        self._oModel.set_sort_func(1, self._oModel.num_col_sort_func, 1)
-        # Parent counts
-        self._oModel.set_sort_func(2, self._oModel.num_col_sort_func, 2)
 
     # pylint: enable-msg=R0915
 
@@ -351,7 +347,7 @@ class CardSetView(CardListView):
 
     def set_color_edit_cue(self):
         """Set a visual cue that the card set is editable."""
-        if not self._oModel.sEditColour:
+        if not self._oModel.oEditColour:
             self._determine_edit_colour()
         self.set_name('editable_view')
 
@@ -398,7 +394,7 @@ class CardSetView(CardListView):
         if not _compare_colors(oEditColor, self.oCellColor) or \
                 not _compare_colors(oEditBackColor, oCurBackColor):
             # Visiually distinct, so honour user's choice
-            self._oModel.sEditColour = oEditColor.to_string()
+            self._oModel.oEditColour = oEditColor
         else:
             # If the theme change isn't visually distinct here, we go
             # with red  as the default - this is safe,
@@ -406,7 +402,7 @@ class CardSetView(CardListView):
             # themed, so the default color will not be red
             # (famous last words)
             # If the default background color is red, too bad
-            self._oModel.sEditColour = 'red'
+            self._oModel.oEditColour = gtk.gdk.color_parse('red')
 
     def set_color_normal(self):
         """Unset the editable visual cue"""

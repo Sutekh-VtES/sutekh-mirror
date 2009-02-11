@@ -1,3 +1,8 @@
+12 Feb 2009
+ * Replace the string + markup fiddling with card set numbers with seperate
+   model columns for number and colour. Simplifies & speeds up numerical
+   sorting.
+
 11 Feb 2009
  * Add plugin for displaying the pricelist from thelasombra.com
  * Adjust sample pylint rcfile based on discussion on the mailling list

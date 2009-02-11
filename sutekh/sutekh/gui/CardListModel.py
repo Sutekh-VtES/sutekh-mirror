@@ -7,16 +7,11 @@
 
 """The gtk.TreeModel for the card lists."""
 
-import gtk, pango, gobject
+import gtk, gobject
 from sutekh.core.Filters import FilterAndBox, NullFilter, PhysicalCardFilter
 from sutekh.core.Groupings import CardTypeGrouping
 from sutekh.core.SutekhObjects import IAbstractCard, PhysicalCard, \
         IPhysicalCard
-
-def remove_markup(sMarkup):
-    """Return the string with markup stripped"""
-    # Wrapper around parse_markup, dropping the info we wish to ignore
-    return pango.parse_markup(sMarkup)[1]
 
 def norm_path(oPath):
     """Transform string paths to tuple paths"""
@@ -66,8 +61,9 @@ class CardListModel(gtk.TreeStore):
 
     def __init__(self):
         # STRING is the card name, INT is the card count
-        super(CardListModel, self).__init__(str, str, str, bool, bool,
-                gobject.TYPE_PYOBJECT, gobject.TYPE_PYOBJECT)
+        super(CardListModel, self).__init__(str, int, int, bool, bool,
+                gobject.TYPE_PYOBJECT, gobject.TYPE_PYOBJECT,
+                gtk.gdk.Color, gtk.gdk.Color)
         # name, count, parent count, showInc, showDec, text_list, icons
         self._dName2Iter = {}
         self._dNameExpansion2Iter = {}
@@ -113,9 +109,7 @@ class CardListModel(gtk.TreeStore):
 
     # various utilty functions for checking the model state
 
-    # pylint: disable-msg=W0613
-    # oCard needed so children can override this sensibly
-    def get_expansion_info(self, oCard, dExpanInfo):
+    def get_expansion_info(self, _oCard, dExpanInfo):
         """Get information about expansions"""
         aExpansions = []
         if not self.bExpansions:
@@ -124,31 +118,12 @@ class CardListModel(gtk.TreeStore):
             aExpansions.append(self.get_expansion_name(oExpansion))
         return aExpansions
 
-    # pylint: enable-msg=W0613
-
     def get_expansion_name(self, oExpansion):
         """Utility function to return iether the name, or the appropriate
            placeholder for oExpansion is None."""
         if oExpansion:
             return oExpansion.name
         return self.sUnknownExpansion
-
-    def get_int_value(self, oIter, iPos):
-        """Extract an integer value from the model, removing markup"""
-        sMarkup = self.get_value(oIter, iPos)
-        if sMarkup:
-            sValue = remove_markup(sMarkup)
-        else:
-            return 0
-        return int(sValue)
-
-    def num_col_sort_func(self, oModel, oIter1, oIter2, iPos):
-        """Custom sort function for the numerical columns
-
-           iPos is user info set by set_sort_func"""
-        iNum1 = self.get_int_value(oIter1, iPos)
-        iNum2 = self.get_int_value(oIter2, iPos)
-        return cmp(iNum1, iNum2)
 
     def lookup_icons(self, sGroup):
         """Lookup the icons for the group. Method since it's repeated in
@@ -324,7 +299,7 @@ class CardListModel(gtk.TreeStore):
         else:
             sName = self.get_name_from_iter(oIter)
             sExpansion = None
-        iCount = self.get_int_value(oIter, 1)
+        iCount = self.get_value(oIter, 1)
         return sName, sExpansion, iCount, iDepth
 
 
@@ -352,7 +327,7 @@ class CardListModel(gtk.TreeStore):
         oChildIter = self.iter_children(oIter)
         while oChildIter:
             sExpansion = self.get_value(oChildIter, 0)
-            iCount = self.get_int_value(oChildIter, 1)
+            iCount = self.get_value(oChildIter, 1)
             aChildren.append((sExpansion, iCount))
             oChildIter = self.iter_next(oChildIter)
         return aChildren
@@ -384,11 +359,11 @@ class CardListModel(gtk.TreeStore):
 
     def get_card_count_from_iter(self, oIter):
         """Return the card count for a given iterator"""
-        return self.get_int_value(oIter, 1)
+        return self.get_value(oIter, 1)
 
     def get_parent_count_from_iter(self, oIter):
         """Return the parent count for a given iterator"""
-        return self.get_int_value(oIter, 2)
+        return self.get_value(oIter, 2)
 
     def _get_empty_text(self):
         """Get the correct text for an empty model."""
