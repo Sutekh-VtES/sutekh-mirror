@@ -16,6 +16,8 @@ choices, exceptions, additions and clarifications:
 
 [1] http://www.python.org/dev/peps/pep-0008/
 
+Constants are named using the ALL_CAPS naming cnvention
+
 === Regular Expressions for Matching Bad Style ===
 
  * Assignments without spaces around equals:
@@ -27,14 +29,12 @@ While pylint doesn't handle some of the inheritence cases well (especially
 involving dialogs from gtk), it is useful for detecting some style and syntax
 issues.
 
-I use the following pylintrc file to teach pylint about the variable naming
-scheme (this does not enforce the typing convention)
+A sample pylintrc file is available as tools/sutekh_pylint. Some useful
+additional checkers for pylint are also available in tools.
 
-[BASIC]
-variable-rgx = [_]{0,2}[a,b,d,f,i,o,s,t][A-Z][A-z0-9]{1,20}$
-argument-rgx = [_]{0,2}[a,b,d,f,i,o,s,t][A-Z][A-z0-9]{1,20}$|self|cls
-attr-rgx = [_]{0,2}[a,b,d,f,i,o,s,t][A-Z][A-z0-9]{1,20}$
-const-rgx = [_]{0,2}[a,b,d,f,i,o,s,t][A-Z][A-z0-9]{1,20}$
+We use the _<Variable Name> convention to mark dummy variables and arguments
+that will not be used - this is mainly used for loop counters and the required
+arguments to the gtk callback functions.
 
 In general, when disabling a pylint message, a comment explaining why
 the message should be overridden is expected.

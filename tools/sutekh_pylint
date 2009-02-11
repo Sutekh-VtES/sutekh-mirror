@@ -3,13 +3,15 @@
 variable-rgx = [_]{0,2}[a,b,c,d,f,i,o,s,t][A-Z][A-z0-9]{1,20}$
 argument-rgx = [_]{0,2}[a,b,c,d,f,i,o,s,t][A-Z][A-z0-9]{1,20}$|self|cls
 attr-rgx = [_]{0,2}[a,b,c,d,f,i,o,s,t][A-Z][A-z0-9]{1,20}$
-const-rgx = [_]{0,2}[a,b,c,d,f,i,o,s,t][A-Z][A-z0-9]{1,20}$
+# Consts use the ALL_CAPS naming convention
+const-rgx = [_]{0,2}[A-Z0-9_]{1,20}$
 # test_ names are used for the test suite
 module-rgx = (([a-z_][a-z0-9_]*)|([A-Z][a-zA-Z0-9]+)|(test_[A-Z][a-zA-Z0-9]+))$
 # sqlmeta is a SQLObject convention, which we need to support
 class-rgx = [A-Z_][a-zA-Z0-9]+$|sqlmeta
-# kwargs is an acceptable name
-good-names=kwargs, cls, __all__
+# args & kwargs are acceptable names (common in python)
+# plugin is used by all the plugins, so we accept that
+good-names=kwargs, cls, __all__, args, plugin
 
 [DESIGN]
 max-public-methods=30
@@ -23,3 +25,7 @@ max-parents=12
 [FORMAT]
 # PEP 008 says 79, not 80
 max-line-length=79
+
+[VARIABLES]
+# We use the convention _oName to indicate dummy variables (i.e. unused vars) 
+dummy-variables=_[a,b,c,d,f,i,o,s,t][A-Z][A-z0-9]{1,20}$
