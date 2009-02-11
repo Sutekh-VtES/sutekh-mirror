@@ -330,19 +330,18 @@ class CardSetCardListModel(CardListModel):
             sName = self.get_name_from_iter(self.iter_parent(oIter))
         return sName
 
-    def get_all_names_from_path(self, oPath):
-        """Get all the relevant names from the path (cardname, expansion
+    def get_all_names_from_iter(self, oIter):
+        """Get all the relevant names from the iter (cardname, expansion
            and card set), returning None for any that can't be determined.
-
-           This is mainly used by the button signals for editing.
            """
-        oIter = self.get_iter(oPath)
         iDepth = self.iter_depth(oIter)
         if iDepth == 0:
             # Top Level item, so no info at all
             return None, None, None
-        sCardName = self.get_name_from_iter(self.get_iter(norm_path(
-            oPath)[0:2]))
+        oCardIter = oIter
+        while self.iter_depth(oCardIter) > 1:
+            oCardIter = self.iter_parent(oCardIter)
+        sCardName = self.get_name_from_iter(oCardIter)
         sExpName = None
         sCardSetName = None
         # Get the expansion name
@@ -351,8 +350,7 @@ class CardSetCardListModel(CardListModel):
             if iDepth == 2:
                 sExpName = self.get_name_from_iter(oIter)
             elif iDepth == 3:
-                sExpName = self.get_name_from_iter(self.get_iter(norm_path(
-                    oPath)[0:3]))
+                sExpName = self.get_name_from_iter(self.iter_parent(oIter))
         elif self.iExtraLevelsMode == CARD_SETS_AND_EXPANSIONS and \
                 iDepth == 3:
             sExpName = self.get_name_from_iter(oIter)
@@ -362,12 +360,25 @@ class CardSetCardListModel(CardListModel):
             if iDepth == 2:
                 sCardSetName = self.get_name_from_iter(oIter)
             elif iDepth == 3:
-                sCardSetName = self.get_name_from_iter(self.get_iter(norm_path(
-                    oPath)[0:3]))
+                sCardSetName = self.get_name_from_iter(self.iter_parent(oIter))
         elif self.iExtraLevelsMode == EXPANSIONS_AND_CARD_SETS and \
                 iDepth == 3:
             sCardSetName = self.get_name_from_iter(oIter)
         return sCardName, sExpName, sCardSetName
+
+
+    def get_all_names_from_path(self, oPath):
+        """Get all the relevant names from the path
+
+           Convenience wrapper around get_all_names_from_iter for cases
+           when the path is easier to get than the iter (selections, etc.)
+           This is mainly used by the button signals for editing.
+           """
+        if oPath:
+            # Don' crash if oPath is None for some reason
+            oIter = self.get_iter(oPath)
+            return self.get_all_names_from_iter(oIter)
+        return None, None, None
 
     def get_drag_info_from_path(self, oPath):
         """Get card name and expansion information from the path for the

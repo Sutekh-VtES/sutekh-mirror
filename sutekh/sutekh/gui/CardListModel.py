@@ -312,24 +312,35 @@ class CardListModel(gtk.TreeStore):
             oIter = self.get_iter(norm_path(oPath)[0:2])
         return self.get_name_from_iter(oIter)
 
-    def get_all_from_path(self, oPath):
-        """Get all relevent information about the current path.
+    def get_all_from_iter(self, oIter):
+        """Get all relevent information about the current iter.
 
            Returns the tuple (CardName, Expansion info, Card Count,
            depth in the  model), where depth in the model is 1 for the top
            level of cards, and 2 for the expansion level.
            """
-        oIter = self.get_iter(oPath)
         iDepth = self.iter_depth(oIter)
         if iDepth == 2:
-            sName = self.get_name_from_iter(self.get_iter(
-                norm_path(oPath)[0:2]))
+            sName = self.get_name_from_iter(self.iter_parent(oIter))
             sExpansion = self.get_value(oIter, 0)
         else:
             sName = self.get_name_from_iter(oIter)
             sExpansion = None
         iCount = self.get_int_value(oIter, 1)
         return sName, sExpansion, iCount, iDepth
+
+
+    def get_all_from_path(self, oPath):
+        """Get all relevent information about the current path.
+
+           Conveince wrapper around get_all_from_iter, for use in cases when
+           it's easier to get the path than the iter (selections, etc.)
+           """
+        if oPath:
+            # Avoid crashes when oPath is None for some reason
+            oIter = self.get_iter(oPath)
+            return self.get_all_from_iter(oIter)
+        return None, None, None, None
 
     def get_child_entries_from_path(self, oPath):
         """Return a list of (sExpansion, iCount) pairs for the children of

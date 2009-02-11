@@ -358,8 +358,7 @@ class LasombraSales(CardListPlugin):
 
            This is the key retrieval version for CardListModels.
            """
-        oPath = self.model.get_path(oIter)
-        sName, sExpansion, iCount, iDepth = self.model.get_all_from_path(oPath)
+        sName, sExpansion, iCount, iDepth = self.model.get_all_from_iter(oIter)
         if sName is not None:
             # sExpansion may be None.
             return sName, sExpansion
@@ -375,8 +374,7 @@ class LasombraSales(CardListPlugin):
 
            This is the key retrieval version for CardSetListModels.
            """
-        oPath = self.model.get_path(oIter)
-        sName, sExpansion, sCardSet = self.model.get_all_names_from_path(oPath)
+        sName, sExpansion, sCardSet = self.model.get_all_names_from_iter(oIter)
         if sName is not None:
             # sExpansion may be None.
             return sName, sExpansion
