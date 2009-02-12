@@ -2,6 +2,7 @@
  * Replace the string + markup fiddling with card set numbers with seperate
    model columns for number and colour. Simplifies & speeds up numerical
    sorting.
+ * Factor out some common code from the different HTML Parsers.
 
 11 Feb 2009
  * Add plugin for displaying the pricelist from thelasombra.com

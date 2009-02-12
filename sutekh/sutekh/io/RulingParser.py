@@ -7,8 +7,10 @@
 
 """HTML Parser for extracting card rulings from the WW online rulings list."""
 
-import HTMLParser, re
+import re
 from logging import Logger
+from sutekh.io.SutekhBaseHTMLParser import SutekhBaseHTMLParser, StateError, \
+        LogState, LogStateWithInfo
 from sutekh.core.SutekhObjects import IAbstractCard, SutekhObjectMaker
 from sqlobject import SQLObjectNotFound
 
@@ -16,6 +18,7 @@ from sqlobject import SQLObjectNotFound
 
 class RuleDict(dict):
     """Dictionary object which holds the extracted rulings information."""
+
     _aSectionKeys = ['title', 'card']
     _oMasterOut = re.compile(r'\s*-\s*Master\s*\:?\s*Out\-of\-Turn$')
     _oCommaThe = re.compile(r'\s*\,\s*The$')
@@ -100,53 +103,22 @@ class RuleDict(dict):
 
         self['card'].addRuling(oRuling)
 
-# State Base Classes
-
-class StateError(Exception):
-    """Error thrown in state transitions."""
-    pass
-
-class State(object):
-    """Base class for all States"""
-    def __init__(self, oLogger):
-        super(State, self).__init__()
-        self._sData = ""
-        self.oLogger = oLogger
-
-    def transition(self, sTag, dAttr):
-        """Transition from one state to another"""
-        raise NotImplementedError
-
-    def data(self, sData):
-        """Add data to the state"""
-        self._sData += sData
-
-class StateWithRule(State):
-    """Base class for states which contain information of interest"""
-    # pylint: disable-msg=W0223
-    # transition method is still abstract here
-    def __init__(self, dInfo, oLogger):
-        super(StateWithRule, self).__init__(oLogger)
-        self._dInfo = dInfo
-
 # State Classes
 
-class NoSection(State):
+class NoSection(LogState):
     """Not in any ruling section."""
-    # pylint: disable-msg=W0613
-    # dAttr needed by function signature
-    def transition(self, sTag, dAttr):
+
+    def transition(self, sTag, _dAttr):
         """Transition ot InSection if needed."""
         if sTag == 'p':
             return InSection(RuleDict(self.oLogger), self.oLogger)
         else:
             return self
 
-class InSection(StateWithRule):
+class InSection(LogStateWithInfo):
     """In a ruling section."""
-    # pylint: disable-msg=W0613
-    # dAttr needed by function signature
-    def transition(self, sTag, dAttr):
+
+    def transition(self, sTag, _dAttr):
         """Transition to SectionTitle or NoSection as needed."""
         if sTag == 'b':
             return SectionTitle(self._dInfo, self.oLogger)
@@ -156,11 +128,10 @@ class InSection(StateWithRule):
         else:
             return NoSection(self.oLogger)
 
-class SectionTitle(StateWithRule):
+class SectionTitle(LogStateWithInfo):
     """In the tilte of the section."""
-    # pylint: disable-msg=W0613
-    # dAttr needed by function signature
-    def transition(self, sTag, dAttr):
+
+    def transition(self, sTag, _dAttr):
         """Transition to SectionWithTitle if needed."""
         if sTag == 'b':
             raise StateError()
@@ -170,11 +141,10 @@ class SectionTitle(StateWithRule):
         else:
             return self
 
-class SectionWithTitle(StateWithRule):
+class SectionWithTitle(LogStateWithInfo):
     """In a section with a known title."""
-    # pylint: disable-msg=W0613
-    # dAttr needed by function signature
-    def transition(self, sTag, dAttr):
+
+    def transition(self, sTag, _dAttr):
         """Transition to SectionRule, InSection or NoSection if needed."""
         if sTag == 'li':
             return SectionRule(self._dInfo, self.oLogger)
@@ -186,8 +156,9 @@ class SectionWithTitle(StateWithRule):
         else:
             return self
 
-class SectionRule(StateWithRule):
+class SectionRule(LogStateWithInfo):
     """In a ruling in the section."""
+
     def transition(self, sTag, dAttr):
         """Transition to the appropriate InRule State."""
         if sTag == 'span' and dAttr.get('class') in ['ruling', 'errata',
@@ -220,11 +191,10 @@ class SectionRule(StateWithRule):
             return NoSection(self.oLogger)
         return self
 
-class InRuleText(StateWithRule):
+class InRuleText(LogStateWithInfo):
     """In the text of a ruling."""
-    # pylint: disable-msg=W0613
-    # dAttr needed by function signature
-    def transition(self, sTag, dAttr):
+
+    def transition(self, sTag, _dAttr):
         """Transition to SectionRule if needed."""
         if sTag == 'span':
             raise StateError()
@@ -234,11 +204,10 @@ class InRuleText(StateWithRule):
         else:
             return self
 
-class InRuleUrl(StateWithRule):
+class InRuleUrl(LogStateWithInfo):
     """In the url associated with this ruling."""
-    # pylint: disable-msg=W0613
-    # dAttr needed by function signature
-    def transition(self, sTag, dAttr):
+
+    def transition(self, sTag, _dAttr):
         """Transition to SectionRule if needed."""
         if sTag == 'a':
             raise StateError()
@@ -250,33 +219,18 @@ class InRuleUrl(StateWithRule):
 
 # Parser
 
-class RulingParser(HTMLParser.HTMLParser, object):
+class RulingParser(SutekhBaseHTMLParser):
     """Actual Parser for the WW rulings HTML files."""
-    # We explicitly inherit from object, since HTMLParser is a classic class
+
     def __init__(self, oLogHandler):
         # super().__init__ calls reset, so we need this first
         self.oLogger = Logger('WW Rulings parser')
         if oLogHandler is not None:
             self.oLogger.addHandler(oLogHandler)
         super(RulingParser, self).__init__()
-        self._oState = NoSection(self.oLogger)
+        # No need to touch self._oState, reset will do that for us
 
-    # pylint: disable-msg=C0111
-    # names are as listed in HTMLParser docs, so no need for docstrings
     def reset(self):
+        """Reset the parser"""
         super(RulingParser, self).reset()
         self._oState = NoSection(self.oLogger)
-
-    def handle_starttag(self, sTag, aAttr):
-        self._oState = self._oState.transition(sTag.lower(), dict(aAttr))
-
-    def handle_endtag(self, sTag):
-        self._oState = self._oState.transition('/'+sTag.lower(), {})
-
-    def handle_data(self, sData):
-        self._oState.data(sData)
-
-    # pylint: disable-msg=C0321
-    # these don't need statements
-    def handle_charref(self, sName): pass
-    def handle_entityref(self, sName): pass

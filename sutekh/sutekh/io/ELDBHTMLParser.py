@@ -22,34 +22,14 @@
    """
 # pylint: enable-msg=C0301
 
-import HTMLParser
+from sutekh.io.SutekhBaseHTMLParser import SutekhBaseHTMLParser, HolderState
 import re
-
-# State Base Classes
-
-class StateError(Exception):
-    """Error case in the state true"""
-    pass
-
-class State(object):
-    """Base class for parser states"""
-    def __init__(self, oHolder):
-        super(State, self).__init__()
-        self._sData = ""
-        self._oHolder = oHolder
-
-    def transition(self, sTag, dAttr):
-        """Transition from one state to another"""
-        raise NotImplementedError
-
-    def data(self, sData):
-        """Add data to the state"""
-        self._sData += sData
 
 # State Classes
 
-class Collecting(State):
+class Collecting(HolderState):
     """Default state - transitions to other states as needed"""
+
     def transition(self, sTag, dAttr):
         """Transition to CardItem of DeckInfoItem as needed."""
         if sTag == 'td' and dAttr.get('colspan') == '2':
@@ -59,12 +39,10 @@ class Collecting(State):
         else:
             return self
 
-class DeckInfoItem(State):
+class DeckInfoItem(HolderState):
     """States for the table rows describing the deck."""
 
-    # pylint: disable-msg=W0613
-    # dAttr required by function signature
-    def transition(self, sTag, dAttr):
+    def transition(self, sTag, _dAttr):
         """Transition back to Collecting if needed"""
         if sTag == '/tr':
             aParts = self._sData.split(':', 1)
@@ -85,7 +63,7 @@ class DeckInfoItem(State):
         else:
             return self
 
-class CardItem(State):
+class CardItem(HolderState):
     """State for the table rows listing the cards in the deck."""
     _oCountRegex = re.compile(r'^[^0-9]*(?P<cnt>[0-9]+)[^0-9]*')
 
@@ -93,9 +71,7 @@ class CardItem(State):
         super(CardItem, self).__init__(oHolder)
         self._iCnt = None
 
-    # pylint: disable-msg=W0613
-    # dAttr required by function signature
-    def transition(self, sTag, dAttr):
+    def transition(self, sTag, _dAttr):
         """Extract card data and add it back to the CardSetHolder if possible,
            and transtion back to Collecting if needed."""
         if sTag == 'a':
@@ -122,36 +98,22 @@ class CardItem(State):
 
 # Parser
 
-class ELDBHTMLParser(HTMLParser.HTMLParser, object):
+class ELDBHTMLParser(SutekhBaseHTMLParser):
     """Actual Parser for the ELDB HTML files."""
-    # We explicitly inherit from object, since HTMLParser is a classic class
+
     def __init__(self, oHolder):
         """Create an ELDBHTMLParser.
 
            oHolder is a sutekh.core.CardSetHolder.CardSetHolder object
            (or similar).
            """
+        # super __init__ will call rest, so need this
         self._oHolder = oHolder
-        self._oState = Collecting(self._oHolder)
         super(ELDBHTMLParser, self).__init__()
+        # Don't need to set oState, since reset will do that
 
     def reset(self):
         """Reset the parser"""
         super(ELDBHTMLParser, self).reset()
         self._oState = Collecting(self._oHolder)
 
-    # pylint: disable-msg=C0111
-    # names are as listed in HTMLParser docs, so no need for docstrings
-    def handle_starttag(self, sTag, aAttr):
-        self._oState = self._oState.transition(sTag.lower(), dict(aAttr))
-
-    def handle_endtag(self, sTag):
-        self._oState = self._oState.transition('/' + sTag.lower(), {})
-
-    def handle_data(self, sData):
-        self._oState.data(sData)
-
-    # pylint: disable-msg=C0321
-    # these don't need statements
-    def handle_charref(self, sName): pass
-    def handle_entityref(self, sName): pass
