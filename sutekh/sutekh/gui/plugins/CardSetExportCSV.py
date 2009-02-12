@@ -27,9 +27,7 @@ class CardSetExportCSV(CardListPlugin):
         oExport.connect("activate", self.make_dialog)
         return ('Export Card Set', oExport)
 
-    # pylint: disable-msg=W0613
-    # oWidget has to be here, although it's unused
-    def make_dialog(self, oWidget):
+    def make_dialog(self, _oWidget):
         """Create the dialog"""
         # pylint: disable-msg=E1101
         # vbox confuses pylint
@@ -47,8 +45,6 @@ class CardSetExportCSV(CardListPlugin):
 
         self.handle_response(oDlg.get_name(), oIncHeader.get_active(),
                 oIncExpansion.get_active())
-
-    # pylint: enable-msg=W0613
 
     def handle_response(self, sFileName, bIncHeader, bIncExpansion):
         """Handle the users response. Write the CSV output to file."""

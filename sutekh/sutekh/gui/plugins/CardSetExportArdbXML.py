@@ -28,9 +28,7 @@ class CardSetExportArdbXML(CardListPlugin):
         oExport.connect("activate", self.make_dialog)
         return ('Export Card Set', oExport)
 
-    # pylint: disable-msg=W0613
-    # oWidget has to be here, although it's unused
-    def make_dialog(self, oWidget):
+    def make_dialog(self, _oWidget):
         """Create the dialog"""
         # pylint: disable-msg=E1101
         # vbox confuses pylint
@@ -45,8 +43,6 @@ class CardSetExportArdbXML(CardListPlugin):
         oDlg.run()
 
         self.handle_response(oDlg.get_name(), oFirstBut)
-
-    # pylint: enable-msg=W0613
 
     def handle_response(self, sFileName, oFirstBut):
         """Handle the users response. Write the XML output to file."""
