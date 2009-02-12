@@ -13,7 +13,7 @@
 import zipfile
 from logging import Logger
 from sqlobject import sqlhub, SQLObjectNotFound
-from sutekh.core.SutekhObjects import PhysicalCardSet, aPhysicalSetList
+from sutekh.core.SutekhObjects import PhysicalCardSet, PHYSICAL_SET_LIST
 from sutekh.core.CardLookup import DEFAULT_LOOKUP
 from sutekh.SutekhUtility import refresh_tables
 from sutekh.io.PhysicalCardParser import PhysicalCardParser
@@ -96,7 +96,7 @@ class ZipFileWrapper(object):
                 # hopefully this is safe to do
                 # if we fail, the database will be in an inconsitent state,
                 # but that's going to be true anyway
-                refresh_tables(aPhysicalSetList, sqlhub.processConnection)
+                refresh_tables(PHYSICAL_SET_LIST, sqlhub.processConnection)
                 bTablesRefreshed = True
             if oIdParser.type == 'PhysicalCard':
                 bOldStyle = True

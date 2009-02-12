@@ -1,3 +1,6 @@
+13 Feb 2009
+ * Remove more redundant pylint disable-msgs
+
 12 Feb 2009
  * Replace the string + markup fiddling with card set numbers with seperate
    model columns for number and colour. Simplifies & speeds up numerical

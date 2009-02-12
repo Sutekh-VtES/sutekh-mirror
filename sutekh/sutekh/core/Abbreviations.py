@@ -14,12 +14,11 @@
 
 class AbbrevMeta(type):
     """Meta class for the abbrevation classes"""
-    # pylint: disable-msg=W0231, W0613, C0203
+    # pylint: disable-msg=W0231, C0203
     # W0231 - no point in calling type's init
-    # dDict, aBases, sName required by metaclass call signature
     # C0203 - pylint's buggy here, see
     # http://lists.logilab.org/pipermail/python-projects/2007-July/001249.html
-    def __init__(cls, sName, aBases, dDict):
+    def __init__(cls, _sName, _aBases, _dDict):
         if cls.dKeys:
             cls.make_lookup()
 

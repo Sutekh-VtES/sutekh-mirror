@@ -7,7 +7,7 @@
 
 
 import gtk
-from sutekh.core.SutekhObjects import VersionTable, aObjectList
+from sutekh.core.SutekhObjects import VersionTable, TABLE_LIST
 from sutekh.SutekhUtility import prefs_dir, ensure_dir_exists, sqlite_uri
 from sutekh.gui.MultiPaneWindow import MultiPaneWindow
 from sutekh.core.DatabaseVersion import DatabaseVersion
@@ -119,7 +119,7 @@ def main(aArgs):
         if not initialize_db(oMultiPaneWindow):
             return 1
 
-    aTables = [VersionTable] + aObjectList
+    aTables = [VersionTable] + TABLE_LIST
     aVersions = []
 
     for oTable in aTables:

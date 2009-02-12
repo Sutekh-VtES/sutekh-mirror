@@ -12,7 +12,7 @@ management functionality
 import sys, optparse, os
 from logging import StreamHandler
 from sqlobject import sqlhub, connectionForURI
-from sutekh.core.SutekhObjects import Ruling, aObjectList, aPhysicalList
+from sutekh.core.SutekhObjects import Ruling, TABLE_LIST, PHYSICAL_LIST
 from sutekh.SutekhUtility import refresh_tables, read_white_wolf_list, \
         read_rulings, gen_temp_dir, prefs_dir, ensure_dir_exists, sqlite_uri
 from sutekh.core.DatabaseUpgrade import attempt_database_upgrade
@@ -136,12 +136,12 @@ def main(aArgs):
             return 1
 
     if oOpts.refresh_tables:
-        if not refresh_tables(aObjectList, sqlhub.processConnection):
+        if not refresh_tables(TABLE_LIST, sqlhub.processConnection):
             print "refresh failed"
             return 1
 
     if oOpts.refresh_physical_card_tables:
-        if not refresh_tables(aPhysicalList, sqlhub.processConnection):
+        if not refresh_tables(PHYSICAL_LIST, sqlhub.processConnection):
             print "refresh failed"
             return 1
 

@@ -9,7 +9,7 @@
 from sutekh.tests.TestData import TEST_CARD_LIST, TEST_RULINGS
 from sutekh.SutekhUtility import read_white_wolf_list, read_rulings, \
         refresh_tables
-from sutekh.core.SutekhObjects import aObjectList
+from sutekh.core.SutekhObjects import TABLE_LIST
 from sutekh.io.WwFile import WwFile
 from sqlobject import sqlhub, connectionForURI
 import unittest
@@ -67,7 +67,7 @@ class SutekhTest(unittest.TestCase):
         sCardList = self._create_tmp_file(TEST_CARD_LIST)
         sRulings = self._create_tmp_file(TEST_RULINGS)
 
-        assert refresh_tables(aObjectList, oConn)
+        assert refresh_tables(TABLE_LIST, oConn)
 
         oLogHandler = FileHandler('/dev/null')
         read_white_wolf_list([WwFile(sCardList)], oLogHandler)
@@ -92,10 +92,10 @@ class SutekhTest(unittest.TestCase):
            Base sqlite cleanup.
            """
         # Clean up database
-        aObjectList.reverse()
-        for cCls in aObjectList:
+        TABLE_LIST.reverse()
+        for cCls in TABLE_LIST:
             cCls.dropTable(ifExists=True)
-        aObjectList.reverse()
+        TABLE_LIST.reverse()
         sqlhub.processConnection = None
         self._tearDownTemps()
 

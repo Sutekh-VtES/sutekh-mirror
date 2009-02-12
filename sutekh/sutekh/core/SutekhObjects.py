@@ -352,7 +352,7 @@ class MapAbstractCardToVirtue(SQLObject):
 
 # List of Tables to be created, dropped, etc.
 
-aObjectList = [ AbstractCard, Expansion,
+TABLE_LIST = [ AbstractCard, Expansion,
                PhysicalCard, PhysicalCardSet,
                Rarity, RarityPair, Discipline, DisciplinePair,
                Clan, CardType, Sect, Title, Ruling, Virtue, Creed,
@@ -369,10 +369,10 @@ aObjectList = [ AbstractCard, Expansion,
                MapAbstractCardToCreed,
                ]
 # For reloading the Physical Card Sets
-aPhysicalSetList = [PhysicalCardSet,
+PHYSICAL_SET_LIST = [PhysicalCardSet,
         MapPhysicalCardToPhysicalCardSet]
 # For database upgrades, etc.
-aPhysicalList = [PhysicalCard] + aPhysicalSetList
+PHYSICAL_LIST = [PhysicalCard] + PHYSICAL_SET_LIST
 
 # Object Maker API
 
@@ -471,12 +471,11 @@ class SutekhObjectMaker(object):
 
 class StrAdaptMeta(type):
     """Metaclass for the string adaptors."""
-    # pylint: disable-msg=W0231, W0613, C0203
+    # pylint: disable-msg=W0231, C0203
     # W0231 - no point in calling type's init
-    # dDict, aBases, sName required by metaclass call signature
     # C0203 - pylint's buggy here, see
     # http://lists.logilab.org/pipermail/python-projects/2007-July/001249.html
-    def __init__(cls, sName, aBases, dDict):
+    def __init__(cls, _sName, _aBases, _dDict):
         cls.make_object_cache()
 
     # pylint: disable-msg=W0201

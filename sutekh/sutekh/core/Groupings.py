@@ -144,7 +144,5 @@ class CostGrouping(IterGrouping):
             return []
 
 class NullGrouping(IterGrouping):
-    # pylint: disable-msg=W0613
-    # fGetCard is required by function signature
-    def __init__(self, oIter, fGetCard=DEF_GET_CARD):
+    def __init__(self, oIter, _fGetCard=DEF_GET_CARD):
         super(NullGrouping, self).__init__(oIter, lambda x: ["All"])
