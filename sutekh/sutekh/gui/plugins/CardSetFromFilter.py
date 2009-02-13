@@ -28,9 +28,7 @@ class DeckFromFilter(CardListPlugin):
         oGenPCS.connect("activate", self.activate)
         return ('Filter', oGenPCS)
 
-    # pylint: disable-msg=W0613
-    # oWidget required by gtk function signature
-    def activate(self, oWidget):
+    def activate(self, _oWidget):
         """Create the dialog.
 
            Prompt the user for Card Set Properties, and so forth.
@@ -39,8 +37,6 @@ class DeckFromFilter(CardListPlugin):
         oDlg.run()
 
         self.handle_response(oDlg)
-
-    # pylint: enable-msg=W0613
 
     def handle_response(self, oDlg):
         """Handle the user response from make_dialog

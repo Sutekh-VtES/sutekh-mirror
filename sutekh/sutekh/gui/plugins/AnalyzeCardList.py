@@ -195,10 +195,10 @@ def _wrap(sText):
     return oLabel
 
 class DisciplineNumberSelect(gtk.HBox):
-    """Holds a combo box and a discpline list for choosing a list
-       of disciplines to use."""
     # pylint: disable-msg=R0904
     # gtk.Widget so many public methods
+    """Holds a combo box and a discpline list for choosing a list
+       of disciplines to use."""
 
     _sUseList = 'Use list of disciplines'
 

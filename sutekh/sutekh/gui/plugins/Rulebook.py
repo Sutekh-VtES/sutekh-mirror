@@ -16,9 +16,9 @@ from sutekh.gui.FileOrUrlWidget import FileOrUrlWidget
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 from sutekh.SutekhUtility import prefs_dir, ensure_dir_exists
 
-# pylint: disable-msg=R0904
-# R0904 - gtk Widget, so has many public methods
 class RulebookConfigDialog(SutekhDialog):
+    # pylint: disable-msg=R0904
+    # R0904 - gtk Widget, so has many public methods
     """Dialog for configuring the Rulebook plugin."""
 
     POSSIBLE_FILES = [
@@ -99,8 +99,8 @@ class RulebookPlugin(CardListPlugin):
 
     # pylint: disable-msg=W0142
     # ** magic OK here
-    def __init__(self, *aArgs, **kwargs):
-        super(RulebookPlugin, self).__init__(*aArgs, **kwargs)
+    def __init__(self, *args, **kwargs):
+        super(RulebookPlugin, self).__init__(*args, **kwargs)
         self._oRulebookDlg = None
         self._dMenuItems = None
         self._sPrefsPath = os.path.join(prefs_dir('Sutekh'), 'rulebook')

@@ -40,8 +40,8 @@ class ExtraCardViewColumns(CardListPlugin):
 
     # pylint: disable-msg=W0142
     # **magic OK here
-    def __init__(self, *aArgs, **kwargs):
-        super(ExtraCardViewColumns, self).__init__(*aArgs, **kwargs)
+    def __init__(self, *args, **kwargs):
+        super(ExtraCardViewColumns, self).__init__(*args, **kwargs)
         self._dCols = {}
         self._dCols['Card Type'] = self._render_card_type
         self._dCols['Clans and Creeds'] = self._render_clan
@@ -94,7 +94,7 @@ class ExtraCardViewColumns(CardListPlugin):
         else:
             return None
 
-    # pylint: disable-msg=R0201, W0613
+    # pylint: disable-msg=R0201
     # Making these functions for clarity
     # several unused paramaters due to function signatures
     # The bGetIcons parameter is needed to avoid icon lookups, etc when
@@ -112,7 +112,7 @@ class ExtraCardViewColumns(CardListPlugin):
             return " /|".join(aTypes).split("|"), aIcons
         return [], []
 
-    def _render_card_type(self, oColumn, oCell, oModel, oIter):
+    def _render_card_type(self, _oColumn, oCell, _oModel, oIter):
         """display the card type(s)"""
         oCard = self._get_card(oIter)
         aText, aIcons = self._get_data_cardtype(oCard, True)
@@ -140,7 +140,7 @@ class ExtraCardViewColumns(CardListPlugin):
                 return " /|".join(aCreed).split("|"), aIcons
         return [], []
 
-    def _render_clan(self, oColumn, oCell, oModel, oIter):
+    def _render_clan(self, _oColumn, oCell, _oModel, oIter):
         """display the clan"""
         oCard = self._get_card(oIter)
         aText, aIcons = self._get_data_clan(oCard)
@@ -176,7 +176,7 @@ class ExtraCardViewColumns(CardListPlugin):
                     return aVirt, aIcons
         return [], []
 
-    def _render_disciplines(self, oColumn, oCell, oModel, oIter):
+    def _render_disciplines(self, _oColumn, oCell, _oModel, oIter):
         """display the card disciplines"""
         oCard = self._get_card(oIter)
         aText, aIcons = self._get_data_disciplines(oCard)
@@ -194,20 +194,20 @@ class ExtraCardViewColumns(CardListPlugin):
             return aExp, aIcons
         return [], []
 
-    def _render_expansions(self, oColumn, oCell, oModel, oIter):
+    def _render_expansions(self, _oColumn, oCell, _oModel, oIter):
         """Display expanson info"""
         oCard = self._get_card(oIter)
         aText, aIcons = self._get_data_expansions(oCard)
         oCell.set_data(aText, aIcons, self._iShowMode)
 
-    def _get_data_group(self, oCard, bGetIcons=True):
+    def _get_data_group(self, oCard, _bGetIcons=True):
         """get the group info for the card"""
         if not oCard is None and not oCard.group is None:
             return oCard.group, [None]
         # We use -1 for the any group, so flag with a very different number
         return -100, [None]
 
-    def _render_group(self, oColumn, oCell, oModel, oIter):
+    def _render_group(self, _oColumn, oCell, _oModel, oIter):
         """Display the group info"""
         oCard = self._get_card(oIter)
         iGrp, aIcons = self._get_data_group(oCard)
@@ -219,7 +219,7 @@ class ExtraCardViewColumns(CardListPlugin):
         else:
             oCell.set_data([""], aIcons, SHOW_TEXT_ONLY)
 
-    def _get_data_capacity(self, oCard, bGetIcons=True):
+    def _get_data_capacity(self, oCard, _bGetIcons=True):
         """Get the card's capacity"""
         if not oCard is None and not oCard.capacity is None:
             return oCard.capacity, [None]
@@ -227,7 +227,7 @@ class ExtraCardViewColumns(CardListPlugin):
             return oCard.life, [None]
         return -1, [None]
 
-    def _render_capacity(self, oColumn, oCell, oModel, oIter):
+    def _render_capacity(self, _oColumn, oCell, _oModel, oIter):
         """Display capacity in the column"""
         oCard = self._get_card(oIter)
         iCap, aIcons = self._get_data_capacity(oCard)
@@ -236,7 +236,7 @@ class ExtraCardViewColumns(CardListPlugin):
         else:
             oCell.set_data([""], aIcons, SHOW_TEXT_ONLY)
 
-    def _get_data_cost(self, oCard, bGetIcons=True):
+    def _get_data_cost(self, oCard, _bGetIcons=True):
         """Get the card's cost"""
         if not oCard is None and not oCard.cost is None:
             return oCard.cost, oCard.costtype, [None]
@@ -259,7 +259,7 @@ class ExtraCardViewColumns(CardListPlugin):
             sKey = ""
         return sKey, aIcons
 
-    def _render_cost(self, oColumn, oCell, oModel, oIter):
+    def _render_cost(self, _oColumn, oCell, _oModel, oIter):
         """Display cost in the column"""
         oCard = self._get_card(oIter)
         iCost, sCostType, aIcons = self._get_data_cost(oCard)
@@ -284,7 +284,7 @@ class ExtraCardViewColumns(CardListPlugin):
             return aTitles, aIcons
         return [], []
 
-    def _render_title(self, oColumn, oCell, oModel, oIter):
+    def _render_title(self, _oColumn, oCell, _oModel, oIter):
         """Display title in the column"""
         oCard = self._get_card(oIter)
         aTitles, aIcons = self._get_data_title(oCard)
@@ -301,7 +301,7 @@ class ExtraCardViewColumns(CardListPlugin):
             return aSects, aIcons
         return [], []
 
-    def _render_sect(self, oColumn, oCell, oModel, oIter):
+    def _render_sect(self, _oColumn, oCell, _oModel, oIter):
         """Display sect in the column"""
         oCard = self._get_card(oIter)
         aSects, aIcons = self._get_data_sect(oCard)
@@ -317,7 +317,7 @@ class ExtraCardViewColumns(CardListPlugin):
             return aTexts, aIcons
         return [], []
 
-    def _render_card_text(self, oColumn, oCell, oModel, oIter):
+    def _render_card_text(self, _oColumn, oCell, _oModel, oIter):
         """Display card text in the column"""
         oCard = self._get_card(oIter)
         aTexts, aIcons = self._get_data_card_text(oCard)
@@ -334,14 +334,12 @@ class ExtraCardViewColumns(CardListPlugin):
         oSelector.connect("activate", self.activate)
         return ('Plugins', oSelector)
 
-    # W0613 - oWidget required by function signature
-    def activate(self, oWidget):
+    def activate(self, _oWidget):
         """Handle menu activation"""
         oDlg = self.make_dialog()
         oDlg.run()
 
-    # W0613: oModel required by gtk's function signature
-    def sort_column(self, oModel, oIter1, oIter2, oGetData):
+    def sort_column(self, _oModel, oIter1, oIter2, oGetData):
         """Stringwise comparision of oIter1 and oIter2.
 
            Return -1 if oIter1 < oIter, 0 in ==, 1 if >
@@ -375,16 +373,14 @@ class ExtraCardViewColumns(CardListPlugin):
             iRes = cmp(oCard1.name, oCard2.name)
         return iRes
 
-    # pylint: enable-msg=W0613
-
     def make_dialog(self):
         """Create the column selection dialog"""
         sName = "Select Extra Columns ..."
 
         oDlg = SutekhDialog(sName, self.parent,
-                gtk.DIALOG_DESTROY_WITH_PARENT)
-        oDlg.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
-        oDlg.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
+                gtk.DIALOG_DESTROY_WITH_PARENT,
+                (gtk.STOCK_OK, gtk.RESPONSE_OK, gtk.STOCK_CANCEL,
+                    gtk.RESPONSE_CANCEL))
 
         oDlg.connect("response", self.handle_response)
 

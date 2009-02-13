@@ -50,9 +50,7 @@ class CardSetPrint(CardListPlugin):
 
     # pylint: enable-msg=W0201
 
-    # pylint: disable-msg=W0613
-    # oWidget part of function signature
-    def activate(self, oWidget):
+    def activate(self, _oWidget):
         """In response to the menu choice, do the actual print operation."""
         oPrintOp = gtk.PrintOperation()
 
@@ -111,14 +109,14 @@ class CardSetPrint(CardListPlugin):
         self._oPangoLayout = oLayout
 
     # oPrintOp, oContext part of function signature
-    def end_print(self, oPrintOp, oContext):
+    def end_print(self, _oPrintOp, _oContext):
         """Clean up resources allocated in begin_print.
            """
         self._aPageBreaks = None
         self._oPangoLayout = None
 
     # oPrintOp part of function signature
-    def draw_page(self, oPrintOp, oContext, iPageNum):
+    def draw_page(self, _oPrintOp, oContext, iPageNum):
         """Page drawing callback.
            """
         # pylint: disable-msg=R0914
@@ -168,8 +166,6 @@ class CardSetPrint(CardListPlugin):
             iLine += 1
             if not (iLine < iEndPageLine and oIter.next_line()):
                 break
-
-    # pylint: enable-msg=W0613
 
     def cardlist_markup(self):
         """Format the card set nicely for printing."""

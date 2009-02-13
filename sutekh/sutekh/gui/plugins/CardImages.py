@@ -350,9 +350,9 @@ class CardImageFrame(BasicFrame, CardListViewListener):
                     tCurSize[1] != self._tPaneSize[1]:
                 self.__redraw(True)
 
-# pylint: disable-msg=R0904
-# R0904 - gtk Widget, so has many public methods
 class ImageConfigDialog(SutekhDialog):
+    # pylint: disable-msg=R0904
+    # R0904 - gtk Widget, so has many public methods
     """Dialog for configuring the Image plugin."""
     def __init__(self, oParent, bFirstTime=False):
         super(ImageConfigDialog, self).__init__('Configure Card Images Plugin',

@@ -50,23 +50,19 @@ class GroupCardList(CardListPlugin):
         oGrouping.connect("activate", self.activate)
         return ('Plugins', oGrouping)
 
-    # pylint: disable-msg=W0613
-    # oWidget required by function signature
-    def activate(self, oWidget):
+    def activate(self, _oWidget):
         """Response to the menu - create the dialog and run it"""
         oDlg = self.make_dialog()
         oDlg.run()
-
-    # pylint: enable-msg=W0613
 
     def make_dialog(self):
         """Create the required dialog."""
         sName = "Change Card List Grouping..."
 
         oDlg = SutekhDialog(sName, self.parent,
-                gtk.DIALOG_DESTROY_WITH_PARENT)
-        oDlg.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
-        oDlg.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
+                gtk.DIALOG_DESTROY_WITH_PARENT,
+                (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OK,
+                    gtk.RESPONSE_OK))
 
         oDlg.connect("response", self.handle_response)
 

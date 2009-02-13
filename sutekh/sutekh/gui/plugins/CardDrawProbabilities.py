@@ -8,8 +8,7 @@
 
 import gtk
 from copy import copy
-from sutekh.core.SutekhObjects import PhysicalCardSet, \
-        IAbstractCard
+from sutekh.core.SutekhObjects import PhysicalCardSet, IAbstractCard
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
@@ -126,11 +125,10 @@ class CardDrawSimPlugin(CardListPlugin):
         oCardDraw.connect("activate", self.activate)
         return ('Plugins', oCardDraw)
 
-    # pylint: disable-msg=W0613, W0201
-    # W0613 - oWidget has to be here, although it's unused
+    # pylint: disable-msg=W0201
     # W0201 - we define lots of things here, rather than __init__, since this
     # is the plugin's entry point, and they need to reflect the current state
-    def activate(self, oWidget):
+    def activate(self, _oWidget):
         """Create the actual dialog, and populate it."""
         self.iTotal = 0
         self.dSelectedCounts = {}
@@ -184,8 +182,6 @@ class CardDrawSimPlugin(CardListPlugin):
         oDialog.show_all()
 
         oDialog.run()
-
-    # pylint: enable-msg=W0613, W0201
 
     def _make_dialog(self, oMainTitle, bCrypt):
         """Create the dialog box."""
@@ -318,9 +314,7 @@ class CardDrawSimPlugin(CardListPlugin):
         """Handle changes to the oNumDraws combo box."""
         self.iNumSteps = int(oComboBox.get_active_text())
 
-    # pylint: disable-msg=W0613
-    # oWidget is intentionally unused
-    def _fill_table(self, oWidget, bCrypt):
+    def _fill_table(self, _oWidget, bCrypt):
         """Fill Results Box with the draw results.
 
            oWidget is a dummy placeholder so this method can be called by the
@@ -384,7 +378,6 @@ class CardDrawSimPlugin(CardListPlugin):
         for iRow in range(1, iNumCardRows):
             self._fill_row(iRow, iOffset, False, aCardCounts)
         self.oResultsTable.show_all()
-    # pylint: enable-msg=W0613
 
     def _setup_table(self, iNumRows, iNumCols):
         """Clear the table, and setup constant entries."""

@@ -30,8 +30,8 @@ class ClanDisciplineStats(CardListPlugin):
 
     # pylint: disable-msg=W0142
     # **magic OK here
-    def __init__(self, *aArgs, **kwargs):
-        super(ClanDisciplineStats, self).__init__(*aArgs, **kwargs)
+    def __init__(self, *args, **kwargs):
+        super(ClanDisciplineStats, self).__init__(*args, **kwargs)
         self._oStatsVbox = None
 
     def get_menu_item(self):
@@ -80,6 +80,7 @@ class ClanDisciplineStats(CardListPlugin):
         self._oStatsVbox.pack_start(AutoScrolledWindow(oView, True))
         self._oStatsVbox.show_all()
 
+
 class GroupStats(object):
     """Manage statistics for a set of vampire groups."""
 
@@ -116,6 +117,7 @@ class GroupStats(object):
         aScores = aScores[:iNum]
         return [self.dDisciplines[oId] for oId, _iScore in aScores]
 
+
 class ClanStats(object):
     """Manage combined statistics for a clan"""
 
@@ -136,10 +138,12 @@ class ClanStats(object):
             if oVamp.group in tGrps:
                 oStats.add_vamp(oVamp)
 
-# pylint: disable-msg=R0904
-# gtk classes, so we have lots of public methods
+
 class StatsView(gtk.TreeView):
+    # pylint: disable-msg=R0904
+    # gtk classes, so we have lots of public methods
     """TreeView used to display clan discipline stats"""
+
     def __init__(self):
         self._oModel = StatsModel()
         self._aLabels = [
@@ -161,10 +165,13 @@ class StatsView(gtk.TreeView):
             self.set_grid_lines(gtk.TREE_VIEW_GRID_LINES_BOTH)
 
 class StatsModel(gtk.TreeStore):
+    # pylint: disable-msg=R0904
+    # gtk classes, so we have lots of public methods
     """TreeStore to hold the data about the clan statistics"""
-    # pylint: disable-msg=W0142
-    # *magic OK here
+
     def __init__(self):
+        # pylint: disable-msg=W0142
+        # We need the * magic here
         super(StatsModel, self).__init__(gobject.TYPE_STRING,
                 gobject.TYPE_STRING, gobject.TYPE_INT, gobject.TYPE_INT,
                 *[gobject.TYPE_STRING]*5)

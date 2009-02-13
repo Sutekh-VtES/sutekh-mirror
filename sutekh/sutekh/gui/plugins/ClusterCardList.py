@@ -31,8 +31,8 @@ class ClusterCardList(CardListPlugin):
 
     # pylint: disable-msg=W0142
     # ** magic OK
-    def __init__(self, *aArgs, **kwargs):
-        super(ClusterCardList, self).__init__(*aArgs, **kwargs)
+    def __init__(self, *args, **kwargs):
+        super(ClusterCardList, self).__init__(*args, **kwargs)
         # pylint: disable-msg=C0103
         # fMakeCardFromCluster triggers on length, but we like the name
         if not self.model:
@@ -59,9 +59,7 @@ class ClusterCardList(CardListPlugin):
         oCluster.connect("activate", self.activate)
         return ('Plugins', oCluster)
 
-    # pylint: disable-msg=W0613
-    # oWidget required by function signature
-    def activate(self, oWidget):
+    def activate(self, _oWidget):
         """In response to the menu, create the correct dialog."""
         oDlg = self.make_dialog()
         oDlg.run()
@@ -324,14 +322,11 @@ class ClusterCardList(CardListPlugin):
             # change to results section
             self._oNotebook.set_current_page(2)
 
-    # oSomeObj required by function signature
-    def handle_make_card_sets(self, oSomeObj):
+    def handle_make_card_sets(self, _oSomeObj):
         """Create card a suitable card set from the chosen clusters"""
         for iId, oBut in self._dCardSetMakingButtons.iteritems():
             if oBut.get_active():
                 self._fMakeCardSetFromCluster(iId)
-
-    # pylint: enable-msg=W0613
 
     @staticmethod
     def k_means_plus_plus(aCards, iNumClust, fDist):

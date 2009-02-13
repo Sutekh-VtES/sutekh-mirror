@@ -9,8 +9,7 @@
 import gtk, gobject
 from copy import copy
 from random import choice
-from sutekh.core.SutekhObjects import PhysicalCardSet, \
-        IAbstractCard
+from sutekh.core.SutekhObjects import PhysicalCardSet, IAbstractCard
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
@@ -133,8 +132,8 @@ class OpeningHandSimulator(CardListPlugin):
 
     # pylint: disable-msg=W0142
     # **magic OK here
-    def __init__(self, *aArgs, **kwargs):
-        super(OpeningHandSimulator, self).__init__(*aArgs, **kwargs)
+    def __init__(self, *args, **kwargs):
+        super(OpeningHandSimulator, self).__init__(*args, **kwargs)
         self.dCardTypes = {}
         self.dCardProperties = {}
         self.aLibrary = []

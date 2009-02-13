@@ -63,9 +63,7 @@ class ACSImporter(CardListPlugin):
         oImport.connect("activate", self.make_dialog)
         return ('Import Card Set', oImport)
 
-    # pylint: disable-msg=W0613
-    # oWidget required by signature
-    def make_dialog(self, oWidget):
+    def make_dialog(self, _oWidget):
         """Create the dialog asking the user for the source to import."""
         self.oDlg = SutekhDialog("Choose Card Set File or URL", None,
                 gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
@@ -111,7 +109,7 @@ class ACSImporter(CardListPlugin):
 
         self.oDlg.run()
 
-    def handle_response(self, oWidget, oResponse):
+    def handle_response(self, _oWidget, oResponse):
         """Handle the user's clicking on OK or CANCEL in the dialog."""
         if oResponse == gtk.RESPONSE_OK:
             sUri = self.oUri.get_text().strip()
@@ -129,12 +127,10 @@ class ACSImporter(CardListPlugin):
 
         self.oDlg.destroy()
 
-    def handle_name_response(self, oWidget, oResponse, oDlg, oEntry):
+    def handle_name_response(self, _oWidget, oResponse, _oDlg, oEntry):
         """Handle the user's clicking on OK or CANCEL in the dialog."""
         if oResponse == gtk.RESPONSE_OK:
             self._sNewName = oEntry.get_text().strip()
-
-    # pylint: enable-msg=W0613
 
     def make_cs_from_uri(self, sUri, cParser):
         """From an URI, create an Card Set"""

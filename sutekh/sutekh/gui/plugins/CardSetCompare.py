@@ -73,9 +73,7 @@ class CardSetCompare(CardListPlugin):
         oCompare.connect("activate", self.activate)
         return ('Plugins', oCompare)
 
-    # pylint: disable-msg=W0613
-    # oWidget required by gtk function signature
-    def activate(self, oWidget):
+    def activate(self, _oWidget):
         """Create the dialog for choosing the second card set."""
         oDlg = SutekhDialog("Choose Card Set to Compare with", self.parent,
                 gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
@@ -97,7 +95,7 @@ class CardSetCompare(CardListPlugin):
         oDlg.run()
         oDlg.destroy()
 
-    def handle_response(self, oWidget, iResponse, oCSList, oUseExpansions):
+    def handle_response(self, _oWidget, iResponse, oCSList, oUseExpansions):
         """Handle response from the dialog."""
         if iResponse ==  gtk.RESPONSE_OK:
             aCardSetNames = [self.view.sSetName]
@@ -181,7 +179,7 @@ class CardSetCompare(CardListPlugin):
         oResultDlg.run()
         oResultDlg.destroy()
 
-    def create_card_set(self, oButton, aCardData):
+    def create_card_set(self, _oButton, aCardData):
         """Create a card set from the card list"""
         oDlg = CreateCardSetDialog(self.parent)
         oDlg.run()

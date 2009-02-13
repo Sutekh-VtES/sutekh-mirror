@@ -20,6 +20,9 @@ def _id_card(oCard):
     else:
         return 'Library'
 
+TOT_FORMAT = 'Tot: <b>%(tot)d</b> L: <b>%(lib)d</b> C: <b>%(crypt)d</b>'
+TOT_TOOLTIP = 'Total Cards: <b>%(tot)d</b> (Library: <b>%(lib)d</b>' \
+        ' Crypt: <b>%(crypt)d</b>)'
 
 
 class CountCardSetCards(CardListPlugin, CardListModelListener):
@@ -30,14 +33,11 @@ class CountCardSetCards(CardListPlugin, CardListModelListener):
     dTableVersions = {PhysicalCardSet : [5]}
     aModelsSupported = [PhysicalCardSet]
 
-    sFormat = 'Tot: <b>%(tot)d</b> L: <b>%(lib)d</b> C: <b>%(crypt)d</b>'
-    sTooltip = 'Total Cards: <b>%(tot)d</b> (Library: <b>%(lib)d</b>' \
-            ' Crypt: <b>%(crypt)d</b>)'
 
     # pylint: disable-msg=W0142
     # **magic OK here
-    def __init__(self, *aArgs, **kwargs):
-        super(CountCardSetCards, self).__init__(*aArgs, **kwargs)
+    def __init__(self, *args, **kwargs):
+        super(CountCardSetCards, self).__init__(*args, **kwargs)
 
         self.__iTot = 0
         self.__iCrypt = 0
@@ -55,10 +55,10 @@ class CountCardSetCards(CardListPlugin, CardListModelListener):
         if not self.check_versions() or not self.check_model_type():
             return None
 
-        self.__oTextLabel = gtk.Label(self.sFormat % {'tot' : 0,
+        self.__oTextLabel = gtk.Label(TOT_FORMAT % {'tot' : 0,
             'crypt' : 0, 'lib' : 0})
         if hasattr(self.__oTextLabel, 'set_tooltip_markup'):
-            self.__oTextLabel.set_tooltip_markup(self.sTooltip % {
+            self.__oTextLabel.set_tooltip_markup(TOT_TOOLTIP % {
             'tot' : 0, 'crypt' : 0, 'lib' : 0})
 
 
@@ -69,10 +69,10 @@ class CountCardSetCards(CardListPlugin, CardListModelListener):
         # Timing issues mean that this can be called before text label has
         # been properly realised, so we need this guard case
         if self.__oTextLabel:
-            self.__oTextLabel.set_markup(self.sFormat % {'tot' : self.__iTot,
+            self.__oTextLabel.set_markup(TOT_FORMAT % {'tot' : self.__iTot,
                 'crypt' : self.__iCrypt, 'lib' : self.__iLibrary})
             if hasattr(self.__oTextLabel, 'set_tooltip_markup'):
-                self.__oTextLabel.set_tooltip_markup(self.sTooltip % {
+                self.__oTextLabel.set_tooltip_markup(TOT_TOOLTIP % {
                 'tot' : self.__iTot, 'crypt' : self.__iCrypt,
                 'lib' : self.__iLibrary})
 
