@@ -60,9 +60,7 @@ class CellRendererSutekhButton(gtk.GenericCellRenderer):
         else:
             raise AttributeError, 'unknown property %s' % oProp.name
 
-    # pylint: disable-msg=W0613
-    # oWidget equired by function signature
-    def on_get_size(self, oWidget, oCellArea):
+    def on_get_size(self, _oWidget, oCellArea):
         """Handle get_size requests"""
         if self.oPixbuf is None:
             return 0, 0, 0, 0
@@ -80,11 +78,10 @@ class CellRendererSutekhButton(gtk.GenericCellRenderer):
         # gtk want's ints here
         return iXOffset, iYOffset, int(fCalcWidth), int(fCalcHeight)
 
-    # pylint: disable-msg=W0613, R0913
+    # pylint: disable-msg=R0913
     # R0913 - number of parameters needed by function signature
-    # iFlags, oWidget, oEvent, oCellArea required by function signature
-    def on_activate(self, oEvent, oWidget, oPath, oBackgroundArea,
-            oCellArea, iFlags):
+    def on_activate(self, _oEvent, _oWidget, oPath, oBackgroundArea,
+            _oCellArea, _iFlags):
         """Activate signal recieved from the TreeView"""
         # Note that we need to offset button
         self.bClicked = True
@@ -93,11 +90,10 @@ class CellRendererSutekhButton(gtk.GenericCellRenderer):
         self.emit('clicked', oPath)
         return True
 
-    # pylint: disable-msg=W0613, R0913
+    # pylint: disable-msg=R0913
     # R0913 - number of parameters needed by function signature
-    # W0613 - iFlags required by function signature
     def on_render(self, oWindow, oWidget, oBackgroundArea,
-            oCellArea, oExposeArea, iFlags):
+            oCellArea, oExposeArea, _iFlags):
         """Render the icon for the button"""
         bDrawOffset = False
         # Need to ensure that self.bClicked is unset before any early return

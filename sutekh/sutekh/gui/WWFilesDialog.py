@@ -76,9 +76,7 @@ class WWFilesDialog(SutekhDialog):
         self.bCLIsUrl = None
         self.bRulingsIsUrl = None
 
-    # pylint: disable-msg=W0613
-    # oWidget required by the function signature
-    def handle_response(self, oWidget, iResponse):
+    def handle_response(self, _oWidget, iResponse):
         """Extract the information from the dialog if the user presses OK"""
         if iResponse == gtk.RESPONSE_OK:
             if self.oUseWwCardListButton.get_active():
@@ -98,16 +96,12 @@ class WWFilesDialog(SutekhDialog):
             if self.oBackupFileButton.get_active():
                 self.sBackupFileName = self.oBackupFileDialog.get_filename()
 
-    # pylint: enable-msg=W0613
-
     def get_names(self):
         """Pass the information back to the caller"""
         return (self.sCLName, self.bCLIsUrl, self.sRulingsName,
                 self.bRulingsIsUrl, self.sBackupFileName)
 
-    # pylint: disable-msg=W0613
-    # oWidget required by the function signature
-    def backup_file_toggled(self, oWidget):
+    def backup_file_toggled(self, _oWidget):
         """Update status if user toggles the 'make backup' checkbox"""
         if self.oBackupFileButton.get_active():
             self.oBackupFileDialog.run()
@@ -121,14 +115,14 @@ class WWFilesDialog(SutekhDialog):
         else:
             self.oBackupFileLabel.set_text("(None)")
 
-    def use_ww_cardlist_toggled(self, oWidget):
+    def use_ww_cardlist_toggled(self, _oWidget):
         """Update state if user toggles the 'Use WW cardlist' checkbox"""
         if self.oUseWwCardListButton.get_active():
             self.oCardListFileButton.hide()
         else:
             self.oCardListFileButton.show()
 
-    def use_ww_rulings_toggled(self, oWidget):
+    def use_ww_rulings_toggled(self, _oWidget):
         """Update state if the user toggles the 'Use WW rulings' checkbox"""
         if self.oUseWwRulingsButton.get_active():
             self.oRulingsFileButton.hide()

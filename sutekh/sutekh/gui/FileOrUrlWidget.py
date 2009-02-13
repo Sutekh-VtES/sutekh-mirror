@@ -20,6 +20,8 @@ class FileOrUrlWidget(gtk.VBox):
     OTHER_FILE = 'Select file ...'
     OTHER_URL = 'Enter other URL ...'
 
+    # pylint: disable-msg=R0913
+    # Need this many arguments
     def __init__(self, oParent, sTitle=None, dUrls=None,
                 homogeneous=False, spacing=0):
         """Create a FileOrUrlWidget.
@@ -74,6 +76,8 @@ class FileOrUrlWidget(gtk.VBox):
 
         self._oSrcCombo.set_active(0)
         self._src_combo_updated(self._oSrcCombo)
+
+    # pylint: enable-msg=R0913
 
     def _src_combo_updated(self, oSrcCombo):
         """Handle updating of the selected source combo box."""

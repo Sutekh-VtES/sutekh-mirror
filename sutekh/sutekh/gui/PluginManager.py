@@ -129,9 +129,7 @@ class CardListPlugin(object):
            """
         return None
 
-    # pylint: disable-msg=W0613
-    # sType can be used by children of this class
-    def get_frame_from_config(self, sType):
+    def get_frame_from_config(self, _sType):
         """Hook for plugins which supply a frame in the Main window.
 
            Allows them to restore from the config file properly.

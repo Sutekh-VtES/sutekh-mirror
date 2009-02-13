@@ -95,8 +95,6 @@ class CellRendererIcons(gtk.GenericCellRenderer):
         self.aData = zip(aText, aIcons)
         self.iMode = iMode
 
-    # pylint: disable-msg=W0613
-    # oWidget equired by function signature
     def on_get_size(self, oWidget, oCellArea):
         """Handle get_size requests"""
         if not self.aData and not self.sText:
@@ -142,11 +140,10 @@ class CellRendererIcons(gtk.GenericCellRenderer):
         # gtk want's ints here
         return iXOffset, iYOffset, int(fCalcWidth), int(fCalcHeight)
 
-    # pylint: disable-msg=W0613, R0913
+    # pylint: disable-msg=R0913
     # R0913 - number of parameters needed by function signature
-    # W0613 - iFlags required by function signature
-    def on_render(self, oWindow, oWidget, oBackgroundArea,
-            oCellArea, oExposeArea, iFlags):
+    def on_render(self, oWindow, oWidget, _oBackgroundArea,
+            oCellArea, oExposeArea, _iFlags):
         """Render the icons & text for the tree view"""
         oLayout = oWidget.create_pango_layout("")
         oPixRect = gtk.gdk.Rectangle()

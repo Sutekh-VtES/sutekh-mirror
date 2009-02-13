@@ -25,9 +25,7 @@ class SutekhLogHandler(Handler, object):
         """point to the progress dialog"""
         self.oDialog = oDialog
 
-    # pylint: disable-msg=W0613
-    # oRecord required by function signature
-    def emit(self, oRecord):
+    def emit(self, _oRecord):
         """Default emit handler"""
         pass
 
@@ -84,9 +82,7 @@ class SutekhCountLogHandler(SutekhLogHandler):
         self.fTot = float(iTot)
         self.iCount = 0
 
-    # pylint: disable-msg=W0613
-    # oRecord required by function signature
-    def emit(self, oRecord):
+    def emit(self, _oRecord):
         """Handle a emitted signal, updating the progress count."""
         if self.oDialog is None:
             return # No point

@@ -63,16 +63,14 @@ class SearchDialog(gtk.Window):
         """Hide the window"""
         super(SearchDialog, self).hide()
 
-    # pylint: disable-msg=W0613
-    # Various arguments required by function signatures
-    def _key_press(self, oWidget, oEvent):
+    def _key_press(self, _oWidget, oEvent):
         """Hide the dialog on escape"""
         if oEvent.keyval == gtk.gdk.keyval_from_name('Escape'):
             self.hide()
             return True
         return False # propogate event
 
-    def check_hide(self, oWidget, oEvent):
+    def check_hide(self, _oWidget, _oEvent):
         """Check if we need to hide the dialog"""
         # pylint: disable-msg=E1101
         # allocation confuses pylint
@@ -116,7 +114,7 @@ class SearchDialog(gtk.Window):
 
     # key press for searching in the tree view
 
-    def treeview_key_press_event(self, oWidget, oEvent):
+    def treeview_key_press_event(self, _oWidget, oEvent):
         """Handle key press events, so we display a search box with
            entry completion."""
         if oEvent.keyval in range(33, 127):
