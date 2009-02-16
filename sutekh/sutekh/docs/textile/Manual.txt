@@ -55,6 +55,7 @@ h2. Contents
 ## "Simulate Opening Hand":#opening_hand_plugin
 ## "Card draw probabilities":#prob_plugin
 ## "Rulebook":#rulebook_plugin
+## "Lasombra Sales":#lasombra_sales_plugin
 
 h2(#intro). Introduction
 
@@ -241,6 +242,7 @@ The following plugins are available from the White Wolf Card List pane menu:
 * "Clan Discipline Stats":#stats_plugin
 * "Change Grouping":#grouping_plugin
 * "Select Extra Columns":#columns_plugin
+* "Show Lasombra Prices":#lasombra_sales_plugin
 
 
 h2(#card_text). Card Text
@@ -458,6 +460,7 @@ The following plugins are available from the card set pane plugins menu:
 * "Cluster Cards":#cluster_plugin
 * "Change Grouping":#grouping_plugin
 * "Select Extra Columns":#columns_plugin
+* "Show Lasombra Prices":#lasombra_sales_plugin
 * "Set selected cards to a single expansion":#set_exp_plugin
 * "Compare card set with another Card Set":#compare_plugin
 * "Analyze Deck":#analyze_plugin
@@ -987,3 +990,36 @@ Once you have downloaded the rulebook files, you can open them in a web browser
 using the _Rulebook_ submenu in the _Plugins_ menu on the _Main Window_. To
 download the files, or update your existing copies, use the
 _Configure Rulebook Plugin_ item in the same submenu.
+
+h3(#lasombra_sales_plugin). Lasombra Sales
+
+The Lasombra website (www.thelasombra.com) sells card singles. This plugin
+provides the ability to download the current card singles inventory and
+display the available stock and card prices as extra columns alongside
+"card sets":#cardsets and the "White Wolf card list":#ww.
+
+In order to configure the plugin and download the current inventory from
+the Lasombra site, use the _Configure Lasombra Sales Plugin_ item in the
+_Plugins_ menu on the _Main Window_. Once Sutekh has downloaded and processed 
+the inventory, you can activate the stock and card prices columns using the 
+_Show Lasombra Prices_ toggle button in the _Plugins_ menu on the White Wolf 
+card list or card set panes.
+
+There are three cases for you to consider when you interpret the stock and 
+price columns:
+
+* _expansion known_: The values displayed next to a row which lists an 
+expansion indicate the price and number of copies of that card available in 
+that printing.
+
+* _unknown expansion_: The values displayed next to a row where the expansion
+is listed as _Unknown Expansion_ indicate the price and number of copies of
+the card found in the Lasombra inventory for which the expansion 
+could not be uniquely determined -- usually because the inventory file
+lists the available stock as originating from a combination of expansions.
+
+* _card name only_: The stock value displayed next to a row which lists only 
+the card name (and has a blank expansion column) shows the total number of 
+copies of the card available across all expansions (including the cards listed 
+under _Unknown Expansion_). The price shown is the _minimum_ price at which 
+copies of the card are available.

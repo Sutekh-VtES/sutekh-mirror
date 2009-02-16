@@ -83,6 +83,7 @@
 <li><a href="#opening_hand_plugin">Simulate Opening Hand</a></li>
 <li><a href="#prob_plugin">Card draw probabilities</a></li>
 <li><a href="#rulebook_plugin">Rulebook</a></li>
+<li><a href="#lasombra_sales_plugin">Lasombra Sales</a></li>
 </ol>
 </li>
 </ol>
@@ -288,6 +289,7 @@ of the current filter.</li>
 <li><a href="#stats_plugin">Clan Discipline Stats</a></li>
 <li><a href="#grouping_plugin">Change Grouping</a></li>
 <li><a href="#columns_plugin">Select Extra Columns</a></li>
+<li><a href="#lasombra_sales_plugin">Show Lasombra Prices</a></li>
 </ul>
 
 <h2 id="card_text">Card Text</h2>
@@ -528,6 +530,7 @@ of the current filter.</li>
 <li><a href="#cluster_plugin">Cluster Cards</a></li>
 <li><a href="#grouping_plugin">Change Grouping</a></li>
 <li><a href="#columns_plugin">Select Extra Columns</a></li>
+<li><a href="#lasombra_sales_plugin">Show Lasombra Prices</a></li>
 <li><a href="#set_exp_plugin">Set selected cards to a single expansion</a></li>
 <li><a href="#compare_plugin">Compare card set with another Card Set</a></li>
 <li><a href="#analyze_plugin">Analyze Deck</a></li>
@@ -1073,5 +1076,44 @@ Once you have downloaded the rulebook files, you can open them in a web browser
 using the <em>Rulebook</em> submenu in the <em>Plugins</em> menu on the <em>Main Window</em>. To 
 download the files, or update your existing copies, use the 
 <em>Configure Rulebook Plugin</em> item in the same submenu.</p>
+
+<h3 id="lasombra_sales_plugin">Lasombra Sales</h3>
+
+<p>The Lasombra website (www.thelasombra.com) sells card singles. This plugin 
+provides the ability to download the current card singles inventory and 
+display the available stock and card prices as extra columns alongside 
+<a href="#cardsets">card sets</a> and the <a href="#ww">White Wolf card list</a>.</p>
+
+<p>In order to configure the plugin and download the current inventory from 
+the Lasombra site, use the <em>Configure Lasombra Sales Plugin</em> item in the 
+<em>Plugins</em> menu on the <em>Main Window</em>. Once Sutekh has downloaded and processed  
+the inventory, you can activate the stock and card prices columns using the  
+<em>Show Lasombra Prices</em> toggle button in the <em>Plugins</em> menu on the White Wolf  
+card list or card set panes.</p>
+
+<p>There are three cases for you to consider when you interpret the stock and  
+price columns:</p>
+
+<ul>
+<li><em>expansion known</em>: The values displayed next to a row which lists an  
+expansion indicate the price and number of copies of that card available in  
+that printing.</li>
+</ul>
+
+<ul>
+<li><em>unknown expansion</em>: The values displayed next to a row where the expansion 
+is listed as <em>Unknown Expansion</em> indicate the price and number of copies of 
+the card found in the Lasombra inventory for which the expansion  
+could not be uniquely determined&#8212;usually because the inventory file 
+lists the available stock as originating from a combination of expansions.</li>
+</ul>
+
+<ul>
+<li><em>card name only</em>: The stock value displayed next to a row which lists only  
+the card name (and has a blank expansion column) shows the total number of  
+copies of the card available across all expansions (including the cards listed  
+under <em>Unknown Expansion</em>). The price shown is the <em>minimum</em> price at which  
+copies of the card are available.</li>
+</ul>
 </body>
 </html>
