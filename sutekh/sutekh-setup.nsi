@@ -8,9 +8,10 @@
 ; Application Details
 
   !define SUTEKH_VERSION "0.0.0" ; set by sutekh-makensis
+  !define DIST_FOLDER "dist"
 
   Name "Sutekh"
-  OutFile "sutekh-${SUTEKH_VERSION}-setup.exe"
+  OutFile "${DIST_FOLDER}\sutekh-${SUTEKH_VERSION}-setup.exe"
   InstallDir "$PROGRAMFILES\Sutekh"
   
 ; Interface Settings
@@ -29,7 +30,6 @@
   ; These files should be on the same directory as
   ; this script
 
-  !define DIST_FOLDER "dist"
   !define DEPENDENCIES_FOLDER "." ; set by sutekh-makensis
 
   !define GTK_INSTALLER "gtk-dev-2.12.9-win32-2.exe"

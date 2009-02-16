@@ -8,9 +8,10 @@
 ; Application Details
 
   !define SUTEKH_VERSION "0.0.0" ; set by sutekh-makensis
+  !define DIST_FOLDER "dist"
 
   Name "Sutekh"
-  OutFile "sutekh-${SUTEKH_VERSION}-upgrade.exe"
+  OutFile "${DIST_FOLDER}\sutekh-${SUTEKH_VERSION}-upgrade.exe"
   InstallDir "$PROGRAMFILES\Sutekh"
   
 ; Interface Settings
@@ -30,7 +31,6 @@
   ; this script
 
   !define SUTEKH_FOLDER "sutekh"
-  !define DIST_FOLDER "dist"
   !define DEPENDENCIES_FOLDER "." ; set by sutekh-makensis
 
   !define SUTEKH_EGG "Sutekh-${SUTEKH_VERSION}-py2.5.egg"
