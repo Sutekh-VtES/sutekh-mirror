@@ -2,7 +2,7 @@ For 0.8.0 cycle
  
  (see mailing list for the details, this is just a reminder list)
 
- - Definate
+ - Definite
     * Require gtk 2.12 - allows more use of the tooltip API
     * Improve Filter Edit Dialog
     * Rename user visible references to PhysicalCardSet to CardSet
@@ -36,8 +36,10 @@ For 0.8.0 cycle
     * Add better persistence of data across tests, to avoid rerunning the 
       parser for each test and improve test runtime
     * Address code duplication issues - especially io module & Filter tests
-    * Abstrat Card Editor
+    * Abstract Card Editor
     * Real plugin support
+      - and mechanism for plugins to provide their own documentation to the
+        help menu.
     * Cluster plugin speed-up
     * Add support for creating .debs and .rpms
     * Improve the error & warnings dialogs. 
