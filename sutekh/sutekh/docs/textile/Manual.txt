@@ -332,6 +332,8 @@ You can mark sets either as _in use_ or _not in use_. This is intended to
 help you track which cards are currently available for you to use in new card
 sets.
 
+It's possible to open multiple copies of a given card set. 
+
 h3(#card_set_list_actions). Actions
 
 The following actions are available:

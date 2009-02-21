@@ -97,9 +97,10 @@ class BasicFrame(gtk.Frame):
     def do_dragged_card_set(self, aData):
         """Replace this pane with the relevant card set"""
         # We replace otherselves with the card set
-        oFrame = self._oMainWindow.find_pane_by_name(aData[1])
-        if not oFrame:
-            # Card set is not already open
+        # Check that we're not the same card set already
+        aFrames = self._oMainWindow.find_cs_pane_by_set_name(aData[1])
+        if self not in aFrames:
+            # Open the card set
             self._oMainWindow.replace_with_physical_card_set(aData[1], self)
             return True
         return False

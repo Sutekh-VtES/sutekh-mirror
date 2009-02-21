@@ -23,6 +23,9 @@ class DummyWindow(object):
             return True
         return False
 
+    def find_cs_pane_by_set_name(self, sName):
+        """Proxy for the find_cs_pane_by_Set_name method"""
+        return self.find_pane_by_name(sName)
 
 class CardSetManagementModelTests(SutekhTest):
     """Class for the test cases"""

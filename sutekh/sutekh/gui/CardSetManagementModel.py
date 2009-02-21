@@ -81,7 +81,7 @@ class CardSetManagementModel(gtk.TreeStore):
             for oSet in aToAdd:
                 oIter = self.append(oIter)
                 sMarkup = oSet.name
-                if self._oMainWin.find_pane_by_name(oSet.name):
+                if self._oMainWin.find_cs_pane_by_set_name(oSet.name):
                     sMarkup = '<span foreground="blue">%s</span>' % sMarkup
                 if oSet.inuse:
                     # In use sets are in bold

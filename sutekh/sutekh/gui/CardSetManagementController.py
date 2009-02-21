@@ -197,9 +197,9 @@ class CardSetManagementController(object):
             return
         # Check for card sets this is a parent of
         if check_ok_to_delete(oCS):
-            sFrameName = sSetName
             delete_physical_card_set(sSetName)
-            self._oMainWindow.remove_frame_by_name(sFrameName)
+            for oFrame in self._oMainWindow.find_cs_pane_by_set_name(sSetName):
+                oFrame.close_frame()
             self.reload_keep_expanded(False)
 
     def toggle_in_use_flag(self, oMenuItem):
@@ -223,10 +223,6 @@ class CardSetManagementController(object):
            allow double clicks to open a card set.
            """
         sName = self._oModel.get_name_from_path(oPath)
-        # check if card set is open before opening again
-        oPane = self._oMainWindow.find_pane_by_name(sName)
-        if oPane is not None:
-            return # Already open, so do nothing
         self._oMainWindow.add_new_physical_card_set(sName)
 
     def reload_keep_expanded(self, bRestoreSelection):

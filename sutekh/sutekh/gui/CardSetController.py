@@ -246,6 +246,10 @@ class CardSetController(object):
             # Tell window to clean up
             # Card Set was deleted, so close up
             self._oFrame.close_frame()
+            # Close any other open copies as well
+            for oFrame in self._oMainWindow.find_cs_pane_by_set_name(
+                    self.view.sSetName):
+                oFrame.close_frame()
 
     def add_paste_data(self, sSource, aCards):
         """Helper function for drag+drop and copy+paste.

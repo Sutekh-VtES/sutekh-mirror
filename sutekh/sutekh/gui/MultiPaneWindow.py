@@ -219,6 +219,16 @@ class MultiPaneWindow(gtk.Window):
         except ValueError:
             return None
 
+    def find_cs_pane_by_set_name(self, sSetName):
+        """Find all the panes that correspond to the same card set"""
+        aPanes = []
+        for oPane, sName in self.dOpenFrames.iteritems():
+            if sName.startswith(sSetName) and hasattr(oPane, 'view') and \
+                    hasattr(oPane.view, 'sSetName'):
+                if oPane.view.sSetName == sSetName:
+                    aPanes.append(oPane)
+        return aPanes
+
     def rename_pane(self, sOldName, sNewName):
         """Rename a frame"""
         oFrame = self.find_pane_by_name(sOldName)
@@ -228,20 +238,15 @@ class MultiPaneWindow(gtk.Window):
 
     def replace_with_physical_card_set(self, sName, oFrame, tInfo=None):
         """Replace the pane oFrame with the physical card set sName"""
-        sMenuFlag = sName
-        if sMenuFlag not in self.dOpenFrames.values() and oFrame:
+        if oFrame:
             # pylint: disable-msg=W0704
             # not doing anything for errors right now
             try:
                 oPane = CardSetFrame(self, sName, tInfo)
-                self.replace_frame(oFrame, oPane, sMenuFlag)
+                self.replace_frame(oFrame, oPane, oPane.name)
             except RuntimeError:
                 # add warning dialog?
                 pass
-        else:
-            oPane = self.find_pane_by_name(sMenuFlag)
-            if oPane:
-                oPane.reload()
 
     def add_new_physical_card_set(self, sName):
         """Create a new pane and replace with the PCS sName"""

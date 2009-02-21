@@ -37,6 +37,8 @@ class CardSetFrame(CardListFrame):
         if tInfo:
             self.set_model_modes(tInfo)
 
+        self._sName = sName
+
         self.init_plugins()
 
         self._oMenu = CardSetMenu(self, self._oController, self._oMainWindow,
@@ -61,11 +63,14 @@ class CardSetFrame(CardListFrame):
 
     def update_name(self, sNewName):
         """Update the frame name to the current card set name."""
-        # pylint: disable-msg=W0201
-        # this is called from __init__, so OK
-        self.sSetName = sNewName
-        self._sName = sNewName
-        self.set_title(self.sSetName)
+        # Find an unused name for this card set
+        iCount = 0
+        sFinalName = sNewName
+        while self._oMainWindow.find_pane_by_name(sFinalName) is not None:
+            iCount += 1
+            sFinalName = "%s (%d)" % (sNewName, iCount)
+        self._sName = sFinalName
+        self.set_title(self._sName)
 
     def update_to_new_db(self):
         """Re-associate internal data against the database.

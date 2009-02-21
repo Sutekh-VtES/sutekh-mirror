@@ -44,7 +44,6 @@ For 0.8.0 cycle
     * Add support for creating .debs and .rpms
     * Improve the error & warnings dialogs. 
       - include exception backtrace in error dialogs
-    * Multiple copies of a card set open simulatenously
     * Add more keyboard shortcuts
     * Right-click context menus
     * Reduce the gtk speed penalty for large models.

@@ -1,3 +1,7 @@
+21 Feb 2009
+ * Allow opening multiple copies of a card set. Usefule for seperate
+   crypt/library views, etc.
+
 13 Feb 2009
  * Remove more redundant pylint disable-msgs
 
