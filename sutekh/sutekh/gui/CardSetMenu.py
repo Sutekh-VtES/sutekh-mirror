@@ -30,14 +30,21 @@ class CardSetMenu(CardListMenu):
        """
     # pylint: disable-msg=R0902
     # R0902 - we are keeping a lot of state, so many instance variables
-    def __init__(self, oFrame, oController, oWindow, sName):
+    def __init__(self, oFrame, oController, oWindow):
         super(CardSetMenu, self).__init__(oFrame, oWindow, oController)
         self.__oController = oController
-        self.sSetName = sName
         self.__create_card_set_menu()
         self.create_edit_menu()
         self.create_filter_menu()
         self.create_plugins_menu('_Plugins', self._oFrame)
+
+    # pylint: disable-msg=W0212
+    # We allow access via these properties
+    name = property(fget=lambda self: self._oController.view.sSetName,
+            doc="Associated Card Set Name")
+
+    #pylint: enable-msg=W0212
+
 
     # pylint: disable-msg=W0201
     # these methods are called from __init__, so it's OK
@@ -91,7 +98,7 @@ class CardSetMenu(CardListMenu):
         oNoParentCount = None
         # pylint: disable-msg=E1101
         # SQLObject confuses pylint
-        oCS = PhysicalCardSet.byName(self.sSetName)
+        oCS = PhysicalCardSet.byName(self.name)
         for sString, iValue in [
                 ("Don't show parent card counts", IGNORE_PARENT),
                 ("Show Parent Count", PARENT_COUNT),
@@ -155,8 +162,12 @@ class CardSetMenu(CardListMenu):
 
     def update_card_set_menu(self, oCardSet):
         """Update the menu to reflect changes in the card set name."""
-        self.sSetName = oCardSet.name
-        self._oFrame.update_name(self.sSetName)
+        sNewName = oCardSet.name
+        sOldFrameName = self._oFrame.name
+        self._oFrame.update_name(sNewName)
+        self._oController.view.update_name(sNewName)
+        # Also update the main window's idea of the frame name
+        self._oMainWindow.rename_pane(sOldFrameName, self._oFrame.name)
 
     def check_parent_count_column(self, oOldParent, oNewParent):
         """Check that the parent column values are set correctly
@@ -179,14 +190,14 @@ class CardSetMenu(CardListMenu):
     def _do_export(self, oWidget):
         """Export the card set to the chosen filename."""
         oFileChooser = ExportDialog("Save Card Set As ", self._oMainWindow,
-                '%s.xml' % safe_filename(self.sSetName))
+                '%s.xml' % safe_filename(self.name))
         oFileChooser.add_filter_with_pattern('XML Files', ['*.xml'])
         oFileChooser.run()
         sFileName = oFileChooser.get_name()
         if sFileName is not None:
             # User has OK'd us overwriting anything
             oWriter = PhysicalCardSetXmlFile(sFileName)
-            oWriter.write(self.sSetName)
+            oWriter.write(self.name)
 
     def _card_set_delete(self, oWidget):
         """Delete the card set."""

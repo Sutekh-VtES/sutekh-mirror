@@ -11,7 +11,6 @@ from sqlobject import SQLObjectNotFound
 from sutekh.gui.CardSetManagementController import check_ok_to_delete, \
         update_card_set
 from sutekh.gui.CardSetView import CardSetView
-from sutekh.gui.CreateCardSetDialog import CreateCardSetDialog
 from sutekh.core.DBSignals import listen_row_destroy, listen_row_update, \
         send_changed_signal, disconnect_row_destroy, disconnect_row_update
 from sutekh.core.SutekhObjects import IPhysicalCardSet, PhysicalCardSet, \
@@ -215,17 +214,7 @@ class CardSetController(object):
 
     def edit_properties(self, oMenu):
         """Run the dialog to update the card set properties"""
-        # pylint: disable-msg=E1101
-        # pyprotocols confuses pylint
-        oProp = CreateCardSetDialog(self._oMainWindow,
-                oCardSet=self.__oPhysCardSet)
-        oProp.run()
-        sName = oProp.get_name()
-        if sName:
-            if sName != self.view.sSetName:
-                self.view.update_name(sName)
-            update_card_set(self.__oPhysCardSet, oProp, self._oMainWindow,
-                    self._oFrame.menu)
+        update_card_set(self.__oPhysCardSet, self._oMainWindow)
 
     def update_to_new_db(self):
         """Update the internal card set to the new DB."""

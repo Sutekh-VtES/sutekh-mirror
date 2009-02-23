@@ -1,3 +1,7 @@
+23 Feb 2009
+ * Fix renaming of card sets to work with multiple copies
+ * Ensure deleting renamed card sets works properly
+
 21 Feb 2009
  * Allow opening multiple copies of a card set. Usefule for seperate
    crypt/library views, etc.

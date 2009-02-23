@@ -65,13 +65,15 @@ def check_ok_to_delete(oCardSet):
                 " Has Children. Really Delete?" % oCardSet.name)
     return iResponse == gtk.RESPONSE_OK
 
-def update_card_set(oCardSet, oEditDialog, oMainWindow, oMenu):
+def update_card_set(oCardSet, oMainWindow):
     """Update the details of the card set when the user edits them."""
     sOldName = oCardSet.name
+    oEditDialog = CreateCardSetDialog(oMainWindow, oCardSet=oCardSet)
+    oEditDialog.run()
     sName = oEditDialog.get_name()
-    if sName != sOldName:
-        oCardSet.name = sName
-        oMainWindow.rename_pane(sOldName, sName)
+    if not sName:
+        return # bail
+    oCardSet.name = sName
     oCardSet.author = oEditDialog.get_author()
     oCardSet.comment = oEditDialog.get_comment()
     oCardSet.annotations = oEditDialog.get_annotations()
@@ -80,8 +82,9 @@ def update_card_set(oCardSet, oEditDialog, oMainWindow, oMenu):
         reparent_card_set(oCardSet, oParent)
     oCardSet.syncUpdate()
     # Update frame menu
-    if oMenu:
-        oMenu.update_card_set_menu(oCardSet)
+    for oFrame in oMainWindow.find_cs_pane_by_set_name(sOldName):
+        oFrame.menu.update_card_set_menu(oCardSet)
+        # update_card_set_menu does the needed magic for us
     oMainWindow.reload_pcs_list()
 
 class CardSetManagementController(object):
@@ -169,20 +172,8 @@ class CardSetManagementController(object):
         sSetName = self._oView.get_selected_card_set()
         if not sSetName:
             return
-        oFrame = self._oMainWindow.find_pane_by_name(sSetName)
-        if oFrame:
-            oMenu = oFrame.menu
-        else:
-            oMenu = None
         oCardSet = IPhysicalCardSet(sSetName)
-        oDialog = CreateCardSetDialog(self._oMainWindow, oCardSet=oCardSet)
-        oDialog.run()
-        sName = oDialog.get_name()
-        if sName:
-            if oFrame and sName != oFrame.view.sSetName:
-                oFrame.view.update_name(sName)
-            update_card_set(oCardSet, oDialog, self._oMainWindow,
-                    oMenu)
+        update_card_set(oCardSet, self._oMainWindow)
 
     def delete_card_set(self, oWidget):
         """Delete the selected card set."""
