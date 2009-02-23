@@ -189,8 +189,12 @@ class FilterParserTests(SutekhTest):
         # sqlobject confuses pylint
         for iCnt, tData in enumerate(aCardSets):
             sName, sAuthor, sComment, bInUse = tData
+            if bInUse:
+                oParent = aPCSs[0]
+            else:
+                oParent = None
             oPCS = PhysicalCardSet(name=sName, comment=sComment,
-                    author=sAuthor, inuse=bInUse)
+                    author=sAuthor, inuse=bInUse, parent=oParent)
             for sName, sExp in aPCSCards[iCnt]:
                 if sExp:
                     oExp = IExpansion(sExp)
@@ -245,7 +249,8 @@ class FilterParserTests(SutekhTest):
                     " failed. %s != %s." % (oFullFilter, aCSCards,
                         aExpectedCards))
 
-        oInUseFilter = self.oFilterParser.apply('SetsInUse').get_filter()
+        oInUseFilter = self.oFilterParser.apply(
+                'SetsInUse = "Test 1"').get_filter()
         aPCSCardsInUse = list(oInUseFilter.select(PhysicalCard).distinct())
         aExpectedCards = list(aPCSs[2].cards)
         self.assertEqual(aPCSCardsInUse, aExpectedCards, 'PhysicalCardSet In '

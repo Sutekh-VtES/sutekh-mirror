@@ -705,9 +705,13 @@ matches any expansion in the list. This is different from the
 specific physical expansion of the card, not the list of expansions in which the 
 card has been printed.</li>
 <li><em>Card Sets</em>: You must specify a <a href="#list">list</a> of card sets. A card matches if 
-it belongs to at least one set in the list.</li>
+it belongs to at least one set in the list. This filter matches on name and 
+expansion, so the filter will return as many copies of the card exist in this 
+set, not the same number as in the listed sets.</li>
 <li><em>In Card Sets In Use</em>: A card matches if it belongs to a card set which is 
-marked as <em>In Use</em>. This filter has no parameters.</li>
+marked as <em>In Use</em> and is a child of the given card set. Like the <em>Card Sets</em> 
+filter, this matches solely on the card name and expansion, and the numbers 
+are those for this card set, not the number in the in use children.</li>
 <li><em>Card Count</em>: Filter on card count within the current card set or a different 
 card set. You must specify a <a href="#list">list</a> of card counts, and a single card set. 
 A card matches if it belongs to the specified set, and has a count within that 

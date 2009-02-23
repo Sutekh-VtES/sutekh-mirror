@@ -1237,16 +1237,17 @@ class MultiPhysicalCardSetMapFilter(Filter):
 class PhysicalCardSetInUseFilter(Filter):
     """Filter on a membership of Physical Card Sets marked in use"""
     keyword = "SetsInUse"
-    description = "In Card Sets in Use"
+    description = "In the 'In Use; children of"
     helptext = "Selects cards in the Card Sets marked " \
-            "as in use. This filter takes no parameters."
+            "as in use that are children of the given card sets."
+    islistfilter = True
     types = ['PhysicalCard']
 
-    def __init__(self):
+    def __init__(self, aParCardSets):
         # Select cards belonging to the PhysicalCardSet in use
         self.__aCardSetIds = []
         for oCS in PhysicalCardSet.select():
-            if oCS.inuse:
+            if oCS.inuse and oCS.parent and oCS.parent.name in aParCardSets:
                 self.__aCardSetIds.append(oCS.id)
         self.__oTable = make_table_alias('physical_map')
         self.__oPT = Table('physical_card')
@@ -1255,7 +1256,12 @@ class PhysicalCardSetInUseFilter(Filter):
     # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
-        return None
+        aInUseCardSets = PhysicalCardSet.selectBy(inuse=True)
+        aParents = set([])
+        for oSet in aInUseCardSets:
+            if oSet.parent:
+                aParents.add(oSet.parent.name)
+        return list(aParents)
 
     def _get_joins(self):
         return [LEFTJOINOn(None, self.__oTable,

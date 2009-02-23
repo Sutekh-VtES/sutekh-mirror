@@ -635,9 +635,13 @@ _Expansion_with_Rarity_ filter, since it ignores rarities, and matches the
 specific physical expansion of the card, not the list of expansions in which the
 card has been printed.
 * _Card Sets_: You must specify a "list":#list of card sets. A card matches if
-it belongs to at least one set in the list.
+it belongs to at least one set in the list. This filter matches on name and
+expansion, so the filter will return as many copies of the card exist in this
+set, not the same number as in the listed sets.
 * _In Card Sets In Use_: A card matches if it belongs to a card set which is
-marked as _In Use_. This filter has no parameters.
+marked as _In Use_ and is a child of the given card set. Like the _Card Sets_
+filter, this matches solely on the card name and expansion, and the numbers
+are those for this card set, not the number in the in use children.
 * _Card Count_: Filter on card count within the current card set or a different
 card set. You must specify a "list":#list of card counts, and a single card set.
 A card matches if it belongs to the specified set, and has a count within that

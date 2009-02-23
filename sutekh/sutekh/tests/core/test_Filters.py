@@ -334,8 +334,12 @@ class FilterTests(SutekhTest):
         # sqlobject confuses pylint
         for iCnt, tData in enumerate(aCardSets):
             sName, sAuthor, sComment, bInUse = tData
+            if bInUse:
+                oParent = aPCSs[0]
+            else:
+                oParent = None
             oPCS = PhysicalCardSet(name=sName, comment=sComment,
-                    author=sAuthor, inuse=bInUse)
+                    author=sAuthor, inuse=bInUse, parent=oParent)
             for sName, sExp in aPCSCards[iCnt]:
                 if sExp:
                     oExp = IExpansion(sExp)
@@ -349,7 +353,8 @@ class FilterTests(SutekhTest):
         aPhysicalCardSetTests = [
                 (Filters.CardSetNameFilter('Test 1'), [aPCSs[0]]),
                 (Filters.CardSetNameFilter('Test'), sorted(aPCSs)),
-                (Filters.CSPhysicalCardSetInUseFilter(), [aPCSs[2]]),
+                (Filters.CSPhysicalCardSetInUseFilter(),
+                    [aPCSs[2]]),
                 (Filters.CardSetAuthorFilter('Author A'),
                     sorted([aPCSs[0], aPCSs[2]])),
                 (Filters.CardSetDescriptionFilter('set'),
@@ -427,8 +432,8 @@ class FilterTests(SutekhTest):
                         aExpectedPhysCards))
 
 
-        aPCSCardsInUse = list(Filters.PhysicalCardSetInUseFilter().select(
-                PhysicalCard).distinct())
+        aPCSCardsInUse = list(Filters.PhysicalCardSetInUseFilter([
+            'Test 1']).select(PhysicalCard).distinct())
         aExpectedCards = list(aPCSs[2].cards)
         self.assertEqual(aPCSCardsInUse, aExpectedCards, 'PhysicalCardSet In '
                 'Use Filter failed %s != %s' % (aPCSCardsInUse,

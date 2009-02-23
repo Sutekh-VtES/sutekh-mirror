@@ -1,6 +1,10 @@
 23 Feb 2009
  * Fix renaming of card sets to work with multiple copies
  * Ensure deleting renamed card sets works properly
+ * Change the card list sets in use filter to take a card set parameter.
+   Fixes incorret behaviour when multiple card sets have in use children.
+   Document that both in use and the "in card set" filter just match on card
+   name and expansion.
 
 21 Feb 2009
  * Allow opening multiple copies of a card set. Usefule for seperate
