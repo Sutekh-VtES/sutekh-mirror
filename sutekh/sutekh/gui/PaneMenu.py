@@ -89,29 +89,27 @@ class CardListMenu(PaneMenu):
         super(CardListMenu, self).__init__(oFrame, oWindow)
         self._oController = oController
 
-    # pylint: disable-msg=W0613
-    # oWidget required by function signature for the following methods
     def toggle_apply_filter(self, oWidget):
         """Toggle the filter applied state."""
         self._oController.view.run_filter(oWidget.active)
 
-    def set_active_filter(self, oWidget):
+    def set_active_filter(self, _oWidget):
         """Set the current filter for the card set."""
         self._oController.view.get_filter(self)
 
-    def expand_all(self, oWidget):
+    def expand_all(self, _oWidget):
         """Expand all the rows in the card set."""
         self._oController.view.expand_all()
 
-    def collapse_all(self, oWidget):
+    def collapse_all(self, _oWidget):
         """Collapse all the rows in the card set."""
         self._oController.view.collapse_all()
 
-    def copy_selection(self, oWidget):
+    def copy_selection(self, _oWidget):
         """Copy the current selection to the application clipboard."""
         self._oController.view.copy_selection()
 
-    def show_search_dialog(self, oWidget):
+    def show_search_dialog(self, _oWidget):
         """Show the search dialog"""
         self._oController.view.searchdialog.show_all()
 

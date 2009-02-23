@@ -108,9 +108,7 @@ class CreateCardSetDialog(SutekhDialog):
         """Get the chosen parent card set, or None if 'No Parent' is chosen"""
         return self.oParent
 
-    # pylint: disable-msg=W0613
-    # oWidget required by function signature
-    def button_response(self, oWidget, iResponse):
+    def button_response(self, _oWidget, iResponse):
         """Handle button press from the dialog."""
         if iResponse == gtk.RESPONSE_OK:
             self.sName = self.oName.get_text()

@@ -37,8 +37,6 @@ class PhysicalCardController(object):
         """Set the card text to reflect the selected card."""
         self.__oMainWin.set_card_text(sCardName)
 
-    # pylint: disable-msg=W0613
-    # oWidget required by function signature
     def toggle_expansion(self, oWidget):
         """Toggle whether the expansion information is shown."""
         self.__oModel.bExpansions = oWidget.active

@@ -55,9 +55,7 @@ class MultiSelectComboBox(gtk.HBox):
         self._bInButton = False
         self._oParentWin = oParentWin
 
-    # pylint: disable-msg=W0613
-    # oWidget required by function signature
-    def __grab_event(self, oWidget, oEvent):
+    def __grab_event(self, _oWidget, oEvent):
         """Hook into the event-after chain, so we can check if any uncaught
            events refer to the original button."""
         # This is a bit convuluted, but seems the best
@@ -92,7 +90,7 @@ class MultiSelectComboBox(gtk.HBox):
         # safe, since we're in event-after
         return False
 
-    def __show_list(self, oButton):
+    def __show_list(self, _oButton):
         """Drop down the list of possible selections."""
         self._aOldSelection = self.get_selection()
 
@@ -116,7 +114,7 @@ class MultiSelectComboBox(gtk.HBox):
         self._oDialog.move(tDialogPos[0], tDialogPos[1])
         self._bInButton = False
 
-    def __hide_on_return(self, oWidget, oEvent):
+    def __hide_on_return(self, _oWidget, oEvent):
         """Hide the list when return or escape is pressed."""
         if oEvent.type is gtk.gdk.KEY_PRESS:
             sKeyName = gtk.gdk.keyval_name(oEvent.keyval)
@@ -126,7 +124,6 @@ class MultiSelectComboBox(gtk.HBox):
                 self.__hide_list()
                 return True # event handled
         return False # process further
-    # pylint: enable-msg=W0613
 
     def __hide_list(self):
         """Hide the list of options"""

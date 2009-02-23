@@ -191,19 +191,19 @@ class BasicFrame(gtk.Frame):
         self._oTitleLabel.set_name('frame_title')
         self._oTitle.set_name('frame_title')
 
-    # pylint: disable-msg=W0613, R0913
+    # pylint: disable-msg=R0913
     # function signature requires these arguments
-    def close_menu_item(self, oMenuWidget):
+    def close_menu_item(self, _oMenuWidget):
         """Handle close requests from the menu."""
         self.close_frame()
 
-    def call_focus(self, oWidget, oEvent, oFocusFunc):
+    def call_focus(self, _oWidget, oEvent, oFocusFunc):
         """Call MultiPaneWindow focus handler for button events"""
         oFocusFunc(self, oEvent, self)
         return False
 
-    def drag_drop_handler(self, oWindow, oDragContext, iXPos, iYPos,
-            oSelectionData, oInfo, oTime):
+    def drag_drop_handler(self, _oWindow, oDragContext, _iXPos, _iYPos,
+            oSelectionData, _oInfo, oTime):
         """Handle panes being dragged onto this one.
 
            Allows panes to be sapped by dragging 'n dropping."""
@@ -224,17 +224,19 @@ class BasicFrame(gtk.Frame):
             else:
                 oDragContext.finish(False, False, oTime)
 
-    def create_drag_data(self, oBtn, oContext, oSelectionData, oInfo, oTime):
+    def create_drag_data(self, _oBtn, _oContext, oSelectionData, _oInfo,
+            _oTime):
         """Fill in the needed data for drag-n-drop code"""
         sData = 'Sutekh Pane:\n' + self.title
         oSelectionData.set(oSelectionData.target, 8, sData)
 
     # pylint: disable-msg=R0201
     # needs to be a mthod, as children can override this if needed
-    def drag_motion(self, oWidget, oDrag_context, iXPos, iYPos, oTimestamp):
+    def drag_motion(self, _oWidget, oDrag_context, _iXPos, _iYPos,
+            _oTimestamp):
         """Show proper icon during drag-n-drop actions."""
         if 'STRING' in oDrag_context.targets:
             oDrag_context.drag_status(gtk.gdk.ACTION_COPY)
             return True
         return False
-    # pylint: enable-msg=R0913, W0613
+    # pylint: enable-msg=R0913

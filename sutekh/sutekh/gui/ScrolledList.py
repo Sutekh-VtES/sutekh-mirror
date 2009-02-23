@@ -101,9 +101,7 @@ class ScrolledList(gtk.Frame):
         self.dSecondColVals = dVals
         self._oTreeView.queue_draw()
 
-    # pylint: disable-msg=W0613
-    # oColumn required by function signature
-    def _render_second_column(self, oColumn, oCell, oModel, oIter):
+    def _render_second_column(self, _oColumn, oCell, oModel, oIter):
         """Method to render the values in the second column."""
         sKey = oModel.get_value(oIter, 0)
         if sKey in self.dSecondColVals:
