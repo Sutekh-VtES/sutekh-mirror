@@ -1,3 +1,7 @@
+24 Feb 2008
+ * Ensure Lasombra plugin and extra columns plugin use different sort column
+   ids when both are enabled.
+
 23 Feb 2009
  * Fix renaming of card sets to work with multiple copies
  * Ensure deleting renamed card sets works properly

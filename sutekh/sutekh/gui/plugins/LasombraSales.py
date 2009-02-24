@@ -21,6 +21,9 @@ from sutekh.core.SutekhObjects import PhysicalCard, PhysicalCardSet, \
         IExpansion, IAbstractCard
 from sutekh.SutekhUtility import prefs_dir, ensure_dir_exists
 
+
+SORT_COLUMN_OFFSET = 200 # ensure we don't clash with other extra columns
+
 # pylint: disable-msg=R0904
 # R0904 - gtk Widget, so has many public methods
 class LasombraConfigDialog(SutekhDialog):
@@ -527,9 +530,9 @@ class LasombraSales(CardListPlugin):
             oColumn.set_fixed_width(self._dWidths.get(sCol, 100))
             oColumn.set_resizable(True)
             self.view.insert_column(oColumn, iNum + 3)
-            oColumn.set_sort_column_id(iNum + 3)
-            self.model.set_sort_func(iNum + 3, self.sort_column,
-                    self._dSortDataFuncs[sCol])
+            oColumn.set_sort_column_id(iNum + 3 + SORT_COLUMN_OFFSET)
+            self.model.set_sort_func(iNum + 3 + SORT_COLUMN_OFFSET,
+                    self.sort_column, self._dSortDataFuncs[sCol])
 
     def get_cols_in_use(self):
         """Get which extra columns have been added to view"""
