@@ -248,30 +248,30 @@ class CardSetCardListModel(CardListModel):
         dChildInfo = oRow.get_child_info()
         sCardName = self.get_name_from_iter(oChildIter)
         if self.iExtraLevelsMode == SHOW_EXPANSIONS:
-            for sExpansion in sorted(dExpansionInfo):
+            for sExpansion in dExpansionInfo:
                 self._add_extra_level(oChildIter, sExpansion,
                         dExpansionInfo[sExpansion],
                         (2, sCardName))
         elif self.iExtraLevelsMode == SHOW_CARD_SETS:
-            for sChildSet in sorted(dChildInfo):
+            for sChildSet in dChildInfo:
                 self._add_extra_level(oChildIter, sChildSet,
                         dChildInfo[sChildSet],
                         (2, sCardName))
         elif self.iExtraLevelsMode == EXP_AND_CARD_SETS:
-            for sExpansion in sorted(dExpansionInfo):
+            for sExpansion in dExpansionInfo:
                 oSubIter = self._add_extra_level(oChildIter,
                         sExpansion, dExpansionInfo[sExpansion],
                         (2, sCardName))
-                for sChildSet in sorted(dChildInfo[sExpansion]):
+                for sChildSet in dChildInfo[sExpansion]:
                     self._add_extra_level(oSubIter, sChildSet,
                             dChildInfo[sExpansion][sChildSet],
                             (3, (sCardName, sExpansion)))
         elif self.iExtraLevelsMode == CARD_SETS_AND_EXP:
-            for sChildSet in sorted(dChildInfo):
+            for sChildSet in dChildInfo:
                 oSubIter = self._add_extra_level(oChildIter,
                         sChildSet, dChildInfo[sChildSet],
                         (2, sCardName))
-                for sExpansion in sorted(dExpansionInfo[sChildSet]):
+                for sExpansion in dExpansionInfo[sChildSet]:
                     self._add_extra_level(oSubIter, sExpansion,
                             dExpansionInfo[sChildSet][sExpansion],
                             (3, (sCardName, sChildSet)))
@@ -664,7 +664,6 @@ class CardSetCardListModel(CardListModel):
         self._add_parent_info(dAbsCards, dPhysCards)
 
         aCards = list(dAbsCards.iteritems())
-        aCards.sort(lambda x, y: cmp(x[0].name, y[0].name))
 
         # Iterate over groups
         return (self.groupby(aCards, lambda x: x[0]), aAbsCards)

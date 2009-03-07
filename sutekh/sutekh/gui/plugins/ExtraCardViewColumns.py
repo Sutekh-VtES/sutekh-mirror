@@ -367,13 +367,10 @@ class ExtraCardViewColumns(CardListPlugin):
         if isinstance(oVal1, list):
             oVal1 = " ".join(oVal1)
             oVal2 = " ".join(oVal2)
-        if oVal1 < oVal2:
-            iRes = -1
-        elif oVal1 > oVal2:
-            iRes = 1
-        else:
-            # Values agrees, so sort on card name
-            iRes = cmp(oCard1.name, oCard2.name)
+        iRes = cmp(oVal1, oVal2)
+        if iRes == 0:
+            # Values agree, so do fall back sort
+            iRes = self.model.sort_equal_iters(oIter1, oIter2)
         return iRes
 
     def make_dialog(self):

@@ -495,13 +495,10 @@ class LasombraSales(CardListPlugin):
         oVal1 = oGetData(tKey1)
         oVal2 = oGetData(tKey2)
 
-        if oVal1 < oVal2:
-            iRes = -1
-        elif oVal1 > oVal2:
-            iRes = 1
-        else:
-            # Values agree, so sort keys themselves
-            iRes = cmp(tKey1, tKey2)
+        iRes = cmp(oVal1, oVal2)
+        if iRes == 0:
+            # Values agree, so do fall back sort
+            iRes = self.model.sort_equal_iters(oIter1, oIter2)
         return iRes
 
     # Actions

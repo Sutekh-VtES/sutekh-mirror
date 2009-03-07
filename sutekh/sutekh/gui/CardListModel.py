@@ -83,6 +83,11 @@ class CardListModel(gtk.TreeStore):
         self.oEmptyIter = None
         self.oIconManager = None
         self.bUseIcons = True
+        self.set_sort_func(0, self._sort_col, 0)
+        self.set_sort_func(1, self._sort_col, 1)
+        self.set_sort_func(2, self._sort_col, 2)
+        # Sort the model on the card name by default
+        self.set_sort_column_id(0, gtk.SORT_ASCENDING)
 
     # pylint: disable-msg=W0212, C0103
     # W0212 - we explicitly allow access via these properties
@@ -108,6 +113,26 @@ class CardListModel(gtk.TreeStore):
         del self.dListeners[oListener]
 
     # various utilty functions for checking the model state
+
+    # Helper's for sorting
+
+    def _sort_col(self, _oModel, oIter1, oIter2, iCol):
+        """Default sort function for model"""
+        oVal1 = self.get_value(oIter1, iCol)
+        oVal2 = self.get_value(oIter2, iCol)
+        iRes = cmp(oVal1, oVal2)
+        if iRes == 0:
+            iRes = self.sort_equal_iters(oIter1, oIter2)
+        return iRes
+
+    def sort_equal_iters(self, oIter1, oIter2):
+        """Default sort on names (card names, expansion names, etc.)"""
+        # The default sorting behaviour for equal rows can be changed by
+        # hooking into this
+        oVal1 = self.get_value(oIter1, 0)
+        oVal2 = self.get_value(oIter2, 0)
+        return cmp(oVal1, oVal2)
+
 
     def get_expansion_info(self, _oCard, dExpanInfo):
         """Get information about expansions"""
@@ -172,7 +197,7 @@ class CardListModel(gtk.TreeStore):
                 )
                 aExpansionInfo = self.get_expansion_info(oCard,
                         fGetExpanInfo(oItem))
-                for sExpansion in sorted(aExpansionInfo):
+                for sExpansion in aExpansionInfo:
                     oExpansionIter = self.append(oChildIter)
                     self.set(oExpansionIter,
                             0, sExpansion,
@@ -249,7 +274,6 @@ class CardListModel(gtk.TreeStore):
                 dExpanInfo[oPhysCard.expansion] += 1
 
         aCards = list(dAbsCards.iteritems())
-        aCards.sort(lambda x, y: cmp(x[0].name, y[0].name))
 
         # Iterate over groups
         return (fGetCard, fGetCount, fGetExpanInfo,

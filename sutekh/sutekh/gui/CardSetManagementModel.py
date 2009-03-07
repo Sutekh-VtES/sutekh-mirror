@@ -29,6 +29,8 @@ class CardSetManagementModel(gtk.TreeStore):
         self._oSelectFilter = None
         self.oEmptyIter = None
         self.set_sort_func(0, self.sort_column)
+        # sort on card set name by default, for consistency elsewhere
+        self.set_sort_column_id(0, gtk.SORT_ASCENDING)
 
     # pylint: disable-msg=W0212, C0103
     # W0212 - we explicitly allow access via these properties
