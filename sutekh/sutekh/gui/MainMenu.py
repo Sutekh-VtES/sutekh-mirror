@@ -233,9 +233,7 @@ class MainMenu(SutekhMenu):
         """Show the Sutekh Tutorial"""
         self._oMainWindow.show_manual(oMenuWidget, self.oHelpLast)
 
-    # pylint: disable-msg=W0613
-    # oWidget + oMenuWidget required by function signature
-    def do_import_card_set(self, oWidget):
+    def do_import_card_set(self, _oWidget):
         """Import a card set from a XML File."""
         oFileChooser = ImportDialog("Select Card Set(s) to Import",
                 self._oMainWindow)
@@ -301,47 +299,47 @@ class MainMenu(SutekhMenu):
             else:
                 do_complaint_error("File is not a CardSet XML File.")
 
-    def do_import_new_card_list(self, oWidget):
+    def do_import_new_card_list(self, _oWidget):
         """Refresh the WW card list and rulings files."""
         if refresh_ww_card_list(self._oMainWindow):
             self._oMainWindow.reload_all()
 
-    def do_save_pane_set(self, oWidget):
+    def do_save_pane_set(self, _oWidget):
         """Save the current pane layout"""
         self._oMainWindow.save_frames()
 
-    def do_toggle_save_on_exit(self, oWidget):
+    def do_toggle_save_on_exit(self, _oWidget):
         """Toggle the 'Save Pane layout on exit' option"""
         bChoice = not self.__oConfig.get_save_on_exit()
         self.__oConfig.set_save_on_exit(bChoice)
         # gtk can handle the rest for us
 
-    def do_toggle_save_precise_pos(self, oWidget):
+    def do_toggle_save_precise_pos(self, _oWidget):
         """Toggle save precise pane positions option"""
         bChoice = not self.__oConfig.get_save_precise_pos()
         self.__oConfig.set_save_precise_pos(bChoice)
 
-    def do_toggle_save_window_size(self, oWidget):
+    def do_toggle_save_window_size(self, _oWidget):
         """Toggle save window size option"""
         bChoice = not self.__oConfig.get_save_window_size()
         self.__oConfig.set_save_window_size(bChoice)
 
-    def equalize_panes(self, oMenuWidget):
+    def equalize_panes(self, _oWidget):
         """Ensure all panes have the same width allocated."""
         self._oMainWindow.set_all_panes_equal()
 
-    def add_pane_horizontal(self, oMenuWidget):
+    def add_pane_horizontal(self, _oWidget):
         """Split the current pane horizonitally and add a new pane."""
         self._oMainWindow.add_pane(False)
 
-    def add_pane_vertical(self, oMenuWidget):
+    def add_pane_vertical(self, _oWidget):
         """Split the current pane vertically and add a new pane."""
         self._oMainWindow.add_pane(True)
 
-    def do_restore(self, oMenuWidget):
+    def do_restore(self, _oWidget):
         """Restore the pane layout from the config file."""
         self._oMainWindow.restore_from_config()
 
-    def download_icons(self, oMenuWidget):
+    def download_icons(self, _oWidget):
         """Call on the icon manager to download the icons."""
         self._oMainWindow.icon_manager.download_icons()

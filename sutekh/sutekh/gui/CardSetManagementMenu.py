@@ -46,24 +46,22 @@ class CardSetManagementMenu(PaneMenu):
 
     # pylint: enable-msg=W0201
 
-    # pylint: disable-msg=W0613
-    # oWidget required by function signature
     def toggle_apply_filter(self, oWidget):
         """Handle menu toggle events"""
         self._oController.run_filter(oWidget.active)
 
-    def set_active_filter(self, oWidget):
+    def set_active_filter(self, _oWidget):
         """Handle the menu activate signal"""
         self._oController.get_filter(self)
 
-    def expand_all(self, oWidget):
+    def expand_all(self, _oWidget):
         """Expand all the rows in the card set."""
         self._oController.view.expand_all()
 
-    def collapse_all(self, oWidget):
+    def collapse_all(self, _oWidget):
         """Collapse all the rows in the card set."""
         self._oController.view.collapse_all()
 
-    def show_search_dialog(self, oWidget):
+    def show_search_dialog(self, _oWidget):
         """Show the search dialog"""
         self._oController.view.searchdialog.show_all()

@@ -255,9 +255,7 @@ class MultiPaneWindow(gtk.Window):
         self.replace_with_physical_card_set(sName, oFrame)
         self.win_focus(None, None, oCurFocus)
 
-    # pylint: disable-msg=W0613
-    # oWidget needed so this can be called from the menu
-    def replace_with_pcs_list(self, oWidget):
+    def replace_with_pcs_list(self, _oWidget):
         """Replace the focussed pane with the physical card set list."""
         sMenuFlag = "Card Set List"
         if sMenuFlag not in self.dOpenFrames.values() and self._oFocussed:
@@ -272,7 +270,7 @@ class MultiPaneWindow(gtk.Window):
         self.replace_with_pcs_list(oMenuWidget)
         self.win_focus(None, None, oCurFocus)
 
-    def replace_with_physical_card_list(self, oWidget):
+    def replace_with_physical_card_list(self, _oWidget):
         """Replace the currently focussed pane with the physical card list."""
         sMenuFlag = "White Wolf Card List"
         if sMenuFlag not in self.dOpenFrames.values() and self._oFocussed:
@@ -286,7 +284,7 @@ class MultiPaneWindow(gtk.Window):
         self.replace_with_physical_card_list(oMenuWidget)
         self.win_focus(None, None, oCurFocus)
 
-    def replace_with_card_text(self, oWidget):
+    def replace_with_card_text(self, _oWidget):
         """Replace the current pane with the card set pane."""
         sMenuFlag = "Card Text"
         if sMenuFlag not in self.dOpenFrames.values() and self._oFocussed:
@@ -424,11 +422,11 @@ class MultiPaneWindow(gtk.Window):
         """gtk entry point"""
         gtk.main()
 
-    # making this a function would not be convient
-    # pylint: disable-msg=W0613
-    # oWidget needed by function signature
+    def action_quit(self, _oWidget):
+        """Exit the app"""
+        gtk.main_quit()
 
-    def show_about_dialog(self, oWidget):
+    def show_about_dialog(self, _oWidget):
         """Display the about dialog"""
         oDlg = SutekhAboutDialog()
         oDlg.run()
@@ -444,9 +442,8 @@ class MultiPaneWindow(gtk.Window):
 
     # pylint: enable-msg=R0201
 
-    # oWidget, oEvent needed by function signature
-    def win_focus(self, oWidget, oEvent, oFrame):
-        """Responsd to focus change events.
+    def win_focus(self, _oWidget, _oEvent, oFrame):
+        """Respond to focus change events.
 
            Keep track of focussed pane, update menus and handle highlighting.
            """
@@ -459,7 +456,7 @@ class MultiPaneWindow(gtk.Window):
             self._oFocussed.view.grab_focus()
         self.reset_menu()
 
-    def key_press(self, oWidget, oEvent):
+    def key_press(self, _oWidget, oEvent):
         """Move to the next frame on Tab"""
         if oEvent.keyval == gtk.gdk.keyval_from_name('Tab') or \
                 oEvent.keyval == gtk.gdk.keyval_from_name('KP_Tab'):
@@ -471,8 +468,7 @@ class MultiPaneWindow(gtk.Window):
             return True
         return False # propogate event
 
-    # oWidget needed by function signature
-    def action_close(self, oWidget, oEvent):
+    def action_close(self, _oWidget, _oEvent):
         """Close the app (menu or window manager) and save the settings"""
         if self._oConfig.get_save_on_exit():
             self.save_frames()
@@ -481,29 +477,25 @@ class MultiPaneWindow(gtk.Window):
         # cue app exit
         self.destroy()
 
-    def action_quit(self, oWidget):
-        """Exit the app"""
-        gtk.main_quit()
-
-    def show_tutorial(self, oMenuWidget, oHelpLast):
+    def show_tutorial(self, _oMenuWidget, oHelpLast):
         """Show the HTML Tutorial"""
         fTutorial = self._link_resource('Tutorial.html')
         oHelpLast.set_sensitive(True)
         self._do_html_dialog(fTutorial)
 
-    def show_manual(self, oMenuWidget, oHelpLast):
+    def show_manual(self, _oMenuWidget, oHelpLast):
         """Show the HTML Manual"""
         fManual = self._link_resource('Manual.html')
         oHelpLast.set_sensitive(True)
         self._do_html_dialog(fManual)
 
-    def show_last_help(self, oMenuWidget):
+    def show_last_help(self, _oMenuWidget):
         """Reshow the help dialog with the last shown page"""
         if self._oHelpDlg is not None:
             self._oHelpDlg.show()
 
-    # oWidget needed so this can be called from the menu
-    def add_pane_end(self, oWidget=None):
+    # _oWidget needed so this can be also be called from the menu
+    def add_pane_end(self, _oWidget=None):
         """Add a pane to the right edge of the window.
 
            Used for the add pane menu items and double clicking on card set
@@ -521,12 +513,9 @@ class MultiPaneWindow(gtk.Window):
         self._oFocussed = oPane
         return self.add_pane()
 
-    # oMenuWidget needed so this can be called from the menu
-    def menu_remove_frame(self, oMenuWidget):
+    def menu_remove_frame(self, _oMenuWidget):
         """Handle the remove pane request from the menu"""
         self.remove_frame(self._oFocussed)
-
-    # pylint: enable-msg=W0613
 
     def _do_html_dialog(self, fInput):
         """Popup and run HTML Dialog widget"""

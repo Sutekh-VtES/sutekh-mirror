@@ -191,8 +191,6 @@ class BasicFrame(gtk.Frame):
         self._oTitleLabel.set_name('frame_title')
         self._oTitle.set_name('frame_title')
 
-    # pylint: disable-msg=R0913
-    # function signature requires these arguments
     def close_menu_item(self, _oMenuWidget):
         """Handle close requests from the menu."""
         self.close_frame()
@@ -202,6 +200,8 @@ class BasicFrame(gtk.Frame):
         oFocusFunc(self, oEvent, self)
         return False
 
+    # pylint: disable-msg=R0913
+    # function signature requires all these arguments
     def drag_drop_handler(self, _oWindow, oDragContext, _iXPos, _iYPos,
             oSelectionData, _oInfo, oTime):
         """Handle panes being dragged onto this one.
@@ -231,7 +231,7 @@ class BasicFrame(gtk.Frame):
         oSelectionData.set(oSelectionData.target, 8, sData)
 
     # pylint: disable-msg=R0201
-    # needs to be a mthod, as children can override this if needed
+    # needs to be a method, as children can override this if needed
     def drag_motion(self, _oWidget, oDrag_context, _iXPos, _iYPos,
             _oTimestamp):
         """Show proper icon during drag-n-drop actions."""
@@ -239,4 +239,3 @@ class BasicFrame(gtk.Frame):
             oDrag_context.drag_status(gtk.gdk.ACTION_COPY)
             return True
         return False
-    # pylint: enable-msg=R0913

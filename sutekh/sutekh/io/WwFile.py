@@ -10,8 +10,6 @@
 import codecs
 import urllib2
 
-# pylint: disable-msg=C0103
-# These names are acceptable in this case
 WW_CARDLIST_URL = [
         "http://www.white-wolf.com/vtes/index.php?line=cardlist__",
         "http://www.white-wolf.com/vtes/index.php?line=cardlist_A",
@@ -43,7 +41,6 @@ WW_CARDLIST_URL = [
         ]
 
 WW_RULINGS_URL = "http://www.white-wolf.com/vtes/index.php?line=rulings"
-# pylint: enable-msg=C0103
 
 class WwFile(object):
     """WwFile is a convenience class which has an .open(..) method which

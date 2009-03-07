@@ -125,9 +125,7 @@ class SimpleFileDialog(SutekhFileDialog):
         self.set_select_multiple(False)
         self.sName = None
 
-    # pylint: disable-msg=W0613
-    # oWidget required by function signature
-    def button_response(self, oWidget, iResponse):
+    def button_response(self, _oWidget, iResponse):
         """Handle button press events"""
         if iResponse == gtk.RESPONSE_OK:
             self.sName = self.get_filename()

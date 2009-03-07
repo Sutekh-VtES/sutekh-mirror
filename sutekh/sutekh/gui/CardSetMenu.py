@@ -152,9 +152,7 @@ class CardSetMenu(CardListMenu):
 
     # pylint: enable-msg=W0201
 
-    # pylint: disable-msg=W0613
-    # oWidget required by function signature for the following methods
-    def _edit_properties(self, oWidget):
+    def _edit_properties(self, _oWidget):
         """Popup the Edit Properties dialog to change card set properties."""
         # pylint: disable-msg=E1101
         # sqlobject confuses pylint
@@ -187,7 +185,7 @@ class CardSetMenu(CardListMenu):
             self._oParentCol.set_sensitive(False)
             self._change_parent_count_mode(None, IGNORE_PARENT, True)
 
-    def _do_export(self, oWidget):
+    def _do_export(self, _oWidget):
         """Export the card set to the chosen filename."""
         oFileChooser = ExportDialog("Save Card Set As ", self._oMainWindow,
                 '%s.xml' % safe_filename(self.name))
@@ -199,11 +197,11 @@ class CardSetMenu(CardListMenu):
             oWriter = PhysicalCardSetXmlFile(sFileName)
             oWriter.write(self.name)
 
-    def _card_set_delete(self, oWidget):
+    def _card_set_delete(self, _oWidget):
         """Delete the card set."""
         self._oController.delete_card_set()
 
-    def _change_mode(self, oWidget, iLevel):
+    def _change_mode(self, _oWidget, iLevel):
         """Set which extra information is shown."""
         # NB. gtk calls this twice, once for the current value,
         # and once for the new value. We don't want to call
@@ -212,13 +210,13 @@ class CardSetMenu(CardListMenu):
             self._oController.model.iExtraLevelsMode = iLevel
             self._oController.view.reload_keep_expanded()
 
-    def _change_count_mode(self, oWidget, iLevel):
+    def _change_count_mode(self, _oWidget, iLevel):
         """Set which extra information is shown."""
         if self._oController.model.iShowCardMode != iLevel:
             self._oController.model.iShowCardMode = iLevel
             self._oController.view.reload_keep_expanded()
 
-    def _change_parent_count_mode(self, oWidget, iLevel, bNoReload=False):
+    def _change_parent_count_mode(self, _oWidget, iLevel, bNoReload=False):
         """Toggle the visibility of the parent col"""
         if iLevel == IGNORE_PARENT:
             self._oController.view.set_parent_count_col_vis(False)
@@ -243,12 +241,10 @@ class CardSetMenu(CardListMenu):
         self._oPaste.set_sensitive(bValue)
         self._oDel.set_sensitive(bValue)
 
-    def _del_selection(self, oWidget):
+    def _del_selection(self, _oWidget):
         """Delete the current selection"""
         self._oController.view.del_selection()
 
-    def _paste_selection(self, oWidget):
+    def _paste_selection(self, _oWidget):
         """Try to paste the current clipbaord contents"""
         self._oController.view.do_paste()
-
-    # pylint: enable-msg=W0613
