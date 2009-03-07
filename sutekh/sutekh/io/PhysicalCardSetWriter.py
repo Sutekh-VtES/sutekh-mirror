@@ -70,20 +70,21 @@ class PhysicalCardSetWriter(object):
             # so this is easier than using the tree directly. For
             # elementtree 1.3, this should be reworked
             oAbs = oCard.abstractCard
-            try:
-                dPhys[(oAbs.id, oAbs.name, oCard.expansion)] += 1
-            except KeyError:
-                dPhys[(oAbs.id, oAbs.name, oCard.expansion)] = 1
-
-        for tKey, iNum in dPhys.iteritems():
-            iId, sName, oExpansion = tKey
-            oCardElem = SubElement(oRoot, 'card', id=str(iId), name=sName,
-                    count = str(iNum))
-            if oExpansion is None:
-                oCardElem.attrib['expansion'] =  'None Specified'
+            if oCard.expansion:
+                sExpName = oCard.expansion.name
             else:
-                oCardElem.attrib['expansion'] = oExpansion.name
+                sExpName = 'None Specified'
+            tKey = (oAbs.id, oAbs.name, sExpName)
+            dPhys.setdefault(tKey, 0)
+            dPhys[tKey] += 1
 
+        # we sort by card name & expansion, as makes results more predictable
+        for tKey in sorted(dPhys, key=lambda x: (x[1], x[2])):
+            iNum = dPhys[tKey]
+            iId, sName, sExpName = tKey
+            oCardElem = SubElement(oRoot, 'card', id=str(iId), name=sName,
+                    count = str(iNum), expansion=sExpName)
+        pretty_xml(oRoot)
         return oRoot
 
     def gen_xml_string(self, sPhysicalCardSetName):
@@ -94,5 +95,4 @@ class PhysicalCardSetWriter(object):
     def write(self, fOut, sPhysicalCardSetName):
         """Generate prettier XML and write it to the file fOut."""
         oRoot = self.make_tree(sPhysicalCardSetName)
-        pretty_xml(oRoot)
         ElementTree(oRoot).write(fOut)

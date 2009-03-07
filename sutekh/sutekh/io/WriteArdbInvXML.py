@@ -50,6 +50,7 @@ class WriteArdbInvXML(ArdbInfo):
         oLibElem = SubElement(oRoot, 'library', size=str(iLibSize))
         self.format_library(oLibElem, dLib)
 
+        pretty_xml(oRoot)
         return oRoot
 
     # pylint: disable-msg=R0201
@@ -120,7 +121,6 @@ class WriteArdbInvXML(ArdbInfo):
            form dCard[(id,name)] = count and writes the file."""
         dCards = self._get_cards(oCardIter)
         oRoot = self.gen_tree(dCards)
-        pretty_xml(oRoot)
         ElementTree(oRoot).write(fOut)
 
     def gen_xml_string(self, oCardIter):

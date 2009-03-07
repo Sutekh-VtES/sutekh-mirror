@@ -1,6 +1,9 @@
 07 Mar 2009
  * Always sort by name when the columns values are equal
  * Always sort the various models (card sets, card lists, card set list)
+ * Always pretty print the xml, even when sending it to the zip file
+ * Sort XML file entries by card name + expansion, to make things more
+   predictable - simplifies the test cases a bit as well
 
 24 Feb 2009
  * Ensure Lasombra plugin and extra columns plugin use different sort column
