@@ -82,7 +82,7 @@ class PhysicalCardSetWriter(object):
         for tKey in sorted(dPhys, key=lambda x: (x[1], x[2])):
             iNum = dPhys[tKey]
             iId, sName, sExpName = tKey
-            oCardElem = SubElement(oRoot, 'card', id=str(iId), name=sName,
+            SubElement(oRoot, 'card', id=str(iId), name=sName,
                     count = str(iNum), expansion=sExpName)
         pretty_xml(oRoot)
         return oRoot

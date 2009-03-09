@@ -122,9 +122,7 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
 
         self.show_all()
 
-    # pylint: disable-msg=W0613
-    # oWidget required by function signature
-    def __button_response(self, oWidget, iResponse):
+    def __button_response(self, _oWidget, iResponse):
         """Handle the button choices from the user.
 
            If the operation doesn't close the dialog, such as the
@@ -163,8 +161,6 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
             self.__bWasCancelled = True
         self.hide()
 
-    # pylint: enable-msg=W0613
-
     def __run_load_dialog(self):
         """Display a dialog for loading a filter."""
         oLoadDialog = SutekhDialog("Load Filter", self.__oParent,
@@ -179,7 +175,7 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
         oFilterStore = gtk.ListStore(gobject.TYPE_BOOLEAN, gobject.TYPE_STRING,
                                      gobject.TYPE_STRING)
 
-        def iter_to_text(oLayout, oCell, oModel, oIter):
+        def iter_to_text(_oLayout, oCell, oModel, oIter):
             """Convert the model entry at oIter into the correct text"""
             bDefault = oModel.get_value(oIter, 0)
             sName = oModel.get_value(oIter, 1)
@@ -341,7 +337,7 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
         else:
             self.set_response_sensitive(self.RESPONSE_DELETE, False)
 
-    def __name_changed(self, oNameEntry):
+    def __name_changed(self, _oNameEntry):
         """Callback for connecting to filter editor name change events."""
         self.__update_sensitivity()
 
@@ -356,16 +352,14 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
         return self.__bWasCancelled
 
     # Config File Listener methods
-    # pylint: disable-msg=W0613
-    # Various arguments required by the function signature
-    def replace_filter(self, sId, sOldFilter, sNewFilter):
+    def replace_filter(self, _sId, _sOldFilter, _sNewFilter):
         """Handle a filter in the config file being replaced."""
         self.__update_sensitivity()
 
-    def add_filter(self, sId, sFilter):
+    def add_filter(self, _sId, _sFilter):
         """Handle filter being added to the config file."""
         self.__update_sensitivity()
 
-    def remove_filter(self, sId, sFilter):
+    def remove_filter(self, _sId, _sFilter):
         """Handle a filter being removed from the config file."""
         self.__update_sensitivity()

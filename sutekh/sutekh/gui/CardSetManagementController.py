@@ -118,9 +118,7 @@ class CardSetManagementController(object):
             doc="Associated Type")
     # pylint: enable-msg=W0212
 
-    # pylint: disable-msg=W0613
-    # oWidget, oMenuItem required by function signature
-    def get_filter(self, oMenuItem):
+    def get_filter(self, oMenuWidget):
         """Get the Filter from the FilterDialog."""
         if self._oFilterDialog is None:
             self._oFilterDialog = FilterDialog(self._oMainWindow,
@@ -136,7 +134,7 @@ class CardSetManagementController(object):
             self._oModel.selectfilter = oFilter
             if not self._oModel.applyfilter:
                 # If a filter is set, automatically apply
-                oMenuItem.set_apply_filter(True)
+                oMenuWidget.set_apply_filter(True)
             else:
                 # Filter Changed, so reload
                 self._oModel.load()
@@ -144,7 +142,7 @@ class CardSetManagementController(object):
             # Filter is set to blank, so we treat this as disabling
             # Filter
             if self._oModel.applyfilter:
-                oMenuItem.set_apply_filter(False)
+                oMenuWidget.set_apply_filter(False)
             else:
                 self._oModel.load()
 
@@ -154,7 +152,7 @@ class CardSetManagementController(object):
             self._oModel.applyfilter = bState
             self._oModel.load()
 
-    def create_new_card_set(self, oWidget):
+    def create_new_card_set(self, _oWidget):
         """Create a new card set"""
         oDialog = CreateCardSetDialog(self._oMainWindow)
         oDialog.run()
@@ -167,7 +165,7 @@ class CardSetManagementController(object):
                     comment=sComment, parent=oParent)
             self._oMainWindow.add_new_physical_card_set(sName)
 
-    def edit_card_set_properties(self, oWidget):
+    def edit_card_set_properties(self, _oWidget):
         """Create a new card set"""
         sSetName = self._oView.get_selected_card_set()
         if not sSetName:
@@ -175,7 +173,7 @@ class CardSetManagementController(object):
         oCardSet = IPhysicalCardSet(sSetName)
         update_card_set(oCardSet, self._oMainWindow)
 
-    def delete_card_set(self, oWidget):
+    def delete_card_set(self, _oWidget):
         """Delete the selected card set."""
         sSetName = self._oView.get_selected_card_set()
         if not sSetName:
@@ -193,7 +191,7 @@ class CardSetManagementController(object):
                 oFrame.close_frame()
             self.reload_keep_expanded(False)
 
-    def toggle_in_use_flag(self, oMenuItem):
+    def toggle_in_use_flag(self, _oMenuWidget):
         """Toggle the in-use status of the card set"""
         sSetName = self._oView.get_selected_card_set()
         if not sSetName:
@@ -208,7 +206,7 @@ class CardSetManagementController(object):
         oCS.syncUpdate()
         self.reload_keep_expanded(True)
 
-    def row_clicked(self, oTreeView, oPath, oColumn):
+    def row_clicked(self, _oTreeView, oPath, _oColumn):
         """Handle row clicked events.
 
            allow double clicks to open a card set.

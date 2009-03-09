@@ -130,9 +130,7 @@ class FilterEditor(gtk.Frame):
         """Connect a callback to the name entry change signal."""
         self.__oNameEntry.connect('changed', fCallback)
 
-    # pylint: disable-msg=W0613
-    # oTextEditorButton required by function signature
-    def __show_text_editor(self, oTextEditorButton):
+    def __show_text_editor(self, _oTextEditorButton):
         """Show a gtk.Entry widget so filters can be directly typed by the
            user."""
         oDlg = SutekhDialog("Query Editor", self.__oFilterDialog,
@@ -163,8 +161,7 @@ class FilterEditor(gtk.Frame):
         finally:
             oDlg.destroy()
 
-    # oHelpButton required by function signature
-    def __show_help_dialog(self, oHelpButton):
+    def __show_help_dialog(self, _oHelpButton):
         """Show a dialog window with the helptext from the filters."""
         oDlg = SutekhDialog("Help on Filters", self.__oFilterDialog,
                 gtk.DIALOG_DESTROY_WITH_PARENT,
@@ -452,9 +449,7 @@ class FilterBoxModelEditor(gtk.VBox):
             sBoxType, bNegate = self.BOXTYPE[sType]
             self.__oBoxModel.set_boxtype(sBoxType, bNegate)
 
-    # pylint: disable-msg=W0613
-    # oAddButton needed by function signature
-    def __add_filter_part(self, oAddButton, oTypeSelector):
+    def __add_filter_part(self, _oAddButton, oTypeSelector):
         """Add a filter part or filter box to this box."""
         oIter = oTypeSelector.get_active_iter()
         oModel = oTypeSelector.get_model()
@@ -480,8 +475,7 @@ class FilterBoxModelEditor(gtk.VBox):
         self.__oChildArea.pack_start(oChildEditor, expand=False)
         self.show_all()
 
-    # oRemoveButton needed by function signature
-    def __remove_filter_part(self, oRemoveButton, oEditor, oModelOrItem):
+    def __remove_filter_part(self, _oRemoveButton, oEditor, oModelOrItem):
         """Remove the filter part from this box at the user's request"""
         self.__oBoxModel.remove_child(oModelOrItem)
         self.__aChildren.remove(oEditor)
@@ -672,9 +666,7 @@ class FilterBoxItemEditor(gtk.HBox):
         else:
             self.__oEntryWidget.set_text("")
 
-    # pylint: disable-msg=W0613
-    # oWidget is needed by function signature
-    def __toggle_negated(self, oWidget):
+    def __toggle_negated(self, _oWidget):
         """Response to the use setting/unsetting the not status of this
            filter item"""
         self.__oBoxItem.bNegated = self.__oNegateButton.get_active()

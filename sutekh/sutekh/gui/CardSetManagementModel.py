@@ -142,9 +142,7 @@ class CardSetManagementModel(gtk.TreeStore):
         oIter = self.get_iter(oPath)
         return self.get_name_from_iter(oIter)
 
-    # pylint: disable-msg=W0613
-    # oModel required by function signature
-    def sort_column(self, oModel, oIter1, oIter2):
+    def sort_column(self, _oModel, oIter1, oIter2):
         """Custom sort function - ensure that markup doesn't affect sort
            order"""
         oCardSet1 = self.get_name_from_iter(oIter1)

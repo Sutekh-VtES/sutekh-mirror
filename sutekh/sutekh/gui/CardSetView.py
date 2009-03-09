@@ -214,7 +214,7 @@ class CardSetView(CardListView):
         return dSelectedData
 
 
-    # pylint: disable-msg=R0913, W0613
+    # pylint: disable-msg=R0913
     # elements required by function signature
     def card_drop(self, oWidget, oContext, iXPos, iYPos, oData, oInfo, oTime):
         """Handle drag-n-drop events."""
@@ -241,9 +241,7 @@ class CardSetView(CardListView):
 
     # pylint: enable-msg=R0913
 
-    # pylint: disable-msg=W0613
-    # arguments as required by the function signature
-    def inc_card(self, oCell, oPath):
+    def inc_card(self, _oCell, oPath):
         """Called to increment the count for a card."""
         if self._oModel.bEditable:
             bInc, _bDec = self._oModel.get_inc_dec_flags_from_path(oPath)
@@ -252,7 +250,7 @@ class CardSetView(CardListView):
                         self._oModel.get_all_names_from_path(oPath)
                 self._oController.inc_card(sCardName, sExpansion, sCardSetName)
 
-    def dec_card(self, oCell, oPath):
+    def dec_card(self, _oCell, oPath):
         """Called to decrement the count for a card"""
         if self._oModel.bEditable:
             _bInc, bDec = self._oModel.get_inc_dec_flags_from_path(oPath)
@@ -261,7 +259,7 @@ class CardSetView(CardListView):
                         self._oModel.get_all_names_from_path(oPath)
                 self._oController.dec_card(sCardName, sExpansion, sCardSetName)
 
-    def key_press(self, oWidget, oEvent):
+    def key_press(self, _oWidget, oEvent):
         """Change the number if 1-9 is pressed and we're editable or if + or
            - is pressed. We use the lists defined above to handle the keypad
            as well."""
@@ -285,7 +283,7 @@ class CardSetView(CardListView):
 
     # functions related to tweaking widget display
 
-    def mapped(self, oWidget, oEvent):
+    def mapped(self, _oWidget, _oEvent):
         """Called when the view has been mapped, so we can twiddle the
            display"""
         # see if we need to be editable
@@ -297,8 +295,6 @@ class CardSetView(CardListView):
         # We don't want to redo this if map is called again due to
         # panes moving, etc.
         self.disconnect(self.__iMapID)
-
-    # pylint: enable-msg=W0613
 
     # Anything that touches the database is based off to the controller
     # We handle the editable checks here though, since the controller methods

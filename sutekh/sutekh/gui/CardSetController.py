@@ -108,9 +108,9 @@ class CardSetController(object):
                 # changing inuse status of sibling
                 self._oFrame.queue_reload()
 
-    # pylint: disable-msg=W0613
-    # fPostFuncs is passed by SQLObject 0.10, but not by 0.9
-    def card_set_deleted(self, oCardSet, fPostFuncs=None):
+    # _fPostFuncs is passed by SQLObject 0.10, but not by 0.9, so we need to
+    # sipport both
+    def card_set_deleted(self, oCardSet, _fPostFuncs=None):
         """Listen for card set removal events.
 
            Needed if child card sets are deleted, for instance.
@@ -212,7 +212,7 @@ class CardSetController(object):
         send_changed_signal(oThePCS, oCard, 1)
         return True
 
-    def edit_properties(self, oMenu):
+    def edit_properties(self, _oMenuWidget):
         """Run the dialog to update the card set properties"""
         update_card_set(self.__oPhysCardSet, self._oMainWindow)
 

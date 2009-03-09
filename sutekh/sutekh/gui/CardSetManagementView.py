@@ -59,16 +59,12 @@ class CardSetManagementView(gtk.TreeView):
         self._oModel.load()
 
     # Help functions used by reload_keep_expanded
-    # pylint: disable-msg=W0613
-    # Various arguments required by function signatures
-    def get_row_status(self, oModel, oPath, oIter, dExpandedDict):
+    def get_row_status(self, _oModel, oPath, _oIter, dExpandedDict):
         """Create a dictionary of rows and their expanded status."""
         if self.row_expanded(oPath):
             dExpandedDict.setdefault(oPath,
                     self._oModel.get_name_from_path(oPath))
         return False # Need to process the whole list
-
-    # pylint: disable-msg=W0613
 
     def set_row_status(self, dExpandedDict):
         """Attempt to expand the rows listed in dExpandedDict."""
@@ -100,9 +96,9 @@ class CardSetManagementView(gtk.TreeView):
         """Convert a card name or key to a canonical ASCII form."""
         return unicodedata.normalize('NFKD', sName).encode('ascii','ignore')
 
-    # pylint: disable-msg=R0913, W0613
+    # pylint: disable-msg=R0913
     # arguments as required by the function signature
-    def compare(self, oModel, iColumn, sKey, oIter, oData):
+    def compare(self, oModel, _iColumn, sKey, oIter, _oData):
         """Compare the entered text to the card names."""
 
         def check_children(oModel, oIter, sKey, iLenKey):
@@ -136,7 +132,8 @@ class CardSetManagementView(gtk.TreeView):
         # Fell through
         return True
 
-    def drag_card_set(self, oBtn, oDragContext, oSelectionData, oInfo, oTime):
+    def drag_card_set(self, _oBtn, _oDragContext, oSelectionData, _oInfo,
+            _oTime):
         """Allow card sets to be dragged to a frame."""
         sSetName = self.get_selected_card_set()
         if not sSetName:
@@ -144,7 +141,7 @@ class CardSetManagementView(gtk.TreeView):
         sData = "\n".join(['Card Set:', sSetName])
         oSelectionData.set(oSelectionData.target, 8, sData)
 
-    # pylint: enable-msg=R0913, W0613
+    # pylint: enable-msg=R0913
 
     def get_selected_card_set(self):
         """Return the currently selected card set name, or None if nothing
