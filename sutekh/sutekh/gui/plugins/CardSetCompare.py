@@ -8,7 +8,7 @@
 
 import gtk
 from sutekh.core.SutekhObjects import PhysicalCard, IPhysicalCard, \
-        PhysicalCardSet, IAbstractCard, IExpansion, IPhysicalCardSet
+        PhysicalCardSet, IAbstractCard, IPhysicalCardSet
 from sutekh.core.Filters import PhysicalCardSetFilter
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
@@ -29,30 +29,30 @@ def _get_card_set_list(aCardSetNames, bUseExpansions):
             oAbsCard = IAbstractCard(oCard)
             if bUseExpansions:
                 if oCard.expansion:
-                    tKey = (oAbsCard.name, oCard.expansion.name)
+                    oKey = (oCard, oAbsCard.name, oCard.expansion.name)
                 else:
-                    tKey = (oAbsCard.name, 'Unspecified Expansion')
+                    oKey = (oAbsCard, oAbsCard.name, 'Unspecified Expansion')
             else:
-                tKey = (oAbsCard.name, None)
-            dFullCardList.setdefault(tKey, {aCardSetNames[0] : 0,
+                oKey = (oAbsCard, oAbsCard.name, None)
+            dFullCardList.setdefault(oKey, {aCardSetNames[0] : 0,
                 aCardSetNames[1] : 0})
-            dFullCardList[tKey][sCardSetName] += 1
-    dDifferences = { aCardSetNames[0] : [], aCardSetNames[1] : [] }
-    aCommon = []
+            dFullCardList[oKey][sCardSetName] += 1
+    dDifferences = { aCardSetNames[0] : {}, aCardSetNames[1] : {} }
+    dCommon = {}
     for tCardInfo in dFullCardList:
         iDiff = dFullCardList[tCardInfo][aCardSetNames[0]] - \
                 dFullCardList[tCardInfo][aCardSetNames[1]]
         iCommon = min(dFullCardList[tCardInfo][aCardSetNames[0]],
                 dFullCardList[tCardInfo][aCardSetNames[1]])
         if iDiff > 0:
-            dDifferences[aCardSetNames[0]].append((tCardInfo[0], tCardInfo[1],
-                iDiff))
+            dDifferences[aCardSetNames[0]][tCardInfo[0]] = (tCardInfo[1],
+                    tCardInfo[2], iDiff)
         elif iDiff < 0:
-            dDifferences[aCardSetNames[1]].append((tCardInfo[0], tCardInfo[1],
-                abs(iDiff)))
+            dDifferences[aCardSetNames[1]][tCardInfo[0]] = (tCardInfo[1],
+                    tCardInfo[2], abs(iDiff))
         if iCommon > 0:
-            aCommon.append((tCardInfo[0], tCardInfo[1], iCommon))
-    return (dDifferences, aCommon)
+            dCommon[tCardInfo[0]] = (tCardInfo[1], tCardInfo[2], iCommon)
+    return (dDifferences, dCommon)
 
 
 class CardSetCompare(CardListPlugin):
@@ -106,21 +106,25 @@ class CardSetCompare(CardListPlugin):
 
     def comp_card_sets(self, aCardSetNames, bUseExpansions):
         """Display the results of comparing the card sets."""
-        def format_list(aList, sColor):
+        def format_list(dCardInfo, sColor):
             """Format the list of cards for display."""
             oLabel = gtk.Label()
             oAlign = gtk.Alignment()
             oAlign.add(oLabel)
             oAlign.set_padding(0, 0, 5, 0) # offset a little from the left edge
-            if len(aList) > 0:
-                sContents = ""
+            oGroupedCards = self.model.groupby(dCardInfo, IAbstractCard)
+            sContents = ""
+            for sGroup, oGroupIter in oGroupedCards:
+                print sGroup
+                sContents += '<span foreground="blue">%s</span>\n' % sGroup
+                aList = [dCardInfo[x] for x in oGroupIter]
                 aList.sort()
                 aList.sort(key=lambda x: x[1], reverse=True)
                 # sort alphabetically, then reverse sort by card count
                 # stable sorting means this gives the desired ordering
                 for sCardName, sExpansion, iCount in aList:
-                    sContents += '%(num)d X <span foreground = "%(color)s">' \
-                            '%(name)s' % {
+                    sContents += u'\t%(num)d \u00D7 <span foreground =' \
+                            ' "%(color)s"> %(name)s' % {
                                     'num' : iCount,
                                     'color' : sColor,
                                     'name' : sCardName,
@@ -129,23 +133,24 @@ class CardSetCompare(CardListPlugin):
                         sContents += " (%s)</span>\n" % sExpansion
                     else:
                         sContents += "</span>\n"
+            if sContents:
                 oLabel.set_markup(sContents)
             else:
                 oLabel.set_text('No Cards')
             return oAlign
 
-        def make_page(oList, aCardData):
+        def make_page(oList, dCardData):
             """Setup the list + button for the notebook"""
             oPage = gtk.VBox(False)
             oPage.pack_start(AutoScrolledWindow(oList, True), True)
-            if aCardData:
+            if dCardData:
                 oButton = gtk.Button('Create Card Set from this list')
                 oButton.connect('clicked', self.create_card_set,
-                        aCardData)
+                        dCardData)
                 oPage.pack_start(oButton, False)
             return oPage
 
-        (dDifferences, aCommon) = _get_card_set_list(aCardSetNames,
+        (dDifferences, dCommon) = _get_card_set_list(aCardSetNames,
                 bUseExpansions)
         oResultDlg = SutekhDialog("Card Comparison", self.parent,
                 gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
@@ -155,8 +160,8 @@ class CardSetCompare(CardListPlugin):
         oNotebook.popup_enable()
         oHeading = gtk.Label()
         oHeading.set_markup('<span foreground = "blue">Common Cards</span>')
-        oComm = format_list(aCommon, 'green')
-        oPage = make_page(oComm, aCommon)
+        oComm = format_list(dCommon, 'green')
+        oPage = make_page(oComm, dCommon)
         oNotebook.append_page(oPage, oHeading)
         oHeading = gtk.Label()
         oHeading.set_markup('<span foreground = "red">Cards only in %s</span>'
@@ -178,17 +183,18 @@ class CardSetCompare(CardListPlugin):
         oResultDlg.run()
         oResultDlg.destroy()
 
-    def create_card_set(self, _oButton, aCardData):
+    def create_card_set(self, _oButton, dCardData):
         """Create a card set from the card list"""
         sCSName = create_card_set(self.parent)
         oCardSet = IPhysicalCardSet(sCSName)
-        for sCardName, sExpansionName, iCnt in aCardData:
-            if sExpansionName:
-                oExpansion = IExpansion(sExpansionName)
+        for oCard in dCardData:
+            _sCardName, sExpansionName, iCnt = dCardData[oCard]
+            if not sExpansionName:
+                # Dealing with abstract cards in the list
+                oPhysCard = IPhysicalCard((oCard, None))
             else:
-                oExpansion = None
-            oCard = IAbstractCard(sCardName)
-            oPhysCard = IPhysicalCard((oCard, oExpansion))
+                # Dealing with pysical cards in the list
+                oPhysCard = oCard
             # pylint: disable-msg=E1101
             # E1101 - sqlobject confuses pylint
             for _iNum in range(iCnt):

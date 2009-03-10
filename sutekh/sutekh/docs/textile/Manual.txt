@@ -920,6 +920,12 @@ By default, the plugin ignores the expansions of cards, and considers all
 cards with the same name to be the same. You can change this behaviour using the
 _Consider Expansions as well_ checkbox when selecting a card set for comparison.
 
+The display of the results uses the same grouping as the card set the plugin.
+
+You can create card sets from each list of results using the 'Create Card Set
+from this list' button.
+
+
 h3(#analyze_plugin). Analyze Deck
 
 This plugin examines a card set and displays various statistics about it which
