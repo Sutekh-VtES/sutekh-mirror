@@ -12,7 +12,8 @@ from sutekh.core.SutekhObjects import PhysicalCardSet, IPhysicalCardSet
 from sutekh.gui.FilterDialog import FilterDialog
 from sutekh.gui.CardSetManagementView import CardSetManagementView
 from sutekh.gui.CreateCardSetDialog import CreateCardSetDialog
-from sutekh.gui.SutekhDialog import do_complaint_warning, do_complaint
+from sutekh.gui.SutekhDialog import do_complaint_warning, do_complaint, \
+        do_complaint_error
 from sutekh.core.CardSetUtilities import delete_physical_card_set, \
         find_children, detect_loop, get_loop_names, break_loop
 
@@ -64,6 +65,22 @@ def check_ok_to_delete(oCardSet):
         iResponse = do_complaint_warning("Card Set %s"
                 " Has Children. Really Delete?" % oCardSet.name)
     return iResponse == gtk.RESPONSE_OK
+
+def create_card_set(oMainWindow):
+    """Create a new card set from the edit dialog"""
+    oDialog = CreateCardSetDialog(oMainWindow)
+    oDialog.run()
+    sName = oDialog.get_name()
+    if sName:
+        if PhysicalCardSet.selectBy(name=sName).count() != 0:
+            do_complaint_error("Card Set %s already exists." % sName)
+            return None
+        sAuthor = oDialog.get_author()
+        sComment = oDialog.get_comment()
+        oParent = oDialog.get_parent()
+        _oCS = PhysicalCardSet(name=sName, author=sAuthor,
+                comment=sComment, parent=oParent)
+    return sName
 
 def update_card_set(oCardSet, oMainWindow):
     """Update the details of the card set when the user edits them."""
@@ -154,15 +171,8 @@ class CardSetManagementController(object):
 
     def create_new_card_set(self, _oWidget):
         """Create a new card set"""
-        oDialog = CreateCardSetDialog(self._oMainWindow)
-        oDialog.run()
-        sName = oDialog.get_name()
+        sName = create_card_set(self._oMainWindow)
         if sName:
-            sAuthor = oDialog.get_author()
-            sComment = oDialog.get_comment()
-            oParent = oDialog.get_parent()
-            _oCS = PhysicalCardSet(name=sName, author=sAuthor,
-                    comment=sComment, parent=oParent)
             self._oMainWindow.add_new_physical_card_set(sName)
 
     def edit_card_set_properties(self, _oWidget):

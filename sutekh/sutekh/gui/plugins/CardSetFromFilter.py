@@ -8,11 +8,9 @@
 
 import gtk
 from sutekh.core.SutekhObjects import PhysicalCardSet, PhysicalCard, \
-        IPhysicalCard
+        IPhysicalCard, IPhysicalCardSet
 from sutekh.gui.PluginManager import CardListPlugin
-from sutekh.gui.SutekhDialog import do_complaint_error
-from sutekh.gui.CreateCardSetDialog import CreateCardSetDialog
-from sutekh.gui.CardSetManagementController import update_card_set
+from sutekh.gui.CardSetManagementController import create_card_set
 
 class DeckFromFilter(CardListPlugin):
     """Converts a filter into a Card Set."""
@@ -33,37 +31,17 @@ class DeckFromFilter(CardListPlugin):
 
            Prompt the user for Card Set Properties, and so forth.
            """
-        oDlg = CreateCardSetDialog(self.parent)
-        oDlg.run()
-
-        self.handle_response(oDlg)
-
-    def handle_response(self, oDlg):
-        """Handle the user response from make_dialog
-
-           call make_pcs_from_filter to create the PCS if needed
-           """
-        sCSName = oDlg.get_name()
+        sCSName = create_card_set(self.parent)
         if sCSName:
             oCardSet = self.make_cs_from_filter(sCSName)
             if oCardSet:
-                update_card_set(oCardSet, oDlg, self.parent, None)
                 self.open_cs(sCSName)
 
     def make_cs_from_filter(self, sCSName):
         """Create the actual PCS."""
-        # Check CS Doesn't Exist
         # pylint: disable-msg=E1101
         # pylint misses PhysicalCardSet methods
-        if PhysicalCardSet.selectBy(name=sCSName).count() != 0:
-            do_complaint_error("Card Set %s already exists."
-                    % sCSName)
-            return None
-
-        # Create PCS
-        oCS = PhysicalCardSet(name=sCSName)
-
-        # E1101 is still disabled for this
+        oCS = IPhysicalCardSet(sCSName)
         for oCard in self.model.get_card_iterator(
                 self.model.get_current_filter()):
             oCS.addPhysicalCard(IPhysicalCard(oCard))

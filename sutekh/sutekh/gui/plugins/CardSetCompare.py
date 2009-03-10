@@ -8,14 +8,13 @@
 
 import gtk
 from sutekh.core.SutekhObjects import PhysicalCard, IPhysicalCard, \
-        PhysicalCardSet, IAbstractCard, IExpansion
+        PhysicalCardSet, IAbstractCard, IExpansion, IPhysicalCardSet
 from sutekh.core.Filters import PhysicalCardSetFilter
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 from sutekh.gui.ScrolledList import ScrolledList
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
-from sutekh.gui.CreateCardSetDialog import CreateCardSetDialog
-from sutekh.gui.CardSetManagementController import update_card_set
+from sutekh.gui.CardSetManagementController import create_card_set
 
 def _get_card_set_list(aCardSetNames, bUseExpansions):
     """Get the differences and common cards for the card sets."""
@@ -181,16 +180,8 @@ class CardSetCompare(CardListPlugin):
 
     def create_card_set(self, _oButton, aCardData):
         """Create a card set from the card list"""
-        oDlg = CreateCardSetDialog(self.parent)
-        oDlg.run()
-        sCSName = oDlg.get_name()
-        if not sCSName:
-            return
-        if PhysicalCardSet.selectBy(name=sCSName).count() != 0:
-            do_complaint_error("Card Set %s already exists."
-                    % sCSName)
-            return
-        oCardSet = PhysicalCardSet(name=sCSName)
+        sCSName = create_card_set(self.parent)
+        oCardSet = IPhysicalCardSet(sCSName)
         for sCardName, sExpansionName, iCnt in aCardData:
             if sExpansionName:
                 oExpansion = IExpansion(sExpansionName)
@@ -202,7 +193,6 @@ class CardSetCompare(CardListPlugin):
             # E1101 - sqlobject confuses pylint
             for _iNum in range(iCnt):
                 oCardSet.addPhysicalCard(oPhysCard)
-        update_card_set(oCardSet, oDlg, self.parent, None)
         self.open_cs(sCSName)
 
 
