@@ -485,11 +485,11 @@ class AnalyzeCardList(CardListPlugin):
             sMainText += '<span foreground = "red">Less than 40 Library' \
                     ' Cards</span>\n'
         elif self.iNumberLibrary < 60:
-            sMainText += '<span foreground = "blue">Less than 60 Library' \
+            sMainText += '<span foreground = "orange">Less than 60 Library' \
                     ' Cards - this deck is not legal for standard' \
                     ' constructed tournaments</span>'
         elif self.iNumberLibrary > 90:
-            sMainText += '<span foreground = "blue">More than 90 Library' \
+            sMainText += '<span foreground = "orange">More than 90 Library' \
                     ' Cards - this deck is not legal for standard' \
                     ' constructed tournaments</span>\n'
 
