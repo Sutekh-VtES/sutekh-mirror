@@ -22,7 +22,7 @@ class RulebookConfigDialog(SutekhDialog):
     """Dialog for configuring the Rulebook plugin."""
 
     POSSIBLE_FILES = [
-        "Rulebook", "Imbued Rules", "Rulings"
+            "Rulebook", "Imbued Rules", "Rulings", "V:EKN Tournament Rules"
     ]
 
     WW_RULEBOOK_URLS = {
@@ -30,6 +30,8 @@ class RulebookConfigDialog(SutekhDialog):
         "Imbued Rules":
            "http://www.white-wolf.com/vtes/?line=Checklist_NightsOfReckoning",
         "Rulings": "http://www.white-wolf.com/vtes/index.php?line=rulings",
+        "V:EKN Tournament Rules":
+           "http://www.white-wolf.com/vtes/index.php?line=veknRules",
     }
 
     def __init__(self, oParent, bFirstTime=False):
@@ -95,6 +97,7 @@ class RulebookPlugin(CardListPlugin):
         "Rulebook": "rulebook.html",
         "Imbued Rules": "imbued.html",
         "Rulings": "rulings.html",
+        "V:EKN Tournament Rules": "tournament_rules.html",
     }
 
     # pylint: disable-msg=W0142
@@ -273,7 +276,7 @@ class RulebookPlugin(CardListPlugin):
 
         # in rulings, remove everything between header and first
         # end of first style tag
-        if sName in ("Rulings", "Imbued Rules"):
+        if sName in ("Rulings", "Imbued Rules", "V:EKN Tournament Rules"):
             oHdrToStyle = re.compile(r"</head>.*?</style>",
                 re.MULTILINE | re.DOTALL)
             sData = oHdrToStyle.sub("</head>", sData, 1)

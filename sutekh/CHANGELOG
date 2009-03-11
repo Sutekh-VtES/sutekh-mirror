@@ -1,5 +1,6 @@
 11 Mar 2009
  * Add some notes about the total library size to the Analyze plugin
+ * Add supoort for the V:EKN Tournament rules to the rulebook plugin
 
 10 Mar 2009
  * Fix creating card sets from filters & card set compares
