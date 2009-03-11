@@ -115,7 +115,6 @@ class CardSetCompare(CardListPlugin):
             oGroupedCards = self.model.groupby(dCardInfo, IAbstractCard)
             sContents = ""
             for sGroup, oGroupIter in oGroupedCards:
-                print sGroup
                 sContents += '<span foreground="blue">%s</span>\n' % sGroup
                 aList = [dCardInfo[x] for x in oGroupIter]
                 aList.sort()
