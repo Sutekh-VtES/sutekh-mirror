@@ -143,6 +143,8 @@ class LasombraSales(CardListPlugin):
         self._sCacheFile = os.path.join(self._sPrefsPath, 'cache.dat')
         self._load_cache()
 
+        # pylint: disable-msg=C0103
+        # _get_key name OK here
         if hasattr(self.model, "get_all_names_from_path"):
             self._get_key = self._get_key_for_card_set_list
         elif hasattr(self.model, "get_all_from_path"):
@@ -160,6 +162,8 @@ class LasombraSales(CardListPlugin):
             return
 
         fIn = file(self._sCacheFile, "rb")
+        # pylint: disable-msg=W0703
+        # we really do want all the exceptions
         try:
             self.__class__._dPriceCache, self.__class__._aWarnings = \
                 cPickle.load(fIn)
@@ -256,6 +260,8 @@ class LasombraSales(CardListPlugin):
             """Return the expansion for the given row."""
             sShort = str(oRow[5].value).strip()
             sShort = self._dShortExpLookup.get(sShort, sShort)
+            # pylint: disable-msg=W0703
+            # we really do want all the exceptions
             try:
                 oExp = IExpansion(sShort)
             except Exception, _oExcept:
@@ -275,6 +281,8 @@ class LasombraSales(CardListPlugin):
         """Extract prices from the other sheets."""
 
         oFirstRow = oSheet.row(0)
+        # pylint: disable-msg=W0703
+        # we really do want all the exceptions
         try:
             sVal = oFirstRow[1].value
             sVal = self._dExpansionLookup[sVal]
@@ -300,6 +308,8 @@ class LasombraSales(CardListPlugin):
            tCols - quantity, name and price column numbers (default 0, 1, 2).
            """
 
+        # pylint: disable-msg=C0103
+        # names use the constant convention since they're "psuedo" consts
         QUANTITY, NAME, PRICE = tCols
 
         for iNum in range(iStart, iEnd):
@@ -310,6 +320,8 @@ class LasombraSales(CardListPlugin):
                     oRow[PRICE].value):
                 continue
 
+            # pylint: disable-msg=W0703
+            # we really do want all the exceptions
             try:
                 sCardName = str(oRow[NAME].value)
                 iStock = int(oRow[QUANTITY].value)
