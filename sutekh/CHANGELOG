@@ -1,3 +1,6 @@
+11 Mar 2009
+ * Add some notes about the total library size to the Analyze plugin
+
 10 Mar 2009
  * Fix creating card sets from filters & card set compares
  * Compare card set plugin uses same grouping as the card set used as the
