@@ -1,3 +1,7 @@
+13 Mar 2009
+ * Fix sorting in CardSetCompare plugin. Add totals for each group to the
+   display
+
 11 Mar 2009
  * Add some notes about the total library size to the Analyze plugin
  * Add supoort for the V:EKN Tournament rules to the rulebook plugin

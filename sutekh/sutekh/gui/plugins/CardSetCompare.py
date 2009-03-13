@@ -115,10 +115,11 @@ class CardSetCompare(CardListPlugin):
             oGroupedCards = self.model.groupby(dCardInfo, IAbstractCard)
             sContents = ""
             for sGroup, oGroupIter in oGroupedCards:
-                sContents += '<span foreground="blue">%s</span>\n' % sGroup
                 aList = [dCardInfo[x] for x in oGroupIter]
+                iTot = sum([x[2] for x in aList])
                 aList.sort()
-                aList.sort(key=lambda x: x[1], reverse=True)
+                sContents += '<span foreground="blue">%s - %d cards' \
+                        '</span>\n' % (sGroup, iTot)
                 # sort alphabetically, then reverse sort by card count
                 # stable sorting means this gives the desired ordering
                 for sCardName, sExpansion, iCount in aList:
