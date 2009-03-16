@@ -125,7 +125,7 @@ def main(aArgs):
         else:
             sTempdir = gen_temp_dir()
             aPhysicalCardSetList = write_all_pcs(sTempdir)
-            oPCFile = PhysicalCardXmlFile(dir=sTempdir)
+            oPCFile = PhysicalCardXmlFile(sDir=sTempdir)
             oPCFile.write()
             # We dump the databases here
             # We will reload them later

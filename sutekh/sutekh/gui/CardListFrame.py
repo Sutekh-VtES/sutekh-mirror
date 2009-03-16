@@ -26,7 +26,9 @@ class CardListFrame(BasicFrame):
         self._aPlugins = []
         self._oConfig = oMainWindow.config_file
 
+        # Subclasses will override these
         self._oController = None
+        self._oMenu = None
 
     # pylint: disable-msg=W0212
     # We allow access via these properties

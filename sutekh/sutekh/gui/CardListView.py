@@ -29,6 +29,8 @@ class CardListView(gtk.TreeView):
         self._oController = oController
         self._oMainWin = oMainWindow
         self._oConfig = oConfig
+        # subclasses will override this
+        self._sDragPrefix = 'None:'
         self.dListeners = {} # dictionary of CardListViewListeners
 
         super(CardListView, self).__init__(self._oModel)

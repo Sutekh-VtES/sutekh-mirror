@@ -67,7 +67,7 @@ class AbstractCardSetXmlFile(object):
 
     # pylint: disable-msg=R0201
     # method for backwards compatibility
-    def write(self, sAbstractCardSetName):
+    def write(self, _sAbstractCardSetName):
         """Write the given card set to the file (DEPRECATED)."""
         raise RuntimeError("Writing out of abstract card sets to XML files"
                 " is no longer supported.")
