@@ -22,7 +22,8 @@ class RulebookConfigDialog(SutekhDialog):
     """Dialog for configuring the Rulebook plugin."""
 
     POSSIBLE_FILES = [
-            "Rulebook", "Imbued Rules", "Rulings", "V:EKN Tournament Rules"
+            "Rulebook", "Imbued Rules", "Rulings", "V:EKN Tournament Rules",
+            "VTES FAQ",
     ]
 
     WW_RULEBOOK_URLS = {
@@ -32,6 +33,7 @@ class RulebookConfigDialog(SutekhDialog):
         "Rulings": "http://www.white-wolf.com/vtes/index.php?line=rulings",
         "V:EKN Tournament Rules":
            "http://www.white-wolf.com/vtes/index.php?line=veknRules",
+        "VTES FAQ" : "http://www.thelasombra.com/vtes_faq.htm",
     }
 
     def __init__(self, oParent, bFirstTime=False):
@@ -55,9 +57,13 @@ class RulebookConfigDialog(SutekhDialog):
 
         self._dFileSelectors = {}
         for sName in self.POSSIBLE_FILES:
+            if sName == 'VTES FAQ':
+                sBaseUrl = 'www.thelasombra.com'
+            else:
+                sBaseUrl = 'www.white-wolf.com'
             oFileSelector = FileOrUrlWidget(oParent,
                 dUrls = {
-                    'www.white-wolf.com': self.WW_RULEBOOK_URLS[sName]
+                    sBaseUrl: self.WW_RULEBOOK_URLS[sName]
                 },
                 sTitle="Select %s HTML file ..." % (sName,),
             )
@@ -98,6 +104,7 @@ class RulebookPlugin(CardListPlugin):
         "Imbued Rules": "imbued.html",
         "Rulings": "rulings.html",
         "V:EKN Tournament Rules": "tournament_rules.html",
+        "VTES FAQ" : "faq.html",
     }
 
     # pylint: disable-msg=W0142
