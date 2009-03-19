@@ -340,6 +340,8 @@ class LasombraSales(CardListPlugin):
             except SQLObjectNotFound:
                 continue
 
+            sCardName = oAbsCard.name
+
             oExp = fExp(oAbsCard, oRow)
             if oExp is None:
                 sExp = CardListModel.sUnknownExpansion

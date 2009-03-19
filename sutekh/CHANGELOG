@@ -1,5 +1,6 @@
 19 Mar 2009
  * Teach IAbstractCard about "..., The" names
+ * Fix lasombra plugin to handle the occasional "..., The" name correctly
 
 17 Mar 2009
  * Add the VTES FAQ from thelasombra.com to the rulebook plugin
