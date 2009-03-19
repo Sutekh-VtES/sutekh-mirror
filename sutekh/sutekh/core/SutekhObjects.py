@@ -626,7 +626,19 @@ class AbstractCardAdapter(object):
     def __new__(cls, sName):
         # pylint: disable-msg=E1101
         # SQLObject confuses pylint
-        return AbstractCard.byCanonicalName(sName.encode('utf8').lower())
+        try:
+            oCard = AbstractCard.byCanonicalName(sName.encode('utf8').lower())
+        except SQLObjectNotFound:
+            # Correct for common variations
+            if sName.endswith(', The'):
+                sName = 'The ' + sName[:-5]
+            elif sName.endswith(', An'):
+                sName = 'An ' + sName[:-4]
+            else:
+                # Reraise the error if we're going to look up the same card
+                raise
+            oCard = AbstractCard.byCanonicalName(sName.encode('utf8').lower())
+        return oCard
 
 class RulingAdapter(object):
     advise(instancesProvide=[IRuling], asAdapterForTypes=[tuple])
