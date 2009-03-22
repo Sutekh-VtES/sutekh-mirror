@@ -23,7 +23,7 @@ class MyDictKeyChecker(BaseChecker):
 
     name = 'custom_dict_keys'
     msgs = {'W9967': ('Used x in Dict.keys()',
-                      ('Used when "x in Dict.keys()" is used rtaher than'
+                      ('Used when "x in Dict.keys()" is used rather than'
                           ' "x in Dict"')),
             }
     options = ()
