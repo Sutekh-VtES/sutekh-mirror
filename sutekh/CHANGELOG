@@ -1,3 +1,6 @@
+22 Mar 2009
+ * Ensure zip file entries are created with sensible unix permissions
+
 19 Mar 2009
  * Teach IAbstractCard about "..., The" names
  * Fix lasombra plugin to handle the occasional "..., The" name correctly

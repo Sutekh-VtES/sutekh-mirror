@@ -62,7 +62,11 @@ class ZipFileWrapper(object):
             sZipName = 'pcs_%s.xml' % sZName
             sZipName = sZipName.encode('ascii', 'xmlcharrefreplace')
             aList.append(sZipName)
-            self.oZip.writestr(sZipName, oString)
+            oInfoObj = zipfile.ZipInfo(sZipName)
+            # Set permissions on the created file - see issue 3394 on the
+            # python bugtracker. Docs say this is safe on all platforms
+            oInfoObj.external_attr = 0600 << 16L
+            self.oZip.writestr(oInfoObj, oString)
             oLogger.info('PCS: %s written', oPCSet.name)
         if bClose:
             self.__close_zip()
