@@ -53,24 +53,24 @@ def parse_options(aArgs):
     oOptParser.add_option("--sql-debug",
                   action="store_true", dest="sql_debug", default=False,
                   help="Print out SQL statements.")
-    oOptParser.add_option("-l", "--read-physical-cards-from",
+    oOptParser.add_option("-l", "--read-cards-from",
                   type="string", dest="read_physical_cards_from", default=None,
                   help="Read physical card list from the given XML file.")
-    oOptParser.add_option("--save-pcs",
-                  type="string", dest="save_pcs", default=None,
-                  help="Save the given Physical Card Set to an XML file " \
-                          "(by default named <pcsname>.xml).")
-    oOptParser.add_option("--pcs-filename",
-                  type="string", dest="pcs_filename", default=None,
-                  help="Give an alternative filename to save the Physical " \
+    oOptParser.add_option("--save-cs",
+                  type="string", dest="save_cs", default=None,
+                  help="Save the given Card Set to an XML file " \
+                          "(by default named <csname>.xml).")
+    oOptParser.add_option("--cs-filename",
+                  type="string", dest="cs_filename", default=None,
+                  help="Give an alternative filename to save the " \
                           "Card Set as")
-    oOptParser.add_option("--save-all-pcs",
-                  action="store_true", dest="save_all_pcss", default=False,
-                  help="Save all Physical Card Sets in the database to files" \
-                          " - Cannot be used with --save-pcs.")
-    oOptParser.add_option("--read-pcs",
-                  type="string", dest="read_pcs", default=None,
-                  help="Load a Physical Card Set from the given XML file.")
+    oOptParser.add_option("--save-all-cs",
+                  action="store_true", dest="save_all_css", default=False,
+                  help="Save all Card Sets in the database to files" \
+                          " - Cannot be used with --save-cs.")
+    oOptParser.add_option("--read-cs",
+                  type="string", dest="read_cs", default=None,
+                  help="Load a Card Set from the given XML file.")
     oOptParser.add_option("--read-acs",
                   type="string", dest="read_acs", default=None,
                   help="Load an Abstract Card Set from the given XML file.")
@@ -155,11 +155,11 @@ def main(aArgs):
         oFile = PhysicalCardXmlFile(oOpts.read_physical_cards_from)
         oFile.read()
 
-    if oOpts.save_all_pcss and not oOpts.save_pcs is None:
-        print "Can't use --save-pcs and --save-all-pcs Simulatenously"
+    if oOpts.save_all_css and not oOpts.save_cs is None:
+        print "Can't use --save-cs and --save-all-cs Simulatenously"
         return 1
 
-    if oOpts.save_all_pcss:
+    if oOpts.save_all_css:
         write_all_pcs()
 
     if oOpts.dump_zip_name is not None:
@@ -170,12 +170,12 @@ def main(aArgs):
         oZipFile = ZipFileWrapper(oOpts.restore_zip_name)
         oZipFile.do_restore_from_zip(oLogHandler=oLogHandler)
 
-    if not oOpts.save_pcs is None:
-        oFile = PhysicalCardSetXmlFile(oOpts.pcs_filename)
-        oFile.write(oOpts.save_pcs)
+    if not oOpts.save_cs is None:
+        oFile = PhysicalCardSetXmlFile(oOpts.cs_filename)
+        oFile.write(oOpts.save_cs)
 
-    if not oOpts.read_pcs is None:
-        oFile = PhysicalCardSetXmlFile(oOpts.read_pcs)
+    if not oOpts.read_cs is None:
+        oFile = PhysicalCardSetXmlFile(oOpts.read_cs)
         oFile.read()
 
     if not oOpts.read_acs is None:

@@ -1460,8 +1460,8 @@ class CSPhysicalCardSetInUseFilter(DirectFilter):
     """Filter Physical Card Set on inuse status"""
     keyword = "CSSetsInUse"
     description = "Card Set Marked as in Use"
-    helptext = "Selects those Physical Card Sets in the Physical Card Set" \
-            "List that are marked as in use. This filter takes no parameters."
+    helptext = "Selects those Card Sets in the Card Set List that are " \
+            "marked as in use. This filter takes no parameters."
     types = ['PhysicalCardSet']
 
     # pylint: disable-msg=C0111
