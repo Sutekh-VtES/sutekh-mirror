@@ -53,7 +53,7 @@ def parse_options(aArgs):
     oOptParser.add_option("--sql-debug",
                   action="store_true", dest="sql_debug", default=False,
                   help="Print out SQL statements.")
-    oOptParser.add_option("-l", "--read-cards-from",
+    oOptParser.add_option("-l", "--read-physical-cards-from",
                   type="string", dest="read_physical_cards_from", default=None,
                   help="Read physical card list from the given XML file.")
     oOptParser.add_option("--save-cs",
