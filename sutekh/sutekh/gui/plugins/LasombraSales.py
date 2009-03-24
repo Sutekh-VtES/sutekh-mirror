@@ -335,6 +335,8 @@ class LasombraSales(CardListPlugin):
             # Fix advanced vampires
             sCardName = sCardName.replace('(Adv)', '(Advanced)')
 
+            # pylint: disable-msg=E1101
+            # pylint doesn't pick up pyprotocols methods correctly
             try:
                 oAbsCard = IAbstractCard(sCardName)
             except SQLObjectNotFound:
