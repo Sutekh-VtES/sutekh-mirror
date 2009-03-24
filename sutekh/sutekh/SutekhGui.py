@@ -104,10 +104,10 @@ def main(aArgs):
         oConn.debug = True
 
     # Check we have the correct gtk version
-    sMessage = gtk.check_version(2, 10, 0)
+    sMessage = gtk.check_version(2, 12, 0)
     if sMessage is not None:
         do_complaint_error('Incorrect gtk version. Sutekh requires at least'
-                ' gtk 2.10.0.\nError reported %s' % sMessage)
+                ' gtk 2.12.0.\nError reported %s' % sMessage)
         return 1
 
     # construct Window
