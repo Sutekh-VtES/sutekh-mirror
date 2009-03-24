@@ -159,22 +159,23 @@ class CardSetCompare(CardListPlugin):
         oNotebook.set_scrollable(True)
         oNotebook.popup_enable()
         oHeading = gtk.Label()
-        oHeading.set_markup('<span foreground = "blue">Common Cards</span>')
+        sTabText = 'Common Cards'
+        oHeading.set_markup('<span foreground = "blue">%s</span>' % sTabText)
         oComm = format_list(dCommon, 'green')
         oPage = make_page(oComm, dCommon)
-        oNotebook.append_page(oPage, oHeading)
+        oNotebook.append_page_menu(oPage, oHeading, gtk.Label(sTabText))
         oHeading = gtk.Label()
-        oHeading.set_markup('<span foreground = "red">Cards only in %s</span>'
-                % aCardSetNames[0])
+        sTabText ='Cards only in %s' % aCardSetNames[0]
+        oHeading.set_markup('<span foreground = "red">%s</span>' % sTabText)
         oDiff1 = format_list(dDifferences[aCardSetNames[0]], 'red')
         oPage = make_page(oDiff1, dDifferences[aCardSetNames[0]])
-        oNotebook.append_page(oPage, oHeading)
+        oNotebook.append_page_menu(oPage, oHeading, gtk.Label(sTabText))
+        sTabText ='Cards only in %s' % aCardSetNames[1]
         oHeading = gtk.Label()
-        oHeading.set_markup('<span foreground = "red">Cards only in %s</span>'
-                % aCardSetNames[1])
+        oHeading.set_markup('<span foreground = "red">%s</span>' % sTabText)
         oDiff2 = format_list(dDifferences[aCardSetNames[1]], 'red')
         oPage = make_page(oDiff2, dDifferences[aCardSetNames[1]])
-        oNotebook.append_page(oPage, oHeading)
+        oNotebook.append_page_menu(oPage, oHeading, gtk.Label(sTabText))
         # pylint: disable-msg=E1101
         # pylint misses vbox methods
         oResultDlg.vbox.pack_start(oNotebook)
