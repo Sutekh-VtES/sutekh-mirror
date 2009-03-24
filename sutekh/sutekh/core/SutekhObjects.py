@@ -630,14 +630,12 @@ class AbstractCardAdapter(object):
             oCard = AbstractCard.byCanonicalName(sName.encode('utf8').lower())
         except SQLObjectNotFound:
             # Correct for common variations
-            if sName.endswith(', The'):
-                sName = 'The ' + sName[:-5]
-            elif sName.endswith(', An'):
-                sName = 'An ' + sName[:-4]
+            sNewName = csv_to_canonical(sName)
+            if sNewName != sName:
+                oCard = AbstractCard.byCanonicalName(
+                        sNewName.encode('utf8').lower())
             else:
-                # Reraise the error if we're going to look up the same card
                 raise
-            oCard = AbstractCard.byCanonicalName(sName.encode('utf8').lower())
         return oCard
 
 class RulingAdapter(object):
@@ -716,3 +714,25 @@ def init_cache():
     for oJoin in AbstractCard.sqlmeta.joins:
         if type(oJoin) is SOCachedRelatedJoin:
             oJoin.init_cache()
+
+# helper conversion functions
+# We define them here to avoid circular imports, since pretty much everything
+# else requires SutekhObjects
+
+def canonical_to_csv(sName):
+    """Moves articles to the end of the name"""
+    if sName.startswith('The '):
+        sName = sName[4:] + ", The"
+    elif sName.startswith('An '):
+        sName = sName[3:] + ", An"
+    return sName
+
+def csv_to_canonical(sName):
+    """Moves articles from the end back to the start - reverses
+       cannonical_to_csv"""
+    if sName.endswith(', The'):
+        sName = "The " + sName[:-5]
+    elif sName.endswith(', An'):
+        sName = "An " + sName[:-4]
+    return sName
+

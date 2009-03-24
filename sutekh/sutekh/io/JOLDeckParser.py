@@ -10,6 +10,7 @@
 # pylint: disable-msg=W0402
 # string.digits is OK
 import re
+from sutekh.core.SutekhObjects import csv_to_canonical
 
 class JOLDeckParser(object):
     """Parser for the JOL Deck format."""
@@ -43,11 +44,7 @@ class JOLDeckParser(object):
         # Unescape names
         if sName.endswith('(advanced)'):
             sName = sName.replace('(advanced)', '(Advanced)')
-        # The following two may not be necessary, but it's not unlikely that
-        # people will produce decks with these
-        if sName.endswith(', The'):
-            sName = 'The ' + sName[:-5]
-        elif sName.endswith(', An'):
-            sName = 'An ' + sName[:-4]
+        # Avoid going down the exception path in IAbstractCard if we can
+        sName = csv_to_canonical(sName)
         # JOL has no expansion info
         self._oHolder.add(iNum, sName, None)

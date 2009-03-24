@@ -7,7 +7,7 @@
 """Export a card set to HTML."""
 
 import time
-from sutekh.core.SutekhObjects import IAbstractCard
+from sutekh.core.SutekhObjects import IAbstractCard, canonical_to_csv
 from sutekh.core.ArdbInfo import ArdbInfo
 from sutekh.SutekhInfo import SutekhInfo
 from sutekh.SutekhUtility import pretty_xml
@@ -130,11 +130,7 @@ a:hover {
 
 def _monger_url(oCard, bVamp):
     """Return a monger url for the given AbstractCard"""
-    sName = oCard.name
-    if sName.startswith('The '):
-        sName = sName[4:] + ', The'
-    elif sName.startswith('An '):
-        sName = sName[3:] + ', An'
+    sName = canonical_to_csv(oCard.name)
     if bVamp:
         if oCard.level is not None:
             sName = sName.replace(' (Advanced)', '')
@@ -150,11 +146,7 @@ def _monger_url(oCard, bVamp):
 
 def _secret_library_url(oCard, bVamp):
     """Return a Secret Library url for the given AbstractCard"""
-    sName = oCard.name
-    if sName.startswith('The '):
-        sName = sName[4:] + ',+The'
-    elif sName.startswith('An '):
-        sName = sName[3:] + ',+An'
+    sName = canonical_to_csv(oCard.name)
     if bVamp:
         if oCard.level is not None:
             sName = sName.replace(' (Advanced)', '')

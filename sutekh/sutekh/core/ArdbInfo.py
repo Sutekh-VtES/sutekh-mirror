@@ -14,22 +14,6 @@ from sutekh.core.SutekhObjects import IAbstractCard, IPhysicalCard
 from sutekh.SutekhInfo import SutekhInfo
 
 
-def escape_ardb_name(sName):
-    """Rework the card name to match ARDB conventions"""
-    if sName.startswith('An '):
-        sName = sName[3:] + ', An'
-    elif sName.startswith('The '):
-        sName = sName[4:] + ', The'
-    return sName
-
-def unescape_ardb_name(sCardName):
-    """Convert from ARDB conventions to Sutekh Conventions"""
-    if sCardName.endswith(', The'):
-        sCardName = 'The ' + sCardName[:-5]
-    elif sCardName.endswith(', An'):
-        sCardName = 'An ' + sCardName[:-4]
-    return sCardName
-
 def escape_ardb_expansion_name(oExpansion):
     """Rework the expansion name to match ARDB"""
     sExpName = oExpansion.shortname

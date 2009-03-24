@@ -22,16 +22,14 @@
 
 import unicodedata
 from sutekh.core.ELDBUtilities import type_of_card
+from sutekh.core.SutekhObjects import canonical_to_csv
 
 def lackey_name(oCard):
     """Escape the card name to Lackey CCG's requirements"""
     sName = oCard.name
     if oCard.level is not None:
         sName = sName.replace("(Advanced)", "Adv.")
-    if sName.startswith("The "):
-        sName = sName[4:] + ", The"
-    if sName.startswith("An "):
-        sName = sName[3:] + ", An"
+    sName = canonical_to_csv(sName)
     sName = unicodedata.normalize('NFKD', sName).encode('ascii','ignore')
     return sName
 

@@ -1,5 +1,6 @@
 24 Mar 2009
  * Remove markup from tab popup menu in card set compare plugin
+ * Unify the repeated handling of "..., The" names into common functions
  
 22 Mar 2009
  * Ensure zip file entries are created with sensible unix permissions

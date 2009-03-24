@@ -7,7 +7,7 @@
 """Utilitity functions for importing from & exporting to FELDB"""
 
 import unicodedata
-from sutekh.core.SutekhObjects import AbstractCard
+from sutekh.core.SutekhObjects import AbstractCard, canonical_to_csv
 
 def type_of_card(oCard):
     """Return either Crypt or Library as required."""
@@ -22,12 +22,9 @@ def norm_name(oCard):
     sName = oCard.name
     if oCard.level is not None:
         sName = sName.replace("(Advanced)", "(ADV)")
-    if sName.startswith("The ") and sName != "The Kikiyaon":
+    if sName != "The Kikiyaon":
         # Annoying ELDB special case
-        sName = sName[4:] + ", The"
-    if sName.startswith("An "):
-        # FELDB does this as well
-        sName = sName[3:] + ", An"
+        sName = canonical_to_csv(sName)
     sName = sName.replace("'", "`")
     return unicodedata.normalize('NFKD', sName).encode('ascii','ignore')
 

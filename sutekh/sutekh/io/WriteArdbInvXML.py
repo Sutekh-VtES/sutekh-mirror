@@ -9,8 +9,8 @@
 """Given a list of Abstract Cards in a set, write a XML file compatable with
    the Anarch Revolt Deck Builder's XML inventory format."""
 
-from sutekh.core.SutekhObjects import IAbstractCard
-from sutekh.core.ArdbInfo import ArdbInfo, escape_ardb_name
+from sutekh.core.SutekhObjects import IAbstractCard, canonical_to_csv
+from sutekh.core.ArdbInfo import ArdbInfo
 from sutekh.SutekhUtility import pretty_xml
 import time
 # pylint: disable-msg=E0611, F0401
@@ -88,7 +88,7 @@ class WriteArdbInvXML(ArdbInfo):
                 oNameElem.text = sName.replace(' (Advanced)', '')
             else:
                 oNameElem.text = sName
-            sName = escape_ardb_name(sName)
+            sName = canonical_to_csv(sName)
             oSetElem = SubElement(oCardElem, 'set')
             oSetElem.text = sSet
 
@@ -109,7 +109,7 @@ class WriteArdbInvXML(ArdbInfo):
             oCardElem = SubElement(oLibElem, 'card', databaseID=str(iId),
                     have=str(iNum), spare='0', need='0')
             oNameElem = SubElement(oCardElem, 'name')
-            sName = escape_ardb_name(sName)
+            sName = canonical_to_csv(sName)
             oNameElem.text = sName
             oSetElem = SubElement(oCardElem, 'set')
             oSetElem.text = sSet

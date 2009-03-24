@@ -14,8 +14,8 @@ try:
 except ImportError:
     from elementtree.ElementTree import XMLParser
 # pylint: enable-msg=E0611, F0401
-from sutekh.core.ArdbInfo import unescape_ardb_name, \
-        unescape_ardb_expansion_name
+from sutekh.core.SutekhObjects import csv_to_canonical
+from sutekh.core.ArdbInfo import unescape_ardb_expansion_name
 
 class XMLState(object):
     """Simple State tracker used by the XMLParser"""
@@ -68,7 +68,7 @@ class XMLState(object):
                             self._sCardSet)
                 if self._sAdvanced == '(Advanced)':
                     self._sCardName = self._sCardName + ' (Advanced)'
-                self._sCardName = unescape_ardb_name(self._sCardName)
+                self._sCardName = csv_to_canonical(self._sCardName)
                 self._oHolder.add(self._iCount, self._sCardName,
                         self._sCardSet)
                 self._sCardName = None

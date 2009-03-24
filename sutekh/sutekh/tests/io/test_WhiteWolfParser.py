@@ -361,6 +361,19 @@ class WhiteWolfParserTests(SutekhTest):
         self.assertEqual(len(oKemintiri.title), 0)
         self.assertTrue(IRarityPair(('KMW', 'Uncommon')) in oKemintiri.rarity)
 
+        # Check The Path
+        oPath1 = IAbstractCard('The Path of Blood')
+        
+        self.failUnless(IClan('Assamite') in oPath1.clan)
+        self.assertEqual(oPath1.cost, 1)
+        self.assertEqual(oPath1.costtype, 'pool')
+        self.failUnless(ICardType('Master') in oPath1.cardtype)
+
+        # Check alternative lookup
+        oPath2 = IAbstractCard('Path of Blood, The')
+        self.assertEqual(oPath1.id, oPath2.id)
+
+
 
 if __name__ == "__main__":
     unittest.main()
