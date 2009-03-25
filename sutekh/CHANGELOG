@@ -1,3 +1,6 @@
+25 Mar 2009
+ * Add tooltips to butons in GuiCardListView
+
 24 Mar 2009
  * Remove markup from tab popup menu in card set compare plugin
  * Unify the repeated handling of "..., The" names into common functions

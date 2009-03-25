@@ -101,6 +101,9 @@ class ReplacementTreeView(gtk.TreeView):
            appended.
            """
         # ListStore: count, missing card, replacement
+
+        self._dToolTips = {}
+
         oModel = gtk.ListStore(gobject.TYPE_INT, gobject.TYPE_STRING,
                                gobject.TYPE_STRING)
 
@@ -123,6 +126,9 @@ class ReplacementTreeView(gtk.TreeView):
                 'Filter on best guess',
                 self._set_filter) # filter out best guesses
 
+        self.set_property('has-tooltip', True)
+        self.connect('query-tooltip', self._show_tooltip)
+
     # utility methods to simplify column creation
     def _create_button_column(self, oIcon, sLabel, sToolTip, fClicked):
         """Create a column with a button, usin oIcon and the function
@@ -130,15 +136,29 @@ class ReplacementTreeView(gtk.TreeView):
         oCell = CellRendererSutekhButton(bShowIcon=True)
         oCell.load_icon(oIcon, self)
         oLabel = gtk.Label(sLabel)
-        if hasattr(oLabel,'set_tooltip_text'):
-            # GTK < 2.12 doesn't have the new tooltip API
-            oLabel.set_tooltip_text(sToolTip)
         oColumn = gtk.TreeViewColumn("", oCell)
         oColumn.set_widget(oLabel)
         oColumn.set_fixed_width(22)
         oColumn.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
         self.append_column(oColumn)
         oCell.connect('clicked', fClicked)
+        self._dToolTips[oColumn] = sToolTip
+
+    # Show tooltips for the column buttons
+    def _show_tooltip(self, _oWidget, _iXPos, _iYPos, _bKeyboard, oToolTip):
+        """Test if a tooltip should be shown"""
+        sToolTip = None
+        # The positions passed in aren't relative to the right window for
+        # get_path, so we query position directly
+        iXPos, iYPos, _oIgnore = self.get_bin_window().get_pointer()
+        tRes = self.get_path_at_pos(iXPos, iYPos)
+        if tRes:
+            # path returned may be none
+            sToolTip = self._dToolTips.get(tRes[1], None)
+        if sToolTip:
+            oToolTip.set_markup(sToolTip)
+            return True
+        return False
 
     def _create_text_column(self, sLabel, iColumn):
         """Create a text column, using iColumn from the model"""
