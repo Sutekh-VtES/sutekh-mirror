@@ -1,7 +1,7 @@
 # LackeyDeckParser.py
 # -*- coding: utf8 -*-
 # vim:fileencoding=utf8 ai ts=4 sts=4 et sw=4
-# ELDB Deck File Parser
+# Lackey Deck File Parser
 # Copyright 2008 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 

@@ -1,14 +1,12 @@
 # JOLDeckParser.py
 # -*- coding: utf8 -*-
 # vim:fileencoding=utf8 ai ts=4 sts=4 et sw=4
-# ELDB Deck File Parser
+# JOL Deck File Parser
 # Copyright 2008 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
 """Parser for JOL deck format"""
 
-# pylint: disable-msg=W0402
-# string.digits is OK
 import re
 from sutekh.core.SutekhObjects import csv_to_canonical
 
