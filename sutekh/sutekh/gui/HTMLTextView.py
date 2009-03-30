@@ -7,6 +7,9 @@
 # License: GPL - See COPYRIGHT file for details
 # Original version downloaded from http://www.gnome.org/~gjc/htmltextview.py
 # April 2008
+#   Original version released under the GNU Lesser General Public License
+#   (version 2 or later) - see
+#       http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
 
 """A gtk.TextView-based renderer for XHTML-IM, as described in:
    http://www.jabber.org/jeps/jep-0071.html .
