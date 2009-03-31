@@ -31,7 +31,8 @@ from sutekh.core.SutekhObjects import csv_to_canonical
 class SLInventoryParser(object):
     """Parser for the Secret Libary web API inventory format."""
 
-    oCardLineRegexp = re.compile('^(?P<have>[0-9]+)\s*;\s*(?P<want>[0-9]+)\s*;\s*(?P<name>.*)$')
+    oCardLineRegexp = re.compile(
+            '^(?P<have>[0-9]+)\s*;\s*(?P<want>[0-9]+)\s*;\s*(?P<name>.*)$')
 
     def __init__(self, oHolder):
         self._oHolder = oHolder
@@ -57,10 +58,14 @@ class SLInventoryParser(object):
             raise RuntimeError('Unknown section heading in Secret'
                 ' Library inventory format')
 
+    # pylint: disable-msg=R0201
+    # Making these functions for clarity
     def _no_section(self, sLine):
         """Initial parser -- seeing a line here is an error."""
         raise RuntimeError('Data line outside of section'
             ' for Secret Library inventory format')
+
+    # pylint: enable-msg=R0201
 
     def _crypt_section(self, sLine):
         """Parse a crypt entry."""

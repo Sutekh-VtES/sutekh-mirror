@@ -31,7 +31,7 @@ class TestSLDeckParser(SutekhTest):
         10 Cloak the Gathering
         2 Coven, The
         2 Carlton Van Wyk (Hunter)
-        ***SL***ENDDECK*** 
+        ***SL***ENDDECK***
         """
 
     def test_basic(self):

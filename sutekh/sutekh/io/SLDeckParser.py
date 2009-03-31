@@ -68,10 +68,15 @@ class SLDeckParser(object):
             raise RuntimeError('Unknown section heading in Secret'
                 ' Library Deck Format')
 
+    # pylint: disable-msg=R0201
+    # Making these functions for clarity
     def _no_section(self, sLine):
         """Initial parser -- seeing a line here is an error."""
         raise RuntimeError('Data line outside of section'
             ' for Secret Library Deck format')
+
+
+    # pylint: enable-msg=R0201
 
     def _title_section(self, sLine):
         """Parse a title line."""

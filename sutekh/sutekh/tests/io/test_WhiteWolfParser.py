@@ -363,7 +363,7 @@ class WhiteWolfParserTests(SutekhTest):
 
         # Check The Path
         oPath1 = IAbstractCard('The Path of Blood')
-        
+
         self.failUnless(IClan('Assamite') in oPath1.clan)
         self.assertEqual(oPath1.cost, 1)
         self.assertEqual(oPath1.costtype, 'pool')

@@ -144,6 +144,8 @@ class ReplacementTreeView(gtk.TreeView):
         oCell.connect('clicked', fClicked)
         self._dToolTips[oColumn] = sToolTip
 
+    # pylint: disable-msg=R0913
+    # Need this many arguments from function signature
     # Show tooltips for the column buttons
     def _show_tooltip(self, _oWidget, _iXPos, _iYPos, _bKeyboard, oToolTip):
         """Test if a tooltip should be shown"""
@@ -159,6 +161,8 @@ class ReplacementTreeView(gtk.TreeView):
             oToolTip.set_markup(sToolTip)
             return True
         return False
+
+    # pylint: enable-msg=R0913
 
     def _create_text_column(self, sLabel, iColumn):
         """Create a text column, using iColumn from the model"""

@@ -20,8 +20,9 @@ class FileOrUrlWidget(gtk.VBox):
     OTHER_FILE = 'Select file ...'
     OTHER_URL = 'Enter other URL ...'
 
-    # pylint: disable-msg=R0913
-    # Need this many arguments
+    # pylint: disable-msg=R0913, C0103
+    # R0913: Need this many arguments
+    # C0103: Use gtk naming conventions here for consistency when called
     def __init__(self, oParent, sTitle=None, dUrls=None,
                 homogeneous=False, spacing=0):
         """Create a FileOrUrlWidget.
@@ -77,7 +78,7 @@ class FileOrUrlWidget(gtk.VBox):
         self._oSrcCombo.set_active(0)
         self._src_combo_updated(self._oSrcCombo)
 
-    # pylint: enable-msg=R0913
+    # pylint: enable-msg=R0913, C0103
 
     def _src_combo_updated(self, oSrcCombo):
         """Handle updating of the selected source combo box."""
