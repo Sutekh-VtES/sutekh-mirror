@@ -27,6 +27,7 @@ class CardSetManagementMenu(PaneMenu):
         self.__create_actions_menu()
         self.create_edit_menu()
         self.create_filter_menu()
+        self.create_plugins_menu('_Plugins', self._oFrame)
 
     # pylint: disable-msg=W0201
     # called from __init__, so OK

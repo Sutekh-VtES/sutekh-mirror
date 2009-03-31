@@ -26,11 +26,18 @@ class CardSetManagementFrame(BasicFrame):
     _sName = 'Card Set List'
     _oSetClass = PhysicalCardSet
 
+    _cModelType = "Card Set List"
+
     def __init__(self, oMainWindow):
         super(CardSetManagementFrame, self).__init__(oMainWindow)
         self._oMenu = None
         self._oController = CardSetManagementController(oMainWindow, self)
         self.set_name("card sets list")
+
+        self.init_plugins()
+        self._oMenu = CardSetManagementMenu(self, self._oMainWindow,
+                self._oController)
+
         self.add_parts()
 
     # pylint: disable-msg=W0212
@@ -47,9 +54,6 @@ class CardSetManagementFrame(BasicFrame):
 
         self.set_title(self._sName)
         oMbox.pack_start(self._oTitle, False, False)
-
-        self._oMenu = CardSetManagementMenu(self, self._oMainWindow,
-                self._oController)
 
         oMbox.pack_start(self._oMenu, False, False)
 

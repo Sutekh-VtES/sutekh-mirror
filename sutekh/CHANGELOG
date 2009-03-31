@@ -1,3 +1,6 @@
+31 Mar 2009
+ * Allow plugins to register on the CardSetManagement pane
+
 25 Mar 2009
  * Add tooltips to butons in GuiCardListView
 

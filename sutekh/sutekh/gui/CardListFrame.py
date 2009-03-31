@@ -19,11 +19,9 @@ class CardListFrame(BasicFrame):
        Provide common methods and basic parameters common to all the
        different CardList Frames.
        """
-    _cModelType = None
 
     def __init__(self, oMainWindow):
         super(CardListFrame, self).__init__(oMainWindow)
-        self._aPlugins = []
         self._oConfig = oMainWindow.config_file
 
         # Subclasses will override these
@@ -37,16 +35,7 @@ class CardListFrame(BasicFrame):
     menu = property(fget=lambda self: self._oMenu, doc="Frame Menu")
     type = property(fget=lambda self: self._cModelType.sqlmeta.table,
             doc="Frame Type")
-    plugins = property(fget=lambda self: self._aPlugins,
-            doc="Plugins enabled for this frame.")
     # pylint: enable-msg=W0212
-
-    def init_plugins(self):
-        """Loop through the plugins, and enable those appropriate for us."""
-        for cPlugin in \
-                self._oMainWindow.plugin_manager.get_card_list_plugins():
-            self._aPlugins.append(cPlugin(self._oController.view,
-                self._oController.view.get_model(), self._cModelType))
 
     def reload(self):
         """Reload frame contents"""

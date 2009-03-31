@@ -22,9 +22,12 @@ class BasicFrame(gtk.Frame):
     aDragTargets = [ ('STRING', 0, 0),
             ('text/plain', 0, 0) ]
 
+    _cModelType = None
+
     def __init__(self, oMainWindow):
         super(BasicFrame, self).__init__()
         self._oMainWindow = oMainWindow
+        self._aPlugins = []
         self.set_name("blank frame")
 
         # Ensure new panes aren't completely hidden
@@ -63,7 +66,16 @@ class BasicFrame(gtk.Frame):
     view = property(fget=lambda self: self._oView,
             doc="Associated View Object")
     menu = property(fget=lambda self: None, doc="Frame's menu")
+    plugins = property(fget=lambda self: self._aPlugins,
+            doc="Plugins enabled for this frame.")
     # pylint: enable-msg=W0212
+
+    def init_plugins(self):
+        """Loop through the plugins, and enable those appropriate for us."""
+        for cPlugin in \
+                self._oMainWindow.plugin_manager.get_card_list_plugins():
+            self._aPlugins.append(cPlugin(self._oController.view,
+                self._oController.view.get_model(), self._cModelType))
 
     def set_title(self, sTitle):
         """Set the title of the pane to sTitle"""
