@@ -50,6 +50,8 @@ class ExtraCardSetListViewColumns(CardListPlugin):
             'In-Use Children' : 100,
             'Library' : 100,
             'Crypt' : 100,
+            'Author' : 300,
+            'Description' : 700,
             }
 
     # Placeholder if we decide to add columns with icons later
@@ -69,6 +71,8 @@ class ExtraCardSetListViewColumns(CardListPlugin):
         self._dCols['In-Use Children'] = self._render_inuse_children
         self._dCols['Library'] = self._render_library
         self._dCols['Crypt'] = self._render_crypt
+        self._dCols['Author'] = self._render_author
+        self._dCols['Description'] = self._render_description
         # The database lookups are moderately expensive, so cache the results
         self._dCache = {}
 
@@ -78,6 +82,8 @@ class ExtraCardSetListViewColumns(CardListPlugin):
         self._dSortDataFuncs['In-Use Children'] = self._get_data_inuse_children
         self._dSortDataFuncs['Library'] = self._get_data_library
         self._dSortDataFuncs['Crypt'] = self._get_data_crypt
+        self._dSortDataFuncs['Author'] = self._get_data_author
+        self._dSortDataFuncs['Description'] = self._get_data_description
 
         # We may add columns with icons later, like clans in the crypt
         #self._oFirstBut = None
@@ -239,6 +245,41 @@ class ExtraCardSetListViewColumns(CardListPlugin):
         iCount, aIcons = self._get_data_crypt(sCardSet, True)
         aText = _format_number(iCount)
         oCell.set_data(aText, aIcons, self._iShowMode)
+
+    def _get_data_author(self, sCardSet, bGetIcons=True):
+        """Get the card set author info"""
+        if sCardSet:
+            oCardSet = self._dCache[sCardSet]['Card Set']
+            sAuthor = oCardSet.author
+            aIcons = []
+            if bGetIcons:
+                aIcons = [None]
+            return [sAuthor], aIcons
+        return [], []
+
+    def _render_author(self, _oColumn, oCell, _oModel, oIter):
+        """Display the author column"""
+        sCardSet = self._get_card_set(oIter)
+        aText, aIcons = self._get_data_author(sCardSet, True)
+        oCell.set_data(aText, aIcons, self._iShowMode)
+
+    def _get_data_description(self, sCardSet, bGetIcons=True):
+        """Get the card set description"""
+        if sCardSet:
+            oCardSet = self._dCache[sCardSet]['Card Set']
+            sDesc = oCardSet.comment
+            aIcons = []
+            if bGetIcons:
+                aIcons = [None]
+            return [sDesc], aIcons
+        return [], []
+
+    def _render_description(self, _oColumn, oCell, _oModel, oIter):
+        """Display the card set comment"""
+        sCardSet = self._get_card_set(oIter)
+        aText, aIcons = self._get_data_description(sCardSet, True)
+        oCell.set_data(aText, aIcons, self._iShowMode)
+
 
     # pylint: enable-msg=R0201
     # Dialog and Menu Item Creation
