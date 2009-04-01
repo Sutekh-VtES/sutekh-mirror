@@ -23,6 +23,7 @@ h2. Contents
 ## "Actions":#card_set_list_actions
 ## "Edit":#card_set_list_edit
 ## "Filter":#card_set_list_filter
+## "Plugins":#card_set_list_plugins
 # "Card Sets":#cardsets
 ## "Actions":#cardsets_actions
 ## "Edit":#cardsets_edit
@@ -363,6 +364,12 @@ The filter menu has two options:
 "Card Set Filters":#card_set_filters section.
 * _Apply Filter_: Toggle whether the filter is currently applied to the
 list.
+
+h3(#card_set_list_plugins). Plugins
+
+The following plugins are available from the card set list pane plugins menu:
+
+* "Select Extra Columns":#cs_columns_plugin
 
 h2(#cardsets). Card Sets
 
@@ -872,9 +879,11 @@ the *Action Modifier* and *Combat* groups.
 
 h3(#columns_plugin). Select Extra Columns
 
-By default, Sutekh only shows card names in the White Wolf Card List,
-and card names and card counts in other card set lists. You can select
-additional columns to display using this plugin. Possible extra columns are:
+By default, Sutekh only shows card names in the White Wolf Card List, and card
+names and card counts in other card set card lists.  You can select additional
+columns to display using this plugin.
+
+The possible extra columns are:
 
 * _Clans and Creeds:_ Show the Clans or Creeds listed on the card.
 * _Group:_ Show the group number for the card.
@@ -903,6 +912,23 @@ If you have downloaded the icons from the White Wolf site, you will be able to
 toggle the display between the _Show Icons and Names_, _Show Text only_ and
 _Show Icons only_ options using the radio buttons provided. This setting will
 affect all selected columns that can use icons.
+
+h3(#cs_columns_plugin). Select Extra Columns (card set list)
+
+Only card set names are shown in the card set list by default as well.  You can
+select additional columns to display using this plugin.
+
+The possible extra columns are:
+
+* _Author_: Show the card set author.
+* _Description_: Show the card set description.
+* _Total cards_: Show the total number of cards in the card set.
+* _Crypt_: Show the number of crypt cards in the card set.
+* _Library_: Show the number of library cards in the card set.
+* _All Children_: Show the number of child card sets each card set has
+* _In-Use Children_: Show the number of child card sets marked as in use.
+
+The display can be sorted on these columns by clicking on the column headers.
 
 h3(#set_exp_plugin). Set selected cards to a single expansion
 
