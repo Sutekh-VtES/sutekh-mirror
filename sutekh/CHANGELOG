@@ -1,3 +1,7 @@
+01 Apr 2009
+ * Add an Extra Columns plugin for the CardSetManagement pane. Shows children
+   and card counts at present.
+
 31 Mar 2009
  * Allow plugins to register on the CardSetManagement pane
 

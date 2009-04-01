@@ -9,7 +9,8 @@
 """Wrappers around SQLObject signals needed to keep card sets and the card
 collection in sync."""
 
-from sqlobject.events import Signal, listen, RowUpdateSignal, RowDestroySignal
+from sqlobject.events import Signal, listen, RowUpdateSignal, \
+        RowDestroySignal, RowCreatedSignal
 from sqlobject.include.pydispatch import dispatcher
 from sutekh.core.SutekhObjects import PhysicalCardSet
 
@@ -40,6 +41,10 @@ def listen_row_destroy(fListener, cClass):
 def listen_row_update(fListener, cClass):
     """listen for the row updated signal sent when a card set is modified."""
     listen(fListener, cClass, RowUpdateSignal)
+
+def listen_row_created(fListener, cClass):
+    """listen for the row updated signal sent when a card set is modified."""
+    listen(fListener, cClass, RowCreatedSignal)
 
 def disconnect_changed(fListener, cClass):
     """Disconnects from the changed_signal."""
