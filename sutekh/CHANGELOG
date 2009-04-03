@@ -1,3 +1,7 @@
+03 Apr 2009
+ * Copy mscvr71.dll from the windows python installation - fixes 
+   sutekh installation on windows XP.
+
 01 Apr 2009
  * Add an Extra Columns plugin for the CardSetManagement pane. 
    Shows children card set counts, card counts & some card set

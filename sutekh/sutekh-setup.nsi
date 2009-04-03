@@ -105,6 +105,9 @@ Section "PyGTK, PyCairo and PyGObject"
 
   SetOutPath "$INSTDIR"
 
+  ; Copy msc*dll files from python to here so pygtk installers can find it
+  CopyFiles /SILENT $INSTDIR\Python\msvcr71.dll $INSTDIR
+
   File "${DEPENDENCIES_FOLDER}/${PYGTK_INSTALLER}"
   File "${DEPENDENCIES_FOLDER}/${PYCAIRO_INSTALLER}"
   File "${DEPENDENCIES_FOLDER}/${PYGOBJECT_INSTALLER}"
@@ -116,6 +119,8 @@ Section "PyGTK, PyCairo and PyGObject"
   delete $INSTDIR\${PYGTK_INSTALLER}
   delete $INSTDIR\${PYCAIRO_INSTALLER}
   delete $INSTDIR\${PYGOBJECT_INSTALLER}
+  ; I think only the pygtk stuff needs this, so we can delete it now
+  delete $INSTDIR\msvcr71.dll
 SectionEnd
 
 Section "Setuptools"
