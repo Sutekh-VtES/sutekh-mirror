@@ -1,3 +1,7 @@
+05 Apr 2009
+ * Explicitly close transactions connections on commit when reading. Avoids
+   the "too many connections" errors on postgres.
+
 03 Apr 2009
  * Copy mscvr71.dll from the windows python installation - fixes 
    sutekh installation on windows XP.
