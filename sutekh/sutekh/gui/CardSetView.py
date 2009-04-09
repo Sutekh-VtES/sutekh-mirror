@@ -62,6 +62,7 @@ class CardSetView(CardListView):
     # We need a lot of setup here, so this is long
     def __init__(self, oMainWindow, oController, sName):
         oModel = CardSetCardListModel(sName)
+        oModel.enable_sorting()
         # The only path here is via the main window, so config_file exists
         super(CardSetView, self).__init__(oController, oMainWindow,
                 oModel, oMainWindow.config_file)

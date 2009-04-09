@@ -83,11 +83,6 @@ class CardListModel(gtk.TreeStore):
         self.oEmptyIter = None
         self.oIconManager = None
         self.bUseIcons = True
-        self.set_sort_func(0, self._sort_col, 0)
-        self.set_sort_func(1, self._sort_col, 1)
-        self.set_sort_func(2, self._sort_col, 2)
-        # Sort the model on the card name by default
-        self.set_sort_column_id(0, gtk.SORT_ASCENDING)
 
     # pylint: disable-msg=W0212, C0103
     # W0212 - we explicitly allow access via these properties
@@ -133,6 +128,17 @@ class CardListModel(gtk.TreeStore):
         oVal2 = self.get_value(oIter2, 0)
         return cmp(oVal1, oVal2)
 
+    def enable_sorting(self):
+        """Enable default sorting setup"""
+        # We don't do this in __init__, as it makes the test suite a
+        # lot slower, and the tests don't need sorting anyway.
+        # The view calls this to enable sorting. Not elegant, but
+        # at least workable.
+        self.set_sort_func(0, self._sort_col, 0)
+        self.set_sort_func(1, self._sort_col, 1)
+        self.set_sort_func(2, self._sort_col, 2)
+        # Sort the model on the card name by default
+        self.set_sort_column_id(0, gtk.SORT_ASCENDING)
 
     def get_expansion_info(self, _oCard, dExpanInfo):
         """Get information about expansions"""

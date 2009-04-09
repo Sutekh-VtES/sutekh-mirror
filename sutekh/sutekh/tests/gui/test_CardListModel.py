@@ -124,6 +124,8 @@ class CardListModelTests(SutekhTest):
         self.assertEqual(self._count_expansions(oModel),
                 oModel.get_card_iterator(oModel.selectfilter).count())
         # Test path queries
+        # The remain tests require a sorted model
+        oModel.enable_sorting()
         oPath = '0:0:0' # First expansion for the first card
         self.assertEqual(oModel.get_exp_name_from_path(oPath),
                 oModel.sUnknownExpansion)

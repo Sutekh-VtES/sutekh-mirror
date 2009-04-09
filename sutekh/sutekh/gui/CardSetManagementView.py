@@ -17,6 +17,7 @@ class CardSetManagementView(gtk.TreeView):
     # gtk.Widget, so lots of public methods
     def __init__(self, oMainWindow, oController):
         self._oModel = CardSetManagementModel(oMainWindow)
+        self._oModel.enable_sorting()
         super(CardSetManagementView, self).__init__(self._oModel)
 
         self._oMainWin = oMainWindow

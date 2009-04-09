@@ -25,6 +25,7 @@ class PhysicalCardView(CardListView):
 
     def __init__(self, oController, oWindow, oConfig):
         oModel = CardListModel()
+        oModel.enable_sorting()
         super(PhysicalCardView, self).__init__(oController, oWindow,
                 oModel, oConfig)
 

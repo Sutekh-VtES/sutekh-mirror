@@ -240,9 +240,6 @@ class CardSetListModelTests(SutekhTest):
 
     def test_basic(self):
         """Set of simple tests of the Card Set List Model"""
-        # pylint: disable-msg=R0915, R0914
-        # R0915, R0914: Want a long, sequential test case to minimise
-        # repeated setups, so it has lots of lines + variables
         _oCache = SutekhObjectCache()
         oPCS = PhysicalCardSet(name=self.aNames[0])
         oModel = CardSetCardListModel(self.aNames[0])
@@ -268,6 +265,8 @@ class CardSetListModelTests(SutekhTest):
         oModel.groupby = Groupings.NullGrouping
         self.assertEqual(self._count_all_cards(oModel), 2)
         self.assertEqual(self._count_second_level(oModel), 2)
+        # These tests need the model to be sorted
+        oModel.enable_sorting()
         # Check the drag-n-drop helper
         self.assertEqual(oModel.get_drag_child_info('0'), {})
         self.assertEqual(oModel.get_drag_child_info('0:0:0'), {})
@@ -287,7 +286,22 @@ class CardSetListModelTests(SutekhTest):
         self.assertEqual(oModel.get_drag_child_info('0'), {})
         self.assertEqual(oModel.get_drag_child_info('0:0'),
                 {'Camarilla Edition' : 1})
-        # Add Cards
+
+    def test_adding_cards(self):
+        """Test adding & removing cards from the model for the different
+           groupings"""
+        _oCache = SutekhObjectCache()
+        oPCS = PhysicalCardSet(name=self.aNames[0])
+        oModel = CardSetCardListModel(self.aNames[0])
+        # Initial cards
+        aCards = [('Alexandra', 'CE'), ('Sha-Ennu', 'Third Edition')]
+        for sName, sExp in aCards:
+            oCard = self._gen_card(sName, sExp)
+            # pylint: disable-msg=E1101
+            # PyProtocols confuses pylint
+            oPCS.addPhysicalCard(oCard.id)
+        oModel.load()
+        # Test adding more cards
         self._reset_modes(oModel)
         self._loop_modes(oPCS, oModel)
         # Check over all the groupings
