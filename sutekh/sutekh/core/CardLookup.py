@@ -12,7 +12,7 @@ from sqlobject import SQLObjectNotFound
 # we need string.punctuation
 import string
 # pylint: enable-msg=W0402
-from sutekh.core.SutekhObjects import AbstractCard, IPhysicalCard, IExpansion
+from sutekh.core.SutekhObjects import IPhysicalCard, IExpansion, IAbstractCard
 from sutekh.core.Filters import CardNameFilter
 
 # pylint: disable-msg=R0922
@@ -92,8 +92,7 @@ class SimpleLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
                 # pylint: disable-msg=E1101
                 # SQLObject confuses pylint
                 try:
-                    oAbs = AbstractCard.byCanonicalName(
-                            sName.encode('utf8').lower())
+                    oAbs = IAbstractCard(sName.encode('utf8'))
                     aCards.append(oAbs)
                 except SQLObjectNotFound:
                     aCards.append(None)

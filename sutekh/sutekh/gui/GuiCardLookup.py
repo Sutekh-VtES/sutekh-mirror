@@ -13,7 +13,7 @@ import pango
 import gobject
 from sqlobject import SQLObjectNotFound
 from sutekh.core.SutekhObjects import AbstractCard, PhysicalCard, IExpansion, \
-        Expansion, IPhysicalCard
+        Expansion, IPhysicalCard, IAbstractCard
 from sutekh.core.CardLookup import AbstractCardLookup, PhysicalCardLookup, \
         ExpansionLookup, LookupFailed, best_guess_filter
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
@@ -261,11 +261,8 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
                 dCards[sName] = None
             else:
                 try:
-                    # pylint: disable-msg=E1101
-                    # SQLObject methods confuse pylint
-                    oAbs = AbstractCard.byCanonicalName(
-                                sName.encode('utf8').lower())
-                    # pylint: enable-msg=E1101
+                    # Use IAbstractCard to cover more variations
+                    oAbs = IAbstractCard(sName.encode('utf8'))
                     dCards[sName] = oAbs
                 except SQLObjectNotFound:
                     dUnknownCards[sName] = None
