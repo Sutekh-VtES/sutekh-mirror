@@ -19,7 +19,7 @@ from logging import Logger
 from sutekh.core.SutekhObjects import PhysicalCard, AbstractCard, \
         PhysicalCardSet, Expansion, Clan, Virtue, Discipline, Rarity, \
         RarityPair, CardType, Ruling, TABLE_LIST, DisciplinePair, Creed, \
-        Sect, Title, flush_cache, SutekhObjectMaker
+        Sect, Title, Keyword, Artist, flush_cache, SutekhObjectMaker
 from sutekh.core.CardSetHolder import CachedCardSetHolder
 from sutekh.SutekhUtility import refresh_tables
 from sutekh.core.DatabaseVersion import DatabaseVersion
@@ -282,9 +282,7 @@ def old_database_count(oConn):
             [AbstractCard.tableversion], oConn):
         iCount += AbstractCard.select(connection=oConn).count()
     elif oVer.check_tables_and_versions([AbstractCard], [4], oConn):
-        # We log once for each AC copied, and once for each set of PC's
-        # created from the abstract cards
-        iCount += 2 * AbstractCard_v4.select(connection=oConn).count()
+        iCount += AbstractCard_v4.select(connection=oConn).count()
     if oVer.check_tables_and_versions([PhysicalCard],
             [PhysicalCard.tableversion], oConn):
         iCount += PhysicalCard.select(connection=oConn).count()
@@ -506,6 +504,34 @@ def copy_old_title(oOrigConn, oTrans, oVer):
             _oCopy = Title(id=oObj.id, name=oObj.name, connection=oTrans)
     else:
         return (False, ["Unknown Title Version"])
+    return (True, [])
+
+def copy_keyword(oOrigConn, oTrans):
+    """Copy Keyword, assuming versions match"""
+    for oObj in Keyword.select(connection=oOrigConn):
+        _oCopy = Keyword(id=oObj.id, keyword=oObj.keyword, connection=oTrans)
+
+def copy_old_keyword(oOrigConn, oTrans, oVer):
+    """Copy Keyword, updating if needed"""
+    if oVer.check_tables_and_versions([Keyword], [Keyword.tableversion],
+            oOrigConn):
+        copy_keyword(oOrigConn, oTrans)
+    else:
+        return (False, ["Unknown Keyword Version"])
+    return (True, [])
+
+def copy_artist(oOrigConn, oTrans):
+    """Copy Artist, assuming versions match"""
+    for oObj in Artist.select(connection=oOrigConn):
+        _oCopy = Artist(id=oObj.id, name=oObj.name, connection=oTrans)
+
+def copy_old_artist(oOrigConn, oTrans, oVer):
+    """Copy Artist, updating if needed"""
+    if oVer.check_tables_and_versions([Artist], [Artist.tableversion],
+            oOrigConn):
+        copy_artist(oOrigConn, oTrans)
+    else:
+        return (False, ["Unknown Artist Version"])
     return (True, [])
 
 def copy_abstract_card(oOrigConn, oTrans, oLogger):
@@ -778,6 +804,8 @@ def copy_database(oOrigConn, oDestConnn, oLogHandler=None):
             (copy_rarity_pair, 'RarityPair table', False),
             (copy_sect, 'Sect table', False),
             (copy_title, 'Title table', False),
+            (copy_artist, 'Artist table', False),
+            (copy_keyword, 'Keyword table', False),
             (copy_abstract_card, 'AbstractCard table', True),
             (copy_physical_card, 'PhysicalCard table', True),
             (copy_physical_card_set, 'PhysicalCardSet table', True),
