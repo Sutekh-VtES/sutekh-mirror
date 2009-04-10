@@ -618,6 +618,12 @@ sect in the list.
 * _Title_: Filter on the vampire title(s) listed on the card. You must specify a
 "list":#list of titles. A card matches if any title listed on the card matches
 any title in the list.
+* _Keyword_: Filter on keywords associated with the card. You must specify a
+"list":#list of keywords. A card matches if any keyword connected with the card
+matches any keyword in the list.
+* _Artist_: Filter on artists who have created art for the card. You must
+specify a "list":#list of artists. A card matches if any artist in the list
+has drawn art for any printing of the card.
 * _Expansion with Rarity_: Filter on the expansions and rarities in which the
 card has been printed. You must specify a "list":#list of expansion and rarity
 combinations. A card matches if it has been printed in one of the given
