@@ -85,8 +85,6 @@ class CardSetHolder(object):
 
     # pylint: enable-msg=W0212, C0103
 
-    # Save Virtual Card Set to Database
-
     def get_parent_pcs(self):
         """Get the parent PCS, or none if no parent exists."""
         if self.parent:
@@ -147,6 +145,50 @@ class CardSetHolder(object):
                 continue
             oPCS.addPhysicalCard(oPhysCard.id)
         oPCS.syncUpdate()
+
+class CardSetWrapper(CardSetHolder):
+    """CardSetHolder class which provides a read-only wrapper of a card set."""
+
+    def __init__(self, oCS):
+        self._oCS = oCS
+        self._aWarnings = [] # Any warnings to be passed back to the user
+
+    def add(self, iCnt, sName, sExpansionName):
+        """Not allowed to append cards."""
+        raise NotImplementedError("CardSetWrapper is read-only")
+
+    def remove(self, iCnt, sName, sExpansionName):
+        """Not allowed to remove cards."""
+        raise NotImplementedError("CardSetWrapper is read-only")
+
+    def create_pcs(self, oCardLookup=DEFAULT_LOOKUP):
+        """Can't create a Physical Card Set -- there is one already."""
+        raise NotImplementedError("CardSetWrapper is read-only")
+
+    def _parent_name(self):
+        """Return the parent card set's name or None if their is no parent."""
+        if self._oCS.parent is None:
+            return None
+        else:
+            return self._oCS.parent.name
+
+    # pylint: disable-msg=W0212, C0103
+    # W0212: we delibrately allow access via these properties
+    # C0103: we use the column naming conventions
+    name = property(fget = lambda self: self._oCS.name)
+    author = property(fget = lambda self: self._oCS.author)
+    comment = property(fget = lambda self: self._oCS.comment)
+    annotations = property(fget = lambda self: self._oCS.annotations)
+    inuse = property(fget = lambda self: self._oCS.inuse)
+    parent = property(fget = lambda self: self._parent_name())
+    num_entries = property(fget = lambda self: len(self._oCS.cards))
+    cards = property(fget = lambda self: self._oCS.cards)
+
+    # pylint: enable-msg=W0212, C0103
+
+    def get_parent_pcs(self):
+        """Get the parent PCS, or none if no parent exists."""
+        return self._oCS.parent
 
 class CachedCardSetHolder(CardSetHolder):
     """CardSetHolder class which supports creating and using a
