@@ -9,7 +9,7 @@
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.core.SutekhObjects import AbstractCard, IAbstractCard, \
         IPhysicalCard, IClan, IDisciplinePair, ICardType, ISect, ITitle, \
-        ICreed, IVirtue, IExpansion, IRarity, IRarityPair
+        ICreed, IVirtue, IExpansion, IRarity, IRarityPair, IArtist, IKeyword
 from sqlobject import SQLObjectNotFound
 import unittest
 
@@ -34,7 +34,7 @@ class WhiteWolfParserTests(SutekhTest):
         u'Inez "Nurse216" Villagrande', u"Kabede Maru",
         u"Kemintiri (Advanced)", u"L\xe1z\xe1r Dobrescu",
         u"Predator's Communion", u"Sha-Ennu", u"The Path of Blood",
-        u"Yvette, The Hopeless",
+        u"The Slaughterhouse", u"Yvette, The Hopeless",
         ]
 
     def test_basic(self):
@@ -107,6 +107,8 @@ class WhiteWolfParserTests(SutekhTest):
         self.assertEqual(len(oDob.cardtype), 1)
         self.failUnless(ICardType('Vampire') in oDob.cardtype)
         self.failUnless(ISect('Independent') in oDob.sect)
+        self.assertEqual(len(oDob.artists), 1)
+        self.failUnless(IArtist('Rebecca Guay') in oDob.artists)
 
         self.assertEqual(len(oDob.rulings), 1)
         oRuling = oDob.rulings[0]
@@ -147,6 +149,8 @@ class WhiteWolfParserTests(SutekhTest):
         self.assertEqual(len(oYvette.cardtype), 1)
         self.failUnless(ICardType('Vampire') in oYvette.cardtype)
         self.failUnless(ISect('Camarilla') in oYvette.sect)
+        self.assertEqual(len(oYvette.artists), 1)
+        self.failUnless(IArtist('Leif Jones') in oYvette.artists)
 
         # Check Sha-Ennu
 
@@ -174,6 +178,8 @@ class WhiteWolfParserTests(SutekhTest):
         self.assertTrue(IRarityPair(('Third', 'Vampire')) in oShaEnnu.rarity)
         self.assertFalse(IRarityPair(('VTES', 'Common')) in oShaEnnu.rarity)
         self.assertFalse(IRarityPair(('VTES', 'Vampire')) in oShaEnnu.rarity)
+        self.assertEqual(len(oShaEnnu.artists), 1)
+        self.failUnless(IArtist('Richard Thomas') in oShaEnnu.artists)
 
         # Check Kabede
 
@@ -201,6 +207,8 @@ class WhiteWolfParserTests(SutekhTest):
         self.failUnless(ISect('Laibon') in oKabede.sect)
         self.failUnless(ITitle('Magaji') in oKabede.title)
         self.assertTrue(IRarityPair(('LotN', 'Uncommon')) in oKabede.rarity)
+        self.assertEqual(len(oKabede.artists), 1)
+        self.failUnless(IArtist('Ken Meyer, Jr.') in oKabede.artists)
 
         # Check Predator's Communion
         oPredComm = IAbstractCard(u"Predator's Communion")
@@ -221,6 +229,8 @@ class WhiteWolfParserTests(SutekhTest):
         self.failUnless(ICardType('Reaction') in oPredComm.cardtype)
         self.failUnless(ICardType('Reflex') in oPredComm.cardtype)
         self.assertTrue(IRarityPair(('LoB', 'Common')) in oPredComm.rarity)
+        self.assertEqual(len(oPredComm.artists), 1)
+        self.failUnless(IArtist('David Day') in oPredComm.artists)
 
         # Check Earl
         oEarl = IAbstractCard(u'Earl "Shaka74" Deams')
@@ -244,6 +254,8 @@ class WhiteWolfParserTests(SutekhTest):
         self.assertEqual(len(oEarl.cardtype), 1)
         self.failUnless(ICardType('Imbued') in oEarl.cardtype)
         self.assertTrue(IRarityPair(('NoR', 'Uncommon')) in oEarl.rarity)
+        self.assertEqual(len(oEarl.artists), 1)
+        self.failUnless(IArtist('David Day') in oEarl.artists)
 
         # Check Aire
         oAire = IAbstractCard("Aire of Elation")
@@ -270,6 +282,9 @@ class WhiteWolfParserTests(SutekhTest):
         self.assertTrue(IRarityPair(('Anarchs', 'Precon')) in oAire.rarity)
         self.assertTrue(IRarityPair(('KMW', 'Precon')) in oAire.rarity)
 
+        self.assertEqual(len(oAire.artists), 1)
+        self.failUnless(IArtist('Greg Simanson') in oAire.artists)
+
         # Abjure
         oAbjure = IAbstractCard("Abjure")
         self.assertEqual(oAbjure.canonicalName, u"abjure")
@@ -287,6 +302,8 @@ class WhiteWolfParserTests(SutekhTest):
         self.failUnless(IVirtue('Redemption') in oAbjure.virtue)
         self.assertEqual(len(oAbjure.cardtype), 1)
         self.failUnless(ICardType('Power') in oAbjure.cardtype)
+        self.assertEqual(len(oAbjure.artists), 1)
+        self.failUnless(IArtist('Brian LeBlanc') in oAbjure.artists)
 
         # Abombwe Master Card
         oAbo = IAbstractCard('Abombwe')
@@ -306,6 +323,8 @@ class WhiteWolfParserTests(SutekhTest):
         self.assertEqual(len(oAbo.cardtype), 1)
         self.failUnless(ICardType('Master') in oAbo.cardtype)
         self.assertEqual(len(oAbo.rulings), 0)
+        self.assertEqual(len(oAbo.artists), 1)
+        self.failUnless(IArtist('Ken Meyer, Jr.') in oAbo.artists)
 
         # Ablative Skin Card
         oAblat = IAbstractCard('Ablative Skin')
@@ -329,6 +348,8 @@ class WhiteWolfParserTests(SutekhTest):
         self.assertTrue(oRuling.text.startswith("Cannot be used to prevent"))
         self.assertTrue(oRuling.text.endswith("Blood Fury)."))
         self.assertEqual(oRuling.code, "[LSJ19990216]")
+        self.assertEqual(len(oAblat.artists), 1)
+        self.failUnless(IArtist('Richard Thomas') in oAblat.artists)
 
         # Check Independent titles
         oAmbrig = IAbstractCard(u"Ambrogino Giovanni")
@@ -357,6 +378,9 @@ class WhiteWolfParserTests(SutekhTest):
         self.assertEqual(len(oKemintiri.cardtype), 1)
         self.failUnless(ICardType('Vampire') in oKemintiri.cardtype)
         self.failUnless(ISect('Independent') in oKemintiri.sect)
+        self.assertEqual(len(oKemintiri.artists), 1)
+        self.failUnless(IArtist('Lawrence Snelly') in oKemintiri.artists)
+
         # Make sure we're not picking up the Merged title
         self.assertEqual(len(oKemintiri.title), 0)
         self.assertTrue(IRarityPair(('KMW', 'Uncommon')) in oKemintiri.rarity)
@@ -373,6 +397,11 @@ class WhiteWolfParserTests(SutekhTest):
         oPath2 = IAbstractCard('Path of Blood, The')
         self.assertEqual(oPath1.id, oPath2.id)
 
+        # Check The Slaughterhouse
+        oSlaughter = IAbstractCard('The Slaughterhouse')
+        self.assertEqual(oSlaughter.canonicalName, u"the slaughterhouse")
+        self.assertEqual(len(oSlaughter.keywords), 1)
+        self.failUnless(IKeyword('burn option') in oSlaughter.keywords)
 
 
 if __name__ == "__main__":

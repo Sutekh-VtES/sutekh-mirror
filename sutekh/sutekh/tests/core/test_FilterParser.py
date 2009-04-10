@@ -123,11 +123,12 @@ class FilterParserTests(SutekhTest):
             ('Life in 3, 6', [u'Anna "Dictatrix11" Suljic',
                 u'Earl "Shaka74" Deams', u'Inez "Nurse216" Villagrande']),
             ('CostType in Pool', [u".44 Magnum", u"AK-47",
-                u"Aaron's Feeding Razor", u"The Path of Blood"]),
+                u"Aaron's Feeding Razor", u"The Path of Blood",
+                u"The Slaughterhouse"]),
             ('CostType in Blood', [u"Aire of Elation"]),
             ('CostType in Pool, Blood', [u".44 Magnum", u"AK-47",
                 u"Aaron's Feeding Razor", u"Aire of Elation",
-                u"The Path of Blood"]),
+                u"The Path of Blood", u"The Slaughterhouse"]),
             ('Life in 4', []),
             ('Life in 4,5', []),
 
@@ -147,13 +148,15 @@ class FilterParserTests(SutekhTest):
                         u"Ablative Skin", u"Abombwe", u"Aire of Elation",
                         u'Anna "Dictatrix11" Suljic', u'Earl "Shaka74" Deams',
                         u'Inez "Nurse216" Villagrande',
-                        u"Predator's Communion", u"The Path of Blood"]),
+                        u"Predator's Communion", u"The Path of Blood",
+                        u"The Slaughterhouse"]),
             ('CardType not in Equipment, Vampire',
                     [u"Abandoning the Flesh", u"Abbot", u"Abjure",
                         u"Ablative Skin", u"Abombwe", u"Aire of Elation",
                         u'Anna "Dictatrix11" Suljic', u'Earl "Shaka74" Deams',
                         u'Inez "Nurse216" Villagrande',
-                        u"Predator's Communion", u"The Path of Blood"]),
+                        u"Predator's Communion", u"The Path of Blood",
+                        u"The Slaughterhouse"]),
         ]
 
         # Abstract Card Filtering Tests

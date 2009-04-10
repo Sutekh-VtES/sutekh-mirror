@@ -505,6 +505,19 @@ Put this card in play. Cards that require Quietus [qui] <span class="clarificati
 </table>
 </p>
 
+<p>
+<a name="Slaughterhouse"><span class="cardname">The Slaughterhouse</span></a>
+<span class="exp">[BL:C1, LoB:C]</span><br />
+<table border=0 cellpadding=0 cellspacing=0><tr><td width=1><span class="key">Cardtype:</span> </td><td>Master<br /></td></tr>
+<tr><td width=1><span class="key">Clan:</span> </td><td>Harbinger of Skulls<br /></td></tr>
+<tr><td width=1><span class="key">Cost:</span> </td><td>1 pool<br /></td></tr>
+<tr><td><span class="key">Burn Option</span></td></tr>
+<tr><td colspan=2><b>Master: location.</b><br />
+<n>Tap to burn two cards from the top of your prey's library.<br />
+<tr><td width=1><span class="key">Artist:</span> </td><td>William O'Connor<br /></td></tr>
+</table>
+</p>
+
 </td></tr>
 </table></body></html>
 """

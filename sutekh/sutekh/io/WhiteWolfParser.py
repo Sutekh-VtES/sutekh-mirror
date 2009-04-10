@@ -99,6 +99,7 @@ class CardDict(dict):
     oDisGaps = re.compile(r'[\\\/{}\&\s]+')
     oWhiteSp = re.compile(r'[{}\s]+')
     oDispCard = re.compile(r'\[[^\]]+\]$')
+    oArtistSp = re.compile(r'[&;]')
 
     def __init__(self, oLogger):
         super(CardDict, self).__init__()
@@ -288,6 +289,16 @@ class CardDict(dict):
         """Add the sect to the card."""
         oCard.addSect(self._oMaker.make_sect(sSect))
 
+    def _add_keyword(self, oCard, sKeyword):
+        """Add the keyword to the card."""
+        oCard.addKeyword(self._oMaker.make_keyword(sKeyword))
+
+    def _add_artists(self, oCard, sArtists):
+        """Add the artist to the card."""
+        for sArtist in self.oArtistSp.split(sArtists):
+            sArtist = sArtist.strip()
+            oCard.addArtist(self._oMaker.make_artist(sArtist))
+
     def _add_physical_cards(self, oCard):
         """Create a physical card for each expansion."""
         self._oMaker.make_physical_card(oCard, None)
@@ -348,13 +359,16 @@ class CardDict(dict):
             self._add_card_type(oCard, self['cardtype'])
 
         if self.has_key('burn option'):
-            oCard.burnoption = True
+            self._add_keyword(oCard, "burn option")
 
         if self.has_key('title'):
             self._add_title(oCard, self['title'])
 
         if self.has_key('sect'):
             self._add_sect(oCard, self['sect'])
+
+        if self.has_key('artist'):
+            self._add_artists(oCard, self['artist'])
 
         if self.has_key('text'):
             oCard.text = self['text'].replace('\r', '')

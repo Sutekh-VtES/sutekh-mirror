@@ -107,7 +107,7 @@ class FilterTests(SutekhTest):
                 u"Abebe", u"Abjure", u"Abombwe",
                 u'Anna "Dictatrix11" Suljic', u"Cedric", u"Cesewayo",
                 u'Earl "Shaka74" Deams', u'Inez "Nurse216" Villagrande',
-                u"Predator's Communion"]),
+                u"Predator's Communion", u"The Slaughterhouse"]),
             (Filters.ExpansionRarityFilter(('Sabbat', 'Rare')),
                 [u"Ablative Skin"]),
             (Filters.ExpansionRarityFilter(('Blood Shadowed Court',
@@ -209,11 +209,12 @@ class FilterTests(SutekhTest):
             (Filters.MultiLifeFilter([3, 6]), [u'Anna "Dictatrix11" Suljic',
                 u'Earl "Shaka74" Deams', u'Inez "Nurse216" Villagrande']),
             (Filters.CostTypeFilter('Pool'), [u".44 Magnum", u"AK-47",
-                u"Aaron's Feeding Razor", u"The Path of Blood"]),
+                u"Aaron's Feeding Razor", u"The Path of Blood",
+                u"The Slaughterhouse"]),
             (Filters.CostTypeFilter('Blood'), [u"Aire of Elation"]),
             (Filters.MultiCostTypeFilter(['Pool', 'Blood']), [u".44 Magnum",
                 u"AK-47", u"Aaron's Feeding Razor", u"Aire of Elation",
-                U"The Path of Blood"]),
+                U"The Path of Blood", u"The Slaughterhouse"]),
             (Filters.LifeFilter(4), []),
             (Filters.MultiLifeFilter([4, 5]), []),
 
@@ -238,7 +239,7 @@ class FilterTests(SutekhTest):
                     u"Ablative Skin", u"Abombwe", u"Aire of Elation",
                     u'Anna "Dictatrix11" Suljic', u'Earl "Shaka74" Deams',
                     u'Inez "Nurse216" Villagrande', u"Predator's Communion",
-                    u"The Path of Blood"]),
+                    u"The Path of Blood", u"The Slaughterhouse"]),
         ]
 
         aPhysicalTests = [self._physical_test(tTest) for tTest in aTests]
@@ -253,9 +254,9 @@ class FilterTests(SutekhTest):
         # Filter values Tests
         self.assertEqual(Filters.MultiClanFilter.get_values(), [u"Assamite",
             u"Brujah", u"Brujah antitribu", u"Follower of Set", u"Gargoyle",
-            u"Giovanni", u"Lasombra", u"Nosferatu antitribu", u"Osebo",
-            u"Pander", u"Ravnos", u"Samedi", u"Toreador", u"Tremere",
-            u"Tzimisce", u"Ventrue"])
+            u"Giovanni", u"Harbinger of Skulls", u"Lasombra",
+            u"Nosferatu antitribu", u"Osebo", u"Pander", u"Ravnos", u"Samedi",
+            u"Toreador", u"Tremere", u"Tzimisce", u"Ventrue"])
         self.assertEqual(Filters.MultiDisciplineFilter.get_values(),
                 [u"Abombwe", u"Animalism", u"Auspex", u"Celerity",
                     u"Chimerstry", u"Dementation", u"Dominate", u"Flight",
@@ -290,14 +291,16 @@ class FilterTests(SutekhTest):
                     ['Jyhad']),
                 (Filters.PhysicalExpansionFilter('LoB'),
                     ['Abombwe','.44 Magnum', 'Abebe', u"Cedric", u"Cesewayo",
-                        u"Predator's Communion"], ['LoB']),
+                        u"Predator's Communion", u"The Slaughterhouse"],
+                    ['LoB']),
                 (Filters.PhysicalExpansionFilter(None),
                     self.aExpectedCards,
                     [None]),
                 (Filters.MultiPhysicalExpansionFilter(['LoB', 'LotN']),
                     ['Abombwe','.44 Magnum', 'Abebe', 'AK-47', 'Abdelsobek',
                         u"Cedric", u"Cesewayo", u"Kabede Maru",
-                        u"Predator's Communion", u"The Path of Blood"],
+                        u"Predator's Communion", u"The Path of Blood",
+                        u"The Slaughterhouse"],
                     ['LoB', 'LotN']),
                 (Filters.MultiPhysicalExpansionFilter(
                     ['  Unspecified Expansion', 'VTES']),
