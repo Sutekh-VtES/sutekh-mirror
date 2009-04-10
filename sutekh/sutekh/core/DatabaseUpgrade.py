@@ -19,7 +19,7 @@ from logging import Logger
 from sutekh.core.SutekhObjects import PhysicalCard, AbstractCard, \
         PhysicalCardSet, Expansion, Clan, Virtue, Discipline, Rarity, \
         RarityPair, CardType, Ruling, TABLE_LIST, DisciplinePair, Creed, \
-        Sect, Title, flush_cache, IKeyword
+        Sect, Title, flush_cache, SutekhObjectMaker
 from sutekh.core.CardSetHolder import CachedCardSetHolder
 from sutekh.SutekhUtility import refresh_tables
 from sutekh.core.DatabaseVersion import DatabaseVersion
@@ -561,7 +561,12 @@ def copy_old_abstract_card(oOrigConn, oTrans, oLogger, oVer):
         aMessages.append('Missing data for the Artist.'
                 ' You will need to reimport the White wolf card list'
                 ' for these to be correct')
-        #oBurnOption = IKeyword('burn option')
+        # Need to refer to new database to lookup/create keywords
+        oTempConn = sqlhub.processConnection
+        sqlhub.processConnection = oTrans
+        oObjectMaker = SutekhObjectMaker()
+        oBurnOption = oObjectMaker.make_keyword('burn option')
+        sqlhub.processConnection = oTempConn
         for oCard in AbstractCard_v4.select(connection=oOrigConn):
             oCardCopy = AbstractCard(id=oCard.id,
                     canonicalName=oCard.canonicalName, name=oCard.name,
@@ -572,9 +577,8 @@ def copy_old_abstract_card(oOrigConn, oTrans, oLogger, oVer):
             oCardCopy.costtype = oCard.costtype
             oCardCopy.level = oCard.level
             oCardCopy.life = oCard.life
-            # FIXME: Turn burnoption into a keyword
-            #if oCard.burnoption:
-            #    oCardCopy.addKeyword(oBurnOption)
+            if oCard.burnoption:
+                oCardCopy.addKeyword(oBurnOption)
             # FIXME: Parse card text for other keywords
             for oData in oCard.rarity:
                 oCardCopy.addRarityPair(oData)
