@@ -571,6 +571,8 @@ def copy_abstract_card(oOrigConn, oTrans, oLogger):
             oCardCopy.addVirtue(oData)
         for oData in oCard.keywords:
             oCardCopy.addKeyword(oData)
+        for oData in oCard.artists:
+            oCardCopy.addArtist(oData)
         oCardCopy.syncUpdate()
         oLogger.info('copied AC %s', oCardCopy.name)
 
