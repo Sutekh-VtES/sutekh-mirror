@@ -106,8 +106,8 @@ class AbstractCard(SQLObject):
             createRelatedTable=False)
     artists = CachedRelatedJoin('Artist', intermediateTable='abs_artist_map',
             createRelatedTable=False)
-    keywords = CachedRelatedJoin('Keyword', intermediateTable='abs_keyword_map',
-            createRelatedTable=False)
+    keywords = CachedRelatedJoin('Keyword',
+            intermediateTable='abs_keyword_map', createRelatedTable=False)
 
     physicalCards = MultipleJoin('PhysicalCard')
 

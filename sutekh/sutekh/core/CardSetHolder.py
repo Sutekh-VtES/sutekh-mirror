@@ -146,9 +146,13 @@ class CardSetHolder(object):
             oPCS.addPhysicalCard(oPhysCard.id)
         oPCS.syncUpdate()
 
+# pylint: disable-msg=R0921
+# This isn't a abstract base class. It just looks like one to pylint.
 class CardSetWrapper(CardSetHolder):
     """CardSetHolder class which provides a read-only wrapper of a card set."""
 
+    # pylint: disable-msg=W0231
+    # We don't want to call the base __init__
     def __init__(self, oCS):
         self._oCS = oCS
         self._aWarnings = [] # Any warnings to be passed back to the user
@@ -189,6 +193,8 @@ class CardSetWrapper(CardSetHolder):
     def get_parent_pcs(self):
         """Get the parent PCS, or none if no parent exists."""
         return self._oCS.parent
+
+# pylint: enable-msg=R0921
 
 class CachedCardSetHolder(CardSetHolder):
     """CardSetHolder class which supports creating and using a
