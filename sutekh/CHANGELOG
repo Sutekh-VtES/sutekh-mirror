@@ -1,3 +1,18 @@
+10 Apr 2009
+ * Add sutkeh.io.IOBase which describes card set parser and writer
+   interfaces.
+ * Add sutekh.core.CardSetHolder.CardSetWrapper that provides a
+   read-only CardSetHolder compatible view of an existing card set.
+ * Sutekh 0.8 database changes:
+   - Add Artist and Keyword tables.
+   - Remove restrictions on string column lengths, except alternate
+     ids which now all have a maximum length of MAX_ID_LENGTH
+     (currently 512)
+   - Remove burnoption field from AbstractCard and replace it with
+     the "burn option" keyword.
+   - The AbstractCard life field now refers to retainer and ally
+     life as well as imbued crypt card life.
+
 09 Apr 2009
  * Tweak the way sorting is enabled to speed up the tests.
  * Split CardSetListView test a bit so it's somewhat clearer

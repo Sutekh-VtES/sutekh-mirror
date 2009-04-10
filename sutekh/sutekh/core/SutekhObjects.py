@@ -40,6 +40,8 @@ class ITitle(Interface): pass
 class ICreed(Interface): pass
 class IVirtue(Interface): pass
 class IRuling(Interface): pass
+class IArtist(Interface): pass
+class IKeyword(Interface): pass
 
 # pylint: enable-msg=C0111, C0321
 # Table Objects
@@ -50,6 +52,12 @@ class IRuling(Interface): pass
 # W0201: We don't care about attributes defined outside init, by design
 # C0103: We use different naming conventions for the table columns
 
+# We try to avoid limiting the length of unicode columns but we have
+# to provide a length for alternate id columns and index columns.
+# For these we default to 512 characters.
+
+MAX_ID_LENGTH = 512
+
 class VersionTable(SQLObject):
     TableName = UnicodeCol(alternateID=True, length=50)
     Version = IntCol(default=None)
@@ -58,11 +66,11 @@ class VersionTable(SQLObject):
 class AbstractCard(SQLObject):
     advise(instancesProvide=[IAbstractCard])
 
-    tableversion = 4
+    tableversion = 5
     sqlmeta.lazyUpdate = True
 
-    canonicalName = UnicodeCol(alternateID=True, length=50)
-    name = UnicodeCol(length=50)
+    canonicalName = UnicodeCol(alternateID=True, length=MAX_ID_LENGTH)
+    name = UnicodeCol()
     text = UnicodeCol()
     group = IntCol(default=None, dbName='grp')
     capacity = IntCol(default=None)
@@ -71,8 +79,11 @@ class AbstractCard(SQLObject):
     costtype = EnumCol(enumValues=['pool', 'blood', 'conviction', None],
             default=None)
     level = EnumCol(enumValues=['advanced', None], default=None)
-    burnoption = BoolCol(default=False)
 
+    # Most of these names are singular when they should be plural
+    # since they refer to lists. We've decided to live with the
+    # inconsistency for old columns but do the right thing for new
+    # ones.
     discipline = CachedRelatedJoin('DisciplinePair',
             intermediateTable='abs_discipline_pair_map',
             createRelatedTable=False)
@@ -93,6 +104,10 @@ class AbstractCard(SQLObject):
             createRelatedTable=False)
     rulings = CachedRelatedJoin('Ruling', intermediateTable='abs_ruling_map',
             createRelatedTable=False)
+    artists = CachedRelatedJoin('Artist', intermediateTable='abs_artist_map',
+            createRelatedTable=False)
+    keywords = CachedRelatedJoin('Keyword', intermediateTable='abs_keyword_map',
+            createRelatedTable=False)
 
     physicalCards = MultipleJoin('PhysicalCard')
 
@@ -110,9 +125,9 @@ class PhysicalCard(SQLObject):
 class PhysicalCardSet(SQLObject):
     advise(instancesProvide=[IPhysicalCardSet])
 
-    tableversion = 5
-    name = UnicodeCol(alternateID=True, length=50)
-    author = UnicodeCol(length=50, default='')
+    tableversion = 6
+    name = UnicodeCol(alternateID=True, length=MAX_ID_LENGTH)
+    author = UnicodeCol(default='')
     comment = UnicodeCol(default='')
     annotations = UnicodeCol(default='')
     inuse = BoolCol(default=False)
@@ -133,17 +148,17 @@ class RarityPair(SQLObject):
 class Expansion(SQLObject):
     advise(instancesProvide=[IExpansion])
 
-    tableversion = 2
-    name = UnicodeCol(alternateID=True, length=20)
-    shortname = UnicodeCol(length=10, default=None)
+    tableversion = 3
+    name = UnicodeCol(alternateID=True, length=MAX_ID_LENGTH)
+    shortname = UnicodeCol(default=None)
     pairs = MultipleJoin('RarityPair')
 
 class Rarity(SQLObject):
     advise(instancesProvide=[IRarity])
 
-    tableversion = 2
-    name = UnicodeCol(alternateID=True, length=20)
-    shortname = UnicodeCol(alternateID=True, length=20)
+    tableversion = 3
+    name = UnicodeCol(alternateID=True, length=MAX_ID_LENGTH)
+    shortname = UnicodeCol(alternateID=True, length=MAX_ID_LENGTH)
 
 class DisciplinePair(SQLObject):
     advise(instancesProvide=[IDisciplinePair])
@@ -159,70 +174,90 @@ class DisciplinePair(SQLObject):
 class Discipline(SQLObject):
     advise(instancesProvide=[IDiscipline])
 
-    tableversion = 2
-    name = UnicodeCol(alternateID=True, length=30)
-    fullname = UnicodeCol(length=30, default=None)
+    tableversion = 3
+    name = UnicodeCol(alternateID=True, length=MAX_ID_LENGTH)
+    fullname = UnicodeCol(default=None)
     pairs = MultipleJoin('DisciplinePair')
 
 class Virtue(SQLObject):
     advise(instancesProvide=[IVirtue])
 
-    tableversion = 1
-    name = UnicodeCol(alternateID=True, length=30)
-    fullname = UnicodeCol(length=30, default=None)
+    tableversion = 2
+    name = UnicodeCol(alternateID=True, length=MAX_ID_LENGTH)
+    fullname = UnicodeCol(default=None)
     cards = RelatedJoin('AbstractCard', intermediateTable='abs_virtue_map',
             createRelatedTable=False)
 
 class Creed(SQLObject):
     advise(instancesProvide=[ICreed])
 
-    tableversion = 1
-    name = UnicodeCol(alternateID=True, length=40)
-    shortname = UnicodeCol(length=10, default=None)
+    tableversion = 2
+    name = UnicodeCol(alternateID=True, length=MAX_ID_LENGTH)
+    shortname = UnicodeCol(default=None)
     cards = RelatedJoin('AbstractCard', intermediateTable='abs_creed_map',
             createRelatedTable=False)
 
 class Clan(SQLObject):
     advise(instancesProvide=[IClan])
 
-    tableversion = 2
-    name = UnicodeCol(alternateID=True, length=40)
-    shortname = UnicodeCol(length=10, default=None)
+    tableversion = 3
+    name = UnicodeCol(alternateID=True, length=MAX_ID_LENGTH)
+    shortname = UnicodeCol(default=None)
     cards = RelatedJoin('AbstractCard', intermediateTable='abs_clan_map',
             createRelatedTable=False)
 
 class CardType(SQLObject):
     advise(instancesProvide=[ICardType])
 
-    tableversion = 1
-    name = UnicodeCol(alternateID=True, length=50)
+    tableversion = 2
+    name = UnicodeCol(alternateID=True, length=MAX_ID_LENGTH)
     cards = RelatedJoin('AbstractCard', intermediateTable='abs_type_map',
             createRelatedTable=False)
 
 class Sect(SQLObject):
     advise(instancesProvide=[ISect])
 
-    tableversion = 1
-    name = UnicodeCol(alternateID=True, length=50)
+    tableversion = 2
+    name = UnicodeCol(alternateID=True, length=MAX_ID_LENGTH)
     cards = RelatedJoin('AbstractCard', intermediateTable='abs_sect_map',
             createRelatedTable=False)
 
 class Title(SQLObject):
     advise(instancesProvide=[ITitle])
 
-    tableversion = 1
-    name = UnicodeCol(alternateID=True, length=50)
+    tableversion = 2
+    name = UnicodeCol(alternateID=True, length=MAX_ID_LENGTH)
     cards = RelatedJoin('AbstractCard', intermediateTable='abs_title_map',
             createRelatedTable=False)
 
 class Ruling(SQLObject):
     advise(instancesProvide=[IRuling])
 
-    tableversion = 1
-    text = UnicodeCol(alternateID=True, length=512)
-    code = UnicodeCol(length=50)
-    url = UnicodeCol(length=256, default=None)
+    tableversion = 2
+    text = UnicodeCol(alternateID=True, length=MAX_ID_LENGTH)
+    code = UnicodeCol()
+    url = UnicodeCol(default=None)
     cards = RelatedJoin('AbstractCard', intermediateTable='abs_ruling_map',
+            createRelatedTable=False)
+
+class Artist(SQLObject):
+    advise(instancesProvide=[IArtist])
+
+    tableversion = 1
+    name = UnicodeCol(alternateID=True, length=MAX_ID_LENGTH)
+    cards = RelatedJoin('AbstractCard', intermediateTable='abs_artist_map',
+            createRelatedTable=False)
+
+class Keyword(SQLObject):
+    advise(instancesProvide=[IKeyword])
+
+    # For sanity, avoid keywords with commas since this is the preferred
+    # character for separating lists of keywords when displaying them
+    # to a user in a compact way.
+
+    tableversion = 1
+    keyword = UnicodeCol(alternateID=True, length=MAX_ID_LENGTH)
+    cards = RelatedJoin('AbstractCard', intermediateTable='abs_keyword_map',
             createRelatedTable=False)
 
 # Mapping Tables
@@ -347,6 +382,30 @@ class MapAbstractCardToVirtue(SQLObject):
 
     abstractCardIndex = DatabaseIndex(abstractCard, unique=False)
     virtueIndex = DatabaseIndex(virtue, unique=False)
+
+class MapAbstractCardToArtist(SQLObject):
+    class sqlmeta:
+        table = 'abs_artist_map'
+
+    tableversion = 1
+
+    abstractCard = ForeignKey('AbstractCard', notNull=True)
+    artist = ForeignKey('Artist', notNull=True)
+
+    abstractCardIndex = DatabaseIndex(abstractCard, unique=False)
+    artistIndex = DatabaseIndex(artist, unique=False)
+
+class MapAbstractCardToKeyword(SQLObject):
+    class sqlmeta:
+        table = 'abs_keyword_map'
+
+    tableversion = 1
+
+    abstractCard = ForeignKey('AbstractCard', notNull=True)
+    keyword = ForeignKey('Keyword', notNull=True)
+
+    abstractCardIndex = DatabaseIndex(abstractCard, unique=False)
+    keywordIndex = DatabaseIndex(keyword, unique=False)
 
 # pylint: enable-msg=W0232, R0902, W0201, C0103
 
