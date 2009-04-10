@@ -415,6 +415,7 @@ TABLE_LIST = [ AbstractCard, Expansion,
                PhysicalCard, PhysicalCardSet,
                Rarity, RarityPair, Discipline, DisciplinePair,
                Clan, CardType, Sect, Title, Ruling, Virtue, Creed,
+               Artist, Keyword,
                # Mapping tables from here on out
                MapPhysicalCardToPhysicalCardSet,
                MapAbstractCardToRarityPair,
@@ -426,6 +427,8 @@ TABLE_LIST = [ AbstractCard, Expansion,
                MapAbstractCardToTitle,
                MapAbstractCardToVirtue,
                MapAbstractCardToCreed,
+               MapAbstractCardToArtist,
+               MapAbstractCardToKeyword,
                ]
 # For reloading the Physical Card Sets
 PHYSICAL_SET_LIST = [PhysicalCardSet,
@@ -525,6 +528,18 @@ class SutekhObjectMaker(object):
             return IRuling((sText, sCode))
         except SQLObjectNotFound:
             return Ruling(text=sText, code=sCode)
+
+    def make_keyword(self, sKeyword):
+        try:
+            return IKeyword(sKeyword)
+        except SQLObjectNotFound:
+            return Keyword(keyword=sKeyword)
+
+    def make_artist(self, sArtist):
+        try:
+            return IArtist(sArtist)
+        except SQLObjectNotFound:
+            return Artist(name=sArtist)
 
 # Abbreviation lookup based adapters
 
@@ -706,6 +721,22 @@ class RulingAdapter(object):
         sText, _sCode = tData
         return Ruling.byText(sText.encode('utf8'))
 
+class KeywordAdapter(object):
+    advise(instancesProvide=[IKeyword], asAdapterForTypes=[basestring])
+
+    def __new__(cls, sKeyword):
+        # pylint: disable-msg=E1101,
+        # SQLObject confuses pylint
+        return Keyword.byKeyword(sKeyword.encode('utf8'))
+
+class ArtistAdapter(object):
+    advise(instancesProvide=[IArtist], asAdapterForTypes=[basestring])
+
+    def __new__(cls, sArtistName):
+        # pylint: disable-msg=E1101,
+        # SQLObject confuses pylint
+        return Artist.byName(sArtistName.encode('utf8'))
+
 class PhysicalCardSetAdapter(object):
     advise(instancesProvide=[IPhysicalCardSet], asAdapterForTypes=[basestring])
 
@@ -740,7 +771,6 @@ class PhysicalCardMappingToAbstractCardAdapter(object):
 
     def __new__(cls, oMapPhysCard):
         return IAbstractCard(oMapPhysCard.physicalCard)
-
 
 class PhysicalCardAdapter(object):
     advise(instancesProvide=[IPhysicalCard], asAdapterForTypes=[tuple])
