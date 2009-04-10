@@ -19,7 +19,7 @@ from sutekh.core.SutekhObjects import AbstractCard, IAbstractCard, ICreed, \
         IPhysicalCardSet, IRarityPair, IRarity, Clan, \
         Discipline, CardType, Title, Creed, Virtue, Sect, Expansion, \
         RarityPair, PhysicalCardSet, PhysicalCard, IDisciplinePair, \
-        MapPhysicalCardToPhysicalCardSet
+        MapPhysicalCardToPhysicalCardSet, Artist, Keyword, IArtist, IKeyword
 from sqlobject import SQLObjectNotFound, AND, OR, NOT, LIKE, func, \
         IN as SQLOBJ_IN
 from sqlobject.sqlbuilder import Table, Alias, LEFTJOINOn, Select, \
@@ -606,6 +606,70 @@ class MultiVirtueFilter(MultiFilter):
     @classmethod
     def get_values(cls):
         return [x.fullname for x in Virtue.select().orderBy('name')]
+
+class ArtistFilter(SingleFilter):
+    """Filter on Card's artist"""
+    types = ['AbstractCard', 'PhysicalCard']
+    def __init__(self, sArtist):
+        # pylint: disable-msg=E1101
+        # SQLObject methods not detected by pylint
+        self._oId = IArtist(sArtist).id
+        self._oMapTable = make_table_alias('abs_artist_map')
+        self._oIdField = self._oMapTable.q.artist_id
+
+class MultiArtistFilter(MultiFilter):
+    """Filter on multiple artists"""
+    keyword = "Artist"
+    islistfilter = True
+    description = "Artist"
+    helptext = "a list of artists\nReturns all cards where one or more of" \
+             " the specified artists has created art for the card."
+    types = ['AbstractCard', 'PhysicalCard']
+
+    def __init__(self, aArtists):
+        # pylint: disable-msg=E1101
+        # SQLObject methods not detected by pylint
+        self._aIds = [IArtist(x).id for x in aArtists]
+        self._oMapTable = make_table_alias('abs_artist_map')
+        self._oIdField = self._oMapTable.q.artist_id
+
+    # pylint: disable-msg=C0111
+    # don't need docstrings for _get_expression, get_values & _get_joins
+    @classmethod
+    def get_values(cls):
+        return [x.name for x in Artist.select().orderBy('name')]
+
+class KeywordFilter(SingleFilter):
+    """Filter on Card's keyword"""
+    types = ['AbstractCard', 'PhysicalCard']
+    def __init__(self, sKeyword):
+        # pylint: disable-msg=E1101
+        # SQLObject methods not detected by pylint
+        self._oId = IKeyword(sKeyword).id
+        self._oMapTable = make_table_alias('abs_keyword_map')
+        self._oIdField = self._oMapTable.q.keyword_id
+
+class MultiKeywordFilter(MultiFilter):
+    """Filter on multiple keywords"""
+    keyword = "Keyword"
+    islistfilter = True
+    description = "Keyword"
+    helptext = "a list of keywords\nReturns all cards where one or more of" \
+             " the specified keywords is associated with the card."
+    types = ['AbstractCard', 'PhysicalCard']
+
+    def __init__(self, aKeywords):
+        # pylint: disable-msg=E1101
+        # SQLObject methods not detected by pylint
+        self._aIds = [IKeyword(x).id for x in aKeywords]
+        self._oMapTable = make_table_alias('abs_keyword_map')
+        self._oIdField = self._oMapTable.q.keyword_id
+
+    # pylint: disable-msg=C0111
+    # don't need docstrings for _get_expression, get_values & _get_joins
+    @classmethod
+    def get_values(cls):
+        return [x.name for x in Keyword.select().orderBy('keyword')]
 
 class GroupFilter(DirectFilter):
     """Filter on Group"""
@@ -1478,7 +1542,8 @@ class CSPhysicalCardSetInUseFilter(DirectFilter):
 # The List of filters exposed to the Filter Parser - new filters should just
 # be tacked on here
 
-PARSER_FILTERS = [MultiCardTypeFilter, MultiCostTypeFilter, MultiClanFilter,
+PARSER_FILTERS = [
+        MultiCardTypeFilter, MultiCostTypeFilter, MultiClanFilter,
         MultiDisciplineFilter, MultiGroupFilter, MultiCapacityFilter,
         MultiCostFilter, MultiLifeFilter, MultiCreedFilter, MultiVirtueFilter,
         CardTextFilter, CardNameFilter, MultiSectFilter, MultiTitleFilter,
@@ -1487,5 +1552,7 @@ PARSER_FILTERS = [MultiCardTypeFilter, MultiCostTypeFilter, MultiClanFilter,
         CardSetDescriptionFilter, CardSetAnnotationsFilter,
         MultiPhysicalCardSetFilter, PhysicalCardSetInUseFilter,
         CardSetMultiCardCountFilter, CSPhysicalCardSetInUseFilter,
-        CardFunctionFilter, ParentCardSetFilter]
+        CardFunctionFilter, ParentCardSetFilter, MultiArtistFilter,
+        MultiKeywordFilter,
+]
 

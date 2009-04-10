@@ -218,6 +218,14 @@ class FilterTests(SutekhTest):
                 U"The Path of Blood", u"The Slaughterhouse"]),
             (Filters.LifeFilter(4), []),
             (Filters.MultiLifeFilter([4, 5]), []),
+            (Filters.ArtistFilter('Leif Jones'), [u"Alan Sovereign (Advanced)",
+                u"Yvette, The Hopeless"]),
+            (Filters.MultiArtistFilter(["William O'Connor",
+                u"N\xe9 N\xe9 Thomas"]), [u".44 Magnum",
+                u"The Slaughterhouse"]),
+            (Filters.KeywordFilter('burn option'), [u"The Slaughterhouse"]),
+            (Filters.MultiKeywordFilter(['burn option']),
+                [u"The Slaughterhouse"]),
 
             # Other Filters
             (Filters.CardTextFilter('strike'), [u".44 Magnum", u"AK-47",

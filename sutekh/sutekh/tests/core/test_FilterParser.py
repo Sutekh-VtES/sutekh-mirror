@@ -131,6 +131,11 @@ class FilterParserTests(SutekhTest):
                 u"The Path of Blood", u"The Slaughterhouse"]),
             ('Life in 4', []),
             ('Life in 4,5', []),
+            ('Artist in "Leif Jones"', [u"Alan Sovereign (Advanced)",
+                u"Yvette, The Hopeless"]),
+            (u'Artist in "William O\'Connor", "N\xe9 N\xe9 Thomas"',
+                [u".44 Magnum", u"The Slaughterhouse"]),
+            ('Keyword in "burn option"', [u"The Slaughterhouse"]),
 
             # Text Entry Filters Filters
             ('CardText in strike', [u".44 Magnum", u"AK-47", u"Aeron",
