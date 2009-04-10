@@ -9,9 +9,10 @@ The Python modules required are:
 * PyGtk (for the GUI) [ http://cheeseshop.python.org/pypi/PyGTK ]  
 * Python-xml for the xml writing support
 
-One will also need to download the official cardlist at:
+One will also need to download the official cardlist at one of:
 
 * http://www.white-wolf.com/vtes/index.php?line=cardlist
+* http://www.white-wolf.com/vtes/HTML/cardlist.html
 
 to a local file.  Sutekh can also parse the official rulings
 file from:
