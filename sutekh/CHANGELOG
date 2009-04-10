@@ -12,6 +12,7 @@
      the "burn option" keyword.
    - The AbstractCard life field now refers to retainer and ally
      life as well as imbued crypt card life.
+ * Basic support for upgrading from 0.6 to 0.8.
 
 09 Apr 2009
  * Tweak the way sorting is enabled to speed up the tests.

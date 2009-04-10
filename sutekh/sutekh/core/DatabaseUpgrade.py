@@ -19,11 +19,10 @@ from logging import Logger
 from sutekh.core.SutekhObjects import PhysicalCard, AbstractCard, \
         PhysicalCardSet, Expansion, Clan, Virtue, Discipline, Rarity, \
         RarityPair, CardType, Ruling, TABLE_LIST, DisciplinePair, Creed, \
-        Sect, Title, flush_cache
+        Sect, Title, flush_cache, IKeyword
 from sutekh.core.CardSetHolder import CachedCardSetHolder
 from sutekh.SutekhUtility import refresh_tables
 from sutekh.core.DatabaseVersion import DatabaseVersion
-from sutekh.core.Abbreviations import Rarities
 
 # This file handles all the grunt work of the database upgrades. We have some
 # (arguablely overly) complex trickery to read old databases, and we create a
@@ -44,103 +43,13 @@ class UnknownVersion(Exception):
 # pylint: disable-msg=C0103, W0232
 # C0103 - names set largely by SQLObject conventions, so ours don't apply
 # W0232 - SQLObject classes don't have user defined __init__
-class PhysicalCardSet_v3(SQLObject):
-    """PhysicalCardSet V3 - doesn't have the inuse flag."""
-    class sqlmeta:
-        """meta class used to set the correct table."""
-        table = PhysicalCardSet.sqlmeta.table
-    name = UnicodeCol(alternateID=True, length=50)
-    author = UnicodeCol(length=50, default='')
-    comment = UnicodeCol(default='')
-    annotations = UnicodeCol(default='')
-    cards = RelatedJoin('PhysicalCard', intermediateTable='physical_map',
-            createRelatedTable=False)
 
-class AbstractCard_v2(SQLObject):
-    """AbstractCard V2 - doesn't have the burnoption"""
+class AbstractCard_v4(SQLObject):
+    """Table used to upgrade AbstractCard from v4"""
     class sqlmeta:
-        """meta class used to set the correct table."""
+        """meta class used to set the correct table"""
         table = AbstractCard.sqlmeta.table
-    canonicalName = UnicodeCol(alternateID=True, length=50)
-    name = UnicodeCol(length=50)
-    text = UnicodeCol()
-    group = IntCol(default=None, dbName='grp')
-    capacity = IntCol(default=None)
-    cost = IntCol(default=None)
-    life = IntCol(default=None)
-    costtype = EnumCol(enumValues=['pool', 'blood', 'conviction', None],
-            default=None)
-    level = EnumCol(enumValues=['advanced', None], default=None)
-    discipline = RelatedJoin('DisciplinePair',
-            intermediateTable='abs_discipline_pair_map',
-            createRelatedTable=False)
-    rarity = RelatedJoin('RarityPair', intermediateTable='abs_rarity_pair_map',
-            createRelatedTable=False)
-    clan = RelatedJoin('Clan', intermediateTable='abs_clan_map',
-            createRelatedTable=False)
-    cardtype = RelatedJoin('CardType', intermediateTable='abs_type_map',
-            createRelatedTable=False)
-    sect = RelatedJoin('Sect', intermediateTable='abs_sect_map',
-            createRelatedTable=False)
-    title = RelatedJoin('Title', intermediateTable='abs_title_map',
-            createRelatedTable=False)
-    creed = RelatedJoin('Creed', intermediateTable='abs_creed_map',
-            createRelatedTable=False)
-    virtue = RelatedJoin('Virtue', intermediateTable='abs_virtue_map',
-            createRelatedTable=False)
-    rulings = RelatedJoin('Ruling', intermediateTable='abs_ruling_map',
-            createRelatedTable=False)
-    sets = RelatedJoin('AbstractCardSet_v3', intermediateTable='abstract_map',
-            createRelatedTable=False)
-    physicalCards = MultipleJoin('PhysicalCard')
 
-class Rarity_v1(SQLObject):
-    """Rarity v1 - doesn't have shortname"""
-    class sqlmeta:
-        """meta class used to set the correct table."""
-        table = Rarity.sqlmeta.table
-    name = UnicodeCol(alternateID=True, length=20)
-
-class RarityPair_Rv1(SQLObject):
-    """RarityPior table that joins with Rarity_v1"""
-    class sqlmeta:
-        """meta class used to set the correct table."""
-        table = RarityPair.sqlmeta.table
-    expansion = ForeignKey('Expansion')
-    rarity = ForeignKey('Rarity_v1')
-    cards = RelatedJoin('AbstractCard_v2',
-            intermediateTable='abs_rarity_pair_map', createRelatedTable=False)
-
-class AbstractCardSet_ACv2(SQLObject):
-    """AbstractCardSet table that joins with AbstractCard_v2"""
-    class sqlmeta:
-        """meta class used to set the correct table."""
-        table = 'abstract_card_set'
-    name = UnicodeCol(alternateID=True, length=50)
-    author = UnicodeCol(length=50, default='')
-    comment = UnicodeCol(default='')
-    annotations = UnicodeCol(default='')
-    # Provides a join to AbstractCard_v2, needed to read old DB
-    cards = RelatedJoin('AbstractCard_v2',
-            intermediateTable='abstract_map', createRelatedTable=False)
-
-class AbstractCardSet_v3(SQLObject):
-    """Old abstract card set table."""
-    class sqlmeta:
-        """meta class used to set the correct table."""
-        table = 'abstract_card_set'
-    name = UnicodeCol(alternateID=True, length=50)
-    author = UnicodeCol(length=50, default='')
-    comment = UnicodeCol(default='')
-    annotations = UnicodeCol(default='')
-    cards = RelatedJoin('AbstractCard_v3', intermediateTable='abstract_map',
-            createRelatedTable=False)
-
-class AbstractCard_v3(SQLObject):
-    """Old abstract card with join to abstract card set."""
-    class sqlmeta:
-        """meta class used to set the correct table."""
-        table = AbstractCard.sqlmeta.table
     canonicalName = UnicodeCol(alternateID=True, length=50)
     name = UnicodeCol(length=50)
     text = UnicodeCol()
@@ -152,11 +61,13 @@ class AbstractCard_v3(SQLObject):
             default=None)
     level = EnumCol(enumValues=['advanced', None], default=None)
     burnoption = BoolCol(default=False)
+
     discipline = RelatedJoin('DisciplinePair',
             intermediateTable='abs_discipline_pair_map',
             createRelatedTable=False)
     rarity = RelatedJoin('RarityPair',
-            intermediateTable='abs_rarity_pair_map', createRelatedTable=False)
+            intermediateTable='abs_rarity_pair_map',
+            createRelatedTable=False)
     clan = RelatedJoin('Clan',
             intermediateTable='abs_clan_map', createRelatedTable=False)
     cardtype = RelatedJoin('CardType', intermediateTable='abs_type_map',
@@ -171,30 +82,127 @@ class AbstractCard_v3(SQLObject):
             createRelatedTable=False)
     rulings = RelatedJoin('Ruling', intermediateTable='abs_ruling_map',
             createRelatedTable=False)
-    sets = RelatedJoin('AbstractCardSet_v3', intermediateTable='abstract_map',
-            createRelatedTable=False)
+
     physicalCards = MultipleJoin('PhysicalCard')
 
-class PhysicalCardSet_v4(SQLObject):
-    """Old PCS table without parent links."""
+class PhysicalCardSet_v5(SQLObject):
+    """Table to upgrade PhysicalCardSet from v5"""
     class sqlmeta:
         """meta class used to set the correct table."""
         table = PhysicalCardSet.sqlmeta.table
+
     name = UnicodeCol(alternateID=True, length=50)
     author = UnicodeCol(length=50, default='')
     comment = UnicodeCol(default='')
     annotations = UnicodeCol(default='')
     inuse = BoolCol(default=False)
+    parent = ForeignKey('PhysicalCardSet_v5', default=None)
     cards = RelatedJoin('PhysicalCard', intermediateTable='physical_map',
             createRelatedTable=False)
 
-class MapAbstractCardToAbstractCardSet_v3(SQLObject):
-    """Old abstract card map to need so we can drop tables properly"""
+class Expansion_v2(SQLObject):
+    """Table to upgrade Expansion from version 1"""
     class sqlmeta:
         """meta class used to set the correct table."""
-        table = 'abstract_map'
-    abstractCard = ForeignKey('AbstractCard_v3', notNull=True)
-    abstractCardSet = ForeignKey('AbstractCardSet_v3', notNull=True)
+        table = Expansion.sqlmeta.table
+
+    name = UnicodeCol(alternateID=True, length=20)
+    shortname = UnicodeCol(length=10, default=None)
+    pairs = MultipleJoin('RarityPair')
+
+class Rarity_v2(SQLObject):
+    """Table used to upgrade Rarity from version 1"""
+    class sqlmeta:
+        """meta class used to set the correct table."""
+        table = Rarity.sqlmeta.table
+
+    name = UnicodeCol(alternateID=True, length=20)
+    shortname = UnicodeCol(alternateID=True, length=20)
+
+class Discipline_v2(SQLObject):
+    """Table used to upgrade Discipline from version 2"""
+    class sqlmeta:
+        """meta class used to set the correct table."""
+        table = Discipline.sqlmeta.table
+
+    name = UnicodeCol(alternateID=True, length=30)
+    fullname = UnicodeCol(length=30, default=None)
+    pairs = MultipleJoin('DisciplinePair')
+
+class Virtue_v1(SQLObject):
+    """Table used to upgrade Virtue from version 1"""
+    class sqlmeta:
+        """meta class used to set the correct table."""
+        table = Virtue.sqlmeta.table
+
+    name = UnicodeCol(alternateID=True, length=30)
+    fullname = UnicodeCol(length=30, default=None)
+    cards = RelatedJoin('AbstractCard', intermediateTable='abs_virtue_map',
+            createRelatedTable=False)
+
+class Creed_v1(SQLObject):
+    """Table used to upgrade Creed from version 1"""
+    class sqlmeta:
+        """meta class used to set the correct table."""
+        table = Creed.sqlmeta.table
+
+    name = UnicodeCol(alternateID=True, length=40)
+    shortname = UnicodeCol(length=10, default=None)
+    cards = RelatedJoin('AbstractCard', intermediateTable='abs_creed_map',
+            createRelatedTable=False)
+
+class Clan_v2(SQLObject):
+    """Table used to upgrade Clane from version 2"""
+    class sqlmeta:
+        """meta class used to set the correct table."""
+        table = Clan.sqlmeta.table
+
+    name = UnicodeCol(alternateID=True, length=40)
+    shortname = UnicodeCol(length=10, default=None)
+    cards = RelatedJoin('AbstractCard', intermediateTable='abs_clan_map',
+            createRelatedTable=False)
+
+class CardType_v1(SQLObject):
+    """Table used to upgrade CardType from version 1"""
+    class sqlmeta:
+        """meta class used to set the correct table."""
+        table = CardType.sqlmeta.table
+
+    name = UnicodeCol(alternateID=True, length=50)
+    cards = RelatedJoin('AbstractCard', intermediateTable='abs_type_map',
+            createRelatedTable=False)
+
+class Sect_v1(SQLObject):
+    """Table used to upgrade Sect from version 1"""
+    class sqlmeta:
+        """meta class used to set the correct table."""
+        table = Sect.sqlmeta.table
+
+    name = UnicodeCol(alternateID=True, length=50)
+    cards = RelatedJoin('AbstractCard', intermediateTable='abs_sect_map',
+            createRelatedTable=False)
+
+class Title_v1(SQLObject):
+    """Table used to upgrade Title from version 1"""
+    class sqlmeta:
+        """meta class used to set the correct table."""
+        table = Title.sqlmeta.table
+
+    name = UnicodeCol(alternateID=True, length=50)
+    cards = RelatedJoin('AbstractCard', intermediateTable='abs_title_map',
+            createRelatedTable=False)
+
+class Ruling_v1(SQLObject):
+    """Table used to upgrade Ruling from version 1"""
+    class sqlmeta:
+        """meta class used to set the correct table."""
+        table = Ruling.sqlmeta.table
+
+    text = UnicodeCol(alternateID=True, length=512)
+    code = UnicodeCol(length=50)
+    url = UnicodeCol(length=256, default=None)
+    cards = RelatedJoin('AbstractCard', intermediateTable='abs_ruling_map',
+            createRelatedTable=False)
 
 # pylint: enable-msg=C0103, W0232
 
@@ -204,39 +212,47 @@ def check_can_read_old_database(oConn):
     # subdivision isn't really beneficial
     """Can we upgrade from this database version?
 
-       Sutekh 0.5.x and 0.6.x can upgrade from the versions in Sutekh 0.4.x,
+       Sutekh 0.7.x and 0.8.x can upgrade from the versions in Sutekh 0.6.x,
        but no earlier
        """
     oVer = DatabaseVersion()
     oVer.expire_cache()
     if not oVer.check_tables_and_versions([Rarity], [Rarity.tableversion],
-            oConn) and not oVer.check_tables_and_versions([Rarity], [1],
+            oConn) and not oVer.check_tables_and_versions([Rarity], [2],
                     oConn):
         raise UnknownVersion("Rarity")
     if not oVer.check_tables_and_versions([Expansion],
-            [Expansion.tableversion], oConn):
+            [Expansion.tableversion], oConn) and not \
+                    oVer.check_tables_and_versions([Expansion], [2], oConn):
         raise UnknownVersion("Expansion")
     if not oVer.check_tables_and_versions([Discipline],
-            [Discipline.tableversion], oConn):
+            [Discipline.tableversion], oConn) and not \
+                    oVer.check_tables_and_versions([Discipline], [2], oConn):
         raise UnknownVersion("Discipline")
-    if not oVer.check_tables_and_versions([Clan], [Clan.tableversion], oConn):
+    if not oVer.check_tables_and_versions([Clan], [Clan.tableversion],
+            oConn) and not oVer.check_tables_and_versions([Clan], [2], oConn):
         raise UnknownVersion("Clan")
     if not oVer.check_tables_and_versions([CardType], [CardType.tableversion],
-            oConn):
+            oConn) and not oVer.check_tables_and_versions([CardType], [1],
+                    oConn):
         raise UnknownVersion("CardType")
     if not oVer.check_tables_and_versions([Creed], [Creed.tableversion],
-            oConn):
+            oConn) and not oVer.check_tables_and_versions([Creed], [1],
+                    oConn):
         raise UnknownVersion("Creed")
     if not oVer.check_tables_and_versions([Virtue], [Virtue.tableversion],
-            oConn):
+            oConn) and not oVer.check_tables_and_versions([Virtue], [1],
+                    oConn):
         raise UnknownVersion("Virtue")
-    if not oVer.check_tables_and_versions([Sect], [Sect.tableversion], oConn):
+    if not oVer.check_tables_and_versions([Sect], [Sect.tableversion], oConn) \
+            and not oVer.check_tables_and_versions([Sect], [1], oConn):
         raise UnknownVersion("Sect")
     if not oVer.check_tables_and_versions([Title], [Title.tableversion],
-            oConn):
+            oConn) and not oVer.check_tables_and_versions([Title], [1], oConn):
         raise UnknownVersion("Title")
     if not oVer.check_tables_and_versions([Ruling], [Ruling.tableversion],
-            oConn):
+            oConn) and not oVer.check_tables_and_versions([Ruling], [1],
+                    oConn):
         raise UnknownVersion("Ruling")
     if not oVer.check_tables_and_versions([DisciplinePair],
             [DisciplinePair.tableversion], oConn):
@@ -246,19 +262,16 @@ def check_can_read_old_database(oConn):
         raise UnknownVersion("RarityPair")
     if not oVer.check_tables_and_versions([AbstractCard],
             [AbstractCard.tableversion], oConn) \
-            and not oVer.check_table_in_versions(AbstractCard, [2, 3]):
+            and not oVer.check_tables_and_versions([AbstractCard], [4], oConn):
         raise UnknownVersion("AbstractCard")
     if not oVer.check_tables_and_versions([PhysicalCard],
             [PhysicalCard.tableversion], oConn):
         raise UnknownVersion("PhysicalCard")
     if not oVer.check_tables_and_versions([PhysicalCardSet],
             [PhysicalCardSet.tableversion], oConn) and not \
-                    oVer.check_table_in_versions(PhysicalCardSet, [3, 4]):
+                    oVer.check_tables_and_versions([PhysicalCardSet], [5],
+                            oConn):
         raise UnknownVersion("PhysicalCardSet")
-    # NB: This test should go away for Sutekh 0.8, as we will no longer
-    # support upgrading from DB version which have abstract card sets
-    if not oVer.check_table_in_versions(AbstractCardSet_v3, [-1, 3]):
-        raise UnknownVersion("AbstractCardSet")
     return True
 
 def old_database_count(oConn):
@@ -268,33 +281,24 @@ def old_database_count(oConn):
     if oVer.check_tables_and_versions([AbstractCard],
             [AbstractCard.tableversion], oConn):
         iCount += AbstractCard.select(connection=oConn).count()
-    elif oVer.check_tables_and_versions([AbstractCard], [3], oConn):
+    elif oVer.check_tables_and_versions([AbstractCard], [4], oConn):
         # We log once for each AC copied, and once for each set of PC's
         # created from the abstract cards
-        iCount += 2 * AbstractCard_v3.select(connection=oConn).count()
-    elif oVer.check_tables_and_versions([AbstractCard], [2], oConn):
-        iCount += 2 * AbstractCard_v2.select(connection=oConn).count()
+        iCount += 2 * AbstractCard_v4.select(connection=oConn).count()
     if oVer.check_tables_and_versions([PhysicalCard],
             [PhysicalCard.tableversion], oConn):
         iCount += PhysicalCard.select(connection=oConn).count()
     if oVer.check_tables_and_versions([PhysicalCardSet],
             [PhysicalCardSet.tableversion], oConn):
         iCount += PhysicalCardSet.select(connection=oConn).count()
-    elif oVer.check_tables_and_versions([PhysicalCardSet], [3], oConn):
-        iCount += PhysicalCardSet_v3.select(connection=oConn).count()
-    elif oVer.check_tables_and_versions([PhysicalCardSet], [4], oConn):
-        iCount += PhysicalCardSet_v4.select(connection=oConn).count()
-    if oVer.check_tables_and_versions([AbstractCardSet_v3], [3], oConn):
-        iCount += AbstractCardSet_v3.select(connection=oConn).count()
+    elif oVer.check_tables_and_versions([PhysicalCardSet], [5], oConn):
+        iCount += PhysicalCardSet_v5.select(connection=oConn).count()
     return iCount
-
-# pylint: disable-msg=W0612
-# W0612 - we have lots of unused variables from creating copies
 
 def copy_rarity(oOrigConn, oTrans):
     """Copy rarity tables, assumings same version"""
     for oObj in Rarity.select(connection=oOrigConn):
-        oCopy = Rarity(id=oObj.id, name=oObj.name,
+        _oCopy = Rarity(id=oObj.id, name=oObj.name,
                 shortname=oObj.shortname, connection=oTrans)
 
 def copy_old_rarity(oOrigConn, oTrans, oVer):
@@ -302,11 +306,10 @@ def copy_old_rarity(oOrigConn, oTrans, oVer):
     if oVer.check_tables_and_versions([Rarity], [Rarity.tableversion],
             oOrigConn):
         copy_rarity(oOrigConn, oTrans)
-    elif oVer.check_tables_and_versions([Rarity], [1], oOrigConn):
-        for oObj in Rarity_v1.select(connection=oOrigConn):
-            oCopy = Rarity(id=oObj.id, name=oObj.name,
-                    shortname=Rarities.shortname(oObj.name),
-                    connection=oTrans)
+    elif oVer.check_tables_and_versions([Rarity], [2], oOrigConn):
+        for oObj in Rarity_v2.select(connection=oOrigConn):
+            _oCopy = Rarity(id=oObj.id, name=oObj.name,
+                    shortname=oObj.shortname, connection=oTrans)
     else:
         return (False, ["Unknown Version for Rarity"])
     return (True, [])
@@ -314,7 +317,7 @@ def copy_old_rarity(oOrigConn, oTrans, oVer):
 def copy_expansion(oOrigConn, oTrans):
     """Copy expansion, assuming versions match"""
     for oObj in Expansion.select(connection=oOrigConn):
-        oCopy = Expansion(id=oObj.id, name=oObj.name,
+        _oCopy = Expansion(id=oObj.id, name=oObj.name,
                 shortname=oObj.shortname, connection=oTrans)
 
 def copy_old_expansion(oOrigConn, oTrans, oVer):
@@ -322,6 +325,10 @@ def copy_old_expansion(oOrigConn, oTrans, oVer):
     if oVer.check_tables_and_versions([Expansion], [Expansion.tableversion],
             oOrigConn):
         copy_expansion(oOrigConn, oTrans)
+    elif oVer.check_tables_and_versions([Expansion], [2], oOrigConn):
+        for oObj in Expansion_v2.select(connection=oOrigConn):
+            _oCopy = Expansion(id=oObj.id, name=oObj.name,
+                    shortname=oObj.shortname, connection=oTrans)
     else:
         return (False, ["Unknown Expansion Version"])
     return (True, [])
@@ -329,7 +336,7 @@ def copy_old_expansion(oOrigConn, oTrans, oVer):
 def copy_discipline(oOrigConn, oTrans):
     """Copy Discipline, assuming versions match"""
     for oObj in Discipline.select(connection=oOrigConn):
-        oCopy = Discipline(id=oObj.id, name=oObj.name,
+        _oCopy = Discipline(id=oObj.id, name=oObj.name,
             fullname=oObj.fullname, connection=oTrans)
 
 def copy_old_discipline(oOrigConn, oTrans, oVer):
@@ -337,6 +344,10 @@ def copy_old_discipline(oOrigConn, oTrans, oVer):
     if oVer.check_tables_and_versions([Discipline], [Discipline.tableversion],
             oOrigConn):
         copy_discipline(oOrigConn, oTrans)
+    elif oVer.check_tables_and_versions([Discipline], [2], oOrigConn):
+        for oObj in Discipline_v2.select(connection=oOrigConn):
+            _oCopy = Discipline(id=oObj.id, name=oObj.name,
+                fullname=oObj.fullname, connection=oTrans)
     else:
         return (False, ["Unknown Discipline version"])
     return (True, [])
@@ -344,13 +355,17 @@ def copy_old_discipline(oOrigConn, oTrans, oVer):
 def copy_clan(oOrigConn, oTrans):
     """Copy Clan, assuming database versions match"""
     for oObj in Clan.select(connection=oOrigConn):
-        oCopy = Clan(id=oObj.id, name=oObj.name, shortname=oObj.shortname,
+        _oCopy = Clan(id=oObj.id, name=oObj.name, shortname=oObj.shortname,
                 connection=oTrans)
 
 def copy_old_clan(oOrigConn, oTrans, oVer):
     """Copy clan, upgrading as needed."""
     if oVer.check_tables_and_versions([Clan], [Clan.tableversion], oOrigConn):
         copy_clan(oOrigConn, oTrans)
+    elif oVer.check_tables_and_versions([Clan], [2], oOrigConn):
+        for oObj in Clan_v2.select(connection=oOrigConn):
+            _oCopy = Clan(id=oObj.id, name=oObj.name,
+                    shortname=oObj.shortname, connection=oTrans)
     else:
         return (False, ["Unknown Clan Version"])
     return (True, [])
@@ -358,7 +373,7 @@ def copy_old_clan(oOrigConn, oTrans, oVer):
 def copy_creed(oOrigConn, oTrans):
     """Copy Creed, assuming versions match"""
     for oObj in Creed.select(connection=oOrigConn):
-        oCopy = Creed(id=oObj.id, name=oObj.name, shortname=oObj.shortname,
+        _oCopy = Creed(id=oObj.id, name=oObj.name, shortname=oObj.shortname,
                 connection=oTrans)
 
 def copy_old_creed(oOrigConn, oTrans, oVer):
@@ -366,6 +381,10 @@ def copy_old_creed(oOrigConn, oTrans, oVer):
     if oVer.check_tables_and_versions([Creed], [Creed.tableversion],
             oOrigConn):
         copy_creed(oOrigConn, oTrans)
+    elif oVer.check_tables_and_versions([Creed], [1], oOrigConn):
+        for oObj in Creed_v1.select(connection=oOrigConn):
+            _oCopy = Creed(id=oObj.id, name=oObj.name,
+                    shortname=oObj.shortname, connection=oTrans)
     else:
         return (False, ["Unknown Creed Version"])
     return (True, [])
@@ -373,7 +392,7 @@ def copy_old_creed(oOrigConn, oTrans, oVer):
 def copy_virtue(oOrigConn, oTrans):
     """Copy Virtue, assuming versions match"""
     for oObj in Virtue.select(connection=oOrigConn):
-        oCopy = Virtue(id=oObj.id, name=oObj.name, fullname=oObj.fullname,
+        _oCopy = Virtue(id=oObj.id, name=oObj.name, fullname=oObj.fullname,
                 connection=oTrans)
 
 def copy_old_virtue(oOrigConn, oTrans, oVer):
@@ -381,6 +400,10 @@ def copy_old_virtue(oOrigConn, oTrans, oVer):
     if oVer.check_tables_and_versions([Virtue], [Virtue.tableversion],
             oOrigConn):
         copy_virtue(oOrigConn, oTrans)
+    elif oVer.check_tables_and_versions([Virtue], [1], oOrigConn):
+        for oObj in Virtue_v1.select(connection=oOrigConn):
+            _oCopy = Virtue(id=oObj.id, name=oObj.name,
+                    fullname=oObj.fullname, connection=oTrans)
     else:
         return (False, ["Unknown Virtue Version"])
     return (True, [])
@@ -388,13 +411,17 @@ def copy_old_virtue(oOrigConn, oTrans, oVer):
 def copy_card_type(oOrigConn, oTrans):
     """Copy CardType, assuming versions match"""
     for oObj in CardType.select(connection=oOrigConn):
-        oCopy = CardType(id=oObj.id, name=oObj.name, connection=oTrans)
+        _oCopy = CardType(id=oObj.id, name=oObj.name, connection=oTrans)
 
 def copy_old_card_type(oOrigConn, oTrans, oVer):
     """Copy CardType, upgrading as needed"""
     if oVer.check_tables_and_versions([CardType], [CardType.tableversion],
             oOrigConn):
         copy_card_type(oOrigConn, oTrans)
+    elif oVer.check_tables_and_versions([CardType], [1], oOrigConn):
+        for oObj in CardType_v1.select(connection=oOrigConn):
+            _oCopy = CardType(id=oObj.id, name=oObj.name,
+                    connection=oTrans)
     else:
         return (False, ["Unknown CardType Version"])
     return (True, [])
@@ -402,14 +429,18 @@ def copy_old_card_type(oOrigConn, oTrans, oVer):
 def copy_ruling(oOrigConn, oTrans):
     """Copy Ruling, assuming versions match"""
     for oObj in Ruling.select(connection=oOrigConn):
-        oCopy = Ruling(id=oObj.id, text=oObj.text, code=oObj.code,
+        _oCopy = Ruling(id=oObj.id, text=oObj.text, code=oObj.code,
                 url=oObj.url, connection=oTrans)
 
 def copy_old_ruling(oOrigConn, oTrans, oVer):
     """Copy Ruling, upgrading as needed"""
-    if oVer.check_tables_and_versions([CardType], [CardType.tableversion],
+    if oVer.check_tables_and_versions([Ruling], [Ruling.tableversion],
             oOrigConn):
         copy_ruling(oOrigConn, oTrans)
+    elif oVer.check_tables_and_versions([Ruling], [1], oOrigConn):
+        for oObj in Ruling_v1.select(connection=oOrigConn):
+            _oCopy = Ruling(id=oObj.id, text=oObj.text, code=oObj.code,
+                    url=oObj.url, connection=oTrans)
     else:
         return (False, ["Unknown Ruling Version"])
     return (True, [])
@@ -417,7 +448,7 @@ def copy_old_ruling(oOrigConn, oTrans, oVer):
 def copy_discipline_pair(oOrigConn, oTrans):
     """Copy DisciplinePair, assuming versions match"""
     for oObj in DisciplinePair.select(connection=oOrigConn):
-        oCopy = DisciplinePair(id=oObj.id, level=oObj.level,
+        _oCopy = DisciplinePair(id=oObj.id, level=oObj.level,
                discipline=oObj.discipline, connection=oTrans)
 
 def copy_old_discipline_pair(oOrigConn, oTrans, oVer):
@@ -432,21 +463,14 @@ def copy_old_discipline_pair(oOrigConn, oTrans, oVer):
 def copy_rarity_pair(oOrigConn, oTrans):
     """Copy RairtyPair, assuming versions match"""
     for oObj in RarityPair.select(connection=oOrigConn):
-        oCopy = RarityPair(id=oObj.id, expansion=oObj.expansion,
+        _oCopy = RarityPair(id=oObj.id, expansion=oObj.expansion,
                 rarity=oObj.rarity, connection=oTrans)
 
 def copy_old_rarity_pair(oOrigConn, oTrans, oVer):
     """Copy RarityPair, upgrading as needed"""
     if oVer.check_tables_and_versions([RarityPair], [RarityPair.tableversion],
-            oOrigConn) and oVer.check_tables_and_versions([Rarity],
-                    [Rarity.tableversion], oOrigConn):
+            oOrigConn):
         copy_rarity_pair(oOrigConn, oTrans)
-    elif oVer.check_tables_and_versions([RarityPair],
-            [RarityPair.tableversion], oOrigConn) and \
-            oVer.check_tables_and_versions([Rarity], [1], oOrigConn):
-        for oObj in RarityPair_Rv1.select(connection=oOrigConn):
-            oCopy = RarityPair(id=oObj.id, expansion=oObj.expansion,
-                    rarity=oObj.rarity, connection=oTrans)
     else:
         return (False, ["Unknown RarityPair version"])
     return (True, [])
@@ -454,12 +478,15 @@ def copy_old_rarity_pair(oOrigConn, oTrans, oVer):
 def copy_sect(oOrigConn, oTrans):
     """Copy Sect, assuming versions match"""
     for oObj in Sect.select(connection=oOrigConn):
-        oCopy = Sect(id=oObj.id, name=oObj.name, connection=oTrans)
+        _oCopy = Sect(id=oObj.id, name=oObj.name, connection=oTrans)
 
 def copy_old_sect(oOrigConn, oTrans, oVer):
     """Copy Sect, updating if needed"""
     if oVer.check_tables_and_versions([Sect], [Sect.tableversion], oOrigConn):
         copy_sect(oOrigConn, oTrans)
+    elif oVer.check_tables_and_versions([Sect], [1], oOrigConn):
+        for oObj in Sect_v1.select(connection=oOrigConn):
+            _oCopy = Sect(id=oObj.id, name=oObj.name, connection=oTrans)
     else:
         return (False, ["Unknown Sect Version"])
     return (True, [])
@@ -467,13 +494,16 @@ def copy_old_sect(oOrigConn, oTrans, oVer):
 def copy_title(oOrigConn, oTrans):
     """Copy Title, assuming versions match"""
     for oObj in Title.select(connection=oOrigConn):
-        oCopy = Title(id=oObj.id, name=oObj.name, connection=oTrans)
+        _oCopy = Title(id=oObj.id, name=oObj.name, connection=oTrans)
 
 def copy_old_title(oOrigConn, oTrans, oVer):
     """Copy Title, updating if needed"""
     if oVer.check_tables_and_versions([Title], [Title.tableversion],
             oOrigConn):
         copy_title(oOrigConn, oTrans)
+    elif oVer.check_tables_and_versions([Title], [1], oOrigConn):
+        for oObj in Title_v1.select(connection=oOrigConn):
+            _oCopy = Title(id=oObj.id, name=oObj.name, connection=oTrans)
     else:
         return (False, ["Unknown Title Version"])
     return (True, [])
@@ -495,7 +525,6 @@ def copy_abstract_card(oOrigConn, oTrans, oLogger):
         oCardCopy.costtype = oCard.costtype
         oCardCopy.level = oCard.level
         oCardCopy.life = oCard.life
-        oCardCopy.burnoption = oCard.burnoption
         for oData in oCard.rarity:
             oCardCopy.addRarityPair(oData)
         for oData in oCard.discipline:
@@ -514,6 +543,8 @@ def copy_abstract_card(oOrigConn, oTrans, oLogger):
             oCardCopy.addCreed(oData)
         for oData in oCard.virtue:
             oCardCopy.addVirtue(oData)
+        for oData in oCard.keywords:
+            oCardCopy.addKeyword(oData)
         oCardCopy.syncUpdate()
         oLogger.info('copied AC %s', oCardCopy.name)
 
@@ -526,19 +557,12 @@ def copy_old_abstract_card(oOrigConn, oTrans, oLogger, oVer):
     if oVer.check_tables_and_versions([AbstractCard],
             [AbstractCard.tableversion], oOrigConn):
         copy_abstract_card(oOrigConn, oTrans, oLogger)
-    else:
-        if oVer.check_tables_and_versions([AbstractCard], [3], oOrigConn):
-            oACTable = AbstractCard_v3
-            bHasBurn = True
-        elif oVer.check_tables_and_versions([AbstractCard], [2], oOrigConn):
-            aMessages.append('Missing data for the Burn Option on cards.'
-                    ' You will need to reimport the White wolf card list'
-                    ' for these to be correct')
-            oACTable = AbstractCard_v2
-            bHasBurn = False
-        else:
-            return (False, ["Unknown AbstractCard version"])
-        for oCard in oACTable.select(connection=oOrigConn):
+    elif oVer.check_tables_and_versions([AbstractCard], [4], oOrigConn):
+        aMessages.append('Missing data for the Artist.'
+                ' You will need to reimport the White wolf card list'
+                ' for these to be correct')
+        #oBurnOption = IKeyword('burn option')
+        for oCard in AbstractCard_v4.select(connection=oOrigConn):
             oCardCopy = AbstractCard(id=oCard.id,
                     canonicalName=oCard.canonicalName, name=oCard.name,
                     text=oCard.text, connection=oTrans)
@@ -548,10 +572,10 @@ def copy_old_abstract_card(oOrigConn, oTrans, oLogger, oVer):
             oCardCopy.costtype = oCard.costtype
             oCardCopy.level = oCard.level
             oCardCopy.life = oCard.life
-            if bHasBurn:
-                oCardCopy.burnoption = oCard.burnoption
-            else:
-                oCardCopy.burnoption = False
+            # FIXME: Turn burnoption into a keyword
+            #if oCard.burnoption:
+            #    oCardCopy.addKeyword(oBurnOption)
+            # FIXME: Parse card text for other keywords
             for oData in oCard.rarity:
                 oCardCopy.addRarityPair(oData)
             for oData in oCard.discipline:
@@ -572,6 +596,8 @@ def copy_old_abstract_card(oOrigConn, oTrans, oLogger, oVer):
                 oCardCopy.addVirtue(oData)
             oCardCopy.syncUpdate()
             oLogger.info('copied AC %s', oCardCopy.name)
+    else:
+        return (False, ["Unknown AbstractCard version"])
     return (True, aMessages)
 
 def copy_physical_card(oOrigConn, oTrans, oLogger):
@@ -584,77 +610,21 @@ def copy_physical_card(oOrigConn, oTrans, oLogger):
                 expansionID=oCard.expansionID, connection=oTrans)
         oLogger.info('copied PC %s', oCardCopy.id)
 
-def get_new_physical_card(oCard, oTrans, aMessages):
-    """Get the equivalent physical card in the new physical card table.
-
-       If oCard is an AbstractCard, use None as the expansion.
-       """
-    if hasattr(oCard,'abstractCardID'):
-        # must be a physical card
-        oExp = oCard.expansion
-        oId = oCard.abstractCardID
-    else:
-        oExp = None
-        oId = oCard.id
-    try:
-        oNewCard = PhysicalCard.selectBy(
-                    abstractCardID=oId,
-                    expansion=oExp, connection=oTrans).getOne()
-    except SQLObjectNotFound:
-        if oExp is None:
-            raise
-
-        # probably an invalid (AbstractCard, Expansion) pair in the old
-        # database. Try with no expansion.
-        aMessages.append("'%s' isn't listed as appearing in" \
-                         " expansion '%s'. Attempting to insert " \
-                         " without an expansion." \
-                         % (oCard.abstractCard.name, oCard.expansion.name))
-        oNewCard = PhysicalCard.selectBy(
-                    abstractCardID=oId,
-                    expansion=None, connection=oTrans).getOne()
-    return oNewCard
-
 def copy_old_physical_card(oOrigConn, oTrans, oLogger, oVer):
     """Copy PhysicalCards, upgrading if needed."""
     aMessages = []
-    if oVer.check_table_in_versions(PhysicalCardSet, [3, 4], oOrigConn) and \
-            oVer.check_tables_and_versions([PhysicalCard],
-                    [PhysicalCard.tableversion], oOrigConn):
-        # We setup the list of cards and expansions as in the WW parser
-        for oCard in AbstractCard.select(connection=oTrans):
-            PhysicalCard(abstractCardID=oCard.id,
-                    expansionID=None, connection=oTrans)
-            for oExp in set([oRarity.expansion for oRarity in oCard.rarity]):
-                PhysicalCard(abstractCardID=oCard.id,
-                        expansionID=oExp.id, connection=oTrans)
-            oTrans.commit()
-            oLogger.info('created Physical Cards for AC %s', oCard.id)
-        # We create a PhysicalCardSet named 'My Collection' and add the
-        # changed cards here
-        oPCLSet = PhysicalCardSet(name='My Collection', parent=None,
-                connection=oTrans)
-        # For all the Physical cards currently in the collection,
-        # add them to the card set
-        # pylint: disable-msg=E1101, E1103
-        # SQLObject confuses pylint
-        for oCard in PhysicalCard.select(connection=oOrigConn):
-            oNewCard = get_new_physical_card(oCard, oTrans, aMessages)
-            oPCLSet.addPhysicalCard(oNewCard.id)
-            oLogger.info('copied PC %s', oNewCard.id)
-    elif oVer.check_tables_and_versions([PhysicalCardSet, PhysicalCard],
-            [PhysicalCardSet.tableversion, PhysicalCard.tableversion],
-            oOrigConn):
+    if oVer.check_tables_and_versions([PhysicalCard],
+            [PhysicalCard.tableversion], oOrigConn):
         copy_physical_card(oOrigConn, oTrans, oLogger)
     else:
         return (False, ["Unknown PhysicalCard version"])
     return (True, aMessages)
 
-def copy_physical_card_set(oOrigConn, oTrans, oLogger):
-    """Copy PCS, assuming versions match"""
-    # pylint: disable-msg=E1101
-    # SQLObject confuses pylint
-    aSets = list(PhysicalCardSet.select(connection=oOrigConn))
+def _copy_physical_card_set_loop(aSets, oTrans, oLogger):
+    """Central loop for copying card sets.
+
+       Copy the list of card sets in aSet, ensuring we copy parents before
+       children."""
     bDone = False
     dDone = {}
     while not bDone:
@@ -668,6 +638,8 @@ def copy_physical_card_set(oOrigConn, oTrans, oLogger):
                     oParent = dDone[oSet.parent]
                 else:
                     oParent = None
+                # pylint: disable-msg=E1101
+                # SQLObject confuses pylint
                 oCopy = PhysicalCardSet(name=oSet.name,
                         author=oSet.author, comment=oSet.comment,
                         annotations=oSet.annotations, inuse=oSet.inuse,
@@ -684,95 +656,26 @@ def copy_physical_card_set(oOrigConn, oTrans, oLogger):
         else:
             aSets = aToDo
 
+def copy_physical_card_set(oOrigConn, oTrans, oLogger):
+    """Copy PCS, assuming versions match"""
+    aSets = list(PhysicalCardSet.select(connection=oOrigConn))
+    _copy_physical_card_set_loop(aSets, oTrans, oLogger)
+
 def copy_old_physical_card_set(oOrigConn, oTrans, oLogger, oVer):
     """Copy PCS, upgrading as needed."""
     # pylint: disable-msg=E1101, E1103
     # SQLObject confuses pylint
-    def _copy_cards(oOldSet, oNewSet):
-        """Copy the cards from the old physical card set to the new set,
-           replacing references to the correct new Physical Cards."""
-        for oCard in oOldSet.cards:
-            oNewCard = get_new_physical_card(oCard, oTrans, aMessages)
-            oNewSet.addPhysicalCard(oNewCard.id)
-
     aMessages = []
     if oVer.check_tables_and_versions([PhysicalCardSet],
             [PhysicalCardSet.tableversion], oOrigConn) \
             and oVer.check_tables_and_versions([PhysicalCard],
                     [PhysicalCard.tableversion], oOrigConn):
         copy_physical_card_set(oOrigConn, oTrans, oLogger)
+    elif oVer.check_tables_and_versions([PhysicalCardSet], [5], oOrigConn):
+        aSets = list(PhysicalCardSet_v5.select(connection=oOrigConn))
+        _copy_physical_card_set_loop(aSets, oTrans, oLogger)
     else:
-        if oVer.check_tables_and_versions([PhysicalCardSet], [3], oOrigConn):
-            oPCSTable = PhysicalCardSet_v3
-            bHasInUse = False
-        elif oVer.check_tables_and_versions([PhysicalCardSet], [4], oOrigConn):
-            oPCSTable = PhysicalCardSet_v4
-            bHasInUse = True
-        else:
-            return (False, ["Unknown PhysicalCardSet version"])
-        oParent = PhysicalCardSet.selectBy(name='My Collection',
-                connection=oTrans).getOne()
-        for oSet in oPCSTable.select(connection=oOrigConn):
-            oCopy = PhysicalCardSet(name=oSet.name,
-                    author=oSet.author, comment=oSet.comment,
-                    annotations=None, inuse=False, parent=oParent,
-                    connection=oTrans)
-            _copy_cards(oSet, oCopy)
-            if bHasInUse:
-                oCopy.inuse = oSet.inuse
-            oCopy.syncUpdate()
-            oLogger.info('Copied PCS %s', oCopy.name)
-    return (True, aMessages)
-
-def copy_old_abstract_card_set(oOrigConn, oTrans, oLogger, oVer):
-    """Copy old Abstract Card Sets, upgrading as needed."""
-    # pylint: disable-msg=E1101
-    # SQLObject confuses pylint
-    def _gen_new_name(sSetName, aPhysSetNames):
-        """Crate a new PCS name for the existing ACS"""
-        sNewName = '(ACS) ' + sSetName
-        sNewName = sNewName[:50]
-        iSuffix = 0
-        while sNewName in aPhysSetNames:
-            sNewName = '(ACS) %s %d' % (sSetName[:40], iSuffix)
-            sNewName = sNewName[:50]
-            iSuffix += 1
-        aPhysSetNames.append(sNewName)
-        return sNewName
-
-    def _copy_cards(oOldSet, oNewSet):
-        """Copy the cards from the old abstract card set oOldSet to the
-           PhysicalCardSet oNewSet, doing the right thing."""
-        for oCard in oOldSet.cards:
-            # We find the physical card with the same abstract card id
-            # and No expansion info
-            # pylint: disable-msg=E1103
-            # SQLObject confuses pylint
-            oNewCard = get_new_physical_card(oCard, oTrans, aMessages)
-            oNewSet.addPhysicalCard(oNewCard.id)
-
-    aMessages = []
-    if oVer.check_tables_and_versions([AbstractCardSet_v3], [3], oOrigConn):
-        aPhysSetNames = [x.name for x in
-                PhysicalCardSet.select(connection=oTrans)]
-        if oVer.check_tables_and_versions([AbstractCard], [3], oOrigConn):
-            oACSTable = AbstractCardSet_v3
-        elif oVer.check_tables_and_versions([AbstractCard], [2], oOrigConn):
-            oACSTable = AbstractCardSet_ACv2
-        else:
-            return (False, ["Unknown AbstractCard version for the "
-                "AbstractCardSet version"])
-        for oSet in oACSTable.select(connection=oOrigConn):
-            # Create a similiar Physical Card Set
-            sNewName = _gen_new_name(oSet.name, aPhysSetNames)
-            oNewPCS = PhysicalCardSet(name=sNewName, author=oSet.author,
-                    annotations=oSet.annotations, comment=oSet.comment,
-                    parent=None, inuse=False, connection=oTrans)
-            _copy_cards(oSet, oNewPCS)
-            oNewPCS.syncUpdate()
-            oLogger.info('Copied Abstract CS %s', oNewPCS.name)
-    else:
-        return (False, ["Unknown AbstractCardSet version"])
+        return (False, ["Unknown PhysicalCardSet version"])
     return (True, aMessages)
 
 def read_old_database(oOrigConn, oDestConnn, oLogHandler=None):
@@ -809,7 +712,6 @@ def read_old_database(oOrigConn, oDestConnn, oLogHandler=None):
             (copy_old_abstract_card, 'AbstractCard table', True),
             (copy_old_physical_card, 'PhysicalCard table', True),
             (copy_old_physical_card_set, 'PhysicalCardSet table', True),
-            (copy_old_abstract_card_set, 'AbstractCardSet table', True),
             ]
     oVer = DatabaseVersion()
     for fCopy, sName, bPassLogger in aToCopy:
@@ -832,15 +734,10 @@ def read_old_database(oOrigConn, oDestConnn, oLogHandler=None):
 
 # pylint: enable-msg=W0612, C0103
 
-def drop_old_tables(oConn):
-    """Drop tables whihc are no longer used from the database.
-       Needed for postgres and other such things."""
-    oVer = DatabaseVersion()
-    if oVer.check_tables_and_versions([AbstractCardSet_v3], [3], oConn):
-        # Need to drop the old ACS tables
-        MapAbstractCardToAbstractCardSet_v3.dropTable(ifExists=True,
-                connection=oConn)
-        AbstractCardSet_v3.dropTable(ifExists=True, connection=oConn)
+# Not needed for 0.6 to 0.8 upgrade, but not deleting for future reference
+#def drop_old_tables(_oConn):
+#    """Drop tables which are no longer used from the database.
+#       Needed for postgres and other such things."""
 
 def copy_database(oOrigConn, oDestConnn, oLogHandler=None):
     """Copy the database, with no attempts to upgrade.
@@ -992,7 +889,7 @@ def create_memory_copy(oTempConn, oLogHandler=None):
 
 def create_final_copy(oTempConn, oLogHandler=None):
     """Copy from the memory database to the real thing"""
-    drop_old_tables(sqlhub.processConnection)
+    #drop_old_tables(sqlhub.processConnection)
     if refresh_tables(TABLE_LIST, sqlhub.processConnection):
         return copy_database(oTempConn, sqlhub.processConnection, oLogHandler)
     return (False, ["Unable to create tables"])
