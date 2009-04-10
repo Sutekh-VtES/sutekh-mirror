@@ -35,7 +35,8 @@ class CardTextBuffer(gtk.TextBuffer):
         self.create_tag("capacity", style=pango.STYLE_ITALIC)
         self.create_tag("group", style=pango.STYLE_ITALIC)
         self.create_tag("level", style=pango.STYLE_ITALIC)
-        self.create_tag("burn_option", style=pango.STYLE_ITALIC)
+        self.create_tag("keywords", style=pango.STYLE_ITALIC, left_margin=15,
+                tabs=oIconTabs)
         self.create_tag("card_type", style=pango.STYLE_ITALIC, left_margin=15,
                 tabs=oIconTabs)
         self.create_tag("clan", style=pango.STYLE_ITALIC, left_margin=15,
@@ -53,6 +54,8 @@ class CardTextBuffer(gtk.TextBuffer):
         self.create_tag("ruling", left_margin=15,
                 tabs=oIconTabs)
         self.create_tag("card_text", style=pango.STYLE_ITALIC)
+        self.create_tag("artist", style=pango.STYLE_ITALIC, left_margin=15,
+                tabs=oIconTabs)
         self._oIter = None
 
     # pylint: disable-msg=W0142
@@ -157,7 +160,7 @@ class CardTextView(gtk.TextView):
         # a lot, so we cache the result
         # we can't do this during import, because we're not assured that the
         # database exists yet
-        self.oBurnOption = IKeyword('burn option')
+        self._oBurnOption = IKeyword('burn option')
 
     def set_card_text(self, oCard):
         """Add the text for oCard to the TextView."""
@@ -201,16 +204,24 @@ class CardTextView(gtk.TextView):
                     oIcon)
 
         if len(oCard.cardtype) == 0:
-            aTypes = ["Unknown"]
+            aInfo = ["Unknown"]
         else:
-            aTypes = [oT.name for oT in oCard.cardtype]
+            aInfo = [oT.name for oT in oCard.cardtype]
         dIcons = self._oIconManager.get_icon_list(oCard.cardtype)
-        self.__oBuf.labelled_list("Card Type", aTypes, "card_type", dIcons)
+        self.__oBuf.labelled_list("Card Type", aInfo, "card_type", dIcons)
 
-        if self.oBurnOption in oCard.keywords:
-            oIcon = self._oIconManager.get_icon_by_name('burn option')
-            self.__oBuf.labelled_value("Burn Option:", "Yes", "burn_option",
-                    oIcon)
+        if len(oCard.keywords) != 0:
+            dIcons = {}
+            aInfo = []
+            for oItem in oCard.keywords:
+                if self._oBurnOption == oItem:
+                    oIcon = self._oIconManager.get_icon_by_name('burn option')
+                else:
+                    oIcon = None
+                dIcons[oItem.keyword] = oIcon
+                aInfo.append(oItem.keyword)
+            self.__oBuf.labelled_list("Keywords:", aInfo,
+                    "keywords", dIcons)
 
         if not len(oCard.clan) == 0:
             dIcons = self._oIconManager.get_icon_list(oCard.clan)
@@ -231,13 +242,13 @@ class CardTextView(gtk.TextView):
                     [oC.name for oC in oCard.title], "title")
 
         if not len(oCard.discipline) == 0:
-            aDis = []
-            aDis.extend(sorted([oP.discipline.name.upper() for oP in
+            aInfo = []
+            aInfo.extend(sorted([oP.discipline.name.upper() for oP in
                 oCard.discipline if oP.level == 'superior']))
-            aDis.extend(sorted([oP.discipline.name for oP in oCard.discipline
+            aInfo.extend(sorted([oP.discipline.name for oP in oCard.discipline
                 if oP.level != 'superior']))
             dIcons = self._oIconManager.get_icon_list(oCard.discipline)
-            self.__oBuf.labelled_list("Disciplines", aDis, "discipline",
+            self.__oBuf.labelled_list("Disciplines", aInfo, "discipline",
                     dIcons)
 
         if not len(oCard.virtue) == 0:
@@ -253,10 +264,16 @@ class CardTextView(gtk.TextView):
             self.__oBuf.labelled_exp_list("Expansions", dExp, "expansion")
 
         if not len(oCard.rulings) == 0:
-            aRulings = [oR.text.replace("\n", " ") + " " + oR.code for oR
+            aInfo = [oR.text.replace("\n", " ") + " " + oR.code for oR
                     in oCard.rulings]
-            self.__oBuf.labelled_list("Rulings", aRulings, "ruling")
+            self.__oBuf.labelled_list("Rulings", aInfo, "ruling")
 
         self.__oBuf.tag_text("\n\n")
         self.__oBuf.tag_text(oCard.text.replace("\n", " "),
                 "card_text")
+
+        if len(oCard.artists) > 0:
+            self.__oBuf.tag_text("\n")
+            self.__oBuf.labelled_list("Artists",
+                    [oA.name for oA in oCard.artists], "artist")
+
