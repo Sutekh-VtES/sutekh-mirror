@@ -8,6 +8,10 @@
 """Base classes for sutekh.io card set parsers and writers.
    """
 
+# pylint: disable-msg=R0921
+# These may be referenced elsewhere, and mainly exist as interface
+# documentation, rather than genuine base classes
+
 class CardSetParser(object):
     """Parent class for card set parsers.
 
@@ -15,7 +19,7 @@ class CardSetParser(object):
        create a card set parser object when called without arguments.
        The parser object should have a .parse() method that takes a
        file-like object and a card set holder as parameters.
- 
+
        Example:
            oParser = cParser()
            oParser.parse(fIn, oCardSetHolder)
