@@ -9,6 +9,7 @@
 
 import gtk
 import pango
+from sutekh.core.SutekhObjects import IKeyword
 
 class CardTextBuffer(gtk.TextBuffer):
     """Buffer object which holds the actual card text.
@@ -131,6 +132,8 @@ class CardTextView(gtk.TextView):
        This handles extracting the text from the database for the card,
        and feeding it to the buffer in suitable chunks.
        """
+
+
     # pylint: disable-msg=R0904
     # gtk.Widget, so many public methods
     def __init__(self, oController, oIconManager, bVerbose):
@@ -148,6 +151,13 @@ class CardTextView(gtk.TextView):
             oContext = self.get_pango_context()
             print 'Pango Language : ', oContext.get_language()
             print 'Pango Font Description : ', oContext.get_font_description()
+
+
+        # Burn option is a special case because of the icon, so we test for it
+        # a lot, so we cache the result
+        # we can't do this during import, because we're not assured that the
+        # database exists yet
+        self.oBurnOption = IKeyword('burn option')
 
     def set_card_text(self, oCard):
         """Add the text for oCard to the TextView."""
@@ -197,7 +207,7 @@ class CardTextView(gtk.TextView):
         dIcons = self._oIconManager.get_icon_list(oCard.cardtype)
         self.__oBuf.labelled_list("Card Type", aTypes, "card_type", dIcons)
 
-        if oCard.burnoption:
+        if self.oBurnOption in oCard.keywords:
             oIcon = self._oIconManager.get_icon_by_name('burn option')
             self.__oBuf.labelled_value("Burn Option:", "Yes", "burn_option",
                     oIcon)
