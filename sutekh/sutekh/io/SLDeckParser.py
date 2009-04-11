@@ -34,14 +34,14 @@
 
 import re
 from sutekh.core.SutekhObjects import csv_to_canonical
+from sutekh.io.IOBase import CardSetParser
 
-class SLDeckParser(object):
+class SLDeckParser(CardSetParser):
     """Parser for the Secret Library Web API deck format."""
 
     oCardLineRegexp = re.compile('^(?P<num>[0-9]+)\s+(?P<name>.*)$')
 
-    def __init__(self, oHolder):
-        self._oHolder = oHolder
+    def __init__(self):
         self._dSectionParsers = {
             'title': self._title_section,
             'author': self._author_section,
@@ -51,26 +51,21 @@ class SLDeckParser(object):
             'library': self._library_section,
             'enddeck': self._no_section
         }
-        self._fLineParser = self._no_section
-
-    def reset(self):
-        """Reset the parser state"""
-        pass
 
     # section parsers
 
     def _switch_section(self, sLine):
-        """Switch to a new section parser based on the given heading line."""
+        """Return a new section parser based on the given heading line."""
         sSection = sLine[len('***SL***'):-len('***')].lower()
         if sSection in self._dSectionParsers:
-            self._fLineParser = self._dSectionParsers[sSection]
+            return self._dSectionParsers[sSection]
         else:
             raise RuntimeError('Unknown section heading in Secret'
                 ' Library Deck Format')
 
     # pylint: disable-msg=R0201
     # Making these functions for clarity
-    def _no_section(self, sLine):
+    def _no_section(self, sLine, oHolder):
         """Initial parser -- seeing a line here is an error."""
         raise RuntimeError('Data line outside of section'
             ' for Secret Library Deck format')
@@ -78,30 +73,30 @@ class SLDeckParser(object):
 
     # pylint: enable-msg=R0201
 
-    def _title_section(self, sLine):
+    def _title_section(self, sLine, oHolder):
         """Parse a title line."""
-        self._oHolder.name = sLine
+        oHolder.name = sLine
 
-    def _author_section(self, sLine):
+    def _author_section(self, sLine, oHolder):
         """Parse an author line."""
-        self._oHolder.author = sLine
+        oHolder.author = sLine
 
-    def _created_section(self, sLine):
+    def _created_section(self, sLine, oHolder):
         """Parse a created section line."""
         sCreatedLine = "Created on %s" % (sLine,)
-        if self._oHolder.comment:
-            self._oHolder.comment += "\n" + sCreatedLine
+        if oHolder.comment:
+            oHolder.comment += "\n" + sCreatedLine
         else:
-            self._oHolder.comment = sCreatedLine
+            oHolder.comment = sCreatedLine
 
-    def _description_section(self, sLine):
+    def _description_section(self, sLine, oHolder):
         """Parse a description line. """
-        if self._oHolder.comment:
-            self._oHolder.comment += "\n" + sLine
+        if oHolder.comment:
+            oHolder.comment += "\n" + sLine
         else:
-            self._oHolder.comment = sLine
+            oHolder.comment = sLine
 
-    def _crypt_section(self, sLine):
+    def _crypt_section(self, sLine, oHolder):
         """Parse a crypt entry."""
         oMatch = self.oCardLineRegexp.match(sLine)
         if oMatch is None:
@@ -118,9 +113,9 @@ class SLDeckParser(object):
         sName = csv_to_canonical(sName)
 
         # Secret Library has no expansion info
-        self._oHolder.add(iNum, sName, None)
+        oHolder.add(iNum, sName, None)
 
-    def _library_section(self, sLine):
+    def _library_section(self, sLine, oHolder):
         """Parse a library entry."""
         oMatch = self.oCardLineRegexp.match(sLine)
         if oMatch is None:
@@ -133,16 +128,19 @@ class SLDeckParser(object):
         sName = csv_to_canonical(sName)
 
         # Secret Library has no expansion info
-        self._oHolder.add(iNum, sName, None)
+        oHolder.add(iNum, sName, None)
 
-    def feed(self, sLine):
-        """Feed the next line to the parser and extract the cards"""
-        sLine = sLine.strip()
-        if not sLine:
-            # skip blank lines
-            return
+    def parse(self, fIn, oHolder):
+        """Parse the SL deck in fIn into oHolder."""
+        fLineParser = self._no_section
 
-        if sLine.startswith('***'):
-            self._switch_section(sLine)
-        else:
-            self._fLineParser(sLine)
+        for sLine in fIn:
+            sLine = sLine.strip()
+            if not sLine:
+                # skip blank lines
+                continue
+
+            if sLine.startswith('***'):
+                fLineParser = self._switch_section(sLine)
+            else:
+                fLineParser(sLine, oHolder)

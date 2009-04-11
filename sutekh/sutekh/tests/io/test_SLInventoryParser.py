@@ -7,6 +7,7 @@
 """Test reading a card set from an Secret Libary inventory file"""
 
 import unittest
+import StringIO
 from sutekh.tests.TestCore import SutekhTest, DummyHolder
 from sutekh.io.SLInventoryParser import SLInventoryParser
 
@@ -30,10 +31,9 @@ class TestSLInventoryParser(SutekhTest):
     def test_basic(self):
         """Run the Secret Libary inventory input test."""
         oHolder = DummyHolder()
-        oParser = SLInventoryParser(oHolder)
-
-        for sLine in self.sTestText1.split("\n"):
-            oParser.feed(sLine + "\n")
+        fIn = StringIO.StringIO(self.sTestText1)
+        oParser = SLInventoryParser()
+        oParser.parse(fIn, oHolder)
 
         aCards = oHolder.get_cards()
 

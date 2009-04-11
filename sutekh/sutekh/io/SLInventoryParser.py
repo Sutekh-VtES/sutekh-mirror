@@ -27,47 +27,42 @@
 
 import re
 from sutekh.core.SutekhObjects import csv_to_canonical
+from sutekh.io.IOBase import CardSetParser
 
-class SLInventoryParser(object):
+class SLInventoryParser(CardSetParser):
     """Parser for the Secret Libary web API inventory format."""
 
     oCardLineRegexp = re.compile(
             '^(?P<have>[0-9]+)\s*;\s*(?P<want>[0-9]+)\s*;\s*(?P<name>.*)$')
 
-    def __init__(self, oHolder):
-        self._oHolder = oHolder
+    def __init__(self):
         self._dSectionParsers = {
             'crypt': self._crypt_section,
             'library': self._library_section,
             'endexport': self._no_section
         }
-        self._fLineParser = self._no_section
-
-    def reset(self):
-        """Reset the parser state"""
-        pass
 
     # section parsers
 
     def _switch_section(self, sLine):
-        """Switch to a new section parser based on the given heading line."""
+        """Return a new section parser based on the given heading line."""
         sSection = sLine[len('***SL***'):-len('***')].lower()
         if sSection in self._dSectionParsers:
-            self._fLineParser = self._dSectionParsers[sSection]
+            return self._dSectionParsers[sSection]
         else:
             raise RuntimeError('Unknown section heading in Secret'
                 ' Library inventory format')
 
     # pylint: disable-msg=R0201
     # Making these functions for clarity
-    def _no_section(self, sLine):
+    def _no_section(self, sLine, oHolder):
         """Initial parser -- seeing a line here is an error."""
         raise RuntimeError('Data line outside of section'
             ' for Secret Library inventory format')
 
     # pylint: enable-msg=R0201
 
-    def _crypt_section(self, sLine):
+    def _crypt_section(self, sLine, oHolder):
         """Parse a crypt entry."""
         oMatch = self.oCardLineRegexp.match(sLine)
         if oMatch is None:
@@ -84,9 +79,9 @@ class SLInventoryParser(object):
         sName = csv_to_canonical(sName)
 
         # Secret Library has no expansion info
-        self._oHolder.add(iNum, sName, None)
+        oHolder.add(iNum, sName, None)
 
-    def _library_section(self, sLine):
+    def _library_section(self, sLine, oHolder):
         """Parse a library entry."""
         oMatch = self.oCardLineRegexp.match(sLine)
         if oMatch is None:
@@ -99,16 +94,19 @@ class SLInventoryParser(object):
         sName = csv_to_canonical(sName)
 
         # Secret Library has no expansion info
-        self._oHolder.add(iNum, sName, None)
+        oHolder.add(iNum, sName, None)
 
-    def feed(self, sLine):
-        """Feed the next line to the parser and extract the cards"""
-        sLine = sLine.strip()
-        if not sLine:
-            # skip blank lines
-            return
+    def parse(self, fIn, oHolder):
+        """Parse the SL inventory in fIn into oHolder."""
+        fLineParser = self._no_section
 
-        if sLine.startswith('***'):
-            self._switch_section(sLine)
-        else:
-            self._fLineParser(sLine)
+        for sLine in fIn:
+            sLine = sLine.strip()
+            if not sLine:
+                # skip blank lines
+                continue
+
+            if sLine.startswith('***'):
+                fLineParser = self._switch_section(sLine)
+            else:
+                fLineParser(sLine, oHolder)
