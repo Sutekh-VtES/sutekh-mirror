@@ -30,7 +30,7 @@ class CountCardSetCards(CardListPlugin, CardListModelListener):
        containing a label with a running count of the cards in the card
        set, the library cards and the crypt cards
        """
-    dTableVersions = {PhysicalCardSet : [5]}
+    dTableVersions = {PhysicalCardSet : [5, 6]}
     aModelsSupported = [PhysicalCardSet]
 
 

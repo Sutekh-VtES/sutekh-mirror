@@ -245,7 +245,7 @@ class AnalyzeCardList(CardListPlugin):
       Displays various interesting stats, and does a Happy Family
       analysis of the deck
        """
-    dTableVersions = {PhysicalCardSet : [3, 4, 5]}
+    dTableVersions = {PhysicalCardSet : [4, 5, 6]}
     aModelsSupported = [PhysicalCardSet]
 
     aCryptTypes = ['Vampire', 'Imbued']

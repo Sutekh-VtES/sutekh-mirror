@@ -15,7 +15,7 @@ from sutekh.gui.PluginManager import CardListPlugin
 
 class SecretLibrary(CardListPlugin):
     """Provides ability to export cards directly to the Secret Library."""
-    dTableVersions = { PhysicalCardSet: [5]}
+    dTableVersions = { PhysicalCardSet: [5, 6]}
     aModelsSupported = [PhysicalCardSet]
 
     def get_menu_item(self):

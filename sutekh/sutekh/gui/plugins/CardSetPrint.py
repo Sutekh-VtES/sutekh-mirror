@@ -27,7 +27,7 @@ class CardSetPrint(CardListPlugin):
        in the card set. This has less formatting than exporting via
        HTML, for instance, but does print directly.
        """
-    dTableVersions = { PhysicalCardSet: [2, 3, 4, 5]}
+    dTableVersions = { PhysicalCardSet: [4, 5, 6]}
     aModelsSupported = [PhysicalCardSet]
 
     # pylint: disable-msg=W0201

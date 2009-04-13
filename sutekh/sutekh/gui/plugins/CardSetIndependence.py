@@ -124,7 +124,7 @@ class CardSetIndependence(CardListPlugin):
        particularly sensible to say there. We also don't do anything
        when there is only 1 child, for similiar justification.
        """
-    dTableVersions = {PhysicalCardSet : [1, 2, 3, 4, 5]}
+    dTableVersions = {PhysicalCardSet : [4, 5, 6]}
     aModelsSupported = [PhysicalCardSet]
 
     def get_menu_item(self):

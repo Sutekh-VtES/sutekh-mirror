@@ -16,7 +16,7 @@ from sutekh.SutekhUtility import safe_filename
 class CardSetExportLackey(CardListPlugin):
     """Provides a dialog for selecting a filename, then calls on
        WriteJOL to produce the required output."""
-    dTableVersions = { PhysicalCardSet: [2, 3, 4, 5]}
+    dTableVersions = { PhysicalCardSet: [4, 5, 6]}
     aModelsSupported = [PhysicalCardSet]
 
     def get_menu_item(self):

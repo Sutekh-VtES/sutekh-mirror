@@ -20,7 +20,7 @@ class SetCardExpansions(CardListPlugin):
        the user to choose which expansion to set all the cards too.
        """
 
-    dTableVersions = { PhysicalCardSet: [5] }
+    dTableVersions = { PhysicalCardSet: [5, 6] }
     aModelsSupported = [PhysicalCardSet]
 
     def get_menu_item(self):

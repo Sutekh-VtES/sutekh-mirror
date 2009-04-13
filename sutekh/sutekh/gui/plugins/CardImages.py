@@ -436,7 +436,7 @@ class ImageConfigDialog(SutekhDialog):
 
 class CardImagePlugin(CardListPlugin):
     """Plugin providing access to CardImageFrame."""
-    dTableVersions = {PhysicalCardSet : [5]}
+    dTableVersions = {PhysicalCardSet : [5, 6]}
     aModelsSupported = ["MainWindow"]
     aListenViews = [PhysicalCardSet,
             PhysicalCard]

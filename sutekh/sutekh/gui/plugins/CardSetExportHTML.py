@@ -22,7 +22,7 @@ class CardSetExportHTML(CardListPlugin):
        and then dump that to file.
        This tries to match the HTML file produced by ARDB.
        """
-    dTableVersions = { PhysicalCardSet: [2, 3, 4, 5]}
+    dTableVersions = { PhysicalCardSet: [4, 5, 6]}
     aModelsSupported = [PhysicalCardSet, "MainWindow"]
 
     def get_menu_item(self):

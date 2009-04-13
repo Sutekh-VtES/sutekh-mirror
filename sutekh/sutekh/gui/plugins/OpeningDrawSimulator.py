@@ -125,7 +125,7 @@ def create_view(oStore, sHeading):
 
 class OpeningHandSimulator(CardListPlugin):
     """Simulate opening hands."""
-    dTableVersions = {PhysicalCardSet : [3, 4, 5]}
+    dTableVersions = {PhysicalCardSet : [4, 5, 6]}
     aModelsSupported = [PhysicalCardSet]
     # responses for the hand dialog
     BACK, FORWARD, BREAKDOWN = range(1, 4)

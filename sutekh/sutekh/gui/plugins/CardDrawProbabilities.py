@@ -114,7 +114,7 @@ class CardDrawSimPlugin(CardListPlugin):
        selection."""
     # pylint: disable-msg=R0902
     # we use a lot of attributes to parse the data around
-    dTableVersions = {PhysicalCardSet : [3, 4, 5]}
+    dTableVersions = {PhysicalCardSet : [4, 5, 6]}
     aModelsSupported = [PhysicalCardSet]
 
     def get_menu_item(self):

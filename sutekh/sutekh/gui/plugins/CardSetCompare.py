@@ -61,7 +61,7 @@ class CardSetCompare(CardListPlugin):
        Display a gtk.Notebook containing tabs for common cards, and cards
        only in each of the card sets.
        """
-    dTableVersions = {PhysicalCardSet : [5]}
+    dTableVersions = {PhysicalCardSet : [5, 6]}
     aModelsSupported = [PhysicalCardSet]
 
     def get_menu_item(self):

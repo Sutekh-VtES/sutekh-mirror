@@ -17,7 +17,7 @@ from sutekh.SutekhUtility import safe_filename
 class CardSetExportFELDB(CardListPlugin):
     """Provides a dialog for selecting a filename, then calls on
        WriteELDB* to produce the required output."""
-    dTableVersions = { PhysicalCardSet: [5]}
+    dTableVersions = { PhysicalCardSet: [5, 6]}
     aModelsSupported = [PhysicalCardSet]
 
     def get_menu_item(self):
