@@ -2,6 +2,7 @@
  * Rework card set entry limits in the gui to match database again
  * Reformat comment part of card set properties dialog to use a scrolled
    window - better for long/complex formatted descriptions.
+ * Listen on card changes in the card set management extra column plugins.
 
 10 Apr 2009
  * Add sutkeh.io.IOBase which describes card set parser and writer

@@ -17,7 +17,7 @@ from sutekh.core.SutekhObjects import PhysicalCardSet, IPhysicalCardSet, \
 from sutekh.core.Filters import PhysicalCardSetFilter, MultiCardTypeFilter, \
         FilterAndBox
 from sutekh.core.DBSignals import listen_row_destroy, listen_row_update, \
-        listen_row_created
+        listen_row_created, listen_changed
 from sqlobject import SQLObjectNotFound
 
 
@@ -92,6 +92,7 @@ class ExtraCardSetListViewColumns(CardListPlugin):
         listen_row_update(self.card_set_changed, PhysicalCardSet)
         listen_row_destroy(self.card_set_added_deleted, PhysicalCardSet)
         listen_row_created(self.card_set_added_deleted, PhysicalCardSet)
+        listen_changed(self.card_changed, PhysicalCardSet)
     # pylint: enable-msg=W0142
 
     # Rendering Functions
@@ -359,13 +360,10 @@ class ExtraCardSetListViewColumns(CardListPlugin):
         return oDlg
 
     # SQLObject event listeners
-    # FIXME: We can be much cleverer here, and update the cache rather
-    # than just invalidating it, but this is simpler for the initial
-    # implementation
-    # FIXME: Need to listen for card changes as well so the number of
-    # cards is displayed correctly
-    # FIXME: If counts are shown, we need to trigger a redraw when card counts
-    # are changed.
+    # FIXME: We can be much cleverer here, and update the cache rather than
+    # just invalidating it, but this is simpler for the initial implementation
+    # (needs care when dealing with large scale changes like importing new WW
+    # cardlists which cause lots of signals)
 
     def card_set_changed(self, _oCardSet, _dChanges):
         """We listen for card set events, and invalidate the cache"""
@@ -375,6 +373,20 @@ class ExtraCardSetListViewColumns(CardListPlugin):
         """We listen for card set additions & deletions, and
            invalidate the cache when that occurs"""
         self._dCache = {}
+
+    def card_changed(self, oCardSet, _oPhysCard, _iChg):
+        """Listen for card changes.
+
+           We invalidate card counts for the card set if it's in the cache.
+           """
+        sName = oCardSet.name
+        if sName in self._dCache:
+            dInfo = self._dCache[sName]
+            for sKey in ['Total Cards', 'Library', 'Crypt']:
+                if sKey in dInfo:
+                    del dInfo[sKey]
+            # queue a redraw
+            self.view.queue_draw()
 
     # Actions
 
