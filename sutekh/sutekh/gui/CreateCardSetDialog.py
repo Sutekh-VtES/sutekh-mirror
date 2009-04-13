@@ -11,7 +11,23 @@ import gtk
 from sqlobject import SQLObjectNotFound
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
-from sutekh.core.SutekhObjects import PhysicalCardSet, IPhysicalCardSet
+from sutekh.core.SutekhObjects import PhysicalCardSet, IPhysicalCardSet, \
+        MAX_ID_LENGTH
+
+def make_scrolled_text(oCardSet, sAttr):
+    """Create a text buffer wrapped in a scrolled window, filled with
+       the contents of sAtter if available"""
+
+    oTextView = gtk.TextView()
+    oBuffer = oTextView.get_buffer()
+    oScrolledWin = AutoScrolledWindow(oTextView)
+    if oCardSet:
+        # Check for None values
+        sValue = getattr(oCardSet, sAttr)
+        if sValue:
+            oBuffer.set_text(sValue)
+    return oBuffer, oScrolledWin
+
 
 class CreateCardSetDialog(SutekhDialog):
     # pylint: disable-msg=R0904, R0902
@@ -29,11 +45,12 @@ class CreateCardSetDialog(SutekhDialog):
                 gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
 
         oNameLabel = gtk.Label("Card Set Name : ")
-        self.oName = gtk.Entry(50)
+        self.oName = gtk.Entry(MAX_ID_LENGTH)
         oAuthorLabel = gtk.Label("Author : ")
-        self.oAuthor = gtk.Entry(50)
+        self.oAuthor = gtk.Entry()
         oCommentriptionLabel = gtk.Label("Description : ")
-        self.oComment = gtk.Entry()
+        self.oCommentBuffer, oCommentWin = make_scrolled_text(oCardSet,
+                'comment')
         oParentLabel = gtk.Label("This card set is a subset of : ")
         self.oParentList = gtk.combo_box_new_text()
         if not oCardSetParent and oCardSet:
@@ -50,21 +67,20 @@ class CreateCardSetDialog(SutekhDialog):
             if oCardSetParent and oCardSetParent.name == oLoopCardSet.name:
                 self.oParentList.set_active(iNum + 1)
         oAnnotateLabel = gtk.Label("Annotations : ")
-        oTextView = gtk.TextView()
-        self.oBuffer = oTextView.get_buffer()
+        self.oAnnotateBuffer, oAnnotateWin = make_scrolled_text(oCardSet,
+                'annotations')
 
+        self.set_default_size(500, 500)
         self.vbox.pack_start(oNameLabel, expand=False)
         self.vbox.pack_start(self.oName, expand=False)
         self.vbox.pack_start(oAuthorLabel, expand=False)
         self.vbox.pack_start(self.oAuthor, expand=False)
         self.vbox.pack_start(oCommentriptionLabel, expand=False)
-        self.vbox.pack_start(self.oComment, expand=False)
+        self.vbox.pack_start(oCommentWin, expand=True)
         self.vbox.pack_start(oParentLabel, expand=False)
         self.vbox.pack_start(self.oParentList, expand=False)
         self.vbox.pack_start(oAnnotateLabel, expand=False)
-        oScrolledWin = AutoScrolledWindow(oTextView)
-        self.set_default_size(500, 500)
-        self.vbox.pack_start(oScrolledWin, expand=True)
+        self.vbox.pack_start(oAnnotateWin, expand=True)
 
         self.connect("response", self.button_response)
 
@@ -77,9 +93,6 @@ class CreateCardSetDialog(SutekhDialog):
                 self.oName.set_text(oCardSet.name)
                 self.sOrigName = oCardSet.name
             self.oAuthor.set_text(oCardSet.author)
-            self.oComment.set_text(oCardSet.comment)
-            if oCardSet.annotations:
-                self.oBuffer.set_text(oCardSet.annotations)
 
         self.sName = None
         self.oParent = oCardSetParent
@@ -96,12 +109,16 @@ class CreateCardSetDialog(SutekhDialog):
 
     def get_comment(self):
         """Get the comment value"""
-        return self.oComment.get_text()
+        sComment = self.oCommentBuffer.get_text(
+                self.oCommentBuffer.get_start_iter(),
+                self.oCommentBuffer.get_end_iter())
+        return sComment
 
     def get_annotations(self):
         """Get the comment value"""
-        sAnnotations = self.oBuffer.get_text(
-                self.oBuffer.get_start_iter(), self.oBuffer.get_end_iter())
+        sAnnotations = self.oAnnotateBuffer.get_text(
+                self.oAnnotateBuffer.get_start_iter(),
+                self.oAnnotateBuffer.get_end_iter())
         return sAnnotations
 
     def get_parent(self):

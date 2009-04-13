@@ -8,7 +8,7 @@
 import gtk
 import os
 from logging import Logger
-from sutekh.core.SutekhObjects import PhysicalCardSet
+from sutekh.core.SutekhObjects import PhysicalCardSet, MAX_ID_LENGTH
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 from sutekh.gui.SutekhFileWidget import SutekhFileDialog
@@ -181,7 +181,7 @@ class ImportFromZipFile(CardListPlugin):
         oLabel.set_markup('Card Set %s already.\nPlease choose a new name or\n'
                 'press Cancel to skip this card set' % sOldName)
         oDlg.vbox.pack_start(oLabel)
-        oEntry = gtk.Entry(50)
+        oEntry = gtk.Entry(MAX_ID_LENGTH)
         oDlg.vbox.pack_start(oEntry)
         # Need this so entry box works as expected
         oEntry.connect("activate", oDlg.response, gtk.RESPONSE_OK)
