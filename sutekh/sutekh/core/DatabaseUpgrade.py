@@ -681,6 +681,7 @@ def _copy_physical_card_set_loop(aSets, oTrans, oLogger):
                 oCopy.syncUpdate()
                 oLogger.info('Copied PCS %s', oCopy.name)
                 dDone[oSet] = oCopy
+                oTrans.commit()
             else:
                 aToDo.append(oSet)
         if not aToDo:
@@ -762,6 +763,7 @@ def read_old_database(oOrigConn, oDestConnn, oLogHandler=None):
         aMessages.extend(aNewMessages)
         oTrans.commit()
         oTrans.cache.clear()
+    oTrans.commit(close=True)
     return (bRes, aMessages)
 
 # pylint: enable-msg=W0612, C0103
@@ -829,6 +831,7 @@ def copy_database(oOrigConn, oDestConnn, oLogHandler=None):
             if not bPassLogger:
                 oLogger.info('%s copied' % sName)
     flush_cache()
+    oTrans.commit(close=True)
     # Clear out cache related joins and such
     return bRes, aMessages
 
@@ -900,9 +903,7 @@ def copy_to_new_abstract_card_db(oOrigConn, oNewConn, oCardLookup,
         oLogger.info('Physical Card Set: %s', oSet.name)
         oTarget.commit()
         oTarget.cache.clear()
-    # Restore mapping
-    oTarget = oNewConn.transaction()
-    oTarget.commit()
+    oTarget.commit(close=True)
     sqlhub.processConnection = oOldConn
     return (True, [])
 
