@@ -1,3 +1,6 @@
+14 Apr 2009
+ * Functionally complete Secret Library import / export plugin.
+
 13 Apr 2009
  * Rework card set entry limits in the gui to match database again
  * Reformat comment part of card set properties dialog to use a scrolled
