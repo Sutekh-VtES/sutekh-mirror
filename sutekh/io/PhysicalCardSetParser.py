@@ -90,7 +90,7 @@ class PhysicalCardSetParser(object):
         oOldConn = sqlhub.processConnection
         sqlhub.processConnection = oOldConn.transaction()
         self.oCS.create_pcs(oCardLookup, dLookupCache)
-        sqlhub.processConnection.commit()
+        sqlhub.processConnection.commit(close=True)
         sqlhub.processConnection = oOldConn
 
     def string_to_holder(self, sIn):

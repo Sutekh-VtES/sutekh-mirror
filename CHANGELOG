@@ -1,3 +1,10 @@
+14 Apr 2009
+ * Merge fixes from trunk
+   - Explicitly close transactions connections on commit when reading. (r1865)
+   - Fix sutekh installation on windows XP (r1864)
+   - Ensure zip file entries have sensible unix permissions (r1848)
+   - Fix restoring of backups via the command line (r1832)
+
 05 Feb 2009
  * Release 0.6.2.
 

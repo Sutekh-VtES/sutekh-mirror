@@ -73,7 +73,7 @@ class AbstractCardSetParser(object):
         oOldConn = sqlhub.processConnection
         sqlhub.processConnection = oOldConn.transaction()
         self.oCS.create_pcs(oCardLookup, dLookupCache)
-        sqlhub.processConnection.commit()
+        sqlhub.processConnection.commit(close=True)
         sqlhub.processConnection = oOldConn
 
     # pylint: disable-msg=W0102

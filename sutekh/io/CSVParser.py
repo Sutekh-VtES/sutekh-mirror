@@ -40,7 +40,7 @@ class CSVParser(object):
 
         self.oCS.create_pcs(oCardLookup)
 
-        sqlhub.processConnection.commit()
+        sqlhub.processConnection.commit(close=True)
         sqlhub.processConnection = oOldConn
 
     def _process_row(self, aRow):
