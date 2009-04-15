@@ -58,6 +58,7 @@ class WriteArdbXML(ArdbInfo):
         oLibElem = SubElement(oRoot, 'library', size=str(iLibSize))
         self.format_library(oLibElem, dLib)
 
+        pretty_xml(oRoot)
         return oRoot
 
     def format_vamps(self, oCryptElem, dVamps):
@@ -158,7 +159,6 @@ class WriteArdbXML(ArdbInfo):
            form dCard[(id,name)] = count and writes the file."""
         dCards = self._get_cards(oCardIter)
         oRoot = self.gen_tree(sSetName, sAuthor, sDescription, dCards)
-        pretty_xml(oRoot)
         ElementTree(oRoot).write(fOut)
 
     # pylint: enable-msg=R0913

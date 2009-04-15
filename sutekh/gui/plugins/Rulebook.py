@@ -24,7 +24,8 @@ class RulebookConfigDialog(SutekhDialog):
     """Dialog for configuring the Rulebook plugin."""
 
     POSSIBLE_FILES = [
-        "Rulebook", "Imbued Rules", "Rulings"
+            "Rulebook", "Imbued Rules", "Rulings", "V:EKN Tournament Rules",
+            "VTES FAQ",
     ]
 
     WW_RULEBOOK_URLS = {
@@ -32,6 +33,9 @@ class RulebookConfigDialog(SutekhDialog):
         "Imbued Rules":
            "http://www.white-wolf.com/vtes/?line=Checklist_NightsOfReckoning",
         "Rulings": "http://www.white-wolf.com/vtes/index.php?line=rulings",
+        "V:EKN Tournament Rules":
+           "http://www.white-wolf.com/vtes/index.php?line=veknRules",
+        "VTES FAQ" : "http://www.thelasombra.com/vtes_faq.htm",
     }
 
     def __init__(self, oParent, bFirstTime=False):
@@ -50,10 +54,11 @@ class RulebookConfigDialog(SutekhDialog):
                     'plugin\nYou will not be prompted again')
 
         self.oSourceWw = gtk.RadioButton(
-                label='Download from www.white-wolf.com')
+                label='Download from www.white-wolf.com and'
+                ' www.thelasombra.com')
 
         self.oSourceUrl = gtk.RadioButton(self.oSourceWw,
-                label='Download from other URL')
+                label='Download from other URL(s)')
 
         # SourceUrl sub-components
         oUrlSub = gtk.VBox(False, 2)
@@ -68,7 +73,7 @@ class RulebookConfigDialog(SutekhDialog):
             self.dUrlSubEntries[sName] = oEntry
 
         self.oSourceFile = gtk.RadioButton(self.oSourceWw,
-                label='Select local file')
+                label='Select local files')
 
         # SourceFile sub-components
         oFileSub = gtk.VBox(False, 2)
@@ -148,6 +153,8 @@ class RulebookPlugin(CardListPlugin):
         "Rulebook": "rulebook.html",
         "Imbued Rules": "imbued.html",
         "Rulings": "rulings.html",
+        "V:EKN Tournament Rules": "tournament_rules.html",
+        "VTES FAQ" : "faq.html",
     }
 
     # pylint: disable-msg=W0142
@@ -390,7 +397,7 @@ class RulebookPlugin(CardListPlugin):
 
         # in rulings, remove everything between header and first
         # end of first style tag
-        if sName in ("Rulings", "Imbued Rules"):
+        if sName in ("Rulings", "Imbued Rules", "V:EKN Tournament Rules"):
             oHdrToStyle = re.compile(r"</head>.*?</style>",
                 re.MULTILINE | re.DOTALL)
             sData = oHdrToStyle.sub("</head>", sData, 1)

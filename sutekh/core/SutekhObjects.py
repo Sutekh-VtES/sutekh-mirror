@@ -707,3 +707,26 @@ def init_cache():
     for oJoin in AbstractCard.sqlmeta.joins:
         if type(oJoin) is SOCachedRelatedJoin:
             oJoin.init_cache()
+
+# backport these so we can use the SL stuff.
+# The other fixes around these functions aren't backported yet
+def canonical_to_csv(sName):
+    """Moves articles to the end of the name"""
+    if sName.startswith('The '):
+        sName = sName[4:] + ", The"
+    elif sName.startswith('An '):
+        sName = sName[3:] + ", An"
+    return sName
+
+def csv_to_canonical(sName):
+    """Moves articles from the end back to the start - reverses
+       cannonical_to_csv"""
+    # handle case variations as well
+    if sName.lower().endswith(', the'):
+        sName = "The " + sName[:-5]
+    elif sName.lower().endswith(', an'):
+        sName = "An " + sName[:-4]
+    # The result might be mixed case, but, as we will feed this into
+    # IAbstractCard in most cases, that won't matter
+    return sName
+

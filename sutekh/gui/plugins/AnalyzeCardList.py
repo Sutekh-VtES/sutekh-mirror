@@ -486,6 +486,18 @@ class AnalyzeCardList(CardListPlugin):
 
         sMainText += "Total Library Size = " + str(self.iNumberLibrary) + "\n"
 
+        if self.iNumberLibrary < 40:
+            sMainText += '<span foreground = "red">Less than 40 Library' \
+                    ' Cards</span>\n'
+        elif self.iNumberLibrary < 60:
+            sMainText += '<span foreground = "orange">Less than 60 Library' \
+                    ' Cards - this deck is not legal for standard' \
+                    ' constructed tournaments</span>'
+        elif self.iNumberLibrary > 90:
+            sMainText += '<span foreground = "orange">More than 90 Library' \
+                    ' Cards - this deck is not legal for standard' \
+                    ' constructed tournaments</span>\n'
+
         return sMainText
 
     def _process_library(self):

@@ -1,9 +1,25 @@
+15 Apr 2009
+ * More merges from trunk
+   - Always pretty print XML & sort cards in the exported XML files (r1831)
+   - Add FAQ and V:EKN rulings support to the Rulebook plugin (r1839, r1840,
+     r1844)
+   - Add library size notes to the Analyze plugin (r1837, r1838)
+ * Fix card set creation with unknown expansions in compare plugin (fixed in
+   trunk as part of r1835, but as we haven't backported the related changes,
+   this fix is different)
+ * Merge Secret Library work from trunk
+   - Added canonical_to_csv & csv_to_canonical functions to SutekhObjects,
+     but not the other changes to use these.
+
 14 Apr 2009
  * Merge fixes from trunk
    - Explicitly close transactions connections on commit when reading. (r1865)
    - Fix sutekh installation on windows XP (r1864)
    - Ensure zip file entries have sensible unix permissions (r1848)
    - Fix restoring of backups via the command line (r1832)
+ * Always pretty print the xml, even when sending it to the zip file
+ * Sort XML file entries by card name + expansion, to make things more
+   predictable - simplifies the test cases a bit as well
 
 05 Feb 2009
  * Release 0.6.2.

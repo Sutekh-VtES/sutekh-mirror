@@ -118,9 +118,6 @@ class CardSetCompare(CardListPlugin):
             if len(aList) > 0:
                 sContents = ""
                 aList.sort()
-                aList.sort(key=lambda x: x[1], reverse=True)
-                # sort alphabetically, then reverse sort by card count
-                # stable sorting means this gives the desired ordering
                 for sCardName, sExpansion, iCount in aList:
                     sContents += '%(num)d X <span foreground = "%(color)s">' \
                             '%(name)s' % {
@@ -194,7 +191,7 @@ class CardSetCompare(CardListPlugin):
             return
         oCardSet = PhysicalCardSet(name=sCSName)
         for sCardName, sExpansionName, iCnt in aCardData:
-            if sExpansionName:
+            if sExpansionName and sExpansionName != 'Unspecified Expansion':
                 oExpansion = IExpansion(sExpansionName)
             else:
                 oExpansion = None
