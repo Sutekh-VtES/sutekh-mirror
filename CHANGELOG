@@ -1,3 +1,7 @@
+17 Apr 2009
+ * Merge from trunk
+   - Remove markup from tab popup menu in card set compare plugin (r1851)
+
 15 Apr 2009
  * More merges from trunk
    - Always pretty print XML & sort cards in the exported XML files (r1831)
