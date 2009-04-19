@@ -244,7 +244,8 @@ class Artist(SQLObject):
     advise(instancesProvide=[IArtist])
 
     tableversion = 1
-    name = UnicodeCol(alternateID=True, length=MAX_ID_LENGTH)
+    canonicalName = UnicodeCol(alternateID=True, length=MAX_ID_LENGTH)
+    name = UnicodeCol()
     cards = RelatedJoin('AbstractCard', intermediateTable='abs_artist_map',
             createRelatedTable=False)
 
@@ -539,7 +540,7 @@ class SutekhObjectMaker(object):
         try:
             return IArtist(sArtist)
         except SQLObjectNotFound:
-            return Artist(name=sArtist)
+            return Artist(canonicalName=sArtist.lower(), name=sArtist)
 
 # Abbreviation lookup based adapters
 
@@ -735,7 +736,7 @@ class ArtistAdapter(object):
     def __new__(cls, sArtistName):
         # pylint: disable-msg=E1101,
         # SQLObject confuses pylint
-        return Artist.byName(sArtistName.encode('utf8'))
+        return Artist.byCanonicalName(sArtistName.encode('utf8').lower())
 
 class PhysicalCardSetAdapter(object):
     advise(instancesProvide=[IPhysicalCardSet], asAdapterForTypes=[basestring])

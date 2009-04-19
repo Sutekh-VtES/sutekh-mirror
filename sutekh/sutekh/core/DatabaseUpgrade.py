@@ -523,7 +523,8 @@ def copy_old_keyword(oOrigConn, oTrans, oVer):
 def copy_artist(oOrigConn, oTrans):
     """Copy Artist, assuming versions match"""
     for oObj in Artist.select(connection=oOrigConn):
-        _oCopy = Artist(id=oObj.id, name=oObj.name, connection=oTrans)
+        _oCopy = Artist(id=oObj.id, canonicalName=oObj.canonicalName,
+            name=oObj.name, connection=oTrans)
 
 def copy_old_artist(oOrigConn, oTrans, oVer):
     """Copy Artist, updating if needed"""
