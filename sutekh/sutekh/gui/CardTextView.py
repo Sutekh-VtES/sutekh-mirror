@@ -9,7 +9,9 @@
 
 import gtk
 import pango
+import logging
 from sutekh.core.SutekhObjects import IKeyword
+from sqlobject import SQLObjectNotFound
 
 class CardTextBuffer(gtk.TextBuffer):
     """Buffer object which holds the actual card text.
@@ -160,7 +162,13 @@ class CardTextView(gtk.TextView):
         # a lot, so we cache the result
         # we can't do this during import, because we're not assured that the
         # database exists yet
-        self._oBurnOption = IKeyword('burn option')
+        try:
+            self._oBurnOption = IKeyword('burn option')
+        except SQLObjectNotFound:
+            # protect against burn option being missing from the database
+            # (this shouldn't happen but it seems a shame to crash)
+            self._oBurnOption = None
+            logging.warn("Keyword 'burn option' not present in database.")
 
     def set_card_text(self, oCard):
         """Add the text for oCard to the TextView."""
