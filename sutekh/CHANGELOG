@@ -1,3 +1,9 @@
+19 Apr 2009
+ * Add canonicalName to Artist table (a belated 0.8.x database change).
+ * Add artist, keyword and crypt group groupings.
+ * Warn if "burn option" keyword isn't found by CardTextViewer instead
+   of exiting.
+
 14 Apr 2009
  * Functionally complete Secret Library import / export plugin.
 
