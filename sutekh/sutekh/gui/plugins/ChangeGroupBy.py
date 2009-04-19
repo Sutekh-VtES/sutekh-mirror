@@ -11,7 +11,8 @@ from sutekh.core.SutekhObjects import PhysicalCard, PhysicalCardSet
 from sutekh.core.Groupings import CardTypeGrouping, ClanGrouping, \
         DisciplineGrouping, ExpansionGrouping, RarityGrouping, \
         CryptLibraryGrouping, NullGrouping, MultiTypeGrouping, \
-        SectGrouping, TitleGrouping, CostGrouping
+        SectGrouping, TitleGrouping, CostGrouping, GroupGrouping, \
+        ArtistGrouping, KeywordGrouping
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog
 
@@ -39,6 +40,9 @@ class GroupCardList(CardListPlugin):
         self._dGrpings['Sect'] = SectGrouping
         self._dGrpings['Title'] = TitleGrouping
         self._dGrpings['Cost'] = CostGrouping
+        self._dGrpings['Group'] = GroupGrouping
+        self._dGrpings['Artist'] = ArtistGrouping
+        self._dGrpings['Keyword'] = KeywordGrouping
         self._dGrpings['No Grouping'] = NullGrouping
         self._oFirstBut = None # placeholder for the radio group
 

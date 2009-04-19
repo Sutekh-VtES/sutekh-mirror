@@ -129,20 +129,50 @@ class TitleGrouping(IterGrouping):
 class CostGrouping(IterGrouping):
     """Group by Cost"""
     def __init__(self, oIter, fGetCard=DEF_GET_CARD):
-        super(CostGrouping, self).__init__(oIter, self._get_values)
-        self.fGetCard = fGetCard
 
-    def _get_values(self, oCard):
-        """Get the values to group by for this card"""
-        oThisCard = self.fGetCard(oCard)
-        if oThisCard.cost:
-            if oThisCard.cost == -1:
-                return ['X %s' % oThisCard.costtype]
+        def get_values(oCardSrc):
+            """Get the values to group by for this card"""
+            oCard = self._fGetCard(oCardSrc)
+            if oCard.cost:
+                if oCard.cost == -1:
+                    return ['X %s' % oCard.costtype]
+                else:
+                    return ['%d %s' % (oCard.cost, oCard.costtype)]
             else:
-                return ['%d %s' % (oThisCard.cost, oThisCard.costtype)]
-        else:
-            return []
+                return []
+
+        super(CostGrouping, self).__init__(oIter, self._get_values)
+
+class GroupGrouping(IterGrouping):
+    """Group by crypt Group"""
+    def __init__(self, oIter, fGetCard=DEF_GET_CARD):
+
+        def get_values(oCardSrc):
+            """Get the group values for this card"""
+            oCard = fGetCard(oCardSrc)
+            if oCard.group:
+                if oCard.group != -1:
+                    return ['Group %d' % oCard.group]
+                else:
+                    return ['Any group']
+            else:
+                return []
+
+        super(GroupGrouping, self).__init__(oIter, get_values)
+
+class ArtistGrouping(IterGrouping):
+    """Group by Artist"""
+    def __init__(self, oIter, fGetCard=DEF_GET_CARD):
+        super(ArtistGrouping, self).__init__(oIter,
+            lambda x: [y.name for y in fGetCard(x).artists])
+
+class KeywordGrouping(IterGrouping):
+    """Group by Keyword"""
+    def __init__(self, oIter, fGetCard=DEF_GET_CARD):
+        super(KeywordGrouping, self).__init__(oIter,
+            lambda x: [y.keyword for y in fGetCard(x).keywords])
 
 class NullGrouping(IterGrouping):
+    """Group everything into a single group named 'All'."""
     def __init__(self, oIter, _fGetCard=DEF_GET_CARD):
         super(NullGrouping, self).__init__(oIter, lambda x: ["All"])
