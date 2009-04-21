@@ -132,7 +132,7 @@ class CostGrouping(IterGrouping):
 
         def get_values(oCardSrc):
             """Get the values to group by for this card"""
-            oCard = self._fGetCard(oCardSrc)
+            oCard = fGetCard(oCardSrc)
             if oCard.cost:
                 if oCard.cost == -1:
                     return ['X %s' % oCard.costtype]
@@ -141,7 +141,7 @@ class CostGrouping(IterGrouping):
             else:
                 return []
 
-        super(CostGrouping, self).__init__(oIter, self._get_values)
+        super(CostGrouping, self).__init__(oIter, get_values)
 
 class GroupGrouping(IterGrouping):
     """Group by crypt Group"""
