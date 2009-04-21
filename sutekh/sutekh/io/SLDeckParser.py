@@ -42,6 +42,8 @@ class SLDeckParser(CardSetParser):
     oCardLineRegexp = re.compile('^(?P<num>[0-9]+)\s+(?P<name>.*)$')
 
     def __init__(self):
+        # pylint: disable-msg=W0231
+        # No need to call IOBase.__init__()
         self._dSectionParsers = {
             'title': self._title_section,
             'author': self._author_section,
@@ -70,9 +72,6 @@ class SLDeckParser(CardSetParser):
         raise RuntimeError('Data line outside of section'
             ' for Secret Library Deck format')
 
-
-    # pylint: enable-msg=R0201
-
     def _title_section(self, sLine, oHolder):
         """Parse a title line."""
         oHolder.name = sLine
@@ -95,6 +94,8 @@ class SLDeckParser(CardSetParser):
             oHolder.comment += "\n" + sLine
         else:
             oHolder.comment = sLine
+
+    # pylint: enable-msg=R0201
 
     def _crypt_section(self, sLine, oHolder):
         """Parse a crypt entry."""
