@@ -776,12 +776,22 @@ class PhysicalCardMappingToAbstractCardAdapter(object):
 class PhysicalCardAdapter(object):
     advise(instancesProvide=[IPhysicalCard], asAdapterForTypes=[tuple])
 
+    __dCache = {}
+
+    @classmethod
+    def make_object_cache(cls):
+        cls.__dCache = {}
+
     def __new__(cls, tData):
         # pylint: disable-msg=E1101
         # SQLObject confuses pylint
         oAbsCard, oExp = tData
-        oPhysicalCard = PhysicalCard.selectBy(abstractCard=oAbsCard,
-                expansion=oExp).getOne()
+        # oExp may be None, so we don't use oExp.id here
+        oPhysicalCard = cls.__dCache.get((oAbsCard.id, oExp), None)
+        if oPhysicalCard is None:
+            oPhysicalCard = PhysicalCard.selectBy(abstractCard=oAbsCard,
+                    expansion=oExp).getOne()
+            cls.__dCache[(oAbsCard.id, oExp)] = oPhysicalCard
         return oPhysicalCard
 
 # Flushing
@@ -792,7 +802,7 @@ def flush_cache():
     for cAdaptor in [ ExpansionAdapter, RarityAdapter, DisciplineAdapter,
                       ClanAdapter, CardTypeAdapter, SectAdaptor, TitleAdapter,
                       VirtueAdapter, CreedAdapter, DisciplinePairAdapter,
-                      RarityPairAdapter ]:
+                      RarityPairAdapter, PhysicalCardAdapter ]:
         cAdaptor.make_object_cache()
 
     for oJoin in AbstractCard.sqlmeta.joins:

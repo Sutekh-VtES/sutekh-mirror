@@ -1,3 +1,7 @@
+21 Apr 2009
+ * Fix cost grouping
+ * Cache IPhysicalCard(<tuple>) lookups
+
 19 Apr 2009
  * Add canonicalName to Artist table (a belated 0.8.x database change).
  * Add artist, keyword and crypt group groupings.
