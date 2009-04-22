@@ -55,9 +55,12 @@ class CardSetManagementView(gtk.TreeView):
         self.oNameCell = gtk.CellRendererText()
         oColumn = gtk.TreeViewColumn("Card Sets", self.oNameCell, markup=0)
         oColumn.set_expand(True)
+        oColumn.set_resizable(True)
         oColumn.set_sort_column_id(0)
         self.append_column(oColumn)
         self._oModel.load()
+
+        self.set_expander_column(oColumn)
 
     # Help functions used by reload_keep_expanded
     def get_row_status(self, _oModel, oPath, _oIter, dExpandedDict):
