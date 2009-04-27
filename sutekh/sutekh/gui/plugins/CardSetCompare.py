@@ -120,8 +120,6 @@ class CardSetCompare(CardListPlugin):
                 aList.sort()
                 sContents += '<span foreground="blue">%s - %d cards' \
                         '</span>\n' % (sGroup, iTot)
-                # sort alphabetically, then reverse sort by card count
-                # stable sorting means this gives the desired ordering
                 for sCardName, sExpansion, iCount in aList:
                     sContents += u'\t%(num)d \u00D7 <span foreground =' \
                             ' "%(color)s"> %(name)s' % {
