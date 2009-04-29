@@ -72,6 +72,10 @@ def main(aArgs):
        pass control off to MultiPaneWindow.
        Save preferences on exit if needed
        """
+    # Print nice complaint if not under a windowing system
+    if gtk.gdk.screen_get_default() is None:
+        print "Unable to find windowing system. Aborting"
+        return 1
     # handle exceptions with a GUI dialog
     sys.excepthook = exception_handler
 

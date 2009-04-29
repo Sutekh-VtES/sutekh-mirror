@@ -28,9 +28,13 @@ from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 
 WHITE_SPACE_REGEX = re.compile("\\s+")
 
-## pixels = points * SCREEN_RESOLUTION
-SCREEN_RESOLUTION = 0.3514598*(gtk.gdk.screen_height() /
-                    float(gtk.gdk.screen_height_mm()))
+# don't throw an exception if no screen during import - we'll catch that later
+if gtk.gdk.screen_get_default() is None:
+    SCREEN_RESOLUTION = 0
+else:
+    ## pixels = points * SCREEN_RESOLUTION
+    SCREEN_RESOLUTION = 0.3514598*(gtk.gdk.screen_height() /
+            float(gtk.gdk.screen_height_mm()))
 
 def _parse_css_color(sColor):
     '''_parse_css_color(css_color) -> gtk.gdk.Color'''

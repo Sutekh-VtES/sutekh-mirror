@@ -1,3 +1,6 @@
+29 Apr 2009
+ * Make SutekhGui.py fail more gracefully when run without a windowing system
+
 21 Apr 2009
  * Fix cost grouping
  * Cache IPhysicalCard(<tuple>) lookups
