@@ -28,8 +28,8 @@ from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 
 WHITE_SPACE_REGEX = re.compile("\\s+")
 
-## pixels = points * SCREEN_RESOULTION
-SCREEN_RESOULTION = 0.3514598*(gtk.gdk.screen_height() /
+## pixels = points * SCREEN_RESOLUTION
+SCREEN_RESOLUTION = 0.3514598*(gtk.gdk.screen_height() /
                     float(gtk.gdk.screen_height_mm()))
 
 def _parse_css_color(sColor):
@@ -137,7 +137,7 @@ class HtmlHandler(HTMLParser.HTMLParser):
             if bFontRelative:
                 oAttrs = self._get_current_attributes()
                 fFontSize = oAttrs.font.get_size() / pango.SCALE
-                fCallback(fFrac * SCREEN_RESOULTION * fFontSize, *args)
+                fCallback(fFrac * SCREEN_RESOLUTION * fFontSize, *args)
             else:
                 ## CSS says "Percentage values: refer to width of the closest
                 ##           block-level ancestor"
@@ -151,18 +151,18 @@ class HtmlHandler(HTMLParser.HTMLParser):
                         fCallback, args)
 
         elif sValue.endswith('pt'): # points
-            fCallback(float(sValue[:-2]) * SCREEN_RESOULTION, *args)
+            fCallback(float(sValue[:-2]) * SCREEN_RESOLUTION, *args)
         elif sValue.endswith('em'): # ems, the height of the element's font
             oAttrs = self._get_current_attributes()
             fFontSize = oAttrs.font.get_size() / pango.SCALE
-            fCallback(float(sValue[:-2]) * SCREEN_RESOULTION * fFontSize,
+            fCallback(float(sValue[:-2]) * SCREEN_RESOLUTION * fFontSize,
                     *args)
         elif sValue.endswith('ex'): # x-height, ~ the height of the letter 'x'
             ## FIXME: figure out how to calculate this correctly
             ##        for now 'em' size is used as approximation
             oAttrs = self._get_current_attributes()
             fFontSize = oAttrs.font.get_size() / pango.SCALE
-            fCallback(float(sValue[:-2]) * SCREEN_RESOULTION * fFontSize,
+            fCallback(float(sValue[:-2]) * SCREEN_RESOLUTION * fFontSize,
                     *args)
         elif sValue.endswith('px'): # pixels
             fCallback(int(sValue[:-2]), *args)
@@ -172,7 +172,7 @@ class HtmlHandler(HTMLParser.HTMLParser):
     @staticmethod
     def __parse_font_size_cb(fLength, oTag):
         """Callback for font size calculations."""
-        oTag.set_property("size-points", fLength/SCREEN_RESOULTION)
+        oTag.set_property("size-points", fLength/SCREEN_RESOLUTION)
 
     def _parse_style_font_size(self, oTag, sValue):
         """Parse the font size attribute"""
@@ -464,7 +464,7 @@ class HtmlHandler(HTMLParser.HTMLParser):
             oTextAttrs = self._get_current_attributes()
             fFontSize = oTextAttrs.font.get_size() / pango.SCALE
             iDepth = len(self._aListCounters)
-            oTag.set_property('left-margin', 2.0 * iDepth * SCREEN_RESOULTION
+            oTag.set_property('left-margin', 2.0 * iDepth * SCREEN_RESOLUTION
                     * fFontSize)
 
         self._begin_span(oStyle, oTag)
