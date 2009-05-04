@@ -1,3 +1,6 @@
+04 May 2009
+ * Merge transaction leak fix from trunk (partial merge of 1908)
+
 17 Apr 2009
  * Merge from trunk
    - Remove markup from tab popup menu in card set compare plugin (r1851)
