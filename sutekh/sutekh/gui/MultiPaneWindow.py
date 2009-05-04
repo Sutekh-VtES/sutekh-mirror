@@ -17,7 +17,7 @@ from pkg_resources import resource_stream, resource_exists
 from sqlobject import SQLObjectNotFound
 from sutekh.core.SutekhObjectCache import SutekhObjectCache
 from sutekh.core.SutekhObjects import AbstractCard, PhysicalCardSet, \
-        PhysicalCard
+        PhysicalCard, flush_cache
 from sutekh.gui.BasicFrame import BasicFrame
 from sutekh.gui.PhysicalCardFrame import PhysicalCardFrame
 from sutekh.gui.CardTextFrame import CardTextFrame
@@ -320,6 +320,8 @@ class MultiPaneWindow(gtk.Window):
            cardlist, since card sets with children are always created
            before there children are added.
            """
+        # Flush the caches, so we don't hit stale lookups
+        flush_cache()
         # Reset the lookup cache holder
         self.__oSutekhObjectCache = SutekhObjectCache()
         aToLoopOver = self.dOpenFrames.keys()

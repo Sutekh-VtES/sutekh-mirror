@@ -1,3 +1,8 @@
+04 May 2009
+ * Close a couple more potential connection leaks
+ * Ensure caches are properly flushed on backup restores & importing new
+   cardlists. Prevents a couple of bugs.
+
 29 Apr 2009
  * Make SutekhGui.py fail more gracefully when run without a windowing system
 

@@ -51,7 +51,7 @@ def read_white_wolf_list(aWwFiles, oLogHandler=None):
         for sLine in fIn:
             oParser.feed(sLine)
         fIn.close()
-    sqlhub.processConnection.commit()
+    sqlhub.processConnection.commit(close=True)
     sqlhub.processConnection = oOldConn
 
 def read_rulings(oRulings, oLogHandler=None):
@@ -67,7 +67,7 @@ def read_rulings(oRulings, oLogHandler=None):
     for sLine in fIn:
         oParser.feed(sLine)
     fIn.close()
-    sqlhub.processConnection.commit()
+    sqlhub.processConnection.commit(close=True)
     sqlhub.processConnection = oOldConn
 
 def gen_temp_file(sBaseName, sDir):
