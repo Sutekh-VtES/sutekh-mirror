@@ -1,5 +1,6 @@
 05 May 2009
  * Make rulebook plugin less aggressive when stripping <img> tags.
+ * Add some basic tests for mixed card backs in the Analyze Deck plugin.
 
 04 May 2009
  * Close a couple more potential connection leaks

@@ -9,12 +9,21 @@
 
 import gtk
 from sutekh.core.SutekhObjects import PhysicalCardSet, \
-        IAbstractCard
+        IAbstractCard, IPhysicalCard, IExpansion
 from sutekh.core.Filters import CardTypeFilter, CardTextFilter
 from sutekh.core.Abbreviations import Titles
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog
 from sutekh.gui.MultiSelectComboBox import MultiSelectComboBox
+
+
+THIRD_ED = IExpansion('Third Edition')
+JYHAD = IExpansion('Jyhad')
+ODD_BACKS = [None, THIRD_ED, JYHAD]
+
+CRYPT_TYPES = ['Vampire', 'Imbued']
+BANNED_FILTER = CardTextFilter('Added to the V:EKN banned list')
+
 
 # utility functions
 def _percentage(iNum, iTot, sDesc):
@@ -194,6 +203,43 @@ def _wrap(sText):
     oLabel.set_markup(sText)
     return oLabel
 
+def _get_back_counts(aPhysCards):
+    """Get the counts of the different expansions for the list"""
+    dCounts = {}
+    for oCard in aPhysCards:
+        oKey = oCard.expansion
+        if oKey not in ODD_BACKS:
+            oKey = 'Other'
+        dCounts.setdefault(oKey, 0)
+        dCounts[oKey] += 1
+    return dCounts
+
+def _split_into_crypt_lib(aPhysCards):
+    """Split a list of physical cards into crypt and library"""
+    aCrypt = []
+    aLib = []
+    for oCard in aPhysCards:
+        # pylint: disable-msg=E1101
+        # pyprotocols confuses pylint
+        oAbsCard = IAbstractCard(oCard)
+        sType = [x.name for x in oAbsCard.cardtype][0]
+        if sType in CRYPT_TYPES:
+            aCrypt.append(oCard)
+        else:
+            aLib.append(oCard)
+    return aCrypt, aLib
+
+def _check_same(aPhysCards):
+    """Check that all the crypt cards and all the library cards have the
+       same backs"""
+    aCrypt, aLib = _split_into_crypt_lib(aPhysCards)
+    dCrypt = _get_back_counts(aCrypt)
+    dLib = _get_back_counts(aLib)
+    if len(dCrypt) > 1 or len(dLib) > 1:
+        return False # Differing backs
+    return True
+
+
 class DisciplineNumberSelect(gtk.HBox):
     # pylint: disable-msg=R0904
     # gtk.Widget so many public methods
@@ -248,9 +294,6 @@ class AnalyzeCardList(CardListPlugin):
     dTableVersions = {PhysicalCardSet : [4, 5, 6]}
     aModelsSupported = [PhysicalCardSet]
 
-    aCryptTypes = ['Vampire', 'Imbued']
-    _oBannedFilter = CardTextFilter('Added to the V:EKN banned list')
-
     def get_menu_item(self):
         """Register on the 'Plugins' Menu"""
         if not self.check_versions() or not self.check_model_type():
@@ -286,13 +329,19 @@ class AnalyzeCardList(CardListPlugin):
                 'Master' : self._process_master,
                 'Multirole' : self._process_multi,
                 'Banned Cards' : self._process_banned,
+                'Mixed Card Backs' : self._process_backs,
                 }
 
         self.dTypeNumbers = {}
         dCardLists = {}
 
+        aAllPhysCards = [IPhysicalCard(x) for x in
+                self.model.get_card_iterator(None)]
+        aAllCards = _get_abstract_cards(aAllPhysCards)
+        aSpecial = ['Banned Cards', 'Multirole', 'Mixed Card Backs']
+
         for sCardType in dConstruct:
-            if sCardType not in ['Multirole', 'Banned Cards']:
+            if sCardType not in aSpecial:
                 oFilter = CardTypeFilter(sCardType)
                 dCardLists[sCardType] = _get_abstract_cards(
                         self.model.get_card_iterator(oFilter))
@@ -302,19 +351,25 @@ class AnalyzeCardList(CardListPlugin):
                 dCardLists[sCardType] = []
                 self.dTypeNumbers[sCardType] = 0
             elif sCardType == 'Banned Cards':
-                oFilter = self._oBannedFilter
+                oFilter = BANNED_FILTER
                 dCardLists[sCardType] = _get_abstract_cards(
                         self.model.get_card_iterator(oFilter))
                 self.dTypeNumbers[sCardType] = len(dCardLists[sCardType])
+            elif sCardType == 'Mixed Card Backs':
+                if _check_same(aAllPhysCards):
+                    # Not mixed, so we skip
+                    self.dTypeNumbers[sCardType] = 0
+                else:
+                    self.dTypeNumbers[sCardType] = len(aAllPhysCards)
+                dCardLists[sCardType] = aAllPhysCards
 
         oHappyBox = gtk.VBox(False, 2)
 
-        aAllCards = _get_abstract_cards(self.model.get_card_iterator(None))
         self.iTotNumber = len(aAllCards)
         self.dCryptStats = {}
         self.dLibraryStats = {}
 
-        self.iCryptSize = sum([self.dTypeNumbers[x] for x in self.aCryptTypes])
+        self.iCryptSize = sum([self.dTypeNumbers[x] for x in CRYPT_TYPES])
         self.iNumberLibrary = len(aAllCards) - self.iCryptSize
         self.get_crypt_stats(dCardLists['Vampire'], dCardLists['Imbued'])
         self.get_library_stats(aAllCards, dCardLists)
@@ -330,10 +385,9 @@ class AnalyzeCardList(CardListPlugin):
         oNotebook.append_page(oMainBox, gtk.Label('Basic Info'))
         oNotebook.append_page(oHappyBox, gtk.Label('Happy Families Analysis'))
 
-        # overly clever? crypt cards first, then alphabetical, then multirole
-        aOrderToList = self.aCryptTypes + \
-                [x for x in sorted(self.dTypeNumbers) if (x not in
-                    self.aCryptTypes and x != 'Multirole')] + ['Multirole']
+        # overly clever? crypt cards first, then alphabetical, then specials
+        aOrderToList = CRYPT_TYPES + [x for x in sorted(self.dTypeNumbers)
+                if (x not in CRYPT_TYPES and x not in aSpecial)] + aSpecial
         for sCardType in aOrderToList:
             if self.dTypeNumbers[sCardType] > 0:
                 fProcess = dConstruct[sCardType]
@@ -402,7 +456,7 @@ class AnalyzeCardList(CardListPlugin):
     def get_library_stats(self, aAllCards, dCardLists):
         """Extract the relevant library stats from the list of cards"""
         aCryptCards = []
-        for sType in self.aCryptTypes:
+        for sType in CRYPT_TYPES:
             aCryptCards.extend(dCardLists[sType])
         aLibraryCards = [x for x in aAllCards if x not in aCryptCards]
         # Extract the relevant stats
@@ -445,7 +499,7 @@ class AnalyzeCardList(CardListPlugin):
                         }
 
         # Set main notebook text
-        for sCardType in self.aCryptTypes:
+        for sCardType in CRYPT_TYPES:
             if self.dTypeNumbers[sCardType] > 0:
                 sMainText += 'Number of %s = %d\n' % (sCardType,
                         self.dTypeNumbers[sCardType])
@@ -503,7 +557,7 @@ class AnalyzeCardList(CardListPlugin):
         # Show card types, sorted by number (then alphabetical by type)
         for sType, iCount in sorted(self.dTypeNumbers.items(),
                 key=lambda x: (x[1], x[0]), reverse=True):
-            if sType not in self.aCryptTypes and sType != 'Multirole' and \
+            if sType not in CRYPT_TYPES and sType != 'Multirole' and \
                     iCount > 0:
                 sTypeText += _format_card_line(sType, 'cards', iCount,
                         self.iNumberLibrary)
@@ -822,6 +876,122 @@ class AnalyzeCardList(CardListPlugin):
                     'num' : iNum,
                     'name' : sName,
                     }
+
+        return sText
+
+    def _process_backs(self, aPhysCards):
+        """Run some heuristic tests to see if cards are 'of sufficiently
+           mixed card type'"""
+        aCrypt, aLib = _split_into_crypt_lib(aPhysCards)
+        dCrypt = _get_back_counts(aCrypt)
+        dLib = _get_back_counts(aLib)
+        sUnsleeved = "<span foreground='green'>%s may be played unsleeved" \
+                "</span>\n"
+        sSleeved = "<span foreground='orange'>%s should be sleeved" \
+                "</span>\n"
+        sText = "\t\t<b>Mixed Card Backs :</b>\n\n"
+        if dCrypt.has_key(None) and dLib.has_key(None):
+            sText += "Both library and crypt have cards with unspecified" \
+                    " expansions.\nIgnoring the mixed backs.\n"
+            return sText
+        # We know there are mixed cards, when we get here.
+        sText += "Mixed card backs in the deck. The V:EKN rules require " \
+                "that a mixed deck be of 'sufficiently mixed card types' " \
+                "if it's to be played without sleeves. This tests some " \
+                "obvious cases, but check with the event judge if playing " \
+                "without sleeves\n\n"
+        sText += "\t<b>Crypt</b>\n\n"
+        if len(dCrypt) == 1 and not dCrypt.has_key(None):
+            sText += "All crypt cards have identical backs\n" + \
+                    sUnsleeved % "Crypt"
+        elif dCrypt.has_key(None):
+            sText += "Crypt has cards from unspecified expansions." \
+                    " Ignoring the crypt\n"
+        else:
+            # Crypt checks
+            # < 20% of known cards have a single back
+            bOK = True
+            iTot = sum([dCrypt[x] for x in dCrypt])
+            aPer = [float(dCrypt[x])/float(iTot) for x in dCrypt]
+            if min(aPer) < 0.2:
+                sText += "Group of cards with the same back that's smaller" \
+                        " than 20% of the crypt.\n"
+                bOK = False
+            # No more than 2 distinct vampires of in a group of common backs
+            dCryptByExp = {}
+            for oExp in dCrypt:
+                if oExp != 'Other':
+                    dCryptByExp[oExp] = [oCard for oCard in aCrypt if
+                            oCard.expansion == oExp]
+                else:
+                    dCryptByExp[oExp] = [oCard for oCard in aCrypt if
+                            oCard.expansion not in ODD_BACKS]
+            for oExp, aCards in dCryptByExp.iteritems():
+                # For each expansion, count number of distinct cards
+                aNames = set([x.abstractCard.name for x in aCards])
+                if len(aNames) < 3:
+                    sText += "Group of fewer than 3 different crypt cards" \
+                            " with the same back.\n"
+                    sText += "\t" + ", ".join(aNames) + "\n"
+                    bOK = False
+                    break
+            if bOK:
+                sText += "Mixed backs, but seems sufficiently mixed.\n" \
+                        + sUnsleeved % "Crypt"
+            else:
+                sText += sSleeved % "Crypt"
+
+        sText += "\n\t<b>Library</b>\n\n"
+        if len(dLib) == 1 and not dLib.has_key(None):
+            sText += "All Library cards have identicial backs\n" + \
+                    sUnsleeved % "Library"
+        elif dLib.has_key(None):
+            sText += "Library has cards from unspecified expansions." \
+                    " Ignoring the library.\n"
+        else:
+            bOK = True
+            # Library checks
+            # < 20% of known cards have a single back
+            iTot = sum([dLib[x] for x in dLib])
+            aPer = [float(dLib[x])/float(iTot) for x in dLib]
+            if min(aPer) < 0.2:
+                sText += "Group of cards with the same back that's smaller" \
+                        " than 20% of the library.\n" + sSleeved % "Library"
+                bOK = False
+            dLibByExp = {}
+            for oExp in dLib:
+                if oExp:
+                    if oExp != 'Other':
+                        dLibByExp[oExp] = [oCard for oCard in aLib if
+                                oCard.expansion == oExp]
+                    else:
+                        dLibByExp[oExp] = [oCard for oCard in aLib if
+                                oCard.expansion not in ODD_BACKS]
+            for oExp, aCards in dLibByExp.iteritems():
+                # For each expansion, count number of distinct cards
+                aNames = set([x.abstractCard.name for x in aCards])
+                # If <= 5 distinct cards of a single back
+                if len(aNames) < 5:
+                    sText += "Group of fewer than 5 different library cards" \
+                            " with the same back.\n"
+                    sText += "\t" + ", ".join(aNames) + "\n"
+                    bOK = False
+                    break
+                # if a single back contains less than 3 types of library card
+                aAllTypes = set()
+                for oCard in aCards:
+                    aTypes = [y.name for y in oCard.abstractCard.cardtype]
+                    sTypes = "/".join(aTypes)
+                    aAllTypes.add(sTypes)
+                if len(aAllTypes) < 3:
+                    sText += "Group of library cards with the same back" \
+                            " with less than 3 different card types.\n"
+                    sText += "\t" + ", ".join(aNames) + "\n"
+            if bOK:
+                sText += "Mixed backs, but seems sufficiently mixed.\n" \
+                        + sUnsleeved % "Library"
+            else:
+                sText += sSleeved % "Library"
 
         return sText
 
