@@ -288,12 +288,15 @@ class RulebookPlugin(CardListPlugin):
                 re.MULTILINE | re.DOTALL)
             sData = oHdrToStyle.sub("</head>", sData, 1)
 
-        # remove <img> and <script> tags since they're not
+        # remove <script> tags since they're not
         # vital to the rulebook and avoid attempts by the
         # browser to access the network
-        oTagRemove = re.compile(r"<(img|script)[^<>]*>[^<]*"
-            r"(</(img|script)[^<>]*>)?",
+        oTagRemove = re.compile(r"<script[^<>]*>[^<]*"
+            r"(</script[^<>]*>)?",
             re.MULTILINE)
+        sData = oTagRemove.sub("", sData)
+        # remove <img> tags. These are not closed properly
+        oTagRemove = re.compile(r"<img[^<>]*>")
         sData = oTagRemove.sub("", sData)
         # remove the onclick tags from the imbued rules, since they're
         # just broken
