@@ -1,3 +1,7 @@
+17 May 2009
+ * Merge fix from trunk:
+   - r1914 Properly set date & time in zip file
+
 13 May 2009
  * Merge fix from trunk:
    - r1910 Make rulebook plugin less aggressive when stripping <img> tags.
