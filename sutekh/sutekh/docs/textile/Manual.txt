@@ -1052,6 +1052,11 @@ the inventory, you can activate the stock and card prices columns using the
 _Show Lasombra Prices_ toggle button in the _Plugins_ menu on the White Wolf 
 card list or card set panes.
 
+If the Lasombra Sales plugin encounters difficulties while process the
+inventory, it will display a list of warnings once it finishes. These warnings
+may be reviewed at a later stage using the _Lasombra Sales Plugin Warnings_
+item in the _Plugins_ menu on the _Main Window_.
+
 There are three cases for you to consider when you interpret the stock and 
 price columns:
 
