@@ -11,6 +11,7 @@
    Sutekh needs."""
 
 import zipfile
+import datetime
 from logging import Logger
 from sqlobject import sqlhub, SQLObjectNotFound
 from sutekh.core.SutekhObjects import PhysicalCardSet, PHYSICAL_SET_LIST
@@ -48,6 +49,7 @@ class ZipFileWrapper(object):
     def write_all_pcs_to_zip(self, oLogger):
         """Add all the physical card sets to the zip file"""
         bClose = False
+        tTime = datetime.datetime.now().timetuple()
         if self.oZip is None:
             self.__open_zip_for_write()
             bClose = True
@@ -62,7 +64,8 @@ class ZipFileWrapper(object):
             sZipName = 'pcs_%s.xml' % sZName
             sZipName = sZipName.encode('ascii', 'xmlcharrefreplace')
             aList.append(sZipName)
-            oInfoObj = zipfile.ZipInfo(sZipName)
+            # ZipInfo will just use the 1st 6 fields in tTime
+            oInfoObj = zipfile.ZipInfo(sZipName, tTime)
             # Set permissions on the created file - see issue 3394 on the
             # python bugtracker. Docs say this is safe on all platforms
             oInfoObj.external_attr = 0600 << 16L
