@@ -1,7 +1,7 @@
 # test_SLInventoryParser.py
 # -*- coding: utf8 -*-
 # vim:fileencoding=utf8 ai ts=4 sts=4 et sw=4
-# Copyright 2009 Simon Cross hodgestar+sutekh@gmail.com>
+# Copyright 2009 Simon Cross <hodgestar+sutekh@gmail.com>
 # GPL - see COPYING for details
 
 """Test reading a card set from an Secret Libary inventory file"""

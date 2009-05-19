@@ -1,7 +1,7 @@
 # test_MultiPaneWindow.py
 # -*- coding: utf8 -*-
 # vim:fileencoding=utf8 ai ts=4 sts=4 et sw=4
-# Copyright 2008 Neil Muller <drnlmuller+sutekh@gmail.com>
+# Copyright 2009 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
 """Test parts of the multipane window and config stuff"""
@@ -20,7 +20,7 @@ class TestMultiPaneWindow(SutekhTest):
     def test_basic(self):
         """Set of simple tests of the MultiPaneWindow"""
         # Skip if we're not under a windowing system
-        # We need to do this before trying to run MultiPaneWindow's __init__, 
+        # We need to do this before trying to run MultiPaneWindow's __init__,
         # which will fail if not under a windowing system
         if gtk.gdk.screen_get_default() is None:
             raise SkipTest
