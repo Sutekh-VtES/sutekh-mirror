@@ -32,6 +32,7 @@ class TestCardSetFrame(SutekhTest):
         oModel = oFrame._oController.model
         oSelection = oFrame.view.get_selection()
         oFrame.view.expand_all() # needed so we can select deeper entries
+        oSelection.unselect_all()
         # Walk the model, tracking the paths we wish to select
         oIter = oModel.get_iter_root()
         while oIter:
@@ -98,12 +99,41 @@ class TestCardSetFrame(SutekhTest):
         oNewFrame = oWin.find_pane_by_name('Test Set 1')
         oNewFrame.view.do_paste()
         self.assertEqual(len(oPCS2.cards), 2)
-        # Check results
+        # Select cards in new card set and change numbers
+        self._select_cards(oNewFrame, [(u'AK-47', None),
+                (u'AK-47', u'Lords of the Night')])
+        # Generate key_press event
+        oEvent = gtk.gdk.Event(gtk.gdk.KEY_PRESS)
+        oEvent.keyval = int(gtk.gdk.keyval_from_name('4'))
+        oNewFrame.view.key_press(oNewFrame, oEvent)
+        self.assertEqual(len(oPCS2.cards), 8)
+        oNewFrame.view.key_press(oNewFrame, oEvent)
+        self.assertEqual(len(oPCS2.cards), 8)
+        oEvent.keyval = int(gtk.gdk.keyval_from_name('1'))
+        oNewFrame.view.key_press(oNewFrame, oEvent)
+        self.assertEqual(len(oPCS2.cards), 2)
+        oEvent.keyval = int(gtk.gdk.keyval_from_name('plus'))
+        oNewFrame.view.key_press(oNewFrame, oEvent)
+        self.assertEqual(len(oPCS2.cards), 4)
+        oEvent.keyval = int(gtk.gdk.keyval_from_name('minus'))
+        oNewFrame.view.key_press(oNewFrame, oEvent)
+        self.assertEqual(len(oPCS2.cards), 2)
+        oNewFrame.view.key_press(oNewFrame, oEvent)
+        self.assertEqual(len(oPCS2.cards), 0)
         # Select all and delete it from the new card set
-        # Check results
+        oNewFrame.view.do_paste()
+        self.assertEqual(len(oPCS2.cards), 2)
+        self._select_cards(oNewFrame, [(u'AK-47', u'Lords of the Night')])
+        oNewFrame.view.del_selection()
+        self.assertEqual(len(oPCS2.cards), 1)
+        self._select_cards(oNewFrame, [(u'AK-47', None)])
+        oEvent.keyval = int(gtk.gdk.keyval_from_name('plus'))
+        oNewFrame.view.key_press(oNewFrame, oEvent)
+        self.assertEqual(len(oPCS2.cards), 2)
+        oNewFrame.view.del_selection()
+        self.assertEqual(len(oPCS2.cards), 0)
         # Select card from My Collection and paste it into the card set
         # Check results
-        # Select cards in new card set and change numbers
         # Check results
         # set editable off
         # Verify that trying to change the seleciton does nothing
