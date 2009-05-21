@@ -27,6 +27,31 @@ class TestCardSetFrame(SutekhTest):
         oAbs = IAbstractCard(sName)
         return IPhysicalCard((oAbs, oExp))
 
+    def _select_cards(self, oFrame, aCards):
+        """Find cards by name and expansion in the frame and select them"""
+        oModel = oFrame._oController.model
+        oSelection = oFrame.view.get_selection()
+        oFrame.view.expand_all() # needed so we can select deeper entries
+        # Walk the model, tracking the paths we wish to select
+        oIter = oModel.get_iter_root()
+        while oIter:
+            # loop over card level nodes
+            oCardIter = oModel.iter_children(oIter)
+            while oCardIter:
+                # Loop over expansions
+                sName = oModel.get_name_from_iter(oCardIter)
+                oExpIter = oModel.iter_children(oCardIter)
+                while oExpIter:
+                    sExp = oModel.get_name_from_iter(oExpIter)
+                    if sExp == oModel.sUnknownExpansion:
+                        sExp = None
+                    if ((sName, sExp) in aCards):
+                        oPath=oModel.get_path(oExpIter)
+                        oSelection.select_path(oPath)
+                    oExpIter = oModel.iter_next(oExpIter)
+                oCardIter = oModel.iter_next(oCardIter)
+            oIter = oModel.iter_next(oIter)
+
     def test_basic(self):
         """Set of simple tests of the CardSetFrame"""
         # Skip if we're not under a windowing system
@@ -36,7 +61,7 @@ class TestCardSetFrame(SutekhTest):
             raise SkipTest
         # Add card sets needed for the tests
         oPhysCardSet = PhysicalCardSet(name='My Collection')
-        PhysicalCardSet(name='Test Set 1',
+        oPCS2 = PhysicalCardSet(name='Test Set 1',
                 parent=oPhysCardSet)
         PhysicalCardSet(name='Test Set 2',
                 parent=oPhysCardSet)
@@ -64,6 +89,15 @@ class TestCardSetFrame(SutekhTest):
         oWin.add_new_physical_card_set('Test Set 1')
         # Create selection of cards from the WW card list and
         # paste it into the new card set
+        oFrame = oWin.find_pane_by_name('White Wolf Card List')
+        self._select_cards(oFrame, [(u'AK-47', None),
+            (u'AK-47', u'Lords of the Night')])
+        self.assertEqual(oFrame.view.get_selection().count_selected_rows(), 2)
+        # Copy
+        oFrame.view.copy_selection()
+        oNewFrame = oWin.find_pane_by_name('Test Set 1')
+        oNewFrame.view.do_paste()
+        self.assertEqual(len(oPCS2.cards), 2)
         # Check results
         # Select all and delete it from the new card set
         # Check results
