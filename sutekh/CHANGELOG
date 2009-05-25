@@ -1,5 +1,5 @@
 25 May 2009
- * Add VTES Rules reference to rulebook plaugin
+ * Add VTES Rules reference to rulebook plugin.
  * Ensure proper cleanup in the new gui tests. Fixes some interactions with
    nose and the gui tests which caused running the complete test suite to fail.
 
