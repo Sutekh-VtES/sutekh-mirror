@@ -1,3 +1,8 @@
+25 May 2009
+ * Add VTES Rules reference to rulebook plaugin
+ * Ensure proper cleanup in the new gui tests. Fixes some interactions with
+   nose and the gui tests which caused running the complete test suite to fail.
+
 17 May 2009
  * Properly set date & time in zip file
  * Display TheLasombra inventory import errors more neatly.

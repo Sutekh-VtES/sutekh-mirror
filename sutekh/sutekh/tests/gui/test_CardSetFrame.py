@@ -10,6 +10,7 @@ from sutekh.tests.TestCore import SutekhTest
 from nose import SkipTest
 import gtk
 import unittest
+import tempfile, os
 from sutekh.core.SutekhObjects import PhysicalCardSet, IExpansion, \
         IAbstractCard, IPhysicalCard
 from sutekh.gui.MultiPaneWindow import MultiPaneWindow
@@ -81,6 +82,9 @@ class TestCardSetFrame(SutekhTest):
         # Carry on with the test
         sConfigFile = self._create_tmp_file()
         oConfig = ConfigFile(sConfigFile)
+        # Don't try and create a path in the user's home dir
+        sImagesDir = tempfile.mkdtemp(suffix='dir', prefix='sutekhtests')
+        oConfig.set_plugin_key('card image path', sImagesDir)
         oWin = MultiPaneWindow()
         oWin.setup(oConfig)
         # Remove the unneeded panes
@@ -139,6 +143,12 @@ class TestCardSetFrame(SutekhTest):
         # Verify that trying to change the seleciton does nothing
         # set editable on and verify that we can change the numbers
         # rename card set, and verify that everything gets updated properly
+        # Clean up
+        oWin.destroy()
+        # Process pending gtk events so cleanup completes
+        while gtk.events_pending():
+            gtk.main_iteration()
+        os.rmdir(sImagesDir)
 
 if __name__ == "__main__":
     unittest.main()

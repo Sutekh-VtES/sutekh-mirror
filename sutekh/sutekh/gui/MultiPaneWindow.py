@@ -426,7 +426,13 @@ class MultiPaneWindow(gtk.Window):
 
     def action_quit(self, _oWidget):
         """Exit the app"""
-        gtk.main_quit()
+        # ensure we cleanup all signals (needed for tests)
+        for oFrame in self.dOpenFrames.keys():
+            oFrame.cleanup()
+        # Don't call gtk.main_quit when the main loop isn't running (true in
+        # the tests)
+        if gtk.main_level() > 0:
+            gtk.main_quit()
 
     def show_about_dialog(self, _oWidget):
         """Display the about dialog"""

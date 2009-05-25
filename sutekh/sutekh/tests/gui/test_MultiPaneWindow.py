@@ -10,6 +10,7 @@ from sutekh.tests.TestCore import SutekhTest
 from nose import SkipTest
 import gtk
 import unittest
+import tempfile, os
 from sutekh.core.SutekhObjects import PhysicalCardSet
 from sutekh.gui.MultiPaneWindow import MultiPaneWindow
 from sutekh.gui.ConfigFile import ConfigFile
@@ -33,6 +34,9 @@ class TestMultiPaneWindow(SutekhTest):
         # Carry on with the test
         sConfigFile = self._create_tmp_file()
         oConfig = ConfigFile(sConfigFile)
+        # Don't try and create a path in the user's home dir
+        sImagesDir = tempfile.mkdtemp(suffix='dir', prefix='sutekhtests')
+        oConfig.set_plugin_key('card image path', sImagesDir)
         oWin = MultiPaneWindow()
         oWin.setup(oConfig)
         # Check we have the correct panes in place
@@ -60,6 +64,12 @@ class TestMultiPaneWindow(SutekhTest):
         oWin.add_new_pcs_list(None)
         self.assertEqual(oWin.focussed_pane, None)
         self.assertNotEqual(oWin.find_pane_by_name('Card Set List'), None)
+        # Clean up
+        oWin.destroy()
+        # Process pending gtk events so cleanup completes
+        while gtk.events_pending():
+            gtk.main_iteration()
+        os.rmdir(sImagesDir)
 
 if __name__ == "__main__":
     unittest.main()
