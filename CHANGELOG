@@ -1,3 +1,8 @@
+=======
+25 May 2009
+ * Add VTES Rules reference to rulebook plugin.
+   - r1922, r1924
+
 17 May 2009
  * Merge fix from trunk:
    - r1914 Properly set date & time in zip file
