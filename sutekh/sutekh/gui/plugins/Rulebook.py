@@ -23,7 +23,7 @@ class RulebookConfigDialog(SutekhDialog):
 
     POSSIBLE_FILES = [
             "Rulebook", "Imbued Rules", "Rulings", "V:EKN Tournament Rules",
-            "VTES FAQ",
+            "VTES FAQ", "V:TES Complete Rules Reference",
     ]
 
     WW_RULEBOOK_URLS = {
@@ -33,7 +33,9 @@ class RulebookConfigDialog(SutekhDialog):
         "Rulings": "http://www.white-wolf.com/vtes/index.php?line=rulings",
         "V:EKN Tournament Rules":
            "http://www.white-wolf.com/vtes/index.php?line=veknRules",
-        "VTES FAQ" : "http://www.thelasombra.com/vtes_faq.htm",
+        "VTES FAQ": "http://www.thelasombra.com/vtes_faq.htm",
+        "V:TES Complete Rules Reference":
+           "http://www.white-wolf.com/vtes/?line=outline",
     }
 
     def __init__(self, oParent, bFirstTime=False):
@@ -105,6 +107,7 @@ class RulebookPlugin(CardListPlugin):
         "Rulings": "rulings.html",
         "V:EKN Tournament Rules": "tournament_rules.html",
         "VTES FAQ" : "faq.html",
+        "V:TES Complete Rules Reference": "rules_reference.html",
     }
 
     # pylint: disable-msg=W0142
@@ -283,7 +286,8 @@ class RulebookPlugin(CardListPlugin):
 
         # in rulings, remove everything between header and first
         # end of first style tag
-        if sName in ("Rulings", "Imbued Rules", "V:EKN Tournament Rules"):
+        if sName in ("Rulings", "Imbued Rules", "V:EKN Tournament Rules",
+            "V:TES Complete Rules Reference"):
             oHdrToStyle = re.compile(r"</head>.*?</style>",
                 re.MULTILINE | re.DOTALL)
             sData = oHdrToStyle.sub("</head>", sData, 1)
