@@ -65,8 +65,6 @@ class TestCardSetFrame(SutekhTest):
         oPhysCardSet = PhysicalCardSet(name='My Collection')
         oPCS2 = PhysicalCardSet(name='Test Set 1',
                 parent=oPhysCardSet)
-        PhysicalCardSet(name='Test Set 2',
-                parent=oPhysCardSet)
         # Add some cards
         aCards = [('AK-47', None), ('Bronwen', 'SW'), ('Cesewayo', None),
                 ('Anna "Dictatrix11" Suljic', 'NoR'), ('Ablative Skin',
@@ -136,12 +134,25 @@ class TestCardSetFrame(SutekhTest):
         self.assertEqual(len(oPCS2.cards), 2)
         oNewFrame.view.del_selection()
         self.assertEqual(len(oPCS2.cards), 0)
+        oNewFrame.view.do_paste()
+        self.assertEqual(len(oPCS2.cards), 2)
         # Select card from My Collection and paste it into the card set
-        # Check results
-        # Check results
+        oFrame = oWin.find_pane_by_name('My Collection')
         # set editable off
-        # Verify that trying to change the seleciton does nothing
+        oNewFrame.view.toggle_editable(False)
+        # Verify that trying to paste the selection does nothing
+        self._select_cards(oFrame, [(u'AK-47', None),
+                ('Ablative Skin', 'Sabbat'), ('Alexandra', 'Camarilla Edition')])
+        oFrame.view.copy_selection()
+        oNewFrame.view.do_paste()
+        self.assertEqual(len(oPCS2.cards), 2)
         # set editable on and verify that we can change the numbers
+        oNewFrame.view.toggle_editable(True)
+        oNewFrame.view.do_paste()
+        # We should get 5 copies of Alexandra from My Collection
+        self.assertEqual(len(oPCS2.cards), 9)
+        self.assertEqual(len([x for x in oPCS2.cards if
+            IPhysicalCard(x).abstractCard.name == 'Alexandra']), 5)
         # rename card set, and verify that everything gets updated properly
         # Clean up
         oWin.destroy()
