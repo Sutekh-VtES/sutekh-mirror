@@ -24,6 +24,11 @@ ODD_BACKS = [None, THIRD_ED, JYHAD]
 CRYPT_TYPES = ['Vampire', 'Imbued']
 BANNED_FILTER = CardTextFilter('Added to the V:EKN banned list')
 
+UNSLEEVED = "<span foreground='green'>%s may be played unsleeved</span>\n"
+SLEEVED = "<span foreground='orange'>%s should be sleeved</span>\n"
+SPECIAL = ['Banned Cards', 'Multirole', 'Mixed Card Backs']
+
+
 
 # utility functions
 def _percentage(iNum, iTot, sDesc):
@@ -338,10 +343,9 @@ class AnalyzeCardList(CardListPlugin):
         aAllPhysCards = [IPhysicalCard(x) for x in
                 self.model.get_card_iterator(None)]
         aAllCards = _get_abstract_cards(aAllPhysCards)
-        aSpecial = ['Banned Cards', 'Multirole', 'Mixed Card Backs']
 
         for sCardType in dConstruct:
-            if sCardType not in aSpecial:
+            if sCardType not in SPECIAL:
                 oFilter = CardTypeFilter(sCardType)
                 dCardLists[sCardType] = _get_abstract_cards(
                         self.model.get_card_iterator(oFilter))
@@ -356,10 +360,9 @@ class AnalyzeCardList(CardListPlugin):
                         self.model.get_card_iterator(oFilter))
                 self.dTypeNumbers[sCardType] = len(dCardLists[sCardType])
             elif sCardType == 'Mixed Card Backs':
-                if _check_same(aAllPhysCards):
-                    # Not mixed, so we skip
-                    self.dTypeNumbers[sCardType] = 0
-                else:
+                # Assume not mixed, so we skip
+                self.dTypeNumbers[sCardType] = 0
+                if not _check_same(aAllPhysCards):
                     self.dTypeNumbers[sCardType] = len(aAllPhysCards)
                 dCardLists[sCardType] = aAllPhysCards
 
@@ -387,9 +390,9 @@ class AnalyzeCardList(CardListPlugin):
 
         # overly clever? crypt cards first, then alphabetical, then specials
         aOrderToList = CRYPT_TYPES + [x for x in sorted(self.dTypeNumbers)
-                if (x not in CRYPT_TYPES and x not in aSpecial)] + aSpecial
+                if (x not in CRYPT_TYPES and x not in SPECIAL)] + SPECIAL
         for sCardType in aOrderToList:
-            if self.dTypeNumbers[sCardType] > 0:
+            if self.dTypeNumbers[sCardType]:
                 fProcess = dConstruct[sCardType]
                 oNotebook.append_page(_wrap(fProcess(dCardLists[sCardType])),
                         gtk.Label(sCardType))
@@ -885,10 +888,6 @@ class AnalyzeCardList(CardListPlugin):
         aCrypt, aLib = _split_into_crypt_lib(aPhysCards)
         dCrypt = _get_back_counts(aCrypt)
         dLib = _get_back_counts(aLib)
-        sUnsleeved = "<span foreground='green'>%s may be played unsleeved" \
-                "</span>\n"
-        sSleeved = "<span foreground='orange'>%s should be sleeved" \
-                "</span>\n"
         sText = "\t\t<b>Mixed Card Backs :</b>\n\n"
         if dCrypt.has_key(None) and dLib.has_key(None):
             sText += "Both library and crypt have cards with unspecified" \
@@ -903,7 +902,7 @@ class AnalyzeCardList(CardListPlugin):
         sText += "\t<b>Crypt</b>\n\n"
         if len(dCrypt) == 1 and not dCrypt.has_key(None):
             sText += "All crypt cards have identical backs\n" + \
-                    sUnsleeved % "Crypt"
+                    UNSLEEVED % "Crypt"
         elif dCrypt.has_key(None):
             sText += "Crypt has cards from unspecified expansions." \
                     " Ignoring the crypt\n"
@@ -911,8 +910,7 @@ class AnalyzeCardList(CardListPlugin):
             # Crypt checks
             # < 20% of known cards have a single back
             bOK = True
-            iTot = sum([dCrypt[x] for x in dCrypt])
-            aPer = [float(dCrypt[x])/float(iTot) for x in dCrypt]
+            aPer = [float(dCrypt[x])/float(self.iCryptSize) for x in dCrypt]
             if min(aPer) < 0.2:
                 sText += "Group of cards with the same back that's smaller" \
                         " than 20% of the crypt.\n"
@@ -937,14 +935,14 @@ class AnalyzeCardList(CardListPlugin):
                     break
             if bOK:
                 sText += "Mixed backs, but seems sufficiently mixed.\n" \
-                        + sUnsleeved % "Crypt"
+                        + UNSLEEVED % "Crypt"
             else:
-                sText += sSleeved % "Crypt"
+                sText += SLEEVED % "Crypt"
 
         sText += "\n\t<b>Library</b>\n\n"
         if len(dLib) == 1 and not dLib.has_key(None):
             sText += "All Library cards have identicial backs\n" + \
-                    sUnsleeved % "Library"
+                    UNSLEEVED % "Library"
         elif dLib.has_key(None):
             sText += "Library has cards from unspecified expansions." \
                     " Ignoring the library.\n"
@@ -952,11 +950,10 @@ class AnalyzeCardList(CardListPlugin):
             bOK = True
             # Library checks
             # < 20% of known cards have a single back
-            iTot = sum([dLib[x] for x in dLib])
-            aPer = [float(dLib[x])/float(iTot) for x in dLib]
+            aPer = [float(dLib[x])/float(self.iNumberLibrary) for x in dLib]
             if min(aPer) < 0.2:
                 sText += "Group of cards with the same back that's smaller" \
-                        " than 20% of the library.\n" + sSleeved % "Library"
+                        " than 20% of the library.\n" + SLEEVED % "Library"
                 bOK = False
             dLibByExp = {}
             for oExp in dLib:
@@ -989,9 +986,9 @@ class AnalyzeCardList(CardListPlugin):
                     sText += "\t" + ", ".join(aNames) + "\n"
             if bOK:
                 sText += "Mixed backs, but seems sufficiently mixed.\n" \
-                        + sUnsleeved % "Library"
+                        + UNSLEEVED % "Library"
             else:
-                sText += sSleeved % "Library"
+                sText += SLEEVED % "Library"
 
         return sText
 
