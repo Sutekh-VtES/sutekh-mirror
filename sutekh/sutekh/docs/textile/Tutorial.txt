@@ -114,6 +114,10 @@ must be unique. You can specify that a card set has _No Parent_, in which case
 it will be a stand-alone card set, or you can select any existing card set to
 be its parent, in which case the new set will be a subset of that card set.
 
+For each card set, you can add the author information, a description and
+annotations about the card set. Both the description and annotations entries
+are free form text entries, and can be formatted as desired.
+
 h3. Renaming a card set.
 
 You can rename a card set using the *Edit Card Set Properties* option in the

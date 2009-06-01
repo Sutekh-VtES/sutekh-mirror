@@ -340,7 +340,7 @@ h3(#card_set_list_actions). Actions
 The following actions are available:
 
 * _Create New Card Set_: Create a new card set.
-* _Edit Card Set Properties_: Change the card set name, author and comment,
+* _Edit Card Set Properties_: Change the card set name, author and description,
 change the parent of the card set, or add annotations to the card set.
 * _Mark/Unmark Card Set as In Use_: Toggle whether the card set is _in use_ or
 _not in use_.
@@ -377,7 +377,7 @@ h3(#cardsets_actions). Actions
 
 The Actions menu allows the following actions:
 
-* _Edit Card Set Properties_: Change the card set name, author and comment,
+* _Edit Card Set Properties_: Change the card set name, author and description,
 change the parent of the card set, or add annotations to the card set.
 * _Save Card Set to File_: Save the card set to Sutekh's XML format.
 * _Export Card Set_: Export the card set to other file formats. The currently
