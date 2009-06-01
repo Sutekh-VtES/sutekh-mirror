@@ -13,7 +13,7 @@ from sutekh.core.SutekhObjects import PhysicalCardSet
 from sutekh.io.PhysicalCardSetWriter import PhysicalCardSetWriter
 import unittest
 
-EXPECTED = '<physicalcardset author="A test author" ' \
+EXPECTED_1 = '<physicalcardset author="A test author" ' \
         'name="Test Set 1" '\
         'sutekh_xml_version="1.3">\n' \
         '  <comment>A test comment</comment>\n' \
@@ -29,6 +29,25 @@ EXPECTED = '<physicalcardset author="A test author" ' \
         '  <card count="1" expansion="None Specified" id="14"' \
         ' name="Abombwe" />\n' \
         '</physicalcardset>'
+
+EXPECTED_2 = '<physicalcardset author="A test author" ' \
+        'name="Test Set 2" '\
+        'sutekh_xml_version="1.3">\n' \
+        '  <comment>A formatted test comment\n' \
+        'A second line\n' \
+        'A third line</comment>\n' \
+        '  <annotations>Some Annotations</annotations>\n' \
+        '  <card count="1" expansion="Jyhad" id="1" name=".44 Magnum" />\n' \
+        '  <card count="1" expansion="Lords of the Night"' \
+        ' id="2" name="AK-47" />\n' \
+        '  <card count="1" expansion="Third Edition" id="8"' \
+        ' name="Abbot" />\n' \
+        '  <card count="1" expansion="Legacy of Blood" id="14"' \
+        ' name="Abombwe" />\n ' \
+        ' <card count="1" expansion="Promo-20051001" id="19"' \
+        ' name="Alan Sovereign (Advanced)" />\n' \
+        '</physicalcardset>'
+
 
 class PhysicalCardSetWriterTests(SutekhTest):
     """class for the Physical Card Set writer tests"""
@@ -57,8 +76,8 @@ class PhysicalCardSetWriterTests(SutekhTest):
             oWriter.gen_xml_string(CARD_SET_NAMES[0]))
         # The writer uses database order - this is not
         # the same across databases, hence the nature of the checks below
-        self.assertEqual(sWriterXML, EXPECTED)
-        self.assertEqual(len(sWriterXML), len(EXPECTED))
+        self.assertEqual(sWriterXML, EXPECTED_1)
+        self.assertEqual(len(sWriterXML), len(EXPECTED_1))
 
         sTempFileName =  self._create_tmp_file()
         fOut = open(sTempFileName, 'w')
@@ -68,8 +87,25 @@ class PhysicalCardSetWriterTests(SutekhTest):
         fIn = open(sTempFileName, 'rU')
         sData = fIn.read()
         self.assertEqual(sData, sWriterXML)
-        self.assertEqual(len(sData), len(EXPECTED))
-        self.assertEqual(sorted(sData), sorted(EXPECTED))
+        self.assertEqual(len(sData), len(EXPECTED_1))
+        self.assertEqual(sorted(sData), sorted(EXPECTED_1))
+
+        oPhysCardSet2 = PhysicalCardSet(name=CARD_SET_NAMES[1])
+        oPhysCardSet2.author = 'A test author'
+        oPhysCardSet2.comment = 'A formatted test comment\nA second line\n' \
+                'A third line'
+        oPhysCardSet2.annotations = 'Some Annotations'
+
+        for iLoop in range(5,10):
+            oPhysCardSet2.addPhysicalCard(aAddedPhysCards[iLoop].id)
+            oPhysCardSet2.syncUpdate()
+
+        sWriterXML = oWriter.gen_xml_string(oPhysCardSet2.name)
+        # The writer uses database order - this is not
+        # the same across databases, hence the nature of the checks below
+        self.assertEqual(len(sWriterXML), len(EXPECTED_2))
+        self.assertEqual(sorted(sWriterXML), sorted(EXPECTED_2))
+
 
 if __name__ == "__main__":
     unittest.main()

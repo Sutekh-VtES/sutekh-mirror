@@ -53,6 +53,24 @@ class PhysicalCardSetParserTests(SutekhTest):
                 '<card count="1" expansion="Lords of the Night" id="2" ' \
                 'name="AK-47" />\n</physicalcardset>'
 
+        sExpected3 = '<physicalcardset author="A test author" ' \
+                'name="Test Set 3" '\
+                'sutekh_xml_version="1.3">' \
+                '<comment>A formatted test comment\n' \
+                'A second line</comment>' \
+                '<annotations>Some annotations</annotations>\n"' \
+                '<card count="1" expansion="None Specified" id="8" ' \
+                'name="Abbot" />\n' \
+                '<card count="2" expansion="None Specified" id="2" ' \
+                'name="AK-47" />\n' \
+                '<card count="1" expansion="None Specified" id="14" ' \
+                'name="Abombwe" />\n' \
+                '<card count="1" expansion = "Jyhad" id="1" ' \
+                'name=".44 Magnum" />\n' \
+                '<card count="1" expansion="Lords of the Night" id="2" ' \
+                'name="AK-47" />\n</physicalcardset>'
+
+
         # Check input
 
         oParser = PhysicalCardSetParser()
@@ -67,8 +85,11 @@ class PhysicalCardSetParserTests(SutekhTest):
         oParser.parse(fIn)
         fIn.close()
 
+        oParser.parse_string(sExpected3)
+
         oPhysCardSet1 = IPhysicalCardSet(CARD_SET_NAMES[0])
         oPhysCardSet2 = IPhysicalCardSet(CARD_SET_NAMES[1])
+        oPhysCardSet3 = IPhysicalCardSet(CARD_SET_NAMES[2])
 
         self.assertEqual(len(oPhysCardSet1.cards), 5)
         self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
@@ -77,13 +98,13 @@ class PhysicalCardSetParserTests(SutekhTest):
             physicalCardID = aAddedPhysCards[7].id).count(), 0)
         self.assertEqual(len(oPhysCardSet2.cards), 6)
         self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
-            physicalCardID = aAddedPhysCards[4].id).count(), 2)
+            physicalCardID = aAddedPhysCards[4].id).count(), 3)
         self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
             physicalCardID = aAddedPhysCards[0].id).count(), 1)
         self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
-            physicalCardID = aAddedPhysCards[1].id).count(), 3)
+            physicalCardID = aAddedPhysCards[1].id).count(), 5)
         self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
-            physicalCardID = aAddedPhysCards[6].id).count(), 1)
+            physicalCardID = aAddedPhysCards[6].id).count(), 2)
 
         PhysicalCardSet.delete(oPhysCardSet2.id)
         oFile = PhysicalCardSetXmlFile()
@@ -100,6 +121,13 @@ class PhysicalCardSetParserTests(SutekhTest):
         oFile.read()
         oPhysCardSet2 = IPhysicalCardSet("Test Set 2")
         self.assertEqual(len(oPhysCardSet2.cards), 6)
+
+        self.assertEqual(oPhysCardSet2.annotations, None)
+        self.assertEqual(oPhysCardSet3.annotations, 'Some annotations')
+
+        self.assertEqual(oPhysCardSet2.comment, 'A test comment')
+        self.assertEqual(oPhysCardSet3.comment, 'A formatted test comment\n'
+                'A second line')
 
 
 if __name__ == "__main__":
