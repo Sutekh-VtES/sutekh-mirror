@@ -8,8 +8,8 @@
 """Write physical cards from a PhysicalCardSet
 
    Save to an XML file which looks like:
-   <physicalcardset sutekh_xml_version='1.1' name='SetName' author='Author'
-         comment='Comment'>
+   <physicalcardset sutekh_xml_version='1.3' name='SetName' author='Author'>
+     <comment>Deck Description</comment>
      <annotations> Various annotations
      More annotations
      </annotations>
@@ -40,7 +40,7 @@ class PhysicalCardSetWriter(object):
        We generate an ElementTree representation of the Card Set, which
        can then easily be converted to an appropriate XML representation.
        """
-    sMyVersion = "1.2"
+    sMyVersion = "1.3"
 
     def make_tree(self, sPhysicalCardSetName):
         """Convert the card set sPhysicalCardSetName to an ElementTree."""
@@ -55,8 +55,9 @@ class PhysicalCardSetWriter(object):
                     sPhysicalCardSetName)
 
         oRoot = Element('physicalcardset', sutekh_xml_version=self.sMyVersion,
-                name=sPhysicalCardSetName, author=oPCS.author,
-                comment=oPCS.comment)
+                name=sPhysicalCardSetName, author=oPCS.author)
+        oCommentNode = SubElement(oRoot, 'comment')
+        oCommentNode.text = oPCS.comment
         oAnnotationNode = SubElement(oRoot, 'annotations')
         oAnnotationNode.text = oPCS.annotations
         if oPCS.parent:

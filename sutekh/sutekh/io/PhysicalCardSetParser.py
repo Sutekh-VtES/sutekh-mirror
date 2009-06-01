@@ -7,8 +7,11 @@
 
 """Read physical cards from an XML file which looks like:
 
-   <physicalcardset sutekh_xml_version='1.2' name='SetName' author='Author'
-      comment='Comment' parent='Parent PCS name'>
+   <physicalcardset sutekh_xml_version='1.3' name='SetName' author='Author'
+      parent='Parent PCS name'>
+     <comment>
+     Deck Description
+     </comment>
      <annotations>
      Annotations
      </annotations>
@@ -40,7 +43,7 @@ class PhysicalCardSetParser(object):
        cards.
        """
     def __init__(self):
-        self.aSupportedVersions = ['1.2', '1.1', '1.0']
+        self.aSupportedVersions = ['1.3', '1.2', '1.1', '1.0']
         self.oCS = CachedCardSetHolder()
         self.oTree = None
 
@@ -54,21 +57,35 @@ class PhysicalCardSetParser(object):
             raise RuntimeError("Unrecognised XML File version")
         self.oCS.name = oRoot.attrib['name']
         self.oCS.author = oRoot.attrib['author']
-        self.oCS.comment = oRoot.attrib['comment']
         self.oCS.inuse = False
         # pylint: disable-msg=W0704
-        # exception does enough for us
+        # exceptions does enough for us
+        try:
+            self.oCS.comment = oRoot.attrib['comment']
+        except KeyError:
+            # Default value for comment is the right thing here
+            pass
         try:
             if oRoot.attrib['inuse'] == 'Yes':
                 self.oCS.inuse = True
         except KeyError:
             pass
+        # pylint: enable-msg=W0704
+
         if oRoot.attrib.has_key('parent'):
             self.oCS.parent = oRoot.attrib['parent']
 
-        # pylint: enable-msg=W0704
         for oElem in oRoot:
+            if oElem.tag == 'comment':
+                if self.oCS.comment:
+                    # We already encontered a comment, so error out
+                    raise RuntimeError("Format error. Multiple"
+                            " comment values encountered.")
+                self.oCS.comment = oElem.text
             if oElem.tag == 'annotations':
+                if self.oCS.annotations:
+                    raise RuntimeError("Format error. Multiple"
+                            " annotation values encountered.")
                 self.oCS.annotations = oElem.text
             elif oElem.tag == 'card':
                 iCount = int(oElem.attrib['count'], 10)

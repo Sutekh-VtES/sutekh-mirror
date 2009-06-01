@@ -39,8 +39,9 @@ class PhysicalCardSetParserTests(SutekhTest):
                 'name="Abombwe" /></physicalcardset>'
 
         sExpected2 = '<physicalcardset author="A test author" ' \
-                'comment="A test comment" name="Test Set 2" '\
-                'sutekh_xml_version="1.2"><annotations />\n"' \
+                'name="Test Set 2" '\
+                'sutekh_xml_version="1.3"><comment>A test comment</comment>' \
+                '<annotations />\n"' \
                 '<card count="1" expansion="None Specified" id="8" ' \
                 'name="Abbot" />\n' \
                 '<card count="2" expansion="None Specified" id="2" ' \

@@ -14,8 +14,9 @@ from sutekh.io.PhysicalCardSetWriter import PhysicalCardSetWriter
 import unittest
 
 EXPECTED = '<physicalcardset author="A test author" ' \
-        'comment="A test comment" name="Test Set 1" '\
-        'sutekh_xml_version="1.2">\n' \
+        'name="Test Set 1" '\
+        'sutekh_xml_version="1.3">\n' \
+        '  <comment>A test comment</comment>\n' \
         '  <annotations />\n' \
         '  <card count="1" expansion="None Specified" id="1"' \
         ' name=".44 Magnum" />\n' \

@@ -1,3 +1,7 @@
+01 Jun 2009
+ * Change PhysicalCardSet XML file to use an element for the deck description.
+   This preserves formatting, unlike XML attributes.
+
 25 May 2009
  * Add VTES Rules reference to rulebook plugin.
  * Ensure proper cleanup in the new gui tests. Fixes some interactions with
