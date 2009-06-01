@@ -96,7 +96,7 @@ class PhysicalCardSetWriterTests(SutekhTest):
                 'A third line'
         oPhysCardSet2.annotations = 'Some Annotations'
 
-        for iLoop in range(5,10):
+        for iLoop in range(5, 10):
             oPhysCardSet2.addPhysicalCard(aAddedPhysCards[iLoop].id)
             oPhysCardSet2.syncUpdate()
 
