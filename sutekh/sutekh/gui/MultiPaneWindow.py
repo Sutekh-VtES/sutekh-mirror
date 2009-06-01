@@ -427,7 +427,7 @@ class MultiPaneWindow(gtk.Window):
     def action_quit(self, _oWidget):
         """Exit the app"""
         # ensure we cleanup all signals (needed for tests)
-        for oFrame in self.dOpenFrames.keys():
+        for oFrame in self.dOpenFrames:
             oFrame.cleanup()
         # Don't call gtk.main_quit when the main loop isn't running (true in
         # the tests)

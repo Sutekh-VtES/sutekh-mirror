@@ -113,7 +113,7 @@ class CardDrawSimPlugin(CardListPlugin):
     """Displays the probabilities for drawing cards from the current
        selection."""
     # pylint: disable-msg=R0902
-    # we use a lot of attributes to parse the data around
+    # we use a lot of attributes to pass the data around
     dTableVersions = {PhysicalCardSet : [4, 5, 6]}
     aModelsSupported = [PhysicalCardSet]
 

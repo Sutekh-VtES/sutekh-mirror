@@ -23,13 +23,18 @@ from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 from sutekh.gui.PluginManager import CardListPlugin
 
 class ImportExportBase(SutekhDialog):
-    # pylint: disable-msg=R0904
+    # pylint: disable-msg=R0904, R0902
     # R0904 - gtk Widget, so has many public methods
+    # R0902 - we use a lot of attributes to pass the data around
     """Base class for import and export dialogs."""
 
     _sCachedUsername = None
     _sCachedPassword = None
 
+
+    # pylint: disable-msg=W0201
+    # we define attributes outside __init__, but it's OK because of plugin
+    # structure
     def _setup_vbox(self, sTitlePhrase, sSourcePhrase, aDeckWidgets,
                     aInvWidgets):
         """Set up Secret Library configuration dialog."""
@@ -46,6 +51,7 @@ class ImportExportBase(SutekhDialog):
 
         # Deck / Inventory Selector
 
+        self._sNewName = ""
         self._oAsDeckButton = gtk.RadioButton(None, "Deck")
         self._oAsInvButton = gtk.RadioButton(self._oAsDeckButton, "Inventory")
         self._oAsDeckButton.connect("toggled", self._deck_inv_changed)
@@ -90,6 +96,8 @@ class ImportExportBase(SutekhDialog):
 
         self.vbox.pack_start(gtk.Label("Password"), False, False)
         self.vbox.pack_start(self._oPasswordEntry)
+
+    # pylint: enable-msg=W0201
 
     def _deck_inv_changed(self, _oWidget):
         """Handle a change in whether we're importing/exporting to/from a
@@ -302,9 +310,9 @@ class SecretLibrary(CardListPlugin):
            Return True if no error is found, False otherwise. Pops up an
            error dialog to the user if an error is found.
            """
-        oM = self.SL_ERROR_RE.match(sLine)
-        if oM:
-            if int(oM.group('code')) != 0:
+        oMatch = self.SL_ERROR_RE.match(sLine)
+        if oMatch:
+            if int(oMatch.group('code')) != 0:
                 do_complaint_error(
                     "The Secret Library site returned the error:\n"
                     + sLine.strip()
@@ -373,7 +381,8 @@ class SecretLibrary(CardListPlugin):
         """Export a card set to the Secret Library as an inventory."""
         oCardSet = self.get_card_set()
 
-        dData['inventory_crypt'], dData['inventory_library'] = self._cs_as_inventory()
+        dData['inventory_crypt'], dData['inventory_library'] = \
+                self._cs_as_inventory()
 
         sData = urllib.urlencode(dData)
 

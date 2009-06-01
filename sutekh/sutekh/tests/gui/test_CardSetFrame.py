@@ -19,6 +19,9 @@ from sutekh.gui.ConfigFile import ConfigFile
 class TestCardSetFrame(SutekhTest):
     """Class for the MultiPanewindow test cases"""
 
+
+    # pylint: disable-msg=R0201
+    # I prefer to have these as methods
     def _gen_card(self, sName, sExp):
         """Create a card given the name and Expansion"""
         if sExp:
@@ -30,7 +33,7 @@ class TestCardSetFrame(SutekhTest):
 
     def _select_cards(self, oFrame, aCards):
         """Find cards by name and expansion in the frame and select them"""
-        oModel = oFrame._oController.model
+        oModel = oFrame.view.get_model()
         oSelection = oFrame.view.get_selection()
         oFrame.view.expand_all() # needed so we can select deeper entries
         oSelection.unselect_all()
@@ -48,20 +51,28 @@ class TestCardSetFrame(SutekhTest):
                     if sExp == oModel.sUnknownExpansion:
                         sExp = None
                     if ((sName, sExp) in aCards):
-                        oPath=oModel.get_path(oExpIter)
+                        oPath = oModel.get_path(oExpIter)
                         oSelection.select_path(oPath)
                     oExpIter = oModel.iter_next(oExpIter)
                 oCardIter = oModel.iter_next(oCardIter)
             oIter = oModel.iter_next(oIter)
 
+    # pylint: enable-msg=R0201
+
     def test_basic(self):
         """Set of simple tests of the CardSetFrame"""
+        # pylint: disable-msg=R0915, R0914
+        # R0915, R0914: Want a long, sequential test case to minimise
+        # repeated setups, so it has lots of lines + variables
+
         # Skip if we're not under a windowing system
         # We need to do this before trying to run MultiPaneWindow's __init__,
         # which will fail if not under a windowing system
         if gtk.gdk.screen_get_default() is None:
             raise SkipTest
         # Add card sets needed for the tests
+        # pylint: disable-msg=E1101
+        # PyProtocols confuses pylint
         oPhysCardSet = PhysicalCardSet(name='My Collection')
         oPCS2 = PhysicalCardSet(name='Test Set 1',
                 parent=oPhysCardSet)
@@ -142,7 +153,8 @@ class TestCardSetFrame(SutekhTest):
         oNewFrame.view.toggle_editable(False)
         # Verify that trying to paste the selection does nothing
         self._select_cards(oFrame, [(u'AK-47', None),
-                ('Ablative Skin', 'Sabbat'), ('Alexandra', 'Camarilla Edition')])
+                ('Ablative Skin', 'Sabbat'),
+                ('Alexandra', 'Camarilla Edition')])
         oFrame.view.copy_selection()
         oNewFrame.view.do_paste()
         self.assertEqual(len(oPCS2.cards), 2)
