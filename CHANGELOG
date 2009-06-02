@@ -1,4 +1,7 @@
-=======
+02 Jun 2009
+ * Merge PhysicalCardSet XML changes to saving deck description
+   - r1927-r1930, r1932
+
 25 May 2009
  * Add VTES Rules reference to rulebook plugin.
    - r1922, r1924

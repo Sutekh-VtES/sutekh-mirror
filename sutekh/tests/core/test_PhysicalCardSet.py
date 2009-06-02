@@ -21,7 +21,7 @@ aCardExpansions = [('.44 magnum', 'Jyhad'),
         ('abombwe', 'Legacy of Blood'),
         ('alan sovereign (advanced)', 'Promo-20051001'),
         ('the path of blood', 'LotN')]
-aCardSetNames = ['Test Set 1', 'Test Set 2']
+aCardSetNames = ['Test Set 1', 'Test Set 2', 'Test Set 3']
 
 def get_phys_cards():
     """Get Physical Cards for the given lists"""
