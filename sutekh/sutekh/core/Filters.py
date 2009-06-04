@@ -669,7 +669,7 @@ class MultiKeywordFilter(MultiFilter):
     # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
-        return [x.name for x in Keyword.select().orderBy('keyword')]
+        return [x.keyword for x in Keyword.select().orderBy('keyword')]
 
 class GroupFilter(DirectFilter):
     """Filter on Group"""
