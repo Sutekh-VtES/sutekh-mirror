@@ -176,6 +176,7 @@ class Expansions(AbbreviationLookup):
         'Blood Shadowed Court' : ['BSC'],
         'Camarilla Edition' : ['CE'],
         'Dark Sovereigns' : ['DS'],
+        'Ebony Kingdom' : ['EK'],
         'Final Nights' : ['FN'],
         'Gehenna' : [],
         'Jyhad' : [],
@@ -221,7 +222,7 @@ class Expansions(AbbreviationLookup):
 class Rarities(AbbreviationLookup):
     """Common strings and abbrevations for the different card rarities."""
     dKeys = {
-        'Common' : ['C','C1','C2','C3'],
+        'Common' : ['C','C1','C2','C3',u'C\xbd'], # EK uses C1/2 for Aye & Orun
         'Uncommon' : ['U','U1','U2','U3','U5'],
         'Rare' : ['R','R1','R2','R3'],
         'Vampire' : ['V','V1','V2','V3'],

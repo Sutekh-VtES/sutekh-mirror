@@ -1,3 +1,7 @@
+04 Jun 2009
+ * Add Abbrevation entry of Ebony Kingdom
+ * Add new common abbrevation for Aye and Orun
+
 01 Jun 2009
  * Change PhysicalCardSet XML file to use an element for the deck description.
    This preserves formatting, unlike XML attributes.
