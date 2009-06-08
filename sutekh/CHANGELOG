@@ -1,3 +1,9 @@
+08 Jun 2009
+ * Add PhysicalCard and AbstractCard to the model. Avoids bouncing through
+   the adapator in several places
+   - Ensure all access to the card name go through the abstractcard, so the
+     result is not tied to the model entry
+
 04 Jun 2009
  * Add Abbrevation entry of Ebony Kingdom
  * Add new common abbrevation for Aye and Orun

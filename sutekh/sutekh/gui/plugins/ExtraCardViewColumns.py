@@ -10,8 +10,7 @@ from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog
 from sutekh.gui.CellRendererIcons import CellRendererIcons, SHOW_TEXT_ONLY, \
         SHOW_ICONS_ONLY, SHOW_ICONS_AND_TEXT
-from sutekh.core.SutekhObjects import AbstractCard, PhysicalCard, \
-           PhysicalCardSet
+from sutekh.core.SutekhObjects import PhysicalCard, PhysicalCardSet
 from sqlobject import SQLObjectNotFound
 
 
@@ -71,7 +70,6 @@ class ExtraCardViewColumns(CardListPlugin):
                 self._get_data_capacity
         self._dSortDataFuncs['Cost'] = self._get_data_cost_sortkey
 
-        self._dCardCache = {} # Used for sorting
         self._iShowMode = SHOW_ICONS_AND_TEXT
         self._oFirstBut = None
     # pylint: enable-msg=W0142
@@ -83,15 +81,8 @@ class ExtraCardViewColumns(CardListPlugin):
         if self.model.iter_depth(oIter) == 1:
             # Only try and lookup things that look like they should be cards
             try:
-                sCardName = self.model.get_name_from_iter(oIter).lower()
-                # Cache lookups, so we don't hit the database so hard when
-                # sorting
-                if not self._dCardCache.has_key(sCardName):
-                    # pylint: disable-msg=E1101
-                    # pylint + AbstractCard method wierdness
-                    self._dCardCache[sCardName] = \
-                            AbstractCard.byCanonicalName(sCardName)
-                return self._dCardCache[sCardName]
+                oAbsCard = self.model.get_abstract_card_from_iter(oIter)
+                return oAbsCard
             except SQLObjectNotFound:
                 return None
         else:

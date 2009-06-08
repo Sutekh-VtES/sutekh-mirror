@@ -14,10 +14,9 @@ import gtk
 # pylint doesn't see resource_stream here, for some reason
 from pkg_resources import resource_stream, resource_exists
 # pylint: enable-msg=E0611
-from sqlobject import SQLObjectNotFound
 from sutekh.core.SutekhObjectCache import SutekhObjectCache
-from sutekh.core.SutekhObjects import AbstractCard, PhysicalCardSet, \
-        PhysicalCard, flush_cache
+from sutekh.core.SutekhObjects import PhysicalCardSet, flush_cache, \
+        PhysicalCard
 from sutekh.gui.BasicFrame import BasicFrame
 from sutekh.gui.PhysicalCardFrame import PhysicalCardFrame
 from sutekh.gui.CardTextFrame import CardTextFrame
@@ -358,16 +357,11 @@ class MultiPaneWindow(gtk.Window):
                     # Empty panes still need to be editable, though
                     oPane.view.check_editable()
 
-    def set_card_text(self, sCardName):
+    def set_card_text(self, oCard):
         """Update the card text frame to the currently selected card."""
-        # pylint: disable-msg=E1101, W0704
-        # E1101 - SQLObject confuse pylint
-        # W0704 - not doing anything is the right thing here
-        try:
-            oCard = AbstractCard.byCanonicalName(sCardName.lower())
+        if oCard:
+            # Skip if None
             self._oCardTextPane.view.set_card_text(oCard)
-        except SQLObjectNotFound:
-            pass
 
     def reset_menu(self):
         """Ensure menu state is correct."""

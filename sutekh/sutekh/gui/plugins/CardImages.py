@@ -290,8 +290,14 @@ class CardImageFrame(BasicFrame, CardListViewListener):
         self._oConfigFile.set_plugin_key('card image path', sNewPath)
         self.__bShowExpansions = self.__have_expansions()
 
-    def set_card_text(self, sCardName, sExpansionName=''):
+    def set_card_text(self, oPhysCard):
         """Set the image in response to a set card name event."""
+        if not oPhysCard:
+            return
+        sCardName = oPhysCard.abstractCard.name
+        sExpansionName = ''
+        if oPhysCard.expansion:
+            sExpansionName = oPhysCard.expansion.name
         if sCardName != self.__sCardName:
             self.__set_expansion_info(sCardName)
             self.__sCardName = sCardName

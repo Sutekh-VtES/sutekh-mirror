@@ -14,7 +14,7 @@ from sutekh.gui.CardSetView import CardSetView
 from sutekh.core.DBSignals import listen_row_destroy, listen_row_update, \
         send_changed_signal, disconnect_row_destroy, disconnect_row_update
 from sutekh.core.SutekhObjects import IPhysicalCardSet, PhysicalCardSet, \
-        AbstractCard, PhysicalCard, MapPhysicalCardToPhysicalCardSet, \
+        IAbstractCard, PhysicalCard, MapPhysicalCardToPhysicalCardSet, \
         IExpansion, IPhysicalCard
 from sutekh.core.CardSetUtilities import delete_physical_card_set
 
@@ -136,15 +136,15 @@ class CardSetController(object):
         self.model.bUseIcons = oWidget.active
         self.view.reload_keep_expanded()
 
-    def set_card_text(self, sCardName):
+    def set_card_text(self, oCard):
         """Set card text to reflect selected card."""
-        self._oMainWindow.set_card_text(sCardName)
+        self._oMainWindow.set_card_text(oCard)
 
-    def inc_card(self, sName, sExpansion, sCardSetName):
+    def inc_card(self, oPhysCard, sCardSetName):
         """Returns True if a card was successfully added, False otherwise."""
-        return self.add_card(sName, sExpansion, sCardSetName)
+        return self.add_card(oPhysCard, sCardSetName)
 
-    def dec_card(self, sName, sExpansion, sCardSetName):
+    def dec_card(self, oPhysCard, sCardSetName):
         """Returns True if a card was successfully removed, False otherwise."""
         # pylint: disable-msg=E1101
         # SQLObject methods confuse pylint
@@ -153,19 +153,22 @@ class CardSetController(object):
                 oThePCS = IPhysicalCardSet(sCardSetName)
             else:
                 oThePCS = self.__oPhysCardSet
-            oAbsCard = AbstractCard.byCanonicalName(sName.lower())
-
-            # find if there's a physical card of that name in the Set
-            if not sExpansion:
-                # Not expansion specified, so consider all physical cards
+            # find if the physical card given is in the set
+            # Can only happen when expansion is None, since that may be a
+            # top-level item or an expansion level item.
+            # This also means, when removing cards from via a top-level item,
+            # we will prefer removing cards without expansion information if
+            # they are present.
+            if not oPhysCard.expansion and \
+                    MapPhysicalCardToPhysicalCardSet.selectBy(
+                            physicalCardID=oPhysCard.id,
+                            physicalCardSetID=oThePCS.id).count() == 0:
+                # Given card is not in the card set, so consider all
+                # cards with the same name.
                 aPhysCards = list(PhysicalCard.selectBy(
-                    abstractCardID=oAbsCard.id))
+                    abstractCardID=oPhysCard.abstractCard.id))
             else:
-                if sExpansion == self.model.sUnknownExpansion:
-                    oExp = None
-                else:
-                    oExp = IExpansion(sExpansion)
-                aPhysCards = [IPhysicalCard((oAbsCard, oExp))]
+                aPhysCards = [oPhysCard]
         except SQLObjectNotFound:
             # Bail on error
             return False
@@ -186,7 +189,7 @@ class CardSetController(object):
         # Got here, so we failed to remove a card
         return False
 
-    def add_card(self, sName, sExpansion, sCardSetName):
+    def add_card(self, oPhysCard, sCardSetName):
         """Returns True if a card was successfully added, False otherwise."""
         # pylint: disable-msg=E1101
         # SQLObject methods confuse pylint
@@ -195,21 +198,14 @@ class CardSetController(object):
                 oThePCS = IPhysicalCardSet(sCardSetName)
             else:
                 oThePCS = self.__oPhysCardSet
-            oAbsCard = AbstractCard.byCanonicalName(sName.lower())
-
-            if not sExpansion or sExpansion == self.model.sUnknownExpansion:
-                oExp = None
-            else:
-                oExp = IExpansion(sExpansion)
-            oCard = IPhysicalCard((oAbsCard, oExp))
         except SQLObjectNotFound:
             # Any error means we bail
             return False
 
-        oThePCS.addPhysicalCard(oCard.id)
+        oThePCS.addPhysicalCard(oPhysCard.id)
         oThePCS.syncUpdate()
         # Signal to update the model
-        send_changed_signal(oThePCS, oCard, 1)
+        send_changed_signal(oThePCS, oPhysCard, 1)
         return True
 
     def edit_properties(self, _oMenuWidget):
@@ -240,6 +236,22 @@ class CardSetController(object):
                     self.view.sSetName):
                 oFrame.close_frame()
 
+    def _get_card(self, sCardName, sExpansionName):
+        """Convert card name & Expansion to PhsicalCard.
+
+           Help for add_paste_data."""
+        oExp = None
+        try:
+            if sExpansionName and sExpansionName != 'None' and \
+                    sExpansionName != self.model.sUnknownExpansion:
+                oExp = IExpansion(sExpansionName)
+            oAbsCard = IAbstractCard(sCardName)
+            oPhysCard = IPhysicalCard((oAbsCard, oExp))
+            return oPhysCard
+        except SQLObjectNotFound:
+            # Error, so bail
+            return None
+
     def add_paste_data(self, sSource, aCards):
         """Helper function for drag+drop and copy+paste.
 
@@ -252,63 +264,31 @@ class CardSetController(object):
             # Add the cards, Count Matters
             for iCount, sCardName, sExpansion in aCards:
                 # Use None to indicate this card set
+                oPhysCard = self._get_card(sCardName, sExpansion)
+                if not oPhysCard:
+                    # error, so skip this. (Warn user?)
+                    continue
                 if aSources[0] == "Phys":
-                    # Only ever add 1 when dragging from physiscal card list
-                    self.add_card(sCardName, sExpansion, None)
+                    # Only ever add 1 when dragging from physical card list
+                    self.add_card(oPhysCard, None)
                 else:
                     for _iLoop in range(iCount):
-                        self.add_card(sCardName, sExpansion, None)
+                        self.add_card(oPhysCard, None)
             return True
         else:
             return False
 
-    def del_selected_cards(self, dSelectedData):
-        """Helper function to delete the selected data."""
-        for sCardName in dSelectedData:
-            for sExpansion, iCount in dSelectedData[sCardName].iteritems():
-                for _iAttempt in range(iCount):
-                    # None as card set indicates this card set
-                    if sExpansion != 'None':
-                        self.dec_card(sCardName, sExpansion, None)
-                    else:
-                        self.dec_card(sCardName, None, None)
-
-    def set_selected_card_count(self, dSelectedData, iNewCnt):
+    def change_selected_card_count(self, dSelectedData):
         """Helper function to set the selected cards to the specified number"""
-        for sCardName in dSelectedData:
-            for (sExpansion, sCardSetName), iCardCount in \
-                    dSelectedData[sCardName].iteritems():
+        for oPhysCard in dSelectedData:
+            for sCardSetName, (iCardCount, iNewCnt) in \
+                    dSelectedData[oPhysCard].iteritems():
                 if iNewCnt < iCardCount:
                     # remove cards
                     for _iAttempt in range(iCardCount - iNewCnt):
                         # None as card set indicates this card set
-                        if sExpansion != 'None' and sExpansion != 'All':
-                            self.dec_card(sCardName, sExpansion, sCardSetName)
-                        else:
-                            self.dec_card(sCardName, None, sCardSetName)
+                        self.dec_card(oPhysCard, sCardSetName)
                 elif iNewCnt > iCardCount:
                     # add cards
                     for _iAttempt in range(iNewCnt - iCardCount):
-                        # None as card set indicates this card set
-                        if sExpansion != 'None' and sExpansion != 'All':
-                            self.inc_card(sCardName, sExpansion, sCardSetName)
-                        else:
-                            self.inc_card(sCardName, None, sCardSetName)
-
-    def alter_selected_card_count(self, dSelectedData, iChg):
-        """Helper function to inc/dec the count for the selected cards"""
-        for sCardName in dSelectedData:
-            for (sExpansion, sCardSetName) in dSelectedData[sCardName]:
-                # None as card set in inc_card/dec_Card indicates this card set
-                if iChg == -1:
-                    # remove cards
-                    if sExpansion != 'None' and sExpansion != 'All':
-                        self.dec_card(sCardName, sExpansion, sCardSetName)
-                    else:
-                        self.dec_card(sCardName, None, sCardSetName)
-                elif iChg == 1:
-                    # add cards
-                    if sExpansion != 'None' and sExpansion != 'All':
-                        self.inc_card(sCardName, sExpansion, sCardSetName)
-                    else:
-                        self.inc_card(sCardName, None, sCardSetName)
+                        self.inc_card(oPhysCard, sCardSetName)

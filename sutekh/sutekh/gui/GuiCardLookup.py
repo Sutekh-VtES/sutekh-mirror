@@ -39,7 +39,7 @@ class DummyController(object):
 
     filtertype = property(fget=lambda self: self.sFilterType)
 
-    def set_card_text(self, sCardName):
+    def set_card_text(self, _oCard):
         """Ignore card text updates."""
         pass
 

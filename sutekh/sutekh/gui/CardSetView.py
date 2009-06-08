@@ -179,41 +179,52 @@ class CardSetView(CardListView):
                 dSelectedData[sCardName][sExpansion] = iCount
         return dSelectedData
 
-    def process_edit_selection(self):
+    def _process_edit_selection(self, iSetNewCount=None, iChg=None):
         """Create a dictionary from the selection, suitable for the quick
            key based edits.
 
            Entries are of the form
-               sCardName : { (sExpansion1, sCardSet) : iCount1, ... }
+               oPhysCard : { sCardSetName : [iCount1, iNewCnt1] ... }
            In addition to adding information about card sets, this
            differs from process_selection in the way card level items
            are handled. Here, these are treated as selecting the expansion
            None, and ignoring other expansions.
+
+           Since this isn't going through the drag-n-drop code, we don't
+           need to create a string representation, so we can work with the
+           card objects directly.
+
            """
         oModel, oPathList = self._oSelection.get_selected_rows()
         dSelectedData = {}
+        iNewCount = 0
         for oPath in oPathList:
             sCardSet = None
-            sCardName, sExpansion, iCount, iDepth = \
-                    oModel.get_drag_info_from_path(oPath)
-            if not sCardName:
-                sCardName, sExpansion, sCardSet = \
-                        oModel.get_all_names_from_path(oPath)
-            dSelectedData.setdefault(sCardName, {})
+            oIter = oModel.get_iter(oPath)
+            oPhysCard = oModel.get_physical_card_from_iter(oIter)
+            iCount = oModel.get_card_count_from_iter(oIter)
+            if iChg:
+                iNewCount = max(0, iCount + iChg)
+            elif iSetNewCount:
+                iNewCount = iSetNewCount
+            _sCardName, _sExpansion, sCardSet = \
+                        oModel.get_all_names_from_iter(oIter)
+            dSelectedData.setdefault(oPhysCard, {})
+            iDepth = oModel.iter_depth(oIter)
             if iDepth == 1:
                 # this is treated as selecting all the entries of this card
                 # in this card set
                 # Remove anything already assigned to this
-                dSelectedData[sCardName].clear()
-                dSelectedData[sCardName][('All', None)] = iCount
+                dSelectedData[oPhysCard].clear()
+                dSelectedData[oPhysCard][None] = [iCount, iNewCount]
             else:
-                if (sExpansion, sCardSet) in dSelectedData[sCardName] or \
-                        ('All', None) in dSelectedData[sCardName]:
-                    # We already have this info
+                if sCardSet in dSelectedData[oPhysCard]:
+                    # We already have this info (for selections via multiple
+                    # groups, etc.)
                     continue
-                dSelectedData[sCardName][(sExpansion, sCardSet)] = iCount
+                dSelectedData[oPhysCard][sCardSet] = [iCount,
+                        iNewCount]
         return dSelectedData
-
 
     # pylint: disable-msg=R0913
     # elements required by function signature
@@ -247,18 +258,20 @@ class CardSetView(CardListView):
         if self._oModel.bEditable:
             bInc, _bDec = self._oModel.get_inc_dec_flags_from_path(oPath)
             if bInc:
-                sCardName, sExpansion, sCardSetName = \
+                oPhysCard = self._oModel.get_physical_card_from_path(oPath)
+                _sCardName, _sExpansion, sCardSetName = \
                         self._oModel.get_all_names_from_path(oPath)
-                self._oController.inc_card(sCardName, sExpansion, sCardSetName)
+                self._oController.inc_card(oPhysCard, sCardSetName)
 
     def dec_card(self, _oCell, oPath):
         """Called to decrement the count for a card"""
         if self._oModel.bEditable:
             _bInc, bDec = self._oModel.get_inc_dec_flags_from_path(oPath)
             if bDec:
-                sCardName, sExpansion, sCardSetName = \
+                oPhysCard = self._oModel.get_physical_card_from_path(oPath)
+                _sCardName, _sExpansion, sCardSetName = \
                         self._oModel.get_all_names_from_path(oPath)
-                self._oController.dec_card(sCardName, sExpansion, sCardSetName)
+                self._oController.dec_card(oPhysCard, sCardSetName)
 
     def key_press(self, _oWidget, oEvent):
         """Change the number if 1-9 is pressed and we're editable or if + or
@@ -267,18 +280,20 @@ class CardSetView(CardListView):
         if oEvent.keyval in NUM_KEYS:
             if self._oModel.bEditable:
                 iCnt = NUM_KEYS[oEvent.keyval]
-                dSelectedData = self.process_edit_selection()
-                self._oController.set_selected_card_count(dSelectedData, iCnt)
+                dSelectedData = self._process_edit_selection(iSetNewCount=iCnt)
+                self._oController.change_selected_card_count(dSelectedData)
             # if we're not editable, we still ignore this, so we avoid funny
             # search behaviour
             return True
         elif oEvent.keyval in PLUS_KEYS and self._oModel.bEditable:
-            dSelectedData = self.process_edit_selection()
-            self._oController.alter_selected_card_count(dSelectedData, 1)
+            # Special value to indicate we change the count
+            dSelectedData = self._process_edit_selection(iChg=+1)
+            self._oController.change_selected_card_count(dSelectedData)
             return True
         elif oEvent.keyval in MINUS_KEYS and self._oModel.bEditable:
-            dSelectedData = self.process_edit_selection()
-            self._oController.alter_selected_card_count(dSelectedData, -1)
+            # Special value to indicate we change the count
+            dSelectedData = self._process_edit_selection(iChg=-1)
+            self._oController.change_selected_card_count(dSelectedData)
             return True
         return False # propogate event
 
@@ -307,8 +322,8 @@ class CardSetView(CardListView):
     def del_selection(self):
         """try to delete all the cards in the current selection"""
         if self._oModel.bEditable:
-            dSelectedData = self.process_selection()
-            self._oController.del_selected_cards(dSelectedData)
+            dSelectedData = self._process_edit_selection(iSetNewCount=0)
+            self._oController.change_selected_card_count(dSelectedData)
 
     def do_paste(self):
         """Try and paste the current selection from the appliction clipboard"""

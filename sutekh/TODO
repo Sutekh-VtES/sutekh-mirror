@@ -13,10 +13,13 @@ For 0.8.0 cycle
 
  - Done
     + Remove/Relax limits in the database (Card set names, etc.)
+    + Add PhysicalCard and AbstractCard to the CardListModel columns.
+    - Parts of add more info to the database:
+          - Migrate burnoption to keyword.
+          - Parse artist info from the cardlist
 
  - Definite
     * Improve Filter Edit Dialog
-    * Add PhysicalCard and AbstractCard to the CardListModel columns.
     + Add more info to the database. At least some of
        + Additional keywords
           - Other card distinctions (trifle, location, loquipment, etc.)
@@ -24,10 +27,8 @@ For 0.8.0 cycle
               - "0 bleed", "1 bleed", "2 bleed", etc.
               - "0 strength", "1 strength", "X strength", etc.
               - "1 stealth", "1 intercept".
-          - Migrate burnoption to keyword.
        + Ally/Retainer life ?
           - Put base ally / retainer life into existing life column.
-       + Parse artist info from the cardlist
     + Standardise the reader/writer design for the io files.
        + Parser: .__init__(), .parse(fIn, oHolder)
        + Writer: .__init__(), .write(fOut, oHolder)

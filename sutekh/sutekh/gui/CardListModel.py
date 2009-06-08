@@ -13,18 +13,6 @@ from sutekh.core.Groupings import CardTypeGrouping
 from sutekh.core.SutekhObjects import IAbstractCard, PhysicalCard, \
         IPhysicalCard
 
-def norm_path(oPath):
-    """Transform string paths to tuple paths"""
-    # Some widgets give us a path string, others a tuple,
-    # to deal with tuples when moving between expansions and
-    # card names
-    if isinstance(oPath, str):
-        oNormPath = tuple([int(x) for x in oPath.split(':')])
-    else:
-        oNormPath = oPath
-    return oNormPath
-
-
 class CardListModelListener(object):
     """Listens to updates, i.e. .load(...), .alter_card_count(...),
        .add_new_card(..) calls, to CardListModels."""
@@ -63,11 +51,10 @@ class CardListModel(gtk.TreeStore):
         # STRING is the card name, INT is the card count
         super(CardListModel, self).__init__(str, int, int, bool, bool,
                 gobject.TYPE_PYOBJECT, gobject.TYPE_PYOBJECT,
-                gtk.gdk.Color, gtk.gdk.Color)
-        # name, count, parent count, showInc, showDec, text_list, icons
-        self._dName2Iter = {}
-        self._dNameExpansion2Iter = {}
-        self._dGroupName2Iter = {}
+                gtk.gdk.Color, gtk.gdk.Color,
+                gobject.TYPE_PYOBJECT, gobject.TYPE_PYOBJECT)
+        # name, count, parent count, showInc, showDec, text_list, icons,
+        #       color1, color2, AbstractCard, PhysicalCard
 
         self._cGroupBy = CardTypeGrouping # grouping class to use
         # base filter defines the card list
@@ -145,8 +132,9 @@ class CardListModel(gtk.TreeStore):
         aExpansions = []
         if not self.bExpansions:
             return aExpansions
-        for oExpansion in dExpanInfo:
-            aExpansions.append(self.get_expansion_name(oExpansion))
+        for oPhysCard in dExpanInfo:
+            aExpansions.append((oPhysCard,
+                self.get_expansion_name(oPhysCard.expansion)))
         return aExpansions
 
     def get_expansion_name(self, oExpansion):
@@ -172,9 +160,6 @@ class CardListModel(gtk.TreeStore):
         """Clear and reload the underlying store. For use after initialisation
            or when the filter or grouping changes."""
         self.clear()
-        self._dName2Iter = {}
-        self._dNameExpansion2Iter = {}
-        self._dGroupName2Iter = {}
 
         oCardIter = self.get_card_iterator(self.get_current_filter())
         fGetCard, _fGetCount, fGetExpanInfo, oGroupedIter, aAbsCards = \
@@ -183,6 +168,7 @@ class CardListModel(gtk.TreeStore):
         self.oEmptyIter = None
 
         # Iterate over groups
+        bEmpty = True
         for sGroup, oGroupIter in oGroupedIter:
             # Check for null group
             if sGroup is None:
@@ -190,50 +176,58 @@ class CardListModel(gtk.TreeStore):
 
             # Create Group Section
             oSectionIter = self.append(None)
-            self._dGroupName2Iter[sGroup] = oSectionIter
 
             # Fill in Cards
             for oItem in oGroupIter:
                 oCard = fGetCard(oItem)
                 oChildIter = self.append(oSectionIter)
+                # We need to lookup the card directly, since aExpansionInfo
+                # may not have the info we need
                 self.set(oChildIter,
-                    0, oCard.name,
-                    5, [],
-                    6, [],
+                    0,  oCard.name,
+                    5,  [],
+                    6,  [],
+                    9,  oCard,
+                    10, IPhysicalCard((oCard, None)),
                 )
                 aExpansionInfo = self.get_expansion_info(oCard,
                         fGetExpanInfo(oItem))
-                for sExpansion in aExpansionInfo:
+                for oPhysCard, sExpansion in aExpansionInfo:
                     oExpansionIter = self.append(oChildIter)
                     self.set(oExpansionIter,
-                            0, sExpansion,
-                            5, [],
-                            6, [])
-                    self._dNameExpansion2Iter.setdefault(oCard.name,
-                            {}).setdefault(sExpansion, []).append(
-                                    oExpansionIter)
-                self._dName2Iter.setdefault(oCard.name, []).append(oChildIter)
+                            0,  sExpansion,
+                            5,  [],
+                            6,  [],
+                            9,  oCard,
+                            10, oPhysCard,
+                            )
+                    bEmpty = False
 
             # Update Group Section
             aTexts, aIcons = self.lookup_icons(sGroup)
             if aTexts:
                 self.set(oSectionIter,
-                    0, sGroup,
-                    5, aTexts,
-                    6, aIcons,
+                    0,  sGroup,
+                    5,  aTexts,
+                    6,  aIcons,
+                    9,  None,
+                    10, None,
                 )
             else:
                 self.set(oSectionIter,
-                    0, sGroup,
-                    5, [],
-                    6, [],
+                    0,  sGroup,
+                    5,  [],
+                    6,  [],
+                    9,  None,
+                    10, None,
                 )
 
-        if not self._dName2Iter:
+        if bEmpty:
             # Showing nothing
             self.oEmptyIter = self.append(None)
             sText = self._get_empty_text()
-            self.set(self.oEmptyIter, 0, sText, 5, [], 6, [])
+            self.set(self.oEmptyIter, 0, sText, 5, [], 6, [], 9, None, 10,
+                    None)
 
         # Notify Listeners
         for oListener in self.dListeners:
@@ -276,8 +270,8 @@ class CardListModel(gtk.TreeStore):
             dAbsCards[oAbsCard][0] += 1
             if self.bExpansions:
                 dExpanInfo = dAbsCards[oAbsCard][1]
-                dExpanInfo.setdefault(oPhysCard.expansion, 0)
-                dExpanInfo[oPhysCard.expansion] += 1
+                dExpanInfo.setdefault(oPhysCard, 0)
+                dExpanInfo[oPhysCard] += 1
 
         aCards = list(dAbsCards.iteritems())
 
@@ -308,12 +302,22 @@ class CardListModel(gtk.TreeStore):
     def get_card_name_from_path(self, oPath):
         """Get the card name associated with the current path. Handle the
            expansion level transparently."""
+        return self.get_abstract_card_from_path(oPath).name
+
+    def get_card_name_from_iter(self, oIter):
+        """Get the card name associated with the current iter. Handle the
+           expansion level transparently."""
+        return self.get_abstract_card_from_iter(oIter).name
+
+    def get_abstract_card_from_path(self, oPath):
+        """Get the abstract card name for the current path."""
         oIter = self.get_iter(oPath)
-        if self.iter_depth(oIter) > 1:
-            # Child of the card name
-            # According to the docs, this will be the correct path
-            oIter = self.get_iter(norm_path(oPath)[0:2])
-        return self.get_name_from_iter(oIter)
+        return self.get_abstract_card_from_iter(oIter)
+
+    def get_physical_card_from_path(self, oPath):
+        """Get the physical card name for the current path."""
+        oIter = self.get_iter(oPath)
+        return self.get_physical_card_from_iter(oIter)
 
     def get_all_from_iter(self, oIter):
         """Get all relevent information about the current iter.
@@ -323,15 +327,16 @@ class CardListModel(gtk.TreeStore):
            level of cards, and 2 for the expansion level.
            """
         iDepth = self.iter_depth(oIter)
+        if iDepth == 0:
+            # No card info here
+            return None, None, 0, iDepth
+        sCardName = self.get_abstract_card_from_iter(oIter).name
         if iDepth == 2:
-            sName = self.get_name_from_iter(self.iter_parent(oIter))
             sExpansion = self.get_value(oIter, 0)
         else:
-            sName = self.get_name_from_iter(oIter)
             sExpansion = None
         iCount = self.get_value(oIter, 1)
-        return sName, sExpansion, iCount, iDepth
-
+        return sCardName, sExpansion, iCount, iDepth
 
     def get_all_from_path(self, oPath):
         """Get all relevent information about the current path.
@@ -384,8 +389,8 @@ class CardListModel(gtk.TreeStore):
         # tree store having been encoded *again* despite
         # displaying correctly, so we decode it here.
         # I hope all systems encode with utf-8. :(
-        sCardName = self.get_value(oIter, 0).decode("utf-8")
-        return sCardName
+        sName = self.get_value(oIter, 0).decode("utf-8")
+        return sName
 
     def get_card_count_from_iter(self, oIter):
         """Return the card count for a given iterator"""
@@ -394,6 +399,14 @@ class CardListModel(gtk.TreeStore):
     def get_parent_count_from_iter(self, oIter):
         """Return the parent count for a given iterator"""
         return self.get_value(oIter, 2)
+
+    def get_abstract_card_from_iter(self, oIter):
+        """Extract the Abstract Card at oIter from the model"""
+        return self.get_value(oIter, 9)
+
+    def get_physical_card_from_iter(self, oIter):
+        """Extract the Physical Card at oIter from the model"""
+        return self.get_value(oIter, 10)
 
     def _get_empty_text(self):
         """Get the correct text for an empty model."""

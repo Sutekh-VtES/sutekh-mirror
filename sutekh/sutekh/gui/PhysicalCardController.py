@@ -33,9 +33,9 @@ class PhysicalCardController(object):
             doc="Associated Type")
     # pylint: enable-msg=W0212
 
-    def set_card_text(self, sCardName):
+    def set_card_text(self, oCard):
         """Set the card text to reflect the selected card."""
-        self.__oMainWin.set_card_text(sCardName)
+        self.__oMainWin.set_card_text(oCard)
 
     def toggle_expansion(self, oWidget):
         """Toggle whether the expansion information is shown."""

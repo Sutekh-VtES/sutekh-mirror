@@ -14,8 +14,8 @@ from sutekh.gui.SearchDialog import SearchDialog
 
 class CardListViewListener(object):
     """Listens to changes, i.e. .set_card_text(...) to CardListViews."""
-    def set_card_text(self, sCardName, sExpansion):
-        """The CardListViw has called set_card_text on the CardText pane"""
+    def set_card_text(self, oPhysCard):
+        """The CardListView has called set_card_text on the CardText pane"""
         pass
 
 class CardListView(gtk.TreeView):
@@ -211,13 +211,11 @@ class CardListView(gtk.TreeView):
                 oPath = [x for x in aList if x not in self._aOldSelection][-1]
             self._aOldSelection = aList
 
-        sCardName = self._oModel.get_card_name_from_path(oPath)
-        self._oController.set_card_text(sCardName)
-        sExpansion = self._oModel.get_exp_name_from_path(oPath)
-        if not sExpansion:
-            sExpansion = ''
+        oAbsCard = self._oModel.get_abstract_card_from_path(oPath)
+        self._oController.set_card_text(oAbsCard)
+        oPhysCard = self._oModel.get_physical_card_from_path(oPath)
         for oListener in self.dListeners:
-            oListener.set_card_text(sCardName, sExpansion)
+            oListener.set_card_text(oPhysCard)
 
     # Filtering
 
@@ -308,7 +306,10 @@ class CardListView(gtk.TreeView):
         return dSelectedData
 
     def get_selection_as_string(self):
-        """Get a string representing the current selection."""
+        """Get a string representing the current selection.
+
+           Because of how pygtk handles drag-n-drop data, we need to
+           create a string representating the card data."""
         if self._oSelection.count_selected_rows()<1:
             return ''
         dSelectedData = self.process_selection()
@@ -351,7 +352,6 @@ class CardListView(gtk.TreeView):
                 [true_expansion(x) for x in aLines[3::3]])
         return sSource, aCardInfo
 
-
     # pylint: disable-msg=R0913
     # arguments as required by the function signature
 
@@ -364,7 +364,6 @@ class CardListView(gtk.TreeView):
                     oSelectionData, oInfo, oTime)
             return
         oSelectionData.set(oSelectionData.target, 8, sSelectData)
-
 
     def drag_delete(self, oBtn, oContext, oData):
         """Default drag-delete handler"""
@@ -380,7 +379,6 @@ class CardListView(gtk.TreeView):
         """Copy the current selection to the application clipboard"""
         sSelection = self.get_selection_as_string()
         self._oMainWin.set_selection_text(sSelection)
-
 
     # Card name searching
 
@@ -439,10 +437,11 @@ class CardListView(gtk.TreeView):
     # Activating Rows
     def card_activated(self, _oTree, oPath, _oColumn):
         """Update card text and notify listeners when a card is selected."""
-        sCardName = self._oModel.get_card_name_from_path(oPath)
-        self._oController.set_card_text(sCardName)
+        oAbsCard = self._oModel.get_abstract_card_from_path(oPath)
+        oPhysCard = self._oModel.get_physical_card_from_path(oPath)
+        self._oController.set_card_text(oAbsCard)
         for oListener in self.dListeners:
-            oListener.set_card_text(sCardName, '')
+            oListener.set_card_text(oPhysCard)
 
     # Selecting
 

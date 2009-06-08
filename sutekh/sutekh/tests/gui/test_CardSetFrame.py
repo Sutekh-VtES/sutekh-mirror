@@ -45,6 +45,9 @@ class TestCardSetFrame(SutekhTest):
             while oCardIter:
                 # Loop over expansions
                 sName = oModel.get_name_from_iter(oCardIter)
+                if (sName, 'Top Level') in aCards:
+                    oPath = oModel.get_path(oCardIter)
+                    oSelection.select_path(oPath)
                 oExpIter = oModel.iter_children(oCardIter)
                 while oExpIter:
                     sExp = oModel.get_name_from_iter(oExpIter)
@@ -165,6 +168,36 @@ class TestCardSetFrame(SutekhTest):
         self.assertEqual(len(oPCS2.cards), 9)
         self.assertEqual(len([x for x in oPCS2.cards if
             IPhysicalCard(x).abstractCard.name == 'Alexandra']), 5)
+        # Tests involving the top level selection
+        oFrame = oWin.find_pane_by_name('White Wolf Card List')
+        self._select_cards(oFrame, [(u'AK-47', 'Top Level'),
+            (u'Ablative Skin', 'Top Level')])
+        oFrame.view.copy_selection()
+        oNewFrame.view.do_paste()
+        self.assertEqual(len(oPCS2.cards), 11)
+        self.assertEqual(len([x for x in oPCS2.cards if
+            IPhysicalCard(x).abstractCard.name == 'Alexandra']), 5)
+        self.assertEqual(len([x for x in oPCS2.cards if
+            IPhysicalCard(x).abstractCard.name == 'AK-47']), 4)
+        aCardNames = [oCard.abstractCard.name for oCard in oPCS2.cards]
+        self._select_cards(oNewFrame, [(sName, 'Top Level') for sName in
+            aCardNames])
+        oNewFrame.view.del_selection()
+        self.assertEqual(len(oPCS2.cards), 0)
+        oFrame = oWin.find_pane_by_name('My Collection')
+        self._select_cards(oFrame, [(u'AK-47', 'Top Level'),
+            (u'Ablative Skin', 'Top Level')])
+        oFrame.view.copy_selection()
+        oNewFrame.view.do_paste()
+        self.assertEqual(len(oPCS2.cards), 7)
+        self.assertEqual(len([x for x in oPCS2.cards if
+            IPhysicalCard(x).abstractCard.name == 'AK-47']), 1)
+        self.assertEqual(len([x for x in oPCS2.cards if
+            IPhysicalCard(x).abstractCard.name == 'Ablative Skin']), 6)
+        self.assertEqual(len([x for x in oPCS2.cards if
+            IPhysicalCard(x).abstractCard.name == 'Ablative Skin' and
+            IPhysicalCard(x).expansion is None]), 5)
+        # We should copy all the ones from My Collection
         # rename card set, and verify that everything gets updated properly
         # Clean up
         oWin.destroy()
