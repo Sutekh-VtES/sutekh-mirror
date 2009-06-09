@@ -12,6 +12,7 @@ from sutekh.gui.ProgressDialog import ProgressDialog, SutekhCountLogHandler
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
 import gtk
 import os
+import traceback
 
 class FullBackup(CardListPlugin):
     """Provide access to ZipFileWrapper's backup and restore methods.
@@ -165,7 +166,7 @@ class FullBackup(CardListPlugin):
                 # we really do want all the exceptions
                 except Exception, oException:
                     oProgressDialog.destroy()
-                    sMsg = "Failed to restore backup.\n\n%s" % oException
+                    sMsg = "Failed to restore backup.\n\n%s" % traceback.format_exc(limit=30)
                     do_complaint_error(sMsg)
         else:
             oDlg.destroy()
