@@ -9,11 +9,13 @@
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.core.SutekhObjects import IAbstractCard, IPhysicalCard, \
         IPhysicalCardSet, MapPhysicalCardToPhysicalCardSet, PhysicalCardSet
+from sutekh.core.CardSetHolder import CardSetHolder
 from sutekh.io.AbstractCardSetParser import AbstractCardSetParser
 from sutekh.io.XmlFileHandling import AbstractCardSetXmlFile
 from sutekh.tests.core.test_PhysicalCardSet import CARD_SET_NAMES, \
         ABSTRACT_CARDS
 import unittest, os
+from StringIO import StringIO
 
 
 class AbstractCardSetParserTest(SutekhTest):
@@ -51,9 +53,13 @@ class AbstractCardSetParserTest(SutekhTest):
         fOut.write(sExample1)
         fOut.close()
 
-        oParser.parse_string(sExample2)
+        oHolder = CardSetHolder()
+        oParser.parse(StringIO(sExample2), oHolder)
+        oHolder.create_pcs()
         fIn = open(sTempFileName, 'rU')
-        oParser.parse(fIn)
+        oHolder = CardSetHolder()
+        oParser.parse(fIn, oHolder)
+        oHolder.create_pcs()
         fIn.close()
 
         oCardSet1 = IPhysicalCardSet("(ACS) " + CARD_SET_NAMES[0])
@@ -73,6 +79,7 @@ class AbstractCardSetParserTest(SutekhTest):
             physicalCardID=oPhysCard2.id).count(),
             2)
 
+
         PhysicalCardSet.delete(oCardSet1.id)
         oFile = AbstractCardSetXmlFile()
         self.assertRaises(RuntimeError, oFile.read)
@@ -83,6 +90,10 @@ class AbstractCardSetParserTest(SutekhTest):
         oFile.delete()
         self.assertFalse(os.path.exists(sTempFileName))
         self.assertRaises(RuntimeError, oFile.write, '(ACS) Test Set 1')
+
+        oHolder = CardSetHolder()
+        self.assertRaises(RuntimeError, oParser.parse, StringIO(
+            '<caarrd>%s</caarrd>' % sExample1), oHolder)
 
 
 if __name__ == "__main__":

@@ -9,7 +9,7 @@
 
 from sutekh.core.CardLookup import DEFAULT_LOOKUP
 from sutekh.core.SutekhObjects import PhysicalCardSet
-from sqlobject import SQLObjectNotFound
+from sqlobject import SQLObjectNotFound, sqlhub
 
 class CardSetHolder(object):
     # pylint: disable-msg=R0902
@@ -127,7 +127,7 @@ class CardSetHolder(object):
         aPhysCards = oCardLookup.physical_lookup(self._dCardExpansions,
                 dNameCards, dExpansionLookup, "Physical Card Set " + self.name)
 
-        self._commit_pcs(aPhysCards)
+        sqlhub.doInTransaction(self._commit_pcs, aPhysCards)
 
     def _commit_pcs(self, aPhysCards):
         """Commit the card set to the database."""
@@ -251,5 +251,5 @@ class CachedCardSetHolder(CardSetHolder):
         aPhysCards = oCardLookup.physical_lookup(dCardExpansions,
                 dNameCards, dExpansionLookup, "Physical Card Set " + self.name)
 
-        self._commit_pcs(aPhysCards)
+        sqlhub.doInTransaction(self._commit_pcs, aPhysCards)
 

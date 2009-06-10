@@ -8,6 +8,13 @@
 """Base classes for sutekh.io card set parsers and writers.
    """
 
+# pylint: disable-msg=E0611, F0401
+# xml.etree is a python2.5 thing
+try:
+    from xml.etree.ElementTree import parse
+except ImportError:
+    from elementtree.ElementTree import parse
+
 # pylint: disable-msg=R0921
 # These may be referenced elsewhere, and mainly exist as interface
 # documentation, rather than genuine base classes
@@ -58,3 +65,43 @@ class CardSetWriter(object):
            object fOut.
            """
         raise NotImplementedError("CardSetWriter should be sub-classed")
+
+
+class BaseXMLParser(object):
+    """Base object for the various XML Parser classes.
+
+       classes just implement a _convert_tree class to fill in the
+       card set holder from the XML tree."""
+
+    def __init__(self):
+        self._oTree = None
+
+    def _convert_tree(self, oHolder):
+        """Convert the XML Tree into a card set holder"""
+        raise NotImplementedError("BaseXMLParser should be subclassed")
+
+    def parse(self, fIn, oHolder):
+        """Read the XML tree from the file-like object fIn"""
+        self._oTree = parse(fIn)
+        self._convert_tree(oHolder)
+
+class BaseSutekhXMLParser(BaseXMLParser):
+    # pylint: disable-msg=W0223
+    # Doesn't matter that we don't overrider _convert_tree - subclasses will
+    # do that for us
+    """Base class for Sutekh XML files.
+
+       Adds version checking helper functions and such"""
+
+    # Sub-classes override these
+    aSupportedVersions = []
+    sTypeTag = "none"
+    sTypeName = "Sutekh XML"
+
+    def _check_tree(self):
+        """Check if the tree is valid"""
+        oRoot = self._oTree.getroot()
+        if oRoot.tag != self.sTypeTag:
+            raise RuntimeError("Not a %s File" % self.sTypeName)
+        if oRoot.attrib['sutekh_xml_version'] not in self.aSupportedVersions:
+            raise RuntimeError("Unrecognised %s File version" % self.sTypeName)

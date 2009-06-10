@@ -11,9 +11,11 @@ from sutekh.tests.core.test_PhysicalCardSet import CARD_SET_NAMES, \
         get_phys_cards
 from sutekh.core.SutekhObjects import IPhysicalCardSet, \
         MapPhysicalCardToPhysicalCardSet, PhysicalCardSet
+from sutekh.core.CardSetHolder import CardSetHolder
 from sutekh.io.PhysicalCardSetParser import PhysicalCardSetParser
 from sutekh.io.XmlFileHandling import PhysicalCardSetXmlFile
 import unittest, os
+from StringIO import StringIO
 
 class PhysicalCardSetParserTests(SutekhTest):
     """class for the Card Set Parser tests"""
@@ -75,17 +77,23 @@ class PhysicalCardSetParserTests(SutekhTest):
 
         oParser = PhysicalCardSetParser()
 
-        oParser.parse_string(sExpected1)
+        oHolder = CardSetHolder()
+        oParser.parse(StringIO(sExpected1), oHolder)
+        oHolder.create_pcs()
 
         sTempFileName = self._create_tmp_file()
         fIn = open(sTempFileName, 'w')
         fIn.write(sExpected2)
         fIn.close()
         fIn = open(sTempFileName, 'rU')
-        oParser.parse(fIn)
+        oHolder = CardSetHolder()
+        oParser.parse(fIn, oHolder)
+        oHolder.create_pcs()
         fIn.close()
 
-        oParser.parse_string(sExpected3)
+        oHolder = CardSetHolder()
+        oParser.parse(StringIO(sExpected3), oHolder)
+        oHolder.create_pcs()
 
         oPhysCardSet1 = IPhysicalCardSet(CARD_SET_NAMES[0])
         oPhysCardSet2 = IPhysicalCardSet(CARD_SET_NAMES[1])
@@ -129,6 +137,9 @@ class PhysicalCardSetParserTests(SutekhTest):
         self.assertEqual(oPhysCardSet3.comment, 'A formatted test comment\n'
                 'A second line')
 
+        oHolder = CardSetHolder()
+        self.assertRaises(RuntimeError, oParser.parse, StringIO(
+            '<caards></caards>'), oHolder)
 
 if __name__ == "__main__":
     unittest.main()

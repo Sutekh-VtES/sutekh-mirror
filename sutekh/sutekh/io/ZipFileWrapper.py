@@ -12,16 +12,25 @@
 
 import zipfile
 import datetime
+from StringIO import StringIO
 from logging import Logger
 from sqlobject import sqlhub, SQLObjectNotFound
 from sutekh.core.SutekhObjects import PhysicalCardSet, PHYSICAL_SET_LIST
 from sutekh.core.CardLookup import DEFAULT_LOOKUP
+from sutekh.core.CardSetHolder import CachedCardSetHolder
 from sutekh.SutekhUtility import refresh_tables
 from sutekh.io.PhysicalCardParser import PhysicalCardParser
 from sutekh.io.PhysicalCardSetParser import PhysicalCardSetParser
 from sutekh.io.AbstractCardSetParser import AbstractCardSetParser
 from sutekh.io.PhysicalCardSetWriter import PhysicalCardSetWriter
 from sutekh.io.IdentifyXMLFile import IdentifyXMLFile
+
+def _parse_string(oParser, sIn, oHolder):
+    """Utitlity function for reading zip files.
+
+       Allows oParser.parse to be called on a string."""
+    oFile = StringIO(sIn)
+    oParser.parse(oFile, oHolder)
 
 class ZipFileWrapper(object):
     """The zip file wrapper.
@@ -94,7 +103,7 @@ class ZipFileWrapper(object):
         # PhysicalCard list
         for oItem in self.oZip.infolist():
             oData = self.oZip.read(oItem.filename)
-            oIdParser.parse_string(oData)
+            _parse_string(oIdParser, oData, None)
             if (oIdParser.type == 'PhysicalCard' or \
                     oIdParser.type == 'PhysicalCardSet') and not \
                     bTablesRefreshed:
@@ -128,7 +137,7 @@ class ZipFileWrapper(object):
         for oItem in aList:
             bReparent = False
             oData = self.oZip.read(oItem.filename)
-            oIdParser.parse_string(oData)
+            _parse_string(oIdParser, oData, None)
             if oIdParser.type == 'PhysicalCardSet':
                 # We check whether the parent has been read already
                 if bOldStyle:
@@ -153,8 +162,10 @@ class ZipFileWrapper(object):
                 oParser = PhysicalCardParser()
             else:
                 continue
-            self._aWarnings.extend(oParser.parse_string(oData, oCardLookup,
-                True, dLookupCache))
+            oHolder = CachedCardSetHolder()
+            _parse_string(oParser, oData, oHolder)
+            oHolder.create_pcs(oCardLookup, dLookupCache)
+            self._aWarnings.extend(oHolder.get_warnings())
             oLogger.info('%s %s read', oIdParser.type, oItem.filename)
             if bReparent:
                 # pylint: disable-msg=E1103
@@ -190,7 +201,7 @@ class ZipFileWrapper(object):
         oIdParser = IdentifyXMLFile()
         for oItem in self.oZip.infolist():
             oData = self.oZip.read(oItem.filename)
-            oIdParser.parse_string(oData)
+            _parse_string(oIdParser, oData, None)
             if oIdParser.type == 'PhysicalCardSet':
                 dCardSets[oIdParser.name] = (oItem.filename,
                         oIdParser.parent_exists, oIdParser.parent)
@@ -202,15 +213,14 @@ class ZipFileWrapper(object):
         self.__open_zip_for_read()
         oIdParser = IdentifyXMLFile()
         oData = self.oZip.read(sFilename)
-        oIdParser.parse_string(oData)
-        oParser = None
+        _parse_string(oIdParser, oData, None)
+        oHolder = None
         if oIdParser.type == 'PhysicalCardSet':
             oParser = PhysicalCardSetParser()
-            oParser.string_to_holder(oData)
+            oHolder = CachedCardSetHolder()
+            _parse_string(oParser, oData, oHolder)
         self.__close_zip()
-        if oParser:
-            return oParser.oCS
-        return None
+        return oHolder
 
     def get_warnings(self):
         """Get any warnings from the process"""

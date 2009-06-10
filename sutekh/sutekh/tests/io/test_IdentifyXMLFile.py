@@ -11,6 +11,7 @@ from sutekh.io.IdentifyXMLFile import IdentifyXMLFile
 from sutekh.core.SutekhObjects import IAbstractCard, IPhysicalCard
 from sutekh.tests.core.test_PhysicalCardSet import ABSTRACT_CARDS
 import unittest
+from StringIO import StringIO
 
 
 class TestIdentifyXMLFile(SutekhTest):
@@ -53,16 +54,16 @@ class TestIdentifyXMLFile(SutekhTest):
         oIdFile.id_file(sTempFileName)
         self.assertEqual(oIdFile.type, 'PhysicalCard')
 
-        oIdFile.parse_string(sExample)
+        oIdFile.parse(StringIO(sExample), None)
         self.assertEqual(oIdFile.type, 'PhysicalCard')
 
-        oIdFile.parse_string('garbage input')
+        oIdFile.parse(StringIO('garbage input'))
         self.assertEqual(oIdFile.type, 'Unknown')
 
-        oIdFile.parse_string(sExampleACS)
+        oIdFile.parse(StringIO(sExampleACS))
         self.assertEqual(oIdFile.type, 'AbstractCardSet')
 
-        oIdFile.parse_string(sExamplePCS)
+        oIdFile.parse(StringIO(sExamplePCS))
         self.assertEqual(oIdFile.type, 'PhysicalCardSet')
 
 if __name__ == "__main__":

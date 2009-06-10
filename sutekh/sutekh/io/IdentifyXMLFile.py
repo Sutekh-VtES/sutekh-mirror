@@ -13,9 +13,9 @@ from sqlobject import SQLObjectNotFound
 # pylint: disable-msg=E0611, F0401
 # pylint doesn't like the handling of the differences between 2.4 and 2.5
 try:
-    from xml.etree.ElementTree import parse, fromstring, ElementTree
+    from xml.etree.ElementTree import parse
 except ImportError:
-    from elementtree.ElementTree import parse, fromstring, ElementTree
+    from elementtree.ElementTree import parse
 # pylint: enable-msg=E0611, F0401
 from xml.parsers.expat import ExpatError
 
@@ -107,7 +107,7 @@ class IdentifyXMLFile(object):
             self._bSetExists = False
             self._bParentExists = False
 
-    def parse(self, fIn):
+    def parse(self, fIn, _oDummyHolder=None):
         """Parse the file fIn into the ElementTree."""
         try:
             oTree = parse(fIn)
@@ -116,19 +116,10 @@ class IdentifyXMLFile(object):
             return
         self.identify_tree(oTree)
 
-    def parse_string(self, sIn):
-        """Parse the string sIn into the ElementTree"""
-        try:
-            oTree = ElementTree(fromstring(sIn))
-        except ExpatError:
-            self._clear_id_results() # Not an XML File
-            return
-        self.identify_tree(oTree)
-
     def id_file(self, sFileName):
         """Load the file sFileName, and try to identify it."""
         fIn = file(sFileName, 'rU')
         try:
-            self.parse(fIn)
+            self.parse(fIn, None)
         finally:
             fIn.close()

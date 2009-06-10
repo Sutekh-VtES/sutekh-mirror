@@ -10,11 +10,13 @@ from sutekh.tests.TestCore import SutekhTest
 from sutekh.tests.io import test_WhiteWolfParser
 from sutekh.core.SutekhObjects import IAbstractCard, IPhysicalCard, \
         IPhysicalCardSet, PhysicalCardSet
+from sutekh.core.CardSetHolder import CardSetHolder
 from sutekh.io.PhysicalCardParser import PhysicalCardParser
 from sutekh.io.IdentifyXMLFile import IdentifyXMLFile
 from sutekh.io.XmlFileHandling import PhysicalCardXmlFile
 from sutekh.tests.core.test_PhysicalCardSet import ABSTRACT_CARDS
 import unittest, os
+from StringIO import StringIO
 
 
 class PhysicalCardTests(SutekhTest):
@@ -39,7 +41,9 @@ class PhysicalCardTests(SutekhTest):
                    % (sLastWriterVersion, oPC.id, oAC.name)
 
         oParser = PhysicalCardParser()
-        oParser.parse_string(sExample)
+        oHolder = CardSetHolder()
+        oParser.parse(StringIO(sExample), oHolder)
+        oHolder.create_pcs()
 
         oMyCollection = IPhysicalCardSet("My Collection")
         assert(len(oMyCollection.cards) == 1)
@@ -55,9 +59,23 @@ class PhysicalCardTests(SutekhTest):
         self.assertEqual(oIdFile.type, 'PhysicalCard')
 
         fIn = open(sTempFileName, 'rU')
-        oParser.parse(fIn)
+        oHolder = CardSetHolder()
+        oParser.parse(fIn, oHolder)
         fIn.close()
+        oHolder.create_pcs()
 
+        # Test incorrect input
+        oHolder = CardSetHolder()
+        self.assertRaises(RuntimeError, oParser.parse, StringIO(
+            '<ccaardd sutekh_xml_version="%s"><card count="1" ' \
+            'expansion="None Specified" id="%d" name="%s" /></ccaardd>' \
+            % (sLastWriterVersion, oPC.id, oAC.name)), oHolder)
+        self.assertRaises(RuntimeError, oParser.parse, StringIO(
+            '<cards sutekh_xml_version="5.0"><card count="1" ' \
+            'expansion="None Specified" id="%d" name="%s" /></cards>' \
+            % (oPC.id, oAC.name)), oHolder)
+
+        # Check read results
         oMyCollection = IPhysicalCardSet("My Collection")
         assert(len(oMyCollection.cards) == 1)
         PhysicalCardSet.delete(oMyCollection.id)

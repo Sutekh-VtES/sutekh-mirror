@@ -11,6 +11,7 @@
 """Routines for manipulating XML Files"""
 
 from sutekh.core.SutekhObjects import PhysicalCardSet
+from sutekh.core.CardSetHolder import CardSetHolder
 from sutekh.core.CardLookup import DEFAULT_LOOKUP
 from sutekh.SutekhUtility import gen_temp_file, gen_temp_dir, safe_filename
 from sutekh.io.PhysicalCardParser import PhysicalCardParser
@@ -18,6 +19,15 @@ from sutekh.io.PhysicalCardSetParser import PhysicalCardSetParser
 from sutekh.io.AbstractCardSetParser import AbstractCardSetParser
 from sutekh.io.PhysicalCardSetWriter import PhysicalCardSetWriter
 import os
+
+def _do_read(oParser, sFileName, oLookup, bIgnoreWarnings):
+    """Helper function to read from a parser"""
+    oHolder = CardSetHolder()
+    oParser.parse(file(sFileName,'rU'), oHolder)
+    oHolder.create_pcs(oLookup)
+    if not bIgnoreWarnings:
+        return oHolder.get_warnings()
+    return None
 
 class PhysicalCardXmlFile(object):
     """Class for handling PhysicalCard XML Files"""
@@ -35,7 +45,7 @@ class PhysicalCardXmlFile(object):
         if self.sXmlFile is None:
             raise RuntimeError("No Filename specified")
         oParser = PhysicalCardParser()
-        return oParser.parse(file(self.sXmlFile,'rU'), self.oCardLookup,
+        return _do_read(oParser, self.sXmlFile, self.oCardLookup,
                 bIgnoreWarnings)
 
     # pylint: disable-msg=R0201
@@ -62,7 +72,7 @@ class AbstractCardSetXmlFile(object):
         if self.sXmlFile is None:
             raise RuntimeError("No Filename specified")
         oParser = AbstractCardSetParser()
-        return oParser.parse(file(self.sXmlFile,'rU'), self.oCardLookup,
+        return _do_read(oParser, self.sXmlFile, self.oCardLookup,
                 bIgnoreWarnings)
 
     # pylint: disable-msg=R0201
@@ -89,7 +99,7 @@ class PhysicalCardSetXmlFile(object):
         if self.sXmlFile is None:
             raise RuntimeError("No Filename specified")
         oParser = PhysicalCardSetParser()
-        return oParser.parse(file(self.sXmlFile,'rU'), self.oCardLookup,
+        return _do_read(oParser, self.sXmlFile, self.oCardLookup,
                 bIgnoreWarnings)
 
     def write(self, sPhysicalCardSetName):
