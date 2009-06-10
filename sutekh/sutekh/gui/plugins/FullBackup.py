@@ -164,9 +164,10 @@ class FullBackup(CardListPlugin):
                     self.parent.restore_editable_panes(aEditable)
                 # pylint: disable-msg=W0703
                 # we really do want all the exceptions
-                except Exception, oException:
+                except Exception, _oException:
                     oProgressDialog.destroy()
-                    sMsg = "Failed to restore backup.\n\n%s" % traceback.format_exc(limit=30)
+                    sMsg = "Failed to restore backup.\n\n%s" % \
+                            traceback.format_exc(limit=30)
                     do_complaint_error(sMsg)
         else:
             oDlg.destroy()

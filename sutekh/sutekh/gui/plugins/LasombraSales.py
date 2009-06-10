@@ -364,6 +364,8 @@ class LasombraSales(CardListPlugin):
 
         self._extract_cards(oSheet, 3, oSheet.nrows, fExp=lambda oC, oR: oExp)
 
+    # pylint: disable-msg=R0913
+    # R0913: We need all these arguments here
     def _extract_cards(self, oSheet, iStart, iEnd, fExp, tCols=(0, 1, 2, 3)):
         """Extract the card info from the cards.
 
@@ -377,8 +379,9 @@ class LasombraSales(CardListPlugin):
                    The rarity may be set to None to indicate there is no rarity column.
            """
 
-        # pylint: disable-msg=C0103
-        # names use the constant convention since they're "psuedo" consts
+        # pylint: disable-msg=C0103, R0915
+        # C0103: names use the constant convention as they're "psuedo" consts
+        # R0915: Function is long, but not much to be gained by splitting it
         QUANTITY, NAME, PRICE, RARITY = tCols
 
         # Within a given sheet, a card may appear multiple times with different
@@ -480,7 +483,7 @@ class LasombraSales(CardListPlugin):
             self._dPriceCache[tKey] = (min(fPrice, fOverallPrice), iStock
                     + iOverallStock)
 
-    # pylint: enable-msg=W0142
+    # pylint: enable-msg=W0142, R0913
 
     def _get_key_for_card_list(self, oIter):
         """For the given iterator, get the associated card name and expansion
