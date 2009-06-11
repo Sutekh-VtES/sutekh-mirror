@@ -143,7 +143,8 @@ class ZipFileWrapper(object):
                 if bOldStyle:
                     # We need to reparent this card set
                     try:
-                        oParent = PhysicalCardSet.selectBy(
+                        # card set holder will handle setting the parent
+                        PhysicalCardSet.selectBy(
                                 name='My Collection').getOne()
                         bReparent = True
                         oParser = PhysicalCardSetParser()
@@ -164,15 +165,13 @@ class ZipFileWrapper(object):
                 continue
             oHolder = CachedCardSetHolder()
             _parse_string(oParser, oData, oHolder)
-            oHolder.create_pcs(oCardLookup, dLookupCache)
-            self._aWarnings.extend(oHolder.get_warnings())
-            oLogger.info('%s %s read', oIdParser.type, oItem.filename)
             if bReparent:
                 # pylint: disable-msg=E1103
                 # SQLObject confuses pylint
-                oPCS = PhysicalCardSet.selectBy(name=oIdParser.name).getOne()
-                oPCS.parent = oParent
-                oPCS.syncUpdate()
+                oHolder.parent = 'My Collection'
+            oHolder.create_pcs(oCardLookup, dLookupCache)
+            self._aWarnings.extend(oHolder.get_warnings())
+            oLogger.info('%s %s read', oIdParser.type, oItem.filename)
         if len(aToRead) == len(aList):
             # We were unable to read any items this loop, so we fail
             raise IOError('Card sets with unstatisfiable parents %s' %

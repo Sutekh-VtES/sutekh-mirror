@@ -15,7 +15,7 @@ try:
 except ImportError:
     from elementtree.ElementTree import parse
 
-# pylint: disable-msg=R0921
+# pylint: disable-msg=R0921, R0922
 # These may be referenced elsewhere, and mainly exist as interface
 # documentation, rather than genuine base classes
 
