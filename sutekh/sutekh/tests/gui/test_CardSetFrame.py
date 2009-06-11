@@ -61,6 +61,7 @@ class TestCardSetFrame(SutekhTest):
             oIter = oModel.iter_next(oIter)
 
     def check_row(self, _oModel, oPath, _oIter, tInfo):
+        """Add a row to the list if it's expanded"""
         oView, aPaths = tInfo
         if oView.row_expanded(oPath):
             aPaths.append(oPath)
@@ -68,11 +69,41 @@ class TestCardSetFrame(SutekhTest):
     def get_expanded(self, oView):
         """Get the expanded entries from the view"""
         aPaths = []
-        oView._oModel.foreach(self.check_row, (oView, aPaths))
+        oView.get_model().foreach(self.check_row, (oView, aPaths))
         aPaths.sort()
         return aPaths
 
     # pylint: enable-msg=R0201
+
+    # pylint: disable-msg=C0103
+    # setUp + tearDown names are needed by unittest - use their convention
+
+    def setUp(self):
+        """Setup gtk window for the tests"""
+        # Skip if we're not under a windowing system
+        # We need to do this before trying to run MultiPaneWindow's __init__,
+        # which will fail if not under a windowing system
+        if gtk.gdk.screen_get_default() is None:
+            raise SkipTest
+        super(TestCardSetFrame, self).setUp()
+        # Carry on with the test
+        sConfigFile = self._create_tmp_file()
+        self.oConfig = ConfigFile(sConfigFile)
+        # Don't try and create a path in the user's home dir
+        self.sImagesDir = tempfile.mkdtemp(suffix='dir', prefix='sutekhtests')
+        self.oConfig.set_plugin_key('card image path', self.sImagesDir)
+        self.oWin = MultiPaneWindow()
+
+    def tearDown(self):
+        """Tear down gtk framework after test run"""
+        self.oWin.destroy()
+        # Process pending gtk events so cleanup completes
+        while gtk.events_pending():
+            gtk.main_iteration()
+        os.rmdir(self.sImagesDir)
+        super(TestCardSetFrame, self).tearDown()
+
+    # pylint: enable-msg=C0103
 
     def test_basic(self):
         """Set of simple tests of the CardSetFrame"""
@@ -80,11 +111,6 @@ class TestCardSetFrame(SutekhTest):
         # R0915, R0914: Want a long, sequential test case to minimise
         # repeated setups, so it has lots of lines + variables
 
-        # Skip if we're not under a windowing system
-        # We need to do this before trying to run MultiPaneWindow's __init__,
-        # which will fail if not under a windowing system
-        if gtk.gdk.screen_get_default() is None:
-            raise SkipTest
         # Add card sets needed for the tests
         # pylint: disable-msg=E1101
         # PyProtocols confuses pylint
@@ -103,28 +129,21 @@ class TestCardSetFrame(SutekhTest):
         for oCard in aPhysCards:
             oPhysCardSet.addPhysicalCard(oCard.id)
             oPhysCardSet.syncUpdate()
-        # Carry on with the test
-        sConfigFile = self._create_tmp_file()
-        oConfig = ConfigFile(sConfigFile)
-        # Don't try and create a path in the user's home dir
-        sImagesDir = tempfile.mkdtemp(suffix='dir', prefix='sutekhtests')
-        oConfig.set_plugin_key('card image path', sImagesDir)
-        oWin = MultiPaneWindow()
-        oWin.setup(oConfig)
+        self.oWin.setup(self.oConfig)
         # Remove the unneeded panes
-        oWin.remove_frame_by_name('Card Text')
-        oWin.remove_frame_by_name('Card Set List')
+        self.oWin.remove_frame_by_name('Card Text')
+        self.oWin.remove_frame_by_name('Card Set List')
         # Add one of the new card sets
-        oWin.add_new_physical_card_set('Test Set 1')
+        self.oWin.add_new_physical_card_set('Test Set 1')
         # Create selection of cards from the WW card list and
         # paste it into the new card set
-        oFrame = oWin.find_pane_by_name('White Wolf Card List')
+        oFrame = self.oWin.find_pane_by_name('White Wolf Card List')
         self._select_cards(oFrame, [(u'AK-47', None),
             (u'AK-47', u'Lords of the Night')])
         self.assertEqual(oFrame.view.get_selection().count_selected_rows(), 2)
         # Copy
         oFrame.view.copy_selection()
-        oNewFrame = oWin.find_pane_by_name('Test Set 1')
+        oNewFrame = self.oWin.find_pane_by_name('Test Set 1')
         oNewFrame.view.do_paste()
         self.assertEqual(len(oPCS2.cards), 2)
         # Select cards in new card set and change numbers
@@ -163,7 +182,7 @@ class TestCardSetFrame(SutekhTest):
         oNewFrame.view.do_paste()
         self.assertEqual(len(oPCS2.cards), 2)
         # Select card from My Collection and paste it into the card set
-        oFrame = oWin.find_pane_by_name('My Collection')
+        oFrame = self.oWin.find_pane_by_name('My Collection')
         # set editable off
         oNewFrame.view.toggle_editable(False)
         # Verify that trying to paste the selection does nothing
@@ -181,7 +200,7 @@ class TestCardSetFrame(SutekhTest):
         self.assertEqual(len([x for x in oPCS2.cards if
             IPhysicalCard(x).abstractCard.name == 'Alexandra']), 5)
         # Tests involving the top level selection
-        oFrame = oWin.find_pane_by_name('White Wolf Card List')
+        oFrame = self.oWin.find_pane_by_name('White Wolf Card List')
         self._select_cards(oFrame, [(u'AK-47', 'Top Level'),
             (u'Ablative Skin', 'Top Level')])
         oFrame.view.copy_selection()
@@ -196,7 +215,7 @@ class TestCardSetFrame(SutekhTest):
             aCardNames])
         oNewFrame.view.del_selection()
         self.assertEqual(len(oPCS2.cards), 0)
-        oFrame = oWin.find_pane_by_name('My Collection')
+        oFrame = self.oWin.find_pane_by_name('My Collection')
         self._select_cards(oFrame, [(u'AK-47', 'Top Level'),
             (u'Ablative Skin', 'Top Level')])
         oFrame.view.copy_selection()
@@ -227,12 +246,6 @@ class TestCardSetFrame(SutekhTest):
         aExp2 = self.get_expanded(oFrame.view)
         self.assertEqual(aExp1, aExp2) # But reload has retained the new state
 
-        # Clean up
-        oWin.destroy()
-        # Process pending gtk events so cleanup completes
-        while gtk.events_pending():
-            gtk.main_iteration()
-        os.rmdir(sImagesDir)
 
 if __name__ == "__main__":
     unittest.main()
