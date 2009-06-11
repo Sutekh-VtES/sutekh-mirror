@@ -309,12 +309,17 @@ class CardListModel(gtk.TreeStore):
     def get_card_name_from_path(self, oPath):
         """Get the card name associated with the current path. Handle the
            expansion level transparently."""
-        return self.get_abstract_card_from_path(oPath).name
+        oIter = self.get_iter(oPath)
+        return self.get_card_name_from_iter(oIter)
 
     def get_card_name_from_iter(self, oIter):
         """Get the card name associated with the current iter. Handle the
            expansion level transparently."""
-        return self.get_abstract_card_from_iter(oIter).name
+        oCard = self.get_abstract_card_from_iter(oIter)
+        if oCard:
+            return oCard.name
+        # Top level item, so just return the string
+        return self.get_name_from_iter(oIter)
 
     def get_abstract_card_from_path(self, oPath):
         """Get the abstract card name for the current path."""
