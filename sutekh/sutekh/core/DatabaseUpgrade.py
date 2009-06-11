@@ -897,11 +897,13 @@ def copy_to_new_abstract_card_db(oOrigConn, oNewConn, oCardLookup,
     oLogger.info('Memory copies made')
     # Create the cardsets from the holders
     dLookupCache = {}
+    sqlhub.processConnection = oNewConn
     for oSet in aPhysCardSets:
         # create_pcs will manage transactions for us
         oSet.create_pcs(oCardLookup, dLookupCache)
         oLogger.info('Physical Card Set: %s', oSet.name)
         sqlhub.processConnection.cache.clear()
+    sqlhub.processConnection = oOldConn
     return (True, [])
 
 def create_memory_copy(oTempConn, oLogHandler=None):
