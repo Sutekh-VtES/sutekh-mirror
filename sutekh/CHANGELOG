@@ -1,3 +1,9 @@
+10 Jun 2009
+ * Refactor the Sutekh XML Parsers to the new IOBase interface.
+   - pull a lot of common code into BaseSutekhXMLParser
+ * Push transaction management into CardSetHolder, ratehr than adding
+   it everywhere the Parsers are used. Fix fallout of this.
+
 08 Jun 2009
  * Add PhysicalCard and AbstractCard to the model. Avoids bouncing through
    the adapator in several places
