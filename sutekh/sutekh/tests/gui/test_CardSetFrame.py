@@ -60,6 +60,18 @@ class TestCardSetFrame(SutekhTest):
                 oCardIter = oModel.iter_next(oCardIter)
             oIter = oModel.iter_next(oIter)
 
+    def check_row(self, _oModel, oPath, _oIter, tInfo):
+        oView, aPaths = tInfo
+        if oView.row_expanded(oPath):
+            aPaths.append(oPath)
+
+    def get_expanded(self, oView):
+        """Get the expanded entries from the view"""
+        aPaths = []
+        oView._oModel.foreach(self.check_row, (oView, aPaths))
+        aPaths.sort()
+        return aPaths
+
     # pylint: enable-msg=R0201
 
     def test_basic(self):
@@ -199,6 +211,22 @@ class TestCardSetFrame(SutekhTest):
             IPhysicalCard(x).expansion is None]), 5)
         # We should copy all the ones from My Collection
         # rename card set, and verify that everything gets updated properly
+
+        # Check reload keep expanded works
+        aExp1 = self.get_expanded(oFrame.view)
+        oFrame.reload()
+        aExp2 = self.get_expanded(oFrame.view)
+        self.assertEqual(aExp1, aExp2)
+        # Change some paths
+        oFrame.view.collapse_all()
+        for oPath in aExp1[::4]:
+            oFrame.view.expand_to_path(oPath)
+        aExp1 = self.get_expanded(oFrame.view)
+        self.assertNotEqual(aExp1, aExp2) # We have changed the paths
+        oFrame.reload()
+        aExp2 = self.get_expanded(oFrame.view)
+        self.assertEqual(aExp1, aExp2) # But reload has retained the new state
+
         # Clean up
         oWin.destroy()
         # Process pending gtk events so cleanup completes
