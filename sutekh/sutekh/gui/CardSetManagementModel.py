@@ -65,6 +65,11 @@ class CardSetManagementModel(gtk.TreeStore):
         oCardSetIter = self.get_card_set_iterator(self.get_current_filter())
         self._dName2Iter = {}
 
+        # Disable sorting while we do the insertions - speeds things up
+        iSortColumn, iSortOrder = self.get_sort_column_id()
+        if iSortColumn is not None:
+            self.set_sort_column_id(-2, 0)
+
         # Loop through the card sets, getting the parent->child relationships
         for oCardSet in oCardSetIter:
             if oCardSet.name in self._dName2Iter:
@@ -101,6 +106,9 @@ class CardSetManagementModel(gtk.TreeStore):
             self.oEmptyIter = self.append(None)
             sText = self._get_empty_text()
             self.set(self.oEmptyIter, 0, sText)
+
+        if iSortColumn is not None:
+            self.set_sort_column_id(iSortColumn, iSortOrder)
 
     def get_current_filter(self):
         """Get the current applied filter."""

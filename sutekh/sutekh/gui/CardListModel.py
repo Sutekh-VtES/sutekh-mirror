@@ -167,6 +167,11 @@ class CardListModel(gtk.TreeStore):
 
         self.oEmptyIter = None
 
+        # Disable sorting while we do the insertions - speeds things up
+        iSortColumn, iSortOrder = self.get_sort_column_id()
+        if iSortColumn is not None:
+            self.set_sort_column_id(-2, 0)
+
         # Iterate over groups
         bEmpty = True
         for sGroup, oGroupIter in oGroupedIter:
@@ -229,6 +234,8 @@ class CardListModel(gtk.TreeStore):
             self.set(self.oEmptyIter, 0, sText, 5, [], 6, [], 9, None, 10,
                     None)
 
+        if iSortColumn is not None:
+            self.set_sort_column_id(iSortColumn, iSortOrder)
         # Notify Listeners
         for oListener in self.dListeners:
             oListener.load(aAbsCards)
