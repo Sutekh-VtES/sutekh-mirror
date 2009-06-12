@@ -1,7 +1,15 @@
+12 Jun 2009
+ * Pull card count colour completely out of the model. Minor tweaks to the
+   gtk model insert loop (10% faster on large models).
+
+11 Jun 2009
+ * Fix bug in reloading card sets due to Model changes
+ * Twiddle enabling/disbaling sorting in WW list to speed by reloads
+
 10 Jun 2009
  * Refactor the Sutekh XML Parsers to the new IOBase interface.
    - pull a lot of common code into BaseSutekhXMLParser
- * Push transaction management into CardSetHolder, ratehr than adding
+ * Push transaction management into CardSetHolder, rather than adding
    it everywhere the Parsers are used. Fix fallout of this.
 
 08 Jun 2009

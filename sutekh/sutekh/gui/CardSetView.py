@@ -74,8 +74,7 @@ class CardSetView(CardListView):
         self.oNumCell = gtk.CellRendererText()
         self.oNameCell = CellRendererIcons(5)
 
-        oColumn1 = gtk.TreeViewColumn("#", self.oNumCell, text=1,
-                foreground_gdk=7)
+        oColumn1 = gtk.TreeViewColumn("#", self.oNumCell, text=1)
         oColumn1.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
         oColumn1.set_fixed_width(60)
         oColumn1.set_sort_column_id(1)
@@ -84,7 +83,7 @@ class CardSetView(CardListView):
 
         oParentCell = gtk.CellRendererText()
         self.oParentCol = gtk.TreeViewColumn("Par #", oParentCell, text=2,
-                foreground_gdk=8)
+                foreground_gdk=7)
         self.oParentCol.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
         self.oParentCol.set_fixed_width(60)
         self.oParentCol.set_sort_column_id(2)
@@ -346,6 +345,8 @@ class CardSetView(CardListView):
         self._oModel.load()
         self.check_editable()
         self.set_model(self._oModel)
+        self.oNumCell.set_property('foreground-gdk',
+                self._oModel.get_count_colour())
         self.thaw_child_notify()
         if hasattr(self._oMainWin, 'restore_cursor'):
             self._oMainWin.restore_cursor()

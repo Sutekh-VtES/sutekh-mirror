@@ -51,10 +51,10 @@ class CardListModel(gtk.TreeStore):
         # STRING is the card name, INT is the card count
         super(CardListModel, self).__init__(str, int, int, bool, bool,
                 gobject.TYPE_PYOBJECT, gobject.TYPE_PYOBJECT,
-                gtk.gdk.Color, gtk.gdk.Color,
+                gtk.gdk.Color,
                 gobject.TYPE_PYOBJECT, gobject.TYPE_PYOBJECT)
         # name, count, parent count, showInc, showDec, text_list, icons,
-        #       color1, color2, AbstractCard, PhysicalCard
+        #       parent_color, AbstractCard, PhysicalCard
 
         self._cGroupBy = CardTypeGrouping # grouping class to use
         # base filter defines the card list
@@ -189,22 +189,22 @@ class CardListModel(gtk.TreeStore):
                 # We need to lookup the card directly, since aExpansionInfo
                 # may not have the info we need
                 self.set(oChildIter,
-                    0,  oCard.name,
-                    5,  [],
-                    6,  [],
-                    9,  oCard,
-                    10, IPhysicalCard((oCard, None)),
+                    0, oCard.name,
+                    5, [],
+                    6, [],
+                    8, oCard,
+                    9, IPhysicalCard((oCard, None)),
                 )
                 aExpansionInfo = self.get_expansion_info(oCard,
                         fGetExpanInfo(oItem))
                 for oPhysCard, sExpansion in aExpansionInfo:
                     oExpansionIter = self.append(oChildIter)
                     self.set(oExpansionIter,
-                            0,  sExpansion,
-                            5,  [],
-                            6,  [],
-                            9,  oCard,
-                            10, oPhysCard,
+                            0, sExpansion,
+                            5, [],
+                            6, [],
+                            8, oCard,
+                            9, oPhysCard,
                             )
                     bEmpty = False
 
@@ -212,27 +212,26 @@ class CardListModel(gtk.TreeStore):
             aTexts, aIcons = self.lookup_icons(sGroup)
             if aTexts:
                 self.set(oSectionIter,
-                    0,  sGroup,
-                    5,  aTexts,
-                    6,  aIcons,
-                    9,  None,
-                    10, None,
+                    0, sGroup,
+                    5, aTexts,
+                    6, aIcons,
+                    8, None,
+                    9, None,
                 )
             else:
                 self.set(oSectionIter,
-                    0,  sGroup,
-                    5,  [],
-                    6,  [],
-                    9,  None,
-                    10, None,
+                    0, sGroup,
+                    5, [],
+                    6, [],
+                    8, None,
+                    9, None,
                 )
 
         if bEmpty:
             # Showing nothing
             self.oEmptyIter = self.append(None)
             sText = self._get_empty_text()
-            self.set(self.oEmptyIter, 0, sText, 5, [], 6, [], 9, None, 10,
-                    None)
+            self.set(self.oEmptyIter, 0, sText, 5, [], 6, [], 8, None, 9, None)
 
         if iSortColumn is not None:
             self.set_sort_column_id(iSortColumn, iSortOrder)
@@ -414,11 +413,11 @@ class CardListModel(gtk.TreeStore):
 
     def get_abstract_card_from_iter(self, oIter):
         """Extract the Abstract Card at oIter from the model"""
-        return self.get_value(oIter, 9)
+        return self.get_value(oIter, 8)
 
     def get_physical_card_from_iter(self, oIter):
         """Extract the Physical Card at oIter from the model"""
-        return self.get_value(oIter, 10)
+        return self.get_value(oIter, 9)
 
     def _get_empty_text(self):
         """Get the correct text for an empty model."""

@@ -148,12 +148,18 @@ class CardSetCardListModel(CardListModel):
         if self.bEditable and self.oEditColour:
             self._oCountColour = self.oEditColour
 
-    def get_par_count_colour(self, iParCnt, iCnt):
+    def get_count_colour(self):
+        """Get the current color for counts"""
+        return self._oCountColour
+
+    def set_par_count_colour(self, oIter, iParCnt, iCnt):
         """Format the parent card count"""
-        if (self.iParentCountMode == PARENT_COUNT and iParCnt < iCnt) or \
-                iParCnt < 0:
-            return RED
-        return BLACK
+        if self.iParentCountMode != IGNORE_PARENT:
+            oColour = BLACK
+            if (self.iParentCountMode == PARENT_COUNT and iParCnt < iCnt) or \
+                    iParCnt < 0:
+                oColour = RED
+            self.set(oIter, 7, oColour)
 
     def _check_if_empty(self):
         """Add the empty entry if needed"""
@@ -161,7 +167,7 @@ class CardSetCardListModel(CardListModel):
             # Showing nothing
             sText = self._get_empty_text()
             self.oEmptyIter = self.append(None, (sText, 0, 0, False, False, [],
-                [], self._oCountColour, self.get_par_count_colour(0, 0),
+                [], BLACK,
                 None, None))
 
     def load(self):
@@ -171,6 +177,7 @@ class CardSetCardListModel(CardListModel):
            when the filter or grouping changes or when card set relationships
            change.
            """
+        self.set_count_colour()
         self.clear()
         self._dAbs2Iter = {}
         self._dAbsSecondLevel2Iter = {}
@@ -194,22 +201,21 @@ class CardSetCardListModel(CardListModel):
             self.set_sort_column_id(-2, 0)
 
         # Iterate over groups
-        self.set_count_colour()
         for sGroup, oGroupIter in oGroupedIter:
             # Check for null group
             if sGroup is None:
                 sGroup = '<< None >>'
 
             # Create Group Section
-            oSectionIter = self.append(None)
+            oSectionIter = self.prepend(None)
             self._dGroupName2Iter[sGroup] = oSectionIter
 
             # Fill in Cards
             iGrpCnt = 0
             iParGrpCnt = 0
-            # We reverse, so we can prepend rather than append -
+            # We prepend rather than append -
             # this is a lot faster for long lists.
-            for oCard, oRow in reversed(oGroupIter):
+            for oCard, oRow in oGroupIter:
                 iCnt = oRow.get_card_count()
                 iParCnt = oRow.get_parent_count()
                 iGrpCnt += iCnt
@@ -220,11 +226,10 @@ class CardSetCardListModel(CardListModel):
                 self.set(oChildIter, 0, oCard.name,
                     1, iCnt, 2, iParCnt,
                     3, bIncCard, 4, bDecCard,
-                    7, self._oCountColour,
-                    8, self.get_par_count_colour(iParCnt, iCnt),
-                    9, oCard,
-                    10, oRow.oPhysCard,
+                    8, oCard,
+                    9, oRow.oPhysCard,
                     )
+                self.set_par_count_colour(oChildIter, iParCnt, iCnt)
                 self._dAbs2Iter.setdefault(oCard, []).append(oChildIter)
                 self._add_children(oChildIter, oRow)
             # Update Group Section
@@ -238,10 +243,8 @@ class CardSetCardListModel(CardListModel):
                         4, False,
                         5, aTexts,
                         6, aIcons,
-                        7, self._oCountColour,
-                        8, self.get_par_count_colour(iParGrpCnt, iGrpCnt),
+                        8, None,
                         9, None,
-                        10, None,
                         )
             else:
                 self.set(oSectionIter,
@@ -250,11 +253,11 @@ class CardSetCardListModel(CardListModel):
                         2, iParGrpCnt,
                         3, False,
                         4, False,
-                        7, self._oCountColour,
-                        8, self.get_par_count_colour(iParGrpCnt, iGrpCnt),
+                        8, None,
                         9, None,
-                        10, None,
                         )
+
+            self.set_par_count_colour(oSectionIter, iParGrpCnt, iGrpCnt)
 
         self._check_if_empty()
         # Restore sorting
@@ -308,22 +311,24 @@ class CardSetCardListModel(CardListModel):
     def _update_entry(self, oIter, iCnt, iParCnt):
         """Update an oIter with the count and parent count"""
         bIncCard, bDecCard = self.check_inc_dec(iCnt)
-        self.set(oIter, 1, iCnt, 2, iParCnt, 3, bIncCard, 4, bDecCard,
-                7, self._oCountColour,
-                8, self.get_par_count_colour(iParCnt, iCnt))
+        self.set(oIter, 1, iCnt, 2, iParCnt, 3, bIncCard, 4, bDecCard)
+        self.set_par_count_colour(oIter, iParCnt, iCnt)
 
     def _add_extra_level(self, oParIter, sName, tInfo, tKeyInfo):
         """Add an extra level iterator to the card list model."""
         iCnt, iParCnt, oPhysCard, bIncCard, bDecCard = tInfo
         iDepth, oKey = tKeyInfo
-        oIter = self.append(oParIter)
+        if iDepth == 2:
+            oAbsCard = oKey
+        else:
+            oAbsCard = oKey[0]
+        oIter = self.prepend(oParIter)
         # Rely on the defaults to handle icons + textlist
         # Since we skip the handling here, this is about 15% faster on
         # large loads such as All Cards + Expansions + Card Sets
         self.set(oIter, 0, sName, 1, iCnt, 2, iParCnt, 3, bIncCard,
-                4, bDecCard, 7, self._oCountColour,
-                8, self.get_par_count_colour(iParCnt, iCnt),
-                9, self.get_value(oParIter, 9), 10, oPhysCard)
+                4, bDecCard, 8, oAbsCard, 9, oPhysCard)
+        self.set_par_count_colour(oIter, iParCnt, iCnt)
         if iDepth == 2:
             self._dAbsSecondLevel2Iter.setdefault(oKey, {})
             self._dAbsSecondLevel2Iter[oKey].setdefault(sName,
@@ -362,7 +367,7 @@ class CardSetCardListModel(CardListModel):
         if iDepth == 0:
             # Top Level item, so no info at all
             return None, None, None
-        sCardName = self.get_value(oIter, 9).name
+        sCardName = self.get_card_name_from_iter(oIter)
         sExpName = None
         sCardSetName = None
         # Get the expansion name
@@ -882,13 +887,11 @@ class CardSetCardListModel(CardListModel):
         """Handle the addition of a new group entry from add_new_card"""
         aTexts, aIcons = self.lookup_icons(sGroup)
         if aTexts:
-            oSectionIter = self.append(None, (sGroup, 0, 0, False, False,
-                aTexts, aIcons, self._oCountColour,
-                self.get_par_count_colour(0, 0), None, None))
+            oSectionIter = self.prepend(None, (sGroup, 0, 0, False, False,
+                aTexts, aIcons, BLACK, None, None))
         else:
-            oSectionIter = self.append(None, (sGroup, 0, 0, False, False, [],
-                [], self._oCountColour, self.get_par_count_colour(0, 0),
-                None, None))
+            oSectionIter = self.prepend(None, (sGroup, 0, 0, False, False, [],
+                [], BLACK, None, None))
         return oSectionIter
 
     def add_new_card(self, oPhysCard):
@@ -948,22 +951,19 @@ class CardSetCardListModel(CardListModel):
                 iGrpCnt += iCnt
                 iParGrpCnt += iParCnt
                 bIncCard, bDecCard = self.check_inc_dec(iCnt)
-                oChildIter = self.append(oSectionIter)
+                oChildIter = self.prepend(oSectionIter)
                 self.set(oChildIter, 0, oCard.name,
                         1, iCnt, 2, iParCnt, 3, bIncCard, 4, bDecCard,
-                        7, self._oCountColour,
-                        8, self.get_par_count_colour(iParCnt, iCnt),
-                        9, oCard,
-                        10, IPhysicalCard((oCard, None)),
+                        8, oCard, 9, IPhysicalCard((oCard, None)),
                         )
+                self.set_par_count_colour(oChildIter, iParCnt, iCnt)
                 self._dAbs2Iter.setdefault(oCard, []).append(oChildIter)
                 # Handle as for loading
                 self._add_children(oChildIter, oRow)
 
             # Update Group Section
-            self.set(oSectionIter, 1, iGrpCnt, 2, iParGrpCnt,
-                    7, self._oCountColour,
-                    8, self.get_par_count_colour(iParGrpCnt, iGrpCnt))
+            self.set(oSectionIter, 1, iGrpCnt, 2, iParGrpCnt)
+            self.set_par_count_colour(oSectionIter, iParGrpCnt, iGrpCnt)
 
         if self.oEmptyIter and self._dAbs2Iter:
             # remove previous empty note
@@ -1411,7 +1411,7 @@ class CardSetCardListModel(CardListModel):
             iCnt = self.get_value(oIter, 1) + iChg
             iGrpCnt = self.get_value(oGrpIter, 1) + iChg
             iParGrpCnt = self.get_value(oGrpIter, 2)
-            self.set(oIter, 1, iCnt, 7, self._oCountColour)
+            self.set(oIter, 1, iCnt)
             iParCnt = self.get_value(oIter, 2)
             if self._card_count_changes_parent():
                 iParCnt -= iChg
@@ -1427,9 +1427,9 @@ class CardSetCardListModel(CardListModel):
             else:
                 self._update_entry(oIter, iCnt, iParCnt)
 
-            self.set(oGrpIter, 1, iGrpCnt, 2, iParGrpCnt,
-                    7, self._oCountColour,
-                    8, self.get_par_count_colour(iParGrpCnt, iGrpCnt))
+            self.set(oGrpIter, 1, iGrpCnt, 2, iParGrpCnt)
+
+            self.set_par_count_colour(oGrpIter, iParGrpCnt, iGrpCnt)
             if not self.check_group_iter_stays(oGrpIter):
                 sGroupName = self.get_value(oGrpIter, 0)
                 del self._dGroupName2Iter[sGroupName]
@@ -1479,8 +1479,8 @@ class CardSetCardListModel(CardListModel):
             iGrpCnt = self.get_value(oGrpIter, 1)
             iCnt = self.get_value(oIter, 1)
             self._update_entry(oIter, iCnt, iParCnt)
-            self.set(oGrpIter, 2, iParGrpCnt,
-                    8, self.get_par_count_colour(iParGrpCnt, iGrpCnt))
+            self.set(oGrpIter, 2, iParGrpCnt)
+            self.set_par_count_colour(oGrpIter, iParGrpCnt, iGrpCnt)
             if not bChecked and not self.check_card_iter_stays(oIter):
                 bRemove = True
             bChecked = True
@@ -1491,8 +1491,8 @@ class CardSetCardListModel(CardListModel):
                 iGrpCnt = self.get_value(oGrpIter, 1)
                 self.remove(oIter)
                 # Fix the group counts
-                self.set(oGrpIter, 2, iParGrpCnt,
-                        8, self.get_par_count_colour(iParGrpCnt, iGrpCnt))
+                self.set(oGrpIter, 2, iParGrpCnt)
+                self.set_par_count_colour(oGrpIter, iParGrpCnt, iGrpCnt)
                 if not self.check_group_iter_stays(oGrpIter):
                     sGroupName = self.get_value(oGrpIter, 0)
                     del self._dGroupName2Iter[sGroupName]
@@ -1523,7 +1523,7 @@ class CardSetCardListModel(CardListModel):
                 iCnt = self.get_value(oIter, 1) + iChg
                 # We can't change parent counts, so no need to
                 # consider them
-                self.set(oIter, 1, iCnt, 7, self._oCountColour)
+                self.set(oIter, 1, iCnt)
                 if bRemove or not \
                         self.check_child_iter_stays(oIter, oPhysCard):
                     bRemove = True
@@ -1601,14 +1601,14 @@ class CardSetCardListModel(CardListModel):
             # Update counts
             for oIter in self._dAbs2nd3rdLevel2Iter[tExpKey][sCardSetName]:
                 iCnt = self.get_value(oIter, 1) + 1
-                self.set(oIter, 1, iCnt, 7, self._oCountColour)
+                self.set(oIter, 1, iCnt)
         else:
             # We need to add 2nd3rd level entries
             # Since we're adding this entry, it must be 1
             iCnt = 1
             for oIter in self._dAbsSecondLevel2Iter[oAbsCard][sExpName]:
                 iParCnt = self.get_value(oIter, 2)
-                oPhysCard = self.get_value(oIter, 10)
+                oPhysCard = self.get_physical_card_from_iter(oIter)
                 bIncCard, bDecCard = self.check_inc_dec(iCnt)
                 self._add_extra_level(oIter, sCardSetName, (iCnt, iParCnt,
                     oPhysCard, bIncCard, bDecCard), (3, (oAbsCard, sExpName)))
@@ -1644,7 +1644,7 @@ class CardSetCardListModel(CardListModel):
                 for oIter in self._dAbs2nd3rdLevel2Iter[tExpKey][
                         sCardSetName]:
                     iCnt = self.get_value(oIter, 1) + iChg
-                    self.set(oIter, 1, iCnt, 7, self._oCountColour)
+                    self.set(oIter, 1, iCnt)
                     if bRemove or not self.check_child_iter_stays(oIter,
                             oPhysCard):
                         bRemove = True
@@ -1676,7 +1676,7 @@ class CardSetCardListModel(CardListModel):
             for oIter in self._dAbsSecondLevel2Iter[oAbsCard][sCardSetName]:
                 iCnt = self.get_value(oIter, 1) + iChg
                 iParCnt = self.get_value(oIter, 2)
-                self.set(oIter, 1, iCnt, 7, self._oCountColour)
+                self.set(oIter, 1, iCnt)
                 if not self.check_child_iter_stays(oIter, oPhysCard):
                     bRemove = True
             if bRemove:
@@ -1688,7 +1688,7 @@ class CardSetCardListModel(CardListModel):
                 for oIter in self._dAbs2nd3rdLevel2Iter[tCSKey][sExpName]:
                     iCnt = self.get_value(oIter, 1) + iChg
                     iParCnt = self.get_value(oIter, 2)
-                    self.set(oIter, 1, iCnt, 7, self._oCountColour)
+                    self.set(oIter, 1, iCnt)
                     if bRemove or not self.check_child_iter_stays(oIter,
                             oPhysCard):
                         self.remove(oIter)
