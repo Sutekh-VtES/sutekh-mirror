@@ -79,13 +79,12 @@ class CardSetManagementModel(gtk.TreeStore):
                 # Do funky stuff to make sure parent is shown in the view
                 oParent = oCardSet
                 aToAdd = []
+                oIter = None
                 while oParent and oParent.name not in self._dName2Iter:
                     aToAdd.insert(0, oParent) # Insert at the head
                     oParent = oParent.parent
                 if oParent and oParent.name in self._dName2Iter:
                     oIter = self._dName2Iter[oParent.name]
-                else:
-                    oIter = None
             else:
                 # Just add
                 oIter = None
