@@ -5,6 +5,10 @@
 # Copyright 2006, 2007 Neil Muller <drnlmuller+sutekh@gmail.com>,
 # Copyright 2006 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
+# pylint: disable-msg=C0302
+# C0302 - This covers a lot of cases, and splitting it into multiple
+# files won't gain any clarity
+
 """Display interesting statistics and properties of the card set."""
 
 import gtk
@@ -68,9 +72,9 @@ def _disc_sort_cmp(oTuple1, oTuple2):
         return -iCmp
     return cmp(oTuple1[0].fullname, oTuple2[0].fullname)
 
-def _format_card_line(sString, sTrailer, iNum, iNumberLibrary):
+def _format_card_line(sString, sTrailer, iNum, iLibSize):
     """Format card lines for notebook"""
-    sPer = _percentage(iNum, iNumberLibrary, "Library")
+    sPer = _percentage(iNum, iLibSize, "Library")
     return "Number of %(type)s %(trail)s = %(num)d %(per)s\n" % {
             'type' : sString,
             'trail' : sTrailer,
@@ -244,6 +248,55 @@ def _check_same(aPhysCards):
         return False # Differing backs
     return True
 
+def _simple_back_checks(dCards, sType):
+    """Simple checks on the card backs. Returns None if we need
+       further investigation"""
+    if len(dCards) == 1 and not dCards.has_key(None):
+        sText = "All %s cards have identical backs\n" % sType.lower() + \
+                    UNSLEEVED % sType
+        return sText
+    elif dCards.has_key(None):
+        sText = "%s has cards from unspecified expansions." \
+                    " Ignoring the %s\n" % (sType, sType.lower())
+        return sText
+    return None
+
+def _percentage_backs(dCards, iSize, fPer, sType):
+    """Checks that the percentage of cards with a single back are not too
+       small"""
+    aPer = [float(dCards[x])/float(iSize) for x in dCards]
+    if min(aPer) < fPer/100.0:
+        return "Group of cards with the same back that's smaller" \
+                " than %2.1f%% of the %s.\n" % (fPer, sType.lower())
+    return None
+
+def _group_backs(dCards, aCards, iNum):
+    """Check for that cards of a single back don't belong to too few different
+       card groups"""
+    # No more than 2 distinct vampires of in a group of common backs
+    dCardsByExp = {}
+    bOK = True
+    sText = ""
+    for oExp in dCards:
+        if oExp != 'Other':
+            dCardsByExp[oExp] = [oCard for oCard in aCards if
+                    oCard.expansion == oExp]
+        else:
+            dCardsByExp[oExp] = [oCard for oCard in aCards if
+                    oCard.expansion not in ODD_BACKS]
+    for oExp, aExpCards in dCardsByExp.iteritems():
+        # For each expansion, count number of distinct cards
+        aNames = set([x.abstractCard.name for x in aExpCards])
+        if len(aNames) < iNum:
+            sText += "Group of fewer than %d different cards" \
+                    " with the same back.\n" % iNum
+            sText += "\t" + ", ".join(aNames) + "\n"
+            bOK = False
+    if not bOK:
+        return sText, dCardsByExp
+    else:
+        return None, dCardsByExp
+
 
 class DisciplineNumberSelect(gtk.HBox):
     # pylint: disable-msg=R0904
@@ -370,10 +423,10 @@ class AnalyzeCardList(CardListPlugin):
 
         self.iTotNumber = len(aAllCards)
         self.dCryptStats = {}
-        self.dLibraryStats = {}
+        self.dLibStats = {}
 
         self.iCryptSize = sum([self.dTypeNumbers[x] for x in CRYPT_TYPES])
-        self.iNumberLibrary = len(aAllCards) - self.iCryptSize
+        self.iLibSize = len(aAllCards) - self.iCryptSize
         self.get_crypt_stats(dCardLists['Vampire'], dCardLists['Imbued'])
         self.get_library_stats(aAllCards, dCardLists)
         # Do happy family analysis
@@ -399,7 +452,7 @@ class AnalyzeCardList(CardListPlugin):
 
         # Setup the main notebook
         oMainBox.pack_start(_wrap(self._prepare_main()))
-        if self.iNumberLibrary > 0:
+        if self.iLibSize > 0:
             oMainBox.pack_start(self._process_library())
         # pylint: disable-msg=E1101
         # vbox methods not seen
@@ -461,11 +514,11 @@ class AnalyzeCardList(CardListPlugin):
         aCryptCards = []
         for sType in CRYPT_TYPES:
             aCryptCards.extend(dCardLists[sType])
-        aLibraryCards = [x for x in aAllCards if x not in aCryptCards]
+        aLibCards = [x for x in aAllCards if x not in aCryptCards]
         # Extract the relevant stats
-        self.dLibraryStats['clan'] = {'No Clan' : 0}
-        self.dLibraryStats['discipline'] = {'No Discipline' : 0}
-        for oCard in aLibraryCards:
+        self.dLibStats['clan'] = {'No Clan' : 0}
+        self.dLibStats['discipline'] = {'No Discipline' : 0}
+        for oCard in aLibCards:
             if len(oCard.cardtype) > 1:
                 self.dTypeNumbers['Multirole'] += 1
                 dCardLists['Multirole'].append(oCard)
@@ -476,8 +529,8 @@ class AnalyzeCardList(CardListPlugin):
             else:
                 aClans = ['No Clan']
             for sClan in aClans:
-                self.dLibraryStats['clan'].setdefault(sClan, 0)
-                self.dLibraryStats['clan'][sClan] += 1
+                self.dLibStats['clan'].setdefault(sClan, 0)
+                self.dLibStats['clan'][sClan] += 1
             if len(oCard.discipline) > 0:
                 aDisciplines = [oP.discipline.fullname for oP in
                         oCard.discipline]
@@ -486,8 +539,8 @@ class AnalyzeCardList(CardListPlugin):
             else:
                 aDisciplines = ['No Discipline']
             for sDisc in aDisciplines:
-                self.dLibraryStats['discipline'].setdefault(sDisc, 0)
-                self.dLibraryStats['discipline'][sDisc] += 1
+                self.dLibStats['discipline'].setdefault(sDisc, 0)
+                self.dLibStats['discipline'][sDisc] += 1
 
     def _prepare_main(self):
         """Setup the main notebook display"""
@@ -536,16 +589,16 @@ class AnalyzeCardList(CardListPlugin):
         sMainText += 'Minimum draw cost = %d\n' % self.dCryptStats['min draw']
         sMainText += 'Maximum Draw cost = %d\n' % self.dCryptStats['max draw']
 
-        sMainText += "Total Library Size = %d\n" % self.iNumberLibrary
+        sMainText += "Total Library Size = %d\n" % self.iLibSize
 
-        if self.iNumberLibrary < 40:
+        if self.iLibSize < 40:
             sMainText += '<span foreground = "red">Less than 40 Library' \
                     ' Cards</span>\n'
-        elif self.iNumberLibrary < 60:
+        elif self.iLibSize < 60:
             sMainText += '<span foreground = "orange">Less than 60 Library' \
                     ' Cards - this deck is not legal for standard' \
                     ' constructed tournaments</span>'
-        elif self.iNumberLibrary > 90:
+        elif self.iLibSize > 90:
             sMainText += '<span foreground = "orange">More than 90 Library' \
                     ' Cards - this deck is not legal for standard' \
                     ' constructed tournaments</span>\n'
@@ -563,37 +616,36 @@ class AnalyzeCardList(CardListPlugin):
             if sType not in CRYPT_TYPES and sType != 'Multirole' and \
                     iCount > 0:
                 sTypeText += _format_card_line(sType, 'cards', iCount,
-                        self.iNumberLibrary)
+                        self.iLibSize)
         if self.dTypeNumbers['Multirole'] > 0:
             sTypeText += '\n' + _format_card_line('Multirole', 'cards',
-                    self.dTypeNumbers['Multirole'], self.iNumberLibrary)
+                    self.dTypeNumbers['Multirole'], self.iLibSize)
         oLibNotebook.append_page(_wrap(sTypeText),
                 gtk.Label('Card Types'))
         # Stats by discipline
         sDiscText = _format_card_line('Master', 'cards',
-                self.dTypeNumbers['Master'], self.iNumberLibrary)
+                self.dTypeNumbers['Master'], self.iLibSize)
         sDiscText += _format_card_line('non-master cards with No '
                 'discipline requirement', '',
-                self.dLibraryStats['discipline']['No Discipline'],
-                self.iNumberLibrary) + '\n'
+                self.dLibStats['discipline']['No Discipline'],
+                self.iLibSize) + '\n'
         # sort by number, then name
-        for sDisc, iNum in sorted(self.dLibraryStats['discipline'].items(),
+        for sDisc, iNum in sorted(self.dLibStats['discipline'].items(),
                 key=lambda x: (x[1], x[0]), reverse=True):
             if sDisc != 'No Discipline' and iNum > 0:
                 sDiscDesc = 'non-master cards with %s' % sDisc
                 sDiscText += _format_card_line(sDiscDesc, '', iNum,
-                        self.iNumberLibrary)
+                        self.iLibSize)
         oLibNotebook.append_page(_wrap(sDiscText),
                 gtk.Label('Disciplines'))
         # Stats by clan requirement
         sClanText = _format_card_line('cards with No clan requirement', '',
-                self.dLibraryStats['clan']['No Clan'], self.iNumberLibrary) \
-                        + '\n'
-        for sClan, iNum in sorted(self.dLibraryStats['clan'].items()):
+                self.dLibStats['clan']['No Clan'], self.iLibSize) + '\n'
+        for sClan, iNum in sorted(self.dLibStats['clan'].items()):
             if sClan != 'No Clan' and iNum > 0:
                 sClanDesc = 'cards requiring %s' % sClan
                 sClanText += _format_card_line(sClanDesc, '', iNum,
-                        self.iNumberLibrary)
+                        self.iLibSize)
         oLibNotebook.append_page(_wrap(sClanText),
                 gtk.Label('Clan Requirements'))
         return oLibNotebook
@@ -716,7 +768,7 @@ class AnalyzeCardList(CardListPlugin):
         # Build up Text
         sText = "\t\t<b>Master Cards :</b>\n\n"
         sText += "Number of Masters = %d %s\n" % (self.dTypeNumbers['Master'],
-                _percentage(iNum, self.iNumberLibrary, "Library"))
+                _percentage(iNum, self.iLibSize, "Library"))
         if aPool[1] > 0:
             sText += '\n<span foreground = "blue">Cost</span>\n'
             sText += _format_cost_numbers('Master', 'pool', aPool, iNum)
@@ -735,7 +787,7 @@ class AnalyzeCardList(CardListPlugin):
         dDisciplines, dVirtues, iNoneCount = _get_card_disciplines(aCards)
         iClanRequirement, dClan, dMulti = _get_card_clan_multi(aCards)
         # Build up Text
-        sPerCards = _percentage(iNum, self.iNumberLibrary, 'Library')
+        sPerCards = _percentage(iNum, self.iLibSize, 'Library')
         sText = "\t\t<b>%(type)s Cards :</b>\n\n" \
                 "Number of %(type)s cards = %(num)d %(per)s\n" % {
                         'type' : sType,
@@ -784,7 +836,7 @@ class AnalyzeCardList(CardListPlugin):
         iNumEvents = len(aCards)
         sEventText = "\t\t<b>Event Cards :</b>\n\n"
         sEventText += "Number of Event cards = %d %s\n\n" % (iNumEvents,
-                _percentage(iNumEvents, self.iNumberLibrary, "Library"))
+                _percentage(iNumEvents, self.iLibSize, "Library"))
         sEventText += '<span foreground = "blue">Event classes</span>\n'
         dEventTypes = {}
         for oCard in aCards:
@@ -794,7 +846,7 @@ class AnalyzeCardList(CardListPlugin):
         for sType, iCount in dEventTypes.iteritems():
             sEventText += '%d of type %s : %s (%s) \n' % (iCount, sType,
                     _percentage(iCount, iNumEvents, 'Events'),
-                    _percentage(iCount, self.iNumberLibrary, 'Library'))
+                    _percentage(iCount, self.iLibSize, 'Library'))
         return sEventText
 
     def _process_action(self, aCards):
@@ -835,8 +887,8 @@ class AnalyzeCardList(CardListPlugin):
     def _process_multi(self, aCards):
         """Fill the multirole card tab"""
         dMulti = {}
-        sPerCards = _percentage(self.dTypeNumbers['Multirole'],
-                self.iNumberLibrary, 'Library')
+        sPerCards = _percentage(self.dTypeNumbers['Multirole'], self.iLibSize,
+                'Library')
         sText = "\t\t<b>Multirole Cards :</b>\n\n" \
                 "Number of Multirole cards = %(num)d %(per)s\n" % {
                         'num' : self.dTypeNumbers['Multirole'],
@@ -850,7 +902,7 @@ class AnalyzeCardList(CardListPlugin):
                 dMulti[sKey] += 1
         for sMultiType, iNum in sorted(dMulti.items(), key=lambda x: x[1],
                 reverse=True):
-            sPer = _percentage(iNum, self.iNumberLibrary, 'Library')
+            sPer = _percentage(iNum, self.iLibSize, 'Library')
             sText += 'Number of %(multitype)s cards = %(num)d %(per)s\n' % {
                     'multitype' : sMultiType,
                     'num' : iNum,
@@ -861,7 +913,7 @@ class AnalyzeCardList(CardListPlugin):
 
     def _process_banned(self, aCards):
         """Fill the banned card tab"""
-        iTotal = self.iCryptSize + self.iNumberLibrary
+        iTotal = self.iCryptSize + self.iLibSize
         dBanned = {}
         sPerCards = _percentage(self.dTypeNumbers['Banned Cards'],
                 iTotal, 'Deck')
@@ -882,6 +934,66 @@ class AnalyzeCardList(CardListPlugin):
 
         return sText
 
+    def _check_crypt_backs(self, dCrypt, aCrypt):
+        """Check the backs on the crypt cards"""
+        sText = "\t<b>Crypt</b>\n\n"
+        sAddText = _simple_back_checks(dCrypt, 'Crypt')
+        bOK = True
+        if sAddText:
+            sText += sText
+            return sText
+        sAddText = _percentage_backs(dCrypt, self.iCryptSize, 20.0, 'Crypt')
+        if sAddText:
+            sText += sAddText
+            bOK = False
+        sAddText, _dCryptByExp = _group_backs(dCrypt, aCrypt, 3)
+        if sAddText:
+            sText += sAddText
+            bOK = False
+        if bOK:
+            sText += "Mixed backs, but seems sufficiently mixed.\n" \
+                    + UNSLEEVED % "Crypt"
+        else:
+            sText += SLEEVED % "Crypt"
+
+        return sText
+
+    def _check_lib_backs(self, dLib, aLib):
+        """Check the card backs for the library"""
+        sText = "\n\t<b>Library</b>\n\n"
+        sAddText = _simple_back_checks(dLib, 'Library')
+        bOK = True
+        if sAddText:
+            sText += sText
+            return sText
+        sAddText = _percentage_backs(dLib, self.iLibSize, 20.0, 'Library')
+        if sAddText:
+            sText += sAddText
+            bOK = False
+        sAddText, dLibByExp = _group_backs(dLib, aLib, 5)
+        if sAddText:
+            sText += sAddText
+            bOK = False
+        for aExpCards in dLibByExp.itervalues():
+            # if a single back contains less than 3 types of library card
+            aAllTypes = set()
+            for oCard in aExpCards:
+                aTypes = [y.name for y in oCard.abstractCard.cardtype]
+                aAllTypes.add("/".join(aTypes))
+            if len(aAllTypes) < 3:
+                aNames = set([x.abstractCard.name for x in aExpCards])
+                sText += "Group of cards with the same back" \
+                        " containing less than 3 different card types.\n"
+                sText += "\t" + ", ".join(aNames) + "\n"
+                bOK = False
+        if bOK:
+            sText += "Mixed backs, but seems sufficiently mixed.\n" + \
+                    UNSLEEVED % "Library"
+        else:
+            sText += SLEEVED % "Library"
+
+        return sText
+
     def _process_backs(self, aPhysCards):
         """Run some heuristic tests to see if cards are 'of sufficiently
            mixed card type'"""
@@ -899,96 +1011,8 @@ class AnalyzeCardList(CardListPlugin):
                 "if it's to be played without sleeves. This tests some " \
                 "obvious cases, but check with the event judge if playing " \
                 "without sleeves\n\n"
-        sText += "\t<b>Crypt</b>\n\n"
-        if len(dCrypt) == 1 and not dCrypt.has_key(None):
-            sText += "All crypt cards have identical backs\n" + \
-                    UNSLEEVED % "Crypt"
-        elif dCrypt.has_key(None):
-            sText += "Crypt has cards from unspecified expansions." \
-                    " Ignoring the crypt\n"
-        else:
-            # Crypt checks
-            # < 20% of known cards have a single back
-            bOK = True
-            aPer = [float(dCrypt[x])/float(self.iCryptSize) for x in dCrypt]
-            if min(aPer) < 0.2:
-                sText += "Group of cards with the same back that's smaller" \
-                        " than 20% of the crypt.\n"
-                bOK = False
-            # No more than 2 distinct vampires of in a group of common backs
-            dCryptByExp = {}
-            for oExp in dCrypt:
-                if oExp != 'Other':
-                    dCryptByExp[oExp] = [oCard for oCard in aCrypt if
-                            oCard.expansion == oExp]
-                else:
-                    dCryptByExp[oExp] = [oCard for oCard in aCrypt if
-                            oCard.expansion not in ODD_BACKS]
-            for oExp, aCards in dCryptByExp.iteritems():
-                # For each expansion, count number of distinct cards
-                aNames = set([x.abstractCard.name for x in aCards])
-                if len(aNames) < 3:
-                    sText += "Group of fewer than 3 different crypt cards" \
-                            " with the same back.\n"
-                    sText += "\t" + ", ".join(aNames) + "\n"
-                    bOK = False
-                    break
-            if bOK:
-                sText += "Mixed backs, but seems sufficiently mixed.\n" \
-                        + UNSLEEVED % "Crypt"
-            else:
-                sText += SLEEVED % "Crypt"
-
-        sText += "\n\t<b>Library</b>\n\n"
-        if len(dLib) == 1 and not dLib.has_key(None):
-            sText += "All Library cards have identicial backs\n" + \
-                    UNSLEEVED % "Library"
-        elif dLib.has_key(None):
-            sText += "Library has cards from unspecified expansions." \
-                    " Ignoring the library.\n"
-        else:
-            bOK = True
-            # Library checks
-            # < 20% of known cards have a single back
-            aPer = [float(dLib[x])/float(self.iNumberLibrary) for x in dLib]
-            if min(aPer) < 0.2:
-                sText += "Group of cards with the same back that's smaller" \
-                        " than 20% of the library.\n" + SLEEVED % "Library"
-                bOK = False
-            dLibByExp = {}
-            for oExp in dLib:
-                if oExp:
-                    if oExp != 'Other':
-                        dLibByExp[oExp] = [oCard for oCard in aLib if
-                                oCard.expansion == oExp]
-                    else:
-                        dLibByExp[oExp] = [oCard for oCard in aLib if
-                                oCard.expansion not in ODD_BACKS]
-            for oExp, aCards in dLibByExp.iteritems():
-                # For each expansion, count number of distinct cards
-                aNames = set([x.abstractCard.name for x in aCards])
-                # If <= 5 distinct cards of a single back
-                if len(aNames) < 5:
-                    sText += "Group of fewer than 5 different library cards" \
-                            " with the same back.\n"
-                    sText += "\t" + ", ".join(aNames) + "\n"
-                    bOK = False
-                    break
-                # if a single back contains less than 3 types of library card
-                aAllTypes = set()
-                for oCard in aCards:
-                    aTypes = [y.name for y in oCard.abstractCard.cardtype]
-                    sTypes = "/".join(aTypes)
-                    aAllTypes.add(sTypes)
-                if len(aAllTypes) < 3:
-                    sText += "Group of library cards with the same back" \
-                            " with less than 3 different card types.\n"
-                    sText += "\t" + ", ".join(aNames) + "\n"
-            if bOK:
-                sText += "Mixed backs, but seems sufficiently mixed.\n" \
-                        + UNSLEEVED % "Library"
-            else:
-                sText += SLEEVED % "Library"
+        sText += self._check_crypt_backs(dCrypt, aCrypt)
+        sText += self._check_lib_backs(dLib, aLib)
 
         return sText
 
@@ -1020,12 +1044,12 @@ class AnalyzeCardList(CardListPlugin):
             return
         # OK, for analysis, so set eveything up
         # Masters analysis
-        iHFMasters = int(round(0.2 * self.iNumberLibrary))
-        iNonMasters = self.iNumberLibrary - self.dTypeNumbers['Master']
+        iHFMasters = int(round(0.2 * self.iLibSize))
+        iNonMasters = self.iLibSize - self.dTypeNumbers['Master']
         sHappyFamilyText += "\n\t<b>Master Cards</b>\n"
         sHappyFamilyText += str(self.dTypeNumbers['Master']) + " Masters " + \
                 _percentage(self.dTypeNumbers['Master'],
-                        self.iNumberLibrary, "Library") + \
+                        self.iLibSize, "Library") + \
                 ",\nHappy Families recommends 20%, which would be " + \
                 str(iHFMasters) + '  : '
         sHappyFamilyText += "<span foreground = \"blue\">Difference = " + \
@@ -1052,7 +1076,7 @@ class AnalyzeCardList(CardListPlugin):
         aTheseDiscs = oDiscSelect.get_disciplines()
         if not aTheseDiscs:
             return # Just ignore the zero selection case
-        iNonMasters = self.iNumberLibrary - self.dTypeNumbers['Master']
+        iNonMasters = self.iLibSize - self.dTypeNumbers['Master']
         oResLabel.hide()
         oResLabel.set_markup(self._happy_lib_analysis(aTheseDiscs,
             iNonMasters))
@@ -1084,16 +1108,16 @@ class AnalyzeCardList(CardListPlugin):
         if iDiff > 0:
             iHFNoDiscipline += iDiff # Shove rounding errors here
         sHappyFamilyText += "Number of Cards requiring No discipline : %s\n" \
-                % self.dLibraryStats['discipline']['No Discipline']
+                % self.dLibStats['discipline']['No Discipline']
         sHappyFamilyText += "Happy Families recommends %d (%.1f %%): " % (
                 iHFNoDiscipline, (80 * self.iCryptSize / fDemon) )
         sHappyFamilyText += '<span foreground = "blue">Difference = ' \
                 '%s</span>\n\n' % abs(iHFNoDiscipline -
-                        self.dLibraryStats['discipline']['No Discipline'])
+                        self.dLibStats['discipline']['No Discipline'])
         for sDisc in aDiscsToUse:
             iHFNum = dDiscNumbers[sDisc]
-            if self.dLibraryStats['discipline'].has_key(sDisc):
-                iLibNum = self.dLibraryStats['discipline'][sDisc]
+            if self.dLibStats['discipline'].has_key(sDisc):
+                iLibNum = self.dLibStats['discipline'][sDisc]
             else:
                 iLibNum = 0
             sHappyFamilyText += "Number of Cards requiring %(disc)s :" \
