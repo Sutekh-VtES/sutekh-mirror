@@ -17,7 +17,7 @@ from logging import Logger
 from sqlobject import sqlhub, SQLObjectNotFound
 from sutekh.core.SutekhObjects import PhysicalCardSet, PHYSICAL_SET_LIST
 from sutekh.core.CardLookup import DEFAULT_LOOKUP
-from sutekh.core.CardSetHolder import CachedCardSetHolder
+from sutekh.core.CardSetHolder import CachedCardSetHolder, CardSetWrapper
 from sutekh.SutekhUtility import refresh_tables
 from sutekh.io.PhysicalCardParser import PhysicalCardParser
 from sutekh.io.PhysicalCardSetParser import PhysicalCardSetParser
@@ -67,7 +67,11 @@ class ZipFileWrapper(object):
         for oPCSet in oPhysicalCardSets:
             sZName = oPCSet.name
             oWriter = PhysicalCardSetWriter()
-            oString = oWriter.gen_xml_string(sZName)
+            oHolder = CardSetWrapper(oPCSet)
+            oFile = StringIO()
+            oWriter.write(oFile, oHolder)
+            oString = oFile.getvalue()
+            oFile.close()
             sZName = sZName.replace(" ", "_")
             sZName = sZName.replace("/", "_")
             sZipName = 'pcs_%s.xml' % sZName

@@ -1,3 +1,6 @@
+15 Jun 2009
+ * Change PhysicalCardSetWriter to use the new IOBase interface.
+
 12 Jun 2009
  * Pull card count colour completely out of the model. Minor tweaks to the
    gtk model insert loop (10% faster on large models).

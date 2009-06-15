@@ -9,8 +9,11 @@
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.tests.core.test_PhysicalCardSet import CARD_SET_NAMES, \
         get_phys_cards
-from sutekh.core.SutekhObjects import PhysicalCardSet
+from sutekh.core.SutekhObjects import PhysicalCardSet, IPhysicalCardSet
+from sutekh.core.CardSetHolder import CardSetWrapper
 from sutekh.io.PhysicalCardSetWriter import PhysicalCardSetWriter
+from sutekh.io.XmlFileHandling import PhysicalCardSetXmlFile
+from StringIO import StringIO
 import unittest
 
 EXPECTED_1 = '<physicalcardset author="A test author" ' \
@@ -71,24 +74,24 @@ class PhysicalCardSetWriterTests(SutekhTest):
         # Check output
 
         oWriter = PhysicalCardSetWriter()
-        sWriterXML = oWriter.gen_xml_string(oPhysCardSet1.name)
-        self.assertEqual(sWriterXML,
-            oWriter.gen_xml_string(CARD_SET_NAMES[0]))
-        # The writer uses database order - this is not
-        # the same across databases, hence the nature of the checks below
+        oFile = StringIO()
+        oWriter.write(oFile, CardSetWrapper(oPhysCardSet1))
+        sWriterXML = oFile.getvalue()
+        oFile.close()
         self.assertEqual(sWriterXML, EXPECTED_1)
         self.assertEqual(len(sWriterXML), len(EXPECTED_1))
 
         sTempFileName =  self._create_tmp_file()
         fOut = open(sTempFileName, 'w')
-        oWriter.write(fOut, CARD_SET_NAMES[0])
+        oPCS = IPhysicalCardSet(CARD_SET_NAMES[0])
+        oWriter.write(fOut, CardSetWrapper(oPCS))
         fOut.close()
 
         fIn = open(sTempFileName, 'rU')
         sData = fIn.read()
         self.assertEqual(sData, sWriterXML)
         self.assertEqual(len(sData), len(EXPECTED_1))
-        self.assertEqual(sorted(sData), sorted(EXPECTED_1))
+        self.assertEqual(sData, EXPECTED_1)
 
         oPhysCardSet2 = PhysicalCardSet(name=CARD_SET_NAMES[1])
         oPhysCardSet2.author = 'A test author'
@@ -100,12 +103,20 @@ class PhysicalCardSetWriterTests(SutekhTest):
             oPhysCardSet2.addPhysicalCard(aAddedPhysCards[iLoop].id)
             oPhysCardSet2.syncUpdate()
 
-        sWriterXML = oWriter.gen_xml_string(oPhysCardSet2.name)
-        # The writer uses database order - this is not
-        # the same across databases, hence the nature of the checks below
+        oFile = StringIO()
+        oWriter.write(oFile, CardSetWrapper(oPhysCardSet2))
+        sWriterXML = oFile.getvalue()
+        oFile.close()
         self.assertEqual(len(sWriterXML), len(EXPECTED_2))
-        self.assertEqual(sorted(sWriterXML), sorted(EXPECTED_2))
+        self.assertEqual(sWriterXML, EXPECTED_2)
 
+        sTempFileName =  self._create_tmp_file()
+        oFileXML = PhysicalCardSetXmlFile(sTempFileName)
+        oFileXML.write(CARD_SET_NAMES[1])
+        fIn = open(sTempFileName, 'rU')
+        sData = fIn.read()
+        self.assertEqual(len(sData), len(EXPECTED_2))
+        self.assertEqual(sData, EXPECTED_2)
 
 if __name__ == "__main__":
     unittest.main()

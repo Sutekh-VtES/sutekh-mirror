@@ -21,17 +21,13 @@
    </physicalcardset>
    """
 
-from sutekh.core.SutekhObjects import PhysicalCardSet
-from sqlobject import SQLObjectNotFound
 from sutekh.SutekhUtility import pretty_xml
 # pylint: disable-msg=E0611, F0401
 # xml.etree is a python2.5 thing
 try:
-    from xml.etree.ElementTree import Element, SubElement, ElementTree, \
-            tostring
+    from xml.etree.ElementTree import Element, SubElement, ElementTree
 except ImportError:
-    from elementtree.ElementTree import Element, SubElement, ElementTree, \
-            tostring
+    from elementtree.ElementTree import Element, SubElement, ElementTree
 # pylint: enable-msg=E0611, F0401
 
 class PhysicalCardSetWriter(object):
@@ -42,31 +38,24 @@ class PhysicalCardSetWriter(object):
        """
     sMyVersion = "1.3"
 
-    def make_tree(self, sPhysicalCardSetName):
-        """Convert the card set sPhysicalCardSetName to an ElementTree."""
+    def make_tree(self, oHolder):
+        """Convert the card set wrapped in oHolder to an ElementTree."""
         dPhys = {}
-        try:
-            # pylint: disable-msg=E1101
-            # SQLObject confuses pylint
-            oPCS = PhysicalCardSet.byName(sPhysicalCardSetName)
-            bInUse = oPCS.inuse
-        except SQLObjectNotFound:
-            raise RuntimeError('Unable to find card set %s' %
-                    sPhysicalCardSetName)
+        bInUse = oHolder.inuse
 
         oRoot = Element('physicalcardset', sutekh_xml_version=self.sMyVersion,
-                name=sPhysicalCardSetName, author=oPCS.author)
+                name=oHolder.name, author=oHolder.author)
         oCommentNode = SubElement(oRoot, 'comment')
-        oCommentNode.text = oPCS.comment
+        oCommentNode.text = oHolder.comment
         oAnnotationNode = SubElement(oRoot, 'annotations')
-        oAnnotationNode.text = oPCS.annotations
-        if oPCS.parent:
-            oRoot.attrib['parent'] = oPCS.parent.name
+        oAnnotationNode.text = oHolder.annotations
+        if oHolder.parent:
+            oRoot.attrib['parent'] = oHolder.parent
 
         if bInUse:
             oRoot.attrib['inuse'] = 'Yes'
 
-        for oCard in oPCS.cards:
+        for oCard in oHolder.cards:
             # ElementTree 1.2 doesn't support searching for attributes,
             # so this is easier than using the tree directly. For
             # elementtree 1.3, this should be reworked
@@ -88,12 +77,7 @@ class PhysicalCardSetWriter(object):
         pretty_xml(oRoot)
         return oRoot
 
-    def gen_xml_string(self, sPhysicalCardSetName):
-        """Generate a string containing the XML output."""
-        oRoot = self.make_tree(sPhysicalCardSetName)
-        return tostring(oRoot)
-
-    def write(self, fOut, sPhysicalCardSetName):
+    def write(self, fOut, oHolder):
         """Generate prettier XML and write it to the file fOut."""
-        oRoot = self.make_tree(sPhysicalCardSetName)
+        oRoot = self.make_tree(oHolder)
         ElementTree(oRoot).write(fOut)

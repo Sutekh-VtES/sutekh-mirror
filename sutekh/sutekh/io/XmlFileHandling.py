@@ -10,14 +10,15 @@
 
 """Routines for manipulating XML Files"""
 
-from sutekh.core.SutekhObjects import PhysicalCardSet
-from sutekh.core.CardSetHolder import CardSetHolder
+from sutekh.core.SutekhObjects import PhysicalCardSet, IPhysicalCardSet
+from sutekh.core.CardSetHolder import CardSetHolder, CardSetWrapper
 from sutekh.core.CardLookup import DEFAULT_LOOKUP
 from sutekh.SutekhUtility import gen_temp_file, gen_temp_dir, safe_filename
 from sutekh.io.PhysicalCardParser import PhysicalCardParser
 from sutekh.io.PhysicalCardSetParser import PhysicalCardSetParser
 from sutekh.io.AbstractCardSetParser import AbstractCardSetParser
 from sutekh.io.PhysicalCardSetWriter import PhysicalCardSetWriter
+from sqlobject import SQLObjectNotFound
 import os
 
 def _do_read(oParser, sFileName, oLookup, bIgnoreWarnings):
@@ -110,7 +111,12 @@ class PhysicalCardSetXmlFile(object):
             fOut = file(sFileName,'w')
         else:
             fOut = file(self.sXmlFile,'w')
-        oWriter.write(fOut, sPhysicalCardSetName)
+        try:
+            oPCS = IPhysicalCardSet(sPhysicalCardSetName)
+        except SQLObjectNotFound:
+            raise RuntimeError('No card set named %s ' % sPhysicalCardSetName)
+        oHolder = CardSetWrapper(oPCS)
+        oWriter.write(fOut, oHolder)
         fOut.close()
 
     def delete(self):
