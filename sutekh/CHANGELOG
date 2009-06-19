@@ -1,3 +1,9 @@
+19 Jun 2009
+ * Convert ARDB XML Parser's to the new IOBase interface. Combine some common
+   code.
+ * Add compatiblity check to CardSetImporter so it can work with both old and
+   new interfaces.
+
 15 Jun 2009
  * Change PhysicalCardSetWriter to use the new IOBase interface.
 

@@ -7,6 +7,7 @@
 """Test reading a card set from an ARDB XML inventory file"""
 
 import unittest
+from StringIO import StringIO
 from sutekh.tests.TestCore import DummyHolder
 from sutekh.io.ARDBXMLInvParser import ARDBXMLInvParser
 
@@ -72,10 +73,10 @@ class ArdbXMLInvParserTests(unittest.TestCase):
     def test_basic(self):
         """Run the input test."""
         oHolder = DummyHolder()
-        oParser = ARDBXMLInvParser(oHolder)
+        oParser = ARDBXMLInvParser()
 
-        for sLine in self.sTestText1.split("\n"):
-            oParser.feed(sLine + "\n")
+        fIn = StringIO(self.sTestText1)
+        oParser.parse(fIn, oHolder)
 
         self.assertEqual(oHolder.name, "")
 

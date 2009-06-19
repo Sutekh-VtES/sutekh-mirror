@@ -17,21 +17,23 @@ except ImportError:
 from sutekh.core.SutekhObjects import csv_to_canonical
 from sutekh.core.ArdbInfo import unescape_ardb_expansion_name
 
-class XMLState(object):
+class ARDBInvXMLState(object):
     """Simple State tracker used by the XMLParser"""
     # tag states of interest
     # We try and honour set info, although current ARDB seems a bit odd in
     # how it sets this
     NOTAG, INCARD, CARDNAME, CARDSET, ADVANCED = range(5)
 
+    COUNT_KEY = 'have'
+
     def __init__(self, oHolder):
         self._sData = ""
         self._sCardName = None
         self._sCardSet = None
-        self._sAdvanced = ''
         self._iCount = 0
         self._iState = self.NOTAG
         self._oHolder = oHolder
+        self._sAdvanced = ''
 
     def reset(self):
         """Reset internal state"""
@@ -54,7 +56,7 @@ class XMLState(object):
         elif self._iState == self.NOTAG:
             if sTag == 'vampire' or sTag == 'card':
                 self._iState = self.INCARD
-                self._iCount = int(dAttributes['have'])
+                self._iCount = int(dAttributes[self.COUNT_KEY])
 
     def end(self, sTag):
         """End tage encountered"""
@@ -97,15 +99,13 @@ class XMLState(object):
                 self._sData = sText
 
 
-class ARDBXMLInvParser(XMLParser, object):
+class ARDBXMLInvParser(object):
     """Parser for the ARDB Inventory XML format."""
-    def __init__(self, oHolder):
-        self._oHolder = oHolder
-        self._oState = XMLState(self._oHolder)
-        super(ARDBXMLInvParser, self).__init__(target=self._oState)
-        self.reset()
+    _cState = ARDBInvXMLState
 
-    def reset(self):
-        """Reset parser state"""
-        self._oState.reset()
+    def parse(self, fIn, oHolder):
+        """Parse XML file into the card set holder"""
+        oParser = XMLParser(target=self._cState(oHolder))
+        for sLine in fIn:
+            oParser.feed(sLine)
 
