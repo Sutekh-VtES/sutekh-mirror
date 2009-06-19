@@ -37,8 +37,9 @@ class ACSImporter(CardListPlugin):
     # ** magic OK
     def __init__(self, *aArgs, **kwargs):
         super(ACSImporter, self).__init__(*aArgs, **kwargs)
-        # Parser classes should be instantiable using Parser(oCardSetHolder)
-        # Parser objects should have a .feed(sLine) method
+        # Parser classes should be instantiable using Parser()
+        # Parser objects should have a .parse(oFile, oCardSetHolder) method
+        # (see the interface in IOBase)
         self._dParsers = {
             'ELDB HTML File': ELDBHTMLParser,
             'ARDB Text File': ARDBTextParser,
@@ -155,9 +156,15 @@ class ACSImporter(CardListPlugin):
         # pylint: disable-msg=W0703
         # we really do want all the exceptions
         try:
-            oParser = cParser(oHolder)
-            for sLine in fIn:
-                oParser.feed(sLine)
+            # FIXME: Remove compatibility with old parsers when they've all
+            # been updated.
+            if hasattr(cParser, 'parse'):
+                oParser = cParser()
+                oParser.parse(fIn, oHolder)
+            else:
+                oParser = cParser(oHolder)
+                for sLine in fIn:
+                    oParser.feed(sLine)
         except Exception, oExp:
             sMsg = "Reading the card set failed with the following error:\n" \
                    "%s\n The file is probably not in the format the Parser" \
@@ -203,8 +210,6 @@ class ACSImporter(CardListPlugin):
         except RuntimeError, oExp:
             sMsg = "Creating the card set failed with the following error:\n"
             sMsg += str(oExp) + "\n"
-            sMsg += "The file is probably not in the format the Parser" \
-                    " expects\n"
             sMsg += "Aborting"
             do_complaint_error(sMsg)
             return
