@@ -13,7 +13,7 @@ from sutekh.core.SutekhObjects import PhysicalCardSet
 from sutekh.io.WriteELDBDeckFile import WriteELDBDeckFile
 import unittest
 
-EXPECTED = """"Test Set 1"
+EXPECTED_1 = """"Test Set 1"
 "A test author"
 "A test comment"
 1
@@ -47,16 +47,9 @@ class ELDBDeckWriterTests(SutekhTest):
         # Check output
 
         oWriter = WriteELDBDeckFile()
-        sTempFileName =  self._create_tmp_file()
-        fOut = open(sTempFileName, 'w')
-        oWriter.write(fOut, oPhysCardSet1)
-        fOut.close()
+        sData = self._round_trip_obj(oWriter, oPhysCardSet1)
 
-        fIn = open(sTempFileName, 'rU')
-        sData = fIn.read()
-        fIn.close()
-
-        self.assertEqual(sData, EXPECTED)
+        self.assertEqual(sData, EXPECTED_1)
 
 if __name__ == "__main__":
     unittest.main()

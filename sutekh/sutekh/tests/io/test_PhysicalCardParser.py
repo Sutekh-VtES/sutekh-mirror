@@ -12,11 +12,24 @@ from sutekh.core.SutekhObjects import IAbstractCard, IPhysicalCard, \
         IPhysicalCardSet, PhysicalCardSet
 from sutekh.core.CardSetHolder import CardSetHolder
 from sutekh.io.PhysicalCardParser import PhysicalCardParser
-from sutekh.io.IdentifyXMLFile import IdentifyXMLFile
 from sutekh.io.XmlFileHandling import PhysicalCardXmlFile
 from sutekh.tests.core.test_PhysicalCardSet import ABSTRACT_CARDS
 import unittest, os
 from StringIO import StringIO
+
+LAST_WRITER_VERSION = "1.0"
+
+def make_example_pcxml():
+    """Create the example XML File"""
+    # pylint: disable-msg=E1101
+    # E1101: SQLObject + PyProtocols magic confuses pylint
+    oAC = IAbstractCard(ABSTRACT_CARDS[0])
+    oPC = IPhysicalCard((oAC, None))
+
+    sExample = '<cards sutekh_xml_version="%s"><card count="1" ' \
+            'expansion="None Specified" id="%d" name="%s" /></cards>' \
+            % (LAST_WRITER_VERSION, oPC.id, oAC.name)
+    return sExample
 
 
 class PhysicalCardTests(SutekhTest):
@@ -25,21 +38,11 @@ class PhysicalCardTests(SutekhTest):
 
     def test_physical(self):
         """Test physical card handling"""
-        # pylint: disable-msg=E1101, R0915, R0914
+        # pylint: disable-msg=E1101
         # E1101: SQLObject + PyProtocols magic confuses pylint
-        # R0915, R0914: Want a long, sequential test case to minimise
-        # repeated setups, so it has lots of lines + variables
 
         # test IO
-
-        oAC = IAbstractCard(ABSTRACT_CARDS[0])
-        oPC = IPhysicalCard((oAC, None))
-        sLastWriterVersion = "1.0"
-
-        sExample = '<cards sutekh_xml_version="%s"><card count="1" ' \
-                   'expansion="None Specified" id="%d" name="%s" /></cards>' \
-                   % (sLastWriterVersion, oPC.id, oAC.name)
-
+        sExample = make_example_pcxml()
         oParser = PhysicalCardParser()
         oHolder = CardSetHolder()
         oParser.parse(StringIO(sExample), oHolder)
@@ -54,10 +57,6 @@ class PhysicalCardTests(SutekhTest):
         fOut.write(sExample)
         fOut.close()
 
-        oIdFile = IdentifyXMLFile()
-        oIdFile.id_file(sTempFileName)
-        self.assertEqual(oIdFile.type, 'PhysicalCard')
-
         fIn = open(sTempFileName, 'rU')
         oHolder = CardSetHolder()
         oParser.parse(fIn, oHolder)
@@ -67,13 +66,13 @@ class PhysicalCardTests(SutekhTest):
         # Test incorrect input
         oHolder = CardSetHolder()
         self.assertRaises(RuntimeError, oParser.parse, StringIO(
-            '<ccaardd sutekh_xml_version="%s"><card count="1" ' \
-            'expansion="None Specified" id="%d" name="%s" /></ccaardd>' \
-            % (sLastWriterVersion, oPC.id, oAC.name)), oHolder)
+            '<ccaardd sutekh_xml_version="1.0"><card count="1" ' \
+            'expansion="None Specified" id="12" name="Abbot" /></ccaardd>'),
+            oHolder)
         self.assertRaises(RuntimeError, oParser.parse, StringIO(
             '<cards sutekh_xml_version="5.0"><card count="1" ' \
-            'expansion="None Specified" id="%d" name="%s" /></cards>' \
-            % (oPC.id, oAC.name)), oHolder)
+            'expansion="None Specified" id="12" name="Abbot" /></cards>'),
+            oHolder)
 
         # Check read results
         oMyCollection = IPhysicalCardSet("My Collection")

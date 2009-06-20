@@ -9,8 +9,11 @@
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.tests.core.test_PhysicalCardSet import CARD_SET_NAMES, \
         get_phys_cards
-from sutekh.core.SutekhObjects import IAbstractCard, IPhysicalCard, \
-        IPhysicalCardSet, PhysicalCardSet
+from sutekh.tests.io.test_AbstractCardSetParser import ACS_EXAMPLE_1, \
+        ACS_EXAMPLE_2
+from sutekh.tests.io.test_PhysicalCardSetParser import PCS_EXAMPLE_1
+from sutekh.tests.io.test_PhysicalCardParser import make_example_pcxml
+from sutekh.core.SutekhObjects import IPhysicalCardSet, PhysicalCardSet
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
 from sutekh.gui.ProgressDialog import SutekhCountLogHandler
 from sutekh.core.CardSetUtilities import delete_physical_card_set
@@ -100,47 +103,14 @@ class ZipFileWrapperTest(SutekhTest):
         self.assertEqual(len(oPhysCardSet2.cards), 5)
 
         # Create a test zipfile with old data
-        sACS1 = '<abstractcardset author="A test author" ' \
-                'comment="A test comment" name="AC Set 1" ' \
-                'sutekh_xml_version="1.1"><annotations /><card count="1" ' \
-                'id="11" name="Abebe" /><card count="1" id="8" name="Abbot" ' \
-                '/><card count="1" id="1" name=".44 Magnum" /><card ' \
-                'count="1" id="2" name="AK-47" /><card count="1" id="14" ' \
-                'name="Abombwe" /></abstractcardset>'
-
-        sACS2 = '<abstractcardset author="A test author" ' \
-                'comment="A test comment" name="AC Set 2" ' \
-                'sutekh_xml_version="1.1"><annotations /><card count="2" ' \
-                'id="11" name="Abebe" /><card count="1" id="8" name="Abbot" ' \
-                '/><card count="2" id="2" name=".44 Magnum" /><card ' \
-                'count="2" id="2" name="AK-47" /><card count="2" id="14" ' \
-                'name="Abombwe" /></abstractcardset>'
-
-        sPCS1 = '<physicalcardset author="A test author" ' \
-                'comment="A test comment" name="Test Set 1" '\
-                'sutekh_xml_version="1.2"><annotations /><card count="1" ' \
-                'expansion="None Specified" id="11" name="Abebe" /><card ' \
-                'count="1" expansion="None Specified" id="1" ' \
-                'name=".44 Magnum" /><card count="1" expansion="None ' \
-                'Specified" id="8" name="Abbot" /><card count="1" ' \
-                'expansion="None Specified" id="2" name="AK-47" /><card ' \
-                'count="1" expansion="None Specified" id="14" ' \
-                'name="Abombwe" /></physicalcardset>'
-
-        oAC = IAbstractCard('.44 magnum')
-        oPC = IPhysicalCard((oAC, None))
-        sLastWriterVersion = "1.0"
-
-        sPhysicalCards = '<cards sutekh_xml_version="%s"><card count="1" ' \
-                   'expansion="None Specified" id="%d" name="%s" /></cards>' \
-                   % (sLastWriterVersion, oPC.id, oAC.name)
+        sPhysicalCards = make_example_pcxml()
 
         sTempFileName =  self._create_tmp_file()
         oZipFile = zipfile.ZipFile(sTempFileName, 'w')
         oZipFile.writestr('PhysicalCardList.xml', sPhysicalCards)
-        oZipFile.writestr('acs_set_1.xml', sACS1)
-        oZipFile.writestr('acs_set_2.xml', sACS2)
-        oZipFile.writestr('pcs_set_2.xml', sPCS1)
+        oZipFile.writestr('acs_set_1.xml', ACS_EXAMPLE_1)
+        oZipFile.writestr('acs_set_2.xml', ACS_EXAMPLE_2)
+        oZipFile.writestr('pcs_set_2.xml', PCS_EXAMPLE_1)
         oZipFile.close()
 
         # Check it loads correctly
@@ -157,8 +127,8 @@ class ZipFileWrapperTest(SutekhTest):
 
         self.assertEqual(len(oPhysCardSet1.cards), 5)
 
-        oACSCardSet1 = IPhysicalCardSet("(ACS) AC Set 1")
-        oACSCardSet2 = IPhysicalCardSet("(ACS) AC Set 2")
+        oACSCardSet1 = IPhysicalCardSet("(ACS) Test Set 1")
+        oACSCardSet2 = IPhysicalCardSet("(ACS) Test Set 2")
 
         self.assertEqual(len(oACSCardSet1.cards), 5)
         self.assertEqual(len(oACSCardSet2.cards), 9)

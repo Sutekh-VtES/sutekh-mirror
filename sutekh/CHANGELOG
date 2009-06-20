@@ -1,3 +1,6 @@
+20 Jun 2009
+ * Rework the io tests to remove some duplicated code.
+
 19 Jun 2009
  * Convert ARDB XML Parser's to the new IOBase interface. Combine some common
    code.

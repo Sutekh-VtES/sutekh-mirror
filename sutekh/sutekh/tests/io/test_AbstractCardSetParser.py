@@ -17,6 +17,22 @@ from sutekh.tests.core.test_PhysicalCardSet import CARD_SET_NAMES, \
 import unittest, os
 from StringIO import StringIO
 
+ACS_EXAMPLE_1 = '<abstractcardset author="A test author" ' \
+  'comment="A test comment" name="Test Set 1" ' \
+  'sutekh_xml_version="1.1"><annotations /><card count="1" ' \
+  'id="11" name="Abebe" /><card count="1" id="8" name="Abbot" ' \
+  '/><card count="1" id="1" name=".44 Magnum" /><card ' \
+  'count="1" id="2" name="AK-47" /><card count="1" id="14" ' \
+  'name="Abombwe" /></abstractcardset>'
+
+ACS_EXAMPLE_2 = '<abstractcardset author="A test author" ' \
+  'comment="A test comment" name="Test Set 2" ' \
+  'sutekh_xml_version="1.1"><annotations /><card count="2" ' \
+  'id="11" name="Abebe" /><card count="1" id="8" name="Abbot" ' \
+  '/><card count="2" id="2" name=".44 Magnum" /><card ' \
+  'count="2" id="2" name="AK-47" /><card count="2" id="14" ' \
+  'name="Abombwe" /></abstractcardset>'
+
 
 class AbstractCardSetParserTest(SutekhTest):
     """class for the Abstract Card Set Parser"""
@@ -30,31 +46,15 @@ class AbstractCardSetParserTest(SutekhTest):
         # It is expected that reading in an ACS will create an
         # equivalent PCS.
 
-        sExample1 = '<abstractcardset author="A test author" ' \
-                'comment="A test comment" name="Test Set 1" ' \
-                'sutekh_xml_version="1.1"><annotations /><card count="1" ' \
-                'id="11" name="Abebe" /><card count="1" id="8" name="Abbot" ' \
-                '/><card count="1" id="1" name=".44 Magnum" /><card ' \
-                'count="1" id="2" name="AK-47" /><card count="1" id="14" ' \
-                'name="Abombwe" /></abstractcardset>'
-
-        sExample2 = '<abstractcardset author="A test author" ' \
-                'comment="A test comment" name="Test Set 2" ' \
-                'sutekh_xml_version="1.1"><annotations /><card count="2" ' \
-                'id="11" name="Abebe" /><card count="1" id="8" name="Abbot" ' \
-                '/><card count="2" id="2" name=".44 Magnum" /><card ' \
-                'count="2" id="2" name="AK-47" /><card count="2" id="14" ' \
-                'name="Abombwe" /></abstractcardset>'
-
         oParser = AbstractCardSetParser()
 
         sTempFileName =  self._create_tmp_file()
         fOut = open(sTempFileName, 'w')
-        fOut.write(sExample1)
+        fOut.write(ACS_EXAMPLE_1)
         fOut.close()
 
         oHolder = CardSetHolder()
-        oParser.parse(StringIO(sExample2), oHolder)
+        oParser.parse(StringIO(ACS_EXAMPLE_2), oHolder)
         oHolder.create_pcs()
         fIn = open(sTempFileName, 'rU')
         oHolder = CardSetHolder()
@@ -93,7 +93,7 @@ class AbstractCardSetParserTest(SutekhTest):
 
         oHolder = CardSetHolder()
         self.assertRaises(RuntimeError, oParser.parse, StringIO(
-            '<caarrd>%s</caarrd>' % sExample1), oHolder)
+            '<caarrd>%s</caarrd>' % ACS_EXAMPLE_1), oHolder)
 
 
 if __name__ == "__main__":

@@ -48,14 +48,7 @@ class JOLWriterTests(SutekhTest):
         # Check output
 
         oWriter = WriteJOL()
-        sTempFileName =  self._create_tmp_file()
-        fOut = file(sTempFileName, 'w')
-        oWriter.write(fOut, oPhysCardSet1)
-        fOut.close()
-
-        fIn = open(sTempFileName, 'rU')
-        sData = fIn.read()
-        fIn.close()
+        sData = self._round_trip_obj(oWriter, oPhysCardSet1)
 
         self.assertEqual(sData, EXPECTED_1)
 

@@ -99,6 +99,20 @@ class SutekhTest(unittest.TestCase):
         sqlhub.processConnection = None
         self._tearDownTemps()
 
+    def _round_trip_obj(self, oWriter, oObj):
+        """Round trip an object through a temporary file.
+
+           Common operation for the writer tests."""
+        sTempFile = self._create_tmp_file()
+        fOut = file(sTempFile, 'w')
+        oWriter.write(fOut, oObj)
+        fOut.close()
+
+        fIn = open(sTempFile, 'rU')
+        sData = fIn.read()
+        fIn.close()
+        return sData
+
 
 class DummyHolder(object):
     """Emulate CardSetHolder for test purposes."""

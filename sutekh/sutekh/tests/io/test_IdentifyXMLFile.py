@@ -8,8 +8,9 @@
 
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.io.IdentifyXMLFile import IdentifyXMLFile
-from sutekh.core.SutekhObjects import IAbstractCard, IPhysicalCard
-from sutekh.tests.core.test_PhysicalCardSet import ABSTRACT_CARDS
+from sutekh.tests.io.test_AbstractCardSetParser import ACS_EXAMPLE_1
+from sutekh.tests.io.test_PhysicalCardSetParser import PCS_EXAMPLE_1
+from sutekh.tests.io.test_PhysicalCardParser import make_example_pcxml
 import unittest
 from StringIO import StringIO
 
@@ -22,28 +23,7 @@ class TestIdentifyXMLFile(SutekhTest):
         # pylint: disable-msg=E1101
         # E1101: SQLObject + PyProtocols magic confuses pylint
         # test IO
-
-        oAC = IAbstractCard(ABSTRACT_CARDS[0])
-        oPC = IPhysicalCard((oAC, None))
-        sLastWriterVersion = "1.0"
-
-        sExample = '<cards sutekh_xml_version="%s"><card count="1" ' \
-                   'expansion="None Specified" id="%d" name="%s" /></cards>' \
-                   % (sLastWriterVersion, oPC.id, oAC.name)
-
-        sExampleACS = '<abstractcardset author="A test author" ' \
-                'comment="A test comment" name="Test Set 1" ' \
-                'sutekh_xml_version="1.1"><annotations /><card count="1" ' \
-                'id="11" name="Abebe" /><card count="1" id="8" name="Abbot" ' \
-                '/><card count="1" id="1" name=".44 Magnum" /><card ' \
-                'count="1" id="2" name="AK-47" /><card count="1" id="14" ' \
-                'name="Abombwe" /></abstractcardset>'
-
-        sExamplePCS = '<physicalcardset author="A test author" ' \
-                'comment="A test comment" name="Test Set 1" '\
-                'sutekh_xml_version="1.2"><annotations /><card count="1" ' \
-                'expansion="None Specified" id="11" name="Abebe" />' \
-                '</physicalcardset>'
+        sExample = make_example_pcxml()
 
         sTempFileName =  self._create_tmp_file()
         fOut = open(sTempFileName, 'w')
@@ -60,10 +40,10 @@ class TestIdentifyXMLFile(SutekhTest):
         oIdFile.parse(StringIO('garbage input'))
         self.assertEqual(oIdFile.type, 'Unknown')
 
-        oIdFile.parse(StringIO(sExampleACS))
+        oIdFile.parse(StringIO(ACS_EXAMPLE_1))
         self.assertEqual(oIdFile.type, 'AbstractCardSet')
 
-        oIdFile.parse(StringIO(sExamplePCS))
+        oIdFile.parse(StringIO(PCS_EXAMPLE_1))
         self.assertEqual(oIdFile.type, 'PhysicalCardSet')
 
 if __name__ == "__main__":

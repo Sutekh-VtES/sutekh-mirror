@@ -18,7 +18,7 @@ import time
 # pylint: disable-msg=W0511, C0301
 # W0511 - this is not a actual TODO item
 # C0301 - Ignore line length limits for this string
-EXPECTED = """<deck databaseVersion="%s" formatVersion="-TODO-1.0" generator="Sutekh [ %s ]">
+EXPECTED_1 = """<deck databaseVersion="%s" formatVersion="-TODO-1.0" generator="Sutekh [ %s ]">
   <name>Test Set 1</name>
   <author>A test author</author>
   <description>A test comment</description>
@@ -124,7 +124,7 @@ class ArdbXMLWriterTests(SutekhTest):
         sData = fIn.read()
         fIn.close()
 
-        self.assertEqual(sData, EXPECTED)
+        self.assertEqual(sData, EXPECTED_1)
 
 if __name__ == "__main__":
     unittest.main()

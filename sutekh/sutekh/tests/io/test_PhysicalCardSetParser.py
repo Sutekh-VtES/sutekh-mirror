@@ -17,6 +17,50 @@ from sutekh.io.XmlFileHandling import PhysicalCardSetXmlFile
 import unittest, os
 from StringIO import StringIO
 
+PCS_EXAMPLE_1 = '<physicalcardset author="A test author" ' \
+        'comment="A test comment" name="Test Set 1" '\
+        'sutekh_xml_version="1.2"><annotations /><card count="1" ' \
+        'expansion="None Specified" id="11" name="Abebe" /><card ' \
+        'count="1" expansion="None Specified" id="1" ' \
+        'name=".44 Magnum" /><card count="1" expansion="None ' \
+        'Specified" id="8" name="Abbot" /><card count="1" ' \
+        'expansion="None Specified" id="2" name="AK-47" /><card ' \
+        'count="1" expansion="None Specified" id="14" ' \
+        'name="Abombwe" /></physicalcardset>'
+
+PCS_EXAMPLE_2 = '<physicalcardset author="A test author" ' \
+        'name="Test Set 2" '\
+        'sutekh_xml_version="1.3"><comment>A test comment</comment>' \
+        '<annotations />\n"' \
+        '<card count="1" expansion="None Specified" id="8" ' \
+        'name="Abbot" />\n' \
+        '<card count="2" expansion="None Specified" id="2" ' \
+        'name="AK-47" />\n' \
+        '<card count="1" expansion="None Specified" id="14" ' \
+        'name="Abombwe" />\n' \
+        '<card count="1" expansion = "Jyhad" id="1" ' \
+        'name=".44 Magnum" />\n' \
+        '<card count="1" expansion="Lords of the Night" id="2" ' \
+        'name="AK-47" />\n</physicalcardset>'
+
+PCS_EXAMPLE_3 = '<physicalcardset author="A test author" ' \
+        'name="Test Set 3" '\
+        'sutekh_xml_version="1.3">' \
+        '<comment>A formatted test comment\n' \
+        'A second line</comment>' \
+        '<annotations>Some annotations</annotations>\n"' \
+        '<card count="1" expansion="None Specified" id="8" ' \
+        'name="Abbot" />\n' \
+        '<card count="2" expansion="None Specified" id="2" ' \
+        'name="AK-47" />\n' \
+        '<card count="1" expansion="None Specified" id="14" ' \
+        'name="Abombwe" />\n' \
+        '<card count="1" expansion = "Jyhad" id="1" ' \
+        'name=".44 Magnum" />\n' \
+        '<card count="1" expansion="Lords of the Night" id="2" ' \
+        'name="AK-47" />\n</physicalcardset>'
+
+
 class PhysicalCardSetParserTests(SutekhTest):
     """class for the Card Set Parser tests"""
 
@@ -29,61 +73,17 @@ class PhysicalCardSetParserTests(SutekhTest):
         aAddedPhysCards = get_phys_cards()
         # We have a physical card list, so create some physical card sets
 
-        sExpected1 = '<physicalcardset author="A test author" ' \
-                'comment="A test comment" name="Test Set 1" '\
-                'sutekh_xml_version="1.2"><annotations /><card count="1" ' \
-                'expansion="None Specified" id="11" name="Abebe" /><card ' \
-                'count="1" expansion="None Specified" id="1" ' \
-                'name=".44 Magnum" /><card count="1" expansion="None ' \
-                'Specified" id="8" name="Abbot" /><card count="1" ' \
-                'expansion="None Specified" id="2" name="AK-47" /><card ' \
-                'count="1" expansion="None Specified" id="14" ' \
-                'name="Abombwe" /></physicalcardset>'
-
-        sExpected2 = '<physicalcardset author="A test author" ' \
-                'name="Test Set 2" '\
-                'sutekh_xml_version="1.3"><comment>A test comment</comment>' \
-                '<annotations />\n"' \
-                '<card count="1" expansion="None Specified" id="8" ' \
-                'name="Abbot" />\n' \
-                '<card count="2" expansion="None Specified" id="2" ' \
-                'name="AK-47" />\n' \
-                '<card count="1" expansion="None Specified" id="14" ' \
-                'name="Abombwe" />\n' \
-                '<card count="1" expansion = "Jyhad" id="1" ' \
-                'name=".44 Magnum" />\n' \
-                '<card count="1" expansion="Lords of the Night" id="2" ' \
-                'name="AK-47" />\n</physicalcardset>'
-
-        sExpected3 = '<physicalcardset author="A test author" ' \
-                'name="Test Set 3" '\
-                'sutekh_xml_version="1.3">' \
-                '<comment>A formatted test comment\n' \
-                'A second line</comment>' \
-                '<annotations>Some annotations</annotations>\n"' \
-                '<card count="1" expansion="None Specified" id="8" ' \
-                'name="Abbot" />\n' \
-                '<card count="2" expansion="None Specified" id="2" ' \
-                'name="AK-47" />\n' \
-                '<card count="1" expansion="None Specified" id="14" ' \
-                'name="Abombwe" />\n' \
-                '<card count="1" expansion = "Jyhad" id="1" ' \
-                'name=".44 Magnum" />\n' \
-                '<card count="1" expansion="Lords of the Night" id="2" ' \
-                'name="AK-47" />\n</physicalcardset>'
-
-
         # Check input
 
         oParser = PhysicalCardSetParser()
 
         oHolder = CardSetHolder()
-        oParser.parse(StringIO(sExpected1), oHolder)
+        oParser.parse(StringIO(PCS_EXAMPLE_1), oHolder)
         oHolder.create_pcs()
 
         sTempFileName = self._create_tmp_file()
         fIn = open(sTempFileName, 'w')
-        fIn.write(sExpected2)
+        fIn.write(PCS_EXAMPLE_2)
         fIn.close()
         fIn = open(sTempFileName, 'rU')
         oHolder = CardSetHolder()
@@ -92,7 +92,7 @@ class PhysicalCardSetParserTests(SutekhTest):
         fIn.close()
 
         oHolder = CardSetHolder()
-        oParser.parse(StringIO(sExpected3), oHolder)
+        oParser.parse(StringIO(PCS_EXAMPLE_3), oHolder)
         oHolder.create_pcs()
 
         oPhysCardSet1 = IPhysicalCardSet(CARD_SET_NAMES[0])

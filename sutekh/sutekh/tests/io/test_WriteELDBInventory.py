@@ -79,14 +79,7 @@ class ELDBInventoryWriterTests(SutekhTest):
         # Check output
 
         oWriter = WriteELDBInventory()
-        sTempFileName =  self._create_tmp_file()
-        fOut = open(sTempFileName, 'w')
-        oWriter.write(fOut, oPhysCardSet1)
-        fOut.close()
-
-        fIn = open(sTempFileName, 'rU')
-        sData = fIn.read()
-        fIn.close()
+        sData = self._round_trip_obj(oWriter, oPhysCardSet1)
 
         self.assertEqual(sorted(sData), sorted(EXPECTED), "Output differs : "
                 "%s vs %s" % (sData, EXPECTED))

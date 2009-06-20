@@ -18,7 +18,7 @@ import time
 # pylint: disable-msg=W0511, C0301
 # W0511 - this is not a actual TODO item
 # C0301 - Ignore line length limits for this string
-EXPECTED = """<inventory databaseVersion="%s" formatVersion="-TODO-1.0" generator="Sutekh [ %s ]">
+EXPECTED_1 = """<inventory databaseVersion="%s" formatVersion="-TODO-1.0" generator="Sutekh [ %s ]">
   <date>%s</date>
   <crypt size="2">
     <vampire databaseID="11" have="1" need="0" spare="0">
@@ -74,16 +74,9 @@ class ArdbInvXMLWriterTests(SutekhTest):
         # Check output
 
         oWriter = WriteArdbInvXML()
-        sTempFileName =  self._create_tmp_file()
-        fOut = open(sTempFileName, 'w')
-        oWriter.write(fOut, oPhysCardSet1.cards)
-        fOut.close()
+        sData = self._round_trip_obj(oWriter, oPhysCardSet1.cards)
 
-        fIn = open(sTempFileName, 'rU')
-        sData = fIn.read()
-        fIn.close()
-
-        self.assertEqual(sData, EXPECTED)
+        self.assertEqual(sData, EXPECTED_1)
 
 if __name__ == "__main__":
     unittest.main()
