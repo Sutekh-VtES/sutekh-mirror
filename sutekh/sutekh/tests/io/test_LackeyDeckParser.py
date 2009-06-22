@@ -7,32 +7,32 @@
 """Test reading a card set from an Lackey CCG deck file"""
 
 import unittest
+from StringIO import StringIO
 from sutekh.tests.TestCore import SutekhTest, DummyHolder
 from sutekh.io.LackeyDeckParser import LackeyDeckParser
+
+LACKEY_EXAMPLE_1 = """
+2\tTest Card 1
+4\tTest Card 2
+12\tTest Card 3
+1\tTest Card 4
+1\tPath of Blood, The
+Crypt:
+2\tTest Vamp 1
+1\tLazar Dobrescu
+1\tAlan Sovereign Adv.
+"""
 
 # Needs to be a SutekhTestCase so the name mapping cache test works
 class TestLackeyDeckFileParser(SutekhTest):
     """class for the ELDB deck file parser tests"""
 
-    sTestText1 = """
-        2\tTest Card 1
-        4\tTest Card 2
-        12\tTest Card 3
-        1\tTest Card 4
-        1\tPath of Blood, The
-        Crypt:
-        2\tTest Vamp 1
-        1\tLazar Dobrescu
-        1\tAlan Sovereign Adv.
-        """
-
     def test_basic(self):
         """Run the input test."""
         oHolder = DummyHolder()
-        oParser = LackeyDeckParser(oHolder)
+        oParser = LackeyDeckParser()
 
-        for sLine in self.sTestText1.split("\n"):
-            oParser.feed(sLine + "\n")
+        oParser.parse(StringIO(LACKEY_EXAMPLE_1), oHolder)
 
         aCards = oHolder.get_cards()
 

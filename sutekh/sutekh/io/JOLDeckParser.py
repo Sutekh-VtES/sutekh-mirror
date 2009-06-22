@@ -9,25 +9,15 @@
 
 import re
 from sutekh.core.SutekhObjects import csv_to_canonical
+from sutekh.io.IOBase import BaseLineParser
 
-class JOLDeckParser(object):
+class JOLDeckParser(BaseLineParser):
     """Parser for the JOL Deck format."""
 
     oCardLineRegexp = re.compile('((?P<num>[0-9]+)(\s)*x(\s)*)?(?P<name>.*)$')
 
-    def __init__(self, oHolder):
-        self._oHolder = oHolder
-
-    def reset(self):
-        """Reset the parser state"""
-        pass
-
-    def feed(self, sLine):
-        """Feed the next line to the parser and extract the cards"""
-        sLine = sLine.strip()
-        if not sLine:
-            # skip blank lines
-            return
+    def _feed(self, sLine, oHolder):
+        """Read the line into the given CardSetHolder"""
         oMatch = self.oCardLineRegexp.match(sLine)
         if oMatch is not None:
             dResults = oMatch.groupdict()
@@ -45,4 +35,4 @@ class JOLDeckParser(object):
         # Avoid going down the exception path in IAbstractCard if we can
         sName = csv_to_canonical(sName)
         # JOL has no expansion info
-        self._oHolder.add(iNum, sName, None)
+        oHolder.add(iNum, sName, None)

@@ -87,18 +87,20 @@ class Cards(State):
 class ELDBDeckFileParser(object):
     """Parser for the ELDB Deck format."""
 
-    def __init__(self, oHolder):
+    def __init__(self):
+        super(ELDBDeckFileParser, self).__init__()
         self._dNameCache = gen_name_lookups()
-        self._oHolder = oHolder
         self._oState = None
-        self.reset()
 
-    def reset(self):
-        """Reset the parser state"""
-        self._oState = Name(self._oHolder, self._dNameCache)
-
-    def feed(self, sLine):
+    def _feed(self, sLine):
         """Feed the next line to the current state object, and transition if
            required."""
         self._oState = self._oState.transition(sLine)
 
+    def parse(self, fIn, oHolder):
+        """Parse the file line-by-line"""
+        self._oState = Name(oHolder, self._dNameCache)
+        for sLine in fIn:
+            # Because of how ELDB formats comments, we don't skip blank
+            # lines
+            self._feed(sLine)

@@ -7,54 +7,55 @@
 """Test reading a card set from an ELDB deck file"""
 
 import unittest
+from StringIO import StringIO
 from sutekh.tests.TestCore import SutekhTest, DummyHolder
 from sutekh.io.ELDBDeckFileParser import ELDBDeckFileParser
+
+ELDB_EXAMPLE_1 = """
+"Test Deck"
+"Anon Y Mous"
+"Simple test deck.
+
+http://www.example.url/in/description"
+4
+"Test Vamp 1"
+"Test Vamp 1"
+"Lazar Dobrescu"
+"Alan Sovereign (ADV)"
+18
+"Test Card 1"
+"Test Card 1"
+"Test Card 2"
+"Test Card 2"
+"Test Card 2"
+"Test Card 2"
+"Test Card 3"
+"Test Card 3"
+"Test Card 3"
+"Test Card 3"
+"Test Card 3"
+"Test Card 3"
+"Test Card 3"
+"Test Card 3"
+"Test Card 3"
+"Test Card 3"
+"Test Card 3"
+"Test Card 3"
+"Test Card 4"
+"Path of Blood, The"
+"""
 
 # Needs to be a SutekhTestCase so the name mapping cache test works
 class TestELDBDeckFileParser(SutekhTest):
     """class for the ELDB deck file parser tests"""
 
-    sTestText1 = """
-        "Test Deck"
-        "Anon Y Mous"
-        "Simple test deck.
-
-        http://www.example.url/in/description"
-        4
-        "Test Vamp 1"
-        "Test Vamp 1"
-        "Lazar Dobrescu"
-        "Alan Sovereign (ADV)"
-        18
-        "Test Card 1"
-        "Test Card 1"
-        "Test Card 2"
-        "Test Card 2"
-        "Test Card 2"
-        "Test Card 2"
-        "Test Card 3"
-        "Test Card 3"
-        "Test Card 3"
-        "Test Card 3"
-        "Test Card 3"
-        "Test Card 3"
-        "Test Card 3"
-        "Test Card 3"
-        "Test Card 3"
-        "Test Card 3"
-        "Test Card 3"
-        "Test Card 3"
-        "Test Card 4"
-        "Path of Blood, The"
-        """
 
     def test_basic(self):
         """Run the input test."""
         oHolder = DummyHolder()
-        oParser = ELDBDeckFileParser(oHolder)
+        oParser = ELDBDeckFileParser()
 
-        for sLine in self.sTestText1.split("\n"):
-            oParser.feed(sLine + "\n")
+        oParser.parse(StringIO(ELDB_EXAMPLE_1), oHolder)
 
         self.assertEqual(oHolder.name, "Test Deck")
         self.assertEqual(oHolder.author, "Anon Y Mous")

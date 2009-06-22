@@ -105,3 +105,23 @@ class BaseSutekhXMLParser(BaseXMLParser):
             raise RuntimeError("Not a %s File" % self.sTypeName)
         if oRoot.attrib['sutekh_xml_version'] not in self.aSupportedVersions:
             raise RuntimeError("Unrecognised %s File version" % self.sTypeName)
+
+
+class BaseLineParser(CardSetParser):
+    """Base class for simple line-by-line parsers.
+
+       Subclasses override _feed to handle the individual lines
+       """
+
+    def _feed(self, sLine, oHolder):
+        """Internal method to handle a single line. Overriden by the
+           subclasses"""
+        raise NotImplementedError("BaseLineParser should be subclassed")
+
+    def parse(self, fIn, oHolder):
+        """Parse the file line by line"""
+        for sLine in fIn:
+            sLine = sLine.strip()
+            if not sLine:
+                continue # skip blank lines
+            self._feed(sLine, oHolder)

@@ -7,45 +7,47 @@
 """Test reading a card set from an JOL deck file"""
 
 import unittest
+from StringIO import StringIO
 from sutekh.tests.TestCore import SutekhTest, DummyHolder
 from sutekh.io.JOLDeckParser import JOLDeckParser
+
+JOL_EXAMPLE_1 = """
+3xTest Vamp 1
+Alan Sovereign (advanced)
+The Path of Blood
+Path of Blood, The
+Test Vamp 2
+Test Card 1
+Test Card 1
+4 x   Test Card 2
+Test Card 3
+Test Card 3
+Test Card 3
+Test Card 3
+Test Card 3
+Test Card 3
+Test Card 3
+Test Card 3
+Test Card 3
+Test Card 3
+Test Card 3
+Test Card 3
+Test Card 4
+12x Test Card 5
+2 xTest Card 6
+"""
+
 
 class TestJOLDeckParser(SutekhTest):
     """class for the JOL deck file parser tests"""
 
-    sTestText1 = """
-        3xTest Vamp 1
-        Alan Sovereign (advanced)
-        The Path of Blood
-        Path of Blood, The
-        Test Vamp 2
-        Test Card 1
-        Test Card 1
-        4 x   Test Card 2
-        Test Card 3
-        Test Card 3
-        Test Card 3
-        Test Card 3
-        Test Card 3
-        Test Card 3
-        Test Card 3
-        Test Card 3
-        Test Card 3
-        Test Card 3
-        Test Card 3
-        Test Card 3
-        Test Card 4
-        12x Test Card 5
-        2 xTest Card 6
-        """
 
     def test_basic(self):
         """Run the JOL input test."""
         oHolder = DummyHolder()
-        oParser = JOLDeckParser(oHolder)
+        oParser = JOLDeckParser()
 
-        for sLine in self.sTestText1.split("\n"):
-            oParser.feed(sLine + "\n")
+        oParser.parse(StringIO(JOL_EXAMPLE_1), oHolder)
 
         aCards = oHolder.get_cards()
 

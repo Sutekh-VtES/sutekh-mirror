@@ -12,6 +12,7 @@
 import string
 from sutekh.core.SutekhObjects import AbstractCard
 from sutekh.io.WriteLackeyCCG import lackey_name
+from sutekh.io.IOBase import BaseLineParser
 
 def gen_name_lookups():
     """Create a lookup table to map Lackey CCG names to Sutekh names -
@@ -27,23 +28,15 @@ def gen_name_lookups():
             dNameCache[sLackeyName] = sSutekhName
     return dNameCache
 
-class LackeyDeckParser(object):
+class LackeyDeckParser(BaseLineParser):
     """Parser for the Lackey Deck format."""
 
-    def __init__(self, oHolder):
-        self._oHolder = oHolder
+    def __init__(self):
+        super(LackeyDeckParser, self).__init__()
         self._dNameCache = gen_name_lookups()
 
-    def reset(self):
-        """Reset the parser state"""
-        pass
-
-    def feed(self, sLine):
-        """Feed the next line to the parser and extract the cards"""
-        sLine = sLine.strip()
-        if not sLine:
-            # skip blank lines
-            return
+    def _feed(self, sLine, oHolder):
+        """Read the line into the given CardSetHolder"""
         if sLine[0] in string.digits:
             # Split on any whitespace
             sNum, sName = sLine.split(None, 1)
@@ -57,4 +50,4 @@ class LackeyDeckParser(object):
             # Skip the 'Crypt:' line
             return
         # Lackey has no expansion info
-        self._oHolder.add(iNum, sName, None)
+        oHolder.add(iNum, sName, None)

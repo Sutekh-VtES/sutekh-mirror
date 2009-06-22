@@ -1,4 +1,5 @@
 22 Jun 2009
+ * Convert JOL, Lackey CCG & ELDB Deck Parsers to the new interface.
  * Create base class for tests using the main window. Unifies setup/teardown
    code.
 
