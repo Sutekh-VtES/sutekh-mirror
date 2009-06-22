@@ -6,17 +6,13 @@
 
 """Test parts of the card set controller-view-model interactions"""
 
-from sutekh.tests.TestCore import SutekhTest
-from nose import SkipTest
-import gtk
+from sutekh.tests.GuiSutekhTest import GuiSutekhTest
 import unittest
-import tempfile, os
+import gtk
 from sutekh.core.SutekhObjects import PhysicalCardSet, IExpansion, \
         IAbstractCard, IPhysicalCard
-from sutekh.gui.MultiPaneWindow import MultiPaneWindow
-from sutekh.gui.ConfigFile import ConfigFile
 
-class TestCardSetFrame(SutekhTest):
+class TestCardSetFrame(GuiSutekhTest):
     """Class for the MultiPanewindow test cases"""
 
 
@@ -74,36 +70,6 @@ class TestCardSetFrame(SutekhTest):
         return aPaths
 
     # pylint: enable-msg=R0201
-
-    # pylint: disable-msg=C0103
-    # setUp + tearDown names are needed by unittest - use their convention
-
-    def setUp(self):
-        """Setup gtk window for the tests"""
-        # Skip if we're not under a windowing system
-        # We need to do this before trying to run MultiPaneWindow's __init__,
-        # which will fail if not under a windowing system
-        if gtk.gdk.screen_get_default() is None:
-            raise SkipTest
-        super(TestCardSetFrame, self).setUp()
-        # Carry on with the test
-        sConfigFile = self._create_tmp_file()
-        self.oConfig = ConfigFile(sConfigFile)
-        # Don't try and create a path in the user's home dir
-        self.sImagesDir = tempfile.mkdtemp(suffix='dir', prefix='sutekhtests')
-        self.oConfig.set_plugin_key('card image path', self.sImagesDir)
-        self.oWin = MultiPaneWindow()
-
-    def tearDown(self):
-        """Tear down gtk framework after test run"""
-        self.oWin.destroy()
-        # Process pending gtk events so cleanup completes
-        while gtk.events_pending():
-            gtk.main_iteration()
-        os.rmdir(self.sImagesDir)
-        super(TestCardSetFrame, self).tearDown()
-
-    # pylint: enable-msg=C0103
 
     def test_basic(self):
         """Set of simple tests of the CardSetFrame"""

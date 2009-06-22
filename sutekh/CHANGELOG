@@ -1,3 +1,7 @@
+22 Jun 2009
+ * Create base class for tests using the main window. Unifies setup/teardown
+   code.
+
 20 Jun 2009
  * Rework the io tests to remove some duplicated code.
 
