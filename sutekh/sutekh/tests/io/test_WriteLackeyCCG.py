@@ -21,6 +21,7 @@ EXPECTED_1 = """4\t.44 Magnum
 Crypt:
 1\tAbebe
 1\tAlan Sovereign Adv.
+1\tSiamese, The
 """
 
 class LackeyWriterTests(SutekhTest):

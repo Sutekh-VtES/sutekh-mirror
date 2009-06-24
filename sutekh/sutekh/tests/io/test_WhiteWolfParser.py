@@ -34,7 +34,7 @@ class WhiteWolfParserTests(SutekhTest):
         u'Inez "Nurse216" Villagrande', u"Kabede Maru",
         u"Kemintiri (Advanced)", u"L\xe1z\xe1r Dobrescu",
         u"Predator's Communion", u"Sha-Ennu", u"The Path of Blood",
-        u"The Slaughterhouse", u"Yvette, The Hopeless",
+        u"The Siamese", u"The Slaughterhouse", u"Yvette, The Hopeless",
         ]
 
     def test_basic(self):

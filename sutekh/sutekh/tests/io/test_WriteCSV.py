@@ -25,6 +25,7 @@ EXPECTED_1 = """"Card Name", "Expansion", "Number"
 "Abombwe", "Unknown Expansion", 1
 "Alan Sovereign (Advanced)", "Promo-20051001", 1
 "The Path of Blood", "Lords of the Night", 1
+"The Siamese", "Bloodlines", 1
 """
 
 EXPECTED_2 = """".44 Magnum", "Jyhad", 1
@@ -38,6 +39,7 @@ EXPECTED_2 = """".44 Magnum", "Jyhad", 1
 "Abombwe", "Unknown Expansion", 1
 "Alan Sovereign (Advanced)", "Promo-20051001", 1
 "The Path of Blood", "Lords of the Night", 1
+"The Siamese", "Bloodlines", 1
 """
 
 
@@ -49,6 +51,7 @@ EXPECTED_3 = """"Card Name", "Number"
 "Abombwe", 2
 "Alan Sovereign (Advanced)", 1
 "The Path of Blood", 1
+"The Siamese", 1
 """
 
 EXPECTED_4 = """".44 Magnum", 4
@@ -58,6 +61,7 @@ EXPECTED_4 = """".44 Magnum", 4
 "Abombwe", 2
 "Alan Sovereign (Advanced)", 1
 "The Path of Blood", 1
+"The Siamese", 1
 """
 
 
@@ -65,7 +69,7 @@ class CSVWriterTests(SutekhTest):
     """class for the CSV deck writer tests"""
 
     def test_deck_writer(self):
-        """Test HTML deck writing"""
+        """Test CSV deck writing"""
         # pylint: disable-msg=E1101, R0915, R0914
         # E1101: SQLObject + PyProtocols magic confuses pylint
         # R0915, R0914: Want a long, sequential test case to minimise

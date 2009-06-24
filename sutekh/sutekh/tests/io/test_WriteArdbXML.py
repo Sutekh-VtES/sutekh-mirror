@@ -23,7 +23,7 @@ EXPECTED_1 = """<deck databaseVersion="%s" formatVersion="-TODO-1.0" generator="
   <author>A test author</author>
   <description>A test comment</description>
   <date>%s</date>
-  <crypt avg="5.00" max="6" min="4" size="2">
+  <crypt avg="5.67" max="7" min="4" size="3">
     <vampire count="1" databaseID="11">
       <adv />
       <name>Abebe</name>
@@ -43,6 +43,15 @@ EXPECTED_1 = """<deck databaseVersion="%s" formatVersion="-TODO-1.0" generator="
       <group>3</group>
       <text>Advanced, Camarilla: While Alan is ready, you may pay some or all of the pool cost of equipping from any investment cards you control.
 [MERGED] During your master phase, if Alan is ready, you may move a counter from any investment card to your pool.</text>
+    </vampire><vampire count="1" databaseID="41">
+      <adv />
+      <name>Siamese, The</name>
+      <set>BL</set>
+      <disciplines>PRE SPI ani pro</disciplines>
+      <clan>Ahrimane</clan>
+      <capacity>7</capacity>
+      <group>2</group>
+      <text>Sabbat: +1 bleed. Sterile.</text>
     </vampire>
   </crypt><library size="9">
     <card count="1" databaseID="1">

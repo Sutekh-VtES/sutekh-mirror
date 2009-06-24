@@ -20,7 +20,8 @@ CARD_EXPANSIONS = [('.44 magnum', 'Jyhad'),
         ('abbot', 'Third Edition'),
         ('abombwe', 'Legacy of Blood'),
         ('alan sovereign (advanced)', 'Promo-20051001'),
-        ('the path of blood', 'LotN')]
+        ('the path of blood', 'LotN'),
+        ('the siamese', 'BL')]
 CARD_SET_NAMES = ['Test Set 1', 'Test Set 2', 'Test Set 3']
 
 def get_phys_cards():

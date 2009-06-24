@@ -537,7 +537,7 @@ class CardSetListModelTests(SutekhTest):
         tTotals = (oModel.iter_n_children(None),
                 self._count_all_cards(oModel),
                 self._count_second_level(oModel))
-        tExpected = (1, 26, 26)
+        tExpected = (1, 27, 27)
         self.assertEqual(tTotals, tExpected, 'Wrong results from filter : '
                 '%s vs %s' % (tTotals, tExpected))
 

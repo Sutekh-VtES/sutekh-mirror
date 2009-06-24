@@ -20,7 +20,7 @@ import time
 # C0301 - Ignore line length limits for this string
 EXPECTED_1 = """<inventory databaseVersion="%s" formatVersion="-TODO-1.0" generator="Sutekh [ %s ]">
   <date>%s</date>
-  <crypt size="2">
+  <crypt size="3">
     <vampire databaseID="11" have="1" need="0" spare="0">
       <adv />
       <name>Abebe</name>
@@ -29,6 +29,10 @@ EXPECTED_1 = """<inventory databaseVersion="%s" formatVersion="-TODO-1.0" genera
       <adv>(Advanced)</adv>
       <name>Alan Sovereign</name>
       <set>Promo20051001</set>
+    </vampire><vampire databaseID="41" have="1" need="0" spare="0">
+      <adv />
+      <name>Siamese, The</name>
+      <set>BL</set>
     </vampire>
   </crypt><library size="9">
     <card databaseID="1" have="2" need="0" spare="0">

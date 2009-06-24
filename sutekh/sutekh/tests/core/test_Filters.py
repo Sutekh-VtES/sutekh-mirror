@@ -136,7 +136,8 @@ class FilterTests(SutekhTest):
                 u"Abjure", u"Ablative Skin"]),
             (Filters.SectFilter('Sabbat'), [u"Aaron Bathurst",
                 u"Aaron Duggan, Cameron's Toady", u"Aeron", u"Alfred Benezri",
-                u"Angelica, The Canonicus", u"Bronwen", u"Sha-Ennu"]),
+                u"Angelica, The Canonicus", u"Bronwen", u"Sha-Ennu",
+                u"The Siamese"]),
             (Filters.MultiSectFilter(['Sabbat', 'Independent']),
                 [u"Aabbt Kindred",
                 u"Aaron Bathurst", u"Aaron Duggan, Cameron's Toady",
@@ -144,7 +145,7 @@ class FilterTests(SutekhTest):
                 u"Aeron", u"Alfred Benezri", u"Ambrogino Giovanni", u"Amisa",
                 u"Angelica, The Canonicus", u"Bronwen",
                 u"Kemintiri (Advanced)", u"L\xe1z\xe1r Dobrescu",
-                u"Sha-Ennu"]),
+                u"Sha-Ennu", u"The Siamese"]),
             (Filters.TitleFilter('Bishop'), [u"Alfred Benezri"]),
             (Filters.TitleFilter('Independent with 1 vote'),
                 [u"Ambrogino Giovanni"]),
@@ -189,7 +190,7 @@ class FilterTests(SutekhTest):
                 u'Earl "Shaka74" Deams', u'Gracis Nostinus',
                 u'Inez "Nurse216" Villagrande', u'Kabede Maru',
                 u'Kemintiri (Advanced)', u'L\xe1z\xe1r Dobrescu',
-                u"Predator's Communion", u'Sha-Ennu',
+                u"Predator's Communion", u'Sha-Ennu', u"The Siamese",
                 u'Yvette, The Hopeless']),
             (Filters.MultiCostFilter([0, 5]), [u"AK-47", u'Aabbt Kindred',
                 u'Aaron Bathurst', u"Aaron Duggan, Cameron's Toady",
@@ -203,7 +204,7 @@ class FilterTests(SutekhTest):
                 u'Earl "Shaka74" Deams', u'Gracis Nostinus',
                 u'Inez "Nurse216" Villagrande', u'Kabede Maru',
                 u'Kemintiri (Advanced)', u'L\xe1z\xe1r Dobrescu',
-                u"Predator's Communion", u'Sha-Ennu',
+                u"Predator's Communion", u'Sha-Ennu', u"The Siamese",
                 u'Yvette, The Hopeless']),
             (Filters.LifeFilter(6), [u'Anna "Dictatrix11" Suljic',
                 u'Earl "Shaka74" Deams']),
@@ -261,9 +262,9 @@ class FilterTests(SutekhTest):
                     " failed. %s != %s." % (oFilter, aNames, aExpectedNames))
 
         # Filter values Tests
-        self.assertEqual(Filters.MultiClanFilter.get_values(), [u"Assamite",
-            u"Brujah", u"Brujah antitribu", u"Follower of Set", u"Gargoyle",
-            u"Giovanni", u"Harbinger of Skulls", u"Lasombra",
+        self.assertEqual(Filters.MultiClanFilter.get_values(), [ u"Ahrimane",
+            u"Assamite", u"Brujah", u"Brujah antitribu", u"Follower of Set",
+            u"Gargoyle", u"Giovanni", u"Harbinger of Skulls", u"Lasombra",
             u"Nosferatu antitribu", u"Osebo", u"Pander", u"Ravnos", u"Samedi",
             u"Toreador", u"Tremere", u"Tzimisce", u"Ventrue"])
         self.assertEqual(Filters.MultiDisciplineFilter.get_values(),
@@ -271,8 +272,9 @@ class FilterTests(SutekhTest):
                     u"Chimerstry", u"Dementation", u"Dominate", u"Flight",
                     u"Fortitude", u"Necromancy", u"Obfuscate",
                     u"Obtenebration", u"Potence", u"Presence",
-                    u"Protean", u"Quietus", u"Serpentis", u"Thaumaturgy",
-                    u"Thanatosis", u"Vicissitude", u"Visceratika"])
+                    u"Protean", u"Quietus", u"Serpentis", u"Spiritus",
+                    u"Thaumaturgy", u"Thanatosis", u"Vicissitude",
+                    u"Visceratika"])
         self.assertEqual(Filters.MultiCardTypeFilter.get_values(), [u"Action",
             u"Action Modifier", u"Combat", u"Equipment", u"Imbued", u"Master",
             u"Power", u"Reaction", u"Reflex", u"Vampire"])

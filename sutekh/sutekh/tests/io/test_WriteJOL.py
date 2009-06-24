@@ -15,6 +15,7 @@ import unittest
 
 EXPECTED_1 = """Abebe
 Alan Sovereign (advanced)
+The Siamese
 
 4x.44 Magnum
 2xAK-47

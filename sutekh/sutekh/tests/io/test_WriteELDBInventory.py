@@ -55,6 +55,7 @@ EXPECTED = """"ELDB - Inventory"
 "Abbot",1,0,"","Library"
 "Sha-Ennu",0,0,"","Crypt"
 "Aaron Bathurst",0,0,"","Crypt"
+"Siamese, The",0,0,"","Crypt"
 """
 
 class ELDBInventoryWriterTests(SutekhTest):

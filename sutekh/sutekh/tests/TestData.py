@@ -506,6 +506,19 @@ Put this card in play. Cards that require Quietus [qui] <span class="clarificati
 </p>
 
 <p>
+<a name="Siamese"><span class="cardname">The Siamese</span></a>
+<span class="exp">[BL:U2]</span><br />
+<table border=0 cellpadding=0 cellspacing=0><tr><td width=1><span class="key">Cardtype:</span> </td><td>Vampire<br /></td></tr>
+<tr><td width=1><span class="key">Clan:</span> </td><td>Ahrimane<br /></td></tr>
+<tr><td width=1><span class="key">Group:</span> </td><td>2<br /></td></tr>
+<tr><td width=1><span class="key">Capacity:</span> </td><td>7<br /></td></tr>
+<tr><td width=1><span class="key">Discipline:</span> </td><td>ani pro PRE SPI<br /></td></tr>
+<tr><td colspan=2><b>Sabbat:</b> +1 bleed. Sterile.<br />
+<tr><td width=1><span class="key">Artist:</span> </td><td>Lawrence Snelly<br /></td></tr>
+</table>
+</p>
+
+<p>
 <a name="Slaughterhouse"><span class="cardname">The Slaughterhouse</span></a>
 <span class="exp">[BL:C1, LoB:C]</span><br />
 <table border=0 cellpadding=0 cellspacing=0><tr><td width=1><span class="key">Cardtype:</span> </td><td>Master<br /></td></tr>
