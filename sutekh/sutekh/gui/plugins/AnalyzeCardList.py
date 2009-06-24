@@ -179,7 +179,7 @@ def _format_clan(sCardType, iClanRequirement, dClan, iNum):
     """Format the clan requirements list for display"""
     sText = ''
     if iClanRequirement > 0:
-        sPer = _percentage(iClanRequirement, iNum, 'Library')
+        sPer = _percentage(iClanRequirement, iNum, '%s cards' % sCardType)
         sText += "Number of %(type)s with a Clan requirement = %(num)d " \
                 "%(per)s\n" % { 'type' : sCardType, 'num' : iClanRequirement,
                 'per' : sPer, }
