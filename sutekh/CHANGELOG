@@ -1,4 +1,5 @@
 24 Jun 2009
+ * Fix escaping of vampire names in ARDB XML export
  * Fix bug in ARDB text export
 
 22 Jun 2009

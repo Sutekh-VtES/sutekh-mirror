@@ -82,13 +82,13 @@ class WriteArdbInvXML(ArdbInfo):
             # these are fine for the xml2html conversion, and look meaningful
             oAdvElem = SubElement(oCardElem, 'adv')
             oNameElem = SubElement(oCardElem, 'name')
+            sName = canonical_to_csv(sName)
             if oCard.level is not None:
                 oAdvElem.text = '(Advanced)'
                 # This is a bit hackish
                 oNameElem.text = sName.replace(' (Advanced)', '')
             else:
                 oNameElem.text = sName
-            sName = canonical_to_csv(sName)
             oSetElem = SubElement(oCardElem, 'set')
             oSetElem.text = sSet
 
