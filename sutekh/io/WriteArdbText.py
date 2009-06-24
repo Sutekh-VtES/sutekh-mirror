@@ -52,7 +52,7 @@ class WriteArdbText(ArdbInfo):
         (dVamps, dCryptStats) = self._extract_crypt(dCards)
 
         sCrypt = "Crypt [%(size)d vampires] Capacity min: %(min)d " \
-                "max: %(max)d average: %(avg)f\n" \
+                "max: %(max)d average: %(avg).2f\n" \
                 "-------------------------------------------------" \
                 "-----------\n" \
                 % dCryptStats

@@ -23,7 +23,7 @@ sExpected = """<deck databaseVersion="%s" formatVersion="-TODO-1.0" generator="S
   <author>A test author</author>
   <description>A test comment</description>
   <date>%s</date>
-  <crypt avg="5.0" max="6" min="4" size="2">
+  <crypt avg="5.00" max="6" min="4" size="2">
     <vampire count="1" databaseID="11">
       <adv />
       <name>Abebe</name>
