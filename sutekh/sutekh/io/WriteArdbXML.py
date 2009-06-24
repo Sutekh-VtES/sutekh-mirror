@@ -52,7 +52,7 @@ class WriteArdbXML(ArdbInfo):
 
         oCryptElem = SubElement(oRoot, 'crypt', size=str(dCryptStats['size']),
                 min=str(dCryptStats['min']), max=str(dCryptStats['max']),
-                avg=str(dCryptStats['avg']))
+                avg='%.2f' % dCryptStats['avg'])
         self.format_vamps(oCryptElem, dVamps)
 
         oLibElem = SubElement(oRoot, 'library', size=str(iLibSize))
