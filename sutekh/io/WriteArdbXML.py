@@ -80,13 +80,13 @@ class WriteArdbXML(ArdbInfo):
             # these are fine for the xml2html conversion, and look meaningful
             oAdvElem = SubElement(oCardElem, 'adv')
             oNameElem = SubElement(oCardElem, 'name')
+            sName = escape_ardb_name(sName)
             if oCard.level is not None:
                 oAdvElem.text = '(Advanced)'
                 # This is a bit hackish
                 oNameElem.text = sName.replace(' (Advanced)', '')
             else:
                 oNameElem.text = sName
-            sName = escape_ardb_name(sName)
             oSetElem = SubElement(oCardElem, 'set')
             oSetElem.text = sSet
             oDiscElem = SubElement(oCardElem, 'disciplines')
