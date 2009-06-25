@@ -1,4 +1,5 @@
 25 Jun 2009
+ * Extend several io tests to cover more cases
  * Convert ARDB XML export to IOBase interface
  * Convert ARDB HTML export to IOBase interface
    - Also fixes the HTML grouping bug (r1967 on the stable branch)

@@ -7,9 +7,7 @@
 """Test Writing a card set to an ARDB deck XML file"""
 
 from sutekh.tests.TestCore import SutekhTest
-from sutekh.tests.core.test_PhysicalCardSet import CARD_SET_NAMES, \
-        get_phys_cards
-from sutekh.core.SutekhObjects import PhysicalCardSet
+from sutekh.tests.core.test_PhysicalCardSet import make_set_1
 from sutekh.core.CardSetHolder import CardSetWrapper
 from sutekh.io.WriteArdbXML import WriteArdbXML
 from sutekh.SutekhInfo import SutekhInfo
@@ -54,7 +52,7 @@ EXPECTED_1 = """<deck databaseVersion="%s" formatVersion="-TODO-1.0" generator="
       <group>2</group>
       <text>Sabbat: +1 bleed. Sterile.</text>
     </vampire>
-  </crypt><library size="9">
+  </crypt><library size="11">
     <card count="1" databaseID="1">
       <name>.44 Magnum</name>
       <set>Jyhad</set>
@@ -62,7 +60,7 @@ EXPECTED_1 = """<deck databaseVersion="%s" formatVersion="-TODO-1.0" generator="
       <type>Equipment</type>
       <text>Weapon, gun.
 2R damage each strike, with an optional maneuver each combat.</text>
-    </card><card count="1" databaseID="1">
+    </card><card count="3" databaseID="1">
       <name>.44 Magnum</name>
       <set>CE</set>
       <cost>2 pool</cost>
@@ -107,19 +105,7 @@ class ArdbXMLWriterTests(SutekhTest):
 
     def test_deck_writer(self):
         """Test ARDB XML deck writing"""
-        # pylint: disable-msg=E1101, R0915, R0914
-        # E1101: SQLObject + PyProtocols magic confuses pylint
-        # R0915, R0914: Want a long, sequential test case to minimise
-        # repeated setups, so it has lots of lines + variables
-        aAddedPhysCards = get_phys_cards()
-        # We have a physical card list, so create some physical card sets
-        oPhysCardSet1 = PhysicalCardSet(name=CARD_SET_NAMES[0])
-        oPhysCardSet1.comment = 'A test comment'
-        oPhysCardSet1.author = 'A test author'
-
-        for oCard in aAddedPhysCards:
-            oPhysCardSet1.addPhysicalCard(oCard.id)
-            oPhysCardSet1.syncUpdate()
+        oPhysCardSet1 = make_set_1()
 
         # Check output
 

@@ -8,7 +8,7 @@
 
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.tests.core.test_PhysicalCardSet import CARD_SET_NAMES, \
-        get_phys_cards
+        get_phys_cards, make_set_1
 from sutekh.core.SutekhObjects import PhysicalCardSet, IPhysicalCardSet
 from sutekh.core.CardSetHolder import CardSetWrapper
 from sutekh.io.PhysicalCardSetWriter import PhysicalCardSetWriter
@@ -16,21 +16,33 @@ from sutekh.io.XmlFileHandling import PhysicalCardSetXmlFile
 from StringIO import StringIO
 import unittest
 
-EXPECTED_1 = '<physicalcardset author="A test author" ' \
-        'name="Test Set 1" '\
-        'sutekh_xml_version="1.3">\n' \
+EXPECTED_1 = '<physicalcardset author="A test author"'\
+        ' name="Test Set 1" sutekh_xml_version="1.3">\n' \
         '  <comment>A test comment</comment>\n' \
         '  <annotations />\n' \
-        '  <card count="1" expansion="None Specified" id="1"' \
+        '  <card count="1" expansion="Jyhad" id="1" name=".44 Magnum" />\n' \
+        '  <card count="3" expansion="None Specified" id="1"' \
         ' name=".44 Magnum" />\n' \
+        '  <card count="1" expansion="Lords of the Night" id="2"' \
+        ' name="AK-47" />\n' \
         '  <card count="1" expansion="None Specified" id="2"' \
         ' name="AK-47" />\n' \
         '  <card count="1" expansion="None Specified" id="8"' \
         ' name="Abbot" />\n' \
+        '  <card count="1" expansion="Third Edition" id="8"' \
+        ' name="Abbot" />\n' \
         '  <card count="1" expansion="None Specified" id="11"' \
         ' name="Abebe" />\n' \
+        '  <card count="1" expansion="Legacy of Blood" id="14"' \
+        ' name="Abombwe" />\n' \
         '  <card count="1" expansion="None Specified" id="14"' \
         ' name="Abombwe" />\n' \
+        '  <card count="1" expansion="Promo-20051001" id="19"' \
+        ' name="Alan Sovereign (Advanced)" />\n' \
+        '  <card count="1" expansion="Lords of the Night" id="37"' \
+        ' name="The Path of Blood" />\n' \
+        '  <card count="1" expansion="Bloodlines" id="41"' \
+        ' name="The Siamese" />\n' \
         '</physicalcardset>'
 
 EXPECTED_2 = '<physicalcardset author="A test author" ' \
@@ -63,13 +75,7 @@ class PhysicalCardSetWriterTests(SutekhTest):
         # repeated setups, so it has lots of lines + variables
         aAddedPhysCards = get_phys_cards()
         # We have a physical card list, so create some physical card sets
-        oPhysCardSet1 = PhysicalCardSet(name=CARD_SET_NAMES[0])
-        oPhysCardSet1.comment = 'A test comment'
-        oPhysCardSet1.author = 'A test author'
-
-        for iLoop in range(5):
-            oPhysCardSet1.addPhysicalCard(aAddedPhysCards[iLoop].id)
-            oPhysCardSet1.syncUpdate()
+        oPhysCardSet1 = make_set_1()
 
         # Check output
 

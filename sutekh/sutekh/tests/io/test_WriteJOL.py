@@ -7,9 +7,7 @@
 """Test Writing a card set to an JOL file"""
 
 from sutekh.tests.TestCore import SutekhTest
-from sutekh.tests.core.test_PhysicalCardSet import CARD_SET_NAMES, \
-        get_phys_cards
-from sutekh.core.SutekhObjects import PhysicalCardSet
+from sutekh.tests.core.test_PhysicalCardSet import make_set_1
 from sutekh.io.WriteJOL import  WriteJOL
 import unittest
 
@@ -29,22 +27,7 @@ class JOLWriterTests(SutekhTest):
 
     def test_deck_writer(self):
         """Test JOL deck writing"""
-        # pylint: disable-msg=E1101, R0915, R0914
-        # E1101: SQLObject + PyProtocols magic confuses pylint
-        # R0915, R0914: Want a long, sequential test case to minimise
-        # repeated setups, so it has lots of lines + variables
-        aAddedPhysCards = get_phys_cards()
-        # We have a physical card list, so create some physical card sets
-        oPhysCardSet1 = PhysicalCardSet(name=CARD_SET_NAMES[0])
-        oPhysCardSet1.comment = 'A test comment'
-        oPhysCardSet1.author = 'A test author'
-
-        for oCard in aAddedPhysCards:
-            oPhysCardSet1.addPhysicalCard(oCard.id)
-            oPhysCardSet1.syncUpdate()
-        oPhysCardSet1.addPhysicalCard(aAddedPhysCards[0])
-        oPhysCardSet1.addPhysicalCard(aAddedPhysCards[0])
-        oPhysCardSet1.syncUpdate()
+        oPhysCardSet1 = make_set_1()
 
         # Check output
 

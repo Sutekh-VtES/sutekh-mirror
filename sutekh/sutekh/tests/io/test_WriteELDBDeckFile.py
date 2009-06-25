@@ -7,22 +7,29 @@
 """Test Writing a card set to an ELDB deck"""
 
 from sutekh.tests.TestCore import SutekhTest
-from sutekh.tests.core.test_PhysicalCardSet import CARD_SET_NAMES, \
-        get_phys_cards
-from sutekh.core.SutekhObjects import PhysicalCardSet
+from sutekh.tests.core.test_PhysicalCardSet import make_set_1
 from sutekh.io.WriteELDBDeckFile import WriteELDBDeckFile
 import unittest
 
 EXPECTED_1 = """"Test Set 1"
 "A test author"
 "A test comment"
-1
+3
 "Abebe"
-4
+"Alan Sovereign (ADV)"
+"Siamese, The"
+11
+".44 Magnum"
+".44 Magnum"
+".44 Magnum"
 ".44 Magnum"
 "AK-47"
+"AK-47"
+"Abbot"
 "Abbot"
 "Abombwe"
+"Abombwe"
+"Path of Blood, The"
 """
 
 class ELDBDeckWriterTests(SutekhTest):
@@ -30,19 +37,7 @@ class ELDBDeckWriterTests(SutekhTest):
 
     def test_deck_writer(self):
         """Test ELDB deck writing"""
-        # pylint: disable-msg=E1101, R0915, R0914
-        # E1101: SQLObject + PyProtocols magic confuses pylint
-        # R0915, R0914: Want a long, sequential test case to minimise
-        # repeated setups, so it has lots of lines + variables
-        aAddedPhysCards = get_phys_cards()
-        # We have a physical card list, so create some physical card sets
-        oPhysCardSet1 = PhysicalCardSet(name=CARD_SET_NAMES[0])
-        oPhysCardSet1.comment = 'A test comment'
-        oPhysCardSet1.author = 'A test author'
-
-        for iLoop in range(5):
-            oPhysCardSet1.addPhysicalCard(aAddedPhysCards[iLoop].id)
-            oPhysCardSet1.syncUpdate()
+        oPhysCardSet1 = make_set_1()
 
         # Check output
 
