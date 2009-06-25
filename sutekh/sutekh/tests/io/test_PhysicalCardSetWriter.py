@@ -81,14 +81,8 @@ class PhysicalCardSetWriterTests(SutekhTest):
         self.assertEqual(sWriterXML, EXPECTED_1)
         self.assertEqual(len(sWriterXML), len(EXPECTED_1))
 
-        sTempFileName =  self._create_tmp_file()
-        fOut = open(sTempFileName, 'w')
         oPCS = IPhysicalCardSet(CARD_SET_NAMES[0])
-        oWriter.write(fOut, CardSetWrapper(oPCS))
-        fOut.close()
-
-        fIn = open(sTempFileName, 'rU')
-        sData = fIn.read()
+        sData = self._round_trip_obj(oWriter, CardSetWrapper(oPCS))
         self.assertEqual(sData, sWriterXML)
         self.assertEqual(len(sData), len(EXPECTED_1))
         self.assertEqual(sData, EXPECTED_1)
