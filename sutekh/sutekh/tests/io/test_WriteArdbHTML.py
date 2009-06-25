@@ -11,6 +11,7 @@ from sutekh.SutekhInfo import SutekhInfo
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.tests.core.test_PhysicalCardSet import CARD_SET_NAMES, \
         get_phys_cards
+from sutekh.core.CardSetHolder import CardSetWrapper
 from sutekh.core.SutekhObjects import PhysicalCardSet
 from sutekh.io.WriteArdbHTML import  WriteArdbHTML, HTML_STYLE
 import unittest
@@ -369,44 +370,24 @@ class ARDBHTMLWriterTests(SutekhTest):
 
         # Check output
 
-        oWriter = WriteArdbHTML()
-        sTempFileName =  self._create_tmp_file()
-        oWriter.write(sTempFileName, oPhysCardSet1, oPhysCardSet1.cards, False)
-
-        fIn = open(sTempFileName, 'rU')
-        sData = fIn.read()
-        fIn.close()
+        oWriter = WriteArdbHTML(bDoText=False)
+        sData = self._round_trip_obj(oWriter, CardSetWrapper(oPhysCardSet1))
 
         self.assertEqual(sData, EXPECTED_1)
 
         # Test other modes
-        oWriter = WriteArdbHTML('Monger')
-        sTempFileName =  self._create_tmp_file()
-        oWriter.write(sTempFileName, oPhysCardSet1, oPhysCardSet1.cards, False)
-
-        fIn = open(sTempFileName, 'rU')
-        sData = fIn.read()
-        fIn.close()
+        oWriter = WriteArdbHTML('Monger', False)
+        sData = self._round_trip_obj(oWriter, CardSetWrapper(oPhysCardSet1))
 
         self.assertEqual(sData, EXPECTED_1)
 
-        oWriter = WriteArdbHTML('None')
-        sTempFileName =  self._create_tmp_file()
-        oWriter.write(sTempFileName, oPhysCardSet1, oPhysCardSet1.cards, False)
-
-        fIn = open(sTempFileName, 'rU')
-        sData = fIn.read()
-        fIn.close()
+        oWriter = WriteArdbHTML('None', False)
+        sData = self._round_trip_obj(oWriter, CardSetWrapper(oPhysCardSet1))
 
         self.assertEqual(sData, EXPECTED_2)
 
-        oWriter = WriteArdbHTML('Secret Library')
-        sTempFileName =  self._create_tmp_file()
-        oWriter.write(sTempFileName, oPhysCardSet1, oPhysCardSet1.cards, False)
-
-        fIn = open(sTempFileName, 'rU')
-        sData = fIn.read()
-        fIn.close()
+        oWriter = WriteArdbHTML('Secret Library', False)
+        sData = self._round_trip_obj(oWriter, CardSetWrapper(oPhysCardSet1))
 
         self.assertEqual(sData, EXPECTED_3)
 

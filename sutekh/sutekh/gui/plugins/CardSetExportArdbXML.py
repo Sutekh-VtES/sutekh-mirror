@@ -12,6 +12,7 @@ from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhFileWidget import ExportDialog
 from sutekh.io.WriteArdbXML import WriteArdbXML
 from sutekh.io.WriteArdbInvXML import WriteArdbInvXML
+from sutekh.core.CardSetHolder import CardSetWrapper
 from sutekh.SutekhUtility import safe_filename
 
 class CardSetExportArdbXML(CardListPlugin):
@@ -55,11 +56,9 @@ class CardSetExportArdbXML(CardListPlugin):
             fOut = file(sFileName,"w")
             if oFirstBut.get_active():
                 oWriter = WriteArdbXML()
-                oWriter.write(fOut, self.view.sSetName, oCardSet.author,
-                        oCardSet.comment, self.get_all_cards())
             else:
                 oWriter = WriteArdbInvXML()
-                oWriter.write(fOut, self.get_all_cards())
+            oWriter.write(fOut, CardSetWrapper(oCardSet))
             fOut.close()
 
 plugin = CardSetExportArdbXML

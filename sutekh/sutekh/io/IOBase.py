@@ -8,12 +8,13 @@
 """Base classes for sutekh.io card set parsers and writers.
    """
 
+from sutekh.SutekhUtility import pretty_xml
 # pylint: disable-msg=E0611, F0401
 # xml.etree is a python2.5 thing
 try:
-    from xml.etree.ElementTree import parse
+    from xml.etree.ElementTree import parse, ElementTree
 except ImportError:
-    from elementtree.ElementTree import parse
+    from elementtree.ElementTree import parse, ElementTree
 
 # pylint: disable-msg=R0921, R0922
 # These may be referenced elsewhere, and mainly exist as interface
@@ -125,3 +126,18 @@ class BaseLineParser(CardSetParser):
             if not sLine:
                 continue # skip blank lines
             self._feed(sLine, oHolder)
+
+class BaseXMLWriter(CardSetWriter):
+    """Base class for XML output"""
+
+    def _gen_tree(self, oHolder):
+        """Create the XML Tree"""
+        raise NotImplementedError("BaseXMLWriter should be subclassed")
+
+    def write(self, fOut, oHolder):
+        """Write the holder contents as pretty XML to the given file-like
+           object fOut"""
+        oRoot = self._gen_tree(oHolder)
+        pretty_xml(oRoot)
+        ElementTree(oRoot).write(fOut)
+

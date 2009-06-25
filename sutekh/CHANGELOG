@@ -1,3 +1,9 @@
+25 Jun 2009
+ * Convert ARDB XML export to IOBase interface
+ * Convert ARDB HTML export to IOBase interface
+   - Also fixes the HTML grouping bug (r1967 on the stable branch)
+ * Convert Lackey export to IOBase interface
+
 24 Jun 2009
  * Wording fix on clan stats for analyze card set
  * Add test case for escaping vampire names

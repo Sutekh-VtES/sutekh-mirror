@@ -165,18 +165,15 @@ def _secret_library_url(oCard, bVamp):
 def _sort_vampires(dVamps):
     """Sort the vampires by number, then capacity."""
     aSortedVampires = []
-    # pylint: disable-msg=E1101
-    # IAbstrctCard confuses pylint
-    for iId, sVampName, sSet in dVamps:
-        oCard = IAbstractCard(sVampName)
-        iCount = dVamps[(iId, sVampName, sSet)]
+    for oCard, (iCount, _sSet) in dVamps.iteritems():
         if len(oCard.creed) > 0:
             iCapacity = oCard.life
             sClan = "Imbued"
         else:
             iCapacity = oCard.capacity
             sClan = [oClan.name for oClan in oCard.clan][0]
-        aSortedVampires.append(((iCount, iCapacity, sVampName, sClan), oCard))
+        aSortedVampires.append(((iCount, iCapacity, oCard.name, sClan),
+            oCard))
     # We reverse sort by Capacity and Count, normal sort by name
     # fortunately, python's sort is stable, so this works
     aSortedVampires.sort(key=lambda x: x[0][2])
@@ -189,12 +186,10 @@ def _sort_lib(dLib):
     """Extract a list of cards sorted into types from the library"""
     dTypes = {}
     # Group by type
-    for tKey in dLib:
-        _iId, sName, sType, _sSet = tKey
-        iCount = dLib[tKey]
+    for oCard, (iCount, sType, _sSet) in dLib.iteritems():
         dTypes.setdefault(sType, [0])
         dTypes[sType][0] += iCount
-        dTypes[sType].append((iCount, sName))
+        dTypes[sType].append((iCount, oCard.name))
     return sorted(dTypes.items())
 
 def _add_span(oElement, sText, sClass=None, sId=None):
@@ -222,17 +217,16 @@ class WriteArdbHTML(ArdbInfo):
        This tries to match the HTML file produced by ARDB.
        """
 
-    def __init__(self, sLinkMode='Monger'):
+    def __init__(self, sLinkMode='Monger', bDoText=False):
         super(WriteArdbHTML, self).__init__()
         self._sLinkMode = sLinkMode
+        self._bDoText = bDoText
 
-    def write(self, sFileName, oCardSet, oCardIter, bDoText=False):
+    def write(self, fOut, oHolder):
         """Handle the response to the dialog"""
         # pylint: disable-msg=E1101
         # SQLObject methods confuse pylint
-        # 'w' should be fine, since we're using an ascii coding
-        fOut = file(sFileName, "w")
-        oETree = self.gen_tree(oCardSet, oCardIter, bDoText)
+        oETree = self.gen_tree(oHolder)
         # We're producing XHTML output, so we need a doctype header
         fOut.write('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0'
                 ' Strict//EN"\n "http://www.w3.org/TR/xhtml1/DTD/'
@@ -240,20 +234,19 @@ class WriteArdbHTML(ArdbInfo):
         # We have the elementree with the needed information,
         # need to produce decent HTML output
         oETree.write(fOut)
-        fOut.close()
 
-    def gen_tree(self, oCardSet, oCardIter, bDoText):
+    def gen_tree(self, oHolder):
         """Convert the Cards to a element tree containing 'nice' HTML"""
         oDocRoot = Element('html', xmlns='http://www.w3.org/1999/xhtml',
                 lang='en')
         oDocRoot.attrib["xml:lang"] = 'en'
 
-        oBody = self._add_header(oDocRoot, oCardSet)
+        oBody = self._add_header(oDocRoot, oHolder)
 
-        dCards = self._get_cards(oCardIter)
+        dCards = self._get_cards(oHolder.cards)
         aSortedVampires = self._add_crypt(oBody, dCards)
         aSortedLibCards = self._add_library(oBody, dCards)
-        if bDoText:
+        if self._bDoText:
             oCardText = SubElement(oBody, "div", id="cardtext")
             oTextHead = SubElement(oCardText, "h3")
             oTextHead.attrib["class"] = "cardtext"
@@ -274,7 +267,7 @@ class WriteArdbHTML(ArdbInfo):
     # methods to fill in the actual HTML content
     # pylint: disable-msg=R0201
     # these are all methods for consistency
-    def _add_header(self, oDocRoot, oCardSet):
+    def _add_header(self, oDocRoot, oHolder):
         """Add the header and title of the HTML file."""
         oHead = SubElement(oDocRoot, 'head')
         oEncoding = SubElement(oHead, 'meta')
@@ -290,21 +283,21 @@ class WriteArdbHTML(ArdbInfo):
         # Is there a better idea here?
         oStyle.text = HTML_STYLE
         oTitle = SubElement(oHead, "title")
-        oTitle.text = "VTES deck : %s by %s" % (oCardSet.name,
-                oCardSet.author)
+        oTitle.text = "VTES deck : %s by %s" % (oHolder.name,
+                oHolder.author)
 
         oBody = SubElement(oDocRoot, "body")
         oInfo = SubElement(oBody, "div", id="info")
         oName = SubElement(oInfo, "h1", id="nametitle")
         _add_span(oName, 'Deck Name :')
-        _add_span(oName, oCardSet.name, 'value', 'namevalue')
+        _add_span(oName, oHolder.name, 'value', 'namevalue')
         oAuthor = SubElement(oInfo, "h2", id="authortitle")
         _add_span(oAuthor, 'Author : ')
-        _add_span(oAuthor, oCardSet.author, 'value', 'authornamevalue')
+        _add_span(oAuthor, oHolder.author, 'value', 'authornamevalue')
         oDesc = SubElement(oInfo, "h2", id="description")
         _add_span(oDesc, 'Description : ')
         oPara = SubElement(oInfo, "p")
-        _add_span(oPara, oCardSet.comment, 'value', 'descriptionvalue')
+        _add_span(oPara, oHolder.comment, 'value', 'descriptionvalue')
         return oBody
 
     def _gen_link(self, oCard, oSpan, sName, bVamp):
@@ -334,7 +327,7 @@ class WriteArdbHTML(ArdbInfo):
             _add_span(oCryptTitle, 'Crypt')
             _add_span(oCryptTitle, "[%(size)d vampires] Capacity min : %(min)d"
                     " max : %(max)d average : %(avg).2f" % dCryptStats)
-            aSortedVampires = _sort_vampires(dVamps)
+            aSortedVampires = _sort_vampires(self._group_sets(dVamps))
             return oCrypt, aSortedVampires
 
         def add_row(oCryptTBody, tVampInfo, oCard):
@@ -385,7 +378,7 @@ class WriteArdbHTML(ArdbInfo):
         def start_section(oBody, dCards):
             """Set up the header for this section"""
             (dLib, iLibSize) = self._extract_library(dCards)
-            aSortedLibCards = _sort_lib(dLib)
+            aSortedLibCards = _sort_lib(self._group_sets(dLib))
             oLib = SubElement(oBody, "div", id="library")
             oLibTitle = SubElement(oLib, "h3", id="librarytitle")
             _add_span(oLibTitle, "Library")

@@ -10,6 +10,7 @@ from sutekh.tests.TestCore import SutekhTest
 from sutekh.tests.core.test_PhysicalCardSet import CARD_SET_NAMES, \
         get_phys_cards
 from sutekh.core.SutekhObjects import PhysicalCardSet
+from sutekh.core.CardSetHolder import CardSetWrapper
 from sutekh.io.WriteArdbInvXML import WriteArdbInvXML
 from sutekh.SutekhInfo import SutekhInfo
 import unittest
@@ -26,7 +27,7 @@ EXPECTED_1 = """<inventory databaseVersion="%s" formatVersion="-TODO-1.0" genera
       <name>Abebe</name>
       <set>LoB</set>
     </vampire><vampire databaseID="19" have="1" need="0" spare="0">
-      <adv>(Advanced)</adv>
+      <adv>Advanced</adv>
       <name>Alan Sovereign</name>
       <set>Promo20051001</set>
     </vampire><vampire databaseID="41" have="1" need="0" spare="0">
@@ -78,7 +79,7 @@ class ArdbInvXMLWriterTests(SutekhTest):
         # Check output
 
         oWriter = WriteArdbInvXML()
-        sData = self._round_trip_obj(oWriter, oPhysCardSet1.cards)
+        sData = self._round_trip_obj(oWriter, CardSetWrapper(oPhysCardSet1))
 
         self.assertEqual(sData, EXPECTED_1)
 

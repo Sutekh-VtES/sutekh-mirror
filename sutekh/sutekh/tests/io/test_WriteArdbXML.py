@@ -10,6 +10,7 @@ from sutekh.tests.TestCore import SutekhTest
 from sutekh.tests.core.test_PhysicalCardSet import CARD_SET_NAMES, \
         get_phys_cards
 from sutekh.core.SutekhObjects import PhysicalCardSet
+from sutekh.core.CardSetHolder import CardSetWrapper
 from sutekh.io.WriteArdbXML import WriteArdbXML
 from sutekh.SutekhInfo import SutekhInfo
 import unittest
@@ -19,10 +20,10 @@ import time
 # W0511 - this is not a actual TODO item
 # C0301 - Ignore line length limits for this string
 EXPECTED_1 = """<deck databaseVersion="%s" formatVersion="-TODO-1.0" generator="Sutekh [ %s ]">
+  <date>%s</date>
   <name>Test Set 1</name>
   <author>A test author</author>
   <description>A test comment</description>
-  <date>%s</date>
   <crypt avg="5.67" max="7" min="4" size="3">
     <vampire count="1" databaseID="11">
       <adv />
@@ -34,7 +35,7 @@ EXPECTED_1 = """<deck databaseVersion="%s" formatVersion="-TODO-1.0" generator="
       <group>4</group>
       <text>Independent.</text>
     </vampire><vampire count="1" databaseID="19">
-      <adv>(Advanced)</adv>
+      <adv>Advanced</adv>
       <name>Alan Sovereign</name>
       <set>Promo20051001</set>
       <disciplines>AUS DOM for pre</disciplines>
@@ -57,21 +58,21 @@ EXPECTED_1 = """<deck databaseVersion="%s" formatVersion="-TODO-1.0" generator="
     <card count="1" databaseID="1">
       <name>.44 Magnum</name>
       <set>Jyhad</set>
-      <cost>2 pool </cost>
+      <cost>2 pool</cost>
       <type>Equipment</type>
       <text>Weapon, gun.
 2R damage each strike, with an optional maneuver each combat.</text>
     </card><card count="1" databaseID="1">
       <name>.44 Magnum</name>
       <set>CE</set>
-      <cost>2 pool </cost>
+      <cost>2 pool</cost>
       <type>Equipment</type>
       <text>Weapon, gun.
 2R damage each strike, with an optional maneuver each combat.</text>
     </card><card count="2" databaseID="2">
       <name>AK-47</name>
       <set>LotN</set>
-      <cost>5 pool </cost>
+      <cost>5 pool</cost>
       <type>Equipment</type>
       <text>Weapon. Gun.
 2R damage each strike, with an optional maneuver {each combat}. When bearer strikes with this gun, he or she gets an optional additional strike this round, only usable to strike with this gun.</text>
@@ -90,7 +91,7 @@ Put this card on a Laibon or on a vampire with Protean [pro]. This vampire gains
     </card><card count="1" databaseID="37">
       <name>Path of Blood, The</name>
       <set>LotN</set>
-      <cost>1 pool </cost>
+      <cost>1 pool</cost>
       <requirement>Assamite</requirement>
       <type>Master</type>
       <text>Unique master.
@@ -123,15 +124,7 @@ class ArdbXMLWriterTests(SutekhTest):
         # Check output
 
         oWriter = WriteArdbXML()
-        sTempFileName =  self._create_tmp_file()
-        fOut = open(sTempFileName, 'w')
-        oWriter.write(fOut, oPhysCardSet1.name, oPhysCardSet1.author,
-                oPhysCardSet1.comment, oPhysCardSet1.cards)
-        fOut.close()
-
-        fIn = open(sTempFileName, 'rU')
-        sData = fIn.read()
-        fIn.close()
+        sData = self._round_trip_obj(oWriter, CardSetWrapper(oPhysCardSet1))
 
         self.assertEqual(sData, EXPECTED_1)
 

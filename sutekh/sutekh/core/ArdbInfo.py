@@ -37,7 +37,7 @@ class ArdbInfo(object):
        of cards."""
 
     # Should this be an attribute of VersionTable?
-    sDatabaseVersion = 'Sutekh-20080331'
+    sDatabaseVersion = 'Sutekh-20090410'
 
     sVersionString = SutekhInfo.VERSION_STR
     # pylint: disable-msg=W0511
@@ -46,9 +46,34 @@ class ArdbInfo(object):
     sFormatVersion = '-TODO-1.0'
     # pyline: enable-msg=W0511
 
+    def _get_cards(self, oCardIter):
+        """Create the dictionary of cards given the list of cards"""
+        # pylint: disable-msg=E1101
+        # SQLObject methods confuse pylint
+        dDict = {}
+        for oCard in oCardIter:
+            oPhysCard = IPhysicalCard(oCard)
+            oAbsCard = IAbstractCard(oCard)
+            sSet = self._get_ardb_exp_name(oPhysCard)
+            dDict.setdefault((oAbsCard, sSet), 0)
+            dDict[(oAbsCard, sSet)] += 1
+        return dDict
 
     # pylint: disable-msg=R0201
     # these need to be available to the descendants
+    def _group_sets(self, dCards):
+        """Group the cards together regardless of set.
+
+           ARDB inventory doesn't seperate cards by set, although it's included
+           in the XML file, so we need to combine things so there's only 1
+           entry per card."""
+        dCombinedCards = {}
+        for tKey, iNum in dCards.iteritems():
+            oCard = tKey[0]
+            dCombinedCards.setdefault(oCard, [0] + list(tKey[1:]))
+            dCombinedCards[oCard][0] += iNum
+        return dCombinedCards
+
     def _extract_crypt(self, dCards):
         """Extract the crypt cards from the list."""
         dCryptStats = {
@@ -59,10 +84,7 @@ class ArdbInfo(object):
                 }
         dVamps = {}
         for tKey, iCount in dCards.iteritems():
-            sName = tKey[1]
-            # pylint: disable-msg=E1101
-            # IAbstractCard confuses pylint
-            oCard = IAbstractCard(sName)
+            oCard = tKey[0]
             aTypes = [x.name for x in oCard.cardtype]
             if aTypes[0] == 'Vampire':
                 dVamps[tKey] = iCount
@@ -92,17 +114,14 @@ class ArdbInfo(object):
         iSize = 0
         dLib = {}
         for tKey, iCount in dCards.iteritems():
-            iId, sName, sSet = tKey
-            # pylint: disable-msg=E1101
-            # IAbstractCard confuses pylint
-            oCard = IAbstractCard(sName)
+            oCard, sSet = tKey
             aTypes = sorted([x.name for x in oCard.cardtype])
             if aTypes[0] != 'Vampire' and aTypes[0] != 'Imbued':
                 # Looks like it should be the right thing, but may not
                 sTypeString = "/".join(aTypes)
                 # We want to be able to sort over types easily, so
                 # we add them to the keys
-                dLib[(iId, sName, sTypeString, sSet)] = iCount
+                dLib[(oCard, sTypeString, sSet)] = iCount
                 iSize += iCount
         return (dLib, iSize)
 
@@ -120,19 +139,6 @@ class ArdbInfo(object):
         elif len(oCard.virtue) > 0:
             return " ".join(sorted([x.name for x in oCard.virtue]))
         return ""
-
-    def _get_cards(self, oCardIter):
-        """Create the dictionary of cards given the list of cards"""
-        # pylint: disable-msg=E1101
-        # SQLObject methods confuse pylint
-        dDict = {}
-        for oCard in oCardIter:
-            oPhysCard = IPhysicalCard(oCard)
-            oAbsCard = IAbstractCard(oCard)
-            sSet = self._get_ardb_exp_name(oPhysCard)
-            dDict.setdefault((oAbsCard.id, oAbsCard.name, sSet), 0)
-            dDict[(oAbsCard.id, oAbsCard.name, sSet)] += 1
-        return dDict
 
     def _get_ardb_exp_name(self, oPhysCard):
         """Extract the correct ARDB name for the expansion"""

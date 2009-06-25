@@ -8,6 +8,7 @@
 
 import gtk
 from sutekh.core.SutekhObjects import PhysicalCardSet
+from sutekh.core.CardSetHolder import CardSetWrapper
 from sutekh.io.WriteArdbHTML import WriteArdbHTML
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhDialog import do_complaint_error
@@ -101,15 +102,16 @@ class CardSetExportHTML(CardListPlugin):
             if not oCardSet:
                 do_complaint_error("Unsupported Card Set Type")
                 return
-            oCardIter = self.get_all_cards()
             bDoText = False
             if self.oTextButton.get_active():
                 bDoText = True
             sLinkMode = self.parent.config_file.get_plugin_key(
                     'HTML export mode')
             try:
-                oWriter = WriteArdbHTML(sLinkMode)
-                oWriter.write(sFileName, oCardSet, oCardIter, bDoText)
+                oWriter = WriteArdbHTML(sLinkMode, bDoText)
+                fOut = file(sFileName, 'w')
+                oWriter.write(fOut, CardSetWrapper(oCardSet))
+                fOut.close()
             except Exception, oExp:
                 sMsg = "Failed to open output file.\n\n" + str(oExp)
                 do_complaint_error(sMsg)
