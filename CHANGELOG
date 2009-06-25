@@ -1,4 +1,5 @@
 25 June 2009
+ * Release 0.6.3.
  * Properly group cards of different expansions in the HTML export.
    This fix is different from trunk, due to changes to the IO interface on
    trunk.
