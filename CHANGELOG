@@ -1,3 +1,8 @@
+25 June 2009
+ * Properly group cards of different expansions in the HTML export.
+   This fix is different from trunk, due to changes to the IO interface on
+   trunk.
+
 24 Jun 2009
  * Merge r1964 - Wording fix on clan stats for analyze card set
  * Merge r1961 - Fix escaping of vampire names in ARDB XML export

@@ -172,7 +172,7 @@ def _secret_library_url(oCard, bVamp):
 
 def _sort_vampires(dVamps):
     """Sort the vampires by number, then capacity."""
-    aSortedVampires = []
+    dSortedVampires = {}
     # pylint: disable-msg=E1101
     # IAbstrctCard confuses pylint
     for iId, sVampName, sSet in dVamps:
@@ -184,7 +184,10 @@ def _sort_vampires(dVamps):
         else:
             iCapacity = oCard.capacity
             sClan = [oClan.name for oClan in oCard.clan][0]
-        aSortedVampires.append(((iCount, iCapacity, sVampName, sClan), oCard))
+        dSortedVampires.setdefault(oCard, [0, iCapacity, sVampName, sClan])
+        dSortedVampires[oCard][0] += iCount
+    # swap key elements
+    aSortedVampires = [(x[1], x[0]) for x in dSortedVampires.iteritems()]
     # We reverse sort by Capacity and Count, normal sort by name
     # fortunately, python's sort is stable, so this works
     aSortedVampires.sort(key=lambda x: x[0][2])
@@ -202,10 +205,16 @@ def _sort_lib(dLib):
         # iId, sSet isn't used here
         iId, sName, sType, sSet = tKey
         iCount = dLib[tKey]
-        dTypes.setdefault(sType, [0])
-        dTypes[sType][0] += iCount
-        dTypes[sType].append((iCount, sName))
-    return sorted(dTypes.items())
+        dTypes.setdefault(sType, {'total' : 0})
+        dTypes[sType]['total'] += iCount
+        dTypes[sType].setdefault(sName, 0)
+        dTypes[sType][sName] += iCount
+    dSortedTypes =  {}
+    for sType, dInfo in dTypes.iteritems():
+        dSortedTypes.setdefault(sType, [dInfo['total']])
+        dSortedTypes[sType].extend([(dInfo[x], x) for x in dInfo
+                if x != 'total'])
+    return sorted(dSortedTypes.items())
 
 def _add_span(oElement, sText, sClass=None, sId=None):
     """Add a span element to the element oElement"""
