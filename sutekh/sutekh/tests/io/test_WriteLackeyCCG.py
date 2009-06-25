@@ -10,6 +10,7 @@ from sutekh.tests.TestCore import SutekhTest
 from sutekh.tests.core.test_PhysicalCardSet import CARD_SET_NAMES, \
         get_phys_cards
 from sutekh.core.SutekhObjects import PhysicalCardSet
+from sutekh.core.CardSetHolder import CardSetWrapper
 from sutekh.io.WriteLackeyCCG import  WriteLackeyCCG
 import unittest
 
@@ -49,7 +50,7 @@ class LackeyWriterTests(SutekhTest):
         # Check output
 
         oWriter = WriteLackeyCCG()
-        sData = self._round_trip_obj(oWriter, oPhysCardSet1)
+        sData = self._round_trip_obj(oWriter, CardSetWrapper(oPhysCardSet1))
 
         self.assertEqual(sData, EXPECTED_1)
 

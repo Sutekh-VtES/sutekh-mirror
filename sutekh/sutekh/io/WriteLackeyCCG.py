@@ -22,7 +22,7 @@
 
 import unicodedata
 from sutekh.core.ELDBUtilities import type_of_card
-from sutekh.core.SutekhObjects import canonical_to_csv
+from sutekh.core.SutekhObjects import canonical_to_csv, IAbstractCard
 
 def lackey_name(oCard):
     """Escape the card name to Lackey CCG's requirements"""
@@ -39,13 +39,13 @@ class WriteLackeyCCG(object):
 
     # pylint: disable-msg=R0201
     # Method for consistency
-    def _gen_inv(self, oCardSet):
+    def _gen_inv(self, oHolder):
         """Process the card set, creating the lines as needed"""
         dCards = {'Crypt' : {}, 'Library' : {}}
         sResult = ""
-        for oCard in oCardSet.cards:
-            sType = type_of_card(oCard.abstractCard)
-            sName = lackey_name(oCard.abstractCard)
+        for oCard in oHolder.cards:
+            sType = type_of_card(IAbstractCard(oCard))
+            sName = lackey_name(IAbstractCard(oCard))
             dCards[sType].setdefault(sName, 0)
             dCards[sType][sName] += 1
         # Sort the output
@@ -59,7 +59,7 @@ class WriteLackeyCCG(object):
 
     # pylint: enable-msg=R0201
 
-    def write(self, fOut, oCardSet):
+    def write(self, fOut, oHolder):
         """Takes file object + card set to write, and writes an Lackey CCG
            deck representing the card set"""
-        fOut.write(self._gen_inv(oCardSet))
+        fOut.write(self._gen_inv(oHolder))
