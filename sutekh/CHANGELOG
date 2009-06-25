@@ -1,3 +1,10 @@
+26 Jun 2009
+ * Update dependencies used in Windows build:
+   - Python 2.5.4
+   - setuptools to 0.6c9
+   - SQLObject 0.10.6
+   - FormEncode 1.2.2
+
 25 Jun 2009
  * Extend several io tests to cover more cases
  * Convert ARDB XML export to IOBase interface

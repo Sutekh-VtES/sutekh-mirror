@@ -33,16 +33,16 @@
   !define DEPENDENCIES_FOLDER "." ; set by sutekh-makensis
 
   !define GTK_INSTALLER "gtk-dev-2.12.9-win32-2.exe"
-  !define PYTHON_INSTALLER "python-2.5.2.msi"
+  !define PYTHON_INSTALLER "python-2.5.4.msi"
   !define PYGTK_INSTALLER "pygtk-2.12.1-2.win32-py2.5.exe"
   !define PYCAIRO_INSTALLER "pycairo-1.2.6-1.win32-py2.5.exe"
   !define PYGOBJECT_INSTALLER "pygobject-2.12.3-1.win32-py2.5.exe"
-  !define SETUPTOOLS_INSTALLER "setuptools-0.6c7.win32-py2.5.exe"
+  !define SETUPTOOLS_INSTALLER "setuptools-0.6c9.win32-py2.5.exe"
   !define PYPROTOCOLS_EGG "PyProtocols-1.0a0-py2.5-win32.egg"
   !define PLY_EGG "ply-2.3-py2.5.egg"
   !define XLRD_EGG "xlrd-0.6.1-py2.5.egg"
-  !define FORMENCODE_EGG "FormEncode-1.0-py2.5.egg"
-  !define SQLOBJECT_EGG "SQLObject-0.9.5-py2.5.egg"
+  !define FORMENCODE_EGG "FormEncode-1.2.2-py2.5.egg"
+  !define SQLOBJECT_EGG "SQLObject-0.10.6-py2.5.egg"
   !define SUTEKH_ICON "sutekh.ico"
 
   !define SUTEKH_EGG "Sutekh-${SUTEKH_VERSION}-py2.5.egg"
