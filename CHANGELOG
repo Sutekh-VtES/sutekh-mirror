@@ -1,3 +1,10 @@
+26 Jun 2009
+ * Update dependencies used in Windows build:
+   - Python 2.5.4
+   - setuptools to 0.6c9
+   - SQLObject 0.10.6
+   - FormEncode 1.2.2
+
 25 June 2009
  * Release 0.6.3.
  * Properly group cards of different expansions in the HTML export.
