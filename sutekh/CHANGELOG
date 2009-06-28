@@ -1,3 +1,6 @@
+29 Jun 2009
+ * Drop id attribute from XML files
+
 26 Jun 2009
  * Update dependencies used in Windows build:
    - Python 2.5.4

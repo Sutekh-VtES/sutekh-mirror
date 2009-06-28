@@ -15,10 +15,10 @@
      <annotations>
      Annotations
      </annotations>
-     <card id='3' name='Some Card' count='5' expansion='Some Expansion' />
-     <card id='3' name='Some Card' count='2'
+     <card name='Some Card' count='5' expansion='Some Expansion' />
+     <card name='Some Card' count='2'
          expansion='Some Other Expansion' />
-     <card id='5' name='Some Other Card' count='2'
+     <card name='Some Other Card' count='2'
          expansion='Some Other Expansion' />
    </physicalcardset>
 

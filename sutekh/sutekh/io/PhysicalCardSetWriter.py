@@ -13,10 +13,10 @@
      <annotations> Various annotations
      More annotations
      </annotations>
-     <card id='3' name='Some Card' count='5' expansion='Some Expansion' />
-     <card id='3' name='Some Card' count='2'
+     <card name='Some Card' count='5' expansion='Some Expansion' />
+     <card name='Some Card' count='2'
         expansion='Some Other Expansion' />
-     <card id='5' name='Some Other Card' count='2'
+     <card name='Some Other Card' count='2'
         expansion='Some Other Expansion' />
    </physicalcardset>
    """
@@ -64,15 +64,15 @@ class PhysicalCardSetWriter(object):
                 sExpName = oCard.expansion.name
             else:
                 sExpName = 'None Specified'
-            tKey = (oAbs.id, oAbs.name, sExpName)
+            tKey = (oAbs.name, sExpName)
             dPhys.setdefault(tKey, 0)
             dPhys[tKey] += 1
 
         # we sort by card name & expansion, as makes results more predictable
-        for tKey in sorted(dPhys, key=lambda x: (x[1], x[2])):
+        for tKey in sorted(dPhys):
             iNum = dPhys[tKey]
-            iId, sName, sExpName = tKey
-            SubElement(oRoot, 'card', id=str(iId), name=sName,
+            sName, sExpName = tKey
+            SubElement(oRoot, 'card', name=sName,
                     count = str(iNum), expansion=sExpName)
         pretty_xml(oRoot)
         return oRoot
