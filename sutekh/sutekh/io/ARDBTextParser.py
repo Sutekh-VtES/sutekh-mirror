@@ -112,20 +112,24 @@ class Cards(State):
 
 class ARDBTextParser(object):
     """Parser for the ARDB Text format."""
-    def __init__(self, oHolder):
+    def __init__(self):
         """Create an ARDBTextParser.
 
            oHolder is a sutekh.core.CardSetHolder.CardSetHolder object (or similar).
            """
-        self._oHolder = oHolder
         self._oState = None
-        self.reset()
 
-    def reset(self):
+    def reset(self, oHolder):
         """Reset the parser state"""
-        self._oState = NameAndAuthor(self._oHolder)
+        self._oState = NameAndAuthor(oHolder)
 
-    def feed(self, sLine):
+    def parse(self, fIn, oHolder):
+        """Parse the file"""
+        self.reset(oHolder)
+        for sLine in fIn:
+            self._feed(sLine)
+
+    def _feed(self, sLine):
         """Feed the next line to the current state object, and transition if
            required."""
         self._oState = self._oState.transition(sLine)
