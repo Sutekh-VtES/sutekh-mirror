@@ -1,5 +1,6 @@
 29 Jun 2009
  * Drop id attribute from XML files
+ * Change ELDBInventryParser to the IOBase interface
 
 26 Jun 2009
  * Update dependencies used in Windows build:

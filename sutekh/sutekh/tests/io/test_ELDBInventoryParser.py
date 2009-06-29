@@ -7,35 +7,35 @@
 """Test reading a card set from an ELDB inventory file"""
 
 import unittest
+from StringIO import StringIO
 from sutekh.tests.TestCore import SutekhTest, DummyHolder
 from sutekh.io.ELDBInventoryParser import ELDBInventoryParser
+
+# FELDB creates 0,0 entries, so they need to be in the test case
+ELDB_INV_EXAMPLE_1 = """
+"ELDB - Inventory"
+"Test Vamp 1",2,0,"","Crypt"
+"Lazar Dobrescu",1,0,"","Crypt"
+"Test Vamp 2",0,0,"","Crypt"
+"Test Card 1",2,0,"","Library"
+"Test Card 2",4,0,"","Library"
+"Test Card 3",12,0,"","Library"
+"Test Card 4",1,0,"","Library"
+"Test Card 5",0,0,"","Library"
+"""
 
 # Needs to be a SutekhTestCase so the name mapping cache test works
 class TestELDBInventoryParser(SutekhTest):
     """class for the ELDB inventory reading test"""
 
-    sTestText1 = """
-        "ELDB - Inventory"
-        "Test Vamp 1",2,0,"","Crypt"
-        "Lazar Dobrescu",1,0,"","Crypt"
-        "Test Vamp 2",0,0,"","Crypt"
-        "Test Card 1",2,0,"","Library"
-        "Test Card 2",4,0,"","Library"
-        "Test Card 3",12,0,"","Library"
-        "Test Card 4",1,0,"","Library"
-        "Test Card 5",0,0,"","Library"
-        """
-        # FELD creates 0,0 entries, so they need to be in the test case
-
     def test_basic(self):
         """Run the input test."""
         oHolder = DummyHolder()
-        oParser = ELDBInventoryParser(oHolder)
+        oParser = ELDBInventoryParser()
 
-        for sLine in self.sTestText1.split("\n"):
-            oParser.feed(sLine + "\n")
+        oParser.parse(StringIO(ELDB_INV_EXAMPLE_1), oHolder)
 
-        self.assertEqual(oHolder.name, "")
+        self.assertEqual(oHolder.name, '') # DummyHolder default
 
         aCards = oHolder.get_cards()
 

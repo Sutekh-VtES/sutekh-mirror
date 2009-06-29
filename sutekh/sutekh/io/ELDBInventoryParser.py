@@ -10,22 +10,25 @@
 
 import re
 from sutekh.core.ELDBUtilities import gen_name_lookups
+from sutekh.io.IOBase import BaseLineParser
 
-class ELDBInventoryParser(object):
-    """Parser for the ELDB Inventory format."""
+class ELDBInventoryParser(BaseLineParser):
+    """Parser for the ELDB Inventory format.
+
+       The inventory file has no name info, so the holder name isn't changed
+       by the parser."""
 
     # Should this be based on CSVParser?
     _oCardRe = re.compile(r'\s*"(?P<name>[^"]*)"\s*,\s*(?P<cnt>[0-9]+)')
 
-    def __init__(self, oHolder):
-        self._oHolder = oHolder
-        # No name info in the file - user will have to sort this out
-        self._oHolder.name = ""
+    def __init__(self):
+        super(ELDBInventoryParser, self).__init__()
         self._dNameCache = gen_name_lookups()
 
-    def feed(self, sLine):
+    def _feed(self, sLine, oHolder):
         """Handle line by line data"""
-        if sLine.strip().startswith('"ELDB - Inv'):
+        # sLine is stripped by parse
+        if sLine.startswith('"ELDB - Inv'):
             # Skip header
             return
         oMatch = self._oCardRe.match(sLine)
@@ -36,4 +39,4 @@ class ELDBInventoryParser(object):
                 sName = self._dNameCache[sName]
             if iCnt:
                 # ELDB will create 0 entries
-                self._oHolder.add(iCnt, sName, None)
+                oHolder.add(iCnt, sName, None)
