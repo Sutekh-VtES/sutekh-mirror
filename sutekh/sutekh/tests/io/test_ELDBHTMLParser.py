@@ -9,10 +9,9 @@
 from sutekh.io.ELDBHTMLParser import ELDBHTMLParser
 from sutekh.tests.TestCore import DummyHolder
 import unittest
+from StringIO import StringIO
 
-class ARDBTextParserTests(unittest.TestCase):
-    """class for the ARDB/FELDB text input parser"""
-    sTestText1 = """<HTML>
+ELDB_HTML_EXAMPLE_1 = """<HTML>
 <HEAD>
 <TITLE>Test Deck</TITLE>
 </HEAD>
@@ -40,13 +39,16 @@ class ARDBTextParserTests(unittest.TestCase):
 </HTML>
 """
 
+
+class ARDBTextParserTests(unittest.TestCase):
+    """class for the ARDB/FELDB text input parser"""
+
     def test_basic(self):
         """Run the input test."""
         oHolder = DummyHolder()
-        oParser = ELDBHTMLParser(oHolder)
+        oParser = ELDBHTMLParser()
 
-        for sLine in self.sTestText1.split("\n"):
-            oParser.feed(sLine + "\n")
+        oParser.parse(StringIO(ELDB_HTML_EXAMPLE_1), oHolder)
 
         self.assertEqual(oHolder.name, "Test Deck")
         self.assertEqual(oHolder.author, "Anon Y Mous")

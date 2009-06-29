@@ -101,14 +101,11 @@ class CardItem(HolderState):
 class ELDBHTMLParser(SutekhBaseHTMLParser):
     """Actual Parser for the ELDB HTML files."""
 
-    def __init__(self, oHolder):
+    def __init__(self):
         """Create an ELDBHTMLParser.
-
-           oHolder is a sutekh.core.CardSetHolder.CardSetHolder object
-           (or similar).
            """
         # super __init__ will call rest, so need this
-        self._oHolder = oHolder
+        self._oHolder = None # Placeholder for later
         super(ELDBHTMLParser, self).__init__()
         # Don't need to set oState, since reset will do that
 
@@ -116,4 +113,11 @@ class ELDBHTMLParser(SutekhBaseHTMLParser):
         """Reset the parser"""
         super(ELDBHTMLParser, self).reset()
         self._oState = Collecting(self._oHolder)
+
+    def parse(self, fIn, oHolder):
+        """Parse a file into the given holder"""
+        self._oHolder = oHolder
+        self.reset()
+        for sLine in fIn:
+            self.feed(sLine)
 
