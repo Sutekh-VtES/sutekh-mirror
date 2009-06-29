@@ -59,7 +59,7 @@ class ArdbInvXMLWriterTests(SutekhTest):
     """class for the ARDB inventory XML writer tests"""
 
     def test_deck_writer(self):
-        """Test ARDB XML inventroy writing"""
+        """Test ARDB XML inventory writing"""
         oPhysCardSet1 = make_set_1()
 
         # Check output

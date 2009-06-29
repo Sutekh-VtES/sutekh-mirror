@@ -42,7 +42,7 @@ class WriteArdbInvXML(WriteArdbXML):
         return oRoot
 
     def format_vamps(self, oCryptElem, dCombinedVamps):
-        """Convert the Vampire dictionary into elementtree representation."""
+        """Convert the Vampire dictionary into ElementTree representation."""
         for oCard, (iNum, sSet) in sorted(dCombinedVamps.iteritems(),
                 key=lambda x: x[0].name):
             # This won't match the ARDB ID's, unless by chance.

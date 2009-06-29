@@ -152,7 +152,7 @@ class Creed_v1(SQLObject):
             createRelatedTable=False)
 
 class Clan_v2(SQLObject):
-    """Table used to upgrade Clane from version 2"""
+    """Table used to upgrade Clan from version 2"""
     class sqlmeta:
         """meta class used to set the correct table."""
         table = Clan.sqlmeta.table
@@ -294,7 +294,7 @@ def old_database_count(oConn):
     return iCount
 
 def copy_rarity(oOrigConn, oTrans):
-    """Copy rarity tables, assumings same version"""
+    """Copy rarity tables, assuming same version"""
     for oObj in Rarity.select(connection=oOrigConn):
         _oCopy = Rarity(id=oObj.id, name=oObj.name,
                 shortname=oObj.shortname, connection=oTrans)

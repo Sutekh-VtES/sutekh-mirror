@@ -34,7 +34,7 @@ def get_filter_type(sKeyword):
 # pylint is never going to like the naming conventions here,
 # which are based on ply examples
 class ParseFilterDefinitions(object):
-    """Provides the lexxer used by PLY"""
+    """Provides the lexer used by PLY"""
     # pylint: disable-msg=C0103, R0201
     aKeywords = [x.keyword for x in PARSER_FILTERS]
 
@@ -265,7 +265,7 @@ class ValueObject(object):
     """Object to represent values extracted from the AST"""
 
     def __init__(self, oValue, oNode):
-        """Initialize ValueObject with oValue and AST node oNode"""
+        """Initialise ValueObject with oValue and AST node oNode"""
         self.oValue = oValue
         self.oNode = oNode
 
@@ -344,7 +344,7 @@ class FilterNode(AstBaseNode):
         return self.oExpression
 
     def get_values(self):
-        """Get ilter values"""
+        """Get filter values"""
         if self.oExpression:
             return self.oExpression.get_values()
         else:
@@ -358,7 +358,7 @@ class FilterNode(AstBaseNode):
             return None
 
     def get_invalid_values(self):
-        """Get values that are invlaid for this filter"""
+        """Get values that are invalid for this filter"""
         if self.oExpression:
             return self.oExpression.get_invalid_values()
         else:
@@ -376,7 +376,7 @@ class OperatorNode(AstBaseNode):
     pass
 
 class TermNode(AstBaseNode):
-    """Node to represnt values in the AST"""
+    """Node to represent values in the AST"""
 
     def get_type(self):
         """Return type.
@@ -411,7 +411,7 @@ class IdNode(TermNode):
     """$foo variable identifier in the AST"""
 
     def __init__(self, sValue):
-        """Initiliase IdNode. sValue == name of variable"""
+        """Initialise IdNode. sValue == name of variable"""
         super(IdNode, self).__init__([sValue])
         self.oValue = sValue
 
@@ -623,7 +623,7 @@ class BinOpNode(OperatorNode):
         return aRes
 
 class CommaNode(OperatorNode):
-    """AST node for comma seperator (Val1, Val2)"""
+    """AST node for comma separator (Val1, Val2)"""
     def __init__(self, oLeft, oOp, oRight):
         super(CommaNode, self).__init__([oLeft, oRight])
         self.oOp = oOp

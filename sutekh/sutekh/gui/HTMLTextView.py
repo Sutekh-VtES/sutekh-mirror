@@ -48,7 +48,7 @@ class HtmlHandler(HTMLParser.HTMLParser):
     # pylint: disable-msg=R0201, R0902
     # R0201: can't break these into functions
     # R0902: We need to keep a lot of state to handle HTML properly
-    """Parse the HTML imput and update the gtk.TextView"""
+    """Parse the HTML input and update the gtk.TextView"""
     def __init__(self, oTextView, oStartIter, fLinkLoader):
         HTMLParser.HTMLParser.__init__(self)
         self._oTextBuf = oTextView.get_buffer()
@@ -229,7 +229,7 @@ class HtmlHandler(HTMLParser.HTMLParser):
                 "left-margin")
 
     def _parse_style_margin_right(self, oTag, sValue):
-        """Hanlde the margin right style attribute."""
+        """Handle the margin right style attribute."""
         self._parse_length(sValue, False, self.__frac_length_tag_cb, oTag,
                 "right-margin")
 
@@ -669,7 +669,7 @@ class HTMLTextView(gtk.TextView):
         # We just silently ignore invalid anchors
 
     def display_html(self, fHTMLInput):
-        """Displa the HTML from the file-like object fHTMLInput"""
+        """Display the HTML from the file-like object fHTMLInput"""
         oBuffer = self.get_buffer()
         oStartOfBuf, oEndOfBuf = oBuffer.get_bounds()
         oBuffer.delete(oStartOfBuf, oEndOfBuf)

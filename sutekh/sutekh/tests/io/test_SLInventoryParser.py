@@ -4,7 +4,7 @@
 # Copyright 2009 Simon Cross <hodgestar+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-"""Test reading a card set from an Secret Libary inventory file"""
+"""Test reading a card set from an Secret Library inventory file"""
 
 import unittest
 import StringIO
@@ -29,7 +29,7 @@ class TestSLInventoryParser(SutekhTest):
         """
 
     def test_basic(self):
-        """Run the Secret Libary inventory input test."""
+        """Run the Secret Library inventory input test."""
         oHolder = DummyHolder()
         fIn = StringIO.StringIO(self.sTestText1)
         oParser = SLInventoryParser()

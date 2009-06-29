@@ -308,7 +308,7 @@ class MultiPaneWindow(gtk.Window):
             oPane.reload()
 
     def do_all_queued_reloads(self):
-        """Do any defferred reloads from the database signal handlers."""
+        """Do any deferred reloads from the database signal handlers."""
         for oPane in self.dOpenFrames:
             oPane.do_queued_reload()
 

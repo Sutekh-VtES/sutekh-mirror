@@ -59,7 +59,7 @@ class ARDBInvXMLState(object):
                 self._iCount = int(dAttributes[self.COUNT_KEY])
 
     def end(self, sTag):
-        """End tage encountered"""
+        """End tag encountered"""
         if self._iState == self.INCARD:
             if sTag == 'vampire' or sTag == 'card':
                 if not self._sCardSet:

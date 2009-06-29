@@ -4,7 +4,7 @@
 # Copyright 2008 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-"""Utilitity functions for dealing with managing the CardSet Objects"""
+"""Utility functions for dealing with managing the CardSet Objects"""
 
 from sqlobject import SQLObjectNotFound
 from sutekh.core.SutekhObjects import PhysicalCardSet

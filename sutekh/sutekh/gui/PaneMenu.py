@@ -16,7 +16,7 @@ class PaneMenu(SutekhMenu):
     """Base class for individual Frame menus
 
        This provides handling for enabling and disabling the menus
-       ability to recieve acceleraotrs on focus changes.
+       ability to receive accelerators on focus changes.
        """
     def __init__(self, oFrame, oWindow):
         super(PaneMenu, self).__init__(oWindow)

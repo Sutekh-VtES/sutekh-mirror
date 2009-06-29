@@ -13,7 +13,7 @@ from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.CardListModel import CardListModelListener
 
 def _id_card(oCard):
-    """Idenitfy the card type"""
+    """Identify the card type"""
     sType = list(oCard.cardtype)[0].name
     if sType == 'Vampire' or sType == 'Imbued':
         return 'Crypt'

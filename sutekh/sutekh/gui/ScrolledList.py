@@ -5,7 +5,7 @@
 # Copyright 2006 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
 
-"""Generic Scrolled List, used in the Filter Dialo and elsewhere"""
+"""Generic Scrolled List, used in the Filter Dialog and elsewhere"""
 
 import gtk, gobject
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow

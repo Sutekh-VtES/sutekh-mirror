@@ -36,7 +36,7 @@ class TestSLDeckParser(SutekhTest):
         """
 
     def test_basic(self):
-        """Run the Secret Libary deck input test."""
+        """Run the Secret Library deck input test."""
         oHolder = DummyHolder()
         fIn = StringIO.StringIO(self.sTestText1)
         oParser = SLDeckParser()

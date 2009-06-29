@@ -474,7 +474,7 @@ class Vector(object):
     # pylint: disable-msg=W0212
 
     def euclidian_distance(self, oVec2):
-        """Euclidian distance between two vectors."""
+        """Euclidean distance between two vectors."""
         assert len(self._aData) == len(oVec2._aData)
         fSum = sum(((x-y)**2 for (x, y) in zip(self._aData, oVec2._aData)))
         return math.sqrt(fSum)

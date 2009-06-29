@@ -82,7 +82,7 @@ class CellRendererSutekhButton(gtk.GenericCellRenderer):
     # R0913 - number of parameters needed by function signature
     def on_activate(self, _oEvent, _oWidget, oPath, oBackgroundArea,
             _oCellArea, _iFlags):
-        """Activate signal recieved from the TreeView"""
+        """Activate signal received from the TreeView"""
         # Note that we need to offset button
         self.bClicked = True
         self.oClickedBackgroundArea = oBackgroundArea

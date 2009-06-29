@@ -16,7 +16,7 @@ class WWFilesDialog(SutekhDialog):
     # pylint: disable-msg=R0904, R0902
     # R0904 - gtk.Widget, so many public methods
     # R0902 - we keep a lot of internal state, so many instance variables
-    """Actual dailog widget"""
+    """Actual dialog widget"""
 
     def __init__(self, oParent):
         super(WWFilesDialog, self).__init__("Choose White Wolf Files", oParent,

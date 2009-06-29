@@ -5,7 +5,7 @@
 # Copyright 2009 Neil Muller <drnlmuller+sutekh@gmail.com>
 # Modified from ExtraCardViewColumns.py
 # GPL - see COPYING for details
-"""Disply extra columns in the tree view"""
+"""Display extra columns in the tree view"""
 
 import gtk
 import pango

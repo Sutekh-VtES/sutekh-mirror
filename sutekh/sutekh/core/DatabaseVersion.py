@@ -12,7 +12,7 @@ from sqlobject import sqlhub
 from sutekh.core.SutekhObjects import VersionTable
 
 def _get_connection(oConn):
-    """Ensure we have a vaild connection object"""
+    """Ensure we have a valid connection object"""
     if oConn is None:
         return sqlhub.processConnection
     else:

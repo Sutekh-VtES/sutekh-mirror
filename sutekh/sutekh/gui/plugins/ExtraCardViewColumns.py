@@ -3,7 +3,7 @@
 # vim:fileencoding=utf8 ai ts=4 sts=4 et sw=4
 # Copyright 2007 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
-"""Disply extra columns in the tree view"""
+"""Display extra columns in the tree view"""
 
 import gtk
 from sutekh.gui.PluginManager import CardListPlugin
@@ -141,7 +141,7 @@ class ExtraCardViewColumns(CardListPlugin):
         oCell.set_data(aText, aIcons, self._iShowMode)
 
     def _get_data_disciplines(self, oCard, bGetIcons=True):
-        """get disipline info for card"""
+        """get discipline info for card"""
         if not oCard is None:
             # There are better ways of doing this, but this is 1st draft
             # attempt, so we'll do the firt that occurs to me
@@ -189,7 +189,7 @@ class ExtraCardViewColumns(CardListPlugin):
         return [], []
 
     def _render_expansions(self, _oColumn, oCell, _oModel, oIter):
-        """Display expanson info"""
+        """Display expansion info"""
         oCard = self._get_card(oIter)
         aText, aIcons = self._get_data_expansions(oCard)
         oCell.set_data(aText, aIcons, self._iShowMode)

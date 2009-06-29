@@ -52,7 +52,7 @@ class CardSetModelRow(object):
         return self.iParentCount
 
     def get_inc_dec_flags(self, iCnt):
-        """Deermine the status of the button flags."""
+        """Determine the status of the button flags."""
         if self.bEditable:
             return True, (iCnt > 0)
         return False, False
@@ -143,7 +143,7 @@ class CardSetCardListModel(CardListModel):
         disconnect_changed(self.card_changed, PhysicalCardSet)
 
     def set_count_colour(self):
-        """Format the card count accorindly"""
+        """Format the card count accordingly"""
         self._oCountColour = BLACK
         if self.bEditable and self.oEditColour:
             self._oCountColour = self.oEditColour

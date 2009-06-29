@@ -142,7 +142,7 @@ class ACSImporter(CardListPlugin):
             fIn.close()
 
     def make_cs_from_file(self, sFile, cParser):
-        """From an fiel, create an Card Set"""
+        """From an file, create an Card Set"""
         fIn = file(sFile, "rb")
         try:
             self.make_cs(fIn, cParser)

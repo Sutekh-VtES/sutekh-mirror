@@ -4,7 +4,7 @@
 # Copyright 2008 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-"""Utilitity functions for importing from & exporting to FELDB"""
+"""Utility functions for importing from & exporting to FELDB"""
 
 import unicodedata
 from sutekh.core.SutekhObjects import AbstractCard, canonical_to_csv
@@ -18,7 +18,7 @@ def type_of_card(oCard):
         return "Library"
 
 def norm_name(oCard):
-    """Transform a card name to the ELDB equivilant"""
+    """Transform a card name to the ELDB equivalent"""
     sName = oCard.name
     if oCard.level is not None:
         sName = sName.replace("(Advanced)", "(ADV)")

@@ -405,7 +405,7 @@ class InCard(LogStateWithInfo):
     """State for in a card description in the WW card list."""
 
     def transition(self, sTag, dAttr):
-        """Transistion to the appropriate section state if needed."""
+        """Transition to the appropriate section state if needed."""
         if sTag == 'p':
             raise StateError()
         elif sTag == '/p':
@@ -426,7 +426,7 @@ class InCardName(LogStateWithInfo):
     """In the card name section."""
 
     def transition(self, sTag, _dAttr):
-        """Transistion back to InCard if needed."""
+        """Transition back to InCard if needed."""
         if sTag == '/span':
             self._dInfo['name'] = self._sData.strip()
             return InCard(self._dInfo, self.oLogger)
@@ -439,7 +439,7 @@ class InExpansion(LogStateWithInfo):
     """In the expansions section."""
 
     def transition(self, sTag, _dAttr):
-        """Transistion back to InCard if needed."""
+        """Transition back to InCard if needed."""
         if sTag == '/span':
             self._dInfo['expansion'] = self._sData.strip()
             return InCard(self._dInfo, self.oLogger)
@@ -452,7 +452,7 @@ class InCardText(LogStateWithInfo):
     """In the card text section."""
 
     def transition(self, sTag, _dAttr):
-        """Transistion back to InCard if needed."""
+        """Transition back to InCard if needed."""
         if sTag == '/td' or sTag == 'tr' or sTag == '/tr' or sTag == '/table':
             self._dInfo['text'] = self._sData.strip()
             return InCard(self._dInfo, self.oLogger)

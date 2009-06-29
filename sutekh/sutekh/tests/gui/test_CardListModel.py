@@ -52,7 +52,7 @@ class CardListModelTests(SutekhTest):
         return iTotal
 
     def _count_top_level(self, oModel):
-        """Count all the top level enterie in the model."""
+        """Count all the top level entries in the model."""
         iTotal = oModel.iter_n_children(None)
         return iTotal
 

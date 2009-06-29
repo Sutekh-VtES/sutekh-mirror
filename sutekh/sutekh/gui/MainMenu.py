@@ -218,7 +218,7 @@ class MainMenu(SutekhMenu):
         self.__oAddPCLPane.set_sensitive(bValue)
 
     def set_split_vertical_active(self, bValue):
-        """Set the split veritcal pane option to bValue"""
+        """Set the split vertical pane option to bValue"""
         self.__oAddVertPane.set_sensitive(bValue)
 
     def set_split_horizontal_active(self, bValue):
@@ -329,7 +329,7 @@ class MainMenu(SutekhMenu):
         self._oMainWindow.set_all_panes_equal()
 
     def add_pane_horizontal(self, _oWidget):
-        """Split the current pane horizonitally and add a new pane."""
+        """Split the current pane horizontally and add a new pane."""
         self._oMainWindow.add_pane(False)
 
     def add_pane_vertical(self, _oWidget):

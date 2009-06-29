@@ -100,7 +100,7 @@ class CreateCardSetDialog(SutekhDialog):
         self.show_all()
 
     def get_name(self):
-        """Get the name entred by the user"""
+        """Get the name entered by the user"""
         return self.sName
 
     def get_author(self):

@@ -260,7 +260,7 @@ class CardListView(gtk.TreeView):
                 self.load()
 
     def run_filter(self, bState):
-        """Enable or diable the current filter based on bState"""
+        """Enable or disable the current filter based on bState"""
         if self._oModel.applyfilter != bState:
             self._oModel.applyfilter = bState
             self.load()

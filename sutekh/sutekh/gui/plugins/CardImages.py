@@ -56,7 +56,7 @@ def _check_file(sFileName):
     return bRes
 
 def _unaccent(sCardName):
-    """Remove unicode accents."""
+    """Remove Unicode accents."""
     # Inspired by a post by renaud turned up by google
     # Unicode Normed decomposed form
     sNormed = unicodedata.normalize('NFD',
@@ -180,7 +180,7 @@ class CardImageFrame(BasicFrame, CardListViewListener):
         return _check_file(sTestFile)
 
     def __convert_expansion(self, sExpansionName):
-        """Convert the Full Expansion name into the abbrevation needed."""
+        """Convert the Full Expansion name into the abbreviation needed."""
         if sExpansionName == '' or not self.__bShowExpansions:
             return ''
         # pylint: disable-msg=E1101

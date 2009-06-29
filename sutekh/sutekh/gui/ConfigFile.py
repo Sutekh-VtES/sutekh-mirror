@@ -102,7 +102,7 @@ class ConfigFile(object):
             self.__oConfig.set(sSection, sKey, 'no')
 
     def add_listener(self, oListener):
-        """Add a listener to respon to config file changes."""
+        """Add a listener to respond to config file changes."""
         self.__dListeners[oListener] = None
 
     def remove_listener(self, oListener):

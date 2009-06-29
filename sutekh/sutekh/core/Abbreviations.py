@@ -13,7 +13,7 @@
 # Base Classes
 
 class AbbrevMeta(type):
-    """Meta class for the abbrevation classes"""
+    """Meta class for the abbreviation classes"""
     # pylint: disable-msg=W0231, C0203
     # W0231 - no point in calling type's init
     # C0203 - pylint's buggy here, see
@@ -35,7 +35,7 @@ class AbbrevMeta(type):
 # pylint: disable-msg=E1101
 # meta-class magic with _dLook confuses pylint
 class AbbreviationLookup(object):
-    """Base class for specific abbreavtion tables."""
+    """Base class for specific abbreviation tables."""
     __metaclass__ = AbbrevMeta
 
     # Subclass should define a dictionary of keys:
@@ -77,7 +77,7 @@ class CardTypes(AbbreviationLookup):
     }
 
 class Clans(AbbreviationLookup):
-    """Standard names and common abbreavitaions for the VtES clans."""
+    """Standard names and common abbreviations for the VtES clans."""
     dKeys = {
         # Camarilla
         'Brujah' : ['Brujah'], 'Malkavian' : ['Malk'],
@@ -128,7 +128,7 @@ class Creeds(AbbreviationLookup):
         return sCanonical
 
 class Disciplines(AbbreviationLookup):
-    """Standard abbrevations and names for the VtES disciplines."""
+    """Standard abbreviations and names for the VtES disciplines."""
     dKeys = {
         'abo' : ['ABO','Abombwe'],
         'ani' : ['ANI','Animalism'],
@@ -163,11 +163,11 @@ class Disciplines(AbbreviationLookup):
 
     @classmethod
     def fullname(cls, sCanonical):
-        """Return the full name for the given abbrevation."""
+        """Return the full name for the given abbreviation."""
         return cls.dKeys[sCanonical][1]
 
 class Expansions(AbbreviationLookup):
-    """Common names and abbrevations for the different expansions."""
+    """Common names and abbreviations for the different expansions."""
     dKeys = {
         'Anarchs' : [],
         'Ancient Hearts' : ['AH'],
@@ -220,7 +220,7 @@ class Expansions(AbbreviationLookup):
         return sCanonical
 
 class Rarities(AbbreviationLookup):
-    """Common strings and abbrevations for the different card rarities."""
+    """Common strings and abbreviations for the different card rarities."""
     dKeys = {
         'Common' : ['C','C1','C2','C3',u'C\xbd'], # EK uses C1/2 for Aye & Orun
         'Uncommon' : ['U','U1','U2','U3','U5'],
@@ -295,7 +295,7 @@ class Titles(AbbreviationLookup):
         return cls.dVoteValues[sTitle]
 
 class Virtues(AbbreviationLookup):
-    """Common abbrevations for Imbued Virtues"""
+    """Common abbreviations for Imbued Virtues"""
     dKeys = {
         # Virtues (last key is full name)
         'def' : ['Defense'],

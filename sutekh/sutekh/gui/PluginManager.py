@@ -4,7 +4,7 @@
 # Copyright 2006 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
 
-"""Classes for mangaging and creating plugins for Sutekh."""
+"""Classes for managing and creating plugins for Sutekh."""
 
 import os
 import glob

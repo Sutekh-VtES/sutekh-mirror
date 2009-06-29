@@ -109,7 +109,7 @@ class NoSection(LogState):
     """Not in any ruling section."""
 
     def transition(self, sTag, _dAttr):
-        """Transition ot InSection if needed."""
+        """Transition to InSection if needed."""
         if sTag == 'p':
             return InSection(RuleDict(self.oLogger), self.oLogger)
         else:
@@ -129,7 +129,7 @@ class InSection(LogStateWithInfo):
             return NoSection(self.oLogger)
 
 class SectionTitle(LogStateWithInfo):
-    """In the tilte of the section."""
+    """In the title of the section."""
 
     def transition(self, sTag, _dAttr):
         """Transition to SectionWithTitle if needed."""

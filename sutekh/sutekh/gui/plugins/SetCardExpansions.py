@@ -32,7 +32,7 @@ class SetCardExpansions(CardListPlugin):
         return ('Plugins', oMenuItem)
 
     def activate(self, _oWidget):
-        """Handle menu activiation"""
+        """Handle menu activation"""
         self.create_dialog()
 
     def create_dialog(self):

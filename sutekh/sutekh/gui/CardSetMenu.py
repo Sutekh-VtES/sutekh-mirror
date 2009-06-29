@@ -246,5 +246,5 @@ class CardSetMenu(CardListMenu):
         self._oController.view.del_selection()
 
     def _paste_selection(self, _oWidget):
-        """Try to paste the current clipbaord contents"""
+        """Try to paste the current clipboard contents"""
         self._oController.view.do_paste()

@@ -4,7 +4,7 @@
 # Dialog to display deck analysis software
 # Copyright 2008 Neil Muller <drnlmuller+sutekh@gmail.com>,
 # GPL - see COPYING for details
-"""Calculate probailibities for drawing the current selection."""
+"""Calculate probabilities for drawing the current selection."""
 
 import gtk
 from copy import copy
@@ -393,7 +393,7 @@ class CardDrawSimPlugin(CardListPlugin):
         self.oResultsTable.attach(oLeftLabel, 0, 1, 1, iNumRows)
 
     def _setup_count_rows(self):
-        """Fill in the culmative count rows."""
+        """Fill in the cumulative count rows."""
         iBottomRow = 3
         for iCardRow in range(self.iCardsToDraw + 1):
             self.oResultsTable.attach(gtk.HSeparator(), 1, 3, iBottomRow,

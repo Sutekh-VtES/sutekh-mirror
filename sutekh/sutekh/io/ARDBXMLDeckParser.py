@@ -33,7 +33,7 @@ class ARDBDeckXMLState(ARDBInvXMLState):
             super(ARDBDeckXMLState, self).start(sTag, dAttributes)
 
     def end(self, sTag):
-        """End tage encountered"""
+        """End tag encountered"""
         # Handle cases different to base class
         if self._iState == self.DECKAUTHOR and sTag == 'author':
             self._oHolder.author = self._sData

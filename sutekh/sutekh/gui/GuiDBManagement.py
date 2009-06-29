@@ -67,7 +67,7 @@ def copy_to_new_db(oOldConn, oTempConn, oWin, oProgressDialog, oLogHandler):
     return True
 
 def initialize_db(oParent):
-    """Initailize the database if it doesn't exist"""
+    """Initialise the database if it doesn't exist"""
     iRes = do_complaint_buttons("The database doesn't seem to be properly"
             " initialised",
             gtk.MESSAGE_ERROR, (gtk.STOCK_QUIT, gtk.RESPONSE_CLOSE,
@@ -215,7 +215,7 @@ def do_db_upgrade(aLowerTables, aHigherTables):
     return False
 
 def _do_commit_db(oLogHandler, oTempConn):
-    """Handle commiting the memory copy to the actual DB"""
+    """Handle committing the memory copy to the actual DB"""
     oProgressDialog = ProgressDialog()
     oProgressDialog.set_description("Commiting changes")
     oLogHandler.set_dialog(oProgressDialog)

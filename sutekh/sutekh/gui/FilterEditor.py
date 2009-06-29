@@ -5,7 +5,7 @@
 # Copyright 2008 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
 
-"""Widget for ediging filters."""
+"""Widget for editing filters."""
 
 from sutekh.gui.MultiSelectComboBox import MultiSelectComboBox
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
@@ -536,7 +536,7 @@ class FilterBoxItem(object):
         return set([self.sVariableName])
 
     def get_ast(self):
-        """Return an AST respresentation of the filter."""
+        """Return an AST representation of the filter."""
         oAST = FilterPartNode(self.sFilterName, self.aFilterValues,
                 self.sVariableName)
         if self.bNegated:

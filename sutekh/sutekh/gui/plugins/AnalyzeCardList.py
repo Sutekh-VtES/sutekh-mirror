@@ -53,7 +53,7 @@ def escape(sInput):
         return sInput # pass None straigh through
 
 def _get_abstract_cards(aCards):
-    """Get the asbtract cards given the list of names"""
+    """Get the abstract cards given the list of names"""
     return [IAbstractCard(x) for x in aCards]
 
 def _lookup_discipline(sKey, dDisciplines):

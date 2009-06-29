@@ -30,7 +30,7 @@ def get_cards_filter(oModel, oFilter):
     return convert_to_abs(list(oModel.get_card_iterator(oFilter)))
 
 def get_probs(dLibProbs, dToCheck, dGroupedProbs):
-    """Calculate the probablilties for the card groups"""
+    """Calculate the probabilities for the card groups"""
     for sCardName, fMean in dLibProbs.iteritems():
         for sGroup, aCards in dToCheck.iteritems():
             if sCardName in aCards:

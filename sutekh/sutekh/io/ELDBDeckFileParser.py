@@ -29,7 +29,7 @@ class State(object):
 class Name(State):
     """State for extracting Name."""
     def transition(self, sLine):
-        """Process the line for Name - transioning to author."""
+        """Process the line for Name - transitioning to author."""
         sValue = sLine.strip()
         if not sValue:
             return self
@@ -40,7 +40,7 @@ class Name(State):
 class Author(State):
     """State for extracting Author."""
     def transition(self, sLine):
-        """Process the line for Author - transioning to description."""
+        """Process the line for Author - transitioning to description."""
         sValue = sLine.strip()
         if not sValue:
             return self

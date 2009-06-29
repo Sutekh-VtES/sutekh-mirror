@@ -406,7 +406,7 @@ class DisciplineLevelFilter(MultiFilter):
         self._oIdField = self._oMapTable.q.discipline_pair_id
 
 class MultiDisciplineLevelFilter(MultiFilter):
-    """Filter on mulitple discipline & level combos"""
+    """Filter on multiple discipline & level combos"""
     keyword = "Discipline_with_Level"
     description = "Discipline with Level"
     helptext = "a list of disciplines with levels (each element specified" \

@@ -95,7 +95,7 @@ class CardSetFrame(CardListFrame):
         self._oController.model.iShowCardMode = iShowCardMode
 
     def do_queued_reload(self):
-        """Do a defferred reload if one was set earlier"""
+        """Do a deferred reload if one was set earlier"""
         if self._bNeedReload:
             self.reload()
         self._bNeedReload = False

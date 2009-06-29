@@ -325,7 +325,7 @@ class CardSetView(CardListView):
             self._oController.change_selected_card_count(dSelectedData)
 
     def do_paste(self):
-        """Try and paste the current selection from the appliction clipboard"""
+        """Try and paste the current selection from the application clipboard"""
         if self._oModel.bEditable:
             sSelection = self._oMainWin.get_selection_text()
             sSource, aCards = self.split_selection_data(sSelection)
