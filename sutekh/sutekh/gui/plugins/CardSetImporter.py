@@ -156,15 +156,8 @@ class ACSImporter(CardListPlugin):
         # pylint: disable-msg=W0703
         # we really do want all the exceptions
         try:
-            # FIXME: Remove compatibility with old parsers when they've all
-            # been updated.
-            if hasattr(cParser, 'parse'):
-                oParser = cParser()
-                oParser.parse(fIn, oHolder)
-            else:
-                oParser = cParser(oHolder)
-                for sLine in fIn:
-                    oParser.feed(sLine)
+            oParser = cParser()
+            oParser.parse(fIn, oHolder)
         except Exception, oExp:
             sMsg = "Reading the card set failed with the following error:\n" \
                    "%s\n The file is probably not in the format the Parser" \

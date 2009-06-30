@@ -1,3 +1,6 @@
+30 Jun 2009
+ * Remove compatability code for old parsers from CardSetImport plugin
+
 29 Jun 2009
  * Drop id attribute from XML files
  * Change ELDBInventryParser to the IOBase interface
