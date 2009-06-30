@@ -107,6 +107,21 @@ class BaseSutekhXMLParser(BaseXMLParser):
         if oRoot.attrib['sutekh_xml_version'] not in self.aSupportedVersions:
             raise RuntimeError("Unrecognised %s File version" % self.sTypeName)
 
+    # pylint: disable-msg=R0201
+    # method so subclasses can use it
+
+    def _parse_card(self, oElem, oHolder):
+        """Extract the expansion information from a card node"""
+        iCount = int(oElem.attrib['count'], 10)
+        sName = oElem.attrib['name']
+        try:
+            sExpansionName = oElem.attrib['expansion']
+            if sExpansionName == "None Specified":
+                sExpansionName = None
+        except KeyError:
+            sExpansionName = None
+        oHolder.add(iCount, sName, sExpansionName)
+
 
 class BaseLineParser(CardSetParser):
     """Base class for simple line-by-line parsers.

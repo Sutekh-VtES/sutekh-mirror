@@ -75,13 +75,5 @@ class PhysicalCardSetParser(BaseSutekhXMLParser):
                             " annotation values encountered.")
                 oHolder.annotations = oElem.text
             elif oElem.tag == 'card':
-                iCount = int(oElem.attrib['count'], 10)
-                sName = oElem.attrib['name']
-                try:
-                    sExpansionName = oElem.attrib['expansion']
-                    if sExpansionName == "None Specified":
-                        sExpansionName = None
-                except KeyError:
-                    sExpansionName = None
-                oHolder.add(iCount, sName, sExpansionName)
+                self._parse_card(oElem, oHolder)
 

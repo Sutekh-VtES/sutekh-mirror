@@ -29,6 +29,8 @@ class PhysicalCardParser(BaseSutekhXMLParser):
     sTypeTag = 'cards'
     sTypeName = 'Physical card list'
 
+    # pylint: disable-msg=R0201
+
     def _convert_tree(self, oHolder):
         """parse the elementtree into a card set holder"""
         self._check_tree()
@@ -36,12 +38,5 @@ class PhysicalCardParser(BaseSutekhXMLParser):
         oRoot = self._oTree.getroot()
         for oElem in oRoot:
             if oElem.tag == 'card':
-                iCount = int(oElem.attrib['count'], 10)
-                sName = oElem.attrib['name']
-                try:
-                    sExpansionName = oElem.attrib['expansion']
-                    if sExpansionName == "None Specified":
-                        sExpansionName = None
-                except KeyError:
-                    sExpansionName = None
-                oHolder.add(iCount, sName, sExpansionName)
+                self._parse_card(oElem, oHolder)
+

@@ -45,7 +45,4 @@ class AbstractCardSetParser(BaseSutekhXMLParser):
             if oElem.tag == 'annotations':
                 oHolder.annotations = oElem.text
             elif oElem.tag == 'card':
-                iCount = int(oElem.attrib['count'], 10)
-                sName = oElem.attrib['name']
-                # Add card to virtual cardset
-                oHolder.add(iCount, sName, None)
+                self._parse_card(oElem, oHolder) # Will use no expansion path
