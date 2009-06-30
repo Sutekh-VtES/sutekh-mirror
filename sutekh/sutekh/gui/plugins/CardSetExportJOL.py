@@ -8,6 +8,7 @@
 
 import gtk
 from sutekh.core.SutekhObjects import PhysicalCardSet
+from sutekh.core.CardSetHolder import CardSetWrapper
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhFileWidget import ExportDialog
 from sutekh.io.WriteJOL import WriteJOL
@@ -45,7 +46,7 @@ class CardSetExportJOL(CardListPlugin):
                 return
             oWriter = WriteJOL()
             fOut = file(sFileName,"w")
-            oWriter.write(fOut, oCardSet)
+            oWriter.write(fOut, CardSetWrapper(oCardSet))
             fOut.close()
 
 plugin = CardSetExportJOL

@@ -8,6 +8,7 @@
 
 import gtk
 from sutekh.core.SutekhObjects import PhysicalCardSet
+from sutekh.core.CardSetHolder import CardSetWrapper
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhFileWidget import ExportDialog
 from sutekh.io.WriteELDBInventory import WriteELDBInventory
@@ -55,10 +56,9 @@ class CardSetExportFELDB(CardListPlugin):
             fOut = file(sFileName,"w")
             if oFirstBut.get_active():
                 oWriter = WriteELDBDeckFile()
-                oWriter.write(fOut, oCardSet)
             else:
                 oWriter = WriteELDBInventory()
-                oWriter.write(fOut, oCardSet)
+            oWriter.write(fOut, CardSetWrapper(oCardSet))
             fOut.close()
 
 plugin = CardSetExportFELDB

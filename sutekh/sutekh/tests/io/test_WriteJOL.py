@@ -8,6 +8,7 @@
 
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.tests.core.test_PhysicalCardSet import make_set_1
+from sutekh.core.CardSetHolder import CardSetWrapper
 from sutekh.io.WriteJOL import  WriteJOL
 import unittest
 
@@ -32,7 +33,7 @@ class JOLWriterTests(SutekhTest):
         # Check output
 
         oWriter = WriteJOL()
-        sData = self._round_trip_obj(oWriter, oPhysCardSet1)
+        sData = self._round_trip_obj(oWriter, CardSetWrapper(oPhysCardSet1))
 
         self.assertEqual(sData, EXPECTED_1)
 

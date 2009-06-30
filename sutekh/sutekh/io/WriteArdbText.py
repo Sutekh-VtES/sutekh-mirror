@@ -37,11 +37,12 @@ class WriteArdbText(ArdbInfo):
 
     # pylint: disable-msg=R0201
     # method for consistency with the other methods
-    def _gen_header(self, sSetName, sAuthor, sDescription):
+    def _gen_header(self, oHolder):
         """Generate an ARDB text file header."""
         return "Deck Name : %s\n" \
                "Author : %s\n" \
-               "Description :\n%s\n" % (sSetName, sAuthor, sDescription)
+               "Description :\n%s\n" % (oHolder.name, oHolder.author,
+                       oHolder.comment)
     # pylint: enable-msg=R0201
 
     def _gen_crypt(self, dCards):
@@ -112,11 +113,11 @@ class WriteArdbText(ArdbInfo):
 
     # pylint: disable-msg=R0913
     # we need all these arguments
-    def write(self, fOut, sSetName, sAuthor, sDescription, oCardIter):
+    def write(self, fOut, oHolder):
         """Takes filename, deck details and a dictionary of cards, of the
            form dCard[(id, name, set)] = count and writes the file."""
-        dCards = self._get_cards(oCardIter)
-        fOut.write(self._gen_header(sSetName, sAuthor, sDescription))
+        dCards = self._get_cards(oHolder.cards)
+        fOut.write(self._gen_header(oHolder))
         fOut.write("\n")
         fOut.write(self._gen_crypt(dCards))
         fOut.write("\n")

@@ -18,6 +18,8 @@
 
    """
 
+from sutekh.core.SutekhObjects import IAbstractCard
+
 class WriteJOL(object):
     """Create a string in JOL format representing a card set."""
 
@@ -31,20 +33,24 @@ class WriteJOL(object):
 
     def _crypt_or_library(self, oCard):
         """Return 'crypt' or 'library' as required"""
-        sType = list(oCard.abstractCard.cardtype)[0].name
+        # pylint: disable-msg=E1101
+        # pyprotocols confuses pylint
+        sType = list(IAbstractCard(oCard).cardtype)[0].name
         if sType == "Vampire" or sType == "Imbued":
             return "crypt"
         else:
             return "library"
 
     # pylint: enable-msg=R0201
-    def _gen_inv(self, oCardSet):
+    def _gen_inv(self, oHolder):
         """Process the card set, creating the lines as needed"""
+        # pylint: disable-msg=E1101
+        # pyprotocols confuses pylint
         dCards = {'crypt' : {}, 'library' : {}}
         sResult = ""
-        for oCard in oCardSet.cards:
+        for oCard in oHolder.cards:
             sType = self._crypt_or_library(oCard)
-            sName = self._escape(oCard.abstractCard.name)
+            sName = self._escape(IAbstractCard(oCard).name)
             dCards[sType].setdefault(sName, 0)
             dCards[sType][sName] += 1
         # Sort the output
@@ -61,7 +67,7 @@ class WriteJOL(object):
 
     # pylint: enable-msg=R0201
 
-    def write(self, fOut, oCardSet):
+    def write(self, fOut, oHolder):
         """Takes file object + card set to write, and writes an JOL deck
            representing the deck"""
-        fOut.write(self._gen_inv(oCardSet))
+        fOut.write(self._gen_inv(oHolder))

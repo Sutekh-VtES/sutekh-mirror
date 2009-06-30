@@ -9,6 +9,7 @@
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.tests.core.test_PhysicalCardSet import make_set_1
 from sutekh.io.WriteELDBDeckFile import WriteELDBDeckFile
+from sutekh.core.CardSetHolder import CardSetWrapper
 import unittest
 
 EXPECTED_1 = """"Test Set 1"
@@ -42,7 +43,7 @@ class ELDBDeckWriterTests(SutekhTest):
         # Check output
 
         oWriter = WriteELDBDeckFile()
-        sData = self._round_trip_obj(oWriter, oPhysCardSet1)
+        sData = self._round_trip_obj(oWriter, CardSetWrapper(oPhysCardSet1))
 
         self.assertEqual(sData, EXPECTED_1)
 

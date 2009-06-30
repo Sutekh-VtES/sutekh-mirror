@@ -41,11 +41,11 @@ class WriteCSV(object):
         else:
             return ""
 
-    def _gen_inv(self, oCardSet):
+    def _gen_inv(self, oHolder):
         """Process the card set, creating the lines as needed"""
         dCards = {}
         sResult = ""
-        for oCard in oCardSet.cards:
+        for oCard in oHolder.cards:
             tKey = (oCard.abstractCard.name, self._expansion_name(oCard))
             dCards.setdefault(tKey, 0)
             dCards[tKey] += 1
@@ -59,10 +59,10 @@ class WriteCSV(object):
 
     # pylint: enable-msg=R0201
 
-    def write(self, fOut, oCardSet):
+    def write(self, fOut, oHolder):
         """Takes file object + card set to write, and writes an ELDB inventory
            representing the deck"""
         sHeader = self._gen_header()
         if sHeader:
             fOut.write(sHeader)
-        fOut.write(self._gen_inv(oCardSet))
+        fOut.write(self._gen_inv(oHolder))

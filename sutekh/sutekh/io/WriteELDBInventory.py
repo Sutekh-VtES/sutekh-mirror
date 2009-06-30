@@ -15,7 +15,7 @@
    "Zip Line",0,0,"","Library"
    """
 
-from sutekh.core.SutekhObjects import AbstractCard
+from sutekh.core.SutekhObjects import AbstractCard, IAbstractCard
 from sutekh.core.ELDBUtilities import norm_name, type_of_card
 
 class WriteELDBInventory(object):
@@ -27,14 +27,14 @@ class WriteELDBInventory(object):
         """Generate an ELDB inventory file header."""
         return '"ELDB - Inventory"'
 
-    def _gen_inv(self, oCardSet):
+    def _gen_inv(self, oHolder):
         """Process the card set, creating the lines as needed"""
         dCards = {}
         sResult = ""
         for oCard in AbstractCard.select():
             dCards[oCard] = 0
-        for oCard in oCardSet.cards:
-            oAbsCard = oCard.abstractCard
+        for oCard in oHolder.cards:
+            oAbsCard = IAbstractCard(oCard)
             dCards[oAbsCard] += 1
         for oCard, iNum in dCards.iteritems():
             sResult += '"%s",%d,0,"","%s"\n' % (norm_name(oCard), iNum,
@@ -43,9 +43,9 @@ class WriteELDBInventory(object):
 
     # pylint: enable-msg=R0201
 
-    def write(self, fOut, oCardSet):
+    def write(self, fOut, oHolder):
         """Takes file object + card set to write, and writes an ELDB inventory
            representing the deck"""
         fOut.write(self._gen_header())
         fOut.write("\n")
-        fOut.write(self._gen_inv(oCardSet))
+        fOut.write(self._gen_inv(oHolder))

@@ -1,5 +1,7 @@
 30 Jun 2009
  * Remove compatability code for old parsers from CardSetImport plugin
+ * Tweak remaining writers to use IOBase interface
+   - update test suite & import plugins
 
 29 Jun 2009
  * Drop id attribute from XML files

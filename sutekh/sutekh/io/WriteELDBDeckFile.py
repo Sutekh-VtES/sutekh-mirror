@@ -29,17 +29,17 @@ class WriteELDBDeckFile(object):
 
     # pylint: disable-msg=R0201
     # method for consistency with the other methods
-    def _gen_header(self, oCardSet):
+    def _gen_header(self, oHolder):
         """Generate an ELDB deck file header."""
         return '"%s"\n' \
                '"%s"\n' \
-               '"%s"\n' % (oCardSet.name, oCardSet.author, oCardSet.comment)
+               '"%s"\n' % (oHolder.name, oHolder.author, oHolder.comment)
 
-    def _gen_inv(self, oCardSet):
+    def _gen_inv(self, oHolder):
         """Process the card set, creating the lines as needed"""
         aCrypt = []
         aLib = []
-        for oCard in oCardSet.cards:
+        for oCard in oHolder.cards:
             oAbsCard = oCard.abstractCard
             sType = list(oAbsCard.cardtype)[0].name
             sName = norm_name(oAbsCard)
@@ -59,8 +59,8 @@ class WriteELDBDeckFile(object):
 
     # pylint: enable-msg=R0201
 
-    def write(self, fOut, oCardSet):
+    def write(self, fOut, oHolder):
         """Takes file object + card set to write, and writes an ELDB inventory
            representing the deck"""
-        fOut.write(self._gen_header(oCardSet))
-        fOut.write(self._gen_inv(oCardSet))
+        fOut.write(self._gen_header(oHolder))
+        fOut.write(self._gen_inv(oHolder))

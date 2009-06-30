@@ -9,6 +9,7 @@
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.tests.core.test_PhysicalCardSet import make_set_1
 from sutekh.io.WriteELDBInventory import WriteELDBInventory
+from sutekh.core.CardSetHolder import CardSetWrapper
 import unittest
 
 EXPECTED = """"ELDB - Inventory"
@@ -66,7 +67,7 @@ class ELDBInventoryWriterTests(SutekhTest):
         # Check output
 
         oWriter = WriteELDBInventory()
-        sData = self._round_trip_obj(oWriter, oPhysCardSet1)
+        sData = self._round_trip_obj(oWriter, CardSetWrapper(oPhysCardSet1))
 
         self.assertEqual(sorted(sData), sorted(EXPECTED), "Output differs : "
                 "%s vs %s" % (sData, EXPECTED))

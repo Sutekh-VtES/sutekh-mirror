@@ -8,6 +8,7 @@
 
 import gtk
 from sutekh.core.SutekhObjects import PhysicalCardSet
+from sutekh.core.CardSetHolder import CardSetWrapper
 from sutekh.io.WriteCSV import WriteCSV
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhFileWidget import ExportDialog
@@ -56,7 +57,7 @@ class CardSetExportCSV(CardListPlugin):
                 return
             fOut = file(sFileName,"w")
             oWriter = WriteCSV(bIncHeader, bIncExpansion)
-            oWriter.write(fOut, oCardSet)
+            oWriter.write(fOut, CardSetWrapper(oCardSet))
             fOut.close()
 
 plugin = CardSetExportCSV

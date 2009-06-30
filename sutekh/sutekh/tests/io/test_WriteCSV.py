@@ -9,6 +9,7 @@
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.tests.core.test_PhysicalCardSet import make_set_1
 from sutekh.io.WriteCSV import  WriteCSV
+from sutekh.core.CardSetHolder import CardSetWrapper
 import unittest
 
 EXPECTED_1 = """"Card Name", "Expansion", "Number"
@@ -73,22 +74,22 @@ class CSVWriterTests(SutekhTest):
         # Check output
 
         oWriter = WriteCSV(True, True)
-        sData = self._round_trip_obj(oWriter, oPhysCardSet1)
+        sData = self._round_trip_obj(oWriter, CardSetWrapper(oPhysCardSet1))
 
         self.assertEqual(sData, EXPECTED_1)
 
         oWriter = WriteCSV(False, True)
-        sData = self._round_trip_obj(oWriter, oPhysCardSet1)
+        sData = self._round_trip_obj(oWriter, CardSetWrapper(oPhysCardSet1))
 
         self.assertEqual(sData, EXPECTED_2)
 
         oWriter = WriteCSV(True, False)
-        sData = self._round_trip_obj(oWriter, oPhysCardSet1)
+        sData = self._round_trip_obj(oWriter, CardSetWrapper(oPhysCardSet1))
 
         self.assertEqual(sData, EXPECTED_3)
 
         oWriter = WriteCSV(False, False)
-        sData = self._round_trip_obj(oWriter, oPhysCardSet1)
+        sData = self._round_trip_obj(oWriter, CardSetWrapper(oPhysCardSet1))
 
         self.assertEqual(sData, EXPECTED_4)
 
