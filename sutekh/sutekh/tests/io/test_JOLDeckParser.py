@@ -7,8 +7,7 @@
 """Test reading a card set from an JOL deck file"""
 
 import unittest
-from StringIO import StringIO
-from sutekh.tests.TestCore import SutekhTest, DummyHolder
+from sutekh.tests.TestCore import SutekhTest
 from sutekh.io.JOLDeckParser import JOLDeckParser
 
 JOL_EXAMPLE_1 = """
@@ -44,10 +43,7 @@ class TestJOLDeckParser(SutekhTest):
 
     def test_basic(self):
         """Run the JOL input test."""
-        oHolder = DummyHolder()
-        oParser = JOLDeckParser()
-
-        oParser.parse(StringIO(JOL_EXAMPLE_1), oHolder)
+        oHolder = self._make_holder_from_string(JOLDeckParser(), JOL_EXAMPLE_1)
 
         aCards = oHolder.get_cards()
 

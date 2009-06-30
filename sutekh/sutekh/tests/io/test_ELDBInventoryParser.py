@@ -7,8 +7,7 @@
 """Test reading a card set from an ELDB inventory file"""
 
 import unittest
-from StringIO import StringIO
-from sutekh.tests.TestCore import SutekhTest, DummyHolder
+from sutekh.tests.TestCore import SutekhTest
 from sutekh.io.ELDBInventoryParser import ELDBInventoryParser
 
 # FELDB creates 0,0 entries, so they need to be in the test case
@@ -30,10 +29,8 @@ class TestELDBInventoryParser(SutekhTest):
 
     def test_basic(self):
         """Run the input test."""
-        oHolder = DummyHolder()
-        oParser = ELDBInventoryParser()
-
-        oParser.parse(StringIO(ELDB_INV_EXAMPLE_1), oHolder)
+        oHolder = self._make_holder_from_string(ELDBInventoryParser(),
+                ELDB_INV_EXAMPLE_1)
 
         self.assertEqual(oHolder.name, '') # DummyHolder default
 

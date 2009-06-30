@@ -7,8 +7,7 @@
 """Test reading a card set from an Lackey CCG deck file"""
 
 import unittest
-from StringIO import StringIO
-from sutekh.tests.TestCore import SutekhTest, DummyHolder
+from sutekh.tests.TestCore import SutekhTest
 from sutekh.io.LackeyDeckParser import LackeyDeckParser
 
 LACKEY_EXAMPLE_1 = """
@@ -29,10 +28,8 @@ class TestLackeyDeckFileParser(SutekhTest):
 
     def test_basic(self):
         """Run the input test."""
-        oHolder = DummyHolder()
-        oParser = LackeyDeckParser()
-
-        oParser.parse(StringIO(LACKEY_EXAMPLE_1), oHolder)
+        oHolder = self._make_holder_from_string(LackeyDeckParser(),
+                LACKEY_EXAMPLE_1)
 
         aCards = oHolder.get_cards()
 

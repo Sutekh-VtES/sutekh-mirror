@@ -7,104 +7,101 @@
 """Test reading a card set from an ARDB XML deck file"""
 
 import unittest
-from StringIO import StringIO
-from sutekh.tests.TestCore import DummyHolder
+from sutekh.tests.TestCore import SutekhTest
 from sutekh.io.ARDBXMLDeckParser import ARDBXMLDeckParser
 
-class ArdbXMLDeckParserTests(unittest.TestCase):
+ARDB_DECK_EXAMPLE_1 = """
+<deck generator="Sutekh [ Test ]" fromatVersion="val">
+    <name>Test Deck</name>
+    <author>Anon Y Mous</author>
+    <description>Simple test deck.
+
+    http://www.example.url/in/description</description>
+    <date>2008-09-01</date>
+    <crypt size="3" min="1" max="2" avg="1.1">
+        <vampire databaseID="1" count="2">
+           <name>Test Vamp 1</name>
+           <adv></adv>
+           <set>CE</set>
+           <capacity></capacity>
+           <text></text>
+           <group />
+           <disciplines></disciplines>
+        </vampire>
+        <vampire databaseID="2" count="1">
+           <name>Test Vamp 2</name>
+           <adv></adv>
+           <set>SW</set>
+           <capacity></capacity>
+           <text></text>
+           <group></group>
+           <disciplines></disciplines>
+        </vampire>
+        <vampire databaseID="2" count="1">
+           <name>Test Vamp 2</name>
+           <adv>(Advanced)</adv>
+           <set>Promo20051001</set>
+           <capacity></capacity>
+           <text></text>
+           <group></group>
+           <disciplines></disciplines>
+        </vampire>
+    </crypt>
+    <library size="17">
+       <card databaseID="3" count="4">
+          <name>Test Card 1</name>
+          <set>Sabbat</set>
+          <type></type>
+          <cost></cost>
+          <requirement></requirement>
+          <text />
+       </card>
+       <card databaseID="3" count="2">
+          <name>Test Card 2</name>
+          <set>BH</set>
+          <type></type>
+          <cost></cost>
+          <requirement />
+          <text></text>
+       </card>
+       <card databaseID="3" count="12">
+          <name>Test Card 3</name>
+          <set>BH</set>
+          <type></type>
+          <cost></cost>
+          <requirement></requirement>
+          <text></text>
+       </card>
+       <card databaseID="3" count="1">
+          <name>Test Card 4</name>
+          <set></set>
+          <type></type>
+          <cost></cost>
+          <requirement></requirement>
+          <text></text>
+       </card>
+       <card databaseID="50" count="1">
+          <name>Test Card 5, The</name>
+          <set></set>
+          <type></type>
+          <cost></cost>
+          <requirement></requirement>
+          <text></text>
+       </card>
+    </library>
+</deck>
+"""
+
+class ArdbXMLDeckParserTests(SutekhTest):
     """class for the ARDB XML deck file parser tests"""
 
     # ARDB produces tag pairs for empty elements, we produce minimal
     # tags (<set></set> vs <set />, so we have both in the test data
-    sTestText1 = """
-    <deck generator="Sutekh [ Test ]" fromatVersion="val">
-        <name>Test Deck</name>
-        <author>Anon Y Mous</author>
-        <description>Simple test deck.
-
-        http://www.example.url/in/description</description>
-        <date>2008-09-01</date>
-        <crypt size="3" min="1" max="2" avg="1.1">
-            <vampire databaseID="1" count="2">
-               <name>Test Vamp 1</name>
-               <adv></adv>
-               <set>CE</set>
-               <capacity></capacity>
-               <text></text>
-               <group />
-               <disciplines></disciplines>
-            </vampire>
-            <vampire databaseID="2" count="1">
-               <name>Test Vamp 2</name>
-               <adv></adv>
-               <set>SW</set>
-               <capacity></capacity>
-               <text></text>
-               <group></group>
-               <disciplines></disciplines>
-            </vampire>
-            <vampire databaseID="2" count="1">
-               <name>Test Vamp 2</name>
-               <adv>(Advanced)</adv>
-               <set>Promo20051001</set>
-               <capacity></capacity>
-               <text></text>
-               <group></group>
-               <disciplines></disciplines>
-            </vampire>
-        </crypt>
-        <library size="17">
-           <card databaseID="3" count="4">
-              <name>Test Card 1</name>
-              <set>Sabbat</set>
-              <type></type>
-              <cost></cost>
-              <requirement></requirement>
-              <text />
-           </card>
-           <card databaseID="3" count="2">
-              <name>Test Card 2</name>
-              <set>BH</set>
-              <type></type>
-              <cost></cost>
-              <requirement />
-              <text></text>
-           </card>
-           <card databaseID="3" count="12">
-              <name>Test Card 3</name>
-              <set>BH</set>
-              <type></type>
-              <cost></cost>
-              <requirement></requirement>
-              <text></text>
-           </card>
-           <card databaseID="3" count="1">
-              <name>Test Card 4</name>
-              <set></set>
-              <type></type>
-              <cost></cost>
-              <requirement></requirement>
-              <text></text>
-           </card>
-           <card databaseID="50" count="1">
-              <name>Test Card 5, The</name>
-              <set></set>
-              <type></type>
-              <cost></cost>
-              <requirement></requirement>
-              <text></text>
-           </card>
-        </library>
-    </deck>
-    """
 
     def test_basic(self):
         """Run the input test."""
-        oHolder = DummyHolder()
-        oParser = ARDBXMLDeckParser()
-
-        fIn = StringIO(self.sTestText1)
-        oParser.parse(fIn, oHolder)
+        oHolder = self._make_holder_from_string(ARDBXMLDeckParser(),
+                ARDB_DECK_EXAMPLE_1)
 
         self.assertEqual(oHolder.name, "Test Deck")
         self.assertEqual(oHolder.author, "Anon Y Mous")

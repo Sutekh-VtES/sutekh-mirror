@@ -15,6 +15,7 @@ from sqlobject import sqlhub, connectionForURI
 import unittest
 import tempfile
 import os
+import StringIO
 from logging import FileHandler
 
 class SutekhTest(unittest.TestCase):
@@ -112,6 +113,16 @@ class SutekhTest(unittest.TestCase):
         sData = fIn.read()
         fIn.close()
         return sData
+
+    # pylint: disable-msg=R0201
+    # method for consistency with _round_trip_obj
+    def _make_holder_from_string(self, oParser, sString):
+        """Read the given string into a DummyHolder.
+
+           common operation for the parser tests"""
+        oHolder = DummyHolder()
+        oParser.parse(StringIO.StringIO(sString), oHolder)
+        return oHolder
 
 
 class DummyHolder(object):

@@ -7,9 +7,8 @@
 """Test case for ARDB text parser"""
 
 from sutekh.io.ARDBTextParser import ARDBTextParser
-from sutekh.tests.TestCore import DummyHolder
+from sutekh.tests.TestCore import SutekhTest
 import unittest
-from StringIO import StringIO
 
 ARDB_TEXT_EXAMPLE_1 = """
 Deck Name : Test Deck
@@ -63,15 +62,13 @@ Reaction [1]
 ...
 """
 
-class ARDBTextParserTests(unittest.TestCase):
+class ARDBTextParserTests(SutekhTest):
     """class for the ARDB/FELDB text input parser"""
 
     def test_basic(self):
         """Run the input test."""
-        oHolder = DummyHolder()
         oParser = ARDBTextParser()
-
-        oParser.parse(StringIO(ARDB_TEXT_EXAMPLE_1), oHolder)
+        oHolder = self._make_holder_from_string(oParser, ARDB_TEXT_EXAMPLE_1)
 
         self.assertEqual(oHolder.name, "Test Deck")
         self.assertEqual(oHolder.author, "Anon Y Mous")
@@ -89,8 +86,7 @@ class ARDBTextParserTests(unittest.TestCase):
         self.failUnless(("Test Card 3", 12) in aCards)
         self.failUnless(("Test Card 4", 1) in aCards)
 
-        oHolder = DummyHolder()
-        oParser.parse(StringIO(ARDB_TEXT_EXAMPLE_2), oHolder)
+        oHolder = self._make_holder_from_string(oParser, ARDB_TEXT_EXAMPLE_2)
 
         self.assertEqual(oHolder.name, "Test Deck 2")
         self.assertEqual(oHolder.author, "Anon Y Mous")

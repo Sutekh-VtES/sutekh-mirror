@@ -7,11 +7,10 @@
 """Test reading a card set from an ELDB deck file"""
 
 import unittest
-from StringIO import StringIO
-from sutekh.tests.TestCore import SutekhTest, DummyHolder
+from sutekh.tests.TestCore import SutekhTest
 from sutekh.io.ELDBDeckFileParser import ELDBDeckFileParser
 
-ELDB_EXAMPLE_1 = """
+ELDB_TEXT_EXAMPLE_1 = """
 "Test Deck"
 "Anon Y Mous"
 "Simple test deck.
@@ -52,10 +51,8 @@ class TestELDBDeckFileParser(SutekhTest):
 
     def test_basic(self):
         """Run the input test."""
-        oHolder = DummyHolder()
-        oParser = ELDBDeckFileParser()
-
-        oParser.parse(StringIO(ELDB_EXAMPLE_1), oHolder)
+        oHolder = self._make_holder_from_string(ELDBDeckFileParser(),
+                ELDB_TEXT_EXAMPLE_1)
 
         self.assertEqual(oHolder.name, "Test Deck")
         self.assertEqual(oHolder.author, "Anon Y Mous")
