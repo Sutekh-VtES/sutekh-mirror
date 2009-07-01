@@ -28,7 +28,6 @@
    ...
    """
 
-from sutekh.core.SutekhObjects import IAbstractCard
 from sutekh.core.ArdbInfo import ArdbInfo
 
 class WriteArdbText(ArdbInfo):
@@ -51,6 +50,7 @@ class WriteArdbText(ArdbInfo):
            dCards is mapping of (card id, card name) -> card count.
            """
         (dVamps, dCryptStats) = self._extract_crypt(dCards)
+        dCombinedVamps = self._group_sets(dVamps)
 
         sCrypt = "Crypt [%(size)d vampires] Capacity min: %(min)d " \
                 "max: %(max)d average: %(avg).2f\n" \
@@ -58,20 +58,20 @@ class WriteArdbText(ArdbInfo):
                 "-----------\n" \
                 % dCryptStats
 
-        for tKey in sorted(dVamps, key=lambda x: x[1]):
-            sName = tKey[1]
-            iCount = dVamps[tKey]
-
-            # pylint: disable-msg=E1101
-            # IAbstractCard confuses pylint
-            oCard = IAbstractCard(sName)
+        for oCard,  (iCount, _sSet) in sorted(dCombinedVamps.iteritems()):
             if len(oCard.creed) > 0:
                 sClan = "Imbued"
                 iCapacity = oCard.life
             else:
                 sClan = [x.name for x in oCard.clan][0]
                 iCapacity = oCard.capacity
-            sDisciplines = self._gen_disciplines(oCard)
+            sName = oCard.name.ljust(20)
+            sDisciplines = self._gen_disciplines(oCard).ljust(20)
+
+            # FIXME: Current discrepencies from ARDB's output
+            # We don't truncate fields (ARDB truncates at least name & clan)
+            # We don't include titles
+            # We don't use the !Clan form for antitribu clans
 
             sCrypt += "  %dx %s %d %s %s :%d\n" % \
                  (iCount, sName, iCapacity, sDisciplines, sClan,
@@ -85,18 +85,18 @@ class WriteArdbText(ArdbInfo):
            dCards is mapping of (card id, card name) -> card count.
            """
         (dLib, iLibSize) = self._extract_library(dCards)
+        dCombinedLib = self._group_sets(dLib)
 
         sLib = "Library [%d cards]\n" \
             "------------------------------------------------------------\n" \
             % (iLibSize,)
 
         dTypes = {}
-        for iId, sName, sTypeString, sSet in dLib:
+        for oCard, (iCount, sTypeString, _sSet) in dCombinedLib.iteritems():
             if sTypeString not in dTypes:
                 dTypes[sTypeString] = {}
-            dTypes[sTypeString].setdefault((iId, sName), 0)
-            dTypes[sTypeString][(iId, sName)] += dLib[(iId, sName,
-                sTypeString, sSet)]
+            dTypes[sTypeString].setdefault(oCard, 0)
+            dTypes[sTypeString][oCard] += iCount
 
         for sTypeString in sorted(dTypes):
             dCards = dTypes[sTypeString]
@@ -104,8 +104,9 @@ class WriteArdbText(ArdbInfo):
 
             sLib += "%s [%d]\n" % (sTypeString, iTotal)
 
-            for (iId, sName), iCount in dCards.iteritems():
-                sLib += "  %dx %s\n" % (iCount, sName)
+            for oCard, iCount in sorted(dCards.iteritems(),
+                    key=lambda x: x[0].name):
+                sLib += "  %dx %s\n" % (iCount, oCard.name)
 
             sLib += "\n"
 
@@ -116,6 +117,9 @@ class WriteArdbText(ArdbInfo):
     def write(self, fOut, oHolder):
         """Takes filename, deck details and a dictionary of cards, of the
            form dCard[(id, name, set)] = count and writes the file."""
+        # We don't encode strange characters, and just write the unicode string
+        # to file. This looks to match ARDB's behaviour (tested against
+        # ARDB version 2.8
         dCards = self._get_cards(oHolder.cards)
         fOut.write(self._gen_header(oHolder))
         fOut.write("\n")
