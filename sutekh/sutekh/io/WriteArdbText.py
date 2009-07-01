@@ -58,7 +58,11 @@ class WriteArdbText(ArdbInfo):
                 "-----------\n" \
                 % dCryptStats
 
-        for oCard,  (iCount, _sSet) in sorted(dCombinedVamps.iteritems()):
+        for oCard,  (iCount, _sSet) in sorted(dCombinedVamps.iteritems(),
+                key=lambda x: (-x[1][0], -max(x[0].capacity, x[0].life),
+                    x[0].name)):
+            # We sort inversely on count, then capacity and then normally by
+            # name
             if len(oCard.creed) > 0:
                 sClan = "Imbued"
                 iCapacity = oCard.life
