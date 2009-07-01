@@ -155,6 +155,7 @@ class LasombraSales(CardListPlugin):
         'Black Hand Set': 'Blackhand',
         'Bloodlines Set': 'Bloodlines',
         'Camarilla Set': 'Camarilla Edition',
+        'Ebony Kingdom': 'Ebony Kingdom',
         'Gehenna Set, Rares and Commons': 'Gehenna',
         'Kindred Most Wanted Set': 'Kindred Most Wanted',
         'Keepers of Tradition': 'Keepers of Tradition',
@@ -425,6 +426,9 @@ class LasombraSales(CardListPlugin):
 
             # Fix advanced vampires
             sCardName = oAdvFixer.sub('(Advanced)', sCardName, 1)
+
+            # Standardise whitespace
+            sCardName = " ".join(sCardName.split())
 
             # pylint: disable-msg=E1101
             # pylint doesn't pick up pyprotocols methods correctly
