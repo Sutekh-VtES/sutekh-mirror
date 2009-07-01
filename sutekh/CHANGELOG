@@ -1,3 +1,8 @@
+02 Jul 2009
+ * Add py2exe build system, including:
+   - support for loading plugins from zipimported modules
+   - a test console script for launching into py2exe environments
+
 01 Jul 2009
  * Fix ARDB Text Export (broken by changes ArdbInfo)
    - add test case for ARDB Text export

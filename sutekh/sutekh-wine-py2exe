@@ -1,0 +1,64 @@
+#!/bin/sh
+# Copyright 2008 Simon Cross <hodgestar@gmail.com>
+# GPL - see COPYING for details
+#
+# Usage: sutekh-wine-py2exe <dependencies folder>
+
+SUTEKH_VERSION=`PYTHONPATH=. python -c "from sutekh import SutekhInfo; print SutekhInfo.SutekhInfo.VERSION_STR"`
+BUILD_FOLDER="sutekh-${SUTEKH_VERSION}"
+ZIP_NAME="${BUILD_FOLDER}.zip"
+TEMPLATE_FOLDER="$1"
+PY2EXE_LOG="py2exe.log"
+
+#
+# Run py2exe build under wine
+#
+
+echo "=== Running wine python setup.py ==="
+echo "  Sutekh version: ${SUTEKH_VERSION}"
+echo "  Writing log to ${PY2EXE_LOG}."
+echo "  ---"
+echo "  Please make sure you have patched your py2exe run.exe"
+echo "  and run_w.exe with PETools (they need to have their"
+echo "  executable size correctly set)."
+echo ""
+
+wine python setup.py py2exe >${PY2EXE_LOG} 2>&1
+
+#
+# Copy in GTK dependencies py2exe missed
+#   One should be able to obtain /etc, /lib
+#   and /share by installing GTK in a Windows machine
+#   and copying them into the template folder.
+# Copy python dll that py2exe misses   
+# Copy sqlite dll that py2exe misses
+#   One should be able to obtain python25.dll and
+#   sqlite3.dll from a Windows Python 2.5 installation.
+
+echo "=== Copying in GTK and Python dependencies that py2exe missed ==="
+echo "  Using template folder ${TEMPLATE_FOLDER}."
+echo ""
+
+cp -R \
+    "${TEMPLATE_FOLDER}/etc" \
+    "${TEMPLATE_FOLDER}/lib" \
+    "${TEMPLATE_FOLDER}/share" \
+    "${TEMPLATE_FOLDER}/python25.dll" \
+    "${TEMPLATE_FOLDER}/sqlite3.dll" \
+  "dist/${BUILD_FOLDER}"
+
+#
+# create zip file
+#
+
+echo "=== Creating zip of patched py2exe dist folder ==="
+echo "  Zip file: dist/${ZIP_NAME}"
+echo "  Build folder: dist/${BUILD_FOLDER}"
+echo ""
+
+cd dist
+rm -f "$ZIP_NAME"
+zip -r -q "$ZIP_NAME" "$BUILD_FOLDER"
+rm -rf "/home/simon/.VirtualBox/shared/$BUILD_FOLDER"
+cp -R "$BUILD_FOLDER" ~/.VirtualBox/shared/
+cd ..
