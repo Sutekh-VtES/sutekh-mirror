@@ -1,3 +1,8 @@
+01 Jul 2009
+ * Fix ARDB Text Export (broken by changes ArdbInfo)
+   - add test case for ARDB Text export
+ * Unify several export plugins into CardSetExport.py
+
 30 Jun 2009
  * Remove compatability code for old parsers from CardSetImport plugin
  * Tweak remaining writers to use IOBase interface
