@@ -12,5 +12,7 @@
 
 if __name__ == "__main__":
     import code
+    # pylint: disable-msg=C0103
+    # pylint thinks this should be a constant
     console = code.InteractiveConsole()
     console.interact()

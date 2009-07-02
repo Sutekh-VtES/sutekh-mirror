@@ -30,9 +30,9 @@ def submodules(oPackage):
         for sFile in oPackageZip.namelist():
             if sFile.startswith(sPrefix):
                 sFile = sFile[len(sPrefix):]
-                oM = oModRe.match(sFile)
-                if oM and oM.group('mod') != '__init__':
-                    aModules.add(oM.group('mod'))
+                oMatch = oModRe.match(sFile)
+                if oMatch and oMatch.group('mod') != '__init__':
+                    aModules.add(oMatch.group('mod'))
     else:
         # try the filesystem
         sPackageDir = os.path.dirname(oPackage.__file__)
