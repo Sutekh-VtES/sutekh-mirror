@@ -24,7 +24,8 @@ from sutekh.core.CardLookup import LookupFailed
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 from sutekh.gui.RenameDialog import get_import_name
-from sutekh.gui.CardSetManagementController import reparent_all_children
+from sutekh.gui.CardSetManagementController import reparent_all_children, \
+        update_open_card_sets
 from sutekh.gui.SutekhFileWidget import SutekhFileWidget
 
 class ACSImporter(CardListPlugin):
@@ -176,8 +177,6 @@ class ACSImporter(CardListPlugin):
         if not oHolder.name:
             return # User bailed
         # Create CS
-        # FIXME: If the card set is already open, we're should replace all
-        # the instances rather than opening a new one
         try:
             oHolder.create_pcs(oCardLookup=self.cardlookup)
             reparent_all_children(oHolder.name, aChildren)
@@ -190,7 +189,12 @@ class ACSImporter(CardListPlugin):
         except LookupFailed, oExp:
             return
 
-        self.open_cs(oHolder.name)
+        if self.parent.find_cs_pane_by_set_name(oHolder.name):
+            # Already open, so update to changes
+            update_open_card_sets(self.parent, oHolder.name)
+        else:
+            # Not already open, so open a new copy
+            self.open_cs(oHolder.name)
 
 
 plugin = ACSImporter

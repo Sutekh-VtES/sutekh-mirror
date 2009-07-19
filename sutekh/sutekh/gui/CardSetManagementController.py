@@ -89,6 +89,14 @@ def create_card_set(oMainWindow):
                 comment=sComment, parent=oParent)
     return sName
 
+def update_open_card_sets(oMainWindow, sSetName):
+    """Update open copies of the card set sSetName to database changes
+       (from imports, etc.)"""
+    oCardSet = IPhysicalCardSet(sSetName)
+    for oFrame in oMainWindow.find_cs_pane_by_set_name(sSetName):
+        oFrame.update_to_new_db()
+    oMainWindow.reload_pcs_list()
+
 def update_card_set(oCardSet, oMainWindow):
     """Update the details of the card set when the user edits them."""
     sOldName = oCardSet.name
