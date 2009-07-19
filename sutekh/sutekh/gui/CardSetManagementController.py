@@ -92,7 +92,6 @@ def create_card_set(oMainWindow):
 def update_open_card_sets(oMainWindow, sSetName):
     """Update open copies of the card set sSetName to database changes
        (from imports, etc.)"""
-    oCardSet = IPhysicalCardSet(sSetName)
     for oFrame in oMainWindow.find_cs_pane_by_set_name(sSetName):
         oFrame.update_to_new_db()
     oMainWindow.reload_pcs_list()

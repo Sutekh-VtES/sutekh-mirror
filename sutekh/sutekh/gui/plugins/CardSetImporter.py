@@ -17,8 +17,7 @@ from sutekh.io.ELDBDeckFileParser import ELDBDeckFileParser
 from sutekh.io.ELDBInventoryParser import ELDBInventoryParser
 from sutekh.io.JOLDeckParser import JOLDeckParser
 from sutekh.io.LackeyDeckParser import LackeyDeckParser
-from sutekh.core.SutekhObjects import PhysicalCardSet, MAX_ID_LENGTH, \
-        IPhysicalCardSet
+from sutekh.core.SutekhObjects import PhysicalCardSet
 from sutekh.core.CardSetHolder import CardSetHolder
 from sutekh.core.CardLookup import LookupFailed
 from sutekh.gui.PluginManager import CardListPlugin
