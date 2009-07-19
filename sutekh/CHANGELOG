@@ -1,3 +1,7 @@
+19 Jul 2009
+ * Add a rename dialog and start working on unifying the handling renames 
+   when importing a card set.
+
 02 Jul 2009
  * Add py2exe build system, including:
    - support for loading plugins from zipimported modules

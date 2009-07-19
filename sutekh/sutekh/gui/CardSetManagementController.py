@@ -51,6 +51,13 @@ def reparent_card_set(oCardSet, oNewParent):
         return True
     return False
 
+def reparent_all_children(sCardSetName, aChildren):
+    """Handle reparenting a list of children gracefully"""
+    if aChildren:
+        oCardSet = IPhysicalCardSet(sCardSetName)
+        for oChildCS in aChildren:
+            reparent_card_set(oChildCS, oCardSet)
+
 def check_ok_to_delete(oCardSet):
     """Check if the user is OK with deleting the card set."""
     aChildren = find_children(oCardSet)

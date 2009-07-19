@@ -17,11 +17,14 @@ from sutekh.io.ELDBDeckFileParser import ELDBDeckFileParser
 from sutekh.io.ELDBInventoryParser import ELDBInventoryParser
 from sutekh.io.JOLDeckParser import JOLDeckParser
 from sutekh.io.LackeyDeckParser import LackeyDeckParser
-from sutekh.core.SutekhObjects import PhysicalCardSet, MAX_ID_LENGTH
+from sutekh.core.SutekhObjects import PhysicalCardSet, MAX_ID_LENGTH, \
+        IPhysicalCardSet
 from sutekh.core.CardSetHolder import CardSetHolder
 from sutekh.core.CardLookup import LookupFailed
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
+from sutekh.gui.RenameDialog import get_import_name
+from sutekh.gui.CardSetManagementController import reparent_all_children
 from sutekh.gui.SutekhFileWidget import SutekhFileWidget
 
 class ACSImporter(CardListPlugin):
@@ -128,11 +131,6 @@ class ACSImporter(CardListPlugin):
 
         self.oDlg.destroy()
 
-    def handle_name_response(self, _oWidget, oResponse, _oDlg, oEntry):
-        """Handle the user's clicking on OK or CANCEL in the dialog."""
-        if oResponse == gtk.RESPONSE_OK:
-            self._sNewName = oEntry.get_text().strip()
-
     def make_cs_from_uri(self, sUri, cParser):
         """From an URI, create an Card Set"""
         fIn = urllib2.urlopen(sUri)
@@ -173,33 +171,16 @@ class ACSImporter(CardListPlugin):
                     "Aborting")
             return
 
-        # Check CS Doesn't Exist
-        bContinue = False
-        # We loop until we have an acceptable name
-        while not bContinue:
-            bDoNewName = False
-            sMsg = ""
-            if PhysicalCardSet.selectBy(name=oHolder.name).count() != 0:
-                sMsg = "Card Set %s already exists.\n" \
-                        "Please choose another name.\n" \
-                        "Choose cancel to abort this import." % oHolder.name
-                bDoNewName = True
-            elif not oHolder.name:
-                sMsg = "No name given for the card set\n" \
-                        "Please specify a name.\n" \
-                        "Choose cancel to abort this import."
-                bDoNewName = True
-            if bDoNewName:
-                if not self.make_name_dialog(sMsg):
-                    return
-                oHolder.name = self._sNewName
-                self._sNewName = ""
-            else:
-                bContinue = True
-
+        # Handle naming issues if needed
+        oHolder, aChildren = get_import_name(oHolder)
+        if not oHolder.name:
+            return # User bailed
         # Create CS
+        # FIXME: If the card set is already open, we're should replace all
+        # the instances rather than opening a new one
         try:
             oHolder.create_pcs(oCardLookup=self.cardlookup)
+            reparent_all_children(oHolder.name, aChildren)
         except RuntimeError, oExp:
             sMsg = "Creating the card set failed with the following error:\n"
             sMsg += str(oExp) + "\n"
@@ -210,31 +191,6 @@ class ACSImporter(CardListPlugin):
             return
 
         self.open_cs(oHolder.name)
-
-    def make_name_dialog(self, sMsg):
-        """Create a dialog to prompt for a new name"""
-        oDlg = SutekhDialog("Choose New Card Set Name", self.parent,
-                gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
-                (gtk.STOCK_OK, gtk.RESPONSE_OK,
-                    gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
-
-        oLabel = gtk.Label(sMsg)
-
-        oEntry = gtk.Entry(MAX_ID_LENGTH)
-        # Need this so entry box works as expected
-        oEntry.connect("activate", self.handle_name_response,
-                gtk.RESPONSE_OK, oDlg, oEntry)
-        oDlg.connect("response", self.handle_name_response, oDlg, oEntry)
-
-        # pylint: disable-msg=E1101
-        # pylint misses vbox methods
-        oDlg.vbox.pack_start(oLabel)
-        oDlg.vbox.pack_start(oEntry)
-        oDlg.show_all()
-
-        iResponse = oDlg.run()
-        oDlg.destroy()
-        return iResponse == gtk.RESPONSE_OK
 
 
 plugin = ACSImporter
