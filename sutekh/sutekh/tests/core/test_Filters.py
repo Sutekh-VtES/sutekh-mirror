@@ -16,6 +16,21 @@ from sqlobject import SQLObjectNotFound
 from sutekh.core.CardLookup import best_guess_filter
 import unittest
 
+
+# Split off as a function, so can be used by several test cases
+
+def make_card(sCardName, sExpName):
+    """Create a Physical card given the name and expansion.
+
+       Handle None for the expansion name properly"""
+    if sExpName:
+        oExp = IExpansion(sExpName)
+    else:
+        oExp = None
+    oAbs = IAbstractCard(sCardName)
+    oCard = IPhysicalCard((oAbs, oExp))
+    return oCard
+
 class FilterTests(SutekhTest):
     """Test class for testing Sutekh Filters"""
     aExpectedCards = test_WhiteWolfParser.WhiteWolfParserTests.aExpectedCards
@@ -69,12 +84,7 @@ class FilterTests(SutekhTest):
         aPhysCards = []
         for sName, sExp in aList:
             try:
-                if sExp:
-                    oExp = IExpansion(sExp)
-                else:
-                    oExp = None
-                oAbs = IAbstractCard(sName)
-                oCard = IPhysicalCard((oAbs, oExp))
+                oCard = make_card(sName, sExp)
                 aPhysCards.append(oCard)
             except SQLObjectNotFound:
                 self.fail("Invalid physical card (%s from expansion %s)"
@@ -355,12 +365,7 @@ class FilterTests(SutekhTest):
             oPCS = PhysicalCardSet(name=sName, comment=sComment,
                     author=sAuthor, inuse=bInUse, parent=oParent)
             for sName, sExp in aPCSCards[iCnt]:
-                if sExp:
-                    oExp = IExpansion(sExp)
-                else:
-                    oExp = None
-                oAbs = IAbstractCard(sName)
-                oPhys = IPhysicalCard((oAbs, oExp))
+                oPhys = make_card(sName, sExp)
                 oPCS.addPhysicalCard(oPhys.id)
             aPCSs.append(oPCS)
         # Tests on the physical card set properties

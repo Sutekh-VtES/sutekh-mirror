@@ -7,9 +7,9 @@
 """Test the PhysicalCardSet object handling"""
 
 from sutekh.tests.TestCore import SutekhTest
-from sutekh.core.SutekhObjects import IAbstractCard, IPhysicalCard, \
-        IExpansion, PhysicalCardSet, IPhysicalCardSet, \
+from sutekh.core.SutekhObjects import PhysicalCardSet, IPhysicalCardSet, \
         MapPhysicalCardToPhysicalCardSet
+from sutekh.tests.core.test_Filters import make_card
 from sutekh.core.CardSetUtilities import delete_physical_card_set
 from sqlobject import SQLObjectNotFound
 import unittest
@@ -28,13 +28,10 @@ def get_phys_cards():
     """Get Physical Cards for the given lists"""
     aAddedPhysCards = []
     for sName in ABSTRACT_CARDS:
-        oAC = IAbstractCard(sName)
-        oPC = IPhysicalCard((oAC, None))
+        oPC = make_card(sName, None)
         aAddedPhysCards.append(oPC)
     for sName, sExpansion in CARD_EXPANSIONS:
-        oAC = IAbstractCard(sName)
-        oExpansion = IExpansion(sExpansion)
-        oPC = IPhysicalCard((oAC, oExpansion))
+        oPC = make_card(sName, sExpansion)
         aAddedPhysCards.append(oPC)
     return aAddedPhysCards
 

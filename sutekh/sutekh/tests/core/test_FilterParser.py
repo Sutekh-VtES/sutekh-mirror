@@ -9,9 +9,9 @@
 
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.tests.io import test_WhiteWolfParser
+from sutekh.tests.core.test_Filters import make_card
 from sutekh.core.SutekhObjects import AbstractCard, PhysicalCardSet, \
-        PhysicalCard, MapPhysicalCardToPhysicalCardSet, IAbstractCard, \
-        IPhysicalCard, IExpansion
+        PhysicalCard, MapPhysicalCardToPhysicalCardSet, IAbstractCard
 from sutekh.core import FilterParser, Filters
 import unittest
 
@@ -205,12 +205,7 @@ class FilterParserTests(SutekhTest):
             oPCS = PhysicalCardSet(name=sName, comment=sComment,
                     author=sAuthor, inuse=bInUse, parent=oParent)
             for sName, sExp in aPCSCards[iCnt]:
-                if sExp:
-                    oExp = IExpansion(sExp)
-                else:
-                    oExp = None
-                oAbs = IAbstractCard(sName)
-                oPhys = IPhysicalCard((oAbs, oExp))
+                oPhys = make_card(sName, sExp)
                 oPCS.addPhysicalCard(oPhys.id)
             aPCSs.append(oPCS)
         # Tests on the physical card set properties

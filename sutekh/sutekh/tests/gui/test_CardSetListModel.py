@@ -13,8 +13,9 @@ from sutekh.gui.CardSetListModel import CardSetCardListModel, \
         CARD_SETS_AND_EXP, ALL_CARDS, PARENT_CARDS, MINUS_SETS_IN_USE, \
         CHILD_CARDS, IGNORE_PARENT, PARENT_COUNT, MINUS_THIS_SET, THIS_SET_ONLY
 from sutekh.core import Filters, Groupings
-from sutekh.core.SutekhObjects import PhysicalCardSet, IPhysicalCard, \
-        IExpansion, IAbstractCard, MapPhysicalCardToPhysicalCardSet
+from sutekh.core.SutekhObjects import PhysicalCardSet, \
+        MapPhysicalCardToPhysicalCardSet
+from sutekh.tests.core.test_Filters import make_card
 # Needed to reduce speed impact of Grouping tests
 from sutekh.core.SutekhObjectCache import SutekhObjectCache
 from sutekh.core.DBSignals import send_changed_signal
@@ -88,15 +89,6 @@ class CardSetListModelTests(SutekhTest):
     def _get_all_counts(self, oModel):
         """Return a list of iCnt, iParCnt, sCardName tuples from the Model"""
         return self._get_all_child_counts(oModel, None)
-
-    def _gen_card(self, sName, sExp):
-        """Create a card given the name and Expansion"""
-        if sExp:
-            oExp = IExpansion(sExp)
-        else:
-            oExp = None
-        oAbs = IAbstractCard(sName)
-        return IPhysicalCard((oAbs, oExp))
 
     def _reset_modes(self, oModel):
         """Set the model to the minimal state."""
@@ -196,7 +188,7 @@ class CardSetListModelTests(SutekhTest):
                 ('Ablative Skin', None)] * 5
         aPhysCards = []
         for sName, sExp in aCards:
-            oCard = self._gen_card(sName, sExp)
+            oCard = make_card(sName, sExp)
             aPhysCards.append(oCard)
         for bEditFlag in [False, True]:
             oModel.bEditable = bEditFlag
@@ -254,7 +246,7 @@ class CardSetListModelTests(SutekhTest):
         self.assertEquals(oModel.iter_n_children(None), 1)
         aCards = [('Alexandra', 'CE'), ('Sha-Ennu', 'Third Edition')]
         for sName, sExp in aCards:
-            oCard = self._gen_card(sName, sExp)
+            oCard = make_card(sName, sExp)
             # pylint: disable-msg=E1101
             # PyProtocols confuses pylint
             oPCS.addPhysicalCard(oCard.id)
@@ -296,7 +288,7 @@ class CardSetListModelTests(SutekhTest):
         # Initial cards
         aCards = [('Alexandra', 'CE'), ('Sha-Ennu', 'Third Edition')]
         for sName, sExp in aCards:
-            oCard = self._gen_card(sName, sExp)
+            oCard = make_card(sName, sExp)
             # pylint: disable-msg=E1101
             # PyProtocols confuses pylint
             oPCS.addPhysicalCard(oCard.id)
@@ -328,14 +320,14 @@ class CardSetListModelTests(SutekhTest):
                 ('Yvette, The Hopeless', 'CE'),
                 ('Yvette, The Hopeless', 'BSC')]
         for sName, sExp in aCards:
-            oCard = self._gen_card(sName, sExp)
+            oCard = make_card(sName, sExp)
             # pylint: disable-msg=E1101
             # PyProtocols confuses pylint
             oPCS.addPhysicalCard(oCard.id)
         # Create a child card set with some entries and check everything works
         oChildPCS = PhysicalCardSet(name=self.aNames[1], parent=oPCS)
         for sName, sExp in aCards[2:6]:
-            oCard = self._gen_card(sName, sExp)
+            oCard = make_card(sName, sExp)
             # pylint: disable-msg=E1101
             # PyProtocols confuses pylint
             oChildPCS.addPhysicalCard(oCard.id)
@@ -355,7 +347,7 @@ class CardSetListModelTests(SutekhTest):
         # Add a grand child
         oGrandChildPCS = PhysicalCardSet(name=self.aNames[2], parent=oChildPCS)
         for sName, sExp in aCards[3:7]:
-            oCard = self._gen_card(sName, sExp)
+            oCard = make_card(sName, sExp)
             # pylint: disable-msg=E1101
             # PyProtocols confuses pylint
             oGrandChildPCS.addPhysicalCard(oCard.id)
@@ -369,7 +361,7 @@ class CardSetListModelTests(SutekhTest):
         # add a sibling card set to oChildPCS and add another child and retest
         oSibPCS = PhysicalCardSet(name=self.aNames[3], parent=oPCS)
         for sName, sExp in aCards[1:6]:
-            oCard = self._gen_card(sName, sExp)
+            oCard = make_card(sName, sExp)
             # pylint: disable-msg=E1101
             # PyProtocols confuses pylint
             oSibPCS.addPhysicalCard(oCard.id)
@@ -381,7 +373,7 @@ class CardSetListModelTests(SutekhTest):
                 ('Aire of Elation', 'CE'), ('Yvette, The Hopeless', None),
                 ('Yvette, The Hopeless', 'BSC')]
         for sName, sExp in aCards:
-            oCard = self._gen_card(sName, sExp)
+            oCard = make_card(sName, sExp)
             # pylint: disable-msg=E1101
             # PyProtocols confuses pylint
             oGrandChild2PCS.addPhysicalCard(oCard.id)
@@ -397,12 +389,12 @@ class CardSetListModelTests(SutekhTest):
         self._loop_modes(oChildPCS, oModel)
         # pylint: disable-msg=E1101
         # PyProtocols confuses pylint
-        oGrandChild2PCS.addPhysicalCard(self._gen_card('Ablative Skin',
+        oGrandChild2PCS.addPhysicalCard(make_card('Ablative Skin',
             'Sabbat'))
         self._loop_modes(oChildPCS, oModel)
-        oChildPCS.addPhysicalCard(self._gen_card('Ablative Skin',
+        oChildPCS.addPhysicalCard(make_card('Ablative Skin',
             'Sabbat'))
-        oGrandChild2PCS.addPhysicalCard(self._gen_card(
+        oGrandChild2PCS.addPhysicalCard(make_card(
             'Ablative Skin', None))
         self._loop_modes(oChildPCS, oModel)
         # Point model at grandchild
@@ -448,7 +440,7 @@ class CardSetListModelTests(SutekhTest):
                 ('Yvette, The Hopeless', 'CE'),
                 ('Yvette, The Hopeless', 'BSC')]
         for sName, sExp in aCards:
-            oCard = self._gen_card(sName, sExp)
+            oCard = make_card(sName, sExp)
             # pylint: disable-msg=E1101
             # PyProtocols confuses pylint
             oPCS.addPhysicalCard(oCard.id)
@@ -504,7 +496,7 @@ class CardSetListModelTests(SutekhTest):
                 ('Gracis Nostinus', 'CE'),
                 ('Yvette, The Hopeless', 'BSC')]
         for sName, sExp in aCards:
-            oCard = self._gen_card(sName, sExp)
+            oCard = make_card(sName, sExp)
             # pylint: disable-msg=E1101
             # PyProtocols confuses pylint
             oChildPCS.addPhysicalCard(oCard.id)
@@ -559,7 +551,7 @@ class CardSetListModelTests(SutekhTest):
                 ('Yvette, The Hopeless', 'CE'),
                 ('Yvette, The Hopeless', 'BSC')]
         for sName, sExp in aCards:
-            oCard = self._gen_card(sName, sExp)
+            oCard = make_card(sName, sExp)
             # pylint: disable-msg=E1101
             # PyProtocols confuses pylint
             oPCS.addPhysicalCard(oCard.id)

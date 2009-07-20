@@ -9,8 +9,8 @@
 from sutekh.tests.GuiSutekhTest import GuiSutekhTest
 import unittest
 import gtk
-from sutekh.core.SutekhObjects import PhysicalCardSet, IExpansion, \
-        IAbstractCard, IPhysicalCard
+from sutekh.core.SutekhObjects import PhysicalCardSet, IPhysicalCard
+from sutekh.tests.core.test_Filters import make_card
 
 class TestCardSetFrame(GuiSutekhTest):
     """Class for the MultiPanewindow test cases"""
@@ -18,14 +18,6 @@ class TestCardSetFrame(GuiSutekhTest):
 
     # pylint: disable-msg=R0201
     # I prefer to have these as methods
-    def _gen_card(self, sName, sExp):
-        """Create a card given the name and Expansion"""
-        if sExp:
-            oExp = IExpansion(sExp)
-        else:
-            oExp = None
-        oAbs = IAbstractCard(sName)
-        return IPhysicalCard((oAbs, oExp))
 
     def _select_cards(self, oFrame, aCards):
         """Find cards by name and expansion in the frame and select them"""
@@ -90,7 +82,7 @@ class TestCardSetFrame(GuiSutekhTest):
                 ('Ablative Skin', None)] * 5
         aPhysCards = []
         for sName, sExp in aCards:
-            oCard = self._gen_card(sName, sExp)
+            oCard = make_card(sName, sExp)
             aPhysCards.append(oCard)
         for oCard in aPhysCards:
             oPhysCardSet.addPhysicalCard(oCard.id)
