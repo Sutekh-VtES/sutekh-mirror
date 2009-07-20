@@ -1,3 +1,6 @@
+20 Jul 2009
+ * Change zip import plugin to use unified rename dialog and logic.
+
 19 Jul 2009
  * Add a rename dialog and start working on unifying the handling renames 
    when importing a card set.

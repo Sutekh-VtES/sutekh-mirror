@@ -8,13 +8,15 @@
 import gtk
 import os
 from logging import Logger
-from sutekh.core.SutekhObjects import PhysicalCardSet, MAX_ID_LENGTH
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 from sutekh.gui.SutekhFileWidget import SutekhFileDialog
 from sutekh.gui.ProgressDialog import ProgressDialog, SutekhCountLogHandler
 from sutekh.gui.ScrolledList import ScrolledList
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
+from sutekh.gui.RenameDialog import get_import_name
+from sutekh.gui.CardSetManagementController import reparent_all_children, \
+        update_open_card_sets
 
 def _do_rename_parent(sOldName, sNewName, dRemaining):
     """Handle the renaming of a parent card set in the unprocessed list."""
@@ -143,68 +145,28 @@ class ImportFromZipFile(CardListPlugin):
             try:
                 oCardSetHolder = oFile.read_single_card_set(sFilename)
                 oLogger.info('Read %s' % sName)
-                # Check for whether we're overwriting something
-                # or not
-                if PhysicalCardSet.selectBy(name=sName).count() != 0:
-                    # Ask the user whether to rename, replace or cancel
-                    sNewName = self._query_rename(sName)
-                    dRenames[sName] = sNewName
-                    # Check for cardsets that were waiting for us
-                    dRemaining = _do_rename_parent(sName, sNewName, dRemaining)
-                    if sNewName:
-                        # rename
-                        oCardSetHolder.name = sNewName
-                    else:
-                        # We skip this card set
-                        continue
+                # Ask the user whether to rename, replace or cancel
+                oCardSetHolder, aChildren = get_import_name(oCardSetHolder)
+                dRenames[sName] = oCardSetHolder.name
+                # Check for cardsets that were waiting for us
+                dRemaining = _do_rename_parent(sName, oCardSetHolder.name,
+                        dRemaining)
+                if not oCardSetHolder.name:
+                    # We skip this card set
+                    continue
                 # Ensure we use the right name for the parent
                 oCardSetHolder.parent = sParentName
                 oCardSetHolder.create_pcs(self.cardlookup)
+                reparent_all_children(oCardSetHolder.name, aChildren)
+                if self.parent.find_cs_pane_by_set_name(oCardSetHolder.name):
+                    # Already open, so update to changes
+                    update_open_card_sets(self.parent, oCardSetHolder.name)
                 self.reload_pcs_list()
             except Exception, oException:
                 sMsg = "Failed to import card set %s.\n\n%s" % (sName,
                         oException)
                 do_complaint_error(sMsg)
         return dRemaining
-
-    def _query_rename(self, sOldName):
-        """Request a new name for the card set."""
-        sNewName = None
-        bRenamed = False
-        oDlg = SutekhDialog("Card Set Name Exists", self.parent,
-                gtk.DIALOG_MODAL|gtk.DIALOG_DESTROY_WITH_PARENT,
-                (gtk.STOCK_OK, gtk.RESPONSE_OK, gtk.STOCK_CANCEL,
-                    gtk.RESPONSE_CANCEL))
-        # pylint: disable-msg=E1101
-        # vbox confuses pylint
-        oLabel = gtk.Label()
-        oLabel.set_markup('Card Set %s already.\nPlease choose a new name or\n'
-                'press Cancel to skip this card set' % sOldName)
-        oDlg.vbox.pack_start(oLabel)
-        oEntry = gtk.Entry(MAX_ID_LENGTH)
-        oDlg.vbox.pack_start(oEntry)
-        # Need this so entry box works as expected
-        oEntry.connect("activate", oDlg.response, gtk.RESPONSE_OK)
-        oDlg.vbox.show_all()
-        while not bRenamed:
-            iResponse = oDlg.run()
-            if iResponse == gtk.RESPONSE_OK:
-                sNewName = oEntry.get_text().strip()
-                if not sNewName:
-                    do_complaint_error('No new name given')
-                    # go around again
-                    continue
-                elif PhysicalCardSet.selectBy(name=sNewName).count() != 0:
-                    do_complaint_error('New name %s is already in use'
-                            % sNewName)
-                    # go around again
-                    continue
-            else:
-                sNewName = None
-            # we got here, so we're done
-            bRenamed = True
-        oDlg.destroy()
-        return sNewName
 
 
 plugin = ImportFromZipFile
