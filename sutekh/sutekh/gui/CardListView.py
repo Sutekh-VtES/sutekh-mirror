@@ -117,18 +117,26 @@ class CardListView(gtk.TreeView):
         if hasattr(self._oMainWin, 'restore_cursor'):
             self._oMainWin.restore_cursor()
 
-    def __set_row_status(self, dExpandedDict):
-        """Attempt to expand the rows listed in dExpandedDict."""
-        for oPath in dExpandedDict:
-            # pylint: disable-msg=W0704
-            # Paths may disappear, so this error can be ignored
-            try:
-                sCardName = self._oModel.get_card_name_from_path(oPath)
-                if sCardName == dExpandedDict[oPath]:
-                    self.expand_to_path(oPath)
-            except ValueError:
-                pass
+    def _set_row_status(self, _oModel, oPath, oIter, aExpandedSet):
+        """Attempt to expand the rows listed in aExpandedSet."""
+        if self._oModel.iter_n_children(oIter) == 0:
+            # The tail nodes can't be expanded, only their parents,
+            # so no need to check the tail nodes
+            return False
+        sKey = self.get_iter_identifier(oIter)
+        if sKey in aExpandedSet:
+            self.expand_to_path(oPath)
         return False
+
+    def get_iter_identifier(self, oIter):
+        """Get the identifier for the path.
+
+           The identifier is (sGroup, sCard, ...) as required."""
+        aKey = []
+        while oIter:
+            aKey.append(self._oModel.get_value(oIter, 0))
+            oIter = self._oModel.iter_parent(oIter) # Move back up the model
+        return ''.join(aKey)
 
     def reload_keep_expanded(self):
         """Reload with current expanded state.
@@ -138,12 +146,21 @@ class CardListView(gtk.TreeView):
            """
         # Internal helper functions
         # See what's expanded
-        dExpandedDict = {}
-        self._oModel.foreach(self.__get_row_status, dExpandedDict)
+        aExpandedSet = self.get_expanded_list()
         # Reload, but use cached info
         self.load()
         # Re-expand stuff
-        self.__set_row_status(dExpandedDict)
+        self.expand_list(aExpandedSet)
+
+    def get_expanded_list(self):
+        """Create a list of expanded rows"""
+        aExpandedSet = set()
+        self._oModel.foreach(self._get_row_status, aExpandedSet)
+        return aExpandedSet
+
+    def expand_list(self, aExpandedSet):
+        """Expand the rows listed in aExpandedSet"""
+        self._oModel.foreach(self._set_row_status, aExpandedSet)
 
     # Introspection
 
@@ -247,7 +264,7 @@ class CardListView(gtk.TreeView):
                     self._oModel.applyfilter = True
             else:
                 # Filter Changed, so reload
-                self.load()
+                self.reload_keep_expanded()
         else:
             # Filter is set to blank, so we treat this as disabling
             # Filter
@@ -257,13 +274,13 @@ class CardListView(gtk.TreeView):
                 else:
                     self._oModel.applyfilter = True
             else:
-                self.load()
+                self.reload_keep_expanded()
 
     def run_filter(self, bState):
         """Enable or disable the current filter based on bState"""
         if self._oModel.applyfilter != bState:
             self._oModel.applyfilter = bState
-            self.load()
+            self.reload_keep_expanded()
 
     def process_selection(self):
         """Create a dictionary from the selection.
@@ -427,11 +444,11 @@ class CardListView(gtk.TreeView):
 
     # Helper function used by reload_keep_expanded
     # Various arguments required by function signatures
-    def __get_row_status(self, _oModel, oPath, _oIter, dExpandedDict):
+    def _get_row_status(self, _oModel, oPath, oIter, aExpandedSet):
         """Create a dictionary of rows and their expanded status."""
         if self.row_expanded(oPath):
-            dExpandedDict.setdefault(oPath,
-                    self._oModel.get_card_name_from_path(oPath))
+            sKey = self.get_iter_identifier(oIter)
+            aExpandedSet.add(sKey)
         return False # Need to process the whole list
 
     # Activating Rows

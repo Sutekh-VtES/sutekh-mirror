@@ -1,3 +1,8 @@
+29 Jul 2009
+ * Redo reload_keep_expanded to be robust against various path changes.
+ * Use reload_keep_expanded when applying/unapplying a filter,
+   as being more predictable.
+
 20 Jul 2009
  * Change zip import plugin to use unified rename dialog and logic.
 
