@@ -119,7 +119,7 @@ class CardListView(gtk.TreeView):
 
     def _set_row_status(self, _oModel, oPath, oIter, aExpandedSet):
         """Attempt to expand the rows listed in aExpandedSet."""
-        if self._oModel.iter_n_children(oIter) == 0:
+        if not self._oModel.iter_has_child(oIter):
             # The tail nodes can't be expanded, only their parents,
             # so no need to check the tail nodes
             return False
