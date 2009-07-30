@@ -13,13 +13,16 @@ import StringIO
 import re
 from sutekh.SutekhInfo import SutekhInfo
 from sutekh.core.SutekhObjects import PhysicalCardSet, IAbstractCard, \
-    canonical_to_csv, MAX_ID_LENGTH
+    canonical_to_csv
 from sutekh.core.Filters import MultiCardTypeFilter, FilterNot
 from sutekh.core.CardSetHolder import CardSetHolder
 from sutekh.core.CardLookup import LookupFailed
 from sutekh.io.SLDeckParser import SLDeckParser
 from sutekh.io.SLInventoryParser import SLInventoryParser
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
+from sutekh.gui.RenameDialog import get_import_name
+from sutekh.gui.CardSetManagementController import reparent_all_children, \
+        update_open_card_sets
 from sutekh.gui.PluginManager import CardListPlugin
 
 class ImportExportBase(SutekhDialog):
@@ -323,7 +326,6 @@ class SecretLibrary(CardListPlugin):
     def _import_deck(self, sApiUrl, dData):
         """Import a Secret Library deck as a card set."""
         sData = urllib.urlencode(dData)
-        oHolder = CardSetHolder()
         oParser = SLDeckParser()
 
         oReq = urllib2.Request(url=sApiUrl, data=sData)
@@ -379,8 +381,6 @@ class SecretLibrary(CardListPlugin):
 
     def _export_inventory(self, sApiUrl, dData):
         """Export a card set to the Secret Library as an inventory."""
-        oCardSet = self.get_card_set()
-
         dData['inventory_crypt'], dData['inventory_library'] = \
                 self._cs_as_inventory()
 
@@ -467,7 +467,7 @@ class SecretLibrary(CardListPlugin):
 
         return "\n".join(aCrypt), "\n".join(aLibrary)
 
-    # TODO: make_cs, make_name_dialog and handle_name_response copied from
+    # TODO: make_cs copied from
     #       sutekh.gui.plugins.CardSetImporter expect for a minor change in the
     #       way the parser class is used and should probably be factored out
     #       into a common class (yet another method on the plugin base class?)
@@ -482,7 +482,7 @@ class SecretLibrary(CardListPlugin):
             oParser.parse(fIn, oHolder)
         except Exception, oExp:
             sMsg = "Reading the card set failed with the following error:\n" \
-                   "%s\n The file is probably not in the format the Parser" \
+                   "%s\nThe file is probably not in the format the Parser" \
                    " expects.\nAborting" % oExp
             do_complaint_error(sMsg)
             # Fail out
@@ -495,75 +495,28 @@ class SecretLibrary(CardListPlugin):
                     "Aborting")
             return
 
-        # Check CS Doesn't Exist
-        bContinue = False
-        # We loop until we have an acceptable name
-        while not bContinue:
-            bDoNewName = False
-            sMsg = ""
-            if PhysicalCardSet.selectBy(name=oHolder.name).count() != 0:
-                sMsg = "Card Set %s already exists.\n" \
-                        "Please choose another name.\n" \
-                        "Choose cancel to abort this import." % oHolder.name
-                bDoNewName = True
-            elif not oHolder.name:
-                sMsg = "No name given for the card set\n" \
-                        "Please specify a name.\n" \
-                        "Choose cancel to abort this import."
-                bDoNewName = True
-            if bDoNewName:
-                if not self.make_name_dialog(sMsg):
-                    return
-                oHolder.name = self._sNewName
-                self._sNewName = ""
-            else:
-                bContinue = True
-
+        # Handle naming issues if needed
+        oHolder, aChildren = get_import_name(oHolder)
+        if not oHolder.name:
+            return # User bailed
         # Create CS
         try:
             oHolder.create_pcs(oCardLookup=self.cardlookup)
+            reparent_all_children(oHolder.name, aChildren)
         except RuntimeError, oExp:
-            sMsg = "Creating the card set failed with the following error:\n"
-            sMsg += str(oExp) + "\n"
-            sMsg += "The file is probably not in the format the Parser" \
-                    " expects\n"
-            sMsg += "Aborting"
+            sMsg = "Creating the card set failed with the following error:\n" \
+                   "%s\nAborting" % oExp
             do_complaint_error(sMsg)
             return
         except LookupFailed, oExp:
             return
 
-        self.open_cs(oHolder.name)
-
-    def make_name_dialog(self, sMsg):
-        """Create a dialog to prompt for a new name"""
-        oDlg = SutekhDialog("Choose New Card Set Name", self.parent,
-                gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
-                (gtk.STOCK_OK, gtk.RESPONSE_OK,
-                    gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
-
-        oLabel = gtk.Label(sMsg)
-
-        oEntry = gtk.Entry(MAX_ID_LENGTH)
-        # Need this so entry box works as expected
-        oEntry.connect("activate", self.handle_name_response,
-                gtk.RESPONSE_OK, oDlg, oEntry)
-        oDlg.connect("response", self.handle_name_response, oDlg, oEntry)
-
-        # pylint: disable-msg=E1101
-        # pylint misses vbox methods
-        oDlg.vbox.pack_start(oLabel)
-        oDlg.vbox.pack_start(oEntry)
-        oDlg.show_all()
-
-        iResponse = oDlg.run()
-        oDlg.destroy()
-        return iResponse == gtk.RESPONSE_OK
-
-    def handle_name_response(self, _oWidget, oResponse, _oDlg, oEntry):
-        """Handle the user's clicking on OK or CANCEL in the dialog."""
-        if oResponse == gtk.RESPONSE_OK:
-            self._sNewName = oEntry.get_text().strip()
+        if self.parent.find_cs_pane_by_set_name(oHolder.name):
+            # Already open, so update to changes
+            update_open_card_sets(self.parent, oHolder.name)
+        else:
+            # Not already open, so open a new copy
+            self.open_cs(oHolder.name)
 
 
 plugin = SecretLibrary

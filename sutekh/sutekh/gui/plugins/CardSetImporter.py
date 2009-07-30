@@ -180,9 +180,8 @@ class ACSImporter(CardListPlugin):
             oHolder.create_pcs(oCardLookup=self.cardlookup)
             reparent_all_children(oHolder.name, aChildren)
         except RuntimeError, oExp:
-            sMsg = "Creating the card set failed with the following error:\n"
-            sMsg += str(oExp) + "\n"
-            sMsg += "Aborting"
+            sMsg = "Creating the card set failed with the following error:\n" \
+                   "%s\nAborting" % oExp
             do_complaint_error(sMsg)
             return
         except LookupFailed, oExp:
