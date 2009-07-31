@@ -8,11 +8,11 @@
 
 import unicodedata
 from sutekh.core.SutekhObjects import AbstractCard, canonical_to_csv
+from sutekh.SutekhUtility import is_crypt_card
 
 def type_of_card(oCard):
     """Return either Crypt or Library as required."""
-    sType = list(oCard.cardtype)[0].name
-    if sType == "Vampire" or sType == "Imbued":
+    if is_crypt_card(oCard):
         return "Crypt"
     else:
         return "Library"

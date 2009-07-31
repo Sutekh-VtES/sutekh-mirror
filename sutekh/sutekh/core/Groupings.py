@@ -8,6 +8,8 @@
 
 # Base Grouping Class
 
+from sutekh.core.SutekhObjects import CRYPT_TYPES
+
 class IterGrouping(object):
     """Bass class for the groupings"""
     def __init__(self, oIter, fKeys):
@@ -111,8 +113,8 @@ class CryptLibraryGrouping(IterGrouping):
         # Vampires and Imbued have exactly one card type (we hope that WW
         # don't change that)
         super(CryptLibraryGrouping, self).__init__(oIter,
-                lambda x: [fGetCard(x).cardtype[0].name in ["Vampire",
-                    "Imbued"] and "Crypt" or "Library"])
+                lambda x: [fGetCard(x).cardtype[0].name in CRYPT_TYPES
+                    and "Crypt" or "Library"])
 
 class SectGrouping(IterGrouping):
     """Group by Sect"""

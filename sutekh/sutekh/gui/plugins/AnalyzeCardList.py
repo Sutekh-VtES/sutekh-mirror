@@ -13,7 +13,7 @@
 
 import gtk
 from sutekh.core.SutekhObjects import PhysicalCardSet, \
-        IAbstractCard, IPhysicalCard, IExpansion
+        IAbstractCard, IPhysicalCard, IExpansion, CRYPT_TYPES
 from sutekh.core.Filters import CardTypeFilter, CardTextFilter
 from sutekh.core.Abbreviations import Titles
 from sutekh.gui.PluginManager import CardListPlugin
@@ -25,7 +25,6 @@ THIRD_ED = IExpansion('Third Edition')
 JYHAD = IExpansion('Jyhad')
 ODD_BACKS = [None, THIRD_ED, JYHAD]
 
-CRYPT_TYPES = ['Vampire', 'Imbued']
 BANNED_FILTER = CardTextFilter('Added to the V:EKN banned list')
 
 UNSLEEVED = "<span foreground='green'>%s may be played unsleeved</span>\n"

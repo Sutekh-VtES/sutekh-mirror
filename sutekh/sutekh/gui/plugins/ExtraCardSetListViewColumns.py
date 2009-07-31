@@ -14,7 +14,7 @@ from sutekh.gui.SutekhDialog import SutekhDialog
 from sutekh.gui.CellRendererIcons import CellRendererIcons, SHOW_TEXT_ONLY
 from sutekh.core.SutekhObjects import PhysicalCardSet, IPhysicalCardSet, \
         MapPhysicalCardToPhysicalCardSet
-from sutekh.core.Filters import PhysicalCardSetFilter, MultiCardTypeFilter, \
+from sutekh.core.Filters import PhysicalCardSetFilter, CryptCardFilter, \
         FilterAndBox
 from sutekh.core.DBSignals import listen_row_destroy, listen_row_update, \
         listen_row_created, listen_changed
@@ -197,7 +197,7 @@ class ExtraCardSetListViewColumns(CardListPlugin):
         def query(oCardSet):
             """Query the database"""
             oFilter = FilterAndBox([PhysicalCardSetFilter(oCardSet.name),
-                MultiCardTypeFilter(['Vampire', 'Imbued'])])
+                CryptCardFilter()])
             iCrypt = oFilter.select(
                 MapPhysicalCardToPhysicalCardSet).distinct().count()
             iTot = MapPhysicalCardToPhysicalCardSet.selectBy(
@@ -226,7 +226,7 @@ class ExtraCardSetListViewColumns(CardListPlugin):
         def query(oCardSet):
             """Query the database"""
             oFilter = FilterAndBox([PhysicalCardSetFilter(oCardSet.name),
-                MultiCardTypeFilter(['Vampire', 'Imbued'])])
+                CryptCardFilter()])
             return oFilter.select(
                 MapPhysicalCardToPhysicalCardSet).distinct().count()
 

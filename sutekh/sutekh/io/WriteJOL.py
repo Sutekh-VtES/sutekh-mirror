@@ -19,6 +19,7 @@
    """
 
 from sutekh.core.SutekhObjects import IAbstractCard
+from sutekh.core.ELDBUtilities import type_of_card
 
 class WriteJOL(object):
     """Create a string in JOL format representing a card set."""
@@ -31,26 +32,17 @@ class WriteJOL(object):
         sName = sName.replace('(Advanced)', '(advanced)')
         return sName
 
-    def _crypt_or_library(self, oCard):
-        """Return 'crypt' or 'library' as required"""
-        # pylint: disable-msg=E1101
-        # pyprotocols confuses pylint
-        sType = list(IAbstractCard(oCard).cardtype)[0].name
-        if sType == "Vampire" or sType == "Imbued":
-            return "crypt"
-        else:
-            return "library"
-
     # pylint: enable-msg=R0201
     def _gen_inv(self, oHolder):
         """Process the card set, creating the lines as needed"""
         # pylint: disable-msg=E1101
         # pyprotocols confuses pylint
-        dCards = {'crypt' : {}, 'library' : {}}
+        dCards = {'Crypt' : {}, 'Library' : {}}
         sResult = ""
         for oCard in oHolder.cards:
-            sType = self._crypt_or_library(oCard)
-            sName = self._escape(IAbstractCard(oCard).name)
+            oAbsCard = IAbstractCard(oCard)
+            sType = type_of_card(oAbsCard)
+            sName = self._escape(oAbsCard.name)
             dCards[sType].setdefault(sName, 0)
             dCards[sType][sName] += 1
         # Sort the output
@@ -60,7 +52,7 @@ class WriteJOL(object):
                     sResult += '%dx%s\n' % (iNum, sName)
                 else:
                     sResult += '%s\n' % sName
-            if sType == 'crypt':
+            if sType == 'Crypt':
                 sResult += '\n'
         # Assume conversion will be handled by viewers/editor/web browser?
         return sResult

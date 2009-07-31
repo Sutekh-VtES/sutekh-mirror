@@ -437,6 +437,9 @@ PHYSICAL_SET_LIST = [PhysicalCardSet,
 # For database upgrades, etc.
 PHYSICAL_LIST = [PhysicalCard] + PHYSICAL_SET_LIST
 
+# Generically useful constant
+CRYPT_TYPES = ['Vampire', 'Imbued']
+
 # Object Maker API
 
 class SutekhObjectMaker(object):

@@ -1,3 +1,6 @@
+31 Jul 2009
+ * Unify the various crypt/library tests scattered in the code
+
 30 Jul 2009
  * Change secret library import to use unified rename dialog and logic.
 

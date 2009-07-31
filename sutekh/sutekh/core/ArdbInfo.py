@@ -12,6 +12,7 @@
 
 from sutekh.core.SutekhObjects import IAbstractCard, IPhysicalCard
 from sutekh.SutekhInfo import SutekhInfo
+from sutekh.SutekhUtility import is_crypt_card
 
 
 def escape_ardb_expansion_name(oExpansion):
@@ -85,23 +86,18 @@ class ArdbInfo(object):
         dVamps = {}
         for tKey, iCount in dCards.iteritems():
             oCard = tKey[0]
-            aTypes = [x.name for x in oCard.cardtype]
-            if aTypes[0] == 'Vampire':
+            if is_crypt_card(oCard):
                 dVamps[tKey] = iCount
                 dCryptStats['size'] += iCount
-                dCryptStats['avg'] += oCard.capacity*iCount
-                if oCard.capacity > dCryptStats['max']:
-                    dCryptStats['max'] = oCard.capacity
-                if oCard.capacity < dCryptStats['min']:
-                    dCryptStats['min'] = oCard.capacity
-            if aTypes[0] == 'Imbued':
-                dVamps[tKey] = iCount
-                dCryptStats['size'] += iCount
-                dCryptStats['avg'] += oCard.life*iCount
-                if oCard.life > dCryptStats['max']:
-                    dCryptStats['max'] = oCard.life
-                if oCard.life < dCryptStats['min']:
-                    dCryptStats['min'] = oCard.life
+                if oCard.cardtype[0].name == "Vampire":
+                    iCap = oCard.capacity
+                elif oCard.cardtype[0].name == "Imbued":
+                    iCap = oCard.life
+                dCryptStats['avg'] += iCap * iCount
+                if iCap > dCryptStats['max']:
+                    dCryptStats['max'] = iCap
+                if iCap < dCryptStats['min']:
+                    dCryptStats['min'] = iCap 
         if dCryptStats['size'] > 0:
             dCryptStats['avg'] = round(dCryptStats['avg'] /
                     dCryptStats['size'], 2)
@@ -115,8 +111,8 @@ class ArdbInfo(object):
         dLib = {}
         for tKey, iCount in dCards.iteritems():
             oCard, sSet = tKey
-            aTypes = sorted([x.name for x in oCard.cardtype])
-            if aTypes[0] != 'Vampire' and aTypes[0] != 'Imbued':
+            if not is_crypt_card(oCard):
+                aTypes = sorted([x.name for x in oCard.cardtype])
                 # Looks like it should be the right thing, but may not
                 sTypeString = "/".join(aTypes)
                 # We want to be able to sort over types easily, so

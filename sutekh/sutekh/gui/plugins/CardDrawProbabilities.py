@@ -9,6 +9,7 @@
 import gtk
 from copy import copy
 from sutekh.core.SutekhObjects import PhysicalCardSet, IAbstractCard
+from sutekh.SutekhUtility import is_crypt_card
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
@@ -265,8 +266,7 @@ class CardDrawSimPlugin(CardListPlugin):
         self.dSelectedCounts = {}
         self.iSelectedCount = 0
         for oCard in aAllAbsCards:
-            aTypes = [oType.name for oType in oCard.cardtype]
-            if aTypes[0] == 'Vampire' or aTypes[0] == 'Imbued':
+            if is_crypt_card(oCard):
                 iCryptSize += 1
             else:
                 iLibrarySize += 1
@@ -293,8 +293,7 @@ class CardDrawSimPlugin(CardListPlugin):
             # pylint: disable-msg=E1101
             # pylint doesn't pick up adaptor's methods correctly
             oCard = IAbstractCard(self.model.get_card_name_from_path(oPath))
-            aTypes = [oType.name for oType in oCard.cardtype]
-            if aTypes[0] == 'Vampire' or aTypes[0] == 'Imbued':
+            if is_crypt_card(oCard):
                 bCrypt = True
             else:
                 bLibrary = True

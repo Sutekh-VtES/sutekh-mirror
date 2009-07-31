@@ -14,7 +14,7 @@ import re
 from sutekh.SutekhInfo import SutekhInfo
 from sutekh.core.SutekhObjects import PhysicalCardSet, IAbstractCard, \
     canonical_to_csv
-from sutekh.core.Filters import MultiCardTypeFilter, FilterNot
+from sutekh.core.Filters import CryptCardFilter, FilterNot
 from sutekh.core.CardSetHolder import CardSetHolder
 from sutekh.core.CardLookup import LookupFailed
 from sutekh.io.SLDeckParser import SLDeckParser
@@ -399,7 +399,7 @@ class SecretLibrary(CardListPlugin):
         """Convert a card set to an SL (crypt, library) string pair."""
         # populate crypt
         aCrypt = []
-        oCryptFilter = MultiCardTypeFilter(['Vampire', 'Imbued'])
+        oCryptFilter = CryptCardFilter()
         oCryptIter = self.model.get_card_iterator(oCryptFilter)
 
         for oCard in oCryptIter:
@@ -429,7 +429,7 @@ class SecretLibrary(CardListPlugin):
            """
         # populate crypt dict
         dCrypt = {}
-        oCryptFilter = MultiCardTypeFilter(['Vampire', 'Imbued'])
+        oCryptFilter = CryptCardFilter()
         oCryptIter = self.model.get_card_iterator(oCryptFilter)
 
         for oCard in oCryptIter:

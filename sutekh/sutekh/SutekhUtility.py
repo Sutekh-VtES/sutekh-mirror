@@ -9,7 +9,7 @@
 
 """Misc functions needed in various places in Sutekh."""
 
-from sutekh.core.SutekhObjects import VersionTable, flush_cache
+from sutekh.core.SutekhObjects import VersionTable, flush_cache, CRYPT_TYPES
 from sutekh.core.DatabaseVersion import DatabaseVersion
 from sutekh.io.WhiteWolfParser import WhiteWolfParser
 from sutekh.io.RulingParser import RulingParser
@@ -152,3 +152,11 @@ def pretty_xml(oElement, iIndentLevel=0):
             oElement.tail = sIndent
 
 
+
+# Utility test for crypt cards
+
+def is_crypt_card(oAbsCard):
+    """Test if a card is a crypt card or not"""
+    # Vampires and Imbued have exactly one card type (we hope that WW
+    # don't change that)
+    return oAbsCard.cardtype[0].name in CRYPT_TYPES

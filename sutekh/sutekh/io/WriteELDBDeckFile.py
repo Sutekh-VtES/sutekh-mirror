@@ -23,6 +23,7 @@
    """
 
 from sutekh.core.ELDBUtilities import norm_name
+from sutekh.SutekhUtility import is_crypt_card
 
 class WriteELDBDeckFile(object):
     """Create a string in ELDB deck format representing a card set."""
@@ -41,9 +42,8 @@ class WriteELDBDeckFile(object):
         aLib = []
         for oCard in oHolder.cards:
             oAbsCard = oCard.abstractCard
-            sType = list(oAbsCard.cardtype)[0].name
             sName = norm_name(oAbsCard)
-            if sType == "Vampire" or sType == "Imbued":
+            if is_crypt_card(oAbsCard):
                 aCrypt.append(sName)
             else:
                 aLib.append(sName)

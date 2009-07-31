@@ -13,8 +13,8 @@ from sutekh.core.SutekhObjects import PhysicalCardSet, IAbstractCard
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
-from sutekh.core.Filters import CardTypeFilter, MultiCardTypeFilter, \
-        CardFunctionFilter, FilterNot
+from sutekh.core.Filters import CryptCardFilter, MultiCardTypeFilter, \
+        CardTypeFilter, CardFunctionFilter, FilterNot
 
 # Utility functions
 
@@ -153,7 +153,7 @@ class OpeningHandSimulator(CardListPlugin):
     def activate(self, _oWidget):
         """Create the actual dialog, and populate it"""
         sDiagName = "Opening Hand"
-        oCryptFilter = MultiCardTypeFilter(['Imbued', 'Vampire'])
+        oCryptFilter = CryptCardFilter()
 
         self.aCrypt = get_cards_filter(self.model, oCryptFilter)
         self.aLibrary = get_cards_filter(self.model, FilterNot(oCryptFilter))

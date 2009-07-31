@@ -19,7 +19,8 @@ from sutekh.core.SutekhObjects import AbstractCard, IAbstractCard, ICreed, \
         IPhysicalCardSet, IRarityPair, IRarity, Clan, \
         Discipline, CardType, Title, Creed, Virtue, Sect, Expansion, \
         RarityPair, PhysicalCardSet, PhysicalCard, IDisciplinePair, \
-        MapPhysicalCardToPhysicalCardSet, Artist, Keyword, IArtist, IKeyword
+        MapPhysicalCardToPhysicalCardSet, Artist, Keyword, IArtist, IKeyword, \
+        CRYPT_TYPES
 from sqlobject import SQLObjectNotFound, AND, OR, NOT, LIKE, func, \
         IN as SQLOBJ_IN
 from sqlobject.sqlbuilder import Table, Alias, LEFTJOINOn, Select, \
@@ -479,6 +480,19 @@ class MultiCardTypeFilter(MultiFilter):
     @classmethod
     def get_values(cls):
         return [x.name for x in CardType.select().orderBy('name')]
+
+
+class CryptCardFilter(MultiFilter):
+    """Filter on crypt card types"""
+    types = ['AbstractCard', 'PhysicalCard']
+
+    def __init__(self):
+        # pylint: disable-msg=E1101
+        # SQLObject methods not detected by pylint
+        self._aIds = [ICardType(x).id for x in CRYPT_TYPES]
+        self._oMapTable = make_table_alias('abs_type_map')
+        self._oIdField = self._oMapTable.q.card_type_id
+
 
 class SectFilter(SingleFilter):
     """Filter on Sect"""
@@ -1555,4 +1569,3 @@ PARSER_FILTERS = [
         CardFunctionFilter, ParentCardSetFilter, MultiArtistFilter,
         MultiKeywordFilter,
 ]
-

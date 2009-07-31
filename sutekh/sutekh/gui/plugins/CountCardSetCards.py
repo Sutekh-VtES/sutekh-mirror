@@ -11,14 +11,7 @@ import gtk
 from sutekh.core.SutekhObjects import PhysicalCardSet
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.CardListModel import CardListModelListener
-
-def _id_card(oCard):
-    """Identify the card type"""
-    sType = list(oCard.cardtype)[0].name
-    if sType == 'Vampire' or sType == 'Imbued':
-        return 'Crypt'
-    else:
-        return 'Library'
+from sutekh.SutekhUtility import is_crypt_card
 
 TOT_FORMAT = 'Tot: <b>%(tot)d</b> L: <b>%(lib)d</b> C: <b>%(crypt)d</b>'
 TOT_TOOLTIP = 'Total Cards: <b>%(tot)d</b> (Library: <b>%(lib)d</b>' \
@@ -61,7 +54,6 @@ class CountCardSetCards(CardListPlugin, CardListModelListener):
             self.__oTextLabel.set_tooltip_markup(TOT_TOOLTIP % {
             'tot' : 0, 'crypt' : 0, 'lib' : 0})
 
-
         return self.__oTextLabel
 
     def update_numbers(self):
@@ -82,7 +74,7 @@ class CountCardSetCards(CardListPlugin, CardListModelListener):
         self.__iLibrary = 0
         self.__iTot = len(aAbsCards)
         for oAbsCard in aAbsCards:
-            if _id_card(oAbsCard) == 'Crypt':
+            if is_crypt_card(oAbsCard):
                 self.__iCrypt += 1
             else:
                 self.__iLibrary += 1
@@ -91,7 +83,7 @@ class CountCardSetCards(CardListPlugin, CardListModelListener):
     def alter_card_count(self, oCard, iChg):
         """respond to alter_card_count events"""
         self.__iTot += iChg
-        if _id_card(oCard) == 'Crypt':
+        if is_crypt_card(oCard):
             self.__iCrypt += iChg
         else:
             self.__iLibrary += iChg
@@ -100,7 +92,7 @@ class CountCardSetCards(CardListPlugin, CardListModelListener):
     def add_new_card(self, oCard):
         """response to add_new_card events"""
         self.__iTot += 1
-        if _id_card(oCard) == 'Crypt':
+        if is__crypt_card(oCard):
             self.__iCrypt += 1
         else:
             self.__iLibrary += 1
