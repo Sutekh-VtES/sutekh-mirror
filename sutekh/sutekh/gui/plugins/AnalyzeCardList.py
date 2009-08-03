@@ -939,7 +939,7 @@ class AnalyzeCardList(CardListPlugin):
         sAddText = _simple_back_checks(dCrypt, 'Crypt')
         bOK = True
         if sAddText:
-            sText += sText
+            sText += sAddText
             return sText
         sAddText = _percentage_backs(dCrypt, self.iCryptSize, 20.0, 'Crypt')
         if sAddText:
@@ -963,7 +963,7 @@ class AnalyzeCardList(CardListPlugin):
         sAddText = _simple_back_checks(dLib, 'Library')
         bOK = True
         if sAddText:
-            sText += sText
+            sText += sAddText
             return sText
         sAddText = _percentage_backs(dLib, self.iLibSize, 20.0, 'Library')
         if sAddText:
