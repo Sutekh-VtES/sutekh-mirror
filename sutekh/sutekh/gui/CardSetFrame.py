@@ -14,6 +14,7 @@ from sutekh.core.SutekhObjects import PhysicalCardSet, \
 from sutekh.gui.CardListFrame import CardListFrame
 from sutekh.gui.CardSetMenu import CardSetMenu
 from sutekh.gui.CardSetController import CardSetController
+from sutekh.gui.CardSetListModel import IGNORE_PARENT
 
 class CardSetFrame(CardListFrame):
     # pylint: disable-msg=R0904
@@ -36,6 +37,9 @@ class CardSetFrame(CardListFrame):
 
         if tInfo:
             self.set_model_modes(tInfo)
+        elif _oCS.parent and not _oCS.parent.cards:
+            self._oController.model.iParentCountMode = IGNORE_PARENT
+            # Else, we go with the defaults
 
         self._sName = sName
 

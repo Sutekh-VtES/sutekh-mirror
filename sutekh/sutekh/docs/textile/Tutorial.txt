@@ -326,7 +326,14 @@ h3. Opening multiple copies of the card set
 It's possible to open multiple copies of a given card set. This can be useful
 for displaying different sets of extra columns for different filters, and so
 forth. Open another copy of the card set either by dragging the card set name
-from the card set list onto a diffrent pane, or by double clicking the card set
+from the card set list onto a different pane, or by double clicking the card set
 name.
+
+h3. Organising card sets
+
+It's often useful to keep a record of card sets that are related, but aren't
+strictly subsets of another card set. One common approach is to use empty
+card sets to act as card set *holders* which group logically related
+card sets together.
 
 "The Sutekh Manual":Manual.html

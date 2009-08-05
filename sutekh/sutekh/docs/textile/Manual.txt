@@ -202,7 +202,7 @@ expansion when updating the database during your next upgrade.
 h2(#ww). White Wolf Card List
 
 This pane contains a list of all the cards imported from the official
-White Wolf card list.
+White Wolf card list. 
 
 h3(#ww_actions). Actions
 
@@ -372,6 +372,20 @@ The following plugins are available from the card set list pane plugins menu:
 * "Select Extra Columns":#cs_columns_plugin
 
 h2(#cardsets). Card Sets
+
+This pane lists the contents of a specific card set.
+
+The display has several columns. A column for the number of cards,
+a column for the number of cards in the parent card set (the
+*parent count column*) and a column for the card name. Extra columns can
+be enabled as well.
+
+By default, the card set is sorted on the card name, but it can be sorted
+by any of the columns. 
+
+The parent card column is hidden, and cannot be enabled, if the card set
+has no parent. By default, the parent count column is hidden if the parent
+card set is empty, but it can be shown.
 
 h3(#cardsets_actions). Actions
 
