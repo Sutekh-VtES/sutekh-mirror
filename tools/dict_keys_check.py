@@ -13,6 +13,7 @@
 
 from pylint.interfaces import IASTNGChecker
 from pylint.checkers import BaseChecker
+from logilab import astng
 
 # pylint: disable-msg=R0904
 # Handling three cases, so we exceed the 20 method pylint limit
@@ -30,7 +31,16 @@ class MyDictKeyChecker(BaseChecker):
 
     def __internal_test(self, oNode):
         """Grunt work of the test"""
-        if hasattr(oNode.list, 'node') and \
+        if not hasattr(oNode, 'list'):
+            # Later pylint is different. Bother
+            oForObject = list(oNode.get_children())[1] # part we want
+            if type(oForObject) is astng.CallFunc:
+                # Check if name is keys
+                oChild = list(oForObject.get_children())[0]
+                if hasattr(oChild, 'attrname') and oChild.attrname == 'keys':
+                    # Should check oChild to see if it's a dict?
+                    self.add_message('W9967', line=oNode.lineno)
+        elif hasattr(oNode.list, 'node') and \
                 hasattr(oNode.list.node, 'attrname') and \
                 oNode.list.node.attrname == 'keys':
             self.add_message('W9967', line=oNode.lineno)
@@ -47,12 +57,24 @@ class MyDictKeyChecker(BaseChecker):
         """Check (x for x in d) generator expressions"""
         self.__internal_test(oNode)
 
+    def visit_listcomp(self, oNode):
+        """Check [x for x in d] list comprehensions"""
+        oListNode = list(oNode.get_children())[1]
+        self.__internal_test(oListNode)
+
+    def visit_genexp(self, oNode):
+        """Check (x for x in d) generator expressions"""
+        oListNode = list(oNode.get_children())[1]
+        self.__internal_test(oListNode)
+
     # Uncomment for testing
     #def __dummy(self, dDict):
     #    """Dummy method used for testing"""
     #    for oYY in dDict.keys():
     #        print oYY
-    #    self.oZZ = [oX for oX in dDict.keys()]
+    #    print [oX for oX in self.msgs.keys()]
+    #    for oYY in ['a', 'b', 'c']:
+    #        print oYY
 
 def register(oLinter):
     """required method to auto register this checker"""

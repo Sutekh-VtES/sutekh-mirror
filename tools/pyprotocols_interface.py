@@ -16,6 +16,16 @@ from pylint.interfaces import IASTNGChecker
 from pylint.checkers import BaseChecker
 from logilab import astng
 
+def _get_child_nodes(oNode):
+    """Get the child nodes"""
+    # Work around differing pylint versions
+    if hasattr(oNode, 'getChildNodes'):
+        return oNode.getChildNodes()
+    elif hasattr(oNode, 'get_children'):
+        return oNode.get_children()
+    else:
+        return []
+
 class MyPyProtocolsChecker(BaseChecker):
     """Check for PyProtocols advises syntax
 
@@ -43,10 +53,13 @@ class MyPyProtocolsChecker(BaseChecker):
     def find_poss_advise_call(self, oNode, aClasses):
         """Check to see if we have a 'advise' function call"""
         # Ugly check here
-        for oSubNode in oNode.getChildNodes():
-            if not isinstance(oSubNode, astng.Discard):
+        for oSubNode in _get_child_nodes(oNode):
+            if isinstance(oSubNode, astng.CallFunc):
+                if self.check_poss_advise_call(oSubNode, aClasses):
+                    return True
+            elif not isinstance(oSubNode, astng.Discard):
                 continue
-            for oPossAdvise in oSubNode.getChildNodes():
+            for oPossAdvise in _get_child_nodes(oSubNode):
                 if not isinstance(oPossAdvise, astng.CallFunc):
                     continue
                 if self.check_poss_advise_call(oPossAdvise, aClasses):
@@ -57,12 +70,17 @@ class MyPyProtocolsChecker(BaseChecker):
         """Check if a promising looking call matches pyprotocols"""
         bNamedAdvise = False
         bProvides = False
-        for oInfoNode in oNode.getChildNodes():
+        for oInfoNode in _get_child_nodes(oNode):
             if isinstance(oInfoNode, astng.Name) and \
                     oInfoNode.name == 'advise':
                 bNamedAdvise = True
             elif isinstance(oInfoNode, astng.Keyword):
-                if oInfoNode.name == 'instancesProvide':
+                sName = ''
+                if hasattr(oInfoNode, 'name'):
+                    sName = oInfoNode.name
+                elif hasattr(oInfoNode, 'arg'):
+                    sName = oInfoNode.arg
+                if sName == 'instancesProvide':
                     bProvides = True
                     if bNamedAdvise:
                         if not self.extract_classes(oInfoNode, aClasses):
@@ -71,10 +89,10 @@ class MyPyProtocolsChecker(BaseChecker):
 
     def extract_classes(self, oNode, aClasses):
         """Extract the inferface provided from the keyword node"""
-        for oSubNode in oNode.getChildNodes():
+        for oSubNode in _get_child_nodes(oNode):
             if not isinstance(oSubNode, astng.List):
                 return False
-            for oName in oSubNode.getChildNodes():
+            for oName in _get_child_nodes(oSubNode):
                 if oName.name in self._dInterfaces:
                     aClasses.append(self._dInterfaces[oName.name])
         return True
@@ -84,9 +102,9 @@ class MyPyProtocolsChecker(BaseChecker):
         if oNode.type == 'interface' and oNode.name != 'Interface':
             # Cache interfaces we encounter
             self._dInterfaces[oNode.name] = oNode
-        for oSubNode in oNode.getChildNodes():
+        aClasses = []
+        for oSubNode in _get_child_nodes(oNode):
             if oSubNode.statement():
-                aClasses = []
                 if self.find_poss_advise_call(oSubNode, aClasses):
                     #print oNode, 'Interface implementation detected', aClasses
                     # MONKEY-PATCH alert
@@ -100,6 +118,7 @@ class MyPyProtocolsChecker(BaseChecker):
                     # C0322: pylint get's this wrong
                     oNode.interfaces = lambda herited=True, \
                             handler_func=None: aClasses
+                    #print oNode.interfaces()
 
 
 def register(oLinter):
