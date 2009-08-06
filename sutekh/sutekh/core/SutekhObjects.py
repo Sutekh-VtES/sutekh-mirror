@@ -43,7 +43,7 @@ class IRuling(Interface): pass
 class IArtist(Interface): pass
 class IKeyword(Interface): pass
 
-# pylint: enable-msg=C0111, C0321
+# pylint: enable-msg=C0321
 # Table Objects
 
 # pylint: disable-msg=W0232, R0902, W0201, C0103
@@ -796,6 +796,8 @@ class PhysicalCardAdapter(object):
                     expansion=oExp).getOne()
             cls.__dCache[(oAbsCard.id, oExp)] = oPhysicalCard
         return oPhysicalCard
+
+# pylint: enable-msg=C0111
 
 # Flushing
 
