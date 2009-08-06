@@ -10,8 +10,11 @@
    final Filter Object is constructed
    """
 
+# pylint: disable-msg=E0611
+# pylint 0.18 misses ply parts
 import ply.lex as lex
 import ply.yacc as yacc
+# pylint: enable-msg=E0611
 from sutekh.core.Filters import PARSER_FILTERS, FilterNot, FilterAndBox, \
         FilterOrBox
 

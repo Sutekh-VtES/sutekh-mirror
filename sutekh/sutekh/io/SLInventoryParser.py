@@ -57,7 +57,7 @@ class SLInventoryParser(CardSetParser):
 
     # pylint: disable-msg=R0201
     # Making these functions for clarity
-    def _no_section(self, sLine, oHolder):
+    def _no_section(self, _sLine, _oHolder):
         """Initial parser -- seeing a line here is an error."""
         raise RuntimeError('Data line outside of section'
             ' for Secret Library inventory format')

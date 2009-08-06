@@ -97,7 +97,7 @@ class ArdbInfo(object):
                 if iCap > dCryptStats['max']:
                     dCryptStats['max'] = iCap
                 if iCap < dCryptStats['min']:
-                    dCryptStats['min'] = iCap 
+                    dCryptStats['min'] = iCap
         if dCryptStats['size'] > 0:
             dCryptStats['avg'] = round(dCryptStats['avg'] /
                     dCryptStats['size'], 2)

@@ -35,6 +35,8 @@ class CardSetFrame(CardListFrame):
         self._oController = CardSetController(sName,
                 oMainWindow, self)
 
+        # pylint: disable-msg=E1101
+        # PyProtocols confuses pylint here
         if tInfo:
             self.set_model_modes(tInfo)
         elif _oCS.parent and not _oCS.parent.cards:
