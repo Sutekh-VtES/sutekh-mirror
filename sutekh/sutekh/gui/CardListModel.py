@@ -206,7 +206,7 @@ class CardListModel(gtk.TreeStore):
                             8, oCard,
                             9, oPhysCard,
                             )
-                    bEmpty = False
+                bEmpty = False
 
             # Update Group Section
             aTexts, aIcons = self.lookup_icons(sGroup)
