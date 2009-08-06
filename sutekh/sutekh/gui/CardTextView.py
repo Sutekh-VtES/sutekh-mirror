@@ -156,8 +156,11 @@ class CardTextView(gtk.TextView):
             oContext = self.get_pango_context()
             print 'Pango Language : ', oContext.get_language()
             print 'Pango Font Description : ', oContext.get_font_description()
+        self._oBurnOption = None
+        self.update_to_new_db() # lookup burn option
 
-
+    def update_to_new_db(self):
+        """Cached lookup of the burn option keyword"""
         # Burn option is a special case because of the icon, so we test for it
         # a lot, so we cache the result
         # we can't do this during import, because we're not assured that the
