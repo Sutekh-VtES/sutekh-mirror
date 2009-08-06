@@ -92,7 +92,7 @@ class SimpleLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
                 # pylint: disable-msg=E1101
                 # SQLObject confuses pylint
                 try:
-                    oAbs = IAbstractCard(sName.encode('utf8'))
+                    oAbs = IAbstractCard(sName)
                     aCards.append(oAbs)
                 except SQLObjectNotFound:
                     aCards.append(None)
