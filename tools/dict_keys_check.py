@@ -59,13 +59,15 @@ class MyDictKeyChecker(BaseChecker):
 
     def visit_listcomp(self, oNode):
         """Check [x for x in d] list comprehensions"""
-        oListNode = list(oNode.get_children())[1]
-        self.__internal_test(oListNode)
+        if hasattr(oNode, 'get_children'):
+            oListNode = list(oNode.get_children())[1]
+            self.__internal_test(oListNode)
 
     def visit_genexp(self, oNode):
         """Check (x for x in d) generator expressions"""
-        oListNode = list(oNode.get_children())[1]
-        self.__internal_test(oListNode)
+        if hasattr(oNode, 'get_children'):
+            oListNode = list(oNode.get_children())[1]
+            self.__internal_test(oListNode)
 
     # Uncomment for testing
     #def __dummy(self, dDict):
