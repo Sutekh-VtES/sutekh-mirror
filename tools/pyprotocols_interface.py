@@ -120,6 +120,24 @@ class MyPyProtocolsChecker(BaseChecker):
                             handler_func=None: aClasses
                     #print oNode.interfaces()
 
+# Test data - uncomment to test
+#
+#from protocols import advise, Interface
+#
+#class ITest(Interface):
+#    """Test Class 1"""
+#    pass
+#
+#class IMissed(Interface):
+#    """Test Class 2 - should not be implemented"""
+#    pass
+#
+#class TestAdapter(object):
+#    """Adapter for ITest"""
+#    advise(instancesProvide=[ITest], asAdapterForTypes=[basestring])
+#
+#    def __new__(cls, sName):
+#        return sName
 
 def register(oLinter):
     """required method to auto register this checker"""
