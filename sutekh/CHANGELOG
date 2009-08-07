@@ -1,3 +1,6 @@
+07 Aug 2009
+ * Add support for a number of keywords.
+
 05 Aug 2009
  * Hide the parent count column by default if the parent card set is empty
    (useful when using the parent set as a card set holder)

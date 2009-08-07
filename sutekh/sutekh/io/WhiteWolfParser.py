@@ -96,25 +96,95 @@ def _find_sect_and_title(aLines):
 
 class CardDict(dict):
     """Dictionary object which holds the extracted card info."""
+
+    # Usefule regex's
     oDisGaps = re.compile(r'[\\\/{}\&\s]+')
     oWhiteSp = re.compile(r'[{}\s]+')
     oDispCard = re.compile(r'\[[^\]]+\]$')
     oArtistSp = re.compile(r'[&;]')
+    # Use regexp lookahead for the last '.', so it can anchor the next match
+    # Defaults
+    oCryptInfoRgx = re.compile(
+            '[:\.] ([+-]\d) (bleed|strength|stealth|intercept)(?=\.)')
+    dCryptProperties = {
+            'black hand' : re.compile('Sabbat\. Black Hand'),
+            # Seraph has a special case
+            'seraph' : re.compile('Sabbat\. Black Hand(\.)? Seraph'),
+            'infernal' : re.compile('[.:] Infernal\.'),
+            'red list' : re.compile('\. Red List:'),
+            'anarch' : re.compile('\. Anarch:'),
+            'scarce' : re.compile('[.:] Scarce.'),
+            'sterile' : re.compile('[.:] Sterile.'),
+            'blood cursed' : re.compile('[.:] \(?Blood Cursed'),
+            }
+    dLibProperties = {
+            # Red list allies are templated differently
+            'red list' : re.compile('\. Red List\.'),
+            }
+    oLifeRgx = re.compile('(Unique )?\[?(Gargoyle creature|[A-Za-z]+)\]?'
+            ' with (\d) life\.')
+
 
     def __init__(self, oLogger):
         super(CardDict, self).__init__()
         self.oLogger = oLogger
         self._oMaker = SutekhObjectMaker()
 
-    def _parse_text(self):
+    def _find_crypt_keywords(self, oCard):
+        """Extract the bleed, strength & stealth keywords from the card text"""
+        dKeywords = {'bleed' : 1, 'strength' : 1, 'stealth' : 0,
+                'intercept' : 0}
+        # Make sure we don't detect merged properties
+        sText = self['text'].split('[MERGED]')[0]
+        for sNum, sType in self.oCryptInfoRgx.findall(sText):
+            dKeywords[sType] += int(sNum)
+        for sType, iNum in dKeywords.iteritems():
+            self._add_keyword(oCard, '%d %s' % (iNum, sType))
+        # Check for "Black Hand", "Infernal", "Red List", "Seraph",
+        for sKeyword, oRegexp in self.dCryptProperties.iteritems():
+            oMatch = oRegexp.search(sText)
+            if oMatch:
+                self._add_keyword(oCard, sKeyword)
+
+    def _find_lib_life_and_keywords(self, oCard):
+        """Extract ally and retainer life and strength & bleed keywords from
+           the card text"""
+        # Restrict ourselves to text before Superior disciplines
+        sText = re.split('\[[A-Z]{3}\]', self['text'])[0]
+        # Annoyingly not standardised
+        # FIXME: Allies with stealth/intercept, the Ghoul Retainer are missed
+        oDetail1Rgx = re.compile('\. (\d strength), (\d bleed)[\.,]')
+        oDetail2Rgx = re.compile('\. (\d bleed), (\d strength)[\.,]')
+        oMatch = self.oLifeRgx.search(sText)
+        if oMatch:
+            # Normalise type
+            if oMatch.group(1):
+                self._add_keyword(oCard, 'unique')
+            sType = oMatch.group(2).lower().replace(']', '')
+            self._add_keyword(oCard, sType)
+            self['life'] = oMatch.group(3)
+            oDetail = oDetail1Rgx.search(sText)
+            if not oDetail:
+                oDetail = oDetail2Rgx.search(sText)
+            if oDetail:
+                self._add_keyword(oCard, oDetail.group(1))
+                self._add_keyword(oCard, oDetail.group(2))
+        for sKeyword, oRegexp in self.dLibProperties.iteritems():
+            oMatch = oRegexp.search(sText)
+            if oMatch:
+                self._add_keyword(oCard, sKeyword)
+
+
+    def _parse_text(self, oCard):
         """Parse the CardText for Sect and Titles"""
         sType = None
         if self.has_key('cardtype'):
             sTypes = self['cardtype']
-            # Determine if vampire is one of the card types
+            # Determine if we need to examine the card further based on type
             for sVal in sTypes.split('/'):
-                if sVal == 'Vampire':
+                if sVal in ['Vampire', 'Imbued', 'Ally', 'Retainer']:
                     sType = sVal
+
         # Check for REFLEX card type
         if self['text'].find(' [REFLEX] ') != -1:
             if self.has_key('cardtype'):
@@ -122,6 +192,10 @@ class CardDict(dict):
                 self['cardtype'] += '/Reflex'
             else:
                 self['cardtype'] = 'Reflex'
+        if sType == 'Imbued' or sType == 'Vampire':
+            self._find_crypt_keywords(oCard)
+        elif sType == 'Ally' or sType == 'Retainer':
+            self._find_lib_life_and_keywords(oCard)
         if sType == 'Vampire':
             # Sect attributes: more text. Title is in the attributes
             aLines = self['text'].split(':')
@@ -316,15 +390,16 @@ class CardDict(dict):
         if not self.has_key('name'):
             return
 
-        if self.has_key('text'):
-            self._parse_text()
-
         if self.has_key('level'):
             self['name'] = self._add_level_to_name(self['name'], self['level'])
 
+        oCard = self._make_card(self['name'])
+
         self.oLogger.info('Card: %s', self['name'])
 
-        oCard = self._make_card(self['name'])
+        if self.has_key('text'):
+            self._parse_text(oCard)
+
         if self.has_key('group'):
             self._add_group(oCard, self['group'])
 
