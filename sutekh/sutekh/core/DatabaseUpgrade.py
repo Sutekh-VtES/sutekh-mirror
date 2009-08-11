@@ -588,6 +588,7 @@ def copy_old_abstract_card(oOrigConn, oTrans, oLogger, oVer):
         copy_abstract_card(oOrigConn, oTrans, oLogger)
     elif oVer.check_tables_and_versions([AbstractCard], [4], oOrigConn):
         aMessages.append('Missing data for the Artist.'
+                ' Missing data for several keywords.'
                 ' You will need to reimport the White wolf card list'
                 ' for these to be correct')
         # Need to refer to new database to lookup/create keywords
@@ -608,7 +609,10 @@ def copy_old_abstract_card(oOrigConn, oTrans, oLogger, oVer):
             oCardCopy.life = oCard.life
             if oCard.burnoption:
                 oCardCopy.addKeyword(oBurnOption)
-            # FIXME: Parse card text for other keywords
+                # Since we want the user to import the card text for the
+                # artists anyway, and the WW io parser's keyword code isn't
+                # seperated, we punt the rest of the keywords to the
+                # next import
             for oData in oCard.rarity:
                 oCardCopy.addRarityPair(oData)
             for oData in oCard.discipline:
