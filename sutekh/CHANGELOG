@@ -1,3 +1,6 @@
+11 Aug 2009
+ * Expose text buffer & view via properties (mainly for plugins that add text)
+
 07 Aug 2009
  * Add support for a number of keywords.
 

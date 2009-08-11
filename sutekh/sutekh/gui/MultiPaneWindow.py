@@ -144,6 +144,8 @@ class MultiPaneWindow(gtk.Window):
             doc="Return reference to the main window")
     icon_manager = property(fget=lambda self: self._oIconManager,
             doc="Used to lookup icons for disciplines, clans, etc.")
+    card_text_pane = property(fget=lambda self: self._oCardTextPane,
+            doc="Return reference to the card text pane")
 
     # pylint: enable-msg=W0212
 

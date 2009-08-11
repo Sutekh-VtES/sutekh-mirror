@@ -26,8 +26,9 @@ class CardTextBuffer(gtk.TextBuffer):
         # See http://www.pygtk.org/pygtk2reference/class-gtktexttag.html
         # for some possible properties
 
-        oIconTabs = pango.TabArray(1, True)
-        oIconTabs.set_tab(0, pango.TAB_LEFT, 15) # Icons are scaled to 15'ish
+        self._oIconTabs = pango.TabArray(1, True)
+        # Icons are scaled to 15'ish
+        self._oIconTabs.set_tab(0, pango.TAB_LEFT, 15)
 
         self.create_tag("label", underline=pango.UNDERLINE_SINGLE)
 
@@ -38,26 +39,26 @@ class CardTextBuffer(gtk.TextBuffer):
         self.create_tag("group", style=pango.STYLE_ITALIC)
         self.create_tag("level", style=pango.STYLE_ITALIC)
         self.create_tag("keywords", style=pango.STYLE_ITALIC, left_margin=15,
-                tabs=oIconTabs)
+                tabs=self._oIconTabs)
         self.create_tag("card_type", style=pango.STYLE_ITALIC, left_margin=15,
-                tabs=oIconTabs)
+                tabs=self._oIconTabs)
         self.create_tag("clan", style=pango.STYLE_ITALIC, left_margin=15,
-                tabs=oIconTabs)
+                tabs=self._oIconTabs)
         self.create_tag("sect", style=pango.STYLE_ITALIC)
         self.create_tag("title", style=pango.STYLE_ITALIC)
         self.create_tag("creed", style=pango.STYLE_ITALIC, left_margin=15,
-                tabs=oIconTabs)
+                tabs=self._oIconTabs)
         self.create_tag("discipline", style=pango.STYLE_ITALIC, left_margin=15,
-                tabs=oIconTabs)
+                tabs=self._oIconTabs)
         self.create_tag("virtue", style=pango.STYLE_ITALIC, left_margin=15,
-                tabs=oIconTabs)
+                tabs=self._oIconTabs)
         self.create_tag("expansion", style=pango.STYLE_ITALIC, left_margin=15,
-                tabs=oIconTabs)
+                tabs=self._oIconTabs)
         self.create_tag("ruling", left_margin=15,
-                tabs=oIconTabs)
+                tabs=self._oIconTabs)
         self.create_tag("card_text", style=pango.STYLE_ITALIC)
         self.create_tag("artist", style=pango.STYLE_ITALIC, left_margin=15,
-                tabs=oIconTabs)
+                tabs=self._oIconTabs)
         self._oIter = None
 
     # pylint: disable-msg=W0142
@@ -67,6 +68,19 @@ class CardTextBuffer(gtk.TextBuffer):
         self.insert_with_tags_by_name(self._oIter, *aArgs, **kwargs)
 
     # pylint: enable-msg=W0142
+
+    # Methods for adding new tags to the buffer
+
+    def add_tag(self, sTag):
+        """Add a simple tag"""
+        self.create_tag(sTag, style=pango.STYLE_ITALIC)
+
+    def add_list_tag(self, sTag):
+        """Add a tag with the list style indents"""
+        self.create_tag(sTag, style=pango.STYLE_ITALIC, left_margin=15,
+                tabs=self._oIconTabs)
+
+    # Methods for adding data
 
     def labelled_value(self, sLabel, sValue, sTag, oIcon=None):
         """Add a single value to the buffer."""
@@ -145,9 +159,9 @@ class CardTextView(gtk.TextView):
         super(CardTextView, self).__init__()
         # Can be styled as frame_name.view
         self.__oController = oController
-        self.__oBuf = CardTextBuffer()
+        self._oBuf = CardTextBuffer()
 
-        self.set_buffer(self.__oBuf)
+        self.set_buffer(self._oBuf)
         self.set_editable(False)
         self.set_cursor_visible(False)
         self.set_wrap_mode(gtk.WRAP_WORD)
@@ -158,6 +172,14 @@ class CardTextView(gtk.TextView):
             print 'Pango Font Description : ', oContext.get_font_description()
         self._oBurnOption = None
         self.update_to_new_db() # lookup burn option
+
+    # pylint: disable-msg=W0212
+    # We allow access via these properties
+
+    text_buffer = property(fget=lambda self: self._oBuf,
+            doc="Return reference to text buffer")
+
+    # pylint: enable-msg=W0212
 
     def update_to_new_db(self):
         """Cached lookup of the burn option keyword"""
@@ -175,8 +197,8 @@ class CardTextView(gtk.TextView):
 
     def set_card_text(self, oCard):
         """Add the text for oCard to the TextView."""
-        oStart, oEnd = self.__oBuf.get_bounds()
-        self.__oBuf.delete(oStart, oEnd)
+        oStart, oEnd = self._oBuf.get_bounds()
+        self._oBuf.delete(oStart, oEnd)
         self.print_card_to_buffer(oCard)
 
     # pylint: disable-msg=R0912, R0915
@@ -184,34 +206,34 @@ class CardTextView(gtk.TextView):
     # and statements
     def print_card_to_buffer(self, oCard):
         """Format the text for the card and add it to the buffer."""
-        self.__oBuf.reset_iter()
+        self._oBuf.reset_iter()
 
-        self.__oBuf.tag_text(oCard.name, "card_name")
+        self._oBuf.tag_text(oCard.name, "card_name")
 
         if not oCard.cost is None:
             if oCard.cost == -1:
                 sCost = "X " + str(oCard.costtype)
             else:
                 sCost = str(oCard.cost) + " " + str(oCard.costtype)
-            self.__oBuf.labelled_value("Cost", sCost, "cost")
+            self._oBuf.labelled_value("Cost", sCost, "cost")
 
         if not oCard.capacity is None:
-            self.__oBuf.labelled_value("Capacity", str(oCard.capacity),
+            self._oBuf.labelled_value("Capacity", str(oCard.capacity),
                     "capacity")
 
         if not oCard.life is None:
-            self.__oBuf.labelled_value("Life", str(oCard.life), "life")
+            self._oBuf.labelled_value("Life", str(oCard.life), "life")
 
         if not oCard.group is None:
             if oCard.group == -1:
                 sGroup = 'Any'
             else:
                 sGroup = str(oCard.group)
-            self.__oBuf.labelled_value("Group", sGroup, "group")
+            self._oBuf.labelled_value("Group", sGroup, "group")
 
         if not oCard.level is None:
             oIcon = self._oIconManager.get_icon_by_name('advanced')
-            self.__oBuf.labelled_value("Level", str(oCard.level), "level",
+            self._oBuf.labelled_value("Level", str(oCard.level), "level",
                     oIcon)
 
         if len(oCard.cardtype) == 0:
@@ -219,7 +241,7 @@ class CardTextView(gtk.TextView):
         else:
             aInfo = [oT.name for oT in oCard.cardtype]
         dIcons = self._oIconManager.get_icon_list(oCard.cardtype)
-        self.__oBuf.labelled_list("Card Type", aInfo, "card_type", dIcons)
+        self._oBuf.labelled_list("Card Type", aInfo, "card_type", dIcons)
 
         if len(oCard.keywords) != 0:
             dIcons = {}
@@ -231,25 +253,25 @@ class CardTextView(gtk.TextView):
                     oIcon = None
                 dIcons[oItem.keyword] = oIcon
                 aInfo.append(oItem.keyword)
-            self.__oBuf.labelled_list("Keywords:", aInfo,
+            self._oBuf.labelled_list("Keywords:", aInfo,
                     "keywords", dIcons)
 
         if not len(oCard.clan) == 0:
             dIcons = self._oIconManager.get_icon_list(oCard.clan)
-            self.__oBuf.labelled_list("Clan",
+            self._oBuf.labelled_list("Clan",
                     [oC.name for oC in oCard.clan], "clan", dIcons)
 
         if not len(oCard.creed) == 0:
             dIcons = self._oIconManager.get_icon_list(oCard.creed)
-            self.__oBuf.labelled_list("Creed",
+            self._oBuf.labelled_list("Creed",
                     [oC.name for oC in oCard.creed], "creed", dIcons)
 
         if not len(oCard.sect) == 0:
-            self.__oBuf.labelled_compact_list("Sect",
+            self._oBuf.labelled_compact_list("Sect",
                     [oC.name for oC in oCard.sect], "sect")
 
         if not len(oCard.title) == 0:
-            self.__oBuf.labelled_compact_list("Title",
+            self._oBuf.labelled_compact_list("Title",
                     [oC.name for oC in oCard.title], "title")
 
         if not len(oCard.discipline) == 0:
@@ -259,12 +281,12 @@ class CardTextView(gtk.TextView):
             aInfo.extend(sorted([oP.discipline.name for oP in oCard.discipline
                 if oP.level != 'superior']))
             dIcons = self._oIconManager.get_icon_list(oCard.discipline)
-            self.__oBuf.labelled_list("Disciplines", aInfo, "discipline",
+            self._oBuf.labelled_list("Disciplines", aInfo, "discipline",
                     dIcons)
 
         if not len(oCard.virtue) == 0:
             dIcons = self._oIconManager.get_icon_list(oCard.virtue)
-            self.__oBuf.labelled_list("Virtue",
+            self._oBuf.labelled_list("Virtue",
                     [oC.name for oC in oCard.virtue], "virtue", dIcons)
 
         if not len(oCard.rarity) == 0:
@@ -272,19 +294,19 @@ class CardTextView(gtk.TextView):
             for oPair in oCard.rarity:
                 dExp.setdefault(oPair.expansion.name, [])
                 dExp[oPair.expansion.name].append(oPair.rarity.name)
-            self.__oBuf.labelled_exp_list("Expansions", dExp, "expansion")
+            self._oBuf.labelled_exp_list("Expansions", dExp, "expansion")
 
         if not len(oCard.rulings) == 0:
             aInfo = [oR.text.replace("\n", " ") + " " + oR.code for oR
                     in oCard.rulings]
-            self.__oBuf.labelled_list("Rulings", aInfo, "ruling")
+            self._oBuf.labelled_list("Rulings", aInfo, "ruling")
 
-        self.__oBuf.tag_text("\n\n")
-        self.__oBuf.tag_text(oCard.text.replace("\n", " "),
+        self._oBuf.tag_text("\n\n")
+        self._oBuf.tag_text(oCard.text.replace("\n", " "),
                 "card_text")
 
         if len(oCard.artists) > 0:
-            self.__oBuf.tag_text("\n")
-            self.__oBuf.labelled_list("Artists",
+            self._oBuf.tag_text("\n")
+            self._oBuf.labelled_list("Artists",
                     [oA.name for oA in oCard.artists], "artist")
 
