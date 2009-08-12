@@ -9,6 +9,8 @@
 import gtk
 from sqlobject import SQLObjectNotFound
 from sutekh.core.SutekhObjects import PhysicalCardSet, IPhysicalCardSet
+from sutekh.core.CardSetHolder import CardSetHolder
+from sutekh.core.CardLookup import LookupFailed
 from sutekh.gui.FilterDialog import FilterDialog
 from sutekh.gui.CardSetManagementView import CardSetManagementView
 from sutekh.gui.CreateCardSetDialog import CreateCardSetDialog
@@ -16,6 +18,7 @@ from sutekh.gui.SutekhDialog import do_complaint_warning, do_complaint, \
         do_complaint_error
 from sutekh.core.CardSetUtilities import delete_physical_card_set, \
         find_children, detect_loop, get_loop_names, break_loop
+from sutekh.gui.RenameDialog import RenameDialog, RENAME, REPLACE
 
 def split_selection_data(sSelectionData):
     """Helper function to subdivide selection string into bits again"""
@@ -89,6 +92,40 @@ def create_card_set(oMainWindow):
                 comment=sComment, parent=oParent)
     return sName
 
+# import helpers
+
+def get_import_name(oHolder):
+    """Helper for importing a card set holder.
+
+       Deals with prompting the user for a new name if required, and properly
+       dealing with child card sets if the user decides to replace an
+       existing card set."""
+    bRename = False
+    if oHolder.name:
+        # Check if we need to prompt for rename
+        if PhysicalCardSet.selectBy(name=oHolder.name).count() != 0:
+            bRename = True
+    else:
+        # No name, need to prompt
+        bRename = True
+    aChildren = []
+    if bRename:
+        oDlg = RenameDialog(oHolder.name)
+        iResponse = oDlg.run()
+        if iResponse == RENAME:
+            oHolder.name = oDlg.sNewName
+        elif iResponse == REPLACE:
+            # Get child card sets
+            oCS = IPhysicalCardSet(oHolder.name)
+            aChildren = find_children(oCS)
+            # Delete existing card set
+            delete_physical_card_set(oHolder.name)
+        else:
+            # User cancelled, so bail
+            oHolder.name = None
+        oDlg.destroy()
+    return oHolder, aChildren
+
 def update_open_card_sets(oMainWindow, sSetName):
     """Update open copies of the card set sSetName to database changes
        (from imports, etc.)"""
@@ -117,6 +154,62 @@ def update_card_set(oCardSet, oMainWindow):
         oFrame.menu.update_card_set_menu(oCardSet)
         # update_card_set_menu does the needed magic for us
     oMainWindow.reload_pcs_list()
+
+# Common to MainMenu import code and plugins
+
+def import_cs(fIn, oParser, oMainWindow):
+    """Create a card set from the given file object."""
+    oHolder = CardSetHolder()
+
+    # pylint: disable-msg=W0703
+    # we really do want all the exceptions
+    try:
+        oParser.parse(fIn, oHolder)
+    except Exception, oExp:
+        sMsg = "Reading the card set failed with the following error:\n" \
+               "%s\n The file is probably not in the format the Parser" \
+               " expects.\nAborting" % oExp
+        do_complaint_error(sMsg)
+        # Fail out
+        return
+
+    if oHolder.num_entries < 1:
+        # No cards seen, so abort
+        do_complaint_error("No cards found in the card set.\n"
+                "The file may not be in the format the Parser expects.\n"
+                "Aborting")
+        return
+
+    # Display any warnings
+    aWarnings = oHolder.get_warnings()
+    if aWarnings:
+        sMsg = "The following warnings were reported:\n%s" % \
+                "\n".join(aWarnings)
+        do_complaint_warning(sMsg)
+
+    # Handle naming issues if needed
+    oHolder, aChildren = get_import_name(oHolder)
+    if not oHolder.name:
+        return # User bailed
+    # Create CS
+    try:
+        oHolder.create_pcs(oCardLookup=oMainWindow.cardLookup)
+        reparent_all_children(oHolder.name, aChildren)
+    except RuntimeError, oExp:
+        sMsg = "Creating the card set failed with the following error:\n" \
+               "%s\nAborting" % oExp
+        do_complaint_error(sMsg)
+        return
+    except LookupFailed, oExp:
+        return
+
+    if oMainWindow.find_cs_pane_by_set_name(oHolder.name):
+        # Already open, so update to changes
+        update_open_card_sets(oMainWindow, oHolder.name)
+    else:
+        # Not already open, so open a new copy
+        oMainWindow.add_new_physical_card_set(oHolder.name)
+
 
 class CardSetManagementController(object):
     """Controller object for the card set list."""

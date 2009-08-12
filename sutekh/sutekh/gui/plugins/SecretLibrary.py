@@ -15,14 +15,10 @@ from sutekh.SutekhInfo import SutekhInfo
 from sutekh.core.SutekhObjects import PhysicalCardSet, IAbstractCard, \
     canonical_to_csv
 from sutekh.core.Filters import CryptCardFilter, FilterNot
-from sutekh.core.CardSetHolder import CardSetHolder
-from sutekh.core.CardLookup import LookupFailed
 from sutekh.io.SLDeckParser import SLDeckParser
 from sutekh.io.SLInventoryParser import SLInventoryParser
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
-from sutekh.gui.RenameDialog import get_import_name
-from sutekh.gui.CardSetManagementController import reparent_all_children, \
-        update_open_card_sets
+from sutekh.gui.CardSetManagementController import import_cs
 from sutekh.gui.PluginManager import CardListPlugin
 
 class ImportExportBase(SutekhDialog):
@@ -339,7 +335,7 @@ class SecretLibrary(CardListPlugin):
         fIn.seek(0)
 
         if self._check_sl_result(sFirstLine):
-            self.make_cs(fIn, oParser)
+            import_cs(fIn, oParser)
 
     def _import_inventory(self, sApiUrl, dData):
         """Import a Secret Library inventory as a card set."""
@@ -357,7 +353,7 @@ class SecretLibrary(CardListPlugin):
         fIn.seek(0)
 
         if self._check_sl_result(sFirstLine):
-            self.make_cs(fIn, oParser)
+            import_cs(fIn, oParser)
 
     def _export_deck(self, sApiUrl, dData):
         """Export a card set to the Secret Library as a deck."""
@@ -466,57 +462,6 @@ class SecretLibrary(CardListPlugin):
             aLibrary.append("%d;%d;%s" % (iCnt, iCnt, sCsvName))
 
         return "\n".join(aCrypt), "\n".join(aLibrary)
-
-    # TODO: make_cs copied from
-    #       sutekh.gui.plugins.CardSetImporter expect for a minor change in the
-    #       way the parser class is used and should probably be factored out
-    #       into a common class (yet another method on the plugin base class?)
-
-    def make_cs(self, fIn, oParser):
-        """Create a Abstract card set from the given file object."""
-        oHolder = CardSetHolder()
-
-        # pylint: disable-msg=W0703
-        # we really do want all the exceptions
-        try:
-            oParser.parse(fIn, oHolder)
-        except Exception, oExp:
-            sMsg = "Reading the card set failed with the following error:\n" \
-                   "%s\nThe file is probably not in the format the Parser" \
-                   " expects.\nAborting" % oExp
-            do_complaint_error(sMsg)
-            # Fail out
-            return
-
-        if oHolder.num_entries < 1:
-            # No cards seen, so abort
-            do_complaint_error("No cards found in the card set.\n"
-                    "The file may not be in the format the Parser expects.\n"
-                    "Aborting")
-            return
-
-        # Handle naming issues if needed
-        oHolder, aChildren = get_import_name(oHolder)
-        if not oHolder.name:
-            return # User bailed
-        # Create CS
-        try:
-            oHolder.create_pcs(oCardLookup=self.cardlookup)
-            reparent_all_children(oHolder.name, aChildren)
-        except RuntimeError, oExp:
-            sMsg = "Creating the card set failed with the following error:\n" \
-                   "%s\nAborting" % oExp
-            do_complaint_error(sMsg)
-            return
-        except LookupFailed, oExp:
-            return
-
-        if self.parent.find_cs_pane_by_set_name(oHolder.name):
-            # Already open, so update to changes
-            update_open_card_sets(self.parent, oHolder.name)
-        else:
-            # Not already open, so open a new copy
-            self.open_cs(oHolder.name)
 
 
 plugin = SecretLibrary

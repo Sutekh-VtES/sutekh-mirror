@@ -11,10 +11,7 @@
 
 import gtk
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
-from sutekh.core.SutekhObjects import PhysicalCardSet, MAX_ID_LENGTH, \
-        IPhysicalCardSet
-from sutekh.core.CardSetUtilities import delete_physical_card_set, \
-        find_children
+from sutekh.core.SutekhObjects import PhysicalCardSet, MAX_ID_LENGTH
 
 RENAME, REPLACE = 1, 2
 
@@ -72,36 +69,3 @@ class RenameDialog(SutekhDialog):
                 return self.run() # Reprompt
             else:
                 self.sNewName = sNewName
-
-def get_import_name(oHolder):
-    """Helper for importing a card set holder.
-
-       Deals with prompting the user for a new name if required, and properly
-       dealing with child card sets if the user decides to replace an
-       existing card set."""
-    bRename = False
-    if oHolder.name:
-        # Check if we need to prompt for rename
-        if PhysicalCardSet.selectBy(name=oHolder.name).count() != 0:
-            bRename = True
-    else:
-        # No name, need to prompt
-        bRename = True
-    aChildren = []
-    if bRename:
-        oDlg = RenameDialog(oHolder.name)
-        iResponse = oDlg.run()
-        if iResponse == RENAME:
-            oHolder.name = oDlg.sNewName
-        elif iResponse == REPLACE:
-            # Get child card sets
-            oCS = IPhysicalCardSet(oHolder.name)
-            aChildren = find_children(oCS)
-            # Delete existing card set
-            delete_physical_card_set(oHolder.name)
-        else:
-            # User cancelled, so bail
-            oHolder.name = None
-        oDlg.destroy()
-    return oHolder, aChildren
-

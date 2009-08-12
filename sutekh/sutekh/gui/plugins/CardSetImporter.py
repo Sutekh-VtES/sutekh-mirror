@@ -18,13 +18,9 @@ from sutekh.io.ELDBInventoryParser import ELDBInventoryParser
 from sutekh.io.JOLDeckParser import JOLDeckParser
 from sutekh.io.LackeyDeckParser import LackeyDeckParser
 from sutekh.core.SutekhObjects import PhysicalCardSet
-from sutekh.core.CardSetHolder import CardSetHolder
-from sutekh.core.CardLookup import LookupFailed
 from sutekh.gui.PluginManager import CardListPlugin
-from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
-from sutekh.gui.RenameDialog import get_import_name
-from sutekh.gui.CardSetManagementController import reparent_all_children, \
-        update_open_card_sets
+from sutekh.gui.SutekhDialog import SutekhDialog
+from sutekh.gui.CardSetManagementController import import_cs
 from sutekh.gui.SutekhFileWidget import SutekhFileWidget
 
 class ACSImporter(CardListPlugin):
@@ -135,7 +131,7 @@ class ACSImporter(CardListPlugin):
         """From an URI, create an Card Set"""
         fIn = urllib2.urlopen(sUri)
         try:
-            self.make_cs(fIn, cParser)
+            import_cs(fIn, cParser(), self.parent)
         finally:
             fIn.close()
 
@@ -143,56 +139,9 @@ class ACSImporter(CardListPlugin):
         """From an file, create an Card Set"""
         fIn = file(sFile, "rb")
         try:
-            self.make_cs(fIn, cParser)
+            import_cs(fIn, cParser(), self.parent)
         finally:
             fIn.close()
-
-    def make_cs(self, fIn, cParser):
-        """Create a Abstract card set from the given file object."""
-        oHolder = CardSetHolder()
-
-        # pylint: disable-msg=W0703
-        # we really do want all the exceptions
-        try:
-            oParser = cParser()
-            oParser.parse(fIn, oHolder)
-        except Exception, oExp:
-            sMsg = "Reading the card set failed with the following error:\n" \
-                   "%s\n The file is probably not in the format the Parser" \
-                   " expects.\nAborting" % oExp
-            do_complaint_error(sMsg)
-            # Fail out
-            return
-
-        if oHolder.num_entries < 1:
-            # No cards seen, so abort
-            do_complaint_error("No cards found in the card set.\n"
-                    "The file may not be in the format the Parser expects.\n"
-                    "Aborting")
-            return
-
-        # Handle naming issues if needed
-        oHolder, aChildren = get_import_name(oHolder)
-        if not oHolder.name:
-            return # User bailed
-        # Create CS
-        try:
-            oHolder.create_pcs(oCardLookup=self.cardlookup)
-            reparent_all_children(oHolder.name, aChildren)
-        except RuntimeError, oExp:
-            sMsg = "Creating the card set failed with the following error:\n" \
-                   "%s\nAborting" % oExp
-            do_complaint_error(sMsg)
-            return
-        except LookupFailed, oExp:
-            return
-
-        if self.parent.find_cs_pane_by_set_name(oHolder.name):
-            # Already open, so update to changes
-            update_open_card_sets(self.parent, oHolder.name)
-        else:
-            # Not already open, so open a new copy
-            self.open_cs(oHolder.name)
 
 
 plugin = ACSImporter

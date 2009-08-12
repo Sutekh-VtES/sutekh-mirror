@@ -9,17 +9,14 @@
 
 import gtk
 from sqlobject import sqlhub
-from sutekh.core.CardLookup import LookupFailed
-from sutekh.core.SutekhObjects import IPhysicalCardSet
-from sutekh.gui.SutekhDialog import do_complaint_error, do_complaint_warning
+from sutekh.gui.SutekhDialog import do_complaint_error
 from sutekh.gui.SutekhFileWidget import ImportDialog
 from sutekh.gui.GuiDBManagement import refresh_ww_card_list
-from sutekh.gui.CardSetManagementController import reparent_card_set
-from sutekh.io.XmlFileHandling import PhysicalCardXmlFile, \
-        PhysicalCardSetXmlFile, AbstractCardSetXmlFile
+from sutekh.gui.CardSetManagementController import import_cs
 from sutekh.io.IdentifyXMLFile import IdentifyXMLFile
-from sutekh.core.CardSetUtilities import delete_physical_card_set, \
-        find_children
+from sutekh.io.AbstractCardSetParser import AbstractCardSetParser
+from sutekh.io.PhysicalCardParser import PhysicalCardParser
+from sutekh.io.PhysicalCardSetParser import PhysicalCardSetParser
 from sutekh.gui.SutekhMenu import SutekhMenu
 
 class MainMenu(SutekhMenu):
@@ -243,59 +240,18 @@ class MainMenu(SutekhMenu):
         if sFileName is not None:
             oIdParser = IdentifyXMLFile()
             oIdParser.id_file(sFileName)
-            aChildren = []
             if oIdParser.type == 'PhysicalCardSet' or \
                     oIdParser.type == 'AbstractCardSet' or \
                     oIdParser.type == 'PhysicalCard':
-                if oIdParser.exists:
-                    iResponse = do_complaint_warning("This would delete the"
-                            " existing CardSet %s" % oIdParser.name)
-                    if iResponse == gtk.RESPONSE_CANCEL:
-                        return
-                    else:
-                        # Delete the card set
-                        oCS = IPhysicalCardSet(oIdParser.name)
-                        aChildren = find_children(oCS)
-                        # we need to make sure we do the right
-                        # thing for any children of the card set.
-                        # delete_physical_card_set will reparent them,
-                        # but we need to be able to re-reparent them to
-                        # the new card set, so re-importing a card set
-                        # with children added does the expected thing
-                        delete_physical_card_set(oIdParser.name)
-                oFrame = self._oMainWindow.add_pane_end()
-                try:
-                    if oIdParser.type == "AbstractCardSet":
-                        oFile = AbstractCardSetXmlFile(sFileName,
-                                oLookup=self._oMainWindow.cardLookup)
-                        aMessages = oFile.read(bIgnoreWarnings=False)
-                    elif oIdParser.type == 'PhysicalCardSet':
-                        oFile = PhysicalCardSetXmlFile(sFileName,
-                                oLookup=self._oMainWindow.cardLookup)
-                        aMessages = oFile.read(bIgnoreWarnings=False)
-                    else:
-                        # Old style PhysicalCard list
-                        oFile = PhysicalCardXmlFile(sFileName,
-                                oLookup=self._oMainWindow.cardLookup)
-                        aMessages = oFile.read(bIgnoreWarnings=False)
-                    if aMessages:
-                        sMsg = "The following warnings were reported:\n%s" % \
-                                "\n".join(aMessages)
-                        do_complaint_warning(sMsg)
-                    # Reparent any children
-                    oCS = IPhysicalCardSet(oIdParser.name)
-                    # We worry about loops, since the recreated card set
-                    # may not have the same parent as before
-                    for oChildCS in aChildren:
-                        reparent_card_set(oChildCS, oCS)
-                    self._oMainWindow.replace_with_physical_card_set(
-                            oIdParser.name, oFrame)
-                except LookupFailed:
-                    # Remove window, since we didn't succeed
-                    # Should this dialog be here?
-                    do_complaint_error("Import failed. Unable to find "
-                            "matches for all the cards in the cardset.")
-                    self._oMainWindow.remove_frame(oFrame)
+                fIn = file(sFileName, 'rU')
+                if oIdParser.type == "AbstractCardSet":
+                    oParser = AbstractCardSetParser()
+                elif oIdParser.type == 'PhysicalCardSet':
+                    oParser = PhysicalCardSetParser()
+                else:
+                    # Old style PhysicalCard list
+                    oParser = PhysicalCardParser()
+                import_cs(fIn, oParser, self._oMainWindow)
             else:
                 do_complaint_error("File is not a CardSet XML File.")
 

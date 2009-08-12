@@ -14,9 +14,8 @@ from sutekh.gui.SutekhFileWidget import SutekhFileDialog
 from sutekh.gui.ProgressDialog import ProgressDialog, SutekhCountLogHandler
 from sutekh.gui.ScrolledList import ScrolledList
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
-from sutekh.gui.RenameDialog import get_import_name
 from sutekh.gui.CardSetManagementController import reparent_all_children, \
-        update_open_card_sets
+        update_open_card_sets, get_import_name
 
 def _do_rename_parent(sOldName, sNewName, dRemaining):
     """Handle the renaming of a parent card set in the unprocessed list."""
