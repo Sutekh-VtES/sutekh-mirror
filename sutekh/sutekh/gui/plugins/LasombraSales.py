@@ -637,16 +637,8 @@ class LasombraSales(CardListPlugin):
         tKey1 = self._get_key(oIter1)
         tKey2 = self._get_key(oIter2)
         if tKey1 is None or tKey2 is None:
-            # Not comparing cards, sort on name only
-            sName1 = self.model.get_name_from_iter(oIter1).lower()
-            sName2 = self.model.get_name_from_iter(oIter2).lower()
-            if sName1 < sName2:
-                iRes = -1
-            elif sName1 > sName2:
-                iRes = 1
-            else:
-                iRes = 0
-            return iRes
+            # Not comparing cards, revert to default sort
+            return self.model.sort_equal_iters(oIter1, oIter2)
 
         oVal1 = oGetData(tKey1)
         oVal2 = oGetData(tKey2)
