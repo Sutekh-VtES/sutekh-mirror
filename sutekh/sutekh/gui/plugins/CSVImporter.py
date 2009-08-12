@@ -9,12 +9,12 @@
 import gtk
 import csv
 import gobject
-from sutekh.io.CSVParser import CSVParser
 from sutekh.core.SutekhObjects import PhysicalCardSet
-from sutekh.core.CardLookup import LookupFailed
+from sutekh.io.CSVParser import CSVParser
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 from sutekh.gui.SutekhFileWidget import SutekhFileButton
+from sutekh.gui.CardSetManagementController import import_cs
 
 class CSVImporter(CardListPlugin):
     """CSV Import plugin.
@@ -198,19 +198,6 @@ class CSVImporter(CardListPlugin):
                 self.oDlg.run()
                 return
 
-            # Check PCS Doesn't Exist
-            sCardSetName = self.oSetNameEntry.get_text()
-            if not sCardSetName:
-                sMsg = "Please specify a name for the Card Set."
-                do_complaint_error(sMsg)
-                self.oDlg.run()
-                return
-            if PhysicalCardSet.selectBy(name=sCardSetName).count() != 0:
-                sMsg = "Card Set '%s' already exists." % sCardSetName
-                do_complaint_error(sMsg)
-                self.oDlg.run()
-                return
-
             oParser = CSVParser(iCardNameColumn, iCountColumn,
                                 iExpansionColumn, bHasHeader=True)
 
@@ -225,16 +212,8 @@ class CSVImporter(CardListPlugin):
                 self.oDlg.destroy()
                 return
 
-            try:
-                oParser.parse(fIn, sCardSetName, oCardLookup=self.cardlookup)
-            except LookupFailed:
-                fIn.close()
-                self.oDlg.destroy()
-                return
-
-            fIn.close()
-
-            self.open_cs(sCardSetName)
+            # Tread the well-worn import path
+            import_cs(fIn, oParser, self.parent)
 
         self.oDlg.destroy()
 

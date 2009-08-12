@@ -2,6 +2,9 @@
  * Use sort_equal_iter in some plugins, rather than repeating code.
  * Add import_cs helper function - combine common code in plugins
  * Refactor import code in main menu to use import_cs helper
+ * Rework CSVParser to use the IOBase interface
+ * Add simple test case for CSVParser
+ * Change CSVImport plugin to use import_cs helper
 
 11 Aug 2009
  * Expose text buffer & view via properties (mainly for plugins that add text)
