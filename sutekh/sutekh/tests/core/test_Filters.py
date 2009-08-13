@@ -31,6 +31,40 @@ def make_card(sCardName, sExpName):
     oCard = IPhysicalCard((oAbs, oExp))
     return oCard
 
+def make_physical_card_sets():
+    """Create the set of physical card sets used for testing"""
+    aCardSets = [('Test 1', 'Author A', 'A set', False),
+            ('Test 2', 'Author B', 'Another set', False),
+            ('Test 3', 'Author A', 'Something different', True)]
+    aPCSCards = [
+            # Set 1
+            [('Abombwe', None), ('Alexandra', 'CE'),
+            ('Sha-Ennu', None), ('Sha-Ennu', None), ('Sha-Ennu', None),
+            ('Sha-Ennu', 'Third Edition')],
+            # Set 2
+            [('Sha-Ennu', 'Third Edition'), ('Anson', 'Jyhad'),
+                ('.44 magnum', 'Jyhad'), ('ak-47', 'LotN'),
+                ('Alexandra', 'CE'), ('Alexandra', 'CE')],
+            # Set 3
+            [('Yvette, The Hopeless', 'BSC')]]
+    aPCSs = []
+    # pylint: disable-msg=E1101
+    # sqlobject confuses pylint
+    for iCnt, tData in enumerate(aCardSets):
+        sName, sAuthor, sComment, bInUse = tData
+        if bInUse:
+            oParent = aPCSs[0]
+        else:
+            oParent = None
+        oPCS = PhysicalCardSet(name=sName, comment=sComment,
+                author=sAuthor, inuse=bInUse, parent=oParent)
+        for sName, sExp in aPCSCards[iCnt]:
+            oPhys = make_card(sName, sExp)
+            oPCS.addPhysicalCard(oPhys.id)
+        aPCSs.append(oPCS)
+    return aPCSs
+
+
 class FilterTests(SutekhTest):
     """Test class for testing Sutekh Filters"""
     aExpectedCards = test_WhiteWolfParser.WhiteWolfParserTests.aExpectedCards
@@ -184,11 +218,13 @@ class FilterTests(SutekhTest):
                 u"Cedric", u"Cesewayo", u'Earl "Shaka74" Deams',
                 u'Inez "Nurse216" Villagrande', u"Kabede Maru", u"Sha-Ennu"]),
             (Filters.CapacityFilter(2), [u"Aaron Duggan, Cameron's Toady"]),
+            (Filters.MultiCapacityFilter([2]),
+                    [u"Aaron Duggan, Cameron's Toady"]),
             (Filters.MultiCapacityFilter([2, 1]),
                 [u"Aaron Duggan, Cameron's Toady", u"Abombwe"]),
             (Filters.CostFilter(5), [u"AK-47"]),
             (Filters.MultiCostFilter([2, 5]), [u".44 Magnum", u"AK-47"]),
-            (Filters.MultiCostFilter([0]), [u'Aabbt Kindred',
+            (Filters.CostFilter(0), [u'Aabbt Kindred',
                 u'Aaron Bathurst', u"Aaron Duggan, Cameron's Toady",
                 u'Abandoning the Flesh', u'Abbot', u'Abd al-Rashid',
                 u'Abdelsobek', u'Abebe', u'Abjure', u'Ablative Skin',
@@ -337,38 +373,10 @@ class FilterTests(SutekhTest):
 
     def test_card_set_filters(self):
         """Tests for the physical card set filters."""
+        # Tests on the physical card set properties
         # Although splitting this off does add an additional init
         # pass, the logical grouping is fairly different
-        aCardSets = [('Test 1', 'Author A', 'A set', False),
-                ('Test 2', 'Author B', 'Another set', False),
-                ('Test 3', 'Author A', 'Something different', True)]
-        aPCSCards = [
-                # Set 1
-                [('Abombwe', None), ('Alexandra', 'CE'),
-                ('Sha-Ennu', None), ('Sha-Ennu', None), ('Sha-Ennu', None),
-                ('Sha-Ennu', 'Third Edition')],
-                # Set 2
-                [('Sha-Ennu', 'Third Edition'), ('Anson', 'Jyhad'),
-                    ('.44 magnum', 'Jyhad'), ('ak-47', 'LotN'),
-                    ('Alexandra', 'CE'), ('Alexandra', 'CE')],
-                # Set 3
-                [('Yvette, The Hopeless', 'BSC')]]
-        aPCSs = []
-        # pylint: disable-msg=E1101
-        # sqlobject confuses pylint
-        for iCnt, tData in enumerate(aCardSets):
-            sName, sAuthor, sComment, bInUse = tData
-            if bInUse:
-                oParent = aPCSs[0]
-            else:
-                oParent = None
-            oPCS = PhysicalCardSet(name=sName, comment=sComment,
-                    author=sAuthor, inuse=bInUse, parent=oParent)
-            for sName, sExp in aPCSCards[iCnt]:
-                oPhys = make_card(sName, sExp)
-                oPCS.addPhysicalCard(oPhys.id)
-            aPCSs.append(oPCS)
-        # Tests on the physical card set properties
+        aPCSs = make_physical_card_sets()
         aPhysicalCardSetTests = [
                 (Filters.CardSetNameFilter('Test 1'), [aPCSs[0]]),
                 (Filters.CardSetNameFilter('Test'), sorted(aPCSs)),
@@ -388,6 +396,8 @@ class FilterTests(SutekhTest):
                     " failed. %s != %s." % (oFilter, aCardSets, aExpectedSets))
 
         # Test data for the Specific card filters
+        # pylint: disable-msg=E1101
+        # sqlobject confuses pylint
         oAbsAK = IAbstractCard('ak-47')
         oExp = IExpansion('LotN')
         oPhysAK = IPhysicalCard((oAbsAK, oExp))

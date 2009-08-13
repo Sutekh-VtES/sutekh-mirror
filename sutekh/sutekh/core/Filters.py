@@ -766,6 +766,9 @@ class CostFilter(DirectFilter):
     # cards without cost?
     def __init__(self, iCost):
         self.__iCost = iCost
+        # Handle 0 correctly
+        if not iCost:
+            self.__iCost = None
 
     # pylint: disable-msg=C0111
     # don't need docstrings for _get_expression, get_values & _get_joins
