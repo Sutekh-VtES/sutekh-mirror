@@ -218,8 +218,6 @@ class FilterTests(SutekhTest):
                 u"Cedric", u"Cesewayo", u'Earl "Shaka74" Deams',
                 u'Inez "Nurse216" Villagrande', u"Kabede Maru", u"Sha-Ennu"]),
             (Filters.CapacityFilter(2), [u"Aaron Duggan, Cameron's Toady"]),
-            (Filters.MultiCapacityFilter([2]),
-                    [u"Aaron Duggan, Cameron's Toady"]),
             (Filters.MultiCapacityFilter([2, 1]),
                 [u"Aaron Duggan, Cameron's Toady", u"Abombwe"]),
             (Filters.CostFilter(5), [u"AK-47"]),
@@ -370,6 +368,72 @@ class FilterTests(SutekhTest):
             aCards = sorted(oFilter.select(PhysicalCard).distinct())
             self.assertEqual(aCards, aExpectedCards, "Filter Object %s"
                     " failed. %s != %s." % (oFilter, aCards, aExpectedCards))
+
+    def test_multi_filters(self):
+        """Test that MultiFilters and the equivilent single filters work as
+           expected"""
+        # Tests are MultiFilter, EquivFilter pairs - we want to assert that
+        # the behaviours match
+        aTests = [
+                (Filters.MultiClanFilter(['Follower of Set']),
+                    Filters.ClanFilter('Follower of Set')),
+                (Filters.MultiClanFilter(['Follower of Set', 'Ravnos']),
+                    Filters.FilterOrBox([
+                        Filters.ClanFilter('Follower of Set'),
+                        Filters.ClanFilter('Ravnos')])),
+                (Filters.MultiDisciplineFilter(['nec']),
+                    Filters.DisciplineFilter('nec')),
+                (Filters.MultiDisciplineFilter(['nec', 'obf']),
+                    Filters.FilterOrBox([Filters.DisciplineFilter('nec'),
+                        Filters.DisciplineFilter('obf')])),
+                (Filters.MultiExpansionRarityFilter([('Third', 'Uncommon')]),
+                    Filters.ExpansionRarityFilter(('Third', 'Uncommon'))),
+                (Filters.MultiDisciplineLevelFilter([('obf', 'inferior')]),
+                    Filters.DisciplineLevelFilter(('obf', 'inferior'))),
+                (Filters.MultiCardTypeFilter(['Action']),
+                    Filters.CardTypeFilter('Action')),
+                (Filters.MultiSectFilter(['Sabbat']),
+                    Filters.SectFilter('Sabbat')),
+                (Filters.MultiTitleFilter(['Bishop']),
+                    Filters.TitleFilter('Bishop')),
+                (Filters.MultiVirtueFilter(['Redemption']),
+                    Filters.VirtueFilter('Redemption')),
+                (Filters.MultiCreedFilter(['Innocent']),
+                    Filters.CreedFilter('Innocent')),
+                (Filters.MultiGroupFilter([4]), Filters.GroupFilter(4)),
+                (Filters.MultiCapacityFilter([2]), Filters.CapacityFilter(2)),
+                (Filters.MultiCostFilter([0]), Filters.CostFilter(0)),
+                (Filters.MultiCostFilter([2]), Filters.CostFilter(2)),
+                (Filters.MultiLifeFilter([1]), Filters.LifeFilter(1)),
+                (Filters.MultiCostTypeFilter(['pool']),
+                    Filters.CostTypeFilter('pool')),
+                (Filters.MultiArtistFilter(["William O'Connor"]),
+                    Filters.ArtistFilter("William O'Connor")),
+                ]
+
+        for oFilter, oEquivFilter in aTests:
+            aCards = sorted(oFilter.select(AbstractCard).distinct())
+            aExpectedCards = sorted(
+                    oEquivFilter.select(AbstractCard).distinct())
+            self.assertEqual(aCards, aExpectedCards, "Filter Object %s"
+                    " failed. %s != %s." % (oFilter, aCards, aExpectedCards))
+
+        aExpansionTests = [
+                (Filters.MultiPhysicalExpansionFilter(['Jyhad']),
+                    Filters.PhysicalExpansionFilter('Jyhad')),
+                (Filters.MultiPhysicalExpansionFilter(['LoB', 'LotN']),
+                    Filters.FilterOrBox([
+                        Filters.PhysicalExpansionFilter('LoB'),
+                        Filters.PhysicalExpansionFilter('LotN')]))
+                    ]
+
+        for oFilter, oEquivFilter in aExpansionTests:
+            aCards = sorted(oFilter.select(PhysicalCard).distinct())
+            aExpectedCards = sorted(
+                    oEquivFilter.select(PhysicalCard).distinct())
+            self.assertEqual(aCards, aExpectedCards, "Filter Object %s"
+                    " failed. %s != %s." % (oFilter, aCards, aExpectedCards))
+
 
     def test_card_set_filters(self):
         """Tests for the physical card set filters."""

@@ -1,3 +1,9 @@
+14 Aug 2009
+ * Add some tests to ensure MultiXFilter and XFilter behave the same
+
+13 Aug 2009
+ * Fix CostFilter to handle 0 costs the same as MultiCostFilter
+
 12 Aug 2009
  * Use sort_equal_iter in some plugins, rather than repeating code.
  * Add import_cs helper function - combine common code in plugins
