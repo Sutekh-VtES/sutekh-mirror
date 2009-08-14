@@ -9,222 +9,164 @@
 
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.tests.io import test_WhiteWolfParser
-from sutekh.tests.core.test_Filters import make_card
+from sutekh.tests.core.test_Filters import make_physical_card_sets
 from sutekh.core.SutekhObjects import AbstractCard, PhysicalCardSet, \
         PhysicalCard, MapPhysicalCardToPhysicalCardSet, IAbstractCard
 from sutekh.core import FilterParser, Filters
 import unittest
+
 
 class FilterParserTests(SutekhTest):
     """Class for the test cases"""
     aExpectedCards = test_WhiteWolfParser.WhiteWolfParserTests.aExpectedCards
     oFilterParser = FilterParser.FilterParser()
 
+    # Useful helper functions
+    def _parse_filter(self, sFilter):
+        """Turn a filter expression into a filter"""
+        oAST = self.oFilterParser.apply(sFilter)
+        return oAST.get_filter()
+
+    # pylint: disable-msg=R0201
+    # I prefer to have these as methods
+    def _get_abs_names(self, oFilter):
+        """Get the names of the cards selected by a filter on the
+           AbstractCards"""
+        aCards = oFilter.select(AbstractCard).distinct()
+        return sorted([oC.name for oC in aCards])
+
+    def _get_physical_names(self, oPCSFilter, oFilter):
+        """Combine a card set filter with the filter and return the card
+           names"""
+        # pylint: disable-msg=E1101
+        # pyprotocols confuses pylinta
+        oFullFilter = Filters.FilterAndBox([oPCSFilter, oFilter])
+        aNames = [IAbstractCard(x).name for x in oFullFilter.select(
+            MapPhysicalCardToPhysicalCardSet).distinct()]
+        return sorted(aNames)
+
+    # pylint: enable-msg=R0201
+
     # pylint: disable-msg=R0914
     # We don't really care about the number of local variables here
     def test_basic(self):
         """Set of simple tests of the filter parser."""
         # setup filters
+        # The tests a given as "Expression", "Equivilant Filter"
+        # where the two filters should give the same results
         aTests = [
             # Single & Multiple value tests
-            ('Clan in "Follower of Set"', [u"Aabbt Kindred", u"Abdelsobek",
-                u"Amisa", u"Kemintiri (Advanced)"]),
-            ('Clan in Ravnos, Samedi', [u"Abebe", u"L\xe1z\xe1r Dobrescu"]),
-            ('Discipline in obf', [u"Aaron Bathurst", u"Abd al-Rashid",
-                u"Abdelsobek", u"Abebe", u"Aeron", u"Amisa",
-                u"Angelica, The Canonicus", u"Cedric", u"Kabede Maru",
-                u"Kemintiri (Advanced)", u"Sha-Ennu"]),
-            ('Discipline in fli', [u"Cedric"]),
-            ('Discipline in nec, Quietus', [u"Abd al-Rashid", u"Abdelsobek",
-                u"Abebe", u"Akram", u"Ambrogino Giovanni", u"Kabede Maru"]),
-            ('Expansion_with_Rarity in Sabbat with Rare', [u"Ablative Skin"]),
+            ('Clan in "Follower of Set"',
+                Filters.ClanFilter('Follower of Set')),
+            ('Clan in Ravnos, Samedi',
+                Filters.MultiClanFilter(['Ravnos', 'Samedi'])),
+            ('Discipline in obf', Filters.DisciplineFilter('obf')),
+            ('Discipline in fli', Filters.DisciplineFilter('fli')),
+            ('Discipline in nec, Quietus',
+                Filters.MultiDisciplineFilter(['nec', 'qui'])),
+            ('Expansion_with_Rarity in Sabbat with Rare',
+                Filters.ExpansionRarityFilter(('Sabbat', 'Rare'))),
             ('Expansion_with_Rarity in Third with Uncommon, Jyhad with Rare',
-                [u"Aaron's Feeding Razor", u"Abbot"]),
-            ('Discipline_with_Level in cel with superior', [u"Abd al-Rashid",
-                u"Akram", u"Alexandra", u"Anson", u"Bronwen", u"Cesewayo",
-                u"Kabede Maru"]),
+                Filters.MultiExpansionRarityFilter([('Third', 'Uncommon'),
+                    ('Jyhad', 'Rare')])),
+            ('Discipline_with_Level in cel with superior',
+                Filters.DisciplineLevelFilter(('cel', 'superior'))),
             ('Discipline_with_Level in obt with inferior,'
                 ' Potence with inferior, obf with superior',
-                [u"Aaron Bathurst", u"Aaron Duggan, Cameron's Toady",
-                    u"Aeron", u"Akram", u"Amisa", u"Bronwen", u"Cedric",
-                    u"Kabede Maru", u"Kemintiri (Advanced)"]),
-            ('CardType in Equipment', [u".44 Magnum", u"AK-47",
-                u"Aaron's Feeding Razor"]),
-            ('CardType in Reflex', [u"Predator's Communion"]),
-            ('CardType in Power,Action', [u"Abbot", u"Abjure",
-                u"Ablative Skin"]),
-            ('Sect in Sabbat', [u"Aaron Bathurst",
-                u"Aaron Duggan, Cameron's Toady", u"Aeron", u"Alfred Benezri",
-                u"Angelica, The Canonicus", u"Bronwen", u"Sha-Ennu",
-                u"The Siamese"]),
-            ('Sect in Sabbat, Independent', [u"Aabbt Kindred",
-                u"Aaron Bathurst", u"Aaron Duggan, Cameron's Toady",
-                u"Abd al-Rashid", u"Abdelsobek", u"Abebe",
-                u"Aeron", u"Alfred Benezri", u"Ambrogino Giovanni", u"Amisa",
-                u"Angelica, The Canonicus", u"Bronwen",
-                u"Kemintiri (Advanced)", u"L\xe1z\xe1r Dobrescu",
-                u"Sha-Ennu", u"The Siamese"]),
-            ('Title in Bishop', [u"Alfred Benezri"]),
+                Filters.MultiDisciplineLevelFilter([('obt', 'inferior'),
+                    ('pot', 'inferior'), ('obf', 'superior')])),
+            ('CardType in Equipment', Filters.CardTypeFilter('Equipment')),
+            ('CardType in Reflex', Filters.CardTypeFilter('Reflex')),
+            ('CardType in Power,Action',
+                Filters.MultiCardTypeFilter(['Power', 'Action'])),
+            ('Sect in Sabbat', Filters.SectFilter('Sabbat')),
+            ('Sect in Sabbat, Independent',
+                Filters.MultiSectFilter(['Sabbat', 'Independent'])),
+            ('Title in Bishop', Filters.TitleFilter('Bishop')),
             ('Title in "Independent with 1 vote"',
-                [u"Ambrogino Giovanni"]),
+                Filters.TitleFilter('Independent with 1 vote')),
             ('Title in Bishop, Prince',
-                    [u"Alfred Benezri", u"Anson"]),
+                Filters.MultiTitleFilter(['Bishop', 'Prince'])),
             ('Title in Magaji, Regent',
-                    [u"Cesewayo", u"Kabede Maru", u"Sha-Ennu"]),
+                Filters.MultiTitleFilter(['Magaji', 'Regent'])),
             ('Title in Primogen, Priscus, Cardinal',
-                    [u"Akram", u"Angelica, The Canonicus", u"Bronwen"]),
-            ('Creed = Martyr',
-                    [u'Anna "Dictatrix11" Suljic']),
+                Filters.MultiTitleFilter(['Primogen', 'Priscus', 'Cardinal'])),
+            ('Creed = Martyr', Filters.CreedFilter('Martyr')),
             ('Creed = Martyr, Innocent',
-                    [u'Anna "Dictatrix11" Suljic',
-                        u'Inez "Nurse216" Villagrande']),
-            ('Virtue in Redemption', [u"Abjure",
-                u'Anna "Dictatrix11" Suljic']),
-            ('Group in 4', [u"Aaron Bathurst", u"Abebe",
-                u'Anna "Dictatrix11" Suljic', u"Cedric", u"Cesewayo",
-                u'Earl "Shaka74" Deams', u'Inez "Nurse216" Villagrande',
-                u"Sha-Ennu"]),
-            ('Group in 4, 5', [u"Aaron Bathurst", u"Abdelsobek", u"Abebe",
-                u'Anna "Dictatrix11" Suljic', u"Cedric", u"Cesewayo",
-                u'Earl "Shaka74" Deams', u'Inez "Nurse216" Villagrande',
-                u"Kabede Maru", u"Sha-Ennu"]),
-            ('Capacity in 2', [u"Aaron Duggan, Cameron's Toady"]),
-            ('Capacity in 2,1', [u"Aaron Duggan, Cameron's Toady",
-                u"Abombwe"]),
-            ('Cost in 5', [u"AK-47"]),
-            ('Cost in 2,5', [u".44 Magnum", u"AK-47"]),
-            ('Cost in 0', [u'Aabbt Kindred', u'Aaron Bathurst',
-                u"Aaron Duggan, Cameron's Toady", u'Abandoning the Flesh',
-                u'Abbot', u'Abd al-Rashid', u'Abdelsobek', u'Abebe',
-                u'Abjure', u'Ablative Skin', u'Abombwe', u'Aeron', u'Akram',
-                u'Alan Sovereign', u'Alan Sovereign (Advanced)', u'Alexandra',
-                u'Alfred Benezri', u'Ambrogino Giovanni', u'Amisa',
-                u'Anastasz di Zagreb', u'Angelica, The Canonicus',
-                u'Anna "Dictatrix11" Suljic', u'Anson', u'Bronwen',
-                u'Cedric', u'Cesewayo', u'Earl "Shaka74" Deams',
-                u'Gracis Nostinus', u'Inez "Nurse216" Villagrande',
-                u'Kabede Maru', u'Kemintiri (Advanced)',
-                u'L\xe1z\xe1r Dobrescu', u"Predator's Communion", u'Sha-Ennu',
-                u'The Siamese', u'Yvette, The Hopeless']),
-            ('Cost in 0,5', [u"AK-47", u'Aabbt Kindred', u'Aaron Bathurst',
-                u"Aaron Duggan, Cameron's Toady", u'Abandoning the Flesh',
-                u'Abbot', u'Abd al-Rashid', u'Abdelsobek', u'Abebe',
-                u'Abjure', u'Ablative Skin', u'Abombwe', u'Aeron', u'Akram',
-                u'Alan Sovereign', u'Alan Sovereign (Advanced)', u'Alexandra',
-                u'Alfred Benezri', u'Ambrogino Giovanni', u'Amisa',
-                u'Anastasz di Zagreb', u'Angelica, The Canonicus',
-                u'Anna "Dictatrix11" Suljic', u'Anson', u'Bronwen',
-                u'Cedric', u'Cesewayo', u'Earl "Shaka74" Deams',
-                u'Gracis Nostinus', u'Inez "Nurse216" Villagrande',
-                u'Kabede Maru', u'Kemintiri (Advanced)',
-                u'L\xe1z\xe1r Dobrescu', u"Predator's Communion", u'Sha-Ennu',
-                u'The Siamese', u'Yvette, The Hopeless']),
-            ('Life in 6', [u'Anna "Dictatrix11" Suljic',
-                u'Earl "Shaka74" Deams']),
-            ('Life in 3, 6', [u'Anna "Dictatrix11" Suljic',
-                u'Earl "Shaka74" Deams', u'Inez "Nurse216" Villagrande']),
-            ('CostType in Pool', [u".44 Magnum", u"AK-47",
-                u"Aaron's Feeding Razor", u"The Path of Blood",
-                u"The Slaughterhouse"]),
-            ('CostType in Blood', [u"Aire of Elation"]),
-            ('CostType in Pool, Blood', [u".44 Magnum", u"AK-47",
-                u"Aaron's Feeding Razor", u"Aire of Elation",
-                u"The Path of Blood", u"The Slaughterhouse"]),
-            ('Life in 4', []),
-            ('Life in 4,5', []),
-            ('Artist in "Leif Jones"', [u"Alan Sovereign (Advanced)",
-                u"Yvette, The Hopeless"]),
+                Filters.MultiCreedFilter(['Martyr', 'Innocent'])),
+            ('Virtue in Redemption', Filters.VirtueFilter('Redemption')),
+            ('Virtue in Redemption, jud',
+                Filters.MultiVirtueFilter(['Redemption', 'Judgement'])),
+            ('Group in 4', Filters.GroupFilter(4)),
+            ('Group in 4, 5', Filters.MultiGroupFilter([4, 5])),
+            ('Capacity in 2', Filters.MultiCapacityFilter([2])),
+            ('Capacity in 2,1', Filters.MultiCapacityFilter([1, 2])),
+            ('Cost in 5', Filters.CostFilter(5)),
+            ('Cost in 2,5', Filters.MultiCostFilter([2, 5])),
+            ('Cost in 0', Filters.CostFilter(0)),
+            ('Cost in 0,5', Filters.MultiCostFilter([0, 5])),
+            ('Life in 6', Filters.LifeFilter(6)),
+            ('Life = 3, 6', Filters.MultiLifeFilter([3, 6])),
+            ('CostType in Pool', Filters.CostTypeFilter('pool')),
+            ('CostType in Blood', Filters.CostTypeFilter('blood')),
+            ('CostType in Pool, Blood',
+                    Filters.MultiCostTypeFilter(['blood', 'pool'])),
+            ('Artist in "Leif Jones"', Filters.ArtistFilter('Leif Jones')),
             (u'Artist in "William O\'Connor", "N\xe9 N\xe9 Thomas"',
-                [u".44 Magnum", u"The Slaughterhouse"]),
-            ('Keyword in "burn option"', [u"The Slaughterhouse"]),
+                    Filters.MultiArtistFilter(["William O'Connor",
+                        u"N\xe9 N\xe9 Thomas"])),
+            ('Keyword in "burn option"', Filters.KeywordFilter('burn option')),
 
             # Text Entry Filters Filters
-            ('CardText in strike', [u".44 Magnum", u"AK-47", u"Aeron",
-                u"Anastasz di Zagreb", u"Bronwen"]),
-            ('CardName in cameron', [u"Aaron Duggan, Cameron's Toady"]),
-            (u'CardName in "L\xe1z\xe1r"', [u"L\xe1z\xe1r Dobrescu"]),
+            ('CardText in strike', Filters.CardTextFilter('strike')),
+            ('CardName in cameron', Filters.CardNameFilter('cameron')),
+            (u'CardName = "L\xe1z\xe1r"',
+                    Filters.CardNameFilter(u"L\xe1z\xe1r")),
 
             # Compound Filters
-            ('CardType in Equipment AND Cost in 5', [u"AK-47"]),
+            ('CardType in Equipment AND Cost in 5', Filters.FilterAndBox([
+                Filters.CardTypeFilter('Equipment'),
+                Filters.CostFilter(5)
+                ])),
             ('CardType in Equipment OR CardType in Power',
-                    [u".44 Magnum", u"AK-47", u"Aaron's Feeding Razor",
-                        u"Abjure"]),
-            ('NOT CardType in Equipment, Vampire',
-                    [u"Abandoning the Flesh", u"Abbot", u"Abjure",
-                        u"Ablative Skin", u"Abombwe", u"Aire of Elation",
-                        u'Anna "Dictatrix11" Suljic', u'Earl "Shaka74" Deams',
-                        u'Inez "Nurse216" Villagrande',
-                        u"Predator's Communion", u"The Path of Blood",
-                        u"The Slaughterhouse"]),
-            ('CardType not in Equipment, Vampire',
-                    [u"Abandoning the Flesh", u"Abbot", u"Abjure",
-                        u"Ablative Skin", u"Abombwe", u"Aire of Elation",
-                        u'Anna "Dictatrix11" Suljic', u'Earl "Shaka74" Deams',
-                        u'Inez "Nurse216" Villagrande',
-                        u"Predator's Communion", u"The Path of Blood",
-                        u"The Slaughterhouse"]),
+                    Filters.MultiCardTypeFilter(['Equipment', 'Power'])),
+            ('NOT CardType in Equipment, Vampire', Filters.FilterNot(
+                Filters.MultiCardTypeFilter(['Equipment', 'Vampire']))),
+            ('CardType not in Equipment, Vampire', Filters.FilterNot(
+                Filters.MultiCardTypeFilter(['Equipment', 'Vampire']))),
         ]
 
         # Abstract Card Filtering Tests
-        for sFilter, aExpectedNames in aTests:
-            oAST = self.oFilterParser.apply(sFilter)
-            oFilter = oAST.get_filter()
-            aCards = oFilter.select(AbstractCard).distinct()
-            aNames = sorted([oC.name for oC in aCards])
-            self.assertEqual(aNames, aExpectedNames,
-                    "Filter Object %s failed."
-                    " %s != %s." % (oFilter, aNames, aExpectedNames))
+        for sFilter, oEquivFilter in aTests:
+            oFilter = self._parse_filter(sFilter)
+            aNames = self._get_abs_names(oFilter)
+            aExpectedNames = self._get_abs_names(oEquivFilter)
+            self.assertEqual(aNames, aExpectedNames, "Filter Object %s "
+                    "failed. %s != %s." % (oFilter, aNames, aExpectedNames))
 
     def test_card_set_filters(self):
         """Tests for the physical card set filters."""
-        # Although splitting this off does add an additional init
-        # pass, the logical grouping is fairly different
-        aCardSets = [('Test 1', 'Author A', 'A set', False),
-                ('Test 2', 'Author B', 'Another set', False),
-                ('Test 3', 'Author A', 'Something different', True)]
-        aPCSCards = [
-                # Set 1
-                [('Abombwe', None), ('Alexandra', 'CE'),
-                ('Sha-Ennu', None), ('Sha-Ennu', None), ('Sha-Ennu', None),
-                ('Sha-Ennu', 'Third Edition')],
-                # Set 2
-                [('Sha-Ennu', 'Third Edition'), ('Anson', 'Jyhad'),
-                    ('.44 magnum', 'Jyhad'), ('ak-47', 'LotN'),
-                    ('Alexandra', 'CE'), ('Alexandra', 'CE')],
-                # Set 3
-                [('Yvette, The Hopeless', 'BSC')]]
-        aPCSs = []
-        # pylint: disable-msg=E1101
-        # sqlobject confuses pylint
-        for iCnt, tData in enumerate(aCardSets):
-            sName, sAuthor, sComment, bInUse = tData
-            if bInUse:
-                oParent = aPCSs[0]
-            else:
-                oParent = None
-            oPCS = PhysicalCardSet(name=sName, comment=sComment,
-                    author=sAuthor, inuse=bInUse, parent=oParent)
-            for sName, sExp in aPCSCards[iCnt]:
-                oPhys = make_card(sName, sExp)
-                oPCS.addPhysicalCard(oPhys.id)
-            aPCSs.append(oPCS)
+        aPCSs = make_physical_card_sets()
         # Tests on the physical card set properties
+        # Also Filter Expression, eqiv Filter pairs
         aPhysicalCardSetTests = [
-                ('CardSetName = "Test 1"', [aPCSs[0]]),
-                ('CardSetName = Test', sorted(aPCSs)),
-                ('CSSetsInUse', [aPCSs[2]]),
+                ('CardSetName = "Test 1"',
+                    Filters.CardSetNameFilter('Test 1')),
+                ('CardSetName = Test', Filters.CardSetNameFilter('Test')),
+                ('CSSetsInUse', Filters.CSPhysicalCardSetInUseFilter()),
                 ('CardSetAuthor = "Author A"',
-                    sorted([aPCSs[0], aPCSs[2]])),
+                    Filters.CardSetAuthorFilter('Author A')),
                 ('CardSetDescription = set',
-                    sorted([aPCSs[0], aPCSs[1]])),
+                    Filters.CardSetDescriptionFilter('set')),
                 ('CardSetDescription in different',
-                    [aPCSs[2]]),
+                    Filters.CardSetDescriptionFilter('different')),
                 ]
 
-        for sFilter, aExpectedSets in aPhysicalCardSetTests:
-            oAST = self.oFilterParser.apply(sFilter)
-            oFilter = oAST.get_filter()
+        for sFilter, oEquivFilter in aPhysicalCardSetTests:
+            oFilter = self._parse_filter(sFilter)
             aCardSets = sorted(oFilter.select(PhysicalCardSet).distinct())
+            aExpectedSets = sorted(oEquivFilter.select(
+                PhysicalCardSet).distinct())
             self.assertEqual(aCardSets, aExpectedSets, "Filter Object %s"
                     " failed. %s != %s." % (oFilter, aCardSets, aExpectedSets))
 
@@ -232,25 +174,20 @@ class FilterParserTests(SutekhTest):
 
         aPCSAbsCardTests = [
                 (Filters.PhysicalCardSetFilter('Test 1'),
-                    'CardType in Vampire',
-                    [u"Alexandra", u"Sha-Ennu", u"Sha-Ennu", u"Sha-Ennu",
-                        u"Sha-Ennu"]),
+                    'CardType in Vampire', Filters.CardTypeFilter('Vampire')),
                 (Filters.PhysicalCardSetFilter('Test 1'),
-                    'CardType in Master',
-                    [u"Abombwe"]),
+                    'CardType in Master', Filters.CardTypeFilter('Master')),
                 (Filters.PhysicalCardSetFilter('Test 2'),
                     'CardType in Equipment',
-                    [u".44 Magnum", u"AK-47"]),
+                    Filters.CardTypeFilter('Equipment')),
                 ]
 
-        for oPCSFilter, sFilter, aExpectedCards in aPCSAbsCardTests:
-            oAST = self.oFilterParser.apply(sFilter)
-            oFilter = oAST.get_filter()
-            oFullFilter = Filters.FilterAndBox([oPCSFilter, oFilter])
-            aCSCards = [IAbstractCard(x).name for x in oFullFilter.select(
-                        MapPhysicalCardToPhysicalCardSet).distinct()]
-            self.assertEqual(aCSCards, aExpectedCards, "Filter Object %s"
-                    " failed. %s != %s." % (oFullFilter, aCSCards,
+        for oPCSFilter, sFilter, oEquivFilter in aPCSAbsCardTests:
+            oFilter = self._parse_filter(sFilter)
+            aExpectedCards = self._get_physical_names(oPCSFilter, oEquivFilter)
+            aCSCards = self._get_physical_names(oPCSFilter, oFilter)
+            self.assertEqual(aCSCards, aExpectedCards, "Filter %s, %s"
+                    " failed. %s != %s." % (oPCSFilter, sFilter, aCSCards,
                         aExpectedCards))
 
         oInUseFilter = self.oFilterParser.apply(
@@ -271,37 +208,38 @@ class FilterParserTests(SutekhTest):
         aPCSNumberTests = [
                 (Filters.PhysicalCardSetFilter('Test 1'),
                     'CardCount = 4 from "%s"' % aPCSs[0].name,
-                    [u"Sha-Ennu", u"Sha-Ennu", u"Sha-Ennu", u"Sha-Ennu"]),
+                    Filters.CardSetMultiCardCountFilter(('4', aPCSs[0].name))),
                 (Filters.PhysicalCardSetFilter('Test 1'),
                     'CardCount = 7 from "%s"' % aPCSs[0].name,
-                    []),
+                    Filters.CardSetMultiCardCountFilter(('7', aPCSs[0].name))),
                 (Filters.PhysicalCardSetFilter('Test 1'),
                     'CardCount in "1" from "%s"' % aPCSs[0].name,
-                    [u"Abombwe", u"Alexandra"]),
+                    Filters.CardSetMultiCardCountFilter(('1', aPCSs[0].name))),
                 (Filters.PhysicalCardSetFilter('Test 1'),
                     'CardCount in 1, 4 from "%s"' % aPCSs[0].name,
-                    [u"Abombwe", u"Alexandra", u"Sha-Ennu", u"Sha-Ennu",
-                        u"Sha-Ennu", u"Sha-Ennu"]),
+                    Filters.CardSetMultiCardCountFilter((['1', '4'],
+                        aPCSs[0].name))),
                 # Cards in 'Test 2' with zero count in 'Test 1'
                 (Filters.PhysicalCardSetFilter('Test 2'),
                     'CardCount = 0 from "%s"' % aPCSs[0].name,
-                    [u"Anson", u".44 Magnum", u"AK-47"]),
+                    Filters.CardSetMultiCardCountFilter(('0', aPCSs[0].name))),
                 (Filters.PhysicalCardSetFilter('Test 2'),
                     'CardCount = 0 from "%s" and CardType = Vampire' %
                     aPCSs[0].name,
-                    [u"Anson"]),
+                    Filters.FilterAndBox([
+                        Filters.CardSetMultiCardCountFilter(('0',
+                            aPCSs[0].name)),
+                        Filters.CardTypeFilter('Vampire')])),
                     ]
 
-        for oPCSFilter, sFilter, aExpectedCards in aPCSNumberTests:
+        for oPCSFilter, sFilter, oEquivFilter in aPCSNumberTests:
             # pylint: disable-msg=E1101
             # pyprotocols confuses pylinta
-            oAST = self.oFilterParser.apply(sFilter)
-            oFilter = oAST.get_filter()
-            oFullFilter = Filters.FilterAndBox([oPCSFilter, oFilter])
-            aCSCards = [IAbstractCard(x).name for x in oFullFilter.select(
-                        MapPhysicalCardToPhysicalCardSet).distinct()]
-            self.assertEqual(aCSCards, aExpectedCards, "Filter Object %s"
-                    " failed. %s != %s." % (oFullFilter, aCSCards,
+            oFilter = self._parse_filter(sFilter)
+            aExpectedCards = self._get_physical_names(oPCSFilter, oEquivFilter)
+            aCSCards = self._get_physical_names(oPCSFilter, oFilter)
+            self.assertEqual(aCSCards, aExpectedCards, "Filter %s, %s"
+                    " failed. %s != %s." % (oPCSFilter, sFilter, aCSCards,
                         aExpectedCards))
 
     def test_variables(self):
