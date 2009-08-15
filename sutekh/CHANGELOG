@@ -1,3 +1,6 @@
+15 Aug 2009
+ * Add more test data to cover the keywords
+
 14 Aug 2009
  * Add some tests to ensure MultiXFilter and XFilter behave the same
  * Rework test_FilterParser to avoid maintaining a duplicated set of
