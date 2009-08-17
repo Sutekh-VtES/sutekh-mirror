@@ -476,6 +476,15 @@ The filter menu has three options:
 * _Create Card Set From Filter_: Create a new card set containing the results
 of the current filter.
 
+When editing a card set, the display is always updated according to the active
+filter (i.e. if the filter is being applied). This does mean that, when adding
+cards to a card set when a filter is active, not all the new cards may be
+displayed, and, when using a filter that includes the card count, cards may
+appear and disappear due to the changing counts. 
+
+Since complex filters may be expensive to evaluate, editing card sets with
+a filter active will be slow in some cases.
+
 h3(#cardsets_plugins). Plugins
 
 The following plugins are available from the card set pane plugins menu:

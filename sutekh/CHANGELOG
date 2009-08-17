@@ -4,6 +4,7 @@
    - Add additional checks for when a filter restricting cards on physical card
      properties (expansions or counts) is used - removes a number of odd
      corner cases
+ * Add some notes about editing with filters active to Manual
 
 15 Aug 2009
  * Add more test data to cover the keywords
