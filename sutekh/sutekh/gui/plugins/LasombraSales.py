@@ -18,7 +18,7 @@ from sqlobject import SQLObjectNotFound
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 from sutekh.gui.CellRendererIcons import CellRendererIcons, SHOW_TEXT_ONLY
-from sutekh.gui.CardListModel import CardListModel
+from sutekh.gui.CardListModel import CardListModel, CardListModelListener
 from sutekh.gui.FileOrUrlWidget import FileOrUrlWidget
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 from sutekh.core.SutekhObjects import PhysicalCard, PhysicalCardSet, \
@@ -132,7 +132,7 @@ class LasombraWarningsDialog(SutekhDialog):
         self.show_all()
 
 
-class LasombraSales(CardListPlugin):
+class LasombraSales(CardListPlugin, CardListModelListener):
     """Add singles card sales information as extra columns to the card list
        view and allow sorting on these columns.
        """
@@ -198,6 +198,7 @@ class LasombraSales(CardListPlugin):
         super(LasombraSales, self).__init__(*aArgs, **kwargs)
 
         self._dCols = {}
+        self._bHideZeroCards = False
         self._dCols['Price'] = self._render_price
         self._dCols['Stock'] = self._render_stock
 
@@ -213,8 +214,10 @@ class LasombraSales(CardListPlugin):
         # _get_key name OK here
         if hasattr(self.model, "get_all_names_from_path"):
             self._get_key = self._get_key_for_card_set_list
+            self.model.add_listener(self)
         elif hasattr(self.model, "get_all_from_path"):
             self._get_key = self._get_key_for_card_list
+            self.model.add_listener(self)
         else:
             # This plugin is also registered on the main window
             self._get_key = None
@@ -566,7 +569,10 @@ class LasombraSales(CardListPlugin):
             oToggle = gtk.CheckMenuItem("Show Lasombra Prices")
             oToggle.set_active(False)
             oToggle.connect('toggled', self._toggle_prices)
-            return [('Plugins', oToggle)]
+            oHide = gtk.CheckMenuItem("Hide cards not listed in the Lasombra Inventory")
+            oHide.set_active(False)
+            oHide.connect('toggled', self._toggle_hide)
+            return [('Plugins', oToggle), ('Plugins', oHide)]
         else:
             oConfigMenuItem = gtk.MenuItem("Configure Lasombra Sales Plugin")
             oConfigMenuItem.connect("activate", self.config_activate)
@@ -628,6 +634,23 @@ class LasombraSales(CardListPlugin):
             self.set_cols_in_use(['Price', 'Stock'])
         else:
             self.set_cols_in_use([])
+
+
+    def _toggle_hide(self, oHide):
+        """Handle menu activation"""
+        self._bHideZeroCards = oHide.get_active()
+        # Force model reload
+        self.view.load()
+
+    def check_card_visible(self, oPhysCard):
+        if not self._bHideZeroCards:
+            return True # Nothing to do
+        sCardName = oPhysCard.abstractCard.name
+        if oPhysCard.expansion:
+            sExpName = oPhysCard.expansion.name
+        else:
+            sExpName = None
+        return self._get_data_stock((sCardName, sExpName)) > 0
 
     def sort_column(self, _oModel, oIter1, oIter2, oGetData):
         """Stringwise comparision of oIter1 and oIter2.

@@ -244,6 +244,7 @@ The following plugins are available from the White Wolf Card List pane menu:
 * "Change Grouping":#grouping_plugin
 * "Select Extra Columns":#columns_plugin
 * "Show Lasombra Prices":#lasombra_sales_plugin
+* "Hide cards not listed in the Lasombra Inventory":#lasombra_sales_plugin
 
 
 h2(#card_text). Card Text
@@ -493,6 +494,7 @@ The following plugins are available from the card set pane plugins menu:
 * "Change Grouping":#grouping_plugin
 * "Select Extra Columns":#columns_plugin
 * "Show Lasombra Prices":#lasombra_sales_plugin
+* "Hide cards not listed in the Lasombra Inventory":#lasombra_sales_plugin
 * "Set selected cards to a single expansion":#set_exp_plugin
 * "Compare card set with another Card Set":#compare_plugin
 * "Analyze Deck":#analyze_plugin
@@ -1080,6 +1082,9 @@ If the Lasombra Sales plugin encounters difficulties while process the
 inventory, it will display a list of warnings once it finishes. These warnings
 may be reviewed at a later stage using the _Lasombra Sales Plugin Warnings_
 item in the _Plugins_ menu on the _Main Window_.
+
+The _Hide cards not listed in the Lasombra Inventory_ option will restrict
+the display to only those cards for which the inventory lists stock available.
 
 There are three cases for you to consider when you interpret the stock and 
 price columns:

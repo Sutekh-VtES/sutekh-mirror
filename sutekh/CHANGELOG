@@ -5,6 +5,7 @@
      properties (expansions or counts) is used - removes a number of odd
      corner cases
  * Add some notes about editing with filters active to Manual
+ * Add support for hiding zero counts to Lasombra plugin
 
 15 Aug 2009
  * Add more test data to cover the keywords
