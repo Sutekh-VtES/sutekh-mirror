@@ -37,6 +37,14 @@ class CardListModelListener(object):
            """
         pass
 
+    def check_card_visible(self, oPhysCard):
+        """Check if a card should be shown in the model.
+
+           return False if the card should be hidden, True otherwise.
+           oPhysCard is always a physical card."""
+
+        return True
+
 class CardListModel(gtk.TreeStore):
     # pylint: disable-msg=R0904, R0902
     # inherit a lot of public methods for gtk, need local attributes for state
@@ -270,6 +278,8 @@ class CardListModel(gtk.TreeStore):
             # pylint: disable-msg=E1101
             # sqlobject confuses pylint
             oPhysCard = IPhysicalCard(oCard)
+            if not self.check_card_visible(oPhysCard):
+                continue
             oAbsCard = IAbstractCard(oPhysCard)
             aAbsCards.append(oAbsCard)
             dAbsCards.setdefault(oAbsCard, [0, {}])
@@ -329,6 +339,17 @@ class CardListModel(gtk.TreeStore):
         """Get the physical card name for the current path."""
         oIter = self.get_iter(oPath)
         return self.get_physical_card_from_iter(oIter)
+
+    def check_card_visible(self, oPhysCard):
+        """Returns true if oPhysCard should be shown.
+
+           Used by plugins to allow extra filtering of cards."""
+        bResult = True
+        for oListener in self.dListeners:
+            bResult = bResult and oListener.check_card_visible(oPhysCard)
+            if not bResult:
+                break # Failed, so bail on loop
+        return bResult
 
     def get_all_from_iter(self, oIter):
         """Get all relevent information about the current iter.

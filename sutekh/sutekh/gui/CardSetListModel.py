@@ -127,6 +127,7 @@ class CardSetCardListModel(CardListModel):
         self.bChildren = False
         self.iShowCardMode = THIS_SET_ONLY
         self.bEditable = False
+        self._bPhysicalFilter = False
         self._dAbs2Iter = {}
         self._dAbsSecondLevel2Iter = {}
         self._dAbs2nd3rdLevel2Iter = {}
@@ -186,6 +187,10 @@ class CardSetCardListModel(CardListModel):
         # Clear cache (we can't do this in grouped_card_iter, since that
         # is also called by add_new_card)
         self._dCache = {}
+
+        self._bPhysicalFilter = False
+        if self.applyfilter:
+            self._bPhysicalFilter = self._check_filter()
 
         oCardIter = self.get_card_iterator(self.get_current_filter())
         oGroupedIter, aAbsCards = self.grouped_card_iter(oCardIter)
@@ -491,8 +496,9 @@ class CardSetCardListModel(CardListModel):
         """Initialise the expansion dict for a card"""
         if self.bEditable:
             for oPhysCard in oAbsCard.physicalCards:
-                dExpanInfo.setdefault((self.get_expansion_name(
-                    oPhysCard.expansion), oPhysCard), 0)
+                if self.check_card_visible(oPhysCard):
+                    dExpanInfo.setdefault((self.get_expansion_name(
+                        oPhysCard.expansion), oPhysCard), 0)
 
     def _init_abs(self, dAbsCards, oAbsCard):
         """Initialize the entry for oAbsCard in dAbsCards"""
@@ -621,6 +627,9 @@ class CardSetCardListModel(CardListModel):
         self._dCache['sibling cards'] = {}
         self._dCache['sibling abstract cards'] = {}
         self._dCache['child card sets'] = {}
+        self._dCache['visible'] = {}
+        self._dCache['filtered cards'] = None
+        self._dCache['current cards'] = {}
 
         if oCardIter.count() == 0 and self.iShowCardMode == THIS_SET_ONLY:
             # Short circuit the more expensive checks if we've got no cards
@@ -631,6 +640,13 @@ class CardSetCardListModel(CardListModel):
         if oCurFilter is None:
             oCurFilter = NullFilter()
 
+        if self._bPhysicalFilter:
+            oFullFilter = FilterAndBox([PhysicalCardFilter(), oCurFilter])
+            # This does a batched query, due to SQLObject magic, so should be
+            # fairly effecient.
+            self._dCache['filtered cards'] = set(
+                    oFullFilter.select(PhysicalCard).distinct())
+
         dChildCardCache = self._get_child_filters(oCurFilter)
         self._get_parent_list(oCurFilter)
 
@@ -638,6 +654,8 @@ class CardSetCardListModel(CardListModel):
         aExtraCards = self._get_extra_cards(oCurFilter)
 
         for oPhysCard in aExtraCards:
+            if not self.check_card_visible(oPhysCard):
+                continue # Skip
             oAbsCard = oPhysCard.abstractCard
             self._init_abs(dAbsCards, oAbsCard)
             if self.iExtraLevelsMode == SHOW_EXPANSIONS or \
@@ -654,6 +672,8 @@ class CardSetCardListModel(CardListModel):
 
         for oCard in oCardIter:
             oPhysCard = IPhysicalCard(oCard)
+            if not self.check_card_visible(oPhysCard):
+                continue # Skip
             dPhysCards.setdefault(oPhysCard, 0)
             dPhysCards[oPhysCard] += 1
             sExpName = self.get_expansion_name(oPhysCard.expansion)
@@ -678,6 +698,10 @@ class CardSetCardListModel(CardListModel):
         self._add_parent_info(dAbsCards, dPhysCards)
 
         aCards = list(dAbsCards.iteritems())
+
+        # expire caches
+        self._dCache['filtered cards'] = None
+        self._dCache['visible'] = {}
 
         # Iterate over groups
         return (self.groupby(aCards, lambda x: x[0]), aAbsCards)
@@ -802,7 +826,7 @@ class CardSetCardListModel(CardListModel):
             # pylint: disable-msg=E1101
             # Pyprotocols confuses pylint
             oAbsCard = oPhysCard.abstractCard
-            if oAbsCard in dAbsCards:
+            if oAbsCard in dAbsCards and self.check_card_visible(oPhysCard):
                 sExpansion = self.get_expansion_name(oPhysCard.expansion)
                 dParentExp = dAbsCards[oAbsCard].dParentExpansions
                 dParentExp.setdefault(sExpansion, 0)
@@ -901,21 +925,20 @@ class CardSetCardListModel(CardListModel):
            the card set or is filtered out) see if it should be visible. If it
            should be visible, add it to the appropriate groups.
            """
-        oFilter = self.combine_filter_with_base(self.get_current_filter())
+        oFilter = self.get_current_filter()
+        if not oFilter:
+            oFilter = NullFilter()
         oAbsCard = IAbstractCard(oPhysCard)
         # pylint: disable-msg=E1101
         # PyProtocols confuses pylint
-        if self.bEditable:
-            oFullFilter = FilterAndBox([SpecificCardIdFilter(oAbsCard.id),
-                oFilter])
-            # Checking on the physical card picks up filters on the physical
-            # expansion - since we show all expansions when editing, checking
-            # on the physical card when the list is editable doesn't behave as
-            # one would expect, so we only check the abstract card.
+        if self._bPhysicalFilter:
+            # Check visible will fix the extra cards we might select
+            oCardFilter = FilterAndBox([oFilter,
+                SpecificCardIdFilter(oAbsCard.id)])
         else:
-            oFullFilter = FilterAndBox([SpecificPhysCardIdFilter(oPhysCard.id),
-                oFilter])
-        oCardIter = oFullFilter.select(self.cardclass).distinct()
+            oCardFilter = FilterAndBox([oFilter,
+                SpecificPhysCardIdFilter(oPhysCard.id)])
+        oCardIter = self.get_card_iterator(oCardFilter)
 
         bNonZero = False
 
@@ -1046,7 +1069,13 @@ class CardSetCardListModel(CardListModel):
         # E1101 - Pyprotocols confuses pylint
         # R0912 - need to consider several cases, so lots of branches
         oAbsCard = IAbstractCard(oPhysCard)
-        if oCardSet.id == self._oCardSet.id:
+        if self._bPhysicalFilter:
+            # If we have a card count filter, any change can affect us,
+            # so we always consider these cases.
+            # We hand them off to add_new_card to do the right thing
+            self._clear_card_iter(oAbsCard)
+            self.add_new_card(oPhysCard)
+        elif oCardSet.id == self._oCardSet.id:
             # Changing a card from this card set
             if self._oCardSet.inuse:
                 self._update_cache(oPhysCard, iChg, 'sibling')
@@ -1072,7 +1101,6 @@ class CardSetCardListModel(CardListModel):
             # Changing parent card set
             self._update_cache(oPhysCard, iChg, 'parent')
             if oAbsCard in self._dAbs2Iter:
-                # update cache
                 self.alter_parent_count(oPhysCard, iChg)
             elif iChg > 0 and oPhysCard not in self._dCache['parent cards']:
                 # New card that we haven't seen before, so see if we need
@@ -1092,6 +1120,48 @@ class CardSetCardListModel(CardListModel):
                 self.alter_parent_count(oPhysCard, -iChg, False)
             self._clean_cache(oPhysCard, 'sibling')
         # Doesn't affect us, so ignore
+        # expire short-lived cache
+        self._dCache['visible'] = {}
+
+    def check_card_visible(self, oPhysCard):
+        """Returns true if oPhysCard should be shown.
+
+           In addition to the listener check for the plugin, we add
+           a extra check on the filter. This is to ensure we don't display
+           incorrect results when filtering on physical card properties
+           and the card set changes."""
+        # This cache is short-lived - it's intended to stop repeated calls to
+        # the plugins & filter for the same card during an operation
+        if oPhysCard in self._dCache['visible']:
+            return self._dCache['visible'][oPhysCard]
+        bResult = True
+        if self._bPhysicalFilter:
+            if self._dCache['filtered cards']:
+                # During grouped_iter, this is defined
+                bResult = oPhysCard in self._dCache['filtered cards']
+            else:
+                # We don't use the base filter, to avoid complex logic for the
+                # different display modes.
+                oFilter = self.get_current_filter()
+                oFullFilter = FilterAndBox([PhysicalCardFilter(),
+                    SpecificPhysCardIdFilter(oPhysCard.id), oFilter])
+                bResult = \
+                        oFullFilter.select(PhysicalCard).distinct().count() > 0
+        if bResult:
+            # Check the listeners
+            for oListener in self.dListeners:
+                bResult = bResult and oListener.check_card_visible(oPhysCard)
+                if not bResult:
+                    break # Failed, so bail on loop
+        self._dCache['visible'][oPhysCard] = bResult
+        return bResult
+
+    def _check_filter(self):
+        """Check if the filter is a physical card only filter"""
+        oCurFilter = self.get_current_filter()
+        if oCurFilter:
+            return not ('AbstractCard' in oCurFilter.types)
+        return False
 
     def _card_count_changes_parent(self):
         """Check if a change in the card count changes the parent"""
@@ -1139,6 +1209,10 @@ class CardSetCardListModel(CardListModel):
         # pylint: disable-msg=E1101
         # E1101: PyProtocols confuses pylint
         iCnt = self.get_value(oIter, 1)
+        if not self.check_card_visible(oPhysCard):
+            # Card doesn't match the current filter & plugins, so it must
+            # vanish
+            return False
         if iCnt > 0 or self.bEditable:
             # When editing, we don't delete 0 entries unless the card vanishes
             return True
@@ -1226,7 +1300,12 @@ class CardSetCardListModel(CardListModel):
         """Check if we need to remove the top-level item"""
         # Conditions for removal vary with the cards shown
         if self.iShowCardMode == ALL_CARDS:
-            return True # We don't remove group entries
+            # We don't remove group entries unless we have no children
+            # (due to physical card filters)
+            if not self._bPhysicalFilter:
+                return True
+            else:
+                return self.iter_n_children(oIter) > 0
         iCnt = self.get_value(oIter, 1)
         if iCnt > 0:
             # Count is non-zero, so we stay
@@ -1398,6 +1477,31 @@ class CardSetCardListModel(CardListModel):
                             iParCnt, oPhysCard, bIncCard, bDecCard), (3,
                                 (oAbsCard, sCardSetName)))
 
+    def _clear_card_iter(self, oAbsCard):
+        """Remove a card-level iter and update everything accordingly"""
+        if oAbsCard not in self._dAbs2Iter:
+            return # Nothing to do
+        for oIter in self._dAbs2Iter[oAbsCard]:
+            oGrpIter = self.iter_parent(oIter)
+            iCnt = self.get_value(oIter, 1)
+            iParCnt = self.get_value(oIter, 2)
+            iGrpCnt = self.get_value(oGrpIter, 1) - iCnt
+            iParGrpCnt = self.get_value(oGrpIter, 2) - iParCnt
+            self._remove_sub_iters(oAbsCard)
+            self.remove(oIter)
+
+            self.set(oGrpIter, 1, iGrpCnt, 2, iParGrpCnt)
+
+            if not self.check_group_iter_stays(oGrpIter):
+                sGroupName = self.get_value(oGrpIter, 0)
+                del self._dGroupName2Iter[sGroupName]
+                self.remove(oGrpIter)
+            else:
+                self.set_par_count_colour(oGrpIter, iParGrpCnt, iGrpCnt)
+
+        del self._dAbs2Iter[oAbsCard]
+        self._check_if_empty()
+
     def alter_card_count(self, oPhysCard, iChg):
         """Alter the card count of a card which is in the current list
            (i.e. in the card set and not filtered out) by iChg."""
@@ -1462,7 +1566,6 @@ class CardSetCardListModel(CardListModel):
            be removed from the model. This is used for sibling card set
            changes.
            """
-        # update cache
         bRemove = False
         bChecked = False # flag so we don't revist decisions
         if not bCheckAddRemove:

@@ -114,6 +114,8 @@ class CardSetListModelTests(SutekhTest):
         sModel += "Model: [card set %s, inuse=%s, groupby=%s]\n" % (
                     oModel._oCardSet.name, oModel._oCardSet.inuse,
                     oModel.groupby)
+        if oModel.applyfilter:
+            sModel += "Filter: %s\n" % oModel.selectfilter
         sModel += " State : (ExtraLevelsMode %s, ParentCountMode : %s, " \
                 "ShowCardMode : %s, Editable: %s)" % (
                         self.aExtraLevelToStr[oModel.iExtraLevelsMode],
@@ -303,6 +305,16 @@ class CardSetListModelTests(SutekhTest):
                 Groupings.RarityGrouping]:
             oModel.groupby = cGrouping
             self._loop_modes(oPCS, oModel)
+        # Check filtering behaviour
+        oModel.groupby = Groupings.NullGrouping
+        for oFilter in [Filters.CardTypeFilter('Vampire'),
+                Filters.PhysicalExpansionFilter('Sabbat'),
+                Filters.CardSetMultiCardCountFilter((['3','4','5'],
+                    self.aNames[0])),
+                ]:
+            oModel.selectfilter = oFilter
+            oModel.applyfilter = True
+            self._loop_modes(oPCS, oModel)
 
     def test_relationships(self):
         """Tests Model against more complex Card Set relationships"""
@@ -422,6 +434,19 @@ class CardSetListModelTests(SutekhTest):
         for cGrouping in [Groupings.DisciplineGrouping,
                 Groupings.CardTypeGrouping]:
             oModel.groupby = cGrouping
+            self._loop_modes(oSibPCS, oModel)
+            self._loop_modes(oPCS, oModel)
+            self._loop_modes(oGrandChildPCS, oModel)
+        # Test with filters enabled on the model
+        oModel.groupby = Groupings.NullGrouping
+        for oFilter in [
+                Filters.CardTypeFilter('Vampire'),
+                Filters.PhysicalExpansionFilter('Sabbat'),
+                Filters.CardSetMultiCardCountFilter((['3','4','5'],
+                    self.aNames[0])),
+                ]:
+            oModel.selectfilter = oFilter
+            oModel.applyfilter = True
             self._loop_modes(oSibPCS, oModel)
             self._loop_modes(oPCS, oModel)
             self._loop_modes(oGrandChildPCS, oModel)
