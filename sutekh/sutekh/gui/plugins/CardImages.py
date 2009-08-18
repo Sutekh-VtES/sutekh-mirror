@@ -14,11 +14,10 @@ import zipfile
 import urllib2
 import tempfile
 from sqlobject import SQLObjectNotFound
-from sutekh.core.SutekhObjects import PhysicalCard, PhysicalCardSet, \
-        IAbstractCard, IExpansion
+from sutekh.core.SutekhObjects import IAbstractCard, IExpansion
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.ProgressDialog import ProgressDialog
-from sutekh.gui.CardListView import CardListViewListener
+from sutekh.gui.CardTextView import CardTextViewListener
 from sutekh.gui.BasicFrame import BasicFrame
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_buttons, \
         do_complaint_error
@@ -120,7 +119,7 @@ class CardImagePopupMenu(gtk.Menu):
         assert(iScale in [FULL, VIEW_FIXED, FIT])
         self.oFrame.set_zoom_mode(iScale)
 
-class CardImageFrame(BasicFrame, CardListViewListener):
+class CardImageFrame(BasicFrame, CardTextViewListener):
     # pylint: disable-msg=R0904, R0902
     # R0904 - can't not trigger these warning with pygtk
     # R0902 - we need to keep quite a lot of internal state
@@ -442,12 +441,8 @@ class ImageConfigDialog(SutekhDialog):
 
 class CardImagePlugin(CardListPlugin):
     """Plugin providing access to CardImageFrame."""
-    dTableVersions = {PhysicalCardSet : [5, 6]}
+    dTableVersions = {}
     aModelsSupported = ["MainWindow"]
-    aListenViews = [PhysicalCardSet,
-            PhysicalCard]
-
-    oImageFrame = None
 
     _sMenuFlag = 'Card Image Frame'
 
@@ -455,31 +450,21 @@ class CardImagePlugin(CardListPlugin):
     # ** magic OK here
     def __init__(self, *args, **kwargs):
         super(CardImagePlugin, self).__init__(*args, **kwargs)
-        # Add listeners to the appropriate views
-        if not self.image_frame:
-            self.init_image_frame(self)
-        if self._cModelType in self.aListenViews:
-            self.view.add_listener(self.image_frame)
+        self.oImageFrame = None
         self._oReplaceItem = None
         self._oAddItem = None
         self._oConfigMenuItem = None
 
-    image_frame = property(fget=lambda self: self.get_image_frame(),
+    image_frame = property(fget=lambda self: self.oImageFrame,
             doc="The image frame")
 
-    @classmethod
-    def get_image_frame(cls):
-        """Return the global ImageFrame."""
-        return cls.oImageFrame
-
-    @classmethod
-    def init_image_frame(cls, oCur):
-        """Setup the global image frame."""
-        if not cls.oImageFrame:
-            cls.oImageFrame = CardImageFrame(oCur.parent,
-                    oCur.parent.config_file)
-            cls.oImageFrame.set_title(cls._sMenuFlag)
-            cls.oImageFrame.add_parts()
+    def init_image_frame(self):
+        """Setup the image frame."""
+        if not self.oImageFrame:
+            self.oImageFrame = CardImageFrame(self.parent,
+                    self.parent.config_file)
+            self.oImageFrame.set_title(self._sMenuFlag)
+            self.oImageFrame.add_parts()
 
     def get_menu_item(self):
         """Overrides method from base class.
@@ -488,6 +473,9 @@ class CardImagePlugin(CardListPlugin):
            """
         if not self.check_versions() or not self.check_model_type():
             return None
+        self.init_image_frame()
+        # Add listener
+        self.parent.card_text_pane.view.add_listener(self.oImageFrame)
         self._oReplaceItem = gtk.MenuItem("Replace with Card Image Frame")
         self._oReplaceItem.connect("activate", self.replace_pane)
 

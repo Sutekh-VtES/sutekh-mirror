@@ -13,6 +13,12 @@ import logging
 from sutekh.core.SutekhObjects import IKeyword
 from sqlobject import SQLObjectNotFound
 
+class CardTextViewListener(object):
+    """Listens to changes, i.e. .set_card_text(...) to CardListViews."""
+    def set_card_text(self, oPhysCard):
+        """The CardListView has called set_card_text on the CardText pane"""
+        pass
+
 class CardTextBuffer(gtk.TextBuffer):
     """Buffer object which holds the actual card text.
 
@@ -172,6 +178,7 @@ class CardTextView(gtk.TextView):
             print 'Pango Font Description : ', oContext.get_font_description()
         self._oBurnOption = None
         self.update_to_new_db() # lookup burn option
+        self.dListeners = {} # dictionary of CardTextViewListeners
 
     # pylint: disable-msg=W0212
     # We allow access via these properties
@@ -180,6 +187,16 @@ class CardTextView(gtk.TextView):
             doc="Return reference to text buffer")
 
     # pylint: enable-msg=W0212
+
+    # Listener helper functions
+
+    def add_listener(self, oListener):
+        """Add a listener to the list."""
+        self.dListeners[oListener] = None
+
+    def remove_listener(self, oListener):
+        """Remove a listener from the list."""
+        del self.dListeners[oListener]
 
     def update_to_new_db(self):
         """Cached lookup of the burn option keyword"""
@@ -195,11 +212,13 @@ class CardTextView(gtk.TextView):
             self._oBurnOption = None
             logging.warn("Keyword 'burn option' not present in database.")
 
-    def set_card_text(self, oCard):
+    def set_card_text(self, oPhysCard):
         """Add the text for oCard to the TextView."""
         oStart, oEnd = self._oBuf.get_bounds()
         self._oBuf.delete(oStart, oEnd)
-        self.print_card_to_buffer(oCard)
+        self.print_card_to_buffer(oPhysCard.abstractCard)
+        for oListener in self.dListeners:
+            oListener.set_card_text(oPhysCard)
 
     # pylint: disable-msg=R0912, R0915
     # We need to consider all cases for oCard, so need the branches

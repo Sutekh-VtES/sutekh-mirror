@@ -12,12 +12,6 @@ import unicodedata
 from sutekh.gui.FilterDialog import FilterDialog
 from sutekh.gui.SearchDialog import SearchDialog
 
-class CardListViewListener(object):
-    """Listens to changes, i.e. .set_card_text(...) to CardListViews."""
-    def set_card_text(self, oPhysCard):
-        """The CardListView has called set_card_text on the CardText pane"""
-        pass
-
 class CardListView(gtk.TreeView):
     """Base class for all the card list views in Sutekh."""
     # pylint: disable-msg=R0904, R0902
@@ -31,7 +25,6 @@ class CardListView(gtk.TreeView):
         self._oConfig = oConfig
         # subclasses will override this
         self._sDragPrefix = 'None:'
-        self.dListeners = {} # dictionary of CardListViewListeners
 
         super(CardListView, self).__init__(self._oModel)
 
@@ -93,17 +86,6 @@ class CardListView(gtk.TreeView):
         # Grid Lines
         if hasattr(self, 'set_grid_lines'):
             self.set_grid_lines(gtk.TREE_VIEW_GRID_LINES_BOTH)
-
-
-    # Listener helper functions
-
-    def add_listener(self, oListener):
-        """Add a listener to the list."""
-        self.dListeners[oListener] = None
-
-    def remove_listener(self, oListener):
-        """Remove a listener from the list."""
-        del self.dListeners[oListener]
 
     def load(self):
         """Called when the model needs to be reloaded."""
@@ -228,11 +210,8 @@ class CardListView(gtk.TreeView):
                 oPath = [x for x in aList if x not in self._aOldSelection][-1]
             self._aOldSelection = aList
 
-        oAbsCard = self._oModel.get_abstract_card_from_path(oPath)
-        self._oController.set_card_text(oAbsCard)
         oPhysCard = self._oModel.get_physical_card_from_path(oPath)
-        for oListener in self.dListeners:
-            oListener.set_card_text(oPhysCard)
+        self._oController.set_card_text(oPhysCard)
 
     # Filtering
 
@@ -454,11 +433,8 @@ class CardListView(gtk.TreeView):
     # Activating Rows
     def card_activated(self, _oTree, oPath, _oColumn):
         """Update card text and notify listeners when a card is selected."""
-        oAbsCard = self._oModel.get_abstract_card_from_path(oPath)
         oPhysCard = self._oModel.get_physical_card_from_path(oPath)
-        self._oController.set_card_text(oAbsCard)
-        for oListener in self.dListeners:
-            oListener.set_card_text(oPhysCard)
+        self._oController.set_card_text(oPhysCard)
 
     # Selecting
 
