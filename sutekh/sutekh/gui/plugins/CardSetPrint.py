@@ -169,22 +169,13 @@ class CardSetPrint(CardListPlugin):
 
     def cardlist_markup(self):
         """Format the card set nicely for printing."""
-        def escape(sInput):
-            """Escape strings so that markup and special characters
-               don't break things."""
-            from gobject import markup_escape_text
-            if sInput:
-                return markup_escape_text(sInput)
-            else:
-                return sInput # pass None straigh through
-
         oCS = self.get_card_set()
 
         aMarkup = []
-        aMarkup.append("<u>%s</u>" % escape(oCS.name))
-        aMarkup.append("  Author: %s" % escape(oCS.author))
-        aMarkup.append("  Comment: %s" % escape(oCS.comment))
-        aMarkup.append("  Annotations: %s" % escape(oCS.annotations))
+        aMarkup.append("<u>%s</u>" % self.escape(oCS.name))
+        aMarkup.append("  Author: %s" % self.escape(oCS.author))
+        aMarkup.append("  Comment: %s" % self.escape(oCS.comment))
+        aMarkup.append("  Annotations: %s" % self.escape(oCS.annotations))
         aMarkup.append("")
 
         oCardIter = self.model.get_card_iterator(None)
@@ -196,12 +187,12 @@ class CardSetPrint(CardListPlugin):
             if sGroup is None:
                 sGroup = '<< None >>'
 
-            aMarkup.append("<u>%s:</u>" % (escape(sGroup),))
+            aMarkup.append("<u>%s:</u>" % (self.escape(sGroup),))
 
             # Fill in Cards
             for oCard, oRow in oGroupIter:
                 iCnt = oRow.get_card_count()
-                aMarkup.append("  %ix %s" % (iCnt, escape(oCard.name)))
+                aMarkup.append("  %ix %s" % (iCnt, self.escape(oCard.name)))
 
             aMarkup.append("")
 

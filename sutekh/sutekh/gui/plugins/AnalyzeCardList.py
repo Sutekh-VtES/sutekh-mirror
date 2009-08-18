@@ -42,15 +42,6 @@ def _percentage(iNum, iTot, sDesc):
         fPrec = 0.0
     return '<i>(%5.3f %% of %s)</i>' % (fPrec*100, sDesc)
 
-def escape(sInput):
-    """Escape strings so that markup and special characters don't break
-       things."""
-    from gobject import markup_escape_text
-    if sInput:
-        return markup_escape_text(sInput)
-    else:
-        return sInput # pass None straigh through
-
 def _get_abstract_cards(aCards):
     """Get the abstract cards given the list of names"""
     return [IAbstractCard(x) for x in aCards]
@@ -548,9 +539,9 @@ class AnalyzeCardList(CardListPlugin):
         sMainText = "Analysis Results for :\n\t\t<b>%(name)s</b>\n" \
                 "\t\tby <i>%(author)s</i>\n\t\tDescription: <i>%(desc)s</i>" \
                 "\n\n" % {
-                        'name' : escape(self.view.sSetName),
-                        'author' : escape(oCS.author),
-                        'desc' : escape(oCS.comment),
+                        'name' : self.escape(self.view.sSetName),
+                        'author' : self.escape(oCS.author),
+                        'desc' : self.escape(oCS.comment),
                         }
 
         # Set main notebook text

@@ -1,6 +1,8 @@
 18 Aug 2009
  * Move set_card_text listener to CardTextView, as being more logical, and
    allowing plugins to be simplified
+ * Combine multiple definitions of escape function in plugins into a common
+   method, as being a generally useful thing for plugins to access.
 
 17 Aug 2009
  * Add check_card_visible listener

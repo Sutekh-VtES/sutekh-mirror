@@ -10,6 +10,7 @@ import os
 import glob
 import logging
 import sutekh.gui.plugins as plugins
+from gobject import markup_escape_text
 import zipimport
 import zipfile
 import re
@@ -207,4 +208,15 @@ class CardListPlugin(object):
         if self._cModelType is PhysicalCardSet:
             return self.model.get_card_iterator(None)
         return []
+
+    # pylint: disable-msg: R0201
+    # utilty function for plugins
+    def escape(self, sInput):
+        """Escape strings so that markup and special characters don't break
+           things."""
+        if sInput:
+            return markup_escape_text(sInput)
+        else:
+            return sInput # pass None straight through
+
 
