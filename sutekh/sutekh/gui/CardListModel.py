@@ -37,7 +37,9 @@ class CardListModelListener(object):
            """
         pass
 
-    def check_card_visible(self, oPhysCard):
+    # pylint: disable-msg=R0201
+    # Default of returning true is correct
+    def check_card_visible(self, _oPhysCard):
         """Check if a card should be shown in the model.
 
            return False if the card should be hidden, True otherwise.
@@ -162,6 +164,17 @@ class CardListModel(gtk.TreeStore):
             aTexts = aIcons = []
         return aTexts, aIcons
 
+    # pylint: disable-msg=R0201
+    # Method so it can be inherited
+    def _fix_group_name(self, sGroup):
+        """Fix the None group name"""
+        # Utiltiy helper, so we only need to change this once
+        if sGroup is None:
+            return "<< None >>"
+        return sGroup
+
+    # pylint: enable-msg=R0201
+
     def load(self):
         # pylint: disable-msg=R0914
         # we use many local variables for clarity
@@ -184,8 +197,7 @@ class CardListModel(gtk.TreeStore):
         bEmpty = True
         for sGroup, oGroupIter in oGroupedIter:
             # Check for null group
-            if sGroup is None:
-                sGroup = '<< None >>'
+            sGroup = self._fix_group_name(sGroup)
 
             # Create Group Section
             oSectionIter = self.append(None)

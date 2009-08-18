@@ -208,8 +208,7 @@ class CardSetCardListModel(CardListModel):
         # Iterate over groups
         for sGroup, oGroupIter in oGroupedIter:
             # Check for null group
-            if sGroup is None:
-                sGroup = '<< None >>'
+            sGroup = self._fix_group_name(sGroup)
 
             # Create Group Section
             oSectionIter = self.prepend(None)
@@ -605,21 +604,8 @@ class CardSetCardListModel(CardListModel):
             aExtraCards = []
         return aExtraCards
 
-    def grouped_card_iter(self, oCardIter):
-        """Get the data that needs to fill the model, handling the different
-           CardShow modes, the different counts, the filter, etc.
-
-           Returns a iterator over the groupings, and a list of all the
-           abstract cards in the card set considered.
-           """
-        # pylint: disable-msg=E1101, R0914
-        # E1101: SQLObject + PyProtocols confuse pylint
-        # R0914: We use lots of local variables for clarity
-        # Define iterable and grouping function based on cardclass
-        aAbsCards = []
-        dAbsCards = {}
-        dPhysCards = {}
-
+    def _init_cache(self):
+        """Setup the initial cache state"""
         self._dCache['parent cards'] = {}
         self._dCache['parent abstract cards'] = {}
         self._dCache['child cards'] = {}
@@ -630,6 +616,24 @@ class CardSetCardListModel(CardListModel):
         self._dCache['visible'] = {}
         self._dCache['filtered cards'] = None
         self._dCache['current cards'] = {}
+
+    def grouped_card_iter(self, oCardIter):
+        """Get the data that needs to fill the model, handling the different
+           CardShow modes, the different counts, the filter, etc.
+
+           Returns a iterator over the groupings, and a list of all the
+           abstract cards in the card set considered.
+           """
+        # pylint: disable-msg=E1101, R0914
+        # E1101: SQLObject + PyProtocols confuse pylint
+        # R0914: We use lots of local variables for clarity
+
+        # Define iterable and grouping function based on cardclass
+        aAbsCards = []
+        dAbsCards = {}
+        dPhysCards = {}
+
+        self._init_cache()
 
         if oCardIter.count() == 0 and self.iShowCardMode == THIS_SET_ONLY:
             # Short circuit the more expensive checks if we've got no cards
@@ -932,12 +936,16 @@ class CardSetCardListModel(CardListModel):
         # pylint: disable-msg=E1101
         # PyProtocols confuses pylint
         if self._bPhysicalFilter:
-            # Check visible will fix the extra cards we might select
+            # Because we rely on this fixing any entries we removed
+            # in card_changed, we need to select more cards than in
+            # the non-physical case.
+            # check_card_visible will fix the extra cards we might select
             oCardFilter = FilterAndBox([oFilter,
                 SpecificCardIdFilter(oAbsCard.id)])
         else:
             oCardFilter = FilterAndBox([oFilter,
                 SpecificPhysCardIdFilter(oPhysCard.id)])
+
         oCardIter = self.get_card_iterator(oCardFilter)
 
         bNonZero = False
@@ -947,8 +955,7 @@ class CardSetCardListModel(CardListModel):
         # Iterate over groups
         for sGroup, oGroupIter in oGroupedIter:
             # Check for null group
-            if sGroup is None:
-                sGroup = '<< None >>'
+            sGroup = self._fix_group_name(sGroup)
 
             # Find Group Section
             if sGroup in self._dGroupName2Iter:
@@ -1299,13 +1306,14 @@ class CardSetCardListModel(CardListModel):
     def check_group_iter_stays(self, oIter):
         """Check if we need to remove the top-level item"""
         # Conditions for removal vary with the cards shown
+        bResult = False
         if self.iShowCardMode == ALL_CARDS:
             # We don't remove group entries unless we have no children
             # (due to physical card filters)
-            if not self._bPhysicalFilter:
-                return True
-            else:
-                return self.iter_n_children(oIter) > 0
+            bResult = True
+            if self._bPhysicalFilter:
+                bResult = self.iter_n_children(oIter) > 0
+            return bResult
         iCnt = self.get_value(oIter, 1)
         if iCnt > 0:
             # Count is non-zero, so we stay
@@ -1313,13 +1321,13 @@ class CardSetCardListModel(CardListModel):
         iParCnt = self.get_value(oIter, 2)
         if self.iShowCardMode == PARENT_CARDS and iParCnt > 0:
             # Obviously parent cards present
-            return True
+            bResult = True
         elif self.iShowCardMode == PARENT_CARDS and \
                 self.iParentCountMode not in [PARENT_COUNT, MINUS_THIS_SET]:
-            return self._check_child_card_entries(oIter)
+            bResult = self._check_child_card_entries(oIter)
         elif self.iShowCardMode == CHILD_CARDS:
-            return self._check_child_card_entries(oIter)
-        return False
+            bResult = self._check_child_card_entries(oIter)
+        return bResult
 
     def _update_3rd_level_card_sets(self, oPhysCard, iChg, iParChg,
             bCheckAddRemove):

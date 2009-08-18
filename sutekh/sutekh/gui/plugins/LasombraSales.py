@@ -231,11 +231,13 @@ class LasombraSales(CardListPlugin, CardListModelListener):
             return
 
         fIn = file(self._sCacheFile, "rb")
-        # pylint: disable-msg=W0703
-        # we really do want all the exceptions
+
+        # pylint: disable-msg=W0703, C0321
+        # W0703: we really do want all the exceptions
+        # C0321: pylint false positive - see www.logilab.org/ticket/8764
         try:
             self.__class__._dPriceCache, self.__class__._aWarnings = \
-                cPickle.load(fIn)
+                    cPickle.load(fIn)
         except Exception, _oExcept:
             if self._aWarnings is None:
                 # first time encountering error
@@ -569,7 +571,8 @@ class LasombraSales(CardListPlugin, CardListModelListener):
             oToggle = gtk.CheckMenuItem("Show Lasombra Prices")
             oToggle.set_active(False)
             oToggle.connect('toggled', self._toggle_prices)
-            oHide = gtk.CheckMenuItem("Hide cards not listed in the Lasombra Inventory")
+            oHide = gtk.CheckMenuItem("Hide cards not listed in the"
+                    " Lasombra Inventory")
             oHide.set_active(False)
             oHide.connect('toggled', self._toggle_hide)
             return [('Plugins', oToggle), ('Plugins', oHide)]
@@ -643,6 +646,7 @@ class LasombraSales(CardListPlugin, CardListModelListener):
         self.view.load()
 
     def check_card_visible(self, oPhysCard):
+        """Implement mechanism for hiding cards if appropriate"""
         if not self._bHideZeroCards:
             return True # Nothing to do
         sCardName = oPhysCard.abstractCard.name

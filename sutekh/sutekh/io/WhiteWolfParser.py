@@ -177,6 +177,8 @@ class CardDict(dict):
 
     def _parse_text(self, oCard):
         """Parse the CardText for Sect and Titles"""
+        # pylint: disable-msg=R0912
+        # Complex set of conditions, so many branches
         sType = None
         if self.has_key('cardtype'):
             sTypes = self['cardtype']
