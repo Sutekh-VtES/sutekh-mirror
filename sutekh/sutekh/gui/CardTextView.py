@@ -39,32 +39,27 @@ class CardTextBuffer(gtk.TextBuffer):
         self.create_tag("label", underline=pango.UNDERLINE_SINGLE)
 
         self.create_tag("card_name", weight=pango.WEIGHT_BOLD)
-        self.create_tag("cost", style=pango.STYLE_ITALIC)
-        self.create_tag("life", style=pango.STYLE_ITALIC)
-        self.create_tag("capacity", style=pango.STYLE_ITALIC)
-        self.create_tag("group", style=pango.STYLE_ITALIC)
-        self.create_tag("level", style=pango.STYLE_ITALIC)
-        self.create_tag("keywords", style=pango.STYLE_ITALIC, left_margin=15,
-                tabs=self._oIconTabs)
-        self.create_tag("card_type", style=pango.STYLE_ITALIC, left_margin=15,
-                tabs=self._oIconTabs)
-        self.create_tag("clan", style=pango.STYLE_ITALIC, left_margin=15,
-                tabs=self._oIconTabs)
-        self.create_tag("sect", style=pango.STYLE_ITALIC)
-        self.create_tag("title", style=pango.STYLE_ITALIC)
-        self.create_tag("creed", style=pango.STYLE_ITALIC, left_margin=15,
-                tabs=self._oIconTabs)
-        self.create_tag("discipline", style=pango.STYLE_ITALIC, left_margin=15,
-                tabs=self._oIconTabs)
-        self.create_tag("virtue", style=pango.STYLE_ITALIC, left_margin=15,
-                tabs=self._oIconTabs)
-        self.create_tag("expansion", style=pango.STYLE_ITALIC, left_margin=15,
-                tabs=self._oIconTabs)
-        self.create_tag("ruling", left_margin=15,
-                tabs=self._oIconTabs)
-        self.create_tag("card_text", style=pango.STYLE_ITALIC)
-        self.create_tag("artist", style=pango.STYLE_ITALIC, left_margin=15,
-                tabs=self._oIconTabs)
+
+        # We use add_tag, so each tag has an associated mark, which will be
+        # set to immediately after the text inserted with this tag
+        self.add_tag('cost')
+        self.add_tag('life')
+        self.add_tag('capacity')
+        self.add_tag('group')
+        self.add_tag('level')
+        self.add_tag("sect")
+        self.add_tag("title")
+        self.add_list_tag('keywords')
+        self.add_list_tag("card_type")
+        self.add_list_tag("clan")
+        self.add_list_tag("creed")
+        self.add_list_tag("discipline")
+        self.add_list_tag("virtue")
+        self.add_list_tag("expansion")
+        self.create_tag("ruling", left_margin=15, tabs=self._oIconTabs)
+        self.create_mark("ruling", self.get_start_iter(), True)
+        self.add_tag("card_text")
+        self.add_list_tag("artist")
         self._oIter = None
 
     # pylint: disable-msg=W0142
@@ -80,11 +75,13 @@ class CardTextBuffer(gtk.TextBuffer):
     def add_tag(self, sTag):
         """Add a simple tag"""
         self.create_tag(sTag, style=pango.STYLE_ITALIC)
+        self.create_mark(sTag, self.get_start_iter(), True)
 
     def add_list_tag(self, sTag):
         """Add a tag with the list style indents"""
         self.create_tag(sTag, style=pango.STYLE_ITALIC, left_margin=15,
                 tabs=self._oIconTabs)
+        self.create_mark(sTag, self.get_start_iter(), True)
 
     # Methods for adding data
 
@@ -97,6 +94,7 @@ class CardTextBuffer(gtk.TextBuffer):
             self.insert_pixbuf(self._oIter, oIcon)
             self.insert(self._oIter, ' ')
         self.tag_text(sValue, sTag)
+        self.move_mark(self.get_mark(sTag), self._oIter)
 
     def labelled_list(self, sLabel, aValues, sTag, dIcons=None):
         """Add a list of values to the Buffer"""
@@ -115,6 +113,8 @@ class CardTextBuffer(gtk.TextBuffer):
                 self.insert_pixbuf(self.get_iter_at_mark(oMark1), oPixbuf)
                 # We've invalidated self._oIter, so restore it
                 self._oIter = self.get_iter_at_mark(oMarkEnd)
+                self.delete_mark(oMark1)
+                self.delete_mark(oMarkEnd)
             else:
                 self.tag_text('\n*\t%s' % sText, sTag)
         self.tag_text("\n")
@@ -130,6 +130,7 @@ class CardTextBuffer(gtk.TextBuffer):
                     _insert_line(sValue, sTag, None)
             else:
                 _insert_line(sValue, sTag, None)
+        self.move_mark(self.get_mark(sTag), self._oIter)
 
     def labelled_compact_list(self, sLabel, aValues, sTag):
         """More compact list for clans, etc."""
@@ -149,6 +150,20 @@ class CardTextBuffer(gtk.TextBuffer):
     def reset_iter(self):
         """Reset the iterator to point at the start of the buffer."""
         self._oIter = self.get_iter_at_offset(0)
+
+    def get_cur_iter(self):
+        """Get the current text iter position"""
+        return self._oIter
+
+    def set_cur_iter(self, oNewIter):
+        """Set the current text iter to the given position"""
+        self._oIter = oNewIter
+
+    def set_cur_iter_to_mark(self, sMarkName):
+        """Set the iter to the position of the given mark"""
+        oMark = self.get_mark(sMarkName)
+        if oMark:
+            self._oIter = self.get_iter_at_mark(oMark)
 
 
 class CardTextView(gtk.TextView):

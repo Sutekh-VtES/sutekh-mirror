@@ -3,6 +3,8 @@
    allowing plugins to be simplified
  * Combine multiple definitions of escape function in plugins into a common
    method, as being a generally useful thing for plugins to access.
+ * Tweak CardTextBuffer so each label has an associated mark, so we can
+   easily move to points in the buffer.
 
 17 Aug 2009
  * Add check_card_visible listener
