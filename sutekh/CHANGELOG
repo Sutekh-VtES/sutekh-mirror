@@ -1,3 +1,9 @@
+19 Aug 2009
+ * Tweak CardListModelListener API to work better with the changes to
+   the handling of phyiscal filters
+ * Fix CountCardSetCards plugin to work with modified API
+ * Add more tests for CardListModelListener behaviour
+
 18 Aug 2009
  * Move set_card_text listener to CardTextView, as being more logical, and
    allowing plugins to be simplified

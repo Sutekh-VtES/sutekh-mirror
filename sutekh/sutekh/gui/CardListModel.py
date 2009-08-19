@@ -29,11 +29,11 @@ class CardListModelListener(object):
            """
         pass
 
-    def add_new_card(self, oCard):
-        """A single copy of the given card has been added to this set.
+    def add_new_card(self, oCard, iCnt):
+        """The card has been added to this set iCnt times.
 
-           oCard: AbstractCard for the card altered (the actual card may be
-           a Physical Card).
+           oCard: AbstractCard for the cards altered (the actual cards
+           may be Physical Cards).
            """
         pass
 

@@ -27,12 +27,20 @@ class CardSetListener(CardListModelListener):
     # CardListModelListener has no __init__
     def __init__(self):
         self.bLoadCalled = False
-        self.aCards = []
+        self.iCnt = 0
 
     def load(self, aAbsCards):
         """Called when the model is loaded."""
         self.bLoadCalled = True
-        self.aCards = aAbsCards
+        self.iCnt = len(aAbsCards)
+
+    def alter_card_count(self, _oCard, iChg):
+        """Called when the model alters the card count"""
+        self.iCnt += iChg
+
+    def add_new_card(self, _oCard, iCnt):
+        """Called when the model adds a new card to the model"""
+        self.iCnt += iCnt
 
 class CardSetListModelTests(SutekhTest):
     """Class for the test cases"""
@@ -130,8 +138,11 @@ class CardSetListModelTests(SutekhTest):
     def _add_remove_cards(self, oPCS, oModel, aPhysCards):
         """Helper function to add and remove distinct cards from the card set,
            validating that the model works correctly"""
-        # pylint: disable-msg=E1101
-        # SQLObjext confuses pylint
+        # pylint: disable-msg=E1101, R0914
+        # E1101: SQLObjext confuses pylint
+        # R0914: several local variables, as we test a number of conditions
+        oListener = CardSetListener()
+        oModel.add_listener(oListener)
         oModel.sEditColour = "red"
         oModel.load()
         tStartTotals = (
@@ -160,6 +171,10 @@ class CardSetListModelTests(SutekhTest):
         self.assertEqual(aAddList, aLoadList, self._format_error(
             "Card Lists for inc_card and load differ", aAddList, aLoadList,
             oModel, oPCS))
+        iSetCnt = oModel.get_card_iterator(oModel.get_current_filter()).count()
+        self.assertEqual(oListener.iCnt, iSetCnt, self._format_error(
+            "Listener has wrong count after inc_card", oListener.iCnt,
+            iSetCnt, oModel, oPCS))
         # Card removal
         # We use the map table, so we can also test dec_card properly
         for oCard in aPhysCards:
@@ -180,6 +195,11 @@ class CardSetListModelTests(SutekhTest):
         self.assertEqual(aDecList, aStartList, self._format_error(
             "Card lists for dec_card and load differ", aDecList, aStartList,
             oModel, oPCS))
+        iSetCnt = oModel.get_card_iterator(oModel.get_current_filter()).count()
+        self.assertEqual(oListener.iCnt, iSetCnt, self._format_error(
+            "Listener has wrong count after inc_card", oListener.iCnt,
+            iSetCnt, oModel, oPCS))
+        oModel.remove_listener(oListener)
 
     def _loop_modes(self, oPCS, oModel):
         """Loop over all the possible modes of the model, calling
@@ -243,7 +263,7 @@ class CardSetListModelTests(SutekhTest):
         oModel.add_listener(oListener)
         oModel.load()
         self.assertTrue(oListener.bLoadCalled)
-        self.assertEquals(len(oListener.aCards), 0)
+        self.assertEquals(oListener.iCnt, 0)
         # Check for the 'No cards' entry in the model
         self.assertEquals(oModel.iter_n_children(None), 1)
         aCards = [('Alexandra', 'CE'), ('Sha-Ennu', 'Third Edition')]
@@ -253,7 +273,7 @@ class CardSetListModelTests(SutekhTest):
             # PyProtocols confuses pylint
             oPCS.addPhysicalCard(oCard.id)
         oModel.load()
-        self.assertEqual(len(oListener.aCards), 2)
+        self.assertEqual(oListener.iCnt, 2)
         # Only Vampires added
         self.assertEqual(oModel.iter_n_children(None), 1)
         oModel.groupby = Groupings.NullGrouping

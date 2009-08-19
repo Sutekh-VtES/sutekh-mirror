@@ -948,8 +948,7 @@ class CardSetCardListModel(CardListModel):
 
         oCardIter = self.get_card_iterator(oCardFilter)
 
-        bNonZero = False
-
+        iCnt = 0 # Since we'll test this later, and may skip assigning it
         oGroupedIter, _aAbsCards = self.grouped_card_iter(oCardIter)
 
         # Iterate over groups
@@ -975,8 +974,6 @@ class CardSetCardListModel(CardListModel):
                 if oAbsCard.id != oCard.id:
                     continue
                 iCnt = oRow.get_card_count()
-                if iCnt > 0:
-                    bNonZero = True
                 iParCnt = oRow.get_parent_count()
                 iGrpCnt += iCnt
                 iParGrpCnt += iParCnt
@@ -1001,9 +998,9 @@ class CardSetCardListModel(CardListModel):
             self.oEmptyIter = None
 
         # Notify Listeners
-        if bNonZero:
+        if iCnt:
             for oListener in self.dListeners:
-                oListener.add_new_card(oAbsCard)
+                oListener.add_new_card(oAbsCard, iCnt)
 
     def update_to_new_db(self, sSetName):
         """Update internal card set to the new DB."""
@@ -1489,9 +1486,11 @@ class CardSetCardListModel(CardListModel):
         """Remove a card-level iter and update everything accordingly"""
         if oAbsCard not in self._dAbs2Iter:
             return # Nothing to do
+        iChg = 0
         for oIter in self._dAbs2Iter[oAbsCard]:
             oGrpIter = self.iter_parent(oIter)
             iCnt = self.get_value(oIter, 1)
+            iChg = -iCnt
             iParCnt = self.get_value(oIter, 2)
             iGrpCnt = self.get_value(oGrpIter, 1) - iCnt
             iParGrpCnt = self.get_value(oGrpIter, 2) - iParCnt
@@ -1508,6 +1507,9 @@ class CardSetCardListModel(CardListModel):
                 self.set_par_count_colour(oGrpIter, iParGrpCnt, iGrpCnt)
 
         del self._dAbs2Iter[oAbsCard]
+        # Update the listeners
+        for oListener in self.dListeners:
+            oListener.alter_card_count(oAbsCard, iChg)
         self._check_if_empty()
 
     def alter_card_count(self, oPhysCard, iChg):
