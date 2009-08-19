@@ -209,7 +209,7 @@ class CardListPlugin(object):
             return self.model.get_card_iterator(None)
         return []
 
-    # pylint: disable-msg: R0201
+    # pylint: disable-msg=R0201
     # utilty function for plugins
     def escape(self, sInput):
         """Escape strings so that markup and special characters don't break
