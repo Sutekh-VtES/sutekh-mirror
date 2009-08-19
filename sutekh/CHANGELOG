@@ -3,6 +3,7 @@
    the handling of phyiscal filters
  * Fix CountCardSetCards plugin to work with modified API
  * Add more tests for CardListModelListener behaviour
+ * Add plugin to show which starter cards can be found in
 
 18 Aug 2009
  * Move set_card_text listener to CardTextView, as being more logical, and
