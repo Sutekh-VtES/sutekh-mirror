@@ -185,6 +185,8 @@ class CardSetCompare(CardListPlugin):
     def create_card_set(self, _oButton, dCardData):
         """Create a card set from the card list"""
         sCSName = create_card_set(self.parent)
+        if not sCSName:
+            return # User cancelled, so skip out
         oCardSet = IPhysicalCardSet(sCSName)
         for oCard in dCardData:
             _sCardName, sExpansionName, iCnt = dCardData[oCard]
