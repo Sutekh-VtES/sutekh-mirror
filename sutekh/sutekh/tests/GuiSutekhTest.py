@@ -35,6 +35,7 @@ class GuiSutekhTest(SutekhTest):
         # Don't try and create a path in the user's home dir
         self.sImagesDir = tempfile.mkdtemp(suffix='dir', prefix='sutekhtests')
         self.oConfig.set_plugin_key('card image path', self.sImagesDir)
+        self.oConfig.set_plugin_key('show starters', 'No')
         self.oWin = MultiPaneWindow()
 
     def tearDown(self):
