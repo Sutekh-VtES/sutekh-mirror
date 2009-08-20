@@ -1,3 +1,7 @@
+20 Aug 2009
+ * Tweak logic for physical card assigned to the model when the filter
+   restricts this.
+
 19 Aug 2009
  * Tweak CardListModelListener API to work better with the changes to
    the handling of phyiscal filters

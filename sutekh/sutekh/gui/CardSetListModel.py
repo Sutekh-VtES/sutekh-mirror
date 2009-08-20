@@ -507,6 +507,16 @@ class CardSetCardListModel(CardListModel):
             if self.iExtraLevelsMode in [SHOW_EXPANSIONS, EXP_AND_CARD_SETS]:
                 self._init_expansions(dAbsCards[oAbsCard].dExpansions,
                         oAbsCard)
+            if not self.check_card_visible(dAbsCards[oAbsCard].oPhysCard):
+                # Fix the Row's Physical Card to point to the first
+                # expansion, in alphabetical order
+                # pylint: disable-msg=E1101
+                # SQLObject confuses pylint
+                aPhysCards = [x for x in oAbsCard.physicalCards if
+                        self.check_card_visible(x)]
+                # This is safe, since we know the None case has been excluded
+                aPhysCards.sort(key=lambda x: x.expansion.name)
+                dAbsCards[oAbsCard].oPhysCard = aPhysCards[0]
 
     def _get_child_filters(self, oCurFilter):
         """Get the filters for the child card sets of this card set."""
@@ -981,7 +991,7 @@ class CardSetCardListModel(CardListModel):
                 oChildIter = self.prepend(oSectionIter)
                 self.set(oChildIter, 0, oCard.name,
                         1, iCnt, 2, iParCnt, 3, bIncCard, 4, bDecCard,
-                        8, oCard, 9, IPhysicalCard((oCard, None)),
+                        8, oCard, 9, oRow.oPhysCard,
                         )
                 self.set_par_count_colour(oChildIter, iParCnt, iCnt)
                 self._dAbs2Iter.setdefault(oCard, []).append(oChildIter)
