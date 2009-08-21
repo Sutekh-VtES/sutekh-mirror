@@ -182,7 +182,7 @@ class CardSetPrint(CardListPlugin):
         oGroupedIter, _aAbsCards = self.model.grouped_card_iter(oCardIter)
 
         # Iterate over groups
-        for sGroup, oGroupIter in oGroupedIter:
+        for sGroup, oGroupIter in sorted(oGroupedIter, key=lambda x: x[0]):
             # Check for null group
             if sGroup is None:
                 sGroup = '<< None >>'
@@ -190,7 +190,7 @@ class CardSetPrint(CardListPlugin):
             aMarkup.append("<u>%s:</u>" % (self.escape(sGroup),))
 
             # Fill in Cards
-            for oCard, oRow in oGroupIter:
+            for oCard, oRow in sorted(oGroupIter, key=lambda x: x[0].name):
                 iCnt = oRow.get_card_count()
                 aMarkup.append("  %ix %s" % (iCnt, self.escape(oCard.name)))
 
