@@ -8,7 +8,7 @@
 
 import gtk
 import pango
-from sutekh.core.SutekhObjects import PhysicalCardSet
+from sutekh.core.SutekhObjects import PhysicalCardSet, IAbstractCard
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhDialog import do_complaint_error
 
@@ -179,7 +179,7 @@ class CardSetPrint(CardListPlugin):
         aMarkup.append("")
 
         oCardIter = self.model.get_card_iterator(None)
-        oGroupedIter, _aAbsCards = self.model.grouped_card_iter(oCardIter)
+        oGroupedIter = self.model.groupby(oCardIter, IAbstractCard)
 
         # Iterate over groups
         for sGroup, oGroupIter in sorted(oGroupedIter, key=lambda x: x[0]):
@@ -189,10 +189,17 @@ class CardSetPrint(CardListPlugin):
 
             aMarkup.append("<u>%s:</u>" % (self.escape(sGroup),))
 
+            dCardInfo = {}
+            for oCard in oGroupIter:
+                # pylint: disable-msg=E1101
+                # pyprotocols confuses pylint
+                sCardName = IAbstractCard(oCard).name
+                dCardInfo.setdefault(sCardName, 0)
+                dCardInfo[sCardName] += 1
+
             # Fill in Cards
-            for oCard, oRow in sorted(oGroupIter, key=lambda x: x[0].name):
-                iCnt = oRow.get_card_count()
-                aMarkup.append("  %ix %s" % (iCnt, self.escape(oCard.name)))
+            for sCardName, iCnt in sorted(dCardInfo.items()):
+                aMarkup.append("  %ix %s" % (iCnt, self.escape(sCardName)))
 
             aMarkup.append("")
 

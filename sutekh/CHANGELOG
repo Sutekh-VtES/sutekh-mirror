@@ -1,3 +1,7 @@
+21 Aug 2009
+ * Don't use grouped_card_iter in printing so we don't inherit the "show all
+   cards", etc. settings.
+
 20 Aug 2009
  * Tweak logic for physical card assigned to the model when the filter
    restricts this.
