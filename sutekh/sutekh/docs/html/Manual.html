@@ -691,11 +691,12 @@ this filter with the <em>Cost Type</em> filter (see
 <a href="#combining">Combining Basic Filters</a>). Note that cards without a cost are 
 considered not to have a cost type either, so filtering for a cost of 0 and 
 a cost type will fail to match any cards. </li>
-<li><em>Life (Crypt)</em>: Filter on the life value of a crypt card. You must specify a 
+<li><em>Life</em>: Filter on the life value of a card. You must specify a 
 <a href="#list">list</a> of life values. A card matches if the life value listed on the card 
-matches any life value in the list. This filter only matches crypt cards which 
-have a life value (currently the Imbued), and does not match library cards which 
-have a life value (other allies, and retainers).</li>
+matches any life value in the list. This filter matches crypt cards which 
+have a life value (currently the Imbued), and match library cards which 
+have a life value (other allies, and retainers). For allies and retainers this 
+matches only the base life if the life varies with discipline level.</li>
 <li><em>Creed</em>: Filter on the creed(s) listed on the card. You must specify a 
 <a href="#list">list</a> of creeds. A card matches if any creed listed on the card matches 
 any creed in the list.</li>
@@ -1009,9 +1010,8 @@ columns to display using this plugin.</p>
 <li><em>Disciplines and Virtues:</em> Show the Disciplines or Virtues listed on the card.</li>
 <li><em>Card Type:</em> Show the card type.</li>
 <li><em>Expansions:</em> Show the expansions in which the card has been printed.</li>
-<li><em>Capacity or Life (Imbued):</em> Show the capacity associated with the card, or 
-its life, if it is an Imbued crypt card. The life of other ally and retainer 
-cards is not shown.</li>
+<li><em>Capacity or Life:</em> Show the capacity associated with the card, or 
+its life.</li>
 <li><em>Sect</em>: Show the Sect associated with the card.</li>
 <li><em>Title</em>: Show the political titles listed on the card, if it is a crypt card. 
 Titles listed on library cards will not be shown.</li>

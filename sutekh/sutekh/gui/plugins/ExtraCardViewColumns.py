@@ -30,7 +30,7 @@ class ExtraCardViewColumns(CardListPlugin):
             'Disciplines and Virtues' : 150,
             'Expansions' : 600,
             'Group' : 40,
-            'Capacity or Life(Imbued)' : 40,
+            'Capacity or Life' : 40,
             'Cost' : 100,
             }
 
@@ -53,7 +53,7 @@ class ExtraCardViewColumns(CardListPlugin):
         self._dCols['Title'] = self._render_title
         self._dCols['Sect'] = self._render_sect
         self._dCols['Card Text'] = self._render_card_text
-        self._dCols['Capacity or Life(Imbued)'] = self._render_capacity
+        self._dCols['Capacity or Life'] = self._render_capacity
         self._dCols['Cost'] = self._render_cost
 
         self._dSortDataFuncs = {}
@@ -66,7 +66,7 @@ class ExtraCardViewColumns(CardListPlugin):
         self._dSortDataFuncs['Title'] = self._get_data_title
         self._dSortDataFuncs['Sect'] = self._get_data_sect
         self._dSortDataFuncs['Card Text'] = self._get_data_card_text
-        self._dSortDataFuncs['Capacity or Life(Imbued)'] = \
+        self._dSortDataFuncs['Capacity or Life'] = \
                 self._get_data_capacity
         self._dSortDataFuncs['Cost'] = self._get_data_cost_sortkey
 
