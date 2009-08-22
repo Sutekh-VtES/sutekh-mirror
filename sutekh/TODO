@@ -16,22 +16,24 @@ For 0.8.0 cycle
     + Add PhysicalCard and AbstractCard to the CardListModel columns.
     - Parts of add more info to the database:
           - Migrate burnoption to keyword.
+          - Base bleed, strength, stealth, intercept keywords
+              - "0 bleed", "1 bleed", "2 bleed", etc.
+              - "0 strength", "1 strength", "X strength", etc.
+              - "1 stealth", "1 intercept".
           - Parse artist info from the cardlist
+          - Ally/Retainer life ?
+              - Put base ally / retainer life into existing life column.
+    + Standardise the reader/writer design for the io files. 
+       + Parser: .__init__(), .parse(fIn, oHolder)
+       + Writer: .__init__(), .write(fOut, oHolder)
 
  - Definite
     * Improve Filter Edit Dialog
     + Add more info to the database. At least some of
-       + Additional keywords
+       + Additional keywords (somewhat done)
           - Other card distinctions (trifle, location, loquipment, etc.)
-          - Base bleed, strength, stealth, intercept.
-              - "0 bleed", "1 bleed", "2 bleed", etc.
-              - "0 strength", "1 strength", "X strength", etc.
-              - "1 stealth", "1 intercept".
-       + Ally/Retainer life ?
-          - Put base ally / retainer life into existing life column.
-    + Standardise the reader/writer design for the io files.
-       + Parser: .__init__(), .parse(fIn, oHolder)
-       + Writer: .__init__(), .write(fOut, oHolder)
+          - Corner cases for keywords (Ghoul retainer strength, High Top
+            intercept, etc.)
     * Add decent error checking for the io files
     * Redo preferences system. Allow finder grained preferences (save
       groupings, etc per card set)
@@ -45,13 +47,13 @@ For 0.8.0 cycle
       - Allow specifying order of columns to use, etc.
 
     Website:
-       * Mirror documentation on website.
+       * Mirror documentation on website. (sort of done, needs automating)
 
  - Nice to have
     * Add ways of specifying more limited test data sets
     * Add better persistence of data across tests, to avoid rerunning the 
       parser for each test and improve test runtime
-    * Address code duplication issues - especially io module & Filter tests
+    * Address code duplication issues - especially io module & Filter tests (largely done)
     * Abstract Card Editor
     * Real plugin support
       - and mechanism for plugins to provide their own documentation to the
