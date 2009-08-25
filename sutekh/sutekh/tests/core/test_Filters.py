@@ -367,6 +367,8 @@ class FilterTests(SutekhTest):
             u"Harbinger of Skulls", u"Lasombra", u"Nosferatu antitribu",
             u"Osebo", u"Pander", u"Ravnos", u"Samedi", u"Toreador", u"Tremere",
             u"Tzimisce", u"Ventrue"])
+        self.assertEqual(Filters.MultiCapacityFilter.get_values(),
+                [str(x) for x in range(1,12)])
         self.assertEqual(Filters.MultiDisciplineFilter.get_values(),
                 [u"Abombwe", u"Animalism", u"Auspex", u"Celerity",
                     u"Chimerstry", u"Dementation", u"Dominate", u"Flight",

@@ -1,3 +1,7 @@
+25 Aug 2009
+ * Don't hard-code numerical limits in Filters for group, life, etc., but
+   read them from the database.
+
 21 Aug 2009
  * Don't use grouped_card_iter in printing so we don't inherit the "show all
    cards", etc. settings.

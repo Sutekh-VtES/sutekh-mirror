@@ -716,7 +716,11 @@ class MultiGroupFilter(DirectFilter):
     # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
-        return [str(x) for x in range(1, 6)] + ['Any']
+        # pylint: disable-msg=E1101
+        # E1101 - avoid SQLObject method not detected problems
+        iMax = AbstractCard.select().accumulateOne(func.MAX,
+                AbstractCard.q.group)
+        return [str(x) for x in range(1, iMax + 1)] + ['Any']
 
     def _get_expression(self):
         # pylint: disable-msg=E1101
@@ -752,7 +756,11 @@ class MultiCapacityFilter(DirectFilter):
     # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
-        return [str(x) for x in range(1, 12)]
+        # pylint: disable-msg=E1101
+        # E1101 - avoid SQLObject method not detected problems
+        iMax = AbstractCard.select().accumulateOne(func.MAX,
+                AbstractCard.q.capacity)
+        return [str(x) for x in range(1, iMax + 1)]
 
     def _get_expression(self):
         # pylint: disable-msg=E1101
@@ -798,7 +806,11 @@ class MultiCostFilter(DirectFilter):
     # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
-        return [str(x) for x in range(0, 7)] + ['X']
+        # pylint: disable-msg=E1101
+        # E1101 - avoid SQLObject method not detected problems
+        iMax = AbstractCard.select().accumulateOne(func.MAX,
+                AbstractCard.q.cost)
+        return [str(x) for x in range(0, iMax + 1)] + ['X']
 
     def _get_expression(self):
         # pylint: disable-msg=E1101
@@ -884,7 +896,11 @@ class MultiLifeFilter(DirectFilter):
     # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
-        return [str(x) for x in range(1, 8)]
+        # pylint: disable-msg=E1101
+        # E1101 - avoid SQLObject method not detected problems
+        iMax = AbstractCard.select().accumulateOne(func.MAX,
+                AbstractCard.q.life)
+        return [str(x) for x in range(1, iMax + 1)]
 
     def _get_expression(self):
         # pylint: disable-msg=E1101
