@@ -718,8 +718,7 @@ class MultiGroupFilter(DirectFilter):
     def get_values(cls):
         # pylint: disable-msg=E1101
         # E1101 - avoid SQLObject method not detected problems
-        iMax = AbstractCard.select().accumulateOne(func.MAX,
-                AbstractCard.q.group)
+        iMax = AbstractCard.select().max(AbstractCard.q.group)
         return [str(x) for x in range(1, iMax + 1)] + ['Any']
 
     def _get_expression(self):
@@ -758,8 +757,7 @@ class MultiCapacityFilter(DirectFilter):
     def get_values(cls):
         # pylint: disable-msg=E1101
         # E1101 - avoid SQLObject method not detected problems
-        iMax = AbstractCard.select().accumulateOne(func.MAX,
-                AbstractCard.q.capacity)
+        iMax = AbstractCard.select().max(AbstractCard.q.capacity)
         return [str(x) for x in range(1, iMax + 1)]
 
     def _get_expression(self):
@@ -808,8 +806,7 @@ class MultiCostFilter(DirectFilter):
     def get_values(cls):
         # pylint: disable-msg=E1101
         # E1101 - avoid SQLObject method not detected problems
-        iMax = AbstractCard.select().accumulateOne(func.MAX,
-                AbstractCard.q.cost)
+        iMax = AbstractCard.select().max(AbstractCard.q.cost)
         return [str(x) for x in range(0, iMax + 1)] + ['X']
 
     def _get_expression(self):
@@ -898,8 +895,7 @@ class MultiLifeFilter(DirectFilter):
     def get_values(cls):
         # pylint: disable-msg=E1101
         # E1101 - avoid SQLObject method not detected problems
-        iMax = AbstractCard.select().accumulateOne(func.MAX,
-                AbstractCard.q.life)
+        iMax = AbstractCard.select().max(AbstractCard.q.life)
         return [str(x) for x in range(1, iMax + 1)]
 
     def _get_expression(self):
