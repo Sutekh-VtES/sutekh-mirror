@@ -879,10 +879,11 @@ class LifeFilter(DirectFilter):
 class MultiLifeFilter(DirectFilter):
     """Filter on a list of list values"""
     keyword = "Life"
-    description = "Life (Crypt)"
-    helptext = "a list of life values.\nReturns crypt cards with the " \
-            "selected  life. This should not be confused with the life for " \
-            "allies and retainers, as these are not crypt cards."
+    description = "Life"
+    helptext = "a list of life values.\nReturns allies (both library and " \
+            "crypt cards) and retainers with the selected life.\n" \
+            "For cases where the life varies, only the base value for life " \
+            "is used."
     islistfilter = True
     types = ['AbstractCard', 'PhysicalCard']
 
