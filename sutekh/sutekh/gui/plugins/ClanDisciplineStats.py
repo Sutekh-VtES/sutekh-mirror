@@ -12,7 +12,8 @@
 import gtk
 import pango
 import gobject
-from sutekh.core.SutekhObjects import PhysicalCard, Clan, ICardType
+from sutekh.core.SutekhObjects import PhysicalCard, Clan, ICardType, \
+        AbstractCard
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
@@ -121,15 +122,13 @@ class GroupStats(object):
 class ClanStats(object):
     """Manage combined statistics for a clan"""
 
-    def __init__(self):
+    def __init__(self, iMaxGrp):
         # Set of all vampires
         self.oAllStats = GroupStats()
         # group pairs
-        self.dSubStats = { (1, 2): GroupStats(),
-                           (2, 3): GroupStats(),
-                           (3, 4): GroupStats(),
-                           (4, 5): GroupStats(),
-                         }
+        self.dSubStats = { }
+        for iGrp in range(1, iMaxGrp):
+            self.dSubStats[(iGrp, iGrp+1)] = GroupStats()
 
     def add_vamp(self, oVamp):
         """Process a vampire to the total"""
@@ -225,18 +224,22 @@ class StatsModel(gtk.TreeStore):
 
     def gather_stats(self):
         """Collect up information on vampires from all clans."""
+        # pylint: disable-msg=E1101
+        # E1101 - avoid SQLObject method not detected problems
+        iMaxGrp = AbstractCard.select().max(AbstractCard.q.group)
+
         aClans = list(Clan.select())
         aClans.sort(key = lambda x: x.name)
 
         for oClan in aClans:
-            yield (oClan, self.gather_clan_stats(oClan))
+            yield (oClan, self.gather_clan_stats(oClan, iMaxGrp))
 
     # pylint: disable-msg=R0201
     # could be a function, but that doesn't add to clarity
-    def gather_clan_stats(self, oClan):
+    def gather_clan_stats(self, oClan, iMaxGrp):
         """Collect information on vampires from a particular clan."""
         oVampType = ICardType("Vampire")
-        oClanStats = ClanStats()
+        oClanStats = ClanStats(iMaxGrp)
 
         for oCard in oClan.cards:
             if oVampType in oCard.cardtype:

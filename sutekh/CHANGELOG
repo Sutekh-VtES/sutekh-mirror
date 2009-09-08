@@ -1,3 +1,6 @@
+08 Sep 2009
+ * Query database for max group in ClanDisciplineStats plugin
+
 25 Aug 2009
  * Don't hard-code numerical limits in Filters for group, life, etc., but
    read them from the database.
