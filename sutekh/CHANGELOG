@@ -1,5 +1,6 @@
 08 Sep 2009
  * Query database for max group in ClanDisciplineStats plugin
+ * Update maximum limit on SQLObject, since 0.11 has been released
 
 25 Aug 2009
  * Don't hard-code numerical limits in Filters for group, life, etc., but
