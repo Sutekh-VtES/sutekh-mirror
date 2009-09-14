@@ -94,7 +94,7 @@ setup   (   # Metadata
                 'py2exe': PkgResourceBuilder,
             },
             options = { 'py2exe': {
-                'dist_dir': 'dist/sutekh-%s' % SutekhInfo.VERSION_STR,
+                'dist_dir': 'build/sutekh-%s-py2exe' % SutekhInfo.VERSION_STR,
                 'packages': [
                     'logging', 'encodings', 'sqlite3',
                 ],

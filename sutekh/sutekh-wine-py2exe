@@ -5,17 +5,45 @@
 # Usage: sutekh-wine-py2exe <dependencies folder>
 
 SUTEKH_VERSION=`PYTHONPATH=. python -c "from sutekh import SutekhInfo; print SutekhInfo.SutekhInfo.VERSION_STR"`
-BUILD_FOLDER="sutekh-${SUTEKH_VERSION}"
-ZIP_NAME="${BUILD_FOLDER}.zip"
+BUILD_NAME="sutekh-${SUTEKH_VERSION}"
+BUILD_FOLDER="build/${BUILD_NAME}-py2exe"
+ZIP_NAME="dist/${BUILD_NAME}.zip"
 TEMPLATE_FOLDER="$1"
 PY2EXE_LOG="py2exe.log"
+
+# Calculate paths.
+
+WINE_WIN_PYTHON=`wine python -u -c "import os, sys; print os.path.dirname(sys.executable)"`
+WINE_WIN_SYS32="C:/windows/system32"
+WINE_PYTHON=`winepath "${WINE_WIN_PYTHON}"`
+WINE_SYS32=`winepath "${WINE_WIN_SYS32}"`
+
+# Sanitize build environment
+
+rm -rf "${BUILD_FOLDER}"
+rm -rf "${ZIP_NAME}"
+mkdir -p "${BUILD_FOLDER}"
+mkdir -p `dirname "${ZIP_NAME}"`
+
+#
+# Report vairables 
+#
+
+echo "=== Building Sutekh for Windows using Wine ==="
+echo ""
+echo "  Sutekh version: ${SUTEKH_VERSION}"
+echo "  Build folder: ${BUILD_FOLDER}"
+echo "  Dist file: ${ZIP_NAME}"
+echo "  Wine Python: ${WINE_PYTHON}"
+echo "  Wine System32: ${WINE_SYS32}"
+echo ""
 
 #
 # Run py2exe build under wine
 #
 
 echo "=== Running wine python setup.py ==="
-echo "  Sutekh version: ${SUTEKH_VERSION}"
+echo ""
 echo "  Writing log to ${PY2EXE_LOG}."
 echo "  ---"
 echo "  Please make sure you have patched your py2exe run.exe"
@@ -31,34 +59,38 @@ wine python setup.py py2exe >${PY2EXE_LOG} 2>&1
 #   and /share by installing GTK in a Windows machine
 #   and copying them into the template folder.
 # Copy python dll that py2exe misses   
+# Copy msvcr71 dll that py2exe misses
 # Copy sqlite dll that py2exe misses
-#   One should be able to obtain python25.dll and
-#   sqlite3.dll from a Windows Python 2.5 installation.
 
 echo "=== Copying in GTK and Python dependencies that py2exe missed ==="
+echo ""
 echo "  Using template folder ${TEMPLATE_FOLDER}."
 echo ""
 
+echo "'${TEMPLATE_FOLDER}' -> '${BUILD_FOLDER}"
 cp -R \
     "${TEMPLATE_FOLDER}/etc" \
     "${TEMPLATE_FOLDER}/lib" \
     "${TEMPLATE_FOLDER}/share" \
-    "${TEMPLATE_FOLDER}/python25.dll" \
-    "${TEMPLATE_FOLDER}/sqlite3.dll" \
-  "dist/${BUILD_FOLDER}"
+  "${BUILD_FOLDER}"
+
+cp -v "${WINE_SYS32}/python25.dll" "${BUILD_FOLDER}"
+cp -v "${WINE_SYS32}/msvcr71.dll" "${BUILD_FOLDER}"
+cp -v "${WINE_PYTHON}/DLLs/sqlite3.dll" "${BUILD_FOLDER}"
+
+echo ""
 
 #
 # create zip file
 #
 
 echo "=== Creating zip of patched py2exe dist folder ==="
-echo "  Zip file: dist/${ZIP_NAME}"
-echo "  Build folder: dist/${BUILD_FOLDER}"
+echo ""
+echo "  Zip file: ${ZIP_NAME}"
+echo "  Build folder: ${BUILD_FOLDER}"
 echo ""
 
-cd dist
 rm -f "$ZIP_NAME"
-zip -r -q "$ZIP_NAME" "$BUILD_FOLDER"
-rm -rf "/home/simon/.VirtualBox/shared/$BUILD_FOLDER"
-cp -R "$BUILD_FOLDER" ~/.VirtualBox/shared/
-cd ..
+cd `dirname "${BUILD_FOLDER}"`
+zip -r -q "$OLDPWD/$ZIP_NAME" `basename "${BUILD_FOLDER}"`
+cd "$OLDPWD"
