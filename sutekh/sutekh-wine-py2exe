@@ -2,21 +2,22 @@
 # Copyright 2008 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
 #
-# Usage: sutekh-wine-py2exe <dependencies folder>
+# Usage: sutekh-wine-py2exe
 
 SUTEKH_VERSION=`PYTHONPATH=. python -c "from sutekh import SutekhInfo; print SutekhInfo.SutekhInfo.VERSION_STR"`
 BUILD_NAME="sutekh-${SUTEKH_VERSION}"
 BUILD_FOLDER="build/${BUILD_NAME}-py2exe"
 ZIP_NAME="dist/${BUILD_NAME}.zip"
-TEMPLATE_FOLDER="$1"
 PY2EXE_LOG="py2exe.log"
 
 # Calculate paths.
 
 WINE_WIN_PYTHON=`wine python -u -c "import os, sys; print os.path.dirname(sys.executable)"`
 WINE_WIN_SYS32="C:/windows/system32"
+WINE_WIN_GTK="C:/GTK"
 WINE_PYTHON=`winepath "${WINE_WIN_PYTHON}"`
 WINE_SYS32=`winepath "${WINE_WIN_SYS32}"`
+WINE_GTK=`winepath "${WINE_WIN_GTK}"`
 
 # Sanitize build environment
 
@@ -36,6 +37,7 @@ echo "  Build folder: ${BUILD_FOLDER}"
 echo "  Dist file: ${ZIP_NAME}"
 echo "  Wine Python: ${WINE_PYTHON}"
 echo "  Wine System32: ${WINE_SYS32}"
+echo "  Wine GTK: ${WINE_GTK}"
 echo ""
 
 #
@@ -53,26 +55,23 @@ echo ""
 
 wine python setup.py py2exe >${PY2EXE_LOG} 2>&1
 
-#
-# Copy in GTK dependencies py2exe missed
-#   One should be able to obtain /etc, /lib
-#   and /share by installing GTK in a Windows machine
-#   and copying them into the template folder.
+# Copy /etc, /lib and /share/themes from GTK Wine installation
 # Copy python dll that py2exe misses   
 # Copy msvcr71 dll that py2exe misses
 # Copy sqlite dll that py2exe misses
 
 echo "=== Copying in GTK and Python dependencies that py2exe missed ==="
 echo ""
-echo "  Using template folder ${TEMPLATE_FOLDER}."
-echo ""
 
-echo "'${TEMPLATE_FOLDER}' -> '${BUILD_FOLDER}"
-cp -R \
-    "${TEMPLATE_FOLDER}/etc" \
-    "${TEMPLATE_FOLDER}/lib" \
-    "${TEMPLATE_FOLDER}/share" \
-  "${BUILD_FOLDER}"
+echo "'${WINE_GTK}/etc' -> '${BUILD_FOLDER}'"
+cp -R "${WINE_GTK}/etc" "${BUILD_FOLDER}"
+
+echo "'${WINE_GTK}/lib' -> '${BUILD_FOLDER}'"
+cp -R "${WINE_GTK}/lib" "${BUILD_FOLDER}"
+
+echo "'${WINE_GTK}/share/themes' -> '${BUILD_FOLDER}/share'"
+mkdir -p "${BUILD_FOLDER}/share"
+cp -R "${WINE_GTK}/share/themes" "${BUILD_FOLDER}/share"
 
 cp -v "${WINE_SYS32}/python25.dll" "${BUILD_FOLDER}"
 cp -v "${WINE_SYS32}/msvcr71.dll" "${BUILD_FOLDER}"
