@@ -71,7 +71,7 @@ class CardSetFrame(CardListFrame):
         # Find an unused name for this card set
         iCount = 0
         sFinalName = sNewName
-        while self._oMainWindow.find_pane_by_name(sFinalName) is not None:
+        while self._oMainWindow.find_pane_by_name(sFinalName) not in [None, self]:
             iCount += 1
             sFinalName = "%s (%d)" % (sNewName, iCount)
         self._sName = sFinalName
