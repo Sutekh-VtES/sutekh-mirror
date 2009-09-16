@@ -448,8 +448,9 @@ class WhiteWolfParserTests(SutekhTest):
         # Check The Slaughterhouse
         oSlaughter = IAbstractCard('The Slaughterhouse')
         self.assertEqual(oSlaughter.canonicalName, u"the slaughterhouse")
-        self.assertEqual(len(oSlaughter.keywords), 1)
+        self.assertEqual(len(oSlaughter.keywords), 2)
         self.failUnless(IKeyword('burn option') in oSlaughter.keywords)
+        self.failUnless(IKeyword('location') in oSlaughter.keywords)
 
 
 if __name__ == "__main__":
