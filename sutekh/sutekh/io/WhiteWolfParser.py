@@ -124,6 +124,38 @@ class CardDict(dict):
     oLifeRgx = re.compile('(Unique )?\[?(Gargoyle creature|[A-Za-z]+)\]?'
             ' with (\d) life\.')
 
+    dEquipmentProperties = {
+            'unique' : re.compile('Unique (melee )?weapon|Unique equipment|'
+                'represents a unique location'),
+            'location' : re.compile('represents a (unique )?location'),
+            'melee weapon' : re.compile('[mM]elee weapon\.'),
+            'cold iron' : re.compile('weapon\. Cold iron\.'),
+            'gun' : re.compile('[wW]eapon[:,.] [gG]un\.'),
+            'weapon' : re.compile('[wW]eapon[:,.] [gG]un\.|[mM]elee weapon\.|'
+                'Weapon.|Unique weapon.'),
+            'vehicle' : re.compile('Vehicle\.'),
+            'haven' : re.compile('Haven\.'),
+            }
+
+    dMasterProperties = {
+            # unique isn't very consistent
+            'unique' : re.compile('[Uu]nique [mM]aster|Master: unique|Unique\.'),
+            'trifle' : re.compile('[mM]aster[:.] .*[tT]rifle'),
+            'discipline' : re.compile('Master: Discipline\.'),
+            'out-of-turn' : re.compile('Master: out-of-turn'),
+            'location' : re.compile('Master[:.] (unique )?[Ll]ocation'),
+            'boon' : re.compile('Boon\.'),
+            'frenzy' : re.compile('Frenzy\.'),
+            'hunting ground' : re.compile('Hunting Ground'),
+            'haven' : re.compile('Haven\.'),
+            }
+
+    dOtherProperties = {
+            'unique' : re.compile('Unique\.'),
+            'boon' : re.compile('Boon\.'),
+            'frenzy' : re.compile('Frenzy\.'),
+            }
+
 
     def __init__(self, oLogger):
         super(CardDict, self).__init__()
@@ -174,6 +206,12 @@ class CardDict(dict):
             if oMatch:
                 self._add_keyword(oCard, sKeyword)
 
+    def _find_card_keywords(self, oCard, dProps):
+        """Find keywords for master cards"""
+        for sKeyword, oRegexp in dProps.iteritems():
+            oMatch = oRegexp.search(self['text'])
+            if oMatch:
+                self._add_keyword(oCard, sKeyword)
 
     def _parse_text(self, oCard):
         """Parse the CardText for Sect and Titles"""
@@ -184,7 +222,8 @@ class CardDict(dict):
             sTypes = self['cardtype']
             # Determine if we need to examine the card further based on type
             for sVal in sTypes.split('/'):
-                if sVal in ['Vampire', 'Imbued', 'Ally', 'Retainer']:
+                if sVal in ['Vampire', 'Imbued', 'Ally', 'Retainer',
+                        'Equipment', 'Master']:
                     sType = sVal
 
         # Check for REFLEX card type
@@ -198,6 +237,12 @@ class CardDict(dict):
             self._find_crypt_keywords(oCard)
         elif sType == 'Ally' or sType == 'Retainer':
             self._find_lib_life_and_keywords(oCard)
+        elif sType == 'Equipment':
+            self._find_card_keywords(oCard, self.dEquipmentProperties)
+        elif sType == 'Master':
+            self._find_card_keywords(oCard, self.dMasterProperties)
+        else:
+            self._find_card_keywords(oCard, self.dOtherProperties)
         if sType == 'Vampire':
             # Sect attributes: more text. Title is in the attributes
             aLines = self['text'].split(':')

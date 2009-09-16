@@ -1,3 +1,6 @@
+16 Sep 2009
+ * Add more keywords (equipment & master keywords)
+
 08 Sep 2009
  * Query database for max group in ClanDisciplineStats plugin
  * Update maximum limit on SQLObject, since 0.11 has been released

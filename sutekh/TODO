@@ -20,6 +20,8 @@ For 0.8.0 cycle
               - "0 bleed", "1 bleed", "2 bleed", etc.
               - "0 strength", "1 strength", "X strength", etc.
               - "1 stealth", "1 intercept".
+          - Master keywords (trifle, out-of-turn, discipline, location, etc.)
+          - Equipment keywords (gun, melee weapon, vehicle, etc.)
           - Parse artist info from the cardlist
           - Ally/Retainer life ?
               - Put base ally / retainer life into existing life column.
@@ -31,7 +33,6 @@ For 0.8.0 cycle
     * Improve Filter Edit Dialog
     + Add more info to the database. At least some of
        + Additional keywords (somewhat done)
-          - Other card distinctions (trifle, location, loquipment, etc.)
           - Corner cases for keywords (Ghoul retainer strength, High Top
             intercept, etc.)
     * Add decent error checking for the io files
