@@ -139,7 +139,8 @@ class CardDict(dict):
 
     dMasterProperties = {
             # unique isn't very consistent
-            'unique' : re.compile('[Uu]nique [mM]aster|Master: unique|Unique\.'),
+            'unique' : re.compile('[Uu]nique [mM]aster|Master: unique|'
+                'Unique\.'),
             'trifle' : re.compile('[mM]aster[:.] .*[tT]rifle'),
             'discipline' : re.compile('Master: Discipline\.'),
             'out-of-turn' : re.compile('Master: out-of-turn'),
