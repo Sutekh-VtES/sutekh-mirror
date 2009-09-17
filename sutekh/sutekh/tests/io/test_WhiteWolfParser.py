@@ -122,6 +122,8 @@ class WhiteWolfParserTests(SutekhTest):
 
         self.assertTrue(IRarityPair(('VTES', 'Common')) in o44.rarity)
 
+        self.failUnless(IKeyword('gun') in o44.keywords)
+        self.failUnless(IKeyword('weapon') in o44.keywords)
 
         # Find some discipline pairs
         oFortInf = IDisciplinePair((u"Fortitude", u"inferior"))
@@ -229,6 +231,11 @@ class WhiteWolfParserTests(SutekhTest):
         self.assertEqual(len(oShaEnnu.artists), 1)
         self.failUnless(IArtist('Richard Thomas') in oShaEnnu.artists)
 
+        self.failUnless(IKeyword('0 stealth') in oShaEnnu.keywords)
+        self.failUnless(IKeyword('0 intercept') in oShaEnnu.keywords)
+        self.failUnless(IKeyword('1 strength') in oShaEnnu.keywords)
+        self.failUnless(IKeyword('3 bleed') in oShaEnnu.keywords)
+
         # Check Kabede
 
         oKabede = IAbstractCard(u"Kabede Maru")
@@ -257,6 +264,11 @@ class WhiteWolfParserTests(SutekhTest):
         self.assertTrue(IRarityPair(('LotN', 'Uncommon')) in oKabede.rarity)
         self.assertEqual(len(oKabede.artists), 1)
         self.failUnless(IArtist('Ken Meyer, Jr.') in oKabede.artists)
+
+        self.failUnless(IKeyword('0 stealth') in oKabede.keywords)
+        self.failUnless(IKeyword('0 intercept') in oKabede.keywords)
+        self.failUnless(IKeyword('1 strength') in oKabede.keywords)
+        self.failUnless(IKeyword('1 bleed') in oKabede.keywords)
 
         # Check Predator's Communion
         oPredComm = IAbstractCard(u"Predator's Communion")
@@ -374,6 +386,9 @@ class WhiteWolfParserTests(SutekhTest):
         self.assertEqual(len(oAbo.artists), 1)
         self.failUnless(IArtist('Ken Meyer, Jr.') in oAbo.artists)
 
+        self.failUnless(IKeyword('trifle') in oAbo.keywords)
+        self.failUnless(IKeyword('discipline') in oAbo.keywords)
+
         # Ablative Skin Card
         oAblat = IAbstractCard('Ablative Skin')
 
@@ -441,6 +456,8 @@ class WhiteWolfParserTests(SutekhTest):
         self.assertEqual(oPath1.costtype, 'pool')
         self.failUnless(ICardType('Master') in oPath1.cardtype)
 
+        self.failUnless(IKeyword('unique') in oPath1.keywords)
+
         # Check alternative lookup
         oPath2 = IAbstractCard('Path of Blood, The')
         self.assertEqual(oPath1.id, oPath2.id)
@@ -451,6 +468,32 @@ class WhiteWolfParserTests(SutekhTest):
         self.assertEqual(len(oSlaughter.keywords), 2)
         self.failUnless(IKeyword('burn option') in oSlaughter.keywords)
         self.failUnless(IKeyword('location') in oSlaughter.keywords)
+
+        # Check keywords for The Ankara Citadel, Turkey
+        oCitadel = IAbstractCard('The Ankara Citadel, Turkey')
+        self.assertEqual(oCitadel.cost, 2)
+        self.failUnless(IClan('Tremere') in oCitadel.clan)
+        self.assertEqual(oCitadel.costtype, 'blood')
+        self.failUnless(IKeyword('location') in oCitadel.keywords)
+        self.failUnless(IKeyword('unique') in oCitadel.keywords)
+
+        # Check life & keywords for Ossian
+        oOssian = IAbstractCard('Ossian')
+        self.assertEqual(oOssian.life, 4)
+        self.assertEqual(oOssian.cost, 3)
+        self.assertEqual(oOssian.costtype, 'pool')
+        self.failUnless(IKeyword('werewolf') in oOssian.keywords)
+        self.failUnless(IKeyword('red list') in oOssian.keywords)
+        self.failUnless(IKeyword('unique') in oOssian.keywords)
+        self.failUnless(IKeyword('0 bleed') in oOssian.keywords)
+        self.failUnless(IKeyword('2 strength') in oOssian.keywords)
+
+        # Check life & keywords for Raven Spy
+        oRaven = IAbstractCard('Raven Spy')
+        self.failUnless(IKeyword('animal') in oRaven.keywords)
+        self.assertEqual(oRaven.life, 1)
+        self.assertEqual(oRaven.cost, 1)
+        self.assertEqual(oRaven.costtype, 'blood')
 
 
 if __name__ == "__main__":
