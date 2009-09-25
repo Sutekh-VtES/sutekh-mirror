@@ -1,3 +1,7 @@
+25 Sep 2009
+ * Do required iter juggling when editing with a physical filter in place
+   so entries don't get unexpectedly collapsed
+
 17 Sep 2009
  * Add expansion & font options to the print plugin
 

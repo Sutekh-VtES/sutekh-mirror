@@ -363,6 +363,15 @@ class CardListModel(gtk.TreeStore):
                 break # Failed, so bail on loop
         return bResult
 
+    def get_all_iter_children(self, oIter):
+        """Get a list of all the subiters of this iter"""
+        aChildIters = []
+        oChildIter = self.iter_children(oIter)
+        while oChildIter:
+            aChildIters.append(oChildIter)
+            oChildIter = self.iter_next(oChildIter)
+        return aChildIters
+
     def get_all_from_iter(self, oIter):
         """Get all relevent information about the current iter.
 

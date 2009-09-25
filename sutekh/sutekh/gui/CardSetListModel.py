@@ -136,12 +136,18 @@ class CardSetCardListModel(CardListModel):
         self.oEditColour = None
         self._oCountColour = BLACK
         listen_changed(self.card_changed, PhysicalCardSet)
+        self._oController = None
+
+    def set_controller(self, oController):
+        """Set the controller"""
+        self._oController = oController
 
     def cleanup(self):
         # FIXME: We should make sure that all the references go
         """Remove the signal handler - avoids issues when card sets are
            deleted, but the objects are still around."""
         disconnect_changed(self.card_changed, PhysicalCardSet)
+        self._oController = None
 
     def set_count_colour(self):
         """Format the card count accordingly"""
@@ -1087,8 +1093,14 @@ class CardSetCardListModel(CardListModel):
             # If we have a card count filter, any change can affect us,
             # so we always consider these cases.
             # We hand them off to add_new_card to do the right thing
+            if self._oController and oAbsCard in self._dAbs2Iter:
+                dStates = self._oController.save_iter_state(
+                        self._dAbs2Iter[oAbsCard])
             self._clear_card_iter(oAbsCard)
             self.add_new_card(oPhysCard)
+            if self._oController and oAbsCard in self._dAbs2Iter:
+                self._oController.restore_iter_state(self._dAbs2Iter[oAbsCard],
+                        dStates)
         elif oCardSet.id == self._oCardSet.id:
             # Changing a card from this card set
             if self._oCardSet.inuse:

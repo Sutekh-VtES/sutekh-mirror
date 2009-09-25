@@ -38,6 +38,7 @@ class CardSetController(object):
         # We don't listen for card set creation, since newly created card
         # sets aren't inuse. If that changes, we'll need to add an additional
         # signal listen here
+        self.model.set_controller(self)
 
     # pylint: disable-msg=W0212
     # explicitly allow access to these values via thesep properties
@@ -235,6 +236,17 @@ class CardSetController(object):
             for oFrame in self._oMainWindow.find_cs_pane_by_set_name(
                     self.view.sSetName):
                 oFrame.close_frame()
+
+
+    def save_iter_state(self, aIters):
+        """Ask the view to save the state for us"""
+        dStates = {}
+        self.view.save_iter_state(aIters, dStates)
+        return dStates
+
+    def restore_iter_state(self, aIters, dStates):
+        """Ask the view to restore the state"""
+        self.view.restore_iter_state(aIters, dStates)
 
     def _get_card(self, sCardName, sExpansionName):
         """Convert card name & Expansion to PhsicalCard.

@@ -451,3 +451,30 @@ class CardSetView(CardListView):
            etc."""
         self.sSetName = sNewName
         self.sDragPrefix = PhysicalCardSet.sqlmeta.table + ":" + self.sSetName
+
+    def save_iter_state(self, aIters, dStates):
+        """Save the expanded state of the list of iters in aIters and their
+           children."""
+        dStates.setdefault('expanded', set())
+        dStates.setdefault('selected', set())
+        for oIter in aIters:
+            sKey = self.get_iter_identifier(oIter)
+            if self._oSelection.iter_is_selected(oIter):
+                dStates['selected'].add(sKey)
+            oPath = self._oModel.get_path(oIter)
+            if self.row_expanded(oPath):
+                dStates['expanded'].add(sKey)
+            aChildIters = self._oModel.get_all_iter_children(oIter)
+            self.save_iter_state(aChildIters, dStates)
+
+    def restore_iter_state(self, aIters, dStates):
+        """Restore expanded state of the iters."""
+        for oIter in aIters:
+            sKey = self.get_iter_identifier(oIter)
+            if sKey in dStates['selected']:
+                self._oSelection.select_iter(oIter)
+            if sKey in dStates['expanded']:
+                self.expand_to_path(self._oModel.get_path(oIter))
+            aChildIters = self._oModel.get_all_iter_children(oIter)
+            self.restore_iter_state(aChildIters, dStates)
+
