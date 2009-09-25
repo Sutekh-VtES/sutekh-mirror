@@ -54,7 +54,6 @@ class ImportFromZipFile(CardListPlugin):
                 oAction=gtk.FILE_CHOOSER_ACTION_OPEN,
                 oButtons=(gtk.STOCK_OK, gtk.RESPONSE_OK,
                     gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
-        oDlg.set_name("Sutekh.dialog")
         oDlg.add_filter_with_pattern('Zip Files', ['*.zip', '*.ZIP'])
 
         oDlg.connect("response", self.handle_response)
