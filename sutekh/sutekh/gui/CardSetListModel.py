@@ -15,7 +15,7 @@ from sutekh.core.Filters import FilterAndBox, NullFilter, PhysicalCardFilter, \
         MultiPhysicalCardSetMapFilter, SpecificPhysCardIdFilter
 from sutekh.core.SutekhObjects import PhysicalCard, IAbstractCard, \
         MapPhysicalCardToPhysicalCardSet, IPhysicalCard, IPhysicalCardSet, \
-        PhysicalCardSet
+        PhysicalCardSet, canonical_to_csv
 from sutekh.gui.CardListModel import CardListModel
 from sutekh.core.DBSignals import listen_changed, disconnect_changed
 import gtk
@@ -117,8 +117,8 @@ class CardSetCardListModel(CardListModel):
        entries. Updates the model to correspond to database changes in
        response to calls from CardSetController.
        """
-    def __init__(self, sSetName):
-        super(CardSetCardListModel, self).__init__()
+    def __init__(self, sSetName, oConfig):
+        super(CardSetCardListModel, self).__init__(oConfig)
         self._cCardClass = MapPhysicalCardToPhysicalCardSet
         self._oBaseFilter = PhysicalCardSetFilter(sSetName)
         self._oCardSet = IPhysicalCardSet(sSetName)
@@ -270,6 +270,8 @@ class CardSetCardListModel(CardListModel):
             self.set_par_count_colour(oSectionIter, iParGrpCnt, iGrpCnt)
 
         self._check_if_empty()
+
+        self._set_display_name(self._oConfig.get_postfix_the_display())
         # Restore sorting
 
         if iSortColumn is not None:
@@ -966,6 +968,7 @@ class CardSetCardListModel(CardListModel):
 
         iCnt = 0 # Since we'll test this later, and may skip assigning it
         oGroupedIter, _aAbsCards = self.grouped_card_iter(oCardIter)
+        bPostfix = self._oConfig.get_postfix_the_display()
 
         # Iterate over groups
         for sGroup, oGroupIter in oGroupedIter:
@@ -995,7 +998,11 @@ class CardSetCardListModel(CardListModel):
                 iParGrpCnt += iParCnt
                 bIncCard, bDecCard = self.check_inc_dec(iCnt)
                 oChildIter = self.prepend(oSectionIter)
-                self.set(oChildIter, 0, oCard.name,
+                # We don't do the full _set_display_name for speed here.
+                sName = oCard.name
+                if bPostfix:
+                    sName = canonical_to_csv(sName)
+                self.set(oChildIter, 0, sName,
                         1, iCnt, 2, iParCnt, 3, bIncCard, 4, bDecCard,
                         8, oCard, 9, oRow.oPhysCard,
                         )

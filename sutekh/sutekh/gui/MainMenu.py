@@ -85,6 +85,15 @@ class MainMenu(SutekhMenu):
         """Add the File Preferences menu"""
         self._dMenus["File Preferences"] = oPrefsMenu
 
+        oNameDisplay = gtk.CheckMenuItem('Use "path of ..., the" name display')
+        oNameDisplay.set_inconsistent(False)
+        if self.__oConfig.get_postfix_the_display():
+            oNameDisplay.set_active(True)
+        else:
+            oNameDisplay.set_active(False)
+        oNameDisplay.connect('activate', self.do_postfix_the_display)
+        oPrefsMenu.add(oNameDisplay)
+
         oSaveOnExit = gtk.CheckMenuItem('Save Pane Set on Exit')
         oSaveOnExit.set_inconsistent(False)
         if self.__oConfig.get_save_on_exit():
@@ -259,6 +268,11 @@ class MainMenu(SutekhMenu):
         """Refresh the WW card list and rulings files."""
         if refresh_ww_card_list(self._oMainWindow):
             self._oMainWindow.reload_all()
+
+    def do_postfix_the_display(self, oWidget):
+        """Save the current pane layout"""
+        bChoice = not self.__oConfig.get_postfix_the_display()
+        self.__oConfig.set_postfix_the_display(bChoice)
 
     def do_save_pane_set(self, _oWidget):
         """Save the current pane layout"""

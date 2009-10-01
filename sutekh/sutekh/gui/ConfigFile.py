@@ -25,6 +25,14 @@ class ConfigFileListener(object):
         """A Filter has been replaced"""
         pass
 
+    def set_postfix_the_display(self, bPostfix):
+        """Postfix display mode has been set."""
+        pass
+
+    def set_plugin_key(self, sKey, sValue):
+        """Plugin key has been set"""
+        pass
+
 class ConfigFile(object):
     """Handle the setup and management of the config file.
 
@@ -65,6 +73,10 @@ class ConfigFile(object):
         if 'save window size' not in self.__oConfig.options(
                 self.__sPrefsSection):
             self.set_save_window_size(True)
+
+        if 'postfix name display' not in self.__oConfig.options(
+                self.__sPrefsSection):
+            self.set_postfix_the_display(False)
 
         if not self.__oConfig.has_section(self.__sPanesSection):
             self.__oConfig.add_section(self.__sPanesSection)
@@ -175,6 +187,17 @@ class ConfigFile(object):
                 # skip this one then
                 continue
         return dRes
+
+    def get_postfix_the_display(self):
+        """Query the 'postfix names' option."""
+        return self._get_bool_key(self.__sPrefsSection, 'postfix name display')
+
+    def set_postfix_the_display(self, bPostfix):
+        """Set the 'postfix names' option."""
+        self._set_bool_key(self.__sPrefsSection, 'postfix name display',
+                bPostfix)
+        for oListener in self.__dListeners:
+            oListener.set_postfix_the_display(bPostfix)
 
     def get_save_on_exit(self):
         """Query the 'save on exit' option."""
@@ -329,3 +352,5 @@ class ConfigFile(object):
     def set_plugin_key(self, sKey, sValue):
         """Set a value in the plugin section"""
         self.__oConfig.set(self.__sPluginsSection, sKey, sValue)
+        for oListener in self.__dListeners:
+            oListener.set_plugin_key(sKey, sValue)

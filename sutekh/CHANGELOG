@@ -1,3 +1,7 @@
+01 Oct 2009
+ * Enable sorting as "X, The" based on user preference
+ * Ensure we handle 'A ' and 'An ' the same (future proofing)
+
 25 Sep 2009
  * Do required iter juggling when editing with a physical filter in place
    so entries don't get unexpectedly collapsed

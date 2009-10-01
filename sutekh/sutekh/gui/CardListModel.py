@@ -11,7 +11,8 @@ import gtk, gobject
 from sutekh.core.Filters import FilterAndBox, NullFilter, PhysicalCardFilter
 from sutekh.core.Groupings import CardTypeGrouping
 from sutekh.core.SutekhObjects import IAbstractCard, PhysicalCard, \
-        IPhysicalCard
+        IPhysicalCard, canonical_to_csv
+from sutekh.gui.ConfigFile import ConfigFileListener
 
 class CardListModelListener(object):
     """Listens to updates, i.e. .load(...), .alter_card_count(...),
@@ -47,7 +48,7 @@ class CardListModelListener(object):
 
         return True
 
-class CardListModel(gtk.TreeStore):
+class CardListModel(gtk.TreeStore, ConfigFileListener):
     # pylint: disable-msg=R0904, R0902
     # inherit a lot of public methods for gtk, need local attributes for state
     """Provides a card list specific API for accessing a gtk.TreeStore."""
@@ -57,7 +58,7 @@ class CardListModel(gtk.TreeStore):
 
     sUnknownExpansion = '  Unspecified Expansion'
 
-    def __init__(self):
+    def __init__(self, oConfig):
         # STRING is the card name, INT is the card count
         super(CardListModel, self).__init__(str, int, int, bool, bool,
                 gobject.TYPE_PYOBJECT, gobject.TYPE_PYOBJECT,
@@ -73,6 +74,8 @@ class CardListModel(gtk.TreeStore):
         self._bApplyFilter = False # whether to apply the select filter
         # additional filters for selecting from the list
         self._oSelectFilter = None
+        self._oConfig = oConfig
+        self._oConfig.add_listener(self)
 
         self.dListeners = {} # dictionary of CardListModelListeners
 
@@ -175,6 +178,35 @@ class CardListModel(gtk.TreeStore):
 
     # pylint: enable-msg=R0201
 
+    def _set_display_name(self, bPostfix):
+        """Set the correct display name for the cards.
+
+           We walk all the 1st level entries, and set the name from the
+           card, based on bPostfix."""
+        oIter = self.get_iter_first() # Grouping level items
+        while oIter:
+            oChildIter = self.iter_children(oIter)
+            while oChildIter:
+                sName = self.get_card_name_from_iter(oChildIter)
+                if bPostfix:
+                    sName = canonical_to_csv(sName)
+                self.set(oChildIter, 0, sName)
+                self.row_changed(self.get_path(oChildIter), oChildIter)
+                oChildIter = self.iter_next(oChildIter)
+            oIter = self.iter_next(oIter)
+
+    def set_postfix_the_display(self, bPostfix):
+        """Respond to config file changes. Passes straight through to
+           _set_display_name so we don't need another load."""
+        # Disable sorting while we touch everything
+        iSortColumn, iSortOrder = self.get_sort_column_id()
+        if iSortColumn is not None:
+            self.set_sort_column_id(-2, 0)
+        self._set_display_name(bPostfix)
+        # Enable sorting
+        if iSortColumn is not None:
+            self.set_sort_column_id(iSortColumn, iSortOrder)
+
     def load(self):
         # pylint: disable-msg=R0914
         # we use many local variables for clarity
@@ -205,11 +237,11 @@ class CardListModel(gtk.TreeStore):
             # Fill in Cards
             for oItem in oGroupIter:
                 oCard = fGetCard(oItem)
-                oChildIter = self.append(oSectionIter)
+                oChildIter = self.prepend(oSectionIter)
                 # We need to lookup the card directly, since aExpansionInfo
                 # may not have the info we need
+                # Names will be set by _set_display_name
                 self.set(oChildIter,
-                    0, oCard.name,
                     5, [],
                     6, [],
                     8, oCard,
@@ -252,6 +284,8 @@ class CardListModel(gtk.TreeStore):
             self.oEmptyIter = self.append(None)
             sText = self._get_empty_text()
             self.set(self.oEmptyIter, 0, sText, 5, [], 6, [], 8, None, 9, None)
+        else:
+            self._set_display_name(self._oConfig.get_postfix_the_display())
 
         if iSortColumn is not None:
             self.set_sort_column_id(iSortColumn, iSortOrder)
@@ -383,7 +417,7 @@ class CardListModel(gtk.TreeStore):
         if iDepth == 0:
             # No card info here
             return None, None, 0, iDepth
-        sCardName = self.get_abstract_card_from_iter(oIter).name
+        sCardName = self.get_card_name_from_iter(oIter)
         if iDepth == 2:
             sExpansion = self.get_value(oIter, 0)
         else:
