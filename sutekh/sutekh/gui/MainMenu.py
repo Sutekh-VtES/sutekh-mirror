@@ -269,7 +269,7 @@ class MainMenu(SutekhMenu):
         if refresh_ww_card_list(self._oMainWindow):
             self._oMainWindow.reload_all()
 
-    def do_postfix_the_display(self, oWidget):
+    def do_postfix_the_display(self, _oWidget):
         """Save the current pane layout"""
         bChoice = not self.__oConfig.get_postfix_the_display()
         self.__oConfig.set_postfix_the_display(bChoice)

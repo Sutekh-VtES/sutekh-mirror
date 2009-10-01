@@ -360,10 +360,9 @@ class ExtraCardSetListViewColumns(CardListPlugin):
         return oDlg
 
     # SQLObject event listeners
-    # FIXME: We can be much cleverer here, and update the cache rather than
-    # just invalidating it, but this is simpler for the initial implementation
-    # (needs care when dealing with large scale changes like importing new WW
-    # cardlists which cause lots of signals)
+    # While we can try to be clever and update the cache, there are enough
+    # complex cases (importing backups, etc.) that need to be considered 
+    # that simply invalidating the cache is significanly simpler and safer
 
     def card_set_changed(self, _oCardSet, _dChanges):
         """We listen for card set events, and invalidate the cache"""
