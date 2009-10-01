@@ -68,8 +68,8 @@ class PluginManager(object):
                         None, None, [plugins])
             except ImportError, oExp:
                 if bVerbose:
-                    logging.warn("Failed to load plugin %s (%s)." % (
-                        sPluginName, oExp))
+                    logging.warn("Failed to load plugin %s (%s).",
+                        sPluginName, oExp)
                 continue
 
             # find plugin class
@@ -78,7 +78,7 @@ class PluginManager(object):
             except AttributeError, oExp:
                 if bVerbose:
                     logging.warn("Plugin module %s appears not to contain a"
-                            " plugin (%s)." % (sPluginName, oExp))
+                            " plugin (%s)." , sPluginName, oExp)
                 continue
 
             # add to appropriate plugin lists
