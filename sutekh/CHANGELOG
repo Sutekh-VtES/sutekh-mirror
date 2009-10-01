@@ -1,5 +1,6 @@
 01 Oct 2009
  * Enable sorting as "X, The" based on user preference
+ * Document "X, The" preference
  * Ensure we handle 'A ' and 'An ' the same (future proofing)
 
 25 Sep 2009

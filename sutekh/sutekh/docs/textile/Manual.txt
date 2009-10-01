@@ -129,6 +129,8 @@ published -- this is discussed further in the section
 * _Download VTES icons_: Attempt to download the icons from the White Wolf
 website.
 * _Preferences_: Manage various preferences.
+** _Use "path of ..., the" name display_: If selected, card names prefixed with
+   "The", "An" or "A" are displayed and sorted with the prefix at the end.
 ** _Save Current Pane Set_: Save the current configuration of the panes.
 ** _Save Pane Set on Exit_: Save the pane configuration when Sutekh exits.
 ** _Save Exact Pane Positions_: Save the exact pane positions on exit.

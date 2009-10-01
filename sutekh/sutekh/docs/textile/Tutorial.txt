@@ -321,6 +321,11 @@ The search looks to match names starting with the typed text. When multiple
 cards match, you can easily move between them by using the up or down keys
 while the search dialog is visible.
 
+The _Use "path of ..., the" name display_ preference controls how cards
+that start with "The", "An" or "A" are displayed. If set, the prefix
+is displayed at the end. This also effects how the card name search matches
+the cards.
+
 h3. Opening multiple copies of the card set
 
 It's possible to open multiple copies of a given card set. This can be useful
