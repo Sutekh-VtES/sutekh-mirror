@@ -830,6 +830,8 @@ def canonical_to_csv(sName):
         sName = sName[4:] + ", The"
     elif sName.startswith('An '):
         sName = sName[3:] + ", An"
+    elif sName.startswith('A '):
+        sName = sName[2:] + ", A"
     return sName
 
 def csv_to_canonical(sName):
@@ -840,6 +842,8 @@ def csv_to_canonical(sName):
         sName = "The " + sName[:-5]
     elif sName.lower().endswith(', an'):
         sName = "An " + sName[:-4]
+    elif sName.lower().endswith(', a'):
+        sName = "A " + sName[:-3]
     # The result might be mixed case, but, as we will feed this into
     # IAbstractCard in most cases, that won't matter
     return sName
