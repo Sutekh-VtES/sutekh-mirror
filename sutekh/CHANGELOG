@@ -1,3 +1,6 @@
+02 Oct 2009
+ * Remove historical 'pcs_' prefix from zip file entries.
+
 01 Oct 2009
  * Enable sorting as "X, The" based on user preference
  * Document "X, The" preference

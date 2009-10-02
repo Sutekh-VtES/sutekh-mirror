@@ -74,7 +74,7 @@ class ZipFileWrapper(object):
             oFile.close()
             sZName = sZName.replace(" ", "_")
             sZName = sZName.replace("/", "_")
-            sZipName = 'pcs_%s.xml' % sZName
+            sZipName = '%s.xml' % sZName
             sZipName = sZipName.encode('ascii', 'xmlcharrefreplace')
             aList.append(sZipName)
             # ZipInfo will just use the 1st 6 fields in tTime
