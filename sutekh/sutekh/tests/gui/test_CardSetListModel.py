@@ -6,7 +6,7 @@
 
 """Tests the Card List Model"""
 
-from sutekh.tests.TestCore import SutekhTest
+from sutekh.tests.GuiSutekhTest import ConfigSutekhTest
 from sutekh.gui.CardListModel import CardListModelListener
 from sutekh.gui.CardSetListModel import CardSetCardListModel, \
         NO_SECOND_LEVEL, SHOW_EXPANSIONS, SHOW_CARD_SETS, EXP_AND_CARD_SETS, \
@@ -42,7 +42,7 @@ class CardSetListener(CardListModelListener):
         """Called when the model adds a new card to the model"""
         self.iCnt += iCnt
 
-class CardSetListModelTests(SutekhTest):
+class CardSetListModelTests(ConfigSutekhTest):
     """Class for the test cases"""
 
     aParentCountToStr = ['IGNORE_PARENT', 'PARENT_COUNT', 'MINUS_THIS_SET',
@@ -256,7 +256,7 @@ class CardSetListModelTests(SutekhTest):
         """Set of simple tests of the Card Set List Model"""
         _oCache = SutekhObjectCache()
         oPCS = PhysicalCardSet(name=self.aNames[0])
-        oModel = CardSetCardListModel(self.aNames[0])
+        oModel = CardSetCardListModel(self.aNames[0], self.oConfig)
         oListener = CardSetListener()
         oModel.load()
         self.assertFalse(oListener.bLoadCalled)
@@ -306,7 +306,7 @@ class CardSetListModelTests(SutekhTest):
            groupings"""
         _oCache = SutekhObjectCache()
         oPCS = PhysicalCardSet(name=self.aNames[0])
-        oModel = CardSetCardListModel(self.aNames[0])
+        oModel = CardSetCardListModel(self.aNames[0], self.oConfig)
         # Initial cards
         aCards = [('Alexandra', 'CE'), ('Sha-Ennu', 'Third Edition')]
         for sName, sExp in aCards:
@@ -343,7 +343,7 @@ class CardSetListModelTests(SutekhTest):
         # repeated setups, so it has lots of lines + variables
         _oCache = SutekhObjectCache()
         oPCS = PhysicalCardSet(name=self.aNames[0])
-        oModel = CardSetCardListModel(self.aNames[0])
+        oModel = CardSetCardListModel(self.aNames[0], self.oConfig)
         # Add cards
         aCards = [('Alexandra', 'CE'), ('Sha-Ennu', 'Third Edition'),
                 ('Alexandra', 'CE'), ('Sha-Ennu', 'Third Edition'),
@@ -478,7 +478,7 @@ class CardSetListModelTests(SutekhTest):
         # repeated setups, so it has lots of lines
         _oCache = SutekhObjectCache()
         oPCS = PhysicalCardSet(name=self.aNames[0])
-        oModel = CardSetCardListModel(self.aNames[0])
+        oModel = CardSetCardListModel(self.aNames[0], self.oConfig)
         aCards = [('Alexandra', 'CE'), ('Sha-Ennu', 'Third Edition'),
                 ('Alexandra', None), ('Bronwen', 'Sabbat'),
                 ('.44 Magnum', 'Jyhad'), ('.44 Magnum', 'Jyhad'),
@@ -584,7 +584,7 @@ class CardSetListModelTests(SutekhTest):
         oPCS = PhysicalCardSet(name=self.aNames[0])
         oChildPCS = PhysicalCardSet(name=self.aNames[1], parent=oPCS)
         oGrandChildPCS = PhysicalCardSet(name=self.aNames[2], parent=oChildPCS)
-        oChildModel = CardSetCardListModel(self.aNames[1])
+        oChildModel = CardSetCardListModel(self.aNames[1], self.oConfig)
         oChildModel.groupby = Groupings.NullGrouping
         self._loop_modes(oChildPCS, oChildModel)
         self._loop_modes(oPCS, oChildModel)

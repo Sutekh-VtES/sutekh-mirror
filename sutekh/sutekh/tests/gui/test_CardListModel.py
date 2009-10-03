@@ -6,7 +6,7 @@
 
 """Tests the Card List Model"""
 
-from sutekh.tests.TestCore import SutekhTest
+from sutekh.tests.GuiSutekhTest import ConfigSutekhTest
 from sutekh.core.SutekhObjects import PhysicalCard, AbstractCard
 from sutekh.core import Filters, Groupings
 from sutekh.gui.CardListModel import CardListModel, CardListModelListener
@@ -25,7 +25,7 @@ class TestListener(CardListModelListener):
         self.bLoadCalled = True
         self.aCards = aAbsCards
 
-class CardListModelTests(SutekhTest):
+class CardListModelTests(ConfigSutekhTest):
     """Class for the test cases"""
 
     # pylint: disable-msg=R0201
@@ -63,7 +63,7 @@ class CardListModelTests(SutekhTest):
         # pylint: disable-msg=R0915, R0914
         # R0915, R0914: Want a long, sequential test case to minimise
         # repeated setups, so it has lots of lines + variables
-        oModel = CardListModel()
+        oModel = CardListModel(self.oConfig)
         oListener = TestListener()
         oModel.load()
         self.assertFalse(oListener.bLoadCalled)

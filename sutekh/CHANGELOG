@@ -1,3 +1,6 @@
+03 Oct 2009
+ * Fix CardListModel and CardSetCardListModel tests
+
 02 Oct 2009
  * Remove historical 'pcs_' prefix from zip file entries.
 
