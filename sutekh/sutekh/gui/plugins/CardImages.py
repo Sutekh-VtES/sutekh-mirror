@@ -605,6 +605,10 @@ class CardImagePlugin(CardListPlugin):
             iCur += 1
             oProgressDialog.update_bar(float(iCur) / iNumber)
             oData = oZipFile.read(oItem.filename)
+            # Empty data represents a folder
+            # (or at any rate a file to be skipped)
+            if not oData:
+                continue
             # Should I also test for cardimages\ ?
             sFileName = os.path.join(sPrefsPath,
                     oItem.filename.replace('cardimages/',''))
