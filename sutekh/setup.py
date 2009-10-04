@@ -80,7 +80,8 @@ setup   (   # Metadata
                 'sutekh.gui': ['*.svg'],
                 # Include LICENSE information for sutekh package
                 # Include everything under the docs directory
-                'sutekh': ['COPYING', 'docs/html/*'],
+                'sutekh': ['COPYING'],
+                'sutekh.docs.html': ['*'],
             },
             scripts = ['sutekh/SutekhCli.py','sutekh/SutekhGui.py'],
 
