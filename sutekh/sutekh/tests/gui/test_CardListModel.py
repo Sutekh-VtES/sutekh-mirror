@@ -56,6 +56,18 @@ class CardListModelTests(ConfigSutekhTest):
         iTotal = oModel.iter_n_children(None)
         return iTotal
 
+    def _get_card_names(self, oModel):
+        """Return a set of all the cards listed in the model"""
+        oIter = oModel.get_iter_first()
+        aResults = set()
+        while oIter:
+            oChildIter = oModel.iter_children(oIter)
+            while oChildIter:
+                aResults.add(oModel.get_value(oChildIter, 0))
+                oChildIter = oModel.iter_next(oChildIter)
+            oIter = oModel.iter_next(oIter)
+        return aResults
+
     # pylint: enable-msg=R0201
 
     def test_basic(self):
@@ -153,6 +165,30 @@ class CardListModelTests(ConfigSutekhTest):
         oModel.remove_listener(oListener)
         oModel.load()
         self.assertFalse(oListener.bLoadCalled)
+
+    def test_postfix(self):
+        """Test that the postfix display option works as expected"""
+        oModel = CardListModel(self.oConfig)
+        oModel.load()
+        aCards = self._get_card_names(oModel)
+        self.assertEqual('The Path of Blood' in aCards, True)
+        self.assertEqual('Path of Blood, The' in aCards, False)
+        self.assertEqual('The Siamese' in aCards, True)
+        self.oConfig.set_postfix_the_display(True)
+        aCards = self._get_card_names(oModel)
+        self.assertEqual('The Path of Blood' in aCards, False)
+        self.assertEqual('Path of Blood, The' in aCards, True)
+        self.assertEqual('Siamese, The' in aCards, True)
+
+        # Check load works as expected
+        oModel.load()
+        aCards = self._get_card_names(oModel)
+        self.assertEqual('The Path of Blood' in aCards, False)
+        self.assertEqual('Path of Blood, The' in aCards, True)
+        self.assertEqual('Siamese, The' in aCards, True)
+        self.oConfig.set_postfix_the_display(False)
+        aCards = self._get_card_names(oModel)
+        self.assertEqual('The Path of Blood' in aCards, True)
 
 if __name__ == "__main__":
     unittest.main()
