@@ -135,96 +135,114 @@ class CardSetListModelTests(ConfigSutekhTest):
     # pylint: enable-msg=R0201
     # pylint: enable-msg=R0913
 
-    def _add_remove_cards(self, oPCS, oModel, aPhysCards):
+    def setUp(self):
+        """Setup the card list used in _loop_modes"""
+        super(CardSetListModelTests, self).setUp()
+        aCards = [('AK-47', None), ('Bronwen', 'SW'), ('Cesewayo', None),
+                ('Anna "Dictatrix11" Suljic', 'NoR'), ('Ablative Skin',
+                    'Sabbat')] + [('Alexandra', 'CE'), ('Alexandra', None),
+                ('Ablative Skin', None)] * 5
+        self.aPhysCards = []
+        for sName, sExp in aCards:
+            oCard = make_card(sName, sExp)
+            self.aPhysCards.append(oCard)
+
+    def _add_remove_cards(self, oPCS, aModels):
         """Helper function to add and remove distinct cards from the card set,
            validating that the model works correctly"""
         # pylint: disable-msg=E1101, R0914
         # E1101: SQLObjext confuses pylint
         # R0914: several local variables, as we test a number of conditions
-        oListener = CardSetListener()
-        oModel.add_listener(oListener)
-        oModel.sEditColour = "red"
-        oModel.load()
-        tStartTotals = (
-                oModel.iter_n_children(None),
-                self._count_all_cards(oModel),
-                self._count_second_level(oModel))
-        aStartList = self._get_all_counts(oModel)
-        for oCard in aPhysCards:
+        dModelInfo = {}
+        for oModel in aModels:
+            oListener = CardSetListener()
+            oModel.add_listener(oListener)
+            oModel.sEditColour = "red"
+            oModel.load()
+            tStartTotals = (
+                    oModel.iter_n_children(None),
+                    self._count_all_cards(oModel),
+                    self._count_second_level(oModel))
+            aStartList = self._get_all_counts(oModel)
+            dModelInfo[oModel] = [oListener, tStartTotals, aStartList]
+        for oCard in self.aPhysCards:
             oPCS.addPhysicalCard(oCard.id)
             oPCS.syncUpdate()
             send_changed_signal(oPCS, oCard, 1)
-        tAddTotals = (
-                oModel.iter_n_children(None),
-                self._count_all_cards(oModel),
-                self._count_second_level(oModel))
-        aAddList = self._get_all_counts(oModel)
-        oModel.load()
-        tLoadTotals = (
-                oModel.iter_n_children(None),
-                self._count_all_cards(oModel),
-                self._count_second_level(oModel))
-        aLoadList = self._get_all_counts(oModel)
-        self.assertEqual(tAddTotals, tLoadTotals, self._format_error(
-            "Totals for inc_card and load differ", tAddTotals, tLoadTotals,
-            oModel, oPCS))
-        self.assertEqual(aAddList, aLoadList, self._format_error(
-            "Card Lists for inc_card and load differ", aAddList, aLoadList,
-            oModel, oPCS))
-        iSetCnt = oModel.get_card_iterator(oModel.get_current_filter()).count()
-        self.assertEqual(oListener.iCnt, iSetCnt, self._format_error(
-            "Listener has wrong count after inc_card", oListener.iCnt,
-            iSetCnt, oModel, oPCS))
+        for oModel in aModels:
+            tAddTotals = (
+                    oModel.iter_n_children(None),
+                    self._count_all_cards(oModel),
+                    self._count_second_level(oModel))
+            aAddList = self._get_all_counts(oModel)
+            oModel.load()
+            tLoadTotals = (
+                    oModel.iter_n_children(None),
+                    self._count_all_cards(oModel),
+                    self._count_second_level(oModel))
+            aLoadList = self._get_all_counts(oModel)
+            self.assertEqual(tAddTotals, tLoadTotals, self._format_error(
+                "Totals for inc_card and load differ", tAddTotals, tLoadTotals,
+                oModel, oPCS))
+            self.assertEqual(aAddList, aLoadList, self._format_error(
+                "Card Lists for inc_card and load differ", aAddList, aLoadList,
+                oModel, oPCS))
+            iSetCnt = oModel.get_card_iterator(
+                    oModel.get_current_filter()).count()
+            iListCnt = dModelInfo[oModel][0].iCnt
+            self.assertEqual(iListCnt, iSetCnt, self._format_error(
+                "Listener has wrong count after inc_card", iListCnt,
+                iSetCnt, oModel, oPCS))
         # Card removal
         # We use the map table, so we can also test dec_card properly
-        for oCard in aPhysCards:
+        for oCard in self.aPhysCards:
             oMapEntry = list(MapPhysicalCardToPhysicalCardSet.selectBy(
                     physicalCardID=oCard.id, physicalCardSetID=oPCS.id))[-1]
             MapPhysicalCardToPhysicalCardSet.delete(oMapEntry.id)
             oPCS.syncUpdate()
             send_changed_signal(oPCS, oCard, -1)
-        tDecTotals = (
-                oModel.iter_n_children(None),
-                self._count_all_cards(oModel),
-                self._count_second_level(oModel))
-        aDecList = self._get_all_counts(oModel)
-        # test that we've behaved sanely
-        self.assertEqual(tDecTotals, tStartTotals, self._format_error(
-            "Totals for dec_card and load differ", tDecTotals, tStartTotals,
-            oModel, oPCS))
-        self.assertEqual(aDecList, aStartList, self._format_error(
-            "Card lists for dec_card and load differ", aDecList, aStartList,
-            oModel, oPCS))
-        iSetCnt = oModel.get_card_iterator(oModel.get_current_filter()).count()
-        self.assertEqual(oListener.iCnt, iSetCnt, self._format_error(
-            "Listener has wrong count after inc_card", oListener.iCnt,
-            iSetCnt, oModel, oPCS))
-        oModel.remove_listener(oListener)
+        for oModel in aModels:
+            tDecTotals = (
+                    oModel.iter_n_children(None),
+                    self._count_all_cards(oModel),
+                    self._count_second_level(oModel))
+            aDecList = self._get_all_counts(oModel)
+            # test that we've behaved sanely
+            oListener, tStartTotals, aStartList = dModelInfo[oModel]
+            self.assertEqual(aDecList, aStartList, self._format_error(
+                "Card lists for dec_card and load differ", aDecList, aStartList,
+                oModel, oPCS))
+            self.assertEqual(tDecTotals, tStartTotals, self._format_error(
+                "Totals for dec_card and load differ", tDecTotals, tStartTotals,
+                oModel, oPCS))
+            iSetCnt = oModel.get_card_iterator(
+                    oModel.get_current_filter()).count()
+            self.assertEqual(oListener.iCnt, iSetCnt, self._format_error(
+                "Listener has wrong count after inc_card", oListener.iCnt,
+                iSetCnt, oModel, oPCS))
+            oModel.remove_listener(oListener)
 
-    def _loop_modes(self, oPCS, oModel):
+    def _loop_modes(self, oPCS, aModels):
         """Loop over all the possible modes of the model, calling
            _add_remove_cards to test the model."""
-        aCards = [('AK-47', None), ('Bronwen', 'SW'), ('Cesewayo', None),
-                ('Anna "Dictatrix11" Suljic', 'NoR'), ('Ablative Skin',
-                    'Sabbat')] + [('Alexandra', 'CE'), ('Alexandra', None),
-                ('Ablative Skin', None)] * 5
-        aPhysCards = []
-        for sName, sExp in aCards:
-            oCard = make_card(sName, sExp)
-            aPhysCards.append(oCard)
         for bEditFlag in [False, True]:
-            oModel.bEditable = bEditFlag
+            for oModel in aModels:
+                oModel.bEditable = bEditFlag
             for iLevelMode in [NO_SECOND_LEVEL, SHOW_EXPANSIONS,
                     SHOW_CARD_SETS, EXP_AND_CARD_SETS, CARD_SETS_AND_EXP]:
-                oModel.iExtraLevelsMode = iLevelMode
+                for oModel in aModels:
+                    oModel.iExtraLevelsMode = iLevelMode
                 for iParentMode in [IGNORE_PARENT, PARENT_COUNT,
                         MINUS_THIS_SET, MINUS_SETS_IN_USE]:
-                    oModel.iParentCountMode = iParentMode
+                    for oModel in aModels:
+                        oModel.iParentCountMode = iParentMode
                     for iShowMode in [THIS_SET_ONLY, ALL_CARDS, PARENT_CARDS,
                             CHILD_CARDS]:
-                        oModel.iShowCardMode = iShowMode
-                        self._add_remove_cards(oPCS, oModel, aPhysCards)
-        self._reset_modes(oModel)
+                        for oModel in aModels:
+                            oModel.iShowCardMode = iShowMode
+                        self._add_remove_cards(oPCS, aModels)
+        for oModel in aModels:
+            self._reset_modes(oModel)
 
     def _loop_zero_filter_modes(self, oModel):
         """Loop over all the possible modes of the model, calling
@@ -306,7 +324,6 @@ class CardSetListModelTests(ConfigSutekhTest):
            groupings"""
         _oCache = SutekhObjectCache()
         oPCS = PhysicalCardSet(name=self.aNames[0])
-        oModel = CardSetCardListModel(self.aNames[0], self.oConfig)
         # Initial cards
         aCards = [('Alexandra', 'CE'), ('Sha-Ennu', 'Third Edition')]
         for sName, sExp in aCards:
@@ -314,27 +331,38 @@ class CardSetListModelTests(ConfigSutekhTest):
             # pylint: disable-msg=E1101
             # PyProtocols confuses pylint
             oPCS.addPhysicalCard(oCard.id)
-        oModel.load()
+            oPCS.syncUpdate()
         # Test adding more cards
-        self._reset_modes(oModel)
-        self._loop_modes(oPCS, oModel)
+        oModel = CardSetCardListModel(self.aNames[0], self.oConfig)
+        self._loop_modes(oPCS, [oModel])
         # Check over all the groupings
+        oModel.cleanup()
+        aModels = []
         for cGrouping in [Groupings.CryptLibraryGrouping,
                 Groupings.DisciplineGrouping, Groupings.ClanGrouping,
                 Groupings.CardTypeGrouping, Groupings.ExpansionGrouping,
                 Groupings.RarityGrouping]:
+            oModel = CardSetCardListModel(self.aNames[0], self.oConfig)
             oModel.groupby = cGrouping
-            self._loop_modes(oPCS, oModel)
+            aModels.append(oModel)
+        self._loop_modes(oPCS, aModels)
+        for oModel in aModels:
+            oModel.cleanup()
         # Check filtering behaviour
-        oModel.groupby = Groupings.NullGrouping
+        aModels = []
         for oFilter in [Filters.CardTypeFilter('Vampire'),
                 Filters.PhysicalExpansionFilter('Sabbat'),
                 Filters.CardSetMultiCardCountFilter((['3','4','5'],
                     self.aNames[0])),
                 ]:
+            oModel = CardSetCardListModel(self.aNames[0], self.oConfig)
+            oModel.groupby = Groupings.NullGrouping
             oModel.selectfilter = oFilter
             oModel.applyfilter = True
-            self._loop_modes(oPCS, oModel)
+            aModels.append(oModel)
+        self._loop_modes(oPCS, aModels)
+        for oModel in aModels:
+            oModel.cleanup()
 
     def test_relationships(self):
         """Tests Model against more complex Card Set relationships"""
@@ -343,7 +371,6 @@ class CardSetListModelTests(ConfigSutekhTest):
         # repeated setups, so it has lots of lines + variables
         _oCache = SutekhObjectCache()
         oPCS = PhysicalCardSet(name=self.aNames[0])
-        oModel = CardSetCardListModel(self.aNames[0], self.oConfig)
         # Add cards
         aCards = [('Alexandra', 'CE'), ('Sha-Ennu', 'Third Edition'),
                 ('Alexandra', 'CE'), ('Sha-Ennu', 'Third Edition'),
@@ -351,6 +378,7 @@ class CardSetListModelTests(ConfigSutekhTest):
                 ('.44 Magnum', 'Jyhad'), ('.44 Magnum', 'Jyhad'),
                 ('Yvette, The Hopeless', 'CE'),
                 ('Yvette, The Hopeless', 'BSC')]
+        aModels = []
         for sName, sExp in aCards:
             oCard = make_card(sName, sExp)
             # pylint: disable-msg=E1101
@@ -364,18 +392,17 @@ class CardSetListModelTests(ConfigSutekhTest):
             # PyProtocols confuses pylint
             oChildPCS.addPhysicalCard(oCard.id)
         oChildPCS.inuse = False
-        # Check adding cards when we have a parent card set
-        self._loop_modes(oPCS, oModel)
-        # Change model to other card set
-        oModel.update_to_new_db(self.aNames[1])
-        self._loop_modes(oChildPCS, oModel)
-        # Check adding cards when we have a child, but no parent
+        oModel = CardSetCardListModel(self.aNames[0], self.oConfig)
+        oChildModel = CardSetCardListModel(self.aNames[1], self.oConfig)
+        oModel.groupby = Groupings.NullGrouping
+        oChildModel.groupby = Groupings.NullGrouping
+        aModels = [oModel, oChildModel]
+        self._loop_modes(oPCS, aModels)
+        self._loop_modes(oChildPCS, aModels)
         # And when we're in use
         oChildPCS.inuse = True
-        self._loop_modes(oChildPCS, oModel)
-        # change back
-        oModel.update_to_new_db(self.aNames[0])
-        self._loop_modes(oPCS, oModel)
+        self._loop_modes(oChildPCS, aModels)
+        self._loop_modes(oPCS, aModels)
         # Add a grand child
         oGrandChildPCS = PhysicalCardSet(name=self.aNames[2], parent=oChildPCS)
         for sName, sExp in aCards[3:7]:
@@ -383,12 +410,14 @@ class CardSetListModelTests(ConfigSutekhTest):
             # pylint: disable-msg=E1101
             # PyProtocols confuses pylint
             oGrandChildPCS.addPhysicalCard(oCard.id)
+        oGrandChildModel = CardSetCardListModel(self.aNames[2], self.oConfig)
+        oGrandChildModel.groupby = Groupings.NullGrouping
+        aModels.append(oGrandChildModel)
         oGrandChildPCS.inuse = False
         # Check adding cards when we have a parent card set and a child
-        oModel.update_to_new_db(self.aNames[1])
-        self._loop_modes(oChildPCS, oModel)
+        self._loop_modes(oChildPCS, aModels)
         oGrandChildPCS.inuse = True
-        self._loop_modes(oChildPCS, oModel)
+        self._loop_modes(oChildPCS, aModels)
         # Add some cards to oGrandChildPCS that aren't in parent and oChildPCS,
         # add a sibling card set to oChildPCS and add another child and retest
         oSibPCS = PhysicalCardSet(name=self.aNames[3], parent=oPCS)
@@ -416,47 +445,42 @@ class CardSetListModelTests(ConfigSutekhTest):
                 oGrandChildPCS.syncUpdate()
             oGrandChild2PCS.syncUpdate()
         oGrandChildPCS.inuse = False
-        self._loop_modes(oChildPCS, oModel)
+        self._loop_modes(oChildPCS, aModels)
         oGrandChildPCS.inuse = True
-        self._loop_modes(oChildPCS, oModel)
+        self._loop_modes(oChildPCS, aModels)
         # pylint: disable-msg=E1101
         # PyProtocols confuses pylint
         oGrandChild2PCS.addPhysicalCard(make_card('Ablative Skin',
             'Sabbat'))
-        self._loop_modes(oChildPCS, oModel)
+        self._loop_modes(oChildPCS, aModels)
         oChildPCS.addPhysicalCard(make_card('Ablative Skin',
             'Sabbat'))
         oGrandChild2PCS.addPhysicalCard(make_card(
             'Ablative Skin', None))
-        self._loop_modes(oChildPCS, oModel)
-        # Point model at grandchild
-        oModel.update_to_new_db(self.aNames[2])
-        # Test adding cards to a sibling card set
-        self._loop_modes(oGrandChild2PCS, oModel)
-        # point at child
-        oModel.update_to_new_db(self.aNames[1])
-        self._loop_modes(oSibPCS, oModel)
-        # Test adding cards to the parent card set
-        self._loop_modes(oPCS, oModel)
-        # point at grand child
-        oModel.update_to_new_db(self.aNames[2])
-        self._loop_modes(oChildPCS, oModel)
-        # Test adding cards to the child card set - point at parent
-        oModel.update_to_new_db(self.aNames[0])
-        self._loop_modes(oChildPCS, oModel)
-        self._loop_modes(oSibPCS, oModel)
-        # point at child
-        oModel.update_to_new_db(self.aNames[1])
-        self._loop_modes(oGrandChildPCS, oModel)
+        self._loop_modes(oSibPCS, aModels)
+        self._loop_modes(oGrandChild2PCS, aModels)
+        self._loop_modes(oPCS, aModels)
+        for oModel in aModels:
+            oModel.cleanup()
         # Go through some of grouping tests as well
         # We want to ensure that this works with non-NullGroupings,
         # but we don't need to cover all the groupings again
+        aModels = []
         for cGrouping in [Groupings.DisciplineGrouping,
                 Groupings.CardTypeGrouping]:
-            oModel.groupby = cGrouping
-            self._loop_modes(oSibPCS, oModel)
-            self._loop_modes(oPCS, oModel)
-            self._loop_modes(oGrandChildPCS, oModel)
+            oModel = CardSetCardListModel(self.aNames[0], self.oConfig)
+            oChildModel = CardSetCardListModel(self.aNames[1], self.oConfig)
+            oSibModel = CardSetCardListModel(self.aNames[3], self.oConfig)
+            oGrandChildModel = CardSetCardListModel(self.aNames[2],
+                    self.oConfig)
+            for oTheModel in [oModel, oChildModel, oGrandChildModel,
+                    oSibModel]:
+                oTheModel.groupby = cGrouping
+                aModels.append(oTheModel)
+        self._loop_modes(oChildPCS, aModels)
+        for oModel in aModels:
+            oModel.cleanup()
+        aModels = []
         # Test with filters enabled on the model
         oModel.groupby = Groupings.NullGrouping
         for oFilter in [
@@ -465,11 +489,20 @@ class CardSetListModelTests(ConfigSutekhTest):
                 Filters.CardSetMultiCardCountFilter((['3','4','5'],
                     self.aNames[0])),
                 ]:
-            oModel.selectfilter = oFilter
-            oModel.applyfilter = True
-            self._loop_modes(oSibPCS, oModel)
-            self._loop_modes(oPCS, oModel)
-            self._loop_modes(oGrandChildPCS, oModel)
+            oModel = CardSetCardListModel(self.aNames[0], self.oConfig)
+            oChildModel = CardSetCardListModel(self.aNames[1], self.oConfig)
+            oSibModel = CardSetCardListModel(self.aNames[3], self.oConfig)
+            oGrandChildModel = CardSetCardListModel(self.aNames[2],
+                    self.oConfig)
+            for oTheModel in [oModel, oChildModel, oGrandChildModel,
+                    oSibModel]:
+                oTheModel.selectfilter = oFilter
+                oTheModel.groupby = Groupings.NullGrouping
+                oTheModel.applyfilter = True
+                aModels.append(oTheModel)
+        self._loop_modes(oChildPCS, aModels)
+        for oModel in aModels:
+            oModel.cleanup()
 
     def test_filters(self):
         """Test filtering for the card set"""
@@ -584,11 +617,12 @@ class CardSetListModelTests(ConfigSutekhTest):
         oPCS = PhysicalCardSet(name=self.aNames[0])
         oChildPCS = PhysicalCardSet(name=self.aNames[1], parent=oPCS)
         oGrandChildPCS = PhysicalCardSet(name=self.aNames[2], parent=oChildPCS)
+        oGrandChildPCS.inuse = True
         oChildModel = CardSetCardListModel(self.aNames[1], self.oConfig)
         oChildModel.groupby = Groupings.NullGrouping
-        self._loop_modes(oChildPCS, oChildModel)
-        self._loop_modes(oPCS, oChildModel)
-        self._loop_modes(oGrandChildPCS, oChildModel)
+        self._loop_modes(oChildPCS, [oChildModel])
+        self._loop_modes(oPCS, [oChildModel])
+        self._loop_modes(oGrandChildPCS, [oChildModel])
         # Add some cards to parent + child card sets
         aCards = [('Alexandra', 'CE'), ('Sha-Ennu', 'Third Edition'),
                 ('Alexandra', None), ('Bronwen', 'Sabbat'),
@@ -602,7 +636,7 @@ class CardSetListModelTests(ConfigSutekhTest):
             oPCS.addPhysicalCard(oCard.id)
             if sName != 'Yvette, The Hopeless':
                 oGrandChildPCS.addPhysicalCard(oCard.id)
-        self._loop_modes(oChildPCS, oChildModel)
+        self._loop_modes(oChildPCS, [oChildModel])
 
 if __name__ == "__main__":
     unittest.main()
