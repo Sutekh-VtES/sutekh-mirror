@@ -141,7 +141,8 @@ class CardSetListModelTests(ConfigSutekhTest):
         aCards = [('AK-47', None), ('Bronwen', 'SW'), ('Cesewayo', None),
                 ('Anna "Dictatrix11" Suljic', 'NoR'), ('Ablative Skin',
                     'Sabbat')] + [('Alexandra', 'CE'), ('Alexandra', None),
-                ('Ablative Skin', None)] * 5
+                ('Ablative Skin', None), (u'Two Wrongs', None),
+                (u'Agent of Power', None)] * 5
         self.aPhysCards = []
         for sName, sExp in aCards:
             oCard = make_card(sName, sExp)
@@ -372,7 +373,8 @@ class CardSetListModelTests(ConfigSutekhTest):
         _oCache = SutekhObjectCache()
         oPCS = PhysicalCardSet(name=self.aNames[0])
         # Add cards
-        aCards = [('Alexandra', 'CE'), ('Sha-Ennu', 'Third Edition'),
+        aCards = [(u'Agent of Power', None), ('Alexandra', 'CE'),
+                ('Sha-Ennu', 'Third Edition'),
                 ('Alexandra', 'CE'), ('Sha-Ennu', 'Third Edition'),
                 ('Alexandra', None), ('Bronwen', 'Sabbat'),
                 ('.44 Magnum', 'Jyhad'), ('.44 Magnum', 'Jyhad'),
@@ -386,7 +388,7 @@ class CardSetListModelTests(ConfigSutekhTest):
             oPCS.addPhysicalCard(oCard.id)
         # Create a child card set with some entries and check everything works
         oChildPCS = PhysicalCardSet(name=self.aNames[1], parent=oPCS)
-        for sName, sExp in aCards[2:6]:
+        for sName, sExp in aCards[2:6] + [(u'Two Wrongs', None)]:
             oCard = make_card(sName, sExp)
             # pylint: disable-msg=E1101
             # PyProtocols confuses pylint
