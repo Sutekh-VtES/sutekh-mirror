@@ -1567,6 +1567,7 @@ class CardSetCardListModel(CardListModel):
             if bRemove:
                 self._remove_sub_iters(oAbsCard)
                 self.remove(oIter)
+                iParGrpCnt -= iParCnt
             else:
                 self._update_entry(oIter, iCnt, iParCnt)
 
@@ -1720,13 +1721,18 @@ class CardSetCardListModel(CardListModel):
         if len(self._dAbs2Iter[oAbsCard]) > 0 and iChg < 0:
             # Test if we need to remove entries
             oIter = self._dAbs2Iter[oAbsCard][0]
+            iParCnt = self.get_value(oIter, 2)
             bRemove = not self.check_card_iter_stays(oIter)
         if bRemove:
             # Remove the card entry
             for oIter in self._dAbs2Iter[oAbsCard]:
                 oGrpIter = self.iter_parent(oIter)
+                iGrpCnt = self.get_value(oGrpIter, 1)
+                iParGrpCnt = self.get_value(oGrpIter, 2) - iParCnt
                 self._remove_sub_iters(oAbsCard)
                 self.remove(oIter)
+                self.set(oGrpIter, 2, iParGrpCnt)
+                self.set_par_count_colour(oGrpIter, iParGrpCnt, iGrpCnt)
                 if not self.check_group_iter_stays(oGrpIter):
                     sGroupName = self.get_value(oGrpIter, 0)
                     del self._dGroupName2Iter[sGroupName]

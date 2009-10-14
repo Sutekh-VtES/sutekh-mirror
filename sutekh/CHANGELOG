@@ -1,3 +1,7 @@
+14 Oct 2009
+ * Fix bug where the parent count for the group would not be updated correctly
+   when removing a card from the group
+
 13 Oct 2009
  * Rework test_CardSetListModel to compress several loops - significantly
    faster
