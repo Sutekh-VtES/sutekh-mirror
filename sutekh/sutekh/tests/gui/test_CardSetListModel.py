@@ -79,17 +79,21 @@ class CardSetListModelTests(ConfigSutekhTest):
             oIter = oModel.iter_next(oIter)
         return iTotal
 
-    def _get_all_child_counts(self, oModel, oIter):
+    def _get_all_child_counts(self, oModel, oIter, sName=''):
         """Recursively descend the children of oIter, getting all the
            relevant info."""
         aList = []
         oChildIter = oModel.iter_children(oIter)
         while oChildIter:
+            if sName:
+                sListName = sName + ':' + oModel.get_name_from_iter(oChildIter)
+            else:
+                sListName = oModel.get_name_from_iter(oChildIter)
             aList.append((oModel.get_card_count_from_iter(oChildIter),
-                oModel.get_parent_count_from_iter(oChildIter),
-                oModel.get_name_from_iter(oChildIter)))
+                oModel.get_parent_count_from_iter(oChildIter), sListName))
             if oModel.iter_n_children(oChildIter) > 0:
-                aList.extend(self._get_all_child_counts(oModel, oChildIter))
+                aList.extend(self._get_all_child_counts(oModel, oChildIter, 
+                    sListName))
             oChildIter = oModel.iter_next(oChildIter)
         aList.sort()
         return aList
