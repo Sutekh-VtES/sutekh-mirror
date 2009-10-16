@@ -171,7 +171,9 @@ class Expansions(AbbreviationLookup):
     dKeys = {
         'Anarchs' : [],
         'Ancient Hearts' : ['AH'],
-        'Blackhand' : ['BH'],
+        # Blackhand is an abbreviation so reading card sets from old versions
+        # work
+        'Black Hand' : ['BH', 'Blackhand'],
         'Bloodlines' : ['BL'],
         'Blood Shadowed Court' : ['BSC'],
         'Camarilla Edition' : ['CE'],
