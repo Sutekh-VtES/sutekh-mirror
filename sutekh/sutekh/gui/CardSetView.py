@@ -122,7 +122,7 @@ class CardSetView(CardListView):
         oCell3.connect('clicked', self.inc_card)
         oCell4.connect('clicked', self.dec_card)
 
-        self.__iMapID = self.connect('map-event', self.mapped)
+        self.__iMapID = self.connect('map', self.mapped)
         self.connect('key-press-event', self.key_press)
 
         self._oMenu = None
@@ -298,7 +298,7 @@ class CardSetView(CardListView):
 
     # functions related to tweaking widget display
 
-    def mapped(self, _oWidget, _oEvent):
+    def mapped(self, _oWidget):
         """Called when the view has been mapped, so we can twiddle the
            display"""
         # see if we need to be editable
@@ -310,6 +310,9 @@ class CardSetView(CardListView):
         # We don't want to redo this if map is called again due to
         # panes moving, etc.
         self.disconnect(self.__iMapID)
+        # Allow other map signals to run as well (needed for drag-n-drop in
+        # some gtk versions)
+        return True
 
     # Anything that touches the database is based off to the controller
     # We handle the editable checks here though, since the controller methods

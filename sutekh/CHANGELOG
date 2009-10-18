@@ -1,3 +1,6 @@
+18 Oct 2009
+ * Tweak ma signal handling to work around changes between gtk 2.16 and 2.18
+
 16 Oct 2009
  * Rename Blackhand to Black Hand for beter consistency with the rest of the
    world
