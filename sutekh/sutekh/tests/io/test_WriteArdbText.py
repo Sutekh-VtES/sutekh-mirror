@@ -21,22 +21,22 @@ A test comment
 
 Crypt [3 vampires] Capacity min: 4 max: 7 average: 5.67
 ------------------------------------------------------------
-  1x The Siamese          7 PRE SPI ani pro      Ahrimane :2
-  1x Alan Sovereign (Advanced) 6 AUS DOM for pre      Ventrue :3
-  1x Abebe                4 nec obf thn          Samedi :4
+ 1x The Siamese            7 PRE SPI ani pro     Ahrimane:2
+ 1x Alan Sovereign     Adv 6 AUS DOM for pre     Ventrue:3
+ 1x Abebe                  4 nec obf thn         Samedi:4
 
 Library [11 cards]
 ------------------------------------------------------------
 Action [2]
-  2x Abbot
+ 2x Abbot
 
 Equipment [6]
-  4x .44 Magnum
-  2x AK-47
+ 4x .44 Magnum
+ 2x AK-47
 
 Master [3]
-  2x Abombwe
-  1x The Path of Blood
+ 2x Abombwe
+ 1x The Path of Blood
 
 """
 

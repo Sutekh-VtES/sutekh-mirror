@@ -58,28 +58,52 @@ class WriteArdbText(ArdbInfo):
                 "-----------\n" \
                 % dCryptStats
 
+        aCryptLines = []
+        # ARDB's discipline & title padding are based on the longest entry
+        # so we need to keep track and format later
+        iDiscJust = 0
+        iTitleJust = 0
         for oCard,  (iCount, _sSet) in sorted(dCombinedVamps.iteritems(),
                 key=lambda x: (-x[1][0], -max(x[0].capacity, x[0].life),
                     x[0].name)):
             # We sort inversely on count, then capacity and then normally by
             # name
+            dLine = {'count' : iCount}
             if len(oCard.creed) > 0:
-                sClan = "Imbued"
-                iCapacity = oCard.life
+                dLine['clan'] = "Imbued"
+                dLine['capacity'] = oCard.life
             else:
-                sClan = [x.name for x in oCard.clan][0]
-                iCapacity = oCard.capacity
-            sName = oCard.name.ljust(20)
-            sDisciplines = self._gen_disciplines(oCard).ljust(20)
+                dLine['clan'] = [x.name for x in oCard.clan][0]
+                if dLine['clan'].endswith('antitribu'):
+                    # ARDB doesn't truncate antitribu further
+                    dLine['clan'] = '!' + dLine['clan'].replace(' antitribu',
+                            '')
+                else:
+                    dLine['clan'] = dLine['clan'][:10] # truncate if needed
+                dLine['capacity'] = oCard.capacity
+            dLine['name'] = oCard.name
+            dLine['adv'] = '   '
+            if oCard.level is not None:
+                dLine['name'] = dLine['name'].replace(' (Advanced)', '')
+                dLine['adv'] = 'Adv'
+            dLine['name'] = dLine['name'].ljust(18)[:18] # truncate if needed
+            dLine['disc'] = self._gen_disciplines(oCard)
+            iDiscJust = max(iDiscJust, len(dLine['disc']))
 
-            # FIXME: Current discrepencies from ARDB's output
-            # We don't truncate fields (ARDB truncates at least name & clan)
-            # We don't include titles
-            # We don't use the !Clan form for antitribu clans
+            dLine['title'] = '   '
+            if len(oCard.title):
+                dLine['title'] = [oC.name for oC in oCard.title][0]
+                dLine['title'] = dLine['title'].replace('Independent with ',
+                        '')[:12]
+                iTitleJust = max(iTitleJust, len(dLine['title']))
+            dLine['group'] = int(oCard.group)
+            aCryptLines.append(dLine)
 
-            sCrypt += "  %dx %s %d %s %s :%d\n" % \
-                 (iCount, sName, iCapacity, sDisciplines, sClan,
-                         oCard.group)
+        for dLine in aCryptLines:
+            dLine['title'] = dLine['title'].ljust(iTitleJust)
+            dLine['disc'] = dLine['disc'].ljust(iDiscJust)
+            sCrypt += " %(count)dx %(name)s %(adv)s %(capacity)d" \
+                    " %(disc)s %(title)s %(clan)s:%(group)d\n" % dLine
 
         return sCrypt
 
@@ -110,7 +134,7 @@ class WriteArdbText(ArdbInfo):
 
             for oCard, iCount in sorted(dCards.iteritems(),
                     key=lambda x: x[0].name):
-                sLib += "  %dx %s\n" % (iCount, oCard.name)
+                sLib += " %dx %s\n" % (iCount, oCard.name)
 
             sLib += "\n"
 
