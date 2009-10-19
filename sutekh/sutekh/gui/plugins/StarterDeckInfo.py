@@ -114,6 +114,9 @@ class StarterInfoPlugin(CardListPlugin, CardTextViewListener):
     # FIXME: Expose this to the user?
     oStarterRegex = re.compile('^\[(.*)\] (.*) Starter')
 
+    sDocUrl = 'http://sourceforge.net/apps/trac/sutekh/wiki/' \
+            'UserDocumentation?format=txt'
+
     # pylint: disable-msg=W0142
     # ** magic OK here
     def __init__(self, *args, **kwargs):
@@ -194,11 +197,29 @@ class StarterInfoPlugin(CardListPlugin, CardTextViewListener):
         # get rid of the dialog
         oDialog.destroy()
 
+    def _get_zip_file_name(self):
+        """Extract the zip file from the UserDocumentation page on the
+           wiki"""
+        # Extract the first zip file from this
+        oFile = urllib2.urlopen(self.sDocUrl)
+        sZipUrlBase = 'http://sourceforge.net/apps/trac/sutekh/raw-attachment'
+        for sLine in oFile.readlines():
+            if sLine.find('.zip') != -1:
+                # Extract the zip file name
+                # Assumption - rst attachment, and the 1st zip file in
+                # the list
+                sZipRef = sLine.split('[')[1].split(' ')[0]
+                break
+        # Build up the url
+        sZipRef = sZipRef.replace('attachment:', '')
+        # We need to split off the zip file name and the path bits
+        sZipName, sPath = sZipRef.split(':', 1)
+        sPath = sPath.replace(':', '/')
+        return '/'.join((sZipUrlBase, sPath, sZipName))
+
     def _download_file(self):
         """Download a zip file containing the starters."""
-        # FIXME: re-work so we can always get the latest zip file here.
-        sUrl = 'http://sourceforge.net/apps/trac/sutekh/raw-attachment/' \
-                'wiki/MiscWikiFiles/Starters_SW_to_KoT.zip'
+        sUrl = self._get_zip_file_name()
         oFile = urllib2.urlopen(sUrl)
         sDownloadDir = prefs_dir('Sutekh')
         ensure_dir_exists(sDownloadDir)

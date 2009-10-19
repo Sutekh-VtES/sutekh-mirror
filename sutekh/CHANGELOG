@@ -1,3 +1,8 @@
+19 Oct 2009
+ * Extract Starter deck zipfile name from UserDocumentation page, rather than
+   hardcoding it. Does assume that the 1st zipfile listed on the page is the
+   right one.
+
 18 Oct 2009
  * Tweak ma signal handling to work around changes between gtk 2.16 and 2.18
 
