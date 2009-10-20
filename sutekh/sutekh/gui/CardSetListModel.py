@@ -740,10 +740,9 @@ class CardSetCardListModel(CardListModel):
             if self.iExtraLevelsMode == SHOW_CARD_SETS or \
                     self.iExtraLevelsMode == CARD_SETS_AND_EXP:
                 iChildCnt = len(aChildCards)
-                if iChildCnt > 0 or self.iShowCardMode == ALL_CARDS or \
-                        self.bEditable:
+                if iChildCnt > 0 or self.bEditable:
                     # We treat card sets like expansion, showing all of them
-                    # when editable or showing all cards.
+                    # when editable.
                     dChildInfo.setdefault(sCardSetName, iChildCnt)
                     if self.iExtraLevelsMode == CARD_SETS_AND_EXP:
                         dExpanInfo.setdefault(sCardSetName, {})
@@ -1250,16 +1249,17 @@ class CardSetCardListModel(CardListModel):
             # When editing, we don't delete 0 entries unless the card vanishes
             return True
         iDepth = self.iter_depth(oIter)
-        if iDepth == 3 and self.iExtraLevelsMode in [EXP_AND_CARD_SETS,
+        if iDepth == 2 and self.iExtraLevelsMode in [SHOW_EXPANSIONS,
+                EXP_AND_CARD_SETS] and self.iShowCardMode == ALL_CARDS:
+            # We don't delete expansion entries in this case
+            return True
+        elif iDepth == 3 and self.iExtraLevelsMode in [EXP_AND_CARD_SETS,
                 CARD_SETS_AND_EXP]:
             # Since we're not editable here, we always remove these
             return False
         iParCnt = self.get_value(oIter, 2)
         bResult = False
-        if self.iShowCardMode == ALL_CARDS:
-            # Other than the above, we never remove entries for ALL_CARDS
-            bResult = True
-        elif self.iExtraLevelsMode == EXP_AND_CARD_SETS and \
+        if self.iExtraLevelsMode == EXP_AND_CARD_SETS and \
                 self.iShowCardMode == CHILD_CARDS and \
                 self.iter_n_children(oIter) > 0:
             # iCnt is 0, and we're not editable, so we only show this

@@ -1,3 +1,7 @@
+20 Oct 2009
+ * Don't show all card sets unless editable in 'show card sets' and
+   'show card sets + expansions' - more consistent with behaviour elsewhere.
+
 19 Oct 2009
  * Extract Starter deck zipfile name from UserDocumentation page, rather than
    hardcoding it. Does assume that the 1st zipfile listed on the page is the
