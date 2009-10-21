@@ -7,31 +7,21 @@
 """gtk.TreeView class the card set list."""
 
 import gtk
-import unicodedata
 from sutekh.gui.CardSetManagementModel import CardSetManagementModel
-from sutekh.gui.SearchDialog import SearchDialog
+from sutekh.gui.FilteredView import FilteredView
 
-class CardSetManagementView(gtk.TreeView):
+class CardSetManagementView(FilteredView):
     """Tree View for the card set list."""
     # pylint: disable-msg=R0904
     # gtk.Widget, so lots of public methods
-    def __init__(self, oMainWindow, oController):
-        self._oModel = CardSetManagementModel(oMainWindow)
-        self._oModel.enable_sorting()
-        super(CardSetManagementView, self).__init__(self._oModel)
-
-        self._oMainWin = oMainWindow
-        self._oController = oController
+    def __init__(self, oController, oMainWindow):
+        oModel = CardSetManagementModel(oMainWindow)
+        oModel.enable_sorting()
+        super(CardSetManagementView, self).__init__(oController,
+                oMainWindow, oModel, oMainWindow.config_file)
 
         # Selecting rows
-        self._oSelection = self.get_selection()
         self._oSelection.set_mode(gtk.SELECTION_SINGLE)
-
-        # Text searching of card names
-        self.set_search_equal_func(self.compare, None)
-        # Search dialog
-        # Entry item for text searching
-        self._oSearchDialog = SearchDialog(self, self._oMainWin)
 
         # Drag and Drop
         aTargets = [ ('STRING', 0, 0),      # second 0 means TARGET_STRING
@@ -49,8 +39,6 @@ class CardSetManagementView(gtk.TreeView):
 
         self.set_name('card set view')
         # Grid Lines
-        if hasattr(self, 'set_grid_lines'):
-            self.set_grid_lines(gtk.TREE_VIEW_GRID_LINES_BOTH)
 
         self.oNameCell = gtk.CellRendererText()
         oColumn = gtk.TreeViewColumn("Card Sets", self.oNameCell, markup=0)
@@ -62,79 +50,7 @@ class CardSetManagementView(gtk.TreeView):
 
         self.set_expander_column(oColumn)
 
-    # Help functions used by reload_keep_expanded
-    def get_row_status(self, _oModel, oPath, _oIter, dExpandedDict):
-        """Create a dictionary of rows and their expanded status."""
-        if self.row_expanded(oPath):
-            dExpandedDict.setdefault(oPath,
-                    self._oModel.get_name_from_path(oPath))
-        return False # Need to process the whole list
-
-    def set_row_status(self, dExpandedDict):
-        """Attempt to expand the rows listed in dExpandedDict."""
-        for oPath in dExpandedDict:
-            # pylint: disable-msg=W0704
-            # Paths may disappear, so this error can be ignored
-            try:
-                sCardSetName = self._oModel.get_name_from_path(oPath)
-                if sCardSetName == dExpandedDict[oPath]:
-                    self.expand_to_path(oPath)
-            except ValueError:
-                pass
-        return False
-
     # Introspection
-
-    # pylint: disable-msg=W0212
-    # We allow access via these properties (for plugins)
-    mainwindow = property(fget=lambda self: self._oMainWin,
-            doc="The parent window sed for dialogs, etc.")
-    searchdialog = property(fget=lambda self: self._oSearchDialog,
-            doc="The search dialog.")
-    # pylint: enable-msg=W0212
-
-    # Card Set Name searching
-
-    @staticmethod
-    def to_ascii(sName):
-        """Convert a card name or key to a canonical ASCII form."""
-        return unicodedata.normalize('NFKD', sName).encode('ascii','ignore')
-
-    # pylint: disable-msg=R0913
-    # arguments as required by the function signature
-    def compare(self, oModel, _iColumn, sKey, oIter, _oData):
-        """Compare the entered text to the card names."""
-
-        def check_children(oModel, oIter, sKey, iLenKey):
-            """Check if the children of this iterator match."""
-            oChildIter = oModel.iter_children(oIter)
-            while oChildIter:
-                sChildName = oModel.get_name_from_iter(oChildIter)
-                sChildName = sChildName[:iLenKey].lower()
-                if self.to_ascii(sChildName).startswith(sKey) or\
-                    sChildName.startswith(sKey):
-                    oPath = oModel.get_path(oChildIter)
-                    # Expand the row
-                    self.expand_to_path(oPath)
-                if oModel.iter_n_children(oChildIter) > 0:
-                    # recurse into the children
-                    check_children(oModel, oChildIter, sKey, iLenKey)
-                oChildIter = oModel.iter_next(oChildIter)
-
-        sKey = sKey.lower()
-        iLenKey = len(sKey)
-
-        # Test this row straight up
-        sCardSetName = self._oModel.get_name_from_iter(oIter)[:iLenKey].lower()
-        if self.to_ascii(sCardSetName).startswith(sKey) or \
-                sCardSetName.startswith(sKey):
-            return False
-
-        if oModel.iter_n_children(oIter) > 0:
-            # row has children, so need to check if any of the children match
-            check_children(oModel, oIter, sKey, iLenKey)
-        # Fell through
-        return True
 
     def drag_card_set(self, _oBtn, _oDragContext, oSelectionData, _oInfo,
             _oTime):
@@ -151,9 +67,9 @@ class CardSetManagementView(gtk.TreeView):
         """Return the currently selected card set name, or None if nothing
            is selected."""
         oModel, aSelectedRows = self._oSelection.get_selected_rows()
-        if len(aSelectedRows) < 1:
+        if len(aSelectedRows) != 1:
+            # Only feasible when we have a single card set selected
             return None
-        # We only allow single selection mode, so len(aSelectedRows) == 1
         oPath = aSelectedRows[0]
         return oModel.get_name_from_path(oPath)
 

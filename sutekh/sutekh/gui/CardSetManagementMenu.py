@@ -49,11 +49,11 @@ class CardSetManagementMenu(PaneMenu):
 
     def toggle_apply_filter(self, oWidget):
         """Handle menu toggle events"""
-        self._oController.run_filter(oWidget.active)
+        self._oController.view.run_filter(oWidget.active)
 
     def set_active_filter(self, _oWidget):
         """Handle the menu activate signal"""
-        self._oController.get_filter(self)
+        self._oController.view.get_filter(self)
 
     def expand_all(self, _oWidget):
         """Expand all the rows in the card set."""

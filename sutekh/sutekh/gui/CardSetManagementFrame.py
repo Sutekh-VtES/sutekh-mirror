@@ -22,7 +22,6 @@ class CardSetManagementFrame(BasicFrame):
        Provides the actions associated with this Pane - creating new
        card sets, filtering, etc.
        """
-    _sFilterType = 'PhysicalCardSet'
     _sName = 'Card Set List'
     _oSetClass = PhysicalCardSet
 
@@ -67,4 +66,4 @@ class CardSetManagementFrame(BasicFrame):
 
     def reload(self):
         """Reload the frame contents"""
-        self._oController.reload_keep_expanded(True)
+        self.view.reload_keep_expanded(True)

@@ -11,7 +11,6 @@ from sqlobject import SQLObjectNotFound
 from sutekh.core.SutekhObjects import PhysicalCardSet, IPhysicalCardSet
 from sutekh.core.CardSetHolder import CardSetHolder
 from sutekh.core.CardLookup import LookupFailed
-from sutekh.gui.FilterDialog import FilterDialog
 from sutekh.gui.CardSetManagementView import CardSetManagementView
 from sutekh.gui.CreateCardSetDialog import CreateCardSetDialog
 from sutekh.gui.SutekhDialog import do_complaint_warning, do_complaint, \
@@ -215,10 +214,11 @@ class CardSetManagementController(object):
     """Controller object for the card set list."""
     # pylint: disable-msg=R0904
     # gtk.Widget, so lots of public methods
+    _sFilterType = 'PhysicalCardSet'
+
     def __init__(self, oMainWindow, oFrame):
         self._oMainWindow = oMainWindow
         self._oFrame = oFrame
-        self._oFilterDialog = None
         # Check the current set for loops
         for oCS in PhysicalCardSet.select():
             if detect_loop(oCS):
@@ -230,7 +230,7 @@ class CardSetManagementController(object):
                         gtk.MESSAGE_WARNING, gtk.BUTTONS_CLOSE)
                 # We break the loop, and let the user fix things,
                 # rather than try and be too clever
-        self._oView = CardSetManagementView(oMainWindow, self)
+        self._oView = CardSetManagementView(self, oMainWindow)
         self._oModel = self._oView.get_model()
 
     # pylint: disable-msg=W0212
@@ -241,40 +241,6 @@ class CardSetManagementController(object):
     filtertype = property(fget=lambda self: self._sFilterType,
             doc="Associated Type")
     # pylint: enable-msg=W0212
-
-    def get_filter(self, oMenuWidget):
-        """Get the Filter from the FilterDialog."""
-        if self._oFilterDialog is None:
-            self._oFilterDialog = FilterDialog(self._oMainWindow,
-                    self._oMainWindow.config_file, 'PhysicalCardSet')
-
-        self._oFilterDialog.run()
-
-        if self._oFilterDialog.was_cancelled():
-            return # Change nothing
-
-        oFilter = self._oFilterDialog.get_filter()
-        if oFilter != None:
-            self._oModel.selectfilter = oFilter
-            if not self._oModel.applyfilter:
-                # If a filter is set, automatically apply
-                oMenuWidget.set_apply_filter(True)
-            else:
-                # Filter Changed, so reload
-                self._oModel.load()
-        else:
-            # Filter is set to blank, so we treat this as disabling
-            # Filter
-            if self._oModel.applyfilter:
-                oMenuWidget.set_apply_filter(False)
-            else:
-                self._oModel.load()
-
-    def run_filter(self, bState):
-        """Enable or disable the current filter based on bState"""
-        if self._oModel.applyfilter != bState:
-            self._oModel.applyfilter = bState
-            self._oModel.load()
 
     def create_new_card_set(self, _oWidget):
         """Create a new card set"""
@@ -306,7 +272,7 @@ class CardSetManagementController(object):
             delete_physical_card_set(sSetName)
             for oFrame in self._oMainWindow.find_cs_pane_by_set_name(sSetName):
                 oFrame.close_frame()
-            self.reload_keep_expanded(False)
+            self.view.reload_keep_expanded(False)
 
     def toggle_in_use_flag(self, _oMenuWidget):
         """Toggle the in-use status of the card set"""
@@ -321,7 +287,7 @@ class CardSetManagementController(object):
             return
         oCS.inuse = not oCS.inuse
         oCS.syncUpdate()
-        self.reload_keep_expanded(True)
+        self.view.reload_keep_expanded(True)
 
     def row_clicked(self, _oTreeView, oPath, _oColumn):
         """Handle row clicked events.
@@ -330,35 +296,6 @@ class CardSetManagementController(object):
            """
         sName = self._oModel.get_name_from_path(oPath)
         self._oMainWindow.add_new_physical_card_set(sName)
-
-    def reload_keep_expanded(self, bRestoreSelection):
-        """Reload with current expanded state.
-
-           Attempt to reload the card list, keeping the existing structure
-           of expanded rows.
-           """
-        # Internal helper functions
-        # See what's expanded
-        oSelection = self._oView.get_selection()
-        if oSelection is not None:
-            _oModel, aSelectedRows = oSelection.get_selected_rows()
-        else:
-            aSelectedRows = []
-        if len(aSelectedRows) > 0:
-            oSelPath = aSelectedRows[0]
-        else:
-            oSelPath = None
-        dExpandedDict = {}
-        self._oModel.foreach(self._oView.get_row_status, dExpandedDict)
-        # Reload, but use cached info
-        self._oModel.load()
-        # Re-expand stuff
-        self._oView.set_row_status(dExpandedDict)
-        if oSelPath and bRestoreSelection:
-            # Restore selection
-            oSelection.select_path(oSelPath)
-        # Handle any defferred database single issues
-        self._oMainWindow.do_all_queued_reloads()
 
     # pylint: disable-msg=R0913
     # arguments as required by function signature
@@ -383,7 +320,7 @@ class CardSetManagementController(object):
                     oDraggedCS = IPhysicalCardSet(sThisName)
                     oParentCS = IPhysicalCardSet(sTargetName)
                     if reparent_card_set(oDraggedCS, oParentCS):
-                        self.reload_keep_expanded(False)
+                        self.view.reload_keep_expanded(False)
                         oPath = self._oModel.get_path_from_name(sThisName)
                         # Make newly dragged set visible
                         if oPath:
