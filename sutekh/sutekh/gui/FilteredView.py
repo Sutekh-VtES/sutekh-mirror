@@ -240,3 +240,13 @@ class FilteredView(gtk.TreeView):
         # Fell through - the gtk continue search behaviour will find child
         # matches
         return True
+
+    # helpers for selection management
+    def set_select_single(self):
+        """set selection to single mode"""
+        self._oSelection.set_mode(gtk.SELECTION_SINGLE)
+
+    def set_select_multiple(self):
+        """set selection to multiple mode"""
+        self._oSelection.set_mode(gtk.SELECTION_MULTIPLE)
+

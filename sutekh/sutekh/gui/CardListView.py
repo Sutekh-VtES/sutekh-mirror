@@ -21,7 +21,7 @@ class CardListView(FilteredView):
         super(CardListView, self).__init__(oController, oMainWindow,
                 oModel, oConfig)
 
-        self._oSelection.set_mode(gtk.SELECTION_MULTIPLE)
+        self.set_select_multiple()
         self._aOldSelection = []
 
         self._oSelection.connect('changed', self.card_selected)

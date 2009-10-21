@@ -21,7 +21,7 @@ class CardSetManagementView(FilteredView):
                 oMainWindow, oModel, oMainWindow.config_file)
 
         # Selecting rows
-        self._oSelection.set_mode(gtk.SELECTION_SINGLE)
+        self.set_select_single()
 
         # Drag and Drop
         aTargets = [ ('STRING', 0, 0),      # second 0 means TARGET_STRING
