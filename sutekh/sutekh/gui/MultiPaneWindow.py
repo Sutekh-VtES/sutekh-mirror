@@ -964,14 +964,18 @@ class MultiPaneWindow(gtk.Window):
         # This needs to be on the top level widget, so has to be here
         # pylint: disable-msg=E1101
         # gtk properties confuse pylint here
-        self.window.set_cursor(self._oBusyCursor)
-        # Since we're about to do a buncg of CPU grinding, tell gtk
-        # to redraw now
-        gtk.gdk.flush()
+        # Safe-guard for if we're called while shutting down
+        if self.window:
+            self.window.set_cursor(self._oBusyCursor)
+            # Since we're about to do a buncg of CPU grinding, tell gtk
+            # to redraw now
+            gtk.gdk.flush()
 
     def restore_cursor(self):
         """Restore the ordinary cursor"""
         # pylint: disable-msg=E1101
         # gtk properties confuse pylint here
-        self.window.set_cursor(None)
+        # Safe-guard for if we're called while shutting down
+        if self.window:
+            self.window.set_cursor(None)
 
