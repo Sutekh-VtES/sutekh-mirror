@@ -13,8 +13,11 @@ from sutekh.gui.CardListModel import CardListModel
 from sutekh.gui.CellRendererIcons import CellRendererIcons
 
 class PhysicalCardView(CardListView):
-    # pylint: disable-msg=R0904
-    # gtk class, so many public methods
+    # pylint: disable-msg=R0904, R0902, R0901
+    # R0904 - gtk.Widget, so many public methods
+    # R0902 - We need to track a fair amount of state, so many attributes
+    # R0901 - many ancestors, due to our object hierachy on top of the quite
+    # deep gtk one
     """The card list view for the physical card collection.
 
        Special cases Editable card list with those properties

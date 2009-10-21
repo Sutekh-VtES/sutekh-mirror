@@ -8,28 +8,19 @@
 """gtk.TreeView classes for displaying the card list."""
 
 import gtk
-import unicodedata
-from sutekh.gui.FilterDialog import FilterDialog
-from sutekh.gui.SearchDialog import SearchDialog
+from sutekh.gui.FilteredView import FilteredView
 
-class CardListView(gtk.TreeView):
+class CardListView(FilteredView):
     """Base class for all the card list views in Sutekh."""
-    # pylint: disable-msg=R0904, R0902
-    # gtk.Widget, so many public methods. We need to keep state, so many attrs
+    # pylint: disable-msg=R0904, R0902, R0901
+    # R0904 - gtk.Widget, so many public methods
+    # R0902 - We need to track a fair amount of state, so many attributes
+    # R0901 - many ancestors, due to our object hierachy on top of the quite
+    # deep gtk one
     def __init__(self, oController, oMainWindow, oModel, oConfig):
-        # Although MainWindow usually contains a config_file property,
-        # when we come in from the GuiCardLookup, we just have oConfig
-        self._oModel = oModel
-        self._oController = oController
-        self._oMainWin = oMainWindow
-        self._oConfig = oConfig
-        # subclasses will override this
-        self._sDragPrefix = 'None:'
+        super(CardListView, self).__init__(oController, oMainWindow,
+                oModel, oConfig)
 
-        super(CardListView, self).__init__(self._oModel)
-
-        # Selecting rows
-        self._oSelection = self.get_selection()
         self._oSelection.set_mode(gtk.SELECTION_MULTIPLE)
         self._aOldSelection = []
 
@@ -55,12 +46,6 @@ class CardListView(gtk.TreeView):
         self.connect('row-activated', self.card_activated)
         # Key combination for searching
 
-        # Text searching of card names
-        self.set_search_equal_func(self.compare, None)
-        # Search dialog
-        # Entry item for text searching
-        self._oSearchDialog = SearchDialog(self, self._oMainWin)
-
         # Drag and Drop
         aTargets = [ ('STRING', 0, 0),      # second 0 means TARGET_STRING
                      ('text/plain', 0, 0) ] # and here
@@ -78,82 +63,6 @@ class CardListView(gtk.TreeView):
         self.connect('drag_data_received', self.card_drop)
         self.bReentrant = False
         self.bSelectTop = 0
-
-        # Filtering Dialog
-        self._oFilterDialog = None
-        self.set_name('normal_view')
-
-        # Grid Lines
-        if hasattr(self, 'set_grid_lines'):
-            self.set_grid_lines(gtk.TREE_VIEW_GRID_LINES_BOTH)
-
-    def load(self):
-        """Called when the model needs to be reloaded."""
-        if hasattr(self._oMainWin, 'set_busy_cursor'):
-            self._oMainWin.set_busy_cursor()
-        self.freeze_child_notify()
-        self.set_model(None)
-        self._oModel.load()
-        self.set_model(self._oModel)
-        self.thaw_child_notify()
-        if hasattr(self._oMainWin, 'restore_cursor'):
-            self._oMainWin.restore_cursor()
-
-    def _set_row_status(self, _oModel, oPath, oIter, aExpandedSet):
-        """Attempt to expand the rows listed in aExpandedSet."""
-        if not self._oModel.iter_has_child(oIter):
-            # The tail nodes can't be expanded, only their parents,
-            # so no need to check the tail nodes
-            return False
-        sKey = self.get_iter_identifier(oIter)
-        if sKey in aExpandedSet:
-            self.expand_to_path(oPath)
-        return False
-
-    def get_iter_identifier(self, oIter):
-        """Get the identifier for the path.
-
-           The identifier is (sGroup, sCard, ...) as required."""
-        aKey = []
-        while oIter:
-            aKey.append(self._oModel.get_value(oIter, 0))
-            oIter = self._oModel.iter_parent(oIter) # Move back up the model
-        return ''.join(aKey)
-
-    def reload_keep_expanded(self):
-        """Reload with current expanded state.
-
-           Attempt to reload the card list, keeping the existing structure
-           of expanded rows.
-           """
-        # Internal helper functions
-        # See what's expanded
-        aExpandedSet = self.get_expanded_list()
-        # Reload, but use cached info
-        self.load()
-        # Re-expand stuff
-        self.expand_list(aExpandedSet)
-
-    def get_expanded_list(self):
-        """Create a list of expanded rows"""
-        aExpandedSet = set()
-        self._oModel.foreach(self._get_row_status, aExpandedSet)
-        return aExpandedSet
-
-    def expand_list(self, aExpandedSet):
-        """Expand the rows listed in aExpandedSet"""
-        self._oModel.foreach(self._set_row_status, aExpandedSet)
-
-    # Introspection
-
-    # pylint: disable-msg=W0212
-    # We allow access via these properties (for plugins)
-    mainwindow = property(fget=lambda self: self._oMainWin,
-            doc="The parent window used for dialogs, etc.")
-    searchdialog = property(fget=lambda self: self._oSearchDialog,
-            doc="The search dialog.")
-    # pylint: enable-msg=W0212
-
 
     def can_select(self, oPath):
         """disable selecting top level rows"""
@@ -212,54 +121,6 @@ class CardListView(gtk.TreeView):
 
         oPhysCard = self._oModel.get_physical_card_from_path(oPath)
         self._oController.set_card_text(oPhysCard)
-
-    # Filtering
-
-    def get_filter(self, oMenu, sDefaultFilter=None):
-        """Get the Filter from the FilterDialog.
-
-           oMenu is a menu item to toggle if it exists.
-           sDefaultFilterName is the name of the default filter
-           to set when the dialog is created. This is intended for
-           use by GuiCardLookup."""
-        if self._oFilterDialog is None:
-            self._oFilterDialog = FilterDialog(self._oMainWin,
-                    self._oConfig, self._oController.filtertype,
-                    sDefaultFilter)
-
-        self._oFilterDialog.run()
-
-        if self._oFilterDialog.was_cancelled():
-            return # Change nothing
-
-        oFilter = self._oFilterDialog.get_filter()
-        if oFilter != None:
-            self._oModel.selectfilter = oFilter
-            if not self._oModel.applyfilter:
-                # If a filter is set, automatically apply
-                if oMenu:
-                    oMenu.set_apply_filter(True)
-                else:
-                    self._oModel.applyfilter = True
-            else:
-                # Filter Changed, so reload
-                self.reload_keep_expanded()
-        else:
-            # Filter is set to blank, so we treat this as disabling
-            # Filter
-            if self._oModel.applyfilter:
-                if oMenu:
-                    oMenu.set_apply_filter(False)
-                else:
-                    self._oModel.applyfilter = True
-            else:
-                self.reload_keep_expanded()
-
-    def run_filter(self, bState):
-        """Enable or disable the current filter based on bState"""
-        if self._oModel.applyfilter != bState:
-            self._oModel.applyfilter = bState
-            self.reload_keep_expanded()
 
     def process_selection(self):
         """Create a dictionary from the selection.
@@ -378,11 +239,6 @@ class CardListView(gtk.TreeView):
 
     # Card name searching
 
-    @staticmethod
-    def to_ascii(sName):
-        """Convert a card name or key to a canonical ASCII form."""
-        return unicodedata.normalize('NFKD', sName).encode('ascii','ignore')
-
     def compare(self, oModel, _iColumn, sKey, oIter, _oData):
         """Compare the entered text to the card names."""
         if oModel.iter_depth(oIter) == 2:
@@ -420,15 +276,6 @@ class CardListView(gtk.TreeView):
         return True
 
     # pylint: enable-msg=R0913
-
-    # Helper function used by reload_keep_expanded
-    # Various arguments required by function signatures
-    def _get_row_status(self, _oModel, oPath, oIter, aExpandedSet):
-        """Create a dictionary of rows and their expanded status."""
-        if self.row_expanded(oPath):
-            sKey = self.get_iter_identifier(oIter)
-            aExpandedSet.add(sKey)
-        return False # Need to process the whole list
 
     # Activating Rows
     def card_activated(self, _oTree, oPath, _oColumn):

@@ -46,9 +46,11 @@ MINUS_KEYS = [
 
 
 class CardSetView(CardListView):
-    # pylint: disable-msg=R0904, R0902
+    # pylint: disable-msg=R0904, R0902, R0901
     # R0904 - gtk.Widget, so many public methods
     # R0902 - We need to track a fair amount of state, so many attributes
+    # R0901 - many ancestors, due to our object hierachy on top of the quite
+    # deep gtk one
     """Subclass of CardListView specific to the Card Sets
 
        Adds editing support, and other specific to the card sets.

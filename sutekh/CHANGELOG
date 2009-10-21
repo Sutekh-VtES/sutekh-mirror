@@ -1,5 +1,7 @@
 21 Oct 2009
  * Ensure we don't call set_busy_cursor when we no longer have a window
+ * Create FilteredView base class to unify filtering + search for the various
+   TreeViews
 
 20 Oct 2009
  * Don't show all card sets unless editable in 'show card sets' and
