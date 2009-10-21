@@ -12,7 +12,7 @@ from sqlobject import sqlhub
 from sutekh.gui.SutekhDialog import do_complaint_error
 from sutekh.gui.SutekhFileWidget import ImportDialog
 from sutekh.gui.GuiDBManagement import refresh_ww_card_list
-from sutekh.gui.CardSetManagementController import import_cs
+from sutekh.gui.GuiCardSetFunctions import import_cs
 from sutekh.io.IdentifyXMLFile import IdentifyXMLFile
 from sutekh.io.AbstractCardSetParser import AbstractCardSetParser
 from sutekh.io.PhysicalCardParser import PhysicalCardParser

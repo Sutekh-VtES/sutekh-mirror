@@ -24,6 +24,7 @@ from sutekh.gui.CardSetFrame import CardSetFrame
 from sutekh.gui.AboutDialog import SutekhAboutDialog
 from sutekh.gui.MainMenu import MainMenu
 from sutekh.gui.GuiCardLookup import GuiLookup
+from sutekh.gui.GuiCardSetFunctions import break_existing_loops
 from sutekh.gui.CardSetManagementFrame import CardSetManagementFrame
 from sutekh.gui.PluginManager import PluginManager
 from sutekh.gui import SutekhIcon
@@ -117,6 +118,9 @@ class MultiPaneWindow(gtk.Window):
         self.oVBox.pack_start(self.__oMenu, False, False)
         self.oVBox.show()
         self.add(self.oVBox)
+
+        # Break any loops in the database
+        break_existing_loops()
 
         self.show_all()
         self.restore_from_config()

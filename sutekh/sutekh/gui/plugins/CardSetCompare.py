@@ -14,7 +14,7 @@ from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 from sutekh.gui.ScrolledList import ScrolledList
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
-from sutekh.gui.CardSetManagementController import create_card_set
+from sutekh.gui.GuiCardSetFunctions import create_card_set
 
 def _get_card_set_list(aCardSetNames, bUseExpansions):
     """Get the differences and common cards for the card sets."""

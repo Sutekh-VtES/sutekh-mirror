@@ -14,7 +14,7 @@ from sutekh.io.CSVParser import CSVParser
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 from sutekh.gui.SutekhFileWidget import SutekhFileButton
-from sutekh.gui.CardSetManagementController import import_cs
+from sutekh.gui.GuiCardSetFunctions import import_cs
 
 class CSVImporter(CardListPlugin):
     """CSV Import plugin.

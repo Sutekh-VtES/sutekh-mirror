@@ -4,16 +4,34 @@
 # Copyright 2008 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-"""gtk.TreeView class the card set list."""
+"""gtk.TreeView class for the card set list."""
 
 import gtk
+from sqlobject import SQLObjectNotFound
+from sutekh.core.SutekhObjects import IPhysicalCardSet
 from sutekh.gui.CardSetManagementModel import CardSetManagementModel
+from sutekh.gui.GuiCardSetFunctions import reparent_card_set
 from sutekh.gui.FilteredView import FilteredView
 
+def split_selection_data(sSelectionData):
+    """Helper function to subdivide selection string into bits again"""
+    if sSelectionData == '':
+        return 'None', ['']
+    aLines = sSelectionData.splitlines()
+    sSource = aLines[0]
+    if sSource == "Sutekh Pane:" or sSource == 'Card Set:':
+        return sSource, aLines
+    # Irrelevant to us
+    return 'None', ['']
+
+
 class CardSetManagementView(FilteredView):
-    """Tree View for the card set list."""
-    # pylint: disable-msg=R0904
-    # gtk.Widget, so lots of public methods
+    """Tree View for the management of card set list."""
+    # pylint: disable-msg=R0904, R0902, R0901
+    # R0904 - gtk.Widget, so many public methods
+    # R0902 - We need to track a fair amount of state, so many attributes
+    # R0901 - many ancestors, due to our object hierachy on top of the quite
+    # deep gtk one
     def __init__(self, oController, oMainWindow):
         oModel = CardSetManagementModel(oMainWindow)
         oModel.enable_sorting()
@@ -34,11 +52,10 @@ class CardSetManagementView(FilteredView):
                 aTargets, gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
 
         self.connect('drag_data_get', self.drag_card_set)
-        self.connect('row_activated', self._oController.row_clicked)
-        self.connect('drag_data_received', self._oController.card_set_drop)
+        self.connect('row_activated', self.row_clicked)
+        self.connect('drag_data_received', self.card_set_drop)
 
-        self.set_name('card set view')
-        # Grid Lines
+        self.set_name('card set management view')
 
         self.oNameCell = gtk.CellRendererText()
         oColumn = gtk.TreeViewColumn("Card Sets", self.oNameCell, markup=0)
@@ -50,8 +67,8 @@ class CardSetManagementView(FilteredView):
 
         self.set_expander_column(oColumn)
 
-    # Introspection
-
+    # pylint: disable-msg=R0913
+    # arguments as required by the function signature
     def drag_card_set(self, _oBtn, _oDragContext, oSelectionData, _oInfo,
             _oTime):
         """Allow card sets to be dragged to a frame."""
@@ -61,6 +78,45 @@ class CardSetManagementView(FilteredView):
         sData = "\n".join(['Card Set:', sSetName])
         oSelectionData.set(oSelectionData.target, 8, sData)
 
+    def card_set_drop(self, oWdgt, oContext, iXPos, iYPos, oData, oInfo,
+            oTime):
+        """Default drag-n-drop handler."""
+        # Pass off to the Frame Handler
+        sSource, aData = split_selection_data(oData.data)
+        if sSource == "Sutekh Pane:":
+            self._oController.frame.drag_drop_handler(oWdgt, oContext, iXPos,
+                    iYPos, oData, oInfo, oTime)
+        elif sSource == "Card Set:":
+            # Find the card set at iXPos, iYPos
+            # Need to do this to skip avoid headers and such confusing us
+            oPath = self.get_path_at_pointer()
+            if oPath:
+                sTargetName = self._oModel.get_name_from_path(oPath)
+                sThisName = aData[1]
+                # pylint: disable-msg=W0704
+                # doing nothing on SQLObjectNotFound seems the best choice
+                try:
+                    oDraggedCS = IPhysicalCardSet(sThisName)
+                    oParentCS = IPhysicalCardSet(sTargetName)
+                    if reparent_card_set(oDraggedCS, oParentCS):
+                        self.reload_keep_expanded(False)
+                        oPath = self._oModel.get_path_from_name(sThisName)
+                        # Make newly dragged set visible
+                        if oPath:
+                            self.expand_to_path(oPath)
+                        oContext.finish(True, False, oTime)
+                except SQLObjectNotFound:
+                    pass
+        oContext.finish(False, False, oTime)
+
+    def row_clicked(self, _oTreeView, oPath, _oColumn):
+        """Handle row clicked events.
+
+           allow double clicks to open a card set.
+           """
+        sName = self._oModel.get_name_from_path(oPath)
+        self._oMainWin.add_new_physical_card_set(sName)
+
     # pylint: enable-msg=R0913
 
     def get_selected_card_set(self):
@@ -68,7 +124,7 @@ class CardSetManagementView(FilteredView):
            is selected."""
         oModel, aSelectedRows = self._oSelection.get_selected_rows()
         if len(aSelectedRows) != 1:
-            # Only feasible when we have a single card set selected
+            # Only viable when a single row is selected
             return None
         oPath = aSelectedRows[0]
         return oModel.get_name_from_path(oPath)

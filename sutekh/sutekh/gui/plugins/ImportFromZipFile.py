@@ -14,7 +14,7 @@ from sutekh.gui.SutekhFileWidget import SutekhFileDialog
 from sutekh.gui.ProgressDialog import ProgressDialog, SutekhCountLogHandler
 from sutekh.gui.ScrolledList import ScrolledList
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
-from sutekh.gui.CardSetManagementController import reparent_all_children, \
+from sutekh.gui.GuiCardSetFunctions import reparent_all_children, \
         update_open_card_sets, get_import_name
 
 def _do_rename_parent(sOldName, sNewName, dRemaining):

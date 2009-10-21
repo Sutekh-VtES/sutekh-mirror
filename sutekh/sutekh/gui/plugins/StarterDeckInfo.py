@@ -17,7 +17,7 @@ from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 from sutekh.core.CardSetUtilities import delete_physical_card_set, \
         find_children
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
-from sutekh.gui.CardSetManagementController import reparent_all_children, \
+from sutekh.gui.GuiCardSetFunctions import reparent_all_children, \
         update_open_card_sets
 from sutekh.SutekhUtility import prefs_dir, ensure_dir_exists
 import re

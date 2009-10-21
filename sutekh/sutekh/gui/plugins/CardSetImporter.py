@@ -20,7 +20,7 @@ from sutekh.io.LackeyDeckParser import LackeyDeckParser
 from sutekh.core.SutekhObjects import PhysicalCardSet
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog
-from sutekh.gui.CardSetManagementController import import_cs
+from sutekh.gui.GuiCardSetFunctions import import_cs
 from sutekh.gui.SutekhFileWidget import SutekhFileWidget
 
 class ACSImporter(CardListPlugin):

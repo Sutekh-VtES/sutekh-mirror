@@ -8,7 +8,7 @@
 """Controller for the card sets"""
 
 from sqlobject import SQLObjectNotFound
-from sutekh.gui.CardSetManagementController import check_ok_to_delete, \
+from sutekh.gui.GuiCardSetFunctions import check_ok_to_delete, \
         update_card_set
 from sutekh.gui.CardSetView import CardSetView
 from sutekh.core.DBSignals import listen_row_destroy, listen_row_update, \

@@ -4,6 +4,8 @@
    TreeViews
  * Rework CardSetManagementView to inherit from FilteredView. Remove
    duplicated code from CardSetManagementController
+ * Shuffled a lot of utility functions out of CardSetManagementController
+   into GuiCardSetFunctions
 
 20 Oct 2009
  * Don't show all card sets unless editable in 'show card sets' and

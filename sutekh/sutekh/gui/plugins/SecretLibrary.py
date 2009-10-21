@@ -18,7 +18,7 @@ from sutekh.core.Filters import CryptCardFilter, FilterNot
 from sutekh.io.SLDeckParser import SLDeckParser
 from sutekh.io.SLInventoryParser import SLInventoryParser
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
-from sutekh.gui.CardSetManagementController import import_cs
+from sutekh.gui.GuiCardSetFunctions import import_cs
 from sutekh.gui.PluginManager import CardListPlugin
 
 class ImportExportBase(SutekhDialog):
