@@ -110,9 +110,9 @@ h3. Creating a new card set
 
 You can create a new card set in the _Card Set List_ using the
 *Create New Card Set* option in the *Actions* menu. The name is required, and
-must be unique. You can specify that a card set has _No Parent_, in which case
-it will be a stand-alone card set, or you can select any existing card set to
-be its parent, in which case the new set will be a subset of that card set.
+must be unique. You can specify that a card set is a subset of a another
+card set, by selecting an existing card set to be it's parent, or
+you can not select a parent, in which case it will be a stand-alone card set.
 
 For each card set, you can add the author information, a description and
 annotations about the card set. Both the description and annotations entries
@@ -129,7 +129,10 @@ h3. Changing the parent of a card set.
 
 You can change the parent of a card set by using the *Edit Card Set Properties*
 option in the *Actions* Menu, or by dragging the selected card set onto its
-new parent in the card set list pane.
+new parent in the card set list pane. To change a card set to have no parent,
+you have to use the *Edit Card Set Properties* option and unselect the
+existing parent (*&lt;Ctrl&gt;-&lt;space&gt;* or
+*&lt;Ctrl&gt;-&lt;left button&gt;*)
 
 h3. Deleting a card set
 
