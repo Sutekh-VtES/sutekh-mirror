@@ -13,12 +13,20 @@ from setuptools import setup, find_packages
 from sutekh.SutekhInfo import SutekhInfo
 
 try:
+    # pylint: disable-msg=F0401, W0611
+    # F0401 - OK to fail to import these here
+    # W0611 - py2exe is unused, since the import is just a check
     import py2exe
     from py2exe.build_exe import py2exe as builder
     import os
     import glob
+    # pylint: enable-msg=F0401, W0611
 
     class PkgResourceBuilder(builder):
+        """Extend to builder class to override copy_extensions"""
+
+        # pylint: disable-msg=E1101
+        # missed imports leave pylint confused here
         def copy_extensions(self, extensions):
             """Hack the py2exe C extension copier
                to put pkg_resources into the
@@ -43,9 +51,12 @@ try:
                         if not os.path.exists(folder):
                             self.mkpath(folder)
                         self.copy_file(f, os.path.join(collect_dir, name))
-                        self.compiled_files.append(os.path.join(package_dir, name))
+                        self.compiled_files.append(os.path.join(package_dir,
+                            name))
 
 except ImportError:
+    # pylint: disable-msg=C0103
+    # pylint thinks this is a const, which it isn't
     PkgResourceBuilder = None
 
 setup   (   # Metadata
