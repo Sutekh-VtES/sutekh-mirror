@@ -361,7 +361,7 @@ class ExtraCardSetListViewColumns(CardListPlugin):
 
     # SQLObject event listeners
     # While we can try to be clever and update the cache, there are enough
-    # complex cases (importing backups, etc.) that need to be considered 
+    # complex cases (importing backups, etc.) that need to be considered
     # that simply invalidating the cache is significanly simpler and safer
 
     def card_set_changed(self, _oCardSet, _dChanges):

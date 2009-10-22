@@ -92,7 +92,7 @@ class CardSetListModelTests(ConfigSutekhTest):
             aList.append((oModel.get_card_count_from_iter(oChildIter),
                 oModel.get_parent_count_from_iter(oChildIter), sListName))
             if oModel.iter_n_children(oChildIter) > 0:
-                aList.extend(self._get_all_child_counts(oModel, oChildIter, 
+                aList.extend(self._get_all_child_counts(oModel, oChildIter,
                     sListName))
             oChildIter = oModel.iter_next(oChildIter)
         aList.sort()
