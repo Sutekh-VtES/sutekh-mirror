@@ -1,6 +1,7 @@
 22 Oct 2009
  * Add holder for excluded card sets to CardSetManagementModel
  * Factor out CardSetListsView from CardSetManagementView.
+ * Change CreateCardSetDialog to use CardSetListsView
 
 21 Oct 2009
  * Ensure we don't call set_busy_cursor when we no longer have a window

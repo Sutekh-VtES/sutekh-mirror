@@ -10,9 +10,9 @@
 import gtk
 from sqlobject import SQLObjectNotFound
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
+from sutekh.gui.CardSetsListView import CardSetsListView
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
-from sutekh.core.SutekhObjects import PhysicalCardSet, IPhysicalCardSet, \
-        MAX_ID_LENGTH
+from sutekh.core.SutekhObjects import IPhysicalCardSet, MAX_ID_LENGTH
 
 def make_scrolled_text(oCardSet, sAttr):
     """Create a text buffer wrapped in a scrolled window, filled with
@@ -52,25 +52,15 @@ class CreateCardSetDialog(SutekhDialog):
         self.oCommentBuffer, oCommentWin = make_scrolled_text(oCardSet,
                 'comment')
         oParentLabel = gtk.Label("This card set is a subset of : ")
-        self.oParentList = gtk.combo_box_new_text()
-        if not oCardSetParent and oCardSet:
-            oCardSetParent = oCardSet.parent
-        # pylint: disable-msg=E1101
-        # vbox, sqlobject confuse pylint
-        self.oParentList.append_text('No Parent')
-        if not oCardSetParent:
-            # Select this when no parent is specified
-            self.oParentList.set_active(0)
-        for iNum, oLoopCardSet in enumerate(
-                PhysicalCardSet.select().orderBy('name')):
-            self.oParentList.append_text(oLoopCardSet.name)
-            if oCardSetParent and oCardSetParent.name == oLoopCardSet.name:
-                self.oParentList.set_active(iNum + 1)
+        self.oParentList = CardSetsListView(None, self)
+        self.oParentList.set_size_request(100, 200)
         oAnnotateLabel = gtk.Label("Annotations : ")
         self.oAnnotateBuffer, oAnnotateWin = make_scrolled_text(oCardSet,
                 'annotations')
 
         self.set_default_size(500, 500)
+        # pylint: disable-msg=E1101
+        # gtk methods confuse pylint
         self.vbox.pack_start(oNameLabel, expand=False)
         self.vbox.pack_start(self.oName, expand=False)
         self.vbox.pack_start(oAuthorLabel, expand=False)
@@ -78,7 +68,7 @@ class CreateCardSetDialog(SutekhDialog):
         self.vbox.pack_start(oCommentriptionLabel, expand=False)
         self.vbox.pack_start(oCommentWin, expand=True)
         self.vbox.pack_start(oParentLabel, expand=False)
-        self.vbox.pack_start(self.oParentList, expand=False)
+        self.vbox.pack_start(AutoScrolledWindow(self.oParentList), expand=True)
         self.vbox.pack_start(oAnnotateLabel, expand=False)
         self.vbox.pack_start(oAnnotateWin, expand=True)
 
@@ -92,10 +82,14 @@ class CreateCardSetDialog(SutekhDialog):
             if not sName:
                 self.oName.set_text(oCardSet.name)
                 self.sOrigName = oCardSet.name
+                self.oParentList.exclude_set(self.sOrigName)
+            if oCardSetParent is None and oCardSet.parent is not None:
+                self.oParentList.set_selected_card_set(oCardSet.parent.name)
             self.oAuthor.set_text(oCardSet.author)
 
         self.sName = None
         self.oParent = oCardSetParent
+        self.oParentList.reload_keep_expanded(True)
 
         self.show_all()
 
@@ -147,9 +141,9 @@ class CreateCardSetDialog(SutekhDialog):
                         return
                     except SQLObjectNotFound:
                         pass
-                if self.oParentList.get_active() > 0:
+                sParent = self.oParentList.get_selected_card_set()
+                if sParent:
                     # Get the parent object for this card set
-                    sParent = self.oParentList.get_active_text()
                     self.oParent = IPhysicalCardSet(sParent)
                 else:
                     # 'No parent' option selected, so use none
