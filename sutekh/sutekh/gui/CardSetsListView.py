@@ -20,8 +20,12 @@ class CardSetsListView(FilteredView):
     def __init__(self, oController, oMainWindow):
         oModel = CardSetManagementModel(oMainWindow)
         oModel.enable_sorting()
+        if hasattr(oMainWindow, 'config_file'):
+            oConfig = oMainWindow.config_file
+        else:
+            oConfig = None
         super(CardSetsListView, self).__init__(oController, oMainWindow,
-                oModel, oMainWindow.config_file)
+                oModel, oConfig)
 
         self.set_name('card set list view')
 
