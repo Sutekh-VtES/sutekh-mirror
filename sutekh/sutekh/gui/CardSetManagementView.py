@@ -9,9 +9,8 @@
 import gtk
 from sqlobject import SQLObjectNotFound
 from sutekh.core.SutekhObjects import IPhysicalCardSet
-from sutekh.gui.CardSetManagementModel import CardSetManagementModel
 from sutekh.gui.GuiCardSetFunctions import reparent_card_set
-from sutekh.gui.FilteredView import FilteredView
+from sutekh.gui.CardSetsListView import CardSetsListView
 
 def split_selection_data(sSelectionData):
     """Helper function to subdivide selection string into bits again"""
@@ -25,7 +24,7 @@ def split_selection_data(sSelectionData):
     return 'None', ['']
 
 
-class CardSetManagementView(FilteredView):
+class CardSetManagementView(CardSetsListView):
     """Tree View for the management of card set list."""
     # pylint: disable-msg=R0904, R0902, R0901
     # R0904 - gtk.Widget, so many public methods
@@ -33,10 +32,8 @@ class CardSetManagementView(FilteredView):
     # R0901 - many ancestors, due to our object hierachy on top of the quite
     # deep gtk one
     def __init__(self, oController, oMainWindow):
-        oModel = CardSetManagementModel(oMainWindow)
-        oModel.enable_sorting()
         super(CardSetManagementView, self).__init__(oController,
-                oMainWindow, oModel, oMainWindow.config_file)
+                oMainWindow)
 
         # Selecting rows
         self.set_select_single()
@@ -56,16 +53,6 @@ class CardSetManagementView(FilteredView):
         self.connect('drag_data_received', self.card_set_drop)
 
         self.set_name('card set management view')
-
-        self.oNameCell = gtk.CellRendererText()
-        oColumn = gtk.TreeViewColumn("Card Sets", self.oNameCell, markup=0)
-        oColumn.set_expand(True)
-        oColumn.set_resizable(True)
-        oColumn.set_sort_column_id(0)
-        self.append_column(oColumn)
-        self._oModel.load()
-
-        self.set_expander_column(oColumn)
 
     # pylint: disable-msg=R0913
     # arguments as required by the function signature
@@ -118,16 +105,6 @@ class CardSetManagementView(FilteredView):
         self._oMainWin.add_new_physical_card_set(sName)
 
     # pylint: enable-msg=R0913
-
-    def get_selected_card_set(self):
-        """Return the currently selected card set name, or None if nothing
-           is selected."""
-        oModel, aSelectedRows = self._oSelection.get_selected_rows()
-        if len(aSelectedRows) != 1:
-            # Only viable when a single row is selected
-            return None
-        oPath = aSelectedRows[0]
-        return oModel.get_name_from_path(oPath)
 
     def get_path_at_pointer(self):
         """Get the path at the current pointer position"""
