@@ -29,6 +29,8 @@ class CardSetManagementModel(gtk.TreeStore):
         self._oSelectFilter = None
         self.oEmptyIter = None
 
+        self._sExcludedSet = ''
+
     # pylint: disable-msg=W0212, C0103
     # W0212 - we explicitly allow access via these properties
     # C0103 - we allow these names
@@ -50,6 +52,27 @@ class CardSetManagementModel(gtk.TreeStore):
             oFilter = NullFilter()
         return oFilter.select(PhysicalCardSet).distinct()
     # pylint: enable-msg=R0201
+
+    def _format_set(self, oSet):
+        """Format the card set name for display"""
+        sMarkup = oSet.name
+        if oSet.name == self._sExcludedSet:
+            sMarkup = '<span foreground="grey">%s</span>' % sMarkup
+        elif hasattr(self._oMainWin, 'find_cs_pane_by_set_name') and \
+                self._oMainWin.find_cs_pane_by_set_name(oSet.name):
+            sMarkup = '<span foreground="blue">%s</span>' % sMarkup
+        if oSet.inuse:
+            # In use sets are in bold
+            sMarkup = '<b>%s</b>' % sMarkup
+        return sMarkup
+
+    def exclude_set(self, sSetName):
+        """Mark the given set as excluded"""
+        self._sExcludedSet = sSetName
+
+    def is_excluded(self, sSetName):
+        """Check if this set is excluded"""
+        return self._sExcludedSet == sSetName
 
     def enable_sorting(self):
         """Enable the default sorting behaviour"""
@@ -91,12 +114,7 @@ class CardSetManagementModel(gtk.TreeStore):
                 aToAdd = [oCardSet]
             for oSet in aToAdd:
                 oIter = self.append(oIter)
-                sMarkup = oSet.name
-                if self._oMainWin.find_cs_pane_by_set_name(oSet.name):
-                    sMarkup = '<span foreground="blue">%s</span>' % sMarkup
-                if oSet.inuse:
-                    # In use sets are in bold
-                    sMarkup = '<b>%s</b>' % sMarkup
+                sMarkup = self._format_set(oSet)
                 self.set(oIter, 0, sMarkup, 1, oSet.name)
                 self._dName2Iter[oSet.name] = oIter
 
