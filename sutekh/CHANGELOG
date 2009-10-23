@@ -1,3 +1,6 @@
+23 Oct 2009
+ * Add support for reading multiple selections from CardSetsListView
+
 22 Oct 2009
  * Add holder for excluded card sets to CardSetManagementModel
  * Factor out CardSetListsView from CardSetManagementView.

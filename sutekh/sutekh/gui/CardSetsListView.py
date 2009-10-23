@@ -75,3 +75,13 @@ class CardSetsListView(FilteredView):
                 if self._oModel.iter_has_child(oIter):
                     aIters.append(self._oModel.iter_children(oIter))
                 oIter = self._oModel.iter_next(oIter)
+
+    def get_all_selected_sets(self):
+        """Return a list of all the selected sets"""
+        oModel, aSelectedRows = self._oSelection.get_selected_rows()
+        if len(aSelectedRows) < 1:
+            return None
+        aSets = []
+        for oPath in aSelectedRows:
+            aSets.append(oModel.get_name_from_path(oPath))
+        return aSets
