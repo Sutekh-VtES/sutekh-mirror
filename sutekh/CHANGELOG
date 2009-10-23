@@ -1,6 +1,7 @@
 23 Oct 2009
  * Add support for reading multiple selections from CardSetsListView
  * Change CardSetCompare plugin to use CardSetsListView
+ * Allow multiple sets to be excluded.
 
 22 Oct 2009
  * Add holder for excluded card sets to CardSetManagementModel

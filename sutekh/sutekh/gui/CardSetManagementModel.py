@@ -7,7 +7,7 @@
 """gtk.TreeModel class the card set list."""
 
 import gtk
-from sutekh.core.SutekhObjects import PhysicalCardSet
+from sutekh.core.SutekhObjects import PhysicalCardSet, IPhysicalCardSet
 from sutekh.core.Filters import NullFilter
 
 class CardSetManagementModel(gtk.TreeStore):
@@ -29,7 +29,7 @@ class CardSetManagementModel(gtk.TreeStore):
         self._oSelectFilter = None
         self.oEmptyIter = None
 
-        self._sExcludedSet = ''
+        self._aExcludedSet = set()
 
     # pylint: disable-msg=W0212, C0103
     # W0212 - we explicitly allow access via these properties
@@ -56,7 +56,7 @@ class CardSetManagementModel(gtk.TreeStore):
     def _format_set(self, oSet):
         """Format the card set name for display"""
         sMarkup = oSet.name
-        if oSet.name == self._sExcludedSet:
+        if oSet.name in self._aExcludedSet:
             sMarkup = '<span foreground="grey">%s</span>' % sMarkup
         elif hasattr(self._oMainWin, 'find_cs_pane_by_set_name') and \
                 self._oMainWin.find_cs_pane_by_set_name(oSet.name):
@@ -68,11 +68,15 @@ class CardSetManagementModel(gtk.TreeStore):
 
     def exclude_set(self, sSetName):
         """Mark the given set as excluded"""
-        self._sExcludedSet = sSetName
+        self._aExcludedSet.add(sSetName)
+
+    def unexclude_set(self, sSetName):
+        """Unmark the given set as excluded"""
+        self._aExcludedSet.discard(sSetName)
 
     def is_excluded(self, sSetName):
         """Check if this set is excluded"""
-        return self._sExcludedSet == sSetName
+        return sSetName in self._aExcludedSet
 
     def enable_sorting(self):
         """Enable the default sorting behaviour"""
