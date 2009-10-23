@@ -69,6 +69,13 @@ class CardSetManagementModel(gtk.TreeStore):
     def exclude_set(self, sSetName):
         """Mark the given set as excluded"""
         self._aExcludedSet.add(sSetName)
+        # Update markup if required
+        oPath = self.get_path_from_name(sSetName)
+        if oPath:
+            oIter = self.get_iter(oPath)
+            sMarkup = self._format_set(IPhysicalCardSet(sSetName))
+            # gtk signals will do the rest for us
+            self.set(oIter, 0, sMarkup)
 
     def unexclude_set(self, sSetName):
         """Unmark the given set as excluded"""
