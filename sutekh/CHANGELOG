@@ -3,6 +3,7 @@
  * Change CardSetCompare plugin to use CardSetsListView
  * Allow multiple sets to be excluded.
  * Update model when marking a set as excluded
+   - remove no longer needed reloads
 
 22 Oct 2009
  * Add holder for excluded card sets to CardSetManagementModel

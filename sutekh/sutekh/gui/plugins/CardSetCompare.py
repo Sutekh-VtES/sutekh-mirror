@@ -83,7 +83,6 @@ class CardSetCompare(CardListPlugin):
         # pylint misses vbox methods
         oCSView.set_select_single()
         oCSView.exclude_set(self.view.sSetName)
-        oCSView.load()
         oDlg.vbox.pack_start(AutoScrolledWindow(oCSView), expand=True)
         oUseExpansions = gtk.CheckButton("Consider Expansions as well")
         oDlg.vbox.pack_start(oUseExpansions)

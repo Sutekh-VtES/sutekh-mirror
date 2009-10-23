@@ -89,7 +89,6 @@ class CreateCardSetDialog(SutekhDialog):
 
         self.sName = None
         self.oParent = oCardSetParent
-        self.oParentList.reload_keep_expanded(True)
 
         self.show_all()
 
