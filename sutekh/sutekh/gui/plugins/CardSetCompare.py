@@ -12,7 +12,7 @@ from sutekh.core.SutekhObjects import PhysicalCard, IPhysicalCard, \
 from sutekh.core.Filters import PhysicalCardSetFilter
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
-from sutekh.gui.ScrolledList import ScrolledList
+from sutekh.gui.CardSetsListView import CardSetsListView
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 from sutekh.gui.GuiCardSetFunctions import create_card_set
 
@@ -78,30 +78,30 @@ class CardSetCompare(CardListPlugin):
                 gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                 (gtk.STOCK_OK, gtk.RESPONSE_OK,
                     gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
-        oSelect = PhysicalCardSet.select().orderBy('name')
-        oCSList = ScrolledList('Card Sets')
-        oCSList.set_select_single()
+        oCSView = CardSetsListView(None, oDlg)
         # pylint: disable-msg=E1101
         # pylint misses vbox methods
-        oDlg.vbox.pack_start(oCSList)
+        oCSView.set_select_single()
+        oCSView.exclude_set(self.view.sSetName)
+        oCSView.load()
+        oDlg.vbox.pack_start(AutoScrolledWindow(oCSView), expand=True)
         oUseExpansions = gtk.CheckButton("Consider Expansions as well")
         oDlg.vbox.pack_start(oUseExpansions)
-        oCSList.set_size_request(150, 300)
-        aVals = [oCS.name for oCS in oSelect if oCS.name != self.view.sSetName]
-        oCSList.fill_list(aVals)
-        oDlg.connect("response", self.handle_response, oCSList, oUseExpansions)
+        oCSView.set_size_request(150, 300)
+        oDlg.connect("response", self.handle_response, oCSView, oUseExpansions)
         oDlg.show_all()
         oDlg.run()
         oDlg.destroy()
 
-    def handle_response(self, _oWidget, iResponse, oCSList, oUseExpansions):
+    def handle_response(self, _oWidget, iResponse, oCSView, oUseExpansions):
         """Handle response from the dialog."""
         if iResponse ==  gtk.RESPONSE_OK:
             aCardSetNames = [self.view.sSetName]
-            aCardSetNames.extend(oCSList.get_selection())
-            if len(aCardSetNames) != 2:
+            sSet = oCSView.get_selected_card_set()
+            if not sSet:
                 do_complaint_error("Need to choose a card set to compare to")
             else:
+                aCardSetNames.append(sSet)
                 self.comp_card_sets(aCardSetNames, oUseExpansions.get_active())
 
     def comp_card_sets(self, aCardSetNames, bUseExpansions):
