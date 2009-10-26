@@ -18,6 +18,7 @@ from sutekh.io.WriteArdbInvXML import WriteArdbInvXML
 from sutekh.io.WriteELDBInventory import WriteELDBInventory
 from sutekh.io.WriteELDBDeckFile import WriteELDBDeckFile
 from sutekh.io.WriteArdbText import WriteArdbText
+from sutekh.io.WriteLasombraOrder import WriteLasombraOrder
 from sutekh.SutekhUtility import safe_filename
 
 class CardSetExport(CardListPlugin):
@@ -46,6 +47,8 @@ class CardSetExport(CardListPlugin):
                 '.inv.ardb.xml', 'XML Files', ['*.xml']),
             'ARDB Deck' : (WriteArdbXML, 'Export to ARDB Deck XML File',
                 '.ardb.xml', 'XML Files', ['*.xml']),
+            'Lasombra Order Form' : (WriteLasombraOrder, "Export to the "
+                "Lasombra's order specifications", '.lasombra.txt'),
             }
 
     def get_menu_item(self):

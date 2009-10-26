@@ -1,3 +1,6 @@
+26 Oct 2009
+ * Add export to the Lasombra's order template
+
 23 Oct 2009
  * Add support for reading multiple selections from CardSetsListView
  * Change CardSetCompare plugin to use CardSetsListView
