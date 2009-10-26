@@ -408,6 +408,7 @@ manager
 ** _JOL_: A text file that can be pasted into the Jyhad Online deck
 builder
 ** _Lackey CCG_: A text file that can be imported into the Lackey CCG client
+** _Lasombra Order specification_: A text file based on the 'how to order' instructions for ordering card from thelasombra.com
 * _Cards To Show_: Set which cards are displayed. The options are:
 ** _This Set Only_: Show only the cards in this card set.
 ** _Show All Cards_: Show all the cards in the White Wolf list. Cards not in
