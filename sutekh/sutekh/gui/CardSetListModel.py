@@ -129,6 +129,7 @@ class CardSetCardListModel(CardListModel):
         self.bEditable = False
         self._bPhysicalFilter = False
         self._dAbs2Iter = {}
+        self._dAbs2Phys = {}
         self._dAbsSecondLevel2Iter = {}
         self._dAbs2nd3rdLevel2Iter = {}
         self._dGroupName2Iter = {}
@@ -186,6 +187,7 @@ class CardSetCardListModel(CardListModel):
            """
         self.set_count_colour()
         self.clear()
+        self._dAbs2Phys = {}
         self._dAbs2Iter = {}
         self._dAbsSecondLevel2Iter = {}
         self._dAbs2nd3rdLevel2Iter = {}
@@ -701,6 +703,15 @@ class CardSetCardListModel(CardListModel):
             sExpName = self.get_expansion_name(oPhysCard.expansion)
             oAbsCard = oPhysCard.abstractCard
             aCards.append(oPhysCard)
+            if self._bPhysicalFilter:
+                # We need to be able to give the correct list of physical
+                # cards to the listeners if we remove these via _clear_iter
+                # We can't get this from the card set, since that's already
+                # changed, and we may not be able to extract it from the model
+                # (depending on mode), so we just cache this
+                self._dAbs2Phys.setdefault(oAbsCard, {})
+                self._dAbs2Phys[oAbsCard].setdefault(oPhysCard, 0)
+                self._dAbs2Phys[oAbsCard][oPhysCard] += 1
             self._init_abs(dAbsCards, oAbsCard)
             dAbsCards[oAbsCard].iCount += 1
             dChildInfo = dAbsCards[oAbsCard].dChildCardSets
@@ -1515,11 +1526,9 @@ class CardSetCardListModel(CardListModel):
         """Remove a card-level iter and update everything accordingly"""
         if oAbsCard not in self._dAbs2Iter:
             return # Nothing to do
-        iChg = 0
         for oIter in self._dAbs2Iter[oAbsCard]:
             oGrpIter = self.iter_parent(oIter)
             iCnt = self.get_value(oIter, 1)
-            iChg = -iCnt
             iParCnt = self.get_value(oIter, 2)
             iGrpCnt = self.get_value(oGrpIter, 1) - iCnt
             iParGrpCnt = self.get_value(oGrpIter, 2) - iParCnt
@@ -1536,10 +1545,18 @@ class CardSetCardListModel(CardListModel):
                 self.set_par_count_colour(oGrpIter, iParGrpCnt, iGrpCnt)
 
         del self._dAbs2Iter[oAbsCard]
-        # Update the listeners
-        for oListener in self.dListeners:
-            oListener.alter_card_count(oCard, iChg)
+
         self._check_if_empty()
+
+        if oAbsCard not in self._dAbs2Phys:
+            # The change didn't affect a card in the card
+            # set, so we don't need to call the listeners
+            return
+        # Update the listeners
+        for oPhysCard, iCnt in self._dAbs2Phys[oAbsCard].iteritems():
+            for oListener in self.dListeners:
+                oListener.alter_card_count(oPhysCard, -iCnt)
+        del self._dAbs2Phys[oAbsCard]
 
     def alter_card_count(self, oPhysCard, iChg):
         """Alter the card count of a card which is in the current list
@@ -1598,6 +1615,12 @@ class CardSetCardListModel(CardListModel):
         # Notify Listeners
         for oListener in self.dListeners:
             oListener.alter_card_count(oPhysCard, iChg)
+        # Update cache
+        if self._bPhysicalFilter:
+            self._dAbs2Phys[oAbsCard].setdefault(oPhysCard, 0)
+            self._dAbs2Phys[oAbsCard][oPhysCard] += iChg
+            if self._dAbs2Phys[oAbsCard][oPhysCard] == 0:
+                del self._dAbs2Phys[oAbsCard][oPhysCard]
 
     def alter_parent_count(self, oPhysCard, iChg, bCheckAddRemove=True):
         """Alter the parent count by iChg
