@@ -28,7 +28,7 @@ from sutekh.SutekhUtility import prefs_dir, ensure_dir_exists
 
 SORT_COLUMN_OFFSET = 200 # ensure we don't clash with other extra columns
 
-TOOLPRICE_FORMAT = 'Tot: $%(tot).2f  Unkown: %(unknown)d'
+TOOLPRICE_FORMAT = 'Tot: $%(tot).2f  Unknown: %(unknown)d'
 TOOLPRICE_TOOLTIP = 'Total cost: $%(tot).2f Cards with unknown price:' \
         ' %(unknown)d'
 
