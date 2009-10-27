@@ -20,10 +20,10 @@ class TestListener(CardListModelListener):
         self.bLoadCalled = False
         self.aCards = []
 
-    def load(self, aAbsCards):
+    def load(self, aCards):
         """Called when the model is loaded."""
         self.bLoadCalled = True
-        self.aCards = aAbsCards
+        self.aCards = [oCard.abstractCard for oCard in aCards]
 
 class CardListModelTests(ConfigSutekhTest):
     """Class for the test cases"""
