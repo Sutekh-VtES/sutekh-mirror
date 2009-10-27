@@ -29,10 +29,10 @@ class CardSetListener(CardListModelListener):
         self.bLoadCalled = False
         self.iCnt = 0
 
-    def load(self, aAbsCards):
+    def load(self, aCards):
         """Called when the model is loaded."""
         self.bLoadCalled = True
-        self.iCnt = len(aAbsCards)
+        self.iCnt = len(aCards)
 
     def alter_card_count(self, _oCard, iChg):
         """Called when the model alters the card count"""
