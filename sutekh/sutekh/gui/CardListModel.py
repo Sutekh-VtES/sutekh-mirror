@@ -333,11 +333,11 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
                 dExpanInfo.setdefault(oPhysCard, 0)
                 dExpanInfo[oPhysCard] += 1
 
-        aCards = list(dAbsCards.iteritems())
+        aAbsCards = list(dAbsCards.iteritems())
 
         # Iterate over groups
         return (fGetCard, fGetCount, fGetExpanInfo,
-                self.groupby(aCards, fGetCard), aCards)
+                self.groupby(aAbsCards, fGetCard), aCards)
 
     def get_current_filter(self):
         """Get the current applied filter."""
