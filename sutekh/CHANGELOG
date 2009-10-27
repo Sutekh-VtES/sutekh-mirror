@@ -1,6 +1,7 @@
 27 Oct 2009
  * Send list of physical cards to listeners
  * Tweak show logic so toolbar plugins can start hidden
+ * Add a total cost of card set option to the Lasombra plugin
 
 26 Oct 2009
  * Add export to the Lasombra's order template

@@ -28,6 +28,10 @@ from sutekh.SutekhUtility import prefs_dir, ensure_dir_exists
 
 SORT_COLUMN_OFFSET = 200 # ensure we don't clash with other extra columns
 
+TOOLPRICE_FORMAT = 'Tot: $%(tot).2f  Unkown: %(unknown)d'
+TOOLPRICE_TOOLTIP = 'Total cost: $%(tot).2f Cards with unknown price:' \
+        ' %(unknown)d'
+
 # pylint: disable-msg=R0904
 # R0904 - gtk Widget, so has many public methods
 class LasombraConfigDialog(SutekhDialog):
@@ -199,6 +203,10 @@ class LasombraSales(CardListPlugin, CardListModelListener):
 
         self._dCols = {}
         self._bHideZeroCards = False
+        self._bTotal = False
+        self._oToolbarLabel = None
+        self._fTot = 0
+        self._iUnknown = 0
         self._dCols['Price'] = self._render_price
         self._dCols['Stock'] = self._render_stock
 
@@ -575,7 +583,14 @@ class LasombraSales(CardListPlugin, CardListModelListener):
                     " Lasombra Inventory")
             oHide.set_active(False)
             oHide.connect('toggled', self._toggle_hide)
-            return [('Plugins', oToggle), ('Plugins', oHide)]
+            aMenus = [('Plugins', oToggle), ('Plugins', oHide)]
+            if self._cModelType is PhysicalCardSet:
+                oTotal = gtk.CheckMenuItem("Show total cost for card set "
+                        "based on the Lasombra Inventory")
+                oTotal.set_active(False)
+                oTotal.connect('toggled', self._toggle_total)
+                aMenus.append(('Plugins', oTotal))
+            return aMenus
         else:
             oConfigMenuItem = gtk.MenuItem("Configure Lasombra Sales Plugin")
             oConfigMenuItem.connect("activate", self.config_activate)
@@ -585,6 +600,17 @@ class LasombraSales(CardListPlugin, CardListModelListener):
                 ('Plugins', oConfigMenuItem),
                 ('Plugins', oWarningMenuItem),
             ]
+
+    def get_toolbar_widget(self):
+        """Overrides method from base class."""
+        if not self.check_versions() or not self.check_model_type():
+            return None
+        if self._cModelType is not PhysicalCardSet:
+            return None
+        self._oToolbarLabel = gtk.Label()
+        self.update_numbers()
+        self._oToolbarLabel.hide()
+        return self._oToolbarLabel
 
     def setup(self):
         """Prompt the user to download/setup the plugin the first time"""
@@ -638,12 +664,92 @@ class LasombraSales(CardListPlugin, CardListModelListener):
         else:
             self.set_cols_in_use([])
 
-
     def _toggle_hide(self, oHide):
         """Handle menu activation"""
         self._bHideZeroCards = oHide.get_active()
         # Force model reload
-        self.view.load()
+        self.view.reload_keep_expanded()
+
+    def _toggle_total(self, oTotal):
+        """Handle menu activation"""
+        self._bTotal = oTotal.get_active()
+        if self._bTotal:
+            self._oToolbarLabel.show()
+        else:
+            self._oToolbarLabel.hide()
+
+    def update_numbers(self):
+        """Update the label"""
+        # Timing issues mean that this can be called before text label has
+        # been properly realised, so we need this guard case
+        if self._oToolbarLabel:
+            self._oToolbarLabel.set_markup(TOOLPRICE_FORMAT % {
+                'tot' : self._fTot,
+                'unknown' : self._iUnknown})
+            if hasattr(self._oToolbarLabel, 'set_tooltip_markup'):
+                self._oToolbarLabel.set_tooltip_markup(TOOLPRICE_TOOLTIP % {
+                    'tot' : self._fTot,
+                    'unknown' : self._iUnknown})
+
+    def load(self, aCards):
+        """Listen on load events & update counts"""
+        # pylint: disable-msg=E1101
+        # pyprotocols confuses pylint
+        if self._cModelType is not PhysicalCardSet:
+            return
+        self._fTot = 0
+        self._iUnknown = 0
+        for oCard in aCards:
+            if not oCard.expansion:
+                # Treat cards with no expansion set as unknown
+                self._iUnknown += 1
+                continue
+            oAbsCard = IAbstractCard(oCard)
+            tKey = (oAbsCard.name, oCard.expansion.name)
+            fPrice = self._get_data_price(tKey)
+            if fPrice is None:
+                self._iUnknown += 1
+            else:
+                self._fTot += fPrice
+        self.update_numbers()
+
+    def alter_card_count(self, oCard, iChg):
+        """respond to alter_card_count events"""
+        # pylint: disable-msg=E1101
+        # pyprotocols confuses pylint
+        if self._cModelType is not PhysicalCardSet:
+            return
+        if not oCard.expansion:
+            bUnknown = True
+        else:
+            oAbsCard = IAbstractCard(oCard)
+            tKey = (oAbsCard.name, oCard.expansion.name)
+            fPrice = self._get_data_price(tKey)
+            bUnknown = fPrice is None
+        if bUnknown:
+            self._iUnknown += iChg
+        else:
+            self._fTot += iChg * fPrice
+        self.update_numbers()
+
+    def add_new_card(self, oCard, iCnt):
+        """response to add_new_card events"""
+        # pylint: disable-msg=E1101
+        # pyprotocols confuses pylint
+        if self._cModelType is not PhysicalCardSet:
+            return
+        if not oCard.expansion:
+            bUnknown = True
+        else:
+            oAbsCard = IAbstractCard(oCard)
+            tKey = (oAbsCard.name, oCard.expansion.name)
+            fPrice = self._get_data_price(tKey)
+            bUnknown = fPrice is None
+        if bUnknown:
+            self._iUnknown += iCnt
+        else:
+            self._fTot += iCnt * fPrice
+        self.update_numbers()
 
     def check_card_visible(self, oPhysCard):
         """Implement mechanism for hiding cards if appropriate"""
