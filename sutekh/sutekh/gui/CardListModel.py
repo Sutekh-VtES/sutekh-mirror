@@ -17,24 +17,22 @@ from sutekh.gui.ConfigFile import ConfigFileListener
 class CardListModelListener(object):
     """Listens to updates, i.e. .load(...), .alter_card_count(...),
        .add_new_card(..) calls, to CardListModels."""
-    def load(self, aAbsCards):
-        """The CardListModel has reloaded itself. aAbsCards is the list of
-           AbstractCards loaded."""
+    def load(self, aPhysCards):
+        """The CardListModel has reloaded itself. aPhysCards is the list of
+           PhysicalCards loaded."""
         pass
 
     def alter_card_count(self, oCard, iChg):
         """The count of the given card has been altered by iChg.
 
-           oCard: AbstractCard for the card altered (the actual card may be
-           a Physical Card).
+           oCard: PhysicalCard for the card altered
            """
         pass
 
     def add_new_card(self, oCard, iCnt):
         """The card has been added to this set iCnt times.
 
-           oCard: AbstractCard for the cards altered (the actual cards
-           may be Physical Cards).
+           oCard: PhysicalCard for the cards altered
            """
         pass
 
@@ -215,7 +213,7 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
         self.clear()
 
         oCardIter = self.get_card_iterator(self.get_current_filter())
-        fGetCard, _fGetCount, fGetExpanInfo, oGroupedIter, aAbsCards = \
+        fGetCard, _fGetCount, fGetExpanInfo, oGroupedIter, aCards = \
                 self.grouped_card_iter(oCardIter)
 
         self.oEmptyIter = None
@@ -291,7 +289,7 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
             self.set_sort_column_id(iSortColumn, iSortOrder)
         # Notify Listeners
         for oListener in self.dListeners:
-            oListener.load(aAbsCards)
+            oListener.load(aCards)
 
     def get_card_iterator(self, oFilter):
         """Return an interator over the card model.
@@ -312,7 +310,7 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
            retrieve a card count from an item) and oGroupedIter (an iterator
            over the card groups)
            """
-        aAbsCards = []
+        aCards = []
         fGetCard = lambda x:x[0]
         fGetCount = lambda x:x[1][0]
         fGetExpanInfo = lambda x:x[1][1]
@@ -327,7 +325,7 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
             if not self.check_card_visible(oPhysCard):
                 continue
             oAbsCard = IAbstractCard(oPhysCard)
-            aAbsCards.append(oAbsCard)
+            aCards.append(oPhysCard)
             dAbsCards.setdefault(oAbsCard, [0, {}])
             dAbsCards[oAbsCard][0] += 1
             if self.bExpansions:
@@ -339,7 +337,7 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
 
         # Iterate over groups
         return (fGetCard, fGetCount, fGetExpanInfo,
-                self.groupby(aCards, fGetCard), aAbsCards)
+                self.groupby(aCards, fGetCard), aCards)
 
     def get_current_filter(self):
         """Get the current applied filter."""

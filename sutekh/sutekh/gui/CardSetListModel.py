@@ -199,7 +199,7 @@ class CardSetCardListModel(CardListModel):
             self._bPhysicalFilter = self._check_filter()
 
         oCardIter = self.get_card_iterator(self.get_current_filter())
-        oGroupedIter, aAbsCards = self.grouped_card_iter(oCardIter)
+        oGroupedIter, aCards = self.grouped_card_iter(oCardIter)
         self.oEmptyIter = None
 
         # Disable sorting while we do the insertions
@@ -279,7 +279,7 @@ class CardSetCardListModel(CardListModel):
 
         # Notify Listeners
         for oListener in self.dListeners:
-            oListener.load(aAbsCards)
+            oListener.load(aCards)
 
     def _add_children(self, oChildIter, oRow):
         """Add the needed children for a card in the model."""
@@ -647,7 +647,7 @@ class CardSetCardListModel(CardListModel):
         # R0914: We use lots of local variables for clarity
 
         # Define iterable and grouping function based on cardclass
-        aAbsCards = []
+        aCards = []
         dAbsCards = {}
         dPhysCards = {}
 
@@ -700,7 +700,7 @@ class CardSetCardListModel(CardListModel):
             dPhysCards[oPhysCard] += 1
             sExpName = self.get_expansion_name(oPhysCard.expansion)
             oAbsCard = oPhysCard.abstractCard
-            aAbsCards.append(oAbsCard)
+            aCards.append(oPhysCard)
             self._init_abs(dAbsCards, oAbsCard)
             dAbsCards[oAbsCard].iCount += 1
             dChildInfo = dAbsCards[oAbsCard].dChildCardSets
@@ -719,14 +719,14 @@ class CardSetCardListModel(CardListModel):
 
         self._add_parent_info(dAbsCards, dPhysCards)
 
-        aCards = list(dAbsCards.iteritems())
+        aAbsCards = list(dAbsCards.iteritems())
 
         # expire caches
         self._dCache['filtered cards'] = None
         self._dCache['visible'] = {}
 
         # Iterate over groups
-        return (self.groupby(aCards, lambda x: x[0]), aAbsCards)
+        return (self.groupby(aAbsCards, lambda x: x[0]), aCards)
 
     def get_child_set_info(self, oAbsCard, dChildInfo, dExpanInfo,
             dChildCardCache):
@@ -966,7 +966,7 @@ class CardSetCardListModel(CardListModel):
         oCardIter = self.get_card_iterator(oCardFilter)
 
         iCnt = 0 # Since we'll test this later, and may skip assigning it
-        oGroupedIter, _aAbsCards = self.grouped_card_iter(oCardIter)
+        oGroupedIter, _aCards = self.grouped_card_iter(oCardIter)
         bPostfix = self._oConfig.get_postfix_the_display()
 
         # Iterate over groups
@@ -1022,7 +1022,7 @@ class CardSetCardListModel(CardListModel):
         # Notify Listeners
         if iCnt:
             for oListener in self.dListeners:
-                oListener.add_new_card(oAbsCard, iCnt)
+                oListener.add_new_card(oPhysCard, iCnt)
 
     def update_to_new_db(self, sSetName):
         """Update internal card set to the new DB."""
@@ -1538,7 +1538,7 @@ class CardSetCardListModel(CardListModel):
         del self._dAbs2Iter[oAbsCard]
         # Update the listeners
         for oListener in self.dListeners:
-            oListener.alter_card_count(oAbsCard, iChg)
+            oListener.alter_card_count(oCard, iChg)
         self._check_if_empty()
 
     def alter_card_count(self, oPhysCard, iChg):
@@ -1597,7 +1597,7 @@ class CardSetCardListModel(CardListModel):
 
         # Notify Listeners
         for oListener in self.dListeners:
-            oListener.alter_card_count(oAbsCard, iChg)
+            oListener.alter_card_count(oPhysCard, iChg)
 
     def alter_parent_count(self, oPhysCard, iChg, bCheckAddRemove=True):
         """Alter the parent count by iChg

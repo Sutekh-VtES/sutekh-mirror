@@ -8,7 +8,7 @@
 """Display a running total of the cards in a card set"""
 
 import gtk
-from sutekh.core.SutekhObjects import PhysicalCardSet
+from sutekh.core.SutekhObjects import PhysicalCardSet, IAbstractCard
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.CardListModel import CardListModelListener
 from sutekh.SutekhUtility import is_crypt_card
@@ -68,12 +68,13 @@ class CountCardSetCards(CardListPlugin, CardListModelListener):
                 'tot' : self.__iTot, 'crypt' : self.__iCrypt,
                 'lib' : self.__iLibrary})
 
-    def load(self, aAbsCards):
+    def load(self, aCards):
         """Listen on load events & update counts"""
         self.__iCrypt = 0
         self.__iLibrary = 0
-        self.__iTot = len(aAbsCards)
-        for oAbsCard in aAbsCards:
+        self.__iTot = len(aCards)
+        for oCard in aCards:
+            oAbsCard = IAbstractCard(oCard)
             if is_crypt_card(oAbsCard):
                 self.__iCrypt += 1
             else:
@@ -83,7 +84,8 @@ class CountCardSetCards(CardListPlugin, CardListModelListener):
     def alter_card_count(self, oCard, iChg):
         """respond to alter_card_count events"""
         self.__iTot += iChg
-        if is_crypt_card(oCard):
+        oAbsCard = IAbstractCard(oCard)
+        if is_crypt_card(oAbsCard):
             self.__iCrypt += iChg
         else:
             self.__iLibrary += iChg
@@ -92,7 +94,8 @@ class CountCardSetCards(CardListPlugin, CardListModelListener):
     def add_new_card(self, oCard, iCnt):
         """response to add_new_card events"""
         self.__iTot += iCnt
-        if is_crypt_card(oCard):
+        oAbsCard = IAbstractCard(oCard)
+        if is_crypt_card(oAbsCard):
             self.__iCrypt += iCnt
         else:
             self.__iLibrary += iCnt
