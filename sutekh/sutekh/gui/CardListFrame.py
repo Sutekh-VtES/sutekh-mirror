@@ -52,6 +52,7 @@ class CardListFrame(BasicFrame):
                 oToolbar.pack_start(oWidget)
                 bInsertToolbar = True
         if bInsertToolbar:
+            oToolbar.show()
             return oToolbar
         else:
             return None
@@ -63,13 +64,16 @@ class CardListFrame(BasicFrame):
         oMbox.pack_start(self._oTitle, False, False)
         oMbox.pack_start(self._oMenu, False, False)
 
+        oMbox.pack_end(AutoScrolledWindow(self._oController.view),
+                expand=True)
+
+        self.add(oMbox)
+        self.show_all()
+
+        # We want the toolbars be able to choose if they start visible
+        # or not, so we need to call this after show_all
         oToolbar = self.get_toolbar_plugins()
         if oToolbar is not None:
             oMbox.pack_start(oToolbar, False, False)
 
-        oMbox.pack_start(AutoScrolledWindow(self._oController.view),
-                expand=True)
-
-        self.add(oMbox)
         self._oController.view.load()
-        self.show_all()

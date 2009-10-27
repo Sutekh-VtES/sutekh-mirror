@@ -1,5 +1,6 @@
 27 Oct 2009
  * Send list of physical cards to listeners
+ * Tweak show logic so toolbar plugins can start hidden
 
 26 Oct 2009
  * Add export to the Lasombra's order template

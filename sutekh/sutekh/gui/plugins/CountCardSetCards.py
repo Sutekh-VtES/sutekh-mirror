@@ -54,6 +54,7 @@ class CountCardSetCards(CardListPlugin, CardListModelListener):
             self.__oTextLabel.set_tooltip_markup(TOT_TOOLTIP % {
             'tot' : 0, 'crypt' : 0, 'lib' : 0})
 
+        self.__oTextLabel.show()
         return self.__oTextLabel
 
     def update_numbers(self):

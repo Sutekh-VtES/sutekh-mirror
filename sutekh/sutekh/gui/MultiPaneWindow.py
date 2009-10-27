@@ -680,7 +680,7 @@ class MultiPaneWindow(gtk.Window):
 
     def replace_frame(self, oOldFrame, oNewFrame, sMenuFlag):
         """Replace oOldFrame with oNewFrame + update menus"""
-        oNewFrame.show_all()
+        oNewFrame.show()
         oNewFrame.set_focus_handler(self.win_focus)
         oParent = oOldFrame.get_parent()
         oParent.remove(oOldFrame)
@@ -716,8 +716,8 @@ class MultiPaneWindow(gtk.Window):
                 oParent1.remove(oFrame1)
                 oParent2.add(oFrame1)
                 oParent1.add(oFrame2)
-            oParent1.show_all()
-            oParent2.show_all()
+            oParent1.show()
+            oParent2.show()
             self.reset_menu()
 
     def get_current_pane(self):
@@ -842,7 +842,7 @@ class MultiPaneWindow(gtk.Window):
             else:
                 oNewPane.set_position(iConfigPos)
         self._iNumberOpenFrames += 1
-        self.oVBox.show_all()
+        self.oVBox.show()
         self.reset_menu()
         # Reset frame focussed state
         if self._oFocussed:
