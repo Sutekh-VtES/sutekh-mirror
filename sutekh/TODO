@@ -46,6 +46,10 @@ For 0.8.0 cycle
       - Do more with the --verbose flag?
     * Improved card set sorting
       - Allow specifying order of columns to use, etc.
+    * Use card set list view widget in place of long card set name lists
+      everywhere
+    * Don't set dates in the expected io results at import time to avoid test
+      failures when the test run crosses midnight.
 
     Website:
        * Mirror documentation on website. (sort of done, needs automating)
