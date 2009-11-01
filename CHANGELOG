@@ -1,4 +1,6 @@
 02 Nov 2009
+ * Merge r2116 from trunk:
+   * Add support for minimizing panes to a toolbar.
  * Merge r2114 from trunk:
    * Change from grid lines to rules hint to differentiate adjacent rows.
 

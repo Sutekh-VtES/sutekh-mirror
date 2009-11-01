@@ -57,7 +57,8 @@ class SutekhMenu(gtk.MenuBar):
            Create a menu item, connect it to fAction (if not None), and
            add an accelerator if specified."""
         oMenuItem = gtk.MenuItem(sName)
-        oMenu.add(oMenuItem)
+        if oMenu is not None:
+            oMenu.add(oMenuItem)
         if fAction:
             oMenuItem.connect('activate', fAction)
         if sAccelKey:
