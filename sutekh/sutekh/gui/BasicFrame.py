@@ -54,6 +54,7 @@ class BasicFrame(gtk.Frame):
 
         self._oTitle.connect('drag-data-received', self.drag_drop_handler)
         self._oTitle.connect('drag-data-get', self.create_drag_data)
+        self._oTitle.connect('button-press-event', self.minimize_to_toolbar)
         self.set_drag_handler()
 
     # pylint: disable-msg=W0212
@@ -251,3 +252,8 @@ class BasicFrame(gtk.Frame):
             oDrag_context.drag_status(gtk.gdk.ACTION_COPY)
             return True
         return False
+
+    def minimize_to_toolbar(self, _oWidget, oEvent):
+        """Minimize the frame to the toolbar on double-click."""
+        if oEvent.type == gtk.gdk._2BUTTON_PRESS:
+            self._oMainWindow.minimize_to_toolbar(self)

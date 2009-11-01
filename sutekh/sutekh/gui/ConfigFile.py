@@ -82,10 +82,12 @@ class ConfigFile(object):
             self.__oConfig.add_section(self.__sPanesSection)
             # No panes information, so we set 'sensible' defaults
             self.add_frame(1, 'physical_card', 'White Wolf Card List', False,
+                    False, -1)
+            self.add_frame(2, 'Card Text', 'Card Text', False, False, -1)
+            self.add_frame(3, 'Card Set List', 'Card Set List', False, False,
                     -1)
-            self.add_frame(2, 'Card Text', 'Card Text', False, -1)
-            self.add_frame(3, 'Card Set List', 'Card Set List', False, -1)
-            self.add_frame(4, 'physical_card_set', 'My Collection', False, -1)
+            self.add_frame(4, 'physical_card_set', 'My Collection', False,
+                    False, -1)
 
         if not self.__oConfig.has_section(self.__sFiltersSection):
             self.__oConfig.add_section(self.__sFiltersSection)
@@ -156,18 +158,21 @@ class ConfigFile(object):
             sType = aData[0]
             sPos = '-1'
             bVertical = False
+            bClosed = False
             if len(aData) > 1:
                 if aData[1] == 'V':
                     bVertical = True
                     if len(aData) > 2:
                         sPos = aData[2]
+                elif aData[1] == 'C':
+                    bClosed = True
                 else:
                     sPos = aData[1]
             try:
                 iPos = int(sPos)
             except ValueError:
                 iPos = -1
-            aRes.append((iPaneNumber, sType, sName, bVertical, iPos))
+            aRes.append((iPaneNumber, sType, sName, bVertical, bClosed, iPos))
         aRes.sort() # Numbers denote ordering
         return aRes
 
@@ -235,13 +240,15 @@ class ConfigFile(object):
 
     # pylint: disable-msg=R0913
     # We need all the info in the arguments here
-    def add_frame(self, iFrameNumber, sType, sName, bVertical, iPos):
+    def add_frame(self, iFrameNumber, sType, sName, bVertical, bClosed, iPos):
         """Add a frame with the given position info to the config file"""
         sKey = 'pane %d' % iFrameNumber
         sData = sType
         if bVertical:
             sData += '.V'
-        if iPos > 0 and self.get_save_precise_pos():
+        elif bClosed:
+            sData += '.C'
+        if iPos > 0 and self.get_save_precise_pos() and not bClosed:
             sData += '.%d' % iPos
         sValue = '%s:%s' % (sData, sName)
         self.__oConfig.set(self.__sPanesSection, sKey, sValue)
