@@ -11,6 +11,7 @@ h2. Contents
 ## "Pane Actions":#main_pane_actions
 ## "Plugins":#main_plugins
 ## "Keyboard Shortcuts":#keyboard
+## "Minimizing Panes":#minimize_panes
 ## "Refreshing the White Wolf Card List":#refresh
 # "White Wolf Card List":#ww
 ## "Actions":#ww_actions
@@ -185,6 +186,14 @@ on and off using *&lt;Ctrl&gt;-T*.
 
 The *&lt;Ctrl&gt;-+* and *&lt;Ctrl&gt;--* shortcuts allow you to expand fully or
 collapse completely the entire tree displayed in a pane.
+
+
+h3(#minimize_panes). Minimizing Panes
+
+Double-clicking on a pane title will minimize the pane to a toolbar below the
+main menu. The toolbar is hidden if no frames are currently minimized. Clicking
+on a pane listed on the toolbar will unminize it and place to the right of
+current set of open panes.
 
 
 h3(#refresh). Refreshing the White Wolf Card List
