@@ -1,3 +1,7 @@
+02 Nov 2009
+ * Merge r2114 from trunk:
+   * Change from grid lines to rules hint to differentiate adjacent rows.
+
 27 Oct 2009
  * Send list of physical cards to listeners
  * Tweak show logic so toolbar plugins can start hidden

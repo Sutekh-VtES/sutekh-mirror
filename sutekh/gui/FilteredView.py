@@ -42,9 +42,8 @@ class FilteredView(gtk.TreeView):
 
         self.set_name('filtered_view')
 
-        # Grid Lines
-        if hasattr(self, 'set_grid_lines'):
-            self.set_grid_lines(gtk.TREE_VIEW_GRID_LINES_BOTH)
+        # Enable rules hints
+        self.set_rules_hint(True)
 
     # Introspection
 
