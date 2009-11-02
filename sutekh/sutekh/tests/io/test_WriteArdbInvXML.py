@@ -36,7 +36,7 @@ EXPECTED_1 = """<inventory databaseVersion="%s" formatVersion="-TODO-1.0" genera
   </crypt><library size="11">
     <card databaseID="1" have="4" need="0" spare="0">
       <name>.44 Magnum</name>
-      <set>Jyhad</set>
+      <set>CE</set>
     </card><card databaseID="2" have="2" need="0" spare="0">
       <name>AK-47</name>
       <set>LotN</set>

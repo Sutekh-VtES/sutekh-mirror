@@ -86,7 +86,7 @@ class WriteArdbXML(ArdbInfo, BaseXMLWriter):
     def format_vamps(self, oCryptElem, dVamps):
         """Convert the Vampire dictionary into ElementTree representation."""
         for (oCard, sSet), iNum in sorted(dVamps.iteritems(),
-                key = lambda x: x[0][0].name):
+                key = lambda x: (x[0][0].name, x[0][1], x[1])):
             # This won't match the ARDB ID's, unless by chance.
             # It looks like that should not be an issue as ARDB will
             # use the name if the IDs don't match
@@ -120,7 +120,7 @@ class WriteArdbXML(ArdbInfo, BaseXMLWriter):
     def format_library(self, oLibElem, dLib):
         """Format the dictionary of library cards for the element tree."""
         for (oCard, sTypeString, sSet), iNum in sorted(dLib.iteritems(),
-                key = lambda x: x[0][0].name):
+                key = lambda x: (x[0][0].name, x[0][1], x[1])):
             oCardElem = SubElement(oLibElem, 'card', databaseID=str(oCard.id),
                     count=str(iNum))
             self._ardb_lib_card(oCardElem, oCard, sSet)

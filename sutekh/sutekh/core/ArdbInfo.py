@@ -69,7 +69,8 @@ class ArdbInfo(object):
            in the XML file, so we need to combine things so there's only 1
            entry per card."""
         dCombinedCards = {}
-        for tKey, iNum in dCards.iteritems():
+        for tKey, iNum in sorted(dCards.iteritems(),
+                key=lambda x: (x[0][0].name, x[0][-1])):
             oCard = tKey[0]
             dCombinedCards.setdefault(oCard, [0] + list(tKey[1:]))
             dCombinedCards[oCard][0] += iNum
