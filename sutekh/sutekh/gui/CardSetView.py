@@ -104,25 +104,27 @@ class CardSetView(CardListView):
         self.set_expander_column(oColumn2)
 
         # Inc/Dec cells
-        oCell3 = CellRendererSutekhButton()
-        oCell3.load_icon(gtk.STOCK_ADD, self)
-        oCell4 = CellRendererSutekhButton()
-        oCell4.load_icon(gtk.STOCK_REMOVE, self)
+        oIncCell = CellRendererSutekhButton()
+        oIncCell.load_icon(gtk.STOCK_ADD, self)
+        oDecCell = CellRendererSutekhButton()
+        oDecCell.load_icon(gtk.STOCK_REMOVE, self)
 
-        oColumn3 = gtk.TreeViewColumn("", oCell3, showicon=3)
-        oColumn3.set_fixed_width(22)
-        oColumn3.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
-        oColumn3.set_resizable(False)
-        self.append_column(oColumn3)
+        self.oIncCol = gtk.TreeViewColumn("", oIncCell, showicon=3)
+        self.oIncCol.set_fixed_width(22)
+        self.oIncCol.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
+        self.oIncCol.set_resizable(False)
+        self.oIncCol.set_visible(False)
+        self.append_column(self.oIncCol)
 
-        oColumn4 = gtk.TreeViewColumn("", oCell4, showicon=4)
-        oColumn4.set_fixed_width(22)
-        oColumn4.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
-        oColumn4.set_resizable(False)
-        self.append_column(oColumn4)
+        self.oDecCol = gtk.TreeViewColumn("", oDecCell, showicon=4)
+        self.oDecCol.set_fixed_width(22)
+        self.oDecCol.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
+        self.oDecCol.set_resizable(False)
+        self.oDecCol.set_visible(False)
+        self.append_column(self.oDecCol)
 
-        oCell3.connect('clicked', self.inc_card)
-        oCell4.connect('clicked', self.dec_card)
+        oIncCell.connect('clicked', self.inc_card)
+        oDecCell.connect('clicked', self.dec_card)
 
         self.__iMapID = self.connect('map', self.mapped)
         self.connect('key-press-event', self.key_press)
@@ -434,8 +436,12 @@ class CardSetView(CardListView):
             self._oMenu.force_editable_mode(bValue)
         if bValue:
             self.set_color_edit_cue()
+            self.oIncCol.set_visible(True)
+            self.oDecCol.set_visible(True)
         else:
             self.set_color_normal()
+            self.oIncCol.set_visible(False)
+            self.oDecCol.set_visible(False)
 
     def toggle_editable(self, bValue):
         """Reload the view and update status when editable status changes"""
