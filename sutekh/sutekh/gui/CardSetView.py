@@ -110,14 +110,14 @@ class CardSetView(CardListView):
         oDecCell.load_icon(gtk.STOCK_REMOVE, self)
 
         self.oIncCol = gtk.TreeViewColumn("", oIncCell, showicon=3)
-        self.oIncCol.set_fixed_width(22)
+        self.oIncCol.set_fixed_width(19)
         self.oIncCol.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
         self.oIncCol.set_resizable(False)
         self.oIncCol.set_visible(False)
         self.append_column(self.oIncCol)
 
         self.oDecCol = gtk.TreeViewColumn("", oDecCell, showicon=4)
-        self.oDecCol.set_fixed_width(22)
+        self.oDecCol.set_fixed_width(19)
         self.oDecCol.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
         self.oDecCol.set_resizable(False)
         self.oDecCol.set_visible(False)

@@ -1,6 +1,11 @@
+04 Nov 2009
+ * Use slightly smaller gtk.ICON_SIZE_MENU for the add/remove icons.
+   - Adjust pressed animation to use smaller offsets as a result
+
 02 Nov 2009
  * Be explicit about sorting items in ARDB export. Avoids differences
-   between python 2.6 and python 2.5 output.
+   between python 2.6 and python 2.5 output (this may partly be a 32bit vs
+   64bit issue, but it's still a bug).
 
 27 Oct 2009
  * Send list of physical cards to listeners

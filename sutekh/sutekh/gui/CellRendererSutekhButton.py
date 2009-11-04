@@ -26,7 +26,7 @@ class CellRendererSutekhButton(gtk.GenericCellRenderer):
        Used to render the arrows for incrementing and decrementing cards
        in the CardListView's
        """
-    # Register a showicon property - used to control wether the arrow
+    # Register a showicon property - used to control wether the icon
     # is visible or not
     __gproperties__ = {
             'showicon' : (gobject.TYPE_BOOLEAN, 'showicon property',
@@ -44,7 +44,7 @@ class CellRendererSutekhButton(gtk.GenericCellRenderer):
 
     def load_icon(self, sName, oWidget):
         """Load the icon specified in name"""
-        self.oPixbuf = oWidget.render_icon(sName, gtk.ICON_SIZE_SMALL_TOOLBAR)
+        self.oPixbuf = oWidget.render_icon(sName, gtk.ICON_SIZE_MENU)
 
     def do_get_property(self, oProp):
         """Allow reading the showicon property"""
@@ -121,8 +121,8 @@ class CellRendererSutekhButton(gtk.GenericCellRenderer):
         oPixRect.height -= int(2 * self.get_property("ypad"))
 
         if bDrawOffset:
-            oPixRect.x += 2
-            oPixRect.y += 2
+            oPixRect.x += 1
+            oPixRect.y += 1
             # We add a timeout to force a redraw to unbump the button
             gobject.timeout_add(200, self.restore_offset, oWindow,
                     oBackgroundArea)
@@ -132,7 +132,7 @@ class CellRendererSutekhButton(gtk.GenericCellRenderer):
 
         oWindow.draw_pixbuf(oWidget.style.black_gc, self.oPixbuf,
             oDrawRect.x - oPixRect.x, oDrawRect.y - oPixRect.y, oDrawRect.x,
-            oDrawRect.y + 2, oDrawRect.width, oDrawRect.height,
+            oDrawRect.y, oDrawRect.width, oDrawRect.height,
             gtk.gdk.RGB_DITHER_NONE, 0, 0)
         return None
 
