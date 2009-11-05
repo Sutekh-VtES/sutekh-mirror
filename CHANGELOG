@@ -1,3 +1,7 @@
+06 Nov 2009
+ * Merge r2121 from trunk:
+   * Hide increment and decrement columns when a card set is not editable.
+
 02 Nov 2009
  * Merge r2116 and r2118 from trunk:
    * Add support for minimizing panes to a toolbar.
