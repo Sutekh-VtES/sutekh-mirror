@@ -1,3 +1,6 @@
+05 Nov 2009
+ * Add caching of SQLite databases during tests.
+
 04 Nov 2009
  * Use slightly smaller gtk.ICON_SIZE_MENU for the add/remove icons.
    - Adjust pressed animation to use smaller offsets as a result
