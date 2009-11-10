@@ -188,7 +188,7 @@ class CardDrawSimPlugin(CardListPlugin):
         """Create the dialog box."""
         oDialog = SutekhDialog( "Card Draw probablities", self.parent,
             gtk.DIALOG_DESTROY_WITH_PARENT,
-            (gtk.STOCK_OK, gtk.RESPONSE_OK))
+            (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
         oDialog.connect("response", lambda oDialog, resp: oDialog.destroy())
 
         oWidgetBox = gtk.HBox(False, 2)
