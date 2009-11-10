@@ -181,7 +181,7 @@ class OpeningHandSimulator(CardListPlugin):
 
         oDialog = SutekhDialog(sDiagName, self.parent,
                 gtk.DIALOG_MODAL|gtk.DIALOG_DESTROY_WITH_PARENT,
-                (gtk.STOCK_OK, gtk.RESPONSE_OK))
+                (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
         oDialog.set_size_request(900, 600)
 
         self._fill_stats(oDialog)
@@ -267,7 +267,7 @@ class OpeningHandSimulator(CardListPlugin):
         oBackButton = oDialog.add_button(gtk.STOCK_GO_BACK, self.BACK)
         oBackButton.set_sensitive(False)
         oDialog.add_button(gtk.STOCK_GO_FORWARD, self.FORWARD)
-        oDialog.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
+        oDialog.add_button(gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE)
         self.bShowDetails = False
         if len(self.aDrawnHands) > 0:
             self.iCurHand = len(self.aDrawnHands)

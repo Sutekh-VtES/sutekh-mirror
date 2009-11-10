@@ -358,7 +358,7 @@ class AnalyzeCardList(CardListPlugin):
         """Create the actual dialog, and populate it"""
         oDlg = SutekhDialog( "Analysis of Card List", self.parent,
                 gtk.DIALOG_DESTROY_WITH_PARENT,
-                (gtk.STOCK_OK, gtk.RESPONSE_OK))
+                (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
         oDlg.connect("response", lambda oDlg, resp: oDlg.destroy())
         dConstruct = {
                 'Vampire' : self._process_vampire,
