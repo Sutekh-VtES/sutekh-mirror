@@ -34,7 +34,7 @@ class CardSetExport(CardListPlugin):
             # 'Text files', '*.txt' if not present
             # Extension is directly appended to suggested filename,
             # so should include an initial . if appropriate
-            'JOL' : (WriteJOL, 'Export Card Set to JOL format', '.jol.txt'),
+            'JOL' : (WriteJOL, 'Export to JOL format', '.jol.txt'),
             'Lackey' : (WriteLackeyCCG, 'Export to Lackey CCG format',
                 '.lackey.txt'),
             'ARDB Text' : (WriteArdbText, 'Export to ARDB Text', '.ardb.txt'),
