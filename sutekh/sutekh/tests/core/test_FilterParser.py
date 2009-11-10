@@ -257,6 +257,8 @@ class FilterParserTests(SutekhTest):
         self.assertRaises(ValueError, self.oFilterParser.apply,
             'CardType in $a and Clan in $a')
         self.assertRaises(ValueError, self.oFilterParser.apply,
+            'CardType not in $a and Clan in $a')
+        self.assertRaises(ValueError, self.oFilterParser.apply,
             'CardType in')
         self.assertRaises(ValueError, self.oFilterParser.apply,
             'Vampire in $a')
