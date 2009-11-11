@@ -333,6 +333,7 @@ class CardSetListModelTests(ConfigSutekhTest):
         self.assertEqual(oModel.get_drag_child_info('0'), {})
         self.assertEqual(oModel.get_drag_child_info('0:0'),
                 {'Camarilla Edition' : 1})
+        self._cleanup_models([oModel])
 
     def _setup_simple(self):
         """Convience method for setting up a single card set for tests"""
@@ -674,6 +675,7 @@ class CardSetListModelTests(ConfigSutekhTest):
         tExpected = (1, 30, 4)
         self.assertEqual(tTotals, tExpected, 'Wrong results from filter : '
                 '%s vs %s' % (tTotals, tExpected))
+        self._cleanup_models([oModel])
 
     def test_empty(self):
         """Test corner cases around empty card sets"""
@@ -701,6 +703,7 @@ class CardSetListModelTests(ConfigSutekhTest):
             if sName != 'Yvette, The Hopeless':
                 oGrandChildPCS.addPhysicalCard(oCard.id)
         self._loop_modes(oChildPCS, [oChildModel])
+        self._cleanup_models([oChildModel])
 
 if __name__ == "__main__":
     unittest.main()
