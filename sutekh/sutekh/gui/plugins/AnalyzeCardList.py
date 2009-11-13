@@ -255,7 +255,7 @@ def _percentage_backs(dCards, iSize, fPer, sType):
     """Checks that the percentage of cards with a single back are not too
        small"""
     aPer = [float(dCards[x])/float(iSize) for x in dCards]
-    if min(aPer) < fPer/100.0:
+    if aPer and min(aPer) < fPer/100.0:
         return "Group of cards with the same back that's smaller" \
                 " than %2.1f%% of the %s.\n" % (fPer, sType.lower())
     return None
