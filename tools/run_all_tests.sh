@@ -9,7 +9,7 @@ if which nosetests > /dev/null; then
    (cd ../sutekh && nosetests sutekh/tests)
 else
    export PYTHONPATH=../sutekh
-   for file in ../sutekh/sutekh/tests/test_*py; do
+   for file in ../sutekh/sutekh/tests/*/test_*py; do
       echo "Running $file"
       python $file
    done
