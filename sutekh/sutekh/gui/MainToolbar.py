@@ -18,6 +18,7 @@ class MainToolbar(gtk.Toolbar):
     def __init__(self, oWindow):
         super(MainToolbar, self).__init__()
         self.set_no_show_all(True)
+        self.set_style(gtk.TOOLBAR_BOTH)
         self._oMainWindow = oWindow
 
     def create_tool_button(self, sLabel, oIcon=None, fAction=None):

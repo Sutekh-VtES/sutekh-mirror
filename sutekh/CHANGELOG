@@ -1,3 +1,6 @@
+15 Nov 2009
+ * Add explicit style hint to toolbar, to override system setting.
+
 05 Nov 2009
  * Add caching of SQLite databases during tests.
 
