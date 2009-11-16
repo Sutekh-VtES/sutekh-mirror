@@ -161,7 +161,7 @@ class CardSetListModelTests(ConfigSutekhTest):
 
     # pylint: enable-msg=C0103
 
-    def _add_remove_cards(self, oPCS, aModels):
+    def _add_remove_cards(self, oPCS, aModels, dCountInfo):
         """Helper function to add and remove distinct cards from the card set,
            validating that the model works correctly"""
         # pylint: disable-msg=E1101, R0914
@@ -201,8 +201,12 @@ class CardSetListModelTests(ConfigSutekhTest):
             self.assertEqual(aAddList, aLoadList, self._format_error(
                 "Card Lists for inc_card and load differ", aAddList, aLoadList,
                 oModel, oPCS))
-            iSetCnt = oModel.get_card_iterator(
-                    oModel.get_current_filter()).count()
+            if not dCountInfo[oModel]['added']:
+                iSetCnt = oModel.get_card_iterator(
+                        oModel.get_current_filter()).count()
+                dCountInfo[oModel]['added'] = iSetCnt
+            else:
+                iSetCnt = dCountInfo[oModel]['added']
             iListCnt = dModelInfo[oModel][0].iCnt
             self.assertEqual(iListCnt, iSetCnt, self._format_error(
                 "Listener has wrong count after inc_card", iListCnt,
@@ -229,16 +233,24 @@ class CardSetListModelTests(ConfigSutekhTest):
             self.assertEqual(tDecTotals, tStartTotals, self._format_error(
                 "Totals for dec_card and load differ", tDecTotals,
                 tStartTotals, oModel, oPCS))
-            iSetCnt = oModel.get_card_iterator(
-                    oModel.get_current_filter()).count()
+            iSetCnt = dCountInfo[oModel]['start']
             self.assertEqual(oListener.iCnt, iSetCnt, self._format_error(
-                "Listener has wrong count after inc_card", oListener.iCnt,
+                "Listener has wrong count after dec_card", oListener.iCnt,
                 iSetCnt, oModel, oPCS))
             oModel.remove_listener(oListener)
 
     def _loop_modes(self, oPCS, aModels):
         """Loop over all the possible modes of the model, calling
            _add_remove_cards to test the model."""
+        dCountInfo = {}
+        for oModel in aModels:
+            # We cache these lookups, since the various modes don't change
+            # these numbers
+            dCountInfo[oModel] = {}
+            iSetCnt = oModel.get_card_iterator(
+                    oModel.get_current_filter()).count()
+            dCountInfo[oModel]['start'] = iSetCnt
+            dCountInfo[oModel]['added'] = None
         for bEditFlag in [False, True]:
             for oModel in aModels:
                 oModel.bEditable = bEditFlag
@@ -254,7 +266,7 @@ class CardSetListModelTests(ConfigSutekhTest):
                             CHILD_CARDS]:
                         for oModel in aModels:
                             oModel.iShowCardMode = iShowMode
-                        self._add_remove_cards(oPCS, aModels)
+                        self._add_remove_cards(oPCS, aModels, dCountInfo)
         for oModel in aModels:
             self._reset_modes(oModel)
 
