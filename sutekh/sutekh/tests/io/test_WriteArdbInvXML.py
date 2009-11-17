@@ -18,7 +18,7 @@ import time
 # W0511 - this is not a actual TODO item
 # C0301 - Ignore line length limits for this string
 EXPECTED_1 = """<inventory databaseVersion="%s" formatVersion="-TODO-1.0" generator="Sutekh [ %s ]">
-  <date>%s</date>
+  <date>DATE</date>
   <crypt size="3">
     <vampire databaseID="11" have="1" need="0" spare="0">
       <adv />
@@ -51,8 +51,7 @@ EXPECTED_1 = """<inventory databaseVersion="%s" formatVersion="-TODO-1.0" genera
       <set>LotN</set>
     </card>
   </library>
-</inventory>""" % (WriteArdbInvXML.sDatabaseVersion, SutekhInfo.VERSION_STR,
-        time.strftime('%Y-%m-%d', time.localtime()))
+</inventory>""" % (WriteArdbInvXML.sDatabaseVersion, SutekhInfo.VERSION_STR)
 # pylint: enable-msg=W0511, C0301
 
 class ArdbInvXMLWriterTests(SutekhTest):
@@ -61,11 +60,13 @@ class ArdbInvXMLWriterTests(SutekhTest):
     def test_deck_writer(self):
         """Test ARDB XML inventory writing"""
         oPhysCardSet1 = make_set_1()
+        sCurDate = time.strftime('>%Y-%m-%d<', time.localtime())
 
         # Check output
 
         oWriter = WriteArdbInvXML()
         sData = self._round_trip_obj(oWriter, CardSetWrapper(oPhysCardSet1))
+        sData = sData.replace(sCurDate, '>DATE<')
 
         self.assertEqual(sData, EXPECTED_1)
 

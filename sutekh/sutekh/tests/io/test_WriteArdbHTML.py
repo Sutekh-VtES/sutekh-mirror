@@ -163,11 +163,10 @@ EXPECTED_1 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
         </table>
       </div>
     </div><div>
-      <span class="generator">Crafted with : Sutekh [ %s ]. [ %s ]</span>
+      <span class="generator">Crafted with : Sutekh [ %s ]. [ DATE ]</span>
     </div>
   </body>
-</html>""" % (HTML_STYLE, SutekhInfo.VERSION_STR,
-        time.strftime('%Y-%m-%d', time.localtime()))
+</html>""" % (HTML_STYLE, SutekhInfo.VERSION_STR)
 
 EXPECTED_2 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -302,11 +301,10 @@ EXPECTED_2 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
         </table>
       </div>
     </div><div>
-      <span class="generator">Crafted with : Sutekh [ %s ]. [ %s ]</span>
+      <span class="generator">Crafted with : Sutekh [ %s ]. [ DATE ]</span>
     </div>
   </body>
-</html>""" % (HTML_STYLE, SutekhInfo.VERSION_STR,
-        time.strftime('%Y-%m-%d', time.localtime()))
+</html>""" % (HTML_STYLE, SutekhInfo.VERSION_STR)
 
 EXPECTED_3 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -457,11 +455,10 @@ EXPECTED_3 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
         </table>
       </div>
     </div><div>
-      <span class="generator">Crafted with : Sutekh [ %s ]. [ %s ]</span>
+      <span class="generator">Crafted with : Sutekh [ %s ]. [ DATE ]</span>
     </div>
   </body>
-</html>""" % (HTML_STYLE, SutekhInfo.VERSION_STR,
-        time.strftime('%Y-%m-%d', time.localtime()))
+</html>""" % (HTML_STYLE, SutekhInfo.VERSION_STR)
 
 EXPECTED_4 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -710,13 +707,10 @@ EXPECTED_4 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
         <p>Put this card in play. Cards that require Quietus [qui] cost Assamites 1 less blood. Any minion may burn this card as a (D) action; if that minion is a vampire, he or she then takes 1 unpreventable damage when this card is burned.</p>
       </div>
     </div><div>
-      <span class="generator">Crafted with : Sutekh [ %s ]. [ %s ]</span>
+      <span class="generator">Crafted with : Sutekh [ %s ]. [ DATE ]</span>
     </div>
   </body>
-</html>""" % (HTML_STYLE, SutekhInfo.VERSION_STR,
-        time.strftime('%Y-%m-%d', time.localtime()))
-
-
+</html>""" % (HTML_STYLE, SutekhInfo.VERSION_STR)
 
 
 class ARDBHTMLWriterTests(SutekhTest):
@@ -726,31 +720,37 @@ class ARDBHTMLWriterTests(SutekhTest):
         """Test HTML deck writing"""
         oPhysCardSet1 = make_set_1()
 
+        sCurDate = time.strftime('[ %Y-%m-%d ]', time.localtime())
         # Check output
 
         oWriter = WriteArdbHTML(bDoText=False)
         sData = self._round_trip_obj(oWriter, CardSetWrapper(oPhysCardSet1))
+        sData = sData.replace(sCurDate, '[ DATE ]')
 
         self.assertEqual(sData, EXPECTED_1)
 
         # Test other modes
         oWriter = WriteArdbHTML('Monger', False)
         sData = self._round_trip_obj(oWriter, CardSetWrapper(oPhysCardSet1))
+        sData = sData.replace(sCurDate, '[ DATE ]')
 
         self.assertEqual(sData, EXPECTED_1)
 
         oWriter = WriteArdbHTML('None', False)
         sData = self._round_trip_obj(oWriter, CardSetWrapper(oPhysCardSet1))
+        sData = sData.replace(sCurDate, '[ DATE ]')
 
         self.assertEqual(sData, EXPECTED_2)
 
         oWriter = WriteArdbHTML('Secret Library', False)
         sData = self._round_trip_obj(oWriter, CardSetWrapper(oPhysCardSet1))
+        sData = sData.replace(sCurDate, '[ DATE ]')
 
         self.assertEqual(sData, EXPECTED_3)
 
         oWriter = WriteArdbHTML('Secret Library', True)
         sData = self._round_trip_obj(oWriter, CardSetWrapper(oPhysCardSet1))
+        sData = sData.replace(sCurDate, '[ DATE ]')
 
         self.assertEqual(sData, EXPECTED_4)
 

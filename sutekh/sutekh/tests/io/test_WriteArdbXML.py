@@ -18,7 +18,7 @@ import time
 # W0511 - this is not a actual TODO item
 # C0301 - Ignore line length limits for this string
 EXPECTED_1 = """<deck databaseVersion="%s" formatVersion="-TODO-1.0" generator="Sutekh [ %s ]">
-  <date>%s</date>
+  <date>DATE</date>
   <name>Test Set 1</name>
   <author>A test author</author>
   <description>A test comment</description>
@@ -96,8 +96,7 @@ Put this card on a Laibon or on a vampire with Protean [pro]. This vampire gains
 Put this card in play. Cards that require Quietus [qui] cost Assamites 1 less blood. Any minion may burn this card as a (D) action; if that minion is a vampire, he or she then takes 1 unpreventable damage when this card is burned.</text>
     </card>
   </library>
-</deck>""" % (WriteArdbXML.sDatabaseVersion, SutekhInfo.VERSION_STR,
-        time.strftime('%Y-%m-%d', time.localtime()))
+</deck>""" % (WriteArdbXML.sDatabaseVersion, SutekhInfo.VERSION_STR)
 # pylint: enable-msg=W0511, C0301
 
 class ArdbXMLWriterTests(SutekhTest):
@@ -106,11 +105,13 @@ class ArdbXMLWriterTests(SutekhTest):
     def test_deck_writer(self):
         """Test ARDB XML deck writing"""
         oPhysCardSet1 = make_set_1()
+        sCurDate = time.strftime('>%Y-%m-%d<', time.localtime())
 
         # Check output
 
         oWriter = WriteArdbXML()
         sData = self._round_trip_obj(oWriter, CardSetWrapper(oPhysCardSet1))
+        sData = sData.replace(sCurDate, '>DATE<')
 
         self.assertEqual(sData, EXPECTED_1)
 
