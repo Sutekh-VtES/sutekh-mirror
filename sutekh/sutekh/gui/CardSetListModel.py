@@ -610,9 +610,12 @@ class CardSetCardListModel(CardListModel):
         # pylint: disable-msg=E1101
         # Pyprotocols confuses pylint
         if self.iShowCardMode == ALL_CARDS:
-            oFullFilter = FilterAndBox([PhysicalCardFilter(), oCurFilter])
-            aExtraCards = [x for x in
-                    oFullFilter.select(PhysicalCard).distinct()]
+            if self._dCache['all cards']:
+                aExtraCards = self._dCache['all cards']
+            else:
+                oFullFilter = FilterAndBox([PhysicalCardFilter(), oCurFilter])
+                aExtraCards = list(oFullFilter.select(PhysicalCard).distinct())
+                self._dCache['all cards'] = aExtraCards
         elif self.iShowCardMode == PARENT_CARDS and self._oCardSet.parent:
             # Since we handle numbers later, this works
             aExtraCards = self._dCache['parent cards']
@@ -626,6 +629,10 @@ class CardSetCardListModel(CardListModel):
 
     def _init_cache(self):
         """Setup the initial cache state"""
+        # preserve this across calls to add_new_card
+        self._dCache.setdefault('all cards', None)
+        # We always refresh these on calls to add_new_card due so
+        # filter checks are taken into account
         self._dCache['parent cards'] = {}
         self._dCache['parent abstract cards'] = {}
         self._dCache['child cards'] = {}
@@ -644,9 +651,11 @@ class CardSetCardListModel(CardListModel):
            Returns a iterator over the groupings, and a list of all the
            abstract cards in the card set considered.
            """
-        # pylint: disable-msg=E1101, R0914
+        # pylint: disable-msg=E1101, R0914, R0912, R0915
         # E1101: SQLObject + PyProtocols confuse pylint
         # R0914: We use lots of local variables for clarity
+        # R0912: Lots of cases to consider, so several branches
+        # R0915: Artificially subdividing this further would not be useful
 
         # Define iterable and grouping function based on cardclass
         aCards = []
@@ -670,6 +679,9 @@ class CardSetCardListModel(CardListModel):
             # fairly effecient.
             self._dCache['filtered cards'] = set(
                     oFullFilter.select(PhysicalCard).distinct())
+            if self.iShowCardMode == ALL_CARDS:
+                # Stomp on the cache, as we have a physical filter
+                self._dCache['all cards'] = self._dCache['filtered cards']
 
         dChildCardCache = self._get_child_filters(oCurFilter)
         self._get_parent_list(oCurFilter)
@@ -1561,8 +1573,9 @@ class CardSetCardListModel(CardListModel):
     def alter_card_count(self, oPhysCard, iChg):
         """Alter the card count of a card which is in the current list
            (i.e. in the card set and not filtered out) by iChg."""
-        # pylint: disable-msg=E1101
-        # PyProtocols confuses pylint here
+        # pylint: disable-msg=E1101, R0912
+        # E1101: PyProtocols confuses pylint here
+        # R0912: Several cases to consider, so several branches
         oAbsCard = IAbstractCard(oPhysCard)
         bRemove = False
         bChecked = False # flag to avoid repeated work

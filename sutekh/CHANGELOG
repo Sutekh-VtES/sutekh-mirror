@@ -1,3 +1,7 @@
+17 Nov 2009
+ * Improve database lookup caching for the case when showing all cards while
+   also filtering the card set.
+
 15 Nov 2009
  * Add explicit style hint to toolbar, to override system setting.
 
