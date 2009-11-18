@@ -149,6 +149,7 @@ class CardDict(dict):
             'frenzy' : re.compile('Frenzy\.'),
             'hunting ground' : re.compile('. Hunting [Gg]round'),
             'haven' : re.compile('Haven\.'),
+            'trophy' : re.compile('Master\. Trophy'),
             }
 
     dOtherProperties = {

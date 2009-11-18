@@ -1,5 +1,6 @@
 18 Nov 2009
  * Fix 'hunting ground' keyword regexp
+ * Add 'trophy' as a keyword
 
 17 Nov 2009
  * Improve database lookup caching for the case when showing all cards while
