@@ -48,16 +48,12 @@ For 0.8.0 cycle
       - Allow specifying order of columns to use, etc.
     * Use card set list view widget in place of long card set name lists
       everywhere
-    * Don't set dates in the expected io results at import time to avoid test
-      failures when the test run crosses midnight.
 
     Website:
        * Mirror documentation on website. (sort of done, needs automating)
 
  - Nice to have
     * Add ways of specifying more limited test data sets
-    * Add better persistence of data across tests, to avoid rerunning the 
-      parser for each test and improve test runtime
     * Address code duplication issues - especially io module & Filter tests (largely done)
     * Abstract Card Editor
     * Real plugin support
@@ -118,8 +114,4 @@ Upstream:
  * File GTK bugs for:
    * TreeView jumping.
    * TreeView search pop-up not working under Windows. 
-
-
-
-
 
