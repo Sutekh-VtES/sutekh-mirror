@@ -1646,12 +1646,6 @@ class CardSetCardListModel(CardListModel):
         # Notify Listeners
         for oListener in self.dListeners:
             oListener.alter_card_count(oPhysCard, iChg)
-        # Update cache
-        if self._bPhysicalFilter:
-            self._dAbs2Phys[oAbsCard].setdefault(oPhysCard, 0)
-            self._dAbs2Phys[oAbsCard][oPhysCard] += iChg
-            if self._dAbs2Phys[oAbsCard][oPhysCard] == 0:
-                del self._dAbs2Phys[oAbsCard][oPhysCard]
 
     def alter_parent_count(self, oPhysCard, iChg, bCheckAddRemove=True):
         """Alter the parent count by iChg
