@@ -1106,6 +1106,20 @@ class CardSetCardListModel(CardListModel):
                 self._dCache['child card sets'][sName][oPhysCard] == 0:
             del self._dCache['child card sets'][sName][oPhysCard]
 
+    def _needs_update(self, oAbsCard, oPhysCard):
+        """Check if we need to update for this card.
+
+           Only called in the PhysicalFilter case, where we can't
+           decide based on card set properties."""
+        bVisible = self.check_card_visible(oPhysCard)
+        bPresent = True
+        if oAbsCard not in self._dAbs2Iter:
+            bPresent = False
+        if not bVisible and not bPresent:
+            # No need to change anything in this case
+            return False
+        return True
+
     def card_changed(self, oCardSet, oPhysCard, iChg):
         """Listen on card changes.
 
@@ -1121,11 +1135,15 @@ class CardSetCardListModel(CardListModel):
         if self._bPhysicalFilter:
             # If we have a card count filter, any change can affect us,
             # so we always consider these cases.
-            # We hand them off to add_new_card to do the right thing
+            if not self._needs_update(oAbsCard, oPhysCard):
+                self._dCache['visible'] = {}
+                return
             if self._oController and oAbsCard in self._dAbs2Iter:
                 dStates = self._oController.save_iter_state(
                         self._dAbs2Iter[oAbsCard])
+            # clear existing info about the card
             self._clear_card_iter(oAbsCard)
+            # We hand off to add_new_card to do the right thing
             self.add_new_card(oPhysCard)
             if self._oController and oAbsCard in self._dAbs2Iter:
                 self._oController.restore_iter_state(self._dAbs2Iter[oAbsCard],
