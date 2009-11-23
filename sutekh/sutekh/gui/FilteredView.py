@@ -107,27 +107,7 @@ class FilteredView(gtk.TreeView):
             return # Change nothing
 
         oFilter = self._oFilterDialog.get_filter()
-        if oFilter != None:
-            self._oModel.selectfilter = oFilter
-            if not self._oModel.applyfilter:
-                # If a filter is set, automatically apply
-                if oMenu:
-                    oMenu.set_apply_filter(True)
-                else:
-                    self._oModel.applyfilter = True
-            else:
-                # Filter Changed, so reload
-                self.reload_keep_expanded()
-        else:
-            # Filter is set to blank, so we treat this as disabling
-            # Filter
-            if self._oModel.applyfilter:
-                if oMenu:
-                    oMenu.set_apply_filter(False)
-                else:
-                    self._oModel.applyfilter = True
-            else:
-                self.reload_keep_expanded()
+        self.set_filter(oFilter, oMenu)
 
     def run_filter(self, bState):
         """Enable or disable the current filter based on bState"""
@@ -241,6 +221,10 @@ class FilteredView(gtk.TreeView):
         return True
 
     # helpers for selection management
+    def set_select_none(self):
+        """set selection to single mode"""
+        self._oSelection.set_mode(gtk.SELECTION_NONE)
+
     def set_select_single(self):
         """set selection to single mode"""
         self._oSelection.set_mode(gtk.SELECTION_SINGLE)
@@ -248,4 +232,28 @@ class FilteredView(gtk.TreeView):
     def set_select_multiple(self):
         """set selection to multiple mode"""
         self._oSelection.set_mode(gtk.SELECTION_MULTIPLE)
+
+    def set_filter(self, oFilter, oMenu=None):
+        """Set the current filter to oFilter & apply it."""
+        if oFilter:
+            self._oModel.selectfilter = oFilter
+            if not self._oModel.applyfilter:
+                # If a filter is set, automatically apply
+                if oMenu:
+                    oMenu.set_apply_filter(True)
+                else:
+                    self._oModel.applyfilter = True
+            else:
+                # Filter Changed, so reload
+                self.reload_keep_expanded()
+        else:
+            # Filter is set to blank, so we treat this as disabling
+            # Filter
+            if self._oModel.applyfilter:
+                if oMenu:
+                    oMenu.set_apply_filter(False)
+                else:
+                    self._oModel.applyfilter = False
+            else:
+                self.reload_keep_expanded()
 
