@@ -9,8 +9,10 @@
 
 import gtk
 from sutekh.core.SutekhObjects import PhysicalCardSet, IPhysicalCardSet
+from sutekh.core.Filters import ParentCardSetFilter
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.ScrolledList import ScrolledList
+from sutekh.gui.CardSetsListView import CardSetsListView
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint, \
         do_complaint_error
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
@@ -145,31 +147,35 @@ class CardSetIndependence(CardListPlugin):
         """Create the list of card sets to select"""
         # pylint: disable-msg=W0201, E1101
         # E1101: PyProtocols confuses pylint
-        # W0201: No need to define oThisCardSet, oCSList & oInUseButton in
+        # W0201: No need to define oThisCardSet, oCSView & oInUseButton in
         # __init__
         self.oThisCardSet = IPhysicalCardSet(self.view.sSetName)
         if not self.oThisCardSet.parent:
             do_complaint_error("Card Set has no parent, so nothing to test.")
             return None
-        oSelect = PhysicalCardSet.selectBy(
-                parentID=self.oThisCardSet.parent.id).orderBy('name')
-        bInUseSets = PhysicalCardSet.selectBy(
-                parentID=self.oThisCardSet.parent.id, inuse=True).count() > 0
-        aNames = [oCS.name for oCS in oSelect if oCS.name !=
-                self.view.sSetName]
-        if not aNames:
+        if not PhysicalCardSet.selectBy(
+                parentID=self.oThisCardSet.parent.id).count() > 0:
             do_complaint_error("No sibling card sets, so nothing to test.")
             return None
+
+        bInUseSets = PhysicalCardSet.selectBy(
+                parentID=self.oThisCardSet.parent.id, inuse=True).count() > 0
         oDlg = SutekhDialog("Choose Card Sets to Test", self.parent,
                           gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                           (gtk.STOCK_OK, gtk.RESPONSE_OK,
                            gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
-        self.oCSList = ScrolledList('Card Sets')
+        self.oCSView = CardSetsListView(None, oDlg)
         # pylint: disable-msg=E1101
         # vbox confuses pylint
-        oDlg.vbox.pack_start(self.oCSList)
-        self.oCSList.set_size_request(150, 300)
-        self.oCSList.fill_list(aNames)
+        oDlg.vbox.pack_start(AutoScrolledWindow(self.oCSView), expand=True)
+        self.oCSView.set_select_multiple()
+        self.oCSView.exclude_set(self.view.sSetName)
+        # Add filter so we only show the sibling card sets
+        oFilter = ParentCardSetFilter([self.oThisCardSet.parent.name])
+        self.oCSView.set_filter(oFilter, None)
+        self.oCSView.load()
+        self.oCSView.expand_to_entry(self.view.sSetName)
+        self.oCSView.set_size_request(150, 300)
         self.oInUseButton = gtk.CheckButton(label="Test against all cards sets"
                 " marked as in use")
         if bInUseSets:
@@ -180,11 +186,11 @@ class CardSetIndependence(CardListPlugin):
         return oDlg
 
     def show_hide_list(self, oWidget):
-        """Hide the card set list when the user toggles the check box"""
+        """Hide the card set selection when the user toggles the check box"""
         if oWidget.get_active():
-            self.oCSList.set_select_none()
+            self.oCSView.set_select_none()
         else:
-            self.oCSList.set_select_multiple()
+            self.oCSView.set_select_multiple()
 
     def handle_response(self, oDlg, oResponse):
         """Handle the response from the dialog."""
@@ -199,7 +205,7 @@ class CardSetIndependence(CardListPlugin):
                     aCardSetNames.append(self.view.sSetName)
             else:
                 aCardSetNames = [self.view.sSetName]
-                aCardSetNames.extend(self.oCSList.get_selection())
+                aCardSetNames.extend(self.oCSView.get_all_selected_sets())
             _test_card_sets(aCardSetNames, self.oThisCardSet.parent)
         oDlg.destroy()
 

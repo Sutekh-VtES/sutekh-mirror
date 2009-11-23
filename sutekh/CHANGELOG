@@ -1,3 +1,6 @@
+23 Nov 2009
+ * Change card set independance plugin to also use the card set lists widget
+
 18 Nov 2009
  * Fix 'hunting ground' keyword regexp
  * Add 'trophy' as a keyword

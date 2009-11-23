@@ -85,3 +85,14 @@ class CardSetsListView(FilteredView):
         for oPath in aSelectedRows:
             aSets.append(oModel.get_name_from_path(oPath))
         return aSets
+
+    def _check_row_for_entry(self, _oModel, oPath, oIter, sEntry):
+        """Check if row matches the entry, and expand it if so"""
+        sRow = self._oModel.get_name_from_iter(oIter)
+        if sRow == sEntry:
+            self.expand_to_path(oPath)
+
+    def expand_to_entry(self, sEntry):
+        """Find the entry with the text sEntry, and expand the appropriate
+           row."""
+        self._oModel.foreach(self._check_row_for_entry, sEntry)
