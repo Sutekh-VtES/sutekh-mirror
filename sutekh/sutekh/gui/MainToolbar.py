@@ -29,7 +29,8 @@ class MainToolbar(gtk.Toolbar):
         return oToolButton
 
     def refresh(self):
-        """Refresh the toolbars hide/show state (needed because show all is turned off)."""
+        """Refresh the toolbars hide/show state (needed because show all
+           is turned off)."""
         aItems = self.get_children()
         if aItems:
             for oItem in aItems:

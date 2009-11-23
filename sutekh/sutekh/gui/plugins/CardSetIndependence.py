@@ -11,7 +11,6 @@ import gtk
 from sutekh.core.SutekhObjects import PhysicalCardSet, IPhysicalCardSet
 from sutekh.core.Filters import ParentCardSetFilter
 from sutekh.gui.PluginManager import CardListPlugin
-from sutekh.gui.ScrolledList import ScrolledList
 from sutekh.gui.CardSetsListView import CardSetsListView
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint, \
         do_complaint_error

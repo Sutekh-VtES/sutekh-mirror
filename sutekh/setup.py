@@ -25,8 +25,9 @@ try:
     class PkgResourceBuilder(builder):
         """Extend to builder class to override copy_extensions"""
 
-        # pylint: disable-msg=E1101
-        # missed imports leave pylint confused here
+        # pylint: disable-msg=E1101, C0103
+        # E1101: missed imports leave pylint confused here
+        # C0103: not using our naming conventions here
         def copy_extensions(self, extensions):
             """Hack the py2exe C extension copier
                to put pkg_resources into the

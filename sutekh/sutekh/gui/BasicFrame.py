@@ -255,5 +255,7 @@ class BasicFrame(gtk.Frame):
 
     def minimize_to_toolbar(self, _oWidget, oEvent):
         """Minimize the frame to the toolbar on double-click."""
+        # pylint: disable-msg=W0212
+        # We need to access _2BUTTON_PRESS
         if oEvent.type == gtk.gdk._2BUTTON_PRESS:
             self._oMainWindow.minimize_to_toolbar(self)

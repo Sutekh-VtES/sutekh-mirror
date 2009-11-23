@@ -91,7 +91,7 @@ class SutekhTest(unittest.TestCase):
             for cCls in reversed(TABLE_LIST):
                 cCls.dropTable(ifExists=True)
 
-            VersionTable.dropTable(ifExists=True);
+            VersionTable.dropTable(ifExists=True)
 
             oRawConn = oConn.getConnection()
             try:
@@ -188,6 +188,8 @@ def _iterdump(connection):
     database for later restoration.  This function should not be called
     directly but instead called from the Connection method, iterdump().
     """
+    # pylint: disable-msg=C0103
+    # Using the original naming convention
 
     cu = connection.cursor()
     # yield('BEGIN TRANSACTION;')
@@ -200,7 +202,7 @@ def _iterdump(connection):
             type == 'table'
         """
     schema_res = cu.execute(q)
-    for table_name, type, sql in schema_res.fetchall():
+    for table_name, _type, sql in schema_res.fetchall():
         if table_name == 'sqlite_sequence':
             yield('DELETE FROM sqlite_sequence;')
         elif table_name == 'sqlite_stat1':
@@ -210,7 +212,7 @@ def _iterdump(connection):
         # NOTE: Virtual table support not implemented
         #elif sql.startswith('CREATE VIRTUAL TABLE'):
         #    qtable = table_name.replace("'", "''")
-        #    yield("INSERT INTO sqlite_master(type,name,tbl_name,rootpage,sql)"\
+        #    yield("INSERT INTO sqlite_master(type,name,tbl_name,rootpage,sql)"
         #        "VALUES('table','%s','%s',0,'%s');" %
         #        qtable,
         #        qtable,
@@ -236,7 +238,7 @@ def _iterdump(connection):
             type IN ('index', 'trigger', 'view')
         """
     schema_res = cu.execute(q)
-    for name, type, sql in schema_res.fetchall():
+    for _name, _type, sql in schema_res.fetchall():
         yield('%s;' % sql)
 
     # yield('COMMIT;')
