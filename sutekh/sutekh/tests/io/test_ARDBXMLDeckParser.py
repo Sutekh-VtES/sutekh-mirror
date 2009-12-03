@@ -9,6 +9,7 @@
 import unittest
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.io.ARDBXMLDeckParser import ARDBXMLDeckParser
+from sutekh.tests.io.test_AbstractCardSetParser import ACS_EXAMPLE_1
 
 ARDB_DECK_EXAMPLE_1 = """
 <deck generator="Sutekh [ Test ]" fromatVersion="val">
@@ -120,6 +121,12 @@ class ArdbXMLDeckParserTests(SutekhTest):
         self.failUnless((("Test Card 3", "BH"), 12) in aCards)
         self.failUnless((("Test Card 4", None), 1) in aCards)
         self.failUnless((("The Test Card 5", None), 1) in aCards)
+
+        oParser = ARDBXMLDeckParser()
+        self.assertRaises(RuntimeError, self._make_holder_from_string, oParser,
+                ACS_EXAMPLE_1)
+        self.assertRaises(RuntimeError, self._make_holder_from_string, oParser,
+                'random stuff')
 
 
 if __name__ == "__main__":

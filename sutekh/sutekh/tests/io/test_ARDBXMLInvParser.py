@@ -9,6 +9,8 @@
 import unittest
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.io.ARDBXMLInvParser import ARDBXMLInvParser
+from sutekh.tests.io.test_ARDBXMLDeckParser import ARDB_DECK_EXAMPLE_1
+from sutekh.tests.io.test_AbstractCardSetParser import ACS_EXAMPLE_1
 
 # ARDB produces tag pairs for empty elements, we produce minimal
 # tags (<set></set> vs <set />, so we have both in the test data
@@ -90,6 +92,14 @@ class ArdbXMLInvParserTests(SutekhTest):
         self.failUnless((("The Path of Blood", None), 1) in aCards)
         self.failUnless((("Alan Sovereign (Advanced)", 'Promo-20051001'), 1)
                 in aCards)
+
+        oParser = ARDBXMLInvParser()
+        self.assertRaises(RuntimeError, self._make_holder_from_string, oParser,
+                ACS_EXAMPLE_1)
+        self.assertRaises(RuntimeError, self._make_holder_from_string, oParser,
+                ARDB_DECK_EXAMPLE_1)
+        self.assertRaises(RuntimeError, self._make_holder_from_string, oParser,
+                'random stuff')
 
 if __name__ == "__main__":
     unittest.main()
