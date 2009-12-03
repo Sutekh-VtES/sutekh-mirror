@@ -13,6 +13,7 @@ try:
     from xml.etree.ElementTree import XMLParser
 except ImportError:
     from elementtree.ElementTree import XMLParser
+from xml.parsers.expat import ExpatError
 # pylint: enable-msg=E0611, F0401
 from sutekh.core.SutekhObjects import csv_to_canonical
 from sutekh.core.ArdbInfo import unescape_ardb_expansion_name
@@ -106,6 +107,9 @@ class ARDBXMLInvParser(object):
     def parse(self, fIn, oHolder):
         """Parse XML file into the card set holder"""
         oParser = XMLParser(target=self._cState(oHolder))
-        for sLine in fIn:
-            oParser.feed(sLine)
+        try:
+            for sLine in fIn:
+                oParser.feed(sLine)
+        except ExpatError, oExp:
+            raise RuntimeError('Not an XML file: %s' % oExp)
 

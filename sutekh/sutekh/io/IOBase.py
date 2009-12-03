@@ -15,6 +15,7 @@ try:
     from xml.etree.ElementTree import parse, ElementTree
 except ImportError:
     from elementtree.ElementTree import parse, ElementTree
+from xml.parsers.expat import ExpatError
 
 # pylint: disable-msg=R0921, R0922
 # These may be referenced elsewhere, and mainly exist as interface
@@ -83,7 +84,10 @@ class BaseXMLParser(object):
 
     def parse(self, fIn, oHolder):
         """Read the XML tree from the file-like object fIn"""
-        self._oTree = parse(fIn)
+        try:
+            self._oTree = parse(fIn)
+        except ExpatError, oExp:
+            raise RuntimeError('Not an XML file: %s' % oExp)
         self._convert_tree(oHolder)
 
 class BaseSutekhXMLParser(BaseXMLParser):
