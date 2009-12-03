@@ -157,6 +157,7 @@ class DummyHolder(object):
         self.name = ''
         self.comment = ''
         self.author = ''
+        self.annotations = ''
 
     def add(self, iCnt, sName, sExpName):
         """Add a card to the dummy holder."""
