@@ -40,7 +40,11 @@ class LackeyDeckParser(BaseLineParser):
         if sLine[0] in string.digits:
             # Split on any whitespace
             sNum, sName = sLine.split(None, 1)
-            iNum = int(sNum)
+            try:
+                iNum = int(sNum)
+            except ValueError:
+                raise RuntimeError("Illegal number %s for Lacket CCG deck"
+                        % sNum)
             if sName in self._dNameCache:
                 sName = self._dNameCache[sName]
         elif sLine != 'Crypt:':
