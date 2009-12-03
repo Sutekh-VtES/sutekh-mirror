@@ -18,21 +18,24 @@ from xml.parsers.expat import ExpatError
 from sutekh.core.SutekhObjects import csv_to_canonical
 from sutekh.core.ArdbInfo import unescape_ardb_expansion_name
 
+
 class ARDBInvXMLState(object):
     """Simple State tracker used by the XMLParser"""
     # tag states of interest
     # We try and honour set info, although current ARDB seems a bit odd in
     # how it sets this
-    NOTAG, INCARD, CARDNAME, CARDSET, ADVANCED = range(5)
+    ROOTTAG, NOTAG, INCARD, CARDNAME, CARDSET, ADVANCED = range(6)
 
     COUNT_KEY = 'have'
+
+    ROOT = 'inventory'
 
     def __init__(self, oHolder):
         self._sData = ""
         self._sCardName = None
         self._sCardSet = None
         self._iCount = 0
-        self._iState = self.NOTAG
+        self._iState = self.ROOTTAG
         self._oHolder = oHolder
         self._sAdvanced = ''
 
@@ -42,12 +45,17 @@ class ARDBInvXMLState(object):
         self._sCardName = None
         self._sCardSet = None
         self._iCount = 0
-        self._iState = self.NOTAG
+        self._iState = self.ROOTTAG
         self._sAdvanced = ''
 
     def start(self, sTag, dAttributes):
         """Start tag encountered"""
-        if self._iState == self.INCARD:
+        if self._iState == self.ROOTTAG:
+            if sTag == self.ROOT:
+                self._iState = self.NOTAG
+            else:
+                raise RuntimeError('Not a ARDB %s XML file type' % self.ROOT)
+        elif self._iState == self.INCARD:
             if sTag == 'name':
                 self._iState = self.CARDNAME
             elif sTag == 'set':

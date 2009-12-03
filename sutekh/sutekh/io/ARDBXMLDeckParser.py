@@ -12,10 +12,12 @@ from sutekh.io.ARDBXMLInvParser import ARDBInvXMLState, ARDBXMLInvParser
 class ARDBDeckXMLState(ARDBInvXMLState):
     """Simple State tracker used by the XMLParser"""
     # tag states of interest
-    NOTAG, DECKNAME, DECKAUTHOR, DECKCOMMENT, INCARD, CARDNAME, CARDSET, \
-            ADVANCED = range(8)
+    ROOTTAG, NOTAG, DECKNAME, DECKAUTHOR, DECKCOMMENT, INCARD, CARDNAME, CARDSET, \
+            ADVANCED = range(9)
 
     COUNT_KEY = 'count'
+
+    ROOT = 'deck'
 
     def start(self, sTag, dAttributes):
         """Start tag encountered"""
