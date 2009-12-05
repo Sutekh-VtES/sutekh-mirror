@@ -54,7 +54,7 @@ class ARDBInvXMLState(object):
             if sTag == self.ROOT:
                 self._iState = self.NOTAG
             else:
-                raise RuntimeError('Not a ARDB %s XML file type' % self.ROOT)
+                raise IOError('Not a ARDB %s XML file type' % self.ROOT)
         elif self._iState == self.INCARD:
             if sTag == 'name':
                 self._iState = self.CARDNAME
@@ -119,5 +119,5 @@ class ARDBXMLInvParser(object):
             for sLine in fIn:
                 oParser.feed(sLine)
         except ExpatError, oExp:
-            raise RuntimeError('Not an XML file: %s' % oExp)
+            raise IOError('Not an XML file: %s' % oExp)
 

@@ -65,11 +65,11 @@ class PhysicalCardTests(SutekhTest):
 
         # Test incorrect input
         oHolder = CardSetHolder()
-        self.assertRaises(RuntimeError, oParser.parse, StringIO(
+        self.assertRaises(IOError, oParser.parse, StringIO(
             '<ccaardd sutekh_xml_version="1.0"><card count="1" ' \
             'expansion="None Specified" id="12" name="Abbot" /></ccaardd>'),
             oHolder)
-        self.assertRaises(RuntimeError, oParser.parse, StringIO(
+        self.assertRaises(IOError, oParser.parse, StringIO(
             '<cards sutekh_xml_version="5.0"><card count="1" ' \
             'expansion="None Specified" id="12" name="Abbot" /></cards>'),
             oHolder)

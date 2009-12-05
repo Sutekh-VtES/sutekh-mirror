@@ -59,8 +59,7 @@ class WriteLasombraOrder(object):
         dLib = {}
         for oCard in oHolder.cards:
             if not oCard.expansion:
-                raise RuntimeError(
-                        'All cards need to have an expansion specified')
+                raise IOError('All cards need to have an expansion specified')
             oAbsCard = IAbstractCard(oCard)
             sName = self._escape(oAbsCard.name)
             sType = type_of_card(oAbsCard)

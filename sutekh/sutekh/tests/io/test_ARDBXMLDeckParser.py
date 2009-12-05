@@ -123,9 +123,9 @@ class ArdbXMLDeckParserTests(SutekhTest):
         self.failUnless((("The Test Card 5", None), 1) in aCards)
 
         oParser = ARDBXMLDeckParser()
-        self.assertRaises(RuntimeError, self._make_holder_from_string, oParser,
+        self.assertRaises(IOError, self._make_holder_from_string, oParser,
                 ACS_EXAMPLE_1)
-        self.assertRaises(RuntimeError, self._make_holder_from_string, oParser,
+        self.assertRaises(IOError, self._make_holder_from_string, oParser,
                 'random stuff')
 
 

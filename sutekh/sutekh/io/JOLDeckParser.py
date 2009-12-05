@@ -28,7 +28,7 @@ class JOLDeckParser(BaseLineParser):
             sName = dResults['name']
         else:
             # error condition
-            raise RuntimeError('Unrecognised line for JOL format')
+            raise IOError('Unrecognised line for JOL format')
         # Unescape names
         if sName.endswith('(advanced)'):
             sName = sName.replace('(advanced)', '(Advanced)')

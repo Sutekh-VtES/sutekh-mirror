@@ -66,12 +66,12 @@ class PhysicalCardSetParser(BaseSutekhXMLParser):
             if oElem.tag == 'comment':
                 if oHolder.comment:
                     # We already encontered a comment, so error out
-                    raise RuntimeError("Format error. Multiple"
+                    raise IOError("Format error. Multiple"
                             " comment values encountered.")
                 oHolder.comment = oElem.text
             if oElem.tag == 'annotations':
                 if oHolder.annotations:
-                    raise RuntimeError("Format error. Multiple"
+                    raise IOError("Format error. Multiple"
                             " annotation values encountered.")
                 oHolder.annotations = oElem.text
             elif oElem.tag == 'card':

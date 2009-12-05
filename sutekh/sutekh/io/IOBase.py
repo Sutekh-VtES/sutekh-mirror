@@ -87,7 +87,7 @@ class BaseXMLParser(object):
         try:
             self._oTree = parse(fIn)
         except ExpatError, oExp:
-            raise RuntimeError('Not an XML file: %s' % oExp)
+            raise IOError('Not an XML file: %s' % oExp)
         self._convert_tree(oHolder)
 
 class BaseSutekhXMLParser(BaseXMLParser):
@@ -107,9 +107,9 @@ class BaseSutekhXMLParser(BaseXMLParser):
         """Check if the tree is valid"""
         oRoot = self._oTree.getroot()
         if oRoot.tag != self.sTypeTag:
-            raise RuntimeError("Not a %s File" % self.sTypeName)
+            raise IOError("Not a %s XML File" % self.sTypeName)
         if oRoot.attrib['sutekh_xml_version'] not in self.aSupportedVersions:
-            raise RuntimeError("Unrecognised %s File version" % self.sTypeName)
+            raise IOError("Unrecognised %s File version" % self.sTypeName)
 
     # pylint: disable-msg=R0201
     # method so subclasses can use it

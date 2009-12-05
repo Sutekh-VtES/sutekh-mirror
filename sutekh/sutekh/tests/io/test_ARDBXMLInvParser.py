@@ -94,11 +94,11 @@ class ArdbXMLInvParserTests(SutekhTest):
                 in aCards)
 
         oParser = ARDBXMLInvParser()
-        self.assertRaises(RuntimeError, self._make_holder_from_string, oParser,
+        self.assertRaises(IOError, self._make_holder_from_string, oParser,
                 ACS_EXAMPLE_1)
-        self.assertRaises(RuntimeError, self._make_holder_from_string, oParser,
+        self.assertRaises(IOError, self._make_holder_from_string, oParser,
                 ARDB_DECK_EXAMPLE_1)
-        self.assertRaises(RuntimeError, self._make_holder_from_string, oParser,
+        self.assertRaises(IOError, self._make_holder_from_string, oParser,
                 'random stuff')
 
 if __name__ == "__main__":

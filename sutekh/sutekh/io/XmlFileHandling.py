@@ -44,7 +44,7 @@ class PhysicalCardXmlFile(object):
     def read(self, bIgnoreWarnings=True):
         """Read the card collection from the file"""
         if self.sXmlFile is None:
-            raise RuntimeError("No Filename specified")
+            raise IOError("No Filename specified")
         oParser = PhysicalCardParser()
         return _do_read(oParser, self.sXmlFile, self.oCardLookup,
                 bIgnoreWarnings)
@@ -59,7 +59,7 @@ class PhysicalCardXmlFile(object):
     def delete(self):
         """Delete the file"""
         if self.sXmlFile is None:
-            raise RuntimeError("No Filename specified")
+            raise IOError("No Filename specified")
         os.remove(self.sXmlFile)
 
 class AbstractCardSetXmlFile(object):
@@ -71,7 +71,7 @@ class AbstractCardSetXmlFile(object):
     def read(self, bIgnoreWarnings=True):
         """Read the card set from the file."""
         if self.sXmlFile is None:
-            raise RuntimeError("No Filename specified")
+            raise IOError("No Filename specified")
         oParser = AbstractCardSetParser()
         return _do_read(oParser, self.sXmlFile, self.oCardLookup,
                 bIgnoreWarnings)
@@ -86,7 +86,7 @@ class AbstractCardSetXmlFile(object):
     def delete(self):
         """Delete the file"""
         if self.sXmlFile is None:
-            raise RuntimeError("No Filename specified")
+            raise IOError("No Filename specified")
         os.remove(self.sXmlFile)
 
 class PhysicalCardSetXmlFile(object):
@@ -98,7 +98,7 @@ class PhysicalCardSetXmlFile(object):
     def read(self, bIgnoreWarnings=True):
         """Read the card set from the file."""
         if self.sXmlFile is None:
-            raise RuntimeError("No Filename specified")
+            raise IOError("No Filename specified")
         oParser = PhysicalCardSetParser()
         return _do_read(oParser, self.sXmlFile, self.oCardLookup,
                 bIgnoreWarnings)
@@ -114,7 +114,7 @@ class PhysicalCardSetXmlFile(object):
         try:
             oPCS = IPhysicalCardSet(sPhysicalCardSetName)
         except SQLObjectNotFound:
-            raise RuntimeError('No card set named %s ' % sPhysicalCardSetName)
+            raise IOError('No card set named %s ' % sPhysicalCardSetName)
         oHolder = CardSetWrapper(oPCS)
         oWriter.write(fOut, oHolder)
         fOut.close()
@@ -122,7 +122,7 @@ class PhysicalCardSetXmlFile(object):
     def delete(self):
         """Delete the file"""
         if self.sXmlFile is None:
-            raise RuntimeError("No Filename specified")
+            raise IOError("No Filename specified")
         os.remove(self.sXmlFile)
 
 def write_all_pcs(sDir=''):

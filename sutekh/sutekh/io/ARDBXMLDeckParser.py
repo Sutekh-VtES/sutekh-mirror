@@ -12,8 +12,8 @@ from sutekh.io.ARDBXMLInvParser import ARDBInvXMLState, ARDBXMLInvParser
 class ARDBDeckXMLState(ARDBInvXMLState):
     """Simple State tracker used by the XMLParser"""
     # tag states of interest
-    ROOTTAG, NOTAG, DECKNAME, DECKAUTHOR, DECKCOMMENT, INCARD, CARDNAME, CARDSET, \
-            ADVANCED = range(9)
+    ROOTTAG, NOTAG, DECKNAME, DECKAUTHOR, DECKCOMMENT, INCARD, CARDNAME, \
+            CARDSET, ADVANCED = range(9)
 
     COUNT_KEY = 'count'
 

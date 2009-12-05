@@ -1,3 +1,7 @@
+05 Dec 2009
+ * Make io modules raise IOError rather than RuntimeError, as matching intent
+   better
+
 23 Nov 2009
  * Change card set independance plugin to also use the card set lists widget
 

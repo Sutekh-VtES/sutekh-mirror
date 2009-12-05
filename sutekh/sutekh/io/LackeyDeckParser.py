@@ -43,12 +43,12 @@ class LackeyDeckParser(BaseLineParser):
             try:
                 iNum = int(sNum)
             except ValueError:
-                raise RuntimeError("Illegal number %s for Lacket CCG deck"
+                raise IOError("Illegal number %s for Lacket CCG deck"
                         % sNum)
             if sName in self._dNameCache:
                 sName = self._dNameCache[sName]
         elif sLine != 'Crypt:':
-            raise RuntimeError("Illegal string %s for Lackey CCG deck" %
+            raise IOError("Illegal string %s for Lackey CCG deck" %
                     sLine)
         else:
             # Skip the 'Crypt:' line

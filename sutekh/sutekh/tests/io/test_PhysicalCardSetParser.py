@@ -139,7 +139,7 @@ class PhysicalCardSetParserTests(SutekhTest):
 
         PhysicalCardSet.delete(oPhysCardSet2.id)
         oFile = PhysicalCardSetXmlFile()
-        self.assertRaises(RuntimeError, oFile.read)
+        self.assertRaises(IOError, oFile.read)
         oFile = PhysicalCardSetXmlFile(sTempFileName)
         oFile.read()
         oPhysCardSet2 = IPhysicalCardSet("Test Set 2")
@@ -161,7 +161,7 @@ class PhysicalCardSetParserTests(SutekhTest):
                 'A second line')
 
         oHolder = CardSetHolder()
-        self.assertRaises(RuntimeError, oParser.parse, StringIO(
+        self.assertRaises(IOError, oParser.parse, StringIO(
             '<caards></caards>'), oHolder)
 
     def test_card_set_parser_no_id(self):

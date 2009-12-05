@@ -82,7 +82,7 @@ class AbstractCardSetParserTest(SutekhTest):
 
         PhysicalCardSet.delete(oCardSet1.id)
         oFile = AbstractCardSetXmlFile()
-        self.assertRaises(RuntimeError, oFile.read)
+        self.assertRaises(IOError, oFile.read)
         oFile = AbstractCardSetXmlFile(sTempFileName)
         oFile.read()
         oCardSet1 = IPhysicalCardSet("(ACS) Test Set 1")
@@ -92,7 +92,7 @@ class AbstractCardSetParserTest(SutekhTest):
         self.assertRaises(RuntimeError, oFile.write, '(ACS) Test Set 1')
 
         oHolder = CardSetHolder()
-        self.assertRaises(RuntimeError, oParser.parse, StringIO(
+        self.assertRaises(IOError, oParser.parse, StringIO(
             '<caarrd>%s</caarrd>' % ACS_EXAMPLE_1), oHolder)
 
 

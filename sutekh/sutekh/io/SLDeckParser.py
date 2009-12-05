@@ -62,14 +62,14 @@ class SLDeckParser(CardSetParser):
         if sSection in self._dSectionParsers:
             return self._dSectionParsers[sSection]
         else:
-            raise RuntimeError('Unknown section heading in Secret'
+            raise IOError('Unknown section heading in Secret'
                 ' Library Deck Format')
 
     # pylint: disable-msg=R0201
     # Making these functions for clarity
     def _no_section(self, _sLine, _oHolder):
         """Initial parser -- seeing a line here is an error."""
-        raise RuntimeError('Data line outside of section'
+        raise IOError('Data line outside of section'
             ' for Secret Library Deck format')
 
     def _title_section(self, sLine, oHolder):
@@ -101,7 +101,7 @@ class SLDeckParser(CardSetParser):
         """Parse a crypt entry."""
         oMatch = self.oCardLineRegexp.match(sLine)
         if oMatch is None:
-            raise RuntimeError('Unrecognised crypt line for Secrety Library'
+            raise IOError('Unrecognised crypt line for Secrety Library'
                 ' deck format')
         iNum = int(oMatch.group('num'))
         sName = oMatch.group('name')
@@ -120,7 +120,7 @@ class SLDeckParser(CardSetParser):
         """Parse a library entry."""
         oMatch = self.oCardLineRegexp.match(sLine)
         if oMatch is None:
-            raise RuntimeError('Unrecognised library line for Secrety Library'
+            raise IOError('Unrecognised library line for Secrety Library'
                 ' deck format')
         iNum = int(oMatch.group('num'))
         sName = oMatch.group('name')
