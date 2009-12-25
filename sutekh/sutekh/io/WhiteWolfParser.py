@@ -147,7 +147,7 @@ class CardDict(dict):
             'location' : re.compile('Master[:.] (unique )?[Ll]ocation'),
             'boon' : re.compile('Boon\.'),
             'frenzy' : re.compile('Frenzy\.'),
-            'hunting ground' : re.compile('. Hunting [Gg]round'),
+            'hunting ground' : re.compile('\. Hunting [Gg]round'),
             'haven' : re.compile('Haven\.'),
             'trophy' : re.compile('Master\. Trophy'),
             }
