@@ -149,7 +149,7 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
         return aExpansions
 
     def get_expansion_name(self, oExpansion):
-        """Utility function to return iether the name, or the appropriate
+        """Utility function to return either the name, or the appropriate
            placeholder for oExpansion is None."""
         if oExpansion:
             return oExpansion.name
