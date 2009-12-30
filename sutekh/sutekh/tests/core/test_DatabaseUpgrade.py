@@ -7,6 +7,7 @@
 """Test database upgrading"""
 
 from sutekh.tests.TestCore import SutekhTest
+from sutekh.tests import create_db
 from sutekh.core.DatabaseUpgrade import copy_to_new_abstract_card_db, \
                                         create_final_copy
 from sutekh.core.CardLookup import SimpleLookup
@@ -44,7 +45,7 @@ class DatabaseUpgradeTests(SutekhTest):
         oNewConn = connectionForURI("sqlite://%s" % sDbFile)
         sqlhub.processConnection = oNewConn
 
-        self._setUpDb()
+        create_db()
 
         assert list(AbstractCard.select())
 

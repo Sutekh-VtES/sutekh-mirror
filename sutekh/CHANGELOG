@@ -3,6 +3,8 @@
    exceptions, and allow a log file to be specified.
  * Sort menu items created by plugins in the 'Plugins' and 'Card Set Export'
    menus.
+ * Rework database caching during test runs - depends on nosetests to do
+   the right thing.
 
 05 Dec 2009
  * Make io modules raise IOError rather than RuntimeError, as matching intent

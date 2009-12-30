@@ -259,8 +259,7 @@ Testing Sutekh
 
 Sutekh has a test suite - see the tests directory.
 
-We recommend using nose [1] to run the tests, but they can be run without
-using nose. 
+The test suite requires nose [1] to run.
 
 By default, the tests will use an sqlite memory database, as being the
 simplest, but, as it's often desireable to test against other databases,
@@ -273,6 +272,10 @@ $ nosetests <test to run>
 Note that the test suite creates and drops the tables several times, so it can
 be quite slow. Also, DO NOT run the tests against your personal card database,
 as you will lose data. Use a dedicated test database for this.
+
+Setting SUTEKH_SAVE_DB to yes will preserve the database state at the end of
+the lat test run. This can be combined with the with-ids option for selecing
+which tess to run to save the state after a specific test.
 
 [1] http://somethingaboutorange.com/mrl/projects/nose/
 

@@ -9,25 +9,26 @@
 
 """Base for Sutekh test cases"""
 
-from sutekh.tests.TestData import TEST_CARD_LIST, TEST_RULINGS
-from sutekh.SutekhUtility import read_white_wolf_list, read_rulings, \
-        refresh_tables
-from sutekh.core.SutekhObjects import TABLE_LIST, VersionTable
-from sutekh.io.WwFile import WwFile
-from sqlobject import sqlhub, connectionForURI
+from sutekh.SutekhUtility import refresh_tables
+from sutekh.core.SutekhObjects import PHYSICAL_SET_LIST
+from sqlobject import sqlhub
 import unittest
 import tempfile
 import os
 import StringIO
-from logging import FileHandler
-
-SQLITE_DUMP = None
 
 class SutekhTest(unittest.TestCase):
     """Base class for Sutekh tests.
 
        Define common setup and teardown routines common to test cases.
        """
+
+    TEST_CONN = None
+
+    @classmethod
+    def set_db_conn(cls, oConn):
+        """Set the class connection to the correct global conn for later use"""
+        cls.TEST_CONN = oConn
 
     def _create_tmp_file(self, sData=None):
         """Creates a temporary file with the given data, closes it and returns
@@ -68,36 +69,7 @@ class SutekhTest(unittest.TestCase):
         """Initialises a database with the cardlist and
            rulings.
            """
-        global SQLITE_DUMP
-        oConn = sqlhub.processConnection
-
-        assert refresh_tables(TABLE_LIST, oConn)
-
-        if oConn.dbName != 'sqlite' or SQLITE_DUMP is None:
-            sCardList = self._create_tmp_file(TEST_CARD_LIST)
-            sRulings = self._create_tmp_file(TEST_RULINGS)
-
-            oLogHandler = FileHandler('/dev/null')
-            read_white_wolf_list([WwFile(sCardList)], oLogHandler)
-            read_rulings(WwFile(sRulings), oLogHandler)
-
-            if oConn.dbName == 'sqlite':
-                oRawConn = oConn.getConnection()
-                try:
-                    SQLITE_DUMP = "\n".join(_iterdump(oRawConn))
-                finally:
-                    oConn.releaseConnection(oRawConn)
-        else:
-            for cCls in reversed(TABLE_LIST):
-                cCls.dropTable(ifExists=True)
-
-            VersionTable.dropTable(ifExists=True)
-
-            oRawConn = oConn.getConnection()
-            try:
-                oRawConn.executescript(SQLITE_DUMP)
-            finally:
-                oConn.releaseConnection(oRawConn)
+        assert refresh_tables(PHYSICAL_SET_LIST, sqlhub.processConnection)
 
     def setUp(self):
         """Common setup routine for tests.
@@ -105,11 +77,6 @@ class SutekhTest(unittest.TestCase):
            Initialises a database with the cardlist and rulings.
            """
         self._setUpTemps()
-        # Get the database to use from the environment, defaulting to an
-        # sqlite memory DB
-        sDBUrl = os.getenv('SUTEKH_TEST_DB', "sqlite:///:memory:")
-        oConn = connectionForURI(sDBUrl)
-        sqlhub.processConnection = oConn
         self._setUpDb()
 
     def tearDown(self):
@@ -117,11 +84,9 @@ class SutekhTest(unittest.TestCase):
 
            Base sqlite cleanup.
            """
-        # Clean up database
-        for cCls in reversed(TABLE_LIST):
-            cCls.dropTable(ifExists=True)
-        sqlhub.processConnection = None
         self._tearDownTemps()
+        # Undo any connection fiddling
+        sqlhub.processConnection = self.TEST_CONN
 
     def _round_trip_obj(self, oWriter, oObj):
         """Round trip an object through a temporary file.
