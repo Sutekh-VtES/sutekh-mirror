@@ -576,30 +576,43 @@ class LasombraSales(CardListPlugin, CardListModelListener):
             return None
 
         if self.model is not None:
-            oToggle = gtk.CheckMenuItem("Show Lasombra Prices")
+            oSubMenuItem = gtk.MenuItem("Lasombra Singles Sales")
+            oSubMenu = gtk.Menu()
+            oSubMenuItem.set_submenu(oSubMenu)
+
+            oToggle = gtk.CheckMenuItem("Show Prices")
             oToggle.set_active(False)
             oToggle.connect('toggled', self._toggle_prices)
+            oSubMenu.add(oToggle)
+
             oHide = gtk.CheckMenuItem("Hide cards not listed in the"
                     " Lasombra Inventory")
             oHide.set_active(False)
             oHide.connect('toggled', self._toggle_hide)
-            aMenus = [('Plugins', oToggle), ('Plugins', oHide)]
+            oSubMenu.add(oHide)
+
             if self._cModelType is PhysicalCardSet:
                 oTotal = gtk.CheckMenuItem("Show total cost for card set "
                         "based on the Lasombra Inventory")
                 oTotal.set_active(False)
                 oTotal.connect('toggled', self._toggle_total)
-                aMenus.append(('Plugins', oTotal))
-            return aMenus
+                oSubMenu.add(oTotal)
+
+            return [('Plugins', oSubMenuItem)]
         else:
+            oSubMenuItem = gtk.MenuItem("Lasombra Singles Sales")
+            oSubMenu = gtk.Menu()
+            oSubMenuItem.set_submenu(oSubMenu)
+
             oConfigMenuItem = gtk.MenuItem("Configure Lasombra Sales Plugin")
             oConfigMenuItem.connect("activate", self.config_activate)
+            oSubMenu.add(oConfigMenuItem)
+
             oWarningMenuItem = gtk.MenuItem("Lasombra Sales Plugin Warnings")
             oWarningMenuItem.connect("activate", self.warning_activate)
-            return [
-                ('Plugins', oConfigMenuItem),
-                ('Plugins', oWarningMenuItem),
-            ]
+            oSubMenu.add(oWarningMenuItem)
+
+            return [('Plugins', oSubMenuItem)]
 
     def get_toolbar_widget(self):
         """Overrides method from base class."""
