@@ -42,7 +42,8 @@ For 0.8.0 cycle
       be perfect, but should do OK in most cases)
     * More access to debugging info
       - Make it easier to get relevant info from users
-      - Use logging module to store more info, to be easily extracted
+      - Use logging module to store more info, to be easily
+        extracted (partly done)
       - Do more with the --verbose flag?
     * Improved card set sorting
       - Allow specifying order of columns to use, etc.

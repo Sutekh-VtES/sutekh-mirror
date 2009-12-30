@@ -176,7 +176,7 @@ class CardTextView(gtk.TextView):
 
     # pylint: disable-msg=R0904
     # gtk.Widget, so many public methods
-    def __init__(self, oController, oIconManager, bVerbose):
+    def __init__(self, oController, oIconManager):
         super(CardTextView, self).__init__()
         # Can be styled as frame_name.view
         self.__oController = oController
@@ -187,10 +187,10 @@ class CardTextView(gtk.TextView):
         self.set_cursor_visible(False)
         self.set_wrap_mode(gtk.WRAP_WORD)
         self._oIconManager = oIconManager
-        if bVerbose:
-            oContext = self.get_pango_context()
-            print 'Pango Language : ', oContext.get_language()
-            print 'Pango Font Description : ', oContext.get_font_description()
+        oContext = self.get_pango_context()
+        logging.info('Pango Language : %s', oContext.get_language())
+        logging.info('Pango Font Description : %s',
+                oContext.get_font_description())
         self._oBurnOption = None
         self.update_to_new_db() # lookup burn option
         self.dListeners = {} # dictionary of CardTextViewListeners

@@ -85,7 +85,7 @@ class MultiPaneWindow(gtk.Window):
 
     # pylint: disable-msg=W0201
     # We define attributes here, since this is called after database checks
-    def setup(self, oConfig, bVerbose=False):
+    def setup(self, oConfig):
         """After database checks are passed, setup what we need to display
            data from the database."""
         self._oConfig = oConfig
@@ -97,11 +97,11 @@ class MultiPaneWindow(gtk.Window):
         # Create global icon manager
         self._oIconManager = IconManager(oConfig)
         # Create card text pane
-        self._oCardTextPane = CardTextFrame(self, self._oIconManager, bVerbose)
+        self._oCardTextPane = CardTextFrame(self, self._oIconManager)
 
         # Load plugins
         self._oPluginManager = PluginManager()
-        self._oPluginManager.load_plugins(bVerbose)
+        self._oPluginManager.load_plugins()
         for cPlugin in self._oPluginManager.get_card_list_plugins():
             # Find plugins that will work on the Main Window
             self._aPlugins.append(cPlugin(self, None,
