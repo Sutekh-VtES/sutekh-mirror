@@ -37,6 +37,7 @@ class CardSetMenu(CardListMenu):
         self.create_edit_menu()
         self.create_filter_menu()
         self.create_plugins_menu('_Plugins', self._oFrame)
+        self.sort_menu(self._dMenus['Export Card Set'])
 
     # pylint: disable-msg=W0212
     # We allow access via these properties

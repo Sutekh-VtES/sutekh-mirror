@@ -115,4 +115,26 @@ class SutekhMenu(gtk.MenuBar):
             oPlugin.add_to_menu(self._dMenus, oMenu)
         if len(oMenu.get_children()) == 0:
             oMenuItem.set_sensitive(False)
+        else:
+            self.sort_menu(oMenu)
 
+    @staticmethod
+    def sort_menu(oMenu):
+        """Sort the entries of a sub-menu by the menu text"""
+        def get_name(oWidget):
+            """Get the text label from an menu item by descending the
+               children"""
+            if isinstance(oWidget, gtk.Label):
+                return oWidget.get_text()
+            if not hasattr(oWidget, 'get_children'):
+                return None
+            for oChild in oWidget.get_children():
+                sName = get_name(oChild)
+                if sName:
+                    return sName
+            return None
+
+        aItems = [(get_name(x), x) for x in oMenu.get_children()]
+        aItems.sort()
+        for iPos, (_sText, oItem) in enumerate(aItems):
+            oMenu.reorder_child(oItem, iPos)
