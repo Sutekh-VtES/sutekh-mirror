@@ -25,10 +25,8 @@ class ZipFileWrapperTest(SutekhTest):
 
     def test_zip_file(self):
         """Test zip file handling"""
-        # pylint: disable-msg=E1101, R0915, R0914
+        # pylint: disable-msg=E1101
         # E1101: SQLObject + PyProtocols magic confuses pylint
-        # R0915, R0914: Want a long, sequential test case to minimise
-        # repeated setups, so it has lots of lines + variables
         sTempFileName =  self._create_tmp_file()
         oZipFile = ZipFileWrapper(sTempFileName)
         aPhysCards = get_phys_cards()
@@ -102,9 +100,42 @@ class ZipFileWrapperTest(SutekhTest):
         self.assertEqual(len(oPhysCardSet1.cards), 6)
         self.assertEqual(len(oPhysCardSet2.cards), 5)
 
+    def test_read_single(self):
+        """Check read_single_works"""
+        # pylint: disable-msg=E1101
+        # E1101: SQLObject + PyProtocols magic confuses pylint
+        sTempFileName =  self._create_tmp_file()
+        oZipFile = ZipFileWrapper(sTempFileName)
+        aPhysCards = get_phys_cards()
+
+        oMyCollection = PhysicalCardSet(name='My Collection')
+
+        for oCard in aPhysCards:
+            oMyCollection.addPhysicalCard(oCard.id)
+            oMyCollection.syncUpdate()
+
+        oHandler = SutekhCountLogHandler()
+        oZipFile.do_dump_all_to_zip(oHandler)
+
+        oHolder = oZipFile.read_single_card_set('My_Collection.xml')
+        self.assertEqual(oHolder.name, oMyCollection.name)
+
+        delete_physical_card_set(oMyCollection.name)
+        oHolder.create_pcs()
+        oMyCollection = IPhysicalCardSet('My Collection')
+
+        self.assertEqual(sorted([x.abstractCard.name for x in
+            oMyCollection.cards]), sorted([x.abstractCard.name for x in
+                aPhysCards]))
+
+    def test_old_format(self):
+        """Test that an old zip file loads correctly"""
+        # pylint: disable-msg=E1101
+        # E1101: SQLObject + PyProtocols magic confuses pylint
         # Create a test zipfile with old data
         sPhysicalCards = make_example_pcxml()
 
+        oHandler = SutekhCountLogHandler()
         sTempFileName =  self._create_tmp_file()
         oZipFile = zipfile.ZipFile(sTempFileName, 'w')
         oZipFile.writestr('PhysicalCardList.xml', sPhysicalCards)
