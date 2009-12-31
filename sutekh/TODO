@@ -28,6 +28,8 @@ For 0.8.0 cycle
     + Standardise the reader/writer design for the io files. 
        + Parser: .__init__(), .parse(fIn, oHolder)
        + Writer: .__init__(), .write(fOut, oHolder)
+    * Add automatic detection of file type for import plugin (doesn't have to
+      be perfect, but should do OK in most cases) (GuessFileParser)
 
  - Definite
     * Improve Filter Edit Dialog
@@ -38,8 +40,6 @@ For 0.8.0 cycle
     * Add decent error checking for the io files
     * Redo preferences system. Allow finder grained preferences (save
       groupings, etc per card set)
-    * Add automatic detection of file type for import plugin (doesn't have to
-      be perfect, but should do OK in most cases)
     * More access to debugging info
       - Make it easier to get relevant info from users
       - Use logging module to store more info, to be easily

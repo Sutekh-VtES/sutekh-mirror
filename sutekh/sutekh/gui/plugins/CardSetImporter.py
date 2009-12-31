@@ -17,6 +17,7 @@ from sutekh.io.ELDBDeckFileParser import ELDBDeckFileParser
 from sutekh.io.ELDBInventoryParser import ELDBInventoryParser
 from sutekh.io.JOLDeckParser import JOLDeckParser
 from sutekh.io.LackeyDeckParser import LackeyDeckParser
+from sutekh.io.GuessFileParser import GuessFileParser
 from sutekh.core.SutekhObjects import PhysicalCardSet
 from sutekh.gui.PluginManager import CardListPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog
@@ -48,6 +49,7 @@ class ACSImporter(CardListPlugin):
             'ARDB Inventory XML File': ARDBXMLInvParser,
             'JOL Deck File': JOLDeckParser,
             'Lackey CCG Deck File': LackeyDeckParser,
+            'Guess file format' : GuessFileParser,
         }
         self.oUri = None
         self.oDlg = None
@@ -59,7 +61,7 @@ class ACSImporter(CardListPlugin):
         """Register with the 'Import' Menu"""
         if not self.check_versions() or not self.check_model_type():
             return None
-        oImport = gtk.MenuItem("Import ARDB or ELDB Card Set")
+        oImport = gtk.MenuItem("Import Card Set in other formats")
         oImport.connect("activate", self.make_dialog)
         return ('Import Card Set', oImport)
 
@@ -91,17 +93,22 @@ class ACSImporter(CardListPlugin):
         self.oFileChooser.default_filter()
         self.oDlg.vbox.pack_start(self.oFileChooser)
 
-        # FIXME: Add some sort of 'guess format' option for the default,
-        # rather than the first one in the _dParsers dict.
+        self._oFirstBut = gtk.RadioButton(None, 'Guess file format', False)
+        self._oFirstBut.set_active(True)
+        self.oDlg.vbox.pack_start(self._oFirstBut, expand=False)
+        oTable = gtk.Table(len(self._dParsers) / 2, 2)
+        self.oDlg.vbox.pack_start(oTable)
         oIter = self._dParsers.iterkeys()
+        iXPos, iYPos = 0, 0
         for sName in oIter:
-            self._oFirstBut = gtk.RadioButton(None, sName, False)
-            self._oFirstBut.set_active(True)
-            self.oDlg.vbox.pack_start(self._oFirstBut, expand=False)
-            break
-        for sName in oIter:
+            if sName == 'Guess file format':
+                continue
             oBut = gtk.RadioButton(self._oFirstBut, sName)
-            self.oDlg.vbox.pack_start(oBut, expand=False)
+            oTable.attach(oBut, iXPos, iXPos + 1, iYPos, iYPos + 1)
+            iXPos += 1
+            if iXPos > 1:
+                iXPos = 0
+                iYPos += 1
 
         self.oDlg.connect("response", self.handle_response)
         self.oDlg.set_size_request(600, 500)

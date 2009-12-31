@@ -1,3 +1,7 @@
+31 Dec 2009
+ * Add GuessFileParser, which attempts to guess the correct file format when
+   importing a card set.
+
 30 Dec 2009
  * Make more use of the logging module to record errors. Log uncaught
    exceptions, and allow a log file to be specified.
