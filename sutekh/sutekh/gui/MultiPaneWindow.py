@@ -175,13 +175,13 @@ class MultiPaneWindow(gtk.Window):
 
     def restore_from_config(self):
         """Restore all the frame form the config file."""
-        # pylint: disable-msg=R0912
-        # Need to consider all these cases, so many branches
+        # pylint: disable-msg=R0912, R0914, W9967
+        # R0912: Need to consider all these cases, so many branches
+        # R0914: Consequently, many local variables
+        # W9967: Need to use keys(), since we remove items from the
+        # dictionary in remove_frame
 
         # Clear out all existing frames
-        # pylint: disable-msg=W9967
-        # Need to use keys(), since we remove items from the dictionary
-        # in remove_frame
         for oFrame in self.dOpenFrames.keys():
             self.remove_frame(oFrame, True)
 
@@ -272,7 +272,8 @@ class MultiPaneWindow(gtk.Window):
         self.replace_with_physical_card_set(sName, oFrame)
 
     def replace_with_pcs_list(self, _oWidget, oOldFrame=None):
-        """Replace the focussed or given pane with the physical card set list."""
+        """Replace the focussed or given pane with the physical card set
+           list."""
         sMenuFlag = "Card Set List"
         if oOldFrame is None:
             oOldFrame = self._oFocussed
@@ -287,7 +288,8 @@ class MultiPaneWindow(gtk.Window):
         self.replace_with_pcs_list(oMenuWidget, oNewPane)
 
     def replace_with_physical_card_list(self, _oWidget, oOldFrame=None):
-        """Replace the currently focussed or given pane with the physical card list."""
+        """Replace the currently focussed or given pane with the physical
+           card list."""
         sMenuFlag = "White Wolf Card List"
         if oOldFrame is None:
             oOldFrame = self._oFocussed
@@ -383,7 +385,8 @@ class MultiPaneWindow(gtk.Window):
     def reset_menu(self):
         """Ensure menu state is correct."""
         for sMenu, fSetSensitiveFunc in self.__dMenus.iteritems():
-            if sMenu in self.dOpenFrames.values() or sMenu in self.dClosedFrames.values():
+            if sMenu in self.dOpenFrames.values() or \
+                    sMenu in self.dClosedFrames.values():
                 fSetSensitiveFunc(False)
             else:
                 fSetSensitiveFunc(True)

@@ -65,11 +65,15 @@ class SutekhTest(unittest.TestCase):
         self._sTempDir = None
         self._aTempFiles = None
 
+    # pylint: disable-msg=R0201
+    # This is a method for convience
     def _setUpDb(self):
         """Initialises a database with the cardlist and
            rulings.
            """
         assert refresh_tables(PHYSICAL_SET_LIST, sqlhub.processConnection)
+
+    # pylint: enable-msg=R0201
 
     def setUp(self):
         """Common setup routine for tests.
