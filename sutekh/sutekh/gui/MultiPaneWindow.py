@@ -185,6 +185,8 @@ class MultiPaneWindow(gtk.Window):
         for oFrame in self.dOpenFrames.keys():
             self.remove_frame(oFrame, True)
 
+        aClosedFrames = []
+
         iWidth, iHeight = self._oConfig.get_window_size()
         if iWidth > 0 and iHeight > 0:
             self.resize(iWidth, iHeight)
@@ -194,16 +196,18 @@ class MultiPaneWindow(gtk.Window):
         for _iNumber, sType, sName, bVert, bClosed, iPos in \
                 self._oConfig.get_all_panes():
             oNewFrame = self.add_pane(bVert, iPos)
+            oRestored = None
             self.win_focus(None, None, oNewFrame)
             if sType == PhysicalCardSet.sqlmeta.table:
                 tInfo = dPaneInfo.get(sName)
-                self.replace_with_physical_card_set(sName, oNewFrame, tInfo)
+                oRestored = self.replace_with_physical_card_set(sName,
+                        oNewFrame, tInfo)
             elif sType == 'Card Text':
-                self.replace_with_card_text(None)
+                oRestored = self.replace_with_card_text(None)
             elif sType == PhysicalCard.sqlmeta.table:
-                self.replace_with_physical_card_list(None)
+                oRestored = self.replace_with_physical_card_list(None)
             elif sType == 'Card Set List':
-                self.replace_with_pcs_list(None)
+                oRestored = self.replace_with_pcs_list(None)
             else:
                 # See if one of the plugins claims this type
                 for oPlugin in self._aPlugins:
@@ -211,6 +215,14 @@ class MultiPaneWindow(gtk.Window):
                     if tResult:
                         oFrame, sMenuFlag = tResult
                         self.replace_frame(oNewFrame, oFrame, sMenuFlag)
+                        oRestored = oFrame
+            if bClosed and oRestored:
+                # Hold off minimizing until all frames are added to avoid
+                # corner cases around the 1st restored frame needing to be
+                # minimised
+                aClosedFrames.append(oRestored)
+        for oFrame in aClosedFrames:
+            self.minimize_to_toolbar(oFrame)
         if not self.dOpenFrames:
             # We always have at least one pane
             self.add_pane()
@@ -262,9 +274,11 @@ class MultiPaneWindow(gtk.Window):
             try:
                 oPane = CardSetFrame(self, sName, tInfo)
                 self.replace_frame(oFrame, oPane, oPane.name)
+                return oPane
             except RuntimeError:
                 # add warning dialog?
                 pass
+        return None
 
     def add_new_physical_card_set(self, sName):
         """Create a new pane and replace with the PCS sName"""
@@ -281,6 +295,8 @@ class MultiPaneWindow(gtk.Window):
             oPane = CardSetManagementFrame(self)
             self.replace_frame(oOldFrame, oPane, sMenuFlag)
             self._oPCSListPane = oPane
+            return oPane
+        return None
 
     def add_new_pcs_list(self, oMenuWidget):
         """Add a new pane and replace it with the physical card set list."""
@@ -296,6 +312,8 @@ class MultiPaneWindow(gtk.Window):
         if sMenuFlag not in self.dOpenFrames.values() and oOldFrame:
             oPane = PhysicalCardFrame(self)
             self.replace_frame(oOldFrame, oPane, sMenuFlag)
+            return oPane
+        return None
 
     def add_new_physical_card_list(self, oMenuWidget):
         """Add a new pane and replace it with the physical card list."""
@@ -309,6 +327,8 @@ class MultiPaneWindow(gtk.Window):
             oOldFrame = self._oFocussed
         if sMenuFlag not in self.dOpenFrames.values() and oOldFrame:
             self.replace_frame(oOldFrame, self._oCardTextPane, sMenuFlag)
+            return self._oCardTextPane
+        return None
 
     def add_new_card_text(self, oMenuWidget):
         """Add a new pane and replace it with the card set pane."""
