@@ -335,7 +335,7 @@ class SecretLibrary(CardListPlugin):
         fIn.seek(0)
 
         if self._check_sl_result(sFirstLine):
-            import_cs(fIn, oParser)
+            import_cs(fIn, oParser, self.parent)
 
     def _import_inventory(self, sApiUrl, dData):
         """Import a Secret Library inventory as a card set."""
@@ -353,7 +353,7 @@ class SecretLibrary(CardListPlugin):
         fIn.seek(0)
 
         if self._check_sl_result(sFirstLine):
-            import_cs(fIn, oParser)
+            import_cs(fIn, oParser, self.parent)
 
     def _export_deck(self, sApiUrl, dData):
         """Export a card set to the Secret Library as a deck."""
