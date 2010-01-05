@@ -70,6 +70,35 @@ def exception_handler(oType, oValue, oTraceback):
     oErrorDlg.run()
     oErrorDlg.destroy()
 
+def setup_logging(oOpts):
+    """Setup the log handling for this run"""
+    # Only log critical messages by default
+    oRootLogger = logging.getLogger()
+    oRootLogger.setLevel(level=logging.CRITICAL)
+    if oOpts.verbose or oOpts.sErrFile:
+        # Change logging level to debug
+        oRootLogger.setLevel(logging.DEBUG)
+        bSkipVerbose = False
+        if oOpts.sErrFile:
+            try:
+                oLogHandler = logging.FileHandler(oOpts.sErrFile)
+                oRootLogger.addHandler(oLogHandler)
+            except IOError:
+                oLogHandler = logging.StreamHandler(sys.stderr)
+                oRootLogger.addHandler(oLogHandler)
+                bSkipVerbose = True # Avoid doubled logging to stderr
+                logging.error('Unable to open log file, logging to stderr',
+                        exc_info=1)
+        if oOpts.verbose and not bSkipVerbose:
+            # Add logging to stderr
+            oLogHandler = logging.StreamHandler(sys.stderr)
+            oRootLogger.addHandler(oLogHandler)
+    else:
+        # Setup fallback logger for critical messages
+        oLogHandler = logging.StreamHandler(sys.stderr)
+        oRootLogger.addHandler(oLogHandler)
+    return oRootLogger
+
 def main(aArgs):
     """Start the Sutekh Gui.
 
@@ -142,31 +171,7 @@ def main(aArgs):
         if not do_db_upgrade(aLowerTables, aHigherTables):
             return 1
 
-    # Only log critical messages by default
-    oRootLogger = logging.getLogger()
-    oRootLogger.setLevel(level=logging.CRITICAL)
-    if oOpts.verbose or oOpts.sErrFile:
-        # Change logging level to debug
-        oRootLogger.setLevel(logging.DEBUG)
-        bSkipVerbose = False
-        if oOpts.sErrFile:
-            try:
-                oLogHandler = logging.FileHandler(oOpts.sErrFile)
-                oRootLogger.addHandler(oLogHandler)
-            except IOError:
-                oLogHandler = logging.StreamHandler(sys.stderr)
-                oRootLogger.addHandler(oLogHandler)
-                bSkipVerbose = True # Avoid doubled logging to stderr
-                logging.error('Unable to open log file, logging to stderr',
-                        exc_info=1)
-        if oOpts.verbose and not bSkipVerbose:
-            # Add logging to stderr
-            oLogHandler = logging.StreamHandler(sys.stderr)
-            oRootLogger.addHandler(oLogHandler)
-    else:
-        # Setup faillback logger for critical messages
-        oLogHandler = logging.StreamHandler(sys.stderr)
-        oRootLogger.addHandler(oLogHandler)
+    _oRootLogger = setup_logging(oOpts)
 
     oMultiPaneWindow.setup(oConfig)
     oMultiPaneWindow.run()
