@@ -44,11 +44,16 @@ class CardSetUtilTests(SutekhTest):
                 sorted([x.name for x in aChildren]))
 
         # Check ordinary deletion
-        delete_physical_card_set(aChildren[0].name)
+        bRes = delete_physical_card_set(aChildren[0].name)
+        self.assertEqual(bRes, True)
         aFoundChildren = find_children(oRoot)
         self.assertEqual(len(aFoundChildren), 3)
         self.assertEqual(sorted([x.name for x in aFoundChildren]),
                 sorted([x.name for x in aChildren[1:]]))
+
+        # Check trying to delete non-existant card set
+        bRes = delete_physical_card_set(aChildren[0].name)
+        self.assertEqual(bRes, False)
 
     def test_loops(self):
         """Test loop detection and loop handling"""
