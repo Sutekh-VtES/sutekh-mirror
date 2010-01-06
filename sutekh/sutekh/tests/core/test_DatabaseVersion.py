@@ -34,6 +34,13 @@ class DatabaseVersionTests(SutekhTest):
                     oTable.tableversion + 2)
             aVersionsFail = range(oTable.tableversion + 1,
                     oTable.tableversion + 5)
+            # Check with cache expired
+            DatabaseVersion.expire_cache()
+            self.assertTrue(oVersion.check_table_in_versions(oTable,
+                aVersions))
+            self.assertFalse(oVersion.check_table_in_versions(oTable,
+                aVersionsFail))
+            # Test with the cache filled
             self.assertTrue(oVersion.check_table_in_versions(oTable,
                 aVersions))
             self.assertFalse(oVersion.check_table_in_versions(oTable,
