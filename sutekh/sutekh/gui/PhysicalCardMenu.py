@@ -9,7 +9,7 @@
 """Menu for the Physical card collection."""
 
 import gtk
-from sutekh.gui.PaneMenu import CardListMenu
+from sutekh.gui.FilteredViewMenu import CardListMenu
 
 class PhysicalCardMenu(CardListMenu):
     """Menu for the Physical card collection.

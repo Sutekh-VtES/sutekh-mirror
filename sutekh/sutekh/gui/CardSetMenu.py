@@ -13,7 +13,7 @@ from sutekh.SutekhUtility import safe_filename
 from sutekh.core.SutekhObjects import PhysicalCardSet
 from sutekh.gui.SutekhFileWidget import ExportDialog
 from sutekh.io.XmlFileHandling import PhysicalCardSetXmlFile
-from sutekh.gui.PaneMenu import CardListMenu
+from sutekh.gui.FilteredViewMenu import CardListMenu
 from sutekh.gui.CardSetListModel import NO_SECOND_LEVEL, SHOW_EXPANSIONS, \
         SHOW_CARD_SETS, EXP_AND_CARD_SETS, CARD_SETS_AND_EXP, THIS_SET_ONLY, \
         ALL_CARDS, PARENT_CARDS, CHILD_CARDS, IGNORE_PARENT, PARENT_COUNT, \

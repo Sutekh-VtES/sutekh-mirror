@@ -1,4 +1,4 @@
-# PaneMenu.py
+# FilteredViewMenu.py
 # -*- coding: utf8 -*-
 # vim:fileencoding=utf8 ai ts=4 sts=4 et sw=4
 # Base class for the frame menu's
@@ -9,19 +9,21 @@
 
 from sutekh.gui.SutekhMenu import SutekhMenu
 
-class PaneMenu(SutekhMenu):
+class FilteredViewMenu(SutekhMenu):
     # pylint: disable-msg=R0904, R0922
     # R0904 - gtk.Widget, so many public methods
     # R0922 - we use this in other files
-    """Base class for individual Frame menus
+    """Base class for individual FilteredView menus
 
        This provides handling for enabling and disabling the menus
-       ability to receive accelerators on focus changes.
+       ability to receive accelerators on focus changes, expanding
+       & collapsing rows, and manging the active filter.
        """
-    def __init__(self, oFrame, oWindow):
-        super(PaneMenu, self).__init__(oWindow)
+    def __init__(self, oFrame, oWindow, oController):
+        super(FilteredViewMenu, self).__init__(oWindow)
         self._oFrame = oFrame
         self.oApply = None
+        self._oController = oController
 
     def create_filter_menu(self):
         """Create the Filter Menu."""
@@ -37,13 +39,13 @@ class PaneMenu(SutekhMenu):
         oMenu = self.create_submenu(self, "_Edit")
         self.add_edit_menu_actions(oMenu)
 
-    def set_active_filter(self, oWidget):
-        """Abstract method to handle filter request events."""
-        raise NotImplementedError
+    def set_active_filter(self, _oWidget):
+        """Set the current filter for the card set."""
+        self._oController.view.get_filter(self)
 
     def toggle_apply_filter(self, oWidget):
-        """Abstract method to handle checkbox events."""
-        raise NotImplementedError
+        """Toggle the filter applied state."""
+        self._oController.view.run_filter(oWidget.active)
 
     def set_apply_filter(self, bState):
         """Set the applied filter state to bState."""
@@ -65,38 +67,6 @@ class PaneMenu(SutekhMenu):
         self.create_menu_item('_Search', oMenu, self.show_search_dialog,
                 '<Ctrl>f')
 
-    def expand_all(self, oWidget):
-        """Expand all the rows in the card set."""
-        raise NotImplementedError
-
-    def collapse_all(self, oWidget):
-        """Collapse all the rows in the card set."""
-        raise NotImplementedError
-
-    def show_search_dialog(self, oWidget):
-        """Show the search dialog"""
-        raise NotImplementedError
-
-class CardListMenu(PaneMenu):
-    # pylint: disable-msg=R0904
-    # R0904 - gtk.Widget, so many public methods
-    """Base class for Card List Menus
-
-       Adds some common methods for dealing with the card lists -
-       copying selections, expanding + collapsing rows, etc.
-       """
-    def __init__(self, oFrame, oWindow, oController):
-        super(CardListMenu, self).__init__(oFrame, oWindow)
-        self._oController = oController
-
-    def toggle_apply_filter(self, oWidget):
-        """Toggle the filter applied state."""
-        self._oController.view.run_filter(oWidget.active)
-
-    def set_active_filter(self, _oWidget):
-        """Set the current filter for the card set."""
-        self._oController.view.get_filter(self)
-
     def expand_all(self, _oWidget):
         """Expand all the rows in the card set."""
         self._oController.view.expand_all()
@@ -105,11 +75,20 @@ class CardListMenu(PaneMenu):
         """Collapse all the rows in the card set."""
         self._oController.view.collapse_all()
 
-    def copy_selection(self, _oWidget):
-        """Copy the current selection to the application clipboard."""
-        self._oController.view.copy_selection()
-
     def show_search_dialog(self, _oWidget):
         """Show the search dialog"""
         self._oController.view.searchdialog.show_all()
+
+class CardListMenu(FilteredViewMenu):
+    # pylint: disable-msg=R0904
+    # R0904 - gtk.Widget, so many public methods
+    """Base class for Card List Menus
+
+       Adds some common methods for dealing with the card lists -
+       copying selections, etc.
+       """
+
+    def copy_selection(self, _oWidget):
+        """Copy the current selection to the application clipboard."""
+        self._oController.view.copy_selection()
 

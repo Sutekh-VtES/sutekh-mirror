@@ -9,18 +9,16 @@
 """Menu for the card set list"""
 
 import gtk
-from sutekh.gui.PaneMenu import PaneMenu
+from sutekh.gui.FilteredViewMenu import FilteredViewMenu
 
-class CardSetManagementMenu(PaneMenu):
+class CardSetManagementMenu(FilteredViewMenu):
     """Card Set List Management menu.
-
-       Allows managing the list of card sets (adding new card sets,
-       opening card sets, deleting card sets) and filtering the list.
        """
     # pylint: disable-msg=R0904
     # gtk.Widget, so many public methods
     def __init__(self, oFrame, oWindow, oController):
-        super(CardSetManagementMenu, self).__init__(oFrame, oWindow)
+        super(CardSetManagementMenu, self).__init__(oFrame, oWindow,
+                oController)
         self.__sName = 'Card Set List'
         self.__sSetTypeName = 'Card Set'
         self._oController = oController
@@ -46,23 +44,3 @@ class CardSetManagementMenu(PaneMenu):
         self.add_common_actions(oMenu)
 
     # pylint: enable-msg=W0201
-
-    def toggle_apply_filter(self, oWidget):
-        """Handle menu toggle events"""
-        self._oController.view.run_filter(oWidget.active)
-
-    def set_active_filter(self, _oWidget):
-        """Handle the menu activate signal"""
-        self._oController.view.get_filter(self)
-
-    def expand_all(self, _oWidget):
-        """Expand all the rows in the card set."""
-        self._oController.view.expand_all()
-
-    def collapse_all(self, _oWidget):
-        """Collapse all the rows in the card set."""
-        self._oController.view.collapse_all()
-
-    def show_search_dialog(self, _oWidget):
-        """Show the search dialog"""
-        self._oController.view.searchdialog.show_all()
