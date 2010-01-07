@@ -10,7 +10,7 @@ import gtk
 from copy import copy
 from sutekh.core.SutekhObjects import PhysicalCardSet, IAbstractCard
 from sutekh.SutekhUtility import is_crypt_card
-from sutekh.gui.PluginManager import CardListPlugin
+from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 
@@ -110,7 +110,7 @@ def _hyper_prob_at_least(aFound, iDraws, aObjects, iTotal, iCurCol=0):
             fProb += _multi_hyper_prob(aThisFound, iDraws, aObjects, iTotal)
     return fProb
 
-class CardDrawSimPlugin(CardListPlugin):
+class CardDrawSimPlugin(SutekhPlugin):
     """Displays the probabilities for drawing cards from the current
        selection."""
     # pylint: disable-msg=R0902

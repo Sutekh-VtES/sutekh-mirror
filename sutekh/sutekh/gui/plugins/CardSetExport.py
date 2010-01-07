@@ -9,7 +9,7 @@
 import gtk
 from sutekh.core.SutekhObjects import PhysicalCardSet
 from sutekh.core.CardSetHolder import CardSetWrapper
-from sutekh.gui.PluginManager import CardListPlugin
+from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.SutekhFileWidget import ExportDialog
 from sutekh.io.WriteJOL import WriteJOL
 from sutekh.io.WriteLackeyCCG import WriteLackeyCCG
@@ -21,7 +21,7 @@ from sutekh.io.WriteArdbText import WriteArdbText
 from sutekh.io.WriteLasombraOrder import WriteLasombraOrder
 from sutekh.SutekhUtility import safe_filename
 
-class CardSetExport(CardListPlugin):
+class CardSetExport(SutekhPlugin):
     """Provides a dialog for selecting a filename, then calls on
        the appropriate writer to produce the required output."""
     dTableVersions = { PhysicalCardSet: [4, 5, 6]}

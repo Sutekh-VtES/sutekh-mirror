@@ -10,7 +10,7 @@ from sutekh.core.SutekhObjects import PhysicalCardSet, \
         MapPhysicalCardToPhysicalCardSet, IPhysicalCardSet
 from sutekh.core.Filters import PhysicalCardSetFilter, \
         FilterAndBox, SpecificCardIdFilter
-from sutekh.gui.PluginManager import CardListPlugin
+from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.CardTextView import CardTextViewListener
 from sutekh.gui.ProgressDialog import ProgressDialog, SutekhCountLogHandler
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
@@ -106,7 +106,7 @@ def _check_exp_name(sExpName, oAbsCard):
             return True
     return False
 
-class StarterInfoPlugin(CardListPlugin, CardTextViewListener):
+class StarterInfoPlugin(SutekhPlugin, CardTextViewListener):
     """Plugin providing access to CardImageFrame."""
     dTableVersions = {PhysicalCardSet : [5, 6]}
     aModelsSupported = ["MainWindow"]

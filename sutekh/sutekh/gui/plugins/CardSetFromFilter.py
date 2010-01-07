@@ -9,10 +9,10 @@
 import gtk
 from sutekh.core.SutekhObjects import PhysicalCardSet, PhysicalCard, \
         IPhysicalCard, IPhysicalCardSet
-from sutekh.gui.PluginManager import CardListPlugin
+from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.GuiCardSetFunctions import create_card_set
 
-class DeckFromFilter(CardListPlugin):
+class DeckFromFilter(SutekhPlugin):
     """Converts a filter into a Card Set."""
 
     dTableVersions = { PhysicalCardSet : [4, 5, 6]}

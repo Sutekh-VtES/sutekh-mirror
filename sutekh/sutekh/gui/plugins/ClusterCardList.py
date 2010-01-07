@@ -13,11 +13,11 @@ from sutekh.core.SutekhObjects import PhysicalCard, \
                                       PhysicalCardSet, \
                                       IPhysicalCard
 from sutekh.core.CardListTabulator import CardListTabulator
-from sutekh.gui.PluginManager import CardListPlugin
+from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 
-class ClusterCardList(CardListPlugin):
+class ClusterCardList(SutekhPlugin):
     """Plugin that attempts to find clusters in the card list.
 
        Allows the user to choose various clustering parameters, such as

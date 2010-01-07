@@ -13,10 +13,10 @@ from sutekh.core.Groupings import CardTypeGrouping, ClanGrouping, \
         CryptLibraryGrouping, NullGrouping, MultiTypeGrouping, \
         SectGrouping, TitleGrouping, CostGrouping, GroupGrouping, \
         ArtistGrouping, KeywordGrouping
-from sutekh.gui.PluginManager import CardListPlugin
+from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog
 
-class GroupCardList(CardListPlugin):
+class GroupCardList(SutekhPlugin):
     """Plugin to allow the user to change how cards are grouped.
 
        Show a dialog which allows the user to select from the avail

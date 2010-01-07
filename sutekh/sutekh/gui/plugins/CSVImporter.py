@@ -11,12 +11,12 @@ import csv
 import gobject
 from sutekh.core.SutekhObjects import PhysicalCardSet
 from sutekh.io.CSVParser import CSVParser
-from sutekh.gui.PluginManager import CardListPlugin
+from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 from sutekh.gui.SutekhFileWidget import SutekhFileButton
 from sutekh.gui.GuiCardSetFunctions import import_cs
 
-class CSVImporter(CardListPlugin):
+class CSVImporter(SutekhPlugin):
     """CSV Import plugin.
 
        Allow the user to select the file, provide information about the

@@ -10,11 +10,11 @@ import gtk
 from sutekh.core.SutekhObjects import PhysicalCardSet
 from sutekh.core.CardSetHolder import CardSetWrapper
 from sutekh.io.WriteCSV import WriteCSV
-from sutekh.gui.PluginManager import CardListPlugin
+from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.SutekhFileWidget import ExportDialog
 from sutekh.SutekhUtility import safe_filename
 
-class CardSetExportCSV(CardListPlugin):
+class CardSetExportCSV(SutekhPlugin):
     """Provides a dialog for selecting a filename, then calls on
        WriteCSV to produce the required output."""
     dTableVersions = { PhysicalCardSet: [4, 5, 6]}

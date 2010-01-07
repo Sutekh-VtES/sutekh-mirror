@@ -14,11 +14,11 @@ import pango
 import gobject
 from sutekh.core.SutekhObjects import PhysicalCard, Clan, ICardType, \
         AbstractCard
-from sutekh.gui.PluginManager import CardListPlugin
+from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 
-class ClanDisciplineStats(CardListPlugin):
+class ClanDisciplineStats(SutekhPlugin):
     """Display discipline spread for all clans.
 
        A dialog listing discipline spreads per clan is shown,

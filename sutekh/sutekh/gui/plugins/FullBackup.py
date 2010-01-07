@@ -5,7 +5,7 @@
 # GPL - see COPYING for details
 """Plugin to wrap zipfile backup and restore methods"""
 
-from sutekh.gui.PluginManager import CardListPlugin
+from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.SutekhDialog import do_complaint_error, do_complaint_warning
 from sutekh.gui.SutekhFileWidget import SutekhFileDialog
 from sutekh.gui.ProgressDialog import ProgressDialog, SutekhCountLogHandler
@@ -14,7 +14,7 @@ import gtk
 import os
 import traceback
 
-class FullBackup(CardListPlugin):
+class FullBackup(SutekhPlugin):
     """Provide access to ZipFileWrapper's backup and restore methods.
 
        Handle GUI aspects associated with restoring (ensuring everything

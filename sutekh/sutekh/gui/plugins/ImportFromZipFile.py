@@ -8,7 +8,7 @@
 import gtk
 import os
 from logging import Logger
-from sutekh.gui.PluginManager import CardListPlugin
+from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 from sutekh.gui.SutekhFileWidget import SutekhFileDialog
 from sutekh.gui.ProgressDialog import ProgressDialog, SutekhCountLogHandler
@@ -27,7 +27,7 @@ def _do_rename_parent(sOldName, sNewName, dRemaining):
             dResult[sName] = tInfo
     return dResult
 
-class ImportFromZipFile(CardListPlugin):
+class ImportFromZipFile(SutekhPlugin):
     """Extract selected card sets from a zip file."""
 
     dTableVersions = {}

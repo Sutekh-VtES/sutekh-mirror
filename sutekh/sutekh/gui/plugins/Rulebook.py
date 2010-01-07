@@ -11,7 +11,7 @@ import os
 import re
 import webbrowser
 import urllib
-from sutekh.gui.PluginManager import CardListPlugin
+from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.FileOrUrlWidget import FileOrUrlWidget
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 from sutekh.SutekhUtility import prefs_dir, ensure_dir_exists
@@ -92,7 +92,7 @@ class RulebookConfigDialog(SutekhDialog):
         return self._dFileSelectors[sName].get_wwfile_data()
 
 
-class RulebookPlugin(CardListPlugin):
+class RulebookPlugin(SutekhPlugin):
     """Plugin allowing downloading of rulebook HTML pages and making them
        available via the Plugins menu.
        """

@@ -10,7 +10,7 @@ import gtk
 import pango
 from sutekh.core.SutekhObjects import PhysicalCardSet, IAbstractCard, \
         IPhysicalCard
-from sutekh.gui.PluginManager import CardListPlugin
+from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.SutekhDialog import do_complaint_error
 
 try:
@@ -35,7 +35,7 @@ def _card_expansion_details(oCard, iMode):
     return ' (Unknown)'
 
 
-class CardSetPrint(CardListPlugin):
+class CardSetPrint(SutekhPlugin):
     """Plugin for printing the card sets.
 
        Use gtk's Printing support to print out a simple list of the cards

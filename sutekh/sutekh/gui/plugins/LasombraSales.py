@@ -15,7 +15,7 @@ import cPickle
 import cgi
 from cStringIO import StringIO
 from sqlobject import SQLObjectNotFound
-from sutekh.gui.PluginManager import CardListPlugin
+from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 from sutekh.gui.CellRendererIcons import CellRendererIcons, SHOW_TEXT_ONLY
 from sutekh.gui.CardListModel import CardListModel, CardListModelListener
@@ -136,7 +136,7 @@ class LasombraWarningsDialog(SutekhDialog):
         self.show_all()
 
 
-class LasombraSales(CardListPlugin, CardListModelListener):
+class LasombraSales(SutekhPlugin, CardListModelListener):
     """Add singles card sales information as extra columns to the card list
        view and allow sorting on these columns.
        """

@@ -15,7 +15,7 @@ import urllib2
 import tempfile
 from sqlobject import SQLObjectNotFound
 from sutekh.core.SutekhObjects import IAbstractCard, IExpansion
-from sutekh.gui.PluginManager import CardListPlugin
+from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.ProgressDialog import ProgressDialog
 from sutekh.gui.CardTextView import CardTextViewListener
 from sutekh.gui.BasicFrame import BasicFrame
@@ -439,7 +439,7 @@ class ImageConfigDialog(SutekhDialog):
         else:
             return 'New directory'
 
-class CardImagePlugin(CardListPlugin):
+class CardImagePlugin(SutekhPlugin):
     """Plugin providing access to CardImageFrame."""
     dTableVersions = {}
     aModelsSupported = ["MainWindow"]

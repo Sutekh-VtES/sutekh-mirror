@@ -55,7 +55,7 @@ class PluginManager(object):
        """
 
     def __init__(self):
-        self._aCardListPlugins = []
+        self._aPlugins = []
 
     def load_plugins(self):
         """Load list of Plugin Classes from plugin dir."""
@@ -80,14 +80,14 @@ class PluginManager(object):
                 continue
 
             # add to appropriate plugin lists
-            if issubclass(cPlugin, CardListPlugin):
-                self._aCardListPlugins.append(cPlugin)
+            if issubclass(cPlugin, SutekhPlugin):
+                self._aPlugins.append(cPlugin)
 
     def get_card_list_plugins(self):
         """Get all the plugins loaded"""
-        return list(self._aCardListPlugins)
+        return list(self._aPlugins)
 
-class CardListPlugin(object):
+class SutekhPlugin(object):
     """Base class for card list plugins."""
     dTableVersions = {}
     aModelsSupported = []

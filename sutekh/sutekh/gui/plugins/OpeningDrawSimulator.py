@@ -10,7 +10,7 @@ import gtk, gobject
 from copy import copy
 from random import choice
 from sutekh.core.SutekhObjects import PhysicalCardSet, IAbstractCard
-from sutekh.gui.PluginManager import CardListPlugin
+from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 from sutekh.core.Filters import CryptCardFilter, MultiCardTypeFilter, \
@@ -123,7 +123,7 @@ def create_view(oStore, sHeading):
 
     return oView
 
-class OpeningHandSimulator(CardListPlugin):
+class OpeningHandSimulator(SutekhPlugin):
     """Simulate opening hands."""
     dTableVersions = {PhysicalCardSet : [4, 5, 6]}
     aModelsSupported = [PhysicalCardSet]

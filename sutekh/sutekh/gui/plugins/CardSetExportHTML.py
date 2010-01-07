@@ -10,13 +10,13 @@ import gtk
 from sutekh.core.SutekhObjects import PhysicalCardSet
 from sutekh.core.CardSetHolder import CardSetWrapper
 from sutekh.io.WriteArdbHTML import WriteArdbHTML
-from sutekh.gui.PluginManager import CardListPlugin
+from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.SutekhDialog import do_complaint_error
 from sutekh.gui.SutekhFileWidget import ExportDialog
 from sutekh.SutekhUtility import safe_filename
 
 
-class CardSetExportHTML(CardListPlugin):
+class CardSetExportHTML(SutekhPlugin):
     """Export a Card set to a 'nice' HTML file.
 
        We create a ElementTree that represents the XHTML file,

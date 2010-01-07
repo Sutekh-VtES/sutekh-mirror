@@ -10,7 +10,7 @@ import gtk
 from sutekh.core.SutekhObjects import PhysicalCard, IPhysicalCard, \
         PhysicalCardSet, IAbstractCard, IPhysicalCardSet
 from sutekh.core.Filters import PhysicalCardSetFilter
-from sutekh.gui.PluginManager import CardListPlugin
+from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 from sutekh.gui.CardSetsListView import CardSetsListView
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
@@ -55,7 +55,7 @@ def _get_card_set_list(aCardSetNames, bUseExpansions):
     return (dDifferences, dCommon)
 
 
-class CardSetCompare(CardListPlugin):
+class CardSetCompare(SutekhPlugin):
     """Compare Two Card Sets
 
        Display a gtk.Notebook containing tabs for common cards, and cards

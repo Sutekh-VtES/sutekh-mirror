@@ -6,7 +6,7 @@
 """Display extra columns in the tree view"""
 
 import gtk
-from sutekh.gui.PluginManager import CardListPlugin
+from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog
 from sutekh.gui.CellRendererIcons import CellRendererIcons, SHOW_TEXT_ONLY, \
         SHOW_ICONS_ONLY, SHOW_ICONS_AND_TEXT
@@ -16,7 +16,7 @@ from sqlobject import SQLObjectNotFound
 
 SORT_COLUMN_OFFSET = 100 # ensure we don't clash with other extra columns
 
-class ExtraCardViewColumns(CardListPlugin):
+class ExtraCardViewColumns(SutekhPlugin):
     """Add extra columns to the card list view.
 
        Allow the card list to be sorted on these columns

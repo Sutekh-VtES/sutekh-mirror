@@ -19,7 +19,7 @@ from sutekh.io.SLDeckParser import SLDeckParser
 from sutekh.io.SLInventoryParser import SLInventoryParser
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 from sutekh.gui.GuiCardSetFunctions import import_cs
-from sutekh.gui.PluginManager import CardListPlugin
+from sutekh.gui.PluginManager import SutekhPlugin
 
 class ImportExportBase(SutekhDialog):
     # pylint: disable-msg=R0904, R0902
@@ -197,7 +197,7 @@ class ExportDialog(ImportExportBase):
         return self._oPurge.get_active()
 
 
-class SecretLibrary(CardListPlugin):
+class SecretLibrary(SutekhPlugin):
     """Provides ability to export and import cards directly
        to and from the Secret Library.
        """

@@ -10,7 +10,7 @@
 import gtk
 from sutekh.core.SutekhObjects import PhysicalCardSet, IPhysicalCardSet
 from sutekh.core.Filters import ParentCardSetFilter
-from sutekh.gui.PluginManager import CardListPlugin
+from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.CardSetsListView import CardSetsListView
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint, \
         do_complaint_error
@@ -114,7 +114,7 @@ def _test_card_sets(aCardSetNames, oParentCS):
         sMessage = "No cards missing from %s" % oParentCS.name
         do_complaint(sMessage, gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, True)
 
-class CardSetIndependence(CardListPlugin):
+class CardSetIndependence(SutekhPlugin):
     """Provides a plugin for testing whether card sets are independant.
 
        Independence in this cases means that there are enought cards in

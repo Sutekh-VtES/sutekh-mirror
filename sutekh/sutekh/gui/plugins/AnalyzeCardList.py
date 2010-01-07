@@ -16,7 +16,7 @@ from sutekh.core.SutekhObjects import PhysicalCardSet, \
         IAbstractCard, IPhysicalCard, IExpansion, CRYPT_TYPES
 from sutekh.core.Filters import CardTypeFilter, CardTextFilter
 from sutekh.core.Abbreviations import Titles
-from sutekh.gui.PluginManager import CardListPlugin
+from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog
 from sutekh.gui.MultiSelectComboBox import MultiSelectComboBox
 
@@ -333,7 +333,7 @@ class DisciplineNumberSelect(gtk.HBox):
         return aTheseDiscs
 
 
-class AnalyzeCardList(CardListPlugin):
+class AnalyzeCardList(SutekhPlugin):
     """Plugin to analyze card sets.
 
       Displays various interesting stats, and does a Happy Family

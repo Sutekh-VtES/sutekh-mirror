@@ -9,7 +9,7 @@
 
 import gtk
 import pango
-from sutekh.gui.PluginManager import CardListPlugin
+from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog
 from sutekh.gui.CellRendererIcons import CellRendererIcons, SHOW_TEXT_ONLY
 from sutekh.core.SutekhObjects import PhysicalCardSet, IPhysicalCardSet, \
@@ -36,7 +36,7 @@ def _format_number(iCount):
         return [""]
     return [str(iCount)]
 
-class ExtraCardSetListViewColumns(CardListPlugin):
+class ExtraCardSetListViewColumns(SutekhPlugin):
     """Add extra columns to the card set list view.
 
        Allow the card set list to be sorted on these columns

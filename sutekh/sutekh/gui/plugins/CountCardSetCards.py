@@ -9,7 +9,7 @@
 
 import gtk
 from sutekh.core.SutekhObjects import PhysicalCardSet, IAbstractCard
-from sutekh.gui.PluginManager import CardListPlugin
+from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.CardListModel import CardListModelListener
 from sutekh.SutekhUtility import is_crypt_card
 
@@ -18,7 +18,7 @@ TOT_TOOLTIP = 'Total Cards: <b>%(tot)d</b> (Library: <b>%(lib)d</b>' \
         ' Crypt: <b>%(crypt)d</b>)'
 
 
-class CountCardSetCards(CardListPlugin, CardListModelListener):
+class CountCardSetCards(SutekhPlugin, CardListModelListener):
     """Listen to changes on the card list views, and display a toolbar
        containing a label with a running count of the cards in the card
        set, the library cards and the crypt cards

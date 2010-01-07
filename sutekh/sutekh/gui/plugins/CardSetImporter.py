@@ -19,12 +19,12 @@ from sutekh.io.JOLDeckParser import JOLDeckParser
 from sutekh.io.LackeyDeckParser import LackeyDeckParser
 from sutekh.io.GuessFileParser import GuessFileParser
 from sutekh.core.SutekhObjects import PhysicalCardSet
-from sutekh.gui.PluginManager import CardListPlugin
+from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog
 from sutekh.gui.GuiCardSetFunctions import import_cs
 from sutekh.gui.SutekhFileWidget import SutekhFileWidget
 
-class ACSImporter(CardListPlugin):
+class ACSImporter(SutekhPlugin):
     """Convert a HTML or text deck into an ACS.
 
        Handles the most common formats, and allows the user to choose
