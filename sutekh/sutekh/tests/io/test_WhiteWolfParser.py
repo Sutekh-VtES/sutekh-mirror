@@ -492,9 +492,18 @@ class WhiteWolfParserTests(SutekhTest):
         # Check life & keywords for Raven Spy
         oRaven = IAbstractCard('Raven Spy')
         self.failUnless(IKeyword('animal') in oRaven.keywords)
+        self.failUnless(IKeyword('1 strength') not in oRaven.keywords)
         self.assertEqual(oRaven.life, 1)
         self.assertEqual(oRaven.cost, 1)
         self.assertEqual(oRaven.costtype, 'blood')
+
+        # Check special cases
+        oRetainer = IAbstractCard('Ghoul Retainer')
+        self.failUnless(IKeyword('1 strength') in oRetainer.keywords)
+        oHighTop = IAbstractCard('High Top')
+        self.failUnless(IKeyword('1 intercept') in oHighTop.keywords)
+        oGypsies = IAbstractCard('Gypsies')
+        self.failUnless(IKeyword('1 stealth') in oGypsies.keywords)
 
 
 if __name__ == "__main__":
