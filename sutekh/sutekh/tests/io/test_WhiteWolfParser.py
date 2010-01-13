@@ -54,6 +54,7 @@ class WhiteWolfParserTests(SutekhTest):
         u'Earl "Shaka74" Deams',
         u"Enkidu, The Noah",
         u"Fidus, The Shrunken Beast",
+        u"Ghoul Retainer",
         u"Gracis Nostinus",
         u"Gypsies",
         u"High Top",

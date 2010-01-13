@@ -702,7 +702,6 @@ Rock Cat may enter combat with any ready minion controlled by another Methuselah
 <tr><td width=1><span class="key">Artist:</span> </td><td>Jeff Holt; Dan Frazier<br /></td></tr>
 </table>
 </p>
-<p>
 
 <p>
 <a name="Ghoul_Retainer"><span class="cardname">Ghoul Retainer</span></a>
