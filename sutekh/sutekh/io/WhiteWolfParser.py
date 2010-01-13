@@ -158,6 +158,12 @@ class CardDict(dict):
             'frenzy' : re.compile('Frenzy\.'),
             }
 
+    # Special cases that aren't handled by the general code
+    dKeywordSpecial = {
+            'Gypsies' : ['1 stealth'],
+            'High Top' : ['1 intercept'],
+            'Ghoul Retainer' : ['1 strength'],
+            }
 
     def __init__(self, oLogger):
         super(CardDict, self).__init__()
@@ -186,7 +192,6 @@ class CardDict(dict):
         # Restrict ourselves to text before Superior disciplines
         sText = re.split('\[[A-Z]{3}\]', self['text'])[0]
         # Annoyingly not standardised
-        # FIXME: Allies with stealth/intercept, the Ghoul Retainer are missed
         oDetail1Rgx = re.compile('\. (\d strength), (\d bleed)[\.,]')
         oDetail2Rgx = re.compile('\. (\d bleed), (\d strength)[\.,]')
         oMatch = self.oLifeRgx.search(sText)
@@ -206,6 +211,9 @@ class CardDict(dict):
         for sKeyword, oRegexp in self.dLibProperties.iteritems():
             oMatch = oRegexp.search(sText)
             if oMatch:
+                self._add_keyword(oCard, sKeyword)
+        if self['name'] in self.dKeywordSpecial:
+            for sKeyword in self.dKeywordSpecial[self['name']]:
                 self._add_keyword(oCard, sKeyword)
 
     def _find_card_keywords(self, oCard, dProps):

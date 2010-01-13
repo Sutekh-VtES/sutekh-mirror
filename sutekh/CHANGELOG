@@ -1,3 +1,6 @@
+13 Jan 2009
+ * Add special case list to handle Ghoul Retainer, High Top & Gypsies
+
 31 Dec 2009
  * Add GuessFileParser, which attempts to guess the correct file format when
    importing a card set.
