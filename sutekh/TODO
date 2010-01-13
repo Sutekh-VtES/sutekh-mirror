@@ -11,32 +11,8 @@ For 0.8.0 cycle
        [ implement a plugin which can filter out what a set of crypt
          cards can play first ]
 
- - Done
-    + Remove/Relax limits in the database (Card set names, etc.)
-    + Add PhysicalCard and AbstractCard to the CardListModel columns.
-    - Parts of add more info to the database:
-          - Migrate burnoption to keyword.
-          - Base bleed, strength, stealth, intercept keywords
-              - "0 bleed", "1 bleed", "2 bleed", etc.
-              - "0 strength", "1 strength", "X strength", etc.
-              - "1 stealth", "1 intercept".
-          - Master keywords (trifle, out-of-turn, discipline, location, etc.)
-          - Equipment keywords (gun, melee weapon, vehicle, etc.)
-          - Parse artist info from the cardlist
-          - Ally/Retainer life ?
-              - Put base ally / retainer life into existing life column.
-    + Standardise the reader/writer design for the io files. 
-       + Parser: .__init__(), .parse(fIn, oHolder)
-       + Writer: .__init__(), .write(fOut, oHolder)
-    * Add automatic detection of file type for import plugin (doesn't have to
-      be perfect, but should do OK in most cases) (GuessFileParser)
-
  - Definite
     * Improve Filter Edit Dialog
-    + Add more info to the database. At least some of
-       + Additional keywords (somewhat done)
-          - Corner cases for keywords (Ghoul retainer strength, High Top
-            intercept, etc.)
     * Add decent error checking for the io files
     * Redo preferences system. Allow finder grained preferences (save
       groupings, etc per card set)
@@ -45,8 +21,6 @@ For 0.8.0 cycle
       - Use logging module to store more info, to be easily
         extracted (partly done)
       - Do more with the --verbose flag?
-    * Improved card set sorting
-      - Allow specifying order of columns to use, etc.
     * Use card set list view widget in place of long card set name lists
       everywhere
 
@@ -55,7 +29,8 @@ For 0.8.0 cycle
 
  - Nice to have
     * Add ways of specifying more limited test data sets
-    * Address code duplication issues - especially io module & Filter tests (largely done)
+    * Address code duplication issues - especially io module & Filter
+      tests (largely done)
     * Abstract Card Editor
     * Real plugin support
       - and mechanism for plugins to provide their own documentation to the
@@ -67,6 +42,8 @@ For 0.8.0 cycle
     * Add more keyboard shortcuts
     * Right-click context menus
     * Make MultiSelectCombo less evil (turn it into a proper widget?)
+    * Improved card set sorting
+      - Allow specifying order of columns to use, etc.
 
 * Post 0.8
   * Allow colouring options for the cards
@@ -85,8 +62,7 @@ Backend:
 Code Cleanup
  * Refactor gui classes somewhat - there's a fair bit code duplication ATM
    between the different View-Window-Controller sets for instance, and this
-   looks like something worth addressing
-   - Common base class for the TreeViews?
+   looks like something worth addressing (partly done, could use further work)
  * More tests
  * MultiPaneWindow mixes code for handling the widget hopping and application
    code - these should be seperated.
@@ -100,7 +76,7 @@ Gui (Functionality):
 Gui (Presentation):
  * Cleanup various dialogs, including
    * Unify some of the other dialogs and make various bits more reusable 
-     (cf. CreateCardSetDialog hack in plugins)
+     (cf. CreateCardSetDialog hack in plugins) (largely done)
  * Clean up the card set controller/model/view interactions
    - CardSetManagement stuff is still rather tangled
  * Parse in a GTK rc file? (http://www.moeraki.com/pygtktutorial/pygtk2tutorial/ch-GtkRcFiles.html)
@@ -114,5 +90,6 @@ Other Tasks:
 Upstream:
  * File GTK bugs for:
    * TreeView jumping.
-   * TreeView search pop-up not working under Windows. 
+   * TreeView search pop-up not working under Windows. (apparently fixed in
+     recent gtk versions)
 
