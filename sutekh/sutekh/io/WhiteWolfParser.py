@@ -159,10 +159,16 @@ class CardDict(dict):
             }
 
     # Special cases that aren't handled by the general code
-    dKeywordSpecial = {
+    dAllyKeywordSpecial = {
             'Gypsies' : ['1 stealth'],
             'High Top' : ['1 intercept'],
             'Ghoul Retainer' : ['1 strength'],
+            }
+    # These vampires aren't templated as normal
+    dCryptKeywordSpecial = {
+            'Spider-Killer' : {'stealth' : 1},
+            'Muaziz, Archon of Ulugh Beg' : {'stealth' : 1},
+            'Rebekka, Chantry Elder of Munich' : { 'stealth' : 1},
             }
 
     def __init__(self, oLogger):
@@ -174,6 +180,11 @@ class CardDict(dict):
         """Extract the bleed, strength & stealth keywords from the card text"""
         dKeywords = {'bleed' : 1, 'strength' : 1, 'stealth' : 0,
                 'intercept' : 0}
+        # Correct special cases
+        if self['name'] in self.dCryptKeywordSpecial:
+            for sKeyword, iVal in \
+                    self.dCryptKeywordSpecial[self['name']].iteritems():
+                dKeywords[sKeyword] = iVal
         # Make sure we don't detect merged properties
         sText = self['text'].split('[MERGED]')[0]
         for sNum, sType in self.oCryptInfoRgx.findall(sText):
@@ -212,8 +223,8 @@ class CardDict(dict):
             oMatch = oRegexp.search(sText)
             if oMatch:
                 self._add_keyword(oCard, sKeyword)
-        if self['name'] in self.dKeywordSpecial:
-            for sKeyword in self.dKeywordSpecial[self['name']]:
+        if self['name'] in self.dAllyKeywordSpecial:
+            for sKeyword in self.dAllyKeywordSpecial[self['name']]:
                 self._add_keyword(oCard, sKeyword)
 
     def _find_card_keywords(self, oCard, dProps):

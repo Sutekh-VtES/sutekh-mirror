@@ -1,6 +1,7 @@
 20 Jan 2010
  * Remove Lasombra order export plugin, since the Lasombra no longer accepts
    orders for singles.
+ * Add some more keyword special cases.
 
 13 Jan 2010
  * Add special case list to handle Ghoul Retainer, High Top & Gypsies
