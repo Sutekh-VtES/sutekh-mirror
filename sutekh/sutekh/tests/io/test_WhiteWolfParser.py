@@ -72,6 +72,7 @@ class WhiteWolfParserTests(SutekhTest):
         u"Political Hunting Ground",
         u"Predator's Communion",
         u"Raven Spy",
+        u"Rebekka, Chantry Elder of Munich",
         u"Rock Cat",
         u'Scapelli, The Family "Mechanic"',
         u"Sha-Ennu",
@@ -504,6 +505,8 @@ class WhiteWolfParserTests(SutekhTest):
         self.failUnless(IKeyword('1 intercept') in oHighTop.keywords)
         oGypsies = IAbstractCard('Gypsies')
         self.failUnless(IKeyword('1 stealth') in oGypsies.keywords)
+        oRebekka = IAbstractCard('Rebekka, Chantry Elder of Munich')
+        self.failUnless(IKeyword('1 stealth') in oRebekka.keywords)
 
 
 if __name__ == "__main__":

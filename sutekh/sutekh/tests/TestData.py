@@ -780,6 +780,19 @@ Put this card on a vampire. This vampire gains 1 level of Necromancy [nec]. Capa
 </table>
 </p>
 
+<p>
+<a name="Rebekka_Chantry_Elder_of_Munich"><span class="cardname">Rebekka, Chantry Elder of Munich</span></a>
+<span class="exp">[DS:V, CE:PTr]</span><br />
+<table border=0 cellpadding=0 cellspacing=0><tr><td width=1><span class="key">Cardtype:</span> </td><td>Vampire<br /></td></tr>
+<tr><td width=1><span class="key">Clan:</span> </td><td>Tremere<br /></td></tr>
+<tr><td width=1><span class="key">Group:</span> </td><td>2<br /></td></tr>
+<tr><td width=1><span class="key">Capacity:</span> </td><td>8<br /></td></tr>
+<tr><td width=1><span class="key">Discipline:</span> </td><td>pot AUS PRE THA<br /></td></tr>
+<tr><td colspan=2><b>Camarilla:</b> Rebekka gets +1 stealth on each of her actions. Rebekka gets +1 bleed when bleeding a Methuselah who controls a ready Malkavian.<br />
+<tr><td width=1><span class="key">Artist:</span> </td><td>Anson Maddocks<br /></ td></tr>
+</table>
+</p>
+
 </td></tr>
 </table></body></html>
 """

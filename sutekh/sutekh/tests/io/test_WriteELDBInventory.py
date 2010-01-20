@@ -76,6 +76,7 @@ EXPECTED = """"ELDB - Inventory"
 "Rock Cat",0,0,"","Library"
 "Enkidu, The Noah",0,0,"","Crypt"
 "Fidus, The Shrunken Beast",0,0,"","Crypt"
+"Rebekka, Chantry Elder of Munich",0,0,"","Crypt"
 """
 
 class ELDBInventoryWriterTests(SutekhTest):
