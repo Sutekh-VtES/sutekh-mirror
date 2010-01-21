@@ -77,15 +77,24 @@ class FilteredView(gtk.TreeView):
            """
         # Internal helper functions
         # See what's expanded
+        sCurId = None
         aExpandedSet = self._get_expanded_list()
         if bRestoreSelection:
             aSelectedRows = self._get_selected_rows()
+        oCurPath, _oCol = self.get_cursor()
+        if oCurPath:
+            sCurId = self.get_iter_identifier(
+                    self._oModel.get_iter(oCurPath))
         # Reload, but use cached info
         self.load()
         # Re-expand stuff
         self._expand_list(aExpandedSet)
         if bRestoreSelection and aSelectedRows:
             self._reset_selected_rows(aSelectedRows)
+        if oCurPath:
+            # Restore cursor position if possible
+            self._oModel.foreach(self._restore_cursor, sCurId)
+
 
     # Filtering
 
@@ -163,6 +172,13 @@ class FilteredView(gtk.TreeView):
         sKey = self.get_iter_identifier(oIter)
         if sKey in aSelectedSet:
             self._oSelection.select_path(oPath)
+        return False
+
+    def _restore_cursor(self, _oModel, oPath, oIter, sCursorId):
+        """Select the rows listed in aSelectedSet"""
+        sKey = self.get_iter_identifier(oIter)
+        if sKey == sCursorId:
+            self.set_cursor(oPath)
         return False
 
     def _set_row_expanded_status(self, _oModel, oPath, oIter, aExpandedSet):
