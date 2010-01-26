@@ -12,6 +12,36 @@ from sutekh.gui.SutekhFileWidget import SutekhFileButton
 from sutekh.io.WwFile import WwFile
 from sutekh.gui.ProgressDialog import ProgressDialog
 
+def fetch_data(oFile):
+    """Fetch data from a file'ish object (WwFile, urlopen or file)"""
+    if hasattr(oFile, 'info') and callable(oFile.info):
+        sLength = oFile.info().getheader('Content-Length')
+    else:
+        sLength = None
+
+    if sLength:
+        aData = []
+        iLength = int(sLength)
+        oProgress = ProgressDialog()
+        oProgress.set_description('Download progress')
+        iTotal = 0
+        bCont = True
+        while bCont:
+            sInf = oFile.read(10000)
+            iTotal += 10000
+            oProgress.update_bar(float(iTotal) / iLength)
+            if sInf:
+                aData.append(sInf)
+            else:
+                bCont = False
+                oProgress.destroy()
+        sData = ''.join(aData)
+    else:
+        # Just try and download
+        sData = oFile.read()
+    return sData
+
+
 class FileOrUrlWidget(gtk.VBox):
     """Compound widget for loading a file from either a URL or a local file."""
     # pylint: disable-msg=R0904
@@ -126,33 +156,8 @@ class FileOrUrlWidget(gtk.VBox):
         sUrl, bUrl = self.get_file_or_url()
 
         oFile = WwFile(sUrl, bUrl=bUrl).open()
-        if hasattr(oFile, 'info') and callable(oFile.info):
-            sLength = oFile.info().getheader('Content-Length')
-        else:
-            sLength = None
 
-        if sLength:
-            aData = []
-            iLength = int(sLength)
-            oProgress = ProgressDialog()
-            oProgress.set_description('Download progress')
-            iTotal = 0
-            bCont = True
-            while bCont:
-                sInf = oFile.read(10000)
-                iTotal += 10000
-                oProgress.update_bar(float(iTotal) / iLength)
-                if sInf:
-                    aData.append(sInf)
-                else:
-                    bCont = False
-                    oProgress.destroy()
-            sData = ''.join(aData)
-        else:
-            # Just try and download
-            sData = oFile.read()
-
-        return sData
+        return fetch_data(oFile)
 
     def get_binary_data(self):
         """Open the selected file and retrieve the binary data.
@@ -166,34 +171,5 @@ class FileOrUrlWidget(gtk.VBox):
         else:
             oFile = file(sUrl, "rb")
 
-        # pylint: disable-msg=E1103
-        # hasattr check means this is safe
-        if hasattr(oFile, 'info') and callable(oFile.info):
-            sLength = oFile.info().getheader('Content-Length')
-        else:
-            sLength = None
+        return fetch_data(oFile)
 
-        # pylint: enable-msg=E1103
-
-        if sLength:
-            aData = []
-            iLength = int(sLength)
-            oProgress = ProgressDialog()
-            oProgress.set_description('Download progress')
-            iTotal = 0
-            bCont = True
-            while bCont:
-                sInf = oFile.read(10000)
-                iTotal += 10000
-                oProgress.update_bar(float(iTotal) / iLength)
-                if sInf:
-                    aData.append(sInf)
-                else:
-                    bCont = False
-                    oProgress.destroy()
-            sData = ''.join(aData)
-        else:
-            # Just try and download
-            sData = oFile.read()
-
-        return sData
