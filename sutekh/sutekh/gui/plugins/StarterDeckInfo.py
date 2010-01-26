@@ -19,17 +19,23 @@ from sutekh.core.CardSetUtilities import delete_physical_card_set, \
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
 from sutekh.gui.GuiCardSetFunctions import reparent_all_children, \
         update_open_card_sets
-from sutekh.SutekhUtility import prefs_dir, ensure_dir_exists
+from sutekh.gui.FileOrUrlWidget import FileOrUrlWidget, fetch_data
 import re
 import gtk
 import urllib2
-import tempfile
 from logging import Logger
+from StringIO import StringIO
 
 class StarterConfigDialog(SutekhDialog):
     # pylint: disable-msg=R0904
     # R0904 - gtk Widget, so has many public methods
     """Dialog for configuring the Starter plugin."""
+
+    sDocUrl = 'http://sourceforge.net/apps/trac/sutekh/wiki/' \
+            'UserDocumentation?format=txt'
+
+    sZipUrlBase = 'http://sourceforge.net/apps/trac/sutekh/raw-attachment'
+
     def __init__(self, oParent, bFirstTime=False):
         super(StarterConfigDialog, self).__init__(
                 'Configure Stater Info Plugin', oParent,
@@ -44,52 +50,52 @@ class StarterConfigDialog(SutekhDialog):
             oDescLabel.set_markup('<b>Choose how to configure the starter info'
                     ' plugin</b>\nChoose cancel to skip configuring the '
                     ' plugin\nYou will not be prompted again')
-        self.oChoiceDownload = gtk.RadioButton(
-                label='Download starter info from sourceforge.net')
-        self.oChoiceLocalCopy = gtk.RadioButton(self.oChoiceDownload,
-                label='Add starters from a local zip file')
-        oChoiceBox = gtk.VBox(False, 2)
-        self.oFileChoiceWidget = gtk.FileChooserWidget(
-                action=gtk.FILE_CHOOSER_ACTION_OPEN)
-        self.oChoiceDownload.connect('toggled', self._radio_toggled,
-                oChoiceBox, None)
-        self.oChoiceLocalCopy.connect('toggled', self._radio_toggled,
-                oChoiceBox, self.oFileChoiceWidget)
-
-        self.oChoiceDownload.set_active(True)
+        self.oFileWidget = FileOrUrlWidget(oParent, "Choose localtion for "
+                "Starter decks", { 'Sutekh Wiki' : self.sDocUrl })
         # pylint: disable-msg=E1101
         # pylint doesn't pick up vbox methods correctly
         self.vbox.pack_start(oDescLabel, False, False)
-        self.vbox.pack_start(self.oChoiceDownload, False, False)
-        self.vbox.pack_start(self.oChoiceLocalCopy, False, False)
-        self.vbox.pack_start(oChoiceBox)
-        self.set_size_request(600, 600)
+        self.vbox.pack_start(self.oFileWidget, False, False)
+        self.set_size_request(300, 200)
 
-        oZipFilter = gtk.FileFilter()
-        oZipFilter.add_pattern('*.zip')
-        oZipFilter.add_pattern('*.ZIP')
-        self.oFileChoiceWidget.add_filter(oZipFilter)
+        #oZipFilter = gtk.FileFilter()
+        #oZipFilter.add_pattern('*.zip')
+        #oZipFilter.add_pattern('*.ZIP')
+        #self.oFileWidget.add_filter(oZipFilter)
         self.show_all()
 
-    def _radio_toggled(self, oRadioButton, oChoiceBox, oFileWidget):
-        """Display the correct file widget when radio buttons change"""
-        if oRadioButton.get_active():
-            for oChild in oChoiceBox.get_children():
-                oChoiceBox.remove(oChild)
-            if oFileWidget:
-                oChoiceBox.pack_start(oFileWidget)
-            self.show_all()
+    def _get_zip_data(self):
+        """Extract the zip file from the UserDocumentation page on the
+           wiki"""
+        # Extract the first zip file from this
+        oFile = urllib2.urlopen(self.sDocUrl)
+        for sLine in oFile.readlines():
+            if sLine.find('.zip') != -1:
+                # Extract the zip file name
+                # Assumption - rst attachment, and the 1st zip file in
+                # the list
+                sZipRef = sLine.split('[')[1].split(' ')[0]
+                break
+        # Build up the url
+        sZipRef = sZipRef.replace('attachment:', '')
+        # We need to split off the zip file name and the path bits
+        sZipName, sPath = sZipRef.split(':', 1)
+        sPath = sPath.replace(':', '/')
+        sZipUrl = '/'.join((self.sZipUrlBase, sPath, sZipName))
+        oFile = urllib2.urlopen(sZipUrl)
+        return fetch_data(oFile)
 
-    def get_file(self):
-        """Get the file from oFileChoiceWidget."""
-        return self.oFileChoiceWidget.get_filename()
+    def get_data(self):
+        """Return the zip file data containing the decks"""
+        sFile, _bUrl = self.oFileWidget.get_file_or_url()
+        sData = None
+        if sFile == self.sDocUrl:
+            # Downloading from sutekh wiki, so need magic to get right file
+            sData = self._get_zip_data()
+        elif sFile:
+            sData = self.oFileWidget.get_binary_data()
+        return sData
 
-    def get_choice(self):
-        """Get which of the RadioButtons was active."""
-        if self.oChoiceDownload.get_active():
-            return 'Download'
-        elif self.oChoiceLocalCopy.get_active():
-            return 'Local copy'
 
 def _check_precon(oAbsCard):
     """Check if we have a precon rarity here"""
@@ -113,9 +119,6 @@ class StarterInfoPlugin(SutekhPlugin, CardTextViewListener):
 
     # FIXME: Expose this to the user?
     oStarterRegex = re.compile('^\[(.*)\] (.*) Starter')
-
-    sDocUrl = 'http://sourceforge.net/apps/trac/sutekh/wiki/' \
-            'UserDocumentation?format=txt'
 
     # pylint: disable-msg=W0142
     # ** magic OK here
@@ -180,91 +183,23 @@ class StarterInfoPlugin(SutekhPlugin, CardTextViewListener):
         """Handle the response from the config dialog"""
         iResponse = oDialog.run()
         if iResponse == gtk.RESPONSE_OK:
-            sChoice = oDialog.get_choice()
-            if sChoice == 'Download':
-                if not self._download_file():
-                    do_complaint_error('Unable to successfully download'
-                            ' and install zipfile')
-            elif sChoice == 'Local copy':
-                sFileName = oDialog.get_file()
-                if not self._unzip_file(sFileName):
-                    do_complaint_error('Unable to successfully install '
-                            ' zipfile %s' % sFileName)
+            sData = oDialog.get_data()
+            if not sData:
+                do_complaint_error('Unable to access zipfile data')
+            elif not self._unzip_file(sData):
+                do_complaint_error('Unable to successfully unzip zipfile')
         if self.check_enabled():
             self.oToggle.set_sensitive(True)
         else:
             self.oToggle.set_sensitive(False)
-        # get rid of the dialog
+        # cleanup
         oDialog.destroy()
 
-    def _get_zip_file_name(self):
-        """Extract the zip file from the UserDocumentation page on the
-           wiki"""
-        # Extract the first zip file from this
-        oFile = urllib2.urlopen(self.sDocUrl)
-        sZipUrlBase = 'http://sourceforge.net/apps/trac/sutekh/raw-attachment'
-        for sLine in oFile.readlines():
-            if sLine.find('.zip') != -1:
-                # Extract the zip file name
-                # Assumption - rst attachment, and the 1st zip file in
-                # the list
-                sZipRef = sLine.split('[')[1].split(' ')[0]
-                break
-        # Build up the url
-        sZipRef = sZipRef.replace('attachment:', '')
-        # We need to split off the zip file name and the path bits
-        sZipName, sPath = sZipRef.split(':', 1)
-        sPath = sPath.replace(':', '/')
-        return '/'.join((sZipUrlBase, sPath, sZipName))
-
-    def _download_file(self):
-        """Download a zip file containing the starters."""
-        sUrl = self._get_zip_file_name()
-        oFile = urllib2.urlopen(sUrl)
-        sDownloadDir = prefs_dir('Sutekh')
-        ensure_dir_exists(sDownloadDir)
-        fTemp = tempfile.TemporaryFile()
-        sLength = oFile.info().getheader('Content-Length')
-        if sLength:
-            iLength = int(sLength)
-            oProgress = ProgressDialog()
-            oProgress.set_description('Download progress')
-            iTotal = 0
-            bCont = True
-            while bCont:
-                oInf = oFile.read(10000)
-                iTotal += 10000
-                oProgress.update_bar(float(iTotal) / iLength)
-                if oInf:
-                    fTemp.write(oInf)
-                else:
-                    bCont = False
-            oProgress.destroy()
-        else:
-            # Just try and download
-            fTemp.write(oFile.read())
-        # pylint: disable-msg=W0703
-        # we really do want all the exceptions
-        try:
-            # zipfile will accept file-like objects
-            oZipFile = ZipFileWrapper(fTemp)
-            bResult = self._unzip_heart(oZipFile)
-        except Exception, _oExcept:
-            bResult = False
-        # cleanup file
-        fTemp.close()
-        return bResult
-
-    def _unzip_file(self, sFileName):
-        """Unzip a file containing the images."""
+    def _unzip_file(self, sData):
+        """Unzip a file containing the decks."""
         bResult = False
-        # pylint: disable-msg=W0703
-        # we really do want all the exceptions
-        try:
-            oZipFile = ZipFileWrapper(sFileName)
-            bResult = self._unzip_heart(oZipFile)
-        except Exception, _oExcept:
-            return False
+        oZipFile = ZipFileWrapper(StringIO(sData))
+        bResult = self._unzip_heart(oZipFile)
         return bResult
 
     def _unzip_heart(self, oFile):

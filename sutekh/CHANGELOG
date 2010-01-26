@@ -1,5 +1,6 @@
 26 Jan 2010
  * Combine duplicate code in FileOrUrlWidget
+ * Convert Starter Deck plugin to use FileOrUrlWidget
 
 21 Jan 2010
  * Try to preserve cursor position in reload_keep_expanded.
