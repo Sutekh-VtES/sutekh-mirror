@@ -173,3 +173,13 @@ class FileOrUrlWidget(gtk.VBox):
 
         return fetch_data(oFile)
 
+    # Methods needed by the add_filter utility function in SutekhFileWidget
+
+    def add_filter(self, oFilter):
+        """Add a filter to the file button"""
+        self._oFileButton.add_filter(oFilter)
+
+    def set_filter(self, oFilter):
+        """Set the active filter on the file button"""
+        self._oFileButton.set_filter(oFilter)
+

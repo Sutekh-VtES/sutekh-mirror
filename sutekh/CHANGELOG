@@ -1,3 +1,6 @@
+27 Jan 2010
+ * Add filter to the starter deck file selection widget
+
 26 Jan 2010
  * Combine duplicate code in FileOrUrlWidget
  * Convert Starter Deck plugin to use FileOrUrlWidget

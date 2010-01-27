@@ -20,6 +20,7 @@ from sutekh.io.ZipFileWrapper import ZipFileWrapper
 from sutekh.gui.GuiCardSetFunctions import reparent_all_children, \
         update_open_card_sets
 from sutekh.gui.FileOrUrlWidget import FileOrUrlWidget, fetch_data
+from sutekh.gui.SutekhFileWidget import add_filter
 import re
 import gtk
 import urllib2
@@ -52,16 +53,13 @@ class StarterConfigDialog(SutekhDialog):
                     ' plugin\nYou will not be prompted again')
         self.oFileWidget = FileOrUrlWidget(oParent, "Choose localtion for "
                 "Starter decks", { 'Sutekh Wiki' : self.sDocUrl })
+        add_filter(self.oFileWidget, 'Zip Files', ['*.zip', '*.ZIP'])
         # pylint: disable-msg=E1101
         # pylint doesn't pick up vbox methods correctly
         self.vbox.pack_start(oDescLabel, False, False)
         self.vbox.pack_start(self.oFileWidget, False, False)
         self.set_size_request(300, 200)
 
-        #oZipFilter = gtk.FileFilter()
-        #oZipFilter.add_pattern('*.zip')
-        #oZipFilter.add_pattern('*.ZIP')
-        #self.oFileWidget.add_filter(oZipFilter)
         self.show_all()
 
     def _get_zip_data(self):
