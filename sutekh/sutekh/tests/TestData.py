@@ -793,6 +793,17 @@ Put this card on a vampire. This vampire gains 1 level of Necromancy [nec]. Capa
 </table>
 </p>
 
+<p>
+<a name="Protracted_Investment"><span class="cardname">Protracted Investment</span></a>
+<span class="exp">[Jyhad:C, VTES:C, CE:PTr]</span><br />
+<table border=0 cellpadding=0 cellspacing=0><tr><td width=1><span class="key">Cardtype:</span> </td><td>Master<br /></td></tr>
+<tr><td width=1><span class="key">Cost:</span> </td><td>2 pool<br /></td></tr>
+<tr><td colspan=2><b>Master. Investment.</b><br />
+<span class="clarification">&lt;Put this card in play and&gt;</span> move 5 blood from the blood bank to this card. You may use a master phase action to move 1 blood from this card to your pool. Burn this card when all blood has been removed.<br />
+<tr><td width=1><span class="key">Artist:</span> </td><td>Brian Snoddy<br /></td></tr>
+</table>
+</p>
+
 </td></tr>
 </table></body></html>
 """

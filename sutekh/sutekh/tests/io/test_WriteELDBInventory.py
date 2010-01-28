@@ -77,6 +77,7 @@ EXPECTED = """"ELDB - Inventory"
 "Enkidu, The Noah",0,0,"","Crypt"
 "Fidus, The Shrunken Beast",0,0,"","Crypt"
 "Rebekka, Chantry Elder of Munich",0,0,"","Crypt"
+"Protracted Investment",0,0,"","Library"
 """
 
 class ELDBInventoryWriterTests(SutekhTest):

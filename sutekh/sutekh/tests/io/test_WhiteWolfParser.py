@@ -71,6 +71,7 @@ class WhiteWolfParserTests(SutekhTest):
         u"Pier 13, Port of Baltimore",
         u"Political Hunting Ground",
         u"Predator's Communion",
+        u"Protracted Investment",
         u"Raven Spy",
         u"Rebekka, Chantry Elder of Munich",
         u"Rock Cat",
@@ -507,6 +508,8 @@ class WhiteWolfParserTests(SutekhTest):
         self.failUnless(IKeyword('1 stealth') in oGypsies.keywords)
         oRebekka = IAbstractCard('Rebekka, Chantry Elder of Munich')
         self.failUnless(IKeyword('1 stealth') in oRebekka.keywords)
+        oProtracted = IAbstractCard('Protracted Investment')
+        self.failUnless(IKeyword('investment') in oProtracted.keywords)
 
 
 if __name__ == "__main__":
