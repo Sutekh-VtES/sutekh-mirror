@@ -12,7 +12,7 @@
 try:
     from xml.etree.ElementTree import XMLParser
 except ImportError:
-    from elementtree.ElementTree import XMLParser
+    from elementtree.ElementTree import XMLTreeBuilder as XMLParser
 from xml.parsers.expat import ExpatError
 # pylint: enable-msg=E0611, F0401
 from sutekh.core.SutekhObjects import csv_to_canonical
