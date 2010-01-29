@@ -244,8 +244,11 @@ class LasombraSales(SutekhPlugin, CardListModelListener):
         # W0703: we really do want all the exceptions
         # C0321: pylint false positive - see www.logilab.org/ticket/8764
         try:
-            self.__class__._dPriceCache, self.__class__._aWarnings = \
-                    cPickle.load(fIn)
+            try:
+                self.__class__._dPriceCache, self.__class__._aWarnings = \
+                        cPickle.load(fIn)
+            finally:
+                fIn.close()
         except Exception, _oExcept:
             if self._aWarnings is None:
                 # first time encountering error
@@ -254,8 +257,6 @@ class LasombraSales(SutekhPlugin, CardListModelListener):
                     " correct the problem."
                 self.__class__._aWarnings = [(None, None, sMsg)]
                 do_complaint_error(sMsg)
-        finally:
-            fIn.close()
 
     def _initialize_cache(self, fInventory):
         """Initialize the price information from the Lasombra inventory."""
