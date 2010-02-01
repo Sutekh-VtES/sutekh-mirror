@@ -1,3 +1,7 @@
+01 Feb 2010
+ * Rework card images plugin to use  modified FileOrUrlWidget for UI
+   consistency.
+
 28 Jan 2010
  * Add investment keyword
 

@@ -8,11 +8,12 @@
 
 import gtk
 import urllib2
+import os.path
 from sutekh.gui.SutekhFileWidget import SutekhFileButton
 from sutekh.io.WwFile import WwFile
 from sutekh.gui.ProgressDialog import ProgressDialog
 
-def fetch_data(oFile):
+def fetch_data(oFile, oOutFile=None):
     """Fetch data from a file'ish object (WwFile, urlopen or file)"""
     if hasattr(oFile, 'info') and callable(oFile.info):
         sLength = oFile.info().getheader('Content-Length')
@@ -31,14 +32,24 @@ def fetch_data(oFile):
             iTotal += 10000
             oProgress.update_bar(float(iTotal) / iLength)
             if sInf:
-                aData.append(sInf)
+                if oOutFile:
+                    oOutFile.write(sInf)
+                else:
+                    aData.append(sInf)
             else:
                 bCont = False
                 oProgress.destroy()
-        sData = ''.join(aData)
+        if oOutFile:
+            sData = None
+        else:
+            sData = ''.join(aData)
     else:
         # Just try and download
-        sData = oFile.read()
+        if oOutFile:
+            oOutFile.write(oFile.read())
+            sData = None
+        else:
+            sData = oFile.read()
     return sData
 
 
@@ -159,7 +170,7 @@ class FileOrUrlWidget(gtk.VBox):
 
         return fetch_data(oFile)
 
-    def get_binary_data(self):
+    def get_binary_data(self, oOutFile=None):
         """Open the selected file and retrieve the binary data.
 
            Will attempt to display a progress dialog if the file is a URL.
@@ -171,7 +182,7 @@ class FileOrUrlWidget(gtk.VBox):
         else:
             oFile = file(sUrl, "rb")
 
-        return fetch_data(oFile)
+        return fetch_data(oFile, oOutFile)
 
     # Methods needed by the add_filter utility function in SutekhFileWidget
 
@@ -182,4 +193,68 @@ class FileOrUrlWidget(gtk.VBox):
     def set_filter(self, oFilter):
         """Set the active filter on the file button"""
         self._oFileButton.set_filter(oFilter)
+
+
+class FileOrDirOrUrlWidget(FileOrUrlWidget):
+    """Allow the user to select either a file, an url or a directory"""
+    # pylint: disable-msg=R0904
+    # gtk.Widget, so many public methods
+
+    OTHER_DIR = 'Select directory ...'
+
+    # pylint: disable-msg=R0913, C0103
+    # R0913: Need this many arguments
+    # C0103: Use gtk naming conventions here for consistency when called
+    def __init__(self, oParent, sTitle=None, sDirTitle=None,
+            sDefaultDir=None, dUrls=None, homogeneous=False, spacing=0):
+        """Create a FileOrDirOrUrlWidget.
+           """
+        super(FileOrDirOrUrlWidget, self).__init__(oParent, sTitle, dUrls,
+                homogeneous=homogeneous, spacing=spacing)
+
+        if not sDirTitle:
+            sDirTitle = 'Select directory ...'
+        self._oDirButton = SutekhFileButton(oParent, sDirTitle)
+        self._oDirButton.set_action(gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER)
+        if sDefaultDir and os.path.exists(sDefaultDir) and \
+                os.path.isdir(sDefaultDir):
+            # File widget doesn't like being pointed at non-dirs
+            # when in SELECT_FOLDER mode
+            self._oDirButton.set_current_folder(sDefaultDir)
+
+        self._oSrcCombo.append_text(self.OTHER_DIR)
+
+    # pylint: enable-msg=R0913, C0103
+
+    def _src_combo_updated(self, oSrcCombo):
+        """Handle updating of the selected source combo box."""
+        sName = oSrcCombo.get_active_text()
+
+        super(FileOrDirOrUrlWidget, self)._src_combo_updated(oSrcCombo)
+
+        # Only need to consider this case
+        if sName == self.OTHER_DIR:
+            self._oSubBox.pack_start(self._oDirButton)
+            self._oSubBox.show_all()
+
+    def get_file_or_dir_or_url(self):
+        """Return the selected file name, directory or URL and
+           whether the result represents a URL and whether a directory
+
+           E.g.  ("http://www.example.com/myfile.html", True, False)
+                 ("/home/user/myfile.html", False, False)
+                 ("/home/user/cache/", False, True)
+           The two flags is a bit messy, but keeps similiarties with parent
+           class
+           """
+        sFile, bUrl = self.get_file_or_url()
+        if sFile:
+            # Not the directory case
+            return sFile, bUrl, False
+        # Need to check for the directory case
+        sName = self._oSrcCombo.get_active_text()
+        if sName == self.OTHER_DIR:
+            return self._oDirButton.get_filename(), False, True
+        else:
+            return None, False, False
 

@@ -11,7 +11,6 @@ import gobject
 import unicodedata
 import os
 import zipfile
-import urllib2
 import tempfile
 from sqlobject import SQLObjectNotFound
 from sutekh.core.SutekhObjects import IAbstractCard, IExpansion
@@ -23,6 +22,8 @@ from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_buttons, \
         do_complaint_error
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 from sutekh.SutekhUtility import prefs_dir, ensure_dir_exists
+from sutekh.gui.FileOrUrlWidget import FileOrDirOrUrlWidget
+from sutekh.gui.SutekhFileWidget import add_filter
 
 
 FORWARD, BACKWARD = range(2)
@@ -355,10 +356,15 @@ class CardImageFrame(BasicFrame, CardTextViewListener):
                     tCurSize[1] != self._tPaneSize[1]:
                 self.__redraw(True)
 
+
+
 class ImageConfigDialog(SutekhDialog):
     # pylint: disable-msg=R0904
     # R0904 - gtk Widget, so has many public methods
     """Dialog for configuring the Image plugin."""
+
+    sDefaultUrl = 'http://feldb.extra.hu/pictures.zip'
+
     def __init__(self, oParent, bFirstTime=False):
         super(ImageConfigDialog, self).__init__('Configure Card Images Plugin',
                 oParent, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
@@ -372,72 +378,31 @@ class ImageConfigDialog(SutekhDialog):
             oDescLabel.set_markup('<b>Choose how to configure the cardimages '
                     'plugin</b>\nChoose cancel to skip configuring the '
                     'images plugin\nYou will not be prompted again')
-        self.oChoiceDownload = gtk.RadioButton(
-                label='Download and install cardimages from feldb.extra.hu')
-        self.oChoiceLocalCopy = gtk.RadioButton(self.oChoiceDownload,
-                label='Install images from a local zip file')
-        self.oChoiceNewDir = gtk.RadioButton(self.oChoiceDownload,
-                label='Choose a directory containing the images')
-        oChoiceBox = gtk.VBox(False, 2)
-        self.oDirChoiceWidget = gtk.FileChooserWidget(
-                action=gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER)
-        self.oFileChoiceWidget = gtk.FileChooserWidget(
-                action=gtk.FILE_CHOOSER_ACTION_OPEN)
-        self.oChoiceDownload.connect('toggled', self._radio_toggled,
-                oChoiceBox, None)
-        self.oChoiceLocalCopy.connect('toggled', self._radio_toggled,
-                oChoiceBox, self.oFileChoiceWidget)
-        self.oChoiceNewDir.connect('toggled', self._radio_toggled, oChoiceBox,
-                self.oDirChoiceWidget)
-
-        self.oChoiceDownload.set_active(True)
+        sDefaultDir = oParent.config_file.get_plugin_key('card image path')
+        self.oChoice = FileOrDirOrUrlWidget(oParent, "Choose location for "
+                "images file", "Choose image directory", sDefaultDir,
+                { 'feldb.hu' : self.sDefaultUrl })
+        add_filter(self.oChoice, 'Zip Files', ['*.zip', '*.ZIP'])
         # pylint: disable-msg=E1101
         # pylint doesn't pick up vbox methods correctly
         self.vbox.pack_start(oDescLabel, False, False)
-        self.vbox.pack_start(self.oChoiceDownload, False, False)
-        self.vbox.pack_start(self.oChoiceLocalCopy, False, False)
-        self.vbox.pack_start(self.oChoiceNewDir, False, False)
-        self.vbox.pack_start(oChoiceBox)
-        self.set_size_request(600, 600)
+        self.vbox.pack_start(self.oChoice, False, False)
+        self.set_size_request(400, 200)
 
-        #oDialog.vbox.pack_start(oFileWidget)
-        sPrefsPath = oParent.config_file.get_plugin_key('card image path')
-        if sPrefsPath is not None:
-            if os.path.exists(sPrefsPath) and os.path.isdir(sPrefsPath):
-                # File widget doesn't like being pointed at non-dirs
-                # when in SELECT_FOLDER mode
-                self.oDirChoiceWidget.set_current_folder(sPrefsPath)
-        oZipFilter = gtk.FileFilter()
-        oZipFilter.add_pattern('*.zip')
-        oZipFilter.add_pattern('*.ZIP')
-        self.oFileChoiceWidget.add_filter(oZipFilter)
         self.show_all()
 
-    def _radio_toggled(self, oRadioButton, oChoiceBox, oFileWidget):
-        """Display the correct file widget when radio buttons change"""
-        if oRadioButton.get_active():
-            for oChild in oChoiceBox.get_children():
-                oChoiceBox.remove(oChild)
-            if oFileWidget:
-                oChoiceBox.pack_start(oFileWidget)
-            self.show_all()
+    def get_data(self):
+        """Get the results of the users choice."""
 
-    def get_path(self):
-        """Get the path from oDirChoiceWidget."""
-        return self.oDirChoiceWidget.get_filename()
-
-    def get_file(self):
-        """Get the file from oFileChoiceWidget."""
-        return self.oFileChoiceWidget.get_filename()
-
-    def get_choice(self):
-        """Get which of the RadioButtons was active."""
-        if self.oChoiceDownload.get_active():
-            return 'Download'
-        elif self.oChoiceLocalCopy.get_active():
-            return 'Local copy'
-        else:
-            return 'New directory'
+        sFile, _bUrl, bDir = self.oChoice.get_file_or_dir_or_url()
+        if bDir:
+            # Just return the name the user chose
+            return sFile, True
+        if sFile:
+            oOutFile = tempfile.TemporaryFile()
+            self.oChoice.get_binary_data(oOutFile)
+            return oOutFile, False
+        return None, None
 
 class CardImagePlugin(SutekhPlugin):
     """Plugin providing access to CardImageFrame."""
@@ -515,27 +480,22 @@ class CardImagePlugin(SutekhPlugin):
         iResponse = oDialog.run()
         bActivateMenu = False
         if iResponse == gtk.RESPONSE_OK:
-            sChoice = oDialog.get_choice()
-            if sChoice == 'Download':
-                if self._download_file():
-                    bActivateMenu = True
-                else:
-                    do_complaint_error('Unable to successfully download'
-                            ' and install zipfile')
-            elif sChoice == 'Local copy':
-                sFileName = oDialog.get_file()
-                if self._unzip_file(sFileName):
-                    bActivateMenu = True
-                else:
-                    do_complaint_error('Unable to successfully install '
-                            ' zipfile %s' % sFileName)
-            else:
+            oFile, bDir = oDialog.get_data()
+            if bDir:
                 # New directory
-                sTestPath = oDialog.get_path()
-                if self._accept_path(sTestPath):
+                if self._accept_path(oFile):
                     # Update preferences
-                    self.image_frame.update_config_path(sTestPath)
+                    self.image_frame.update_config_path(oFile)
                     bActivateMenu = True
+            elif oFile:
+                if self._unzip_file(oFile):
+                    bActivateMenu = True
+                else:
+                    do_complaint_error('Unable to successfully unzip data')
+                oFile.close() # clean up temp file
+            else:
+                # Unable to get data
+                do_complaint_error('Unable to configure card images plugin')
         if bActivateMenu:
             # Update the menu display if needed
             if self._sMenuFlag not in self.parent.dOpenFrames.values():
@@ -544,51 +504,13 @@ class CardImagePlugin(SutekhPlugin):
         # get rid of the dialog
         oDialog.destroy()
 
-    def _download_file(self):
-        """Download a zip file containing the images."""
-        # Download and install http://feldb.extra.hu/pictures.zip
-        sUrl = 'http://feldb.extra.hu/pictures.zip'
-        oFile = urllib2.urlopen(sUrl)
-        sDownloadDir = prefs_dir('Sutekh')
-        ensure_dir_exists(sDownloadDir)
-        fTemp = tempfile.TemporaryFile()
-        sLength = oFile.info().getheader('Content-Length')
-        if sLength:
-            iLength = int(sLength)
-            oProgress = ProgressDialog()
-            oProgress.set_description('Download progress')
-            iTotal = 0
-            bCont = True
-            while bCont:
-                oInf = oFile.read(10000)
-                iTotal += 10000
-                oProgress.update_bar(float(iTotal) / iLength)
-                if oInf:
-                    fTemp.write(oInf)
-                else:
-                    bCont = False
-                    oProgress.destroy()
-        else:
-            # Just try and download
-            fTemp.write(oFile.read())
-        try:
-            oZipFile = zipfile.ZipFile(fTemp, 'r')
-            bRet = self._unzip_heart(oZipFile)
-        except zipfile.BadZipfile:
-            bRet = False
-        # cleanup file
-        fTemp.close()
-        return bRet
-
-    def _unzip_file(self, sFileName):
+    def _unzip_file(self, oFile):
         """Unzip a file containing the images."""
-        if _check_file(sFileName):
-            try:
-                oZipFile = zipfile.ZipFile(sFileName, 'r')
-            except zipfile.BadZipfile:
-                return False
-            return self._unzip_heart(oZipFile)
-        return False
+        try:
+            oZipFile = zipfile.ZipFile(oFile)
+        except zipfile.BadZipfile:
+            return False
+        return self._unzip_heart(oZipFile)
 
     def _unzip_heart(self, oZipFile):
         """Heavy lifting of unzipping a file"""
