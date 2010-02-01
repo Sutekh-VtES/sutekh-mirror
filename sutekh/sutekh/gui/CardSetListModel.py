@@ -1138,6 +1138,7 @@ class CardSetCardListModel(CardListModel):
             if not self._needs_update(oAbsCard, oPhysCard):
                 self._dCache['visible'] = {}
                 return
+            dStates = {}
             if self._oController and oAbsCard in self._dAbs2Iter:
                 dStates = self._oController.save_iter_state(
                         self._dAbs2Iter[oAbsCard])
