@@ -135,6 +135,7 @@ class CardDict(dict):
                 'Weapon.|Unique weapon.'),
             'vehicle' : re.compile('Vehicle\.'),
             'haven' : re.compile('Haven\.'),
+            'electronic equipment' : re.compile('Electronic equipment.'),
             }
 
     dMasterProperties = {
