@@ -631,6 +631,9 @@ class MultiPaneWindow(gtk.Window):
         for oFrame in self.dClosedFrames:
             self._oConfig.add_frame(iNum, oFrame.type, oFrame.name, False,
                     True, -1)
+            if oFrame.type == PhysicalCardSet.sqlmeta.table:
+                tInfo = oFrame.get_model_modes()
+                self._oConfig.add_pane_info(iNum, oFrame.name, tInfo)
             iNum += 1
 
     # frame management functions
