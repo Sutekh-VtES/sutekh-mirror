@@ -140,6 +140,9 @@ setup   (   # Metadata
                 ],
             }},
             data_files = [
-                'COPYRIGHT',
+                ('share/doc/python-sutekh', [
+                    'COPYRIGHT',
+                    'sutekh/COPYING',
+                ]),
             ],
         )
