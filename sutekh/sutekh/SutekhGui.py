@@ -99,7 +99,7 @@ def setup_logging(oOpts):
         oRootLogger.addHandler(oLogHandler)
     return oRootLogger
 
-def main(aArgs):
+def main():
     """Start the Sutekh Gui.
 
        Check that database exists, doesn't need to be upgraded, then
@@ -113,7 +113,7 @@ def main(aArgs):
     # handle exceptions with a GUI dialog
     sys.excepthook = exception_handler
 
-    oOptParser, (oOpts, aArgs) = parse_options(aArgs)
+    oOptParser, (oOpts, aArgs) = parse_options(sys.argv)
     sPrefsDir = prefs_dir("Sutekh")
 
     if len(aArgs) != 1:
@@ -183,6 +183,6 @@ def main(aArgs):
 
 
 if __name__ == "__main__":
-    sys.exit(main(sys.argv))
+    sys.exit(main())
 
 

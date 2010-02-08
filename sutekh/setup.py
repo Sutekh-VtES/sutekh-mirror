@@ -95,7 +95,10 @@ setup   (   # Metadata
                 'sutekh': ['COPYING'],
                 'sutekh.docs.html': ['*'],
             },
-            scripts = ['sutekh/SutekhCli.py','sutekh/SutekhGui.py'],
+            entry_points = {
+                'console_scripts' : ['SutekhCli = sutekh.SutekhCli:main'],
+                'gui_scripts' : ['SutekhGui = sutekh.SutekhGui:main'],
+                },
 
             # py2exe
             console = ['sutekh/SutekhCli.py', 'sutekh/TestConsole.py'],

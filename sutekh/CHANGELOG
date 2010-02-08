@@ -1,4 +1,6 @@
 08 Feb 2010
+ * Change to using setuptools entry_points rather than scripts in setup.py -
+   this is easier for packaging tools to deal with
  * Remove Lasombra sales plugin (since the Lasombra no longer sells singles).
  * Remove xlrd dependancy (no longer needed)
 
