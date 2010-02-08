@@ -115,7 +115,7 @@ setup   (   # Metadata
                     # gtk
                     'cairo', 'pango', 'gobject', 'atk', 'pangocairo',
                     # plugin only dependencies
-                    'xlrd', 'webbrowser', 'csv',
+                    'webbrowser', 'csv',
                     # plugins
                     'sutekh.gui.plugins.*',
                 ],

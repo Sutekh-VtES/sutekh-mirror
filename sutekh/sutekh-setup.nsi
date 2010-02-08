@@ -40,7 +40,6 @@
   !define SETUPTOOLS_INSTALLER "setuptools-0.6c9.win32-py2.5.exe"
   !define PYPROTOCOLS_EGG "PyProtocols-1.0a0-py2.5-win32.egg"
   !define PLY_EGG "ply-2.3-py2.5.egg"
-  !define XLRD_EGG "xlrd-0.6.1-py2.5.egg"
   !define FORMENCODE_EGG "FormEncode-1.2.2-py2.5.egg"
   !define SQLOBJECT_EGG "SQLObject-0.10.6-py2.5.egg"
   !define SUTEKH_ICON "sutekh.ico"
@@ -151,16 +150,6 @@ Section "Ply"
   ExecWait '$INSTDIR\Python\Scripts\easy_install.exe --no-deps "$INSTDIR\${PLY_EGG}"'
 
   delete $INSTDIR\${PLY_EGG}
-SectionEnd
-
-Section "XLRD"
-  SetOutPath "$INSTDIR"
-
-  File "${DEPENDENCIES_FOLDER}/${XLRD_EGG}"
-
-  ExecWait '$INSTDIR\Python\Scripts\easy_install.exe --no-deps "$INSTDIR\${XLRD_EGG}"'
-
-  delete $INSTDIR\${XLRD_EGG}
 SectionEnd
 
 Section "FORMEncode"

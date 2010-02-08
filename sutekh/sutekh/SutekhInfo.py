@@ -82,7 +82,6 @@ class SutekhInfo(object):
                            # (which is a bit crazy as an install requirement)
         'PyProtocols',
         'ply',
-        'xlrd',
     ]
 
     # Install these manually
