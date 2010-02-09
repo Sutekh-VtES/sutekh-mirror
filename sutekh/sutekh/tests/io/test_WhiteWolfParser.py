@@ -48,6 +48,7 @@ class WhiteWolfParserTests(SutekhTest):
         u"Angelica, The Canonicus",
         u'Anna "Dictatrix11" Suljic',
         u"Anson",
+        u"Bravo",
         u"Bronwen",
         u"Cedric",
         u"Cesewayo",
@@ -510,6 +511,8 @@ class WhiteWolfParserTests(SutekhTest):
         self.failUnless(IKeyword('1 stealth') in oRebekka.keywords)
         oProtracted = IAbstractCard('Protracted Investment')
         self.failUnless(IKeyword('investment') in oProtracted.keywords)
+        oBravo = IAbstractCard('Bravo')
+        self.failUnless(IKeyword('archetype') in oBravo.keywords)
 
 
 if __name__ == "__main__":

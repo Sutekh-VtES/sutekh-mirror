@@ -804,6 +804,16 @@ Put this card on a vampire. This vampire gains 1 level of Necromancy [nec]. Capa
 </table>
 </p>
 
+<p>
+<a name="Bravo"><span class="cardname">Bravo</span></a>
+<span class="exp">[Gehenna:C]</span><br />
+<table border=0 cellpadding=0 cellspacing=0><tr><td width=1><span class="key">Cardtype:</span> </td><td>Master<br /></td></tr>
+<tr><td colspan=2><b>Master: archetype.</b><br />
+Put this card on a vampire you control. Once per turn, when this vampire successfully performs an action to enter combat with another, he or she gains 1 blood from the blood bank when the combat ends, if he or she is still ready. A vampire can have only one archetype.<br />
+<tr><td width=1><span class="key">Artist:</span> </td><td>Nilson<br /></td></tr>
+</table>
+</p>
+
 </td></tr>
 </table></body></html>
 """

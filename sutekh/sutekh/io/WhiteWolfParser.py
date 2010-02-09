@@ -152,6 +152,7 @@ class CardDict(dict):
             'haven' : re.compile('Haven\.'),
             'trophy' : re.compile('Master\. Trophy'),
             'investment' : re.compile('Master[.:] (unique )?[Ii]nvestment'),
+            'archetype' : re.compile('Master: archetype'),
             }
 
     dOtherProperties = {
@@ -230,7 +231,7 @@ class CardDict(dict):
                 self._add_keyword(oCard, sKeyword)
 
     def _find_card_keywords(self, oCard, dProps):
-        """Find keywords for master cards"""
+        """Find keywords for library cards"""
         for sKeyword, oRegexp in dProps.iteritems():
             oMatch = oRegexp.search(self['text'])
             if oMatch:
