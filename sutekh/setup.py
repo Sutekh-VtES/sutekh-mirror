@@ -84,7 +84,8 @@ setup   (   # Metadata
             install_requires = SutekhInfo.INSTALL_REQUIRES,
 
             # Files
-            packages = find_packages(exclude=['sutekh.tests']),
+            packages = find_packages(exclude=['sutekh.tests.*',
+                'sutekh.tests']),
             package_data = {
                 # NOTE: PkgResourceBuilder cannot handle the
                 #   catch-all empty package ''.
