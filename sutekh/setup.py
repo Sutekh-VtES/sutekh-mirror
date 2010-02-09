@@ -96,8 +96,8 @@ setup   (   # Metadata
                 'sutekh.docs.html': ['*'],
             },
             entry_points = {
-                'console_scripts' : ['SutekhCli = sutekh.SutekhCli:main'],
-                'gui_scripts' : ['SutekhGui = sutekh.SutekhGui:main'],
+                'console_scripts' : ['sutekh-cli = sutekh.SutekhCli:main'],
+                'gui_scripts' : ['sutekh = sutekh.SutekhGui:main'],
                 },
 
             # py2exe

@@ -1,3 +1,6 @@
+09 Feb 2010
+ * Rename the scripts. rename SutekhGui to sutekh, SutekhCli to sutekh-cli
+
 08 Feb 2010
  * Change to using setuptools entry_points rather than scripts in setup.py -
    this is easier for packaging tools to deal with
