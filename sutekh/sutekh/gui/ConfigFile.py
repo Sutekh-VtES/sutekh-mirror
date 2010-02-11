@@ -166,6 +166,8 @@ class ConfigFile(object):
                         sPos = aData[2]
                 elif aData[1] == 'C':
                     bClosed = True
+                    # We aim for minimal impact on the layout of other panes
+                    sPos = '0'
                 else:
                     sPos = aData[1]
             try:
