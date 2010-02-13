@@ -165,8 +165,6 @@ class CardSetMenu(CardListMenu):
         sOldFrameName = self._oFrame.name
         self._oFrame.update_name(sNewName)
         self._oController.view.update_name(sNewName)
-        # Also update the main window's idea of the frame name
-        self._oMainWindow.rename_pane(sOldFrameName, self._oFrame.name)
 
     def check_parent_count_column(self, oOldParent, oNewParent):
         """Check that the parent column values are set correctly

@@ -130,6 +130,8 @@ class CardImageFrame(BasicFrame, CardTextViewListener):
        and a Viewport (for scrolling)
        """
 
+    _sMenuFlag = 'Card Image Frame'
+
     def __init__(self, oMainWindow, oConfigFile):
         super(CardImageFrame, self).__init__(oMainWindow)
         self._oConfigFile = oConfigFile
@@ -356,7 +358,9 @@ class CardImageFrame(BasicFrame, CardTextViewListener):
                     tCurSize[1] != self._tPaneSize[1]:
                 self.__redraw(True)
 
-
+    def get_menu_name(self):
+        """Return the menu key"""
+        return self._sMenuFlag
 
 class ImageConfigDialog(SutekhDialog):
     # pylint: disable-msg=R0904
@@ -409,7 +413,7 @@ class CardImagePlugin(SutekhPlugin):
     dTableVersions = {}
     aModelsSupported = ["MainWindow"]
 
-    _sMenuFlag = 'Card Image Frame'
+    _sMenuFlag = CardImageFrame._sMenuFlag
 
     # pylint: disable-msg=W0142
     # ** magic OK here
@@ -498,7 +502,7 @@ class CardImagePlugin(SutekhPlugin):
                 do_complaint_error('Unable to configure card images plugin')
         if bActivateMenu:
             # Update the menu display if needed
-            if self._sMenuFlag not in self.parent.dOpenFrames.values():
+            if not self.parent.is_open_by_menu_name(self._sMenuFlag):
                 # Pane is not open, so try to enable menu
                 self.add_image_frame_active(True)
         # get rid of the dialog
@@ -574,24 +578,24 @@ class CardImagePlugin(SutekhPlugin):
     def get_frame_from_config(self, sType):
         """Add the frame if it's been saved in the config file."""
         if sType == self._sMenuFlag:
-            return (self.image_frame, self._sMenuFlag)
+            return self.image_frame
         else:
             return None
 
     def replace_pane(self, _oWidget):
         """Handle replacing a frame to the main window if required"""
-        if self._sMenuFlag not in self.parent.dOpenFrames.values():
+        if not self.parent.is_open_by_menu_name(self._sMenuFlag):
             oNewPane = self.parent.focussed_pane
             if oNewPane:
-                self.parent.replace_frame(oNewPane, self.image_frame,
-                        self._sMenuFlag)
+                self.image_frame.set_unique_id()
+                self.parent.replace_frame(oNewPane, self.image_frame)
 
     def add_pane(self, _oWidget):
         """Handle adding the frame to the main window if required"""
-        if self._sMenuFlag not in self.parent.dOpenFrames.values():
+        if not self.parent.is_open_by_menu_name(self._sMenuFlag):
             oNewPane = self.parent.add_pane_end()
-            self.parent.replace_frame(oNewPane, self.image_frame,
-                    self._sMenuFlag)
+            self.image_frame.set_unique_id()
+            self.parent.replace_frame(oNewPane, self.image_frame)
 
 
 plugin = CardImagePlugin

@@ -63,8 +63,8 @@ class MultiPaneWindow(gtk.Window):
         self._iCount = 0
 
         # Need to keep track of open card sets globally
-        self.dOpenFrames = {}
-        self.dClosedFrames = {}
+        self.aClosedFrames = []
+        self.aOpenFrames = []
 
         self._sCardSelection = '' # copy + paste selection
         self._aHPanes = []
@@ -97,6 +97,7 @@ class MultiPaneWindow(gtk.Window):
         # Create global icon manager
         self._oIconManager = IconManager(oConfig)
         # Create card text pane
+        self._oCardTextPane = None # So we can call get_pane_ids
         self._oCardTextPane = CardTextFrame(self, self._oIconManager)
 
         # Load plugins
@@ -178,11 +179,9 @@ class MultiPaneWindow(gtk.Window):
         # pylint: disable-msg=R0912, R0914, W9967
         # R0912: Need to consider all these cases, so many branches
         # R0914: Consequently, many local variables
-        # W9967: Need to use keys(), since we remove items from the
-        # dictionary in remove_frame
 
-        # Clear out all existing frames
-        for oFrame in self.dOpenFrames.keys():
+        # Clear out all existing frames (loop over copy of the list)
+        for oFrame in self.aOpenFrames[:]:
             self.remove_frame(oFrame, True)
 
         aClosedFrames = []
@@ -211,10 +210,9 @@ class MultiPaneWindow(gtk.Window):
             else:
                 # See if one of the plugins claims this type
                 for oPlugin in self._aPlugins:
-                    tResult = oPlugin.get_frame_from_config(sType)
-                    if tResult:
-                        oFrame, sMenuFlag = tResult
-                        self.replace_frame(oNewFrame, oFrame, sMenuFlag)
+                    oFrame = oPlugin.get_frame_from_config(sType)
+                    if oFrame:
+                        self.replace_frame(oNewFrame, oFrame)
                         oRestored = oFrame
             if bClosed and oRestored:
                 # Hold off minimizing until all frames are added to avoid
@@ -223,7 +221,7 @@ class MultiPaneWindow(gtk.Window):
                 aClosedFrames.append(oRestored)
         for oFrame in aClosedFrames:
             self.minimize_to_toolbar(oFrame)
-        if not self.dOpenFrames:
+        if not self.aOpenFrames:
             # We always have at least one pane
             self.add_pane()
 
@@ -238,33 +236,39 @@ class MultiPaneWindow(gtk.Window):
         return [x for x in self.oVBox.get_children() if
                     x not in (self.__oMenu, self.__oToolbar)]
 
-    def find_pane_by_name(self, sName):
+    def find_pane_by_id(self, iId):
         """Return the gtk widget corresponding to the given pane name"""
-        # pylint: disable-msg=W0704
-        # not doing anything for ValueError is the right thing here
-        try:
-            iIndex = self.dOpenFrames.values().index(sName)
-            oPane = self.dOpenFrames.keys()[iIndex]
-            return oPane
-        except ValueError:
-            return None
+        for oPane in chain(self.aOpenFrames, self.aClosedFrames):
+            if oPane.pane_id == iId:
+                return oPane
+        return None
+
+    def get_pane_ids(self):
+        """Return a list of all relevant pane ids"""
+        # the [0] is to a) ensure max is never over an empty set and
+        # b) that the next id is positive
+        aIds = [0]
+        if self._oCardTextPane:
+            aIds.append(self._oCardTextPane.pane_id)
+        aIds.extend([x.pane_id for x in self.aOpenFrames])
+        aIds.extend([x.pane_id for x in self.aClosedFrames])
+        return aIds
+
+
+    def is_open_by_menu_name(self, sMenuFlag):
+        """Check if a frame with the given menu name is open"""
+        for oPane in chain(self.aOpenFrames, self.aClosedFrames):
+            if oPane.get_menu_name() == sMenuFlag:
+                return True
+        return False
 
     def find_cs_pane_by_set_name(self, sSetName):
         """Find all the panes that correspond to the same card set"""
         aPanes = []
-        for oPane, sName in self.dOpenFrames.iteritems():
-            if sName.startswith(sSetName) and hasattr(oPane, 'view') and \
-                    hasattr(oPane.view, 'sSetName'):
-                if oPane.view.sSetName == sSetName:
-                    aPanes.append(oPane)
+        for oPane in chain(self.aOpenFrames, self.aClosedFrames):
+            if oPane.is_card_set(sSetName):
+                aPanes.append(oPane)
         return aPanes
-
-    def rename_pane(self, sOldName, sNewName):
-        """Rename a frame"""
-        oFrame = self.find_pane_by_name(sOldName)
-        if not oFrame:
-            return
-        self.dOpenFrames[oFrame] = sNewName
 
     def replace_with_physical_card_set(self, sName, oFrame, tInfo=None):
         """Replace the pane oFrame with the physical card set sName"""
@@ -273,7 +277,7 @@ class MultiPaneWindow(gtk.Window):
             # not doing anything for errors right now
             try:
                 oPane = CardSetFrame(self, sName, tInfo)
-                self.replace_frame(oFrame, oPane, oPane.name)
+                self.replace_frame(oFrame, oPane)
                 return oPane
             except RuntimeError:
                 # add warning dialog?
@@ -283,57 +287,54 @@ class MultiPaneWindow(gtk.Window):
     def add_new_physical_card_set(self, sName):
         """Create a new pane and replace with the PCS sName"""
         oFrame = self.add_pane_end()
-        self.replace_with_physical_card_set(sName, oFrame)
+        return self.replace_with_physical_card_set(sName, oFrame)
 
     def replace_with_pcs_list(self, _oWidget, oOldFrame=None):
         """Replace the focussed or given pane with the physical card set
            list."""
-        sMenuFlag = "Card Set List"
+        if self.is_open_by_menu_name("Card Set List"):
+            return None
         if oOldFrame is None:
             oOldFrame = self._oFocussed
-        if sMenuFlag not in self.dOpenFrames.values() and oOldFrame:
-            oPane = CardSetManagementFrame(self)
-            self.replace_frame(oOldFrame, oPane, sMenuFlag)
-            self._oPCSListPane = oPane
-            return oPane
-        return None
+        oPane = CardSetManagementFrame(self)
+        self.replace_frame(oOldFrame, oPane)
+        self._oPCSListPane = oPane
+        return oPane
 
     def add_new_pcs_list(self, oMenuWidget):
         """Add a new pane and replace it with the physical card set list."""
         oNewPane = self.add_pane_end()
-        self.replace_with_pcs_list(oMenuWidget, oNewPane)
+        return self.replace_with_pcs_list(oMenuWidget, oNewPane)
 
     def replace_with_physical_card_list(self, _oWidget, oOldFrame=None):
         """Replace the currently focussed or given pane with the physical
            card list."""
-        sMenuFlag = "White Wolf Card List"
+        if self.is_open_by_menu_name("White Wolf Card List"):
+            return None
         if oOldFrame is None:
             oOldFrame = self._oFocussed
-        if sMenuFlag not in self.dOpenFrames.values() and oOldFrame:
-            oPane = PhysicalCardFrame(self)
-            self.replace_frame(oOldFrame, oPane, sMenuFlag)
-            return oPane
-        return None
+        oPane = PhysicalCardFrame(self)
+        self.replace_frame(oOldFrame, oPane)
+        return oPane
 
     def add_new_physical_card_list(self, oMenuWidget):
         """Add a new pane and replace it with the physical card list."""
         oNewPane = self.add_pane_end()
-        self.replace_with_physical_card_list(oMenuWidget, oNewPane)
+        return self.replace_with_physical_card_list(oMenuWidget, oNewPane)
 
     def replace_with_card_text(self, _oWidget, oOldFrame=None):
         """Replace the current or given pane with the card set pane."""
-        sMenuFlag = "Card Text"
+        if self.is_open_by_menu_name("Card Text"):
+            return None
         if oOldFrame is None:
             oOldFrame = self._oFocussed
-        if sMenuFlag not in self.dOpenFrames.values() and oOldFrame:
-            self.replace_frame(oOldFrame, self._oCardTextPane, sMenuFlag)
-            return self._oCardTextPane
-        return None
+        self.replace_frame(oOldFrame, self._oCardTextPane)
+        return self._oCardTextPane
 
     def add_new_card_text(self, oMenuWidget):
         """Add a new pane and replace it with the card set pane."""
         oNewPane = self.add_pane_end()
-        self.replace_with_card_text(oMenuWidget, oNewPane)
+        return self.replace_with_card_text(oMenuWidget, oNewPane)
 
     # state manipulation
     def reload_pcs_list(self):
@@ -343,12 +344,12 @@ class MultiPaneWindow(gtk.Window):
 
     def reload_all(self):
         """Reload all open frames. Useful for major DB changes"""
-        for oPane in self.dOpenFrames:
+        for oPane in self.aOpenFrames:
             oPane.reload()
 
     def do_all_queued_reloads(self):
         """Do any deferred reloads from the database signal handlers."""
-        for oPane in self.dOpenFrames:
+        for oPane in self.aOpenFrames:
             oPane.do_queued_reload()
 
     def update_to_new_db(self):
@@ -362,9 +363,8 @@ class MultiPaneWindow(gtk.Window):
         flush_cache()
         # Reset the lookup cache holder
         self.__oSutekhObjectCache = SutekhObjectCache()
-        aToLoopOver = self.dOpenFrames.keys()
         # We may close frames here, so loop over a copy of the list
-        for oPane in aToLoopOver:
+        for oPane in self.aOpenFrames[:]:
             oPane.update_to_new_db()
 
     def clear_cache(self):
@@ -378,7 +378,7 @@ class MultiPaneWindow(gtk.Window):
            for the zero card list state setting the cardlist's to editable.
            """
         aEditable = []
-        for oPane in self.dOpenFrames:
+        for oPane in self.aOpenFrames:
             if hasattr(oPane.view, 'toggle_editable'):
                 if oPane.view.get_model().bEditable:
                     aEditable.append(oPane)
@@ -387,7 +387,7 @@ class MultiPaneWindow(gtk.Window):
     def restore_editable_panes(self, aEditable):
         """Restore the editable state so only the panes in aEditable are
            editable."""
-        for oPane in self.dOpenFrames:
+        for oPane in self.aOpenFrames:
             if hasattr(oPane.view, 'toggle_editable'):
                 if oPane in aEditable:
                     oPane.view.toggle_editable(True)
@@ -404,14 +404,14 @@ class MultiPaneWindow(gtk.Window):
 
     def reset_menu(self):
         """Ensure menu state is correct."""
-        for sMenu, fSetSensitiveFunc in self.__dMenus.iteritems():
-            if sMenu in self.dOpenFrames.values() or \
-                    sMenu in self.dClosedFrames.values():
-                fSetSensitiveFunc(False)
-            else:
-                fSetSensitiveFunc(True)
+        for fSetSensitiveFunc in self.__dMenus.values():
+            fSetSensitiveFunc(True)
+        for oPane in chain(self.aOpenFrames, self.aClosedFrames):
+            sMenuName = oPane.get_menu_name()
+            if sMenuName in self.__dMenus:
+                self.__dMenus[sMenuName](False)
         # Disable the menu accelerators for unfocussed panes
-        for oFrame in chain(self.dOpenFrames, self.dClosedFrames):
+        for oFrame in chain(self.aOpenFrames, self.aClosedFrames):
             if self._oFocussed != oFrame and hasattr(oFrame, 'menu') and \
                     hasattr(oFrame.menu, 'remove_accels'):
                 oFrame.menu.remove_accels()
@@ -426,7 +426,7 @@ class MultiPaneWindow(gtk.Window):
             else:
                 self.__oMenu.set_split_vertical_active(True)
             # can't delete the last pane
-            if len(self.dOpenFrames) > 1:
+            if len(self.aOpenFrames) > 1:
                 self.__oMenu.del_pane_set_sensitive(True)
             else:
                 self.__oMenu.del_pane_set_sensitive(False)
@@ -461,7 +461,7 @@ class MultiPaneWindow(gtk.Window):
     def action_quit(self, _oWidget):
         """Exit the app"""
         # ensure we cleanup all signals (needed for tests)
-        for oFrame in self.dOpenFrames:
+        for oFrame in self.aOpenFrames:
             oFrame.cleanup()
         # Don't call gtk.main_quit when the main loop isn't running (true in
         # the tests)
@@ -543,7 +543,7 @@ class MultiPaneWindow(gtk.Window):
            Used for the add pane menu items and double clicking on card set
            names.
            """
-        if not self.dOpenFrames:
+        if not self.aOpenFrames:
             oPane = None
         else:
             # Descend the right child of the panes, until we get a
@@ -628,7 +628,7 @@ class MultiPaneWindow(gtk.Window):
         if aTopLevelPanes:
             iNum, _iPos = save_children(aTopLevelPanes[0], self._oConfig,
                     False, 1, -1)
-        for oFrame in self.dClosedFrames:
+        for oFrame in self.aClosedFrames:
             self._oConfig.add_frame(iNum, oFrame.type, oFrame.name, False,
                     True, -1)
             if oFrame.type == PhysicalCardSet.sqlmeta.table:
@@ -650,7 +650,7 @@ class MultiPaneWindow(gtk.Window):
     def _find_prev_frame(self, oFrame):
         """Move the focus to the next frame in the window"""
         if not oFrame:
-            if not self.dOpenFrames:
+            if not self.aOpenFrames:
                 # No frame, so nothing to focus
                 return
             # get first child, and descent that
@@ -687,7 +687,7 @@ class MultiPaneWindow(gtk.Window):
     def _find_next_frame(self, oFrame):
         """Move the focus to the next frame in the window"""
         if not oFrame:
-            if not self.dOpenFrames:
+            if not self.aOpenFrames:
                 # No frame, so nothing to focus
                 return
             # get first child, and descent that
@@ -721,17 +721,17 @@ class MultiPaneWindow(gtk.Window):
             oChild = oChild.get_child1()
         return oChild
 
-    def replace_frame(self, oOldFrame, oNewFrame, sMenuFlag):
+    def replace_frame(self, oOldFrame, oNewFrame):
         """Replace oOldFrame with oNewFrame + update menus"""
         oNewFrame.show()
         oNewFrame.set_focus_handler(self.win_focus)
         oParent = oOldFrame.get_parent()
         oParent.remove(oOldFrame)
         oParent.add(oNewFrame)
-        del self.dOpenFrames[oOldFrame]
-        self.dOpenFrames[oNewFrame] = sMenuFlag
-        if oNewFrame in self.dClosedFrames:
-            del self.dClosedFrames[oNewFrame]
+        self.aOpenFrames.remove(oOldFrame)
+        self.aOpenFrames.append(oNewFrame)
+        if oNewFrame in self.aClosedFrames:
+            self.aClosedFrames.remove(oNewFrame)
         if self._oFocussed == oOldFrame:
             self.win_focus(None, None, None)
         self.reset_menu()
@@ -840,8 +840,8 @@ class MultiPaneWindow(gtk.Window):
         self._iCount += 1
         sKey = 'Blank Pane:' + str(self._iCount)
         oWidget.set_title(sKey)
-        self.dOpenFrames[oWidget] = sKey
-        if len(self.dOpenFrames) == 1:
+        self.aOpenFrames.append(oWidget)
+        if len(self.aOpenFrames) == 1:
             # We have a blank space to fill, so just plonk in the widget
             self.oVBox.pack_start(oWidget)
         else:
@@ -892,12 +892,6 @@ class MultiPaneWindow(gtk.Window):
             self.win_focus(None, None, self._oFocussed)
         return oWidget
 
-    def remove_frame_by_name(self, sName):
-        """Remove the pane with the given name"""
-        oPane = self.find_pane_by_name(sName)
-        if oPane is not None:
-            self.remove_frame(oPane)
-
     def remove_frame(self, oFrame, bForceZero=False, bClose=False):
         """Remove the Frame oFrame from the window.
 
@@ -909,7 +903,7 @@ class MultiPaneWindow(gtk.Window):
            """
         if oFrame is not None:
             oNeighbour = self._find_prev_frame(oFrame)
-            if len(self.dOpenFrames) == 1:
+            if len(self.aOpenFrames) == 1:
                 if not bForceZero:
                     # Break out, as we do nothing
                     return
@@ -949,11 +943,10 @@ class MultiPaneWindow(gtk.Window):
                 self._aHPanes.remove(oFocussedPane)
             self.oVBox.show()
             # Remove from dictionary of open panes
-            sKey = self.dOpenFrames[oFrame]
-            del self.dOpenFrames[oFrame]
+            self.aOpenFrames.remove(oFrame)
             # Any cleanup events we need?
             if bClose:
-                self.dClosedFrames[oFrame] = sKey
+                self.aClosedFrames.append(oFrame)
             else:
                 oFrame.cleanup()
             if oFrame == self._oFocussed:
@@ -1025,13 +1018,13 @@ class MultiPaneWindow(gtk.Window):
     def minimize_to_toolbar(self, oFrame):
         """Minimize the given frame to the main menu"""
         # don't allow last frame to be minimized
-        if len(self.dOpenFrames) == 1:
+        if len(self.aOpenFrames) == 1:
             return
-        self.__oToolbar.frame_to_toolbar(oFrame, self.dOpenFrames[oFrame])
+        self.__oToolbar.frame_to_toolbar(oFrame, oFrame.title)
         self.remove_frame(oFrame, bClose=True)
 
-    def restore_from_toolbar(self, oFrame, sFrameTitle):
+    def restore_from_toolbar(self, oFrame):
         """Restore the given frame from the toolbar"""
         oNewPane = self.add_pane_end()
-        self.replace_frame(oNewPane, oFrame, sFrameTitle)
+        self.replace_frame(oNewPane, oFrame)
         self.win_focus(None, None, oFrame)

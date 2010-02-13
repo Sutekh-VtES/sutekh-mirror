@@ -34,3 +34,7 @@ class PhysicalCardFrame(CardListFrame):
 
         self._oMenu = PhysicalCardMenu(self, self._oController, oMainWindow)
         self.add_parts()
+
+    def get_menu_name(self):
+        """Get the menu key"""
+        return self._sName

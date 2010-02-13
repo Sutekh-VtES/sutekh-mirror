@@ -46,7 +46,7 @@ class MainToolbar(gtk.Toolbar):
             """Unminimize this frame"""
             self.remove(oToolbarWidget)
             self.refresh()
-            self.frame_from_toolbar(oFrame, sTitle)
+            self.frame_from_toolbar(oFrame)
 
         oToolButton = self.create_tool_button(sTitle, oIcon=None,
             fAction=unminimize)
@@ -54,6 +54,6 @@ class MainToolbar(gtk.Toolbar):
         self.add(oToolButton)
         self.refresh()
 
-    def frame_from_toolbar(self, oFrame, sTitle):
+    def frame_from_toolbar(self, oFrame):
         """Restore the given frame from the toolbar."""
-        self._oMainWindow.restore_from_toolbar(oFrame, sTitle)
+        self._oMainWindow.restore_from_toolbar(oFrame)

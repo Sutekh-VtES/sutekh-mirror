@@ -1,5 +1,9 @@
 13 Feb 2010
  * Rework SutekhCli so sutekh.start() works as expected
+ * MultiPaneWindow makes much less use of pane names.
+   - Do more by querying the pane properties.
+   - Pane's now have unique ids, which are pane properties
+   - Same is true for menu dictionary keys
 
 09 Feb 2010
  * Add 'archetype' as a keyword

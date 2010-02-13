@@ -89,19 +89,24 @@ class TestCardSetFrame(GuiSutekhTest):
             oPhysCardSet.syncUpdate()
         self.oWin.setup(self.oConfig)
         # Remove the unneeded panes
-        self.oWin.remove_frame_by_name('Card Text')
-        self.oWin.remove_frame_by_name('Card Set List')
+        for oPane in self.oWin.aOpenFrames[:]:
+            if oPane.title in ['Card Text', 'Card Set List']:
+                self.oWin.remove_frame(oPane)
+            if oPane.title == 'White Wolf Card List':
+                oWWList = oPane
+            if oPane.title == 'My Collection':
+                oMyColl = oPane
         # Add one of the new card sets
-        self.oWin.add_new_physical_card_set('Test Set 1')
+        oTestSet1 = self.oWin.add_new_physical_card_set('Test Set 1')
         # Create selection of cards from the WW card list and
         # paste it into the new card set
-        oFrame = self.oWin.find_pane_by_name('White Wolf Card List')
+        oFrame = oWWList
         self._select_cards(oFrame, [(u'AK-47', None),
             (u'AK-47', u'Lords of the Night')])
         self.assertEqual(oFrame.view.get_selection().count_selected_rows(), 2)
         # Copy
         oFrame.view.copy_selection()
-        oNewFrame = self.oWin.find_pane_by_name('Test Set 1')
+        oNewFrame = oTestSet1
         oNewFrame.view.do_paste()
         self.assertEqual(len(oPCS2.cards), 2)
         # Select cards in new card set and change numbers
@@ -140,7 +145,7 @@ class TestCardSetFrame(GuiSutekhTest):
         oNewFrame.view.do_paste()
         self.assertEqual(len(oPCS2.cards), 2)
         # Select card from My Collection and paste it into the card set
-        oFrame = self.oWin.find_pane_by_name('My Collection')
+        oFrame = oMyColl
         # set editable off
         oNewFrame.view.toggle_editable(False)
         # Verify that trying to paste the selection does nothing
@@ -158,7 +163,7 @@ class TestCardSetFrame(GuiSutekhTest):
         self.assertEqual(len([x for x in oPCS2.cards if
             IPhysicalCard(x).abstractCard.name == 'Alexandra']), 5)
         # Tests involving the top level selection
-        oFrame = self.oWin.find_pane_by_name('White Wolf Card List')
+        oFrame = oWWList
         self._select_cards(oFrame, [(u'AK-47', 'Top Level'),
             (u'Ablative Skin', 'Top Level')])
         oFrame.view.copy_selection()
@@ -173,7 +178,7 @@ class TestCardSetFrame(GuiSutekhTest):
             aCardNames])
         oNewFrame.view.del_selection()
         self.assertEqual(len(oPCS2.cards), 0)
-        oFrame = self.oWin.find_pane_by_name('My Collection')
+        oFrame = oMyColl
         self._select_cards(oFrame, [(u'AK-47', 'Top Level'),
             (u'Ablative Skin', 'Top Level')])
         oFrame.view.copy_selection()

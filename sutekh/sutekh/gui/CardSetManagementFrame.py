@@ -67,3 +67,7 @@ class CardSetManagementFrame(BasicFrame):
     def reload(self):
         """Reload the frame contents"""
         self.view.reload_keep_expanded(True)
+
+    def get_menu_name(self):
+        """Get the menu key"""
+        return self._sName

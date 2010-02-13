@@ -57,6 +57,8 @@ class BasicFrame(gtk.Frame):
         self._oTitle.connect('button-press-event', self.minimize_to_toolbar)
         self.set_drag_handler()
 
+        self.set_unique_id()
+
     # pylint: disable-msg=W0212
     # explicitly allow access to these values via thesep properties
     title = property(fget=lambda self: self._oTitleLabel.get_text(),
@@ -69,7 +71,15 @@ class BasicFrame(gtk.Frame):
     menu = property(fget=lambda self: None, doc="Frame's menu")
     plugins = property(fget=lambda self: self._aPlugins,
             doc="Plugins enabled for this frame.")
+    pane_id = property(fget=lambda self: self._iId,
+            doc="ID number for this pane (should be unique)")
     # pylint: enable-msg=W0212
+
+    def set_unique_id(self):
+        """Set a unique id for this pane"""
+        # the [0] is to a) ensure max is never over an empty set and
+        # b) that the id is positive
+        self._iId = max(self._oMainWindow.get_pane_ids()) + 1
 
     def init_plugins(self):
         """Loop through the plugins, and enable those appropriate for us."""
@@ -81,6 +91,10 @@ class BasicFrame(gtk.Frame):
     def set_title(self, sTitle):
         """Set the title of the pane to sTitle"""
         self._oTitleLabel.set_text(gobject.markup_escape_text(sTitle))
+
+    def set_id(self, iNewId):
+        """Set the id of the pane to the correct value"""
+        self._iId = iNewId
 
     def set_drag_handler(self):
         """Setup the appropriate drag-n-drop handler for the view"""
@@ -101,7 +115,7 @@ class BasicFrame(gtk.Frame):
     def do_swap(self, aData):
         """Swap this pane with the relevant pane"""
         # We swap ourself with the other pane
-        oOtherFrame = self._oMainWindow.find_pane_by_name(aData[1])
+        oOtherFrame = self._oMainWindow.find_pane_by_id(int(aData[1]))
         if oOtherFrame:
             self._oMainWindow.swap_frames(self, oOtherFrame)
             return True
@@ -111,12 +125,19 @@ class BasicFrame(gtk.Frame):
         """Replace this pane with the relevant card set"""
         # We replace otherselves with the card set
         # Check that we're not the same card set already
-        aFrames = self._oMainWindow.find_cs_pane_by_set_name(aData[1])
-        if self not in aFrames:
-            # Open the card set
-            self._oMainWindow.replace_with_physical_card_set(aData[1], self)
-            return True
+        if self.is_card_set(aData[1]):
+            return False
+        # Open the card set
+        self._oMainWindow.replace_with_physical_card_set(aData[1], self)
+        return True
+
+    def is_card_set(self, _sSetName):
+        """Returns true if we're a copy of the given card set"""
         return False
+
+    def get_menu_name(self):
+        """Return the key into the menu dictionary in the main window"""
+        return None
 
     def cleanup(self):
         """Hook for cleanup actions when the frame is removed."""
@@ -240,7 +261,7 @@ class BasicFrame(gtk.Frame):
     def create_drag_data(self, _oBtn, _oContext, oSelectionData, _oInfo,
             _oTime):
         """Fill in the needed data for drag-n-drop code"""
-        sData = 'Sutekh Pane:\n' + self.title
+        sData = 'Sutekh Pane:\n%s' % self.pane_id
         oSelectionData.set(oSelectionData.target, 8, sData)
 
     # pylint: disable-msg=R0201

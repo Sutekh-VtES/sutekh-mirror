@@ -71,12 +71,17 @@ class CardSetFrame(CardListFrame):
         # Find an unused name for this card set
         iCount = 0
         sFinalName = sNewName
-        while self._oMainWindow.find_pane_by_name(sFinalName) \
-                not in [None, self]:
+        aOpenSets = [x.title for x in
+                self._oMainWindow.find_cs_pane_by_set_name(sNewName)]
+        while sFinalName in aOpenSets:
             iCount += 1
             sFinalName = "%s (%d)" % (sNewName, iCount)
         self._sName = sFinalName
         self.set_title(self._sName)
+
+    def is_card_set(self, sSetName):
+        """Return true if we're a copy of the given set"""
+        return self._oController.view.sSetName == sSetName
 
     def update_to_new_db(self):
         """Re-associate internal data against the database.

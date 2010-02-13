@@ -48,3 +48,7 @@ class CardTextFrame(BasicFrame):
            results"""
         self._oView.update_to_new_db()
 
+    def get_menu_name(self):
+        """Get the menu key"""
+        return "Card Text"
+
