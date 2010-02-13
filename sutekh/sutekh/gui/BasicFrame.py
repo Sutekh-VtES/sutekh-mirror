@@ -79,7 +79,7 @@ class BasicFrame(gtk.Frame):
         """Set a unique id for this pane"""
         # the [0] is to a) ensure max is never over an empty set and
         # b) that the id is positive
-        self._iId = max(self._oMainWindow.get_pane_ids()) + 1
+        self._iId = max(self._oMainWindow.get_pane_ids() + [0]) + 1
 
     def init_plugins(self):
         """Loop through the plugins, and enable those appropriate for us."""

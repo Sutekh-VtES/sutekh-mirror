@@ -245,9 +245,7 @@ class MultiPaneWindow(gtk.Window):
 
     def get_pane_ids(self):
         """Return a list of all relevant pane ids"""
-        # the [0] is to a) ensure max is never over an empty set and
-        # b) that the next id is positive
-        aIds = [0]
+        aIds = []
         if self._oCardTextPane:
             aIds.append(self._oCardTextPane.pane_id)
         aIds.extend([x.pane_id for x in self.aOpenFrames])
