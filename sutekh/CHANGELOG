@@ -1,3 +1,6 @@
+13 Feb 2010
+ * Rework SutekhCli so sutekh.start() works as expected
+
 09 Feb 2010
  * Add 'archetype' as a keyword
  * Rename the scripts. rename SutekhGui to sutekh, SutekhCli to sutekh-cli

@@ -31,7 +31,7 @@ from sutekh.core.Groupings import CardTypeGrouping, ClanGrouping, \
 
 from sutekh.core.CardListTabulator import CardListTabulator
 
-from sutekh.SutekhCli import main
+from sutekh.SutekhCli import main_with_args
 
 # start() method for use when working in the Python interpreter
 # pylint: disable-msg=W0102
@@ -39,7 +39,7 @@ from sutekh.SutekhCli import main
 def start(aArgs=['sutekh']):
     """Initialise SQLObject connection and so forth, for working in the
        python interpreter"""
-    main(aArgs)
+    main_with_args(aArgs)
 
 # What we expose to import *
 

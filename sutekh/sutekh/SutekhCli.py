@@ -92,14 +92,14 @@ def parse_options(aArgs):
 
     return oOptParser, oOptParser.parse_args(aArgs)
 
-def main():
+def main_with_args(aTheArgs):
     """
     Main function: Loop through the options and process the database
     accordingly.
     """
     # Turn off some pylint refactoring warnings
     # pylint: disable-msg=R0915, R0912, R0911
-    oOptParser, (oOpts, aArgs) = parse_options(sys.argv)
+    oOptParser, (oOpts, aArgs) = parse_options(aTheArgs)
     sPrefsDir = prefs_dir("Sutekh")
 
     oLogHandler = StreamHandler(sys.stdout)
@@ -198,6 +198,12 @@ def main():
         attempt_database_upgrade(oLogHandler)
 
     return 0
+
+def main():
+    """
+    Entry_point for setuptools scripts. Passes sys.argv to main_with_args
+    """
+    return main_with_args(sys.argv)
 
 if __name__ == "__main__":
     sys.exit(main())
