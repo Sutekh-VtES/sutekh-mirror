@@ -89,8 +89,8 @@ setup   (   # Metadata
             package_data = {
                 # NOTE: PkgResourceBuilder cannot handle the
                 #   catch-all empty package ''.
-                # Include SVG files from sutekh.gui package
-                'sutekh.gui': ['*.svg'],
+                # Include SVG and INI files from sutekh.gui package
+                'sutekh.gui': ['*.svg', '*.ini'],
                 # Include LICENSE information for sutekh package
                 # Include everything under the docs directory
                 'sutekh': ['COPYING'],
