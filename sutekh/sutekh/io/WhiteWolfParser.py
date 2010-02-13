@@ -155,6 +155,14 @@ class CardDict(dict):
             'archetype' : re.compile('Master: archetype'),
             }
 
+    dEventProperties = {
+            'gehenna' : re.compile('Gehenna\.'),
+            'transient' : re.compile('Transient\.'),
+            'inconnu' : re.compile('Inconnu\.'),
+            'government' : re.compile('Government\.'),
+            'inquisition' : re.compile('Inquisition\.'),
+            }
+
     dOtherProperties = {
             'unique' : re.compile('Unique\.'),
             'boon' : re.compile('Boon\.'),
@@ -247,7 +255,7 @@ class CardDict(dict):
             # Determine if we need to examine the card further based on type
             for sVal in sTypes.split('/'):
                 if sVal in ['Vampire', 'Imbued', 'Ally', 'Retainer',
-                        'Equipment', 'Master']:
+                        'Equipment', 'Master', 'Event']:
                     sType = sVal
 
         # Check for REFLEX card type
@@ -265,6 +273,8 @@ class CardDict(dict):
             self._find_card_keywords(oCard, self.dEquipmentProperties)
         elif sType == 'Master':
             self._find_card_keywords(oCard, self.dMasterProperties)
+        elif sType == 'Event':
+            self._find_card_keywords(oCard, self.dEventProperties)
         else:
             self._find_card_keywords(oCard, self.dOtherProperties)
         if sType == 'Vampire':
