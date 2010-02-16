@@ -10,7 +10,9 @@
 import codecs
 import urllib2
 
-WW_CARDLIST_URL = [
+WW_CARDLIST_URL = "http://www.white-wolf.com/vtes/HTML/cardlist.html"
+
+WW_CARDLIST_PER_LETTER_URLS = [
         "http://www.white-wolf.com/vtes/index.php?line=cardlist__",
         "http://www.white-wolf.com/vtes/index.php?line=cardlist_A",
         "http://www.white-wolf.com/vtes/index.php?line=cardlist_B",
