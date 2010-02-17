@@ -1,3 +1,11 @@
+17 Feb 2010
+ * Make WhiteWolfParser more robust against duplicated entries in the
+   cardlist.
+
+16 Feb 2010
+ * Add support for HttB
+ * Change default download location to better url
+
 13 Feb 2010
  * Rework SutekhCli so sutekh.start() works as expected
  * MultiPaneWindow makes much less use of pane names.

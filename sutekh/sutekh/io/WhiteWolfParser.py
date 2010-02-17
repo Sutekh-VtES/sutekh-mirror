@@ -325,7 +325,8 @@ class CardDict(dict):
         for sExp, sRarSet in aExp:
             for sRar in sRarSet.split('/'):
                 oPair = self._oMaker.make_rarity_pair(sExp, sRar)
-                oCard.addRarityPair(oPair)
+                if oPair not in oCard.rarity:
+                    oCard.addRarityPair(oPair)
 
     def _add_disciplines(self, oCard, sDis):
         """Add the list of disciplines to the card, creating discipline
@@ -340,7 +341,8 @@ class CardDict(dict):
                 oPair = self._oMaker.make_discipline_pair(sVal, 'inferior')
             else:
                 oPair = self._oMaker.make_discipline_pair(sVal, 'superior')
-            oCard.addDisciplinePair(oPair)
+            if oPair not in oCard.discipline:
+                oCard.addDisciplinePair(oPair)
 
     def _add_virtues(self, oCard, sVir):
         """Add the list of virtues to the card."""
@@ -351,7 +353,8 @@ class CardDict(dict):
 
         for sVal in sVir.split():
             oVirt = self._oMaker.make_virtue(sVal)
-            oCard.addVirtue(oVirt)
+            if oVirt not in oCard.virtue:
+                oCard.addVirtue(oVirt)
 
     def _add_creeds(self, oCard, sCreed):
         """Add creeds to the card."""
@@ -361,7 +364,9 @@ class CardDict(dict):
             return
 
         for sVal in sCreed.split('/'):
-            oCard.addCreed(self._oMaker.make_creed(sVal.strip()))
+            oCreed = self._oMaker.make_creed(sVal.strip())
+            if oCreed not in oCard.creed:
+                oCard.addCreed(oCreed)
 
     def _add_clans(self, oCard, sClan):
         """Add clans to the card."""
@@ -371,7 +376,9 @@ class CardDict(dict):
             return
 
         for sVal in sClan.split('/'):
-            oCard.addClan(self._oMaker.make_clan(sVal.strip()))
+            oClan = self._oMaker.make_clan(sVal.strip())
+            if oClan not in oCard.clan:
+                oCard.addClan(oClan)
 
     def _add_cost(self, oCard, sCost):
         """Add the cost to the card, replace 'X' with -1."""
@@ -434,25 +441,34 @@ class CardDict(dict):
     def _add_card_type(self, oCard, sTypes):
         """Add the card type info to the card."""
         for sVal in sTypes.split('/'):
-            oCard.addCardType(self._oMaker.make_card_type(sVal.strip()))
+            oType = self._oMaker.make_card_type(sVal.strip())
+            if oType not in oCard.cardtype:
+                oCard.addCardType(oType)
 
     def _add_title(self, oCard, sTitle):
         """Add the title to the card."""
-        oCard.addTitle(self._oMaker.make_title(sTitle))
+        oTitle = self._oMaker.make_title(sTitle)
+        if oTitle not in oCard.title:
+            oCard.addTitle(oTitle)
 
     def _add_sect(self, oCard, sSect):
         """Add the sect to the card."""
-        oCard.addSect(self._oMaker.make_sect(sSect))
+        oSect = self._oMaker.make_sect(sSect)
+        if oSect not in oCard.sect:
+            oCard.addSect(oSect)
 
     def _add_keyword(self, oCard, sKeyword):
         """Add the keyword to the card."""
-        oCard.addKeyword(self._oMaker.make_keyword(sKeyword))
+        oKeyword = self._oMaker.make_keyword(sKeyword)
+        if oKeyword not in oCard.keywords:
+            oCard.addKeyword(oKeyword)
 
     def _add_artists(self, oCard, sArtists):
         """Add the artist to the card."""
         for sArtist in self.oArtistSp.split(sArtists):
-            sArtist = sArtist.strip()
-            oCard.addArtist(self._oMaker.make_artist(sArtist))
+            oArtist = self._oMaker.make_artist(sArtist.strip())
+            if oArtist not in oCard.artists:
+                oCard.addArtist(oArtist)
 
     def _add_physical_cards(self, oCard):
         """Create a physical card for each expansion."""
