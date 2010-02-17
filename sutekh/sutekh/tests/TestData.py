@@ -9,7 +9,7 @@
 # pylint: disable-msg=C0103
 # don't care about naming conventions here
 
-# Note - Yvette & Aire of Elation are delibraetly duplicated, so we ensure
+# Note - Yvette & Aire of Elation are deliberately duplicated, so we ensure
 # that duplicates in the cardlist are handled properly
 
 TEST_CARD_LIST = """
