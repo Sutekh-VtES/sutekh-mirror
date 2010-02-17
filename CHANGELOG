@@ -6,6 +6,8 @@
    - Merge r2131 - Fix parser bug. Rework code so intent is clearer
    - Merge r2183 - Fix python2.4 compatability bug
    - Merge r2215 - Improve filter description
+ * Add 'Black Hand' as alias for 'Blackhand', so we can read card sets
+   made by trunk after r2079
 
 26 Jun 2009
  * Release 0.6.3.

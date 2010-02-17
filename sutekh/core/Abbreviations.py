@@ -172,7 +172,9 @@ class Expansions(AbbreviationLookup):
     dKeys = {
         'Anarchs' : [],
         'Ancient Hearts' : ['AH'],
-        'Blackhand' : ['BH'],
+        # Support Black Hand, so we can read zip files saved after r2079 on
+        # trunk
+        'Blackhand' : ['BH', 'Black Hand'],
         'Bloodlines' : ['BL'],
         'Blood Shadowed Court' : ['BSC'],
         'Camarilla Edition' : ['CE'],
