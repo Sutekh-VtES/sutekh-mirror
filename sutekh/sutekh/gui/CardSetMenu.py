@@ -162,7 +162,6 @@ class CardSetMenu(CardListMenu):
     def update_card_set_menu(self, oCardSet):
         """Update the menu to reflect changes in the card set name."""
         sNewName = oCardSet.name
-        sOldFrameName = self._oFrame.name
         self._oFrame.update_name(sNewName)
         self._oController.view.update_name(sNewName)
 

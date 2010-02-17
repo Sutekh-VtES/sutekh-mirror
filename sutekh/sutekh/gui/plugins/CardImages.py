@@ -130,7 +130,7 @@ class CardImageFrame(BasicFrame, CardTextViewListener):
        and a Viewport (for scrolling)
        """
 
-    _sMenuFlag = 'Card Image Frame'
+    sMenuFlag = 'Card Image Frame'
 
     def __init__(self, oMainWindow, oConfigFile):
         super(CardImageFrame, self).__init__(oMainWindow)
@@ -360,7 +360,7 @@ class CardImageFrame(BasicFrame, CardTextViewListener):
 
     def get_menu_name(self):
         """Return the menu key"""
-        return self._sMenuFlag
+        return self.sMenuFlag
 
 class ImageConfigDialog(SutekhDialog):
     # pylint: disable-msg=R0904
@@ -413,7 +413,7 @@ class CardImagePlugin(SutekhPlugin):
     dTableVersions = {}
     aModelsSupported = ["MainWindow"]
 
-    _sMenuFlag = CardImageFrame._sMenuFlag
+    _sMenuFlag = CardImageFrame.sMenuFlag
 
     # pylint: disable-msg=W0142
     # ** magic OK here

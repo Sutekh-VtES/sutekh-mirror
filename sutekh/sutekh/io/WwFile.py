@@ -12,6 +12,8 @@ import urllib2
 
 WW_CARDLIST_URL = "http://www.white-wolf.com/vtes/HTML/cardlist.html"
 
+# pylint: disable-msg=C0103
+# We accept the overly long name here
 WW_CARDLIST_PER_LETTER_URLS = [
         "http://www.white-wolf.com/vtes/index.php?line=cardlist__",
         "http://www.white-wolf.com/vtes/index.php?line=cardlist_A",
@@ -41,6 +43,8 @@ WW_CARDLIST_PER_LETTER_URLS = [
         "http://www.white-wolf.com/vtes/index.php?line=cardlist_Y",
         "http://www.white-wolf.com/vtes/index.php?line=cardlist_Z",
         ]
+
+# pylint: enable-msg=C0103
 
 WW_RULINGS_URL = "http://www.white-wolf.com/vtes/index.php?line=rulings"
 

@@ -29,6 +29,7 @@ class BasicFrame(gtk.Frame):
         self._oMainWindow = oMainWindow
         self._aPlugins = []
         self.set_name("blank frame")
+        self._iId = 0
 
         # Ensure new panes aren't completely hidden
 
@@ -56,6 +57,7 @@ class BasicFrame(gtk.Frame):
         self._oTitle.connect('drag-data-get', self.create_drag_data)
         self._oTitle.connect('button-press-event', self.minimize_to_toolbar)
         self.set_drag_handler()
+
 
         self.set_unique_id()
 
@@ -131,6 +133,8 @@ class BasicFrame(gtk.Frame):
         self._oMainWindow.replace_with_physical_card_set(aData[1], self)
         return True
 
+    # pylint: disable-msg=R0201
+    # Methods so sub-classes can override them
     def is_card_set(self, _sSetName):
         """Returns true if we're a copy of the given card set"""
         return False
@@ -138,6 +142,8 @@ class BasicFrame(gtk.Frame):
     def get_menu_name(self):
         """Return the key into the menu dictionary in the main window"""
         return None
+
+    # pylint: enable-msg=R0201
 
     def cleanup(self):
         """Hook for cleanup actions when the frame is removed."""
