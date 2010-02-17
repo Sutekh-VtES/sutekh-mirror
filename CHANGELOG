@@ -6,12 +6,17 @@
    - Merge r2131 - Fix parser bug. Rework code so intent is clearer
    - Merge r2183 - Fix python2.4 compatability bug
    - Merge r2215 - Improve filter description
-   - Merge r2213 - Makeparser somewhat more robust against duplicate
+   - Merge r2213 - Make parser somewhat more robust against duplicate
      entries in the card list
+   - Merge r2220 - Fix comment typo
  * Add 'Black Hand' as alias for 'Blackhand', so we can read card sets
    made by trunk after r2079
  * Merge r2127 and r2128 - Use close instead of OK in some dialogs, since
    that is more accurate.
+ * Merge r2211 - support for the "Heirs to the Blood" expansion
+ * Merge r2212 - Switch default WW cardlist URL to newly discovered minimalist
+   single HTML file.
+ 
 
 26 Jun 2009
  * Release 0.6.3.
