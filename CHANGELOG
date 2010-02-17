@@ -1,3 +1,12 @@
+17 Feb 2010
+ * Backport various bugfixes from trunk:
+   - Merge r2043 - Fix bug which caused 0 card counts to be printed
+   - Merge r2071 - Skip empty data when importing cards from an image zip file
+   - Merge r2076 - Fix missed parent count updates bug
+   - Merge r2131 - Fix parser bug. Rework code so intent is clearer
+   - Merge r2183 - Fix python2.4 compatability bug
+   - Merge r2215 - Improve filter description
+
 26 Jun 2009
  * Release 0.6.3.
  * Update dependencies used in Windows build:

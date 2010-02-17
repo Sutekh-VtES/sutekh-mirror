@@ -12,7 +12,7 @@
 try:
     from xml.etree.ElementTree import XMLParser
 except ImportError:
-    from elementtree.ElementTree import XMLParser
+    from elementtree.ElementTree import XMLTreeBuilder as XMLParser
 # pylint: enable-msg=E0611, F0401
 from sutekh.core.ArdbInfo import unescape_ardb_name, \
         unescape_ardb_expansion_name

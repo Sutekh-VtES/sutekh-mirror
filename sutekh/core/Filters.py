@@ -1237,7 +1237,7 @@ class MultiPhysicalCardSetMapFilter(Filter):
 class PhysicalCardSetInUseFilter(Filter):
     """Filter on a membership of Physical Card Sets marked in use"""
     keyword = "SetsInUse"
-    description = "In Card Sets in Use"
+    description = "In the 'In Use' children of"
     helptext = "Selects cards in the Card Sets marked " \
             "as in use. This filter takes no parameters."
     types = ['PhysicalCard']
