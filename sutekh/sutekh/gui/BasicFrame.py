@@ -92,7 +92,7 @@ class BasicFrame(gtk.Frame):
 
     def set_title(self, sTitle):
         """Set the title of the pane to sTitle"""
-        self._oTitleLabel.set_text(gobject.markup_escape_text(sTitle))
+        self._oTitleLabel.set_markup(gobject.markup_escape_text(sTitle))
 
     def set_id(self, iNewId):
         """Set the id of the pane to the correct value"""
