@@ -179,6 +179,8 @@ class FilteredView(gtk.TreeView):
         sKey = self.get_iter_identifier(oIter)
         if sKey == sCursorId:
             self.set_cursor(oPath)
+            # Ensure the cursor is visible
+            self.scroll_to_cell(oPath, None, True, 0.5, 0.0)
         return False
 
     def _set_row_expanded_status(self, _oModel, oPath, oIter, aExpandedSet):
