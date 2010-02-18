@@ -6,7 +6,7 @@
 
 """gtk.TreeModel class the card set list."""
 
-import gtk
+import gtk, gobject
 from sutekh.core.SutekhObjects import PhysicalCardSet, IPhysicalCardSet
 from sutekh.core.Filters import NullFilter
 
@@ -55,7 +55,7 @@ class CardSetManagementModel(gtk.TreeStore):
 
     def _format_set(self, oSet):
         """Format the card set name for display"""
-        sMarkup = oSet.name
+        sMarkup = gobject.markup_escape_text(oSet.name)
         if oSet.name in self._aExcludedSet:
             sMarkup = '<span foreground="grey">%s</span>' % sMarkup
         elif hasattr(self._oMainWin, 'find_cs_pane_by_set_name') and \
