@@ -99,7 +99,7 @@ class Clans(AbbreviationLookup):
         'Malkavian antitribu' : ['!Malk'], 'Nosferatu antitribu' : ['!Nos'],
         'Toreador antitribu' : ['!Tor'], 'Tremere antitribu' : ['!Tre'],
         'Ventrue antitribu' : ['!Ven'], 'Pander' : ['Pan'],
-        'Ahrimanes' : ['Ahrimanes'],
+        'Ahrimane' : ['Ahrimanes'],
         'Blood Brother' : ['BB', 'Blood Brothers'],
         'Harbinger of Skulls' : ['HoS'],
         'Kiasyd' : ['Kias'], 'Salubri antitribu' : ['!Salu'],
@@ -107,7 +107,6 @@ class Clans(AbbreviationLookup):
         'Akunanse' : ['Aku'], 'Guruhi' : ['Guru'], 'Ishtarri' : ['Ish'],
         'Osebo' : ['Ose'],
         # Other
-        'Ahrimane' : ['Ahrimane'],
     }
 
     @classmethod
