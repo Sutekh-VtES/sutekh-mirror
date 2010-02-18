@@ -1,3 +1,10 @@
+18 Feb 2010
+ * Backport some more minor fixes from trunk:
+   - Merge r2223 - Fix Ahrimanes clan name
+   - Merge r2225 - Fix bug in display of card set name as frame title
+   - Merge r2226 - Properly escape names in  the card set list
+   - Merge r2228 - Set new title before reset, so we draw new title immediately
+
 17 Feb 2010
  * Backport various bugfixes from trunk:
    - Merge r2043 - Fix bug which caused 0 card counts to be printed

@@ -6,7 +6,7 @@
 
 """gtk.TreeModel class the card set list."""
 
-import gtk
+import gtk, gobject
 from sutekh.core.SutekhObjects import PhysicalCardSet
 from sutekh.core.Filters import NullFilter
 
@@ -80,7 +80,7 @@ class CardSetManagementModel(gtk.TreeStore):
                 aToAdd = [oCardSet]
             for oSet in aToAdd:
                 oIter = self.append(oIter)
-                sMarkup = oSet.name
+                sMarkup = gobject.markup_escape_text(oSet.name)
                 if self._oMainWin.find_pane_by_name(oSet.name):
                     sMarkup = '<span foreground="blue">%s</span>' % sMarkup
                 if oSet.inuse:
