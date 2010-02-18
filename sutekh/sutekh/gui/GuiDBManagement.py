@@ -31,8 +31,8 @@ def read_cardlist(oCardList, oProgressDialog, oLogHandler):
 
 def read_ww_rulings(oRulings, oProgressDialog, oLogHandler):
     """Read the WW Rulings file into the database"""
-    oProgressDialog.reset()
     oProgressDialog.set_description("Reading White Wolf Rulings")
+    oProgressDialog.reset()
     read_rulings(oRulings, oLogHandler)
     oProgressDialog.set_complete()
 
@@ -49,8 +49,8 @@ def read_ww_lists_into_db(aCLFile, oRulingsFile, oProgressDialog):
 
 def copy_to_new_db(oOldConn, oTempConn, oWin, oProgressDialog, oLogHandler):
     """Copy card collection and card sets to a new abstract card db."""
-    oProgressDialog.reset()
     oProgressDialog.set_description("Reloading card collection and card sets")
+    oProgressDialog.reset()
     (bOK, aErrors) = copy_to_new_abstract_card_db(oOldConn, oTempConn,
             oWin.cardLookup, oLogHandler)
     oProgressDialog.set_complete()
@@ -147,8 +147,8 @@ def refresh_ww_card_list(oWin):
     # OK, update complete, copy back from oTempConn
     sqlhub.processConnection = oOldConn
     oWin.clear_cache() # Don't hold old copies
-    oProgressDialog.reset()
     oProgressDialog.set_description("Finalizing import")
+    oProgressDialog.reset()
     oProgressDialog.show()
     (bOK, aErrors) = create_final_copy(oTempConn, oLogHandler)
     if not bOK:
