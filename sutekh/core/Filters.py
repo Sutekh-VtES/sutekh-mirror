@@ -638,7 +638,7 @@ class MultiGroupFilter(DirectFilter):
     # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
-        return [str(x) for x in range(1, 6)] + ['Any']
+        return [str(x) for x in range(1, 7)] + ['Any']
 
     def _get_expression(self):
         # pylint: disable-msg=E1101

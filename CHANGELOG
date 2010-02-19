@@ -1,3 +1,6 @@
+19 Feb 2010
+ * Extend group range to include group 6.
+
 18 Feb 2010
  * Backport some more minor fixes from trunk:
    - Merge r2223 - Fix Ahrimanes clan name
