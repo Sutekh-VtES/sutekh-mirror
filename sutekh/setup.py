@@ -118,6 +118,8 @@ setup   (   # Metadata
                 'includes': [
                     # gtk
                     'cairo', 'pango', 'gobject', 'atk', 'pangocairo',
+                    # configobj
+                    'configobj', 'validate',
                     # plugin only dependencies
                     'webbrowser', 'csv',
                     # plugins
