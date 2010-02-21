@@ -1,3 +1,23 @@
+21 Feb 2010
+ * Merge changes to the build system
+   - Merge changes so py2exe build works
+     - r1992 - Add support for finding plugins in zip modules
+     - r1993 - Script that launches a Python console
+     - r1994 - Add py2exe build system
+     - r2052 - Remove some reliance on template folder. Clean-up py2exe script.
+     - r2053 - Remove dependency on template folder.
+     - r2070 - Copy across more parts of GTK and fix up the pixbuf loaders file
+       to get GTK working on a clean VM.
+     - r2072 - Put help HTML pages in the correct place inside the py2exe build.
+     - r2091 - Add some pylint hints & cleanups
+   - Merge changes for stdeb and dist_rpm support
+     - r2192 - Ask for data_files to be placed in share/doc/python-sutekh rather
+       than directly in sys.prefix.
+     - r2195 - Add stdeb.cfg file and use it to add python-gtk2 dependency to .deb.
+     - r2196 - Use entry_points
+     - r2197 - Add setup.cfg with bdist_rpm dependancy hints
+     - r2199 - Exclude test submodules as well
+
 19 Feb 2010
  * Extend group range to include group 6.
 

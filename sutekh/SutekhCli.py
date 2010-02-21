@@ -92,14 +92,14 @@ def parse_options(aArgs):
 
     return oOptParser, oOptParser.parse_args(aArgs)
 
-def main(aArgs):
+def main():
     """
     Main function: Loop through the options and process the database
     accordingly.
     """
     # Turn off some pylint refactoring warnings
     # pylint: disable-msg=R0915, R0912, R0911
-    oOptParser, (oOpts, aArgs) = parse_options(aArgs)
+    oOptParser, (oOpts, aArgs) = parse_options(sys.argv)
     sPrefsDir = prefs_dir("Sutekh")
 
     oLogHandler = StreamHandler(sys.stdout)
@@ -200,4 +200,4 @@ def main(aArgs):
     return 0
 
 if __name__ == "__main__":
-    sys.exit(main(sys.argv))
+    sys.exit(main())

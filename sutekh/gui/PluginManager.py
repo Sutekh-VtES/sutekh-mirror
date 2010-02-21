@@ -10,8 +10,40 @@ import os
 import glob
 import logging
 import sutekh.gui.plugins as plugins
+import zipimport
+import zipfile
+import re
 from sutekh.core.DatabaseVersion import DatabaseVersion
 from sutekh.core.SutekhObjects import PhysicalCardSet
+
+def submodules(oPackage):
+    """List all the submodules in a package."""
+    oLoader = getattr(oPackage, "__loader__", None)
+    aModules = set()
+
+    if type(oLoader) is zipimport.zipimporter:
+        # look inside the zip
+        oPackageZip = zipfile.ZipFile(oLoader.archive)
+        sPrefix = "/".join(oPackage.__name__.split('.')) + "/"
+        oModRe = re.compile(r"(?P<mod>[^/]*)\.py[^/]*")
+
+        for sFile in oPackageZip.namelist():
+            if sFile.startswith(sPrefix):
+                sFile = sFile[len(sPrefix):]
+                oM = oModRe.match(sFile)
+                if oM and oM.group('mod') != '__init__':
+                    aModules.add(oM.group('mod'))
+    else:
+        # try the filesystem
+        sPackageDir = os.path.dirname(oPackage.__file__)
+        for sModuleFile in glob.glob(os.path.join(sPackageDir, "*.py*")):
+            sModule = os.path.basename(sModuleFile)
+            sModule = os.path.splitext(sModule)[0]
+            if sModule != "__init__":
+                aModules.add(sModule)
+
+    return list(aModules)
+
 
 class PluginManager(object):
     """Manages plugins for Sutekh
@@ -26,14 +58,7 @@ class PluginManager(object):
 
     def load_plugins(self, bVerbose):
         """Load list of Plugin Classes from plugin dir."""
-        sPluginDir = os.path.dirname(plugins.__file__)
-
-        for sPluginPath in glob.glob(os.path.join(sPluginDir, "*.py")):
-            sPluginName = os.path.basename(sPluginPath)[:-len(".py")]
-
-            if sPluginName == "__init__":
-                continue
-
+        for sPluginName in submodules(plugins):
             # load module
             # pylint: disable-msg=C0103
             # mPlugin is legal name here
