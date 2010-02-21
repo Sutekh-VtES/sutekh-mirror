@@ -302,4 +302,3 @@ class CardListView(FilteredView):
         # Let gtk handle the rest of the move, since we're not doing
         # anything else funky
         return False
-

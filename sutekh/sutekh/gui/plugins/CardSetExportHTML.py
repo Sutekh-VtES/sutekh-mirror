@@ -26,6 +26,10 @@ class CardSetExportHTML(SutekhPlugin):
     dTableVersions = { PhysicalCardSet: [4, 5, 6]}
     aModelsSupported = [PhysicalCardSet, "MainWindow"]
 
+    dGlobalConfig = {
+        'HTML export mode': 'string(default=None)',
+    }
+
     def get_menu_item(self):
         """Register on the Plugins Menu"""
         if not self.check_versions() or not self.check_model_type():
@@ -36,11 +40,10 @@ class CardSetExportHTML(SutekhPlugin):
             oSubMenu = gtk.Menu()
             oPrefs.set_submenu(oSubMenu)
             oGroup = None
-            sDefault = self.parent.config_file.get_plugin_key(
-                    'HTML export mode')
+            sDefault = self.get_config_item('HTML export mode')
             if sDefault is None:
                 sDefault = 'Secret Library'
-                self.parent.config_file.set_plugin_key('HTML export mode',
+                self.set_config_item('HTML export mode',
                         sDefault)
             for sString, sVal in [("Add links to The Secret Library",
                 'Secret Library'),
@@ -68,9 +71,9 @@ class CardSetExportHTML(SutekhPlugin):
 
     def change_prefs(self, _oWidget, sChoice):
         """Manage the preferences (library to link to, etc.)"""
-        sCur = self.parent.config_file.get_plugin_key('HTML export mode')
+        sCur = self.get_config_item('HTML export mode')
         if sChoice != sCur:
-            self.parent.config_file.set_plugin_key('HTML export mode',
+            self.set_config_item('HTML export mode',
                     sChoice)
 
     # pylint: disable-msg=W0201
@@ -105,8 +108,7 @@ class CardSetExportHTML(SutekhPlugin):
             bDoText = False
             if self.oTextButton.get_active():
                 bDoText = True
-            sLinkMode = self.parent.config_file.get_plugin_key(
-                    'HTML export mode')
+            sLinkMode = self.get_config_item('HTML export mode')
             try:
                 oWriter = WriteArdbHTML(sLinkMode, bDoText)
                 fOut = file(sFileName, 'w')

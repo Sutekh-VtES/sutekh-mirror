@@ -32,6 +32,7 @@ from sutekh.gui.PluginManager import PluginManager
 from sutekh.gui import SutekhIcon
 from sutekh.gui.HTMLTextView import HTMLViewDialog
 from sutekh.gui.IconManager import IconManager
+from sutekh.gui.SutekhDialog import do_complaint_error
 
 class MultiPaneWindow(gtk.Window):
     """Window that has a configurable number of panes."""
@@ -91,6 +92,23 @@ class MultiPaneWindow(gtk.Window):
         self._oConfig = oConfig
         self._oCardLookup = GuiLookup(self._oConfig)
 
+        # Load plugins
+        self._oPluginManager = PluginManager()
+        self._oPluginManager.load_plugins()
+        for cPlugin in self._oPluginManager.get_card_list_plugins():
+            # Find plugins that will work on the Main Window
+            self._aPlugins.append(cPlugin(self, None,
+                "MainWindow"))
+            cPlugin.register_with_config(oConfig)
+
+        oValidationResults = oConfig.validate()
+        aErrors = oConfig.validation_errors(oValidationResults)
+        if aErrors:
+            aErrors.insert(0, "The following configuration file errors were encountered:")
+            aErrors.insert(1, "")
+            do_complaint_error("\n".join(aErrors))
+        oConfig.sanitize()
+
         # Create object cache
         self.__oSutekhObjectCache = SutekhObjectCache()
 
@@ -100,13 +118,6 @@ class MultiPaneWindow(gtk.Window):
         self._oCardTextPane = None # So we can call get_pane_ids
         self._oCardTextPane = CardTextFrame(self, self._oIconManager)
 
-        # Load plugins
-        self._oPluginManager = PluginManager()
-        self._oPluginManager.load_plugins()
-        for cPlugin in self._oPluginManager.get_card_list_plugins():
-            # Find plugins that will work on the Main Window
-            self._aPlugins.append(cPlugin(self, None,
-                "MainWindow"))
 
         self.__oMenu = MainMenu(self, oConfig)
         self.__oToolbar = MainToolbar(self)
@@ -191,16 +202,14 @@ class MultiPaneWindow(gtk.Window):
             self.resize(iWidth, iHeight)
         # Reset the pane number count, since we're starting afresh
         self._iCount = 0
-        dPaneInfo = self._oConfig.get_all_pane_info()
         for _iNumber, sType, sName, bVert, bClosed, iPos in \
-                self._oConfig.get_all_panes():
+                self._oConfig.open_frames():
             oNewFrame = self.add_pane(bVert, iPos)
             oRestored = None
             self.win_focus(None, None, oNewFrame)
             if sType == PhysicalCardSet.sqlmeta.table:
-                tInfo = dPaneInfo.get(sName)
                 oRestored = self.replace_with_physical_card_set(sName,
-                        oNewFrame, tInfo)
+                        oNewFrame)
             elif sType == 'Card Text':
                 oRestored = self.replace_with_card_text(None)
             elif sType == PhysicalCard.sqlmeta.table:
@@ -268,13 +277,13 @@ class MultiPaneWindow(gtk.Window):
                 aPanes.append(oPane)
         return aPanes
 
-    def replace_with_physical_card_set(self, sName, oFrame, tInfo=None):
+    def replace_with_physical_card_set(self, sName, oFrame):
         """Replace the pane oFrame with the physical card set sName"""
         if oFrame:
             # pylint: disable-msg=W0704
             # not doing anything for errors right now
             try:
-                oPane = CardSetFrame(self, sName, tInfo)
+                oPane = CardSetFrame(self, sName)
                 self.replace_frame(oFrame, oPane)
                 return oPane
             except RuntimeError:
@@ -571,11 +580,11 @@ class MultiPaneWindow(gtk.Window):
 
     def save_window_size(self):
         """Write the current window size to the config file"""
-        self._oConfig.save_window_size(self.get_size())
+        self._oConfig.set_window_size(self.get_size())
 
     def save_frames(self):
         """save the current frame layout"""
-        self._oConfig.pre_save_clear()
+        self._oConfig.clear_open_frames()
 
         def save_children(oPane, oConfig, bVert, iNum, iPos):
             """Walk the tree of HPanes + VPanes, and save their info."""
@@ -614,9 +623,6 @@ class MultiPaneWindow(gtk.Window):
             else:
                 oConfig.add_frame(iNum, oPane.type, oPane.name, bVert, False,
                         iPos)
-                if oPane.type == PhysicalCardSet.sqlmeta.table:
-                    tInfo = oPane.get_model_modes()
-                    oConfig.add_pane_info(iNum, oPane.name, tInfo)
                 iNum += 1
                 iChildPos = iPos
             return iNum, iChildPos
@@ -629,9 +635,6 @@ class MultiPaneWindow(gtk.Window):
         for oFrame in self.aClosedFrames:
             self._oConfig.add_frame(iNum, oFrame.type, oFrame.name, False,
                     True, -1)
-            if oFrame.type == PhysicalCardSet.sqlmeta.table:
-                tInfo = oFrame.get_model_modes()
-                self._oConfig.add_pane_info(iNum, oFrame.name, tInfo)
             iNum += 1
 
     # frame management functions

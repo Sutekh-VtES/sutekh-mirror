@@ -51,6 +51,10 @@ class FilteredView(gtk.TreeView):
     # We allow access via these properties (for plugins)
     mainwindow = property(fget=lambda self: self._oMainWin,
             doc="The parent window used for dialogs, etc.")
+    controller = property(fget=lambda self: self._oController,
+            doc="The controller used by the view.")
+    frame = property(fget=lambda self: self._oController.frame,
+            doc="The frame used by the view.")
     searchdialog = property(fget=lambda self: self._oSearchDialog,
             doc="The search dialog.")
     filterdialog = property(fget=lambda self: self._oFilterDialog,

@@ -123,9 +123,7 @@ class CardSetCardListModel(CardListModel):
         self._oBaseFilter = PhysicalCardSetFilter(sSetName)
         self._oCardSet = IPhysicalCardSet(sSetName)
         self._dCache = {}
-        self.iExtraLevelsMode = SHOW_EXPANSIONS
         self.bChildren = False
-        self.iShowCardMode = THIS_SET_ONLY
         self.bEditable = False
         self._bPhysicalFilter = False
         self._dAbs2Iter = {}
@@ -133,15 +131,20 @@ class CardSetCardListModel(CardListModel):
         self._dAbsSecondLevel2Iter = {}
         self._dAbs2nd3rdLevel2Iter = {}
         self._dGroupName2Iter = {}
-        self.iParentCountMode = PARENT_COUNT
         self.oEditColour = None
         self._oCountColour = BLACK
+
+        self.iExtraLevelsMode = SHOW_EXPANSIONS
+        self.iShowCardMode = THIS_SET_ONLY
+        self.iParentCountMode = PARENT_COUNT
+
         listen_changed(self.card_changed, PhysicalCardSet)
         self._oController = None
 
     def set_controller(self, oController):
         """Set the controller"""
         self._oController = oController
+        self.update_deck_options()
 
     def cleanup(self):
         # FIXME: We should make sure that all the references go
@@ -1906,3 +1909,64 @@ class CardSetCardListModel(CardListModel):
                         (2, oAbsCard))
             self._add_child_3rd_level_exp_entry(oPhysCard, sCardSetName,
                     tExpKey)
+
+    #
+    # Per-deck configuration listener options
+    #
+
+    #
+    # Per-deck option changes
+    #
+
+    def _change_mode(self, iLevel):
+        """Set which extra information is shown."""
+        # We don't want to call load multiple times, so this logic
+        if self.iExtraLevelsMode != iLevel:
+            self.iExtraLevelsMode = iLevel
+            self._oController.view.reload_keep_expanded()
+
+    def _change_count_mode(self, iLevel):
+        """Set which extra information is shown."""
+        if self.iShowCardMode != iLevel:
+            self.iShowCardMode = iLevel
+            self._oController.view.reload_keep_expanded()
+
+    def _change_parent_count_mode(self, iLevel, bNoReload=False):
+        """Toggle the visibility of the parent col"""
+        if iLevel == IGNORE_PARENT:
+            self._oController.view.set_parent_count_col_vis(False)
+        else:
+            self._oController.view.set_parent_count_col_vis(True)
+        if self.iParentCountMode == iLevel:
+            return
+        self.iParentCountMode = iLevel
+        if not bNoReload:
+            self._oController.view.reload_keep_expanded()
+
+    def update_deck_options(self):
+        """Update all the per-deck options."""
+        sFrameId = self._oController.frame.pane_id
+        # TODO: is this a good cardset id?
+        sCardSetId = self._oCardSet.id
+        self._change_mode(self._oConfig.get_deck_option(
+            sFrameId, sCardSetId, self._oConfig.EXTRA_LEVEL_MODE))
+        self._change_count_mode(self._oConfig.get_deck_option(
+            sFrameId, sCardSetId, self._oConfig.SHOW_ZERO_COUNT_CARDS))
+        self._change_parent_count_mode(self._oConfig.get_deck_option(
+            sFrameId, sCardSetId, self._oConfig.SHOW_PARENT_CARD_COUNT))
+
+    def profile_changed(self, sProfile, sKey):
+        """One of the per-deck configuration items changed."""
+        # TODO: only call update_deck_options when needed
+        self.update_deck_options()
+
+    def frame_profile_changed(self, sFrame, sNewProfile):
+        """The profile associated with a frame changed."""
+        # TODO: only call update_deck_options when needed
+        self.update_deck_options()
+
+    def cardset_profile_changed(self, sCardset, sNewProfile):
+        """The profile associated with a cardset changed."""
+        # TODO: only call update_deck_options when needed
+        self.update_deck_options()
+

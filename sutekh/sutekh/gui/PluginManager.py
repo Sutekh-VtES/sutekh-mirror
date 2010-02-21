@@ -92,6 +92,10 @@ class SutekhPlugin(object):
     dTableVersions = {}
     aModelsSupported = []
 
+    # ConfigObj validation specs as dictionaries
+    dGlobalConfig = {}
+    dPerPaneConfig = {}
+
     def __init__(self, oCardListView, oCardListModel, cModelType=None):
         """oCardListModel - card list model for this plugin to operate on."""
         self._oView = oCardListView
@@ -111,6 +115,12 @@ class SutekhPlugin(object):
     icon_manager = property(fget=lambda self: self.parent.icon_manager,
             doc="Icon manager.")
     # pylint: enable-msg=W0212
+
+    @classmethod
+    def register_with_config(cls, oConfig):
+        """Register this config class with the given config."""
+        oConfig.add_plugin_specs(cls.__name__, cls.dGlobalConfig)
+        oConfig.add_deck_specs(cls.__name__, cls.dPerPaneConfig)
 
     def add_to_menu(self, dAllMenus, oCatchAllMenu):
         """Grunt work of adding menu item to the frame"""
@@ -207,6 +217,24 @@ class SutekhPlugin(object):
             return self.model.get_card_iterator(None)
         return []
 
+    def get_config_item(self, sKey):
+        """Return the value of a plugin global config key."""
+        return self.parent.config_file.get_plugin_key(
+            self.__class__.__name__, sKey)
+
+    def set_config_item(self, sKey, sValue):
+        """Set the value of a plugin global config key."""
+        self.parent.config_file.set_plugin_key(
+            self.__class__.__name__, sKey, sValue)
+
+    def get_perpane_item(self, sKey):
+        """Return the value of a per-pane config key."""
+        sCardSet = None
+        if hasattr(self.view, "sSetName"):
+            sCardSet = self.view.sSetName
+        sPaneId = self.view.frame.pane_id
+        return self.parent.config_file.get_perpane_key(sPaneId, sCardSet, sKey)
+
     # pylint: disable-msg=R0201
     # utilty function for plugins
     def escape(self, sInput):
@@ -216,5 +244,4 @@ class SutekhPlugin(object):
             return markup_escape_text(sInput)
         else:
             return sInput # pass None straight through
-
 

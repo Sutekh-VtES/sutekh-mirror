@@ -122,7 +122,7 @@ def main():
 
     if oOpts.sRCFile is None:
         ensure_dir_exists(sPrefsDir)
-        oOpts.sRCFile = os.path.join(sPrefsDir, "sutekhrc")
+        oOpts.sRCFile = os.path.join(sPrefsDir, "sutekh.ini")
 
     oConfig = ConfigFile(oOpts.sRCFile)
 

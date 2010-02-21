@@ -115,6 +115,10 @@ class StarterInfoPlugin(SutekhPlugin, CardTextViewListener):
     dTableVersions = {PhysicalCardSet : [5, 6]}
     aModelsSupported = ["MainWindow"]
 
+    dGlobalConfig = {
+        'show starters': 'option("Yes", "No", default="No")',
+    }
+
     # FIXME: Expose this to the user?
     oStarterRegex = re.compile('^\[(.*)\] (.*) Starter')
 
@@ -148,7 +152,7 @@ class StarterInfoPlugin(SutekhPlugin, CardTextViewListener):
         oSubMenu.add(self.oToggle)
         if self.check_enabled():
             sPrefsValue = \
-                    self.parent.config_file.get_plugin_key('show starters')
+                    self.get_config_item('show starters')
             if sPrefsValue == 'Yes':
                 self.oToggle.set_active(True)
         else:
@@ -170,10 +174,10 @@ class StarterInfoPlugin(SutekhPlugin, CardTextViewListener):
 
     def setup(self):
         """1st time setup tasks"""
-        sPrefsValue = self.parent.config_file.get_plugin_key('show starters')
+        sPrefsValue = self.get_config_item('show starters')
         if sPrefsValue is None:
             # First time
-            self.parent.config_file.set_plugin_key('show starters', 'No')
+            self.set_config_item('show starters', 'No')
             if not self.check_enabled():
                 oDialog = StarterConfigDialog(self.parent, True)
                 self.handle_response(oDialog)
@@ -289,9 +293,9 @@ class StarterInfoPlugin(SutekhPlugin, CardTextViewListener):
         # Update the card text pane to reflect changes
         self.parent.set_card_text(self.oLastCard)
         if self.bShowInfo:
-            self.parent.config_file.set_plugin_key('show starters', 'Yes')
+            self.set_config_item('show starters', 'Yes')
         else:
-            self.parent.config_file.set_plugin_key('show starters', 'No')
+            self.set_config_item('show starters', 'No')
 
     def set_card_text(self, oPhysCard):
         """Update the card text pane with the starter info"""

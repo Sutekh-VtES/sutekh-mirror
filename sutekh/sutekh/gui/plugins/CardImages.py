@@ -132,9 +132,9 @@ class CardImageFrame(BasicFrame, CardTextViewListener):
 
     sMenuFlag = 'Card Image Frame'
 
-    def __init__(self, oMainWindow, oConfigFile):
-        super(CardImageFrame, self).__init__(oMainWindow)
-        self._oConfigFile = oConfigFile
+    def __init__(self, oImagePlugin):
+        super(CardImageFrame, self).__init__(oImagePlugin.parent)
+        self._oImagePlugin = oImagePlugin
         oVBox = gtk.VBox(False, 2)
         oBox = gtk.EventBox()
         self.oExpansionLabel = gtk.Label()
@@ -158,10 +158,10 @@ class CardImageFrame(BasicFrame, CardTextViewListener):
         oBox.connect('drag-motion', self.drag_motion)
         oBox.connect('button-press-event', self.__cycle_expansion)
 
-        self.__sPrefsPath = self._oConfigFile.get_plugin_key('card image path')
+        self.__sPrefsPath = self._oImagePlugin.get_config_item('card image path')
         if self.__sPrefsPath is None:
             self.__sPrefsPath = os.path.join(prefs_dir('Sutekh'), 'cardimages')
-            self._oConfigFile.set_plugin_key('card image path',
+            self._oImagePlugin.set_config_item('card image path',
                     self.__sPrefsPath)
         self.__bShowExpansions = self.__have_expansions()
         self.__sCurExpansion = ''
@@ -289,7 +289,7 @@ class CardImageFrame(BasicFrame, CardTextViewListener):
     def update_config_path(self, sNewPath):
         """Update the path we use to search for expansions."""
         self.__sPrefsPath = sNewPath
-        self._oConfigFile.set_plugin_key('card image path', sNewPath)
+        self._oImagePlugin.set_config_item('card image path', sNewPath)
         self.__bShowExpansions = self.__have_expansions()
 
     def set_card_text(self, oPhysCard):
@@ -369,9 +369,9 @@ class ImageConfigDialog(SutekhDialog):
 
     sDefaultUrl = 'http://feldb.extra.hu/pictures.zip'
 
-    def __init__(self, oParent, bFirstTime=False):
+    def __init__(self, oImagePlugin, bFirstTime=False):
         super(ImageConfigDialog, self).__init__('Configure Card Images Plugin',
-                oParent, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
+                oImagePlugin.parent, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                 (gtk.STOCK_OK, gtk.RESPONSE_OK, gtk.STOCK_CANCEL,
                     gtk.RESPONSE_CANCEL))
         oDescLabel = gtk.Label()
@@ -382,8 +382,8 @@ class ImageConfigDialog(SutekhDialog):
             oDescLabel.set_markup('<b>Choose how to configure the cardimages '
                     'plugin</b>\nChoose cancel to skip configuring the '
                     'images plugin\nYou will not be prompted again')
-        sDefaultDir = oParent.config_file.get_plugin_key('card image path')
-        self.oChoice = FileOrDirOrUrlWidget(oParent, "Choose location for "
+        sDefaultDir = oImagePlugin.get_config_item('card image path')
+        self.oChoice = FileOrDirOrUrlWidget(oImagePlugin.parent, "Choose location for "
                 "images file", "Choose image directory", sDefaultDir,
                 { 'feldb.hu' : self.sDefaultUrl })
         add_filter(self.oChoice, 'Zip Files', ['*.zip', '*.ZIP'])
@@ -413,6 +413,10 @@ class CardImagePlugin(SutekhPlugin):
     dTableVersions = {}
     aModelsSupported = ["MainWindow"]
 
+    dGlobalConfig = {
+        'card image path': 'string(default=None)',
+    }
+
     _sMenuFlag = CardImageFrame.sMenuFlag
 
     # pylint: disable-msg=W0142
@@ -430,8 +434,7 @@ class CardImagePlugin(SutekhPlugin):
     def init_image_frame(self):
         """Setup the image frame."""
         if not self.oImageFrame:
-            self.oImageFrame = CardImageFrame(self.parent,
-                    self.parent.config_file)
+            self.oImageFrame = CardImageFrame(self)
             self.oImageFrame.set_title(self._sMenuFlag)
             self.oImageFrame.add_parts()
 
@@ -463,20 +466,19 @@ class CardImagePlugin(SutekhPlugin):
 
     def setup(self):
         """Prompt the user to download/setup images the first time"""
-        sPrefsPath = self.parent.config_file.get_plugin_key('card image path')
+        sPrefsPath = self.get_config_item('card image path')
         if not os.path.exists(sPrefsPath):
             # Looks like the first time
-            oDialog = ImageConfigDialog(self.parent, True)
+            oDialog = ImageConfigDialog(self, True)
             self.handle_response(oDialog)
             # Path may have been changed, so we need to requery config file
-            sPrefsPath = self.parent.config_file.get_plugin_key(
-                    'card image path')
+            sPrefsPath = self.get_config_item('card image path')
             # Don't get called next time
             ensure_dir_exists(sPrefsPath)
 
     def config_activate(self, _oMenuWidget):
         """Configure the plugin dialog."""
-        oDialog = ImageConfigDialog(self.parent, False)
+        oDialog = ImageConfigDialog(self, False)
         self.handle_response(oDialog)
 
     def handle_response(self, oDialog):
@@ -518,7 +520,7 @@ class CardImagePlugin(SutekhPlugin):
 
     def _unzip_heart(self, oZipFile):
         """Heavy lifting of unzipping a file"""
-        sPrefsPath = self.parent.config_file.get_plugin_key('card image path')
+        sPrefsPath = self.get_config_item('card image path')
         ensure_dir_exists(sPrefsPath)
         iNumber = len(oZipFile.infolist())
         if iNumber < 300:

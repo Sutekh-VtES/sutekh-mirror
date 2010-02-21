@@ -1,14 +1,17 @@
 # ConfigFile.py
 # -*- coding: utf8 -*-
 # vim:fileencoding=utf8 ai ts=4 sts=4 et sw=4
-# Config File handling object
-# Wrapper around ConfigParser with some hooks for Sutekh purposes
+# Config handling object
+# Wrapper around configobj and validate with some hooks for Sutekh purposes
 # Copyright 2007 Neil Muller <drnlmuller+sutekh@gmail.com>
+# Copyright 2010 Simon Cross <hodgestar+sutekh@gmail.com>
 # License: GPL - See COPYRIGHT file for details
 
-"""Config file handling for sutekh"""
+"""Configuration handling for the Sutekh GUI."""
 
-from ConfigParser import RawConfigParser, NoOptionError
+from configobj import ConfigObj, flatten_errors
+from validate import Validator
+import pkg_resources
 
 class ConfigFileListener(object):
     """Listener object for config changes - inspired by CardListModeListener"""
@@ -29,8 +32,16 @@ class ConfigFileListener(object):
         """Postfix display mode has been set."""
         pass
 
-    def set_plugin_key(self, sKey, sValue):
-        """Plugin key has been set"""
+    def profile_changed(self, sProfile, sKey):
+        """One of the per-deck configuration items changed."""
+        pass
+
+    def frame_profile_changed(self, sFrame, sNewProfile):
+        """The profile associated with a frame changed."""
+        pass
+
+    def cardset_profile_changed(self, sCardset, sNewProfile):
+        """The profile associated with a cardset changed."""
         pass
 
 class ConfigFile(object):
@@ -44,76 +55,26 @@ class ConfigFile(object):
        changes to the filters.
        """
 
-    __sFiltersSection = 'Filters'
-    __sPanesSection = 'Open Panes'
-    __sPrefsSection = 'GUI Preferences'
-    __sPluginsSection = 'Plugin Options'
-    __sPaneInfoSection = 'Pane settings'
+    #
+    # BUILT-IN PER-DECK CONFIG OPTIONS
+    #
+
+    SHOW_ZERO_COUNT_CARDS = 'show zero count cards'
+    SHOW_PARENT_CARD_COUNT = 'show parent count'
+    EXTRA_LEVEL_MODE = 'extra level mode'
 
     def __init__(self, sFileName):
         self.__sFileName = sFileName
-        self.__oConfig = RawConfigParser()
-        # Use read to parse file if it exists
-        self.__oConfig.read(self.__sFileName)
+        self.__oConfigSpec = None
+        self.__oConfig = None
         self.__dListeners = {}
-
-        if not self.__oConfig.has_section(self.__sPrefsSection):
-            self.__oConfig.add_section(self.__sPrefsSection)
-            # default to saving on exit
-            self.set_save_on_exit(True)
-
-        if 'save pane sizes' not in self.__oConfig.options(
-                self.__sPrefsSection):
-            self.set_save_precise_pos(True)
-
-        if 'show zero count cards' not in self.__oConfig.options(
-                self.__sPrefsSection):
-            self.set_show_zero_count_cards(False)
-
-        if 'save window size' not in self.__oConfig.options(
-                self.__sPrefsSection):
-            self.set_save_window_size(True)
-
-        if 'postfix name display' not in self.__oConfig.options(
-                self.__sPrefsSection):
-            self.set_postfix_the_display(False)
-
-        if not self.__oConfig.has_section(self.__sPanesSection):
-            self.__oConfig.add_section(self.__sPanesSection)
-            # No panes information, so we set 'sensible' defaults
-            self.add_frame(1, 'physical_card', 'White Wolf Card List', False,
-                    False, -1)
-            self.add_frame(2, 'Card Text', 'Card Text', False, False, -1)
-            self.add_frame(3, 'Card Set List', 'Card Set List', False, False,
-                    -1)
-            self.add_frame(4, 'physical_card_set', 'My Collection', False,
-                    False, -1)
-
-        if not self.__oConfig.has_section(self.__sFiltersSection):
-            self.__oConfig.add_section(self.__sFiltersSection)
-
-        self.__iNum = len(self.__oConfig.items(self.__sFiltersSection))
-
-        if not self.__oConfig.has_section(self.__sPluginsSection):
-            self.__oConfig.add_section(self.__sPluginsSection)
-
-        if not self.__oConfig.has_section(self.__sPaneInfoSection):
-            self.__oConfig.add_section(self.__sPaneInfoSection)
+        self.__dPluginSpecs = {}
+        self.__dDeckSpecs = {}
 
     def __str__(self):
-        """Debugging aid - print the filename"""
-        return "FileName : " + self.__sFileName
-
-    def _get_bool_key(self, sSection, sKey):
-        """Test if a boolean key is set or not"""
-        return self.__oConfig.get(sSection, sKey) == 'yes'
-
-    def _set_bool_key(self, sSection, sKey, bValue):
-        """Set a boolean key"""
-        if bValue:
-            self.__oConfig.set(sSection, sKey, 'yes')
-        else:
-            self.__oConfig.set(sSection, sKey, 'no')
+        """Debugging aid - include the filename"""
+        return "<%s object at %s; config file: %r>" % (
+            self.__class__.__name__, hex(id(self)), self.__sFilename)
 
     def add_listener(self, oListener):
         """Add a listener to respond to config file changes."""
@@ -123,24 +84,87 @@ class ConfigFile(object):
         """Remove a listener from the list."""
         del self.__dListeners[oListener]
 
+    def add_plugin_specs(self, sName, dConfigSpecs):
+        """Add a validator to the plugins_main configspec section."""
+        self.__dPluginSpecs[sName] = dConfigSpecs
+
+    def add_deck_specs(self, sName, dConfigSpecs):
+        """Add validation options to the per_deck.defaults configspec."""
+        self.__dDeckSpecs[sName] = dConfigSpecs
+
+    def validate(self):
+        """Validate a configuration object."""
+        fConfigSpec = pkg_resources.resource_stream(__name__, "configspec.ini")
+        oConfigSpec = ConfigObj(fConfigSpec,
+            raise_errors=True, file_error=True, list_values=False)
+
+        for sPlugin, dGlobal in self.__dPluginSpecs.items():
+            oConfigSpec['plugins_main'][sPlugin] = dGlobal
+
+        for sPlugin, dPerDeck in self.__dDeckSpecs.items():
+            for sKey, oValue in dPerDeck.items():
+                oConfigSpec['per_deck']['defaults'][sKey] = oValue
+
+        self.__oConfig = ConfigObj(self.__sFileName,
+            configspec=oConfigSpec, indent_type='    ')
+
+        oValidator = Validator()
+        oResults = self.__oConfig.validate(oValidator, preserve_errors=True)
+        return oResults
+
+    def validation_errors(self, oValidationResults):
+        """Return a list of string describing any validation errors.
+
+           Returns an empty list if no validation errors occurred. Validation
+           results must have been returned by a call to validate() on the same
+           config object.
+           """
+        aErrors = []
+        if oValidationResults == True:
+            return aErrors
+
+        for (aSections, sKey, _) in flatten_errors(self.__oConfig,
+            oValidationResults):
+            if sKey is not None:
+                aErrors.append('Key %r in section %r failed validation.' % (sKey, aSections))
+            else:
+                aErrors.append('Section %r was missing.' % (aSections,))
+
+        return aErrors
+
+    def sanitize(self):
+        """Called after validation to clean up a valid config.
+
+           Currently clean-up consists of adding some open panes if none
+           are listed.
+           """
+        if not self.__oConfig['open_frames']:
+            # No panes information, so we set 'sensible' defaults
+            self.add_frame(1, 'physical_card', 'White Wolf Card List', False,
+                    False, -1)
+            self.add_frame(2, 'Card Text', 'Card Text', False, False, -1)
+            self.add_frame(3, 'Card Set List', 'Card Set List', False, False,
+                    -1)
+            self.add_frame(4, 'physical_card_set', 'My Collection', False,
+                    False, -1)
+
     def write(self):
         """Write the config file to disk."""
-        self.__oConfig.write(open(self.__sFileName, 'w'))
+        self.__oConfig.write()
 
-    def pre_save_clear(self):
-        """Clear out old saved pos, before saving new stuff"""
-        aKeys = self.__oConfig.options(self.__sPanesSection)
-        for sKey in aKeys:
-            self.__oConfig.remove_option(self.__sPanesSection, sKey)
-        aKeys = self.__oConfig.options(self.__sPaneInfoSection)
-        for sKey in aKeys:
-            self.__oConfig.remove_option(self.__sPaneInfoSection, sKey)
+    #
+    # Open Frame Handling
+    #
 
-    def get_all_panes(self):
+    def clear_open_frames(self):
+        """Clear out old save panes (used before adding new ones)."""
+        self.__oConfig['open_frames'].clear()
+
+    def open_frames(self):
         """Get the all the panes saved in the config file, and their
            positions."""
         aRes = []
-        for sKey, sValue in self.__oConfig.items(self.__sPanesSection):
+        for sKey, dPane in self.__oConfig['open_frames'].items():
             if not sKey.startswith('pane'):
                 # invalid key
                 continue
@@ -149,217 +173,287 @@ class ConfigFile(object):
             except ValueError:
                 # invalid key
                 continue
-            # Type is before 1st colon in the name
-            if sValue.find(':') == -1:
-                # invalid format, so skip
-                continue
-            sData, sName = sValue.split(':', 1)
-            aData = sData.split('.')
-            sType = aData[0]
-            sPos = '-1'
-            bVertical = False
-            bClosed = False
-            if len(aData) > 1:
-                if aData[1] == 'V':
-                    bVertical = True
-                    if len(aData) > 2:
-                        sPos = aData[2]
-                elif aData[1] == 'C':
-                    bClosed = True
-                    # We aim for minimal impact on the layout of other panes
-                    sPos = '0'
-                else:
-                    sPos = aData[1]
-            try:
-                iPos = int(sPos)
-            except ValueError:
-                iPos = -1
-            aRes.append((iPaneNumber, sType, sName, bVertical, bClosed, iPos))
+
+            iPos = dPane['position']
+            if dPane['orientation'] == 'C':
+                # We aim for minimal impact on the layout of other panes
+                iPos = 0
+
+            aRes.append((
+                iPaneNumber,
+                dPane['type'],
+                dPane['name'],
+                dPane['orientation'] == 'V',
+                dPane['orientation'] == 'C',
+                iPos,
+            ))
+
         aRes.sort() # Numbers denote ordering
         return aRes
-
-    def get_all_pane_info(self):
-        """Get the pane info (card mode, etc) saved in the config file"""
-        dRes = {}
-        for tPaneInfo in self.__oConfig.items(self.__sPaneInfoSection):
-            # Format is 'pane number' =
-            #        Extra Level Mode:Parent Count Mode:Card Mode:Name
-            # We can' use the name as a key, since the key isn't case sensitive
-            try:
-                sExtraLevelMode, sParentCount, sShowCardMode, sName = \
-                        tPaneInfo[1].split(':', 3)
-                dRes[sName] = (int(sExtraLevelMode), int(sParentCount),
-                        int(sShowCardMode))
-            except ValueError:
-                # skip this one then
-                continue
-        return dRes
-
-    def get_postfix_the_display(self):
-        """Query the 'postfix names' option."""
-        return self._get_bool_key(self.__sPrefsSection, 'postfix name display')
-
-    def set_postfix_the_display(self, bPostfix):
-        """Set the 'postfix names' option."""
-        self._set_bool_key(self.__sPrefsSection, 'postfix name display',
-                bPostfix)
-        for oListener in self.__dListeners:
-            oListener.set_postfix_the_display(bPostfix)
-
-    def get_save_on_exit(self):
-        """Query the 'save on exit' option."""
-        return self._get_bool_key(self.__sPrefsSection, 'save on exit')
-
-    def set_save_on_exit(self, bSaveOnExit):
-        """Set the 'save on exit' option."""
-        self._set_bool_key(self.__sPrefsSection, 'save on exit', bSaveOnExit)
-
-    def get_save_precise_pos(self):
-        """Query the 'save pane sizes' option."""
-        return self._get_bool_key(self.__sPrefsSection, 'save pane sizes')
-
-    def set_save_precise_pos(self, bSavePos):
-        """Set the 'save pane sizes' option."""
-        self._set_bool_key(self.__sPrefsSection, 'save pane sizes', bSavePos)
-
-    def get_save_window_size(self):
-        """Query the 'save window size' option."""
-        return self._get_bool_key(self.__sPrefsSection, 'save window size')
-
-    def set_save_window_size(self, bSavePos):
-        """Set the 'save window size' option."""
-        self._set_bool_key(self.__sPrefsSection, 'save window size', bSavePos)
-
-    def get_show_zero_count_cards(self):
-        """Query the 'show zero count cards' option."""
-        return self._get_bool_key(self.__sPrefsSection,
-                'show zero count cards')
-
-    def set_show_zero_count_cards(self, bShowZero):
-        """Set the 'show zero count cards' option."""
-        self._set_bool_key(self.__sPrefsSection, 'show zero count cards',
-                bShowZero)
 
     # pylint: disable-msg=R0913
     # We need all the info in the arguments here
     def add_frame(self, iFrameNumber, sType, sName, bVertical, bClosed, iPos):
         """Add a frame with the given position info to the config file"""
+        oPanes = self.__oConfig['open_frames']
         sKey = 'pane %d' % iFrameNumber
-        sData = sType
+
+        oPanes[sKey] = {}
+        oNewPane = oPanes[sKey]
+
+        oNewPane['type'] = sType
+        oNewPane['name'] = sName
+
         if bVertical:
-            sData += '.V'
+            oNewPane['orientation'] = "V"
         elif bClosed:
-            sData += '.C'
+            oNewPane['orientation'] = "C"
+        else:
+            oNewPane['orientation'] = "H"
+
         if iPos > 0 and self.get_save_precise_pos() and not bClosed:
-            sData += '.%d' % iPos
-        sValue = '%s:%s' % (sData, sName)
-        self.__oConfig.set(self.__sPanesSection, sKey, sValue)
+            oNewPane['position'] = iPos
+        elif bClosed:
+            oNewPane['position'] = 0
+        else:
+            oNewPane['position'] = -1
 
     # pylint: enable-msg=R0913
 
-    def add_pane_info(self, iFrameNumber, sName, tInfo):
-        """Save the pane info"""
-        sKey = 'pane %d' % iFrameNumber
-        iExtraLevelMode, iParentCount, iShowCardMode = tInfo
-        sValue = '%d:%d:%d:%s' % (iExtraLevelMode, iParentCount, iShowCardMode,
-                sName)
-        self.__oConfig.set(self.__sPaneInfoSection, sKey, sValue)
+    #
+    # Plugin Config Section Handling
+    #
 
-    def set_database_uri(self, sDatabaseURI):
-        """Set the configured database URI"""
-        self.__oConfig.set(self.__sPrefsSection, "database url", sDatabaseURI)
-
-    def get_database_uri(self):
-        """Get database URI from the config file"""
-        try:
-            sResult = self.__oConfig.get(self.__sPrefsSection, "database url")
-        except NoOptionError:
-            sResult = None
-        return sResult
-
-    def get_icon_path(self):
-        """Get the icon path from the config file"""
-        try:
-            sResult = self.__oConfig.get(self.__sPrefsSection, "icon path")
-        except NoOptionError:
-            sResult = None
-        return sResult
-
-    def set_icon_path(self, sPath):
-        """Set the configured icon path"""
-        self.__oConfig.set(self.__sPrefsSection, "icon path", sPath)
-
-    def get_window_size(self):
-        """Get the saved window size from the config file."""
-        try:
-            sResult = self.__oConfig.get(self.__sPrefsSection, 'window size')
-            iWidth, iHeight = [int(x) for x in sResult.split(',')]
-        except NoOptionError:
-            iWidth, iHeight = -1, -1
-        return iWidth, iHeight
-
-    def save_window_size(self, tSize):
-        """Save the current window size."""
-        sPos = '%d, %d' % (tSize[0], tSize[1])
-        self.__oConfig.set(self.__sPrefsSection, 'window size', sPos)
-
-    # filters section
-
-    def get_filters(self):
-        """Get all the filters in the config file."""
-        return [x[1] for x in self.__oConfig.items(self.__sFiltersSection)]
-
-    def get_filter_keys(self):
-        """Get the keys used to reference the filters."""
-        return self.__oConfig.items(self.__sFiltersSection)
-
-    def get_filter(self, sKey):
-        """Return the filter associated with the given key or None."""
-        if sKey.lower() in self.__oConfig.options(self.__sFiltersSection):
-            return self.__oConfig.get(self.__sFiltersSection, sKey)
-        else:
-            return None
-
-    def add_filter(self, sKey, sFilter):
-        """Add a filter to the config file."""
-        if sKey.lower() not in self.__oConfig.options(self.__sFiltersSection):
-            self.__oConfig.set(self.__sFiltersSection, sKey, sFilter)
-            for oListener in self.__dListeners:
-                oListener.add_filter(sKey, sFilter)
-
-    def remove_filter(self, sKey, sFilter):
-        """Remove a filter from the file"""
-        # Make sure Filer and key match
-        if sKey.lower() in self.__oConfig.options(self.__sFiltersSection) and \
-                sFilter == self.__oConfig.get(self.__sFiltersSection, sKey):
-            self.__oConfig.remove_option(self.__sFiltersSection, sKey)
-            for oListener in self.__dListeners:
-                oListener.remove_filter(sKey, sFilter)
-
-    def replace_filter(self, sKey, sOldFilter, sNewFilter):
-        """Replace a filter in the file with new filter"""
-        if sKey.lower() in self.__oConfig.options(self.__sFiltersSection) and \
-                sOldFilter == self.__oConfig.get(self.__sFiltersSection, sKey):
-            self.__oConfig.remove_option(self.__sFiltersSection, sKey)
-            self.__oConfig.set(self.__sFiltersSection, sKey, sNewFilter)
-            for oListener in self.__dListeners:
-                oListener.replace_filter(sKey, sOldFilter, sNewFilter)
-
-    # plugins section
-
-    def get_plugin_key(self, sKey):
+    def get_plugin_key(self, sPlugin, sKey):
         """Get an option from the plugins section.
 
            Return None if no option is set
            """
         try:
-            sResult = self.__oConfig.get(self.__sPluginsSection, sKey)
-        except NoOptionError:
+            sResult = self.__oConfig['plugins_main'][sPlugin][sKey]
+        except KeyError:
             sResult = None
         return sResult
 
-    def set_plugin_key(self, sKey, sValue):
+    def set_plugin_key(self, sPlugin, sKey, sValue):
         """Set a value in the plugin section"""
-        self.__oConfig.set(self.__sPluginsSection, sKey, sValue)
+        self.__oConfig['plugins_main'][sPlugin][sKey] = sValue
+
+    #
+    # Filters section
+    #
+
+    def get_filters(self):
+        """Get all the filters in the config file.
+
+           Filters are return as a list of (sQuery, dVars) tuples.
+           """
+        return [(oF['query'], oF['vars']) for oF in
+            self.__oConfig['filters'].values()]
+
+    def get_filter_keys(self):
+        """Return all the keys for all the filters in the config file."""
+        return [(sKey, dFilter['query']) for sKey, dFilter in
+            self.__oConfig['filters'].items()]
+
+    def get_filter(self, sKey):
+        """Return the filter associated with the given key.
+        
+           Return None if the filter is not known.
+           """
+        sKey = sKey.lower()
+        if sKey in self.__oConfig['filters']:
+            return self.__oConfig['filters'][sKey]['query']
+        else:
+            return None
+
+    def get_filter_values(self, sKey):
+        """Return the filter values associated with the given key.
+
+        Return None if the filter is not knonw.
+        """
+        sKey = sKey.lower()
+        if sKey in self.__oConfig['filters']:
+            return self.__oConfig['filters'][sKey]['vars'].dict()
+        else:
+            return None
+
+    def add_filter(self, sKey, sQuery, dVars={}):
+        """Add a filter to the config file."""
+        sKey = sKey.lower()
+        if sKey not in self.__oConfig['filters']:
+            dFilter = {
+                'query': sQuery,
+                'vars': dVars
+            }
+            self.__oConfig['filters'][sKey] = dFilter
+            for oListener in self.__dListeners:
+                oListener.add_filter(sKey, sQuery)
+
+    def remove_filter(self, sKey, sFilter):
+        """Remove a filter from the file"""
+        # Make sure Filer and key match
+        sKey = sKey.lower()
+        if sKey in self.__oConfig['filters'] and \
+                sFilter == self.__oConfig['filters'][sKey]['query']:
+            del self.__oConfig['filters'][sKey]
+            for oListener in self.__dListeners:
+                oListener.remove_filter(sKey, sFilter)
+
+    def replace_filter(self, sKey, sOldFilter, sNewFilter):
+        """Replace a filter in the file with new filter"""
+        sKey = sKey.lower()
+        if sKey in self.__oConfig['filters'] and \
+                sOldFilter == self.__oConfig['filters'][sKey]['query']:
+            self.__oConfig['filters'][sKey]['query'] = sNewFilter
+            for oListener in self.__dListeners:
+                oListener.replace_filter(sKey, sOldFilter, sNewFilter)
+
+    #
+    # Per-Deck Options
+    #
+
+    def get_deck_option(self, sFrame, sCardset, sKey):
+        """Retrieve the value of a per-deck option.
+
+           Either sFrame or sCardset may be None, in
+           which case the frame or cardset option look-up
+           is skipped.
+           """
+        dPerDeck = self.__oConfig['per_deck']
+
+        try:
+            sProfile = dPerDeck['frame_profiles'][sFrame]
+            return dPerDeck['profiles'][sProfile][sKey]
+        except KeyError:
+            pass
+
+        try:
+            sProfile = dPerDeck['cardset_profiles'][sCardset]
+            return dPerDeck['profiles'][sProfile][sKey]
+        except KeyError:
+            pass
+
+        return dPerDeck['defaults'][sKey]
+
+    def get_deck_profile_option(self, sProfile, sKey):
+        """Get the value of a per-deck option for a profile."""
+        try:
+            if sProfile == "defaults":
+                return self.__oConfig['per_deck']['defaults'][sKey]
+            else:
+                return self.__oConfig['per_deck']['profiles'][sProfile][sKey]
+        except KeyError:
+            return None
+
+    def set_deck_profile_option(self, sProfile, sKey, sValue):
+        """Set the value of a per-deck option for a profile."""
+        if sProfile == "defaults":
+            self.__oConfig['per_deck']['defaults'][sKey] = sValue
+        else:
+            self.__oConfig['per_deck']['profiles'][sProfile][sKey] = sValue
         for oListener in self.__dListeners:
-            oListener.set_plugin_key(sKey, sValue)
+            oListener.profile_changed(sProfile, sKey)
+
+    def set_frame_profile(self, sFrame, sProfile):
+        """Set the profile associated with a frame id."""
+        self.__oConfig['per_deck']['frame_profiles'][sFrame] = sProfile
+        for oListener in self.__dListeners:
+            oListener.frame_profile_changed(sFrame, sProfile)
+
+    def set_cardset_profile(self, sCardset, sProfile):
+        """Set the profile associated with a cardset id."""
+        self.__oConfig['per_deck']['cardset_profiles'][sCardset] = sProfile
+        for oListener in self.__dListeners:
+            oListener.cardset_profile_changed(sCardset, sProfile)
+
+    def frame_profiles(self):
+        """Return a dictionary of frame id -> profile mappings."""
+        return dict(self.__oConfig['per_deck']['frame_profiles'])
+
+    def cardset_profiles(self):
+        """Return a dictionary of cardset id -> profile mappings."""
+        return dict(self.__oConfig['per_deck']['cardset_profiles'])
+
+    def profiles(self):
+        """Return a list of profile names."""
+        return self.__oConfig['per_deck']['profiles'].keys()
+
+    def deck_options(self):
+        """Return a list of per-deck option names."""
+        return self.__oConfig['per_deck']['defaults'].keys()
+
+    #
+    # Application Level Config Settings
+    #
+
+    def get_save_on_exit(self):
+        """Query the 'save on exit' option."""
+        return self.__oConfig['main']['save on exit']
+
+    def set_save_on_exit(self, bSaveOnExit):
+        """Set the 'save on exit' option."""
+        self.__oConfig['main']['save on exit'] = bSaveOnExit
+
+    def get_save_precise_pos(self):
+        """Query the 'save pane sizes' option."""
+        return self.__oConfig['main']['save pane sizes']
+
+    def set_save_precise_pos(self, bSavePos):
+        """Set the 'save pane sizes' option."""
+        self.__oConfig['main']['save pane sizes'] = bSavePos
+
+    def get_save_window_size(self):
+        """Query the 'save window size' option."""
+        return self.__oConfig['main']['save window size']
+
+    def set_save_window_size(self, bSavePos):
+        """Set the 'save window size' option."""
+        self.__oConfig['main']['save window size'] = bSavePos
+
+    def set_database_uri(self, sDatabaseURI):
+        """Set the configured database URI"""
+        self.__oConfig.set['main']['database url'] = sDatabaseURI
+
+    def get_database_uri(self):
+        """Get database URI from the config file"""
+        return self.__oConfig.set['main']['database url']
+
+    def get_icon_path(self):
+        """Get the icon path from the config file"""
+        return self.__oConfig['main']['icon path']
+
+    def set_icon_path(self, sPath):
+        """Set the configured icon path"""
+        self.__oConfig['main']['icon path'] = sPath
+
+    def get_window_size(self):
+        """Get the saved window size from the config file."""
+        iWidth, iHeight = self.__oConfig['main']['window size']
+        return iWidth, iHeight
+
+    def set_window_size(self, tSize):
+        """Save the current window size."""
+        self.__oConfig['main']['window size'] = tSize
+
+    def get_postfix_the_display(self):
+        """Get the 'postfix name display' option."""
+        return self.__oConfig['main']['postfix name display']
+
+    def set_postfix_the_display(self, bPostfix):
+        """Set the 'postfix name display' option."""
+        self.__oConfig['main']['postfix name display'] = bPostfix
+        for oListener in self.__dListeners:
+            oListener.set_postfix_the_display(bPostfix)
+
+    # TODO:
+    #
+    # - write profile preference dialog
+    #   - oNameDisplay = gtk.CheckMenuItem('Use "path of ..., the" name display')
+    #   - ("This Card Set Only", THIS_SET_ONLY),
+    #   - ("Show All Cards", ALL_CARDS),
+    #   - ("Show all cards in parent card set", PARENT_CARDS),
+    #   - ("Show all cards in child card sets", CHILD_CARDS),
+    # - add selector for default, deck and cardlist profile
+    #
+    # - add loader for old config files

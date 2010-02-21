@@ -1,3 +1,6 @@
+21 Feb 2010
+ * Major rework of configuration file format and handling.
+
 17 Feb 2010
  * Make WhiteWolfParser more robust against duplicated entries in the
    cardlist.

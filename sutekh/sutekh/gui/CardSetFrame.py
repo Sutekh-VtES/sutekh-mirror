@@ -14,7 +14,6 @@ from sutekh.core.SutekhObjects import PhysicalCardSet, \
 from sutekh.gui.CardListFrame import CardListFrame
 from sutekh.gui.CardSetMenu import CardSetMenu
 from sutekh.gui.CardSetController import CardSetController
-from sutekh.gui.CardSetListModel import IGNORE_PARENT
 
 class CardSetFrame(CardListFrame):
     # pylint: disable-msg=R0904
@@ -26,7 +25,7 @@ class CardSetFrame(CardListFrame):
        """
     _cModelType = PhysicalCardSet
 
-    def __init__(self, oMainWindow, sName, tInfo=None):
+    def __init__(self, oMainWindow, sName):
         super(CardSetFrame, self).__init__(oMainWindow)
         try:
             _oCS = IPhysicalCardSet(sName)
@@ -34,14 +33,6 @@ class CardSetFrame(CardListFrame):
             raise RuntimeError("Card Set %s does not exist" % sName)
         self._oController = CardSetController(sName,
                 oMainWindow, self)
-
-        # pylint: disable-msg=E1101
-        # PyProtocols confuses pylint here
-        if tInfo:
-            self.set_model_modes(tInfo)
-        elif _oCS.parent and not _oCS.parent.cards:
-            self._oController.model.iParentCountMode = IGNORE_PARENT
-            # Else, we go with the defaults
 
         self._sName = sName
 
@@ -92,19 +83,6 @@ class CardSetFrame(CardListFrame):
            """
         self._oController.update_to_new_db()
         self.reload()
-
-    def get_model_modes(self):
-        """Get the model modes"""
-        return self._oController.model.iExtraLevelsMode, \
-                self._oController.model.iParentCountMode, \
-                self._oController.model.iShowCardMode
-
-    def set_model_modes(self, tInfo):
-        """Set the model + menu to the saved modes"""
-        iExtraLevelsMode, iParentCountMode, iShowCardMode = tInfo
-        self._oController.model.iExtraLevelsMode = iExtraLevelsMode
-        self._oController.model.iParentCountMode = iParentCountMode
-        self._oController.model.iShowCardMode = iShowCardMode
 
     def do_queued_reload(self):
         """Do a deferred reload if one was set earlier"""
