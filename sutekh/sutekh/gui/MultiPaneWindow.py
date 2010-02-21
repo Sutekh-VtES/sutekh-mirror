@@ -101,6 +101,7 @@ class MultiPaneWindow(gtk.Window):
                 "MainWindow"))
             cPlugin.register_with_config(oConfig)
 
+        # Re-validate config after adding plugin specs
         oValidationResults = oConfig.validate()
         aErrors = oConfig.validation_errors(oValidationResults)
         if aErrors:

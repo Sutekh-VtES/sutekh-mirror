@@ -125,6 +125,9 @@ def main():
         oOpts.sRCFile = os.path.join(sPrefsDir, "sutekh.ini")
 
     oConfig = ConfigFile(oOpts.sRCFile)
+    # initial config validation to set sane defaults
+    # (re-validated later after plugins are loaded)
+    oConfig.validate()
 
     if oOpts.db is None:
         oOpts.db = oConfig.get_database_uri()
