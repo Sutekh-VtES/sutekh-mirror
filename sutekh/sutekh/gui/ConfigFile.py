@@ -413,11 +413,11 @@ class ConfigFile(object):
 
     def set_database_uri(self, sDatabaseURI):
         """Set the configured database URI"""
-        self.__oConfig.set['main']['database url'] = sDatabaseURI
+        self.__oConfig['main']['database url'] = sDatabaseURI
 
     def get_database_uri(self):
         """Get database URI from the config file"""
-        return self.__oConfig.set['main']['database url']
+        return self.__oConfig['main']['database url']
 
     def get_icon_path(self):
         """Get the icon path from the config file"""
