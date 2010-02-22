@@ -1,6 +1,6 @@
 ; Copyright 2010 Simon Cross <hodgestar@gmail.com>
 ; GPL - see COPYING for details
-; Compile with sutekh-makensis sutekh.nsi .
+; Compile with sutekh-makensis sutekh-py2exe.nsi .
 ; You'll need to have previously run sutekh-wine-py2exe
 
   !include "MUI.nsh"
