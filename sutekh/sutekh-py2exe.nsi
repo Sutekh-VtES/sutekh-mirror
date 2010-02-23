@@ -29,7 +29,7 @@
 
 ; Dependencies 
 
-  !define COMBINED_LICENSE "GPLv2.txt"
+  !define COMBINED_LICENSE "sutekh\COPYING"
   !define SUTEKH_ICON "sutekh-icon-inkscape.ico"
   !define SUTEKH_PY2EXE_ZIP "sutekh-${SUTEKH_VERSION}.zip"
   !define UNINSTALLER "Uninstaller.exe"
