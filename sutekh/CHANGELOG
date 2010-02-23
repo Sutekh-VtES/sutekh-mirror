@@ -1,3 +1,6 @@
+23 Feb 2010
+ * Addition of NSIS installer script for py2exe build.
+
 21 Feb 2010
  * Major rework of configuration file format and handling.
 
