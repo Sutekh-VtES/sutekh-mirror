@@ -91,3 +91,54 @@ class SutekhInfo(object):
         'pysqlite', # sqlite3 is installed by default in Python >= 2.5
         'PyGTK',
     ]
+
+    # Currently this allows us license the Windows build (which
+    # includes dependencies) under the GPL version 2 (which
+    # conveniently is the same license in Sutekh's COPYING
+    # file although Sutekh itself also later versions of the
+    # GPL).
+    #
+    # dependency -> (
+    #   license classifier,
+    #   license URL,
+    #   license notes - usually license version
+    # )
+    DEPENDENCY_LICENSES = {
+        'SQLObject': (
+            'License :: OSI Approved :: GNU Library or Lesser '
+                'General Public License (LGPL)',
+            'http://www.gnu.org/copyleft/lesser.html',
+            'Version 3'),
+        'PyProtocols': (
+            'License :: OSI Approved :: Zope Public License',
+            'http://www.zope.org/Resources/ZPL',
+            'Version 2.1'),
+        'ply': (
+            # Note: ply changes to BSD license in version 3.2
+            'License :: OSI Approved :: GNU Library or Lesser '
+                'General Public License (LGPL)',
+            'http://www.gnu.org/licenses/lgpl-2.1.html',
+            'Version 2.1'),
+        'configobj': (
+            'License :: OSI Approved :: BSD License',
+            'http://www.voidspace.org.uk/python/configobj.html#license',
+            'New-BSD license'),
+        'setuptools': (
+            'License :: OSI Approved :: Python Software Foundation License',
+            'http://www.python.org/psf/license/',
+            'Version 2'),
+        'PyGTK': (
+            'License :: OSI Approved :: GNU Library or Lesser '
+                'General Public License (LGPL)',
+            'http://www.gnu.org/copyleft/lesser.html',
+            'Version 2 or later'),
+        'GTK': (
+            'License :: OSI Approved :: GNU Library or Lesser '
+                'General Public License (LGPL)',
+            'http://www.gnu.org/copyleft/lesser.html',
+            'Version 2 or later'),
+        'Python': (
+            'License :: OSI Approved :: Python Software Foundation License',
+            'http://www.python.org/psf/license/',
+            'Version 2'),
+    }
