@@ -1,3 +1,11 @@
+24 Feb 2010
+ * Merge py2exe NSIS installer:
+   - Merge r2237 - NSIS installer for py2exe Sutekh build.
+   - Merge r2238 - Fix name of py2exe NSIS file.
+   - Merge r2239 - Record of licenses used by Sutekh's dependencies.
+   - Merge r2240 - Use Sutekh license text for combined Windows install since at the moment these texts are the same.
+   - Merge r2241 - Update changelog.
+
 21 Feb 2010
  * Merge changes to the build system
    - Merge changes so py2exe build works
