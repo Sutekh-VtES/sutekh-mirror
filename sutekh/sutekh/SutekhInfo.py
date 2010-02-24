@@ -141,4 +141,8 @@ class SutekhInfo(object):
             'License :: OSI Approved :: Python Software Foundation License',
             'http://www.python.org/psf/license/',
             'Version 2'),
+        'ZipDLL': ( # NSIS Plugin
+            'License :: OSI Approved :: GNU General Public License (GPL)',
+            'http://www.gnu.org/copyleft/gpl.html',
+            'Version 2 or later'),
     }
