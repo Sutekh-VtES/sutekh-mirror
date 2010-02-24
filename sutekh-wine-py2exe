@@ -61,6 +61,9 @@ wine python setup.py py2exe >${PY2EXE_LOG} 2>&1
 # Copy /bin/*.dll from the GTK Wine installation
 # Copy python dll that py2exe misses   
 # Copy msvcr71 dll that py2exe misses
+#  Note: we can include this DLL because it's required by the Python DLL.
+#  See http://groups.google.com/group/comp.lang.python/msg/512681847a18e684
+#  for an explanation.
 # Copy sqlite dll that py2exe misses
 
 echo "=== Copying in GTK and Python dependencies that py2exe missed ==="

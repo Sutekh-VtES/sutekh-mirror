@@ -6,7 +6,9 @@
    - Merge r2240 - Use Sutekh license text for combined Windows install since at
      the moment these texts are the same.
    - Merge r2241 - Update changelog.
-   - Merfe r2243 - Add ZipDLL NSIS plugin license information.
+   - Merge r2243 - Add ZipDLL NSIS plugin license information.
+   - Merge r2245 - Add note on why we are allowed to copy msvcr71.dll into the
+     py2exe build
 
 21 Feb 2010
  * Merge changes to the build system
