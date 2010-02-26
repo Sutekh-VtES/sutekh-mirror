@@ -1,5 +1,5 @@
 For 0.8.0 cycle
- 
+
  (see mailing list for the details, this is just a reminder list)
 
  - Postponed
@@ -29,21 +29,17 @@ For 0.8.0 cycle
 
  - Nice to have
     * Add ways of specifying more limited test data sets
-    * Address code duplication issues - especially io module & Filter
-      tests (largely done)
+    * Address code duplication issues - (largely done)
     * Abstract Card Editor
     * Real plugin support
       - and mechanism for plugins to provide their own documentation to the
         help menu.
     * Cluster plugin speed-up
-    * Add support for creating .debs and .rpms (more or less working)
-    * Improve the error & warnings dialogs. 
+    * Improve the error & warnings dialogs.
       - include exception backtrace in error dialogs
     * Add more keyboard shortcuts
     * Right-click context menus
     * Make MultiSelectCombo less evil (turn it into a proper widget?)
-    * Improved card set sorting
-      - Allow specifying order of columns to use, etc.
 
 * Post 0.8
   * Allow colouring options for the cards
@@ -70,12 +66,14 @@ Code Cleanup
 Gui (Functionality):
  * Compare CardSet Plugin (basic version done. Could be improved)
  * Plugins for calling out to other VtES utilities as appropriate (http://ashheap.storageannex.com/utilities.htm)
- * Convert the repeated functions in the plugins into functions in the plugin 
+ * Convert the repeated functions in the plugins into functions in the plugin
    API
+ * Improved card set sorting
+   - Allow specifying order of columns to use, etc.
 
 Gui (Presentation):
  * Cleanup various dialogs, including
-   * Unify some of the other dialogs and make various bits more reusable 
+   - Unify some of the other dialogs and make various bits more reusable
      (cf. CreateCardSetDialog hack in plugins) (largely done)
  * Clean up the card set controller/model/view interactions
    - CardSetManagement stuff is still rather tangled
@@ -89,7 +87,5 @@ Other Tasks:
 
 Upstream:
  * File GTK bugs for:
-   * TreeView jumping.
-   * TreeView search pop-up not working under Windows. (apparently fixed in
-     recent gtk versions)
+   - TreeView jumping.
 
