@@ -286,7 +286,8 @@ TEST_CARD_LIST = """
 <tr><td width=1><span class="key">Group:</span> </td><td>2<br /></td></tr>
 <tr><td width=1><span class="key">Capacity:</span> </td><td>9<br /></td></tr>
 <tr><td width=1><span class="key">Discipline:</span> </td><td>aus DOM NEC POT THA<br /></td></tr>
-<tr><td colspan=2><b>Independent:</b> <n>Ambrogino has 1 vote. +1 bleed.<br />
+<tr><td colspan=2><b>Independent:</b> Ambrogino has 1 vote. +1
+bleed.<br />
 <tr><td width=1><span class="key">Artist:</span> </td><td>Christopher Shy<br /></td></tr>
 </table>
 </p>
@@ -466,7 +467,10 @@ TEST_CARD_LIST = """
 <tr><td><span class="key">Group:</span> </td><td>2<br /></td></tr>
 <tr><td><span class="key">Capacity:</span> </td><td>3<br /></td></tr>
 <tr><td><span class="key">Discipline:</span> </td><td>for<br /></td></tr>
-<tr><td colspan=2><b>Independent:</b> <n>Lázár may move one blood from <span class="clarification">&lt;an uncontrolled minion&gt;</span> in your prey's uncontrolled region to a vampire in your uncontrolled region as a (D) action.<br />
+<tr><td colspan=2><b>Independent:</b> <n>Lázár may
+move one blood from <span class="clarification">&lt;an uncontrolled
+minion&gt;</span> in your prey's uncontrolled region to a vampire in your
+uncontrolled region as a (D) action.<br />
 <tr><td><span class="key">Artist:</span> </td><td>Rebecca Guay<br /></td></tr>
 </table>
 </p>
@@ -605,7 +609,8 @@ Ossian may enter combat with any vampire as a +1 stealth (D) action. In the firs
 <tr><td width=1><span class="key">Group:</span> </td><td>2<br /></td></tr>
 <tr><td width=1><span class="key">Capacity:</span> </td><td>6<br /></td></tr>
 <tr><td width=1><span class="key">Discipline:</span> </td><td>pot pre OBF PRO<br /></td></tr>
-<tr><td colspan=2><b>Independent:</b> During your master phase, discard a master card or tap Pariah. Pariah cannot take undirected actions other than hunting. He can enter combat with any minion as a (D) action. +1 strength. Scarce. Sterile.<br />
+<tr><td colspan=2><b>Independent:</b> During your master phase, discard a master card or tap Pariah. Pariah cannot take undirected actions other than hunting. He can enter combat with any minion as a (D) action. +1
+strength. Scarce. Sterile.<br />
 <tr><td width=1><span class="key">Artist:</span> </td><td>Richard Thomas<br /></td></tr>
 </table>
 </p>
