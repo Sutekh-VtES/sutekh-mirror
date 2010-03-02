@@ -623,13 +623,31 @@ class InExpansion(LogStateWithInfo):
 class InCardText(LogStateWithInfo):
     """In the card text section."""
 
+    def data(self, sData):
+        """Add data, cleaning up line breaks"""
+        self._sData += sData.replace('\n', ' ')
+
     def transition(self, sTag, _dAttr):
         """Transition back to InCard if needed."""
         if sTag == '/td' or sTag == 'tr' or sTag == '/tr' or sTag == '/table':
-            self._dInfo['text'] = self._sData.strip()
+            if  self._dInfo.has_key('text'):
+                # We use lstrip to ensure we don't add double whitespace
+                # in the middle. We don't use strip, since, as sData can be
+                # empty here, we need to call strip on the entire text
+                # afterwards, anyway
+                self._dInfo['text'] += self._sData.lstrip()
+                self._dInfo['text'] = self._dInfo['text'].strip()
+            else:
+                self._dInfo['text'] = self._sData.strip()
             return InCard(self._dInfo, self.oLogger)
         elif sTag == 'td':
             raise StateError()
+        elif sTag == 'br':
+            if not self._dInfo.has_key('text'):
+                # 1st br
+                self._dInfo['text'] = self._sData.strip() + '\n'
+                self._sData = ''
+            return self
         else:
             return self
 
