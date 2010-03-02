@@ -8,7 +8,7 @@ SUTEKH_VERSION=`PYTHONPATH=. python -c "from sutekh import SutekhInfo; print Sut
 BUILD_NAME="sutekh-${SUTEKH_VERSION}"
 BUILD_FOLDER="build/${BUILD_NAME}-py2exe"
 ZIP_NAME="dist/${BUILD_NAME}.zip"
-PY2EXE_LOG="py2exe.log"
+PY2EXE_LOG="build/${BUILD_NAME}-py2exe.log"
 
 # Calculate paths.
 
@@ -23,6 +23,7 @@ WINE_GTK=`winepath "${WINE_WIN_GTK}"`
 
 rm -rf "${BUILD_FOLDER}"
 rm -rf "${ZIP_NAME}"
+rm -f "${PY2EXE_LOG}"
 mkdir -p "${BUILD_FOLDER}"
 mkdir -p `dirname "${ZIP_NAME}"`
 
