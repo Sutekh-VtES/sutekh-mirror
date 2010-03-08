@@ -11,6 +11,7 @@ from sqlobject import SQLObjectNotFound
 from sutekh.core.SutekhObjects import IPhysicalCardSet
 from sutekh.gui.GuiCardSetFunctions import reparent_card_set
 from sutekh.gui.CardSetsListView import CardSetsListView
+from sutekh.gui.FilterDialog import FilterDialog
 
 def split_selection_data(sSelectionData):
     """Helper function to subdivide selection string into bits again"""
@@ -113,3 +114,12 @@ class CardSetManagementView(CardSetsListView):
         if tRes:
             return tRes[0]
         return None
+
+    # Filtering
+
+    def _get_filter_dialog(self, sDefaultFilter):
+        """Create the filter dialog for this view."""
+        self._oFilterDialog = FilterDialog(self._oMainWin,
+                self._oConfig, self._oController.filtertype,
+                sDefaultFilter)
+        return True

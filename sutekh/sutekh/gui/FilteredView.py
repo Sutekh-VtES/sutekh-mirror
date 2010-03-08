@@ -9,7 +9,6 @@
 
 import gtk
 import unicodedata
-from sutekh.gui.FilterDialog import FilterDialog
 from sutekh.gui.SearchDialog import SearchDialog
 
 class FilteredView(gtk.TreeView):
@@ -102,6 +101,13 @@ class FilteredView(gtk.TreeView):
 
     # Filtering
 
+    def _get_filter_dialog(self, _sDefaultFilter):
+        """Create the filter dialog if applicable for this view.
+
+           The default doesn't create a dialog, but some subclasses
+           do."""
+        return False
+
     def get_filter(self, oMenu, sDefaultFilter=None):
         """Get the Filter from the FilterDialog.
 
@@ -110,9 +116,8 @@ class FilteredView(gtk.TreeView):
            to set when the dialog is created. This is intended for
            use by GuiCardLookup."""
         if self._oFilterDialog is None:
-            self._oFilterDialog = FilterDialog(self._oMainWin,
-                    self._oConfig, self._oController.filtertype,
-                    sDefaultFilter)
+            if not self._get_filter_dialog(sDefaultFilter):
+                return
 
         self._oFilterDialog.run()
 

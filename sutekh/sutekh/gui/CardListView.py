@@ -9,6 +9,7 @@
 
 import gtk
 from sutekh.gui.FilteredView import FilteredView
+from sutekh.gui.FilterDialog import FilterDialog
 
 class CardListView(FilteredView):
     """Base class for all the card list views in Sutekh."""
@@ -302,3 +303,12 @@ class CardListView(FilteredView):
         # Let gtk handle the rest of the move, since we're not doing
         # anything else funky
         return False
+
+    # Filtering
+
+    def _get_filter_dialog(self, sDefaultFilter):
+        """Create the filter dialog for this view."""
+        self._oFilterDialog = FilterDialog(self._oMainWin,
+                self._oConfig, self._oController.filtertype,
+                sDefaultFilter)
+        return True
