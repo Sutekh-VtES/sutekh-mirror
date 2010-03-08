@@ -169,6 +169,11 @@ class CardSetIndependence(SutekhPlugin):
         oDlg.vbox.pack_start(AutoScrolledWindow(self.oCSView), expand=True)
         self.oCSView.set_select_multiple()
         self.oCSView.exclude_set(self.view.sSetName)
+        # exclude all parents
+        oParentSet = self.oThisCardSet.parent
+        while oParentSet:
+            self.oCSView.exclude_set(oParentSet.name)
+            oParentSet = oParentSet.parent
         # Add filter so we only show the sibling card sets
         oFilter = ParentCardSetFilter([self.oThisCardSet.parent.name])
         self.oCSView.set_filter(oFilter, None)
