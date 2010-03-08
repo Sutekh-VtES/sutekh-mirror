@@ -1,6 +1,9 @@
 08 Mar 2010
  * Change Card count filter to take multiple card sets as well as multiple
    counts.
+ * Fix some bugs in the Card Set independence plugin.
+ * Commit some of the less invasive changes required by the filter dialog
+   rewrite.
 
 26 Feb 2010
  * Update TODO
