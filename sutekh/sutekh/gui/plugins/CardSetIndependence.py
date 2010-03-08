@@ -153,7 +153,7 @@ class CardSetIndependence(SutekhPlugin):
             do_complaint_error("Card Set has no parent, so nothing to test.")
             return None
         if not PhysicalCardSet.selectBy(
-                parentID=self.oThisCardSet.parent.id).count() > 0:
+                parentID=self.oThisCardSet.parent.id).count() > 1:
             do_complaint_error("No sibling card sets, so nothing to test.")
             return None
 
