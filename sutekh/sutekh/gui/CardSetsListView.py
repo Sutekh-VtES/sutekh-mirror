@@ -60,9 +60,9 @@ class CardSetsListView(FilteredView):
         oPath = aSelectedRows[0]
         return oModel.get_name_from_path(oPath)
 
-    def set_selected_card_set(self, sCardSetName):
-        """Set the currently selected card set."""
-        self._oSelection.unselect_all()
+
+    def _select_set(self, sCardSetName):
+        """Add the specified set to the selection"""
         aIters =  [ self._oModel.get_iter_first() ]
         while aIters:
             oIter = aIters.pop()
@@ -76,6 +76,17 @@ class CardSetsListView(FilteredView):
                     aIters.append(self._oModel.iter_children(oIter))
                 oIter = self._oModel.iter_next(oIter)
 
+    def set_selected_card_set(self, sCardSetName):
+        """Set the currently selected card set."""
+        self._oSelection.unselect_all()
+        self._select_set(sCardSetName)
+
+    def set_all_selected_sets(self, aSetNames):
+        """Set all the sets"""
+        self._oSelection.unselect_all()
+        for sCardSetName in aSetNames:
+            self._select_set(sCardSetName)
+
     def get_all_selected_sets(self):
         """Return a list of all the selected sets"""
         oModel, aSelectedRows = self._oSelection.get_selected_rows()
@@ -85,6 +96,10 @@ class CardSetsListView(FilteredView):
         for oPath in aSelectedRows:
             aSets.append(oModel.get_name_from_path(oPath))
         return aSets
+
+    def get_selection_object(self):
+        """Return the selection object for this list"""
+        return self._oSelection
 
     def _check_row_for_entry(self, _oModel, oPath, oIter, sEntry):
         """Check if row matches the entry, and expand it if so"""

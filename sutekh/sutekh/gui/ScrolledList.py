@@ -109,5 +109,7 @@ class ScrolledList(gtk.Frame):
         else:
             oCell.set_property("markup", "")
 
-
+    def get_selection_object(self):
+        """Get a reference to the TreeView selection"""
+        return self._oTreeView.get_selection()
 
