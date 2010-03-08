@@ -1,3 +1,7 @@
+08 Mar 2010
+ * Change Card count filter to take multiple card sets as well as multiple
+   counts.
+
 26 Feb 2010
  * Update TODO
  * Remove the non-py2exe nsis installers, as being no longer needed, and

@@ -1106,12 +1106,17 @@ class CardSetMultiCardCountFilter(DirectFilter):
         # We rely on the joins to limit this to the appropriate card sets
         # pylint: disable-msg=E1101
         # SQLObject methods not detected by pylint
+        aIds = []
         try:
-            aCounts, sCardSetName = aData
-            try:
-                oCS = IPhysicalCardSet(sCardSetName)
-            except SQLObjectNotFound:
-                aCounts = []
+            aCounts, aCardSetName = aData
+            if not isinstance(aCardSetName, list):
+                aCardSetName = [aCardSetName]
+            for sCardSetName in aCardSetName:
+                try:
+                    oCS = IPhysicalCardSet(sCardSetName)
+                    aIds.append(oCS.id)
+                except SQLObjectNotFound:
+                    aCounts = []
         except ValueError:
             aCounts = []
         aCounts = set(aCounts)
@@ -1120,8 +1125,8 @@ class CardSetMultiCardCountFilter(DirectFilter):
             aCounts.remove('0')
             oZeroQuery = NOT(IN(PhysicalCard.q.abstractCardID, Select(
                 PhysicalCard.q.abstractCardID,
-                where=MapPhysicalCardToPhysicalCardSet.q.physicalCardSetID
-                    == oCS.id,
+                where=IN(MapPhysicalCardToPhysicalCardSet.q.physicalCardSetID,
+                    aIds),
                 join=LEFTJOINOn(PhysicalCard, MapPhysicalCardToPhysicalCardSet,
                     PhysicalCard.q.id ==
                     MapPhysicalCardToPhysicalCardSet.q.physicalCardID),
@@ -1132,8 +1137,8 @@ class CardSetMultiCardCountFilter(DirectFilter):
             aCounts.remove('>30')
             oGreater30Query = IN(PhysicalCard.q.abstractCardID, Select(
                 PhysicalCard.q.abstractCardID,
-                where=MapPhysicalCardToPhysicalCardSet.q.physicalCardSetID
-                    == oCS.id,
+                where=IN(MapPhysicalCardToPhysicalCardSet.q.physicalCardSetID,
+                    aIds),
                 join=LEFTJOINOn(PhysicalCard, MapPhysicalCardToPhysicalCardSet,
                     PhysicalCard.q.id ==
                     MapPhysicalCardToPhysicalCardSet.q.physicalCardID),
@@ -1145,8 +1150,8 @@ class CardSetMultiCardCountFilter(DirectFilter):
             # SQLite doesn't like strings here, so convert to int
             oCountFilter = IN(PhysicalCard.q.abstractCardID, Select(
                 PhysicalCard.q.abstractCardID,
-                where=MapPhysicalCardToPhysicalCardSet.q.physicalCardSetID
-                    == oCS.id,
+                where=IN(MapPhysicalCardToPhysicalCardSet.q.physicalCardSetID,
+                    aIds),
                 join=LEFTJOINOn(PhysicalCard, MapPhysicalCardToPhysicalCardSet,
                     PhysicalCard.q.id ==
                     MapPhysicalCardToPhysicalCardSet.q.physicalCardID),

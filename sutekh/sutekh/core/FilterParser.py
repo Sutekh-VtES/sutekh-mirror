@@ -493,9 +493,10 @@ class FilterPartNode(OperatorNode):
         if self.aFilterValues is not None:
             raise RuntimeError("Filter values already set")
         if self.sFilterName in FROM_FILTERS:
-            sCommaList = ",".join(aVals[0])
-            sInternalFilter = self.sFilterName + '=' + sCommaList + 'from' + \
-                    aVals[1]
+            sCountList = ",".join(aVals[0])
+            sSetList = ",".join(aVals[1])
+            sInternalFilter = self.sFilterName + '=' + sCountList + 'from' + \
+                    sSetList
         else:
             sCommaList = ",".join(aVals)
             sInternalFilter = self.sFilterName + '=' + sCommaList

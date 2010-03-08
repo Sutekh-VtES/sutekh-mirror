@@ -208,7 +208,7 @@ class FilterParserTests(SutekhTest):
         aPCSNumberTests = [
                 (Filters.PhysicalCardSetFilter('Test 1'),
                     'CardCount = 4 from "%s"' % aPCSs[0].name,
-                    Filters.CardSetMultiCardCountFilter(('4', aPCSs[0].name))),
+                    Filters.CardSetMultiCardCountFilter(('4', [aPCSs[0].name]))),
                 (Filters.PhysicalCardSetFilter('Test 1'),
                     'CardCount = 7 from "%s"' % aPCSs[0].name,
                     Filters.CardSetMultiCardCountFilter(('7', aPCSs[0].name))),
@@ -219,6 +219,11 @@ class FilterParserTests(SutekhTest):
                     'CardCount in 1, 4 from "%s"' % aPCSs[0].name,
                     Filters.CardSetMultiCardCountFilter((['1', '4'],
                         aPCSs[0].name))),
+                (Filters.PhysicalCardSetFilter('Test 1'),
+                    'CardCount in 1, 4 from "%s", "%s"' % (aPCSs[0].name,
+                        aPCSs[1].name),
+                    Filters.CardSetMultiCardCountFilter((['1', '4'],
+                        [aPCSs[0].name, aPCSs[1].name]))),
                 # Cards in 'Test 2' with zero count in 'Test 1'
                 (Filters.PhysicalCardSetFilter('Test 2'),
                     'CardCount = 0 from "%s"' % aPCSs[0].name,
