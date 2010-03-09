@@ -1,5 +1,6 @@
 09 Mar 2010
  * Add the new tree-model based filter dialog.
+ * Add plugin to determine some expansion & rarity stats.
 
 08 Mar 2010
  * Change Card count filter to take multiple card sets as well as multiple
