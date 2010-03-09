@@ -10,7 +10,6 @@
 
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error, \
                                     do_complaint_buttons
-from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 from sutekh.core import FilterParser
 from sutekh.gui.ConfigFile import ConfigFileListener
 from sutekh.gui.FilterEditor import FilterEditor
@@ -89,7 +88,7 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
         self.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
         self.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
 
-        self.vbox.pack_start(AutoScrolledWindow(self.__oFilterEditor, True))
+        self.vbox.pack_start(self.__oFilterEditor)
 
         # set initial filter
 

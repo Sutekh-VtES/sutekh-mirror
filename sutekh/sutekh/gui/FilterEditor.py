@@ -7,9 +7,10 @@
 
 """Widget for editing filters."""
 
-from sutekh.gui.MultiSelectComboBox import MultiSelectComboBox
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
+from sutekh.gui.CardSetsListView import CardSetsListView
+from sutekh.gui.ScrolledList import ScrolledList
 from sutekh.core.FilterParser import FilterNode, BinOpNode, NotOpNode, \
         FilterPartNode
 from sutekh.core import FilterParser
@@ -17,7 +18,9 @@ import gtk
 import pango
 import gobject
 
-class FilterEditor(gtk.Frame):
+DRAG_TARGETS = [ ('STRING', 0, 0), ('text/plain', 0, 0) ]
+
+class FilterEditor(gtk.Alignment):
     # pylint: disable-msg=R0904
     # gtk.Widget, so many public methods
     """GTK component for editing Sutekh filter ASTs.
@@ -26,20 +29,17 @@ class FilterEditor(gtk.Frame):
        which the user can extend or remove from.
        """
     def __init__(self, oAST, sFilterType, oParser, oFilterDialog):
-        super(FilterEditor, self).__init__(" Filter Editor ")
-        self.__sFilterType = sFilterType
+        # Child widget absorbs all free space
+        super(FilterEditor, self).__init__(xscale=1.0, yscale=1.0)
         self.__oParser = oParser
         self.__oFilterDialog = oFilterDialog # Dialog we're a child of
 
-        self.__oBoxModel = None
-        self.__oBoxEditor = None
+        self.__oPanes = FilterModelPanes(sFilterType, oFilterDialog)
 
         oNameLabel = gtk.Label("Filter name:")
         self.__oNameEntry = gtk.Entry()
         self.__oNameEntry.set_width_chars(30)
 
-        oTextEditorButton = gtk.Button("Edit Query Text")
-        oTextEditorButton.connect("clicked", self.__show_text_editor)
         oHelpButton = gtk.Button("Help")
         oHelpButton.connect("clicked", self.__show_help_dialog)
 
@@ -47,11 +47,11 @@ class FilterEditor(gtk.Frame):
         oHBox.pack_start(oNameLabel, expand=False)
         oHBox.pack_start(self.__oNameEntry, expand=False)
         oHBox.pack_end(oHelpButton, expand=False)
-        oHBox.pack_end(oTextEditorButton, expand=False)
 
         self.__oVBox = gtk.VBox(spacing=5)
         self.__oVBox.pack_end(oHBox, expand=False)
         self.__oVBox.pack_end(gtk.HSeparator(), expand=False)
+        self.__oVBox.pack_start(self.__oPanes, expand=True)
 
         self.add(self.__oVBox)
 
@@ -67,11 +67,11 @@ class FilterEditor(gtk.Frame):
 
     def get_current_ast(self):
         """Get the current AST represented by the editor."""
-        oNewAST = self.__oBoxModel.get_ast()
+        oNewAST = self.__oPanes.get_ast()
         if oNewAST is None:
             return oNewAST
 
-        dValues = self.get_current_values()
+        dValues = self.__oPanes.get_current_values()
         for aVals in dValues.values():
             if not aVals:
                 do_complaint_error("Some filter values have not been " \
@@ -92,31 +92,7 @@ class FilterEditor(gtk.Frame):
 
            Also used to setup the filter initially.
            """
-        if self.__oBoxEditor is None:
-            dVars = {}
-        else:
-            dVars = self.get_current_values()
-            self.__oVBox.remove(self.__oBoxEditor)
-
-        self.__oBoxModel = FilterBoxModel(oAST, self.__sFilterType)
-        self.__oBoxEditor = FilterBoxModelEditor(self.__oBoxModel,
-                self.__oFilterDialog)
-        self.__oVBox.pack_start(self.__oBoxEditor)
-        self.show_all()
-
-        self.set_current_values(dVars)
-
-    def get_current_values(self):
-        """Get the current values in the editor."""
-        return self.__oBoxEditor.get_current_values()
-
-    def set_current_values(self, dVars):
-        """Set the values in the editor to those in dVars."""
-        self.__oBoxEditor.set_current_values(dVars)
-
-    def get_current_text(self):
-        """Get the current text in the editor."""
-        return self.__oBoxModel.get_text()
+        self.__oPanes.replace_ast(oAST)
 
     def set_name(self, sName):
         """Set the filter name."""
@@ -130,37 +106,6 @@ class FilterEditor(gtk.Frame):
         """Connect a callback to the name entry change signal."""
         self.__oNameEntry.connect('changed', fCallback)
 
-    def __show_text_editor(self, _oTextEditorButton):
-        """Show a gtk.Entry widget so filters can be directly typed by the
-           user."""
-        oDlg = SutekhDialog("Query Editor", self.__oFilterDialog,
-                gtk.DIALOG_DESTROY_WITH_PARENT,
-                (gtk.STOCK_OK, gtk.RESPONSE_OK,
-                 gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
-
-        oDlg.set_default_size(600, -1)
-
-        oEntry = gtk.Entry()
-        oEntry.set_text(self.get_current_text())
-        # pylint: disable-msg=E1101
-        # vbox confuse pylint
-        oDlg.vbox.pack_start(oEntry)
-        oDlg.show_all()
-
-        try:
-            iResponse = oDlg.run()
-            if iResponse == gtk.RESPONSE_OK:
-                sNewFilter = oEntry.get_text()
-                try:
-                    oAST = self.__oParser.apply(sNewFilter)
-                except ValueError, oExcep:
-                    do_complaint_error("Invalid Filter: %s\n Error: %s"
-                            % (sNewFilter, str(oExcep)))
-                else:
-                    self.replace_ast(oAST)
-        finally:
-            oDlg.destroy()
-
     def __show_help_dialog(self, _oHelpButton):
         """Show a dialog window with the helptext from the filters."""
         oDlg = SutekhDialog("Help on Filters", self.__oFilterDialog,
@@ -172,7 +117,7 @@ class FilterEditor(gtk.Frame):
         # vbox confuse pylint
 
         oHelpView = AutoScrolledWindow(FilterHelpTextView(
-            self.__oBoxModel.get_filter_types()))
+            self.__oPanes.get_filter_types()))
         oDlg.vbox.pack_start(oHelpView)
         oDlg.show_all()
 
@@ -204,6 +149,7 @@ class FilterBoxModel(list):
 
         self.sFilterType = sFilterType
         self.bNegate = False
+        self.bDisabled = False
         self.oVarNameMaker = oVarNameMaker
 
         if type(oAST) is FilterNode:
@@ -263,7 +209,11 @@ class FilterBoxModel(list):
 
     def get_ast(self):
         """Return an AST representation of the filter."""
-        aChildASTs = [oChild.get_ast() for oChild in self]
+        if self.bDisabled:
+            return None
+
+        aChildASTs = [oChild.get_ast() for oChild in self
+                if not oChild.bDisabled]
         aChildASTs = [oChild for oChild in aChildASTs if oChild is not None]
 
         if len(aChildASTs) == 0:
@@ -322,6 +272,288 @@ class FilterBoxModel(list):
         """Remove a filter item or box from this box."""
         self.remove(oChild)
 
+
+class FilterModelPanes(gtk.HBox):
+    """Widget to hold the different panes of the Filter editor"""
+
+    def __init__(self, sFilterType, oDialog):
+        super(FilterModelPanes, self).__init__()
+        # Create the 3 panes
+        self.__oBoxModel = None
+        self.__sFilterType = sFilterType
+        self.__oSelectBar = FilterValuesBox(oDialog)
+        self.__oEditor = FilterBoxModelEditor(self.__oSelectBar)
+        self.__oToolbar = FilterEditorToolbar(sFilterType)
+
+        self.pack_start(AutoScrolledWindow(self.__oToolbar, True),
+                expand=True)
+        self.pack_start(AutoScrolledWindow(self.__oEditor, True), expand=True)
+        self.pack_start(self.__oSelectBar, expand=True)
+
+    def get_current_values(self):
+        """Get the list of values from the editor"""
+        return self.__oEditor.get_current_values()
+
+    def get_filter_types(self):
+        """Get a listing of all filter types"""
+        return self.__oBoxModel.get_filter_types()
+
+    def replace_ast(self, oAST):
+        """Replace the AST in the tree model"""
+        dVars = self.__oEditor.get_current_values()
+
+        self.__oBoxModel = FilterBoxModel(oAST, self.__sFilterType)
+        self.__oEditor.set_box_model(self.__oBoxModel)
+        self.__oEditor.load()
+        self.__oEditor.set_current_values(dVars)
+
+    def get_ast(self):
+        """Get the current ast"""
+        if self.__oBoxModel:
+            return self.__oBoxModel.get_ast()
+        return None
+
+    def get_values(self):
+        """Get the current values"""
+        if self.__oBoxModel:
+            return self.__oEditor.get_values()
+        return None
+
+class FilterEditorToolbar(gtk.TreeView):
+    """Toolbar listing the possible filter elements"""
+
+    def __init__(self, sFilterType):
+        self.__oListStore = gtk.ListStore(gobject.TYPE_STRING,
+                gobject.TYPE_STRING)
+        super(FilterEditorToolbar, self).__init__(self.__oListStore)
+        oTextCell = gtk.CellRendererText()
+        oColumn = gtk.TreeViewColumn("Filter Element", oTextCell, text=0)
+        oColumn.set_spacing(2)
+        self.append_column(oColumn)
+        self.__sFilterType = sFilterType
+        # Get supported filters
+        aFilters = [('Filter Group ..', 'Filter Group')]
+        for oFilterType in sorted(self.get_filter_types(),
+                key=lambda x: x.description):
+            aFilters.append((oFilterType.description, oFilterType.keyword))
+        # Create buttons for each of the filters we support
+        self.drag_source_set(gtk.gdk.BUTTON1_MASK | gtk.gdk.BUTTON3_MASK,
+                DRAG_TARGETS, gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
+        for tInfo in aFilters:
+            self.__oListStore.append(tInfo)
+
+        self.connect('drag_data_get', self.drag_filter)
+        self.get_selection().set_mode(gtk.SELECTION_SINGLE)
+
+    def get_filter_types(self):
+        """Get the types support by this filter."""
+        return [oFilterType for oFilterType in FilterParser.PARSER_FILTERS
+                if self.__sFilterType in oFilterType.types]
+
+    def drag_filter(self, _oBtn, _oContext, oSelectionData, _oInfo, _oTime):
+        """Create a drag info for this filter"""
+        _oModel, oIter = self.get_selection().get_selected()
+        if oIter:
+            sSelect = 'NewFilter: %s' % self.__oListStore.get_value(oIter, 1)
+            oSelectionData.set(oSelectionData.target, 8, sSelect)
+
+
+class FilterValuesBox(gtk.VBox):
+    """Holder for the value setting objects"""
+
+    def __init__(self, oDialog):
+        super(FilterValuesBox, self).__init__()
+        self._oEmptyWidget = gtk.VBox()
+        self._oParent = oDialog
+        self._oEmptyWidget.pack_start(gtk.Label(
+            'Select an active\nfilter element'), expand=False)
+        self._oFilter = None
+        self._oBoxModelEditor = None
+        oCheckBox = gtk.HBox()
+        self.__oDisable = gtk.CheckButton('Disable')
+        self.__oNegate = gtk.CheckButton('Negate')
+        self.__oDelete = gtk.Button('Delete')
+
+        self.__oDisable.set_sensitive(False)
+        self.__oDelete.set_sensitive(False)
+        self.__oNegate.set_sensitive(False)
+
+        oCheckBox.pack_start(self.__oDisable, expand=True)
+        oCheckBox.pack_start(self.__oNegate, expand=True)
+        self.pack_start(oCheckBox, expand=False)
+        self.pack_start(self.__oDelete, expand=False)
+        self.__oDisable.connect('toggled', self.toggle_disabled)
+        self.__oDelete.connect('clicked', self.delete)
+        self.__oNegate.connect('toggled', self.toggle_negate)
+
+        self._oWidget = self._oEmptyWidget
+        self.pack_start(self._oWidget, expand=True)
+        self.show_all()
+
+    def set_widget(self, oFilter, oBoxModelEditor):
+        """Replace the current widget with the correct widget for the
+           new filter"""
+        self._oBoxModelEditor = oBoxModelEditor
+        if self._oWidget:
+            self.remove(self._oWidget)
+            self._oWidget = None
+        if isinstance(oFilter, FilterBoxModel):
+            # Select between box options
+            self.__oDisable.set_active(oFilter.bDisabled)
+            self.__oNegate.set_inconsistent(True)
+            self.__oNegate.set_sensitive(False)
+            self._oWidget = ScrolledList('Filter Group Type')
+            self._oWidget.set_select_single()
+            self._oWidget.fill_list(oBoxModelEditor.BOXTYPE_ORDER)
+            self.set_box_model_value(oFilter)
+            self._oWidget.get_selection_object().connect('changed',
+                    self.update_box_model, oFilter)
+        elif isinstance(oFilter, FilterBoxItem):
+            self.__oDisable.set_active(oFilter.bDisabled)
+            self.__oNegate.set_inconsistent(False)
+            self.__oNegate.set_active(oFilter.bNegated)
+            self.__oNegate.set_sensitive(True)
+            if oFilter.iValueType == FilterBoxItem.LIST:
+                # Select appropriate list widget for this filter
+                if oFilter.sFilterName == "PhysicalSet" or \
+                        oFilter.sFilterName == "ParentCardSet":
+                    # Special case to use card set list widget
+                    oSetList = CardSetsListView(None, self._oParent)
+                    oSetList.set_select_multiple()
+                    if oFilter.aCurValues:
+                        oSetList.set_all_selected_sets(oFilter.aCurValues)
+                    oSetList.get_selection_object().connect('changed',
+                            self.update_set_list, oFilter, oSetList)
+                    self._oWidget = AutoScrolledWindow(oSetList, False)
+                else:
+                    # Ordinary list
+                    self._oWidget = ScrolledList('Select Filter Values')
+                    self._oWidget.set_select_multiple()
+                    self._oWidget.fill_list(oFilter.aValues)
+                    if oFilter.aCurValues:
+                        self._oWidget.set_selection(oFilter.aCurValues)
+                    self._oWidget.get_selection_object().connect('changed',
+                            self.update_filter_list, oFilter)
+            elif oFilter.iValueType == FilterBoxItem.ENTRY:
+                self._oWidget = gtk.VBox()
+                self._oWidget.pack_start(gtk.Label('Enter Text'), expand=False)
+                oEntry = gtk.Entry()
+                self._oWidget.pack_start(oEntry, expand=False)
+                if oFilter.aCurValues:
+                    oEntry.set_text(oFilter.aCurValues[0])
+                oEntry.connect('changed', self.update_edit_box, oFilter)
+            elif oFilter.iValueType == FilterBoxItem.LIST_FROM:
+                self._oWidget = gtk.VBox()
+                aCurCounts, aFrom = [], []
+                if oFilter.aCurValues:
+                    aCurCounts, aFrom = oFilter.aCurValues
+                oCountList = ScrolledList('Select Counts')
+                oCountList.set_select_multiple()
+                oCountList.fill_list(oFilter.aValues[0])
+                if aCurCounts:
+                    oCountList.set_selection(aCurCounts)
+                oSetList = CardSetsListView(None, self._oParent)
+                oSetList.set_select_multiple()
+                if aFrom:
+                    oSetList.set_all_selected_sets(aFrom)
+                oSetList.get_selection_object().connect('changed',
+                        self.update_count_set, oFilter, oSetList)
+                oCountList.get_selection_object().connect('changed',
+                            self.update_count_list, oFilter, oCountList)
+                self._oWidget.pack_start(oCountList, expand=True)
+                oLabel = gtk.Label()
+                oLabel.set_markup('<b>From</b>')
+                self._oWidget.pack_start(oLabel, expand=False)
+                self._oWidget.pack_start(AutoScrolledWindow(oSetList, False),
+                        expand=True)
+        else:
+            # No selected widget, so clear everything
+            self._oWidget = self._oEmptyWidget
+            self.disable_all_buttons()
+        self.pack_start(self._oWidget, expand=True)
+        self.show_all()
+
+    def set_box_model_value(self, oBoxModel):
+        """Set the correct selection for this box model"""
+        for sDesc, tInfo in self._oBoxModelEditor.BOXTYPE.iteritems():
+            sBoxType, bNegate = tInfo
+            if oBoxModel.sBoxType == sBoxType and oBoxModel.bNegate == bNegate:
+                self._oWidget.set_selected(sDesc)
+
+    def update_box_model(self, _oSelection, oBoxModel):
+        """Update the box model to the current selection"""
+        aSelected = self._oWidget.get_selection()
+        if not aSelected:
+            return # We don't do anything special if nothing's selected
+        for sDesc, tInfo in self._oBoxModelEditor.BOXTYPE.iteritems():
+            if sDesc == aSelected[0]:
+                oBoxModel.sBoxType, oBoxModel.bNegate = tInfo
+        self._oBoxModelEditor.update(oBoxModel)
+
+    def update_filter_list(self, _oSelection, oFilter):
+        """Update the box model to the current selection"""
+        aSelected = self._oWidget.get_selection()
+        oFilter.aCurValues = aSelected
+        self._oBoxModelEditor.update_list(oFilter)
+
+    def update_count_list(self, _oSelection, oFilter, oCountList):
+        """Update the box model to the current selection"""
+        aSelected = oCountList.get_selection()
+        if aSelected:
+            oFilter.aCurValues[0] = aSelected
+        else:
+            oFilter.aCurValues[0] = None
+        self._oBoxModelEditor.update_count_list(oFilter)
+
+    def update_set_list(self, _oSelection, oFilter, oSetList):
+        """Update the box model to the current selection"""
+        aSelected = oSetList.get_all_selected_sets()
+        oFilter.aCurValues = aSelected
+        self._oBoxModelEditor.update_list(oFilter)
+
+    def update_count_set(self, _oSelection, oFilter, oSetList):
+        """Update the box model to the current selection"""
+        aSelected = oSetList.get_all_selected_sets()
+        if aSelected:
+            oFilter.aCurValues[1] = aSelected
+        else:
+            oFilter.aCurValues[1] = None
+        self._oBoxModelEditor.update_count_list(oFilter)
+
+    def update_edit_box(self, oEntry, oFilter):
+        """Update the box model with the current text"""
+        oFilter.aCurValues = [oEntry.get_text()]
+        self._oBoxModelEditor.update_entry(oFilter)
+
+    def toggle_negate(self, oButton):
+        """Toggle the disabled flag for a section of the filter"""
+        if self._oBoxModelEditor:
+            self._oBoxModelEditor.set_negate(oButton.get_active())
+
+    def toggle_disabled(self, oButton):
+        """Toggle the disabled flag for a section of the filter"""
+        if self._oBoxModelEditor:
+            self._oBoxModelEditor.set_disabled(oButton.get_active())
+
+    def delete(self, _oButton):
+        """Delete a filter element"""
+        if self._oBoxModelEditor:
+            self._oBoxModelEditor.delete()
+
+    def disable_all_buttons(self):
+        """Disable all the buttons"""
+        self.__oDisable.set_sensitive(False)
+        self.__oDelete.set_sensitive(False)
+        self.__oNegate.set_sensitive(False)
+
+    def enable_delete(self):
+        """Enable the delete button"""
+        self.__oDelete.set_sensitive(True)
+
+    def enable_disable(self):
+        """Enable the delete button"""
+        self.__oDisable.set_sensitive(True)
+
 class FilterBoxModelEditor(gtk.VBox):
     """Widget for editing a FilterBoxModel."""
     # pylint: disable-msg=R0904
@@ -338,89 +570,326 @@ class FilterBoxModelEditor(gtk.VBox):
         'None of ...',
     ]
 
-    def __init__(self, oBoxModel, oParentWin):
-        super(FilterBoxModelEditor, self).__init__(spacing=5)
-        self.__oBoxModel = oBoxModel
-        self.__aChildren = []
-        self.__fRemoveBox = None # set by parent (if any)
-        self.__oParentWin = oParentWin
+    def __init__(self, oValuesWidget):
+        super(FilterBoxModelEditor, self).__init__()
+        self.__oTreeStore = gtk.TreeStore(gobject.TYPE_STRING,
+                gobject.TYPE_PYOBJECT)
+        self.__oTreeView = gtk.TreeView(self.__oTreeStore)
+        self.pack_start(self.__oTreeView, expand=True)
+        oTextCell = gtk.CellRendererText()
+        oColumn = gtk.TreeViewColumn("Filter", oTextCell, markup=0)
+        self.__oTreeView.append_column(oColumn)
 
-        self.__oBoxTypeSelector = gtk.combo_box_new_text()
-        self.pack_start(self.__oBoxTypeSelector, expand=False)
+        self.__oTreeView.drag_dest_set(gtk.DEST_DEFAULT_ALL, DRAG_TARGETS,
+                gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
 
-        for iLoop, sDesc in enumerate(self.BOXTYPE_ORDER):
-            self.__oBoxTypeSelector.append_text(sDesc)
-            sBoxType, bNegate = self.BOXTYPE[sDesc]
-            if self.__oBoxModel.sBoxType == sBoxType \
-               and self.__oBoxModel.bNegate == bNegate:
-                self.__oBoxTypeSelector.set_active(iLoop)
+        self.__oTreeView.drag_source_set(
+                gtk.gdk.BUTTON1_MASK | gtk.gdk.BUTTON3_MASK,
+                DRAG_TARGETS, gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
 
-        self.__oBoxTypeSelector.connect('changed', self.__change_boxtype)
+        self.__oTreeView.connect('drag-data-received', self.drag_drop_handler)
 
-        oChildHBox = gtk.HBox(spacing=10)
-        oChildHBox.pack_start(gtk.VSeparator(), expand=False)
-        self.__oChildArea = gtk.VBox(spacing=5)
-        oChildHBox.pack_start(self.__oChildArea)
-        self.pack_start(oChildHBox, expand=False)
+        self.__oTreeView.connect('drag_data_get', self.drag_filter)
 
-        for oChild in self.__oBoxModel:
-            if type(oChild) is FilterBoxModel:
-                oModelEditor = FilterBoxModelEditor(oChild, self.__oParentWin)
-                oModelEditor.register_remove_box(self.__remove_model)
-                self.__aChildren.append(oModelEditor)
-                self.__oChildArea.pack_start(oModelEditor, expand=False)
+        self.__oBoxModel = None
+        self.oCurSelectIter = None
+        oSelection = self.__oTreeView.get_selection()
+        oSelection.set_mode(gtk.SELECTION_SINGLE)
+        oSelection.connect('changed', self.update_values_widget, oValuesWidget)
+
+    def load(self):
+        """Load the boxmodel into the TreeView"""
+        def do_add_iter(oIter, oModel, bDisabled):
+            """Recursively add elements of the box model"""
+            oThisIter = self.__oTreeStore.append(oIter)
+            sSpan = '<span foreground="red">'
+            if hasattr(oModel, 'sFilterName'):
+                if oModel.bDisabled or bDisabled:
+                    sSpan = '<span foreground="grey">'
+                if oModel.bNegated:
+                    sNot = 'NOT '
+                else:
+                    sNot = ''
+                self.__oTreeStore.set(oThisIter, 0,
+                        '%s%s%s</span>' % (sSpan, sNot, oModel.sFilterName),
+                        1, oModel)
+                if oModel.iValueType == oModel.LIST_FROM:
+                    # Load LIST_FROM
+                    aValues, aFrom = oModel.aCurValues
+                    if aValues:
+                        for sValue in aValues:
+                            oChild = self.__oTreeStore.append(oThisIter)
+                            self.__oTreeStore.set(oChild, 0,
+                                    '%s%s</span>' % (sSpan, sValue), 1, None)
+                    else:
+                        oChild = self.__oTreeStore.append(oThisIter)
+                        self.__oTreeStore.set(oChild, 0,
+                                '%s<i>No Values Set</i></span>' % sSpan,
+                                1, None)
+                    oChild = self.__oTreeStore.append(oThisIter)
+                    self.__oTreeStore.set(oChild, 0,
+                            '%s<b>From</b></span>' % sSpan, 1, None)
+                    if aFrom:
+                        for sValue in aFrom:
+                            oChild = self.__oTreeStore.append(oThisIter)
+                            self.__oTreeStore.set(oChild, 0,
+                                    '%s%s</span>' % (sSpan, sValue), 1, None)
+                    else:
+                        oChild = self.__oTreeStore.append(oThisIter)
+                        self.__oTreeStore.set(oChild, 0,
+                                '%s<i>No Values Set</i></span>' % sSpan,
+                                1, None)
+                elif oModel.aCurValues and oModel.aValues:
+                    for sValue in oModel.aCurValues:
+                        oChild = self.__oTreeStore.append(oThisIter)
+                        self.__oTreeStore.set(oChild, 0,
+                                '%s%s</span>' % (sSpan, sValue), 1, None)
+                elif oModel.aCurValues:
+                    oChild = self.__oTreeStore.append(oThisIter)
+                    self.__oTreeStore.set(oChild, 0,
+                            '%s%s</span>' % (sSpan, oModel.aCurValues[0]),
+                            1, None)
+                else:
+                    oChild = self.__oTreeStore.append(oThisIter)
+                    self.__oTreeStore.set(oChild, 0,
+                            '%s<i>No Values Set</i></span>' % sSpan,
+                            1, None)
+            elif hasattr(oModel, 'sBoxType'):
+                # Box Model, so lookup correct string
+                if oModel.bDisabled or bDisabled:
+                    sSpan = '<span foreground="grey">'
+                    bDisabled = True
+                for sDesc, tInfo in self.BOXTYPE.iteritems():
+                    sBoxType, bNegate = tInfo
+                    if oModel.sBoxType == sBoxType \
+                            and oModel.bNegate == bNegate:
+                        self.__oTreeStore.set(oThisIter, 0,
+                                '%s%s</span>' % (sSpan, sDesc), 1, oModel)
+                # iterate over children
+                for oSubModel in oModel:
+                    do_add_iter(oThisIter, oSubModel, bDisabled)
             else:
-                oItemEditor = FilterBoxItemEditor(oChild, self.__oParentWin)
-                oItemEditor.connect_remove_button(self.__remove_filter_part)
-                self.__aChildren.append(oItemEditor)
-                self.__oChildArea.pack_start(oItemEditor, expand=False)
+                # Something else
+                pass
 
-        self.pack_start(gtk.HSeparator(), expand=False)
+        self.__oTreeStore.clear()
+        if self.__oBoxModel is None:
+            return
+        # Walk the box model, creating items as we need them
+        do_add_iter(None, self.__oBoxModel, False)
+        self.__oTreeView.expand_all()
 
-        oHBox = gtk.HBox()
-        self.pack_start(oHBox, expand=False)
-
-        oAddButton = gtk.Button("+")
-        oHBox.pack_start(oAddButton, expand=False)
-
-        oTypeSelector = self._make_type_list()
-        oHBox.pack_start(oTypeSelector, expand=False)
-
-        oAddButton.connect('clicked', self.__add_filter_part, oTypeSelector)
-
-    def _make_type_list(self):
-        """Create a combo box to select the filter type."""
-        oTypeStore = gtk.ListStore(gobject.TYPE_STRING, gobject.TYPE_STRING,)
-        oTypeSelector = gtk.ComboBox(oTypeStore)
-        oCell = gtk.CellRendererText()
-        oTypeSelector.pack_start(oCell, True)
-        oTypeSelector.add_attribute(oCell, 'text', 0)
-
-        for oFilterType in self.__oBoxModel.get_filter_types():
-            oIter = oTypeStore.append(None)
-            oTypeStore.set(oIter, 0, oFilterType.description,
-                                  1, oFilterType.keyword)
-        oIter = oTypeStore.append(None)
-        oTypeStore.set(oIter, 0, "Sub-Filter",
-                              1, None)
-
-        return oTypeSelector
-
-    def get_title(self):
-        """Get the correct title for this box"""
-        if self.__oBoxModel.sBoxType == FilterBoxModel.AND:
-            return "All of ..."
+    def drag_drop_handler(self, _oWindow, oDragContext, iXPos, iYPos,
+            oSelectionData, _oInfo, oTime):
+        """Handle drops from the filter toolbar"""
+        if not oSelectionData and oSelectionData.format != 8:
+            oDragContext.finish(False, False, oTime)
         else:
-            return "One of ..."
+            sData =  oSelectionData.data
+            if sData.startswith('NewFilter: ') or \
+                    sData.startswith('MoveFilter: '):
+                sSource, sFilter = [x.strip() for x in sData.split(':', 1)]
+                # Check we have an acceptable drop position
+                tInfo = self.__oTreeView.get_dest_row_at_pos(iXPos, iYPos)
+                iIndex = 0
+                if not tInfo:
+                    oIter = self.__oTreeStore.get_iter_root()
+                    iIndex = -1
+                else:
+                    oPath, iDropPos = tInfo
+                    oIter = self.__oTreeStore.get_iter(oPath)
+                    if self.__oTreeStore.iter_depth(oIter) > 0 and \
+                            iDropPos == gtk.TREE_VIEW_DROP_BEFORE:
+                        # Find the iter immediately before this one, since
+                        # that's our actual target
+                        oParIter = self.__oTreeStore.iter_parent(oIter)
+                        oPrevIter = oParIter
+                        oNextIter = self.__oTreeStore.iter_children(oParIter)
+                        while self.__oTreeStore.get_path(oNextIter) != oPath:
+                            oPrevIter = oNextIter
+                            oNextIter = self.__oTreeStore.iter_next(oPrevIter)
+                        oIter = oPrevIter
+                # oIter now points to the right point to insert
+                oFilterObj = self.__oTreeStore.get_value(oIter, 1)
+                if not hasattr(oFilterObj, 'sBoxType'):
+                    # Need to insert into parent box model
+                    oTempIter = oIter
+                    oInsertObj = oFilterObj
+                    while not hasattr(oInsertObj, 'sBoxType'):
+                        oTempIter = self.__oTreeStore.iter_parent(oTempIter)
+                        oInsertObj = self.__oTreeStore.get_value(oTempIter, 1)
+                        if oFilterObj is None:
+                            # Bounce this up a level to
+                            oFilterObj = oInsertObj
+                    # We insert after this filter
+                    iIndex = oInsertObj.index(oFilterObj) + 1
+                else:
+                    oInsertObj = oFilterObj
+                if sSource == 'NewFilter':
+                    if sFilter == 'Filter Group':
+                        oInsertObj.add_child_box(oInsertObj.AND)
+                    else:
+                        oInsertObj.add_child_item(sFilter)
+                else:
+                    # Find the dragged filter and remove it from it's current
+                    # position
+                    oMoveIter = self.__oTreeStore.get_iter_from_string(sFilter)
+                    oMoveObj = self.__oTreeStore.get_value(oMoveIter, 1)
+                    oParent  = self.__oTreeStore.get_value(
+                            self.__oTreeStore.iter_parent(oMoveIter), 1)
+                    oParent.remove(oMoveObj)
+                    oInsertObj.append(oMoveObj)
+                # Move to the correct place
+                if iIndex >= 0:
+                    oAddedFilter = oInsertObj.pop()
+                    oInsertObj.insert(iIndex, oAddedFilter)
+                self.load()
+            else:
+                oDragContext.finish(False, False, oTime)
+
+    def drag_filter(self, _oBtn, _oContext, oSelectionData, _oInfo, _oTime):
+        """Create a drag info for this filter"""
+        _oModel, oIter = self.__oTreeView.get_selection().get_selected()
+        if oIter and self.__oTreeStore.iter_depth(oIter) > 0:
+            # We don't allow the root node to be dragged
+            oFilter = self.__oTreeStore.get_value(oIter, 1)
+            if oFilter is None:
+                # Dragging a value moves the entire filter
+                oIter = self.__oTreeStore.iter_parent(oIter)
+            sSelect = 'MoveFilter: %s' % self.__oTreeStore.get_string_from_iter(oIter)
+            oSelectionData.set(oSelectionData.target, 8, sSelect)
+
+    def set_box_model(self, oBoxModel):
+        """Set the box model to the correct value"""
+        self.__oBoxModel = oBoxModel
+
+    def update_values_widget(self, _oTreeSelection, oValuesWidget):
+        """Update the values widget to the new selection"""
+        # Get the current selected row
+        _oModel, oIter = self.__oTreeView.get_selection().get_selected()
+        oFilterObj = None
+        if oIter:
+            oFilterObj = self.__oTreeStore.get_value(oIter, 1)
+            while oFilterObj is None:
+                oIter = self.__oTreeStore.iter_parent(oIter)
+                if oIter:
+                    oFilterObj = self.__oTreeStore.get_value(oIter, 1)
+        self.oCurSelectIter = oIter
+        if oFilterObj is None:
+            oValuesWidget.set_widget(None, self)
+            return
+        elif oFilterObj.bDisabled:
+            oValuesWidget.set_widget(None, self)
+        else:
+            oValuesWidget.set_widget(oFilterObj, self)
+        if self.__oTreeStore.iter_depth(self.oCurSelectIter) > 0:
+            oValuesWidget.enable_disable()
+            oValuesWidget.enable_delete()
+        else:
+            oValuesWidget.disable_all_buttons()
+
+    def update(self, oBoxModel):
+        """Update the listing for the given box model"""
+        for sDesc, tInfo in self.BOXTYPE.iteritems():
+            sBoxType, bNegate = tInfo
+            if oBoxModel.sBoxType == sBoxType and oBoxModel.bNegate == bNegate:
+                self.__oTreeStore.set(self.oCurSelectIter, 0,
+                        '<span foreground="red">%s</span>' % sDesc)
+
+    def update_entry(self, oFilterItem):
+        """Update the filter with the current text"""
+        oChild = self.__oTreeStore.iter_children(self.oCurSelectIter)
+        if not oChild:
+            # No children, so oCurSelectIter is the one we want
+            oChild = self.oCurSelectIter
+        sText = oFilterItem.aCurValues[0]
+        if not sText:
+            sText = '<i>No Values Set</i>'
+        self.__oTreeStore.set(oChild, 0,
+                '<span foreground="red">%s</span>' % sText,
+                    1, None)
+        self.__oTreeView.expand_to_path(self.__oTreeStore.get_path(oChild))
+        self.__oTreeView.expand_row(self.__oTreeStore.get_path(oChild), True)
+
+
+    def _update_cur_iter_with_list(self, aValues):
+        """Fill in the list values"""
+        oChild = self.__oTreeStore.iter_children(self.oCurSelectIter)
+        oCurPath, _oCol = self.__oTreeView.get_cursor()
+        oCurIter = self.__oTreeStore.get_iter(oCurPath)
+        iPos = 0
+        iIndex = -1
+        while oChild:
+            oNext = self.__oTreeStore.iter_next(oChild)
+            if not self.__oTreeStore.get_path(oChild) == \
+                    self.__oTreeStore.get_path(oCurIter):
+                self.__oTreeStore.remove(oChild)
+            else:
+                iIndex = iPos
+            oChild = oNext
+            iPos += 1
+        if iIndex < 0:
+            # We deleted everything, so add 1 child
+            oCurIter = self.__oTreeStore.append(self.oCurSelectIter)
+            iIndex = 0
+        if aValues:
+            iIndex = min(len(aValues) - 1, iIndex)
+            iPos = 0
+            for sValue in aValues:
+                if iPos == iIndex:
+                    oChild = oCurIter
+                elif iPos < iIndex:
+                    oChild = self.__oTreeStore.insert_before(
+                            self.oCurSelectIter, oCurIter)
+                else:
+                    oChild = self.__oTreeStore.append(self.oCurSelectIter)
+                if sValue is not None:
+                    self.__oTreeStore.set(oChild, 0,
+                            '<span foreground="red">%s</span>' % sValue,
+                            1, None)
+                else:
+                    self.__oTreeStore.set(oChild, 0,
+                            '<span foreground="red"><i>No Values Set</i></span>',
+                            1, None)
+                iPos += 1
+        else:
+            self.__oTreeStore.set(oCurIter, 0,
+                    '<span foreground="red"><i>No Values Set</i></span>',
+                    1, None)
+        self.__oTreeView.expand_to_path(self.__oTreeStore.get_path(oCurIter))
+        self.__oTreeView.expand_row(self.__oTreeStore.get_path(oCurIter), True)
+
+    def update_list(self, oFilterItem):
+        """Update the list to show the current values"""
+        self._update_cur_iter_with_list(oFilterItem.aCurValues)
+
+    def update_count_list(self, oFilterItem):
+        """Update the list to show the current values"""
+        aValues = []
+        if oFilterItem.aCurValues[0]:
+            aValues.extend(oFilterItem.aCurValues[0])
+        else:
+            aValues.append(None)
+        aValues.append('<b>From</b>')
+        if oFilterItem.aCurValues[1]:
+            aValues.extend(oFilterItem.aCurValues[1])
+        else:
+            aValues.append(None)
+        self._update_cur_iter_with_list(aValues)
 
     def get_current_values(self):
         """Return a dictionary of name -> value mappings for the variables
            present in the filter editing gui.
            """
         dVars = {}
-        for oChild in self.__aChildren:
-            dVars.update(oChild.get_current_values())
+        self.__oTreeStore.foreach(self.get_child_values, dVars)
         return dVars
+
+    def get_child_values(self, _oModel, _oPath, oIter, dVars):
+        """Get the values out of the child value"""
+        oChild = self.__oTreeStore.get_value(oIter, 1)
+        if isinstance(oChild, FilterBoxItem):
+            dVars.update(oChild.get_current_values())
 
     def set_current_values(self, dVars):
         """Set the current list values using variable names in the given
@@ -428,62 +897,52 @@ class FilterBoxModelEditor(gtk.VBox):
 
            dVars is a mapping sVariableName -> [ list of string values ]
            """
-        for oChild in self.__aChildren:
+        self.__oTreeStore.foreach(self.set_child_values, dVars)
+
+    def set_child_values(self, _oModel, _oPath, oIter, dVars):
+        """Get the values out of the child value"""
+        oChild = self.__oTreeStore.get_value(oIter, 1)
+        if isinstance(oChild, FilterBoxItem):
             oChild.set_current_values(dVars)
 
-    def register_remove_box(self, fRemoveBox):
-        """Register a function for removing this box from it's parent editor.
-
-           The function signature is fRemoveBox(oBoxEditor, oBoxModel)
-           """
-        self.__fRemoveBox = fRemoveBox
-        self.__oBoxTypeSelector.append_text("Remove Sub-Filter")
-        self.__oBoxTypeSelector.show_all()
-
-    def __change_boxtype(self, oBoxTypeSelector):
-        """Change the type of this box to that chosen by the user."""
-        sType = oBoxTypeSelector.get_active_text()
-        if sType == "Remove Sub-Filter":
-            self.__fRemoveBox(self, self.__oBoxModel)
-        else:
-            sBoxType, bNegate = self.BOXTYPE[sType]
-            self.__oBoxModel.set_boxtype(sBoxType, bNegate)
-
-    def __add_filter_part(self, _oAddButton, oTypeSelector):
-        """Add a filter part or filter box to this box."""
-        oIter = oTypeSelector.get_active_iter()
-        oModel = oTypeSelector.get_model()
-
-        if not oIter:
-            # ignore add button clicks when a type isn't selected
-            return
-
-        sDescription = oModel.get_value(oIter, 0)
-        sKeyword = oModel.get_value(oIter, 1)
-
-        if sDescription == "Sub-Filter":
-            oChildBoxModel = self.__oBoxModel.add_child_box(FilterBoxModel.AND)
-            oChildEditor = FilterBoxModelEditor(oChildBoxModel,
-                    self.__oParentWin)
-            oChildEditor.register_remove_box(self.__remove_model)
-        else:
-            oChildItem = self.__oBoxModel.add_child_item(sKeyword)
-            oChildEditor = FilterBoxItemEditor(oChildItem, self.__oParentWin)
-            oChildEditor.connect_remove_button(self.__remove_filter_part)
-
-        self.__aChildren.append(oChildEditor)
-        self.__oChildArea.pack_start(oChildEditor, expand=False)
-        self.show_all()
-
-    def __remove_filter_part(self, _oRemoveButton, oEditor, oModelOrItem):
+    def __remove_filter_part(self, oModelOrItem):
         """Remove the filter part from this box at the user's request"""
         self.__oBoxModel.remove_child(oModelOrItem)
-        self.__aChildren.remove(oEditor)
-        self.__oChildArea.remove(oEditor)
+        self.load()
 
-    def __remove_model(self, oEditor, oModel):
-        """Remove the filter model from this box"""
-        self.__remove_filter_part(None, oEditor, oModel)
+    def set_negate(self, bState):
+        """Set the disabled flag for a section of the filter"""
+        oCurPath, _oCol = self.__oTreeView.get_cursor()
+        oFilterObj = self.__oTreeStore.get_value(self.oCurSelectIter, 1)
+        if oFilterObj.bNegated != bState:
+            oFilterObj.bNegated = bState
+            # We opt for the lazy approach and reload
+            self.load()
+            # Restore selection after load
+            self.__oTreeView.set_cursor(oCurPath)
+            self.__oTreeView.grab_focus()
+            self.__oTreeView.scroll_to_cell(oCurPath, None, True, 0.5, 0.0)
+
+    def set_disabled(self, bState):
+        """Set the disabled flag for a section of the filter"""
+        oCurPath, _oCol = self.__oTreeView.get_cursor()
+        oFilterObj = self.__oTreeStore.get_value(self.oCurSelectIter, 1)
+        if oFilterObj.bDisabled != bState:
+            oFilterObj.bDisabled = bState
+            # We opt for the lazy approach and reload
+            self.load()
+            # Restore selection after load
+            self.__oTreeView.set_cursor(oCurPath)
+            self.__oTreeView.grab_focus()
+            self.__oTreeView.scroll_to_cell(oCurPath, None, True, 0.5, 0.0)
+
+    def delete(self):
+        """Delete an filter component from the model"""
+        oFilterObj = self.__oTreeStore.get_value(self.oCurSelectIter, 1)
+        oParent = self.__oTreeStore.get_value(self.__oTreeStore.iter_parent(
+            self.oCurSelectIter), 1)
+        oParent.remove(oFilterObj)
+        self.load()
 
 class FilterBoxItem(object):
     """A item in the filter editor.
@@ -502,6 +961,8 @@ class FilterBoxItem(object):
 
         assert type(oAST) is FilterPartNode
 
+        self.bDisabled = False
+
         self.sFilterName = oAST.sFilterName
         self.sVariableName = oAST.sVariableName
         self.aFilterValues = oAST.aFilterValues
@@ -509,6 +970,7 @@ class FilterBoxItem(object):
 
         # process values
         self.sLabel, self.aValues = None, None
+        self.aCurValues = []
         for oValue in oAST.get_values():
             if oValue.is_value():
                 assert self.sLabel is None
@@ -521,6 +983,7 @@ class FilterBoxItem(object):
                 assert self.iValueType is None
                 self.aValues = oValue.oValue
                 self.iValueType = self.LIST_FROM
+                self.aCurValues = [None, None]
             elif oValue.is_entry():
                 assert self.iValueType is None
                 self.iValueType = self.ENTRY
@@ -534,6 +997,45 @@ class FilterBoxItem(object):
     def get_variable_names(self):
         """Get the variable name for this filter"""
         return set([self.sVariableName])
+
+    def get_current_values(self):
+        """Get the current values set for this filter."""
+        dVars = {}
+        if self.aCurValues:
+            if self.iValueType == self.LIST:
+                dVars[self.sVariableName] = ['"%s"' % sValue for sValue in
+                        self.aCurValues]
+            elif self.iValueType == self.LIST_FROM:
+                aValues, aFrom = self.aCurValues
+                if aFrom:
+                    aFrom = ['"%s"' % x for x in aFrom]
+                    if aValues:
+                        aValues = ['"%s"' % x for x in aValues]
+                        dVars[self.sVariableName] = [aValues, aFrom]
+            elif self.iValueType == self.ENTRY:
+                dVars[self.sVariableName] = ['"%s"' % self.aCurValues[0]]
+        return dVars
+
+    def set_current_values(self, dVars):
+        """Set the current values for the entry widget for this filter
+           item."""
+        sName = self.sVariableName
+        if not sName in dVars:
+            return
+        if self.aValues:
+            if self.iValueType == FilterBoxItem.LIST:
+                aVals = [sVal.strip('"') for sVal in dVars[sName]]
+                self.aCurValues = aVals
+            elif self.iValueType == FilterBoxItem.LIST_FROM:
+                if len(dVars[sName]) != 2:
+                    return
+                aVals = [sVal.strip('"') for sVal in dVars[sName][0]]
+                aFrom = [sVal.strip('"') for sVal in dVars[sName][1]]
+                self.aCurValues = [aVals, aFrom]
+        elif len(dVars[sName]) > 0:
+            self.aCurValues = [dVars[sName][0].strip('"')]
+        else:
+            self.aCurValues = []
 
     def get_ast(self):
         """Return an AST representation of the filter."""
@@ -550,126 +1052,6 @@ class FilterBoxItem(object):
         else:
             sText = "%s in %s" % (self.sFilterName, self.sVariableName)
         return sText
-
-class FilterBoxItemEditor(gtk.HBox):
-    """Widget for editing the entries for the filter associated with a
-       FilterBoxItem."""
-    # pylint: disable-msg=R0904
-    # gtk.Widget, so many public methods
-    def __init__(self, oBoxItem, oParent):
-        super(FilterBoxItemEditor, self).__init__(spacing=5)
-        self.__oBoxItem = oBoxItem
-
-        self.__oRemoveButton = gtk.Button("-")
-        self.pack_start(self.__oRemoveButton, expand=False)
-
-        self.__oNegateButton = gtk.CheckButton("NOT")
-        self.__oNegateButton.set_active(self.__oBoxItem.bNegated)
-        self.__oNegateButton.connect('toggled', self.__toggle_negated)
-        self.pack_start(self.__oNegateButton, expand=False)
-
-        self.pack_start(gtk.Label(self.__oBoxItem.sLabel), expand=False)
-
-        if self.__oBoxItem.iValueType == FilterBoxItem.LIST:
-            oWidget = MultiSelectComboBox(oParent)
-            oWidget.fill_list(self.__oBoxItem.aValues)
-            oWidget.set_list_size(200, 400)
-        elif self.__oBoxItem.iValueType == FilterBoxItem.LIST_FROM:
-            # Create an additional widget for the from side
-            oWidget = MultiSelectComboBox(oParent)
-            oWidget.fill_list(self.__oBoxItem.aValues[0])
-            oWidget.set_list_size(200, 400)
-            oFromStore = gtk.ListStore(str)
-            self.__oFromWidget = gtk.ComboBox(oFromStore)
-            oCell = gtk.CellRendererText()
-            self.__oFromWidget.pack_start(oCell, True)
-            self.__oFromWidget.add_attribute(oCell, 'text', 0)
-            for sCardSet in self.__oBoxItem.aValues[1]:
-                oIter = oFromStore.append(None)
-                oFromStore.set(oIter, 0, sCardSet)
-            self.pack_end(self.__oFromWidget, False, False)
-            self.pack_end(gtk.Label(' from '), False, False)
-        elif self.__oBoxItem.iValueType == FilterBoxItem.NONE:
-            oWidget = gtk.Label('  < No user data required > ')
-        elif self.__oBoxItem.iValueType == FilterBoxItem.ENTRY:
-            oWidget = gtk.Entry(100)
-            oWidget.set_width_chars(30)
-        else:
-            raise RuntimeError("Unknown FilterBoxItem ValueType %s" %
-                    (self.__oBoxItem.iValueType,))
-
-        self.__oEntryWidget = oWidget
-        self.pack_start(oWidget)
-
-    def connect_remove_button(self, fHandler):
-        """Add a handler for the 'remove filter' button"""
-        if self.__oRemoveButton is not None:
-            self.__oRemoveButton.connect('clicked', fHandler, self,
-                    self.__oBoxItem)
-
-    def get_current_values(self):
-        """Get the current values set for this filter."""
-        dVars = {}
-        sName = self.__oBoxItem.sVariableName
-        if self.__oBoxItem.aValues:
-            aSelection = self.__oEntryWidget.get_selection()
-            if self.__oBoxItem.sFilterName in FilterParser.WITH_FILTERS:
-                aSplit = [sItem.split(" with ") for sItem in aSelection]
-                aVals = ['"%s with %s"' % (sPart1, sPart2) for sPart1,
-                        sPart2 in aSplit]
-            elif self.__oBoxItem.sFilterName in FilterParser.FROM_FILTERS:
-                # Need to sort out how to handle this case
-                oIter = self.__oFromWidget.get_active_iter()
-                oModel = self.__oFromWidget.get_model()
-                if not oIter:
-                    sFrom = None
-                else:
-                    sFrom = '"%s"' % oModel.get_value(oIter, 0)
-                aVals = [['"%s"' % (sItem,) for sItem in aSelection], sFrom]
-            else:
-                aVals = ['"%s"' % (sItem,) for sItem in aSelection]
-            dVars[sName] = aVals
-        else:
-            sText = self.__oEntryWidget.get_text()
-            if sText != '':
-                dVars[sName] = ['"' + sText + '"']
-        return dVars
-
-    def set_current_values(self, dVars):
-        """Set the current values for the entry widget for this filter
-           item."""
-        sName = self.__oBoxItem.sVariableName
-        if not sName in dVars:
-            return
-        if self.__oBoxItem.aValues:
-            if self.__oBoxItem.iValueType == FilterBoxItem.LIST:
-                aVals = [sVal.strip('"') for sVal in dVars[sName]]
-                self.__oEntryWidget.set_selection(aVals)
-            elif self.__oBoxItem.iValueType == FilterBoxItem.LIST_FROM:
-                if len(dVars[sName]) != 2:
-                    return
-                aVals = [sVal.strip('"') for sVal in dVars[sName][0]]
-                self.__oEntryWidget.set_selection(aVals)
-                sFrom = dVars[sName][1]
-                if sFrom:
-                    sFrom = sFrom.strip('"')
-                    oModel = self.__oFromWidget.get_model()
-                    oIter = oModel.get_iter_first()
-                    while oIter:
-                        sEntry = oModel.get(oIter, 0)[0]
-                        if sEntry == sFrom:
-                            self.__oFromWidget.set_active_iter(oIter)
-                            break
-                        oIter = oModel.iter_next(oIter)
-        elif len(dVars[sName]) > 0:
-            self.__oEntryWidget.set_text(dVars[sName][0].strip('"'))
-        else:
-            self.__oEntryWidget.set_text("")
-
-    def __toggle_negated(self, _oWidget):
-        """Response to the use setting/unsetting the not status of this
-           filter item"""
-        self.__oBoxItem.bNegated = self.__oNegateButton.get_active()
 
 class VariableNameGenerator(set):
     """Generate a unique name for a variable in a filter."""
