@@ -74,7 +74,7 @@ class ConfigFile(object):
     def __str__(self):
         """Debugging aid - include the filename"""
         return "<%s object at %s; config file: %r>" % (
-            self.__class__.__name__, hex(id(self)), self.__sFilename)
+            self.__class__.__name__, hex(id(self)), self.__sFileName)
 
     def add_listener(self, oListener):
         """Add a listener to respond to config file changes."""
@@ -123,10 +123,11 @@ class ConfigFile(object):
         if oValidationResults == True:
             return aErrors
 
-        for (aSections, sKey, _) in flatten_errors(self.__oConfig,
+        for (aSections, sKey, _oIgnore) in flatten_errors(self.__oConfig,
             oValidationResults):
             if sKey is not None:
-                aErrors.append('Key %r in section %r failed validation.' % (sKey, aSections))
+                aErrors.append('Key %r in section %r failed validation.' %
+                        (sKey, aSections))
             else:
                 aErrors.append('Section %r was missing.' % (aSections,))
 
@@ -258,7 +259,7 @@ class ConfigFile(object):
 
     def get_filter(self, sKey):
         """Return the filter associated with the given key.
-        
+
            Return None if the filter is not known.
            """
         sKey = sKey.lower()
@@ -449,7 +450,8 @@ class ConfigFile(object):
     # TODO:
     #
     # - write profile preference dialog
-    #   - oNameDisplay = gtk.CheckMenuItem('Use "path of ..., the" name display')
+    #   - oNameDisplay = gtk.CheckMenuItem(
+    #              'Use "path of ..., the" name display')
     #   - ("This Card Set Only", THIS_SET_ONLY),
     #   - ("Show All Cards", ALL_CARDS),
     #   - ("Show all cards in parent card set", PARENT_CARDS),

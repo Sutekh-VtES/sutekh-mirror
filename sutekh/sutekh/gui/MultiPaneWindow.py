@@ -105,7 +105,8 @@ class MultiPaneWindow(gtk.Window):
         oValidationResults = oConfig.validate()
         aErrors = oConfig.validation_errors(oValidationResults)
         if aErrors:
-            aErrors.insert(0, "The following configuration file errors were encountered:")
+            aErrors.insert(0, "The following configuration file errors were"
+                    " encountered:")
             aErrors.insert(1, "")
             do_complaint_error("\n".join(aErrors))
         oConfig.sanitize()

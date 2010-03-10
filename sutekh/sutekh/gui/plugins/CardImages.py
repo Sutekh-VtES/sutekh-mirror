@@ -158,7 +158,8 @@ class CardImageFrame(BasicFrame, CardTextViewListener):
         oBox.connect('drag-motion', self.drag_motion)
         oBox.connect('button-press-event', self.__cycle_expansion)
 
-        self.__sPrefsPath = self._oImagePlugin.get_config_item('card image path')
+        self.__sPrefsPath = self._oImagePlugin.get_config_item(
+                'card image path')
         if self.__sPrefsPath is None:
             self.__sPrefsPath = os.path.join(prefs_dir('Sutekh'), 'cardimages')
             self._oImagePlugin.set_config_item('card image path',
@@ -371,7 +372,8 @@ class ImageConfigDialog(SutekhDialog):
 
     def __init__(self, oImagePlugin, bFirstTime=False):
         super(ImageConfigDialog, self).__init__('Configure Card Images Plugin',
-                oImagePlugin.parent, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
+                oImagePlugin.parent,
+                gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                 (gtk.STOCK_OK, gtk.RESPONSE_OK, gtk.STOCK_CANCEL,
                     gtk.RESPONSE_CANCEL))
         oDescLabel = gtk.Label()
@@ -383,7 +385,8 @@ class ImageConfigDialog(SutekhDialog):
                     'plugin</b>\nChoose cancel to skip configuring the '
                     'images plugin\nYou will not be prompted again')
         sDefaultDir = oImagePlugin.get_config_item('card image path')
-        self.oChoice = FileOrDirOrUrlWidget(oImagePlugin.parent, "Choose location for "
+        self.oChoice = FileOrDirOrUrlWidget(oImagePlugin.parent,
+                "Choose location for "
                 "images file", "Choose image directory", sDefaultDir,
                 { 'feldb.hu' : self.sDefaultUrl })
         add_filter(self.oChoice, 'Zip Files', ['*.zip', '*.ZIP'])
