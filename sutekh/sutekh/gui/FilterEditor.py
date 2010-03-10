@@ -272,6 +272,16 @@ class FilterBoxModel(list):
         """Remove a filter item or box from this box."""
         self.remove(oChild)
 
+    def is_in_model(self, oChild):
+        """Check if oChild is included in this box model, either directly
+           or in a child box model."""
+        if oChild in self:
+            return True
+        for oObj in self:
+            if isinstance(oObj, FilterBoxModel) and oObj.is_in_model(oChild):
+                return True
+        return False
+
 
 class FilterModelPanes(gtk.HBox):
     """Widget to hold the different panes of the Filter editor"""
@@ -682,6 +692,7 @@ class FilterBoxModelEditor(gtk.VBox):
     def drag_drop_handler(self, _oWindow, oDragContext, iXPos, iYPos,
             oSelectionData, _oInfo, oTime):
         """Handle drops from the filter toolbar"""
+
         if not oSelectionData and oSelectionData.format != 8:
             oDragContext.finish(False, False, oTime)
         else:
@@ -737,8 +748,18 @@ class FilterBoxModelEditor(gtk.VBox):
                     oMoveObj = self.__oTreeStore.get_value(oMoveIter, 1)
                     oParent  = self.__oTreeStore.get_value(
                             self.__oTreeStore.iter_parent(oMoveIter), 1)
-                    oParent.remove(oMoveObj)
-                    oInsertObj.append(oMoveObj)
+                    # Check move is legal
+                    bDoInsert = False
+                    if oInsertObj != oMoveObj:
+                        if not isinstance(oMoveObj, FilterBoxModel) or \
+                                not oMoveObj.is_in_model(oInsertObj):
+                            bDoInsert = True
+                    if bDoInsert:
+                        oParent.remove(oMoveObj)
+                        oInsertObj.append(oMoveObj)
+                    else:
+                        oDragContext.finish(False, False, oTime)
+                        return
                 # Move to the correct place
                 if iIndex >= 0:
                     oAddedFilter = oInsertObj.pop()
