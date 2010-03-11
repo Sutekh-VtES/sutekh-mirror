@@ -99,6 +99,10 @@ class CardSetMenu(CardListMenu):
         """Check that the parent column values are set correctly
            when the parent changes.
            """
+        # FIXME: Make code do the right thing for the changed
+        # preferences system. For now, we just return so reparenting at
+        # least works.
+        return
         # pylint: disable-msg=E1101
         # SQLObject confuses pylint
         # We rely on signal handler to cause reload
