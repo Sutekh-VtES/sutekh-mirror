@@ -58,6 +58,8 @@ class CreateCardSetDialog(SutekhDialog):
         self.oAnnotateBuffer, oAnnotateWin = make_scrolled_text(oCardSet,
                 'annotations')
 
+        self.oInUse = gtk.CheckButton('Mark card Set as In Use')
+
         self.set_default_size(500, 500)
         # pylint: disable-msg=E1101
         # gtk methods confuse pylint
@@ -71,6 +73,7 @@ class CreateCardSetDialog(SutekhDialog):
         self.vbox.pack_start(AutoScrolledWindow(self.oParentList), expand=True)
         self.vbox.pack_start(oAnnotateLabel, expand=False)
         self.vbox.pack_start(oAnnotateWin, expand=True)
+        self.vbox.pack_start(self.oInUse, expand=False)
 
         self.connect("response", self.button_response)
 
@@ -86,6 +89,7 @@ class CreateCardSetDialog(SutekhDialog):
             if oCardSetParent is None and oCardSet.parent is not None:
                 self.oParentList.set_selected_card_set(oCardSet.parent.name)
             self.oAuthor.set_text(oCardSet.author)
+            self.oInUse.set_active(oCardSet.inuse)
 
         self.sName = None
         self.oParent = oCardSetParent
@@ -117,6 +121,10 @@ class CreateCardSetDialog(SutekhDialog):
     def get_parent(self):
         """Get the chosen parent card set, or None if 'No Parent' is chosen"""
         return self.oParent
+
+    def get_in_use(self):
+        """Get the In Use checkbox status"""
+        return self.oInUse.get_active()
 
     def button_response(self, _oWidget, iResponse):
         """Handle button press from the dialog."""

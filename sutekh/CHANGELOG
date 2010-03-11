@@ -1,3 +1,7 @@
+11 Mar 2010
+ * Add check button to toggle in use status to the Create/Edit card set
+   properties dialog.
+
 09 Mar 2010
  * Add the new tree-model based filter dialog.
  * Add plugin to determine some expansion & rarity stats.

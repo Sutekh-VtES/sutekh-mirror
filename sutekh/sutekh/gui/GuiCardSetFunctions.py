@@ -74,8 +74,9 @@ def create_card_set(oMainWindow):
         sAuthor = oDialog.get_author()
         sComment = oDialog.get_comment()
         oParent = oDialog.get_parent()
+        bInUse = oDialog.get_in_use()
         _oCS = PhysicalCardSet(name=sName, author=sAuthor,
-                comment=sComment, parent=oParent)
+                comment=sComment, parent=oParent, inuse=bInUse)
     return sName
 
 # import helpers
@@ -131,6 +132,7 @@ def update_card_set(oCardSet, oMainWindow):
     oCardSet.author = oEditDialog.get_author()
     oCardSet.comment = oEditDialog.get_comment()
     oCardSet.annotations = oEditDialog.get_annotations()
+    oCardSet.inuse = oEditDialog.get_in_use()
     oParent = oEditDialog.get_parent()
     if oParent != oCardSet.parent:
         reparent_card_set(oCardSet, oParent)
