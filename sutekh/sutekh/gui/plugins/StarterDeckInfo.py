@@ -246,19 +246,16 @@ class StarterInfoPlugin(SutekhPlugin, CardTextViewListener):
 
     def _unzip_list(self, oZipFile, dList, oLogger, dRemaining):
         """Extract the files left in the list."""
-        dRemaining = {}
         for sName, tInfo in dList.iteritems():
-            sFilename, bParentExists, sParentName = tInfo
+            sFilename, _bIgnore, sParentName = tInfo
             if sParentName is not None and sParentName in dList:
-                # Do have a parent to look at, so skip for now
+                # Do have a parent to look at later, so skip for now
                 dRemaining[sName] = tInfo
                 continue
             elif sParentName is not None:
-                # Missing parent from the file, so it the file is invalid
-                return False
-            elif not bParentExists:
-                # Parent mentioned, but doesn't exist, so file is invalid
-                return False
+                if PhysicalCardSet.selectBy(name=sParentName).count() == 0:
+                    # Missing parent, so it the file is invalid
+                    return False
             # pylint: disable-msg=W0703
             # we really do want all the exceptions
             try:
@@ -273,6 +270,9 @@ class StarterInfoPlugin(SutekhPlugin, CardTextViewListener):
                 if PhysicalCardSet.selectBy(name=oHolder.name).count() != 0:
                     oCS = IPhysicalCardSet(oHolder.name)
                     aChildren = find_children(oCS)
+                    if oCS.parent:
+                        # Ensure we restore with the correct parent
+                        oHolder.parent = oCS.parent.name
                     delete_physical_card_set(oHolder.name)
                 oHolder.create_pcs(self.cardlookup)
                 reparent_all_children(oHolder.name, aChildren)

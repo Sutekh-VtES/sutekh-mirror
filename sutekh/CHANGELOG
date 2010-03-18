@@ -1,3 +1,6 @@
+18 Mar 2010
+ * Preserve any existing card set hierachy when importing the starter decks
+
 11 Mar 2010
  * Add check button to toggle in use status to the Create/Edit card set
    properties dialog.
