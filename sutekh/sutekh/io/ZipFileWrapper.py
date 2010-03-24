@@ -82,6 +82,7 @@ class ZipFileWrapper(object):
             # Set permissions on the created file - see issue 3394 on the
             # python bugtracker. Docs say this is safe on all platforms
             oInfoObj.external_attr = 0600 << 16L
+            oInfoObj.compress_type = zipfile.ZIP_DEFLATED
             self.oZip.writestr(oInfoObj, oString)
             oLogger.info('PCS: %s written', oPCSet.name)
         if bClose:

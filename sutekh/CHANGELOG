@@ -1,3 +1,6 @@
+24 Mar 2010
+ * Compress zipfile entries when creating zip files.
+
 18 Mar 2010
  * Preserve any existing card set hierachy when importing the starter decks
 
