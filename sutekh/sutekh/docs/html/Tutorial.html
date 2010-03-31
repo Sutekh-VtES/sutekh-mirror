@@ -154,17 +154,17 @@
 
 <p>There are several basic filters available, such as <em>Clan</em>, <em>Discipline</em>, <em>Card Text</em> etc..</p>
 
-<p>Most of these filters allow only a limited range of options, which you can select from a drop-down list. The <em>Clan</em> filter, for example, only accepts the clans listed in the database as input. You can select multiple clans, and the filter will match a card if it matches any of the selected clans.</p>
+<p>Most of these filters allow only a limited range of options, which you can select from the list. The <em>Clan</em> filter, for example, only accepts the clans listed in the database as input. You can select multiple clans, and the filter will match a card if it matches any of the selected clans.</p>
 
 <p>Other filters, such as the <em>Card Text</em> filter, require you to enter a string. The filter will match any card with card text that contains this string. The <strong>%</strong> and <strong>_</strong> characters can be used as wildcards: <strong>%</strong> will match any number of letters, and <strong>_</strong> will match exactly one.</p>
 
 <p>The <em>Card Sets In Use</em> filter takes no input.</p>
 
-<p>The <em>Card Count</em> filter requires you to input a list of card counts and a card set.</p>
+<p>The <em>Card Count</em> filter requires you to input a list of card counts and a list of card sets.</p>
 
 <h3>Combing basic filters</h3>
 
-<p>You can combine these basic filters to create more complex queries.</p>
+<p>You can combine these basic filters to create more complex queries by placing filters inside a filter group.</p>
 
 <p>Multiple filters can be combined according to one of the following rules:</p>
 
@@ -176,7 +176,7 @@
 
 <p><em>None of</em> requires that none of the included filters be satisfied.</p>
 
-<p>In addition to the basic filters, the <strong>Sub-filter</strong> option allows these combinations to be nested. Thus an <em>All of</em> filter can include <em>Any of</em> or <em>None of</em> filters below it, which allows for extremely complex queries to be constructed.</p>
+<p>A Filter Group can be added to an existing Filter Group, which allows combinations to be nested. Thus an <em>All of</em> filter can include <em>Any of</em> or <em>None of</em> filters below it, which allows for extremely complex queries to be constructed.</p>
 
 <p>For example, to find all cards that require either <strong>Follower of Set</strong> or <strong>Serpentis</strong>, but not both, you could construct the following filter:</p>
 
