@@ -912,6 +912,14 @@ with the superior discipline score 2.
 
 h3(#exp_stats_plugin). Expansion Stats
 
+This plugin list some statistics about the different expansions and rarities.
+
+For each expansion, this lists the number of cards of each rarity. It also
+notes which cards are found only in the preconstructed decks for that expansion
+if needed. For each rarity, the individual cards are list, grouped according
+to the current grouping of the white wolf card list.
+
+
 h3(#grouping_plugin). Change Grouping
 
 By default, Sutekh groups the cards into the separate card types.   You can change
