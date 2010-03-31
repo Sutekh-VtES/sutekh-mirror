@@ -48,6 +48,7 @@ h2. Contents
 ## "Import card sets from zip file":#import_zip_plugin
 ## "Cluster Cards":#cluster_plugin
 ## "Clan Discipline Stats":#stats_plugin
+## "Expansion Stats":#exp_stats_plugin
 ## "Change Grouping":#grouping_plugin
 ## "Select Extra Columns":#columns_plugin
 ## "Set selected cards to a single expansion":#set_exp_plugin
@@ -252,9 +253,10 @@ h3(#ww_plugins). Plugins
 
 The following plugins are available from the White Wolf Card List pane menu:
 
-* "Cluster Cards":#cluster_plugin
-* "Clan Discipline Stats":#stats_plugin
 * "Change Grouping":#grouping_plugin
+* "Clan Discipline Stats":#stats_plugin
+* "Cluster Cards":#cluster_plugin
+* "Expansion Stats":#exp_stats_plugin
 * "Select Extra Columns":#columns_plugin
 
 h2(#card_text). Card Text
@@ -500,15 +502,15 @@ h3(#cardsets_plugins). Plugins
 
 The following plugins are available from the card set pane plugins menu:
 
-* "Cluster Cards":#cluster_plugin
+* "Analyze Deck":#analyze_plugin
+* "Card draw probabilities":#prob_plugin
 * "Change Grouping":#grouping_plugin
+* "Cluster Cards":#cluster_plugin
+* "Compare card set with another Card Set":#compare_plugin
 * "Select Extra Columns":#columns_plugin
 * "Set selected cards to a single expansion":#set_exp_plugin
-* "Compare card set with another Card Set":#compare_plugin
-* "Analyze Deck":#analyze_plugin
-* "Test Card Set Independence":#indep_plugin
 * "Simulate Opening Hand":#opening_hand_plugin
-* "Card draw probabilities":#prob_plugin
+* "Test Card Set Independence":#indep_plugin
 
 
 h3(#cardsets_keyboard). Keyboard Shortcuts
@@ -906,6 +908,9 @@ The score is intended to give you some indication of how common
 disciplines are within the clan. Vampires without a discipline score 0 for that
 discipline, vampires with the inferior discipline score 1 and vampires
 with the superior discipline score 2.
+
+
+h3(#exp_stats_plugin). Expansion Stats
 
 h3(#grouping_plugin). Change Grouping
 
