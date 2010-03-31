@@ -221,7 +221,7 @@ There are several basic filters available, such as _Clan_, _Discipline_,
 _Card Text_ etc..
 
 Most of these filters allow only a limited range of options, which you can
-select from a drop-down list. The _Clan_ filter, for example, only accepts the
+select from the list. The _Clan_ filter, for example, only accepts the
 clans listed in the database as input. You can select multiple clans, and the
 filter will match a card if it matches any of the selected clans.
 
@@ -232,12 +232,13 @@ letters, and *_* will match exactly one.
 
 The _Card Sets In Use_ filter takes no input.
 
-The _Card Count_ filter requires you to input a list of card counts and a card
-set.
+The _Card Count_ filter requires you to input a list of card counts and a list
+of card sets.
 
 h3. Combing basic filters
 
-You can combine these basic filters to create more complex queries.
+You can combine these basic filters to create more complex queries by placing
+filters inside a filter group.
 
 Multiple filters can be combined according to one of the following rules:
 
@@ -255,7 +256,7 @@ the filters.
 
 _None of_ requires that none of the included filters be satisfied.
 
-In addition to the basic filters, the *Sub-filter* option allows these
+A Filter Group can be added to an existing Filter Group, which allows
 combinations to be nested. Thus an _All of_ filter can include _Any of_ or
 _None of_ filters below it, which allows for extremely complex queries to
 be constructed.

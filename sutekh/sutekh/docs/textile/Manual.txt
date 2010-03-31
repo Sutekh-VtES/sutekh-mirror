@@ -593,6 +593,23 @@ You can save complex filters for later reuse using the _Save_ button, and recall
 them using the _Load_ button. When modifying a filter, you can revert to the
 saved version using the _Revert Filter_ button.
 
+h3(#filter_dialog). The Filter Dialog
+
+The filter dialog is laid out with 3 panes. The central pane shows the current
+filter, with any values that have been set so far.
+
+The left hand pane lists all the different possible filter types. Individual
+filter elements can be dragged from this into the central filter pane, and the
+filter elements can be re-arranged within the central pane as well. This
+is mostly useful when using multiple filter groups (see
+"Combining Basic Filters":#combining).
+
+When a filter element is selected, the right hand pane allows for the values
+for that filter element to be selected. This also provides buttons to delete
+filter elements, negate the meeting of the filter element and to temporarily
+disable filter elements.  Disabled filter elements are not used in the filter,
+but the values set for the element are preserved.
+
 h3(#card_filters). Card Filters
 
 These filters apply either to the White Wolf card list or a card set. The
@@ -690,13 +707,13 @@ marked as _In Use_ and is a child of the given card set. Like the _Card Sets_
 filter, this matches solely on the card name and expansion, and the numbers
 are those for this card set, not the number in the in use children.
 * _Card Count_: Filter on card count within the current card set or a different
-card set. You must specify a "list":#list of card counts, and a single card set.
-A card matches if it belongs to the specified set, and has a count within that
-set equal to any count in the list.
+card set. You must specify a "list":#list of card counts, and a "list":#list of
+card sets.  A card matches if it belongs to one of the specified sets, and has
+a count within that set equal to any count in the list.
 * _Card Function_: Filter on common card functions. You must specify a
 "list":#list of card functions. A card matches if it satisfies at least one
 function in the list.
-* _Sub-Filter_: Nest an additional filter box inside the current box. See
+* _Filter Group_: Add an additional filter group to the filter. See
 "Combining Basic Filters":#combining
 
 You can also use these filters in the "Card Lookup Dialog":#lookup during a card
@@ -725,7 +742,7 @@ annotations. You can use % and _ as "wildcard":#wildcard characters.
 * _Parent Card Set_: You must specify a "list":#list of card sets. A card set
 matches if any card set in the list is its parent set.
 * _Card Set Marked as in Use_: A card set matches if it is marked as _In Use_.
-* _Sub-Filter_: Nest an additional filter box inside the current box. See
+* _Filter Group_: Add an additional filter group to the filter. See
 "Combining Basic Filters":#combining
 
 When Sutekh displays card sets which match a filter, all the direct ancestors of
@@ -736,10 +753,10 @@ hierarchy.
 
 h3(#combining). Combining Basic Filters
 
-You can combine filters by using filter boxes to group the basic filters
+You can combine filters by using filter groups to group the basic filters
 together.
 
-There are four types of filter box:
+There are four types of filter group:
 
 * _All of_: This filter matches only if every filter in the box matches.
 * _Any of_: This filter matches if at least one of the filters in the box
@@ -749,9 +766,8 @@ doesn't match.
 * _Not any of_: This filter matches only if every filter in the box doesn't
 match.
 
-Each filter box can also contain sub-filters, which are themselves
-filter boxes. You can thus construct complex queries by nesting multiple filter
-boxes.
+Each filter group can also contain further filters groups.  You can thus
+construct complex queries by nesting multiple filter groups.
 
 
 h3(#string). String filters
