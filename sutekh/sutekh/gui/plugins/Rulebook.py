@@ -23,7 +23,7 @@ class RulebookConfigDialog(SutekhDialog):
 
     POSSIBLE_FILES = [
             "Rulebook", "Imbued Rules", "Rulings", "V:EKN Tournament Rules",
-            "VTES FAQ", "V:TES Complete Rules Reference",
+            "VTES FAQ", "Imbued FAQ", "V:TES Complete Rules Reference",
     ]
 
     WW_RULEBOOK_URLS = {
@@ -34,6 +34,7 @@ class RulebookConfigDialog(SutekhDialog):
         "V:EKN Tournament Rules":
            "http://www.white-wolf.com/vtes/index.php?line=veknRules",
         "VTES FAQ": "http://www.thelasombra.com/vtes_faq.htm",
+        "Imbued FAQ": "http://www.thelasombra.com/faq_imbued.htm",
         "V:TES Complete Rules Reference":
            "http://www.white-wolf.com/vtes/?line=outline",
     }
@@ -59,7 +60,7 @@ class RulebookConfigDialog(SutekhDialog):
 
         self._dFileSelectors = {}
         for sName in self.POSSIBLE_FILES:
-            if sName == 'VTES FAQ':
+            if sName in ['VTES FAQ', 'Imbued FAQ']:
                 sBaseUrl = 'www.thelasombra.com'
             else:
                 sBaseUrl = 'www.white-wolf.com'
@@ -107,6 +108,7 @@ class RulebookPlugin(SutekhPlugin):
         "Rulings": "rulings.html",
         "V:EKN Tournament Rules": "tournament_rules.html",
         "VTES FAQ" : "faq.html",
+        "Imbued FAQ" : "imbued_faq.html",
         "V:TES Complete Rules Reference": "rules_reference.html",
     }
 
