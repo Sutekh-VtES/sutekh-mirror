@@ -1095,11 +1095,11 @@ h3(#rulebook_plugin). Rulebook
 
 This plugin allows you to download copies of the rulebook, the rules reference,
 the V:EKN tournament rules, imbued rules and card rulings from the White Wolf
-site, or to install previously downloaded copies.  Once you have downloaded the
-rulebook files, you can open them in a web browser using the _Rulebook_ submenu
-in the _Plugins_ menu on the _Main Window_. To download the files, or update
-your existing copies, use the _Configure Rulebook Plugin_ item in the same
-submenu.
+site and the VTES and Imbued FAQ's hosted on www.thelasombra.com, or to install
+previously downloaded copies.  Once you have downloaded the rulebook files, you
+can open them in a web browser using the _Rulebook_ submenu in the _Plugins_
+menu on the _Main Window_. To download the files, or update your existing
+copies, use the _Configure Rulebook Plugin_ item in the same submenu.
 
 h3(#starter_plugin). Starter deck plugin
 
