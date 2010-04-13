@@ -86,6 +86,11 @@ class FilterEditor(gtk.Alignment):
 
         return oNewAST
 
+    def get_current_text(self):
+        """Get the current text of the filter for saving in the config
+           file."""
+        return self.__oPanes.get_text()
+
     def replace_ast(self, oAST):
         """Replace the current AST with a new one and update the GUI,
            preserving variable values if possible.
@@ -321,6 +326,12 @@ class FilterModelPanes(gtk.HBox):
         """Get the current ast"""
         if self.__oBoxModel:
             return self.__oBoxModel.get_ast()
+        return None
+
+    def get_text(self):
+        """Get the current ast"""
+        if self.__oBoxModel:
+            return self.__oBoxModel.get_text()
         return None
 
     def get_values(self):
@@ -1072,6 +1083,8 @@ class FilterBoxItem(object):
             sText = self.sFilterName
         else:
             sText = "%s in %s" % (self.sFilterName, self.sVariableName)
+        if self.bNegated:
+            return "NOT (%s)" % sText
         return sText
 
 class VariableNameGenerator(set):
