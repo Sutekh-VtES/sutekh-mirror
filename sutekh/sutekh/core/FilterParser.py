@@ -672,7 +672,7 @@ class WithNode(OperatorNode):
         return None
 
 class FromNode(OperatorNode):
-    """AST node for values of the form 'X, Y from Z'"""
+    """AST node for values of the form 'X, Y from W, Z'"""
     def __init__(self, oLeft, oOp, oRight):
         super(FromNode, self).__init__([oLeft, oRight])
         self.oOp = oOp
@@ -682,11 +682,11 @@ class FromNode(OperatorNode):
     def get_values(self):
         """Get values"""
         return [[self.oLeft.get_values()],
-            self.oRight.get_filter()[0]]
+            [self.oRight.get_values()]]
 
     def get_filter(self):
         """Get filter expression"""
-        return [self.oLeft.get_filter(), self.oRight.get_filter()[0]]
+        return [self.oLeft.get_filter(), self.oRight.get_filter()]
 
     def get_type(self):
         """Get filter type - these are values, so always None"""
