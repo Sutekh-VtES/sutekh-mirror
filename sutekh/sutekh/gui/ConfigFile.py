@@ -67,6 +67,7 @@ class ConfigFile(object):
         self.__sFileName = sFileName
         self.__oConfigSpec = None
         self.__oConfig = None
+        self.__oValidator = None
         self.__dListeners = {}
         self.__dPluginSpecs = {}
         self.__dDeckSpecs = {}
@@ -105,11 +106,12 @@ class ConfigFile(object):
             for sKey, oValue in dPerDeck.items():
                 oConfigSpec['per_deck']['defaults'][sKey] = oValue
 
+        self.__oConfigSpec = oConfigSpec
         self.__oConfig = ConfigObj(self.__sFileName,
             configspec=oConfigSpec, indent_type='    ')
+        self.__oValidator = Validator()
 
-        oValidator = Validator()
-        oResults = self.__oConfig.validate(oValidator, preserve_errors=True)
+        oResults = self.__oConfig.validate(self.__oValidator, preserve_errors=True)
         return oResults
 
     def validation_errors(self, oValidationResults):
@@ -132,6 +134,10 @@ class ConfigFile(object):
                 aErrors.append('Section %r was missing.' % (aSections,))
 
         return aErrors
+
+    def get_validator(self):
+        """Return the validator used to check the configuration."""
+        return self.__oValidator
 
     def sanitize(self):
         """Called after validation to clean up a valid config.
@@ -383,6 +389,10 @@ class ConfigFile(object):
     def deck_options(self):
         """Return a list of per-deck option names."""
         return self.__oConfig['per_deck']['defaults'].keys()
+
+    def get_deck_option_spec(self, sKey):
+        """Return the config spec for a given option."""
+        return self.__oConfigSpec['per_deck']['defaults'][sKey]
 
     #
     # Application Level Config Settings

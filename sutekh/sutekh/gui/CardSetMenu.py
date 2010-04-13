@@ -14,6 +14,7 @@ from sutekh.gui.SutekhFileWidget import ExportDialog
 from sutekh.io.XmlFileHandling import PhysicalCardSetXmlFile
 from sutekh.gui.FilteredViewMenu import CardListMenu
 from sutekh.gui.CardSetListModel import PARENT_COUNT, IGNORE_PARENT
+from sutekh.gui.FrameProfileEditor import FrameProfileEditor
 
 class CardSetMenu(CardListMenu):
     # pylint: disable-msg=R0904
@@ -79,6 +80,7 @@ class CardSetMenu(CardListMenu):
                 self._del_selection, 'Delete')
         self._oPaste.set_sensitive(False)
         self._oDel.set_sensitive(False)
+        self.create_menu_item('Edit _Profiles', oMenu, self._edit_profiles)
         self.add_edit_menu_actions(oMenu)
 
     # pylint: enable-msg=W0201
@@ -153,3 +155,8 @@ class CardSetMenu(CardListMenu):
     def _paste_selection(self, _oWidget):
         """Try to paste the current clipboard contents"""
         self._oController.view.do_paste()
+
+    def _edit_profiles(self, _oWidget):
+        oDlg = FrameProfileEditor(self._oMainWindow,
+            self._oMainWindow.config_file)
+        oDlg.run()
