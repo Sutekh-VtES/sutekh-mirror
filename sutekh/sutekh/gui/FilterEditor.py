@@ -575,9 +575,10 @@ class FilterValuesBox(gtk.VBox):
         """Enable the delete button"""
         self.__oDelete.set_sensitive(True)
 
-    def enable_disable(self):
+    def enable_disable(self, oFilterObj):
         """Enable the delete button"""
         self.__oDisable.set_sensitive(True)
+        self.__oDisable.set_active(oFilterObj.bDisabled)
 
 class FilterBoxModelEditor(gtk.VBox):
     """Widget for editing a FilterBoxModel."""
@@ -825,7 +826,7 @@ class FilterBoxModelEditor(gtk.VBox):
         else:
             oValuesWidget.set_widget(oFilterObj, self)
         if self.__oTreeStore.iter_depth(self.oCurSelectIter) > 0:
-            oValuesWidget.enable_disable()
+            oValuesWidget.enable_disable(oFilterObj)
             oValuesWidget.enable_delete()
         else:
             oValuesWidget.disable_all_buttons()
