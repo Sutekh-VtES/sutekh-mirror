@@ -704,6 +704,9 @@ class FilterBoxModelEditor(gtk.VBox):
         # Walk the box model, creating items as we need them
         do_add_iter(None, self.__oBoxModel, False)
         self.__oTreeView.expand_all()
+        # Select the root of the model by default.
+        self._select_path(
+                self.__oTreeStore.get_path(self.__oTreeStore.get_iter_root()))
 
     def drag_drop_handler(self, _oWindow, oDragContext, iXPos, iYPos,
             oSelectionData, _oInfo, oTime):
