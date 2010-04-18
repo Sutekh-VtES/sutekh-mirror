@@ -747,7 +747,7 @@ class FilterBoxModelEditor(gtk.VBox):
                         oTempIter = self.__oTreeStore.iter_parent(oTempIter)
                         oInsertObj = self.__oTreeStore.get_value(oTempIter, 1)
                         if oFilterObj is None:
-                            # Bounce this up a level to
+                            # Bounce this up a level as well
                             oFilterObj = oInsertObj
                     # We insert after this filter
                     iIndex = oInsertObj.index(oFilterObj) + 1
@@ -782,13 +782,31 @@ class FilterBoxModelEditor(gtk.VBox):
                     oAddedFilter = oInsertObj.pop()
                     oInsertObj.insert(iIndex, oAddedFilter)
                 self.load()
-                # Restore selection after load
-                self.__oTreeView.set_cursor(oCurPath)
-                self.__oTreeView.grab_focus()
-                self.__oTreeView.scroll_to_cell(oCurPath, None, True, 0.5, 0.0)
-
+                if sSource == 'NewFilter':
+                    # Restore selection after load
+                    self._select_path(oCurPath)
+                else:
+                    # Find where dropped filter ended up and select it
+                    # Since we can serious muck around with the tree layout,
+                    # we can't use any previous iters or paths, so we use
+                    # foreach
+                    self.__oTreeStore.foreach(self._check_for_obj,
+                            oMoveObj)
             else:
                 oDragContext.finish(False, False, oTime)
+
+    def _select_path(self, oPath):
+        """Helper function to manage setting the selected path"""
+        self.__oTreeView.set_cursor(oPath)
+        self.__oTreeView.grab_focus()
+        self.__oTreeView.scroll_to_cell(oPath, None, True, 0.5, 0.0)
+
+    def _check_for_obj(self, _oModel, oPath, oIter, oFilterObj):
+        """Helper function for selecting and object in the tree.
+          Meant to be called via the foreach method."""
+        oCurObj = self.__oTreeStore.get_value(oIter, 1)
+        if oCurObj is oFilterObj:
+            self._select_path(oPath)
 
     def drag_filter(self, _oBtn, _oContext, oSelectionData, _oInfo, _oTime):
         """Create a drag info for this filter"""
