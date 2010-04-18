@@ -977,9 +977,7 @@ class FilterBoxModelEditor(gtk.VBox):
             # We opt for the lazy approach and reload
             self.load()
             # Restore selection after load
-            self.__oTreeView.set_cursor(oCurPath)
-            self.__oTreeView.grab_focus()
-            self.__oTreeView.scroll_to_cell(oCurPath, None, True, 0.5, 0.0)
+            self._select_path(oCurPath)
 
     def set_disabled(self, bState):
         """Set the disabled flag for a section of the filter"""
@@ -990,9 +988,7 @@ class FilterBoxModelEditor(gtk.VBox):
             # We opt for the lazy approach and reload
             self.load()
             # Restore selection after load
-            self.__oTreeView.set_cursor(oCurPath)
-            self.__oTreeView.grab_focus()
-            self.__oTreeView.scroll_to_cell(oCurPath, None, True, 0.5, 0.0)
+            self._select_path(oCurPath)
 
     def delete(self):
         """Delete an filter component from the model"""
