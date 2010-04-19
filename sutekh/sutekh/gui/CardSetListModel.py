@@ -1947,7 +1947,7 @@ class CardSetCardListModel(CardListModel):
         """Update all the per-deck options."""
         sFrameId = self._oController.frame.pane_id
         # TODO: is this a good cardset id?
-        sCardSetId = self._oCardSet.id
+        sCardSetId = str(self._oCardSet.id)
         self._change_mode(self._oConfig.get_deck_option(
             sFrameId, sCardSetId, self._oConfig.EXTRA_LEVEL_MODE))
         self._change_count_mode(self._oConfig.get_deck_option(

@@ -81,7 +81,47 @@ class CardSetMenu(CardListMenu):
         self._oPaste.set_sensitive(False)
         self._oDel.set_sensitive(False)
         self.create_menu_item('Edit _Profiles', oMenu, self._edit_profiles)
+
+        self._oCardsetProfileMenu = self._create_profile_menu(oMenu,
+            "Cardset Profile", self._select_cardset_profile)
+        self._oFrameProfileMenu = self._create_profile_menu(oMenu,
+            "Pane Profile", self._select_frame_profile)
+
         self.add_edit_menu_actions(oMenu)
+
+    def _create_profile_menu(self, oParentMenu, sTitle, fCallback):
+        """Create a radio group sub-menu for selecting a profile."""
+        oMenu = self.create_submenu(oParentMenu, sTitle)
+        oConfig = self._oMainWindow.config_file
+
+        oGroup = gtk.RadioMenuItem(None,
+            oConfig.get_deck_profile_option("defaults", "name"))
+        oGroup.connect("toggled", fCallback, "defaults")
+        oMenu.append(oGroup)
+
+        self._update_profile_group(oMenu, fCallback)
+
+        return oMenu
+
+    def _update_profile_group(self, oMenu, fCallback):
+        oConfig = self._oMainWindow.config_file
+        oGroup = oMenu.get_children()[0]
+
+        aProfiles = [(sKey, oConfig.get_deck_profile_option(sKey, "name")) \
+            for sKey in oConfig.profiles() if sKey != "defaults"]
+        aProfiles.sort(key=lambda tProfile: tProfile[1])
+
+        # clear out existing radio items
+        for oRadio in oGroup.get_group():
+            if oRadio is not oGroup:
+                oRadio.set_group(None)
+                oMenu.remove(oRadio)
+
+        for sKey, sName in aProfiles:
+            oRadio = gtk.RadioMenuItem(oGroup, sName)
+            oRadio.connect("toggled", fCallback, sKey)
+            oMenu.append(oRadio)
+            oRadio.show()
 
     # pylint: enable-msg=W0201
 
@@ -157,6 +197,26 @@ class CardSetMenu(CardListMenu):
         self._oController.view.do_paste()
 
     def _edit_profiles(self, _oWidget):
+        """Open an options profiles editing dialog."""
         oDlg = FrameProfileEditor(self._oMainWindow,
             self._oMainWindow.config_file)
         oDlg.run()
+        self._update_profile_group(self._oCardsetProfileMenu,
+            self._select_cardset_profile)
+        self._update_profile_group(self._oFrameProfileMenu,
+            self._select_frame_profile)
+
+    def _select_cardset_profile(self, oRadio, sProfileKey):
+        """Callback to change the profile of the current card set."""
+        if oRadio.get_active():
+            oConfig = self._oMainWindow.config_file
+            # TODO: is this a good cardset id?
+            sCardSetId = str(self._oController.model._oCardSet.id)
+            oConfig.set_cardset_profile(sCardSetId, sProfileKey)
+
+    def _select_frame_profile(self, oRadio, sProfileKey):
+        """Callback to change the profile of the current frame."""
+        if oRadio.get_active():
+            oConfig = self._oMainWindow.config_file
+            sFrameId = self._oController.frame.pane_id
+            oConfig.set_frame_profile(sFrameId, sProfileKey)
