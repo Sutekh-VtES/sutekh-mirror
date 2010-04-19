@@ -354,13 +354,32 @@ class ConfigFile(object):
             return None
 
     def set_deck_profile_option(self, sProfile, sKey, sValue):
-        """Set the value of a per-deck option for a profile."""
+        """Set the value of a per-deck option for a profile.
+
+           If sValue is None, remove the key. New profiles are
+           created as needed.
+           """
         if sProfile == "defaults":
-            self.__oConfig['per_deck']['defaults'][sKey] = sValue
+            dProfile = self.__oConfig['per_deck']['defaults']
+        elif sProfile in self.__oConfig['per_deck']['profiles']:
+            dProfile = self.__oConfig['per_deck']['profiles'][sProfile]
         else:
-            self.__oConfig['per_deck']['profiles'][sProfile][sKey] = sValue
-        for oListener in self.__dListeners:
-            oListener.profile_changed(sProfile, sKey)
+            dProfile = {}
+            self.__oConfig['per_deck']['profiles'][sProfile] = dProfile
+
+        bChanged = False
+        if sValue is None:
+            if sKey in dProfile:
+                bChanged = True
+                del dProfile[sKey]
+        else:
+            if sKey not in dProfile or dProfile[sKey] != sValue:
+                bChanged = True
+                dProfile[sKey] = sValue
+
+        if bChanged:
+            for oListener in self.__dListeners:
+                oListener.profile_changed(sProfile, sKey)
 
     def set_frame_profile(self, sFrame, sProfile):
         """Set the profile associated with a frame id."""
@@ -383,8 +402,10 @@ class ConfigFile(object):
         return dict(self.__oConfig['per_deck']['cardset_profiles'])
 
     def profiles(self):
-        """Return a list of profile names."""
-        return self.__oConfig['per_deck']['profiles'].keys()
+        """Return a list of profile keys."""
+        aProfiles = ["defaults"]
+        aProfiles.extend(self.__oConfig['per_deck']['profiles'].keys())
+        return aProfiles
 
     def deck_options(self):
         """Return a list of per-deck option names."""
