@@ -352,7 +352,7 @@ class ConfigFile(object):
     def get_deck_profile_option(self, sProfile, sKey):
         """Get the value of a per-deck option for a profile."""
         try:
-            if sProfile == "defaults":
+            if sProfile is None:
                 return self.__oConfig['per_deck']['defaults'][sKey]
             else:
                 return self.__oConfig['per_deck']['profiles'][sProfile][sKey]
@@ -365,7 +365,7 @@ class ConfigFile(object):
            If sValue is None, remove the key. New profiles are
            created as needed.
            """
-        if sProfile == "defaults":
+        if sProfile is None:
             dProfile = self.__oConfig['per_deck']['defaults']
         elif sProfile in self.__oConfig['per_deck']['profiles']:
             dProfile = self.__oConfig['per_deck']['profiles'][sProfile]
@@ -389,15 +389,35 @@ class ConfigFile(object):
 
     def set_frame_profile(self, sFrame, sProfile):
         """Set the profile associated with a frame id."""
-        self.__oConfig['per_deck']['frame_profiles'][sFrame] = sProfile
+        dFrameProfiles = self.__oConfig['per_deck']['frame_profiles']
+        if dFrameProfiles.get(sFrame) == sProfile:
+            return
+        if sProfile is None:
+            del dFrameProfiles[sFrame]
+        else:
+            dFrameProfiles[sFrame] = sProfile
         for oListener in self.__dListeners:
             oListener.frame_profile_changed(sFrame, sProfile)
 
     def set_cardset_profile(self, sCardset, sProfile):
         """Set the profile associated with a cardset id."""
-        self.__oConfig['per_deck']['cardset_profiles'][sCardset] = sProfile
+        dCardsetProfiles = self.__oConfig['per_deck']['cardset_profiles']
+        if dCardsetProfiles.get(sCardset) == sProfile:
+            return
+        if sProfile is None:
+            del dCardsetProfiles[sCardset]
+        else:
+            dCardsetProfiles[sCardset] = sProfile
         for oListener in self.__dListeners:
             oListener.cardset_profile_changed(sCardset, sProfile)
+
+    def get_frame_profile(self, sFrame):
+        """Return the current profile of the frame."""
+        return self.__oConfig['per_deck']['frame_profiles'].get(sFrame)
+
+    def get_cardset_profile(self, sCardset):
+        """Return the current profile of the cardset."""
+        self.__oConfig['per_deck']['cardset_profiles'].get(sCardset)
 
     def frame_profiles(self):
         """Return a dictionary of frame id -> profile mappings."""
@@ -409,9 +429,7 @@ class ConfigFile(object):
 
     def profiles(self):
         """Return a list of profile keys."""
-        aProfiles = ["defaults"]
-        aProfiles.extend(self.__oConfig['per_deck']['profiles'].keys())
-        return aProfiles
+        return list(self.__oConfig['per_deck']['profiles'].keys())
 
     def deck_options(self):
         """Return a list of per-deck option names."""

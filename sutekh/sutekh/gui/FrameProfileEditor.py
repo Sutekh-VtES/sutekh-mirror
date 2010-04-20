@@ -86,6 +86,7 @@ class FrameProfileEditor(SutekhDialog):
     def _all_profile_keys(self):
         """Return a set of all profile keys (including unsaved profiles)."""
         aProfiles = set(self.__oConfig.profiles())
+        aProfiles.add("defaults")
         aProfiles.update(self.__dUnsavedChanges)
         return aProfiles
 
@@ -93,8 +94,10 @@ class FrameProfileEditor(SutekhDialog):
         """Return a dict of option values from a (possibly unsaved) profile."""
         if sProfile in self.__dUnsavedChanges:
             dValues = self.__dUnsavedChanges[sProfile]
-        elif sProfile in self.__oConfig.profiles():
+        elif sProfile in self.__oConfig.profiles() or sProfile == "defaults":
             dValues = {}
+            if sProfile == "defaults":
+                sProfile = None
             for sKey in self.__oConfig.deck_options():
                 dValues[sKey] = self.__oConfig.get_deck_profile_option(
                     sProfile, sKey)
@@ -194,5 +197,7 @@ class FrameProfileEditor(SutekhDialog):
     def _save_unsaved_changes(self):
         """Save all the unsaved changes."""
         for sProfile, dValues in self.__dUnsavedChanges.items():
+            if sProfile == "defaults":
+                sProfile = None
             for sKey, sValue in dValues.items():
                 self.__oConfig.set_deck_profile_option(sProfile, sKey, sValue)

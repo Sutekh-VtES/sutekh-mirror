@@ -41,6 +41,14 @@ class CardSetMenu(CardListMenu):
     name = property(fget=lambda self: self._oController.view.sSetName,
             doc="Associated Card Set Name")
 
+    frame_id = property(fget=lambda self: str(self._oController.frame.pane_id),
+            doc="Frame ID of associated card set (for selecting profiles)")
+
+    # TODO: is this a good cardset id?
+    cardset_id = property(fget=lambda self:
+            str(self._oController.model._oCardSet.id),
+            doc="Cardset ID of associated card set (for selecting profiles)")
+
     #pylint: enable-msg=W0212
 
 
@@ -82,34 +90,42 @@ class CardSetMenu(CardListMenu):
         self._oDel.set_sensitive(False)
         self.create_menu_item('Edit _Profiles', oMenu, self._edit_profiles)
 
+        sCardsetProfile = self._oMainWindow.config_file.get_cardset_profile(
+            self.cardset_id)
         self._oCardsetProfileMenu = self._create_profile_menu(oMenu,
-            "Cardset Profile", self._select_cardset_profile)
+            "Cardset Profile", self._select_cardset_profile, sCardsetProfile)
+
+        sFrameProfiles = self._oMainWindow.config_file.get_frame_profile(
+            self.frame_id)
         self._oFrameProfileMenu = self._create_profile_menu(oMenu,
-            "Pane Profile", self._select_frame_profile)
+            "Pane Profile", self._select_frame_profile, sFrameProfiles)
 
         self.add_edit_menu_actions(oMenu)
 
-    def _create_profile_menu(self, oParentMenu, sTitle, fCallback):
+    def _create_profile_menu(self, oParentMenu, sTitle, fCallback, sProfile):
         """Create a radio group sub-menu for selecting a profile."""
         oMenu = self.create_submenu(oParentMenu, sTitle)
         oConfig = self._oMainWindow.config_file
 
         oGroup = gtk.RadioMenuItem(None,
-            oConfig.get_deck_profile_option("defaults", "name"))
-        oGroup.connect("toggled", fCallback, "defaults")
+            oConfig.get_deck_profile_option(None, "name"))
+        oGroup.connect("toggled", fCallback, None)
         oMenu.append(oGroup)
 
-        self._update_profile_group(oMenu, fCallback)
+        self._update_profile_group(oMenu, fCallback, sProfile)
 
         return oMenu
 
-    def _update_profile_group(self, oMenu, fCallback):
+    def _update_profile_group(self, oMenu, fCallback, sProfile):
         oConfig = self._oMainWindow.config_file
         oGroup = oMenu.get_children()[0]
 
         aProfiles = [(sKey, oConfig.get_deck_profile_option(sKey, "name")) \
-            for sKey in oConfig.profiles() if sKey != "defaults"]
+            for sKey in oConfig.profiles()]
         aProfiles.sort(key=lambda tProfile: tProfile[1])
+
+        if sProfile is None:
+            oGroup.set_active(True)
 
         # clear out existing radio items
         for oRadio in oGroup.get_group():
@@ -120,6 +136,8 @@ class CardSetMenu(CardListMenu):
         for sKey, sName in aProfiles:
             oRadio = gtk.RadioMenuItem(oGroup, sName)
             oRadio.connect("toggled", fCallback, sKey)
+            if sKey == sProfile:
+                oRadio.set_active(True)
             oMenu.append(oRadio)
             oRadio.show()
 
@@ -136,28 +154,6 @@ class CardSetMenu(CardListMenu):
         sNewName = oCardSet.name
         self._oFrame.update_name(sNewName)
         self._oController.view.update_name(sNewName)
-
-    def check_parent_count_column(self, oOldParent, oNewParent):
-        """Check that the parent column values are set correctly
-           when the parent changes.
-           """
-        # FIXME: Make code do the right thing for the changed
-        # preferences system. For now, we just return so reparenting at
-        # least works.
-        return
-        # pylint: disable-msg=E1101
-        # SQLObject confuses pylint
-        # We rely on signal handler to cause reload
-        if oNewParent:
-            self._oParentCol.set_sensitive(True)
-            if not oOldParent:
-                # Parent has changed from none, so set to default
-                self._change_parent_count_mode(None, PARENT_COUNT, True)
-                # Check below will force reload anyway
-                self._oDefaultParentCount.set_active(True)
-        else:
-            self._oParentCol.set_sensitive(False)
-            self._change_parent_count_mode(None, IGNORE_PARENT, True)
 
     def _do_export(self, _oWidget):
         """Export the card set to the chosen filename."""
@@ -201,22 +197,25 @@ class CardSetMenu(CardListMenu):
         oDlg = FrameProfileEditor(self._oMainWindow,
             self._oMainWindow.config_file)
         oDlg.run()
+
+        sCardsetProfile = self._oMainWindow.config_file.get_cardset_profile(
+            self.cardset_id)
         self._update_profile_group(self._oCardsetProfileMenu,
-            self._select_cardset_profile)
+            self._select_cardset_profile, sCardsetProfile)
+
+        sFrameProfile = self._oMainWindow.config_file.get_frame_profile(
+            self.frame_id)
         self._update_profile_group(self._oFrameProfileMenu,
-            self._select_frame_profile)
+            self._select_frame_profile, sFrameProfile)
 
     def _select_cardset_profile(self, oRadio, sProfileKey):
         """Callback to change the profile of the current card set."""
         if oRadio.get_active():
             oConfig = self._oMainWindow.config_file
-            # TODO: is this a good cardset id?
-            sCardSetId = str(self._oController.model._oCardSet.id)
-            oConfig.set_cardset_profile(sCardSetId, sProfileKey)
+            oConfig.set_cardset_profile(self.cardset_id, sProfileKey)
 
     def _select_frame_profile(self, oRadio, sProfileKey):
         """Callback to change the profile of the current frame."""
         if oRadio.get_active():
             oConfig = self._oMainWindow.config_file
-            sFrameId = self._oController.frame.pane_id
-            oConfig.set_frame_profile(sFrameId, sProfileKey)
+            oConfig.set_frame_profile(self.frame_id, sProfileKey)

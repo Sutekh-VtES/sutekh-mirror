@@ -141,6 +141,18 @@ class CardSetCardListModel(CardListModel):
         listen_changed(self.card_changed, PhysicalCardSet)
         self._oController = None
 
+    # pylint: disable-msg=W0212
+    # We allow access via these properties
+
+    frame_id = property(fget=lambda self: str(self._oController.frame.pane_id),
+            doc="Frame ID of associated card set (for selecting profiles)")
+
+    # TODO: is this a good cardset id?
+    cardset_id = property(fget=lambda self: str(self._oCardSet.id),
+            doc="Cardset ID of associated card set (for selecting profiles)")
+
+    #pylint: enable-msg=W0212
+
     def set_controller(self, oController):
         """Set the controller"""
         self._oController = oController
@@ -1947,28 +1959,32 @@ class CardSetCardListModel(CardListModel):
         """Update all the per-deck options."""
         # pylint: disable-msg=E1101, E1103
         # Pyprotocols confuses pylint
-        sFrameId = self._oController.frame.pane_id
-        # TODO: is this a good cardset id?
-        sCardSetId = str(self._oCardSet.id)
+        # FIXME: the way this is using _change_* is totally
+        # broken (needs mapping between config values and
+        # internal mode constants and changes to config specs)
         self._change_mode(self._oConfig.get_deck_option(
-            sFrameId, sCardSetId, self._oConfig.EXTRA_LEVEL_MODE))
+            self.frame_id, self.cardset_id,
+            self._oConfig.EXTRA_LEVEL_MODE))
         self._change_count_mode(self._oConfig.get_deck_option(
-            sFrameId, sCardSetId, self._oConfig.SHOW_ZERO_COUNT_CARDS))
+            self.frame_id, self.cardset_id,
+            self._oConfig.SHOW_ZERO_COUNT_CARDS))
         self._change_parent_count_mode(self._oConfig.get_deck_option(
-            sFrameId, sCardSetId, self._oConfig.SHOW_PARENT_CARD_COUNT))
+            self.frame_id, self.cardset_id,
+            self._oConfig.SHOW_PARENT_CARD_COUNT))
 
     def profile_changed(self, sProfile, sKey):
         """One of the per-deck configuration items changed."""
-        # TODO: only call update_deck_options when needed
         self.update_deck_options()
 
     def frame_profile_changed(self, sFrame, sNewProfile):
         """The profile associated with a frame changed."""
-        # TODO: only call update_deck_options when needed
+        if sFrame != self.frame_id:
+            return
         self.update_deck_options()
 
     def cardset_profile_changed(self, sCardset, sNewProfile):
         """The profile associated with a cardset changed."""
-        # TODO: only call update_deck_options when needed
+        if sCardset != self.cardset_id:
+            return
         self.update_deck_options()
 

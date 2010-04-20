@@ -74,10 +74,7 @@ class CardSetController(object):
         if oCardSet.id == self.__oPhysCardSet.id and \
                 dChanges.has_key('parentID'):
             # This card set's parent is changing
-            # Update menu to reflect this
-            self._oFrame.menu.check_parent_count_column(oCardSet.parent,
-                    dChanges['parentID'])
-            if self.model.changes_with_parent() or not dChanges['parentID']:
+            if self.model.changes_with_parent():
                 # Parent count is shown, or not shown becuase parent is
                 # changing to None, so this affects the shown cards.
                 self._oFrame.queue_reload()
