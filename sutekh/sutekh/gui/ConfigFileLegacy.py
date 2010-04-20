@@ -43,6 +43,9 @@ class ConfigFile(object):
        can register as listeners on the config file to respond to
        changes to the filters.
        """
+    # pylint: disable-msg=R0904
+    # We need to provide fine-grained access to all the data,
+    # so lots of methods
 
     __sFiltersSection = 'Filters'
     __sPanesSection = 'Open Panes'

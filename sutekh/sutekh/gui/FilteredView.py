@@ -101,12 +101,17 @@ class FilteredView(gtk.TreeView):
 
     # Filtering
 
+    # pylint: disable-msg=R0201
+    # Method so sub-classes can override this
+
     def _get_filter_dialog(self, _sDefaultFilter):
         """Create the filter dialog if applicable for this view.
 
            The default doesn't create a dialog, but some subclasses
            do."""
         return False
+
+    # pylint: enable-msg=R0201
 
     def get_filter(self, oMenu, sDefaultFilter=None):
         """Get the Filter from the FilterDialog.

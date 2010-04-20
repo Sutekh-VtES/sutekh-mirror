@@ -54,6 +54,9 @@ class ConfigFile(object):
        can register as listeners on the config file to respond to
        changes to the filters.
        """
+    # pylint: disable-msg=R0904
+    # We need to provide fine-grained access to all the data,
+    # so lots of methods
 
     #
     # BUILT-IN PER-DECK CONFIG OPTIONS
@@ -95,9 +98,11 @@ class ConfigFile(object):
 
     def validate(self):
         """Validate a configuration object."""
+        # pylint: disable-msg=E1101
+        # pkg_resources confuses pylint here
         fConfigSpec = pkg_resources.resource_stream(__name__, "configspec.ini")
-        oConfigSpec = ConfigObj(fConfigSpec,
-            raise_errors=True, file_error=True, list_values=False)
+        oConfigSpec = ConfigObj(fConfigSpec, raise_errors=True,
+                file_error=True, list_values=False)
 
         for sPlugin, dGlobal in self.__dPluginSpecs.items():
             oConfigSpec['plugins_main'][sPlugin] = dGlobal
@@ -107,11 +112,12 @@ class ConfigFile(object):
                 oConfigSpec['per_deck']['defaults'][sKey] = oValue
 
         self.__oConfigSpec = oConfigSpec
-        self.__oConfig = ConfigObj(self.__sFileName,
-            configspec=oConfigSpec, indent_type='    ')
+        self.__oConfig = ConfigObj(self.__sFileName, configspec=oConfigSpec,
+                indent_type='    ')
         self.__oValidator = Validator()
 
-        oResults = self.__oConfig.validate(self.__oValidator, preserve_errors=True)
+        oResults = self.__oConfig.validate(self.__oValidator,
+                preserve_errors=True)
         return oResults
 
     def validation_errors(self, oValidationResults):

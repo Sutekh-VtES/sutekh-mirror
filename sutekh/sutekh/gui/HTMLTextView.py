@@ -3,7 +3,8 @@
 # vim:fileencoding=utf8 ai ts=4 sts=4 et sw=4
 # TextView Object that displays an HTML file
 # Copyright 2005, 2006, 2007 Gustavo J. A. M. Carneiro
-# Changes for Sutekh, Copyright 2008, 2009, 2010 Neil Muller <drnlmuller+sutekh@gmail.com>
+# Changes for Sutekh, Copyright 2008, 2009, 2010
+#           Neil Muller <drnlmuller+sutekh@gmail.com>
 # License: GPL - See COPYRIGHT file for details
 # Original version downloaded from http://www.gnome.org/~gjc/htmltextview.py
 # April 2008
@@ -20,7 +21,6 @@ import pango
 import gtk
 import re
 import warnings
-import operator
 import HTMLParser
 from cStringIO import StringIO
 from sutekh.gui.SutekhDialog import SutekhDialog
