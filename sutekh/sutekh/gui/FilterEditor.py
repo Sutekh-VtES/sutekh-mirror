@@ -1063,6 +1063,8 @@ class FilterBoxItem(object):
     def get_current_values(self):
         """Get the current values set for this filter."""
         dVars = {}
+        # Flag as empty by default
+        dVars[self.sVariableName] = None
         if self.aCurValues:
             if self.iValueType == self.LIST:
                 dVars[self.sVariableName] = ['"%s"' % sValue for sValue in
