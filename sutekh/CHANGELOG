@@ -1,3 +1,20 @@
+20 Apr 2010
+ * Fix database upgrade code to also work with newer sqlobject versions
+
+19 Apr 2010
+ * Add menu options for choosing a profile
+ * Mostly working profile editor
+
+18 Apr 2010
+ * Change filter dialog to a two-pane only layout
+
+13 Apr 2010
+ * Fix bug in parsing 'X from Y' filters
+ * Initial profile editor dialog
+
+10 Apr 2010
+ * Add imbued FAQ to the Rulebook plugin
+
 24 Mar 2010
  * Compress zipfile entries when creating zip files.
 
