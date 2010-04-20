@@ -31,6 +31,36 @@ IGNORE_PARENT, PARENT_COUNT, MINUS_THIS_SET, MINUS_SETS_IN_USE = range(4)
 BLACK = gtk.gdk.color_parse('black')
 RED = gtk.gdk.color_parse('red')
 
+#
+# config text lookup -- keep in sync with configspec.ini
+#
+
+EXTRA_LEVEL_OPTION = "extra levels"
+EXTRA_LEVEL_LOOKUP = {
+    "none": NO_SECOND_LEVEL,
+    "expansions": SHOW_EXPANSIONS,
+    "card sets": SHOW_CARD_SETS,
+    "expansions, then card sets": EXP_AND_CARD_SETS,
+    "card sets, then expansions": CARD_SETS_AND_EXP,
+}
+
+SHOW_CARD_OPTION = "cards to show"
+SHOW_CARD_LOOKUP = {
+    "this set only": THIS_SET_ONLY,
+    "all cards": ALL_CARDS,
+    "parent cards": PARENT_CARDS,
+    "child cards": CHILD_CARDS,
+}
+
+PARENT_COUNT_MODE = "parent count mode"
+PARENT_COUNT_LOOKUP = {
+    "ignore parent": IGNORE_PARENT,
+    "parent count": PARENT_COUNT,
+    "parent minus this set": MINUS_THIS_SET,
+    "parent minus sets in use": MINUS_SETS_IN_USE,
+}
+
+
 class CardSetModelRow(object):
     """Object which holds the data needed for a card set row."""
     # pylint: disable-msg=R0902
@@ -144,11 +174,11 @@ class CardSetCardListModel(CardListModel):
     # pylint: disable-msg=W0212
     # We allow access via these properties
 
-    frame_id = property(fget=lambda self: str(self._oController.frame.pane_id),
+    frame_id = property(fget=lambda self: "pane%s" % (self._oController.frame.pane_id,),
             doc="Frame ID of associated card set (for selecting profiles)")
 
     # TODO: is this a good cardset id?
-    cardset_id = property(fget=lambda self: str(self._oCardSet.id),
+    cardset_id = property(fget=lambda self: "cs%s" % (self._oCardSet.id,),
             doc="Cardset ID of associated card set (for selecting profiles)")
 
     #pylint: enable-msg=W0212
@@ -1932,45 +1962,51 @@ class CardSetCardListModel(CardListModel):
 
     def _change_mode(self, iLevel):
         """Set which extra information is shown."""
-        # We don't want to call load multiple times, so this logic
         if self.iExtraLevelsMode != iLevel:
             self.iExtraLevelsMode = iLevel
-            self._oController.view.reload_keep_expanded()
+            return True
+        return False
 
     def _change_count_mode(self, iLevel):
         """Set which extra information is shown."""
         if self.iShowCardMode != iLevel:
             self.iShowCardMode = iLevel
-            self._oController.view.reload_keep_expanded()
+            return True
+        return False
 
-    def _change_parent_count_mode(self, iLevel, bNoReload=False):
+    def _change_parent_count_mode(self, iLevel):
         """Toggle the visibility of the parent col"""
         if iLevel == IGNORE_PARENT:
             self._oController.view.set_parent_count_col_vis(False)
         else:
             self._oController.view.set_parent_count_col_vis(True)
         if self.iParentCountMode == iLevel:
-            return
+            return False
         self.iParentCountMode = iLevel
-        if not bNoReload:
-            self._oController.view.reload_keep_expanded()
+        return True
 
     def update_deck_options(self):
         """Update all the per-deck options."""
         # pylint: disable-msg=E1101, E1103
         # Pyprotocols confuses pylint
-        # FIXME: the way this is using _change_* is totally
-        # broken (needs mapping between config values and
-        # internal mode constants and changes to config specs)
-        self._change_mode(self._oConfig.get_deck_option(
-            self.frame_id, self.cardset_id,
-            self._oConfig.EXTRA_LEVEL_MODE))
-        self._change_count_mode(self._oConfig.get_deck_option(
-            self.frame_id, self.cardset_id,
-            self._oConfig.SHOW_ZERO_COUNT_CARDS))
-        self._change_parent_count_mode(self._oConfig.get_deck_option(
-            self.frame_id, self.cardset_id,
-            self._oConfig.SHOW_PARENT_CARD_COUNT))
+
+        sExtraLevelOpt = self._oConfig.get_deck_option(
+            self.frame_id, self.cardset_id, EXTRA_LEVEL_OPTION).lower()
+        iExtraLevelMode = EXTRA_LEVEL_LOOKUP.get(sExtraLevelOpt, SHOW_EXPANSIONS)
+
+        sShowCardOpt = self._oConfig.get_deck_option(
+            self.frame_id, self.cardset_id, SHOW_CARD_OPTION).lower()
+        iShowCardMode = SHOW_CARD_LOOKUP.get(sShowCardOpt, THIS_SET_ONLY)
+
+        sParentCountOpt = self._oConfig.get_deck_option(
+            self.frame_id, self.cardset_id, PARENT_COUNT_MODE).lower()
+        iParentCountOpt = PARENT_COUNT_LOOKUP.get(sParentCountOpt, IGNORE_PARENT)
+
+        bReloadELM = self._change_mode(iExtraLevelMode)
+        bReloadSCM = self._change_count_mode(iShowCardMode)
+        bReloadPCM = self._change_parent_count_mode(iParentCountOpt)
+        if bReloadELM or bReloadSCM or bReloadPCM:
+            self._oController.view.reload_keep_expanded()
 
     def profile_changed(self, sProfile, sKey):
         """One of the per-deck configuration items changed."""

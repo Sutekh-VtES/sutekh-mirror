@@ -14,8 +14,6 @@ import gtk
 import gobject
 
 # TODO: add means to delete profile (possibly separate menu item)
-# TODO: add means to associate profile with deck (separate menu item)
-# TODO: add means to associate profile with frame (separate menu item)
 
 class FrameProfileEditor(SutekhDialog):
     """Dialog which allows the user to per-deck option profiles.

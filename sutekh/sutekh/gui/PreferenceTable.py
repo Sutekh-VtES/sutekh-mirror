@@ -173,7 +173,10 @@ class OptionParsedSpec(BaseParsedSpec):
         return oCombo
 
     def set_value(self, oValue):
-        iIndex = self.aArgs.find(oValue)
+        try:
+            iIndex = self.aArgs.index(oValue)
+        except ValueError:
+            iIndex = -1
         self.oEntry.set_active(iIndex)
 
     def get_value(self):

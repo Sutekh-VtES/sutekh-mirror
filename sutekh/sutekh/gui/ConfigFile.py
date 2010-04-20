@@ -58,14 +58,6 @@ class ConfigFile(object):
     # We need to provide fine-grained access to all the data,
     # so lots of methods
 
-    #
-    # BUILT-IN PER-DECK CONFIG OPTIONS
-    #
-
-    SHOW_ZERO_COUNT_CARDS = 'show zero count cards'
-    SHOW_PARENT_CARD_COUNT = 'show parent count'
-    EXTRA_LEVEL_MODE = 'extra level mode'
-
     def __init__(self, sFileName):
         self.__sFileName = sFileName
         self.__oConfigSpec = None
@@ -417,7 +409,7 @@ class ConfigFile(object):
 
     def get_cardset_profile(self, sCardset):
         """Return the current profile of the cardset."""
-        self.__oConfig['per_deck']['cardset_profiles'].get(sCardset)
+        return self.__oConfig['per_deck']['cardset_profiles'].get(sCardset)
 
     def frame_profiles(self):
         """Return a dictionary of frame id -> profile mappings."""
@@ -502,15 +494,6 @@ class ConfigFile(object):
         for oListener in self.__dListeners:
             oListener.set_postfix_the_display(bPostfix)
 
-    # TODO:
-    #
-    # - write profile preference dialog
-    #   - oNameDisplay = gtk.CheckMenuItem(
-    #              'Use "path of ..., the" name display')
-    #   - ("This Card Set Only", THIS_SET_ONLY),
-    #   - ("Show All Cards", ALL_CARDS),
-    #   - ("Show all cards in parent card set", PARENT_CARDS),
-    #   - ("Show all cards in child card sets", CHILD_CARDS),
-    # - add selector for default, deck and cardlist profile
-    #
-    # - add loader for old config files
+    # TODO: add loader for old config files
+    # TODO: add preference dialog for postfix name display
+    #       'Use "path of ..., the" name display'

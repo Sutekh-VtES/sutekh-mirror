@@ -13,7 +13,6 @@ from sutekh.SutekhUtility import safe_filename
 from sutekh.gui.SutekhFileWidget import ExportDialog
 from sutekh.io.XmlFileHandling import PhysicalCardSetXmlFile
 from sutekh.gui.FilteredViewMenu import CardListMenu
-from sutekh.gui.CardSetListModel import PARENT_COUNT, IGNORE_PARENT
 from sutekh.gui.FrameProfileEditor import FrameProfileEditor
 
 class CardSetMenu(CardListMenu):
@@ -41,12 +40,10 @@ class CardSetMenu(CardListMenu):
     name = property(fget=lambda self: self._oController.view.sSetName,
             doc="Associated Card Set Name")
 
-    frame_id = property(fget=lambda self: str(self._oController.frame.pane_id),
+    frame_id = property(fget=lambda self: self._oController.model.frame_id,
             doc="Frame ID of associated card set (for selecting profiles)")
 
-    # TODO: is this a good cardset id?
-    cardset_id = property(fget=lambda self:
-            str(self._oController.model._oCardSet.id),
+    cardset_id = property(fget=lambda self: self._oController.model.cardset_id,
             doc="Cardset ID of associated card set (for selecting profiles)")
 
     #pylint: enable-msg=W0212
