@@ -110,9 +110,9 @@ class RarityGrouping(IterGrouping):
 
 class ExpansionRarityGrouping(IterGrouping):
     def __init__(self, oIter, fGetCard=DEF_GET_CARD):
-        def expansion_rarity(x):
+        def expansion_rarity(oCard):
             aExpRarities = []
-            aRarities = list(fGetCard(x).rarity)
+            aRarities = list(fGetCard(oCard).rarity)
             for oRarity in aRarities:
                 if oRarity.expansion.name.startswith('Promo'):
                     aExpRarities.append('Promo')

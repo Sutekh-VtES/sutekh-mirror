@@ -23,7 +23,7 @@ class CardSetController(object):
     _sFilterType = 'PhysicalCard'
 
     def __init__(self, sName, oMainWindow, oFrame):
-        # pylint: disable-msg=E1101
+        # pylint: disable-msg=E1101, E1103
         # SQLObject methods confuse pylint
         self._oMainWindow = oMainWindow
         self._oMenu = None
@@ -69,7 +69,7 @@ class CardSetController(object):
            When the parent changes to or from none, we also update the menus
            and the parent card shown view.
            """
-        # pylint: disable-msg=E1101
+        # pylint: disable-msg=E1101, E1103
         # Pyprotocols confuses pylint
         if oCardSet.id == self.__oPhysCardSet.id and \
                 dChanges.has_key('parentID'):
@@ -116,7 +116,7 @@ class CardSetController(object):
 
            Needed if child card sets are deleted, for instance.
            """
-        # pylint: disable-msg=E1101
+        # pylint: disable-msg=E1101, E1103
         # Pyprotocols confuses pylint
         if oCardSet.parent and oCardSet.parent.id == \
                 self.__oPhysCardSet.id and oCardSet.inuse and \
@@ -147,8 +147,8 @@ class CardSetController(object):
 
     def dec_card(self, oPhysCard, sCardSetName):
         """Returns True if a card was successfully removed, False otherwise."""
-        # pylint: disable-msg=E1101
-        # SQLObject methods confuse pylint
+        # pylint: disable-msg=E1101, E1103
+        # SQLObject +Pyprotocol methods confuse pylint
         try:
             if sCardSetName:
                 oThePCS = IPhysicalCardSet(sCardSetName)
@@ -192,8 +192,8 @@ class CardSetController(object):
 
     def add_card(self, oPhysCard, sCardSetName):
         """Returns True if a card was successfully added, False otherwise."""
-        # pylint: disable-msg=E1101
-        # SQLObject methods confuse pylint
+        # pylint: disable-msg=E1101, E1103
+        # SQLObject + PyProtocols methods confuse pylint
         try:
             if sCardSetName:
                 oThePCS = IPhysicalCardSet(sCardSetName)

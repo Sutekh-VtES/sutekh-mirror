@@ -472,7 +472,7 @@ class CardSetCardListModel(CardListModel):
             oCard = self.get_abstract_card_from_path(oPath)
             oCardIter = self.get_card_iterator(
                     SpecificCardIdFilter(oCard.id))
-            # pylint: disable-msg=E1101
+            # pylint: disable-msg=E1101, E1103
             # Pyprotocols confuses pylint
             for oCard in oCardIter:
                 oPhysCard = IPhysicalCard(oCard)
@@ -496,7 +496,7 @@ class CardSetCardListModel(CardListModel):
             oCSFilter = FilterAndBox([self._dCache['child filters'][
                 sCardSetName], SpecificCardIdFilter(oCard.id)])
             for oCard in oCSFilter.select(self.cardclass).distinct():
-                # pylint: disable-msg=E1101
+                # pylint: disable-msg=E1101, E1103
                 # Pyprotocols confuses pylint
                 oPhysCard = IPhysicalCard(oCard)
                 sExpansion = self.get_expansion_name(oPhysCard.expansion)
@@ -533,7 +533,7 @@ class CardSetCardListModel(CardListModel):
 
     def _get_child_filters(self, oCurFilter):
         """Get the filters for the child card sets of this card set."""
-        # pylint: disable-msg=E1101
+        # pylint: disable-msg=E1101, E1103
         # SQLObject + PyProtocols confuse pylint
         if self.iExtraLevelsMode in [SHOW_CARD_SETS, EXP_AND_CARD_SETS,
                 CARD_SETS_AND_EXP] or self.iShowCardMode == CHILD_CARDS:
@@ -586,7 +586,7 @@ class CardSetCardListModel(CardListModel):
 
     def _get_parent_list(self, oCurFilter):
         """Get a list object for the cards in the parent card set."""
-        # pylint: disable-msg=E1101
+        # pylint: disable-msg=E1101, E1103
         # SQLObject + PyProtocols confuse pylint
         if self._oCardSet.parent and not (
                 self.iParentCountMode == IGNORE_PARENT and
@@ -610,7 +610,7 @@ class CardSetCardListModel(CardListModel):
     def _get_extra_cards(self, oCurFilter):
         """Return any extra cards not in this card set that need to be
            considered for the current mode."""
-        # pylint: disable-msg=E1101
+        # pylint: disable-msg=E1101, E1103
         # Pyprotocols confuses pylint
         if self.iShowCardMode == ALL_CARDS:
             if self._dCache['all cards']:
@@ -800,7 +800,7 @@ class CardSetCardListModel(CardListModel):
 
     def _get_sibling_cards(self):
         """Get the list of cards in sibling card sets"""
-        # pylint: disable-msg=E1101
+        # pylint: disable-msg=E1101, E1103
         # pyprotocols confusion
         dSiblingCards = {}
         if not 'sibling filter' in self._dCache:
@@ -847,7 +847,7 @@ class CardSetCardListModel(CardListModel):
 
     def _add_parent_info(self, dAbsCards, dPhysCards):
         """Add the parent count info into the mix"""
-        # pylint: disable-msg=E1101
+        # pylint: disable-msg=E1101, E1103
         # Pyprotocols confuses pylint
         if (self.iParentCountMode == IGNORE_PARENT and
                 self.iShowCardMode != PARENT_CARDS) or \
@@ -911,7 +911,7 @@ class CardSetCardListModel(CardListModel):
 
     def _get_parent_count(self, oPhysCard, iThisSetCnt=None):
         """Get the correct parent count for the given card"""
-        # pylint: disable-msg=E1101
+        # pylint: disable-msg=E1101, E1103
         # PyProtocols confuses pylint
         iParCnt = 0
         if self.iParentCountMode != IGNORE_PARENT and self._oCardSet.parent:
@@ -1058,7 +1058,7 @@ class CardSetCardListModel(CardListModel):
     def changes_with_parent(self):
         """Utility function. Returns true if the parent card set influences
            the currently visible set of cards."""
-        # pylint: disable-msg=E1101
+        # pylint: disable-msg=E1101, E1103
         # PyProtocols confuse pylint
         return (self.iParentCountMode != IGNORE_PARENT or \
                 self.iShowCardMode == PARENT_CARDS) and \
@@ -1073,7 +1073,7 @@ class CardSetCardListModel(CardListModel):
     def changes_with_siblings(self):
         """Utility function. Returns true if changes to the sibling card sets
            influence the display."""
-        # pylint: disable-msg=E1101
+        # pylint: disable-msg=E1101, E1103
         # PyProtocols confuse pylint
         return self.iParentCountMode == MINUS_SETS_IN_USE and \
                 self._oCardSet.parent is not None
@@ -1131,8 +1131,8 @@ class CardSetCardListModel(CardListModel):
            as we can query the database and obtain accurate results.
            Does rely on everyone calling send_changed_signal.
            """
-        # pylint: disable-msg=E1101, R0912
-        # E1101 - Pyprotocols confuses pylint
+        # pylint: disable-msg=E1101, R0912, E1103
+        # E1101, E1103 - Pyprotocols confuses pylint
         # R0912 - need to consider several cases, so lots of branches
         oAbsCard = IAbstractCard(oPhysCard)
         if self._bPhysicalFilter:
@@ -1242,7 +1242,7 @@ class CardSetCardListModel(CardListModel):
 
     def _card_count_changes_parent(self):
         """Check if a change in the card count changes the parent"""
-        # pylint: disable-msg=E1101
+        # pylint: disable-msg=E1101, E1103
         # pyprotocols confuses pylint
         return (self.iParentCountMode == MINUS_THIS_SET or
                 (self.iParentCountMode == MINUS_SETS_IN_USE and
@@ -1283,8 +1283,8 @@ class CardSetCardListModel(CardListModel):
         # get the result right when the parent row isn't being removed.
         # If the parent row is to be removed, returning the wrong result
         # here doesn't matter - this simplifies the logic a bit
-        # pylint: disable-msg=E1101
-        # E1101: PyProtocols confuses pylint
+        # pylint: disable-msg=E1101, E1103
+        # E1101, E1103: PyProtocols confuses pylint
         iCnt = self.get_value(oIter, 1)
         if not self.check_card_visible(oPhysCard):
             # Card doesn't match the current filter & plugins, so it must
@@ -1336,7 +1336,7 @@ class CardSetCardListModel(CardListModel):
     def check_card_iter_stays(self, oIter):
         """Check if we need to remove a given card or not"""
         # Conditions for removal vary with the cards shown
-        # pylint: disable-msg=E1101
+        # pylint: disable-msg=E1101, E1103
         # Pyprotocols confuses pylint
         iCnt = self.get_value(oIter, 1)
         if self.iShowCardMode == ALL_CARDS or iCnt > 0:
@@ -1457,7 +1457,7 @@ class CardSetCardListModel(CardListModel):
         """Update the expansion entries and the children for a changed entry
            for the SHOW_EXPANSIONS and EXP_AND_CARD_SETS modes"""
         # We need to update the expansion count for this card
-        # pylint: disable-msg=E1101
+        # pylint: disable-msg=E1101, E1103
         # pyprotocols confuses pylint
         oAbsCard = oPhysCard.abstractCard
         sExpName = self.get_expansion_name(oPhysCard.expansion)
@@ -1595,8 +1595,8 @@ class CardSetCardListModel(CardListModel):
     def alter_card_count(self, oPhysCard, iChg):
         """Alter the card count of a card which is in the current list
            (i.e. in the card set and not filtered out) by iChg."""
-        # pylint: disable-msg=E1101, R0912
-        # E1101: PyProtocols confuses pylint here
+        # pylint: disable-msg=E1101, R0912, E1103
+        # E1101, E1103: PyProtocols confuses pylint here
         # R0912: Several cases to consider, so several branches
         oAbsCard = IAbstractCard(oPhysCard)
         bRemove = False
@@ -1707,7 +1707,7 @@ class CardSetCardListModel(CardListModel):
     def alter_child_count_card_sets(self, oPhysCard, sCardSetName, iChg):
         """Handle the alter child card case when showing child sets as the
            second level without expansions."""
-        # pylint: disable-msg = E1101
+        # pylint: disable-msg = E1101, E1103
         # PyProtocols confuses pylint
         oAbsCard = oPhysCard.abstractCard
         if oAbsCard in self._dAbsSecondLevel2Iter and \
@@ -1738,7 +1738,7 @@ class CardSetCardListModel(CardListModel):
             tExpKey):
         """Add the third level expansion entry when dealing with adding cards
            to a child card set"""
-        # pylint: disable-msg = E1101
+        # pylint: disable-msg = E1101, E1103
         # PyProtocols confuses pylint
         iCnt = 1
         oAbsCard, sExpName = tExpKey
@@ -1756,7 +1756,7 @@ class CardSetCardListModel(CardListModel):
         # for card level items, but they can cause card level items to vanish
         # So we don't need to loop over the card level, merely the sub-levels,
         # but we do need to check if the card is removed at the end
-        # pylint: disable-msg = E1101
+        # pylint: disable-msg = E1101, E1103
         # PyProtocols confuses pylint
         oAbsCard = oPhysCard.abstractCard
         if (self.iExtraLevelsMode == SHOW_EXPANSIONS and
@@ -1816,7 +1816,7 @@ class CardSetCardListModel(CardListModel):
     def alter_child_count_expansions(self, oPhysCard, sCardSetName, iChg):
         """Handle the alter child card case when showing expansions as the
            second level."""
-        # pylint: disable-msg = E1101
+        # pylint: disable-msg = E1101, E1103
         # PyProtocols confuses pylint
         oAbsCard = oPhysCard.abstractCard
         sExpName = self.get_expansion_name(oPhysCard.expansion)
@@ -1862,7 +1862,7 @@ class CardSetCardListModel(CardListModel):
     def alter_child_cnt_cs_exps(self, oPhysCard, sCardSetName, iChg):
         """Handle the alter child card case when showing child sets as the
            second level with expansions"""
-        # pylint: disable-msg = E1101
+        # pylint: disable-msg = E1101, E1103
         # PyProtocols confuses pylint
         oAbsCard = oPhysCard.abstractCard
         sExpName = self.get_expansion_name(oPhysCard.expansion)
@@ -1945,6 +1945,8 @@ class CardSetCardListModel(CardListModel):
 
     def update_deck_options(self):
         """Update all the per-deck options."""
+        # pylint: disable-msg=E1101, E1103
+        # Pyprotocols confuses pylint
         sFrameId = self._oController.frame.pane_id
         # TODO: is this a good cardset id?
         sCardSetId = str(self._oCardSet.id)

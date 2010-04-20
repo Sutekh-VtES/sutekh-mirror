@@ -474,7 +474,7 @@ class CardSetListModelTests(ConfigSutekhTest):
                 ('Yvette, The Hopeless', 'BSC')]
         for sName, sExp in aCards:
             oCard = make_card(sName, sExp)
-            # pylint: disable-msg=E1101
+            # pylint: disable-msg=E1101, E1103
             # PyProtocols confuses pylint
             oGrandChild2PCS.addPhysicalCard(oCard.id)
             if sName == 'Aire of Elation':

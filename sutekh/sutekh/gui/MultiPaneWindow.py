@@ -83,6 +83,8 @@ class MultiPaneWindow(gtk.Window):
         # Global icon manager
         self._oIconManager = None
         self._oBusyCursor = gtk.gdk.Cursor(gtk.gdk.WATCH)
+        # Sutekh lookuo cache
+        self.__oSutekhObjectCache = None
 
     # pylint: disable-msg=W0201
     # We define attributes here, since this is called after database checks
@@ -1006,7 +1008,7 @@ class MultiPaneWindow(gtk.Window):
         # Safe-guard for if we're called while shutting down
         if self.window:
             self.window.set_cursor(self._oBusyCursor)
-            # Since we're about to do a buncg of CPU grinding, tell gtk
+            # Since we're about to do a bunch of CPU grinding, tell gtk
             # to redraw now
             gtk.gdk.flush()
 

@@ -26,10 +26,11 @@ class IdentifyXMLFile(object):
        to see which xml file it matches.
        """
     def __init__(self):
+        self._bSetExists = self._bParentExists = False
+        self._sType = self._sName = self._sParent = None
+
         self._clear_id_results()
 
-    # pylint: disable-msg=W0201
-    # we call this form __init__, so it's fine
     def _clear_id_results(self):
         """Reset identifier state."""
         self._bSetExists = False
@@ -37,8 +38,6 @@ class IdentifyXMLFile(object):
         self._sType = 'Unknown'
         self._sName = None
         self._sParent = None
-
-    # pylint: enable-msg=W0201
 
     # pylint: disable-msg=W0212
     # We allow access via these properties

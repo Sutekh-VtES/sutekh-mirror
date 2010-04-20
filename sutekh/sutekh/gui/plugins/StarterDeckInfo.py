@@ -268,6 +268,8 @@ class StarterInfoPlugin(SutekhPlugin, CardTextViewListener):
                 # exists, as being the most sensible default
                 aChildren = []
                 if PhysicalCardSet.selectBy(name=oHolder.name).count() != 0:
+                    # pylint: disable-msg=E1101, E1103
+                    # pyprotocols confuses pylint
                     oCS = IPhysicalCardSet(oHolder.name)
                     aChildren = find_children(oCS)
                     if oCS.parent:

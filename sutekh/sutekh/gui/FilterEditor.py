@@ -290,6 +290,8 @@ class FilterBoxModel(list):
 
 class FilterModelPanes(gtk.HBox):
     """Widget to hold the different panes of the Filter editor"""
+    # pylint: disable-msg=R0904
+    # R0904 - gtk.Widget, so many public methods
 
     def __init__(self, sFilterType, oDialog):
         super(FilterModelPanes, self).__init__()
@@ -339,6 +341,8 @@ class FilterModelPanes(gtk.HBox):
 
 class FilterEditorToolbar(gtk.TreeView):
     """Toolbar listing the possible filter elements"""
+    # pylint: disable-msg=R0904
+    # R0904 - gtk.Widget, so many public methods
 
     def __init__(self, sFilterType):
         self.__oListStore = gtk.ListStore(gobject.TYPE_STRING,
@@ -378,6 +382,8 @@ class FilterEditorToolbar(gtk.TreeView):
 
 class FilterValuesBox(gtk.VBox):
     """Holder for the value setting objects"""
+    # pylint: disable-msg=R0904
+    # R0904 - gtk.Widget, so many public methods
 
     def __init__(self, oDialog, sFilterType):
         super(FilterValuesBox, self).__init__()
@@ -429,7 +435,8 @@ class FilterValuesBox(gtk.VBox):
             oFilterTypes.get_selection_object().connect('changed',
                     self.update_box_model, oFilter, oFilterTypes)
             self._oWidget.pack_start(oFilterTypes, expand=True)
-            self._oWidget.pack_start(gtk.Label('Or Drag Filter element'), expand=False)
+            self._oWidget.pack_start(gtk.Label('Or Drag Filter element'),
+                    expand=False)
             oSubFilterList = FilterEditorToolbar(self.__sFilterType)
             self._oWidget.pack_start(AutoScrolledWindow(oSubFilterList),
                     expand=True)
@@ -820,7 +827,8 @@ class FilterBoxModelEditor(gtk.VBox):
             if oFilter is None:
                 # Dragging a value moves the entire filter
                 oIter = self.__oTreeStore.iter_parent(oIter)
-            sSelect = 'MoveFilter: %s' % self.__oTreeStore.get_string_from_iter(oIter)
+            sSelect = 'MoveFilter: %s' % \
+                    self.__oTreeStore.get_string_from_iter(oIter)
             oSelectionData.set(oSelectionData.target, 8, sSelect)
 
     def set_box_model(self, oBoxModel):
