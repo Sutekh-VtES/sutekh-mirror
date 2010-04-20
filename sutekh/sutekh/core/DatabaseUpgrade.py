@@ -49,6 +49,7 @@ class AbstractCard_v4(SQLObject):
     class sqlmeta:
         """meta class used to set the correct table"""
         table = AbstractCard.sqlmeta.table
+        cacheValues = False
 
     canonicalName = UnicodeCol(alternateID=True, length=50)
     name = UnicodeCol(length=50)
@@ -90,6 +91,7 @@ class PhysicalCardSet_v5(SQLObject):
     class sqlmeta:
         """meta class used to set the correct table."""
         table = PhysicalCardSet.sqlmeta.table
+        cacheValues = False
 
     name = UnicodeCol(alternateID=True, length=50)
     author = UnicodeCol(length=50, default='')
@@ -105,6 +107,7 @@ class Expansion_v2(SQLObject):
     class sqlmeta:
         """meta class used to set the correct table."""
         table = Expansion.sqlmeta.table
+        cacheValues = False
 
     name = UnicodeCol(alternateID=True, length=20)
     shortname = UnicodeCol(length=10, default=None)
@@ -115,6 +118,7 @@ class Rarity_v2(SQLObject):
     class sqlmeta:
         """meta class used to set the correct table."""
         table = Rarity.sqlmeta.table
+        cacheValues = False
 
     name = UnicodeCol(alternateID=True, length=20)
     shortname = UnicodeCol(alternateID=True, length=20)
@@ -124,6 +128,7 @@ class Discipline_v2(SQLObject):
     class sqlmeta:
         """meta class used to set the correct table."""
         table = Discipline.sqlmeta.table
+        cacheValues = False
 
     name = UnicodeCol(alternateID=True, length=30)
     fullname = UnicodeCol(length=30, default=None)
@@ -134,6 +139,7 @@ class Virtue_v1(SQLObject):
     class sqlmeta:
         """meta class used to set the correct table."""
         table = Virtue.sqlmeta.table
+        cacheValues = False
 
     name = UnicodeCol(alternateID=True, length=30)
     fullname = UnicodeCol(length=30, default=None)
@@ -145,6 +151,7 @@ class Creed_v1(SQLObject):
     class sqlmeta:
         """meta class used to set the correct table."""
         table = Creed.sqlmeta.table
+        cacheValues = False
 
     name = UnicodeCol(alternateID=True, length=40)
     shortname = UnicodeCol(length=10, default=None)
@@ -156,6 +163,7 @@ class Clan_v2(SQLObject):
     class sqlmeta:
         """meta class used to set the correct table."""
         table = Clan.sqlmeta.table
+        cacheValues = False
 
     name = UnicodeCol(alternateID=True, length=40)
     shortname = UnicodeCol(length=10, default=None)
@@ -167,6 +175,7 @@ class CardType_v1(SQLObject):
     class sqlmeta:
         """meta class used to set the correct table."""
         table = CardType.sqlmeta.table
+        cacheValues = False
 
     name = UnicodeCol(alternateID=True, length=50)
     cards = RelatedJoin('AbstractCard', intermediateTable='abs_type_map',
@@ -177,6 +186,7 @@ class Sect_v1(SQLObject):
     class sqlmeta:
         """meta class used to set the correct table."""
         table = Sect.sqlmeta.table
+        cacheValues = False
 
     name = UnicodeCol(alternateID=True, length=50)
     cards = RelatedJoin('AbstractCard', intermediateTable='abs_sect_map',
@@ -187,6 +197,7 @@ class Title_v1(SQLObject):
     class sqlmeta:
         """meta class used to set the correct table."""
         table = Title.sqlmeta.table
+        cacheValues = False
 
     name = UnicodeCol(alternateID=True, length=50)
     cards = RelatedJoin('AbstractCard', intermediateTable='abs_title_map',
@@ -197,6 +208,7 @@ class Ruling_v1(SQLObject):
     class sqlmeta:
         """meta class used to set the correct table."""
         table = Ruling.sqlmeta.table
+        cacheValues = False
 
     text = UnicodeCol(alternateID=True, length=512)
     code = UnicodeCol(length=50)
@@ -446,6 +458,8 @@ def copy_old_ruling(oOrigConn, oTrans, oVer):
 def copy_discipline_pair(oOrigConn, oTrans):
     """Copy DisciplinePair, assuming versions match"""
     for oObj in DisciplinePair.select(connection=oOrigConn):
+        # Force for SQLObject >= 0.11.4
+        oObj._connection = oOrigConn
         _oCopy = DisciplinePair(id=oObj.id, level=oObj.level,
                discipline=oObj.discipline, connection=oTrans)
 
@@ -461,6 +475,8 @@ def copy_old_discipline_pair(oOrigConn, oTrans, oVer):
 def copy_rarity_pair(oOrigConn, oTrans):
     """Copy RairtyPair, assuming versions match"""
     for oObj in RarityPair.select(connection=oOrigConn):
+        # Force for SQLObject >= 0.11.4
+        oObj._connection = oOrigConn
         _oCopy = RarityPair(id=oObj.id, expansion=oObj.expansion,
                 rarity=oObj.rarity, connection=oTrans)
 
@@ -541,6 +557,8 @@ def copy_abstract_card(oOrigConn, oTrans, oLogger):
     # E1101 - SQLObject confuses pylint
     # R0912 - need the branches for this
     for oCard in AbstractCard.select(connection=oOrigConn):
+        # force issue for SQObject >= 0.11.4
+        oCard._connection = oOrigConn
         oCardCopy = AbstractCard(id=oCard.id,
                 canonicalName=oCard.canonicalName, name=oCard.name,
                 text=oCard.text, connection=oTrans)
@@ -598,6 +616,8 @@ def copy_old_abstract_card(oOrigConn, oTrans, oLogger, oVer):
         oBurnOption = oObjectMaker.make_keyword('burn option')
         sqlhub.processConnection = oTempConn
         for oCard in AbstractCard_v4.select(connection=oOrigConn):
+            # force issue for SQObject >= 0.11.4
+            oCard._connection = oOrigConn
             oCardCopy = AbstractCard(id=oCard.id,
                     canonicalName=oCard.canonicalName, name=oCard.name,
                     text=oCard.text, connection=oTrans)
@@ -657,22 +677,27 @@ def copy_old_physical_card(oOrigConn, oTrans, oLogger, oVer):
         return (False, ["Unknown PhysicalCard version"])
     return (True, aMessages)
 
-def _copy_physical_card_set_loop(aSets, oTrans, oLogger):
+def _copy_physical_card_set_loop(aSets, oTrans, oOrigConn, oLogger):
     """Central loop for copying card sets.
 
        Copy the list of card sets in aSet, ensuring we copy parents before
        children."""
     bDone = False
     dDone = {}
+    # SQLObject < 0.11.4 does this automatically, but later versions don't
+    # We depend on this, so we force the issue
+    for oSet in aSets:
+        oSet._connection = oOrigConn
     while not bDone:
         # We make sure we copy parent's before children
         # We need to be careful, since we don't retain card set IDs,
         # due to issues with sequence numbers
         aToDo = []
         for oSet in aSets:
-            if oSet.parent is None or oSet.parent in dDone:
+
+            if oSet.parent is None or oSet.parent.id in dDone:
                 if oSet.parent:
-                    oParent = dDone[oSet.parent]
+                    oParent = dDone[oSet.parent.id]
                 else:
                     oParent = None
                 # pylint: disable-msg=E1101
@@ -685,7 +710,7 @@ def _copy_physical_card_set_loop(aSets, oTrans, oLogger):
                     oCopy.addPhysicalCard(oCard.id)
                 oCopy.syncUpdate()
                 oLogger.info('Copied PCS %s', oCopy.name)
-                dDone[oSet] = oCopy
+                dDone[oSet.id] = oCopy
                 oTrans.commit()
             else:
                 aToDo.append(oSet)
@@ -697,7 +722,7 @@ def _copy_physical_card_set_loop(aSets, oTrans, oLogger):
 def copy_physical_card_set(oOrigConn, oTrans, oLogger):
     """Copy PCS, assuming versions match"""
     aSets = list(PhysicalCardSet.select(connection=oOrigConn))
-    _copy_physical_card_set_loop(aSets, oTrans, oLogger)
+    _copy_physical_card_set_loop(aSets, oTrans, oOrigConn, oLogger)
 
 def copy_old_physical_card_set(oOrigConn, oTrans, oLogger, oVer):
     """Copy PCS, upgrading as needed."""
@@ -711,7 +736,7 @@ def copy_old_physical_card_set(oOrigConn, oTrans, oLogger, oVer):
         copy_physical_card_set(oOrigConn, oTrans, oLogger)
     elif oVer.check_tables_and_versions([PhysicalCardSet], [5], oOrigConn):
         aSets = list(PhysicalCardSet_v5.select(connection=oOrigConn))
-        _copy_physical_card_set_loop(aSets, oTrans, oLogger)
+        _copy_physical_card_set_loop(aSets, oTrans, oOrigConn, oLogger)
     else:
         return (False, ["Unknown PhysicalCardSet version"])
     return (True, aMessages)
