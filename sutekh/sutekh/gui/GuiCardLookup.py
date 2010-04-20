@@ -28,7 +28,7 @@ def add_accel_to_button(oButton, sAccelKey, oAccelGroup, sToolTip=None):
     if iKeyVal != 0:
         oButton.add_accelerator('clicked', oAccelGroup, iKeyVal, iMod,
                 gtk.ACCEL_VISIBLE)
-    if sToolTip and hasattr(oButton,'set_tooltip_markup'):
+    if sToolTip:
         oButton.set_tooltip_markup(sToolTip)
 
 

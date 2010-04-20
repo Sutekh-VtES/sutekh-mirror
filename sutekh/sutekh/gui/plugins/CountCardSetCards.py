@@ -50,9 +50,8 @@ class CountCardSetCards(SutekhPlugin, CardListModelListener):
 
         self.__oTextLabel = gtk.Label(TOT_FORMAT % {'tot' : 0,
             'crypt' : 0, 'lib' : 0})
-        if hasattr(self.__oTextLabel, 'set_tooltip_markup'):
-            self.__oTextLabel.set_tooltip_markup(TOT_TOOLTIP % {
-            'tot' : 0, 'crypt' : 0, 'lib' : 0})
+        self.__oTextLabel.set_tooltip_markup(TOT_TOOLTIP % {'tot' : 0,
+            'crypt' : 0, 'lib' : 0})
 
         self.__oTextLabel.show()
         return self.__oTextLabel
@@ -64,8 +63,7 @@ class CountCardSetCards(SutekhPlugin, CardListModelListener):
         if self.__oTextLabel:
             self.__oTextLabel.set_markup(TOT_FORMAT % {'tot' : self.__iTot,
                 'crypt' : self.__iCrypt, 'lib' : self.__iLibrary})
-            if hasattr(self.__oTextLabel, 'set_tooltip_markup'):
-                self.__oTextLabel.set_tooltip_markup(TOT_TOOLTIP % {
+            self.__oTextLabel.set_tooltip_markup(TOT_TOOLTIP % {
                 'tot' : self.__iTot, 'crypt' : self.__iCrypt,
                 'lib' : self.__iLibrary})
 

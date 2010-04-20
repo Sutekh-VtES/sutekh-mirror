@@ -3,7 +3,7 @@
 # vim:fileencoding=utf8 ai ts=4 sts=4 et sw=4
 # TextView Object that displays an HTML file
 # Copyright 2005, 2006, 2007 Gustavo J. A. M. Carneiro
-# Changes for Sutekh, Copyright 2008 Neil Muller <drnlmuller+sutekh@gmail.com>
+# Changes for Sutekh, Copyright 2008, 2009, 2010 Neil Muller <drnlmuller+sutekh@gmail.com>
 # License: GPL - See COPYRIGHT file for details
 # Original version downloaded from http://www.gnome.org/~gjc/htmltextview.py
 # April 2008
@@ -71,62 +71,16 @@ class HtmlHandler(HTMLParser.HTMLParser):
         """Convert background value to TextView background color."""
         oColor = _parse_css_color(sValue)
         oTag.set_property("background-gdk", oColor)
-        if gtk.gtk_version >= (2, 8):
-            oTag.set_property("paragraph-background-gdk", oColor)
+        oTag.set_property("paragraph-background-gdk", oColor)
 
 
-    if gtk.gtk_version >= (2, 8, 5) or gobject.pygtk_version >= (2, 8, 1):
-
-        def _get_current_attributes(self):
-            """Get current attributes."""
-            aAttrs = self._oTextView.get_default_attributes()
-            self._oIter.backward_char()
-            self._oIter.get_attributes(aAttrs)
-            self._oIter.forward_char()
-            return aAttrs
-
-    else:
-
-        ## Workaround http://bugzilla.gnome.org/show_bug.cgi?id=317455
-        def _get_current_style_attr(self, sPropName, fCombOper=None):
-            """Get the current style attributes."""
-            aTags = [oTag for oTag in self._aStyles if oTag is not None]
-            aTags.reverse()
-            sIsSetName = sPropName + "-set"
-            oValue = None
-            for oTag in aTags:
-                if oTag.get_property(sIsSetName):
-                    if oValue is None:
-                        oValue = oTag.get_property(sPropName)
-                        if fCombOper is None:
-                            return oValue
-                    else:
-                        oValue = fCombOper(oValue,
-                                oTag.get_property(sPropName))
-            return oValue
-
-        class _FakeAttrs(object):
-            """Fake class with default attributes"""
-            __slots__ = ("font", "font_scale")
-            # pylint: disable-msg=C0103
-            # names need to match gtk's convention
-            def __init__(self):
-                self.font_scale = None
-                self.font = None
-
-        def _get_current_attributes(self):
-            """Get current attributes."""
-            # pylint: disable-msg=C0103
-            # font, font-scale required by design
-            aAttrs = self._FakeAttrs()
-            aAttrs.font_scale = self._get_current_style_attr("scale",
-                                                            operator.mul)
-            if aAttrs.font_scale is None:
-                aAttrs.font_scale = 1.0
-            aAttrs.font = self._get_current_style_attr("font-desc")
-            if aAttrs.font is None:
-                aAttrs.font = self._oTextView.style.font_desc
-            return aAttrs
+    def _get_current_attributes(self):
+        """Get current attributes."""
+        aAttrs = self._oTextView.get_default_attributes()
+        self._oIter.backward_char()
+        self._oIter.get_attributes(aAttrs)
+        self._oIter.forward_char()
+        return aAttrs
 
     def _parse_length(self, sValue, bFontRelative, fCallback, *args):
         """Parse/calc length, converting to pixels.
@@ -683,9 +637,6 @@ class HTMLTextView(gtk.TextView):
 
         # Need the anchor -> tag mappings
         self._dTargets = oHandler.get_targets()
-
-if gobject.pygtk_version < (2, 8):
-    gobject.type_register(HTMLTextView)
 
 class HTMLViewDialog(SutekhDialog):
     # pylint: disable-msg=R0904, R0902

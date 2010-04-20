@@ -160,8 +160,7 @@ class StatsView(gtk.TreeView):
             oColumn.set_sort_column_id(iCol)
             self.append_column(oColumn)
 
-        if hasattr(self, 'set_grid_lines'):
-            self.set_grid_lines(gtk.TREE_VIEW_GRID_LINES_BOTH)
+        self.set_grid_lines(gtk.TREE_VIEW_GRID_LINES_BOTH)
 
 class StatsModel(gtk.TreeStore):
     # pylint: disable-msg=R0904
