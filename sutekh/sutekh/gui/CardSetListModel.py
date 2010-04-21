@@ -40,8 +40,8 @@ EXTRA_LEVEL_LOOKUP = {
     "none": NO_SECOND_LEVEL,
     "expansions": SHOW_EXPANSIONS,
     "card sets": SHOW_CARD_SETS,
-    "expansions, then card sets": EXP_AND_CARD_SETS,
-    "card sets, then expansions": CARD_SETS_AND_EXP,
+    "expansions then card sets": EXP_AND_CARD_SETS,
+    "card sets then expansions": CARD_SETS_AND_EXP,
 }
 
 SHOW_CARD_OPTION = "cards to show"
