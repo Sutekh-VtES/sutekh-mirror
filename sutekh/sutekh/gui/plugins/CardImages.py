@@ -309,11 +309,23 @@ class CardImageFrame(BasicFrame, CardTextViewListener):
                 # Honour expansion from set_card_text
                 self.__sCurExpansion = sExpansionName
                 self.__iExpansionPos = self.__aExpansions.index(sExpansionName)
-            elif self.__sCurExpansion == '' or \
-                    self.__sCurExpansion not in self.__aExpansions:
-                # Set self.__sCurExpansion to a valid value
+            else:
+                # Set self.__sCurExpansion to an existing image, if possible
                 self.__sCurExpansion = self.__aExpansions[0]
                 self.__iExpansionPos = 0
+                bFound = False
+                while not bFound and \
+                        self.__iExpansionPos < len(self.__aExpansions):
+                    sFullFilename = self.__convert_cardname()
+                    if _check_file(sFullFilename):
+                        bFound = True
+                    else:
+                        self.__iExpansionPos += 1
+                        self.__sCurExpansion = \
+                                self.__aExpansions[self.__iExpansionPos]
+                if not bFound:
+                    self.__sCurExpansion = self.__aExpansions[0]
+                    self.__iExpansionPos = 0
         self.__redraw(False)
 
     def do_cycle_expansion(self, iDir):
