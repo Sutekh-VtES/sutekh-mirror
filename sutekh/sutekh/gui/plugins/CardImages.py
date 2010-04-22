@@ -311,18 +311,17 @@ class CardImageFrame(BasicFrame, CardTextViewListener):
                 self.__iExpansionPos = self.__aExpansions.index(sExpansionName)
             else:
                 # Set self.__sCurExpansion to an existing image, if possible
-                self.__sCurExpansion = self.__aExpansions[0]
                 self.__iExpansionPos = 0
                 bFound = False
                 while not bFound and \
                         self.__iExpansionPos < len(self.__aExpansions):
+                    self.__sCurExpansion = \
+                            self.__aExpansions[self.__iExpansionPos]
                     sFullFilename = self.__convert_cardname()
                     if _check_file(sFullFilename):
                         bFound = True
                     else:
                         self.__iExpansionPos += 1
-                        self.__sCurExpansion = \
-                                self.__aExpansions[self.__iExpansionPos]
                 if not bFound:
                     self.__sCurExpansion = self.__aExpansions[0]
                     self.__iExpansionPos = 0
