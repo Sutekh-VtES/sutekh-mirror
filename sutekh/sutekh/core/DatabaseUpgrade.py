@@ -21,6 +21,7 @@ from sutekh.core.SutekhObjects import PhysicalCard, AbstractCard, \
         RarityPair, CardType, Ruling, TABLE_LIST, DisciplinePair, Creed, \
         Sect, Title, Keyword, Artist, flush_cache, SutekhObjectMaker
 from sutekh.core.CardSetHolder import CachedCardSetHolder
+from sutekh.core.Abbreviations import Expansions
 from sutekh.SutekhUtility import refresh_tables
 from sutekh.core.DatabaseVersion import DatabaseVersion
 
@@ -337,7 +338,10 @@ def copy_old_expansion(oOrigConn, oTrans, oVer):
         copy_expansion(oOrigConn, oTrans)
     elif oVer.check_tables_and_versions([Expansion], [2], oOrigConn):
         for oObj in Expansion_v2.select(connection=oOrigConn):
-            _oCopy = Expansion(id=oObj.id, name=oObj.name,
+            # Convert the expansion name as well to handle the 'Blackhand'
+            # rename.
+            sExpName = Expansions.canonical(oObj.name)
+            _oCopy = Expansion(id=oObj.id, name=sExpName,
                     shortname=oObj.shortname, connection=oTrans)
     else:
         return (False, ["Unknown Expansion Version"])
