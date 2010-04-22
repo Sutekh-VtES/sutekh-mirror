@@ -186,7 +186,7 @@ class CardSetCardListModel(CardListModel):
     def set_controller(self, oController):
         """Set the controller"""
         self._oController = oController
-        self.update_deck_options()
+        self.update_deck_options(True)
 
     def cleanup(self):
         # FIXME: We should make sure that all the references go
@@ -1985,8 +1985,11 @@ class CardSetCardListModel(CardListModel):
         self.iParentCountMode = iLevel
         return True
 
-    def update_deck_options(self):
-        """Update all the per-deck options."""
+    def update_deck_options(self, bSkipLoad=False):
+        """Update all the per-deck options.
+
+           bSkipLoad is set when we first call this function during the model
+           creation to avoid calling load twice."""
         # pylint: disable-msg=E1101, E1103
         # Pyprotocols confuses pylint
 
@@ -2005,7 +2008,7 @@ class CardSetCardListModel(CardListModel):
         bReloadELM = self._change_mode(iExtraLevelMode)
         bReloadSCM = self._change_count_mode(iShowCardMode)
         bReloadPCM = self._change_parent_count_mode(iParentCountOpt)
-        if bReloadELM or bReloadSCM or bReloadPCM:
+        if not bSkipLoad and (bReloadELM or bReloadSCM or bReloadPCM):
             self._oController.view.reload_keep_expanded()
 
     def profile_changed(self, sProfile, sKey):
