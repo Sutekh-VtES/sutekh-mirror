@@ -499,5 +499,3 @@ class ConfigFile(object):
             oListener.set_postfix_the_display(bPostfix)
 
     # TODO: add loader for old config files
-    # TODO: add preference dialog for postfix name display
-    #       'Use "path of ..., the" name display'
