@@ -591,6 +591,28 @@ class FilterValuesBox(gtk.VBox):
         self.__oDisable.set_sensitive(True)
         self.__oDisable.set_active(oFilterObj.bDisabled)
 
+    def get_current_pos_and_sel(self):
+        """Get the current scroll position and selection path in the
+           sub-filter list to restore later"""
+        assert len(self._oWidget.get_children()) == 3
+        oScrolledWindow = self._oWidget.get_children()[2]
+        oSubFilterWidget = oScrolledWindow.get_children()[0]
+        _oModel, aPaths = oSubFilterWidget.get_selection().get_selected_rows()
+        return oScrolledWindow.get_hadjustment(), \
+                oScrolledWindow.get_vadjustment(), aPaths
+
+    def restore_pos_and_selection(self, tScrollAdj):
+        """Restore the selection and scrollbar position in the sub-filter
+           list"""
+        assert len(self._oWidget.get_children()) == 3
+        oScrolledWindow = self._oWidget.get_children()[2]
+        oSubFilterWidget = oScrolledWindow.get_children()[0]
+        oSelection = oSubFilterWidget.get_selection()
+        # selection will be a list with 1 path
+        oSelection.select_path(tScrollAdj[2][0])
+        oScrolledWindow.set_hadjustment(tScrollAdj[0])
+        oScrolledWindow.set_vadjustment(tScrollAdj[1])
+
 class FilterBoxModelEditor(gtk.VBox):
     """Widget for editing a FilterBoxModel."""
     # pylint: disable-msg=R0904
@@ -625,6 +647,8 @@ class FilterBoxModelEditor(gtk.VBox):
         self.__oTreeView.drag_dest_set(gtk.DEST_DEFAULT_ALL, DRAG_TARGETS,
                 gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
 
+        self._oValuesWidget = oValuesWidget
+
         self.__oTreeView.drag_source_set(
                 gtk.gdk.BUTTON1_MASK | gtk.gdk.BUTTON3_MASK,
                 DRAG_TARGETS, gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
@@ -637,7 +661,7 @@ class FilterBoxModelEditor(gtk.VBox):
         self.oCurSelectIter = None
         oSelection = self.__oTreeView.get_selection()
         oSelection.set_mode(gtk.SELECTION_SINGLE)
-        oSelection.connect('changed', self.update_values_widget, oValuesWidget)
+        oSelection.connect('changed', self.update_values_widget)
 
     def load(self):
         """Load the boxmodel into the TreeView"""
@@ -768,6 +792,7 @@ class FilterBoxModelEditor(gtk.VBox):
                 else:
                     oInsertObj = oFilterObj
                 if sSource == 'NewFilter':
+                    tInfo = self._oValuesWidget.get_current_pos_and_sel()
                     if sFilter == 'Filter Group':
                         oInsertObj.add_child_box(oInsertObj.AND)
                     else:
@@ -799,6 +824,8 @@ class FilterBoxModelEditor(gtk.VBox):
                 if sSource == 'NewFilter':
                     # Restore selection after load
                     self._select_path(oCurPath)
+                    # Restore values widget selection
+                    self._oValuesWidget.restore_pos_and_selection(tInfo)
                 else:
                     # Find where dropped filter ended up and select it
                     # Since we can serious muck around with the tree layout,
@@ -839,7 +866,7 @@ class FilterBoxModelEditor(gtk.VBox):
         """Set the box model to the correct value"""
         self.__oBoxModel = oBoxModel
 
-    def update_values_widget(self, _oTreeSelection, oValuesWidget):
+    def update_values_widget(self, _oTreeSelection):
         """Update the values widget to the new selection"""
         # Get the current selected row
         _oModel, oIter = self.__oTreeView.get_selection().get_selected()
@@ -852,17 +879,17 @@ class FilterBoxModelEditor(gtk.VBox):
                     oFilterObj = self.__oTreeStore.get_value(oIter, 1)
         self.oCurSelectIter = oIter
         if oFilterObj is None:
-            oValuesWidget.set_widget(None, self)
+            self._oValuesWidget.set_widget(None, self)
             return
         elif oFilterObj.bDisabled:
-            oValuesWidget.set_widget(None, self)
+            self._oValuesWidget.set_widget(None, self)
         else:
-            oValuesWidget.set_widget(oFilterObj, self)
+            self._oValuesWidget.set_widget(oFilterObj, self)
         if self.__oTreeStore.iter_depth(self.oCurSelectIter) > 0:
-            oValuesWidget.enable_disable(oFilterObj)
-            oValuesWidget.enable_delete()
+            self._oValuesWidget.enable_disable(oFilterObj)
+            self._oValuesWidget.enable_delete()
         else:
-            oValuesWidget.disable_all_buttons()
+            self._oValuesWidget.disable_all_buttons()
 
     def update(self, oBoxModel):
         """Update the listing for the given box model"""
