@@ -22,29 +22,39 @@ class GroupCardList(SutekhPlugin):
        Show a dialog which allows the user to select from the avail
        groupings of the cards, and changes the setting in the CardListView.
        """
+
+    GROUPINGS = {
+        'Card Type': CardTypeGrouping,
+        'Multi Card Type': MultiTypeGrouping,
+        'Crypt or Library': CryptLibraryGrouping,
+        'Clans and Creeds': ClanGrouping,
+        'Disciplines and Virtues': DisciplineGrouping,
+        'Expansion': ExpansionGrouping,
+        'Rarity': RarityGrouping,
+        'Sect': SectGrouping,
+        'Title': TitleGrouping,
+        'Cost': CostGrouping,
+        'Group': GroupGrouping,
+        'Artist': ArtistGrouping,
+        'Keyword': KeywordGrouping,
+        'No Grouping': NullGrouping,
+    }
+
+    OPTION_STR = ", ".join('"%s"' % sKey for sKey in GROUPINGS.keys())
+    GROUP_BY = "group by"
+
     dTableVersions = {}
     aModelsSupported = [PhysicalCard, PhysicalCardSet]
+    dPerPaneConfig = {
+        GROUP_BY: 'option(%s, default="Card Type")' % OPTION_STR,
+    }
 
     # pylint: disable-msg=W0142
     # ** magic OK here
     def __init__(self, *aArgs, **kwargs):
         super(GroupCardList, self).__init__(*aArgs, **kwargs)
-        self._dGrpings = {}
-        self._dGrpings['Card Type'] = CardTypeGrouping
-        self._dGrpings['Multi Card Type'] = MultiTypeGrouping
-        self._dGrpings['Crypt or Library'] = CryptLibraryGrouping
-        self._dGrpings['Clans and Creeds'] = ClanGrouping
-        self._dGrpings['Disciplines and Virtues'] = DisciplineGrouping
-        self._dGrpings['Expansion'] = ExpansionGrouping
-        self._dGrpings['Rarity'] = RarityGrouping
-        self._dGrpings['Sect'] = SectGrouping
-        self._dGrpings['Title'] = TitleGrouping
-        self._dGrpings['Cost'] = CostGrouping
-        self._dGrpings['Group'] = GroupGrouping
-        self._dGrpings['Artist'] = ArtistGrouping
-        self._dGrpings['Keyword'] = KeywordGrouping
-        self._dGrpings['No Grouping'] = NullGrouping
         self._oFirstBut = None # placeholder for the radio group
+        self.perpane_config_updated()
 
     def get_menu_item(self):
         """Register on the 'Plugins' menu"""
@@ -71,7 +81,7 @@ class GroupCardList(SutekhPlugin):
         oDlg.connect("response", self.handle_response)
 
         cCurrentGrping = self.get_grouping()
-        oIter = self._dGrpings.iteritems()
+        oIter = self.GROUPINGS.iteritems()
         # pylint: disable-msg=E1101
         # vbox confuses pylint
         for sName, cGrping in oIter:
@@ -88,6 +98,15 @@ class GroupCardList(SutekhPlugin):
 
         return oDlg
 
+    # Config Update
+
+    def perpane_config_updated(self):
+        """Called by base class on config updates."""
+        sGrping = self.get_perpane_item(self.GROUP_BY)
+        cGrping = self.GROUPINGS.get(sGrping)
+        if cGrping is not None:
+            self.set_grouping(cGrping)
+
     # Actions
 
     def handle_response(self, oDlg, oResponse):
@@ -100,15 +119,17 @@ class GroupCardList(SutekhPlugin):
             for oBut in self._oFirstBut.get_group():
                 if oBut.get_active():
                     sLabel = oBut.get_label()
-                    cGrping = self._dGrpings[sLabel]
+                    cGrping = self.GROUPINGS[sLabel]
                     self.set_grouping(cGrping)
             oDlg.destroy()
 
-    def set_grouping(self, cGrping):
+    def set_grouping(self, cGrping, bReload=True):
         """Set the grouping to that specified by cGrping."""
-        self.model.groupby = cGrping
-        # Use view.load so we get busy cursor, etc.
-        self.view.load()
+        if self.model.groupby != cGrping:
+            self.model.groupby = cGrping
+            if bReload:
+                # Use view.load so we get busy cursor, etc.
+                self.view.load()
 
     def get_grouping(self):
         """Get the current grouping class."""
