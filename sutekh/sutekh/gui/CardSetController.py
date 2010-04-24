@@ -213,6 +213,7 @@ class CardSetController(object):
     def update_to_new_db(self):
         """Update the internal card set to the new DB."""
         try:
+            # TODO: update cardset id -> profile map here
             self.__oPhysCardSet = IPhysicalCardSet(self.view.sSetName)
             self.model.update_to_new_db(self.view.sSetName)
         except SQLObjectNotFound:
