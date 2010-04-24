@@ -12,6 +12,7 @@
 from configobj import ConfigObj, flatten_errors
 from validate import Validator
 import pkg_resources
+import weakref
 
 class ConfigFileListener(object):
     """Listener object for config changes - inspired by CardListModeListener"""
@@ -63,7 +64,9 @@ class ConfigFile(object):
         self.__oConfigSpec = None
         self.__oConfig = None
         self.__oValidator = None
-        self.__dListeners = {}
+        # allow listeners to be automatically removed by garbage
+        # collection
+        self.__dListeners = weakref.WeakKeyDictionary()
         self.__dPluginSpecs = {}
         self.__dDeckSpecs = {}
 
@@ -79,6 +82,14 @@ class ConfigFile(object):
     def remove_listener(self, oListener):
         """Remove a listener from the list."""
         del self.__dListeners[oListener]
+
+    def listeners(self):
+        """Return a list of listeners.
+
+        Useful for iterating over the listeners since the internal
+        list is stored in a weakref dictionary.
+        """
+        return self.__dListeners.keys()
 
     def add_plugin_specs(self, sName, dConfigSpecs):
         """Add a validator to the plugins_main configspec section."""
@@ -296,7 +307,7 @@ class ConfigFile(object):
                 'vars': dVars
             }
             self.__oConfig['filters'][sKey] = dFilter
-            for oListener in self.__dListeners:
+            for oListener in self.listeners():
                 oListener.add_filter(sKey, sQuery)
 
     def remove_filter(self, sKey, sFilter):
@@ -306,7 +317,7 @@ class ConfigFile(object):
         if sKey in self.__oConfig['filters'] and \
                 sFilter == self.__oConfig['filters'][sKey]['query']:
             del self.__oConfig['filters'][sKey]
-            for oListener in self.__dListeners:
+            for oListener in self.listeners():
                 oListener.remove_filter(sKey, sFilter)
 
     def replace_filter(self, sKey, sOldFilter, sNewFilter):
@@ -315,7 +326,7 @@ class ConfigFile(object):
         if sKey in self.__oConfig['filters'] and \
                 sOldFilter == self.__oConfig['filters'][sKey]['query']:
             self.__oConfig['filters'][sKey]['query'] = sNewFilter
-            for oListener in self.__dListeners:
+            for oListener in self.listeners():
                 oListener.replace_filter(sKey, sOldFilter, sNewFilter)
 
     #
@@ -380,7 +391,7 @@ class ConfigFile(object):
                 dProfile[sKey] = sValue
 
         if bChanged:
-            for oListener in self.__dListeners:
+            for oListener in self.listeners():
                 oListener.profile_changed(sProfile, sKey)
 
     def set_frame_profile(self, sFrame, sProfile):
@@ -392,7 +403,7 @@ class ConfigFile(object):
             del dFrameProfiles[sFrame]
         else:
             dFrameProfiles[sFrame] = sProfile
-        for oListener in self.__dListeners:
+        for oListener in self.listeners():
             oListener.frame_profile_changed(sFrame, sProfile)
 
     def set_cardset_profile(self, sCardset, sProfile):
@@ -404,7 +415,7 @@ class ConfigFile(object):
             del dCardsetProfiles[sCardset]
         else:
             dCardsetProfiles[sCardset] = sProfile
-        for oListener in self.__dListeners:
+        for oListener in self.listeners():
             oListener.cardset_profile_changed(sCardset, sProfile)
 
     def get_frame_profile(self, sFrame):
@@ -495,7 +506,7 @@ class ConfigFile(object):
     def set_postfix_the_display(self, bPostfix):
         """Set the 'postfix name display' option."""
         self.__oConfig['main']['postfix name display'] = bPostfix
-        for oListener in self.__dListeners:
+        for oListener in self.listeners():
             oListener.set_postfix_the_display(bPostfix)
 
     # TODO: add loader for old config files
