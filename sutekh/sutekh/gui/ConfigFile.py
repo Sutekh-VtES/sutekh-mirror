@@ -169,6 +169,10 @@ class ConfigFile(object):
         """Get the all the panes saved in the config file, and their
            positions."""
         aRes = []
+        # TODO: return old pane id so it can be restored so that
+        #       pane id -> profile mappings still make sense
+        # TODO: Update pane id used by profile to be identical to
+        #       open frame pane keys 
         for sKey, dPane in self.__oConfig['open_frames'].items():
             if not sKey.startswith('pane'):
                 # invalid key
