@@ -1,3 +1,6 @@
+24 Apr 2010
+ * Add support for saving filters with values
+
 20 Apr 2010
  * Fix database upgrade code to also work with newer sqlobject versions
 

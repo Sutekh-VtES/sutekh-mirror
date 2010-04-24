@@ -452,13 +452,10 @@ class FilterPartNode(OperatorNode):
             # values to return
             return [ValueObject(get_filter_type(self.sFilterName).description,
                 self), ValueObject(None, self)]
-        if self.aFilterValues is None:
-            aVals = get_filter_type(self.sFilterName).get_values()
-            # Want a list within ValueObject for the GUI stuff to work
-            # '' case for Entry boxes works as well
-            aResults.append(ValueObject(aVals, self))
-        else:
-            aResults.extend(self.aFilterValues.get_values())
+        # Want a list within ValueObject for the GUI stuff to work
+        # '' case for Entry boxes works as well
+        aVals = get_filter_type(self.sFilterName).get_values()
+        aResults.append(ValueObject(aVals, self))
         return aResults
 
     def get_invalid_values(self):
@@ -681,8 +678,8 @@ class FromNode(OperatorNode):
 
     def get_values(self):
         """Get values"""
-        return [[self.oLeft.get_values()],
-            [self.oRight.get_values()]]
+        return [self.oLeft.get_values(),
+            self.oRight.get_values()]
 
     def get_filter(self):
         """Get filter expression"""

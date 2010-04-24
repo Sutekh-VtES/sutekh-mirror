@@ -88,7 +88,9 @@ class FilterEditor(gtk.Alignment):
 
     def get_current_text(self):
         """Get the current text of the filter for saving in the config
-           file."""
+           file.
+
+           We include any current set values for the filter when saving."""
         return self.__oPanes.get_text()
 
     def replace_ast(self, oAST):
@@ -172,7 +174,7 @@ class FilterBoxModel(list):
                 type(oAST) is NotOpNode and \
                 type(oAST.oSubExpression) is FilterPartNode:
             self.sBoxType = self.AND
-            self.append(FilterBoxItem(oAST))
+            self.append(FilterBoxItem(oAST, self.oVarNameMaker))
         elif oAST is None:
             # support for completely empty boxes
             self.sBoxType = self.AND
@@ -193,8 +195,12 @@ class FilterBoxModel(list):
             elif type(oChild) is BinOpNode:
                 self.append(FilterBoxModel(oChild, self.sFilterType,
                     self.oVarNameMaker))
+            elif type(oChild) is NotOpNode and \
+                    type(oChild.oSubExpression) is BinOpNode:
+                self.append(FilterBoxModel(oChild, self.sFilterType,
+                    self.oVarNameMaker))
             elif type(oChild) in [NotOpNode, FilterPartNode]:
-                self.append(FilterBoxItem(oChild))
+                self.append(FilterBoxItem(oChild, self.oVarNameMaker))
             else:
                 raise ValueError("FilterBoxModel encountered unsupported AST"
                         " node type %s (%s) while examing BinOpNode tree." %
@@ -314,12 +320,9 @@ class FilterModelPanes(gtk.HBox):
 
     def replace_ast(self, oAST):
         """Replace the AST in the tree model"""
-        dVars = self.__oEditor.get_current_values()
-
         self.__oBoxModel = FilterBoxModel(oAST, self.__sFilterType)
         self.__oEditor.set_box_model(self.__oBoxModel)
         self.__oEditor.load()
-        self.__oEditor.set_current_values(dVars)
 
     def get_ast(self):
         """Get the current ast"""
@@ -332,6 +335,7 @@ class FilterModelPanes(gtk.HBox):
         if self.__oBoxModel:
             return self.__oBoxModel.get_text()
         return None
+
 
     def get_values(self):
         """Get the current values"""
@@ -957,20 +961,6 @@ class FilterBoxModelEditor(gtk.VBox):
         if isinstance(oChild, FilterBoxItem):
             dVars.update(oChild.get_current_values())
 
-    def set_current_values(self, dVars):
-        """Set the current list values using variable names in the given
-           dictionary.
-
-           dVars is a mapping sVariableName -> [ list of string values ]
-           """
-        self.__oTreeStore.foreach(self.set_child_values, dVars)
-
-    def set_child_values(self, _oModel, _oPath, oIter, dVars):
-        """Get the values out of the child value"""
-        oChild = self.__oTreeStore.get_value(oIter, 1)
-        if isinstance(oChild, FilterBoxItem):
-            oChild.set_current_values(dVars)
-
     def __remove_filter_part(self, oModelOrItem):
         """Remove the filter part from this box at the user's request"""
         self.__oBoxModel.remove_child(oModelOrItem)
@@ -1014,7 +1004,7 @@ class FilterBoxItem(object):
        """
     NONE, ENTRY, LIST, LIST_FROM = range(4)
 
-    def __init__(self, oAST):
+    def __init__(self, oAST, oVarNameMaker=None):
         if type(oAST) is NotOpNode:
             self.bNegated = True
             oAST = oAST.oSubExpression
@@ -1027,7 +1017,14 @@ class FilterBoxItem(object):
 
         self.sFilterName = oAST.sFilterName
         self.sVariableName = oAST.sVariableName
-        self.aFilterValues = oAST.aFilterValues
+        if not self.sVariableName and oVarNameMaker is not None:
+            self.sVariableName = oVarNameMaker.generate_name()
+        elif self.sVariableName and oVarNameMaker is not None:
+            if self.sVariableName in oVarNameMaker:
+                self.sVariableName = oVarNameMaker.generate_name()
+            else:
+                oVarNameMaker.update([self.sVariableName])
+        aFilterValues = oAST.aFilterValues
         self.iValueType = None
 
         # process values
@@ -1055,6 +1052,30 @@ class FilterBoxItem(object):
 
         assert self.sLabel is not None
         assert self.iValueType is not None
+        if aFilterValues:
+            if self.iValueType == self.LIST_FROM:
+                assert len(aFilterValues.get_values()) == 2
+                oLeft, oRight = aFilterValues.get_values()
+                aFrom, aValues = [], []
+                for oNode in oLeft:
+                    if oNode.oValue != ',':
+                        aValues.append(oNode.oValue)
+                if '-1' in aValues:
+                    aValues = None # Sentinal case
+                for oNode in oRight:
+                    if oNode.oValue != ',':
+                        aFrom.append(oNode.oValue)
+                if "" in aFrom:
+                    aFrom = None # Sentinal case
+                self.aCurValues = [aValues, aFrom]
+            elif self.iValueType == self.ENTRY:
+                assert len(aFilterValues.get_values()) == 1
+                self.aCurValues =  [aFilterValues.get_values()[0].oValue]
+            else:
+                # List filter
+                for oNode in aFilterValues.get_values():
+                    if oNode.oValue != ',':
+                        self.aCurValues.append(oNode.oValue)
 
     def get_variable_names(self):
         """Get the variable name for this filter"""
@@ -1080,30 +1101,9 @@ class FilterBoxItem(object):
                 dVars[self.sVariableName] = ['"%s"' % self.aCurValues[0]]
         return dVars
 
-    def set_current_values(self, dVars):
-        """Set the current values for the entry widget for this filter
-           item."""
-        sName = self.sVariableName
-        if not sName in dVars:
-            return
-        if self.aValues:
-            if self.iValueType == FilterBoxItem.LIST:
-                aVals = [sVal.strip('"') for sVal in dVars[sName]]
-                self.aCurValues = aVals
-            elif self.iValueType == FilterBoxItem.LIST_FROM:
-                if len(dVars[sName]) != 2:
-                    return
-                aVals = [sVal.strip('"') for sVal in dVars[sName][0]]
-                aFrom = [sVal.strip('"') for sVal in dVars[sName][1]]
-                self.aCurValues = [aVals, aFrom]
-        elif len(dVars[sName]) > 0:
-            self.aCurValues = [dVars[sName][0].strip('"')]
-        else:
-            self.aCurValues = []
-
     def get_ast(self):
         """Return an AST representation of the filter."""
-        oAST = FilterPartNode(self.sFilterName, self.aFilterValues,
+        oAST = FilterPartNode(self.sFilterName, None,
                 self.sVariableName)
         if self.bNegated:
             oAST = NotOpNode(oAST)
@@ -1113,6 +1113,29 @@ class FilterBoxItem(object):
         """Return a text representation of the filter."""
         if self.iValueType == self.NONE:
             sText = self.sFilterName
+        elif self.aCurValues:
+            sValues = None
+            if self.iValueType == self.LIST:
+                sValues = ",".join(['"%s"' % sValue for sValue in
+                        self.aCurValues])
+            elif self.iValueType == self.LIST_FROM:
+                aValues, aFrom = self.aCurValues
+                if aValues:
+                    sFromValues = ",".join(['"%s"' % x for x in aValues])
+                else:
+                    sFromValues = '"-1"'
+                if aFrom:
+                    sFrom = ",".join(['"%s"' % x for x in aFrom])
+                else:
+                    sFrom = '""' # Sentinal
+                if aFrom or aValues:
+                    sValues = "%s FROM %s" % (sFromValues, sFrom)
+            elif self.iValueType == self.ENTRY:
+                sValues = '"%s"' % self.aCurValues[0]
+            if sValues:
+                sText = '%s in %s' % (self.sFilterName, sValues)
+            else:
+                sText = "%s in %s" % (self.sFilterName, self.sVariableName)
         else:
             sText = "%s in %s" % (self.sFilterName, self.sVariableName)
         if self.bNegated:
