@@ -16,6 +16,7 @@ import zipfile
 import re
 from sutekh.core.DatabaseVersion import DatabaseVersion
 from sutekh.core.SutekhObjects import PhysicalCardSet
+from sutekh.gui.ConfigFile import ConfigFileListener
 
 def submodules(oPackage):
     """List all the submodules in a package."""
@@ -87,6 +88,34 @@ class PluginManager(object):
         """Get all the plugins loaded"""
         return list(self._aPlugins)
 
+
+class PluginConfigFileListener(ConfigFileListener):
+    """ConfigListener tailored to inform plugins when their config changes."""
+
+    def __init__(self, oPlugin):
+        self._oPlugin = oPlugin
+
+    def profile_changed(self, sProfile, sKey):
+        """One of the per-deck configuration items changed."""
+        if sKey in self._oPlugin.dPerPaneConfig:
+            oConfig = self._oPlugin.config
+            if sProfile in (
+                oConfig.get_frame_profile(self._oPlugin.model.frame_id),
+                oConfig.get_cardset_profile(self._oPlugin.model.cardset_id),
+            ):
+                self._oPlugin.perpane_config_updated()
+
+    def frame_profile_changed(self, sFrame, sNewProfile):
+        """The profile associated with a frame changed."""
+        if self._oPlugin.model.frame_id == sFrame:
+            self._oPlugin.perpane_config_updated()
+
+    def cardset_profile_changed(self, sCardset, sNewProfile):
+        """The profile associated with a cardset changed."""
+        if self._oPlugin.model.cardset_id == sCardset:
+            self._oPlugin.perpane_config_updated()
+
+
 class SutekhPlugin(object):
     """Base class for card list plugins."""
     dTableVersions = {}
@@ -101,6 +130,12 @@ class SutekhPlugin(object):
         self._oView = oCardListView
         self._oModel = oCardListModel
         self._cModelType = cModelType
+        # TODO: clean up detection of relevant models
+        if self._oModel is not None and hasattr(self._oModel, "frame_id"):
+            self._oListener = PluginConfigFileListener(self)
+            # listener automatically removed when plugin is garbage collected
+            # since the config only maintains a weakref to it.
+            self.config.add_listener(self._oListener)
 
     # pylint: disable-msg=W0212
     # we allow access to the members via these properties
@@ -114,6 +149,8 @@ class SutekhPlugin(object):
             doc="GUI CardLookup.")
     icon_manager = property(fget=lambda self: self.parent.icon_manager,
             doc="Icon manager.")
+    config = property(fget=lambda self: self._oView.mainwindow.config_file,
+            doc="Configuration object.")
     # pylint: enable-msg=W0212
 
     @classmethod
@@ -219,21 +256,24 @@ class SutekhPlugin(object):
 
     def get_config_item(self, sKey):
         """Return the value of a plugin global config key."""
-        return self.parent.config_file.get_plugin_key(
-            self.__class__.__name__, sKey)
+        return self.config.get_plugin_key(self.__class__.__name__, sKey)
 
     def set_config_item(self, sKey, sValue):
         """Set the value of a plugin global config key."""
-        self.parent.config_file.set_plugin_key(
-            self.__class__.__name__, sKey, sValue)
+        self.config.set_plugin_key(self.__class__.__name__, sKey, sValue)
 
     def get_perpane_item(self, sKey):
         """Return the value of a per-pane config key."""
-        sCardSet = None
-        if hasattr(self.view, "sSetName"):
-            sCardSet = self.view.sSetName
-        sPaneId = self.view.frame.pane_id
-        return self.parent.config_file.get_perpane_key(sPaneId, sCardSet, sKey)
+        oModel = self.model
+        # TODO: clean up detection of relevant models
+        if oModel is None or not hasattr(oModel, "frame_id"):
+            return None
+        return self.config.get_deck_option(oModel.frame_id, oModel.cardset_id,
+            sKey)
+
+    def perpane_config_updated(self):
+        """Plugins should override this to be informed of config changes."""
+        pass
 
     # pylint: disable-msg=R0201
     # utilty function for plugins
