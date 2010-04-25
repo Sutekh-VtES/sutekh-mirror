@@ -31,7 +31,7 @@ class PreferenceTable(gtk.Table):
         self.set_row_spacings(5)
 
         dAttachOpts = {
-            "xoptions": 0,
+            "xoptions": gtk.FILL,
             "yoptions": 0,
         }
         for iRow, oOpt in enumerate(self._aOptions):
@@ -67,6 +67,7 @@ class PreferenceOption(object):
         self.oSpec = parse_spec(sConfigSpec, oValidator)
         self.oEntry = self.oSpec.oEntry
         self.oLabel = gtk.Label(sKey.capitalize())
+        self.oLabel.set_alignment(0, 0)
         self.bInheritable = True
         self.oInherit = gtk.CheckButton("use default")
         self.oInherit.connect("toggled", self._inherit_toggled)
