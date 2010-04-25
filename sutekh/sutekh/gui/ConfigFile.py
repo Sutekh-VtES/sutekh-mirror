@@ -10,9 +10,15 @@
 """Configuration handling for the Sutekh GUI."""
 
 from configobj import ConfigObj, flatten_errors
-from validate import Validator
+from validate import Validator, is_option, is_list
 import pkg_resources
 import weakref
+
+
+def is_option_list(sValue, *aOptions):
+    """Validator function for option_list configspec type."""
+    return [is_option(sMem, *aOptions) for sMem in is_list(sValue)]
+
 
 class ConfigFileListener(object):
     """Listener object for config changes - inspired by CardListModeListener"""
@@ -58,6 +64,10 @@ class ConfigFile(object):
     # pylint: disable-msg=R0904
     # We need to provide fine-grained access to all the data,
     # so lots of methods
+
+    dCustomConfigTypes = {
+        'option_list': is_option_list,
+    }
 
     def __init__(self, sFileName):
         self.__sFileName = sFileName
@@ -117,7 +127,7 @@ class ConfigFile(object):
         self.__oConfigSpec = oConfigSpec
         self.__oConfig = ConfigObj(self.__sFileName, configspec=oConfigSpec,
                 indent_type='    ')
-        self.__oValidator = Validator()
+        self.__oValidator = Validator(self.dCustomConfigTypes)
 
         oResults = self.__oConfig.validate(self.__oValidator,
                 preserve_errors=True)

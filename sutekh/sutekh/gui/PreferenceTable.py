@@ -186,6 +186,24 @@ class OptionParsedSpec(BaseParsedSpec):
         return self.aArgs[iIndex]
 
 
+class OptionListParsedSpec(BaseParsedSpec):
+
+    def create_widget(self):
+        oContainer = gtk.VBox()
+        for sValue in self.aArgs:
+            oContainer.pack_start(gtk.CheckButton(sValue))
+        return oContainer
+
+    def set_value(self, oValue):
+        oValSet = set(oValue)
+        for oButton in self.oEntry.get_children():
+            oButton.set_active(oButton.get_label() in oValSet)
+
+    def get_value(self):
+        return [oButton.get_label() for oButton in self.oEntry.get_children()
+            if oButton.get_active()]
+
+
 class IntegerParsedSpec(BaseParsedSpec):
 
     def create_widget(self):
@@ -213,6 +231,7 @@ SPEC_TYPE_MAP = {
     "string": StringParsedSpec,
     "boolean": BooleanParsedSpec,
     "option": OptionParsedSpec,
+    "option_list": OptionListParsedSpec,
     "integer": IntegerParsedSpec,
 }
 
