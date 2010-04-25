@@ -438,7 +438,8 @@ class FilterValuesBox(gtk.VBox):
             self.set_box_model_value(oFilter, oFilterTypes)
             oFilterTypes.get_selection_object().connect('changed',
                     self.update_box_model, oFilter, oFilterTypes)
-            self._oWidget.pack_start(oFilterTypes, expand=True)
+            oFilterTypes.set_size_request(100, 150)
+            self._oWidget.pack_start(oFilterTypes, expand=False)
             self._oWidget.pack_start(gtk.Label('Or Drag Filter element'),
                     expand=False)
             oSubFilterList = FilterEditorToolbar(self.__sFilterType)
