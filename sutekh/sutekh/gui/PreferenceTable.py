@@ -22,6 +22,9 @@ class PreferenceTable(gtk.Table):
             self._aOptions.append(
                 PreferenceOption(sKey, sConfigSpec, oValidator))
 
+        self._aOptions.sort(
+            key=lambda oOpt: oOpt.sKey != "name" and oOpt.sKey or "")
+
         super(PreferenceTable, self).__init__(
             rows=len(self._aOptions), columns=self.COLUMNS)
         self.set_col_spacings(5)
