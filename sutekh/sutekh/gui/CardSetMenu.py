@@ -14,6 +14,7 @@ from sutekh.gui.SutekhFileWidget import ExportDialog
 from sutekh.io.XmlFileHandling import PhysicalCardSetXmlFile
 from sutekh.gui.FilteredViewMenu import CardListMenu
 from sutekh.gui.FrameProfileEditor import FrameProfileEditor
+from sutekh.gui.LocalProfileEditor import LocalProfileEditor
 
 class CardSetMenu(CardListMenu):
     # pylint: disable-msg=R0904
@@ -194,8 +195,10 @@ class CardSetMenu(CardListMenu):
 
     def _edit_local_profile(self, _oWidget):
         """Open an editor for the local cardset profile."""
-        # TODO: open an editor
-        pass
+        # TODO: arrange for local profile updates to be stored
+        oDlg = LocalProfileEditor(self._oMainWindow,
+            self._oMainWindow.config_file)
+        oDlg.run()
 
     def _edit_profiles(self, _oWidget):
         """Open an options profiles editing dialog."""
