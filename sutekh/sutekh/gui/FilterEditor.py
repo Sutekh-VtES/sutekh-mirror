@@ -575,7 +575,7 @@ class FilterValuesBox(gtk.VBox):
     def delete(self, _oButton):
         """Delete a filter element"""
         if self._oBoxModelEditor:
-            self._oBoxModelEditor.delete()
+            self._oBoxModelEditor.delete(None)
 
     def disable_all_buttons(self):
         """Disable all the buttons"""
@@ -613,6 +613,25 @@ class FilterValuesBox(gtk.VBox):
         oSelection.select_path(tScrollAdj[2][0])
         oScrolledWindow.set_hadjustment(tScrollAdj[0])
         oScrolledWindow.set_vadjustment(tScrollAdj[1])
+
+class BoxModelPopupMenu(gtk.Menu):
+    """Popup context menu for disable/ negate & delete"""
+    # pylint: disable-msg=R0904
+    # gtk.Widget, so many public methods
+
+    def __init__(self, oBoxModelEditor):
+        super(BoxModelPopupMenu, self).__init__()
+        self._oDis = gtk.MenuItem("Disable / Enable Filter")
+        self._oNeg = gtk.MenuItem("Negate Filter Element")
+        self._oDel = gtk.MenuItem("Delete filter")
+
+        self._oDis.connect("activate", oBoxModelEditor.toggle_disabled)
+        self._oNeg.connect("activate", oBoxModelEditor.toggle_negate)
+        self._oDel.connect("activate", oBoxModelEditor.delete)
+        self.append(self._oDis)
+        self.append(self._oNeg)
+        self.append(gtk.SeparatorMenuItem())
+        self.append(self._oDel)
 
 class FilterBoxModelEditor(gtk.VBox):
     """Widget for editing a FilterBoxModel."""
@@ -663,6 +682,7 @@ class FilterBoxModelEditor(gtk.VBox):
         oSelection = self.__oTreeView.get_selection()
         oSelection.set_mode(gtk.SELECTION_SINGLE)
         oSelection.connect('changed', self.update_values_widget)
+        self.__oTreeView.connect('button_press_event', self.press_button)
 
     def load(self):
         """Load the boxmodel into the TreeView"""
@@ -994,35 +1014,82 @@ class FilterBoxModelEditor(gtk.VBox):
         self.__oBoxModel.remove_child(oModelOrItem)
         self.load()
 
+    def _get_cur_filter(self):
+        """Get the currently selected filter path"""
+        oCurPath, _oCol = self.__oTreeView.get_cursor()
+        if oCurPath:
+            return self.__oTreeStore.get_value(self.oCurSelectIter, 1), \
+                    oCurPath
+        return None, None
+
+    def toggle_negate(self, _oWidget):
+        """Toggle the disabled flag for a section of the filter"""
+        oFilterObj, oCurPath = self._get_cur_filter()
+        if oFilterObj:
+            oFilterObj.bNegated = not oFilterObj.bNegated
+            # We opt for the lazy approach and reload
+            self.load()
+            # Restore selection after load
+            self._select_path(oCurPath)
+
+
     def set_negate(self, bState):
         """Set the disabled flag for a section of the filter"""
-        oCurPath, _oCol = self.__oTreeView.get_cursor()
-        oFilterObj = self.__oTreeStore.get_value(self.oCurSelectIter, 1)
-        if oFilterObj.bNegated != bState:
+        oFilterObj, oCurPath = self._get_cur_filter()
+        if oFilterObj and oFilterObj.bNegated != bState:
             oFilterObj.bNegated = bState
             # We opt for the lazy approach and reload
             self.load()
             # Restore selection after load
             self._select_path(oCurPath)
 
+    def toggle_disabled(self, _oWidget):
+        """Toggle the disabled flag for a section of the filter"""
+        oFilterObj, oCurPath = self._get_cur_filter()
+        if oFilterObj:
+            oFilterObj.bDisabled = not oFilterObj.bDisabled
+            self.load()
+            self._select_path(oCurPath)
+
     def set_disabled(self, bState):
         """Set the disabled flag for a section of the filter"""
-        oCurPath, _oCol = self.__oTreeView.get_cursor()
-        oFilterObj = self.__oTreeStore.get_value(self.oCurSelectIter, 1)
-        if oFilterObj.bDisabled != bState:
+        oFilterObj, oCurPath = self._get_cur_filter()
+        if oFilterObj and oFilterObj.bDisabled != bState:
             oFilterObj.bDisabled = bState
             # We opt for the lazy approach and reload
             self.load()
             # Restore selection after load
             self._select_path(oCurPath)
 
-    def delete(self):
-        """Delete an filter component from the model"""
-        oFilterObj = self.__oTreeStore.get_value(self.oCurSelectIter, 1)
-        oParent = self.__oTreeStore.get_value(self.__oTreeStore.iter_parent(
-            self.oCurSelectIter), 1)
-        oParent.remove(oFilterObj)
-        self.load()
+    def delete(self, _oIgnore):
+        """Delete an filter component from the model
+
+           _oIgnore is so this can be called from the popup menu"""
+        oFilterObj, _oCurPath = self._get_cur_filter()
+        if oFilterObj:
+            oParent = self.__oTreeStore.get_value(
+                    self.__oTreeStore.iter_parent(self.oCurSelectIter), 1)
+            oParent.remove(oFilterObj)
+            self.load()
+
+    def press_button(self, _oWidget, oEvent):
+        """Display the popup menu"""
+        if oEvent.button == 3:
+            iXPos = int(oEvent.x)
+            iYPos = int(oEvent.y)
+            oTime = oEvent.time
+            oPathInfo = self.__oTreeView.get_path_at_pos(iXPos, iYPos)
+            if oPathInfo is not None:
+                oPath, oCol, _iCellX, _iCellY = oPathInfo
+                self.__oTreeView.grab_focus()
+                self.__oTreeView.set_cursor(oPath, oCol, False)
+                oPopupMenu = BoxModelPopupMenu(self)
+                # Show before popup, otherwise menu items aren't drawn properly
+                oPopupMenu.show_all()
+                oPopupMenu.popup(None, None, None, oEvent.button, oTime)
+                return True # Don't propogate to buttons
+        return False
+
 
 class FilterBoxItem(object):
     """A item in the filter editor.
