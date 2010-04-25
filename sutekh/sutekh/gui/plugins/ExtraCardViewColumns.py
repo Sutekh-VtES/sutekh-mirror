@@ -21,8 +21,30 @@ class ExtraCardViewColumns(SutekhPlugin):
 
        Allow the card list to be sorted on these columns
        """
+
+    COLUMNS = {
+        'Card Type': None,
+        'Clans and Creeds': None,
+        'Disciplines and Virtues': None,
+        'Expansions': None,
+        'Group': None,
+        'Title': None,
+        'Sect': None,
+        'Card Text': None,
+        'Capacity or Life': None,
+        'Cost': None,
+    }
+
+    OPTION_STR = ", ".join('"%s"' % sKey for sKey in COLUMNS.keys())
+    EXTRA_COLUMNS = "extra columns"
+
+    # TODO: hook up functionality to per pane config option
+
     dTableVersions = {}
     aModelsSupported = [PhysicalCardSet, PhysicalCard]
+    dPerPaneConfig = {
+        EXTRA_COLUMNS: 'option_list(%s, default=list())' % OPTION_STR,
+    }
 
     _dWidths = {
             'Card Type' : 100,
