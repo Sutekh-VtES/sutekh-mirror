@@ -1953,10 +1953,6 @@ class CardSetCardListModel(CardListModel):
                     tExpKey)
 
     #
-    # Per-deck configuration listener options
-    #
-
-    #
     # Per-deck option changes
     #
 
@@ -2010,6 +2006,10 @@ class CardSetCardListModel(CardListModel):
         bReloadPCM = self._change_parent_count_mode(iParentCountOpt)
         if not bSkipLoad and (bReloadELM or bReloadSCM or bReloadPCM):
             self._oController.view.reload_keep_expanded()
+
+    #
+    # Per-deck configuration listeners
+    #
 
     def profile_changed(self, sProfile, sKey):
         """One of the per-deck configuration items changed."""
