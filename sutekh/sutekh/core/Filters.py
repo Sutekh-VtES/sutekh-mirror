@@ -1269,7 +1269,7 @@ class PhysicalCardSetFilter(Filter):
 
 class MultiPhysicalCardSetFilter(Filter):
     """Filter on a list of Physical Card Sets"""
-    keyword = "PhysicalSet"
+    keyword = "Card_Sets"
     description = "Card Sets"
     helptext = "a list of card sets names\nSelects cards in the " \
             "specified sets."
