@@ -7,7 +7,7 @@
 
 """Widget for editing filters."""
 
-from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
+from sutekh.gui.SutekhDialog import SutekhDialog
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 from sutekh.gui.CardSetsListView import CardSetsListView
 from sutekh.gui.ScrolledList import ScrolledList
@@ -72,12 +72,7 @@ class FilterEditor(gtk.Alignment):
             return oNewAST
 
         dValues = self.__oPanes.get_current_values()
-        for aVals in dValues.values():
-            if not aVals:
-                do_complaint_error("Some filter values have not been " \
-                                   "filled in so the selected filter " \
-                                   "will be ignored")
-                return None
+        # FIXME: Add note to the help about unset filter values
 
         aNewValues = oNewAST.get_values()
         for oValue in aNewValues:
@@ -223,8 +218,7 @@ class FilterBoxModel(list):
         if self.bDisabled:
             return None
 
-        aChildASTs = [oChild.get_ast() for oChild in self
-                if not oChild.bDisabled]
+        aChildASTs = [oChild.get_ast() for oChild in self]
         aChildASTs = [oChild for oChild in aChildASTs if oChild is not None]
 
         if len(aChildASTs) == 0:
@@ -1198,6 +1192,8 @@ class FilterBoxItem(object):
 
     def get_ast(self):
         """Return an AST representation of the filter."""
+        if not self.aCurValues or self.bDisabled:
+            return None
         oAST = FilterPartNode(self.sFilterName, None,
                 self.sVariableName)
         if self.bNegated:
