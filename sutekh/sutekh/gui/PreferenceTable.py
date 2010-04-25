@@ -42,14 +42,16 @@ class PreferenceTable(gtk.Table):
             self.attach(oOpt.oInherit, self.INHERIT_COL, self.INHERIT_COL+1,
                 iRow, iRow+1, **dAttachOpts)
 
-    def update_values(self, dNewValues, dInherit):
+    def update_values(self, dNewValues, dInherit, dEditable):
         """Update the option values.
 
            dNewValues is an sKey -> sValue mapping.
            dInherit is an sKey -> bInheritable mapping.
+           dEditable is an sKey -> bEditable mapping.
            """
         for oOpt in self._aOptions:
             oOpt.set_inheritable(dInherit.get(oOpt.sKey, True))
+            oOpt.set_editable(dEditable.get(oOpt.sKey, True))
             oOpt.set_value(dNewValues.get(oOpt.sKey))
 
     def get_values(self):
@@ -68,6 +70,7 @@ class PreferenceOption(object):
         self.bInheritable = True
         self.oInherit = gtk.CheckButton("use default")
         self.oInherit.connect("toggled", self._inherit_toggled)
+        self.bEditable = True
 
     def set_inheritable(self, bInheritable):
         self.bInheritable = bInheritable
@@ -78,13 +81,17 @@ class PreferenceOption(object):
             self.oInherit.set_sensitive(False)
             self.oInherit.hide()
 
+    def set_editable(self, bEditable):
+        self.bEditable = bEditable
+        self.oEntry.set_sensitive(bEditable)
+
     def set_value(self, oValue):
         """Update the value of the option."""
         if oValue is None and self.bInheritable:
             self.oEntry.set_sensitive(False)
             self.oInherit.set_active(True)
         else:
-            self.oEntry.set_sensitive(True)
+            self.oEntry.set_sensitive(self.bEditable)
             self.oInherit.set_active(False)
             self.oSpec.set_value(oValue)
 
@@ -100,7 +107,7 @@ class PreferenceOption(object):
         if self.oInherit.get_active():
             self.oEntry.set_sensitive(False)
         else:
-            self.oEntry.set_sensitive(True)
+            self.oEntry.set_sensitive(self.bEditable)
 
 
 class BaseParsedSpec(object):

@@ -177,10 +177,12 @@ class FrameProfileEditor(SutekhDialog):
         dNewValues = self._profile_options(sActiveProfile)
         if sActiveProfile == "defaults":
             dInherit = dict.fromkeys(dNewValues.keys(), False)
+            dEdit = { "name" : False }
         else:
             dInherit = { "name": False }
+            dEdit = {}
         self.__dUnsavedChanges[sActiveProfile] = dNewValues
-        self.__oOptionsTable.update_values(dNewValues, dInherit)
+        self.__oOptionsTable.update_values(dNewValues, dInherit, dEdit)
         self.__sActiveProfile = sActiveProfile
 
     def _check_unsaved_changes(self):
