@@ -692,9 +692,9 @@ class FilterBoxModelEditor(gtk.VBox):
             oColour = self.BLACK
             if hasattr(oModel, 'sFilterName'):
                 if oModel.bNegated:
-                    sText = 'NOT %s' % oModel.sFilterName
+                    sText = 'NOT %s' % oModel.sFilterName.replace('_', ' ')
                 else:
-                    sText = oModel.sFilterName
+                    sText = oModel.sFilterName.replace('_', ' ')
                 if oModel.bDisabled or bDisabled:
                     oColour = self.GREY
                 self.__oTreeStore.set(oThisIter, 0, sText, 1, oModel,
