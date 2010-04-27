@@ -589,24 +589,40 @@ class FilterValuesBox(gtk.VBox):
     def get_current_pos_and_sel(self):
         """Get the current scroll position and selection path in the
            sub-filter list to restore later"""
+
+        def _get_values(oAdj):
+            """Get important values out of a gtk.Adjustment"""
+            return oAdj.value, oAdj.page_size
+
         assert len(self._oWidget.get_children()) == 3
         oScrolledWindow = self._oWidget.get_children()[2]
         oSubFilterWidget = oScrolledWindow.get_children()[0]
         _oModel, aPaths = oSubFilterWidget.get_selection().get_selected_rows()
-        return oScrolledWindow.get_hadjustment(), \
-                oScrolledWindow.get_vadjustment(), aPaths
+        # We use the values, rather than the actual adjustments, to avoid a race
+        # condition where gtk deletes the actual adjustment out from under us
+        tHorizVals = _get_values(oScrolledWindow.get_hadjustment())
+        tVertVals = _get_values(oScrolledWindow.get_vadjustment())
+        return tHorizVals, tVertVals, aPaths
 
     def restore_pos_and_selection(self, tScrollAdj):
         """Restore the selection and scrollbar position in the sub-filter
            list"""
+        def _set_values(oAdj, tInfo):
+            """Set the values on an adjustment"""
+            oAdj.value = tInfo[0]
+            oAdj.page_size = tInfo[1]
+            # Send required signals
+            oAdj.changed()
+            oAdj.value_changed()
+
         assert len(self._oWidget.get_children()) == 3
         oScrolledWindow = self._oWidget.get_children()[2]
         oSubFilterWidget = oScrolledWindow.get_children()[0]
         oSelection = oSubFilterWidget.get_selection()
         # selection will be a list with 1 path
         oSelection.select_path(tScrollAdj[2][0])
-        oScrolledWindow.set_hadjustment(tScrollAdj[0])
-        oScrolledWindow.set_vadjustment(tScrollAdj[1])
+        _set_values(oScrolledWindow.get_hadjustment(), tScrollAdj[0])
+        _set_values(oScrolledWindow.get_vadjustment(), tScrollAdj[1])
 
 class BoxModelPopupMenu(gtk.Menu):
     """Popup context menu for disable/ negate & delete"""
