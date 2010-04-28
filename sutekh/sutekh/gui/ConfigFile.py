@@ -387,8 +387,11 @@ class ConfigFile(object):
         elif sProfile in self.__oConfig['per_deck']['profiles']:
             dProfile = self.__oConfig['per_deck']['profiles'][sProfile]
         else:
-            dProfile = {}
-            self.__oConfig['per_deck']['profiles'][sProfile] = dProfile
+            # configobj replaces the dict with a config object, so
+            # trigger the creation of the config object, then set
+            # dProfile to it
+            self.__oConfig['per_deck']['profiles'][sProfile] = {}
+            dProfile = self.__oConfig['per_deck']['profiles'][sProfile]
 
         bChanged = False
         if sValue is None:
