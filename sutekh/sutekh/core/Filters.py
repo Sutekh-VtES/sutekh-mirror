@@ -963,22 +963,24 @@ class CardFunctionFilter(DirectFilter):
     islistfilter = True
     types = ['AbstractCard', 'PhysicalCard']
 
+    # Currently mainly used by the Hand Simulation plugin
+
     # Implementation discussion
     # Because we want flexiblity here, we define these filters in terms
     # of the existing filters - this avoids needing fancy
     # logic in _get_joins, and so forth
     # The filters can only be specificed after the database connection is
-    # established, hence the list of contants and if .. constuction
+    # established, hence the list of constants and if .. constuction
     # in __init__, rather than using a class dictionary or similiar scheme
 
-    __sStealth = 'Stealth'
-    __sIntercept = 'Intercept'
-    __sUntap = 'Untap'
-    __sBounce = 'Bleed Bounce'
-    __sEnterCombat = 'Enter combat'
-    __sBleedModifier = 'Increase bleed action modifiers'
+    __sStealth = 'Stealth action modifiers'
+    __sIntercept = 'Intercept reactions'
+    __sUntap = 'Untap reactions (Wake)'
+    __sBounce = 'Bleed redirection reactions (Bounce)'
+    __sEnterCombat = 'Enter combat actions (Rush)'
+    __sBleedModifier = 'Increased bleed action modifiers'
     __sBleedAction = 'Increased bleed actions'
-    __sBleedReduction = 'Bleed reduction'
+    __sBleedReduction = 'Bleed reduction reactions'
 
     def __init__(self, aTypes):
         aFilters = []
