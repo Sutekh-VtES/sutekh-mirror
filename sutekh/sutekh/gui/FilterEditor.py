@@ -700,11 +700,11 @@ class FilterBoxModelEditor(gtk.VBox):
             """Recursively add elements of the box model"""
             oThisIter = self.__oTreeStore.append(oIter)
             oColour = self.BLACK
-            if hasattr(oModel, 'sFilterName'):
+            if hasattr(oModel, 'sFilterDesc'):
                 if oModel.bNegated:
-                    sText = 'NOT %s' % oModel.sFilterName.replace('_', ' ')
+                    sText = 'NOT %s' % oModel.sFilterDesc
                 else:
-                    sText = oModel.sFilterName.replace('_', ' ')
+                    sText = oModel.sFilterDesc
                 if oModel.bDisabled or bDisabled:
                     oColour = self.GREY
                 self.__oTreeStore.set(oThisIter, 0, sText, 1, oModel,
@@ -1121,6 +1121,7 @@ class FilterBoxItem(object):
         self.bDisabled = False
 
         self.sFilterName = oAST.sFilterName
+        self.sFilterDesc = oAST.get_description()
         self.sVariableName = oAST.sVariableName
         if not self.sVariableName and oVarNameMaker is not None:
             self.sVariableName = oVarNameMaker.generate_name()

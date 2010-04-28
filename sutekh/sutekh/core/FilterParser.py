@@ -436,6 +436,10 @@ class FilterPartNode(OperatorNode):
         """Variable name associated with the filter"""
         return self.sVariableName
 
+    def get_description(self):
+        """Get the description for the associated filter object"""
+        return get_filter_type(self.sFilterName).description
+
     def get_values(self):
         """List of ValueObjects describing the filter and its associated
            values."""
@@ -538,6 +542,13 @@ class NotOpNode(OperatorNode):
     def get_invalid_values(self):
         """NOT(X)'s invalid values are the subfilter's invalid values"""
         return self.oSubExpression.get_invalid_values()
+
+    def get_description(self):
+        """NOT(X)'s description is the subfilter's description,
+           if applicable"""
+        if hasattr(self.oSubExpression, 'get_description'):
+            return self.oSubExpression.get_description()
+        return None
 
     def get_values(self):
         """NOT(X)'s values are the subfilter's values"""
