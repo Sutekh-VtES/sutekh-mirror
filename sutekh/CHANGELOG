@@ -1,5 +1,35 @@
+28 Apr 2010
+ * Rename CardFunction filters to be clearer
+ * Add check_cs_size option for plugins - used by Analyze, CardDrawProbablities
+   and OpeningHandSim plugins to query user when called on large card sets
+   (like "My Collection")
+ * Tweak CardDrawProbablities plugin to handle selections with 0 card counts
+   better
+
+27 Apr 2010
+ * Fix bug in dealing with gtk.Adjustments which could cause a crash when
+   dragging fitlers into the filter editor.
+
+25 Apr 2010
+ * Ignore filter components with unset values.
+ * Add a popup context menu for deleting/disabling filter components
+ * Make default profile name not editable
+ * Sort preference entries sensibly
+ * Add partial support of extra columns to the profile editor
+ * Initial work on local profile support
+ * Tweak some filter names / disply issues
+
 24 Apr 2010
  * Add support for saving filters with values
+ * Add config file listener to plugins
+ * Add groupings to profile preferences
+
+22 Apr 2010
+ * Avoid calling load twice for each card set on startup
+ * Update old 'Blackhand' expansion name during upgrades
+
+21 Apr 2010
+ * Tweak Card Images plugin to prefer showing existing images more often
 
 20 Apr 2010
  * Fix database upgrade code to also work with newer sqlobject versions
