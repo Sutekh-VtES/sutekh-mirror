@@ -386,10 +386,13 @@ class FilterValuesBox(gtk.VBox):
     def __init__(self, oDialog, sFilterType):
         super(FilterValuesBox, self).__init__()
         self._oEmptyWidget = gtk.VBox()
+        self._oNoneWidget = gtk.VBox()
         self._oParent = oDialog
         self.__sFilterType = sFilterType
         self._oEmptyWidget.pack_start(gtk.Label(
             'Select an active\nfilter element'), expand=False)
+        self._oNoneWidget.pack_start(gtk.Label(
+            'No values for this filter'), expand=False)
         self._oFilter = None
         self._oBoxModelEditor = None
         oCheckBox = gtk.HBox()
@@ -497,6 +500,9 @@ class FilterValuesBox(gtk.VBox):
                 self._oWidget.pack_start(oLabel, expand=False)
                 self._oWidget.pack_start(AutoScrolledWindow(oSetList, False),
                         expand=True)
+            elif oFilter.iValueType == FilterBoxItem.NONE:
+                # None filter, so no selection widget, but we have buttons
+                self._oWidget = self._oNoneWidget
         else:
             # No selected widget, so clear everything
             self._oWidget = self._oEmptyWidget
@@ -662,6 +668,7 @@ class FilterBoxModelEditor(gtk.VBox):
     BLACK =  gtk.gdk.color_parse('black')
     GREY =  gtk.gdk.color_parse('grey')
     NO_VALUE = '<i>No Values Set</i>'
+    NONE_VALUE = '<b>No Values for this filter</b>'
 
     def __init__(self, oValuesWidget):
         super(FilterBoxModelEditor, self).__init__()
@@ -742,6 +749,10 @@ class FilterBoxModelEditor(gtk.VBox):
                     oChild = self.__oTreeStore.append(oThisIter)
                     self.__oTreeStore.set(oChild, 0, oModel.aCurValues[0],
                             1, None, 2, oColour)
+                elif oModel.iValueType == oModel.NONE:
+                    oChild = self.__oTreeStore.append(oThisIter)
+                    self.__oTreeStore.set(oChild, 0, self.NONE_VALUE, 1, None,
+                            2, oColour)
                 else:
                     oChild = self.__oTreeStore.append(oThisIter)
                     self.__oTreeStore.set(oChild, 0, self.NO_VALUE, 1, None,
@@ -1209,7 +1220,8 @@ class FilterBoxItem(object):
 
     def get_ast(self):
         """Return an AST representation of the filter."""
-        if not self.aCurValues or self.bDisabled:
+        if (not self.aCurValues and self.iValueType != self.NONE) \
+                or self.bDisabled:
             return None
         oAST = FilterPartNode(self.sFilterName, None,
                 self.sVariableName)
