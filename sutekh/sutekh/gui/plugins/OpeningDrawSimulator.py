@@ -108,7 +108,7 @@ def create_view(oStore, sHeading):
     oValCol.pack_start(oValProgCell, True)
     oValCol.add_attribute(oValProgCell, 'value', 2)
     oValCol.add_attribute(oValProgCell, 'text', 1)
-    # size request is 900x600, cols are about 300, so gran most of the column
+    # size request is 900x600, cols are about 300, so grab most of the column
     oTextCol.set_min_width(230)
     oTextCol.set_sort_column_id(0)
     oTextCol.set_expand(True)
@@ -153,6 +153,8 @@ class OpeningHandSimulator(SutekhPlugin):
     def activate(self, _oWidget):
         """Create the actual dialog, and populate it"""
         sDiagName = "Opening Hand"
+        if not self.check_cs_size(sDiagName, 500):
+            return
         oCryptFilter = CryptCardFilter()
 
         self.aCrypt = get_cards_filter(self.model, oCryptFilter)

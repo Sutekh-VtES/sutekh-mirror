@@ -11,12 +11,14 @@ import glob
 import logging
 import sutekh.gui.plugins as plugins
 from gobject import markup_escape_text
+import gtk
 import zipimport
 import zipfile
 import re
 from sutekh.core.DatabaseVersion import DatabaseVersion
 from sutekh.core.SutekhObjects import PhysicalCardSet
 from sutekh.gui.ConfigFile import ConfigFileListener
+from sutekh.gui.SutekhDialog import do_complaint_warning
 
 def submodules(oPackage):
     """List all the submodules in a package."""
@@ -253,6 +255,22 @@ class SutekhPlugin(object):
         if self._cModelType is PhysicalCardSet:
             return self.model.get_card_iterator(None)
         return []
+
+    def check_cs_size(self, sName, iLimit):
+        """Check that the card set isn't considerably larger than we
+           expect to deal with and warn the user if it is"""
+        iCards = 0
+        aCards = self.get_all_cards()
+        if aCards:
+            iCards = aCards.count()
+        if iCards > iLimit:
+            iRes = do_complaint_warning("This card set is very large"
+                    " (%d cards), and so using the %s plugin doesn't seem"
+                    " sensible.\nAre you sure you want to continue?" %
+                    (iCards, sName))
+            if iRes == gtk.RESPONSE_CANCEL:
+                return False # fail
+        return True # A-OK
 
     def get_config_item(self, sKey):
         """Return the value of a plugin global config key."""

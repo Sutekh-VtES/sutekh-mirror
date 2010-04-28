@@ -131,6 +131,9 @@ class CardDrawSimPlugin(SutekhPlugin):
     # is the plugin's entry point, and they need to reflect the current state
     def activate(self, _oWidget):
         """Create the actual dialog, and populate it."""
+        if not self.check_cs_size('Card Draw probabilities', 500):
+            return
+
         self.iTotal = 0
         self.dSelectedCounts = {}
         self.iSelectedCount = 0

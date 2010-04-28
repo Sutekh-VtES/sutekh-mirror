@@ -356,6 +356,8 @@ class AnalyzeCardList(SutekhPlugin):
     # so they can't be filled properly in __init__
     def activate(self, _oWidget):
         """Create the actual dialog, and populate it"""
+        if not self.check_cs_size('Analyze Deck', 500):
+            return
         oDlg = SutekhDialog( "Analysis of Card List", self.parent,
                 gtk.DIALOG_DESTROY_WITH_PARENT,
                 (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
