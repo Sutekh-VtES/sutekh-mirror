@@ -11,7 +11,8 @@ from copy import copy
 from sutekh.core.SutekhObjects import PhysicalCardSet, IAbstractCard
 from sutekh.SutekhUtility import is_crypt_card
 from sutekh.gui.PluginManager import SutekhPlugin
-from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
+from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error, \
+        do_complaint_warning
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 
 
@@ -153,6 +154,13 @@ class CardDrawSimPlugin(SutekhPlugin):
 
         self._setup_cardlists(aSelectedCards, bCrypt)
 
+        # Query user if we have zero counts
+        if 0 in self.dSelectedCounts.values():
+            iRes = do_complaint_warning("Selected cards include cards with"
+                    " a count of 0.\nDo you want to continue?")
+            if iRes == gtk.RESPONSE_CANCEL:
+                return
+
         oMainTitle = gtk.Label()
         if bCrypt:
             oMainTitle.set_markup('<b>Crypt:</b> Drawing from <b>%d</b> '
@@ -268,13 +276,16 @@ class CardDrawSimPlugin(SutekhPlugin):
         iLibrarySize = 0
         self.dSelectedCounts = {}
         self.iSelectedCount = 0
+        # Initialise dict 1st, as cards with a count of 0 in the selection
+        # are possible.
+        for oCard in aSelectedCards:
+            self.dSelectedCounts.setdefault(oCard, 0)
         for oCard in aAllAbsCards:
             if is_crypt_card(oCard):
                 iCryptSize += 1
             else:
                 iLibrarySize += 1
-            if oCard in aSelectedCards:
-                self.dSelectedCounts.setdefault(oCard, 0)
+            if oCard in self.dSelectedCounts:
                 self.dSelectedCounts[oCard] += 1
                 self.iSelectedCount += 1
             # The assumption is that the user is interested in all copies of
