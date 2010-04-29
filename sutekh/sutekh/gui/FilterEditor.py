@@ -449,7 +449,7 @@ class FilterValuesBox(gtk.VBox):
             self.__oNegate.set_sensitive(True)
             if oFilter.iValueType == FilterBoxItem.LIST:
                 # Select appropriate list widget for this filter
-                if oFilter.sFilterName == "PhysicalSet" or \
+                if oFilter.sFilterName == "Card_Sets" or \
                         oFilter.sFilterName == "ParentCardSet":
                     # Special case to use card set list widget
                     oSetList = CardSetsListView(None, self._oParent)
