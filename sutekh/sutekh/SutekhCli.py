@@ -9,7 +9,7 @@ SutekhCli.py: command-line interface to much of Sutekh's database
 management functionality
 """
 
-import sys, optparse, os
+import sys, optparse, os, tempfile
 from logging import StreamHandler
 from sqlobject import sqlhub, connectionForURI
 from sutekh.core.SutekhObjects import Ruling, TABLE_LIST, PHYSICAL_LIST
@@ -124,9 +124,11 @@ def main_with_args(aTheArgs):
             return 1
         else:
             sTempdir = gen_temp_dir()
-            aPhysicalCardSetList = write_all_pcs(sTempdir)
-            oPCFile = PhysicalCardXmlFile(sDir=sTempdir)
-            oPCFile.write()
+            (fTemp, sReloadZipName) = \
+                    tempfile.mkstemp('.zip', 'sutekh', sTempdir)
+            os.close(fTemp)
+            oZipFile = ZipFileWrapper(sReloadZipName)
+            oZipFile.do_dump_all_to_zip(oLogHandler)
             # We dump the databases here
             # We will reload them later
 
@@ -183,11 +185,9 @@ def main_with_args(aTheArgs):
         oFile.read()
 
     if oOpts.reload:
-        oPCFile.read()
-        oPCFile.delete()
-        for oPCSet in aPhysicalCardSetList:
-            oPCSet.read()
-            oPCSet.delete()
+        oZipFile = ZipFileWrapper(sReloadZipName)
+        oZipFile.do_restore_from_zip(oLogHandler=oLogHandler)
+        os.remove(sReloadZipName)
         os.rmdir(sTempdir)
 
     if oOpts.upgrade_db and oOpts.refresh_tables:
