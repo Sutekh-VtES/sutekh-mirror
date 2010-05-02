@@ -153,6 +153,7 @@ class CardDict(dict):
             'trophy' : re.compile('Master\. Trophy'),
             'investment' : re.compile('Master[.:] (unique )?[Ii]nvestment'),
             'archetype' : re.compile('Master: archetype'),
+            'watchtower' : re.compile('Master: watchtower'),
             }
 
     dEventProperties = {
@@ -166,6 +167,7 @@ class CardDict(dict):
     dOtherProperties = {
             'unique' : re.compile('Unique\.'),
             'boon' : re.compile('Boon\.'),
+            'watchtower' : re.compile('Watchtower\.'),
             'frenzy' : re.compile('Frenzy\.'),
             }
 
