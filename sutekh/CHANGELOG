@@ -1,3 +1,20 @@
+05 May 2010
+ * Reorganise the menu structure.
+   - Combine all download operations under File->Data Downloads
+   - Move backup to file
+   - Create Analyze menu for analysis routines
+   - Rename plugins menu to Other.
+   - Hide, rather than diabling, the Other menu if it's empty
+
+02 May 2010
+ * Fix sutekh-cli --reload to work again
+   - Use zip files, so we reload card sets in the correct order
+ * Add watcher as a keyword
+
+29 Apr 2010
+ * Fix filter editor's display of card set filters (broken by description
+   change)
+
 28 Apr 2010
  * Rename CardFunction filters to be clearer
  * Add check_cs_size option for plugins - used by Analyze, CardDrawProbablities
@@ -5,6 +22,10 @@
    (like "My Collection")
  * Tweak CardDrawProbablities plugin to handle selections with 0 card counts
    better
+ * Use filter descriptions everywhere in filter editor for consistency
+ * Fix bug in setting first option in a profile
+ * Filters that don't require input should not be treated as disabled by the
+   filter editor
 
 27 Apr 2010
  * Fix bug in dealing with gtk.Adjustments which could cause a crash when
