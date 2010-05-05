@@ -36,12 +36,12 @@ class ClanDisciplineStats(SutekhPlugin):
         self._oStatsVbox = None
 
     def get_menu_item(self):
-        """Register on the 'Plugins' menu"""
+        """Register on the 'Analyze' menu"""
         if not self.check_versions() or not self.check_model_type():
             return None
         oClanStats = gtk.MenuItem("Clan Discipline Stats")
         oClanStats.connect("activate", self.activate)
-        return ('Plugins', oClanStats)
+        return ('Analyze', oClanStats)
 
     def activate(self, _oWidget):
         """Handle response from menu"""

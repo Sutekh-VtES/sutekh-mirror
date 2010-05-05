@@ -24,7 +24,9 @@ class PhysicalCardMenu(CardListMenu):
         self.__create_physical_cl_menu()
         self.create_edit_menu()
         self.create_filter_menu()
-        self.create_plugins_menu('_Plugins', self._oFrame)
+        self.create_analyze_menu()
+        self.add_plugins_to_menus(self._oFrame)
+        self.sort_menu(self._dMenus['Analyze'])
 
     # pylint: disable-msg=W0201
     # called from __init__, so OK

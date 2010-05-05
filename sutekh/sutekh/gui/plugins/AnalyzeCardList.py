@@ -343,12 +343,12 @@ class AnalyzeCardList(SutekhPlugin):
     aModelsSupported = [PhysicalCardSet]
 
     def get_menu_item(self):
-        """Register on the 'Plugins' Menu"""
+        """Register on the 'Analyze' Menu"""
         if not self.check_versions() or not self.check_model_type():
             return None
         oAnalyze = gtk.MenuItem("Analyze Deck")
         oAnalyze.connect("activate", self.activate)
-        return ('Plugins', oAnalyze)
+        return ('Analyze', oAnalyze)
 
     # pylint: disable-msg=W0201
     # W0201 - We define a lot of class variables here, because a) this is the

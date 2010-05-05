@@ -105,16 +105,16 @@ class SutekhMenu(gtk.MenuBar):
         oMenuItem = self.create_menu_item_with_submenu(oMenu, sName)
         return oMenuItem.get_submenu()
 
-
-    def create_plugins_menu(self, sName, oPluginWindow):
-        """Create a menu holding the plugins for oPluginWindow."""
-        oMenuItem = self.create_menu_item_with_submenu(self, sName)
+    def add_plugins_to_menus(self, oPluginWindow):
+        """Add the plugins for oPluginWindow to the current menus."""
+        oMenuItem = self.create_menu_item_with_submenu(self, 'Other')
         oMenu = oMenuItem.get_submenu()
         # Add plugins
         for oPlugin in oPluginWindow.plugins:
             oPlugin.add_to_menu(self._dMenus, oMenu)
         if len(oMenu.get_children()) == 0:
-            oMenuItem.set_sensitive(False)
+            self.remove(oMenuItem)
+            del self._dMenus['Other']
         else:
             self.sort_menu(oMenu)
 

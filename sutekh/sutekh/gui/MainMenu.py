@@ -33,7 +33,8 @@ class MainMenu(SutekhMenu):
         self.__oConfig = oConfig
         self.__create_file_menu()
         self.__create_pane_menu()
-        self.create_plugins_menu('Plugins', oWindow)
+        self.__create_rulebook_menu()
+        self.add_plugins_to_menus(oWindow)
         self.__create_help_menu()
         oWindow.add_to_menu_list("White Wolf Card List",
                 self.physical_cl_set_sensitive)
@@ -50,6 +51,8 @@ class MainMenu(SutekhMenu):
         """Create the File Menu"""
         oMenu = self.create_submenu(self, "_File")
         # items
+
+        self.create_submenu(oMenu, 'Backup')
         oImport = self.create_submenu(oMenu, "Import Card Set")
 
         self.create_menu_item("Load Saved Card Set from File", oImport,
@@ -57,16 +60,13 @@ class MainMenu(SutekhMenu):
 
         oMenu.add(gtk.SeparatorMenuItem())
 
-        if sqlhub.processConnection.uri() != "sqlite:///:memory:":
-            # Need to have memory connection available for this
-            self.create_menu_item("Import new White Wolf Card List and"
-                    " rulings", oMenu, self.do_import_new_card_list)
-        self.create_menu_item('Download VTES icons', oMenu,
-                self.download_icons)
+
+        oDownloadMenu = self.create_submenu(oMenu, 'Data Downloads')
+        self.__add_download_menu(oDownloadMenu)
+
         oMenu.add(gtk.SeparatorMenuItem())
 
         oPrefsMenu = self.create_submenu(oMenu, 'Preferences')
-
         self.__add_prefs_menu(oPrefsMenu)
 
         self.create_menu_item('Save Current Pane Set', oMenu,
@@ -120,6 +120,15 @@ class MainMenu(SutekhMenu):
             oSaveWinSize.set_active(False)
         oSaveOnExit.connect('activate', self.do_toggle_save_window_size)
         oPrefsMenu.add(oSaveWinSize)
+
+    def __add_download_menu(self, oDownloadMenu):
+        """Add the File Download menu"""
+        if sqlhub.processConnection.uri() != "sqlite:///:memory:":
+            # Need to have memory connection available for this
+            self.create_menu_item("Import new White Wolf Card List and"
+                    " rulings", oDownloadMenu, self.do_import_new_card_list)
+        self.create_menu_item('Download VTES icons', oDownloadMenu,
+                self.download_icons)
 
     def __create_pane_menu(self):
         """Create the 'Pane Actions' menu"""
@@ -182,6 +191,11 @@ class MainMenu(SutekhMenu):
                 " pane with Card Set List", self.__oReplaceMenu,
                 self._oMainWindow.replace_with_pcs_list)
         self.__oReplacePCSListPane.set_sensitive(True)
+
+    def __create_rulebook_menu(self):
+        """Create the menu for rulebook items"""
+        # setup sub menu
+        self.create_menu_item_with_submenu(self, "_Rulebook")
 
     def __create_help_menu(self):
         """Create the menu for help items"""

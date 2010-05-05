@@ -469,12 +469,13 @@ class CardImagePlugin(SutekhPlugin):
         self._oAddItem.connect("activate", self.add_pane)
         self.parent.add_to_menu_list('Card Image Frame',
                 self.add_image_frame_active)
-        self._oConfigMenuItem = gtk.MenuItem("Configure Card Images Plugin")
+        self._oConfigMenuItem = gtk.MenuItem(
+                "Download or Configure Card Images")
         self._oConfigMenuItem.connect("activate", self.config_activate)
         if not self.image_frame.check_images():
             # Don't allow the menu option if we can't find the images
             self.add_image_frame_active(False)
-        return [('Plugins', self._oConfigMenuItem),
+        return [('Data Downloads', self._oConfigMenuItem),
                 ('Add Pane', self._oAddItem),
                 ('Replace Pane', self._oReplaceItem)]
 

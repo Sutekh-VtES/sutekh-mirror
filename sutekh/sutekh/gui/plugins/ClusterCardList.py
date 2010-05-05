@@ -52,12 +52,12 @@ class ClusterCardList(SutekhPlugin):
     # pylint: enable-msg=W0142
 
     def get_menu_item(self):
-        """Register on the 'Plugins' menu."""
+        """Register on the 'Analyze' menu."""
         if not self.check_versions() or not self.check_model_type():
             return None
         oCluster = gtk.MenuItem("Cluster Cards")
         oCluster.connect("activate", self.activate)
-        return ('Plugins', oCluster)
+        return ('Analyze', oCluster)
 
     def activate(self, _oWidget):
         """In response to the menu, create the correct dialog."""

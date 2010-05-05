@@ -92,3 +92,7 @@ class CardListMenu(FilteredViewMenu):
         """Copy the current selection to the application clipboard."""
         self._oController.view.copy_selection()
 
+    def create_analyze_menu(self):
+        """Create the Analyze Menu, to be filled in by plugins"""
+        self.create_submenu(self, "Analy_ze")
+

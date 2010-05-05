@@ -142,14 +142,9 @@ class StarterInfoPlugin(SutekhPlugin, CardTextViewListener):
         oCardTextView.add_listener(self)
         oCardTextView.text_buffer.add_list_tag('starters')
 
-        oSubMenu = gtk.Menu()
-        oMenuItem = gtk.MenuItem("Starter deck plugin")
-        oMenuItem.set_submenu(oSubMenu)
-
         self.oToggle = gtk.CheckMenuItem("Show Starter Information")
         self.oToggle.connect('toggled', self._toggle_starter)
         self.oToggle.set_active(False)
-        oSubMenu.add(self.oToggle)
         if self.check_enabled():
             sPrefsValue = \
                     self.get_config_item('show starters')
@@ -159,8 +154,7 @@ class StarterInfoPlugin(SutekhPlugin, CardTextViewListener):
             self.oToggle.set_sensitive(False)
         oDownload = gtk.MenuItem("Download starter decks")
         oDownload.connect('activate', self.do_download)
-        oSubMenu.add(oDownload)
-        return [('Plugins', oMenuItem)]
+        return [('Preferences', self.oToggle), ('Data Downloads', oDownload)]
 
     def check_enabled(self):
         """check for starter decks in the database and disable menu if not"""

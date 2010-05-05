@@ -31,19 +31,12 @@ class FullBackup(SutekhPlugin):
         if not self.check_versions() or not self.check_model_type():
             return None
 
-        oMenuItem = gtk.MenuItem("Backup")
-        oMenu = gtk.Menu()
-        oMenuItem.set_submenu(oMenu)
-
         oBackup = gtk.MenuItem("Save a Full Backup")
         oBackup.connect("activate", self.activate_backup)
         oRestore = gtk.MenuItem("Restore a Full Backup")
         oRestore.connect("activate", self.activate_restore)
 
-        oMenu.add(oBackup)
-        oMenu.add(oRestore)
-
-        return ('Plugins', oMenuItem)
+        return [('Backup', oBackup), ('Backup', oRestore)]
 
     # Menu responses
 

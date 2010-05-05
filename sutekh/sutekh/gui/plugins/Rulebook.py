@@ -128,24 +128,22 @@ class RulebookPlugin(SutekhPlugin):
         if not self.check_versions() or not self.check_model_type():
             return None
 
-        oSubMenu = gtk.Menu()
-        oMenuItem = gtk.MenuItem("Rulebook")
-        oMenuItem.set_submenu(oSubMenu)
-
-        oConfigMenuItem = gtk.MenuItem("Configure Rulebook Plugin")
+        oConfigMenuItem = gtk.MenuItem("Download Rulebook Files")
         oConfigMenuItem.connect("activate", self.config_activate)
-        oSubMenu.add(oConfigMenuItem)
+
+        aMenuList = [('Data Downloads', oConfigMenuItem)]
 
         self._dMenuItems = {}
         for sName in self.POSSIBLE_FILES:
             oItem = gtk.MenuItem(sName)
             oItem.connect("activate", self.rulebook_activate, sName)
             self._dMenuItems[sName] = oItem
-            oSubMenu.add(oItem)
+            # Add to top-level rulebook menu
+            aMenuList.append(('Rulebook', oItem))
 
         self._update_menu()
 
-        return [('Plugins', oMenuItem)]
+        return aMenuList
 
     def _update_menu(self):
         """Check for existence of files and update which menu items are active

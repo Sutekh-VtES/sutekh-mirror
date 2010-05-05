@@ -65,12 +65,12 @@ class CardSetCompare(SutekhPlugin):
     aModelsSupported = [PhysicalCardSet]
 
     def get_menu_item(self):
-        """Register on the 'Plugins' menu."""
+        """Register on the 'Analyze' menu."""
         if not self.check_versions() or not self.check_model_type():
             return None
         oCompare = gtk.MenuItem("Compare with another Card Set")
         oCompare.connect("activate", self.activate)
-        return ('Plugins', oCompare)
+        return ('Analyze', oCompare)
 
     def activate(self, _oWidget):
         """Create the dialog for choosing the second card set."""

@@ -34,12 +34,12 @@ class ExpansionStats(SutekhPlugin):
         self._oStatsVbox = None
 
     def get_menu_item(self):
-        """Register on the 'Plugins' menu"""
+        """Register on the 'Analyze' menu"""
         if not self.check_versions() or not self.check_model_type():
             return None
         oExpStats = gtk.MenuItem("Expansion Stats")
         oExpStats.connect("activate", self.activate)
-        return ('Plugins', oExpStats)
+        return ('Analyze', oExpStats)
 
     def activate(self, _oWidget):
         """Handle response from menu"""

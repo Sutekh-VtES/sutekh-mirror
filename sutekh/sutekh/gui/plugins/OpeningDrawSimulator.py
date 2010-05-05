@@ -143,12 +143,12 @@ class OpeningHandSimulator(SutekhPlugin):
         self.bShowDetails = False
 
     def get_menu_item(self):
-        """Register on the 'Plugins' menu"""
+        """Register on the 'Analyze' menu"""
         if not self.check_versions() or not self.check_model_type():
             return None
         oCardDraw = gtk.MenuItem("Simulate opening hand")
         oCardDraw.connect("activate", self.activate)
-        return ('Plugins', oCardDraw)
+        return ('Analyze', oCardDraw)
 
     def activate(self, _oWidget):
         """Create the actual dialog, and populate it"""

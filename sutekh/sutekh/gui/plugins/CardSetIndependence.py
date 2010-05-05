@@ -129,12 +129,12 @@ class CardSetIndependence(SutekhPlugin):
     aModelsSupported = [PhysicalCardSet]
 
     def get_menu_item(self):
-        """Register with the 'Plugins' Menu"""
+        """Register with the 'Analyze' Menu"""
         if not self.check_versions() or not self.check_model_type():
             return None
         oTest = gtk.MenuItem("Test Card Set Independence")
         oTest.connect("activate", self.activate)
-        return ('Plugins', oTest)
+        return ('Analyze', oTest)
 
     def activate(self, _oWidget):
         """Create the dialog in response to the menu item."""

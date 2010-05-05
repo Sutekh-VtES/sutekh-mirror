@@ -120,12 +120,12 @@ class CardDrawSimPlugin(SutekhPlugin):
     aModelsSupported = [PhysicalCardSet]
 
     def get_menu_item(self):
-        """Register on the 'Plugins' menu"""
+        """Register on the 'Analyze' menu"""
         if not self.check_versions() or not self.check_model_type():
             return None
         oCardDraw = gtk.MenuItem("Card Draw probabilities")
         oCardDraw.connect("activate", self.activate)
-        return ('Plugins', oCardDraw)
+        return ('Analyze', oCardDraw)
 
     # pylint: disable-msg=W0201
     # W0201 - we define lots of things here, rather than __init__, since this
