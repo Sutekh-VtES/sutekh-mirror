@@ -54,7 +54,29 @@ def convert(sTextileDir, sHtmlDir):
         fTextile = file(sTextilePath, "rb")
         fHtml = file(sHtmlPath, "wb")
 
-        fHtml.write(textile2html(fTextile.read(), dContext))
+        # FIXME: Late night fast 'n dirty hack alert
+        # Annoyingly, python-textile 2.1 doesn't handle list elements split
+        # over multiple lines the way python-textile 2.0 does [1], so we need
+        # to manually join lines before feeding them to textile
+        # We use the tradional trailing \ to indicate continuation
+        # [1] Note that the 2.10 version in karmic is a misnumbered 2.0.10
+        aLines = []
+        sCurLine = ''
+        for sLine in fTextile.readlines():
+            if sLine.endswith("\\\n"):
+                if sCurLine:
+                    sCurLine += sLine[:-2]
+                else:
+                    sCurLine = sLine[:-2]
+                continue
+            elif sCurLine:
+                sCurLine += sLine
+                aLines.append(sCurLine)
+                sCurLine = ''
+            else:
+                aLines.append(sLine)
+
+        fHtml.write(textile2html(''.join(aLines), dContext))
 
         fTextile.close()
         fHtml.close()
