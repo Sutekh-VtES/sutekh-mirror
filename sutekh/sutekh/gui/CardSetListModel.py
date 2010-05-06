@@ -60,6 +60,8 @@ PARENT_COUNT_LOOKUP = {
     "parent minus sets in use": MINUS_SETS_IN_USE,
 }
 
+USE_ICONS = "show icons for grouping"
+
 
 class CardSetModelRow(object):
     """Object which holds the data needed for a card set row."""
@@ -1970,6 +1972,14 @@ class CardSetCardListModel(CardListModel):
             return True
         return False
 
+    def _change_icon_mode(self, bMode):
+        """Set which extra information is shown."""
+        if self.bUseIcons != bMode:
+            self.bUseIcons = bMode
+            return True
+        return False
+
+
     def _change_parent_count_mode(self, iLevel):
         """Toggle the visibility of the parent col"""
         if iLevel == IGNORE_PARENT:
@@ -1999,12 +2009,17 @@ class CardSetCardListModel(CardListModel):
 
         sParentCountOpt = self._oConfig.get_deck_option(
             self.frame_id, self.cardset_id, PARENT_COUNT_MODE).lower()
-        iParentCountOpt = PARENT_COUNT_LOOKUP.get(sParentCountOpt, IGNORE_PARENT)
+        iParentCountOpt = PARENT_COUNT_LOOKUP.get(sParentCountOpt,
+                IGNORE_PARENT)
+        bUseIcons = self._oConfig.get_deck_option(self.frame_id,
+                self.cardset_id, USE_ICONS)
 
         bReloadELM = self._change_mode(iExtraLevelMode)
         bReloadSCM = self._change_count_mode(iShowCardMode)
         bReloadPCM = self._change_parent_count_mode(iParentCountOpt)
-        if not bSkipLoad and (bReloadELM or bReloadSCM or bReloadPCM):
+        bReloadIcons = self._change_icon_mode(bUseIcons)
+        if not bSkipLoad and (bReloadELM or bReloadSCM or bReloadPCM
+                or bReloadIcons):
             self._oController.view.reload_keep_expanded()
 
     #

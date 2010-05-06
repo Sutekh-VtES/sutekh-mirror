@@ -129,11 +129,6 @@ class CardSetController(object):
         # Other card set deletions don't need to be watched here, since the
         # fiddling on parents should generate changed signals for us.
 
-    def toggle_icons(self, oWidget):
-        """Toggle the icons display"""
-        self.model.bUseIcons = oWidget.active
-        self.view.reload_keep_expanded()
-
     def set_card_text(self, oCard):
         """Set card text to reflect selected card."""
         self._oMainWindow.set_card_text(oCard)

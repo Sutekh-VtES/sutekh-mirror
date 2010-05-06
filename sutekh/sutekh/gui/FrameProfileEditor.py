@@ -41,15 +41,18 @@ class FrameProfileEditor(SutekhDialog):
         self.__oSelectorCombo.add_attribute(oCell, 'text', 1)
         self.__oSelectorCombo.set_wrap_width(1)
         self.__oSelectorCombo.connect("changed", self._selector_changed)
-        self.__oSelectorCombo.connect("notify::popup-shown", self._selector_opened)
+        self.__oSelectorCombo.connect("notify::popup-shown",
+                self._selector_opened)
         self.vbox.pack_start(self.__oSelectorCombo, expand=False)
 
         aOptions = []
         for sKey in self.__oConfig.deck_options():
             bInherit = sKey != "name"
-            aOptions.append((sKey, self.__oConfig.get_deck_option_spec(sKey), bInherit))
+            aOptions.append((sKey, self.__oConfig.get_deck_option_spec(sKey),
+                bInherit))
 
-        self.__oOptionsTable = PreferenceTable(aOptions, oConfig.get_validator())
+        self.__oOptionsTable = PreferenceTable(aOptions,
+                oConfig.get_validator())
         self.vbox.pack_start(AutoScrolledWindow(self.__oOptionsTable,
             bUseViewport=True))
 
