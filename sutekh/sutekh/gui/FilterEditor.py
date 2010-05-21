@@ -454,22 +454,39 @@ class FilterValuesBox(gtk.VBox):
                     # Special case to use card set list widget
                     oSetList = CardSetsListView(None, self._oParent)
                     oSetList.set_select_multiple()
-                    if oFilter.aCurValues:
-                        oSetList.set_all_selected_sets(oFilter.aCurValues)
-                    oSetList.get_selection_object().connect('changed',
-                            self.update_set_list, oFilter, oSetList)
                     self._oWidget = AutoScrolledWindow(oSetList, False)
+                    oSetList.drag_source_set(
+                            gtk.gdk.BUTTON1_MASK | gtk.gdk.BUTTON3_MASK,
+                            DRAG_TARGETS,
+                            gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
+                    oSetList.drag_dest_set(gtk.DEST_DEFAULT_ALL, DRAG_TARGETS,
+                            gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
+                    oSetList.connect('drag_data_get', self.update_set_list,
+                            oFilter, oSetList)
+                    oSetList.connect('drag_data_received',
+                            self.drag_drop_handler)
                 else:
                     # Ordinary list
                     self._oWidget = ScrolledList('Select Filter Values')
                     self._oWidget.set_select_multiple()
                     self._oWidget.fill_list(oFilter.aValues)
-                    if oFilter.aCurValues:
-                        self._oWidget.set_selection(oFilter.aCurValues)
-                    self._oWidget.get_selection_object().connect('changed',
+                    self._oWidget.view.drag_source_set(
+                            gtk.gdk.BUTTON1_MASK | gtk.gdk.BUTTON3_MASK,
+                            DRAG_TARGETS,
+                            gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
+                    self._oWidget.view.drag_dest_set(
+                            gtk.DEST_DEFAULT_ALL, DRAG_TARGETS,
+                            gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
+                    self._oWidget.view.connect('drag_data_get',
                             self.update_filter_list, oFilter)
+                    self._oWidget.view.connect('drag_data_received',
+                            self.drag_drop_handler)
             elif oFilter.iValueType == FilterBoxItem.ENTRY:
                 self._oWidget = gtk.VBox()
+                self._oWidget.drag_dest_set(gtk.DEST_DEFAULT_ALL, DRAG_TARGETS,
+                        gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
+                self._oWidget.connect('drag_data_received',
+                        self.drag_drop_handler)
                 self._oWidget.pack_start(gtk.Label('Enter Text'), expand=False)
                 oEntry = gtk.Entry()
                 self._oWidget.pack_start(oEntry, expand=False)
@@ -478,22 +495,32 @@ class FilterValuesBox(gtk.VBox):
                 oEntry.connect('changed', self.update_edit_box, oFilter)
             elif oFilter.iValueType == FilterBoxItem.LIST_FROM:
                 self._oWidget = gtk.VBox()
-                aCurCounts, aFrom = [], []
-                if oFilter.aCurValues:
-                    aCurCounts, aFrom = oFilter.aCurValues
                 oCountList = ScrolledList('Select Counts')
                 oCountList.set_select_multiple()
                 oCountList.fill_list(oFilter.aValues[0])
-                if aCurCounts:
-                    oCountList.set_selection(aCurCounts)
                 oSetList = CardSetsListView(None, self._oParent)
                 oSetList.set_select_multiple()
-                if aFrom:
-                    oSetList.set_all_selected_sets(aFrom)
-                oSetList.get_selection_object().connect('changed',
+                oSetList.drag_source_set(
+                        gtk.gdk.BUTTON1_MASK | gtk.gdk.BUTTON3_MASK,
+                        DRAG_TARGETS,
+                        gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
+                oSetList.drag_dest_set(gtk.DEST_DEFAULT_ALL, DRAG_TARGETS,
+                            gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
+                oSetList.connect('drag_data_get',
                         self.update_count_set, oFilter, oSetList)
-                oCountList.get_selection_object().connect('changed',
-                            self.update_count_list, oFilter, oCountList)
+                oSetList.connect('drag_data_received',
+                        self.drag_drop_handler)
+                oCountList.view.drag_source_set(
+                        gtk.gdk.BUTTON1_MASK | gtk.gdk.BUTTON3_MASK,
+                        DRAG_TARGETS,
+                        gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
+                oCountList.view.drag_dest_set(
+                        gtk.DEST_DEFAULT_ALL, DRAG_TARGETS,
+                        gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
+                oCountList.view.connect('drag_data_get',
+                        self.update_count_list, oFilter, oCountList)
+                oCountList.view.connect('drag_data_received',
+                        self.drag_drop_handler)
                 self._oWidget.pack_start(oCountList, expand=True)
                 oLabel = gtk.Label()
                 oLabel.set_markup('<b>From</b>')
@@ -527,34 +554,86 @@ class FilterValuesBox(gtk.VBox):
                 oBoxModel.sBoxType, oBoxModel.bNegate = tInfo
         self._oBoxModelEditor.update(oBoxModel)
 
-    def update_filter_list(self, _oSelection, oFilter):
-        """Update the box model to the current selection"""
+
+    def drag_drop_handler(self, _oWindow, oDragContext, _iXPos, _iYPos,
+            oSelectionData, _oInfo, oTime):
+        """Handle drops from the filter toolbar"""
+        if not oSelectionData and oSelectionData.format != 8:
+            oDragContext.finish(False, False, oTime)
+        else:
+            sData =  oSelectionData.data
+            oStore = self._oBoxModelEditor.get_tree_store()
+            if sData.startswith('MoveValue: '):
+                # Removing a value from the list
+                sSource, sValue = [x.strip() for x in sData.split(':', 1)]
+                oValIter = oStore.get_iter_from_string(sValue)
+                oFilter = oStore.get_value(oStore.iter_parent(oValIter), 1)
+                sVal = oStore.get_value(oValIter, 0)
+                if oFilter.iValueType == FilterBoxItem.LIST \
+                        and sVal in oFilter.aCurValues:
+                    oFilter.aCurValues.remove(sVal)
+                    self._oBoxModelEditor.update_list(oFilter)
+                elif oFilter.iValueType == FilterBoxItem.LIST_FROM:
+                    if oFilter.aCurValues[0] and sVal in oFilter.aCurValues[0]:
+                        oFilter.aCurValues[0].remove(sVal)
+                    elif oFilter.aCurValues[1] and \
+                            sVal in oFilter.aCurValues[1]:
+                        oFilter.aCurValues[1].remove(sVal)
+                    self._oBoxModelEditor.update_count_list(oFilter)
+            elif sData.startswith('MoveFilter: '):
+                # Removing a filter
+                sSource, sFilter = [x.strip() for x in sData.split(':', 1)]
+                oMoveIter = oStore.get_iter_from_string(sFilter)
+                oMoveObj = oStore.get_value(oMoveIter, 1)
+                oParent  = oStore.get_value(oStore.iter_parent(oMoveIter), 1)
+                oParent.remove(oMoveObj)
+                self._oBoxModelEditor.load() # May break stuff
+            else:
+                oDragContext.finish(False, False, oTime)
+
+
+    def update_filter_list(self, _oBtn, _oContext, _oSelectionData,
+            _oInfo, _oTime, oFilter):
+        """Update the box model with the new values"""
         aSelected = self._oWidget.get_selection()
-        oFilter.aCurValues = aSelected
+        for sSet in aSelected:
+            if sSet not in oFilter.aCurValues:
+                oFilter.aCurValues.append(sSet)
+        oFilter.aCurValues.sort()
         self._oBoxModelEditor.update_list(oFilter)
 
-    def update_count_list(self, _oSelection, oFilter, oCountList):
-        """Update the box model to the current selection"""
+    def update_count_list(self, _oBtn, _oContext, _oSelectionData,
+            _oInfo, _oTime, oFilter, oCountList):
+        """Update the box model with the new values"""
         aSelected = oCountList.get_selection()
-        if aSelected:
-            oFilter.aCurValues[0] = aSelected
-        else:
-            oFilter.aCurValues[0] = None
+        for sCount in aSelected:
+            if not oFilter.aCurValues[0]:
+                oFilter.aCurValues[0] = [sCount]
+            elif sCount not in oFilter.aCurValues[0]:
+                oFilter.aCurValues[0].append(sCount)
+        oFilter.aCurValues[0].sort()
         self._oBoxModelEditor.update_count_list(oFilter)
 
-    def update_set_list(self, _oSelection, oFilter, oSetList):
+    def update_set_list(self, _oBtn, _oContext, _oSelectionData,
+            _oInfo, _oTime, oFilter, oSetList):
         """Update the box model to the current selection"""
         aSelected = oSetList.get_all_selected_sets()
-        oFilter.aCurValues = aSelected
+        for sSet in aSelected:
+            if sSet not in oFilter.aCurValues:
+                oFilter.aCurValues.append(sSet)
+        oFilter.aCurValues[0].sort()
         self._oBoxModelEditor.update_list(oFilter)
 
-    def update_count_set(self, _oSelection, oFilter, oSetList):
+    def update_count_set(self, _oBtn, _oContext, _oSelectionData,
+            _oInfo, _oTime, oFilter, oSetList):
         """Update the box model to the current selection"""
         aSelected = oSetList.get_all_selected_sets()
-        if aSelected:
-            oFilter.aCurValues[1] = aSelected
-        else:
-            oFilter.aCurValues[1] = None
+        for sSet in aSelected:
+            if not oFilter.aCurValues[1]:
+                oFilter.aCurValues[1] = [sSet]
+            elif sSet not in oFilter.aCurValues[1]:
+                oFilter.aCurValues[1].append(sSet)
+        oFilter.aCurValues[1].sort()
         self._oBoxModelEditor.update_count_list(oFilter)
 
     def update_edit_box(self, oEntry, oFilter):
@@ -604,8 +683,9 @@ class FilterValuesBox(gtk.VBox):
         oScrolledWindow = self._oWidget.get_children()[2]
         oSubFilterWidget = oScrolledWindow.get_children()[0]
         _oModel, aPaths = oSubFilterWidget.get_selection().get_selected_rows()
-        # We use the values, rather than the actual adjustments, to avoid a race
-        # condition where gtk deletes the actual adjustment out from under us
+        # We use the values, rather than the actual adjustments, to avoid a
+        # race condition where gtk deletes the actual adjustment out from
+        # under us
         tHorizVals = _get_values(oScrolledWindow.get_hadjustment())
         tVertVals = _get_values(oScrolledWindow.get_vadjustment())
         return tHorizVals, tVertVals, aPaths
@@ -690,7 +770,7 @@ class FilterBoxModelEditor(gtk.VBox):
                 gtk.gdk.BUTTON1_MASK | gtk.gdk.BUTTON3_MASK,
                 DRAG_TARGETS, gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
 
-        self.__oTreeView.connect('drag-data-received', self.drag_drop_handler)
+        self.__oTreeView.connect('drag_data_received', self.drag_drop_handler)
 
         self.__oTreeView.connect('drag_data_get', self.drag_filter)
 
@@ -788,11 +868,10 @@ class FilterBoxModelEditor(gtk.VBox):
     def drag_drop_handler(self, _oWindow, oDragContext, iXPos, iYPos,
             oSelectionData, _oInfo, oTime):
         """Handle drops from the filter toolbar"""
-
-        oCurPath, _oCol = self.__oTreeView.get_cursor()
         if not oSelectionData and oSelectionData.format != 8:
             oDragContext.finish(False, False, oTime)
         else:
+            oCurPath, _oCol = self.__oTreeView.get_cursor()
             sData =  oSelectionData.data
             if sData.startswith('NewFilter: ') or \
                     sData.startswith('MoveFilter: '):
@@ -878,6 +957,14 @@ class FilterBoxModelEditor(gtk.VBox):
             else:
                 oDragContext.finish(False, False, oTime)
 
+    def get_view(self):
+        """Get the view object"""
+        return self.__oTreeView
+
+    def get_tree_store(self):
+        """Get the tree store"""
+        return self.__oTreeStore
+
     def _select_path(self, oPath):
         """Helper function to manage setting the selected path"""
         self.__oTreeView.set_cursor(oPath)
@@ -898,10 +985,13 @@ class FilterBoxModelEditor(gtk.VBox):
             # We don't allow the root node to be dragged
             oFilter = self.__oTreeStore.get_value(oIter, 1)
             if oFilter is None:
-                # Dragging a value moves the entire filter
-                oIter = self.__oTreeStore.iter_parent(oIter)
-            sSelect = 'MoveFilter: %s' % \
-                    self.__oTreeStore.get_string_from_iter(oIter)
+                # Dragging a value
+                sSelect = 'MoveValue: %s' % \
+                        self.__oTreeStore.get_string_from_iter(oIter)
+            else:
+                # Dragging a filter
+                sSelect = 'MoveFilter: %s' % \
+                        self.__oTreeStore.get_string_from_iter(oIter)
             oSelectionData.set(oSelectionData.target, 8, sSelect)
 
     def set_box_model(self, oBoxModel):
