@@ -3,6 +3,7 @@
 # vim:fileencoding=utf8 ai ts=4 sts=4 et sw=4
 # Editor component for generic filter ASTs.
 # Copyright 2008 Simon Cross <hodgestar@gmail.com>
+# Copyright 2010 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
 """Widget for editing filters."""
@@ -11,9 +12,8 @@ from sutekh.gui.SutekhDialog import SutekhDialog
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 from sutekh.gui.CardSetsListView import CardSetsListView
 from sutekh.gui.ScrolledList import ScrolledList
-from sutekh.core.FilterParser import FilterNode, BinOpNode, NotOpNode, \
-        FilterPartNode
-from sutekh.core import FilterParser
+from sutekh.core.FilterParser import get_filters_for_type
+from sutekh.core.FilterBox import FilterBoxItem, FilterBoxModel
 import gtk
 import pango
 import gobject
@@ -35,6 +35,8 @@ class FilterEditor(gtk.Alignment):
         self.__oFilterDialog = oFilterDialog # Dialog we're a child of
 
         self.__oPanes = FilterModelPanes(sFilterType, oFilterDialog)
+
+        self.__sFilterType = sFilterType
 
         oNameLabel = gtk.Label("Filter name:")
         self.__oNameEntry = gtk.Entry()
@@ -67,19 +69,8 @@ class FilterEditor(gtk.Alignment):
 
     def get_current_ast(self):
         """Get the current AST represented by the editor."""
-        oNewAST = self.__oPanes.get_ast()
-        if oNewAST is None:
-            return oNewAST
-
-        dValues = self.__oPanes.get_current_values()
         # FIXME: Add note to the help about unset filter values
-
-        aNewValues = oNewAST.get_values()
-        for oValue in aNewValues:
-            if oValue.is_entry() or oValue.is_list() or oValue.is_tuple():
-                oValue.oNode.set_values(dValues[oValue.oNode.get_name()])
-
-        return oNewAST
+        return self.__oPanes.get_ast_with_values()
 
     def get_current_text(self):
         """Get the current text of the filter for saving in the config
@@ -119,7 +110,7 @@ class FilterEditor(gtk.Alignment):
         # vbox confuse pylint
 
         oHelpView = AutoScrolledWindow(FilterHelpTextView(
-            self.__oPanes.get_filter_types()))
+            get_filters_for_type(self.__sFilterType)))
         oDlg.vbox.pack_start(oHelpView)
         oDlg.show_all()
 
@@ -127,165 +118,6 @@ class FilterEditor(gtk.Alignment):
             oDlg.run()
         finally:
             oDlg.destroy()
-
-
-class FilterBoxModel(list):
-    """Converts a filter AST into a simple nest box model.
-
-       Each box either ANDs or ORs all of its contained filters.
-       Each contained filter may optionally be negated.
-       Values are retained for each contained filter.
-       """
-
-    AND, OR = 'and', 'or'
-
-    # pylint: disable-msg=W0231
-    # no point to calling list's __init__
-    def __init__(self, oAST, sFilterType, oVarNameMaker=None):
-        """Initialise a filter box from an AST filter representation."""
-        if oVarNameMaker is None:
-            oVarNameMaker = VariableNameGenerator()
-            bVarMakerNeedsInit = True
-        else:
-            bVarMakerNeedsInit = False
-
-        self.sFilterType = sFilterType
-        self.bNegate = False
-        self.bDisabled = False
-        self.oVarNameMaker = oVarNameMaker
-
-        if type(oAST) is FilterNode:
-            oAST = oAST.oExpression
-
-        if type(oAST) is BinOpNode:
-            self.sBoxType = oAST.oOp
-            self._init_binop(oAST)
-        elif type(oAST) is NotOpNode and \
-                type(oAST.oSubExpression) is BinOpNode:
-            self.bNegate = True
-            self.sBoxType = oAST.oSubExpression.oOp
-            self._init_binop(oAST.oSubExpression)
-        elif type(oAST) is FilterPartNode or \
-                type(oAST) is NotOpNode and \
-                type(oAST.oSubExpression) is FilterPartNode:
-            self.sBoxType = self.AND
-            self.append(FilterBoxItem(oAST, self.oVarNameMaker))
-        elif oAST is None:
-            # support for completely empty boxes
-            self.sBoxType = self.AND
-        else:
-            raise ValueError("FilterBoxModel cannot represent AST %s of"
-                    " type %s" % (oAST, type(oAST)))
-
-        assert self.sBoxType in [self.AND, self.OR]
-
-        if bVarMakerNeedsInit:
-            self.oVarNameMaker.update(self.get_variable_names())
-
-    def _init_binop(self, oBinOp):
-        """Create the correct box entries for a BinOpNode in the AST."""
-        for oChild in [oBinOp.oLeft, oBinOp.oRight]:
-            if type(oChild) is BinOpNode and oChild.oOp == oBinOp.oOp:
-                self._init_binop(oChild)
-            elif type(oChild) is BinOpNode:
-                self.append(FilterBoxModel(oChild, self.sFilterType,
-                    self.oVarNameMaker))
-            elif type(oChild) is NotOpNode and \
-                    type(oChild.oSubExpression) is BinOpNode:
-                self.append(FilterBoxModel(oChild, self.sFilterType,
-                    self.oVarNameMaker))
-            elif type(oChild) in [NotOpNode, FilterPartNode]:
-                self.append(FilterBoxItem(oChild, self.oVarNameMaker))
-            else:
-                raise ValueError("FilterBoxModel encountered unsupported AST"
-                        " node type %s (%s) while examing BinOpNode tree." %
-                        (type(oChild), oChild))
-
-    def set_boxtype(self, sBoxType, bNegate=False):
-        """Set the type for this filter box"""
-        self.sBoxType = sBoxType
-        self.bNegate = bNegate
-
-    def get_variable_names(self):
-        """Get the variable names of the children in this box."""
-        oNames = set()
-        for oChild in self:
-            oNames.update(oChild.get_variable_names())
-        return oNames
-
-    def get_ast(self):
-        """Return an AST representation of the filter."""
-        if self.bDisabled:
-            return None
-
-        aChildASTs = [oChild.get_ast() for oChild in self]
-        aChildASTs = [oChild for oChild in aChildASTs if oChild is not None]
-
-        if len(aChildASTs) == 0:
-            oAST = None
-        elif len(aChildASTs) == 1:
-            oAST = aChildASTs[0]
-        else:
-            oAST = BinOpNode(aChildASTs[0], self.sBoxType, aChildASTs[1])
-            for oChild in aChildASTs[2:]:
-                oAST = BinOpNode(oAST, self.sBoxType, oChild)
-
-        if self.bNegate and oAST is not None:
-            oAST = NotOpNode(oAST)
-
-        return oAST
-
-    def get_text(self):
-        """Return a text representation of the filter."""
-        aChildTexts = [oChild.get_text() for oChild in self]
-        aChildTexts = [sChild for sChild in aChildTexts if sChild]
-
-        if len(aChildTexts) == 0:
-            sText = ''
-        elif len(aChildTexts) == 1:
-            sText = aChildTexts[0]
-        else:
-            sText = "(" + (") %s (" % self.sBoxType).join(aChildTexts) + ")"
-
-        if self.bNegate and sText:
-            sText = "NOT (%s)" % (sText,)
-
-        return sText
-
-    def get_filter_types(self):
-        """Get the types support by this filter."""
-        return [oFilterType for oFilterType in FilterParser.PARSER_FILTERS
-                if self.sFilterType in oFilterType.types]
-
-    def add_child_box(self, sChildBoxType):
-        """Add a child box to this box."""
-        assert sChildBoxType in [self.AND, self.OR]
-        oChildBox = FilterBoxModel(None, self.sFilterType, self.oVarNameMaker)
-        oChildBox.sBoxType = sChildBoxType
-        self.append(oChildBox)
-        return oChildBox
-
-    def add_child_item(self, sChildTypeKeyword):
-        """Add a filter item to this box."""
-        sVarName = self.oVarNameMaker.generate_name()
-        oAST = FilterPartNode(sChildTypeKeyword, None, sVarName)
-        oChildItem = FilterBoxItem(oAST)
-        self.append(oChildItem)
-        return oChildItem
-
-    def remove_child(self, oChild):
-        """Remove a filter item or box from this box."""
-        self.remove(oChild)
-
-    def is_in_model(self, oChild):
-        """Check if oChild is included in this box model, either directly
-           or in a child box model."""
-        if oChild in self:
-            return True
-        for oObj in self:
-            if isinstance(oObj, FilterBoxModel) and oObj.is_in_model(oChild):
-                return True
-        return False
 
 
 class FilterModelPanes(gtk.HBox):
@@ -304,25 +136,18 @@ class FilterModelPanes(gtk.HBox):
         self.pack_start(AutoScrolledWindow(self.__oEditor, True), expand=True)
         self.pack_start(self.__oSelectBar, expand=True)
 
-    def get_current_values(self):
-        """Get the list of values from the editor"""
-        return self.__oEditor.get_current_values()
-
-    def get_filter_types(self):
-        """Get a listing of all filter types"""
-        return self.__oBoxModel.get_filter_types()
-
     def replace_ast(self, oAST):
         """Replace the AST in the tree model"""
         self.__oBoxModel = FilterBoxModel(oAST, self.__sFilterType)
         self.__oEditor.set_box_model(self.__oBoxModel)
         self.__oEditor.load()
 
-    def get_ast(self):
-        """Get the current ast"""
-        if self.__oBoxModel:
-            return self.__oBoxModel.get_ast()
-        return None
+    def get_ast_with_values(self):
+        """Get the current ast for the Editor, with values filled in"""
+        if not self.__oBoxModel:
+            return None
+
+        return self.__oBoxModel.get_ast_with_values()
 
     def get_text(self):
         """Get the current ast"""
@@ -330,12 +155,6 @@ class FilterModelPanes(gtk.HBox):
             return self.__oBoxModel.get_text()
         return None
 
-
-    def get_values(self):
-        """Get the current values"""
-        if self.__oBoxModel:
-            return self.__oEditor.get_values()
-        return None
 
 class FilterEditorToolbar(gtk.TreeView):
     """Toolbar listing the possible filter elements"""
@@ -353,7 +172,7 @@ class FilterEditorToolbar(gtk.TreeView):
         self.__sFilterType = sFilterType
         # Get supported filters
         aFilters = [('Filter Group ..', 'Filter Group')]
-        for oFilterType in sorted(self.get_filter_types(),
+        for oFilterType in sorted(get_filters_for_type(self.__sFilterType),
                 key=lambda x: x.description):
             aFilters.append((oFilterType.description, oFilterType.keyword))
         # Create buttons for each of the filters we support
@@ -364,11 +183,6 @@ class FilterEditorToolbar(gtk.TreeView):
 
         self.connect('drag_data_get', self.drag_filter)
         self.get_selection().set_mode(gtk.SELECTION_SINGLE)
-
-    def get_filter_types(self):
-        """Get the types support by this filter."""
-        return [oFilterType for oFilterType in FilterParser.PARSER_FILTERS
-                if self.__sFilterType in oFilterType.types]
 
     def drag_filter(self, _oBtn, _oContext, oSelectionData, _oInfo, _oTime):
         """Create a drag info for this filter"""
@@ -1106,20 +920,6 @@ class FilterBoxModelEditor(gtk.VBox):
             aValues.append(None)
         self._update_cur_iter_with_list(aValues)
 
-    def get_current_values(self):
-        """Return a dictionary of name -> value mappings for the variables
-           present in the filter editing gui.
-           """
-        dVars = {}
-        self.__oTreeStore.foreach(self.get_child_values, dVars)
-        return dVars
-
-    def get_child_values(self, _oModel, _oPath, oIter, dVars):
-        """Get the values out of the child value"""
-        oChild = self.__oTreeStore.get_value(oIter, 1)
-        if isinstance(oChild, FilterBoxItem):
-            dVars.update(oChild.get_current_values())
-
     def __remove_filter_part(self, oModelOrItem):
         """Remove the filter part from this box at the user's request"""
         self.__oBoxModel.remove_child(oModelOrItem)
@@ -1201,173 +1001,6 @@ class FilterBoxModelEditor(gtk.VBox):
                 return True # Don't propogate to buttons
         return False
 
-
-class FilterBoxItem(object):
-    """A item in the filter editor.
-
-       This represents either a single FilterPart or a single
-       NOT(FilterPart) expression in the AST.
-       """
-    NONE, ENTRY, LIST, LIST_FROM = range(4)
-
-    def __init__(self, oAST, oVarNameMaker=None):
-        if type(oAST) is NotOpNode:
-            self.bNegated = True
-            oAST = oAST.oSubExpression
-        else:
-            self.bNegated = False
-
-        assert type(oAST) is FilterPartNode
-
-        self.bDisabled = False
-
-        self.sFilterName = oAST.sFilterName
-        self.sFilterDesc = oAST.get_description()
-        self.sVariableName = oAST.sVariableName
-        if not self.sVariableName and oVarNameMaker is not None:
-            self.sVariableName = oVarNameMaker.generate_name()
-        elif self.sVariableName and oVarNameMaker is not None:
-            if self.sVariableName in oVarNameMaker:
-                self.sVariableName = oVarNameMaker.generate_name()
-            else:
-                oVarNameMaker.update([self.sVariableName])
-        aFilterValues = oAST.aFilterValues
-        self.iValueType = None
-
-        # process values
-        self.sLabel, self.aValues = None, None
-        self.aCurValues = []
-        for oValue in oAST.get_values():
-            if oValue.is_value():
-                assert self.sLabel is None
-                self.sLabel = oValue.oValue
-            elif oValue.is_list():
-                assert self.iValueType is None
-                self.aValues = oValue.oValue
-                self.iValueType = self.LIST
-            elif oValue.is_tuple():
-                assert self.iValueType is None
-                self.aValues = oValue.oValue
-                self.iValueType = self.LIST_FROM
-                self.aCurValues = [None, None]
-            elif oValue.is_entry():
-                assert self.iValueType is None
-                self.iValueType = self.ENTRY
-            elif oValue.is_None():
-                assert self.iValueType is None
-                self.iValueType = self.NONE
-
-        assert self.sLabel is not None
-        assert self.iValueType is not None
-        if aFilterValues:
-            if self.iValueType == self.LIST_FROM:
-                assert len(aFilterValues.get_values()) == 2
-                oLeft, oRight = aFilterValues.get_values()
-                aFrom, aValues = [], []
-                for oNode in oLeft:
-                    if oNode.oValue != ',':
-                        aValues.append(oNode.oValue)
-                if '-1' in aValues:
-                    aValues = None # Sentinal case
-                for oNode in oRight:
-                    if oNode.oValue != ',':
-                        aFrom.append(oNode.oValue)
-                if "" in aFrom:
-                    aFrom = None # Sentinal case
-                self.aCurValues = [aValues, aFrom]
-            elif self.iValueType == self.ENTRY:
-                assert len(aFilterValues.get_values()) == 1
-                self.aCurValues =  [aFilterValues.get_values()[0].oValue]
-            else:
-                # List filter
-                for oNode in aFilterValues.get_values():
-                    if oNode.oValue != ',':
-                        self.aCurValues.append(oNode.oValue)
-
-    def get_variable_names(self):
-        """Get the variable name for this filter"""
-        return set([self.sVariableName])
-
-    def get_current_values(self):
-        """Get the current values set for this filter."""
-        dVars = {}
-        # Flag as empty by default
-        dVars[self.sVariableName] = None
-        if self.aCurValues:
-            if self.iValueType == self.LIST:
-                dVars[self.sVariableName] = ['"%s"' % sValue for sValue in
-                        self.aCurValues]
-            elif self.iValueType == self.LIST_FROM:
-                aValues, aFrom = self.aCurValues
-                if aFrom:
-                    aFrom = ['"%s"' % x for x in aFrom]
-                    if aValues:
-                        aValues = ['"%s"' % x for x in aValues]
-                        dVars[self.sVariableName] = [aValues, aFrom]
-            elif self.iValueType == self.ENTRY:
-                dVars[self.sVariableName] = ['"%s"' % self.aCurValues[0]]
-        return dVars
-
-    def get_ast(self):
-        """Return an AST representation of the filter."""
-        if (not self.aCurValues and self.iValueType != self.NONE) \
-                or self.bDisabled:
-            return None
-        oAST = FilterPartNode(self.sFilterName, None,
-                self.sVariableName)
-        if self.bNegated:
-            oAST = NotOpNode(oAST)
-        return oAST
-
-    def get_text(self):
-        """Return a text representation of the filter."""
-        if self.iValueType == self.NONE:
-            sText = self.sFilterName
-        elif self.aCurValues:
-            sValues = None
-            if self.iValueType == self.LIST:
-                sValues = ",".join(['"%s"' % sValue for sValue in
-                        self.aCurValues])
-            elif self.iValueType == self.LIST_FROM:
-                aValues, aFrom = self.aCurValues
-                if aValues:
-                    sFromValues = ",".join(['"%s"' % x for x in aValues])
-                else:
-                    sFromValues = '"-1"'
-                if aFrom:
-                    sFrom = ",".join(['"%s"' % x for x in aFrom])
-                else:
-                    sFrom = '""' # Sentinal
-                if aFrom or aValues:
-                    sValues = "%s FROM %s" % (sFromValues, sFrom)
-            elif self.iValueType == self.ENTRY:
-                sValues = '"%s"' % self.aCurValues[0]
-            if sValues:
-                sText = '%s in %s' % (self.sFilterName, sValues)
-            else:
-                sText = "%s in %s" % (self.sFilterName, self.sVariableName)
-        else:
-            sText = "%s in %s" % (self.sFilterName, self.sVariableName)
-        if self.bNegated:
-            return "NOT (%s)" % sText
-        return sText
-
-class VariableNameGenerator(set):
-    """Generate a unique name for a variable in a filter."""
-    KEYFORM = "$var%s"
-
-    def __init__(self):
-        super(VariableNameGenerator, self).__init__()
-        self.__iNum = 0
-
-    def generate_name(self):
-        """Generate the next variable in the list."""
-        sName = self.KEYFORM % self.__iNum
-        while sName in self:
-            self.__iNum += 1
-            sName = self.KEYFORM % self.__iNum
-        self.add(sName)
-        return sName
 
 class FilterHelpBuffer(gtk.TextBuffer):
     # pylint: disable-msg=R0904

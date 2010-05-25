@@ -27,10 +27,17 @@ FROM_FILTERS = [x.keyword for x in PARSER_FILTERS if hasattr(x,'isfromfilter')
 LIST_FILTERS = [x.keyword for x in PARSER_FILTERS if hasattr(x,'islistfilter')
         and x.islistfilter]
 
+# Misc utility functions
+
 def get_filter_type(sKeyword):
     """Get the actual filter object from the type string"""
     # pylint: disable-msg=W0621
     return [x for x in PARSER_FILTERS if x.keyword == sKeyword][0]
+
+def get_filters_for_type(sFilterType):
+    """Get the filters associated with this filter type."""
+    return [oFilterType for oFilterType in PARSER_FILTERS
+            if sFilterType in oFilterType.types]
 
 # We define an object for the lex parser
 

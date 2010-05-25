@@ -5,16 +5,15 @@
 # Copyright 2008 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-"""Tests the Filter Parser code"""
+"""Tests the Filter Parser and FilterBox code"""
 
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.tests.io import test_WhiteWolfParser
 from sutekh.tests.core.test_Filters import make_physical_card_sets
 from sutekh.core.SutekhObjects import AbstractCard, PhysicalCardSet, \
         PhysicalCard, MapPhysicalCardToPhysicalCardSet, IAbstractCard
-from sutekh.core import FilterParser, Filters
+from sutekh.core import FilterParser, Filters, FilterBox
 import unittest
-
 
 class FilterParserTests(SutekhTest):
     """Class for the test cases"""
@@ -141,6 +140,23 @@ class FilterParserTests(SutekhTest):
             oFilter = self._parse_filter(sFilter)
             aNames = self._get_abs_names(oFilter)
             aExpectedNames = self._get_abs_names(oEquivFilter)
+            self.assertEqual(aNames, aExpectedNames, "Filter Object %s "
+                    "failed. %s != %s." % (oFilter, aNames, aExpectedNames))
+
+        # Test bouncing through filter box code
+        for sFilter, oEquivFilter in aTests:
+            oAST = self.oFilterParser.apply(sFilter)
+            oBoxModel = FilterBox.FilterBoxModel(oAST, 'AbstractCard')
+            # Test get_text round-trip
+            oFilter = self._parse_filter(oBoxModel.get_text())
+            aNames = self._get_abs_names(oFilter)
+            aExpectedNames = self._get_abs_names(oEquivFilter)
+            self.assertEqual(aNames, aExpectedNames, "Filter Object %s "
+                    "failed. %s != %s." % (oFilter, aNames, aExpectedNames))
+            # test get_ast + get_values round-trip
+            oAST = oBoxModel.get_ast_with_values()
+            oFilter = oAST.get_filter()
+            aNames = self._get_abs_names(oFilter)
             self.assertEqual(aNames, aExpectedNames, "Filter Object %s "
                     "failed. %s != %s." % (oFilter, aNames, aExpectedNames))
 
