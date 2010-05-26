@@ -118,12 +118,12 @@ class FilterBoxModel(list):
     def get_ast_with_values(self):
         """Return AST with values filled in"""
         oNewAST = self.get_ast()
-        dValues = self.get_current_values()
-
-        aNewValues = oNewAST.get_values()
-        for oValue in aNewValues:
-            if oValue.is_entry() or oValue.is_list() or oValue.is_tuple():
-                oValue.oNode.set_values(dValues[oValue.oNode.get_name()])
+        if oNewAST:
+            dValues = self.get_current_values()
+            aNewValues = oNewAST.get_values()
+            for oValue in aNewValues:
+                if oValue.is_entry() or oValue.is_list() or oValue.is_tuple():
+                    oValue.oNode.set_values(dValues[oValue.oNode.get_name()])
 
         return oNewAST
 
