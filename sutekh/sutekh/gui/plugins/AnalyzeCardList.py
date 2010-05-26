@@ -32,7 +32,6 @@ SLEEVED = "<span foreground='orange'>%s should be sleeved</span>\n"
 SPECIAL = ['Banned Cards', 'Multirole', 'Mixed Card Backs']
 
 
-
 # utility functions
 def _percentage(iNum, iTot, sDesc):
     """Utility function for calculating _percentages"""
@@ -605,7 +604,7 @@ class AnalyzeCardList(SutekhPlugin):
         # Show card types, sorted by number (then alphabetical by type)
         for sType, iCount in sorted(self.dTypeNumbers.items(),
                 key=lambda x: (x[1], x[0]), reverse=True):
-            if sType not in CRYPT_TYPES and sType != 'Multirole' and \
+            if sType not in CRYPT_TYPES and sType not in SPECIAL and \
                     iCount > 0:
                 sTypeText += _format_card_line(sType, 'cards', iCount,
                         self.iLibSize)
