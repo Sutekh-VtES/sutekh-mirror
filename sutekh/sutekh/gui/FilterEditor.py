@@ -435,7 +435,7 @@ class FilterValuesBox(gtk.VBox):
         for sSet in aSelected:
             if sSet not in oFilter.aCurValues:
                 oFilter.aCurValues.append(sSet)
-        oFilter.aCurValues[0].sort()
+        oFilter.aCurValues.sort()
         self._oBoxModelEditor.update_list(oFilter)
 
     def update_count_set(self, _oBtn, _oContext, _oSelectionData,
