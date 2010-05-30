@@ -500,7 +500,10 @@ class FilterPartNode(OperatorNode):
         """Set values for this filter"""
         if self.aFilterValues is not None:
             raise RuntimeError("Filter values already set")
-        if self.sFilterName in FROM_FILTERS:
+        if not aVals:
+            # Skip empty values
+            return
+        elif self.sFilterName in FROM_FILTERS:
             sCountList = ",".join(aVals[0])
             sSetList = ",".join(aVals[1])
             sInternalFilter = self.sFilterName + '=' + sCountList + 'from' + \
