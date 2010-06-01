@@ -54,7 +54,8 @@ class GroupCardList(SutekhPlugin):
     def __init__(self, *aArgs, **kwargs):
         super(GroupCardList, self).__init__(*aArgs, **kwargs)
         self._oFirstBut = None # placeholder for the radio group
-        self.perpane_config_updated()
+        # We don't reload on init, to avoid double loads.
+        self.perpane_config_updated(False)
 
     def get_menu_item(self):
         """Register on the 'Plugins' menu"""
@@ -100,12 +101,13 @@ class GroupCardList(SutekhPlugin):
 
     # Config Update
 
-    def perpane_config_updated(self):
+    def perpane_config_updated(self, bReload=True):
         """Called by base class on config updates."""
+        # bReload flag so we can call this during __init__
         sGrping = self.get_perpane_item(self.GROUP_BY)
         cGrping = self.GROUPINGS.get(sGrping)
         if cGrping is not None:
-            self.set_grouping(cGrping)
+            self.set_grouping(cGrping, bReload)
 
     # Actions
 
