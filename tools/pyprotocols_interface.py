@@ -40,6 +40,11 @@ class MyPyProtocolsChecker(BaseChecker):
     options = ()
     # We're going to mess with the AST, so we need to run first
     priority = -1
+    # We need to have a msgid or reportid, otherwise newer pylints don't
+    # add this to the enable checker list
+    msgs = {'C6789' : ('PyProtocols Interface checker dummy message',
+        ('Dummy message to prevent pylint optimising us out')),
+        }
 
     def __init__(self, oLinter=None):
         """Constructor"""
