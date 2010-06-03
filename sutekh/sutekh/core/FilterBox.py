@@ -6,6 +6,8 @@
 # Split out from FilterEditor 2010 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
+"""FilterBox model of the filters. Mainly used in filter editor"""
+
 from sutekh.core.FilterParser import FilterNode, BinOpNode, NotOpNode, \
         FilterPartNode
 
@@ -190,6 +192,8 @@ class FilterBoxItem(object):
        This represents either a single FilterPart or a single
        NOT(FilterPart) expression in the AST.
        """
+    # pylint: disable-msg=R0902
+    # We track a lot of state, so several instance attributes
     NONE, ENTRY, LIST, LIST_FROM = range(4)
 
     def __init__(self, oAST, oVarNameMaker=None):
@@ -213,12 +217,11 @@ class FilterBoxItem(object):
                 self.sVariableName = oVarNameMaker.generate_name()
             else:
                 oVarNameMaker.update([self.sVariableName])
-        aFilterValues = oAST.aFilterValues
         self.iValueType = None
 
-        # process values
         self.sLabel, self.aValues = None, None
         self.aCurValues = []
+        # process values
         for oValue in oAST.get_values():
             if oValue.is_value():
                 assert self.sLabel is None
@@ -241,6 +244,8 @@ class FilterBoxItem(object):
 
         assert self.sLabel is not None
         assert self.iValueType is not None
+
+        aFilterValues = oAST.aFilterValues
         if aFilterValues:
             if self.iValueType == self.LIST_FROM:
                 assert len(aFilterValues.get_values()) == 2
@@ -307,27 +312,24 @@ class FilterBoxItem(object):
             sText = self.sFilterName
         elif self.aCurValues:
             sValues = None
+            sText = "%s in %s" % (self.sFilterName, self.sVariableName)
             if self.iValueType == self.LIST:
                 sValues = ",".join(['"%s"' % sValue for sValue in
                         self.aCurValues])
             elif self.iValueType == self.LIST_FROM:
                 aValues, aFrom = self.aCurValues
+                sFromValues = '"-1"'
+                sFrom = '""' # Sentinals
                 if aValues:
                     sFromValues = ",".join(['"%s"' % x for x in aValues])
-                else:
-                    sFromValues = '"-1"'
                 if aFrom:
                     sFrom = ",".join(['"%s"' % x for x in aFrom])
-                else:
-                    sFrom = '""' # Sentinal
                 if aFrom or aValues:
                     sValues = "%s FROM %s" % (sFromValues, sFrom)
             elif self.iValueType == self.ENTRY:
                 sValues = '"%s"' % self.aCurValues[0]
             if sValues:
                 sText = '%s in %s' % (self.sFilterName, sValues)
-            else:
-                sText = "%s in %s" % (self.sFilterName, self.sVariableName)
         else:
             sText = "%s in %s" % (self.sFilterName, self.sVariableName)
         if self.bNegated:
