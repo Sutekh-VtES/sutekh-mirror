@@ -186,6 +186,24 @@ class FilterParserTests(SutekhTest):
             self.assertEqual(aCardSets, aExpectedSets, "Filter Object %s"
                     " failed. %s != %s." % (oFilter, aCardSets, aExpectedSets))
 
+        # Test bouncing through filter box code
+        for sFilter, oEquivFilter in aPhysicalCardSetTests:
+            oAST = self.oFilterParser.apply(sFilter)
+            oBoxModel = FilterBox.FilterBoxModel(oAST, 'PhysicalCardSet')
+            # Test get_text round-trip
+            oFilter = self._parse_filter(oBoxModel.get_text())
+            aExpectedSets = sorted(oEquivFilter.select(
+                PhysicalCardSet).distinct())
+            aCardSets = sorted(oFilter.select(PhysicalCardSet).distinct())
+            self.assertEqual(aCardSets, aExpectedSets, "Filter Object %s"
+                    " failed. %s != %s." % (oFilter, aCardSets, aExpectedSets))
+            # test get_ast + get_values round-trip
+            oAST = oBoxModel.get_ast_with_values()
+            oFilter = oAST.get_filter()
+            aCardSets = sorted(oFilter.select(PhysicalCardSet).distinct())
+            self.assertEqual(aCardSets, aExpectedSets, "Filter Object %s"
+                    " failed. %s != %s." % (oFilter, aCardSets, aExpectedSets))
+
         # Test data for the Specific card filters
 
         aPCSAbsCardTests = [
@@ -292,6 +310,69 @@ class FilterParserTests(SutekhTest):
 
         oAST = self.oFilterParser.apply('CardType in "Vampire","Action Mod"')
         self.assertEqual(oAST.get_invalid_values(), ["Action Mod"])
+
+    def test_filter_box_missing_values(self):
+        """Test that filter box handle missing values as expected"""
+        # Test filters that should be treated as empty
+        aNullTests = ['CardType = $a', 'CardType in $a']
+        for sFilter in aNullTests:
+            oAST = self.oFilterParser.apply(sFilter)
+            oBoxModel = FilterBox.FilterBoxModel(oAST, 'AbstractCard')
+            oAST = oBoxModel.get_ast_with_values()
+            self.assertEqual(oAST, None, "Didn't get expected None Filter "
+                    "for empty box model")
+        # Check partially filled filters
+        # The tests a given as "Expression", "Equivilant Filter"
+        # where the two filters should give the same results
+        aTests = [
+            ('Clan in "Follower of Set" and CardType in $a',
+                Filters.ClanFilter('Follower of Set')),
+            ('Clan in Ravnos, Samedi and Clan in $a',
+                Filters.MultiClanFilter(['Ravnos', 'Samedi'])),
+            ('Discipline in obf or Discipline in $a',
+                Filters.DisciplineFilter('obf')),
+            ('Discipline in nec, Quietus or Clan in $a',
+                Filters.MultiDisciplineFilter(['nec', 'qui']))]
+
+        for sFilter, oEquivFilter in aTests:
+            oAST = self.oFilterParser.apply(sFilter)
+            oBoxModel = FilterBox.FilterBoxModel(oAST, 'AbstractCard')
+            # Test get_text round-trip
+            oFilter = self._parse_filter(oBoxModel.get_text())
+            aNames = self._get_abs_names(oFilter)
+            aExpectedNames = self._get_abs_names(oEquivFilter)
+            self.assertEqual(aNames, aExpectedNames, "Filter Object %s "
+                    "failed. %s != %s." % (oFilter, aNames, aExpectedNames))
+            # test get_ast + get_values round-trip
+            oAST = oBoxModel.get_ast_with_values()
+            oFilter = oAST.get_filter()
+            aNames = self._get_abs_names(oFilter)
+            self.assertEqual(aNames, aExpectedNames, "Filter Object %s "
+                    "failed. %s != %s." % (oFilter, aNames, aExpectedNames))
+
+        # Test disabling sections
+        # We will always disable the first section in these filters
+        aDisableTests = [
+            ('Clan in "Assamite" and Clan in "Follower of Set"',
+                Filters.ClanFilter('Follower of Set')),
+            ('Clan in "Assamite" and Clan in Ravnos, Samedi',
+                Filters.MultiClanFilter(['Ravnos', 'Samedi'])),
+            ('Clan in "Assamite" and Discipline in obf',
+                Filters.DisciplineFilter('obf')),
+            ('Discipline in obf or Discipline in nec, Quietus',
+                Filters.MultiDisciplineFilter(['nec', 'qui']))]
+
+        for sFilter, oEquivFilter in aDisableTests:
+            oAST = self.oFilterParser.apply(sFilter)
+            aExpectedNames = self._get_abs_names(oEquivFilter)
+            oBoxModel = FilterBox.FilterBoxModel(oAST, 'AbstractCard')
+            oBoxModel[0].bDisabled = True
+            # test get_ast_with_values round-trip
+            oAST = oBoxModel.get_ast_with_values()
+            oFilter = oAST.get_filter()
+            aNames = self._get_abs_names(oFilter)
+            self.assertEqual(aNames, aExpectedNames, "Filter Object %s "
+                    "failed. %s != %s." % (oFilter, aNames, aExpectedNames))
 
 
 if __name__ == "__main__":
