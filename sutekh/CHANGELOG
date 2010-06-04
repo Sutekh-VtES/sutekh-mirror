@@ -1,3 +1,21 @@
+04 Jun 2010
+ * Optimise this_set_only + parent count case for small (deck-sized) card
+   lists
+
+03 Jun 2010
+ * Add more tests to the FilterBox code
+ * Fix pyprotocols interface check to work with newer pylint
+
+01 Jun 2010
+ * Avoid double load when restoring the grouping to a card set.
+
+30 May 2010
+ * Fix some fallout from the FilterBox changes
+
+26 May 2010
+ * Don't display special cases in library overview of AnalyzeDeck
+ * Fix FilterBox code to work with empty filters.
+
 25 May 2010
  * Split FilterBox code out of FilterEditor into seperate file
    - Add some basic FilterBox tests as well
