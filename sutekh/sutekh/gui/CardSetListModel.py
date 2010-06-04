@@ -12,7 +12,8 @@
 
 from sutekh.core.Filters import FilterAndBox, NullFilter, PhysicalCardFilter, \
         PhysicalCardSetFilter, SpecificCardIdFilter, \
-        MultiPhysicalCardSetMapFilter, SpecificPhysCardIdFilter
+        MultiPhysicalCardSetMapFilter, SpecificPhysCardIdFilter, \
+        MultiSpecificCardIdFilter
 from sutekh.core.SutekhObjects import PhysicalCard, IAbstractCard, \
         MapPhysicalCardToPhysicalCardSet, IPhysicalCard, IPhysicalCardSet, \
         PhysicalCardSet, canonical_to_csv
@@ -176,7 +177,8 @@ class CardSetCardListModel(CardListModel):
     # pylint: disable-msg=W0212
     # We allow access via these properties
 
-    frame_id = property(fget=lambda self: "pane%s" % (self._oController.frame.pane_id,),
+    frame_id = property(fget=lambda self: "pane%s" %
+            (self._oController.frame.pane_id,),
             doc="Frame ID of associated card set (for selecting profiles)")
 
     # TODO: is this a good cardset id?
@@ -628,7 +630,7 @@ class CardSetCardListModel(CardListModel):
                         oCard.abstractCard.id] += 1
         return dChildCardCache
 
-    def _get_parent_list(self, oCurFilter):
+    def _get_parent_list(self, oCurFilter, oCardIter):
         """Get a list object for the cards in the parent card set."""
         # pylint: disable-msg=E1101, E1103
         # SQLObject + PyProtocols confuse pylint
@@ -639,8 +641,14 @@ class CardSetCardListModel(CardListModel):
             # obviously doesn't work because of _oBaseFilter
             self._dCache['parent filter'] = PhysicalCardSetFilter(
                     self._oCardSet.parent.name)
-            oParentFilter = FilterAndBox([self._dCache['parent filter'],
-                oCurFilter])
+            aFilters = [self._dCache['parent filter'], oCurFilter]
+            if self.iShowCardMode == THIS_SET_ONLY and \
+                    oCardIter.count() < 200:
+                # Restrict filter to the cards in this set, to save time
+                # oCardIter.count() > 0, due to check in grouped_card_iter
+                aAbsCardIds = set([IAbstractCard(x).id for x in oCardIter])
+                aFilters.append(MultiSpecificCardIdFilter(aAbsCardIds))
+            oParentFilter = FilterAndBox(aFilters)
             aParentCards = [IPhysicalCard(x) for x in
                     oParentFilter.select(self.cardclass).distinct()]
             for oPhysCard in aParentCards:
@@ -731,7 +739,7 @@ class CardSetCardListModel(CardListModel):
                 self._dCache['all cards'] = self._dCache['filtered cards']
 
         dChildCardCache = self._get_child_filters(oCurFilter)
-        self._get_parent_list(oCurFilter)
+        self._get_parent_list(oCurFilter, oCardIter)
 
         # Other card show modes
         aExtraCards = self._get_extra_cards(oCurFilter)
@@ -2001,7 +2009,8 @@ class CardSetCardListModel(CardListModel):
 
         sExtraLevelOpt = self._oConfig.get_deck_option(
             self.frame_id, self.cardset_id, EXTRA_LEVEL_OPTION).lower()
-        iExtraLevelMode = EXTRA_LEVEL_LOOKUP.get(sExtraLevelOpt, SHOW_EXPANSIONS)
+        iExtraLevelMode = EXTRA_LEVEL_LOOKUP.get(sExtraLevelOpt,
+                SHOW_EXPANSIONS)
 
         sShowCardOpt = self._oConfig.get_deck_option(
             self.frame_id, self.cardset_id, SHOW_CARD_OPTION).lower()

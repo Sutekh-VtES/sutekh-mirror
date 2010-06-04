@@ -1406,6 +1406,22 @@ class SpecificCardIdFilter(DirectFilter):
         # SQLObject methods not detected by pylint
         return AbstractCard.q.id == self.__iCardId
 
+class MultiSpecificCardIdFilter(DirectFilter):
+    """This filter matches multiple cards by id."""
+    types = ['AbstractCard', 'PhysicalCard']
+
+    def __init__(self, aCardIds):
+        # pylint: disable-msg=E1101
+        # SQLObject methods not detected by pylint
+        self.__aCardIds = aCardIds
+
+    # pylint: disable-msg=C0111
+    # don't need docstrings for _get_expression, get_values & _get_joins
+    def _get_expression(self):
+        # pylint: disable-msg=E1101
+        # SQLObject methods not detected by pylint
+        return IN(AbstractCard.q.id, self.__aCardIds)
+
 class SpecificPhysCardIdFilter(DirectFilter):
     """This filter matches a single physical card by id.
 
