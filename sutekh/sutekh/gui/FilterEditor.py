@@ -69,7 +69,6 @@ class FilterEditor(gtk.Alignment):
 
     def get_current_ast(self):
         """Get the current AST represented by the editor."""
-        # FIXME: Add note to the help about unset filter values
         return self.__oPanes.get_ast_with_values()
 
     def get_current_text(self):
@@ -109,8 +108,10 @@ class FilterEditor(gtk.Alignment):
         # pylint: disable-msg=E1101
         # vbox confuse pylint
 
+        # Ensure we sort this in the same order as the toolbar
         oHelpView = AutoScrolledWindow(FilterHelpTextView(
-            get_filters_for_type(self.__sFilterType)))
+            sorted(get_filters_for_type(self.__sFilterType),
+                key=lambda x: x.description)))
         oDlg.vbox.pack_start(oHelpView)
         oDlg.show_all()
 
@@ -379,7 +380,7 @@ class FilterValuesBox(gtk.VBox):
             oStore = self._oBoxModelEditor.get_tree_store()
             if sData.startswith('MoveValue: '):
                 # Removing a value from the list
-                sSource, sValue = [x.strip() for x in sData.split(':', 1)]
+                _sSource, sValue = [x.strip() for x in sData.split(':', 1)]
                 oValIter = oStore.get_iter_from_string(sValue)
                 oFilter = oStore.get_value(oStore.iter_parent(oValIter), 1)
                 sVal = oStore.get_value(oValIter, 0)
@@ -396,7 +397,7 @@ class FilterValuesBox(gtk.VBox):
                     self._oBoxModelEditor.update_count_list(oFilter)
             elif sData.startswith('MoveFilter: '):
                 # Removing a filter
-                sSource, sFilter = [x.strip() for x in sData.split(':', 1)]
+                _sSource, sFilter = [x.strip() for x in sData.split(':', 1)]
                 oMoveIter = oStore.get_iter_from_string(sFilter)
                 oMoveObj = oStore.get_value(oMoveIter, 1)
                 oParent  = oStore.get_value(oStore.iter_parent(oMoveIter), 1)
@@ -1025,12 +1026,10 @@ class FilterHelpBuffer(gtk.TextBuffer):
 
     # pylint: enable-msg=W0142
 
-    def add_help_text(self, sDescription, sKeyword, sHelpText):
+    def add_help_text(self, sDescription, sHelpText):
         """Add the given help text to the text buffer."""
         self.tag_text(sDescription, "description")
-        self.tag_text(" (")
-        self.tag_text(sKeyword, "keyword")
-        self.tag_text(") :\n")
+        self.tag_text(" :\n")
         self.tag_text(sHelpText, "helptext")
         self.tag_text("\n")
 
@@ -1056,17 +1055,27 @@ class FilterHelpTextView(gtk.TextView):
         oBuf.reset_iter()
 
         oBuf.tag_text(
+            "Filter elements and values for the filters can be dragged "
+            "from the right hand pane to the filter to add them to "
+            "the filter, and dragged from the filter to the right hand "
+            "pane to remove them from the filter. Disabled filter elements "
+            "or filter elements with no values set are ignored.\n"
             "The available filtering options are listed below. "
             "The first line of each item shows the description "
-            "you'll see in the filter editor in bold with the "
-            "keyword to use in query strings in italics afterwards. "
+            "you'll see in the filter editor in bold. "
             "The rest of the description describes the arguments "
             "the filter takes and the results it produces."
             "\n\n"
         )
 
+        # Add test for filter group
+        oBuf.add_help_text('Filter Group', "Filter element with holds "
+                "other filter elements. The result of is the combination "
+                "of all the filter elements as specified by the Filter "
+                "Group type (All of, Any of and so on).")
+
         for oFilt in aFilterTypes:
-            oBuf.add_help_text(oFilt.description, oFilt.keyword,
+            oBuf.add_help_text(oFilt.description,
                     oFilt.helptext)
 
         oBuf.tag_text(
