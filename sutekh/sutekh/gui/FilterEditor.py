@@ -208,6 +208,10 @@ class FilterValuesBox(gtk.VBox):
             'Select an active\nfilter element'), expand=False)
         self._oNoneWidget.pack_start(gtk.Label(
             'No values for this filter'), expand=False)
+        # Handle removing none file elements
+        self._oNoneWidget.drag_dest_set(gtk.DEST_DEFAULT_ALL, DRAG_TARGETS,
+                gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
+        self._oNoneWidget.connect('drag_data_received', self.drag_drop_handler)
         self._oFilter = None
         self._oBoxModelEditor = None
         oCheckBox = gtk.HBox()
