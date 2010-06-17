@@ -192,7 +192,6 @@ class FilterEditorToolbar(gtk.TreeView):
             sSelect = 'NewFilter: %s' % self.__oListStore.get_value(oIter, 1)
             oSelectionData.set(oSelectionData.target, 8, sSelect)
 
-
 class FilterValuesBox(gtk.VBox):
     """Holder for the value setting objects"""
     # pylint: disable-msg=R0904
@@ -209,9 +208,7 @@ class FilterValuesBox(gtk.VBox):
         self._oNoneWidget.pack_start(gtk.Label(
             'No values for this filter'), expand=False)
         # Handle removing none file elements
-        self._oNoneWidget.drag_dest_set(gtk.DEST_DEFAULT_ALL, DRAG_TARGETS,
-                gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
-        self._oNoneWidget.connect('drag_data_received', self.drag_drop_handler)
+        self._set_drop_for_widget(self._oNoneWidget)
         self._oFilter = None
         self._oBoxModelEditor = None
         oCheckBox = gtk.HBox()
@@ -234,6 +231,28 @@ class FilterValuesBox(gtk.VBox):
         self._oWidget = self._oEmptyWidget
         self.pack_start(self._oWidget, expand=True)
         self.show_all()
+
+    def _get_view_widget(self, oWidget):
+        """Helper function to get view from widget if needed"""
+        oSetWidget = oWidget
+        if hasattr(oWidget, 'view'):
+            oSetWidget = oWidget.view
+        return oSetWidget
+
+    def _set_drop_for_widget(self, oWidget):
+        """Set the correct drop dest behaviour for the given widget"""
+        oViewWidget = self._get_view_widget(oWidget)
+        oViewWidget.drag_dest_set(gtk.DEST_DEFAULT_ALL, DRAG_TARGETS,
+                gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
+        oViewWidget.connect('drag_data_received', self.drag_drop_handler)
+
+    def _set_drag_for_widget(self, oWidget, fCallback, oFilter):
+        """Set the correct drag source behaviour for the widget"""
+        oViewWidget = self._get_view_widget(oWidget)
+        oViewWidget.drag_source_set(
+                gtk.gdk.BUTTON1_MASK | gtk.gdk.BUTTON3_MASK, DRAG_TARGETS,
+                gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
+        oViewWidget.connect('drag_data_get', fCallback, oFilter, oWidget)
 
     def set_widget(self, oFilter, oBoxModelEditor):
         """Replace the current widget with the correct widget for the
@@ -274,38 +293,20 @@ class FilterValuesBox(gtk.VBox):
                     oSetList = CardSetsListView(None, self._oParent)
                     oSetList.set_select_multiple()
                     self._oWidget = AutoScrolledWindow(oSetList, False)
-                    oSetList.drag_source_set(
-                            gtk.gdk.BUTTON1_MASK | gtk.gdk.BUTTON3_MASK,
-                            DRAG_TARGETS,
-                            gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
-                    oSetList.drag_dest_set(gtk.DEST_DEFAULT_ALL, DRAG_TARGETS,
-                            gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
-                    oSetList.connect('drag_data_get', self.update_set_list,
-                            oFilter, oSetList)
-                    oSetList.connect('drag_data_received',
-                            self.drag_drop_handler)
+                    self._set_drag_for_widget(oSetList, self.update_set_list,
+                            oFilter)
+                    self._set_drop_for_widget(oSetList)
                 else:
                     # Ordinary list
                     self._oWidget = ScrolledList('Select Filter Values')
                     self._oWidget.set_select_multiple()
                     self._oWidget.fill_list(oFilter.aValues)
-                    self._oWidget.view.drag_source_set(
-                            gtk.gdk.BUTTON1_MASK | gtk.gdk.BUTTON3_MASK,
-                            DRAG_TARGETS,
-                            gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
-                    self._oWidget.view.drag_dest_set(
-                            gtk.DEST_DEFAULT_ALL, DRAG_TARGETS,
-                            gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
-                    self._oWidget.view.connect('drag_data_get',
+                    self._set_drag_for_widget(self._oWidget,
                             self.update_filter_list, oFilter)
-                    self._oWidget.view.connect('drag_data_received',
-                            self.drag_drop_handler)
+                    self._set_drop_for_widget(self._oWidget)
             elif oFilter.iValueType == FilterBoxItem.ENTRY:
                 self._oWidget = gtk.VBox()
-                self._oWidget.drag_dest_set(gtk.DEST_DEFAULT_ALL, DRAG_TARGETS,
-                        gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
-                self._oWidget.connect('drag_data_received',
-                        self.drag_drop_handler)
+                self._set_drop_for_widget(self._oWidget)
                 self._oWidget.pack_start(gtk.Label('Enter Text'), expand=False)
                 oEntry = gtk.Entry()
                 self._oWidget.pack_start(oEntry, expand=False)
@@ -319,27 +320,12 @@ class FilterValuesBox(gtk.VBox):
                 oCountList.fill_list(oFilter.aValues[0])
                 oSetList = CardSetsListView(None, self._oParent)
                 oSetList.set_select_multiple()
-                oSetList.drag_source_set(
-                        gtk.gdk.BUTTON1_MASK | gtk.gdk.BUTTON3_MASK,
-                        DRAG_TARGETS,
-                        gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
-                oSetList.drag_dest_set(gtk.DEST_DEFAULT_ALL, DRAG_TARGETS,
-                            gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
-                oSetList.connect('drag_data_get',
-                        self.update_count_set, oFilter, oSetList)
-                oSetList.connect('drag_data_received',
-                        self.drag_drop_handler)
-                oCountList.view.drag_source_set(
-                        gtk.gdk.BUTTON1_MASK | gtk.gdk.BUTTON3_MASK,
-                        DRAG_TARGETS,
-                        gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
-                oCountList.view.drag_dest_set(
-                        gtk.DEST_DEFAULT_ALL, DRAG_TARGETS,
-                        gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
-                oCountList.view.connect('drag_data_get',
-                        self.update_count_list, oFilter, oCountList)
-                oCountList.view.connect('drag_data_received',
-                        self.drag_drop_handler)
+                self._set_drag_for_widget(oSetList, self.update_count_set,
+                        oFilter)
+                self._set_drop_for_widget(oSetList)
+                self._set_drag_for_widget(oCountList,
+                        self.update_count_list, oFilter)
+                self._set_drop_for_widget(oCountList)
                 self._oWidget.pack_start(oCountList, expand=True)
                 oLabel = gtk.Label()
                 oLabel.set_markup('<b>From</b>')
@@ -412,7 +398,7 @@ class FilterValuesBox(gtk.VBox):
 
 
     def update_filter_list(self, _oBtn, _oContext, _oSelectionData,
-            _oInfo, _oTime, oFilter):
+            _oInfo, _oTime, oFilter, _oWidget):
         """Update the box model with the new values"""
         aSelected = self._oWidget.get_selection()
         for sSet in aSelected:
