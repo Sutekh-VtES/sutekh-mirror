@@ -92,6 +92,7 @@ class CreateCardSetDialog(SutekhDialog):
             self.oInUse.set_active(oCardSet.inuse)
 
         self.sName = None
+        self.sAuthor = None
         self.oParent = oCardSetParent
 
         self.show_all()
@@ -102,7 +103,7 @@ class CreateCardSetDialog(SutekhDialog):
 
     def get_author(self):
         """Get the author value"""
-        return self.oAuthor.get_text()
+        return self.sAuthor
 
     def get_comment(self):
         """Get the comment value"""
@@ -130,6 +131,7 @@ class CreateCardSetDialog(SutekhDialog):
         """Handle button press from the dialog."""
         if iResponse == gtk.RESPONSE_OK:
             self.sName = self.oName.get_text()
+            self.sAuthor = self.oAuthor.get_text()
             if len(self.sName) > 0:
                 # We don't allow < or > in the name, since pango uses that for
                 # markup
