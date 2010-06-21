@@ -253,11 +253,21 @@ def _simple_back_checks(dCards, sType):
 def _percentage_backs(dCards, iSize, fPer, sType):
     """Checks that the percentage of cards with a single back are not too
        small"""
-    aPer = [float(dCards[x])/float(iSize) for x in dCards]
-    if aPer and min(aPer) < fPer/100.0:
-        return "Group of cards with the same back that's smaller" \
-                " than %2.1f%% of the %s.\n" % (fPer, sType.lower())
-    return None
+    sText = ""
+    bOK = True
+    for oExp in dCards:
+        fThisPer = float(dCards[oExp])/float(iSize) * 100
+        if hasattr(oExp, 'name'):
+            sName = oExp.name
+        else:
+            sName = oExp
+        sText += "%d %s backs (%2.1f%% of the %s).\n" % (dCards[oExp], sName,
+                fThisPer, sType.lower())
+        if fThisPer < fPer:
+            sText += "Group of cards with the same back that's smaller" \
+                    " than %2.1f%% of the %s.\n" % (fPer, sType.lower())
+            bOK = False
+    return sText, bOK
 
 def _group_backs(dCards, aCards, iNum):
     """Check for that cards of a single back don't belong to too few different
@@ -933,10 +943,10 @@ class AnalyzeCardList(SutekhPlugin):
         if sAddText:
             sText += sAddText
             return sText
-        sAddText = _percentage_backs(dCrypt, self.iCryptSize, 20.0, 'Crypt')
+        sAddText, bOK = _percentage_backs(dCrypt, self.iCryptSize, 20.0,
+                'Crypt')
         if sAddText:
             sText += sAddText
-            bOK = False
         sAddText, _dCryptByExp = _group_backs(dCrypt, aCrypt, 3)
         if sAddText:
             sText += sAddText
@@ -957,10 +967,9 @@ class AnalyzeCardList(SutekhPlugin):
         if sAddText:
             sText += sAddText
             return sText
-        sAddText = _percentage_backs(dLib, self.iLibSize, 20.0, 'Library')
+        sAddText, bOK = _percentage_backs(dLib, self.iLibSize, 20.0, 'Library')
         if sAddText:
             sText += sAddText
-            bOK = False
         sAddText, dLibByExp = _group_backs(dLib, aLib, 5)
         if sAddText:
             sText += sAddText
