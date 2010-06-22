@@ -1,4 +1,4 @@
-# test_WriteArdbXML.py
+# test_WriteArdbText.py
 # -*- coding: utf8 -*-
 # vim:fileencoding=utf8 ai ts=4 sts=4 et sw=4
 # Copyright 2008 Neil Muller <drnlmuller+sutekh@gmail.com>
