@@ -44,14 +44,18 @@ class ExtraCardSetListViewColumns(SutekhPlugin):
     dTableVersions = {}
     aModelsSupported = ['Card Set List']
 
-    _dWidths = {
-            'Total cards' : 100,
-            'All Children' : 100,
-            'In-Use Children' : 100,
-            'Library' : 100,
-            'Crypt' : 100,
-            'Author' : 300,
-            'Description' : 700,
+    # Dictionary of column info - width, render function name, data func name
+    COLUMNS = {
+            'Total cards' : (100, '_render_total', '_get_data_total'),
+            'All Children' : (100, '_render_all_children',
+                '_get_data_all_children'),
+            'In-Use Children' : (100, '_render_inuse_children',
+                '_get_data_inuse_children'),
+            'Library' : (100, '_render_library', '_get_data_library'),
+            'Crypt' : (100, '_render_crypt', '_get_data_crypt'),
+            'Author' : (300, '_render_author', '_get_data_author'),
+            'Description' : (700, '_render_description',
+                '_get_data_description'),
             }
 
     # Placeholder if we decide to add columns with icons later
@@ -66,24 +70,16 @@ class ExtraCardSetListViewColumns(SutekhPlugin):
     def __init__(self, *args, **kwargs):
         super(ExtraCardSetListViewColumns, self).__init__(*args, **kwargs)
         self._dCols = {}
-        self._dCols['Total'] = self._render_total
-        self._dCols['All Children'] = self._render_all_children
-        self._dCols['In-Use Children'] = self._render_inuse_children
-        self._dCols['Library'] = self._render_library
-        self._dCols['Crypt'] = self._render_crypt
-        self._dCols['Author'] = self._render_author
-        self._dCols['Description'] = self._render_description
+        self._dWidths = {}
+        self._dSortDataFuncs = {}
+
+        for sKey, (iWidth, sRender, sData) in self.COLUMNS.iteritems():
+            self._dWidths[sKey] = iWidth
+            self._dCols[sKey] = getattr(self, sRender)
+            self._dSortDataFuncs[sKey] = getattr(self, sData)
+
         # The database lookups are moderately expensive, so cache the results
         self._dCache = {}
-
-        self._dSortDataFuncs = {}
-        self._dSortDataFuncs['Total'] = self._get_data_total
-        self._dSortDataFuncs['All Children'] = self._get_data_all_children
-        self._dSortDataFuncs['In-Use Children'] = self._get_data_inuse_children
-        self._dSortDataFuncs['Library'] = self._get_data_library
-        self._dSortDataFuncs['Crypt'] = self._get_data_crypt
-        self._dSortDataFuncs['Author'] = self._get_data_author
-        self._dSortDataFuncs['Description'] = self._get_data_description
 
         # We may add columns with icons later, like clans in the crypt
         #self._oFirstBut = None
