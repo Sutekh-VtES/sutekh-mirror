@@ -116,14 +116,25 @@ class CardDict(dict):
             'scarce' : re.compile('[.:] Scarce.'),
             'sterile' : re.compile('[.:] Sterile.'),
             'blood cursed' : re.compile('[.:] \(?Blood Cursed'),
+            'not for legal play' : re.compile(
+                '\{NOT FOR LEGAL PLAY\}|\{Added to the V:EKN banned list'),
             }
+
+    # Properites we check for all library cards
     dLibProperties = {
+            'not for legal play' : re.compile(
+                '\{NOT FOR LEGAL PLAY\}|\{Added to the V:EKN banned list'),
+            }
+
+    # Ally properties
+    dAllyProperties = {
             # Red list allies are templated differently
             'red list' : re.compile('\. Red List\.'),
             }
     oLifeRgx = re.compile('(Unique )?\[?(Gargoyle creature|[A-Za-z]+)\]?'
             ' with (\d) life\.')
 
+    # equipment properties
     dEquipmentProperties = {
             'unique' : re.compile('Unique (melee )?weapon|Unique equipment|'
                 'represents a unique location'),
@@ -138,6 +149,7 @@ class CardDict(dict):
             'electronic equipment' : re.compile('Electronic equipment.'),
             }
 
+    # master properties
     dMasterProperties = {
             # unique isn't very consistent
             'unique' : re.compile('[Uu]nique [mM]aster|Master[:.] unique|'
@@ -156,6 +168,7 @@ class CardDict(dict):
             'watchtower' : re.compile('Master: watchtower'),
             }
 
+    # event properties
     dEventProperties = {
             'gehenna' : re.compile('Gehenna\.'),
             'transient' : re.compile('Transient\.'),
@@ -164,6 +177,7 @@ class CardDict(dict):
             'inquisition' : re.compile('Inquisition\.'),
             }
 
+    # Catch for non-specified card types
     dOtherProperties = {
             'unique' : re.compile('Unique\.'),
             'boon' : re.compile('Boon\.'),
@@ -233,20 +247,22 @@ class CardDict(dict):
             if oDetail:
                 self._add_keyword(oCard, oDetail.group(1))
                 self._add_keyword(oCard, oDetail.group(2))
-        for sKeyword, oRegexp in self.dLibProperties.iteritems():
-            oMatch = oRegexp.search(sText)
-            if oMatch:
-                self._add_keyword(oCard, sKeyword)
+        self._find_card_keywords(oCard, self.dAllyProperties)
         if self['name'] in self.dAllyKeywordSpecial:
             for sKeyword in self.dAllyKeywordSpecial[self['name']]:
                 self._add_keyword(oCard, sKeyword)
 
     def _find_card_keywords(self, oCard, dProps):
         """Find keywords for library cards"""
-        for sKeyword, oRegexp in dProps.iteritems():
+        def _do_match(sKeyword, oRegexp):
+            """Helper to do the match"""
             oMatch = oRegexp.search(self['text'])
             if oMatch:
                 self._add_keyword(oCard, sKeyword)
+        for sKeyword, oRegexp in dProps.iteritems():
+            _do_match(sKeyword, oRegexp)
+        for sKeyword, oRegexp in self.dLibProperties.iteritems():
+            _do_match(sKeyword, oRegexp)
 
     def _parse_text(self, oCard):
         """Parse the CardText for Sect and Titles"""

@@ -29,6 +29,13 @@ def read_cardlist(oCardList, oProgressDialog, oLogHandler):
     read_white_wolf_list(oCardList, oLogHandler)
     oProgressDialog.set_complete()
 
+def read_extra(oExtraFile, oProgressDialog, oLogHandler):
+    """Read extra card info into the database"""
+    oProgressDialog.set_description("Reading Extra Card Info")
+    oProgressDialog.show()
+    read_white_wolf_list(oExtraFile, oLogHandler)
+    oProgressDialog.set_complete()
+
 def read_ww_rulings(oRulings, oProgressDialog, oLogHandler):
     """Read the WW Rulings file into the database"""
     oProgressDialog.set_description("Reading White Wolf Rulings")
@@ -36,7 +43,7 @@ def read_ww_rulings(oRulings, oProgressDialog, oLogHandler):
     read_rulings(oRulings, oLogHandler)
     oProgressDialog.set_complete()
 
-def read_ww_lists_into_db(aCLFile, oRulingsFile, oProgressDialog):
+def read_ww_lists_into_db(aCLFile, oExtraFile, oRulingsFile, oProgressDialog):
     """Read WW card list and possibly rulings into the given database"""
     refresh_tables(TABLE_LIST, sqlhub.processConnection)
     oProgressDialog.reset()
@@ -44,6 +51,8 @@ def read_ww_lists_into_db(aCLFile, oRulingsFile, oProgressDialog):
     oLogHandler = SutekhHTMLLogHandler()
     oLogHandler.set_dialog(oProgressDialog)
     read_cardlist(aCLFile, oProgressDialog, oLogHandler)
+    if oExtraFile:
+        read_extra([oExtraFile], oProgressDialog, oLogHandler)
     if oRulingsFile:
         read_ww_rulings(oRulingsFile, oProgressDialog,  oLogHandler)
 
@@ -75,10 +84,11 @@ def initialize_db(oParent):
     if iRes != 1:
         return False
     else:
-        aCLFile, oRulingsFile, _sIgnore = _get_names(oParent)
+        aCLFile, oExtraFile, oRulingsFile, _sIgnore = _get_names(oParent)
         if aCLFile is not None:
             oProgressDialog = ProgressDialog()
-            read_ww_lists_into_db(aCLFile, oRulingsFile, oProgressDialog)
+            read_ww_lists_into_db(aCLFile, oExtraFile, oRulingsFile,
+                    oProgressDialog)
             oProgressDialog.destroy()
         else:
             return False
@@ -100,7 +110,8 @@ def _get_names(oWin):
     """Get the names from the user, and ready them for the import."""
     oWWFilesDialog = WWFilesDialog(oWin)
     oWWFilesDialog.run()
-    (sCLFileName, bCLIsUrl, sRulingsFileName, bRulingsIsUrl,
+    (sCLFileName, bCLIsUrl, sExtraFileName, bExtraIsUrl,
+            sRulingsFileName, bRulingsIsUrl,
             sBackupFile) = oWWFilesDialog.get_names()
     oWWFilesDialog.destroy()
     if sCLFileName is not None:
@@ -110,16 +121,20 @@ def _get_names(oWin):
             aCLFile = [WwFile(sCLFileName, bUrl=bCLIsUrl)]
     else:
         aCLFile = None
+    if sExtraFileName is not None:
+        oExtraFile = WwFile(sExtraFileName, bUrl=bExtraIsUrl)
+    else:
+        oExtraFile = None
     if sRulingsFileName is not None:
         oRulingsFile = WwFile(sRulingsFileName, bUrl=bRulingsIsUrl)
     else:
         oRulingsFile = None
-    return aCLFile, oRulingsFile, sBackupFile
+    return aCLFile, oExtraFile, oRulingsFile, sBackupFile
 
 def refresh_ww_card_list(oWin):
     """Handle grunt work of refreshing the card lists"""
     aEditable = oWin.get_editable_panes()
-    aCLFile, oRulingsFile, sBackupFile = _get_names(oWin)
+    aCLFile, oExtraFile, oRulingsFile, sBackupFile = _get_names(oWin)
     if not aCLFile:
         return False # Nothing happened
     oProgressDialog = ProgressDialog()
@@ -135,7 +150,7 @@ def refresh_ww_card_list(oWin):
     oOldConn = sqlhub.processConnection
     oTempConn = connectionForURI("sqlite:///:memory:")
     sqlhub.processConnection = oTempConn
-    read_ww_lists_into_db(aCLFile, oRulingsFile, oProgressDialog)
+    read_ww_lists_into_db(aCLFile, oExtraFile, oRulingsFile, oProgressDialog)
     # Refresh abstract card view for card lookups
     oLogHandler = SutekhCountLogHandler()
     oLogHandler.set_dialog(oProgressDialog)

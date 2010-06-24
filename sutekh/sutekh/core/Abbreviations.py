@@ -235,6 +235,8 @@ class Rarities(AbbreviationLookup):
         'BSC' : ['X'],
         'Precon' : ['P','PB','PA','PTo3','PTr','PG','PB2','PTo4','PAl2','PO3'],
         'Not Applicable' : ['NA'],
+        'Rules' : ['Rules'],
+        'Storyline' : ['Storyline'],
     }
 
     @classmethod

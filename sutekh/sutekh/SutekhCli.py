@@ -34,6 +34,10 @@ def parse_options(aArgs):
                   type="string", dest="ww_file", default=None,
                   help="HTML file (probably from WW website) to read " \
                           "cards from.")
+    oOptParser.add_option("-e", "--extra-file",
+                  type="string", dest="extra_file", default=None,
+                  help="HTML file to read extra storyline" \
+                          "cards from.")
     oOptParser.add_option("--ruling-file",
                   type="string", dest="ruling_file", default=None,
                   help="HTML file (probably from WW website) to read " \
@@ -149,6 +153,9 @@ def main_with_args(aTheArgs):
 
     if not oOpts.ww_file is None:
         read_white_wolf_list([WwFile(oOpts.ww_file)], oLogHandler)
+
+    if not oOpts.extra_file is None:
+        read_white_wolf_list([WwFile(oOpts.extra_file)], oLogHandler)
 
     if not oOpts.ruling_file is None:
         read_rulings(WwFile(oOpts.ruling_file), oLogHandler)

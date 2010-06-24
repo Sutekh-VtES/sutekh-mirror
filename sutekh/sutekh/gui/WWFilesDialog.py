@@ -10,7 +10,7 @@
 import gtk
 from sutekh.gui.SutekhDialog import SutekhDialog
 from sutekh.gui.SutekhFileWidget import SutekhFileDialog, SutekhFileButton
-from sutekh.io.WwFile import WW_CARDLIST_URL, WW_RULINGS_URL
+from sutekh.io.WwFile import WW_CARDLIST_URL, WW_RULINGS_URL, EXTRA_CARD_URL
 
 class WWFilesDialog(SutekhDialog):
     # pylint: disable-msg=R0904, R0902
@@ -31,6 +31,15 @@ class WWFilesDialog(SutekhDialog):
                 ['*.html', '*htm'])
         self.oUseWwCardListButton = gtk.CheckButton(label=
                 "Grab cardlist from White Wolf website?")
+
+        # FIXME: Needs better text
+        oExtraLabel = gtk.Label("Storyline Card File (optional):")
+        self.oExtraFileButton = SutekhFileButton(oParent,
+                "Storyline card file")
+        self.oExtraFileButton.add_filter_with_pattern('HTML files',
+                ['*.html', '*htm'])
+        self.oUseExtraUrlButton = gtk.CheckButton(label=
+                "Grab extra cards from some site?")
 
         oRulingsLabel = gtk.Label("White Wolf Rulings File (optional):")
         self.oRulingsFileButton = SutekhFileButton(oParent,
@@ -56,6 +65,9 @@ class WWFilesDialog(SutekhDialog):
         self.vbox.pack_start(oCardListLabel)
         self.vbox.pack_start(self.oCardListFileButton)
         self.vbox.pack_start(self.oUseWwCardListButton)
+        self.vbox.pack_start(oExtraLabel)
+        self.vbox.pack_start(self.oExtraFileButton)
+        self.vbox.pack_start(self.oUseExtraUrlButton)
         self.vbox.pack_start(oRulingsLabel)
         self.vbox.pack_start(self.oRulingsFileButton)
         self.vbox.pack_start(self.oUseWwRulingsButton)
@@ -65,6 +77,8 @@ class WWFilesDialog(SutekhDialog):
         self.oBackupFileButton.connect("toggled", self.backup_file_toggled)
         self.oUseWwCardListButton.connect("toggled",
                 self.use_ww_cardlist_toggled)
+        self.oUseExtraUrlButton.connect("toggled",
+                self.use_extra_url_toggled)
         self.oUseWwRulingsButton.connect("toggled",
                 self.use_ww_rulings_toggled)
         self.connect("response", self.handle_response)
@@ -75,6 +89,8 @@ class WWFilesDialog(SutekhDialog):
         self.sBackupFileName = None
         self.bCLIsUrl = None
         self.bRulingsIsUrl = None
+        self.bExtraIsUrl = None
+        self.sExtraName = None
 
     def handle_response(self, _oWidget, iResponse):
         """Extract the information from the dialog if the user presses OK"""
@@ -85,6 +101,13 @@ class WWFilesDialog(SutekhDialog):
             else:
                 self.bCLIsUrl = False
                 self.sCLName = self.oCardListFileButton.get_filename()
+
+            if self.oUseExtraUrlButton.get_active():
+                self.bExtraIsUrl = True
+                self.sExtraName = EXTRA_CARD_URL
+            else:
+                self.bExtraIsUrl = False
+                self.sExtraName = self.oExtraFileButton.get_filename()
 
             if self.oUseWwRulingsButton.get_active():
                 self.bRulingsIsUrl = True
@@ -98,8 +121,8 @@ class WWFilesDialog(SutekhDialog):
 
     def get_names(self):
         """Pass the information back to the caller"""
-        return (self.sCLName, self.bCLIsUrl, self.sRulingsName,
-                self.bRulingsIsUrl, self.sBackupFileName)
+        return (self.sCLName, self.bCLIsUrl, self.sExtraName, self.bExtraIsUrl,
+                self.sRulingsName, self.bRulingsIsUrl, self.sBackupFileName)
 
     def backup_file_toggled(self, _oWidget):
         """Update status if user toggles the 'make backup' checkbox"""
@@ -128,3 +151,10 @@ class WWFilesDialog(SutekhDialog):
             self.oRulingsFileButton.hide()
         else:
             self.oRulingsFileButton.show()
+
+    def use_extra_url_toggled(self, _oWidget):
+        """Update state if the user toggles the 'Use WW rulings' checkbox"""
+        if self.oUseExtraUrlButton.get_active():
+            self.oExtraFileButton.hide()
+        else:
+            self.oExtraFileButton.show()
