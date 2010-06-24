@@ -1,3 +1,22 @@
+24 Jun 2010
+ * Display percentage in progress bar
+ * Add support for reading extra cards from a file. Can be used for adding
+   missing information or cards not in the WW cardlist (such as the storyline
+   cards).
+ * Change Analyze plugin to search for new "not for legal play" keyword,
+   instead of banned text.
+
+21 Jun 2010
+ * Tweak display of mixed back info in Analyze plugin
+ * Work-around some gtk+ versions clearing the author text field before we
+   read it.
+
+17 Jun 2010
+ * Fix bug with dragging filters with no input widget out of the filter.
+
+08 Jun 2010
+ * Update help text for filter dialog.
+
 04 Jun 2010
  * Optimise this_set_only + parent count case for small (deck-sized) card
    lists
