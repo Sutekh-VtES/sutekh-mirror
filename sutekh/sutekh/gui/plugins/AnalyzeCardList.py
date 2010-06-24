@@ -12,9 +12,10 @@
 """Display interesting statistics and properties of the card set."""
 
 import gtk
+from sqlobject import SQLObjectNotFound
 from sutekh.core.SutekhObjects import PhysicalCardSet, \
         IAbstractCard, IPhysicalCard, IExpansion, CRYPT_TYPES
-from sutekh.core.Filters import CardTypeFilter, KeywordFilter
+from sutekh.core.Filters import CardTypeFilter, KeywordFilter, CardTextFilter
 from sutekh.core.Abbreviations import Titles
 from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog
@@ -25,7 +26,11 @@ THIRD_ED = IExpansion('Third Edition')
 JYHAD = IExpansion('Jyhad')
 ODD_BACKS = [None, THIRD_ED, JYHAD]
 
-NOT_LEGAL_FILTER = KeywordFilter('not for legal play')
+# NB - Remove this after Sutekh 0.8 is out
+try:
+    NOT_LEGAL_FILTER = KeywordFilter('not for legal play')
+except SQLObjectNotFound:
+    NOT_LEGAL_FILTER = CardTextFilter('Added to the V:EKN banned list')
 
 UNSLEEVED = "<span foreground='green'>%s may be played unsleeved</span>\n"
 SLEEVED = "<span foreground='orange'>%s should be sleeved</span>\n"
