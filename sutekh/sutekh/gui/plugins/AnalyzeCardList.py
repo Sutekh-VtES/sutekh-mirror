@@ -14,7 +14,7 @@
 import gtk
 from sutekh.core.SutekhObjects import PhysicalCardSet, \
         IAbstractCard, IPhysicalCard, IExpansion, CRYPT_TYPES
-from sutekh.core.Filters import CardTypeFilter, CardTextFilter
+from sutekh.core.Filters import CardTypeFilter, KeywordFilter
 from sutekh.core.Abbreviations import Titles
 from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog
@@ -25,11 +25,11 @@ THIRD_ED = IExpansion('Third Edition')
 JYHAD = IExpansion('Jyhad')
 ODD_BACKS = [None, THIRD_ED, JYHAD]
 
-BANNED_FILTER = CardTextFilter('Added to the V:EKN banned list')
+NOT_LEGAL_FILTER = KeywordFilter('not for legal play')
 
 UNSLEEVED = "<span foreground='green'>%s may be played unsleeved</span>\n"
 SLEEVED = "<span foreground='orange'>%s should be sleeved</span>\n"
-SPECIAL = ['Banned Cards', 'Multirole', 'Mixed Card Backs']
+SPECIAL = ['Not Tournament Legal Cards', 'Multirole', 'Mixed Card Backs']
 
 
 # utility functions
@@ -387,7 +387,7 @@ class AnalyzeCardList(SutekhPlugin):
                 'Event' : self._process_event,
                 'Master' : self._process_master,
                 'Multirole' : self._process_multi,
-                'Banned Cards' : self._process_banned,
+                'Not Tournament Legal Cards' : self._process_non_legal,
                 'Mixed Card Backs' : self._process_backs,
                 }
 
@@ -408,8 +408,8 @@ class AnalyzeCardList(SutekhPlugin):
                  # Multirole values start empty, and are filled in later
                 dCardLists[sCardType] = []
                 self.dTypeNumbers[sCardType] = 0
-            elif sCardType == 'Banned Cards':
-                oFilter = BANNED_FILTER
+            elif sCardType == 'Not Tournament Legal Cards':
+                oFilter = NOT_LEGAL_FILTER
                 dCardLists[sCardType] = _get_abstract_cards(
                         self.model.get_card_iterator(oFilter))
                 self.dTypeNumbers[sCardType] = len(dCardLists[sCardType])
@@ -576,9 +576,9 @@ class AnalyzeCardList(SutekhPlugin):
             sMainText += '<span foreground = "red">Group Range Exceeded' \
                     '</span>\n'
 
-        if self.dTypeNumbers['Banned Cards'] > 0:
-            sMainText += '<span foreground = "red">Card Set uses cards on ' \
-                    'V:EKN banned list</span>\n'
+        if self.dTypeNumbers['Not Tournament Legal Cards'] > 0:
+            sMainText += '<span foreground = "red">Card Set uses cards that ' \
+                    'are not legal for tournament play</span>\n'
 
         sMainText += '\nMaximum cost in crypt = %d\n' % \
                 self.dCryptStats['max cost']
@@ -912,21 +912,24 @@ class AnalyzeCardList(SutekhPlugin):
 
         return sText
 
-    def _process_banned(self, aCards):
-        """Fill the banned card tab"""
+    def _process_non_legal(self, aCards):
+        """Fill the non_legal card tab"""
         iTotal = self.iCryptSize + self.iLibSize
-        dBanned = {}
-        sPerCards = _percentage(self.dTypeNumbers['Banned Cards'],
+        dNonLegal = {}
+        sPerCards = _percentage(
+                self.dTypeNumbers['Not Tournament Legal Cards'],
                 iTotal, 'Deck')
-        sText = "\t\t<b>Banned Cards :</b>\n\n" \
-                "Number of Banned Cards cards = %(num)d %(per)s\n" % {
-                        'num' : self.dTypeNumbers['Banned Cards'],
+        sText = "\t\t<b>Not Tournament Legal Cards :</b>\n\n" \
+                "Number of cards not legal for tournament play =" \
+                " %(num)d %(per)s\n" % {
+                        'num' : self.dTypeNumbers[
+                            'Not Tournament Legal Cards'],
                         'per' : sPerCards
                         }
         for oAbsCard in aCards:
-            dBanned.setdefault(oAbsCard.name, 0)
-            dBanned[oAbsCard.name] += 1
-        for sName, iNum in sorted(dBanned.items(), key=lambda x: x[1],
+            dNonLegal.setdefault(oAbsCard.name, 0)
+            dNonLegal[oAbsCard.name] += 1
+        for sName, iNum in sorted(dNonLegal.items(), key=lambda x: x[1],
                 reverse=True):
             sText += '%(num)d X %(name)s\n' % {
                     'num' : iNum,
