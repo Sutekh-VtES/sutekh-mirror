@@ -137,10 +137,13 @@ class ProgressDialog(gtk.Window):
         # Progress bar doesn't like values < 0.0 or > 1.0
         if fStep > 1.0:
             self.oProgressBar.set_fraction(1.0)
+            self.oProgressBar.set_text('100% done')
         elif fStep < 0.0:
             self.oProgressBar.set_fraction(0.0)
+            self.oProgressBar.set_text('0% done')
         else:
             self.oProgressBar.set_fraction(fStep)
+            self.oProgressBar.set_text('%.1f%% done' % (fStep * 100))
         # Since Sutekh is single threaded, and some IO bound
         # task has the gtk.main loop process, we fudge the
         # required behaviour to get the update drawn
