@@ -8,7 +8,7 @@
 
 # Base Grouping Class
 
-from sutekh.core.SutekhObjects import CRYPT_TYPES
+from sutekh.core.SutekhObjects import CRYPT_TYPES, AbstractCard
 
 class IterGrouping(object):
     """Bass class for the groupings"""
@@ -183,6 +183,32 @@ class GroupGrouping(IterGrouping):
                 return []
 
         super(GroupGrouping, self).__init__(oIter, get_values)
+
+class GroupPairGrouping(IterGrouping):
+    """Group by crypt adjacent pairs of Group"""
+    def __init__(self, oIter, fGetCard=DEF_GET_CARD):
+        iMax = AbstractCard.select().max(AbstractCard.q.group)
+
+        def get_values(oCardSrc):
+            """Get the group pairs for this card"""
+            oCard = fGetCard(oCardSrc)
+            if oCard.group:
+                if oCard.group != -1:
+                    if oCard.group == 1:
+                        return ['Groups %d, %d' % (oCard.group, oCard.group+1)]
+                    elif oCard.group < iMax:
+                        return ['Groups %d, %d' % (oCard.group-1, oCard.group),
+                                'Groups %d, %d' % (oCard.group, oCard.group+1)]
+                    else:
+                        return ['Groups %d, %d' % (oCard.group-1, oCard.group)]
+                else:
+                    # Any group is returned in all pairs
+                    return ['Groups %d, %d' % (x, x+1) for x in range(1, iMax)]
+            else:
+                return []
+
+        super(GroupPairGrouping, self).__init__(oIter, get_values)
+
 
 class ArtistGrouping(IterGrouping):
     """Group by Artist"""

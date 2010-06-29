@@ -12,7 +12,7 @@ from sutekh.core.Groupings import CardTypeGrouping, ClanGrouping, \
         DisciplineGrouping, ExpansionGrouping, RarityGrouping, \
         CryptLibraryGrouping, NullGrouping, MultiTypeGrouping, \
         SectGrouping, TitleGrouping, CostGrouping, GroupGrouping, \
-        ArtistGrouping, KeywordGrouping
+        ArtistGrouping, KeywordGrouping, GroupPairGrouping
 from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog
 
@@ -35,6 +35,7 @@ class GroupCardList(SutekhPlugin):
         'Title': TitleGrouping,
         'Cost': CostGrouping,
         'Group': GroupGrouping,
+        'Group pairs': GroupPairGrouping,
         'Artist': ArtistGrouping,
         'Keyword': KeywordGrouping,
         'No Grouping': NullGrouping,
