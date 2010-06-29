@@ -1051,6 +1051,8 @@ multi-type cards as members of separate types. Thus *Action Modifier/Combat* \
 will appear as a separate group, and cards of that type will not be listed \
 in the *Action Modifier* and *Combat* groups.
 * _Group_: Group the cards by their crypt group.
+* _Group pairs_: Group cards into pairs of adjacent groups. Cards marked as \
+*Any Group* are considered to belong to all group pairs.
 * _Artist_: Group the cards by their artists.
 * _Keyword_: Group the cards by the keywords associated with them.
 
