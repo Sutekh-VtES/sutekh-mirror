@@ -314,7 +314,9 @@ class StarterInfoPlugin(SutekhPlugin, CardTextViewListener):
                         oMatch.groups()[1]))
         # Find the card in the starter decks
         aInfo = []
-        for oCS, sExpName, sDeckName in aStarters:
+        for oCS, sExpName, sDeckName in sorted(aStarters,
+                key=lambda x: (x[2], x[1])):
+            # Sort by name, exp
             oFilter = FilterAndBox([SpecificCardIdFilter(oAbsCard.id),
                     PhysicalCardSetFilter(oCS.name)])
             iCount = oFilter.select(MapPhysicalCardToPhysicalCardSet).count()
