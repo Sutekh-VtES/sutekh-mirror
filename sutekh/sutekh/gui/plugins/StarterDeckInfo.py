@@ -315,13 +315,17 @@ class StarterInfoPlugin(SutekhPlugin, CardTextViewListener):
         # Find the card in the starter decks
         aInfo = []
         for oCS, sExpName, sDeckName in sorted(aStarters,
-                key=lambda x: (x[2], x[1])):
-            # Sort by name, exp
+                key=lambda x: (x[1], x[2])):
+            # Sort by exp, name
             oFilter = FilterAndBox([SpecificCardIdFilter(oAbsCard.id),
                     PhysicalCardSetFilter(oCS.name)])
             iCount = oFilter.select(MapPhysicalCardToPhysicalCardSet).count()
             if iCount > 0:
-                aInfo.append("%s (%s) (x %d)" % (sDeckName, sExpName, iCount))
+                aInfo.append("x %(count)d %(exp)s (%(cardset)s)" % {
+                    'count' : iCount,
+                    'exp' : sExpName,
+                    'cardset' : sDeckName,
+                    })
         if aInfo:
             # Move to after the expansionsa
             oTempIter = oCardTextBuf.get_cur_iter()
