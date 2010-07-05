@@ -43,3 +43,4 @@ class PhysicalCardView(CardListView):
         self.append_column(oColumn)
 
         self.set_expander_column(oColumn)
+

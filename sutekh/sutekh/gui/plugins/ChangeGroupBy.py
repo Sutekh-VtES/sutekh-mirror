@@ -50,6 +50,8 @@ class GroupCardList(SutekhPlugin):
         GROUP_BY: 'option(%s, default="Card Type")' % OPTION_STR,
     }
 
+    dCardListConfig = dPerPaneConfig
+
     # pylint: disable-msg=W0142
     # ** magic OK here
     def __init__(self, *aArgs, **kwargs):

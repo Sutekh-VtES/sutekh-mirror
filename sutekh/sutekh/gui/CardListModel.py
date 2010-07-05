@@ -14,6 +14,15 @@ from sutekh.core.SutekhObjects import IAbstractCard, PhysicalCard, \
         IPhysicalCard, canonical_to_csv
 from sutekh.gui.ConfigFile import ConfigFileListener
 
+EXTRA_LEVEL_OPTION = "extra levels"
+EXTRA_LEVEL_LOOKUP = {
+    "none": False,
+    "expansions": True,
+}
+
+USE_ICONS = "show icons for grouping"
+
+
 class CardListModelListener(object):
     """Listens to updates, i.e. .load(...), .alter_card_count(...),
        .add_new_card(..) calls, to CardListModels."""
@@ -81,6 +90,7 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
         self.oEmptyIter = None
         self.oIconManager = None
         self.bUseIcons = True
+        self._oController = None
 
     # pylint: disable-msg=W0212, C0103
     # W0212 - we explicitly allow access via these properties
@@ -95,6 +105,13 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
             fset=lambda self, x: setattr(self, '_bApplyFilter', x))
     selectfilter = property(fget=lambda self: self._oSelectFilter,
             fset=lambda self, x: setattr(self, '_oSelectFilter', x))
+
+    frame_id = property(fget=lambda self: "WW Card List Pane",
+            doc="Frame ID of the card list (for selecting profiles)")
+
+    cardset_id = property(fget=lambda self: "WW Card List Pane",
+            doc="Cardset ID of card list (for selecting profiles)")
+
     # pylint: enable-msg=W0212, C0103
 
     def add_listener(self, oListener):
@@ -137,6 +154,11 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
         self.set_sort_func(2, self._sort_col, 2)
         # Sort the model on the card name by default
         self.set_sort_column_id(0, gtk.SORT_ASCENDING)
+
+    def set_controller(self, oController):
+        """Set the controller"""
+        self._oController = oController
+        self.update_options(True)
 
     def get_expansion_info(self, _oCard, dExpanInfo):
         """Get information about expansions"""
@@ -500,3 +522,44 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
         else:
             sText = 'No Cards found'
         return sText
+
+    def _change_level_mode(self, bLevel):
+        """Set which extra information is shown."""
+        if self.bExpansions != bLevel:
+            self.bExpansions = bLevel
+            return True
+        return False
+
+    def _change_icon_mode(self, bMode):
+        """Set which extra information is shown."""
+        if self.bUseIcons != bMode:
+            self.bUseIcons = bMode
+            return True
+        return False
+
+    def update_options(self, bSkipLoad=False):
+        """Respond to config file changes"""
+        sProfile = self._oConfig.get_current_cardlist_profile()
+        sExpMode = self._oConfig.get_cardlist_profile_option(sProfile,
+                EXTRA_LEVEL_OPTION).lower()
+        bExpMode = EXTRA_LEVEL_LOOKUP.get(sExpMode, True)
+
+        bUseIcons = self._oConfig.get_cardlist_profile_option(sProfile,
+                USE_ICONS)
+
+        bReloadELM = self._change_level_mode(bExpMode)
+        bReloadIcons = self._change_icon_mode(bUseIcons)
+        if not bSkipLoad and (bReloadELM or bReloadIcons):
+            self._oController.view.reload_keep_expanded()
+
+
+    # Listen for changes to the cardlist config options
+
+    def cardlist_profile_changed(self, sProfile, sKey):
+        """One of the per-deck configuration items changed."""
+        self.update_options()
+
+    def cardlist_frame_profile_changed(self, sNewProfile):
+        """The profile associated with a frame changed."""
+        self.update_options()
+

@@ -1,4 +1,4 @@
-# PluginManager.py
+# pLUGINmanager.py
 # -*- coding: utf8 -*-
 # vim:fileencoding=utf8 ai ts=4 sts=4 et sw=4
 # Copyright 2006 Simon Cross <hodgestar@gmail.com>
@@ -117,6 +117,17 @@ class PluginConfigFileListener(ConfigFileListener):
         if self._oPlugin.model.cardset_id == sCardset:
             self._oPlugin.perpane_config_updated()
 
+    def cardlist_profile_changed(self, sProfile, sKey):
+        """And option for a WW cardlist profile changed"""
+        if sKey in self._oPlugin.dCardListConfig:
+            if sProfile == self._oPlugin.config.get_current_cardlist_profile():
+                self._oPlugin.perpane_config_updated()
+
+    def cardlist_frame_profile_changes(self, sNewProfile):
+        """The profile for the WW cardlist changed"""
+        if self._oPlugin.model.frame_id == "WW Card List Pane":
+            self._oPlugin.perpane_config_updated()
+
 
 class SutekhPlugin(object):
     """Base class for card list plugins."""
@@ -126,6 +137,8 @@ class SutekhPlugin(object):
     # ConfigObj validation specs as dictionaries
     dGlobalConfig = {}
     dPerPaneConfig = {}
+    dCardListConfig = {}
+    dCardSetListConfig = {}
 
     def __init__(self, oCardListView, oCardListModel, cModelType=None):
         """oCardListModel - card list model for this plugin to operate on."""
@@ -160,6 +173,8 @@ class SutekhPlugin(object):
         """Register this config class with the given config."""
         oConfig.add_plugin_specs(cls.__name__, cls.dGlobalConfig)
         oConfig.add_deck_specs(cls.__name__, cls.dPerPaneConfig)
+        oConfig.add_cardlist_specs(cls.__name__, cls.dCardListConfig)
+        oConfig.add_cardset_list_specs(cls.__name__, cls.dCardSetListConfig)
 
     def add_to_menu(self, dAllMenus, oCatchAllMenu):
         """Grunt work of adding menu item to the frame"""
@@ -286,6 +301,9 @@ class SutekhPlugin(object):
         # TODO: clean up detection of relevant models
         if oModel is None or not hasattr(oModel, "frame_id"):
             return None
+        if oModel.frame_id == "WW Card List Pane":
+            sProfile = self.config.get_current_cardlist_profile()
+            return self.config.get_cardlist_profile_option(sProfile, sKey)
         return self.config.get_deck_option(oModel.frame_id, oModel.cardset_id,
             sKey)
 

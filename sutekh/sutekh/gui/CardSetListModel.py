@@ -172,7 +172,6 @@ class CardSetCardListModel(CardListModel):
         self.iParentCountMode = PARENT_COUNT
 
         listen_changed(self.card_changed, PhysicalCardSet)
-        self._oController = None
 
     # pylint: disable-msg=W0212
     # We allow access via these properties
@@ -186,11 +185,6 @@ class CardSetCardListModel(CardListModel):
             doc="Cardset ID of associated card set (for selecting profiles)")
 
     #pylint: enable-msg=W0212
-
-    def set_controller(self, oController):
-        """Set the controller"""
-        self._oController = oController
-        self.update_deck_options(True)
 
     def cleanup(self):
         # FIXME: We should make sure that all the references go
@@ -1966,7 +1960,7 @@ class CardSetCardListModel(CardListModel):
     # Per-deck option changes
     #
 
-    def _change_mode(self, iLevel):
+    def _change_level_mode(self, iLevel):
         """Set which extra information is shown."""
         if self.iExtraLevelsMode != iLevel:
             self.iExtraLevelsMode = iLevel
@@ -1980,14 +1974,6 @@ class CardSetCardListModel(CardListModel):
             return True
         return False
 
-    def _change_icon_mode(self, bMode):
-        """Set which extra information is shown."""
-        if self.bUseIcons != bMode:
-            self.bUseIcons = bMode
-            return True
-        return False
-
-
     def _change_parent_count_mode(self, iLevel):
         """Toggle the visibility of the parent col"""
         if iLevel == IGNORE_PARENT:
@@ -1999,7 +1985,7 @@ class CardSetCardListModel(CardListModel):
         self.iParentCountMode = iLevel
         return True
 
-    def update_deck_options(self, bSkipLoad=False):
+    def update_options(self, bSkipLoad=False):
         """Update all the per-deck options.
 
            bSkipLoad is set when we first call this function during the model
@@ -2023,7 +2009,7 @@ class CardSetCardListModel(CardListModel):
         bUseIcons = self._oConfig.get_deck_option(self.frame_id,
                 self.cardset_id, USE_ICONS)
 
-        bReloadELM = self._change_mode(iExtraLevelMode)
+        bReloadELM = self._change_level_mode(iExtraLevelMode)
         bReloadSCM = self._change_count_mode(iShowCardMode)
         bReloadPCM = self._change_parent_count_mode(iParentCountOpt)
         bReloadIcons = self._change_icon_mode(bUseIcons)
@@ -2037,17 +2023,16 @@ class CardSetCardListModel(CardListModel):
 
     def profile_changed(self, sProfile, sKey):
         """One of the per-deck configuration items changed."""
-        self.update_deck_options()
+        self.update_options()
 
     def frame_profile_changed(self, sFrame, sNewProfile):
         """The profile associated with a frame changed."""
         if sFrame != self.frame_id:
             return
-        self.update_deck_options()
+        self.update_options()
 
     def cardset_profile_changed(self, sCardset, sNewProfile):
         """The profile associated with a cardset changed."""
         if sCardset != self.cardset_id:
             return
-        self.update_deck_options()
-
+        self.update_options()

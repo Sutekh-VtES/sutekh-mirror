@@ -22,6 +22,7 @@ class PhysicalCardController(object):
                 oMainWindow.config_file)
         self.__oModel = self.__oView.get_model()
         self._sFilterType = 'PhysicalCard'
+        self.model.set_controller(self)
 
     # pylint: disable-msg=W0212
     # We provide read access to these items via these properties
