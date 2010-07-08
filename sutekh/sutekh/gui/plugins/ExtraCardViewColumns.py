@@ -46,6 +46,8 @@ class ExtraCardViewColumns(SutekhPlugin):
         EXTRA_COLUMNS: 'option_list(%s, default=list())' % OPTION_STR,
     }
 
+    dCardListConfig = dPerPaneConfig
+
     _dWidths = {
             'Card Type' : 100,
             'Clans and Creeds' : 100,
@@ -94,6 +96,7 @@ class ExtraCardViewColumns(SutekhPlugin):
 
         self._iShowMode = SHOW_ICONS_AND_TEXT
         self._oFirstBut = None
+        self.perpane_config_updated()
     # pylint: enable-msg=W0142
 
     # Rendering Functions
@@ -470,5 +473,17 @@ class ExtraCardViewColumns(SutekhPlugin):
         """Get the actual TreeColumn in the view"""
         return [oCol for oCol in self.view.get_columns() if
                 oCol.get_property("title") in self._dCols]
+
+    # Config Update
+
+    def perpane_config_updated(self, _bDoReload=True):
+        """Called by base class on config updates."""
+        aCols = None
+        if self.check_versions() and self.check_model_type():
+            aCols = self.get_perpane_item(self.EXTRA_COLUMNS)
+        if aCols is not None:
+            # Need to accept empty lists so we remove columns
+            self.set_cols_in_use(aCols)
+
 
 plugin = ExtraCardViewColumns
