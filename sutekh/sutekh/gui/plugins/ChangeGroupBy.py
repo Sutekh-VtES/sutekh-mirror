@@ -104,13 +104,13 @@ class GroupCardList(SutekhPlugin):
 
     # Config Update
 
-    def perpane_config_updated(self, bReload=True):
+    def perpane_config_updated(self, bDoReload=True):
         """Called by base class on config updates."""
         # bReload flag so we can call this during __init__
         sGrping = self.get_perpane_item(self.GROUP_BY)
         cGrping = self.GROUPINGS.get(sGrping)
         if cGrping is not None:
-            self.set_grouping(cGrping, bReload)
+            self.set_grouping(cGrping, bDoReload)
 
     # Actions
 

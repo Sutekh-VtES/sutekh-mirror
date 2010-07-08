@@ -10,6 +10,8 @@
 
 import gtk
 from sutekh.gui.FilteredViewMenu import FilteredViewMenu
+from sutekh.gui.CardSetManagementProfileEditor import \
+        CardSetManagementProfileEditor
 
 class CardSetManagementMenu(FilteredViewMenu):
     """Card Set List Management menu.
@@ -44,3 +46,73 @@ class CardSetManagementMenu(FilteredViewMenu):
         self.add_common_actions(oMenu)
 
     # pylint: enable-msg=W0201
+
+    def create_edit_menu(self):
+        """Create the edit menu and populate it"""
+        oMenu = self.create_submenu(self, "_Edit")
+
+        self.create_menu_item('Edit _Profiles', oMenu, self._edit_profiles)
+
+        sProfile = self._oMainWindow.config_file.get_cardset_list_profile()
+        self._oCardSetlistProfileMenu = self._create_profile_menu(oMenu,
+            "CardSet list Profile", self._select_cardset_list_profile, sProfile)
+
+        self.add_edit_menu_actions(oMenu)
+
+    def _create_profile_menu(self, oParentMenu, sTitle, fCallback, sProfile):
+        """Create a radio group sub-menu for selecting a profile."""
+        oMenu = self.create_submenu(oParentMenu, sTitle)
+        oConfig = self._oMainWindow.config_file
+
+        oGroup = gtk.RadioMenuItem(None,
+            oConfig.get_cardset_list_profile_option(None, "name"))
+        oGroup.connect("toggled", fCallback, None)
+        oMenu.append(oGroup)
+
+        self._update_profile_group(oMenu, fCallback, sProfile)
+
+        return oMenu
+
+    def _update_profile_group(self, oMenu, fCallback, sProfile):
+        """Update the profile selection menu"""
+        oConfig = self._oMainWindow.config_file
+        oGroup = oMenu.get_children()[0]
+
+        aProfiles = [(sKey, oConfig.get_cardset_list_profile_option(sKey, "name"))
+            for sKey in oConfig.cardset_list_profiles()]
+        aProfiles.sort(key=lambda tProfile: tProfile[1])
+
+        if sProfile is None:
+            oGroup.set_active(True)
+
+        # clear out existing radio items
+        for oRadio in oGroup.get_group():
+            if oRadio is not oGroup:
+                oRadio.set_group(None)
+                oMenu.remove(oRadio)
+
+        for sKey, sName in aProfiles:
+            oRadio = gtk.RadioMenuItem(oGroup, sName)
+            oRadio.connect("toggled", fCallback, sKey)
+            if sKey == sProfile:
+                oRadio.set_active(True)
+            oMenu.append(oRadio)
+            oRadio.show()
+
+
+    def _edit_profiles(self, _oWidget):
+        """Open an options profiles editing dialog."""
+        oDlg = CardSetManagementProfileEditor(self._oMainWindow,
+            self._oMainWindow.config_file)
+        oDlg.run()
+
+        sProfile = self._oMainWindow.config_file.get_cardset_list_profile()
+        self._update_profile_group(self._oCardSetlistProfileMenu,
+            self._select_cardset_list_profile, sProfile)
+
+    def _select_cardset_list_profile(self, oRadio, sProfileKey):
+        """Callback to change the profile of the current card set."""
+        if oRadio.get_active():
+            oConfig = self._oMainWindow.config_file
+            oConfig.set_cardset_list_profile(sProfileKey)
+

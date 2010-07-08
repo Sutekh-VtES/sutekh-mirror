@@ -1,4 +1,4 @@
-# pLUGINmanager.py
+# PluginManager.py
 # -*- coding: utf8 -*-
 # vim:fileencoding=utf8 ai ts=4 sts=4 et sw=4
 # Copyright 2006 Simon Cross <hodgestar@gmail.com>
@@ -123,11 +123,21 @@ class PluginConfigFileListener(ConfigFileListener):
             if sProfile == self._oPlugin.config.get_current_cardlist_profile():
                 self._oPlugin.perpane_config_updated()
 
-    def cardlist_frame_profile_changes(self, sNewProfile):
+    def cardlist_frame_profile_changed(self, sNewProfile):
         """The profile for the WW cardlist changed"""
         if self._oPlugin.model.frame_id == "WW Card List Pane":
             self._oPlugin.perpane_config_updated()
 
+    def cardset_list_profile_changed(self, sProfile, sKey):
+        """An option for the cardset list profile changed"""
+        if sKey in self._oPlugin.dCardSetListConfig:
+            if sProfile == self._oPlugin.config.get_current_cardset_list_profile():
+                self._oPlugin.perpane_config_updated()
+
+    def cardset_list_frame_profile_changed(self, sNewProfile):
+        """The profile for the WW cardlist changed"""
+        if self._oPlugin.model.frame_id == "Card Set List Pane":
+            self._oPlugin.perpane_config_updated()
 
 class SutekhPlugin(object):
     """Base class for card list plugins."""
@@ -304,10 +314,13 @@ class SutekhPlugin(object):
         if oModel.frame_id == "WW Card List Pane":
             sProfile = self.config.get_current_cardlist_profile()
             return self.config.get_cardlist_profile_option(sProfile, sKey)
+        elif oModel.frame_id == "Card Set List Pane":
+            sProfile = self.config.get_current_cardset_list_profile()
+            return self.config.get_cardset_list_profile_option(sProfile, sKey)
         return self.config.get_deck_option(oModel.frame_id, oModel.cardset_id,
             sKey)
 
-    def perpane_config_updated(self):
+    def perpane_config_updated(self, bDoReload=True):
         """Plugins should override this to be informed of config changes."""
         pass
 

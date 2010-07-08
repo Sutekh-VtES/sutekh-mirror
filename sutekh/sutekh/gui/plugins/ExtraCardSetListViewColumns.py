@@ -58,6 +58,13 @@ class ExtraCardSetListViewColumns(SutekhPlugin):
                 '_get_data_description'),
             }
 
+    OPTION_STR = ", ".join('"%s"' % sKey for sKey in COLUMNS.keys())
+    EXTRA_COLUMNS = "extra columns"
+
+    dCardSetListConfig = {
+        EXTRA_COLUMNS: 'option_list(%s, default=list())' % OPTION_STR,
+    }
+
     # Placeholder if we decide to add columns with icons later
     #_dModes = {
     #        'Show Icons and Names' : SHOW_ICONS_AND_TEXT,
@@ -89,6 +96,7 @@ class ExtraCardSetListViewColumns(SutekhPlugin):
         listen_row_destroy(self.card_set_added_deleted, PhysicalCardSet)
         listen_row_created(self.card_set_added_deleted, PhysicalCardSet)
         listen_changed(self.card_changed, PhysicalCardSet)
+        self.perpane_config_updated()
     # pylint: enable-msg=W0142
 
     # Rendering Functions
@@ -433,5 +441,17 @@ class ExtraCardSetListViewColumns(SutekhPlugin):
         """Get the actual TreeColumn in the view"""
         return [oCol for oCol in self.view.get_columns() if
                 oCol.get_property("title") in self._dCols]
+
+    # Config Update
+
+    def perpane_config_updated(self, _bDoReload=True):
+        """Called by base class on config updates."""
+        aCols = None
+        if self.check_versions() and self.check_model_type():
+            aCols = self.get_perpane_item(self.EXTRA_COLUMNS)
+        if aCols is not None:
+            # Need to accept empty lists so we remove columns
+            self.set_cols_in_use(aCols)
+
 
 plugin = ExtraCardSetListViewColumns

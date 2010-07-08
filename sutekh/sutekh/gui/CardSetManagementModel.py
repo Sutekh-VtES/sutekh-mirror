@@ -39,6 +39,13 @@ class CardSetManagementModel(gtk.TreeStore):
     selectfilter = property(fget=lambda self: self._oSelectFilter,
             fset=lambda self, x: setattr(self, '_oSelectFilter', x))
 
+    frame_id = property(fget=lambda self: "Card Set List Pane",
+            doc="Frame ID of the card set list (for selecting profiles)")
+
+    cardset_id = property(fget=lambda self: "Card Set List Pane",
+            doc="Cardset ID of card set list (for selecting profiles)")
+
+
     # pylint: enable-msg=W0212, C0103
 
     # pylint: disable-msg=R0201

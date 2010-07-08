@@ -63,7 +63,7 @@ class ConfigFileListener(object):
         """One of the cardset list configuration items changed."""
         pass
 
-    def cardset_list_frame_profile_changed(self, sFrame, sNewProfile):
+    def cardset_list_frame_profile_changed(self, sNewProfile):
         """The profile associated with the cardset list frame changed."""
         pass
 
@@ -495,6 +495,20 @@ class ConfigFile(object):
         """Return the current profile of the cardset."""
         return self.__oConfig['cardset list'].get('current profile')
 
+    def set_cardset_list_profile(self, sProfile):
+        """Set the profile associated with the WW cardlist."""
+        sCurProfile = self.__oConfig['cardset list'].get('current profile')
+        if sCurProfile == sProfile:
+            return
+        if sProfile:
+            self.__oConfig['cardset list']['current profile'] = sProfile
+        else:
+            del self.__oConfig['cardset list']['current profile']
+
+        for oListener in self.listeners():
+            oListener.cardset_list_frame_profile_changed(sProfile)
+
+
     def frame_profiles(self):
         """Return a dictionary of frame id -> profile mappings."""
         return dict(self.__oConfig['per_deck']['frame_profiles'])
@@ -543,6 +557,10 @@ class ConfigFile(object):
         """Get the current WW cardlist profile"""
         return self.__oConfig['cardlist'].get('current profile')
 
+    def get_current_cardset_list_profile(self):
+        """Get the current cardset list profile"""
+        return self.__oConfig['cardset list'].get('current profile')
+
     def get_cardlist_profile_option(self, sProfile, sKey):
         """Get the value of a per-deck option for a profile."""
         try:
@@ -584,6 +602,47 @@ class ConfigFile(object):
             for oListener in self.listeners():
                 oListener.cardlist_profile_changed(sProfile, sKey)
 
+
+    def get_cardset_list_profile_option(self, sProfile, sKey):
+        """Get the value of a per-deck option for a profile."""
+        try:
+            if sProfile is None or sProfile.lower() == "default":
+                return self.__oConfig['cardset list']['defaults'][sKey]
+            else:
+                return self.__oConfig['cardset list']['profiles'][sProfile][sKey]
+        except KeyError:
+            return None
+
+    def set_cardset_list_profile_option(self, sProfile, sKey, sValue):
+        """Set the value of a per-deck option for a profile.
+
+           If sValue is None, remove the key. New profiles are
+           created as needed.
+           """
+        if sProfile is None:
+            dProfile = self.__oConfig['cardset list']['defaults']
+        elif sProfile in self.__oConfig['cardset list']['profiles']:
+            dProfile = self.__oConfig['cardset list']['profiles'][sProfile]
+        else:
+            # configobj replaces the dict with a config object, so
+            # trigger the creation of the config object, then set
+            # dProfile to it
+            self.__oConfig['cardset list']['profiles'][sProfile] = {}
+            dProfile = self.__oConfig['cardset list']['profiles'][sProfile]
+
+        bChanged = False
+        if sValue is None:
+            if sKey in dProfile:
+                bChanged = True
+                del dProfile[sKey]
+        else:
+            if sKey not in dProfile or dProfile[sKey] != sValue:
+                bChanged = True
+                dProfile[sKey] = sValue
+
+        if bChanged:
+            for oListener in self.listeners():
+                oListener.cardset_list_profile_changed(sProfile, sKey)
 
     #
     # Application Level Config Settings
