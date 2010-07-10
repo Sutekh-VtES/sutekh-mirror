@@ -1,3 +1,14 @@
+10 Jul 2010
+ * Add Preference to show or hide illegal cards
+
+08 Jul 2010
+ * Add support for profiles for the card set list view
+ * Hook up extra columns to the profiles
+
+05 Jul 2010
+ * Add profile support for the WW cardlist
+ * Tweak starter deck display. Sort starters by expansion, then name
+
 29 Jun 2010
  * Add GroupPairGrouping
 
