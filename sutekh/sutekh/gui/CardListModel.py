@@ -8,7 +8,9 @@
 """The gtk.TreeModel for the card lists."""
 
 import gtk, gobject
-from sutekh.core.Filters import FilterAndBox, NullFilter, PhysicalCardFilter
+from sqlobject import SQLObjectNotFound
+from sutekh.core.Filters import FilterAndBox, NullFilter, PhysicalCardFilter, \
+        KeywordFilter, CardTextFilter, FilterNot
 from sutekh.core.Groupings import CardTypeGrouping
 from sutekh.core.SutekhObjects import IAbstractCard, PhysicalCard, \
         IPhysicalCard, canonical_to_csv
@@ -21,7 +23,7 @@ EXTRA_LEVEL_LOOKUP = {
 }
 
 USE_ICONS = "show icons for grouping"
-
+HIDE_ILLEGAL = "hide cards not legal for tournament play"
 
 class CardListModelListener(object):
     """Listens to updates, i.e. .load(...), .alter_card_count(...),
@@ -78,6 +80,14 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
         # base filter defines the card list
         self._oBaseFilter = PhysicalCardFilter()
         self._cCardClass = PhysicalCard # card class to use
+        # Filter to exclude illegal cards. Needs to be defined after
+        # we esablish database connections, et al.
+        # NB - Remove exception after Sutekh 0.8 is out
+        try:
+            self.oLegalFilter = FilterNot(KeywordFilter('not for legal play'))
+        except SQLObjectNotFound:
+            self.oLegalFilter = FilterNot(CardTextFilter(
+                    'Added to the V:EKN banned list'))
         self._bApplyFilter = False # whether to apply the select filter
         # additional filters for selecting from the list
         self._oSelectFilter = None
@@ -90,6 +100,7 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
         self.oEmptyIter = None
         self.oIconManager = None
         self.bUseIcons = True
+        self.bHideIllegal = True
         self._oController = None
 
     # pylint: disable-msg=W0212, C0103
@@ -319,8 +330,12 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
            The filter is combined with self.basefilter. None may be used to
            retrieve the entire card list (with only the base filter
            restriciting which cards appear).
+
+           This is also responsible for handling the not legal filter case.
            """
         oFilter = self.combine_filter_with_base(oFilter)
+        if self.bHideIllegal:
+            oFilter = FilterAndBox([oFilter, self.oLegalFilter])
 
         return oFilter.select(self.cardclass).distinct()
 
@@ -531,9 +546,16 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
         return False
 
     def _change_icon_mode(self, bMode):
-        """Set which extra information is shown."""
+        """Set whether icons should be shown."""
         if self.bUseIcons != bMode:
             self.bUseIcons = bMode
+            return True
+        return False
+
+    def _change_illegal_mode(self, bMode):
+        """Set whether illegal cards should be shown."""
+        if self.bHideIllegal != bMode:
+            self.bHideIllegal = bMode
             return True
         return False
 
@@ -547,9 +569,13 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
         bUseIcons = self._oConfig.get_cardlist_profile_option(sProfile,
                 USE_ICONS)
 
+        bHideIllegal = self._oConfig.get_cardlist_profile_option(sProfile,
+                HIDE_ILLEGAL)
+
         bReloadELM = self._change_level_mode(bExpMode)
         bReloadIcons = self._change_icon_mode(bUseIcons)
-        if not bSkipLoad and (bReloadELM or bReloadIcons):
+        bReloadIllegal = self._change_illegal_mode(bHideIllegal)
+        if not bSkipLoad and (bReloadELM or bReloadIcons or bReloadIllegal):
             self._oController.view.reload_keep_expanded()
 
 

@@ -17,7 +17,7 @@ from sutekh.core.Filters import FilterAndBox, NullFilter, PhysicalCardFilter, \
 from sutekh.core.SutekhObjects import PhysicalCard, IAbstractCard, \
         MapPhysicalCardToPhysicalCardSet, IPhysicalCard, IPhysicalCardSet, \
         PhysicalCardSet, canonical_to_csv
-from sutekh.gui.CardListModel import CardListModel
+from sutekh.gui.CardListModel import CardListModel, USE_ICONS, HIDE_ILLEGAL
 from sutekh.core.DBSignals import listen_changed, disconnect_changed
 import gtk
 
@@ -60,8 +60,6 @@ PARENT_COUNT_LOOKUP = {
     "parent minus this set": MINUS_THIS_SET,
     "parent minus sets in use": MINUS_SETS_IN_USE,
 }
-
-USE_ICONS = "show icons for grouping"
 
 
 class CardSetModelRow(object):
@@ -583,11 +581,22 @@ class CardSetCardListModel(CardListModel):
                         PhysicalCardSet.selectBy(parentID=self._oCardSet.id,
                             inuse=True)]
                 if aChildren:
-                    self._dCache ['all children filter'] = \
-                            MultiPhysicalCardSetMapFilter(aChildren)
-                    for sName in aChildren:
-                        self._dCache['child filters'][sName] = \
-                                PhysicalCardSetFilter(sName)
+                    if self.bHideIllegal:
+                        self._dCache ['all children filter'] = \
+                                FilterAndBox([
+                                    MultiPhysicalCardSetMapFilter(aChildren),
+                                    self.oLegalFilter])
+                        for sName in aChildren:
+                            self._dCache['child filters'][sName] = \
+                                    FilterAndBox([
+                                        PhysicalCardSetFilter(sName),
+                                        self.oLegalFilter])
+                    else:
+                        self._dCache ['all children filter'] = \
+                                MultiPhysicalCardSetMapFilter(aChildren)
+                        for sName in aChildren:
+                            self._dCache['child filters'][sName] = \
+                                    PhysicalCardSetFilter(sName)
         dChildCardCache = {}
         if self.iExtraLevelsMode in [SHOW_CARD_SETS, EXP_AND_CARD_SETS,
                 CARD_SETS_AND_EXP] and self._dCache['child filters']:
@@ -633,8 +642,13 @@ class CardSetCardListModel(CardListModel):
                 self.iShowCardMode != PARENT_CARDS):
             # It's tempting to use get_card_iterator here, but that
             # obviously doesn't work because of _oBaseFilter
-            self._dCache['parent filter'] = PhysicalCardSetFilter(
-                    self._oCardSet.parent.name)
+            if self.bHideIllegal:
+                self._dCache['parent filter'] = FilterAndBox([
+                    PhysicalCardSetFilter(self._oCardSet.parent.name),
+                    self.oLegalFilter])
+            else:
+                self._dCache['parent filter'] = PhysicalCardSetFilter(
+                        self._oCardSet.parent.name)
             aFilters = [self._dCache['parent filter'], oCurFilter]
             if self.iShowCardMode == THIS_SET_ONLY and \
                     oCardIter.count() < 200:
@@ -662,7 +676,12 @@ class CardSetCardListModel(CardListModel):
             if self._dCache['all cards']:
                 aExtraCards = self._dCache['all cards']
             else:
-                oFullFilter = FilterAndBox([PhysicalCardFilter(), oCurFilter])
+                if self.bHideIllegal:
+                    oFullFilter = FilterAndBox([PhysicalCardFilter(),
+                        oCurFilter, self.oLegalFilter])
+                else:
+                    oFullFilter = FilterAndBox([PhysicalCardFilter(),
+                        oCurFilter])
                 aExtraCards = list(oFullFilter.select(PhysicalCard).distinct())
                 self._dCache['all cards'] = aExtraCards
         elif self.iShowCardMode == PARENT_CARDS and self._oCardSet.parent:
@@ -2009,12 +2028,16 @@ class CardSetCardListModel(CardListModel):
         bUseIcons = self._oConfig.get_deck_option(self.frame_id,
                 self.cardset_id, USE_ICONS)
 
+        bHideIllegal = self._oConfig.get_deck_option(self.frame_id,
+                self.cardset_id, HIDE_ILLEGAL)
+
         bReloadELM = self._change_level_mode(iExtraLevelMode)
         bReloadSCM = self._change_count_mode(iShowCardMode)
         bReloadPCM = self._change_parent_count_mode(iParentCountOpt)
         bReloadIcons = self._change_icon_mode(bUseIcons)
+        bReloadIllegal = self._change_illegal_mode(bHideIllegal)
         if not bSkipLoad and (bReloadELM or bReloadSCM or bReloadPCM
-                or bReloadIcons):
+                or bReloadIcons or bReloadIllegal):
             self._oController.view.reload_keep_expanded()
 
     #

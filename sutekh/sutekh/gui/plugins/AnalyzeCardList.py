@@ -12,30 +12,21 @@
 """Display interesting statistics and properties of the card set."""
 
 import gtk
-from sqlobject import SQLObjectNotFound
 from sutekh.core.SutekhObjects import PhysicalCardSet, \
         IAbstractCard, IPhysicalCard, IExpansion, CRYPT_TYPES
-from sutekh.core.Filters import CardTypeFilter, KeywordFilter, CardTextFilter
+from sutekh.core.Filters import CardTypeFilter, FilterNot
 from sutekh.core.Abbreviations import Titles
 from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog
 from sutekh.gui.MultiSelectComboBox import MultiSelectComboBox
 
-
 THIRD_ED = IExpansion('Third Edition')
 JYHAD = IExpansion('Jyhad')
 ODD_BACKS = [None, THIRD_ED, JYHAD]
 
-# NB - Remove this after Sutekh 0.8 is out
-try:
-    NOT_LEGAL_FILTER = KeywordFilter('not for legal play')
-except SQLObjectNotFound:
-    NOT_LEGAL_FILTER = CardTextFilter('Added to the V:EKN banned list')
-
 UNSLEEVED = "<span foreground='green'>%s may be played unsleeved</span>\n"
 SLEEVED = "<span foreground='orange'>%s should be sleeved</span>\n"
 SPECIAL = ['Not Tournament Legal Cards', 'Multirole', 'Mixed Card Backs']
-
 
 # utility functions
 def _percentage(iNum, iTot, sDesc):
@@ -414,7 +405,7 @@ class AnalyzeCardList(SutekhPlugin):
                 dCardLists[sCardType] = []
                 self.dTypeNumbers[sCardType] = 0
             elif sCardType == 'Not Tournament Legal Cards':
-                oFilter = NOT_LEGAL_FILTER
+                oFilter = FilterNot(self.model.oLegalFilter)
                 dCardLists[sCardType] = _get_abstract_cards(
                         self.model.get_card_iterator(oFilter))
                 self.dTypeNumbers[sCardType] = len(dCardLists[sCardType])
