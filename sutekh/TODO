@@ -62,6 +62,8 @@ Code Cleanup
  * More tests
  * MultiPaneWindow mixes code for handling the widget hopping and application
    code - these should be seperated.
+ * Replace the profileration of listeners with a generic event bus (using
+   gobject signals?)
 
 Gui (Functionality):
  * Compare CardSet Plugin (basic version done. Could be improved)
