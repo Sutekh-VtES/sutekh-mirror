@@ -9,8 +9,7 @@
 """Edit the profile for the card set list"""
 
 
-from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error, \
-                                    do_complaint_buttons
+from sutekh.gui.SutekhDialog import SutekhDialog
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 from sutekh.gui.PreferenceTable import PreferenceTable
 import gtk
@@ -26,7 +25,8 @@ class CardSetManagementProfileEditor(SutekhDialog):
     RESPONSE_CANCEL = 2
 
     def __init__(self, oParent, oConfig):
-        super(CardSetManagementProfileEditor, self).__init__("Edit Cardset Profiles",
+        super(CardSetManagementProfileEditor, self).__init__(
+                "Edit Cardset Profiles",
                 oParent, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT)
 
         self.__oParent = oParent
@@ -82,7 +82,8 @@ class CardSetManagementProfileEditor(SutekhDialog):
         else:
             # Evil recursion
             self.destroy()
-            oDlg = CardSetManagementProfileEditor(self.__oParent, self.__oConfig)
+            oDlg = CardSetManagementProfileEditor(self.__oParent,
+                    self.__oConfig)
             oDlg.run()
 
     def _all_profile_keys(self):
@@ -105,7 +106,8 @@ class CardSetManagementProfileEditor(SutekhDialog):
                 dValues[sKey] = self.__oConfig.get_cardset_list_profile_option(
                     sProfile, sKey)
         else:
-            dValues = dict.fromkeys(self.__oConfig.cardset_list_options(), None)
+            dValues = dict.fromkeys(self.__oConfig.cardset_list_options(),
+                    None)
             dValues["name"] = "New Profile (%s)" % sProfile
         return dValues
 
@@ -164,6 +166,7 @@ class CardSetManagementProfileEditor(SutekhDialog):
             return
 
         def set_func(oModel, _oPath, oIter):
+            """Check function used in foreach"""
             if oModel.get_value(oIter, 0) == self.__sActiveProfile:
                 self.__oSelectorCombo.set_active_iter(oIter)
                 return True

@@ -131,7 +131,8 @@ class PluginConfigFileListener(ConfigFileListener):
     def cardset_list_profile_changed(self, sProfile, sKey):
         """An option for the cardset list profile changed"""
         if sKey in self._oPlugin.dCardSetListConfig:
-            if sProfile == self._oPlugin.config.get_current_cardset_list_profile():
+            if sProfile == \
+                    self._oPlugin.config.get_current_cardset_list_profile():
                 self._oPlugin.perpane_config_updated()
 
     def cardset_list_frame_profile_changed(self, sNewProfile):

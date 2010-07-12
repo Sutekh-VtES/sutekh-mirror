@@ -228,7 +228,7 @@ class ConfigFile(object):
         # TODO: return old pane id so it can be restored so that
         #       pane id -> profile mappings still make sense
         # TODO: Update pane id used by profile to be identical to
-        #       open frame pane keys 
+        #       open frame pane keys
         for sKey, dPane in self.__oConfig['open_frames'].items():
             if not sKey.startswith('pane'):
                 # invalid key
@@ -609,7 +609,8 @@ class ConfigFile(object):
             if sProfile is None or sProfile.lower() == "default":
                 return self.__oConfig['cardset list']['defaults'][sKey]
             else:
-                return self.__oConfig['cardset list']['profiles'][sProfile][sKey]
+                return self.__oConfig['cardset list']['profiles'][
+                        sProfile][sKey]
         except KeyError:
             return None
 

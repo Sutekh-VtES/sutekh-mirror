@@ -187,6 +187,8 @@ class GroupGrouping(IterGrouping):
 class GroupPairGrouping(IterGrouping):
     """Group by crypt adjacent pairs of Group"""
     def __init__(self, oIter, fGetCard=DEF_GET_CARD):
+        # pylint: disable-msg=E1101
+        # SQLObject methods not detected by pylint
         iMax = AbstractCard.select().max(AbstractCard.q.group)
 
         def get_values(oCardSrc):
