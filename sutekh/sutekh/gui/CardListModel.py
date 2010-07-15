@@ -10,7 +10,7 @@
 import gtk, gobject
 from sqlobject import SQLObjectNotFound
 from sutekh.core.Filters import FilterAndBox, NullFilter, PhysicalCardFilter, \
-        KeywordFilter, CardTextFilter, FilterNot
+        MultiKeywordFilter, CardTextFilter, FilterNot
 from sutekh.core.Groupings import CardTypeGrouping
 from sutekh.core.SutekhObjects import IAbstractCard, PhysicalCard, \
         IPhysicalCard, canonical_to_csv
@@ -84,7 +84,11 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
         # we esablish database connections, et al.
         # NB - Remove exception after Sutekh 0.8 is out
         try:
-            self.oLegalFilter = FilterNot(KeywordFilter('not for legal play'))
+            # We use MultiKeywordFilter to work around a performance
+            # oddity of sqlite, where IN(a, b) outperforms a == b
+            # for large sets
+            self.oLegalFilter = FilterNot(MultiKeywordFilter(
+                ['not for legal play']))
         except SQLObjectNotFound:
             self.oLegalFilter = FilterNot(CardTextFilter(
                     'Added to the V:EKN banned list'))
