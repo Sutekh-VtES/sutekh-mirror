@@ -79,6 +79,8 @@ EXPECTED = """"ELDB - Inventory"
 "Rebekka, Chantry Elder of Munich",0,0,"","Crypt"
 "Protracted Investment",0,0,"","Library"
 "Bravo",0,0,"","Library"
+"Dramatic Upheaval",0,0,"","Library"
+"Motivated by Gehenna",0,0,"","Library"
 """
 
 class ELDBInventoryWriterTests(SutekhTest):

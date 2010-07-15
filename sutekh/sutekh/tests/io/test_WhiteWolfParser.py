@@ -52,6 +52,7 @@ class WhiteWolfParserTests(SutekhTest):
         u"Bronwen",
         u"Cedric",
         u"Cesewayo",
+        u'Dramatic Upheaval',
         u'Earl "Shaka74" Deams',
         u"Enkidu, The Noah",
         u"Fidus, The Shrunken Beast",
@@ -64,6 +65,7 @@ class WhiteWolfParserTests(SutekhTest):
         u"Kemintiri (Advanced)",
         u"Living Manse",
         u"L\xe1z\xe1r Dobrescu",
+        u'Motivated by Gehenna',
         u"Necromancy",
         u"Ossian",
         u"Pariah",
@@ -513,6 +515,10 @@ class WhiteWolfParserTests(SutekhTest):
         self.failUnless(IKeyword('investment') in oProtracted.keywords)
         oBravo = IAbstractCard('Bravo')
         self.failUnless(IKeyword('archetype') in oBravo.keywords)
+        oDramatic = IAbstractCard('Dramatic Upheaval')
+        self.failUnless(IKeyword('not for legal play') in oDramatic.keywords)
+        oMotivated = IAbstractCard('Motivated by Gehenna')
+        self.failUnless(IKeyword('not for legal play') in oMotivated.keywords)
 
 
 if __name__ == "__main__":

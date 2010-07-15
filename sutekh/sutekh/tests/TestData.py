@@ -848,6 +848,24 @@ Put this card on a vampire you control. Once per turn, when this vampire success
 </table>
 </p>
 
+<p>
+<a name="Dramatic_Upheaval"><span class="cardname">Dramatic Upheaval</span></a>
+<span class="exp">[Jyhad:V, VTES:V, CE:U, Anarchs:PAB, BH:PM]</span><br />
+<table border=0 cellpadding=0 cellspacing=0><tr><td width=1><span class="key">Cardtype:</span> </td><td>Political Action<br /></td></tr>
+<tr><td colspan=2>Choose another Methuselah. Successful referendum means you switch places with that Methuselah. <span class="errata">{Added to the V:EKN banned list in 2005.}</span><br />
+<tr><td width=1><span class="key">Artist:</span> </td><td>Heather Hudson; Mike Huddleston<br /></td></tr>
+</table>
+</p>
+
+<p>
+<a name="Motivated_by_Gehenna"><span class="cardname">Motivated by Gehenna</span></a>
+<span class="exp">Eden's Legacy Storyline:Storyline</span><table border=0 cellpadding=0 cellspacing=0><tr><td width=1><tr><td width=1><span class="key">Cardtype:</span> </td><td>Master<br /></td></tr>
+<tr><td colspan=2><b>Master.</b><br />
+Put this card in play, If you control the Edge, any vampire you control may enter combat with a ready minion controlled by another Methuselah as a (D) action that costs 1 blood.<br />
+{NOT FOR LEGAL PLAY}<br />
+</table>
+</p>
+
 </td></tr>
 </table></body></html>
 """

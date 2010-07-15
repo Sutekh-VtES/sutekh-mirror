@@ -76,6 +76,8 @@ class CardListModelTests(ConfigSutekhTest):
         # R0915, R0914: Want a long, sequential test case to minimise
         # repeated setups, so it has lots of lines + variables
         oModel = CardListModel(self.oConfig)
+        # We test with illegal cards shown
+        oModel.bHideIllegal = False
         oListener = TestListener()
         oModel.load()
         self.assertFalse(oListener.bLoadCalled)
@@ -189,6 +191,19 @@ class CardListModelTests(ConfigSutekhTest):
         self.oConfig.set_postfix_the_display(False)
         aCards = self._get_card_names(oModel)
         self.assertEqual('The Path of Blood' in aCards, True)
+
+    def test_illegal(self):
+        """Test that the hide/show illegal cards works as expected"""
+        oModel = CardListModel(self.oConfig)
+        oModel.load()
+        aCards = self._get_card_names(oModel)
+        self.assertEqual('Dramatic Upheaval' in aCards, False)
+        self.assertEqual('Motivated by Gehenna' in aCards, False)
+        oModel.bHideIllegal = False
+        oModel.load()
+        aCards = self._get_card_names(oModel)
+        self.assertEqual('Dramatic Upheaval' in aCards, True)
+        self.assertEqual('Motivated by Gehenna' in aCards, True)
 
 if __name__ == "__main__":
     unittest.main()
