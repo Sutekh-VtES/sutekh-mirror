@@ -334,12 +334,8 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
            The filter is combined with self.basefilter. None may be used to
            retrieve the entire card list (with only the base filter
            restriciting which cards appear).
-
-           This is also responsible for handling the not legal filter case.
            """
         oFilter = self.combine_filter_with_base(oFilter)
-        if self.bHideIllegal:
-            oFilter = FilterAndBox([oFilter, self.oLegalFilter])
 
         return oFilter.select(self.cardclass).distinct()
 
@@ -381,8 +377,15 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
                 self.groupby(aAbsCards, fGetCard), aCards)
 
     def get_current_filter(self):
-        """Get the current applied filter."""
-        if self.applyfilter:
+        """Get the current applied filter.
+
+           This is also responsible for handling the not legal filter case."""
+        if self.applyfilter and self.bHideIllegal and self.selectfilter:
+            return FilterAndBox([self.selectfilter, self.oLegalFilter])
+        elif self.bHideIllegal:
+            # either not self.apply, or self.selectfilter is None
+            return self.oLegalFilter
+        elif self.applyfilter:
             return self.selectfilter
         else:
             return None

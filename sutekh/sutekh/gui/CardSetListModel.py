@@ -581,22 +581,11 @@ class CardSetCardListModel(CardListModel):
                         PhysicalCardSet.selectBy(parentID=self._oCardSet.id,
                             inuse=True)]
                 if aChildren:
-                    if self.bHideIllegal:
-                        self._dCache ['all children filter'] = \
-                                FilterAndBox([
-                                    MultiPhysicalCardSetMapFilter(aChildren),
-                                    self.oLegalFilter])
-                        for sName in aChildren:
-                            self._dCache['child filters'][sName] = \
-                                    FilterAndBox([
-                                        PhysicalCardSetFilter(sName),
-                                        self.oLegalFilter])
-                    else:
-                        self._dCache ['all children filter'] = \
-                                MultiPhysicalCardSetMapFilter(aChildren)
-                        for sName in aChildren:
-                            self._dCache['child filters'][sName] = \
-                                    PhysicalCardSetFilter(sName)
+                    self._dCache ['all children filter'] = \
+                            MultiPhysicalCardSetMapFilter(aChildren)
+                    for sName in aChildren:
+                        self._dCache['child filters'][sName] = \
+                                PhysicalCardSetFilter(sName)
         dChildCardCache = {}
         if self.iExtraLevelsMode in [SHOW_CARD_SETS, EXP_AND_CARD_SETS,
                 CARD_SETS_AND_EXP] and self._dCache['child filters']:
@@ -621,8 +610,8 @@ class CardSetCardListModel(CardListModel):
         elif self.iShowCardMode == CHILD_CARDS and \
                 self._dCache['child filters']:
             # Need to setup the cache
-            oFullFilter = FilterAndBox([self._dCache['all children filter'],
-                oCurFilter])
+            aFilters = [self._dCache['all children filter'], oCurFilter]
+            oFullFilter = FilterAndBox(aFilters)
             for oCard in [IPhysicalCard(x) for x in oFullFilter.select(
                     self.cardclass).distinct()]:
                 self._dCache['child cards'].setdefault(oCard, 0)
@@ -642,13 +631,8 @@ class CardSetCardListModel(CardListModel):
                 self.iShowCardMode != PARENT_CARDS):
             # It's tempting to use get_card_iterator here, but that
             # obviously doesn't work because of _oBaseFilter
-            if self.bHideIllegal:
-                self._dCache['parent filter'] = FilterAndBox([
-                    PhysicalCardSetFilter(self._oCardSet.parent.name),
-                    self.oLegalFilter])
-            else:
-                self._dCache['parent filter'] = PhysicalCardSetFilter(
-                        self._oCardSet.parent.name)
+            self._dCache['parent filter'] = \
+                    PhysicalCardSetFilter(self._oCardSet.parent.name)
             aFilters = [self._dCache['parent filter'], oCurFilter]
             if self.iShowCardMode == THIS_SET_ONLY and \
                     oCardIter.count() < 200:
@@ -676,12 +660,8 @@ class CardSetCardListModel(CardListModel):
             if self._dCache['all cards']:
                 aExtraCards = self._dCache['all cards']
             else:
-                if self.bHideIllegal:
-                    oFullFilter = FilterAndBox([PhysicalCardFilter(),
-                        oCurFilter, self.oLegalFilter])
-                else:
-                    oFullFilter = FilterAndBox([PhysicalCardFilter(),
-                        oCurFilter])
+                oFullFilter = FilterAndBox([PhysicalCardFilter(),
+                    oCurFilter])
                 aExtraCards = list(oFullFilter.select(PhysicalCard).distinct())
                 self._dCache['all cards'] = aExtraCards
         elif self.iShowCardMode == PARENT_CARDS and self._oCardSet.parent:
