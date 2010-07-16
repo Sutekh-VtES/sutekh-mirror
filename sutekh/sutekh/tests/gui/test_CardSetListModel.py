@@ -251,6 +251,8 @@ class CardSetListModelTests(ConfigSutekhTest):
                     oModel.get_current_filter()).count()
             dCountInfo[oModel]['start'] = iSetCnt
             dCountInfo[oModel]['added'] = None
+            # We disable the illegal card filter for these tests for speed
+            oModel.bHideIllegal = False
         for bEditFlag in [False, True]:
             for oModel in aModels:
                 oModel.bEditable = bEditFlag
@@ -586,6 +588,7 @@ class CardSetListModelTests(ConfigSutekhTest):
         # pylint: disable-msg=R0915
         # R0915: Want a long, sequential test case to reduce
         # repeated setups, so it has lots of lines
+        # Note that these tests are with the illegal card filter enabled
         _oCache = SutekhObjectCache()
         oPCS = PhysicalCardSet(name=self.aNames[0])
         oModel = CardSetCardListModel(self.aNames[0], self.oConfig)
