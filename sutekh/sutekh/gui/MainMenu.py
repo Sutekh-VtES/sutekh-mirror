@@ -132,7 +132,7 @@ class MainMenu(SutekhMenu):
 
     def __create_pane_menu(self):
         """Create the 'Pane Actions' menu"""
-        oMenu = self.create_submenu(self, 'Pane A_ctions')
+        oMenu = self.create_submenu(self, '_Pane Actions')
 
         self.create_menu_item("Equalize _pane sizes", oMenu,
                 self.equalize_panes, "<Ctrl>p")
