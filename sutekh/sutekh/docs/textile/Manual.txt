@@ -227,7 +227,8 @@ This menu allows you to manage the panes in Sutekh. The _Pane Actions_ menu
 has the following options:
 
 * _Equalize pane sizes_: Rearrange the panes so that each pane has the \
-same width, and panes which are split vertically all have the same height.
+same width, and panes which are split vertically all have the same height. \
+Pane equalizing may also be triggered using the *&lt;Ctrl&gt;-p* shortcut.
 * _Split current pane horizontally_: Split the currently active pane \
 into the currently active pane and a new pane to the immediate right of the \
 active pane. The two panes will be the same height as, and half the width of \

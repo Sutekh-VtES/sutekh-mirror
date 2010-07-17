@@ -134,8 +134,8 @@ class MainMenu(SutekhMenu):
         """Create the 'Pane Actions' menu"""
         oMenu = self.create_submenu(self, 'Pane A_ctions')
 
-        self.create_menu_item("Equalize pane sizes", oMenu,
-                self.equalize_panes)
+        self.create_menu_item("Equalize _pane sizes", oMenu,
+                self.equalize_panes, "<Ctrl>p")
 
         self.__oAddHorzPane = self.create_menu_item("Split current pane"
                 " _horizontally (|)", oMenu, self.add_pane_horizontal)
