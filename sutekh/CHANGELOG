@@ -1,3 +1,18 @@
+18 Jul 2010
+ * Add python-rsvg dependancy note
+
+17 Jul 2010
+ * Add shortcut for Equalize pane sizes
+ * Change Pane menu accelerator to 'P'
+
+16 Jul 2010
+ * Simplify code for handling the 'hide illegal cards' option
+ * Disable 'hide illegal cards' to improve test speed where appropriate
+
+15 Jul 2010
+ * Tweak filter for 'hide illegal cards' option to perfrom better with sqlite
+ * Add some 'not for legal play' cards to the test data.
+
 10 Jul 2010
  * Add Preference to show or hide illegal cards
 

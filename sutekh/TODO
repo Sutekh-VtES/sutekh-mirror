@@ -12,17 +12,18 @@ For 0.8.0 cycle
          cards can play first ]
 
  - Definite
-    * Improve Filter Edit Dialog
+    * Improve Filter Edit Dialog (largely done)
     * Add decent error checking for the io files
     * Redo preferences system. Allow finder grained preferences (save
-      groupings, etc per card set)
+      groupings, etc per card set) (largely done)
+      - Import preferences from 0.6 config files.
     * More access to debugging info
       - Make it easier to get relevant info from users
       - Use logging module to store more info, to be easily
         extracted (partly done)
       - Do more with the --verbose flag?
     * Use card set list view widget in place of long card set name lists
-      everywhere
+      everywhere (largely done)
 
     Website:
        * Mirror documentation on website. (sort of done, needs automating)
