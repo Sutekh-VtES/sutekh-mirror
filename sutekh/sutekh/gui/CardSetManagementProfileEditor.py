@@ -12,6 +12,7 @@
 from sutekh.gui.SutekhDialog import SutekhDialog
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 from sutekh.gui.PreferenceTable import PreferenceTable
+from sutekh.gui.ConfigFile import CARDSET_LIST
 import gtk
 import gobject
 
@@ -103,7 +104,7 @@ class CardSetManagementProfileEditor(SutekhDialog):
             if sProfile == "defaults":
                 sProfile = None
             for sKey in self.__oConfig.cardset_list_options():
-                dValues[sKey] = self.__oConfig.get_cardset_list_profile_option(
+                dValues[sKey] = self.__oConfig.get_profile_option(CARDSET_LIST,
                     sProfile, sKey)
         else:
             dValues = dict.fromkeys(self.__oConfig.cardset_list_options(),

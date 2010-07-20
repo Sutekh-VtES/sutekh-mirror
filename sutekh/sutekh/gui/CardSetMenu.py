@@ -15,6 +15,7 @@ from sutekh.io.XmlFileHandling import PhysicalCardSetXmlFile
 from sutekh.gui.FilteredViewMenu import CardListMenu
 from sutekh.gui.FrameProfileEditor import FrameProfileEditor
 from sutekh.gui.LocalProfileEditor import LocalProfileEditor
+from sutekh.gui.ConfigFile import CARDSET, FRAME
 
 class CardSetMenu(CardListMenu):
     # pylint: disable-msg=R0904
@@ -89,12 +90,12 @@ class CardSetMenu(CardListMenu):
             self._edit_local_profile)
         self.create_menu_item('Edit _Profiles', oMenu, self._edit_profiles)
 
-        sCardsetProfile = self._oMainWindow.config_file.get_cardset_profile(
+        sCardsetProfile = self._oMainWindow.config_file.get_profile(CARDSET,
             self.cardset_id)
         self._oCardsetProfileMenu = self._create_profile_menu(oMenu,
             "Cardset Profile", self._select_cardset_profile, sCardsetProfile)
 
-        sFrameProfiles = self._oMainWindow.config_file.get_frame_profile(
+        sFrameProfiles = self._oMainWindow.config_file.get_profile(FRAME,
             self.frame_id)
         self._oFrameProfileMenu = self._create_profile_menu(oMenu,
             "Pane Profile", self._select_frame_profile, sFrameProfiles)
@@ -204,12 +205,12 @@ class CardSetMenu(CardListMenu):
             self._oMainWindow.config_file)
         oDlg.run()
 
-        sCardsetProfile = self._oMainWindow.config_file.get_cardset_profile(
+        sCardsetProfile = self._oMainWindow.config_file.get_profile(CARDSET,
             self.cardset_id)
         self._update_profile_group(self._oCardsetProfileMenu,
             self._select_cardset_profile, sCardsetProfile)
 
-        sFrameProfile = self._oMainWindow.config_file.get_frame_profile(
+        sFrameProfile = self._oMainWindow.config_file.get_profile(FRAME,
             self.frame_id)
         self._update_profile_group(self._oFrameProfileMenu,
             self._select_frame_profile, sFrameProfile)
@@ -218,10 +219,10 @@ class CardSetMenu(CardListMenu):
         """Callback to change the profile of the current card set."""
         if oRadio.get_active():
             oConfig = self._oMainWindow.config_file
-            oConfig.set_cardset_profile(self.cardset_id, sProfileKey)
+            oConfig.set_profile(CARDSET, self.cardset_id, sProfileKey)
 
     def _select_frame_profile(self, oRadio, sProfileKey):
         """Callback to change the profile of the current frame."""
         if oRadio.get_active():
             oConfig = self._oMainWindow.config_file
-            oConfig.set_frame_profile(self.frame_id, sProfileKey)
+            oConfig.set_profile(FRAME, self.frame_id, sProfileKey)

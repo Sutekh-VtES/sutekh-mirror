@@ -11,6 +11,7 @@
 import gtk
 from sutekh.gui.FilteredViewMenu import CardListMenu
 from sutekh.gui.CardListProfileEditor import CardListProfileEditor
+from sutekh.gui.ConfigFile import WW_CARDLIST
 
 class PhysicalCardMenu(CardListMenu):
     """Menu for the Physical card collection.
@@ -54,7 +55,8 @@ class PhysicalCardMenu(CardListMenu):
 
         self.create_menu_item('Edit _Profiles', oMenu, self._edit_profiles)
 
-        sProfile = self._oMainWindow.config_file.get_cardlist_profile()
+        sProfile = self._oMainWindow.config_file.get_profile(WW_CARDLIST,
+                WW_CARDLIST)
         self._oCardlistProfileMenu = self._create_profile_menu(oMenu,
             "Cardlist Profile", self._select_cardlist_profile, sProfile)
 
@@ -66,7 +68,7 @@ class PhysicalCardMenu(CardListMenu):
         oConfig = self._oMainWindow.config_file
 
         oGroup = gtk.RadioMenuItem(None,
-            oConfig.get_cardlist_profile_option(None, "name"))
+            oConfig.get_profile_option(WW_CARDLIST, None, "name"))
         oGroup.connect("toggled", fCallback, None)
         oMenu.append(oGroup)
 
@@ -79,7 +81,7 @@ class PhysicalCardMenu(CardListMenu):
         oConfig = self._oMainWindow.config_file
         oGroup = oMenu.get_children()[0]
 
-        aProfiles = [(sKey, oConfig.get_cardlist_profile_option(sKey, "name"))
+        aProfiles = [(sKey, oConfig.get_profile_option(WW_CARDLIST, sKey, "name"))
             for sKey in oConfig.cardlist_profiles()]
         aProfiles.sort(key=lambda tProfile: tProfile[1])
 
@@ -107,7 +109,8 @@ class PhysicalCardMenu(CardListMenu):
             self._oMainWindow.config_file)
         oDlg.run()
 
-        sProfile = self._oMainWindow.config_file.get_cardlist_profile()
+        sProfile = self._oMainWindow.config_file.get_profile(WW_CARDLIST,
+                WW_CARDLIST)
         self._update_profile_group(self._oCardlistProfileMenu,
             self._select_cardlist_profile, sProfile)
 
@@ -115,5 +118,5 @@ class PhysicalCardMenu(CardListMenu):
         """Callback to change the profile of the current card set."""
         if oRadio.get_active():
             oConfig = self._oMainWindow.config_file
-            oConfig.set_cardlist_profile(sProfileKey)
+            oConfig.set_profile(WW_CARDLIST, WW_CARDLIST, sProfileKey)
 

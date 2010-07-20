@@ -17,7 +17,8 @@ import zipfile
 import re
 from sutekh.core.DatabaseVersion import DatabaseVersion
 from sutekh.core.SutekhObjects import PhysicalCardSet
-from sutekh.gui.ConfigFile import ConfigFileListener
+from sutekh.gui.ConfigFile import ConfigFileListener, CARDSET, WW_CARDLIST, \
+        CARDSET_LIST, FRAME
 from sutekh.gui.SutekhDialog import do_complaint_warning
 
 def submodules(oPackage):
@@ -97,47 +98,38 @@ class PluginConfigFileListener(ConfigFileListener):
     def __init__(self, oPlugin):
         self._oPlugin = oPlugin
 
-    def profile_changed(self, sProfile, sKey):
+    def profile_option_changed(self, sType, sProfile, sKey):
         """One of the per-deck configuration items changed."""
-        if sKey in self._oPlugin.dPerPaneConfig:
+        if sType == CARDSET or sType == FRAME:
+            dConfig = self._oPlugin.dPerPaneConfig
+        elif sType == WW_CARDLIST:
+            dConfig = self._oPlugin.dCardListConfig
+        elif sType == CARDSET_LIST:
+            dConfig = self._oPlugin.dCardSetListConfig
+        else:
+            dConfig = {}
+        if sKey in dConfig:
             oConfig = self._oPlugin.config
-            if sProfile in (
-                oConfig.get_frame_profile(self._oPlugin.model.frame_id),
-                oConfig.get_cardset_profile(self._oPlugin.model.cardset_id),
-            ):
+            if sType == CARDSET or sType == FRAME:
+                # Handle the cardset_profile, frame_profile case
+                tProfiles = (
+                        oConfig.get_profile(FRAME,
+                            self._oPlugin.model.frame_id),
+                        oConfig.get_profile(CARDSET,
+                            self._oPlugin.model.cardset_id),
+                        )
+            else:
+                tProfiles = (oConfig.get_profile(sType,
+                    self._oPlugin.model.cardset),)
+            if sProfile in tProfiles:
                 self._oPlugin.perpane_config_updated()
 
-    def frame_profile_changed(self, sFrame, sNewProfile):
+    def profile_changed(self, sType, sId, sNewProfile):
         """The profile associated with a frame changed."""
-        if self._oPlugin.model.frame_id == sFrame:
+        if sType == FRAME and self._oPlugin.model.frame_id == sId:
             self._oPlugin.perpane_config_updated()
-
-    def cardset_profile_changed(self, sCardset, sNewProfile):
-        """The profile associated with a cardset changed."""
-        if self._oPlugin.model.cardset_id == sCardset:
-            self._oPlugin.perpane_config_updated()
-
-    def cardlist_profile_changed(self, sProfile, sKey):
-        """And option for a WW cardlist profile changed"""
-        if sKey in self._oPlugin.dCardListConfig:
-            if sProfile == self._oPlugin.config.get_current_cardlist_profile():
-                self._oPlugin.perpane_config_updated()
-
-    def cardlist_frame_profile_changed(self, sNewProfile):
-        """The profile for the WW cardlist changed"""
-        if self._oPlugin.model.frame_id == "WW Card List Pane":
-            self._oPlugin.perpane_config_updated()
-
-    def cardset_list_profile_changed(self, sProfile, sKey):
-        """An option for the cardset list profile changed"""
-        if sKey in self._oPlugin.dCardSetListConfig:
-            if sProfile == \
-                    self._oPlugin.config.get_current_cardset_list_profile():
-                self._oPlugin.perpane_config_updated()
-
-    def cardset_list_frame_profile_changed(self, sNewProfile):
-        """The profile for the WW cardlist changed"""
-        if self._oPlugin.model.frame_id == "Card Set List Pane":
+        elif sType in (CARDSET, WW_CARDLIST, CARDSET_LIST) and \
+                self._oPlugin.model.cardset_id == sId:
             self._oPlugin.perpane_config_updated()
 
 class SutekhPlugin(object):
@@ -310,14 +302,14 @@ class SutekhPlugin(object):
         """Return the value of a per-pane config key."""
         oModel = self.model
         # TODO: clean up detection of relevant models
-        if oModel is None or not hasattr(oModel, "frame_id"):
+        if oModel is None or not hasattr(oModel, "cardset_id"):
             return None
-        if oModel.frame_id == "WW Card List Pane":
-            sProfile = self.config.get_current_cardlist_profile()
-            return self.config.get_cardlist_profile_option(sProfile, sKey)
-        elif oModel.frame_id == "Card Set List Pane":
-            sProfile = self.config.get_current_cardset_list_profile()
-            return self.config.get_cardset_list_profile_option(sProfile, sKey)
+        if oModel.cardset_id == WW_CARDLIST or \
+                oModel.cardset_id == CARDSET_LIST:
+            sProfile = self.config.get_profile(oModel.cardset_id,
+                    oModel.cardset_id)
+            return self.config.get_profile_option(oModel.cardset_id,
+                    sProfile, sKey)
         return self.config.get_deck_option(oModel.frame_id, oModel.cardset_id,
             sKey)
 

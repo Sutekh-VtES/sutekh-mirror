@@ -12,6 +12,7 @@ import gtk
 from sutekh.gui.FilteredViewMenu import FilteredViewMenu
 from sutekh.gui.CardSetManagementProfileEditor import \
         CardSetManagementProfileEditor
+from sutekh.gui.ConfigFile import CARDSET_LIST
 
 class CardSetManagementMenu(FilteredViewMenu):
     """Card Set List Management menu.
@@ -54,7 +55,8 @@ class CardSetManagementMenu(FilteredViewMenu):
 
         self.create_menu_item('Edit _Profiles', oMenu, self._edit_profiles)
 
-        sProfile = self._oMainWindow.config_file.get_cardset_list_profile()
+        sProfile = self._oMainWindow.config_file.get_profile(CARDSET_LIST,
+                CARDSET_LIST)
         self._oCardSetlistProfileMenu = self._create_profile_menu(oMenu,
             "CardSet list Profile", self._select_cardset_list_profile,
             sProfile)
@@ -67,7 +69,7 @@ class CardSetManagementMenu(FilteredViewMenu):
         oConfig = self._oMainWindow.config_file
 
         oGroup = gtk.RadioMenuItem(None,
-            oConfig.get_cardset_list_profile_option(None, "name"))
+            oConfig.get_profile_option(CARDSET_LIST, None, "name"))
         oGroup.connect("toggled", fCallback, None)
         oMenu.append(oGroup)
 
@@ -80,7 +82,7 @@ class CardSetManagementMenu(FilteredViewMenu):
         oConfig = self._oMainWindow.config_file
         oGroup = oMenu.get_children()[0]
 
-        aProfiles = [(sKey, oConfig.get_cardset_list_profile_option(sKey,
+        aProfiles = [(sKey, oConfig.get_profile_option(CARDSET_LIST, sKey,
             "name"))
             for sKey in oConfig.cardset_list_profiles()]
         aProfiles.sort(key=lambda tProfile: tProfile[1])
@@ -109,7 +111,8 @@ class CardSetManagementMenu(FilteredViewMenu):
             self._oMainWindow.config_file)
         oDlg.run()
 
-        sProfile = self._oMainWindow.config_file.get_cardset_list_profile()
+        sProfile = self._oMainWindow.config_file.get_profile(CARDSET_LIST,
+                CARDSET_LIST)
         self._update_profile_group(self._oCardSetlistProfileMenu,
             self._select_cardset_list_profile, sProfile)
 
@@ -117,5 +120,5 @@ class CardSetManagementMenu(FilteredViewMenu):
         """Callback to change the profile of the current card set."""
         if oRadio.get_active():
             oConfig = self._oMainWindow.config_file
-            oConfig.set_cardset_list_profile(sProfileKey)
+            oConfig.set_profile(CARDSET_LIST, CARDSET_LIST, sProfileKey)
 

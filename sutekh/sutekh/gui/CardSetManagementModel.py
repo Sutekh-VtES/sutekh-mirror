@@ -9,6 +9,7 @@
 import gtk, gobject
 from sutekh.core.SutekhObjects import PhysicalCardSet, IPhysicalCardSet
 from sutekh.core.Filters import NullFilter
+from sutekh.gui.ConfigFile import CARDSET_LIST
 
 class CardSetManagementModel(gtk.TreeStore):
     # pylint: disable-msg=R0904
@@ -39,10 +40,10 @@ class CardSetManagementModel(gtk.TreeStore):
     selectfilter = property(fget=lambda self: self._oSelectFilter,
             fset=lambda self, x: setattr(self, '_oSelectFilter', x))
 
-    frame_id = property(fget=lambda self: "Card Set List Pane",
+    frame_id = property(fget=lambda self: CARDSET_LIST,
             doc="Frame ID of the card set list (for selecting profiles)")
 
-    cardset_id = property(fget=lambda self: "Card Set List Pane",
+    cardset_id = property(fget=lambda self: CARDSET_LIST,
             doc="Cardset ID of card set list (for selecting profiles)")
 
 

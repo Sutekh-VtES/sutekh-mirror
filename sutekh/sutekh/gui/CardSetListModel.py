@@ -19,6 +19,7 @@ from sutekh.core.SutekhObjects import PhysicalCard, IAbstractCard, \
         PhysicalCardSet, canonical_to_csv
 from sutekh.gui.CardListModel import CardListModel, USE_ICONS, HIDE_ILLEGAL
 from sutekh.core.DBSignals import listen_changed, disconnect_changed
+from sutekh.gui.ConfigFile import CARDSET, FRAME
 import gtk
 
 # consts for the different modes we need (iExtraLevelsMode)
@@ -2024,18 +2025,19 @@ class CardSetCardListModel(CardListModel):
     # Per-deck configuration listeners
     #
 
-    def profile_changed(self, sProfile, sKey):
-        """One of the per-deck configuration items changed."""
-        self.update_options()
 
-    def frame_profile_changed(self, sFrame, sNewProfile):
-        """The profile associated with a frame changed."""
-        if sFrame != self.frame_id:
+    def profile_option_changed(self, sType, sProfile, sKey):
+        """A profile option changed with a cardset changed."""
+        if sType != CARDSET and sType != FRAME:
             return
         self.update_options()
 
-    def cardset_profile_changed(self, sCardset, sNewProfile):
+    def profile_changed(self, sType, sId, sNewProfile):
         """The profile associated with a cardset changed."""
-        if sCardset != self.cardset_id:
+        if sType != CARDSET and sType != FRAME:
+            return
+        if sType == CARDSET and sId != self.cardset_id:
+            return
+        if sType == FRAME and sId != self.frame_id:
             return
         self.update_options()

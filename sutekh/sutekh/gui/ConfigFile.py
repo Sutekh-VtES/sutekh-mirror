@@ -14,6 +14,12 @@ from validate import Validator, is_option, is_list
 import pkg_resources
 import weakref
 
+# Type definitions
+CARDSET = 'Card Set'
+FRAME = 'Frame'
+WW_CARDLIST = 'cardlist'
+CARDSET_LIST = 'cardset list'
+
 
 def is_option_list(sValue, *aOptions):
     """Validator function for option_list configspec type."""
@@ -39,32 +45,12 @@ class ConfigFileListener(object):
         """Postfix display mode has been set."""
         pass
 
-    def profile_changed(self, sProfile, sKey):
-        """One of the per-deck configuration items changed."""
+    def profile_option_changed(self, sType, sProfile, sKey):
+        """One of the profile configuration items changed."""
         pass
 
-    def frame_profile_changed(self, sFrame, sNewProfile):
-        """The profile associated with a frame changed."""
-        pass
-
-    def cardset_profile_changed(self, sCardset, sNewProfile):
+    def profile_changed(self, sType, sId, sNewProfile):
         """The profile associated with a cardset changed."""
-        pass
-
-    def cardlist_profile_changed(self, sProfile, sKey):
-        """One of the WW cardlist configuration items changed."""
-        pass
-
-    def cardlist_frame_profile_changed(self, sNewProfile):
-        """The profile associated with the WW cardlist frame changed."""
-        pass
-
-    def cardset_list_profile_changed(self, sProfile, sKey):
-        """One of the cardset list configuration items changed."""
-        pass
-
-    def cardset_list_frame_profile_changed(self, sNewProfile):
-        """The profile associated with the cardset list frame changed."""
         pass
 
 
@@ -440,74 +426,46 @@ class ConfigFile(object):
 
         if bChanged:
             for oListener in self.listeners():
-                oListener.profile_changed(sProfile, sKey)
+                oListener.profile_option_changed(CARDSET, sProfile, sKey)
 
-    def set_frame_profile(self, sFrame, sProfile):
-        """Set the profile associated with a frame id."""
-        dFrameProfiles = self.__oConfig['per_deck']['frame_profiles']
-        if dFrameProfiles.get(sFrame) == sProfile:
-            return
-        if sProfile is None:
-            del dFrameProfiles[sFrame]
+    def set_profile(self, sType, sId, sProfile):
+        """Set the profile associated of the given type."""
+        if sType == CARDSET or sType == FRAME:
+            if sType == CARDSET:
+                dProfiles = self.__oConfig['per_deck']['cardset_profiles']
+            else:
+                dProfiles = self.__oConfig['per_deck']['frame_profiles']
+            if dProfiles.get(sId) == sProfile:
+                return
+            if sProfile is None:
+                del dProfiles[sId]
+            else:
+                dProfiles[sId] = sProfile
+        elif (sType == WW_CARDLIST and sId == WW_CARDLIST) or \
+                (sType == CARDSET_LIST and sId == CARDSET_LIST):
+            sCurProfile = self.__oConfig[sType].get('current profile')
+            if sCurProfile == sProfile:
+                return
+            if sProfile is None:
+                del self.__oConfig[sType]['current profile']
+            else:
+                self.__oConfig[sType]['current profile'] = sProfile
         else:
-            dFrameProfiles[sFrame] = sProfile
-        for oListener in self.listeners():
-            oListener.frame_profile_changed(sFrame, sProfile)
-
-    def set_cardset_profile(self, sCardset, sProfile):
-        """Set the profile associated with a cardset id."""
-        dCardsetProfiles = self.__oConfig['per_deck']['cardset_profiles']
-        if dCardsetProfiles.get(sCardset) == sProfile:
+            # Unrecognised type / cardset combo
             return
-        if sProfile is None:
-            del dCardsetProfiles[sCardset]
-        else:
-            dCardsetProfiles[sCardset] = sProfile
         for oListener in self.listeners():
-            oListener.cardset_profile_changed(sCardset, sProfile)
+            oListener.profile_changed(sType, sId, sProfile)
 
-    def get_frame_profile(self, sFrame):
-        """Return the current profile of the frame."""
-        return self.__oConfig['per_deck']['frame_profiles'].get(sFrame)
-
-    def get_cardset_profile(self, sCardset):
-        """Return the current profile of the cardset."""
-        return self.__oConfig['per_deck']['cardset_profiles'].get(sCardset)
-
-    def get_cardlist_profile(self):
-        """Return the current profile of the cardset."""
-        return self.__oConfig['cardlist'].get('current profile')
-
-    def set_cardlist_profile(self, sProfile):
-        """Set the profile associated with the WW cardlist."""
-        sCurProfile = self.__oConfig['cardlist'].get('current profile')
-        if sCurProfile == sProfile:
-            return
-        if sProfile:
-            self.__oConfig['cardlist']['current profile'] = sProfile
-        else:
-            del self.__oConfig['cardlist']['current profile']
-
-        for oListener in self.listeners():
-            oListener.cardlist_frame_profile_changed(sProfile)
-
-    def get_cardset_list_profile(self):
-        """Return the current profile of the cardset."""
-        return self.__oConfig['cardset list'].get('current profile')
-
-    def set_cardset_list_profile(self, sProfile):
-        """Set the profile associated with the WW cardlist."""
-        sCurProfile = self.__oConfig['cardset list'].get('current profile')
-        if sCurProfile == sProfile:
-            return
-        if sProfile:
-            self.__oConfig['cardset list']['current profile'] = sProfile
-        else:
-            del self.__oConfig['cardset list']['current profile']
-
-        for oListener in self.listeners():
-            oListener.cardset_list_frame_profile_changed(sProfile)
-
+    def get_profile(self, sType, sId):
+        """Return the current profile of the cardset/cardlist/cardset list."""
+        if sType == CARDSET:
+            return self.__oConfig['per_deck']['cardset_profiles'].get(sId)
+        elif sType == FRAME:
+            return self.__oConfig['per_deck']['frame_profiles'].get(sId)
+        elif (sType == WW_CARDLIST and sId == WW_CARDLIST) or \
+                (sType == CARDSET_LIST and sId == CARDSET_LIST):
+            return self.__oConfig[sType].get('current profile')
+        return None
 
     def frame_profiles(self):
         """Return a dictionary of frame id -> profile mappings."""
@@ -553,21 +511,15 @@ class ConfigFile(object):
         """Return a list of profile keys."""
         return list(self.__oConfig['cardset list']['profiles'].keys())
 
-    def get_current_cardlist_profile(self):
-        """Get the current WW cardlist profile"""
-        return self.__oConfig['cardlist'].get('current profile')
-
-    def get_current_cardset_list_profile(self):
-        """Get the current cardset list profile"""
-        return self.__oConfig['cardset list'].get('current profile')
-
-    def get_cardlist_profile_option(self, sProfile, sKey):
+    def get_profile_option(self, sType, sProfile, sKey):
         """Get the value of a per-deck option for a profile."""
+        if sType == FRAME or sType == CARDSET:
+            return self.get_deck_profile_option(sProfile, sKey)
         try:
             if sProfile is None or sProfile.lower() == "default":
-                return self.__oConfig['cardlist']['defaults'][sKey]
+                return self.__oConfig[sType]['defaults'][sKey]
             else:
-                return self.__oConfig['cardlist']['profiles'][sProfile][sKey]
+                return self.__oConfig[sType]['profiles'][sProfile][sKey]
         except KeyError:
             return None
 
@@ -600,7 +552,7 @@ class ConfigFile(object):
 
         if bChanged:
             for oListener in self.listeners():
-                oListener.cardlist_profile_changed(sProfile, sKey)
+                oListener.profile_option_changed(WW_CARDLIST, sProfile, sKey)
 
 
     def get_cardset_list_profile_option(self, sProfile, sKey):
@@ -643,7 +595,7 @@ class ConfigFile(object):
 
         if bChanged:
             for oListener in self.listeners():
-                oListener.cardset_list_profile_changed(sProfile, sKey)
+                oListener.profile_option_changed(CARDSET_LIST, sProfile, sKey)
 
     #
     # Application Level Config Settings

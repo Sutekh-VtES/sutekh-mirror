@@ -13,6 +13,7 @@ from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error, \
                                     do_complaint_buttons
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 from sutekh.gui.PreferenceTable import PreferenceTable
+from sutekh.gui.ConfigFile import WW_CARDLIST
 import gtk
 import gobject
 
@@ -104,7 +105,7 @@ class CardListProfileEditor(SutekhDialog):
             if sProfile == "defaults":
                 sProfile = None
             for sKey in self.__oConfig.cardlist_options():
-                dValues[sKey] = self.__oConfig.get_cardlist_profile_option(
+                dValues[sKey] = self.__oConfig.get_profile_option(WW_CARDLIST,
                     sProfile, sKey)
         else:
             dValues = dict.fromkeys(self.__oConfig.cardlist_options(), None)

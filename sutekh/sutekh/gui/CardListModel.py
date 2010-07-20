@@ -14,7 +14,7 @@ from sutekh.core.Filters import FilterAndBox, NullFilter, PhysicalCardFilter, \
 from sutekh.core.Groupings import CardTypeGrouping
 from sutekh.core.SutekhObjects import IAbstractCard, PhysicalCard, \
         IPhysicalCard, canonical_to_csv
-from sutekh.gui.ConfigFile import ConfigFileListener
+from sutekh.gui.ConfigFile import ConfigFileListener, WW_CARDLIST
 
 EXTRA_LEVEL_OPTION = "extra levels"
 EXTRA_LEVEL_LOOKUP = {
@@ -121,10 +121,10 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
     selectfilter = property(fget=lambda self: self._oSelectFilter,
             fset=lambda self, x: setattr(self, '_oSelectFilter', x))
 
-    frame_id = property(fget=lambda self: "WW Card List Pane",
+    frame_id = property(fget=lambda self: WW_CARDLIST,
             doc="Frame ID of the card list (for selecting profiles)")
 
-    cardset_id = property(fget=lambda self: "WW Card List Pane",
+    cardset_id = property(fget=lambda self: WW_CARDLIST,
             doc="Cardset ID of card list (for selecting profiles)")
 
     # pylint: enable-msg=W0212, C0103
@@ -568,15 +568,15 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
 
     def update_options(self, bSkipLoad=False):
         """Respond to config file changes"""
-        sProfile = self._oConfig.get_current_cardlist_profile()
-        sExpMode = self._oConfig.get_cardlist_profile_option(sProfile,
+        sProfile = self._oConfig.get_profile(WW_CARDLIST, WW_CARDLIST)
+        sExpMode = self._oConfig.get_profile_option(WW_CARDLIST, sProfile,
                 EXTRA_LEVEL_OPTION).lower()
         bExpMode = EXTRA_LEVEL_LOOKUP.get(sExpMode, True)
 
-        bUseIcons = self._oConfig.get_cardlist_profile_option(sProfile,
+        bUseIcons = self._oConfig.get_profile_option(WW_CARDLIST, sProfile,
                 USE_ICONS)
 
-        bHideIllegal = self._oConfig.get_cardlist_profile_option(sProfile,
+        bHideIllegal = self._oConfig.get_profile_option(WW_CARDLIST, sProfile,
                 HIDE_ILLEGAL)
 
         bReloadELM = self._change_level_mode(bExpMode)
@@ -588,11 +588,15 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
 
     # Listen for changes to the cardlist config options
 
-    def cardlist_profile_changed(self, sProfile, sKey):
+    def profile_option_changed(self, sType, sProfile, sKey):
         """One of the per-deck configuration items changed."""
+        if sType != WW_CARDLIST:
+            return
         self.update_options()
 
-    def cardlist_frame_profile_changed(self, sNewProfile):
-        """The profile associated with a frame changed."""
+    def profile_changed(self, sType, sId, sNewProfile):
+        """A profile option changed with a cardset changed."""
+        if sType != WW_CARDLIST or sId != WW_CARDLIST:
+            return
         self.update_options()
 
