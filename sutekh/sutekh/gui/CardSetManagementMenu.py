@@ -87,7 +87,7 @@ class CardSetManagementMenu(FilteredViewMenu):
             for sKey in oConfig.cardset_list_profiles()]
         aProfiles.sort(key=lambda tProfile: tProfile[1])
 
-        if sProfile is None:
+        if sProfile is None or sProfile == 'Default':
             oGroup.set_active(True)
 
         # clear out existing radio items

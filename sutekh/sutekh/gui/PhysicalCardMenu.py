@@ -85,7 +85,7 @@ class PhysicalCardMenu(CardListMenu):
             for sKey in oConfig.cardlist_profiles()]
         aProfiles.sort(key=lambda tProfile: tProfile[1])
 
-        if sProfile is None:
+        if sProfile is None or sProfile == 'Default':
             oGroup.set_active(True)
 
         # clear out existing radio items
