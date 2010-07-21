@@ -30,7 +30,6 @@ class CardSetMenu(CardListMenu):
     # R0902 - we are keeping a lot of state, so many instance variables
     def __init__(self, oFrame, oController, oWindow):
         super(CardSetMenu, self).__init__(oFrame, oWindow, oController)
-        self.__oController = oController
         self.__create_card_set_menu()
         self.create_edit_menu()
         self.create_filter_menu()
