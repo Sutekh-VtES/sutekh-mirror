@@ -62,9 +62,10 @@ class CardSetFrame(CardListFrame):
         # Find an unused name for this card set
         iCount = 0
         sFinalName = sNewName
-        aOpenSets = [x.title for x in
-                self._oMainWindow.find_cs_pane_by_set_name(sNewName)]
-        while sFinalName in aOpenSets:
+        aOtherOpenSets = [x.title for x in
+                self._oMainWindow.find_cs_pane_by_set_name(sNewName)
+                if x is not self]
+        while sFinalName in aOtherOpenSets:
             iCount += 1
             sFinalName = "%s (%d)" % (sNewName, iCount)
         self._sName = sFinalName
