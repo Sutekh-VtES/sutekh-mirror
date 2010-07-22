@@ -92,53 +92,15 @@ class CardSetMenu(CardListMenu):
         sCardsetProfile = self._oMainWindow.config_file.get_profile(CARDSET,
             self.cardset_id)
         self._oCardsetProfileMenu = self._create_profile_menu(oMenu,
-            "Cardset Profile", self._select_cardset_profile, sCardsetProfile)
+            "Cardset Profile", CARDSET, self._select_cardset_profile,
+            sCardsetProfile)
 
         sFrameProfiles = self._oMainWindow.config_file.get_profile(FRAME,
             self.frame_id)
         self._oFrameProfileMenu = self._create_profile_menu(oMenu,
-            "Pane Profile", self._select_frame_profile, sFrameProfiles)
+            "Pane Profile", FRAME, self._select_frame_profile, sFrameProfiles)
 
         self.add_edit_menu_actions(oMenu)
-
-    def _create_profile_menu(self, oParentMenu, sTitle, fCallback, sProfile):
-        """Create a radio group sub-menu for selecting a profile."""
-        oMenu = self.create_submenu(oParentMenu, sTitle)
-        oConfig = self._oMainWindow.config_file
-
-        oGroup = gtk.RadioMenuItem(None,
-            oConfig.get_deck_profile_option(None, "name"))
-        oGroup.connect("toggled", fCallback, None)
-        oMenu.append(oGroup)
-
-        self._update_profile_group(oMenu, fCallback, sProfile)
-
-        return oMenu
-
-    def _update_profile_group(self, oMenu, fCallback, sProfile):
-        oConfig = self._oMainWindow.config_file
-        oGroup = oMenu.get_children()[0]
-
-        aProfiles = [(sKey, oConfig.get_deck_profile_option(sKey, "name")) \
-            for sKey in oConfig.profiles()]
-        aProfiles.sort(key=lambda tProfile: tProfile[1])
-
-        if sProfile is None:
-            oGroup.set_active(True)
-
-        # clear out existing radio items
-        for oRadio in oGroup.get_group():
-            if oRadio is not oGroup:
-                oRadio.set_group(None)
-                oMenu.remove(oRadio)
-
-        for sKey, sName in aProfiles:
-            oRadio = gtk.RadioMenuItem(oGroup, sName)
-            oRadio.connect("toggled", fCallback, sKey)
-            if sKey == sProfile:
-                oRadio.set_active(True)
-            oMenu.append(oRadio)
-            oRadio.show()
 
     # pylint: enable-msg=W0201
 
@@ -206,12 +168,12 @@ class CardSetMenu(CardListMenu):
 
         sCardsetProfile = self._oMainWindow.config_file.get_profile(CARDSET,
             self.cardset_id)
-        self._update_profile_group(self._oCardsetProfileMenu,
+        self._update_profile_group(self._oCardsetProfileMenu, CARDSET,
             self._select_cardset_profile, sCardsetProfile)
 
         sFrameProfile = self._oMainWindow.config_file.get_profile(FRAME,
             self.frame_id)
-        self._update_profile_group(self._oFrameProfileMenu,
+        self._update_profile_group(self._oFrameProfileMenu, FRAME,
             self._select_frame_profile, sFrameProfile)
 
     def _select_cardset_profile(self, oRadio, sProfileKey):

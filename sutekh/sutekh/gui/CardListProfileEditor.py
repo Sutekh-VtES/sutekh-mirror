@@ -90,7 +90,7 @@ class CardListProfileEditor(SutekhDialog):
 
     def _all_profile_keys(self):
         """Return a set of all profile keys (including unsaved profiles)."""
-        aProfiles = set(self.__oConfig.cardlist_profiles())
+        aProfiles = set(self.__oConfig.profiles(WW_CARDLIST))
         aProfiles.add("defaults")
         aProfiles.update(self.__dUnsavedChanges)
         return aProfiles
@@ -99,7 +99,7 @@ class CardListProfileEditor(SutekhDialog):
         """Return a dict of option values from a (possibly unsaved) profile."""
         if sProfile in self.__dUnsavedChanges:
             dValues = self.__dUnsavedChanges[sProfile]
-        elif sProfile in self.__oConfig.cardlist_profiles() or \
+        elif sProfile in self.__oConfig.profiles(WW_CARDLIST) or \
                 sProfile == "defaults":
             dValues = {}
             if sProfile == "defaults":

@@ -475,9 +475,16 @@ class ConfigFile(object):
         """Return a dictionary of cardset id -> profile mappings."""
         return dict(self.__oConfig['per_deck']['cardset_profiles'])
 
-    def profiles(self):
+    def profiles(self, sType):
         """Return a list of profile keys."""
-        return list(self.__oConfig['per_deck']['profiles'].keys())
+        if sType == FRAME or sType == CARDSET:
+            return list(self.__oConfig['per_deck']['profiles'].keys())
+        elif sType == CARDSET_LIST:
+            return list(self.__oConfig['cardset list']['profiles'].keys())
+        elif sType == WW_CARDLIST:
+            return list(self.__oConfig['cardlist']['profiles'].keys())
+        # Unkown type
+        return None
 
     def deck_options(self):
         """Return a list of per-deck option names."""
@@ -495,10 +502,6 @@ class ConfigFile(object):
         """Return the config spec for a given option."""
         return self.__oConfigSpec['cardlist']['defaults'][sKey]
 
-    def cardlist_profiles(self):
-        """Return a list of profile keys."""
-        return list(self.__oConfig['cardlist']['profiles'].keys())
-
     def cardset_list_options(self):
         """Return a list of cardset list option names."""
         return self.__oConfig['cardset list']['defaults'].keys()
@@ -506,10 +509,6 @@ class ConfigFile(object):
     def get_cardset_list_option_spec(self, sKey):
         """Return the config spec for a given option."""
         return self.__oConfigSpec['cardset list']['defaults'][sKey]
-
-    def cardset_list_profiles(self):
-        """Return a list of profile keys."""
-        return list(self.__oConfig['cardset list']['profiles'].keys())
 
     def get_profile_option(self, sType, sProfile, sKey):
         """Get the value of a per-deck option for a profile."""

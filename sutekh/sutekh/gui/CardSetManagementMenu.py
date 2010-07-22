@@ -58,52 +58,10 @@ class CardSetManagementMenu(FilteredViewMenu):
         sProfile = self._oMainWindow.config_file.get_profile(CARDSET_LIST,
                 CARDSET_LIST)
         self._oCardSetlistProfileMenu = self._create_profile_menu(oMenu,
-            "CardSet list Profile", self._select_cardset_list_profile,
-            sProfile)
+            "CardSet list Profile", CARDSET_LIST,
+            self._select_cardset_list_profile, sProfile)
 
         self.add_edit_menu_actions(oMenu)
-
-    def _create_profile_menu(self, oParentMenu, sTitle, fCallback, sProfile):
-        """Create a radio group sub-menu for selecting a profile."""
-        oMenu = self.create_submenu(oParentMenu, sTitle)
-        oConfig = self._oMainWindow.config_file
-
-        oGroup = gtk.RadioMenuItem(None,
-            oConfig.get_profile_option(CARDSET_LIST, None, "name"))
-        oGroup.connect("toggled", fCallback, None)
-        oMenu.append(oGroup)
-
-        self._update_profile_group(oMenu, fCallback, sProfile)
-
-        return oMenu
-
-    def _update_profile_group(self, oMenu, fCallback, sProfile):
-        """Update the profile selection menu"""
-        oConfig = self._oMainWindow.config_file
-        oGroup = oMenu.get_children()[0]
-
-        aProfiles = [(sKey, oConfig.get_profile_option(CARDSET_LIST, sKey,
-            "name"))
-            for sKey in oConfig.cardset_list_profiles()]
-        aProfiles.sort(key=lambda tProfile: tProfile[1])
-
-        if sProfile is None or sProfile == 'Default':
-            oGroup.set_active(True)
-
-        # clear out existing radio items
-        for oRadio in oGroup.get_group():
-            if oRadio is not oGroup:
-                oRadio.set_group(None)
-                oMenu.remove(oRadio)
-
-        for sKey, sName in aProfiles:
-            oRadio = gtk.RadioMenuItem(oGroup, sName)
-            oRadio.connect("toggled", fCallback, sKey)
-            if sKey == sProfile:
-                oRadio.set_active(True)
-            oMenu.append(oRadio)
-            oRadio.show()
-
 
     def _edit_profiles(self, _oWidget):
         """Open an options profiles editing dialog."""
@@ -113,7 +71,7 @@ class CardSetManagementMenu(FilteredViewMenu):
 
         sProfile = self._oMainWindow.config_file.get_profile(CARDSET_LIST,
                 CARDSET_LIST)
-        self._update_profile_group(self._oCardSetlistProfileMenu,
+        self._update_profile_group(self._oCardSetlistProfileMenu, CARDSET_LIST,
             self._select_cardset_list_profile, sProfile)
 
     def _select_cardset_list_profile(self, oRadio, sProfileKey):

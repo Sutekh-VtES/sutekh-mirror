@@ -10,6 +10,7 @@ from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error, \
                                     do_complaint_buttons
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 from sutekh.gui.PreferenceTable import PreferenceTable
+from sutekh.gui.ConfigFile import FRAME
 import gtk
 import gobject
 
@@ -86,7 +87,7 @@ class FrameProfileEditor(SutekhDialog):
 
     def _all_profile_keys(self):
         """Return a set of all profile keys (including unsaved profiles)."""
-        aProfiles = set(self.__oConfig.profiles())
+        aProfiles = set(self.__oConfig.profiles(FRAME))
         aProfiles.add("defaults")
         aProfiles.update(self.__dUnsavedChanges)
         return aProfiles
@@ -95,7 +96,7 @@ class FrameProfileEditor(SutekhDialog):
         """Return a dict of option values from a (possibly unsaved) profile."""
         if sProfile in self.__dUnsavedChanges:
             dValues = self.__dUnsavedChanges[sProfile]
-        elif sProfile in self.__oConfig.profiles() or sProfile == "defaults":
+        elif sProfile in self.__oConfig.profiles(FRAME) or sProfile == "defaults":
             dValues = {}
             if sProfile == "defaults":
                 sProfile = None

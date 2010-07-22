@@ -8,6 +8,7 @@
 """Base class for the pane menus"""
 
 from sutekh.gui.SutekhMenu import SutekhMenu
+import gtk
 
 class FilteredViewMenu(SutekhMenu):
     # pylint: disable-msg=R0904, R0922
@@ -78,6 +79,49 @@ class FilteredViewMenu(SutekhMenu):
     def show_search_dialog(self, _oWidget):
         """Show the search dialog"""
         self._oController.view.searchdialog.show_all()
+
+    # profile helpers
+
+    def _create_profile_menu(self, oParentMenu, sTitle, sType, fCallback,
+            sProfile):
+        """Create a radio group sub-menu for selecting a profile."""
+        oMenu = self.create_submenu(oParentMenu, sTitle)
+        oConfig = self._oMainWindow.config_file
+
+        oGroup = gtk.RadioMenuItem(None,
+            oConfig.get_profile_option(sType, None, "name"))
+        oGroup.connect("toggled", fCallback, None)
+        oMenu.append(oGroup)
+
+        self._update_profile_group(oMenu, sType, fCallback, sProfile)
+
+        return oMenu
+
+    def _update_profile_group(self, oMenu, sType, fCallback, sProfile):
+        """Update the profile selection menu"""
+        oConfig = self._oMainWindow.config_file
+        oGroup = oMenu.get_children()[0]
+
+        aProfiles = [(sKey, oConfig.get_profile_option(sType, sKey, "name"))
+            for sKey in oConfig.profiles(sType)]
+        aProfiles.sort(key=lambda tProfile: tProfile[1])
+
+        if sProfile is None or sProfile == 'Default':
+            oGroup.set_active(True)
+
+        # clear out existing radio items
+        for oRadio in oGroup.get_group():
+            if oRadio is not oGroup:
+                oRadio.set_group(None)
+                oMenu.remove(oRadio)
+
+        for sKey, sName in aProfiles:
+            oRadio = gtk.RadioMenuItem(oGroup, sName)
+            oRadio.connect("toggled", fCallback, sKey)
+            if sKey == sProfile:
+                oRadio.set_active(True)
+            oMenu.append(oRadio)
+            oRadio.show()
 
 class CardListMenu(FilteredViewMenu):
     # pylint: disable-msg=R0904
