@@ -1,3 +1,15 @@
+22 Jul 2010
+ * Unify the profile editors
+ * Unify some of the profile menu handling code
+
+21 Jul 2010
+ * Fix bug that caused unnessecary appending of pane numbers to names
+ * Fix bug wit left default profile entry in the menu incorrectly
+   unselected when loading the profiles
+
+20 Jul 2010
+ * Add a profile type parameter to simplify profile code
+
 18 Jul 2010
  * Add python-rsvg dependancy note
 
