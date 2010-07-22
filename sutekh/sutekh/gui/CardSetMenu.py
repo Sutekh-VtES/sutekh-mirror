@@ -163,7 +163,7 @@ class CardSetMenu(CardListMenu):
     def _edit_profiles(self, _oWidget):
         """Open an options profiles editing dialog."""
         oDlg = FrameProfileEditor(self._oMainWindow,
-            self._oMainWindow.config_file)
+            self._oMainWindow.config_file, CARDSET)
         oDlg.run()
 
         sCardsetProfile = self._oMainWindow.config_file.get_profile(CARDSET,

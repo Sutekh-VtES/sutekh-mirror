@@ -1,23 +1,27 @@
 # FrameProfileEditor.py
 # -*- coding: utf8 -*-
 # vim:fileencoding=utf8 ai ts=4 sts=4 et sw=4
-# Dialog for editing per-frame/per-deck profiles.
 # Copyright 2010 Simon Cross <hodgestar+sutekh@gmail.com>
 # GPL - see COPYING for details
+
+"""Dialog for editing profiles.
+
+The type of profile to edit (cardset, cardset list, etc.) is a parameter
+passed in when the dialog is created.
+"""
 
 
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error, \
                                     do_complaint_buttons
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 from sutekh.gui.PreferenceTable import PreferenceTable
-from sutekh.gui.ConfigFile import FRAME
 import gtk
 import gobject
 
 # TODO: add means to delete profile (possibly separate menu item)
 
 class FrameProfileEditor(SutekhDialog):
-    """Dialog which allows the user to per-deck option profiles.
+    """Dialog which allows the user to edit profiles of the specified type.
        """
     # pylint: disable-msg=R0904, R0902
     # R0904 - gtk.Widget, so many public methods
@@ -25,12 +29,13 @@ class FrameProfileEditor(SutekhDialog):
     RESPONSE_SAVE_AND_CLOSE = 1
     RESPONSE_CANCEL = 2
 
-    def __init__(self, oParent, oConfig):
+    def __init__(self, oParent, oConfig, sType):
         super(FrameProfileEditor, self).__init__("Edit Per-Deck Profiles",
                 oParent, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT)
 
         self.__oParent = oParent
         self.__oConfig = oConfig
+        self._sType = sType
         self.__dUnsavedChanges = {}
         self.__sActiveProfile = None
 
@@ -47,10 +52,10 @@ class FrameProfileEditor(SutekhDialog):
         self.vbox.pack_start(self.__oSelectorCombo, expand=False)
 
         aOptions = []
-        for sKey in self.__oConfig.deck_options():
+        for sKey in self.__oConfig.profile_options(self._sType):
             bInherit = sKey != "name"
-            aOptions.append((sKey, self.__oConfig.get_deck_option_spec(sKey),
-                bInherit))
+            aOptions.append((sKey,
+                self.__oConfig.get_option_spec(self._sType, sKey), bInherit))
 
         self.__oOptionsTable = PreferenceTable(aOptions,
                 oConfig.get_validator())
@@ -87,7 +92,7 @@ class FrameProfileEditor(SutekhDialog):
 
     def _all_profile_keys(self):
         """Return a set of all profile keys (including unsaved profiles)."""
-        aProfiles = set(self.__oConfig.profiles(FRAME))
+        aProfiles = set(self.__oConfig.profiles(self._sType))
         aProfiles.add("defaults")
         aProfiles.update(self.__dUnsavedChanges)
         return aProfiles
@@ -96,15 +101,17 @@ class FrameProfileEditor(SutekhDialog):
         """Return a dict of option values from a (possibly unsaved) profile."""
         if sProfile in self.__dUnsavedChanges:
             dValues = self.__dUnsavedChanges[sProfile]
-        elif sProfile in self.__oConfig.profiles(FRAME) or sProfile == "defaults":
+        elif sProfile in self.__oConfig.profiles(self._sType) or \
+                sProfile == "defaults":
             dValues = {}
             if sProfile == "defaults":
                 sProfile = None
-            for sKey in self.__oConfig.deck_options():
-                dValues[sKey] = self.__oConfig.get_deck_profile_option(
+            for sKey in self.__oConfig.profile_options(self._sType):
+                dValues[sKey] = self.__oConfig.get_profile_option(self._sType,
                     sProfile, sKey)
         else:
-            dValues = dict.fromkeys(self.__oConfig.deck_options(), None)
+            dValues = dict.fromkeys(
+                    self.__oConfig.profile_options(self._sType), None)
             dValues["name"] = "New Profile (%s)" % sProfile
         return dValues
 
@@ -163,6 +170,8 @@ class FrameProfileEditor(SutekhDialog):
             return
 
         def set_func(oModel, _oPath, oIter):
+            """Helper function used in foreach loop. Sets the correct
+               iter active."""
             if oModel.get_value(oIter, 0) == self.__sActiveProfile:
                 self.__oSelectorCombo.set_active_iter(oIter)
                 return True
@@ -204,4 +213,5 @@ class FrameProfileEditor(SutekhDialog):
             if sProfile == "defaults":
                 sProfile = None
             for sKey, sValue in dValues.items():
-                self.__oConfig.set_deck_profile_option(sProfile, sKey, sValue)
+                self.__oConfig.set_profile_option(self._sType, sProfile,
+                        sKey, sValue)

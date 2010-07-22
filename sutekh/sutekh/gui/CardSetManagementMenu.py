@@ -10,8 +10,7 @@
 
 import gtk
 from sutekh.gui.FilteredViewMenu import FilteredViewMenu
-from sutekh.gui.CardSetManagementProfileEditor import \
-        CardSetManagementProfileEditor
+from sutekh.gui.FrameProfileEditor import FrameProfileEditor
 from sutekh.gui.ConfigFile import CARDSET_LIST
 
 class CardSetManagementMenu(FilteredViewMenu):
@@ -65,8 +64,8 @@ class CardSetManagementMenu(FilteredViewMenu):
 
     def _edit_profiles(self, _oWidget):
         """Open an options profiles editing dialog."""
-        oDlg = CardSetManagementProfileEditor(self._oMainWindow,
-            self._oMainWindow.config_file)
+        oDlg = FrameProfileEditor(self._oMainWindow,
+            self._oMainWindow.config_file, CARDSET_LIST)
         oDlg.run()
 
         sProfile = self._oMainWindow.config_file.get_profile(CARDSET_LIST,

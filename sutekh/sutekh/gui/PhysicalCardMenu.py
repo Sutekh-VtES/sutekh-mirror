@@ -10,7 +10,7 @@
 
 import gtk
 from sutekh.gui.FilteredViewMenu import CardListMenu
-from sutekh.gui.CardListProfileEditor import CardListProfileEditor
+from sutekh.gui.FrameProfileEditor import FrameProfileEditor
 from sutekh.gui.ConfigFile import WW_CARDLIST
 
 class PhysicalCardMenu(CardListMenu):
@@ -65,8 +65,8 @@ class PhysicalCardMenu(CardListMenu):
 
     def _edit_profiles(self, _oWidget):
         """Open an options profiles editing dialog."""
-        oDlg = CardListProfileEditor(self._oMainWindow,
-            self._oMainWindow.config_file)
+        oDlg = FrameProfileEditor(self._oMainWindow,
+            self._oMainWindow.config_file, WW_CARDLIST)
         oDlg.run()
 
         sProfile = self._oMainWindow.config_file.get_profile(WW_CARDLIST,
