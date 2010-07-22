@@ -120,7 +120,7 @@ class PluginConfigFileListener(ConfigFileListener):
                         )
             else:
                 tProfiles = (oConfig.get_profile(sType,
-                    self._oPlugin.model.cardset),)
+                    self._oPlugin.model.cardset_id),)
             if sProfile in tProfiles:
                 self._oPlugin.perpane_config_updated()
 
