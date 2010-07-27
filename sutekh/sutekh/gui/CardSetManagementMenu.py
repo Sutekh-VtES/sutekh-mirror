@@ -57,7 +57,7 @@ class CardSetManagementMenu(FilteredViewMenu):
         sProfile = self._oMainWindow.config_file.get_profile(CARDSET_LIST,
                 CARDSET_LIST)
         self._oCardSetlistProfileMenu = self._create_profile_menu(oMenu,
-            "CardSet list Profile", CARDSET_LIST,
+            "CardSet List Profile", CARDSET_LIST,
             self._select_cardset_list_profile, sProfile)
 
         self.add_edit_menu_actions(oMenu)
