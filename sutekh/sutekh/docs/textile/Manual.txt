@@ -55,10 +55,16 @@ h2. Contents
 ## "Test Card Set Independence":#test_cs_indep
 ## "Simulate Opening Hand":#opening_hand
 ## "Card draw probabilities":#draw_prob
+# "Profiles":#profiles
+## "Edit Profile":#edit_profile
+## "Managing Profiles":#manage_profile
+## "White Wolf Card List Profile Options":#ww_profile
+## "Card Set Profile Options":#cardset_profile
+## "CardSet List Profile Options":#cs_profile
+### "Extra Columns (card set list)"#cs_columns
 # "Other Tools":#other
 ## "Change Grouping":#grouping
 ## "Select Extra Columns":#columns
-## "Select Extra Columns (card set list)":#cs_columns
 
 h2(#intro). Introduction
 
@@ -413,6 +419,10 @@ h3(#card_set_list_edit). Edit
 a card set with a name starting with the typed text. The search dialog can \
 also be opened by either using the *&lt;Ctrl&gt;-F* shortcut, or by simply \
 starting to type in the list view.
+* _Edit Profiles_: Open up a "edit":#edit_profile profile dialog for
+adding or changing profiles for the carrd set list.
+* _CardSet List Profile_: Allows you to select between the available
+profiles for the card set list.
 
 
 h3(#card_set_list_filter). Filter
@@ -422,12 +432,6 @@ The filter menu has two options:
 * _Specify Filter_: Specify the filter to apply to the card set list. See the \
 "Card Set Filters":#card_set_filters section.
 * _Apply Filter_: Toggle whether the filter is currently applied to the list.
-
-h3(#card_set_list_other). Other
-
-The following other options are available from the card set list pane:
-
-* "Select Extra Columns":#cs_columns
 
 h2(#cardsets). Card Sets
 
@@ -1024,6 +1028,46 @@ a number from one to the total number of cards selected.
 The selected changes are only applied when you press the the _recalculate table_
 button.
 
+h2(#profiles). Profiles
+
+h3(#edit_profile). Editing Profiles
+
+The *Edit Profile* dialog is an interface for creating new profiles of the
+appropriate type, or to adjust the settings of the profile.
+
+New Profiles can be created by selecting the *New Profile* option from the drop
+down list. Otherwise, the profile to be edited can be selected. Profiles can
+be renamed by editing the name field.
+
+Changes are only applied if the *Save and Close* option is chosen. The changes
+are applied to all panes used the edited profile.  Cancel discards all changes
+made.
+
+h3(#manage_profile). Managing Profiles
+
+h3(#ww_profile). White Wolf Card List Profile Options
+
+h3(#cardset_profile). Card Set Profile Options
+
+h3(#cs_profile) CardSet List Profile Options
+
+h4(#cs_columns). Extra Columns (card set list)
+
+Only card set names are shown in the card set list by default as well.  You can
+select additional columns to display as part of the card set list profile.
+
+The possible extra columns are:
+
+* _Author_: Show the card set author.
+* _Description_: Show the card set description.
+* _Total cards_: Show the total number of cards in the card set.
+* _Crypt_: Show the number of crypt cards in the card set.
+* _Library_: Show the number of library cards in the card set.
+* _All Children_: Show the number of child card sets each card set has
+* _In-Use Children_: Show the number of child card sets marked as in use.
+
+The display can be sorted on these columns by clicking on the column headers.
+
 h2(#other). Other Tools
 
 h3(#grouping). Change Grouping
@@ -1091,22 +1135,5 @@ If you have downloaded the icons from the White Wolf site, you will be able to
 toggle the display between the _Show Icons and Names_, _Show Text only_ and
 _Show Icons only_ options using the radio buttons provided. This setting will
 affect all selected columns that can use icons.
-
-h3(#cs_columns). Select Extra Columns (card set list)
-
-Only card set names are shown in the card set list by default as well.  You can
-select additional columns to display using this option.
-
-The possible extra columns are:
-
-* _Author_: Show the card set author.
-* _Description_: Show the card set description.
-* _Total cards_: Show the total number of cards in the card set.
-* _Crypt_: Show the number of crypt cards in the card set.
-* _Library_: Show the number of library cards in the card set.
-* _All Children_: Show the number of child card sets each card set has
-* _In-Use Children_: Show the number of child card sets marked as in use.
-
-The display can be sorted on these columns by clicking on the column headers.
 
 
