@@ -1,3 +1,8 @@
+27 Jul 2010
+ * Start profile docs section
+ * Remove some dead code
+ * Remove 'card set extra columns' from menus (only changeable via profiles now)
+
 22 Jul 2010
  * Unify the profile editors
  * Unify some of the profile menu handling code
