@@ -475,10 +475,6 @@ class ConfigFile(object):
         """Return a dictionary of frame id -> profile mappings."""
         return dict(self.__oConfig['per_deck']['frame_profiles'])
 
-    def cardset_profiles(self):
-        """Return a dictionary of cardset id -> profile mappings."""
-        return dict(self.__oConfig['per_deck']['cardset_profiles'])
-
     def profiles(self, sType):
         """Return a list of profile keys."""
         if sType == FRAME or sType == CARDSET:
@@ -511,17 +507,6 @@ class ConfigFile(object):
                 return self.__oConfig[sType]['defaults'][sKey]
             else:
                 return self.__oConfig[sType]['profiles'][sProfile][sKey]
-        except KeyError:
-            return None
-
-    def get_cardset_list_profile_option(self, sProfile, sKey):
-        """Get the value of a per-deck option for a profile."""
-        try:
-            if sProfile is None or sProfile.lower() == "default":
-                return self.__oConfig['cardset list']['defaults'][sKey]
-            else:
-                return self.__oConfig['cardset list']['profiles'][
-                        sProfile][sKey]
         except KeyError:
             return None
 
