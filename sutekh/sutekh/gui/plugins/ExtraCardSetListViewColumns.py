@@ -10,7 +10,6 @@
 import gtk
 import pango
 from sutekh.gui.PluginManager import SutekhPlugin
-from sutekh.gui.SutekhDialog import SutekhDialog
 from sutekh.gui.CellRendererIcons import CellRendererIcons, SHOW_TEXT_ONLY
 from sutekh.core.SutekhObjects import PhysicalCardSet, IPhysicalCardSet, \
         MapPhysicalCardToPhysicalCardSet
@@ -89,7 +88,6 @@ class ExtraCardSetListViewColumns(SutekhPlugin):
         self._dCache = {}
 
         # We may add columns with icons later, like clans in the crypt
-        #self._oFirstBut = None
         self._iShowMode = SHOW_TEXT_ONLY
 
         listen_row_update(self.card_set_changed, PhysicalCardSet)
@@ -287,20 +285,6 @@ class ExtraCardSetListViewColumns(SutekhPlugin):
 
 
     # pylint: enable-msg=R0201
-    # Dialog and Menu Item Creation
-
-    def get_menu_item(self):
-        """Register on 'Plugins' menu"""
-        if not self.check_versions() or not self.check_model_type():
-            return None
-        oSelector = gtk.MenuItem("Select Extra Columns")
-        oSelector.connect("activate", self.activate)
-        return ('Plugins', oSelector)
-
-    def activate(self, _oWidget):
-        """Handle menu activation"""
-        oDlg = self.make_dialog()
-        oDlg.run()
 
     def sort_column(self, _oModel, oIter1, oIter2, oGetData):
         """Stringwise comparision of oIter1 and oIter2.
@@ -320,48 +304,6 @@ class ExtraCardSetListViewColumns(SutekhPlugin):
             # Values agree, so do fall back sort
             iRes = cmp(sCardSet1, sCardSet2)
         return iRes
-
-    def make_dialog(self):
-        """Create the column selection dialog"""
-        sName = "Select Extra Columns ..."
-
-        oDlg = SutekhDialog(sName, self.parent,
-                gtk.DIALOG_DESTROY_WITH_PARENT,
-                (gtk.STOCK_OK, gtk.RESPONSE_OK, gtk.STOCK_CANCEL,
-                    gtk.RESPONSE_CANCEL))
-
-        oDlg.connect("response", self.handle_response)
-
-        # pylint: disable-msg=W0201
-        # no point in defining this in __init__
-        self._aButtons = []
-        aColsInUse = self.get_cols_in_use()
-        # pylint: disable-msg=E1101
-        # pylint doesn't detect vbox's methods
-        for sName in self._dCols:
-            oBut = gtk.CheckButton(sName)
-            oBut.set_active(sName in aColsInUse)
-            oDlg.vbox.pack_start(oBut)
-            self._aButtons.append(oBut)
-
-        # Icons mode question logic
-        #oDlg.vbox.pack_start(gtk.HSeparator())
-        #oIter = self._dModes.iterkeys()
-        #for sName in oIter:
-        #    self._oFirstBut = gtk.RadioButton(None, sName, False)
-        #    if self._iShowMode == self._dModes[sName]:
-        #        self._oFirstBut.set_active(True)
-        #    oDlg.vbox.pack_start(self._oFirstBut, expand=False)
-        #    break
-        #for sName in oIter:
-        #    oBut = gtk.RadioButton(self._oFirstBut, sName)
-        #    oDlg.vbox.pack_start(oBut, expand=False)
-        #    if self._iShowMode == self._dModes[sName]:
-        #        oBut.set_active(True)
-
-        oDlg.show_all()
-
-        return oDlg
 
     # SQLObject event listeners
     # While we can try to be clever and update the cache, there are enough
@@ -393,24 +335,6 @@ class ExtraCardSetListViewColumns(SutekhPlugin):
 
     # Actions
 
-    def handle_response(self, oDlg, oResponse):
-        """Handle user response from the dialog"""
-        if oResponse == gtk.RESPONSE_CANCEL:
-            oDlg.destroy()
-        elif oResponse == gtk.RESPONSE_OK:
-            aColsInUse = []
-            for oBut in self._aButtons:
-                if oBut.get_active():
-                    sLabel = oBut.get_label()
-                    aColsInUse.append(sLabel)
-            #for oBut in self._oFirstBut.get_group():
-            #    sName = oBut.get_label()
-            #    if oBut.get_active():
-            #        self._iShowMode = self._dModes[sName]
-
-            self.set_cols_in_use(aColsInUse)
-            oDlg.destroy()
-
     def set_cols_in_use(self, aCols):
         """Add columns to the view"""
         iSortCol, _iDir = self.model.get_sort_column_id()
@@ -432,10 +356,6 @@ class ExtraCardSetListViewColumns(SutekhPlugin):
             oColumn.set_sort_column_id(iNum + 1 + SORT_COLUMN_OFFSET)
             self.model.set_sort_func(iNum + 1 + SORT_COLUMN_OFFSET,
                     self.sort_column, self._dSortDataFuncs[sCol])
-
-    def get_cols_in_use(self):
-        """Get which extra columns have been added to view"""
-        return [oCol.get_property("title") for oCol in self._get_col_objects()]
 
     def _get_col_objects(self):
         """Get the actual TreeColumn in the view"""
