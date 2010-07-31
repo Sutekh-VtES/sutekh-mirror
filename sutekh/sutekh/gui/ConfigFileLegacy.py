@@ -10,38 +10,11 @@
 
 from ConfigParser import RawConfigParser, NoOptionError
 
-class ConfigFileListener(object):
-    """Listener object for config changes - inspired by CardListModeListener"""
-
-    def add_filter(self, sKey, sFilter):
-        """New Filter added"""
-        pass
-
-    def remove_filter(self, sKey, sFilter):
-        """Filter removed"""
-        pass
-
-    def replace_filter(self, sKey, sOldFilter, sNewFilter):
-        """A Filter has been replaced"""
-        pass
-
-    def set_postfix_the_display(self, bPostfix):
-        """Postfix display mode has been set."""
-        pass
-
-    def set_plugin_key(self, sKey, sValue):
-        """Plugin key has been set"""
-        pass
-
-class ConfigFile(object):
-    """Handle the setup and management of the config file.
+class ConfigFileLegacy(object):
+    """Handle the setup and management of the old config file format.
 
        Ensure that the needed sections exist, and that sensible
        defaults values are assigned.
-
-       Filters are saved to the config file, and interested objects
-       can register as listeners on the config file to respond to
-       changes to the filters.
        """
     # pylint: disable-msg=R0904
     # We need to provide fine-grained access to all the data,
@@ -58,7 +31,6 @@ class ConfigFile(object):
         self.__oConfig = RawConfigParser()
         # Use read to parse file if it exists
         self.__oConfig.read(self.__sFileName)
-        self.__dListeners = {}
 
         if not self.__oConfig.has_section(self.__sPrefsSection):
             self.__oConfig.add_section(self.__sPrefsSection)
@@ -103,10 +75,6 @@ class ConfigFile(object):
         if not self.__oConfig.has_section(self.__sPaneInfoSection):
             self.__oConfig.add_section(self.__sPaneInfoSection)
 
-    def __str__(self):
-        """Debugging aid - print the filename"""
-        return "FileName : " + self.__sFileName
-
     def _get_bool_key(self, sSection, sKey):
         """Test if a boolean key is set or not"""
         return self.__oConfig.get(sSection, sKey) == 'yes'
@@ -118,17 +86,9 @@ class ConfigFile(object):
         else:
             self.__oConfig.set(sSection, sKey, 'no')
 
-    def add_listener(self, oListener):
-        """Add a listener to respond to config file changes."""
-        self.__dListeners[oListener] = None
-
-    def remove_listener(self, oListener):
-        """Remove a listener from the list."""
-        del self.__dListeners[oListener]
-
     def write(self):
         """Write the config file to disk."""
-        self.__oConfig.write(open(self.__sFileName, 'w'))
+        raise RuntimeError("Writing the old config file no longer supported")
 
     def pre_save_clear(self):
         """Clear out old saved pos, before saving new stuff"""
@@ -206,8 +166,6 @@ class ConfigFile(object):
         """Set the 'postfix names' option."""
         self._set_bool_key(self.__sPrefsSection, 'postfix name display',
                 bPostfix)
-        for oListener in self.__dListeners:
-            oListener.set_postfix_the_display(bPostfix)
 
     def get_save_on_exit(self):
         """Query the 'save on exit' option."""
@@ -327,8 +285,6 @@ class ConfigFile(object):
         """Add a filter to the config file."""
         if sKey.lower() not in self.__oConfig.options(self.__sFiltersSection):
             self.__oConfig.set(self.__sFiltersSection, sKey, sFilter)
-            for oListener in self.__dListeners:
-                oListener.add_filter(sKey, sFilter)
 
     def remove_filter(self, sKey, sFilter):
         """Remove a filter from the file"""
@@ -336,8 +292,6 @@ class ConfigFile(object):
         if sKey.lower() in self.__oConfig.options(self.__sFiltersSection) and \
                 sFilter == self.__oConfig.get(self.__sFiltersSection, sKey):
             self.__oConfig.remove_option(self.__sFiltersSection, sKey)
-            for oListener in self.__dListeners:
-                oListener.remove_filter(sKey, sFilter)
 
     def replace_filter(self, sKey, sOldFilter, sNewFilter):
         """Replace a filter in the file with new filter"""
@@ -345,8 +299,6 @@ class ConfigFile(object):
                 sOldFilter == self.__oConfig.get(self.__sFiltersSection, sKey):
             self.__oConfig.remove_option(self.__sFiltersSection, sKey)
             self.__oConfig.set(self.__sFiltersSection, sKey, sNewFilter)
-            for oListener in self.__dListeners:
-                oListener.replace_filter(sKey, sOldFilter, sNewFilter)
 
     # plugins section
 
@@ -364,5 +316,3 @@ class ConfigFile(object):
     def set_plugin_key(self, sKey, sValue):
         """Set a value in the plugin section"""
         self.__oConfig.set(self.__sPluginsSection, sKey, sValue)
-        for oListener in self.__dListeners:
-            oListener.set_plugin_key(sKey, sValue)
