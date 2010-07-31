@@ -355,10 +355,12 @@ class AnalyzeCardList(SutekhPlugin):
         oAnalyze.connect("activate", self.activate)
         return ('Analyze', oAnalyze)
 
-    # pylint: disable-msg=W0201
+    # pylint: disable-msg=W0201, R0915
     # W0201 - We define a lot of class variables here, because a) this is the
     # plugin entry point, and, b) they need to reflect the current CardSet,
     # so they can't be filled properly in __init__
+    # R0915 - This is responsible for filling the whole notebook, so quite
+    # a long function, and there's no benefit to splitting it up further
     def activate(self, _oWidget):
         """Create the actual dialog, and populate it"""
         if not self.check_cs_size('Analyze Deck', 500):
@@ -457,6 +459,8 @@ class AnalyzeCardList(SutekhPlugin):
         oDlg.show_all()
         oNotebook.set_current_page(0)
         oDlg.run()
+
+    # pylint: enable-msg=W0201, R0915
 
     def get_crypt_stats(self, aVampireCards, aImbuedCards):
         """Extract the relevant statistics about the crypt from the lists
