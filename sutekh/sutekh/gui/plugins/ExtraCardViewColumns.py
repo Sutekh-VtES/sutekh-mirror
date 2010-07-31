@@ -38,8 +38,6 @@ class ExtraCardViewColumns(SutekhPlugin):
     OPTION_STR = ", ".join('"%s"' % sKey for sKey in COLUMNS.keys())
     EXTRA_COLUMNS = "extra columns"
 
-    # TODO: hook up functionality to per pane config option
-
     dTableVersions = {}
     aModelsSupported = [PhysicalCardSet, PhysicalCard]
     dPerPaneConfig = {
