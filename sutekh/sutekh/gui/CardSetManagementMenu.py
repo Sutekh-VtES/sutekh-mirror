@@ -24,7 +24,7 @@ class CardSetManagementMenu(FilteredViewMenu):
         self.__sName = 'Card Set List'
         self.__sSetTypeName = 'Card Set'
         self._oController = oController
-        self._oCardSetlistProfileMenu = None
+        self._oCardSetProfileMenu = None
         self.__create_actions_menu()
         self.create_edit_menu()
         self.create_filter_menu()
@@ -56,7 +56,7 @@ class CardSetManagementMenu(FilteredViewMenu):
 
         sProfile = self._oMainWindow.config_file.get_profile(CARDSET_LIST,
                 CARDSET_LIST)
-        self._oCardSetlistProfileMenu = self._create_profile_menu(oMenu,
+        self._oCardSetProfileMenu = self._create_profile_menu(oMenu,
             "CardSet List Profile", CARDSET_LIST,
             self._select_cardset_list_profile, sProfile)
 
@@ -70,7 +70,7 @@ class CardSetManagementMenu(FilteredViewMenu):
 
         sProfile = self._oMainWindow.config_file.get_profile(CARDSET_LIST,
                 CARDSET_LIST)
-        self._update_profile_group(self._oCardSetlistProfileMenu, CARDSET_LIST,
+        self._update_profile_group(self._oCardSetProfileMenu, CARDSET_LIST,
             self._select_cardset_list_profile, sProfile)
 
     def _select_cardset_list_profile(self, oRadio, sProfileKey):

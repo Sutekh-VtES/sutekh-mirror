@@ -86,9 +86,13 @@ class ConfigFileLegacy(object):
         else:
             self.__oConfig.set(sSection, sKey, 'no')
 
+    # pylint: disable-msg=R0201
+    # method for backwards compatibility
     def write(self):
         """Write the config file to disk."""
         raise RuntimeError("Writing the old config file no longer supported")
+
+    # pylint: enable-msg=R0201
 
     def pre_save_clear(self):
         """Clear out old saved pos, before saving new stuff"""
