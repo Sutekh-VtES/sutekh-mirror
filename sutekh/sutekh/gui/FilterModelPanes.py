@@ -11,7 +11,8 @@ from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 from sutekh.gui.ScrolledList import ScrolledList
 from sutekh.gui.CardSetsListView import CardSetsListView
 from sutekh.core.FilterParser import get_filters_for_type
-from sutekh.core.FilterBox import FilterBoxItem, FilterBoxModel
+from sutekh.core.FilterBox import FilterBoxItem, FilterBoxModel, BOXTYPE, \
+        BOXTYPE_ORDER
 import gobject
 import gtk
 
@@ -28,16 +29,15 @@ class FilterModelPanes(gtk.HBox):
         self.__oBoxModel = None
         self.__sFilterType = sFilterType
         self.__oSelectBar = FilterValuesBox(oDialog, sFilterType)
-        self.__oEditor = FilterBoxModelEditor(self.__oSelectBar)
+        self.__oEditBox = FilterBoxModelEditBox(self.__oSelectBar)
 
-        self.pack_start(AutoScrolledWindow(self.__oEditor, True), expand=True)
+        self.pack_start(AutoScrolledWindow(self.__oEditBox, True), expand=True)
         self.pack_start(self.__oSelectBar, expand=True)
 
     def replace_ast(self, oAST):
         """Replace the AST in the tree model"""
         self.__oBoxModel = FilterBoxModel(oAST, self.__sFilterType)
-        self.__oEditor.set_box_model(self.__oBoxModel)
-        self.__oEditor.load()
+        self.__oEditBox.set_box_model(self.__oBoxModel)
 
     def get_ast_with_values(self):
         """Get the current ast for the Editor, with values filled in"""
@@ -161,7 +161,7 @@ class FilterValuesBox(gtk.VBox):
         self._oWidget = gtk.VBox()
         oFilterTypes = ScrolledList('Filter Group Type')
         oFilterTypes.set_select_single()
-        oFilterTypes.fill_list(self._oBoxModelEditor.BOXTYPE_ORDER)
+        oFilterTypes.fill_list(BOXTYPE_ORDER)
         self.set_box_model_value(oFilter, oFilterTypes)
         oFilterTypes.get_selection_object().connect('changed',
                 self.update_box_model, oFilter, oFilterTypes)
@@ -263,7 +263,7 @@ class FilterValuesBox(gtk.VBox):
 
     def set_box_model_value(self, oBoxModel, oWidget):
         """Set the correct selection for this box model"""
-        for sDesc, tInfo in self._oBoxModelEditor.BOXTYPE.iteritems():
+        for sDesc, tInfo in BOXTYPE.iteritems():
             sBoxType, bNegate = tInfo
             if oBoxModel.sBoxType == sBoxType and oBoxModel.bNegate == bNegate:
                 oWidget.set_selected(sDesc)
@@ -273,10 +273,10 @@ class FilterValuesBox(gtk.VBox):
         aSelected = oList.get_selection()
         if not aSelected:
             return # We don't do anything special if nothing's selected
-        for sDesc, tInfo in self._oBoxModelEditor.BOXTYPE.iteritems():
+        for sDesc, tInfo in BOXTYPE.iteritems():
             if sDesc == aSelected[0]:
                 oBoxModel.sBoxType, oBoxModel.bNegate = tInfo
-        self._oBoxModelEditor.update(oBoxModel)
+        self._oBoxModelEditor.update_box_text(oBoxModel)
 
     # pylint: disable-msg=R0913
     # function signature requires all these arguments
@@ -457,63 +457,26 @@ class BoxModelPopupMenu(gtk.Menu):
         self.append(gtk.SeparatorMenuItem())
         self.append(self._oDel)
 
-class FilterBoxModelEditor(gtk.VBox):
-    """Widget for editing a FilterBoxModel."""
-    # pylint: disable-msg=R0904
-    # gtk.Widget, so many public methods
-    BOXTYPE = { # description -> (AND or OR, bNegate)
-        'All of ...': (FilterBoxModel.AND, False),
-        'Any of ...': (FilterBoxModel.OR, False),
-        'Not all of ...': (FilterBoxModel.AND, True),
-        'None of ...': (FilterBoxModel.OR, True),
-    }
 
-    BOXTYPE_ORDER = [ # order types should appear in combo
-        'All of ...', 'Any of ...', 'Not all of ...',
-        'None of ...',
-    ]
+class FilterBoxModelStore(gtk.TreeStore):
+    """TreeStore for the FilterBoxModelEditor"""
+    # pylint: disable-msg=R0904
+    # R0904 - gtk.Widget, so many public methods
 
     BLACK =  gtk.gdk.color_parse('black')
     GREY =  gtk.gdk.color_parse('grey')
     NO_VALUE = '<i>No Values Set</i>'
     NONE_VALUE = '<b>No Values for this filter</b>'
 
-    def __init__(self, oValuesWidget):
-        super(FilterBoxModelEditor, self).__init__()
-        self.__oTreeStore = gtk.TreeStore(gobject.TYPE_STRING,
+    def __init__(self):
+        super(FilterBoxModelStore, self).__init__(gobject.TYPE_STRING,
                 gobject.TYPE_PYOBJECT, gtk.gdk.Color)
-        self.__oTreeView = gtk.TreeView(self.__oTreeStore)
-        self.pack_start(self.__oTreeView, expand=True)
-        oTextCell = gtk.CellRendererText()
-        oColumn = gtk.TreeViewColumn("Filter", oTextCell, markup=0,
-                foreground_gdk=2)
-        self.__oTreeView.append_column(oColumn)
 
-        self.__oTreeView.drag_dest_set(gtk.DEST_DEFAULT_ALL, DRAG_TARGETS,
-                gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
-
-        self._oValuesWidget = oValuesWidget
-
-        self.__oTreeView.drag_source_set(
-                gtk.gdk.BUTTON1_MASK | gtk.gdk.BUTTON3_MASK,
-                DRAG_TARGETS, gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
-
-        self.__oTreeView.connect('drag_data_received', self.drag_drop_handler)
-
-        self.__oTreeView.connect('drag_data_get', self.drag_filter)
-
-        self.__oBoxModel = None
-        self.oCurSelectIter = None
-        oSelection = self.__oTreeView.get_selection()
-        oSelection.set_mode(gtk.SELECTION_SINGLE)
-        oSelection.connect('changed', self.update_values_widget)
-        self.__oTreeView.connect('button_press_event', self.press_button)
-
-    def load(self):
-        """Load the boxmodel into the TreeView"""
+    def load(self, oBoxModel):
+        """Load the box model into the store"""
         def do_add_iter(oIter, oModel, bDisabled):
             """Recursively add elements of the box model"""
-            oThisIter = self.__oTreeStore.append(oIter)
+            oThisIter = self.append(oIter)
             oColour = self.BLACK
             if hasattr(oModel, 'sFilterDesc'):
                 if oModel.bNegated:
@@ -522,60 +485,50 @@ class FilterBoxModelEditor(gtk.VBox):
                     sText = oModel.sFilterDesc
                 if oModel.bDisabled or bDisabled:
                     oColour = self.GREY
-                self.__oTreeStore.set(oThisIter, 0, sText, 1, oModel,
-                        2, oColour)
+                self.set(oThisIter, 0, sText, 1, oModel, 2, oColour)
                 if oModel.iValueType == oModel.LIST_FROM:
                     # Load LIST_FROM
                     aValues, aFrom = oModel.aCurValues
                     if aValues:
                         for sValue in aValues:
-                            oChild = self.__oTreeStore.append(oThisIter)
-                            self.__oTreeStore.set(oChild, 0, sValue, 1, None,
-                                    2, oColour)
+                            oChild = self.append(oThisIter)
+                            self.set(oChild, 0, sValue, 1, None, 2, oColour)
                     else:
-                        oChild = self.__oTreeStore.append(oThisIter)
-                        self.__oTreeStore.set(oChild, 0, self.NO_VALUE,
-                                1, None, 2, oColour)
-                    oChild = self.__oTreeStore.append(oThisIter)
-                    self.__oTreeStore.set(oChild, 0, '<b>From</b>', 1, None,
-                            2, oColour)
+                        oChild = self.append(oThisIter)
+                        self.set(oChild, 0, self.NO_VALUE, 1, None, 2, oColour)
+                    oChild = self.append(oThisIter)
+                    self.set(oChild, 0, '<b>From</b>', 1, None, 2, oColour)
                     if aFrom:
                         for sValue in aFrom:
-                            oChild = self.__oTreeStore.append(oThisIter)
-                            self.__oTreeStore.set(oChild, 0, sValue, 1, None,
-                                    2, oColour)
+                            oChild = self.append(oThisIter)
+                            self.set(oChild, 0, sValue, 1, None, 2, oColour)
                     else:
-                        oChild = self.__oTreeStore.append(oThisIter)
-                        self.__oTreeStore.set(oChild, 0, self.NO_VALUE,
-                                1, None, 2, oColour)
+                        oChild = self.append(oThisIter)
+                        self.set(oChild, 0, self.NO_VALUE, 1, None, 2, oColour)
                 elif oModel.aCurValues and oModel.aValues:
                     for sValue in oModel.aCurValues:
-                        oChild = self.__oTreeStore.append(oThisIter)
-                        self.__oTreeStore.set(oChild, 0, sValue, 1, None,
-                                2, oColour)
+                        oChild = self.append(oThisIter)
+                        self.set(oChild, 0, sValue, 1, None, 2, oColour)
                 elif oModel.aCurValues:
-                    oChild = self.__oTreeStore.append(oThisIter)
-                    self.__oTreeStore.set(oChild, 0, oModel.aCurValues[0],
-                            1, None, 2, oColour)
+                    oChild = self.append(oThisIter)
+                    self.set(oChild, 0, oModel.aCurValues[0], 1, None,
+                            2, oColour)
                 elif oModel.iValueType == oModel.NONE:
-                    oChild = self.__oTreeStore.append(oThisIter)
-                    self.__oTreeStore.set(oChild, 0, self.NONE_VALUE, 1, None,
-                            2, oColour)
+                    oChild = self.append(oThisIter)
+                    self.set(oChild, 0, self.NONE_VALUE, 1, None, 2, oColour)
                 else:
-                    oChild = self.__oTreeStore.append(oThisIter)
-                    self.__oTreeStore.set(oChild, 0, self.NO_VALUE, 1, None,
-                            2, oColour)
+                    oChild = self.append(oThisIter)
+                    self.set(oChild, 0, self.NO_VALUE, 1, None, 2, oColour)
             elif hasattr(oModel, 'sBoxType'):
                 # Box Model, so lookup correct string
                 if oModel.bDisabled or bDisabled:
                     oColour = self.GREY
                     bDisabled = True
-                for sDesc, tInfo in self.BOXTYPE.iteritems():
+                for sDesc, tInfo in BOXTYPE.iteritems():
                     sBoxType, bNegate = tInfo
                     if oModel.sBoxType == sBoxType \
                             and oModel.bNegate == bNegate:
-                        self.__oTreeStore.set(oThisIter, 0, sDesc, 1, oModel,
-                                2, oColour)
+                        self.set(oThisIter, 0, sDesc, 1, oModel, 2, oColour)
                 # iterate over children
                 for oSubModel in oModel:
                     do_add_iter(oThisIter, oSubModel, bDisabled)
@@ -583,15 +536,179 @@ class FilterBoxModelEditor(gtk.VBox):
                 # Something else
                 pass
 
-        self.__oTreeStore.clear()
-        if self.__oBoxModel is None:
+        self.clear()
+        if oBoxModel is None:
             return
         # Walk the box model, creating items as we need them
-        do_add_iter(None, self.__oBoxModel, False)
-        self.__oTreeView.expand_all()
-        # Select the root of the model by default.
-        self._select_path(
-                self.__oTreeStore.get_path(self.__oTreeStore.get_iter_root()))
+        do_add_iter(None, oBoxModel, False)
+        return self.get_path(self.get_iter_root())
+
+    def update_iter_with_values(self, aValues, oSelectIter, oPath):
+        """Update the given iter with the changed values"""
+        oChild = self.iter_children(oSelectIter)
+        oCurIter = self.get_iter(oPath)
+        iPos = 0
+        iIndex = -1
+        while oChild:
+            oNext = self.iter_next(oChild)
+            if not self.get_path(oChild) == self.get_path(oCurIter):
+                self.remove(oChild)
+            else:
+                iIndex = iPos
+            oChild = oNext
+            iPos += 1
+        if iIndex < 0:
+            # We deleted everything, so add 1 child
+            oCurIter = self.append(oSelectIter)
+            iIndex = 0
+        if aValues:
+            iIndex = min(len(aValues) - 1, iIndex)
+            iPos = 0
+            for sValue in aValues:
+                if iPos == iIndex:
+                    oChild = oCurIter
+                elif iPos < iIndex:
+                    oChild = self.insert_before(oSelectIter, oCurIter)
+                else:
+                    oChild = self.append(oSelectIter)
+                if sValue is not None:
+                    self.set(oChild, 0, sValue, 1, None, 2, self.BLACK)
+                else:
+                    self.set(oChild, 0, self.NO_VALUE, 1, None, 2, self.BLACK)
+                iPos += 1
+        else:
+            self.set(oCurIter, 0, self.NO_VALUE, 1, None, 2, self.BLACK)
+        return self.get_path(oCurIter)
+
+    def update_entry(self, oFilterItem, oSelectIter):
+        """Update the store with the current text"""
+        oChild = self.iter_children(oSelectIter)
+        if not oChild:
+            # No children, so oSelectIter is the one we want
+            oChild = oSelectIter
+        sText = oFilterItem.aCurValues[0]
+        if not sText:
+            sText = self.NO_VALUE
+        self.set(oChild, 0, sText, 1, None)
+        return self.get_path(oChild)
+
+
+class FilterBoxModelEditView(gtk.TreeView):
+    """TreeView for the FilterBoxModelEditor"""
+    # pylint: disable-msg=R0904
+    # R0904 - gtk.Widget, so many public methods
+
+    def __init__(self, oStore, oValuesWidget, oBoxModel):
+        super(FilterBoxModelEditView, self).__init__(oStore)
+        self._oStore = oStore
+        self._oBoxModel = oBoxModel
+        oTextCell = gtk.CellRendererText()
+        oColumn = gtk.TreeViewColumn("Filter", oTextCell, markup=0,
+                foreground_gdk=2)
+        self.append_column(oColumn)
+
+        self.drag_dest_set(gtk.DEST_DEFAULT_ALL, DRAG_TARGETS,
+                gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
+        self.drag_source_set(gtk.gdk.BUTTON1_MASK | gtk.gdk.BUTTON3_MASK,
+                DRAG_TARGETS, gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
+
+        self.connect('drag_data_received', self.drag_drop_handler)
+
+        oSelection = self.get_selection()
+        oSelection.set_mode(gtk.SELECTION_SINGLE)
+        self._oValuesWidget = oValuesWidget
+        oSelection.connect('changed', self.update_values_widget)
+        self.oCurSelectIter = None
+
+    def update_values_widget(self, _oTreeSelection):
+        """Update the values widget to the new selection"""
+        # Get the current selected row
+        _oModel, oIter = self.get_selection().get_selected()
+        oFilterObj = None
+        if oIter:
+            oFilterObj = self._oStore.get_value(oIter, 1)
+            while oFilterObj is None:
+                oIter = self._oStore.iter_parent(oIter)
+                if oIter:
+                    oFilterObj = self._oStore.get_value(oIter, 1)
+        self.oCurSelectIter = oIter
+        if oFilterObj is None:
+            self._oValuesWidget.set_widget(None, self)
+            return
+        elif oFilterObj.bDisabled:
+            self._oValuesWidget.set_widget(None, self)
+        else:
+            self._oValuesWidget.set_widget(oFilterObj, self)
+        if self._oStore.iter_depth(self.oCurSelectIter) > 0:
+            self._oValuesWidget.enable_disable(oFilterObj)
+            self._oValuesWidget.enable_delete()
+        else:
+            self._oValuesWidget.disable_all_buttons()
+
+    def select_path(self, oPath):
+        """Helper function to manage setting the selected path"""
+        self.set_cursor(oPath)
+        self.grab_focus()
+        self.scroll_to_cell(oPath, None, True, 0.5, 0.0)
+
+    def set_box_model(self, oBoxModel):
+        """Set the box model to the correct value"""
+        self._oBoxModel = oBoxModel
+        self.load()
+
+    def load(self, oPath=None):
+        """Load the boxmodel into the TreeView"""
+        oRootPath = self._oStore.load(self._oBoxModel)
+        self.expand_all()
+        if oPath:
+            self.select_path(oPath)
+        else:
+            # Select the root of the model by default.
+            self.select_path(oRootPath)
+
+    def get_tree_store(self):
+        """Get the tree store"""
+        return self._oStore
+
+    def update_list(self, oFilterItem):
+        """Update the list to show the current values"""
+        self._update_cur_iter_with_list(oFilterItem.aCurValues)
+
+    def update_count_list(self, oFilterItem):
+        """Update the list to show the current values"""
+        aValues = []
+        if oFilterItem.aCurValues[0]:
+            aValues.extend(oFilterItem.aCurValues[0])
+        else:
+            aValues.append(None)
+        aValues.append('<b>From</b>')
+        if oFilterItem.aCurValues[1]:
+            aValues.extend(oFilterItem.aCurValues[1])
+        else:
+            aValues.append(None)
+        self._update_cur_iter_with_list(aValues)
+
+    def update_box_text(self, oBoxModel):
+        """Update the listing for the given box model"""
+        for sDesc, tInfo in BOXTYPE.iteritems():
+            sBoxType, bNegate = tInfo
+            if oBoxModel.sBoxType == sBoxType and oBoxModel.bNegate == bNegate:
+                self.__oTreeStore.set(self.oCurSelectIter, 0, sDesc)
+
+    def update_entry(self, oFilterItem):
+        """Update the filter with the current text"""
+        oChildPath = self._oStore.update_entry(oFilterItem,
+                self.oCurSelectIter)
+        self.expand_to_path(oChildPath)
+        self.expand_row(oChildPath, True)
+
+    def _update_cur_iter_with_list(self, aValues):
+        """Fill in the list values"""
+        oPath, _oCol = self.get_cursor()
+        oCurPath = self._oStore.update_iter_with_values(aValues,
+                self.oCurSelectIter, oPath)
+        self.expand_to_path(oCurPath)
+        self.expand_row(oCurPath, True)
 
     # pylint: disable-msg=R0913
     # function signature requires all these arguments
@@ -602,40 +719,40 @@ class FilterBoxModelEditor(gtk.VBox):
         if not oSelectionData and oSelectionData.format != 8:
             oDragContext.finish(False, False, oTime)
         else:
-            oCurPath, _oCol = self.__oTreeView.get_cursor()
+            oCurPath, _oCol = self.get_cursor()
             sData =  oSelectionData.data
             if sData.startswith('NewFilter: ') or \
                     sData.startswith('MoveFilter: '):
                 sSource, sFilter = [x.strip() for x in sData.split(':', 1)]
                 # Check we have an acceptable drop position
-                tInfo = self.__oTreeView.get_dest_row_at_pos(iXPos, iYPos)
+                tInfo = self.get_dest_row_at_pos(iXPos, iYPos)
                 iIndex = 0
                 if not tInfo:
-                    oIter = self.__oTreeStore.get_iter_root()
+                    oIter = self._oStore.get_iter_root()
                     iIndex = -1
                 else:
                     oPath, iDropPos = tInfo
-                    oIter = self.__oTreeStore.get_iter(oPath)
-                    if self.__oTreeStore.iter_depth(oIter) > 0 and \
+                    oIter = self._oStore.get_iter(oPath)
+                    if self._oStore.iter_depth(oIter) > 0 and \
                             iDropPos == gtk.TREE_VIEW_DROP_BEFORE:
                         # Find the iter immediately before this one, since
                         # that's our actual target
-                        oParIter = self.__oTreeStore.iter_parent(oIter)
+                        oParIter = self._oStore.iter_parent(oIter)
                         oPrevIter = oParIter
-                        oNextIter = self.__oTreeStore.iter_children(oParIter)
-                        while self.__oTreeStore.get_path(oNextIter) != oPath:
+                        oNextIter = self._oStore.iter_children(oParIter)
+                        while self._oStore.get_path(oNextIter) != oPath:
                             oPrevIter = oNextIter
-                            oNextIter = self.__oTreeStore.iter_next(oPrevIter)
+                            oNextIter = self._oStore.iter_next(oPrevIter)
                         oIter = oPrevIter
                 # oIter now points to the right point to insert
-                oFilterObj = self.__oTreeStore.get_value(oIter, 1)
+                oFilterObj = self._oStore.get_value(oIter, 1)
                 if not hasattr(oFilterObj, 'sBoxType'):
                     # Need to insert into parent box model
                     oTempIter = oIter
                     oInsertObj = oFilterObj
                     while not hasattr(oInsertObj, 'sBoxType'):
-                        oTempIter = self.__oTreeStore.iter_parent(oTempIter)
-                        oInsertObj = self.__oTreeStore.get_value(oTempIter, 1)
+                        oTempIter = self._oStore.iter_parent(oTempIter)
+                        oInsertObj = self._oStore.get_value(oTempIter, 1)
                         if oFilterObj is None:
                             # Bounce this up a level as well
                             oFilterObj = oInsertObj
@@ -655,10 +772,10 @@ class FilterBoxModelEditor(gtk.VBox):
                 else:
                     # Find the dragged filter and remove it from it's current
                     # position
-                    oMoveIter = self.__oTreeStore.get_iter_from_string(sFilter)
-                    oMoveObj = self.__oTreeStore.get_value(oMoveIter, 1)
-                    oParent  = self.__oTreeStore.get_value(
-                            self.__oTreeStore.iter_parent(oMoveIter), 1)
+                    oMoveIter = self._oStore.get_iter_from_string(sFilter)
+                    oMoveObj = self._oStore.get_value(oMoveIter, 1)
+                    oParent  = self._oStore.get_value(
+                            self._oStore.iter_parent(oMoveIter), 1)
                     # Check move is legal
                     bDoInsert = False
                     if oInsertObj is not oMoveObj:
@@ -681,7 +798,7 @@ class FilterBoxModelEditor(gtk.VBox):
                 self.load()
                 if sSource == 'NewFilter':
                     # Restore selection after load
-                    self._select_path(oCurPath)
+                    self.select_path(oCurPath)
                     # Restore values widget selection
                     self._oValuesWidget.restore_pos_and_selection(tInfo)
                 else:
@@ -689,33 +806,42 @@ class FilterBoxModelEditor(gtk.VBox):
                     # Since we can serious muck around with the tree layout,
                     # we can't use any previous iters or paths, so we use
                     # foreach
-                    self.__oTreeStore.foreach(self._check_for_obj,
+                    self._oStore.foreach(self._check_for_obj,
                             oMoveObj)
             else:
                 oDragContext.finish(False, False, oTime)
 
     # pylint: enable-msg=R0913
 
+
+class FilterBoxModelEditBox(gtk.VBox):
+    """Box to hold the BoxModel view."""
+    # pylint: disable-msg=R0904
+    # gtk.Widget, so many public methods
+
+    def __init__(self, oValuesWidget):
+        super(FilterBoxModelEditBox, self).__init__()
+        self._oValuesWidget = oValuesWidget
+        self.__oTreeStore = FilterBoxModelStore()
+        self.__oTreeView = FilterBoxModelEditView(self.__oTreeStore,
+                oValuesWidget, None)
+        self.pack_start(self.__oTreeView, expand=True)
+
+        self.__oTreeView.connect('drag_data_get', self.drag_filter)
+
+        self.__oBoxModel = None
+        self.__oTreeView.connect('button_press_event', self.press_button)
+
     def get_view(self):
         """Get the view object"""
         return self.__oTreeView
-
-    def get_tree_store(self):
-        """Get the tree store"""
-        return self.__oTreeStore
-
-    def _select_path(self, oPath):
-        """Helper function to manage setting the selected path"""
-        self.__oTreeView.set_cursor(oPath)
-        self.__oTreeView.grab_focus()
-        self.__oTreeView.scroll_to_cell(oPath, None, True, 0.5, 0.0)
 
     def _check_for_obj(self, _oModel, oPath, oIter, oFilterObj):
         """Helper function for selecting and object in the tree.
           Meant to be called via the foreach method."""
         oCurObj = self.__oTreeStore.get_value(oIter, 1)
         if oCurObj is oFilterObj:
-            self._select_path(oPath)
+            self.__oTreeView.select_path(oPath)
 
     def drag_filter(self, _oBtn, _oContext, oSelectionData, _oInfo, _oTime):
         """Create a drag info for this filter"""
@@ -736,119 +862,11 @@ class FilterBoxModelEditor(gtk.VBox):
     def set_box_model(self, oBoxModel):
         """Set the box model to the correct value"""
         self.__oBoxModel = oBoxModel
+        self.__oTreeView.set_box_model(oBoxModel)
 
-    def update_values_widget(self, _oTreeSelection):
-        """Update the values widget to the new selection"""
-        # Get the current selected row
-        _oModel, oIter = self.__oTreeView.get_selection().get_selected()
-        oFilterObj = None
-        if oIter:
-            oFilterObj = self.__oTreeStore.get_value(oIter, 1)
-            while oFilterObj is None:
-                oIter = self.__oTreeStore.iter_parent(oIter)
-                if oIter:
-                    oFilterObj = self.__oTreeStore.get_value(oIter, 1)
-        self.oCurSelectIter = oIter
-        if oFilterObj is None:
-            self._oValuesWidget.set_widget(None, self)
-            return
-        elif oFilterObj.bDisabled:
-            self._oValuesWidget.set_widget(None, self)
-        else:
-            self._oValuesWidget.set_widget(oFilterObj, self)
-        if self.__oTreeStore.iter_depth(self.oCurSelectIter) > 0:
-            self._oValuesWidget.enable_disable(oFilterObj)
-            self._oValuesWidget.enable_delete()
-        else:
-            self._oValuesWidget.disable_all_buttons()
-
-    def update(self, oBoxModel):
-        """Update the listing for the given box model"""
-        for sDesc, tInfo in self.BOXTYPE.iteritems():
-            sBoxType, bNegate = tInfo
-            if oBoxModel.sBoxType == sBoxType and oBoxModel.bNegate == bNegate:
-                self.__oTreeStore.set(self.oCurSelectIter, 0, sDesc)
-
-    def update_entry(self, oFilterItem):
-        """Update the filter with the current text"""
-        oChild = self.__oTreeStore.iter_children(self.oCurSelectIter)
-        if not oChild:
-            # No children, so oCurSelectIter is the one we want
-            oChild = self.oCurSelectIter
-        sText = oFilterItem.aCurValues[0]
-        if not sText:
-            sText = self.NO_VALUE
-        self.__oTreeStore.set(oChild, 0, sText, 1, None)
-        self.__oTreeView.expand_to_path(self.__oTreeStore.get_path(oChild))
-        self.__oTreeView.expand_row(self.__oTreeStore.get_path(oChild), True)
-
-
-    def _update_cur_iter_with_list(self, aValues):
-        """Fill in the list values"""
-        oChild = self.__oTreeStore.iter_children(self.oCurSelectIter)
-        oCurPath, _oCol = self.__oTreeView.get_cursor()
-        oCurIter = self.__oTreeStore.get_iter(oCurPath)
-        iPos = 0
-        iIndex = -1
-        while oChild:
-            oNext = self.__oTreeStore.iter_next(oChild)
-            if not self.__oTreeStore.get_path(oChild) == \
-                    self.__oTreeStore.get_path(oCurIter):
-                self.__oTreeStore.remove(oChild)
-            else:
-                iIndex = iPos
-            oChild = oNext
-            iPos += 1
-        if iIndex < 0:
-            # We deleted everything, so add 1 child
-            oCurIter = self.__oTreeStore.append(self.oCurSelectIter)
-            iIndex = 0
-        if aValues:
-            iIndex = min(len(aValues) - 1, iIndex)
-            iPos = 0
-            for sValue in aValues:
-                if iPos == iIndex:
-                    oChild = oCurIter
-                elif iPos < iIndex:
-                    oChild = self.__oTreeStore.insert_before(
-                            self.oCurSelectIter, oCurIter)
-                else:
-                    oChild = self.__oTreeStore.append(self.oCurSelectIter)
-                if sValue is not None:
-                    self.__oTreeStore.set(oChild, 0, sValue, 1, None, 2,
-                            self.BLACK)
-                else:
-                    self.__oTreeStore.set(oChild, 0, self.NO_VALUE, 1, None,
-                            2, self.BLACK)
-                iPos += 1
-        else:
-            self.__oTreeStore.set(oCurIter, 0, self.NO_VALUE, 1, None, 2,
-                    self.BLACK)
-        self.__oTreeView.expand_to_path(self.__oTreeStore.get_path(oCurIter))
-        self.__oTreeView.expand_row(self.__oTreeStore.get_path(oCurIter), True)
-
-    def update_list(self, oFilterItem):
-        """Update the list to show the current values"""
-        self._update_cur_iter_with_list(oFilterItem.aCurValues)
-
-    def update_count_list(self, oFilterItem):
-        """Update the list to show the current values"""
-        aValues = []
-        if oFilterItem.aCurValues[0]:
-            aValues.extend(oFilterItem.aCurValues[0])
-        else:
-            aValues.append(None)
-        aValues.append('<b>From</b>')
-        if oFilterItem.aCurValues[1]:
-            aValues.extend(oFilterItem.aCurValues[1])
-        else:
-            aValues.append(None)
-        self._update_cur_iter_with_list(aValues)
-
-    def __remove_filter_part(self, oModelOrItem):
-        """Remove the filter part from this box at the user's request"""
-        self.__oBoxModel.remove_child(oModelOrItem)
-        self.load()
+    def load(self):
+        """Reload"""
+        self.__oTreeView.load()
 
     def _get_cur_filter(self):
         """Get the currently selected filter path"""
@@ -864,10 +882,7 @@ class FilterBoxModelEditor(gtk.VBox):
         if oFilterObj:
             oFilterObj.bNegated = not oFilterObj.bNegated
             # We opt for the lazy approach and reload
-            self.load()
-            # Restore selection after load
-            self._select_path(oCurPath)
-
+            self.__oTreeView.load(oCurPath)
 
     def set_negate(self, bState):
         """Set the disabled flag for a section of the filter"""
@@ -875,17 +890,14 @@ class FilterBoxModelEditor(gtk.VBox):
         if oFilterObj and oFilterObj.bNegated != bState:
             oFilterObj.bNegated = bState
             # We opt for the lazy approach and reload
-            self.load()
-            # Restore selection after load
-            self._select_path(oCurPath)
+            self.__oTreeView.load(oCurPath)
 
     def toggle_disabled(self, _oWidget):
         """Toggle the disabled flag for a section of the filter"""
         oFilterObj, oCurPath = self._get_cur_filter()
         if oFilterObj:
             oFilterObj.bDisabled = not oFilterObj.bDisabled
-            self.load()
-            self._select_path(oCurPath)
+            self.__oTreeView.load(oCurPath)
 
     def set_disabled(self, bState):
         """Set the disabled flag for a section of the filter"""
@@ -893,9 +905,7 @@ class FilterBoxModelEditor(gtk.VBox):
         if oFilterObj and oFilterObj.bDisabled != bState:
             oFilterObj.bDisabled = bState
             # We opt for the lazy approach and reload
-            self.load()
-            # Restore selection after load
-            self._select_path(oCurPath)
+            self.__oTreeView.load(oCurPath)
 
     def delete(self, _oIgnore):
         """Delete an filter component from the model
@@ -906,7 +916,7 @@ class FilterBoxModelEditor(gtk.VBox):
             oParent = self.__oTreeStore.get_value(
                     self.__oTreeStore.iter_parent(self.oCurSelectIter), 1)
             oParent.remove(oFilterObj)
-            self.load()
+            self.__oTreeView.load()
 
     def press_button(self, _oWidget, oEvent):
         """Display the popup menu"""
