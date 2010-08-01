@@ -111,7 +111,7 @@ class FilterValuesBox(gtk.VBox):
         oCheckBox = gtk.HBox()
         self.__oDisable = gtk.CheckButton('Disable')
         self.__oNegate = gtk.CheckButton('Negate')
-        self.__oDelete = gtk.Button('Delete')
+        self.__oDelete = gtk.Button('Delete Filter')
 
         self.__oDisable.set_sensitive(False)
         self.__oDelete.set_sensitive(False)
@@ -902,7 +902,7 @@ class FilterBoxModelEditor(gtk.VBox):
 
            _oIgnore is so this can be called from the popup menu"""
         oFilterObj, _oCurPath = self._get_cur_filter()
-        if oFilterObj:
+        if oFilterObj is not None:
             oParent = self.__oTreeStore.get_value(
                     self.__oTreeStore.iter_parent(self.oCurSelectIter), 1)
             oParent.remove(oFilterObj)
