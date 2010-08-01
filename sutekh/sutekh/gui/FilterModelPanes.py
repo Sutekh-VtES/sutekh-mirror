@@ -640,7 +640,10 @@ class FilterBoxModelEditor(gtk.VBox):
                             # Bounce this up a level as well
                             oFilterObj = oInsertObj
                     # We insert after this filter
-                    iIndex = oInsertObj.index(oFilterObj) + 1
+                    # We want to deal with object identity, not value
+                    # indentity
+                    aIds = [id(x) for x in oInsertObj]
+                    iIndex = aIds.index(id(oFilterObj)) + 1
                 else:
                     oInsertObj = oFilterObj
                 if sSource == 'NewFilter':
@@ -658,12 +661,15 @@ class FilterBoxModelEditor(gtk.VBox):
                             self.__oTreeStore.iter_parent(oMoveIter), 1)
                     # Check move is legal
                     bDoInsert = False
-                    if oInsertObj != oMoveObj:
+                    if oInsertObj is not oMoveObj:
                         if not isinstance(oMoveObj, FilterBoxModel) or \
                                 not oMoveObj.is_in_model(oInsertObj):
                             bDoInsert = True
                     if bDoInsert:
-                        oParent.remove(oMoveObj)
+                        # Hack to deal with object identity again
+                        aIds = [id(x) for x in oParent]
+                        iRemoveIndex = aIds.index(id(oMoveObj))
+                        oParent.pop(iRemoveIndex)
                         oInsertObj.append(oMoveObj)
                     else:
                         oDragContext.finish(False, False, oTime)
