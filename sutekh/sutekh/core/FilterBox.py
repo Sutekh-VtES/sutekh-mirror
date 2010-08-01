@@ -353,3 +353,16 @@ class VariableNameGenerator(set):
         self.add(sName)
         return sName
 
+# Useful constants for dealing with the filter boxes
+
+BOXTYPE = { # description -> (AND or OR, bNegate)
+    'All of ...': (FilterBoxModel.AND, False),
+    'Any of ...': (FilterBoxModel.OR, False),
+    'Not all of ...': (FilterBoxModel.AND, True),
+    'None of ...': (FilterBoxModel.OR, True),
+}
+
+BOXTYPE_ORDER = [ # order types should appear in combo
+    'All of ...', 'Any of ...', 'Not all of ...', 'None of ...',
+]
+
