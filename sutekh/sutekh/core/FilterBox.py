@@ -64,6 +64,10 @@ class FilterBoxModel(list):
         if bVarMakerNeedsInit:
             self.oVarNameMaker.update(self.get_variable_names())
 
+    def __eq__(self, oOther):
+        """Non-list equality check so empty boxes aren't equal"""
+        return self is oOther
+
     def _init_binop(self, oBinOp):
         """Create the correct box entries for a BinOpNode in the AST."""
         for oChild in [oBinOp.oLeft, oBinOp.oRight]:

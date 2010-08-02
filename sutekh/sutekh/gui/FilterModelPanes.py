@@ -758,10 +758,7 @@ class FilterBoxModelEditView(gtk.TreeView):
                             # Bounce this up a level as well
                             oFilterObj = oInsertObj
                     # We insert after this filter
-                    # We want to deal with object identity, not value
-                    # indentity
-                    aIds = [id(x) for x in oInsertObj]
-                    iIndex = aIds.index(id(oFilterObj)) + 1
+                    iIndex = oInsertObj.index(oFilterObj) + 1
                 else:
                     oInsertObj = oFilterObj
                 if sSource == 'NewFilter':
@@ -784,10 +781,7 @@ class FilterBoxModelEditView(gtk.TreeView):
                                 not oMoveObj.is_in_model(oInsertObj):
                             bDoInsert = True
                     if bDoInsert:
-                        # Hack to deal with object identity again
-                        aIds = [id(x) for x in oParent]
-                        iRemoveIndex = aIds.index(id(oMoveObj))
-                        oParent.pop(iRemoveIndex)
+                        oParent.remove(oMoveObj)
                         oInsertObj.append(oMoveObj)
                     else:
                         oDragContext.finish(False, False, oTime)
