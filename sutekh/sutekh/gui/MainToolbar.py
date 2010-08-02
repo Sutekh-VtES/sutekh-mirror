@@ -21,12 +21,16 @@ class MainToolbar(gtk.Toolbar):
         self.set_style(gtk.TOOLBAR_BOTH)
         self._oMainWindow = oWindow
 
+    # pylint: disable-msg=R0201
+    # Method for consistency
     def create_tool_button(self, sLabel, oIcon=None, fAction=None):
         """Create a Toolbar button with the given action."""
         oToolButton = gtk.ToolButton(oIcon, sLabel)
         if fAction is not None:
             oToolButton.connect('clicked', fAction)
         return oToolButton
+
+    # pylint: enable-msg=R0201
 
     def refresh(self):
         """Refresh the toolbars hide/show state (needed because show all

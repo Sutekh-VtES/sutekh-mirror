@@ -222,6 +222,14 @@ class FilterBoxItem(object):
         self.sLabel, self.aValues = None, None
         self.aCurValues = []
         # process values
+        self._set_value_type(oAST)
+        assert self.sLabel is not None
+        assert self.iValueType is not None
+
+        self._set_values(oAST)
+
+    def _set_value_type(self, oAST):
+        """Set the value type and label for the filter"""
         for oValue in oAST.get_values():
             if oValue.is_value():
                 assert self.sLabel is None
@@ -242,9 +250,8 @@ class FilterBoxItem(object):
                 assert self.iValueType is None
                 self.iValueType = self.NONE
 
-        assert self.sLabel is not None
-        assert self.iValueType is not None
-
+    def _set_values(self, oAST):
+        """Initialise the values of the filter item"""
         aFilterValues = oAST.aFilterValues
         if aFilterValues:
             if self.iValueType == self.LIST_FROM:

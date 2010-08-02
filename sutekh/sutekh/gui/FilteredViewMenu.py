@@ -82,6 +82,8 @@ class FilteredViewMenu(SutekhMenu):
 
     # profile helpers
 
+    # pylint: disable-msg=R0913
+    # We need all these arguments
     def _create_profile_menu(self, oParentMenu, sTitle, sType, fCallback,
             sProfile):
         """Create a radio group sub-menu for selecting a profile."""
@@ -96,6 +98,8 @@ class FilteredViewMenu(SutekhMenu):
         self._update_profile_group(oMenu, sType, fCallback, sProfile)
 
         return oMenu
+
+    # pylint: enable-msg=R0913
 
     def _update_profile_group(self, oMenu, sType, fCallback, sProfile):
         """Update the profile selection menu"""

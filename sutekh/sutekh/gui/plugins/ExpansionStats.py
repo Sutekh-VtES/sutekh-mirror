@@ -113,6 +113,8 @@ class StatsModel(gtk.TreeStore):
                 gobject.TYPE_INT)
         self.load(cGrping)
 
+    # pylint: disable-msg=R0914
+    # R0914: We use lots of local variables for clarity
     def load(self, cSubGrping):
         """Populate the contents of the TreeStore"""
         self.clear()
