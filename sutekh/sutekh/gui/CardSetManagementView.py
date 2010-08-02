@@ -13,18 +13,6 @@ from sutekh.gui.GuiCardSetFunctions import reparent_card_set
 from sutekh.gui.CardSetsListView import CardSetsListView
 from sutekh.gui.FilterDialog import FilterDialog
 
-def split_selection_data(sSelectionData):
-    """Helper function to subdivide selection string into bits again"""
-    if sSelectionData == '':
-        return 'None', ['']
-    aLines = sSelectionData.splitlines()
-    sSource = aLines[0]
-    if sSource == "Sutekh Pane:" or sSource == 'Card Set:':
-        return sSource, aLines
-    # Irrelevant to us
-    return 'None', ['']
-
-
 class CardSetManagementView(CardSetsListView):
     """Tree View for the management of card set list."""
     # pylint: disable-msg=R0904, R0902, R0901
@@ -70,13 +58,13 @@ class CardSetManagementView(CardSetsListView):
             oTime):
         """Default drag-n-drop handler."""
         # Pass off to the Frame Handler
-        sSource, aData = split_selection_data(oData.data)
+        sSource, aData = self.split_selection_data(oData.data)
         if sSource == "Sutekh Pane:":
             self._oController.frame.drag_drop_handler(oWdgt, oContext, iXPos,
                     iYPos, oData, oInfo, oTime)
         elif sSource == "Card Set:":
             # Find the card set at iXPos, iYPos
-            # Need to do this to skip avoid headers and such confusing us
+            # Need to do this to avoid headers and such confusing us
             oPath = self.get_path_at_pointer()
             if oPath:
                 sTargetName = self._oModel.get_name_from_path(oPath)
@@ -119,7 +107,6 @@ class CardSetManagementView(CardSetsListView):
 
     def _get_filter_dialog(self, sDefaultFilter):
         """Create the filter dialog for this view."""
-        self._oFilterDialog = FilterDialog(self._oMainWin,
-                self._oConfig, self._oController.filtertype,
-                sDefaultFilter)
+        self._oFilterDialog = FilterDialog(self._oMainWin, self._oConfig,
+                self._oController.filtertype, sDefaultFilter)
         return True

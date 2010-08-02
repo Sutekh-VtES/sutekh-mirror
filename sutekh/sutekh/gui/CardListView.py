@@ -185,17 +185,9 @@ class CardListView(FilteredView):
 
     # Drag and Drop
     # Sub-classes should override as needed.
-    # pylint: disable-msg=R0201
-    # These need to be available to children as methods
 
     def split_selection_data(self, sSelectionData):
         """Helper function to subdivide selection string into bits again"""
-        if sSelectionData == '':
-            return 'None', ['']
-        aLines = sSelectionData.splitlines()
-        sSource = aLines[0]
-        if sSource == "Sutekh Pane:" or sSource == 'Card Set:':
-            return sSource, aLines
         # Construct list of (iCount, sCardName, sExpansion) tuples
         def true_expansion(sExpand):
             """Convert back from the 'None' placeholder in the string"""
@@ -206,6 +198,12 @@ class CardListView(FilteredView):
                 return None
             else:
                 return sExpand
+
+        sSource, aLines = \
+                super(CardListView, self).split_selection_data(sSelectionData)
+        if sSource in ["None", "Sutekh Pane:", "Card Set:"]:
+            # Not cards that were dragged, so just return
+            return sSource, aLines
         aCardInfo = zip([int(x) for x in aLines[1::3]], aLines[2::3],
                 [true_expansion(x) for x in aLines[3::3]])
         return sSource, aCardInfo
@@ -308,7 +306,6 @@ class CardListView(FilteredView):
 
     def _get_filter_dialog(self, sDefaultFilter):
         """Create the filter dialog for this view."""
-        self._oFilterDialog = FilterDialog(self._oMainWin,
-                self._oConfig, self._oController.filtertype,
-                sDefaultFilter)
+        self._oFilterDialog = FilterDialog(self._oMainWin, self._oConfig,
+                self._oController.filtertype, sDefaultFilter)
         return True

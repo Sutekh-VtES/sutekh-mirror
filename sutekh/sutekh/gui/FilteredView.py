@@ -289,3 +289,15 @@ class FilteredView(gtk.TreeView):
             else:
                 self.reload_keep_expanded()
 
+    # drag-n-drop helpers
+    # pylint: disable-msg=R0201
+    # These need to be available to children as methods
+
+    def split_selection_data(self, sSelectionData):
+        """Helper function to subdivide selection string into bits again"""
+        if sSelectionData == '':
+            return 'None', ['']
+        aLines = sSelectionData.splitlines()
+        sSource = aLines[0]
+        return sSource, aLines
+
