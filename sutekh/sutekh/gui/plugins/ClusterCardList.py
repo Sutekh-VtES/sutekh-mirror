@@ -37,7 +37,7 @@ class ClusterCardList(SutekhPlugin):
         # fMakeCardFromCluster triggers on length, but we like the name
         if not self.model:
             self._fMakeCardSetFromCluster = None
-        self._fMakeCardSetFromCluster = self.make_pcs_from_cluster
+        self._fMakeCardSetFromCluster = self._make_pcs_from_cluster
         self._dPropButtons = {}
         self._dGroups = {}
         self._oResultsVbox = None
@@ -68,7 +68,7 @@ class ClusterCardList(SutekhPlugin):
         """Create the dialog for the clustering options."""
         sDlgName = "Cluster Cards in List"
 
-        self.make_prop_groups()
+        self._make_prop_groups()
 
         oDlg = SutekhDialog(sDlgName, self.parent,
                 gtk.DIALOG_DESTROY_WITH_PARENT)
@@ -79,9 +79,9 @@ class ClusterCardList(SutekhPlugin):
 
         self._oNotebook = gtk.Notebook()
 
-        oTableSection = self.make_table_section()
-        oAlgorithmSection = self.make_algorithm_section()
-        oResultsSection = self.make_results_section()
+        oTableSection = self._make_table_section()
+        oAlgorithmSection = self._make_algorithm_section()
+        oResultsSection = self._make_results_section()
 
         self._oNotebook.append_page(oTableSection, gtk.Label('Select Columns'))
         self._oNotebook.append_page(oAlgorithmSection, gtk.Label('Settings'))
@@ -94,7 +94,7 @@ class ClusterCardList(SutekhPlugin):
 
         return oDlg
 
-    def make_prop_groups(self):
+    def _make_prop_groups(self):
         """Extract the list of possible properties to cluster on."""
         dPropFuncs = CardListTabulator.get_default_prop_funcs()
         self._dGroups = {}
@@ -109,7 +109,7 @@ class ClusterCardList(SutekhPlugin):
                         ":".join(aParts[1:]).strip().capitalize()
                 self._dGroups.setdefault(sGroup, {})[sRest] = fProp
 
-    def make_table_section(self):
+    def _make_table_section(self):
         """Create a notebook, and populate the first tabe with a list of
            properties to cluster on."""
         oNotebook = gtk.Notebook()
@@ -146,7 +146,7 @@ class ClusterCardList(SutekhPlugin):
 
         return oNotebook
 
-    def make_algorithm_section(self):
+    def _make_algorithm_section(self):
         """Populate a tab on the notebook with the parameters and options for
            the clustering algorithm.
            """
@@ -220,7 +220,7 @@ class ClusterCardList(SutekhPlugin):
 
         return oVbx
 
-    def make_results_section(self):
+    def _make_results_section(self):
         """Create a widget in the notebook which can be used to display
            the clustering results."""
         oVbx = gtk.VBox(False, 0)
@@ -242,7 +242,7 @@ class ClusterCardList(SutekhPlugin):
     # W0201: We create a lot of attributes here, which is OK, because of
     # plugin structure
     # R0914: We use lots of local variables for clarity
-    def populate_results(self, aCards, aColNames, aMeans, aClusters):
+    def _populate_results(self, aCards, aColNames, aMeans, aClusters):
         """Populate the results tab of the notebook with the results of
            clustering run."""
         self._aCards, self._aColNames, self._aMeans, self._aClusters = \
@@ -438,9 +438,9 @@ class ClusterCardList(SutekhPlugin):
         aMeans, aClusters = self.k_means(aTable, iNumClusts, iIterations,
                 fDist)
 
-        self.populate_results(aCards, aColNames, aMeans, aClusters)
+        self._populate_results(aCards, aColNames, aMeans, aClusters)
 
-    def make_pcs_from_cluster(self, iClusterId):
+    def _make_pcs_from_cluster(self, iClusterId):
         """Create a Card Set from the chosen cluster"""
         sDeckName = '_cluster_deck_%d' % (iClusterId,)
 
