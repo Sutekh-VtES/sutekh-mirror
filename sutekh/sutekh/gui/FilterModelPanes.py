@@ -596,6 +596,15 @@ class FilterBoxModelStore(gtk.TreeStore):
         # oIter now points to the right point to insert
         return iIndex, oIter
 
+    def get_drop_filter(self, tRowInfo):
+        """Get the filter associated with the given drop point"""
+        _iIndex, oIter = self.get_drop_iter(tRowInfo)
+        oFilterObj = self.get_value(oIter, 1)
+        while oFilterObj is None:
+            oIter = self.iter_parent(oIter)
+            oFilterObj = self.get_value(oIter, 1)
+        return oFilterObj
+
     def get_insert_box(self, tRowInfo):
         """Get the filter box model to insert into."""
         iIndex, oIter = self.get_drop_iter(tRowInfo)
@@ -760,11 +769,23 @@ class FilterBoxModelEditView(gtk.TreeView):
         self.expand_row(oCurPath, True)
 
     def _check_for_obj(self, _oModel, oPath, oIter, oFilterObj):
-        """Helper function for selecting and object in the tree.
+        """Helper function for selecting an object in the tree.
           Meant to be called via the foreach method."""
         oCurObj = self._oStore.get_value(oIter, 1)
         if oCurObj is oFilterObj:
             self.select_path(oPath)
+
+    def _check_for_value(self, _oModel, oPath, oIter, tValueInfo):
+        """Helper function for selecting a value in a filter in the tree.
+          Meant to be called via the foreach method."""
+        oFilterObj, sValue = tValueInfo
+        sCurValue = self._oStore.get_value(oIter, 0)
+        if sCurValue == sValue:
+            # Check parent
+            oParIter = self._oStore.iter_parent(oIter)
+            oCurFilter = self._oStore.get_value(oParIter, 1)
+            if oCurFilter is oFilterObj:
+                self.select_path(oPath)
 
     # pylint: disable-msg=R0913
     # function signature requires all these arguments
@@ -775,34 +796,61 @@ class FilterBoxModelEditView(gtk.TreeView):
         if not oSelectionData and oSelectionData.format != 8:
             oDragContext.finish(False, False, oTime)
         else:
-            oCurPath, _oCol = self.get_cursor()
             sData =  oSelectionData.data
             tRowInfo = self.get_dest_row_at_pos(iXPos, iYPos)
             if not sData:
                 oDragContext.finish(False, False, oTime)
             elif sData.startswith('NewFilter: ') or \
                     sData.startswith('MoveFilter: '):
-                if not self._do_drop_filter(oCurPath, sData, tRowInfo):
+                if not self._do_drop_filter(sData, tRowInfo):
                     oDragContext.finish(False, False, oTime)
             elif sData.startswith('MoveValue: '):
-                self._do_move_value(oCurPath, sData, tRowInfo)
+                if not self._do_move_value(sData, tRowInfo):
+                    oDragContext.finish(False, False, oTime)
             elif sData.startswith('NewValue: '):
-                self._do_drop_value(oCurPath, sData, tRowInfo)
+                if not self._do_drop_value(sData, tRowInfo):
+                    oDragContext.finish(False, False, oTime)
             else:
                 oDragContext.finish(False, False, oTime)
 
     # pylint: enable-msg=R0913
 
-    def _do_drop_value(self, oCurPath, sData, tRowInfo):
+    def _do_drop_value(self, sData, tRowInfo):
         """Handled dropping in new values"""
         pass
 
-    def _do_move_value(self, oCurPath, sData, tRowInfo):
+    def _do_move_value(self, sData, tRowInfo):
         """Handle moving filter values"""
-        pass
+        sIter = sData.split(':', 1)[1].strip()
+        # Check if target point is suitable
+        oFilterObj = self._oStore.get_drop_filter(tRowInfo)
+        oIter = self._oStore.get_iter_from_string(sIter)
+        oSourceFilter = self._oStore.get_value(
+                self._oStore.iter_parent(oIter), 1)
+        sValue = self._oStore.get_value(oIter, 0)
+        if oSourceFilter.sFilterName != oFilterObj.sFilterName:
+            # Only drag between the same filter types
+            return False
+        elif oSourceFilter is oFilterObj:
+            # Don't drag onto ourselves
+            return False
+        if oFilterObj.iValueType == FilterBoxItem.LIST:
+            if sValue in oFilterObj.aCurValues:
+                # Don't duplicate
+                return False
+            oSourceFilter.aCurValues.remove(sValue)
+            oFilterObj.aCurValues.append(sValue)
+            oFilterObj.aCurValues.sort()
+        elif oFilterObj.iValueType == FilterBoxItem.LIST_FROM:
+            # FIXME: Sort out moving between from filters
+            return False
+        self.load()
+        self._oStore.foreach(self._check_for_value, (oFilterObj, sValue))
+        return True
 
-    def _do_drop_filter(self, oCurPath, sData, tRowInfo):
+    def _do_drop_filter(self, sData, tRowInfo):
         """Handle the moving/dropping of a filter onto the view"""
+        oCurPath, _oCol = self.get_cursor()
         sSource, sFilter = [x.strip() for x in sData.split(':', 1)]
         # Check we have an acceptable drop position
         oInsertObj, iIndex = self._oStore.get_insert_box(tRowInfo)
