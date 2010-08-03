@@ -288,34 +288,16 @@ class FilterValuesBox(gtk.VBox):
             oDragContext.finish(False, False, oTime)
         else:
             sData =  oSelectionData.data
-            oStore = self._oBoxModelEditor.get_tree_store()
             if sData.startswith('MoveValue: '):
                 # Removing a value from the list
-                _sSource, sIter = [x.strip() for x in sData.split(':', 1)]
-                oIter = oStore.get_iter_from_string(sIter)
-                oFilter = oStore.get_value(oStore.iter_parent(oIter), 1)
-                sValue = oStore.get_value(oIter, 0)
-                if oFilter.iValueType == FilterBoxItem.LIST \
-                        and sValue in oFilter.aCurValues:
-                    oFilter.aCurValues.remove(sValue)
-                    self._oBoxModelEditor.update_list(oFilter)
-                elif oFilter.iValueType == FilterBoxItem.LIST_FROM:
-                    if oFilter.aCurValues[0] and \
-                            sValue in oFilter.aCurValues[0]:
-                        oFilter.aCurValues[0].remove(sValue)
-                    elif oFilter.aCurValues[1] and \
-                            sValue in oFilter.aCurValues[1]:
-                        oFilter.aCurValues[1].remove(sValue)
-                    self._oBoxModelEditor.update_count_list(oFilter)
+                sIter = sData.split(':', 1)[1].strip()
+                self._oBoxModelEditor.remove_value_at_iter(sIter)
             elif sData.startswith('MoveFilter: '):
                 # Removing a filter
-                _sSource, sIter = [x.strip() for x in sData.split(':', 1)]
-                oIter = oStore.get_iter_from_string(sIter)
-                oMoveObj = oStore.get_value(oIter, 1)
-                oParent  = oStore.get_value(oStore.iter_parent(oIter), 1)
-                oParent.remove(oMoveObj)
-                self._oBoxModelEditor.load() # May break stuff
+                sIter = sData.split(':', 1)[1].strip()
+                self._oBoxModelEditor.remove_filter_at_iter(sIter)
             else:
+                # Not relevant
                 oDragContext.finish(False, False, oTime)
 
     # pylint: enable-msg=R0913
@@ -660,9 +642,31 @@ class FilterBoxModelEditView(gtk.TreeView):
             # Select the root of the model by default.
             self.select_path(oRootPath)
 
-    def get_tree_store(self):
-        """Get the tree store"""
-        return self._oStore
+    def remove_value_at_iter(self, sIter):
+        """Remove the filter value at the given point in the tree"""
+        oIter = self._oStore.get_iter_from_string(sIter)
+        oFilter = self._oStore.get_value(self._oStore.iter_parent(oIter), 1)
+        sValue = self._oStore.get_value(oIter, 0)
+        if oFilter.iValueType == FilterBoxItem.LIST \
+                and sValue in oFilter.aCurValues:
+            oFilter.aCurValues.remove(sValue)
+            self.update_list(oFilter)
+        elif oFilter.iValueType == FilterBoxItem.LIST_FROM:
+            if oFilter.aCurValues[0] and \
+                    sValue in oFilter.aCurValues[0]:
+                oFilter.aCurValues[0].remove(sValue)
+            elif oFilter.aCurValues[1] and \
+                    sValue in oFilter.aCurValues[1]:
+                oFilter.aCurValues[1].remove(sValue)
+            self.update_count_list(oFilter)
+
+    def remove_filter_at_iter(self, sIter):
+        """Remove the filter element at the given point in the tree"""
+        oIter = self._oStore.get_iter_from_string(sIter)
+        oMoveObj = self._oStore.get_value(oIter, 1)
+        oParent  = self._oStore.get_value(self._oStore.iter_parent(oIter), 1)
+        oParent.remove(oMoveObj)
+        self.load() # May break stuff
 
     def update_list(self, oFilterItem):
         """Update the list to show the current values"""
