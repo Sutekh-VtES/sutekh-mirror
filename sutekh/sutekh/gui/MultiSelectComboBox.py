@@ -6,9 +6,10 @@
 
 """Generic multiselect combobox for use in FilterEditor (and elsewhere)"""
 
-import gtk, gobject
+import gtk
 import sys
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
+from sutekh.gui.ScrolledList import ScrolledListView
 
 def mouse_in_button(oButton):
     """Check if mouse pointer is inside the button"""
@@ -29,12 +30,7 @@ class MultiSelectComboBox(gtk.HBox):
         self._oButton.connect('clicked', self.__show_list)
         self.pack_start(self._oButton)
 
-        self._oListStore = gtk.ListStore(gobject.TYPE_STRING)
-
-        self._oTreeView = gtk.TreeView(self._oListStore)
-        oCell1 = gtk.CellRendererText()
-        oColumn1 = gtk.TreeViewColumn(" ... ", oCell1, markup=0)
-        self._oTreeView.append_column(oColumn1)
+        self._oTreeView = ScrolledListView(" ... ")
         self._oTreeView.get_selection().set_mode(gtk.SELECTION_MULTIPLE)
 
         oScrolled = AutoScrolledWindow(self._oTreeView)
@@ -140,10 +136,7 @@ class MultiSelectComboBox(gtk.HBox):
 
     def fill_list(self, aVals):
         """Fill the list store with the given values"""
-        self._oListStore.clear()
-        for sEntry in aVals:
-            oIter = self._oListStore.append(None)
-            self._oListStore.set(oIter, 0, sEntry)
+        self._oTreeView.store.fill_list(aVals)
 
     def set_list_size(self, iWidth, iHeight):
         """Set size of the drop-down list"""
@@ -155,24 +148,8 @@ class MultiSelectComboBox(gtk.HBox):
 
     def get_selection(self):
         """Return a list of the selected elements of the list"""
-        aSelectedList = []
-        oModel, oSelection = \
-                self._oTreeView.get_selection().get_selected_rows()
-        for oPath in oSelection:
-            oIter = oModel.get_iter(oPath)
-            sName = oModel.get_value(oIter, 0)
-            aSelectedList.append(sName)
-        return aSelectedList
+        return self._oTreeView.get_selected_data()
 
     def set_selection(self, aRowsToSelect):
         """Set the selected rows in the drop-down to aRowsToSelect"""
-        aRowsToSelect = set(aRowsToSelect)
-        oIter = self._oListStore.get_iter_first()
-        oTreeSelection = self._oTreeView.get_selection()
-        oTreeSelection.unselect_all()
-        while oIter is not None:
-            sName = self._oListStore.get_value(oIter, 0)
-            if sName in aRowsToSelect:
-                oTreeSelection.select_iter(oIter)
-            oIter = self._oListStore.iter_next(oIter)
-        self.__update_button_text()
+        self._oTreeView.set_selection(aRowsToSelect)

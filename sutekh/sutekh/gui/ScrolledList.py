@@ -10,19 +10,79 @@
 import gtk, gobject
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 
+class ScrolledListStore(gtk.ListStore):
+    # pylint: disable-msg=R0904
+    # gtk.Widget, so many public methods
+    """Simple list store for ScrolledList widget"""
+    def __init__(self):
+        super(ScrolledListStore, self).__init__(gobject.TYPE_STRING)
+
+    def fill_list(self, aVals):
+        """Fill the list"""
+        self.clear()
+        for sEntry in aVals:
+            oIter = self.append(None)
+            self.set(oIter, 0, sEntry)
+
+class ScrolledListView(gtk.TreeView):
+    # pylint: disable-msg=R0904
+    # gtk.Widget, so many public methods
+    """Simple tree view for the ScrolledList widget"""
+    def __init__(self, sTitle):
+        self._oStore = ScrolledListStore()
+        super(ScrolledListView, self).__init__(self._oStore)
+        oCell1 = gtk.CellRendererText()
+        oColumn1 = gtk.TreeViewColumn(sTitle, oCell1, markup=0)
+        self.append_column(oColumn1)
+        self.get_selection().set_mode(gtk.SELECTION_MULTIPLE)
+
+    # pylint: disable-msg=W0212
+    # allow access via these properties
+    store = property(fget=lambda self: self._oStore, doc="List of values")
+    # disable-msg=W0212
+
+    def get_selected_data(self):
+        """Get the list of selected values"""
+        aSelectedList = []
+        oModel, oSelection = self.get_selection().get_selected_rows()
+        for oPath in oSelection:
+            oIter = oModel.get_iter(oPath)
+            sName = oModel.get_value(oIter, 0)
+            aSelectedList.append(sName)
+        return aSelectedList
+
+    def set_selection(self, aRowsToSelect):
+        """Set the selection to the correct list"""
+        aRowsToSelect = set(aRowsToSelect)
+        oIter = self._oStore.get_iter_first()
+        oTreeSelection = self.get_selection()
+        oTreeSelection.unselect_all()
+        while oIter is not None:
+            sName = self._oStore.get_value(oIter, 0)
+            if sName in aRowsToSelect:
+                oTreeSelection.select_iter(oIter)
+            oIter = self._oStore.iter_next(oIter)
+
+    def set_selected(self, sEntry):
+        """Set the selection to the correct entry"""
+        oIter = self._oStore.get_iter_first()
+        while oIter is not None:
+            sName = self._oStore.get_value(oIter, 0)
+            if sName == sEntry:
+                oPath = self._oStore.get_path(oIter)
+                self.set_cursor(oPath)
+                return
+            oIter = self._oStore.iter_next(oIter)
+
+
 class ScrolledList(gtk.Frame):
     # pylint: disable-msg=R0904
     # gtk.Widget, so many public methods
     """Frame containing an auto scrolled list"""
     def __init__(self, sTitle):
         super(ScrolledList, self).__init__(None)
-        self._oListStore = gtk.ListStore(gobject.TYPE_STRING)
-        self._oTreeView = gtk.TreeView(self._oListStore)
-        oCell1 = gtk.CellRendererText()
-        oColumn1 = gtk.TreeViewColumn(sTitle, oCell1, markup=0)
+        self._oTreeView = ScrolledListView(sTitle)
         self.dSecondColVals = {}
-        self._oTreeView.append_column(oColumn1)
-        self._oTreeView.get_selection().set_mode(gtk.SELECTION_MULTIPLE)
         oMyScroll = AutoScrolledWindow(self._oTreeView)
         self.add(oMyScroll)
         self.set_shadow_type(gtk.SHADOW_NONE)
@@ -32,8 +92,6 @@ class ScrolledList(gtk.Frame):
     # allow access via these properties
     view = property(fget=lambda self: self._oTreeView,
             doc="Associated View Object")
-    itemlist = property(fget=lambda self: self._oListStore,
-            doc="List of values")
     # disable-msg=W0212
 
     def add_second_column(self, sTitle):
@@ -57,44 +115,19 @@ class ScrolledList(gtk.Frame):
 
     def get_selection(self):
         """Return a list of the selected elements of the list"""
-        aSelectedList = []
-        oModel, oSelection = \
-                self._oTreeView.get_selection().get_selected_rows()
-        for oPath in oSelection:
-            oIter = oModel.get_iter(oPath)
-            sName = oModel.get_value(oIter, 0)
-            aSelectedList.append(sName)
-        return aSelectedList
+        return self._oTreeView.get_selected_data()
 
     def set_selection(self, aRowsToSelect):
         """Set the selected rows to aRowsToSelect."""
-        aRowsToSelect = set(aRowsToSelect)
-        oIter = self._oListStore.get_iter_first()
-        oTreeSelection = self._oTreeView.get_selection()
-        oTreeSelection.unselect_all()
-        while oIter is not None:
-            sName = self._oListStore.get_value(oIter, 0)
-            if sName in aRowsToSelect:
-                oTreeSelection.select_iter(oIter)
-            oIter = self._oListStore.iter_next(oIter)
+        self._oTreeView.set_selection(aRowsToSelect)
 
     def set_selected(self, sEntry):
         """Select the current entry"""
-        oIter = self._oListStore.get_iter_first()
-        while oIter is not None:
-            sName = self._oListStore.get_value(oIter, 0)
-            if sName == sEntry:
-                oPath = self._oListStore.get_path(oIter)
-                self._oTreeView.set_cursor(oPath)
-                return
-            oIter = self._oListStore.iter_next(oIter)
+        self._oTreeView.set_selected(sEntry)
 
     def fill_list(self, aVals):
         """Fill the list store with the given values"""
-        self._oListStore.clear()
-        for sEntry in aVals:
-            oIter = self._oListStore.append(None)
-            self._oListStore.set(oIter, 0, sEntry)
+        self._oTreeView.store.fill_list(aVals)
 
     def fill_second_column(self, dVals):
         """Fill the values in the second column."""
