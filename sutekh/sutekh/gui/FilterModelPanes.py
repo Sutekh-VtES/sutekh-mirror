@@ -261,12 +261,16 @@ class FilterValuesBox(gtk.VBox):
         self.pack_start(self._oWidget, expand=True)
         self.show_all()
 
+    # pylint: disable-msg=R0201
+    # Methods for consistency
     def set_box_model_value(self, oBoxModel, oWidget):
         """Set the correct selection for this box model"""
         for sDesc, tInfo in BOXTYPE.iteritems():
             sBoxType, bNegate = tInfo
             if oBoxModel.sBoxType == sBoxType and oBoxModel.bNegate == bNegate:
                 oWidget.set_selected(sDesc)
+
+    # pylint: enable-msg=R0201
 
     def update_box_model(self, _oSelection, oBoxModel, oList):
         """Update the box model to the current selection"""
@@ -566,6 +570,49 @@ class FilterBoxModelStore(gtk.TreeStore):
         self.set(oChild, 0, sText, 1, None)
         return self.get_path(oChild)
 
+    def get_drop_iter(self, tRowInfo):
+        """Get the correct iter from the drop info"""
+        iIndex = 0
+        if not tRowInfo:
+            oIter = self.get_iter_root()
+            iIndex = -1
+        else:
+            oPath, iDropPos = tRowInfo
+            oIter = self.get_iter(oPath)
+            if self.iter_depth(oIter) > 0 and \
+                    iDropPos == gtk.TREE_VIEW_DROP_BEFORE:
+                # Find the iter immediately before this one, since
+                # that's our actual target
+                oParIter = self.iter_parent(oIter)
+                oPrevIter = oParIter
+                oNextIter = self.iter_children(oParIter)
+                while self.get_path(oNextIter) != oPath:
+                    oPrevIter = oNextIter
+                    oNextIter = self.iter_next(oPrevIter)
+                oIter = oPrevIter
+        # oIter now points to the right point to insert
+        return iIndex, oIter
+
+    def get_insert_box(self, tRowInfo):
+        """Get the filter box model to insert into."""
+        iIndex, oIter = self.get_drop_iter(tRowInfo)
+        oFilterObj = self.get_value(oIter, 1)
+        if not hasattr(oFilterObj, 'sBoxType'):
+            # Need to insert into parent box model
+            oTempIter = oIter
+            oInsertObj = oFilterObj
+            while not hasattr(oInsertObj, 'sBoxType'):
+                oTempIter = self.iter_parent(oTempIter)
+                oInsertObj = self.get_value(oTempIter, 1)
+                if oFilterObj is None:
+                    # Bounce this up a level as well
+                    oFilterObj = oInsertObj
+            # We insert after this filter
+            iIndex = oInsertObj.index(oFilterObj) + 1
+        else:
+            oInsertObj = oFilterObj
+        return oInsertObj, iIndex
+
 
 class FilterBoxModelEditView(gtk.TreeView):
     """TreeView for the FilterBoxModelEditor"""
@@ -726,91 +773,74 @@ class FilterBoxModelEditView(gtk.TreeView):
         else:
             oCurPath, _oCol = self.get_cursor()
             sData =  oSelectionData.data
+            tRowInfo = self.get_dest_row_at_pos(iXPos, iYPos)
             if sData.startswith('NewFilter: ') or \
                     sData.startswith('MoveFilter: '):
-                sSource, sFilter = [x.strip() for x in sData.split(':', 1)]
-                # Check we have an acceptable drop position
-                tInfo = self.get_dest_row_at_pos(iXPos, iYPos)
-                iIndex = 0
-                if not tInfo:
-                    oIter = self._oStore.get_iter_root()
-                    iIndex = -1
-                else:
-                    oPath, iDropPos = tInfo
-                    oIter = self._oStore.get_iter(oPath)
-                    if self._oStore.iter_depth(oIter) > 0 and \
-                            iDropPos == gtk.TREE_VIEW_DROP_BEFORE:
-                        # Find the iter immediately before this one, since
-                        # that's our actual target
-                        oParIter = self._oStore.iter_parent(oIter)
-                        oPrevIter = oParIter
-                        oNextIter = self._oStore.iter_children(oParIter)
-                        while self._oStore.get_path(oNextIter) != oPath:
-                            oPrevIter = oNextIter
-                            oNextIter = self._oStore.iter_next(oPrevIter)
-                        oIter = oPrevIter
-                # oIter now points to the right point to insert
-                oFilterObj = self._oStore.get_value(oIter, 1)
-                if not hasattr(oFilterObj, 'sBoxType'):
-                    # Need to insert into parent box model
-                    oTempIter = oIter
-                    oInsertObj = oFilterObj
-                    while not hasattr(oInsertObj, 'sBoxType'):
-                        oTempIter = self._oStore.iter_parent(oTempIter)
-                        oInsertObj = self._oStore.get_value(oTempIter, 1)
-                        if oFilterObj is None:
-                            # Bounce this up a level as well
-                            oFilterObj = oInsertObj
-                    # We insert after this filter
-                    iIndex = oInsertObj.index(oFilterObj) + 1
-                else:
-                    oInsertObj = oFilterObj
-                if sSource == 'NewFilter':
-                    tInfo = self._oValuesWidget.get_current_pos_and_sel()
-                    if sFilter == 'Filter Group':
-                        oInsertObj.add_child_box(oInsertObj.AND)
-                    else:
-                        oInsertObj.add_child_item(sFilter)
-                else:
-                    # Find the dragged filter and remove it from it's current
-                    # position
-                    oMoveIter = self._oStore.get_iter_from_string(sFilter)
-                    oMoveObj = self._oStore.get_value(oMoveIter, 1)
-                    oParent  = self._oStore.get_value(
-                            self._oStore.iter_parent(oMoveIter), 1)
-                    # Check move is legal
-                    bDoInsert = False
-                    if oInsertObj is not oMoveObj:
-                        if not isinstance(oMoveObj, FilterBoxModel) or \
-                                not oMoveObj.is_in_model(oInsertObj):
-                            bDoInsert = True
-                    if bDoInsert:
-                        oParent.remove(oMoveObj)
-                        oInsertObj.append(oMoveObj)
-                    else:
-                        oDragContext.finish(False, False, oTime)
-                        return
-                # Move to the correct place
-                if iIndex >= 0:
-                    oAddedFilter = oInsertObj.pop()
-                    oInsertObj.insert(iIndex, oAddedFilter)
-                self.load()
-                if sSource == 'NewFilter':
-                    # Restore selection after load
-                    self.select_path(oCurPath)
-                    # Restore values widget selection
-                    self._oValuesWidget.restore_pos_and_selection(tInfo)
-                else:
-                    # Find where dropped filter ended up and select it
-                    # Since we can serious muck around with the tree layout,
-                    # we can't use any previous iters or paths, so we use
-                    # foreach
-                    self._oStore.foreach(self._check_for_obj,
-                            oMoveObj)
+                if not self._do_drop_filter(oCurPath, sData, tRowInfo):
+                    oDragContext.finish(False, False, oTime)
+            elif sData.startswith('MoveValue: '):
+                self._do_move_value(oCurPath, sData, tRowInfo)
+            elif sData.startswith('NewValue: '):
+                self._do_drop_value(oCurPath, sData, tRowInfo)
             else:
                 oDragContext.finish(False, False, oTime)
 
     # pylint: enable-msg=R0913
+
+    def _do_drop_value(self, oCurPath, sData, tRowInfo):
+        """Handled dropping in new values"""
+        pass
+
+    def _do_move_value(self, oCurPath, sData, tRowInfo):
+        """Handle moving filter values"""
+        pass
+
+    def _do_drop_filter(self, oCurPath, sData, tRowInfo):
+        """Handle the moving/dropping of a filter onto the view"""
+        sSource, sFilter = [x.strip() for x in sData.split(':', 1)]
+        # Check we have an acceptable drop position
+        oInsertObj, iIndex = self._oStore.get_insert_box(tRowInfo)
+        if sSource == 'NewFilter':
+            tSelInfo = self._oValuesWidget.get_current_pos_and_sel()
+            if sFilter == 'Filter Group':
+                oInsertObj.add_child_box(oInsertObj.AND)
+            else:
+                oInsertObj.add_child_item(sFilter)
+        else:
+            # Find the dragged filter and remove it from it's current
+            # position
+            oMoveIter = self._oStore.get_iter_from_string(sFilter)
+            oMoveObj = self._oStore.get_value(oMoveIter, 1)
+            oParent  = self._oStore.get_value(
+                    self._oStore.iter_parent(oMoveIter), 1)
+            # Check move is legal
+            bDoInsert = False
+            if oInsertObj is not oMoveObj:
+                if not isinstance(oMoveObj, FilterBoxModel) or \
+                        not oMoveObj.is_in_model(oInsertObj):
+                    bDoInsert = True
+            if bDoInsert:
+                oParent.remove(oMoveObj)
+                oInsertObj.append(oMoveObj)
+            else:
+                return False
+        # Move to the correct place
+        if iIndex >= 0:
+            oAddedFilter = oInsertObj.pop()
+            oInsertObj.insert(iIndex, oAddedFilter)
+        self.load()
+        if sSource == 'NewFilter':
+            # Restore selection after load
+            self.select_path(oCurPath)
+            # Restore values widget selection
+            self._oValuesWidget.restore_pos_and_selection(tSelInfo)
+        else:
+            # Find where dropped filter ended up and select it
+            # Since we can seriously muck around with the tree layout,
+            # we can't use any previous iters or paths, so we use
+            # foreach
+            self._oStore.foreach(self._check_for_obj, oMoveObj)
+        return True
 
     def _get_cur_filter(self):
         """Get the currently selected filter path"""
