@@ -72,9 +72,10 @@ class FilterEditorToolbar(gtk.TreeView):
         for oFilterType in sorted(get_filters_for_type(self.__sFilterType),
                 key=lambda x: x.description):
             aFilters.append((oFilterType.description, oFilterType.keyword))
-        # Create buttons for each of the filters we support
-        self.drag_source_set(gtk.gdk.BUTTON1_MASK | gtk.gdk.BUTTON3_MASK,
+        self.enable_model_drag_source(
+                gtk.gdk.BUTTON1_MASK | gtk.gdk.BUTTON3_MASK,
                 DRAG_TARGETS, gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
+        # Create entries for each of the filters we support
         for tInfo in aFilters:
             self.__oListStore.append(tInfo)
 
@@ -292,7 +293,9 @@ class FilterValuesBox(gtk.VBox):
             oDragContext.finish(False, False, oTime)
         else:
             sData =  oSelectionData.data
-            if sData.startswith('MoveValue: '):
+            if not sData:
+                oDragContext.finish(False, False, oTime)
+            elif sData.startswith('MoveValue: '):
                 # Removing a value from the list
                 sIter = sData.split(':', 1)[1].strip()
                 self._oBoxModelEditor.remove_value_at_iter(sIter)
@@ -628,9 +631,10 @@ class FilterBoxModelEditView(gtk.TreeView):
                 foreground_gdk=2)
         self.append_column(oColumn)
 
-        self.drag_dest_set(gtk.DEST_DEFAULT_ALL, DRAG_TARGETS,
+        self.enable_model_drag_dest(DRAG_TARGETS,
                 gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
-        self.drag_source_set(gtk.gdk.BUTTON1_MASK | gtk.gdk.BUTTON3_MASK,
+        self.enable_model_drag_source(
+                gtk.gdk.BUTTON1_MASK | gtk.gdk.BUTTON3_MASK,
                 DRAG_TARGETS, gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
 
         oSelection = self.get_selection()
@@ -774,7 +778,9 @@ class FilterBoxModelEditView(gtk.TreeView):
             oCurPath, _oCol = self.get_cursor()
             sData =  oSelectionData.data
             tRowInfo = self.get_dest_row_at_pos(iXPos, iYPos)
-            if sData.startswith('NewFilter: ') or \
+            if not sData:
+                oDragContext.finish(False, False, oTime)
+            elif sData.startswith('NewFilter: ') or \
                     sData.startswith('MoveFilter: '):
                 if not self._do_drop_filter(oCurPath, sData, tRowInfo):
                     oDragContext.finish(False, False, oTime)
