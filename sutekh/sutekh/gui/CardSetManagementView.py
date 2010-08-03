@@ -31,11 +31,12 @@ class CardSetManagementView(CardSetsListView):
         aTargets = [ ('STRING', 0, 0),      # second 0 means TARGET_STRING
                      ('text/plain', 0, 0) ] # and here
 
-        self.drag_source_set(gtk.gdk.BUTTON1_MASK | gtk.gdk.BUTTON3_MASK,
+        self.enable_model_drag_source(
+                gtk.gdk.BUTTON1_MASK | gtk.gdk.BUTTON3_MASK,
                 aTargets, gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
 
-        self.drag_dest_set(gtk.DEST_DEFAULT_ALL,
-                aTargets, gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
+        self.enable_model_drag_dest(aTargets,
+                gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
 
         self.connect('drag_data_get', self.drag_card_set)
         self.connect('row_activated', self.row_clicked)
