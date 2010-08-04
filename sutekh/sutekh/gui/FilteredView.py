@@ -10,23 +10,21 @@
 import gtk
 import unicodedata
 from sutekh.gui.SearchDialog import SearchDialog
+from sutekh.gui.CustomDragIconView import CustomDragIconView
 
-class FilteredView(gtk.TreeView):
+class FilteredView(CustomDragIconView):
     """Base class for all card and card set views in Sutekh"""
     # pylint: disable-msg=R0904, R0902
     # gtk.Widget, so many public methods. We need to keep state, so many attrs
     def __init__(self, oController, oMainWindow, oModel, oConfig):
         # Although MainWindow usually contains a config_file property,
         # when we come in from the GuiCardLookup, we just have oConfig
-        self._oModel = oModel
         self._oController = oController
         self._oMainWin = oMainWindow
         self._oConfig = oConfig
 
-        super(FilteredView, self).__init__(self._oModel)
+        super(FilteredView, self).__init__(oModel)
 
-        # Selecting rows
-        self._oSelection = self.get_selection()
         # subclasses will override this
         self._sDragPrefix = 'None:'
 

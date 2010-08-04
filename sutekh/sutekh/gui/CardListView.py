@@ -129,9 +129,9 @@ class CardListView(FilteredView):
            Entries are of the form sCardName : {sExpansion1 : iCount1, ... }
            for use in drag-'n drop and elsewhere.
            """
-        oModel, oPathList = self._oSelection.get_selected_rows()
+        oModel, aPathList = self._oSelection.get_selected_rows()
         dSelectedData = {}
-        for oPath in oPathList:
+        for oPath in aPathList:
             sCardName, sExpansion, iCount, iDepth = \
                     oModel.get_all_from_path(oPath)
             if iDepth == 0:
@@ -309,3 +309,13 @@ class CardListView(FilteredView):
         self._oFilterDialog = FilterDialog(self._oMainWin, self._oConfig,
                 self._oController.filtertype, sDefaultFilter)
         return True
+
+    def make_drag_icon(self, _oWidget, _oDragContext):
+        """Custom drag icon for draggin cards"""
+        # We use STOCK_DND_MULTIPLE for multiple cards, otherwise
+        # STOCK_DND for single row selected
+        iNumSelected = self._oSelection.count_selected_rows()
+        if iNumSelected > 1:
+            self.drag_source_set_icon_stock(gtk.STOCK_DND_MULTIPLE)
+        else:
+            self.drag_source_set_icon_stock(gtk.STOCK_DND)

@@ -111,3 +111,4 @@ class CardSetsListView(FilteredView):
         """Find the entry with the text sEntry, and expand the appropriate
            row."""
         self._oModel.foreach(self._check_row_for_entry, sEntry)
+

@@ -9,6 +9,7 @@
 
 import gtk, gobject
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
+from sutekh.gui.CustomDragIconView import CustomDragIconView
 
 class ScrolledListStore(gtk.ListStore):
     # pylint: disable-msg=R0904
@@ -24,28 +25,28 @@ class ScrolledListStore(gtk.ListStore):
             oIter = self.append(None)
             self.set(oIter, 0, sEntry)
 
-class ScrolledListView(gtk.TreeView):
+class ScrolledListView(CustomDragIconView):
     # pylint: disable-msg=R0904
     # gtk.Widget, so many public methods
     """Simple tree view for the ScrolledList widget"""
     def __init__(self, sTitle):
-        self._oStore = ScrolledListStore()
-        super(ScrolledListView, self).__init__(self._oStore)
+        oModel = ScrolledListStore()
+        super(ScrolledListView, self).__init__(oModel)
         oCell1 = gtk.CellRendererText()
         oColumn1 = gtk.TreeViewColumn(sTitle, oCell1, markup=0)
         self.append_column(oColumn1)
-        self.get_selection().set_mode(gtk.SELECTION_MULTIPLE)
+        self._oSelection.set_mode(gtk.SELECTION_MULTIPLE)
 
     # pylint: disable-msg=W0212
     # allow access via these properties
-    store = property(fget=lambda self: self._oStore, doc="List of values")
+    store = property(fget=lambda self: self._oModel, doc="List of values")
     # disable-msg=W0212
 
     def get_selected_data(self):
         """Get the list of selected values"""
         aSelectedList = []
-        oModel, oSelection = self.get_selection().get_selected_rows()
-        for oPath in oSelection:
+        oModel, aSelectedRows = self._oSelection.get_selected_rows()
+        for oPath in aSelectedRows:
             oIter = oModel.get_iter(oPath)
             sName = oModel.get_value(oIter, 0)
             aSelectedList.append(sName)
@@ -54,25 +55,24 @@ class ScrolledListView(gtk.TreeView):
     def set_selection(self, aRowsToSelect):
         """Set the selection to the correct list"""
         aRowsToSelect = set(aRowsToSelect)
-        oIter = self._oStore.get_iter_first()
-        oTreeSelection = self.get_selection()
-        oTreeSelection.unselect_all()
+        oIter = self._oModel.get_iter_first()
+        self._oSelection.unselect_all()
         while oIter is not None:
-            sName = self._oStore.get_value(oIter, 0)
+            sName = self._oModel.get_value(oIter, 0)
             if sName in aRowsToSelect:
-                oTreeSelection.select_iter(oIter)
-            oIter = self._oStore.iter_next(oIter)
+                self._oSelection.select_iter(oIter)
+            oIter = self._oModel.iter_next(oIter)
 
     def set_selected(self, sEntry):
         """Set the selection to the correct entry"""
-        oIter = self._oStore.get_iter_first()
+        oIter = self._oModel.get_iter_first()
         while oIter is not None:
-            sName = self._oStore.get_value(oIter, 0)
+            sName = self._oModel.get_value(oIter, 0)
             if sName == sEntry:
-                oPath = self._oStore.get_path(oIter)
+                oPath = self._oModel.get_path(oIter)
                 self.set_cursor(oPath)
                 return
-            oIter = self._oStore.iter_next(oIter)
+            oIter = self._oModel.iter_next(oIter)
 
 
 class ScrolledList(gtk.Frame):
