@@ -310,12 +310,16 @@ class CardListView(FilteredView):
                 self._oController.filtertype, sDefaultFilter)
         return True
 
-    def make_drag_icon(self, _oWidget, _oDragContext):
+    def make_drag_icon(self, _oWidget, oDragContext):
         """Custom drag icon for draggin cards"""
         # We use STOCK_DND_MULTIPLE for multiple cards, otherwise
         # STOCK_DND for single row selected
         iNumSelected = self._oSelection.count_selected_rows()
         if iNumSelected > 1:
             self.drag_source_set_icon_stock(gtk.STOCK_DND_MULTIPLE)
-        else:
+        elif iNumSelected == 1:
             self.drag_source_set_icon_stock(gtk.STOCK_DND)
+        else:
+            # Nothing selected, so we're dragging the entire pane, so use
+            # the pane icon
+            self.frame.make_drag_icon(self, oDragContext)

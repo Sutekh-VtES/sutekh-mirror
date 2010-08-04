@@ -56,8 +56,8 @@ class BasicFrame(gtk.Frame):
         self._oTitle.connect('drag-data-received', self.drag_drop_handler)
         self._oTitle.connect('drag-data-get', self.create_drag_data)
         self._oTitle.connect('button-press-event', self.minimize_to_toolbar)
+        self._oTitle.connect_after('drag_begin', self.make_drag_icon)
         self.set_drag_handler()
-
 
         self.set_unique_id()
 
@@ -286,3 +286,9 @@ class BasicFrame(gtk.Frame):
         # We need to access _2BUTTON_PRESS
         if oEvent.type == gtk.gdk._2BUTTON_PRESS:
             self._oMainWindow.minimize_to_toolbar(self)
+
+    def make_drag_icon(self, oWidget, _oDragContext):
+        """Create an icon for dragging the pane from the titlebar"""
+        oDrawable = self._oTitleLabel.get_snapshot(None)
+        oWidget.drag_source_set_icon(oDrawable.get_colormap(), oDrawable)
+
