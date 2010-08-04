@@ -1,3 +1,23 @@
+04 Aug 2010
+ * Use custom drag icons to give more visual feedback when dragging objects
+
+03 Aug 2010
+ * Start implementing dragging filter values around
+ * Use treeview methods for more visual feedback when dragging
+
+02 Aug 2010
+ * better fix of the empty filter group deletion / moving issue
+ * Pylint driven cleanups
+
+01 Aug 2010
+ * Fix bug that led to filter groups disappering in the filter editor
+ * Fix bug that made it impossible to delete some empty filter groups
+ * Some pylint cleanups
+
+31 Jul 2010
+ * Remove some dead code
+ * Pylint cleanups
+
 27 Jul 2010
  * Start profile docs section
  * Remove some dead code
