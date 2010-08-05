@@ -17,6 +17,8 @@ import gobject
 import gtk
 
 DRAG_TARGETS = [ ('STRING', 0, 0), ('text/plain', 0, 0) ]
+# Filters we pad values for to sort nicely
+PAD_FILTERS = ['Capacity']
 
 class FilterModelPanes(gtk.HBox):
     """Widget to hold the different panes of the Filter editor"""
@@ -313,9 +315,12 @@ class FilterValuesBox(gtk.VBox):
             _oInfo, _oTime, oFilter, _oWidget):
         """Update the box model with the new values"""
         aSelected = self._oWidget.get_selection()
-        for sSet in aSelected:
-            if sSet not in oFilter.aCurValues:
-                oFilter.aCurValues.append(sSet)
+        for sValue in aSelected:
+            if oFilter.sFilterName in PAD_FILTERS:
+                # Is this the best approach?
+                sValue = '%2s' % sValue
+            if sValue not in oFilter.aCurValues:
+                oFilter.aCurValues.append(sValue)
         oFilter.aCurValues.sort()
         self._oBoxModelEditor.update_list(oFilter)
 
@@ -324,6 +329,8 @@ class FilterValuesBox(gtk.VBox):
         """Update the box model with the new values"""
         aSelected = oCountList.get_selection()
         for sCount in aSelected:
+            # Pad so they sort nicely
+            sCount = '%3s' % sCount
             if not oFilter.aCurValues[0]:
                 oFilter.aCurValues[0] = [sCount]
             elif sCount not in oFilter.aCurValues[0]:
