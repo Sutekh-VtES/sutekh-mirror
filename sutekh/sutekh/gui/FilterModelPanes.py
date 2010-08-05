@@ -821,6 +821,23 @@ class FilterBoxModelEditView(gtk.TreeView):
 
     def _do_move_value(self, sData, tRowInfo):
         """Handle moving filter values"""
+        def target_ok(oDropFilter, oSourceFilter):
+            """Check that we have a valid target"""
+            if not hasattr(oDropFilter, 'sFilterName'):
+                # Can't drop values onto a box filter
+                return False
+            elif oDropFilter.iValueType not in [FilterBoxItem.LIST,
+                    FilterBoxItem.LIST_FROM]:
+                # Not sensible to drop onto entry or null filters
+                return False
+            elif oSourceFilter.sFilterName != oDropFilter.sFilterName:
+                # Only drag between the same filter types
+                return False
+            elif oSourceFilter is oDropFilter:
+                # Don't drag onto ourselves
+                return False
+            return True
+
         sIter = sData.split(':', 1)[1].strip()
         # Check if target point is suitable
         oFilterObj = self._oStore.get_drop_filter(tRowInfo)
@@ -828,22 +845,29 @@ class FilterBoxModelEditView(gtk.TreeView):
         oSourceFilter = self._oStore.get_value(
                 self._oStore.iter_parent(oIter), 1)
         sValue = self._oStore.get_value(oIter, 0)
-        if oSourceFilter.sFilterName != oFilterObj.sFilterName:
-            # Only drag between the same filter types
+        if not target_ok(oFilterObj, oSourceFilter):
             return False
-        elif oSourceFilter is oFilterObj:
-            # Don't drag onto ourselves
-            return False
+        aTarget = []
         if oFilterObj.iValueType == FilterBoxItem.LIST:
-            if sValue in oFilterObj.aCurValues:
-                # Don't duplicate
-                return False
-            oSourceFilter.aCurValues.remove(sValue)
-            oFilterObj.aCurValues.append(sValue)
-            oFilterObj.aCurValues.sort()
+            aTarget = oFilterObj.aCurValues
         elif oFilterObj.iValueType == FilterBoxItem.LIST_FROM:
-            # FIXME: Sort out moving between from filters
+            if oSourceFilter.aCurValues[0] and \
+                    sValue in oSourceFilter.aCurValues[0]:
+                # Dragging the 1st element
+                if not oFilterObj.aCurValues[0]:
+                    oFilterObj.aCurValues[0] = []
+                aTarget = oFilterObj.aCurValues[0]
+            elif oSourceFilter.aCurValues[1] and \
+                    sValue in oSourceFilter.aCurValues[1]:
+                if not oFilterObj.aCurValues[0]:
+                    oFilterObj.aCurValues[1] = []
+                aTarget = oFilterObj.aCurValues[1]
+        if sValue in aTarget:
+            # Don't allow duplicate values
             return False
+        aTarget.append(sValue)
+        aTarget.sort()
+        self.remove_value_at_iter(sIter)
         self.load()
         self._oStore.foreach(self._check_for_value, (oFilterObj, sValue))
         return True
