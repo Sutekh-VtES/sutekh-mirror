@@ -1170,7 +1170,7 @@ class CardSetMultiCardCountFilter(DirectFilter):
         # Should this have a more staggered range split? 0..20, 20-30,
         # 30-40, >40 type thing?
         aCardSets = [x.name for x in PhysicalCardSet.select().orderBy('name')]
-        aValues = [str(x) for x in range(0, 30)] + ['>30']
+        aValues = [str(x) for x in range(0, 31)] + ['>30']
         return (aValues, aCardSets)
 
     # pylint: disable-msg=W0142
