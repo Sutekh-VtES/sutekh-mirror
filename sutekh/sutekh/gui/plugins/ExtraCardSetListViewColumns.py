@@ -57,7 +57,7 @@ class ExtraCardSetListViewColumns(SutekhPlugin):
                 '_get_data_description'),
             }
 
-    OPTION_STR = ", ".join('"%s"' % sKey for sKey in COLUMNS.keys())
+    OPTION_STR = ", ".join('"%s"' % sKey for sKey in sorted(COLUMNS.keys()))
     EXTRA_COLUMNS = "extra columns"
 
     dCardSetListConfig = {
