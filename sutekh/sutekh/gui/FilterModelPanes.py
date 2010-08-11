@@ -18,7 +18,13 @@ import gtk
 
 DRAG_TARGETS = [ ('STRING', 0, 0), ('text/plain', 0, 0) ]
 # Filters we pad values for to sort nicely
-PAD_FILTERS = ['Capacity']
+PAD_FILTERS = ['Capacity', 'CardCount: Count']
+
+# Drag type constants
+NEW_VALUE = 'NewValue: '
+MOVE_VALUE = 'MoveValue: '
+MOVE_FILTER = 'MoveFilter: '
+NEW_FILTER = 'NewFilter: '
 
 class FilterModelPanes(gtk.HBox):
     """Widget to hold the different panes of the Filter editor"""
@@ -88,7 +94,8 @@ class FilterEditorToolbar(gtk.TreeView):
         """Create a drag info for this filter"""
         _oModel, oIter = self.get_selection().get_selected()
         if oIter:
-            sSelect = 'NewFilter: %s' % self.__oListStore.get_value(oIter, 1)
+            sSelect = '%s%s' % (NEW_FILTER,
+                    self.__oListStore.get_value(oIter, 1))
             oSelectionData.set(oSelectionData.target, 8, sSelect)
 
 class FilterValuesBox(gtk.VBox):
@@ -111,6 +118,7 @@ class FilterValuesBox(gtk.VBox):
         self._set_drop_for_widget(self._oNoneWidget)
         self._oFilter = None
         self._oBoxModelEditor = None
+        self._aLastSelection = []
         oCheckBox = gtk.HBox()
         self.__oDisable = gtk.CheckButton('Disable')
         self.__oNegate = gtk.CheckButton('Negate')
@@ -227,6 +235,7 @@ class FilterValuesBox(gtk.VBox):
         """Replace the current widget with the correct widget for the
            new filter"""
         self._oBoxModelEditor = oBoxModelEditor
+        self._aLastSelection = []
         if self._oWidget:
             self.remove(self._oWidget)
             self._oWidget = None
@@ -297,11 +306,11 @@ class FilterValuesBox(gtk.VBox):
             sData =  oSelectionData.data
             if not sData:
                 oDragContext.finish(False, False, oTime)
-            elif sData.startswith('MoveValue: '):
+            elif sData.startswith(MOVE_VALUE):
                 # Removing a value from the list
                 sIter = sData.split(':', 1)[1].strip()
                 self._oBoxModelEditor.remove_value_at_iter(sIter)
-            elif sData.startswith('MoveFilter: '):
+            elif sData.startswith(MOVE_FILTER):
                 # Removing a filter
                 sIter = sData.split(':', 1)[1].strip()
                 self._oBoxModelEditor.remove_filter_at_iter(sIter)
@@ -311,54 +320,46 @@ class FilterValuesBox(gtk.VBox):
 
     # pylint: enable-msg=R0913
 
-    def update_filter_list(self, _oBtn, _oContext, _oSelectionData,
+    def get_selected_values(self):
+        """Get the most recent selection - used by the drop values code"""
+        return self._aLastSelection
+
+    def _format_selection(self, sSelect, aSelection):
+        """Set the current selection, properly formatted for sorting"""
+        sName = sSelect.replace(NEW_VALUE, '')
+        if sName in PAD_FILTERS:
+            # Is this the best approach?
+            self._aLastSelection = ['%2s' % x for x in aSelection]
+        else:
+            self._aLastSelection = aSelection
+
+    def update_filter_list(self, _oBtn, _oContext, oSelectionData,
             _oInfo, _oTime, oFilter, _oWidget):
         """Update the box model with the new values"""
-        aSelected = self._oWidget.get_selection()
-        for sValue in aSelected:
-            if oFilter.sFilterName in PAD_FILTERS:
-                # Is this the best approach?
-                sValue = '%2s' % sValue
-            if sValue not in oFilter.aCurValues:
-                oFilter.aCurValues.append(sValue)
-        oFilter.aCurValues.sort()
-        self._oBoxModelEditor.update_list(oFilter)
+        sSelect = '%s%s' % (NEW_VALUE, oFilter.sFilterName)
+        self._format_selection(sSelect, self._oWidget.get_selection())
+        oSelectionData.set(oSelectionData.target, 8, sSelect)
 
-    def update_count_list(self, _oBtn, _oContext, _oSelectionData,
+    def update_count_list(self, _oBtn, _oContext, oSelectionData,
             _oInfo, _oTime, oFilter, oCountList):
         """Update the box model with the new values"""
-        aSelected = oCountList.get_selection()
-        for sCount in aSelected:
-            # Pad so they sort nicely
-            sCount = '%3s' % sCount
-            if not oFilter.aCurValues[0]:
-                oFilter.aCurValues[0] = [sCount]
-            elif sCount not in oFilter.aCurValues[0]:
-                oFilter.aCurValues[0].append(sCount)
-        oFilter.aCurValues[0].sort()
-        self._oBoxModelEditor.update_count_list(oFilter)
+        sSelect = '%s%s: Count' % (NEW_VALUE, oFilter.sFilterName)
+        self._format_selection(sSelect, oCountList.get_selection())
+        oSelectionData.set(oSelectionData.target, 8, sSelect)
 
-    def update_set_list(self, _oBtn, _oContext, _oSelectionData,
+    def update_set_list(self, _oBtn, _oContext, oSelectionData,
             _oInfo, _oTime, oFilter, oSetList):
         """Update the box model to the current selection"""
-        aSelected = oSetList.get_all_selected_sets()
-        for sSet in aSelected:
-            if sSet not in oFilter.aCurValues:
-                oFilter.aCurValues.append(sSet)
-        oFilter.aCurValues.sort()
-        self._oBoxModelEditor.update_list(oFilter)
+        sSelect = '%s%s' % (NEW_VALUE, oFilter.sFilterName)
+        self._format_selection(sSelect, oSetList.get_all_selected_sets())
+        oSelectionData.set(oSelectionData.target, 8, sSelect)
 
-    def update_count_set(self, _oBtn, _oContext, _oSelectionData,
+    def update_count_set(self, _oBtn, _oContext, oSelectionData,
             _oInfo, _oTime, oFilter, oSetList):
         """Update the box model to the current selection"""
-        aSelected = oSetList.get_all_selected_sets()
-        for sSet in aSelected:
-            if not oFilter.aCurValues[1]:
-                oFilter.aCurValues[1] = [sSet]
-            elif sSet not in oFilter.aCurValues[1]:
-                oFilter.aCurValues[1].append(sSet)
-        oFilter.aCurValues[1].sort()
-        self._oBoxModelEditor.update_count_list(oFilter)
+        sSelect = '%s%s: Set' % (NEW_VALUE, oFilter.sFilterName)
+        self._format_selection(sSelect, oSetList.get_all_selected_sets())
+        oSelectionData.set(oSelectionData.target, 8, sSelect)
 
     def update_edit_box(self, oEntry, oFilter):
         """Update the box model with the current text"""
@@ -610,7 +611,7 @@ class FilterBoxModelStore(gtk.TreeStore):
         while oFilterObj is None:
             oIter = self.iter_parent(oIter)
             oFilterObj = self.get_value(oIter, 1)
-        return oFilterObj
+        return oFilterObj, oIter
 
     def get_insert_box(self, tRowInfo):
         """Get the filter box model to insert into."""
@@ -660,7 +661,7 @@ class FilterBoxModelEditView(gtk.TreeView):
         oSelection.connect('changed', self.update_values_widget)
 
         self.connect('drag_data_received', self.drag_drop_handler)
-        self.connect('drag_data_get', self.drag_filter)
+        self.connect('drag_data_get', self.drag_element)
         self.connect('button_press_event', self.press_button)
 
     def update_values_widget(self, _oTreeSelection):
@@ -717,7 +718,7 @@ class FilterBoxModelEditView(gtk.TreeView):
         if oFilter.iValueType == FilterBoxItem.LIST \
                 and sValue in oFilter.aCurValues:
             oFilter.aCurValues.remove(sValue)
-            self.update_list(oFilter)
+            self.update_list(self.oCurSelectIter, oFilter)
         elif oFilter.iValueType == FilterBoxItem.LIST_FROM:
             if oFilter.aCurValues[0] and \
                     sValue in oFilter.aCurValues[0]:
@@ -725,7 +726,7 @@ class FilterBoxModelEditView(gtk.TreeView):
             elif oFilter.aCurValues[1] and \
                     sValue in oFilter.aCurValues[1]:
                 oFilter.aCurValues[1].remove(sValue)
-            self.update_count_list(oFilter)
+            self.update_count_list(self.oCurSelectIter, oFilter)
 
     def remove_filter_at_iter(self, sIter):
         """Remove the filter element at the given point in the tree"""
@@ -735,11 +736,11 @@ class FilterBoxModelEditView(gtk.TreeView):
         oParent.remove(oMoveObj)
         self.load() # May break stuff
 
-    def update_list(self, oFilterItem):
+    def update_list(self, oIter, oFilterItem):
         """Update the list to show the current values"""
-        self._update_cur_iter_with_list(oFilterItem.aCurValues)
+        self._update_iter_with_list(oIter, oFilterItem.aCurValues)
 
-    def update_count_list(self, oFilterItem):
+    def update_count_list(self, oIter, oFilterItem):
         """Update the list to show the current values"""
         aValues = []
         if oFilterItem.aCurValues[0]:
@@ -751,7 +752,7 @@ class FilterBoxModelEditView(gtk.TreeView):
             aValues.extend(oFilterItem.aCurValues[1])
         else:
             aValues.append(None)
-        self._update_cur_iter_with_list(aValues)
+        self._update_iter_with_list(oIter, aValues)
 
     def update_box_text(self, oBoxModel):
         """Update the listing for the given box model"""
@@ -767,11 +768,11 @@ class FilterBoxModelEditView(gtk.TreeView):
         self.expand_to_path(oChildPath)
         self.expand_row(oChildPath, True)
 
-    def _update_cur_iter_with_list(self, aValues):
+    def _update_iter_with_list(self, oIter, aValues):
         """Fill in the list values"""
         oPath, _oCol = self.get_cursor()
         oCurPath = self._oStore.update_iter_with_values(aValues,
-                self.oCurSelectIter, oPath)
+                oIter, oPath)
         self.expand_to_path(oCurPath)
         self.expand_row(oCurPath, True)
 
@@ -807,14 +808,14 @@ class FilterBoxModelEditView(gtk.TreeView):
             tRowInfo = self.get_dest_row_at_pos(iXPos, iYPos)
             if not sData:
                 oDragContext.finish(False, False, oTime)
-            elif sData.startswith('NewFilter: ') or \
-                    sData.startswith('MoveFilter: '):
+            elif sData.startswith(NEW_FILTER) or \
+                    sData.startswith(MOVE_FILTER):
                 if not self._do_drop_filter(sData, tRowInfo):
                     oDragContext.finish(False, False, oTime)
-            elif sData.startswith('MoveValue: '):
+            elif sData.startswith(MOVE_VALUE):
                 if not self._do_move_value(sData, tRowInfo):
                     oDragContext.finish(False, False, oTime)
-            elif sData.startswith('NewValue: '):
+            elif sData.startswith(NEW_VALUE):
                 if not self._do_drop_value(sData, tRowInfo):
                     oDragContext.finish(False, False, oTime)
             else:
@@ -824,7 +825,56 @@ class FilterBoxModelEditView(gtk.TreeView):
 
     def _do_drop_value(self, sData, tRowInfo):
         """Handled dropping in new values"""
-        pass
+        def target_ok(oDropFilter, sFilterName):
+            """Check that we have a valid target"""
+            if not hasattr(oDropFilter, 'sFilterName'):
+                # Can't drop values onto a box filter
+                return False
+            elif oDropFilter.iValueType not in [FilterBoxItem.LIST,
+                    FilterBoxItem.LIST_FROM]:
+                # Not sensible to drop onto entry or null filters
+                return False
+            elif sFilterName != oDropFilter.sFilterName:
+                # Only drag between the same filter types
+                return False
+            return True
+
+        # values are created as 'NewValue: FilterName[: Section]'
+        # We then call back into oValuesWidget to get the actual
+        # values, to avoid awkward escaping issues
+        oFilterObj, oDropIter = self._oStore.get_drop_filter(tRowInfo)
+        sFilterName = sData.split(':', 2)[1].strip()
+        if not target_ok(oFilterObj, sFilterName):
+            return False
+        aSelection = self._oValuesWidget.get_selected_values()
+        if oFilterObj.iValueType == FilterBoxItem.LIST:
+            # Get values from the list
+            for sValue in aSelection:
+                if sValue not in oFilterObj.aCurValues:
+                    oFilterObj.aCurValues.append(sValue)
+            oFilterObj.aCurValues.sort()
+            self.update_list(oDropIter, oFilterObj)
+        else:
+            # List from filter - we need to distinguish between the
+            # different parts
+            sSection = sData.split(':', 2)[2].strip()
+            for sValue in aSelection:
+                if sSection == 'Count':
+                    if not oFilterObj.aCurValues[0]:
+                        oFilterObj.aCurValues[0] = [sValue]
+                    elif sValue not in oFilterObj.aCurValues[0]:
+                        oFilterObj.aCurValues[0].append(sValue)
+                else:
+                    if not oFilterObj.aCurValues[1]:
+                        oFilterObj.aCurValues[1] = [sValue]
+                    elif sValue not in oFilterObj.aCurValues[1]:
+                        oFilterObj.aCurValues[1].append(sValue)
+            if sSection == 'Count':
+                oFilterObj.aCurValues[0].sort()
+            else:
+                oFilterObj.aCurValues[1].sort()
+            self.update_count_list(oDropIter, oFilterObj)
+        return True
 
     def _do_move_value(self, sData, tRowInfo):
         """Handle moving filter values"""
@@ -847,7 +897,7 @@ class FilterBoxModelEditView(gtk.TreeView):
 
         sIter = sData.split(':', 1)[1].strip()
         # Check if target point is suitable
-        oFilterObj = self._oStore.get_drop_filter(tRowInfo)
+        oFilterObj, _oDropIter = self._oStore.get_drop_filter(tRowInfo)
         oIter = self._oStore.get_iter_from_string(sIter)
         oSourceFilter = self._oStore.get_value(
                 self._oStore.iter_parent(oIter), 1)
@@ -994,7 +1044,7 @@ class FilterBoxModelEditView(gtk.TreeView):
                 return True # Don't propogate to buttons
         return False
 
-    def drag_filter(self, _oBtn, _oContext, oSelectionData, _oInfo, _oTime):
+    def drag_element(self, _oBtn, _oContext, oSelectionData, _oInfo, _oTime):
         """Create a drag info for this filter"""
         _oModel, oIter = self.get_selection().get_selected()
         if oIter and self._oStore.iter_depth(oIter) > 0:
@@ -1002,12 +1052,12 @@ class FilterBoxModelEditView(gtk.TreeView):
             oFilter = self._oStore.get_value(oIter, 1)
             if oFilter is None:
                 # Dragging a value
-                sSelect = 'MoveValue: %s' % \
-                        self._oStore.get_string_from_iter(oIter)
+                sSelect = '%s%s' % (MOVE_VALUE,
+                        self._oStore.get_string_from_iter(oIter))
             else:
                 # Dragging a filter
-                sSelect = 'MoveFilter: %s' % \
-                        self._oStore.get_string_from_iter(oIter)
+                sSelect = '%s%s' % (MOVE_FILTER,
+                        self._oStore.get_string_from_iter(oIter))
             oSelectionData.set(oSelectionData.target, 8, sSelect)
 
 
