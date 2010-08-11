@@ -5,6 +5,10 @@
 # Copyright 2010 Simon Cross <hodgestar+sutekh@gmail.com>
 # GPL - see COPYING for details
 
+"""Widget that constructs an interface to manipulate the profile options.
+
+   Used bby the various Profile editor dialogs."""
+
 import gtk
 
 
@@ -18,7 +22,7 @@ class PreferenceTable(gtk.Table):
 
     def __init__(self, aOptions, oValidator):
         self._aOptions = []
-        for sKey, sConfigSpec, bInherit in aOptions:
+        for sKey, sConfigSpec, _bInherit in aOptions:
             self._aOptions.append(
                 PreferenceOption(sKey, sConfigSpec, oValidator))
 
@@ -35,6 +39,8 @@ class PreferenceTable(gtk.Table):
             "yoptions": 0,
         }
         for iRow, oOpt in enumerate(self._aOptions):
+            # pylint: disable-msg=W0142
+            # *args magic OK here
             self.attach(oOpt.oLabel, self.KEY_COL, self.KEY_COL+1,
                 iRow, iRow+1, **dAttachOpts)
             self.attach(oOpt.oEntry, self.ENTRY_COL, self.ENTRY_COL+1,
@@ -74,6 +80,7 @@ class PreferenceOption(object):
         self.bEditable = True
 
     def set_inheritable(self, bInheritable):
+        """Set wether the values are inherited from the default profile"""
         self.bInheritable = bInheritable
         if bInheritable:
             self.oInherit.set_sensitive(True)
@@ -83,6 +90,7 @@ class PreferenceOption(object):
             self.oInherit.hide()
 
     def set_editable(self, bEditable):
+        """Mark the option as editable"""
         self.bEditable = bEditable
         self.oEntry.set_sensitive(bEditable)
 
@@ -133,57 +141,75 @@ class BaseParsedSpec(object):
 
 
 class UneditableSpec(BaseParsedSpec):
+    """Class for a spec entry that can't be edited"""
 
+    # pylint: disable-msg=W0201
+    # we define _oOrigValue outside __init__, but it's OK because create_widget
+    # is called in init
     def create_widget(self):
+        """Create a suitable widget (gtk.Label)"""
         self._oOrigValue = None
         return gtk.Label()
 
     def set_value(self, oValue):
+        """Set the label value"""
         self._oOrigValue = oValue
         self.oEntry.set_text(str(oValue))
 
     def get_value(self):
+        """Get the label value"""
         return self._oOrigValue
 
 
 class StringParsedSpec(BaseParsedSpec):
+    """Class for a option taking an artbitary string"""
 
     def create_widget(self):
+        """Create suitable widget (gtk.Entry)"""
         return gtk.Entry()
 
     def set_value(self, oValue):
+        """Set the entry widget value"""
         if oValue is None:
             oValue = ""
         self.oEntry.set_text(str(oValue))
 
     def get_value(self):
+        """Get the entry widget value"""
         return self.oEntry.get_text()
 
 
 class BooleanParsedSpec(BaseParsedSpec):
+    """Class for a Boolean option in the spec"""
 
     def create_widget(self):
+        """Create a asuitable widget (gtk.CheckBox)"""
         return gtk.CheckButton()
 
     def set_value(self, oValue):
+        """Set the checkbox correctly for the given value"""
         if oValue:
             self.oEntry.set_active(True)
         else:
             self.oEntry.set_active(False)
 
     def get_value(self):
+        """Get the checkbox value"""
         return self.oEntry.get_active()
 
 
 class OptionParsedSpec(BaseParsedSpec):
+    """Widget for dealing with a list of exclusive options"""
 
     def create_widget(self):
+        """Create a suitable widget (gtk.ComboBox)"""
         oCombo = gtk.combo_box_new_text()
         for sValue in self.aArgs:
             oCombo.append_text(sValue)
         return oCombo
 
     def set_value(self, oValue):
+        """Set the values on the combo box"""
         try:
             iIndex = self.aArgs.index(oValue)
         except ValueError:
@@ -191,6 +217,7 @@ class OptionParsedSpec(BaseParsedSpec):
         self.oEntry.set_active(iIndex)
 
     def get_value(self):
+        """Get the combo box value"""
         iIndex = self.oEntry.get_active()
         if iIndex < 0 or iIndex >= len(self.aArgs):
             return None
@@ -198,26 +225,32 @@ class OptionParsedSpec(BaseParsedSpec):
 
 
 class OptionListParsedSpec(BaseParsedSpec):
+    """Class for dealing with a list of non-exclusive options"""
 
     def create_widget(self):
+        """Create suitable widget (list of gtk.CheckBoxes)"""
         oContainer = gtk.VBox()
         for sValue in self.aArgs:
             oContainer.pack_start(gtk.CheckButton(sValue))
         return oContainer
 
     def set_value(self, oValue):
+        """Set the selected list correctly"""
         oValSet = set(oValue)
         for oButton in self.oEntry.get_children():
             oButton.set_active(oButton.get_label() in oValSet)
 
     def get_value(self):
+        """Get the current list of selected items"""
         return [oButton.get_label() for oButton in self.oEntry.get_children()
             if oButton.get_active()]
 
 
 class IntegerParsedSpec(BaseParsedSpec):
+    """Class for dealing with integer valued options"""
 
     def create_widget(self):
+        """Create suitable widget (gtk.Adjustment)"""
         iMin = self.dKwargs.get("min", 0)
         iMax = self.dKwargs.get("max", 100)
 
@@ -227,6 +260,7 @@ class IntegerParsedSpec(BaseParsedSpec):
         return oSpin
 
     def set_value(self, oValue):
+        """Set the adjustment value, ignoring errornous input"""
         try:
             oValue = int(oValue)
         except Exception:
@@ -235,6 +269,7 @@ class IntegerParsedSpec(BaseParsedSpec):
             self.oEntry.set_value(oValue)
 
     def get_value(self):
+        """Get the value form the gtk.Adjustment"""
         return self.oEntry.get_value_as_int()
 
 
