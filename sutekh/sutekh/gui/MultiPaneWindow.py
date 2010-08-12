@@ -7,6 +7,10 @@
 
 """Main window for Sutekh."""
 
+# pylint: disable-msg=C0302
+# C0302 - the module is long, but keeping the everything together is the best
+# option for now
+
 import pygtk
 pygtk.require('2.0')
 import gtk
@@ -122,7 +126,6 @@ class MultiPaneWindow(gtk.Window):
         self._oCardTextPane = None # So we can call get_pane_ids
         self._oCardTextPane = CardTextFrame(self, self._oIconManager)
 
-
         self.__oMenu = MainMenu(self, oConfig)
         self.__oToolbar = MainToolbar(self)
 
@@ -143,9 +146,7 @@ class MultiPaneWindow(gtk.Window):
 
         self.show_all()
         self.restore_from_config()
-
-        self.connect('key-press-event',
-                self.key_press)
+        self.connect('key-press-event', self.key_press)
 
     # pylint: enable-msg=W0201
 
@@ -160,7 +161,7 @@ class MultiPaneWindow(gtk.Window):
     plugins = property(fget=lambda self: self._aPlugins,
             doc="Plugins enabled for the main window.")
     config_file = property(fget=lambda self: self._oConfig,
-            doc="The confi file")
+            doc="The config file")
     focussed_pane = property(fget=lambda self: self._oFocussed,
             doc="The currently focussed pane.")
     mainwindow = property(fget=lambda self: self,
@@ -264,7 +265,6 @@ class MultiPaneWindow(gtk.Window):
         aIds.extend([x.pane_id for x in self.aOpenFrames])
         aIds.extend([x.pane_id for x in self.aClosedFrames])
         return aIds
-
 
     def is_open_by_menu_name(self, sMenuFlag):
         """Check if a frame with the given menu name is open"""
