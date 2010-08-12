@@ -35,13 +35,24 @@ class ExtraCardViewColumns(SutekhPlugin):
         'Cost': None,
     }
 
+    DEFAULT_MODE = 'Show Icons and Names'
+
+    MODES = {
+            DEFAULT_MODE : SHOW_ICONS_AND_TEXT,
+            'Show Icons only' : SHOW_ICONS_ONLY,
+            'Show Text only' : SHOW_TEXT_ONLY,
+            }
+
     OPTION_STR = ", ".join('"%s"' % sKey for sKey in sorted(COLUMNS.keys()))
     EXTRA_COLUMNS = "extra columns"
+    ICON_MODE = "column mode"
+    ICON_OPT_STR = ", ".join('"%s"' % sKey for sKey in sorted(MODES.keys()))
 
     dTableVersions = {}
     aModelsSupported = [PhysicalCardSet, PhysicalCard]
     dPerPaneConfig = {
         EXTRA_COLUMNS: 'option_list(%s, default=list())' % OPTION_STR,
+        ICON_MODE: 'option(%s, default="%s")' % (ICON_OPT_STR, DEFAULT_MODE),
     }
 
     dCardListConfig = dPerPaneConfig
@@ -54,12 +65,6 @@ class ExtraCardViewColumns(SutekhPlugin):
             'Group' : 40,
             'Capacity or Life' : 40,
             'Cost' : 100,
-            }
-
-    _dModes = {
-            'Show Icons and Names' : SHOW_ICONS_AND_TEXT,
-            'Show Icons only' : SHOW_ICONS_ONLY,
-            'Show Text only' : SHOW_TEXT_ONLY,
             }
 
     # pylint: disable-msg=W0142
@@ -404,17 +409,17 @@ class ExtraCardViewColumns(SutekhPlugin):
 
         oDlg.vbox.pack_start(gtk.HSeparator())
 
-        oIter = self._dModes.iterkeys()
+        oIter = self.MODES.iterkeys()
         for sName in oIter:
             self._oFirstBut = gtk.RadioButton(None, sName, False)
-            if self._iShowMode == self._dModes[sName]:
+            if self._iShowMode == self.MODES[sName]:
                 self._oFirstBut.set_active(True)
             oDlg.vbox.pack_start(self._oFirstBut, expand=False)
             break
         for sName in oIter:
             oBut = gtk.RadioButton(self._oFirstBut, sName)
             oDlg.vbox.pack_start(oBut, expand=False)
-            if self._iShowMode == self._dModes[sName]:
+            if self._iShowMode == self.MODES[sName]:
                 oBut.set_active(True)
 
         oDlg.show_all()
@@ -436,7 +441,7 @@ class ExtraCardViewColumns(SutekhPlugin):
             for oBut in self._oFirstBut.get_group():
                 sName = oBut.get_label()
                 if oBut.get_active():
-                    self._iShowMode = self._dModes[sName]
+                    self._iShowMode = self.MODES[sName]
 
             self.set_cols_in_use(aColsInUse)
             oDlg.destroy()
@@ -479,6 +484,8 @@ class ExtraCardViewColumns(SutekhPlugin):
         aCols = None
         if self.check_versions() and self.check_model_type():
             aCols = self.get_perpane_item(self.EXTRA_COLUMNS)
+            sShowMode = self.get_perpane_item(self.ICON_MODE)
+            self._iShowMode = self.MODES.get(sShowMode, self.DEFAULT_MODE)
         if aCols is not None:
             # Need to accept empty lists so we remove columns
             self.set_cols_in_use(aCols)
