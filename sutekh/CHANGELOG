@@ -1,3 +1,18 @@
+12 Aug 2010
+ * Update docs
+ * Tweak textile2html script to use tidylib if available
+ * Add extra column icon mode to the profiles
+
+11 Aug 2010
+ * Allow dragging filter values onto any suitable filter
+
+10 Aug 2010
+ * Sort column options in the profile editor
+
+05 Aug 2010
+ * Pad various values in the filter editor so that sort better
+ * Finish support for dragging values between filters of the same type
+
 04 Aug 2010
  * Use custom drag icons to give more visual feedback when dragging objects
 
