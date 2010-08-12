@@ -233,26 +233,28 @@ class CardSetView(CardListView):
     # elements required by function signature
     def card_drop(self, oWidget, oContext, iXPos, iYPos, oData, oInfo, oTime):
         """Handle drag-n-drop events."""
+        bDragRes = True
         if not oData or oData.format != 8:
             # Don't accept invalid data
-            oContext.finish(False, False, oTime)
+            bDragRes = False
         else:
             sSource, aCardInfo = self.split_selection_data(oData.data)
             bSkip = False
             if sSource == "Sutekh Pane:" or sSource == "Card Set:":
                 self._oController.frame.drag_drop_handler(oWidget, oContext,
                         iXPos, iYPos, oData, oInfo, oTime)
+                return
             elif not self._oModel.bEditable:
                 # Don't accept cards when not editable
                 bSkip = True
             elif sSource == self.sDragPrefix:
                 # Can't drag to oneself
                 bSkip = True
-            if not bSkip and self._oController.add_paste_data(sSource,
+            if bSkip or not self._oController.add_paste_data(sSource,
                     aCardInfo):
-                oContext.finish(True, False, oTime) # paste successful
-            else:
-                oContext.finish(False, False, oTime) # not successful
+                bDragRes = False # paste failed
+            # else paste succeeds
+        oContext.finish(bDragRes, False, oTime)
 
     # pylint: enable-msg=R0913
 

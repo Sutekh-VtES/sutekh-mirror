@@ -60,9 +60,11 @@ class CardSetManagementView(CardSetsListView):
         """Default drag-n-drop handler."""
         # Pass off to the Frame Handler
         sSource, aData = self.split_selection_data(oData.data)
+        bDragRes = False
         if sSource == "Sutekh Pane:":
             self._oController.frame.drag_drop_handler(oWdgt, oContext, iXPos,
                     iYPos, oData, oInfo, oTime)
+            return
         elif sSource == "Card Set:":
             # Find the card set at iXPos, iYPos
             # Need to do this to avoid headers and such confusing us
@@ -81,10 +83,10 @@ class CardSetManagementView(CardSetsListView):
                         # Make newly dragged set visible
                         if oPath:
                             self.expand_to_path(oPath)
-                        oContext.finish(True, False, oTime)
+                        bDragRes = True # drop succeeded
                 except SQLObjectNotFound:
                     pass
-        oContext.finish(False, False, oTime)
+        oContext.finish(bDragRes, False, oTime)
 
     def row_clicked(self, _oTreeView, oPath, _oColumn):
         """Handle row clicked events.

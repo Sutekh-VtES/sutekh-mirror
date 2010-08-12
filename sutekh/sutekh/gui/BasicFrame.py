@@ -247,22 +247,20 @@ class BasicFrame(gtk.Frame):
         """Handle panes being dragged onto this one.
 
            Allows panes to be sapped by dragging 'n dropping."""
+        bDragRes = True
         if not oSelectionData and oSelectionData.format != 8:
-            oDragContext.finish(False, False, oTime)
+            bDragRes = False
         else:
             aData =  oSelectionData.data.splitlines()
             if aData[0] == 'Sutekh Pane:':
-                if self.do_swap(aData):
-                    oDragContext.finish(True, False, oTime)
-                else:
-                    oDragContext.finish(False, False, oTime)
+                if not self.do_swap(aData):
+                    bDragRes = False
             elif aData[0] == 'Card Set:':
-                if self.do_dragged_card_set(aData):
-                    oDragContext.finish(True, False, oTime)
-                else:
-                    oDragContext.finish(False, False, oTime)
+                if not self.do_dragged_card_set(aData):
+                    bDragRes = False
             else:
-                oDragContext.finish(False, False, oTime)
+                bDragRes = False
+        oDragContext.finish(bDragRes, False, oTime)
 
     def create_drag_data(self, _oBtn, _oContext, oSelectionData, _oInfo,
             _oTime):

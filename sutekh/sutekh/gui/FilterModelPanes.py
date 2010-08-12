@@ -300,12 +300,13 @@ class FilterValuesBox(gtk.VBox):
     def drag_drop_handler(self, _oWindow, oDragContext, _iXPos, _iYPos,
             oSelectionData, _oInfo, oTime):
         """Handle drops from the filter toolbar"""
+        bDragRes = True
         if not oSelectionData and oSelectionData.format != 8:
-            oDragContext.finish(False, False, oTime)
+            bDragRes = False
         else:
             sData =  oSelectionData.data
             if not sData:
-                oDragContext.finish(False, False, oTime)
+                bDragRes = False
             elif sData.startswith(MOVE_VALUE):
                 # Removing a value from the list
                 sIter = sData.split(':', 1)[1].strip()
@@ -316,7 +317,8 @@ class FilterValuesBox(gtk.VBox):
                 self._oBoxModelEditor.remove_filter_at_iter(sIter)
             else:
                 # Not relevant
-                oDragContext.finish(False, False, oTime)
+                bDragRes = False
+        oDragContext.finish(bDragRes, False, oTime)
 
     # pylint: enable-msg=R0913
 
@@ -801,25 +803,27 @@ class FilterBoxModelEditView(gtk.TreeView):
     def drag_drop_handler(self, _oWindow, oDragContext, iXPos, iYPos,
             oSelectionData, _oInfo, oTime):
         """Handle drops from the filter toolbar"""
+        bDragRes = True
         if not oSelectionData and oSelectionData.format != 8:
-            oDragContext.finish(False, False, oTime)
+            bDragRes = False
         else:
             sData =  oSelectionData.data
             tRowInfo = self.get_dest_row_at_pos(iXPos, iYPos)
             if not sData:
-                oDragContext.finish(False, False, oTime)
+                bDragRes = False
             elif sData.startswith(NEW_FILTER) or \
                     sData.startswith(MOVE_FILTER):
                 if not self._do_drop_filter(sData, tRowInfo):
-                    oDragContext.finish(False, False, oTime)
+                    bDragRes = False
             elif sData.startswith(MOVE_VALUE):
                 if not self._do_move_value(sData, tRowInfo):
-                    oDragContext.finish(False, False, oTime)
+                    bDragRes = False
             elif sData.startswith(NEW_VALUE):
                 if not self._do_drop_value(sData, tRowInfo):
-                    oDragContext.finish(False, False, oTime)
+                    bDragRes = False
             else:
-                oDragContext.finish(False, False, oTime)
+                bDragRes = False
+        oDragContext.finish(bDragRes, False, oTime)
 
     # pylint: enable-msg=R0913
 
