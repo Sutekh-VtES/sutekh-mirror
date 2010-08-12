@@ -36,7 +36,6 @@
 		<li><a href="#ww_edit">Edit</a></li>
 		<li><a href="#ww_filter">Filter</a></li>
 		<li><a href="#ww_analyze">Analyze</a></li>
-		<li><a href="#ww_other">Other</a></li>
 	</ol></li>
 		<li><a href="#card_text">Card Text</a></li>
 		<li><a href="#card_image">Card Image</a></li>
@@ -45,7 +44,6 @@
 		<li><a href="#card_set_list_actions">Actions</a></li>
 		<li><a href="#card_set_list_edit">Edit</a></li>
 		<li><a href="#card_set_list_filter">Filter</a></li>
-		<li><a href="#card_set_list_other">Other</a></li>
 	</ol></li>
 		<li><a href="#cardsets">Card Sets</a>
 	<ol>
@@ -53,7 +51,6 @@
 		<li><a href="#cardsets_edit">Edit</a></li>
 		<li><a href="#cardsets_filter">Filter</a></li>
 		<li><a href="#cardsets_analyze">Analyze</a></li>
-		<li><a href="#cardsets_other">Other</a></li>
 		<li><a href="#cardsets_keyboard">Keyboard Shortcuts</a></li>
 	</ol></li>
 		<li><a href="#dialogs">Other dialogs</a>
@@ -88,13 +85,10 @@
 		<li><a href="#cardset_profile">Card Set Profile Options</a></li>
 		<li><a href="#cs_profile">CardSet List Profile Options</a>
 	<ol>
-		<li>&#8220;Extra Columns (card set list)&#8221;#cs_columns</li>
+		<li><a href="#cs_columns">Extra Columns &#8212; card set list</a></li>
+		<li><a href="#grouping">Card Grouping</a></li>
+		<li><a href="#columns">Extra Columns &#8212; card sets</a></li>
 	</ol></li>
-	</ol></li>
-		<li><a href="#other">Other Tools</a>
-	<ol>
-		<li><a href="#grouping">Change Grouping</a></li>
-		<li><a href="#columns">Select Extra Columns</a></li>
 	</ol></li>
 	</ol>
 
@@ -289,15 +283,6 @@
 		<li><a href="#cluster">Cluster Cards</a></li>
 	</ul>
 
-<h3 id="ww_other">Other</h3>
-
-<p>The following other options are available for the White Wolf Card List:</p>
-
-	<ul>
-		<li><a href="#grouping">Change Grouping</a></li>
-		<li><a href="#columns">Select Extra Columns</a></li>
-	</ul>
-
 <h2 id="card_text">Card Text</h2>
 
 <p>The Card Text Pane displays the text on the card, and any rulings that apply to the card.</p>
@@ -345,13 +330,11 @@
 
 <h3 id="card_set_list_edit">Edit</h3>
 
-<p>	<ul>
-		<li><em>Search</em>: Open up a <a href="#search">search</a> dialog which will search the list for a card set with a name starting with the typed text. The search dialog can also be opened by either using the <strong>&lt;Ctrl&gt;-F</strong> shortcut, or by simply starting to type in the list view.</li>
-		<li><em>Edit Profiles</em>: Open up a <a href="#edit_profile">edit</a> profile dialog for</li>
-	</ul> adding or changing profiles for the carrd set list.
 	<ul>
-		<li><em>CardSet List Profile</em>: Allows you to select between the available</li>
-	</ul> profiles for the card set list.</p>
+		<li><em>Search</em>: Open up a <a href="#search">search</a> dialog which will search the list for a card set with a name starting with the typed text. The search dialog can also be opened by either using the <strong>&lt;Ctrl&gt;-F</strong> shortcut, or by simply starting to type in the list view.</li>
+		<li><em>Edit Profiles</em>: Open up a <a href="#edit_profile">edit</a> profile dialog for adding or changing profiles for the carrd set list.</li>
+		<li><em>CardSet List Profile</em>: Allows you to select between the available profiles for the card set list.</li>
+	</ul>
 
 <h3 id="card_set_list_filter">Filter</h3>
 
@@ -460,15 +443,6 @@
 		<li><a href="#test_indep">Test Card Set Independence</a></li>
 	</ul>
 
-<h3 id="cardsets_other">Other</h3>
-
-<p>The following other options are available for card sets:</p>
-
-	<ul>
-		<li><a href="#grouping">Change Grouping</a></li>
-		<li><a href="#columns">Select Extra Columns</a></li>
-	</ul>
-
 <h3 id="cardsets_keyboard">Keyboard Shortcuts</h3>
 
 <p>For card sets, the following additional keyboard shortcuts exist:</p>
@@ -515,7 +489,7 @@
 
 <p>The Filter dialog will display the last used filter for the given pane. You can clear or modify this filter using the <em>Clear Filter</em> button.</p>
 
-<p>You can save complex filters for later reuse using the <em>Save</em> button, and recall them using the <em>Load</em> button. When modifying a filter, you can revert to the saved version using the <em>Revert Filter</em> button.</p>
+<p>You can save complex filters for later reuse using the <em>Save</em> button, and recall them using the <em>Load</em> button. When modifying a filter, you can revert to the saved version using the <em>Revert Filter</em> button. A saved filter will include all values currently set for the filter.</p>
 
 <h3 id="filter_dialog">The Filter Dialog</h3>
 
@@ -523,140 +497,37 @@
 
 <p>The left hand pane lists all the different possible filter types. Individual filter elements can be dragged from this into the central filter pane, and the filter elements can be re-arranged within the central pane as well. This is mostly useful when using multiple filter groups (see <a href="#combining">Combining Basic Filters</a>).</p>
 
-<p>When a filter element is selected, the right hand pane allows for the values for that filter element to be selected. This also provides buttons to delete filter elements, negate the meeting of the filter element and to temporarily disable filter elements.  Disabled filter elements are not used in the filter, but the values set for the element are preserved.</p>
+<p>When a filter element is selected, the right hand pane allows for the values for that filter element to be selected. This also provides buttons to delete filter elements, negate the meeting of the filter element and to temporarily disable filter elements.  Disabled filter elements are not used in the filter, but the values set for the element are preserved. These options are also available from a <strong>Right-Click</strong> context menu.</p>
+
+<p>Filter values can be dragged from the right-hand pane into any filter of the same type. Filter values can also be dragged between filters of the same type.</p>
+
+<p>Filters and filter values can be removed from the filter by using the buttons, using the context menu, or by dragging filter elements from the left hand pane to the right hand pane.</p>
 
 <h3 id="card_filters">Card Filters</h3>
 
 <p>These filters apply either to the White Wolf card list or a card set. The following basic filters are supported:</p>
 
 	<ul>
-		<li><em>Card Type</em>: Filter on the type of card. You must specify a <a href="#list">list</a> of</li>
-	</ul>
-card types. A card matches if any one of its types matches any type in the
-list.
-	<ul>
-		<li><em>Cost Type</em>: Filter on the type of cost which must be paid for the card. You</li>
-	</ul>
-must specify a <a href="#list">list</a> of cost types. The filter ignores the numerical
-cost, and considers only the cost type. If you wish to filter on a specific
-cost and cost type, you must combine this filter with the <em>Cost</em> filter.
-Presently, the recognised types of cost are pool, blood and conviction, and this
-filter matches only library cards. Vampire capacity and ally/retainer life are
-not considered to be cost types.
-	<ul>
-		<li><em>Clan</em>: Filter on the clan(s) listed on the card. You must specify a</li>
-	</ul>
-<a href="#list">list</a> of clans. A card matches if any clan listed on the card matches
-any clan in the list.
-	<ul>
-		<li><em>Discipline</em>: Filter on the discipline(s) listed on the card. You must specify</li>
-	</ul>
-a <a href="#list">list</a> of disciplines. A card matches if any discipline listed on the
-card matches any discipline in the list. This filter ignores discipline levels.
-	<ul>
-		<li><em>Group</em>: Filter on the group of a crypt card. You must specify a <a href="#list">list</a></li>
-	</ul>
-of groups. A card matches if its group matches any group in the list.
-	<ul>
-		<li><em>Capacity</em>: Filter on the capacity listed on the card. You must specify a</li>
-	</ul>
-<a href="#list">list</a> of capacities. A card matches if its capacity matches any capacity
-in the list.
-	<ul>
-		<li><em>Cost</em>: Filter on the cost which must be paid for the card. You must specify a</li>
-	</ul>
-<a href="#list">list</a> of costs. A card matches if its cost matches any cost in the list
-numerically. This filter ignores the cost type, and considers only the numerical
-cost. If you wish to filter on a specific cost and cost type, you must combine
-this filter with the <em>Cost Type</em> filter (see
-<a href="#combining">Combining Basic Filters</a>). Note that cards without a cost are
-considered not to have a cost type either, so filtering for a cost of 0 and
-a cost type will fail to match any cards. 
-	<ul>
-		<li><em>Life</em>: Filter on the life value of a card. You must specify a</li>
-	</ul>
-<a href="#list">list</a> of life values. A card matches if the life value listed on the card
-matches any life value in the list. This filter matches crypt cards which
-have a life value (currently the Imbued), and match library cards which
-have a life value (other allies, and retainers). For allies and retainers this
-matches only the base life if the life varies with discipline level.
-	<ul>
-		<li><em>Creed</em>: Filter on the creed(s) listed on the card. You must specify a</li>
-	</ul>
-<a href="#list">list</a> of creeds. A card matches if any creed listed on the card matches
-any creed in the list.
-	<ul>
-		<li><em>Virtue</em>: Filter on the virtue(s) listed on the card. You must specify a</li>
-	</ul>
-<a href="#list">list</a> of virtues. A card matches if any virtue listed on the card matches
-any virtue in the list.
-	<ul>
-		<li><em>Card Text</em>: Filter on the text of the card. You must specify a</li>
-	</ul>
-<a href="#string">string</a>. A card matches if the string appears in the card text. This
-filter ignores the card name. You can use % and _ as <a href="#wildcard">wildcard</a>
-characters.
-	<ul>
-		<li><em>Card Name</em>: Filter on the name of the card. You must specify a</li>
-	</ul>
-<a href="#string">string</a>. A card matches if the string appears in the card name. You can
-use % and _ as <a href="#wildcard">wildcard</a> characters.
-	<ul>
-		<li><em>Sect</em>: Filter on the sect(s) listed on the card. You must specify a</li>
-	</ul>
-<a href="#list">list</a> of sects. A card matches if any sect listed on the card matches any
-sect in the list.
-	<ul>
-		<li><em>Title</em>: Filter on the vampire title(s) listed on the card. You must specify a</li>
-	</ul>
-<a href="#list">list</a> of titles. A card matches if any title listed on the card matches
-any title in the list.
-	<ul>
-		<li><em>Keyword</em>: Filter on keywords associated with the card. You must specify a</li>
-	</ul>
-<a href="#list">list</a> of keywords. A card matches if any keyword connected with the card
-matches any keyword in the list.
-	<ul>
-		<li><em>Artist</em>: Filter on artists who have created art for the card. You must</li>
-	</ul>
-specify a <a href="#list">list</a> of artists. A card matches if any artist in the list
-has drawn art for any printing of the card.
-	<ul>
-		<li><em>Expansion with Rarity</em>: Filter on the expansions and rarities in which the</li>
-	</ul>
-card has been printed. You must specify a <a href="#list">list</a> of expansion and rarity
-combinations. A card matches if it has been printed in one of the given
-expansion and rarity combinations. This filter considers all the expansions and
-rarities in which a card has ever been printed, and ignores the specific
-physical expansion information on the card. If you want to filter on a card&#8217;s
-physical expansion information, use the <em>Physical Expansion</em> filter.
-	<ul>
-		<li><em>Discipline with Level</em>: Filter on the discipline(s) listed on the card and</li>
-	</ul>
-their levels. You must specify a <a href="#list">list</a> of discipline and level
-combinations. A crypt card matches if any discipline listed on the card, and its
-listed level, match any combination in the list. This filter is intended to be
-used to find vampires &#8212; presently, all library cards which have a discipline
-requirement have that discipline associated with them at the superior level.
-This filter treats different levels of the same discipline as different and
-unrelated disciplines, so a list which contains only the inferior version of a
-discipline will not match a card which has the superior version of that
-discipline.
-	<ul>
-		<li><em>Physical Expansion</em>: Filter on a card&#8217;s expansion information. You must</li>
-	</ul>
-specify a <a href="#list">list</a> of expansions. A card matches if its listed expansion
-matches any expansion in the list. This is different from the
-_Expansion_with_Rarity_ filter, since it ignores rarities, and matches the
-specific physical expansion of the card, not the list of expansions in which the
-card has been printed.
-	<ul>
-		<li><em>Card Sets</em>: You must specify a <a href="#list">list</a> of card sets. A card matches if</li>
-	</ul>
-it belongs to at least one set in the list. This filter matches on name and
-expansion, so the filter will return as many copies of the card exist in this
-set, not the same number as in the listed sets.
-	<ul>
+		<li><em>Card Type</em>: Filter on the type of card. You must specify a <a href="#list">list</a> of card types. A card matches if any one of its types matches any type in the list.</li>
+		<li><em>Cost Type</em>: Filter on the type of cost which must be paid for the card. You must specify a <a href="#list">list</a> of cost types. The filter ignores the numerical cost, and considers only the cost type. If you wish to filter on a specific cost and cost type, you must combine this filter with the <em>Cost</em> filter.  Presently, the recognised types of cost are pool, blood and conviction, and this filter matches only library cards. Vampire capacity and ally/retainer life are not considered to be cost types.</li>
+		<li><em>Clan</em>: Filter on the clan(s) listed on the card. You must specify a  <a href="#list">list</a> of clans. A card matches if any clan listed on the card matches any clan in the list.</li>
+		<li><em>Discipline</em>: Filter on the discipline(s) listed on the card. You must specify a <a href="#list">list</a> of disciplines. A card matches if any discipline listed on the card matches any discipline in the list. This filter ignores discipline levels.</li>
+		<li><em>Group</em>: Filter on the group of a crypt card. You must specify a <a href="#list">list</a> of groups. A card matches if its group matches any group in the list.</li>
+		<li><em>Capacity</em>: Filter on the capacity listed on the card. You must specify a <a href="#list">list</a> of capacities. A card matches if its capacity matches any capacity in the list.</li>
+		<li><em>Cost</em>: Filter on the cost which must be paid for the card. You must specify a <a href="#list">list</a> of costs. A card matches if its cost matches any cost in the list numerically. This filter ignores the cost type, and considers only the numerical cost. If you wish to filter on a specific cost and cost type, you must combine this filter with the <em>Cost Type</em> filter (see <a href="#combining">Combining Basic Filters</a>). Note that cards without a cost are considered not to have a cost type either, so filtering for a cost of 0 and a cost type will fail to match any cards.</li>
+		<li><em>Life</em>: Filter on the life value of a card. You must specify a <a href="#list">list</a> of life values. A card matches if the life value listed on the card matches any life value in the list. This filter matches crypt cards which have a life value (such as the Imbued), and match library cards which have a life value (other allies, and retainers). For allies and retainers this matches only the base life if the life varies with discipline level.</li>
+		<li><em>Creed</em>: Filter on the creed(s) listed on the card. You must specify a <a href="#list">list</a> of creeds. A card matches if any creed listed on the card matches any creed in the list.</li>
+		<li><em>Virtue</em>: Filter on the virtue(s) listed on the card. You must specify a <a href="#list">list</a> of virtues. A card matches if any virtue listed on the card matches any virtue in the list.</li>
+		<li><em>Card Text</em>: Filter on the text of the card. You must specify a <a href="#string">string</a>. A card matches if the string appears in the card text. This filter ignores the card name. You can use % and _ as <a href="#wildcard">wildcard</a> characters.</li>
+		<li><em>Card Name</em>: Filter on the name of the card. You must specify a <a href="#string">string</a>. A card matches if the string appears in the card name. You can use % and _ as <a href="#wildcard">wildcard</a> characters.</li>
+		<li><em>Sect</em>: Filter on the sect(s) listed on the card. You must specify a <a href="#list">list</a> of sects. A card matches if any sect listed on the card matches any sect in the list.</li>
+		<li><em>Title</em>: Filter on the vampire title(s) listed on the card. You must specify a <a href="#list">list</a> of titles. A card matches if any title listed on the card matches any title in the list.</li>
+		<li><em>Keyword</em>: Filter on keywords associated with the card. You must specify a <a href="#list">list</a> of keywords. A card matches if any keyword connected with the card matches any keyword in the list.</li>
+		<li><em>Artist</em>: Filter on artists who have created art for the card. You must specify a <a href="#list">list</a> of artists. A card matches if any artist in the list has drawn art for any printing of the card.</li>
+		<li><em>Expansion with Rarity</em>: Filter on the expansions and rarities in which the card has been printed. You must specify a <a href="#list">list</a> of expansion and rarity combinations. A card matches if it has been printed in one of the given expansion and rarity combinations. This filter considers all the expansions and rarities in which a card has ever been printed, and ignores the specific physical expansion information on the card. If you want to filter on a card&#8217;s physical expansion information, use the <em>Physical Expansion</em> filter.</li>
+		<li><em>Discipline with Level</em>: Filter on the discipline(s) listed on the card and their levels. You must specify a <a href="#list">list</a> of discipline and level combinations. A crypt card matches if any discipline listed on the card, and its listed level, match any combination in the list. This filter is intended to be used to find vampires &#8212; presently, all library cards which have a discipline requirement have that discipline associated with them at the superior level. This filter treats different levels of the same discipline as different and unrelated disciplines, so a list which contains only the inferior version of a discipline will not match a card which has the superior version of that discipline.</li>
+		<li><em>Physical Expansion</em>: Filter on a card&#8217;s expansion information. You must specify a <a href="#list">list</a> of expansions. A card matches if its listed expansion matches any expansion in the list. This is different from the _Expansion_with_Rarity_ filter, since it ignores rarities, and matches the specific physical expansion of the card, not the list of expansions in which the card has been printed.</li>
+		<li><em>Card Sets</em>: You must specify a <a href="#list">list</a> of card sets. A card matches if it belongs to at least one set in the list. This filter matches on name and expansion, so the filter will return as many copies of the card exist in this set, not the same number as in the listed sets.</li>
 		<li><em>In Card Sets In Use</em>: A card matches if it belongs to a card set which is marked as <em>In Use</em> and is a child of the given card set. Like the <em>Card Sets</em> filter, this matches solely on the card name and expansion, and the numbers are those for this card set, not the number in the in use children.</li>
 		<li><em>Card Count</em>: Filter on card count within the current card set or a different card set. You must specify a <a href="#list">list</a> of card counts, and a <a href="#list">list</a> of card sets.  A card matches if it belongs to one of the specified sets, and has a count within that set equal to any count in the list.</li>
 		<li><em>Card Function</em>: Filter on common card functions. You must specify a <a href="#list">list</a> of card functions. A card matches if it satisfies at least one function in the list.</li>
@@ -687,13 +558,13 @@ set, not the same number as in the listed sets.
 
 <p>You can combine filters by using filter groups to group the basic filters together.</p>
 
-<p>There are four types of filter group:</p>
+<p>A Filter group can be set to any of the following options.</p>
 
 	<ul>
-		<li><em>All of</em>: This filter matches only if every filter in the box matches.</li>
-		<li><em>Any of</em>: This filter matches if at least one of the filters in the box matches.</li>
-		<li><em>Not all of</em>: This filter matches if at least one of the filters in the box doesn&#8217;t match.</li>
-		<li><em>Not any of</em>: This filter matches only if every filter in the box doesn&#8217;t match.</li>
+		<li><em>All of</em>: This filter matches only if every filter in the group matches.</li>
+		<li><em>Any of</em>: This filter matches if at least one of the filters in the group matches.</li>
+		<li><em>Not all of</em>: This filter matches if at least one of the filters in the group doesn&#8217;t match.</li>
+		<li><em>Not any of</em>: This filter matches only if none of the filters in the group match.</li>
 	</ul>
 
 <p>Each filter group can also contain further filters groups.  You can thus construct complex queries by nesting multiple filter groups.</p>
@@ -818,7 +689,7 @@ set, not the same number as in the listed sets.
 
 <h3 id="cardset_profile">Card Set Profile Options</h3>
 
-<p>h3(#cs_profile) CardSet List Profile Options</p>
+<h3 id="cs_profile">CardSet List Profile Options</h3>
 
 <h4 id="cs_columns">Extra Columns (card set list)</h4>
 
@@ -838,11 +709,9 @@ set, not the same number as in the listed sets.
 
 <p>The display can be sorted on these columns by clicking on the column headers.</p>
 
-<h2 id="other">Other Tools</h2>
+<h4 id="grouping">Card Grouping</h4>
 
-<h3 id="grouping">Change Grouping</h3>
-
-<p>By default, Sutekh groups the cards into the separate card types.   You can change the grouping with this menu option.</p>
+<p>By default, Sutekh groups the cards into the separate card types.   You can change the grouping as part of the pane profile.</p>
 
 <p>The following groupings are available:</p>
 
@@ -863,9 +732,9 @@ set, not the same number as in the listed sets.
 		<li><em>Keyword</em>: Group the cards by the keywords associated with them.</li>
 	</ul>
 
-<h3 id="columns">Select Extra Columns</h3>
+<h4 id="columns">Extra Columns (card sets)</h4>
 
-<p>By default, Sutekh only shows card names in the White Wolf Card List, and card names and card counts in other card set card lists.  You can select additional columns to display using this option.</p>
+<p>By default, Sutekh only shows card names in the White Wolf Card List, and card names and card counts in other card set card lists.  You can select additional columns to display as part of the pane profile.</p>
 
 <p>The possible extra columns are:</p>
 
@@ -886,7 +755,7 @@ set, not the same number as in the listed sets.
 
 <p>Cards which have equal values within the column selected for sorting are further sorted by the card name. Because the different cost types aren&#8217;t comparable, if you choose to sort by cost, cards will be grouped by cost type first and sorted within those types.</p>
 
-<p>If you have downloaded the icons from the White Wolf site, you will be able to toggle the display between the <em>Show Icons and Names</em>, <em>Show Text only</em> and <em>Show Icons only</em> options using the radio buttons provided. This setting will affect all selected columns that can use icons.</p>
+<p>If you have downloaded the icons from the White Wolf site, you will be able to toggle the display between the <em>Show Icons and Names</em>, <em>Show Text only</em> and <em>Show Icons only</em> options using the combo box. This setting will affect all selected columns that can use icons.</p>
 
 
 </body>

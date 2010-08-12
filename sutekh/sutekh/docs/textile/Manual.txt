@@ -22,20 +22,17 @@ h2. Contents
 ## "Edit":#ww_edit
 ## "Filter":#ww_filter
 ## "Analyze":#ww_analyze
-## "Other":#ww_other
 # "Card Text":#card_text
 # "Card Image":#card_image
 # "Card Set List":#card_set_list
 ## "Actions":#card_set_list_actions
 ## "Edit":#card_set_list_edit
 ## "Filter":#card_set_list_filter
-## "Other":#card_set_list_other
 # "Card Sets":#cardsets
 ## "Actions":#cardsets_actions
 ## "Edit":#cardsets_edit
 ## "Filter":#cardsets_filter
 ## "Analyze":#cardsets_analyze
-## "Other":#cardsets_other
 ## "Keyboard Shortcuts":#cardsets_keyboard
 # "Other dialogs":#dialogs
 ## "Card Lookup Dialog":#lookup
@@ -61,10 +58,9 @@ h2. Contents
 ## "White Wolf Card List Profile Options":#ww_profile
 ## "Card Set Profile Options":#cardset_profile
 ## "CardSet List Profile Options":#cs_profile
-### "Extra Columns (card set list)"#cs_columns
-# "Other Tools":#other
-## "Change Grouping":#grouping
-## "Select Extra Columns":#columns
+### "Extra Columns -- card set list":#cs_columns
+### "Card Grouping":#grouping
+### "Extra Columns -- card sets":#columns
 
 h2(#intro). Introduction
 
@@ -344,13 +340,6 @@ The following analysis options are available for White Wolf Card List:
 * "Expansion Stats":#exp_stats
 * "Cluster Cards":#cluster
 
-h3(#ww_other). Other
-
-The following other options are available for the White Wolf Card List:
-
-* "Change Grouping":#grouping
-* "Select Extra Columns":#columns
-
 h2(#card_text). Card Text
 
 The Card Text Pane displays the text on the card, and any rulings that apply
@@ -419,11 +408,10 @@ h3(#card_set_list_edit). Edit
 a card set with a name starting with the typed text. The search dialog can \
 also be opened by either using the *&lt;Ctrl&gt;-F* shortcut, or by simply \
 starting to type in the list view.
-* _Edit Profiles_: Open up a "edit":#edit_profile profile dialog for
+* _Edit Profiles_: Open up a "edit":#edit_profile profile dialog for \
 adding or changing profiles for the carrd set list.
-* _CardSet List Profile_: Allows you to select between the available
+* _CardSet List Profile_: Allows you to select between the available \
 profiles for the card set list.
-
 
 h3(#card_set_list_filter). Filter
 
@@ -566,13 +554,6 @@ The following analysis options are available for card sets:
 * "Simulate Opening Hand":#opening_hand
 * "Test Card Set Independence":#test_indep
 
-h3(#cardsets_other). Other
-
-The following other options are available for card sets:
-
-* "Change Grouping":#grouping
-* "Select Extra Columns":#columns
-
 h3(#cardsets_keyboard). Keyboard Shortcuts
 
 For card sets, the following additional keyboard shortcuts exist:
@@ -653,7 +634,8 @@ clear or modify this filter using the _Clear Filter_ button.
 
 You can save complex filters for later reuse using the _Save_ button, and recall
 them using the _Load_ button. When modifying a filter, you can revert to the
-saved version using the _Revert Filter_ button.
+saved version using the _Revert Filter_ button. A saved filter will include
+all values currently set for the filter.
 
 h3(#filter_dialog). The Filter Dialog
 
@@ -670,100 +652,112 @@ When a filter element is selected, the right hand pane allows for the values
 for that filter element to be selected. This also provides buttons to delete
 filter elements, negate the meeting of the filter element and to temporarily
 disable filter elements.  Disabled filter elements are not used in the filter,
-but the values set for the element are preserved.
+but the values set for the element are preserved. These options are also
+available from a *Right-Click* context menu.
+
+Filter values can be dragged from the right-hand pane into any filter of the
+same type. Filter values can also be dragged between filters of the same
+type.
+
+Filters and filter values can be removed from the filter by using the
+buttons, using the context menu, or by dragging filter elements from the
+left hand pane to the right hand pane.
 
 h3(#card_filters). Card Filters
 
 These filters apply either to the White Wolf card list or a card set. The
 following basic filters are supported:
 
-* _Card Type_: Filter on the type of card. You must specify a "list":#list of
-card types. A card matches if any one of its types matches any type in the
+* _Card Type_: Filter on the type of card. You must specify a "list":#list of \
+card types. A card matches if any one of its types matches any type in the \
 list.
-* _Cost Type_: Filter on the type of cost which must be paid for the card. You
-must specify a "list":#list of cost types. The filter ignores the numerical
-cost, and considers only the cost type. If you wish to filter on a specific
-cost and cost type, you must combine this filter with the _Cost_ filter.
-Presently, the recognised types of cost are pool, blood and conviction, and this
-filter matches only library cards. Vampire capacity and ally/retainer life are
-not considered to be cost types.
-* _Clan_: Filter on the clan(s) listed on the card. You must specify a
-"list":#list of clans. A card matches if any clan listed on the card matches
+* _Cost Type_: Filter on the type of cost which must be paid for the card. \
+You must specify a "list":#list of cost types. The filter ignores the \
+numerical cost, and considers only the cost type. If you wish to filter on \
+a specific cost and cost type, you must combine this filter with the _Cost_ \
+filter.  Presently, the recognised types of cost are pool, blood and \
+conviction, and this filter matches only library cards. Vampire capacity and \
+ally/retainer life are not considered to be cost types.
+* _Clan_: Filter on the clan(s) listed on the card. You must specify a  \
+"list":#list of clans. A card matches if any clan listed on the card matches \
 any clan in the list.
-* _Discipline_: Filter on the discipline(s) listed on the card. You must specify
-a "list":#list of disciplines. A card matches if any discipline listed on the
-card matches any discipline in the list. This filter ignores discipline levels.
-* _Group_: Filter on the group of a crypt card. You must specify a "list":#list
-of groups. A card matches if its group matches any group in the list.
-* _Capacity_: Filter on the capacity listed on the card. You must specify a
-"list":#list of capacities. A card matches if its capacity matches any capacity
-in the list.
-* _Cost_: Filter on the cost which must be paid for the card. You must specify a
-"list":#list of costs. A card matches if its cost matches any cost in the list
-numerically. This filter ignores the cost type, and considers only the numerical
-cost. If you wish to filter on a specific cost and cost type, you must combine
-this filter with the _Cost Type_ filter (see
-"Combining Basic Filters":#combining). Note that cards without a cost are
-considered not to have a cost type either, so filtering for a cost of 0 and
-a cost type will fail to match any cards. 
-* _Life_: Filter on the life value of a card. You must specify a
-"list":#list of life values. A card matches if the life value listed on the card
-matches any life value in the list. This filter matches crypt cards which
-have a life value (currently the Imbued), and match library cards which
-have a life value (other allies, and retainers). For allies and retainers this
-matches only the base life if the life varies with discipline level.
-* _Creed_: Filter on the creed(s) listed on the card. You must specify a
-"list":#list of creeds. A card matches if any creed listed on the card matches
-any creed in the list.
-* _Virtue_: Filter on the virtue(s) listed on the card. You must specify a
-"list":#list of virtues. A card matches if any virtue listed on the card matches
-any virtue in the list.
-* _Card Text_: Filter on the text of the card. You must specify a
-"string":#string. A card matches if the string appears in the card text. This
-filter ignores the card name. You can use % and _ as "wildcard":#wildcard
+* _Discipline_: Filter on the discipline(s) listed on the card. You must \
+specify a "list":#list of disciplines. A card matches if any discipline \
+listed on the card matches any discipline in the list. This filter ignores \
+discipline levels.
+* _Group_: Filter on the group of a crypt card. You must specify a \
+"list":#list of groups. A card matches if its group matches any group in the \
+list.
+* _Capacity_: Filter on the capacity listed on the card. You must specify a \
+"list":#list of capacities. A card matches if its capacity matches any \
+capacity in the list.
+* _Cost_: Filter on the cost which must be paid for the card. You must \
+specify a "list":#list of costs. A card matches if its cost matches any cost \
+in the list numerically. This filter ignores the cost type, and considers \
+only the numerical cost. If you wish to filter on a specific cost and cost \
+type, you must combine this filter with the _Cost Type_ filter (see \
+"Combining Basic Filters":#combining). Note that cards without a cost are \
+considered not to have a cost type either, so filtering for a cost of 0 and \
+a cost type will fail to match any cards.
+* _Life_: Filter on the life value of a card. You must specify a \
+"list":#list of life values. A card matches if the life value listed on the \
+card matches any life value in the list. This filter matches crypt cards \
+which have a life value (such as the Imbued), and match library cards which \
+have a life value (other allies, and retainers). For allies and retainers \
+this matches only the base life if the life varies with discipline level.
+* _Creed_: Filter on the creed(s) listed on the card. You must specify a \
+"list":#list of creeds. A card matches if any creed listed on the card \
+matches any creed in the list.
+* _Virtue_: Filter on the virtue(s) listed on the card. You must specify a \
+"list":#list of virtues. A card matches if any virtue listed on the card \
+matches any virtue in the list.
+* _Card Text_: Filter on the text of the card. You must specify a \
+"string":#string. A card matches if the string appears in the card text. This \
+filter ignores the card name. You can use % and _ as "wildcard":#wildcard \
 characters.
-* _Card Name_: Filter on the name of the card. You must specify a
-"string":#string. A card matches if the string appears in the card name. You can
-use % and _ as "wildcard":#wildcard characters.
-* _Sect_: Filter on the sect(s) listed on the card. You must specify a
-"list":#list of sects. A card matches if any sect listed on the card matches any
-sect in the list.
-* _Title_: Filter on the vampire title(s) listed on the card. You must specify a
-"list":#list of titles. A card matches if any title listed on the card matches
-any title in the list.
-* _Keyword_: Filter on keywords associated with the card. You must specify a
-"list":#list of keywords. A card matches if any keyword connected with the card
-matches any keyword in the list.
-* _Artist_: Filter on artists who have created art for the card. You must
-specify a "list":#list of artists. A card matches if any artist in the list
+* _Card Name_: Filter on the name of the card. You must specify a \
+"string":#string. A card matches if the string appears in the card name. You \
+can use % and _ as "wildcard":#wildcard characters.
+* _Sect_: Filter on the sect(s) listed on the card. You must specify a \
+"list":#list of sects. A card matches if any sect listed on the card matches \
+any sect in the list.
+* _Title_: Filter on the vampire title(s) listed on the card. You must \
+specify a "list":#list of titles. A card matches if any title listed on the \
+card matches any title in the list.
+* _Keyword_: Filter on keywords associated with the card. You must specify \
+a "list":#list of keywords. A card matches if any keyword connected with \
+the card matches any keyword in the list.
+* _Artist_: Filter on artists who have created art for the card. You must \
+specify a "list":#list of artists. A card matches if any artist in the list \
 has drawn art for any printing of the card.
-* _Expansion with Rarity_: Filter on the expansions and rarities in which the
-card has been printed. You must specify a "list":#list of expansion and rarity
-combinations. A card matches if it has been printed in one of the given
-expansion and rarity combinations. This filter considers all the expansions and
-rarities in which a card has ever been printed, and ignores the specific
-physical expansion information on the card. If you want to filter on a card's
-physical expansion information, use the _Physical Expansion_ filter.
-* _Discipline with Level_: Filter on the discipline(s) listed on the card and
-their levels. You must specify a "list":#list of discipline and level
-combinations. A crypt card matches if any discipline listed on the card, and its
-listed level, match any combination in the list. This filter is intended to be
-used to find vampires -- presently, all library cards which have a discipline
-requirement have that discipline associated with them at the superior level.
-This filter treats different levels of the same discipline as different and
-unrelated disciplines, so a list which contains only the inferior version of a
-discipline will not match a card which has the superior version of that
-discipline.
-* _Physical Expansion_: Filter on a card's expansion information. You must
-specify a "list":#list of expansions. A card matches if its listed expansion
-matches any expansion in the list. This is different from the
-_Expansion_with_Rarity_ filter, since it ignores rarities, and matches the
-specific physical expansion of the card, not the list of expansions in which the
-card has been printed.
-* _Card Sets_: You must specify a "list":#list of card sets. A card matches if
-it belongs to at least one set in the list. This filter matches on name and
-expansion, so the filter will return as many copies of the card exist in this
-set, not the same number as in the listed sets.
+* _Expansion with Rarity_: Filter on the expansions and rarities in which the \
+card has been printed. You must specify a "list":#list of expansion and \
+rarity combinations. A card matches if it has been printed in one of the \
+given expansion and rarity combinations. This filter considers all the \
+expansions and rarities in which a card has ever been printed, and ignores \
+the specific physical expansion information on the card. If you want to \
+filter on a card's physical expansion information, use the \
+_Physical Expansion_ filter.
+* _Discipline with Level_: Filter on the discipline(s) listed on the card and \
+their levels. You must specify a "list":#list of discipline and level \
+combinations. A crypt card matches if any discipline listed on the card, and \
+its listed level, match any combination in the list. This filter is intended \
+to be used to find vampires -- presently, all library cards which have a \
+discipline requirement have that discipline associated with them at the \
+superior level. This filter treats different levels of the same discipline \
+as different and unrelated disciplines, so a list which contains only the \
+inferior version of a discipline will not match a card which has the \
+superior version of that discipline.
+* _Physical Expansion_: Filter on a card's expansion information. You must \
+specify a "list":#list of expansions. A card matches if its listed expansion \
+matches any expansion in the list. This is different from the \
+_Expansion_with_Rarity_ filter, since it ignores rarities, and matches the \
+specific physical expansion of the card, not the list of expansions in which \
+the card has been printed.
+* _Card Sets_: You must specify a "list":#list of card sets. A card matches \
+if it belongs to at least one set in the list. This filter matches on name \
+and expansion, so the filter will return as many copies of the card exist in \
+this set, not the same number as in the listed sets.
 * _In Card Sets In Use_: A card matches if it belongs to a card set which is \
 marked as _In Use_ and is a child of the given card set. Like the \
 _Card Sets_ filter, this matches solely on the card name and expansion, and \
@@ -818,14 +812,14 @@ h3(#combining). Combining Basic Filters
 You can combine filters by using filter groups to group the basic filters
 together.
 
-There are four types of filter group:
+A Filter group can be set to any of the following options.
 
-* _All of_: This filter matches only if every filter in the box matches.
-* _Any of_: This filter matches if at least one of the filters in the box \
+* _All of_: This filter matches only if every filter in the group matches.
+* _Any of_: This filter matches if at least one of the filters in the group \
 matches.
-* _Not all of_: This filter matches if at least one of the filters in the box \
-doesn't match.
-* _Not any of_: This filter matches only if every filter in the box doesn't \
+* _Not all of_: This filter matches if at least one of the filters in the \
+group doesn't match.
+* _Not any of_: This filter matches only if none of the filters in the group \
 match.
 
 Each filter group can also contain further filters groups.  You can thus
@@ -1049,7 +1043,7 @@ h3(#ww_profile). White Wolf Card List Profile Options
 
 h3(#cardset_profile). Card Set Profile Options
 
-h3(#cs_profile) CardSet List Profile Options
+h3(#cs_profile). CardSet List Profile Options
 
 h4(#cs_columns). Extra Columns (card set list)
 
@@ -1068,12 +1062,10 @@ The possible extra columns are:
 
 The display can be sorted on these columns by clicking on the column headers.
 
-h2(#other). Other Tools
-
-h3(#grouping). Change Grouping
+h4(#grouping). Card Grouping
 
 By default, Sutekh groups the cards into the separate card types.   You can
-change the grouping with this menu option.
+change the grouping as part of the pane profile.
 
 The following groupings are available:
 
@@ -1101,11 +1093,11 @@ in the *Action Modifier* and *Combat* groups.
 * _Artist_: Group the cards by their artists.
 * _Keyword_: Group the cards by the keywords associated with them.
 
-h3(#columns). Select Extra Columns
+h4(#columns). Extra Columns (card sets)
 
 By default, Sutekh only shows card names in the White Wolf Card List, and card
 names and card counts in other card set card lists.  You can select additional
-columns to display using this option.
+columns to display as part of the pane profile.
 
 The possible extra columns are:
 
@@ -1133,7 +1125,7 @@ within those types.
 
 If you have downloaded the icons from the White Wolf site, you will be able to
 toggle the display between the _Show Icons and Names_, _Show Text only_ and
-_Show Icons only_ options using the radio buttons provided. This setting will
+_Show Icons only_ options using the combo box. This setting will
 affect all selected columns that can use icons.
 
 
