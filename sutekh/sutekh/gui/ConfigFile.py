@@ -64,9 +64,10 @@ class ConfigFile(object):
        can register as listeners on the config file to respond to
        changes to the filters.
        """
-    # pylint: disable-msg=R0904
-    # We need to provide fine-grained access to all the data,
+    # pylint: disable-msg=R0904, R0902
+    # R0904 - We need to provide fine-grained access to all the data,
     # so lots of methods
+    # R0902 - Lots of internal state, so lots of attributes
 
     dCustomConfigTypes = {
         'option_list': is_option_list,
@@ -329,6 +330,8 @@ class ConfigFile(object):
         else:
             return None
 
+    # pylint: disable-msg=W0102
+    # W0102 - {} is the right thing here
     def add_filter(self, sKey, sQuery, dVars={}):
         """Add a filter to the config file."""
         sKey = sKey.lower()
@@ -340,6 +343,8 @@ class ConfigFile(object):
             self.__oConfig['filters'][sKey] = dFilter
             for oListener in self.listeners():
                 oListener.add_filter(sKey, sQuery)
+
+    # pylint: enable-msg=W0102
 
     def remove_filter(self, sKey, sFilter):
         """Remove a filter from the file"""
