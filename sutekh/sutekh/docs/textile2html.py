@@ -15,6 +15,11 @@ import textile
 # pylint: disable-msg=C0103
 # we ignore our usual naming conventions here
 
+try:
+    import tidy
+except ImportError:
+    tidy = None
+
 HTML_HEADER = """
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -54,25 +59,25 @@ def convert(sTextileDir, sHtmlDir):
         fTextile = file(sTextilePath, "rb")
         fHtml = file(sHtmlPath, "wb")
 
-        # FIXME: Late night fast 'n dirty hack alert
+        # NB: Late night fast 'n dirty hack alert
         # Annoyingly, python-textile 2.1 doesn't handle list elements split
         # over multiple lines the way python-textile 2.0 does [1], so we need
         # to manually join lines before feeding them to textile
         # We use the tradional trailing \ to indicate continuation
         # [1] Note that the 2.10 version in karmic is a misnumbered 2.0.10
         aLines = []
-        sCurLine = ''
+        aCurLine = []
         for sLine in fTextile.readlines():
             if sLine.endswith("\\\n"):
-                if sCurLine:
-                    sCurLine += sLine[:-2]
+                if aCurLine:
+                    aCurLine.append(sLine[:-2])
                 else:
-                    sCurLine = sLine[:-2]
+                    aCurLine = [sLine[:-2]]
                 continue
-            elif sCurLine:
-                sCurLine += sLine
-                aLines.append(sCurLine)
-                sCurLine = ''
+            elif aCurLine:
+                aCurLine.append(sLine)
+                aLines.append(''.join(aCurLine))
+                aCurLine = []
             else:
                 aLines.append(sLine)
 
@@ -80,6 +85,12 @@ def convert(sTextileDir, sHtmlDir):
 
         fTextile.close()
         fHtml.close()
+
+        if tidy is not None:
+            aErrors = tidy.parse(sHtmlPath).get_errors()
+            if aErrors:
+                print 'tidy reports the following errors for %s' % sHtmlPath
+                print '\n'.join([x.err for x in aErrors])
 
 if __name__ == "__main__":
     convert("textile", "html")
