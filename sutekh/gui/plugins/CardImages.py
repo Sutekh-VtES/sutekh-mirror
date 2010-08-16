@@ -373,7 +373,7 @@ class ImageConfigDialog(SutekhDialog):
                     'plugin</b>\nChoose cancel to skip configuring the '
                     'images plugin\nYou will not be prompted again')
         self.oChoiceDownload = gtk.RadioButton(
-                label='Download and install cardimages from feldb.extra.hu')
+                label='Download and install cardimages from csillagbolcselet.hu')
         self.oChoiceLocalCopy = gtk.RadioButton(self.oChoiceDownload,
                 label='Install images from a local zip file')
         self.oChoiceNewDir = gtk.RadioButton(self.oChoiceDownload,
@@ -559,8 +559,8 @@ class CardImagePlugin(CardListPlugin):
 
     def _download_file(self):
         """Download a zip file containing the images."""
-        # Download and install http://feldb.extra.hu/pictures.zip
-        sUrl = 'http://feldb.extra.hu/pictures.zip'
+        # Download and install http://csillagbolcselet.hu/feldb/pictures.zip
+        sUrl = 'http://csillagbolcselet.hu/feldb/pictures.zip'
         oFile = urllib2.urlopen(sUrl)
         sDownloadDir = prefs_dir('Sutekh')
         ensure_dir_exists(sDownloadDir)
