@@ -379,7 +379,7 @@ class ImageConfigDialog(SutekhDialog):
     # R0904 - gtk Widget, so has many public methods
     """Dialog for configuring the Image plugin."""
 
-    sDefaultUrl = 'http://feldb.extra.hu/pictures.zip'
+    sDefaultUrl = 'http://csillagbolcselet.hu/feldb/pictures.zip'
 
     def __init__(self, oImagePlugin, bFirstTime=False):
         super(ImageConfigDialog, self).__init__('Configure Card Images Plugin',
@@ -399,7 +399,7 @@ class ImageConfigDialog(SutekhDialog):
         self.oChoice = FileOrDirOrUrlWidget(oImagePlugin.parent,
                 "Choose location for "
                 "images file", "Choose image directory", sDefaultDir,
-                { 'feldb.hu' : self.sDefaultUrl })
+                { 'csillagbolcselet.hu' : self.sDefaultUrl })
         add_filter(self.oChoice, 'Zip Files', ['*.zip', '*.ZIP'])
         # pylint: disable-msg=E1101
         # pylint doesn't pick up vbox methods correctly
