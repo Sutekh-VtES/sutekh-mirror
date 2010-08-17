@@ -142,6 +142,17 @@ def print_card_details(oCard, sEncoding):
         print 'CardType: %s' % ' / '.join([oT.name for oT in oCard.cardtype])
     if len(oCard.clan) > 0:
         print 'Clan: %s' % ' / '.join([oC.name for oC in oCard.clan])
+    if len(oCard.creed) > 0:
+        print 'Creed: %s' % ' / '.join([oC.name for oC in oCard.creed])
+    if oCard.capacity:
+        print 'Capacity: %d' % oCard.capacity
+    if oCard.life:
+        print 'Life: %d' % oCard.life
+    if oCard.group:
+        if oCard.group == -1:
+            print 'Group: Any'
+        else:
+            print 'Group: %d' % oCard.group
     if not oCard.cost is None:
         if oCard.cost == -1:
             print 'Cost: X %s' % oCard.costtype
@@ -159,6 +170,12 @@ def print_card_details(oCard, sEncoding):
             aDisciplines = [oP.discipline.fullname for oP in oCard.discipline]
             sDisciplines = ' / '.join(aDisciplines)
         print 'Discipline: %s' % sDisciplines
+    if len(oCard.virtue) > 0:
+        if is_crypt_card(oCard):
+            print 'Virtue: %s' % ' '.join([oC.name for oC in oCard.virtue])
+        else:
+            print 'Virtue: %s' % ' / '.join([oC.fullname for oC in
+                oCard.virtue])
     print format_text(oCard.text.encode(sEncoding,'xmlcharrefreplace'))
 
 def run_filter(oFilter, oCardSet, bDetailed, sEncoding):
