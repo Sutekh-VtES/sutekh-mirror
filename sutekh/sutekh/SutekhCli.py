@@ -126,6 +126,9 @@ def parse_options(aArgs):
     oOptParser.add_option("--print-card",
             type="string", dest="print_card", default=None,
             help="Print the details of the given card")
+    oOptParser.add_option("--print-encoding",
+            type="string", dest="print_encoding", default='ascii',
+            help="Encoding to use when printing output")
 
     return oOptParser, oOptParser.parse_args(aArgs)
 
@@ -134,7 +137,7 @@ def format_text(sCardText):
     # We want to split the . [dis] pattern into .\n[dis] again
     return re.sub('\. (\[...\])', '.\n\\1', sCardText)
 
-def print_card_details(oCard):
+def print_card_details(oCard, sEncoding):
     """Print the details of a given card"""
     # pylint: disable-msg=E1101
     # SQLObject can confuse pylint
@@ -161,9 +164,9 @@ def print_card_details(oCard):
             aDisciplines = [oP.discipline.fullname for oP in oCard.discipline]
             sDisciplines = ' / '.join(aDisciplines)
         print 'Discipline: %s' % sDisciplines
-    print format_text(oCard.text)
+    print format_text(oCard.text.encode(sEncoding,'xmlcharrefreplace'))
 
-def run_filter(oFilter, oCardSet, bDetailed):
+def run_filter(oFilter, oCardSet, bDetailed, sEncoding):
     """Run the given filter, printing the results as required"""
     if oCardSet:
         # Filter the given card set
@@ -188,11 +191,12 @@ def run_filter(oFilter, oCardSet, bDetailed):
     for oCard in sorted(dResults, key=lambda x: x.name):
         if oCardSet:
             iCnt = dResults[oCard]
-            print '%3d x %s' % (iCnt, oCard.name)
+            print '%3d x %s' % (iCnt,
+                    oCard.name.encode(sEncoding,'xmlcharrefreplace'))
         else:
-            print oCard.name
+            print oCard.name.encode(sEncoding,'xmlcharrefreplace')
         if bDetailed:
-            print_card_details(oCard)
+            print_card_details(oCard, sEncoding)
 
 def main_with_args(aTheArgs):
     """
@@ -287,7 +291,8 @@ def main_with_args(aTheArgs):
             fPrint = StringIO.StringIO()
             oPrinter = WriteArdbText()
             oPrinter.write(fPrint, CardSetWrapper(oCS))
-            print fPrint.getvalue()
+            print fPrint.getvalue().encode(oOpts.print_encoding,
+                        'xmlcharrefreplace')
         except SQLObjectNotFound:
             print 'Unable to load card set', oOpts.print_cs
             return 1
@@ -298,13 +303,16 @@ def main_with_args(aTheArgs):
                # pylint: disable-msg=E1101
                # SQLObject confuse pylint
                 oCS = IPhysicalCardSet(oOpts.limit_list)
-                print ' %s' % oCS.name
-                print format_cs_list(oCS, '    ')
+                print ' %s' % oCS.name.encode(oOpts.print_encoding,
+                        'xmlcharrefreplace')
+                print format_cs_list(oCS, '    ').encode(oOpts.print_encoding,
+                        'xmlcharrefreplace')
             except SQLObjectNotFound:
                 print 'Unable to load card set', oOpts.limit_list
                 return 1
         else:
-            print format_cs_list()
+            print format_cs_list().encode(oOpts.print_encoding,
+                    'xmlcharrefreplace')
     elif oOpts.limit_list is not None:
         print "Can't use limit-list-to without list-cs"
         return 1
@@ -315,15 +323,15 @@ def main_with_args(aTheArgs):
         oCS = None
         if oOpts.filter_cs:
             oCS = IPhysicalCardSet(oOpts.filter_cs)
-        run_filter(oFilter, oCS, oOpts.filter_detailed)
+        run_filter(oFilter, oCS, oOpts.filter_detailed, oOpts.print_encoding)
 
     if not oOpts.print_card is None:
         try:
             # pylint: disable-msg=E1101
             # SQLObject confuse pylint
             oCard = IAbstractCard(oOpts.print_card)
-            print oCard.name
-            print_card_details(oCard)
+            print oCard.name.encode(oOpts.print_encoding, 'xmlcharrefreplace')
+            print_card_details(oCard, oOpts.print_encoding)
         except SQLObjectNotFound:
             print 'Unable to find card %s' % oOpts.print_card
             return 1
