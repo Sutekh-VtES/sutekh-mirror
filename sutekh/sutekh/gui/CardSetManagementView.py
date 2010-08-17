@@ -55,28 +55,28 @@ class CardSetManagementView(CardSetsListView):
         sData = "\n".join(['Card Set:', sSetName])
         oSelectionData.set(oSelectionData.target, 8, sData)
 
-    def card_set_drop(self, oWdgt, oContext, iXPos, iYPos, oData, oInfo,
+    def card_set_drop(self, oWidget, oContext, iXPos, iYPos, oData, oInfo,
             oTime):
         """Default drag-n-drop handler."""
         # Pass off to the Frame Handler
         sSource, aData = self.split_selection_data(oData.data)
         bDragRes = False
         if sSource == "Sutekh Pane:":
-            self._oController.frame.drag_drop_handler(oWdgt, oContext, iXPos,
-                    iYPos, oData, oInfo, oTime)
+            self._oController.frame.drag_drop_handler(oWidget, oContext,
+                    iXPos, iYPos, oData, oInfo, oTime)
             return
         elif sSource == "Card Set:":
             # Find the card set at iXPos, iYPos
             # Need to do this to avoid headers and such confusing us
             oPath = self.get_path_at_pointer()
             if oPath:
-                sTargetName = self._oModel.get_name_from_path(oPath)
                 sThisName = aData[1]
                 # pylint: disable-msg=W0704
                 # doing nothing on SQLObjectNotFound seems the best choice
                 try:
                     oDraggedCS = IPhysicalCardSet(sThisName)
-                    oParentCS = IPhysicalCardSet(sTargetName)
+                    oParentCS = IPhysicalCardSet(
+                            self._oModel.get_name_from_path(oPath))
                     if reparent_card_set(oDraggedCS, oParentCS):
                         self.reload_keep_expanded(False)
                         oPath = self._oModel.get_path_from_name(sThisName)
