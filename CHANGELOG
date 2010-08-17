@@ -1,3 +1,7 @@
+16 Auf 2010
+ * Fix FELDB download image url
+   - This is r2433 on trunk, but code has changed so it's a different fix
+
 24 Feb 2010
  * Merge py2exe NSIS installer:
    - Merge r2237 - NSIS installer for py2exe Sutekh build.
