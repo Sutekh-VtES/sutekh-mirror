@@ -9,7 +9,7 @@ SutekhCli.py: command-line interface to much of Sutekh's database
 management functionality
 """
 
-import sys, optparse, os, tempfile, StringIO, re
+import sys, optparse, os, tempfile, StringIO
 from logging import StreamHandler
 from sqlobject import sqlhub, connectionForURI, SQLObjectNotFound
 from sutekh.core.SutekhObjects import Ruling, TABLE_LIST, PHYSICAL_LIST, \
@@ -20,7 +20,7 @@ from sutekh.core.Filters import PhysicalCardSetFilter, FilterAndBox, \
 from sutekh.core.FilterParser import FilterParser
 from sutekh.SutekhUtility import refresh_tables, read_white_wolf_list, \
         read_rulings, gen_temp_dir, prefs_dir, ensure_dir_exists, sqlite_uri, \
-        is_crypt_card
+        is_crypt_card, format_text
 from sutekh.core.DatabaseUpgrade import attempt_database_upgrade
 from sutekh.core.CardSetHolder import CardSetWrapper
 from sutekh.core.CardSetUtilities import format_cs_list
@@ -132,11 +132,6 @@ def parse_options(aArgs):
 
     return oOptParser, oOptParser.parse_args(aArgs)
 
-def format_text(sCardText):
-    """Ensure card text is formatted properly"""
-    # We want to split the . [dis] pattern into .\n[dis] again
-    return re.sub('\. (\[...\])', '.\n\\1', sCardText)
-
 def print_card_details(oCard, sEncoding):
     """Print the details of a given card"""
     # pylint: disable-msg=E1101
@@ -146,7 +141,7 @@ def print_card_details(oCard, sEncoding):
     else:
         print 'CardType: %s' % ' / '.join([oT.name for oT in oCard.cardtype])
     if len(oCard.clan) > 0:
-        print 'Clan : %s' % ' / '.join([oC.name for oC in oCard.clan])
+        print 'Clan: %s' % ' / '.join([oC.name for oC in oCard.clan])
     if not oCard.cost is None:
         if oCard.cost == -1:
             print 'Cost: X %s' % oCard.costtype

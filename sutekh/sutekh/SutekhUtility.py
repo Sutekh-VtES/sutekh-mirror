@@ -14,7 +14,7 @@ from sutekh.core.DatabaseVersion import DatabaseVersion
 from sutekh.io.WhiteWolfParser import WhiteWolfParser
 from sutekh.io.RulingParser import RulingParser
 from sqlobject import sqlhub
-import tempfile, os, sys
+import tempfile, os, sys, re
 
 def refresh_tables(aTables, oConn):
     """Drop and recreate the given list of tables"""
@@ -151,7 +151,10 @@ def pretty_xml(oElement, iIndentLevel=0):
         if iIndentLevel and (not oElement.tail or not oElement.tail.strip()):
             oElement.tail = sIndent
 
-
+def format_text(sCardText):
+    """Ensure card text is formatted properly"""
+    # We want to split the . [dis] pattern into .\n[dis] again
+    return re.sub('\. (\[...\])', '.\n\\1', sCardText)
 
 # Utility test for crypt cards
 

@@ -11,6 +11,7 @@ import gtk
 import pango
 import logging
 from sutekh.core.SutekhObjects import IKeyword
+from sutekh.SutekhUtility import format_text
 from sqlobject import SQLObjectNotFound
 
 class CardTextViewListener(object):
@@ -336,7 +337,7 @@ class CardTextView(gtk.TextView):
             self._oBuf.labelled_list("Rulings", aInfo, "ruling")
 
         self._oBuf.tag_text("\n\n")
-        self._oBuf.tag_text(oCard.text.replace("\n", " "),
+        self._oBuf.tag_text(format_text(oCard.text),
                 "card_text")
 
         if len(oCard.artists) > 0:
