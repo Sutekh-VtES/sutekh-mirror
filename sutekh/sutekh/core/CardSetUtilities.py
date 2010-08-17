@@ -78,4 +78,18 @@ def find_children(oCardSet):
     """Find all the children of the given card set"""
     # pylint: disable-msg=E1101
     # SQLObject confuses pylint
-    return list(PhysicalCardSet.selectBy(parentID=oCardSet.id))
+    if oCardSet:
+        return list(PhysicalCardSet.selectBy(parentID=oCardSet.id))
+    return list(PhysicalCardSet.selectBy(parentID=None))
+
+def format_cs_list(oParent=None, sIndent=' '):
+    """Create a formatted string of all the card sets in the database that
+       are children of oParent"""
+    aResult = []
+    for oCS in sorted(find_children(oParent), key=lambda x: x.name):
+        aResult.append(sIndent + oCS.name)
+        if find_children(oCS):
+            aResult.append(format_cs_list(oCS, sIndent + '   '))
+    return '\n'.join(aResult)
+
+

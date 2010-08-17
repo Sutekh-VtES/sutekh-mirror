@@ -9,16 +9,20 @@ SutekhCli.py: command-line interface to much of Sutekh's database
 management functionality
 """
 
-import sys, optparse, os, tempfile
+import sys, optparse, os, tempfile, StringIO
 from logging import StreamHandler
-from sqlobject import sqlhub, connectionForURI
-from sutekh.core.SutekhObjects import Ruling, TABLE_LIST, PHYSICAL_LIST
+from sqlobject import sqlhub, connectionForURI, SQLObjectNotFound
+from sutekh.core.SutekhObjects import Ruling, TABLE_LIST, PHYSICAL_LIST, \
+        IPhysicalCardSet
 from sutekh.SutekhUtility import refresh_tables, read_white_wolf_list, \
         read_rulings, gen_temp_dir, prefs_dir, ensure_dir_exists, sqlite_uri
 from sutekh.core.DatabaseUpgrade import attempt_database_upgrade
+from sutekh.core.CardSetHolder import CardSetWrapper
+from sutekh.core.CardSetUtilities import format_cs_list
 from sutekh.io.XmlFileHandling import PhysicalCardXmlFile, \
         PhysicalCardSetXmlFile, AbstractCardSetXmlFile, \
         write_all_pcs
+from sutekh.io.WriteArdbText import WriteArdbText
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
 from sutekh.io.WwFile import WwFile
 from sutekh.SutekhInfo import SutekhInfo
@@ -93,6 +97,16 @@ def parse_options(aArgs):
     oOptParser.add_option("--restore-zip",
             type="string", dest="restore_zip_name", default=None,
             help="Restore everything from the given zipfile")
+    oOptParser.add_option("--print-cs",
+            type="string", dest="print_cs", default=None,
+            help="Print the given card set (ARDB Text format)")
+    oOptParser.add_option("--list-cs",
+            action="store_true", dest="list_cs", default=False,
+            help="Print a formatted list of all the card sets in the database")
+    oOptParser.add_option("--limit-list-to",
+            type="string", dest="limit_list", default=None,
+            help="Limit the printed list to the children of the "
+                    "given card set")
 
     return oOptParser, oOptParser.parse_args(aArgs)
 
@@ -182,6 +196,34 @@ def main_with_args(aTheArgs):
     if not oOpts.save_cs is None:
         oFile = PhysicalCardSetXmlFile(oOpts.cs_filename)
         oFile.write(oOpts.save_cs)
+
+    if not oOpts.print_cs is None:
+        try:
+            oCS = IPhysicalCardSet(oOpts.print_cs)
+            fPrint = StringIO.StringIO()
+            oPrinter = WriteArdbText()
+            oPrinter.write(fPrint, CardSetWrapper(oCS))
+            print fPrint.getvalue()
+        except SQLObjectNotFound:
+            print 'Unable to load card set', oOpts.print_cs
+            return 1
+
+    if oOpts.list_cs:
+        if oOpts.limit_list is not None:
+            try:
+               # pylint: disable-msg=E1101
+               # SQLObject confuse pylint
+                oCS = IPhysicalCardSet(oOpts.limit_list)
+                print ' %s' % oCS.name
+                print format_cs_list(oCS, '    ')
+            except SQLObjectNotFound:
+                print 'Unable to load card set', oOpts.limit_list
+                return 1
+        else:
+            print format_cs_list()
+    elif oOpts.limit_list is not None:
+        print "Can't use limit-list-to without list-cs"
+        return 1
 
     if not oOpts.read_cs is None:
         oFile = PhysicalCardSetXmlFile(oOpts.read_cs)
