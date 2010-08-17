@@ -1,3 +1,12 @@
+17 Aug 2010
+ * Add various options to the command line tool
+   - support for running filters
+   - print card set (using ARDB text format)
+   - list the card sets
+
+16 Aug 2010
+ * Fix download url for images from FELDB site
+
 12 Aug 2010
  * Update docs
  * Tweak textile2html script to use tidylib if available
