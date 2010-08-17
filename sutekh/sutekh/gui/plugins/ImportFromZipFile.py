@@ -10,7 +10,7 @@ import os
 from logging import Logger
 from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
-from sutekh.gui.SutekhFileWidget import SutekhFileDialog
+from sutekh.gui.SutekhFileWidget import ZipFileDialog
 from sutekh.gui.ProgressDialog import ProgressDialog, SutekhCountLogHandler
 from sutekh.gui.ScrolledList import ScrolledList
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
@@ -50,53 +50,42 @@ class ImportFromZipFile(SutekhPlugin):
         """Create the dialog used to select the zip file"""
         sName = "Select zip file to import from."
 
-        oDlg = SutekhFileDialog(self.parent, sName,
-                oAction=gtk.FILE_CHOOSER_ACTION_OPEN,
-                oButtons=(gtk.STOCK_OK, gtk.RESPONSE_OK,
-                    gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
-        oDlg.add_filter_with_pattern('Zip Files', ['*.zip', '*.ZIP'])
-
-        oDlg.connect("response", self.handle_response)
-        oDlg.set_local_only(True)
-        oDlg.set_select_multiple(False)
+        oDlg = ZipFileDialog(self.parent, sName, gtk.FILE_CHOOSER_ACTION_OPEN)
         oDlg.show_all()
+        oDlg.run()
 
-        return oDlg
+        sFilename = oDlg.get_name()
+        if sFilename:
+            self.handle_response(sFilename)
 
-    def handle_response(self, oDlg, oResponse):
+    def handle_response(self, sFilename):
         """Handle response from the import dialog"""
-        if oResponse == gtk.RESPONSE_OK:
-            sFile = oDlg.get_filename()
-            oDlg.destroy()
+        if not os.path.exists(sFilename):
+            do_complaint_error("Backup file %s does not seem to exist."
+                    % sFilename)
+            return
+        oFile = ZipFileWrapper(sFilename)
+        dList = oFile.get_all_entries()
+        dSelected = {}
+        # Ask user to select entries to import
+        oSelDlg = SutekhDialog("Select Card Sets to Import", self.parent,
+                gtk.DIALOG_MODAL|gtk.DIALOG_DESTROY_WITH_PARENT,
+                (gtk.STOCK_OK, gtk.RESPONSE_OK, gtk.STOCK_CANCEL,
+                    gtk.RESPONSE_CANCEL))
 
-            if not os.path.exists(sFile):
-                do_complaint_error("Backup file %s does not seem to exist."
-                        % sFile)
-                return
-            oFile = ZipFileWrapper(sFile)
-            dList = oFile.get_all_entries()
-            dSelected = {}
-            # Ask user to select entries to import
-            oSelDlg = SutekhDialog("Select Card Sets to Import", self.parent,
-                    gtk.DIALOG_MODAL|gtk.DIALOG_DESTROY_WITH_PARENT,
-                    (gtk.STOCK_OK, gtk.RESPONSE_OK, gtk.STOCK_CANCEL,
-                        gtk.RESPONSE_CANCEL))
-
-            oScrolledList = ScrolledList('Available Card Sets')
-            # pylint: disable-msg=E1101
-            # vbox confuses pylint
-            oSelDlg.vbox.pack_start(oScrolledList)
-            oScrolledList.set_size_request(150, 300)
-            oScrolledList.fill_list(sorted(dList))
-            oResponse = oSelDlg.run()
-            # Extract selected cards from the dialog
-            for sName in oScrolledList.get_selection():
-                dSelected[sName] = dList[sName]
-            oSelDlg.destroy()
-            if oResponse == gtk.RESPONSE_OK and len(dSelected) > 0:
-                self.do_read_list(oFile, dSelected)
-        else:
-            oDlg.destroy()
+        oScrolledList = ScrolledList('Available Card Sets')
+        # pylint: disable-msg=E1101
+        # vbox confuses pylint
+        oSelDlg.vbox.pack_start(oScrolledList)
+        oScrolledList.set_size_request(150, 300)
+        oScrolledList.fill_list(sorted(dList))
+        oResponse = oSelDlg.run()
+        # Extract selected cards from the dialog
+        for sName in oScrolledList.get_selection():
+            dSelected[sName] = dList[sName]
+        oSelDlg.destroy()
+        if oResponse == gtk.RESPONSE_OK and len(dSelected) > 0:
+            self.do_read_list(oFile, dSelected)
 
     def do_read_list(self, oFile, dSelected):
         """Read the selected list of card sets"""

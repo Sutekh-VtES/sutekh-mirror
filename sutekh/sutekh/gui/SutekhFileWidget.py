@@ -153,3 +153,12 @@ class ExportDialog(SimpleFileDialog):
         self.set_do_overwrite_confirmation(True)
         if sDefaultFileName:
             self.set_current_name(sDefaultFileName)
+
+class ZipFileDialog(SimpleFileDialog):
+    # pylint: disable-msg=R0904
+    # gtk.Widget, so many public methods
+    """Prompt the user for a zip file name"""
+    def __init__(self, oParent, sTitle, oAction):
+        super(ZipFileDialog, self).__init__(oParent, sTitle, oAction)
+        self.add_filter_with_pattern('Zip Files', ['*.zip', '*.ZIP'])
+
