@@ -134,8 +134,9 @@ def parse_options(aArgs):
 
 def print_card_details(oCard, sEncoding):
     """Print the details of a given card"""
-    # pylint: disable-msg=E1101
-    # SQLObject can confuse pylint
+    # pylint: disable-msg=E1101, R0912
+    # E1101: SQLObject can confuse pylint
+    # R0912: Several cases to consider, so many branches
     if len(oCard.cardtype) == 0:
         print 'CardType: Unknown'
     else:
