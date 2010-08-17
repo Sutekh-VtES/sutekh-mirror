@@ -9,13 +9,17 @@ SutekhCli.py: command-line interface to much of Sutekh's database
 management functionality
 """
 
-import sys, optparse, os, tempfile, StringIO
+import sys, optparse, os, tempfile, StringIO, re
 from logging import StreamHandler
 from sqlobject import sqlhub, connectionForURI, SQLObjectNotFound
 from sutekh.core.SutekhObjects import Ruling, TABLE_LIST, PHYSICAL_LIST, \
-        IPhysicalCardSet
+        IPhysicalCardSet, IAbstractCard, AbstractCard, \
+        MapPhysicalCardToPhysicalCardSet
+from sutekh.core.Filters import PhysicalCardSetFilter, FilterAndBox
+from sutekh.core.FilterParser import FilterParser
 from sutekh.SutekhUtility import refresh_tables, read_white_wolf_list, \
-        read_rulings, gen_temp_dir, prefs_dir, ensure_dir_exists, sqlite_uri
+        read_rulings, gen_temp_dir, prefs_dir, ensure_dir_exists, sqlite_uri, \
+        is_crypt_card
 from sutekh.core.DatabaseUpgrade import attempt_database_upgrade
 from sutekh.core.CardSetHolder import CardSetWrapper
 from sutekh.core.CardSetUtilities import format_cs_list
@@ -107,8 +111,84 @@ def parse_options(aArgs):
             type="string", dest="limit_list", default=None,
             help="Limit the printed list to the children of the "
                     "given card set")
+    oOptParser.add_option("--filter",
+            type="string", dest="filter_string", default=None,
+            help="Filter to run on the database")
+    oOptParser.add_option("--filter-cs",
+            type="string", dest="filter_cs", default=None,
+            help="card set to filter. If not specified, filter the WW" \
+                    " card list")
+    oOptParser.add_option("--filter-detailed",
+            action="store_true", dest="filter_detailed", default=False,
+            help="Print card details for filter results, rather than just" \
+                    " card names")
+    oOptParser.add_option("--print-card",
+            type="string", dest="print_card", default=None,
+            help="Print the details of the given card")
 
     return oOptParser, oOptParser.parse_args(aArgs)
+
+def format_text(sCardText):
+    """Ensure card text is formatted properly"""
+    # We want to split the . [dis] pattern into .\n[dis] again
+    return re.sub('\. (\[...\])', '.\n\\1', sCardText)
+
+def print_card_details(oCard):
+    """Print the details of a given card"""
+    # pylint: disable-msg=E1101
+    # SQLObject can confuse pylint
+    if len(oCard.cardtype) == 0:
+        print 'CardType: Unknown'
+    else:
+        print 'CardType: %s' % ' / '.join([oT.name for oT in oCard.cardtype])
+    if len(oCard.clan) > 0:
+        print 'Clan : %s' % ' / '.join([oC.name for oC in oCard.clan])
+    if not oCard.cost is None:
+        if oCard.cost == -1:
+            print 'Cost: X %s' % oCard.costtype
+        else:
+            print 'Cost: %d %s' % (oCard.cost, oCard.costtype)
+    if len(oCard.discipline) > 0:
+        if is_crypt_card(oCard):
+            aDisciplines = []
+            aDisciplines.extend(sorted([oP.discipline.name.upper() for oP in
+                oCard.discipline if oP.level == 'superior']))
+            aDisciplines.extend(sorted([oP.discipline.name for oP in
+                oCard.discipline if oP.level != 'superior']))
+            sDisciplines = ' '.join(aDisciplines)
+        else:
+            aDisciplines = [oP.discipline.fullname for oP in oCard.discipline]
+            sDisciplines = ' / '.join(aDisciplines)
+        print 'Discipline: %s' % sDisciplines
+    print format_text(oCard.text)
+
+def run_filter(oFilter, oCardSet, bDetailed):
+    """Run the given filter, printing the results as required"""
+    if oCardSet:
+        # Filter the given card set
+        oBaseFilter = PhysicalCardSetFilter(oCardSet.name)
+        oJointFilter = FilterAndBox([oBaseFilter, oFilter])
+        aResults = oJointFilter.select(MapPhysicalCardToPhysicalCardSet)
+        dResults = {}
+        for oCard in aResults:
+            oAbsCard = IAbstractCard(oCard)
+            dResults.setdefault(oAbsCard, 0)
+            dResults[oAbsCard] += 1
+    else:
+        # Filter WW cardlist
+        aResults = oFilter.select(AbstractCard)
+        dResults = {}
+        for oCard in aResults:
+            dResults[oCard] = 1
+
+    for oCard in sorted(dResults, key=lambda x: x.name):
+        if oCardSet:
+            iCnt = dResults[oCard]
+            print '%3d x %s' % (iCnt, oCard.name)
+        else:
+            print oCard.name
+        if bDetailed:
+            print_card_details(oCard)
 
 def main_with_args(aTheArgs):
     """
@@ -116,7 +196,7 @@ def main_with_args(aTheArgs):
     accordingly.
     """
     # Turn off some pylint refactoring warnings
-    # pylint: disable-msg=R0915, R0912, R0911
+    # pylint: disable-msg=R0915, R0912, R0911, R0914
     oOptParser, (oOpts, aArgs) = parse_options(aTheArgs)
     sPrefsDir = prefs_dir("Sutekh")
 
@@ -224,6 +304,25 @@ def main_with_args(aTheArgs):
     elif oOpts.limit_list is not None:
         print "Can't use limit-list-to without list-cs"
         return 1
+
+    if not oOpts.filter_string is None:
+        oParser = FilterParser()
+        oFilter = oParser.apply(oOpts.filter_string).get_filter()
+        oCS = None
+        if oOpts.filter_cs:
+            oCS = IPhysicalCardSet(oOpts.filter_cs)
+        run_filter(oFilter, oCS, oOpts.filter_detailed)
+
+    if not oOpts.print_card is None:
+        try:
+            # pylint: disable-msg=E1101
+            # SQLObject confuse pylint
+            oCard = IAbstractCard(oOpts.print_card)
+            print oCard.name
+            print_card_details(oCard)
+        except SQLObjectNotFound:
+            print 'Unable to find card %s' % oOpts.print_card
+            return 1
 
     if not oOpts.read_cs is None:
         oFile = PhysicalCardSetXmlFile(oOpts.read_cs)
