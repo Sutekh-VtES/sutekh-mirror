@@ -172,11 +172,17 @@ class CardSetCardListModel(CardListModel):
 
         listen_changed(self.card_changed, PhysicalCardSet)
 
+    def __get_frame_id(self):
+        """Return the frame id, handling oController is None case"""
+        if self._oController:
+            return "pane%s" % (self._oController.frame.pane_id,)
+        # No controller, so return consistent, but not per-pane unique, id
+        return "pane-%s" % (self.cardset_id,)
+
     # pylint: disable-msg=W0212
     # We allow access via these properties
 
-    frame_id = property(fget=lambda self: "pane%s" %
-            (self._oController.frame.pane_id,),
+    frame_id = property(fget=__get_frame_id,
             doc="Frame ID of associated card set (for selecting profiles)")
 
     # TODO: is this a good cardset id?
