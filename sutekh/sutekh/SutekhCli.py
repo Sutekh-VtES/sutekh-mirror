@@ -13,9 +13,10 @@ import sys, optparse, os, tempfile, StringIO, re
 from logging import StreamHandler
 from sqlobject import sqlhub, connectionForURI, SQLObjectNotFound
 from sutekh.core.SutekhObjects import Ruling, TABLE_LIST, PHYSICAL_LIST, \
-        IPhysicalCardSet, IAbstractCard, AbstractCard, \
+        IPhysicalCardSet, IAbstractCard, PhysicalCard, \
         MapPhysicalCardToPhysicalCardSet
-from sutekh.core.Filters import PhysicalCardSetFilter, FilterAndBox
+from sutekh.core.Filters import PhysicalCardSetFilter, FilterAndBox, \
+        PhysicalCardFilter
 from sutekh.core.FilterParser import FilterParser
 from sutekh.SutekhUtility import refresh_tables, read_white_wolf_list, \
         read_rulings, gen_temp_dir, prefs_dir, ensure_dir_exists, sqlite_uri, \
@@ -176,10 +177,13 @@ def run_filter(oFilter, oCardSet, bDetailed):
             dResults[oAbsCard] += 1
     else:
         # Filter WW cardlist
-        aResults = oFilter.select(AbstractCard)
+        oBaseFilter = PhysicalCardFilter()
+        oJointFilter = FilterAndBox([oBaseFilter, oFilter])
+        aResults = oJointFilter.select(PhysicalCard)
         dResults = {}
         for oCard in aResults:
-            dResults[oCard] = 1
+            oAbsCard = IAbstractCard(oCard)
+            dResults.setdefault(oAbsCard, 1)
 
     for oCard in sorted(dResults, key=lambda x: x.name):
         if oCardSet:
