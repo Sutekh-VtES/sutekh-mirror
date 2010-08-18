@@ -66,7 +66,7 @@ class ParseFilterDefinitions(object):
 
     t_AND = r'\&\&'
     t_OR = r'\|\|'
-    t_STRING = r'\".*?\"'
+    t_STRING = r'\".*?\"|\'.*?\''
     t_COMMA = r','
     t_IN = r'='
     t_LPAREN = r'\('
@@ -402,6 +402,8 @@ class StringNode(TermNode):
         super(StringNode, self).__init__([sValue])
         # Strip quotes off strings
         if sValue[0] == '"' and sValue[-1] == '"':
+            self.sValue = sValue[1:-1]
+        elif sValue[0] == "'" and sValue[-1] == "'":
             self.sValue = sValue[1:-1]
         else:
             self.sValue = sValue
