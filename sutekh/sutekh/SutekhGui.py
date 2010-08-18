@@ -56,15 +56,18 @@ def exception_handler(oType, oValue, oTraceback):
 
     sMessage = "Sutekh reported an unhandled exception:\n" \
         "%s\n" % (str(oValue),)
+    aTraceback = traceback.format_exception(oType, oValue, oTraceback)
+
+    logging.error("%s:\n%s", sMessage, "".join(aTraceback))
+    # Log before we show the dialog, otherwise, if there's an exception while
+    # the progress bar update hack is ongoing, the error dialog won't work
+    # correctly, and the exception may be lost
 
     oErrorDlg = gtk.MessageDialog(None, 0, gtk.MESSAGE_ERROR,
         gtk.BUTTONS_CLOSE, sMessage)
     oErrorDlg.set_name("Sutekh.dialog")
 
-    aTraceback = traceback.format_exception(oType, oValue, oTraceback)
     oErrorDlg.format_secondary_text("".join(aTraceback))
-
-    logging.error("%s:\n%s", sMessage, "".join(aTraceback))
 
     # we ignore the response here
     oErrorDlg.run()
