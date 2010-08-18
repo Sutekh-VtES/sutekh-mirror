@@ -160,6 +160,28 @@ class FilterParserTests(SutekhTest):
             self.assertEqual(aNames, aExpectedNames, "Filter Object %s "
                     "failed. %s != %s." % (oFilter, aNames, aExpectedNames))
 
+    def test_quoting(self):
+        """Check that both single and double quotes work"""
+        aTests = [
+            ('Clan in "Follower of Set"',
+                Filters.ClanFilter('Follower of Set')),
+            ('Clan in "Ravnos", "Samedi"',
+                Filters.MultiClanFilter(['Ravnos', 'Samedi'])),
+            ("Clan in 'Ravnos', 'Samedi'",
+                Filters.MultiClanFilter(['Ravnos', 'Samedi'])),
+            ("CardName in 'Aaron'", Filters.CardNameFilter('Aaron')),
+            ('CardName in "Aaron"', Filters.CardNameFilter('Aaron')),
+            ('CardName in "Aaron\'s"', Filters.CardNameFilter("Aaron's")),
+            ("CardName in '\"Di'", Filters.CardNameFilter('"Di')),
+            ]
+        # Only test on AbstractCards
+        for sFilter, oEquivFilter in aTests:
+            oFilter = self._parse_filter(sFilter)
+            aNames = self._get_abs_names(oFilter)
+            aExpectedNames = self._get_abs_names(oEquivFilter)
+            self.assertEqual(aNames, aExpectedNames, "Filter Object %s "
+                    "failed. %s != %s." % (oFilter, aNames, aExpectedNames))
+
     def test_card_set_filters(self):
         """Tests for the physical card set filters."""
         aPCSs = make_physical_card_sets()
