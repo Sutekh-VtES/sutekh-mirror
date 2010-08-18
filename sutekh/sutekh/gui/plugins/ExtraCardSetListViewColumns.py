@@ -25,8 +25,13 @@ SORT_COLUMN_OFFSET = 200 # ensure we don't clash with other extra columns
 def _get_number(dInfo, sKey, fQuery):
     """Handle the use query & cache interaction for numbers"""
     if not dInfo.has_key(sKey):
-        oCardSet = dInfo['Card Set']
-        dInfo[sKey] = fQuery(oCardSet)
+        try:
+            oCardSet = dInfo['Card Set']
+            dInfo[sKey] = fQuery(oCardSet)
+        except KeyError:
+            # This can arise if we're called while reloading a backup or
+            # similiar
+            return -1
     return dInfo[sKey]
 
 def _format_number(iCount):
