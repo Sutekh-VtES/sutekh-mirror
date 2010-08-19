@@ -74,6 +74,16 @@ class FrameProfileEditor(SutekhDialog):
         # widgets correctly.
         self.__oSelectorCombo.set_active(0)
 
+    def set_selected_profile(self, sProfile):
+        """Set the selected profile for editing to given one"""
+        oModel = self.__oSelectorCombo.get_model()
+        oIter = oModel.get_iter_root()
+        while oIter:
+            if oModel.get_value(oIter, 0) == sProfile:
+                self.__oSelectorCombo.set_active_iter(oIter)
+                return # Found a match, so leave
+            oIter = oModel.iter_next(oIter)
+
     def _button_response(self, _oWidget, iResponse):
         """Handle dialog response"""
         if iResponse != self.RESPONSE_SAVE_AND_CLOSE:

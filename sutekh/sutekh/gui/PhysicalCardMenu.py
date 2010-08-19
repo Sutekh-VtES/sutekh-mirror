@@ -67,6 +67,9 @@ class PhysicalCardMenu(CardListMenu):
         """Open an options profiles editing dialog."""
         oDlg = FrameProfileEditor(self._oMainWindow,
             self._oMainWindow.config_file, WW_CARDLIST)
+        sCurProfile = self._oMainWindow.config_file.get_profile(WW_CARDLIST,
+            WW_CARDLIST)
+        oDlg.set_selected_profile(sCurProfile)
         oDlg.run()
 
         sProfile = self._oMainWindow.config_file.get_profile(WW_CARDLIST,

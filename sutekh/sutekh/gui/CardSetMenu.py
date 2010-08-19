@@ -164,6 +164,13 @@ class CardSetMenu(CardListMenu):
         """Open an options profiles editing dialog."""
         oDlg = FrameProfileEditor(self._oMainWindow,
             self._oMainWindow.config_file, CARDSET)
+        sCurProfile = self._oMainWindow.config_file.get_profile(FRAME,
+            self.frame_id)
+        if not sCurProfile:
+            # We're using the card set profile instead
+            sCurProfile = self._oMainWindow.config_file.get_profile(CARDSET,
+                    self.cardset_id)
+        oDlg.set_selected_profile(sCurProfile)
         oDlg.run()
 
         sCardsetProfile = self._oMainWindow.config_file.get_profile(CARDSET,
