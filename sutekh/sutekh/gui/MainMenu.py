@@ -13,6 +13,7 @@ from sutekh.gui.SutekhDialog import do_complaint_error
 from sutekh.gui.SutekhFileWidget import ImportDialog
 from sutekh.gui.GuiDBManagement import refresh_ww_card_list
 from sutekh.gui.GuiCardSetFunctions import import_cs
+from sutekh.gui.ProfileManagement import ProfileMngDlg
 from sutekh.io.IdentifyXMLFile import IdentifyXMLFile
 from sutekh.io.AbstractCardSetParser import AbstractCardSetParser
 from sutekh.io.PhysicalCardParser import PhysicalCardParser
@@ -68,6 +69,9 @@ class MainMenu(SutekhMenu):
 
         oPrefsMenu = self.create_submenu(oMenu, 'Preferences')
         self.__add_prefs_menu(oPrefsMenu)
+
+        self.create_menu_item('Manage Profiles', oMenu,
+                self.do_manage_profiles)
 
         self.create_menu_item('Save Current Pane Set', oMenu,
                 self.do_save_pane_set)
@@ -287,6 +291,12 @@ class MainMenu(SutekhMenu):
         """Save the current pane layout"""
         bChoice = not self.__oConfig.get_postfix_the_display()
         self.__oConfig.set_postfix_the_display(bChoice)
+
+    def do_manage_profiles(self, _oWidget):
+        """Display the Profile management dialog"""
+        oDlg = ProfileMngDlg(self._oMainWindow, self.__oConfig)
+        oDlg.run()
+        oDlg.destroy()
 
     def do_save_pane_set(self, _oWidget):
         """Save the current pane layout"""
