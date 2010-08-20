@@ -82,7 +82,6 @@ class ScrolledList(gtk.Frame):
     def __init__(self, sTitle):
         super(ScrolledList, self).__init__(None)
         self._oTreeView = ScrolledListView(sTitle)
-        self.dSecondColVals = {}
         oMyScroll = AutoScrolledWindow(self._oTreeView)
         self.add(oMyScroll)
         self.set_shadow_type(gtk.SHADOW_NONE)
@@ -93,13 +92,6 @@ class ScrolledList(gtk.Frame):
     view = property(fget=lambda self: self._oTreeView,
             doc="Associated View Object")
     # disable-msg=W0212
-
-    def add_second_column(self, sTitle):
-        """Add an extra column to the list."""
-        oCell2 = gtk.CellRendererText()
-        oColumn2 = gtk.TreeViewColumn(sTitle, oCell2)
-        self._oTreeView.append_column(oColumn2)
-        oColumn2.set_cell_data_func(oCell2, self._render_second_column)
 
     def set_select_single(self):
         """set selection to single mode"""
@@ -128,19 +120,6 @@ class ScrolledList(gtk.Frame):
     def fill_list(self, aVals):
         """Fill the list store with the given values"""
         self._oTreeView.store.fill_list(aVals)
-
-    def fill_second_column(self, dVals):
-        """Fill the values in the second column."""
-        self.dSecondColVals = dVals
-        self._oTreeView.queue_draw()
-
-    def _render_second_column(self, _oColumn, oCell, oModel, oIter):
-        """Method to render the values in the second column."""
-        sKey = oModel.get_value(oIter, 0)
-        if sKey in self.dSecondColVals:
-            oCell.set_property("markup", self.dSecondColVals[sKey])
-        else:
-            oCell.set_property("markup", "")
 
     def get_selection_object(self):
         """Get a reference to the TreeView selection"""
