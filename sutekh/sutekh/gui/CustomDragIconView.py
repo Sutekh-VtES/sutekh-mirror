@@ -23,6 +23,7 @@ class CustomDragIconView(gtk.TreeView):
         # We want to be at the end of the chain, so we can fiddle with the
         # icon after gtk_tree_view sets it
         self.connect_after('drag_begin', self.make_drag_icon)
+        self.connect_after('drag_motion', self.drag_motion)
 
     def make_drag_icon(self, _oWidget, _oDragContext):
         """Drag begin signal handler to set custom icon"""
@@ -48,3 +49,14 @@ class CustomDragIconView(gtk.TreeView):
             oDrawable = self.create_row_drag_icon(aSelectedRows[0])
             self.drag_source_set_icon(oDrawable.get_colormap(), oDrawable)
         # We don't change anything in the nothing selected case
+
+    # pylint: disable-msg=R0201
+    # needs to be a method, as children can override this if needed
+    def drag_motion(self, _oWidget, oDrag_context, _iXPos, _iYPos,
+            _oTimestamp):
+        """Set appropriate context during drag + drop."""
+        if 'STRING' in oDrag_context.targets:
+            oDrag_context.drag_status(gtk.gdk.ACTION_COPY)
+            return True
+        return False
+
