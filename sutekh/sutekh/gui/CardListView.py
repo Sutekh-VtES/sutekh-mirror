@@ -221,7 +221,7 @@ class CardListView(FilteredView):
             return
         oSelectionData.set(oSelectionData.target, 8, sSelectData)
 
-    def drag_delete(self, oBtn, oContext, oData):
+    def drag_delete(self, oBtn, oContext):
         """Default drag-delete handler"""
         pass
 
