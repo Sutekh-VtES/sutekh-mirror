@@ -291,6 +291,9 @@ class FilterParserTests(SutekhTest):
                     'CardCount = 0 from "%s"' % aPCSs[0].name,
                     Filters.CardSetMultiCardCountFilter(('0', aPCSs[0].name))),
                 (Filters.PhysicalCardSetFilter('Test 2'),
+                    'CardCount = " 0" from "%s"' % aPCSs[0].name,
+                    Filters.CardSetMultiCardCountFilter(('0', aPCSs[0].name))),
+                (Filters.PhysicalCardSetFilter('Test 2'),
                     'CardCount = 0 from "%s" and CardType = Vampire' %
                     aPCSs[0].name,
                     Filters.FilterAndBox([

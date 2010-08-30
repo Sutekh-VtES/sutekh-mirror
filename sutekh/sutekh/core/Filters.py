@@ -1121,7 +1121,9 @@ class CardSetMultiCardCountFilter(DirectFilter):
                     aCounts = []
         except ValueError:
             aCounts = []
-        aCounts = set(aCounts)
+        # strip whitespace before comparing stuff
+        # aCounts may be a single string, so we can't use 'for x in aCounts'
+        aCounts = set([x.strip() for x in list(aCounts)])
         self._oFilters = []
         if '0' in aCounts:
             aCounts.remove('0')
