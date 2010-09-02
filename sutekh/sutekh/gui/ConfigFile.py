@@ -53,6 +53,10 @@ class ConfigFileListener(object):
         """The profile associated with a cardset changed."""
         pass
 
+    def remove_profile(self, sType, sProfile):
+        """A profile has been removed"""
+        pass
+
 
 class ConfigFile(object):
     """Handle the setup and management of the config file.
@@ -475,6 +479,43 @@ class ConfigFile(object):
                 (sType == CARDSET_LIST and sId == CARDSET_LIST):
             return self.__oConfig[sType].get('current profile')
         return None
+
+    def clear_profiles(self, sType, sProfile):
+        """Find all cardsets/frames using this profile, and change them to
+          the default"""
+        if sType == CARDSET or sType == FRAME:
+            if sType == CARDSET:
+                dProfiles = self.__oConfig['per_deck']['cardset_profiles']
+            else:
+                dProfiles = self.__oConfig['per_deck']['frame_profiles']
+            # Loop over a copy, as we may change the dict
+            for sId, sCurProfile in dProfiles.items():
+                if sCurProfile == sProfile:
+                    self.set_profile(sType, sId, None)
+        else:
+            sCurProfile = self.__oConfig[sType].get('current profile')
+            if sCurProfile == sProfile:
+                self.set_profile(sType, sType, None)
+
+    def remove_profile(self, sType, sProfile):
+        """Remove a profile from the file"""
+        dData = {}
+        if sType == FRAME or sType == CARDSET:
+            dData = self.__oConfig['per_deck']['profiles']
+        elif sType == CARDSET_LIST:
+            dData = self.__oConfig['cardset list']['profiles']
+        elif sType == WW_CARDLIST:
+            dData = self.__oConfig['cardlist']['profiles'].keys()
+        if sProfile in dData:
+            if sType == FRAME or sType == CARDSET:
+                # Need to clear both lists in this case
+                self.clear_profiles(FRAME, sProfile)
+                self.clear_profiles(CARDSET, sProfile)
+            else:
+                self.clear_profiles(sType, sProfile)
+            del dData[sProfile]
+            for oListener in self.listeners():
+                oListener.remove_profile(sType, sProfile)
 
     def frame_profiles(self):
         """Return a dictionary of frame id -> profile mappings."""

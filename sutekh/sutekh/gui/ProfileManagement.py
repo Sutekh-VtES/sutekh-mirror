@@ -35,14 +35,26 @@ class ProfileListStore(gtk.ListStore):
         for tEntry in aVals:
             self.append(row=tEntry)
 
-    def fix_entry(self, sProfile, sNewName):
-        """Fix the value for the given profile"""
+    def _find_iter(self, sProfile):
+        """Find the correct iter for an entry"""
         oIter = self.get_iter_root()
         while oIter:
             if sProfile == self.get_value(oIter, 0):
-                self.set_value(oIter, 1, sNewName)
-                return
+                return oIter
             oIter = self.iter_next(oIter)
+        return None # fell off the end
+
+    def fix_entry(self, sProfile, sNewName):
+        """Fix the value for the given profile"""
+        oIter = self._find_iter(sProfile)
+        if oIter:
+            self.set_value(oIter, 1, sNewName)
+
+    def remove_entry(self, sProfile):
+        """Fix the value for the given profile"""
+        oIter = self._find_iter(sProfile)
+        if oIter:
+            self.remove(oIter)
 
 class ProfileListView(gtk.TreeView):
     # pylint: disable-msg=R0904
@@ -155,18 +167,33 @@ class ProfileMngDlg(SutekhDialog, ConfigFileListener):
             self._edit_profile()
             return self.run()
         elif iResponse == self.RESPONSE_DELETE:
+            self._delete_profile()
             return self.run()
         # else CLOSE was pressed, so exit
         return iResponse
 
-    def _edit_profile(self):
-        """Fire off the profile editor"""
+    def _get_cur_list(self):
+        """Ensure list stores reflect the correct state"""
         iPageNum = self._oNotebook.get_current_page()
-        oList = self._oNotebook.get_nth_page(iPageNum)
+        return self._oNotebook.get_nth_page(iPageNum)
+
+    def _get_selected_profile(self):
+        """Get the currently selected profile and type"""
+        oList = self._get_cur_list()
         sType = self._dLists[oList]
         tSelected = oList.view.get_selected()
         if tSelected:
-            sProfile, sOldName = tSelected
+            sProfile, sName = tSelected
+        else:
+            sProfile, sName = None, None
+        return sType, sProfile, sName
+
+
+    def _edit_profile(self):
+        """Fire off the profile editor"""
+        sType, sProfile, sName = self._get_selected_profile()
+        if sProfile:
+            sOldName = sName
             oEditDlg = FrameProfileEditor(self.__oParent, self.__oConfig,
                     sType)
             oEditDlg.set_selected_profile(sProfile)
@@ -174,6 +201,16 @@ class ProfileMngDlg(SutekhDialog, ConfigFileListener):
             sNewName = self.__oConfig.get_profile_option(sType, sProfile,
                     'name')
             if sNewName != sOldName:
+                oList = self._get_cur_list()
                 oList.store.fix_entry(sProfile, sNewName)
-                # FIMXE: Ensure menus, etc. are updated
+                # TODO: Ensure menus, etc. are updated
+
+    def _delete_profile(self):
+        """Delete the given profile"""
+        sType, sProfile, _sName = self._get_selected_profile()
+        if sProfile:
+            self.__oConfig.remove_profile(sType, sProfile)
+            oList = self._get_cur_list()
+            oList.store.remove_entry(sProfile)
+            # TODO: Update menus, etc.
 
