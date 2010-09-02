@@ -1,8 +1,32 @@
+02 Sep 2010
+ * Add support for deleting profiles to profile management dialog
+
+30 Aug 2010
+ * Unbreak 0 card count case in the card count filter
+
+29 Aug 2010
+ * Show correct (copy action) symbol on drags
+ * Fix drag_delete signature
+
+20 Aug 2010
+ * Add basic profile management dialog
+
+19 Aug 2010
+ * Show current profile when starting profile editor
+
+18 Aug 2010
+ * Fix bug in card set view column when reloading the database.
+ * Tweak logging to display exceptions earlier, to handle cases involving
+   the progress bar better.
+ * Add support for both single & double quotes to filter parser (for
+   commandline usage), with tests
+
 17 Aug 2010
  * Add various options to the command line tool
    - support for running filters
    - print card set (using ARDB text format)
    - list the card sets
+ * Unify zip dialog handling in plugins
 
 16 Aug 2010
  * Fix download url for images from FELDB site
