@@ -18,8 +18,6 @@ from sutekh.gui.PreferenceTable import PreferenceTable
 import gtk
 import gobject
 
-# TODO: add means to delete profile (possibly separate menu item)
-
 class FrameProfileEditor(SutekhDialog):
     """Dialog which allows the user to edit profiles of the specified type.
        """

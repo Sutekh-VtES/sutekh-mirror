@@ -11,9 +11,9 @@
 import gtk
 from sutekh.gui.FilteredViewMenu import FilteredViewMenu
 from sutekh.gui.FrameProfileEditor import FrameProfileEditor
-from sutekh.gui.ConfigFile import CARDSET_LIST
+from sutekh.gui.ConfigFile import ConfigFileListener, CARDSET_LIST
 
-class CardSetManagementMenu(FilteredViewMenu):
+class CardSetManagementMenu(FilteredViewMenu, ConfigFileListener):
     """Card Set List Management menu.
        """
     # pylint: disable-msg=R0904
@@ -60,6 +60,8 @@ class CardSetManagementMenu(FilteredViewMenu):
             "CardSet List Profile", CARDSET_LIST,
             self._select_cardset_list_profile, sProfile)
 
+        self._oMainWindow.config_file.add_listener(self)
+
         self.add_edit_menu_actions(oMenu)
 
     def _edit_profiles(self, _oWidget):
@@ -71,6 +73,10 @@ class CardSetManagementMenu(FilteredViewMenu):
         oDlg.set_selected_profile(sCurProfile)
         oDlg.run()
 
+        self._fix_profile_menu()
+
+    def _fix_profile_menu(self):
+        """Set the profile menu correctly"""
         sProfile = self._oMainWindow.config_file.get_profile(CARDSET_LIST,
                 CARDSET_LIST)
         self._update_profile_group(self._oCardSetProfileMenu, CARDSET_LIST,
@@ -81,4 +87,16 @@ class CardSetManagementMenu(FilteredViewMenu):
         if oRadio.get_active():
             oConfig = self._oMainWindow.config_file
             oConfig.set_profile(CARDSET_LIST, CARDSET_LIST, sProfileKey)
+
+    # Respond to profile changes
+
+    def remove_profile(self, sType, _sProfile):
+        """A profile has been removed"""
+        if sType == CARDSET_LIST:
+            self._fix_profile_menu()
+
+    def profile_option_changed(self, sType, _sProfile, sKey):
+        """Update menu if profiles are renamed."""
+        if sType == CARDSET_LIST and sKey == 'name':
+            self._fix_profile_menu()
 

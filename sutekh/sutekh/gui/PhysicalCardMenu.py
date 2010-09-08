@@ -11,9 +11,9 @@
 import gtk
 from sutekh.gui.FilteredViewMenu import CardListMenu
 from sutekh.gui.FrameProfileEditor import FrameProfileEditor
-from sutekh.gui.ConfigFile import WW_CARDLIST
+from sutekh.gui.ConfigFile import ConfigFileListener, WW_CARDLIST
 
-class PhysicalCardMenu(CardListMenu):
+class PhysicalCardMenu(CardListMenu, ConfigFileListener):
     """Menu for the Physical card collection.
 
        Enables actions specific to the physical card collection (export to
@@ -61,6 +61,8 @@ class PhysicalCardMenu(CardListMenu):
             "Cardlist Profile", WW_CARDLIST, self._select_cardlist_profile,
             sProfile)
 
+        self._oMainWindow.config_file.add_listener(self)
+
         self.add_edit_menu_actions(oMenu)
 
     def _edit_profiles(self, _oWidget):
@@ -72,6 +74,10 @@ class PhysicalCardMenu(CardListMenu):
         oDlg.set_selected_profile(sCurProfile)
         oDlg.run()
 
+        self._fix_profile_menu()
+
+    def _fix_profile_menu(self):
+        """Set the profile menu correctly"""
         sProfile = self._oMainWindow.config_file.get_profile(WW_CARDLIST,
                 WW_CARDLIST)
         self._update_profile_group(self._oCardlistProfileMenu, WW_CARDLIST,
@@ -82,4 +88,16 @@ class PhysicalCardMenu(CardListMenu):
         if oRadio.get_active():
             oConfig = self._oMainWindow.config_file
             oConfig.set_profile(WW_CARDLIST, WW_CARDLIST, sProfileKey)
+
+    # Respond to profile changes
+
+    def remove_profile(self, sType, _sProfile):
+        """A profile has been removed"""
+        if sType == WW_CARDLIST:
+            self._fix_profile_menu()
+
+    def profile_option_changed(self, sType, _sProfile, sKey):
+        """Update menu if profiles are renamed."""
+        if sType == WW_CARDLIST and sKey == 'name':
+            self._fix_profile_menu()
 

@@ -203,14 +203,12 @@ class ProfileMngDlg(SutekhDialog, ConfigFileListener):
             if sNewName != sOldName:
                 oList = self._get_cur_list()
                 oList.store.fix_entry(sProfile, sNewName)
-                # TODO: Ensure menus, etc. are updated
 
     def _delete_profile(self):
         """Delete the given profile"""
         sType, sProfile, _sName = self._get_selected_profile()
         if sProfile:
+            # TODO: Warn user about deleting in use profiles?
             self.__oConfig.remove_profile(sType, sProfile)
             oList = self._get_cur_list()
             oList.store.remove_entry(sProfile)
-            # TODO: Update menus, etc.
-

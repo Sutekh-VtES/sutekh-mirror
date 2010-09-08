@@ -505,7 +505,7 @@ class ConfigFile(object):
         elif sType == CARDSET_LIST:
             dData = self.__oConfig['cardset list']['profiles']
         elif sType == WW_CARDLIST:
-            dData = self.__oConfig['cardlist']['profiles'].keys()
+            dData = self.__oConfig['cardlist']['profiles']
         if sProfile in dData:
             if sType == FRAME or sType == CARDSET:
                 # Need to clear both lists in this case
