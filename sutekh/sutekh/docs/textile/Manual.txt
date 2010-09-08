@@ -56,11 +56,11 @@ h2. Contents
 ## "Edit Profile":#edit_profile
 ## "Managing Profiles":#manage_profile
 ## "White Wolf Card List Profile Options":#ww_profile
+### "Card Grouping":#grouping
+### "Extra Columns -- card sets":#columns
 ## "Card Set Profile Options":#cardset_profile
 ## "CardSet List Profile Options":#cs_profile
 ### "Extra Columns -- card set list":#cs_columns
-### "Card Grouping":#grouping
-### "Extra Columns -- card sets":#columns
 
 h2(#intro). Introduction
 
@@ -140,22 +140,24 @@ website.
 ** _Download starter decks_: Download and import a list of the White Wolf \
 preconstructed decks from the sutekh wiki.
 ** _Download or Configure Card Images_: Download images of the cards for the \
-"Card Images":card_image pane, or use an existing zip file or directory of \
+"Card Images":#card_image pane, or use an existing zip file or directory of \
 images.
 ** _Download Rulebook Files_: Download the various files for the \
 "Rulebook":#rulebook menu.
 * _Preferences_: Manage various preferences.
 ** _Use "path of ..., the" name display_: If selected, card names prefixed \
 with "The", "An" or "A" are displayed and sorted with the prefix at the end.
-** _Save Current Pane Set_: Save the current configuration of the panes.
 ** _Save Pane Set on Exit_: Save the pane configuration when Sutekh exits.
 ** _Save Exact Pane Positions_: Save the exact pane positions on exit.
 ** _Save Window Size_: Save the window size on exit.
 ** _Show Starter Information_: If the starter decks have been downloaded \
 into the database, this will add a list the starter decks a card has been \
-published in to the "Card Text":card_text pane when the card is selected.
+published in to the "Card Text":#card_text pane when the card is selected.
 ** _Export to HTML preferences_: Set the destination for the links created \
 in the exported HTML files.
+* _Manage Profiles_: Bring up the "profile management dialog":#manage_profiles \
+to edit or delete the various pane profiles
+* _Save Current Pane Set_: Save the current configuration of the panes.
 * _Restore saved configuration_: Restore the panes to the saved configuration.
 * _Quit_: Exit Sutekh.
 
@@ -370,7 +372,6 @@ You can cycle through the available expansions either by left-clicking
 on the image, or by selecting the _Show next expansion image_ and
 _Show previous expansion image_ options after right-clicking on the frame.
 
-
 h2(#card_set_list). Card Set List
 
 This pane lists all the card sets which have been defined. The card sets are
@@ -456,39 +457,6 @@ manager
 ** _JOL_: A text file that can be pasted into the Jyhad Online deck \
 builder
 ** _Lackey CCG_: A text file that can be imported into the Lackey CCG client
-* _Cards To Show_: Set which cards are displayed. The options are:
-** _This Set Only_: Show only the cards in this card set.
-** _Show All Cards_: Show all the cards in the White Wolf list. Cards not in \
-this card set will have a count of 0.
-** _Show all cards in parent card set_: Show all the cards in this card set, \
-as well as any cards in the parent card set that are not in this card set.
-** _Show all cards in child card sets_: Show all the cards in this card set, \
-as well as any cards in those child card sets marked as _In Use_ that are not \
-in this card set.
-* _Display Mode_: Specify what additional information is displayed below the \
-card names in the tree. The options are:
-** _Show No Children_: Display nothing below the card name.
-** _Show Expansions_: Show the expansions of the cards, and a card count for \
-each expansion.
-** _Show Child Card Sets_: Show the card counts for child card sets marked as \
-_In Use_.
-** _Show Expansions and Child Card Sets_: Show expansions, and within each \
-expansion show counts for child card sets marked as _In Use_.
-** _Show Child Card Sets and Expansions_: Show child card sets marked \
-as _In Use_, and for each child card set show expansion counts.
-* _Parent Count Mode_: Specify how the _Parent count_ column is displayed \
-in card sets with a parent set. The options are:
-** _Don't show parent card counts_: Hide the parent count column.
-** _Show parent count_: Show only the parent count. If the count for this \
-card set exceeds the parent count, this number is shown in red.
-** _Show difference between parent count and this card set_: Show the \
-difference between the parent count and this card set's count. If this number \
-is negative, it is shown in red.
-** _Show difference between Parent Count and card sets in use_: Show the \
-difference between the parent count and the total count in all the card \
-sets marked as _In Use_. If this number is negative, it is shown in red.
-* _Show icons for the grouping_: Toggle whether icons are shown for the top \
-level grouping (when available).
 * _Expand All_: Expand all the items in the tree.
 * _Collapse All_: Collapse the tree as far as possible.
 * _Delete Card Set_: Delete the card set from the database.
@@ -1039,28 +1007,31 @@ made.
 
 h3(#manage_profile). Managing Profiles
 
+The Profile Management dialog is found under the "File":#main_file menu.
+
+The dialog has tabs for each profile type. You can choose to either edit the
+selected dialog, in which case the "Edit Profile":#edit_profile dialog
+is opened with the selected profile, or delete the selected profile.
+
+If a profile is deleted, any panes or card sets using that profile change
+to the default profile.
+
 h3(#ww_profile). White Wolf Card List Profile Options
 
-h3(#cardset_profile). Card Set Profile Options
+You can set the following options for the white wolf card list in the profile:
 
-h3(#cs_profile). CardSet List Profile Options
-
-h4(#cs_columns). Extra Columns (card set list)
-
-Only card set names are shown in the card set list by default as well.  You can
-select additional columns to display as part of the card set list profile.
-
-The possible extra columns are:
-
-* _Author_: Show the card set author.
-* _Description_: Show the card set description.
-* _Total cards_: Show the total number of cards in the card set.
-* _Crypt_: Show the number of crypt cards in the card set.
-* _Library_: Show the number of library cards in the card set.
-* _All Children_: Show the number of child card sets each card set has
-* _In-Use Children_: Show the number of child card sets marked as in use.
-
-The display can be sorted on these columns by clicking on the column headers.
+* _Column mode_: This controls how information in the extra columns is \
+displayed. You can choose to only show test, only show icons (if applicable)
+or to show both.
+* _Extra columns_: Select which extra columns of data are shown. See the \
+"Extra Columns (card sets)":#columns section for more details.
+* _Extra levels_: Controls whether the card expansions are listed.
+* _Group by_: Controls how the cards are grouped together. See the \
+"Card Grouping":#grouping section for more details.
+* _Hide cards not legal for tournament play_: Controls whether cards flagged
+as not legal for tournament play (i.e. banned or storyline only cards) are
+shown in the list.
+* _Show icons for grouping_: Controls whether icons are shown with the group name.
 
 h4(#grouping). Card Grouping
 
@@ -1128,4 +1099,75 @@ toggle the display between the _Show Icons and Names_, _Show Text only_ and
 _Show Icons only_ options using the combo box. This setting will
 affect all selected columns that can use icons.
 
+h3(#cardset_profile). Card Set Profile Options
 
+You can set the following options or a card set or frame profile:
+
+* _Cards To Show_: Set which cards are displayed. The options are:
+** _This Set Only_: Show only the cards in this card set.
+** _Show All Cards_: Show all the cards in the White Wolf list. Cards not in \
+this card set will have a count of 0.
+** _Show all cards in parent card set_: Show all the cards in this card set, \
+as well as any cards in the parent card set that are not in this card set.
+** _Show all cards in child card sets_: Show all the cards in this card set, \
+as well as any cards in those child card sets marked as _In Use_ that are not \
+in this card set.
+* _Column mode_: This controls how information in the extra columns is \
+displayed. You can choose to only show test, only show icons (if applicable)
+or to show both.
+* _Extra columns_: Select which extra columns of data are shown. See the \
+"Extra Columns (card sets)":#columns section for more details.
+* _Extra levels: Specify what additional information is displayed below the \
+card names in the tree. The options are:
+** _Show No Children_: Display nothing below the card name.
+** _Show Expansions_: Show the expansions of the cards, and a card count for \
+each expansion.
+** _Show Child Card Sets_: Show the card counts for child card sets marked as \
+_In Use_.
+** _Show Expansions and Child Card Sets_: Show expansions, and within each \
+expansion show counts for child card sets marked as _In Use_.
+** _Show Child Card Sets and Expansions_: Show child card sets marked \
+as _In Use_, and for each child card set show expansion counts.
+* _Group by_: Controls how the cards are grouped together. See the \
+"Card Grouping":#grouping section for more details.
+* _Hide cards not legal for tournament play_: Controls whether cards flagged \
+as not legal for tournament play (i.e. banned or storyline only cards) are \
+shown in the list.
+* _Show icons for grouping_: Controls whether icons are shown with the group \
+name.
+* _Parent Count Mode_: Specify how the _Parent count_ column is displayed \
+in card sets with a parent set. The options are:
+** _Ignore Parent_: Hide the parent count column.
+** _Parent count_: Show only the parent count. If the count for this \
+card set exceeds the parent count, this number is shown in red.
+** _Parent Minus this set_: Show the difference between the parent count and \
+this card set's count. If this number is negative, it is shown in red.
+** _Parent Minus Sets in Use_: Show the difference between the parent count \
+and the total count in all the card sets marked as _In Use_. If this number \
+is negative, it is shown in red.
+* _Show icons for the grouping_: Toggle whether icons are shown for the top \
+level grouping (when available).
+
+h3(#cs_profile). CardSet List Profile Options
+
+The following options can be set for the card set list profile
+
+* _Extra columns_: Select which extra columns of data are shown. See the \
+"Extra Columns (card set list)":#cs_columns section for more details.
+
+h4(#cs_columns). Extra Columns (card set list)
+
+Only card set names are shown in the card set list by default as well.  You can
+select additional columns to display as part of the card set list profile.
+
+The possible extra columns are:
+
+* _Author_: Show the card set author.
+* _Description_: Show the card set description.
+* _Total cards_: Show the total number of cards in the card set.
+* _Crypt_: Show the number of crypt cards in the card set.
+* _Library_: Show the number of library cards in the card set.
+* _All Children_: Show the number of child card sets each card set has
+* _In-Use Children_: Show the number of child card sets marked as in use.
+
+The display can be sorted on these columns by clicking on the column headers.
