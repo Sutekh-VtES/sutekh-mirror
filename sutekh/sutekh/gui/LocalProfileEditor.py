@@ -10,6 +10,7 @@
 from sutekh.gui.SutekhDialog import SutekhDialog
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 from sutekh.gui.PreferenceTable import PreferenceTable
+from sutekh.gui.ConfigFile import FRAME
 import gtk
 
 class LocalProfileEditor(SutekhDialog):
@@ -29,12 +30,14 @@ class LocalProfileEditor(SutekhDialog):
         self.__oConfig = oConfig
 
         aOptions = []
-        for sKey in self.__oConfig.deck_options():
+        for sKey in self.__oConfig.profile_options(FRAME):
             if sKey == "name":
                 continue
-            aOptions.append((sKey, self.__oConfig.get_deck_option_spec(sKey), True))
+            aOptions.append((sKey, self.__oConfig.get_option_spec(FRAME, sKey),
+                True))
 
-        self.__oOptionsTable = PreferenceTable(aOptions, oConfig.get_validator())
+        self.__oOptionsTable = PreferenceTable(aOptions,
+                oConfig.get_validator())
         self.vbox.pack_start(AutoScrolledWindow(self.__oOptionsTable,
             bUseViewport=True))
 
