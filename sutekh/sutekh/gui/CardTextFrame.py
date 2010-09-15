@@ -38,7 +38,7 @@ class CardTextFrame(BasicFrame):
 
         oBox.pack_start(AutoScrolledWindow(self._oView), True, True)
 
-        self.set_drag_handler()
+        self.set_drop_handler(self._oView)
 
         self.add(oBox)
         self.show_all()

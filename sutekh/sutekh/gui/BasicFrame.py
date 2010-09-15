@@ -57,7 +57,8 @@ class BasicFrame(gtk.Frame):
         self._oTitle.connect('drag-data-get', self.create_drag_data)
         self._oTitle.connect('button-press-event', self.minimize_to_toolbar)
         self._oTitle.connect_after('drag_begin', self.make_drag_icon)
-        self.set_drag_handler()
+        self.set_drag_handler(self._oView)
+        self.set_drop_handler(self._oView)
 
         self.set_unique_id()
 
@@ -98,13 +99,22 @@ class BasicFrame(gtk.Frame):
         """Set the id of the pane to the correct value"""
         self._iId = iNewId
 
-    def set_drag_handler(self):
-        """Setup the appropriate drag-n-drop handler for the view"""
-        self._oView.drag_dest_set(gtk.DEST_DEFAULT_ALL,
+    def set_drop_handler(self, oWidget):
+        """Setup the frame drop handler on the widget"""
+        oWidget.drag_dest_set(gtk.DEST_DEFAULT_ALL,
                 self.aDragTargets,
                 gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
-        self._oView.connect('drag-data-received', self.drag_drop_handler)
-        self._oView.connect('drag-motion', self.drag_motion)
+        oWidget.connect('drag-data-received', self.drag_drop_handler)
+        oWidget.connect('drag-motion', self.drag_motion)
+
+    def set_drag_handler(self, oWidget):
+        """Enable dragging of the frame via given widget"""
+        oWidget.drag_source_set(
+                gtk.gdk.BUTTON1_MASK | gtk.gdk.BUTTON3_MASK,
+                self.aDragTargets,
+                gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
+        oWidget.connect('drag-data-get', self.create_drag_data)
+        oWidget.connect_after('drag_begin', self.make_drag_icon)
 
     def set_focus_handler(self, oFunc):
         """Set the button press handler for the frame"""
