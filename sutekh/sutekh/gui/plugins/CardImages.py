@@ -149,13 +149,8 @@ class CardImageFrame(BasicFrame, CardTextViewListener):
         oBox.add(self._oImage)
 
         # Enable DnD handling, same as for BasicFrame
-        aDragTargets = [ ('STRING', 0, 0),
-                ('text/plain', 0, 0) ]
-        oBox.drag_dest_set(gtk.DEST_DEFAULT_ALL,
-                aDragTargets,
-                gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
-        oBox.connect('drag-data-received', self.drag_drop_handler)
-        oBox.connect('drag-motion', self.drag_motion)
+        self.set_drag_handler(oBox)
+        self.set_drop_handler(oBox)
         oBox.connect('button-press-event', self.__cycle_expansion)
 
         self.__sPrefsPath = self._oImagePlugin.get_config_item(
