@@ -31,9 +31,10 @@ class CardSetManagementView(CardSetsListView):
         aTargets = [ ('STRING', 0, 0),      # second 0 means TARGET_STRING
                      ('text/plain', 0, 0) ] # and here
 
-        self.enable_model_drag_source(
-                gtk.gdk.BUTTON1_MASK | gtk.gdk.BUTTON3_MASK,
-                aTargets, gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
+        # Need this so we can drag the pane in the same way as the card list
+        self.drag_source_set(gtk.gdk.BUTTON1_MASK | gtk.gdk.BUTTON3_MASK,
+                             aTargets,
+                             gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
 
         self.enable_model_drag_dest(aTargets,
                 gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
@@ -44,13 +45,27 @@ class CardSetManagementView(CardSetsListView):
 
         self.set_name('card set management view')
 
+    def make_drag_icon(self, oWidget, oDragContext):
+        """Drag begin signal handler to set custom icon"""
+        sSetName = self.get_selected_card_set()
+        if sSetName:
+            # defer to CustomDragIcon
+            super(CardSetManagementView, self).make_drag_icon(oWidget,
+                    oDragContext)
+        else:
+            # use pane icon
+            self.frame.make_drag_icon(self, oDragContext)
+
+
     # pylint: disable-msg=R0913
     # arguments as required by the function signature
-    def drag_card_set(self, _oBtn, _oDragContext, oSelectionData, _oInfo,
-            _oTime):
+    def drag_card_set(self, oBtn, oDragContext, oSelectionData, oInfo, oTime):
         """Allow card sets to be dragged to a frame."""
         sSetName = self.get_selected_card_set()
         if not sSetName:
+            # Pass over to the frame handler
+            self._oController.frame.create_drag_data(oBtn, oDragContext,
+                    oSelectionData, oInfo, oTime)
             return
         sData = "\n".join(['Card Set:', sSetName])
         oSelectionData.set(oSelectionData.target, 8, sData)
