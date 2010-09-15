@@ -228,7 +228,7 @@ class ReplacementTreeView(gtk.TreeView):
 
     def show_search(self, _oButton):
         """Popup the search dialog"""
-        self.oCardListView.searchdialog.show_all()
+        self.oCardListView.emit('start-interactive-search')
 
     NAME_RE = re.compile(r"^(?P<name>.*?)( \[(?P<exp>[^]]+)\])?$")
 

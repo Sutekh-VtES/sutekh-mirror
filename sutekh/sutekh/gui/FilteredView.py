@@ -9,7 +9,6 @@
 
 import gtk
 import unicodedata
-from sutekh.gui.SearchDialog import SearchDialog
 from sutekh.gui.CustomDragIconView import CustomDragIconView
 
 class FilteredView(CustomDragIconView):
@@ -33,9 +32,6 @@ class FilteredView(CustomDragIconView):
 
         # Text searching of card names
         self.set_search_equal_func(self.compare, None)
-        # Search dialog
-        # Entry item for text searching
-        self._oSearchDialog = SearchDialog(self, self._oMainWin)
 
         self.set_name('filtered_view')
 
@@ -52,8 +48,6 @@ class FilteredView(CustomDragIconView):
             doc="The controller used by the view.")
     frame = property(fget=lambda self: self._oController.frame,
             doc="The frame used by the view.")
-    searchdialog = property(fget=lambda self: self._oSearchDialog,
-            doc="The search dialog.")
     filterdialog = property(fget=lambda self: self._oFilterDialog,
             doc="The filter dialog.")
     # pylint: enable-msg=W0212
