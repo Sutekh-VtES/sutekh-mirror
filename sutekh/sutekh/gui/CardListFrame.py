@@ -44,15 +44,19 @@ class CardListFrame(BasicFrame):
 
     def get_toolbar_plugins(self):
         """Register plugins on the frame toolbar."""
-        oToolbar = gtk.VBox(False, 2)
+        oBox = gtk.VBox(False, 2)
         bInsertToolbar = False
         for oPlugin in self._aPlugins:
             oWidget = oPlugin.get_toolbar_widget()
             if oWidget is not None:
-                oToolbar.pack_start(oWidget)
+                oBox.pack_start(oWidget)
                 bInsertToolbar = True
         if bInsertToolbar:
-            oToolbar.show()
+            oToolbar = gtk.EventBox()
+            oToolbar.add(oBox)
+            self.set_drag_handler(oToolbar)
+            self.set_drop_handler(oToolbar)
+            oToolbar.show_all()
             return oToolbar
         else:
             return None
@@ -77,3 +81,6 @@ class CardListFrame(BasicFrame):
             oMbox.pack_start(oToolbar, False, False)
 
         self._oController.view.load()
+
+        self.set_drag_handler(self._oMenu)
+        self.set_drop_handler(self._oMenu)

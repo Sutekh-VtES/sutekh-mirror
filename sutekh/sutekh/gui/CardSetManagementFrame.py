@@ -64,6 +64,9 @@ class CardSetManagementFrame(BasicFrame):
         self.add(oMbox)
         self.show_all()
 
+        self.set_drag_handler(self._oMenu)
+        self.set_drop_handler(self._oMenu)
+
     def reload(self):
         """Reload the frame contents"""
         self.view.reload_keep_expanded(True)
