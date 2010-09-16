@@ -17,6 +17,7 @@ import gobject
 import gtk
 
 DRAG_TARGETS = [ ('STRING', 0, 0), ('text/plain', 0, 0) ]
+NO_DRAG_TARGET = [("No Drag", 0, 0)]
 # Filters we pad values for to sort nicely
 PAD_FILTERS = ['Capacity', 'CardCount: Count']
 
@@ -665,6 +666,7 @@ class FilterBoxModelEditView(gtk.TreeView):
         self.connect('drag_data_received', self.drag_drop_handler)
         self.connect('drag_data_get', self.drag_element)
         self.connect('button_press_event', self.press_button)
+        self.connect('drag_motion', self.do_drag_motion)
 
     def update_values_widget(self, _oTreeSelection):
         """Update the values widget to the new selection"""
@@ -824,6 +826,69 @@ class FilterBoxModelEditView(gtk.TreeView):
             else:
                 bDragRes = False
         oDragContext.finish(bDragRes, False, oTime)
+
+    def _check_drag_value(self, oIter, oFilter, tCurTarget, oAction):
+        """Check if the current target is an acceptable drop location
+           for a filter value"""
+        if not tCurTarget:
+            self.enable_model_drag_dest(NO_DRAG_TARGET, oAction)
+            return
+        if oFilter is None:
+            oFilter = self._oStore.get_value(
+                    self._oStore.iter_parent(oIter), 1)
+        # Check that destination is valid for this value
+        oDropObj, _oIter = self._oStore.get_drop_filter(tCurTarget)
+        if hasattr(oDropObj, 'sFilterName') and \
+               oDropObj.sFilterName == oFilter.sFilterName:
+            self.enable_model_drag_dest(DRAG_TARGETS, oAction)
+        else:
+            self.enable_model_drag_dest(NO_DRAG_TARGET, oAction)
+
+    def _fix_highlight(self):
+        """Fix the highlighted row to match the actual drop target for
+           filters"""
+        tCurTarget = self.get_drag_dest_row()
+        _iIndex, oIter = self._oStore.get_drop_iter(tCurTarget)
+        oDropObj = self._oStore.get_value(oIter, 1)
+        if oDropObj is None:
+            # Target is a filter value, so set highlight to the
+            # parent filter
+            oDropPath = self._oStore.get_path(self._oStore.iter_parent(oIter))
+            self.set_drag_dest_row(oDropPath, gtk.TREE_VIEW_DROP_AFTER)
+
+    def do_drag_motion(self, _oWidget, oDragContext, iXPos, iYPos, _oTime):
+        """Ensure we have correct row highlighted for the drag"""
+        # We lift the idea of changing the drag target from
+        # Walter Anger's post to the pygtk mailling list
+        # http://www.daa.com.au/pipermail/pygtk/2003-November/006431.html
+        oCurPath, _oCol = self.get_cursor()
+        oIter = self._oStore.get_iter(oCurPath)
+        oFilter = self._oStore.get_value(oIter, 1)
+        tCurTarget = self.get_dest_row_at_pos(iXPos, iYPos)
+        if oDragContext.get_source_widget() is self:
+            # We're dragging within the view
+            if oFilter is None:
+                # Dragging a value
+                self._check_drag_value(oIter, oFilter, tCurTarget,
+                        gtk.gdk.ACTION_MOVE)
+            else:
+                # dragging a filter around
+                self.enable_model_drag_dest(DRAG_TARGETS,
+                        gtk.gdk.ACTION_MOVE)
+                # We need to adjust the highlighted row after the default
+                # gtk tree view drag handler, but that doesn't propogate
+                # signals, so we can't use connect after. So we resort
+                # to this timeout trickery.
+                gobject.timeout_add(1, self._fix_highlight)
+        else:
+            # Dragging from outside the view, so different rules
+            if oFilter is None or not hasattr(oFilter, 'sBoxType'):
+                # Dragging values into the filter (since filter is selected)
+                self._check_drag_value(oIter, oFilter, tCurTarget,
+                        gtk.gdk.ACTION_COPY)
+            else:
+                self.enable_model_drag_dest(DRAG_TARGETS, gtk.gdk.ACTION_COPY)
+                gobject.timeout_add(1, self._fix_highlight)
 
     # pylint: enable-msg=R0913
 
