@@ -134,6 +134,9 @@ class CardSetManagementView(gtk.TreeView, object):
         """Allow card sets to be dragged to a frame."""
         sSetName = self.get_selected_card_set()
         if not sSetName:
+            # Pass over to the frame handler
+            self._oController.frame.create_drag_data(oBtn, oDragContext,
+                    oSelectionData, oInfo, oTime)
             return
         sData = "\n".join(['Card Set:', sSetName])
         oSelectionData.set(oSelectionData.target, 8, sData)

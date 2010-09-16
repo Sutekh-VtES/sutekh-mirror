@@ -51,7 +51,8 @@ class BasicFrame(gtk.Frame, object):
 
         self._oTitle.connect('drag-data-received', self.drag_drop_handler)
         self._oTitle.connect('drag-data-get', self.create_drag_data)
-        self.set_drag_handler()
+        self.set_drag_handler(self._oView)
+        self.set_drop_handler(self._oView)
 
     # pylint: disable-msg=W0212
     # explicitly allow access to these values via thesep properties
@@ -69,13 +70,20 @@ class BasicFrame(gtk.Frame, object):
         """Set the title of the pane to sTitle"""
         self._oTitleLabel.set_markup(gobject.markup_escape_text(sTitle))
 
-    def set_drag_handler(self):
+    def set_drop_handler(self, oWidget):
         """Setup the appropriate drag-n-drop handler for the view"""
-        self._oView.drag_dest_set(gtk.DEST_DEFAULT_ALL,
+        oWidget.drag_dest_set(gtk.DEST_DEFAULT_ALL,
                 self.aDragTargets,
                 gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
-        self._oView.connect('drag-data-received', self.drag_drop_handler)
-        self._oView.connect('drag-motion', self.drag_motion)
+        oWidget.connect('drag-data-received', self.drag_drop_handler)
+        oWidget.connect('drag-motion', self.drag_motion)
+
+    def set_drag_handler(self, oWidget):
+        """Setup the appropriate drag-n-drop handler for the view"""
+        oWidget.drag_source_set(
+                gtk.gdk.BUTTON1_MASK | gtk.gdk.BUTTON3_MASK, self.aDragTargets,
+                gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
+        oWidget.connect('drag-data-get', self.create_drag_data)
 
     def set_focus_handler(self, oFunc):
         """Set the button press handler for the frame"""

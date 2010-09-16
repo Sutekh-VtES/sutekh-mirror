@@ -59,6 +59,8 @@ class CardSetManagementFrame(BasicFrame):
         # setup default targets
 
         self.add(oMbox)
+        self.set_drag_handler(self._oMenu)
+        self.set_drop_handler(self._oMenu)
         self.show_all()
 
     def reload(self):
