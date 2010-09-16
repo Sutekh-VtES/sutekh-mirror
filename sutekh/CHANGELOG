@@ -1,3 +1,16 @@
+16 Sep 2010
+ * Better visual hints when dragging filters and filter elements
+
+15 Sep 2010
+ * Improve dragging code
+   - Most panes, except card text pane, can be dragged more easily
+   - Document card text special case
+ * Remove the no longer needed custom search dialog
+
+08 Sep 2010
+ * Add listeners so the menus are updated when the profile changes
+ * Update docs to match current profile status better
+
 02 Sep 2010
  * Add support for deleting profiles to profile management dialog
 
