@@ -1,4 +1,9 @@
-16 Auf 2010
+16 Sep 2010
+ * Backport various fixes
+   - Remove custom search dialog as unneeded (r2468 on trunk)
+   - Make dragging various panes easier (r2463-r2466)
+
+16 Aug 2010
  * Fix FELDB download image url
    - This is r2433 on trunk, but code has changed so it's a different fix
 
