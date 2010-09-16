@@ -66,4 +66,4 @@ class CardSetManagementMenu(PaneMenu, object):
 
     def show_search_dialog(self, oWidget):
         """Show the search dialog"""
-        self._oController.view.searchdialog.show_all()
+        self._oController.view.emit('start-interactive-search')

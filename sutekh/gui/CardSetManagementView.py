@@ -9,7 +9,6 @@
 import gtk
 import unicodedata
 from sutekh.gui.CardSetManagementModel import CardSetManagementModel
-from sutekh.gui.SearchDialog import SearchDialog
 
 class CardSetManagementView(gtk.TreeView, object):
     """Tree View for the card set list."""
@@ -28,9 +27,6 @@ class CardSetManagementView(gtk.TreeView, object):
 
         # Text searching of card names
         self.set_search_equal_func(self.compare, None)
-        # Search dialog
-        # Entry item for text searching
-        self._oSearchDialog = SearchDialog(self, self._oMainWin)
 
         # Drag and Drop
         aTargets = [ ('STRING', 0, 0),      # second 0 means TARGET_STRING
@@ -89,8 +85,6 @@ class CardSetManagementView(gtk.TreeView, object):
     # We allow access via these properties (for plugins)
     mainwindow = property(fget=lambda self: self._oMainWin,
             doc="The parent window sed for dialogs, etc.")
-    searchdialog = property(fget=lambda self: self._oSearchDialog,
-            doc="The search dialog.")
     # pylint: enable-msg=W0212
 
     # Card Set Name searching

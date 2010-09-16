@@ -10,7 +10,6 @@
 import gtk
 import unicodedata
 from sutekh.gui.FilterDialog import FilterDialog
-from sutekh.gui.SearchDialog import SearchDialog
 
 class CardListViewListener(object):
     """Listens to changes, i.e. .set_card_text(...) to CardListViews."""
@@ -62,9 +61,6 @@ class CardListView(gtk.TreeView, object):
 
         # Text searching of card names
         self.set_search_equal_func(self.compare, None)
-        # Search dialog
-        # Entry item for text searching
-        self._oSearchDialog = SearchDialog(self, self._oMainWin)
 
         # Drag and Drop
         aTargets = [ ('STRING', 0, 0),      # second 0 means TARGET_STRING
@@ -149,8 +145,6 @@ class CardListView(gtk.TreeView, object):
     # We allow access via these properties (for plugins)
     mainwindow = property(fget=lambda self: self._oMainWin,
             doc="The parent window used for dialogs, etc.")
-    searchdialog = property(fget=lambda self: self._oSearchDialog,
-            doc="The search dialog.")
     # pylint: enable-msg=W0212
 
 

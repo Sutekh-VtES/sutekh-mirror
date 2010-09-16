@@ -213,7 +213,7 @@ class ReplacementTreeView(gtk.TreeView):
 
     def show_search(self, oButton):
         """Popup the search dialog"""
-        self.oCardListView.searchdialog.show_all()
+        self.oCardListView.emit('start-interactive-search')
 
     # pylint: enable-msg=W0613
 
