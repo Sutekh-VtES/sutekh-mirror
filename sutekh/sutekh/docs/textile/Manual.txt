@@ -897,6 +897,10 @@ disciplines are within the clan. Vampires without a discipline score 0 for that
 discipline, vampires with the inferior discipline score 1 and vampires
 with the superior discipline score 2.
 
+Note that this will only include cards not legal for tournament play (such as
+banned cards or storyline only cards) if the current profile for the white wolf
+card list shows those cards.
+
 
 h3(#exp_stats). Expansion Stats
 
@@ -906,6 +910,10 @@ For each expansion, this lists the number of cards of each rarity. It also
 notes which cards are found only in the preconstructed decks for that expansion
 if needed. For each rarity, the individual cards are list, grouped according
 to the current grouping of the white wolf card list.
+
+Note that this will only include cards not legal for tournament play (such as
+banned cards or storyline only cards) if the current profile for the white wolf
+card list shows those cards.
 
 h3(#compare). Compare with another Card Set
 
