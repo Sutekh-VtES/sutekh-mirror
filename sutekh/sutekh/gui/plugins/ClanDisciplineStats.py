@@ -12,8 +12,9 @@
 import gtk
 import pango
 import gobject
+from sqlobject import SQLObjectNotFound
 from sutekh.core.SutekhObjects import PhysicalCard, Clan, ICardType, \
-        AbstractCard
+        AbstractCard, IKeyword
 from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
@@ -75,7 +76,7 @@ class ClanDisciplineStats(SutekhPlugin):
         for oChild in self._oStatsVbox.get_children():
             self._oStatsVbox.remove(oChild)
 
-        oView = StatsView()
+        oView = StatsView(self.model.bHideIllegal)
 
         # top align, using viewport to scroll
         self._oStatsVbox.pack_start(AutoScrolledWindow(oView, True))
@@ -143,8 +144,8 @@ class StatsView(gtk.TreeView):
     # gtk classes, so we have lots of public methods
     """TreeView used to display clan discipline stats"""
 
-    def __init__(self):
-        self._oModel = StatsModel()
+    def __init__(self, bHideIllegal):
+        self._oModel = StatsModel(bHideIllegal)
         self._aLabels = [
             "Clan", "Groups", "#", "Total Cap.", "Top 5 Disps.",
             "# Sup / # Inf", "Score", "Score / Vamp", "Score / Total Cap."
@@ -167,12 +168,19 @@ class StatsModel(gtk.TreeStore):
     # gtk classes, so we have lots of public methods
     """TreeStore to hold the data about the clan statistics"""
 
-    def __init__(self):
+    def __init__(self, bHideIllegal):
         # pylint: disable-msg=W0142
         # We need the * magic here
         super(StatsModel, self).__init__(gobject.TYPE_STRING,
                 gobject.TYPE_STRING, gobject.TYPE_INT, gobject.TYPE_INT,
                 *[gobject.TYPE_STRING]*5)
+        self.oExcludedKeyword = None
+        if bHideIllegal:
+            try:
+                self.oExcludedKeyword = IKeyword('not for legal play')
+            except SQLObjectNotFound:
+                self.oExcludedKeyword = None
+
         self.load()
 
     def load(self):
@@ -242,7 +250,9 @@ class StatsModel(gtk.TreeStore):
 
         for oCard in oClan.cards:
             if oVampType in oCard.cardtype:
-                oClanStats.add_vamp(oCard)
+                if self.oExcludedKeyword is None or \
+                        self.oExcludedKeyword not in oCard.keywords:
+                    oClanStats.add_vamp(oCard)
 
         return oClanStats
 

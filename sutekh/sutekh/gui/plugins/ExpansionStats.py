@@ -10,8 +10,10 @@
 import gtk
 import pango
 import gobject
+from sqlobject import SQLObjectNotFound
 from sutekh.core.SutekhObjects import PhysicalCard, AbstractCard
 from sutekh.core.Groupings import ExpansionRarityGrouping
+from sutekh.core.Filters import MultiKeywordFilter, NullFilter, FilterNot
 from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
@@ -74,7 +76,7 @@ class ExpansionStats(SutekhPlugin):
         for oChild in self._oStatsVbox.get_children():
             self._oStatsVbox.remove(oChild)
 
-        oView = StatsView(self.model.groupby)
+        oView = StatsView(self.model.groupby, self.model.bHideIllegal)
 
         # top align, using viewport to scroll
         self._oStatsVbox.pack_start(AutoScrolledWindow(oView, True))
@@ -86,8 +88,8 @@ class StatsView(gtk.TreeView):
     # gtk classes, so we have lots of public methods
     """TreeView used to display expansion stats"""
 
-    def __init__(self, cGrping):
-        self._oModel = StatsModel(cGrping)
+    def __init__(self, cGrping, bHideIllegal):
+        self._oModel = StatsModel(cGrping, bHideIllegal)
         self._aLabels = ["Expansion", "Count"]
 
         super(StatsView, self).__init__(self._oModel)
@@ -107,11 +109,18 @@ class StatsModel(gtk.TreeStore):
     # gtk classes, so we have lots of public methods
     """TreeStore to hold the data about the expansion statistics"""
 
-    def __init__(self, cGrping):
+    def __init__(self, cGrping, bHideIllegal):
         # pylint: disable-msg=W0142
         # We need the * magic here
         super(StatsModel, self).__init__(gobject.TYPE_STRING,
                 gobject.TYPE_INT)
+        self.oLegalFilter = NullFilter()
+        if bHideIllegal:
+            try:
+                self.oLegalFilter = FilterNot(MultiKeywordFilter(
+                    ['not for legal play']))
+            except SQLObjectNotFound:
+                self.oLegalFilter = NullFilter()
         self.load(cGrping)
 
     # pylint: disable-msg=R0914
@@ -120,7 +129,7 @@ class StatsModel(gtk.TreeStore):
         """Populate the contents of the TreeStore"""
         self.clear()
 
-        aCards = AbstractCard.select()
+        aCards = self.oLegalFilter.select(AbstractCard)
         oGrouping = ExpansionRarityGrouping(aCards)
         aTopLevel = []
         oExpIter = None
