@@ -19,9 +19,10 @@ from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 class ExpansionStats(SutekhPlugin):
     """Display card counts and stats for each expansion, rarity grouping.
 
-       A dialog listing discipline spreads per clan is shown,
-       along with useful stats about the disciline spread.
-       The user can break down the analysis by vampire groups.
+       A dialog listing cards for each expansion, split by the rarity,
+       with a special category for cards only included in the precon decks.
+       The cards are grouped by the current grouping used by the WW card
+       list view.
        """
 
     dTableVersions = {}
@@ -83,7 +84,7 @@ class ExpansionStats(SutekhPlugin):
 class StatsView(gtk.TreeView):
     # pylint: disable-msg=R0904
     # gtk classes, so we have lots of public methods
-    """TreeView used to display clan discipline stats"""
+    """TreeView used to display expansion stats"""
 
     def __init__(self, cGrping):
         self._oModel = StatsModel(cGrping)
@@ -104,7 +105,7 @@ class StatsView(gtk.TreeView):
 class StatsModel(gtk.TreeStore):
     # pylint: disable-msg=R0904
     # gtk classes, so we have lots of public methods
-    """TreeStore to hold the data about the clan statistics"""
+    """TreeStore to hold the data about the expansion statistics"""
 
     def __init__(self, cGrping):
         # pylint: disable-msg=W0142
