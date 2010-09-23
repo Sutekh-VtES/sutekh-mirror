@@ -197,6 +197,7 @@ class CardSetCardListModel(CardListModel):
            deleted, but the objects are still around."""
         disconnect_changed(self.card_changed, PhysicalCardSet)
         self._oController = None
+        self._oConfig.remove_listener(self)
 
     def set_count_colour(self):
         """Format the card count accordingly"""
