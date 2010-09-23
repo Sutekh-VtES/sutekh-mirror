@@ -8,7 +8,10 @@
 
 from sutekh.tests.GuiSutekhTest import ConfigSutekhTest
 from sutekh.gui.CardListModel import CardListModelListener
+from sutekh.gui.ConfigFile import CARDSET, FRAME
 from sutekh.gui.CardSetListModel import CardSetCardListModel, \
+        EXTRA_LEVEL_OPTION, EXTRA_LEVEL_LOOKUP, SHOW_CARD_OPTION, \
+        SHOW_CARD_LOOKUP, PARENT_COUNT_MODE, PARENT_COUNT_LOOKUP, \
         NO_SECOND_LEVEL, SHOW_EXPANSIONS, SHOW_CARD_SETS, EXP_AND_CARD_SETS, \
         CARD_SETS_AND_EXP, ALL_CARDS, PARENT_CARDS, MINUS_SETS_IN_USE, \
         CHILD_CARDS, IGNORE_PARENT, PARENT_COUNT, MINUS_THIS_SET, THIS_SET_ONLY
@@ -41,6 +44,29 @@ class CardSetListener(CardListModelListener):
     def add_new_card(self, _oCard, iCnt):
         """Called when the model adds a new card to the model"""
         self.iCnt += iCnt
+
+
+class DummyController(object):
+    """Dummy controler object for config tests"""
+
+    # pylint: disable-msg=W0212
+    # We allow access via these properties
+
+    view = property(fget=lambda self: self)
+    frame = property(fget=lambda self: self)
+    pane_id = property(fget=lambda self: 10)
+
+    # pylint: enable-msg=W0212
+
+    # pylint: disable-msg=R0201, C0111
+    # dummy functions, so they're empty
+
+    def set_parent_count_col_vis(self, _bVal):
+        return
+
+    def reload_keep_expanded(self):
+        return
+
 
 class CardSetListModelTests(ConfigSutekhTest):
     """Class for the test cases"""
@@ -347,6 +373,45 @@ class CardSetListModelTests(ConfigSutekhTest):
         self.assertEqual(oModel.get_drag_child_info('0'), {})
         self.assertEqual(oModel.get_drag_child_info('0:0'),
                 {'Camarilla Edition' : 1})
+        self._cleanup_models([oModel])
+
+    def test_config_listener(self):
+        """Test that the model responds to the profile changes as expected"""
+        # We use an empty card set for these tests, to minimise time taken
+        PhysicalCardSet(name=self.aNames[0])
+        oModel = CardSetCardListModel(self.aNames[0], self.oConfig)
+        oDummy = DummyController()
+        oModel.set_controller(oDummy)
+        sTestValue = list(SHOW_CARD_LOOKUP)[0]
+        iTestMode = SHOW_CARD_LOOKUP[sTestValue]
+        self.oConfig.set_profile_option(CARDSET, 'test', SHOW_CARD_OPTION,
+                sTestValue)
+        self.oConfig.set_profile_option(CARDSET, 'test2', SHOW_CARD_OPTION,
+                sTestValue)
+        # Check changing deck profile
+        for sValue, iMode in SHOW_CARD_LOOKUP.iteritems():
+            iCurMode = oModel.iShowCardMode
+            self.oConfig.set_profile_option(CARDSET, 'test', SHOW_CARD_OPTION,
+                    sValue)
+            self.assertEqual(oModel.iShowCardMode, iCurMode)
+            self.oConfig.set_profile(CARDSET, oModel.cardset_id, 'test')
+            self.assertEqual(oModel.iShowCardMode, iMode)
+            self.oConfig.set_profile(FRAME, oModel.frame_id, 'test2')
+            self.assertEqual(oModel.iShowCardMode, iTestMode)
+            self.oConfig.set_profile(FRAME, oModel.frame_id, 'defaults')
+            self.oConfig.set_profile(CARDSET, oModel.cardset_id, 'defaults')
+        # Check listener on card set profile changes
+        self.oConfig.set_profile(CARDSET, oModel.cardset_id, 'test')
+        self.oConfig.set_profile(FRAME, oModel.frame_id, 'test2')
+        for sValue, iMode in EXTRA_LEVEL_LOOKUP.iteritems():
+            self.oConfig.set_profile_option(CARDSET, 'test',
+                    EXTRA_LEVEL_OPTION, sValue)
+            self.assertEqual(oModel.iExtraLevelsMode, iMode)
+        # Check listener on frame profile changes
+        for sValue, iMode in PARENT_COUNT_LOOKUP.iteritems():
+            self.oConfig.set_profile_option(CARDSET, 'test2',
+                    PARENT_COUNT_MODE, sValue)
+            self.assertEqual(oModel.iParentCountMode, iMode)
         self._cleanup_models([oModel])
 
     def _setup_simple(self):
