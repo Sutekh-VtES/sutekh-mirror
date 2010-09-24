@@ -16,7 +16,7 @@ from sutekh.gui.CardSetsListView import CardSetsListView
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 from sutekh.gui.GuiCardSetFunctions import create_card_set
 
-def _get_card_set_list(aCardSetNames, bUseExpansions):
+def _get_card_set_list(aCardSetNames, bIgnoreExpansions):
     """Get the differences and common cards for the card sets."""
     # Only compare abstract cards
     dFullCardList = {}
@@ -27,13 +27,13 @@ def _get_card_set_list(aCardSetNames, bUseExpansions):
             # pylint: disable-msg=E1101
             # pylint doesn't see IAbstractCard methods
             oAbsCard = IAbstractCard(oCard)
-            if bUseExpansions:
+            if bIgnoreExpansions:
+                oKey = (oAbsCard, oAbsCard.name, None)
+            else:
                 if oCard.expansion:
                     oKey = (oCard, oAbsCard.name, oCard.expansion.name)
                 else:
                     oKey = (oAbsCard, oAbsCard.name, 'Unspecified Expansion')
-            else:
-                oKey = (oAbsCard, oAbsCard.name, None)
             dFullCardList.setdefault(oKey, {aCardSetNames[0] : 0,
                 aCardSetNames[1] : 0})
             dFullCardList[oKey][sCardSetName] += 1
@@ -84,15 +84,16 @@ class CardSetCompare(SutekhPlugin):
         oCSView.set_select_single()
         oCSView.exclude_set(self.view.sSetName)
         oDlg.vbox.pack_start(AutoScrolledWindow(oCSView), expand=True)
-        oUseExpansions = gtk.CheckButton("Consider Expansions as well")
-        oDlg.vbox.pack_start(oUseExpansions)
+        oIgnoreExpansions = gtk.CheckButton("Ignore Expansions")
+        oDlg.vbox.pack_start(oIgnoreExpansions)
         oCSView.set_size_request(150, 300)
-        oDlg.connect("response", self.handle_response, oCSView, oUseExpansions)
+        oDlg.connect("response", self.handle_response, oCSView,
+                oIgnoreExpansions)
         oDlg.show_all()
         oDlg.run()
         oDlg.destroy()
 
-    def handle_response(self, _oWidget, iResponse, oCSView, oUseExpansions):
+    def handle_response(self, _oWidget, iResponse, oCSView, oIgnoreExpansions):
         """Handle response from the dialog."""
         if iResponse ==  gtk.RESPONSE_OK:
             aCardSetNames = [self.view.sSetName]
@@ -101,9 +102,10 @@ class CardSetCompare(SutekhPlugin):
                 do_complaint_error("Need to choose a card set to compare to")
             else:
                 aCardSetNames.append(sSet)
-                self.comp_card_sets(aCardSetNames, oUseExpansions.get_active())
+                self.comp_card_sets(aCardSetNames,
+                        oIgnoreExpansions.get_active())
 
-    def comp_card_sets(self, aCardSetNames, bUseExpansions):
+    def comp_card_sets(self, aCardSetNames, bIgnoreExpansions):
         """Display the results of comparing the card sets."""
         def format_list(dCardInfo, sColor):
             """Format the list of cards for display."""
@@ -148,7 +150,7 @@ class CardSetCompare(SutekhPlugin):
             return oPage
 
         (dDifferences, dCommon) = _get_card_set_list(aCardSetNames,
-                bUseExpansions)
+                bIgnoreExpansions)
         oResultDlg = SutekhDialog("Card Comparison", self.parent,
                 gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                 (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
