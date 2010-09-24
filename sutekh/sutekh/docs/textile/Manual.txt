@@ -47,7 +47,7 @@ h2. Contents
 ## "Cluster Cards":#cluster
 ## "Clan Discipline Stats":#stats
 ## "Expansion Stats":#exp_stats
-## "Compare card set with another Card Set":#compare
+## "Compare with another Card Set":#compare
 ## "Analyze Deck":#analyze_deck
 ## "Test Card Set Independence":#test_cs_indep
 ## "Simulate Opening Hand":#opening_hand
@@ -521,7 +521,7 @@ The following analysis options are available for card sets:
 * "Analyze Deck":#analyze_deck
 * "Card draw probabilities":#draw_prob
 * "Cluster Cards":#cluster
-* "Compare card set with another Card Set":#compare
+* "Compare with another Card Set":#compare
 * "Simulate Opening Hand":#opening_hand
 * "Test Card Set Independence":#test_indep
 
@@ -915,16 +915,18 @@ Note that this will only include cards not legal for tournament play (such as
 banned cards or storyline only cards) if the current profile for the white wolf
 card list shows those cards.
 
+
 h3(#compare). Compare with another Card Set
 
 This tool compares the current card set with a different card set. It displays
 which cards are common to both card sets, and lists the unique cards in each
 card set.
 
-By default, the tool ignores the expansions of cards, and considers all cards
-with the same name to be the same. You can change this behaviour using the
-_Consider Expansions as well_ checkbox when selecting a card set for
-comparison.
+By default, the tool considers the expansions of cards, and considers all cards
+with the same name with different expansions as different.  You can change
+this behaviour using the _Ignore Expansionscheckbox when selecting a card set
+for comparison. If selected, all cards of with the same name are considered
+the same, regardless of expansion.
 
 The display of the results uses the same grouping as the card set.
 
