@@ -200,6 +200,10 @@ class MultiPaneWindow(gtk.Window):
         for oFrame in self.aOpenFrames[:]:
             self.remove_frame(oFrame, True)
 
+        # Flag to delay reloading pcs card list until after everything else
+        # has loaded
+        bReloadPCS = False
+
         aClosedFrames = []
 
         iWidth, iHeight = self._oConfig.get_window_size()
@@ -214,7 +218,8 @@ class MultiPaneWindow(gtk.Window):
             self.win_focus(None, None, oNewFrame)
             if sType == PhysicalCardSet.sqlmeta.table:
                 oRestored = self.replace_with_physical_card_set(sName,
-                        oNewFrame)
+                        oNewFrame, False)
+                bReloadPCS = True
             elif sType == 'Card Text':
                 oRestored = self.replace_with_card_text(None)
             elif sType == PhysicalCard.sqlmeta.table:
@@ -235,6 +240,8 @@ class MultiPaneWindow(gtk.Window):
                 aClosedFrames.append(oRestored)
         for oFrame in aClosedFrames:
             self.minimize_to_toolbar(oFrame)
+        if bReloadPCS:
+            self.reload_pcs_list()
         if not self.aOpenFrames:
             # We always have at least one pane
             self.add_pane()
@@ -281,14 +288,14 @@ class MultiPaneWindow(gtk.Window):
                 aPanes.append(oPane)
         return aPanes
 
-    def replace_with_physical_card_set(self, sName, oFrame):
+    def replace_with_physical_card_set(self, sName, oFrame, bDoReloadPCS=True):
         """Replace the pane oFrame with the physical card set sName"""
         if oFrame:
             # pylint: disable-msg=W0704
             # not doing anything for errors right now
             try:
                 oPane = CardSetFrame(self, sName)
-                self.replace_frame(oFrame, oPane)
+                self.replace_frame(oFrame, oPane, bDoReloadPCS)
                 return oPane
             except RuntimeError:
                 # add warning dialog?
@@ -726,7 +733,7 @@ class MultiPaneWindow(gtk.Window):
             oChild = oChild.get_child1()
         return oChild
 
-    def replace_frame(self, oOldFrame, oNewFrame):
+    def replace_frame(self, oOldFrame, oNewFrame, bDoReloadPCS=True):
         """Replace oOldFrame with oNewFrame + update menus"""
         oNewFrame.show()
         oNewFrame.set_focus_handler(self.win_focus)
@@ -742,7 +749,8 @@ class MultiPaneWindow(gtk.Window):
         self.reset_menu()
         # Open card lists may have changed because of the frame we've
         # kicked out
-        self.reload_pcs_list()
+        if bDoReloadPCS:
+            self.reload_pcs_list()
 
     def swap_frames(self, oFrame1, oFrame2):
         """swap two frames - used by drag-n-drop code"""
