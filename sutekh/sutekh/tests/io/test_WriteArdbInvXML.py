@@ -54,6 +54,7 @@ EXPECTED_1 = """<inventory databaseVersion="%s" formatVersion="-TODO-1.0" genera
 </inventory>""" % (WriteArdbInvXML.sDatabaseVersion, SutekhInfo.VERSION_STR)
 # pylint: enable-msg=W0511, C0301
 
+
 class ArdbInvXMLWriterTests(SutekhTest):
     """class for the ARDB inventory XML writer tests"""
 

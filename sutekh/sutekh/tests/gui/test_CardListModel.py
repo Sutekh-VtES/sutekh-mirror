@@ -12,6 +12,7 @@ from sutekh.core import Filters, Groupings
 from sutekh.gui.CardListModel import CardListModel, CardListModelListener
 import unittest
 
+
 class TestListener(CardListModelListener):
     """Listener used in the test cases."""
     # pylint: disable-msg=W0231
@@ -24,6 +25,7 @@ class TestListener(CardListModelListener):
         """Called when the model is loaded."""
         self.bLoadCalled = True
         self.aCards = [oCard.abstractCard for oCard in aCards]
+
 
 class CardListModelTests(ConfigSutekhTest):
     """Class for the test cases"""
@@ -140,7 +142,7 @@ class CardListModelTests(ConfigSutekhTest):
         # Test path queries
         # The remain tests require a sorted model
         oModel.enable_sorting()
-        oPath = '0:0:0' # First expansion for the first card
+        oPath = '0:0:0'  # First expansion for the first card
         self.assertEqual(oModel.get_exp_name_from_path(oPath),
                 oModel.sUnknownExpansion)
         self.assertEqual(oModel.get_card_name_from_path(oPath),
@@ -151,7 +153,7 @@ class CardListModelTests(ConfigSutekhTest):
         self.assertEqual(tAll[2], 0)
         self.assertEqual(tAll[3], 2)
         self.assertEqual(oModel.get_child_entries_from_path(oPath), [])
-        oPath = '0:0' # First card
+        oPath = '0:0'  # First card
         self.assertEqual(oModel.get_exp_name_from_path(oPath), None)
         self.assertEqual(oModel.get_inc_dec_flags_from_path(oPath),
                 (False, False))

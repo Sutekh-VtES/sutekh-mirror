@@ -93,6 +93,7 @@ ARDB_DECK_EXAMPLE_1 = """
 </deck>
 """
 
+
 class ArdbXMLDeckParserTests(SutekhTest):
     """class for the ARDB XML deck file parser tests"""
 

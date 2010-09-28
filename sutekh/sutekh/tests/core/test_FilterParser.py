@@ -15,6 +15,7 @@ from sutekh.core.SutekhObjects import AbstractCard, PhysicalCardSet, \
 from sutekh.core import FilterParser, Filters, FilterBox
 import unittest
 
+
 class FilterParserTests(SutekhTest):
     """Class for the test cases"""
     aExpectedCards = test_WhiteWolfParser.WhiteWolfParserTests.aExpectedCards
@@ -125,7 +126,7 @@ class FilterParserTests(SutekhTest):
             # Compound Filters
             ('CardType in Equipment AND Cost in 5', Filters.FilterAndBox([
                 Filters.CardTypeFilter('Equipment'),
-                Filters.CostFilter(5)
+                Filters.CostFilter(5),
                 ])),
             ('CardType in Equipment OR CardType in Power',
                     Filters.MultiCardTypeFilter(['Equipment', 'Power'])),
@@ -319,7 +320,7 @@ class FilterParserTests(SutekhTest):
 
         for sFilter in aTests:
             oAST = self.oFilterParser.apply(sFilter)
-            oFilterPart = oAST.aChildren[0] # Because they're simple children
+            oFilterPart = oAST.aChildren[0]  # Because they're simple children
             self.assertEqual(oFilterPart.get_name(), '$a')
             self.assertTrue(oFilterPart.aFilterValues is None)
 

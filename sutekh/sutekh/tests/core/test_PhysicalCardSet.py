@@ -24,6 +24,7 @@ CARD_EXPANSIONS = [('.44 magnum', 'Jyhad'),
         ('the siamese', 'BL')]
 CARD_SET_NAMES = ['Test Set 1', 'Test Set 2', 'Test Set 3', 'Test Set 4']
 
+
 def get_phys_cards():
     """Get Physical Cards for the given lists"""
     aAddedPhysCards = []
@@ -34,6 +35,7 @@ def get_phys_cards():
         oPC = make_card(sName, sExpansion)
         aAddedPhysCards.append(oPC)
     return aAddedPhysCards
+
 
 def make_set_1():
     """Make the first card set.

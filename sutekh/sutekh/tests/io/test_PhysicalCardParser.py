@@ -19,6 +19,7 @@ from StringIO import StringIO
 
 LAST_WRITER_VERSION = "1.0"
 
+
 def make_example_pcxml():
     """Create the example XML File"""
     # pylint: disable-msg=E1101
@@ -52,7 +53,7 @@ class PhysicalCardTests(SutekhTest):
         assert(len(oMyCollection.cards) == 1)
         PhysicalCardSet.delete(oMyCollection.id)
 
-        sTempFileName =  self._create_tmp_file()
+        sTempFileName = self._create_tmp_file()
         fOut = open(sTempFileName, 'w')
         fOut.write(sExample)
         fOut.close()

@@ -40,7 +40,6 @@ Test Card 4
 class TestJOLDeckParser(SutekhTest):
     """class for the JOL deck file parser tests"""
 
-
     def test_basic(self):
         """Run the JOL input test."""
         oHolder = self._make_holder_from_string(JOLDeckParser(), JOL_EXAMPLE_1)
@@ -50,7 +49,7 @@ class TestJOLDeckParser(SutekhTest):
         self.assertEqual(len(aCards), 10)
         self.failUnless(("Test Vamp 1", 3) in aCards)
         self.failUnless(("Test Vamp 2", 1) in aCards)
-        self.failUnless(("Test Card 1", 2 ) in aCards)
+        self.failUnless(("Test Card 1", 2) in aCards)
         self.failUnless(("Test Card 2", 4) in aCards)
         self.failUnless(("Test Card 3", 12) in aCards)
         self.failUnless(("Test Card 4", 1) in aCards)

@@ -22,6 +22,7 @@ Crypt:
 1\tAlan Sovereign Adv.
 """
 
+
 # Needs to be a SutekhTestCase so the name mapping cache test works
 class TestLackeyDeckFileParser(SutekhTest):
     """class for the ELDB deck file parser tests"""
@@ -36,7 +37,7 @@ class TestLackeyDeckFileParser(SutekhTest):
         self.assertEqual(len(aCards), 8)
         self.failUnless(("Test Vamp 1", 2) in aCards)
         self.failUnless((u"L\xe1z\xe1r Dobrescu", 1) in aCards)
-        self.failUnless(("Test Card 1", 2 ) in aCards)
+        self.failUnless(("Test Card 1", 2) in aCards)
         self.failUnless(("Test Card 2", 4) in aCards)
         self.failUnless(("Test Card 3", 12) in aCards)
         self.failUnless(("Test Card 4", 1) in aCards)

@@ -17,6 +17,7 @@ import tempfile
 import os
 from logging import FileHandler
 
+
 def _create_pkg_tmp_file(sData):
     """Create a temporary file for use in create_db"""
     (fTemp, sFilename) = tempfile.mkstemp()
@@ -28,6 +29,7 @@ def _create_pkg_tmp_file(sData):
         fTmp.close()
 
     return sFilename
+
 
 def create_db():
     """Create the database"""
@@ -43,6 +45,7 @@ def create_db():
     os.remove(sRulings)
     os.remove(sCardList)
 
+
 def setup_package():
     """Fill database before any of the tests are run"""
     # Get the database to use from the environment, defaulting to an
@@ -53,6 +56,7 @@ def setup_package():
     SutekhTest.set_db_conn(oConn)
 
     create_db()
+
 
 def teardown_package():
     """Cleanup the database after all the tests are done"""

@@ -10,6 +10,7 @@ from sutekh.tests.TestCore import SutekhTest
 from sutekh.core.DatabaseVersion import DatabaseVersion
 from sutekh.core.SutekhObjects import TABLE_LIST
 
+
 class DatabaseVersionTests(SutekhTest):
     """Class for the database version tests."""
 

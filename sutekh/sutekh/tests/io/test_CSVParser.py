@@ -12,10 +12,10 @@ from sutekh.io.CSVParser import CSVParser
 from sutekh.tests.io.test_WriteCSV import EXPECTED_1, EXPECTED_2, EXPECTED_3, \
         EXPECTED_4
 
+
 # Needs to be a SutekhTestCase so the name mapping cache test works
 class TestCSVParser(SutekhTest):
     """class for the CSV deck file parser tests"""
-
 
     def test_basic(self):
         """Run the input test."""
@@ -25,7 +25,7 @@ class TestCSVParser(SutekhTest):
                 (0, 2, 1, True, EXPECTED_1),
                 (0, 2, 1, False, EXPECTED_2),
                 (0, 1, None, True, EXPECTED_3),
-                (0, 1, None, False, EXPECTED_4)
+                (0, 1, None, False, EXPECTED_4),
                 ]
 
         for tTestInfo in aTests:
@@ -38,7 +38,7 @@ class TestCSVParser(SutekhTest):
 
             self.assertEqual(len(aCards), 8)
             self.failUnless((".44 Magnum", 4) in aCards)
-            self.failUnless(("Abebe", 1 ) in aCards)
+            self.failUnless(("Abebe", 1) in aCards)
             self.failUnless(("Alan Sovereign (Advanced)", 1) in aCards)
             self.failUnless(("The Siamese", 1) in aCards)
             self.failUnless(("Abbot", 2) in aCards)

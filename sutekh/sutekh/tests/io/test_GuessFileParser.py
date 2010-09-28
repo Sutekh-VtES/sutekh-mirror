@@ -30,6 +30,7 @@ from sutekh.tests.io.test_LackeyDeckParser import LACKEY_EXAMPLE_1
 from sutekh.tests.io.test_AbstractCardSetParser import ACS_EXAMPLE_1
 from sutekh.tests.io.test_PhysicalCardSetParser import PCS_EXAMPLE_1
 
+
 class TestGuessFileParser(SutekhTest):
     """class for the guess file parser tests"""
 

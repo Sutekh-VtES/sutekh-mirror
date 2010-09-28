@@ -10,6 +10,7 @@ from sutekh.tests.TestCore import SutekhTest
 from sutekh.core.SutekhObjects import Ruling, IRuling
 import unittest
 
+
 class RulingParserTests(SutekhTest):
     """Check the results of the ruling parser call in SutekhTest SetUp"""
     aExpectedRulings = [

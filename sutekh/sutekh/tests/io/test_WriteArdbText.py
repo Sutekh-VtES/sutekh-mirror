@@ -40,6 +40,7 @@ Master [3]
 
 """
 
+
 class ArdbTextWriterTests(SutekhTest):
     """class for the ARDB text file writer tests"""
 

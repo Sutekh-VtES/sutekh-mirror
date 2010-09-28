@@ -24,6 +24,7 @@ from sutekh.core.SutekhObjectCache import SutekhObjectCache
 from sutekh.core.DBSignals import send_changed_signal
 import unittest
 
+
 class CardSetListener(CardListModelListener):
     """Listener used in the test cases."""
     # pylint: disable-msg=W0231
@@ -80,7 +81,6 @@ class CardSetListModelTests(ConfigSutekhTest):
 
     aNames = ['Test 1', 'Test Child 1', 'Test Grand Child', 'Test Sibling',
             'Test Grand Child 2']
-
 
     # pylint: disable-msg=R0201
     # I prefer to have these as methods
@@ -324,7 +324,6 @@ class CardSetListModelTests(ConfigSutekhTest):
                                     " from expected zero result",
                                     tFilterTotals, (1, 0, 0), oModel))
 
-
     def test_basic(self):
         """Set of simple tests of the Card Set List Model"""
         _oCache = SutekhObjectCache()
@@ -358,7 +357,7 @@ class CardSetListModelTests(ConfigSutekhTest):
         self.assertEqual(oModel.get_drag_child_info('0'), {})
         self.assertEqual(oModel.get_drag_child_info('0:0:0'), {})
         self.assertEqual(oModel.get_drag_child_info('0:0'),
-                {'Camarilla Edition' : 1})
+                {'Camarilla Edition': 1})
         self.assertEqual(oModel.get_drag_info_from_path('0:0:0'),
                 (u"Alexandra", "Camarilla Edition", 1, 2))
         self.assertEqual(oModel.get_drag_info_from_path('0:0'),
@@ -372,7 +371,7 @@ class CardSetListModelTests(ConfigSutekhTest):
         self.assertEqual(self._count_second_level(oModel), 0)
         self.assertEqual(oModel.get_drag_child_info('0'), {})
         self.assertEqual(oModel.get_drag_child_info('0:0'),
-                {'Camarilla Edition' : 1})
+                {'Camarilla Edition': 1})
         self._cleanup_models([oModel])
 
     def test_config_listener(self):
@@ -458,7 +457,7 @@ class CardSetListModelTests(ConfigSutekhTest):
         aModels = []
         for oFilter in [Filters.CardTypeFilter('Vampire'),
                 Filters.PhysicalExpansionFilter('Sabbat'),
-                Filters.CardSetMultiCardCountFilter((['2','3'],
+                Filters.CardSetMultiCardCountFilter((['2', '3'],
                     self.aNames[0])),
                 ]:
             oModel = CardSetCardListModel(self.aNames[0], self.oConfig)
@@ -636,7 +635,7 @@ class CardSetListModelTests(ConfigSutekhTest):
         for oFilter in [
                 Filters.CardTypeFilter('Vampire'),
                 Filters.PhysicalExpansionFilter('Sabbat'),
-                Filters.CardSetMultiCardCountFilter((['2','3'],
+                Filters.CardSetMultiCardCountFilter((['2', '3'],
                     self.aNames[0])),
                 ]:
             for sName in self.aNames[:4]:

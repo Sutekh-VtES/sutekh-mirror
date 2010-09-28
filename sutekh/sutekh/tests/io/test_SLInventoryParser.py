@@ -11,6 +11,7 @@ import StringIO
 from sutekh.tests.TestCore import SutekhTest, DummyHolder
 from sutekh.io.SLInventoryParser import SLInventoryParser
 
+
 class TestSLInventoryParser(SutekhTest):
     """Class for the Secret Library inventory file parser tests"""
 

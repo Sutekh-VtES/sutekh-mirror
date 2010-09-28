@@ -10,6 +10,7 @@ import unittest
 from sutekh.tests.GuiSutekhTest import GuiSutekhTest
 from sutekh.core.SutekhObjects import PhysicalCardSet
 
+
 class TestMultiPaneWindow(GuiSutekhTest):
     """Class for the MultiPanewindow test cases"""
 

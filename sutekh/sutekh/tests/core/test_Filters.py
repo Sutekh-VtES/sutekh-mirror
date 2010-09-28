@@ -31,6 +31,7 @@ def make_card(sCardName, sExpName):
     oCard = IPhysicalCard((oAbs, oExp))
     return oCard
 
+
 def make_physical_card_sets():
     """Create the set of physical card sets used for testing"""
     aCardSets = [('Test 1', 'Author A', 'A set', False),
@@ -249,8 +250,8 @@ class FilterTests(SutekhTest):
                 u'Anna "Dictatrix11" Suljic', u'Anson', u'Bravo', u'Bronwen',
                 u'Cedric', u'Cesewayo', u'Dramatic Upheaval',
                 u'Earl "Shaka74" Deams', u"Enkidu, The Noah",
-                u"Fidus, The Shrunken Beast", u'Gracis Nostinus'
-                , u'Inez "Nurse216" Villagrande', u'Kabede Maru',
+                u"Fidus, The Shrunken Beast", u'Gracis Nostinus',
+                u'Inez "Nurse216" Villagrande', u'Kabede Maru',
                 u"Kemintiri (Advanced)", u'L\xe1z\xe1r Dobrescu',
                 u'Motivated by Gehenna', u"Necromancy", u"Pariah",
                 u"Predator's Communion", u"Rebekka, Chantry Elder of Munich",
@@ -363,7 +364,7 @@ class FilterTests(SutekhTest):
                     u"Ablative Skin", u"Abombwe", u"Agent of Power",
                     u"Aire of Elation", u'Anna "Dictatrix11" Suljic', u"Bravo",
                     u'Dramatic Upheaval', u'Earl "Shaka74" Deams',
-                    u"Ghoul Retainer" , u"Gypsies", u"High Top",
+                    u"Ghoul Retainer", u"Gypsies", u"High Top",
                     u'Inez "Nurse216" Villagrande', u'Motivated by Gehenna',
                     u"Necromancy", u"Ossian", u"Paris Opera House",
                     u"Park Hunting Ground", u"Political Hunting Ground",
@@ -392,7 +393,7 @@ class FilterTests(SutekhTest):
             u"Osebo", u"Pander", u"Ravnos", u"Samedi", u"Toreador", u"Tremere",
             u"Tzimisce", u"Ventrue"])
         self.assertEqual(Filters.MultiCapacityFilter.get_values(),
-                [str(x) for x in range(1,12)])
+                [str(x) for x in range(1, 12)])
         self.assertEqual(Filters.MultiDisciplineFilter.get_values(),
                 [u"Abombwe", u"Animalism", u"Auspex", u"Celerity",
                     u"Chimerstry", u"Dementation", u"Dominate", u"Flight",
@@ -430,7 +431,7 @@ class FilterTests(SutekhTest):
                         u"Protracted Investment", u"Raven Spy"],
                     ['Jyhad']),
                 (Filters.PhysicalExpansionFilter('LoB'),
-                    ['Abombwe','.44 Magnum', 'Abebe', u"Cedric", u"Cesewayo",
+                    ['Abombwe', '.44 Magnum', 'Abebe', u"Cedric", u"Cesewayo",
                         u"Predator's Communion", u"The Slaughterhouse",
                         u"Vox Domini", u"Paris Opera House", u"High Top",
                         u"Rock Cat"],
@@ -439,7 +440,7 @@ class FilterTests(SutekhTest):
                     self.aExpectedCards,
                     [None]),
                 (Filters.MultiPhysicalExpansionFilter(['LoB', 'LotN']),
-                    ['Abombwe','.44 Magnum', 'Abebe', 'AK-47', 'Abdelsobek',
+                    ['Abombwe', '.44 Magnum', 'Abebe', 'AK-47', 'Abdelsobek',
                         u"Cedric", u"Cesewayo", u"Kabede Maru",
                         u"Predator's Communion", u"The Path of Blood",
                         u"The Slaughterhouse", u"Raven Spy",
@@ -450,7 +451,7 @@ class FilterTests(SutekhTest):
                 (Filters.MultiPhysicalExpansionFilter(
                     ['  Unspecified Expansion', 'VTES']),
                     self.aExpectedCards,
-                    [None,'VTES']),
+                    [None, 'VTES']),
         ]
 
         for tTest in aExpansionTests:
@@ -519,7 +520,7 @@ class FilterTests(SutekhTest):
                 (Filters.MultiPhysicalExpansionFilter(['LoB', 'LotN']),
                     Filters.FilterOrBox([
                         Filters.PhysicalExpansionFilter('LoB'),
-                        Filters.PhysicalExpansionFilter('LotN')]))
+                        Filters.PhysicalExpansionFilter('LotN')])),
                     ]
 
         for oFilter, oEquivFilter in aExpansionTests:
@@ -528,7 +529,6 @@ class FilterTests(SutekhTest):
                     oEquivFilter.select(PhysicalCard).distinct())
             self.assertEqual(aCards, aExpectedCards, "Filter Object %s"
                     " failed. %s != %s." % (oFilter, aCards, aExpectedCards))
-
 
     def test_card_set_filters(self):
         """Tests for the physical card set filters."""
@@ -618,7 +618,6 @@ class FilterTests(SutekhTest):
             self.assertEqual(aCSCards, aExpectedPhysCards, "Filter Object %s"
                     " failed. %s != %s." % (oFullFilter, aCSCards,
                         aExpectedPhysCards))
-
 
         aPCSCardsInUse = list(Filters.PhysicalCardSetInUseFilter([
             'Test 1']).select(PhysicalCard).distinct())

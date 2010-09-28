@@ -16,6 +16,7 @@ from sutekh.core.SutekhObjects import AbstractCard, PhysicalCardSet, \
 from sqlobject import sqlhub, connectionForURI
 from logging import FileHandler
 
+
 class DatabaseUpgradeTests(SutekhTest):
     """Class for the database upgrade tests."""
 

@@ -33,6 +33,7 @@ EXPECTED_1 = """"Test Set 1"
 "Path of Blood, The"
 """
 
+
 class ELDBDeckWriterTests(SutekhTest):
     """class for the ELDB deck writer tests"""
 

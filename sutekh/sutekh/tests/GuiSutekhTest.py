@@ -13,6 +13,7 @@ import tempfile, os
 from sutekh.gui.MultiPaneWindow import MultiPaneWindow
 from sutekh.gui.ConfigFile import ConfigFile
 
+
 class ConfigSutekhTest(SutekhTest):
     """Base class for Sutekh tests that need a config file.
 
@@ -40,6 +41,7 @@ class ConfigSutekhTest(SutekhTest):
         """Tear down config file stuff after test run"""
         os.rmdir(self.sImagesDir)
         super(ConfigSutekhTest, self).tearDown()
+
 
 class GuiSutekhTest(ConfigSutekhTest):
     """Base class for Sutekh tests that use the main window.

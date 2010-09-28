@@ -48,7 +48,7 @@ class AbstractCardSetParserTest(SutekhTest):
 
         oParser = AbstractCardSetParser()
 
-        sTempFileName =  self._create_tmp_file()
+        sTempFileName = self._create_tmp_file()
         fOut = open(sTempFileName, 'w')
         fOut.write(ACS_EXAMPLE_1)
         fOut.close()
@@ -78,7 +78,6 @@ class AbstractCardSetParserTest(SutekhTest):
         self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
             physicalCardID=oPhysCard2.id).count(),
             2)
-
 
         PhysicalCardSet.delete(oCardSet1.id)
         oFile = AbstractCardSetXmlFile()

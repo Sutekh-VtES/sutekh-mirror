@@ -24,11 +24,11 @@ class CardSetHolderTests(SutekhTest):
         # R0915, R0914: Want a long, sequential test case to minimise
         # Everything is in the database, so should be no problems
         dSet1 = {
-                '.44 Magnum' : [3, None],
-                'AK-47' : [2, 'LotN'],
-                'Abebe' : [3, 'LoB'],
-                'Abombwe' : [3, 'LoB'],
-                'Abbot' : [1, 'Third Edition']
+                '.44 Magnum': [3, None],
+                'AK-47': [2, 'LotN'],
+                'Abebe': [3, 'LoB'],
+                'Abombwe': [3, 'LoB'],
+                'Abbot': [1, 'Third Edition'],
                 }
         oCSH = CardSetHolder()
         aExpectedExpansions = []
@@ -40,7 +40,7 @@ class CardSetHolderTests(SutekhTest):
                 oThisExp = IExpansion(sExpName)
             else:
                 oThisExp = None
-            aExpectedExpansions.extend([oThisExp]*iCnt)
+            aExpectedExpansions.extend([oThisExp] * iCnt)
 
         aExpectedExpansions.sort()
         self.assertRaises(RuntimeError, oCSH.create_pcs)
@@ -90,8 +90,8 @@ class CardSetHolderTests(SutekhTest):
 
         # Misspelt cards - the default lookup should exclude these
         dSet2 = {
-                '.44 Magnum' : [3, None],
-                'Abede' : [3, 'LoB'],
+                '.44 Magnum': [3, None],
+                'Abede': [3, 'LoB'],
                 }
         oCSH = CardSetHolder()
         for sCardName, aInfo in dSet2.iteritems():
@@ -120,8 +120,8 @@ class CardSetHolderTests(SutekhTest):
         # Misspelt expansions - all cards should be added, but some with
         # None for the expansion
         dSet3 = {
-                'AK-47' : [2, 'Lords of the Knight'],
-                'Abebe' : [3, 'Legacy of Bllod'],
+                'AK-47': [2, 'Lords of the Knight'],
+                'Abebe': [3, 'Legacy of Bllod'],
                 }
 
         oCSH = CardSetHolder()
@@ -129,7 +129,7 @@ class CardSetHolderTests(SutekhTest):
             iCnt, sExpName = aInfo
             oCSH.add(iCnt, sCardName, sExpName)
 
-        aExpectedExpansions = [None]*5
+        aExpectedExpansions = [None] * 5
 
         # Also check parent warnings
         oCSH.parent = 'Test Set 5'
@@ -159,7 +159,6 @@ class CardSetHolderTests(SutekhTest):
         aExpansions.sort()
         self.assertEqual(aExpansions, aExpectedExpansions)
 
-
     def test_cache(self):
         """Cached card set holder tests."""
         # pylint: disable-msg=E1101, R0915, R0914
@@ -167,11 +166,11 @@ class CardSetHolderTests(SutekhTest):
         # R0915, R0914: Want a long, sequential test case to minimise
         # Everything is in the database, so should be no problems
         dSet1 = {
-                '.44 Magnum' : [3, None],
-                'AK-47' : [2, 'LotN'],
-                'Abebe' : [3, 'LoB'],
-                'Abombwe' : [3, 'LoB'],
-                'Abbot' : [1, 'Third Edition']
+                '.44 Magnum': [3, None],
+                'AK-47': [2, 'LotN'],
+                'Abebe': [3, 'LoB'],
+                'Abombwe': [3, 'LoB'],
+                'Abbot': [1, 'Third Edition'],
                 }
         oCSH = CachedCardSetHolder()
         aExpectedExpansions = []
@@ -184,7 +183,7 @@ class CardSetHolderTests(SutekhTest):
                 oThisExp = IExpansion(sExpName)
             else:
                 oThisExp = None
-            aExpectedExpansions.extend([oThisExp]*iCnt)
+            aExpectedExpansions.extend([oThisExp] * iCnt)
 
         aExpectedExpansions.sort()
         self.assertRaises(RuntimeError, oCSH.create_pcs)
@@ -239,8 +238,8 @@ class CardSetHolderTests(SutekhTest):
 
         # Misspelt cards - the default lookup should exclude these
         dSet2 = {
-                '.44 Magnum' : [3, None],
-                'Abede' : [3, 'LoB'],
+                '.44 Magnum': [3, None],
+                'Abede': [3, 'LoB'],
                 }
         oCSH = CachedCardSetHolder()
         for sCardName, aInfo in dSet2.iteritems():
@@ -271,8 +270,8 @@ class CardSetHolderTests(SutekhTest):
         # Misspelt expansions - all cards should be added, but some with
         # None for the expansion
         dSet3 = {
-                'AK-47' : [2, 'Lords of the Knight'],
-                'Abebe' : [3, 'Legacy of Bllod'],
+                'AK-47': [2, 'Lords of the Knight'],
+                'Abebe': [3, 'Legacy of Bllod'],
                 }
         dLookupCache = {}
 
@@ -281,7 +280,7 @@ class CardSetHolderTests(SutekhTest):
             iCnt, sExpName = aInfo
             oCSH.add(iCnt, sCardName, sExpName)
 
-        aExpectedExpansions = [None]*5
+        aExpectedExpansions = [None] * 5
 
         oCSH.name = 'Test Set 4'
         oCSH.create_pcs(dLookupCache=dLookupCache)

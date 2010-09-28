@@ -23,6 +23,7 @@ The Siamese
 The Path of Blood
 """
 
+
 class JOLWriterTests(SutekhTest):
     """class for the JOL deck writer tests"""
 

@@ -25,7 +25,7 @@ class TestIdentifyXMLFile(SutekhTest):
         # test IO
         sExample = make_example_pcxml()
 
-        sTempFileName =  self._create_tmp_file()
+        sTempFileName = self._create_tmp_file()
         fOut = open(sTempFileName, 'w')
         fOut.write(sExample)
         fOut.close()

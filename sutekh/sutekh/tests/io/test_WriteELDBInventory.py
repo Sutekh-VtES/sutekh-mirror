@@ -83,6 +83,7 @@ EXPECTED = """"ELDB - Inventory"
 "Motivated by Gehenna",0,0,"","Library"
 """
 
+
 class ELDBInventoryWriterTests(SutekhTest):
     """class for the ELDB Inventory writer tests"""
 

@@ -11,6 +11,7 @@ import StringIO
 from sutekh.tests.TestCore import SutekhTest, DummyHolder
 from sutekh.io.SLDeckParser import SLDeckParser
 
+
 class TestSLDeckParser(SutekhTest):
     """Class for the Secret Library deck parser tests"""
 

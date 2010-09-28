@@ -20,6 +20,7 @@ from sutekh.core.CardSetUtilities import delete_physical_card_set
 import unittest
 import zipfile
 
+
 class ZipFileWrapperTest(SutekhTest):
     """class for the Zip File tests"""
 
@@ -27,7 +28,7 @@ class ZipFileWrapperTest(SutekhTest):
         """Test zip file handling"""
         # pylint: disable-msg=E1101
         # E1101: SQLObject + PyProtocols magic confuses pylint
-        sTempFileName =  self._create_tmp_file()
+        sTempFileName = self._create_tmp_file()
         oZipFile = ZipFileWrapper(sTempFileName)
         aPhysCards = get_phys_cards()
 
@@ -104,7 +105,7 @@ class ZipFileWrapperTest(SutekhTest):
         """Check read_single_works"""
         # pylint: disable-msg=E1101
         # E1101: SQLObject + PyProtocols magic confuses pylint
-        sTempFileName =  self._create_tmp_file()
+        sTempFileName = self._create_tmp_file()
         oZipFile = ZipFileWrapper(sTempFileName)
         aPhysCards = get_phys_cards()
 
@@ -136,7 +137,7 @@ class ZipFileWrapperTest(SutekhTest):
         sPhysicalCards = make_example_pcxml()
 
         oHandler = SutekhCountLogHandler()
-        sTempFileName =  self._create_tmp_file()
+        sTempFileName = self._create_tmp_file()
         oZipFile = zipfile.ZipFile(sTempFileName, 'w')
         oZipFile.writestr('PhysicalCardList.xml', sPhysicalCards)
         oZipFile.writestr('acs_set_1.xml', ACS_EXAMPLE_1)

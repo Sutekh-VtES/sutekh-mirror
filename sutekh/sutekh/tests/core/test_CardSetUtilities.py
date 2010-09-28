@@ -12,6 +12,7 @@ from sutekh.core.CardSetUtilities import delete_physical_card_set, \
         get_loop_names, detect_loop, find_children, break_loop
 import unittest
 
+
 class CardSetUtilTests(SutekhTest):
     """class for the Card Set Utility tests"""
 

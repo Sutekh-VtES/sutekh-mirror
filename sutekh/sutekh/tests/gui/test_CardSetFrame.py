@@ -12,9 +12,9 @@ import gtk
 from sutekh.core.SutekhObjects import PhysicalCardSet, IPhysicalCard
 from sutekh.tests.core.test_Filters import make_card
 
+
 class TestCardSetFrame(GuiSutekhTest):
     """Class for the MultiPanewindow test cases"""
-
 
     # pylint: disable-msg=R0201
     # I prefer to have these as methods
@@ -23,7 +23,7 @@ class TestCardSetFrame(GuiSutekhTest):
         """Find cards by name and expansion in the frame and select them"""
         oModel = oFrame.view.get_model()
         oSelection = oFrame.view.get_selection()
-        oFrame.view.expand_all() # needed so we can select deeper entries
+        oFrame.view.expand_all()  # needed so we can select deeper entries
         oSelection.unselect_all()
         # Walk the model, tracking the paths we wish to select
         oIter = oModel.get_iter_root()
@@ -204,10 +204,10 @@ class TestCardSetFrame(GuiSutekhTest):
         for oPath in aExp1[::4]:
             oFrame.view.expand_to_path(oPath)
         aExp1 = self.get_expanded(oFrame.view)
-        self.assertNotEqual(aExp1, aExp2) # We have changed the paths
+        self.assertNotEqual(aExp1, aExp2)  # We have changed the paths
         oFrame.reload()
         aExp2 = self.get_expanded(oFrame.view)
-        self.assertEqual(aExp1, aExp2) # But reload has retained the new state
+        self.assertEqual(aExp1, aExp2)  # But reload has retained the new state
 
 
 if __name__ == "__main__":

@@ -5,4 +5,3 @@
 # GPL - see COPYING for details
 
 """This is the sutekh.core tests package"""
-

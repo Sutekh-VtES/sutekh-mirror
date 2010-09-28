@@ -44,10 +44,10 @@ http://www.example.url/in/description"
 "Path of Blood, The"
 """
 
+
 # Needs to be a SutekhTestCase so the name mapping cache test works
 class TestELDBDeckFileParser(SutekhTest):
     """class for the ELDB deck file parser tests"""
-
 
     def test_basic(self):
         """Run the input test."""
@@ -65,7 +65,7 @@ class TestELDBDeckFileParser(SutekhTest):
         self.assertEqual(len(aCards), 8)
         self.failUnless(("Test Vamp 1", 2) in aCards)
         self.failUnless((u"L\xe1z\xe1r Dobrescu", 1) in aCards)
-        self.failUnless(("Test Card 1", 2 ) in aCards)
+        self.failUnless(("Test Card 1", 2) in aCards)
         self.failUnless(("Test Card 2", 4) in aCards)
         self.failUnless(("Test Card 3", 12) in aCards)
         self.failUnless(("Test Card 4", 1) in aCards)

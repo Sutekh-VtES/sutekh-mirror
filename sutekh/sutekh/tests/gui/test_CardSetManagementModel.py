@@ -27,6 +27,7 @@ class DummyWindow(object):
         """Proxy for the find_cs_pane_by_Set_name method"""
         return self.find_pane_by_name(sName)
 
+
 class CardSetManagementModelTests(SutekhTest):
     """Class for the test cases"""
 
@@ -88,8 +89,3 @@ class CardSetManagementModelTests(SutekhTest):
         self.assertEqual(oModel.get_path_from_name('Sib'), None)
         self.assertEqual(oModel.get_path_from_name('Child 2 Branch'), (0, 0))
         self.assertEqual(oModel.get_path_from_name('Child 2 Card Set 0'), None)
-
-
-
-
-

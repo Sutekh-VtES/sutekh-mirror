@@ -17,6 +17,7 @@ import tempfile
 import os
 import StringIO
 
+
 class SutekhTest(unittest.TestCase):
     """Base class for Sutekh tests.
 
@@ -43,7 +44,6 @@ class SutekhTest(unittest.TestCase):
             fTmp.close()
 
         return sFilename
-
 
     # pylint: disable-msg=C0103
     # setUp + tearDown names are needed by unittest - use their convention

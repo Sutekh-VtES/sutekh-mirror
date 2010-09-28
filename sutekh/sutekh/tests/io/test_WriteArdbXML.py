@@ -99,6 +99,7 @@ Put this card in play. Cards that require Quietus [qui] cost Assamites 1 less bl
 </deck>""" % (WriteArdbXML.sDatabaseVersion, SutekhInfo.VERSION_STR)
 # pylint: enable-msg=W0511, C0301
 
+
 class ArdbXMLWriterTests(SutekhTest):
     """class for the ARDB deck XML writer tests"""
 

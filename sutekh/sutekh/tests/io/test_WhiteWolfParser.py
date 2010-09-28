@@ -13,6 +13,7 @@ from sutekh.core.SutekhObjects import AbstractCard, IAbstractCard, \
 from sqlobject import SQLObjectNotFound
 import unittest
 
+
 class WhiteWolfParserTests(SutekhTest):
     """Test class for the white wolf card reader.
 
@@ -89,7 +90,6 @@ class WhiteWolfParserTests(SutekhTest):
         u"Vox Domini",
         u"Yvette, The Hopeless",
         ]
-
 
     def test_basic(self):
         """Basic WW list parser tests"""

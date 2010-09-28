@@ -23,6 +23,7 @@ Crypt:
 1\tSiamese, The
 """
 
+
 class LackeyWriterTests(SutekhTest):
     """class for the Lackey CCG deck writer tests"""
 
