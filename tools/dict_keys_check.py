@@ -15,6 +15,7 @@ from pylint.interfaces import IASTNGChecker
 from pylint.checkers import BaseChecker
 from logilab import astng
 
+
 # pylint: disable-msg=R0904
 # Handling three cases, so we exceed the 20 method pylint limit
 class MyDictKeyChecker(BaseChecker):
@@ -33,7 +34,7 @@ class MyDictKeyChecker(BaseChecker):
         """Grunt work of the test"""
         if not hasattr(oNode, 'list'):
             # Later pylint is different. Bother
-            oForObject = list(oNode.get_children())[1] # part we want
+            oForObject = list(oNode.get_children())[1]  # part we want
             if type(oForObject) is astng.CallFunc:
                 # Check if name is keys
                 oChild = list(oForObject.get_children())[0]
@@ -78,7 +79,7 @@ class MyDictKeyChecker(BaseChecker):
     #    for oYY in ['a', 'b', 'c']:
     #        print oYY
 
+
 def register(oLinter):
     """required method to auto register this checker"""
     oLinter.register_checker(MyDictKeyChecker(oLinter))
-

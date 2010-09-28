@@ -16,6 +16,7 @@ from pylint.interfaces import IASTNGChecker
 from pylint.checkers import BaseChecker
 from logilab import astng
 
+
 def _get_child_nodes(oNode):
     """Get the child nodes"""
     # Work around differing pylint versions
@@ -25,6 +26,7 @@ def _get_child_nodes(oNode):
         return oNode.get_children()
     else:
         return []
+
 
 class MyPyProtocolsChecker(BaseChecker):
     """Check for PyProtocols advises syntax
@@ -42,7 +44,7 @@ class MyPyProtocolsChecker(BaseChecker):
     priority = -1
     # We need to have a msgid or reportid, otherwise newer pylints don't
     # add this to the enable checker list
-    msgs = {'C6789' : ('PyProtocols Interface checker dummy message',
+    msgs = {'C6789': ('PyProtocols Interface checker dummy message',
         ('Dummy message to prevent pylint optimising us out')),
         }
 
@@ -144,7 +146,7 @@ class MyPyProtocolsChecker(BaseChecker):
 #    def __new__(cls, sName):
 #        return sName
 
+
 def register(oLinter):
     """required method to auto register this checker"""
     oLinter.register_checker(MyPyProtocolsChecker(oLinter))
-

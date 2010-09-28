@@ -18,6 +18,7 @@ import sys
 import re
 import os
 
+
 def parse_options(aArgs):
     """Parse aArgs for the options to the script"""
     oParser = optparse.OptionParser(usage="usage %prog [options]",
@@ -26,6 +27,7 @@ def parse_options(aArgs):
             type="string", dest="sFileName", default=None,
             help="File to check")
     return oParser, oParser.parse_args(aArgs)
+
 
 def search_file(oFile, dScores, aWrongCopyrights, sFileName):
     """Loop through the comments header and assign the scores."""
@@ -81,6 +83,7 @@ def search_file(oFile, dScores, aWrongCopyrights, sFileName):
 
     return bValidCoding
 
+
 def print_search_results(dScores, aWrongCopyrights, bValidCoding, sFileName):
     """Display any errors found in the file"""
     if dScores['filename'] < 1:
@@ -119,12 +122,14 @@ def print_search_results(dScores, aWrongCopyrights, bValidCoding, sFileName):
         print '%s: One of the coding lines must be in " \
                 "the 1st 2 lines of the file' % sFileName
 
+
 def score_failed(dScores):
     """Test if the file fails the test criteria"""
     return (dScores['coding lines'] == 1 | dScores['copyright'] == 1 |
             dScores['modeline'] == 1 | dScores['license'] == 1 |
             dScores['filename'] == 1 | dScores['encoding'] == 2 |
             dScores['wrong copyright'] == 0)
+
 
 def file_check(sFileName):
     """Actully do the checks. sFileName is the file to check."""
@@ -135,13 +140,13 @@ def file_check(sFileName):
         return False
 
     dScores = {
-            'copyright' : 0,
-            'license' : 0,
-            'modeline' : 0,
-            'coding lines' : 0,
-            'encoding' : 0,
-            'filename' : 0,
-            'wrong copyright' : 0,
+            'copyright': 0,
+            'license': 0,
+            'modeline': 0,
+            'coding lines': 0,
+            'encoding': 0,
+            'filename': 0,
+            'wrong copyright': 0,
             }
     aWrongCopyrights = []
 
@@ -153,6 +158,7 @@ def file_check(sFileName):
 
     return not (score_failed(dScores) | bValidCoding)
 
+
 def main(aArgs):
     """Main function. Parse aArgs for the filename, and call file_check."""
     oOptParser, (oOpts, aArgs) = parse_options(aArgs)
@@ -161,10 +167,9 @@ def main(aArgs):
         oOptParser.print_help()
         return 1
     if not file_check(oOpts.sFileName):
-        return 1 # fail
+        return 1  # fail
 
     return 0
 
 if __name__ == "__main__":
     sys.exit(main(sys.argv))
-
