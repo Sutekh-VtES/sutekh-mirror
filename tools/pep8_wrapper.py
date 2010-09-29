@@ -74,6 +74,7 @@ class PEP8Checker(BaseChecker):
             'C5713': ("No newline at end of file", ['W292']),
             'C5714': ("Whitespace before '{', '[' or '('", ['E211']),
             'C5715': ("Spaces around keyword / parameter =", ['E251']),
+            'C5716': ("Multiple imports on one line", ['E401']),
             }
     options = ()
 
