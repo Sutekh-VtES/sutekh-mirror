@@ -32,6 +32,7 @@ from sutekh.io.ZipFileWrapper import ZipFileWrapper
 from sutekh.io.WwFile import WwFile
 from sutekh.SutekhInfo import SutekhInfo
 
+
 def parse_options(aArgs):
     """Handle the command line options"""
     oOptParser = optparse.OptionParser(usage="usage: %prog [options]",
@@ -132,6 +133,7 @@ def parse_options(aArgs):
 
     return oOptParser, oOptParser.parse_args(aArgs)
 
+
 def print_card_details(oCard, sEncoding):
     """Print the details of a given card"""
     # pylint: disable-msg=E1101, R0912
@@ -177,7 +179,8 @@ def print_card_details(oCard, sEncoding):
         else:
             print 'Virtue: %s' % ' / '.join([oC.fullname for oC in
                 oCard.virtue])
-    print format_text(oCard.text.encode(sEncoding,'xmlcharrefreplace'))
+    print format_text(oCard.text.encode(sEncoding, 'xmlcharrefreplace'))
+
 
 def run_filter(oFilter, oCardSet, bDetailed, sEncoding):
     """Run the given filter, printing the results as required"""
@@ -205,11 +208,12 @@ def run_filter(oFilter, oCardSet, bDetailed, sEncoding):
         if oCardSet:
             iCnt = dResults[oCard]
             print '%3d x %s' % (iCnt,
-                    oCard.name.encode(sEncoding,'xmlcharrefreplace'))
+                    oCard.name.encode(sEncoding, 'xmlcharrefreplace'))
         else:
-            print oCard.name.encode(sEncoding,'xmlcharrefreplace')
+            print oCard.name.encode(sEncoding, 'xmlcharrefreplace')
         if bDetailed:
             print_card_details(oCard, sEncoding)
+
 
 def main_with_args(aTheArgs):
     """
@@ -371,6 +375,7 @@ def main_with_args(aTheArgs):
         attempt_database_upgrade(oLogHandler)
 
     return 0
+
 
 def main():
     """

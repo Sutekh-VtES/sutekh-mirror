@@ -19,7 +19,6 @@ from sutekh.gui.SutekhDialog import do_complaint_error
 from sutekh.SutekhInfo import SutekhInfo
 import sys, optparse, os, traceback
 
-# Script Launching
 
 def parse_options(aArgs):
     """SutekhGui's option parsing"""
@@ -48,6 +47,7 @@ def parse_options(aArgs):
             help="File to log messages to. Defaults to no logging")
     return oOptParser, oOptParser.parse_args(aArgs)
 
+
 def exception_handler(oType, oValue, oTraceback):
     """sys.excepthook exception handler."""
     if oType == KeyboardInterrupt:
@@ -73,6 +73,7 @@ def exception_handler(oType, oValue, oTraceback):
     oErrorDlg.run()
     oErrorDlg.destroy()
 
+
 def setup_logging(oOpts):
     """Setup the log handling for this run"""
     # Only log critical messages by default
@@ -89,7 +90,7 @@ def setup_logging(oOpts):
             except IOError:
                 oLogHandler = logging.StreamHandler(sys.stderr)
                 oRootLogger.addHandler(oLogHandler)
-                bSkipVerbose = True # Avoid doubled logging to stderr
+                bSkipVerbose = True  # Avoid doubled logging to stderr
                 logging.error('Unable to open log file, logging to stderr',
                         exc_info=1)
         if oOpts.verbose and not bSkipVerbose:
@@ -101,6 +102,7 @@ def setup_logging(oOpts):
         oLogHandler = logging.StreamHandler(sys.stderr)
         oRootLogger.addHandler(oLogHandler)
     return oRootLogger
+
 
 def main():
     """Start the Sutekh Gui.
@@ -173,7 +175,7 @@ def main():
 
     if not oVer.check_tables_and_versions(aTables, aVersions) and \
             not oOpts.ignore_db_version:
-        aLowerTables, aHigherTables =  oVer.get_bad_tables(aTables, aVersions)
+        aLowerTables, aHigherTables = oVer.get_bad_tables(aTables, aVersions)
         if not do_db_upgrade(aLowerTables, aHigherTables):
             return 1
 
@@ -190,5 +192,3 @@ def main():
 
 if __name__ == "__main__":
     sys.exit(main())
-
-
