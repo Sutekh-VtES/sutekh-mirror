@@ -83,10 +83,13 @@ class PEP8Checker(BaseChecker):
         # msgs is the pylint required name
         self.msgs = {}
         for sPylint, tData in self.mapping.iteritems():
-            sMsg = 'pep8 %s: %s : (position %%d)' % (','.join(tData[1]),
+            sMsg = 'pep8 %s: %s : (position %%d)%%s' % (','.join(tData[1]),
                     tData[0])
             self.msgs[sPylint] = (sMsg, sMsg)
         super(PEP8Checker, self).__init__(oLinter)
+        pep8.options = DummyOptions()
+        pep8.options.fix_checks()
+        self.oChecker = None
 
     def _transform_error(self, iLineNo, iOffset, sMessage, _oCheck):
         """Monkey patch pep8's message handling.
@@ -99,18 +102,22 @@ class PEP8Checker(BaseChecker):
             aMapping = tData[1]
             if sCode in aMapping:
                 if iOffset:
-                    self.add_message(sPylint, line=iLineNo, args=iOffset)
+                    # Add pretty match marker, like pylint's format checker
+                    sLine = self.oChecker.lines[iLineNo - 1]
+                    sCaret = ' ' * (iOffset - 1) + '^^^'
+                    # We rely on the newline at the end of sLine here
+                    sUnderline = '\n%s%s' % (sLine, sCaret)
+                    self.add_message(sPylint, line=iLineNo,
+                            args=(iOffset, sUnderline))
                 else:
-                    self.add_message(sPylint, line=iLineNo, args=1)
+                    self.add_message(sPylint, line=iLineNo, args=(1, ''))
 
     def process_module(self, aStream):
         """process a module."""
-        pep8.options = DummyOptions()
-        pep8.options.fix_checks()
-        oChecker = pep8.Checker(None)
-        oChecker.lines = list(aStream)
-        oChecker.report_error = self._transform_error
-        oChecker.check_all()
+        self.oChecker = pep8.Checker(None)
+        self.oChecker.lines = list(aStream)
+        self.oChecker.report_error = self._transform_error
+        self.oChecker.check_all()
 
 
 def register(oLinter):
