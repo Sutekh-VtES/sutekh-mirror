@@ -591,6 +591,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
              gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
 
         aKnownExpansions = list(Expansion.select())
+        aKnownExpansions.sort(key=lambda x: x.name)
 
         oMesgLabel1 = gtk.Label("While importing %s\n"
                 "The following expansions could not be found:\n"
