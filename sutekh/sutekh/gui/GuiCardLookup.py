@@ -43,6 +43,7 @@ class DummyController(object):
         """Ignore card text updates."""
         pass
 
+
 class ACLLookupView(PhysicalCardView):
     """Specialised version for the Card Lookup."""
     # pylint: disable-msg=R0904
@@ -63,6 +64,7 @@ class ACLLookupView(PhysicalCardView):
             sNewName, _sExpansion, _iCount, _iDepth = \
                 oModel.get_all_from_path(oPath)
         return sNewName, ''
+
 
 class PCLLookupView(PhysicalCardView):
     """Also show current allocation of cards in the physical card view."""
@@ -86,6 +88,7 @@ class PCLLookupView(PhysicalCardView):
         if sExpansion is None:
             sExpansion = ''
         return sNewName, sExpansion
+
 
 class ReplacementTreeView(gtk.TreeView):
     """A TreeView which tracks the current set of replacement cards."""
@@ -111,20 +114,20 @@ class ReplacementTreeView(gtk.TreeView):
         self.oCardListView = oCardListView
         self.oModel = oModel
         self.oFilterToggleButton = oFilterToggleButton
-        self.set_enable_search(False) # Not much point searching this tree
+        self.set_enable_search(False)  # Not much point searching this tree
 
         self._create_text_column('Missing Card', 1)
         self._create_text_column('Replace Card', 2)
 
         self._create_button_column(gtk.STOCK_OK, 'Set',
                 'Use the selected card',
-                self._set_to_selection) # use selected card
+                self._set_to_selection)  # use selected card
         self._create_button_column(gtk.STOCK_REMOVE, 'Ignore',
                 'Ignore the current card',
-                self._set_ignore) # ignore current card
+                self._set_ignore)  # ignore current card
         self._create_button_column(gtk.STOCK_FIND, 'Filter',
                 'Filter on best guess',
-                self._set_filter) # filter out best guesses
+                self._set_filter)  # filter out best guesses
 
         self.set_property('has-tooltip', True)
         self.connect('query-tooltip', self._show_tooltip)
@@ -178,7 +181,7 @@ class ReplacementTreeView(gtk.TreeView):
 
         # We handle PhysicalCards on a like-for-like matching case.
         # For cases where the user selects an expansion with too few
-        # cards, but where there are enough phyiscal cards, we do the
+        # cards, but where there are enough physical cards, we do the
         # best we can
 
         oIter = self.oModel.get_iter(oPath)
@@ -238,6 +241,7 @@ class ReplacementTreeView(gtk.TreeView):
         oMatch = cls.NAME_RE.match(sName)
         assert oMatch is not None
         return oMatch.group('name'), oMatch.group('exp')
+
 
 class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
     """Lookup AbstractCards. Use the user as the AI if a simple lookup fails.
@@ -312,7 +316,8 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
                 oExpansion = dNameExps[sExpansionName]
                 if iCnt > 0:
                     try:
-                        aCards.extend([IPhysicalCard((oAbs, oExpansion))]*iCnt)
+                        aCards.extend(
+                                [IPhysicalCard((oAbs, oExpansion))] * iCnt)
                     except SQLObjectNotFound:
                         dUnknownCards[(oAbs.name, sExpansionName)] = iCnt
 
@@ -418,7 +423,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
                     # Find First physical card that matches this name
                     # that's not in aPhysCards
                     oPhys = self._lookup_new_phys_card(sNewName, sNewExpName)
-                    aPhysCards.extend([oPhys]*iCnt)
+                    aPhysCards.extend([oPhys] * iCnt)
 
                 oIter = oModel.iter_next(oIter)
             return True
@@ -453,7 +458,6 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
         oUnknownDialog.vbox.pack_start(oMesgLabel2)
 
         return oUnknownDialog, oHBox
-
 
     def _fill_dialog(self, oHBox, oView):
         """Handle the view setup and default buttons for the lookup
@@ -498,7 +502,6 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
         oFilterButtons.pack_start(oFilterDialogButton)
         oFilterButtons.pack_start(oFilterApplyButton)
         oFilterButtons.pack_start(oSearchButton)
-
 
         oFilterDialogButton.connect("clicked",
             oReplacementView.run_filter_dialog)
