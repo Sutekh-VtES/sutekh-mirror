@@ -16,8 +16,8 @@ from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint, \
         do_complaint_error
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 
-# helper functions
 
+# helper functions and classes
 class CardInfo(object):
     """Helper class to hold card set info"""
     def __init__(self):
@@ -27,6 +27,7 @@ class CardInfo(object):
     def format_cs(self):
         """Pretty print card set list"""
         return ", ".join(self.dCardSets)
+
 
 def _get_cards(oCardSet, dCards):
     """Extract the abstract cards from the card set oCardSet"""
@@ -38,15 +39,17 @@ def _get_cards(oCardSet, dCards):
         dCards[oCard].dCardSets.setdefault(oCardSet.name, 0)
         dCards[oCard].dCardSets[oCardSet.name] += 1
 
+
 def _make_align_list(aList):
     """Wrap the list of strings in an aligned widget for display."""
     oLabel = gtk.Label()
     oAlign = gtk.Alignment()
     oAlign.add(oLabel)
-    oAlign.set_padding(0, 0, 5, 0) # offset a little from the left edge
+    oAlign.set_padding(0, 0, 5, 0)  # offset a little from the left edge
     sContents = "\n".join(aList)
     oLabel.set_markup(sContents)
     return oAlign
+
 
 def _display_results(dMissing, oParentCS):
     """Display the list of missing cards"""
@@ -91,6 +94,7 @@ def _display_results(dMissing, oParentCS):
     oResultDlg.run()
     oResultDlg.destroy()
 
+
 def _test_card_sets(aCardSetNames, oParentCS):
     """Test if the Card Sets are actaully independent by
        looking for cards common to the sets"""
@@ -114,6 +118,7 @@ def _test_card_sets(aCardSetNames, oParentCS):
         sMessage = "No cards missing from %s" % oParentCS.name
         do_complaint(sMessage, gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, True)
 
+
 class CardSetIndependence(SutekhPlugin):
     """Provides a plugin for testing whether card sets are independant.
 
@@ -125,7 +130,7 @@ class CardSetIndependence(SutekhPlugin):
        particularly sensible to say there. We also don't do anything
        when there is only 1 child, for similiar justification.
        """
-    dTableVersions = {PhysicalCardSet : [4, 5, 6]}
+    dTableVersions = {PhysicalCardSet: [4, 5, 6]}
     aModelsSupported = [PhysicalCardSet]
 
     def get_menu_item(self):
@@ -200,7 +205,7 @@ class CardSetIndependence(SutekhPlugin):
         """Handle the response from the dialog."""
         # pylint: disable-msg=E1101
         # Pyprotocols confuses pylint
-        if oResponse ==  gtk.RESPONSE_OK:
+        if oResponse == gtk.RESPONSE_OK:
             if self.oInUseButton.get_active():
                 oInUseSets = PhysicalCardSet.selectBy(
                         parentID=self.oThisCardSet.parent.id, inuse=True)

@@ -16,6 +16,7 @@ from sutekh.gui.CardSetsListView import CardSetsListView
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 from sutekh.gui.GuiCardSetFunctions import create_card_set
 
+
 def _get_card_set_list(aCardSetNames, bIgnoreExpansions):
     """Get the differences and common cards for the card sets."""
     # Only compare abstract cards
@@ -34,10 +35,10 @@ def _get_card_set_list(aCardSetNames, bIgnoreExpansions):
                     oKey = (oCard, oAbsCard.name, oCard.expansion.name)
                 else:
                     oKey = (oAbsCard, oAbsCard.name, 'Unspecified Expansion')
-            dFullCardList.setdefault(oKey, {aCardSetNames[0] : 0,
-                aCardSetNames[1] : 0})
+            dFullCardList.setdefault(oKey, {aCardSetNames[0]: 0,
+                aCardSetNames[1]: 0})
             dFullCardList[oKey][sCardSetName] += 1
-    dDifferences = { aCardSetNames[0] : {}, aCardSetNames[1] : {} }
+    dDifferences = {aCardSetNames[0]: {}, aCardSetNames[1]: {}}
     dCommon = {}
     for tCardInfo in dFullCardList:
         iDiff = dFullCardList[tCardInfo][aCardSetNames[0]] - \
@@ -61,7 +62,7 @@ class CardSetCompare(SutekhPlugin):
        Display a gtk.Notebook containing tabs for common cards, and cards
        only in each of the card sets.
        """
-    dTableVersions = {PhysicalCardSet : [5, 6]}
+    dTableVersions = {PhysicalCardSet: [5, 6]}
     aModelsSupported = [PhysicalCardSet]
 
     def get_menu_item(self):
@@ -95,7 +96,7 @@ class CardSetCompare(SutekhPlugin):
 
     def handle_response(self, _oWidget, iResponse, oCSView, oIgnoreExpansions):
         """Handle response from the dialog."""
-        if iResponse ==  gtk.RESPONSE_OK:
+        if iResponse == gtk.RESPONSE_OK:
             aCardSetNames = [self.view.sSetName]
             sSet = oCSView.get_selected_card_set()
             if not sSet:
@@ -112,7 +113,7 @@ class CardSetCompare(SutekhPlugin):
             oLabel = gtk.Label()
             oAlign = gtk.Alignment()
             oAlign.add(oLabel)
-            oAlign.set_padding(0, 0, 5, 0) # offset a little from the left edge
+            oAlign.set_padding(0, 0, 5, 0)  # offset from the left edge
             oGroupedCards = self.model.groupby(dCardInfo, IAbstractCard)
             sContents = ""
             for sGroup, oGroupIter in oGroupedCards:
@@ -124,9 +125,9 @@ class CardSetCompare(SutekhPlugin):
                 for sCardName, sExpansion, iCount in aList:
                     sContents += u'\t%(num)d \u00D7 <span foreground =' \
                             ' "%(color)s"> %(name)s' % {
-                                    'num' : iCount,
-                                    'color' : sColor,
-                                    'name' : sCardName,
+                                    'num': iCount,
+                                    'color': sColor,
+                                    'name': sCardName,
                                     }
                     if sExpansion:
                         sContents += " (%s)</span>\n" % sExpansion
@@ -164,12 +165,12 @@ class CardSetCompare(SutekhPlugin):
         oPage = make_page(oComm, dCommon)
         oNotebook.append_page_menu(oPage, oHeading, gtk.Label(sTabText))
         oHeading = gtk.Label()
-        sTabText ='Cards only in %s' % aCardSetNames[0]
+        sTabText = 'Cards only in %s' % aCardSetNames[0]
         oHeading.set_markup('<span foreground = "red">%s</span>' % sTabText)
         oDiff1 = format_list(dDifferences[aCardSetNames[0]], 'red')
         oPage = make_page(oDiff1, dDifferences[aCardSetNames[0]])
         oNotebook.append_page_menu(oPage, oHeading, gtk.Label(sTabText))
-        sTabText ='Cards only in %s' % aCardSetNames[1]
+        sTabText = 'Cards only in %s' % aCardSetNames[1]
         oHeading = gtk.Label()
         oHeading.set_markup('<span foreground = "red">%s</span>' % sTabText)
         oDiff2 = format_list(dDifferences[aCardSetNames[1]], 'red')
@@ -187,7 +188,7 @@ class CardSetCompare(SutekhPlugin):
         """Create a card set from the card list"""
         sCSName = create_card_set(self.parent)
         if not sCSName:
-            return # User cancelled, so skip out
+            return  # User cancelled, so skip out
         oCardSet = IPhysicalCardSet(sCSName)
         for oCard in dCardData:
             _sCardName, sExpansionName, iCnt = dCardData[oCard]
