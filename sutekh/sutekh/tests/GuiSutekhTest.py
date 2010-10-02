@@ -9,7 +9,8 @@
 from sutekh.tests.TestCore import SutekhTest
 from nose import SkipTest
 import gtk
-import tempfile, os
+import tempfile
+import os
 from sutekh.gui.MultiPaneWindow import MultiPaneWindow
 from sutekh.gui.ConfigFile import ConfigFile
 

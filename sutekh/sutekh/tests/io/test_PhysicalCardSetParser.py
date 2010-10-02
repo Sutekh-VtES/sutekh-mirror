@@ -14,7 +14,8 @@ from sutekh.core.SutekhObjects import IPhysicalCardSet, \
 from sutekh.core.CardSetHolder import CardSetHolder
 from sutekh.io.PhysicalCardSetParser import PhysicalCardSetParser
 from sutekh.io.XmlFileHandling import PhysicalCardSetXmlFile
-import unittest, os
+import unittest
+import os
 from StringIO import StringIO
 
 PCS_EXAMPLE_1 = '<physicalcardset author="A test author" ' \
@@ -126,16 +127,16 @@ class PhysicalCardSetParserTests(SutekhTest):
 
         self.assertEqual(len(oPhysCardSet1.cards), 5)
         self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
-            physicalCardID = aAddedPhysCards[0].id).count(), 1)
+            physicalCardID=aAddedPhysCards[0].id).count(), 1)
         self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
-            physicalCardID = aAddedPhysCards[7].id).count(), 0)
+            physicalCardID=aAddedPhysCards[7].id).count(), 0)
         self.assertEqual(len(oPhysCardSet2.cards), 6)
         self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
-            physicalCardID = aAddedPhysCards[4].id).count(), 3)
+            physicalCardID=aAddedPhysCards[4].id).count(), 3)
         self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
-            physicalCardID = aAddedPhysCards[1].id).count(), 5)
+            physicalCardID=aAddedPhysCards[1].id).count(), 5)
         self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
-            physicalCardID = aAddedPhysCards[6].id).count(), 2)
+            physicalCardID=aAddedPhysCards[6].id).count(), 2)
 
         PhysicalCardSet.delete(oPhysCardSet2.id)
         oFile = PhysicalCardSetXmlFile()
@@ -192,16 +193,16 @@ class PhysicalCardSetParserTests(SutekhTest):
         oPhysCardSet3 = IPhysicalCardSet(CARD_SET_NAMES[2])
 
         self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
-            physicalCardID = aAddedPhysCards[7].id).count(), 0)
+            physicalCardID=aAddedPhysCards[7].id).count(), 0)
         self.assertEqual(len(oPhysCardSet2.cards), 6)
         self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
-            physicalCardID = aAddedPhysCards[4].id).count(), 3)
+            physicalCardID=aAddedPhysCards[4].id).count(), 3)
         self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
-            physicalCardID = aAddedPhysCards[0].id).count(), 1)
+            physicalCardID=aAddedPhysCards[0].id).count(), 1)
         self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
-            physicalCardID = aAddedPhysCards[1].id).count(), 5)
+            physicalCardID=aAddedPhysCards[1].id).count(), 5)
         self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
-            physicalCardID = aAddedPhysCards[6].id).count(), 2)
+            physicalCardID=aAddedPhysCards[6].id).count(), 2)
 
         self.assertEqual(oPhysCardSet2.annotations, None)
         self.assertEqual(oPhysCardSet3.annotations, 'Some annotations')

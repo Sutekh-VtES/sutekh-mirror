@@ -79,11 +79,11 @@ class PhysicalCardSetTests(SutekhTest):
 
         self.assertEqual(len(oPhysCardSet1.cards), 5)
         self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
-            physicalCardID = aAddedPhysCards[0].id).count(), 1)
+            physicalCardID=aAddedPhysCards[0].id).count(), 1)
         self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
-            physicalCardID = aAddedPhysCards[4].id).count(), 1)
+            physicalCardID=aAddedPhysCards[4].id).count(), 1)
         self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
-            physicalCardID = aAddedPhysCards[7].id).count(), 0)
+            physicalCardID=aAddedPhysCards[7].id).count(), 0)
 
         oPhysCardSet2 = PhysicalCardSet(name=CARD_SET_NAMES[1],
                 comment='Test 2', author=oPhysCardSet1.author)
@@ -98,11 +98,11 @@ class PhysicalCardSetTests(SutekhTest):
 
         self.assertEqual(len(oPhysCardSet2.cards), 5)
         self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
-            physicalCardID = aAddedPhysCards[0].id).count(), 1)
+            physicalCardID=aAddedPhysCards[0].id).count(), 1)
         self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
-            physicalCardID = aAddedPhysCards[4].id).count(), 2)
+            physicalCardID=aAddedPhysCards[4].id).count(), 2)
         self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
-            physicalCardID = aAddedPhysCards[7].id).count(), 1)
+            physicalCardID=aAddedPhysCards[7].id).count(), 1)
 
         oPhysCardSet3 = make_set_1()
         self.assertEqual(len(oPhysCardSet3.cards), len(aAddedPhysCards) + 2)
@@ -134,16 +134,16 @@ class PhysicalCardSetTests(SutekhTest):
             CARD_SET_NAMES[1])
 
         self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
-            physicalCardID = aAddedPhysCards[0].id).count(), 1)
+            physicalCardID=aAddedPhysCards[0].id).count(), 1)
         self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
-            physicalCardID = aAddedPhysCards[4].id).count(), 1)
+            physicalCardID=aAddedPhysCards[4].id).count(), 1)
 
         delete_physical_card_set(CARD_SET_NAMES[2])
 
         self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
-            physicalCardID = aAddedPhysCards[0].id).count(), 0)
+            physicalCardID=aAddedPhysCards[0].id).count(), 0)
         self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
-            physicalCardID = aAddedPhysCards[4].id).count(), 0)
+            physicalCardID=aAddedPhysCards[4].id).count(), 0)
 
 if __name__ == "__main__":
     unittest.main()

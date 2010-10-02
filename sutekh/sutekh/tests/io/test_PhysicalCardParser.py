@@ -14,7 +14,8 @@ from sutekh.core.CardSetHolder import CardSetHolder
 from sutekh.io.PhysicalCardParser import PhysicalCardParser
 from sutekh.io.XmlFileHandling import PhysicalCardXmlFile
 from sutekh.tests.core.test_PhysicalCardSet import ABSTRACT_CARDS
-import unittest, os
+import unittest
+import os
 from StringIO import StringIO
 
 LAST_WRITER_VERSION = "1.0"

@@ -179,10 +179,8 @@ class WhiteWolfParserTests(SutekhTest):
                 try:
                     oPair = IPhysicalCard((oAbs, oExp))
                 except SQLObjectNotFound:
-                    self.fail(
-                        "Missing physical card %s from expansion %s"
-                        % (oAbs.name, oExp.name)
-                    )
+                    self.fail("Missing physical card %s from expansion %s"
+                        % (oAbs.name, oExp.name))
 
         # Check Yvette
         oYvette = IAbstractCard(u"Yvette, The Hopeless")

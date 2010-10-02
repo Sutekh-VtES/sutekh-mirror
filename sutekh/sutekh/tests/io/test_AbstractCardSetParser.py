@@ -14,7 +14,8 @@ from sutekh.io.AbstractCardSetParser import AbstractCardSetParser
 from sutekh.io.XmlFileHandling import AbstractCardSetXmlFile
 from sutekh.tests.core.test_PhysicalCardSet import CARD_SET_NAMES, \
         ABSTRACT_CARDS
-import unittest, os
+import unittest
+import os
 from StringIO import StringIO
 
 ACS_EXAMPLE_1 = '<abstractcardset author="A test author" ' \

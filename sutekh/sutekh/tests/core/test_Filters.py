@@ -103,10 +103,8 @@ class FilterTests(SutekhTest):
                 try:
                     aPhysicalCards.append(IPhysicalCard((oAbs, oExp)))
                 except SQLObjectNotFound:
-                    self.fail(
-                        "Missing physical card %s from expansion %s"
-                        % (oAbs.name, oExp.name)
-                    )
+                    self.fail("Missing physical card %s from expansion %s"
+                        % (oAbs.name, oExp.name))
 
         oFullFilter = Filters.FilterAndBox([Filters.PhysicalCardFilter(),
                                             oFilter])
