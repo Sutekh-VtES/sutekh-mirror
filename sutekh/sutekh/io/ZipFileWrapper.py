@@ -25,12 +25,14 @@ from sutekh.io.AbstractCardSetParser import AbstractCardSetParser
 from sutekh.io.PhysicalCardSetWriter import PhysicalCardSetWriter
 from sutekh.io.IdentifyXMLFile import IdentifyXMLFile
 
+
 def _parse_string(oParser, sIn, oHolder):
     """Utitlity function for reading zip files.
 
        Allows oParser.parse to be called on a string."""
     oFile = StringIO(sIn)
     oParser.parse(oFile, oHolder)
+
 
 class ZipFileWrapper(object):
     """The zip file wrapper.
@@ -99,7 +101,7 @@ class ZipFileWrapper(object):
         oLogger = Logger('Restore zip file')
         if oLogHandler is not None:
             oLogger.addHandler(oLogHandler)
-            if hasattr(oLogHandler,'set_total'):
+            if hasattr(oLogHandler, 'set_total'):
                 oLogHandler.set_total(len(self.oZip.infolist()))
         # We do this so we can accomodate user created zipfiles,
         # that don't nessecarily have the ordering we want
@@ -191,7 +193,7 @@ class ZipFileWrapper(object):
         oLogger = Logger('Restore zip file')
         if oLogHandler is not None:
             oLogger.addHandler(oLogHandler)
-            if hasattr(oLogHandler,'set_total'):
+            if hasattr(oLogHandler, 'set_total'):
                 iTotal = PhysicalCardSet.select().count()
                 oLogHandler.set_total(iTotal)
         aPCSList = self.write_all_pcs_to_zip(oLogger)

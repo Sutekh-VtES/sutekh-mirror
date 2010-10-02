@@ -36,6 +36,7 @@ import re
 from sutekh.core.SutekhObjects import csv_to_canonical
 from sutekh.io.IOBase import CardSetParser
 
+
 class SLDeckParser(CardSetParser):
     """Parser for the Secret Library Web API deck format."""
 
@@ -51,7 +52,7 @@ class SLDeckParser(CardSetParser):
             'description': self._description_section,
             'crypt': self._crypt_section,
             'library': self._library_section,
-            'enddeck': self._no_section
+            'enddeck': self._no_section,
         }
 
     # section parsers

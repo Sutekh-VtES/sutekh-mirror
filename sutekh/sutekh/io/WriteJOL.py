@@ -21,6 +21,7 @@
 from sutekh.core.SutekhObjects import IAbstractCard
 from sutekh.core.ELDBUtilities import type_of_card
 
+
 class WriteJOL(object):
     """Create a string in JOL format representing a card set."""
 
@@ -37,7 +38,7 @@ class WriteJOL(object):
         """Process the card set, creating the lines as needed"""
         # pylint: disable-msg=E1101
         # pyprotocols confuses pylint
-        dCards = {'Crypt' : {}, 'Library' : {}}
+        dCards = {'Crypt': {}, 'Library': {}}
         sResult = ""
         for oCard in oHolder.cards:
             oAbsCard = IAbstractCard(oCard)

@@ -19,6 +19,7 @@
 
 from sutekh.io.IOBase import BaseSutekhXMLParser
 
+
 class PhysicalCardParser(BaseSutekhXMLParser):
     """Implement the PhysicalCard Parser.
 
@@ -39,4 +40,3 @@ class PhysicalCardParser(BaseSutekhXMLParser):
         for oElem in oRoot:
             if oElem.tag == 'card':
                 self._parse_card(oElem, oHolder)
-

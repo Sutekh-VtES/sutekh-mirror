@@ -120,4 +120,3 @@ class ARDBXMLInvParser(object):
                 oParser.feed(sLine)
         except ExpatError, oExp:
             raise IOError('Not an XML file: %s' % oExp)
-

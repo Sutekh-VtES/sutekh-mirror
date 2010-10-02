@@ -9,6 +9,7 @@
 
 import csv
 
+
 class CSVParser(object):
     """Parser cards from a CSV file into a CardSetHolder.
 
@@ -33,7 +34,7 @@ class CSVParser(object):
         """Extract the relevant data from a single row in the CSV file."""
         sName = aRow[self.iCardNameColumn].strip()
         if not sName:
-            return # skip rows with no name
+            return  # skip rows with no name
 
         try:
             iCount = int(aRow[self.iCountColumn])
@@ -64,4 +65,3 @@ class CSVParser(object):
             except ValueError, oExp:
                 raise ValueError("Line %d in CSV file could not be parsed"
                         " (%s)" % (oCsvFile.line_num, oExp))
-

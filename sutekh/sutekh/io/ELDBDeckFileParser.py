@@ -9,8 +9,8 @@
 
 from sutekh.core.ELDBUtilities import gen_name_lookups
 
-# State Classes
 
+# State Classes
 class State(object):
     """Base class for the State Objects."""
     def __init__(self, oHolder, dNameCache):
@@ -26,6 +26,7 @@ class State(object):
         """Add data to the state object."""
         self._sData += sData
 
+
 class Name(State):
     """State for extracting Name."""
     def transition(self, sLine):
@@ -36,6 +37,7 @@ class Name(State):
         sValue = sValue.strip('"')
         self._oHolder.name = sValue
         return Author(self._oHolder, self._dNameCache)
+
 
 class Author(State):
     """State for extracting Author."""
@@ -50,6 +52,7 @@ class Author(State):
             self._oHolder.author = sValue
         return Description(self._oHolder, self._dNameCache)
 
+
 class Description(State):
     """State for extracting description"""
     def transition(self, sLine):
@@ -63,6 +66,7 @@ class Description(State):
         else:
             self.data(sValue.strip('"') + '\n')
             return self
+
 
 class Cards(State):
     """State for extracting the cards"""
@@ -83,6 +87,7 @@ class Cards(State):
             sName = sCard
         self._oHolder.add(1, sName, None)
         return self
+
 
 class ELDBDeckFileParser(object):
     """Parser for the ELDB Deck format."""

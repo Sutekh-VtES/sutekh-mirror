@@ -17,10 +17,10 @@ except ImportError:
     from elementtree.ElementTree import parse, ElementTree
 from xml.parsers.expat import ExpatError
 
+
 # pylint: disable-msg=R0921, R0922
 # These may be referenced elsewhere, and mainly exist as interface
 # documentation, rather than genuine base classes
-
 class CardSetParser(object):
     """Parent class for card set parsers.
 
@@ -90,6 +90,7 @@ class BaseXMLParser(object):
             raise IOError('Not an XML file: %s' % oExp)
         self._convert_tree(oHolder)
 
+
 class BaseSutekhXMLParser(BaseXMLParser):
     # pylint: disable-msg=W0223
     # Doesn't matter that we don't overrider _convert_tree - subclasses will
@@ -143,8 +144,9 @@ class BaseLineParser(CardSetParser):
         for sLine in fIn:
             sLine = sLine.strip()
             if not sLine:
-                continue # skip blank lines
+                continue  # skip blank lines
             self._feed(sLine, oHolder)
+
 
 class BaseXMLWriter(CardSetWriter):
     """Base class for XML output"""
@@ -159,4 +161,3 @@ class BaseXMLWriter(CardSetWriter):
         oRoot = self._gen_tree(oHolder)
         pretty_xml(oRoot)
         ElementTree(oRoot).write(fOut)
-

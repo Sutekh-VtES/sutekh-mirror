@@ -25,6 +25,7 @@
 from sutekh.core.ELDBUtilities import norm_name
 from sutekh.SutekhUtility import is_crypt_card
 
+
 class WriteELDBDeckFile(object):
     """Create a string in ELDB deck format representing a card set."""
 

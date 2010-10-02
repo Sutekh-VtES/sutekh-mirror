@@ -9,6 +9,7 @@
 
 from sutekh.io.ARDBXMLInvParser import ARDBInvXMLState, ARDBXMLInvParser
 
+
 class ARDBDeckXMLState(ARDBInvXMLState):
     """Simple State tracker used by the XMLParser"""
     # tag states of interest
@@ -60,4 +61,3 @@ class ARDBXMLDeckParser(ARDBXMLInvParser):
     """Parser for the ARDB XML deck format."""
 
     _cState = ARDBDeckXMLState
-

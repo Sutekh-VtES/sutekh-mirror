@@ -24,13 +24,14 @@ import unicodedata
 from sutekh.core.ELDBUtilities import type_of_card
 from sutekh.core.SutekhObjects import canonical_to_csv, IAbstractCard
 
+
 def lackey_name(oCard):
     """Escape the card name to Lackey CCG's requirements"""
     sName = oCard.name
     if oCard.level is not None:
         sName = sName.replace("(Advanced)", "Adv.")
     sName = canonical_to_csv(sName)
-    sName = unicodedata.normalize('NFKD', sName).encode('ascii','ignore')
+    sName = unicodedata.normalize('NFKD', sName).encode('ascii', 'ignore')
     return sName
 
 
@@ -41,7 +42,7 @@ class WriteLackeyCCG(object):
     # Method for consistency
     def _gen_inv(self, oHolder):
         """Process the card set, creating the lines as needed"""
-        dCards = {'Crypt' : {}, 'Library' : {}}
+        dCards = {'Crypt': {}, 'Library': {}}
         sResult = ""
         for oCard in oHolder.cards:
             sType = type_of_card(IAbstractCard(oCard))

@@ -14,8 +14,8 @@ from sutekh.io.SutekhBaseHTMLParser import SutekhBaseHTMLParser, StateError, \
 from logging import Logger
 from sutekh.core.SutekhObjects import SutekhObjectMaker
 
-# Card Saver
 
+# Card Saver
 def _find_sect_and_title(aLines):
     """Search the first 2 lines of the card text for sect & title
        information.
@@ -94,6 +94,7 @@ def _find_sect_and_title(aLines):
             sTitle = 'Magaji'
     return sSect, sTitle
 
+
 class CardDict(dict):
     """Dictionary object which holds the extracted card info."""
 
@@ -107,96 +108,96 @@ class CardDict(dict):
     oCryptInfoRgx = re.compile(
             '[:\.] ([+-]\d) (bleed|strength|stealth|intercept)(?=\.)')
     dCryptProperties = {
-            'black hand' : re.compile('Sabbat\. Black Hand'),
+            'black hand': re.compile('Sabbat\. Black Hand'),
             # Seraph has a special case
-            'seraph' : re.compile('Sabbat\. Black Hand(\.)? Seraph'),
-            'infernal' : re.compile('[.:] Infernal\.'),
-            'red list' : re.compile('\. Red List:'),
-            'anarch' : re.compile('\. Anarch:'),
-            'scarce' : re.compile('[.:] Scarce.'),
-            'sterile' : re.compile('[.:] Sterile.'),
-            'blood cursed' : re.compile('[.:] \(?Blood Cursed'),
-            'not for legal play' : re.compile(
+            'seraph': re.compile('Sabbat\. Black Hand(\.)? Seraph'),
+            'infernal': re.compile('[.:] Infernal\.'),
+            'red list': re.compile('\. Red List:'),
+            'anarch': re.compile('\. Anarch:'),
+            'scarce': re.compile('[.:] Scarce.'),
+            'sterile': re.compile('[.:] Sterile.'),
+            'blood cursed': re.compile('[.:] \(?Blood Cursed'),
+            'not for legal play': re.compile(
                 '\{NOT FOR LEGAL PLAY\}|\{Added to the V:EKN banned list'),
             }
 
     # Properites we check for all library cards
     dLibProperties = {
-            'not for legal play' : re.compile(
+            'not for legal play': re.compile(
                 '\{NOT FOR LEGAL PLAY\}|\{Added to the V:EKN banned list'),
             }
 
     # Ally properties
     dAllyProperties = {
             # Red list allies are templated differently
-            'red list' : re.compile('\. Red List\.'),
+            'red list': re.compile('\. Red List\.'),
             }
     oLifeRgx = re.compile('(Unique )?\[?(Gargoyle creature|[A-Za-z]+)\]?'
             ' with (\d) life\.')
 
     # equipment properties
     dEquipmentProperties = {
-            'unique' : re.compile('Unique (melee )?weapon|Unique equipment|'
+            'unique': re.compile('Unique (melee )?weapon|Unique equipment|'
                 'represents a unique location'),
-            'location' : re.compile('represents a (unique )?location'),
-            'melee weapon' : re.compile('[mM]elee weapon\.'),
-            'cold iron' : re.compile('weapon\. Cold iron\.'),
-            'gun' : re.compile('[wW]eapon[:,.] [gG]un\.'),
-            'weapon' : re.compile('[wW]eapon[:,.] [gG]un\.|[mM]elee weapon\.|'
+            'location': re.compile('represents a (unique )?location'),
+            'melee weapon': re.compile('[mM]elee weapon\.'),
+            'cold iron': re.compile('weapon\. Cold iron\.'),
+            'gun': re.compile('[wW]eapon[:,.] [gG]un\.'),
+            'weapon': re.compile('[wW]eapon[:,.] [gG]un\.|[mM]elee weapon\.|'
                 'Weapon.|Unique weapon.'),
-            'vehicle' : re.compile('Vehicle\.'),
-            'haven' : re.compile('Haven\.'),
-            'electronic equipment' : re.compile('Electronic equipment.'),
+            'vehicle': re.compile('Vehicle\.'),
+            'haven': re.compile('Haven\.'),
+            'electronic equipment': re.compile('Electronic equipment.'),
             }
 
     # master properties
     dMasterProperties = {
             # unique isn't very consistent
-            'unique' : re.compile('[Uu]nique [mM]aster|Master[:.] unique|'
+            'unique': re.compile('[Uu]nique [mM]aster|Master[:.] unique|'
                 'Unique\.'),
-            'trifle' : re.compile('[mM]aster[:.] .*[tT]rifle'),
-            'discipline' : re.compile('Master: Discipline\.'),
-            'out-of-turn' : re.compile('Master: out-of-turn'),
-            'location' : re.compile('Master[:.] (unique )?[Ll]ocation'),
-            'boon' : re.compile('Boon\.'),
-            'frenzy' : re.compile('Frenzy\.'),
-            'hunting ground' : re.compile('\. Hunting [Gg]round'),
-            'haven' : re.compile('Haven\.'),
-            'trophy' : re.compile('Master\. Trophy'),
-            'investment' : re.compile('Master[.:] (unique )?[Ii]nvestment'),
-            'archetype' : re.compile('Master: archetype'),
-            'watchtower' : re.compile('Master: watchtower'),
+            'trifle': re.compile('[mM]aster[:.] .*[tT]rifle'),
+            'discipline': re.compile('Master: Discipline\.'),
+            'out-of-turn': re.compile('Master: out-of-turn'),
+            'location': re.compile('Master[:.] (unique )?[Ll]ocation'),
+            'boon': re.compile('Boon\.'),
+            'frenzy': re.compile('Frenzy\.'),
+            'hunting ground': re.compile('\. Hunting [Gg]round'),
+            'haven': re.compile('Haven\.'),
+            'trophy': re.compile('Master\. Trophy'),
+            'investment': re.compile('Master[.:] (unique )?[Ii]nvestment'),
+            'archetype': re.compile('Master: archetype'),
+            'watchtower': re.compile('Master: watchtower'),
             }
 
     # event properties
     dEventProperties = {
-            'gehenna' : re.compile('Gehenna\.'),
-            'transient' : re.compile('Transient\.'),
-            'inconnu' : re.compile('Inconnu\.'),
-            'government' : re.compile('Government\.'),
-            'inquisition' : re.compile('Inquisition\.'),
+            'gehenna': re.compile('Gehenna\.'),
+            'transient': re.compile('Transient\.'),
+            'inconnu': re.compile('Inconnu\.'),
+            'government': re.compile('Government\.'),
+            'inquisition': re.compile('Inquisition\.'),
             }
 
     # Catch for non-specified card types
     dOtherProperties = {
-            'unique' : re.compile('Unique\.'),
-            'boon' : re.compile('Boon\.'),
-            'watchtower' : re.compile('Watchtower\.'),
-            'frenzy' : re.compile('Frenzy\.'),
+            'unique': re.compile('Unique\.'),
+            'boon': re.compile('Boon\.'),
+            'watchtower': re.compile('Watchtower\.'),
+            'frenzy': re.compile('Frenzy\.'),
             }
 
     # Special cases that aren't handled by the general code
     dAllyKeywordSpecial = {
-            'Gypsies' : ['1 stealth'],
-            'Veneficti (Mage)' : ['1 stealth'],
-            'High Top' : ['1 intercept'],
-            'Ghoul Retainer' : ['1 strength'],
+            'Gypsies': ['1 stealth'],
+            'Veneficti (Mage)': ['1 stealth'],
+            'High Top': ['1 intercept'],
+            'Ghoul Retainer': ['1 strength'],
             }
     # These vampires aren't templated as normal
     dCryptKeywordSpecial = {
-            'Spider-Killer' : {'stealth' : 1},
-            'Muaziz, Archon of Ulugh Beg' : {'stealth' : 1},
-            'Rebekka, Chantry Elder of Munich' : { 'stealth' : 1},
+            'Spider-Killer': {'stealth': 1},
+            'Muaziz, Archon of Ulugh Beg': {'stealth': 1},
+            'Rebekka, Chantry Elder of Munich': {'stealth': 1},
             }
 
     def __init__(self, oLogger):
@@ -206,8 +207,7 @@ class CardDict(dict):
 
     def _find_crypt_keywords(self, oCard):
         """Extract the bleed, strength & stealth keywords from the card text"""
-        dKeywords = {'bleed' : 1, 'strength' : 1, 'stealth' : 0,
-                'intercept' : 0}
+        dKeywords = {'bleed': 1, 'strength': 1, 'stealth': 0, 'intercept': 0}
         # Correct special cases
         if self['name'] in self.dCryptKeywordSpecial:
             for sKeyword, iVal in \
@@ -410,7 +410,7 @@ class CardDict(dict):
             iCost = int(sAmnt, 10)
 
         oCard.cost = iCost
-        oCard.costtype = str(sType.lower()) # make str non-unicode
+        oCard.costtype = str(sType.lower())  # make str non-unicode
 
     def _add_group(self, oCard, sGroup):
         """Add the group to the card. Replace '*' with -1."""
@@ -440,7 +440,7 @@ class CardDict(dict):
 
     def _add_level(self, oCard, sLevel):
         """Add the correct string for the level to the card."""
-        oCard.level = str(self._get_level(sLevel)) # make str non-unicode
+        oCard.level = str(self._get_level(sLevel))  # make str non-unicode
 
     def _add_level_to_name(self, sName, sLevel):
         """Add level info to the vampire name."""
@@ -570,8 +570,8 @@ class CardDict(dict):
 
         oCard.syncUpdate()
 
-# State Classes
 
+# State Classes
 class NoCard(LogState):
     """State when we are not in a card."""
 
@@ -582,6 +582,7 @@ class NoCard(LogState):
         else:
             return self
 
+
 class PotentialCard(LogState):
     """State for a section that may be a card"""
 
@@ -591,6 +592,7 @@ class PotentialCard(LogState):
             return InCard(CardDict(self.oLogger), self.oLogger)
         else:
             return NoCard(self.oLogger)
+
 
 class InCard(LogStateWithInfo):
     """State for in a card description in the WW card list."""
@@ -613,6 +615,7 @@ class InCard(LogStateWithInfo):
         else:
             return self
 
+
 class InCardName(LogStateWithInfo):
     """In the card name section."""
 
@@ -626,6 +629,7 @@ class InCardName(LogStateWithInfo):
         else:
             return self
 
+
 class InExpansion(LogStateWithInfo):
     """In the expansions section."""
 
@@ -638,6 +642,7 @@ class InExpansion(LogStateWithInfo):
             raise StateError()
         else:
             return self
+
 
 class InCardText(LogStateWithInfo):
     """In the card text section."""
@@ -670,6 +675,7 @@ class InCardText(LogStateWithInfo):
         else:
             return self
 
+
 class InKeyValue(LogStateWithInfo):
     """Extract a dictionary key from the table holding the card info."""
 
@@ -682,6 +688,7 @@ class InKeyValue(LogStateWithInfo):
             raise StateError()
         else:
             return self
+
 
 class WaitingForValue(LogStateWithInfo):
     """Extract a value from the table holding the card info."""
@@ -708,8 +715,8 @@ class WaitingForValue(LogStateWithInfo):
         else:
             return self
 
-# Parser
 
+# Parser
 class WhiteWolfParser(SutekhBaseHTMLParser):
     """Actual Parser for the WW cardlist HTML file(s)."""
 

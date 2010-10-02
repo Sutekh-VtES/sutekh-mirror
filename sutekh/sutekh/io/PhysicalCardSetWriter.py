@@ -30,6 +30,7 @@ except ImportError:
     from elementtree.ElementTree import Element, SubElement, ElementTree
 # pylint: enable-msg=E0611, F0401
 
+
 class PhysicalCardSetWriter(object):
     """Writer for Physical Card Sets.
 
@@ -72,8 +73,8 @@ class PhysicalCardSetWriter(object):
         for tKey in sorted(dPhys):
             iNum = dPhys[tKey]
             sName, sExpName = tKey
-            SubElement(oRoot, 'card', name=sName,
-                    count = str(iNum), expansion=sExpName)
+            SubElement(oRoot, 'card', name=sName, count=str(iNum),
+                    expansion=sExpName)
         pretty_xml(oRoot)
         return oRoot
 

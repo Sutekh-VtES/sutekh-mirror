@@ -66,7 +66,6 @@ class GuessFileParser(object):
             return oParser
         return None
 
-
     def parse(self, fIn, oHolder):
         """attempt arse a file into the given holder"""
         # Cache file, (for network cases, etc.)

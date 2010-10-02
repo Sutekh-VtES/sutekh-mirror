@@ -31,11 +31,12 @@
 
 import re
 
-# State Base Classes
 
+# State Base Classes
 class StateError(Exception):
     """Error in the state transitions."""
     pass
+
 
 class State(object):
     """Base class for the State Objects."""
@@ -51,8 +52,8 @@ class State(object):
         """Add data to the state object."""
         self._sData += sData
 
-# State Classes
 
+# State Classes
 class NameAndAuthor(State):
     """State for extracting Name and Author."""
     def transition(self, sLine):
@@ -76,6 +77,7 @@ class NameAndAuthor(State):
 
         return self
 
+
 class Description(State):
     """State for extracting description"""
     def transition(self, sLine):
@@ -90,6 +92,7 @@ class Description(State):
         else:
             self.data(sLine)
             return self
+
 
 class Cards(State):
     """State for extracting the cards"""
@@ -108,8 +111,8 @@ class Cards(State):
             self._oHolder.add(iCnt, sName, None)
         return self
 
-# Parser
 
+# Parser
 class ARDBTextParser(object):
     """Parser for the ARDB Text format."""
     def __init__(self):

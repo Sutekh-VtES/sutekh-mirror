@@ -18,6 +18,7 @@
 from sutekh.core.SutekhObjects import AbstractCard, IAbstractCard
 from sutekh.core.ELDBUtilities import norm_name, type_of_card
 
+
 class WriteELDBInventory(object):
     """Create a string in ELDB inventory format representing a card set."""
 

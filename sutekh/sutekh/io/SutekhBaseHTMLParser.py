@@ -9,11 +9,12 @@
 
 import HTMLParser
 
-# State Base Classes
 
+# State Base Classes
 class StateError(Exception):
     """Error case in the state true"""
     pass
+
 
 class BaseState(object):
     """Base class for parser states"""
@@ -30,6 +31,7 @@ class BaseState(object):
         """Add data to the state"""
         self._sData += sData
 
+
 class LogState(BaseState):
     """Base class for the State transitions with a log handler"""
 
@@ -38,6 +40,7 @@ class LogState(BaseState):
     def __init__(self, oLogger):
         super(LogState, self).__init__()
         self.oLogger = oLogger
+
 
 class LogStateWithInfo(LogState):
     """Base class for states which contain information of interest"""
@@ -48,6 +51,7 @@ class LogStateWithInfo(LogState):
         super(LogStateWithInfo, self).__init__(oLogger)
         self._dInfo = dInfo
 
+
 class HolderState(BaseState):
     """Base class for parser states"""
 
@@ -57,8 +61,8 @@ class HolderState(BaseState):
         super(HolderState, self).__init__()
         self._oHolder = oHolder
 
-# Base Parser
 
+# Base Parser
 class SutekhBaseHTMLParser(HTMLParser.HTMLParser, object):
     """Base Parser for the Sutekh HTML parsers"""
 

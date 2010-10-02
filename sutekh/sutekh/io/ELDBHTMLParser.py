@@ -25,8 +25,8 @@
 from sutekh.io.SutekhBaseHTMLParser import SutekhBaseHTMLParser, HolderState
 import re
 
-# State Classes
 
+# State Classes
 class Collecting(HolderState):
     """Default state - transitions to other states as needed"""
 
@@ -38,6 +38,7 @@ class Collecting(HolderState):
             return DeckInfoItem(self._oHolder)
         else:
             return self
+
 
 class DeckInfoItem(HolderState):
     """States for the table rows describing the deck."""
@@ -62,6 +63,7 @@ class DeckInfoItem(HolderState):
             return Collecting(self._oHolder)
         else:
             return self
+
 
 class CardItem(HolderState):
     """State for the table rows listing the cards in the deck."""
@@ -96,8 +98,8 @@ class CardItem(HolderState):
         else:
             return self
 
-# Parser
 
+# Parser
 class ELDBHTMLParser(SutekhBaseHTMLParser):
     """Actual Parser for the ELDB HTML files."""
 
@@ -105,7 +107,7 @@ class ELDBHTMLParser(SutekhBaseHTMLParser):
         """Create an ELDBHTMLParser.
            """
         # super __init__ will call rest, so need this
-        self._oHolder = None # Placeholder for later
+        self._oHolder = None  # Placeholder for later
         super(ELDBHTMLParser, self).__init__()
         # Don't need to set oState, since reset will do that
 
@@ -120,4 +122,3 @@ class ELDBHTMLParser(SutekhBaseHTMLParser):
         self.reset()
         for sLine in fIn:
             self.feed(sLine)
-

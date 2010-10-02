@@ -128,6 +128,7 @@ a:hover {
 }
 """
 
+
 def _monger_url(oCard, bVamp):
     """Return a monger url for the given AbstractCard"""
     sName = canonical_to_csv(oCard.name)
@@ -143,6 +144,7 @@ def _monger_url(oCard, bVamp):
     # May not need this, but play safe
     sMongerURL = sMongerURL.replace(' ', '%20')
     return sMongerURL
+
 
 def _secret_library_url(oCard, bVamp):
     """Return a Secret Library url for the given AbstractCard"""
@@ -182,6 +184,7 @@ def _sort_vampires(dVamps):
     # the XSLT approach, but I don't care enough to tweak that
     return aSortedVampires
 
+
 def _sort_lib(dLib):
     """Extract a list of cards sorted into types from the library"""
     dTypes = {}
@@ -192,6 +195,7 @@ def _sort_lib(dLib):
         dTypes[sType].append((iCount, oCard.name))
     return sorted(dTypes.items())
 
+
 def _add_span(oElement, sText, sClass=None, sId=None):
     """Add a span element to the element oElement"""
     oSpan = SubElement(oElement, "span")
@@ -201,6 +205,7 @@ def _add_span(oElement, sText, sClass=None, sId=None):
     if sId:
         oSpan.attrib['id'] = sId
 
+
 def _add_text(oElement, oCard):
     """Add the card text to the ElementTree line by line"""
     oTextDiv = SubElement(oElement, "div")
@@ -208,6 +213,7 @@ def _add_text(oElement, oCard):
     for sLine in oCard.text.splitlines():
         oPara = SubElement(oTextDiv, 'p')
         oPara.text = sLine
+
 
 class WriteArdbHTML(ArdbInfo):
     """Export a Card set to a 'nice' HTML file.

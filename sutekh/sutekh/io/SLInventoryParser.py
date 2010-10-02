@@ -29,6 +29,7 @@ import re
 from sutekh.core.SutekhObjects import csv_to_canonical
 from sutekh.io.IOBase import CardSetParser
 
+
 class SLInventoryParser(CardSetParser):
     """Parser for the Secret Library web API inventory format."""
 
@@ -41,7 +42,7 @@ class SLInventoryParser(CardSetParser):
         self._dSectionParsers = {
             'crypt': self._crypt_section,
             'library': self._library_section,
-            'endexport': self._no_section
+            'endexport': self._no_section,
         }
 
     # section parsers

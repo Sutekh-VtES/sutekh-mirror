@@ -28,6 +28,7 @@
 from sutekh.io.IOBase import BaseSutekhXMLParser
 from sutekh.core.SutekhObjects import MAX_ID_LENGTH
 
+
 class PhysicalCardSetParser(BaseSutekhXMLParser):
     """Impement the parser.
 
@@ -76,4 +77,3 @@ class PhysicalCardSetParser(BaseSutekhXMLParser):
                 oHolder.annotations = oElem.text
             elif oElem.tag == 'card':
                 self._parse_card(oElem, oHolder)
-

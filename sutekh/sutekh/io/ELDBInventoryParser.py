@@ -12,6 +12,7 @@ import re
 from sutekh.core.ELDBUtilities import gen_name_lookups
 from sutekh.io.IOBase import BaseLineParser
 
+
 class ELDBInventoryParser(BaseLineParser):
     """Parser for the ELDB Inventory format.
 

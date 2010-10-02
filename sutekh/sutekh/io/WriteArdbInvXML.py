@@ -32,7 +32,6 @@ class WriteArdbInvXML(WriteArdbXML):
         oRoot = Element('inventory')
         self._add_date_version(oRoot)
 
-
         oCryptElem = SubElement(oRoot, 'crypt', size=str(dCryptStats['size']))
         dCombinedVamps = self._group_sets(dVamps)
         self.format_vamps(oCryptElem, dCombinedVamps)

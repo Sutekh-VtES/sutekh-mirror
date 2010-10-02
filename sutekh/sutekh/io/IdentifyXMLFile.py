@@ -19,6 +19,7 @@ except ImportError:
 # pylint: enable-msg=E0611, F0401
 from xml.parsers.expat import ExpatError
 
+
 class IdentifyXMLFile(object):
     """Tries to identify the XML file type.
 
@@ -70,7 +71,7 @@ class IdentifyXMLFile(object):
                 self._bSetExists = True
             except SQLObjectNotFound:
                 self._bSetExists = False
-            self._bParentExists = True # Always a top level card set
+            self._bParentExists = True  # Always a top level card set
         elif oRoot.tag == 'physicalcardset':
             self._sType = 'PhysicalCardSet'
             self._sName = oRoot.attrib['name']
@@ -87,7 +88,7 @@ class IdentifyXMLFile(object):
                 except SQLObjectNotFound:
                     self._bParentExists = False
             else:
-                self._bParentExists = True # Top level card set
+                self._bParentExists = True  # Top level card set
         elif oRoot.tag == 'cards':
             self._sType = 'PhysicalCard'
             # Old Physical Card Collection XML file - it exists if a card
@@ -98,7 +99,7 @@ class IdentifyXMLFile(object):
                 self._bSetExists = True
             except SQLObjectNotFound:
                 self._bSetExists = False
-            self._bParentExists = True # Always a top level card set
+            self._bParentExists = True  # Always a top level card set
         elif oRoot.tag == 'cardmapping':
             # This is ignored now
             self._sType = 'PhysicalCardSetMappingTable'
@@ -111,7 +112,7 @@ class IdentifyXMLFile(object):
         try:
             oTree = parse(fIn)
         except ExpatError:
-            self._clear_id_results() # Not an XML file
+            self._clear_id_results()  # Not an XML file
             return
         self.identify_tree(oTree)
 

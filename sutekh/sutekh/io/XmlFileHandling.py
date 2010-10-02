@@ -21,14 +21,16 @@ from sutekh.io.PhysicalCardSetWriter import PhysicalCardSetWriter
 from sqlobject import SQLObjectNotFound
 import os
 
+
 def _do_read(oParser, sFileName, oLookup, bIgnoreWarnings):
     """Helper function to read from a parser"""
     oHolder = CardSetHolder()
-    oParser.parse(file(sFileName,'rU'), oHolder)
+    oParser.parse(file(sFileName, 'rU'), oHolder)
     oHolder.create_pcs(oLookup)
     if not bIgnoreWarnings:
         return oHolder.get_warnings()
     return None
+
 
 class PhysicalCardXmlFile(object):
     """Class for handling PhysicalCard XML Files"""
@@ -62,6 +64,7 @@ class PhysicalCardXmlFile(object):
             raise IOError("No Filename specified")
         os.remove(self.sXmlFile)
 
+
 class AbstractCardSetXmlFile(object):
     """Class for handling Abstract Card Set XML files"""
     def __init__(self, sFileName=None, oLookup=DEFAULT_LOOKUP):
@@ -89,6 +92,7 @@ class AbstractCardSetXmlFile(object):
             raise IOError("No Filename specified")
         os.remove(self.sXmlFile)
 
+
 class PhysicalCardSetXmlFile(object):
     """Class for handling Physical Card Set XML files"""
     def __init__(self, sFileName=None, oLookup=DEFAULT_LOOKUP):
@@ -108,9 +112,9 @@ class PhysicalCardSetXmlFile(object):
         oWriter = PhysicalCardSetWriter()
         if self.sXmlFile is None:
             sFileName = safe_filename(sPhysicalCardSetName)
-            fOut = file(sFileName,'w')
+            fOut = file(sFileName, 'w')
         else:
-            fOut = file(self.sXmlFile,'w')
+            fOut = file(self.sXmlFile, 'w')
         try:
             oPCS = IPhysicalCardSet(sPhysicalCardSetName)
         except SQLObjectNotFound:
@@ -125,13 +129,14 @@ class PhysicalCardSetXmlFile(object):
             raise IOError("No Filename specified")
         os.remove(self.sXmlFile)
 
+
 def write_all_pcs(sDir=''):
     """Write all the Physical Card Sets into files in the given directory"""
     oPhysicalCardSets = PhysicalCardSet.select()
     aList = []
     for oPCS in oPhysicalCardSets:
         sFName = safe_filename(oPCS.name)
-        sFileName = gen_temp_file('pcs_'+sFName+'_', sDir)
+        sFileName = gen_temp_file('pcs_' + sFName + '_', sDir)
         oWriter = PhysicalCardSetXmlFile(sFileName)
         aList.append(oWriter)
         oWriter.write(oPCS.name)

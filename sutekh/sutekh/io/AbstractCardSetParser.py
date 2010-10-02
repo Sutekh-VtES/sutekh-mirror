@@ -21,6 +21,7 @@
 from sutekh.io.IOBase import BaseSutekhXMLParser
 from sutekh.core.SutekhObjects import MAX_ID_LENGTH
 
+
 class AbstractCardSetParser(BaseSutekhXMLParser):
     """Impement the parser.
 
@@ -45,4 +46,4 @@ class AbstractCardSetParser(BaseSutekhXMLParser):
             if oElem.tag == 'annotations':
                 oHolder.annotations = oElem.text
             elif oElem.tag == 'card':
-                self._parse_card(oElem, oHolder) # Will use no expansion path
+                self._parse_card(oElem, oHolder)  # Will use no expansion path

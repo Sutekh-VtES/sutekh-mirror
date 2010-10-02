@@ -51,6 +51,7 @@ WW_CARDLIST_PER_LETTER_URLS = [
 
 WW_RULINGS_URL = "http://www.white-wolf.com/vtes/index.php?line=rulings"
 
+
 class WwFile(object):
     """WwFile is a convenience class which has an .open(..) method which
        returns a file-like object with the encoding set correctly.
@@ -77,4 +78,3 @@ class WwFile(object):
                     'cp1252')
         else:
             return codecs.open(self.sfFile, 'rU', 'cp1252')
-

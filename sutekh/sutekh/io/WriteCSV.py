@@ -15,6 +15,7 @@
    "Zip Line", "Twilight Rebellion", 3
    """
 
+
 class WriteCSV(object):
     """Create a string in CSV format representing a card set."""
 

@@ -11,6 +11,7 @@ import re
 from sutekh.core.SutekhObjects import csv_to_canonical
 from sutekh.io.IOBase import BaseLineParser
 
+
 class JOLDeckParser(BaseLineParser):
     """Parser for the JOL Deck format."""
 

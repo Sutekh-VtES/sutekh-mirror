@@ -30,6 +30,7 @@
 
 from sutekh.core.ArdbInfo import ArdbInfo
 
+
 class WriteArdbText(ArdbInfo):
     """Create a string in ARDB's text format representing a dictionary
        of cards."""
@@ -68,7 +69,7 @@ class WriteArdbText(ArdbInfo):
                     x[0].name)):
             # We sort inversely on count, then capacity and then normally by
             # name
-            dLine = {'count' : iCount}
+            dLine = {'count': iCount}
             if len(oCard.creed) > 0:
                 dLine['clan'] = "Imbued"
                 dLine['capacity'] = oCard.life
@@ -79,14 +80,14 @@ class WriteArdbText(ArdbInfo):
                     dLine['clan'] = '!' + dLine['clan'].replace(' antitribu',
                             '')
                 else:
-                    dLine['clan'] = dLine['clan'][:10] # truncate if needed
+                    dLine['clan'] = dLine['clan'][:10]  # truncate if needed
                 dLine['capacity'] = oCard.capacity
             dLine['name'] = oCard.name
             dLine['adv'] = '   '
             if oCard.level is not None:
                 dLine['name'] = dLine['name'].replace(' (Advanced)', '')
                 dLine['adv'] = 'Adv'
-            dLine['name'] = dLine['name'].ljust(18)[:18] # truncate if needed
+            dLine['name'] = dLine['name'].ljust(18)[:18]  # truncate if needed
             dLine['disc'] = self._gen_disciplines(oCard)
             iDiscJust = max(iDiscJust, len(dLine['disc']))
 

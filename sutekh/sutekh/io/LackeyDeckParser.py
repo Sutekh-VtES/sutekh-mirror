@@ -14,6 +14,7 @@ from sutekh.core.SutekhObjects import AbstractCard
 from sutekh.io.WriteLackeyCCG import lackey_name
 from sutekh.io.IOBase import BaseLineParser
 
+
 def gen_name_lookups():
     """Create a lookup table to map Lackey CCG names to Sutekh names -
        reduces the number of user queries"""
@@ -27,6 +28,7 @@ def gen_name_lookups():
             # identity entries
             dNameCache[sLackeyName] = sSutekhName
     return dNameCache
+
 
 class LackeyDeckParser(BaseLineParser):
     """Parser for the Lackey Deck format."""

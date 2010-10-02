@@ -14,8 +14,8 @@ from sutekh.io.SutekhBaseHTMLParser import SutekhBaseHTMLParser, StateError, \
 from sutekh.core.SutekhObjects import IAbstractCard, SutekhObjectMaker
 from sqlobject import SQLObjectNotFound
 
-# Ruling Saver
 
+# Ruling Saver
 class RuleDict(dict):
     """Dictionary object which holds the extracted rulings information."""
 
@@ -23,22 +23,22 @@ class RuleDict(dict):
     _oMasterOut = re.compile(r'\s*-\s*Master\s*\:?\s*Out\-of\-Turn$')
     _oCommaThe = re.compile(r'\s*\,\s*The$')
     _dOddTitles = {
-        'Absilmilard\'s Army' : 'Absimiliard\'s Army',
-        'Carlotta' : 'Carlotta Giovanni',
-        'Donal O\'Connor' : u'D\xf3nal O\'Connor',
-        'Herald of Topeth' : 'Herald of Topheth',
-        'Illusions of Kindred' : 'Illusions of the Kindred',
-        'Khobar Towers' : 'Khobar Towers, Al-Khubar',
-        'Mehemet of the Ahl-i-Batin' : 'Mehemet of the Ahl-i-Batin (Mage)',
-        'Lazar Dobrescu' : u'L\xe1z\xe1r Dobrescu',
-        'Merill Molitor' : 'Merrill Molitor',
-        'Rotschreck' : u'R\xf6tschreck',
-        'Seattle Committe' : 'Seattle Committee',
-        'Shackles of Enkindu' : 'Shackles of Enkidu',
-        'Shadow Court Satyr' : 'Shadow Court Satyr (Changeling)',
-        'Smiling Jack the Anarch' : 'Smiling Jack, The Anarch',
-        'Tereza Rotas' : 'Tereza Rostas',
-        'Ur-Shulgi' : 'Ur-Shulgi, The Shepherd',
+        'Absilmilard\'s Army': 'Absimiliard\'s Army',
+        'Carlotta': 'Carlotta Giovanni',
+        'Donal O\'Connor': u'D\xf3nal O\'Connor',
+        'Herald of Topeth': 'Herald of Topheth',
+        'Illusions of Kindred': 'Illusions of the Kindred',
+        'Khobar Towers': 'Khobar Towers, Al-Khubar',
+        'Mehemet of the Ahl-i-Batin': 'Mehemet of the Ahl-i-Batin (Mage)',
+        'Lazar Dobrescu': u'L\xe1z\xe1r Dobrescu',
+        'Merill Molitor': 'Merrill Molitor',
+        'Rotschreck': u'R\xf6tschreck',
+        'Seattle Committe': 'Seattle Committee',
+        'Shackles of Enkindu': 'Shackles of Enkidu',
+        'Shadow Court Satyr': 'Shadow Court Satyr (Changeling)',
+        'Smiling Jack the Anarch': 'Smiling Jack, The Anarch',
+        'Tereza Rotas': 'Tereza Rostas',
+        'Ur-Shulgi': 'Ur-Shulgi, The Shepherd',
     }
 
     def __init__(self, oLogger):
@@ -103,8 +103,8 @@ class RuleDict(dict):
 
         self['card'].addRuling(oRuling)
 
-# State Classes
 
+# State Classes
 class NoSection(LogState):
     """Not in any ruling section."""
 
@@ -114,6 +114,7 @@ class NoSection(LogState):
             return InSection(RuleDict(self.oLogger), self.oLogger)
         else:
             return self
+
 
 class InSection(LogStateWithInfo):
     """In a ruling section."""
@@ -128,6 +129,7 @@ class InSection(LogStateWithInfo):
         else:
             return NoSection(self.oLogger)
 
+
 class SectionTitle(LogStateWithInfo):
     """In the title of the section."""
 
@@ -140,6 +142,7 @@ class SectionTitle(LogStateWithInfo):
             return SectionWithTitle(self._dInfo, self.oLogger)
         else:
             return self
+
 
 class SectionWithTitle(LogStateWithInfo):
     """In a section with a known title."""
@@ -155,6 +158,7 @@ class SectionWithTitle(LogStateWithInfo):
             return NoSection(self.oLogger)
         else:
             return self
+
 
 class SectionRule(LogStateWithInfo):
     """In a ruling in the section."""
@@ -191,6 +195,7 @@ class SectionRule(LogStateWithInfo):
             return NoSection(self.oLogger)
         return self
 
+
 class InRuleText(LogStateWithInfo):
     """In the text of a ruling."""
 
@@ -203,6 +208,7 @@ class InRuleText(LogStateWithInfo):
             return SectionRule(self._dInfo, self.oLogger)
         else:
             return self
+
 
 class InRuleUrl(LogStateWithInfo):
     """In the url associated with this ruling."""
@@ -217,8 +223,8 @@ class InRuleUrl(LogStateWithInfo):
         else:
             return self
 
-# Parser
 
+# Parser
 class RulingParser(SutekhBaseHTMLParser):
     """Actual Parser for the WW rulings HTML files."""
 
