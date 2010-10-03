@@ -1041,9 +1041,17 @@ or to show both.
 * _Extra levels_: Controls whether the card expansions are listed.
 * _Group by_: Controls how the cards are grouped together. See the \
 "Card Grouping":#grouping section for more details.
-* _Hide cards not legal for tournament play_: Controls whether cards flagged
-as not legal for tournament play (i.e. banned or storyline only cards) are
+* _Hide cards not legal for tournament play_: Controls whether cards flagged \
+as not legal for tournament play (i.e. banned or storyline only cards) are \
 shown in the list.
+* _White Wolf Card List Count Mode_: By default, the White Wolf card list \
+doesn't show a count for cards. This option allows you to choose between the \
+default _Don't show card counts_ mode, _Show counts for each distinct card_ \
+and _Show counts for each expansion_. In _Show counts for each distinct card_, \
+each distinct card has a count of 1, but expansions aren't counted. This \
+can be useful for determining statistics about the cards and so on, While \
+in the _how counts for each expansion_ mode, each printed expansion has a \
+count of 1 (the _Unspecified Expansion_ entries aren't counted).
 * _Show icons for grouping_: Controls whether icons are shown with the group name.
 
 h4(#grouping). Card Grouping
