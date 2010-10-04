@@ -16,6 +16,7 @@ from sutekh.SutekhUtility import is_crypt_card
 TOT_FORMAT = 'Tot: <b>%(tot)d</b> L: <b>%(lib)d</b> C: <b>%(crypt)d</b>'
 TOT_TOOLTIP = 'Total Cards: <b>%(tot)d</b> (Library: <b>%(lib)d</b>' \
         ' Crypt: <b>%(crypt)d</b>)'
+TOTAL, CRYPT, LIB = 'tot', 'crypt', 'lib'
 
 
 class CountCardSetCards(SutekhPlugin, CardListModelListener):
@@ -23,9 +24,8 @@ class CountCardSetCards(SutekhPlugin, CardListModelListener):
        containing a label with a running count of the cards in the card
        set, the library cards and the crypt cards
        """
-    dTableVersions = {PhysicalCardSet : [5, 6]}
+    dTableVersions = {PhysicalCardSet: [5, 6]}
     aModelsSupported = [PhysicalCardSet]
-
 
     # pylint: disable-msg=W0142
     # **magic OK here
@@ -48,11 +48,9 @@ class CountCardSetCards(SutekhPlugin, CardListModelListener):
         if not self.check_versions() or not self.check_model_type():
             return None
 
-        self.__oTextLabel = gtk.Label(TOT_FORMAT % {'tot' : 0,
-            'crypt' : 0, 'lib' : 0})
-        self.__oTextLabel.set_tooltip_markup(TOT_TOOLTIP % {'tot' : 0,
-            'crypt' : 0, 'lib' : 0})
-
+        dInfo = {TOTAL: 0, CRYPT: 0, LIB: 0}
+        self.__oTextLabel = gtk.Label(TOT_FORMAT % dInfo)
+        self.__oTextLabel.set_tooltip_markup(TOT_TOOLTIP % dInfo)
         self.__oTextLabel.show()
         return self.__oTextLabel
 
@@ -61,11 +59,10 @@ class CountCardSetCards(SutekhPlugin, CardListModelListener):
         # Timing issues mean that this can be called before text label has
         # been properly realised, so we need this guard case
         if self.__oTextLabel:
-            self.__oTextLabel.set_markup(TOT_FORMAT % {'tot' : self.__iTot,
-                'crypt' : self.__iCrypt, 'lib' : self.__iLibrary})
-            self.__oTextLabel.set_tooltip_markup(TOT_TOOLTIP % {
-                'tot' : self.__iTot, 'crypt' : self.__iCrypt,
-                'lib' : self.__iLibrary})
+            dInfo = {TOTAL: self.__iTot, CRYPT: self.__iCrypt,
+                    LIB: self.__iLibrary}
+            self.__oTextLabel.set_markup(TOT_FORMAT % dInfo)
+            self.__oTextLabel.set_tooltip_markup(TOT_TOOLTIP % dInfo)
 
     def load(self, aCards):
         """Listen on load events & update counts"""

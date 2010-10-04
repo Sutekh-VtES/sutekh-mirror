@@ -12,10 +12,10 @@ from sutekh.core.SutekhObjects import PhysicalCard, IAbstractCard
 from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.CardListModel import CardListModelListener
 from sutekh.SutekhUtility import is_crypt_card
-from sutekh.gui.plugins.CountCardSetCards import TOT_FORMAT, TOT_TOOLTIP
+from sutekh.gui.plugins.CountCardSetCards import TOT_FORMAT, TOT_TOOLTIP, \
+        TOTAL, CRYPT, LIB
 
 SORT_COLUMN_OFFSET = 300  # ensure we don't clash with other extra columns
-TOTAL, CRYPT, LIB = 'tot', 'crypt', 'lib'
 
 
 class CountWWListCards(SutekhPlugin, CardListModelListener):
@@ -78,9 +78,9 @@ class CountWWListCards(SutekhPlugin, CardListModelListener):
         if not self.check_versions() or not self.check_model_type():
             return None
 
-        self._oTextLabel = gtk.Label(TOT_FORMAT % {TOTAL: 0, CRYPT: 0, LIB: 0})
-        self._oTextLabel.set_tooltip_markup(TOT_TOOLTIP % {TOTAL: 0, CRYPT: 0,
-            LIB: 0})
+        dInfo = {TOTAL: 0, CRYPT: 0, LIB: 0}
+        self._oTextLabel = gtk.Label(TOT_FORMAT % dInfo)
+        self._oTextLabel.set_tooltip_markup(TOT_TOOLTIP % dInfo)
 
         if self._iMode != self.NO_COUNT:
             self._oTextLabel.show()
@@ -95,16 +95,14 @@ class CountWWListCards(SutekhPlugin, CardListModelListener):
         if self._oTextLabel:
             if self._iMode == self.NO_COUNT:
                 self._oTextLabel.hide()
+                return
             elif self._iMode == self.COUNT_CARDS:
-                self._oTextLabel.set_markup(TOT_FORMAT % self._dCardTotals)
-                self._oTextLabel.set_tooltip_markup(TOT_TOOLTIP %
-                        self._dCardTotals)
-                self._oTextLabel.show()
+                dInfo = self._dCardTotals
             else:
-                self._oTextLabel.set_markup(TOT_FORMAT % self._dExpTotals)
-                self._oTextLabel.set_tooltip_markup(TOT_TOOLTIP %
-                        self._dExpTotals)
-                self._oTextLabel.show()
+                dInfo = self._dExpTotals
+            self._oTextLabel.set_markup(TOT_FORMAT % dInfo)
+            self._oTextLabel.set_tooltip_markup(TOT_TOOLTIP % dInfo)
+            self._oTextLabel.show()
 
     def load(self, aCards):
         """Listen on load events & update counts"""
