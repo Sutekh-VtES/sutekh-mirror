@@ -6,7 +6,8 @@
 # GPL - see COPYING for details
 """Simulate the opening hand draw."""
 
-import gtk, gobject
+import gtk
+import gobject
 from copy import copy
 from random import choice
 from sutekh.core.SutekhObjects import PhysicalCardSet, IAbstractCard
@@ -16,8 +17,8 @@ from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 from sutekh.core.Filters import CryptCardFilter, MultiCardTypeFilter, \
         CardTypeFilter, CardFunctionFilter, FilterNot
 
-# Utility functions
 
+# Utility functions
 def convert_to_abs(aCards):
     """Convert a list of possibly physical cards to a list of AbstractCards"""
     aRes = []
@@ -25,21 +26,23 @@ def convert_to_abs(aCards):
         aRes.append(IAbstractCard(oCard))
     return aRes
 
+
 def get_cards_filter(oModel, oFilter):
     """Get abstract card list for the given filter"""
     return convert_to_abs(list(oModel.get_card_iterator(oFilter)))
+
 
 def get_probs(dLibProbs, dToCheck, dGroupedProbs):
     """Calculate the probabilities for the card groups"""
     for sCardName, fMean in dLibProbs.iteritems():
         for sGroup, aCards in dToCheck.iteritems():
             if sCardName in aCards:
-                dGroupedProbs.setdefault(sGroup, {'avg' : 0.0,
-                    'cards' : []})
+                dGroupedProbs.setdefault(sGroup, {'avg': 0.0, 'cards': []})
                 # Cumlative average
                 dGroupedProbs[sGroup]['avg'] += fMean
                 # Need this for the sublists in view
                 dGroupedProbs[sGroup]['cards'].append(sCardName)
+
 
 def check_card(sCardName, dToCheck, dCount):
     """Check if a card is in the list and update dCount."""
@@ -47,6 +50,7 @@ def check_card(sCardName, dToCheck, dCount):
         if sCardName in aList:
             dCount.setdefault(sToCheck, 0)
             dCount[sToCheck] += 1
+
 
 def fill_string(dGroups, dInfo, dToCheck):
     """Construct a string to display for type info"""
@@ -60,6 +64,7 @@ def fill_string(dGroups, dInfo, dToCheck):
                 sResult += u'<i>\t%d \u00D7 %s</i>\n' % (iNum, sCardName)
     return sResult
 
+
 def format_dict(dInfo):
     """Construct a string for the dictionary of names and card numbers"""
     sResult = ''
@@ -69,24 +74,27 @@ def format_dict(dInfo):
         sResult += u'%d \u00D7 %s\n' % (iNum, sName)
     return sResult
 
+
 def hypergeometric_mean(iItems, iDraws, iTotal):
     """Mean of the hypergeometric distribution for a population of iTotal
        with iItems of interest and drawing iDraws items.
        In the usual notation, iItems=n, iDraws=m, iTotal=N
        """
-    return iItems * iDraws / float(iTotal) # mean = nm/N
+    return iItems * iDraws / float(iTotal)  # mean = nm/N
+
 
 def fill_store(oStore, dLibProbs, dGroupedProbs):
     """Fill oStore with the stats about the opening hand"""
     for sName, dEntry in dGroupedProbs.iteritems():
         fMean = dEntry['avg']
         sVal = '%2.2f' % fMean
-        oParentIter = oStore.append(None, (sName, sVal, 100*fMean / 7))
+        oParentIter = oStore.append(None, (sName, sVal, 100 * fMean / 7))
         # Need percentage from mean out of 7
         for sCardName in dEntry['cards']:
             fMean = dLibProbs[sCardName]
             sVal = '%2.2f' % fMean
-            oStore.append(oParentIter, (sCardName, sVal, 100*fMean / 7))
+            oStore.append(oParentIter, (sCardName, sVal, 100 * fMean / 7))
+
 
 def setup_view(dLibProbs, dGroupedProbs, sHeading):
     """Setup the TreeStore for the results"""
@@ -95,6 +103,7 @@ def setup_view(dLibProbs, dGroupedProbs, sHeading):
     fill_store(oStore, dLibProbs, dGroupedProbs)
 
     return create_view(oStore, sHeading)
+
 
 def create_view(oStore, sHeading):
     """Setup the TreeView for the results"""
@@ -123,9 +132,10 @@ def create_view(oStore, sHeading):
 
     return oView
 
+
 class OpeningHandSimulator(SutekhPlugin):
     """Simulate opening hands."""
-    dTableVersions = {PhysicalCardSet : [4, 5, 6]}
+    dTableVersions = {PhysicalCardSet: [4, 5, 6]}
     aModelsSupported = [PhysicalCardSet]
     # responses for the hand dialog
     BACK, FORWARD, BREAKDOWN = range(1, 4)
@@ -182,7 +192,7 @@ class OpeningHandSimulator(SutekhPlugin):
                     aList])
 
         oDialog = SutekhDialog(sDiagName, self.parent,
-                gtk.DIALOG_MODAL|gtk.DIALOG_DESTROY_WITH_PARENT,
+                gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                 (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
         oDialog.set_size_request(900, 600)
 
@@ -194,7 +204,6 @@ class OpeningHandSimulator(SutekhPlugin):
         # pylint: disable-msg=E1101
         # vbox methods not detected by pylint
         oDialog.vbox.pack_start(oShowButton, False, False)
-
 
         oDialog.show_all()
 
@@ -222,7 +231,7 @@ class OpeningHandSimulator(SutekhPlugin):
         for sCardName, iCount in dCrypt.iteritems():
             fMean = hypergeometric_mean(iCount, 4, iTot)
             sVal = '%2.2f' % fMean
-            oStore.append(None, (sCardName, sVal, 100*fMean / 4))
+            oStore.append(None, (sCardName, sVal, 100 * fMean / 4))
 
         return create_view(oStore, 'Crypt Card')
 
@@ -260,7 +269,7 @@ class OpeningHandSimulator(SutekhPlugin):
     def _fill_dialog(self, _oButton):
         """Fill the dialog with the draw results"""
         oDialog = SutekhDialog('Sample Hands', self.parent,
-                gtk.DIALOG_MODAL|gtk.DIALOG_DESTROY_WITH_PARENT)
+                gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT)
         # We need to have access to the back button
         # pylint: disable-msg=E1101
         # pylint doesn't see vbox + action_area methods
@@ -277,7 +286,7 @@ class OpeningHandSimulator(SutekhPlugin):
             if len(self.aDrawnHands) > 1:
                 oBackButton.set_sensitive(True)
         else:
-            oHandBox = self._draw_new_hand() # construct the hand
+            oHandBox = self._draw_new_hand()  # construct the hand
         oDialog.vbox.pack_start(oHandBox)
         oDialog.connect('response', self._next_hand, oBackButton, oShowButton)
 
@@ -340,7 +349,7 @@ class OpeningHandSimulator(SutekhPlugin):
         dTypes = {}
         for _iCard in range(7):
             oCard = choice(aThisLib)
-            aThisLib.remove(oCard) # drawing without replacement
+            aThisLib.remove(oCard)  # drawing without replacement
             dHand.setdefault(oCard.name, 0)
             dHand[oCard.name] += 1
             check_card(oCard.name, self.dCardTypes, dTypes)
@@ -348,7 +357,7 @@ class OpeningHandSimulator(SutekhPlugin):
         dCrypt = {}
         for _iCard in range(4):
             oCard = choice(aThisCrypt)
-            aThisCrypt.remove(oCard) # drawing without replacement
+            aThisCrypt.remove(oCard)  # drawing without replacement
             dCrypt.setdefault(oCard.name, 0)
             dCrypt[oCard.name] += 1
         self.aDrawnHands.append([format_dict(dHand),
@@ -391,9 +400,9 @@ class OpeningHandSimulator(SutekhPlugin):
             return oFrame
         oDetailBox = gtk.VBox(False, 2)
         oHBox = gtk.HBox(False, 2)
-        oHBox.pack_start(fill_frame(self.aDrawnHands[self.iCurHand -1][1],
+        oHBox.pack_start(fill_frame(self.aDrawnHands[self.iCurHand - 1][1],
             'Card Types'))
-        oHBox.pack_start(fill_frame(self.aDrawnHands[self.iCurHand -1][2],
+        oHBox.pack_start(fill_frame(self.aDrawnHands[self.iCurHand - 1][2],
             'Card Properties'))
         oDetailBox.pack_start(oHBox)
         return oDetailBox

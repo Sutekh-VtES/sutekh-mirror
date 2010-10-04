@@ -13,6 +13,7 @@ from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 from sutekh.gui.ScrolledList import ScrolledList
 
+
 class SetCardExpansions(SutekhPlugin):
     """Set al the selected cards in the card list to a single expansion
 
@@ -20,7 +21,7 @@ class SetCardExpansions(SutekhPlugin):
        the user to choose which expansion to set all the cards too.
        """
 
-    dTableVersions = { PhysicalCardSet: [5, 6] }
+    dTableVersions = {PhysicalCardSet: [5, 6]}
     aModelsSupported = [PhysicalCardSet]
 
     def get_menu_item(self):
@@ -45,7 +46,7 @@ class SetCardExpansions(SutekhPlugin):
             return
         aExpansions = self.find_common_expansions(aAbsCards)
         oDialog = SutekhDialog('Select expansion', self.parent,
-                gtk.DIALOG_MODAL|gtk.DIALOG_DESTROY_WITH_PARENT,
+                gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                 (gtk.STOCK_OK, gtk.RESPONSE_OK,
                     gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
         oExpList = ScrolledList('Possible Expansions')
@@ -81,7 +82,7 @@ class SetCardExpansions(SutekhPlugin):
             if oAbsCard.name in dSelected:
                 oPhysCard = IPhysicalCard(oCard)
                 if oPhysCard.expansion is oExpansion:
-                    continue # No need to change this
+                    continue  # No need to change this
                 if (self.model.sUnknownExpansion in dSelected[oAbsCard.name]
                         and not oPhysCard.expansion) or \
                         (oPhysCard.expansion and oPhysCard.expansion.name in
@@ -115,7 +116,7 @@ class SetCardExpansions(SutekhPlugin):
         for oCard in aCardList:
             aThisExpansions = set([x.expansion.name for x in oCard.rarity])
             aCandExpansions = aThisExpansions.intersection(aCandExpansions)
-        aCandExpansions.add(self.model.sUnknownExpansion) # Always possible
+        aCandExpansions.add(self.model.sUnknownExpansion)  # Always possible
         return aCandExpansions
 
 plugin = SetCardExpansions

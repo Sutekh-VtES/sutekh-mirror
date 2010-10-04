@@ -27,6 +27,7 @@ import urllib2
 from logging import Logger
 from StringIO import StringIO
 
+
 class StarterConfigDialog(SutekhDialog):
     # pylint: disable-msg=R0904
     # R0904 - gtk Widget, so has many public methods
@@ -52,7 +53,7 @@ class StarterConfigDialog(SutekhDialog):
                     ' plugin</b>\nChoose cancel to skip configuring the '
                     ' plugin\nYou will not be prompted again')
         self.oFileWidget = FileOrUrlWidget(oParent, "Choose localtion for "
-                "Starter decks", { 'Sutekh Wiki' : self.sDocUrl })
+                "Starter decks", {'Sutekh Wiki': self.sDocUrl})
         add_filter(self.oFileWidget, 'Zip Files', ['*.zip', '*.ZIP'])
         # pylint: disable-msg=E1101
         # pylint doesn't pick up vbox methods correctly
@@ -102,6 +103,7 @@ def _check_precon(oAbsCard):
             return True
     return False
 
+
 def _check_exp_name(sExpName, oAbsCard):
     """Check that expansion is one of the precon expansions of the card"""
     for oPair in oAbsCard.rarity:
@@ -110,9 +112,10 @@ def _check_exp_name(sExpName, oAbsCard):
             return True
     return False
 
+
 class StarterInfoPlugin(SutekhPlugin, CardTextViewListener):
     """Plugin providing access to CardImageFrame."""
-    dTableVersions = {PhysicalCardSet : [5, 6]}
+    dTableVersions = {PhysicalCardSet: [5, 6]}
     aModelsSupported = ["MainWindow"]
 
     dGlobalConfig = {
@@ -221,7 +224,7 @@ class StarterInfoPlugin(SutekhPlugin, CardTextViewListener):
                 break
         if not bOK:
             oProgressDialog.destroy()
-            return False # No starters in zip file
+            return False  # No starters in zip file
         oLogger.addHandler(oLogHandler)
         oLogHandler.set_dialog(oProgressDialog)
         oLogHandler.set_total(len(dList))
@@ -234,7 +237,7 @@ class StarterInfoPlugin(SutekhPlugin, CardTextViewListener):
                 dList = dRemaining
             else:
                 oProgressDialog.destroy()
-                return False # Error
+                return False  # Error
         oProgressDialog.destroy()
         return True
 
@@ -297,7 +300,7 @@ class StarterInfoPlugin(SutekhPlugin, CardTextViewListener):
         """Update the card text pane with the starter info"""
         self.oLastCard = oPhysCard
         if not self.bShowInfo:
-            return # Do nothing
+            return  # Do nothing
         oAbsCard = oPhysCard.abstractCard
         if not _check_precon(oAbsCard):
             return
@@ -322,9 +325,9 @@ class StarterInfoPlugin(SutekhPlugin, CardTextViewListener):
             iCount = oFilter.select(MapPhysicalCardToPhysicalCardSet).count()
             if iCount > 0:
                 aInfo.append("x %(count)d %(exp)s (%(cardset)s)" % {
-                    'count' : iCount,
-                    'exp' : sExpName,
-                    'cardset' : sDeckName,
+                    'count': iCount,
+                    'exp': sExpName,
+                    'cardset': sDeckName,
                     })
         if aInfo:
             # Move to after the expansionsa

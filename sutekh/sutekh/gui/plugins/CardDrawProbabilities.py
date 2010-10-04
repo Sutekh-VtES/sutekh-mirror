@@ -22,12 +22,13 @@ def _choose(iChoices, iTotal):
     if iChoices > 0:
         iDenom = iChoices
     else:
-        return 1 # 0!/0! = 1, since 0! = 1
+        return 1  # 0!/0! = 1, since 0! = 1
     iNumerator = iTotal
     for iNum in range(1, iChoices):
         iNumerator *= (iTotal - iNum)
         iDenom *= iNum
     return iNumerator / iDenom
+
 
 def _gen_choice_list(dSelectedCounts):
     """Recursively generate all possible choices"""
@@ -39,15 +40,16 @@ def _gen_choice_list(dSelectedCounts):
         dNew = copy(dSelectedCounts)
         del dNew[sThisItem]
         aSubLists = _gen_choice_list(dNew)
-        for iChoice in range(dSelectedCounts[sThisItem]+1):
+        for iChoice in range(dSelectedCounts[sThisItem] + 1):
             for aChoices in aSubLists:
                 aThisList = [iChoice]
                 aThisList.extend(aChoices)
                 aList.append(aThisList)
     else:
-        aList = [[x] for x in range(dSelectedCounts[sThisItem]+1)]
-    aList.sort(key=lambda x: [sum(x)]+x)
+        aList = [[x] for x in range(dSelectedCounts[sThisItem] + 1)]
+    aList.sort(key=lambda x: [sum(x)] + x)
     return aList
+
 
 def _multi_hyper_prob(aFound, iDraws, aObjects, iTotal):
     """Multivariate hypergeometric probability:
@@ -91,6 +93,7 @@ def _multi_hyper_prob(aFound, iDraws, aObjects, iTotal):
         fNumerator *= _choose(iRemFound, iRemObjects)
     return fNumerator / fDemon
 
+
 def _hyper_prob_at_least(aFound, iDraws, aObjects, iTotal, iCurCol=0):
     """Returns the probablity of drawing at least aFound from aObjects objects
        of interest from iTotal objects in iDraw draws."""
@@ -111,12 +114,13 @@ def _hyper_prob_at_least(aFound, iDraws, aObjects, iTotal, iCurCol=0):
             fProb += _multi_hyper_prob(aThisFound, iDraws, aObjects, iTotal)
     return fProb
 
+
 class CardDrawSimPlugin(SutekhPlugin):
     """Displays the probabilities for drawing cards from the current
        selection."""
     # pylint: disable-msg=R0902
     # we use a lot of attributes to pass the data around
-    dTableVersions = {PhysicalCardSet : [4, 5, 6]}
+    dTableVersions = {PhysicalCardSet: [4, 5, 6]}
     aModelsSupported = [PhysicalCardSet]
 
     def get_menu_item(self):
@@ -174,7 +178,7 @@ class CardDrawSimPlugin(SutekhPlugin):
             # Look 15 cards into the deck by default, seems good start
             self.iNumSteps = min(8, self.iTotal - self.iOpeningDraw)
         self.iMax = min(15, self.iTotal - self.iOpeningDraw)
-        self.iDrawStep = 1 # Increments to use in table
+        self.iDrawStep = 1  # Increments to use in table
         self.aAllChoices = _gen_choice_list(self.dSelectedCounts)
         self.iCardsToDraw = min(3, self.iSelectedCount)
 
@@ -197,7 +201,7 @@ class CardDrawSimPlugin(SutekhPlugin):
 
     def _make_dialog(self, oMainTitle, bCrypt):
         """Create the dialog box."""
-        oDialog = SutekhDialog( "Card Draw probablities", self.parent,
+        oDialog = SutekhDialog("Card Draw probablities", self.parent,
             gtk.DIALOG_DESTROY_WITH_PARENT,
             (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
         oDialog.connect("response", lambda oDialog, resp: oDialog.destroy())
@@ -266,7 +270,6 @@ class CardDrawSimPlugin(SutekhPlugin):
         oDialog.vbox.pack_start(oWidgetBox, False, False)
         oDialog.vbox.pack_start(oResultsBox)
         return oDialog
-
 
     def _setup_cardlists(self, aSelectedCards, bCrypt):
         """Extract the needed card info from the model"""
@@ -416,7 +419,7 @@ class CardDrawSimPlugin(SutekhPlugin):
             iNumRows = len([x for x in self.aAllChoices if
                 sum(x) == iCardRow])
             iTopRow = iBottomRow + 2 * iNumRows
-            self.oResultsTable.attach(oLabel, 2 , 3, iBottomRow + 1, iTopRow)
+            self.oResultsTable.attach(oLabel, 2, 3, iBottomRow + 1, iTopRow)
             iBottomRow = iTopRow
 
     def _fill_row(self, iRow, iOffset, bZero, aCardCounts):
@@ -427,10 +430,10 @@ class CardDrawSimPlugin(SutekhPlugin):
             iNumDraws = iCol * self.iDrawStep + self.iOpeningDraw
             if iNumDraws < self.iTotal:
                 fProbExact = _multi_hyper_prob(aThisDraw, iNumDraws,
-                        aCardCounts, self.iTotal)*100
+                        aCardCounts, self.iTotal) * 100
                 if not bZero:
                     fProbAccum = _hyper_prob_at_least(aThisDraw, iNumDraws,
-                            aCardCounts, self.iTotal)*100
+                            aCardCounts, self.iTotal) * 100
                     oResLabel = gtk.Label('%3.2f (%3.2f)' % (fProbAccum,
                         fProbExact))
                 else:
