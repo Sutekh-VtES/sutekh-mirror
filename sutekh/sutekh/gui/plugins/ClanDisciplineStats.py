@@ -19,6 +19,7 @@ from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 
+
 class ClanDisciplineStats(SutekhPlugin):
     """Display discipline spread for all clans.
 
@@ -127,9 +128,9 @@ class ClanStats(object):
         # Set of all vampires
         self.oAllStats = GroupStats()
         # group pairs
-        self.dSubStats = { }
+        self.dSubStats = {}
         for iGrp in range(1, iMaxGrp):
-            self.dSubStats[(iGrp, iGrp+1)] = GroupStats()
+            self.dSubStats[(iGrp, iGrp + 1)] = GroupStats()
 
     def add_vamp(self, oVamp):
         """Process a vampire to the total"""
@@ -148,7 +149,7 @@ class StatsView(gtk.TreeView):
         self._oModel = StatsModel(bHideIllegal)
         self._aLabels = [
             "Clan", "Groups", "#", "Total Cap.", "Top 5 Disps.",
-            "# Sup / # Inf", "Score", "Score / Vamp", "Score / Total Cap."
+            "# Sup / # Inf", "Score", "Score / Vamp", "Score / Total Cap.",
         ]
 
         super(StatsView, self).__init__(self._oModel)
@@ -163,6 +164,7 @@ class StatsView(gtk.TreeView):
 
         self.set_grid_lines(gtk.TREE_VIEW_GRID_LINES_BOTH)
 
+
 class StatsModel(gtk.TreeStore):
     # pylint: disable-msg=R0904
     # gtk classes, so we have lots of public methods
@@ -173,7 +175,7 @@ class StatsModel(gtk.TreeStore):
         # We need the * magic here
         super(StatsModel, self).__init__(gobject.TYPE_STRING,
                 gobject.TYPE_STRING, gobject.TYPE_INT, gobject.TYPE_INT,
-                *[gobject.TYPE_STRING]*5)
+                *[gobject.TYPE_STRING] * 5)
         self.oExcludedKeyword = None
         if bHideIllegal:
             try:
@@ -212,9 +214,9 @@ class StatsModel(gtk.TreeStore):
         sDisps = " ".join([x[0].name.upper() for x in aTopN])
         sSupInfCnts = " ".join(["%d/%d" % (x[1], x[2]) for x in aTopN])
         sScores = " ".join([str(x[3]) for x in aTopN])
-        sScoresPerVamp = " ".join(["%.2f" % (float(x[3])/oGrpStats.iVamps)
+        sScoresPerVamp = " ".join(["%.2f" % (float(x[3]) / oGrpStats.iVamps)
             for x in aTopN])
-        sScoresPerCap = " ".join(["%.2f" % (float(x[3])/
+        sScoresPerCap = " ".join(["%.2f" % (float(x[3]) /
             oGrpStats.iTotalCapacity) for x in aTopN])
 
         self.set(oIter,
@@ -236,7 +238,7 @@ class StatsModel(gtk.TreeStore):
         iMaxGrp = AbstractCard.select().max(AbstractCard.q.group)
 
         aClans = list(Clan.select())
-        aClans.sort(key = lambda x: x.name)
+        aClans.sort(key=lambda x: x.name)
 
         for oClan in aClans:
             yield (oClan, self.gather_clan_stats(oClan, iMaxGrp))

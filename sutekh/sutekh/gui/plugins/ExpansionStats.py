@@ -18,6 +18,7 @@ from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 
+
 class ExpansionStats(SutekhPlugin):
     """Display card counts and stats for each expansion, rarity grouping.
 
@@ -103,6 +104,7 @@ class StatsView(gtk.TreeView):
             self.append_column(oColumn)
 
         self.set_grid_lines(gtk.TREE_VIEW_GRID_LINES_BOTH)
+
 
 class StatsModel(gtk.TreeStore):
     # pylint: disable-msg=R0904
