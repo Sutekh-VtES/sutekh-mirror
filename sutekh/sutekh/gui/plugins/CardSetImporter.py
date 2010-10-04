@@ -24,13 +24,14 @@ from sutekh.gui.SutekhDialog import SutekhDialog
 from sutekh.gui.GuiCardSetFunctions import import_cs
 from sutekh.gui.SutekhFileWidget import SutekhFileWidget
 
+
 class ACSImporter(SutekhPlugin):
     """Convert a HTML or text deck into an ACS.
 
        Handles the most common formats, and allows the user to choose
        uri's, so decks published online can be easily imported.
        """
-    dTableVersions = { PhysicalCardSet: [5, 6]}
+    dTableVersions = {PhysicalCardSet: [5, 6]}
     aModelsSupported = ["MainWindow"]
 
     # pylint: disable-msg=W0142
@@ -49,7 +50,7 @@ class ACSImporter(SutekhPlugin):
             'ARDB Inventory XML File': ARDBXMLInvParser,
             'JOL Deck File': JOLDeckParser,
             'Lackey CCG Deck File': LackeyDeckParser,
-            'Guess file format' : GuessFileParser,
+            'Guess file format': GuessFileParser,
         }
         self.oUri = None
         self.oDlg = None

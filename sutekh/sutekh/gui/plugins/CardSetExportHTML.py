@@ -23,7 +23,7 @@ class CardSetExportHTML(SutekhPlugin):
        and then dump that to file.
        This tries to match the HTML file produced by ARDB.
        """
-    dTableVersions = { PhysicalCardSet: [4, 5, 6]}
+    dTableVersions = {PhysicalCardSet: [4, 5, 6]}
     aModelsSupported = [PhysicalCardSet, "MainWindow"]
 
     dGlobalConfig = {
@@ -118,5 +118,6 @@ class CardSetExportHTML(SutekhPlugin):
                 sMsg = "Failed to open output file.\n\n" + str(oExp)
                 do_complaint_error(sMsg)
                 return
+
 
 plugin = CardSetExportHTML

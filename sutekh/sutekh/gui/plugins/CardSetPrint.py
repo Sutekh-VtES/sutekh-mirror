@@ -23,6 +23,7 @@ except AttributeError:
 
 NO_EXPANSION, LONG_INDENT, SHORT_LINE = range(3)
 
+
 def _card_expansion_details(oCard, iMode):
     """Get the expansion for the name"""
     # pylint: disable-msg=E1101
@@ -42,13 +43,13 @@ class CardSetPrint(SutekhPlugin):
        in the card set. This has less formatting than exporting via
        HTML, for instance, but does print directly.
        """
-    dTableVersions = { PhysicalCardSet: [4, 5, 6]}
+    dTableVersions = {PhysicalCardSet: [4, 5, 6]}
     aModelsSupported = [PhysicalCardSet]
 
     dOptions = {
-            'No Expansion info' : NO_EXPANSION,
-            'Card Name\n    Expansion Name' : LONG_INDENT,
-            'Card Name [Short Expansion Name]' : SHORT_LINE,
+            'No Expansion info': NO_EXPANSION,
+            'Card Name\n    Expansion Name': LONG_INDENT,
+            'Card Name [Short Expansion Name]': SHORT_LINE,
             }
 
     def __init__(self, *args, **kwargs):
@@ -103,7 +104,7 @@ class CardSetPrint(SutekhPlugin):
            """
         oPrintOp.set_use_full_page(False)
         oPrintOp.set_unit(gtk.UNIT_MM)
-        oPrintOp.set_n_pages(1) # safety net in case error occur later on
+        oPrintOp.set_n_pages(1)  # safety net in case error occur later on
 
         fWidth, fHeight = oContext.get_width(), oContext.get_height()
 
@@ -131,7 +132,7 @@ class CardSetPrint(SutekhPlugin):
 
             fPageHeight += fLineHeight
 
-        oPrintOp.set_n_pages(len(aPageBreaks)+1)
+        oPrintOp.set_n_pages(len(aPageBreaks) + 1)
         self._aPageBreaks = aPageBreaks
         self._oPangoLayout = oLayout
 
@@ -153,7 +154,7 @@ class CardSetPrint(SutekhPlugin):
         oLayout = self._oPangoLayout
 
         if iPageNum > 0:
-            iStartPageLine = aPageBreaks[iPageNum-1]
+            iStartPageLine = aPageBreaks[iPageNum - 1]
 
         if iPageNum < len(aPageBreaks):
             iEndPageLine = aPageBreaks[iPageNum]
@@ -238,7 +239,7 @@ class CardSetPrint(SutekhPlugin):
                             (iCnt, self.escape(sCardName)))
                     if sCardName in dExpInfo:
                         for sExp, iCnt in sorted(dExpInfo[sCardName].items()):
-                            aMarkup.append(u"    %i \u00D7 %s" %(iCnt,
+                            aMarkup.append(u"    %i \u00D7 %s" % (iCnt,
                                 self.escape(sExp)))
                 else:
                     for sExp, iCnt in sorted(dExpInfo[sCardName].items()):

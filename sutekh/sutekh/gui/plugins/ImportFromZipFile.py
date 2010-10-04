@@ -17,6 +17,7 @@ from sutekh.io.ZipFileWrapper import ZipFileWrapper
 from sutekh.gui.GuiCardSetFunctions import reparent_all_children, \
         update_open_card_sets, get_import_name
 
+
 def _do_rename_parent(sOldName, sNewName, dRemaining):
     """Handle the renaming of a parent card set in the unprocessed list."""
     dResult = {}
@@ -26,6 +27,7 @@ def _do_rename_parent(sOldName, sNewName, dRemaining):
         else:
             dResult[sName] = tInfo
     return dResult
+
 
 class ImportFromZipFile(SutekhPlugin):
     """Extract selected card sets from a zip file."""
@@ -69,7 +71,7 @@ class ImportFromZipFile(SutekhPlugin):
         dSelected = {}
         # Ask user to select entries to import
         oSelDlg = SutekhDialog("Select Card Sets to Import", self.parent,
-                gtk.DIALOG_MODAL|gtk.DIALOG_DESTROY_WITH_PARENT,
+                gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                 (gtk.STOCK_OK, gtk.RESPONSE_OK, gtk.STOCK_CANCEL,
                     gtk.RESPONSE_CANCEL))
 

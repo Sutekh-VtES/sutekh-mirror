@@ -30,6 +30,7 @@ FORWARD, BACKWARD = range(2)
 FULL, VIEW_FIXED, FIT = range(3)
 RATIO = (225, 300)
 
+
 def _scale_dims(iImageWidth, iImageHeight, iPaneWidth, iPaneHeight):
     """Rescale the image dimension so they fit in the pane, preserving the
        aspect ratiom."""
@@ -45,6 +46,7 @@ def _scale_dims(iImageWidth, iImageHeight, iPaneWidth, iPaneHeight):
         fDestWidth = iPaneHeight / fImageAspectRatio
     return int(fDestWidth), int(fDestHeight)
 
+
 def _check_file(sFileName):
     """Check if file exists and is readable"""
     bRes = True
@@ -55,6 +57,7 @@ def _check_file(sFileName):
         bRes = False
     return bRes
 
+
 def _unaccent(sCardName):
     """Remove Unicode accents."""
     # Inspired by a post by renaud turned up by google
@@ -63,6 +66,7 @@ def _unaccent(sCardName):
             unicode(sCardName.encode('utf8'), encoding='utf-8'))
     # Drop non-ascii characters
     return "".join(b for b in sNormed.encode('utf8') if ord(b) < 128)
+
 
 class CardImagePopupMenu(gtk.Menu):
     # pylint: disable-msg=R0904
@@ -119,6 +123,7 @@ class CardImagePopupMenu(gtk.Menu):
         """Change the drawing mode."""
         assert(iScale in [FULL, VIEW_FIXED, FIT])
         self.oFrame.set_zoom_mode(iScale)
+
 
 class CardImageFrame(BasicFrame, CardTextViewListener):
     # pylint: disable-msg=R0904, R0902
@@ -197,7 +202,7 @@ class CardImageFrame(BasicFrame, CardTextViewListener):
             bHasInfo = False
         if bHasInfo:
             aExp = [oP.expansion.name for oP in oAbsCard.rarity]
-            self.__aExpansions = sorted(list(set(aExp))) # remove duplicates
+            self.__aExpansions = sorted(list(set(aExp)))  # remove duplicates
             self.__iExpansionPos = 0
             self.__sCurExpansion = self.__aExpansions[0]
         else:
@@ -228,7 +233,7 @@ class CardImageFrame(BasicFrame, CardTextViewListener):
 
     def __load_image(self, sFullFilename):
         """Load an image into the pane, show broken image if needed"""
-        self._oImage.set_alignment(0.5, 0.5) # Centre image
+        self._oImage.set_alignment(0.5, 0.5)  # Centre image
         try:
             if self.__bShowExpansions:
                 self.oExpansionLabel.set_markup('<i>Image from expansion :'
@@ -238,7 +243,7 @@ class CardImageFrame(BasicFrame, CardTextViewListener):
                 # pylint doesn't pick up allocation methods correctly
                 iHeightOffset = self.oExpansionLabel.allocation.height + 2
             else:
-                self.oExpansionLabel.hide() # config chanes can cause this
+                self.oExpansionLabel.hide()  # config chanes can cause this
                 iHeightOffset = 0
             oPixbuf = gtk.gdk.pixbuf_new_from_file(sFullFilename)
             iWidth = oPixbuf.get_width()
@@ -325,7 +330,7 @@ class CardImageFrame(BasicFrame, CardTextViewListener):
     def do_cycle_expansion(self, iDir):
         """Change the expansion image to a different one in the list."""
         if len(self.__aExpansions) < 2 or not self.__bShowExpansions:
-            return # nothing to scroll through
+            return  # nothing to scroll through
         if iDir == FORWARD:
             self.__iExpansionPos += 1
             if self.__iExpansionPos >= len(self.__aExpansions):
@@ -345,7 +350,7 @@ class CardImageFrame(BasicFrame, CardTextViewListener):
     def __cycle_expansion(self, _oWidget, oEvent):
         """On a button click, move to the next expansion."""
         if oEvent.type != gtk.gdk.BUTTON_PRESS:
-            return True # don't jump twice on double or triple clicks
+            return True  # don't jump twice on double or triple clicks
         if oEvent.button == 1:
             self.do_cycle_expansion(FORWARD)
         elif oEvent.button == 3:
@@ -368,6 +373,7 @@ class CardImageFrame(BasicFrame, CardTextViewListener):
     def get_menu_name(self):
         """Return the menu key"""
         return self.sMenuFlag
+
 
 class ImageConfigDialog(SutekhDialog):
     # pylint: disable-msg=R0904
@@ -394,7 +400,7 @@ class ImageConfigDialog(SutekhDialog):
         self.oChoice = FileOrDirOrUrlWidget(oImagePlugin.parent,
                 "Choose location for "
                 "images file", "Choose image directory", sDefaultDir,
-                { 'csillagbolcselet.hu' : self.sDefaultUrl })
+                {'csillagbolcselet.hu': self.sDefaultUrl})
         add_filter(self.oChoice, 'Zip Files', ['*.zip', '*.ZIP'])
         # pylint: disable-msg=E1101
         # pylint doesn't pick up vbox methods correctly
@@ -416,6 +422,7 @@ class ImageConfigDialog(SutekhDialog):
             self.oChoice.get_binary_data(oOutFile)
             return oOutFile, False
         return None, None
+
 
 class CardImagePlugin(SutekhPlugin):
     """Plugin providing access to CardImageFrame."""
@@ -508,7 +515,7 @@ class CardImagePlugin(SutekhPlugin):
                     bActivateMenu = True
                 else:
                     do_complaint_error('Unable to successfully unzip data')
-                oFile.close() # clean up temp file
+                oFile.close()  # clean up temp file
             else:
                 # Unable to get data
                 do_complaint_error('Unable to configure card images plugin')
@@ -549,7 +556,7 @@ class CardImagePlugin(SutekhPlugin):
                 continue
             # Should I also test for cardimages\ ?
             sFileName = os.path.join(sPrefsPath,
-                    oItem.filename.replace('cardimages/',''))
+                    oItem.filename.replace('cardimages/', ''))
             sFileName = sFileName.replace('/', os.path.sep)
             sDir = os.path.dirname(sFileName)
             ensure_dir_exists(sDir)
@@ -575,7 +582,7 @@ class CardImagePlugin(SutekhPlugin):
                     # Treat as cancelling
                     return False
             return True
-        return False # No path, can't be OK
+        return False  # No path, can't be OK
 
     def add_image_frame_active(self, bValue):
         """Toggle the sensitivity of the menu item."""

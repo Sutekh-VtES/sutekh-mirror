@@ -14,10 +14,11 @@ from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.SutekhFileWidget import ExportDialog
 from sutekh.SutekhUtility import safe_filename
 
+
 class CardSetExportCSV(SutekhPlugin):
     """Provides a dialog for selecting a filename, then calls on
        WriteCSV to produce the required output."""
-    dTableVersions = { PhysicalCardSet: [4, 5, 6]}
+    dTableVersions = {PhysicalCardSet: [4, 5, 6]}
     aModelsSupported = [PhysicalCardSet]
 
     def get_menu_item(self):
@@ -55,9 +56,10 @@ class CardSetExportCSV(SutekhPlugin):
             oCardSet = self.get_card_set()
             if not oCardSet:
                 return
-            fOut = file(sFileName,"w")
+            fOut = file(sFileName, "w")
             oWriter = WriteCSV(bIncHeader, bIncExpansion)
             oWriter.write(fOut, CardSetWrapper(oCardSet))
             fOut.close()
+
 
 plugin = CardSetExportCSV

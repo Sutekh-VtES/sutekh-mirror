@@ -14,6 +14,7 @@ import gtk
 import os
 import traceback
 
+
 class FullBackup(SutekhPlugin):
     """Provide access to ZipFileWrapper's backup and restore methods.
 

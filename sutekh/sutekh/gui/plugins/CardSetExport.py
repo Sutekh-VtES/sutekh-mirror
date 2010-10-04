@@ -20,10 +20,11 @@ from sutekh.io.WriteELDBDeckFile import WriteELDBDeckFile
 from sutekh.io.WriteArdbText import WriteArdbText
 from sutekh.SutekhUtility import safe_filename
 
+
 class CardSetExport(SutekhPlugin):
     """Provides a dialog for selecting a filename, then calls on
        the appropriate writer to produce the required output."""
-    dTableVersions = { PhysicalCardSet: [4, 5, 6]}
+    dTableVersions = {PhysicalCardSet: [4, 5, 6]}
     aModelsSupported = [PhysicalCardSet]
 
     _dExporters = {
@@ -33,18 +34,18 @@ class CardSetExport(SutekhPlugin):
             # 'Text files', '*.txt' if not present
             # Extension is directly appended to suggested filename,
             # so should include an initial . if appropriate
-            'JOL' : (WriteJOL, 'Export to JOL format', '.jol.txt'),
-            'Lackey' : (WriteLackeyCCG, 'Export to Lackey CCG format',
+            'JOL': (WriteJOL, 'Export to JOL format', '.jol.txt'),
+            'Lackey': (WriteLackeyCCG, 'Export to Lackey CCG format',
                 '.lackey.txt'),
-            'ARDB Text' : (WriteArdbText, 'Export to ARDB Text', '.ardb.txt'),
-            'FELDB Inv' : (WriteELDBInventory,
+            'ARDB Text': (WriteArdbText, 'Export to ARDB Text', '.ardb.txt'),
+            'FELDB Inv': (WriteELDBInventory,
                 'Export to ELDB CSV Inventory File', '.eldb.csv', 'CSV Files',
                 ['*.csv']),
-            'FELDB Deck' : (WriteELDBDeckFile, 'Export to ELDB ELD Deck File',
+            'FELDB Deck': (WriteELDBDeckFile, 'Export to ELDB ELD Deck File',
                 '.eldb.eld', 'ELD Files', ['*.eld']),
-            'ARDB Inv' : (WriteArdbInvXML, 'Export to ARDB Inventory XML File',
+            'ARDB Inv': (WriteArdbInvXML, 'Export to ARDB Inventory XML File',
                 '.inv.ardb.xml', 'XML Files', ['*.xml']),
-            'ARDB Deck' : (WriteArdbXML, 'Export to ARDB Deck XML File',
+            'ARDB Deck': (WriteArdbXML, 'Export to ARDB Deck XML File',
                 '.ardb.xml', 'XML Files', ['*.xml']),
             }
 
@@ -82,8 +83,9 @@ class CardSetExport(SutekhPlugin):
             if not oCardSet:
                 return
             oWriter = cWriter()
-            fOut = file(sFileName,"w")
+            fOut = file(sFileName, "w")
             oWriter.write(fOut, CardSetWrapper(oCardSet))
             fOut.close()
+
 
 plugin = CardSetExport
