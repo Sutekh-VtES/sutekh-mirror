@@ -19,8 +19,8 @@ from sutekh.core.DBSignals import listen_row_destroy, listen_row_update, \
         listen_row_created, listen_changed
 from sqlobject import SQLObjectNotFound
 
+SORT_COLUMN_OFFSET = 200  # ensure we don't clash with other extra columns
 
-SORT_COLUMN_OFFSET = 200 # ensure we don't clash with other extra columns
 
 def _get_number(dInfo, sKey, fQuery):
     """Handle the use query & cache interaction for numbers"""
@@ -34,11 +34,13 @@ def _get_number(dInfo, sKey, fQuery):
             return -1
     return dInfo[sKey]
 
+
 def _format_number(iCount):
     """Return suitable list for the given number"""
     if iCount == -1:
         return [""]
     return [str(iCount)]
+
 
 class ExtraCardSetListViewColumns(SutekhPlugin):
     """Add extra columns to the card set list view.
@@ -50,15 +52,15 @@ class ExtraCardSetListViewColumns(SutekhPlugin):
 
     # Dictionary of column info - width, render function name, data func name
     COLUMNS = {
-            'Total cards' : (100, '_render_total', '_get_data_total'),
-            'All Children' : (100, '_render_all_children',
+            'Total cards': (100, '_render_total', '_get_data_total'),
+            'All Children': (100, '_render_all_children',
                 '_get_data_all_children'),
-            'In-Use Children' : (100, '_render_inuse_children',
+            'In-Use Children': (100, '_render_inuse_children',
                 '_get_data_inuse_children'),
-            'Library' : (100, '_render_library', '_get_data_library'),
-            'Crypt' : (100, '_render_crypt', '_get_data_crypt'),
-            'Author' : (300, '_render_author', '_get_data_author'),
-            'Description' : (700, '_render_description',
+            'Library': (100, '_render_library', '_get_data_library'),
+            'Crypt': (100, '_render_crypt', '_get_data_crypt'),
+            'Author': (300, '_render_author', '_get_data_author'),
+            'Description': (700, '_render_description',
                 '_get_data_description'),
             }
 
@@ -71,9 +73,9 @@ class ExtraCardSetListViewColumns(SutekhPlugin):
 
     # Placeholder if we decide to add columns with icons later
     #_dModes = {
-    #        'Show Icons and Names' : SHOW_ICONS_AND_TEXT,
-    #        'Show Icons only' : SHOW_ICONS_ONLY,
-    #        'Show Text only' : SHOW_TEXT_ONLY,
+    #        'Show Icons and Names': SHOW_ICONS_AND_TEXT,
+    #        'Show Icons only': SHOW_ICONS_ONLY,
+    #        'Show Text only': SHOW_TEXT_ONLY,
     #        }
 
     # pylint: disable-msg=W0142
@@ -198,7 +200,6 @@ class ExtraCardSetListViewColumns(SutekhPlugin):
         aText = _format_number(iCount)
         oCell.set_data(aText, aIcons, self._iShowMode)
 
-
     def _get_data_library(self, sCardSet, bGetIcons=True):
         """Return the number of library cards in the card set"""
         def query(oCardSet):
@@ -287,7 +288,6 @@ class ExtraCardSetListViewColumns(SutekhPlugin):
         sCardSet = self._get_card_set(oIter)
         aText, aIcons = self._get_data_description(sCardSet, True)
         oCell.set_data(aText, aIcons, self._iShowMode)
-
 
     # pylint: enable-msg=R0201
 

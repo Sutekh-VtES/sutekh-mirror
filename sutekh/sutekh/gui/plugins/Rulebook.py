@@ -16,6 +16,7 @@ from sutekh.gui.FileOrUrlWidget import FileOrUrlWidget
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 from sutekh.SutekhUtility import prefs_dir, ensure_dir_exists
 
+
 class RulebookConfigDialog(SutekhDialog):
     # pylint: disable-msg=R0904
     # R0904 - gtk Widget, so has many public methods
@@ -65,8 +66,8 @@ class RulebookConfigDialog(SutekhDialog):
             else:
                 sBaseUrl = 'www.white-wolf.com'
             oFileSelector = FileOrUrlWidget(oParent,
-                dUrls = {
-                    sBaseUrl: self.WW_RULEBOOK_URLS[sName]
+                dUrls={
+                    sBaseUrl: self.WW_RULEBOOK_URLS[sName],
                 },
                 sTitle="Select %s HTML file ..." % (sName,),
             )
@@ -107,8 +108,8 @@ class RulebookPlugin(SutekhPlugin):
         "Imbued Rules": "imbued.html",
         "Rulings": "rulings.html",
         "V:EKN Tournament Rules": "tournament_rules.html",
-        "VTES FAQ" : "faq.html",
-        "Imbued FAQ" : "imbued_faq.html",
+        "VTES FAQ": "faq.html",
+        "Imbued FAQ": "imbued_faq.html",
         "V:TES Complete Rules Reference": "rules_reference.html",
     }
 

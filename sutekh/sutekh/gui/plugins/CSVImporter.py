@@ -16,6 +16,7 @@ from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 from sutekh.gui.SutekhFileWidget import SutekhFileButton
 from sutekh.gui.GuiCardSetFunctions import import_cs
 
+
 class CSVImporter(SutekhPlugin):
     """CSV Import plugin.
 
