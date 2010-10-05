@@ -10,6 +10,7 @@
 # pylint: disable-msg=E0611
 from pkg_resources import resource_string
 
+
 # pylint: disable-msg=R0903,C0111
 class SutekhInfo(object):
     VERSION = (0, 8, 0, 'alpha', 0)
@@ -78,7 +79,7 @@ class SutekhInfo(object):
     ]
 
     INSTALL_REQUIRES = [
-        'SQLObject >= 0.9.0, < 0.13', # fetching the dev version requires svn
+        'SQLObject >= 0.9.0, < 0.13',  # fetching the dev version requires svn
                            # (which is a bit crazy as an install requirement)
         'PyProtocols',
         'ply',
@@ -88,7 +89,7 @@ class SutekhInfo(object):
     # Install these manually
     NON_EGG_REQUIREMENTS = [
         'setuptools',
-        'pysqlite', # sqlite3 is installed by default in Python >= 2.5
+        'pysqlite',  # sqlite3 is installed by default in Python >= 2.5
         'PyGTK',
     ]
 
@@ -141,7 +142,7 @@ class SutekhInfo(object):
             'License :: OSI Approved :: Python Software Foundation License',
             'http://www.python.org/psf/license/',
             'Version 2'),
-        'ZipDLL': ( # NSIS Plugin
+        'ZipDLL': (  # NSIS Plugin
             'License :: OSI Approved :: GNU General Public License (GPL)',
             'http://www.gnu.org/copyleft/gpl.html',
             'Version 2 or later'),

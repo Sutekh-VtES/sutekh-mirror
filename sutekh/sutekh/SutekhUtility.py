@@ -9,12 +9,16 @@
 
 """Misc functions needed in various places in Sutekh."""
 
+import tempfile
+import os
+import sys
+import re
+from sqlobject import sqlhub
 from sutekh.core.SutekhObjects import VersionTable, flush_cache, CRYPT_TYPES
 from sutekh.core.DatabaseVersion import DatabaseVersion
 from sutekh.io.WhiteWolfParser import WhiteWolfParser
 from sutekh.io.RulingParser import RulingParser
-from sqlobject import sqlhub
-import tempfile, os, sys, re
+
 
 def refresh_tables(aTables, oConn):
     """Drop and recreate the given list of tables"""
@@ -36,6 +40,7 @@ def refresh_tables(aTables, oConn):
     flush_cache()
     return True
 
+
 def read_white_wolf_list(aWwFiles, oLogHandler=None):
     """Parse in a new White Wolf cardlist
 
@@ -54,6 +59,7 @@ def read_white_wolf_list(aWwFiles, oLogHandler=None):
     sqlhub.processConnection.commit(close=True)
     sqlhub.processConnection = oOldConn
 
+
 def read_rulings(oRulings, oLogHandler=None):
     """Parse a new White Wolf rulings file
 
@@ -70,6 +76,7 @@ def read_rulings(oRulings, oLogHandler=None):
     sqlhub.processConnection.commit(close=True)
     sqlhub.processConnection = oOldConn
 
+
 def gen_temp_file(sBaseName, sDir):
     """Simple wrapper around tempfile creation - generates the name and closes
        the file
@@ -85,21 +92,24 @@ def gen_temp_file(sBaseName, sDir):
     # I don't see it being triggered accidently
     return sFilename
 
+
 def gen_temp_dir():
     """Create a temporary directory using mkdtemp"""
     sTempdir = tempfile.mkdtemp('dir', 'sutekh')
     return sTempdir
+
 
 def safe_filename(sFilename):
     """Replace potentially dangerous and annoying characters in the name -
        used to automatically generate sensible filenames from card set names
        """
     sSafeName = sFilename
-    sSafeName = sSafeName.replace(" ", "_") # I dislike spaces in filenames
+    sSafeName = sSafeName.replace(" ", "_")  # I dislike spaces in filenames
     # Prevented unexpected filesystem issues
     sSafeName = sSafeName.replace("/", "_")
-    sSafeName = sSafeName.replace("\\", "_") # ditto for windows
+    sSafeName = sSafeName.replace("\\", "_")  # ditto for windows
     return sSafeName
+
 
 def prefs_dir(sApp):
     """Return a suitable directory for storing preferences and other
@@ -109,6 +119,7 @@ def prefs_dir(sApp):
     else:
         return os.path.join(os.path.expanduser("~"), ".%s" % sApp.lower())
 
+
 def ensure_dir_exists(sDir):
     """Check that a directory exists and create it if it doesn't.
        """
@@ -116,6 +127,7 @@ def ensure_dir_exists(sDir):
         assert os.path.isdir(sDir)
     else:
         os.makedirs(sDir)
+
 
 def sqlite_uri(sPath):
     """Create an SQLite db URI from the path to the db file.
@@ -129,6 +141,7 @@ def sqlite_uri(sPath):
         sDbFile = sRest
 
     return "sqlite://" + sDbFile
+
 
 def pretty_xml(oElement, iIndentLevel=0):
     """
@@ -151,6 +164,7 @@ def pretty_xml(oElement, iIndentLevel=0):
         if iIndentLevel and (not oElement.tail or not oElement.tail.strip()):
             oElement.tail = sIndent
 
+
 def format_text(sCardText):
     """Ensure card text is formatted properly"""
     # We want to split the . [dis] pattern into .\n[dis] again
@@ -158,8 +172,8 @@ def format_text(sCardText):
     # But don't split the 'is not a discpline'
     return re.sub('\n(\[...\] is not a Dis)', ' \\1', sResult)
 
-# Utility test for crypt cards
 
+# Utility test for crypt cards
 def is_crypt_card(oAbsCard):
     """Test if a card is a crypt card or not"""
     # Vampires and Imbued have exactly one card type (we hope that WW
