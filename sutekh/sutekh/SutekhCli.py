@@ -9,7 +9,11 @@ SutekhCli.py: command-line interface to much of Sutekh's database
 management functionality
 """
 
-import sys, optparse, os, tempfile, StringIO
+import sys
+import optparse
+import os
+import tempfile
+import StringIO
 from logging import StreamHandler
 from sqlobject import sqlhub, connectionForURI, SQLObjectNotFound
 from sutekh.core.SutekhObjects import Ruling, TABLE_LIST, PHYSICAL_LIST, \

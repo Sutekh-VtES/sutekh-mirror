@@ -8,16 +8,19 @@
 
 import gtk
 import logging
+import sys
+import optparse
+import os
+import traceback
+from sqlobject import sqlhub, connectionForURI
 from sutekh.core.SutekhObjects import VersionTable, TABLE_LIST
 from sutekh.SutekhUtility import prefs_dir, ensure_dir_exists, sqlite_uri
 from sutekh.gui.MultiPaneWindow import MultiPaneWindow
 from sutekh.core.DatabaseVersion import DatabaseVersion
-from sqlobject import sqlhub, connectionForURI
 from sutekh.gui.ConfigFile import ConfigFile
 from sutekh.gui.GuiDBManagement import do_db_upgrade, initialize_db
 from sutekh.gui.SutekhDialog import do_complaint_error
 from sutekh.SutekhInfo import SutekhInfo
-import sys, optparse, os, traceback
 
 
 def parse_options(aArgs):
