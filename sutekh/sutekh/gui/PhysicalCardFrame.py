@@ -13,6 +13,7 @@ from sutekh.gui.CardListFrame import CardListFrame
 from sutekh.gui.PhysicalCardController import PhysicalCardController
 from sutekh.gui.PhysicalCardMenu import PhysicalCardMenu
 
+
 class PhysicalCardFrame(CardListFrame):
     # pylint: disable-msg=R0904
     # gtk.Widget, so many public methods

@@ -15,33 +15,33 @@ from sutekh.gui.CardSetListModel import CardSetCardListModel
 from sutekh.core.SutekhObjects import PhysicalCardSet
 
 NUM_KEYS = {
-        gtk.gdk.keyval_from_name('1') : 1,
-        gtk.gdk.keyval_from_name('KP_1') : 1,
-        gtk.gdk.keyval_from_name('2') : 2,
-        gtk.gdk.keyval_from_name('KP_2') : 2,
-        gtk.gdk.keyval_from_name('3') : 3,
-        gtk.gdk.keyval_from_name('KP_3') : 3,
-        gtk.gdk.keyval_from_name('4') : 4,
-        gtk.gdk.keyval_from_name('KP_4') : 4,
-        gtk.gdk.keyval_from_name('5') : 5,
-        gtk.gdk.keyval_from_name('KP_5') : 5,
-        gtk.gdk.keyval_from_name('6') : 6,
-        gtk.gdk.keyval_from_name('KP_6') : 6,
-        gtk.gdk.keyval_from_name('7') : 7,
-        gtk.gdk.keyval_from_name('KP_7') : 7,
-        gtk.gdk.keyval_from_name('8') : 8,
-        gtk.gdk.keyval_from_name('KP_8') : 8,
-        gtk.gdk.keyval_from_name('9') : 9,
-        gtk.gdk.keyval_from_name('KP_9') : 9
+        gtk.gdk.keyval_from_name('1'): 1,
+        gtk.gdk.keyval_from_name('KP_1'): 1,
+        gtk.gdk.keyval_from_name('2'): 2,
+        gtk.gdk.keyval_from_name('KP_2'): 2,
+        gtk.gdk.keyval_from_name('3'): 3,
+        gtk.gdk.keyval_from_name('KP_3'): 3,
+        gtk.gdk.keyval_from_name('4'): 4,
+        gtk.gdk.keyval_from_name('KP_4'): 4,
+        gtk.gdk.keyval_from_name('5'): 5,
+        gtk.gdk.keyval_from_name('KP_5'): 5,
+        gtk.gdk.keyval_from_name('6'): 6,
+        gtk.gdk.keyval_from_name('KP_6'): 6,
+        gtk.gdk.keyval_from_name('7'): 7,
+        gtk.gdk.keyval_from_name('KP_7'): 7,
+        gtk.gdk.keyval_from_name('8'): 8,
+        gtk.gdk.keyval_from_name('KP_8'): 8,
+        gtk.gdk.keyval_from_name('9'): 9,
+        gtk.gdk.keyval_from_name('KP_9'): 9,
         }
 
 PLUS_KEYS = [
         gtk.gdk.keyval_from_name('plus'),
-        gtk.gdk.keyval_from_name('KP_Add')
+        gtk.gdk.keyval_from_name('KP_Add'),
         ]
 MINUS_KEYS = [
         gtk.gdk.keyval_from_name('minus'),
-        gtk.gdk.keyval_from_name('KP_Subtract')
+        gtk.gdk.keyval_from_name('KP_Subtract'),
         ]
 
 
@@ -252,7 +252,7 @@ class CardSetView(CardListView):
                 bSkip = True
             if bSkip or not self._oController.add_paste_data(sSource,
                     aCardInfo):
-                bDragRes = False # paste failed
+                bDragRes = False  # paste failed
             # else paste succeeds
         oContext.finish(bDragRes, False, oTime)
 
@@ -300,7 +300,7 @@ class CardSetView(CardListView):
             dSelectedData = self._process_edit_selection(iChg=-1)
             self._oController.change_selected_card_count(dSelectedData)
             return True
-        return False # propogate event
+        return False  # propogate event
 
     # functions related to tweaking widget display
 
@@ -406,7 +406,7 @@ class CardSetView(CardListView):
                 fg[NORMAL] = "%(colour)s"
                 }
             widget "%(path)s" style "internal_sutekh_editstyle"
-            """ % { 'colour' : sColour, 'path' : self.path() }
+            """ % {'colour': sColour, 'path': self.path()}
             gtk.rc_parse_string(sStyleInfo)
             # Need to force re-assesment of styles
             self.set_name('editable_view')
@@ -483,7 +483,7 @@ class CardSetView(CardListView):
     def restore_iter_state(self, aIters, dStates):
         """Restore expanded state of the iters."""
         if not dStates or not dStates.has_key('selected'):
-            return # Don't do anything if dStates is empty
+            return  # Don't do anything if dStates is empty
         for oIter in aIters:
             sKey = self.get_iter_identifier(oIter)
             if sKey in dStates['selected']:
@@ -492,4 +492,3 @@ class CardSetView(CardListView):
                 self.expand_to_path(self._oModel.get_path(oIter))
             aChildIters = self._oModel.get_all_iter_children(oIter)
             self.restore_iter_state(aChildIters, dStates)
-

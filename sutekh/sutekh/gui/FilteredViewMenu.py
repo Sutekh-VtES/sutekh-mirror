@@ -10,6 +10,7 @@
 from sutekh.gui.SutekhMenu import SutekhMenu
 import gtk
 
+
 class FilteredViewMenu(SutekhMenu):
     # pylint: disable-msg=R0904, R0922
     # R0904 - gtk.Widget, so many public methods
@@ -127,6 +128,7 @@ class FilteredViewMenu(SutekhMenu):
             oMenu.append(oRadio)
             oRadio.show()
 
+
 class CardListMenu(FilteredViewMenu):
     # pylint: disable-msg=R0904
     # R0904 - gtk.Widget, so many public methods
@@ -143,4 +145,3 @@ class CardListMenu(FilteredViewMenu):
     def create_analyze_menu(self):
         """Create the Analyze Menu, to be filled in by plugins"""
         self.create_submenu(self, "Analy_ze")
-

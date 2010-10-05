@@ -11,6 +11,7 @@ import gtk
 from sutekh.gui.FilteredView import FilteredView
 from sutekh.gui.FilterDialog import FilterDialog
 
+
 class CardListView(FilteredView):
     """Base class for all the card list views in Sutekh."""
     # pylint: disable-msg=R0904, R0902, R0901
@@ -18,6 +19,7 @@ class CardListView(FilteredView):
     # R0902 - We need to track a fair amount of state, so many attributes
     # R0901 - many ancestors, due to our object hierachy on top of the quite
     # deep gtk one
+
     def __init__(self, oController, oMainWindow, oModel, oConfig):
         super(CardListView, self).__init__(oController, oMainWindow,
                 oModel, oConfig)
@@ -48,8 +50,8 @@ class CardListView(FilteredView):
         # Key combination for searching
 
         # Drag and Drop
-        aTargets = [ ('STRING', 0, 0),      # second 0 means TARGET_STRING
-                     ('text/plain', 0, 0) ] # and here
+        aTargets = [('STRING', 0, 0),      # second 0 means TARGET_STRING
+                    ('text/plain', 0, 0)]  # and here
 
         self.drag_source_set(gtk.gdk.BUTTON1_MASK | gtk.gdk.BUTTON3_MASK,
                              aTargets,
@@ -168,7 +170,7 @@ class CardListView(FilteredView):
 
            Because of how pygtk handles drag-n-drop data, we need to
            create a string representating the card data."""
-        if self._oSelection.count_selected_rows()<1:
+        if self._oSelection.count_selected_rows() < 1:
             return ''
         dSelectedData = self.process_selection()
         # Create selection data structure
@@ -177,9 +179,9 @@ class CardListView(FilteredView):
         for sCardName in dSelectedData:
             for sExpansion, iCount in dSelectedData[sCardName].iteritems():
                 sSelectData += '\n%(count)d\n%(name)s\n%(expansion)s' % {
-                        'count' : iCount,
-                        'name' : sCardName,
-                        'expansion' : sExpansion,
+                        'count': iCount,
+                        'name': sCardName,
+                        'expansion': sExpansion,
                         }
         return sSelectData
 
@@ -265,7 +267,7 @@ class CardListView(FilteredView):
                         # Bail out, as compare will find the match for us
                         return True
                     oChildIter = self._oModel.iter_next(oChildIter)
-                return True # No matches, so bail
+                return True  # No matches, so bail
 
         sCardName = self._oModel.get_name_from_iter(oIter)[:iLenKey].lower()
         if self.to_ascii(sCardName).startswith(sKey) or \

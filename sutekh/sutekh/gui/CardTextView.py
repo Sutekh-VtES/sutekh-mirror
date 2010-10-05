@@ -14,17 +14,20 @@ from sutekh.core.SutekhObjects import IKeyword
 from sutekh.SutekhUtility import format_text
 from sqlobject import SQLObjectNotFound
 
+
 class CardTextViewListener(object):
     """Listens to changes, i.e. .set_card_text(...) to CardListViews."""
     def set_card_text(self, oPhysCard):
         """The CardListView has called set_card_text on the CardText pane"""
         pass
 
+
 class CardTextBuffer(gtk.TextBuffer):
     """Buffer object which holds the actual card text.
 
        This is also responsible for nicely formatting the output.
        """
+
     # pylint: disable-msg=R0904
     # gtk.Widget, so many public methods
     def __init__(self):
@@ -174,7 +177,6 @@ class CardTextView(gtk.TextView):
        and feeding it to the buffer in suitable chunks.
        """
 
-
     # pylint: disable-msg=R0904
     # gtk.Widget, so many public methods
     def __init__(self, oController, oIconManager):
@@ -193,8 +195,8 @@ class CardTextView(gtk.TextView):
         logging.info('Pango Font Description : %s',
                 oContext.get_font_description())
         self._oBurnOption = None
-        self.update_to_new_db() # lookup burn option
-        self.dListeners = {} # dictionary of CardTextViewListeners
+        self.update_to_new_db()  # lookup burn option
+        self.dListeners = {}  # dictionary of CardTextViewListeners
 
     # pylint: disable-msg=W0212
     # We allow access via these properties
@@ -344,4 +346,3 @@ class CardTextView(gtk.TextView):
             self._oBuf.tag_text("\n")
             self._oBuf.labelled_list("Artists",
                     [oA.name for oA in oCard.artists], "artist")
-

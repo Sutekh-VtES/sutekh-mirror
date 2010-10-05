@@ -14,6 +14,7 @@ from sutekh.gui.CardSetManagementController import CardSetManagementController
 from sutekh.gui.CardSetManagementMenu import CardSetManagementMenu
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 
+
 class CardSetManagementFrame(BasicFrame):
     # pylint: disable-msg=R0904
     # gtk.Widget, so lots of public methods

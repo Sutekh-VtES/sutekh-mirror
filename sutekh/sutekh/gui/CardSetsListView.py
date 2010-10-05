@@ -10,6 +10,7 @@ import gtk
 from sutekh.gui.CardSetManagementModel import CardSetManagementModel
 from sutekh.gui.FilteredView import FilteredView
 
+
 class CardSetsListView(FilteredView):
     """Tree View for the card set list."""
     # pylint: disable-msg=R0904, R0902, R0901
@@ -60,10 +61,9 @@ class CardSetsListView(FilteredView):
         oPath = aSelectedRows[0]
         return oModel.get_name_from_path(oPath)
 
-
     def _select_set(self, sCardSetName):
         """Add the specified set to the selection"""
-        aIters =  [ self._oModel.get_iter_first() ]
+        aIters = [self._oModel.get_iter_first()]
         while aIters:
             oIter = aIters.pop()
             while oIter is not None:
@@ -71,7 +71,7 @@ class CardSetsListView(FilteredView):
                     oPath = self._oModel.get_path(oIter)
                     self.expand_to_path(oPath)
                     self._oSelection.select_iter(oIter)
-                    return # No need to continue
+                    return  # No need to continue
                 if self._oModel.iter_has_child(oIter):
                     aIters.append(self._oModel.iter_children(oIter))
                 oIter = self._oModel.iter_next(oIter)
@@ -111,4 +111,3 @@ class CardSetsListView(FilteredView):
         """Find the entry with the text sEntry, and expand the appropriate
            row."""
         self._oModel.foreach(self._check_row_for_entry, sEntry)
-

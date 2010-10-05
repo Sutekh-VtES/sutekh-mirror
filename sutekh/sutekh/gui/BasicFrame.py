@@ -7,7 +7,9 @@
 
 """Base class for Sutekh Frames"""
 
-import gtk, gobject
+import gtk
+import gobject
+
 
 class BasicFrame(gtk.Frame):
     # pylint: disable-msg=R0904
@@ -19,8 +21,7 @@ class BasicFrame(gtk.Frame):
        setting the active hint.
        """
 
-    aDragTargets = [ ('STRING', 0, 0),
-            ('text/plain', 0, 0) ]
+    aDragTargets = [('STRING', 0, 0), ('text/plain', 0, 0)]
 
     _cModelType = None
 
@@ -228,7 +229,7 @@ class BasicFrame(gtk.Frame):
                 fg[NORMAL] = "%(colour)s"
                 }
             widget "%(path)s" style "internal_sutekh_hlstyle"
-            """ % { 'colour' : sColour, 'path' : self._oTitleLabel.path() }
+            """ % {'colour': sColour, 'path': self._oTitleLabel.path()}
             gtk.rc_parse_string(sStyleInfo)
             # We use gtk's style machinery to do the update.
             # This seems the only way of ensuring we will actually do
@@ -261,7 +262,7 @@ class BasicFrame(gtk.Frame):
         if not oSelectionData and oSelectionData.format != 8:
             bDragRes = False
         else:
-            aData =  oSelectionData.data.splitlines()
+            aData = oSelectionData.data.splitlines()
             if aData[0] == 'Sutekh Pane:':
                 if not self.do_swap(aData):
                     bDragRes = False
@@ -299,4 +300,3 @@ class BasicFrame(gtk.Frame):
         """Create an icon for dragging the pane from the titlebar"""
         oDrawable = self._oTitleLabel.get_snapshot(None)
         oWidget.drag_source_set_icon(oDrawable.get_colormap(), oDrawable)
-

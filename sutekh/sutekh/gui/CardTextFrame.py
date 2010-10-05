@@ -13,6 +13,7 @@ from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 from sutekh.gui.CardTextView import CardTextView
 from sutekh.gui.BasicFrame import BasicFrame
 
+
 class CardTextFrame(BasicFrame):
     """Frame which holds the CardTextView.
 
@@ -51,4 +52,3 @@ class CardTextFrame(BasicFrame):
     def get_menu_name(self):
         """Get the menu key"""
         return "Card Text"
-

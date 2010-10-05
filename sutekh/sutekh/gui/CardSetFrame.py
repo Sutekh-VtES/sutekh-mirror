@@ -15,6 +15,7 @@ from sutekh.gui.CardListFrame import CardListFrame
 from sutekh.gui.CardSetMenu import CardSetMenu
 from sutekh.gui.CardSetController import CardSetController
 
+
 class CardSetFrame(CardListFrame):
     # pylint: disable-msg=R0904
     # gtk.Widget, so many public methods
@@ -90,4 +91,3 @@ class CardSetFrame(CardListFrame):
         if self._bNeedReload:
             self.reload()
         self._bNeedReload = False
-

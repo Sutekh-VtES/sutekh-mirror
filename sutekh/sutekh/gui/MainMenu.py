@@ -20,6 +20,7 @@ from sutekh.io.PhysicalCardParser import PhysicalCardParser
 from sutekh.io.PhysicalCardSetParser import PhysicalCardSetParser
 from sutekh.gui.SutekhMenu import SutekhMenu
 
+
 class MainMenu(SutekhMenu):
     """The Main application Menu.
 
@@ -60,7 +61,6 @@ class MainMenu(SutekhMenu):
             self.do_import_card_set)
 
         oMenu.add(gtk.SeparatorMenuItem())
-
 
         oDownloadMenu = self.create_submenu(oMenu, 'Data Downloads')
         self.__add_download_menu(oDownloadMenu)

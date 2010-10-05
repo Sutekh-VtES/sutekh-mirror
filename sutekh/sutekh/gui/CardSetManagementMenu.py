@@ -13,6 +13,7 @@ from sutekh.gui.FilteredViewMenu import FilteredViewMenu
 from sutekh.gui.FrameProfileEditor import FrameProfileEditor
 from sutekh.gui.ConfigFile import ConfigFileListener, CARDSET_LIST
 
+
 class CardSetManagementMenu(FilteredViewMenu, ConfigFileListener):
     """Card Set List Management menu.
        """
@@ -34,7 +35,7 @@ class CardSetManagementMenu(FilteredViewMenu, ConfigFileListener):
     # called from __init__, so OK
     def __create_actions_menu(self):
         """Add the Actions Menu"""
-        oMenu  = self.create_submenu(self, "_Actions")
+        oMenu = self.create_submenu(self, "_Actions")
         self.create_menu_item('Create New Card Set', oMenu,
                 self._oController.create_new_card_set)
         self.create_menu_item('Edit Card Set Properties', oMenu,
@@ -99,4 +100,3 @@ class CardSetManagementMenu(FilteredViewMenu, ConfigFileListener):
         """Update menu if profiles are renamed."""
         if sType == CARDSET_LIST and sKey == 'name':
             self._fix_profile_menu()
-

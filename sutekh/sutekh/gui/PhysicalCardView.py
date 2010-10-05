@@ -12,6 +12,7 @@ from sutekh.gui.CardListView import CardListView
 from sutekh.gui.CardListModel import CardListModel
 from sutekh.gui.CellRendererIcons import CellRendererIcons
 
+
 class PhysicalCardView(CardListView):
     # pylint: disable-msg=R0904, R0902, R0901
     # R0904 - gtk.Widget, so many public methods
@@ -43,4 +44,3 @@ class PhysicalCardView(CardListView):
         self.append_column(oColumn)
 
         self.set_expander_column(oColumn)
-

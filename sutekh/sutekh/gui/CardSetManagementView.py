@@ -13,6 +13,7 @@ from sutekh.gui.GuiCardSetFunctions import reparent_card_set
 from sutekh.gui.CardSetsListView import CardSetsListView
 from sutekh.gui.FilterDialog import FilterDialog
 
+
 class CardSetManagementView(CardSetsListView):
     """Tree View for the management of card set list."""
     # pylint: disable-msg=R0904, R0902, R0901
@@ -20,6 +21,7 @@ class CardSetManagementView(CardSetsListView):
     # R0902 - We need to track a fair amount of state, so many attributes
     # R0901 - many ancestors, due to our object hierachy on top of the quite
     # deep gtk one
+
     def __init__(self, oController, oMainWindow):
         super(CardSetManagementView, self).__init__(oController,
                 oMainWindow)
@@ -28,8 +30,8 @@ class CardSetManagementView(CardSetsListView):
         self.set_select_single()
 
         # Drag and Drop
-        aTargets = [ ('STRING', 0, 0),      # second 0 means TARGET_STRING
-                     ('text/plain', 0, 0) ] # and here
+        aTargets = [('STRING', 0, 0),       # second 0 means TARGET_STRING
+                     ('text/plain', 0, 0)]  # and here
 
         # Need this so we can drag the pane in the same way as the card list
         self.drag_source_set(gtk.gdk.BUTTON1_MASK | gtk.gdk.BUTTON3_MASK,
@@ -55,7 +57,6 @@ class CardSetManagementView(CardSetsListView):
         else:
             # use pane icon
             self.frame.make_drag_icon(self, oDragContext)
-
 
     # pylint: disable-msg=R0913
     # arguments as required by the function signature
@@ -98,7 +99,7 @@ class CardSetManagementView(CardSetsListView):
                         # Make newly dragged set visible
                         if oPath:
                             self.expand_to_path(oPath)
-                        bDragRes = True # drop succeeded
+                        bDragRes = True  # drop succeeded
                 except SQLObjectNotFound:
                     pass
         oContext.finish(bDragRes, False, oTime)

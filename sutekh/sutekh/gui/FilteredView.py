@@ -11,10 +11,12 @@ import gtk
 import unicodedata
 from sutekh.gui.CustomDragIconView import CustomDragIconView
 
+
 class FilteredView(CustomDragIconView):
     """Base class for all card and card set views in Sutekh"""
     # pylint: disable-msg=R0904, R0902
     # gtk.Widget, so many public methods. We need to keep state, so many attrs
+
     def __init__(self, oController, oMainWindow, oModel, oConfig):
         # Although MainWindow usually contains a config_file property,
         # when we come in from the GuiCardLookup, we just have oConfig
@@ -90,7 +92,6 @@ class FilteredView(CustomDragIconView):
             # Restore cursor position if possible
             self._oModel.foreach(self._restore_cursor, sCurId)
 
-
     # Filtering
 
     # pylint: disable-msg=R0201
@@ -119,7 +120,7 @@ class FilteredView(CustomDragIconView):
         self._oFilterDialog.run()
 
         if self._oFilterDialog.was_cancelled():
-            return # Change nothing
+            return  # Change nothing
 
         oFilter = self._oFilterDialog.get_filter()
         self.set_filter(oFilter, oMenu)
@@ -139,7 +140,7 @@ class FilteredView(CustomDragIconView):
         aKey = []
         while oIter:
             aKey.append(self._oModel.get_value(oIter, 0))
-            oIter = self._oModel.iter_parent(oIter) # Move back up the model
+            oIter = self._oModel.iter_parent(oIter)  # Move back up the model
         return ''.join(aKey)
 
     def _get_selected_rows(self):
@@ -168,7 +169,7 @@ class FilteredView(CustomDragIconView):
     @staticmethod
     def to_ascii(sName):
         """Convert a Name or key to a canonical ASCII form."""
-        return unicodedata.normalize('NFKD', sName).encode('ascii','ignore')
+        return unicodedata.normalize('NFKD', sName).encode('ascii', 'ignore')
 
     # pylint: disable-msg=R0913
     # Various arguments required by function signatures
@@ -205,7 +206,7 @@ class FilteredView(CustomDragIconView):
         if self.row_expanded(oPath):
             sKey = self.get_iter_identifier(oIter)
             aExpandedSet.add(sKey)
-        return False # Need to process the whole list
+        return False  # Need to process the whole list
 
     # Name searching
 
@@ -235,7 +236,7 @@ class FilteredView(CustomDragIconView):
         sCardSetName = self._oModel.get_name_from_iter(oIter)[:iLenKey].lower()
         if self.to_ascii(sCardSetName).startswith(sKey) or \
                 sCardSetName.startswith(sKey):
-            return False # Match
+            return False  # Match
 
         if oModel.iter_n_children(oIter) > 0:
             # row has children, so need to check if any of the children match
@@ -292,4 +293,3 @@ class FilteredView(CustomDragIconView):
         aLines = sSelectionData.splitlines()
         sSource = aLines[0]
         return sSource, aLines
-

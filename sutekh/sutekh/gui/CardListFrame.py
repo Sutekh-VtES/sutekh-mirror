@@ -11,6 +11,7 @@ import gtk
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 from sutekh.gui.BasicFrame import BasicFrame
 
+
 class CardListFrame(BasicFrame):
     # pylint: disable-msg=R0904
     # gtk.Widget, so lots of public methods

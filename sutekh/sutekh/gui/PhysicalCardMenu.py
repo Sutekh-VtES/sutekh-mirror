@@ -13,6 +13,7 @@ from sutekh.gui.FilteredViewMenu import CardListMenu
 from sutekh.gui.FrameProfileEditor import FrameProfileEditor
 from sutekh.gui.ConfigFile import ConfigFileListener, WW_CARDLIST
 
+
 class PhysicalCardMenu(CardListMenu, ConfigFileListener):
     """Menu for the Physical card collection.
 
@@ -100,4 +101,3 @@ class PhysicalCardMenu(CardListMenu, ConfigFileListener):
         """Update menu if profiles are renamed."""
         if sType == WW_CARDLIST and sKey == 'name':
             self._fix_profile_menu()
-

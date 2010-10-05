@@ -8,6 +8,7 @@
 
 import gtk
 
+
 class CustomDragIconView(gtk.TreeView):
     # pylint: disable-msg=R0904
     # gtk.Widget, so many public methods
@@ -59,4 +60,3 @@ class CustomDragIconView(gtk.TreeView):
             oDrag_context.drag_status(gtk.gdk.ACTION_COPY)
             return True
         return False
-

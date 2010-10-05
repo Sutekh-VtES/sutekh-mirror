@@ -17,6 +17,7 @@ from sutekh.gui.FrameProfileEditor import FrameProfileEditor
 from sutekh.gui.LocalProfileEditor import LocalProfileEditor
 from sutekh.gui.ConfigFile import ConfigFileListener, CARDSET, FRAME
 
+
 class CardSetMenu(CardListMenu, ConfigFileListener):
     # pylint: disable-msg=R0904
     # gtk.Widget, so many public methods
@@ -50,7 +51,6 @@ class CardSetMenu(CardListMenu, ConfigFileListener):
             doc="Cardset ID of associated card set (for selecting profiles)")
 
     #pylint: enable-msg=W0212
-
 
     # pylint: disable-msg=W0201
     # these methods are called from __init__, so it's OK
@@ -212,4 +212,3 @@ class CardSetMenu(CardListMenu, ConfigFileListener):
         """Update menu if profiles are renamed."""
         if (sType == CARDSET or sType == FRAME) and sKey == 'name':
             self._fix_profile_menu()
-
