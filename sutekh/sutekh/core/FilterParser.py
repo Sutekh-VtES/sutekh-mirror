@@ -18,29 +18,31 @@ import ply.yacc as yacc
 from sutekh.core.Filters import PARSER_FILTERS, FilterNot, FilterAndBox, \
         FilterOrBox
 
-ENTRY_FILTERS = [x.keyword for x in PARSER_FILTERS if hasattr(x,'istextentry')
+
+ENTRY_FILTERS = [x.keyword for x in PARSER_FILTERS if hasattr(x, 'istextentry')
         and x.istextentry]
-WITH_FILTERS = [x.keyword for x in PARSER_FILTERS if hasattr(x,'iswithfilter')
+WITH_FILTERS = [x.keyword for x in PARSER_FILTERS if hasattr(x, 'iswithfilter')
         and x.iswithfilter]
-FROM_FILTERS = [x.keyword for x in PARSER_FILTERS if hasattr(x,'isfromfilter')
+FROM_FILTERS = [x.keyword for x in PARSER_FILTERS if hasattr(x, 'isfromfilter')
         and x.isfromfilter]
-LIST_FILTERS = [x.keyword for x in PARSER_FILTERS if hasattr(x,'islistfilter')
+LIST_FILTERS = [x.keyword for x in PARSER_FILTERS if hasattr(x, 'islistfilter')
         and x.islistfilter]
 
-# Misc utility functions
 
+# Misc utility functions
 def get_filter_type(sKeyword):
     """Get the actual filter object from the type string"""
     # pylint: disable-msg=W0621
     return [x for x in PARSER_FILTERS if x.keyword == sKeyword][0]
+
 
 def get_filters_for_type(sFilterType):
     """Get the filters associated with this filter type."""
     return [oFilterType for oFilterType in PARSER_FILTERS
             if sFilterType in oFilterType.types]
 
-# We define an object for the lex parser
 
+# We define an object for the lex parser
 # pylint is never going to like the naming conventions here,
 # which are based on ply examples
 class ParseFilterDefinitions(object):
@@ -109,7 +111,7 @@ class ParseFilterDefinitions(object):
 
            Done outside of __init__, as PLY docs state this is required
            """
-        self.oLexer = lex.lex(object = self, **kwargs)
+        self.oLexer = lex.lex(object=self, **kwargs)
 
     def apply(self, sData):
         """Apply the lexer to the string sData"""
@@ -121,8 +123,8 @@ class ParseFilterDefinitions(object):
                 return aResults
             aResults.append(oToken)
 
-# Define a yacc parser to produce the abstract syntax tree
 
+# Define a yacc parser to produce the abstract syntax tree
 class FilterYaccParser(object):
     """Provide the parser used by PLY"""
     # pylint: disable-msg=C0103, R0201
@@ -232,8 +234,8 @@ class FilterYaccParser(object):
         else:
             raise ValueError("Invalid identifier: %s " % p.value)
 
-# Wrapper objects around the parser
 
+# Wrapper objects around the parser
 class FilterParser(object):
     """Entry point for filter parsing. Wraps Lexer and Parser Objects"""
     # pylint: disable-msg=R0903
@@ -251,7 +253,7 @@ class FilterParser(object):
         if not self._oGlobalParser:
             # yacc needs an initialised lexer
             self._oGlobalFilterParser = FilterYaccParser()
-            self._oGlobalParser = yacc.yacc(module = self._oGlobalFilterParser,
+            self._oGlobalParser = yacc.yacc(module=self._oGlobalFilterParser,
                                             debug=0,
                                             write_tables=0)
 
@@ -265,9 +267,9 @@ class FilterParser(object):
             oAST = self._oGlobalParser.parse(' ')
         return oAST
 
+
 # Object used by get_values representation
 # Should be made more robust
-
 class ValueObject(object):
     """Object to represent values extracted from the AST"""
 
@@ -297,9 +299,9 @@ class ValueObject(object):
         """Is this node's value None?"""
         return self.oValue is None
 
+
 # AST object (formulation inspired by Simon Cross's example, and notes
 # from the ply documentation)
-
 class AstBaseNode(object):
     """Basic node class for the AST. Other nodes inherit from this"""
 
@@ -312,7 +314,7 @@ class AstBaseNode(object):
 
            Useful for debugging
            """
-        sAttrs = '(' + ",".join([ str(oValue) for sKey, oValue \
+        sAttrs = '(' + ",".join([str(oValue) for sKey, oValue \
                 in self.__dict__.items() if not sKey.startswith("_") and \
                 sKey != "aChildren" and oValue not in self.aChildren]) + ")"
         sOutput = self.__class__.__name__ + sAttrs
@@ -337,6 +339,7 @@ class AstBaseNode(object):
     def get_type(self):
         """Get type information of the associated filter"""
         pass
+
 
 class FilterNode(AstBaseNode):
     """Represents a Filter in the AST"""
@@ -378,9 +381,11 @@ class FilterNode(AstBaseNode):
         else:
             return None
 
+
 class OperatorNode(AstBaseNode):
     """Base class for nodes involving operators"""
     pass
+
 
 class TermNode(AstBaseNode):
     """Node to represent values in the AST"""
@@ -392,6 +397,7 @@ class TermNode(AstBaseNode):
            filters have meaningful type information
            """
         return None
+
 
 class StringNode(TermNode):
     """String value in the AST"""
@@ -416,6 +422,7 @@ class StringNode(TermNode):
         """The filter is the string, as a list"""
         return [self.sValue]
 
+
 class IdNode(TermNode):
     """$foo variable identifier in the AST"""
 
@@ -431,6 +438,7 @@ class IdNode(TermNode):
     def get_filter(self):
         """IdNode has no filter"""
         return None
+
 
 class FilterPartNode(OperatorNode):
     """A Filter = $X expression in the AST"""
@@ -477,7 +485,7 @@ class FilterPartNode(OperatorNode):
         if self.aFilterValues is None or self.sFilterName not in LIST_FILTERS:
             return None
         aCurVals = self.aFilterValues.get_values()
-        oTemp = get_filter_type(self.sFilterName)([]) # Create Instance
+        oTemp = get_filter_type(self.sFilterName)([])  # Create Instance
         aValidVals = oTemp.get_values()
         if isinstance(aValidVals[0], list) and len(aCurVals) == \
                 len(aValidVals):
@@ -493,7 +501,7 @@ class FilterPartNode(OperatorNode):
                     continue
                 if oVal.oValue not in aValidVals:
                     aRes.append(oVal.oValue)
-        if len(aRes)>0:
+        if len(aRes) > 0:
             return aRes
         else:
             return None
@@ -545,6 +553,7 @@ class FilterPartNode(OperatorNode):
         """Get allowed types for this filter"""
         return get_filter_type(self.sFilterName).types
 
+
 class NotOpNode(OperatorNode):
     """AST node for NOT(X)"""
     def __init__(self, oSubExpression):
@@ -576,6 +585,7 @@ class NotOpNode(OperatorNode):
     def get_type(self):
         """Get the filter type (same as subfilter)"""
         return self.oSubExpression.get_type()
+
 
 class BinOpNode(OperatorNode):
     """AST node for binary operations (AND, OR)"""
@@ -643,6 +653,7 @@ class BinOpNode(OperatorNode):
                 aRes.append(sType)
         return aRes
 
+
 class CommaNode(OperatorNode):
     """AST node for comma separator (Val1, Val2)"""
     def __init__(self, oLeft, oOp, oRight):
@@ -669,6 +680,7 @@ class CommaNode(OperatorNode):
         # Syntax ensures , only in value lists, which have no type
         return None
 
+
 class WithNode(OperatorNode):
     """AST node for values of the form 'X with Y'"""
     def __init__(self, oLeft, oOp, oRight):
@@ -690,6 +702,7 @@ class WithNode(OperatorNode):
         """Get filter type - these are values, so always None"""
         # Syntax ensures with only in value lists, which have no type
         return None
+
 
 class FromNode(OperatorNode):
     """AST node for values of the form 'X, Y from W, Z'"""
