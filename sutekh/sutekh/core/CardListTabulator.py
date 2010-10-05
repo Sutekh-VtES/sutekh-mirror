@@ -6,8 +6,9 @@
 
 """Create a table (as a list of list) from a list of cards"""
 
-from sutekh.core.SutekhObjects import Discipline, Clan, \
-                                 Rarity, Expansion, CardType, IAbstractCard
+from sutekh.core.SutekhObjects import Discipline, Clan, Rarity, Expansion, \
+        CardType, IAbstractCard
+
 
 class CardListTabulator(object):
     """Creates a table of cards from a card list.
@@ -135,4 +136,3 @@ class CardListTabulator(object):
             aTable.append(aRow)
 
         return aTable
-

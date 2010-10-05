@@ -15,13 +15,14 @@ import string
 from sutekh.core.SutekhObjects import IPhysicalCard, IExpansion, IAbstractCard
 from sutekh.core.Filters import CardNameFilter
 
+
 # pylint: disable-msg=R0922
 # We inherit from these classes elsewhere
-
 class LookupFailed(Exception):
     """Raised when an AbstractCard lookup fails completed.
        """
     pass
+
 
 class AbstractCardLookup(object):
     """Base class for objects which translate card names into abstract card
@@ -37,6 +38,7 @@ class AbstractCardLookup(object):
            presented to a user who then cancels the operation).
            """
         raise NotImplementedError
+
 
 class PhysicalCardLookup(object):
     """Base class for objects which translate card and expansion names
@@ -63,6 +65,7 @@ class PhysicalCardLookup(object):
            """
         raise NotImplementedError
 
+
 class ExpansionLookup(object):
     """Base class for objects which translate expansion names into expansion
        objects
@@ -77,6 +80,7 @@ class ExpansionLookup(object):
            presented to a user who then cancels the operation).
            """
         raise NotImplementedError
+
 
 class SimpleLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
     """A really straightforward lookup of AbstractCards and PhysicalCards.
@@ -112,7 +116,8 @@ class SimpleLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
                     try:
                         iCnt = dCardExpansions[sName][sExpansionName]
                         oExpansion = dNameExps[sExpansionName]
-                        aCards.extend([IPhysicalCard((oAbs, oExpansion))]*iCnt)
+                        aCards.extend(
+                                [IPhysicalCard((oAbs, oExpansion))] * iCnt)
                     except SQLObjectNotFound:
                         # This card is missing from the PhysicalCard list, so
                         # skipped

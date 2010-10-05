@@ -11,6 +11,7 @@ from sutekh.core.CardLookup import DEFAULT_LOOKUP
 from sutekh.core.SutekhObjects import PhysicalCardSet
 from sqlobject import SQLObjectNotFound, sqlhub
 
+
 class CardSetHolder(object):
     # pylint: disable-msg=R0902
     # Need to keep state of card set, so many attributes
@@ -25,9 +26,9 @@ class CardSetHolder(object):
                 self._sAnnotations = None, '', '', ''
         self._bInUse = False
         self._sParent = None
-        self._dCards = {} # card name -> count
-        self._dExpansions = {} # expansion name -> count
-        self._aWarnings = [] # Any warnings to be passed back to the user
+        self._dCards = {}  # card name -> count
+        self._dExpansions = {}  # expansion name -> count
+        self._aWarnings = []  # Any warnings to be passed back to the user
         # (card name, expansion name) -> count, used  for physical card sets
         # and the physical card list
         # The expansion name may be None to indicate an unspecified expansion
@@ -69,19 +70,19 @@ class CardSetHolder(object):
     # pylint: disable-msg=W0212, C0103
     # W0212: we delibrately allow access via these properties
     # C0103: we use the column naming conventions
-    name = property(fget = lambda self: self._sName,
-            fset = lambda self, x: setattr(self, '_sName', x))
-    author = property(fget = lambda self: self._sAuthor,
-            fset = lambda self, x: setattr(self, '_sAuthor', x))
-    comment = property(fget = lambda self: self._sComment,
-            fset = lambda self, x: setattr(self, '_sComment', x))
-    annotations = property(fget = lambda self: self._sAnnotations,
-            fset = lambda self, x: setattr(self, '_sAnnotations', x))
-    inuse = property(fget = lambda self: self._bInUse,
-            fset = lambda self, x: setattr(self, '_bInUse', x))
-    parent = property(fget = lambda self: self._sParent,
-            fset = lambda self, x: setattr(self, '_sParent', x))
-    num_entries = property(fget = lambda self: len(self._dCards))
+    name = property(fget=lambda self: self._sName,
+            fset=lambda self, x: setattr(self, '_sName', x))
+    author = property(fget=lambda self: self._sAuthor,
+            fset=lambda self, x: setattr(self, '_sAuthor', x))
+    comment = property(fget=lambda self: self._sComment,
+            fset=lambda self, x: setattr(self, '_sComment', x))
+    annotations = property(fget=lambda self: self._sAnnotations,
+            fset=lambda self, x: setattr(self, '_sAnnotations', x))
+    inuse = property(fget=lambda self: self._bInUse,
+            fset=lambda self, x: setattr(self, '_bInUse', x))
+    parent = property(fget=lambda self: self._sParent,
+            fset=lambda self, x: setattr(self, '_sParent', x))
+    num_entries = property(fget=lambda self: len(self._dCards))
 
     # pylint: enable-msg=W0212, C0103
 
@@ -146,6 +147,7 @@ class CardSetHolder(object):
             oPCS.addPhysicalCard(oPhysCard.id)
         oPCS.syncUpdate()
 
+
 # pylint: disable-msg=R0921
 # This isn't a abstract base class. It just looks like one to pylint.
 class CardSetWrapper(CardSetHolder):
@@ -155,7 +157,7 @@ class CardSetWrapper(CardSetHolder):
     # We don't want to call the base __init__
     def __init__(self, oCS):
         self._oCS = oCS
-        self._aWarnings = [] # Any warnings to be passed back to the user
+        self._aWarnings = []  # Any warnings to be passed back to the user
 
     def add(self, iCnt, sName, sExpansionName):
         """Not allowed to append cards."""
@@ -179,14 +181,14 @@ class CardSetWrapper(CardSetHolder):
     # pylint: disable-msg=W0212, C0103
     # W0212: we delibrately allow access via these properties
     # C0103: we use the column naming conventions
-    name = property(fget = lambda self: self._oCS.name)
-    author = property(fget = lambda self: self._oCS.author)
-    comment = property(fget = lambda self: self._oCS.comment)
-    annotations = property(fget = lambda self: self._oCS.annotations)
-    inuse = property(fget = lambda self: self._oCS.inuse)
-    parent = property(fget = lambda self: self._parent_name())
-    num_entries = property(fget = lambda self: len(self._oCS.cards))
-    cards = property(fget = lambda self: self._oCS.cards)
+    name = property(fget=lambda self: self._oCS.name)
+    author = property(fget=lambda self: self._oCS.author)
+    comment = property(fget=lambda self: self._oCS.comment)
+    annotations = property(fget=lambda self: self._oCS.annotations)
+    inuse = property(fget=lambda self: self._oCS.inuse)
+    parent = property(fget=lambda self: self._parent_name())
+    num_entries = property(fget=lambda self: len(self._oCS.cards))
+    cards = property(fget=lambda self: self._oCS.cards)
 
     # pylint: enable-msg=W0212, C0103
 
@@ -195,6 +197,7 @@ class CardSetWrapper(CardSetHolder):
         return self._oCS.parent
 
 # pylint: enable-msg=R0921
+
 
 class CachedCardSetHolder(CardSetHolder):
     """CardSetHolder class which supports creating and using a
@@ -252,4 +255,3 @@ class CachedCardSetHolder(CardSetHolder):
                 dNameCards, dExpansionLookup, "Physical Card Set " + self.name)
 
         sqlhub.doInTransaction(self._commit_pcs, aPhysCards)
-

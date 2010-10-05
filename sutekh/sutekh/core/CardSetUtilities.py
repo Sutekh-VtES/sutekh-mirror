@@ -9,6 +9,7 @@
 from sqlobject import SQLObjectNotFound
 from sutekh.core.SutekhObjects import PhysicalCardSet
 
+
 def get_loop(oCardSet):
     """Return a list names of the card sets in the loop."""
     aLoop = [oCardSet]
@@ -24,6 +25,7 @@ def get_loop(oCardSet):
         return get_loop(oParent)
     return aLoop
 
+
 def get_loop_names(oCardSet):
     """Return a list names of the card sets in the loop."""
     aLoopNames = []
@@ -33,16 +35,18 @@ def get_loop_names(oCardSet):
         aLoopNames.reverse()
     return aLoopNames
 
+
 def detect_loop(oCardSet):
     """Checks whether the given card set lead to a loop"""
     aSeen = [oCardSet]
     oParent = oCardSet.parent
     while oParent:
         if oParent in aSeen:
-            return True # we have a loop
+            return True  # we have a loop
         aSeen.append(oParent)
         oParent = oParent.parent
-    return False # we've hit none, so no loop
+    return False  # we've hit none, so no loop
+
 
 def break_loop(oCardSet):
     """Break the loop that oCardSet leads into"""
@@ -56,6 +60,7 @@ def break_loop(oCardSet):
         oCS.syncUpdate()
         sName = oCS.name
     return sName
+
 
 def delete_physical_card_set(sSetName):
     """Unconditionally delete a PCS and its contents"""
@@ -74,6 +79,7 @@ def delete_physical_card_set(sSetName):
     except SQLObjectNotFound:
         return False
 
+
 def find_children(oCardSet):
     """Find all the children of the given card set"""
     # pylint: disable-msg=E1101
@@ -81,6 +87,7 @@ def find_children(oCardSet):
     if oCardSet:
         return list(PhysicalCardSet.selectBy(parentID=oCardSet.id))
     return list(PhysicalCardSet.selectBy(parentID=None))
+
 
 def format_cs_list(oParent=None, sIndent=' '):
     """Create a formatted string of all the card sets in the database that
@@ -91,5 +98,3 @@ def format_cs_list(oParent=None, sIndent=' '):
         if find_children(oCS):
             aResult.append(format_cs_list(oCS, sIndent + '   '))
     return '\n'.join(aResult)
-
-
