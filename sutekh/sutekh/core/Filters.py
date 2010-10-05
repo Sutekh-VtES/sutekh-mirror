@@ -918,8 +918,6 @@ class LifeFilter(DirectFilter):
     """Filter on life"""
     types = ['AbstractCard', 'PhysicalCard']
 
-    # Will only return imbued, unless we ever parse life from
-    # retainers & allies
     def __init__(self, iLife):
         self.__iLife = iLife
 
