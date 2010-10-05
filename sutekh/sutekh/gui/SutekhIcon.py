@@ -12,6 +12,7 @@ from pkg_resources import resource_stream
 # pylint: enable-msg=E0611
 import gtk
 
+
 class PkgIcon(object):
     """Load a gtk Pixbuf object from a package resource file."""
 

@@ -9,6 +9,7 @@
 
 import gtk
 
+
 class SutekhMenu(gtk.MenuBar):
     # pylint: disable-msg=R0904
     # R0904 - gtk.Widget, so many public methods
