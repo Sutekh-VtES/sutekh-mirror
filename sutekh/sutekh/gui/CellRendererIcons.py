@@ -7,15 +7,19 @@
 
 """Render a list VTES icons and text in a TreeView"""
 
-import gtk, pango, gobject
+import gtk
+import pango
+import gobject
 
 # consts for the different display modes we need
 SHOW_TEXT_ONLY, SHOW_ICONS_ONLY, SHOW_ICONS_AND_TEXT = range(3)
+
 
 def _layout_text(oLayout, sText):
     """Helper function to ensure consistency in calling layout"""
     oLayout.set_markup("<i>%s </i>" % gobject.markup_escape_text(sText))
     oLayout.set_alignment(pango.ALIGN_LEFT)
+
 
 # pylint: disable-msg=R0904
 # gtk widget, so we must have a lot of public methods
@@ -28,11 +32,11 @@ class CellRendererIcons(gtk.GenericCellRenderer):
     iTextPad = 4
 
     __gproperties__ = {
-            'text' : (gobject.TYPE_STRING, 'text property',
+            'text': (gobject.TYPE_STRING, 'text property',
                 'text to render', '', gobject.PARAM_READWRITE),
-            'textlist' : (gobject.TYPE_PYOBJECT, 'textlist property',
+            'textlist': (gobject.TYPE_PYOBJECT, 'textlist property',
                 'list of text strings to render', gobject.PARAM_READWRITE),
-            'icons' : (gobject.TYPE_PYOBJECT, 'icons property',
+            'icons': (gobject.TYPE_PYOBJECT, 'icons property',
                 'icons to render', gobject.PARAM_READWRITE),
             }
 
@@ -128,15 +132,15 @@ class CellRendererIcons(gtk.GenericCellRenderer):
             if iHeight > iCellHeight:
                 iCellHeight = iHeight
                 iCellWidth += iWidth + self.iTextPad
-        fCalcWidth  = self.get_property("xpad") * 2 + iCellWidth
+        fCalcWidth = self.get_property("xpad") * 2 + iCellWidth
         fCalcHeight = self.get_property("ypad") * 2 + iCellHeight
         iXOffset = 0
         iYOffset = 0
         if oCellArea is not None and iCellWidth > 0 and iCellHeight > 0:
             iXOffset = int(self.get_property("xalign") * (oCellArea.width - \
-                fCalcWidth -  self.get_property("xpad")))
+                fCalcWidth - self.get_property("xpad")))
             iYOffset = int(self.get_property("yalign") * (oCellArea.height - \
-                fCalcHeight -  self.get_property("ypad")))
+                fCalcHeight - self.get_property("ypad")))
         # gtk want's ints here
         return iXOffset, iYOffset, int(fCalcWidth), int(fCalcHeight)
 
@@ -154,7 +158,7 @@ class CellRendererIcons(gtk.GenericCellRenderer):
         oPixRect.x = oCellArea.x
         oPixRect.y += oCellArea.y
         # xpad, ypad are floats, but gtk.gdk.Rectangle needs int's
-        oPixRect.width  -= int(2 * self.get_property("xpad"))
+        oPixRect.width -= int(2 * self.get_property("xpad"))
         oPixRect.height -= int(2 * self.get_property("ypad"))
         oDrawRect = gtk.gdk.Rectangle()
         oDrawRect.x = int(oPixRect.x)
@@ -191,5 +195,6 @@ class CellRendererIcons(gtk.GenericCellRenderer):
                     oDrawRect.y, oLayout)
             oDrawRect.x += oDrawRect.width + self.iTextPad
         return None
+
 
 gobject.type_register(CellRendererIcons)

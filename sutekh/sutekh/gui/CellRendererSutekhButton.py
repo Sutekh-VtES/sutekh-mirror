@@ -8,7 +8,8 @@
 
 """Render a icon in a TreeView"""
 
-import gtk, gobject
+import gtk
+import gobject
 
 # This is heavily cribbed from the example in the pygtk FAQ
 # (By Nikos Kouremenos)
@@ -17,6 +18,7 @@ import gtk, gobject
 # and returns a "clicked" signal when activated
 # To be generically useful, should be extended to abitary pixmaps,
 # but that is currently not a priority
+
 
 # pylint: disable-msg=R0904
 # gtk widget, so we must have a lot of public methods
@@ -29,8 +31,8 @@ class CellRendererSutekhButton(gtk.GenericCellRenderer):
     # Register a showicon property - used to control wether the icon
     # is visible or not
     __gproperties__ = {
-            'showicon' : (gobject.TYPE_BOOLEAN, 'showicon property',
-                'whether to show the icon', 0, gobject.PARAM_READWRITE)
+            'showicon': (gobject.TYPE_BOOLEAN, 'showicon property',
+                'whether to show the icon', 0, gobject.PARAM_READWRITE),
             }
 
     def __init__(self, bShowIcon=False):
@@ -64,17 +66,17 @@ class CellRendererSutekhButton(gtk.GenericCellRenderer):
         """Handle get_size requests"""
         if self.oPixbuf is None:
             return 0, 0, 0, 0
-        iPixbufWidth  = self.oPixbuf.get_width()
+        iPixbufWidth = self.oPixbuf.get_width()
         iPixbufHeight = self.oPixbuf.get_height()
-        fCalcWidth  = self.get_property("xpad") * 2 + iPixbufWidth
+        fCalcWidth = self.get_property("xpad") * 2 + iPixbufWidth
         fCalcHeight = self.get_property("ypad") * 2 + iPixbufHeight
         iXOffset = 0
         iYOffset = 0
         if oCellArea is not None and iPixbufWidth > 0 and iPixbufHeight > 0:
             iXOffset = int(self.get_property("xalign") * (oCellArea.width - \
-                fCalcWidth -  self.get_property("xpad")))
+                fCalcWidth - self.get_property("xpad")))
             iYOffset = int(self.get_property("yalign") * (oCellArea.height - \
-                fCalcHeight -  self.get_property("ypad")))
+                fCalcHeight - self.get_property("ypad")))
         # gtk want's ints here
         return iXOffset, iYOffset, int(fCalcWidth), int(fCalcHeight)
 
@@ -117,7 +119,7 @@ class CellRendererSutekhButton(gtk.GenericCellRenderer):
         oPixRect.x += oCellArea.x
         oPixRect.y += oCellArea.y
         # xpad, ypad are floats, but gtk.gdk.Rectangle needs int's
-        oPixRect.width  -= int(2 * self.get_property("xpad"))
+        oPixRect.width -= int(2 * self.get_property("xpad"))
         oPixRect.height -= int(2 * self.get_property("ypad"))
 
         if bDrawOffset:
@@ -143,6 +145,7 @@ class CellRendererSutekhButton(gtk.GenericCellRenderer):
             # queue a redraw
             oWindow.invalidate_rect(oArea, False)
 
+
 # HouseKeeping work for CellRendererStukehButton
 # Awkward stylistically, but I'm putting it here as it's
 # associated with class creation (is global to the class)
@@ -155,7 +158,7 @@ gobject.type_register(CellRendererSutekhButton)
 # dict in the class, but I couldn't find good documentation for
 # that approach.
 gobject.signal_new("clicked", CellRendererSutekhButton,
-    gobject.SIGNAL_RUN_FIRST|gobject.SIGNAL_ACTION,
+    gobject.SIGNAL_RUN_FIRST | gobject.SIGNAL_ACTION,
     gobject.TYPE_NONE,
     (gobject.TYPE_STRING,))
 # the callback is called as callback (self, oPath)
