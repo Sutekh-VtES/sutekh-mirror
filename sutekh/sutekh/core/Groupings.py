@@ -10,6 +10,7 @@
 
 from sutekh.core.SutekhObjects import CRYPT_TYPES, AbstractCard
 
+
 class IterGrouping(object):
     """Bass class for the groupings"""
     def __init__(self, oIter, fKeys):
@@ -48,12 +49,14 @@ class IterGrouping(object):
 DEF_GET_CARD = lambda x: x
 # pylint: enable-msg=E0602
 
+
 # pylint: disable-msg=C0111
 # class names are pretty self-evident, so skip docstrings
 class CardTypeGrouping(IterGrouping):
     def __init__(self, oIter, fGetCard=DEF_GET_CARD):
         super(CardTypeGrouping, self).__init__(oIter,
                 lambda x: [y.name for y in fGetCard(x).cardtype])
+
 
 class MultiTypeGrouping(IterGrouping):
     """Group by card type, but make separate groupings for
@@ -70,6 +73,7 @@ class MultiTypeGrouping(IterGrouping):
             return [" / ".join(aTypes)]
         super(MultiTypeGrouping, self).__init__(oIter, multitype)
 
+
 class ClanGrouping(IterGrouping):
     """Group the cards by clan and/or creed"""
     def __init__(self, oIter, fGetCard=DEF_GET_CARD):
@@ -83,6 +87,7 @@ class ClanGrouping(IterGrouping):
             return [y.name for y in oThisCard.creed]
         else:
             return [y.name for y in oThisCard.clan]
+
 
 class DisciplineGrouping(IterGrouping):
     """Group by Discipline or Virtue"""
@@ -98,15 +103,18 @@ class DisciplineGrouping(IterGrouping):
         else:
             return [y.discipline.fullname for y in oThisCard.discipline]
 
+
 class ExpansionGrouping(IterGrouping):
     def __init__(self, oIter, fGetCard=DEF_GET_CARD):
         super(ExpansionGrouping, self).__init__(oIter,
                 lambda x: [y.expansion.name for y in fGetCard(x).rarity])
 
+
 class RarityGrouping(IterGrouping):
     def __init__(self, oIter, fGetCard=DEF_GET_CARD):
         super(RarityGrouping, self).__init__(oIter,
                 lambda x: [y.rarity.name for y in fGetCard(x).rarity])
+
 
 class ExpansionRarityGrouping(IterGrouping):
     def __init__(self, oIter, fGetCard=DEF_GET_CARD):
@@ -138,17 +146,20 @@ class CryptLibraryGrouping(IterGrouping):
                 lambda x: [fGetCard(x).cardtype[0].name in CRYPT_TYPES
                     and "Crypt" or "Library"])
 
+
 class SectGrouping(IterGrouping):
     """Group by Sect"""
     def __init__(self, oIter, fGetCard=DEF_GET_CARD):
         super(SectGrouping, self).__init__(oIter,
                 lambda x: [y.name for y in fGetCard(x).sect])
 
+
 class TitleGrouping(IterGrouping):
     """Group by Title"""
     def __init__(self, oIter, fGetCard=DEF_GET_CARD):
         super(TitleGrouping, self).__init__(oIter,
             lambda x: [y.name for y in fGetCard(x).title])
+
 
 class CostGrouping(IterGrouping):
     """Group by Cost"""
@@ -167,6 +178,7 @@ class CostGrouping(IterGrouping):
 
         super(CostGrouping, self).__init__(oIter, get_values)
 
+
 class GroupGrouping(IterGrouping):
     """Group by crypt Group"""
     def __init__(self, oIter, fGetCard=DEF_GET_CARD):
@@ -184,8 +196,11 @@ class GroupGrouping(IterGrouping):
 
         super(GroupGrouping, self).__init__(oIter, get_values)
 
+
 class GroupPairGrouping(IterGrouping):
     """Group by crypt adjacent pairs of Group"""
+    TEXT = "Groups %d, %d"
+
     def __init__(self, oIter, fGetCard=DEF_GET_CARD):
         # pylint: disable-msg=E1101
         # SQLObject methods not detected by pylint
@@ -197,15 +212,15 @@ class GroupPairGrouping(IterGrouping):
             if oCard.group:
                 if oCard.group != -1:
                     if oCard.group == 1:
-                        return ['Groups %d, %d' % (oCard.group, oCard.group+1)]
+                        return [self.TEXT % (oCard.group, oCard.group + 1)]
                     elif oCard.group < iMax:
-                        return ['Groups %d, %d' % (oCard.group-1, oCard.group),
-                                'Groups %d, %d' % (oCard.group, oCard.group+1)]
+                        return [self.TEXT % (oCard.group - 1, oCard.group),
+                                self.TEXT % (oCard.group, oCard.group + 1)]
                     else:
-                        return ['Groups %d, %d' % (oCard.group-1, oCard.group)]
+                        return [self.TEXT % (oCard.group - 1, oCard.group)]
                 else:
                     # Any group is returned in all pairs
-                    return ['Groups %d, %d' % (x, x+1) for x in range(1, iMax)]
+                    return [self.TEXT % (x, x + 1) for x in range(1, iMax)]
             else:
                 return []
 
@@ -218,11 +233,13 @@ class ArtistGrouping(IterGrouping):
         super(ArtistGrouping, self).__init__(oIter,
             lambda x: [y.name for y in fGetCard(x).artists])
 
+
 class KeywordGrouping(IterGrouping):
     """Group by Keyword"""
     def __init__(self, oIter, fGetCard=DEF_GET_CARD):
         super(KeywordGrouping, self).__init__(oIter,
             lambda x: [y.keyword for y in fGetCard(x).keywords])
+
 
 class NullGrouping(IterGrouping):
     """Group everything into a single group named 'All'."""

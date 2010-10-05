@@ -10,6 +10,7 @@
 from sqlobject import joins
 from sqlobject.sqlbuilder import Table, Select
 
+
 class SOCachedRelatedJoin(joins.SORelatedJoin):
     """Version of RelatedJoin that caches the lookup of related objects.
 
@@ -94,6 +95,7 @@ class SOCachedRelatedJoin(joins.SORelatedJoin):
         """Remove an item from the join."""
         self.invalidate_cache_item(oInst, oOther)
         super(SOCachedRelatedJoin, self).remove(oInst, oOther)
+
 
 class CachedRelatedJoin(joins.RelatedJoin):
     """Provide CacheRelatedJoin object to Sutekh"""

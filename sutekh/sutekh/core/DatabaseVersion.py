@@ -11,12 +11,14 @@
 from sqlobject import sqlhub
 from sutekh.core.SutekhObjects import VersionTable
 
+
 def _get_connection(oConn):
     """Ensure we have a valid connection object"""
     if oConn is None:
         return sqlhub.processConnection
     else:
         return oConn
+
 
 class DatabaseVersion(object):
     """Class to handle all the database manipulation aspects."""
@@ -71,7 +73,7 @@ class DatabaseVersion(object):
            Needed in the database upgrade code.
            """
         if not cls._dConns.has_key(oConn):
-            return # Nothing to do
+            return  # Nothing to do
         del cls._dConns[oConn]
 
     def set_version(self, oTable, iTableVersion, oConn=None):
@@ -177,4 +179,3 @@ class DatabaseVersion(object):
                 # Current database is higher than requested
                 aHigherTables.append(oTable.sqlmeta.table)
         return aLowerTables, aHigherTables
-
