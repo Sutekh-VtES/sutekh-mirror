@@ -10,6 +10,7 @@ from sutekh.core.SutekhObjects import AbstractCard, RarityPair, Rarity, Clan, \
         Discipline, DisciplinePair, CardType, Expansion, Ruling, Sect, Title, \
         Creed, Virtue, PhysicalCard, Keyword, Artist, init_cache
 
+
 class SutekhObjectCache(object):
     """Holds references to commonly used database objects so that they don't
        get removed from the cache during big reads.
@@ -23,10 +24,10 @@ class SutekhObjectCache(object):
        """
 
     def __init__(self):
-        aTypesToCache = [ Rarity, Expansion, RarityPair, Discipline,
+        aTypesToCache = [Rarity, Expansion, RarityPair, Discipline,
                 DisciplinePair, Clan, CardType, AbstractCard, Ruling,
                 Creed, Virtue, Sect, Title, PhysicalCard, Keyword,
-                Artist ]
+                Artist]
 
         self._dCache = {}
         for cType in aTypesToCache:

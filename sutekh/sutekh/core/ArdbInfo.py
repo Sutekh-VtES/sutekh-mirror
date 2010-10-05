@@ -26,6 +26,7 @@ def escape_ardb_expansion_name(oExpansion):
         sExpName = 'CE'
     return sExpName
 
+
 def unescape_ardb_expansion_name(sExpName):
     """Rework ARBD Promo to Sutekh Promo-"""
     if sExpName.startswith('Promo') and not sExpName.startswith('Promo-'):
@@ -79,10 +80,10 @@ class ArdbInfo(object):
     def _extract_crypt(self, dCards):
         """Extract the crypt cards from the list."""
         dCryptStats = {
-                'size' : 0,
-                'min' : 75,
-                'max' : 0,
-                'avg' : 0.0
+                'size': 0,
+                'min': 75,
+                'max': 0,
+                'avg': 0.0,
                 }
         dVamps = {}
         for tKey, iCount in dCards.iteritems():
@@ -131,7 +132,7 @@ class ArdbInfo(object):
                     aDisc.append(oDisc.discipline.name.upper())
                 else:
                     aDisc.append(oDisc.discipline.name)
-            aDisc.sort() # May not be needed
+            aDisc.sort()  # May not be needed
             return " ".join(aDisc)
         elif len(oCard.virtue) > 0:
             return " ".join(sorted([x.name for x in oCard.virtue]))
@@ -149,8 +150,7 @@ class ArdbInfo(object):
             # need to fake it. We use the first legitimate expansion
             # We sort the list to ensure stable results across databases, etc.
             aExp = sorted([oP.expansion for oP in oAbsCard.rarity],
-                    key = lambda x: x.shortname)
+                    key=lambda x: x.shortname)
             oExpansion = aExp[0]
         sSet = escape_ardb_expansion_name(oExpansion)
         return sSet
-

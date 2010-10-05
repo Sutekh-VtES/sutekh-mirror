@@ -11,6 +11,7 @@
 from sutekh.core.FilterParser import FilterNode, BinOpNode, NotOpNode, \
         FilterPartNode
 
+
 class FilterBoxModel(list):
     """Converts a filter AST into a simple nest box model.
 
@@ -266,16 +267,16 @@ class FilterBoxItem(object):
                     if oNode.oValue != ',':
                         aValues.append(oNode.oValue)
                 if '-1' in aValues:
-                    aValues = None # Sentinal case
+                    aValues = None  # Sentinal case
                 for oNode in oRight:
                     if oNode.oValue != ',':
                         aFrom.append(oNode.oValue)
                 if "" in aFrom:
-                    aFrom = None # Sentinal case
+                    aFrom = None  # Sentinal case
                 self.aCurValues = [aValues, aFrom]
             elif self.iValueType == self.ENTRY:
                 assert len(aFilterValues.get_values()) == 1
-                self.aCurValues =  [aFilterValues.get_values()[0].oValue]
+                self.aCurValues = [aFilterValues.get_values()[0].oValue]
             else:
                 # List filter
                 for oNode in aFilterValues.get_values():
@@ -330,7 +331,7 @@ class FilterBoxItem(object):
             elif self.iValueType == self.LIST_FROM:
                 aValues, aFrom = self.aCurValues
                 sFromValues = '"-1"'
-                sFrom = '""' # Sentinals
+                sFrom = '""'  # Sentinals
                 if aValues:
                     sFromValues = ",".join(['"%s"' % x for x in aValues])
                 if aFrom:
@@ -346,6 +347,7 @@ class FilterBoxItem(object):
         if self.bNegated:
             return "NOT (%s)" % sText
         return sText
+
 
 class VariableNameGenerator(set):
     """Generate a unique name for a variable in a filter."""
@@ -366,14 +368,13 @@ class VariableNameGenerator(set):
 
 # Useful constants for dealing with the filter boxes
 
-BOXTYPE = { # description -> (AND or OR, bNegate)
+BOXTYPE = {  # description -> (AND or OR, bNegate)
     'All of ...': (FilterBoxModel.AND, False),
     'Any of ...': (FilterBoxModel.OR, False),
     'Not all of ...': (FilterBoxModel.AND, True),
     'None of ...': (FilterBoxModel.OR, True),
 }
 
-BOXTYPE_ORDER = [ # order types should appear in combo
+BOXTYPE_ORDER = [  # order types should appear in combo
     'All of ...', 'Any of ...', 'Not all of ...', 'None of ...',
 ]
-
