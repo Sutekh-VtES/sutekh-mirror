@@ -11,6 +11,7 @@
 
 import gtk
 
+
 class SutekhDialog(gtk.Dialog):
     # pylint: disable-msg=R0904
     # gtk widget, so has many public methods
@@ -18,6 +19,7 @@ class SutekhDialog(gtk.Dialog):
     def __init__(self, sTitle, oParent=None, iFlags=0, oButtons=None):
         super(SutekhDialog, self).__init__(sTitle, oParent, iFlags, oButtons)
         self.set_name("Sutekh.dialog")
+
 
 def do_complaint(sMessage, oDialogType, oButtonType, bMarkup=False):
     """Wrapper function for gtk.MessageDialog.
@@ -36,6 +38,7 @@ def do_complaint(sMessage, oDialogType, oButtonType, bMarkup=False):
     iResponse = oComplaint.run()
     oComplaint.destroy()
     return iResponse
+
 
 def do_complaint_buttons(sMessage, oType, aButtonInfo, bMarkup=False):
     """Wrapper function for gtk.MessageDialog, using add_button to create
@@ -58,9 +61,11 @@ def do_complaint_buttons(sMessage, oType, aButtonInfo, bMarkup=False):
     oComplaint.destroy()
     return iResponse
 
+
 def do_complaint_error(sMessage):
     """Error dialog with close button"""
     return do_complaint(sMessage, gtk.MESSAGE_ERROR, gtk.BUTTONS_CLOSE, False)
+
 
 def do_complaint_warning(sMessage):
     """Warning dialog with OK and CANCEL buttons"""

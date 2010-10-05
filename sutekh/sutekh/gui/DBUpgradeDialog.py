@@ -10,6 +10,7 @@
 import gtk
 from sutekh.gui.SutekhDialog import SutekhDialog
 
+
 class DBUpgradeDialog(SutekhDialog):
     # pylint: disable-msg=R0904
     # gtk.Widget, so many public methods

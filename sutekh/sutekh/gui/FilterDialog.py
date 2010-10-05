@@ -16,6 +16,7 @@ from sutekh.gui.FilterEditor import FilterEditor
 import gtk
 import gobject
 
+
 class FilterDialog(SutekhDialog, ConfigFileListener):
     """Dialog which allows the user to select and edit filters.
 
@@ -131,7 +132,7 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
         # calls to self.run() are recursive
         # not sure if that's such a good thing
 
-        if iResponse ==  gtk.RESPONSE_OK:
+        if iResponse == gtk.RESPONSE_OK:
             # construct the final filter (may be None)
             self.__bWasCancelled = False
             self.__oFilter = self.__oFilterEditor.get_filter()

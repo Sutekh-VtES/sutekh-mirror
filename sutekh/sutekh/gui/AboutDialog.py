@@ -10,6 +10,7 @@ from sutekh.gui import SutekhIcon
 from sutekh.SutekhInfo import SutekhInfo
 import gtk
 
+
 # pylint: disable-msg=R0904
 # R0904 - gtk Widget, so has many public methods
 class SutekhAboutDialog(gtk.AboutDialog):
@@ -25,7 +26,7 @@ class SutekhAboutDialog(gtk.AboutDialog):
         self.set_copyright(SutekhInfo.LICENSE)
         self.set_comments(SutekhInfo.DESCRIPTION)
         self.set_license(SutekhInfo.LICENSE_TEXT)
-        self.set_wrap_license(False) # don't automatically wrap license text
+        self.set_wrap_license(False)  # don't automatically wrap license text
         self.set_website(SutekhInfo.SOURCEFORGE_URL)
         self.set_website_label("Website")
         self.set_authors([tAuth[0] for tAuth in SutekhInfo.AUTHORS])

@@ -15,6 +15,7 @@ from sutekh.core.SutekhObjects import PhysicalCardSet, MAX_ID_LENGTH
 
 RENAME, REPLACE = 1, 2
 
+
 class RenameDialog(SutekhDialog):
     # pylint: disable-msg=R0904
     # gtk widget, so has many public methods
@@ -61,11 +62,11 @@ class RenameDialog(SutekhDialog):
             if not sNewName:
                 do_complaint_error("No name specified.\n"
                         "Please choose a suitable name")
-                return self.run() # Reprompt
+                return self.run()  # Reprompt
             elif PhysicalCardSet.selectBy(name=sNewName).count() != 0:
                 # FIXME: do we want to allow the user to force a replace here?
                 do_complaint_error("The name %s is in use.\n"
                         "Please choose a different name" % sNewName)
-                return self.run() # Reprompt
+                return self.run()  # Reprompt
             else:
                 self.sNewName = sNewName

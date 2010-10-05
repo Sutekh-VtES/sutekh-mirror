@@ -14,6 +14,7 @@ import string
 # pylint: enable-msg=W0402
 from logging import Handler
 
+
 class SutekhLogHandler(Handler, object):
     """Base class for loggers to talk to the dialog"""
     # We explicitly inherit from object, since Handler is a classic class
@@ -28,6 +29,7 @@ class SutekhLogHandler(Handler, object):
     def emit(self, _oRecord):
         """Default emit handler"""
         pass
+
 
 class SutekhHTMLLogHandler(SutekhLogHandler):
     """Logging class for cardlist and rulings parser.
@@ -45,7 +47,7 @@ class SutekhHTMLLogHandler(SutekhLogHandler):
            Skip difficult cases (The X, non-ascii characters, etc.)
            """
         if self.oDialog is None:
-            return # No point
+            return  # No point
         sString = oRecord.getMessage()
         # We skip considering the 'The' cases, as that gets messy
         if sString.startswith('Card: The '):
@@ -62,9 +64,10 @@ class SutekhHTMLLogHandler(SutekhLogHandler):
                 sStart[1] not in string.ascii_uppercase:
             return
         # This is now safe, if not a particularly good idea
-        iPos = ord(sStart[0])*26+ord(sStart[1])-(ord('A')*27)
-        fBarPos = iPos/float(26*26)
+        iPos = ord(sStart[0]) * 26 + ord(sStart[1]) - (ord('A') * 27)
+        fBarPos = iPos / float(26 * 26)
         self.oDialog.update_bar(fBarPos)
+
 
 class SutekhCountLogHandler(SutekhLogHandler):
     """LogHandler class for dealing with database upgrade messages.
@@ -85,10 +88,11 @@ class SutekhCountLogHandler(SutekhLogHandler):
     def emit(self, _oRecord):
         """Handle a emitted signal, updating the progress count."""
         if self.oDialog is None:
-            return # No point
+            return  # No point
         self.iCount += 1
-        fBarPos = self.iCount/self.fTot
+        fBarPos = self.iCount / self.fTot
         self.oDialog.update_bar(fBarPos)
+
 
 class ProgressDialog(gtk.Window):
     # pylint: disable-msg=R0904
@@ -149,5 +153,3 @@ class ProgressDialog(gtk.Window):
         # required behaviour to get the update drawn
         while gtk.events_pending():
             gtk.main_iteration()
-
-

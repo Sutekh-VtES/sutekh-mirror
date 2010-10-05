@@ -14,6 +14,7 @@ from sutekh.gui.CardSetsListView import CardSetsListView
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 from sutekh.core.SutekhObjects import IPhysicalCardSet, MAX_ID_LENGTH
 
+
 def make_scrolled_text(oCardSet, sAttr):
     """Create a text buffer wrapped in a scrolled window, filled with
        the contents of sAtter if available"""

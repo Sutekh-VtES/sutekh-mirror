@@ -12,6 +12,7 @@ from sutekh.gui.SutekhDialog import SutekhDialog
 from sutekh.gui.SutekhFileWidget import SutekhFileDialog, SutekhFileButton
 from sutekh.io.WwFile import WW_CARDLIST_URL, WW_RULINGS_URL, EXTRA_CARD_URL
 
+
 class WWFilesDialog(SutekhDialog):
     # pylint: disable-msg=R0904, R0902
     # R0904 - gtk.Widget, so many public methods
@@ -29,8 +30,8 @@ class WWFilesDialog(SutekhDialog):
                 "White Wolf Card List")
         self.oCardListFileButton.add_filter_with_pattern('HTML files',
                 ['*.html', '*htm'])
-        self.oUseWwCardListButton = gtk.CheckButton(label=
-                "Grab cardlist from White Wolf website?")
+        self.oUseWwCardListButton = gtk.CheckButton(
+                label="Grab cardlist from White Wolf website?")
 
         # FIXME: Needs better text
         oExtraLabel = gtk.Label("Storyline Card File (optional):")
@@ -38,19 +39,19 @@ class WWFilesDialog(SutekhDialog):
                 "Storyline card file")
         self.oExtraFileButton.add_filter_with_pattern('HTML files',
                 ['*.html', '*htm'])
-        self.oUseExtraUrlButton = gtk.CheckButton(label=
-                "Grab extra cards from some site?")
+        self.oUseExtraUrlButton = gtk.CheckButton(
+                label="Grab extra cards from some site?")
 
         oRulingsLabel = gtk.Label("White Wolf Rulings File (optional):")
         self.oRulingsFileButton = SutekhFileButton(oParent,
                 "White Wolf rulings file")
         self.oRulingsFileButton.add_filter_with_pattern('HTML files',
                 ['*.html', '*htm'])
-        self.oUseWwRulingsButton = gtk.CheckButton(label=
-                "Grab rulings from White Wolf website?")
+        self.oUseWwRulingsButton = gtk.CheckButton(
+                label="Grab rulings from White Wolf website?")
 
-        self.oBackupFileButton = gtk.CheckButton(label=
-                "Backup database contents to File?")
+        self.oBackupFileButton = gtk.CheckButton(
+                label="Backup database contents to File?")
         self.oBackupFileButton.set_active(False)
         self.oBackupFileLabel = gtk.Label("(None)")
         # We can't use SimpleFileDialog, as we need to hide + reshow
