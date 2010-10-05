@@ -10,8 +10,8 @@
 # Fullname: Discipline, Virtue
 # Shortname: Expansion, Creed, Clan
 
-# Base Classes
 
+# Base Classes
 class AbbrevMeta(type):
     """Meta class for the abbreviation classes"""
     # pylint: disable-msg=W0231, C0203
@@ -31,6 +31,7 @@ class AbbrevMeta(type):
             cls._dLook[sKey] = sKey
             for sAlt in aAlts:
                 cls._dLook[sAlt] = sKey
+
 
 # pylint: disable-msg=E1101
 # meta-class magic with _dLook confuses pylint
@@ -62,49 +63,50 @@ class AbbreviationLookup(object):
 
 # Abbreviation Lookups
 
+
 # pylint: disable-msg=W0223
 # We don't override all the abstract methods in all the classes
 # this is OK, since we control the use cases
-
 class CardTypes(AbbreviationLookup):
     """The standard VtES card types."""
     dKeys = {
-        'Action' : [], 'Action Modifier' : [], 'Ally' : [],
-        'Combat' : [], 'Conviction' : [], 'Equipment' : [],
-        'Event' : [], 'Imbued' : [], 'Master' : [],
-        'Political Action' : [], 'Power' : [], 'Reaction' : [],
-        'Reflex' : [], 'Retainer' : [], 'Vampire' : [],
+        'Action': [], 'Action Modifier': [], 'Ally': [],
+        'Combat': [], 'Conviction': [], 'Equipment': [],
+        'Event': [], 'Imbued': [], 'Master': [],
+        'Political Action': [], 'Power': [], 'Reaction': [],
+        'Reflex': [], 'Retainer': [], 'Vampire': [],
     }
+
 
 class Clans(AbbreviationLookup):
     """Standard names and common abbreviations for the VtES clans."""
     dKeys = {
         # Camarilla
-        'Brujah' : ['Brujah'], 'Malkavian' : ['Malk'],
-        'Nosferatu' : ['Nos'], 'Toreador' : ['Tor'],
-        'Tremere' : ['Tre'], 'Ventrue' : ['Ven'],
-        'Caitiff' : ['Caitiff'],
+        'Brujah': ['Brujah'], 'Malkavian': ['Malk'],
+        'Nosferatu': ['Nos'], 'Toreador': ['Tor'],
+        'Tremere': ['Tre'], 'Ventrue': ['Ven'],
+        'Caitiff': ['Caitiff'],
         # Independents
-        'Abomination' : ['Abom'], 'Gangrel' : ['Gangrel'],
-        'Assamite' : ['Assa'], 'Follower of Set' : ['Set'],
-        'Giovanni' : ['Giov'], 'Ravnos' : ['Ravnos'],
-        'Baali' : ['Baali'], 'Daughter of Cacophony' : ['DoC'],
-        'Gargoyle' : ['Garg'], 'Nagaraja' : ['Naga'],
-        'Salubri' :['Salu'], 'Samedi' : ['Sam'],
-        'True Brujah' : ['TBruj'],
+        'Abomination': ['Abom'], 'Gangrel': ['Gangrel'],
+        'Assamite': ['Assa'], 'Follower of Set': ['Set'],
+        'Giovanni': ['Giov'], 'Ravnos': ['Ravnos'],
+        'Baali': ['Baali'], 'Daughter of Cacophony': ['DoC'],
+        'Gargoyle': ['Garg'], 'Nagaraja': ['Naga'],
+        'Salubri': ['Salu'], 'Samedi': ['Sam'],
+        'True Brujah': ['TBruj'],
         # Sabbat
-        'Lasombra' : ['Lasom'], 'Tzimisce' : ['Tz'],
-        'Brujah antitribu' : ['!Brujah'], 'Gangrel antitribu' : ['!Gangrel'],
-        'Malkavian antitribu' : ['!Malk'], 'Nosferatu antitribu' : ['!Nos'],
-        'Toreador antitribu' : ['!Tor'], 'Tremere antitribu' : ['!Tre'],
-        'Ventrue antitribu' : ['!Ven'], 'Pander' : ['Pan'],
-        'Ahrimane' : ['Ahrimanes'],
-        'Blood Brother' : ['BB', 'Blood Brothers'],
-        'Harbinger of Skulls' : ['HoS'],
-        'Kiasyd' : ['Kias'], 'Salubri antitribu' : ['!Salu'],
+        'Lasombra': ['Lasom'], 'Tzimisce': ['Tz'],
+        'Brujah antitribu': ['!Brujah'], 'Gangrel antitribu': ['!Gangrel'],
+        'Malkavian antitribu': ['!Malk'], 'Nosferatu antitribu': ['!Nos'],
+        'Toreador antitribu': ['!Tor'], 'Tremere antitribu': ['!Tre'],
+        'Ventrue antitribu': ['!Ven'], 'Pander': ['Pan'],
+        'Ahrimane': ['Ahrimanes'],
+        'Blood Brother': ['BB', 'Blood Brothers'],
+        'Harbinger of Skulls': ['HoS'],
+        'Kiasyd': ['Kias'], 'Salubri antitribu': ['!Salu'],
         # Laibon
-        'Akunanse' : ['Aku'], 'Guruhi' : ['Guru'], 'Ishtarri' : ['Ish'],
-        'Osebo' : ['Ose'],
+        'Akunanse': ['Aku'], 'Guruhi': ['Guru'], 'Ishtarri': ['Ish'],
+        'Osebo': ['Ose'],
         # Other
     }
 
@@ -113,13 +115,14 @@ class Clans(AbbreviationLookup):
         """Return the abbreviation for the canonical clan name."""
         return cls.dKeys[sCanonical][0]
 
+
 class Creeds(AbbreviationLookup):
     """The Imbued creeds."""
     dKeys = {
         # Imbued
-        'Avenger' : [], 'Defender' : [], 'Innocent' : [],
-        'Judge' : [], 'Martyr' : [], 'Redeemer' : [],
-        'Visionary' : []
+        'Avenger': [], 'Defender': [], 'Innocent': [],
+        'Judge': [], 'Martyr': [], 'Redeemer': [],
+        'Visionary': [],
     }
 
     @classmethod
@@ -127,40 +130,41 @@ class Creeds(AbbreviationLookup):
         """Return the defined shortname."""
         return sCanonical
 
+
 class Disciplines(AbbreviationLookup):
     """Standard abbreviations and names for the VtES disciplines."""
     dKeys = {
-        'abo' : ['ABO','Abombwe'],
-        'ani' : ['ANI','Animalism'],
-        'aus' : ['AUS','Auspex'],
-        'cel' : ['CEL','Celerity'],
-        'chi' : ['CHI','Chimerstry'],
-        'dai' : ['DAI','Daimoinon'],
-        'dem' : ['DEM','Dementation'],
-        'dom' : ['DOM','Dominate'],
-        'fli' : ['FLI','Flight'],
-        'for' : ['FOR','Fortitude'],
-        'mal' : ['MAL', 'Maleficia'],
-        'mel' : ['MEL','Melpominee'],
-        'myt' : ['MYT','Mytherceria'],
-        'nec' : ['NEC','Necromancy'],
-        'obe' : ['OBE','Obeah'],
-        'obf' : ['OBF','Obfuscate'],
-        'obt' : ['OBT','Obtenebration'],
-        'pot' : ['POT','Potence'],
-        'pre' : ['PRE','Presence'],
-        'pro' : ['PRO','Protean'],
-        'qui' : ['QUI','Quietus'],
-        'san' : ['SAN','Sanguinus'],
-        'ser' : ['SER','Serpentis'],
-        'spi' : ['SPI','Spiritus'],
-        'str' : ['STR', 'Striga'],
-        'tem' : ['TEM','Temporis'],
-        'thn' : ['THN','Thanatosis'],
-        'tha' : ['THA','Thaumaturgy'],
-        'val' : ['VAL','Valeren'],
-        'vic' : ['VIC','Vicissitude'],
-        'vis' : ['VIS','Visceratika'],
+        'abo': ['ABO', 'Abombwe'],
+        'ani': ['ANI', 'Animalism'],
+        'aus': ['AUS', 'Auspex'],
+        'cel': ['CEL', 'Celerity'],
+        'chi': ['CHI', 'Chimerstry'],
+        'dai': ['DAI', 'Daimoinon'],
+        'dem': ['DEM', 'Dementation'],
+        'dom': ['DOM', 'Dominate'],
+        'fli': ['FLI', 'Flight'],
+        'for': ['FOR', 'Fortitude'],
+        'mal': ['MAL', 'Maleficia'],
+        'mel': ['MEL', 'Melpominee'],
+        'myt': ['MYT', 'Mytherceria'],
+        'nec': ['NEC', 'Necromancy'],
+        'obe': ['OBE', 'Obeah'],
+        'obf': ['OBF', 'Obfuscate'],
+        'obt': ['OBT', 'Obtenebration'],
+        'pot': ['POT', 'Potence'],
+        'pre': ['PRE', 'Presence'],
+        'pro': ['PRO', 'Protean'],
+        'qui': ['QUI', 'Quietus'],
+        'san': ['SAN', 'Sanguinus'],
+        'ser': ['SER', 'Serpentis'],
+        'spi': ['SPI', 'Spiritus'],
+        'str': ['STR', 'Striga'],
+        'tem': ['TEM', 'Temporis'],
+        'thn': ['THN', 'Thanatosis'],
+        'tha': ['THA', 'Thaumaturgy'],
+        'val': ['VAL', 'Valeren'],
+        'vic': ['VIC', 'Vicissitude'],
+        'vis': ['VIS', 'Visceratika'],
     }
 
     @classmethod
@@ -168,35 +172,36 @@ class Disciplines(AbbreviationLookup):
         """Return the full name for the given abbreviation."""
         return cls.dKeys[sCanonical][1]
 
+
 class Expansions(AbbreviationLookup):
     """Common names and abbreviations for the different expansions."""
     dKeys = {
-        'Anarchs' : [],
-        'Ancient Hearts' : ['AH'],
+        'Anarchs': [],
+        'Ancient Hearts': ['AH'],
         # Blackhand is an abbreviation so reading card sets from old versions
         # work
-        'Black Hand' : ['BH', 'Blackhand'],
-        'Bloodlines' : ['BL'],
-        'Blood Shadowed Court' : ['BSC'],
-        'Camarilla Edition' : ['CE'],
-        'Dark Sovereigns' : ['DS'],
-        'Ebony Kingdom' : ['EK'],
-        'Final Nights' : ['FN'],
-        'Gehenna' : [],
+        'Black Hand': ['BH', 'Blackhand'],
+        'Bloodlines': ['BL'],
+        'Blood Shadowed Court': ['BSC'],
+        'Camarilla Edition': ['CE'],
+        'Dark Sovereigns': ['DS'],
+        'Ebony Kingdom': ['EK'],
+        'Final Nights': ['FN'],
+        'Gehenna': [],
         'Heirs to the Blood': ['HttB'],
-        'Jyhad' : [],
-        'Kindred Most Wanted' : ['KMW'],
-        'Keepers of Tradition' : ['KoT'],
-        'Legacy of Blood' : ['LoB'],
-        'Lords of the Night' : ['LotN'],
-        'Nights of Reckoning' : ['NoR'],
-        'Sabbat' : [],
-        'Sabbat Wars' : ['SW'],
-        'Sword of Caine' : ['SoC'],
-        'Tenth Anniversary' : ['Tenth'],
-        'Third Edition' : ['Third'],
-        'Twilight Rebellion' : ['TR'],
-        'VTES' : [],
+        'Jyhad': [],
+        'Kindred Most Wanted': ['KMW'],
+        'Keepers of Tradition': ['KoT'],
+        'Legacy of Blood': ['LoB'],
+        'Lords of the Night': ['LotN'],
+        'Nights of Reckoning': ['NoR'],
+        'Sabbat': [],
+        'Sabbat Wars': ['SW'],
+        'Sword of Caine': ['SoC'],
+        'Tenth Anniversary': ['Tenth'],
+        'Third Edition': ['Third'],
+        'Twilight Rebellion': ['TR'],
+        'VTES': [],
     }
 
     @classmethod
@@ -224,19 +229,22 @@ class Expansions(AbbreviationLookup):
             return cls.dKeys[sCanonical][0]
         return sCanonical
 
+
 class Rarities(AbbreviationLookup):
     """Common strings and abbreviations for the different card rarities."""
     dKeys = {
-        'Common' : ['C','C1','C2','C3',u'C\xbd'], # EK uses C1/2 for Aye & Orun
-        'Uncommon' : ['U','U1','U2','U3','U5'],
-        'Rare' : ['R','R1','R2','R3'],
-        'Vampire' : ['V','V1','V2','V3'],
-        'Tenth': ['A','B'],
-        'BSC' : ['X'],
-        'Precon' : ['P','PB','PA','PTo3','PTr','PG','PB2','PTo4','PAl2','PO3'],
-        'Not Applicable' : ['NA'],
-        'Rules' : ['Rules'],
-        'Storyline' : ['Storyline'],
+        # EK uses C1/2 for Aye & Orun
+        'Common': ['C', 'C1', 'C2', 'C3', u'C\xbd'],
+        'Uncommon': ['U', 'U1', 'U2', 'U3', 'U5'],
+        'Rare': ['R', 'R1', 'R2', 'R3'],
+        'Vampire': ['V', 'V1', 'V2', 'V3'],
+        'Tenth': ['A', 'B'],
+        'BSC': ['X'],
+        'Precon': ['P', 'PB', 'PA', 'PTo3', 'PTr', 'PG', 'PB2', 'PTo4', 'PAl2',
+            'PO3'],
+        'Not Applicable': ['NA'],
+        'Rules': ['Rules'],
+        'Storyline': ['Storyline'],
     }
 
     @classmethod
@@ -255,45 +263,47 @@ class Rarities(AbbreviationLookup):
             return cls.dKeys[sCanonical][0]
         return sCanonical
 
+
 class Sects(AbbreviationLookup):
     """Common strings for the different sects."""
     dKeys = {
-        'Camarilla' : [], 'Sabbat' : [], 'Independent' : [],
-        'Laibon' : [],
+        'Camarilla': [], 'Sabbat': [], 'Independent': [],
+        'Laibon': [],
         # For if we ever start handling merged vampires somehow
-        'Anarch' : [],
+        'Anarch': [],
     }
+
 
 class Titles(AbbreviationLookup):
     """Common strings used to refer to the different titles."""
     dKeys = {
         # Camarilla Titles
-        'Primogen' : [], 'Prince' :  [], 'Justicar' : [],
-        'Inner Circle' : [],
+        'Primogen': [], 'Prince':  [], 'Justicar': [],
+        'Inner Circle': [],
         # Sabbat Titles
-        'Bishop' : [], 'Archbishop' : [], 'Priscus':[],
-        'Cardinal' : [], 'Regent' : [],
+        'Bishop': [], 'Archbishop': [], 'Priscus': [],
+        'Cardinal': [], 'Regent': [],
         # Independant Titles
-        'Independent with 1 vote' : [],
-        'Independent with 2 votes' : [],
-        'Independent with 3 votes' : [],
+        'Independent with 1 vote': [],
+        'Independent with 2 votes': [],
+        'Independent with 3 votes': [],
         # Laibon Titles
-        'Magaji' : [],
+        'Magaji': [],
     }
 
     dVoteValues = {
             # Camarilla Titles
-            'Primogen' : 1, 'Prince' : 2, 'Justicar' : 3,
-            'Inner Circle' : 4,
+            'Primogen': 1, 'Prince': 2, 'Justicar': 3,
+            'Inner Circle': 4,
             # Sabbat Titles
-            'Bishop' : 1, 'Archbishop' : 2, 'Priscus' : 3,
-            'Cardinal' : 3, 'Regent' : 4,
+            'Bishop': 1, 'Archbishop': 2, 'Priscus': 3,
+            'Cardinal': 3, 'Regent': 4,
             # Independent Titles
-            'Independent with 1 vote' : 1,
-            'Independent with 2 votes' : 2,
-            'Independent with 3 votes' : 3,
+            'Independent with 1 vote': 1,
+            'Independent with 2 votes': 2,
+            'Independent with 3 votes': 3,
             # Laibon Titles
-            'Magaji' : 2,
+            'Magaji': 2,
             }
 
     @classmethod
@@ -301,17 +311,18 @@ class Titles(AbbreviationLookup):
         """Get the vote value for the title"""
         return cls.dVoteValues[sTitle]
 
+
 class Virtues(AbbreviationLookup):
     """Common abbreviations for Imbued Virtues"""
     dKeys = {
         # Virtues (last key is full name)
-        'def' : ['Defense'],
-        'inn' : ['Innocence'],
-        'jud' : ['Judgment','Judgement'],
-        'mar' : ['Martyrdom'],
-        'red' : ['Redemption'],
-        'ven' : ['Vengeance'],
-        'vis' : ['Vision'],
+        'def': ['Defense'],
+        'inn': ['Innocence'],
+        'jud': ['Judgment', 'Judgement'],
+        'mar': ['Martyrdom'],
+        'red': ['Redemption'],
+        'ven': ['Vengeance'],
+        'vis': ['Vision'],
     }
 
     @classmethod
