@@ -13,6 +13,7 @@ from sutekh.gui.SutekhFileWidget import SutekhFileButton
 from sutekh.io.WwFile import WwFile
 from sutekh.gui.ProgressDialog import ProgressDialog
 
+
 def fetch_data(oFile, oOutFile=None):
     """Fetch data from a file'ish object (WwFile, urlopen or file)"""
     if hasattr(oFile, 'info') and callable(oFile.info):
@@ -95,14 +96,14 @@ class FileOrUrlWidget(gtk.VBox):
 
         self._oSubBox = gtk.VBox(homogeneous=homogeneous, spacing=spacing)
 
-        self._oUrlLabel = gtk.Label() # for displaying suggested URLs
+        self._oUrlLabel = gtk.Label()  # for displaying suggested URLs
         self._oUrlLabel.set_justify(gtk.JUSTIFY_LEFT)
         self._oUrlLabel.set_line_wrap(True)
         self._oUrlLabel.set_alignment(0.0, 0.5)
         self._oUrlLabel.set_padding(10, 10)
         self._oUrlLabel.set_selectable(True)
 
-        self._oUrlEntry = gtk.Entry() # for entering custom URLs
+        self._oUrlEntry = gtk.Entry()  # for entering custom URLs
         self._oFileButton = SutekhFileButton(oParent, sTitle)
 
         # pack
@@ -257,4 +258,3 @@ class FileOrDirOrUrlWidget(FileOrUrlWidget):
             return self._oDirButton.get_filename(), False, True
         else:
             return None, False, False
-

@@ -13,9 +13,11 @@
 
 import gtk
 
+
 def _changed_dir(oFileChooser, oParentWin):
     """Update parent's working dir when the folder changes."""
     oParentWin.set_working_dir(oFileChooser.get_current_folder())
+
 
 def add_filter(oFileChooser, sFilterName, aFilterPatterns):
     """Add  filter to the widget, using the list of patterns in
@@ -28,6 +30,7 @@ def add_filter(oFileChooser, sFilterName, aFilterPatterns):
     oFileChooser.set_filter(oFilter)
     return oFilter
 
+
 def _mapped(oFileWidget, oParent):
     """Update the dialogs working dir when the widget is shown.
 
@@ -37,6 +40,7 @@ def _mapped(oFileWidget, oParent):
     sWorkingDir = oParent.get_working_dir()
     if sWorkingDir:
         oFileWidget.set_current_folder(sWorkingDir)
+
 
 class SutekhFileDialog(gtk.FileChooserDialog):
     # pylint: disable-msg=R0904
@@ -65,6 +69,7 @@ class SutekhFileDialog(gtk.FileChooserDialog):
         """Set the filter to be the default all files filter"""
         self.set_filter(self._oAllFilter)
 
+
 class SutekhFileWidget(gtk.FileChooserWidget):
     # pylint: disable-msg=R0904
     # gtk widget, so has many public methods
@@ -87,6 +92,7 @@ class SutekhFileWidget(gtk.FileChooserWidget):
     def default_filter(self):
         """Set the filter to be the default all files filter"""
         self.set_filter(self._oAllFilter)
+
 
 class SutekhFileButton(gtk.FileChooserButton):
     # pylint: disable-msg=R0904
@@ -112,6 +118,7 @@ class SutekhFileButton(gtk.FileChooserButton):
         """Set the filter to be the default all files filter"""
         self.oDialog.default_filter()
 
+
 class SimpleFileDialog(SutekhFileDialog):
     # pylint: disable-msg=R0904
     # gtk.Widget, so many public methods
@@ -135,6 +142,7 @@ class SimpleFileDialog(SutekhFileDialog):
         """Return the name to the caller."""
         return self.sName
 
+
 class ImportDialog(SimpleFileDialog):
     # pylint: disable-msg=R0904
     # gtk.Widget, so many public methods
@@ -142,6 +150,7 @@ class ImportDialog(SimpleFileDialog):
     def __init__(self, sTitle, oParent):
         super(ImportDialog, self).__init__(oParent, sTitle,
                 gtk.FILE_CHOOSER_ACTION_OPEN)
+
 
 class ExportDialog(SimpleFileDialog):
     # pylint: disable-msg=R0904
@@ -154,6 +163,7 @@ class ExportDialog(SimpleFileDialog):
         if sDefaultFileName:
             self.set_current_name(sDefaultFileName)
 
+
 class ZipFileDialog(SimpleFileDialog):
     # pylint: disable-msg=R0904
     # gtk.Widget, so many public methods
@@ -161,4 +171,3 @@ class ZipFileDialog(SimpleFileDialog):
     def __init__(self, oParent, sTitle, oAction):
         super(ZipFileDialog, self).__init__(oParent, sTitle, oAction)
         self.add_filter_with_pattern('Zip Files', ['*.zip', '*.ZIP'])
-
