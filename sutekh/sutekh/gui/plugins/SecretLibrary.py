@@ -21,6 +21,7 @@ from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 from sutekh.gui.GuiCardSetFunctions import import_cs
 from sutekh.gui.PluginManager import SutekhPlugin
 
+
 class ImportExportBase(SutekhDialog):
     # pylint: disable-msg=R0904, R0902
     # R0904 - gtk Widget, so has many public methods
@@ -29,7 +30,6 @@ class ImportExportBase(SutekhDialog):
 
     _sCachedUsername = None
     _sCachedPassword = None
-
 
     # pylint: disable-msg=W0201
     # we define attributes outside __init__, but it's OK because of plugin
@@ -179,10 +179,10 @@ class ExportDialog(ImportExportBase):
                  gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
 
         self._oPublic = gtk.CheckButton("Make deck public")
-        aDeckWidgets = [ self._oPublic ]
+        aDeckWidgets = [self._oPublic]
 
         self._oPurge = gtk.CheckButton("Purge inventory on upload")
-        aInvWidgets = [ self._oPurge ]
+        aInvWidgets = [self._oPurge]
 
         self._setup_vbox("Export to", "Export as", aDeckWidgets, aInvWidgets)
 
@@ -202,7 +202,7 @@ class SecretLibrary(SutekhPlugin):
        to and from the Secret Library.
        """
 
-    dTableVersions = { PhysicalCardSet: [5, 6]}
+    dTableVersions = {PhysicalCardSet: [5, 6]}
     aModelsSupported = [PhysicalCardSet, "MainWindow"]
 
     SL_USER_AGENT = "Sutekh Secret Library Plugin"
@@ -313,9 +313,8 @@ class SecretLibrary(SutekhPlugin):
         if oMatch:
             if int(oMatch.group('code')) != 0:
                 do_complaint_error(
-                    "The Secret Library site returned the error:\n"
-                    + sLine.strip()
-                )
+                        "The Secret Library site returned the error:\n"
+                        + sLine.strip())
                 return False
         return True
 

@@ -14,7 +14,8 @@ from sutekh.core.SutekhObjects import PhysicalCard, PhysicalCardSet
 from sqlobject import SQLObjectNotFound
 
 
-SORT_COLUMN_OFFSET = 100 # ensure we don't clash with other extra columns
+SORT_COLUMN_OFFSET = 100  # ensure we don't clash with other extra columns
+
 
 class ExtraCardViewColumns(SutekhPlugin):
     """Add extra columns to the card list view.
@@ -38,9 +39,9 @@ class ExtraCardViewColumns(SutekhPlugin):
     DEFAULT_MODE = 'Show Icons and Names'
 
     MODES = {
-            DEFAULT_MODE : SHOW_ICONS_AND_TEXT,
-            'Show Icons only' : SHOW_ICONS_ONLY,
-            'Show Text only' : SHOW_TEXT_ONLY,
+            DEFAULT_MODE: SHOW_ICONS_AND_TEXT,
+            'Show Icons only': SHOW_ICONS_ONLY,
+            'Show Text only': SHOW_TEXT_ONLY,
             }
 
     OPTION_STR = ", ".join('"%s"' % sKey for sKey in sorted(COLUMNS.keys()))
@@ -58,13 +59,13 @@ class ExtraCardViewColumns(SutekhPlugin):
     dCardListConfig = dPerPaneConfig
 
     _dWidths = {
-            'Card Type' : 100,
-            'Clans and Creeds' : 100,
-            'Disciplines and Virtues' : 150,
-            'Expansions' : 600,
-            'Group' : 40,
-            'Capacity or Life' : 40,
-            'Cost' : 100,
+            'Card Type': 100,
+            'Clans and Creeds': 100,
+            'Disciplines and Virtues': 150,
+            'Expansions': 600,
+            'Group': 40,
+            'Capacity or Life': 40,
+            'Cost': 100,
             }
 
     # pylint: disable-msg=W0142
@@ -212,7 +213,7 @@ class ExtraCardViewColumns(SutekhPlugin):
             aExp.sort()
             aIcons = []
             if bGetIcons:
-                aIcons = [None]*len(aExp)
+                aIcons = [None] * len(aExp)
             return aExp, aIcons
         return [], []
 
@@ -294,7 +295,6 @@ class ExtraCardViewColumns(SutekhPlugin):
         else:
             oCell.set_data([""], aIcons, SHOW_TEXT_ONLY)
 
-
     def _get_data_title(self, oCard, bGetIcons=True):
         """Get the card's title."""
         if not oCard is None:
@@ -302,7 +302,7 @@ class ExtraCardViewColumns(SutekhPlugin):
             aTitles.sort()
             aIcons = []
             if bGetIcons:
-                aIcons = [None]*len(aTitles)
+                aIcons = [None] * len(aTitles)
             return aTitles, aIcons
         return [], []
 
@@ -319,7 +319,7 @@ class ExtraCardViewColumns(SutekhPlugin):
             aSects.sort()
             aIcons = []
             if bGetIcons:
-                aIcons = [None]*len(aSects)
+                aIcons = [None] * len(aSects)
             return aSects, aIcons
         return [], []
 
@@ -335,7 +335,7 @@ class ExtraCardViewColumns(SutekhPlugin):
             aTexts = [oCard.text.replace("\n", " ")]
             aIcons = []
             if bGetIcons:
-                aIcons = [None]*len(aTexts)
+                aIcons = [None] * len(aTexts)
             return aTexts, aIcons
         return [], []
 

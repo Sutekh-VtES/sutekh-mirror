@@ -17,6 +17,7 @@ from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 
+
 class ClusterCardList(SutekhPlugin):
     """Plugin that attempts to find clusters in the card list.
 
@@ -138,7 +139,7 @@ class ClusterCardList(SutekhPlugin):
                     oHbx.pack_start(oVbx)
 
                 oBut = gtk.CheckButton(sName)
-                oVbx.pack_start(oBut, False) # pack at top, don't fill space
+                oVbx.pack_start(oBut, False)  # pack at top, don't fill space
 
                 self._dPropButtons[sGroup][sName] = oBut
 
@@ -155,7 +156,7 @@ class ClusterCardList(SutekhPlugin):
         # K-Means is the only clustering solution for the moment
         oHeading = gtk.Label()
         oHeading.set_markup("<b>Parameters for K-Means Clustering</b>")
-        oVbx.pack_start(oHeading, False, False, 5) # top align
+        oVbx.pack_start(oHeading, False, False, 5)  # top align
 
         # Number of iterations
         oNumIterLabel = gtk.Label("Number of Iterations:")
@@ -164,14 +165,14 @@ class ClusterCardList(SutekhPlugin):
         self._oNumIterSpin.set_increments(1, 10)
         self._oNumIterSpin.set_value(10)
         oHbox = gtk.HBox(False, 0)
-        oHbox.pack_start(oNumIterLabel, False) # left align
-        oHbox.pack_end(self._oNumIterSpin, False) # right align
+        oHbox.pack_start(oNumIterLabel, False)  # left align
+        oHbox.pack_end(self._oNumIterSpin, False)  # right align
         oVbx.pack_start(oHbox, False)
 
         # Autoset Num clusters
         self._oAutoNumClusters = gtk.CheckButton("One cluster per 80 cards")
         oHbox = gtk.HBox(False, 0)
-        oHbox.pack_start(self._oAutoNumClusters, False) # right align
+        oHbox.pack_start(self._oAutoNumClusters, False)  # right align
         oVbx.pack_start(oHbox, False)
 
         # Number of clusters
@@ -181,8 +182,8 @@ class ClusterCardList(SutekhPlugin):
         self._oNumClustersSpin.set_increments(1, 10)
         self._oNumClustersSpin.set_value(10)
         oHbox = gtk.HBox(False, 0)
-        oHbox.pack_start(oNumClustersLabel, False) # left align
-        oHbox.pack_end(self._oNumClustersSpin, False) # right align
+        oHbox.pack_start(oNumClustersLabel, False)  # left align
+        oHbox.pack_end(self._oNumClustersSpin, False)  # right align
         oVbx.pack_start(oHbox, False)
 
         # Connect Autoset and Number of clusters
@@ -229,7 +230,7 @@ class ClusterCardList(SutekhPlugin):
         # Results Heading
         oHeading = gtk.Label()
         oHeading.set_markup("<b>Results</b>")
-        oVbx.pack_start(oHeading, False) # top align
+        oVbx.pack_start(oHeading, False)  # top align
 
         # No Results Yet
         oLabel = gtk.Label("No results yet.")
@@ -256,10 +257,8 @@ class ClusterCardList(SutekhPlugin):
         iHeaderRows = 1
         iExtraCols = 4
 
-        oTable = gtk.Table(
-                rows=len(aMeans) + iHeaderRows,
-                columns=iExtraCols
-        )
+        oTable = gtk.Table(rows=len(aMeans) + iHeaderRows,
+                columns=iExtraCols)
         oTable.set_row_spacings(0)
 
         # Headings
@@ -305,7 +304,7 @@ class ClusterCardList(SutekhPlugin):
         oMakeCardSetsButton = gtk.Button("Make Card Sets from Selected"
                 " Clusters")
         oMakeCardSetsButton.connect("clicked", self.handle_make_card_sets)
-        self._oResultsVbox.pack_end(oMakeCardSetsButton, False) # bottom align
+        self._oResultsVbox.pack_end(oMakeCardSetsButton, False)  # bottom align
 
         self._oResultsVbox.show_all()
 
@@ -334,12 +333,12 @@ class ClusterCardList(SutekhPlugin):
 
            See http://www.stanford.edu/~darthur/kMeansPlusPlus.pdf.
            """
-        aMeans = [ random.choice(aCards) ]
+        aMeans = [random.choice(aCards)]
 
         while len(aMeans) < iNumClust:
             aDists = []
             for oVec in aCards:
-                fMinD = min((fDist(oVec, oMean) for oMean in aMeans))**2
+                fMinD = min((fDist(oVec, oMean) for oMean in aMeans)) ** 2
                 aDists.append(fMinD)
 
             fSumSq = sum(aDists)
@@ -476,7 +475,7 @@ class Vector(object):
     def euclidian_distance(self, oVec2):
         """Euclidean distance between two vectors."""
         assert len(self._aData) == len(oVec2._aData)
-        fSum = sum(((x-y)**2 for (x, y) in zip(self._aData, oVec2._aData)))
+        fSum = sum(((x - y) ** 2 for (x, y) in zip(self._aData, oVec2._aData)))
         return math.sqrt(fSum)
 
     METRICS['Euclidean Distance'] = euclidian_distance
@@ -490,7 +489,7 @@ class Vector(object):
         fSum = sum((
             ((x == -1 or y == -1) and 0.25) or
             (((x == 0) ^ (y == 0) and 4.0)) or
-            (x-y)**2 for (x, y) in zip(self._aData, oVec2._aData)
+            (x - y) ** 2 for (x, y) in zip(self._aData, oVec2._aData)
         ))
         return math.sqrt(fSum)
 
@@ -510,24 +509,24 @@ class Vector(object):
         if oOther == 0:
             return self
         assert len(self._aData) == len(oOther._aData)
-        return Vector([ x+y for (x, y) in zip(self._aData, oOther._aData)])
+        return Vector([x + y for (x, y) in zip(self._aData, oOther._aData)])
 
     def __radd__(self, oOther):
         """Sum this vector with another."""
         if oOther == 0:
             return self
         assert len(self._aData) == len(oOther._aData)
-        return Vector([ x+y for (x, y) in zip(self._aData, oOther._aData)])
+        return Vector([x + y for (x, y) in zip(self._aData, oOther._aData)])
 
     def __mul__(self, fScale):
         """Multiply this vector by a scalar."""
         fScale = float(fScale)
-        return Vector([x*fScale for x in self._aData])
+        return Vector([x * fScale for x in self._aData])
 
     def __rmul__(self, fScale):
         """Multiply this vector by a scalar."""
         fScale = float(fScale)
-        return Vector([x*fScale for x in self._aData])
+        return Vector([x * fScale for x in self._aData])
 
     def __len__(self):
         """Length of this vector."""

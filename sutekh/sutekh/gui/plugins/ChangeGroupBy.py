@@ -16,6 +16,7 @@ from sutekh.core.Groupings import CardTypeGrouping, ClanGrouping, \
 from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog
 
+
 class GroupCardList(SutekhPlugin):
     """Plugin to allow the user to change how cards are grouped.
 
@@ -56,7 +57,7 @@ class GroupCardList(SutekhPlugin):
     # ** magic OK here
     def __init__(self, *aArgs, **kwargs):
         super(GroupCardList, self).__init__(*aArgs, **kwargs)
-        self._oFirstBut = None # placeholder for the radio group
+        self._oFirstBut = None  # placeholder for the radio group
         # We don't reload on init, to avoid double loads.
         self.perpane_config_updated(False)
 
