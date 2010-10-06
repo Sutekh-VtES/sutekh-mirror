@@ -17,6 +17,7 @@ from sutekh.gui.RenameDialog import RenameDialog, RENAME, REPLACE
 from sutekh.core.CardSetUtilities import delete_physical_card_set, \
         find_children, detect_loop, get_loop_names, break_loop
 
+
 def reparent_card_set(oCardSet, oNewParent):
     """Helper function to ensure that reparenting a card set doesn't
        cause loops"""
@@ -40,12 +41,14 @@ def reparent_card_set(oCardSet, oNewParent):
         return True
     return False
 
+
 def reparent_all_children(sCardSetName, aChildren):
     """Handle reparenting a list of children gracefully"""
     if aChildren:
         oCardSet = IPhysicalCardSet(sCardSetName)
         for oChildCS in aChildren:
             reparent_card_set(oChildCS, oCardSet)
+
 
 def check_ok_to_delete(oCardSet):
     """Check if the user is OK with deleting the card set."""
@@ -61,6 +64,7 @@ def check_ok_to_delete(oCardSet):
         iResponse = do_complaint_warning("Card Set %s"
                 " Has Children. Really Delete?" % oCardSet.name)
     return iResponse == gtk.RESPONSE_OK
+
 
 def create_card_set(oMainWindow):
     """Create a new card set from the edit dialog"""
@@ -79,8 +83,8 @@ def create_card_set(oMainWindow):
                 comment=sComment, parent=oParent, inuse=bInUse)
     return sName
 
-# import helpers
 
+# import helpers
 def get_import_name(oHolder):
     """Helper for importing a card set holder.
 
@@ -113,12 +117,14 @@ def get_import_name(oHolder):
         oDlg.destroy()
     return oHolder, aChildren
 
+
 def update_open_card_sets(oMainWindow, sSetName):
     """Update open copies of the card set sSetName to database changes
        (from imports, etc.)"""
     for oFrame in oMainWindow.find_cs_pane_by_set_name(sSetName):
         oFrame.update_to_new_db()
     oMainWindow.reload_pcs_list()
+
 
 def update_card_set(oCardSet, oMainWindow):
     """Update the details of the card set when the user edits them."""
@@ -127,7 +133,7 @@ def update_card_set(oCardSet, oMainWindow):
     oEditDialog.run()
     sName = oEditDialog.get_name()
     if not sName:
-        return # bail
+        return  # bail
     oCardSet.name = sName
     oCardSet.author = oEditDialog.get_author()
     oCardSet.comment = oEditDialog.get_comment()
@@ -143,8 +149,8 @@ def update_card_set(oCardSet, oMainWindow):
         # update_card_set_menu does the needed magic for us
     oMainWindow.reload_pcs_list()
 
-# Common to MainMenu import code and plugins
 
+# Common to MainMenu import code and plugins
 def import_cs(fIn, oParser, oMainWindow):
     """Create a card set from the given file object."""
     oHolder = CardSetHolder()
@@ -178,7 +184,7 @@ def import_cs(fIn, oParser, oMainWindow):
     # Handle naming issues if needed
     oHolder, aChildren = get_import_name(oHolder)
     if not oHolder.name:
-        return # User bailed
+        return  # User bailed
     # Create CS
     try:
         oHolder.create_pcs(oCardLookup=oMainWindow.cardLookup)
@@ -198,6 +204,7 @@ def import_cs(fIn, oParser, oMainWindow):
         # Not already open, so open a new copy
         oMainWindow.add_new_physical_card_set(oHolder.name)
 
+
 def break_existing_loops():
     """Ensure there are no loops in the database"""
     for oCS in PhysicalCardSet.select():
@@ -210,4 +217,3 @@ def break_existing_loops():
                     gtk.MESSAGE_WARNING, gtk.BUTTONS_CLOSE)
             # We break the loop, and let the user fix things,
             # rather than try and be too clever
-

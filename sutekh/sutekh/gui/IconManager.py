@@ -18,6 +18,7 @@ from sutekh.gui.ProgressDialog import ProgressDialog, SutekhCountLogHandler
 from sutekh.gui.SutekhDialog import do_complaint
 from sutekh.core import Groupings
 
+
 # Utilty functions - convert object to a filename
 def _get_clan_filename(oClan):
     """Get the icon filename for the clan"""
@@ -32,6 +33,7 @@ def _get_clan_filename(oClan):
     else:
         sFileName = 'IconClan%s.gif' % oClan.shortname[:3].capitalize()
     return sFileName
+
 
 def _get_card_type_filename(oType):
     """Get the filename for the card type"""
@@ -50,10 +52,12 @@ def _get_card_type_filename(oType):
         sFileName = 'IconType%s.gif' % oType.name.capitalize()
     return sFileName
 
+
 def _get_creed_filename(oCreed):
     """Get the filename for the creed"""
     sFileName = 'IconCreed%s.gif' % oCreed.shortname[:3].capitalize()
     return sFileName
+
 
 def _get_discipline_filename(oDiscipline):
     """Get the filename for the discipline."""
@@ -66,10 +70,12 @@ def _get_discipline_filename(oDiscipline):
         sFileName = 'IconDis%s2.gif' % oDiscipline.discipline.name.capitalize()
     return sFileName
 
+
 def _get_virtue_filename(oVirtue):
     """Get the filename for the virtue"""
     sFileName = 'IconVirtue%s.gif' % oVirtue.name.capitalize()
     return sFileName
+
 
 # Crop the transparent border from the image
 def _crop_alpha(oPixbuf):
@@ -87,7 +93,7 @@ def _crop_alpha(oPixbuf):
     # We don't use get_pixels_array, since numeric support is optional
     # These are gif's so the transparency is either 255 - opaque or 0 -
     # transparent. We want the bounding box of the non-transparent pixels
-    iRowLength = oPixbuf.get_width()*4
+    iRowLength = oPixbuf.get_width() * 4
     iMaxX, iMaxY = -1, -1
     iMinX, iMinY = 1000, 1000
     iXPos, iYPos = 0, 0
@@ -106,6 +112,7 @@ def _crop_alpha(oPixbuf):
     return oPixbuf.subpixbuf(iMinX + 1, iMinY + 1, iMaxX - iMinX,
             iMaxY - iMinY)
 
+
 class IconManager(object):
     """Manager for the VTES Icons.
 
@@ -116,6 +123,7 @@ class IconManager(object):
        """
 
     sBaseUrl = "http://www.white-wolf.com/vtes/images/"
+
     def __init__(self, oConfig):
         self._sPrefsDir = oConfig.get_icon_path()
         if not self._sPrefsDir:
@@ -250,7 +258,6 @@ class IconManager(object):
                     aIcons = [None]
         return aText, aIcons
 
-
     def get_icon_list(self, aValues):
         """Get a list of appropriate icons for the given values"""
         if not aValues:
@@ -312,7 +319,7 @@ class IconManager(object):
         # We use the names as from the WW site - this is not
         # ideal, but simpler than maintaining multiple names for each
         # icon.
-        self._dIconCache = {} # Cache is invalidated by this
+        self._dIconCache = {}  # Cache is invalidated by this
         ensure_dir_exists(self._sPrefsDir)
         oLogHandler = SutekhCountLogHandler()
         oProgressDialog = ProgressDialog()

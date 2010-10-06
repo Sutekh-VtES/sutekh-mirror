@@ -244,7 +244,7 @@ class ConfigFile(object):
                 iPos,
             ))
 
-        aRes.sort() # Numbers denote ordering
+        aRes.sort()  # Numbers denote ordering
         return aRes
 
     # pylint: disable-msg=R0913
@@ -342,7 +342,7 @@ class ConfigFile(object):
         if sKey not in self.__oConfig['filters']:
             dFilter = {
                 'query': sQuery,
-                'vars': dVars
+                'vars': dVars,
             }
             self.__oConfig['filters'][sKey] = dFilter
             for oListener in self.listeners():

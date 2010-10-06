@@ -11,12 +11,14 @@ import sys
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 from sutekh.gui.ScrolledList import ScrolledListView
 
+
 def mouse_in_button(oButton):
     """Check if mouse pointer is inside the button"""
-    (iXPos, iYPos) = oButton.get_pointer() # mouse pos relative to button
+    (iXPos, iYPos) = oButton.get_pointer()  # mouse pos relative to button
     oButtonGeom = oButton.allocation
     return (iXPos >= 0) and (iYPos >= 0) and \
             (iXPos < oButtonGeom.width) and (iYPos < oButtonGeom.height)
+
 
 class MultiSelectComboBox(gtk.HBox):
     # pylint: disable-msg=R0904
@@ -102,7 +104,7 @@ class MultiSelectComboBox(gtk.HBox):
         tDialogPos = (tWinPos[0] + tButtonPos[0] + tShift[0],
                 tWinPos[1] + tButtonPos[1] + tShift[1])
 
-        self._oDialog.set_keep_above(True) # Keep this above the dialog
+        self._oDialog.set_keep_above(True)  # Keep this above the dialog
         self._oDialog.set_transient_for(self._oParentWin)
         self._oDialog.show_all()
         # WM behaviour means that move is unlikely to work before _oDialog
@@ -118,8 +120,8 @@ class MultiSelectComboBox(gtk.HBox):
                 if sKeyName == 'Escape':
                     self.set_selection(self._aOldSelection)
                 self.__hide_list()
-                return True # event handled
-        return False # process further
+                return True  # event handled
+        return False  # process further
 
     def __hide_list(self):
         """Hide the list of options"""

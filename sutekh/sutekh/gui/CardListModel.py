@@ -7,7 +7,8 @@
 
 """The gtk.TreeModel for the card lists."""
 
-import gtk, gobject
+import gtk
+import gobject
 from sqlobject import SQLObjectNotFound
 from sutekh.core.Filters import FilterAndBox, NullFilter, PhysicalCardFilter, \
         MultiKeywordFilter, CardTextFilter, FilterNot
@@ -24,6 +25,7 @@ EXTRA_LEVEL_LOOKUP = {
 
 USE_ICONS = "show icons for grouping"
 HIDE_ILLEGAL = "hide cards not legal for tournament play"
+
 
 class CardListModelListener(object):
     """Listens to updates, i.e. .load(...), .alter_card_count(...),
@@ -57,6 +59,7 @@ class CardListModelListener(object):
 
         return True
 
+
 class CardListModel(gtk.TreeStore, ConfigFileListener):
     # pylint: disable-msg=R0904, R0902
     # inherit a lot of public methods for gtk, need local attributes for state
@@ -76,10 +79,10 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
         # name, count, parent count, showInc, showDec, text_list, icons,
         #       parent_color, AbstractCard, PhysicalCard
 
-        self._cGroupBy = CardTypeGrouping # grouping class to use
+        self._cGroupBy = CardTypeGrouping  # grouping class to use
         # base filter defines the card list
         self._oBaseFilter = PhysicalCardFilter()
-        self._cCardClass = PhysicalCard # card class to use
+        self._cCardClass = PhysicalCard  # card class to use
         # Filter to exclude illegal cards. Needs to be defined after
         # we esablish database connections, et al.
         # NB - Remove exception after Sutekh 0.8 is out
@@ -92,13 +95,13 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
         except SQLObjectNotFound:
             self.oLegalFilter = FilterNot(CardTextFilter(
                     'Added to the V:EKN banned list'))
-        self._bApplyFilter = False # whether to apply the select filter
+        self._bApplyFilter = False  # whether to apply the select filter
         # additional filters for selecting from the list
         self._oSelectFilter = None
         self._oConfig = oConfig
         self._oConfig.add_listener(self)
 
-        self.dListeners = {} # dictionary of CardListModelListeners
+        self.dListeners = {}  # dictionary of CardListModelListeners
 
         self.bExpansions = True
         self.oEmptyIter = None
@@ -218,7 +221,7 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
 
            We walk all the 1st level entries, and set the name from the
            card, based on bPostfix."""
-        oIter = self.get_iter_first() # Grouping level items
+        oIter = self.get_iter_first()  # Grouping level items
         while oIter:
             oChildIter = self.iter_children(oIter)
             while oChildIter:
@@ -348,9 +351,9 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
            over the card groups)
            """
         aCards = []
-        fGetCard = lambda x:x[0]
-        fGetCount = lambda x:x[1][0]
-        fGetExpanInfo = lambda x:x[1][1]
+        fGetCard = lambda x: x[0]
+        fGetCount = lambda x: x[1][0]
+        fGetExpanInfo = lambda x: x[1][1]
 
         # Count by Abstract Card
         dAbsCards = {}
@@ -436,7 +439,7 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
         for oListener in self.dListeners:
             bResult = bResult and oListener.check_card_visible(oPhysCard)
             if not bResult:
-                break # Failed, so bail on loop
+                break  # Failed, so bail on loop
         return bResult
 
     def get_all_iter_children(self, oIter):
@@ -585,7 +588,6 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
         if not bSkipLoad and (bReloadELM or bReloadIcons or bReloadIllegal):
             self._oController.view.reload_keep_expanded()
 
-
     # Listen for changes to the cardlist config options
 
     def profile_option_changed(self, sType, sProfile, sKey):
@@ -599,4 +601,3 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
         if sType != WW_CARDLIST or sId != WW_CARDLIST:
             return
         self.update_options()
-

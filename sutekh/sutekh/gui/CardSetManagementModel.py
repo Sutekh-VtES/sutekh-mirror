@@ -6,10 +6,12 @@
 
 """gtk.TreeModel class the card set list."""
 
-import gtk, gobject
+import gtk
+import gobject
 from sutekh.core.SutekhObjects import PhysicalCardSet, IPhysicalCardSet
 from sutekh.core.Filters import NullFilter
 from sutekh.gui.ConfigFile import CARDSET_LIST
+
 
 class CardSetManagementModel(gtk.TreeStore):
     # pylint: disable-msg=R0904
@@ -25,7 +27,7 @@ class CardSetManagementModel(gtk.TreeStore):
 
         self._oMainWin = oMainWindow
 
-        self._bApplyFilter = False # whether to apply the select filter
+        self._bApplyFilter = False  # whether to apply the select filter
         # additional filters for selecting from the list
         self._oSelectFilter = None
         self.oEmptyIter = None
@@ -45,7 +47,6 @@ class CardSetManagementModel(gtk.TreeStore):
 
     cardset_id = property(fget=lambda self: CARDSET_LIST,
             doc="Cardset ID of card set list (for selecting profiles)")
-
 
     # pylint: enable-msg=W0212, C0103
 
@@ -123,7 +124,7 @@ class CardSetManagementModel(gtk.TreeStore):
                 aToAdd = []
                 oIter = None
                 while oParent and oParent.name not in self._dName2Iter:
-                    aToAdd.insert(0, oParent) # Insert at the head
+                    aToAdd.insert(0, oParent)  # Insert at the head
                     oParent = oParent.parent
                 if oParent and oParent.name in self._dName2Iter:
                     oIter = self._dName2Iter[oParent.name]
