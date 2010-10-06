@@ -18,6 +18,7 @@ from sutekh.core.SutekhObjects import IPhysicalCardSet, PhysicalCardSet, \
         IExpansion, IPhysicalCard
 from sutekh.core.CardSetUtilities import delete_physical_card_set
 
+
 class CardSetController(object):
     """Controller class for the Card Sets."""
     _sFilterType = 'PhysicalCard'
@@ -229,7 +230,6 @@ class CardSetController(object):
             for oFrame in self._oMainWindow.find_cs_pane_by_set_name(
                     self.view.sSetName):
                 oFrame.close_frame()
-
 
     def save_iter_state(self, aIters):
         """Ask the view to save the state for us"""

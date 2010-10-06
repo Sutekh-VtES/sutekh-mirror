@@ -8,6 +8,7 @@
 
 import gtk
 
+
 class AutoScrolledWindow(gtk.ScrolledWindow):
     # pylint: disable-msg=R0904
     # gtk widget, so many public methods

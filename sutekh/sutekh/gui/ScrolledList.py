@@ -7,9 +7,11 @@
 
 """Generic Scrolled List, used in the Filter Dialog and elsewhere"""
 
-import gtk, gobject
+import gtk
+import gobject
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 from sutekh.gui.CustomDragIconView import CustomDragIconView
+
 
 class ScrolledListStore(gtk.ListStore):
     # pylint: disable-msg=R0904
@@ -24,6 +26,7 @@ class ScrolledListStore(gtk.ListStore):
         for sEntry in aVals:
             oIter = self.append(None)
             self.set(oIter, 0, sEntry)
+
 
 class ScrolledListView(CustomDragIconView):
     # pylint: disable-msg=R0904
@@ -124,4 +127,3 @@ class ScrolledList(gtk.Frame):
     def get_selection_object(self):
         """Get a reference to the TreeView selection"""
         return self._oTreeView.get_selection()
-

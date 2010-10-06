@@ -21,6 +21,7 @@ from sutekh.gui.ConfigFile import ConfigFileListener, CARDSET, WW_CARDLIST, \
         CARDSET_LIST, FRAME
 from sutekh.gui.SutekhDialog import do_complaint_warning
 
+
 def submodules(oPackage):
     """List all the submodules in a package."""
     oLoader = getattr(oPackage, "__loader__", None)
@@ -80,7 +81,7 @@ class PluginManager(object):
                 cPlugin = mPlugin.plugin
             except AttributeError, oExp:
                 logging.warn("Plugin module %s appears not to contain a"
-                        " plugin (%s)." , sPluginName, oExp, exc_info=1)
+                        " plugin (%s).", sPluginName, oExp, exc_info=1)
                 continue
 
             # add to appropriate plugin lists
@@ -131,6 +132,7 @@ class PluginConfigFileListener(ConfigFileListener):
         elif sType in (CARDSET, WW_CARDLIST, CARDSET_LIST) and \
                 self._oPlugin.model.cardset_id == sId:
             self._oPlugin.perpane_config_updated()
+
 
 class SutekhPlugin(object):
     """Base class for card list plugins."""
@@ -287,8 +289,8 @@ class SutekhPlugin(object):
                     " sensible.\nAre you sure you want to continue?" %
                     (iCards, sName))
             if iRes == gtk.RESPONSE_CANCEL:
-                return False # fail
-        return True # A-OK
+                return False  # fail
+        return True  # A-OK
 
     def get_config_item(self, sKey):
         """Return the value of a plugin global config key."""
@@ -325,5 +327,4 @@ class SutekhPlugin(object):
         if sInput:
             return markup_escape_text(sInput)
         else:
-            return sInput # pass None straight through
-
+            return sInput  # pass None straight through

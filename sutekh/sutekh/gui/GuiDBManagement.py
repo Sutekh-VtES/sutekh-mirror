@@ -29,6 +29,7 @@ def read_cardlist(oCardList, oProgressDialog, oLogHandler):
     read_white_wolf_list(oCardList, oLogHandler)
     oProgressDialog.set_complete()
 
+
 def read_extra(oExtraFile, oProgressDialog, oLogHandler):
     """Read extra card info into the database"""
     oProgressDialog.set_description("Reading Extra Card Info")
@@ -36,12 +37,14 @@ def read_extra(oExtraFile, oProgressDialog, oLogHandler):
     read_white_wolf_list(oExtraFile, oLogHandler)
     oProgressDialog.set_complete()
 
+
 def read_ww_rulings(oRulings, oProgressDialog, oLogHandler):
     """Read the WW Rulings file into the database"""
     oProgressDialog.set_description("Reading White Wolf Rulings")
     oProgressDialog.reset()
     read_rulings(oRulings, oLogHandler)
     oProgressDialog.set_complete()
+
 
 def read_ww_lists_into_db(aCLFile, oExtraFile, oRulingsFile, oProgressDialog):
     """Read WW card list and possibly rulings into the given database"""
@@ -56,6 +59,7 @@ def read_ww_lists_into_db(aCLFile, oExtraFile, oRulingsFile, oProgressDialog):
     if oRulingsFile:
         read_ww_rulings(oRulingsFile, oProgressDialog,  oLogHandler)
 
+
 def copy_to_new_db(oOldConn, oTempConn, oWin, oProgressDialog, oLogHandler):
     """Copy card collection and card sets to a new abstract card db."""
     oProgressDialog.set_description("Reloading card collection and card sets")
@@ -64,7 +68,7 @@ def copy_to_new_db(oOldConn, oTempConn, oWin, oProgressDialog, oLogHandler):
             oWin.cardLookup, oLogHandler)
     oProgressDialog.set_complete()
     if not bOK:
-        sMesg = "\n".join (["There was a problem copying your collection"
+        sMesg = "\n".join(["There was a problem copying your collection"
             " to the new database"] + aErrors +
                 ["Attempt to Continue Anyway (This is most probably"
                     " very dangerous)?"])
@@ -74,6 +78,7 @@ def copy_to_new_db(oOldConn, oTempConn, oWin, oProgressDialog, oLogHandler):
         else:
             return False
     return True
+
 
 def initialize_db(oParent):
     """Initialise the database if it doesn't exist"""
@@ -96,6 +101,7 @@ def initialize_db(oParent):
     PhysicalCardSet(name='My Collection', parent=None)
     return True
 
+
 def save_backup(sBackupFile, oProgressDialog):
     """Save a backup file, showing a progress dialog"""
     oLogHandler = SutekhCountLogHandler()
@@ -105,6 +111,7 @@ def save_backup(sBackupFile, oProgressDialog):
     oFile = ZipFileWrapper(sBackupFile)
     oFile.do_dump_all_to_zip(oLogHandler)
     oProgressDialog.set_complete()
+
 
 def _get_names(oWin):
     """Get the names from the user, and ready them for the import."""
@@ -131,12 +138,13 @@ def _get_names(oWin):
         oRulingsFile = None
     return aCLFile, oExtraFile, oRulingsFile, sBackupFile
 
+
 def refresh_ww_card_list(oWin):
     """Handle grunt work of refreshing the card lists"""
     aEditable = oWin.get_editable_panes()
     aCLFile, oExtraFile, oRulingsFile, sBackupFile = _get_names(oWin)
     if not aCLFile:
-        return False # Nothing happened
+        return False  # Nothing happened
     oProgressDialog = ProgressDialog()
     if sBackupFile is not None:
         # pylint: disable-msg=W0703
@@ -158,10 +166,10 @@ def refresh_ww_card_list(oWin):
     if not copy_to_new_db(oOldConn, oTempConn, oWin, oProgressDialog,
             oLogHandler):
         oProgressDialog.destroy()
-        return True # Force refresh
+        return True  # Force refresh
     # OK, update complete, copy back from oTempConn
     sqlhub.processConnection = oOldConn
-    oWin.clear_cache() # Don't hold old copies
+    oWin.clear_cache()  # Don't hold old copies
     oProgressDialog.set_description("Finalizing import")
     oProgressDialog.reset()
     oProgressDialog.show()
@@ -181,6 +189,7 @@ def refresh_ww_card_list(oWin):
     oWin.update_to_new_db()
     oWin.restore_editable_panes(aEditable)
     return True
+
 
 def do_db_upgrade(aLowerTables, aHigherTables):
     """Attempt to upgrade the database"""
@@ -229,6 +238,7 @@ def do_db_upgrade(aLowerTables, aHigherTables):
         do_complaint_error("Upgrade Failed. " + str(oErr))
     return False
 
+
 def _do_commit_db(oLogHandler, oTempConn):
     """Handle committing the memory copy to the actual DB"""
     oProgressDialog = ProgressDialog()
@@ -238,7 +248,7 @@ def _do_commit_db(oLogHandler, oTempConn):
     oProgressDialog.destroy()
     if bOK:
         sMesg = "Changes Commited\n"
-        if len(aMessages)>0:
+        if len(aMessages) > 0:
             sMesg += '\n'.join(["Messages reported are:"] +
                     aMessages)
         else:

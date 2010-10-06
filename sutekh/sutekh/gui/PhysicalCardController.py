@@ -9,6 +9,7 @@
 
 from sutekh.gui.PhysicalCardView import PhysicalCardView
 
+
 class PhysicalCardController(object):
     """Controller for the Physical Card Collection.
 

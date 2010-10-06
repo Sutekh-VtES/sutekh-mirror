@@ -8,6 +8,7 @@
 
 import gtk
 
+
 class MainToolbar(gtk.Toolbar):
     """The Main application toolbar.
 

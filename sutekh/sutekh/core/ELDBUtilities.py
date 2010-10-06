@@ -10,12 +10,14 @@ import unicodedata
 from sutekh.core.SutekhObjects import AbstractCard, canonical_to_csv
 from sutekh.SutekhUtility import is_crypt_card
 
+
 def type_of_card(oCard):
     """Return either Crypt or Library as required."""
     if is_crypt_card(oCard):
         return "Crypt"
     else:
         return "Library"
+
 
 def norm_name(oCard):
     """Transform a card name to the ELDB equivalent"""
@@ -26,7 +28,8 @@ def norm_name(oCard):
         # Annoying ELDB special case
         sName = canonical_to_csv(sName)
     sName = sName.replace("'", "`")
-    return unicodedata.normalize('NFKD', sName).encode('ascii','ignore')
+    return unicodedata.normalize('NFKD', sName).encode('ascii', 'ignore')
+
 
 def gen_name_lookups():
     """Create a lookup table to map ELDB names to Sutekh names -

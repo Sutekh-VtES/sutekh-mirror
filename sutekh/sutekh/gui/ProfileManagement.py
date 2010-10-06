@@ -7,19 +7,21 @@
 
 """Allow the user to delete / edit the various profiles"""
 
+import gtk
+import gobject
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error, \
                                     do_complaint_buttons
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 from sutekh.gui.FrameProfileEditor import FrameProfileEditor
 from sutekh.gui.ConfigFile import ConfigFileListener, CARDSET, WW_CARDLIST, \
         CARDSET_LIST
-import gtk, gobject
 
 LABELS = {
-        CARDSET : 'Card Set Profiles',
-        WW_CARDLIST : 'White Wolf Cardlist Profiles',
-        CARDSET_LIST : 'Card Set List Profiles'
+        CARDSET: 'Card Set Profiles',
+        WW_CARDLIST: 'White Wolf Cardlist Profiles',
+        CARDSET_LIST: 'Card Set List Profiles',
         }
+
 
 class ProfileListStore(gtk.ListStore):
     # pylint: disable-msg=R0904
@@ -42,7 +44,7 @@ class ProfileListStore(gtk.ListStore):
             if sProfile == self.get_value(oIter, 0):
                 return oIter
             oIter = self.iter_next(oIter)
-        return None # fell off the end
+        return None  # fell off the end
 
     def fix_entry(self, sProfile, sNewName):
         """Fix the value for the given profile"""
@@ -55,6 +57,7 @@ class ProfileListStore(gtk.ListStore):
         oIter = self._find_iter(sProfile)
         if oIter:
             self.remove(oIter)
+
 
 class ProfileListView(gtk.TreeView):
     # pylint: disable-msg=R0904
@@ -79,6 +82,7 @@ class ProfileListView(gtk.TreeView):
             return (sProfile, sName)
         return None
 
+
 class ScrolledProfileList(gtk.Frame):
     # pylint: disable-msg=R0904
     # gtk.Widget, so many public methods
@@ -97,7 +101,6 @@ class ScrolledProfileList(gtk.Frame):
     store = property(fget=lambda self: self._oStore, doc="List of values")
     view = property(fget=lambda self: self._oView, doc="List of values")
     # disable-msg=W0212
-
 
 
 class ProfileMngDlg(SutekhDialog, ConfigFileListener):
@@ -187,7 +190,6 @@ class ProfileMngDlg(SutekhDialog, ConfigFileListener):
         else:
             sProfile, sName = None, None
         return sType, sProfile, sName
-
 
     def _edit_profile(self):
         """Fire off the profile editor"""

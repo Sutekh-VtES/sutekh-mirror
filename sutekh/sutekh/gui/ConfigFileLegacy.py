@@ -10,6 +10,7 @@
 
 from ConfigParser import RawConfigParser, NoOptionError
 
+
 class ConfigFileLegacy(object):
     """Handle the setup and management of the old config file format.
 
@@ -142,7 +143,7 @@ class ConfigFileLegacy(object):
             except ValueError:
                 iPos = -1
             aRes.append((iPaneNumber, sType, sName, bVertical, bClosed, iPos))
-        aRes.sort() # Numbers denote ordering
+        aRes.sort()  # Numbers denote ordering
         return aRes
 
     def get_all_pane_info(self):

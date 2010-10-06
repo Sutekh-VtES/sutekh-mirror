@@ -83,4 +83,3 @@ class CardSetManagementController(object):
         oCS.inuse = not oCS.inuse
         oCS.syncUpdate()
         self.view.reload_keep_expanded(True)
-
