@@ -38,6 +38,7 @@ from sutekh.gui.HTMLTextView import HTMLViewDialog
 from sutekh.gui.IconManager import IconManager
 from sutekh.gui.SutekhDialog import do_complaint_error
 
+
 class MultiPaneWindow(gtk.Window):
     """Window that has a configurable number of panes."""
     # pylint: disable-msg=R0904, R0902
@@ -71,7 +72,7 @@ class MultiPaneWindow(gtk.Window):
         self.aClosedFrames = []
         self.aOpenFrames = []
 
-        self._sCardSelection = '' # copy + paste selection
+        self._sCardSelection = ''  # copy + paste selection
         self._aHPanes = []
         self._aPlugins = []
         self.__dMenus = {}
@@ -123,7 +124,7 @@ class MultiPaneWindow(gtk.Window):
         # Create global icon manager
         self._oIconManager = IconManager(oConfig)
         # Create card text pane
-        self._oCardTextPane = None # So we can call get_pane_ids
+        self._oCardTextPane = None  # So we can call get_pane_ids
         self._oCardTextPane = CardTextFrame(self, self._oIconManager)
 
         self.__oMenu = MainMenu(self, oConfig)
@@ -526,7 +527,7 @@ class MultiPaneWindow(gtk.Window):
             # Shift & tab should always be this, AFAICT
             self.move_to_frame(-1)
             return True
-        return False # propogate event
+        return False  # propogate event
 
     def action_close(self, _oWidget, _oEvent):
         """Close the app (menu or window manager) and save the settings"""
@@ -819,7 +820,7 @@ class MultiPaneWindow(gtk.Window):
             oParent.remove(oPart1)
             oParent.add1(oNewPane)
             # Going to the left of the current pane,
-            iPos = oParent.get_position()/2
+            iPos = oParent.get_position() / 2
         else:
             oParent.remove(oPart1)
             oParent.add2(oNewPane)
@@ -834,7 +835,7 @@ class MultiPaneWindow(gtk.Window):
                 iPos = oCur.width / (len(self._aHPanes) + 2)
                 self.set_pos_for_all_hpanes(iPos)
             else:
-                iPos = (oCur.width - oParent.get_position())/2
+                iPos = (oCur.width - oParent.get_position()) / 2
         return iPos
 
     def add_pane(self, bVertical=False, iConfigPos=-1):
@@ -884,7 +885,7 @@ class MultiPaneWindow(gtk.Window):
                 # Just split the window
                 oCur = oParent.get_allocation()
                 if not bVertical:
-                    iPos = oCur.width/2
+                    iPos = oCur.width / 2
                 oParent.remove(oPart1)
                 oParent.pack_start(oNewPane)
             oNewPane.add1(oPart1)
@@ -934,7 +935,7 @@ class MultiPaneWindow(gtk.Window):
                 oHPane.add(oKept)
             elif len(self._aHPanes) == 1:
                 # Removing from the only pane, so keep the other pane
-                oThisPane = self._aHPanes[0] # Only pane
+                oThisPane = self._aHPanes[0]  # Only pane
                 self._aHPanes.remove(oThisPane)
                 oKept = [x for x in oThisPane.get_children() if x != oFrame][0]
                 # clear out pane
@@ -982,6 +983,7 @@ class MultiPaneWindow(gtk.Window):
         oCurAlloc = self.oVBox.get_allocation()
         oMenuAlloc = self.__oMenu.get_allocation()
         iVertPos = (oCurAlloc.height - oMenuAlloc.height) / 2
+
         def set_pos_children(oPane, iPos, iVertPos):
             """Walk the tree in display order, setting positions accordingly"""
             oChild1 = oPane.get_child1()
