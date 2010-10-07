@@ -33,16 +33,18 @@ if gtk.gdk.screen_get_default() is None:
     SCREEN_RESOLUTION = 0
 else:
     ## pixels = points * SCREEN_RESOLUTION
-    SCREEN_RESOLUTION = 0.3514598*(gtk.gdk.screen_height() /
+    SCREEN_RESOLUTION = 0.3514598 * (gtk.gdk.screen_height() /
             float(gtk.gdk.screen_height_mm()))
+
 
 def _parse_css_color(sColor):
     '''_parse_css_color(css_color) -> gtk.gdk.Color'''
     if sColor.startswith("rgb(") and sColor.endswith(')'):
-        iRed, iGreen, iBlue = [int(c)*257 for c in sColor[4:-1].split(',')]
+        iRed, iGreen, iBlue = [int(c) * 257 for c in sColor[4:-1].split(',')]
         return gtk.gdk.Color(iRed, iGreen, iBlue)
     else:
         return gtk.gdk.color_parse(sColor)
+
 
 class HtmlHandler(HTMLParser.HTMLParser):
     # pylint: disable-msg=R0201, R0902
@@ -55,8 +57,8 @@ class HtmlHandler(HTMLParser.HTMLParser):
         self._oTextView = oTextView
         self._oIter = oStartIter
         self._sText = ''
-        self._aStyles = [] # a gtk.TextTag or None, for each span level
-        self._aListCounters = [] # stack (top at head) of list
+        self._aStyles = []  # a gtk.TextTag or None, for each span level
+        self._aListCounters = []  # stack (top at head) of list
                                 # counters, or None for unordered list
         self._bInTitle = False
         self._dTargets = {}
@@ -72,7 +74,6 @@ class HtmlHandler(HTMLParser.HTMLParser):
         oColor = _parse_css_color(sValue)
         oTag.set_property("background-gdk", oColor)
         oTag.set_property("paragraph-background-gdk", oColor)
-
 
     def _get_current_attributes(self):
         """Get current attributes."""
@@ -91,7 +92,7 @@ class HtmlHandler(HTMLParser.HTMLParser):
         # pylint: disable-msg=W0142
         # *magic required here
         if sValue.endswith('%'):
-            fFrac = float(sValue[:-1])/100
+            fFrac = float(sValue[:-1]) / 100
             if bFontRelative:
                 oAttrs = self._get_current_attributes()
                 fFontSize = oAttrs.font.get_size() / pango.SCALE
@@ -108,21 +109,21 @@ class HtmlHandler(HTMLParser.HTMLParser):
                         self.__parse_length_frac_cb, fFrac,
                         fCallback, args)
 
-        elif sValue.endswith('pt'): # points
+        elif sValue.endswith('pt'):  # points
             fCallback(float(sValue[:-2]) * SCREEN_RESOLUTION, *args)
-        elif sValue.endswith('em'): # ems, the height of the element's font
+        elif sValue.endswith('em'):  # ems, the height of the element's font
             oAttrs = self._get_current_attributes()
             fFontSize = oAttrs.font.get_size() / pango.SCALE
             fCallback(float(sValue[:-2]) * SCREEN_RESOLUTION * fFontSize,
                     *args)
-        elif sValue.endswith('ex'): # x-height, ~ the height of the letter 'x'
+        elif sValue.endswith('ex'):  # x-height, ~ the height of the letter 'x'
             ## FIXME: figure out how to calculate this correctly
             ##        for now 'em' size is used as approximation
             oAttrs = self._get_current_attributes()
             fFontSize = oAttrs.font.get_size() / pango.SCALE
             fCallback(float(sValue[:-2]) * SCREEN_RESOLUTION * fFontSize,
                     *args)
-        elif sValue.endswith('px'): # pixels
+        elif sValue.endswith('px'):  # pixels
             fCallback(int(sValue[:-2]), *args)
         else:
             warnings.warn("Unable to parse length value '%s'" % sValue)
@@ -130,7 +131,7 @@ class HtmlHandler(HTMLParser.HTMLParser):
     @staticmethod
     def __parse_font_size_cb(fLength, oTag):
         """Callback for font size calculations."""
-        oTag.set_property("size-points", fLength/SCREEN_RESOLUTION)
+        oTag.set_property("size-points", fLength / SCREEN_RESOLUTION)
 
     def _parse_style_font_size(self, oTag, sValue):
         """Parse the font size attribute"""
@@ -248,7 +249,6 @@ class HtmlHandler(HTMLParser.HTMLParser):
         else:
             warnings.warn("text-decoration:%s not implemented" % sValue)
 
-
     ## build a dictionary mapping styles to methods, for greater speed
     __style_methods = dict()
     for sStyle in ["background-color", "color", "font-family", "font-size",
@@ -345,11 +345,11 @@ class HtmlHandler(HTMLParser.HTMLParser):
         # This looks like all that textile will produce as entities
         if sEntity == 'lt':
             self.handle_data('<')
-        elif sEntity ==  'gt':
+        elif sEntity == 'gt':
             self.handle_data('>')
-        elif sEntity ==  'amp':
+        elif sEntity == 'amp':
             self.handle_data('&')
-        elif sEntity ==  'quot':
+        elif sEntity == 'quot':
             self.handle_data('"')
         #else:
         #    print 'Unknown entity', sEntity
@@ -433,7 +433,7 @@ class HtmlHandler(HTMLParser.HTMLParser):
             self._dTargets[oAttrs['id']] = oMark
 
         if sName == 'br':
-            pass # handled in endElement
+            pass  # handled in endElement
         elif sName == 'p':
             if not self._oIter.starts_line():
                 self._insert_text("\n")
@@ -638,6 +638,7 @@ class HTMLTextView(gtk.TextView):
         # Need the anchor -> tag mappings
         self._dTargets = oHandler.get_targets()
 
+
 class HTMLViewDialog(SutekhDialog):
     # pylint: disable-msg=R0904, R0902
     # R0904: gtk.Widget, so many public methods
@@ -710,7 +711,7 @@ class HTMLViewDialog(SutekhDialog):
     def show_page(self, fInput, sPos=None):
         """Display the html file in fInput in the current window."""
         self._aPastUrls.append((self._fCurrent, self._sTextAnchor))
-        self._aFutureUrls = [] # Forward history is lost
+        self._aFutureUrls = []  # Forward history is lost
         if fInput:
             self._fCurrent = fInput
         self._sTextAnchor = sPos
@@ -721,7 +722,7 @@ class HTMLViewDialog(SutekhDialog):
         aParts = sUrl.split('#')
         sFile = aParts[0]
         if len(aParts) > 1:
-            sPos = aParts[1] # Get anchor
+            sPos = aParts[1]  # Get anchor
         else:
             sPos = None
         if sFile:
@@ -730,7 +731,7 @@ class HTMLViewDialog(SutekhDialog):
             try:
                 fInput = self._fLinkLoader(sFile)
             except Exception, _oExp:
-                sError = self._sError % { 'missing' : sUrl }
+                sError = self._sError % {'missing': sUrl}
                 fInput = StringIO(sError)
                 sPos = None
             self.show_page(fInput, sPos)
