@@ -58,10 +58,12 @@ class IKeyword(Interface): pass
 
 MAX_ID_LENGTH = 512
 
+
 class VersionTable(SQLObject):
     TableName = UnicodeCol(alternateID=True, length=50)
     Version = IntCol(default=None)
     tableversion = 1
+
 
 class AbstractCard(SQLObject):
     advise(instancesProvide=[IAbstractCard])
@@ -111,6 +113,7 @@ class AbstractCard(SQLObject):
 
     physicalCards = MultipleJoin('PhysicalCard')
 
+
 class PhysicalCard(SQLObject):
     advise(instancesProvide=[IPhysicalCard])
 
@@ -121,6 +124,7 @@ class PhysicalCard(SQLObject):
     expansion = ForeignKey('Expansion', notNull=False)
     sets = RelatedJoin('PhysicalCardSet', intermediateTable='physical_map',
             createRelatedTable=False)
+
 
 class PhysicalCardSet(SQLObject):
     advise(instancesProvide=[IPhysicalCardSet])
@@ -135,6 +139,7 @@ class PhysicalCardSet(SQLObject):
     cards = RelatedJoin('PhysicalCard', intermediateTable='physical_map',
             createRelatedTable=False)
 
+
 class RarityPair(SQLObject):
     advise(instancesProvide=[IRarityPair])
 
@@ -145,6 +150,7 @@ class RarityPair(SQLObject):
             intermediateTable='abs_rarity_pair_map', createRelatedTable=False)
     expansionRarityIndex = DatabaseIndex(expansion, rarity, unique=True)
 
+
 class Expansion(SQLObject):
     advise(instancesProvide=[IExpansion])
 
@@ -153,12 +159,14 @@ class Expansion(SQLObject):
     shortname = UnicodeCol(default=None)
     pairs = MultipleJoin('RarityPair')
 
+
 class Rarity(SQLObject):
     advise(instancesProvide=[IRarity])
 
     tableversion = 3
     name = UnicodeCol(alternateID=True, length=MAX_ID_LENGTH)
     shortname = UnicodeCol(alternateID=True, length=MAX_ID_LENGTH)
+
 
 class DisciplinePair(SQLObject):
     advise(instancesProvide=[IDisciplinePair])
@@ -171,6 +179,7 @@ class DisciplinePair(SQLObject):
             intermediateTable='abs_discipline_pair_map',
             createRelatedTable=False)
 
+
 class Discipline(SQLObject):
     advise(instancesProvide=[IDiscipline])
 
@@ -178,6 +187,7 @@ class Discipline(SQLObject):
     name = UnicodeCol(alternateID=True, length=MAX_ID_LENGTH)
     fullname = UnicodeCol(default=None)
     pairs = MultipleJoin('DisciplinePair')
+
 
 class Virtue(SQLObject):
     advise(instancesProvide=[IVirtue])
@@ -188,6 +198,7 @@ class Virtue(SQLObject):
     cards = RelatedJoin('AbstractCard', intermediateTable='abs_virtue_map',
             createRelatedTable=False)
 
+
 class Creed(SQLObject):
     advise(instancesProvide=[ICreed])
 
@@ -196,6 +207,7 @@ class Creed(SQLObject):
     shortname = UnicodeCol(default=None)
     cards = RelatedJoin('AbstractCard', intermediateTable='abs_creed_map',
             createRelatedTable=False)
+
 
 class Clan(SQLObject):
     advise(instancesProvide=[IClan])
@@ -206,6 +218,7 @@ class Clan(SQLObject):
     cards = RelatedJoin('AbstractCard', intermediateTable='abs_clan_map',
             createRelatedTable=False)
 
+
 class CardType(SQLObject):
     advise(instancesProvide=[ICardType])
 
@@ -213,6 +226,7 @@ class CardType(SQLObject):
     name = UnicodeCol(alternateID=True, length=MAX_ID_LENGTH)
     cards = RelatedJoin('AbstractCard', intermediateTable='abs_type_map',
             createRelatedTable=False)
+
 
 class Sect(SQLObject):
     advise(instancesProvide=[ISect])
@@ -222,6 +236,7 @@ class Sect(SQLObject):
     cards = RelatedJoin('AbstractCard', intermediateTable='abs_sect_map',
             createRelatedTable=False)
 
+
 class Title(SQLObject):
     advise(instancesProvide=[ITitle])
 
@@ -229,6 +244,7 @@ class Title(SQLObject):
     name = UnicodeCol(alternateID=True, length=MAX_ID_LENGTH)
     cards = RelatedJoin('AbstractCard', intermediateTable='abs_title_map',
             createRelatedTable=False)
+
 
 class Ruling(SQLObject):
     advise(instancesProvide=[IRuling])
@@ -240,6 +256,7 @@ class Ruling(SQLObject):
     cards = RelatedJoin('AbstractCard', intermediateTable='abs_ruling_map',
             createRelatedTable=False)
 
+
 class Artist(SQLObject):
     advise(instancesProvide=[IArtist])
 
@@ -248,6 +265,7 @@ class Artist(SQLObject):
     name = UnicodeCol()
     cards = RelatedJoin('AbstractCard', intermediateTable='abs_artist_map',
             createRelatedTable=False)
+
 
 class Keyword(SQLObject):
     advise(instancesProvide=[IKeyword])
@@ -263,6 +281,7 @@ class Keyword(SQLObject):
 
 # Mapping Tables
 
+
 class MapPhysicalCardToPhysicalCardSet(SQLObject):
     class sqlmeta:
         table = 'physical_map'
@@ -276,6 +295,7 @@ class MapPhysicalCardToPhysicalCardSet(SQLObject):
     physicalCardSetIndex = DatabaseIndex(physicalCardSet, unique=False)
     jointIndex = DatabaseIndex(physicalCard, physicalCardSet, unique=False)
 
+
 class MapAbstractCardToRarityPair(SQLObject):
     class sqlmeta:
         table = 'abs_rarity_pair_map'
@@ -287,6 +307,7 @@ class MapAbstractCardToRarityPair(SQLObject):
 
     abstractCardIndex = DatabaseIndex(abstractCard, unique=False)
     rarityPairIndex = DatabaseIndex(rarityPair, unique=False)
+
 
 class MapAbstractCardToRuling(SQLObject):
     class sqlmeta:
@@ -300,6 +321,7 @@ class MapAbstractCardToRuling(SQLObject):
     abstractCardIndex = DatabaseIndex(abstractCard, unique=False)
     rulingIndex = DatabaseIndex(ruling, unique=False)
 
+
 class MapAbstractCardToClan(SQLObject):
     class sqlmeta:
         table = 'abs_clan_map'
@@ -311,6 +333,7 @@ class MapAbstractCardToClan(SQLObject):
 
     abstractCardIndex = DatabaseIndex(abstractCard, unique=False)
     clanIndex = DatabaseIndex(clan, unique=False)
+
 
 class MapAbstractCardToDisciplinePair(SQLObject):
     class sqlmeta:
@@ -324,6 +347,7 @@ class MapAbstractCardToDisciplinePair(SQLObject):
     abstractCardIndex = DatabaseIndex(abstractCard, unique=False)
     disciplinePairIndex = DatabaseIndex(disciplinePair, unique=False)
 
+
 class MapAbstractCardToCardType(SQLObject):
     class sqlmeta:
         table = 'abs_type_map'
@@ -335,6 +359,7 @@ class MapAbstractCardToCardType(SQLObject):
 
     abstractCardIndex = DatabaseIndex(abstractCard, unique=False)
     cardTypeIndex = DatabaseIndex(cardType, unique=False)
+
 
 class MapAbstractCardToSect(SQLObject):
     class sqlmeta:
@@ -348,6 +373,7 @@ class MapAbstractCardToSect(SQLObject):
     abstractCardIndex = DatabaseIndex(abstractCard, unique=False)
     sectIndex = DatabaseIndex(sect, unique=False)
 
+
 class MapAbstractCardToTitle(SQLObject):
     class sqlmeta:
         table = 'abs_title_map'
@@ -359,6 +385,7 @@ class MapAbstractCardToTitle(SQLObject):
 
     abstractCardIndex = DatabaseIndex(abstractCard, unique=False)
     titleIndex = DatabaseIndex(title, unique=False)
+
 
 class MapAbstractCardToCreed(SQLObject):
     class sqlmeta:
@@ -372,6 +399,7 @@ class MapAbstractCardToCreed(SQLObject):
     abstractCardIndex = DatabaseIndex(abstractCard, unique=False)
     creedIndex = DatabaseIndex(creed, unique=False)
 
+
 class MapAbstractCardToVirtue(SQLObject):
     class sqlmeta:
         table = 'abs_virtue_map'
@@ -384,6 +412,7 @@ class MapAbstractCardToVirtue(SQLObject):
     abstractCardIndex = DatabaseIndex(abstractCard, unique=False)
     virtueIndex = DatabaseIndex(virtue, unique=False)
 
+
 class MapAbstractCardToArtist(SQLObject):
     class sqlmeta:
         table = 'abs_artist_map'
@@ -395,6 +424,7 @@ class MapAbstractCardToArtist(SQLObject):
 
     abstractCardIndex = DatabaseIndex(abstractCard, unique=False)
     artistIndex = DatabaseIndex(artist, unique=False)
+
 
 class MapAbstractCardToKeyword(SQLObject):
     class sqlmeta:
@@ -412,7 +442,7 @@ class MapAbstractCardToKeyword(SQLObject):
 
 # List of Tables to be created, dropped, etc.
 
-TABLE_LIST = [ AbstractCard, Expansion,
+TABLE_LIST = [AbstractCard, Expansion,
                PhysicalCard, PhysicalCardSet,
                Rarity, RarityPair, Discipline, DisciplinePair,
                Clan, CardType, Sect, Title, Ruling, Virtue, Creed,
@@ -432,6 +462,7 @@ TABLE_LIST = [ AbstractCard, Expansion,
                MapAbstractCardToKeyword,
                ]
 # For reloading the Physical Card Sets
+
 PHYSICAL_SET_LIST = [PhysicalCardSet,
         MapPhysicalCardToPhysicalCardSet]
 # For database upgrades, etc.
@@ -440,8 +471,8 @@ PHYSICAL_LIST = [PhysicalCard] + PHYSICAL_SET_LIST
 # Generically useful constant
 CRYPT_TYPES = ['Vampire', 'Imbued']
 
-# Object Maker API
 
+# Object Maker API
 class SutekhObjectMaker(object):
     """Creates all kinds of SutekhObjects from simple strings.
 
@@ -457,7 +488,7 @@ class SutekhObjectMaker(object):
             return cInterface(sObj)
         except SQLObjectNotFound:
             sObj = cAbbreviation.canonical(sObj)
-            dKw = { 'name': sObj }
+            dKw = {'name': sObj}
             if bShortname:
                 dKw['shortname'] = cAbbreviation.shortname(sObj)
             if bFullname:
@@ -545,8 +576,8 @@ class SutekhObjectMaker(object):
         except SQLObjectNotFound:
             return Artist(canonicalName=sArtist.lower(), name=sArtist)
 
-# Abbreviation lookup based adapters
 
+# Abbreviation lookup based adapters
 class StrAdaptMeta(type):
     """Metaclass for the string adaptors."""
     # pylint: disable-msg=W0231, C0203
@@ -569,6 +600,7 @@ class StrAdaptMeta(type):
 
         return oObj
 
+
 class CardTypeAdapter(object):
     # pylint: disable-msg=E1101
     # metaclass confuses pylint
@@ -577,6 +609,7 @@ class CardTypeAdapter(object):
 
     def __new__(cls, sName):
         return cls.fetch(CardTypes.canonical(sName), CardType)
+
 
 class ClanAdapter(object):
     # pylint: disable-msg=E1101
@@ -587,6 +620,7 @@ class ClanAdapter(object):
     def __new__(cls, sName):
         return cls.fetch(Clans.canonical(sName), Clan)
 
+
 class CreedAdapter(object):
     # pylint: disable-msg=E1101
     # metaclass confuses pylint
@@ -595,6 +629,7 @@ class CreedAdapter(object):
 
     def __new__(cls, sName):
         return cls.fetch(Creeds.canonical(sName), Creed)
+
 
 class DisciplineAdapter(object):
     # pylint: disable-msg=E1101
@@ -605,6 +640,7 @@ class DisciplineAdapter(object):
     def __new__(cls, sName):
         return cls.fetch(Disciplines.canonical(sName), Discipline)
 
+
 class ExpansionAdapter(object):
     # pylint: disable-msg=E1101
     # metaclass confuses pylint
@@ -613,6 +649,7 @@ class ExpansionAdapter(object):
 
     def __new__(cls, sName):
         return cls.fetch(Expansions.canonical(sName), Expansion)
+
 
 class RarityAdapter(object):
     # pylint: disable-msg=E1101
@@ -623,6 +660,7 @@ class RarityAdapter(object):
     def __new__(cls, sName):
         return cls.fetch(Rarities.canonical(sName), Rarity)
 
+
 class SectAdaptor(object):
     # pylint: disable-msg=E1101
     # metaclass confuses pylint
@@ -632,6 +670,7 @@ class SectAdaptor(object):
     def __new__(cls, sName):
         return cls.fetch(Sects.canonical(sName), Sect)
 
+
 class TitleAdapter(object):
     # pylint: disable-msg=E1101
     # metaclass confuses pylint
@@ -640,6 +679,7 @@ class TitleAdapter(object):
 
     def __new__(cls, sName):
         return cls.fetch(Titles.canonical(sName), Title)
+
 
 class VirtueAdapter(object):
     # pylint: disable-msg=E1101
@@ -651,6 +691,7 @@ class VirtueAdapter(object):
         return cls.fetch(Virtues.canonical(sName), Virtue)
 
 # Other Adapters
+
 
 class RarityPairAdapter(object):
     advise(instancesProvide=[IRarityPair], asAdapterForTypes=[tuple])
@@ -675,6 +716,7 @@ class RarityPairAdapter(object):
 
         return oPair
 
+
 class DisciplinePairAdapter(object):
     advise(instancesProvide=[IDisciplinePair], asAdapterForTypes=[tuple])
 
@@ -698,6 +740,7 @@ class DisciplinePairAdapter(object):
 
         return oPair
 
+
 class AbstractCardAdapter(object):
     advise(instancesProvide=[IAbstractCard], asAdapterForTypes=[basestring])
 
@@ -716,6 +759,7 @@ class AbstractCardAdapter(object):
                 raise
         return oCard
 
+
 class RulingAdapter(object):
     advise(instancesProvide=[IRuling], asAdapterForTypes=[tuple])
 
@@ -725,6 +769,7 @@ class RulingAdapter(object):
         sText, _sCode = tData
         return Ruling.byText(sText.encode('utf8'))
 
+
 class KeywordAdapter(object):
     advise(instancesProvide=[IKeyword], asAdapterForTypes=[basestring])
 
@@ -732,6 +777,7 @@ class KeywordAdapter(object):
         # pylint: disable-msg=E1101,
         # SQLObject confuses pylint
         return Keyword.byKeyword(sKeyword.encode('utf8'))
+
 
 class ArtistAdapter(object):
     advise(instancesProvide=[IArtist], asAdapterForTypes=[basestring])
@@ -741,6 +787,7 @@ class ArtistAdapter(object):
         # SQLObject confuses pylint
         return Artist.byCanonicalName(sArtistName.encode('utf8').lower())
 
+
 class PhysicalCardSetAdapter(object):
     advise(instancesProvide=[IPhysicalCardSet], asAdapterForTypes=[basestring])
 
@@ -749,32 +796,37 @@ class PhysicalCardSetAdapter(object):
         # SQLObject confuses pylint
         return PhysicalCardSet.byName(sName.encode('utf8'))
 
+
 class PhysicalCardToAbstractCardAdapter(object):
     advise(instancesProvide=[IAbstractCard], asAdapterForTypes=[PhysicalCard])
 
     def __new__(cls, oPhysCard):
         return oPhysCard.abstractCard
 
+
 class PhysicalCardMappingToPhysicalCardAdapter(object):
-    advise(instancesProvide=[IPhysicalCard], asAdapterForTypes=
-            [MapPhysicalCardToPhysicalCardSet])
+    advise(instancesProvide=[IPhysicalCard],
+            asAdapterForTypes=[MapPhysicalCardToPhysicalCardSet])
 
     def __new__(cls, oMapPhysCard):
         return oMapPhysCard.physicalCard
 
+
 class PhysicalCardMappingToCardSetAdapter(object):
-    advise(instancesProvide=[IPhysicalCardSet], asAdapterForTypes=
-            [MapPhysicalCardToPhysicalCardSet])
+    advise(instancesProvide=[IPhysicalCardSet],
+            asAdapterForTypes=[MapPhysicalCardToPhysicalCardSet])
 
     def __new__(cls, oMapPhysCard):
         return oMapPhysCard.physicalCardSet
 
+
 class PhysicalCardMappingToAbstractCardAdapter(object):
-    advise(instancesProvide=[IAbstractCard], asAdapterForTypes=
-            [MapPhysicalCardToPhysicalCardSet])
+    advise(instancesProvide=[IAbstractCard],
+            asAdapterForTypes=[MapPhysicalCardToPhysicalCardSet])
 
     def __new__(cls, oMapPhysCard):
         return IAbstractCard(oMapPhysCard.physicalCard)
+
 
 class PhysicalCardAdapter(object):
     advise(instancesProvide=[IPhysicalCard], asAdapterForTypes=[tuple])
@@ -799,20 +851,21 @@ class PhysicalCardAdapter(object):
 
 # pylint: enable-msg=C0111
 
-# Flushing
 
+# Flushing
 def flush_cache():
     """Flush all the object caches - needed before importing new card lists
        and such"""
-    for cAdaptor in [ ExpansionAdapter, RarityAdapter, DisciplineAdapter,
+    for cAdaptor in [ExpansionAdapter, RarityAdapter, DisciplineAdapter,
                       ClanAdapter, CardTypeAdapter, SectAdaptor, TitleAdapter,
                       VirtueAdapter, CreedAdapter, DisciplinePairAdapter,
-                      RarityPairAdapter, PhysicalCardAdapter ]:
+                      RarityPairAdapter, PhysicalCardAdapter]:
         cAdaptor.make_object_cache()
 
     for oJoin in AbstractCard.sqlmeta.joins:
         if type(oJoin) is SOCachedRelatedJoin:
             oJoin.flush_cache()
+
 
 def init_cache():
     """Initiliase the cached join tables."""
@@ -824,6 +877,7 @@ def init_cache():
 # We define them here to avoid circular imports, since pretty much everything
 # else requires SutekhObjects
 
+
 def canonical_to_csv(sName):
     """Moves articles to the end of the name"""
     if sName.startswith('The '):
@@ -833,6 +887,7 @@ def canonical_to_csv(sName):
     elif sName.startswith('A '):
         sName = sName[2:] + ", A"
     return sName
+
 
 def csv_to_canonical(sName):
     """Moves articles from the end back to the start - reverses
@@ -847,4 +902,3 @@ def csv_to_canonical(sName):
     # The result might be mixed case, but, as we will feed this into
     # IAbstractCard in most cases, that won't matter
     return sName
-
