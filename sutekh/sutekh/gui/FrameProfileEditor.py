@@ -18,6 +18,7 @@ from sutekh.gui.PreferenceTable import PreferenceTable
 import gtk
 import gobject
 
+
 class FrameProfileEditor(SutekhDialog):
     """Dialog which allows the user to edit profiles of the specified type.
        """
@@ -79,7 +80,7 @@ class FrameProfileEditor(SutekhDialog):
         while oIter:
             if oModel.get_value(oIter, 0) == sProfile:
                 self.__oSelectorCombo.set_active_iter(oIter)
-                return # Found a match, so leave
+                return  # Found a match, so leave
             oIter = oModel.iter_next(oIter)
 
     def _button_response(self, _oWidget, iResponse):
@@ -198,9 +199,9 @@ class FrameProfileEditor(SutekhDialog):
         dNewValues = self._profile_options(sActiveProfile)
         if sActiveProfile == "defaults":
             dInherit = dict.fromkeys(dNewValues.keys(), False)
-            dEdit = { "name" : False }
+            dEdit = {"name": False}
         else:
-            dInherit = { "name": False }
+            dInherit = {"name": False}
             dEdit = {}
         self.__dUnsavedChanges[sActiveProfile] = dNewValues
         self.__oOptionsTable.update_values(dNewValues, dInherit, dEdit)

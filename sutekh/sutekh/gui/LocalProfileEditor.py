@@ -13,6 +13,7 @@ from sutekh.gui.PreferenceTable import PreferenceTable
 from sutekh.gui.ConfigFile import FRAME
 import gtk
 
+
 class LocalProfileEditor(SutekhDialog):
     """Dialog which allows the user to per-deck option profiles.
        """

@@ -15,6 +15,7 @@ from sutekh.core.FilterParser import get_filters_for_type
 import gtk
 import pango
 
+
 class FilterEditor(gtk.Alignment):
     # pylint: disable-msg=R0904
     # gtk.Widget, so many public methods
@@ -27,7 +28,7 @@ class FilterEditor(gtk.Alignment):
         # Child widget absorbs all free space
         super(FilterEditor, self).__init__(xscale=1.0, yscale=1.0)
         self.__oParser = oParser
-        self.__oFilterDialog = oFilterDialog # Dialog we're a child of
+        self.__oFilterDialog = oFilterDialog  # Dialog we're a child of
 
         self.__oPanes = FilterModelPanes(sFilterType, oFilterDialog)
 
@@ -150,6 +151,7 @@ class FilterHelpBuffer(gtk.TextBuffer):
         """reset the iterator to the start of the buffer."""
         self._oIter = self.get_iter_at_offset(0)
 
+
 class FilterHelpTextView(gtk.TextView):
     """TextView widget for displaying the help text."""
     # pylint: disable-msg=R0904
@@ -178,8 +180,7 @@ class FilterHelpTextView(gtk.TextView):
             "you'll see in the filter editor in bold. "
             "The rest of the description describes the arguments "
             "the filter takes and the results it produces."
-            "\n\n"
-        )
+            "\n\n")
 
         # Add test for filter group
         oBuf.add_help_text('Filter Group', "Filter element with holds "
@@ -191,15 +192,11 @@ class FilterHelpTextView(gtk.TextView):
             oBuf.add_help_text(oFilt.description,
                     oFilt.helptext)
 
-        oBuf.tag_text(
-            "\n"
+        oBuf.tag_text("\n"
             "Note: Using filters which require information about "
             "cards in a card set will temporarily turn off displaying "
             "cards with zero counts (for modes where this is possible) "
             "in the card list since there are no "
             "associated cards on which to base the query. "
             "Filters affected by this are: Physical Expansion, "
-            "Card Sets and In Card Sets in Use."
-        )
-
-
+            "Card Sets and In Card Sets in Use.")

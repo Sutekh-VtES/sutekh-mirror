@@ -16,7 +16,7 @@ from sutekh.core.FilterBox import FilterBoxItem, FilterBoxModel, BOXTYPE, \
 import gobject
 import gtk
 
-DRAG_TARGETS = [ ('STRING', 0, 0), ('text/plain', 0, 0) ]
+DRAG_TARGETS = [('STRING', 0, 0), ('text/plain', 0, 0)]
 NO_DRAG_TARGET = [("No Drag", 0, 0)]
 # Filters we pad values for to sort nicely
 PAD_FILTERS = ['Capacity', 'CardCount: Count']
@@ -26,6 +26,7 @@ NEW_VALUE = 'NewValue: '
 MOVE_VALUE = 'MoveValue: '
 MOVE_FILTER = 'MoveFilter: '
 NEW_FILTER = 'NewFilter: '
+
 
 class FilterModelPanes(gtk.HBox):
     """Widget to hold the different panes of the Filter editor"""
@@ -98,6 +99,7 @@ class FilterEditorToolbar(gtk.TreeView):
             sSelect = '%s%s' % (NEW_FILTER,
                     self.__oListStore.get_value(oIter, 1))
             oSelectionData.set(oSelectionData.target, 8, sSelect)
+
 
 class FilterValuesBox(gtk.VBox):
     """Holder for the value setting objects"""
@@ -289,7 +291,7 @@ class FilterValuesBox(gtk.VBox):
         """Update the box model to the current selection"""
         aSelected = oList.get_selection()
         if not aSelected:
-            return # We don't do anything special if nothing's selected
+            return  # We don't do anything special if nothing's selected
         for sDesc, tInfo in BOXTYPE.iteritems():
             if sDesc == aSelected[0]:
                 oBoxModel.sBoxType, oBoxModel.bNegate = tInfo
@@ -305,7 +307,7 @@ class FilterValuesBox(gtk.VBox):
         if not oSelectionData and oSelectionData.format != 8:
             bDragRes = False
         else:
-            sData =  oSelectionData.data
+            sData = oSelectionData.data
             if not sData:
                 bDragRes = False
             elif sData.startswith(MOVE_VALUE):
@@ -438,6 +440,7 @@ class FilterValuesBox(gtk.VBox):
         _set_values(oScrolledWindow.get_hadjustment(), tScrollAdj[0])
         _set_values(oScrolledWindow.get_vadjustment(), tScrollAdj[1])
 
+
 class BoxModelPopupMenu(gtk.Menu):
     """Popup context menu for disable/ negate & delete"""
     # pylint: disable-msg=R0904
@@ -463,8 +466,8 @@ class FilterBoxModelStore(gtk.TreeStore):
     # pylint: disable-msg=R0904
     # R0904 - gtk.Widget, so many public methods
 
-    BLACK =  gtk.gdk.color_parse('black')
-    GREY =  gtk.gdk.color_parse('grey')
+    BLACK = gtk.gdk.color_parse('black')
+    GREY = gtk.gdk.color_parse('grey')
     NO_VALUE = '<i>No Values Set</i>'
     NONE_VALUE = '<b>No Values for this filter</b>'
 
@@ -736,9 +739,9 @@ class FilterBoxModelEditView(gtk.TreeView):
         """Remove the filter element at the given point in the tree"""
         oIter = self._oStore.get_iter_from_string(sIter)
         oMoveObj = self._oStore.get_value(oIter, 1)
-        oParent  = self._oStore.get_value(self._oStore.iter_parent(oIter), 1)
+        oParent = self._oStore.get_value(self._oStore.iter_parent(oIter), 1)
         oParent.remove(oMoveObj)
-        self.load() # May break stuff
+        self.load()  # May break stuff
 
     def update_list(self, oIter, oFilterItem):
         """Update the list to show the current values"""
@@ -809,7 +812,7 @@ class FilterBoxModelEditView(gtk.TreeView):
         if not oSelectionData and oSelectionData.format != 8:
             bDragRes = False
         else:
-            sData =  oSelectionData.data
+            sData = oSelectionData.data
             tRowInfo = self.get_dest_row_at_pos(iXPos, iYPos)
             if not sData:
                 bDragRes = False
@@ -1015,7 +1018,7 @@ class FilterBoxModelEditView(gtk.TreeView):
             # position
             oMoveIter = self._oStore.get_iter_from_string(sFilter)
             oMoveObj = self._oStore.get_value(oMoveIter, 1)
-            oParent  = self._oStore.get_value(
+            oParent = self._oStore.get_value(
                     self._oStore.iter_parent(oMoveIter), 1)
             # Check move is legal
             bDoInsert = False
@@ -1110,7 +1113,7 @@ class FilterBoxModelEditView(gtk.TreeView):
                 # Show before popup, otherwise menu items aren't drawn properly
                 oPopupMenu.show_all()
                 oPopupMenu.popup(None, None, None, oEvent.button, oTime)
-                return True # Don't propogate to buttons
+                return True  # Don't propogate to buttons
         return False
 
     def drag_element(self, _oBtn, _oContext, oSelectionData, _oInfo, _oTime):
