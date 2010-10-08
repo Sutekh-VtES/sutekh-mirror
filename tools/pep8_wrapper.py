@@ -75,6 +75,7 @@ class PEP8Checker(BaseChecker):
             'C5714': ("Whitespace before '{', '[' or '('", ['E211']),
             'C5715': ("Spaces around keyword / parameter =", ['E251']),
             'C5716': ("Multiple imports on one line", ['E401']),
+            'C5717': ("Trailing whitespace", ['W291']),
             }
     options = ()
 

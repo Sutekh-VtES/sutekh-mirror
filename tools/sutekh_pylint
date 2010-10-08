@@ -20,7 +20,7 @@ min-public-methods=0
 max-parents=12
 
 [MASTER]
-#load-plugins=dict_keys_check, whitespace_eol, pyprotocols_interface
+#load-plugins=dict_keys_check, pyprotocols_interface, pep8_wrapper
 
 [FORMAT]
 # PEP 008 says 79, not 80
