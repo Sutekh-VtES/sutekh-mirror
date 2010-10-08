@@ -24,6 +24,11 @@ dict_keys_check.py - A plugin to pylint to warn about using
           file is in the PYTHONPATH, and uncomment the load-plugins line
           in sutekh_pylint
 
+pep8_wrapper.py - A plugin to pylint that runs the pep8 checking utility
+          and adds a subset of pep8 complaints to the pylint output. Add
+          to load_plugins in sutekh_pylint, as for dict_keys_check.py.
+          Requires the pep8 utility.
+
 whitespace_eol.py - A plugin for pylint which warns about whitespace at the
           end of the line. This plugin ignores syntax, so spaces in comments
           and strings are also caught.  Add to load_plugins in sutekh_pylint,
