@@ -178,7 +178,8 @@ class ExtraCardViewColumns(SutekhPlugin):
                 oP.discipline.name.upper(), oP.discipline.name) for
                 oP in oCard.discipline]
             if aInfo:
-                aInfo.sort(key=lambda x: x[0])
+                # We sort inf before SUP, so swapcase
+                aInfo.sort(key=lambda x: x[0].swapcase())
                 if bGetIcons:
                     dIcons = self.icon_manager.get_icon_list(oCard.discipline)
                     aIcons = [dIcons[x[1]] for x in aInfo]

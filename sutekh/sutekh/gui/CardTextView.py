@@ -313,10 +313,10 @@ class CardTextView(gtk.TextView):
 
         if not len(oCard.discipline) == 0:
             aInfo = []
-            aInfo.extend(sorted([oP.discipline.name.upper() for oP in
-                oCard.discipline if oP.level == 'superior']))
             aInfo.extend(sorted([oP.discipline.name for oP in oCard.discipline
                 if oP.level != 'superior']))
+            aInfo.extend(sorted([oP.discipline.name.upper() for oP in
+                oCard.discipline if oP.level == 'superior']))
             dIcons = self._oIconManager.get_icon_list(oCard.discipline)
             self._oBuf.labelled_list("Disciplines", aInfo, "discipline",
                     dIcons)
