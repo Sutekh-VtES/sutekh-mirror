@@ -348,9 +348,20 @@ def main_with_args(aTheArgs):
 
     if not oOpts.print_card is None:
         try:
-            # pylint: disable-msg=E1101
+            try:
+                oCard = IAbstractCard(oOpts.print_card)
+            except UnicodeDecodeError, oErr:
+                if oOpts.print_encoding != 'ascii':
+                    # Are there better choices than --print-encoding?
+                    oCard = IAbstractCard(
+                            oOpts.print_card.decode(oOpts.print_encoding))
+                else:
+                    print 'Unable to interpret card name:'
+                    print oErr
+                    print 'Please specify a suitable --print-encoding'
+                    return 1
+            # pylint: disable-msg=E1101, E1103
             # SQLObject confuse pylint
-            oCard = IAbstractCard(oOpts.print_card)
             print oCard.name.encode(oOpts.print_encoding, 'xmlcharrefreplace')
             print_card_details(oCard, oOpts.print_encoding)
         except SQLObjectNotFound:
