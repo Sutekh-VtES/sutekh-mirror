@@ -168,10 +168,10 @@ def print_card_details(oCard, sEncoding):
     if len(oCard.discipline) > 0:
         if is_crypt_card(oCard):
             aDisciplines = []
-            aDisciplines.extend(sorted([oP.discipline.name.upper() for oP in
-                oCard.discipline if oP.level == 'superior']))
             aDisciplines.extend(sorted([oP.discipline.name for oP in
                 oCard.discipline if oP.level != 'superior']))
+            aDisciplines.extend(sorted([oP.discipline.name.upper() for oP in
+                oCard.discipline if oP.level == 'superior']))
             sDisciplines = ' '.join(aDisciplines)
         else:
             aDisciplines = [oP.discipline.fullname for oP in oCard.discipline]
