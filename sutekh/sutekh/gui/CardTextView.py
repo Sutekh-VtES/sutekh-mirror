@@ -326,21 +326,23 @@ class CardTextView(gtk.TextView):
             self._oBuf.labelled_list("Virtue",
                     [oC.name for oC in oCard.virtue], "virtue", dIcons)
 
+        self._oBuf.tag_text("\n\n")
+        self._oBuf.tag_text(format_text(oCard.text),
+                "card_text")
+
+        if not len(oCard.rulings) == 0:
+            self._oBuf.tag_text("\n")
+            aInfo = [oR.text.replace("\n", " ") + " " + oR.code for oR
+                    in oCard.rulings]
+            self._oBuf.labelled_list("Rulings", aInfo, "ruling")
+
         if not len(oCard.rarity) == 0:
+            self._oBuf.tag_text("\n")
             dExp = {}
             for oPair in oCard.rarity:
                 dExp.setdefault(oPair.expansion.name, [])
                 dExp[oPair.expansion.name].append(oPair.rarity.name)
             self._oBuf.labelled_exp_list("Expansions", dExp, "expansion")
-
-        if not len(oCard.rulings) == 0:
-            aInfo = [oR.text.replace("\n", " ") + " " + oR.code for oR
-                    in oCard.rulings]
-            self._oBuf.labelled_list("Rulings", aInfo, "ruling")
-
-        self._oBuf.tag_text("\n\n")
-        self._oBuf.tag_text(format_text(oCard.text),
-                "card_text")
 
         if len(oCard.artists) > 0:
             self._oBuf.tag_text("\n")
