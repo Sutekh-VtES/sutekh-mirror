@@ -104,6 +104,22 @@ class DisciplineGrouping(IterGrouping):
             return [y.discipline.fullname for y in oThisCard.discipline]
 
 
+class DisciplineLevelGrouping(IterGrouping):
+    """Group by Discipline or Virtue, distinguishing discipline levels"""
+    def __init__(self, oIter, fGetCard=DEF_GET_CARD):
+        super(DisciplineLevelGrouping, self).__init__(oIter, self._get_values)
+        self.fGetCard = fGetCard
+
+    def _get_values(self, oCard):
+        """Get the values to group by for this card"""
+        oThisCard = self.fGetCard(oCard)
+        if oThisCard.virtue:
+            return [y.fullname for y in oThisCard.virtue]
+        else:
+            return ['%s (%s)' % (y.discipline.fullname, y.level)
+                    for y in oThisCard.discipline]
+
+
 class ExpansionGrouping(IterGrouping):
     def __init__(self, oIter, fGetCard=DEF_GET_CARD):
         super(ExpansionGrouping, self).__init__(oIter,

@@ -12,7 +12,8 @@ from sutekh.core.Groupings import CardTypeGrouping, ClanGrouping, \
         DisciplineGrouping, ExpansionGrouping, RarityGrouping, \
         CryptLibraryGrouping, NullGrouping, MultiTypeGrouping, \
         SectGrouping, TitleGrouping, CostGrouping, GroupGrouping, \
-        ArtistGrouping, KeywordGrouping, GroupPairGrouping
+        ArtistGrouping, KeywordGrouping, GroupPairGrouping, \
+        DisciplineLevelGrouping
 from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog
 
@@ -30,6 +31,7 @@ class GroupCardList(SutekhPlugin):
         'Crypt or Library': CryptLibraryGrouping,
         'Clans and Creeds': ClanGrouping,
         'Disciplines and Virtues': DisciplineGrouping,
+        'Disciplines (by level) and Virtues': DisciplineLevelGrouping,
         'Expansion': ExpansionGrouping,
         'Rarity': RarityGrouping,
         'Sect': SectGrouping,

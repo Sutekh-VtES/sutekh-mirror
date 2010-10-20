@@ -1066,6 +1066,10 @@ card.  The Imbued Creeds are treated as if they were Vampire Clans.
 * _Disciplines and Virtues_: Group cards by the Discipline(s) or Virtue(s) \
 listed on the card. The Imbued Virtues are treated as if they were Vampire \
 Disciplines.
+* _Disciplines (by level)  and Virtues_: Group cards by the Discipline(s) or \
+Virtue(s) listed on the card. This distinguishes between inferior and \
+superior levels of the discipline on vampires, but otherwise is the same \
+as the _Disciplines and Virtues_ grouping.
 * _Crypt or Library_: Split the card list into crypt and library cards.
 * _Card Type_: Group by card type. This is the default grouping. This grouping \
 treats multi-type cards, such as *Action Modifier/Combat* cards as members of \
