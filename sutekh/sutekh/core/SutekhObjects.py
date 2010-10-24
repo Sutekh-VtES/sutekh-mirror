@@ -800,16 +800,35 @@ class PhysicalCardSetAdapter(object):
 class PhysicalCardToAbstractCardAdapter(object):
     advise(instancesProvide=[IAbstractCard], asAdapterForTypes=[PhysicalCard])
 
+    __dCache = {}
+
+    @classmethod
+    def make_object_cache(cls):
+        cls.__dCache = {}
+
     def __new__(cls, oPhysCard):
-        return oPhysCard.abstractCard
+        oCard = cls.__dCache.get(oPhysCard.abstractCardID, None)
+        if oCard is None:
+            oCard = oPhysCard.abstractCard
+        return oCard
 
 
 class PhysicalCardMappingToPhysicalCardAdapter(object):
     advise(instancesProvide=[IPhysicalCard],
             asAdapterForTypes=[MapPhysicalCardToPhysicalCardSet])
 
+    __dCache = {}
+
+    @classmethod
+    def make_object_cache(cls):
+        cls.__dCache = {}
+
     def __new__(cls, oMapPhysCard):
-        return oMapPhysCard.physicalCard
+        oCard = cls.__dCache.get(oMapPhysCard.physicalCardID, None)
+        if oCard is None:
+            oCard = oMapPhysCard.physicalCard
+            cls.__dCache[oMapPhysCard.physicalCardID] = oCard
+        return oCard
 
 
 class PhysicalCardMappingToCardSetAdapter(object):
@@ -824,8 +843,18 @@ class PhysicalCardMappingToAbstractCardAdapter(object):
     advise(instancesProvide=[IAbstractCard],
             asAdapterForTypes=[MapPhysicalCardToPhysicalCardSet])
 
+    __dCache = {}
+
+    @classmethod
+    def make_object_cache(cls):
+        cls.__dCache = {}
+
     def __new__(cls, oMapPhysCard):
-        return IAbstractCard(oMapPhysCard.physicalCard)
+        oCard = cls.__dCache.get(oMapPhysCard.physicalCardID, None)
+        if oCard is None:
+            oCard = IAbstractCard(oMapPhysCard.physicalCard)
+            cls.__dCache[oMapPhysCard.physicalCardID] = oCard
+        return oCard
 
 
 class PhysicalCardAdapter(object):
@@ -859,7 +888,11 @@ def flush_cache():
     for cAdaptor in [ExpansionAdapter, RarityAdapter, DisciplineAdapter,
                       ClanAdapter, CardTypeAdapter, SectAdaptor, TitleAdapter,
                       VirtueAdapter, CreedAdapter, DisciplinePairAdapter,
-                      RarityPairAdapter, PhysicalCardAdapter]:
+                      RarityPairAdapter, PhysicalCardAdapter,
+                      PhysicalCardMappingToPhysicalCardAdapter,
+                      PhysicalCardToAbstractCardAdapter,
+                      PhysicalCardMappingToAbstractCardAdapter,
+                      ]:
         cAdaptor.make_object_cache()
 
     for oJoin in AbstractCard.sqlmeta.joins:
