@@ -1,3 +1,36 @@
+20 Oct 2010
+ * Add discipline with level grouping
+
+19 Oct 2010
+ * Reorder card text in CardTextView. Card Text is now above rulings and
+   expansion info
+
+18 Oct 2010
+ * Change discipline order in print-card cli option
+ * Make sutekh fail a bit more robustly in the face of unicode input
+
+17 Oct 2010
+ * Sort disciplines in card text view to match the order printed on crypt cards
+
+3 Oct 2010
+ * Add WW Card Count plugin and docs
+
+29 Sep 2010
+ * Sort expansions when presenting list to select replacement from
+
+25 Sep 2010
+ * Avoid repeatedly reloading card sets on startup
+
+24 Sep 2010
+ * Consider expansions by default when comparing card sets
+
+23 Sep 2010
+ * Add test for the card set model config change handling
+
+20 Sep 2010
+ * WW Analysis plugins (Expansion Stats, Clan discipline stats) now only
+   include illegal cards if the card list does
+
 16 Sep 2010
  * Better visual hints when dragging filters and filter elements
 
