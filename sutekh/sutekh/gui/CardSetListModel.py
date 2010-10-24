@@ -2027,7 +2027,8 @@ class CardSetCardListModel(CardListModel):
         bReloadIllegal = self._change_illegal_mode(bHideIllegal)
         if not bSkipLoad and (bReloadELM or bReloadSCM or bReloadPCM
                 or bReloadIcons or bReloadIllegal):
-            self._oController.view.reload_keep_expanded()
+            # queue reload for later
+            self._oController.frame.queue_reload()
 
     #
     # Per-deck configuration listeners

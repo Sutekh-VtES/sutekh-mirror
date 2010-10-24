@@ -137,7 +137,7 @@ class GroupCardList(SutekhPlugin):
             self.model.groupby = cGrping
             if bReload:
                 # Use view.load so we get busy cursor, etc.
-                self.view.load()
+                self.view.frame.queue_reload()
 
     def get_grouping(self):
         """Get the current grouping class."""
