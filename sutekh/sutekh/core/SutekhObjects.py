@@ -865,6 +865,12 @@ class PhysicalCardAdapter(object):
     @classmethod
     def make_object_cache(cls):
         cls.__dCache = {}
+        # pre-populate cache with mappings to commonly used
+        # physical card with None expansion.
+        for oPhysicalCard in PhysicalCard.select(
+                    PhysicalCard.q.expansion == None):
+            oAbsCard = oPhysicalCard.abstractCard
+            cls.__dCache[(oAbsCard.id, None)] = oPhysicalCard
 
     def __new__(cls, tData):
         # pylint: disable-msg=E1101
@@ -882,9 +888,9 @@ class PhysicalCardAdapter(object):
 
 
 # Flushing
-def flush_cache():
-    """Flush all the object caches - needed before importing new card lists
-       and such"""
+
+def make_adaptor_caches():
+    """Flush all adaptor caches."""
     for cAdaptor in [ExpansionAdapter, RarityAdapter, DisciplineAdapter,
                       ClanAdapter, CardTypeAdapter, SectAdaptor, TitleAdapter,
                       VirtueAdapter, CreedAdapter, DisciplinePairAdapter,
@@ -895,9 +901,15 @@ def flush_cache():
                       ]:
         cAdaptor.make_object_cache()
 
+
+def flush_cache():
+    """Flush all the object caches - needed before importing new card lists
+       and such"""
     for oJoin in AbstractCard.sqlmeta.joins:
         if type(oJoin) is SOCachedRelatedJoin:
             oJoin.flush_cache()
+
+    make_adaptor_caches()
 
 
 def init_cache():
@@ -905,6 +917,9 @@ def init_cache():
     for oJoin in AbstractCard.sqlmeta.joins:
         if type(oJoin) is SOCachedRelatedJoin:
             oJoin.init_cache()
+
+    make_adaptor_caches()
+
 
 # helper conversion functions
 # We define them here to avoid circular imports, since pretty much everything
