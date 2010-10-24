@@ -68,6 +68,9 @@ class DummyController(object):
     def reload_keep_expanded(self):
         return
 
+    def queue_reload(self):
+        return
+
 
 class CardSetListModelTests(ConfigSutekhTest):
     """Class for the test cases"""
