@@ -45,7 +45,9 @@ class PhysicalCardSetWriter(object):
         bInUse = oHolder.inuse
 
         oRoot = Element('physicalcardset', sutekh_xml_version=self.sMyVersion,
-                name=oHolder.name, author=oHolder.author)
+                name=oHolder.name)
+        if oHolder.author:
+            oRoot.attrib['author'] = oHolder.author
         oCommentNode = SubElement(oRoot, 'comment')
         oCommentNode.text = oHolder.comment
         oAnnotationNode = SubElement(oRoot, 'annotations')

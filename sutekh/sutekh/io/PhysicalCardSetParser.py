@@ -44,10 +44,13 @@ class PhysicalCardSetParser(BaseSutekhXMLParser):
         self._check_tree()
         oRoot = self._oTree.getroot()
         oHolder.name = oRoot.attrib['name'][:MAX_ID_LENGTH]
-        oHolder.author = oRoot.attrib['author']
         oHolder.inuse = False
         # pylint: disable-msg=W0704
         # exceptions does enough for us
+        try:
+            oHolder.author = oRoot.attrib['author']
+        except KeyError:
+            pass
         try:
             oHolder.comment = oRoot.attrib['comment']
         except KeyError:
