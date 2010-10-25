@@ -89,7 +89,8 @@ class CreateCardSetDialog(SutekhDialog):
                 self.oParentList.exclude_set(self.sOrigName)
             if oCardSetParent is None and oCardSet.parent is not None:
                 self.oParentList.set_selected_card_set(oCardSet.parent.name)
-            self.oAuthor.set_text(oCardSet.author)
+            if oCardSet.author is not None:
+                self.oAuthor.set_text(oCardSet.author)
             self.oInUse.set_active(oCardSet.inuse)
 
         self.sName = None
