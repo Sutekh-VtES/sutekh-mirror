@@ -25,22 +25,55 @@ from protocols import advise, Interface
 # C0111 - No point in docstrings for these classes, really
 # C0321 - Compactness of single line definitions is good here
 
+
 class IAbstractCard(Interface): pass
+
+
 class IPhysicalCard(Interface): pass
+
+
 class IPhysicalCardSet(Interface): pass
+
+
 class IRarityPair(Interface): pass
+
+
 class IExpansion(Interface): pass
+
+
 class IRarity(Interface): pass
+
+
 class IDisciplinePair(Interface): pass
+
+
 class IDiscipline(Interface): pass
+
+
 class IClan(Interface): pass
+
+
 class ICardType(Interface): pass
+
+
 class ISect(Interface): pass
+
+
 class ITitle(Interface): pass
+
+
 class ICreed(Interface): pass
+
+
 class IVirtue(Interface): pass
+
+
 class IRuling(Interface): pass
+
+
 class IArtist(Interface): pass
+
+
 class IKeyword(Interface): pass
 
 # pylint: enable-msg=C0321
