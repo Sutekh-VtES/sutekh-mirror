@@ -867,10 +867,18 @@ class PhysicalCardAdapter(object):
         cls.__dCache = {}
         # pre-populate cache with mappings to commonly used
         # physical card with None expansion.
-        for oPhysicalCard in PhysicalCard.select(
+        # pylint: disable-msg=E1101
+        # SQLObject confuses pylint
+        try:
+            for oPhysicalCard in PhysicalCard.select(
                     PhysicalCard.q.expansion == None):
-            oAbsCard = oPhysicalCard.abstractCard
-            cls.__dCache[(oAbsCard.id, None)] = oPhysicalCard
+                oAbsCard = oPhysicalCard.abstractCard
+                cls.__dCache[(oAbsCard.id, None)] = oPhysicalCard
+        except AttributeError:
+            # Old SQLObject doesn't like this construction if the database
+            # is empty, so, as we can't sensibly fill the cache anyway, we
+            # just skip
+            pass
 
     def __new__(cls, tData):
         # pylint: disable-msg=E1101
