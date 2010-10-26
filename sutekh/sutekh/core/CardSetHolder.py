@@ -171,6 +171,17 @@ class CardSetWrapper(CardSetHolder):
         """Can't create a Physical Card Set -- there is one already."""
         raise NotImplementedError("CardSetWrapper is read-only")
 
+    # Different sqlobject versions can either return '' or None
+    # for unset values here, so we use the properties to ensure
+    # we consistently return ''
+
+    def _get_cs_attr(self, sAttr):
+        """Get attribute, returning '' if unset"""
+        sValue = getattr(self._oCS, sAttr)
+        if sValue:
+            return sValue
+        return ''
+
     def _parent_name(self):
         """Return the parent card set's name or None if their is no parent."""
         if self._oCS.parent is None:
@@ -181,10 +192,10 @@ class CardSetWrapper(CardSetHolder):
     # pylint: disable-msg=W0212, C0103
     # W0212: we delibrately allow access via these properties
     # C0103: we use the column naming conventions
-    name = property(fget=lambda self: self._oCS.name)
-    author = property(fget=lambda self: self._oCS.author)
-    comment = property(fget=lambda self: self._oCS.comment)
-    annotations = property(fget=lambda self: self._oCS.annotations)
+    name = property(fget=lambda self: self._get_cs_attr('name'))
+    author = property(fget=lambda self: self._get_cs_attr('author'))
+    comment = property(fget=lambda self: self._get_cs_attr('comment'))
+    annotations = property(fget=lambda self: self._get_cs_attr('annotations'))
     inuse = property(fget=lambda self: self._oCS.inuse)
     parent = property(fget=lambda self: self._parent_name())
     num_entries = property(fget=lambda self: len(self._oCS.cards))
