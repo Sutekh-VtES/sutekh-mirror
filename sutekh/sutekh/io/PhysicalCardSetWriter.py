@@ -48,6 +48,8 @@ class PhysicalCardSetWriter(object):
                 name=oHolder.name)
         if oHolder.author:
             oRoot.attrib['author'] = oHolder.author
+        else:
+            oRoot.attrib['author'] = ''
         oCommentNode = SubElement(oRoot, 'comment')
         oCommentNode.text = oHolder.comment
         oAnnotationNode = SubElement(oRoot, 'annotations')

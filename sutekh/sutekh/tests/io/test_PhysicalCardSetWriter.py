@@ -52,7 +52,7 @@ EXPECTED_2 = '<physicalcardset author="A test author" ' \
         ' name="Alan Sovereign (Advanced)" />\n' \
         '</physicalcardset>'
 
-EXPECTED_3 = '<physicalcardset name="Test Set 2" '\
+EXPECTED_3 = '<physicalcardset author="" name="Test Set 2" '\
         'sutekh_xml_version="1.3">\n' \
         '  <comment>A formatted test comment\n' \
         'A second line\n' \
