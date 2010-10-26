@@ -843,6 +843,7 @@ class PhysicalCardToAbstractCardAdapter(object):
         oCard = cls.__dCache.get(oPhysCard.abstractCardID, None)
         if oCard is None:
             oCard = oPhysCard.abstractCard
+            cls.__dCache[oPhysCard.abstractCardID] = oCard
         return oCard
 
 
