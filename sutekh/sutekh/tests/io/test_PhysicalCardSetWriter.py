@@ -52,6 +52,20 @@ EXPECTED_2 = '<physicalcardset author="A test author" ' \
         ' name="Alan Sovereign (Advanced)" />\n' \
         '</physicalcardset>'
 
+EXPECTED_3 = '<physicalcardset name="Test Set 2" '\
+        'sutekh_xml_version="1.3">\n' \
+        '  <comment>A formatted test comment\n' \
+        'A second line\n' \
+        'A third line</comment>\n' \
+        '  <annotations>Some Annotations</annotations>\n' \
+        '  <card count="1" expansion="Jyhad" name=".44 Magnum" />\n' \
+        '  <card count="1" expansion="Lords of the Night" name="AK-47" />\n' \
+        '  <card count="1" expansion="Third Edition" name="Abbot" />\n' \
+        '  <card count="1" expansion="Legacy of Blood" name="Abombwe" />\n ' \
+        ' <card count="1" expansion="Promo-20051001"' \
+        ' name="Alan Sovereign (Advanced)" />\n' \
+        '</physicalcardset>'
+
 
 class PhysicalCardSetWriterTests(SutekhTest):
     """class for the Physical Card Set writer tests"""
@@ -106,6 +120,16 @@ class PhysicalCardSetWriterTests(SutekhTest):
         sData = fIn.read()
         self.assertEqual(len(sData), len(EXPECTED_2))
         self.assertEqual(sData, EXPECTED_2)
+
+        # Unset the author
+        oPhysCardSet2.author = None
+        oFile = StringIO()
+        oWriter.write(oFile, CardSetWrapper(oPhysCardSet2))
+        sWriterXML = oFile.getvalue()
+        oFile.close()
+        self.assertEqual(len(sWriterXML), len(EXPECTED_3))
+        self.assertEqual(sWriterXML, EXPECTED_3)
+
 
 if __name__ == "__main__":
     unittest.main()

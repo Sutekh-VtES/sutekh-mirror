@@ -86,6 +86,23 @@ PCS_EXAMPLE_3_NO_ID = '<physicalcardset author="A test author" ' \
         '<card count="1" expansion="Lords of the Night" name="AK-47" />\n' \
         '</physicalcardset>'
 
+PCS_EXAMPLE_NO_AUTH = '<physicalcardset ' \
+        'name="Test Set 3" '\
+        'sutekh_xml_version="1.3">' \
+        '<comment>A formatted test comment\n' \
+        'A second line</comment>' \
+        '<annotations>Some annotations</annotations>\n"' \
+        '<card count="1" expansion="None Specified" id="8" ' \
+        'name="Abbot" />\n' \
+        '<card count="2" expansion="None Specified" id="2" ' \
+        'name="AK-47" />\n' \
+        '<card count="1" expansion="None Specified" id="14" ' \
+        'name="Abombwe" />\n' \
+        '<card count="1" expansion = "Jyhad" id="1" ' \
+        'name=".44 Magnum" />\n' \
+        '<card count="1" expansion="Lords of the Night" id="2" ' \
+        'name="AK-47" />\n</physicalcardset>'
+
 
 class PhysicalCardSetParserTests(SutekhTest):
     """class for the Card Set Parser tests"""
@@ -210,6 +227,28 @@ class PhysicalCardSetParserTests(SutekhTest):
         self.assertEqual(oPhysCardSet2.comment, 'A test comment')
         self.assertEqual(oPhysCardSet3.comment, 'A formatted test comment\n'
                 'A second line')
+
+    def test_card_set_parser_no_author(self):
+        """Test physical card set reading for card sets without an author"""
+        # pylint: disable-msg=E1101
+        # E1101: SQLObject + PyProtocols magic confuses pylint
+        oParser = PhysicalCardSetParser()
+
+        oHolder = CardSetHolder()
+        oParser.parse(StringIO(PCS_EXAMPLE_NO_AUTH), oHolder)
+        oHolder.create_pcs()
+
+        oPhysCardSet3 = IPhysicalCardSet(CARD_SET_NAMES[2])
+        self.assertEqual(len(oPhysCardSet3.cards), 6)
+
+        self.assertEqual(oPhysCardSet3.annotations, 'Some annotations')
+
+        self.assertEqual(oPhysCardSet3.comment, 'A formatted test comment\n'
+                'A second line')
+
+        # This test is a bit funky, as we may get either None or ''
+        # depending on sqlobject version,
+        self.assertTrue(oPhysCardSet3.author in (None, ''))
 
 
 if __name__ == "__main__":
