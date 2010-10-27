@@ -66,12 +66,20 @@ class CountCardSetCards(SutekhPlugin, CardListModelListener):
 
     def load(self, aCards):
         """Listen on load events & update counts"""
+        # We cache type  lookups to save time
+        # The cache is short-lived to avoid needing to deal with
+        # flushing the cache on database changes.
+        dCache = {}
         self.__iCrypt = 0
         self.__iLibrary = 0
         self.__iTot = len(aCards)
         for oCard in aCards:
-            oAbsCard = IAbstractCard(oCard)
-            if is_crypt_card(oAbsCard):
+            bCrypt = dCache.get(oCard.id, None)
+            if bCrypt is None:
+                oAbsCard = IAbstractCard(oCard)
+                bCrypt = is_crypt_card(oAbsCard)
+                dCache[oCard.id] = bCrypt
+            if bCrypt:
                 self.__iCrypt += 1
             else:
                 self.__iLibrary += 1
