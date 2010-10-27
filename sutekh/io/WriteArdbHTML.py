@@ -309,8 +309,11 @@ class WriteArdbHTML(ArdbInfo):
         # Is there a better idea here?
         oStyle.text = sHTMLStyle
         oTitle = SubElement(oHead, "title")
-        oTitle.text = "VTES deck : %s by %s" % (oCardSet.name,
+        if oCardSet.author:
+            oTitle.text = "VTES deck : %s by %s" % (oCardSet.name,
                 oCardSet.author)
+        else:
+            oTitle.text = "VTES deck : %s" % oCardSet.name
 
         oBody = SubElement(oDocRoot, "body")
         oInfo = SubElement(oBody, "div", id="info")

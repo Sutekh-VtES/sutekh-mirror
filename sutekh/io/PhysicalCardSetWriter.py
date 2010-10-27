@@ -55,11 +55,17 @@ class PhysicalCardSetWriter(object):
                     sPhysicalCardSetName)
 
         oRoot = Element('physicalcardset', sutekh_xml_version=self.sMyVersion,
-                name=sPhysicalCardSetName, author=oPCS.author)
+                name=sPhysicalCardSetName)
+        if oPCS.author:
+            oRoot.attrib['author'] = oPCS.author
+        else:
+            oRoot.attrib['author'] = ''
         oCommentNode = SubElement(oRoot, 'comment')
-        oCommentNode.text = oPCS.comment
+        if oPCS.comment:
+            oCommentNode.text = oPCS.comment
         oAnnotationNode = SubElement(oRoot, 'annotations')
-        oAnnotationNode.text = oPCS.annotations
+        if oPCS.annotations:
+            oAnnotationNode.text = oPCS.annotations
         if oPCS.parent:
             oRoot.attrib['parent'] = oPCS.parent.name
 

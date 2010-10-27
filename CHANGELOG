@@ -1,3 +1,8 @@
+27 Oct 2010
+ * Backport fixes for dealing with sqlobject 0.12 retruning None rather than
+   an empty string for some attributes
+    - Merges most of r2536-2538, r2540, r2542 (some tests not merged)
+
 16 Sep 2010
  * Backport various fixes
    - Remove custom search dialog as unneeded (r2468 on trunk)

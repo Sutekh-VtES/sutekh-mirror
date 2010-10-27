@@ -56,10 +56,13 @@ class PhysicalCardSetParser(object):
         if oRoot.attrib['sutekh_xml_version'] not in self.aSupportedVersions:
             raise RuntimeError("Unrecognised XML File version")
         self.oCS.name = oRoot.attrib['name']
-        self.oCS.author = oRoot.attrib['author']
         self.oCS.inuse = False
         # pylint: disable-msg=W0704
         # exceptions does enough for us
+        try:
+            self.oCS.author = oRoot.attrib['author']
+        except KeyError:
+            pass
         try:
             self.oCS.comment = oRoot.attrib['comment']
         except KeyError:

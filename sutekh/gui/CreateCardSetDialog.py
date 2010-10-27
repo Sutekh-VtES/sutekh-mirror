@@ -76,7 +76,8 @@ class CreateCardSetDialog(SutekhDialog):
             if not sName:
                 self.oName.set_text(oCardSet.name)
                 self.sOrigName = oCardSet.name
-            self.oAuthor.set_text(oCardSet.author)
+            if oCardSet.author is not None:
+                self.oAuthor.set_text(oCardSet.author)
             self.oComment.set_text(oCardSet.comment)
             if oCardSet.annotations:
                 self.oBuffer.set_text(oCardSet.annotations)

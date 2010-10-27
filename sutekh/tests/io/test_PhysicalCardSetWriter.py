@@ -48,6 +48,23 @@ sExpected2 = '<physicalcardset author="A test author" ' \
         ' name="Alan Sovereign (Advanced)" />\n' \
         '</physicalcardset>'
 
+sExpected3 = '<physicalcardset author="" name="Test Set 2" '\
+        'sutekh_xml_version="1.3">\n' \
+        '  <comment>A formatted test comment\n' \
+        'A second line\n' \
+        'A third line</comment>\n' \
+        '  <annotations>Some Annotations</annotations>\n' \
+        '  <card count="1" expansion="Jyhad" id="1" name=".44 Magnum" />\n' \
+        '  <card count="1" expansion="Lords of the Night"' \
+        ' id="2" name="AK-47" />\n' \
+        '  <card count="1" expansion="Third Edition" id="8"' \
+        ' name="Abbot" />\n' \
+        '  <card count="1" expansion="Legacy of Blood" id="14"' \
+        ' name="Abombwe" />\n ' \
+        ' <card count="1" expansion="Promo-20051001" id="19"' \
+        ' name="Alan Sovereign (Advanced)" />\n' \
+        '</physicalcardset>'
+
 
 class PhysicalCardSetWriterTests(SutekhTest):
     """class for the Physical Card Set writer tests"""
@@ -105,6 +122,12 @@ class PhysicalCardSetWriterTests(SutekhTest):
         # the same across databases, hence the nature of the checks below
         self.assertEqual(len(sWriterXML), len(sExpected2))
         self.assertEqual(sorted(sWriterXML), sorted(sExpected2))
+
+        # Unset the author
+        oPhysCardSet2.author = None
+        sWriterXML = oWriter.gen_xml_string(oPhysCardSet2.name)
+        self.assertEqual(len(sWriterXML), len(sExpected3))
+        self.assertEqual(sWriterXML, sExpected3)
 
 
 if __name__ == "__main__":
