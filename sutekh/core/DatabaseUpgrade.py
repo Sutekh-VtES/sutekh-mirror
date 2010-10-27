@@ -49,6 +49,7 @@ class PhysicalCardSet_v3(SQLObject):
     class sqlmeta:
         """meta class used to set the correct table."""
         table = PhysicalCardSet.sqlmeta.table
+        cacheValues = False
     name = UnicodeCol(alternateID=True, length=50)
     author = UnicodeCol(length=50, default='')
     comment = UnicodeCol(default='')
@@ -61,6 +62,7 @@ class AbstractCard_v2(SQLObject):
     class sqlmeta:
         """meta class used to set the correct table."""
         table = AbstractCard.sqlmeta.table
+        cacheValues = False
     canonicalName = UnicodeCol(alternateID=True, length=50)
     name = UnicodeCol(length=50)
     text = UnicodeCol()
@@ -99,6 +101,7 @@ class Rarity_v1(SQLObject):
     class sqlmeta:
         """meta class used to set the correct table."""
         table = Rarity.sqlmeta.table
+        cacheValues = False
     name = UnicodeCol(alternateID=True, length=20)
 
 class RarityPair_Rv1(SQLObject):
@@ -106,6 +109,7 @@ class RarityPair_Rv1(SQLObject):
     class sqlmeta:
         """meta class used to set the correct table."""
         table = RarityPair.sqlmeta.table
+        cacheValues = False
     expansion = ForeignKey('Expansion')
     rarity = ForeignKey('Rarity_v1')
     cards = RelatedJoin('AbstractCard_v2',
@@ -116,6 +120,7 @@ class AbstractCardSet_ACv2(SQLObject):
     class sqlmeta:
         """meta class used to set the correct table."""
         table = 'abstract_card_set'
+        cacheValues = False
     name = UnicodeCol(alternateID=True, length=50)
     author = UnicodeCol(length=50, default='')
     comment = UnicodeCol(default='')
@@ -129,6 +134,7 @@ class AbstractCardSet_v3(SQLObject):
     class sqlmeta:
         """meta class used to set the correct table."""
         table = 'abstract_card_set'
+        cacheValues = False
     name = UnicodeCol(alternateID=True, length=50)
     author = UnicodeCol(length=50, default='')
     comment = UnicodeCol(default='')
@@ -141,6 +147,7 @@ class AbstractCard_v3(SQLObject):
     class sqlmeta:
         """meta class used to set the correct table."""
         table = AbstractCard.sqlmeta.table
+        cacheValues = False
     canonicalName = UnicodeCol(alternateID=True, length=50)
     name = UnicodeCol(length=50)
     text = UnicodeCol()
@@ -180,6 +187,7 @@ class PhysicalCardSet_v4(SQLObject):
     class sqlmeta:
         """meta class used to set the correct table."""
         table = PhysicalCardSet.sqlmeta.table
+        cacheValues = False
     name = UnicodeCol(alternateID=True, length=50)
     author = UnicodeCol(length=50, default='')
     comment = UnicodeCol(default='')
@@ -193,6 +201,7 @@ class MapAbstractCardToAbstractCardSet_v3(SQLObject):
     class sqlmeta:
         """meta class used to set the correct table."""
         table = 'abstract_map'
+        cacheValues = False
     abstractCard = ForeignKey('AbstractCard_v3', notNull=True)
     abstractCardSet = ForeignKey('AbstractCardSet_v3', notNull=True)
 
@@ -329,6 +338,8 @@ def copy_old_expansion(oOrigConn, oTrans, oVer):
 def copy_discipline(oOrigConn, oTrans):
     """Copy Discipline, assuming versions match"""
     for oObj in Discipline.select(connection=oOrigConn):
+        # Force for SQLObject >= 0.11.4
+        oObj._connection = oOrigConn
         oCopy = Discipline(id=oObj.id, name=oObj.name,
             fullname=oObj.fullname, connection=oTrans)
 
@@ -432,6 +443,8 @@ def copy_old_discipline_pair(oOrigConn, oTrans, oVer):
 def copy_rarity_pair(oOrigConn, oTrans):
     """Copy RairtyPair, assuming versions match"""
     for oObj in RarityPair.select(connection=oOrigConn):
+        # Force for SQLObject >= 0.11.4
+        oObj._connection = oOrigConn
         oCopy = RarityPair(id=oObj.id, expansion=oObj.expansion,
                 rarity=oObj.rarity, connection=oTrans)
 
@@ -484,6 +497,8 @@ def copy_abstract_card(oOrigConn, oTrans, oLogger):
     # E1101 - SQLObject confuses pylint
     # R0912 - need the branches for this
     for oCard in AbstractCard.select(connection=oOrigConn):
+        # Force for SQLObject >= 0.11.4
+        oCard._connection = oOrigConn
         oCardCopy = AbstractCard(id=oCard.id,
                 canonicalName=oCard.canonicalName, name=oCard.name,
                 text=oCard.text, connection=oTrans)
@@ -657,15 +672,19 @@ def copy_physical_card_set(oOrigConn, oTrans, oLogger):
     aSets = list(PhysicalCardSet.select(connection=oOrigConn))
     bDone = False
     dDone = {}
+    # SQLObject < 0.11.4 does this automatically, but later versions don't
+    # We depend on this, so we force the issue
+    for oSet in aSets:
+        oSet._connection = oOrigConn
     while not bDone:
         # We make sure we copy parent's before children
         # We need to be careful, since we don't retain card set IDs,
         # due to issues with sequence numbers
         aToDo = []
         for oSet in aSets:
-            if oSet.parent is None or oSet.parent in dDone:
+            if oSet.parent is None or oSet.parent.id in dDone:
                 if oSet.parent:
-                    oParent = dDone[oSet.parent]
+                    oParent = dDone[oSet.parent.id]
                 else:
                     oParent = None
                 oCopy = PhysicalCardSet(name=oSet.name,
@@ -676,7 +695,7 @@ def copy_physical_card_set(oOrigConn, oTrans, oLogger):
                     oCopy.addPhysicalCard(oCard.id)
                 oCopy.syncUpdate()
                 oLogger.info('Copied PCS %s', oCopy.name)
-                dDone[oSet] = oCopy
+                dDone[oSet.id] = oCopy
             else:
                 aToDo.append(oSet)
         if not aToDo:
