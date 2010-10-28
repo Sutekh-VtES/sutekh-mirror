@@ -570,42 +570,47 @@ class CardSetCardListModel(CardListModel):
         """Get the filters for the child card sets of this card set."""
         # pylint: disable-msg=E1101, E1103
         # SQLObject + PyProtocols confuse pylint
-        if self.iExtraLevelsMode in [SHOW_CARD_SETS, EXP_AND_CARD_SETS,
-                CARD_SETS_AND_EXP] or self.iShowCardMode == CHILD_CARDS:
+        if self.iExtraLevelsMode in (SHOW_CARD_SETS, EXP_AND_CARD_SETS,
+                CARD_SETS_AND_EXP) or self.iShowCardMode == CHILD_CARDS:
             if self._dCache['child filters'] is None:
                 # This also flags this code path for later calls to
                 # add_new_card
                 self._dCache['child filters'] = {}
-                aChildren = [x.name for x in
+                dChildren = dict(((x.id, x.name) for x in
                         PhysicalCardSet.selectBy(parentID=self._oCardSet.id,
-                            inuse=True)]
-                if aChildren:
+                            inuse=True)))
+                if dChildren:
                     self._dCache['all children filter'] = \
-                            MultiPhysicalCardSetMapFilter(aChildren)
-                    for sName in aChildren:
+                            MultiPhysicalCardSetMapFilter(dChildren.values())
+                    # Although we use a batched query in load, the individual
+                    # filters are used in adding & removing cards and getting
+                    # drag info where we can't always use batched queries
+                    for sName in dChildren.itervalues():
                         self._dCache['child filters'][sName] = \
                                 PhysicalCardSetFilter(sName)
+                    self._dCache['set map'] = dChildren
         dChildCardCache = {}
-        if self.iExtraLevelsMode in [SHOW_CARD_SETS, EXP_AND_CARD_SETS,
-                CARD_SETS_AND_EXP] and self._dCache['child filters']:
-            # Cache card set lookups, to reduce database traffic
-            for sName, oFilter in self._dCache['child filters'].iteritems():
-                oFullFilter = FilterAndBox([oFilter, oCurFilter])
-                dChildCardCache[sName] = {}
-                self._dCache['child card sets'][sName] = {}
-                for oCard in [IPhysicalCard(x) for x in
-                        oFullFilter.select(self.cardclass).distinct()]:
-                    dChildCardCache[sName].setdefault(oCard.abstractCard,
-                            []).append(oCard)
-                    self._dCache['child cards'].setdefault(oCard, 0)
-                    self._dCache['child abstract cards'].setdefault(
-                            oCard.abstractCard.id, 0)
-                    self._dCache['child cards'][oCard] += 1
-                    self._dCache['child abstract cards'][
-                            oCard.abstractCard.id] += 1
-                    self._dCache['child card sets'][sName].setdefault(
-                            oCard, 0)
-                    self._dCache['child card sets'][sName][oCard] += 1
+        if self.iExtraLevelsMode in (SHOW_CARD_SETS, EXP_AND_CARD_SETS,
+                CARD_SETS_AND_EXP) and self._dCache['child filters']:
+            dChildren = self._dCache['set map']
+            for sName in dChildren.itervalues():
+                # Ensure we have entries for the zero cases
+                self._dCache['child card sets'].setdefault(sName, {})
+                dChildCardCache.setdefault(sName, {})
+            # Pull all cards of interest in a single query
+            oFullFilter = FilterAndBox([self._dCache['all children filter'],
+                oCurFilter])
+            for oMapCard in oFullFilter.select(self.cardclass).distinct():
+                sName = dChildren[oMapCard.physicalCardSetID]
+                oCard = IPhysicalCard(oMapCard)
+                oAbsCard = IAbstractCard(oCard)
+                dChildCardCache[sName].setdefault(oAbsCard, []).append(oCard)
+                self._dCache['child cards'].setdefault(oCard, 0)
+                self._dCache['child abstract cards'].setdefault(oAbsCard.id, 0)
+                self._dCache['child cards'][oCard] += 1
+                self._dCache['child abstract cards'][oAbsCard.id] += 1
+                self._dCache['child card sets'][sName].setdefault(oCard, 0)
+                self._dCache['child card sets'][sName][oCard] += 1
         elif self.iShowCardMode == CHILD_CARDS and \
                 self._dCache['child filters']:
             # Need to setup the cache
@@ -687,6 +692,7 @@ class CardSetCardListModel(CardListModel):
         self._dCache.setdefault('child filters', None)
         self._dCache.setdefault('all children filter', None)
         self._dCache.setdefault('sibling filter', None)
+        self._dCache.setdefault('set map', None)
 
         # We always refresh these on calls to add_new_card due so
         # filter checks are taken into account
