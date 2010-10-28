@@ -297,26 +297,13 @@ class CardSetCardListModel(CardListModel):
             # Update Group Section
             aTexts, aIcons = self.lookup_icons(sGroup)
             if aTexts:
-                self.set(oSectionIter,
-                        0, sGroup,
-                        1, iGrpCnt,
-                        2, iParGrpCnt,
-                        3, False,
-                        4, False,
-                        5, aTexts,
-                        6, aIcons,
-                        8, None,
-                        9, None,
+                self.set(oSectionIter, 0, sGroup,
+                        1, iGrpCnt, 2, iParGrpCnt,
+                        5, aTexts, 6, aIcons,
                         )
             else:
-                self.set(oSectionIter,
-                        0, sGroup,
-                        1, iGrpCnt,
-                        2, iParGrpCnt,
-                        3, False,
-                        4, False,
-                        8, None,
-                        9, None,
+                self.set(oSectionIter, 0, sGroup,
+                        1, iGrpCnt, 2, iParGrpCnt,
                         )
 
             self.set_par_count_colour(oSectionIter, iParGrpCnt, iGrpCnt)

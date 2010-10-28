@@ -280,8 +280,6 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
                 # may not have the info we need
                 # Names will be set by _set_display_name
                 self.set(oChildIter,
-                    5, [],
-                    6, [],
                     8, oCard,
                     9, IPhysicalCard((oCard, None)),
                 )
@@ -291,8 +289,6 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
                     oExpansionIter = self.append(oChildIter)
                     self.set(oExpansionIter,
                             0, sExpansion,
-                            5, [],
-                            6, [],
                             8, oCard,
                             9, oPhysCard,
                             )
@@ -301,27 +297,17 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
             # Update Group Section
             aTexts, aIcons = self.lookup_icons(sGroup)
             if aTexts:
-                self.set(oSectionIter,
-                    0, sGroup,
-                    5, aTexts,
-                    6, aIcons,
-                    8, None,
-                    9, None,
+                self.set(oSectionIter, 0, sGroup,
+                    5, aTexts, 6, aIcons,
                 )
             else:
-                self.set(oSectionIter,
-                    0, sGroup,
-                    5, [],
-                    6, [],
-                    8, None,
-                    9, None,
-                )
+                self.set(oSectionIter, 0, sGroup)
 
         if bEmpty:
             # Showing nothing
             self.oEmptyIter = self.append(None)
             sText = self._get_empty_text()
-            self.set(self.oEmptyIter, 0, sText, 5, [], 6, [], 8, None, 9, None)
+            self.set(self.oEmptyIter, 0, sText)
         else:
             self._set_display_name(self._oConfig.get_postfix_the_display())
 
