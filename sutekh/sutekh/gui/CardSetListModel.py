@@ -636,7 +636,9 @@ class CardSetCardListModel(CardListModel):
                 # Restrict filter to the cards in this set, to save time
                 # oCardIter.count() > 0, due to check in grouped_card_iter
                 aAbsCardIds = set([IAbstractCard(x).id for x in oCardIter])
-                aFilters.append(MultiSpecificCardIdFilter(aAbsCardIds))
+                self._dCache['cardset cards filter'] = \
+                        MultiSpecificCardIdFilter(aAbsCardIds)
+                aFilters.append(self._dCache['cardset cards filter'])
             oParentFilter = FilterAndBox(aFilters)
             aParentCards = [IPhysicalCard(x) for x in
                     oParentFilter.select(self.cardclass).distinct()]
@@ -688,6 +690,7 @@ class CardSetCardListModel(CardListModel):
         self._dCache['visible'] = {}
         self._dCache['filtered cards'] = None
         self._dCache['current cards'] = {}
+        self._dCache['cardset cards filter'] = None
 
     def grouped_card_iter(self, oCardIter):
         """Get the data that needs to fill the model, handling the different
@@ -852,11 +855,19 @@ class CardSetCardListModel(CardListModel):
                 self._dCache['sibling filter'] = \
                         MultiPhysicalCardSetMapFilter(aChildren)
             else:
+                # We need this for add / remove card checks
                 self._dCache['sibling filter'] = None
         if self._dCache['sibling filter']:
+            if self._dCache['cardset cards filter']:
+                oSibFilter = FilterAndBox([
+                    self._dCache['cardset cards filter'],
+                    self._dCache['sibling filter'],
+                    ])
+            else:
+                oSibFilter = self._dCache['sibling filter']
+
             aInUseCards = [(IAbstractCard(x), IPhysicalCard(x)) for x in
-                    self._dCache['sibling filter'].select(
-                        self.cardclass).distinct()]
+                    oSibFilter.select(self.cardclass).distinct()]
             for oAbsCard, oPhysCard in aInUseCards:
                 dSiblingCards.setdefault(oAbsCard, []).append(oPhysCard)
                 self._dCache['sibling cards'].setdefault(oPhysCard, 0)
