@@ -62,6 +62,12 @@ class CardListFrame(BasicFrame):
         else:
             return None
 
+    def do_queued_reload(self):
+        """Do a deferred reload if one was set earlier"""
+        if self._bNeedReload:
+            self.reload()
+        self._bNeedReload = False
+
     def add_parts(self):
         """Add the elements to the Frame."""
         oMbox = gtk.VBox(False, 2)

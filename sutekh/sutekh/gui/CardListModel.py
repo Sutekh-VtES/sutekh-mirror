@@ -586,7 +586,7 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
         bReloadIcons = self._change_icon_mode(bUseIcons)
         bReloadIllegal = self._change_illegal_mode(bHideIllegal)
         if not bSkipLoad and (bReloadELM or bReloadIcons or bReloadIllegal):
-            self._oController.view.reload_keep_expanded()
+            self._oController.frame.queue_reload()
 
     # Listen for changes to the cardlist config options
 
