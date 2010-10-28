@@ -114,7 +114,7 @@ class CountWWListCards(SutekhPlugin, CardListModelListener):
         self._dCardTotals = {TOTAL: 0, CRYPT: 0, LIB: 0}
         self._dExpTotals = {TOTAL: 0, CRYPT: 0, LIB: 0}
         for oCard in aCards:
-            if not oCard.expansion:
+            if not oCard.expansionID:
                 continue  # We don't count cards with no expansion set
             oAbsCard = IAbstractCard(oCard)
             if oAbsCard not in self._dAbsCounts:
@@ -189,7 +189,7 @@ class CountWWListCards(SutekhPlugin, CardListModelListener):
         elif self.model.iter_depth(oIter) == 2 and \
                 self._iMode == self.COUNT_EXP:
             oPhysCard = self.model.get_physical_card_from_iter(oIter)
-            if oPhysCard.expansion:
+            if oPhysCard.expansionID:
                 return 1
         return 0
 
