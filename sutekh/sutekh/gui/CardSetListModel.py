@@ -285,7 +285,8 @@ class CardSetCardListModel(CardListModel):
                 bIncCard, bDecCard = self.check_inc_dec(iCnt)
                 oChildIter = self.prepend(oSectionIter)
                 # Direct lookup, for same reason as in CardListModel
-                self.set(oChildIter, 0, oCard.name,
+                # We skip name here, as that gets reset in _set_display_name
+                self.set(oChildIter,
                     1, iCnt, 2, iParCnt,
                     3, bIncCard, 4, bDecCard,
                     8, oCard,
