@@ -159,6 +159,9 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
         # hooking into this
         oVal1 = self.get_value(oIter1, 0)
         oVal2 = self.get_value(oIter2, 0)
+        # since col 0 is the name column, and we have unique names at all
+        # levels (group names, card name, expansion or card set names),
+        # this will always give a non-zero result
         return cmp(oVal1, oVal2)
 
     def enable_sorting(self):
