@@ -572,7 +572,9 @@ class CardSetCardListModel(CardListModel):
         # SQLObject + PyProtocols confuse pylint
         if self.iExtraLevelsMode in [SHOW_CARD_SETS, EXP_AND_CARD_SETS,
                 CARD_SETS_AND_EXP] or self.iShowCardMode == CHILD_CARDS:
-            if not 'child filters' in self._dCache:
+            if self._dCache['child filters'] is None:
+                # This also flags this code path for later calls to
+                # add_new_card
                 self._dCache['child filters'] = {}
                 aChildren = [x.name for x in
                         PhysicalCardSet.selectBy(parentID=self._oCardSet.id,
@@ -678,6 +680,14 @@ class CardSetCardListModel(CardListModel):
         """Setup the initial cache state"""
         # preserve this across calls to add_new_card
         self._dCache.setdefault('all cards', None)
+
+        # The following items may be added to the cache during load,
+        # but, as they are related to the card set hierarchy, we preseve
+        # them across calls to add_new_card
+        self._dCache.setdefault('child filters', None)
+        self._dCache.setdefault('all children filter', None)
+        self._dCache.setdefault('sibling filter', None)
+
         # We always refresh these on calls to add_new_card due so
         # filter checks are taken into account
         self._dCache['parent cards'] = {}
@@ -689,7 +699,6 @@ class CardSetCardListModel(CardListModel):
         self._dCache['child card sets'] = {}
         self._dCache['visible'] = {}
         self._dCache['filtered cards'] = None
-        self._dCache['current cards'] = {}
         self._dCache['cardset cards filter'] = None
 
     def grouped_card_iter(self, oCardIter):
@@ -848,15 +857,16 @@ class CardSetCardListModel(CardListModel):
         # pylint: disable-msg=E1101, E1103
         # pyprotocols confusion
         dSiblingCards = {}
-        if not 'sibling filter' in self._dCache:
+        if self._dCache['sibling filter'] is None:
             aChildren = [x.name for x in PhysicalCardSet.selectBy(
                 parentID=self._oCardSet.parent.id, inuse=True)]
             if aChildren:
                 self._dCache['sibling filter'] = \
                         MultiPhysicalCardSetMapFilter(aChildren)
             else:
-                # We need this for add / remove card checks
-                self._dCache['sibling filter'] = None
+                # We flag this so we don't repeat the check on
+                # calls to add_new_card
+                self._dCache['sibling filter'] = False
         if self._dCache['sibling filter']:
             if self._dCache['cardset cards filter']:
                 oSibFilter = FilterAndBox([
