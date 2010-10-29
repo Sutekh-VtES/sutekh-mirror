@@ -547,15 +547,16 @@ class CardSetCardListModel(CardListModel):
                     dExpanInfo.setdefault((self.get_expansion_name(
                         oPhysCard.expansion), oPhysCard), 0)
 
-    def _init_abs(self, dAbsCards, oAbsCard):
+    def _adjust_row(self, dAbsCards, oPhysCard, dChildCache, bInc):
         """Initialize the entry for oAbsCard in dAbsCards"""
+        oAbsCard = IAbstractCard(oPhysCard)
         if oAbsCard not in dAbsCards:
-            dAbsCards[oAbsCard] = CardSetModelRow(self.bEditable,
+            oRow = CardSetModelRow(self.bEditable,
                     self.iExtraLevelsMode, oAbsCard)
-            if self.iExtraLevelsMode in [SHOW_EXPANSIONS, EXP_AND_CARD_SETS]:
-                self._init_expansions(dAbsCards[oAbsCard].dExpansions,
-                        oAbsCard)
-            if not self.check_card_visible(dAbsCards[oAbsCard].oPhysCard):
+            dAbsCards[oAbsCard] = oRow
+            if self.iExtraLevelsMode in (SHOW_EXPANSIONS, EXP_AND_CARD_SETS):
+                self._init_expansions(oRow.dExpansions, oAbsCard)
+            if not self.check_card_visible(oRow.oPhysCard):
                 # Fix the Row's Physical Card to point to the first
                 # expansion, in alphabetical order
                 # pylint: disable-msg=E1101
@@ -564,7 +565,25 @@ class CardSetCardListModel(CardListModel):
                         self.check_card_visible(x)]
                 # This is safe, since we know the None case has been excluded
                 aPhysCards.sort(key=lambda x: x.expansion.name)
-                dAbsCards[oAbsCard].oPhysCard = aPhysCards[0]
+                oRow.oPhysCard = aPhysCards[0]
+        else:
+            oRow = dAbsCards[oAbsCard]
+        if bInc:
+            oRow.iCount += 1
+        dExpanInfo = oRow.dExpansions
+        dChildInfo = oRow.dChildCardSets
+        if self.iExtraLevelsMode in (SHOW_EXPANSIONS, EXP_AND_CARD_SETS):
+            sExpName = self.get_expansion_name(oPhysCard.expansion)
+            dExpanInfo.setdefault((sExpName, oPhysCard), 0)
+            if bInc:
+                dExpanInfo[(sExpName, oPhysCard)] += 1
+        if not dChildInfo and self.iExtraLevelsMode in (SHOW_CARD_SETS,
+                EXP_AND_CARD_SETS, CARD_SETS_AND_EXP):
+            self.get_child_set_info(oAbsCard, dChildInfo, dExpanInfo,
+                    dChildCache)
+        if self.iExtraLevelsMode == EXP_AND_CARD_SETS:
+            dChildInfo.setdefault(sExpName, {})
+        return oAbsCard
 
     def _get_child_filters(self, oCurFilter):
         """Get the filters for the child card sets of this card set."""
@@ -603,12 +622,12 @@ class CardSetCardListModel(CardListModel):
             for oMapCard in oFullFilter.select(self.cardclass).distinct():
                 sName = dChildren[oMapCard.physicalCardSetID]
                 oCard = IPhysicalCard(oMapCard)
-                oAbsCard = IAbstractCard(oCard)
-                dChildCardCache[sName].setdefault(oAbsCard, []).append(oCard)
+                oAbsId = oCard.abstractCardID
+                dChildCardCache[sName].setdefault(oAbsId, []).append(oCard)
                 self._dCache['child cards'].setdefault(oCard, 0)
-                self._dCache['child abstract cards'].setdefault(oAbsCard.id, 0)
+                self._dCache['child abstract cards'].setdefault(oAbsId, 0)
                 self._dCache['child cards'][oCard] += 1
-                self._dCache['child abstract cards'][oAbsCard.id] += 1
+                self._dCache['child abstract cards'][oAbsId] += 1
                 self._dCache['child card sets'][sName].setdefault(oCard, 0)
                 self._dCache['child card sets'][sName][oCard] += 1
         elif self.iShowCardMode == CHILD_CARDS and \
@@ -620,10 +639,10 @@ class CardSetCardListModel(CardListModel):
                     self.cardclass).distinct()]:
                 self._dCache['child cards'].setdefault(oCard, 0)
                 self._dCache['child abstract cards'].setdefault(
-                        oCard.abstractCard.id, 0)
+                        oCard.abstractCardID, 0)
                 self._dCache['child cards'][oCard] += 1
                 self._dCache['child abstract cards'][
-                        oCard.abstractCard.id] += 1
+                        oCard.abstractCardID] += 1
         return dChildCardCache
 
     def _get_parent_list(self, oCurFilter, oCardIter):
@@ -652,10 +671,10 @@ class CardSetCardListModel(CardListModel):
             for oPhysCard in aParentCards:
                 self._dCache['parent cards'].setdefault(oPhysCard, 0)
                 self._dCache['parent abstract cards'].setdefault(
-                        oPhysCard.abstractCard.id, 0)
+                        oPhysCard.abstractCardID, 0)
                 self._dCache['parent cards'][oPhysCard] += 1
                 self._dCache['parent abstract cards'][
-                        oPhysCard.abstractCard.id] += 1
+                        oPhysCard.abstractCardID] += 1
 
     def _get_extra_cards(self, oCurFilter):
         """Return any extra cards not in this card set that need to be
@@ -747,36 +766,19 @@ class CardSetCardListModel(CardListModel):
                 self._dCache['all cards'] = self._dCache['filtered cards']
 
         dChildCardCache = self._get_child_filters(oCurFilter)
+
         self._get_parent_list(oCurFilter, oCardIter)
 
         # Other card show modes
-        aExtraCards = self._get_extra_cards(oCurFilter)
-
-        for oPhysCard in aExtraCards:
-            if not self.check_card_visible(oPhysCard):
-                continue  # Skip
-            oAbsCard = oPhysCard.abstractCard
-            self._init_abs(dAbsCards, oAbsCard)
-            if self.iExtraLevelsMode == SHOW_EXPANSIONS or \
-                    self.iExtraLevelsMode == EXP_AND_CARD_SETS:
-                dAbsCards[oAbsCard].dExpansions.setdefault(
-                        (self.get_expansion_name(oPhysCard.expansion),
-                            oPhysCard), 0)
-            dExpanInfo = dAbsCards[oAbsCard].dExpansions
-            dChildInfo = dAbsCards[oAbsCard].dChildCardSets
-            if not dChildInfo and self.iExtraLevelsMode in [
-                    SHOW_CARD_SETS, EXP_AND_CARD_SETS, CARD_SETS_AND_EXP]:
-                self.get_child_set_info(oAbsCard, dChildInfo, dExpanInfo,
-                        dChildCardCache)
+        for oPhysCard in self._get_extra_cards(oCurFilter):
+            self._adjust_row(dAbsCards, oPhysCard, dChildCardCache, False)
 
         for oCard in oCardIter:
             oPhysCard = IPhysicalCard(oCard)
-            if not self.check_card_visible(oPhysCard):
-                continue  # Skip
+            oAbsCard = self._adjust_row(dAbsCards, oPhysCard,
+                    dChildCardCache, True)
             dPhysCards.setdefault(oPhysCard, 0)
             dPhysCards[oPhysCard] += 1
-            sExpName = self.get_expansion_name(oPhysCard.expansion)
-            oAbsCard = oPhysCard.abstractCard
             aCards.append(oPhysCard)
             if self._bPhysicalFilter:
                 # We need to be able to give the correct list of physical
@@ -787,21 +789,6 @@ class CardSetCardListModel(CardListModel):
                 self._dAbs2Phys.setdefault(oAbsCard, {})
                 self._dAbs2Phys[oAbsCard].setdefault(oPhysCard, 0)
                 self._dAbs2Phys[oAbsCard][oPhysCard] += 1
-            self._init_abs(dAbsCards, oAbsCard)
-            dAbsCards[oAbsCard].iCount += 1
-            dChildInfo = dAbsCards[oAbsCard].dChildCardSets
-            dExpanInfo = dAbsCards[oAbsCard].dExpansions
-            if self.iExtraLevelsMode == SHOW_EXPANSIONS or \
-                    self.iExtraLevelsMode == EXP_AND_CARD_SETS:
-                dExpanInfo.setdefault((sExpName, oPhysCard), 0)
-                dExpanInfo[(sExpName, oPhysCard)] += 1
-            if self.iExtraLevelsMode in [SHOW_CARD_SETS, EXP_AND_CARD_SETS,
-                    CARD_SETS_AND_EXP] and not dChildInfo:
-                # Don't re-filter for repeated abstract cards
-                self.get_child_set_info(oAbsCard, dChildInfo, dExpanInfo,
-                        dChildCardCache)
-            if self.iExtraLevelsMode == EXP_AND_CARD_SETS:
-                dChildInfo.setdefault(sExpName, {})
 
         self._add_parent_info(dAbsCards, dPhysCards)
 
@@ -821,8 +808,9 @@ class CardSetCardListModel(CardListModel):
         # Pyprotocols confuses pylint
         for sCardSetName in dChildCardCache:
             aChildCards = []
-            if oAbsCard in dChildCardCache[sCardSetName]:
-                aChildCards = dChildCardCache[sCardSetName][oAbsCard]
+            oAbsId = oAbsCard.id
+            if oAbsId in dChildCardCache[sCardSetName]:
+                aChildCards = dChildCardCache[sCardSetName][oAbsId]
             if self.iExtraLevelsMode == SHOW_CARD_SETS or \
                     self.iExtraLevelsMode == CARD_SETS_AND_EXP:
                 iChildCnt = len(aChildCards)
@@ -882,15 +870,15 @@ class CardSetCardListModel(CardListModel):
             else:
                 oSibFilter = self._dCache['sibling filter']
 
-            aInUseCards = [(IAbstractCard(x), IPhysicalCard(x)) for x in
+            aInUseCards = [IPhysicalCard(x) for x in
                     oSibFilter.select(self.cardclass).distinct()]
-            for oAbsCard, oPhysCard in aInUseCards:
-                dSiblingCards.setdefault(oAbsCard, []).append(oPhysCard)
+            for oPhysCard in aInUseCards:
+                oAbsId = oPhysCard.abstractCardID
+                dSiblingCards.setdefault(oAbsId, []).append(oPhysCard)
                 self._dCache['sibling cards'].setdefault(oPhysCard, 0)
-                self._dCache['sibling abstract cards'].setdefault(
-                        oAbsCard.id, 0)
+                self._dCache['sibling abstract cards'].setdefault(oAbsId, 0)
                 self._dCache['sibling cards'][oPhysCard] += 1
-                self._dCache['sibling abstract cards'][oAbsCard.id] += 1
+                self._dCache['sibling abstract cards'][oAbsId] += 1
         return dSiblingCards
 
     def _update_parent_info(self, oSetInfo, dPhysCards):
@@ -925,23 +913,24 @@ class CardSetCardListModel(CardListModel):
         if self.iParentCountMode == MINUS_SETS_IN_USE:
             dSiblingCards = self._get_sibling_cards()
             for oAbsCard, oRow in dAbsCards.iteritems():
-                if oAbsCard in dSiblingCards:
-                    for oPhysCard in dSiblingCards[oAbsCard]:
+                oAbsId = oAbsCard.id
+                if oAbsId in dSiblingCards:
+                    for oPhysCard in dSiblingCards[oAbsId]:
                         oRow.iParentCount -= 1
                         sExpansion = self.get_expansion_name(
                                 oPhysCard.expansion)
                         oRow.dParentExpansions.setdefault(sExpansion, 0)
                         oRow.dParentExpansions[sExpansion] -= 1
 
-        if self.iParentCountMode == MINUS_THIS_SET:
-            for oAbsCard, oRow in dAbsCards.iteritems():
+        elif self.iParentCountMode == MINUS_THIS_SET:
+            for oRow in dAbsCards.itervalues():
                 oRow.iParentCount = -oRow.iCount
                 self._update_parent_info(oRow, dPhysCards)
 
         for oPhysCard in self._dCache['parent cards']:
             # pylint: disable-msg=E1101
             # Pyprotocols confuses pylint
-            oAbsCard = oPhysCard.abstractCard
+            oAbsCard = IAbstractCard(oPhysCard)
             if oAbsCard in dAbsCards and self.check_card_visible(oPhysCard):
                 sExpansion = self.get_expansion_name(oPhysCard.expansion)
                 dParentExp = dAbsCards[oAbsCard].dParentExpansions
@@ -997,9 +986,9 @@ class CardSetCardListModel(CardListModel):
                 # Cache this lookup for the future
                 self._dCache['parent cards'][oPhysCard] = iParCnt
                 self._dCache['parent abstract cards'].setdefault(
-                        oPhysCard.abstractCard.id, 0)
+                        oPhysCard.abstractCardID, 0)
                 self._dCache['parent abstract cards'][
-                        oPhysCard.abstractCard.id] += iParCnt
+                        oPhysCard.abstractCardID] += iParCnt
             if self.iParentCountMode == MINUS_THIS_SET:
                 if iThisSetCnt is None:
                     iThisSetCnt = self.get_card_iterator(
@@ -1018,9 +1007,9 @@ class CardSetCardListModel(CardListModel):
                         iParCnt -= iSibCnt
                         self._dCache['sibling cards'][oPhysCard] = iSibCnt
                         self._dCache['sibling abstract cards'].setdefault(
-                                oPhysCard.abstractCard.id, 0)
+                                oPhysCard.abstractCardID, 0)
                         self._dCache['sibling abstract cards'][
-                                oPhysCard.abstractCard.id] += iSibCnt
+                                oPhysCard.abstractCardID] += iSibCnt
         return iParCnt
 
     def _add_new_group(self, sGroup):
@@ -1153,7 +1142,7 @@ class CardSetCardListModel(CardListModel):
         if oPhysCard in self._dCache[sPhysCache]:
             sAbsCache = "%s abstract cards" % sType
             self._dCache[sPhysCache][oPhysCard] += iChg
-            self._dCache[sAbsCache][oPhysCard.abstractCard.id] += iChg
+            self._dCache[sAbsCache][oPhysCard.abstractCardID] += iChg
 
     def _update_child_set_cache(self, oPhysCard, iChg, sName):
         """Update the number in the card cache"""
@@ -1168,8 +1157,8 @@ class CardSetCardListModel(CardListModel):
                 self._dCache[sPhysCache][oPhysCard] == 0:
             del self._dCache[sPhysCache][oPhysCard]
             sAbsCache = "%s abstract cards" % sType
-            if self._dCache[sAbsCache][oPhysCard.abstractCard.id] == 0:
-                del self._dCache[sAbsCache][oPhysCard.abstractCard.id]
+            if self._dCache[sAbsCache][oPhysCard.abstractCardID] == 0:
+                del self._dCache[sAbsCache][oPhysCard.abstractCardID]
 
     def _clean_child_set_cache(self, oPhysCard, sName):
         """Update the number in the card cache"""
@@ -1472,7 +1461,7 @@ class CardSetCardListModel(CardListModel):
     def _update_3rd_level_card_sets(self, oPhysCard, iChg, iParChg,
             bCheckAddRemove):
         """Update the third level for EXP_AND_CARD_SETS"""
-        oAbsCard = oPhysCard.abstractCard
+        oAbsCard = IAbstractCard(oPhysCard)
         sExpName = self.get_expansion_name(oPhysCard.expansion)
         tExpKey = (oAbsCard, sExpName)
         if tExpKey in self._dAbs2nd3rdLevel2Iter:
@@ -1497,7 +1486,7 @@ class CardSetCardListModel(CardListModel):
 
     def _add_3rd_level_card_sets(self, oPhysCard, iParCnt):
         """Add 3rd level entries for the EXP_AND_CARD_SETS mode"""
-        oAbsCard = oPhysCard.abstractCard
+        oAbsCard = IAbstractCard(oPhysCard)
         sExpName = self.get_expansion_name(oPhysCard.expansion)
         for sCardSet, oSetFilter in self._dCache['child filters'].iteritems():
             iCnt = 0
@@ -1528,7 +1517,7 @@ class CardSetCardListModel(CardListModel):
         # We need to update the expansion count for this card
         # pylint: disable-msg=E1101, E1103
         # pyprotocols confuses pylint
-        oAbsCard = oPhysCard.abstractCard
+        oAbsCard = IAbstractCard(oPhysCard)
         sExpName = self.get_expansion_name(oPhysCard.expansion)
         bRemove = False
         if oAbsCard in self._dAbsSecondLevel2Iter and \
@@ -1564,7 +1553,7 @@ class CardSetCardListModel(CardListModel):
     def _update_2nd3rd_level_par_cnt(self, oPhysCard, iChg):
         """Update the parent counts for CARD_SETS and CARD_SETS_AND_EXP
            modes."""
-        oAbsCard = oPhysCard.abstractCard
+        oAbsCard = IAbstractCard(oPhysCard)
         # Loop over all the children, and modify the count
         # if needed
         if oAbsCard in self._dAbsSecondLevel2Iter:
@@ -1590,7 +1579,7 @@ class CardSetCardListModel(CardListModel):
     def _update_3rd_level_expansions(self, oPhysCard):
         """Add expansion level items for CARD_SETS_AND_EXP mode if
            needed."""
-        oAbsCard = oPhysCard.abstractCard
+        oAbsCard = IAbstractCard(oPhysCard)
         sExpName = self.get_expansion_name(oPhysCard.expansion)
         iParCnt = None
         for sCardSetName in self._dAbsSecondLevel2Iter[oAbsCard]:
@@ -1731,7 +1720,7 @@ class CardSetCardListModel(CardListModel):
         bChecked = False  # flag so we don't revist decisions
         if not bCheckAddRemove:
             bChecked = True  # skip check
-        oAbsCard = oPhysCard.abstractCard
+        oAbsCard = IAbstractCard(oPhysCard)
         for oIter in self._dAbs2Iter[oAbsCard]:
             oGrpIter = self.iter_parent(oIter)
             iParGrpCnt = self.get_value(oGrpIter, 2) + iChg
@@ -1778,7 +1767,7 @@ class CardSetCardListModel(CardListModel):
            second level without expansions."""
         # pylint: disable-msg = E1101, E1103
         # PyProtocols confuses pylint
-        oAbsCard = oPhysCard.abstractCard
+        oAbsCard = IAbstractCard(oPhysCard)
         if oAbsCard in self._dAbsSecondLevel2Iter and \
                 sCardSetName in self._dAbsSecondLevel2Iter[oAbsCard]:
             # Alter the count
@@ -1827,7 +1816,7 @@ class CardSetCardListModel(CardListModel):
         # but we do need to check if the card is removed at the end
         # pylint: disable-msg = E1101, E1103
         # PyProtocols confuses pylint
-        oAbsCard = oPhysCard.abstractCard
+        oAbsCard = IAbstractCard(oPhysCard)
         if (self.iExtraLevelsMode == SHOW_EXPANSIONS and
                 self.iShowCardMode == CHILD_CARDS) \
                         or self.iExtraLevelsMode == EXP_AND_CARD_SETS:
@@ -1887,7 +1876,7 @@ class CardSetCardListModel(CardListModel):
            second level."""
         # pylint: disable-msg = E1101, E1103
         # PyProtocols confuses pylint
-        oAbsCard = oPhysCard.abstractCard
+        oAbsCard = IAbstractCard(oPhysCard)
         sExpName = self.get_expansion_name(oPhysCard.expansion)
         tExpKey = (oAbsCard, sExpName)
         # Check if we need to add or remove an expansion entry
@@ -1933,7 +1922,7 @@ class CardSetCardListModel(CardListModel):
            second level with expansions"""
         # pylint: disable-msg = E1101, E1103
         # PyProtocols confuses pylint
-        oAbsCard = oPhysCard.abstractCard
+        oAbsCard = IAbstractCard(oPhysCard)
         sExpName = self.get_expansion_name(oPhysCard.expansion)
         tExpKey = (oAbsCard, sExpName)
         if oAbsCard in self._dAbsSecondLevel2Iter and \
