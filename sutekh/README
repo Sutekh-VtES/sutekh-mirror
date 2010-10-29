@@ -195,6 +195,25 @@ sutekh-cli -d <old_database_uri> --dump-zip=zipfile.zip
 
 sutekh-cli -d <new_database_uti> --restore-zip=zipfile.zip
 
+==== Disabling SQLObject caching ====
+
+When using the default sqlite database, Sutekh disables SQLObject's internal
+caching. As number of the items SQLObject caches aren't important to Sutekh,
+and, on large card set loads, the overhead of maintaining the cache is
+significant, it can be beneficial to disable the cache with other database as
+well. Disabling the cache is recommended with SQLObject 0.12 and later, where
+changes to the cache culling algorithm have a more noticeable impact on
+performance.
+
+To disable the cache for the other databases, append '?cache=False' to
+the database url:
+
+sutekh -d postgres://username@host/database?cache=False
+
+or
+
+sutekh -d mysql://username@host/database?cache=False&charset=utf8
+
 === Clustering Plugin ===
 
 Sutekh has the ability to data mine card sets for related groups of

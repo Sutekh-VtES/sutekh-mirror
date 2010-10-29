@@ -143,7 +143,7 @@ def main():
     if oOpts.db is None:
         # No commandline + no rc entry
         ensure_dir_exists(sPrefsDir)
-        oOpts.db = sqlite_uri(os.path.join(sPrefsDir, "sutekh.db"))
+        oOpts.db = sqlite_uri(os.path.join(sPrefsDir, "sutekh.db?cache=False"))
         oConfig.set_database_uri(oOpts.db)
 
     oConn = connectionForURI(oOpts.db)
