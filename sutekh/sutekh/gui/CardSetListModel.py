@@ -790,7 +790,7 @@ class CardSetCardListModel(CardListModel):
                 self._dAbs2Phys[oAbsCard].setdefault(oPhysCard, 0)
                 self._dAbs2Phys[oAbsCard][oPhysCard] += 1
 
-        self._add_parent_info(dAbsCards, dPhysCards)
+        self._add_parent_info(dAbsCards, dPhysCards, oCurFilter)
 
         aAbsCards = list(dAbsCards.iteritems())
 
@@ -846,7 +846,7 @@ class CardSetCardListModel(CardListModel):
                         sCardSetName, 0)
                     dChildInfo[sExpName][sCardSetName] += 1
 
-    def _get_sibling_cards(self):
+    def _get_sibling_cards(self, oCurFilter):
         """Get the list of cards in sibling card sets"""
         # pylint: disable-msg=E1101, E1103
         # pyprotocols confusion
@@ -864,11 +864,15 @@ class CardSetCardListModel(CardListModel):
         if self._dCache['sibling filter']:
             if self._dCache['cardset cards filter']:
                 oSibFilter = FilterAndBox([
-                    self._dCache['cardset cards filter'],
                     self._dCache['sibling filter'],
+                    oCurFilter,
+                    self._dCache['cardset cards filter'],
                     ])
             else:
-                oSibFilter = self._dCache['sibling filter']
+                oSibFilter = FilterAndBox([
+                    self._dCache['sibling filter'],
+                    oCurFilter,
+                    ])
 
             aInUseCards = [IPhysicalCard(x) for x in
                     oSibFilter.select(self.cardclass).distinct()]
@@ -902,7 +906,7 @@ class CardSetCardListModel(CardListModel):
                         if oPhysCard in dPhysCards:
                             dParentExp[sExpansion] = -dPhysCards[oPhysCard]
 
-    def _add_parent_info(self, dAbsCards, dPhysCards):
+    def _add_parent_info(self, dAbsCards, dPhysCards, oCurFilter):
         """Add the parent count info into the mix"""
         # pylint: disable-msg=E1101, E1103
         # Pyprotocols confuses pylint
@@ -911,7 +915,7 @@ class CardSetCardListModel(CardListModel):
                         not self._oCardSet.parent:
             return  # No point in doing anything at all
         if self.iParentCountMode == MINUS_SETS_IN_USE:
-            dSiblingCards = self._get_sibling_cards()
+            dSiblingCards = self._get_sibling_cards(oCurFilter)
             for oAbsCard, oRow in dAbsCards.iteritems():
                 oAbsId = oAbsCard.id
                 if oAbsId in dSiblingCards:
