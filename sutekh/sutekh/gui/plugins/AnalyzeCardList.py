@@ -13,7 +13,7 @@
 
 import gtk
 from sutekh.core.SutekhObjects import PhysicalCardSet, \
-        IAbstractCard, IPhysicalCard, IExpansion, CRYPT_TYPES
+        IAbstractCard, IPhysicalCard, IExpansion, CRYPT_TYPES, IKeyword
 from sutekh.core.Filters import CardTypeFilter, FilterNot
 from sutekh.core.Abbreviations import Titles
 from sutekh.gui.PluginManager import SutekhPlugin
@@ -362,7 +362,7 @@ class AnalyzeCardList(SutekhPlugin):
       Displays various interesting stats, and does a Happy Family
       analysis of the deck
        """
-    dTableVersions = {PhysicalCardSet: [4, 5, 6]}
+    dTableVersions = {PhysicalCardSet: [6]}
     aModelsSupported = [PhysicalCardSet]
 
     def get_menu_item(self):
@@ -786,8 +786,18 @@ class AnalyzeCardList(SutekhPlugin):
         iClanRequirement, dClan, dMulti = _get_card_clan_multi(aCards)
         # Build up Text
         sText = "\t\t<b>Master Cards :</b>\n\n"
-        sText += "Number of Masters = %d %s\n" % (self.dTypeNumbers['Master'],
+        sText += "Number of Masters = %d %s\n" % (iNum,
                 _percentage(iNum, self.iLibSize, "Library"))
+        # Extract the number of out-of-turn and trifles
+        for sType in ('trifle', 'out-of-turn'):
+            oKeyword = IKeyword(sType)
+            iCount = 0
+            for oCard in aCards:
+                if oKeyword in oCard.keywords:
+                    iCount += 1
+            if iCount:
+                sText += '   Number of %s masters = %d (%s)\n' % (sType,
+                        iCount, _percentage(iCount, iNum, 'Masters'))
         if aPool[1] > 0:
             sText += '\n<span foreground = "blue">Cost</span>\n'
             sText += _format_cost_numbers('Master', 'pool', aPool, iNum)
