@@ -40,7 +40,7 @@ class WWFilesDialog(SutekhDialog):
         self.oExtraFileButton.add_filter_with_pattern('HTML files',
                 ['*.html', '*htm'])
         self.oUseExtraUrlButton = gtk.CheckButton(
-                label="Grab extra cards from some site?")
+                label="Grab extra cards from bitbucket.org?")
 
         oRulingsLabel = gtk.Label("White Wolf Rulings File (optional):")
         self.oRulingsFileButton = SutekhFileButton(oParent,
@@ -106,6 +106,7 @@ class WWFilesDialog(SutekhDialog):
             if self.oUseExtraUrlButton.get_active():
                 self.bExtraIsUrl = True
                 self.sExtraName = EXTRA_CARD_URL
+                print self.sExtraName
             else:
                 self.bExtraIsUrl = False
                 self.sExtraName = self.oExtraFileButton.get_filename()

@@ -12,8 +12,8 @@ import urllib2
 
 WW_CARDLIST_URL = "http://www.white-wolf.com/vtes/HTML/cardlist.html"
 
-# FIXME: Set when we work out hosting
-EXTRA_CARD_URL = None
+EXTRA_CARD_URL = "http://bitbucket.org/hodgestar/sutekh-extra-cards/" \
+        "raw/tip/extra_list.html"
 
 # pylint: disable-msg=C0103
 # We accept the overly long name here
