@@ -280,8 +280,6 @@ class CardSetListModelTests(ConfigSutekhTest):
                     oModel.get_current_filter()).count()
             dCountInfo[oModel]['start'] = iSetCnt
             dCountInfo[oModel]['added'] = None
-            # We disable the illegal card filter for these tests for speed
-            oModel.bHideIllegal = False
         for bEditFlag in [False, True]:
             for oModel in aModels:
                 oModel.bEditable = bEditFlag
@@ -435,6 +433,9 @@ class CardSetListModelTests(ConfigSutekhTest):
         oPCS = self._setup_simple()
         # Test adding more cards
         oModel = CardSetCardListModel(self.aNames[0], self.oConfig)
+        oModel.bHideIllegal = False
+        self._loop_modes(oPCS, [oModel])
+        oModel.bHideIllegal = True
         self._loop_modes(oPCS, [oModel])
         self._cleanup_models([oModel])
 
@@ -448,6 +449,7 @@ class CardSetListModelTests(ConfigSutekhTest):
                 Groupings.CardTypeGrouping, Groupings.ExpansionGrouping,
                 Groupings.RarityGrouping]:
             oModel = CardSetCardListModel(self.aNames[0], self.oConfig)
+            oModel.bHideIllegal = False
             oModel.groupby = cGrouping
             aModels.append(oModel)
         self._loop_modes(oPCS, aModels)
@@ -467,6 +469,7 @@ class CardSetListModelTests(ConfigSutekhTest):
             oModel.groupby = Groupings.NullGrouping
             oModel.selectfilter = oFilter
             oModel.applyfilter = True
+            oModel.bHideIllegal = False
             aModels.append(oModel)
         self._loop_modes(oPCS, aModels)
         self._cleanup_models(aModels)
@@ -501,7 +504,9 @@ class CardSetListModelTests(ConfigSutekhTest):
             oChildPCS.addPhysicalCard(oCard.id)
         oChildPCS.inuse = False
         oModel = CardSetCardListModel(self.aNames[0], self.oConfig)
+        oModel.bHideIllegal = False
         oChildModel = CardSetCardListModel(self.aNames[1], self.oConfig)
+        oChildModel.bHideIllegal = False
         oModel.groupby = Groupings.NullGrouping
         oChildModel.groupby = Groupings.NullGrouping
         aModels = [oModel, oChildModel]
@@ -519,6 +524,7 @@ class CardSetListModelTests(ConfigSutekhTest):
             # PyProtocols confuses pylint
             oGrandChildPCS.addPhysicalCard(oCard.id)
         oGrandChildModel = CardSetCardListModel(self.aNames[2], self.oConfig)
+        oGrandChildModel.bHideIllegal = False
         oGrandChildModel.groupby = Groupings.NullGrouping
         aModels.append(oGrandChildModel)
         oGrandChildPCS.inuse = False
@@ -567,6 +573,9 @@ class CardSetListModelTests(ConfigSutekhTest):
             'Ablative Skin', None))
         self._loop_modes(oSibPCS, aModels)
         self._loop_modes(oGrandChild2PCS, aModels)
+        # Check with legal filter on as well
+        for oModel in aModels:
+            oModel.bHideIllegal = True
         self._loop_modes(oPCS, aModels)
         self._cleanup_models(aModels)
 
@@ -625,6 +634,7 @@ class CardSetListModelTests(ConfigSutekhTest):
                 Groupings.CardTypeGrouping]:
             for sName in self.aNames[:4]:
                 oModel = CardSetCardListModel(sName, self.oConfig)
+                oModel.bHideIllegal = False
                 oModel.groupby = cGrouping
                 aModels.append(oModel)
         self._loop_modes(oChildPCS, aModels)
@@ -643,6 +653,7 @@ class CardSetListModelTests(ConfigSutekhTest):
                 ]:
             for sName in self.aNames[:4]:
                 oModel = CardSetCardListModel(sName, self.oConfig)
+                oModel.bHideIllegal = False
                 oModel.selectfilter = oFilter
                 oModel.groupby = Groupings.NullGrouping
                 oModel.applyfilter = True
@@ -767,6 +778,7 @@ class CardSetListModelTests(ConfigSutekhTest):
         oGrandChildPCS = PhysicalCardSet(name=self.aNames[2], parent=oChildPCS)
         oGrandChildPCS.inuse = True
         oChildModel = CardSetCardListModel(self.aNames[1], self.oConfig)
+        oChildModel.bHideIllegal = False
         oChildModel.groupby = Groupings.NullGrouping
         self._loop_modes(oChildPCS, [oChildModel])
         self._loop_modes(oPCS, [oChildModel])
