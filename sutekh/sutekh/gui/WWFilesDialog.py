@@ -106,7 +106,6 @@ class WWFilesDialog(SutekhDialog):
             if self.oUseExtraUrlButton.get_active():
                 self.bExtraIsUrl = True
                 self.sExtraName = EXTRA_CARD_URL
-                print self.sExtraName
             else:
                 self.bExtraIsUrl = False
                 self.sExtraName = self.oExtraFileButton.get_filename()
