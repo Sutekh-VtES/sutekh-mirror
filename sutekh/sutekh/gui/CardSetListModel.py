@@ -79,19 +79,11 @@ class CardSetModelRow(object):
         self.oAbsCard = oAbsCard
         self.oPhysCard = IPhysicalCard((self.oAbsCard, None))
 
-    def get_parent_count(self):
-        """Get the parent count"""
-        return self.iParentCount
-
     def get_inc_dec_flags(self, iCnt):
         """Determine the status of the button flags."""
         if self.bEditable:
             return True, (iCnt > 0)
         return False, False
-
-    def get_card_count(self):
-        """Extract a card count from the grouped iterator"""
-        return self.iCount
 
     def get_expansion_info(self):
         """Get information about expansions"""
@@ -213,11 +205,9 @@ class CardSetCardListModel(CardListModel):
     def set_par_count_colour(self, oIter, iParCnt, iCnt):
         """Format the parent card count"""
         if self.iParentCountMode != IGNORE_PARENT:
-            oColour = BLACK
             if (self.iParentCountMode == PARENT_COUNT and iParCnt < iCnt) or \
                     iParCnt < 0:
-                oColour = RED
-            self.set(oIter, 7, oColour)
+                self.set(oIter, 7, RED)
 
     def _check_if_empty(self):
         """Add the empty entry if needed"""
@@ -279,8 +269,8 @@ class CardSetCardListModel(CardListModel):
             # this is a lot faster for long lists.
             for _oId, oRow in oGroupIter:
                 oCard = oRow.oAbsCard
-                iCnt = oRow.get_card_count()
-                iParCnt = oRow.get_parent_count()
+                iCnt = oRow.iCount
+                iParCnt = oRow.iParentCount
                 iGrpCnt += iCnt
                 iParGrpCnt += iParCnt
                 bIncCard, bDecCard = self.check_inc_dec(iCnt)
@@ -1082,8 +1072,8 @@ class CardSetCardListModel(CardListModel):
                 if oAbsId != oId:
                     continue
                 oCard = oRow.oAbsCard
-                iCnt = oRow.get_card_count()
-                iParCnt = oRow.get_parent_count()
+                iCnt = oRow.iCount
+                iParCnt = oRow.iParentCount
                 iGrpCnt += iCnt
                 iParGrpCnt += iParCnt
                 bIncCard, bDecCard = self.check_inc_dec(iCnt)
