@@ -249,9 +249,9 @@ class SutekhPlugin(object):
         # If nothing is specified, currently we assume everything is A-OK
         return True
 
-    def open_cs(self, sPCS):
+    def open_cs(self, sPCS, bStartEditable=False):
         """Open a physical card set in the GUI."""
-        self.parent.add_new_physical_card_set(sPCS)
+        self.parent.add_new_physical_card_set(sPCS, bStartEditable)
 
     def reload_pcs_list(self):
         """Refresh the physical card set list if it is visible."""

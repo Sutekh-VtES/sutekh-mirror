@@ -335,7 +335,8 @@ The filter menu has three options:
 "Card Filters":#card_filters section.
 * _Apply Filter_: Toggle whether the filter is currently applied to the list.
 * _Create Card Set From Filter_: Create a new card set containing the results \
-of the current filter.
+of the current filter. The new card set will be opened automatically and \
+will be set editable.
 
 h3(#ww_analyze). Analyze
 
@@ -396,7 +397,8 @@ h3(#card_set_list_actions). Actions
 
 The following actions are available:
 
-* _Create New Card Set_: Create a new card set.
+* _Create New Card Set_: Create a new card set. The new card set will be \
+opened in a new pane, and will be set to be editable.
 * _Edit Card Set Properties_: Change the card set name, author and \
 description, change the parent of the card set, or add annotations to the \
 card set.
@@ -503,7 +505,8 @@ The filter menu has three options:
 "Card Filters":#card_filters section.
 * _Apply Filter_: Toggle whether the filter is currently applied to the list.
 * _Create Card Set From Filter_: Create a new card set containing the results \
-of the current filter.
+of the current filter. The new card set will be opened automatically and \
+will be set editable.
 
 When editing a card set, the display is always updated according to the active
 filter (i.e. if the filter is being applied). This does mean that, when adding

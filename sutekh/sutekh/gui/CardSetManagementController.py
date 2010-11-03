@@ -41,7 +41,7 @@ class CardSetManagementController(object):
         """Create a new card set"""
         sName = create_card_set(self._oMainWindow)
         if sName:
-            self._oMainWindow.add_new_physical_card_set(sName)
+            self._oMainWindow.add_new_physical_card_set(sName, True)
 
     def edit_card_set_properties(self, _oWidget):
         """Create a new card set"""

@@ -289,13 +289,14 @@ class MultiPaneWindow(gtk.Window):
                 aPanes.append(oPane)
         return aPanes
 
-    def replace_with_physical_card_set(self, sName, oFrame, bDoReloadPCS=True):
+    def replace_with_physical_card_set(self, sName, oFrame, bDoReloadPCS=True,
+            bStartEditable=False):
         """Replace the pane oFrame with the physical card set sName"""
         if oFrame:
             # pylint: disable-msg=W0704
             # not doing anything for errors right now
             try:
-                oPane = CardSetFrame(self, sName)
+                oPane = CardSetFrame(self, sName, bStartEditable)
                 self.replace_frame(oFrame, oPane, bDoReloadPCS)
                 return oPane
             except RuntimeError:
@@ -303,10 +304,11 @@ class MultiPaneWindow(gtk.Window):
                 pass
         return None
 
-    def add_new_physical_card_set(self, sName):
+    def add_new_physical_card_set(self, sName, bStartEditable=False):
         """Create a new pane and replace with the PCS sName"""
         oFrame = self.add_pane_end()
-        return self.replace_with_physical_card_set(sName, oFrame)
+        return self.replace_with_physical_card_set(sName, oFrame,
+                bStartEditable=bStartEditable)
 
     def replace_with_pcs_list(self, _oWidget, oOldFrame=None):
         """Replace the focussed or given pane with the physical card set
@@ -413,8 +415,6 @@ class MultiPaneWindow(gtk.Window):
                     oPane.view.toggle_editable(True)
                 else:
                     oPane.view.toggle_editable(False)
-                    # Empty panes still need to be editable, though
-                    oPane.view.check_editable()
 
     def set_card_text(self, oCard):
         """Update the card text frame to the currently selected card."""

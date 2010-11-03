@@ -23,13 +23,13 @@ class CardSetController(object):
     """Controller class for the Card Sets."""
     _sFilterType = 'PhysicalCard'
 
-    def __init__(self, sName, oMainWindow, oFrame):
+    def __init__(self, sName, oMainWindow, oFrame, bStartEditable):
         # pylint: disable-msg=E1101, E1103
         # SQLObject methods confuse pylint
         self._oMainWindow = oMainWindow
         self._oMenu = None
         self._oFrame = oFrame
-        self._oView = CardSetView(oMainWindow, self, sName)
+        self._oView = CardSetView(oMainWindow, self, sName, bStartEditable)
         self.__oPhysCardSet = IPhysicalCardSet(sName)
         # listen on card set signals
         # We listen here, rather than in the model (as for card set changes),

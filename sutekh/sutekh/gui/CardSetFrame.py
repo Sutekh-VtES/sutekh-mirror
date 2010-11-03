@@ -26,14 +26,14 @@ class CardSetFrame(CardListFrame):
        """
     _cModelType = PhysicalCardSet
 
-    def __init__(self, oMainWindow, sName):
+    def __init__(self, oMainWindow, sName, bStartEditable):
         super(CardSetFrame, self).__init__(oMainWindow)
         try:
             _oCS = IPhysicalCardSet(sName)
         except SQLObjectNotFound:
             raise RuntimeError("Card Set %s does not exist" % sName)
         self._oController = CardSetController(sName,
-                oMainWindow, self)
+                oMainWindow, self, bStartEditable)
 
         self._sName = sName
 
@@ -44,8 +44,6 @@ class CardSetFrame(CardListFrame):
         self.add_parts()
 
         self.update_name(sName)
-
-        self._oController.view.check_editable()
 
     # pylint: disable-msg=W0212
     # We allow access via these properties

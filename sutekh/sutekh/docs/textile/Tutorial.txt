@@ -49,10 +49,11 @@ h2(#cards). Working with Cards
 
 h3. Adding cards to a card set
 
-Card Sets are by default not editable, unless they are empty. You can change
-this property by toggling the *Card Set is Editable* menu entry in the *Edit*
-Menu of the pane. Empty card sets are always editable. Before adding cards to a
-card set, ensure that it is editable.
+Card Sets are by default not editable. You can change this property by toggling
+the *Card Set is Editable* menu entry in the *Edit* Menu of the pane.  Before
+adding cards to a card set, ensure that it is editable.
+
+For convenience, when a card set is first created, it is opened as editable.
 
 You can add cards by dragging them from the _White Wolf Card List_ to the pane
 of the card set. You can also use the copy and paste options from the edit menu.

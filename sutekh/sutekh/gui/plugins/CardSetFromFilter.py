@@ -36,7 +36,7 @@ class DeckFromFilter(SutekhPlugin):
         if sCSName:
             oCardSet = self.make_cs_from_filter(sCSName)
             if oCardSet:
-                self.open_cs(sCSName)
+                self.open_cs(sCSName, True)
 
     def make_cs_from_filter(self, sCSName):
         """Create the actual PCS."""

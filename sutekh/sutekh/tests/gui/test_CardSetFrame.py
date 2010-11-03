@@ -96,8 +96,9 @@ class TestCardSetFrame(GuiSutekhTest):
                 oWWList = oPane
             if oPane.title == 'My Collection':
                 oMyColl = oPane
-        # Add one of the new card sets
-        oTestSet1 = self.oWin.add_new_physical_card_set('Test Set 1')
+        # Add a set, not opened editable
+        oNewFrame = self.oWin.add_new_physical_card_set('Test Set 1', False)
+        # Add one of the new card sets, as an empty, editable set
         # Create selection of cards from the WW card list and
         # paste it into the new card set
         oFrame = oWWList
@@ -106,7 +107,11 @@ class TestCardSetFrame(GuiSutekhTest):
         self.assertEqual(oFrame.view.get_selection().count_selected_rows(), 2)
         # Copy
         oFrame.view.copy_selection()
-        oNewFrame = oTestSet1
+        oNewFrame.view.do_paste()
+        self.assertEqual(len(oPCS2.cards), 0)
+        self.oWin.remove_frame(oNewFrame)
+        # Reopen the card set, only editable this time
+        oNewFrame = self.oWin.add_new_physical_card_set('Test Set 1', True)
         oNewFrame.view.do_paste()
         self.assertEqual(len(oPCS2.cards), 2)
         # Select cards in new card set and change numbers

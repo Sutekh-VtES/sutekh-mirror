@@ -458,7 +458,7 @@ class ClusterCardList(SutekhPlugin):
             oCard = IPhysicalCard(self._aCards[iIndex])
             oDeck.addPhysicalCard(oCard)
 
-        self.open_cs(sDeckName)
+        self.open_cs(sDeckName, True)
 
 
 class Vector(object):

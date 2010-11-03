@@ -62,9 +62,11 @@ class CardSetView(CardListView):
     # Initialise key ranges for key tests
     # pylint: disable-msg=R0915
     # We need a lot of setup here, so this is long
-    def __init__(self, oMainWindow, oController, sName):
+    def __init__(self, oMainWindow, oController, sName, bStartEditable):
         oModel = CardSetCardListModel(sName, oMainWindow.config_file)
         oModel.enable_sorting()
+        if bStartEditable:
+            oModel.bEditable = True
         # The only path here is via the main window, so config_file exists
         super(CardSetView, self).__init__(oController, oMainWindow,
                 oModel, oMainWindow.config_file)
@@ -306,16 +308,20 @@ class CardSetView(CardListView):
 
     def mapped(self, _oWidget):
         """Called when the view has been mapped, so we can twiddle the
-           display"""
-        # see if we need to be editable
-        self.check_editable()
+           display
+
+           In the case when a card set is opened editable, we need to
+           load after the pane is mapped, so that the colours are setup
+           correctly. We also use the opportunity to ensure the menu
+           is in sync."""
         if self._oModel.bEditable:
-            # Ensure hint colour is set correctly
-            self.reload_keep_expanded()
+            self._set_editable(True)
         # We only ever need to call this the first time we're mapped.
         # We don't want to redo this if map is called again due to
         # panes moving, etc.
         self.disconnect(self.__iMapID)
+        self.__iMapID = None
+        self.reload_keep_expanded()
         # Allow other map signals to run as well (needed for drag-n-drop in
         # some gtk versions)
         return True
@@ -345,28 +351,21 @@ class CardSetView(CardListView):
 
     def load(self):
         """Called when the model needs to be reloaded."""
+        if not self.__iMapID is None:
+            # skip loading until we're mapped, to save double loads in
+            # some cases
+            return
         if hasattr(self._oMainWin, 'set_busy_cursor'):
             self._oMainWin.set_busy_cursor()
-        if self._oModel.get_card_iterator(None).count() == 0:
-            self._oModel.bEditable = True
-            # We do this before loading, so edit icons are correct
         self.freeze_child_notify()
         self.set_model(None)
         self._oModel.load()
-        self.check_editable()
         self.set_model(self._oModel)
         self.oNumCell.set_property('foreground-gdk',
                 self._oModel.get_count_colour())
         self.thaw_child_notify()
         if hasattr(self._oMainWin, 'restore_cursor'):
             self._oMainWin.restore_cursor()
-
-    def check_editable(self):
-        """Set the card list to be editable if it's empty"""
-        if self.get_parent() and \
-                self._oModel.get_card_iterator(None).count() == 0:
-            # This isn't true when creating the view
-            self._set_editable(True)
 
     def set_color_edit_cue(self):
         """Set a visual cue that the card set is editable."""
