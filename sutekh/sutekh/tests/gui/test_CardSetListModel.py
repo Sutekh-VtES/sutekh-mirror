@@ -414,6 +414,13 @@ class CardSetListModelTests(ConfigSutekhTest):
             self.assertEqual(oModel.iParentCountMode, iMode)
         self._cleanup_models([oModel])
 
+    def _get_model(self, sName):
+        """Return a model for the named card set, with the null grouping"""
+        oModel = CardSetCardListModel(sName, self.oConfig)
+        oModel.bHideIllegal = False
+        oModel.groupby = Groupings.NullGrouping
+        return oModel
+
     def _setup_simple(self):
         """Convience method for setting up a single card set for tests"""
         # pylint: disable-msg=E1101
@@ -432,8 +439,7 @@ class CardSetListModelTests(ConfigSutekhTest):
         _oCache = SutekhObjectCache()
         oPCS = self._setup_simple()
         # Test adding more cards
-        oModel = CardSetCardListModel(self.aNames[0], self.oConfig)
-        oModel.bHideIllegal = False
+        oModel = self._get_model(self.aNames[0])
         self._loop_modes(oPCS, [oModel])
         oModel.bHideIllegal = True
         self._loop_modes(oPCS, [oModel])
@@ -448,8 +454,7 @@ class CardSetListModelTests(ConfigSutekhTest):
                 Groupings.DisciplineGrouping, Groupings.ClanGrouping,
                 Groupings.CardTypeGrouping, Groupings.ExpansionGrouping,
                 Groupings.RarityGrouping]:
-            oModel = CardSetCardListModel(self.aNames[0], self.oConfig)
-            oModel.bHideIllegal = False
+            oModel = self._get_model(self.aNames[0])
             oModel.groupby = cGrouping
             aModels.append(oModel)
         self._loop_modes(oPCS, aModels)
@@ -465,21 +470,15 @@ class CardSetListModelTests(ConfigSutekhTest):
                 Filters.CardSetMultiCardCountFilter((['2', '3'],
                     self.aNames[0])),
                 ]:
-            oModel = CardSetCardListModel(self.aNames[0], self.oConfig)
-            oModel.groupby = Groupings.NullGrouping
+            oModel = self._get_model(self.aNames[0])
             oModel.selectfilter = oFilter
             oModel.applyfilter = True
-            oModel.bHideIllegal = False
             aModels.append(oModel)
         self._loop_modes(oPCS, aModels)
         self._cleanup_models(aModels)
 
-    def test_relationships(self):
-        """Tests Model against more complex Card Set relationships"""
-        # pylint: disable-msg=R0915, R0914
-        # R0915, R0914: Want a long, sequential test case to minimise
-        # repeated setups, so it has lots of lines + variables
-        _oCache = SutekhObjectCache()
+    def _setup_parent_child(self):
+        """Setup the initial parent and child for relationship tests"""
         oPCS = PhysicalCardSet(name=self.aNames[0])
         # Add cards
         aCards = [(u'Agent of Power', None), ('Alexandra', 'CE'),
@@ -489,13 +488,11 @@ class CardSetListModelTests(ConfigSutekhTest):
                 ('.44 Magnum', 'Jyhad'), ('.44 Magnum', 'Jyhad'),
                 ('Yvette, The Hopeless', 'CE'),
                 ('Yvette, The Hopeless', 'BSC')]
-        aModels = []
         for sName, sExp in aCards:
             oCard = make_card(sName, sExp)
             # pylint: disable-msg=E1101
             # PyProtocols confuses pylint
             oPCS.addPhysicalCard(oCard.id)
-        # Create a child card set with some entries and check everything works
         oChildPCS = PhysicalCardSet(name=self.aNames[1], parent=oPCS)
         for sName, sExp in aCards[2:6] + [(u'Two Wrongs', None)]:
             oCard = make_card(sName, sExp)
@@ -503,100 +500,24 @@ class CardSetListModelTests(ConfigSutekhTest):
             # PyProtocols confuses pylint
             oChildPCS.addPhysicalCard(oCard.id)
         oChildPCS.inuse = False
-        oModel = CardSetCardListModel(self.aNames[0], self.oConfig)
-        oModel.bHideIllegal = False
-        oChildModel = CardSetCardListModel(self.aNames[1], self.oConfig)
-        oChildModel.bHideIllegal = False
-        oModel.groupby = Groupings.NullGrouping
-        oChildModel.groupby = Groupings.NullGrouping
-        aModels = [oModel, oChildModel]
-        self._loop_modes(oPCS, aModels)
-        self._loop_modes(oChildPCS, aModels)
-        # And when we're in use
-        oChildPCS.inuse = True
-        self._loop_modes(oChildPCS, aModels)
-        self._loop_modes(oPCS, aModels)
-        # Add a grand child
+
+        return aCards, oPCS, oChildPCS
+
+    def _setup_grand_child(self, aCards, oChildPCS):
+        """Setup the grand child for the relationship tests"""
         oGrandChildPCS = PhysicalCardSet(name=self.aNames[2], parent=oChildPCS)
         for sName, sExp in aCards[3:7]:
             oCard = make_card(sName, sExp)
             # pylint: disable-msg=E1101
             # PyProtocols confuses pylint
             oGrandChildPCS.addPhysicalCard(oCard.id)
-        oGrandChildModel = CardSetCardListModel(self.aNames[2], self.oConfig)
-        oGrandChildModel.bHideIllegal = False
-        oGrandChildModel.groupby = Groupings.NullGrouping
-        aModels.append(oGrandChildModel)
-        oGrandChildPCS.inuse = False
-        # Check adding cards when we have a parent card set and a child
-        self._loop_modes(oChildPCS, aModels)
-        oGrandChildPCS.inuse = True
-        self._loop_modes(oChildPCS, aModels)
-        # Add some cards to oGrandChildPCS that aren't in parent and oChildPCS,
-        # add a sibling card set to oChildPCS and add another child and retest
-        oSibPCS = PhysicalCardSet(name=self.aNames[3], parent=oPCS)
-        for sName, sExp in aCards[1:6]:
-            oCard = make_card(sName, sExp)
-            # pylint: disable-msg=E1101
-            # PyProtocols confuses pylint
-            oSibPCS.addPhysicalCard(oCard.id)
-        oSibPCS.inuse = True
-        oGrandChild2PCS = PhysicalCardSet(name=self.aNames[4],
-                parent=oChildPCS)
-        oGrandChild2PCS.inuse = True
-        aCards = [('AK-47', 'LotN'), ('Cesewayo', 'LoB'),
-                ('Aire of Elation', 'CE'), ('Yvette, The Hopeless', None),
-                ('Yvette, The Hopeless', 'BSC')]
-        for sName, sExp in aCards:
-            oCard = make_card(sName, sExp)
-            # pylint: disable-msg=E1101, E1103
-            # PyProtocols confuses pylint
-            oGrandChild2PCS.addPhysicalCard(oCard.id)
-            if sName == 'Aire of Elation':
-                oGrandChildPCS.addPhysicalCard(oCard.id)
-                oGrandChildPCS.addPhysicalCard(oCard.id)
-                oGrandChildPCS.addPhysicalCard(oCard.id)
-                oGrandChildPCS.syncUpdate()
-            oGrandChild2PCS.syncUpdate()
-        oGrandChildPCS.inuse = False
-        self._loop_modes(oChildPCS, aModels)
-        oGrandChildPCS.inuse = True
-        self._loop_modes(oChildPCS, aModels)
-        # pylint: disable-msg=E1101
-        # PyProtocols confuses pylint
-        oGrandChild2PCS.addPhysicalCard(make_card('Ablative Skin',
-            'Sabbat'))
-        self._loop_modes(oChildPCS, aModels)
-        oChildPCS.addPhysicalCard(make_card('Ablative Skin',
-            'Sabbat'))
-        oGrandChild2PCS.addPhysicalCard(make_card(
-            'Ablative Skin', None))
-        self._loop_modes(oSibPCS, aModels)
-        self._loop_modes(oGrandChild2PCS, aModels)
-        # Check with legal filter on as well
-        for oModel in aModels:
-            oModel.bHideIllegal = True
-        self._loop_modes(oPCS, aModels)
-        self._cleanup_models(aModels)
+        return oGrandChildPCS
 
     def _setup_relationships(self):
         """Convience method to setup a card set hierachy for test cases"""
         # pylint: disable-msg=E1101
         # PyProtocols confuses pylint
-        oPCS = PhysicalCardSet(name=self.aNames[0])
-        # Add cards
-        aCards = [(u'Agent of Power', None), ('Alexandra', 'CE'),
-                ('Alexandra', 'CE'), ('Alexandra', 'CE'),
-                ('Sha-Ennu', 'Third Edition'),
-                ('Alexandra', None), ('Bronwen', 'Sabbat'),
-                ('.44 Magnum', 'Jyhad'), ('.44 Magnum', 'Jyhad'),
-                ('Yvette, The Hopeless', 'CE'),
-                ('Yvette, The Hopeless', 'BSC')]
-        oChildPCS = PhysicalCardSet(name=self.aNames[1], parent=oPCS)
-        for sName, sExp in aCards[2:6] + [(u'Two Wrongs', None),
-                ('Ablative Skin', None)]:
-            oCard = make_card(sName, sExp)
-            oChildPCS.addPhysicalCard(oCard.id)
+        aCards, oPCS, oChildPCS = self._setup_parent_child()
         oChildPCS.inuse = True
         oSibPCS = PhysicalCardSet(name=self.aNames[3], parent=oPCS)
         for sName, sExp in aCards[1:6]:
@@ -620,7 +541,110 @@ class CardSetListModelTests(ConfigSutekhTest):
             oCard = make_card(sName, sExp)
             oGrandChild2PCS.addPhysicalCard(oCard.id)
             oGrandChild2PCS.syncUpdate()
-        return oChildPCS
+        return oPCS, oSibPCS, oChildPCS, oGrandChildPCS, oGrandChild2PCS
+
+    def test_child_parent(self):
+        """Tests Model against parent-child relationships"""
+        _oCache = SutekhObjectCache()
+        _aCards, oPCS, oChildPCS = self._setup_parent_child()
+        oModel = self._get_model(self.aNames[0])
+        oChildModel = self._get_model(self.aNames[1])
+        aModels = [oModel, oChildModel]
+        # Create a child card set with some entries and check everything works
+        self._loop_modes(oPCS, aModels)
+        self._loop_modes(oChildPCS, aModels)
+        # And when we're in use
+        oChildPCS.inuse = True
+        self._loop_modes(oChildPCS, aModels)
+        self._loop_modes(oPCS, aModels)
+        self._cleanup_models(aModels)
+
+    def test_parent_child_grandchild(self):
+        """Test against more complex (granchild, etc.) relationships"""
+        _oCache = SutekhObjectCache()
+        aModels = []
+        aCards, _oPCS, oChildPCS = self._setup_parent_child()
+        oModel = self._get_model(self.aNames[0])
+        oChildModel = self._get_model(self.aNames[1])
+        aModels = [oModel, oChildModel]
+        # Add a grand child
+        oGrandChildPCS = self._setup_grand_child(aCards, oChildPCS)
+        oGrandChildModel = self._get_model(self.aNames[2])
+        aModels.append(oGrandChildModel)
+        oGrandChildPCS.inuse = False
+        # Check adding cards when we have a parent card set and a child
+        self._loop_modes(oChildPCS, aModels)
+        oGrandChildPCS.inuse = True
+        self._loop_modes(oChildPCS, aModels)
+        self._cleanup_models(aModels)
+
+    def test_complex_heirachy(self):
+        """Test with siblings in the tree as well"""
+        # Add some cards to oGrandChildPCS that aren't in parent and oChildPCS,
+        # add a sibling card set to oChildPCS and add another child and retest
+        _oCache = SutekhObjectCache()
+        aModels = []
+        aCards, oPCS, oChildPCS = self._setup_parent_child()
+        oModel = self._get_model(self.aNames[0])
+        oChildModel = self._get_model(self.aNames[1])
+        aModels = [oModel, oChildModel]
+        # Add a grand child
+        oGrandChildPCS = self._setup_grand_child(aCards, oChildPCS)
+        # add sibling
+        oSibPCS = PhysicalCardSet(name=self.aNames[3], parent=oPCS)
+        for sName, sExp in aCards[1:6]:
+            oCard = make_card(sName, sExp)
+            # pylint: disable-msg=E1101
+            # PyProtocols confuses pylint
+            oSibPCS.addPhysicalCard(oCard.id)
+        oGrandChild2PCS = PhysicalCardSet(name=self.aNames[4],
+                parent=oChildPCS)
+        aCards = [('AK-47', 'LotN'), ('Cesewayo', 'LoB'),
+                ('Aire of Elation', 'CE'), ('Yvette, The Hopeless', None),
+                ('Yvette, The Hopeless', 'BSC')]
+        for sName, sExp in aCards:
+            oCard = make_card(sName, sExp)
+            # pylint: disable-msg=E1101, E1103
+            # PyProtocols confuses pylint
+            oGrandChild2PCS.addPhysicalCard(oCard.id)
+            if sName == 'Aire of Elation':
+                oGrandChildPCS.addPhysicalCard(oCard.id)
+                oGrandChildPCS.addPhysicalCard(oCard.id)
+                oGrandChildPCS.addPhysicalCard(oCard.id)
+                oGrandChildPCS.syncUpdate()
+            oGrandChild2PCS.syncUpdate()
+        oSibPCS.inuse = True
+        oGrandChild2PCS.inuse = True
+        oGrandChildPCS.inuse = False
+        # Add model
+        oGrandChildModel = self._get_model(self.aNames[2])
+        aModels.append(oGrandChildModel)
+        self._loop_modes(oChildPCS, aModels)
+        oGrandChildPCS.inuse = True
+        self._loop_modes(oChildPCS, aModels)
+        self._cleanup_models(aModels)
+
+    def test_final_relationship_state(self):
+        """Tests with the final realtionship setup"""
+        # This tests a slightly different arrangment of cards between the
+        # different cards sets than test_complex_heirachy. It includes a
+        # few more cards where the different physical cards of the same
+        # abstract cards are split across the card sets
+        _oCache = SutekhObjectCache()
+        oPCS, oSibPCS, _oChildPCS, _oGrandChildPCS, oGrandChild2PCS = \
+                self._setup_relationships()
+        oModel = self._get_model(self.aNames[0])
+        oChildModel = self._get_model(self.aNames[1])
+        aModels = [oModel, oChildModel]
+        oGrandChildModel = self._get_model(self.aNames[2])
+        aModels.append(oGrandChildModel)
+        self._loop_modes(oSibPCS, aModels)
+        self._loop_modes(oGrandChild2PCS, aModels)
+        # Check with legal filter on as well
+        for oModel in aModels:
+            oModel.bHideIllegal = True
+        self._loop_modes(oPCS, aModels)
+        self._cleanup_models(aModels)
 
     def test_relation_grouping(self):
         """Test groupings with complex relationships"""
@@ -628,13 +652,13 @@ class CardSetListModelTests(ConfigSutekhTest):
         # We want to ensure that this works with non-NullGroupings,
         # but we don't need to cover all the groupings again
         _oCache = SutekhObjectCache()
-        oChildPCS = self._setup_relationships()
+        _oPCS, _oSPCS, oChildPCS, _oGCPCS, _oGC2PCS = \
+                self._setup_relationships()
         aModels = []
         for cGrouping in [Groupings.DisciplineGrouping,
                 Groupings.CardTypeGrouping]:
             for sName in self.aNames[:4]:
-                oModel = CardSetCardListModel(sName, self.oConfig)
-                oModel.bHideIllegal = False
+                oModel = self._get_model(sName)
                 oModel.groupby = cGrouping
                 aModels.append(oModel)
         self._loop_modes(oChildPCS, aModels)
@@ -643,7 +667,8 @@ class CardSetListModelTests(ConfigSutekhTest):
     def test_relation_filters(self):
         """Test adding with complex relationships and filters"""
         _oCache = SutekhObjectCache()
-        oChildPCS = self._setup_relationships()
+        _oPCS, _oSPCS, oChildPCS, _oGCPCS, _oGC2PCS = \
+                self._setup_relationships()
         aModels = []
         for oFilter in [
                 Filters.CardTypeFilter('Vampire'),
@@ -652,10 +677,8 @@ class CardSetListModelTests(ConfigSutekhTest):
                     self.aNames[0])),
                 ]:
             for sName in self.aNames[:4]:
-                oModel = CardSetCardListModel(sName, self.oConfig)
-                oModel.bHideIllegal = False
+                oModel = self._get_model(sName)
                 oModel.selectfilter = oFilter
-                oModel.groupby = Groupings.NullGrouping
                 oModel.applyfilter = True
                 aModels.append(oModel)
         self._loop_modes(oChildPCS, aModels)
@@ -669,7 +692,6 @@ class CardSetListModelTests(ConfigSutekhTest):
         # Note that these tests are with the illegal card filter enabled
         _oCache = SutekhObjectCache()
         oPCS = PhysicalCardSet(name=self.aNames[0])
-        oModel = CardSetCardListModel(self.aNames[0], self.oConfig)
         aCards = [('Alexandra', 'CE'), ('Sha-Ennu', 'Third Edition'),
                 ('Alexandra', None), ('Bronwen', 'Sabbat'),
                 ('.44 Magnum', 'Jyhad'), ('.44 Magnum', 'Jyhad'),
@@ -680,6 +702,7 @@ class CardSetListModelTests(ConfigSutekhTest):
             # pylint: disable-msg=E1101
             # PyProtocols confuses pylint
             oPCS.addPhysicalCard(oCard.id)
+        oModel = self._get_model(self.aNames[0])
         # Test filter which selects nothing works
         self._loop_zero_filter_modes(oModel)
         # Check basic filtering
@@ -687,7 +710,7 @@ class CardSetListModelTests(ConfigSutekhTest):
         oModel.iParentCountMode = IGNORE_PARENT
         oModel.iExtraLevelsMode = NO_SECOND_LEVEL
         oModel.bEditable = False
-        oModel.groupby = Groupings.NullGrouping
+        oModel.bHideIllegal = True
         # Test card type
         oModel.selectfilter = Filters.CardTypeFilter('Vampire')
         oModel.applyfilter = True
@@ -777,9 +800,7 @@ class CardSetListModelTests(ConfigSutekhTest):
         oChildPCS = PhysicalCardSet(name=self.aNames[1], parent=oPCS)
         oGrandChildPCS = PhysicalCardSet(name=self.aNames[2], parent=oChildPCS)
         oGrandChildPCS.inuse = True
-        oChildModel = CardSetCardListModel(self.aNames[1], self.oConfig)
-        oChildModel.bHideIllegal = False
-        oChildModel.groupby = Groupings.NullGrouping
+        oChildModel = self._get_model(self.aNames[1])
         self._loop_modes(oChildPCS, [oChildModel])
         self._loop_modes(oPCS, [oChildModel])
         self._loop_modes(oGrandChildPCS, [oChildModel])
