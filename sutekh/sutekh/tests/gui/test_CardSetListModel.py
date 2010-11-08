@@ -200,7 +200,6 @@ class CardSetListModelTests(ConfigSutekhTest):
         for oModel in aModels:
             oListener = CardSetListener()
             oModel.add_listener(oListener)
-            oModel.sEditColour = "red"
             oModel.load()
             tStartTotals = (
                     oModel.iter_n_children(None),
@@ -434,8 +433,7 @@ class CardSetListModelTests(ConfigSutekhTest):
         return oPCS
 
     def test_adding_cards(self):
-        """Test adding & removing cards from the model for the different
-           groupings"""
+        """Test adding & removing cards from the model"""
         _oCache = SutekhObjectCache()
         oPCS = self._setup_simple()
         # Test adding more cards
@@ -446,7 +444,7 @@ class CardSetListModelTests(ConfigSutekhTest):
         self._cleanup_models([oModel])
 
     def test_groupings(self):
-        """Check over all the groupings, single card set"""
+        """Check over various groupings, single card set"""
         _oCache = SutekhObjectCache()
         oPCS = self._setup_simple()
         aModels = []
@@ -461,7 +459,7 @@ class CardSetListModelTests(ConfigSutekhTest):
         self._cleanup_models(aModels)
 
     def test_adding_filter(self):
-        """Check adding cards with filters enabled"""
+        """Check adding cards with filters enabled (single card set)"""
         _oCache = SutekhObjectCache()
         oPCS = self._setup_simple()
         aModels = []
@@ -560,7 +558,7 @@ class CardSetListModelTests(ConfigSutekhTest):
         self._cleanup_models(aModels)
 
     def test_parent_child_grandchild(self):
-        """Test against more complex (granchild, etc.) relationships"""
+        """Test against parent-child-grandchild setup"""
         _oCache = SutekhObjectCache()
         aModels = []
         aCards, _oPCS, oChildPCS = self._setup_parent_child()
@@ -625,7 +623,7 @@ class CardSetListModelTests(ConfigSutekhTest):
         self._cleanup_models(aModels)
 
     def test_final_relationship_state(self):
-        """Tests with the final realtionship setup"""
+        """Tests with the final relationship setup"""
         # This tests a slightly different arrangment of cards between the
         # different cards sets than test_complex_heirachy. It includes a
         # few more cards where the different physical cards of the same
