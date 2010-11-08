@@ -545,7 +545,13 @@ class CardSetCardListModel(CardListModel):
             oRow = CardSetModelRow(self.bEditable,
                     self.iExtraLevelsMode, oAbsCard)
             dAbsCards[oPhysCard.abstractCardID] = oRow
-            if self.iExtraLevelsMode in (SHOW_EXPANSIONS, EXP_AND_CARD_SETS):
+            if self.iExtraLevelsMode in (SHOW_EXPANSIONS, EXP_AND_CARD_SETS) \
+                    and self.iShowCardMode != ALL_CARDS:
+                # If we're showing all cards, we'll fill all this in anyway,
+                # so don't pre-empt that work with this more expensive check.
+                # As _init_expansions gets called when looking at card sets
+                # as well in CARD_SETS_AND_EXP mode, this is the right place
+                # for the ALL_CARDS check.
                 self._init_expansions(oRow.dExpansions, oAbsCard)
             if not self.check_card_visible(oRow.oPhysCard):
                 # Fix the Row's Physical Card to point to the first
