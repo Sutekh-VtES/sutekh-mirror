@@ -650,8 +650,9 @@ class CardSetCardListModel(CardListModel):
                 self.iShowCardMode != PARENT_CARDS):
             # It's tempting to use get_card_iterator here, but that
             # obviously doesn't work because of _oBaseFilter
-            self._dCache['parent filter'] = \
-                    PhysicalCardSetFilter(self._oCardSet.parent.name)
+            if not self._dCache['parent filter']:
+                self._dCache['parent filter'] = \
+                        PhysicalCardSetFilter(self._oCardSet.parent.name)
             aFilters = [self._dCache['parent filter'], oCurFilter]
             if self.iShowCardMode == THIS_SET_ONLY and \
                     oCardIter.count() < 200:
@@ -706,6 +707,7 @@ class CardSetCardListModel(CardListModel):
         # them across calls to add_new_card
         self._dCache.setdefault('child filters', None)
         self._dCache.setdefault('all children filter', None)
+        self._dCache.setdefault('parent filter', None)
         self._dCache.setdefault('sibling filter', None)
         self._dCache.setdefault('set map', None)
 
