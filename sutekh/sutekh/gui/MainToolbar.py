@@ -33,6 +33,14 @@ class MainToolbar(gtk.Toolbar):
 
     # pylint: enable-msg=R0201
 
+    def remove_frame_button(self, sTitle):
+        """Remove the button associated with the given frame titla."""
+        aItems = self.get_children()
+        for oItem in aItems:
+            if oItem.get_label() == sTitle:
+                self.remove(oItem)
+                break
+
     def refresh(self):
         """Refresh the toolbars hide/show state (needed because show all
            is turned off)."""

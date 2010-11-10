@@ -197,8 +197,8 @@ class MultiPaneWindow(gtk.Window):
         # R0912: Need to consider all these cases, so many branches
         # R0914: Consequently, many local variables
 
-        # Clear out all existing frames (loop over copy of the list)
-        for oFrame in self.aOpenFrames[:]:
+        # Clear out all existing frames (loop over copies of the list)
+        for oFrame in chain(self.aOpenFrames[:], self.aClosedFrames[:]):
             self.remove_frame(oFrame, True)
 
         # Flag to delay reloading pcs card list until after everything else
@@ -364,18 +364,17 @@ class MultiPaneWindow(gtk.Window):
             self._oPCSListPane.reload()
 
     def reload_all(self):
-        """Reload all open frames. Useful for major DB changes"""
-        for oPane in self.aOpenFrames:
+        """Reload all frames. Useful for major DB changes"""
+        for oPane in chain(self.aOpenFrames, self.aClosedFrames):
             oPane.reload()
 
     def do_all_queued_reloads(self):
         """Do any deferred reloads from the database signal handlers."""
-        # XXX: Should this reload the closed panes?
-        for oPane in self.aOpenFrames:
+        for oPane in chain(self.aOpenFrames, self.aClosedFrames):
             oPane.do_queued_reload()
 
     def update_to_new_db(self):
-        """Resync open Panes against the database.
+        """Resync panes against the database.
 
            Needed because ids aren't kept across re-reading the WW
            cardlist, since card sets with children are always created
@@ -385,8 +384,8 @@ class MultiPaneWindow(gtk.Window):
         flush_cache()
         # Reset the lookup cache holder
         self.__oSutekhObjectCache = SutekhObjectCache()
-        # We may close frames here, so loop over a copy of the list
-        for oPane in self.aOpenFrames[:]:
+        # We may close frames here, so loop over copies of the list
+        for oPane in chain(self.aOpenFrames[:], self.aClosedFrames[:]):
             oPane.update_to_new_db()
 
     def clear_cache(self):
@@ -400,7 +399,7 @@ class MultiPaneWindow(gtk.Window):
            for the zero card list state setting the cardlist's to editable.
            """
         aEditable = []
-        for oPane in self.aOpenFrames:
+        for oPane in chain(self.aOpenFrames, self.aClosedFrames):
             if hasattr(oPane.view, 'toggle_editable'):
                 if oPane.view.get_model().bEditable:
                     aEditable.append(oPane)
@@ -409,7 +408,7 @@ class MultiPaneWindow(gtk.Window):
     def restore_editable_panes(self, aEditable):
         """Restore the editable state so only the panes in aEditable are
            editable."""
-        for oPane in self.aOpenFrames:
+        for oPane in chain(self.aOpenFrames, self.aClosedFrames):
             if hasattr(oPane.view, 'toggle_editable'):
                 if oPane in aEditable:
                     oPane.view.toggle_editable(True)
@@ -916,7 +915,7 @@ class MultiPaneWindow(gtk.Window):
            bClose is used to add the frame to the list of closed frames
            rather than destroying it and cleaning it up.
            """
-        if oFrame is not None:
+        if oFrame is not None and oFrame in self.aOpenFrames:
             oNeighbour = self._find_prev_frame(oFrame)
             if len(self.aOpenFrames) == 1:
                 if not bForceZero:
@@ -957,7 +956,7 @@ class MultiPaneWindow(gtk.Window):
                 oFocussedPane.remove(oFrame)
                 self._aHPanes.remove(oFocussedPane)
             self.oVBox.show()
-            # Remove from dictionary of open panes
+            # Remove from list of open panes
             self.aOpenFrames.remove(oFrame)
             # Any cleanup events we need?
             if bClose:
@@ -972,6 +971,11 @@ class MultiPaneWindow(gtk.Window):
                     # Can't do better than this, really
                     self.win_focus(None, None, None)
             self.reset_menu()
+        elif oFrame in self.aClosedFrames and not bClose:
+            self.aClosedFrames.remove(oFrame)
+            # Need to remove button from the toolbar
+            self.__oToolbar.remove_frame_button(oFrame.title)
+            oFrame.cleanup()
 
     def set_all_panes_equal(self):
         """Evenly distribute the space between all the frames."""
