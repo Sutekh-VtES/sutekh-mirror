@@ -37,13 +37,15 @@ HTML_FOOTER = """
 
 # pylint: enable-msg=C0103
 
+
 def textile2html(sText, dContext):
     """Convert a Textile markup string to an HTML file."""
     sHtml = HTML_HEADER % dContext \
         + textile.textile(sText) \
         + HTML_FOOTER % dContext
-    sHtml = sHtml.replace('<br />',' ') # remove pesky linebreaks
+    sHtml = sHtml.replace('<br />', ' ')  # remove pesky linebreaks
     return sHtml
+
 
 def convert(sTextileDir, sHtmlDir):
     """Convert all .txt files in sTextileDir to .html files in sHtmlDir."""
@@ -53,7 +55,7 @@ def convert(sTextileDir, sHtmlDir):
         sHtmlPath = os.path.join(sHtmlDir, sFilename + ".html")
 
         dContext = {
-            'title': "Sutekh " + sFilename
+            'title': "Sutekh " + sFilename,
         }
 
         fTextile = file(sTextilePath, "rb")
@@ -91,6 +93,7 @@ def convert(sTextileDir, sHtmlDir):
             if aErrors:
                 print 'tidy reports the following errors for %s' % sHtmlPath
                 print '\n'.join([x.err for x in aErrors])
+
 
 if __name__ == "__main__":
     convert("textile", "html")
