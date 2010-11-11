@@ -314,11 +314,14 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
         else:
             self._set_display_name(self._oConfig.get_postfix_the_display())
 
-        if iSortColumn is not None:
-            self.set_sort_column_id(iSortColumn, iSortOrder)
         # Notify Listeners
         for oListener in self.dListeners:
             oListener.load(aCards)
+
+        # We only re-enable sorting after filling listeners, so sorting on
+        # listeners which cache information works properly
+        if iSortColumn is not None:
+            self.set_sort_column_id(iSortColumn, iSortOrder)
 
     def get_card_iterator(self, oFilter):
         """Return an interator over the card model.

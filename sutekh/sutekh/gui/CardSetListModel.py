@@ -303,14 +303,15 @@ class CardSetCardListModel(CardListModel):
         self._check_if_empty()
 
         self._set_display_name(self._oConfig.get_postfix_the_display())
-        # Restore sorting
-
-        if iSortColumn is not None:
-            self.set_sort_column_id(iSortColumn, iSortOrder)
 
         # Notify Listeners
         for oListener in self.dListeners:
             oListener.load(aCards)
+
+        # Restore sorting
+        # See comments in CardListModel
+        if iSortColumn is not None:
+            self.set_sort_column_id(iSortColumn, iSortOrder)
 
     def _add_children(self, oChildIter, oRow):
         """Add the needed children for a card in the model."""
