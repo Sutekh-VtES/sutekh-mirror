@@ -74,6 +74,8 @@ class DummyController(object):
 
 class CardSetListModelTests(ConfigSutekhTest):
     """Class for the test cases"""
+    # pylint: disable-msg=R0904
+    # R0904: We test a number of sepetate bits, so many methods
 
     aParentCountToStr = ['IGNORE_PARENT', 'PARENT_COUNT', 'MINUS_THIS_SET',
             'MINUS_SETS_IN_USE']
@@ -279,6 +281,8 @@ class CardSetListModelTests(ConfigSutekhTest):
                     oModel.get_current_filter()).count()
             dCountInfo[oModel]['start'] = iSetCnt
             dCountInfo[oModel]['added'] = None
+            # Ensure we start with a clean cache
+            oModel._dCache = {}
         for bEditFlag in [False, True]:
             for oModel in aModels:
                 oModel.bEditable = bEditFlag
@@ -473,6 +477,68 @@ class CardSetListModelTests(ConfigSutekhTest):
             oModel.applyfilter = True
             aModels.append(oModel)
         self._loop_modes(oPCS, aModels)
+        self._cleanup_models(aModels)
+
+    def test_cache(self):
+        """Test that the special persistent caches don't affect results"""
+
+        def _check_totals(oModelCache, oModelNoCache, sMode):
+            """Reload the models and check the totals match"""
+            oModelNoCache._dCache = {}
+            oModelCache.load()
+            oModelNoCache.load()
+            tCacheTotals = (
+                    oModelCache.iter_n_children(None),
+                    self._count_all_cards(oModelCache),
+                    self._count_second_level(oModelCache))
+            aCacheList = self._get_all_counts(oModelCache)
+            tNoCacheTotals = (
+                    oModelNoCache.iter_n_children(None),
+                    self._count_all_cards(oModelNoCache),
+                    self._count_second_level(oModelNoCache))
+            aNoCacheList = self._get_all_counts(oModelNoCache)
+            self.assertEqual(tCacheTotals, tNoCacheTotals,
+                    self._format_error("Totals for cache and no-cache differ "
+                        "after %s cards" % sMode, tCacheTotals, tNoCacheTotals,
+                        oModelCache, oPCS))
+            self.assertEqual(aCacheList, aNoCacheList,
+                    self._format_error("Card Lists for cache and no-cach "
+                        "differ after %s cards" % sMode, aCacheList,
+                        aNoCacheList, oModelCache, oPCS))
+
+        _oCache = SutekhObjectCache()
+        oPCS = self._setup_simple()
+        oModelCache = self._get_model(self.aNames[0])
+        oModelNoCache = self._get_model(self.aNames[0])
+        aModels = [oModelCache, oModelNoCache]
+        # We test a much smaller range of things than in loop_modes
+        for bEditFlag in [False, True]:
+            for oModel in aModels:
+                oModel.bEditable = bEditFlag
+            for iLevelMode in [NO_SECOND_LEVEL, SHOW_EXPANSIONS]:
+                for oModel in aModels:
+                    oModel.iExtraLevelsMode = iLevelMode
+                for iShowMode in [THIS_SET_ONLY, ALL_CARDS]:
+                    for oModel in aModels:
+                        oModel.iShowCardMode = iShowMode
+                        oModel.load()
+                    # pylint: disable-msg=E1101
+                    # E1101: SQLObjext confuses pylint
+                    for oCard in self.aPhysCards:
+                        oPCS.addPhysicalCard(oCard.id)
+                        oPCS.syncUpdate()
+                        send_changed_signal(oPCS, oCard, 1)
+                    _check_totals(oModelCache, oModelNoCache, 'adding')
+                    for oCard in self.aPhysCards:
+                        oMapEntry = list(
+                                MapPhysicalCardToPhysicalCardSet.selectBy(
+                                    physicalCardID=oCard.id,
+                                    physicalCardSetID=oPCS.id))[-1]
+                        MapPhysicalCardToPhysicalCardSet.delete(oMapEntry.id)
+                        oPCS.syncUpdate()
+                        send_changed_signal(oPCS, oCard, -1)
+                    _check_totals(oModelCache, oModelNoCache, 'adding')
+
         self._cleanup_models(aModels)
 
     def _setup_parent_child(self):

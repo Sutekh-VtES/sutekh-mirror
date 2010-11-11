@@ -234,7 +234,7 @@ class CardSetCardListModel(CardListModel):
         self._dGroupName2Iter = {}
         # Clear cache (we can't do this in grouped_card_iter, since that
         # is also called by add_new_card)
-        self._dCache = {}
+        self._init_cache(True)
 
         self._bPhysicalFilter = False
         if self.applyfilter:
@@ -679,13 +679,18 @@ class CardSetCardListModel(CardListModel):
         # pylint: disable-msg=E1101, E1103
         # Pyprotocols confuses pylint
         if self.iShowCardMode == ALL_CARDS:
-            if self._dCache['all cards']:
+            if not self.applyfilter and \
+                    self._dCache['full card list']:
+                aExtraCards = self._dCache['full card list']
+            elif self._dCache['all cards']:
                 aExtraCards = self._dCache['all cards']
             else:
                 oFullFilter = FilterAndBox([PhysicalCardFilter(),
                     oCurFilter])
                 aExtraCards = list(oFullFilter.select(PhysicalCard).distinct())
                 self._dCache['all cards'] = aExtraCards
+                if not self.applyfilter:
+                    self._dCache['full card list'] = aExtraCards
         elif self.iShowCardMode == PARENT_CARDS and self._oCardSet.parent:
             # Since we handle numbers later, this works
             aExtraCards = self._dCache['parent cards']
@@ -697,19 +702,21 @@ class CardSetCardListModel(CardListModel):
             aExtraCards = []
         return aExtraCards
 
-    def _init_cache(self):
+    def _init_cache(self, bClearFilters):
         """Setup the initial cache state"""
-        # preserve this across calls to add_new_card
-        self._dCache.setdefault('all cards', None)
+        # We preserve this across everything except database reloads
+        self._dCache.setdefault('full card list', None)
+        self._dCache.setdefault('this card list', None)
 
-        # The following items may be added to the cache during load,
-        # but, as they are related to the card set hierarchy, we preseve
-        # them across calls to add_new_card
-        self._dCache.setdefault('child filters', None)
-        self._dCache.setdefault('all children filter', None)
-        self._dCache.setdefault('parent filter', None)
-        self._dCache.setdefault('sibling filter', None)
-        self._dCache.setdefault('set map', None)
+        if bClearFilters:
+            # These are only reset on full loads. On calls to add new card,
+            # we don't touch them.
+            self._dCache['all cards'] = None
+            self._dCache['child filters'] = None
+            self._dCache['all children filters'] = None
+            self._dCache['sibling filter'] = None
+            self._dCache['parent filter'] = None
+            self._dCache['set map'] = None
 
         # We always refresh these on calls to add_new_card due so
         # filter checks are taken into account
@@ -742,8 +749,6 @@ class CardSetCardListModel(CardListModel):
         dAbsCards = {}
         dPhysCards = {}
 
-        self._init_cache()
-
         if oCardIter.count() == 0 and self.iShowCardMode == THIS_SET_ONLY:
             # Short circuit the more expensive checks if we've got no cards
             # and can't influence this card set
@@ -771,26 +776,36 @@ class CardSetCardListModel(CardListModel):
         for oPhysCard in self._get_extra_cards(oCurFilter):
             self._adjust_row(dAbsCards, oPhysCard, dChildCardCache, False)
 
-        for oCard in oCardIter:
-            oPhysCard = IPhysicalCard(oCard)
-            self._adjust_row(dAbsCards, oPhysCard,
-                    dChildCardCache, True)
-            dPhysCards.setdefault(oPhysCard, 0)
-            dPhysCards[oPhysCard] += 1
-            aCards.append(oPhysCard)
-            if self._bPhysicalFilter:
-                # We need to be able to give the correct list of physical
-                # cards to the listeners if we remove these via _clear_iter
-                # We can't get this from the card set, since that's already
-                # changed, and we may not be able to extract it from the model
-                # (depending on mode), so we just cache this
+        if not self.applyfilter and self._dCache['this card list']:
+            for oPhysCard in self._dCache['this card list']:
+                self._adjust_row(dAbsCards, oPhysCard,
+                        dChildCardCache, True)
+                dPhysCards.setdefault(oPhysCard, 0)
+                dPhysCards[oPhysCard] += 1
+            aCards = self._dCache['this card list']
+        else:
+            for oCard in oCardIter:
+                oPhysCard = IPhysicalCard(oCard)
+                self._adjust_row(dAbsCards, oPhysCard,
+                        dChildCardCache, True)
+                dPhysCards.setdefault(oPhysCard, 0)
+                dPhysCards[oPhysCard] += 1
+                aCards.append(oPhysCard)
+                if self._bPhysicalFilter:
+                    # We need to be able to give the correct list of physical
+                    # cards to the listeners if we remove these via _clear_iter
+                    # We can't get this from the card set, since that's already
+                    # changed, and we may not be able to extract it from the
+                    # model (depending on mode), so we just cache this
 
-                # pylint: disable-msg=E1103
-                # SQLObject confuses pylint
-                oAbsId = oPhysCard.abstractCardID
-                self._dAbs2Phys.setdefault(oAbsId, {})
-                self._dAbs2Phys[oAbsId].setdefault(oPhysCard, 0)
-                self._dAbs2Phys[oAbsId][oPhysCard] += 1
+                    # pylint: disable-msg=E1103
+                    # SQLObject confuses pylint
+                    oAbsId = oPhysCard.abstractCardID
+                    self._dAbs2Phys.setdefault(oAbsId, {})
+                    self._dAbs2Phys[oAbsId].setdefault(oPhysCard, 0)
+                    self._dAbs2Phys[oAbsId][oPhysCard] += 1
+            if not self.applyfilter:
+                self._dCache['this card list'] = aCards
 
         self._add_parent_info(dAbsCards, dPhysCards, oCurFilter)
 
@@ -1034,6 +1049,7 @@ class CardSetCardListModel(CardListModel):
            the card set or is filtered out) see if it should be visible. If it
            should be visible, add it to the appropriate groups.
            """
+        self._init_cache(False)
         oFilter = self.get_current_filter()
         if not oFilter:
             oFilter = NullFilter()
@@ -1117,6 +1133,7 @@ class CardSetCardListModel(CardListModel):
         """Update internal card set to the new DB."""
         self._oCardSet = IPhysicalCardSet(sSetName)
         self._oBaseFilter = PhysicalCardSetFilter(sSetName)
+        self._dCache = {}
 
     def changes_with_parent(self):
         """Utility function. Returns true if the parent card set influences
@@ -1219,6 +1236,10 @@ class CardSetCardListModel(CardListModel):
             # Changing a card from this card set
             if self._oCardSet.inuse:
                 self._update_cache(oPhysCard, iChg, 'sibling')
+            if iChg > 0 and self._dCache['this card list']:
+                self._dCache['this card list'].append(oPhysCard)
+            elif self._dCache['this card list']:
+                self._dCache['this card list'].remove(oPhysCard)
             if oAbsCard in self._dAbs2Iter:
                 self.alter_card_count(oPhysCard, iChg)
             elif iChg > 0:
@@ -2034,6 +2055,9 @@ class CardSetCardListModel(CardListModel):
         bReloadPCM = self._change_parent_count_mode(iParentCountOpt)
         bReloadIcons = self._change_icon_mode(bUseIcons)
         bReloadIllegal = self._change_illegal_mode(bHideIllegal)
+        if bReloadIllegal:
+            # Invalidate card list cache
+            self._dCache = {}
         if not bSkipLoad and (bReloadELM or bReloadSCM or bReloadPCM
                 or bReloadIcons or bReloadIllegal):
             # queue reload for later
