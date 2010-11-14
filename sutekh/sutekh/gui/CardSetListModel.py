@@ -646,7 +646,7 @@ class CardSetCardListModel(CardListModel):
         """Get a list object for the cards in the parent card set."""
         # pylint: disable-msg=E1101, E1103
         # SQLObject + PyProtocols confuse pylint
-        if self._oCardSet.parent and not (
+        if self._oCardSet.parentID and not (
                 self.iParentCountMode == IGNORE_PARENT and
                 self.iShowCardMode != PARENT_CARDS):
             # It's tempting to use get_card_iterator here, but that
@@ -692,7 +692,7 @@ class CardSetCardListModel(CardListModel):
                 self._dCache['all cards'] = aExtraCards
                 if not self.applyfilter:
                     self._dCache['full card list'] = aExtraCards
-        elif self.iShowCardMode == PARENT_CARDS and self._oCardSet.parent:
+        elif self.iShowCardMode == PARENT_CARDS and self._oCardSet.parentID:
             # Since we handle numbers later, this works
             aExtraCards = self._dCache['parent cards']
         elif self.iShowCardMode == CHILD_CARDS and \
@@ -870,7 +870,7 @@ class CardSetCardListModel(CardListModel):
         dSiblingCards = {}
         if self._dCache['sibling filter'] is None:
             aChildren = [x.name for x in PhysicalCardSet.selectBy(
-                parentID=self._oCardSet.parent.id, inuse=True)]
+                parentID=self._oCardSet.parentID, inuse=True)]
             if aChildren:
                 self._dCache['sibling filter'] = \
                         MultiPhysicalCardSetMapFilter(aChildren)
@@ -929,7 +929,7 @@ class CardSetCardListModel(CardListModel):
         # Pyprotocols confuses pylint
         if (self.iParentCountMode == IGNORE_PARENT and
                 self.iShowCardMode != PARENT_CARDS) or \
-                        not self._oCardSet.parent:
+                        not self._oCardSet.parentID:
             return  # No point in doing anything at all
         if self.iParentCountMode == MINUS_SETS_IN_USE:
             dSiblingCards = self._get_sibling_cards(oCurFilter)
@@ -992,7 +992,7 @@ class CardSetCardListModel(CardListModel):
         # pylint: disable-msg=E1101, E1103
         # PyProtocols confuses pylint
         iParCnt = 0
-        if self.iParentCountMode != IGNORE_PARENT and self._oCardSet.parent:
+        if self.iParentCountMode != IGNORE_PARENT and self._oCardSet.parentID:
             if oPhysCard in self._dCache['parent cards']:
                 iParCnt = self._dCache['parent cards'][oPhysCard]
             else:
@@ -1143,7 +1143,7 @@ class CardSetCardListModel(CardListModel):
         # PyProtocols confuse pylint
         return (self.iParentCountMode != IGNORE_PARENT or \
                 self.iShowCardMode == PARENT_CARDS) and \
-                self._oCardSet.parent is not None
+                self._oCardSet.parentID is not None
 
     def changes_with_children(self):
         """Utility function. Returns true if changes to the child card sets
@@ -1157,7 +1157,7 @@ class CardSetCardListModel(CardListModel):
         # pylint: disable-msg=E1101, E1103
         # PyProtocols confuse pylint
         return self.iParentCountMode == MINUS_SETS_IN_USE and \
-                self._oCardSet.parent is not None
+                self._oCardSet.parentID is not None
 
     def _update_cache(self, oPhysCard, iChg, sType):
         """Update the number in the card cache"""
@@ -1247,8 +1247,8 @@ class CardSetCardListModel(CardListModel):
                 self.add_new_card(oPhysCard)  # new card
             if self._oCardSet.inuse:
                 self._clean_cache(oPhysCard, 'sibling')
-        elif self.changes_with_children() and oCardSet.parent and \
-                oCardSet.inuse and oCardSet.parent.id == self._oCardSet.id:
+        elif self.changes_with_children() and oCardSet.parentID and \
+                oCardSet.inuse and oCardSet.parentID == self._oCardSet.id:
             # Changing a child card set
             self._update_cache(oPhysCard, iChg, 'child')
             self._update_child_set_cache(oPhysCard, iChg, oCardSet.name)
@@ -1259,7 +1259,7 @@ class CardSetCardListModel(CardListModel):
             self._clean_cache(oPhysCard, 'child')
             self._clean_child_set_cache(oPhysCard, oCardSet.name)
         elif self.changes_with_parent() and oCardSet.id == \
-                self._oCardSet.parent.id:
+                self._oCardSet.parentID:
             # Changing parent card set
             self._update_cache(oPhysCard, iChg, 'parent')
             if oAbsCard in self._dAbs2Iter:
@@ -1269,9 +1269,9 @@ class CardSetCardListModel(CardListModel):
                 # to add it
                 self.add_new_card(oPhysCard)
             self._clean_cache(oPhysCard, 'parent')
-        elif self.changes_with_siblings() and oCardSet.parent and \
-                oCardSet.inuse and oCardSet.parent.id == \
-                self._oCardSet.parent.id:
+        elif self.changes_with_siblings() and oCardSet.parentID and \
+                oCardSet.inuse and oCardSet.parentID == \
+                self._oCardSet.parentID:
             # Changing sibling card set
             self._update_cache(oPhysCard, iChg, 'sibling')
             if oAbsCard in self._dAbs2Iter:
@@ -1331,7 +1331,7 @@ class CardSetCardListModel(CardListModel):
         # pyprotocols confuses pylint
         return (self.iParentCountMode == MINUS_THIS_SET or
                 (self.iParentCountMode == MINUS_SETS_IN_USE and
-                    self._oCardSet.inuse)) and self._oCardSet.parent
+                    self._oCardSet.inuse)) and self._oCardSet.parentID
 
     def _update_parent_count(self, oIter, iChg, iParChg):
         """Update the card and parent counts"""
@@ -1403,7 +1403,7 @@ class CardSetCardListModel(CardListModel):
                 and iDepth == 2 and iParCnt > 0:
             # cards in the parent set, obviously
             bResult = True
-        elif self.iShowCardMode == PARENT_CARDS and self._oCardSet.parent \
+        elif self.iShowCardMode == PARENT_CARDS and self._oCardSet.parentID \
                 and self.iExtraLevelsMode in [SHOW_EXPANSIONS,
                         EXP_AND_CARD_SETS] and iDepth == 2:
             # Check if the card actually is in the parent card set
@@ -1432,7 +1432,7 @@ class CardSetCardListModel(CardListModel):
         if self.iShowCardMode == PARENT_CARDS and iParCnt > 0 and \
                 self.iParentCountMode in [PARENT_COUNT, MINUS_THIS_SET]:
             bResult = True
-        elif self.iShowCardMode == PARENT_CARDS and self._oCardSet.parent:
+        elif self.iShowCardMode == PARENT_CARDS and self._oCardSet.parentID:
             # Check the parent card cache
             oAbsCard = self.get_abstract_card_from_iter(oIter)
             if oAbsCard.id in self._dCache['parent abstract cards']:

@@ -79,7 +79,7 @@ class CardSetController(object):
                 # Parent count is shown, or not shown becuase parent is
                 # changing to None, so this affects the shown cards.
                 self._oFrame.queue_reload()
-        elif oCardSet.parent and oCardSet.parent.id == self.__oPhysCardSet.id \
+        elif oCardSet.parentID and oCardSet.parentID == self.__oPhysCardSet.id \
                 and self.model.changes_with_children():
             # This is a child card set, and this can require a reload
             if dChanges.has_key('inuse'):
@@ -93,17 +93,18 @@ class CardSetController(object):
                 oCardSet.inuse and self.model.changes_with_children():
             # acquiring a new inuse child card set
             self._oFrame.queue_reload()
-        elif self.__oPhysCardSet.parent and self.model.changes_with_siblings():
+        elif self.__oPhysCardSet.parentID and \
+                self.model.changes_with_siblings():
             # Sibling's are possible, so check for them
             if dChanges.has_key('ParentID') and oCardSet.inuse:
                 # Possibling acquiring or losing inuse sibling
-                if (dChanges['ParentID'] == self.__oPhysCardSet.parent.id) or \
-                        (oCardSet.parent and oCardSet.parent.id ==
-                                self.__oPhysCardSet.parent.id):
+                if (dChanges['ParentID'] == self.__oPhysCardSet.parentID) or \
+                        (oCardSet.parentID and oCardSet.parentID ==
+                                self.__oPhysCardSet.parentID):
                     # Reload if needed
                     self._oFrame.queue_reload()
-            elif dChanges.has_key('inuse') and oCardSet.parent and \
-                    oCardSet.parent.id == self.__oPhysCardSet.parent.id:
+            elif dChanges.has_key('inuse') and oCardSet.parentID and \
+                    oCardSet.parentID == self.__oPhysCardSet.parentID:
                 # changing inuse status of sibling
                 self._oFrame.queue_reload()
 
@@ -116,14 +117,15 @@ class CardSetController(object):
            """
         # pylint: disable-msg=E1101, E1103
         # Pyprotocols confuses pylint
-        if oCardSet.parent and oCardSet.parent.id == \
+        if oCardSet.parentID and oCardSet.parentID == \
                 self.__oPhysCardSet.id and oCardSet.inuse and \
                 self.model.changes_with_children():
             # inuse child card set going, so we need to reload
             self._oFrame.queue_reload()
-        if self.__oPhysCardSet.parent and self.model.changes_with_siblings() \
-                and oCardSet.parent and oCardSet.inuse and \
-                oCardSet.parent.id == self.__oPhysCardSet.parent.id:
+        if self.__oPhysCardSet.parentID and \
+                self.model.changes_with_siblings() and \
+                oCardSet.parentID and oCardSet.inuse and \
+                oCardSet.parentID == self.__oPhysCardSet.parentID:
             # inuse sibling card set going away while this affects display,
             # so reload
             self._oFrame.queue_reload()
