@@ -11,8 +11,7 @@ from sqlobject import SQLObjectNotFound
 from sutekh.gui.GuiCardSetFunctions import check_ok_to_delete, \
         update_card_set
 from sutekh.gui.CardSetView import CardSetView
-from sutekh.core.DBSignals import listen_row_destroy, listen_row_update, \
-        send_changed_signal, disconnect_row_destroy, disconnect_row_update
+from sutekh.core.DBSignals import send_changed_signal
 from sutekh.core.SutekhObjects import IPhysicalCardSet, PhysicalCardSet, \
         IAbstractCard, PhysicalCard, MapPhysicalCardToPhysicalCardSet, \
         IExpansion, IPhysicalCard
@@ -31,14 +30,6 @@ class CardSetController(object):
         self._oFrame = oFrame
         self._oView = CardSetView(oMainWindow, self, sName, bStartEditable)
         self.__oPhysCardSet = IPhysicalCardSet(sName)
-        # listen on card set signals
-        # We listen here, rather than in the model (as for card set changes),
-        # to use queue_reload to delay processing until after the database
-        listen_row_update(self.card_set_changed, PhysicalCardSet)
-        listen_row_destroy(self.card_set_deleted, PhysicalCardSet)
-        # We don't listen for card set creation, since newly created card
-        # sets aren't inuse. If that changes, we'll need to add an additional
-        # signal listen here
         self.model.set_controller(self)
 
     # pylint: disable-msg=W0212
@@ -52,85 +43,7 @@ class CardSetController(object):
 
     def cleanup(self):
         """Remove the signal handlers."""
-        disconnect_row_update(self.card_set_changed, PhysicalCardSet)
-        disconnect_row_destroy(self.card_set_deleted, PhysicalCardSet)
         self.model.cleanup()
-
-    def card_set_changed(self, oCardSet, dChanges):
-        """When changes happen that may effect this card set, reload.
-
-           Cases are:
-             * when the parent changes
-             * when a child card set is added or removed while marked in use
-             * when a child card set is marked/unmarked as in use.
-             * when a 'sibling' card set is marked/unmarked as in use
-             * when a 'sibling' card set is added or removed while marked in
-               use
-           Whether this requires a reload depends on the current model mode.
-           When the parent changes to or from none, we also update the menus
-           and the parent card shown view.
-           """
-        # pylint: disable-msg=E1101, E1103
-        # Pyprotocols confuses pylint
-        if oCardSet.id == self.__oPhysCardSet.id and \
-                dChanges.has_key('parentID'):
-            # This card set's parent is changing
-            if self.model.changes_with_parent():
-                # Parent count is shown, or not shown becuase parent is
-                # changing to None, so this affects the shown cards.
-                self._oFrame.queue_reload()
-        elif oCardSet.parentID and oCardSet.parentID == self.__oPhysCardSet.id \
-                and self.model.changes_with_children():
-            # This is a child card set, and this can require a reload
-            if dChanges.has_key('inuse'):
-                # inuse flag being toggled
-                self._oFrame.queue_reload()
-            elif dChanges.has_key('parentID') and oCardSet.inuse:
-                # Inuse card set is being reparented
-                self._oFrame.queue_reload()
-        elif dChanges.has_key('parentID') and \
-                dChanges['parentID'] == self.__oPhysCardSet.id and \
-                oCardSet.inuse and self.model.changes_with_children():
-            # acquiring a new inuse child card set
-            self._oFrame.queue_reload()
-        elif self.__oPhysCardSet.parentID and \
-                self.model.changes_with_siblings():
-            # Sibling's are possible, so check for them
-            if dChanges.has_key('ParentID') and oCardSet.inuse:
-                # Possibling acquiring or losing inuse sibling
-                if (dChanges['ParentID'] == self.__oPhysCardSet.parentID) or \
-                        (oCardSet.parentID and oCardSet.parentID ==
-                                self.__oPhysCardSet.parentID):
-                    # Reload if needed
-                    self._oFrame.queue_reload()
-            elif dChanges.has_key('inuse') and oCardSet.parentID and \
-                    oCardSet.parentID == self.__oPhysCardSet.parentID:
-                # changing inuse status of sibling
-                self._oFrame.queue_reload()
-
-    # _fPostFuncs is passed by SQLObject 0.10, but not by 0.9, so we need to
-    # sipport both
-    def card_set_deleted(self, oCardSet, _fPostFuncs=None):
-        """Listen for card set removal events.
-
-           Needed if child card sets are deleted, for instance.
-           """
-        # pylint: disable-msg=E1101, E1103
-        # Pyprotocols confuses pylint
-        if oCardSet.parentID and oCardSet.parentID == \
-                self.__oPhysCardSet.id and oCardSet.inuse and \
-                self.model.changes_with_children():
-            # inuse child card set going, so we need to reload
-            self._oFrame.queue_reload()
-        if self.__oPhysCardSet.parentID and \
-                self.model.changes_with_siblings() and \
-                oCardSet.parentID and oCardSet.inuse and \
-                oCardSet.parentID == self.__oPhysCardSet.parentID:
-            # inuse sibling card set going away while this affects display,
-            # so reload
-            self._oFrame.queue_reload()
-        # Other card set deletions don't need to be watched here, since the
-        # fiddling on parents should generate changed signals for us.
 
     def set_card_text(self, oCard):
         """Set card text to reflect selected card."""

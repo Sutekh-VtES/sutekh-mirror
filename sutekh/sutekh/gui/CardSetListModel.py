@@ -18,7 +18,9 @@ from sutekh.core.SutekhObjects import PhysicalCard, IAbstractCard, \
         MapPhysicalCardToPhysicalCardSet, IPhysicalCard, IPhysicalCardSet, \
         PhysicalCardSet, canonical_to_csv
 from sutekh.gui.CardListModel import CardListModel, USE_ICONS, HIDE_ILLEGAL
-from sutekh.core.DBSignals import listen_changed, disconnect_changed
+from sutekh.core.DBSignals import listen_changed, disconnect_changed, \
+        listen_row_destroy, listen_row_update, disconnect_row_destroy, \
+        disconnect_row_update
 from sutekh.gui.ConfigFile import CARDSET, FRAME
 import gtk
 
@@ -163,7 +165,13 @@ class CardSetCardListModel(CardListModel):
         self.iShowCardMode = THIS_SET_ONLY
         self.iParentCountMode = PARENT_COUNT
 
+        # Add database listeners
         listen_changed(self.card_changed, PhysicalCardSet)
+        listen_row_update(self.card_set_changed, PhysicalCardSet)
+        listen_row_destroy(self.card_set_deleted, PhysicalCardSet)
+        # We don't listen for card set creation, since newly created card
+        # sets aren't inuse. If that changes, we'll need to add an additional
+        # signal listen here
 
     def __get_frame_id(self):
         """Return the frame id, handling oController is None case"""
@@ -189,6 +197,8 @@ class CardSetCardListModel(CardListModel):
         """Remove the signal handler - avoids issues when card sets are
            deleted, but the objects are still around."""
         disconnect_changed(self.card_changed, PhysicalCardSet)
+        disconnect_row_update(self.card_set_changed, PhysicalCardSet)
+        disconnect_row_destroy(self.card_set_deleted, PhysicalCardSet)
         self._oController = None
         self._oConfig.remove_listener(self)
 
@@ -312,6 +322,13 @@ class CardSetCardListModel(CardListModel):
         # See comments in CardListModel
         if iSortColumn is not None:
             self.set_sort_column_id(iSortColumn, iSortOrder)
+
+    def _try_queue_reload(self):
+        """Attempt to setup a call to queue_reload, otherwise just reload"""
+        if self._oController:
+            self._oController.frame.queue_reload()
+        else:
+            self.load()
 
     def _add_children(self, oChildIter, oRow):
         """Add the needed children for a card in the model."""
@@ -1204,6 +1221,82 @@ class CardSetCardListModel(CardListModel):
             return False
         return True
 
+    def card_set_changed(self, oCardSet, dChanges):
+        """When changes happen that may effect this card set, reload.
+
+           Cases are:
+             * when the parent changes
+             * when a child card set is added or removed while marked in use
+             * when a child card set is marked/unmarked as in use.
+             * when a 'sibling' card set is marked/unmarked as in use
+             * when a 'sibling' card set is added or removed while marked in
+               use
+           Whether this requires a reload depends on the current model mode.
+           When the parent changes to or from none, we also update the menus
+           and the parent card shown view.
+           """
+        # pylint: disable-msg=E1101, E1103
+        # Pyprotocols confuses pylint
+        if oCardSet.id == self._oCardSet.id and \
+                dChanges.has_key('parentID'):
+            # This card set's parent is changing
+            if self.changes_with_parent():
+                # Parent count is shown, or not shown becuase parent is
+                # changing to None, so this affects the shown cards.
+                self._try_queue_reload()
+        elif oCardSet.parentID and oCardSet.parentID == self._oCardSet.id \
+                and self.changes_with_children():
+            # This is a child card set, and this can require a reload
+            if dChanges.has_key('inuse'):
+                # inuse flag being toggled
+                self._try_queue_reload()
+            elif dChanges.has_key('parentID') and oCardSet.inuse:
+                # Inuse card set is being reparented
+                self._try_queue_reload()
+        elif dChanges.has_key('parentID') and \
+                dChanges['parentID'] == self._oCardSet.id and \
+                oCardSet.inuse and self.changes_with_children():
+            # acquiring a new inuse child card set
+            self._try_queue_reload()
+        elif self._oCardSet.parentID and \
+                self.changes_with_siblings():
+            # Sibling's are possible, so check for them
+            if dChanges.has_key('ParentID') and oCardSet.inuse:
+                # Possibling acquiring or losing inuse sibling
+                if (dChanges['ParentID'] == self._oCardSet.parentID) or \
+                        (oCardSet.parentID and oCardSet.parentID ==
+                                self._oCardSet.parentID):
+                    # Reload if needed
+                    self._try_queue_reload()
+            elif dChanges.has_key('inuse') and oCardSet.parentID and \
+                    oCardSet.parentID == self._oCardSet.parentID:
+                # changing inuse status of sibling
+                self._try_queue_reload()
+
+    # _fPostFuncs is passed by SQLObject 0.10, but not by 0.9, so we need to
+    # sipport both
+    def card_set_deleted(self, oCardSet, _fPostFuncs=None):
+        """Listen for card set removal events.
+
+           Needed if child card sets are deleted, for instance.
+           """
+        # pylint: disable-msg=E1101, E1103
+        # Pyprotocols confuses pylint
+        if oCardSet.parentID and oCardSet.parentID == \
+                self._oCardSet.id and oCardSet.inuse and \
+                self.changes_with_children():
+            # inuse child card set going, so we need to reload
+            self._try_queue_reload()
+        if self._oCardSet.parentID and \
+                self.changes_with_siblings() and \
+                oCardSet.parentID and oCardSet.inuse and \
+                oCardSet.parentID == self._oCardSet.parentID:
+            # inuse sibling card set going away while this affects display,
+            # so reload
+            self._try_queue_reload()
+        # Other card set deletions don't need to be watched here, since the
+        # fiddling on parents should generate changed signals for us.
+
     def card_changed(self, oCardSet, oPhysCard, iChg):
         """Listen on card changes.
 
@@ -2062,7 +2155,7 @@ class CardSetCardListModel(CardListModel):
         if not bSkipLoad and (bReloadELM or bReloadSCM or bReloadPCM
                 or bReloadIcons or bReloadIllegal):
             # queue reload for later
-            self._oController.frame.queue_reload()
+            self._try_queue_reload()
 
     #
     # Per-deck configuration listeners
