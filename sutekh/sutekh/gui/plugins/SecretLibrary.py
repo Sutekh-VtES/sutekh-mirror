@@ -11,6 +11,7 @@ import urllib2
 import urllib
 import StringIO
 import re
+import unicodedata
 from sutekh.SutekhInfo import SutekhInfo
 from sutekh.core.SutekhObjects import PhysicalCardSet, IAbstractCard, \
     canonical_to_csv
@@ -20,6 +21,12 @@ from sutekh.io.SLInventoryParser import SLInventoryParser
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 from sutekh.gui.GuiCardSetFunctions import import_cs
 from sutekh.gui.PluginManager import SutekhPlugin
+
+
+def canonical_to_sl(sName):
+    """Convert a canonical card name to a Secret Library name."""
+    sName = canonical_to_csv(sName)
+    return unicodedata.normalize('NFKD', sName).encode('ascii', 'ignore')
 
 
 class ImportExportBase(SutekhDialog):
@@ -401,7 +408,7 @@ class SecretLibrary(SutekhPlugin):
             # pylint: disable-msg=E1101
             # E1101: PyProtocols confuses pylint
             oAbsCard = IAbstractCard(oCard)
-            sCsvName = canonical_to_csv(oAbsCard.name)
+            sCsvName = canonical_to_sl(oAbsCard.name)
             sCsvName = sCsvName.replace('(Advanced)', '(Adv)')
             aCrypt.append(sCsvName)
 
@@ -414,7 +421,7 @@ class SecretLibrary(SutekhPlugin):
             # pylint: disable-msg=E1101
             # E1101: PyProtocols confuses pylint
             oAbsCard = IAbstractCard(oCard)
-            aLibrary.append(canonical_to_csv(oAbsCard.name))
+            aLibrary.append(canonical_to_sl(oAbsCard.name))
 
         return "\n".join(aCrypt), "\n".join(aLibrary)
 
@@ -445,7 +452,7 @@ class SecretLibrary(SutekhPlugin):
         # create crypt strings
         aCrypt = []
         for oAbsCard, iCnt in dCrypt.iteritems():
-            sCsvName = canonical_to_csv(oAbsCard.name)
+            sCsvName = canonical_to_sl(oAbsCard.name)
             sCsvName = sCsvName.replace('(Advanced)', '(Adv)')
             # TODO: populate wanted field sensibly.
             # HAVE; WANTED; Card Name
@@ -455,7 +462,7 @@ class SecretLibrary(SutekhPlugin):
         # create library strings
         aLibrary = []
         for oAbsCard, iCnt in dLibrary.iteritems():
-            sCsvName = canonical_to_csv(oAbsCard.name)
+            sCsvName = canonical_to_sl(oAbsCard.name)
             # TODO: populate wanted field sensibly.
             # HAVE; WANTED; Card Name
             aLibrary.append("%d;%d;%s" % (iCnt, iCnt, sCsvName))
