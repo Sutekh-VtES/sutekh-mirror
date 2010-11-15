@@ -50,6 +50,9 @@ class CardSetListener(CardListModelListener):
 class DummyController(object):
     """Dummy controler object for config tests"""
 
+    def __init__(self):
+        self.bReload = False
+
     # pylint: disable-msg=W0212
     # We allow access via these properties
 
@@ -69,7 +72,7 @@ class DummyController(object):
         return
 
     def queue_reload(self):
-        return
+        self.bReload = True  # For use in listener test cases
 
 
 class CardSetListModelTests(ConfigSutekhTest):
@@ -376,6 +379,48 @@ class CardSetListModelTests(ConfigSutekhTest):
         self.assertEqual(oModel.get_drag_child_info('0'), {})
         self.assertEqual(oModel.get_drag_child_info('0:0'),
                 {'Camarilla Edition': 1})
+        self._cleanup_models([oModel])
+
+    def test_db_listeners(self):
+        """Test that the model responds to changes to the card set hierachy"""
+        # We use an empty card set for these tests, to minimise time taken
+        oPCS = PhysicalCardSet(name=self.aNames[0])
+        oModel = CardSetCardListModel(self.aNames[0], self.oConfig)
+        oDummy = DummyController()
+        oModel.set_controller(oDummy)
+        oPCS2 = PhysicalCardSet(name=self.aNames[1], parent=oPCS)
+        # Child tests
+        self.assertEqual(oDummy.bReload, False)
+        oPCS2.inuse = True
+        self.assertEqual(oDummy.bReload, False)
+        oModel.iShowCardMode = CHILD_CARDS
+        oPCS2.inuse = False
+        self.assertEqual(oDummy.bReload, True)
+        oDummy.bReload = False
+        PhysicalCardSet.delete(oPCS2.id)
+        self.assertEqual(oDummy.bReload, False)
+        oPCS2 = PhysicalCardSet(name=self.aNames[1], parent=oPCS)
+        self.assertEqual(oDummy.bReload, False)
+        oPCS2.inuse = True
+        self.assertEqual(oDummy.bReload, True)
+        oDummy.bReload = False
+        PhysicalCardSet.delete(oPCS2.id)
+        self.assertEqual(oDummy.bReload, True)
+        oPCS2 = PhysicalCardSet(name=self.aNames[1])
+        oPCS.parent = oPCS2
+        oPCS3 = PhysicalCardSet(name=self.aNames[2], parent=oPCS2)
+        oPCS3.inuse = True
+        oModel.iShowCardMode = PARENT_CARDS
+        oModel.iParentCountMode = MINUS_SETS_IN_USE
+        oDummy.bReload = False
+        oPCS3.inuse = False
+        self.assertEqual(oDummy.bReload, True)
+        oDummy.bReload = False
+        oPCS.parent = None
+        self.assertEqual(oDummy.bReload, True)
+        oDummy.bReload = False
+        oPCS3.inuse = True
+        self.assertEqual(oDummy.bReload, False)
         self._cleanup_models([oModel])
 
     def test_config_listener(self):
