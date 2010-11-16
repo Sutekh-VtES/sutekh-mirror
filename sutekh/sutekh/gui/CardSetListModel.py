@@ -601,6 +601,16 @@ class CardSetCardListModel(CardListModel):
 
     def _get_child_filters(self, oCurFilter):
         """Get the filters for the child card sets of this card set."""
+
+        def _update_child_caches(oCard):
+            """Add card info to the cache"""
+            oAbsId = oCard.abstractCardID
+            self._dCache['child cards'].setdefault(oCard, 0)
+            self._dCache['child abstract cards'].setdefault(oAbsId, 0)
+            self._dCache['child cards'][oCard] += 1
+            self._dCache['child abstract cards'][oAbsId] += 1
+            return oAbsId
+
         # pylint: disable-msg=E1101, E1103
         # SQLObject + PyProtocols confuse pylint
         if self.iExtraLevelsMode in (SHOW_CARD_SETS, EXP_AND_CARD_SETS,
@@ -636,12 +646,8 @@ class CardSetCardListModel(CardListModel):
             for oMapCard in oFullFilter.select(self.cardclass).distinct():
                 sName = dChildren[oMapCard.physicalCardSetID]
                 oCard = IPhysicalCard(oMapCard)
-                oAbsId = oCard.abstractCardID
+                oAbsId = _update_child_caches(oCard)
                 dChildCardCache[sName].setdefault(oAbsId, []).append(oCard)
-                self._dCache['child cards'].setdefault(oCard, 0)
-                self._dCache['child abstract cards'].setdefault(oAbsId, 0)
-                self._dCache['child cards'][oCard] += 1
-                self._dCache['child abstract cards'][oAbsId] += 1
                 self._dCache['child card sets'][sName].setdefault(oCard, 0)
                 self._dCache['child card sets'][sName][oCard] += 1
         elif self.iShowCardMode == CHILD_CARDS and \
@@ -649,14 +655,9 @@ class CardSetCardListModel(CardListModel):
             # Need to setup the cache
             aFilters = [self._dCache['all children filter'], oCurFilter]
             oFullFilter = FilterAndBox(aFilters)
-            for oCard in [IPhysicalCard(x) for x in oFullFilter.select(
-                    self.cardclass).distinct()]:
-                self._dCache['child cards'].setdefault(oCard, 0)
-                self._dCache['child abstract cards'].setdefault(
-                        oCard.abstractCardID, 0)
-                self._dCache['child cards'][oCard] += 1
-                self._dCache['child abstract cards'][
-                        oCard.abstractCardID] += 1
+            for oMapCard in oFullFilter.select(self.cardclass).distinct():
+                oCard = IPhysicalCard(oMapCard)
+                _update_child_caches(oCard)
         return dChildCardCache
 
     def _get_parent_list(self, oCurFilter, oCardIter):
@@ -722,19 +723,22 @@ class CardSetCardListModel(CardListModel):
 
     def _init_cache(self, bClearFilters):
         """Setup the initial cache state"""
-        # We preserve this across everything except database reloads
+        # We preserve this across everything except database reloads or
+        # some profile changes
         self._dCache.setdefault('full card list', None)
         self._dCache.setdefault('this card list', None)
+        # These are preserved unless there are database reloads, or
+        # the card set hierachy changes
+        self._dCache.setdefault('child filters', None)
+        self._dCache.setdefault('all children filter', None)
+        self._dCache.setdefault('set map', None)
+        self._dCache.setdefault('sibling filter', None)
+        self._dCache.setdefault('parent filter', None)
 
         if bClearFilters:
             # These are only reset on full loads. On calls to add new card,
             # we don't touch them.
             self._dCache['all cards'] = None
-            self._dCache['child filters'] = None
-            self._dCache['all children filters'] = None
-            self._dCache['sibling filter'] = None
-            self._dCache['parent filter'] = None
-            self._dCache['set map'] = None
 
         # We always refresh these on calls to add_new_card due so
         # filter checks are taken into account
@@ -1235,43 +1239,55 @@ class CardSetCardListModel(CardListModel):
            When the parent changes to or from none, we also update the menus
            and the parent card shown view.
            """
-        # pylint: disable-msg=E1101, E1103
-        # Pyprotocols confuses pylint
+        # pylint: disable-msg=E1101, E1103, R0912
+        # E1101, E1103: Pyprotocols confuses pylint
+        # R0912: We do need all these branches
         if oCardSet.id == self._oCardSet.id and \
                 dChanges.has_key('parentID'):
             # This card set's parent is changing
+            self._dCache['parent filter'] = None
+            self._dCache['sibling filter'] = None
             if self.changes_with_parent():
-                # Parent count is shown, or not shown becuase parent is
+                # Parent count is shown, or not shown because parent is
                 # changing to None, so this affects the shown cards.
                 self._try_queue_reload()
-        elif oCardSet.parentID and oCardSet.parentID == self._oCardSet.id \
-                and self.changes_with_children():
+        elif oCardSet.parentID and oCardSet.parentID == self._oCardSet.id:
             # This is a child card set, and this can require a reload
-            if dChanges.has_key('inuse'):
+            if dChanges.has_key('inuse') or (dChanges.has_key('parentID')
+                    and oCardSet.inuse):
                 # inuse flag being toggled
-                self._try_queue_reload()
-            elif dChanges.has_key('parentID') and oCardSet.inuse:
-                # Inuse card set is being reparented
-                self._try_queue_reload()
+                # or inuse card set is being reparented
+                self._dCache['child filters'] = None
+                self._dCache['all children filter'] = None
+                self._dCache['set map'] = None
+                if self.changes_with_children():
+                    self._try_queue_reload()
         elif dChanges.has_key('parentID') and \
                 dChanges['parentID'] == self._oCardSet.id and \
-                oCardSet.inuse and self.changes_with_children():
+                oCardSet.inuse:
             # acquiring a new inuse child card set
-            self._try_queue_reload()
-        elif self._oCardSet.parentID and \
-                self.changes_with_siblings():
+            self._dCache['child filters'] = None
+            self._dCache['all children filter'] = None
+            self._dCache['set map'] = None
+            if self.changes_with_children():
+                self._try_queue_reload()
+        elif self._oCardSet.parentID:
             # Sibling's are possible, so check for them
             if dChanges.has_key('ParentID') and oCardSet.inuse:
                 # Possibling acquiring or losing inuse sibling
                 if (dChanges['ParentID'] == self._oCardSet.parentID) or \
                         (oCardSet.parentID and oCardSet.parentID ==
                                 self._oCardSet.parentID):
-                    # Reload if needed
-                    self._try_queue_reload()
+                    self._dCache['sibling filter'] = None
+                    if self.changes_with_siblings():
+                        # Reload if needed
+                        self._try_queue_reload()
             elif dChanges.has_key('inuse') and oCardSet.parentID and \
                     oCardSet.parentID == self._oCardSet.parentID:
                 # changing inuse status of sibling
-                self._try_queue_reload()
+                self._dCache['sibling filter'] = None
+                if self.changes_with_siblings():
+                    self._try_queue_reload()
 
     # _fPostFuncs is passed by SQLObject 0.10, but not by 0.9, so we need to
     # sipport both
@@ -1283,17 +1299,21 @@ class CardSetCardListModel(CardListModel):
         # pylint: disable-msg=E1101, E1103
         # Pyprotocols confuses pylint
         if oCardSet.parentID and oCardSet.parentID == \
-                self._oCardSet.id and oCardSet.inuse and \
-                self.changes_with_children():
+                self._oCardSet.id and oCardSet.inuse:
             # inuse child card set going, so we need to reload
-            self._try_queue_reload()
+            self._dCache['child filters'] = None
+            self._dCache['all children filter'] = None
+            self._dCache['set map'] = None
+            if self.changes_with_children():
+                self._try_queue_reload()
         if self._oCardSet.parentID and \
-                self.changes_with_siblings() and \
                 oCardSet.parentID and oCardSet.inuse and \
                 oCardSet.parentID == self._oCardSet.parentID:
             # inuse sibling card set going away while this affects display,
             # so reload
-            self._try_queue_reload()
+            self._dCache['sibling filter'] = None
+            if self.changes_with_siblings():
+                self._try_queue_reload()
         # Other card set deletions don't need to be watched here, since the
         # fiddling on parents should generate changed signals for us.
 

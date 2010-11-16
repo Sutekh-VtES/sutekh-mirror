@@ -857,8 +857,11 @@ class CardSetListModelTests(ConfigSutekhTest):
                 '%s vs %s' % (tTotals, tExpected))
         # Add a child card set, and test filtering results
         oModel.groupby = Groupings.NullGrouping
-        oChildPCS = PhysicalCardSet(name=self.aNames[1], parent=oPCS,
-                inuse=True)
+        oChildPCS = PhysicalCardSet(name=self.aNames[1], parent=oPCS)
+        # Do this to match how gui code works - this ensures that the
+        # caches are cleared properly
+        oChildPCS.inuse = True
+        oChildPCS.syncUpdate()
         aCards = [('Sha-Ennu', None),
                 ('Kabede Maru', None),
                 ('Gracis Nostinus', 'CE'),
