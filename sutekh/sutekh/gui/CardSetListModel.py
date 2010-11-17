@@ -1157,6 +1157,26 @@ class CardSetCardListModel(CardListModel):
         self._oBaseFilter = PhysicalCardSetFilter(sSetName)
         self._dCache = {}
 
+    def is_sibling(self, oCS):
+        """Return true if oCS is an inuse sibling"""
+        # pylint: disable-msg=E1103, E1101
+        # Pyprotocols & SQLobject confuses pylint
+        # Can't just compare parentID's, as they may both be None
+        return self._oCardSet.parentID is not None and \
+                oCS.parentID == self._oCardSet.parentID and oCS.inuse
+
+    def is_child(self, oCS):
+        """Return true if oCS is an inuse child"""
+        # pylint: disable-msg=E1103, E1101
+        # Pyprotocols & SQLobject confuses pylint
+        return oCS.parentID == self._oCardSet.id and oCS.inuse
+
+    def is_parent(self, oCS):
+        """Return true if oCS is the parent"""
+        # pylint: disable-msg=E1103, E1101
+        # Pyprotocols & SQLobject confuses pylint
+        return self._oCardSet.parentID == oCS.id
+
     def changes_with_parent(self):
         """Utility function. Returns true if the parent card set influences
            the currently visible set of cards."""
@@ -1298,17 +1318,14 @@ class CardSetCardListModel(CardListModel):
            """
         # pylint: disable-msg=E1101, E1103
         # Pyprotocols confuses pylint
-        if oCardSet.parentID and oCardSet.parentID == \
-                self._oCardSet.id and oCardSet.inuse:
+        if self.is_child(oCardSet):
             # inuse child card set going, so we need to reload
             self._dCache['child filters'] = None
             self._dCache['all children filter'] = None
             self._dCache['set map'] = None
             if self.changes_with_children():
                 self._try_queue_reload()
-        if self._oCardSet.parentID and \
-                oCardSet.parentID and oCardSet.inuse and \
-                oCardSet.parentID == self._oCardSet.parentID:
+        if self.is_sibling(oCardSet):
             # inuse sibling card set going away while this affects display,
             # so reload
             self._dCache['sibling filter'] = None
@@ -1360,8 +1377,7 @@ class CardSetCardListModel(CardListModel):
                 self.add_new_card(oPhysCard)  # new card
             if self._oCardSet.inuse:
                 self._clean_cache(oPhysCard, 'sibling')
-        elif self.changes_with_children() and oCardSet.parentID and \
-                oCardSet.inuse and oCardSet.parentID == self._oCardSet.id:
+        elif self.changes_with_children() and self.is_child(oCardSet):
             # Changing a child card set
             self._update_cache(oPhysCard, iChg, 'child')
             self._update_child_set_cache(oPhysCard, iChg, oCardSet.name)
@@ -1371,8 +1387,7 @@ class CardSetCardListModel(CardListModel):
                 self.add_new_card(oPhysCard)
             self._clean_cache(oPhysCard, 'child')
             self._clean_child_set_cache(oPhysCard, oCardSet.name)
-        elif self.changes_with_parent() and oCardSet.id == \
-                self._oCardSet.parentID:
+        elif self.changes_with_parent() and self.is_parent(oCardSet):
             # Changing parent card set
             self._update_cache(oPhysCard, iChg, 'parent')
             if oAbsCard in self._dAbs2Iter:
@@ -1382,9 +1397,7 @@ class CardSetCardListModel(CardListModel):
                 # to add it
                 self.add_new_card(oPhysCard)
             self._clean_cache(oPhysCard, 'parent')
-        elif self.changes_with_siblings() and oCardSet.parentID and \
-                oCardSet.inuse and oCardSet.parentID == \
-                self._oCardSet.parentID:
+        elif self.changes_with_siblings() and self.is_sibling(oCardSet):
             # Changing sibling card set
             self._update_cache(oPhysCard, iChg, 'sibling')
             if oAbsCard in self._dAbs2Iter:
