@@ -623,7 +623,7 @@ class CardSetListModelTests(ConfigSutekhTest):
         oChildPCS.syncUpdate()
         oGrandChildPCS.syncUpdate()
         oEmptyPCS = PhysicalCardSet(name=self.aNames[3], parent=oPCS)
-        oEmptyPCS.inuse=True
+        oEmptyPCS.inuse = True
         oEmptyPCS.syncUpdate()
         for sName in self.aNames[:4]:
             oModelCache = self._get_model(sName)
