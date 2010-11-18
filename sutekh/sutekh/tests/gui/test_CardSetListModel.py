@@ -138,14 +138,16 @@ class CardSetListModelTests(ConfigSutekhTest):
 
     def _reset_modes(self, oModel):
         """Set the model to the minimal state."""
+        # pylint: disable-msg=W0212
+        # we need to access protected methods
         # The database signal handling means that all CardSetListModels
         # associated with a card set will update when send_changed_signal is
         # called, so we reset the model state so these calls will be cheap if
         # this models is affected when we're not explicitly testing it.
-        oModel.iParentCountMode = IGNORE_PARENT
-        oModel.iLevelMode = NO_SECOND_LEVEL
+        oModel._change_parent_count_mode(IGNORE_PARENT)
+        oModel._change_level_mode(NO_SECOND_LEVEL)
         oModel.bEditable = False
-        oModel.iShowMode = THIS_SET_ONLY
+        oModel._change_count_mode(THIS_SET_ONLY)
 
     def _cleanup_models(self, aModels):
         """Utility function to cleanup models signals, etc."""
@@ -169,9 +171,9 @@ class CardSetListModelTests(ConfigSutekhTest):
             sModel += "Filter: %s\n" % oModel.selectfilter
         sModel += " State : (ExtraLevelsMode %s, ParentCountMode : %s, " \
                 "ShowCardMode : %s, Editable: %s)" % (
-                        self.aExtraLevelToStr[oModel.iExtraLevelsMode],
-                        self.aParentCountToStr[oModel.iParentCountMode],
-                        self.aCardCountToStr[oModel.iShowCardMode],
+                        self.aExtraLevelToStr[oModel._iExtraLevelsMode],
+                        self.aParentCountToStr[oModel._iParentCountMode],
+                        self.aCardCountToStr[oModel._iShowCardMode],
                         oModel.bEditable)
         return "%s : %s vs %s\n%s" % (sErrType, oTest1, oTest2, sModel)
 
@@ -275,6 +277,8 @@ class CardSetListModelTests(ConfigSutekhTest):
     def _loop_modes(self, oPCS, aModels):
         """Loop over all the possible modes of the model, calling
            _add_remove_cards to test the model."""
+        # pylint: disable-msg=W0212
+        # we need to access protected methods
         dCountInfo = {}
         for oModel in aModels:
             # We cache these lookups, since the various modes don't change
@@ -292,15 +296,15 @@ class CardSetListModelTests(ConfigSutekhTest):
             for iLevelMode in [NO_SECOND_LEVEL, SHOW_EXPANSIONS,
                     SHOW_CARD_SETS, EXP_AND_CARD_SETS, CARD_SETS_AND_EXP]:
                 for oModel in aModels:
-                    oModel.iExtraLevelsMode = iLevelMode
+                    oModel._change_level_mode(iLevelMode)
                 for iParentMode in [IGNORE_PARENT, PARENT_COUNT,
                         MINUS_THIS_SET, MINUS_SETS_IN_USE]:
                     for oModel in aModels:
-                        oModel.iParentCountMode = iParentMode
+                        oModel._change_parent_count_mode(iParentMode)
                     for iShowMode in [THIS_SET_ONLY, ALL_CARDS, PARENT_CARDS,
                             CHILD_CARDS]:
                         for oModel in aModels:
-                            oModel.iShowCardMode = iShowMode
+                            oModel._change_count_mode(iShowMode)
                         self._add_remove_cards(oPCS, aModels, dCountInfo)
         for oModel in aModels:
             self._reset_modes(oModel)
@@ -308,17 +312,19 @@ class CardSetListModelTests(ConfigSutekhTest):
     def _loop_zero_filter_modes(self, oModel):
         """Loop over all the possible modes of the model, calling
            a zero result filters to test the model."""
+        # pylint: disable-msg=W0212
+        # we need to access protected methods
         for bEditFlag in [False, True]:
             oModel.bEditable = bEditFlag
             for iLevelMode in [NO_SECOND_LEVEL, SHOW_EXPANSIONS,
                     SHOW_CARD_SETS, EXP_AND_CARD_SETS, CARD_SETS_AND_EXP]:
-                oModel.iExtraLevelsMode = iLevelMode
+                oModel._change_level_mode(iLevelMode)
                 for iParentMode in [IGNORE_PARENT, PARENT_COUNT,
                         MINUS_THIS_SET, MINUS_SETS_IN_USE]:
-                    oModel.iParentCountMode = iParentMode
+                    oModel._change_parent_count_mode(iParentMode)
                     for iShowMode in [THIS_SET_ONLY, ALL_CARDS, PARENT_CARDS,
                             CHILD_CARDS]:
-                        oModel.iShowCardMode = iShowMode
+                        oModel._change_count_mode(iShowMode)
                         oModel.selectfilter = Filters.CardNameFilter('ZZZZZZZ')
                         oModel.applyfilter = True
                         oModel.load()
@@ -371,7 +377,9 @@ class CardSetListModelTests(ConfigSutekhTest):
                 (u"Alexandra", None, 1, 1))
         self.assertEqual(oModel.get_drag_info_from_path('0'),
                 (None, None, 2, 0))
-        oModel.iExtraLevelsMode = NO_SECOND_LEVEL
+        # pylint: disable-msg=W0212
+        # we need to access this protected methods
+        oModel._change_level_mode(NO_SECOND_LEVEL)
         oModel.load()
         # This should also work for no expansions shown
         self.assertEqual(self._count_all_cards(oModel), 2)
@@ -384,6 +392,8 @@ class CardSetListModelTests(ConfigSutekhTest):
     def test_db_listeners(self):
         """Test that the model responds to changes to the card set hierachy"""
         # We use an empty card set for these tests, to minimise time taken
+        # pylint: disable-msg=W0212
+        # we need to access protected methods
         oPCS = PhysicalCardSet(name=self.aNames[0])
         oModel = CardSetCardListModel(self.aNames[0], self.oConfig)
         oDummy = DummyController()
@@ -393,7 +403,7 @@ class CardSetListModelTests(ConfigSutekhTest):
         self.assertEqual(oDummy.bReload, False)
         oPCS2.inuse = True
         self.assertEqual(oDummy.bReload, False)
-        oModel.iShowCardMode = CHILD_CARDS
+        oModel._change_count_mode(CHILD_CARDS)
         oPCS2.inuse = False
         self.assertEqual(oDummy.bReload, True)
         oDummy.bReload = False
@@ -410,8 +420,8 @@ class CardSetListModelTests(ConfigSutekhTest):
         oPCS.parent = oPCS2
         oPCS3 = PhysicalCardSet(name=self.aNames[2], parent=oPCS2)
         oPCS3.inuse = True
-        oModel.iShowCardMode = PARENT_CARDS
-        oModel.iParentCountMode = MINUS_SETS_IN_USE
+        oModel._change_count_mode(PARENT_CARDS)
+        oModel._change_parent_count_mode(MINUS_SETS_IN_USE)
         oDummy.bReload = False
         oPCS3.inuse = False
         self.assertEqual(oDummy.bReload, True)
@@ -426,6 +436,8 @@ class CardSetListModelTests(ConfigSutekhTest):
     def test_config_listener(self):
         """Test that the model responds to the profile changes as expected"""
         # We use an empty card set for these tests, to minimise time taken
+        # pylint: disable-msg=W0212
+        # we need to access protected methods
         PhysicalCardSet(name=self.aNames[0])
         oModel = CardSetCardListModel(self.aNames[0], self.oConfig)
         oDummy = DummyController()
@@ -438,14 +450,14 @@ class CardSetListModelTests(ConfigSutekhTest):
                 sTestValue)
         # Check changing deck profile
         for sValue, iMode in SHOW_CARD_LOOKUP.iteritems():
-            iCurMode = oModel.iShowCardMode
+            iCurMode = oModel._iShowCardMode
             self.oConfig.set_profile_option(CARDSET, 'test', SHOW_CARD_OPTION,
                     sValue)
-            self.assertEqual(oModel.iShowCardMode, iCurMode)
+            self.assertEqual(oModel._iShowCardMode, iCurMode)
             self.oConfig.set_profile(CARDSET, oModel.cardset_id, 'test')
-            self.assertEqual(oModel.iShowCardMode, iMode)
+            self.assertEqual(oModel._iShowCardMode, iMode)
             self.oConfig.set_profile(FRAME, oModel.frame_id, 'test2')
-            self.assertEqual(oModel.iShowCardMode, iTestMode)
+            self.assertEqual(oModel._iShowCardMode, iTestMode)
             self.oConfig.set_profile(FRAME, oModel.frame_id, 'defaults')
             self.oConfig.set_profile(CARDSET, oModel.cardset_id, 'defaults')
         # Check listener on card set profile changes
@@ -454,12 +466,12 @@ class CardSetListModelTests(ConfigSutekhTest):
         for sValue, iMode in EXTRA_LEVEL_LOOKUP.iteritems():
             self.oConfig.set_profile_option(CARDSET, 'test',
                     EXTRA_LEVEL_OPTION, sValue)
-            self.assertEqual(oModel.iExtraLevelsMode, iMode)
+            self.assertEqual(oModel._iExtraLevelsMode, iMode)
         # Check listener on frame profile changes
         for sValue, iMode in PARENT_COUNT_LOOKUP.iteritems():
             self.oConfig.set_profile_option(CARDSET, 'test2',
                     PARENT_COUNT_MODE, sValue)
-            self.assertEqual(oModel.iParentCountMode, iMode)
+            self.assertEqual(oModel._iParentCountMode, iMode)
         self._cleanup_models([oModel])
 
     def _get_model(self, sName):
@@ -526,6 +538,8 @@ class CardSetListModelTests(ConfigSutekhTest):
 
     def test_cache(self):
         """Test that the special persistent caches don't affect results"""
+        # pylint: disable-msg=W0212
+        # we need to access protected methods
 
         def _check_totals(oModelCache, oModelNoCache, sMode):
             """Reload the models and check the totals match"""
@@ -562,10 +576,10 @@ class CardSetListModelTests(ConfigSutekhTest):
                 oModel.bEditable = bEditFlag
             for iLevelMode in [NO_SECOND_LEVEL, SHOW_EXPANSIONS]:
                 for oModel in aModels:
-                    oModel.iExtraLevelsMode = iLevelMode
+                    oModel._change_level_mode(iLevelMode)
                 for iShowMode in [THIS_SET_ONLY, ALL_CARDS]:
                     for oModel in aModels:
-                        oModel.iShowCardMode = iShowMode
+                        oModel._change_count_mode(iShowMode)
                         oModel.load()
                     # pylint: disable-msg=E1101
                     # E1101: SQLObjext confuses pylint
@@ -795,8 +809,9 @@ class CardSetListModelTests(ConfigSutekhTest):
 
     def test_filters(self):
         """Test filtering for the card set"""
-        # pylint: disable-msg=R0915
+        # pylint: disable-msg=R0915, W0212
         # R0915: Want a long, sequential test case to reduce
+        # W0212: We need to access protected methods
         # repeated setups, so it has lots of lines
         # Note that these tests are with the illegal card filter enabled
         _oCache = SutekhObjectCache()
@@ -815,9 +830,9 @@ class CardSetListModelTests(ConfigSutekhTest):
         # Test filter which selects nothing works
         self._loop_zero_filter_modes(oModel)
         # Check basic filtering
-        oModel.iShowCardMode = THIS_SET_ONLY
-        oModel.iParentCountMode = IGNORE_PARENT
-        oModel.iExtraLevelsMode = NO_SECOND_LEVEL
+        oModel._change_count_mode(THIS_SET_ONLY)
+        oModel._change_parent_count_mode(IGNORE_PARENT)
+        oModel._change_level_mode(NO_SECOND_LEVEL)
         oModel.bEditable = False
         oModel.bHideIllegal = True
         # Test card type
@@ -839,7 +854,7 @@ class CardSetListModelTests(ConfigSutekhTest):
         tExpected = (11, 18, 0)
         self.assertEqual(tTotals, tExpected, 'Wrong results from filter : '
                 '%s vs %s' % (tTotals, tExpected))
-        oModel.iExtraLevelsMode = SHOW_EXPANSIONS
+        oModel._change_level_mode(SHOW_EXPANSIONS)
         oModel.load()
         tTotals = (oModel.iter_n_children(None),
                 self._count_all_cards(oModel),
@@ -879,7 +894,7 @@ class CardSetListModelTests(ConfigSutekhTest):
         tExpected = (1, 4, 6)
         self.assertEqual(tTotals, tExpected, 'Wrong results from filter : '
                 '%s vs %s' % (tTotals, tExpected))
-        oModel.iExtraLevelsMode = SHOW_CARD_SETS
+        oModel._change_level_mode(SHOW_CARD_SETS)
         oModel.load()
         tTotals = (oModel.iter_n_children(None),
                 self._count_all_cards(oModel),
@@ -887,7 +902,7 @@ class CardSetListModelTests(ConfigSutekhTest):
         tExpected = (1, 4, 2)
         self.assertEqual(tTotals, tExpected, 'Wrong results from filter : '
                 '%s vs %s' % (tTotals, tExpected))
-        oModel.iShowCardMode = CHILD_CARDS
+        oModel._change_count_mode(CHILD_CARDS)
         oModel.load()
         tTotals = (oModel.iter_n_children(None),
                 self._count_all_cards(oModel),
@@ -895,7 +910,7 @@ class CardSetListModelTests(ConfigSutekhTest):
         tExpected = (1, 6, 4)
         self.assertEqual(tTotals, tExpected, 'Wrong results from filter : '
                 '%s vs %s' % (tTotals, tExpected))
-        oModel.iShowCardMode = ALL_CARDS
+        oModel._change_count_mode(ALL_CARDS)
         oModel.load()
         tTotals = (oModel.iter_n_children(None),
                 self._count_all_cards(oModel),
