@@ -1368,7 +1368,8 @@ class CardSetCardListModel(CardListModel):
             # Changing a card from this card set
             if self._oCardSet.inuse:
                 self._update_cache(oPhysCard, iChg, 'sibling')
-            if iChg > 0 and self._dCache['this card list']:
+            if iChg > 0 and self._dCache['this card list'] is not None:
+                # this card list can be empty
                 self._dCache['this card list'].append(oPhysCard)
             elif self._dCache['this card list']:
                 self._dCache['this card list'].remove(oPhysCard)
