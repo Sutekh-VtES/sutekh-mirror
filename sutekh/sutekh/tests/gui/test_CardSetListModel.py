@@ -4,6 +4,9 @@
 # Copyright 2008 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
+# pylint: disable-msg=C0302
+# This tests the card set list model extensively, so it's quite long
+
 """Tests the Card List Model"""
 
 from sutekh.tests.GuiSutekhTest import ConfigSutekhTest
@@ -135,6 +138,30 @@ class CardSetListModelTests(ConfigSutekhTest):
     def _get_all_counts(self, oModel):
         """Return a list of iCnt, iParCnt, sCardName tuples from the Model"""
         return self._get_all_child_counts(oModel, None)
+
+    def _check_cache_totals(self, oCS, oModelCache, oModelNoCache, sMode):
+        """Reload the models and check the totals match"""
+        oModelNoCache._dCache = {}
+        oModelCache.load()
+        oModelNoCache.load()
+        tCacheTotals = (
+                oModelCache.iter_n_children(None),
+                self._count_all_cards(oModelCache),
+                self._count_second_level(oModelCache))
+        aCacheList = self._get_all_counts(oModelCache)
+        tNoCacheTotals = (
+                oModelNoCache.iter_n_children(None),
+                self._count_all_cards(oModelNoCache),
+                self._count_second_level(oModelNoCache))
+        aNoCacheList = self._get_all_counts(oModelNoCache)
+        self.assertEqual(tCacheTotals, tNoCacheTotals,
+                self._format_error("Totals for cache and no-cache differ "
+                    "after %s cards" % sMode, tCacheTotals, tNoCacheTotals,
+                    oModelCache, oCS))
+        self.assertEqual(aCacheList, aNoCacheList,
+                self._format_error("Card Lists for cache and no-cache "
+                    "differ after %s cards" % sMode, aCacheList,
+                    aNoCacheList, oModelCache, oCS))
 
     def _reset_modes(self, oModel):
         """Set the model to the minimal state."""
@@ -490,7 +517,7 @@ class CardSetListModelTests(ConfigSutekhTest):
         for sName, sExp in aCards:
             oCard = make_card(sName, sExp)
             oPCS.addPhysicalCard(oCard.id)
-            oPCS.syncUpdate()
+        oPCS.syncUpdate()
         return oPCS
 
     def test_adding_cards(self):
@@ -536,35 +563,10 @@ class CardSetListModelTests(ConfigSutekhTest):
         self._loop_modes(oPCS, aModels)
         self._cleanup_models(aModels)
 
-    def test_cache(self):
+    def test_cache_simple(self):
         """Test that the special persistent caches don't affect results"""
         # pylint: disable-msg=W0212
         # we need to access protected methods
-
-        def _check_totals(oModelCache, oModelNoCache, sMode):
-            """Reload the models and check the totals match"""
-            oModelNoCache._dCache = {}
-            oModelCache.load()
-            oModelNoCache.load()
-            tCacheTotals = (
-                    oModelCache.iter_n_children(None),
-                    self._count_all_cards(oModelCache),
-                    self._count_second_level(oModelCache))
-            aCacheList = self._get_all_counts(oModelCache)
-            tNoCacheTotals = (
-                    oModelNoCache.iter_n_children(None),
-                    self._count_all_cards(oModelNoCache),
-                    self._count_second_level(oModelNoCache))
-            aNoCacheList = self._get_all_counts(oModelNoCache)
-            self.assertEqual(tCacheTotals, tNoCacheTotals,
-                    self._format_error("Totals for cache and no-cache differ "
-                        "after %s cards" % sMode, tCacheTotals, tNoCacheTotals,
-                        oModelCache, oPCS))
-            self.assertEqual(aCacheList, aNoCacheList,
-                    self._format_error("Card Lists for cache and no-cach "
-                        "differ after %s cards" % sMode, aCacheList,
-                        aNoCacheList, oModelCache, oPCS))
-
         _oCache = SutekhObjectCache()
         oPCS = self._setup_simple()
         oModelCache = self._get_model(self.aNames[0])
@@ -587,7 +589,8 @@ class CardSetListModelTests(ConfigSutekhTest):
                         oPCS.addPhysicalCard(oCard.id)
                         oPCS.syncUpdate()
                         send_changed_signal(oPCS, oCard, 1)
-                    _check_totals(oModelCache, oModelNoCache, 'adding')
+                    self._check_cache_totals(oPCS, oModelCache, oModelNoCache,
+                            'adding')
                     for oCard in self.aPhysCards:
                         oMapEntry = list(
                                 MapPhysicalCardToPhysicalCardSet.selectBy(
@@ -596,7 +599,67 @@ class CardSetListModelTests(ConfigSutekhTest):
                         MapPhysicalCardToPhysicalCardSet.delete(oMapEntry.id)
                         oPCS.syncUpdate()
                         send_changed_signal(oPCS, oCard, -1)
-                    _check_totals(oModelCache, oModelNoCache, 'adding')
+                    self._check_cache_totals(oPCS, oModelCache, oModelNoCache,
+                            'deleting')
+
+        self._cleanup_models(aModels)
+
+    def test_cache_complex(self):
+        """Test that the special persistent caches don't affect results with
+           more complex card set relationships"""
+        # pylint: disable-msg=W0212, R0914
+        # we need to access protected methods
+        # We loop over a lot of combinations, so lots of local variables
+        _oCache = SutekhObjectCache()
+        oPCS, oSibPCS, oChildPCS, oGrandChildPCS, _oGrandChild2PCS = \
+                self._setup_relationships()
+        aNoCache = []
+        aCache = []
+        for sName in self.aNames[:4]:
+            oModelCache = self._get_model(sName)
+            oModelCache._change_parent_count_mode(MINUS_SETS_IN_USE)
+            aCache.append(oModelCache)
+            oModelNoCache = self._get_model(sName)
+            oModelNoCache._change_parent_count_mode(MINUS_SETS_IN_USE)
+            aNoCache.append(oModelNoCache)
+        aModels = aCache + aNoCache
+        # We test a much smaller range of things than in loop_modes
+        for bEditFlag in (False, True):
+            for oModel in aModels:
+                oModel.bEditable = bEditFlag
+            for iLevelMode in (NO_SECOND_LEVEL, SHOW_EXPANSIONS):
+                for oModel in aModels:
+                    oModel._change_level_mode(iLevelMode)
+                for iShowMode in (THIS_SET_ONLY, ALL_CARDS,
+                        PARENT_CARDS, CHILD_CARDS):
+                    for oModel in aModels:
+                        oModel._change_count_mode(iShowMode)
+                        print 'loading'
+                        oModel.load()
+                    # pylint: disable-msg=E1101, E1103
+                    # E1101: SQLObjext confuses pylint
+                    for oCS in (oPCS, oChildPCS, oSibPCS, oGrandChildPCS):
+                        for oCard in self.aPhysCards:
+                            oCS.addPhysicalCard(oCard.id)
+                            oCS.syncUpdate()
+                            send_changed_signal(oCS, oCard, 1)
+                        for oModelCache, oModelNoCache in \
+                                zip(aCache, aNoCache):
+                            self._check_cache_totals(oCS, oModelCache,
+                                    oModelNoCache, 'adding')
+                        for oCard in self.aPhysCards:
+                            oMapEntry = list(
+                                    MapPhysicalCardToPhysicalCardSet.selectBy(
+                                        physicalCardID=oCard.id,
+                                        physicalCardSetID=oCS.id))[-1]
+                            MapPhysicalCardToPhysicalCardSet.delete(
+                                    oMapEntry.id)
+                            oCS.syncUpdate()
+                            send_changed_signal(oCS, oCard, -1)
+                        for oModelCache, oModelNoCache in \
+                                zip(aCache, aNoCache):
+                            self._check_cache_totals(oCS, oModelCache,
+                                    oModelNoCache, 'deleting')
 
         self._cleanup_models(aModels)
 
@@ -624,6 +687,8 @@ class CardSetListModelTests(ConfigSutekhTest):
             oChildPCS.addPhysicalCard(oCard.id)
         oChildPCS.inuse = False
 
+        oChildPCS.syncUpdate()
+        oPCS.syncUpdate()
         return aCards, oPCS, oChildPCS
 
     def _setup_grand_child(self, aCards, oChildPCS):
@@ -634,6 +699,7 @@ class CardSetListModelTests(ConfigSutekhTest):
             # pylint: disable-msg=E1101
             # PyProtocols confuses pylint
             oGrandChildPCS.addPhysicalCard(oCard.id)
+        oGrandChildPCS.syncUpdate()
         return oGrandChildPCS
 
     def _setup_relationships(self):
@@ -663,7 +729,10 @@ class CardSetListModelTests(ConfigSutekhTest):
         for sName, sExp in aGC2Cards:
             oCard = make_card(sName, sExp)
             oGrandChild2PCS.addPhysicalCard(oCard.id)
-            oGrandChild2PCS.syncUpdate()
+        oChildPCS.syncUpdate()
+        oSibPCS.syncUpdate()
+        oGrandChildPCS.syncUpdate()
+        oGrandChild2PCS.syncUpdate()
         return oPCS, oSibPCS, oChildPCS, oGrandChildPCS, oGrandChild2PCS
 
     def test_child_parent(self):
