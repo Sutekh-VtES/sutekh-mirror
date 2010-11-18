@@ -572,6 +572,9 @@ class CardSetListModelTests(ConfigSutekhTest):
         oModelCache = self._get_model(self.aNames[0])
         oModelNoCache = self._get_model(self.aNames[0])
         aModels = [oModelCache, oModelNoCache]
+        # We need to catch some corner cases around adding only 1 copy before
+        # reloading as well
+        aCardsToAdd = self.aPhysCards[1:8:2] + self.aPhysCards[9:]
         # We test a much smaller range of things than in loop_modes
         for bEditFlag in [False, True]:
             for oModel in aModels:
@@ -585,13 +588,13 @@ class CardSetListModelTests(ConfigSutekhTest):
                         oModel.load()
                     # pylint: disable-msg=E1101
                     # E1101: SQLObjext confuses pylint
-                    for oCard in self.aPhysCards:
+                    for oCard in aCardsToAdd:
                         oPCS.addPhysicalCard(oCard.id)
                         oPCS.syncUpdate()
                         send_changed_signal(oPCS, oCard, 1)
                     self._check_cache_totals(oPCS, oModelCache, oModelNoCache,
                             'adding')
-                    for oCard in self.aPhysCards:
+                    for oCard in aCardsToAdd:
                         oMapEntry = list(
                                 MapPhysicalCardToPhysicalCardSet.selectBy(
                                     physicalCardID=oCard.id,
@@ -611,10 +614,17 @@ class CardSetListModelTests(ConfigSutekhTest):
         # we need to access protected methods
         # We loop over a lot of combinations, so lots of local variables
         _oCache = SutekhObjectCache()
-        oPCS, oSibPCS, oChildPCS, oGrandChildPCS, _oGrandChild2PCS = \
-                self._setup_relationships()
         aNoCache = []
         aCache = []
+        aCards, oPCS, oChildPCS = self._setup_parent_child()
+        oGrandChildPCS = self._setup_grand_child(aCards, oChildPCS)
+        oChildPCS.inuse = True
+        oGrandChildPCS.inuse = True
+        oChildPCS.syncUpdate()
+        oGrandChildPCS.syncUpdate()
+        oEmptyPCS = PhysicalCardSet(name=self.aNames[3], parent=oPCS)
+        oEmptyPCS.inuse=True
+        oEmptyPCS.syncUpdate()
         for sName in self.aNames[:4]:
             oModelCache = self._get_model(sName)
             oModelCache._change_parent_count_mode(MINUS_SETS_IN_USE)
@@ -623,6 +633,8 @@ class CardSetListModelTests(ConfigSutekhTest):
             oModelNoCache._change_parent_count_mode(MINUS_SETS_IN_USE)
             aNoCache.append(oModelNoCache)
         aModels = aCache + aNoCache
+        # See test_cache_simple
+        aCardsToAdd = self.aPhysCards[1:8:2] + self.aPhysCards[9:]
         # We test a much smaller range of things than in loop_modes
         for bEditFlag in (False, True):
             for oModel in aModels:
@@ -634,12 +646,11 @@ class CardSetListModelTests(ConfigSutekhTest):
                         PARENT_CARDS, CHILD_CARDS):
                     for oModel in aModels:
                         oModel._change_count_mode(iShowMode)
-                        print 'loading'
                         oModel.load()
                     # pylint: disable-msg=E1101, E1103
                     # E1101: SQLObjext confuses pylint
-                    for oCS in (oPCS, oChildPCS, oSibPCS, oGrandChildPCS):
-                        for oCard in self.aPhysCards:
+                    for oCS in (oEmptyPCS, oChildPCS, oGrandChildPCS, oPCS):
+                        for oCard in aCardsToAdd:
                             oCS.addPhysicalCard(oCard.id)
                             oCS.syncUpdate()
                             send_changed_signal(oCS, oCard, 1)
@@ -647,7 +658,7 @@ class CardSetListModelTests(ConfigSutekhTest):
                                 zip(aCache, aNoCache):
                             self._check_cache_totals(oCS, oModelCache,
                                     oModelNoCache, 'adding')
-                        for oCard in self.aPhysCards:
+                        for oCard in aCardsToAdd:
                             oMapEntry = list(
                                     MapPhysicalCardToPhysicalCardSet.selectBy(
                                         physicalCardID=oCard.id,
