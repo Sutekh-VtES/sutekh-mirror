@@ -661,7 +661,7 @@ class CardSetCardListModel(CardListModel):
                 _update_child_caches(oCard)
         return dChildCardCache
 
-    def _get_parent_list(self, oCurFilter, oCardIter):
+    def _get_parent_list(self, oCurFilter, oCardIter, iIterCnt):
         """Get a list object for the cards in the parent card set."""
         # pylint: disable-msg=E1101, E1103
         # SQLObject + PyProtocols confuse pylint
@@ -675,7 +675,7 @@ class CardSetCardListModel(CardListModel):
                         PhysicalCardSetFilter(self._oCardSet.parent.name)
             aFilters = [self._dCache['parent filter'], oCurFilter]
             if self._iShowCardMode == THIS_SET_ONLY and \
-                    oCardIter.count() < 200:
+                    iIterCnt < 200:
                 # Restrict filter to the cards in this set, to save time
                 # oCardIter.count() > 0, due to check in grouped_card_iter
                 aAbsCardIds = set([IAbstractCard(x).id for x in oCardIter])
@@ -772,7 +772,10 @@ class CardSetCardListModel(CardListModel):
         dAbsCards = {}
         dPhysCards = {}
 
-        if oCardIter.count() == 0 and self._iShowCardMode == THIS_SET_ONLY:
+        # Cache count result, as we might need it again in _get_parent_list
+        iIterCnt = oCardIter.count()
+
+        if iIterCnt == 0 and self._iShowCardMode == THIS_SET_ONLY:
             # Short circuit the more expensive checks if we've got no cards
             # and can't influence this card set
             return (self.groupby([], lambda x: x[0]), [])
@@ -793,7 +796,7 @@ class CardSetCardListModel(CardListModel):
 
         dChildCardCache = self._get_child_filters(oCurFilter)
 
-        self._get_parent_list(oCurFilter, oCardIter)
+        self._get_parent_list(oCurFilter, oCardIter, iIterCnt)
 
         # Other card show modes
         for oPhysCard in self._get_extra_cards(oCurFilter):
