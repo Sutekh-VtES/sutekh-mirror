@@ -31,6 +31,7 @@ class CardSetManagementFrame(BasicFrame):
     def __init__(self, oMainWindow):
         super(CardSetManagementFrame, self).__init__(oMainWindow)
         self._oMenu = None
+        self._oScrolledWindow = None
         self._oController = CardSetManagementController(oMainWindow, self)
         self.set_name("card sets list")
 
@@ -57,8 +58,8 @@ class CardSetManagementFrame(BasicFrame):
 
         oMbox.pack_start(self._oMenu, False, False)
 
-        oMbox.pack_start(AutoScrolledWindow(self._oController.view),
-                expand=True)
+        self._oScrolledWindow = AutoScrolledWindow(self._oController.view)
+        oMbox.pack_start(self._oScrolledWindow, expand=True)
 
         # setup default targets
 
@@ -70,7 +71,18 @@ class CardSetManagementFrame(BasicFrame):
 
     def reload(self):
         """Reload the frame contents"""
+        # get the scroll widget position
+        oVertAdj = self._oScrolledWindow.get_vadjustment()
+        oHorzAdj = self._oScrolledWindow.get_hadjustment()
+        tVertVals = oVertAdj.value, oVertAdj.page_size
+        tHorzVals = oHorzAdj.value, oHorzAdj.page_size
         self.view.reload_keep_expanded(True)
+        oVertAdj.value, oVertAdj.page_size = tVertVals
+        oHorzAdj.value, oHorzAdj.page_size = tHorzVals
+        oVertAdj.changed()
+        oHorzAdj.changed()
+        oVertAdj.value_changed()
+        oHorzAdj.value_changed()
 
     def get_menu_name(self):
         """Get the menu key"""
