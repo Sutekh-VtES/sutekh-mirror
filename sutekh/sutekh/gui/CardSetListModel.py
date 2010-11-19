@@ -634,6 +634,17 @@ class CardSetCardListModel(CardListModel):
                                 PhysicalCardSetFilter(sName)
                     self._dCache['set map'] = dChildren
         dChildCardCache = {}
+        if not self.applyfilter and self._dCache['full child card list']:
+            aChildCards = self._dCache['full child card list']
+        elif self._iShowCardMode != CHILD_CARDS and \
+                self._dCache['full child card list']:
+            aChildCards = self._dCache['full child card list']
+        elif self._dCache['all children filter']:
+            oFullFilter = FilterAndBox([self._dCache['all children filter'],
+                oCurFilter])
+            aChildCards = list(oFullFilter.select(self.cardclass).distinct())
+            if not self.applyfilter:
+                self._dCache['full child card list'] = aChildCards
         if self._iExtraLevelsMode in (SHOW_CARD_SETS, EXP_AND_CARD_SETS,
                 CARD_SETS_AND_EXP) and self._dCache['child filters']:
             dChildren = self._dCache['set map']
@@ -642,9 +653,7 @@ class CardSetCardListModel(CardListModel):
                 self._dCache['child card sets'].setdefault(sName, {})
                 dChildCardCache.setdefault(sName, {})
             # Pull all cards of interest in a single query
-            oFullFilter = FilterAndBox([self._dCache['all children filter'],
-                oCurFilter])
-            for oMapCard in oFullFilter.select(self.cardclass).distinct():
+            for oMapCard in aChildCards:
                 sName = dChildren[oMapCard.physicalCardSetID]
                 oCard = IPhysicalCard(oMapCard)
                 oAbsId = _update_child_caches(oCard)
@@ -654,9 +663,7 @@ class CardSetCardListModel(CardListModel):
         elif self._iShowCardMode == CHILD_CARDS and \
                 self._dCache['child filters']:
             # Need to setup the cache
-            aFilters = [self._dCache['all children filter'], oCurFilter]
-            oFullFilter = FilterAndBox(aFilters)
-            for oMapCard in oFullFilter.select(self.cardclass).distinct():
+            for oMapCard in aChildCards:
                 oCard = IPhysicalCard(oMapCard)
                 _update_child_caches(oCard)
         return dChildCardCache
@@ -668,23 +675,30 @@ class CardSetCardListModel(CardListModel):
         if self._oCardSet.parentID and not (
                 self._iParentCountMode == IGNORE_PARENT and
                 self._iShowCardMode != PARENT_CARDS):
-            # It's tempting to use get_card_iterator here, but that
-            # obviously doesn't work because of _oBaseFilter
-            if not self._dCache['parent filter']:
-                self._dCache['parent filter'] = \
-                        PhysicalCardSetFilter(self._oCardSet.parent.name)
-            aFilters = [self._dCache['parent filter'], oCurFilter]
-            if self._iShowCardMode == THIS_SET_ONLY and \
-                    iIterCnt < 200:
-                # Restrict filter to the cards in this set, to save time
-                # oCardIter.count() > 0, due to check in grouped_card_iter
-                aAbsCardIds = set([IAbstractCard(x).id for x in oCardIter])
-                self._dCache['cardset cards filter'] = \
-                        MultiSpecificCardIdFilter(aAbsCardIds)
-                aFilters.append(self._dCache['cardset cards filter'])
-            oParentFilter = FilterAndBox(aFilters)
-            aParentCards = [IPhysicalCard(x) for x in
-                    oParentFilter.select(self.cardclass).distinct()]
+            if not self.applyfilter and self._dCache['full parent card list']:
+                aParentCards = self._dCache['full parent card list']
+            elif self._iShowCardMode != PARENT_CARDS and \
+                    self._dCache['full parent card list']:
+                # OK to loop over a superset of the cards here, as we're
+                aParentCards = self._dCache['full parent card list']
+            else:
+                if not self._dCache['parent filter']:
+                    self._dCache['parent filter'] = \
+                            PhysicalCardSetFilter(self._oCardSet.parent.name)
+                aFilters = [self._dCache['parent filter'], oCurFilter]
+                if self._iShowCardMode == THIS_SET_ONLY and \
+                        iIterCnt < 200:
+                    # Restrict filter to the cards in this set, to save time
+                    # oCardIter.count() > 0, due to check in grouped_card_iter
+                    aAbsCardIds = set([IAbstractCard(x).id for x in oCardIter])
+                    self._dCache['cardset cards filter'] = \
+                            MultiSpecificCardIdFilter(aAbsCardIds)
+                    aFilters.append(self._dCache['cardset cards filter'])
+                oParentFilter = FilterAndBox(aFilters)
+                aParentCards = [IPhysicalCard(x) for x in
+                        oParentFilter.select(self.cardclass).distinct()]
+                if not self.applyfilter:
+                    self._dCache['full parent card list'] = aParentCards
             for oPhysCard in aParentCards:
                 self._dCache['parent cards'].setdefault(oPhysCard, 0)
                 self._dCache['parent abstract cards'].setdefault(
@@ -728,6 +742,9 @@ class CardSetCardListModel(CardListModel):
         # some profile changes
         self._dCache.setdefault('full card list', None)
         self._dCache.setdefault('this card list', None)
+        self._dCache.setdefault('full parent card list', None)
+        self._dCache.setdefault('full child card list', None)
+        self._dCache.setdefault('full sibling card list', None)
         # These are preserved unless there are database reloads, or
         # the card set hierachy changes
         self._dCache.setdefault('child filters', None)
@@ -904,20 +921,25 @@ class CardSetCardListModel(CardListModel):
                 # calls to add_new_card
                 self._dCache['sibling filter'] = False
         if self._dCache['sibling filter']:
-            if self._dCache['cardset cards filter']:
-                oSibFilter = FilterAndBox([
-                    self._dCache['sibling filter'],
-                    oCurFilter,
-                    self._dCache['cardset cards filter'],
-                    ])
+            if self._dCache['full sibling card list']:
+                aInUseCards = self._dCache['full sibling card list']
             else:
-                oSibFilter = FilterAndBox([
-                    self._dCache['sibling filter'],
-                    oCurFilter,
-                    ])
+                if self._dCache['cardset cards filter']:
+                    oSibFilter = FilterAndBox([
+                        self._dCache['sibling filter'],
+                        oCurFilter,
+                        self._dCache['cardset cards filter'],
+                        ])
+                else:
+                    oSibFilter = FilterAndBox([
+                        self._dCache['sibling filter'],
+                        oCurFilter,
+                        ])
 
-            aInUseCards = [IPhysicalCard(x) for x in
-                    oSibFilter.select(self.cardclass).distinct()]
+                aInUseCards = [IPhysicalCard(x) for x in
+                        oSibFilter.select(self.cardclass).distinct()]
+                if not self.applyfilter:
+                    self._dCache['full sibling card list'] = aInUseCards
             for oPhysCard in aInUseCards:
                 oAbsId = oPhysCard.abstractCardID
                 dSiblingCards.setdefault(oAbsId, []).append(oPhysCard)
@@ -1211,12 +1233,28 @@ class CardSetCardListModel(CardListModel):
             sAbsCache = "%s abstract cards" % sType
             self._dCache[sPhysCache][oPhysCard] += iChg
             self._dCache[sAbsCache][oPhysCard.abstractCardID] += iChg
+        if sType in ('parent', 'sibling'):
+            sFullCache = 'full %s card list' % sType
+            if self._iShowCardMode == THIS_SET_ONLY and iChg > 0:
+                # can't be sure if we need to add card to cache or not,
+                # due to card sets filter limies, so just invalidate cache
+                self._dCache[sFullCache] = None
+            elif self._dCache[sFullCache]:
+                if iChg > 0:
+                    self._dCache[sFullCache].append(oPhysCard)
+                elif iChg < 0 and oPhysCard in self._dCache[sFullCache]:
+                    # may be cases (THIS_SET_ONLY), were card is not in cache,
+                    # so we do need to check fot that.
+                    self._dCache[sFullCache].remove(oPhysCard)
 
     def _update_child_set_cache(self, oPhysCard, iChg, sName):
         """Update the number in the card cache"""
         if sName in self._dCache['child card sets'] and \
                 oPhysCard in self._dCache['child card sets'][sName]:
             self._dCache['child card sets'][sName][oPhysCard] += iChg
+        # Changing the children changes this, but , as this is map
+        # entries, we're not in a position to update it
+        self._dCache['full child card list'] = None
 
     def _clean_cache(self, oPhysCard, sType):
         """Remove zero entries from the card cache"""
@@ -1271,6 +1309,8 @@ class CardSetCardListModel(CardListModel):
             # This card set's parent is changing
             self._dCache['parent filter'] = None
             self._dCache['sibling filter'] = None
+            self._dCache['full sibling card list'] = None
+            self._dCache['full parent card list'] = None
             if self.changes_with_parent():
                 # Parent count is shown, or not shown because parent is
                 # changing to None, so this affects the shown cards.
@@ -1284,6 +1324,7 @@ class CardSetCardListModel(CardListModel):
                 self._dCache['child filters'] = None
                 self._dCache['all children filter'] = None
                 self._dCache['set map'] = None
+                self._dCache['full child card list'] = None
                 if self.changes_with_children():
                     self._try_queue_reload()
         elif dChanges.has_key('parentID') and \
@@ -1293,6 +1334,7 @@ class CardSetCardListModel(CardListModel):
             self._dCache['child filters'] = None
             self._dCache['all children filter'] = None
             self._dCache['set map'] = None
+            self._dCache['full child card list'] = None
             if self.changes_with_children():
                 self._try_queue_reload()
         elif self._oCardSet.parentID:
@@ -1303,6 +1345,7 @@ class CardSetCardListModel(CardListModel):
                         (oCardSet.parentID and oCardSet.parentID ==
                                 self._oCardSet.parentID):
                     self._dCache['sibling filter'] = None
+                    self._dCache['full sibling card list'] = None
                     if self.changes_with_siblings():
                         # Reload if needed
                         self._try_queue_reload()
@@ -1310,6 +1353,7 @@ class CardSetCardListModel(CardListModel):
                     oCardSet.parentID == self._oCardSet.parentID:
                 # changing inuse status of sibling
                 self._dCache['sibling filter'] = None
+                self._dCache['full sibling card list'] = None
                 if self.changes_with_siblings():
                     self._try_queue_reload()
 
@@ -1327,12 +1371,14 @@ class CardSetCardListModel(CardListModel):
             self._dCache['child filters'] = None
             self._dCache['all children filter'] = None
             self._dCache['set map'] = None
+            self._dCache['full child card list'] = None
             if self.changes_with_children():
                 self._try_queue_reload()
         if self.is_sibling(oCardSet):
             # inuse sibling card set going away while this affects display,
             # so reload
             self._dCache['sibling filter'] = None
+            self._dCache['full sibling card list'] = None
             if self.changes_with_siblings():
                 self._try_queue_reload()
         # Other card set deletions don't need to be watched here, since the
@@ -1376,10 +1422,17 @@ class CardSetCardListModel(CardListModel):
                 self._dCache['this card list'].append(oPhysCard)
             elif self._dCache['this card list']:
                 self._dCache['this card list'].remove(oPhysCard)
+            if self._iShowCardMode == THIS_SET_ONLY and iChg > 0:
+                # This cache may no longer be valid in this case
+                self._dCache['full parent card list'] = None
             if oAbsCard in self._dAbs2Iter:
                 self.alter_card_count(oPhysCard, iChg)
             elif iChg > 0:
                 self.add_new_card(oPhysCard)  # new card
+                if self._iShowCardMode == THIS_SET_ONLY:
+                    # Will have added invalid info to these caches
+                    self._dCache['full parent card list'] = None
+                    self._dCache['full sibling card list'] = None
             if self._oCardSet.inuse:
                 self._clean_cache(oPhysCard, 'sibling')
         elif self.changes_with_children() and self.is_child(oCardSet):
@@ -2142,6 +2195,12 @@ class CardSetCardListModel(CardListModel):
         """Set which extra information is shown."""
         if self._iShowCardMode != iLevel:
             self._iShowCardMode = iLevel
+            # We don't maintain these caches in a consistent state in
+            # all count modes, so we need to flush them when the mode
+            # changes
+            self._dCache['full parent card list'] = None
+            self._dCache['full child card list'] = None
+            self._dCache['full sibling card list'] = None
             return True
         return False
 
