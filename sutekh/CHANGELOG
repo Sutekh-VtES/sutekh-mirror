@@ -1,3 +1,79 @@
+19 Nov 2010
+ * More caching in card set list model
+ * Restore card set list scroll position after opening a card set
+
+18 Nov 2010
+ * Limit direct access to the various mode variables in the card set model
+ * Add complex cache test case & fix bug it uncovered
+
+16 Nov 2010
+ * Longer lived filter caching
+
+15 Nov 2010
+ * Use unicode normalisation when talking to Secret Library
+ * Reorganise db signal handling - move code to CardSetListModel
+ * Add some db signal tests
+
+11 Nov 2010
+ * More caching work
+ * Ensure listeners are called before sorting list, for listeners that
+   use cached information
+
+10 Nov 2010
+ * Fix restore_from_config to work with the closed frames.
+ * Fix some other issues around the minimised frames being skipped as well
+
+08 Nov 2010
+ * Make changing to editable views slightly faster
+
+05 Nov 2010
+ * Subdivide card set list model tests a bit
+
+03 Nov 2010
+ * Remove check_editable in favour of explicitly specifying when
+   card sets should be opened editable.
+
+01 Nov 2010
+ * Use bitbucket as source for extra_cards
+ * Minor speed tweaks to card set list model
+ * Add some tests with illegal cards shown and hidden
+
+30 Oct 2010
+ * Show OOT masters & trifles in Anaylze plugin
+
+29 Oct 2010
+ * Update README
+ * Disable qlobject cache (?cache=False) by default.
+ * Bump sqlobject requirement to include 0.14
+
+28 Oct 2010
+ * Fix WW card list to work with queued_reload
+ * Minor speed savings, but removing some unneeded work
+ * Batch child card query for speed
+
+27 Oct 2010
+ * Tweak HTML output when author isn't set
+ * card count listener speedups
+
+26 Oct 2010
+ * Add tests for unset author case
+ * Hide sqlobject differences in CardSetWrapper
+ * Ensure we always include an author attribute in output, for compatability
+   with older versions
+ * Fix caching bugs
+
+25 Oct 2010
+ * Fix exception handling so we still work with sqlobject 0.9
+ * Protect against author returning None with later sqlobject versions
+
+24 Oct 2010
+ * Cache some lookups, to improve card set list model speed
+ * Fix queued_reloads to run.
+ * Fix reloading card set twice on profile changes
+ * Prepopulate abstract card to physical card mapping
+ * Seperate out adaptor cache creation
+ * Fix test breakage caused by changes
+
 20 Oct 2010
  * Add discipline with level grouping
 
