@@ -1489,10 +1489,9 @@ class CardSetCardListModel(CardListModel):
                 # We don't use the base filter, to avoid complex logic for the
                 # different display modes.
                 oFilter = self.get_current_filter()
-                oFullFilter = FilterAndBox([PhysicalCardFilter(),
-                    SpecificPhysCardIdFilter(oPhysCard.id), oFilter])
-                bResult = \
-                        oFullFilter.select(PhysicalCard).distinct().count() > 0
+                oFullFilter = FilterAndBox([PhysicalCardFilter(), oFilter,
+                    SpecificPhysCardIdFilter(oPhysCard.id)])
+                bResult = oFullFilter.select(PhysicalCard).count() > 0
         if bResult:
             # Check the listeners
             for oListener in self.dListeners:
