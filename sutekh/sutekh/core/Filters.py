@@ -57,6 +57,12 @@ class Filter(object):
         # to fill in the values most times
         raise NotImplementedError
 
+    # pylint: disable-msg=R0201
+    # children need to be able to override this.
+    def involves(self, _oCardSet):
+        """Reurn true if the filter results change when oCardSet changes"""
+        return self.is_physical_card_only()
+
     def select(self, cCardClass):
         """cCardClass.select(...) applying the filter to the selection."""
         return cCardClass.select(self._get_expression(),
@@ -106,6 +112,13 @@ class FilterBox(Filter, list):
                 if iLen == len(self):
                     aTypes.append(sType)
         return aTypes
+
+    def involves(self, oCardSet):
+        """Reurn true if any of the child results change with oCardSet"""
+        bResult = False
+        for oSubFilter in self:
+            bResult = bResult or oSubFilter.involves(oCardSet)
+        return bResult
 
     # W0212 applies here too
     types = property(fget=lambda self: self._get_types(),
@@ -1194,6 +1207,7 @@ class CardSetMultiCardCountFilter(DirectFilter):
         # aCounts may be a single string, so we can't use 'for x in aCounts'
         aCounts = set([x.strip() for x in list(aCounts)])
         self._oFilters = []
+        self._aCardSetIds = aIds
         if '0' in aCounts:
             aCounts.remove('0')
             oZeroQuery = NOT(IN(PhysicalCard.q.abstractCardID, Select(
@@ -1248,6 +1262,9 @@ class CardSetMultiCardCountFilter(DirectFilter):
     # *magic is needed by SQLObject
     def _get_expression(self):
         return OR(*self._oFilters)
+
+    def involves(self, oCardSet):
+        return oCardSet.id in self._aCardSetIds
 
 
 class PhysicalExpansionFilter(DirectFilter):
@@ -1345,6 +1362,9 @@ class PhysicalCardSetFilter(Filter):
     def _get_expression(self):
         return self.__oTable.physical_card_set_id == self.__iCardSetId
 
+    def involves(self, oCardSet):
+        return oCardSet.id == self.__iCardSetId
+
 
 class MultiPhysicalCardSetFilter(Filter):
     """Filter on a list of Physical Card Sets"""
@@ -1383,6 +1403,9 @@ class MultiPhysicalCardSetFilter(Filter):
 
     def _get_expression(self):
         return IN(self.__oTable.q.physical_card_set_id, self.__aCardSetIds)
+
+    def involves(self, oCardSet):
+        return oCardSet.id in self.__aCardSetIds
 
 
 class MultiPhysicalCardSetMapFilter(Filter):
@@ -1449,6 +1472,9 @@ class PhysicalCardSetInUseFilter(Filter):
 
     def _get_expression(self):
         return IN(self.__oTable.q.physical_card_set_id, self.__aCardSetIds)
+
+    def involves(self, oCardSet):
+        return oCardSet.id in self.__aCardSetIds
 
 
 class SpecificCardFilter(DirectFilter):

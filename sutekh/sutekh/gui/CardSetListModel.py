@@ -1397,6 +1397,19 @@ class CardSetCardListModel(CardListModel):
         # R0912 - need to consider several cases, so lots of branches
         oAbsCard = IAbstractCard(oPhysCard)
         if self._bPhysicalFilter:
+            oCurFilter = self.get_current_filter()
+            # Physical filters checks are quite expensive, due to the
+            # calls to add_new_Card and iter fiddling, so it's worth trying
+            # to avoid going down this path if at all possible.
+            if oCardSet.id != self._oCardSet.id \
+                    and not oCurFilter.involves(oCardSet) \
+                    and not (self.changes_with_parent() and
+                            self.is_parent(oCardSet)) \
+                    and not (self.changes_with_children() and
+                        self.is_child(oCardSet))  \
+                    and not (self.changes_with_siblings() and
+                        self.is_sibling(oCardSet)):
+                return
             # If we have a card count filter, any change can affect us,
             # so we always consider these cases.
             if not self._needs_update(oAbsCard, oPhysCard):
