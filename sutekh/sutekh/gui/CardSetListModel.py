@@ -247,8 +247,8 @@ class CardSetCardListModel(CardListModel):
         self._init_cache(True)
 
         self._bPhysicalFilter = False
-        if self.applyfilter:
-            self._bPhysicalFilter = self._check_filter()
+        if self.applyfilter and self.selectfilter:
+            self._bPhysicalFilter = self.selectfilter.is_physical_card_only()
 
         oCardIter = self.get_card_iterator(self.get_current_filter())
         oGroupedIter, aCards = self.grouped_card_iter(oCardIter)
@@ -1500,13 +1500,6 @@ class CardSetCardListModel(CardListModel):
                     break  # Failed, so bail on loop
         self._dCache['visible'][oPhysCard] = bResult
         return bResult
-
-    def _check_filter(self):
-        """Check if the filter is a physical card only filter"""
-        oCurFilter = self.get_current_filter()
-        if oCurFilter:
-            return not ('AbstractCard' in oCurFilter.types)
-        return False
 
     def _card_count_changes_parent(self):
         """Check if a change in the card count changes the parent"""

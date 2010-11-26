@@ -47,6 +47,9 @@ def IN(oCol, oListOrSelect):
 # Filter Base Class
 class Filter(object):
     """Base class for all filters"""
+
+    types = []
+
     @classmethod
     def get_values(cls):
         """Used by GUI tools and FilterParser to get/check acceptable values"""
@@ -66,6 +69,13 @@ class Filter(object):
     def _get_joins(self):
         """joins needed by the filter"""
         raise NotImplementedError
+
+    def is_physical_card_only(self):
+        """Return true if this filter only operates on physical cards.
+
+           Mainly used to handle various corner cases in the gui."""
+        return 'PhysicalCard' in self.types and \
+                'AbstractCard' not in self.types
 
 
 # Collections of Filters
