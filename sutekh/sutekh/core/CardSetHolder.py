@@ -118,7 +118,7 @@ class CardSetHolder(object):
 
         aCardCnts = self._dCards.items()
         aAbsCards = oCardLookup.lookup([tCardCnt[0] for tCardCnt in aCardCnts],
-                "Physical Card Set %s" % self.name)
+                'Card Set "%s"' % self.name)
         dNameCards = dict(zip(self._dCards.keys(), aAbsCards))
 
         aExpNames = self._dExpansions.keys()
@@ -126,7 +126,7 @@ class CardSetHolder(object):
         dExpansionLookup = dict(zip(aExpNames, aExps))
 
         aPhysCards = oCardLookup.physical_lookup(self._dCardExpansions,
-                dNameCards, dExpansionLookup, "Physical Card Set " + self.name)
+                dNameCards, dExpansionLookup, 'Card Set "%s"' % self.name)
 
         sqlhub.doInTransaction(self._commit_pcs, aPhysCards)
 
@@ -234,7 +234,7 @@ class CachedCardSetHolder(CardSetHolder):
         aCardCnts = self._dCards.items()
         aAbsCards = oCardLookup.lookup([dLookupCache['cards'].get(tCardCnt[0],
             tCardCnt[0]) for tCardCnt in aCardCnts],
-            "Physical Card Set %s" % self.name)
+            'Card Set "%s"' % self.name)
         dNameCards = dict(zip(self._dCards.keys(), aAbsCards))
 
         # Update dLookupCache
@@ -263,6 +263,6 @@ class CachedCardSetHolder(CardSetHolder):
                 dLookupCache['expansions'][sName] = oExp.name
 
         aPhysCards = oCardLookup.physical_lookup(dCardExpansions,
-                dNameCards, dExpansionLookup, "Physical Card Set " + self.name)
+                dNameCards, dExpansionLookup, 'Card Set "%s"' % self.name)
 
         sqlhub.doInTransaction(self._commit_pcs, aPhysCards)
