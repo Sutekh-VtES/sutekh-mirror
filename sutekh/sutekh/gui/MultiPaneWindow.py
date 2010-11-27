@@ -595,8 +595,22 @@ class MultiPaneWindow(gtk.Window):
         self._oConfig.set_window_size(self.get_size())
 
     def save_frames(self):
+        # pylint:disable-msg=R0912
+        # lots of decisions, so many branches
         """save the current frame layout"""
         self._oConfig.clear_open_frames()
+
+        # pylint: disable-msg=R0913
+        # we need all these arguments
+        def save_pane_to_config(iNum, oPane, oConfig, bVert, bClosed, iPos):
+            """Save a pane to the config file, dealing with card set panes
+               correctly"""
+            if oPane.type != PhysicalCardSet.sqlmeta.table:
+                oConfig.add_frame(iNum, oPane.type, oPane.name, bVert,
+                        bClosed, iPos)
+            else:
+                oConfig.add_frame(iNum, oPane.type, oPane.cardset_name, bVert,
+                        bClosed, iPos)
 
         def save_children(oPane, oConfig, bVert, iNum, iPos):
             """Walk the tree of HPanes + VPanes, and save their info."""
@@ -633,8 +647,7 @@ class MultiPaneWindow(gtk.Window):
                         iMyPos)
                 iChildPos = iPos
             else:
-                oConfig.add_frame(iNum, oPane.type, oPane.name, bVert, False,
-                        iPos)
+                save_pane_to_config(iNum, oPane, oConfig, bVert, False, iPos)
                 iNum += 1
                 iChildPos = iPos
             return iNum, iChildPos
@@ -644,9 +657,8 @@ class MultiPaneWindow(gtk.Window):
         if aTopLevelPanes:
             iNum, _iPos = save_children(aTopLevelPanes[0], self._oConfig,
                     False, 1, -1)
-        for oFrame in self.aClosedFrames:
-            self._oConfig.add_frame(iNum, oFrame.type, oFrame.name, False,
-                    True, -1)
+        for oPane in self.aClosedFrames:
+            save_pane_to_config(iNum, oPane, self._oConfig, False, True, -1)
             iNum += 1
 
     # frame management functions

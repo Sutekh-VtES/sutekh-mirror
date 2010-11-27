@@ -48,6 +48,8 @@ class CardSetFrame(CardListFrame):
     # pylint: disable-msg=W0212
     # We allow access via these properties
     name = property(fget=lambda self: self._sName, doc="Frame Name")
+    cardset_name = property(fget=lambda self: self._oController.view.sSetName,
+            doc="Name of the card set for this frame")
     # pylint: enable-msg=W0212
 
     def cleanup(self):
@@ -72,7 +74,7 @@ class CardSetFrame(CardListFrame):
 
     def is_card_set(self, sSetName):
         """Return true if we're a copy of the given set"""
-        return self._oController.view.sSetName == sSetName
+        return self.cardset_name == sSetName
 
     def update_to_new_db(self):
         """Re-associate internal data against the database.
