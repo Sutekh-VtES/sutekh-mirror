@@ -62,6 +62,22 @@ class TestMultiPaneWindow(GuiSutekhTest):
         self.oWin.remove_frame(oPane)
         self.assertEqual(len(
             self.oWin.find_cs_pane_by_set_name('My Collection')), 2)
+        oPane = self.oWin.find_cs_pane_by_set_name('My Collection')[0]
+        self.oWin.minimize_to_toolbar(oPane)
+        self.assertEqual(len(self.oWin.aClosedFrames), 1)
+        self.assertEqual(len(self.oWin.aOpenFrames), 4)
+        self.assertTrue(oPane in self.oWin.aClosedFrames)
+        self.assertFalse(oPane in self.oWin.aOpenFrames)
+        self.oWin.save_frames()
+        self.oWin.remove_frame(oPane)
+        self.assertEqual(len(self.oWin.aClosedFrames), 0)
+        self.oWin.restore_from_config()
+        print self.oWin.aClosedFrames
+        print self.oWin.aOpenFrames
+        self.assertEqual(len(self.oWin.aClosedFrames), 1)
+        self.assertEqual(len(self.oWin.aOpenFrames), 4)
+        self.assertEqual(len(
+            self.oWin.find_cs_pane_by_set_name('My Collection')), 2)
 
 if __name__ == "__main__":
     unittest.main()
