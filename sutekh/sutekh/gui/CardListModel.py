@@ -292,7 +292,6 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
                     oExpansionIter = self.append(oChildIter)
                     self.set(oExpansionIter,
                             0, sExpansion,
-                            8, oCard,
                             9, oPhysCard,
                             )
                 bEmpty = False
@@ -526,6 +525,9 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
 
     def get_abstract_card_from_iter(self, oIter):
         """Extract the Abstract Card at oIter from the model"""
+        while self.iter_depth(oIter) > 1:
+            # Step up the tree to a level where we store the abstract card
+            oIter = self.iter_parent(oIter)
         return self.get_value(oIter, 8)
 
     def get_physical_card_from_iter(self, oIter):

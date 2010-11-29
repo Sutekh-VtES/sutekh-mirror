@@ -379,16 +379,12 @@ class CardSetCardListModel(CardListModel):
         """Add an extra level iterator to the card list model."""
         iCnt, iParCnt, oPhysCard, bIncCard, bDecCard = tInfo
         iDepth, oKey = tKeyInfo
-        if iDepth == 2:
-            oAbsCard = oKey
-        else:
-            oAbsCard = oKey[0]
         oIter = self.prepend(oParIter)
         # Rely on the defaults to handle icons + textlist
         # Since we skip the handling here, this is about 15% faster on
         # large loads such as All Cards + Expansions + Card Sets
         self.set(oIter, 0, sName, 1, iCnt, 2, iParCnt, 3, bIncCard,
-                4, bDecCard, 8, oAbsCard, 9, oPhysCard)
+                4, bDecCard, 9, oPhysCard)
         self.set_par_count_colour(oIter, iParCnt, iCnt)
         if iDepth == 2:
             self._dAbsSecondLevel2Iter.setdefault(oKey, {})
@@ -1900,11 +1896,12 @@ class CardSetCardListModel(CardListModel):
 
             self.set(oGrpIter, 1, iGrpCnt, 2, iParGrpCnt)
 
-            self.set_par_count_colour(oGrpIter, iParGrpCnt, iGrpCnt)
             if not self.check_group_iter_stays(oGrpIter):
                 sGroupName = self.get_value(oGrpIter, 0)
                 del self._dGroupName2Iter[sGroupName]
                 self.remove(oGrpIter)
+            else:
+                self.set_par_count_colour(oGrpIter, iParGrpCnt, iGrpCnt)
 
         if bRemove:
             del self._dAbs2Iter[oAbsCard]
@@ -1962,11 +1959,12 @@ class CardSetCardListModel(CardListModel):
                 self.remove(oIter)
                 # Fix the group counts
                 self.set(oGrpIter, 2, iParGrpCnt)
-                self.set_par_count_colour(oGrpIter, iParGrpCnt, iGrpCnt)
                 if not self.check_group_iter_stays(oGrpIter):
                     sGroupName = self.get_value(oGrpIter, 0)
                     del self._dGroupName2Iter[sGroupName]
                     self.remove(oGrpIter)
+                else:
+                    self.set_par_count_colour(oGrpIter, iParGrpCnt, iGrpCnt)
 
         if bRemove:
             del self._dAbs2Iter[oAbsCard]
@@ -2059,11 +2057,12 @@ class CardSetCardListModel(CardListModel):
                 self._remove_sub_iters(oAbsCard)
                 self.remove(oIter)
                 self.set(oGrpIter, 2, iParGrpCnt)
-                self.set_par_count_colour(oGrpIter, iParGrpCnt, iGrpCnt)
                 if not self.check_group_iter_stays(oGrpIter):
                     sGroupName = self.get_value(oGrpIter, 0)
                     del self._dGroupName2Iter[sGroupName]
                     self.remove(oGrpIter)
+                else:
+                    self.set_par_count_colour(oGrpIter, iParGrpCnt, iGrpCnt)
             del self._dAbs2Iter[oAbsCard]
         self._check_if_empty()
 
