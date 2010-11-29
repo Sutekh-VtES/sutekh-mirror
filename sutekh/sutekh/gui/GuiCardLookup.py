@@ -20,16 +20,7 @@ from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 from sutekh.gui.CellRendererSutekhButton import CellRendererSutekhButton
 from sutekh.gui.PhysicalCardView import PhysicalCardView
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
-
-
-def add_accel_to_button(oButton, sAccelKey, oAccelGroup, sToolTip=None):
-    """Creates a button using an gtk.AccelLabel to display the accelerator"""
-    (iKeyVal, iMod) = gtk.accelerator_parse(sAccelKey)
-    if iKeyVal != 0:
-        oButton.add_accelerator('clicked', oAccelGroup, iKeyVal, iMod,
-                gtk.ACCEL_VISIBLE)
-    if sToolTip:
-        oButton.set_tooltip_markup(sToolTip)
+from sutekh.gui.FilterModelPanes import add_accel_to_button
 
 
 class DummyController(object):

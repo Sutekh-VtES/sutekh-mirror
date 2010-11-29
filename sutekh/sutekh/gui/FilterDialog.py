@@ -55,6 +55,7 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
         super(FilterDialog, self).__init__("Specify Filter",
                 oParent, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT)
 
+        self._oAccelGroup = gtk.AccelGroup()
         self.__oParent = oParent
         self.__bWasCancelled = False
         self.__oParser = FilterParser.FilterParser()
@@ -120,7 +121,15 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
 
         self.__load_filter(sName, oAST)
 
+        self.add_accel_group(self._oAccelGroup)
+
         self.show_all()
+
+    # pylint: disable-msg=W0212
+    # explicitly allow access to these values via thesep properties
+    accel_group = property(fget=lambda self: self._oAccelGroup,
+            doc="Dialog Accelerator group")
+    # pylint: enable-msg=W0212
 
     def __button_response(self, _oWidget, iResponse):
         """Handle the button choices from the user.

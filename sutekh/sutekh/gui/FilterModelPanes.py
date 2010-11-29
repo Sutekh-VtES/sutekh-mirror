@@ -28,6 +28,16 @@ MOVE_FILTER = 'MoveFilter: '
 NEW_FILTER = 'NewFilter: '
 
 
+def add_accel_to_button(oButton, sAccelKey, oAccelGroup, sToolTip=None):
+    """Creates a button using an gtk.AccelLabel to display the accelerator"""
+    (iKeyVal, iMod) = gtk.accelerator_parse(sAccelKey)
+    if iKeyVal != 0:
+        oButton.add_accelerator('clicked', oAccelGroup, iKeyVal, iMod,
+                gtk.ACCEL_VISIBLE)
+    if sToolTip:
+        oButton.set_tooltip_markup(sToolTip)
+
+
 class FilterModelPanes(gtk.HBox):
     """Widget to hold the different panes of the Filter editor"""
     # pylint: disable-msg=R0904
@@ -123,9 +133,14 @@ class FilterValuesBox(gtk.VBox):
         self._oBoxModelEditor = None
         self._aLastSelection = []
         oCheckBox = gtk.HBox()
-        self.__oDisable = gtk.CheckButton('Disable')
-        self.__oNegate = gtk.CheckButton('Negate')
-        self.__oDelete = gtk.Button('Delete Filter')
+
+        self.__oDisable = gtk.CheckButton('Disable (space)')
+        self.__oNegate = gtk.CheckButton('Negate (Alt-space)')
+        self.__oDelete = gtk.Button('Delete Filter (del)')
+
+        add_accel_to_button(self.__oDisable, "space", oDialog.accel_group)
+        add_accel_to_button(self.__oNegate, "<Alt>space", oDialog.accel_group)
+        add_accel_to_button(self.__oDelete, "Delete", oDialog.accel_group)
 
         self.__oDisable.set_sensitive(False)
         self.__oDelete.set_sensitive(False)
