@@ -629,6 +629,12 @@ disable filter elements.  Disabled filter elements are not used in the filter,
 but the values set for the element are preserved. These options are also
 available from a *Right-Click* context menu.
 
+The buttons also have associated keyboard accelerators. Pressing *&lt;Del&gt;*
+will delete the current filter element, *&lt;space&gt;* will disable the
+current filter element and *&lt;Alt&gt;-&lt;space&gt;* will negate the
+filter element. *&lt;Tab&gt;* can be used to move between the different
+elements in the filter dialog.
+
 Filter values can be dragged from the right-hand pane into any filter of the
 same type. Filter values can also be dragged between filters of the same
 type.
