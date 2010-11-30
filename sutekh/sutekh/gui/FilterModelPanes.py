@@ -520,18 +520,23 @@ class FilterBoxModelStore(gtk.TreeStore):
         else:
             self.append(oFilterIter, (self.NO_VALUE, None, oColour))
 
+    def fix_filter_name(self, oIter, oModel):
+        """Fix the name for the given filter to reflect it negated state"""
+        if oModel.bNegated:
+            sText = 'NOT %s' % oModel.sFilterDesc
+        else:
+            sText = oModel.sFilterDesc
+        self.set(oIter, 0, sText)
+
     def _do_add_iter(self, oIter, oModel, bDisabled):
         """Recursively add elements of the box model"""
         oThisIter = self.append(oIter)
         oColour = self.BLACK
         if hasattr(oModel, 'sFilterDesc'):
-            if oModel.bNegated:
-                sText = 'NOT %s' % oModel.sFilterDesc
-            else:
-                sText = oModel.sFilterDesc
             if oModel.bDisabled or bDisabled:
                 oColour = self.GREY
-            self.set(oThisIter, 0, sText, 1, oModel, 2, oColour)
+            self.set(oThisIter, 1, oModel, 2, oColour)
+            self.fix_filter_name(oThisIter, oModel)
             self._fill_values(oThisIter, oModel, oColour)
         elif hasattr(oModel, 'sBoxType'):
             # Box Model, so lookup correct string
@@ -1077,19 +1082,18 @@ class FilterBoxModelEditView(gtk.TreeView):
 
     def toggle_negate(self, _oWidget):
         """Toggle the disabled flag for a section of the filter"""
-        oFilterObj, oCurPath = self._get_cur_filter()
+        oFilterObj, _oCurPath = self._get_cur_filter()
         if oFilterObj:
-            oFilterObj.bNegated = not oFilterObj.bNegated
-            # We opt for the lazy approach and reload
-            self.load(oCurPath)
+            # This is a a bit inefficient, but allows us to handle updating
+            # the value in only one place
+            self.set_negate(not oFilterObj.bNegated)
 
     def set_negate(self, bState):
         """Set the disabled flag for a section of the filter"""
-        oFilterObj, oCurPath = self._get_cur_filter()
+        oFilterObj, _oCurPath = self._get_cur_filter()
         if oFilterObj and oFilterObj.bNegated != bState:
             oFilterObj.bNegated = bState
-            # We opt for the lazy approach and reload
-            self.load(oCurPath)
+            self._oStore.fix_filter_name(self.oCurSelectIter, oFilterObj)
 
     def toggle_disabled(self, _oWidget):
         """Toggle the disabled flag for a section of the filter"""
