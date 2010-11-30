@@ -119,25 +119,42 @@ class CardSetListModelTests(ConfigSutekhTest):
     def _get_all_child_counts(self, oModel, oIter, sName=''):
         """Recursively descend the children of oIter, getting all the
            relevant info."""
+        # We use get_value rather than get_name_from_iter, as we're
+        # not worried about the encoding issues here, and it saves time.
         aList = []
         oChildIter = oModel.iter_children(oIter)
         while oChildIter:
             if sName:
-                sListName = sName + ':' + oModel.get_name_from_iter(oChildIter)
+                sListName = sName + ':' + oModel.get_value(oChildIter, 0)
             else:
-                sListName = oModel.get_name_from_iter(oChildIter)
-            aList.append((oModel.get_card_count_from_iter(oChildIter),
-                oModel.get_parent_count_from_iter(oChildIter), sListName))
+                sListName = oModel.get_value(oChildIter, 0)
+            # similiarly, we use get_value rather than the count functions
+            # for speed as well
+            aList.append((oModel.get_value(oChildIter, 1),
+                oModel.get_value(oChildIter, 2), sListName))
             if oModel.iter_n_children(oChildIter) > 0:
-                aList.extend(self._get_all_child_counts(oModel, oChildIter,
-                    sListName))
+                oGCIter = oModel.iter_children(oChildIter)
+                # We untoll a level for speed reasons
+                # This is messy - we could easily do this as a recursive call
+                # in all cases, but we hit this function 4 times for almost
+                # every iteration of the test, so sacrificing some readablity
+                # for speed is worthwhile
+                while oGCIter:
+                    sGCName = sListName + ':' + \
+                            oModel.get_value(oGCIter, 0)
+                    if oModel.iter_n_children(oGCIter) > 0:
+                        aList.extend(self._get_all_child_counts(oModel,
+                            oGCIter, sGCName))
+                    else:
+                        aList.append((oModel.get_value(oGCIter, 1),
+                            oModel.get_value(oGCIter, 2), sGCName))
+                    oGCIter = oModel.iter_next(oGCIter)
             oChildIter = oModel.iter_next(oChildIter)
-        aList.sort()
         return aList
 
     def _get_all_counts(self, oModel):
         """Return a list of iCnt, iParCnt, sCardName tuples from the Model"""
-        return self._get_all_child_counts(oModel, None)
+        return sorted(self._get_all_child_counts(oModel, None))
 
     def _check_cache_totals(self, oCS, oModelCache, oModelNoCache, sMode):
         """Reload the models and check the totals match"""
