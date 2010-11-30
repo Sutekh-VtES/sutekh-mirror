@@ -1040,25 +1040,25 @@ class FilterBoxModelEditView(gtk.TreeView):
         else:
             # Find the dragged filter and remove it from it's current
             # position
-            oMoveIter = self._oStore.get_iter_from_string(sFilter)
-            oMoveObj = self._oStore.get_value(oMoveIter, 1)
+            oSourceIter = self._oStore.get_iter_from_string(sFilter)
+            oFilterObj = self._oStore.get_value(oSourceIter, 1)
             oParent = self._oStore.get_value(
-                    self._oStore.iter_parent(oMoveIter), 1)
+                    self._oStore.iter_parent(oSourceIter), 1)
             # Check move is legal
             bDoInsert = False
-            if oInsertObj is not oMoveObj:
-                if not isinstance(oMoveObj, FilterBoxModel) or \
-                        not oMoveObj.is_in_model(oInsertObj):
+            if oInsertObj is not oFilterObj:
+                if not isinstance(oFilterObj, FilterBoxModel) or \
+                        not oFilterObj.is_in_model(oInsertObj):
                     bDoInsert = True
             if bDoInsert:
-                oParent.remove(oMoveObj)
-                oInsertObj.append(oMoveObj)
+                oParent.remove(oFilterObj)
+                oInsertObj.append(oFilterObj)
             else:
                 return False
         # Move to the correct place
         if iIndex >= 0:
-            oAddedFilter = oInsertObj.pop()
-            oInsertObj.insert(iIndex, oAddedFilter)
+            oFilterObj = oInsertObj.pop()
+            oInsertObj.insert(iIndex, oFilterObj)
         self.load()
         if sSource == 'NewFilter':
             # Restore selection after load
@@ -1070,7 +1070,7 @@ class FilterBoxModelEditView(gtk.TreeView):
             # Since we can seriously muck around with the tree layout,
             # we can't use any previous iters or paths, so we use
             # foreach
-            self._oStore.foreach(self._check_for_obj, oMoveObj)
+            self._oStore.foreach(self._check_for_obj, oFilterObj)
         return True
 
     def _get_cur_filter(self):
