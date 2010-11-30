@@ -132,6 +132,7 @@ class FilterValuesBox(gtk.VBox):
         self._oFilter = None
         self._oBoxModelEditor = None
         self._aLastSelection = []
+        self._oLastFilter = None
         oCheckBox = gtk.HBox()
 
         self.__oDisable = gtk.CheckButton('Disable (space)')
@@ -255,6 +256,8 @@ class FilterValuesBox(gtk.VBox):
         self._oBoxModelEditor = oBoxModelEditor
         self._aLastSelection = []
         if self._oWidget:
+            if self._oLastFilter == oFilter:
+                return  # We're still the same filter, so do nothing
             self.remove(self._oWidget)
             self._oWidget = None
         if isinstance(oFilter, FilterBoxModel):
@@ -289,6 +292,7 @@ class FilterValuesBox(gtk.VBox):
             self._oWidget = self._oEmptyWidget
             self.disable_all_buttons()
         self.pack_start(self._oWidget, expand=True)
+        self._oLastFilter = oFilter
         self.show_all()
 
     # pylint: disable-msg=R0201
