@@ -90,7 +90,7 @@ class TestCardSetFrame(GuiSutekhTest):
         self.oWin.setup(self.oConfig)
         # Remove the unneeded panes
         for oPane in self.oWin.aOpenFrames[:]:
-            if oPane.title in ['Card Text', 'Card Set List']:
+            if oPane.title in ('Card Text', 'Card Set List'):
                 self.oWin.remove_frame(oPane)
             if oPane.title == 'White Wolf Card List':
                 oWWList = oPane

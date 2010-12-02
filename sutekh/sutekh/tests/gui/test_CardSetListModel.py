@@ -334,19 +334,19 @@ class CardSetListModelTests(ConfigSutekhTest):
             dCountInfo[oModel]['added'] = None
             # Ensure we start with a clean cache
             oModel._dCache = {}
-        for bEditFlag in [False, True]:
+        for bEditFlag in (False, True):
             for oModel in aModels:
                 oModel.bEditable = bEditFlag
-            for iShowMode in [ALL_CARDS, PARENT_CARDS, CHILD_CARDS,
-                    THIS_SET_ONLY]:
+            for iShowMode in (ALL_CARDS, PARENT_CARDS, CHILD_CARDS,
+                    THIS_SET_ONLY):
                 for oModel in aModels:
                     oModel._change_count_mode(iShowMode)
-                for iLevelMode in [NO_SECOND_LEVEL, SHOW_EXPANSIONS,
-                        SHOW_CARD_SETS, EXP_AND_CARD_SETS, CARD_SETS_AND_EXP]:
+                for iLevelMode in (NO_SECOND_LEVEL, SHOW_EXPANSIONS,
+                        SHOW_CARD_SETS, EXP_AND_CARD_SETS, CARD_SETS_AND_EXP):
                     for oModel in aModels:
                         oModel._change_level_mode(iLevelMode)
-                    for iParentMode in [PARENT_COUNT, MINUS_THIS_SET,
-                            MINUS_SETS_IN_USE, IGNORE_PARENT]:
+                    for iParentMode in (PARENT_COUNT, MINUS_THIS_SET,
+                            MINUS_SETS_IN_USE, IGNORE_PARENT):
                         for oModel in aModels:
                             oModel._change_parent_count_mode(iParentMode)
                         self._add_remove_cards(oPCS, aModels, dCountInfo)
@@ -358,16 +358,16 @@ class CardSetListModelTests(ConfigSutekhTest):
            a zero result filters to test the model."""
         # pylint: disable-msg=W0212
         # we need to access protected methods
-        for bEditFlag in [False, True]:
+        for bEditFlag in (False, True):
             oModel.bEditable = bEditFlag
-            for iLevelMode in [NO_SECOND_LEVEL, SHOW_EXPANSIONS,
-                    SHOW_CARD_SETS, EXP_AND_CARD_SETS, CARD_SETS_AND_EXP]:
+            for iLevelMode in (NO_SECOND_LEVEL, SHOW_EXPANSIONS,
+                    SHOW_CARD_SETS, EXP_AND_CARD_SETS, CARD_SETS_AND_EXP):
                 oModel._change_level_mode(iLevelMode)
-                for iParentMode in [IGNORE_PARENT, PARENT_COUNT,
-                        MINUS_THIS_SET, MINUS_SETS_IN_USE]:
+                for iParentMode in (IGNORE_PARENT, PARENT_COUNT,
+                        MINUS_THIS_SET, MINUS_SETS_IN_USE):
                     oModel._change_parent_count_mode(iParentMode)
-                    for iShowMode in [THIS_SET_ONLY, ALL_CARDS, PARENT_CARDS,
-                            CHILD_CARDS]:
+                    for iShowMode in (THIS_SET_ONLY, ALL_CARDS, PARENT_CARDS,
+                            CHILD_CARDS):
                         oModel._change_count_mode(iShowMode)
                         oModel.selectfilter = Filters.CardNameFilter('ZZZZZZZ')
                         oModel.applyfilter = True
@@ -553,10 +553,10 @@ class CardSetListModelTests(ConfigSutekhTest):
         _oCache = SutekhObjectCache()
         oPCS = self._setup_simple()
         aModels = []
-        for cGrouping in [Groupings.CryptLibraryGrouping,
+        for cGrouping in (Groupings.CryptLibraryGrouping,
                 Groupings.DisciplineGrouping, Groupings.ClanGrouping,
                 Groupings.CardTypeGrouping, Groupings.ExpansionGrouping,
-                Groupings.RarityGrouping]:
+                Groupings.RarityGrouping):
             oModel = self._get_model(self.aNames[0])
             oModel.groupby = cGrouping
             aModels.append(oModel)
@@ -568,11 +568,11 @@ class CardSetListModelTests(ConfigSutekhTest):
         _oCache = SutekhObjectCache()
         oPCS = self._setup_simple()
         aModels = []
-        for oFilter in [Filters.CardTypeFilter('Vampire'),
+        for oFilter in (Filters.CardTypeFilter('Vampire'),
                 Filters.PhysicalExpansionFilter('Sabbat'),
                 Filters.CardSetMultiCardCountFilter((['2', '3'],
                     self.aNames[0])),
-                ]:
+                ):
             oModel = self._get_model(self.aNames[0])
             oModel.selectfilter = oFilter
             oModel.applyfilter = True
@@ -593,13 +593,13 @@ class CardSetListModelTests(ConfigSutekhTest):
         # reloading as well
         aCardsToAdd = self.aPhysCards[1:8:2] + self.aPhysCards[9:]
         # We test a much smaller range of things than in loop_modes
-        for bEditFlag in [False, True]:
+        for bEditFlag in (False, True):
             for oModel in aModels:
                 oModel.bEditable = bEditFlag
-            for iLevelMode in [NO_SECOND_LEVEL, SHOW_EXPANSIONS]:
+            for iLevelMode in (NO_SECOND_LEVEL, SHOW_EXPANSIONS):
                 for oModel in aModels:
                     oModel._change_level_mode(iLevelMode)
-                for iShowMode in [THIS_SET_ONLY, ALL_CARDS]:
+                for iShowMode in (THIS_SET_ONLY, ALL_CARDS):
                     for oModel in aModels:
                         oModel._change_count_mode(iShowMode)
                         oModel.load()
@@ -875,8 +875,8 @@ class CardSetListModelTests(ConfigSutekhTest):
         _oPCS, _oSPCS, oChildPCS, _oGCPCS, _oGC2PCS = \
                 self._setup_relationships()
         aModels = []
-        for cGrouping in [Groupings.DisciplineGrouping,
-                Groupings.CardTypeGrouping]:
+        for cGrouping in (Groupings.DisciplineGrouping,
+                Groupings.CardTypeGrouping):
             for sName in self.aNames[:4]:
                 oModel = self._get_model(sName)
                 oModel.groupby = cGrouping
@@ -890,12 +890,12 @@ class CardSetListModelTests(ConfigSutekhTest):
         _oPCS, _oSPCS, oChildPCS, _oGCPCS, _oGC2PCS = \
                 self._setup_relationships()
         aModels = []
-        for oFilter in [
+        for oFilter in (
                 Filters.CardTypeFilter('Vampire'),
                 Filters.PhysicalExpansionFilter('Sabbat'),
                 Filters.CardSetMultiCardCountFilter((['2', '3'],
                     self.aNames[0])),
-                ]:
+                ):
             for sName in self.aNames[:4]:
                 oModel = self._get_model(sName)
                 oModel.selectfilter = oFilter
