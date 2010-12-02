@@ -19,14 +19,14 @@ from sutekh.core.Filters import PARSER_FILTERS, FilterNot, FilterAndBox, \
         FilterOrBox
 
 
-ENTRY_FILTERS = [x.keyword for x in PARSER_FILTERS if hasattr(x, 'istextentry')
-        and x.istextentry]
-WITH_FILTERS = [x.keyword for x in PARSER_FILTERS if hasattr(x, 'iswithfilter')
-        and x.iswithfilter]
-FROM_FILTERS = [x.keyword for x in PARSER_FILTERS if hasattr(x, 'isfromfilter')
-        and x.isfromfilter]
-LIST_FILTERS = [x.keyword for x in PARSER_FILTERS if hasattr(x, 'islistfilter')
-        and x.islistfilter]
+ENTRY_FILTERS = set([x.keyword for x in PARSER_FILTERS
+    if hasattr(x, 'istextentry') and x.istextentry])
+WITH_FILTERS = set([x.keyword for x in PARSER_FILTERS
+    if hasattr(x, 'iswithfilter') and x.iswithfilter])
+FROM_FILTERS = set([x.keyword for x in PARSER_FILTERS
+    if hasattr(x, 'isfromfilter') and x.isfromfilter])
+LIST_FILTERS = set([x.keyword for x in PARSER_FILTERS
+    if hasattr(x, 'islistfilter') and x.islistfilter])
 
 
 # Misc utility functions
@@ -48,7 +48,7 @@ def get_filters_for_type(sFilterType):
 class ParseFilterDefinitions(object):
     """Provides the lexer used by PLY"""
     # pylint: disable-msg=C0103, R0201
-    aKeywords = [x.keyword for x in PARSER_FILTERS]
+    aKeywords = set([x.keyword for x in PARSER_FILTERS])
 
     tokens = (
             'NOT',
