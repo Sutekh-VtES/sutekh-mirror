@@ -128,7 +128,7 @@ class ProfileMngDlg(SutekhDialog, ConfigFileListener):
         self._oNotebook = gtk.Notebook()
         self._oNotebook.set_scrollable(True)
         self._oNotebook.popup_enable()
-        for sType in [CARDSET, WW_CARDLIST, CARDSET_LIST]:
+        for sType in (CARDSET, WW_CARDLIST, CARDSET_LIST):
             oProfileList = self._make_profile_list(sType)
             self._oNotebook.append_page(oProfileList, gtk.Label(LABELS[sType]))
             self._dLists[oProfileList] = sType
