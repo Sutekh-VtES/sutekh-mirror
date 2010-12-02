@@ -337,18 +337,18 @@ class CardSetListModelTests(ConfigSutekhTest):
         for bEditFlag in [False, True]:
             for oModel in aModels:
                 oModel.bEditable = bEditFlag
-            for iLevelMode in [NO_SECOND_LEVEL, SHOW_EXPANSIONS,
-                    SHOW_CARD_SETS, EXP_AND_CARD_SETS, CARD_SETS_AND_EXP]:
+            for iShowMode in [ALL_CARDS, PARENT_CARDS, CHILD_CARDS,
+                    THIS_SET_ONLY]:
                 for oModel in aModels:
-                    oModel._change_level_mode(iLevelMode)
-                for iParentMode in [IGNORE_PARENT, PARENT_COUNT,
-                        MINUS_THIS_SET, MINUS_SETS_IN_USE]:
+                    oModel._change_count_mode(iShowMode)
+                for iLevelMode in [NO_SECOND_LEVEL, SHOW_EXPANSIONS,
+                        SHOW_CARD_SETS, EXP_AND_CARD_SETS, CARD_SETS_AND_EXP]:
                     for oModel in aModels:
-                        oModel._change_parent_count_mode(iParentMode)
-                    for iShowMode in [THIS_SET_ONLY, ALL_CARDS, PARENT_CARDS,
-                            CHILD_CARDS]:
+                        oModel._change_level_mode(iLevelMode)
+                    for iParentMode in [PARENT_COUNT, MINUS_THIS_SET,
+                            MINUS_SETS_IN_USE, IGNORE_PARENT]:
                         for oModel in aModels:
-                            oModel._change_count_mode(iShowMode)
+                            oModel._change_parent_count_mode(iParentMode)
                         self._add_remove_cards(oPCS, aModels, dCountInfo)
         for oModel in aModels:
             self._reset_modes(oModel)
