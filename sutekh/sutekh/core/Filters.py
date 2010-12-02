@@ -106,7 +106,7 @@ class FilterBox(Filter, list):
            This is the intersection of the types of the subfilters
            """
         aTypes = []
-        if len(self) > 0:
+        if self:
             for sType in self[0].types:
                 iLen = len([x for x in self if sType in x.types])
                 if iLen == len(self):
@@ -885,7 +885,7 @@ class MultiCostFilter(DirectFilter):
         # pylint: disable-msg=E1101
         # SQLObject methods not detected by pylint
         if self.__bZeroCost:
-            if len(self.__aCost) > 0:
+            if self.__aCost:
                 return OR(IN(AbstractCard.q.cost, self.__aCost),
                         AbstractCard.q.cost == None)
             else:
@@ -1233,7 +1233,7 @@ class CardSetMultiCardCountFilter(DirectFilter):
                     MapPhysicalCardToPhysicalCardSet.q.physicalCardSetID),
                 having=func.COUNT(PhysicalCard.q.abstractCardID) > 30))
             self._oFilters.append(oGreater30Query)
-        if len(aCounts) > 0:
+        if aCounts:
             # SQLite doesn't like strings here, so convert to int
             oCountFilter = IN(PhysicalCard.q.abstractCardID, Select(
                 PhysicalCard.q.abstractCardID,
@@ -1322,7 +1322,7 @@ class MultiPhysicalExpansionFilter(DirectFilter):
     def _get_expression(self):
         oTable = Table('physical_card')
         # None in the IN statement doesn't do the right thing for me
-        if self.__bOrUnspec and len(self._aIds) > 0:
+        if self.__bOrUnspec and self._aIds:
             return OR(IN(oTable.expansion_id, self._aIds),
                     oTable.expansion_id == None)
         elif self.__bOrUnspec:
@@ -1460,7 +1460,7 @@ class PhysicalCardSetInUseFilter(Filter):
     @classmethod
     def get_values(cls):
         aInUseCardSets = PhysicalCardSet.selectBy(inuse=True)
-        aParents = set([])
+        aParents = set()
         for oSet in aInUseCardSets:
             if oSet.parent:
                 aParents.add(oSet.parent.name)
