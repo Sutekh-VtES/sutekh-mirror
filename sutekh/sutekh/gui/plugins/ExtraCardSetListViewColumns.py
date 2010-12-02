@@ -332,7 +332,7 @@ class ExtraCardSetListViewColumns(SutekhPlugin):
         sName = oCardSet.name
         if sName in self._dCache:
             dInfo = self._dCache[sName]
-            for sKey in ['Total Cards', 'Library', 'Crypt']:
+            for sKey in ('Total Cards', 'Library', 'Crypt'):
                 if sKey in dInfo:
                     del dInfo[sKey]
             # queue a redraw

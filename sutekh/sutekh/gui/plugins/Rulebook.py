@@ -61,7 +61,7 @@ class RulebookConfigDialog(SutekhDialog):
 
         self._dFileSelectors = {}
         for sName in self.POSSIBLE_FILES:
-            if sName in ['VTES FAQ', 'Imbued FAQ']:
+            if sName in ('VTES FAQ', 'Imbued FAQ'):
                 sBaseUrl = 'www.thelasombra.com'
             else:
                 sBaseUrl = 'www.white-wolf.com'

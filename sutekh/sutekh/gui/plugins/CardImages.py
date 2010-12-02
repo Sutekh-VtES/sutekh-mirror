@@ -116,12 +116,12 @@ class CardImagePopupMenu(gtk.Menu):
 
     def cycle_expansion(self, _oWidget, iDir):
         """Change the expansion as requested."""
-        assert(iDir in [BACKWARD, FORWARD])
+        assert(iDir in (BACKWARD, FORWARD))
         self.oFrame.do_cycle_expansion(iDir)
 
     def set_zoom(self, _oWidget, iScale):
         """Change the drawing mode."""
-        assert(iScale in [FULL, VIEW_FIXED, FIT])
+        assert(iScale in (FULL, VIEW_FIXED, FIT))
         self.oFrame.set_zoom_mode(iScale)
 
 
@@ -226,7 +226,7 @@ class CardImageFrame(BasicFrame, CardTextViewListener):
             sFilename = sFilename[4:] + 'the'
         sFilename = sFilename.replace('(advanced)', 'adv')
         # Should probably do this via translate
-        for sChar in [" ", ".", ",", "'", "(", ")", "-", ":", "!", '"', "/"]:
+        for sChar in (" ", ".", ",", "'", "(", ")", "-", ":", "!", '"', "/"):
             sFilename = sFilename.replace(sChar, '')
         sFilename = sFilename + '.jpg'
         return os.path.join(self.__sPrefsPath, sCurExpansionPath, sFilename)

@@ -80,7 +80,7 @@ def _get_card_costs(aCards):
        Number of cards with a cost
        """
     dCosts = {}
-    for sType in ['blood', 'pool', 'conviction']:
+    for sType in ('blood', 'pool', 'conviction'):
         dCosts.setdefault(sType, [0, 0, 0, 0])
     for oAbsCard in aCards:
         if oAbsCard.cost is not None:

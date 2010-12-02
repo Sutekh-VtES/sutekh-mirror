@@ -234,7 +234,7 @@ class CardSetPrint(SutekhPlugin):
 
             # Fill in Cards
             for sCardName, iCnt in sorted(dCardInfo.items()):
-                if self._iPrintExpansions in [NO_EXPANSION, LONG_INDENT]:
+                if self._iPrintExpansions in (NO_EXPANSION, LONG_INDENT):
                     aMarkup.append(u"  %i \u00D7 %s" %
                             (iCnt, self.escape(sCardName)))
                     if sCardName in dExpInfo:

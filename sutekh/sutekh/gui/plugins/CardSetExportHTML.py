@@ -45,10 +45,10 @@ class CardSetExportHTML(SutekhPlugin):
                 sDefault = 'Secret Library'
                 self.set_config_item('HTML export mode',
                         sDefault)
-            for sString, sVal in [("Add links to The Secret Library",
+            for sString, sVal in (("Add links to The Secret Library",
                 'Secret Library'),
                     ("Add links to VTES Monger", 'Monger'),
-                    ("Don't add links in the HTML file", 'None')]:
+                    ("Don't add links in the HTML file", 'None')):
                 oItem = gtk.RadioMenuItem(oGroup, sString)
                 if not oGroup:
                     oGroup = oItem
