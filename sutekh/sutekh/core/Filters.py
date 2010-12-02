@@ -48,7 +48,7 @@ def IN(oCol, oListOrSelect):
 class Filter(object):
     """Base class for all filters"""
 
-    types = []
+    types = ()
 
     @classmethod
     def get_values(cls):
@@ -191,7 +191,7 @@ class FilterNot(Filter):
 class NullFilter(Filter):
     """Return everything."""
 
-    types = ['AbstractCard', 'PhysicalCard', 'PhysicalCardSet']
+    types = ('AbstractCard', 'PhysicalCard', 'PhysicalCardSet')
 
     # pylint: disable-msg=C0111
     # don't need docstrings for _get_expression, get_values & _get_joins
@@ -277,7 +277,7 @@ def make_table_alias(sTable):
 # Individual Filters
 class ClanFilter(SingleFilter):
     """Filter on Card's clan"""
-    types = ['AbstractCard', 'PhysicalCard']
+    types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, sClan):
         # pylint: disable-msg=E1101
@@ -294,7 +294,7 @@ class MultiClanFilter(MultiFilter):
     description = "Clan"
     helptext = "a list of clans\nReturns all cards which require or are of" \
              " the specified clans"
-    types = ['AbstractCard', 'PhysicalCard']
+    types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, aClans):
         # pylint: disable-msg=E1101
@@ -312,7 +312,7 @@ class MultiClanFilter(MultiFilter):
 
 class DisciplineFilter(MultiFilter):
     """Filter on a card's disciplines"""
-    types = ['AbstractCard', 'PhysicalCard']
+    types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, sDiscipline):
         # pylint: disable-msg=E1101
@@ -329,7 +329,7 @@ class MultiDisciplineFilter(MultiFilter):
     helptext = "a list of disciplines.\nReturns a list of all cards which " \
             "have or require the selected disciplines."
     islistfilter = True
-    types = ['AbstractCard', 'PhysicalCard']
+    types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, aDisciplines):
         # pylint: disable-msg=E1101
@@ -350,7 +350,7 @@ class MultiDisciplineFilter(MultiFilter):
 
 class ExpansionFilter(MultiFilter):
     """Filter AbstractCard on Expansion name"""
-    types = ['AbstractCard', 'PhysicalCard']
+    types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, sExpansion):
         # pylint: disable-msg=E1101
@@ -362,7 +362,7 @@ class ExpansionFilter(MultiFilter):
 
 class MultiExpansionFilter(MultiFilter):
     """Filter AbstractCard on multiple Expansion names"""
-    types = ['AbstractCard', 'PhysicalCard']
+    types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, aExpansions):
         # pylint: disable-msg=E1101
@@ -377,7 +377,7 @@ class MultiExpansionFilter(MultiFilter):
 
 class ExpansionRarityFilter(SingleFilter):
     """Filter on Expansion & Rarity combo """
-    types = ['AbstractCard', 'PhysicalCard']
+    types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, tExpanRarity):
         """ We use a tuple for Expansion and Rarity here to keep the
@@ -399,7 +399,7 @@ class MultiExpansionRarityFilter(MultiFilter):
             " cards."
     iswithfilter = True
     islistfilter = True
-    types = ['AbstractCard', 'PhysicalCard']
+    types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, aExpansionRarities):
         """  Called with a list of Expansion + Rarity pairs"""
@@ -434,14 +434,14 @@ class MultiExpansionRarityFilter(MultiFilter):
 
 class DisciplineLevelFilter(MultiFilter):
     """Filter on discipline & level combo"""
-    types = ['AbstractCard', 'PhysicalCard']
+    types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, tDiscLevel):
         # pylint: disable-msg=E1101
         # SQLObject methods not detected by pylint
         sDiscipline, sLevel = tDiscLevel
         sLevel = sLevel.lower()
-        assert sLevel in ['inferior', 'superior']
+        assert sLevel in ('inferior', 'superior')
         # There will be 0 or 1 ids
         self._aIds = [oP.id for oP in IDiscipline(sDiscipline).pairs if
                 oP.level == sLevel]
@@ -458,7 +458,7 @@ class MultiDisciplineLevelFilter(MultiFilter):
             " inferior)\nReturns all matching cards."
     iswithfilter = True
     islistfilter = True
-    types = ['AbstractCard', 'PhysicalCard']
+    types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, aDiscLevels):
         # pylint: disable-msg=E1101
@@ -470,7 +470,7 @@ class MultiDisciplineLevelFilter(MultiFilter):
             aValues = aDiscLevels
         for sDiscipline, sLevel in aValues:
             sLevel = sLevel.lower()
-            assert sLevel in ['inferior', 'superior']
+            assert sLevel in ('inferior', 'superior')
             self._aIds.extend([oP.id for oP in IDiscipline(sDiscipline).pairs
                     if oP.level == sLevel])
         self._oMapTable = make_table_alias('abs_discipline_pair_map')
@@ -484,7 +484,7 @@ class MultiDisciplineLevelFilter(MultiFilter):
         aDisciplines = oTemp.get_values()
         aResults = []
         for sDisc in aDisciplines:
-            for sLevel in ['inferior', 'superior']:
+            for sLevel in ('inferior', 'superior'):
                 try:
                     # Check if the discipline pair exists
                     IDisciplinePair((sDisc, sLevel))
@@ -496,7 +496,7 @@ class MultiDisciplineLevelFilter(MultiFilter):
 
 class CardTypeFilter(SingleFilter):
     """Filter on card type"""
-    types = ['AbstractCard', 'PhysicalCard']
+    types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, sCardType):
         # pylint: disable-msg=E1101
@@ -512,7 +512,7 @@ class MultiCardTypeFilter(MultiFilter):
     description = "Card Type"
     helptext = "a list of card types.\nReturns all cards of the given types"
     islistfilter = True
-    types = ['AbstractCard', 'PhysicalCard']
+    types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, aCardTypes):
         # pylint: disable-msg=E1101
@@ -530,7 +530,7 @@ class MultiCardTypeFilter(MultiFilter):
 
 class CryptCardFilter(MultiFilter):
     """Filter on crypt card types"""
-    types = ['AbstractCard', 'PhysicalCard']
+    types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self):
         # pylint: disable-msg=E1101
@@ -542,7 +542,7 @@ class CryptCardFilter(MultiFilter):
 
 class SectFilter(SingleFilter):
     """Filter on Sect"""
-    types = ['AbstractCard', 'PhysicalCard']
+    types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, sSect):
         # pylint: disable-msg=E1101
@@ -559,7 +559,7 @@ class MultiSectFilter(MultiFilter):
     helptext = "a list of sects.\nReturns all cards belonging to the given" \
             " sects"
     islistfilter = True
-    types = ['AbstractCard', 'PhysicalCard']
+    types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, aSects):
         # pylint: disable-msg=E1101
@@ -577,7 +577,7 @@ class MultiSectFilter(MultiFilter):
 
 class TitleFilter(SingleFilter):
     """Filter on Title"""
-    types = ['AbstractCard', 'PhysicalCard']
+    types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, sTitle):
         # pylint: disable-msg=E1101
@@ -593,7 +593,7 @@ class MultiTitleFilter(MultiFilter):
     description = "Title"
     helptext = "a list of titles.\nReturns all cards with the selected titles."
     islistfilter = True
-    types = ['AbstractCard', 'PhysicalCard']
+    types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, aTitles):
         # pylint: disable-msg=E1101
@@ -611,7 +611,7 @@ class MultiTitleFilter(MultiFilter):
 
 class CreedFilter(SingleFilter):
     """Filter on Creed"""
-    types = ['AbstractCard', 'PhysicalCard']
+    types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, sCreed):
         # pylint: disable-msg=E1101
@@ -628,7 +628,7 @@ class MultiCreedFilter(MultiFilter):
     helptext = "a list of creeds.\nReturns all cards requiring or of the" \
             " selected creeds"
     islistfilter = True
-    types = ['AbstractCard', 'PhysicalCard']
+    types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, aCreeds):
         # pylint: disable-msg=E1101
@@ -646,7 +646,7 @@ class MultiCreedFilter(MultiFilter):
 
 class VirtueFilter(SingleFilter):
     """Filter on Virtue"""
-    types = ['AbstractCard', 'PhysicalCard']
+    types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, sVirtue):
         # pylint: disable-msg=E1101
@@ -663,7 +663,7 @@ class MultiVirtueFilter(MultiFilter):
     helptext = "a list of virtues.\nReturns all cards requiring or having " \
             "the selected virtues"
     islistfilter = True
-    types = ['AbstractCard', 'PhysicalCard']
+    types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, aVirtues):
         # pylint: disable-msg=E1101
@@ -681,7 +681,7 @@ class MultiVirtueFilter(MultiFilter):
 
 class ArtistFilter(SingleFilter):
     """Filter on Card's artist"""
-    types = ['AbstractCard', 'PhysicalCard']
+    types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, sArtist):
         # pylint: disable-msg=E1101
@@ -698,7 +698,7 @@ class MultiArtistFilter(MultiFilter):
     description = "Artist"
     helptext = "a list of artists\nReturns all cards where one or more of" \
              " the specified artists has created art for the card."
-    types = ['AbstractCard', 'PhysicalCard']
+    types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, aArtists):
         # pylint: disable-msg=E1101
@@ -716,7 +716,7 @@ class MultiArtistFilter(MultiFilter):
 
 class KeywordFilter(SingleFilter):
     """Filter on Card's keyword"""
-    types = ['AbstractCard', 'PhysicalCard']
+    types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, sKeyword):
         # pylint: disable-msg=E1101
@@ -733,7 +733,7 @@ class MultiKeywordFilter(MultiFilter):
     description = "Keyword"
     helptext = "a list of keywords\nReturns all cards where one or more of" \
              " the specified keywords is associated with the card."
-    types = ['AbstractCard', 'PhysicalCard']
+    types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, aKeywords):
         # pylint: disable-msg=E1101
@@ -751,7 +751,7 @@ class MultiKeywordFilter(MultiFilter):
 
 class GroupFilter(DirectFilter):
     """Filter on Group"""
-    types = ['AbstractCard', 'PhysicalCard']
+    types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, iGroup):
         self.__iGroup = iGroup
@@ -771,7 +771,7 @@ class MultiGroupFilter(DirectFilter):
     helptext = "a list of groups.\nReturns all cards belonging to the " \
             "listed group."
     islistfilter = True
-    types = ['AbstractCard', 'PhysicalCard']
+    types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, aGroups):
         self.__aGroups = [int(sV) for sV in aGroups if sV != 'Any']
@@ -795,7 +795,7 @@ class MultiGroupFilter(DirectFilter):
 
 class CapacityFilter(DirectFilter):
     """Filter on Capacity"""
-    types = ['AbstractCard', 'PhysicalCard']
+    types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, iCap):
         self.__iCap = iCap
@@ -815,7 +815,7 @@ class MultiCapacityFilter(DirectFilter):
     helptext = "a list of capacities.\nReturns all cards of the selected" \
             " capacities"
     islistfilter = True
-    types = ['AbstractCard', 'PhysicalCard']
+    types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, aCaps):
         self.__aCaps = [int(sV) for sV in aCaps]
@@ -837,7 +837,7 @@ class MultiCapacityFilter(DirectFilter):
 
 class CostFilter(DirectFilter):
     """Filter on Cost"""
-    types = ['AbstractCard', 'PhysicalCard']
+    types = ('AbstractCard', 'PhysicalCard')
 
     # Should this exclude Vamps & Imbued, if we search for
     # cards without cost?
@@ -861,7 +861,7 @@ class MultiCostFilter(DirectFilter):
     description = "Cost"
     helptext = "a list of costs.\nReturns all cards with the given costs."
     islistfilter = True
-    types = ['AbstractCard', 'PhysicalCard']
+    types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, aCost):
         self.__aCost = [int(sV) for sV in aCost if sV != 'X']
@@ -895,11 +895,11 @@ class MultiCostFilter(DirectFilter):
 
 class CostTypeFilter(DirectFilter):
     """Filter on cost type"""
-    types = ['AbstractCard', 'PhysicalCard']
+    types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, sCostType):
         self.__sCostType = sCostType.lower()
-        assert self.__sCostType in ["blood", "pool", "conviction", None]
+        assert self.__sCostType in ("blood", "pool", "conviction", None)
 
     # pylint: disable-msg=C0111
     # don't need docstrings for _get_expression, get_values & _get_joins
@@ -916,12 +916,12 @@ class MultiCostTypeFilter(DirectFilter):
     description = "Cost Type"
     helptext = "a list of cost types.\nReturns cards requiring the selected" \
             " cost types."
-    types = ['AbstractCard', 'PhysicalCard']
+    types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, aCostTypes):
         self.__aCostTypes = [x.lower() for x in aCostTypes if x is not None]
         for sCostType in self.__aCostTypes:
-            assert sCostType in ["blood", "pool", "conviction"]
+            assert sCostType in ("blood", "pool", "conviction")
         if None in aCostTypes:
             self.__aCostTypes.append(None)
 
@@ -939,7 +939,7 @@ class MultiCostTypeFilter(DirectFilter):
 
 class LifeFilter(DirectFilter):
     """Filter on life"""
-    types = ['AbstractCard', 'PhysicalCard']
+    types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, iLife):
         self.__iLife = iLife
@@ -961,7 +961,7 @@ class MultiLifeFilter(DirectFilter):
             "For cases where the life varies, only the base value for life " \
             "is used."
     islistfilter = True
-    types = ['AbstractCard', 'PhysicalCard']
+    types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, aLife):
         self.__aLife = [int(sV) for sV in aLife]
@@ -988,7 +988,7 @@ class CardTextFilter(DirectFilter):
     helptext = "the desired card text to search for (% can be used as a " \
             "wildcard).\nReturns all cards whose text contains this string."
     istextentry = True
-    types = ['AbstractCard', 'PhysicalCard']
+    types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, sPattern):
         self.__sPattern = sPattern.lower().encode('utf-8')
@@ -1014,7 +1014,7 @@ class CardNameFilter(DirectFilter):
             "as a wildcard).\nReturns all cards whose name contains this " \
             "string"
     istextentry = True
-    types = ['AbstractCard', 'PhysicalCard']
+    types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, sPattern):
         self.__sPattern = sPattern.lower().encode('utf-8')
@@ -1040,7 +1040,7 @@ class CardFunctionFilter(DirectFilter):
             "Functions include roles such as untap or bleed modifier.\n" \
             "Returns all cards matching the given functions."
     islistfilter = True
-    types = ['AbstractCard', 'PhysicalCard']
+    types = ('AbstractCard', 'PhysicalCard')
 
     # Currently mainly used by the Hand Simulation plugin
 
@@ -1181,7 +1181,7 @@ class CardSetMultiCardCountFilter(DirectFilter):
             "that have the chosen counts in the given card set."
     isfromfilter = True
     islistfilter = True
-    types = ['PhysicalCard']
+    types = ('PhysicalCard',)
 
     def __init__(self, aData):
         # aData is a list or tuple of the form (aCounts, sCardSetName)
@@ -1269,7 +1269,7 @@ class CardSetMultiCardCountFilter(DirectFilter):
 
 class PhysicalExpansionFilter(DirectFilter):
     """Filter PhysicalCard based on the PhysicalCard expansion"""
-    types = ['PhysicalCard']
+    types = ('PhysicalCard',)
 
     # We must be calling this with a PhysicalCardFilter for sensible results,
     # so we don't need any special join magic
@@ -1295,7 +1295,7 @@ class MultiPhysicalExpansionFilter(DirectFilter):
     description = "Physical Expansion"
     helptext = "a list of expansions.\nSelects cards with their expansion " \
             "set to the chosen expansions."
-    types = ['PhysicalCard']
+    types = ('PhysicalCard',)
     islistfilter = True
     __sUnspec = '  Unspecified Expansion'
 
@@ -1334,7 +1334,7 @@ class MultiPhysicalExpansionFilter(DirectFilter):
 
 class PhysicalCardSetFilter(Filter):
     """Filter on Physical Card Set membership"""
-    types = ['PhysicalCard']
+    types = ('PhysicalCard',)
 
     def __init__(self, sName):
         # Select cards belonging to a PhysicalCardSet
@@ -1373,7 +1373,7 @@ class MultiPhysicalCardSetFilter(Filter):
     helptext = "a list of card sets names\nSelects cards in the " \
             "specified sets."
     islistfilter = True
-    types = ['PhysicalCard']
+    types = ('PhysicalCard',)
 
     # We don't need the join as in PhysicalCardSetFilter, because this is
     # never the base filter in the gui
@@ -1444,7 +1444,7 @@ class PhysicalCardSetInUseFilter(Filter):
     helptext = "Selects cards in the Card Sets marked " \
             "as in use that are children of the given card sets."
     islistfilter = True
-    types = ['PhysicalCard']
+    types = ('PhysicalCard',)
 
     def __init__(self, aParCardSets):
         # Select cards belonging to the PhysicalCardSet in use
@@ -1482,7 +1482,7 @@ class SpecificCardFilter(DirectFilter):
 
        It is used in the GUI to test if a card is in the filter results set.
        """
-    types = ['AbstractCard', 'PhysicalCard']
+    types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, oCard):
         # pylint: disable-msg=E1101
@@ -1499,7 +1499,7 @@ class SpecificCardFilter(DirectFilter):
 
 class SpecificCardIdFilter(DirectFilter):
     """This filter matches a single card by id."""
-    types = ['AbstractCard', 'PhysicalCard']
+    types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, iCardId):
         # pylint: disable-msg=E1101
@@ -1516,7 +1516,7 @@ class SpecificCardIdFilter(DirectFilter):
 
 class MultiSpecificCardIdFilter(DirectFilter):
     """This filter matches multiple cards by id."""
-    types = ['AbstractCard', 'PhysicalCard']
+    types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, aCardIds):
         # pylint: disable-msg=E1101
@@ -1536,7 +1536,7 @@ class SpecificPhysCardIdFilter(DirectFilter):
 
        It is used in the GUI to test if a card is in the filter results set.
        """
-    types = ['PhysicalCard']
+    types = ('PhysicalCard',)
 
     def __init__(self, iCardId):
         # pylint: disable-msg=E1101
@@ -1565,7 +1565,7 @@ class CardSetNameFilter(DirectFilter):
             "% can be used as a wildcard.\nReturns all card sets containing " \
             "the given string."
     istextentry = True
-    types = ['PhysicalCardSet']
+    types = ('PhysicalCardSet',)
 
     def __init__(self, sPattern):
         self.__sPattern = sPattern.lower().encode('utf-8')
@@ -1590,7 +1590,7 @@ class CardSetDescriptionFilter(DirectFilter):
             "% can be used as a wildcard.\nReturns all card sets containing " \
             "the given string."
     istextentry = True
-    types = ['PhysicalCardSet']
+    types = ('PhysicalCardSet',)
 
     def __init__(self, sPattern):
         self.__sPattern = sPattern.lower().encode('utf-8')
@@ -1616,7 +1616,7 @@ class CardSetAuthorFilter(DirectFilter):
             "% can be used as a wildcard.\nReturns all card sets containing " \
             "the given string."
     istextentry = True
-    types = ['PhysicalCardSet']
+    types = ('PhysicalCardSet',)
 
     def __init__(self, sPattern):
         self.__sPattern = sPattern.lower().encode('utf-8')
@@ -1642,7 +1642,7 @@ class CardSetAnnotationsFilter(DirectFilter):
             "% can be used as a wildcard.\nReturns all card sets where the " \
             "annotations contrain the given string."
     istextentry = True
-    types = ['PhysicalCardSet']
+    types = ('PhysicalCardSet',)
 
     def __init__(self, sPattern):
         self.__sPattern = sPattern.lower().encode('utf-8')
@@ -1668,7 +1668,7 @@ class ParentCardSetFilter(MultiFilter):
             "Returns all card sets with one of the selected card sets " \
             "as a parent."
     islistfilter = True
-    types = ['PhysicalCardSet']
+    types = ('PhysicalCardSet',)
 
     def __init__(self, aCardSets):
         # pylint: disable-msg=E1101
@@ -1693,7 +1693,7 @@ class CSPhysicalCardSetInUseFilter(DirectFilter):
     description = "Card Set Marked as in Use"
     helptext = "Selects those Card Sets in the Card Set List that are " \
             "marked as in use. This filter takes no parameters."
-    types = ['PhysicalCardSet']
+    types = ('PhysicalCardSet',)
 
     # pylint: disable-msg=C0111
     # don't need docstrings for _get_expression, get_values & _get_joins
@@ -1709,7 +1709,7 @@ class CSPhysicalCardSetInUseFilter(DirectFilter):
 
 # The List of filters exposed to the Filter Parser - new filters should just
 # be tacked on here
-PARSER_FILTERS = [
+PARSER_FILTERS = (
         MultiCardTypeFilter, MultiCostTypeFilter, MultiClanFilter,
         MultiDisciplineFilter, MultiGroupFilter, MultiCapacityFilter,
         MultiCostFilter, MultiLifeFilter, MultiCreedFilter, MultiVirtueFilter,
@@ -1721,4 +1721,4 @@ PARSER_FILTERS = [
         CardSetMultiCardCountFilter, CSPhysicalCardSetInUseFilter,
         CardFunctionFilter, ParentCardSetFilter, MultiArtistFilter,
         MultiKeywordFilter,
-]
+        )

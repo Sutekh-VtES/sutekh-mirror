@@ -60,7 +60,7 @@ class FilterBoxModel(list):
             raise ValueError("FilterBoxModel cannot represent AST %s of"
                     " type %s" % (oAST, type(oAST)))
 
-        assert self.sBoxType in [self.AND, self.OR]
+        assert self.sBoxType in (self.AND, self.OR)
 
         if bVarMakerNeedsInit:
             self.oVarNameMaker.update(self.get_variable_names())
@@ -71,7 +71,7 @@ class FilterBoxModel(list):
 
     def _init_binop(self, oBinOp):
         """Create the correct box entries for a BinOpNode in the AST."""
-        for oChild in [oBinOp.oLeft, oBinOp.oRight]:
+        for oChild in (oBinOp.oLeft, oBinOp.oRight):
             if type(oChild) is BinOpNode and oChild.oOp == oBinOp.oOp:
                 self._init_binop(oChild)
             elif type(oChild) is BinOpNode:
@@ -81,7 +81,7 @@ class FilterBoxModel(list):
                     type(oChild.oSubExpression) is BinOpNode:
                 self.append(FilterBoxModel(oChild, self.sFilterType,
                     self.oVarNameMaker))
-            elif type(oChild) in [NotOpNode, FilterPartNode]:
+            elif type(oChild) in (NotOpNode, FilterPartNode):
                 self.append(FilterBoxItem(oChild, self.oVarNameMaker))
             else:
                 raise ValueError("FilterBoxModel encountered unsupported AST"
@@ -162,7 +162,7 @@ class FilterBoxModel(list):
 
     def add_child_box(self, sChildBoxType):
         """Add a child box to this box."""
-        assert sChildBoxType in [self.AND, self.OR]
+        assert sChildBoxType in (self.AND, self.OR)
         oChildBox = FilterBoxModel(None, self.sFilterType, self.oVarNameMaker)
         oChildBox.sBoxType = sChildBoxType
         self.append(oChildBox)
