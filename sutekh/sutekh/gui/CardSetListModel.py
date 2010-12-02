@@ -2189,7 +2189,19 @@ class CardSetCardListModel(CardListModel):
     def _change_level_mode(self, iLevel):
         """Set which extra information is shown."""
         if self._iExtraLevelsMode != iLevel:
+            # If we've been maintaing the cache, it's valid (we hope)
+            bParentCacheValid = self.changes_with_parent()
+            bChildCacheValid = self.changes_with_children()
+            bSibCacheValid = self.changes_with_siblings()
             self._iExtraLevelsMode = iLevel
+            # Invalidate the cache if it's not been kept valid and we need
+            # it now
+            if self.changes_with_parent() and not bParentCacheValid:
+                self._dCache['full parent card list'] = None
+            if self.changes_with_children() and not bChildCacheValid:
+                self._dCache['full child card list'] = None
+            if self.changes_with_siblings() and not bSibCacheValid:
+                self._dCache['full sibling card list'] = None
             return True
         return False
 
