@@ -28,6 +28,9 @@ from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 
 WHITE_SPACE_REGEX = re.compile("\\s+")
 
+# set for fast inclusion queries, since we hit this list multiple times
+HTML_HEADING_TAGS = set(('h1', 'h2', 'h3', 'h4', 'h5', 'h6'))
+
 # don't throw an exception if no screen during import - we'll catch that later
 if gtk.gdk.screen_get_default() is None:
     SCREEN_RESOLUTION = 0
@@ -251,9 +254,9 @@ class HtmlHandler(HTMLParser.HTMLParser):
 
     ## build a dictionary mapping styles to methods, for greater speed
     __style_methods = dict()
-    for sStyle in ["background-color", "color", "font-family", "font-size",
+    for sStyle in ("background-color", "color", "font-family", "font-size",
                   "font-style", "font-weight", "margin-left", "margin-right",
-                  "text-align", "text-decoration"]:
+                  "text-align", "text-decoration"):
         try:
             fMethod = locals()["_parse_style_%s" % sStyle.replace('-', '_')]
         except KeyError:
@@ -386,7 +389,7 @@ class HtmlHandler(HTMLParser.HTMLParser):
                 # Add it to the list of valid targets
                 oMark = self._oTextBuf.create_mark(None, self._oIter, True)
                 self._dTargets[oAttrs['name']] = oMark
-        elif sName in ['h1', 'h2', 'h3', 'h4', 'h5', 'h6']:
+        elif sName in HTML_HEADING_TAGS:
             oTag = self._oTextBuf.create_tag()
             oTag.set_property('underline', pango.UNDERLINE_SINGLE)
             if sName == 'h1':
@@ -495,7 +498,7 @@ class HtmlHandler(HTMLParser.HTMLParser):
             pass
         elif sName == 'html':
             pass
-        elif sName in ['h1', 'h2', 'h3', 'h4', 'h5', 'h6']:
+        elif sName in HTML_HEADING_TAGS:
             pass
         elif sName == 'em' or sName == 'i':
             pass
@@ -543,7 +546,7 @@ class HtmlHandler(HTMLParser.HTMLParser):
             pass
         elif sName == 'a':
             pass
-        elif sName in ['h1', 'h2', 'h3', 'h4', 'h5', 'h6']:
+        elif sName in HTML_HEADING_TAGS:
             if not self._oIter.starts_line():
                 self._insert_text("\n")
         elif sName == 'em' or sName == 'i':
