@@ -33,7 +33,7 @@ class ImportFromZipFile(SutekhPlugin):
     """Extract selected card sets from a zip file."""
 
     dTableVersions = {}
-    aModelsSupported = ["MainWindow"]
+    aModelsSupported = ("MainWindow",)
 
     # Dialog and Menu Item Creation
 

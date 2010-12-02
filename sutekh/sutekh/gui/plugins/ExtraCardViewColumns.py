@@ -50,7 +50,7 @@ class ExtraCardViewColumns(SutekhPlugin):
     ICON_OPT_STR = ", ".join('"%s"' % sKey for sKey in sorted(MODES.keys()))
 
     dTableVersions = {}
-    aModelsSupported = [PhysicalCardSet, PhysicalCard]
+    aModelsSupported = (PhysicalCardSet, PhysicalCard)
     dPerPaneConfig = {
         EXTRA_COLUMNS: 'option_list(%s, default=list())' % OPTION_STR,
         ICON_MODE: 'option(%s, default="%s")' % (ICON_OPT_STR, DEFAULT_MODE),

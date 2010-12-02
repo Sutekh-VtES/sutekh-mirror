@@ -43,8 +43,8 @@ class CardSetPrint(SutekhPlugin):
        in the card set. This has less formatting than exporting via
        HTML, for instance, but does print directly.
        """
-    dTableVersions = {PhysicalCardSet: [4, 5, 6]}
-    aModelsSupported = [PhysicalCardSet]
+    dTableVersions = {PhysicalCardSet: (4, 5, 6)}
+    aModelsSupported = (PhysicalCardSet,)
 
     dOptions = {
             'No Expansion info': NO_EXPANSION,

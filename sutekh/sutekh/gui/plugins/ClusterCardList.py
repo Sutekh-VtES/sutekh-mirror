@@ -28,7 +28,7 @@ class ClusterCardList(SutekhPlugin):
     # we use a lot of attributes to keep track of data & gui aspects
 
     dTableVersions = {}
-    aModelsSupported = [PhysicalCard, PhysicalCardSet]
+    aModelsSupported = (PhysicalCard, PhysicalCardSet)
 
     # pylint: disable-msg=W0142
     # ** magic OK

@@ -137,7 +137,7 @@ class PluginConfigFileListener(ConfigFileListener):
 class SutekhPlugin(object):
     """Base class for card list plugins."""
     dTableVersions = {}
-    aModelsSupported = []
+    aModelsSupported = ()
 
     # ConfigObj validation specs as dictionaries
     dGlobalConfig = {}

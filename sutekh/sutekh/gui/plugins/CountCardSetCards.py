@@ -24,8 +24,8 @@ class CountCardSetCards(SutekhPlugin, CardListModelListener):
        containing a label with a running count of the cards in the card
        set, the library cards and the crypt cards
        """
-    dTableVersions = {PhysicalCardSet: [5, 6]}
-    aModelsSupported = [PhysicalCardSet]
+    dTableVersions = {PhysicalCardSet: (5, 6)}
+    aModelsSupported = (PhysicalCardSet,)
 
     # pylint: disable-msg=W0142
     # **magic OK here

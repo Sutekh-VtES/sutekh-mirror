@@ -48,7 +48,7 @@ class ExtraCardSetListViewColumns(SutekhPlugin):
        Allow the card set list to be sorted on these columns
        """
     dTableVersions = {}
-    aModelsSupported = ['Card Set List']
+    aModelsSupported = ('Card Set List',)
 
     # Dictionary of column info - width, render function name, data func name
     COLUMNS = {

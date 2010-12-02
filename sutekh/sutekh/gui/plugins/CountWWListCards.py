@@ -23,8 +23,8 @@ class CountWWListCards(SutekhPlugin, CardListModelListener):
        containing a label with a running count of the cards in the card
        set, the library cards and the crypt cards
        """
-    dTableVersions = {PhysicalCard: [2]}
-    aModelsSupported = [PhysicalCard]
+    dTableVersions = {PhysicalCard: (2,)}
+    aModelsSupported = (PhysicalCard,)
 
     NO_COUNT, COUNT_CARDS, COUNT_EXP = range(3)
 

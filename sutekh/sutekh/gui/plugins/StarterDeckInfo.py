@@ -115,8 +115,8 @@ def _check_exp_name(sExpName, oAbsCard):
 
 class StarterInfoPlugin(SutekhPlugin, CardTextViewListener):
     """Plugin providing access to CardImageFrame."""
-    dTableVersions = {PhysicalCardSet: [5, 6]}
-    aModelsSupported = ["MainWindow"]
+    dTableVersions = {PhysicalCardSet: (5, 6)}
+    aModelsSupported = ("MainWindow",)
 
     dGlobalConfig = {
         'show starters': 'option("Yes", "No", default="No")',

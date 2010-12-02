@@ -120,8 +120,8 @@ class CardDrawSimPlugin(SutekhPlugin):
        selection."""
     # pylint: disable-msg=R0902
     # we use a lot of attributes to pass the data around
-    dTableVersions = {PhysicalCardSet: [4, 5, 6]}
-    aModelsSupported = [PhysicalCardSet]
+    dTableVersions = {PhysicalCardSet: (4, 5, 6)}
+    aModelsSupported = (PhysicalCardSet,)
 
     def get_menu_item(self):
         """Register on the 'Analyze' menu"""

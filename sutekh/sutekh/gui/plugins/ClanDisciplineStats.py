@@ -29,7 +29,7 @@ class ClanDisciplineStats(SutekhPlugin):
        """
 
     dTableVersions = {}
-    aModelsSupported = [PhysicalCard]
+    aModelsSupported = (PhysicalCard,)
 
     # pylint: disable-msg=W0142
     # **magic OK here

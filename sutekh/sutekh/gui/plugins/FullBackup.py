@@ -23,7 +23,7 @@ class FullBackup(SutekhPlugin):
        """
 
     dTableVersions = {}
-    aModelsSupported = ["MainWindow"]
+    aModelsSupported = ("MainWindow",)
 
     # Dialog and Menu Item Creation
 

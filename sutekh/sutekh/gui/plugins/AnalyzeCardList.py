@@ -22,11 +22,11 @@ from sutekh.gui.MultiSelectComboBox import MultiSelectComboBox
 
 THIRD_ED = IExpansion('Third Edition')
 JYHAD = IExpansion('Jyhad')
-ODD_BACKS = [None, THIRD_ED, JYHAD]
+ODD_BACKS = (None, THIRD_ED, JYHAD)
 
 UNSLEEVED = "<span foreground='green'>%s may be played unsleeved</span>\n"
 SLEEVED = "<span foreground='orange'>%s should be sleeved</span>\n"
-SPECIAL = ['Not Tournament Legal Cards', 'Multirole', 'Mixed Card Backs']
+SPECIAL = ('Not Tournament Legal Cards', 'Multirole', 'Mixed Card Backs')
 
 
 # utility functions
@@ -362,8 +362,8 @@ class AnalyzeCardList(SutekhPlugin):
       Displays various interesting stats, and does a Happy Family
       analysis of the deck
        """
-    dTableVersions = {PhysicalCardSet: [6]}
-    aModelsSupported = [PhysicalCardSet]
+    dTableVersions = {PhysicalCardSet: (6,)}
+    aModelsSupported = (PhysicalCardSet,)
 
     def get_menu_item(self):
         """Register on the 'Analyze' Menu"""

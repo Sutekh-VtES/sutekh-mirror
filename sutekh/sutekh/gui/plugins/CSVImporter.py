@@ -26,9 +26,9 @@ class CSVImporter(SutekhPlugin):
        currently selected file.
        """
     dTableVersions = {
-        PhysicalCardSet: [4, 5],
+        PhysicalCardSet: (4, 5),
     }
-    aModelsSupported = ["MainWindow"]
+    aModelsSupported = ("MainWindow",)
 
     def get_menu_item(self):
         """Overrides method from base class. Register on the 'Import' menu"""

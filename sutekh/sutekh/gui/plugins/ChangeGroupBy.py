@@ -48,7 +48,7 @@ class GroupCardList(SutekhPlugin):
     GROUP_BY = "group by"
 
     dTableVersions = {}
-    aModelsSupported = [PhysicalCard, PhysicalCardSet]
+    aModelsSupported = (PhysicalCard, PhysicalCardSet)
     dPerPaneConfig = {
         GROUP_BY: 'option(%s, default="Card Type")' % OPTION_STR,
     }

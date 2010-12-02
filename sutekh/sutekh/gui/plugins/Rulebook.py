@@ -98,7 +98,7 @@ class RulebookPlugin(SutekhPlugin):
     """Plugin allowing downloading of rulebook HTML pages and making them
        available via the Plugins menu.
        """
-    aModelsSupported = ["MainWindow"]
+    aModelsSupported = ("MainWindow",)
 
     POSSIBLE_FILES = RulebookConfigDialog.POSSIBLE_FILES
     WW_RULEBOOK_URLS = RulebookConfigDialog.WW_RULEBOOK_URLS

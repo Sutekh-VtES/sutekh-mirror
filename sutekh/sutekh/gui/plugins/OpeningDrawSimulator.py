@@ -135,8 +135,8 @@ def create_view(oStore, sHeading):
 
 class OpeningHandSimulator(SutekhPlugin):
     """Simulate opening hands."""
-    dTableVersions = {PhysicalCardSet: [4, 5, 6]}
-    aModelsSupported = [PhysicalCardSet]
+    dTableVersions = {PhysicalCardSet: (4, 5, 6)}
+    aModelsSupported = (PhysicalCardSet,)
     # responses for the hand dialog
     BACK, FORWARD, BREAKDOWN = range(1, 4)
 

@@ -209,8 +209,8 @@ class SecretLibrary(SutekhPlugin):
        to and from the Secret Library.
        """
 
-    dTableVersions = {PhysicalCardSet: [5, 6]}
-    aModelsSupported = [PhysicalCardSet, "MainWindow"]
+    dTableVersions = {PhysicalCardSet: (5, 6)}
+    aModelsSupported = (PhysicalCardSet, "MainWindow")
 
     SL_USER_AGENT = "Sutekh Secret Library Plugin"
     SL_AGENT_VERSION = SutekhInfo.VERSION_STR

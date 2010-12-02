@@ -130,8 +130,8 @@ class CardSetIndependence(SutekhPlugin):
        particularly sensible to say there. We also don't do anything
        when there is only 1 child, for similiar justification.
        """
-    dTableVersions = {PhysicalCardSet: [4, 5, 6]}
-    aModelsSupported = [PhysicalCardSet]
+    dTableVersions = {PhysicalCardSet: (4, 5, 6)}
+    aModelsSupported = (PhysicalCardSet,)
 
     def get_menu_item(self):
         """Register with the 'Analyze' Menu"""

@@ -18,8 +18,8 @@ from sutekh.SutekhUtility import safe_filename
 class CardSetExportCSV(SutekhPlugin):
     """Provides a dialog for selecting a filename, then calls on
        WriteCSV to produce the required output."""
-    dTableVersions = {PhysicalCardSet: [4, 5, 6]}
-    aModelsSupported = [PhysicalCardSet]
+    dTableVersions = {PhysicalCardSet: (4, 5, 6)}
+    aModelsSupported = (PhysicalCardSet,)
 
     def get_menu_item(self):
         """Register on the 'Export Card Set' Menu"""

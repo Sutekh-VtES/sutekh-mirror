@@ -427,7 +427,7 @@ class ImageConfigDialog(SutekhDialog):
 class CardImagePlugin(SutekhPlugin):
     """Plugin providing access to CardImageFrame."""
     dTableVersions = {}
-    aModelsSupported = ["MainWindow"]
+    aModelsSupported = ("MainWindow",)
 
     dGlobalConfig = {
         'card image path': 'string(default=None)',
