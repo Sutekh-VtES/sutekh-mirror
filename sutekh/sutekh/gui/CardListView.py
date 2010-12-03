@@ -203,7 +203,7 @@ class CardListView(FilteredView):
 
         sSource, aLines = \
                 super(CardListView, self).split_selection_data(sSelectionData)
-        if sSource in ["None", "Sutekh Pane:", "Card Set:"]:
+        if sSource in ("None", "Sutekh Pane:", "Card Set:"):
             # Not cards that were dragged, so just return
             return sSource, aLines
         aCardInfo = zip([int(x) for x in aLines[1::3]], aLines[2::3],

@@ -180,7 +180,7 @@ class CardSetController(object):
         aSources = sSource.split(':')
         if not self.model.bEditable:
             return False
-        if aSources[0] in ["Phys", PhysicalCardSet.sqlmeta.table]:
+        if aSources[0] in ("Phys", PhysicalCardSet.sqlmeta.table):
             # Add the cards, Count Matters
             for iCount, sCardName, sExpansion in aCards:
                 # Use None to indicate this card set

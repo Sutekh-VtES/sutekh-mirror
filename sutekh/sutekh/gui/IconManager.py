@@ -45,7 +45,7 @@ def _get_card_type_filename(oType):
         sFileName = 'IconTypePolitical.gif'
     elif oType.name == 'Action Modifier':
         sFileName = 'IconTypeModifier.gif'
-    elif oType.name in ['Master', 'Vampire', 'Imbued']:
+    elif oType.name in ('Master', 'Vampire', 'Imbued'):
         # These types have no icon
         sFileName = None
     else:

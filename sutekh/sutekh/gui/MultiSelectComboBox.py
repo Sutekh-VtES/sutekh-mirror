@@ -116,7 +116,7 @@ class MultiSelectComboBox(gtk.HBox):
         """Hide the list when return or escape is pressed."""
         if oEvent.type is gtk.gdk.KEY_PRESS:
             sKeyName = gtk.gdk.keyval_name(oEvent.keyval)
-            if sKeyName in ['Return', 'Escape']:
+            if sKeyName in ('Return', 'Escape'):
                 if sKeyName == 'Escape':
                     self.set_selection(self._aOldSelection)
                 self.__hide_list()
