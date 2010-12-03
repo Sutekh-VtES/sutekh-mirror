@@ -19,7 +19,8 @@ import gtk
 DRAG_TARGETS = [('STRING', 0, 0), ('text/plain', 0, 0)]
 NO_DRAG_TARGET = [("No Drag", 0, 0)]
 # Filters we pad values for to sort nicely
-PAD_FILTERS = ['Capacity', 'CardCount: Count']
+PAD_FILTERS = set(('Capacity', 'CardCount: Count'))
+LIST_TYPES = set((FilterBoxItem.LIST, FilterBoxItem.LIST_FROM))
 
 # Drag type constants
 NEW_VALUE = 'NewValue: '
@@ -926,8 +927,7 @@ class FilterBoxModelEditView(gtk.TreeView):
             if not hasattr(oDropFilter, 'sFilterName'):
                 # Can't drop values onto a box filter
                 return False
-            elif oDropFilter.iValueType not in [FilterBoxItem.LIST,
-                    FilterBoxItem.LIST_FROM]:
+            elif oDropFilter.iValueType not in LIST_TYPES:
                 # Not sensible to drop onto entry or null filters
                 return False
             elif sFilterName != oDropFilter.sFilterName:
@@ -979,8 +979,7 @@ class FilterBoxModelEditView(gtk.TreeView):
             if not hasattr(oDropFilter, 'sFilterName'):
                 # Can't drop values onto a box filter
                 return False
-            elif oDropFilter.iValueType not in [FilterBoxItem.LIST,
-                    FilterBoxItem.LIST_FROM]:
+            elif oDropFilter.iValueType not in LIST_TYPES:
                 # Not sensible to drop onto entry or null filters
                 return False
             elif oSourceFilter.sFilterName != oDropFilter.sFilterName:
