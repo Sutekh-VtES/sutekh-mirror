@@ -35,14 +35,14 @@ NUM_KEYS = {
         gtk.gdk.keyval_from_name('KP_9'): 9,
         }
 
-PLUS_KEYS = [
+PLUS_KEYS = set([
         gtk.gdk.keyval_from_name('plus'),
         gtk.gdk.keyval_from_name('KP_Add'),
-        ]
-MINUS_KEYS = [
+        ])
+MINUS_KEYS = set([
         gtk.gdk.keyval_from_name('minus'),
         gtk.gdk.keyval_from_name('KP_Subtract'),
-        ]
+        ])
 
 
 class CardSetView(CardListView):
