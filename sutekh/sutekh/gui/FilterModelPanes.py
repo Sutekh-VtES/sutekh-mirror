@@ -28,6 +28,10 @@ MOVE_VALUE = 'MoveValue: '
 MOVE_FILTER = 'MoveFilter: '
 NEW_FILTER = 'NewFilter: '
 
+# Key constants
+ENTER_KEYS = set([gtk.gdk.keyval_from_name('Return'),
+    gtk.gdk.keyval_from_name('KP_Enter')])
+
 
 def add_accel_to_button(oButton, sAccelKey, oAccelGroup, sToolTip=None):
     """Creates a button using an gtk.AccelLabel to display the accelerator"""
@@ -136,11 +140,11 @@ class FilterValuesBox(gtk.VBox):
         self._oLastFilter = None
         oCheckBox = gtk.HBox()
 
-        self.__oDisable = gtk.CheckButton('Disable (space)')
+        self.__oDisable = gtk.CheckButton('Disable (Ctrl-space)')
         self.__oNegate = gtk.CheckButton('Negate (Alt-space)')
         self.__oDelete = gtk.Button('Delete Filter (del)')
 
-        add_accel_to_button(self.__oDisable, "space", oDialog.accel_group)
+        add_accel_to_button(self.__oDisable, "<Ctl>space", oDialog.accel_group)
         add_accel_to_button(self.__oNegate, "<Alt>space", oDialog.accel_group)
         add_accel_to_button(self.__oDelete, "Delete", oDialog.accel_group)
 
@@ -201,6 +205,7 @@ class FilterValuesBox(gtk.VBox):
         self._oWidget.pack_start(gtk.Label('Or Drag Filter element'),
                 expand=False)
         oSubFilterList = FilterEditorToolbar(self.__sFilterType)
+        oSubFilterList.connect('key-press-event', self.key_press, 'Filter')
         self._oWidget.pack_start(AutoScrolledWindow(oSubFilterList),
                     expand=True)
 
@@ -210,8 +215,10 @@ class FilterValuesBox(gtk.VBox):
         oCountList = ScrolledList('Select Counts')
         oCountList.set_select_multiple()
         oCountList.fill_list(oFilter.aValues[0])
+        oCountList.connect('key-press-event', self.key_press, oFilter, 'Count')
         oSetList = CardSetsListView(None, self._oParent)
         oSetList.set_select_multiple()
+        oSetList.connect('key-press-event', self.key_press, oFilter, 'Set')
         self._set_drag_for_widget(oSetList, self.update_count_set, oFilter)
         self._set_drop_for_widget(oSetList)
         self._set_drag_for_widget(oCountList, self.update_count_list, oFilter)
@@ -228,6 +235,7 @@ class FilterValuesBox(gtk.VBox):
         oSetList = CardSetsListView(None, self._oParent)
         oSetList.set_select_multiple()
         self._oWidget = AutoScrolledWindow(oSetList, False)
+        oSetList.connect('key-press-event', self.key_press, oFilter, 'CardSet')
         self._set_drag_for_widget(oSetList, self.update_set_list, oFilter)
         self._set_drop_for_widget(oSetList)
 
@@ -236,6 +244,8 @@ class FilterValuesBox(gtk.VBox):
         self._oWidget = ScrolledList('Select Filter Values')
         self._oWidget.set_select_multiple()
         self._oWidget.fill_list(oFilter.aValues)
+        self._oWidget.connect('key-press-event', self.key_press, oFilter,
+                'Value')
         self._set_drag_for_widget(self._oWidget, self.update_filter_list,
                 oFilter)
         self._set_drop_for_widget(self._oWidget)
@@ -397,6 +407,28 @@ class FilterValuesBox(gtk.VBox):
         """Toggle the disabled flag for a section of the filter"""
         if self._oBoxModelEditor:
             self._oBoxModelEditor.set_negate(oButton.get_active())
+
+    def key_press(self, oWidget, oEvent, oFilter, sSource):
+        """Handle key press events to do allow keyboard pasting"""
+        # We flag on ctrl-enter
+        if oEvent.keyval not in ENTER_KEYS or not \
+                (oEvent.get_state() & gtk.gdk.CONTROL_MASK):
+            return
+        if sSource == 'Filter':
+            # Paste current filter into the current filter box
+            pass
+        elif sSource == 'Count':
+            pass
+        elif sSource == 'Set':
+            pass
+        elif sSource == 'CardSet':
+            sSelect = '%s%s' % (NEW_VALUE, oFilter.sFilterName)
+            self._format_selection(sSelect, oWidget.get_all_selected_sets())
+            self._oBoxModelEditor.paste_value(sSelect)
+        elif sSource == 'Value':
+            sSelect = '%s%s' % (NEW_VALUE, oFilter.sFilterName)
+            self._format_selection(sSelect, oWidget.get_selection())
+            self._oBoxModelEditor.paste_value(sSelect)
 
     def toggle_disabled(self, oButton):
         """Toggle the disabled flag for a section of the filter"""
@@ -855,6 +887,12 @@ class FilterBoxModelEditView(gtk.TreeView):
                 bDragRes = False
         oDragContext.finish(bDragRes, False, oTime)
 
+    def paste_value(self, sData):
+        """Paste data from the widgets"""
+        if sData.startswith(NEW_VALUE):
+            oFilterObj, _oPath = self._get_cur_filter()
+            self._update_values(oFilterObj, self.oCurSelectIter, sData)
+
     def _check_drag_value(self, oIter, oFilter, tCurTarget, oAction):
         """Check if the current target is an acceptable drop location
            for a filter value"""
@@ -942,6 +980,10 @@ class FilterBoxModelEditView(gtk.TreeView):
         sFilterName = sData.split(':', 2)[1].strip()
         if not target_ok(oFilterObj, sFilterName):
             return False
+        self._update_values(oFilterObj, oDropIter, sData)
+
+    def _update_values(self, oFilterObj, oIter, sData):
+        """Update the values with the given info from the filter"""
         aSelection = self._oValuesWidget.get_selected_values()
         if oFilterObj.iValueType == FilterBoxItem.LIST:
             # Get values from the list
@@ -949,7 +991,7 @@ class FilterBoxModelEditView(gtk.TreeView):
                 if sValue not in oFilterObj.aCurValues:
                     oFilterObj.aCurValues.append(sValue)
             oFilterObj.aCurValues.sort()
-            self.update_list(oDropIter, oFilterObj)
+            self.update_list(oIter, oFilterObj)
         else:
             # List from filter - we need to distinguish between the
             # different parts
@@ -969,7 +1011,7 @@ class FilterBoxModelEditView(gtk.TreeView):
                 oFilterObj.aCurValues[0].sort()
             else:
                 oFilterObj.aCurValues[1].sort()
-            self.update_count_list(oDropIter, oFilterObj)
+            self.update_count_list(oIter, oFilterObj)
         return True
 
     def _do_move_value(self, sData, tRowInfo):
