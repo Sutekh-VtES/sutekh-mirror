@@ -23,12 +23,13 @@ class LocalProfileEditor(SutekhDialog):
     RESPONSE_CLOSE = 1
     RESPONSE_CANCEL = 2
 
-    def __init__(self, oParent, oConfig):
+    def __init__(self, oParent, oConfig, sFrame):
         super(LocalProfileEditor, self).__init__("Edit Local Profile",
                 oParent, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT)
 
         self.__oParent = oParent
         self.__oConfig = oConfig
+        self.__sFrame = sFrame
         self.__dUnsavedChanges = None
 
         aOptions = []
@@ -70,6 +71,10 @@ class LocalProfileEditor(SutekhDialog):
     def _repopulate_options(self):
         """Refresh the contents of the options box."""
         dNewValues = {}
+        sFrame = self.__sFrame
+        for sKey in self.__oConfig.profile_options(FRAME):
+            dNewValues[sKey] = \
+                self.__oConfig.get_local_frame_option(sFrame, sKey)
         self.__oOptionsTable.update_values(dNewValues, {}, {})
 
     def _check_unsaved_changes(self):
@@ -83,7 +88,9 @@ class LocalProfileEditor(SutekhDialog):
 
     def _save_unsaved_changes(self):
         """Save all the unsaved changes."""
-        pass
+        sFrame = self.__sFrame
+        for sKey, sValue in self.__dUnsavedChanges.items():
+            self.__oConfig.set_local_frame_option(sFrame, sKey, sValue)
 
     def _store_active_profile(self):
         """Store the unsaved local profile changes."""

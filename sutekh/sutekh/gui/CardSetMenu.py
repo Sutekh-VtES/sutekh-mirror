@@ -157,9 +157,8 @@ class CardSetMenu(CardListMenu, ConfigFileListener):
 
     def _edit_local_profile(self, _oWidget):
         """Open an editor for the local cardset profile."""
-        # TODO: arrange for local profile updates to be stored
         oDlg = LocalProfileEditor(self._oMainWindow,
-            self._oMainWindow.config_file)
+            self._oMainWindow.config_file, self.frame_id)
         oDlg.run()
 
     def _edit_profiles(self, _oWidget):

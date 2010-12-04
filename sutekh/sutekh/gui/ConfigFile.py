@@ -81,6 +81,7 @@ class ConfigFile(object):
         self.__sFileName = sFileName
         self.__oConfigSpec = None
         self.__oConfig = None
+        self.__dLocalFrameOptions = {}
         self.__oValidator = None
         # allow listeners to be automatically removed by garbage
         # collection
@@ -380,6 +381,11 @@ class ConfigFile(object):
            which case the frame or cardset option look-up
            is skipped.
            """
+        try:
+            return self.__dLocalFrameOptions[sFrame][sKey]
+        except KeyError:
+            pass
+
         dPerDeck = self.__oConfig['per_deck']
 
         try:
@@ -403,6 +409,13 @@ class ConfigFile(object):
                 return self.__oConfig['per_deck']['defaults'][sKey]
             else:
                 return self.__oConfig['per_deck']['profiles'][sProfile][sKey]
+        except KeyError:
+            return None
+
+    def get_local_frame_option(self, sFrame, sKey):
+        """Get the value of a per-deck option for a local frame."""
+        try:
+            return self.__dLocalFrameOptions[sFrame][sKey]
         except KeyError:
             return None
 
@@ -440,6 +453,32 @@ class ConfigFile(object):
         if bChanged:
             for oListener in self.listeners():
                 oListener.profile_option_changed(sType, sProfile, sKey)
+
+    def set_local_frame_option(self, sFrame, sKey, sValue):
+        """Set the value of an option in the local frame option dictionary.
+
+        If sValue is None, remove the key.
+        """
+        if sFrame in self.__dLocalFrameOptions:
+            dOptions = self.__dLocalFrameOptions[sFrame]
+        else:
+            dOptions = {}
+            self.__dLocalFrameOptions[sFrame] = dOptions
+
+        bChanged = False
+        if sValue is None:
+            if sKey in dOptions:
+                bChanged = True
+                del dOptions[sKey]
+        else:
+            if sKey not in dOptions or dOptions[sKey] != sValue:
+                bChanged = True
+                dOptions[sKey] = sValue
+
+        if bChanged:
+            for oListener in self.listeners():
+                # TODO: Eep. Notify listeners.
+                pass
 
     def set_profile(self, sType, sId, sProfile):
         """Set the profile associated of the given type."""
