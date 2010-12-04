@@ -13,9 +13,6 @@ For 0.8.0 cycle
 
  - Definite
     * Add decent error checking for the io files
-    * Redo preferences system. Allow finder grained preferences (save
-      groupings, etc per card set) (largely done)
-      - Import preferences from 0.6 config files.
     * More access to debugging info
       - Make it easier to get relevant info from users
       - Use logging module to store more info, to be easily
@@ -73,9 +70,6 @@ Gui (Functionality):
  * Add an undo stack for card set and filter editing operations
 
 Gui (Presentation):
- * Cleanup various dialogs, including
-   - Unify some of the other dialogs and make various bits more reusable
-     (cf. CreateCardSetDialog hack in plugins) (largely done)
  * Clean up the card set controller/model/view interactions
    - CardSetManagement stuff is still rather tangled
  * Parse in a GTK rc file? (http://www.moeraki.com/pygtktutorial/pygtk2tutorial/ch-GtkRcFiles.html)

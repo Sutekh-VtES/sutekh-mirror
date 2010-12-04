@@ -1,3 +1,27 @@
+04 Dec 2010
+ * Import legacy config files from 0.6
+ * Add basic 'Profile in use' detection when deleting profiles
+ * Keyboard shortcut for pasting values/filters in filter dialog
+ * Local profile support
+ * avoid pyprotocols for speed in card set and card list models
+
+02 Dec 2010
+ * Reorder things in card set list model test to make more use of the cache
+
+30 Nov 2010
+ * Don't reload entire filter model on minor changes
+
+29 Nov 2010
+ * Hook up keyboard shortcuts to delete, disable and negate buttons
+
+27 Nov 2010
+ * Fix saving card sets to use the card set name
+
+26 Nov 2010
+ * Add "involves" method to filters, to save some work
+ * Move physical_filter checks into Filters
+ * Replace some references to "Physical Card Set" with "Card Set" in the UI
+
 19 Nov 2010
  * More caching in card set list model
  * Restore card set list scroll position after opening a card set
