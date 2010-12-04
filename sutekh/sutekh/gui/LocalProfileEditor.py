@@ -15,7 +15,7 @@ import gtk
 
 
 class LocalProfileEditor(SutekhDialog):
-    """Dialog which allows the user to per-deck option profiles.
+    """Dialog which allows the user to set temporary option profiles.
        """
     # pylint: disable-msg=R0904, R0902
     # R0904 - gtk.Widget, so many public methods
@@ -29,6 +29,7 @@ class LocalProfileEditor(SutekhDialog):
 
         self.__oParent = oParent
         self.__oConfig = oConfig
+        self.__dUnsavedChanges = None
 
         aOptions = []
         for sKey in self.__oConfig.profile_options(FRAME):
@@ -83,3 +84,7 @@ class LocalProfileEditor(SutekhDialog):
     def _save_unsaved_changes(self):
         """Save all the unsaved changes."""
         pass
+
+    def _store_active_profile(self):
+        """Store the unsaved local profile changes."""
+        self.__dUnsavedChanges = self.__oOptionsTable.get_values()
