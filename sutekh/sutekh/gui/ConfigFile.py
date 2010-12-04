@@ -559,6 +559,29 @@ class ConfigFile(object):
         """Return a dictionary of frame id -> profile mappings."""
         return dict(self.__oConfig['per_deck']['frame_profiles'])
 
+    def get_profile_users(self, sType, sProfile):
+        """Returns a list of all card sets or panes that use the
+           given profile"""
+        if sType == CARDSET_LIST:
+            sCurProfile = self.__oConfig[sType].get('current profile')
+            if sCurProfile == sProfile:
+                return ['Card Set List']
+        elif sType == WW_CARDLIST:
+            sCurProfile = self.__oConfig[sType].get('current profile')
+            if sCurProfile == sProfile:
+                return ['White Wolf Card List']
+        elif sType == CARDSET:
+            aUsers = []
+            for dProfiles in (
+                    self.__oConfig['per_deck']['cardset_profiles'],
+                    self.__oConfig['per_deck']['frame_profiles'],
+                    ):
+                for sId, sCurProfile in dProfiles.iteritems():
+                    if sProfile == sCurProfile:
+                        aUsers.append(sId)
+            return aUsers
+        return None
+
     def profiles(self, sType):
         """Return a list of profile keys."""
         if sType == FRAME or sType == CARDSET:

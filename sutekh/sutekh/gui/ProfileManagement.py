@@ -10,7 +10,7 @@
 import gtk
 import gobject
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error, \
-                                    do_complaint_buttons
+                                    do_complaint_warning
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 from sutekh.gui.FrameProfileEditor import FrameProfileEditor
 from sutekh.gui.ConfigFile import ConfigFileListener, CARDSET, WW_CARDLIST, \
@@ -210,7 +210,16 @@ class ProfileMngDlg(SutekhDialog, ConfigFileListener):
         """Delete the given profile"""
         sType, sProfile, _sName = self._get_selected_profile()
         if sProfile:
-            # TODO: Warn user about deleting in use profiles?
+            if sProfile == 'defaults':
+                do_complaint_error("You can't delete the default profile")
+                return
+            aPanes = self.__oConfig.get_profile_users(sType, sProfile)
+            if aPanes:
+                # FIXME: map aPanes back to names
+                iRes = do_complaint_warning(
+                        'Profile is in use. Really delete?')
+                if iRes == gtk.RESPONSE_CANCEL:
+                    return
             self.__oConfig.remove_profile(sType, sProfile)
             oList = self._get_cur_list()
             oList.store.remove_entry(sProfile)
