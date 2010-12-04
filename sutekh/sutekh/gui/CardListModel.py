@@ -13,8 +13,9 @@ from sqlobject import SQLObjectNotFound
 from sutekh.core.Filters import FilterAndBox, NullFilter, PhysicalCardFilter, \
         MultiKeywordFilter, CardTextFilter, FilterNot
 from sutekh.core.Groupings import CardTypeGrouping
-from sutekh.core.SutekhObjects import IAbstractCard, PhysicalCard, \
-        IPhysicalCard, canonical_to_csv
+from sutekh.core.SutekhObjects import PhysicalCardToAbstractCardAdapter, \
+        PhysicalCard, PhysicalCardAdapter, ExpansionNameAdapter, \
+        canonical_to_csv
 from sutekh.gui.ConfigFile import ConfigFileListener, WW_CARDLIST
 
 EXTRA_LEVEL_OPTION = "extra levels"
@@ -68,7 +69,7 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
     # Could possibly be more visually distinct, but users can filter
     # on unknown expansions if needed.
 
-    sUnknownExpansion = '  Unspecified Expansion'
+    sUnknownExpansion = ExpansionNameAdapter.sUnknownExpansion
 
     def __init__(self, oConfig):
         # STRING is the card name, INT is the card count
@@ -187,16 +188,8 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
         if not self.bExpansions:
             return aExpansions
         for oPhysCard in dExpanInfo:
-            aExpansions.append((oPhysCard,
-                self.get_expansion_name(oPhysCard.expansion)))
+            aExpansions.append((oPhysCard, ExpansionNameAdapter(oPhysCard)))
         return aExpansions
-
-    def get_expansion_name(self, oExpansion):
-        """Utility function to return either the name, or the appropriate
-           placeholder for oExpansion is None."""
-        if oExpansion:
-            return oExpansion.name
-        return self.sUnknownExpansion
 
     def lookup_icons(self, sGroup):
         """Lookup the icons for the group. Method since it's repeated in
@@ -284,7 +277,7 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
                 # Names will be set by _set_display_name
                 self.set(oChildIter,
                     8, oCard,
-                    9, IPhysicalCard((oCard, None)),
+                    9, PhysicalCardAdapter((oCard, None)),
                 )
                 aExpansionInfo = self.get_expansion_info(oCard,
                         fGetExpanInfo(oItem))
@@ -349,13 +342,12 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
         # Count by Abstract Card
         dAbsCards = {}
 
-        for oCard in oCardIter:
+        for oPhysCard in oCardIter:
             # pylint: disable-msg=E1101
             # sqlobject confuses pylint
-            oPhysCard = IPhysicalCard(oCard)
             if not self.check_card_visible(oPhysCard):
                 continue
-            oAbsCard = IAbstractCard(oPhysCard)
+            oAbsCard = PhysicalCardToAbstractCardAdapter(oPhysCard)
             aCards.append(oPhysCard)
             dAbsCards.setdefault(oAbsCard, [0, {}])
             dAbsCards[oAbsCard][0] += 1

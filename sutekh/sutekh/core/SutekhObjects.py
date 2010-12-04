@@ -41,6 +41,9 @@ class IRarityPair(Interface): pass
 class IExpansion(Interface): pass
 
 
+class IExpansionName(Interface): pass
+
+
 class IRarity(Interface): pass
 
 
@@ -873,6 +876,28 @@ class PhysicalCardMappingToCardSetAdapter(object):
         return oMapPhysCard.physicalCardSet
 
 
+class ExpansionNameAdapter(object):
+    """Converts PhysicalCard expansionID to name, used a lot in the gui"""
+    advise(instancesProvide=[IExpansionName], asAdapterForTypes=[PhysicalCard])
+
+    __dCache = {}
+    sUnknownExpansion = '  Unspecified Expansion'  # canonical version
+
+    @classmethod
+    def make_object_cache(cls):
+        cls.__dCache = {}
+
+    def __new__(cls, oPhysCard):
+        sExpName = cls.__dCache.get(oPhysCard.expansionID, None)
+        if sExpName is None:
+            if oPhysCard.expansionID:
+                sExpName = oPhysCard.expansion.name
+            else:
+                sExpName = cls.sUnknownExpansion
+            cls.__dCache[oPhysCard.expansionID] = sExpName
+        return sExpName
+
+
 class PhysicalCardMappingToAbstractCardAdapter(object):
     advise(instancesProvide=[IAbstractCard],
             asAdapterForTypes=[MapPhysicalCardToPhysicalCardSet])
@@ -940,6 +965,7 @@ def make_adaptor_caches():
                       PhysicalCardMappingToPhysicalCardAdapter,
                       PhysicalCardToAbstractCardAdapter,
                       PhysicalCardMappingToAbstractCardAdapter,
+                      ExpansionNameAdapter,
                       ]:
         cAdaptor.make_object_cache()
 
