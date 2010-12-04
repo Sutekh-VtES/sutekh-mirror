@@ -96,6 +96,8 @@ class PluginManager(object):
 class PluginConfigFileListener(ConfigFileListener):
     """ConfigListener tailored to inform plugins when their config changes."""
 
+    # pylint: disable-msg=W0231
+    # no point in calling __init__, since it doesn't exist
     def __init__(self, oPlugin):
         self._oPlugin = oPlugin
 

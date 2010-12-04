@@ -145,7 +145,7 @@ class FrameProfileEditor(SutekhDialog):
 
         for sProfile in ["defaults"] + list(sorted(aProfiles)):
             dValues = self._profile_options(sProfile)
-            oIter = oModel.append((sProfile, dValues["name"]))
+            _oIter = oModel.append((sProfile, dValues["name"]))
 
         oModel.append((self._next_key(), "New Profile ..."))
 

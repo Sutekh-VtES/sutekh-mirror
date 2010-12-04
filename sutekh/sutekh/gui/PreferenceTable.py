@@ -263,7 +263,7 @@ class IntegerParsedSpec(BaseParsedSpec):
         """Set the adjustment value, ignoring errornous input"""
         try:
             oValue = int(oValue)
-        except Exception:
+        except ValueError:
             pass
         else:
             self.oEntry.set_value(oValue)
