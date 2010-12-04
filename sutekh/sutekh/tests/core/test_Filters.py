@@ -9,8 +9,9 @@
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.tests.io import test_WhiteWolfParser
 from sutekh.core.SutekhObjects import AbstractCard, IAbstractCard, \
-        PhysicalCard, IPhysicalCard, Expansion, IExpansion, PhysicalCardSet, \
-        MapPhysicalCardToPhysicalCardSet
+        AbstractCardAdapter, PhysicalCard, PhysicalCardAdapter, \
+        Expansion, ExpansionAdapter, PhysicalCardSet, \
+        MapPhysicalCardToPhysicalCardSet, IPhysicalCard
 from sutekh.core import Filters
 from sqlobject import SQLObjectNotFound
 from sutekh.core.CardLookup import best_guess_filter
@@ -24,11 +25,11 @@ def make_card(sCardName, sExpName):
 
        Handle None for the expansion name properly"""
     if sExpName:
-        oExp = IExpansion(sExpName)
+        oExp = ExpansionAdapter(sExpName)
     else:
         oExp = None
-    oAbs = IAbstractCard(sCardName)
-    oCard = IPhysicalCard((oAbs, oExp))
+    oAbs = AbstractCardAdapter(sCardName)
+    oCard = PhysicalCardAdapter((oAbs, oExp))
     return oCard
 
 
@@ -82,8 +83,8 @@ class FilterTests(SutekhTest):
         else:
             assert len(tTest) == 3
             oFilter, aExpectedNames = tTest[:2]
-            aAllowedExpansions = set([IExpansion(sExp) for sExp in tTest[2]
-                                        if sExp is not None])
+            aAllowedExpansions = set([ExpansionAdapter(sExp) for sExp
+                in tTest[2] if sExp is not None])
             if None in tTest[2]:
                 aAllowedExpansions.add(None)
 
@@ -91,17 +92,17 @@ class FilterTests(SutekhTest):
         for sName in aExpectedNames:
             # pylint: disable-msg=E1101
             # sqlobject confuses pylint
-            oAbs = IAbstractCard(sName)
+            oAbs = AbstractCardAdapter(sName)
             aExps = set([oRarity.expansion for oRarity in oAbs.rarity])
 
             if None in aAllowedExpansions:
-                aPhysicalCards.append(IPhysicalCard((oAbs, None)))
+                aPhysicalCards.append(PhysicalCardAdapter((oAbs, None)))
 
             for oExp in aExps:
                 if not oExp in aAllowedExpansions:
                     continue
                 try:
-                    aPhysicalCards.append(IPhysicalCard((oAbs, oExp)))
+                    aPhysicalCards.append(PhysicalCardAdapter((oAbs, oExp)))
                 except SQLObjectNotFound:
                     self.fail("Missing physical card %s from expansion %s"
                         % (oAbs.name, oExp.name))
@@ -345,7 +346,7 @@ class FilterTests(SutekhTest):
             (Filters.CardNameFilter(u'L\xe1z\xe1r'),
                 [u"L\xe1z\xe1r Dobrescu"]),
             (Filters.NullFilter(), self.aExpectedCards),
-            (Filters.SpecificCardFilter(IAbstractCard("Abebe")),
+            (Filters.SpecificCardFilter(AbstractCardAdapter("Abebe")),
                 [u"Abebe"]),
 
             # Compound Filters
@@ -555,9 +556,9 @@ class FilterTests(SutekhTest):
         # Test data for the Specific card filters
         # pylint: disable-msg=E1101
         # sqlobject confuses pylint
-        oAbsAK = IAbstractCard('ak-47')
-        oExp = IExpansion('LotN')
-        oPhysAK = IPhysicalCard((oAbsAK, oExp))
+        oAbsAK = AbstractCardAdapter('ak-47')
+        oExp = ExpansionAdapter('LotN')
+        oPhysAK = PhysicalCardAdapter((oAbsAK, oExp))
 
         aPCSAbsCardTests = [
                 (Filters.PhysicalCardSetFilter('Test 1'),

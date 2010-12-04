@@ -9,7 +9,8 @@
 from sutekh.tests.GuiSutekhTest import GuiSutekhTest
 import unittest
 import gtk
-from sutekh.core.SutekhObjects import PhysicalCardSet, IPhysicalCard
+from sutekh.core.SutekhObjects import PhysicalCardSet, IPhysicalCard, \
+        IAbstractCard
 from sutekh.tests.core.test_Filters import make_card
 
 
@@ -166,7 +167,7 @@ class TestCardSetFrame(GuiSutekhTest):
         # We should get 5 copies of Alexandra from My Collection
         self.assertEqual(len(oPCS2.cards), 9)
         self.assertEqual(len([x for x in oPCS2.cards if
-            IPhysicalCard(x).abstractCard.name == 'Alexandra']), 5)
+            IAbstractCard(x).name == 'Alexandra']), 5)
         # Tests involving the top level selection
         oFrame = oWWList
         self._select_cards(oFrame, [(u'AK-47', 'Top Level'),
@@ -175,9 +176,9 @@ class TestCardSetFrame(GuiSutekhTest):
         oNewFrame.view.do_paste()
         self.assertEqual(len(oPCS2.cards), 11)
         self.assertEqual(len([x for x in oPCS2.cards if
-            IPhysicalCard(x).abstractCard.name == 'Alexandra']), 5)
+            IAbstractCard(x).name == 'Alexandra']), 5)
         self.assertEqual(len([x for x in oPCS2.cards if
-            IPhysicalCard(x).abstractCard.name == 'AK-47']), 4)
+            IAbstractCard(x).name == 'AK-47']), 4)
         aCardNames = [oCard.abstractCard.name for oCard in oPCS2.cards]
         self._select_cards(oNewFrame, [(sName, 'Top Level') for sName in
             aCardNames])
@@ -190,12 +191,12 @@ class TestCardSetFrame(GuiSutekhTest):
         oNewFrame.view.do_paste()
         self.assertEqual(len(oPCS2.cards), 7)
         self.assertEqual(len([x for x in oPCS2.cards if
-            IPhysicalCard(x).abstractCard.name == 'AK-47']), 1)
+            IAbstractCard(x).name == 'AK-47']), 1)
         self.assertEqual(len([x for x in oPCS2.cards if
-            IPhysicalCard(x).abstractCard.name == 'Ablative Skin']), 6)
+            IAbstractCard(x).name == 'Ablative Skin']), 6)
         self.assertEqual(len([x for x in oPCS2.cards if
-            IPhysicalCard(x).abstractCard.name == 'Ablative Skin' and
-            IPhysicalCard(x).expansion is None]), 5)
+            IAbstractCard(x).name == 'Ablative Skin' and
+            IPhysicalCard(x).expansionID is None]), 5)
         # We should copy all the ones from My Collection
         # rename card set, and verify that everything gets updated properly
 

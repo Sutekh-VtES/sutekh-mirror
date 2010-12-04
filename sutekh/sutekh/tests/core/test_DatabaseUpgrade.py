@@ -12,7 +12,8 @@ from sutekh.core.DatabaseUpgrade import copy_to_new_abstract_card_db, \
                                         create_final_copy
 from sutekh.core.CardLookup import SimpleLookup
 from sutekh.core.SutekhObjects import AbstractCard, PhysicalCardSet, \
-    IAbstractCard, IPhysicalCard, IExpansion, IPhysicalCardSet
+    AbstractCardAdapter, PhysicalCardAdapter, ExpansionAdapter, \
+    IPhysicalCardSet
 from sqlobject import sqlhub, connectionForURI
 from logging import FileHandler
 
@@ -33,7 +34,8 @@ class DatabaseUpgradeTests(SutekhTest):
         # pylint: disable-msg=E1101
         # SQLObject confuses pylint
 
-        oPC = IPhysicalCard((IAbstractCard(".44 magnum"), IExpansion("Jyhad")))
+        oPC = PhysicalCardAdapter((AbstractCardAdapter(".44 magnum"),
+            ExpansionAdapter("Jyhad")))
         oMyCollection.addPhysicalCard(oPC)
 
         assert list(PhysicalCardSet.select())
@@ -68,7 +70,7 @@ class DatabaseUpgradeTests(SutekhTest):
         assert list(AbstractCard.select())
         assert list(PhysicalCardSet.select())
 
-        oMagnum = IAbstractCard('.44 magnum')
+        oMagnum = AbstractCardAdapter('.44 magnum')
         assert oMagnum
 
         oMyCollection = IPhysicalCardSet("My Collection")
