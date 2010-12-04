@@ -292,8 +292,10 @@ class ConfigFile(object):
             sResult = None
         return sResult
 
-    def set_plugin_key(self, sPlugin, sKey, sValue):
+    def set_plugin_key(self, sPlugin, sKey, sValue, bCreateSection=False):
         """Set a value in the plugin section"""
+        if bCreateSection and sPlugin not in self.__oConfig['plugins_main']:
+            self.__oConfig['plugins_main'][sPlugin] = {}
         self.__oConfig['plugins_main'][sPlugin][sKey] = sValue
 
     #
@@ -679,5 +681,3 @@ class ConfigFile(object):
         self.__oConfig['main']['postfix name display'] = bPostfix
         for oListener in self.listeners():
             oListener.set_postfix_the_display(bPostfix)
-
-    # TODO: add loader for old config files

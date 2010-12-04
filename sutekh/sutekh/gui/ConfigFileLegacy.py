@@ -1,14 +1,19 @@
 # ConfigFileLegacy.py
 # -*- coding: utf8 -*-
 # vim:fileencoding=utf8 ai ts=4 sts=4 et sw=4
-# Config File handling object
-# Wrapper around ConfigParser with some hooks for Sutekh purposes
+# Legacy config file handling object
+# Old config file was a wrapper around ConfigParser with some hooks for Sutekh
+# purposes
 # Copyright 2007 Neil Muller <drnlmuller+sutekh@gmail.com>
+# Copyright 2010 Simon Cross <hodgestar+sutekh@gmail.com>
 # License: GPL - See COPYRIGHT file for details
 
-"""Config file handling for sutekh"""
+"""Legacy config file reader for Sutekh"""
 
 from ConfigParser import RawConfigParser, NoOptionError
+from sutekh.gui.ConfigFile import ConfigFile
+from sutekh.gui.CardSetListModel import EXTRA_LEVEL_OPTION, SHOW_CARD_OPTION, \
+    PARENT_COUNT_MODE 
 
 
 class ConfigFileLegacy(object):
@@ -94,6 +99,63 @@ class ConfigFileLegacy(object):
         raise RuntimeError("Writing the old config file no longer supported")
 
     # pylint: enable-msg=R0201
+
+    def convert(self, sFilename):
+        """Return a new-style Sutekh config object."""
+        oConfig = ConfigFile(sFilename)
+        oConfig.validate()
+
+        # Global Options
+
+        for fSetter, fGetter in (
+            (oConfig.set_database_uri, self.get_database_uri),
+            (oConfig.set_icon_path, self.get_icon_path),
+            (oConfig.set_postfix_the_display, self.get_postfix_the_display),
+            (oConfig.set_save_on_exit, self.get_save_on_exit),
+            (oConfig.set_save_precise_pos, self.get_save_precise_pos),
+            (oConfig.set_save_window_size, self.get_save_window_size),
+            (oConfig.set_window_size, self.get_window_size),
+            ):
+            oValue = fGetter()
+            if oValue is not None:
+                fSetter(oValue)
+
+        # Open Frames
+
+        oConfig.clear_open_frames()
+        for iPaneNumber, sType, sName, bVertical, bClosed, iPos in \
+            self.get_all_panes():
+            oConfig.add_frame(iPaneNumber, sType, sName, bVertical, bClosed, iPos)
+
+        # Filters
+
+        for sKey, sFilter in self.get_filter_keys():
+            oConfig.add_filter(sKey, sFilter)
+
+        # Deck Options
+        # Note: deck options from .get_all_pane_info() and
+        # .get_show_zero_count_cards(). This would require constructing profiles
+        # and associating them with frames automatically which is unlikely to
+        # create something the user is happy with. The cost of reconfiguring these
+        # options should be fairly low.
+
+        # Global Plugin Options
+
+        dKey2PluginMap = {
+            'card image path': 'CardImagePlugin',
+            'HTML export mode': 'CardSetExportHTML',
+            'show starters': 'StarterInfoPlugin',
+        }
+
+        for sKey in self.__oConfig.options(self.__sPluginsSection):
+            if sKey not in dKey2PluginMap:
+                # skip keys that aren't known are are presumablly garbage
+                continue
+            sPlugin = dKey2PluginMap[sKey]
+            sValue = self.get_plugin_key(sKey)
+            oConfig.set_plugin_key(sPlugin, sKey, sValue, bCreateSection=True)
+
+        return oConfig
 
     def pre_save_clear(self):
         """Clear out old saved pos, before saving new stuff"""
