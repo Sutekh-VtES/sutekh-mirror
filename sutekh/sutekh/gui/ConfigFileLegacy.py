@@ -13,7 +13,7 @@
 from ConfigParser import RawConfigParser, NoOptionError
 from sutekh.gui.ConfigFile import ConfigFile
 from sutekh.gui.CardSetListModel import EXTRA_LEVEL_OPTION, SHOW_CARD_OPTION, \
-    PARENT_COUNT_MODE 
+    PARENT_COUNT_MODE
 
 
 class ConfigFileLegacy(object):
@@ -125,7 +125,8 @@ class ConfigFileLegacy(object):
         oConfig.clear_open_frames()
         for iPaneNumber, sType, sName, bVertical, bClosed, iPos in \
             self.get_all_panes():
-            oConfig.add_frame(iPaneNumber, sType, sName, bVertical, bClosed, iPos)
+            oConfig.add_frame(iPaneNumber, sType, sName, bVertical, bClosed,
+                    iPos)
 
         # Filters
 
@@ -134,10 +135,10 @@ class ConfigFileLegacy(object):
 
         # Deck Options
         # Note: deck options from .get_all_pane_info() and
-        # .get_show_zero_count_cards(). This would require constructing profiles
-        # and associating them with frames automatically which is unlikely to
-        # create something the user is happy with. The cost of reconfiguring these
-        # options should be fairly low.
+        # .get_show_zero_count_cards(). This would require constructing
+        # profiles and associating them with frames automatically which is
+        # unlikely to create something the user is happy with. The cost of
+        # reconfiguring these options should be fairly low.
 
         # Global Plugin Options
 

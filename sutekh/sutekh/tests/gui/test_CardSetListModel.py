@@ -518,7 +518,8 @@ class CardSetListModelTests(ConfigSutekhTest):
             self.assertEqual(oModel._iParentCountMode, iMode)
         # Check listener on local frame profile changes
         for sValue, iMode in PARENT_COUNT_LOOKUP.iteritems():
-            self.oConfig.set_local_frame_option(oModel.frame_id, PARENT_COUNT_MODE, sValue)
+            self.oConfig.set_local_frame_option(oModel.frame_id,
+                    PARENT_COUNT_MODE, sValue)
             self.assertEqual(oModel._iParentCountMode, iMode)
         self._cleanup_models([oModel])
 
