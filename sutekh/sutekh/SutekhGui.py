@@ -109,6 +109,9 @@ def setup_logging(oOpts):
 
 
 def main():
+    # pylint: disable-msg=R0912, R0914
+    # lots of different cases to consider, so lots of variables and
+    # if statement
     """Start the Sutekh Gui.
 
        Check that database exists, doesn't need to be upgraded, then
