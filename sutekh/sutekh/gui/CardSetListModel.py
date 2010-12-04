@@ -2286,7 +2286,7 @@ class CardSetCardListModel(CardListModel):
             return
         self.update_options()
 
-    def profile_changed(self, sType, sId, sNewProfile):
+    def profile_changed(self, sType, sId):
         """The profile associated with a cardset changed."""
         if sType != CARDSET and sType != FRAME:
             return

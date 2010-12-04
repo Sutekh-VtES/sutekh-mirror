@@ -125,7 +125,7 @@ class PluginConfigFileListener(ConfigFileListener):
             if sProfile in tProfiles:
                 self._oPlugin.perpane_config_updated()
 
-    def profile_changed(self, sType, sId, sNewProfile):
+    def profile_changed(self, sType, sId):
         """The profile associated with a frame changed."""
         if sType == FRAME and self._oPlugin.model.frame_id == sId:
             self._oPlugin.perpane_config_updated()

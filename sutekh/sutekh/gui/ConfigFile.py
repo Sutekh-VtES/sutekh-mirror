@@ -49,7 +49,7 @@ class ConfigFileListener(object):
         """One of the profile configuration items changed."""
         pass
 
-    def profile_changed(self, sType, sId, sNewProfile):
+    def profile_changed(self, sType, sId):
         """The profile associated with a cardset changed."""
         pass
 
@@ -477,8 +477,7 @@ class ConfigFile(object):
 
         if bChanged:
             for oListener in self.listeners():
-                # TODO: Eep. Notify listeners.
-                pass
+                oListener.profile_changed(FRAME, sFrame)
 
     def set_profile(self, sType, sId, sProfile):
         """Set the profile associated of the given type."""
@@ -506,7 +505,7 @@ class ConfigFile(object):
             # Unrecognised type / cardset combo
             return
         for oListener in self.listeners():
-            oListener.profile_changed(sType, sId, sProfile)
+            oListener.profile_changed(sType, sId)
 
     def get_profile(self, sType, sId):
         """Return the current profile of the cardset/cardlist/cardset list."""

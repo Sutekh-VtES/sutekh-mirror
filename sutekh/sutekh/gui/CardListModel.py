@@ -582,7 +582,7 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
             return
         self.update_options()
 
-    def profile_changed(self, sType, sId, sNewProfile):
+    def profile_changed(self, sType, sId):
         """A profile option changed with a cardset changed."""
         if sType != WW_CARDLIST or sId != WW_CARDLIST:
             return
