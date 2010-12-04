@@ -109,11 +109,18 @@ class FilterEditorToolbar(gtk.TreeView):
 
     def drag_filter(self, _oBtn, _oContext, oSelectionData, _oInfo, _oTime):
         """Create a drag info for this filter"""
+        sSelect = self.get_paste_filter()
+        if sSelect:
+            oSelectionData.set(oSelectionData.target, 8, sSelect)
+
+    def get_paste_filter(self):
+        """Get the currently selected filter"""
         _oModel, oIter = self.get_selection().get_selected()
         if oIter:
             sSelect = '%s%s' % (NEW_FILTER,
                     self.__oListStore.get_value(oIter, 1))
-            oSelectionData.set(oSelectionData.target, 8, sSelect)
+            return sSelect
+        return None
 
 
 class FilterValuesBox(gtk.VBox):
@@ -205,7 +212,8 @@ class FilterValuesBox(gtk.VBox):
         self._oWidget.pack_start(gtk.Label('Or Drag Filter element'),
                 expand=False)
         oSubFilterList = FilterEditorToolbar(self.__sFilterType)
-        oSubFilterList.connect('key-press-event', self.key_press, 'Filter')
+        oSubFilterList.connect('key-press-event', self.key_press, oFilter,
+                'Filter')
         self._oWidget.pack_start(AutoScrolledWindow(oSubFilterList),
                     expand=True)
 
@@ -416,11 +424,17 @@ class FilterValuesBox(gtk.VBox):
             return
         if sSource == 'Filter':
             # Paste current filter into the current filter box
-            pass
+            sSelect = oWidget.get_paste_filter()
+            if sSelect:
+                self._oBoxModelEditor.paste_filter(oFilter, sSelect, -1)
         elif sSource == 'Count':
-            pass
+            sSelect = '%s%s: Count' % (NEW_VALUE, oFilter.sFilterName)
+            self._format_selection(sSelect, oWidget.get_selection())
+            self._oBoxModelEditor.paste_value(sSelect)
         elif sSource == 'Set':
-            pass
+            sSelect = '%s%s: Set' % (NEW_VALUE, oFilter.sFilterName)
+            self._format_selection(sSelect, oWidget.get_all_selected_sets())
+            self._oBoxModelEditor.paste_value(sSelect)
         elif sSource == 'CardSet':
             sSelect = '%s%s' % (NEW_VALUE, oFilter.sFilterName)
             self._format_selection(sSelect, oWidget.get_all_selected_sets())
@@ -1045,17 +1059,15 @@ class FilterBoxModelEditView(gtk.TreeView):
         if oFilterObj.iValueType == FilterBoxItem.LIST:
             aTarget = oFilterObj.aCurValues
         elif oFilterObj.iValueType == FilterBoxItem.LIST_FROM:
-            if oSourceFilter.aCurValues[0] and \
-                    sValue in oSourceFilter.aCurValues[0]:
-                # Dragging the 1st element
-                if not oFilterObj.aCurValues[0]:
-                    oFilterObj.aCurValues[0] = []
-                aTarget = oFilterObj.aCurValues[0]
-            elif oSourceFilter.aCurValues[1] and \
-                    sValue in oSourceFilter.aCurValues[1]:
-                if not oFilterObj.aCurValues[0]:
-                    oFilterObj.aCurValues[1] = []
-                aTarget = oFilterObj.aCurValues[1]
+            for iIndex in (0, 1):
+                # We do this loop because we may need to explicitly set
+                # the destination filter to an empty list
+                if oSourceFilter.aCurValues[iIndex] and \
+                        sValue in oSourceFilter.aCurValues[iIndex]:
+                    if not oFilterObj.aCurValues[iIndex]:
+                        oFilterObj.aCurValues[iIndex] = []
+                    aTarget = oFilterObj.aCurValues[iIndex]
+                    break
         if sValue in aTarget:
             # Don't allow duplicate values
             return False
@@ -1066,22 +1078,36 @@ class FilterBoxModelEditView(gtk.TreeView):
         self._oStore.foreach(self._check_for_value, (oFilterObj, sValue))
         return True
 
+    def paste_filter(self, oInsertObj, sData, iIndex):
+        """Add a filter to the given filter object"""
+        oCurPath, _oCol = self.get_cursor()
+        sFilter = [x.strip() for x in sData.split(':', 1)][1]
+        tSelInfo = self._oValuesWidget.get_current_pos_and_sel()
+        if sFilter == 'Filter Group':
+            oInsertObj.add_child_box(oInsertObj.AND)
+        else:
+            oInsertObj.add_child_item(sFilter)
+        # Move to the correct place
+        if iIndex >= 0:
+            oFilterObj = oInsertObj.pop()
+            oInsertObj.insert(iIndex, oFilterObj)
+        self.load()
+        # Restore selection after load
+        self.select_path(oCurPath)
+        # Restore values widget selection
+        self._oValuesWidget.restore_pos_and_selection(tSelInfo)
+
     def _do_drop_filter(self, sData, tRowInfo):
         """Handle the moving/dropping of a filter onto the view"""
-        oCurPath, _oCol = self.get_cursor()
-        sSource, sFilter = [x.strip() for x in sData.split(':', 1)]
         # Check we have an acceptable drop position
         oInsertObj, iIndex = self._oStore.get_insert_box(tRowInfo)
-        if sSource == 'NewFilter':
-            tSelInfo = self._oValuesWidget.get_current_pos_and_sel()
-            if sFilter == 'Filter Group':
-                oInsertObj.add_child_box(oInsertObj.AND)
-            else:
-                oInsertObj.add_child_item(sFilter)
+        if sData.startswith('NewFilter'):
+            self.paste_filter(oInsertObj, sData, iIndex)
         else:
+            sIter = [x.strip() for x in sData.split(':', 1)][1]
             # Find the dragged filter and remove it from it's current
             # position
-            oSourceIter = self._oStore.get_iter_from_string(sFilter)
+            oSourceIter = self._oStore.get_iter_from_string(sIter)
             oFilterObj = self._oStore.get_value(oSourceIter, 1)
             oParent = self._oStore.get_value(
                     self._oStore.iter_parent(oSourceIter), 1)
@@ -1096,21 +1122,11 @@ class FilterBoxModelEditView(gtk.TreeView):
                 oInsertObj.append(oFilterObj)
             else:
                 return False
-        # Move to the correct place
-        if iIndex >= 0:
-            oFilterObj = oInsertObj.pop()
-            oInsertObj.insert(iIndex, oFilterObj)
-        self.load()
-        if sSource == 'NewFilter':
-            # Restore selection after load
-            self.select_path(oCurPath)
-            # Restore values widget selection
-            self._oValuesWidget.restore_pos_and_selection(tSelInfo)
-        else:
-            # Find where dropped filter ended up and select it
-            # Since we can seriously muck around with the tree layout,
-            # we can't use any previous iters or paths, so we use
-            # foreach
+            # Move to the correct place
+            if iIndex >= 0:
+                oFilterObj = oInsertObj.pop()
+                oInsertObj.insert(iIndex, oFilterObj)
+            self.load()
             self._oStore.foreach(self._check_for_obj, oFilterObj)
         return True
 
