@@ -26,7 +26,7 @@ ODD_BACKS = (None, THIRD_ED, JYHAD)
 
 UNSLEEVED = "<span foreground='green'>%s may be played unsleeved</span>\n"
 SLEEVED = "<span foreground='orange'>%s should be sleeved</span>\n"
-SPECIAL = ('Not Tournament Legal Cards', 'Multirole', 'Mixed Card Backs')
+SPECIAL = set(['Not Tournament Legal Cards', 'Multirole', 'Mixed Card Backs'])
 
 
 # utility functions
@@ -460,7 +460,7 @@ class AnalyzeCardList(SutekhPlugin):
 
         # overly clever? crypt cards first, then alphabetical, then specials
         aOrderToList = CRYPT_TYPES + [x for x in sorted(self.dTypeNumbers)
-                if (x not in CRYPT_TYPES and x not in SPECIAL)] + SPECIAL
+                if (x not in CRYPT_TYPES and x not in SPECIAL)] + list(SPECIAL)
         for sCardType in aOrderToList:
             if self.dTypeNumbers[sCardType]:
                 fProcess = dConstruct[sCardType]
