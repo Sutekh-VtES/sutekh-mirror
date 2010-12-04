@@ -72,8 +72,6 @@ class TestMultiPaneWindow(GuiSutekhTest):
         self.oWin.remove_frame(oPane)
         self.assertEqual(len(self.oWin.aClosedFrames), 0)
         self.oWin.restore_from_config()
-        print self.oWin.aClosedFrames
-        print self.oWin.aOpenFrames
         self.assertEqual(len(self.oWin.aClosedFrames), 1)
         self.assertEqual(len(self.oWin.aOpenFrames), 4)
         self.assertEqual(len(
