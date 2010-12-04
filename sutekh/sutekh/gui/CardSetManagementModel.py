@@ -45,6 +45,8 @@ class CardSetManagementModel(gtk.TreeStore):
     frame_id = property(fget=lambda self: CARDSET_LIST,
             doc="Frame ID of the card set list (for selecting profiles)")
 
+    # This isn't a card set id, but it's here to support profiles
+    # (see CardListModel)
     cardset_id = property(fget=lambda self: CARDSET_LIST,
             doc="Cardset ID of card set list (for selecting profiles)")
 

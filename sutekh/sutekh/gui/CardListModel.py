@@ -128,6 +128,7 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
     frame_id = property(fget=lambda self: WW_CARDLIST,
             doc="Frame ID of the card list (for selecting profiles)")
 
+    # This isn't a card set id, but it's here to support profiles
     cardset_id = property(fget=lambda self: WW_CARDLIST,
             doc="Cardset ID of card list (for selecting profiles)")
 

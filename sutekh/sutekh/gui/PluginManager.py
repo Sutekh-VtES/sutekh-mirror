@@ -152,7 +152,6 @@ class SutekhPlugin(object):
         self._oView = oCardListView
         self._oModel = oCardListModel
         self._cModelType = cModelType
-        # TODO: clean up detection of relevant models
         if self._oModel is not None and hasattr(self._oModel, "frame_id"):
             self._oListener = PluginConfigFileListener(self)
             # listener automatically removed when plugin is garbage collected
@@ -305,7 +304,6 @@ class SutekhPlugin(object):
     def get_perpane_item(self, sKey):
         """Return the value of a per-pane config key."""
         oModel = self.model
-        # TODO: clean up detection of relevant models
         if oModel is None or not hasattr(oModel, "cardset_id"):
             return None
         if oModel.cardset_id == WW_CARDLIST or \
