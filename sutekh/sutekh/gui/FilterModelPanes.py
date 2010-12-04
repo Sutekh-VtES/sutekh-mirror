@@ -333,11 +333,13 @@ class FilterValuesBox(gtk.VBox):
             elif sData.startswith(MOVE_VALUE):
                 # Removing a value from the list
                 sIter = sData.split(':', 1)[1].strip()
-                self._oBoxModelEditor.remove_value_at_iter(sIter)
+                oIter = self._oStore.get_iter_from_string(sIter)
+                self._oBoxModelEditor.remove_value_at_iter(oIter)
             elif sData.startswith(MOVE_FILTER):
                 # Removing a filter
                 sIter = sData.split(':', 1)[1].strip()
-                self._oBoxModelEditor.remove_filter_at_iter(sIter)
+                oIter = self._oStore.get_iter_from_string(sIter)
+                self._oBoxModelEditor.remove_filter_at_iter(oIter)
             else:
                 # Not relevant
                 bDragRes = False
@@ -742,9 +744,8 @@ class FilterBoxModelEditView(gtk.TreeView):
             # Select the root of the model by default.
             self.select_path(oRootPath)
 
-    def remove_value_at_iter(self, sIter):
+    def remove_value_at_iter(self, oIter):
         """Remove the filter value at the given point in the tree"""
-        oIter = self._oStore.get_iter_from_string(sIter)
         oFilter = self._oStore.get_value(self._oStore.iter_parent(oIter), 1)
         sValue = self._oStore.get_value(oIter, 0)
         if oFilter.iValueType == FilterBoxItem.LIST \
@@ -760,9 +761,8 @@ class FilterBoxModelEditView(gtk.TreeView):
                 oFilter.aCurValues[1].remove(sValue)
             self.update_count_list(self.oCurSelectIter, oFilter)
 
-    def remove_filter_at_iter(self, sIter):
+    def remove_filter_at_iter(self, oIter):
         """Remove the filter element at the given point in the tree"""
-        oIter = self._oStore.get_iter_from_string(sIter)
         oMoveObj = self._oStore.get_value(oIter, 1)
         oParent = self._oStore.get_value(self._oStore.iter_parent(oIter), 1)
         oParent.remove(oMoveObj)
@@ -1019,7 +1019,7 @@ class FilterBoxModelEditView(gtk.TreeView):
             return False
         aTarget.append(sValue)
         aTarget.sort()
-        self.remove_value_at_iter(sIter)
+        self.remove_value_at_iter(oIter)
         self.load()
         self._oStore.foreach(self._check_for_value, (oFilterObj, sValue))
         return True
@@ -1113,12 +1113,18 @@ class FilterBoxModelEditView(gtk.TreeView):
         """Delete an filter component from the model
 
            _oIgnore is so this can be called from the popup menu"""
-        oFilterObj, _oCurPath = self._get_cur_filter()
-        if oFilterObj is not None:
+        oFilterObj, oCurPath = self._get_cur_filter()
+        oCurIter = self._oStore.get_iter(oCurPath)
+        oCurValue = self._oStore.get_value(oCurIter, 1)
+        if oCurValue is oFilterObj:
+            # At the filter level
             oParent = self._oStore.get_value(
                     self._oStore.iter_parent(self.oCurSelectIter), 1)
             oParent.remove(oFilterObj)
             self.load()
+        else:
+            # Deleting a value
+            self.remove_value_at_iter(oCurIter)
 
     def press_button(self, _oWidget, oEvent):
         """Display the popup menu"""
