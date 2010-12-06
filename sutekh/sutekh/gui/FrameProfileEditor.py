@@ -11,8 +11,7 @@ passed in when the dialog is created.
 """
 
 
-from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error, \
-                                    do_complaint_buttons
+from sutekh.gui.SutekhDialog import SutekhDialog
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 from sutekh.gui.PreferenceTable import PreferenceTable
 import gtk

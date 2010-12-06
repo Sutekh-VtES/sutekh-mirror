@@ -6,6 +6,8 @@
 # Copyright 2010 Simon Cross <hodgestar+sutekh@gmail.com>
 # GPL - see COPYING for details
 
+"""This handles editing the local profile editor, (for temporary options)"""
+
 
 from sutekh.gui.SutekhDialog import SutekhDialog
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow

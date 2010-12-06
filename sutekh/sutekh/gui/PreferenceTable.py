@@ -285,6 +285,9 @@ SPEC_TYPE_MAP = {
 def parse_spec(sConfigSpec, oValidator):
     """Parse a configobj spec into a parsed spec."""
     # TODO: is it okay to use an _ method from the validator?
+    # pylint: disable-msg=W0212
+    # We know we're accessing a protected member, and pylint flags our
+    # note above, so don't flag this twice
     sType, aArgs, dKwargs, sDefault = \
         oValidator._parse_with_caching(sConfigSpec)
     cParsedSpec = SPEC_TYPE_MAP.get(sType, UneditableSpec)
