@@ -460,7 +460,8 @@ class AnalyzeCardList(SutekhPlugin):
 
         # overly clever? crypt cards first, then alphabetical, then specials
         aOrderToList = CRYPT_TYPES + [x for x in sorted(self.dTypeNumbers)
-                if (x not in CRYPT_TYPES and x not in SPECIAL)] + list(SPECIAL)
+                if (x not in CRYPT_TYPES and x not in SPECIAL)] + \
+                        sorted(SPECIAL)
         for sCardType in aOrderToList:
             if self.dTypeNumbers[sCardType]:
                 fProcess = dConstruct[sCardType]
