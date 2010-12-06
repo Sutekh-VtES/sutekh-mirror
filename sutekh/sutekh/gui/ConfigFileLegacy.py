@@ -12,8 +12,6 @@
 
 from ConfigParser import RawConfigParser, NoOptionError
 from sutekh.gui.ConfigFile import ConfigFile
-from sutekh.gui.CardSetListModel import EXTRA_LEVEL_OPTION, SHOW_CARD_OPTION, \
-    PARENT_COUNT_MODE
 
 
 class ConfigFileLegacy(object):
@@ -102,6 +100,8 @@ class ConfigFileLegacy(object):
 
     def convert(self, sFilename):
         """Return a new-style Sutekh config object."""
+        # pylint: disable-msg=R0914
+        # Need to convert a lot of options, so we need many variables
         oConfig = ConfigFile(sFilename)
         oConfig.validate()
 
