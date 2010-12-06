@@ -7,7 +7,6 @@
 
 import gtk
 from sutekh.gui.PluginManager import SutekhPlugin
-from sutekh.gui.SutekhDialog import SutekhDialog
 from sutekh.gui.CellRendererIcons import CellRendererIcons, SHOW_TEXT_ONLY, \
         SHOW_ICONS_ONLY, SHOW_ICONS_AND_TEXT
 from sutekh.core.SutekhObjects import PhysicalCard, PhysicalCardSet
@@ -347,20 +346,6 @@ class ExtraCardViewColumns(SutekhPlugin):
         oCell.set_data(aTexts, aIcons, SHOW_TEXT_ONLY)
 
     # pylint: enable-msg=R0201
-    # Dialog and Menu Item Creation
-
-    def get_menu_item(self):
-        """Register on 'Plugins' menu"""
-        if not self.check_versions() or not self.check_model_type():
-            return None
-        oSelector = gtk.MenuItem("Select Extra Columns")
-        oSelector.connect("activate", self.activate)
-        return ('Plugins', oSelector)
-
-    def activate(self, _oWidget):
-        """Handle menu activation"""
-        oDlg = self.make_dialog()
-        oDlg.run()
 
     def sort_column(self, _oModel, oIter1, oIter2, oGetData):
         """Stringwise comparision of oIter1 and oIter2.
@@ -385,67 +370,7 @@ class ExtraCardViewColumns(SutekhPlugin):
             iRes = self.model.sort_equal_iters(oIter1, oIter2)
         return iRes
 
-    def make_dialog(self):
-        """Create the column selection dialog"""
-        sName = "Select Extra Columns ..."
-
-        oDlg = SutekhDialog(sName, self.parent,
-                gtk.DIALOG_DESTROY_WITH_PARENT,
-                (gtk.STOCK_OK, gtk.RESPONSE_OK, gtk.STOCK_CANCEL,
-                    gtk.RESPONSE_CANCEL))
-
-        oDlg.connect("response", self.handle_response)
-
-        # pylint: disable-msg=W0201
-        # no point in defining this in __init__
-        self._aButtons = []
-        aColsInUse = self.get_cols_in_use()
-        # pylint: disable-msg=E1101
-        # pylint doesn't detect vbox's methods
-        for sName in self._dCols:
-            oBut = gtk.CheckButton(sName)
-            oBut.set_active(sName in aColsInUse)
-            oDlg.vbox.pack_start(oBut)
-            self._aButtons.append(oBut)
-
-        oDlg.vbox.pack_start(gtk.HSeparator())
-
-        oIter = self.MODES.iterkeys()
-        for sName in oIter:
-            self._oFirstBut = gtk.RadioButton(None, sName, False)
-            if self._iShowMode == self.MODES[sName]:
-                self._oFirstBut.set_active(True)
-            oDlg.vbox.pack_start(self._oFirstBut, expand=False)
-            break
-        for sName in oIter:
-            oBut = gtk.RadioButton(self._oFirstBut, sName)
-            oDlg.vbox.pack_start(oBut, expand=False)
-            if self._iShowMode == self.MODES[sName]:
-                oBut.set_active(True)
-
-        oDlg.show_all()
-
-        return oDlg
-
     # Actions
-
-    def handle_response(self, oDlg, oResponse):
-        """Handle user response from the dialog"""
-        if oResponse == gtk.RESPONSE_CANCEL:
-            oDlg.destroy()
-        elif oResponse == gtk.RESPONSE_OK:
-            aColsInUse = []
-            for oBut in self._aButtons:
-                if oBut.get_active():
-                    sLabel = oBut.get_label()
-                    aColsInUse.append(sLabel)
-            for oBut in self._oFirstBut.get_group():
-                sName = oBut.get_label()
-                if oBut.get_active():
-                    self._iShowMode = self.MODES[sName]
-
-            self.set_cols_in_use(aColsInUse)
-            oDlg.destroy()
 
     def set_cols_in_use(self, aCols):
         """Add columns to the view"""
