@@ -351,12 +351,12 @@ class FilterValuesBox(gtk.VBox):
             elif sData.startswith(MOVE_VALUE):
                 # Removing a value from the list
                 sIter = sData.split(':', 1)[1].strip()
-                oIter = self._oStore.get_iter_from_string(sIter)
+                oIter = self._oBoxModelEditor.get_iter_from_string(sIter)
                 self._oBoxModelEditor.remove_value_at_iter(oIter)
             elif sData.startswith(MOVE_FILTER):
                 # Removing a filter
                 sIter = sData.split(':', 1)[1].strip()
-                oIter = self._oStore.get_iter_from_string(sIter)
+                oIter = self._oBoxModelEditor.get_iter_from_string(sIter)
                 self._oBoxModelEditor.remove_filter_at_iter(oIter)
             else:
                 # Not relevant
@@ -789,6 +789,11 @@ class FilterBoxModelEditView(gtk.TreeView):
         else:
             # Select the root of the model by default.
             self.select_path(oRootPath)
+
+    def get_iter_from_string(self, sIter):
+        """Lookup the iter given the string. Used used dragging stuff out
+           of the pane."""
+        return self._oStore.get_iter_from_string(sIter)
 
     def remove_value_at_iter(self, oIter):
         """Remove the filter value at the given point in the tree"""
