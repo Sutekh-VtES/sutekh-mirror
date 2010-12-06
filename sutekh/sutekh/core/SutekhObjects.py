@@ -505,7 +505,7 @@ PHYSICAL_SET_LIST = [PhysicalCardSet,
 PHYSICAL_LIST = [PhysicalCard] + PHYSICAL_SET_LIST
 
 # Generically useful constant
-CRYPT_TYPES = ['Vampire', 'Imbued']
+CRYPT_TYPES = ('Vampire', 'Imbued')
 
 
 # Object Maker API
