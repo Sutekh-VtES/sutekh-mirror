@@ -59,6 +59,7 @@ h2. Contents
 ### "Card Grouping":#grouping
 ### "Extra Columns -- card sets":#columns
 ## "Card Set Profile Options":#cardset_profile
+### "The Different Profiles".#different_profiles
 ## "CardSet List Profile Options":#cs_profile
 ### "Extra Columns -- card set list":#cs_columns
 
@@ -1184,6 +1185,26 @@ and the total count in all the card sets marked as _In Use_. If this number \
 is negative, it is shown in red.
 * _Show icons for the grouping_: Toggle whether icons are shown for the top \
 level grouping (when available).
+
+h4(#different_profiles.) The Different Profiles
+
+The display of a cardset is deteremined by 3 different profiles. These are the
+"local profile", the "pane profile" and the "card set profile". Any options
+that aren't set by one of these profiles is taken from the *Default profile*.
+
+The *cardset profile* is used for any copy of the given card set, when it
+is first opened. If multiple copies of a card set are open, they all use the
+same *cardset profile*, and changing this will effect all open copies of the
+card set.
+
+The *pane profile* is used to override settings in the *cardset profile* and
+save them across sessions. Pane profile settings are lost when the specific
+pane is specifically closed, but, as long as the pane is kept open, they
+are saved and restored as needed.
+
+The *local profile* is used to set temporary options on the specific pane
+which override the other profiles. These setting are temporary, and are never
+saved.
 
 h3(#cs_profile). CardSet List Profile Options
 

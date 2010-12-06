@@ -86,7 +86,10 @@
 		<li><a href="#grouping">Card Grouping</a></li>
 		<li><a href="#columns">Extra Columns &#8212; card sets</a></li>
 	</ol></li>
-		<li><a href="#cardset_profile">Card Set Profile Options</a></li>
+		<li><a href="#cardset_profile">Card Set Profile Options</a>
+	<ol>
+		<li>&#8220;The Different Profiles&#8221;.#different_profiles</li>
+	</ol></li>
 		<li><a href="#cs_profile">CardSet List Profile Options</a>
 	<ol>
 		<li><a href="#cs_columns">Extra Columns &#8212; card set list</a></li>
@@ -782,6 +785,16 @@ or to show both.
 	</ul></li>
 		<li><em>Show icons for the grouping</em>: Toggle whether icons are shown for the top level grouping (when available).</li>
 	</ul>
+
+<p>h4(#different_profiles.) The Different Profiles</p>
+
+<p>The display of a cardset is deteremined by 3 different profiles. These are the &#8220;local profile&#8221;, the &#8220;pane profile&#8221; and the &#8220;card set profile&#8221;. Any options that aren&#8217;t set by one of these profiles is taken from the <strong>Default profile</strong>.</p>
+
+<p>The <strong>cardset profile</strong> is used for any copy of the given card set, when it is first opened. If multiple copies of a card set are open, they all use the same <strong>cardset profile</strong>, and changing this will effect all open copies of the card set.</p>
+
+<p>The <strong>pane profile</strong> is used to override settings in the <strong>cardset profile</strong> and save them across sessions. Pane profile settings are lost when the specific pane is specifically closed, but, as long as the pane is kept open, they are saved and restored as needed.</p>
+
+<p>The <strong>local profile</strong> is used to set temporary options on the specific pane which override the other profiles. These setting are temporary, and are never saved.</p>
 
 <h3 id="cs_profile">CardSet List Profile Options</h3>
 
