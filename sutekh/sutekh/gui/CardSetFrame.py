@@ -54,6 +54,7 @@ class CardSetFrame(CardListFrame):
 
     def cleanup(self):
         """Cleanup function called before pane is removed by the Main Window"""
+        super(CardSetFrame, self).cleanup()
         self._oMainWindow.reload_pcs_list()
         # Clean up the signal handlers, to avoid problems
         self._oController.cleanup()
