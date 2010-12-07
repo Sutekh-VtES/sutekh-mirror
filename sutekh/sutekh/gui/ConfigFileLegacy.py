@@ -126,7 +126,7 @@ class ConfigFileLegacy(object):
         for iPaneNumber, sType, sName, bVertical, bClosed, iPos in \
             self.get_all_panes():
             oConfig.add_frame(iPaneNumber, sType, sName, bVertical, bClosed,
-                    iPos)
+                    iPos, None)
 
         # Filters
 

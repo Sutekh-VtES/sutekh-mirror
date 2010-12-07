@@ -77,6 +77,8 @@ class BasicFrame(gtk.Frame):
             doc="Plugins enabled for this frame.")
     pane_id = property(fget=lambda self: self._iId,
             doc="ID number for this pane (should be unique)")
+    config_frame_id = property(fget=lambda self: "pane%s" % (self._iId,),
+            doc="Config frame id for this pane")
     # pylint: enable-msg=W0212
 
     def set_unique_id(self):

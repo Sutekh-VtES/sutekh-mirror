@@ -188,7 +188,7 @@ class CardSetCardListModel(CardListModel):
     def __get_frame_id(self):
         """Return the frame id, handling oController is None case"""
         if self._oController:
-            return "pane%s" % (self._oController.frame.pane_id,)
+            return self._oController.frame.config_frame_id
         # No controller, so return consistent, but not per-pane unique, id
         return "pane-%s" % (self.cardset_id,)
 

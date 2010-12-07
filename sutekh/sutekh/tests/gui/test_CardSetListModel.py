@@ -62,6 +62,7 @@ class DummyController(object):
     view = property(fget=lambda self: self)
     frame = property(fget=lambda self: self)
     pane_id = property(fget=lambda self: 10)
+    config_frame_id = property(fget=lambda self: 'pane10')
 
     # pylint: enable-msg=W0212
 

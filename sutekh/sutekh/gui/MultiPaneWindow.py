@@ -212,7 +212,8 @@ class MultiPaneWindow(gtk.Window):
             self.resize(iWidth, iHeight)
         # Reset the pane number count, since we're starting afresh
         self._iCount = 0
-        for _iNumber, sType, sName, bVert, bClosed, iPos in \
+        dPaneMap = {}
+        for _iNumber, sType, sName, sOldId, bVert, bClosed, iPos in \
                 self._oConfig.open_frames():
             oNewFrame = self.add_pane(bVert, iPos)
             oRestored = None
@@ -239,8 +240,12 @@ class MultiPaneWindow(gtk.Window):
                 # corner cases around the 1st restored frame needing to be
                 # minimised
                 aClosedFrames.append(oRestored)
+            if oRestored and sOldId:
+                dPaneMap[sOldId] = oRestored.config_frame_id
         for oFrame in aClosedFrames:
             self.minimize_to_toolbar(oFrame)
+        if dPaneMap:
+            self._oConfig.update_pane_numbers(dPaneMap)
         if bReloadPCS:
             self.reload_pcs_list()
         if not self.aOpenFrames:
@@ -607,10 +612,10 @@ class MultiPaneWindow(gtk.Window):
                correctly"""
             if oPane.type != PhysicalCardSet.sqlmeta.table:
                 oConfig.add_frame(iNum, oPane.type, oPane.name, bVert,
-                        bClosed, iPos)
+                        bClosed, iPos, oPane.config_frame_id)
             else:
                 oConfig.add_frame(iNum, oPane.type, oPane.cardset_name, bVert,
-                        bClosed, iPos)
+                        bClosed, iPos, oPane.config_frame_id)
 
         def save_children(oPane, oConfig, bVert, iNum, iPos):
             """Walk the tree of HPanes + VPanes, and save their info."""

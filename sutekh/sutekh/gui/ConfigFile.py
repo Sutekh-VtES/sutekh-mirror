@@ -194,12 +194,12 @@ class ConfigFile(object):
         if not self.__oConfig['open_frames']:
             # No panes information, so we set 'sensible' defaults
             self.add_frame(1, 'physical_card', 'White Wolf Card List', False,
-                    False, -1)
-            self.add_frame(2, 'Card Text', 'Card Text', False, False, -1)
+                    False, -1, None)
+            self.add_frame(2, 'Card Text', 'Card Text', False, False, -1, None)
             self.add_frame(3, 'Card Set List', 'Card Set List', False, False,
-                    -1)
+                    -1, None)
             self.add_frame(4, 'physical_card_set', 'My Collection', False,
-                    False, -1)
+                    False, -1, None)
 
     def write(self):
         """Write the config file to disk."""
@@ -217,10 +217,6 @@ class ConfigFile(object):
         """Get the all the panes saved in the config file, and their
            positions."""
         aRes = []
-        # TODO: return old pane id so it can be restored so that
-        #       pane id -> profile mappings still make sense
-        # TODO: Update pane id used by profile to be identical to
-        #       open frame pane keys
         for sKey, dPane in self.__oConfig['open_frames'].items():
             if not sKey.startswith('pane'):
                 # invalid key
@@ -240,6 +236,7 @@ class ConfigFile(object):
                 iPaneNumber,
                 dPane['type'],
                 dPane['name'],
+                dPane['paneid'],
                 dPane['orientation'] == 'V',
                 dPane['orientation'] == 'C',
                 iPos,
@@ -248,9 +245,26 @@ class ConfigFile(object):
         aRes.sort()  # Numbers denote ordering
         return aRes
 
+    def update_pane_numbers(self, dPaneMap):
+        """Update the profiles to reflect changes in pane-id.
+
+           dPaneMap is a dictionary mapping old_id -> new_id"""
+        # We use a copy, so we avoid problems where sNewId is equal to
+        # a later sOldId
+        dOldProfiles = self.__oConfig['per_deck']['frame_profiles'].copy()
+        # Clear old state, ensuring we set any botched loads to the
+        # default profile
+        for sId in dOldProfiles:
+            self.set_profile(FRAME, sId, None)
+        for sOldId, sNewId in dPaneMap.iteritems():
+            if sOldId in dOldProfiles:
+                # use set_profile to ensure we call the listeners
+                self.set_profile(FRAME, sNewId, dOldProfiles[sOldId])
+
     # pylint: disable-msg=R0913
     # We need all the info in the arguments here
-    def add_frame(self, iFrameNumber, sType, sName, bVertical, bClosed, iPos):
+    def add_frame(self, iFrameNumber, sType, sName, bVertical, bClosed, iPos,
+            sPaneId):
         """Add a frame with the given position info to the config file"""
         oPanes = self.__oConfig['open_frames']
         sKey = 'pane %d' % iFrameNumber
@@ -260,6 +274,7 @@ class ConfigFile(object):
 
         oNewPane['type'] = sType
         oNewPane['name'] = sName
+        oNewPane['paneid'] = sPaneId
 
         if bVertical:
             oNewPane['orientation'] = "V"

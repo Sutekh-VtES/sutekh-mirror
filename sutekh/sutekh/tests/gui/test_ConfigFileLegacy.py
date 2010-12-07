@@ -72,10 +72,11 @@ class ConfigFileLegacyTests(SutekhTest):
         self._check_global_options(oConfig, oLegacyConfig)
 
         self.assertEqual(oConfig.open_frames(), [
-            (1, 'physical_card', 'White Wolf Card List', False, False, -1),
-            (2, 'Card Text', 'Card Text', False, False, -1),
-            (3, 'Card Set List', 'Card Set List', False, False, -1),
-            (4, 'physical_card_set', 'My Collection', False, False, -1),
+            (1, 'physical_card', 'White Wolf Card List', None, False, False,
+                -1),
+            (2, 'Card Text', 'Card Text', None, False, False, -1),
+            (3, 'Card Set List', 'Card Set List', None, False, False, -1),
+            (4, 'physical_card_set', 'My Collection', None, False, False, -1),
         ])
 
         self.assertEqual(oConfig.get_filter_keys(), [])
@@ -91,11 +92,13 @@ class ConfigFileLegacyTests(SutekhTest):
 
         self._check_global_options(oConfig, oLegacyConfig)
         self.assertEqual(oConfig.open_frames(), [
-            (1, 'Card Set List', 'Card Set List', False, False, -1),
-            (2, 'Card Text', 'Card Text', False, False, 209),
-            (3, 'Card Image Frame', 'Card Image Frame', True, False, 306),
-            (4, 'physical_card_set', 'My Collection', False, False, 340),
-            (5, 'physical_card', 'White Wolf Card List', False, False, 435),
+            (1, 'Card Set List', 'Card Set List', None, False, False, -1),
+            (2, 'Card Text', 'Card Text', None, False, False, 209),
+            (3, 'Card Image Frame', 'Card Image Frame', None, True, False,
+                306),
+            (4, 'physical_card_set', 'My Collection', None, False, False, 340),
+            (5, 'physical_card', 'White Wolf Card List', None, False, False,
+                435),
         ])
 
         self.assertEqual(oConfig.get_filter_keys(),

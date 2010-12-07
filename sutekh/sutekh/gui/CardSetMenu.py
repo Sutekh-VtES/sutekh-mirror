@@ -174,8 +174,6 @@ class CardSetMenu(CardListMenu, ConfigFileListener):
         oDlg.set_selected_profile(sCurProfile)
         oDlg.run()
 
-        self._fix_profile_menu()
-
     def _fix_profile_menu(self):
         """Update the profile menu properly"""
         sCardsetProfile = self._oMainWindow.config_file.get_profile(CARDSET,
@@ -210,4 +208,8 @@ class CardSetMenu(CardListMenu, ConfigFileListener):
     def profile_option_changed(self, sType, _sProfile, sKey):
         """Update menu if profiles are renamed."""
         if (sType == CARDSET or sType == FRAME) and sKey == 'name':
+            self._fix_profile_menu()
+
+    def profile_changed(self, sType, sId):
+        if (sType == FRAME or sType == FRAME) and sId == self.frame_id:
             self._fix_profile_menu()
