@@ -94,7 +94,8 @@ class CardSetManagementView(CardSetsListView):
                     oParentCS = IPhysicalCardSet(
                             self._oModel.get_name_from_path(oPath))
                     if reparent_card_set(oDraggedCS, oParentCS):
-                        self.reload_keep_expanded(False)
+                        # Use frame reload to keep scroll position
+                        self.frame.reload()
                         oPath = self._oModel.get_path_from_name(sThisName)
                         # Make newly dragged set visible
                         if oPath:
