@@ -11,6 +11,7 @@ from nose import SkipTest
 import gtk
 import tempfile
 import os
+import gc
 from sutekh.gui.MultiPaneWindow import MultiPaneWindow
 from sutekh.gui.ConfigFile import ConfigFile
 
@@ -42,6 +43,9 @@ class ConfigSutekhTest(SutekhTest):
         """Tear down config file stuff after test run"""
         os.rmdir(self.sImagesDir)
         super(ConfigSutekhTest, self).tearDown()
+        # FIXME: This helps the test suite, but I'm not sure why
+        # This warrants further investigation at some point
+        gc.collect()
 
 
 class GuiSutekhTest(ConfigSutekhTest):
