@@ -487,6 +487,8 @@ class MultiPaneWindow(gtk.Window):
         # ensure we cleanup all signals (needed for tests)
         for oFrame in chain(self.aOpenFrames, self.aClosedFrames):
             oFrame.cleanup()
+        # don't hold references to plugins here either
+        self._aPlugins = []
         # Don't call gtk.main_quit when the main loop isn't running (true in
         # the tests)
         if gtk.main_level() > 0:
