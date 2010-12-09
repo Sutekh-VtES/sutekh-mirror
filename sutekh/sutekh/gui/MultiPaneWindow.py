@@ -133,8 +133,8 @@ class MultiPaneWindow(gtk.Window):
         # Do setup - prompt for downloads, etc. if needed
         self._oIconManager.setup()
         # plugins as well
-        for cPlugin in self._aPlugins:
-            cPlugin.setup()
+        for oPlugin in self._aPlugins:
+            oPlugin.setup()
 
         self.oVBox = gtk.VBox(False, 1)
         self.oVBox.pack_start(self.__oMenu, False, False)
@@ -487,6 +487,8 @@ class MultiPaneWindow(gtk.Window):
         # ensure we cleanup all signals (needed for tests)
         for oFrame in chain(self.aOpenFrames, self.aClosedFrames):
             oFrame.cleanup()
+        for oPlugin in self._aPlugins:
+            oPlugin.cleanup()
         # don't hold references to plugins here either
         self._aPlugins = []
         # Don't call gtk.main_quit when the main loop isn't running (true in

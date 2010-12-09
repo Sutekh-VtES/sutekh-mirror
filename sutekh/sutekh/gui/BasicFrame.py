@@ -160,6 +160,9 @@ class BasicFrame(gtk.Frame):
 
     def cleanup(self):
         """Hook for cleanup actions when the frame is removed."""
+        # do per-plugin cleanup
+        for oPlugin in self._aPlugins:
+            oPlugin.cleanup()
         # Don't hold references to the plugins
         self._aPlugins = []
 

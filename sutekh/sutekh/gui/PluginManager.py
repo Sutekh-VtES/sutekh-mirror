@@ -215,6 +215,13 @@ class SutekhPlugin(object):
            """
         return None
 
+    def cleanup(self):
+        """Handle any cleanup needed by the plugin when the window or
+           pane it's attached to goes away.
+
+           Used for things like database signal cleanup, etc."""
+        return None
+
     def get_toolbar_widget(self):
         """Return an arbitary gtk.Widget which is added to a VBox between the
            menu and the scrolled display area.
