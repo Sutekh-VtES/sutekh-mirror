@@ -149,7 +149,7 @@ class FilterValuesBox(gtk.VBox):
 
         self.__oDisable = gtk.CheckButton('Disable (Ctrl-space)')
         self.__oNegate = gtk.CheckButton('Negate (Alt-space)')
-        self.__oDelete = gtk.Button('Delete Filter (del)')
+        self.__oDelete = gtk.Button('Delete Filter or Value (del)')
 
         add_accel_to_button(self.__oDisable, "<Ctl>space", oDialog.accel_group)
         add_accel_to_button(self.__oNegate, "<Alt>space", oDialog.accel_group)
@@ -518,7 +518,7 @@ class BoxModelPopupMenu(gtk.Menu):
         super(BoxModelPopupMenu, self).__init__()
         self._oDis = gtk.MenuItem("Disable / Enable Filter")
         self._oNeg = gtk.MenuItem("Negate Filter Element")
-        self._oDel = gtk.MenuItem("Delete filter")
+        self._oDel = gtk.MenuItem("Delete filter or value")
 
         self._oDis.connect("activate", oBoxModelEditor.toggle_disabled)
         self._oNeg.connect("activate", oBoxModelEditor.toggle_negate)
@@ -1181,10 +1181,19 @@ class FilterBoxModelEditView(gtk.TreeView):
         oCurValue = self._oStore.get_value(oCurIter, 1)
         if oCurValue is oFilterObj:
             # At the filter level
-            oParent = self._oStore.get_value(
-                    self._oStore.iter_parent(self.oCurSelectIter), 1)
-            oParent.remove(oFilterObj)
-            self.load()
+            self.remove_filter_at_iter(self.oCurSelectIter)
+        elif oFilterObj.iValueType == FilterBoxItem.NONE:
+            # None filter, so delete always removes
+            self.remove_filter_at_iter(self.oCurSelectIter)
+        elif (oFilterObj.iValueType == FilterBoxItem.LIST or
+                oFilterObj.iValueType == FilterBoxItem.ENTRY) \
+                        and not oFilterObj.aCurValues:
+            # Emptu filter
+            self.remove_filter_at_iter(self.oCurSelectIter)
+        elif oFilterObj.iValueType == FilterBoxItem.LIST_FROM and \
+                not oFilterObj.aCurValues[0] and not oFilterObj.aCurValues[1]:
+            # empty list from filter, so remove
+            self.remove_filter_at_iter(self.oCurSelectIter)
         else:
             # Deleting a value
             self.remove_value_at_iter(oCurIter)
