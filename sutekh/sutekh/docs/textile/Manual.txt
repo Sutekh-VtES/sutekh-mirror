@@ -625,10 +625,10 @@ is mostly useful when using multiple filter groups (see
 
 When a filter element is selected, the right hand pane allows for the values
 for that filter element to be selected. This also provides buttons to delete
-filter elements, negate the meeting of the filter element and to temporarily
-disable filter elements.  Disabled filter elements are not used in the filter,
-but the values set for the element are preserved. These options are also
-available from a *Right-Click* context menu.
+filter elements or values, negate the meaning of the filter element and to
+temporarily disable filter elements.  Disabled filter elements are not used in
+the filter, but the values set for the element are preserved. These options are
+also available from a *Right-Click* context menu.
 
 The buttons also have associated keyboard accelerators. Pressing *&lt;Del&gt;*
 will delete the current filter element, *&lt;Ctrl&gt;-&lt;space&gt;* will
