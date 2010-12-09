@@ -61,6 +61,11 @@ def disconnect_row_destroy(fListener, cClass):
     dispatcher.disconnect(fListener, signal=RowDestroySignal, sender=cClass)
 
 
+def disconnect_row_created(fListener, cClass):
+    """Disconnect from the row destroyed signal."""
+    dispatcher.disconnect(fListener, signal=RowCreatedSignal, sender=cClass)
+
+
 def disconnect_row_update(fListener, cClass):
     """Disconnect the row updated signal."""
     dispatcher.disconnect(fListener, signal=RowUpdateSignal, sender=cClass)
