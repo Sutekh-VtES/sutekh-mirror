@@ -1,3 +1,16 @@
+09 Dec 2010
+ * Add cleanup hook for the plugins
+
+07 Dec 2010
+ * Properly save and restore per-pane profiles settings.
+ * Some test suite speed improvements
+ * Keep scroll position when dragging card sets around in the card set list
+   pane
+
+06 Dec 2010
+ * Fix bug in filter editor when dragging items out of the filter
+ * Remove menu items made redundant by local profile support
+
 04 Dec 2010
  * Import legacy config files from 0.6
  * Add basic 'Profile in use' detection when deleting profiles
