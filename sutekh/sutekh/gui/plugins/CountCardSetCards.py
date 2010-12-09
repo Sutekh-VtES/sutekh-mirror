@@ -43,6 +43,11 @@ class CountCardSetCards(SutekhPlugin, CardListModelListener):
             self.model.add_listener(self)
     # pylint: enable-msg=W0142
 
+    def cleanup(self):
+        """Remove the listener"""
+        if self.check_versions() and self.check_model_type():
+            self.model.remove_listener(self)
+
     def get_toolbar_widget(self):
         """Overrides method from base class."""
         if not self.check_versions() or not self.check_model_type():

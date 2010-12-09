@@ -16,7 +16,8 @@ from sutekh.core.SutekhObjects import PhysicalCardSet, IPhysicalCardSet, \
 from sutekh.core.Filters import PhysicalCardSetFilter, CryptCardFilter, \
         FilterAndBox
 from sutekh.core.DBSignals import listen_row_destroy, listen_row_update, \
-        listen_row_created, listen_changed
+        listen_row_created, listen_changed, disconnect_changed, \
+        disconnect_row_destroy, disconnect_row_update, disconnect_row_created
 from sqlobject import SQLObjectNotFound
 
 SORT_COLUMN_OFFSET = 200  # ensure we don't clash with other extra columns
@@ -97,12 +98,23 @@ class ExtraCardSetListViewColumns(SutekhPlugin):
         # We may add columns with icons later, like clans in the crypt
         self._iShowMode = SHOW_TEXT_ONLY
 
-        listen_row_update(self.card_set_changed, PhysicalCardSet)
-        listen_row_destroy(self.card_set_added_deleted, PhysicalCardSet)
-        listen_row_created(self.card_set_added_deleted, PhysicalCardSet)
-        listen_changed(self.card_changed, PhysicalCardSet)
-        self.perpane_config_updated()
+        if self.check_versions() and self.check_model_type():
+            listen_row_update(self.card_set_changed, PhysicalCardSet)
+            listen_row_destroy(self.card_set_added_deleted, PhysicalCardSet)
+            listen_row_created(self.card_set_added_deleted, PhysicalCardSet)
+            listen_changed(self.card_changed, PhysicalCardSet)
+            self.perpane_config_updated()
     # pylint: enable-msg=W0142
+
+    def cleanup(self):
+        """Disconnect the database listeners"""
+        if self.check_versions() and self.check_model_type():
+            disconnect_changed(self.card_changed, PhysicalCardSet)
+            disconnect_row_update(self.card_set_changed, PhysicalCardSet)
+            disconnect_row_destroy(self.card_set_added_deleted,
+                    PhysicalCardSet)
+            disconnect_row_created(self.card_set_added_deleted,
+                    PhysicalCardSet)
 
     # Rendering Functions
 
