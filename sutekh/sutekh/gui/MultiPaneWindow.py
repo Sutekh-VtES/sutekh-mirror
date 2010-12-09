@@ -768,6 +768,8 @@ class MultiPaneWindow(gtk.Window):
             self.aClosedFrames.remove(oNewFrame)
         if self._oFocussed == oOldFrame:
             self.win_focus(None, None, None)
+        # kill any listeners, etc.
+        oOldFrame.cleanup()
         self.reset_menu()
         # Open card lists may have changed because of the frame we've
         # kicked out
