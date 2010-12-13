@@ -120,7 +120,12 @@ class ImportFromZipFile(SutekhPlugin):
             # same name
             if sParentName is not None and sParentName in dSelected:
                 # Do have a parent to look at, so skip for now
-                dRemaining[sName] = tInfo
+                if not bParentExists:
+                    # The parent is in the list of cards to read, so it
+                    # will exist when we get to it
+                    dRemaining[sName] = (sFilename, True, sParentName)
+                else:
+                    dRemaining[sName] = tInfo
                 continue
             elif sParentName is not None and sParentName in dRenames:
                 # Renamed parent, so adjust this - this will also correctly
