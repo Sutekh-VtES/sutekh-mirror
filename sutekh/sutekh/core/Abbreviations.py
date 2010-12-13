@@ -244,6 +244,7 @@ class Rarities(AbbreviationLookup):
             'PO3'],
         'Not Applicable': ['NA'],
         'Rules': ['Rules'],
+        'Demo': ['Demo'],
         'Storyline': ['Storyline'],
     }
 
