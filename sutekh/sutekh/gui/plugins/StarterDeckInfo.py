@@ -96,10 +96,18 @@ class StarterConfigDialog(SutekhDialog):
         return sData
 
 
+def _is_precon(oRarityPair):
+    """Return true if the rarity is a precon one"""
+    if oRarityPair.rarity.name == 'Precon' or \
+            oRarityPair.rarity.name == 'Demo':
+        return True
+    return False
+
+
 def _check_precon(oAbsCard):
-    """Check if we have a precon rarity here"""
+    """Check if we have at least one precon rarity for this card"""
     for oPair in oAbsCard.rarity:
-        if oPair.rarity.name == 'Precon':
+        if _is_precon(oPair):
             return True
     return False
 
@@ -108,7 +116,7 @@ def _check_exp_name(sExpName, oAbsCard):
     """Check that expansion is one of the precon expansions of the card"""
     for oPair in oAbsCard.rarity:
         if oPair.expansion.name.lower() == sExpName.lower() and \
-                oPair.rarity.name == 'Precon':
+                _is_precon(oPair):
             return True
     return False
 
@@ -124,6 +132,7 @@ class StarterInfoPlugin(SutekhPlugin, CardTextViewListener):
 
     # FIXME: Expose this to the user?
     oStarterRegex = re.compile('^\[(.*)\] (.*) Starter')
+    oDemoRegex = re.compile('^\[(.*)\] (.*) Demo Deck')
 
     # pylint: disable-msg=W0142
     # ** magic OK here
@@ -296,6 +305,36 @@ class StarterInfoPlugin(SutekhPlugin, CardTextViewListener):
         else:
             self.set_config_item('show starters', 'No')
 
+    def _get_card_set_info(self, oAbsCard):
+        """Find preconstructed card sets that contain the card"""
+        dMatches = {'Starters': [], 'Demos': []}
+        for oCS in PhysicalCardSet.select():
+            for sType, oRegex in (('Starters', self.oStarterRegex),
+                    ('Demos', self.oDemoRegex)):
+                oMatch = oRegex.match(oCS.name)
+                if oMatch:
+                    sExpName = oMatch.groups()[0]
+                    if _check_exp_name(sExpName, oAbsCard):
+                        dMatches[sType].append((oCS, oMatch.groups()[0],
+                            oMatch.groups()[1]))
+        # Find the card in the starter decks
+        dInfo = {'Starters': [], 'Demos': []}
+        for sType, aResults in dMatches.iteritems():
+            for oCS, sExpName, sDeckName in sorted(aResults,
+                    key=lambda x: (x[1], x[2])):
+                # Sort by exp, name
+                oFilter = FilterAndBox([SpecificCardIdFilter(oAbsCard.id),
+                        PhysicalCardSetFilter(oCS.name)])
+                iCount = oFilter.select(
+                        MapPhysicalCardToPhysicalCardSet).count()
+                if iCount > 0:
+                    dInfo[sType].append("x %(count)d %(exp)s (%(cardset)s)" % {
+                        'count': iCount,
+                        'exp': sExpName,
+                        'cardset': sDeckName,
+                        })
+        return dInfo
+
     def set_card_text(self, oPhysCard):
         """Update the card text pane with the starter info"""
         self.oLastCard = oPhysCard
@@ -304,38 +343,23 @@ class StarterInfoPlugin(SutekhPlugin, CardTextViewListener):
         oAbsCard = oPhysCard.abstractCard
         if not _check_precon(oAbsCard):
             return
+        # Find the starter decks
+        dInfo = self._get_card_set_info(oAbsCard)
         # Get frame
         oCardTextBuf = self.parent.card_text_pane.view.text_buffer
-        # Find the starter decks
-        aStarters = []
-        for oCS in PhysicalCardSet.select():
-            oMatch = self.oStarterRegex.match(oCS.name)
-            if oMatch:
-                sExpName = oMatch.groups()[0]
-                if _check_exp_name(sExpName, oAbsCard):
-                    aStarters.append((oCS, oMatch.groups()[0],
-                        oMatch.groups()[1]))
-        # Find the card in the starter decks
-        aInfo = []
-        for oCS, sExpName, sDeckName in sorted(aStarters,
-                key=lambda x: (x[1], x[2])):
-            # Sort by exp, name
-            oFilter = FilterAndBox([SpecificCardIdFilter(oAbsCard.id),
-                    PhysicalCardSetFilter(oCS.name)])
-            iCount = oFilter.select(MapPhysicalCardToPhysicalCardSet).count()
-            if iCount > 0:
-                aInfo.append("x %(count)d %(exp)s (%(cardset)s)" % {
-                    'count': iCount,
-                    'exp': sExpName,
-                    'cardset': sDeckName,
-                    })
-        if aInfo:
+        oTempIter = oCardTextBuf.get_cur_iter()
+        # We do things in this order, so demo decks appear after the starters
+        if dInfo['Demos']:
             # Move to after the expansionsa
-            oTempIter = oCardTextBuf.get_cur_iter()
             oCardTextBuf.set_cur_iter_to_mark('expansion')
             oCardTextBuf.tag_text("\n")
-            oCardTextBuf.labelled_list('Preconstructed Decks', aInfo,
+            oCardTextBuf.labelled_list('Demonstration Decks', dInfo['Demos'],
                     'starters')
-            oCardTextBuf.set_cur_iter(oTempIter)
+        if dInfo['Starters']:
+            oCardTextBuf.set_cur_iter_to_mark('expansion')
+            oCardTextBuf.tag_text("\n")
+            oCardTextBuf.labelled_list('Preconstrcuted Decks',
+                    dInfo['Starters'], 'starters')
+        oCardTextBuf.set_cur_iter(oTempIter)
 
 plugin = StarterInfoPlugin
