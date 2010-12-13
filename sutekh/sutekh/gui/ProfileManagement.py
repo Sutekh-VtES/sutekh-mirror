@@ -9,6 +9,8 @@
 
 import gtk
 import gobject
+from sqlobject import SQLObjectNotFound
+from sutekh.core.SutekhObjects import PhysicalCardSet
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error, \
                                     do_complaint_warning
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
@@ -206,6 +208,45 @@ class ProfileMngDlg(SutekhDialog, ConfigFileListener):
                 oList = self._get_cur_list()
                 oList.store.fix_entry(sProfile, sNewName)
 
+    def _get_in_use_mesg(self, sType, aPanes):
+        """Return a suitable 'profile in use' message for profile deletion"""
+        if sType in (CARDSET_LIST, WW_CARDLIST):
+            return 'Profile is in use. Really delete?'
+        else:
+            # card set pane, so find names
+            aOpenPanes = []
+            aClosedPanes = []
+            for sId in aPanes:
+                if sId.startswith('cs'):
+                    iCSid = int(sId[2:])  # cs<num>
+                    # lookup name for card set id
+                    try:
+                        aCSs = PhysicalCardSet.selectBy(id=iCSid)
+                        oCS = aCSs[0]
+                    except SQLObjectNotFound:
+                        # FIXME: remove dead entry from the config file
+                        continue
+                    aCSPanes = self.__oParent.find_cs_pane_by_set_name(
+                            oCS.name)
+                    if aCSPanes:
+                        for oPane in aCSPanes:
+                            aOpenPanes.append(oPane.title)
+                    else:
+                        aClosedPanes.append(oCS.name)
+                else:
+                    iPaneId = int(sId[4:])  # pane<num>
+                    oCSFrame = self.__oParent.find_pane_by_id(iPaneId)
+                    aOpenPanes.append(oCSFrame.title)
+            sMesg = "This profile is in use. Really delete?\n"
+            if aOpenPanes:
+                sMesg += '\nThe following open panes reference this ' \
+                        ' profile\n' + '\n'.join(aOpenPanes)
+            if aClosedPanes:
+                sMesg += '\nThe following card closed card sets ' \
+                        'reference this profile\n' + \
+                        '\n'.join(aClosedPanes)
+            return sMesg
+
     def _delete_profile(self):
         """Delete the given profile"""
         sType, sProfile, _sName = self._get_selected_profile()
@@ -215,9 +256,8 @@ class ProfileMngDlg(SutekhDialog, ConfigFileListener):
                 return
             aPanes = self.__oConfig.get_profile_users(sType, sProfile)
             if aPanes:
-                # FIXME: map aPanes back to names
-                iRes = do_complaint_warning(
-                        'Profile is in use. Really delete?')
+                sMesg = self._get_in_use_mesg(sType, aPanes)
+                iRes = do_complaint_warning(sMesg)
                 if iRes == gtk.RESPONSE_CANCEL:
                     return
             self.__oConfig.remove_profile(sType, sProfile)
