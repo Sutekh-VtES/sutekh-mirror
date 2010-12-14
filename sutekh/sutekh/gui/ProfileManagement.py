@@ -221,10 +221,11 @@ class ProfileMngDlg(SutekhDialog, ConfigFileListener):
                     iCSid = int(sId[2:])  # cs<num>
                     # lookup name for card set id
                     try:
-                        aCSs = PhysicalCardSet.selectBy(id=iCSid)
-                        oCS = aCSs[0]
+                        oCS = PhysicalCardSet.get(iCSid)
                     except SQLObjectNotFound:
-                        # FIXME: remove dead entry from the config file
+                        # Remove defunct profile entry from the config
+                        # file
+                        self.__oConfig. clear_cardset_profile(sId)
                         continue
                     aCSPanes = self.__oParent.find_cs_pane_by_set_name(
                             oCS.name)
