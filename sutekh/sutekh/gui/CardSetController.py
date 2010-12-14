@@ -138,14 +138,17 @@ class CardSetController(object):
         # pylint: disable-msg=E1101
         # sqlobject confuses pylint
         if check_ok_to_delete(self.__oPhysCardSet):
-            delete_physical_card_set(self.view.sSetName)
-            # Tell window to clean up
-            # Card Set was deleted, so close up
+            self._oMainWindow.config_file.clear_cardset_profile(
+                    self.model.cardset_id)  # Remove profile entry
+            # Card Set is being deleted, so close pane
             self._oFrame.close_frame()
             # Close any other open copies as well
             for oFrame in self._oMainWindow.find_cs_pane_by_set_name(
                     self.view.sSetName):
                 oFrame.close_frame()
+            # Tell window to clean up
+            delete_physical_card_set(self.view.sSetName)
+            self._oMainWindow.reload_pcs_list()
 
     def save_iter_state(self, aIters):
         """Ask the view to save the state for us"""

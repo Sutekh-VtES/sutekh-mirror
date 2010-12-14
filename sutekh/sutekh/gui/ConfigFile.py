@@ -505,6 +505,18 @@ class ConfigFile(object):
             # pointless reload.
             del dProfiles[sId]
 
+    def clear_cardset_profile(self, sId):
+        """Clear any profiles set for this cardset"""
+        # We don't need to worry about the pane profiles, as the
+        # the frames will be explicitly closed, which will take care of those
+        # for us.
+        dProfiles = self.__oConfig['per_deck']['cardset_profiles']
+        if sId in dProfiles:
+            # We should only be called while the pane is being closed,
+            # so we don't notify the listeners to avoid causing a
+            # pointless reload.
+            del dProfiles[sId]
+
     def fix_profile_mapping(self, dOldMap, dNewMap):
         """Update the card set profiles to a new id -> name mapping"""
         # We need to reverse of dNewMapping. Since both name and id are

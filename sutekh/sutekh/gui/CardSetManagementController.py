@@ -64,9 +64,11 @@ class CardSetManagementController(object):
             return
         # Check for card sets this is a parent of
         if check_ok_to_delete(oCS):
-            delete_physical_card_set(sSetName)
             for oFrame in self._oMainWindow.find_cs_pane_by_set_name(sSetName):
                 oFrame.close_frame()
+            self._oMainWindow.config_file.clear_cardset_profile(
+                    'cs%d' % oCS.id)
+            delete_physical_card_set(sSetName)
             self.view.reload_keep_expanded(False)
 
     def toggle_in_use_flag(self, _oMenuWidget):
