@@ -496,6 +496,15 @@ class ConfigFile(object):
             for oListener in self.listeners():
                 oListener.profile_changed(FRAME, sFrame)
 
+    def clear_frame_profile(self, sId):
+        """Clear any pane profiles set for this frame"""
+        dProfiles = self.__oConfig['per_deck']['frame_profiles']
+        if sId in dProfiles:
+            # We should only be called while the pane is being closed,
+            # so we don't notify the listeners to avoid causing a
+            # pointless reload.
+            del dProfiles[sId]
+
     def set_profile(self, sType, sId, sProfile):
         """Set the profile associated of the given type."""
         if sType == CARDSET or sType == FRAME:

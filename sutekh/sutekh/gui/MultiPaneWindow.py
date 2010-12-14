@@ -587,6 +587,8 @@ class MultiPaneWindow(gtk.Window):
 
     def menu_remove_frame(self, _oMenuWidget):
         """Handle the remove pane request from the menu"""
+        # Closing the pane via the menu, so remove any existing pane profiles
+        self._oConfig.clear_frame_profile(self._oFocussed.config_frame_id)
         self.remove_frame(self._oFocussed)
 
     def _do_html_dialog(self, fInput):

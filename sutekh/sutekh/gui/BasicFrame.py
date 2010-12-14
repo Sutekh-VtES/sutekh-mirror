@@ -194,6 +194,7 @@ class BasicFrame(gtk.Frame):
 
     def close_frame(self):
         """Close the frame"""
+        self._oMainWindow.config_file.clear_frame_profile(self.config_frame_id)
         self._oMainWindow.remove_frame(self)
         self.destroy()
 
