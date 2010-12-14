@@ -346,4 +346,11 @@ strictly subsets of another card set. One common approach is to use empty
 card sets to act as card set *holders* which group logically related
 card sets together.
 
+h3. Tracking the history of a card set
+
+The _Take a snapshot of this card set_ option can be used to keep a history of
+how a card set evolves. Snapshots are children of the current card set, so the
+different view modes can be used and the _Compare with another Card Set_ can be
+used to see how a card set has changed between different versions.
+
 "The Sutekh Manual":Manual.html

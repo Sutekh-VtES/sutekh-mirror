@@ -492,6 +492,9 @@ to type in the list view.
 which are common to all the selected cards, and allows you to choose one of \
 these. The physical expansion for all the selected cards is set to this \
 choice.
+* _Take a snapshot of this card set_: This creates a copy of the current \
+state of the card set, and appends the current date and time to the name. \
+The newly created card set is a child of the current card set.
 
 If the card set is not editable, you cannot make changes to its contents
 directly. It is still possible for you to change the card set contents by
