@@ -198,7 +198,8 @@ class CardSetCardListModel(CardListModel):
     frame_id = property(fget=__get_frame_id,
             doc="Frame ID of associated card set (for selecting profiles)")
 
-    # TODO: is this a good cardset id?
+    # Use the id for referencing the profile, as it's unique to each card set,
+    # and only changes on major database changes (unlike the name)
     cardset_id = property(fget=lambda self: "cs%s" % (self._oCardSet.id,),
             doc="Cardset ID of associated card set (for selecting profiles)")
 
