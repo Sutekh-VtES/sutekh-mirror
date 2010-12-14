@@ -19,7 +19,7 @@ from sutekh.io.ZipFileWrapper import ZipFileWrapper
 from sutekh.io.WwFile import WwFile
 from sutekh.core.SutekhObjects import TABLE_LIST, PhysicalCardSet
 from sutekh.SutekhUtility import refresh_tables, read_rulings, \
-        read_white_wolf_list
+        read_white_wolf_list, get_cs_id_name_table
 
 
 def read_cardlist(oCardList, oProgressDialog, oLogHandler):
@@ -141,7 +141,11 @@ def _get_names(oWin):
 
 def refresh_ww_card_list(oWin):
     """Handle grunt work of refreshing the card lists"""
+    # pylint: disable-msg=R0914
+    # We're juggling lots of different bits of start, so we use a lot
+    # of variables
     aEditable = oWin.get_editable_panes()
+    dOldMap = get_cs_id_name_table()
     aCLFile, oExtraFile, oRulingsFile, sBackupFile = _get_names(oWin)
     if not aCLFile:
         return False  # Nothing happened
@@ -186,6 +190,8 @@ def refresh_ww_card_list(oWin):
         sMesg += "Everything seems to have gone OK"
         do_complaint(sMesg, gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, True)
     oProgressDialog.destroy()
+    dNewMap = get_cs_id_name_table()
+    oWin.config_file.fix_profile_mapping(dOldMap, dNewMap)
     oWin.update_to_new_db()
     oWin.restore_editable_panes(aEditable)
     return True

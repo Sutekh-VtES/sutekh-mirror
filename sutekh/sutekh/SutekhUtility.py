@@ -14,7 +14,8 @@ import os
 import sys
 import re
 from sqlobject import sqlhub
-from sutekh.core.SutekhObjects import VersionTable, flush_cache, CRYPT_TYPES
+from sutekh.core.SutekhObjects import VersionTable, flush_cache, CRYPT_TYPES, \
+        PhysicalCardSet
 from sutekh.core.DatabaseVersion import DatabaseVersion
 from sutekh.io.WhiteWolfParser import WhiteWolfParser
 from sutekh.io.RulingParser import RulingParser
@@ -179,3 +180,15 @@ def is_crypt_card(oAbsCard):
     # Vampires and Imbued have exactly one card type (we hope that WW
     # don't change that)
     return oAbsCard.cardtype[0].name in CRYPT_TYPES
+
+
+# Utility function to help with config management and such
+def get_cs_id_name_table():
+    """Returns a dictionary id : name for all the card sets.
+
+       We do this so we can have the old info available to fix the config
+       after a database reload, etc."""
+    dMapping = {}
+    for oCS in PhysicalCardSet.select():
+        dMapping[oCS.id] = oCS.name
+    return dMapping

@@ -505,6 +505,21 @@ class ConfigFile(object):
             # pointless reload.
             del dProfiles[sId]
 
+    def fix_profile_mapping(self, dOldMap, dNewMap):
+        """Update the card set profiles to a new id -> name mapping"""
+        # We need to reverse of dNewMapping. Since both name and id are
+        # unique, this is safe
+        dNewRev = dict(zip(dNewMap.itervalues(), dNewMap.iterkeys()))
+        dOldProfiles = self.__oConfig['per_deck']['cardset_profiles'].copy()
+        dProfiles = self.__oConfig['per_deck']['cardset_profiles']
+        dProfiles.clear()
+        for sId, sProfile in dOldProfiles.iteritems():
+            iId = int(sId[2:])  # cs<cardset id>
+            sName = dOldMap[iId]
+            if sName in dNewRev:
+                sNewId = 'cs%d' % dNewRev[sName]
+                dProfiles[sNewId] = sProfile
+
     def set_profile(self, sType, sId, sProfile):
         """Set the profile associated of the given type."""
         if sType == CARDSET or sType == FRAME:

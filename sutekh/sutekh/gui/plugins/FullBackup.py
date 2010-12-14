@@ -10,6 +10,7 @@ from sutekh.gui.SutekhDialog import do_complaint_error, do_complaint_warning
 from sutekh.gui.SutekhFileWidget import ZipFileDialog
 from sutekh.gui.ProgressDialog import ProgressDialog, SutekhCountLogHandler
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
+from sutekh.SutekhUtility import get_cs_id_name_table
 import gtk
 import os
 import traceback
@@ -119,6 +120,7 @@ class FullBackup(SutekhPlugin):
                     % sFilename) != gtk.RESPONSE_CANCEL
 
         if bContinue:
+            dOldMap = get_cs_id_name_table()
             try:
                 aEditable = self.parent.get_editable_panes()
                 oLogHandler = SutekhCountLogHandler()
@@ -135,6 +137,8 @@ class FullBackup(SutekhPlugin):
                             "\n".join(aMessages)
                     do_complaint_warning(sMsg)
                 # Id's will not be preserved
+                dNewMap = get_cs_id_name_table()
+                self.parent.config_file.fix_profile_mapping(dOldMap, dNewMap)
                 self.parent.update_to_new_db()
                 oProgressDialog.destroy()
                 self.parent.restore_editable_panes(aEditable)
