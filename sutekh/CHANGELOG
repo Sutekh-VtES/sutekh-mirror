@@ -1,6 +1,9 @@
 14 Dec 2010
  * Update cardset id -> profile map on major database changes
  * delete profile references when deleting a card set
+ * Fix bug around deleting in-use profiles that also refer to card set ids
+   that no longer exist.
+ * Add 'snapshot cardset' plugin.
 
 13 Dec 2010
  * Fix bug with reading parents and children from a zip file.
