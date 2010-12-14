@@ -1,5 +1,18 @@
+14 Dec 2010
+ * Update cardset id -> profile map on major database changes
+ * delete profile references when deleting a card set
+
+13 Dec 2010
+ * Fix bug with reading parents and children from a zip file.
+ * Add support for WW demo decks
+   * Demo Rarity
+   * Support for demo decks as seperate section in starter deck plugin
+ * Report pane and card set names to the user when deleting in-use profiles.
+
 09 Dec 2010
  * Add cleanup hook for the plugins
+ * Fix bug with not properly using carefully constructed config in tests.
+ * Fix a couple of resource cleanup bugs.
 
 07 Dec 2010
  * Properly save and restore per-pane profiles settings.
