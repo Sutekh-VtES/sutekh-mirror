@@ -277,6 +277,9 @@ class CardSetCardListModel(CardListModel):
             self.set_sort_column_id(-2, 0)
 
         # Iterate over groups
+
+        bPostfix = self._oConfig.get_postfix_the_display()
+
         for sGroup, oGroupIter in oGroupedIter:
             # Check for null group
             sGroup = self._fix_group_name(sGroup)
@@ -300,7 +303,11 @@ class CardSetCardListModel(CardListModel):
                 oChildIter = self.prepend(oSectionIter)
                 # Direct lookup, for same reason as in CardListModel
                 # We skip name here, as that gets reset in _set_display_name
+                sName = oCard.name
+                if bPostfix:
+                    sName = canonical_to_csv(sName)
                 self.set(oChildIter,
+                    0, sName,
                     1, iCnt, 2, iParCnt,
                     3, bIncCard, 4, bDecCard,
                     8, oCard,
@@ -324,8 +331,6 @@ class CardSetCardListModel(CardListModel):
             self.set_par_count_colour(oSectionIter, iParGrpCnt, iGrpCnt)
 
         self._check_if_empty()
-
-        self._set_display_name(self._oConfig.get_postfix_the_display())
 
         # Notify Listeners
         for oListener in self.dListeners:

@@ -262,6 +262,7 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
 
         # Iterate over groups
         bEmpty = True
+        bPostfix = self._oConfig.get_postfix_the_display()
         for sGroup, oGroupIter in oGroupedIter:
             # Check for null group
             sGroup = self._fix_group_name(sGroup)
@@ -276,7 +277,11 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
                 # We need to lookup the card directly, since aExpansionInfo
                 # may not have the info we need
                 # Names will be set by _set_display_name
+                sName = oCard.name
+                if bPostfix:
+                    sName = canonical_to_csv(sName)
                 self.set(oChildIter,
+                    0, sName,
                     8, oCard,
                     9, PhysicalCardAdapter((oCard, None)),
                 )
@@ -304,8 +309,6 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
             self.oEmptyIter = self.append(None)
             sText = self._get_empty_text()
             self.set(self.oEmptyIter, 0, sText)
-        else:
-            self._set_display_name(self._oConfig.get_postfix_the_display())
 
         # Notify Listeners
         for oListener in self.dListeners:
