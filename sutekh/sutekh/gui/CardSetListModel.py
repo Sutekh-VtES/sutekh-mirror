@@ -1293,14 +1293,11 @@ class CardSetCardListModel(CardListModel):
 
            Only called in the PhysicalFilter case, where we can't
            decide based on card set properties."""
-        bVisible = self.check_card_visible(oPhysCard)
-        bPresent = True
-        if oAbsId not in self._dAbs2Iter:
-            bPresent = False
-        if not bVisible and not bPresent:
-            # No need to change anything in this case
-            return False
-        return True
+        if oAbsId in self._dAbs2Iter:
+            # Currently present, so we will need to check further
+            return True
+        # not present, so only need to check further if it will be visible
+        return self.check_card_visible(oPhysCard)
 
     def card_set_changed(self, oCardSet, dChanges):
         """When changes happen that may effect this card set, reload.
