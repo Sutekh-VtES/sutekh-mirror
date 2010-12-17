@@ -11,7 +11,7 @@ import gtk
 import gobject
 from sqlobject import SQLObjectNotFound
 from sutekh.core.Filters import FilterAndBox, NullFilter, PhysicalCardFilter, \
-        MultiKeywordFilter, CardTextFilter, FilterNot
+        MultiKeywordFilter, CardTextFilter, FilterNot, CachedFilter
 from sutekh.core.Groupings import CardTypeGrouping
 from sutekh.core.SutekhObjects import PhysicalCardToAbstractCardAdapter, \
         PhysicalCard, PhysicalCardAdapter, ExpansionNameAdapter, \
@@ -91,11 +91,11 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
             # We use MultiKeywordFilter to work around a performance
             # oddity of sqlite, where IN(a, b) outperforms a == b
             # for large sets
-            self.oLegalFilter = FilterNot(MultiKeywordFilter(
-                ['not for legal play']))
+            self.oLegalFilter = CachedFilter(FilterNot(MultiKeywordFilter(
+                ['not for legal play'])))
         except SQLObjectNotFound:
-            self.oLegalFilter = FilterNot(CardTextFilter(
-                    'Added to the V:EKN banned list'))
+            self.oLegalFilter = CachedFilter(FilterNot(CardTextFilter(
+                    'Added to the V:EKN banned list')))
         self._bApplyFilter = False  # whether to apply the select filter
         # additional filters for selecting from the list
         self._oSelectFilter = None

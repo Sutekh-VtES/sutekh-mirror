@@ -187,6 +187,23 @@ class FilterNot(Filter):
             raise RuntimeError("FilterNot unable to handle sub-filter type.")
 
 
+class CachedFilter(Filter):
+    """A filter which caches joins and expression lookups"""
+
+    def __init__(self, oFilter):
+        # pylint: disable-msg=W0212
+        # We delibrately access the protected members here, as that's
+        # the point
+        self._oExpression = oFilter._get_expression()
+        self._aJoins = oFilter._get_joins()
+
+    def _get_expression(self):
+        return self._oExpression
+
+    def _get_joins(self):
+        return self._aJoins
+
+
 # Null Filter
 class NullFilter(Filter):
     """Return everything."""

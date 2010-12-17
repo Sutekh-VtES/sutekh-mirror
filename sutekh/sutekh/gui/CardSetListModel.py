@@ -13,7 +13,7 @@
 from sutekh.core.Filters import FilterAndBox, NullFilter, PhysicalCardFilter, \
         PhysicalCardSetFilter, SpecificCardIdFilter, \
         MultiPhysicalCardSetMapFilter, SpecificPhysCardIdFilter, \
-        MultiSpecificCardIdFilter
+        MultiSpecificCardIdFilter, CachedFilter
 # We use the adapters directly, rather than going through PyProtocols
 # because we know the types explicitly, and thus don't need the overhead
 # of PyPrortocols dispatch logic.
@@ -159,7 +159,7 @@ class CardSetCardListModel(CardListModel):
     def __init__(self, sSetName, oConfig):
         super(CardSetCardListModel, self).__init__(oConfig)
         self._cCardClass = MapPhysicalCardToPhysicalCardSet
-        self._oBaseFilter = PhysicalCardSetFilter(sSetName)
+        self._oBaseFilter = CachedFilter(PhysicalCardSetFilter(sSetName))
         self._oCardSet = PhysicalCardSetAdapter(sSetName)
         self._dCache = {}
         self.bChildren = False
@@ -638,13 +638,14 @@ class CardSetCardListModel(CardListModel):
                             inuse=True)))
                 if dChildren:
                     self._dCache['all children filter'] = \
-                            MultiPhysicalCardSetMapFilter(dChildren.values())
+                            CachedFilter(MultiPhysicalCardSetMapFilter(
+                                dChildren.values()))
                     # Although we use a batched query in load, the individual
                     # filters are used in adding & removing cards and getting
                     # drag info where we can't always use batched queries
                     for sName in dChildren.itervalues():
                         self._dCache['child filters'][sName] = \
-                                PhysicalCardSetFilter(sName)
+                                CachedFilter(PhysicalCardSetFilter(sName))
                     self._dCache['set map'] = dChildren
         dChildCardCache = {}
         if not self.applyfilter and self._dCache['full child card list']:
@@ -697,7 +698,8 @@ class CardSetCardListModel(CardListModel):
             else:
                 if not self._dCache['parent filter']:
                     self._dCache['parent filter'] = \
-                            PhysicalCardSetFilter(self._oCardSet.parent.name)
+                            CachedFilter(PhysicalCardSetFilter(
+                                self._oCardSet.parent.name))
                 aFilters = [self._dCache['parent filter'], oCurFilter]
                 if self._iShowCardMode == THIS_SET_ONLY and \
                         iIterCnt < 200:
@@ -705,7 +707,8 @@ class CardSetCardListModel(CardListModel):
                     # oCardIter.count() > 0, due to check in grouped_card_iter
                     aAbsCardIds = set([IAbstractCard(x).id for x in oCardIter])
                     self._dCache['cardset cards filter'] = \
-                            MultiSpecificCardIdFilter(aAbsCardIds)
+                            CachedFilter(MultiSpecificCardIdFilter(
+                                aAbsCardIds))
                     aFilters.append(self._dCache['cardset cards filter'])
                 oParentFilter = FilterAndBox(aFilters)
                 aParentCards = [PhysicalCardMappingToPhysicalCardAdapter(x)
@@ -814,6 +817,8 @@ class CardSetCardListModel(CardListModel):
         oCurFilter = self.get_current_filter()
         if oCurFilter is None:
             oCurFilter = NullFilter()
+
+        oCurFilter = CachedFilter(oCurFilter)
 
         if self._bPhysicalFilter:
             oFullFilter = FilterAndBox([PhysicalCardFilter(), oCurFilter])
@@ -926,7 +931,7 @@ class CardSetCardListModel(CardListModel):
                 parentID=self._oCardSet.parentID, inuse=True)]
             if aChildren:
                 self._dCache['sibling filter'] = \
-                        MultiPhysicalCardSetMapFilter(aChildren)
+                        CachedFilter(MultiPhysicalCardSetMapFilter(aChildren))
             else:
                 # We flag this so we don't repeat the check on
                 # calls to add_new_card
@@ -1190,7 +1195,7 @@ class CardSetCardListModel(CardListModel):
     def update_to_new_db(self, sSetName):
         """Update internal card set to the new DB."""
         self._oCardSet = PhysicalCardSetAdapter(sSetName)
-        self._oBaseFilter = PhysicalCardSetFilter(sSetName)
+        self._oBaseFilter = CachedFilter(PhysicalCardSetFilter(sSetName))
         self._dCache = {}
 
     def is_sibling(self, oCS):
