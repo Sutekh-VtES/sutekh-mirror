@@ -554,7 +554,7 @@ class CardSetCardListModel(CardListModel):
             sCardSetName = self.get_name_from_iter(oIter)
             oCSFilter = FilterAndBox([self._dCache['child filters'][
                 sCardSetName], SpecificCardIdFilter(oCard.id)])
-            for oCard in oCSFilter.select(self.cardclass).distinct():
+            for oCard in oCSFilter.select(self.cardclass):
                 # pylint: disable-msg=E1101, E1103
                 # Pyprotocols confuses pylint
                 oPhysCard = PhysicalCardMappingToPhysicalCardAdapter(oCard)
@@ -825,7 +825,7 @@ class CardSetCardListModel(CardListModel):
             # This does a batched query, due to SQLObject magic, so should be
             # fairly effecient.
             self._dCache['filtered cards'] = set(
-                    oFullFilter.select(PhysicalCard).distinct())
+                    oFullFilter.select(PhysicalCard))
             if self._iShowCardMode == ALL_CARDS:
                 # Stomp on the cache, as we have a physical filter
                 self._dCache['all cards'] = self._dCache['filtered cards']
@@ -1064,7 +1064,7 @@ class CardSetCardListModel(CardListModel):
                     SpecificPhysCardIdFilter(oPhysCard.id),
                     self._dCache['parent filter']])
                 iParCnt = oParentFilter.select(
-                        self.cardclass).distinct().count()
+                        self.cardclass).count()
                 # Cache this lookup for the future
                 self._dCache['parent cards'][oPhysCard] = iParCnt
                 self._dCache['parent abstract cards'].setdefault(
@@ -1085,7 +1085,7 @@ class CardSetCardListModel(CardListModel):
                             SpecificPhysCardIdFilter(oPhysCard.id),
                             self._dCache['sibling filter']])
                         iSibCnt = oInUseFilter.select(
-                                self.cardclass).distinct().count()
+                                self.cardclass).count()
                         iParCnt -= iSibCnt
                         self._dCache['sibling cards'][oPhysCard] = iSibCnt
                         self._dCache['sibling abstract cards'].setdefault(
@@ -1724,7 +1724,7 @@ class CardSetCardListModel(CardListModel):
             else:
                 oFilter = FilterAndBox([SpecificPhysCardIdFilter(oPhysCard.id),
                     oSetFilter])
-                iCnt = oFilter.select(self.cardclass).distinct().count()
+                iCnt = oFilter.select(self.cardclass).count()
                 # Cache this lookup
                 self._dCache['child card sets'].setdefault(sCardSet, {})
                 self._dCache['child card sets'][sCardSet][oPhysCard] = iCnt
@@ -1825,7 +1825,7 @@ class CardSetCardListModel(CardListModel):
                     oFilter = FilterAndBox([
                         self._dCache['child filters'][sCardSetName],
                         SpecificPhysCardIdFilter(oPhysCard.id)])
-                    iCnt = oFilter.select(self.cardclass).distinct().count()
+                    iCnt = oFilter.select(self.cardclass).count()
                     # Cache this lookup
                     self._dCache['child card sets'].setdefault(sCardSetName,
                             {})
