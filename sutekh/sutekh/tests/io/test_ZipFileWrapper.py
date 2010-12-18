@@ -65,6 +65,12 @@ class ZipFileWrapperTest(SutekhTest):
         oHandler = SutekhCountLogHandler()
         oZipFile.do_dump_all_to_zip(oHandler)
         self.assertEqual(oHandler.fTot, 3)
+        dEntries = oZipFile.get_all_entries()
+        self.assertEqual(len(dEntries), 3)
+        self.assertTrue(oPhysCardSet2.name in dEntries)
+        self.assertTrue(oPhysCardSet1.name in dEntries)
+        self.assertTrue(oMyCollection.name in dEntries)
+        self.assertEquals(dEntries[oPhysCardSet1.name][2], oMyCollection.name)
 
         # Check it loads correctly
         # Destroy some existing data
