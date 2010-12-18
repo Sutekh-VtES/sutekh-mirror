@@ -231,6 +231,9 @@ class CardSetCardListModel(CardListModel):
             if (self._iParentCountMode == PARENT_COUNT and iParCnt < iCnt) or \
                     iParCnt < 0:
                 self.set(oIter, 7, RED)
+            else:
+                # Needed so we fix colours when editing
+                self.set(oIter, 7, BLACK)
 
     def _check_if_empty(self):
         """Add the empty entry if needed"""
@@ -238,8 +241,7 @@ class CardSetCardListModel(CardListModel):
             # Showing nothing
             sText = self._get_empty_text()
             self.oEmptyIter = self.append(None, (sText, 0, 0, False, False, [],
-                [], BLACK,
-                None, None))
+                [], BLACK, None, None))
 
     def load(self):
         # pylint: disable-msg=R0914
