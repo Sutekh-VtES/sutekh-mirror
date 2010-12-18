@@ -9,7 +9,7 @@
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.core.SutekhObjects import PhysicalCardSet
 from sutekh.core.CardSetUtilities import delete_physical_card_set, \
-        get_loop_names, detect_loop, find_children, break_loop
+        get_loop_names, detect_loop, find_children, break_loop, format_cs_list
 import unittest
 
 
@@ -36,6 +36,26 @@ class CardSetUtilTests(SutekhTest):
         self.assertEqual(len(aFoundChildren), 4)
         self.assertEqual(sorted([x.name for x in aFoundChildren]),
                 sorted([x.name for x in aChildren]))
+
+        # Check formatiing works
+        sList = " Root\n" \
+             "    Child\n" \
+             "       Card Set 0\n" \
+             "       Card Set 1\n" \
+             "       Card Set 2\n" \
+             "       Card Set 3"
+        sList2 = " Child\n" \
+             "    Card Set 0\n" \
+             "    Card Set 1\n" \
+             "    Card Set 2\n" \
+             "    Card Set 3"
+        sList3 = "  Card Set 0\n" \
+             "  Card Set 1\n" \
+             "  Card Set 2\n" \
+             "  Card Set 3"
+        self.assertEqual(format_cs_list(None), sList)
+        self.assertEqual(format_cs_list(oRoot), sList2)
+        self.assertEqual(format_cs_list(oChild, '  '), sList3)
 
         # Check children are reparented correctly
         delete_physical_card_set(oChild.name)

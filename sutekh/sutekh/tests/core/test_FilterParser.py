@@ -134,6 +134,16 @@ class FilterParserTests(SutekhTest):
                 Filters.MultiCardTypeFilter(['Equipment', 'Vampire']))),
             ('CardType not in Equipment, Vampire', Filters.FilterNot(
                 Filters.MultiCardTypeFilter(['Equipment', 'Vampire']))),
+            ('NOT CardType in Equipment AND NOT Cost in 5',
+                    Filters.FilterAndBox([
+                Filters.FilterNot(Filters.CardTypeFilter('Equipment')),
+                Filters.FilterNot(Filters.CostFilter(5)),
+                ])),
+            ('NOT (CardType in Equipment AND Cost in 5)',
+                    Filters.FilterNot(Filters.FilterAndBox([
+                Filters.CardTypeFilter('Equipment'),
+                Filters.CostFilter(5),
+                ]))),
         ]
 
         # Abstract Card Filtering Tests
