@@ -15,7 +15,7 @@ from sutekh.tests.core.test_Filters import make_card
 
 
 class TestCardSetFrame(GuiSutekhTest):
-    """Class for the MultiPanewindow test cases"""
+    """Class for the CardSetFrame test cases"""
 
     # pylint: disable-msg=R0201
     # I prefer to have these as methods
