@@ -51,30 +51,30 @@ class FilterModelPanes(gtk.HBox):
     def __init__(self, sFilterType, oDialog):
         super(FilterModelPanes, self).__init__()
         # Create the 3 panes
-        self.__oBoxModel = None
-        self.__sFilterType = sFilterType
-        self.__oSelectBar = FilterValuesBox(oDialog, sFilterType)
-        self.__oEditBox = FilterBoxModelEditBox(self.__oSelectBar)
+        self._oBoxModel = None
+        self._sFilterType = sFilterType
+        self._oSelectBar = FilterValuesBox(oDialog, sFilterType)
+        self._oEditBox = FilterBoxModelEditBox(self._oSelectBar)
 
-        self.pack_start(AutoScrolledWindow(self.__oEditBox, True), expand=True)
-        self.pack_start(self.__oSelectBar, expand=True)
+        self.pack_start(AutoScrolledWindow(self._oEditBox, True), expand=True)
+        self.pack_start(self._oSelectBar, expand=True)
 
     def replace_ast(self, oAST):
         """Replace the AST in the tree model"""
-        self.__oBoxModel = FilterBoxModel(oAST, self.__sFilterType)
-        self.__oEditBox.set_box_model(self.__oBoxModel)
+        self._oBoxModel = FilterBoxModel(oAST, self._sFilterType)
+        self._oEditBox.set_box_model(self._oBoxModel)
 
     def get_ast_with_values(self):
         """Get the current ast for the Editor, with values filled in"""
-        if not self.__oBoxModel:
+        if not self._oBoxModel:
             return None
 
-        return self.__oBoxModel.get_ast_with_values()
+        return self._oBoxModel.get_ast_with_values()
 
     def get_text(self):
         """Get the current ast"""
-        if self.__oBoxModel:
-            return self.__oBoxModel.get_text()
+        if self._oBoxModel:
+            return self._oBoxModel.get_text()
         return None
 
 
@@ -84,17 +84,17 @@ class FilterEditorToolbar(gtk.TreeView):
     # R0904 - gtk.Widget, so many public methods
 
     def __init__(self, sFilterType):
-        self.__oListStore = gtk.ListStore(gobject.TYPE_STRING,
+        self._oListStore = gtk.ListStore(gobject.TYPE_STRING,
                 gobject.TYPE_STRING)
-        super(FilterEditorToolbar, self).__init__(self.__oListStore)
+        super(FilterEditorToolbar, self).__init__(self._oListStore)
         oTextCell = gtk.CellRendererText()
         oColumn = gtk.TreeViewColumn("Filter Element", oTextCell, text=0)
         oColumn.set_spacing(2)
         self.append_column(oColumn)
-        self.__sFilterType = sFilterType
+        self._sFilterType = sFilterType
         # Get supported filters
         aFilters = [('Filter Group ..', 'Filter Group')]
-        for oFilterType in sorted(get_filters_for_type(self.__sFilterType),
+        for oFilterType in sorted(get_filters_for_type(self._sFilterType),
                 key=lambda x: x.description):
             aFilters.append((oFilterType.description, oFilterType.keyword))
         self.enable_model_drag_source(
@@ -102,7 +102,7 @@ class FilterEditorToolbar(gtk.TreeView):
                 DRAG_TARGETS, gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
         # Create entries for each of the filters we support
         for tInfo in aFilters:
-            self.__oListStore.append(tInfo)
+            self._oListStore.append(tInfo)
 
         self.connect('drag_data_get', self.drag_filter)
         self.get_selection().set_mode(gtk.SELECTION_SINGLE)
@@ -118,7 +118,7 @@ class FilterEditorToolbar(gtk.TreeView):
         _oModel, oIter = self.get_selection().get_selected()
         if oIter:
             sSelect = '%s%s' % (NEW_FILTER,
-                    self.__oListStore.get_value(oIter, 1))
+                    self._oListStore.get_value(oIter, 1))
             return sSelect
         return None
 
@@ -134,7 +134,7 @@ class FilterValuesBox(gtk.VBox):
         self._oEmptyWidget = gtk.VBox()
         self._oNoneWidget = gtk.VBox()
         self._oParent = oDialog
-        self.__sFilterType = sFilterType
+        self._sFilterType = sFilterType
         self._oEmptyWidget.pack_start(gtk.Label(
             'Select an active\nfilter element'), expand=False)
         self._oNoneWidget.pack_start(gtk.Label(
@@ -147,25 +147,25 @@ class FilterValuesBox(gtk.VBox):
         self._oLastFilter = None
         oCheckBox = gtk.HBox()
 
-        self.__oDisable = gtk.CheckButton('Disable (Ctrl-space)')
-        self.__oNegate = gtk.CheckButton('Negate (Alt-space)')
-        self.__oDelete = gtk.Button('Delete Filter or Value (del)')
+        self._oDisable = gtk.CheckButton('Disable (Ctrl-space)')
+        self._oNegate = gtk.CheckButton('Negate (Alt-space)')
+        self._oDelete = gtk.Button('Delete Filter or Value (del)')
 
-        add_accel_to_button(self.__oDisable, "<Ctl>space", oDialog.accel_group)
-        add_accel_to_button(self.__oNegate, "<Alt>space", oDialog.accel_group)
-        add_accel_to_button(self.__oDelete, "Delete", oDialog.accel_group)
+        add_accel_to_button(self._oDisable, "<Ctl>space", oDialog.accel_group)
+        add_accel_to_button(self._oNegate, "<Alt>space", oDialog.accel_group)
+        add_accel_to_button(self._oDelete, "Delete", oDialog.accel_group)
 
-        self.__oDisable.set_sensitive(False)
-        self.__oDelete.set_sensitive(False)
-        self.__oNegate.set_sensitive(False)
+        self._oDisable.set_sensitive(False)
+        self._oDelete.set_sensitive(False)
+        self._oNegate.set_sensitive(False)
 
-        oCheckBox.pack_start(self.__oDisable, expand=True)
-        oCheckBox.pack_start(self.__oNegate, expand=True)
+        oCheckBox.pack_start(self._oDisable, expand=True)
+        oCheckBox.pack_start(self._oNegate, expand=True)
         self.pack_start(oCheckBox, expand=False)
-        self.pack_start(self.__oDelete, expand=False)
-        self.__oDisable.connect('toggled', self.toggle_disabled)
-        self.__oDelete.connect('clicked', self.delete)
-        self.__oNegate.connect('toggled', self.toggle_negate)
+        self.pack_start(self._oDelete, expand=False)
+        self._oDisable.connect('toggled', self.toggle_disabled)
+        self._oDelete.connect('clicked', self.delete)
+        self._oNegate.connect('toggled', self.toggle_negate)
 
         self._oWidget = self._oEmptyWidget
         self.pack_start(self._oWidget, expand=True)
@@ -209,9 +209,9 @@ class FilterValuesBox(gtk.VBox):
                 self.update_box_model, oFilter, oFilterTypes)
         oFilterTypes.set_size_request(100, 150)
         self._oWidget.pack_start(oFilterTypes, expand=False)
-        self._oWidget.pack_start(gtk.Label('Or Drag Filter element'),
+        self._oWidget.pack_start(gtk.Label('Or Drag Filter Element'),
                 expand=False)
-        oSubFilterList = FilterEditorToolbar(self.__sFilterType)
+        oSubFilterList = FilterEditorToolbar(self._sFilterType)
         oSubFilterList.connect('key-press-event', self.key_press, oFilter,
                 'Filter')
         self._oWidget.pack_start(AutoScrolledWindow(oSubFilterList),
@@ -281,15 +281,15 @@ class FilterValuesBox(gtk.VBox):
             self._oWidget = None
         if isinstance(oFilter, FilterBoxModel):
             # Select between box options
-            self.__oDisable.set_active(oFilter.bDisabled)
-            self.__oNegate.set_inconsistent(True)
-            self.__oNegate.set_sensitive(False)
+            self._oDisable.set_active(oFilter.bDisabled)
+            self._oNegate.set_inconsistent(True)
+            self._oNegate.set_sensitive(False)
             self._make_filter_group_list(oFilter)
         elif isinstance(oFilter, FilterBoxItem):
-            self.__oDisable.set_active(oFilter.bDisabled)
-            self.__oNegate.set_inconsistent(False)
-            self.__oNegate.set_active(oFilter.bNegated)
-            self.__oNegate.set_sensitive(True)
+            self._oDisable.set_active(oFilter.bDisabled)
+            self._oNegate.set_inconsistent(False)
+            self._oNegate.set_active(oFilter.bNegated)
+            self._oNegate.set_sensitive(True)
             if oFilter.iValueType == FilterBoxItem.LIST:
                 # Select appropriate list widget for this filter
                 if oFilter.sFilterName == "Card_Sets" or \
@@ -456,18 +456,18 @@ class FilterValuesBox(gtk.VBox):
 
     def disable_all_buttons(self):
         """Disable all the buttons"""
-        self.__oDisable.set_sensitive(False)
-        self.__oDelete.set_sensitive(False)
-        self.__oNegate.set_sensitive(False)
+        self._oDisable.set_sensitive(False)
+        self._oDelete.set_sensitive(False)
+        self._oNegate.set_sensitive(False)
 
     def enable_delete(self):
         """Enable the delete button"""
-        self.__oDelete.set_sensitive(True)
+        self._oDelete.set_sensitive(True)
 
     def enable_disable(self, oFilterObj):
         """Enable the delete button"""
-        self.__oDisable.set_sensitive(True)
-        self.__oDisable.set_active(oFilterObj.bDisabled)
+        self._oDisable.set_sensitive(True)
+        self._oDisable.set_active(oFilterObj.bDisabled)
 
     def get_current_pos_and_sel(self):
         """Get the current scroll position and selection path in the
@@ -1242,10 +1242,10 @@ class FilterBoxModelEditBox(gtk.VBox):
         super(FilterBoxModelEditBox, self).__init__()
         self._oValuesWidget = oValuesWidget
         oTreeStore = FilterBoxModelStore()
-        self.__oTreeView = FilterBoxModelEditView(oTreeStore, oValuesWidget,
+        self._oTreeView = FilterBoxModelEditView(oTreeStore, oValuesWidget,
                 None)
-        self.pack_start(self.__oTreeView, expand=True)
+        self.pack_start(self._oTreeView, expand=True)
 
     def set_box_model(self, oBoxModel):
         """Set the box model to the correct value"""
-        self.__oTreeView.set_box_model(oBoxModel)
+        self._oTreeView.set_box_model(oBoxModel)
