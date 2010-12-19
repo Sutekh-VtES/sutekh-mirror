@@ -34,7 +34,7 @@ def search_file(oFile, dScores, aWrongCopyrights, sFileName):
 
     # Setup test expressions
     sName = sFileName.split(os.path.sep)[-1]
-    oCopyright = re.compile('^# Copyright [0-9]{4,}(, [0-9]{4,})*'
+    oCopyright = re.compile('^# ( )*Copyright [0-9]{4,}(, [0-9]{4,})*'
             ' \S+?.* <.*@.*>')
     oWrongCopyright = re.compile('.*<.*@.*> .*[0-9]*|.*[0-9]*.*<.*@.*>'
             '|^# Copyright.*')
