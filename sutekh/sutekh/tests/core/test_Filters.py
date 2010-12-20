@@ -590,6 +590,8 @@ class FilterTests(SutekhTest):
             self.assertTrue('PhysicalCard' in oFullFilter.types)
             aCSCards = [IAbstractCard(x).name for x in oFullFilter.select(
                         MapPhysicalCardToPhysicalCardSet).distinct()]
+            aCSCards.sort()
+            aExpectedCards.sort()
             self.assertEqual(aCSCards, aExpectedCards, "Filter Object %s"
                     " failed. %s != %s." % (oFullFilter, aCSCards,
                         aExpectedCards))
@@ -614,6 +616,8 @@ class FilterTests(SutekhTest):
             aCSCards = sorted([IPhysicalCard(x) for x in oFullFilter.select(
                         MapPhysicalCardToPhysicalCardSet).distinct()])
             aExpectedPhysCards = self._convert_to_phys_cards(aExpectedCards)
+            aExpectedPhysCards.sort()
+            aCSCards.sort()
             self.assertEqual(aCSCards, aExpectedPhysCards, "Filter Object %s"
                     " failed. %s != %s." % (oFullFilter, aCSCards,
                         aExpectedPhysCards))
@@ -666,6 +670,8 @@ class FilterTests(SutekhTest):
             oFullFilter = Filters.FilterAndBox([oPCSFilter, oFilter])
             aCSCards = [IAbstractCard(x).name for x in oFullFilter.select(
                         MapPhysicalCardToPhysicalCardSet).distinct()]
+            aCSCards.sort()
+            aExpectedCards.sort()
             self.assertEqual(aCSCards, aExpectedCards, "Filter Object %s"
                     " failed. %s != %s." % (oFullFilter, aCSCards,
                         aExpectedCards))
@@ -684,7 +690,7 @@ class FilterTests(SutekhTest):
                 ]
         for sGuess, aExpectedNames in aTests:
             oFilter = best_guess_filter(sGuess)
-            aNames = [x.name for x in oFilter.select(AbstractCard)]
+            aNames = sorted([x.name for x in oFilter.select(AbstractCard)])
             self.assertEqual(aNames, aExpectedNames,
                     '%s != expected %s for guess %s' % (aNames, aExpectedNames,
                         sGuess))
