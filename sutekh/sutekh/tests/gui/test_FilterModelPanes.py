@@ -130,8 +130,39 @@ class TestFilterModelPane(GuiSutekhTest):
         self._check_asts(oAST, oFilterAST)
 
         # Check adding filter elements and filter values
+        oAST = oParser.apply('CardType in Equipment or '
+                '(Discipline in Presence and Sect in Sabbat)')
+        oFilterPanes.replace_ast(oAST)
         oAST = oParser.apply('CardType in Equipment or Keyword in location or '
                 '(Discipline in Presence and Sect in Sabbat)')
+        oFilterPanes._oEditBox._oTreeView.get_selection().select_path('0')
+        oFilterPanes._oEditBox._oTreeView.set_cursor('0')
+        oWidget = oFilterPanes._oSelectBar._oWidget.get_children()[2]
+        # check we can round trip setting a discipline on the list
+        oToolbar = oWidget.get_child()
+        oListStore = oToolbar._oListStore
+        oSelection = oToolbar.get_selection()
+        oIter = oListStore.get_iter_root()
+        while oIter:
+            if oListStore.get_value(oIter, 0) == 'Keyword':
+                oSelection.select_path(oListStore.get_path(oIter))
+                break
+            oIter = oListStore.iter_next(oIter)
+        oFilter = oFilterPanes._oSelectBar._oLastFilter
+        # ENTER_KEYS contains longs, but keyval needs int
+        oFilterPanes._oSelectBar.key_press(oToolbar, oEvent, oFilter, 'Filter')
+        oFilterPanes._oEditBox._oTreeView.get_selection().select_path('0:2')
+        oFilterPanes._oEditBox._oTreeView.set_cursor('0:2')
+        oWidget = oFilterPanes._oSelectBar._oWidget.get_children()[0]
+        # check we can round trip setting a discipline on the list
+        oList = oWidget.get_child()
+        oList.set_selected('location')
+        oFilter = oFilterPanes._oSelectBar._oLastFilter
+        oFilterPanes._oSelectBar.key_press(oFilterPanes._oSelectBar._oWidget,
+                oEvent, oFilter, 'Value')
+        # ENTER_KEYS contains longs, but keyval needs int
+        oFilterAST = oFilterPanes.get_ast_with_values()
+        self._check_asts(oAST, oFilterAST)
 
     def test_widgets(self):
         """Test that various filters lead to the right type of widget"""
