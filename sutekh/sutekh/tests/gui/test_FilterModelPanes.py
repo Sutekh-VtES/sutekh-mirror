@@ -10,7 +10,9 @@ from sutekh.tests.GuiSutekhTest import GuiSutekhTest
 import unittest
 import gtk
 from sutekh.core.FilterParser import FilterParser
-from sutekh.gui.FilterModelPanes import FilterModelPanes
+from sutekh.gui.FilterModelPanes import FilterModelPanes, FilterEditorToolbar
+from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
+from sutekh.gui.CardSetsListView import CardSetsListView
 from sutekh.core.SutekhObjects import AbstractCard
 
 
@@ -101,6 +103,8 @@ class TestFilterModelPane(GuiSutekhTest):
         # Label is the 2nd child
         oLabel = oFilterPanes._oSelectBar._oWidget.get_children()[1]
         self.assertEqual(oLabel.get_text(), "Or Drag Filter Element")
+        oWidget = oFilterPanes._oSelectBar._oWidget.get_children()[2]
+        self.assertTrue(isinstance(oWidget.get_child(), FilterEditorToolbar))
         # unselect
         oFilterPanes._oEditBox._oTreeView.get_selection().unselect_all()
         self.assertEqual(oFilterPanes._oSelectBar._oWidget,
@@ -119,15 +123,30 @@ class TestFilterModelPane(GuiSutekhTest):
         oFilterPanes = FilterModelPanes('PhysicalCard', oDialog)
         oAST = oParser.apply('CardCount in $x')
         oFilterPanes.replace_ast(oAST)
+        oFilterPanes._oEditBox._oTreeView.get_selection().select_path('0:0')
         # check we have a count filter
+        oLabel = oFilterPanes._oSelectBar._oWidget.get_children()[1]
+        self.assertEqual(oLabel.get_text(), "From")
+        oWidget = oFilterPanes._oSelectBar._oWidget.get_children()[2]
+        self.assertTrue(isinstance(oWidget.get_child(), CardSetsListView))
 
         oAST = oParser.apply('Card_Sets in $x')
         oFilterPanes.replace_ast(oAST)
+        oFilterPanes._oEditBox._oTreeView.get_selection().select_path('0:0')
         # check we have a card set list filter
+        oWidget = oFilterPanes._oSelectBar._oWidget.get_children()[0]
+        self.assertTrue(isinstance(oWidget, CardSetsListView))
 
         oAST = oParser.apply('Discipline in $x')
         oFilterPanes.replace_ast(oAST)
+        oFilterPanes._oEditBox._oTreeView.get_selection().select_path('0:0')
         # check we have a values list filter
+        oWidget = oFilterPanes._oSelectBar._oWidget.get_children()[0]
+        self.assertTrue(isinstance(oWidget, AutoScrolledWindow))
+        # check we can round trip setting a discipline on the list
+        oList = oWidget.get_child()
+        oList.set_selected('Presence')
+        self.assertEqual(oList.get_selected_data(), ['Presence'])
 
 
 if __name__ == "__main__":
