@@ -10,7 +10,8 @@ from sutekh.tests.GuiSutekhTest import GuiSutekhTest
 import unittest
 import gtk
 from sutekh.core.FilterParser import FilterParser
-from sutekh.gui.FilterModelPanes import FilterModelPanes, FilterEditorToolbar
+from sutekh.gui.FilterModelPanes import FilterModelPanes, \
+        FilterEditorToolbar, ENTER_KEYS
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 from sutekh.gui.CardSetsListView import CardSetsListView
 from sutekh.core.SutekhObjects import AbstractCard
@@ -46,9 +47,10 @@ class TestFilterModelPane(GuiSutekhTest):
 
     def test_basic(self):
         """Set of simple tests of central part the Filter editor dialog"""
-        # pylint: disable-msg=W0212
-        # We directly access lots of internals details for testing
+        # pylint: disable-msg=W0212, R0915
+        # W0212: We directly access lots of internals details for testing
         # setup
+        # R0915: Long test case to avoid repeated setups
         oParser = FilterParser()
         oDialog = DummyDialog()
         oFilterPanes = FilterModelPanes('PhysicalCard', oDialog)
@@ -59,31 +61,73 @@ class TestFilterModelPane(GuiSutekhTest):
         oFilterAST = oFilterPanes.get_ast_with_values()
         self._check_asts(oAST, oFilterAST)
         # Check that we can disable parts of the filter (sect subfilter)
-        oAST = oParser.apply('CardType in Equipment, Imbued or '
+        oAST2 = oParser.apply('CardType in Equipment, Imbued or '
                 'Discipline in Presence')
-
+        # select sect
+        oFilterPanes._oEditBox._oTreeView.get_selection().select_path('0:1:1')
+        oFilterPanes._oSelectBar._oBoxModelEditor.set_disabled(True)
+        oFilterAST = oFilterPanes.get_ast_with_values()
+        self._check_asts(oAST2, oFilterAST)
         # Check that we can re-enable bits
+        oFilterPanes._oEditBox._oTreeView.get_selection().select_path('0:1:1')
+        oFilterPanes._oSelectBar._oBoxModelEditor.set_disabled(False)
+        oFilterAST = oFilterPanes.get_ast_with_values()
+        self._check_asts(oAST, oFilterAST)
 
         # Check that we can negate bits
         oAST = oParser.apply('NOT CardType in Equipment, Imbued or '
                 '(Discipline in Presence and Sect in Sabbat)')
+        oFilterPanes._oEditBox._oTreeView.get_selection().select_path('0:0')
+        oFilterPanes._oSelectBar._oBoxModelEditor.set_negate(True)
+        oFilterAST = oFilterPanes.get_ast_with_values()
+        self._check_asts(oAST, oFilterAST)
+        # reset
+        oFilterPanes._oEditBox._oTreeView.get_selection().select_path('0:0')
+        oFilterPanes._oSelectBar._oBoxModelEditor.set_negate(False)
 
         # Check that we can delete a value
         oAST = oParser.apply('CardType in Equipment or '
                 '(Discipline in Presence and Sect in Sabbat)')
+        oFilterPanes._oEditBox._oTreeView.get_selection().select_path('0:0:1')
+        oFilterPanes._oEditBox._oTreeView.set_cursor('0:0:1')
+        oFilterPanes._oSelectBar._oBoxModelEditor.delete(None)
+        oFilterAST = oFilterPanes.get_ast_with_values()
+        self._check_asts(oAST, oFilterAST)
 
         # Check that a filter without values is disabled.
         oAST = oParser.apply('Discipline in Presence and Sect in Sabbat')
-
-        # Check that we can delete a filter element with values
-        oAST = oParser.apply('CardType in Equipment, Imbued or '
-                '(Discipline in Presence and Sect in Sabbat)')
-        oFilterPanes.replace_ast(oAST)
-        oAST2 = oParser.apply('Discipline in Presence and Sect in Sabbat')
+        oFilterPanes._oEditBox._oTreeView.get_selection().select_path('0:0:0')
+        oFilterPanes._oEditBox._oTreeView.set_cursor('0:0:0')
+        oFilterPanes._oSelectBar._oBoxModelEditor.delete(None)
+        oFilterAST = oFilterPanes.get_ast_with_values()
+        self._check_asts(oAST, oFilterAST)
 
         # Check we can add filter values
         oAST = oParser.apply('CardType in Equipment or '
                 '(Discipline in Presence and Sect in Sabbat)')
+        oFilterPanes._oEditBox._oTreeView.get_selection().select_path('0:0')
+        oFilterPanes._oEditBox._oTreeView.set_cursor('0:0')
+        oWidget = oFilterPanes._oSelectBar._oWidget.get_children()[0]
+        # check we can round trip setting a discipline on the list
+        oList = oWidget.get_child()
+        oList.set_selected('Equipment')
+        oFilter = oFilterPanes._oSelectBar._oLastFilter
+        oEvent = gtk.gdk.Event(gtk.gdk.KEY_PRESS)
+        # ENTER_KEYS contains longs, but keyval needs int
+        oEvent.keyval = int(list(ENTER_KEYS)[0])
+        oEvent.state = gtk.gdk.CONTROL_MASK
+        oFilterPanes._oSelectBar.key_press(oFilterPanes._oSelectBar._oWidget,
+                oEvent, oFilter, 'Value')
+        oFilterAST = oFilterPanes.get_ast_with_values()
+        self._check_asts(oAST, oFilterAST)
+
+        # Check that we can delete a filter element with values
+        oAST = oParser.apply('Discipline in Presence and Sect in Sabbat')
+        oFilterPanes._oEditBox._oTreeView.get_selection().select_path('0:0')
+        oFilterPanes._oEditBox._oTreeView.set_cursor('0:0')
+        oFilterPanes._oSelectBar._oBoxModelEditor.delete(None)
+        oFilterAST = oFilterPanes.get_ast_with_values()
+        self._check_asts(oAST, oFilterAST)
 
         # Check adding filter elements and filter values
         oAST = oParser.apply('CardType in Equipment or Keyword in location or '
