@@ -1,3 +1,13 @@
+21 Dec 2010
+  * Finish test case for the filter model panes
+
+18 Dec 2010
+ * Fix bug with the parent count colour not being updated properly when
+   editing
+
+17 Dec 2010
+ * Add CachedFilter, to improve speed of complex card set loads a bit
+
 14 Dec 2010
  * Update cardset id -> profile map on major database changes
  * delete profile references when deleting a card set
