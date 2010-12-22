@@ -26,8 +26,9 @@ class ZipFileWrapperTest(SutekhTest):
 
     def test_zip_file(self):
         """Test zip file handling"""
-        # pylint: disable-msg=E1101
+        # pylint: disable-msg=E1101, R0915
         # E1101: SQLObject + PyProtocols magic confuses pylint
+        # R0915: Want a single test case to avoid re-initialising the database
         sTempFileName = self._create_tmp_file()
         oZipFile = ZipFileWrapper(sTempFileName)
         aPhysCards = get_phys_cards()
