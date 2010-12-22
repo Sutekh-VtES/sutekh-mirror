@@ -617,6 +617,10 @@ class CardSetCardListModel(CardListModel):
 
     def _get_child_filters(self, oCurFilter):
         """Get the filters for the child card sets of this card set."""
+        # pylint: disable-msg=E1101, E1103, R0912
+        # E1101, E1103 - SQLObject + PyProtocols confuse pylint
+        # R0912 - The various cache cases intoduce many branches, but can't
+        #   reasonably split away.
 
         def _update_child_caches(oCard):
             """Add card info to the cache"""
@@ -627,8 +631,6 @@ class CardSetCardListModel(CardListModel):
             self._dCache['child abstract cards'][oAbsId] += 1
             return oAbsId
 
-        # pylint: disable-msg=E1101, E1103
-        # SQLObject + PyProtocols confuse pylint
         if self._iExtraLevelsMode in CARD_SETS_LEVEL or \
                 self._iShowCardMode == CHILD_CARDS:
             if self._dCache['child filters'] is None:
@@ -1406,9 +1408,10 @@ class CardSetCardListModel(CardListModel):
            as we can query the database and obtain accurate results.
            Does rely on everyone calling send_changed_signal.
            """
-        # pylint: disable-msg=E1101, R0912, E1103
+        # pylint: disable-msg=E1101, R0912, E1103, R0915
         # E1101, E1103 - Pyprotocols confuses pylint
-        # R0912 - need to consider several cases, so lots of branches
+        # R0912, R0915 - need to consider several cases, so lots of
+        #     branches and statements
         oAbsId = oPhysCard.abstractCardID
         if self._bPhysicalFilter:
             oCurFilter = self.get_current_filter()

@@ -5,6 +5,11 @@
 # Copyright 2006, 2007 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
+# pylint: disable-msg=C0111, C0321, C0302
+# C0111 - No point in docstrings for these classes, really
+# C0321 - Compactness of single line definitions is good here
+# C0302 - lots of lines as we want all these related definitions in one file
+
 """The database definitions and pyprotocols adaptors for Sutekh"""
 
 from sutekh.core.CachedRelatedJoin import CachedRelatedJoin, \
@@ -20,10 +25,6 @@ from sqlobject import sqlmeta, SQLObject, IntCol, UnicodeCol, RelatedJoin, \
 from protocols import advise, Interface
 
 # Interfaces
-
-# pylint: disable-msg=C0111, C0321
-# C0111 - No point in docstrings for these classes, really
-# C0321 - Compactness of single line definitions is good here
 
 
 class IAbstractCard(Interface): pass
