@@ -596,7 +596,7 @@ class CardSetCardListModel(CardListModel):
                 aPhysCards = [x for x in oAbsCard.physicalCards if
                         self.check_card_visible(x)]
                 # This is safe, since we know the None case has been excluded
-                aPhysCards.sort(key=lambda x: x.expansion.name)
+                aPhysCards.sort(key=ExpansionNameAdapter)
                 oRow.oPhysCard = aPhysCards[0]
         else:
             oRow = dAbsCards[oPhysCard.abstractCardID]
