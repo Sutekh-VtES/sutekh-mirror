@@ -51,7 +51,7 @@ class CardSetListener(CardListModelListener):
 
 
 class DummyController(object):
-    """Dummy controler object for config tests"""
+    """Dummy controller object for config tests"""
 
     def __init__(self):
         self.bReload = False
@@ -135,7 +135,7 @@ class CardSetListModelTests(ConfigSutekhTest):
                 oModel.get_value(oChildIter, 2), sListName))
             if oModel.iter_n_children(oChildIter) > 0:
                 oGCIter = oModel.iter_children(oChildIter)
-                # We untoll a level for speed reasons
+                # We unroll a level for speed reasons
                 # This is messy - we could easily do this as a recursive call
                 # in all cases, but we hit this function 4 times for almost
                 # every iteration of the test, so sacrificing some readablity
@@ -435,7 +435,7 @@ class CardSetListModelTests(ConfigSutekhTest):
         self._cleanup_models([oModel])
 
     def test_db_listeners(self):
-        """Test that the model responds to changes to the card set hierachy"""
+        """Test that the model responds to changes to the card set hierarchy"""
         # We use an empty card set for these tests, to minimise time taken
         # pylint: disable-msg=W0212
         # we need to access protected methods
@@ -532,7 +532,7 @@ class CardSetListModelTests(ConfigSutekhTest):
         return oModel
 
     def _setup_simple(self):
-        """Convience method for setting up a single card set for tests"""
+        """Convenience method for setting up a single card set for tests"""
         # pylint: disable-msg=E1101
         # PyProtocols confuses pylint
         oPCS = PhysicalCardSet(name=self.aNames[0])
@@ -737,7 +737,7 @@ class CardSetListModelTests(ConfigSutekhTest):
         return oGrandChildPCS
 
     def _setup_relationships(self):
-        """Convience method to setup a card set hierachy for test cases"""
+        """Convenience method to setup a card set hierarchy for test cases"""
         # pylint: disable-msg=E1101
         # PyProtocols confuses pylint
         aCards, oPCS, oChildPCS = self._setup_parent_child()

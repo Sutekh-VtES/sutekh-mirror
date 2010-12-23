@@ -4,7 +4,7 @@
 # Copyright 2009 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-"""Useful utilites for managing card sets that need to access the gui"""
+"""Useful utilities for managing card sets that need to access the gui"""
 
 import gtk
 from sutekh.core.CardSetHolder import CardSetHolder

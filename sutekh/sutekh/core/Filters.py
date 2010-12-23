@@ -60,7 +60,7 @@ class Filter(object):
     # pylint: disable-msg=R0201
     # children need to be able to override this.
     def involves(self, _oCardSet):
-        """Reurn true if the filter results change when oCardSet changes"""
+        """Return true if the filter results change when oCardSet changes"""
         return self.is_physical_card_only()
 
     def select(self, cCardClass):
@@ -114,7 +114,7 @@ class FilterBox(Filter, list):
         return aTypes
 
     def involves(self, oCardSet):
-        """Reurn true if any of the child results change with oCardSet"""
+        """Return true if any of the child results change with oCardSet"""
         bResult = False
         for oSubFilter in self:
             bResult = bResult or oSubFilter.involves(oCardSet)

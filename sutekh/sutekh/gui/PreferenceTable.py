@@ -80,7 +80,7 @@ class PreferenceOption(object):
         self.bEditable = True
 
     def set_inheritable(self, bInheritable):
-        """Set wether the values are inherited from the default profile"""
+        """Set whether the values are inherited from the default profile"""
         self.bInheritable = bInheritable
         if bInheritable:
             self.oInherit.set_sensitive(True)
@@ -162,7 +162,7 @@ class UneditableSpec(BaseParsedSpec):
 
 
 class StringParsedSpec(BaseParsedSpec):
-    """Class for a option taking an artbitary string"""
+    """Class for a option taking an arbitrary string"""
 
     def create_widget(self):
         """Create suitable widget (gtk.Entry)"""
@@ -183,7 +183,7 @@ class BooleanParsedSpec(BaseParsedSpec):
     """Class for a Boolean option in the spec"""
 
     def create_widget(self):
-        """Create a asuitable widget (gtk.CheckBox)"""
+        """Create a a suitable widget (gtk.CheckBox)"""
         return gtk.CheckButton()
 
     def set_value(self, oValue):

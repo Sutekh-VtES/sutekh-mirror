@@ -18,7 +18,7 @@ from sutekh.core.SutekhObjects import AbstractCard
 
 
 class DummyDialog(gtk.Dialog):
-    """Dumy dialog for the filter pane tests"""
+    """Dummy dialog for the filter pane tests"""
     # pylint: disable-msg=R0904
     # gtk widget, so has many public methods
 

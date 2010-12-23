@@ -34,7 +34,7 @@ class MainToolbar(gtk.Toolbar):
     # pylint: enable-msg=R0201
 
     def remove_frame_button(self, sTitle):
-        """Remove the button associated with the given frame titla."""
+        """Remove the button associated with the given frame title."""
         aItems = self.get_children()
         for oItem in aItems:
             if oItem.get_label() == sTitle:

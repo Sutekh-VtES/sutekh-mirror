@@ -313,7 +313,7 @@ class CardListView(FilteredView):
         return True
 
     def make_drag_icon(self, _oWidget, oDragContext):
-        """Custom drag icon for draggin cards"""
+        """Custom drag icon for dragging cards"""
         # We use STOCK_DND_MULTIPLE for multiple cards, otherwise
         # STOCK_DND for single row selected
         iNumSelected = self._oSelection.count_selected_rows()
