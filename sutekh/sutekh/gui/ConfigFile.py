@@ -527,6 +527,10 @@ class ConfigFile(object):
         dProfiles.clear()
         for sId, sProfile in dOldProfiles.iteritems():
             iId = int(sId[2:])  # cs<cardset id>
+            if iId not in dOldMap:
+                # ini file out of synce with database, so skip this entry
+                # (lots of ways this can happen - sutekh-cli, editing, etc.)
+                continue
             sName = dOldMap[iId]
             if sName in dNewRev:
                 sNewId = 'cs%d' % dNewRev[sName]
