@@ -1436,6 +1436,9 @@ class CardSetCardListModel(CardListModel):
             if self._oController and oAbsId in self._dAbs2Iter:
                 dStates = self._oController.save_iter_state(
                         self._dAbs2Iter[oAbsId])
+            if oCardSet.id == self._oCardSet.id:
+                # This cache is no longer valid
+                self._dCache['this card list'] = None
             # clear existing info about the card
             self._clear_card_iter(oAbsId)
             # We hand off to add_new_card to do the right thing
