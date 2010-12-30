@@ -104,9 +104,11 @@ class CardDict(dict):
     oDispCard = re.compile(r'\[[^\]]+\]$')
     oArtistSp = re.compile(r'[&;]')
     # Use regexp lookahead for the last '.', so it can anchor the next match
+    # Use non-grouping parentheses so we ca can catch either . or the end of
+    # the text
     # Defaults
     oCryptInfoRgx = re.compile(
-            '[:\.] ([+-]\d) (bleed|strength|stealth|intercept)(?=\.)')
+            '[:\.] ([+-]\d) (bleed|strength|stealth|intercept)(?:(?=\.)|$)')
     dCryptProperties = {
             'black hand': re.compile('Sabbat\. Black Hand'),
             # Seraph has a special case
