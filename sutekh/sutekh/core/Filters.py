@@ -194,6 +194,7 @@ class CachedFilter(Filter):
         # pylint: disable-msg=W0212
         # We delibrately access the protected members here, as that's
         # the point
+        self._oSubFilter = oFilter
         self._oExpression = oFilter._get_expression()
         self._aJoins = oFilter._get_joins()
 
@@ -202,6 +203,11 @@ class CachedFilter(Filter):
 
     def _get_joins(self):
         return self._aJoins
+
+    # pylint: disable-msg=W0212
+    # W0212 - we are delibrately accesing protected members her
+    types = property(fget=lambda self: self._oSubFilter.types,
+            doc="types supported by this filter")
 
 
 # Null Filter
