@@ -165,12 +165,12 @@ class CardSetCompare(SutekhPlugin):
         oPage = make_page(oComm, dCommon)
         oNotebook.append_page_menu(oPage, oHeading, gtk.Label(sTabText))
         oHeading = gtk.Label()
-        sTabText = 'Cards only in %s' % aCardSetNames[0]
+        sTabText = 'Cards only in %s' % self.escape(aCardSetNames[0])
         oHeading.set_markup('<span foreground = "red">%s</span>' % sTabText)
         oDiff1 = format_list(dDifferences[aCardSetNames[0]], 'red')
         oPage = make_page(oDiff1, dDifferences[aCardSetNames[0]])
         oNotebook.append_page_menu(oPage, oHeading, gtk.Label(sTabText))
-        sTabText = 'Cards only in %s' % aCardSetNames[1]
+        sTabText = 'Cards only in %s' % self.escape(aCardSetNames[1])
         oHeading = gtk.Label()
         oHeading.set_markup('<span foreground = "red">%s</span>' % sTabText)
         oDiff2 = format_list(dDifferences[aCardSetNames[1]], 'red')
