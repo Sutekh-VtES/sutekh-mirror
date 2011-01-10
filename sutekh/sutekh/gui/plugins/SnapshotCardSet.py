@@ -59,7 +59,7 @@ class SnapshotCardSet(SutekhPlugin):
             oNewPCS.syncUpdate()
 
         self.reload_pcs_list()
-        sMesg = 'Snapshot <b>%s</b> created' % oTempHolder.name
+        sMesg = 'Snapshot <b>%s</b> created' % self.escape(oTempHolder.name)
         do_complaint(sMesg, gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, True)
 
 
