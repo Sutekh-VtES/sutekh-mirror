@@ -550,20 +550,27 @@ class FilterBoxModelStore(gtk.TreeStore):
             aValues, aFrom = oModel.aCurValues
             if aValues:
                 for sValue in aValues:
-                    self.append(oFilterIter, (sValue, None, oColour))
+                    self.append(oFilterIter,
+                            (gobject.markup_escape_text(sValue), None,
+                                oColour))
             else:
                 self.append(oFilterIter, (self.NO_VALUE, None, oColour))
             self.append(oFilterIter, ('<b>From</b>', None, oColour))
             if aFrom:
                 for sValue in aFrom:
-                    self.append(oFilterIter, (sValue, None, oColour))
+                    self.append(oFilterIter,
+                            (gobject.markup_escape_text(sValue), None,
+                                oColour))
             else:
                 self.append(oFilterIter, (self.NO_VALUE, None, oColour))
         elif oModel.aCurValues and oModel.aValues:
             for sValue in oModel.aCurValues:
-                self.append(oFilterIter, (sValue, None, oColour))
+                self.append(oFilterIter,
+                        (gobject.markup_escape_text(sValue), None, oColour))
         elif oModel.aCurValues:
-            self.append(oFilterIter, (oModel.aCurValues[0], None, oColour))
+            self.append(oFilterIter,
+                    (gobject.markup_escape_text(oModel.aCurValues[0]), None,
+                        oColour))
         elif oModel.iValueType == oModel.NONE:
             self.append(oFilterIter, (self.NONE_VALUE, None, oColour))
         else:
@@ -603,7 +610,6 @@ class FilterBoxModelStore(gtk.TreeStore):
 
     def load(self, oBoxModel):
         """Load the box model into the store"""
-
         self.clear()
         if oBoxModel is None:
             return
@@ -611,8 +617,8 @@ class FilterBoxModelStore(gtk.TreeStore):
         self._do_add_iter(None, oBoxModel, False)
         return self.get_path(self.get_iter_root())
 
-    def update_iter_with_values(self, aValues, oSelectIter, oPath):
-        """Update the given iter with the changed values"""
+    def _clear_iter(self, oSelectIter, oPath):
+        """Clear the current iter, saving curently selected element"""
         oChild = self.iter_children(oSelectIter)
         oCurIter = self.get_iter(oPath)
         iPos = 0
@@ -629,23 +635,61 @@ class FilterBoxModelStore(gtk.TreeStore):
             # We deleted everything, so add 1 child
             oCurIter = self.append(oSelectIter)
             iIndex = 0
+        return iIndex, oCurIter
+
+    def _add_list_iter(self, iPos, iIndex, oSelectIter, oCurIter):
+        """Set the iter correctly for the list update"""
+        if iPos == iIndex:
+            oChild = oCurIter
+        elif iPos < iIndex:
+            oChild = self.insert_before(oSelectIter, oCurIter)
+        else:
+            oChild = self.append(oSelectIter)
+        return oChild
+
+    def update_iter_with_values(self, aValues, oSelectIter, oPath):
+        """Update the given iter with the changed values"""
+        iIndex, oCurIter = self._clear_iter(oSelectIter, oPath)
         if aValues:
             iIndex = min(len(aValues) - 1, iIndex)
             iPos = 0
             for sValue in aValues:
-                if iPos == iIndex:
-                    oChild = oCurIter
-                elif iPos < iIndex:
-                    oChild = self.insert_before(oSelectIter, oCurIter)
-                else:
-                    oChild = self.append(oSelectIter)
+                oChild = self._add_list_iter(iPos, iIndex, oSelectIter,
+                        oCurIter)
                 if sValue is not None:
-                    self.set(oChild, 0, sValue, 1, None, 2, self.BLACK)
+                    self.set(oChild, 0, gobject.markup_escape_text(sValue),
+                            1, None, 2, self.BLACK)
                 else:
                     self.set(oChild, 0, self.NO_VALUE, 1, None, 2, self.BLACK)
                 iPos += 1
         else:
             self.set(oCurIter, 0, self.NO_VALUE, 1, None, 2, self.BLACK)
+        return self.get_path(oCurIter)
+
+    def update_iter_with_from_list(self, aCounts, aNames, oSelectIter, oPath):
+        """Update the given iter with the changed values"""
+        iIndex, oCurIter = self._clear_iter(oSelectIter, oPath)
+        iIndex = min(len(aCounts) + len(aNames), iIndex)
+        iPos = 0
+        for sValue in aCounts:
+            oChild = self._add_list_iter(iPos, iIndex, oSelectIter, oCurIter)
+            if sValue is not None:
+                self.set(oChild, 0, gobject.markup_escape_text(sValue),
+                        1, None, 2, self.BLACK)
+            else:
+                self.set(oChild, 0, self.NO_VALUE, 1, None, 2, self.BLACK)
+            iPos += 1
+        oChild = self._add_list_iter(iPos, iIndex, oSelectIter, oCurIter)
+        iPos += 1
+        self.set(oChild, 0, '<b>From</b>', 1, None, 2, self.BLACK)
+        for sValue in aNames:
+            oChild = self._add_list_iter(iPos, iIndex, oSelectIter, oCurIter)
+            if sValue is not None:
+                self.set(oChild, 0, gobject.markup_escape_text(sValue),
+                        1, None, 2, self.BLACK)
+            else:
+                self.set(oChild, 0, self.NO_VALUE, 1, None, 2, self.BLACK)
+            iPos += 1
         return self.get_path(oCurIter)
 
     def update_entry(self, oFilterItem, oSelectIter):
@@ -657,7 +701,7 @@ class FilterBoxModelStore(gtk.TreeStore):
         sText = oFilterItem.aCurValues[0]
         if not sText:
             sText = self.NO_VALUE
-        self.set(oChild, 0, sText, 1, None)
+        self.set(oChild, 0, gobject.markup_escape_text(sText), 1, None)
         return self.get_path(oChild)
 
     def get_drop_iter(self, tRowInfo):
@@ -825,17 +869,17 @@ class FilterBoxModelEditView(gtk.TreeView):
 
     def update_count_list(self, oIter, oFilterItem):
         """Update the list to show the current values"""
-        aValues = []
+        aCounts = []
+        aNames = []
         if oFilterItem.aCurValues[0]:
-            aValues.extend(oFilterItem.aCurValues[0])
+            aCounts.extend(oFilterItem.aCurValues[0])
         else:
-            aValues.append(None)
-        aValues.append('<b>From</b>')
+            aCounts.append(None)
         if oFilterItem.aCurValues[1]:
-            aValues.extend(oFilterItem.aCurValues[1])
+            aNames.extend(oFilterItem.aCurValues[1])
         else:
-            aValues.append(None)
-        self._update_iter_with_list(oIter, aValues)
+            aNames.append(None)
+        self._update_iter_with_from_list(oIter, aCounts, aNames)
 
     def update_box_text(self, oBoxModel):
         """Update the listing for the given box model"""
@@ -856,6 +900,14 @@ class FilterBoxModelEditView(gtk.TreeView):
         oPath, _oCol = self.get_cursor()
         oCurPath = self._oStore.update_iter_with_values(aValues,
                 oIter, oPath)
+        self.expand_to_path(oCurPath)
+        self.expand_row(oCurPath, True)
+
+    def _update_iter_with_from_list(self, oIter, aCounts, aNames):
+        """Fill in with a from list"""
+        oPath, _oCol = self.get_cursor()
+        oCurPath = self._oStore.update_iter_with_from_list(aCounts,
+                aNames, oIter, oPath)
         self.expand_to_path(oCurPath)
         self.expand_row(oCurPath, True)
 
