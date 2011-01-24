@@ -527,7 +527,7 @@ class CardSetListModelTests(ConfigSutekhTest):
     def _get_model(self, sName):
         """Return a model for the named card set, with the null grouping"""
         oModel = CardSetCardListModel(sName, self.oConfig)
-        oModel.bHideIllegal = False
+        oModel.hideillegal = False
         oModel.groupby = Groupings.NullGrouping
         return oModel
 
@@ -550,7 +550,7 @@ class CardSetListModelTests(ConfigSutekhTest):
         # Test adding more cards
         oModel = self._get_model(self.aNames[0])
         self._loop_modes(oPCS, [oModel])
-        oModel.bHideIllegal = True
+        oModel.hideillegal = True
         self._loop_modes(oPCS, [oModel])
         self._cleanup_models([oModel])
 
@@ -868,7 +868,7 @@ class CardSetListModelTests(ConfigSutekhTest):
         self._loop_modes(oGrandChild2PCS, aModels)
         # Check with legal filter on as well
         for oModel in aModels:
-            oModel.bHideIllegal = True
+            oModel.hideillegal = True
         self._loop_modes(oPCS, aModels)
         self._cleanup_models(aModels)
 
@@ -937,7 +937,7 @@ class CardSetListModelTests(ConfigSutekhTest):
         oModel._change_parent_count_mode(IGNORE_PARENT)
         oModel._change_level_mode(NO_SECOND_LEVEL)
         oModel.bEditable = False
-        oModel.bHideIllegal = True
+        oModel.hideillegal = True
         # Test card type
         oModel.selectfilter = Filters.CardTypeFilter('Vampire')
         oModel.applyfilter = True

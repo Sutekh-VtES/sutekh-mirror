@@ -79,7 +79,7 @@ class CardListModelTests(ConfigSutekhTest):
         # repeated setups, so it has lots of lines + variables
         oModel = CardListModel(self.oConfig)
         # We test with illegal cards shown
-        oModel.bHideIllegal = False
+        oModel.hideillegal = False
         oListener = TestListener()
         oModel.load()
         self.assertFalse(oListener.bLoadCalled)
@@ -201,7 +201,7 @@ class CardListModelTests(ConfigSutekhTest):
         aCards = self._get_card_names(oModel)
         self.assertEqual('Dramatic Upheaval' in aCards, False)
         self.assertEqual('Motivated by Gehenna' in aCards, False)
-        oModel.bHideIllegal = False
+        oModel.hideillegal = False
         oModel.load()
         aCards = self._get_card_names(oModel)
         self.assertEqual('Dramatic Upheaval' in aCards, True)
