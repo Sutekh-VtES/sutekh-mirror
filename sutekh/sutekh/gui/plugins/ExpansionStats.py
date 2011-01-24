@@ -10,10 +10,9 @@
 import gtk
 import pango
 import gobject
-from sqlobject import SQLObjectNotFound
 from sutekh.core.SutekhObjects import PhysicalCard, AbstractCard
 from sutekh.core.Groupings import ExpansionRarityGrouping
-from sutekh.core.Filters import MultiKeywordFilter, NullFilter, FilterNot
+from sutekh.core.Filters import make_illegal_filter, NullFilter
 from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
@@ -118,11 +117,7 @@ class StatsModel(gtk.TreeStore):
                 gobject.TYPE_INT)
         self.oLegalFilter = NullFilter()
         if bHideIllegal:
-            try:
-                self.oLegalFilter = FilterNot(MultiKeywordFilter(
-                    ['not for legal play']))
-            except SQLObjectNotFound:
-                self.oLegalFilter = NullFilter()
+            self.oLegalFilter = make_illegal_filter()
         self.load(cGrping)
 
     # pylint: disable-msg=R0914
