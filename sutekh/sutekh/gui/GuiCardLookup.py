@@ -220,6 +220,11 @@ class ReplacementTreeView(gtk.TreeView):
             self.oFilterToggleButton.get_active()
         self.oCardListView.load()
 
+    def toggle_show_illegal(self, oButton):
+        """Toggle whether the filter is applied."""
+        self.oCardListView.get_model().hideillegal = not oButton.get_active()
+        self.oCardListView.load()
+
     def show_search(self, _oButton):
         """Popup the search dialog"""
         self.oCardListView.emit('start-interactive-search')
@@ -469,12 +474,16 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
 
         oFilterDialogButton = gtk.Button('Specify Filter')
         oFilterApplyButton = gtk.CheckButton("Apply Filter")
+        oLegalButton = gtk.CheckButton("Show illegal cards")
         oSearchButton = gtk.Button("Search List")
         add_accel_to_button(oFilterDialogButton, "<Ctrl>s", oAccelGroup,
                 'Open the Filter Editing Dialog.\nShortcut :<b>Ctrl-S</b>')
         add_accel_to_button(oFilterApplyButton, "<Ctrl>t", oAccelGroup,
-                'Toggle the applied of the filter.\n'
+                'Toggle the applied state of the filter.\n'
                 'Shortcut : <b>Ctrl-T</b>')
+        add_accel_to_button(oLegalButton, "<Ctrl>l", oAccelGroup,
+                'Toggle the display of cards not legal for tournament play.\n'
+                'Shortcut : <b>Ctrl-L</b>')
         add_accel_to_button(oSearchButton, "<Ctrl>f", oAccelGroup,
                 'Open the search dailog for the cards.\n'
                 'Shortcut : <b>Ctrl-F</b>')
@@ -483,7 +492,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
             oFilterApplyButton)
 
         oReplacementWin = AutoScrolledWindow(oReplacementView)
-        oReplacementWin.set_size_request(400, 600)
+        oReplacementWin.set_size_request(600, 600)
         oVBox.pack_start(oReplacementWin, True, True)
 
         oFilterButtons = gtk.HBox(spacing=2)
@@ -492,12 +501,15 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
 
         oFilterButtons.pack_start(oFilterDialogButton)
         oFilterButtons.pack_start(oFilterApplyButton)
+        oFilterButtons.pack_start(oLegalButton)
         oFilterButtons.pack_start(oSearchButton)
 
         oFilterDialogButton.connect("clicked",
             oReplacementView.run_filter_dialog)
         oFilterApplyButton.connect("toggled",
             oReplacementView.toggle_apply_filter)
+        oLegalButton.connect("toggled",
+            oReplacementView.toggle_show_illegal)
         oSearchButton.connect("clicked",
             oReplacementView.show_search)
 
